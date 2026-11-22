@@ -2,7 +2,7 @@
 // Full local callable -> independent vision -> budget -> reconciliation. Every external I/O is simulated.
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { normalizeInvoiceScan, invoiceScanId, SCAN_MODEL } from '../../functions/src/invoiceScanCore';
-import { GEMINI_LITE_MODEL } from '../../functions/src/models';
+import { GEMINI_LITE_MODEL, INVOICE_STRONG_MAX_OUTPUT, INVOICE_STRONG_MODEL } from '../../functions/src/models';
 // Voie fn-csv8 (D247) : la lecture est C★v8 + N. Lectures 1 et 2 : Flash-Lite à 8 192 jetons ; lecture 3 : la 3.8, appelée sur désaccord, à 8 192 aussi depuis le 02.11
 // ou quand une Flash-Lite manque ; ses valeurs et le statut du vote à trois. Ce fichier décrivait A (deux 3.8 puis une 3ᵉ) : adapté test par test (RESULTAT.md, Relance 1).
 
@@ -54,20 +54,22 @@ function arrangeReadings(readings: unknown[], options: { finishReasons?: string[
   const secondStarted = new Promise<void>(resolve => { releaseFirst = resolve; });
   memory.provider.mockImplementation(async (url, init) => {
     const count = memory.provider.mock.calls.length;
-    // Appels 1 et 2 : les deux Flash-Lite ; appel 3 : la 3.8 (jamais avant que les deux Flash-Lite aient rendu la main).
+    // Appels 1 et 2 : les deux Flash-Lite ; appel 3 : Hydrogen (jamais avant que les deux Flash-Lite aient rendu la main) ; appel 4 : le repli sur la 3.8,
+    // seulement si Hydrogen a échoué. Un repli non prévu par le scénario (moins de 4 lectures données) échoue à son tour, comme un fournisseur en panne.
     const lite = count <= 2;
-    expect(String(url)).toContain(`/${lite ? GEMINI_LITE_MODEL : SCAN_MODEL}:generateContent`);
+    expect(String(url)).toContain(`/${lite ? GEMINI_LITE_MODEL : count === 3 ? INVOICE_STRONG_MODEL : SCAN_MODEL}:generateContent`);
     expect(SCAN_MODEL).toContain('flash'); expect(String(url)).not.toContain('pro');
     expect(documentScan().calls).toBeGreaterThanOrEqual(count);
-    expect(documentScan().calls).toBeLessThanOrEqual(3);
+    expect(documentScan().calls).toBeLessThanOrEqual(4);
     expect(monthly().reservedMicroChf).toBeGreaterThan(0);
     const request = JSON.parse(init.body);
     expect(request.contents[0].parts[1].inlineData).toEqual(file);
-    expect(request.generationConfig).toMatchObject({ maxOutputTokens: 8192, mediaResolution: 'MEDIA_RESOLUTION_HIGH', thinkingConfig: { thinkingLevel: 'LOW' } });
-    if (count > readings.length || count > 3) throw new Error('Unexpected additional vision call.');
+    expect(request.generationConfig).toMatchObject({ maxOutputTokens: count === 3 ? INVOICE_STRONG_MAX_OUTPUT : 8192, mediaResolution: 'MEDIA_RESOLUTION_HIGH', thinkingConfig: { thinkingLevel: 'LOW' } });
+    if (count > 4) throw new Error('Unexpected additional vision call.');
+    if (count > readings.length) return { ok: false, status: 503, headers: new Headers(), json: async () => ({}) };
     if (count === 2) releaseFirst();
     if (count === 1 && options.holdFirstUntilSecond) await secondStarted;
-    return providerResult(readings[count - 1], [1378, 424, 600][count - 1], options.finishReasons?.[count - 1] ?? 'STOP');
+    return providerResult(readings[count - 1], [1378, 424, 600, 600][count - 1], options.finishReasons?.[count - 1] ?? 'STOP');
   });
 }
 const requestScan = (override: Record<string, unknown> = {}) => aiTask.run({ auth: { uid, token: { email: 'invoice-review@example.test', email_verified: true } }, data: { task: 'scanInvoice', file, ...override } } as any);
@@ -179,13 +181,13 @@ describe('Vision complète intégrée au handler et au budget, sans réseau', ()
   });
 
   it.each([null, {}, { lines: [] }, { lines: [{ id: 'line-1', uncertain: false }] }])('rejette l’ancien format partiel ou une lecture inexploitable %j', async raw => {
-    // Lecture 2 inexploitable : la 3.8 est appelée (une Flash-Lite manque) ; ici elle est inexploitable aussi, donc une seule lecture reste.
-    arrangeReadings([invoice(), raw, raw]);
+    // Lecture 2 inexploitable : la 3ᵉ lecture est appelée (Hydrogen, puis le repli sur la 3.8) ; ici les deux sont inexploitables aussi, donc une seule lecture reste.
+    arrangeReadings([invoice(), raw, raw, raw]);
     const { data } = await scan();
     expect(data.review.status).toBe('unavailable'); expect(data.review.readers).toBe(1);
     expect(data.items).toEqual(normalizeInvoiceScan(invoice()).items);
     expect(data.issues.join(' ')).toContain('double lecture n’a pas abouti');
-    expect(memory.provider).toHaveBeenCalledTimes(3);
+    expect(memory.provider).toHaveBeenCalledTimes(4);
   });
 
   it('une Flash-Lite inexploitable : la 3.8 lit à son tour et vote à deux avec l’autre (jamais « indisponible »)', async () => {
@@ -209,15 +211,15 @@ describe('Vision complète intégrée au handler et au budget, sans réseau', ()
     expect(data.issues.join(' ')).toContain('rapprochées');
   });
 
-  it.each([0, 1])('préserve l’autre transcription si la lecture %i est tronquée, sans quatrième tentative', async index => {
+  it.each([0, 1])('préserve l’autre transcription si la lecture %i est tronquée, sans cinquième tentative', async index => {
     const finishes = ['STOP', 'STOP']; finishes[index] = 'MAX_TOKENS';
-    // La 3.8 est appelée (une Flash-Lite est coupée) ; ici elle est coupée aussi : l'autre transcription reste, « unavailable », trois appels exactement.
-    arrangeReadings([invoice(), invoice(), invoice()], { finishReasons: [...finishes, 'MAX_TOKENS'] });
+    // La 3ᵉ lecture est appelée (une Flash-Lite est coupée) : Hydrogen, coupée, puis le repli sur la 3.8, coupé aussi : l'autre transcription reste, « unavailable », quatre appels exactement.
+    arrangeReadings([invoice(), invoice(), invoice(), invoice()], { finishReasons: [...finishes, 'MAX_TOKENS', 'MAX_TOKENS'] });
     const { data } = await scan();
     expect(data.review.status).toBe('unavailable'); expect(data.review.readers).toBe(1);
     expect(data.points.find(point => point.code === 'lecture-coupee')).toMatchObject({ luTexte: 'sortie' });
-    expect(data.items).toEqual(normalizeInvoiceScan(invoice()).items); expect(memory.provider).toHaveBeenCalledTimes(3);
-    expect(monthly().reservedMicroChf).toBe(0); expect(daily().usage.tokens).toBe(2402);
+    expect(data.items).toEqual(normalizeInvoiceScan(invoice()).items); expect(memory.provider).toHaveBeenCalledTimes(4);
+    expect(monthly().reservedMicroChf).toBe(0); expect(daily().usage.tokens).toBe(3002);
   });
 
   it.each([0, 1])('une Flash-Lite (lecture %i) tronquée : la 3.8 lit et vote à deux avec l’autre, la coupure reste dans le journal seulement', async index => {
@@ -229,12 +231,12 @@ describe('Vision complète intégrée au handler et au budget, sans réseau', ()
     expect(monthly().reservedMicroChf).toBe(0); expect(daily().usage.tokens).toBe(2402);
   });
 
-  it('conserve les divergences si la correction est tronquée et borne strictement les trois appels', async () => {
-    arrangeReadings([invoice(), withLine({ quantity: 2 }), invoice()], { finishReasons: ['STOP', 'STOP', 'MAX_TOKENS'] });
+  it('conserve les divergences si la correction est tronquée et borne strictement les appels', async () => {
+    arrangeReadings([invoice(), withLine({ quantity: 2 }), invoice(), invoice()], { finishReasons: ['STOP', 'STOP', 'MAX_TOKENS', 'MAX_TOKENS'] });
     const { data } = await scan();
     expect(data.review.status).toBe('disputed'); expect(data.review.readers).toBe(2);
     expect(data.issues.join(' ')).toContain('contrôle complémentaire n’a pas abouti');
-    expect(data.items[0].quantity).toBe(1); expect(memory.provider).toHaveBeenCalledTimes(3);
+    expect(data.items[0].quantity).toBe(1); expect(memory.provider).toHaveBeenCalledTimes(4);
   });
 
   it('ne paie pas de correction pour une devise étrangère concordante', async () => {
@@ -261,11 +263,11 @@ describe('Vision complète intégrée au handler et au budget, sans réseau', ()
     expect(daily().usage.tokens).toBe(0);
   });
 
-  it('ne relance pas un document qui a consommé ses trois lectures inexploitablement', async () => {
-    arrangeReadings([null, {}, null]);
+  it('ne relance pas un document qui a consommé ses lectures inexploitablement', async () => {
+    arrangeReadings([null, {}, null, null]);
     expect((await requestScan()).ok).toBe(false); expect(documentScan().status).toBe('failed');
     const retry = await requestScan();
-    expect(retry.ok).toBe(false); expect(retry.error).toContain('déjà été analysé'); expect(memory.provider).toHaveBeenCalledTimes(3);
+    expect(retry.ok).toBe(false); expect(retry.error).toContain('déjà été analysé'); expect(memory.provider).toHaveBeenCalledTimes(4);
   });
 
   it('laisse un résultat déjà en cache inchangé même lorsque l’IA est suspendue', async () => {

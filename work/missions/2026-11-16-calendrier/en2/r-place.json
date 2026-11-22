@@ -1,0 +1,69 @@
+{
+ "r1": [
+  "Embouteilleuse −2 800",
+  "Festival +2 450",
+  "(montant) Six fûts inox −1 080",
+  "Hotte −900",
+  "frigo (légende)",
+  "(montant) Mariage +1 100",
+  "(marque) Marché de printemps",
+  "(marque) Frigo",
+  "(marque) Fête de village"
+ ],
+ "r2": [
+  "Festival +2 450",
+  "(montant) Fête de village +2 140",
+  "(montant) Marché de printemps +910",
+  "(marque) Mariage",
+  "Embouteilleuse (rive)",
+  "Six fûts inox (rive)",
+  "Hotte (rive)",
+  "frigo (rive)",
+  "(absent) Frigo",
+  "Frigo −1 800 (ciel)"
+ ],
+ "r3": [
+  "montant Embouteilleuse",
+  "montant Six fûts inox",
+  "montant Hotte",
+  "frigo (légende 2 lignes)",
+  "montant Marché de printemps",
+  "montant Fête de village",
+  "(marque) Mariage",
+  "(marque) Festival",
+  "montant Frigo"
+ ],
+ "r4": [
+  "Embouteilleuse −2 800",
+  "Festival +2 450",
+  "(montant) Six fûts inox −1 080",
+  "Hotte −900",
+  "frigo (légende)",
+  "(marque) Mariage",
+  "(marque) Marché de printemps",
+  "(marque) Frigo",
+  "(marque) Fête de village"
+ ],
+ "r5": [
+  "Embouteilleuse −2 800",
+  "Six fûts inox −1 080",
+  "Hotte −900",
+  "(marque) Marché de printemps",
+  "(montant) Fête de village +2 140",
+  "Festival +2 450",
+  "(montant) Frigo −1 800",
+  "(marque) Mariage",
+  "frigo (légende)"
+ ],
+ "r6": [
+  "Six fûts inox −1 080",
+  "Embouteilleuse −2 800",
+  "frigo (légende 2 lignes)",
+  "(montant) Fête de village +2 140",
+  "(marque) Festival",
+  "Hotte −900",
+  "(marque) Mariage",
+  "(marque) Marché de printemps",
+  "Frigo −1 800"
+ ]
+}

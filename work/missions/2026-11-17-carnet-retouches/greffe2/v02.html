@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carnet · greffe 2 · v02 « Ses Top2 d'abord » (17.11)</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Carnet · greffe 2 · v02 « Ses Top2 d'abord ». Habit de l'app relevé sur ref-app (stocks-articles, fiche) : en-tête logo
+   carré noir, ‹ Nov. ›, loupe bordée, avatars G et A ; segment Stocks à onglet actif noir ; sous-vue au style Étagère ;
+   retour bleu ; grand titre noir ; rangées à filet ; mesures et prix en IBM Plex Mono ; bouton plein vert de zone Stocks ;
+   onglets à icônes de zone (Finances #1F64A3, Calendrier #C87A2C, Brassins #9A4F1E, Stocks #4C6B2A), pastille bleue ; + carré
+   noir. Jetons de DESIGN.md, thème clair. Rayons 10 (contrôle), 16 (panneau), 24 (feuille). Aucun texte sous 14 px. */
+:root{--bg:#FFFFFF;--s1:#F5F5F5;--s2:#EBEBEB;--line:#DDDDDD;--line2:#BFBFBF;--mut:#666666;--txt:#333333;--ink:#111111;
+  --stk:#4C6B2A;--ok:#3F6B2E;--fin:#1F64A3;--prod:#9A4F1E;--cal:#C87A2C;--straw:#F2C14E;--att:#7F5B10;
+  --okbg:color-mix(in srgb,#4C6B2A 9%,#FFFFFF);--okbg2:color-mix(in srgb,#4C6B2A 15%,#FFFFFF)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--s2);color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:16px;line-height:1.35}
+a{color:inherit;text-decoration:none}
+body{width:100vw;overflow-x:hidden}
+.g2-rail{display:flex;gap:28px;align-items:flex-start;width:100vw;overflow-x:auto;padding:0 0 24px 0}
+.g2-rail>.g2-col:last-child{margin-right:28px}
+.g2-col{flex:none;width:390px}
+.g2-cap{margin:10px 4px 0;font-size:16px;color:var(--txt)}
+.g2-scr{position:relative;width:390px;height:844px;overflow:hidden;background:var(--bg)}
+.g2-i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.g2-m{font-family:"IBM Plex Mono",Consolas,ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.mu{color:var(--mut)}.ink{color:var(--ink)}
+.g2-ph{display:block;background:#e8ecef;flex:none}
+
+/* en-tête de l'app */
+.g2-bar{display:flex;align-items:center;gap:6px;height:48px;padding:0 12px;border-bottom:1px solid var(--line);background:var(--bg)}
+.g2-logo{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:var(--ink);color:var(--straw)}
+.g2-logo .g2-i{width:18px;height:18px}
+.g2-nom{font-size:16px;font-weight:600;margin-left:2px}
+.g2-mois{margin-left:auto;display:flex;align-items:stretch;height:36px;border:1px solid var(--line2);border-radius:12px;overflow:hidden}
+.g2-mois>span{display:grid;place-items:center;width:38px;color:var(--txt)}
+.g2-mois>span .g2-i{width:18px;height:18px}
+.g2-mois .t{width:56px;border-left:1px solid var(--line2);border-right:1px solid var(--line2);font-size:16px;font-weight:600;color:var(--ink)}
+.g2-lp{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;border:1px solid var(--line2);background:var(--s1);color:var(--ink)}
+.g2-lp .g2-i{width:18px;height:18px}
+.g2-av{display:flex;position:relative}
+.g2-av span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;font-size:14px;font-weight:700;border:2px solid var(--bg)}
+.g2-av .g{background:var(--ink);color:#fff}.g2-av .a{background:var(--s2);color:var(--ink);margin-left:-8px}
+.g2-av:after{content:"";position:absolute;right:0;top:-1px;width:8px;height:8px;border-radius:50%;background:var(--ink);border:1.5px solid var(--bg)}
+
+/* segment Stocks (actif noir) et sous-vue au style Étagère / Recompter */
+.g2-seg{display:flex;margin:6px 12px 0;padding:3px;border:1px solid var(--line);border-radius:12px;background:var(--s1)}
+.g2-seg a{flex:1;display:grid;place-items:center;height:32px;border-radius:9px;font-size:16px;color:var(--txt)}
+.g2-seg a.on{background:var(--ink);color:#fff;font-weight:600}
+.g2-sous{display:flex;margin:8px 12px 0;padding:3px;border-radius:999px;background:var(--s2)}
+.g2-sous a{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:32px;border-radius:999px;font-size:16px;font-weight:600;color:var(--txt)}
+.g2-sous a .g2-m{font-weight:500;color:var(--mut)}
+.g2-sous a.on{background:var(--ink);color:#fff}.g2-sous a.on .g2-m{color:#fff}
+
+/* retour bleu, grand titre noir */
+.g2-back{display:flex;align-items:center;gap:2px;height:38px;padding:0 12px 0 8px;font-size:16px;color:var(--fin)}
+.g2-back .g2-i{width:20px;height:20px}
+.g2-tag{margin-left:auto;display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--s1);font-size:14px;font-weight:600;color:var(--txt)}
+.g2-tag.ok{background:var(--okbg);border-color:color-mix(in srgb,var(--stk) 35%,#fff);color:var(--ok)}
+.g2-tag.sm{margin:0 4px 0 0;height:22px;padding:0 8px}
+.g2-h1{margin:0 14px 4px;font-size:24px;font-weight:800;line-height:1.1;letter-spacing:-.02em}
+.g2-h1.s{font-size:24px;line-height:1.15}
+.g2-lead{margin:0 14px 6px;font-size:14px;color:var(--mut)}.g2-lead b{color:var(--ok);font-weight:600}
+
+/* liste : groupes, panneaux, rangées à filet */
+.g2-pad{padding:2px 12px 0}.g2-pad.t0{padding-top:0}
+.g2-gh{display:flex;align-items:center;gap:6px;margin:12px 0 6px}
+.g2-gh .t{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;background:var(--okbg2);font-size:14px;font-weight:700;color:var(--ok)}
+.g2-gh .t .g2-m{font-weight:500}
+.g2-gh .r{margin-left:auto;font-size:14px;color:var(--mut)}
+.g2-gh .r.lk{display:inline-flex;align-items:center;color:var(--fin);font-weight:600}.g2-gh .r.lk .g2-i{width:16px;height:16px}
+.g2-gh.av .t{background:var(--s1);color:var(--ink);border:1px solid var(--line)}.g2-gh.av .t .g2-i{width:16px;height:16px;color:var(--stk)}
+.g2-pan{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--bg)}
+.g2-row{display:flex;align-items:center;gap:12px;min-height:66px;padding:9px 12px}
+.g2-row+.g2-row{border-top:1px solid var(--line)}
+.g2-row.s{min-height:52px;padding:6px 12px;gap:10px}
+.g2-vg{flex:none;width:52px;height:52px;border-radius:10px;overflow:hidden;display:grid;place-items:center}
+.g2-vg>svg{width:100%;height:100%;display:block}
+.g2-vg.s{width:40px;height:40px;border-radius:8px}
+.g2-vg.pic{background:var(--okbg2);color:var(--ok)}
+.g2-vg.pic>svg{width:36px;height:36px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.g2-vg.s.pic>svg{width:24px;height:24px}
+.g2-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.g2-tx b{font-size:16px;font-weight:600;line-height:1.25}
+.g2-tx span{font-size:14px;color:var(--mut);line-height:1.3}
+.g2-tx .q{font-style:italic}
+.g2-tx .nx,.g2-tx .why{color:var(--txt)}.g2-tx .nx em{font-style:normal;font-weight:600;color:var(--ok)}
+.g2-tx .ve{display:inline-flex;align-items:center;gap:4px}.g2-tx .ve .g2-i{width:16px;height:16px}
+.g2-fig{flex:none;display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.g2-fig .p{font-size:16px;font-weight:600;color:var(--ink)}
+.g2-fig .u,.g2-fig .d{font-size:14px;color:var(--mut)}
+.g2-go{flex:none;display:inline-flex;align-items:center;gap:4px;height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--stk);font-size:16px;font-weight:600;color:var(--ok)}
+.g2-go .g2-i{width:16px;height:16px}
+.g2-avl{display:grid;grid-template-columns:1fr auto;column-gap:10px;padding:8px 12px;border:1px solid var(--line);border-radius:16px}
+.g2-avl b{font-size:16px;font-weight:600}.g2-avl span{font-size:14px;color:var(--mut)}
+.g2-avl .g2-m{grid-row:1/3;grid-column:2;align-self:center;font-size:16px;font-weight:600;color:var(--ink)}
+.g2-ex{margin:10px 2px 0;font-size:14px;color:var(--mut)}
+.off .g2-tx b{color:var(--txt)}.off .g2-fig .p{color:var(--mut);font-weight:500}
+
+/* champ (C8) à gauche, + carré noir à droite, au-dessus des onglets */
+.g2-dock{position:absolute;left:0;right:0;bottom:54px;height:66px;padding:0 76px 0 12px;display:flex;align-items:center;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 28%);z-index:32}
+.g2-in{flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:48px;padding:0 12px 0 14px;border-radius:12px;border:1px solid var(--line2);background:var(--bg);box-shadow:0 4px 12px -8px rgba(0,0,0,.35)}
+.g2-in .t{flex:1;min-width:0;font-size:16px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g2-in .t.v{color:var(--ink)}
+.g2-in .g2-i.mu{width:19px;height:19px;color:var(--mut)}
+.g2-in.on{border:1.5px solid var(--ink)}
+.g2-in.tall{height:auto;min-height:48px;padding-top:6px;padding-bottom:6px}.g2-in.tall .t{white-space:normal;line-height:1.3}
+.g2-in .url{display:flex;align-items:center;gap:6px;font-size:16px}.g2-in .url .g2-i{width:16px;height:16px;color:var(--fin)}
+.g2-go2{flex:none;display:grid;place-items:center;height:38px;padding:0 14px;border-radius:10px;background:var(--stk);color:#fff;font-size:16px;font-weight:600}
+.g2-fab{position:absolute;right:12px;bottom:62px;z-index:33;display:grid;place-items:center;width:54px;height:54px;border-radius:16px;background:var(--ink);color:#fff;box-shadow:0 6px 16px -4px rgba(0,0,0,.45)}
+.g2-fab .g2-i{width:26px;height:26px;stroke-width:2.4}
+
+/* onglets de l'app */
+.g2-bot{position:absolute;left:0;bottom:0;width:390px;height:54px;display:flex;background:var(--s1);border-top:1px solid var(--line);z-index:30}
+.g2-bot a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:14px;letter-spacing:-.02em;position:relative;min-width:0;color:var(--txt)}
+.g2-bot a.on{background:#E4E4E4;color:var(--ink);font-weight:600}
+.g2-bot .g2-i{width:21px;height:21px}
+.g2-bot .fi{color:var(--fin)}.g2-bot .ca{color:var(--cal)}.g2-bot .br{color:#9A4F1E}.g2-bot .st{color:var(--stk)}
+.g2-bot .bdg{position:absolute;top:3px;left:calc(50% + 6px);min-width:20px;height:20px;display:grid;place-items:center;border-radius:999px;background:var(--fin);color:#fff;font-size:14px;font-weight:700;border:2px solid var(--s1)}
+
+/* clavier (C8 : le champ reste au-dessus) */
+.kbo .g2-dock.kb{bottom:212px;height:auto;padding:8px 12px;flex-direction:column;align-items:stretch;gap:8px;background:var(--bg);border-top:1px solid var(--line)}
+.g2-kbd{position:absolute;left:0;right:0;bottom:0;height:212px;padding:8px 3px 6px;background:#D1D4DA;z-index:40}
+.g2-kbd .rg{display:flex;gap:5px;justify-content:center;margin:0 0 8px}
+.g2-kbd i{flex:1;max-width:34px;height:42px;border-radius:6px;background:#fff;box-shadow:0 1px 0 #8e9298;font-style:normal;display:grid;place-items:center;font-size:16px;color:#111}
+.g2-kbd i.k{background:#B4B8C0;font-size:16px;max-width:44px}
+.g2-kbd i.w{max-width:none;flex:5;font-size:16px}
+.g2-kbd i.go{background:var(--stk);color:#fff;max-width:56px}
+.g2-caret{display:inline-block;width:2px;height:1.1em;background:var(--ink);vertical-align:-3px;margin-left:1px}
+
+/* 2 · ajouter une idée */
+.g2-ghost{margin:12px 0 8px;padding:10px 12px;border:1.5px dashed var(--stk);border-radius:12px;background:var(--okbg)}
+.g2-ghost .l1{display:flex;align-items:center;gap:8px}
+.g2-ghost .l1 b{flex:1;font-size:16px;font-weight:700}
+.g2-ghost .l2{font-size:14px;color:var(--mut);margin-top:2px}.g2-ghost .l2 b{color:var(--ok)}
+.g2-ici{display:inline-flex;align-items:center;gap:3px;font-size:14px;font-weight:600;color:var(--ok);white-space:nowrap}.g2-ici .g2-i{width:16px;height:16px}
+.g2-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g2-opt{display:flex;align-items:center;gap:8px;min-height:54px;padding:6px 10px;border:1px solid var(--line2);border-radius:12px;font-size:16px}
+.g2-opt b{display:block;font-weight:600}
+.g2-opt .ia{display:flex;align-items:center;gap:3px;font-size:14px;color:var(--mut)}.g2-opt .ia .g2-i{width:14px;height:14px}
+.g2-opt .rd{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--line2)}
+.g2-opt.on{border:1.5px solid var(--stk);background:var(--okbg)}.g2-opt.on .rd{border:6px solid var(--stk)}
+.g2-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 16px;border-radius:10px;background:var(--stk);color:#fff;font-size:16px;font-weight:600;white-space:nowrap}
+.g2-btn.full{display:flex;width:100%;margin-top:8px}
+.g2-btn .g2-i{width:19px;height:19px}
+.g2-dim{margin-top:14px;opacity:.55;border-top:1px solid var(--line)}
+.g2-ln{display:flex;align-items:center;gap:8px;height:42px;border-bottom:1px solid var(--line)}
+.g2-ln b{flex:1;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.g2-ln span{font-size:14px;color:var(--mut)}
+
+/* 3 · carnet ouvert */
+.g2-crit{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-size:16px;margin:0 0 6px}
+.g2-crit .g2-i{width:18px;height:18px;color:var(--ok)}.g2-crit .k{color:var(--mut)}.g2-crit b{font-weight:700}
+.g2-q{font-size:16px;font-weight:700;margin:0 0 6px}
+.g2-duo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g2-fa{display:flex;flex-direction:column;gap:0;padding:7px 8px 8px;border:1px solid var(--line);border-radius:12px;font-size:14px}
+.g2-fa b{font-size:16px}.g2-fa .g2-m{font-size:14px;font-weight:600}.g2-fa .ok{color:var(--ok);font-weight:600}
+.g2-fa.sel{border-color:var(--stk);background:var(--okbg)}
+.g2-fa .a{display:flex;gap:6px;margin-top:5px}.g2-fa .a .g2-sb{height:32px}
+.g2-sb{display:inline-grid;place-items:center;height:34px;padding:0 10px;border-radius:10px;border:1px solid var(--line2);background:var(--bg);font-size:14px;font-weight:600;color:var(--txt);flex:1}
+.g2-sb.on{border-color:var(--stk);color:var(--ok)}
+.g2-sh{display:flex;align-items:baseline;gap:8px;margin:10px 0 4px}
+.g2-sh b{display:inline-flex;align-items:center;gap:6px;font-size:16px;font-weight:700}.g2-sh b .g2-i{width:18px;height:18px;color:var(--ok)}
+.g2-sh span{font-size:14px;color:var(--mut)}
+.g2-sh.t{margin-top:10px}.g2-sh.t span:last-child{margin-left:auto}
+.g2-sh.t2{margin-top:18px}
+.g2-tab{border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.g2-th,.g2-tr{display:grid;grid-template-columns:40px 1fr 50px 40px 54px;align-items:center;column-gap:6px;padding:0 10px}
+.g2-th{min-height:28px;font-size:14px;color:var(--mut);line-height:1.1}
+.g2-th .c{text-align:right}
+.g2-gr{padding:1px 10px;background:var(--s1);border-top:1px solid var(--line);font-size:14px;font-weight:600;color:var(--txt)}
+.g2-tr{min-height:43px;border-top:1px solid var(--line);padding:3px 10px}.g2-tr .g2-vg.s{width:36px;height:36px}
+.g2-tr .c{text-align:right;font-size:14px;font-weight:500}
+.g2-tr .c.best{color:var(--ok);font-weight:600}
+.g2-cor{min-width:0;display:flex;flex-direction:column}
+.g2-cor b{font-size:14px;font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.g2-cor b.nw{font-weight:400}
+.g2-cor span{display:flex;align-items:center;gap:3px;font-size:14px;color:var(--mut);white-space:nowrap}.g2-cor span .g2-i{width:15px;height:15px;color:var(--ok)}
+.g2-tr.lien{grid-template-columns:40px 1fr auto}
+.g2-lk{font-size:16px;font-weight:600;color:var(--fin);white-space:nowrap}
+.g2-next{display:flex;align-items:center;gap:10px;margin-top:8px;padding:8px 10px 8px 12px;border-radius:12px;background:var(--okbg);font-size:14px;line-height:1.3}
+.g2-next b{font-weight:700}
+
+/* 4 · ajouter à une idée */
+.g2-case{border-bottom:1px solid var(--line);padding:8px 0}
+.g2-case .h{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600}
+.g2-case .h span{font-weight:400;color:var(--mut)}
+.g2-case .h .g2-i{width:19px;height:19px;color:var(--ok)}.g2-case .h .g2-i.r{margin-left:auto;color:var(--mut)}
+.g2-case .h b.ink{font-weight:600}
+.g2-ghost.s{margin:8px 0 2px}
+.g2-ghost.s .l1{justify-content:space-between}
+.g2-ghost .ia{display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--mut)}.g2-ghost .ia .g2-i{width:15px;height:15px}
+.g2-ghost .v{font-size:16px;font-weight:700;margin-top:4px}
+.g2-ghost .mu{font-size:14px}
+.g2-ghost .ch{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px;color:var(--mut)}
+.g2-chip{display:inline-flex;align-items:center;gap:4px;height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line2);background:var(--bg);font-size:14px;font-weight:600;color:var(--txt);white-space:nowrap}
+.g2-chip.on{background:var(--stk);border-color:var(--stk);color:#fff}
+.g2-chip .g2-i{width:15px;height:15px}
+.g2-to{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--mut)}
+.g2-arr{display:flex;gap:12px;padding:10px;border:1.5px dashed var(--stk);border-radius:12px;background:var(--okbg)}
+.g2-ph.big{width:84px;height:84px;border-radius:10px}
+.g2-arr .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;font-size:14px}
+.g2-arr .l1{display:flex;align-items:baseline;gap:6px}.g2-arr .l1 b{flex:1;font-size:16px}
+.g2-arr .p{font-size:16px;font-weight:600}
+.g2-arr .vw{display:flex;align-items:center;gap:6px;margin-top:2px}.g2-arr .vw .g2-i{width:16px;height:16px;color:var(--ok)}
+.g2-sw{flex:none;margin-left:auto;width:40px;height:24px;border-radius:12px;background:var(--line2);position:relative}
+.g2-sw:after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff}
+.g2-sw.on{background:var(--stk)}.g2-sw.on:after{left:19px}
+
+/* 5 et 6 · feuilles sur la fiche */
+.g2-peek{position:absolute;inset:0 0 auto 0;opacity:.5}
+.g2-pk{padding:4px 12px}.g2-pk .bk{display:flex;align-items:center;font-size:16px;color:var(--fin)}.g2-pk .bk .g2-i{width:18px;height:18px}
+.g2-pk b{display:block;font-size:24px;font-weight:800}.g2-pk .mu{font-size:14px}
+.g2-sheet{position:absolute;left:0;right:0;top:104px;bottom:54px;z-index:2;background:var(--bg);border-radius:24px 24px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.22);padding:6px 12px 0;overflow:hidden}
+.g2-sheet.hi{top:56px}
+.g2-sheet .gr{width:40px;height:5px;border-radius:3px;background:var(--line2);margin:0 auto 6px}
+.g2-shh{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}.g2-shh b{font-size:24px;font-weight:800}.g2-shh .mu{font-size:14px}
+.g2-shh .x,.g2-ah .x{margin-left:auto;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--s1);color:var(--txt);align-self:center}
+.g2-gh2{display:flex;align-items:baseline;gap:6px;margin:8px 2px 5px;font-size:16px;font-weight:700}
+.g2-gh2 .t .g2-m{font-weight:500;color:var(--mut)}.g2-gh2 .r{margin-left:auto;font-size:14px;font-weight:400;color:var(--mut)}
+.g2-card{display:flex;align-items:flex-start;gap:10px;padding:7px 8px;margin-bottom:6px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.g2-ph.c{width:56px;height:56px;border-radius:8px}
+.g2-card .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:0;font-size:14px}
+.g2-card .tx b{font-size:16px;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g2-card .cr{color:var(--txt)}.g2-card .cr .g2-m{font-weight:600}.g2-card .cr.best{color:var(--ok);font-weight:600}
+.g2-card .l2{display:flex;align-items:baseline;gap:8px}.g2-card .l2 .pr{margin-left:auto;white-space:nowrap;color:var(--mut)}.g2-card .l2 .pr .g2-m{font-size:16px;font-weight:600;color:var(--ink)}.g2-card .l3{display:flex;align-items:center;gap:4px;color:var(--mut);white-space:nowrap}
+.g2-dsp{font-size:14px;color:var(--att)}.g2-dsp.ok{color:var(--ok)}
+.g2-vei{margin-left:auto;display:inline-flex;align-items:center;gap:3px;font-size:14px;font-weight:600;color:var(--ok)}.g2-vei .g2-i{width:16px;height:16px}
+.g2-card.duo{border-color:var(--stk)}
+.g2-card .vd{display:flex;align-items:center;gap:6px;justify-content:space-between;color:var(--txt);border-top:1px solid var(--line);padding:2px 0}
+.g2-card .vd>.g2-m{font-size:16px;font-weight:600;color:var(--ink)}
+.g2-card .ec{display:block;color:var(--mut)}.g2-card .ec b{font-size:14px;color:var(--ink);font-weight:600}
+.g2-card.lien{align-items:center}.g2-card.lien .g2-vg{width:44px;height:44px}
+
+/* 6 · article ouvert */
+.g2-ah{display:flex;gap:12px;align-items:flex-start}
+.g2-hero{position:relative;flex:none}
+.g2-ph.h{width:104px;height:86px;border-radius:10px}
+.g2-hero .rk{position:absolute;left:4px;bottom:4px;padding:0 6px;border-radius:6px;background:var(--stk);color:#fff;font-size:14px;font-weight:700}
+.g2-ah .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.g2-ah .tx b{font-size:16px;font-weight:700;line-height:1.2}.g2-ah .tx .mu{font-size:14px}
+.g2-cv{margin-top:8px;padding:8px 12px 8px;border-radius:12px;background:var(--okbg)}
+.g2-cv .k{display:flex;align-items:center;font-size:14px;font-weight:600;color:var(--txt)}.g2-cv .cap{margin-left:auto;font-size:14px;color:var(--ok)}
+.g2-cv .v{display:flex;align-items:baseline;gap:6px;font-size:16px}.g2-cv .v .g2-m{font-size:24px;font-weight:600;color:var(--ok);line-height:1.1}.g2-cv .v .ok{margin-left:auto;font-size:14px;color:var(--ok);font-weight:600}
+.g2-rule{position:relative;height:12px;margin:6px 6px 2px;border-top:2px solid var(--line2);top:6px}
+.g2-rule i{position:absolute;top:-7px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--bg);border:2px solid var(--line2)}
+.g2-rule i.me{background:var(--stk);border-color:var(--stk)}
+.g2-cv .src{font-size:14px;color:var(--mut)}
+.g2-of{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--line)}
+.g2-of .rd{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--line2)}.g2-of.on .rd{border:6px solid var(--stk)}
+.g2-of .t{flex:1;min-width:0;display:flex;flex-direction:column}.g2-of .t b{font-size:16px;font-weight:600}.g2-of .t span{font-size:14px;color:var(--mut)}
+.g2-of .p{font-size:16px;font-weight:600}
+.g2-kv{display:grid;grid-template-columns:1fr auto 104px;column-gap:10px;row-gap:2px;font-size:14px;align-items:baseline}
+.g2-kv span{color:var(--txt)}.g2-kv b{font-size:16px;font-weight:600;text-align:right}.g2-kv em{font-style:normal;color:var(--mut);text-align:right}
+.g2-vw{display:flex;align-items:center;gap:8px;margin-top:8px;padding:6px 10px;border-radius:12px;background:var(--s1)}
+.g2-vw>.g2-i{color:var(--ok)}.g2-vw .t{flex:1;display:flex;flex-direction:column}.g2-vw .t b{font-size:16px}.g2-vw .t span{font-size:14px;color:var(--mut)}
+.g2-part{margin-top:4px;font-size:14px;color:var(--mut);line-height:1.3}
+
+/* 7 · comparer */
+.g2-cmp{width:366px;margin:0 12px;border-collapse:collapse;table-layout:fixed;font-size:14px}
+.g2-cmp th{font-weight:600;font-size:14px;line-height:1.1;padding:0 1px 4px;vertical-align:bottom;text-align:center}
+.g2-cmp th:first-child{width:92px}
+.g2-cmp th .rk{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--s2);font-size:14px}
+.g2-cmp th .rk.un{background:var(--stk);color:#fff}
+.g2-ph.t{width:44px;height:36px;border-radius:6px;margin:3px auto}
+.g2-cmp th .nm{display:block;color:var(--txt)}
+.g2-cmp td{border-top:1px solid var(--line);padding:4px 1px;text-align:center;font-size:14px}
+.g2-cmp td.l{text-align:left;font-family:"Source Sans 3",system-ui,sans-serif;font-size:14px;line-height:1.1;letter-spacing:0;color:var(--txt);padding-right:4px}
+.g2-cmp td.l i{font-style:normal;color:var(--mut)}.g2-cmp td.l .k{display:block;font-weight:600}
+.g2-cmp td.b{color:var(--ok);font-weight:600;background:var(--okbg)}
+.g2-cmp tr.crit td{background:var(--okbg);font-weight:600}.g2-cmp tr.crit td.l{color:var(--ok);font-weight:700}.g2-cmp tr.crit td.b{background:var(--okbg2)}
+.g2-cmp tr.txt td:not(.l){font-family:"Source Sans 3",system-ui,sans-serif;letter-spacing:0}
+.g2-cmp .ov{color:var(--att);font-family:"Source Sans 3",system-ui,sans-serif;letter-spacing:0;line-height:1.05;display:block}
+.g2-cmp tbody tr:last-child td{border-bottom:1px solid var(--line)}
+.g2-note{margin:6px 0 0;font-size:14px;color:var(--txt)}
+.g2-cpr{margin-top:6px;padding:7px 10px;border-radius:12px;background:var(--s1);font-size:14px;line-height:1.35}
+.g2-row2{display:flex;gap:8px;margin-top:8px}
+.g2-out{display:flex;flex-direction:column;padding:5px 0;border-top:1px solid var(--line)}
+.g2-out b{font-size:16px;font-weight:600;color:var(--txt)}.g2-out span{font-size:14px;color:var(--mut)}
+
+/* 8 · choisi */
+.g2-hero2{display:flex;gap:12px;padding:10px 12px}
+.g2-ph.h2{width:84px;height:72px;border-radius:10px}
+.g2-hero2 .p{font-size:16px;font-weight:600;color:var(--ink)}
+.g2-why{padding:8px 12px;border-top:1px solid var(--line);font-size:14px;color:var(--txt)}.g2-why b{color:var(--ok)}
+.g2-kv2{display:flex;gap:8px;margin:8px 2px 0;font-size:14px}.g2-kv2 span{color:var(--mut)}.g2-kv2 b{font-weight:600}
+.g2-send{margin-top:8px;padding:8px 12px 10px;border-radius:16px;background:var(--okbg)}
+.g2-send p{margin:0;font-size:14px;color:var(--txt)}
+.g2-sent{display:flex;align-items:center;gap:8px;margin-top:8px;min-height:48px;padding:0 12px;border:1px solid color-mix(in srgb,var(--stk) 40%,#fff);border-radius:12px;background:var(--okbg);font-size:16px;font-weight:600;color:var(--ok)}
+.g2-sent .lk{margin-left:auto;display:inline-flex;align-items:center;color:var(--fin)}.g2-sent .lk .g2-i{width:16px;height:16px}
+.g2-chg{display:block;margin-top:8px;font-size:16px;font-weight:600;color:var(--fin)}
+
+/* 9 · à venir */
+.g2-sh .g2-m.ink{color:var(--ink);font-size:16px;font-weight:600}
+.g2-new{margin-bottom:8px;padding:10px 12px;border:1.5px solid var(--ink);border-radius:16px}
+.g2-new .h{display:flex;align-items:baseline;gap:8px;font-size:14px}.g2-new .h b{color:var(--ok);font-size:16px}.g2-new .h span{margin-left:auto;color:var(--mut)}
+.g2-new .r{display:flex;gap:10px;margin-top:6px}.g2-new .t{display:flex;flex-direction:column}.g2-new .t b{font-size:16px;font-weight:600}.g2-new .t span{font-size:14px;color:var(--mut)}.g2-new .t .p{font-size:16px;font-weight:600;color:var(--ink)}
+.g2-new .a{display:flex;gap:8px;margin-top:10px}.g2-new .a .g2-sb{height:40px;font-size:16px}
+.g2-empty{margin:4px 2px;font-size:16px;color:var(--mut);line-height:1.4}
+
+.g2-avr{display:flex;align-items:center;gap:8px;min-height:44px;margin:0 12px 0 76px;border-top:1px dashed var(--line2);font-size:14px;font-weight:600;color:var(--ok)}.g2-avr .g2-i{width:18px;height:18px}.g2-avr .lk{margin-left:auto;display:inline-flex;align-items:center;color:var(--fin)}.g2-avr .lk .g2-i{width:16px;height:16px}
+.g2-out{padding-right:64px}
+.g2-cho{color:var(--ok);font-weight:700}
+.g2-card.lien{margin-right:66px}
+.g2-cmp{width:374px;margin:0 8px}.g2-cmp th:first-child{width:76px}.g2-cmp th .nm{letter-spacing:-.02em;white-space:nowrap}
+.g2-plus2{margin:6px 2px 0;font-size:14px;color:var(--mut)}
+.kbo .g2-dock.kb .g2-in{flex:none}
+.g2-card .tx .g2-lk{font-size:14px}
+
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-calin" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></symbol>
+<symbol id="i-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8a2.5 2.5 0 0 1 1-4.5c.8-1.5 3-2 4-1 1-1 3.5-1 4.5.5A2.5 2.5 0 0 1 17 8z"/></symbol>
+<symbol id="i-boxes" viewBox="0 0 24 24"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+<symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+<symbol id="i-fork" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="12" cy="20" r="2"/><path d="M6 7v2a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7M12 12v6"/></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="7.5" cy="7.5" r="1.5"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+<symbol id="i-glass" viewBox="0 0 24 24"><path d="M6 4h12l-1.5 15a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2z"/><path d="M6.5 9h11"/></symbol>
+
+<symbol id="p-a"><rect x="-220" width="560" height="100" fill="#e4e9ee"/><rect x="-220" y="84" width="560" height="16" fill="#cfd6dc"/><rect x="22" y="12" width="76" height="30" rx="3" fill="#b9c3cc" stroke="#7f8d99" stroke-width="1.5"/><rect x="74" y="17" width="18" height="11" rx="1.5" fill="#22313b"/><rect x="76" y="19" width="14" height="7" fill="#5fae8c"/><circle cx="30" cy="20" r="3" fill="#c0392b"/><circle cx="38" cy="20" r="3" fill="#2f7d6b"/><g fill="#7f8d99"><rect x="30" y="42" width="4" height="12"/><rect x="47" y="42" width="4" height="12"/><rect x="64" y="42" width="4" height="12"/><rect x="81" y="42" width="4" height="12"/></g><g fill="#5b3d22"><rect x="27" y="58" width="10" height="26" rx="3"/><rect x="44" y="58" width="10" height="26" rx="3"/><rect x="61" y="58" width="10" height="26" rx="3"/><rect x="78" y="58" width="10" height="26" rx="3"/></g><g fill="#5b3d22"><rect x="30" y="53" width="4" height="6"/><rect x="47" y="53" width="4" height="6"/><rect x="64" y="53" width="4" height="6"/><rect x="81" y="53" width="4" height="6"/></g><rect x="18" y="84" width="84" height="4" fill="#7f8d99"/><rect x="20" y="88" width="4" height="10" fill="#7f8d99"/><rect x="96" y="88" width="4" height="10" fill="#7f8d99"/></symbol>
+<symbol id="p-b"><rect x="-220" width="560" height="100" fill="#e9e6e1"/><rect x="-220" y="80" width="560" height="20" fill="#d5d0c8"/><rect x="6" y="18" width="70" height="52" rx="4" fill="#c8cdd1" stroke="#7d868d" stroke-width="1.5"/><rect x="10" y="22" width="62" height="30" rx="2" fill="#dfe7ec" stroke="#9aa5ad"/><circle cx="41" cy="37" r="12" fill="none" stroke="#7d868d" stroke-width="2"/><g fill="#5b3d22"><rect x="31" y="32" width="5" height="11" rx="1.5"/><rect x="38" y="30" width="5" height="11" rx="1.5"/><rect x="45" y="32" width="5" height="11" rx="1.5"/></g><rect x="80" y="10" width="20" height="14" rx="2" fill="#22313b"/><rect x="82" y="12" width="16" height="10" fill="#7fb3d5"/><rect x="88" y="24" width="4" height="12" fill="#7d868d"/><rect x="-220" y="62" width="560" height="6" fill="#4d565c"/><g fill="#5b3d22"><rect x="78" y="50" width="6" height="12" rx="2"/><rect x="88" y="50" width="6" height="12" rx="2"/><rect x="98" y="50" width="6" height="12" rx="2"/><rect x="108" y="50" width="6" height="12" rx="2"/></g><rect x="10" y="70" width="5" height="12" fill="#7d868d"/><rect x="66" y="70" width="5" height="12" fill="#7d868d"/></symbol>
+<symbol id="p-c"><rect x="-220" width="560" height="100" fill="#ecebe6"/><rect x="-220" y="86" width="560" height="14" fill="#d7d5cc"/><rect x="24" y="14" width="72" height="18" rx="3" fill="#c3c9ce" stroke="#7d868d" stroke-width="1.5"/><g stroke="#3a3f43" stroke-width="3" stroke-linecap="round"><path d="M33 32l-6-10M51 32l-6-10M69 32l-6-10M87 32l-6-10"/></g><g fill="#7d868d"><rect x="31" y="32" width="4" height="12"/><rect x="49" y="32" width="4" height="12"/><rect x="67" y="32" width="4" height="12"/><rect x="85" y="32" width="4" height="12"/></g><g fill="#5b3d22"><rect x="28" y="48" width="10" height="24" rx="3"/><rect x="46" y="48" width="10" height="24" rx="3"/><rect x="64" y="48" width="10" height="24" rx="3"/><rect x="82" y="48" width="10" height="24" rx="3"/></g><rect x="22" y="72" width="76" height="4" fill="#7d868d"/><path d="M28 76l-6 22M92 76l6 22" stroke="#7d868d" stroke-width="3"/></symbol>
+<symbol id="p-d"><rect x="-220" width="560" height="100" fill="#efe9df"/><rect x="-220" y="70" width="560" height="30" fill="#b98d5e"/><rect x="-220" y="70" width="560" height="4" fill="#9a7148"/><rect x="38" y="20" width="44" height="16" rx="3" fill="#c3c9ce" stroke="#7d868d" stroke-width="1.5"/><rect x="58" y="8" width="4" height="12" fill="#7d868d"/><circle cx="60" cy="8" r="4" fill="#b9c3cc" stroke="#7d868d"/><g fill="#7d868d"><rect x="46" y="36" width="4" height="10"/><rect x="70" y="36" width="4" height="10"/></g><g fill="#5b3d22"><rect x="43" y="48" width="10" height="22" rx="3"/><rect x="67" y="48" width="10" height="22" rx="3"/></g><rect x="36" y="66" width="48" height="4" fill="#7d868d"/></symbol>
+<symbol id="p-f"><rect x="-220" width="560" height="100" fill="#e2ecf3"/><rect x="-220" y="86" width="560" height="14" fill="#cbd8e2"/><rect x="24" y="8" width="72" height="78" rx="3" fill="#d6e0e7" stroke="#6f8597" stroke-width="2"/><rect x="30" y="14" width="36" height="66" rx="2" fill="#f4f8fb" stroke="#6f8597" stroke-width="1.5"/><rect x="60" y="40" width="3" height="12" fill="#55616b"/><rect x="72" y="16" width="18" height="8" rx="1" fill="#22313b"/><text x="81" y="23" font-size="7" text-anchor="middle" fill="#7fe0b0" font-family="monospace">2.0</text></symbol>
+<symbol id="p-g"><rect x="-220" width="560" height="100" fill="#ebebe8"/><rect x="-220" y="84" width="560" height="16" fill="#d6d6d1"/><path d="M18 58 36 28h48l18 30z" fill="#c4cacf" stroke="#6d757b" stroke-width="2"/><rect x="50" y="4" width="20" height="24" fill="#a9b0b6" stroke="#6d757b" stroke-width="1.5"/><path d="M34 72c6-6 6-10 0-14M60 74c6-6 6-10 0-14M86 72c6-6 6-10 0-14" stroke="#9aa1a7" stroke-width="2" fill="none"/></symbol>
+<symbol id="p3" viewBox="0 0 100 88"><rect width="100" height="88" fill="#E4ECEE"/><rect x="24" y="16" width="52" height="16" rx="3" fill="#B03A2E"/><g fill="#55616B"><rect x="30" y="32" width="3" height="9"/><rect x="42" y="32" width="3" height="9"/><rect x="54" y="32" width="3" height="9"/><rect x="66" y="32" width="3" height="9"/></g><g fill="#3F6B2E"><rect x="27.5" y="47" width="8" height="19" rx="2"/><rect x="30" y="41" width="3" height="7"/><rect x="39.5" y="47" width="8" height="19" rx="2"/><rect x="42" y="41" width="3" height="7"/><rect x="51.5" y="47" width="8" height="19" rx="2"/><rect x="54" y="41" width="3" height="7"/><rect x="63.5" y="47" width="8" height="19" rx="2"/><rect x="66" y="41" width="3" height="7"/></g><rect x="22" y="66" width="56" height="6" rx="2" fill="#B03A2E"/><rect x="10" y="72" width="80" height="4" fill="#9E9E9E"/></symbol>
+<symbol id="ph-hotte" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e9e9e6"/><path d="M14 52 30 26h40l16 26z" fill="#b8bec3" stroke="#6d757b" stroke-width="2"/><rect x="42" y="6" width="16" height="20" fill="#9aa1a7"/><path d="M30 64c6-6 6-10 0-14M50 66c6-6 6-10 0-14M70 64c6-6 6-10 0-14" stroke="#9aa1a7" stroke-width="2" fill="none"/></symbol>
+<symbol id="ph-extr" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e6ebe4"/><rect x="20" y="14" width="60" height="60" rx="6" fill="#c7cfc3" stroke="#6b7a66" stroke-width="2"/><circle cx="50" cy="44" r="22" fill="#eef2ec" stroke="#6b7a66" stroke-width="2"/><path d="M50 44 50 26M50 44l16 9M50 44l-16 9" stroke="#4c6b2a" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="44" r="4" fill="#4c6b2a"/></symbol>
+<symbol id="ev" viewBox="0 0 76 76"><rect width="76" height="76" fill="#e9edf0"/><rect x="8" y="22" width="60" height="9" rx="1.5" fill="#c9d1d8" stroke="#6d7880" stroke-width="1.5"/><rect x="13" y="31" width="22" height="14" rx="2" fill="#eef2f5" stroke="#6d7880" stroke-width="1.5"/><rect x="41" y="31" width="22" height="14" rx="2" fill="#eef2f5" stroke="#6d7880" stroke-width="1.5"/><path d="M14 45v22M62 45v22M14 58h48" stroke="#6d7880" stroke-width="2"/><path d="M38 22V10h8v5" stroke="#55616b" stroke-width="2" fill="none"/></symbol>
+</svg>
+<div class="g2-rail">
+<div class="g2-col">
+<section class="g2-scr " aria-label="1 · Liste des carnets">
+<header class="g2-bar">
+  <span class="g2-logo"><svg class="g2-i " aria-hidden="true"><use href="#i-glass"/></svg></span><span class="g2-nom">L'Affinée</span>
+  <span class="g2-mois"><span><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg></span><span class="t">Nov.</span><span><svg class="g2-i " aria-hidden="true"><use href="#i-right"/></svg></span></span>
+  <span class="g2-lp" aria-label="Chercher"><svg class="g2-i " aria-hidden="true"><use href="#i-search"/></svg></span>
+  <span class="g2-av"><span class="g">G</span><span class="a">A</span></span>
+</header>
+<nav class="g2-seg" aria-label="Vue des stocks"><a>Articles</a><a>Courses</a><a>Fûts</a><a class="on">Matériel</a><a>Houblons</a></nav>
+<nav class="g2-sous" aria-label="Vue du matériel"><a>À venir <span class="g2-m">1</span></a><a class="on">Carnets <span class="g2-m">4</span></a><a>Réalisés <span class="g2-m">0</span></a></nav>
+<main class="g2-pad">
+  <div class="g2-gh"><span class="t">À comparer <span class="g2-m">1</span></span></div>
+  <div class="g2-pan">
+    <a class="g2-row">
+      <span class="g2-vg"><svg class="g2-ph" viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#ph-hotte"/></svg></span>
+      <span class="g2-tx"><b>Ventilation de la salle de brassage</b><span class="nx"><em>Ensuite :</em> hotte ou extracteur</span><span class="ve">2 façons · 5 articles · <svg class="g2-i " aria-hidden="true"><use href="#i-eye"/></svg>1 en veille</span></span>
+      <span class="g2-fig"><span class="d">dès</span><span class="p g2-m">420</span><span class="u">CHF</span></span>
+    </a>
+  </div>
+  <div class="g2-gh"><span class="t">Idée <span class="g2-m">1</span></span><span class="r">pas encore d'article</span></div>
+  <div class="g2-pan">
+    <a class="g2-row">
+      <span class="g2-vg pic"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M4 18h32"/><path d="M6 18v9a3 3 0 0 0 3 3h22a3 3 0 0 0 3-3v-9"/><path d="M20 18v12"/><path d="M20 18V9h7v4"/></svg></span>
+      <span class="g2-tx"><b>Évier inox</b><span class="q">« 2 bacs pour les fûts »</span></span>
+      <span class="g2-go"><svg class="g2-i " aria-hidden="true"><use href="#i-search"/></svg>Chercher</span>
+    </a>
+  </div>
+  <div class="g2-gh"><span class="t">Choisi <span class="g2-m">2</span></span></div>
+  <div class="g2-pan">
+    <a class="g2-row">
+      <span class="g2-vg"><svg class="g2-ph" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-a"/></svg></span>
+      <span class="g2-tx"><b>Embouteillage</b><span class="why">oxygène le plus bas, SAV suisse</span><span>le 14 nov. · Brassage Romandie</span></span>
+      <span class="g2-fig"><span class="p g2-m">11 700</span><span class="u">CHF</span></span>
+    </a>
+    <a class="g2-row">
+      <span class="g2-vg"><svg class="g2-ph" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-f"/></svg></span>
+      <span class="g2-tx"><b>Frigo de garde pour fûts</b><span class="why">tient 2 °C en été, 6 fûts</span><span>le 10 oct. · Froid Léman</span></span>
+      <span class="g2-fig"><span class="p g2-m">4 900</span><span class="u">CHF</span></span>
+    </a>
+    <a class="g2-avr"><svg class="g2-i " aria-hidden="true"><use href="#i-calin"/></svg>Dans À venir depuis le 16 nov.<span class="lk">Voir <svg class="g2-i " aria-hidden="true"><use href="#i-right"/></svg></span></a>
+  </div>
+  <p class="g2-ex">Fournisseurs, prix et photos : exemple</p>
+</main>
+<div class="g2-dock"><div class="g2-in"><span class="t">Une idée, un besoin…</span><svg class="g2-i mu" aria-hidden="true"><use href="#i-cam"/></svg><svg class="g2-i mu" aria-hidden="true"><use href="#i-mic"/></svg></div></div>
+<a class="g2-fab" aria-label="Ajouter"><svg class="g2-i " aria-hidden="true"><use href="#i-plus"/></svg></a>
+<nav class="g2-bot" aria-label="Navigation">
+  <a class=""><svg class="g2-i " aria-hidden="true"><use href="#i-bord"/></svg>Bord</a>
+  <a class=""><svg class="g2-i fi" aria-hidden="true"><use href="#i-wallet"/></svg>Finances</a>
+  <a class=""><svg class="g2-i ca" aria-hidden="true"><use href="#i-cal"/></svg>Calendrier</a>
+  <a class=""><svg class="g2-i br" aria-hidden="true"><use href="#i-beer"/></svg>Brassins</a>
+  <a class="on"><svg class="g2-i st" aria-hidden="true"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a>
+  <a><svg class="g2-i " aria-hidden="true"><use href="#i-users"/></svg>Clients</a>
+</nav>
+</section>
+<p class="g2-cap"><b>1 · Liste des carnets</b></p>
+</div>
+<div class="g2-col">
+<section class="g2-scr kbo" aria-label="2 · Ajouter une idée">
+<header class="g2-bar">
+  <span class="g2-logo"><svg class="g2-i " aria-hidden="true"><use href="#i-glass"/></svg></span><span class="g2-nom">L'Affinée</span>
+  <span class="g2-mois"><span><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg></span><span class="t">Nov.</span><span><svg class="g2-i " aria-hidden="true"><use href="#i-right"/></svg></span></span>
+  <span class="g2-lp" aria-label="Chercher"><svg class="g2-i " aria-hidden="true"><use href="#i-search"/></svg></span>
+  <span class="g2-av"><span class="g">G</span><span class="a">A</span></span>
+</header>
+<nav class="g2-seg" aria-label="Vue des stocks"><a>Articles</a><a>Courses</a><a>Fûts</a><a class="on">Matériel</a><a>Houblons</a></nav>
+<nav class="g2-sous" aria-label="Vue du matériel"><a>À venir <span class="g2-m">1</span></a><a class="on">Carnets <span class="g2-m">4</span></a><a>Réalisés <span class="g2-m">0</span></a></nav>
+<main class="g2-pad">
+  <div class="g2-ghost">
+    <div class="l1"><b>Tireuse 4 becs<span class="g2-caret"></span></b><span class="g2-ici"><svg class="g2-i " aria-hidden="true"><use href="#i-down"/></svg>arrive ici</span></div>
+    <div class="l2">Nouveau carnet · <b>Idée</b></div>
+  </div>
+  <div class="g2-two">
+    <span class="g2-opt on"><span class="rd"></span><b>Nouveau carnet</b></span>
+    <span class="g2-opt"><span class="rd"></span><span><b>Dans Embouteillage</b><span class="ia"><svg class="g2-i " aria-hidden="true"><use href="#i-spark"/></svg>IA : proche</span></span></span>
+  </div>
+  <a class="g2-btn full"><svg class="g2-i " aria-hidden="true"><use href="#i-plus"/></svg>Créer le carnet</a>
+  <div class="g2-dim">
+    <div class="g2-ln"><b>Évier inox</b><span>Idée</span></div>
+    <div class="g2-ln"><b>Ventilation de la salle de brassage</b><span>À comparer</span></div>
+    <div class="g2-ln"><b>Embouteillage</b><span>Choisi</span></div>
+    <div class="g2-ln"><b>Frigo de garde pour fûts</b><span>Choisi</span></div>
+  </div>
+</main>
+<div class="g2-dock kb"><div class="g2-in on"><span class="t v">tireuse 4 becs<span class="g2-caret"></span></span><svg class="g2-i mu" aria-hidden="true"><use href="#i-cam"/></svg><svg class="g2-i mu" aria-hidden="true"><use href="#i-mic"/></svg></div></div>
+<div class="g2-kbd" aria-hidden="true">
+  <div class="rg"><i>a</i><i>z</i><i>e</i><i>r</i><i>t</i><i>y</i><i>u</i><i>i</i><i>o</i><i>p</i></div>
+  <div class="rg"><i>q</i><i>s</i><i>d</i><i>f</i><i>g</i><i>h</i><i>j</i><i>k</i><i>l</i><i>m</i></div>
+  <div class="rg"><i class="k">⇧</i><i>w</i><i>x</i><i>c</i><i>v</i><i>b</i><i>n</i><i>’</i><i class="k">⌫</i></div>
+  <div class="rg"><i class="k">123</i><i>,</i><i class="w">espace</i><i>.</i><i class="go">↵</i></div>
+</div>
+</section>
+<p class="g2-cap"><b>2 · Ajouter une idée</b></p>
+</div>
+<div class="g2-col">
+<section class="g2-scr " aria-label="3 · Un carnet ouvert">
+<header class="g2-bar">
+  <span class="g2-logo"><svg class="g2-i " aria-hidden="true"><use href="#i-glass"/></svg></span><span class="g2-nom">L'Affinée</span>
+  <span class="g2-mois"><span><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg></span><span class="t">Nov.</span><span><svg class="g2-i " aria-hidden="true"><use href="#i-right"/></svg></span></span>
+  <span class="g2-lp" aria-label="Chercher"><svg class="g2-i " aria-hidden="true"><use href="#i-search"/></svg></span>
+  <span class="g2-av"><span class="g">G</span><span class="a">A</span></span>
+</header>
+<a class="g2-back"><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg>Carnets<span class="g2-tag">À comparer</span></a>
+<h1 class="g2-h1 s">Ventilation de la salle de brassage</h1>
+<main class="g2-pad t0">
+  <div class="g2-crit"><svg class="g2-i " aria-hidden="true"><use href="#i-target"/></svg><span class="k">Critère, proposé par l'IA :</span><b>capter la buée à la source</b></div>
+  <div class="g2-q">Hotte ou extracteur ?</div>
+  <div class="g2-duo">
+    <div class="g2-fa"><b>Hotte + extracteur</b><span><span class="g2-m">1 450</span> à <span class="g2-m">2 600</span> CHF</span><span class="ok">capte au-dessus de la cuve</span><div class="a"><span class="g2-sb">Retenir</span><span class="g2-sb">Écarter</span></div></div>
+    <div class="g2-fa"><b>Extracteur mural</b><span><span class="g2-m">420</span> à <span class="g2-m">690</span> CHF</span><span class="mu">aspire la pièce entière</span><div class="a"><span class="g2-sb">Retenir</span><span class="g2-sb">Écarter</span></div></div>
+  </div>
+  <div class="g2-sh"><b>Articles</b><span>en vert, le meilleur de chaque colonne</span></div>
+  <div class="g2-tab">
+    <div class="g2-th"><span></span><span class="c">débit m³/h</span><span class="c">bruit dB</span><span class="c">prix CHF</span></div>
+    <div class="g2-gr">Hotte + extracteur</div>
+    <div class="g2-tr">
+  <span class="g2-vg s"><svg class="g2-ph" viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#ph-hotte"/></svg></span>
+  <span class="g2-cor"><b>Hotte murale 100 cm</b><span><svg class="g2-i " aria-hidden="true"><use href="#i-eye"/></svg>veille 3 j · DE · en stock</span></span>
+  <span class="c g2-m">1 200</span><span class="c g2-m">55</span><span class="c g2-m">1 450</span>
+</div>
+    <div class="g2-tr">
+  <span class="g2-vg s"><svg class="g2-ph" viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#ph-hotte"/></svg></span>
+  <span class="g2-cor"><b>Hotte inox 120 cm</b><span>CH · délai 4 sem.</span></span>
+  <span class="c g2-m best">1 800</span><span class="c g2-m">58</span><span class="c g2-m">2 600</span>
+</div>
+    <div class="g2-gr">Extracteur mural</div>
+    <div class="g2-tr">
+  <span class="g2-vg s"><svg class="g2-ph" viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#ph-extr"/></svg></span>
+  <span class="g2-cor"><b>Hélicoïde mural</b><span>CH · en stock</span></span>
+  <span class="c g2-m">1 500</span><span class="c g2-m">62</span><span class="c g2-m best">420</span>
+</div>
+    <div class="g2-tr">
+  <span class="g2-vg s"><svg class="g2-ph" viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#ph-extr"/></svg></span>
+  <span class="g2-cor"><b>Centrifuge en ligne</b><span>FR · en stock</span></span>
+  <span class="c g2-m">1 100</span><span class="c g2-m best">49</span><span class="c g2-m">690</span>
+</div>
+    <div class="g2-tr lien"><span class="g2-vg s pic"><svg class="g2-i " aria-hidden="true"><use href="#i-link"/></svg></span><span class="g2-cor"><b class="nw">ventil-express.ch/caisson</b><span>page sans aperçu</span></span><a class="g2-lk">Ouvrir ↗</a></div>
+  </div>
+  <div class="g2-next"><span><b>Ensuite :</b> retenir une façon. Seule la hotte capte la buée à la source.</span></div>
+</main>
+<div class="g2-dock"><div class="g2-in"><span class="t">Ajouter à Ventilation…</span><svg class="g2-i mu" aria-hidden="true"><use href="#i-cam"/></svg><svg class="g2-i mu" aria-hidden="true"><use href="#i-mic"/></svg></div></div>
+<a class="g2-fab" aria-label="Ajouter"><svg class="g2-i " aria-hidden="true"><use href="#i-plus"/></svg></a>
+<nav class="g2-bot" aria-label="Navigation">
+  <a class=""><svg class="g2-i " aria-hidden="true"><use href="#i-bord"/></svg>Bord</a>
+  <a class=""><svg class="g2-i fi" aria-hidden="true"><use href="#i-wallet"/></svg>Finances</a>
+  <a class=""><svg class="g2-i ca" aria-hidden="true"><use href="#i-cal"/></svg>Calendrier</a>
+  <a class=""><svg class="g2-i br" aria-hidden="true"><use href="#i-beer"/></svg>Brassins</a>
+  <a class="on"><svg class="g2-i st" aria-hidden="true"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a>
+  <a><svg class="g2-i " aria-hidden="true"><use href="#i-users"/></svg>Clients</a>
+</nav>
+</section>
+<p class="g2-cap"><b>3 · Un carnet ouvert</b></p>
+</div>
+<div class="g2-col">
+<section class="g2-scr kbo" aria-label="4 · Ajouter à une idée — une phrase">
+<header class="g2-bar">
+  <span class="g2-logo"><svg class="g2-i " aria-hidden="true"><use href="#i-glass"/></svg></span><span class="g2-nom">L'Affinée</span>
+  <span class="g2-mois"><span><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg></span><span class="t">Nov.</span><span><svg class="g2-i " aria-hidden="true"><use href="#i-right"/></svg></span></span>
+  <span class="g2-lp" aria-label="Chercher"><svg class="g2-i " aria-hidden="true"><use href="#i-search"/></svg></span>
+  <span class="g2-av"><span class="g">G</span><span class="a">A</span></span>
+</header>
+<a class="g2-back"><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg>Carnets<span class="g2-tag">Idée · 15 nov.</span></a>
+<h1 class="g2-h1">Évier inox</h1>
+<main class="g2-pad t0">
+  <div class="g2-case">
+    <div class="h"><svg class="g2-i " aria-hidden="true"><use href="#i-target"/></svg>Ce qui compte <span>· rien encore</span></div>
+    <div class="g2-ghost s">
+      <div class="l1"><span class="g2-ici"><svg class="g2-i " aria-hidden="true"><use href="#i-down"/></svg>va atterrir ici</span><span class="ia"><svg class="g2-i " aria-hidden="true"><use href="#i-spark"/></svg>tiré de votre phrase</span></div>
+      <div class="v">Un fût de 20 L couché entre dans le bac</div>
+      <div class="mu">Comparé sur : profondeur de bac</div>
+    </div>
+  </div>
+  <div class="g2-case"><div class="h"><svg class="g2-i " aria-hidden="true"><use href="#i-fork"/></svg>2 façons <span>: encastré, sur pieds</span><svg class="g2-i r" aria-hidden="true"><use href="#i-right"/></svg></div></div>
+  <div class="g2-case"><div class="h"><svg class="g2-i " aria-hidden="true"><use href="#i-tag"/></svg>Articles <span>· aucun : collez un lien</span></div></div>
+</main>
+<div class="g2-dock kb">
+  <div class="g2-to"><span>Va dans</span><span class="g2-chip">Façon</span><span class="g2-chip on">Ce qui compte</span><span class="g2-chip">Article</span><span class="g2-chip">Note</span></div>
+  <div class="g2-in on tall"><span class="t v">un fût de 20 L couché doit entrer dans le bac<span class="g2-caret"></span></span><svg class="g2-i mu" aria-hidden="true"><use href="#i-cam"/></svg><svg class="g2-i mu" aria-hidden="true"><use href="#i-mic"/></svg><span class="g2-go2">Ajouter</span></div>
+</div>
+<div class="g2-kbd" aria-hidden="true">
+  <div class="rg"><i>a</i><i>z</i><i>e</i><i>r</i><i>t</i><i>y</i><i>u</i><i>i</i><i>o</i><i>p</i></div>
+  <div class="rg"><i>q</i><i>s</i><i>d</i><i>f</i><i>g</i><i>h</i><i>j</i><i>k</i><i>l</i><i>m</i></div>
+  <div class="rg"><i class="k">⇧</i><i>w</i><i>x</i><i>c</i><i>v</i><i>b</i><i>n</i><i>’</i><i class="k">⌫</i></div>
+  <div class="rg"><i class="k">123</i><i>,</i><i class="w">espace</i><i>.</i><i class="go">↵</i></div>
+</div>
+</section>
+<p class="g2-cap"><b>4 · Ajouter à une idée — une phrase</b></p>
+</div>
+<div class="g2-col">
+<section class="g2-scr kbo" aria-label="4 bis · Ajouter à une idée — un lien">
+<header class="g2-bar">
+  <span class="g2-logo"><svg class="g2-i " aria-hidden="true"><use href="#i-glass"/></svg></span><span class="g2-nom">L'Affinée</span>
+  <span class="g2-mois"><span><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg></span><span class="t">Nov.</span><span><svg class="g2-i " aria-hidden="true"><use href="#i-right"/></svg></span></span>
+  <span class="g2-lp" aria-label="Chercher"><svg class="g2-i " aria-hidden="true"><use href="#i-search"/></svg></span>
+  <span class="g2-av"><span class="g">G</span><span class="a">A</span></span>
+</header>
+<a class="g2-back"><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg>Carnets<span class="g2-tag">Idée · 15 nov.</span></a>
+<h1 class="g2-h1">Évier inox</h1>
+<main class="g2-pad t0">
+  <div class="g2-case"><div class="h"><svg class="g2-i " aria-hidden="true"><use href="#i-target"/></svg><b class="ink">Un fût de 20 L couché entre dans le bac</b></div></div>
+  <div class="g2-case"><div class="h"><svg class="g2-i " aria-hidden="true"><use href="#i-fork"/></svg>2 façons <span>: encastré, sur pieds</span><svg class="g2-i r" aria-hidden="true"><use href="#i-right"/></svg></div></div>
+  <div class="g2-sh"><b><svg class="g2-i " aria-hidden="true"><use href="#i-tag"/></svg>Articles</b><span>1 en arrivée</span></div>
+  <div class="g2-arr">
+    <svg class="g2-ph big" viewBox="0 0 76 76" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#ev"/></svg>
+    <div class="tx">
+      <div class="l1"><b>Évier 2 bacs sur pieds</b><span class="g2-ici"><svg class="g2-i " aria-hidden="true"><use href="#i-down"/></svg>arrive ici</span></div>
+      <div><span class="g2-m p">1 290</span> CHF <span class="mu">· Inox Riviera (CH)</span></div>
+      <div class="mu">bacs <span class="g2-m">50×40×30</span> cm · lu sur la page</div>
+      <div class="vw"><svg class="g2-i " aria-hidden="true"><use href="#i-eye"/></svg>Veiller le prix, tous les 3 jours<span class="g2-sw on"></span></div>
+    </div>
+  </div>
+</main>
+<div class="g2-dock kb">
+  <div class="g2-to"><span>Va dans</span><span class="g2-chip">Façon</span><span class="g2-chip">Ce qui compte</span><span class="g2-chip on">Article</span><span class="g2-chip">Note</span></div>
+  <div class="g2-in on"><span class="t v url"><svg class="g2-i " aria-hidden="true"><use href="#i-link"/></svg>inox-riviera.ch/evier-2-bacs-pieds</span><svg class="g2-i mu" aria-hidden="true"><use href="#i-cam"/></svg><svg class="g2-i mu" aria-hidden="true"><use href="#i-mic"/></svg><span class="g2-go2">Ajouter</span></div>
+</div>
+<div class="g2-kbd" aria-hidden="true">
+  <div class="rg"><i>a</i><i>z</i><i>e</i><i>r</i><i>t</i><i>y</i><i>u</i><i>i</i><i>o</i><i>p</i></div>
+  <div class="rg"><i>q</i><i>s</i><i>d</i><i>f</i><i>g</i><i>h</i><i>j</i><i>k</i><i>l</i><i>m</i></div>
+  <div class="rg"><i class="k">⇧</i><i>w</i><i>x</i><i>c</i><i>v</i><i>b</i><i>n</i><i>’</i><i class="k">⌫</i></div>
+  <div class="rg"><i class="k">123</i><i>,</i><i class="w">espace</i><i>.</i><i class="go">↵</i></div>
+</div>
+</section>
+<p class="g2-cap"><b>4 bis · Ajouter à une idée — un lien</b></p>
+</div>
+<div class="g2-col">
+<section class="g2-scr " aria-label="5 · Cartes d'article">
+<div class="g2-peek"><header class="g2-bar">
+  <span class="g2-logo"><svg class="g2-i " aria-hidden="true"><use href="#i-glass"/></svg></span><span class="g2-nom">L'Affinée</span>
+  <span class="g2-mois"><span><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg></span><span class="t">Nov.</span><span><svg class="g2-i " aria-hidden="true"><use href="#i-right"/></svg></span></span>
+  <span class="g2-lp" aria-label="Chercher"><svg class="g2-i " aria-hidden="true"><use href="#i-search"/></svg></span>
+  <span class="g2-av"><span class="g">G</span><span class="a">A</span></span>
+</header><div class="g2-pk"><span class="bk"><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg>Carnets</span><b>Embouteillage</b><span class="mu">Critère : le moins d’O₂ au remplissage</span></div></div>
+<div class="g2-sheet">
+  <div class="gr"></div>
+  <div class="g2-shh"><b>Articles · 6</b><span class="mu">classés par O₂</span><a class="x"><svg class="g2-i " aria-hidden="true"><use href="#i-x"/></svg></a></div>
+  <div class="g2-gh2"><span class="t">Isobarique <span class="g2-m">5</span></span><span class="r">dès <span class="g2-m">3 900</span> CHF</span></div>
+  <div class="g2-card duo">
+    <svg class="g2-ph c" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-a"/></svg>
+    <div class="tx">
+      <b>Isobarique 4 becs pré‑évacuation</b>
+      <span class="l2"><span class="cr best">O₂ <span class="g2-m">40</span> ppb · 1re sur 5</span><span class="g2-vei"><svg class="g2-i " aria-hidden="true"><use href="#i-eye"/></svg>veille</span></span>
+      <span class="vd"><span>Abfülltechnik West · DE · <span class="g2-dsp ok">en stock</span></span><span class="g2-m">11 200</span></span>
+      <span class="vd"><span><b class="g2-cho">choisi</b> · Brassage Romandie · CH</span><span class="g2-m">11 700</span></span>
+      <span class="ec">même machine : <b><span class="g2-m">500</span> CHF de plus</b> pour le SAV suisse</span>
+    </div>
+  </div>
+  <div class="g2-card">
+  <svg class="g2-ph c" viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p3"/></svg>
+  <div class="tx">
+    <b>Isobarique 4 becs compact</b>
+    <span class="l2"><span class="cr">O₂ <span class="g2-m">70</span> ppb · 3e sur 5</span><span class="pr"><span class="g2-m">9 600</span> CHF</span></span>
+    <span class="l3">Brew Equip Lyon · FR · <span class="g2-dsp">délai 4 sem.</span></span>
+  </div>
+</div>
+  <div class="g2-card">
+  <svg class="g2-ph c" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-c"/></svg>
+  <div class="tx">
+    <b>Isobarique 4 becs semi-auto</b>
+    <span class="l2"><span class="cr">O₂ <span class="g2-m">90</span> ppb · 4e sur 5</span><span class="pr"><span class="g2-m">8 900</span> CHF</span></span>
+    <span class="l3">Brassage Romandie · CH · <span class="g2-dsp ok">en stock</span><span class="g2-vei"><svg class="g2-i " aria-hidden="true"><use href="#i-eye"/></svg>veille</span></span>
+  </div>
+</div>
+  <div class="g2-card">
+  <svg class="g2-ph c" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-d"/></svg>
+  <div class="tx">
+    <b>Isobarique 2 becs de table</b>
+    <span class="l2"><span class="cr">O₂ <span class="g2-m">120</span> ppb · 5e sur 5</span><span class="pr"><span class="g2-m">3 900</span> CHF</span></span>
+    <span class="l3">Brasserie-Shop Valais · CH · <span class="g2-dsp ok">en stock</span></span>
+  </div>
+</div>
+  <div class="g2-card">
+  <svg class="g2-ph c" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-b"/></svg>
+  <div class="tx">
+    <b>Monobloc isobarique 6 becs</b>
+    <span class="l2"><span class="cr">O₂ <span class="g2-m">50</span> ppb · 2e sur 5</span><span class="pr"><span class="g2-m">21 500</span> CHF</span></span>
+    <span class="l3">Imbottigliatrici Nord · IT · <span class="g2-dsp">délai 6 sem.</span></span>
+  </div>
+</div>
+  <div class="g2-gh2"><span class="t">À compléter <span class="g2-m">1</span></span></div>
+  <div class="g2-card lien"><span class="g2-vg pic"><svg class="g2-i " aria-hidden="true"><use href="#i-link"/></svg></span><div class="tx"><b>Lien sans aperçu</b><span class="mu"><a class="g2-lk">Compléter nom et prix</a></span></div></div>
+</div>
+<a class="g2-fab" aria-label="Ajouter"><svg class="g2-i " aria-hidden="true"><use href="#i-plus"/></svg></a>
+<nav class="g2-bot" aria-label="Navigation">
+  <a class=""><svg class="g2-i " aria-hidden="true"><use href="#i-bord"/></svg>Bord</a>
+  <a class=""><svg class="g2-i fi" aria-hidden="true"><use href="#i-wallet"/></svg>Finances</a>
+  <a class=""><svg class="g2-i ca" aria-hidden="true"><use href="#i-cal"/></svg>Calendrier</a>
+  <a class=""><svg class="g2-i br" aria-hidden="true"><use href="#i-beer"/></svg>Brassins</a>
+  <a class="on"><svg class="g2-i st" aria-hidden="true"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a>
+  <a><svg class="g2-i " aria-hidden="true"><use href="#i-users"/></svg>Clients</a>
+</nav>
+</section>
+<p class="g2-cap"><b>5 · Cartes d'article</b></p>
+</div>
+<div class="g2-col">
+<section class="g2-scr " aria-label="6 · Un article ouvert">
+<div class="g2-peek"><header class="g2-bar">
+  <span class="g2-logo"><svg class="g2-i " aria-hidden="true"><use href="#i-glass"/></svg></span><span class="g2-nom">L'Affinée</span>
+  <span class="g2-mois"><span><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg></span><span class="t">Nov.</span><span><svg class="g2-i " aria-hidden="true"><use href="#i-right"/></svg></span></span>
+  <span class="g2-lp" aria-label="Chercher"><svg class="g2-i " aria-hidden="true"><use href="#i-search"/></svg></span>
+  <span class="g2-av"><span class="g">G</span><span class="a">A</span></span>
+</header><div class="g2-pk"><span class="bk"><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg>Carnets</span><b>Embouteillage</b><span class="mu">Articles · 6</span></div></div>
+<div class="g2-sheet hi">
+  <div class="gr"></div>
+  <div class="g2-ah">
+    <div class="g2-hero"><svg class="g2-ph h" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-a"/></svg><span class="rk">1re sur 5</span></div>
+    <div class="tx"><b>Isobarique 4 becs pré‑évacuation</b><span class="mu">façon isobarique · lien collé le 10 nov.</span></div>
+    <a class="x"><svg class="g2-i " aria-hidden="true"><use href="#i-x"/></svg></a>
+  </div>
+  <div class="g2-cv">
+    <div class="k">O₂ pris au remplissage <span class="cap">critère</span></div>
+    <div class="v"><span class="g2-m">40</span> ppb <span class="ok">la plus basse des 5</span></div>
+    <div class="g2-rule"><i style="left:0%" class="me"></i><i style="left:12.5%"></i><i style="left:37.5%"></i><i style="left:62.5%"></i><i style="left:100%"></i></div>
+    <div class="src">lu sur la fiche technique du vendeur, 12 nov.</div>
+  </div>
+  <div class="g2-sh t"><b>2 offres</b><span>même machine, <span class="g2-m">500</span> CHF d'écart</span></div>
+  <div class="g2-of"><span class="rd"></span><span class="t"><b>Abfülltechnik West · DE</b><span>en stock · le moins cher</span></span><span class="g2-m p">11 200</span><a class="g2-lk">Ouvrir ↗</a></div>
+  <div class="g2-of on"><span class="rd"></span><span class="t"><b>Brassage Romandie · CH</b><span>en stock · SAV en Suisse</span></span><span class="g2-m p">11 700</span><a class="g2-lk">Ouvrir ↗</a></div>
+  <div class="g2-sh t"><b>Ses autres valeurs</b><span>place parmi les 5</span></div>
+  <div class="g2-kv">
+    <span>Cadence</span><b class="g2-m">400 bt/h</b><em>2e ex aequo</em>
+    <span>CO₂ par bouteille</span><b class="g2-m">7 g</b><em>2e</em>
+    <span>Place au sol</span><b class="g2-m">0,7 m²</b><em>4e</em>
+    <span>Nettoyage en place</span><b>oui</b><em>comme 3 autres</em>
+  </div>
+  <div class="g2-vw"><svg class="g2-i " aria-hidden="true"><use href="#i-eye"/></svg><span class="t"><b>Veille tous les 3 jours</b><span>prix et stock · prochain passage dans 3 jours</span></span><span class="g2-sw on"></span></div>
+  <a class="g2-btn full">Choisir · Brassage Romandie</a>
+  <div class="g2-part">Part dans À venir : cette machine, Brassage Romandie, <span class="g2-m">11 700</span> CHF, en stock.</div>
+</div>
+<a class="g2-fab" aria-label="Ajouter"><svg class="g2-i " aria-hidden="true"><use href="#i-plus"/></svg></a>
+<nav class="g2-bot" aria-label="Navigation">
+  <a class=""><svg class="g2-i " aria-hidden="true"><use href="#i-bord"/></svg>Bord</a>
+  <a class=""><svg class="g2-i fi" aria-hidden="true"><use href="#i-wallet"/></svg>Finances</a>
+  <a class=""><svg class="g2-i ca" aria-hidden="true"><use href="#i-cal"/></svg>Calendrier</a>
+  <a class=""><svg class="g2-i br" aria-hidden="true"><use href="#i-beer"/></svg>Brassins</a>
+  <a class="on"><svg class="g2-i st" aria-hidden="true"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a>
+  <a><svg class="g2-i " aria-hidden="true"><use href="#i-users"/></svg>Clients</a>
+</nav>
+</section>
+<p class="g2-cap"><b>6 · Un article ouvert</b></p>
+</div>
+<div class="g2-col">
+<section class="g2-scr " aria-label="7 · Comparer sur le critère">
+<header class="g2-bar">
+  <span class="g2-logo"><svg class="g2-i " aria-hidden="true"><use href="#i-glass"/></svg></span><span class="g2-nom">L'Affinée</span>
+  <span class="g2-mois"><span><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg></span><span class="t">Nov.</span><span><svg class="g2-i " aria-hidden="true"><use href="#i-right"/></svg></span></span>
+  <span class="g2-lp" aria-label="Chercher"><svg class="g2-i " aria-hidden="true"><use href="#i-search"/></svg></span>
+  <span class="g2-av"><span class="g">G</span><span class="a">A</span></span>
+</header>
+<a class="g2-back"><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg>Embouteillage</a>
+<h1 class="g2-h1 s">Comparer · 5 machines</h1>
+<p class="g2-lead">Rangées sur le critère ; <b>en vert, le meilleur de chaque ligne</b>.</p>
+<table class="g2-cmp">
+  <thead><tr><th></th><th><span class="rk un">1</span><svg class="g2-ph t" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-a"/></svg><span class="nm">pré‑évac.</span></th><th><span class="rk">2</span><svg class="g2-ph t" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-b"/></svg><span class="nm">monobloc</span></th><th><span class="rk">3</span><svg class="g2-ph t" viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p3"/></svg><span class="nm">compact</span></th><th><span class="rk">4</span><svg class="g2-ph t" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-c"/></svg><span class="nm">semi-auto</span></th><th><span class="rk">5</span><svg class="g2-ph t" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-d"/></svg><span class="nm">de table</span></th></tr></thead>
+  <tbody class="g2-m">
+    <tr class="crit"><td class="l">O₂ ppb<b class="k">critère</b></td><td class="b">40</td><td class="">50</td><td class="">70</td><td class="">90</td><td class="">120</td></tr>
+    <tr class=""><td class="l">Prix <i>CHF</i></td><td class="">11 200</td><td class="">21 500</td><td class="">9 600</td><td class="">8 900</td><td class="b">3 900</td></tr>
+    <tr class=""><td class="l">Délai <i>sem.</i></td><td class="b">0</td><td class="">6</td><td class="">4</td><td class="b">0</td><td class="b">0</td></tr>
+    <tr class=""><td class="l">Cadence <i>bt/h</i></td><td class="">400</td><td class="b">900</td><td class="">400</td><td class="">250</td><td class="">120</td></tr>
+    <tr class=""><td class="l">CO₂ <i>g/bt</i></td><td class="">7</td><td class="b">6</td><td class="">8</td><td class="">9</td><td class="">10</td></tr>
+    <tr class=""><td class="l">Sol <i>m²</i></td><td class="">0,7</td><td class="">2,4</td><td class="">0,5</td><td class="">0,6</td><td class="b">0,3</td></tr>
+    <tr class=""><td class="l">NEP</td><td class="">oui</td><td class="">oui</td><td class="">oui</td><td class="">oui</td><td class="">non</td></tr>
+  </tbody>
+</table>
+<main class="g2-pad t0">
+  <p class="g2-note">La n° 1 : 2 vendeurs, prix et délai du moins cher (<span class="g2-m">11 200</span> CHF, <span class="g2-m">0</span> sem.).</p>
+  <div class="g2-cpr"><b>Compromis :</b> la 3e, <span class="g2-m">70</span> ppb pour <span class="g2-m">9 600</span> CHF, soit <span class="g2-m">1 600</span> CHF de moins que la 1re pour <span class="g2-m">30</span> ppb de plus.</div>
+  <div class="g2-row2"><span class="g2-chip">Ajouter une caractéristique</span><span class="g2-chip"><svg class="g2-i " aria-hidden="true"><use href="#i-spark"/></svg>Proposer</span></div>
+  <div class="g2-sh"><b>Écartés</b><span><span class="g2-m">2</span>, avec leur raison</span></div>
+  <div class="g2-out"><b>Façon gravité (remplir par écoulement)</b><span>la mousse monte, O₂ autour de <span class="g2-m">400</span> ppb</span></div>
+  <div class="g2-out"><b>Tireuse 3 becs à tube long</b><span>pas de pré‑évacuation de l'air</span></div>
+</main>
+<a class="g2-fab" aria-label="Ajouter"><svg class="g2-i " aria-hidden="true"><use href="#i-plus"/></svg></a>
+<nav class="g2-bot" aria-label="Navigation">
+  <a class=""><svg class="g2-i " aria-hidden="true"><use href="#i-bord"/></svg>Bord</a>
+  <a class=""><svg class="g2-i fi" aria-hidden="true"><use href="#i-wallet"/></svg>Finances</a>
+  <a class=""><svg class="g2-i ca" aria-hidden="true"><use href="#i-cal"/></svg>Calendrier</a>
+  <a class=""><svg class="g2-i br" aria-hidden="true"><use href="#i-beer"/></svg>Brassins</a>
+  <a class="on"><svg class="g2-i st" aria-hidden="true"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a>
+  <a><svg class="g2-i " aria-hidden="true"><use href="#i-users"/></svg>Clients</a>
+</nav>
+</section>
+<p class="g2-cap"><b>7 · Comparer sur le critère</b></p>
+</div>
+<div class="g2-col">
+<section class="g2-scr " aria-label="8 · Choisir, choisi, pourquoi">
+<header class="g2-bar">
+  <span class="g2-logo"><svg class="g2-i " aria-hidden="true"><use href="#i-glass"/></svg></span><span class="g2-nom">L'Affinée</span>
+  <span class="g2-mois"><span><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg></span><span class="t">Nov.</span><span><svg class="g2-i " aria-hidden="true"><use href="#i-right"/></svg></span></span>
+  <span class="g2-lp" aria-label="Chercher"><svg class="g2-i " aria-hidden="true"><use href="#i-search"/></svg></span>
+  <span class="g2-av"><span class="g">G</span><span class="a">A</span></span>
+</header>
+<a class="g2-back"><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg>Carnets<span class="g2-tag ok">Choisi le 14 nov.</span></a>
+<h1 class="g2-h1">Embouteillage</h1>
+<main class="g2-pad t0">
+  <div class="g2-pan">
+    <div class="g2-hero2"><svg class="g2-ph h2" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-a"/></svg><span class="g2-tx"><b>Isobarique 4 becs pré‑évacuation</b><span>Brassage Romandie · CH · en stock</span><span class="p g2-m">11 700 CHF</span></span></div>
+    <div class="g2-why"><b>Pourquoi :</b> oxygène le plus bas à 4 becs ; SAV en Suisse, pour <span class="g2-m">500</span> CHF de plus que la même machine en Allemagne.</div>
+  </div>
+  <div class="g2-kv2"><span>Ce qui comptait</span><b>le moins d'O₂ au remplissage</b></div>
+  <div class="g2-send"><p>Part dans À venir : la machine, <span class="g2-m">11 700</span> CHF, chez Brassage Romandie, livrable de stock.</p><a class="g2-btn full"><svg class="g2-i " aria-hidden="true"><use href="#i-calin"/></svg>Envoyer dans À venir</a></div>
+  <div class="g2-gh"><span class="t">Pas retenus <span class="g2-m">5</span></span><span class="r">et pourquoi</span></div>
+  <div class="g2-pan off">
+    <div class="g2-row s"><span class="g2-vg s"><svg class="g2-ph" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-a"/></svg></span><span class="g2-tx"><b>Même machine, Abfülltechnik</b><span>SAV à l'étranger (DE)</span></span><span class="g2-fig"><span class="p g2-m">11 200</span></span></div>
+    <div class="g2-row s"><span class="g2-vg s"><svg class="g2-ph" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-b"/></svg></span><span class="g2-tx"><b>Monobloc 6 becs</b><span>presque 2 fois le prix, cadence inutile</span></span><span class="g2-fig"><span class="p g2-m">21 500</span></span></div>
+    <div class="g2-row s"><span class="g2-vg s"><svg class="g2-ph" viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p3"/></svg></span><span class="g2-tx"><b>Isobarique 4 becs compact</b><span>70 ppb, livré sous 4 semaines</span></span><span class="g2-fig"><span class="p g2-m">9 600</span></span></div>
+  </div>
+  <p class="g2-plus2">et 2 autres : semi-auto, <span class="g2-m">90</span> ppb ; de table, <span class="g2-m">120</span> ppb sans NEP</p>
+  <p class="g2-plus2">Écartés plus tôt, <span class="g2-m">2</span> : la façon gravité, la tireuse 3 becs à tube long.</p>
+</main>
+<div class="g2-dock"><div class="g2-in"><span class="t">Ajouter à Embouteillage…</span><svg class="g2-i mu" aria-hidden="true"><use href="#i-cam"/></svg><svg class="g2-i mu" aria-hidden="true"><use href="#i-mic"/></svg></div></div>
+<a class="g2-fab" aria-label="Ajouter"><svg class="g2-i " aria-hidden="true"><use href="#i-plus"/></svg></a>
+<nav class="g2-bot" aria-label="Navigation">
+  <a class=""><svg class="g2-i " aria-hidden="true"><use href="#i-bord"/></svg>Bord</a>
+  <a class=""><svg class="g2-i fi" aria-hidden="true"><use href="#i-wallet"/></svg>Finances</a>
+  <a class=""><svg class="g2-i ca" aria-hidden="true"><use href="#i-cal"/></svg>Calendrier</a>
+  <a class=""><svg class="g2-i br" aria-hidden="true"><use href="#i-beer"/></svg>Brassins</a>
+  <a class="on"><svg class="g2-i st" aria-hidden="true"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a>
+  <a><svg class="g2-i " aria-hidden="true"><use href="#i-users"/></svg>Clients</a>
+</nav>
+</section>
+<p class="g2-cap"><b>8 · Choisir, choisi, pourquoi</b></p>
+</div>
+<div class="g2-col">
+<section class="g2-scr " aria-label="8 bis · Choisi, après l’envoi">
+<header class="g2-bar">
+  <span class="g2-logo"><svg class="g2-i " aria-hidden="true"><use href="#i-glass"/></svg></span><span class="g2-nom">L'Affinée</span>
+  <span class="g2-mois"><span><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg></span><span class="t">Nov.</span><span><svg class="g2-i " aria-hidden="true"><use href="#i-right"/></svg></span></span>
+  <span class="g2-lp" aria-label="Chercher"><svg class="g2-i " aria-hidden="true"><use href="#i-search"/></svg></span>
+  <span class="g2-av"><span class="g">G</span><span class="a">A</span></span>
+</header>
+<a class="g2-back"><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg>Carnets<span class="g2-tag ok">Choisi le 14 nov.</span></a>
+<h1 class="g2-h1">Embouteillage</h1>
+<main class="g2-pad t0">
+  <div class="g2-pan">
+    <div class="g2-hero2"><svg class="g2-ph h2" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-a"/></svg><span class="g2-tx"><b>Isobarique 4 becs pré‑évacuation</b><span>Brassage Romandie · CH · en stock</span><span class="p g2-m">11 700 CHF</span></span></div>
+    <div class="g2-why"><b>Pourquoi :</b> oxygène le plus bas à 4 becs ; SAV en Suisse, pour <span class="g2-m">500</span> CHF de plus que la même machine en Allemagne.</div>
+  </div>
+  <div class="g2-kv2"><span>Ce qui comptait</span><b>le moins d'O₂ au remplissage</b></div>
+  <a class="g2-sent"><svg class="g2-i " aria-hidden="true"><use href="#i-check"/></svg><span>Dans À venir depuis le 17 nov.</span><span class="lk">Voir <svg class="g2-i " aria-hidden="true"><use href="#i-right"/></svg></span></a>
+  <div class="g2-gh"><span class="t">Pas retenus <span class="g2-m">5</span></span><span class="r">et pourquoi</span></div>
+  <div class="g2-pan off">
+    <div class="g2-row s"><span class="g2-vg s"><svg class="g2-ph" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-a"/></svg></span><span class="g2-tx"><b>Même machine, Abfülltechnik</b><span>SAV à l'étranger (DE)</span></span><span class="g2-fig"><span class="p g2-m">11 200</span></span></div>
+    <div class="g2-row s"><span class="g2-vg s"><svg class="g2-ph" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-b"/></svg></span><span class="g2-tx"><b>Monobloc 6 becs</b><span>presque 2 fois le prix, cadence inutile</span></span><span class="g2-fig"><span class="p g2-m">21 500</span></span></div>
+    <div class="g2-row s"><span class="g2-vg s"><svg class="g2-ph" viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p3"/></svg></span><span class="g2-tx"><b>Isobarique 4 becs compact</b><span>70 ppb, livré sous 4 semaines</span></span><span class="g2-fig"><span class="p g2-m">9 600</span></span></div>
+  </div>
+  <p class="g2-plus2">et 2 autres : semi-auto, <span class="g2-m">90</span> ppb ; de table, <span class="g2-m">120</span> ppb sans NEP</p>
+  <p class="g2-plus2">Écartés plus tôt, <span class="g2-m">2</span> : la façon gravité, la tireuse 3 becs à tube long.</p>
+  <a class="g2-chg">Changer d'avis</a>
+</main>
+<div class="g2-dock"><div class="g2-in"><span class="t">Ajouter à Embouteillage…</span><svg class="g2-i mu" aria-hidden="true"><use href="#i-cam"/></svg><svg class="g2-i mu" aria-hidden="true"><use href="#i-mic"/></svg></div></div>
+<a class="g2-fab" aria-label="Ajouter"><svg class="g2-i " aria-hidden="true"><use href="#i-plus"/></svg></a>
+<nav class="g2-bot" aria-label="Navigation">
+  <a class=""><svg class="g2-i " aria-hidden="true"><use href="#i-bord"/></svg>Bord</a>
+  <a class=""><svg class="g2-i fi" aria-hidden="true"><use href="#i-wallet"/></svg>Finances</a>
+  <a class=""><svg class="g2-i ca" aria-hidden="true"><use href="#i-cal"/></svg>Calendrier</a>
+  <a class=""><svg class="g2-i br" aria-hidden="true"><use href="#i-beer"/></svg>Brassins</a>
+  <a class="on"><svg class="g2-i st" aria-hidden="true"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a>
+  <a><svg class="g2-i " aria-hidden="true"><use href="#i-users"/></svg>Clients</a>
+</nav>
+</section>
+<p class="g2-cap"><b>8 bis · Choisi, après l’envoi</b></p>
+</div>
+<div class="g2-col">
+<section class="g2-scr " aria-label="9 · À venir et Réalisés">
+<header class="g2-bar">
+  <span class="g2-logo"><svg class="g2-i " aria-hidden="true"><use href="#i-glass"/></svg></span><span class="g2-nom">L'Affinée</span>
+  <span class="g2-mois"><span><svg class="g2-i " aria-hidden="true"><use href="#i-left"/></svg></span><span class="t">Nov.</span><span><svg class="g2-i " aria-hidden="true"><use href="#i-right"/></svg></span></span>
+  <span class="g2-lp" aria-label="Chercher"><svg class="g2-i " aria-hidden="true"><use href="#i-search"/></svg></span>
+  <span class="g2-av"><span class="g">G</span><span class="a">A</span></span>
+</header>
+<nav class="g2-seg" aria-label="Vue des stocks"><a>Articles</a><a>Courses</a><a>Fûts</a><a class="on">Matériel</a><a>Houblons</a></nav>
+<nav class="g2-sous" aria-label="Vue du matériel"><a class="on">À venir <span class="g2-m">2</span></a><a>Carnets <span class="g2-m">4</span></a><a>Réalisés <span class="g2-m">0</span></a></nav>
+<main class="g2-pad">
+  <div class="g2-sh t"><b><svg class="g2-i " aria-hidden="true"><use href="#i-calin"/></svg>À commander</b><span class="g2-m ink">16 600 CHF</span></div>
+  <div class="g2-new">
+    <div class="h"><b>Ajouté le 17 nov.</b><span>du carnet Embouteillage</span></div>
+    <div class="r"><svg class="g2-ph c" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-a"/></svg><div class="t"><b>Isobarique 4 becs pré‑évacuation</b><span>Brassage Romandie (CH) · en stock</span><span class="g2-m p">11 700 CHF</span></div></div>
+    <div class="a"><a class="g2-sb">Fixer la date</a><a class="g2-sb">Ouvrir le carnet</a></div>
+  </div>
+  <div class="g2-pan">
+    <div class="g2-row">
+      <span class="g2-vg"><svg class="g2-ph" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#p-f"/></svg></span>
+      <span class="g2-tx"><b>Armoire froide 6 fûts</b><span>Froid Léman (CH) · livraison à fixer</span><span>du carnet Frigo de garde · depuis le 16 nov.</span></span>
+      <span class="g2-fig"><span class="p g2-m">4 900</span><span class="u">CHF</span></span>
+    </div>
+  </div>
+  <div class="g2-sh t2"><b>Réalisés</b><span class="g2-m">0</span></div>
+  <p class="g2-empty">Rien d'acheté encore. La facture enregistrée dans Finances fait passer l'achat ici.</p>
+</main>
+<a class="g2-fab" aria-label="Ajouter"><svg class="g2-i " aria-hidden="true"><use href="#i-plus"/></svg></a>
+<nav class="g2-bot" aria-label="Navigation">
+  <a class=""><svg class="g2-i " aria-hidden="true"><use href="#i-bord"/></svg>Bord</a>
+  <a class=""><svg class="g2-i fi" aria-hidden="true"><use href="#i-wallet"/></svg>Finances</a>
+  <a class=""><svg class="g2-i ca" aria-hidden="true"><use href="#i-cal"/></svg>Calendrier</a>
+  <a class=""><svg class="g2-i br" aria-hidden="true"><use href="#i-beer"/></svg>Brassins</a>
+  <a class="on"><svg class="g2-i st" aria-hidden="true"><use href="#i-boxes"/></svg>Stocks<span class="bdg">4</span></a>
+  <a><svg class="g2-i " aria-hidden="true"><use href="#i-users"/></svg>Clients</a>
+</nav>
+</section>
+<p class="g2-cap"><b>9 · À venir et Réalisés</b></p>
+</div>
+</div>
+</body>
+</html>

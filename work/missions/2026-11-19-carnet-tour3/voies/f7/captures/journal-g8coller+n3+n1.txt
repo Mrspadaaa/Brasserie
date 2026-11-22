@@ -1,0 +1,14 @@
+=== g8coller 390 clair
+g8coller 390 clair : Coller :
+capture g8coller-390-clair.png
+=== n3 390 clair
+n3 390 clair : ✻ Déjà un carnet proche : ZZ TEST — Ventilation de la salle de brassage / Ouvrir ce carnet / 2 façons · 6 articles · 1 en veille
+capture n3-390-clair-a.png
+texte n3-ouvert-390 : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 6 ¦ Réalisés ¦ 0 ¦ Carnets ¦ ZZ TEST — Ventilation de la salle de brassage ¦ 2 façons à comparer · attendre l’avis du ferblantier ¦ Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer ¦ Articles ¦ 6 ¦ · ¦ Comparer ¦ Hotte inox + extracteur ¦ 1 450 à 2 600 CHF ¦ tient 80 °C ¦ rang · article ¦ m³/h ¦ CHF ¦ 1 ¦ Hotte inox 120 cm + m
+capture n3-390-clair-b-ouvert.png
+=== n1 390 clair
+n1-frappe 390 clair : va dans / Notes / Ce qui compte / Note
+capture n1-390-clair-a-frappe.png
+n1-apres 390 clair : Notes
+capture n1-390-clair-b-apres.png
+introuvable : Frigo

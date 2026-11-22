@@ -1,0 +1,4661 @@
+[
+ {
+  "id": "B2-NOTE-7",
+  "ligne": 297,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "src/services/lectureMorceaux.ts:76 « Lecture en morceaux incomplète : la partie k sur n n'a pas été lue. Réessaie. » (commit 3fd9cf565, 03.11) ; src/ui/depense/etat.ts:175 motRelire la réécrit « … Touche « Relire ». » (commit 5cf2f99d6, ancêtre du tag) ; rendu ExpenseSheet.tsx:1664 Le constat du 16.11 (« le service n'a pas de message ») est faux : le message dit « en morceaux » et quelle partie manque, et le geste Relire."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "TL-46",
+  "ligne": 348,
+  "hist": [
+   [
+    "tri",
+    "present",
+    "src/ui/finance/ExpenseSheet.tsx:1636 lien « Saisir sans justificatif » -> setShowForm(true) ; :1745 showForm sans lecture affiche `sansLecture` (formulaire, ExpenseSheet.tsx:1711), non `scanLayout` (bandes, :1682) ; src/ui/depense/Pages.tsx:43 Sans pièce il n'y a pas de lignes lues : le formulaire simple s'ouvre, pas l'écran à bandes. Question de produit sans décision écrite."
+   ],
+   [
+    "f1",
+    "ouvert",
+    "—"
+   ]
+  ],
+  "der": "f1",
+  "cat": "ouvert",
+  "verdict": "ouvert"
+ },
+ {
+  "id": "TL-NOTE-2",
+  "ligne": 355,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Lecture d'un document par Gemini. Les bandes (Garder/Retirer, Plié/Déplié, Confirmer) se rejouent sur réponse enregistrée."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (les bandes se rejouent sur réponse enregistrée : tests/unit/depense/lecture-d/ecran.test.tsx vert ; le geste « pièce réelle ZZ TEST puis Confirmer » reste à jouer en ligne)",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "gemini",
+  "verdict": "ouvert — non vérifiable sans Gemini (les bandes se rejouent sur réponse enregistrée : tests/unit/depense/lecture-d/ecran.test.tsx vert ; le geste « pièce réelle ZZ TEST puis Confirmer » reste à jouer en ligne)"
+ },
+ {
+  "id": "TL-NOTE-6",
+  "ligne": 359,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    " Gestes jamais joués en ligne (Fermer qui enregistre, Détail ≠ Total, unité, Préparer un brassin, Budget, Copier, Faire relire, épingle, Suivre au stock, Associer un lot) : seul le jeu en ligne tranche."
+   ],
+   [
+    "e1",
+    "present (en partie)",
+    "Joué : Fermer n'enregistre pas (« Abandonner cette saisie ? Rien n'est enregistré »), Détail ≠ Total en direct, épingle et retrait OK. Copier : « Copie refusée ». Défaut neuf, voir plus bas. Non joué : TVA, Préparer un brassin, Budget, Suivre au stock, Associer un lot ; Faire relire exige Gemini."
+   ]
+  ],
+  "der": "e1",
+  "cat": "present",
+  "verdict": "present (en partie)"
+ },
+ {
+  "id": "TE-NOTE-3",
+  "ligne": 400,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    " « Enregistrer et télécharger » produit un PDF : accord du brasseur requis avant de le jouer."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Télécharger le PDF demande l'accord du brasseur (non donné) ; rien créé."
+   ],
+   [
+    "v1",
+    "non-joué (accord)",
+    "PDF « Enregistrer et télécharger » : accord du brasseur requis par la ligne même ; rien joué."
+   ]
+  ],
+  "der": "v1",
+  "cat": "a-voir",
+  "verdict": "non-joué (accord)"
+ },
+ {
+  "id": "LL-8",
+  "ligne": 412,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    " Relecture en ligne des 13 pièces et 5 tickets : un jeu de pièces, pas du code."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Exige Gemini : relire les 13 pièces et 5 tickets veut dire relancer leur lecture ; aucune n'est dans les opérations en ligne."
+   ],
+   [
+    "v1",
+    "non-local",
+    "Relecture en ligne de 13 pièces et 5 tickets : hors local, aucune pièce réelle au banc."
+   ]
+  ],
+  "der": "v1",
+  "cat": "?",
+  "verdict": "non-local"
+ },
+ {
+  "id": "SU-NOTE-6",
+  "ligne": 432,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    " Délais serveur et client des morceaux : se mesurent sur une longue pièce en ligne."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Exige Gemini (lecture d'une pièce de plus de 4 pages, chronométrée)."
+   ],
+   [
+    "v1",
+    "non-local",
+    "Délais sur une longue pièce en ligne : se mesure en ligne seulement (lecture réelle, Gemini)."
+   ]
+  ],
+  "der": "v1",
+  "cat": "?",
+  "verdict": "non-local"
+ },
+ {
+  "id": "BT-NOTE-3",
+  "ligne": 522,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Lecture d'une facture par Gemini, jamais jouée en ligne."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (facture réelle accordée par le brasseur) ; banc-lecture-facture.test.ts vert",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "gemini",
+  "verdict": "ouvert — non vérifiable sans Gemini (facture réelle accordée par le brasseur) ; banc-lecture-facture.test.ts vert"
+ },
+ {
+  "id": "BE-61",
+  "ligne": 879,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    " Entrée enregistre la feuille « Préparer les impôts » : jugé voulu par le pilote, à confirmer par le brasseur."
+   ],
+   [
+    "e1",
+    "obsolete",
+    "Plus de feuille « Préparer les impôts » : Annuel = « Clôture 2026 », 9 étapes en pages (« Préparer le dossier »), sans barre Annuler/Enregistrer."
+   ]
+  ],
+  "der": "e1",
+  "cat": "ecarte",
+  "verdict": "obsolete"
+ },
+ {
+  "id": "BE-62",
+  "ligne": 880,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    " Fin de feuille sous la barre : visuel ; la feuille a été refaite par le port du 15.11 (8151bee7a, ancêtre du tag), à revoir sur capture."
+   ],
+   [
+    "e1",
+    "obsolete",
+    "Étape 7 « Vérifications » en tuiles, sans barre : « Situations particulières examinées · pertes passées, personnel… » entière et visible."
+   ]
+  ],
+  "der": "e1",
+  "cat": "ecarte",
+  "verdict": "obsolete"
+ },
+ {
+  "id": "BE-67",
+  "ligne": 885,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "src/components/EditTransactionModal.tsx:289 value={dateAffichee(date)}, placeholder JJ.MM.AAAA ; src/ui/finance/TransactionDetails.tsx:127 dateAffichee(o.date) ; commit be70fa7c3 (09.11, ancêtre du tag) ; src/domain/finance/ledger.ts:13 Le constat 16.11 (date ISO à TransactionDetails:110) est faux : l'option affiche déjà JJ.MM.AAAA. Reste non relu : la liste du constat est tronquée (« Échéance : 25… »)."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "BE-68",
+  "ligne": 886,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "src/ui/finance/modifier/modifier.css:98-107 (pied .mod-pied flex:none, .mod-corps) Fenêtre « Modifier » refaite par le port du 15.11 (8151bee7a) : la mise en page n'est tranchée que par un rendu."
+   ],
+   [
+    "e1",
+    "corrige",
+    "Modifier (Brau- und Rauchshop) : « Drive · Avril › Brassage » en puce, bas 821 px, pied Annuler/Enregistrer dès 851 px ; rien dessous. Annulé."
+   ]
+  ],
+  "der": "e1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "BE-69",
+  "ligne": 887,
+  "hist": [
+   [
+    "tri",
+    "obsolete",
+    "git grep « Dossier Google Drive » au tag : aucune occurrence ; src/components/EditTransactionModal.tsx:368 le remplace par .mod-drv (cheminEnMots), couleur var(--mod-t2) (modifier.css:5) Le libellé « Dossier Google Drive : » bleu eau n'existe plus (8151bee7a). Le contraste de la nouvelle ligne n'est pas mesuré."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "obsolete"
+ },
+ {
+  "id": "BE-73",
+  "ligne": 891,
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    " Mêmes valeurs (bleu eau #5e8ca8, 4,39:1 et 3,36:1) et même fenêtre que BE-69."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "M9-2",
+  "ligne": 934,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Une date imprimée n'est lue par aucune lecture : défaut de la lecture Gemini (banc m9, 0 sur 8)."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (date imprimée : doc7 et doc14 rejoués, date absente sur les deux : `date-absente` pèse, point honnête, jamais 0)",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "gemini",
+  "verdict": "ouvert — non vérifiable sans Gemini (date imprimée : doc7 et doc14 rejoués, date absente sur les deux : `date-absente` pèse, point honnête, jamais 0)"
+ },
+ {
+  "id": "M9-3",
+  "ligne": 935,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "src/ui/finance/ExpenseSheet.tsx:1495 : ctrlBloc recalculé à chaque rendu depuis draft.lines (lignesCtsBloc) ; controlesCroises.ts:185 « Somme = imprimé » seulement si ecartCents===0 Le code recalcule et devrait passer à « Somme ≠ imprimé » ; aucun test ne retire une ligne puis lit la rangée. Vu seulement en local ; non conclu."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "« Somme = imprimé » ne vient que d'une pièce lue (Gemini). Saisie à la main : « Détail : 84,10 CHF / 86,50 CHF · manque 2,40 CHF », recalculé à chaque ligne."
+   ],
+   [
+    "v1",
+    "non tranché",
+    "Feuille Dépense non atteinte par le script : ni « Somme », ni pied « Lignes », ni « Retirer la ligne 3 » trouvés (ouverture à revoir)."
+   ],
+   [
+    "v3",
+    "corrige",
+    "Retrait de la ligne 3 (2,40) : « Somme ≠ imprimé 84,10 / 86,50 −2,40 », « 22 / 23 », plus de « Somme = imprimé ». Toucher réel du bouton sans effet (clic DOM requis), voir défauts"
+   ]
+  ],
+  "der": "v3",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "LR1-5",
+  "ligne": 989,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Barrés qui ne corrigent rien : variantes d'orthographe d'un tirage à l'autre."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (barrés = lectures vraiment différentes, ressemblance 5 à 95 % ; 0 nom identique aux lettres près) ; correctif attendu côté f1, voir DÉCISION 1",
+    "—"
+   ],
+   [
+    "f1",
+    "corrige (partie client)",
+    "7b199eb85"
+   ],
+   [
+    "v3",
+    "present (en-tête)",
+    "doc14 : fournisseur « BRAU- UND RAUCHSHOP » suivi de « Brau- und Rauchshop » barré (même nom, casse seule). v3-lent : Sabro « 30 g » barré sous « 30 g »"
+   ],
+   [
+    "f6a",
+    "corrigé",
+    "`depense=reel-doc14` 1280 cave : en-tête « BRAU- UND RAUCHSHOP » sans barré ; `depense=v3-lent` 390 clair : Sabro « 30 g » sans barré, sans « 30 g » barré dessous."
+   ],
+   [
+    "v5b",
+    "corrige",
+    "Sabro « 30 g × 0,070 » sans barré ; doc14 en-tête sans barré"
+   ]
+  ],
+  "der": "v5b",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "LR1-6",
+  "ligne": 990,
+  "hist": [
+   [
+    "tri",
+    "present",
+    "src/ui/finance/ExpenseSheet.tsx:1495-1505 : controlesCroises(...) et rangsBloc ne dépendent pas de verif==='attente' (seule la rangée « Lectures » :1500 est neutre) Le bloc de contrôles se rouge sur le brouillon provisoire (2 lecteurs) ; le final peut le renverser. Rien ne le neutralise pendant l'attente."
+   ],
+   [
+    "f1",
+    "corrige",
+    "eccd75e42"
+   ],
+   [
+    "v3",
+    "corrige (avec réserve)",
+    "Provisoire : « Somme en cours » neutre, aucun « manquants », pas d'en-tête rouge. Reste : total 46,40 souligné de tirets rouges pendant la lecture. Final : « À vérifier · 1 ligne retirée »"
+   ],
+   [
+    "v5b",
+    "corrige",
+    "provisoire sans rouge (Payé –, ambre « proposés ») ; rouge au final seulement « 1 ligne retirée · 1,70 »"
+   ]
+  ],
+  "der": "v5b",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "LR1-7",
+  "ligne": 991,
+  "hist": [
+   [
+    "tri",
+    "present",
+    "src/ui/finance/ExpenseSheet.tsx:1271 prix={line.unitPrice!==undefined?prixImprime(...):'—'} ; src/ui/depense/Ligne.tsx:76 « × » affiché dès que la quantité existe ; ExpenseSheet.tsx:1469-1475 sansPrix Quantité 2 et montant 50,00 sans prix unitaire : l'écran écrit « 2 × — 50,00 » et ne déduit pas 25,00, alors que le plateau sait le faire à l'édition (calculPlateau.ts)."
+   ],
+   [
+    "f1",
+    "corrige",
+    "eccd75e42"
+   ],
+   [
+    "v3",
+    "corrige (réserve)",
+    "Quantité 2, montant 50, prix vidé : la rangée dit « 2 pièces × 25,00 · 50,00 », mais le prix est écrit dans le champ, sans jaune ni data-dp-prix-deduit"
+   ],
+   [
+    "v5b",
+    "present (partiel)",
+    "prix 3,35 (13,40 ÷ 4) ambre, `data-dp-prix-deduit` ; title vide sur le champ (f6b promettait « prix déduit… »)"
+   ]
+  ],
+  "der": "v5b",
+  "cat": "present",
+  "verdict": "present (partiel)"
+ },
+ {
+  "id": "LR1-8",
+  "ligne": 992,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " VITRIFIC : 1re lecture « 1 ? × 0,69 » barrée, quantité perdue : sortie de Gemini."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (VITRIFIC : quantité perdue = lecture Flash-Lite, montant seul)",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "gemini",
+  "verdict": "ouvert — non vérifiable sans Gemini (VITRIFIC : quantité perdue = lecture Flash-Lite, montant seul)"
+ },
+ {
+  "id": "LR1-9",
+  "ligne": 993,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "src/ui/finance/ExpenseSheet.tsx:1500 geste « Voir le désaccord » renvoi 'lectures' Ce que montre l'ouverture de la ligne et la hauteur du pied à 390 ne se tranchent que sur un rendu."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Pièce doc2/BAUHAUS absente en ligne (la créer exige Gemini) ; et 390 impossible (iframe refusée)."
+   ],
+   [
+    "v1",
+    "non tranché",
+    "Sonde de 6 états (3, deux-taux, s6, commande, vaccins, renovation) : aucun « Voir le désaccord » ; serveur tombé ensuite (ERR_CONNECTION_REFUSED)."
+   ],
+   [
+    "v3",
+    "present",
+    "doc2 390 : « Voir le désaccord » ouvre la ligne 1 (Sedation, sans montant) ; ni les deux lectures ni le champ en désaccord visibles ; carte fixe du pied (≈ 200 px) couvre la ligne ouverte"
+   ],
+   [
+    "f6b",
+    "corrige",
+    "f568f3f00"
+   ],
+   [
+    "v5b",
+    "corrige",
+    "doc2 : un seul désaccord pesé (Fournisseur) ; chaque toucher du bouton du bloc Lectures ouvre ce champ et son « À confirmer »"
+   ]
+  ],
+  "der": "v5b",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "LR1-10",
+  "ligne": 994,
+  "hist": [
+   [
+    "tri",
+    "present",
+    "src/ui/finance/controlesCroises.ts:236-245 chercherLignes : foin = description, nomLu, imprime.nom/variante, nameFr, sourceReference, montants La recherche n'indexe que la référence courante ; un EAN d'une lecture barrée n'y est pas."
+   ],
+   [
+    "f1",
+    "corrige",
+    "eccd75e42"
+   ]
+  ],
+  "der": "f1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "LR1-12",
+  "ligne": 996,
+  "hist": [
+   [
+    "tri",
+    "present",
+    "src/ui/depense/phrasePied.ts:50-60 sansMotsBruts ne traduit que les mots de nature ; aucun point décimal remplacé Le message serveur « (2.6% …) » est repris tel quel, point décimal. Le faux désaccord TVA 0,44 / 0,44 est de la lecture."
+   ],
+   [
+    "f1",
+    "corrige",
+    "eccd75e42"
+   ]
+  ],
+  "der": "f1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "LR1-14",
+  "ligne": 998,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    " Une dépense ZZ TEST confirmée touche la clôture 2026 réelle : donnée et geste en ligne."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Confirmer une dépense ZZ TEST toucherait la clôture réelle. Avant et après : « Les comptes ont changé… vérifications sont à refaire », « Clôture 2026 · 1 / 9 prêtes »."
+   ],
+   [
+    "v1",
+    "non joué",
+    "Clôture Finances › Annuel en local non jouée (contexte de la voie épuisé)."
+   ],
+   [
+    "v3",
+    "non-joue",
+    "—"
+   ],
+   [
+    "v5b",
+    "non reproduit (local)",
+    "Confirmer puis Terminé : feuille fermée ; Annuel « 0 / 9 prêtes » avant et après, aucun « comptes ont changé »"
+   ]
+  ],
+  "der": "v5b",
+  "cat": "?",
+  "verdict": "non reproduit (local)"
+ },
+ {
+  "id": "LR1-NOTE-1",
+  "ligne": 999,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Doute de lecture IA (LAME DE GABRAGE traduit)."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (nom traduit de travers ; pas de réponse enregistrée de ce ticket)",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "gemini",
+  "verdict": "ouvert — non vérifiable sans Gemini (nom traduit de travers ; pas de réponse enregistrée de ce ticket)"
+ },
+ {
+  "id": "LR1-NOTE-2",
+  "ligne": 1000,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Doute de lecture IA : noms OCR bruts non traduits."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (noms OCR bruts ; banc-lecture-noms-fr.test.ts vert couvre la traduction sur réponse enregistrée)",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "gemini",
+  "verdict": "ouvert — non vérifiable sans Gemini (noms OCR bruts ; banc-lecture-noms-fr.test.ts vert couvre la traduction sur réponse enregistrée)"
+ },
+ {
+  "id": "LR1-NOTE-3",
+  "ligne": 1001,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Doute de lecture IA : BAC A en « pièce / L »."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (« BAC A en pièce / L »)",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "gemini",
+  "verdict": "ouvert — non vérifiable sans Gemini (« BAC A en pièce / L »)"
+ },
+ {
+  "id": "LR1-NOTE-4",
+  "ligne": 1002,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Doute : sens du ⟳ bleu non dit ; dépend de la lecture."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (sens du ⟳ bleu : affichage f1)",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "gemini",
+  "verdict": "ouvert — non vérifiable sans Gemini (sens du ⟳ bleu : affichage f1)"
+ },
+ {
+  "id": "LR2-2",
+  "ligne": 1005,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " « 2 × 50,00 = 50,00 » : Gemini a lu 50,00 comme prix unitaire ; l'écran l'attrape par « Ouvrir la ligne fausse » (controlesCroises.ts, rangée qté)."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini pour la lecture (50,00 lu comme prix unitaire) ; côté app tenu : la rangée quantité attrape la ligne, lt3-ticket-quantite.test.ts vert",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "gemini",
+  "verdict": "ouvert — non vérifiable sans Gemini pour la lecture (50,00 lu comme prix unitaire) ; côté app tenu : la rangée quantité attrape la ligne, lt3-ticket-quantite.test.ts vert"
+ },
+ {
+  "id": "LR2-3",
+  "ligne": 1006,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Désaccords sur noms barrés d'une pièce juste : tirage de Gemini."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (doc14 : 2 tirages, 9 et 8 findings dont 13 points « unité absente » et des noms vraiment différents) ; « Voir le désaccord » vide = f1, voir DÉCISION 2",
+    "—"
+   ],
+   [
+    "f1",
+    "corrige (compte et file sans la nature ; « Voir le désaccord » lit les mêmes points)",
+    "7b199eb85"
+   ],
+   [
+    "v3",
+    "non-tranché",
+    "doc25 « 3/3 · 7 désaccords » pour 35 points lectures-divergentes (19 quantité, 6 nature, 5 montant, 3 nom…) ; doc2 « 1 désaccord » pour 2 points (vendor, currency) : règle de compte non lisible à l'écran"
+   ],
+   [
+    "f6a",
+    "code prêt, PAS visible",
+    "`reel-doc25` : « Lectures 3/3 · 7 valeurs en désaccord » seulement après branchement f6b (DEMANDE)."
+   ],
+   [
+    "v5b",
+    "corrige",
+    "doc25 : « Lectures 3/3 · 7 valeurs en désaccord »"
+   ]
+  ],
+  "der": "v5b",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "LR2-4",
+  "ligne": 1007,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " « 16 lignes dont port » et « Articles 17 lus » : comptages de lecture."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (« 16 lignes dont port » et « 17 lus » : comptages de la lecture ; doc14 rend 16 ou 17 lignes selon le tirage : 16, 17)",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "gemini",
+  "verdict": "ouvert — non vérifiable sans Gemini (« 16 lignes dont port » et « 17 lus » : comptages de la lecture ; doc14 rend 16 ou 17 lignes selon le tirage : 16, 17)"
+ },
+ {
+  "id": "LR2-5",
+  "ligne": 1008,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Compteurs de désaccords et corrections gonflés par la variabilité des tirages."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini pour la variabilité ; le compte vient du vote serveur (DÉCISION 2)",
+    "—"
+   ],
+   [
+    "f1",
+    "corrige pour la part `kind` (5 points par tirage sur 11) ; le reste du compte vient du vote serveur",
+    "7b199eb85"
+   ]
+  ],
+  "der": "f1",
+  "cat": "corrige",
+  "verdict": "corrige pour la part `kind` (5 points par tirage sur 11) ; le reste du compte vient du vote serveur"
+ },
+ {
+  "id": "LR2-6",
+  "ligne": 1009,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Sédation sans montant : lecture ; l'écran la compte « à remplir »."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini : doc2 rend 1 ligne sans montant sur 6 à chaque tirage (4 sur 4) : l'app la compte « à remplir » (l'inconnu n'est jamais 0) ; la somme « verte » vient du total lu",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "gemini",
+  "verdict": "ouvert — non vérifiable sans Gemini : doc2 rend 1 ligne sans montant sur 6 à chaque tirage (4 sur 4) : l'app la compte « à remplir » (l'inconnu n'est jamais 0) ; la somme « verte » vient du total lu"
+ },
+ {
+  "id": "LR2-7",
+  "ligne": 1010,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Actes vétérinaires classés « Matériel » : nature donnée par Gemini."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini : doc2 rend `kind` « other » sur les 6 lignes (4 tirages) ; le rangement en « Matériel » se fait dans `src/ui/depense/familles.ts` (f1) : aucune règle « vétérinaire » n'y existe (git grep vide) ; voir DÉCISION 3",
+    "—"
+   ],
+   [
+    "f1",
+    "corrige",
+    "7b199eb85"
+   ]
+  ],
+  "der": "f1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "LR2-9",
+  "ligne": 1012,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " VITRIFIC : première lecture barrée variable."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (même cause que LR1-8)",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "gemini",
+  "verdict": "ouvert — non vérifiable sans Gemini (même cause que LR1-8)"
+ },
+ {
+  "id": "LR2-10",
+  "ligne": 1013,
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    " Même défaut que LR1-6 : provisoire rouge, final juste (rien ne neutralise le bloc pendant verif attente)."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "LR2-11",
+  "ligne": 1014,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    "src/ui/finance/controlesCroises.ts:154 gesteManque : Comparer à la photo si écart d'articles < -1 avec photo, sinon Ajouter la ligne manquante Le geste dépend de l'écart d'articles, donc de la lecture ; la règle de l'app est déterministe."
+   ],
+   [
+    "r",
+    "corrige (règle déterministe : controlesCroises.ts:154 `gesteManque`, selon l'écart d'articles de la lecture ; le geste change parce que la lecture change) ; test controlesCroisesP2.test.ts vert",
+    "non identifié (code ancien, ancêtre du tag)"
+   ]
+  ],
+  "der": "r",
+  "cat": "corrige",
+  "verdict": "corrige (règle déterministe : controlesCroises.ts:154 `gesteManque`, selon l'écart d'articles de la lecture ; le geste change parce que la lecture change) ; test controlesCroisesP2.test.ts vert"
+ },
+ {
+  "id": "LR2-NOTE-1",
+  "ligne": 1015,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Doute : lignes vues par une seule lecture, vérité 29 et non 30."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (« vues par une seule lecture » : 3e lecture)",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "gemini",
+  "verdict": "ouvert — non vérifiable sans Gemini (« vues par une seule lecture » : 3e lecture)"
+ },
+ {
+  "id": "LR2-NOTE-2",
+  "ligne": 1016,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Doute : unité « Kg » lue en majuscule ; src/ui/depense/etat.ts casseUnites existe, non relu."
+   ],
+   [
+    "r",
+    "present (côté lecture) : doc14 rend l'unité « Kg » en majuscule sur les 3 tirages ; `casseUnites` (src/ui/depense/etat.ts:177) met « kg » en « Kg » exprès, donc « Kg » est le choix d'affichage de l'app, pas un défaut de lecture",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "present",
+  "verdict": "present (côté lecture) : doc14 rend l'unité « Kg » en majuscule sur les 3 tirages ; `casseUnites` (src/ui/depense/etat.ts:177) met « kg » en « Kg » exprès, donc « Kg » est le choix d'affichage de l'app, pas un défaut de lecture"
+ },
+ {
+  "id": "LR3-1",
+  "ligne": 1018,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Lignes remises sur leur montant : quantité et prix perdus ; dépend de la lecture et de la reprise."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini : les 8 lignes « retirées » du doc25 viennent des Flash-Lite avec montant seul (001) ; l'app ne peut pas inventer quantité ni prix ; test versé : chaque retirée garde son montant",
+    "—"
+   ]
+  ],
+  "der": "r",
+  "cat": "gemini",
+  "verdict": "ouvert — non vérifiable sans Gemini : les 8 lignes « retirées » du doc25 viennent des Flash-Lite avec montant seul (001) ; l'app ne peut pas inventer quantité ni prix ; test versé : chaque retirée garde son montant"
+ },
+ {
+  "id": "LR3-3",
+  "ligne": 1020,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Barrés : ancien montant de la voisine, « ? × ? » : sortie des lectures."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (voisine : `redresserDecalage` existe côté serveur, 12 tirages rejoués sans correction possible sur les lignes sans paire)",
+    "—"
+   ],
+   [
+    "f1",
+    "corrige pour les noms ≥ 0,9 et « ? × ? » ; ouvert pour « montant de la voisine » et « ROULEAU barré sous DEBOUCREOR » : appariement des lignes (serveur `rangsProvisoires`, ou repli par position `tableDeRangs` M4), hors DÉCISION 1",
+    "7b199eb85"
+   ],
+   [
+    "v3",
+    "present (partie ouverte)",
+    "doc25 : « MASQUE DE PROTECT. » porte « COMBINAIBON JETABLE · 1 ? × 9,50 · 9,50 » barré (voisine). Lignes « 1 ? × 4,95 » barré sous « ? × — » (prix perdu au final)"
+   ],
+   [
+    "f6a",
+    "corrigé",
+    "`reel-doc25` : « MASQUE DE PROTECT. » sans « COMBINAIBON » barré ; aucune « 2 lignes lues puis retirées » parasite ; « BROSSE MET.GRAMGS » « 1 ? × 4,95 » sans barré « ? × — » (prix suit le montant retenu)."
+   ],
+   [
+    "v5b",
+    "corrige",
+    "doc25 : MASQUE DE PROTECT. et BROSSE MET.GRAMGS sans barré parasite ; aucune « lignes lues puis retirées »"
+   ]
+  ],
+  "der": "v5b",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "LR3-4",
+  "ligne": 1021,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " Compteurs 9 / 20 / 21 désaccords sur lectures justes : variabilité des tirages."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini pour la variabilité ; DÉCISION 2 sur le compte",
+    "—"
+   ],
+   [
+    "f1",
+    "idem LR2-5",
+    "7b199eb85"
+   ]
+  ],
+  "der": "f1",
+  "cat": "?",
+  "verdict": "idem LR2-5"
+ },
+ {
+  "id": "LR3-5",
+  "ligne": 1022,
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    " Même défaut que LR1-6 : provisoire rouge renversé au final."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "LR3-6",
+  "ligne": 1023,
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    " Même défaut que LR1-7 (« 2 × — 50,00 », 1 sans prix unitaire)."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "LR3-7",
+  "ligne": 1024,
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    " Même défaut que LR2-11 : geste Somme variable selon l'écart d'articles."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "LR3-9",
+  "ligne": 1026,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    " ROULEAU sort de son sous-groupe : le sous-groupe vient de la nature donnée par la lecture."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (le sous-groupe vient de `kind`, en désaccord 61 fois sur 12 tirages) ; DÉCISION 3",
+    "—"
+   ],
+   [
+    "f1",
+    "ecarte — D307 (sa maquette D) : un sous-groupe d'une seule ligne montre sa ligne sans chevron, dans l'ordre `SOUS_FAMILLES_RENOVATION` (« Peinture et sols » d'abord). Rejeu privé des 12 tirages : dans la 3.8, ROULEAU est la seule ligne « Peinture et sols » ; il n'a quitté aucun sous-groupe. La règle vétérinaire ne le touche pas",
+    "—"
+   ]
+  ],
+  "der": "f1",
+  "cat": "ecarte",
+  "verdict": "ecarte — D307 (sa maquette D) : un sous-groupe d'une seule ligne montre sa ligne sans chevron, dans l'ordre `SOUS_FAMILLES_RENOVATION` (« Peinture et sols » d'abord). Rejeu privé des 12 tirages : dans la 3.8, ROULEAU est la seule ligne « Peinture et sols » ; il n'a quitté aucun sous-groupe. La règle vétérinaire ne le touche pas"
+ },
+ {
+  "id": "PCN-157",
+  "ligne": 1509,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "commit bf91d78e1 (18.11, ancêtre du tag, « le rangement de l'IA fait foi ») ; tests/unit/carnetsEnLigne2.test.tsx ; rejoué en ligne : en-ligne-3/RAPPORT.md n° 3 « CORRIGÉ : critère Tenir 80 °C au moins dans Pompe, Rangé ici » Test 1 tournait IA éteinte (rangement local). Avec l'IA allumée, la phrase va dans Pompe."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-158",
+  "ligne": 1510,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "bf91d78e1 (ancêtre du tag) ; en-ligne-3/RAPPORT.md n° 1 : l'IA range 2 carnets, vanne au Fermenteur, aperçu local jamais créé L'IA fait foi. Le repli local sans IA garde parleDuBrassin/objetDe (analyseLocale.ts) : non rejoué sans IA."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-159",
+  "ligne": 1511,
+  "hist": [
+   [
+    "tri",
+    "present",
+    "src/domain/carnets/analyseLocale.ts:objetDe, « if (o.length > 40) o = o.slice(0,40).replace(/\\s+\\S*$/,'') » : « pompe de transfert magnétique pour le moût chaud » (48 car.) devient « …pour le » Titre du carnet neuf de la règle locale (IA éteinte ou hors ligne, aperçu d'une seconde) coupé à 40 car. sur un mot. Avec l'IA, le titre vient d'elle."
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8"
+   ],
+   [
+    "v4",
+    "corrige (doute)",
+    "titre proposé = sa phrase « Moulin à malt 2 cylindres, 150 kg/h » (redite, problème 5)"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige (doute)"
+ },
+ {
+  "id": "PCN-160",
+  "ligne": 1512,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    "bf91d78e1 : la sorte rendue par l'IA fait foi ; en-ligne-3/RAPPORT.md n° 10 : « double paroi » devenue note à faire Le classement note ou critère vient de l'IA ; l'heuristique locale (genreLocal) n'est plus qu'un repli."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (le classement note ou critère vient de l'IA ; bf91d78e1 : la sorte rendue fait foi) ; carnetsEnLigne2.test.tsx, réponses enregistrées",
+    "—"
+   ],
+   [
+    "r2",
+    "oui",
+    "carnetsEnLigne2.test.tsx, n° 1"
+   ]
+  ],
+  "der": "r2",
+  "cat": "?",
+  "verdict": "oui"
+ },
+ {
+  "id": "PCN-161",
+  "ligne": 1513,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "commit 57254e47c (19.11, ancêtre du tag) : src/ui/carnets/FeuilleNote.tsx:23 « Déplacer » ; tests/unit/carnetsPaquet1.test.tsx « PCN-178/182 » ; rejoué en ligne : en-ligne-4/RAPPORT.md n° 11 CORRIGÉ Le menu de la note offre Déplacer vers un autre carnet."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-162",
+  "ligne": 1514,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "commit 57254e47c : src/ui/carnets/Comparer.tsx:78-82 choixBloque (un prix connu suffit) ; CarnetsVue.tsx:357 (bf91d78e1, jamais « lecture… » sans fin) ; en-ligne-4/RAPPORT.md : Choisir actif sur ricardo 145 CHF Choisir se débloque dès que le prix est connu ; plus de lecture sans fin."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-163",
+  "ligne": 1515,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "src/ui/carnets/CarnetsVue.tsx:357 (bf91d78e1, ancêtre) : lecture 'lue' ou 'illisible', jamais en attente après l'IA ; CadreArrivee.tsx:145 « Sans lecture ici » seulement si lecturePossible===false « lecture… » sans fin corrigé (test 2 n° 6 et 8 vus corrigés au test 3). Le message « Sans lecture ici » est vrai quand l'IA est éteinte."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-164",
+  "ligne": 1516,
+  "hist": [
+   [
+    "tri",
+    "present",
+    "src/ui/carnets/Comparer.tsx:330 « Valeurs annoncées par les vendeurs » sans condition sur l'origine ; Choisir.tsx:188 seulement pour origine 'exemple' Comparer écrit toujours cette mention, même quand les prix viennent de la phrase du brasseur."
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8"
+   ],
+   [
+    "v4",
+    "corrige",
+    "« Valeurs annoncées par les vendeurs · exemple » sous le compromis"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-165",
+  "ligne": 1517,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "commit 57254e47c : src/ui/carnets/SupprimerCarnet.tsx:51,66 cequiPart(p.contenu) ; tests/unit/carnetsPaquet1.test.tsx « PCN-165 » ; carnetsCritique6Figes.test.tsx:77 « 3 critères, 6 articles… » « Il est vide. » seulement si cequiPart est vide ; les critères comptent."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-166",
+  "ligne": 1518,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "commit 57254e47c : src/ui/carnets/ListeCarnets.tsx:310 et CadreArrivee.tsx:82 « on garde sa photo et son prix, pour comparer » ; test « PCN-166 » ; en-ligne-4/RAPPORT.md (3) OK La promesse de veille est retirée."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-167",
+  "ligne": 1519,
+  "hist": [
+   [
+    "tri",
+    "present",
+    "src/domain/carnets/operations.ts:703 « les messages restent, leurs effets marqués carnet supprimé » ; :301 type 'carnet-message' Voulu par le code : les messages survivent à la suppression du carnet, aucun écran ne les montre ni ne les retire. Retrait en base : accord du brasseur."
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8"
+   ]
+  ],
+  "der": "f2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-176",
+  "ligne": 1535,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "commit 57254e47c : src/domain/carnets/ia.ts:194 vendeurPropre, appliqué :297 ; tests/unit/carnetsPaquet1.test.tsx « PCN-176/181 » ; en-ligne-4/RAPPORT.md n° 9 : aucun champ vendeur stocké Un vendeur n'est gardé que s'il est un nom court propre."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-178",
+  "ligne": 1537,
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    " Même défaut que PCN-182 (corrigé : FeuilleNote.tsx:23, 57254e47c)."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-181",
+  "ligne": 1547,
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    " Même défaut que PCN-176 (corrigé : ia.ts:194,297, 57254e47c)."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-182",
+  "ligne": 1548,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "commit 57254e47c : src/ui/carnets/FeuilleNote.tsx:23, Bandeau.tsx:165 ; CarnetsVue.tsx:799 ; en-ligne-4/RAPPORT.md n° 11 CORRIGÉ en ligne Le menu de la note contient Déplacer."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-183",
+  "ligne": 1549,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "commit 915351885 (19.11, ancêtre du tag) : src/domain/carnets/ia.ts:214-250 (idée d'un autre objet = carnet neuf) ; tests/unit/carnetsEnLigne4.test.tsx:93 « PCN-183/190 » Testé sur réponse simulée ; non rejoué en ligne après ce commit."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-184",
+  "ligne": 1550,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "commit 57254e47c : CarnetsVue.tsx:562,623,788 ; en-ligne-4/RAPPORT.md « nouveau n° 2 CORRIGÉ » (journal toutes les 150 ms) Écrit dans un carnet ouvert, l'écran y reste et revient à lui."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-185",
+  "ligne": 1551,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "commit 57254e47c : src/ui/carnets/pictos.tsx:268 (photo en repli) ; en-ligne-4/RAPPORT.md « nouveau n° 3 CORRIGÉ » ; test « PCN-185 » Une photo qui ne charge pas laisse le picto."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-186",
+  "ligne": 1552,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "commit 57254e47c : CarnetsVue.tsx:145,702 (lignes propres à chaque carnet) ; en-ligne-4/RAPPORT.md « nouveau n° 4 CORRIGÉ » ; test « PCN-186 » Chaque carnet cite ses lignes seulement."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-187",
+  "ligne": 1646,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "commit 915351885 : ia.ts:214-250 ideeDe ; tests/unit/carnetsEnLigne4.test.tsx:104,113 « PCN-187 » L'idée sans rapport ne devient plus critère de l'ouvert ; réponse simulée, non rejoué en ligne."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-188",
+  "ligne": 1647,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "commit 915351885 : src/ui/carnets/CarnetsVue.tsx:156,696 les morceaux de la note que l'IA ne reprend pas restent ; tests/unit/carnetsEnLigne4.test.tsx:139,149 Que la ligne manque dans la réponse ou non, l'app la garde. Non rejoué en ligne."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-189",
+  "ligne": 1648,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "src/ui/carnets/CarnetOuvert.tsx:334-335 : validated -> « Supprimer le carnet » ; commit 915351885 ; test « PCN-189 » Carnet choisi : plus « Supprimer l'idée »."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-190",
+  "ligne": 1649,
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    " Même défaut que PCN-183 (corrigé : 915351885, ia.ts:214)."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-NOTE-4",
+  "ligne": 1650,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    " 390 tactile et 1280 non joués en ligne : seul un rendu tranche."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Aucun carnet en ligne ; créer passe par Gemini ; 390 impossible. Liste vide vue à 2560 : cadre « Évier inox, 2 bacs · exemple… arrive ici », puces d'exemples."
+   ],
+   [
+    "v1",
+    "non-local",
+    "Demandé en ligne ; en local, liste, carnet, Comparer joués aux deux tailles (voir lignes PCN)."
+   ],
+   [
+    "v7",
+    "corrige (local) / ouvert-gemini (en ligne)",
+    "App ?dev-local : liste vide, carnet né, lien rangé, liste ; banc : zéro, liste, carnet ouvert ; clair et sombre lisibles, rien coupé. En ligne : carnet impossible sans Gemini."
+   ]
+  ],
+  "der": "v7",
+  "cat": "gemini",
+  "verdict": "corrige (local) / ouvert-gemini (en ligne)"
+ },
+ {
+  "id": "T2-3",
+  "ligne": 1682,
+  "hist": [
+   [
+    "tri",
+    "present",
+    "git show en-ligne/2026-11-19-tour2:src/ui/finance/operations/Frise.tsx:156 « {nbOperations} opération » ; le tag n'a pas l'épinglage des « à payer » dans le compte La liste épingle une opération à payer hors période, la frise compte 0. Une autre voie la traite (tour3-correctifs/voies/fin, non commité)."
+   ]
+  ],
+  "der": "tri",
+  "cat": "present",
+  "verdict": "present"
+ },
+ {
+  "id": "T2-4",
+  "ligne": 1683,
+  "hist": [
+   [
+    "tri",
+    "present",
+    "git show en-ligne/2026-11-19-tour2:src/ui/finance/TransactionDetails.tsx:114 « Noter un paiement » (bouton principal), :144-145 Retirer seulement pour une écriture payée, sinon « Annuler cette écriture » Le bouton principal d'une écriture à payer dit « Noter un paiement » au lieu de « Confirmer le paiement » ; une écriture à payer saisie par erreur ne se retire pas, elle reste annulée dans Archives."
+   ]
+  ],
+  "der": "tri",
+  "cat": "present",
+  "verdict": "present"
+ },
+ {
+  "id": "PCN-1",
+  "ligne": 1346,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "d15b72a3f (2026-11-18, ancêtre du tag) ; pictos.tsx:1-12 + :258 VignetteObjet (photo sinon objet dessiné sinon initiale, « jamais le cube générique ») ; ListeCarnets.tsx:158-163 et :278 ; CarnetOuvert.tsx:382,637 Le cube vert unique n'existe plus : chaque carnet, article et choisi passe par VignetteObjet. Reste visuel (qualité du dessin) : voir PCN-75 hors lot."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-2",
+  "ligne": 1347,
+  "hist": [
+   [
+    "tri",
+    "obsolete",
+    "ListeCarnets.tsx:305-330 (ListeVide : carte exemple « Évier inox, 2 bacs · votre premier carnet · ↓ arrive ici », « Par exemple : », « Une note en vrac marche aussi ») ; c8bdcba49 ; voies/C/RESULTAT.md:87 Le constat attendait i02-2 (« Votre premier carnet s'affichera ici », « Un carnet garde », bulle « Écrivez ici ») : non porté (la base i06-2 prime, bulle refusée D-108) ; CRITIQUE-5 n° 11 (PCN-57) a redit le bon modèle, que le code porte."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "obsolete"
+ },
+ {
+  "id": "PCN-3",
+  "ligne": 1348,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "d15b72a3f (ancêtre) ; ListeCarnets.tsx:67-96 : prixDe prend le plus bas des articlesEnLice (écartés exclus par tableau().ecarte) « dès » ne compte plus un article écarté (le ventilateur à 180 CHF) ; le 420 CHF serait le premier prix."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-4",
+  "ligne": 1349,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetsVue.tsx:997-1007 : ceQuiCompte = critère tiré de la phrase seulement s'il n'est pas la phrase entière (!memeTexte) ; CadreArrivee.tsx:95-108 ; mais CRITIQUE-8 n° 10 (1280:13,14) : critère qui mêle objet et seuil, phrase brute en titre Le code écarte la phrase entière, mais ce qui devient « critère seul » dépend de l'analyse locale et de l'IA : non démontrable par le code."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Exige Gemini : créer un carnet envoie la phrase à l'IA."
+   ],
+   [
+    "v1",
+    "corrige",
+    "« Ce qui compte · Débit : 150 kg/h au moins · de votre phrase » ; titre non recopié. Mais « 2 cylindres » perdu du critère (défaut neuf 1)."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-5",
+  "ligne": 1350,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "d15b72a3f ; CarnetOuvert.tsx:560-686 : TableauCarnet (rang, VignetteObjet :637, « pays · délai » :632, œil veille :643, pastilleFacon :177 « capte la buée / ne capte pas », conclusion « Retenir … » :464-468 ; ligneEtat :294-303) ; CRITIQUE-8 tableau D-99/D-114 ✓ aux deux tailles Tous les éléments manquants sont rendus par le tableau du carnet."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-6",
+  "ligne": 1351,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "d15b72a3f ; CarnetOuvert.tsx:218-221 (aRelire) + :587-590 (lignesClassees les exclut du rang) + :671-686 LigneARelire « ? · Lien sans aperçu · domaine · à relire · Ouvrir ↗ » ; Comparer.tsx:16 sansApercu Un lien non lu n'est plus classé : ligne « ? » hors rang avec Ouvrir ↗ ; plus de « – – – » dans le classement."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-7",
+  "ligne": 1352,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetsVue.tsx:962-966 (une seule ligne d'état à la fois), :554-565 ; bf91d78e1, 64c70b603, 57254e47c (le rangement de l'IA fait foi) ; en-ligne-4 RAPPORT n° 2 : journal d'écran seulement « range… » puis « ✓ Rangé ici · Annuler » ; mais en-ligne-4 n° 1 PAS CORRIGÉ (idée depuis un carnet ouvert) et CRITIQUE-8 n° 1, 3 Le geste a été rejoué en ligne avec l'IA réelle, avec des cas encore faux (CRITIQUE-8 n° 3 : critère typé note) ; seul un rejeu sur le tag tranche."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Exige Gemini, et aucun carnet Ventilation en ligne."
+   ],
+   [
+    "v1",
+    "corrige / ouvert-gemini",
+    "« ✓ Rangé ici, à l'instant · Annuler » ; roue puis bandeau, jamais ensemble. Mais « doit tenir 80 °C » rangé en note (IA simulée) : typage = vraie IA."
+   ]
+  ],
+  "der": "v1",
+  "cat": "gemini",
+  "verdict": "corrige / ouvert-gemini"
+ },
+ {
+  "id": "PCN-8",
+  "ligne": 1353,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    "CarteArticle.tsx:1-14 (variante complete : photo, caractéristiques avec valeurs, « lu sur la page : … », CHF et dispo, veille) ; CarnetOuvert.tsx:476-482 ; en-ligne-4 n° 3 (picto à la place d'une photo non chargée) La carte existe ; ce qui y figure (photo, valeurs, marque, vendeur) vient de la lecture lireLien par Gemini et de la page."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (contenu de la carte lu par lireLien) ; fixtures produit-ldjson.html, produit-og.html, page-sans-meta.html déjà au dépôt",
+    "—"
+   ],
+   [
+    "r2",
+    "non (partiel)",
+    "carnetsEnLigne2.test.tsx, n° 5, 6, 7"
+   ]
+  ],
+  "der": "r2",
+  "cat": "present",
+  "verdict": "non (partiel)"
+ },
+ {
+  "id": "PCN-9",
+  "ligne": 1354,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "0fea5f478 (2026-11-17, ancêtre) ; Bandeau.tsx:50-70 (« page non lue · Ouvrir ↗ », lien en clair) et :143 ; CadreArrivee.tsx:141-146 lien en clair + « Sans lecture ici : … page non lue » Le bandeau dit quoi a été rangé, « page non lue » et Ouvrir ↗. Le retour à 390 sur les deux thèmes n'a pas été revu depuis : voir en-ligne si le brasseur veut l'image."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-10",
+  "ligne": 1355,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetOuvert.tsx:562-569 colonnesCarnet (valeur qui classe puis prix) ; CRITIQUE-8 n° 2 : un seuil faisait effacer les débits (régression, rang recalculé) ; comparer.ts non relu Le classement (rang) est calculé dans comparer.ts sur les valeurs lues ; la valeur du rang à la naissance du tableau (690 CHF 1re ?) ne se tranche pas par lecture."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Exige Gemini (lire les liens déposés)."
+   ],
+   [
+    "v1",
+    "corrige",
+    "Pompes inox puis magnétique : « 1 Pompe magnétique 12 V · 100 °C · 245 », « 2 Pompe de transfert inox · 90 °C · 690 » : classé par max °C."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-11",
+  "ligne": 1356,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "c8bdcba49 puis d15b72a3f ; NoteEnVrac.tsx:1-14 (« ✓ 3 lignes rangées dans 2 carnets », puce de type ▾, puce de carnet ▾, « › Texte d'origine ») ; ListeCarnets.tsx:109-115 texteAjouts « +2 · question, à acheter » ; CRITIQUE-8 « corrigé depuis CRITIQUE-7 : n° 1 note en vrac découpée » ; en-ligne-3 n° 1 : l'IA range 2 carnets La découpe, les types, les carnets et l'ajout sont rendus. Les types faux restent suivis à part (PCN-128, CRITIQUE-8 n° 3)."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-12",
+  "ligne": 1357,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "d15b72a3f ; CarnetOuvert.tsx:443-453,523-526,690-721 FeuilleCartes ; CarteArticle.tsx:11-14 CarteClassee (photo, valeur du critère en gros, réglette, « Veiller ») Toucher « Articles » ouvre la feuille de cartes h03-5 ; le tableau est le corps du carnet (h05-3)."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-13",
+  "ligne": 1358,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "FicheArticle.tsx:1-18 (cadre photo, héros du critère, grille avec rang, « Choisir » vert ; prix barré seulement si un prix d'avant existe : jamais pour l'instant) ; CRITIQUE-8 n° 14 : picto rogné au lieu de la photo, ligne « lues sur la fiche du vendeur » absente Photo de page et rang dépendent d'un article lu en ligne ; le banc n'a pas de photo. Le prix barré est absent par construction (R31, pas de relève)."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Exige Gemini : aucun article lu en ligne."
+   ],
+   [
+    "v1",
+    "corrige / ouvert-gemini",
+    "« 1re sur 4 », héros « le débit 1 800 m³/h », « la plus haute des 4 », « Choisir · Inox Broye » vert (6,1:1). Photo de page : aucune au banc."
+   ]
+  ],
+  "der": "v1",
+  "cat": "gemini",
+  "verdict": "corrige / ouvert-gemini"
+ },
+ {
+  "id": "PCN-14",
+  "ligne": 1359,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "Comparer.tsx:117-127,215-220,323-330 (compromis IA sinon local, vignettes, « Valeurs annoncées par les vendeurs ») ; en-ligne-4 : « Compromis : la 1re, 145 CHF… » vu en ligne ; Comparer.tsx:8-9 « → n de plus » à 390 Compromis, vignettes et mention sont rendus ; la 4e colonne à 390 est gérée par défilement avec indication : seul un rendu à 390 dit si c'est lisible."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Exige Gemini (4 articles lus), et 390 impossible."
+   ],
+   [
+    "v1",
+    "corrige",
+    "390 : vignettes en tête, « Compromis : la 1re, la seule à tenir 80 °C… », « Valeurs annoncées par les vendeurs », 4e colonne en fondu, « → 2 de plus »."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-15",
+  "ligne": 1360,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    "functions/src/carnetIA.ts:137 (« plus de X » qui dit une gêne → « Moins de X ») ; fixture.ts:62-63 CRITERE_CONDENSATION « Moins de condensation au plafond : capter la buée », d15b72a3f ; iaSimulee.ts:318 Le banc et la consigne sont corrigés ; l'application de la règle en ligne dépend de la réponse de Gemini."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (règle « Moins de X » dans functions/src/carnetIA.ts:137 et banc corrigés ; la réponse de Gemini décide)",
+    "—"
+   ],
+   [
+    "r2",
+    "non",
+    "aucun"
+   ]
+  ],
+  "der": "r2",
+  "cat": "?",
+  "verdict": "non"
+ },
+ {
+  "id": "PCN-16",
+  "ligne": 1361,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "d15b72a3f ; Choisir.tsx:205-226 (places et pourquoi calculés sur le carnet, « jamais un champ vide à taper », proposé à corriger) ; :281-283 ; l'article en tête du cadre :2-5 ; CRITIQUE-8 D-104 ✓ 390 (28b) et 1280 (28) Le « Pourquoi » arrive prérempli (IA ou calcul) et le cadre nomme l'article."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-17",
+  "ligne": 1362,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "d15b72a3f ; Choisir.tsx:6-9,155-185 (« Pourquoi ce choix » : phrase, critère, façon, fournisseur ✓, écartés ✕) ; CRITIQUE-8 « n° 6 pourquoi juste » corrigé et D-104/D-20 ✓ aux deux tailles Phrase calculée avec les valeurs, ✓ et ✕ présents. La photo du choisi dépend de la photo de l'article (PCN-13)."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-18",
+  "ligne": 1363,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "d15b72a3f ; CarnetsVue.tsx:1013-1021 passe `doublon={doublon}` à CadreArrivee (CadreArrivee.tsx:122-127 « Garder à part ») ; config/carnetIA.ts:54-72 Cause supprimée (un appelant passe doublon). En ligne le bouton ne paraît que si VITE_CARNET_AIDES contient doublon : éteint par le pilote (R43), pas un défaut."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-19",
+  "ligne": 1364,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "config/carnetIA.ts:54-72 (aides G25 à G27 éteintes sans VITE_CARNET_AIDES, R43) ; COUVERTURE.md mineur 3 ; aucune fixture de note qui ressemble à un critère Preuve jamais produite : fonction éteinte en ligne, absente du banc."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Banc dev seulement (`?preview=carnets&aides=1`) ; aide éteinte en ligne."
+   ],
+   [
+    "v1",
+    "present",
+    "« moins de 60 dB » envoyé : « ✓ Rangé ici » ; feuille « Ressemble à un critère · Passer » jamais vue (aides du banc allumées)."
+   ],
+   [
+    "f4c",
+    "ecarte — code juste",
+    "—"
+   ],
+   [
+    "v4",
+    "corrige",
+    "··· sur « il faudrait au moins 1 500 m³/h » : « ✻ Ressemble à un critère · Passer en Ce qui compte · Passer » en tête du menu"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-20",
+  "ligne": 1365,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "SupprimerCarnet.tsx:7,23,53,90 (G35 « les déplacer dans <carnet proche> · Déplacer », même catégorie seulement) ; CRITIQUE-8 : non joué faute de carnet proche Code présent ; jamais vu faute de deux carnets proches dans le jeu de test."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Exige deux carnets proches (création par Gemini)."
+   ],
+   [
+    "v1",
+    "present",
+    "g35=1, Ventilation › Supprimer le carnet : « Il part avec… La veille du prix… s'arrête » ; aucune offre « déplacer dans… · Déplacer »."
+   ],
+   [
+    "v1",
+    "present",
+    "g35=1, Ventilation › Supprimer le carnet : « Il part avec… La veille du prix… s'arrête » ; aucune offre « déplacer dans… · Déplacer »."
+   ],
+   [
+    "f4b",
+    "ouvert",
+    "—"
+   ],
+   [
+    "f4c",
+    "corrige",
+    "982f2d370"
+   ],
+   [
+    "v4",
+    "corrige",
+    "« 1 article en veille : le déplacer dans ZZ TEST — Ventilation de la salle de brassage, 2e idée · Déplacer »"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-21",
+  "ligne": 1366,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetsVue.tsx:880 (P21 « ✓ Photo rangée ici · Annuler »), d15b72a3f ; 57254e47c (photo en repli) ; Photos.tsx ; CRITIQUE-8 doute : photo sans effet visible en headless Le code range la photo ; l'effet visible (vignette « non lue ») n'a jamais été vu hors headless."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Exige Gemini (photo rangée, puis lue) et un carnet ouvert."
+   ],
+   [
+    "v1",
+    "corrige / ouvert-gemini",
+    "📷, image, Ajouter : « ✓ Photo rangée ici · Annuler ». « non lue » jamais vu (IA simulée)."
+   ]
+  ],
+  "der": "v1",
+  "cat": "gemini",
+  "verdict": "corrige / ouvert-gemini"
+ },
+ {
+  "id": "PCN-22",
+  "ligne": 1367,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetsVue.tsx:90-101 (« IA éteinte : rangé sur l’appareil, tel quel »), :567 P22, d15b72a3f ; EtatIA.tsx:138-140 ; en-ligne-1 : message « IA éteinte » vu en ligne ; l'autre moitié (« filtre à air G4, 2 pièces » rangé en note) : genreLocal, chir8 21450270a laisse la pièce dans le carnet L'avis d'IA éteinte existe ; le typage d'un achat sans IA (genre local) n'est pas démontré par le code."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Couper le réseau ou l'IA n'est pas faisable sans DevTools ; 390 impossible ; aucun carnet Frigo."
+   ],
+   [
+    "v1",
+    "present (moitié)",
+    "« IA éteinte : rangé sur l'appareil, tel quel · Annuler » (et « Hors ligne : … ») ; mais « filtre à air G4, 2 pièces » rangé en Notes, pas à acheter."
+   ],
+   [
+    "f4c",
+    "corrige",
+    "982f2d370"
+   ],
+   [
+    "v4",
+    "corrige",
+    "IA éteinte : « À acheter : « filtre à air G4, 2 pièces » · dans ZZ TEST — Frigo de garde pour fûts »"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-23",
+  "ligne": 1368,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CRITIQUE-8 tableau D-35 absent ; aucun test de bout en bout au banc Preuve jamais produite : geste non joué aux deux tailles."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Exige Gemini : aucun article lu."
+   ],
+   [
+    "v1",
+    "corrige (défaut neuf 2)",
+    "Puce « ✻ Comparer sur le débit (L/min) · Ajouter » touchée : « ✓ Rangé ici · Annuler ». Mais critère écrit « puis Comparer sur débit »."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige (défaut neuf 2)"
+ },
+ {
+  "id": "PCN-24",
+  "ligne": 1369,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "21450270a (chir8) : CarnetsVue.tsx:197-233 autreObjet (un autre objet part dans un carnet neuf, jamais un critère du carnet ouvert) ; CRITIQUE-8 n° 1 : à 390 résine du sol → hotte, évier → frigo ; rejeu demandé mais non revenu Le correctif existe depuis chir8 ; le scénario complet de zéro n'a pas été rejoué après lui."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Exige Gemini (5 phrases rangées par l'IA)."
+   ],
+   [
+    "v1",
+    "corrige / ouvert-gemini",
+    "De zéro : 5 phrases → 5 carnets (frigo, hotte, évier, tuyau, résine) ; le sol n'est critère d'aucun. 3 attendus : regroupement = vraie IA."
+   ]
+  ],
+  "der": "v1",
+  "cat": "gemini",
+  "verdict": "corrige / ouvert-gemini"
+ },
+ {
+  "id": "PCN-25",
+  "ligne": 1370,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetsVue.tsx:962-966 (P25, P26, d15b72a3f) ; en-ligne-4 n° 2 CORRIGÉ depuis un carnet ouvert ; en-ligne-3 nouveau n° 2 : depuis la liste « Carnet créé » reste avant le saut Corrigé dans un carnet ouvert (vu en ligne) ; depuis la liste, l'enchaînement « Carnet créé » puis rangement IA n'a pas été revu."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Exige Gemini (phrase envoyée depuis la liste)."
+   ],
+   [
+    "v1",
+    "corrige",
+    "Depuis la liste : « Carnet créé » seul, aucune roue « L'IA range… » relevée (8 créations, relevé toutes les 120 ms)."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-26",
+  "ligne": 1371,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "4e489acbb (2026-11-18, ancêtre) ; CarnetOuvert.tsx:342-344 (« une seule nouvelle : le bandeau ‘Carnet créé’ ; ni l'encadré ‘Idée · Ensuite…’ ni ●○○○ »), :394-403 Créer · après n'empile plus qu'un bandeau ; les rubriques sont à filet. Non listé dans CRITIQUE-7 ni 8."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-27",
+  "ligne": 1372,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetOuvert.tsx:496-497 (« Photos · aucune » seulement tout juste créé), :325-327 (pastille « Idée · 17 nov. ») ; 4e489acbb a retiré l'encadré « Idée · Ensuite… » (critique 6 n° 16 et 32) « Photos · aucune » est rendue ; l'encadré R11 a été réduit à la pastille par décision de correction : le brasseur doit voir si c'est conforme à g5:v04-4."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Exige Gemini (créer un carnet)."
+   ],
+   [
+    "v1",
+    "present (choix)",
+    "1280 : « Idée · 19 nov. » en pastille, « Façons · aucune », « Photos · aucune » ; encadré R11 réduit : conformité à g5:v04-4 au brasseur."
+   ]
+  ],
+  "der": "v1",
+  "cat": "present",
+  "verdict": "present (choix)"
+ },
+ {
+  "id": "PCN-28",
+  "ligne": 1373,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetsVue.tsx:983-988 (état « avant » P28 : seulement si focusListe && carnets.length>0), CadreArrivee.tsx:77-94 ; CRITIQUE-8 D-130 : 03 = 01 aux deux tailles L'état dépend du focus du champ : le banc headless ne le prouve pas."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Il faut une liste peuplée, or elle est vide en ligne (0 carnet)."
+   ],
+   [
+    "v1",
+    "corrige",
+    "Champ touché, liste peuplée : « Collez le lien d'un objet ou notez un besoin… », « Évier inox, 2 bacs · exemple · arrive ici », puces d'exemples."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-29",
+  "ligne": 1374,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "ChampCarnet.tsx:59-83,185-199 (titreQuiTient : placeholder coupé sur un mot, mesuré), 4e489acbb Largeur de 270 px et recouvrement d'« En veille » : mise en page à 1280, seul un rendu tranche."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Aucun carnet « Moulin à malt » en ligne ; création par Gemini."
+   ],
+   [
+    "v1",
+    "corrige",
+    "1280 : champ 612 px, « Ajouter à Moulin à malt 2 cylindres, 150 kg/h… » entier ; liste : champ (y 743) ne recouvre pas « En veille » (y 802)."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-30",
+  "ligne": 1375,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "ChampCarnet.tsx:198-199 (dansCarnet → « Ajouter à <titre>… » sinon « Une idée, un besoin… ») ; non vérifié : si dansCarnet est vrai dans Comparer, Choisir et la feuille Pourquoi Le placeholder dépend de l'écran qui montre le champ ; seul un parcours le dit."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Aucun carnet en ligne (Comparer, Choisir et Pourquoi inatteignables)."
+   ],
+   [
+    "v1",
+    "corrige",
+    "Carnet et Comparer : « Ajouter à ZZ TEST — Ventilation… » ; jamais « Une idée, un besoin… » hors liste."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-31",
+  "ligne": 1376,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "ChampCarnet.tsx:2-10 (position, CARNET-CLAV) ; CRITIQUE-8 non mentionné depuis Position à 70 px du bas sur bande blanche : mise en page."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Aucun carnet ouvert possible en ligne."
+   ],
+   [
+    "v1",
+    "corrige",
+    "1280 défilé : champ 743–787 sur 800, collé en bas ; segments en tête."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-32",
+  "ligne": 1377,
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Comparer.tsx:157-167 critereQuiClasse (critique 5 n° 22) : l'en-tête annonce le critère qui classe ; reste un seul critère cité alors que le classement en cite deux = CRITIQUE-7 n° 25 / CRITIQUE-8 n° 22 Même défaut que PCN-118 (et PCN-68) : critère affiché plus étroit que le classement."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-33",
+  "ligne": 1378,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CadreArrivee.tsx:169-184 (« Se modifie ici » avec le texte de la note, plus vide) ; CarnetOuvert.tsx:347-348 (cadre sous le titre, pas à la place de la note) ; en-ligne-1/2/3 : « Note modifiée · Annuler » joué ; CRITIQUE-8 : 32b = 32 Le cadre n'est plus vide ; sa place (haut du carnet, loin de la note) est un fait de mise en page."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Aucun carnet ni note en ligne."
+   ],
+   [
+    "v1",
+    "corrige",
+    "··· d'une note › Modifier : « Se modifie ici » à y 577/844 sans défiler, texte de la note dans le champ."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-34",
+  "ligne": 1379,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "d15b72a3f (P34) ; CarnetsVue.tsx:880-890 ; CarnetOuvert.tsx:509-515 (bandeau « Note supprimée · Annuler » placé par noteSupprimee) ; en-ligne-1 : supprimer une note puis Annuler joué en ligne, sans dialogue Le bandeau part avec la note restaurée (retour effacé par P34)."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-35",
+  "ligne": 1380,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetOuvert.tsx:308-310 (« votre phrase en titre » seulement si phraseEnTitre) ; SupprimerCarnet.tsx : aucune phrase citée ; non retrouvé le rendu de la page 38 Texte conditionné au titre vs phrase ; à voir sur la page de suppression à 390."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Aucun carnet lié en ligne, et 390 impossible."
+   ],
+   [
+    "v1",
+    "corrige",
+    "Supprimer le carnet lié (Frigo) : page sans « votre phrase en titre »."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-36",
+  "ligne": 1381,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "d15b72a3f (P36) ; EtatIA.tsx:138-140 (échec : « L'IA n'a pas répondu : rangé sur place, rien n'est perdu », picto calculette, sans ✻ ni roue) ; CarnetsVue.tsx:90-101,557,1029 L'échec a son propre texte, distinct de « L'IA range… » ; avis dans le bandeau."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-37",
+  "ligne": 1382,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "ChampCarnet.tsx:2-10 (useKeyboardInset, CARNET-CLAV) ; CRITIQUE-8 doute : clavier simulé Hauteur libre avec clavier ouvert : seul un vrai téléphone (390×660) le dit."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Vrai téléphone 390×660 requis."
+   ],
+   [
+    "v1",
+    "non tranché",
+    "390×660 : bulle G8 et champ à y 563–607 ; aucun clavier en sans écran : vrai téléphone requis."
+   ],
+   [
+    "f4c",
+    "ouvert",
+    "—"
+   ]
+  ],
+  "der": "f4c",
+  "cat": "ouvert",
+  "verdict": "ouvert"
+ },
+ {
+  "id": "PCN-38",
+  "ligne": 1383,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetOuvert.tsx:639 (nom sur 2 lignes au plus, cn-deux-lignes), :466 (« 80 °C » insécable) ; carnets.css non relu Coupes de lignes à 390 : rendu seul."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Aucun tableau en ligne, et 390 impossible."
+   ],
+   [
+    "v1",
+    "corrige",
+    "390 : noms sur 1 ou 2 lignes ; « tient 80 °C » sur une ligne (pastille et critère)."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-39",
+  "ligne": 1384,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CRITIQUE-8 n° 15 et 13 (À venir : Sans date, « À venir » dit trois fois) ; code À venir hors du dépôt lu Page À venir non relue ; défaut de mise en page et de répétition."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "390 impossible. À 2560, À venir (3) : « Sans date · 1 », « Les suivants · 2 achats », aucun « Ouvrir le carnet » ; pas de « + » dans la page."
+   ],
+   [
+    "v1",
+    "corrige",
+    "À venir : « Ouvrir le carnet » ×1, aucun « + » de page (seul le bouton flottant), titre entier."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-40",
+  "ligne": 1385,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "ListeCarnets.tsx:200-205 (prix + devise), FicheArticle.tsx:5 « 1 450 CHF », Choisir.tsx:298 ; Choisir prixTexte non relu Les écrans cités (18, 26b, 28b) affichent le prix par trois composants ; non démontré qu'aucun n'omet CHF."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Écrans 18, 26b et 28b introuvables : aucun article lu. À venir montre « 3 200 CHF TTC, au moins », mais « 350 » et « 1 200 » sans CHF."
+   ],
+   [
+    "v1",
+    "corrige",
+    "Lien déposé « 245 CHF », article « 2 600 CHF », Pourquoi « 4 900 CHF » ; tableaux : colonne « CHF » en tête."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-41",
+  "ligne": 1386,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "comparer.ts:182-186 libelleEcarte : « écarté : <raison> » ou raison telle quelle si elle dit déjà « écartée » ; Choisir.tsx:119-129 ecartesDe Si la raison est écrite « Ventilateur de plafond écartée : … », elle est affichée telle quelle : l'accord et la répétition du nom dépendent des données."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Aucun article écarté en ligne."
+   ],
+   [
+    "v1",
+    "corrige",
+    "Comparer : rubrique « écarté », « Ventilateur de plafond 130 cm » une fois, accord masculin ; Retenir la hotte : aucun écarté."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-42",
+  "ligne": 1387,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetOuvert.tsx:356-376 (pastilles de lien, aperçu) ; SupprimerCarnet.tsx : une ligne par lien Lien sur 5 lignes et puce « À venir » qui double la carte : mise en page."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Aucun carnet lié, et 390 impossible."
+   ],
+   [
+    "v1",
+    "present (moitié)",
+    "Lien « … · plan dans À venir » sur 2 lignes ; mais la puce « À venir · ZZ TEST — Frigo… » reste sous la carte."
+   ],
+   [
+    "f4b",
+    "ouvert",
+    "—"
+   ],
+   [
+    "f4c",
+    "corrige",
+    "982f2d370"
+   ],
+   [
+    "v4",
+    "corrige",
+    "Frigo grisé derrière « Supprimer le carnet… ? » : aucune pastille « À venir · … » sous la carte"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-43",
+  "ligne": 1388,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "ListeCarnets.tsx:117-124 (comptes sans 0, « rien de compté à 0 ») et :190-195 ; couleur de la pastille « À comparer » : carnets.css non relu Le compte n'écrit plus « 0 façon » ; la longueur de ligne et la couleur de pastille (vert) sont visuelles."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Liste vide en ligne, et 390 impossible."
+   ],
+   [
+    "v1",
+    "corrige",
+    "390 : « 2 façons · 6 articles · 1 en veille » sur une ligne ; aucun « 0 façon » ; rubrique « À comparer » vert pâle."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-44",
+  "ligne": 1389,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    "comparer.ts consequenceApercu (CarnetsVue.tsx:938) ; CRITIQUE-8 « G9 conséquence reformulée » corrigé au banc Au banc la conséquence est calculée sur place ; en ligne le critère reformulé vient de Gemini et peut perdre « 38 cm »."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini",
+    "—"
+   ],
+   [
+    "r2",
+    "non",
+    "aucun"
+   ]
+  ],
+  "der": "r2",
+  "cat": "?",
+  "verdict": "non"
+ },
+ {
+  "id": "PCN-45",
+  "ligne": 1390,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "SupprimerCarnet.tsx:10-12 (Supprimer grisé tant que n > 0) Contraste d'un bouton grisé à 1280 : visuel."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Aucun carnet lié en ligne."
+   ],
+   [
+    "v1",
+    "corrige (estimé)",
+    "Supprimer grisé, bord pointillé : #666 sur rose 7 % ≈ 5:1 clair ; sombre ≈ 6:1 (calcul alpha fait à la main)."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige (estimé)"
+ },
+ {
+  "id": "PCN-46",
+  "ligne": 1391,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "Comparer.tsx (largeur non relue) ; carnets-decider.css non relu Largeur de colonne à 1280 : CSS non vérifié."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Comparer inatteignable (aucun carnet)."
+   ],
+   [
+    "v1",
+    "corrige",
+    "1280 : Comparer 736 px, comme le carnet (736)."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-47",
+  "ligne": 1392,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetOuvert.tsx:228-293 (une ligne « Critère : … · proposé par l'IA », +1 sans valeur), :104-114 provenanceCritere (de votre phrase / proposé par l'IA via sourceDuCritere), b3bb2d0fd ; CRITIQUE-8 D-99 ✓ Les 4 lignes et la fausse attribution sont corrigées dans le code ; « le tableau tombe sous trois blocs » à 390 est de la hauteur d'écran."
+   ],
+   [
+    "e1",
+    "non-jouable",
+    "Aucun carnet en ligne, et 390 impossible."
+   ],
+   [
+    "v1",
+    "corrige",
+    "« Critère : tient 80 °C, puis le débit · proposé par l'IA » sur une ligne ; tableau à y 280 sur 844."
+   ]
+  ],
+  "der": "v1",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-48",
+  "ligne": 1393,
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "CarnetOuvert.tsx:342-344 ; même défaut que PCN-26 (trois blocs empilés à 1280) et PCN-4 (phrase entière comme critère) Recouvre PCN-26 (bandeaux empilés, corrigé en 4e489acbb) et PCN-4 (critère = phrase)."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-49",
+  "ligne": 1394,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd (2026-11-18) ; CadreArrivee.tsx:113-117 (« va dans <carnet> » quand la phrase part ailleurs, « va atterrir ici » seulement dans le carnet ouvert) ; ChampCarnet.tsx:5-11 puces « Va dans » ; CarnetsVue.tsx:997-1021 (vers) Le cadre nomme la destination (G4) et les puces proposent le carnet. Largeur de la rangée « Va dans » : voir PCN-121."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-50",
+  "ligne": 1395,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    "git grep « 30 L » dans src/ui et src/domain hors fixture/iaSimulee : aucun ; le chiffre vient de la réponse simulée (iaSimulee.ts, exemple G13) ; comparer.ts consequenceApercu Le code de l'app n'invente pas le 30 L : il le tient de la réponse simulée du banc. En ligne, la ligne rangée est celle de Gemini."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (le 30 L vient de la réponse simulée du banc, git grep vide dans l'app)",
+    "—"
+   ],
+   [
+    "r2",
+    "non",
+    "aucun"
+   ]
+  ],
+  "der": "r2",
+  "cat": "?",
+  "verdict": "non"
+ },
+ {
+  "id": "PCN-51",
+  "ligne": 1396,
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même constat que PCN-37 (clavier ouvert, 300 px à 390, CARNET-CLAV, R27) Doublon exact de PCN-37."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-52",
+  "ligne": 1397,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetOuvert.tsx:455-458, CarteArticle.tsx:1-14 (carte complète, 6 n° 6) ; CarnetsVue.tsx:880-890 ; en-ligne-3/4 : carte et rang vus en ligne ; CRITIQUE-8 n° 6 rang absent à 1280 La carte complète est rendue ; ce qu'elle contient et le compteur « un carnet né ailleurs » dépendent de la lecture réelle et du dépôt depuis la liste."
+   ],
+   [
+    "v2",
+    "corrige",
+    "Lien depuis la liste : « Rangé dans … Ventilation, à l'instant · 1er sur 5 · tient 80 °C oui », carte nom·vendeur·prix ; pompe-inox : « Carnet créé, en tête des Carnets », compteur 6 → 7 dit. Photo de carte non vue."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-53",
+  "ligne": 1398,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd (tour 5, ancêtre du tag) : src/ui/carnets/NoteEnVrac.tsx:~92-100 (pendant « L'IA découpe votre note : n lignes »), :109-125 (type ▾ et carnet ▾ après), :141 « › Texte d'origine » ; Bandeau 'vrac' « n lignes rangées dans m carnets » ; CRITIQUE-8 n° 1 : « note en vrac découpée avec Texte d'origine » corrigé aux deux tailles Le cadre pendant, le bandeau après, les puces type/carnet et le texte d'origine existent et ont été revus en vision-8."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-54",
+  "ligne": 1399,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "src/ui/carnets/FicheArticle.tsx:155-160 : cadre photo toujours là, sans photo VignetteObjet taille={132} (b3bb2d0fd). CRITIQUE-8 n° 14 voit encore « picto rogné » après ce commit Le code met le picto en grand dans le cadre ; seul un rendu dit s'il est rogné ou fidèle à h01-6."
+   ],
+   [
+    "v2",
+    "present (390) / corrige (1280)",
+    "Picto 132 px : 1280 dans un cadre de 150 (entier) ; 390 cadre de 104 px, picto 132, overflow visible : dépasse de 28 px. App 390 (pompe) : picto entier."
+   ],
+   [
+    "f4b",
+    "corrige",
+    "a44245e81"
+   ],
+   [
+    "v4",
+    "corrige",
+    "hotte sans photo : picto entier dans son cadre, rien sous le bord bas (hélicoïde, murale idem)"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-55",
+  "ligne": 1400,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "src/ui/carnets/Comparer.tsx:130 useSuiteADroite (fondu + « → n de plus » à 390), :~236 (pastille retirée : ~100 px de vide traités, n° 9) ; nombre de colonnes visibles dépend du CSS (carnets-decider.css) Largeur des colonnes et coupure de la 3e : pure mise en page."
+   ],
+   [
+    "v2",
+    "corrige",
+    "Comparer 390 : colonnes à 116, 198, 280, 362 px ; 3 entières, la 4e coupée (comme g01-8). Vide sous les noms non mesuré."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-56",
+  "ligne": 1401,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd : src/ui/carnets/Choisir.tsx:167-206 (réglettes cn-reglette-piste, ✕ de chaque écarté :140/:239, photo du choisi ou picto :202-204) ; CarnetsVue.tsx:1176 et :1186 passent carnet={ouvert.carnet} (le « corr4-C en échec » est levé) Les trois manques et la cause (carnet non passé) sont réglés dans le code."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-57",
+  "ligne": 1402,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd : src/ui/carnets/ListeCarnets.tsx:300-325 (titre, phrase, carte exemple pointillée « Évier inox, 2 bacs · exemple · ↓ arrive ici », « Par exemple : », aucune flèche vers le champ) ; CRITIQUE-8 D-97 ✓ aux deux tailles Premier usage refait selon i06-2 ; la bulle verte et sa flèche (D-108) n'y sont plus."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-58",
+  "ligne": 1403,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "b3bb2d0fd : src/ui/finance/UpgradeWorkspace.tsx:54-90 ProchainAchatCarnet (vignette VignetteObjet, « <prix> CHF TTC · <vendeur> · en stock », « Fixer la date », titre une fois). CRITIQUE-8 D-105 « partiel », n° 15 : groupé « Sans date » au lieu de « Cette semaine et après » Les éléments textuels sont dans le code ; « + mois » obscur et demi-écran vide à 390 ne se jugent qu'au rendu."
+   ],
+   [
+    "v2",
+    "partiel",
+    "À venir : « Prochain achat · depuis son carnet · Frigo · 4 900 CHF TTC · Froid Léman · Fixer la date · Ouvrir le carnet ». Encore groupé « Sans date · 1 », sans « en stock »."
+   ],
+   [
+    "f4b",
+    "ecarte",
+    "—"
+   ]
+  ],
+  "der": "f4b",
+  "cat": "ecarte",
+  "verdict": "ecarte"
+ },
+ {
+  "id": "PCN-59",
+  "ligne": 1404,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "D-35 : acceptation d'une proposition d'un toucher (accepterProposition, CarnetsVue/operations.ts) ; tests unitaires existent mais aucune capture aux deux tailles (CRITIQUE-8 n° 5 : preuves absentes) Le constat est une preuve visuelle manquante, pas un défaut de code connu ; seul le geste dans l'app tranche."
+   ],
+   [
+    "v2",
+    "corrige",
+    "Puce « ✻ Comparer sur le débit (L/min) · Ajouter » touchée : elle disparaît, critère ajouté (app 390, banc 1280 et 390). Libellé du critère : défaut neuf 2."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-60",
+  "ligne": 1405,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CRITIQUE-8 bloquant 1 : scénario de zéro rangeait l'évier dans le frigo ; corrigé en code par 21450270a (CarnetsVue.tsx:196-231 autreObjet) mais 48c n'a pas été rejoué après (DEMANDE EXECUTANT § 3) Le scénario D-63 complet n'a jamais été rejoué aux deux tailles après correction."
+   ],
+   [
+    "v2",
+    "corrige",
+    "Zéro : frigo, puis évier et hotte tapés dans le carnet ouvert : 3 carnets distincts (Carnets 3), aucun critère croisé."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-61",
+  "ligne": 1406,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CRITIQUE-8 D-131 : 390 04 ✓, 1280 06 absent ; code : CarnetsVue.tsx:969-976 (pendant jusqu'au carnet proche) Parcours créer · pendant non capturé à 1280."
+   ],
+   [
+    "v2",
+    "present",
+    "« Ventilation de la salle » depuis la liste (IA lente) : aucun « Déjà un carnet proche », « Carnet créé » d'emblée : doublon de Ventilation de la salle de brassage."
+   ],
+   [
+    "f4b",
+    "ouvert",
+    "—"
+   ],
+   [
+    "f4c",
+    "ecarte — code juste",
+    "—"
+   ],
+   [
+    "v4",
+    "corrige",
+    "frappe sans envoi : « ✻ Déjà un carnet proche : ZZ TEST — Ventilation de la salle de brassage » (voir problème 3)"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-62",
+  "ligne": 1407,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetsVue.tsx:898 cadre « Se modifie ici » ; CRITIQUE-8 n° 5 : 32b = 32 (md5 identique) à 1280, 33 non joué Geste de modification d'une note jamais prouvé à l'écran aux deux tailles."
+   ],
+   [
+    "v2",
+    "partiel",
+    "1280 : ··· › Modifier, « Se modifie ici », Enregistrer : note changée (1 600 m³/h). 390 : texte inchangé (geste ou outil, non tranché)."
+   ],
+   [
+    "v4",
+    "corrige",
+    "« Se modifie ici » sur la note, Enregistrer : « Note modifiée, à l'instant · Annuler », note « 1 600 m³/h · modifiée · 19 nov. »"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-63",
+  "ligne": 1408,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetsVue.tsx:898 (supprimerNote, onSupprimer) ; CRITIQUE-8 n° 5 : 35b = 35c Suppression d'une note et son Annuler jamais capturés à un état distinct."
+   ],
+   [
+    "v2",
+    "partiel",
+    "390 : Supprimer, bandeau Annuler, Annuler remet la note, bandeau parti. 1280 : la feuille ne s'est pas rouverte après Modifier (non conclu)."
+   ],
+   [
+    "v4",
+    "corrige",
+    "Supprimer : « Note supprimée · Annuler » à la place de la note, « Notes 2 » ; Annuler remet la note"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-64",
+  "ligne": 1409,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CRITIQUE-8 n° 13 et tableau D-46, D-76 : pastilles « répétées » aux deux tailles ; code CarnetOuvert.tsx (pastilles lié à) Pastilles « lié à » jamais jouées à 390 ; un rendu avec un plan lié tranche."
+   ],
+   [
+    "v2",
+    "corrige",
+    "Frigo envoyé : une pastille « À venir · ZZ TEST — Frigo… », zéro « Dans À venir depuis » répété."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-65",
+  "ligne": 1410,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd : src/ui/carnets/CarnetOuvert.tsx:294-302 ligneEtat « 2 façons à comparer · <à faire du carnet> » sous le titre ; CRITIQUE-8 D-99, D-114 ✓ aux deux tailles La ligne d'état est calculée sur les façons en lice et la note à faire."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-66",
+  "ligne": 1411,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd : src/ui/carnets/CarnetOuvert.tsx:461-467, :613, :661 : la conclusion « Le critère sépare … · Retenir … » se colle aux façons en lice, avant l'écartée et le lien à relire Ordre corrigé au tour 5 ; aucun constat de CRITIQUE-8 ne le reprend."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-67",
+  "ligne": 1412,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "src/ui/carnets/ChampCarnet.tsx:215-231 (bulle une ligne, texte entier en title) + carnets-fil.css:17-18, :59 ; CarnetsVue.tsx:933-937 (seulement en « ajouter · avant ») ; comparer.ts:875-902 critereQuiTranche (jamais la phrase du besoin : caractéristique mesurable + colonne connue, 4e489acbb) ; d15b72a3f, b3bb2d0fd, 4e489acbb La bulle n'est plus de 4 lignes, ne paraît plus à chaque état, ne propose plus un critère sans valeur, et la page défile pour lui faire place."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-68",
+  "ligne": 1413,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd : Comparer.tsx:171 premierSansValeur (« capter la buée : sans valeur à comparer, il ne range pas ») + critereQuiClasse :157 ; CarnetOuvert.tsx:211 le critère de tête est celui qui porte une caractéristique Le carnet, la pastille et Comparer citent le même critère qui range ; celui sans valeur est dit à part."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-69",
+  "ligne": 1414,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd : Comparer.tsx:185 moinsBienQueDe (Pareto sur au moins 2 colonnes connues, « moins bien que la 3e sur tout ») ; la 4e moins chère que la 1re ne peut plus être dite dominée ; 21450270a (axeLu) corrige l'effacement des débits par un seuil Le libellé « moins bien partout » n'est plus posé que par domination réelle sur valeurs connues."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-70",
+  "ligne": 1415,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd : Bandeau.tsx:113-150 (avis en tête du bandeau, picto local, jamais ✓ seul) ; CarnetsVue.tsx:100-105 AVIS_IA ; CarnetsVue.tsx:539 « Ensuite : l'IA cherche… » ne promet plus rien ; CarnetOuvert.tsx:343 L'échec et le hors ligne ont leur propre bandeau et ne gardent plus la promesse d'une IA absente."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-71",
+  "ligne": 1416,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "Choisir.tsx:167-206 réglettes (b3bb2d0fd) ; carnets-decider.css Couleur des pastilles en clair et sombre et taille du picto : rendu seulement."
+   ],
+   [
+    "v2",
+    "non-conclu",
+    "Frigo choisi ouvert : `.cn-pourquoi` absent du DOM (« Pourquoi ce choix » non atteint par ouvrir=frigo) ; sombre non joué."
+   ],
+   [
+    "v4",
+    "corrige",
+    "Choisi · pourquoi : réglettes fines (trait + ronds), plus de grandes pastilles ; lisible clair et sombre"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-72",
+  "ligne": 1417,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "b3bb2d0fd : RenommerCarnet.tsx:38-49 champBas + carnets-fil.css:64-71 (en-tête et contenu gardés par :has, cadre à la place du titre) ; CRITIQUE-8 D-119 « texte » : renommer non capturé Le correctif repose sur du CSS :has ; seul un rendu à 390 dit que l'en-tête, le contenu et le champ restent."
+   ],
+   [
+    "v2",
+    "corrige",
+    "390, ✎ : « ✎ Se renomme ici » avec titre en grand, en-tête, contenu et champ « Renommer » visibles ; ✎ aligné à gauche du libellé."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-73",
+  "ligne": 1418,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "rattacher.ts:105-129 carnetProche : seulement un carnet de même catégorie d'objet (categorieDe b3bb2d0fd) et même besoin (4e489acbb) ; CarnetsVue.tsx:1198 ; SupprimerCarnet.tsx:85 ; test tests/unit/carnetsCritique5Decider.test.tsx:118-128 Une hotte en veille n'est plus proposée vers un extracteur de salle de fermentation."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-74",
+  "ligne": 1419,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "b3bb2d0fd : FicheArticle.tsx:119-132 grille de 4 cases avec rang, « non publié » jamais 0 ; CRITIQUE-8 n° 14 : encore « partiel » après ce commit La grille se remplit des seules valeurs lues ; un article pauvre reste maigre : rendu et donnée à juger."
+   ],
+   [
+    "v2",
+    "present",
+    "Grille de l'article : « tient 80 °C · oui », Disponibilité, Origine ; ni débit ni prix, aucun rang (hotte, hélicoïde). Pompe (app) : « débit 25 L/min 2e »."
+   ],
+   [
+    "f4b",
+    "ecarte",
+    "—"
+   ]
+  ],
+  "der": "f4b",
+  "cat": "ecarte",
+  "verdict": "ecarte"
+ },
+ {
+  "id": "PCN-75",
+  "ligne": 1420,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "src/ui/carnets/pictos.tsx (VignetteObjet, d15b72a3f) ; FicheArticle.tsx:158 Trait des pictos et carré gris : question de dessin, rendu seulement."
+   ],
+   [
+    "v2",
+    "corrige",
+    "Vignettes 1280 : objets dessinés en couleur (hotte, extracteur, pompe) sur carré clair, pas de trait fin."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-76",
+  "ligne": 1421,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "ListeCarnets.tsx:229 le carnet tout juste né prend la tête de son groupe (enTete, b3bb2d0fd) ; titre issu de objetDe (analyseLocale.ts:259) Placement dans le groupe Idée et casse du titre : à voir au rendu de la note en vrac à 1280."
+   ],
+   [
+    "v2",
+    "non-conclu",
+    "1280 : la note en vrac « sol » n'est pas partie (Carnets 6). 390 : 3 carnets, titre « Résine pour le sol du local », phrase mise en forme."
+   ],
+   [
+    "v7",
+    "corrige",
+    "Note « sol » : Carnets 6 → 8, « 3 lignes rangées dans 3 carnets ». « Résine pour le sol du local » (majuscule) dans le groupe « Idée 4 », sous Prochain brassin."
+   ]
+  ],
+  "der": "v7",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-77",
+  "ligne": 1422,
+  "hist": [
+   [
+    "tri",
+    "present",
+    "Aucun fil de messages dans src/ui/carnets : les messages ne se lisent que cités (CarnetOuvert « votre phrase : … ») ; CRITIQUE-8 n° 18 ; décision R39 Choix ouvert, reporté aux lots E et F ; pas bloquant du port (D123)."
+   ]
+  ],
+  "der": "tri",
+  "cat": "present",
+  "verdict": "present"
+ },
+ {
+  "id": "PCN-78",
+  "ligne": 1423,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd : ListeCarnets.tsx:127-140 « une ligne par machine » (articles du même nom normalisé regroupés) ; CRITIQUE-8 ne le reprend pas Deux offres de la même machine font une ligne et se disent offres."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-79",
+  "ligne": 1424,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd : Choisir.tsx:286-287 bouton cn-action-vert avec ✓, comme FicheArticle.tsx:235 Un seul habit : vert et ✓ partout où l'on choisit."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-80",
+  "ligne": 1425,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "4e489acbb : ChampCarnet.tsx:59-83 titreQuiTient (titre mesuré, coupé sur un mot, jamais sur un petit mot), :198 « Ajouter à Ventilation… » ; mesureurDe Le placeholder garde le nom du carnet et ne finit plus sur « de »."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-81",
+  "ligne": 1426,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd : src/ui/finance/UpgradeWorkspace.tsx:549-550 (Stocks, vue : « Un projet arrive ici seul, quand sa dépense liée est payée : la facture le solde. Rien à cocher. », vouvoiement) ; carte :54-90 « Il passe seul dans Réalisés » ; « Marque un projet comme réalisé » n'existe plus Le geste manuel disparaît de Stocks ; le tutoiement « Tes projets réalisés » subsiste seulement dans la vue Atelier (:551), hors du constat."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-82",
+  "ligne": 1427,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd : FicheArticle.tsx:253 Piste : borne du meilleur à gauche avec « la plus haute des 4 », pire à droite, chiffrées Les deux bornes sont chiffrées, la gauche dite « la plus … des n »."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-83",
+  "ligne": 1428,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd : FicheArticle.tsx:244 PrixMono ; comparer.ts:472-479 nombreTexte groupe les milliers par un espace ; prixTexte :482-486 ; Choisir.tsx:98 « 1 450 CHF » partout, y compris Choisir."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-84",
+  "ligne": 1429,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd : carnets-decider.css:52 .cn-g35 .cn-prov-local { color: var(--c-ink2) } : calculette neutre dans G35 et G36 Le picto local de la proposition de suppression n'est plus teinté comme l'IA."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-85",
+  "ligne": 1430,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "Bandeau.tsx:136-141 affiche l'URL du lien rangé ; la phrase citée du carnet (CarnetOuvert.tsx:~318-322) peut la citer aussi Doublon d'URL entre titre et bandeau d'un carnet né d'un lien : dépend du rendu."
+   ],
+   [
+    "v2",
+    "corrige",
+    "URL hotte-140 une seule fois à l'écran (« votre message : « … » »)."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-86",
+  "ligne": 1431,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "ChampCarnet.tsx:64 « décision du pilote (critique 6) : le titre stocké, ZZ TEST — compris » ; NoteEnVrac.tsx:78 sansBanc, rattacher.ts titreSansBanc retirent le préfixe à l'affichage ailleurs Le préfixe de banc se montre ou non selon l'écran par décision ; ne touche que les données de test, mais seul un rendu dit où."
+   ],
+   [
+    "v2",
+    "corrige",
+    "Banc : « ZZ TEST — » identique sur Liste, Comparer, Choisi, Réalisés, À venir. En ligne non joué."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-87",
+  "ligne": 1432,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "Mise en page 1280 (segment, colonne de 736 px, + volant) : carnets.css, carnets-fil.css ; repris PCN-46 Largeurs au rendu."
+   ],
+   [
+    "v2",
+    "corrige",
+    "1280 : segment 316–1052 (736 px) = colonne 736 ; + volant à 1060, 8 px de la colonne."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-88",
+  "ligne": 1433,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "ChampCarnet.tsx:200-202, :317 : un seul bouton à mot « Ajouter » (« Enregistrer » ou « Renommer » en modification), plus de flèche ↑ ; b3bb2d0fd (n° 42) Un habit d'envoi partout."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-89",
+  "ligne": 1434,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "b3bb2d0fd : CarnetsVue.tsx:96-105 AVIS_IA « Hors ligne : rangé sur l'appareil, tel quel » ; « rien ne bougera » supprimé (git grep : absent) Le texte ne promet plus ni n'ambiguïse un rerangement ; « Ranger maintenant » reprend à la main au retour du réseau."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-90",
+  "ligne": 1435,
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Ligne même constat que PCN-52 (« provisoire ; = PCN-52 », lien · après, retenu manquant) Doublon de PCN-52 ; à traiter avec lui."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-91",
+  "ligne": 1436,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "4e489acbb : analyseLocale.ts:249-251 parleDuBrassin / TITRE_BRASSIN, rangement.ts:155-170 : levure et brassage vont ensemble dans « Prochain brassin », jamais dans « Sol local » Le rangement local par objet corrige le mélange ; reste CRITIQUE-8 n° 16 (ce carnet va dans Stocks › Matériel), constat distinct hors lot."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-92",
+  "ligne": 1437,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetsVue.tsx:290 detailDe (« trois éléments au plus, puis +n ») ; Bandeau.tsx avis/detail ; aucun test ne compte « 1 achat et 2 notes » (non trouvé) Le décompte du « +n · à acheter » ne se lit qu'au rendu de la note en vrac."
+   ],
+   [
+    "v2",
+    "corrige",
+    "Note du banc : « 3 lignes rangées dans 3 carnets » ; levure : « 3 lignes rangées dans 2 carnets » ; jamais « +3 · à acheter »."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-93",
+  "ligne": 1438,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CadreArrivee.tsx sorte 'texte' (pendant) contre rangDuLien CarnetsVue.tsx:265-282 (après) Le rang promis pendant et celui donné après se comparent au rendu d'un même dépôt de texte."
+   ],
+   [
+    "v2",
+    "corrige",
+    "Texte dans Ventilation : pendant « L'IA range… », après « Rangé ici, à l'instant » ; aucun rang promis, aucun contredit."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-94",
+  "ligne": 1439,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "Chirurgicaux critique 7 (3b8a319bb, 359d88200, ancêtres du tag) : CarnetsVue.tsx:249 plusieursLignes / decouper ; CRITIQUE-8 : n° 1 « note en vrac découpée avec Texte d'origine » corrigé ; chir7 m390-1-vrac-apres.png Une note de plusieurs lignes est découpée aussi depuis une liste vide à 390."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-95",
+  "ligne": 1440,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "3b8a319bb/359d88200 : analyseLocale.ts:259 objetDe « Tient 80 °C pour la hotte » = hotte ; 21450270a : CarnetsVue.tsx:196-231 autreObjet (un autre objet n'est jamais un critère du carnet ouvert) ; tests/unit/carnetsCritique8.test.ts:71-89 « Tient 80 °C » ne se range plus dans le carnet de levures ; la levure part dans « Prochain brassin »."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-96",
+  "ligne": 1441,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "21450270a : CarnetsVue.tsx:325-331 typerVrac (une ligne annoncée critère reste critère), NoteEnVrac.tsx:75 resumeVrac compte critères ; tests/unit/carnetsCritique8.test.ts:90-109 et :137 (pendant = après) « 80 °C » annoncé critère le devient et se compte comme tel ; dernier correctif, vu en capture 390 seulement (chir8), 1280 non rejoué."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-97",
+  "ligne": 1442,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "4e489acbb : comparer.ts:151-157 libelleCaracteristique (« ambiance max °C ») ; Comparer.tsx:292 ; CRITIQUE-8 : n° 4 frigo « amb. max °C 43 » corrigé aux deux tailles La colonne °C porte son libellé (température ambiante max)."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-98",
+  "ligne": 1443,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "359d88200 + 21450270a : operations.ts:625 estRealise gouverne l'état « realise » ; UpgradeWorkspace.tsx:54-90 ; chir7 m390-5-fiche-realise.png « REALISE REALISE OK A-VENIR ABSENT » ; CRITIQUE-8 n° 5 corrigé. Doute noté : Réalisés 0 puis 1 dans le même run à 1280 Les trois écrans lisent la même règle de facture payée."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-99",
+  "ligne": 1444,
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "comparer.ts pourquoiDe (recalculé sur les articles présents) ; chir7 m390-6-pourquoi.png « Le plus gros débit des deux à tenir 80 °C » ; CRITIQUE-8 : n° 6 « pourquoi juste » corrigé Le pourquoi n'est plus figé : il se refait sur les articles en lice."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-100",
+  "ligne": 1445,
+  "hist": [
+   [
+    "tri",
+    "present",
+    "CarnetsVue.tsx:1030-1044 : le rang (rangDuLien :265-282) ne se dit que si le carnet est ouvert (vue 'carnet') ; déposé depuis la liste, le retour est { sorte: 'ailleurs' } (:528, Bandeau.tsx:75 « Rangé dans X, à l'instant ») sans rang ; CRITIQUE-8 n° 6 le garde (1280 : 18, 19) Le dépôt depuis la liste ne dit pas la place de l'article dans le carnet d'arrivée ; le rang n'existe que dans le carnet ouvert."
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8"
+   ],
+   [
+    "v4",
+    "corrige",
+    "« ✓ Rangé dans ZZ TEST — Frigo de garde pour fûts, à l'instant · Annuler », puis « votre message : « … » »"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-101",
+  "ligne": 1446,
+  "hist": [
+   [
+    "tri",
+    "obsolete",
+    "chir7 (Brasserie voies/chir7/RESULTAT.md) : en /?dev-local, Stocks › Matériel › Carnets montre l'en-tête L'Affinée et le segment Stocks (« APP ENTETE OK SEGMENT OK ») ; en ligne (en-ligne-4/RAPPORT.md) le carnet se joue dans l'app, onglet Stocks Le constat porte sur le banc ?preview=carnets (« Banc — données simulées »), absent du build de production ; dans l'app l'en-tête et le segment existent. Le 1280 dans l'app reste « Chargement… » en doute (CRITIQUE-8) : couvert par PCN-102."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "obsolete"
+ },
+ {
+  "id": "PCN-102",
+  "ligne": 1447,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CRITIQUE-8 n° 5 : D-63, D-136, D-118 et d'autres encore sans capture à un état distinct (md5 identiques) ; DEMANDE EXECUTANT de CRITIQUE-8 jamais rejouée Preuve manquante : seuls les gestes dans l'app (ou ?dev-local) la donnent."
+   ],
+   [
+    "v2",
+    "partiel",
+    "D-63 corrigé (3 carnets) ; lien avant (puce Coller) non joué ; D-118 prouvé à 1280 seulement. Local seul."
+   ],
+   [
+    "v4",
+    "corrige (avec défauts)",
+    "lien avant : « Coller : exemple.invalid/hotte-… » au focus, un toucher remplit le champ (problèmes 12, 13) ; D-118 = PCN-62 à 390"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige (avec défauts)"
+ },
+ {
+  "id": "PCN-103",
+  "ligne": 1448,
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "ChampCarnet.tsx:215-231, carnets-fil.css:17-18 : la bulle tient sur une ligne avec ellipsis, texte entier seulement en title ; critereQuiTranche comparer.ts:875-902 À 390 la bulle est encore coupée par « … » et le title ne se lit pas au toucher ; ce qu'elle cache et ce qu'elle dit ne se jugent qu'au rendu."
+   ],
+   [
+    "v2",
+    "present",
+    "390 focus du champ (g8) : bulle sur une ligne « Le critère « pas trop de bruit » pe… », coupée ; ne dit pas entre quoi."
+   ],
+   [
+    "f4b",
+    "corrige",
+    "a44245e81"
+   ],
+   [
+    "v4",
+    "present",
+    "bulle sur 2 lignes mais toujours coupée : « « pas trop de bruit » tranche entre Hotte inox + extracteur et… »"
+   ]
+  ],
+  "der": "v4",
+  "cat": "present",
+  "verdict": "present"
+ },
+ {
+  "id": "PCN-104",
+  "ligne": 1449,
+  "hist": [
+   [
+    "tri",
+    "ia",
+    "functions/src/carnetIA.ts (consigne de mise en forme) ; en-ligne-4/RAPPORT.md : « Mise en forme : OK » (« Réfractomètre pour mesurer la densité du moût ») avec Gemini réel ; repli local « votre phrase : … » (CarnetOuvert.tsx:~318-322) La mise en forme vient de la réponse de l'IA ; la reprise brute n'est qu'un repli hors IA."
+   ],
+   [
+    "r",
+    "ouvert — non vérifiable sans Gemini (la qualité du texte de l'IA ; le repli local reprend la phrase)",
+    "—"
+   ],
+   [
+    "r2",
+    "oui (chemin IA)",
+    "carnetsEnLigne2.test.tsx, n° 2, 3, 4 ; carnetsEnLigne4.test.tsx, « réponse réelle du test 2 »"
+   ]
+  ],
+  "der": "r2",
+  "cat": "?",
+  "verdict": "oui (chemin IA)"
+ },
+ {
+  "id": "PCN-105",
+  "ligne": "Lien collé sur liste vide : carnet titré exemple.invalid, ni lecture ni lien en clair",
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "CRITIQUE-8.md l.15 : n° 12 « lien pendant » corrigé aux deux tailles. Code actuel : CadreArrivee.tsx:141-149 (lien en clair + « ✻ lecture de la page… »), CarnetsVue.tsx:728-730 (titre = nom lu sur la page, sinon titreDePhrase). Commit exact non identifié : entre 4e489acbb et 359d88200, tous ancêtres du tag en-ligne/2026-11-19-tour2. Verdict sur la critique 8 (images) plus lecture du code ; pas rejoué en ligne."
+   ],
+   [
+    "r",
+    "corrige",
+    "c8bdcba49 « Port carnet : port des écrans retenus » (ancêtre du tag) ; CadreArrivee.tsx « lecture de la page » ; CRITIQUE-8 n° 12"
+   ]
+  ],
+  "der": "r",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-106",
+  "ligne": "Compromis : à 390 aligne des valeurs au lieu du prix de l'écart",
+  "hist": [
+   [
+    "tri",
+    "present",
+    "src/domain/carnets/comparer.ts:632-652 (compromisDe, repli « la 1re, <valeurs> » quand aucun article moins cher ne tient les critères) ; ne tient aucun compte de horsSeuil (l.410). Fichier inchangé depuis 4e489acbb. Le repli énumère « tient 80 °C : oui ; 1 800 m³/h ; 2 600 CHF » au lieu de dire « la seule à tenir 80 °C, pour X de plus » (g01-8) ; une proposition peut aussi porter la mention « sous votre minimum »."
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8 + 013bcdbca"
+   ],
+   [
+    "v4",
+    "corrige",
+    "« Compromis : la 1re, la seule à tenir 80 °C et votre minimum, pour 1 150 CHF de plus que la 2e »"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-107",
+  "ligne": "Comparer : écarté sans sa raison (1280)",
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "Comparer.tsx:332-346 : tableau « Écartés · n » avec libelleEcarte(raison), en place depuis e0073224e (tour 3). La capture d1280-clair-27c (vision-8) s'arrête avant ce bloc (dernière ligne visible : « Valeurs annoncées par les vendeurs »). Le code montre la raison sous le tableau ; la critique n'a probablement pas défilé jusque-là. Seul un rendu tranche."
+   ],
+   [
+    "v2",
+    "corrige",
+    "Comparer, sous le tableau : « Écartés · 1 », « Ventilateur de plafond 130 cm », « brasse la buée sans la sortir »."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-108",
+  "ligne": "2e lien : tableau G20 pas au-dessus de la flottaison, à sa place « ✻ Comparer sur… »",
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetsVue.tsx:1100-1113 (puces proposées rendues dans le bandeau, avant ligne d'état, ligne Critère et tableau, CarnetOuvert.tsx:347-351) ; iaSimulee.ts:575-577 (communeLue proposée au 2e article). La puce proposée s'insère au-dessus du tableau et le descend ; la hauteur réelle à 1280 ne se lit qu'au rendu."
+   ],
+   [
+    "v2",
+    "present",
+    "Pompe, 2e lien : en-tête du tableau à 748 px, champ à 743 : sous la flottaison ; au-dessus, la puce « ✻ Comparer sur … »."
+   ],
+   [
+    "f4b",
+    "corrige",
+    "a44245e81"
+   ],
+   [
+    "v4",
+    "corrige",
+    "Pompe, 2e lien : tableau à 392 px (390) / 434 (1280), champ à 747/743 ; « Article rangé ici, à l'instant · 1er sur 2 · … · Annuler » dessous"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-109",
+  "ligne": "Lien À venir dit deux ou trois fois",
+  "hist": [
+   [
+    "tri",
+    "present",
+    "CarnetOuvert.tsx:359-372 (pastille « À venir · libellé », aperçu « dans À venir · depuis le … », bouton « Ouvrir dans À venir ») et :387 (texteSortie « Dans À venir depuis le … » sous le choix). Aucun changement depuis 359d88200 (git diff). Trois mentions du même lien sur le même écran."
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8"
+   ],
+   [
+    "v4",
+    "corrige",
+    "Frigo : une seule pastille « À venir · ZZ TEST — Frigo de garde pour fûts », plus de « Dans À venir depuis »"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-110",
+  "ligne": "Article ouvert : picto rogné au lieu de la photo, ligne « lues… » absente",
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "FicheArticle.tsx:155-158 (photo, sinon VignetteObjet dans cn-vignette-fiche, carnets.css:513 hauteur 150 px) ; :89 et :207 : la ligne « lues sur la fiche du vendeur, <date> » n'existe que si une valeur porte luLe. Dépend de la fixture (pas de photo ni de valeur lue au banc) et du rognage visuel ; le code a les deux éléments."
+   ],
+   [
+    "v2",
+    "non-conclu",
+    "Photo et légende : l'article « Hotte murale » porte une image (img) ; ligne « lues sur la fiche… » non trouvée ; v5 non ouvert (outil)."
+   ],
+   [
+    "v7",
+    "present (en partie)",
+    "Photo « photo de la page collée · exemple » entière (Hotte murale) ; sans photo, picto entier (92 dans 104 à 390). « lues sur la fiche du vendeur » : absente partout."
+   ],
+   [
+    "f11",
+    "corrigé : `luLe` posé à la lecture d'un lien (CarnetsVue `depuisIA`) ; « lues sur la fiche du vendeur, 19 nov. » maigre 14 px à la suite de « Caractéristiques » (h01-6) ; style calculé fw 400, 14 px, même ligne (journal)",
+    "b7bbeb52f"
+   ]
+  ],
+  "der": "f11",
+  "cat": "corrige",
+  "verdict": "corrigé : `luLe` posé à la lecture d'un lien (CarnetsVue `depuisIA`) ; « lues sur la fiche du vendeur, 19 nov. » maigre 14 px à la suite de « Caractéristiques » (h01-6) ; style calculé fw 400, 14 px, même ligne (journal)"
+ },
+ {
+  "id": "PCN-111",
+  "ligne": "À venir : liste « Cette semaine et après » de h05-9 manque",
+  "hist": [
+   [
+    "tri",
+    "present",
+    "src/ui/finance/UpgradeWorkspace.tsx:72 : « Prévu en <mois> » sinon « Sans date » ; aucune occurrence de « Cette semaine et après » dans src. MISSION.md l.58 : port partiel de h05-9, retenu. Port partiel connu et accepté, jamais complété."
+   ],
+   [
+    "f2",
+    "ouvert",
+    "—"
+   ]
+  ],
+  "der": "f2",
+  "cat": "ouvert",
+  "verdict": "ouvert"
+ },
+ {
+  "id": "PCN-112",
+  "ligne": "Note en vrac découpée, lignes collées dans la carte « Prochain brassin »",
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "Paquet 1 PCN-186 (57254e47c, ancêtre du tag) : CarnetsVue.tsx:702-707 la phrase citée d'un carnet neuf de l'IA ne reprend que ses lignes, jointes par « \\n ». Le chemin local (sans IA) n'est pas relu. Le correctif couvre la réponse IA ; le rendu de la phrase citée (retours à la ligne) et le chemin local ne se jugent qu'à l'écran."
+   ],
+   [
+    "r",
+    "en-ligne",
+    "le chemin IA est corrigé (57254e47c, CarnetsVue.tsx:702-707 : phrase citée = lignes de la note jointes par « \\n ») ; le chemin local (`depuisLocale`) ne passe pas par cette ligne : à voir à l'écran. Parcours : liste peuplée, coller « Sachets de levure x2. Prochain brassage mardi. Tient 80 °C pour la hotte. », IA coupée, lire la phrase citée de la carte"
+   ],
+   [
+    "v2",
+    "non-conclu",
+    "Levure : « 3 lignes rangées dans 2 carnets », carnet « Prochain brassin » né ; la phrase citée de sa carte non lue."
+   ],
+   [
+    "v7",
+    "corrige",
+    "Carte « Prochain brassin » : « « Sachets de levure x2. Prochain brassage mardi. » », phrases ponctuées, hotte exclue ; IA simulée et IA éteinte identiques. 390 : coupée « x2.… »."
+   ]
+  ],
+  "der": "v7",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-113",
+  "ligne": "Hors ligne : « Acheter 2 sachets de levure » devient un carnet complet",
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetOuvert.tsx:496-505 (rubriques complètes pour un carnet neuf) ; carnets-fil.css:73 (bandeau de reprise « Ranger maintenant » au retour du réseau, tour 6). Critique 8 (n° 19) le revoit après tour 6. Le bandeau de reprise existe ; ce qui se lit à l'écran hors ligne ne se prouve pas par le code."
+   ],
+   [
+    "v2",
+    "present",
+    "Hors ligne : « Carnet créé », « Hors ligne : rangé sur l'appareil, tel quel », puis Ce qui compte · rien encore, Façons… ; aucun « l'IA le range au retour »."
+   ],
+   [
+    "f4b",
+    "corrige",
+    "a44245e81"
+   ],
+   [
+    "v4",
+    "corrige",
+    "hors ligne : « L'IA le range au retour du réseau : ce qui compte, façons, articles. Rien n'est perdu. », aucune rubrique vide"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-114",
+  "ligne": "IA en cours : à 1280 aucun signe que l'IA travaille",
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "CRITIQUE-8.md l.15 : n° 21 « IA en cours » corrigé aux deux tailles (état EtatIA.tsx). Commit exact non identifié : entre 4e489acbb et 359d88200, ancêtres du tag. Verdict sur la critique 8 ; pas relu dans le code."
+   ],
+   [
+    "r",
+    "corrige",
+    "e0073224e « correction tour 3 » (ancêtre) ; EtatIA.tsx:124 « L'IA range… » ; CRITIQUE-8 n° 21. Rendu 1280 et 390 : à revoir en ligne"
+   ]
+  ],
+  "der": "r",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-115",
+  "ligne": "« Photos · aucune » montrée vide",
+  "hist": [
+   [
+    "tri",
+    "present",
+    "CarnetOuvert.tsx:496-498 : pour un carnet neuf sans photo, la rubrique « Photos · aucune » est écrite ; l'en-tête du fichier (l.7) l'assume (« seulement dans cet état »). MISSION.md l.208 : rubrique Photos vide masquée tant qu'elle est vide. Le code suit g5:v04-4 ; la MISSION demande de la masquer. Contradiction à trancher, non à deviner."
+   ],
+   [
+    "f2",
+    "ecarte",
+    "—"
+   ]
+  ],
+  "der": "f2",
+  "cat": "ecarte",
+  "verdict": "ecarte"
+ },
+ {
+  "id": "PCN-116",
+  "ligne": "Meilleure valeur en vert sur aplat gris",
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "carnets.css:141 (.cn-meilleur : fond zone 12 %, texte area-stocks-texte), themes.css:56 (76 107 42). Contraste calculé en thème clair : environ 5,2:1 (AA tenu). PCN-152 : h05-3 n'a que le vert. Fidèle à la maquette ; lisibilité subjective, à juger sur l'image."
+   ],
+   [
+    "v2",
+    "corrige (clair)",
+    "1280 clair : 1 800 et 420 en vert gras sur aplat gris clair, lisibles ; sombre non joué."
+   ],
+   [
+    "v4",
+    "corrige",
+    "1 800 et 420 en vert sur aplat sombre discret, lisibles"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-117",
+  "ligne": "Pas de fil de chat : ses messages ne vivent que cités",
+  "hist": [
+   [
+    "tri",
+    "present",
+    "MISSION.md l.224 et l.394 : fil et comparaison de deux idées reportés aux lots E et F, après le choix du brasseur (R39, D123). Report voulu, en attente d'un choix du brasseur ; pas un défaut de code."
+   ]
+  ],
+  "der": "tri",
+  "cat": "present",
+  "verdict": "present"
+ },
+ {
+  "id": "PCN-118",
+  "ligne": "Un seul critère affiché alors que le classement en cite deux",
+  "hist": [
+   [
+    "tri",
+    "present",
+    "Comparer.tsx:157-164 et :249-251 : « Ce qui compte » n'écrit que la 1re colonne de critère (critereQuiClasse) ; le 2e (débit) n'est que dans « classées par … » (l.264). Inchangé depuis 359d88200. L'en-tête ne cite que le premier critère."
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8"
+   ],
+   [
+    "v4",
+    "corrige",
+    "« Ce qui compte tient 80 °C · proposé par l'IA, puis le débit · proposé par l'IA » (redite, voir problème 6)"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-119",
+  "ligne": "07 (390) : titre coupé entre 80 et °C ; critère écrit deux fois",
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "CRITIQUE-8.md l.15 : n° 26 « titre séparé du critère (390) » corrigé. Commit exact non identifié : entre 4e489acbb et 359d88200, ancêtres du tag. Verdict sur la critique 8."
+   ],
+   [
+    "r",
+    "en-ligne",
+    "aucune espace insécable dans le titre (git grep : seuls les milliers en ont) ; la coupure « 80 / °C » dépend de la largeur : à voir à 390 ; si présente, correctif f2 : lier la valeur et l'unité dans `titreDePhrase` / le rendu du titre"
+   ],
+   [
+    "v2",
+    "present",
+    "Zéro, « une hotte qui tient 80 °C au-dessus de la cuve » : titre = la phrase brute en minuscule. Coupure 80/°C non vue."
+   ],
+   [
+    "f4b",
+    "ouvert",
+    "—"
+   ],
+   [
+    "f4c",
+    "ecarte — R10/R11 (comme v2-neuf 4)",
+    "—"
+   ]
+  ],
+  "der": "f4c",
+  "cat": "ecarte",
+  "verdict": "ecarte — R10/R11 (comme v2-neuf 4)"
+ },
+ {
+  "id": "PCN-120",
+  "ligne": "Cartes Idée (390) : titre coupé, « Coller un lien » mange la largeur",
+  "hist": [
+   [
+    "tri",
+    "present",
+    "carnets.css:329-331 : titre limité à 2 lignes (line-clamp 2) et « Coller un lien » resserré, depuis la correction 2 ; critique 8 (n° 23) le revoit coupé après cela. Aucun changement depuis. Le port tronque à 2 lignes ; g05-1 en montre une."
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8"
+   ],
+   [
+    "v4",
+    "corrige",
+    "Liste : « Coller un lien » sur Évier et Extracteur (Idée)"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-121",
+  "ligne": "11 (390) : rangée « Va dans » coupée à droite",
+  "hist": [
+   [
+    "tri",
+    "present",
+    "carnets-fil.css:80-83 (tour 6) : la rangée défile (overflow-x auto, barre masquée, puces sans retour à la ligne), sans fondu ni indice ; critique 8 (n° 24) la revoit coupée après ce correctif. Une puce reste tronquée au bord, rien ne dit que la rangée défile."
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8"
+   ]
+  ],
+  "der": "f2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-122",
+  "ligne": "18 (390) : critère « Capter la buée », valeur lue « tient 80 °C : oui »",
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "CRITIQUE-8.md l.15 : n° 29 corrigé. Code : Comparer.tsx:166-177 (premierSansValeur : « sans valeur à comparer, il ne range pas »). Verdict sur la critique 8."
+   ],
+   [
+    "r",
+    "corrige",
+    "b3bb2d0fd « correction tour 5 » (ancêtre) ; Comparer.tsx `premierSansValeur` (« sans valeur à comparer, il ne range pas »)"
+   ]
+  ],
+  "der": "r",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-123",
+  "ligne": "16 (1280) : cadre « Arrive ici » garde environ 90 px vides",
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CadreArrivee.tsx:133-166 (cadre lien, squelette cn-squelette carnets.css:216-220, gap 12 px de .cn-cadre-bloc l.325). Aucune hauteur fixe de 90 px trouvée. Mesure de rendu."
+   ],
+   [
+    "v2",
+    "corrige",
+    "Cadre « Arrive ici, dans Articles » (lien) : 12 px sous le contenu, soit son seul retrait."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-124",
+  "ligne": "Réalisés : ligne nue, sans vignette",
+  "hist": [
+   [
+    "tri",
+    "present",
+    "src/ui/finance/UpgradeWorkspace.tsx:496-508 (renderProject : titre, date, prix, aucun VignetteObjet) ; VignetteObjet n'est utilisé qu'aux lignes 80 et 107 (À venir). La liste Réalisés reprend la ligne de l'Atelier, sans vignette."
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8"
+   ],
+   [
+    "v4",
+    "corrige",
+    "Réalisés : vignette Isobarique, « 11 700 CHF », « Ouvrir le carnet »"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-125",
+  "ligne": "Liste vide : « on le surveille » promet une veille qui ne relève rien",
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "Commit 57254e47c (paquet 1, PCN-166), ancêtre du tag. Texte actuel : « on garde sa photo et son prix, pour comparer » (CadreArrivee.tsx:82, ListeCarnets.tsx:310) ; git grep « surveill » dans src/ui/carnets : aucun résultat. Test carnetsPaquet1 « PCN-166 ». "
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-126",
+  "ligne": "Phrase sur un autre objet rangée dans le carnet ouvert",
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "Commit 21450270a (chir8, ancêtre du tag) : autreObjet + OBJETS_A_PART (CarnetsVue.tsx, lexique fermé) ; test carnetsCritique8 n° 1 ; capture 390 chir8. Mais PCN-187 et PCN-190 (test en ligne 4) : « autre projet, sans rapport : un frigo de garde » dans Pompe reste un critère de Pompe ; la tête « autre projet » n'est pas dans le lexique. 915351885 ne traite pas ce cas. Corrigé pour les objets du lexique (tuyau, évier, sol…) ; le cas général, avec la vraie IA, reste ouvert."
+   ],
+   [
+    "v2",
+    "present",
+    "Pompe ouvert : « autre projet… frigo de garde pour 20 fûts » part dans Frigo (✓) ; « tuyau silicone 8 mm, 5 m » devient critère de Pompe « Tuyau silicone 8 mm au moins »."
+   ],
+   [
+    "f4c",
+    "corrige (cas « autre projet »)",
+    "982f2d370"
+   ],
+   [
+    "v4",
+    "corrige (avec défaut)",
+    "rien n'entre dans Ventilation, rangé dans Frigo ; mais le cadre annonce « Ce qui compte : autre projet, sans rapport : un frigo… » (problème 1)"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige (avec défaut)"
+ },
+ {
+  "id": "PCN-127",
+  "ligne": "Régression : un seuil efface les valeurs de la colonne",
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "Commit 21450270a (chir8, ancêtre du tag) : axeLu, operations.ts:138 et :180 ; test carnetsCritique8 n° 2 (valeurs 1 800, 1 200, 1 500, 1 100 gardées, 1 100 « sous votre minimum ») ; capture m390-clair-2 ouverte par l'auteur. Rejoué à 390 seulement ; la logique est la même à 1280."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-128",
+  "ligne": "Un critère est rangé en note ou hors de la ligne Critère",
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "Commit 21450270a (chir8, ancêtre du tag) : typerVrac CarnetsVue.tsx:328, vuesVrac :253 (genre critère), NoteEnVrac.tsx (compte « critères ») ; test carnetsCritique8 n° 3. chir7 3 (359d88200) : ligne Critère « 2 bacs, puis assez profond pour un fût », capture 390. Prouvé en local avec IA simulée ; la vraie IA type encore parfois « note » (test en ligne 4, PCN-188) : à confirmer en ligne."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-129",
+  "ligne": "À venir contradictoire après « Garder le plan sans ce carnet »",
+  "hist": [
+   [
+    "tri",
+    "corrige",
+    "Commit 21450270a (chir8, ancêtre du tag) : lienDuPlan operations.ts:671, choisisEnAttente :683, UpgradeWorkspace.tsx (« du carnet <titre> · détaché », carnet retiré de « Choisis, pas encore dans À venir ») ; test carnetsCritique8 n° 4 ; capture m390-clair-4. Rejoué à 390 ; 1280 non rejoué."
+   ]
+  ],
+  "der": "tri",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-130",
+  "ligne": "Preuves absentes, gestes sans effet",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-102 (lot a/b/c, hors de ce lot). Défaut de méthode de la critique, à rejouer en ligne ; pas du code."
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-131",
+  "ligne": "Rang absent au dépôt d'un lien depuis la liste (1280)",
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "359d88200 (chir7 tour 2) : rangDuLien porté dans RangeeV ; test carnetsCritique7Suite n° 7 ; critique 8 (n° 7) : rang dit à 390, absent à 1280 (autre fixture). Même logique aux deux tailles ; l'écart vient peut-être de la fixture."
+   ],
+   [
+    "v2",
+    "corrige",
+    "Lien de ventilation depuis la liste : « Rangé dans … Ventilation · 1er sur 5 » à 1280 comme à 390."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-132",
+  "ligne": "Tableau G20 à un geste : « Comparer sur le débit · Ajouter » au lieu d'un tableau",
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "iaSimulee.ts:575-577 (critère proposé, propose:true) ; CarnetsVue.tsx:1100-1113 (puce « Ajouter »). Le tableau existe dès 2 articles lus (comparer.ts, tableau()). Même sujet que PCN-108 : la puce est un geste proposé, le tableau naît seul ; seul le rendu dit s'il est sous la flottaison."
+   ],
+   [
+    "v2",
+    "present",
+    "Comme PCN-108 : la puce Ajouter précède, le tableau est sous la flottaison."
+   ],
+   [
+    "f4b",
+    "corrige",
+    "a44245e81"
+   ],
+   [
+    "v4",
+    "corrige",
+    "puce « ✻ Comparer sur le débit (L/min) · Ajouter » sur une ligne, le tableau suit sans défiler"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-133",
+  "ligne": "Puces de critère empilées, hors sujet et en double",
+  "hist": [
+   [
+    "tri",
+    "present",
+    "CarnetsVue.tsx:1100-1113 : toutes les propositions de tous les messages du carnet ouvert sont rendues, sans plafond ni dédoublonnage (flatMap sur messages, filtre sur carnetId et ✕ seulement). Le hors sujet (m³/h pour un frigo) venait de l'évier rangé dans le frigo (corrigé chir8) ; le doublon « dB deux fois » et l'empilement restent."
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8"
+   ],
+   [
+    "v4",
+    "corrige",
+    "une seule puce « Comparer sur le débit (L/min) » dans Pompe ; aucune sur le Frigo"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-134",
+  "ligne": "Carnet doublon depuis la liste : « hotte murale à 1 200 m³/h au moins » crée un 2e carnet hotte",
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "rattacher.ts et doublons.ts non modifiés depuis 359d88200 (git diff --stat) ; aucun correctif nommé dans chir8 ni paquet 1. Probablement encore là (même code), mais la proximité se juge sur les carnets de la fixture."
+   ],
+   [
+    "r",
+    "en-ligne",
+    "le domaine rattache déjà : `rattacher('hotte murale à 1 200 m³/h au moins', carnets)` rend Ventilation (test carnetsTour3R.test.ts vert) ; le « 2e carnet hotte » venait du chemin de la liste (CarnetsVue.tsx, f2) : à rejouer en ligne : « Déjà un carnet proche », pas de 2e carnet"
+   ],
+   [
+    "v2",
+    "corrige",
+    "« hotte murale à 1 200 m³/h au moins » depuis la liste : rangé dans Ventilation (« parle de hotte »), Carnets reste à 6."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-135",
+  "ligne": "Phrase brute en titre et dans « Ce qui compte » (1280 : 13, 14)",
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "Critique 8 : corrigé à 390 (11). Le seuil est maintenant reformulé en critère débit (axeLu, operations.ts:180, 21450270a) ; le titre depuis la liste suit titreDePhrase (CarnetsVue.tsx:728-735). Non rejoué à 1280. Dépend de la phrase tapée et de la taille."
+   ],
+   [
+    "r",
+    "en-ligne",
+    "la reformulation en critère débit existe (axeLu, 21450270a) ; non rejoué à 1280 : titre et « Ce qui compte » après écriture depuis la liste"
+   ],
+   [
+    "v2",
+    "corrige",
+    "Aucun carnet né, donc pas de titre brut ; dans le carnet : article « Hotte murale 1 200 m… » rangé. Critère affiché réduit à « tient 80 °C » (à revoir)."
+   ]
+  ],
+  "der": "v2",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-136",
+  "ligne": "« sous votre minimum » sans minimum écrit",
+  "hist": [
+   [
+    "tri",
+    "present",
+    "comparer.ts:410 (texte fixe 'sous votre minimum' / 'au-dessus de votre maximum', sans la valeur du seuil), Comparer.tsx:305, Choisir.tsx:309 ; introduit en 4e489acbb, inchangé depuis (git log -S). Le seuil n'est écrit nulle part à l'écran."
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8"
+   ],
+   [
+    "v4",
+    "corrige",
+    "« 1 200 · sous votre minimum de 1 500 m³/h » sous la 2e (petit rouge, voir problème 7)"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-137",
+  "ligne": "Écarté sans raison dans Comparer (1280 : 27)",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-107 (verdict en-ligne : la raison est dans Comparer.tsx:332-346). "
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-138",
+  "ligne": "« À venir » dit trois fois",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-109 (present : CarnetOuvert.tsx:359-372 et :387). "
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-139",
+  "ligne": "Article sans photo ni source",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-110 (en-ligne). "
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-140",
+  "ligne": "À venir groupé « Sans date » au lieu de « Cette semaine et après »",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-111 (present : UpgradeWorkspace.tsx:72). "
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-141",
+  "ligne": "Note en vrac de brassage rangée en Matériel",
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "Tous les carnets vivent dans Stocks › Matériel (StocksTab.tsx) ; aucune règle de « brassage » dans analyseLocale.ts ni iaSimulee.ts (git grep « brassage » ciblé non fait). Paquet 1 PCN-186 ne change que la phrase citée. Probablement présent (pas de carnet « brassin » hors Matériel), mais non prouvé ligne à ligne : dans le doute, en ligne."
+   ],
+   [
+    "r",
+    "present (f2)",
+    "`parleDuBrassin` (analyseLocale.ts:244-251, 4e489acbb, ancêtre) range les lignes brassin dans « Prochain brassin » ; mais tous les carnets vivent dans Stocks › Matériel (StocksTab.tsx) : c'est ce rangement que le brasseur a vu. Test versé : la règle de reconnaissance tient. Décision : DÉCISION 4"
+   ]
+  ],
+  "der": "r",
+  "cat": "present",
+  "verdict": "present (f2)"
+ },
+ {
+  "id": "PCN-142",
+  "ligne": "« Photos · aucune » affiché vide",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-115 (present : CarnetOuvert.tsx:496-498). "
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-143",
+  "ligne": "Pas de fil de chat (report R39)",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-117. "
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-144",
+  "ligne": "Hors ligne : carnet complet, rien ne dit que l'IA range au retour",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-113 (en-ligne). "
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-145",
+  "ligne": "Bulle G8 absente à 1280",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-103 (autre lot). "
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-146",
+  "ligne": "Carnet créé avant confirmation (« Sol du local » déjà en Idée 3 pendant la découpe)",
+  "hist": [
+   [
+    "tri",
+    "en-ligne",
+    "CarnetsVue.tsx:743-745 et :765-780 : l'écriture locale est faite à l'envoi, l'IA la remplace ensuite (remplacerRangement) ; la création anticipée est voulue (critique 7, doute : « création anticipée »). Le correctif paquet 1 PCN-184 (57254e47c) ne couvre que l'envoi depuis un carnet ouvert (CarnetsVue.tsx : definitif). Voulu par le mécanisme d'aperçu local ; c'est la confirmation de la note en vrac qui n'est pas prouvée."
+   ],
+   [
+    "r",
+    "present (f2)",
+    "CarnetsVue.tsx:738-780 : l'écriture locale part à l'envoi et l'IA la remplace (`remplacerRangement`) ; « Sol du local » est donc visible avant la confirmation : voulu par la critique 7 (« création anticipée »), contraire à ce que le brasseur a vu. Correctif attendu côté f2 : ne pas montrer en liste un carnet créé par une note en vrac tant que la découpe attend (ou le marquer provisoire), test carnetsEnLigne*.test.tsx"
+   ]
+  ],
+  "der": "r",
+  "cat": "present",
+  "verdict": "present (f2)"
+ },
+ {
+  "id": "PCN-147",
+  "ligne": "Un seul critère dans Comparer et Choisir",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-118 (present : Comparer.tsx:249-251). "
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-148",
+  "ligne": "Titre de carte Idée coupé",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-120 (present : carnets.css:329). "
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-149",
+  "ligne": "Rangée « Va dans » coupée à droite",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-121 (present : carnets-fil.css:80-83). "
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-150",
+  "ligne": "Liste vide qui promet la veille",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-125 (corrige par 57254e47c). "
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-151",
+  "ligne": "Fiche réalisée contradictoire : « Choisi le 14 nov. » et « Réalisé, payé le 16 nov. »",
+  "hist": [
+   [
+    "tri",
+    "present",
+    "CarnetOuvert.tsx:90 (pastille toujours « Choisi le <date> » quand status=validated) et :387 (texteSortie : « Réalisé, payé le … ») ; la pastille ne lit pas la sortie. 359d88200 a corrigé les lignes de sortie (PCN-98) mais pas cette pastille ; inchangé depuis. La pastille d'état ignore la sortie réalisée."
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8"
+   ],
+   [
+    "v4",
+    "corrige",
+    "Embouteillage : pastille « Réalisé le 16 nov. »"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-152",
+  "ligne": "Meilleure valeur en vert sur aplat gris-vert (1280 : 09)",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-116 (en-ligne ; contraste 5,2:1). "
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-153",
+  "ligne": "Cadre « Arrive ici » avec 90 px vides",
+  "hist": [
+   [
+    "tri",
+    "doublon",
+    "Même défaut que PCN-123 (en-ligne). "
+   ]
+  ],
+  "der": "tri",
+  "cat": "ecarte",
+  "verdict": "doublon"
+ },
+ {
+  "id": "PCN-154",
+  "ligne": "Menu ··· dans le flux : pousse le titre de 130 px",
+  "hist": [
+   [
+    "tri",
+    "present",
+    "CarnetOuvert.tsx:330-337 (le menu est un bloc .cn-feuille .cn-menu inséré entre l'en-tête et le titre) ; carnets.css:249 « .cn-menu { align-self: flex-end; min-width: 220px } » : aucun position absolute ni flottant. Le menu est dans le flux de la colonne."
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8"
+   ],
+   [
+    "v4",
+    "corrige",
+    "menu ··· dans la tête, à droite de la pastille de statut"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "PCN-155",
+  "ligne": "Pastille « À comparer » sans lien lu",
+  "hist": [
+   [
+    "tri",
+    "present",
+    "modele.ts:298 : « un choix → Choisi ; au moins un article → À comparer », lu ou non (relu par grep : comparer.ts:747, Choisir.tsx:238, EtatIA.tsx:53). Aucun changement depuis 359d88200. Un article non lu suffit à passer le carnet en « À comparer »."
+   ],
+   [
+    "r",
+    "present (f2)",
+    "src/domain/carnets/modele.ts:298 `statutDe` : `carnet.articles.length > 0 ? 'research'` (lu ou non) ; correctif attendu : « À comparer » seulement avec au moins un article LU (champ lu/valeurs), test dans carnetsBanc.test.ts"
+   ],
+   [
+    "f2",
+    "corrige",
+    "bfd8cfae8"
+   ],
+   [
+    "v4",
+    "corrige",
+    "statut « Choisi le 10 oct. », « Idée · 19 nov. », « À comparer » en pastille"
+   ]
+  ],
+  "der": "v4",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "T3-6",
+  "hist": [
+   [
+    "f1",
+    "corrige",
+    "d1848500b"
+   ],
+   [
+    "v3",
+    "corrige",
+    "Saisie à la main « ZZ TEST — v3 dépense », 1,00 à payer, Enregistrer : feuille fermée, « Achat enregistré. », écriture listée en Finances (dev-local, sans réseau lent)"
+   ]
+  ],
+  "neuf": true,
+  "der": "v3",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "T3-7",
+  "hist": [
+   [
+    "f1",
+    "corrige",
+    "d1848500b"
+   ],
+   [
+    "v3",
+    "corrige",
+    "Saisie à la main, total 1,00, « À payer » : pastille du pied « Mon mois −1,00 » (390 et 1280)"
+   ]
+  ],
+  "neuf": true,
+  "der": "v3",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "E1-2",
+  "hist": [
+   [
+    "f1",
+    "ouvert — non reproduit sur le code",
+    "d1848500b (2 témoins)"
+   ],
+   [
+    "v3",
+    "non-joue",
+    "—"
+   ],
+   [
+    "v5b",
+    "non joué",
+    "geste du banc faux deux fois (rangées fermées, section « Articles » fermée en g4) ; à rejouer (REPRISE)"
+   ]
+  ],
+  "neuf": true,
+  "der": "v5b",
+  "cat": "a-voir",
+  "verdict": "non joué"
+ },
+ {
+  "id": "BE-23",
+  "hist": [
+   [
+    "f1",
+    "corrige (libellé) ; rouge non obtenu",
+    "d1848500b"
+   ],
+   [
+    "v3",
+    "non-joue",
+    "—"
+   ],
+   [
+    "v5b",
+    "corrige",
+    "medicament, « Ajouter au stock » : « 4 pièce », choix Ingrédient/Emballage/Nettoyage ; « Stk » absent partout"
+   ]
+  ],
+  "neuf": true,
+  "der": "v5b",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "BE-27",
+  "hist": [
+   [
+    "f1",
+    "ouvert — à juger sur capture",
+    "—"
+   ],
+   [
+    "v3",
+    "corrige",
+    "Stocks › Matériel › Enregistrer un achat, « Créer la fiche de ce matériel », bas à 390 : « La fiche reprendra le prix et la date… » lisible au-dessus d’« Enregistrer »"
+   ]
+  ],
+  "neuf": true,
+  "der": "v3",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "BR-27",
+  "hist": [
+   [
+    "f3",
+    "corrige",
+    "e1500f2e8"
+   ],
+   [
+    "v3",
+    "non-joue",
+    "—"
+   ],
+   [
+    "v5b",
+    "corrige",
+    "« -1 » : « une valeur négative n’existe pas ici. Le champ reste vide. »"
+   ]
+  ],
+  "neuf": true,
+  "der": "v5b",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "TE-35",
+  "hist": [
+   [
+    "f3",
+    "corrige (déjà corrigé avant cette voie par MoneyInput/ChampNombre, BE-64/71 ; preuve ajoutée sur livraison « abc », prix « −5 » après 120, installation « -5 »)",
+    "e1500f2e8 (test seul)"
+   ],
+   [
+    "v3",
+    "non-joue",
+    "—"
+   ],
+   [
+    "v5b",
+    "non joué",
+    "prix, livraison, pose absents de « Modifier le devis » ; ils sont sous « À étudier · mon estimation » (REPRISE)"
+   ]
+  ],
+  "neuf": true,
+  "der": "v5b",
+  "cat": "a-voir",
+  "verdict": "non joué"
+ },
+ {
+  "id": "TE-36",
+  "hist": [
+   [
+    "f3",
+    "corrige (registre : « caduc » ; faux : la feuille du projet affichait « Dans mes prévisions » (ProjetPiste:87), la fiche À venir aussi (UpgradeWorkspace:323), la liste et le nom lu « Inclure dans mes prévisions »)",
+    "54ac4ab82"
+   ],
+   [
+    "v3",
+    "non-joue",
+    "—"
+   ],
+   [
+    "v5b",
+    "corrige",
+    "fiche et feuille : « Inclure dans mes prévisions »"
+   ]
+  ],
+  "neuf": true,
+  "der": "v5b",
+  "cat": "corrige",
+  "verdict": "corrige"
+ },
+ {
+  "id": "BE-26",
+  "hist": [
+   [
+    "f3",
+    "ecarte (caduc : CreativePricing.tsx supprimé, 934f9a80, accord du 10.11 ; borne d'un format : BORNES_FINANCE.formatCents ; prix de tarif : BE-98, eae00e02)",
+    "—"
+   ]
+  ],
+  "neuf": true,
+  "der": "f3",
+  "cat": "ecarte",
+  "verdict": "ecarte (caduc : CreativePricing.tsx supprimé, 934f9a80, accord du 10.11 ; borne d'un format : BORNES_FINANCE.formatCents ; prix de tarif : BE-98, eae00e02)"
+ }
+]

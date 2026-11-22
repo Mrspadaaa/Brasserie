@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "note": "Vérité de la voie t2a, écrite le 14.11 AVANT toute passe payante. Recettes et relectures INVENTÉES (aucune donnée du brasseur). Valeurs attendues calculées à la main (voir VERITE.md). half = choix (réglage, élimination) ou jugement (verdict). Les cas qui viennent des fixtures du banc #91 portent 'depuis'.",
+  "cas": [
+    {
+      "id": "imp-fr-metrique", "usage": "import", "half": "choix",
+      "instruction": "Blonde des Alpes (recette fictive de banc)\nVolume final : 20 L — DI 1,050 — DF 1,010\nMalts : 4,2 kg Pilsner, 0,5 kg Munich clair, 0,2 kg flocons d'avoine\nHoublons : Saaz (alpha 3,5 %) 30 g à 60 min ; Saaz 20 g à 10 min ; Hallertau Mittelfrüh 20 g au flame-out (0 min)\nLevure : SafLager W-34/70, 11,5 g\nEmpâtage : 64 °C pendant 45 min, puis 72 °C pendant 20 min, puis 78 °C pendant 10 min.\nFermentation : 12 °C pendant 14 jours.",
+      "expected": {
+        "name": "Blonde des Alpes", "volumeL": 20, "ogTarget": 1.05, "fgTarget": 1.01, "tolOg": 0.0006,
+        "fermentables": [{ "name": "pilsner", "weightKg": 4.2 }, { "name": "munich", "weightKg": 0.5 }, { "name": "avoine|flocon|oat", "weightKg": 0.2 }],
+        "hops": [
+          { "name": "saaz", "weightG": 30, "alpha": 3.5, "stages": ["boil"], "timeMin": 60 },
+          { "name": "saaz", "weightG": 20, "alpha": 3.5, "stages": ["boil"], "timeMin": 10 },
+          { "name": "hallertau", "weightG": 20, "alpha": null, "stages": ["boil", "whirlpool"], "timeMin": 0 }
+        ],
+        "yeast": "w-34|w34",
+        "mashSteps": [{ "tempC": 64, "durationMin": 45 }, { "tempC": 72, "durationMin": 20 }, { "tempC": 78, "durationMin": 10 }],
+        "nbFermentables": 3, "nbHops": 3
+      }
+    },
+    {
+      "id": "imp-de-plato", "usage": "import", "half": "choix",
+      "instruction": "Dunkles Vollbier – Testrezept (fiktiv)\nAusschlagmenge: 25 Liter. Stammwürze 12 °P, Restextrakt 3 °P.\nSchüttung: 5 kg Münchner Malz, 1 kg Pilsner Malz, 0,2 kg Carafa Typ 2.\nHopfung: 40 g Tradition (6 % Alpha) 70 Minuten Kochzeit; 25 g Saphir (3,5 % Alpha) 10 Minuten vor Kochende.\nHefe: Saflager W-34/70.\nMaischen: Einmaischen bei 63 °C, 40 Min. Rast; Verzuckerung 72 °C, 30 Min. Rast.",
+      "expected": {
+        "name": "Dunkles Vollbier", "volumeL": 25, "ogTarget": 1.0484, "fgTarget": 1.0117, "tolOg": 0.0015,
+        "fermentables": [{ "name": "m(u|ü)nch|munich", "weightKg": 5 }, { "name": "pilsner", "weightKg": 1 }, { "name": "carafa", "weightKg": 0.2 }],
+        "hops": [
+          { "name": "tradition", "weightG": 40, "alpha": 6, "stages": ["boil"], "timeMin": 70 },
+          { "name": "saphir", "weightG": 25, "alpha": 3.5, "stages": ["boil"], "timeMin": 10 }
+        ],
+        "yeast": "w-34|w34",
+        "mashSteps": [{ "tempC": 63, "durationMin": 40 }, { "tempC": 72, "durationMin": 30 }],
+        "nbFermentables": 3, "nbHops": 2
+      }
+    },
+    {
+      "id": "imp-photo-metrique", "usage": "import", "half": "choix", "depuis": "tests/fixtures/gemini-usage-bench/vision/recette-photo.png",
+      "instruction": "Lis la recette sur ce document.",
+      "file": "tests/fixtures/gemini-usage-bench/vision/recette-photo.png", "mimeType": "image/png",
+      "expected": {
+        "name": "Blonde du Moulin", "volumeL": 20, "ogTarget": 1.048, "fgTarget": 1.01, "tolOg": 0.0006,
+        "fermentables": [{ "name": "pilsner", "weightKg": 4 }, { "name": "munich", "weightKg": 0.5 }],
+        "hops": [
+          { "name": "saaz", "weightG": 30, "alpha": 3.5, "stages": ["boil"], "timeMin": 60 },
+          { "name": "saaz", "weightG": 20, "alpha": 3.5, "stages": ["boil"], "timeMin": 10 }
+        ],
+        "yeast": "us-05|us05",
+        "mashSteps": [{ "tempC": 66, "durationMin": 60 }, { "tempC": 76, "durationMin": 10 }],
+        "nbFermentables": 2, "nbHops": 2
+      }
+    },
+    {
+      "id": "imp-en-imperial", "usage": "import", "half": "jugement",
+      "instruction": "Citrus Session IPA (fictional test recipe)\nBatch size: 5 gallons. OG 1.062, FG 1.012.\nGrain bill: 10 lb 2-row pale malt, 1 lb Crystal 40L, 0.5 lb Carapils.\nHops: 0.5 oz Magnum (13% AA) at 60 min. 1 oz Citra (12% AA) hop stand for 20 min at 170 F. 2 oz Citra (12% AA) dry hop on day 4 of fermentation.\nYeast: SafAle US-05, 11.5 g (one packet).\nMash at 152 F for 60 minutes.",
+      "expected": {
+        "name": "Citrus Session IPA", "volumeL": 18.93, "ogTarget": 1.062, "fgTarget": 1.012, "tolOg": 0.0006,
+        "fermentables": [{ "name": "2-row|pale", "weightKg": 4.536 }, { "name": "crystal", "weightKg": 0.4536 }, { "name": "carapils", "weightKg": 0.2268 }],
+        "hops": [
+          { "name": "magnum", "weightG": 14.17, "alpha": 13, "stages": ["boil"], "timeMin": 60 },
+          { "name": "citra", "weightG": 28.35, "alpha": 12, "stages": ["whirlpool"], "timeMin": 20 },
+          { "name": "citra", "weightG": 56.7, "alpha": 12, "stages": ["dryHop"], "dayOffset": 4 }
+        ],
+        "yeast": "us-05|us05",
+        "mashSteps": [{ "tempC": 66.7, "durationMin": 60 }],
+        "nbFermentables": 3, "nbHops": 3
+      }
+    },
+    {
+      "id": "imp-saison-sucre", "usage": "import", "half": "jugement",
+      "instruction": "Saison de la Gruyère (test)\n23 L, DI 1.058, DF 1.006\nGrains : 4,5 kg Pilsner, 0,5 kg froment malté\nSucre candi blond 500 g, ajouté à l'ébullition (10 min avant la fin)\nHoublons : Styrian Goldings 40 g (4,5 % AA) à 60 min ; Saaz 30 g (3,5 % AA) à 5 min\nÉpice : 10 g d'écorce d'orange amère à 5 min\nLevure : Belle Saison, 11 g\nEmpâtage 63 °C 60 min. Fermentation 24 °C pendant 10 jours.",
+      "expected": {
+        "name": "Saison de la Gruyère", "volumeL": 23, "ogTarget": 1.058, "fgTarget": 1.006, "tolOg": 0.0006,
+        "fermentables": [{ "name": "pilsner", "weightKg": 4.5 }, { "name": "froment|wheat", "weightKg": 0.5 }, { "name": "candi|sucre|sugar", "weightKg": 0.5, "kind": "sucre" }],
+        "hops": [
+          { "name": "styrian", "weightG": 40, "alpha": 4.5, "stages": ["boil"], "timeMin": 60 },
+          { "name": "saaz", "weightG": 30, "alpha": 3.5, "stages": ["boil"], "timeMin": 5 }
+        ],
+        "yeast": "belle saison|saison",
+        "mashSteps": [{ "tempC": 63, "durationMin": 60 }],
+        "adjuncts": ["orange"],
+        "nbFermentables": 3, "nbHops": 2
+      }
+    },
+    {
+      "id": "imp-brown-ale-pdf", "usage": "import", "half": "jugement", "depuis": "tests/fixtures/gemini-usage-bench/recette-brown-ale.pdf",
+      "instruction": "Lis la recette sur ce document.",
+      "file": "tests/fixtures/gemini-usage-bench/recette-brown-ale.pdf", "mimeType": "application/pdf",
+      "expected": {
+        "name": "Brown Ale du Banc", "volumeL": 18.93, "ogTarget": 1.05, "fgTarget": 1.012, "tolOg": 0.0006,
+        "fermentables": [{ "name": "maris otter", "weightKg": 3.629 }, { "name": "crystal", "weightKg": 0.4536 }, { "name": "chocolate", "weightKg": 0.2268 }],
+        "hops": [
+          { "name": "goldings", "weightG": 28.35, "alpha": 5, "stages": ["boil"], "timeMin": 60 },
+          { "name": "fuggle", "weightG": 14.17, "alpha": 4.5, "stages": ["boil"], "timeMin": 15 }
+        ],
+        "yeast": "s-04|s04",
+        "mashSteps": [{ "tempC": 66.7, "durationMin": 60 }, { "tempC": 75.6, "durationMin": 10 }],
+        "nbFermentables": 3, "nbHops": 2
+      }
+    },
+
+    {
+      "id": "rel-defauts-helles", "usage": "relecture", "half": "choix", "depuis": "tests/fixtures/gemini-usage-bench/cases.json (relecture-defauts)",
+      "context": {"name":"Helles de banc (fictive)","style":"Munich Helles","volumeL":20,"ogTarget":1.048,"fgTarget":1.01,"ibuTarget":20,"colorEbc":8,"fermentables":[{"name":"Pilsner","weightKg":4.2,"colorEbc":3.5,"kind":"grain","use":"empatage"},{"name":"Munich clair","weightKg":0.3,"colorEbc":15,"kind":"grain","use":"empatage"}],"hops":[{"name":"Magnum","alpha":14,"weightG":60,"stage":"boil","timeMin":60},{"name":"Hallertauer Mittelfrüh","weightG":30,"stage":"boil","timeMin":10}],"yeast":{"name":"SafLager W-34/70","form":"sèche","grams":23},"mashSteps":[{"name":"Saccharification","tempC":78,"durationMin":60},{"name":"Mash-out","tempC":78,"durationMin":10}],"waterPlan":{"source":"eau du réseau","saltsG":{"gypse":12,"chlorureCalcium":0}},"waterTreatment":{"ionsAfterTreatmentPpm":{"calcium":160,"sulfate":350,"chloride":20,"bicarbonate":60}},"boilMin":60,"efficiencyPct":75},
+      "expected": {"defects":[{"id":"palier","pattern":"palier|empâtage|empatage|maische|sacchar|78","severity":["bloquant"]},{"id":"amertume","pattern":"amertume|IBU|magnum|houblon","severity":["gout","bloquant"]},{"id":"eau","pattern":"sulfate|SO4|chlorure|eau|gypse","severity":["gout","detail"]}],"missingPattern":"alpha","blockingAllowedPattern":"palier|empâtage|empatage|maische|sacchar|78|amertume|IBU|magnum"}
+    },
+    {
+      "id": "rel-ipa-levure-eau", "usage": "relecture", "half": "choix",
+      "context": {"name":"IPA de banc (fictive)","style":"American IPA","volumeL":20,"ogTarget":1.065,"fgTarget":1.012,"ibuTarget":60,"colorEbc":12,"fermentables":[{"name":"Pale Ale","weightKg":5.2,"colorEbc":6,"kind":"grain","use":"empatage"},{"name":"Crystal 20","weightKg":0.3,"colorEbc":40,"kind":"grain","use":"empatage"}],"hops":[{"name":"Warrior","alpha":15,"weightG":25,"stage":"boil","timeMin":60},{"name":"Citra","weightG":100,"stage":"whirlpool","timeMin":20,"tempC":80},{"name":"Citra","weightG":80,"stage":"dryHop","dayOffset":4}],"yeast":{"name":"SafAle US-05","form":"sèche","grams":5},"mashSteps":[{"name":"Saccharification","tempC":66,"durationMin":60},{"name":"Mash-out","tempC":76,"durationMin":10}],"waterPlan":{"source":"eau du réseau","saltsG":{"gypse":0,"chlorureCalcium":10}},"waterTreatment":{"ionsAfterTreatmentPpm":{"calcium":90,"sulfate":40,"chloride":200,"bicarbonate":40}},"boilMin":60,"efficiencyPct":75},
+      "expected": {"defects":[{"id":"levure","pattern":"levure|ensemencement|US-05|5 g|cellules","severity":["gout","bloquant"]},{"id":"eau","pattern":"chlorure|sulfate|SO4|eau|rapport","severity":["gout","detail","bloquant"]}],"missingPattern":"alpha|Citra","blockingAllowedPattern":"levure|ensemencement|US-05|5 g|cellules"}
+    },
+    {
+      "id": "rel-stout-saine", "usage": "relecture", "half": "choix",
+      "context": {"name":"Dry Stout de banc saine (fictive)","style":"Irish Dry Stout","volumeL":20,"ogTarget":1.042,"fgTarget":1.010,"ibuTarget":35,"colorEbc":70,"fermentables":[{"name":"Pale Ale","weightKg":3.4,"colorEbc":6,"kind":"grain","use":"empatage"},{"name":"Flocons d'orge","weightKg":0.5,"colorEbc":4,"kind":"grain","use":"empatage"},{"name":"Orge torréfiée","weightKg":0.3,"colorEbc":1000,"kind":"grain","use":"empatage"}],"hops":[{"name":"East Kent Goldings","alpha":5.5,"weightG":40,"stage":"boil","timeMin":60}],"yeast":{"name":"SafAle S-04","form":"sèche","grams":11.5},"mashSteps":[{"name":"Saccharification","tempC":67,"durationMin":60},{"name":"Mash-out","tempC":76,"durationMin":10}],"waterPlan":{"source":"eau du réseau","saltsG":{"gypse":2,"chlorureCalcium":2}},"waterTreatment":{"ionsAfterTreatmentPpm":{"calcium":70,"sulfate":60,"chloride":60,"bicarbonate":150}},"boilMin":60,"efficiencyPct":75},
+      "expected": {"defects":[],"missingPattern":null,"blockingAllowedPattern":null}
+    },
+    {
+      "id": "rel-saine-pale", "usage": "relecture", "half": "jugement", "depuis": "tests/fixtures/gemini-usage-bench/cases.json (relecture-saine)",
+      "context": {"name":"Pale de banc saine (fictive)","style":"American Pale Ale","volumeL":20,"ogTarget":1.05,"fgTarget":1.011,"ibuTarget":38,"colorEbc":14,"fermentables":[{"name":"Pale Ale","weightKg":4.4,"colorEbc":6,"kind":"grain","use":"empatage"},{"name":"Crystal 40","weightKg":0.3,"colorEbc":80,"kind":"grain","use":"empatage"}],"hops":[{"name":"Magnum","alpha":13,"weightG":14,"stage":"boil","timeMin":60},{"name":"Cascade","alpha":6.5,"weightG":40,"stage":"whirlpool","timeMin":15,"tempC":80},{"name":"Cascade","alpha":6.5,"weightG":50,"stage":"dryHop","dayOffset":4}],"yeast":{"name":"SafAle US-05","form":"sèche","grams":11.5},"mashSteps":[{"name":"Saccharification","tempC":66,"durationMin":60},{"name":"Mash-out","tempC":76,"durationMin":10}],"waterPlan":{"source":"eau du réseau","saltsG":{"gypse":4,"chlorureCalcium":2}},"waterTreatment":{"ionsAfterTreatmentPpm":{"calcium":95,"sulfate":160,"chloride":75,"bicarbonate":50}},"boilMin":60,"efficiencyPct":75},
+      "expected": {"defects":[],"missingPattern":null,"blockingAllowedPattern":null}
+    },
+    {
+      "id": "rel-pils-densite", "usage": "relecture", "half": "jugement",
+      "context": {"name":"Pils de banc (fictive)","style":"German Pilsner","volumeL":25,"ogTarget":1.060,"fgTarget":1.010,"ibuTarget":30,"colorEbc":6,"fermentables":[{"name":"Pilsner","weightKg":3.0,"colorEbc":3.5,"kind":"grain","use":"empatage"}],"hops":[{"name":"Hallertauer Tradition","alpha":6,"weightG":35,"stage":"boil","timeMin":60},{"name":"Saphir","alpha":3.5,"weightG":25,"stage":"boil","timeMin":10}],"yeast":{"name":"SafLager W-34/70","form":"sèche","grams":23},"mashSteps":[{"name":"Saccharification","tempC":65,"durationMin":60},{"name":"Mash-out","tempC":76,"durationMin":10}],"waterPlan":{"source":"eau du réseau","saltsG":{"gypse":0,"chlorureCalcium":0}},"waterTreatment":{"ionsAfterTreatmentPpm":{"calcium":50,"sulfate":50,"chloride":50,"bicarbonate":30}},"boilMin":60,"efficiencyPct":75},
+      "expected": {"defects":[{"id":"densite","pattern":"densit|OG|1[.,]06|grain|quantit|malt|rendement|kg","severity":["bloquant","gout"]}],"missingPattern":null,"blockingAllowedPattern":"densit|OG|1[.,]06|grain|quantit|malt|rendement|kg"}
+    },
+    {
+      "id": "rel-lager-bicarbonate", "usage": "relecture", "half": "jugement",
+      "context": {"name":"Lager claire de banc (fictive)","style":"Helles","volumeL":20,"ogTarget":1.047,"fgTarget":1.009,"ibuTarget":20,"colorEbc":7,"fermentables":[{"name":"Pilsner","weightKg":4.3,"colorEbc":3.5,"kind":"grain","use":"empatage"}],"hops":[{"name":"Hallertauer Mittelfrüh","alpha":4.2,"weightG":40,"stage":"boil","timeMin":60},{"name":"Hallertauer Mittelfrüh","alpha":4.2,"weightG":20,"stage":"boil","timeMin":10}],"yeast":{"name":"SafLager W-34/70","form":"sèche","grams":23},"mashSteps":[{"name":"Saccharification","tempC":65,"durationMin":60},{"name":"Mash-out","tempC":76,"durationMin":10}],"waterPlan":{"source":"eau du réseau","saltsG":{"gypse":0,"chlorureCalcium":0}},"waterTreatment":{"ionsAfterTreatmentPpm":{"calcium":60,"sulfate":30,"chloride":30,"bicarbonate":350}},"boilMin":60,"efficiencyPct":75},
+      "expected": {"defects":[{"id":"alcalinite","pattern":"bicarbonate|HCO3|alcalinit|pH|eau","severity":["gout","bloquant"]}],"missingPattern":null,"blockingAllowedPattern":"bicarbonate|HCO3|alcalinit|pH|eau"}
+    },
+
+    {
+      "id": "coa-simple", "usage": "coa", "half": "choix", "depuis": "tests/fixtures/gemini-usage-bench/coa-simple.pdf",
+      "file": "tests/fixtures/gemini-usage-bench/coa-simple.pdf", "mimeType": "application/pdf",
+      "expected": {"found":true,"lotNumber":"BENCH-LOT-2025-031","harvestYear":2025,"analyses":[{"analyte":"alpha","value":6.8},{"analyte":"beta","value":5.9},{"analyte":"totalOil","value":1.1},{"analyte":"hsi","value":0.28}],"forbidden":[]}
+    },
+    {
+      "id": "coa-photo", "usage": "coa", "half": "choix", "depuis": "tests/fixtures/gemini-usage-bench/vision/coa-photo.png",
+      "file": "tests/fixtures/gemini-usage-bench/vision/coa-photo.png", "mimeType": "image/png",
+      "expected": {"found":true,"lotNumber":"BENCH-LOT-2025-031","harvestYear":2025,"analyses":[{"analyte":"alpha","value":6.8},{"analyte":"beta","value":5.9},{"analyte":"totalOil","value":1.1},{"analyte":"hsi","value":0.28}],"forbidden":[]}
+    },
+    {
+      "id": "coa-piege", "usage": "coa", "half": "jugement", "depuis": "tests/fixtures/gemini-usage-bench/coa-piege.pdf",
+      "file": "tests/fixtures/gemini-usage-bench/coa-piege.pdf", "mimeType": "application/pdf",
+      "expected": {"found":true,"lotNumber":"BENCH-LOT-2024-112","harvestYear":2024,"analyses":[{"analyte":"alpha","value":12.4},{"analyte":"beta","value":4.1},{"analyte":"totalOil","value":2.6},{"analyte":"myrcene","value":48}],"forbidden":[{"why":"plage variétale de l'annexe","analyte":"alpha","kind":"range"},{"why":"plage variétale de l'annexe","analyte":"beta","kind":"range"},{"why":"HSI non déterminé","analyte":"hsi"},{"why":"seuil olfactif ou dose de kit","unit":"ugL"}]}
+    },
+
+    {
+      "id": "var-fictive", "usage": "variete", "half": "choix", "task": "lookupHopVariety",
+      "context": {"name": "Affinée Gold"},
+      "expected": {"found": false}
+    },
+    {
+      "id": "var-citra", "usage": "variete", "half": "jugement", "task": "lookupHopVariety",
+      "context": {"name": "Citra"},
+      "expected": {"found": true, "alphaMin": 10, "alphaMax": 15, "note": "plage publiée par les producteurs (Yakima Chief, BarthHaas) autour de 11 à 13 % ; à reverifier : le critère ne vise que l'ordre de grandeur"}
+    }
+  ]
+}

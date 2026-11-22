@@ -1,0 +1,100 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 5 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5b.test.tsx[2m > [22mf5b n° 3 : le titre d’un carnet existant tapé dans la liste ouvre ce carnet[2m > [22mle cadre propose « Ouvrir ce carnet » ; un toucher ouvre Ventilation, champ vidé
+[31m[1mAssertionError[22m: expected 'Nouveau carnet · Idée arrive iciVenti…' not to contain 'Y ajouter en façon'[39m
+
+Expected: [32m"Y ajouter en façon"[39m
+Received: [31m"[7mNouveau carnet · Idée arrive iciVentilation de la salle✻ Déjà un carnet proche : ZZ TEST — Ventilation de la salle de brassage [27mY ajouter en façon"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5b.test.tsx:[2m60:23[22m[39m
+    [90m 58| [39m    const cadre = document.querySelector('.cn-cadre')?.textContent ?? …
+    [90m 59| [39m    expect(cadre).toContain('Déjà un carnet proche : ZZ TEST — Ventila…
+    [90m 60| [39m    [34mexpect[39m(cadre)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'Y ajouter en façon'[39m)[33m;[39m
+    [90m   | [39m                      [31m^[39m
+    [90m 61| [39m    fireEvent.click(screen.getByRole('button', { name: /Ouvrir ce carn…
+    [90m 62| [39m    [35mawait[39m [34mattendre[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5b.test.tsx[2m > [22mf5b n° 10 : « moins bien … sur tout » jamais quand une colonne lue les sépare[2m > [22mdomine : la 2e n’est pas dominée, elle a le meilleur débit ; à débit égal, elle l’est
+[31m[1mAssertionError[22m: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5b.test.tsx:[2m81:53[22m[39m
+    [90m 79| [39m  [35mconst[39m inox [33m=[39m [34mart[39m([32m'Pompe de transfert inox'[39m[33m,[39m [34m90[39m[33m,[39m [34m40[39m[33m,[39m [34m690[39m)[33m;[39m
+    [90m 80| [39m  it('domine : la 2e n’est pas dominée, elle a le meilleur débit ; à d…
+    [90m 81| [39m    [34mexpect[39m([34mdomine[39m(inox[33m,[39m magnetique[33m,[39m [temp[33m,[39m debit]))[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m   | [39m                                                    [31m^[39m
+    [90m 82| [39m    expect(moinsBienPartout(inox, [magnetique, inox], [temp, debit])).…
+    [90m 83| [39m    [35mconst[39m inox25 [33m=[39m [34mart[39m([32m'Pompe de transfert inox'[39m[33m,[39m [34m90[39m[33m,[39m [34m25[39m[33m,[39m [34m690[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5b.test.tsx[2m > [22mf5b n° 10 : « moins bien … sur tout » jamais quand une colonne lue les sépare[2m > [22mtableau : la ligne de la pompe inox ne porte ni « moins bien que la 1re » ni « moins bien partout »
+[31m[1mAssertionError[22m: expected 1 to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+1
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5b.test.tsx:[2m95:28[22m[39m
+    [90m 93| [39m    [35mconst[39m l [33m=[39m t[33m.[39mlignes[33m.[39m[34mfind[39m(x [33m=>[39m x[33m.[39marticleId [33m===[39m inox[33m.[39mid)[33m![39m[33m;[39m
+    [90m 94| [39m    [34mexpect[39m(l[33m.[39mrang)[33m.[39m[34mtoBe[39m([34m2[39m)[33m;[39m
+    [90m 95| [39m    [34mexpect[39m(l[33m.[39mmoinsBienQue)[33m.[39m[34mtoBeUndefined[39m()[33m;[39m
+    [90m   | [39m                           [31m^[39m
+    [90m 96| [39m    [34mexpect[39m(l[33m.[39mmoinsBienPartout)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m 97| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5b.test.tsx[2m > [22mf5b n° 12 : un lien de hotte collé depuis la liste va dans Ventilation[2m > [22mle cadre annonce Ventilation, sans carnet titré du domaine ni façon ; l’envoi y range l’article, aucun carnet neuf
+[31m[1mAssertionError[22m: expected 'Nouveau carnet · Idée arrive iciexemp…' to contain 'va dans ZZ TEST — Ventilation de la s…'[39m
+
+Expected: [32m"[7mva dans[27m ZZ TEST — Ventilation de la salle de brassage"[39m
+Received: [31m"[7mNouveau carnet · Idée arrive iciexemple.invalid✻ Déjà un carnet proche :[27m ZZ TEST — Ventilation de la salle de brassage[7m Y ajouter en façon[27m"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5b.test.tsx:[2m111:19[22m[39m
+    [90m109| [39m    [35mawait[39m [34mattendre[39m([34m10[39m)[33m;[39m
+    [90m110| [39m    const cadre = document.querySelector('.cn-cadre')?.textContent ?? …
+    [90m111| [39m    expect(cadre).toContain('va dans ZZ TEST — Ventilation de la salle…
+    [90m   | [39m                  [31m^[39m
+    [90m112| [39m    [34mexpect[39m(cadre)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'Nouveau carnet'[39m)[33m;[39m
+    [90m113| [39m    [34mexpect[39m(cadre)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'Y ajouter en façon'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5b.test.tsx[2m > [22mf5b n° 13 : la puce « Coller : … » seule n’est pas bornée ni coupée net[2m > [22msans bulle, la puce est dans `.cnf-aides` (pas la ligne à 55 %) ; son lien se coupe par « … » s’il le faut
+[31m[1mAssertionError[22m: expected 'cnf-aides-ligne' to be 'cnf-aides' // Object.is equality[39m
+
+Expected: [32m"cnf-aides"[39m
+Received: [31m"cnf-aides[7m-ligne[27m"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5b.test.tsx:[2m133:43[22m[39m
+    [90m131| [39m    [35mawait[39m [34mattendre[39m()[33m;[39m
+    [90m132| [39m    [35mconst[39m puce [33m=[39m screen[33m.[39m[34mgetByRole[39m([32m'button'[39m[33m,[39m { name[33m:[39m [36m/Coller :/[39m })[33m;[39m
+    [90m133| [39m    [34mexpect[39m(puce[33m.[39mparentElement[33m?.[39mclassName)[33m.[39m[34mtoBe[39m([32m'cnf-aides'[39m)[33m;[39m
+    [90m   | [39m                                          [31m^[39m
+    [90m134| [39m    [35mconst[39m lien [33m=[39m puce[33m.[39m[34mquerySelector[39m([32m'.cn-mono'[39m) [35mas[39m [33mHTMLElement[39m[33m;[39m
+    [90m135| [39m    [34mexpect[39m(lien[33m.[39mstyle[33m.[39mtextOverflow)[33m.[39m[34mtoBe[39m([32m'ellipsis'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 19:51:29
+[2m   Duration [22m 3.31s[2m (transform 1.12s, setup 296ms, collect 1.62s, tests 478ms, environment 682ms, prepare 69ms)[22m
+

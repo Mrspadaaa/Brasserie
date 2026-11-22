@@ -299,3 +299,4 @@ Générée par `node scripts/agents/systeme.mjs defauts` depuis `DEFAUTS-RECURRE
 | D380 | 03.11 | « l'écran ne garde qu'une ligne okay mais tu vas fixer ça ??? » | Pièce de 300 lignes sur une page : la lecture coupée (MAX_TOKENS) est jetée entière, la … |
 | D381 | 03.11 | « On peut pas se permettre de perdre ou "gagner" de l'information » | Le recollage des bandes retire le recouvrement en comparant le texte : 4 lignes … |
 | D381 | 03.11 | « un item est en trop et point sur le ou les potentiels coupable ? » | L'écart de la somme des lignes au total ne disait pas quelle ligne l'explique : ligne … |
+| D368 bis | 08.11 | « Pourquoi la vue des houblons est plus celui ci mais l'ancienne ???? » puis « Il y a … | Les déploiements du 08.11 (bc70e11a à ce37a55c) construits sans `VITE_HOP_V4=on` : … |

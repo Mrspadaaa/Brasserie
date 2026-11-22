@@ -1,0 +1,75 @@
+{
+ "reglage": "4-hydrogen@high",
+ "cas": "A-anomalies-1",
+ "tache": "detectAnomalies",
+ "moitie": "choix",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [],
+  "manques": [],
+  "detail": {
+   "rappel": 1,
+   "precision": 1,
+   "types": 1,
+   "fauxPositifs": 0,
+   "anomalies": 5,
+   "manques": [],
+   "qualite": 1
+  }
+ },
+ "ms": 12815,
+ "coutMicro": 33239,
+ "etat": "STOP",
+ "valeur": {
+  "anomalies": [
+   {
+    "transactionIds": [
+     "T05",
+     "T06"
+    ],
+    "type": "doublon",
+    "severity": "attention",
+    "explanation": "Deux écritures identiques chez Brau- und Rauchshop pour « Levure SafAle US-05 x10 » à 184.50 CHF TTC, datées à un jour d'intervalle (2026-08-02 et 2026-08-03).",
+    "suggestion": "Vérifier s'il s'agit d'une double saisie d'une même facture ou de deux commandes distinctes avec deux justificatifs différents."
+   },
+   {
+    "transactionIds": [
+     "T09"
+    ],
+    "type": "montant",
+    "severity": "grave",
+    "explanation": "Le montant de 1150.00 CHF TTC pour « Électricité septembre » chez SIG Fribourg est plus de dix fois supérieur à l'historique mensuel de la catégorie Énergie (96.20 CHF en juillet, 104.10 CHF en août, 99.80 CHF en octobre). De plus, la date du 2026-08-22 est inhabituelle pour une facture de septembre.",
+    "suggestion": "Contrôler la facture SIG Fribourg correspondante pour vérifier une éventuelle erreur de virgule (par exemple 115.00 CHF) ou une régularisation exceptionnelle."
+   },
+   {
+    "transactionIds": [
+     "T11"
+    ],
+    "type": "tva",
+    "severity": "attention",
+    "explanation": "Le taux de TVA saisi pour « Sac de malt Munich 25 kg » chez Eckenstein est de 19 %, ce qui ne correspond pas aux taux suisses. Le malt alimentaire relève du taux réduit suisse de 2.6 % (même si la brasserie non assujettie ne récupère pas la TVA).",
+    "suggestion": "Vérifier le taux réellement inscrit sur le justificatif Eckenstein et corriger l'écriture à 2.6 % si le fournisseur facture la TVA suisse."
+   },
+   {
+    "transactionIds": [
+     "T13"
+    ],
+    "type": "justificatif",
+    "severity": "grave",
+    "explanation": "Aucun justificatif n'est joint pour l'achat « Cuve inox 300 L » chez Frigo Service SA d'un montant élevé de 2480.00 CHF TTC (catégorie Équipement).",
+    "suggestion": "Retrouver et rattacher la facture originale de Frigo Service SA, indispensable pour justifier cette dépense importante et une éventuelle immobilisation."
+   },
+   {
+    "transactionIds": [
+     "T15"
+    ],
+    "type": "date",
+    "severity": "attention",
+    "explanation": "L'écriture « Fûts 20 L x4 » chez SIOS porte la date du 2027-03-14, soit quatre mois dans le futur par rapport à la date du jour (2026-11-14).",
+    "suggestion": "Vérifier la date réelle sur la facture SIOS et corriger l'année ou le mois afin que la charge soit rattachée au bon exercice comptable."
+   }
+  ],
+  "checkedCount": 18
+ }
+}

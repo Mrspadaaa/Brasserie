@@ -1,0 +1,103 @@
+{
+ "cpu": 1,
+ "chaines": {
+  "C2 facture 2 fûts": {
+   "statut": "OK",
+   "gestes": 8,
+   "ms": 8937,
+   "inp": [
+    64,
+    56,
+    24,
+    24,
+    40,
+    40,
+    64,
+    16
+   ],
+   "inpMax": 64
+  },
+  "C3 commande promise": {
+   "statut": "BLOCAGE: Facturer de la chose ne mène à aucune caisse préremplie (Finances affiché, aucune vente créée)",
+   "gestes": 3,
+   "ms": 3955,
+   "inp": [
+    56,
+    40,
+    16
+   ],
+   "inpMax": 56
+  },
+  "C4 livraison F-001": {
+   "statut": "OK",
+   "gestes": 6,
+   "ms": 6338,
+   "inp": [
+    24,
+    16,
+    72,
+    16,
+    16,
+    32
+   ],
+   "inpMax": 72
+  },
+  "C4 retour F-004": {
+   "statut": "OK",
+   "gestes": 2,
+   "ms": 2504,
+   "inp": [
+    40,
+    48
+   ],
+   "inpMax": 48
+  },
+  "C5 encaisser": {
+   "statut": "OK",
+   "gestes": 4,
+   "ms": 5951,
+   "inp": [
+    24,
+    72,
+    32,
+    0
+   ],
+   "inpMax": 72
+  },
+  "__total": 23
+ },
+ "obs": [
+  [
+   "C2 cal après",
+   [
+    "« Calendrier » 66×40 px · INP 16 ms"
+   ]
+  ],
+  [
+   "C2 fûts après",
+   [
+    "« Stocks » 64×40 px · INP 24 ms",
+    "« Fûts » 70×28 px · INP 32 ms"
+   ]
+  ],
+  [
+   "C3 cal après",
+   [
+    "« Calendrier » 66×40 px · INP 48 ms"
+   ]
+  ],
+  [
+   "C4 fûts après",
+   [
+    "« Stocks » 65×40 px · INP 0 ms",
+    "« Fûts » 70×28 px · INP 16 ms"
+   ]
+  ]
+ ],
+ "notes": [
+  [
+   "WFV-12 cible du nom",
+   null
+  ]
+ ]
+}

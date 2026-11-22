@@ -1,0 +1,19 @@
+{
+ "cas": "imp-de-plato",
+ "usage": "import",
+ "half": "choix",
+ "cellule": "hy@low",
+ "ok": true,
+ "ms": 4760,
+ "microChf": 23849,
+ "microDecembre": 23849,
+ "entree": 6674,
+ "sortie": 1209,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 0.7962962962962964,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "id 0.67 · vol 25 · fer 3/3 · hops 2/2 · levure ok · paliers 0/2",
+ "reponse": "{\n  \"name\": \"Dunkles Vollbier – Testrezept (fiktiv)\",\n  \"style\": \"Dunkles Vollbier\",\n  \"volumeL\": 25,\n  \"fermentables\": [\n    {\n      \"name\": \"Münchner Malz\",\n      \"weightKg\": 5,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    },\n    {\n      \"name\": \"Pilsner Malz\",\n      \"weightKg\": 1,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    },\n    {\n      \"name\": \"Carafa Typ 2\",\n      \"weightKg\": 0.2,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    }\n  ],\n  \"hops\": [\n    {\n      \"name\": \"Tradition\",\n      \"weightG\": 40,\n      \"stage\": \"boil\",\n      \"alpha\": 6,\n      \"timeMin\": 70\n    },\n    {\n      \"name\": \"Saphir\",\n      \"weightG\": 25,\n      \"stage\": \"boil\",\n      \"alpha\": 3.5,\n      \"timeMin\": 10\n    }\n  ],\n  \"boilMin\": 70,\n  \"ogTarget\": 1.048,\n  \"preBoilL\": 0,\n  \"yeast\": {\n    \"name\": \"Saflager W-34/70\"\n  }\n}"
+}

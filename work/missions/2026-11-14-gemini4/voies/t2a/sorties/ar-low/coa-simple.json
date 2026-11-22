@@ -1,0 +1,19 @@
+{
+ "cas": "coa-simple",
+ "usage": "coa",
+ "half": "choix",
+ "cellule": "ar@low",
+ "ok": true,
+ "ms": 10922,
+ "microChf": 16223,
+ "microDecembre": 32445,
+ "entree": 2719,
+ "sortie": 754,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "found true · lot « BENCH-LOT-2025-031 » · récolte 2025 · 4/4 mesures · 0 interdite(s)",
+ "reponse": "{\n  \"found\": true,\n  \"analysis\": [\n    {\n      \"analyte\": \"alpha\",\n      \"unit\": \"percentMass\",\n      \"basis\": \"asIs\",\n      \"kind\": \"point\",\n      \"source\": {\n        \"title\": \"Certificate of Analysis - Hop pellets T90\",\n        \"author\": \"Non mentionné\",\n        \"reference\": \"BENCH-COA-0031\",\n        \"year\": 2026,\n        \"kind\": \"coa\",\n        \"locator\": \"Page 1/1\"\n      },\n      \"confidence\": \"low\",\n      \"method\": \"EBC 7.4, conductometric\",\n      \"value\": 6.8\n    },\n    {\n      \"analyte\": \"beta\",\n      \"unit\": \"percentMass\",\n      \"basis\": \"asIs\",\n      \"kind\": \"point\",\n      \"source\": {\n        \"title\": \"Certificate of Analysis - Hop pellets T90\",\n        \"author\": \"Non mentionné\",\n        \"reference\": \"BENCH-COA-0031\",\n        \"year\": 2026,\n        \"kind\": \"coa\",\n        \"locator\": \"Page 1/1\"\n      },\n      \"confidence\": \"low\",\n      \"method\": \"EBC 7.7, HPLC\",\n      \"value\": 5.9\n    },\n    {\n      \"analyte\": \"totalOil\",\n      \"unit\": \"ml100g\",\n      \"basis\": \"asIs\",\n      \"kind\": \"point\",\n      \"source\": {\n        \"title\": \"Certificate of Analysis - Hop pellets T90\",\n        \"author\": \"Non mentionné\",\n        \"reference\": \"BENCH-COA-0031\",\n        \"year\": 2026,\n        \"kind\": \"coa\",\n        \"locator\": \"Page 1/1\"\n      },\n      \"confidence\": \"low\",\n      \"method\": \"EBC 7.10, distillation\",\n      \"value\": 1.1\n    },\n    {\n      \"analyte\": \"hsi\",\n      \"unit\": \"index\",\n      \"basis\": \"asIs\",\n      \"kind\": \"point\",\n      \"source\": {\n        \"title\": \"Certificate of Analysis - Hop pellets T90\",\n        \"author\": \"Non mentionné\",\n        \"reference\": \"BENCH-COA-0031\",\n        \"year\": 2026,\n        \"kind\": \"coa\",\n        \"locator\": \"Page 1/1\"\n      },\n      \"confidence\": \"low\",\n      \"method\": \"ASBC Hops-12\",\n      \"value\": 0.28\n    }\n  ],\n  \"form\": \"pelletT90\",\n  \"harvestYear\": 2025,\n  \"lotNumber\": \"BENCH-LOT-2025-031\",\n  \"note\": \"Certificat d'analyse pour la variété Cascade (date d'analyse : 2026-01-20). Humidité (Moisture) mesurée à 8.9 % w/w (as is).\"\n}"
+}

@@ -1,0 +1,16 @@
+{
+ "reglage": "3.8-flash@low",
+ "element": "injection-controle",
+ "cas": "injection",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 2611,
+ "coutMicro": 7829,
+ "etat": "STOP"
+}

@@ -1,0 +1,2888 @@
+[
+ {
+  "mode": "390",
+  "theme": "clair",
+  "etats": {
+   "nav-Bord": {
+    "ok": true,
+    "vw": 390,
+    "vh": 844,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 390,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 804,
+     "w": 310,
+     "h": 40
+    },
+    "fab": {
+     "x": 314,
+     "y": 804,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 8,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème sombre (cave)",
+      "x": 290,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 322,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 354,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": "page",
+      "x": 0,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 62,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 124,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 186,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 248,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     }
+    ],
+    "html": "clair"
+   },
+   "nav-Finances": {
+    "ok": true,
+    "vw": 390,
+    "vh": 844,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 390,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 804,
+     "w": 310,
+     "h": 40
+    },
+    "fab": {
+     "x": 314,
+     "y": 804,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 8,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème sombre (cave)",
+      "x": 290,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 322,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 354,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 0,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": "page",
+      "x": 62,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 124,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 186,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 248,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     }
+    ],
+    "html": "clair"
+   },
+   "nav-Brassins": {
+    "ok": true,
+    "vw": 390,
+    "vh": 844,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 390,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 804,
+     "w": 310,
+     "h": 40
+    },
+    "fab": {
+     "x": 314,
+     "y": 804,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 8,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème sombre (cave)",
+      "x": 290,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 322,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 354,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 0,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 62,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": "page",
+      "x": 124,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 186,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 248,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     }
+    ],
+    "html": "clair"
+   },
+   "nav-Stocks": {
+    "ok": true,
+    "vw": 390,
+    "vh": 844,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 390,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 804,
+     "w": 310,
+     "h": 40
+    },
+    "fab": {
+     "x": 314,
+     "y": 804,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 8,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème sombre (cave)",
+      "x": 290,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 322,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 354,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 0,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 62,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 124,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": "page",
+      "x": 186,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 248,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     }
+    ],
+    "html": "clair"
+   },
+   "nav-Clients": {
+    "ok": true,
+    "vw": 390,
+    "vh": 844,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 390,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 804,
+     "w": 310,
+     "h": 40
+    },
+    "fab": {
+     "x": 314,
+     "y": 804,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 8,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème sombre (cave)",
+      "x": 290,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 322,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 354,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 0,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 62,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 124,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 186,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": "page",
+      "x": 248,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     }
+    ],
+    "html": "clair"
+   },
+   "recherche-ouvre": true,
+   "recherche-vide": [
+    "Retour au tableau de bord",
+    "Thème sombre (cave)",
+    "Rechercher (⌘K)",
+    "Menu",
+    "Tous",
+    "Voir",
+    "BUTTON",
+    "Gérer",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "Bord",
+    "Finances",
+    "Brassins",
+    "Stocks",
+    "Clients",
+    "Actions rapides",
+    "Fermer la recherche",
+    "INPUT"
+   ],
+   "recherche-ipa": [
+    "Retour au tableau de bord",
+    "Thème sombre (cave)",
+    "Rechercher (⌘K)",
+    "Menu",
+    "Tous",
+    "Voir",
+    "BUTTON",
+    "Gérer",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "Bord",
+    "Finances",
+    "Brassins",
+    "Stocks",
+    "Clients",
+    "Actions rapides",
+    "Fermer la recherche",
+    "INPUT"
+   ],
+   "recherche-rien": "Aucun brassin en cuve.",
+   "menu": [
+    "Période de l’application",
+    "Mes conversations",
+    "Saisie au nom de Gaëtan",
+    "Assistant de brassage",
+    "Atelier R&D 1",
+    "Journal des modifications",
+    "Connexions cloud et IA",
+    "Réglages",
+    "Se déconnecter"
+   ],
+   "menu-Mes conversations": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nÀ la brasserie\nBrassins\n0 en cuve\nTous\n\nAucun brassin en cuve.\n\nStocks\nVoir\n\nStocks suffisants\n\nFinances\nCe mois\nCharges\n0,00 CHF\nAgenda\n1 à faire\nGérer\nMarché d'Automne de Villars-sur-Glâne\n10.10.2026\nÉchéances et démarches\n6 points à suivre · Fribourg / OFDF\nBord\nFinances\nBrassins\nStocks\nClients"
+   },
+   "menu-Saisie au nom de Gaëtan": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nÀ la brasserie\nBrassins\n0 en cuve\nTous\n\nAucun brassin en cuve.\n\nStocks\nVoir\n\nStocks suffisants\n\nFinances\nCe mois\nCharges\n0,00 CHF\nAgenda\n1 à faire\nGérer\nMarché d'Automne de Villars-sur-Glâne\n10.10.2026\nÉchéances et démarches\n6 points à suivre · Fribourg / OFDF\nBord\nFinances\nBrassins\nStocks\nClients\nSaisir au nom de Aricia ?\n\nLes prochaines écritures seront signées Aricia, plus Gaëtan. Tu peux revenir en arrière depuis ce menu.\n\nAnnuler\nSaisir au nom de Aricia"
+   },
+   "menu-Assistant de brassage": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nLes brassins\n\n0 brassin\n\n1\nPériode : Ce mois\nAucun brassin pour le moment\n\nCrée une recette, puis planifie son brassin.\n\nEffacer les filtres\nBord\nFinances\nBrassins\nStocks\nClients"
+   },
+   "menu-Atelier R&D 1": {
+    "ok": true,
+    "texte": "Chargement de la brasserie…"
+   },
+   "menu-Journal des modifications": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter l’achat\nRéfléchir à mes projets\nAvec Gemini\nBord\nFinances\nBrassins\nStocks\nClients\nJournal des modifications\n\nTraçabilité des modifications\n\nTous\nFinances\nProduction\nStocks\nClients\nFûts\nGaëtan\nAricia\nA"
+   },
+   "menu-Connexions cloud et IA": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter l’achat\nRéfléchir à mes projets\nAvec Gemini\nBord\nFinances\nBrassins\nStocks\nClients\nConnexions cloud et IA\nIntelligence artificielle\n\nLa clé Gemini est stockée sur le serveur, dans Secret Manager. Elle "
+   },
+   "menu-Réglages": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter l’achat\nRéfléchir à mes projets\nAvec Gemini\nBord\nFinances\nBrassins\nStocks\nClients\nRéglages\nFiscalité\nBrasserie\nAccès\nSauvegardes\n\nAjustez ces valeurs si la législation suisse évolue (ex: TVA ou droit "
+   },
+   "theme-bascule": {
+    "avant": "clair",
+    "apres": "cave",
+    "label": "Thème sombre (cave)"
+   },
+   "plus": [
+    "Nouvelle idée Sur cet écran",
+    "Compagnon brasseur Atelier R&D",
+    "Entrer une facture Document, puis vérification",
+    "Encaisser une vente",
+    "Créer une recette",
+    "Lancer un brassin À partir d’une recette existante"
+   ],
+   "plus-Nouvelle idée Sur cet écran": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter "
+   },
+   "plus-Compagnon brasseur Atelier R&D": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter "
+   },
+   "plus-Entrer une facture Document, puis vérification": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter "
+   },
+   "plus-Encaisser une vente": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter "
+   },
+   "plus-Créer une recette": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter "
+   },
+   "plus-Lancer un brassin À partir d’une recette existante": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter "
+   }
+  },
+  "repos": {
+   "vw": 390,
+   "vh": 844,
+   "header": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 37
+   },
+   "nav": {
+    "x": 0,
+    "y": 804,
+    "w": 310,
+    "h": 40
+   },
+   "fab": {
+    "x": 314,
+    "y": 804,
+    "w": 64,
+    "h": 40
+   },
+   "boutonsHeader": [
+    {
+     "l": "Retour au tableau de bord",
+     "x": 8,
+     "y": 4,
+     "w": 86,
+     "h": 28
+    },
+    {
+     "l": "Thème sombre (cave)",
+     "x": 290,
+     "y": 4,
+     "w": 28,
+     "h": 28
+    },
+    {
+     "l": "Rechercher (⌘K)",
+     "x": 322,
+     "y": 4,
+     "w": 28,
+     "h": 28
+    },
+    {
+     "l": "Menu",
+     "x": 354,
+     "y": 4,
+     "w": 28,
+     "h": 28
+    }
+   ],
+   "boutonsNav": [
+    {
+     "l": "Bord",
+     "cur": "page",
+     "x": 0,
+     "y": 804,
+     "w": 62,
+     "h": 40
+    },
+    {
+     "l": "Finances",
+     "cur": null,
+     "x": 62,
+     "y": 804,
+     "w": 62,
+     "h": 40
+    },
+    {
+     "l": "Brassins",
+     "cur": null,
+     "x": 124,
+     "y": 804,
+     "w": 62,
+     "h": 40
+    },
+    {
+     "l": "Stocks",
+     "cur": null,
+     "x": 186,
+     "y": 804,
+     "w": 62,
+     "h": 40
+    },
+    {
+     "l": "Clients",
+     "cur": null,
+     "x": 248,
+     "y": 804,
+     "w": 62,
+     "h": 40
+    }
+   ],
+   "html": "clair"
+  }
+ },
+ {
+  "mode": "390",
+  "theme": "cave",
+  "etats": {
+   "nav-Bord": {
+    "ok": true,
+    "vw": 390,
+    "vh": 844,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 390,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 804,
+     "w": 310,
+     "h": 40
+    },
+    "fab": {
+     "x": 314,
+     "y": 804,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 8,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème clair",
+      "x": 290,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 322,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 354,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": "page",
+      "x": 0,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 62,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 124,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 186,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 248,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     }
+    ],
+    "html": "cave"
+   },
+   "nav-Finances": {
+    "ok": true,
+    "vw": 390,
+    "vh": 844,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 390,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 804,
+     "w": 310,
+     "h": 40
+    },
+    "fab": {
+     "x": 314,
+     "y": 804,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 8,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème clair",
+      "x": 290,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 322,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 354,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 0,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": "page",
+      "x": 62,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 124,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 186,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 248,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     }
+    ],
+    "html": "cave"
+   },
+   "nav-Brassins": {
+    "ok": true,
+    "vw": 390,
+    "vh": 844,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 390,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 804,
+     "w": 310,
+     "h": 40
+    },
+    "fab": {
+     "x": 314,
+     "y": 804,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 8,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème clair",
+      "x": 290,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 322,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 354,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 0,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 62,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": "page",
+      "x": 124,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 186,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 248,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     }
+    ],
+    "html": "cave"
+   },
+   "nav-Stocks": {
+    "ok": true,
+    "vw": 390,
+    "vh": 844,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 390,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 804,
+     "w": 310,
+     "h": 40
+    },
+    "fab": {
+     "x": 314,
+     "y": 804,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 8,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème clair",
+      "x": 290,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 322,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 354,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 0,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 62,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 124,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": "page",
+      "x": 186,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 248,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     }
+    ],
+    "html": "cave"
+   },
+   "nav-Clients": {
+    "ok": true,
+    "vw": 390,
+    "vh": 844,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 390,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 804,
+     "w": 310,
+     "h": 40
+    },
+    "fab": {
+     "x": 314,
+     "y": 804,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 8,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème clair",
+      "x": 290,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 322,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 354,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 0,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 62,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 124,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 186,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": "page",
+      "x": 248,
+      "y": 804,
+      "w": 62,
+      "h": 40
+     }
+    ],
+    "html": "cave"
+   },
+   "recherche-ouvre": true,
+   "recherche-vide": [
+    "Retour au tableau de bord",
+    "Thème clair",
+    "Rechercher (⌘K)",
+    "Menu",
+    "Tous",
+    "Voir",
+    "BUTTON",
+    "Gérer",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "Bord",
+    "Finances",
+    "Brassins",
+    "Stocks",
+    "Clients",
+    "Actions rapides",
+    "Fermer la recherche",
+    "INPUT"
+   ],
+   "recherche-ipa": [
+    "Retour au tableau de bord",
+    "Thème clair",
+    "Rechercher (⌘K)",
+    "Menu",
+    "Tous",
+    "Voir",
+    "BUTTON",
+    "Gérer",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "Bord",
+    "Finances",
+    "Brassins",
+    "Stocks",
+    "Clients",
+    "Actions rapides",
+    "Fermer la recherche",
+    "INPUT"
+   ],
+   "recherche-rien": "Aucun brassin en cuve.",
+   "menu": [
+    "Période de l’application",
+    "Mes conversations",
+    "Saisie au nom de Gaëtan",
+    "Assistant de brassage",
+    "Atelier R&D 1",
+    "Journal des modifications",
+    "Connexions cloud et IA",
+    "Réglages",
+    "Se déconnecter"
+   ],
+   "menu-Mes conversations": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nÀ la brasserie\nBrassins\n0 en cuve\nTous\n\nAucun brassin en cuve.\n\nStocks\nVoir\n\nStocks suffisants\n\nFinances\nCe mois\nCharges\n0,00 CHF\nAgenda\n1 à faire\nGérer\nMarché d'Automne de Villars-sur-Glâne\n10.10.2026\nÉchéances et démarches\n6 points à suivre · Fribourg / OFDF\nBord\nFinances\nBrassins\nStocks\nClients"
+   },
+   "menu-Saisie au nom de Gaëtan": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nÀ la brasserie\nBrassins\n0 en cuve\nTous\n\nAucun brassin en cuve.\n\nStocks\nVoir\n\nStocks suffisants\n\nFinances\nCe mois\nCharges\n0,00 CHF\nAgenda\n1 à faire\nGérer\nMarché d'Automne de Villars-sur-Glâne\n10.10.2026\nÉchéances et démarches\n6 points à suivre · Fribourg / OFDF\nBord\nFinances\nBrassins\nStocks\nClients\nSaisir au nom de Aricia ?\n\nLes prochaines écritures seront signées Aricia, plus Gaëtan. Tu peux revenir en arrière depuis ce menu.\n\nAnnuler\nSaisir au nom de Aricia"
+   },
+   "menu-Assistant de brassage": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nLes brassins\n\n0 brassin\n\n1\nPériode : Ce mois\nAucun brassin pour le moment\n\nCrée une recette, puis planifie son brassin.\n\nEffacer les filtres\nBord\nFinances\nBrassins\nStocks\nClients"
+   },
+   "menu-Atelier R&D 1": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter l’achat\nRéfléchir à mes projets\nAvec Gemini\nBord\nFinances\nBrassins\nStocks\nClients"
+   },
+   "menu-Journal des modifications": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter l’achat\nRéfléchir à mes projets\nAvec Gemini\nBord\nFinances\nBrassins\nStocks\nClients\nJournal des modifications\n\nTraçabilité des modifications\n\nTous\nFinances\nProduction\nStocks\nClients\nFûts\nGaëtan\nAricia\nA"
+   },
+   "menu-Connexions cloud et IA": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter l’achat\nRéfléchir à mes projets\nAvec Gemini\nBord\nFinances\nBrassins\nStocks\nClients\nConnexions cloud et IA\nIntelligence artificielle\n\nLa clé Gemini est stockée sur le serveur, dans Secret Manager. Elle "
+   },
+   "menu-Réglages": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter l’achat\nRéfléchir à mes projets\nAvec Gemini\nBord\nFinances\nBrassins\nStocks\nClients\nRéglages\nFiscalité\nBrasserie\nAccès\nSauvegardes\n\nAjustez ces valeurs si la législation suisse évolue (ex: TVA ou droit "
+   },
+   "theme-bascule": {
+    "avant": "cave",
+    "apres": "clair",
+    "label": "Thème clair"
+   },
+   "plus": [
+    "Nouvelle idée Sur cet écran",
+    "Compagnon brasseur Atelier R&D",
+    "Entrer une facture Document, puis vérification",
+    "Encaisser une vente",
+    "Créer une recette",
+    "Lancer un brassin À partir d’une recette existante"
+   ],
+   "plus-Nouvelle idée Sur cet écran": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter "
+   },
+   "plus-Compagnon brasseur Atelier R&D": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter "
+   },
+   "plus-Entrer une facture Document, puis vérification": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter "
+   },
+   "plus-Encaisser une vente": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter "
+   },
+   "plus-Créer une recette": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter "
+   },
+   "plus-Lancer un brassin À partir d’une recette existante": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins\nRecettes\nAtelier\nVolumes\nAtelier Houblons V5.5\nMatériel\nBières\nTarifs\nContacts\nÀ faire\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\n1 200,00 CHF\nBudget ou date à compléter\nNoter "
+   }
+  },
+  "repos": {
+   "vw": 390,
+   "vh": 844,
+   "header": {
+    "x": 0,
+    "y": 0,
+    "w": 390,
+    "h": 37
+   },
+   "nav": {
+    "x": 0,
+    "y": 804,
+    "w": 310,
+    "h": 40
+   },
+   "fab": {
+    "x": 314,
+    "y": 804,
+    "w": 64,
+    "h": 40
+   },
+   "boutonsHeader": [
+    {
+     "l": "Retour au tableau de bord",
+     "x": 8,
+     "y": 4,
+     "w": 86,
+     "h": 28
+    },
+    {
+     "l": "Thème clair",
+     "x": 290,
+     "y": 4,
+     "w": 28,
+     "h": 28
+    },
+    {
+     "l": "Rechercher (⌘K)",
+     "x": 322,
+     "y": 4,
+     "w": 28,
+     "h": 28
+    },
+    {
+     "l": "Menu",
+     "x": 354,
+     "y": 4,
+     "w": 28,
+     "h": 28
+    }
+   ],
+   "boutonsNav": [
+    {
+     "l": "Bord",
+     "cur": null,
+     "x": 0,
+     "y": 804,
+     "w": 62,
+     "h": 40
+    },
+    {
+     "l": "Finances",
+     "cur": null,
+     "x": 62,
+     "y": 804,
+     "w": 62,
+     "h": 40
+    },
+    {
+     "l": "Brassins",
+     "cur": "page",
+     "x": 124,
+     "y": 804,
+     "w": 62,
+     "h": 40
+    },
+    {
+     "l": "Stocks",
+     "cur": null,
+     "x": 186,
+     "y": 804,
+     "w": 62,
+     "h": 40
+    },
+    {
+     "l": "Clients",
+     "cur": null,
+     "x": 248,
+     "y": 804,
+     "w": 62,
+     "h": 40
+    }
+   ],
+   "html": "cave"
+  }
+ },
+ {
+  "mode": "1280",
+  "theme": "clair",
+  "etats": {
+   "nav-Bord": {
+    "ok": true,
+    "vw": 1280,
+    "vh": 800,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 1280,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 760,
+     "w": 1200,
+     "h": 40
+    },
+    "fab": {
+     "x": 1204,
+     "y": 760,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 200,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Ce mois",
+      "x": 898,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème sombre (cave)",
+      "x": 988,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 1020,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 1052,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": "page",
+      "x": 376,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 466,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 555,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 645,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 734,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     }
+    ],
+    "html": "clair"
+   },
+   "nav-Finances": {
+    "ok": true,
+    "vw": 1280,
+    "vh": 800,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 1280,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 760,
+     "w": 1200,
+     "h": 40
+    },
+    "fab": {
+     "x": 1204,
+     "y": 760,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 200,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème sombre (cave)",
+      "x": 988,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 1020,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 1052,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 376,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": "page",
+      "x": 466,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 555,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 645,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 734,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     }
+    ],
+    "html": "clair"
+   },
+   "nav-Brassins": {
+    "ok": true,
+    "vw": 1280,
+    "vh": 800,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 1280,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 760,
+     "w": 1200,
+     "h": 40
+    },
+    "fab": {
+     "x": 1204,
+     "y": 760,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 200,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème sombre (cave)",
+      "x": 988,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 1020,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 1052,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 376,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 466,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": "page",
+      "x": 555,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 645,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 734,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     }
+    ],
+    "html": "clair"
+   },
+   "nav-Stocks": {
+    "ok": true,
+    "vw": 1280,
+    "vh": 800,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 1280,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 760,
+     "w": 1200,
+     "h": 40
+    },
+    "fab": {
+     "x": 1204,
+     "y": 760,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 200,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Ce mois",
+      "x": 898,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème sombre (cave)",
+      "x": 988,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 1020,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 1052,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 376,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 466,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 555,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": "page",
+      "x": 645,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 734,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     }
+    ],
+    "html": "clair"
+   },
+   "nav-Clients": {
+    "ok": true,
+    "vw": 1280,
+    "vh": 800,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 1280,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 760,
+     "w": 1200,
+     "h": 40
+    },
+    "fab": {
+     "x": 1204,
+     "y": 760,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 200,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Ce mois",
+      "x": 898,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème sombre (cave)",
+      "x": 988,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 1020,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 1052,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 376,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 466,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 555,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 645,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": "page",
+      "x": 734,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     }
+    ],
+    "html": "clair"
+   },
+   "recherche-ouvre": true,
+   "recherche-vide": [
+    "Retour au tableau de bord",
+    "Ce mois",
+    "Thème sombre (cave)",
+    "Rechercher (⌘K)",
+    "Menu",
+    "Tous",
+    "Voir",
+    "BUTTON",
+    "Gérer",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "Bord",
+    "Finances",
+    "Brassins",
+    "Stocks",
+    "Clients",
+    "Actions rapides",
+    "Article, recette, brassin, client, écriture…",
+    "Fermer la recherche",
+    "INPUT"
+   ],
+   "recherche-ipa": [
+    "Retour au tableau de bord",
+    "Ce mois",
+    "Thème sombre (cave)",
+    "Rechercher (⌘K)",
+    "Menu",
+    "Tous",
+    "Voir",
+    "BUTTON",
+    "Gérer",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "Bord",
+    "Finances",
+    "Brassins",
+    "Stocks",
+    "Clients",
+    "Actions rapides",
+    "Article, recette, brassin, client, écriture…",
+    "Fermer la recherche",
+    "INPUT"
+   ],
+   "recherche-rien": "Aucun brassin en cuve.",
+   "ctrlK": false,
+   "menu": [
+    "Mes conversations",
+    "Saisie au nom de Gaëtan",
+    "Assistant de brassage",
+    "Atelier R&D 1",
+    "Journal des modifications",
+    "Connexions cloud et IA",
+    "Réglages",
+    "Se déconnecter"
+   ],
+   "menu-Mes conversations": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nCe mois\nÀ la brasserie\nBrassins\n0 en cuve\nTous\n\nAucun brassin en cuve.\n\nStocks\nVoir\n\nStocks suffisants\n\nFinances\nCe mois\nCharges\n0,00 CHF\nAgenda\n1 à faire\nGérer\nMarché d'Automne de Villars-sur-Glâne\n10.10.2026\nÉchéances et démarches\n6 points à suivre · Fribourg / OFDF\nBord\nFinances\nBrassins\nStocks\nClients"
+   },
+   "menu-Saisie au nom de Gaëtan": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nCe mois\nÀ la brasserie\nBrassins\n0 en cuve\nTous\n\nAucun brassin en cuve.\n\nStocks\nVoir\n\nStocks suffisants\n\nFinances\nCe mois\nCharges\n0,00 CHF\nAgenda\n1 à faire\nGérer\nMarché d'Automne de Villars-sur-Glâne\n10.10.2026\nÉchéances et démarches\n6 points à suivre · Fribourg / OFDF\nBord\nFinances\nBrassins\nStocks\nClients\nSaisir au nom de Aricia ?\n\nLes prochaines écritures seront signées Aricia, plus Gaëtan. Tu peux revenir en arrière depuis ce menu.\n\nAnnuler\nSaisir au nom de Aricia"
+   },
+   "menu-Assistant de brassage": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nCe mois\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nLes brassins\nCarnet\nBilan\nFiltres\n1\nTous 0\nEn cuve 0\nÀ brasser 0\nMesures manquantes 0\nNotes à compléter 0\nConditionnés 0\nTerminés 0\nAnnulés 0\nFavoris\n\nVue filtrée · 1 critère\n\nTout effacer\nPériode : Ce mois\n\nMémorisés sur cet appareil.\n\nDossier des brassins\nCourant · 0\nArchives · 0\nTout, archives incluses · 0\nTrier les brassins\nÀ suivre d’abord\nDate ↓\nDate ↑\nNom A–Z\nVolume ↓\nAlcool ↓\nIBU cible ↓\nCouleur EBC ↓\nAvancement\n\n0 brassin sur 0\n\nAucun brassin pour le moment\n\n"
+   },
+   "menu-Atelier R&D 1": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird pour refermentation en bouteille constante même en hiver.\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\nRemplisseuse à contre-press"
+   },
+   "menu-Journal des modifications": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird pour refermentation en bouteille constante même en hiver.\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\nRemplisseuse à contre-press"
+   },
+   "menu-Connexions cloud et IA": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird pour refermentation en bouteille constante même en hiver.\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\nRemplisseuse à contre-press"
+   },
+   "menu-Réglages": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird pour refermentation en bouteille constante même en hiver.\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\nRemplisseuse à contre-press"
+   },
+   "theme-bascule": {
+    "avant": "clair",
+    "apres": "cave",
+    "label": "Thème sombre (cave)"
+   },
+   "plus": [
+    "Nouvelle idée Sur cet écran",
+    "Compagnon brasseur Atelier R&D",
+    "Entrer une facture Document, puis vérification",
+    "Encaisser une vente",
+    "Créer une recette",
+    "Lancer un brassin À partir d’une recette existante"
+   ],
+   "plus-Nouvelle idée Sur cet écran": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird "
+   },
+   "plus-Compagnon brasseur Atelier R&D": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird "
+   },
+   "plus-Entrer une facture Document, puis vérification": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird "
+   },
+   "plus-Encaisser une vente": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird "
+   },
+   "plus-Créer une recette": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird "
+   },
+   "plus-Lancer un brassin À partir d’une recette existante": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird "
+   }
+  },
+  "repos": {
+   "vw": 1280,
+   "vh": 800,
+   "header": {
+    "x": 0,
+    "y": 0,
+    "w": 1280,
+    "h": 37
+   },
+   "nav": {
+    "x": 0,
+    "y": 760,
+    "w": 1200,
+    "h": 40
+   },
+   "fab": {
+    "x": 1204,
+    "y": 760,
+    "w": 64,
+    "h": 40
+   },
+   "boutonsHeader": [
+    {
+     "l": "Retour au tableau de bord",
+     "x": 200,
+     "y": 4,
+     "w": 86,
+     "h": 28
+    },
+    {
+     "l": "Thème sombre (cave)",
+     "x": 988,
+     "y": 4,
+     "w": 28,
+     "h": 28
+    },
+    {
+     "l": "Rechercher (⌘K)",
+     "x": 1020,
+     "y": 4,
+     "w": 28,
+     "h": 28
+    },
+    {
+     "l": "Menu",
+     "x": 1052,
+     "y": 4,
+     "w": 28,
+     "h": 28
+    }
+   ],
+   "boutonsNav": [
+    {
+     "l": "Bord",
+     "cur": null,
+     "x": 376,
+     "y": 760,
+     "w": 90,
+     "h": 40
+    },
+    {
+     "l": "Finances",
+     "cur": null,
+     "x": 466,
+     "y": 760,
+     "w": 90,
+     "h": 40
+    },
+    {
+     "l": "Brassins",
+     "cur": "page",
+     "x": 555,
+     "y": 760,
+     "w": 90,
+     "h": 40
+    },
+    {
+     "l": "Stocks",
+     "cur": null,
+     "x": 645,
+     "y": 760,
+     "w": 90,
+     "h": 40
+    },
+    {
+     "l": "Clients",
+     "cur": null,
+     "x": 734,
+     "y": 760,
+     "w": 90,
+     "h": 40
+    }
+   ],
+   "html": "clair"
+  }
+ },
+ {
+  "mode": "1280",
+  "theme": "cave",
+  "etats": {
+   "nav-Bord": {
+    "ok": true,
+    "vw": 1280,
+    "vh": 800,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 1280,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 760,
+     "w": 1200,
+     "h": 40
+    },
+    "fab": {
+     "x": 1204,
+     "y": 760,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 200,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Ce mois",
+      "x": 898,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème clair",
+      "x": 988,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 1020,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 1052,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": "page",
+      "x": 376,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 466,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 555,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 645,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 734,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     }
+    ],
+    "html": "cave"
+   },
+   "nav-Finances": {
+    "ok": true,
+    "vw": 1280,
+    "vh": 800,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 1280,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 760,
+     "w": 1200,
+     "h": 40
+    },
+    "fab": {
+     "x": 1204,
+     "y": 760,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 200,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème clair",
+      "x": 988,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 1020,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 1052,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 376,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": "page",
+      "x": 466,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 555,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 645,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 734,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     }
+    ],
+    "html": "cave"
+   },
+   "nav-Brassins": {
+    "ok": true,
+    "vw": 1280,
+    "vh": 800,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 1280,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 760,
+     "w": 1200,
+     "h": 40
+    },
+    "fab": {
+     "x": 1204,
+     "y": 760,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 200,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème clair",
+      "x": 988,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 1020,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 1052,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 376,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 466,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": "page",
+      "x": 555,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 645,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 734,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     }
+    ],
+    "html": "cave"
+   },
+   "nav-Stocks": {
+    "ok": true,
+    "vw": 1280,
+    "vh": 800,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 1280,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 760,
+     "w": 1200,
+     "h": 40
+    },
+    "fab": {
+     "x": 1204,
+     "y": 760,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 200,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Ce mois",
+      "x": 898,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème clair",
+      "x": 988,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 1020,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 1052,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 376,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 466,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 555,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": "page",
+      "x": 645,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": null,
+      "x": 734,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     }
+    ],
+    "html": "cave"
+   },
+   "nav-Clients": {
+    "ok": true,
+    "vw": 1280,
+    "vh": 800,
+    "header": {
+     "x": 0,
+     "y": 0,
+     "w": 1280,
+     "h": 37
+    },
+    "nav": {
+     "x": 0,
+     "y": 760,
+     "w": 1200,
+     "h": 40
+    },
+    "fab": {
+     "x": 1204,
+     "y": 760,
+     "w": 64,
+     "h": 40
+    },
+    "boutonsHeader": [
+     {
+      "l": "Retour au tableau de bord",
+      "x": 200,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Ce mois",
+      "x": 898,
+      "y": 4,
+      "w": 86,
+      "h": 28
+     },
+     {
+      "l": "Thème clair",
+      "x": 988,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Rechercher (⌘K)",
+      "x": 1020,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     },
+     {
+      "l": "Menu",
+      "x": 1052,
+      "y": 4,
+      "w": 28,
+      "h": 28
+     }
+    ],
+    "boutonsNav": [
+     {
+      "l": "Bord",
+      "cur": null,
+      "x": 376,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Finances",
+      "cur": null,
+      "x": 466,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Brassins",
+      "cur": null,
+      "x": 555,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Stocks",
+      "cur": null,
+      "x": 645,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     },
+     {
+      "l": "Clients",
+      "cur": "page",
+      "x": 734,
+      "y": 760,
+      "w": 90,
+      "h": 40
+     }
+    ],
+    "html": "cave"
+   },
+   "recherche-ouvre": true,
+   "recherche-vide": [
+    "Retour au tableau de bord",
+    "Ce mois",
+    "Thème clair",
+    "Rechercher (⌘K)",
+    "Menu",
+    "Tous",
+    "Voir",
+    "BUTTON",
+    "Gérer",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "Bord",
+    "Finances",
+    "Brassins",
+    "Stocks",
+    "Clients",
+    "Actions rapides",
+    "Article, recette, brassin, client, écriture…",
+    "Fermer la recherche",
+    "INPUT"
+   ],
+   "recherche-ipa": [
+    "Retour au tableau de bord",
+    "Ce mois",
+    "Thème clair",
+    "Rechercher (⌘K)",
+    "Menu",
+    "Tous",
+    "Voir",
+    "BUTTON",
+    "Gérer",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "INPUT",
+    "Bord",
+    "Finances",
+    "Brassins",
+    "Stocks",
+    "Clients",
+    "Actions rapides",
+    "Article, recette, brassin, client, écriture…",
+    "Fermer la recherche",
+    "INPUT"
+   ],
+   "recherche-rien": "Aucun brassin en cuve.",
+   "ctrlK": false,
+   "menu": [
+    "Mes conversations",
+    "Saisie au nom de Gaëtan",
+    "Assistant de brassage",
+    "Atelier R&D 1",
+    "Journal des modifications",
+    "Connexions cloud et IA",
+    "Réglages",
+    "Se déconnecter"
+   ],
+   "menu-Mes conversations": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nCe mois\nÀ la brasserie\nBrassins\n0 en cuve\nTous\n\nAucun brassin en cuve.\n\nStocks\nVoir\n\nStocks suffisants\n\nFinances\nCe mois\nCharges\n0,00 CHF\nAgenda\n1 à faire\nGérer\nMarché d'Automne de Villars-sur-Glâne\n10.10.2026\nÉchéances et démarches\n6 points à suivre · Fribourg / OFDF\nBord\nFinances\nBrassins\nStocks\nClients"
+   },
+   "menu-Saisie au nom de Gaëtan": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nCe mois\nÀ la brasserie\nBrassins\n0 en cuve\nTous\n\nAucun brassin en cuve.\n\nStocks\nVoir\n\nStocks suffisants\n\nFinances\nCe mois\nCharges\n0,00 CHF\nAgenda\n1 à faire\nGérer\nMarché d'Automne de Villars-sur-Glâne\n10.10.2026\nÉchéances et démarches\n6 points à suivre · Fribourg / OFDF\nBord\nFinances\nBrassins\nStocks\nClients\nSaisir au nom de Aricia ?\n\nLes prochaines écritures seront signées Aricia, plus Gaëtan. Tu peux revenir en arrière depuis ce menu.\n\nAnnuler\nSaisir au nom de Aricia"
+   },
+   "menu-Assistant de brassage": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nCe mois\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nLes brassins\nCarnet\nBilan\nFiltres\n1\nTous 0\nEn cuve 0\nÀ brasser 0\nMesures manquantes 0\nNotes à compléter 0\nConditionnés 0\nTerminés 0\nAnnulés 0\nFavoris\n\nVue filtrée · 1 critère\n\nTout effacer\nPériode : Ce mois\n\nMémorisés sur cet appareil.\n\nDossier des brassins\nCourant · 0\nArchives · 0\nTout, archives incluses · 0\nTrier les brassins\nÀ suivre d’abord\nDate ↓\nDate ↑\nNom A–Z\nVolume ↓\nAlcool ↓\nIBU cible ↓\nCouleur EBC ↓\nAvancement\n\n0 brassin sur 0\n\nAucun brassin pour le moment\n\n"
+   },
+   "menu-Atelier R&D 1": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird pour refermentation en bouteille constante même en hiver.\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\nRemplisseuse à contre-press"
+   },
+   "menu-Journal des modifications": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird pour refermentation en bouteille constante même en hiver.\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\nRemplisseuse à contre-press"
+   },
+   "menu-Connexions cloud et IA": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird pour refermentation en bouteille constante même en hiver.\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\nRemplisseuse à contre-press"
+   },
+   "menu-Réglages": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird pour refermentation en bouteille constante même en hiver.\n350,00 CHF\nBudget ou date à compléter\nNoter l’achat\nSystème d'embouteillage 4 becs inox\nDate à choisir · À étudier\nRemplisseuse à contre-press"
+   },
+   "theme-bascule": {
+    "avant": "cave",
+    "apres": "clair",
+    "label": "Thème clair"
+   },
+   "plus": [
+    "Nouvelle idée Sur cet écran",
+    "Compagnon brasseur Atelier R&D",
+    "Entrer une facture Document, puis vérification",
+    "Encaisser une vente",
+    "Créer une recette",
+    "Lancer un brassin À partir d’une recette existante"
+   ],
+   "plus-Nouvelle idée Sur cet écran": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird "
+   },
+   "plus-Compagnon brasseur Atelier R&D": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird "
+   },
+   "plus-Entrer une facture Document, puis vérification": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird "
+   },
+   "plus-Encaisser une vente": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird "
+   },
+   "plus-Créer une recette": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird "
+   },
+   "plus-Lancer un brassin À partir d’une recette existante": {
+    "ok": true,
+    "texte": "Compagnon hors connexion · mode local\n\n🍺\nL'Affinée\nBrassins (0)\nRecettes (0)\nAtelier R&D\nVolumes\nAtelier Houblons V5.5\nAtelier R&D\nMatériel\nBières\nTarifs\nContacts\nÀ faire\n\nPriorise tes équipements et choisis les achats à inclure dans tes prévisions.\n\nAjouter un projet\nÀ venir\nRéalisés\nArchives\nPlus tard\nChambre chaude régulée (20-22°C)\nDate à choisir · Idée\nArmoire isolée avec thermostat Inkbird "
+   }
+  },
+  "repos": {
+   "vw": 1280,
+   "vh": 800,
+   "header": {
+    "x": 0,
+    "y": 0,
+    "w": 1280,
+    "h": 37
+   },
+   "nav": {
+    "x": 0,
+    "y": 760,
+    "w": 1200,
+    "h": 40
+   },
+   "fab": {
+    "x": 1204,
+    "y": 760,
+    "w": 64,
+    "h": 40
+   },
+   "boutonsHeader": [
+    {
+     "l": "Retour au tableau de bord",
+     "x": 200,
+     "y": 4,
+     "w": 86,
+     "h": 28
+    },
+    {
+     "l": "Thème clair",
+     "x": 988,
+     "y": 4,
+     "w": 28,
+     "h": 28
+    },
+    {
+     "l": "Rechercher (⌘K)",
+     "x": 1020,
+     "y": 4,
+     "w": 28,
+     "h": 28
+    },
+    {
+     "l": "Menu",
+     "x": 1052,
+     "y": 4,
+     "w": 28,
+     "h": 28
+    }
+   ],
+   "boutonsNav": [
+    {
+     "l": "Bord",
+     "cur": null,
+     "x": 376,
+     "y": 760,
+     "w": 90,
+     "h": 40
+    },
+    {
+     "l": "Finances",
+     "cur": null,
+     "x": 466,
+     "y": 760,
+     "w": 90,
+     "h": 40
+    },
+    {
+     "l": "Brassins",
+     "cur": "page",
+     "x": 555,
+     "y": 760,
+     "w": 90,
+     "h": 40
+    },
+    {
+     "l": "Stocks",
+     "cur": null,
+     "x": 645,
+     "y": 760,
+     "w": 90,
+     "h": 40
+    },
+    {
+     "l": "Clients",
+     "cur": null,
+     "x": 734,
+     "y": 760,
+     "w": 90,
+     "h": 40
+    }
+   ],
+   "html": "cave"
+  }
+ }
+]

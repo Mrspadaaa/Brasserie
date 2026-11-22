@@ -1,0 +1,24 @@
+=== liste
+[liste 390] lignes compte : [{"t":"2 façons · 6 articles · 1 en veille","lignes":1,"y":218,"x":101,"w":205,"h":18}]
+[liste 390] 0 façon : false
+[liste 390] champ/En veille : {"champ":{"x":39,"y":747,"w":154,"h":44},"enVeille":[{"x":24,"y":1085,"w":342,"h":238},{"x":24,"y":1085,"w":118,"h":32}],"recouvre":false}
+[liste 390] pastille À comparer : []
+[liste-focus 390] Collez le lien : true ; extrait : tériel /  / À venir / 1 / Carnets / 6 / Réalisés / 0 /  / Collez le lien d'un objet ou notez un besoin : on garde sa photo et son prix, pour comparer. /  / Évier inox, 2 bacs · exemple / arrive ici / Frigo de garde / Ventilation de la salle / Évier pour les fûts /  / Une no
+[liste-focus 390] placeholders : ["Une idée, un besoin…"]
+[liste 1280] lignes compte : [{"t":"2 façons · 6 articles · 1 en veille","lignes":1,"y":177,"x":393,"w":599,"h":18}]
+[liste 1280] 0 façon : false
+[liste 1280] champ/En veille : {"champ":{"x":331,"y":743,"w":612,"h":44},"enVeille":[{"x":316,"y":802,"w":736,"h":218},{"x":316,"y":802,"w":118,"h":32}],"recouvre":false}
+[liste 1280] pastille À comparer : []
+[liste-focus 1280] Collez le lien : true ; extrait : tériel /  / À venir / 1 / Carnets / 6 / Réalisés / 0 /  / Collez le lien d'un objet ou notez un besoin : on garde sa photo et son prix, pour comparer. /  / Évier inox, 2 bacs · exemple / arrive ici / Frigo de garde / Ventilation de la salle / Évier pour les fûts /  / Une no
+[liste-focus 1280] placeholders : ["Une idée, un besoin…"]
+=== creer
+suivi [creer 390 clair] -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[creer 390] Ce qui compte : es, 150 kg/h » · votre phrase en titre /  / Ce qui compte / · Débit : 150 kg/h au moins · de votre phrase /  / Façons / · aucune : l'IA les cherche /  / Articles / · aucun : collez un lien /  / Photos / · aucune /  / Notes / · auc
+[creer 390] en-tête :  / À venir / 1 / Carnets / 7 / Réalisés / 0 / Carnets / Idée · 19 nov. / Moulin à malt 2 cylindres, 150 kg/h / ✓ / Carnet créé, en tête des Ca | Photos · aucune : false | Façons · aucune : false
+[creer 390] placeholders : ["Ajouter à Moulin…"] ; champ w : 154
+suivi [creer 390 sombre] -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+suivi [creer 1280 clair] -|Carnet créé → -|- ; roue+bandeau simultanés : 0 relevés
+[creer 1280] Ce qui compte : (absent : Ce qui compte)
+[creer 1280] en-tête : (absent : Idée · ) | Photos · aucune : false | Façons · aucune : false
+[creer 1280] placeholders : ["Une idée, un besoin…"] ; champ w : 612
+suivi [creer 1280 sombre] -|Carnet créé ; roue+bandeau simultanés : 0 relevés

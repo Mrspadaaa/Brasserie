@@ -1684,38 +1684,9 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : pas de choix donné ; ni choix ni accord ne bloquent (L24) : le pilote porte les préférences du critique (1C, 2B à l'ébullition et 2C à l'ensemencement, 3C, 4C, 5C), réversibles ; la page reste ouverte, un autre choix se reporte.)
 - **11.11**, mot pour mot, sur la page « Brassage : cinq choix », option 1C : « 1 sachet · 11,5 g » ; « Et Une jauge : 11,5 g pour 19 L, sur la plage fabricant 50–80 g/hL. » ; « C'est vraiment bien pas de nouvelles mini maquettes implémente comme telle »
   (lu : 1C choisi, à porter tel que dessiné ; déjà porté par p3, à vérifier contre l'image c1c, voie e3.)
-- **14.11**, mot pour mot, à la liste des prochains chantiers (1 Stock, 2 Brassins, 4 …) : « ok lance 1, 2, 4 en sous session avec la création de mini maquettes (non jouable) SANS FABLE » ; le point 2 était : « Brassins (liste, fiche d'un brassin, fermentation) : suite directe du jour de brassage, jamais repris. »
-  (lu : mission `2026-11-14-brassins` : analyse de la liste des brassins, de la fiche d'un brassin et du suivi de fermentation, puis mini maquettes statiques (images, repos et après un geste), critique en Opus, aucun agent Fable ; il choisit, puis port 1:1.)
-- **14.11**, mot pour mot, sur la page « Brassins · mini maquettes » (Jis8k1YGo26euJoLVKiMDv : s1e2, s1g, s2a2, s3b2 et le panel v0 de 15), à « Quelle variante je porte dans l'app ? » : « Pas super fan de aucun, lance une critique et fait d'autres versions »
-  (lu : aucune variante retenue, ni passe 2 ni v0 ; critique en Opus de la raison commune, puis nouvelles versions d'un autre genre (L13 : changer de genre, partir d'une référence qu'il connaît), sur une page neuve ; rien porté.)
+- **14.11**, mot pour mot, après la liste des nouveaux modèles Gemini 4 (Argon, Carbon, Hydrogen) et « On pourrait en remplacé à certains endroits pour des meilleurs réponse ? » : « Plutôt là où 3.8 était utilisé. Je te donne 10chf de budget pour tester ça. Vitesse et précision. Joue aussi avec le taux de réflexion »
+  (lu : banc de lecture : remplacer 3.8 Flash par Hydrogen, Argon ou Carbon, niveaux de réflexion variés, contre la production ; vitesse et justesse mesurées ; 10 CHF de Gemini payant accordés pour ce banc.)
 
-- **14.11**, mot pour mot, relayé par la session pilote : « J'ai l'impression que tout les écrans sous les boutons de ces Tabs ne sont pas traitées ??? » (lu : sous l'onglet Brassins, chaque sous-onglet, fiche, état et ajout doit avoir sa page de mini maquettes ; tableau `work/missions/2026-11-14-brassins/voies/cv/COUVERTURE.md` : 52 vues, 38 sans maquette, 11 groupes e1 à e11.)
-
-- **15.11**, mot pour mot, devant la page « Brassins · tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « Ça semble pas du tout respecter l'identité global de l'app ?? » (lu : les 44 maquettes e1 à e11 ont chacune leur palette, leurs graisses et leur mise en page ; elles doivent porter les jetons, les polices, les rayons et le chrome de l'app, DESIGN.md et src/theme/themes.css, en gardant leur idée.)
-
-- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · nouvelles versions » (SqU1y2jQgMAX8tX6MKn9qL, version 2) : « s4a Tableau de cuverie, fiche dépliée s4a — s6c Conduite de z1, houblons en colonnes s6c — Dans l'idéal mais s4a est beaucoup trop chargé. Mais j'aime bien le graph sur le temps » (lu : greffe s4a × s6c ; de s4a, le graphique dans le temps (densité jour par jour, bande FG), allégé du reste ; de s6c, les houblons en colonnes ; 3 ou 4 greffes, critique Opus, page neuve.)
-
-- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp, version 2) : « e7a — e6a — e6c Des filtres qui comptent — Créer un brassin ?? Pas convaincu — e4c » (lu par le pilote : e7a et e4c retenues ; e6a greffée des filtres qui comptent de e6c ; « Créer un brassin » : aucune ne convainc, 3 ou 4 nouvelles d'un autre genre ; les groupes sans réponse sont remontrés sur la page neuve avec les greffes s4a × s6c.)
-
-- **15.11**, mot pour mot, relayé par la session pilote, même page : « e1a » (lu : la fiche d'un brassin planifié et son démarrage = e1a, retenue.)
-
-- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « e2a » (lu : la fiche après la fermentation (garde, conditionné, terminé) = e2a, retenue.)
-
-- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « e3b Le fil — e3a Carnet — Je plaise bien... À faire d'autres versions de ceux là. Aussi utiliser l'ia pas chère pour remettre en place des note en vrac » (lu : Carnet et Dossier = 3 ou 4 greffes e3a × e3b ; les notes en vrac rangées par l'IA la moins chère (proposée, validée par lui, simulée en test).)
-
-- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « Le carnet de recettes, pas très compact, pas super convaincu quand il y aura des dizaines de recette — e4c L'échelle ok » (lu : e4c confirmé ; carnet de recettes (e8) refusé tel quel, 3 ou 4 versions compactes pour des dizaines de recettes.)
-
-- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « e11a — e10c » (lu : coque de l'onglet = e11a ; Adapter les volumes = e10c, retenues.)
-
-- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « e8 · Le carnet de recettes j'ai déjà donné mon avis la dessus » (lu : e8 = le carnet déjà refusé ; ne pas le remontrer tel quel.)
-
-- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « e5 · Créer un brassin j'aussi donner mon avis... » (lu : e5 déjà refusé (« Pas convaincu »), refait en e5n.)
-
-- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « · L'Atelier R&D toujours pas super convaincu » (lu : e9 refusé ; 3 ou 4 versions d'un autre genre.)
-
-- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « e5na proposée Le brassin naît dans sa frise · 4 vues — e5nb La carte fantôme dans la liste · 3 vues — Les deux sont bien... Je sais pas trop... » (lu : Créer un brassin hésite entre e5na et e5nb : 2 greffes e5na × e5nb, le geste aboutissant sur e1a.)
-
-- **15.11**, mot pour mot, relayé par la session pilote, sur la page « Brassins · tes choix et la suite » (PUbMUHbiuv8Z3eucLQTffU) ou « tous les écrans » (PVfjKmT4U9rvXxsKQTPPDp) : « Toujours pas très clair. Faire passer critique, feedback, helper, analyse UX UI, et brasseur » (lu : la page de choix elle-même n'est pas claire ; revue à trois regards (revue-page5/SYNTHESE.md), contrôle BR-PAGE.)
 ### 14.11 — Gemini 4
 - « Ah ah augmente la plafond mensuel, surtout regarde pour l'aide au brasseur »
 - (sur Hydrogen, réflexion basse, 93 / 108, 20 s, 0,046 CHF) « Met le à la place de 3.8 pas beaucoup plus long et pas mal mieux »
@@ -1778,35 +1749,508 @@ un toucher. Il n'a jamais demandé de texte petit ; il a demandé « hyper lisib
   (lu : deuxième refus, donc changer de genre de solution (L13). Un besoin est une envie ouverte (« je veux un système d'embouteillage ») qui rassemble plusieurs solutions possibles, chacune avec sa manière, son budget et ses liens, qu'on compare puis qu'on choisit. Ce n'est ni un formulaire ni un parcours à étapes. Une mission dédiée s'en charge.)
 - **15.11**, mot pour mot, sur la page Brassins « six questions » (https://claude.ai/artifact/3f8xRStDq4kDYofi6FihRm) : « Fermentation : gfc · Filtres : e6a + e6c · Créer : aucune · Carnet : e3gb · Recettes : aucune · Atelier : e9na Refait pour celle aucune... Ça resoud aucune de mes problématique »
   (lu : gfc, e6a + e6c, e3gb et e9na choisies ; « Créer un brassin » et « Recettes » refusées en bloc : les refaire en partant de ses problèmes à lui (ses mots dans SPEC), avec un autre genre de solution (L13).)
-
-- **15.11**, mot pour mot, sur la page Brassins « deux questions refaites » (https://claude.ai/artifact/2KzzuYs2orjYwtfkJAzM6R), avec sa capture de la feuille « Brasser Blonde de soif · v4 » (r2a, après « Brasser ») : « Créer : c2a · Recettes : r2a
-
-Mais bien revoir cette écran notamment pour la sélection de date » (lu : c2a et r2a retenues ; la feuille « Brasser » de r2a est à revoir, d abord le choix de la date (Demain / Sam. 21 / Plus tard) : variantes montrées, L24 ; capture : `work/missions/2026-11-14-brassins/voies/d1/ref/sa-capture-c2a-geste.jpg`.)
-
-- **15.11**, mot pour mot (relayé par la session « Houblons v4 maquette »), sur la page « Feuille Brasser · le jour » (https://claude.ai/artifact/W9Lm1mN8cafAYAu2n8dq4B) : « Feuille Brasser : d1b »
-  (lu : la feuille « Brasser » sera le damier de trois semaines, où chaque jour porte l'état de la cuve ; elle se porte 1:1 avec r2a et c2a.)
-- **14.11**, même message, le point 1 était : « Finances › Opérations : ta plainte du 10.11 reste ouverte (ce n'est pas ta maquette choisie « Lignes serrées v6a », pas de filtre du … au …) ; Synthèse, Prévisions et Annuel jamais refaits. »
-  (lu : mission `2026-11-14-finances` : Opérations repart de sa maquette choisie « Lignes serrées v6a » (compta-prix p4) avec un filtre « du … au … » ; Synthèse, Prévisions, Annuel, Mon mois et les feuilles d'écriture analysés par la vision au banc puis montrés en mini maquettes statiques (repos et après un geste), critique en Opus, aucun agent Fable ; il choisit, puis port 1:1.)
-- **14.11**, mot pour mot, sur la page « Opérations : choisir du … au … » (https://claude.ai/artifact/2xGEV9qoGgzadUBHVm2dsU), vignette « 3 · Favorite / La frise des jours / s2ap2 / On voit quels jours » : « Ça j'adore
-  Peut être juste un peu plus compact et toujours un endroit pour mettre des chiffres pour la version de l'ordinateur »
-  (lu : s2ap2 choisie, à porter dans Opérations ; la frise dépliée un peu plus basse ; à l'ordinateur, deux champs de date « du … au … » toujours visibles à côté de la frise pour taper la plage. Lecture étroite, sans nouvelles maquettes ; au téléphone, toucher un jour ou une borne garde la saisie précise.)
-- **15.11**, mot pour mot, sur la page « Finances : les vues sous les boutons » (https://claude.ai/artifact/AgKn2qcDMyGLrKuJNmsUqX), capture de la vignette « Aujourd'hui » des Filtres (`C:/Users/mrspa/.claude/uploads/16fc09ec-4e69-48a9-9744-5912b6ef6552/e4ca6111-image.jpg`) : « 1 les filtre je comprends pas ils sont dans la synthèse normalement ?? Là il y a aucun filtre ? »
-  (lu : la capture « aujourd'hui » des Filtres montrait Opérations sans le panneau, ouvert sous le pli ; réponse sur la page v2 : capture refaite panneau visible ; les lignes de la Synthèse ouvrent Opérations déjà filtré, acquis du 10.11 ; le bouton Filtres d'Opérations en est la seconde porte.)
-- **15.11**, mot pour mot, même page : « La feuille rangée, pièce en tête m2mo-a · tiède · La fiche rangée m2fo-a · tiède · La facture en barre m2fo-c · chaude · Les deux poches m1ap-c · chaude »
-  (lu : choisis : Modifier et « + pièce » = m2mo-a ; Apport ou prélèvement = m1ap-c ; Fiche = m2fo-a et m2fo-c, lecture étroite : m2fo-a avec la facture en barre de m2fo-c, montrée en mini maquette à confirmer.)
-- **15.11**, mot pour mot : « Pour Modifier et « + pièce » il y a pas vraiment moyen de modifier ?? »
-  (lu : dans m2mo-a le montant est verrouillé (cadenas, « Déjà payé : avoir ou annuler l'opération », règle actuelle `moneyLocked` d'EditTransactionModal) ; 4 mini maquettes de m2mo-a où tout se modifie, montant payé compris.)
-- **15.11**, mot pour mot : « 6 · Payer pas de justificatif ? Un peu étrange, pareil pour l'apport personnel SI non candidat 1 »
-  (lu : Payer et l'apport choisi m1ap-c doivent recevoir un justificatif (photo ou fichier) ; « candidat 1 » = m1ap-d, qui relie l'apport aux achats déjà justifiés ; m1ap-c étant choisie, elle reçoit un justificatif. Payer : 4 mini maquettes avec justificatif.)
-- **15.11**, mot pour mot, sur la page « Finances : tes retours du 15.11 » (https://claude.ai/artifact/LStrn5pryjsMnB7eCVbWDP), vignette m5pa-d : « m5pa-d Un virement, plusieurs pièces top »
-  (lu, contrat réécrit du pilote, 15.11 : Payer = m5pa-d, porté 1:1 avec les autres choix de la page ; Modifier et Fiche sans choix explicite : sa règle du 15.11 « SI non candidat 1 » s'applique, donc m5mo-c et m5fo-a (première du critique, cadre bleu), réversibles ; Apport = m5ap-a (m1ap-c choisie + justificatif demandé).)
-- **15.11**, mot pour mot, sur la page « Finances : tes retours du 15.11 », vignette m5mo-c : « Tu choisis, avant / après ok »
-  (lu : Modifier = m5mo-c, choisi explicitement ; déjà en port, voie q4.)
+- **15.11**, mot pour mot, sur le lot 8 (https://claude.ai/artifact/2PNDcPzuZ3hq6wGmxHSzYu) : « kx2r1, prix au litre en échelle logarithmique kxc peut être logarithmique un peu tuné pour mieux montrer les écart. SI non oui proposée kyg1 sans étape de liaison, graphe de kh1r 1:1 kyh1 top »
+  (lu : Tarifs : kxc choisie, échelle log réglée pour ouvrir les petits écarts (domaine resserré sur la plage réelle), sinon kxc telle quelle ; À venir : kyh1 choisie, à porter avec le graphe de kh1r.)
+- **15.11**, mot pour mot, sur la planification : « J'ai l'impression qu'il me manque qqch, comme je suis jamais à 100% sur la brasserie les choses prennent du temps et s'étale, de même pour les achats et rénovation. Avant j'avais l'Excel par semaine pour une tâche et par exemple un déménagement m'a pris 3 mois. J'ai l'impression que ce type dechelle, échéance et planificateur manque. SI par exemple j'ai besoin d'un frigo je veux dire entre la semaine 6 et 35 je vais mettre de côté pour ça. Rénovation des Sol entre la semaine 20 et 40, 5 jour actif et 600chf par exemple ECT... »
+  (lu : il manque un planificateur à l'échelle de la semaine pour tout ce qui s'étale (achats, rénovations, tâches, projets). Chaque chose a une fenêtre (semaine début–fin), un effort (jours actifs) et un budget mis de côté au fil des semaines ; l'effet se voit sur la caisse. Mécanisme général, les exemples n'en sont que des illustrations (L01).)
+- **15.11**, mot pour mot, sur la page « besoin comme dossier de solutions » (https://claude.ai/artifact/LWsQeZYKPrEigpv63JgtcL) : « Ça semble quand même peu résoudre mes problèmes ???? »
+  (lu : troisième refus sur ce sujet. On repart de ses problèmes, avec ses mots, pas d'une forme : il n'est jamais à 100 % à la brasserie, tout s'étale sur des semaines, il met de côté, il prospecte avec des liens, il veut voir le lien avec la caisse et anticiper, et il refuse ce qui est contraignant. Partir d'une référence qu'il connaît (L13) : son ancien Excel par semaine.)
+- **15.11**, mot pour mot, correction : « Mais je parle de problème avec l'emboiteilleuse par de l'Excel ??? »
+  (lu : « peu résoudre mes problèmes » visait l'embouteilleuse elle-même : le dossier compare des prix, mais n'aide pas à résoudre son problème d'embouteillage (temps passé, volume par brassin, cadence, oxygène, carbonatation, coût par bouteille, rentabilité). Chaque solution doit se juger sur le problème qu'elle résout chez lui. Ma lecture « Excel » était fausse.)
+- **15.11**, mot pour mot, sur le planificateur (https://claude.ai/artifact/AL26X3myBJLX9y4zbYXfQM) : « Il faudrait une vue exprès détaillé de t1b2 La frise sous la caisse. C'est top ça avec temps et argent !! »
+  (lu : t1b2 choisie ; à part, une vue détaillée de la frise sous la caisse : chaque chose sur ses semaines, ses jours actifs, l'argent mis de côté, avec l'effet sur la caisse.)
+- **15.11**, mot pour mot, précision : « Une nouvelle vue »
+  (lu : la frise détaillée de t1b2 est un écran à part entière, un nouvel endroit de l'app atteint depuis À venir et la caisse, et non une feuille ou un repli dans À venir.)
+- **15.11**, mot pour mot, sur les pages de choix : « Dans les artefacts fait le bouton copier et choisir. Et met cote à cote les propal »
+  (lu : règle pour toutes les pages de choix. Chaque proposition a un bouton « Choisir » ; une barre fixe assemble la réponse (ids et mots) avec un bouton « Copier » ; les propositions d'un même choix sont côte à côte, en défilement horizontal à 390.)
 - **15.11**, mot pour mot, sur la page des choix (https://claude.ai/artifact/AL26X3myBJLX9y4zbYXfQM) : « m1do-a · m1ar-c · m3pr-c · m3pm-d · m3im-c · m4bb-a · m4pf-c · m4ia-c Pour le workflow, relancer avec plusieurs agent , , c'est mal target »
   (lu : Finances, 8 vues choisies. Simplicité (les parcours) : mal ciblé, à relancer avec plusieurs agents en parallèle, à partir de ses vrais parcours et de ses mots, pas de parcours supposés.)
-  (lu, pilote Finances : m4bb-a est portée en premier plan de la feuille du budget (choix du brassin, piles « quand tu paies ») ; le flux c3a, son choix du 09.11, reste à un toucher, rien n'est retiré.)
-- **18.11**, mot pour mot, Finances : « Parfois j'ai des entrée sans justificatif, je veux juste une coche que je puisse coché pour ces cas là pour ne pas être flaggé comme dans justificatif. C'est normal »
-  (lu : sur la fiche (m5fo-a), la case « Sans justificatif » porte une coche « c’est normal » ; cochée, la pièce sort du filtre, du « + pièce », des compteurs et de l'Annuel ; l'export dit « Sans justificatif (normal) ».)
+- **15.11**, mot pour mot, sur la page des feuilles « Brasser » (https://claude.ai/artifact/W9Lm1mN8cafAYAu2n8dq4B) : « Feuille Brasser : d1b »
+  (lu : d1b choisie, à porter 1:1.)
+- **15.11**, mot pour mot, sur « Caisse et semaines » (https://claude.ai/artifact/9FsyLTSLFpwsAvH3D64YVv) : « Caisse et semaines f1 top ! Une vue full screen sur téléphone qui fait une rotation horizontal, possible ? Et aussi penser aux projets sans budget ou autre activité. Type nettoyage fenêtre Pose du sol Prospection ECT... »
+  (lu : f1 choisie. Au téléphone : un plein écran en paysage. Sur Android (Chrome, app installée) on peut verrouiller l'orientation en plein écran ; sur iPhone, pas de verrouillage, mais la vue se met en page en paysage quand on tourne le téléphone. Règle générale : la frise porte aussi des activités sans budget (temps seul) ; les exemples ne bornent pas le cas, L01.)
+- **15.11**, mot pour mot, sur f1 : « Je pense que F1 peut être encore améliorer pour être 10/10 pour le même c'est du 8/10 Regarde ça aussi Workflow, affichage UX UI, besoin brasseur ECT..m »
+  (lu : f1 vaut 8/10 pour lui ; la passer à 10/10 par une revue en plusieurs regards (parcours, affichage UX/UI, besoin du brasseur), chaque écart chiffré, puis f1r.)
+- **15.11**, mot pour mot, sur f1 (Caisse et semaines) : « Aussi faire des filtres de plannif, car il y a aussi, brassage, event, ou autre activité... Ajouter tout ça... Ça serait un calendrier, prévision et finance global... À voir à quel point c'est adaptable »
+  (lu : la frise de f1 devient le calendrier global : prévisions, temps et finances. Elle porte tout ce qui se planifie (brassages, événements, achats, rénovations, activités, etc.), avec des filtres par type. Mesurer ce qui est déjà dans l'app (brassins planifiés, prévisions Finances) avant d'ajouter.)
+- **15.11**, mot pour mot, sur la boucle de nuit : « 90 % du quota non non99% »
+  (lu : cette nuit, le seuil d'arrêt passe à 99 % du quota hebdomadaire au lieu de 90 % ; [[fermeture-et-quota]] reste la règle par défaut.)
+- **16.11**, mot pour mot, avec une capture de la barre du bas (Bord, Finances, Brassins, Stocks, Clients, +) : « Je pense que même avoir un onglet calendrier en bas pour le global ferait vraiment sens »
+  (lu : le calendrier global (f1r) devient un onglet de la barre du bas. À 390, six onglets plus le + sont serrés : montrer les placements possibles (6e onglet, ou fusion avec Bord, ou à la place d'un autre), le brasseur choisit.)
+- **16.11**, mot pour mot : « Le + n'a jamais été en bas, c'est un bouton "volant" d'ailleurs il pourra avoir ces propre action calendrier. Je pense que on est pas assez créatif avec ce calendrier global. Lance une nouvelle session qui reprend les base de ce qui est en train d'être fait et utilise d'autres moyens d'afficher, interagir avec. En mini maquettes Tu comprends comprends la problématique ? In c'est trop limité actuellement. Alors que on tiens un truc vraiment génial et central qui rendrait vraiment toute l'application encore vraiment beaucoup mieux. »
+  (lu : le + est flottant, pas dans la barre ; sur le calendrier, il porte ses propres actions. Le calendrier global est central à toute l'app. Ouvrir une exploration créative, avec d'autres façons de l'afficher et d'interagir, en mini maquettes, dans une session neuve, sur la base de f1 et f1r.)
+- **16.11**, mot pour mot, avec une capture de la fiche « Système d'embouteillage » (s2a2 : solutions, prix, barre de caisse fin mai) : « Ça correspond pas du tout à mes besoins ?? »
+  (lu : quatrième refus sur l'embouteilleuse. La fiche compare toujours des prix et la caisse, malgré sa correction du 15.11 (« je parle de problème avec l'embouteilleuse »). Avant toute nouvelle maquette, il faut recueillir son besoin réel avec ses mots.)
+- **16.11**, mot pour mot, son besoin réel : « En gros j'ai un besoin ou une idée: embouteillages: il y a plusieurs façons de faire donc je vais rechercher les différentes façons. Je trouve que il faut minimise l'oxygène donc je voudrais partir sur un système iso même si j'ai vu un système par gravité pas mal Donc je regarde les systèmes iso et j'en trouve 5 6 différents, différentes endroit et tout.. J'ai besoin d'un endroit pour noter toutes ces recherches et aussi pas revenir en arrière, du genre pourquoi j'ai pris un système iso super chère... ECT.. pourquoi j'ai pris ce fournisseur... Et aussi ça permettrait de comparer, et aussi je pourrai utiliser l'ai pour voir si ce produit est disponible ECT... »
+  (lu : un carnet de recherche et de décision pour toute idée ou tout besoin, pas seulement l'embouteillage. Il note les façons de faire (gravité, isobarique…), les choix et leurs raisons (« minimiser l'oxygène »), les produits trouvés (5 ou 6, avec fournisseurs et lieux), les comparaisons, puis le choix final et son pourquoi, gardé pour ne pas y revenir. L'IA vérifie la disponibilité et le prix.)
+- **16.11**, mot pour mot : « Comparé les caractéristiques des systèmes »
+  (lu : le carnet compare les caractéristiques techniques des systèmes, et pas seulement les prix : oxygène capté, cadence, becs, matière, CO2, nettoyage, encombrement, formats.)
+- **16.11**, mot pour mot : « Mais ça doit pas être uniquement pour ce système, ça doit être générique, un frigo, une ventil, un évier, ECT... Ça doit être dynamique et générique »
+  (lu : les caractéristiques à comparer changent selon le besoin. L'IA propose celles de la catégorie, le brasseur en ajoute ou en retire ; aucun modèle propre à l'embouteillage.)
+- **16.11**, mot pour mot : « Et va doit être facile d'utilisation, une vue sans détails juste pour savoir de quoi on parle et ensuite on peut détaillé et comparé. Utiliser l'ai au besoin »
+  (lu : au premier plan, une vue sans détails qui dit de quoi on parle et où on en est ; le détail et la comparaison sont à un toucher ; l'IA aide au besoin.)
+- **16.11**, mot pour mot : « Et aussi important, par exemple je mets un liens, ça montre l'objet, et je peux faire un toggle switch qui va regarder tout les 3 jours si l'article est en stock aussi Chez d'autres fournisseurs et si il a baissé de prix »
+  (lu : un lien collé affiche un aperçu de l'objet. Une bascule par article lance une veille tous les 3 jours : stock, autres fournisseurs, baisse de prix. Côté app, il faudra une tâche planifiée et une recherche en ligne payante, à soumettre à son accord le moment venu.)
+- **16.11**, mot pour mot : « Ça doit toujours être ultra facile d'utilisation.. workflow le plus simple »
+  (lu : exigence transversale, déjà dans le carnet : aucune étape imposée, un geste par action, noté « fluidité » par le juge.)
+- **16.11**, mot pour mot, sur la page « Calendrier en un geste » (https://claude.ai/artifact/Ho37S3SppXy2SJ7fEHdE3Z) : « Clairement Calendrier gestes · fb Est le meilleur mais pas 9/10... Ça va être le cœur de l'application, ça doit être 9/10 voir plus. Et il faut que tout le reste de l'application s'intègre là dedans. Mais il faut aussi pour filtrer, trier pinner ou star certaines choses Je pense qu'il manque certaines point important. Mais surtout le plus important, ça doit être hyper lisible, hyper facile à voir les chose. Et ultra simple d'utilisation, le moins d'action possible notamment sur téléphone. Clicker pour ouvrir le clavier et taper c'est déjà beaucoup d'action... »
+  (lu : fb est choisi. Viser 9/10 ou plus : c'est le cœur de l'app, où toutes les sources datées s'intègrent (LIENS.md). Il faut des filtres, un tri, épingler ou mettre en favori. Combler les points importants qui manquent. Rendre l'écran hyper lisible et réduire au minimum les actions : le clavier compte comme un coût, d'où les puces, les valeurs proposées et l'IA.)
+- **16.11**, mot pour mot : « Est-ce que il y aurait d'autres levier pour encore améliorer, facilité tout ça ? »
+  (lu : il demande d'autres leviers pour le calendrier et le carnet. Proposés : partager un lien depuis le navigateur vers l'app, raccourcis sur l'écran d'accueil, la voix au +, des gestes directs sur la frise, une tâche ou une date proposée et acceptée en un toucher, le lien entre carnet et calendrier, des essais chronométrés sur son téléphone.)
+- **16.11**, mot pour mot : « Tous »
+  (lu : il retient les sept leviers ; ils sont ajoutés aux deux chantiers, calendrier et carnet.)
+- **16.11**, mot pour mot : « Surtout Gestes directs sur la frise : tu glisses une barre pour la déplacer, tu tires son bord pour l'allonger. Un appui long ouvre épingler, étoile et filtrer. »
+  (lu : L4 est sa priorité. Critère bloquant K11 du calendrier : glisser pour déplacer, tirer le bord pour allonger, appui long pour le menu, chacun en un geste, sans clavier, avec un retour visible et un Annuler.)
+- **16.11**, mot pour mot, sur la page du carnet (https://claude.ai/artifact/793n3GJYxJHc52JH5ynw1h) : « Da et dc sont pas trop Mal, certains aspec de l'un sont meilleurs que d'autres à toi de décider :) Ça reste du l'ux UI assez mauvaise, et difficile à lire, voir... Ça fait partie des critères.. mais on c'est largement améliorer, on est passé de 5/10 à 7.5 »
+  (lu : la base est une fusion de dc et de da, et le pilote choisit le meilleur de chacun. Le défaut principal reste l'interface : elle est difficile à lire et à voir. Il note 7,5/10, contre 5 avant ; il faut viser 9 ou plus, la lisibilité visuelle d'abord, puis les sept leviers.)
+- **16.11**, mot pour mot : « Pas oublier le lien avec la compta, calendrier et autres... Dans l'application tout a un lien avec tout... Je pourrais par exemple sur le calendrier très facilement dans la section correspond, ajouter avec un + une nouvelle idée, et ça viendrait directement là bas... Ce genre de lien, il y en aurait d'autres... À toi de les faire, trouver, créé, critiqué ECT... »
+  (lu : règle générale, dont le + du calendrier n'est qu'un exemple (L01) : dans l'app, tout est lié à tout. Ce qu'on crée depuis un écran arrive directement là où ça vit, et ce qui naît ailleurs se voit ici. Le carnet se lie à la compta, au calendrier, aux besoins, aux fournisseurs, à l'atelier, au stock. Le pilote trouve, crée et fait critiquer ces liens, sans attendre une liste du brasseur.)
+- **16.11**, mot pour mot : « Le calendrier à aussi les 7 nouveau critères ? Peut être lancée unr session ou agent spécialiste UX UI, workflow, brasseur, expert, critique. Pour comprendre, adapté, critiqué, inové pour ajouter des nouveaux critères afin d'avoir un 9.5 ou 10/10 ? »
+  (lu : oui, le calendrier a les leviers L1 à L7 dans MANQUES.md, en plus de K11 et K12. Un panel de six spécialistes ajoute des critères mesurables pour viser 9,5 à 10 : UX/UI, workflow, brasseur, dataviz, critique et innovation. Les boucles en cours s'arrêtent à 9 ; une boucle suivante visera 9,5 avec ces critères.)
+- **16.11**, mot pour mot : « Parfait soit autonome, n'attends pas de retour de ma part. SI une décision est à prendre, utilise le conseil ou les persona »
+  (lu : le pilote enchaîne sans attendre. Une décision passe au conseil ou aux personas : critique calé sur le PORTRAIT, regards du conseil. Seuls les gestes irréversibles ou externes restent groupés pour lui.)
+- **16.11**, mot pour mot : « Aussi une autre session, car au final ce calendrier sera global, donc certaines actions doivent être adapté, mais aussi certaines vue peuvent être modifiés, enlève, adapté. Notamment la partie finance, je pense que on pourra l'adapter avec ce calendrier en mode finance »
+  (lu : le calendrier global devient le centre de l'app. Il faut revoir chaque vue et chaque action : la garder, l'adapter, la fondre dans un mode du calendrier ou la retirer, sans perdre de fonction ni de données (« Je veux pas perdre en fonctionnalités ni en données »). Finances est l'exemple principal : un « mode finance » du calendrier, sur la base de ses choix finance (f1, t1b2, kh1r, kx2r1, ky2b, kyh1).)
+- **16.11**, mot pour mot : « Peut être une vue de ce calendrier un peu "comme le bouton+" mais par thème ? »
+  (lu : il veut un bouton flottant de thème, comme le +. Il fait passer le calendrier en mode finance, brassage, achats, atelier, ventes, etc., et le + porte alors les actions de ce thème. Lecture ambiguë, donc trois axes de variantes : A, un bouton de thème flottant à côté du + ; B, un éventail de thèmes qui s'ouvre depuis le + ; C, un balayage latéral d'un thème à l'autre. Le mode finance devient un des thèmes.)
+- **16.11**, mot pour mot, sur ma lecture « bouton de thème flottant, éventail, balayage » : « Non pas du tout »
+  (lu : la lecture « changer de thème comme le + » est fausse. Les variantes ta, tb et tc sont arrêtées. On attend son sens avant toute maquette.)
+- **16.11**, mot pour mot : « Ça a rien avoir avec le bouton plus... Ce que je voulais illustré c'est que le bouton+ dépend de son action principal en fonction de là où il est... On pourrait faire un calendrier pareil. Un général avec son Tab Mais aussi un spécifique aux thématiques, finance, stock, brassage ECT... ? »
+  (lu : le + est une comparaison, pas l'objet visé. Le calendrier doit s'adapter à l'endroit où il est, comme le +. Il y a un calendrier général dans son onglet, et un calendrier propre à chaque thème (finance, stock, brassage…) placé dans sa section. C'est le même composant, qui y montre d'abord les choses, le chiffre clé et l'action principale de la section. Le « mode finance » devient le calendrier de la section Finances.)
+- **16.11**, mot pour mot : « On devrait peut être attendre que le 9.5/10 soit terminé ? »
+  (lu : oui pour les calendriers de section : ils se dessinent sur le calendrier fini à 9,5. L'analyse des vues, qui dit quoi garder, adapter ou retirer et où va chaque fonction, ne dépend pas du dessin : elle continue. Les maquettes de Finances en cours servent d'exploration du contenu et seront refaites sur la base à 9,5.)
+- **16.11**, mot pour mot, sur la page Simplicité passe 2 (https://claude.ai/artifact/82HDNSfh4ADr8aigeigoH1) : « pa1 · pa2 · pe1 · pe3 · pe4 · pb1 · pb2 · pb3 · pm1 · pl1 · pl2 »
+  (lu : il reprend à son compte le vote du conseil. Ces onze astuces deviennent son choix (règle n° 1), avec les retouches de DECISIONS.md : Star San au lieu de l'acide pour pe4 ; valeur proposée et curseur de pH pour pm1.)
+- **16.11**, mot pour mot : « Il faut vraiment une version horizontal pour mobile btw »
+  (lu : le paysage sur téléphone est exigé, pas seulement toléré. C'est une vraie vue horizontale, dessinée pour 844 × 390, d'abord pour le calendrier général et ceux de section, puis pour les grandes vues comme la comparaison du carnet. Elle doit montrer plus de temps et plus de rangées que le portrait. Aujourd'hui, en paysage, fb9/p1 ne montre que 2 rangées de la frise, d'après le panel des critères.)
+- **16.11**, mot pour mot, sur la page « Calendrier par section » (https://claude.ai/artifact/TUrDFEM6Z5jywbS8yJsr3f) : « Calendrier par section · Finances fb-fin · Brassins ok · Matériel ok · Stocks ok · Agenda ok · FI1 ok · FI2 ok · FI3 ok · FI4 ok · FI6 ok · FI7 ok · FI8 ok · FI9 ok · FI10 ok · FI11 ok · FI12 ok · FI14 ok · FI15 ok · FI16 ok · FI18 ok · BR1 ok · BR2 ok · BR4 ok · BR5 ok · BR6 ok · BR8 ok · BR10 ok · AT1 ok · AT2 ok · AT3 ok · AT5 ok · AT6 ok · ST1 ok · ST3 ok · ST5 ok · ST7 ok · VE1 ok · VE3 ok · VE5 ok · VE6 ok · Prévoir une dépensem3pr-c à voir...Mes projets de matériel, À venir, graphe de caissem3pm-d · kyh1 · kh1rg pareil Bien amortim3im-c pariel à voir.. »
+  (lu : la base du calendrier de Finances est fb-fin, c'est-à-dire fb réglé sur l'argent. Les calendriers de Brassins, Matériel, Stocks et Clients sont acceptés, ainsi que les vues FI, BR, AT, ST et VE cochées. Trois points sont « à voir » malgré leur « ok » : m3pr-c (Prévoir une dépense), m3pm-d · kyh1 · kh1r (projets, À venir, graphe de caisse) et m3im-c (Bien amorti). Leur place dans le calendrier se montre en variantes. Sans réponse : le calendrier de Courses, celui du Bord, et les vues AC et BO ; ils restent au défaut du plan, sans être son choix.)
+- **16.11**, mot pour mot, sur la page « Liens de l'app » (https://claude.ai/artifact/BHEHrUTuHiJkGnE1MjUGe6) : « Liens de l'app · L5 garder · L1 garder · L11 garder · L3+L4 garder · L12 garder · L7+L22 garder · L6 garder · L9 garder · L18 retirer · L29 garder · L33 garder · L16 garder · L36 garder · L25 garder · 2Le + du calendrier envoie l'idée au carnet L1 ça prend énormément de place pour peu d'ajoute, je veux cette fonctionnalité mais pas aussi intrusif .8Chaque geste décompte ce qu'il use super important!! À bien mettre et généralisé partout »
+  (lu : il garde tous les liens sauf L18, l'entretien du matériel daté au calendrier ; L14 est resté sans réponse. L1 est gardé comme fonction, mais sa forme prend trop de place : ni rangée ni case dédiée, le geste passe par ce qui existe déjà. L9 est prioritaire : chaque geste de l'app décompte ce qu'il consomme, partout.)
+- **16.11**, mot pour mot : « On peut viser 8.5 plutôt que 9 alors... Mais oui changer de méthode si ça tourne en boucle. »
+  (lu : la cible passe à 8,5. La boucle fb9 a tourné à vide : p2 à 7,3, p3 à 7,2, sous fb qu'il notait 8. Elle est arrêtée pour changer de méthode. On repart de fb : d'abord le repos rendu lisible seul, puis chaque fonction ajoutée par lot, sans que la lisibilité retombe.)
+- **16.11**, mot pour mot, sur le carnet fusionné (passe 5, environ 8,2) : « 8.2 ça me va »
+  (lu : le carnet fusion dc+da est accepté à 8,2. Pas de nouvelle boucle. Il reste à le publier, à le jouer sur son téléphone, puis à le porter dans l'app avec les liens choisis.)
+- **16.11**, mot pour mot, sur la page du carnet p5 (https://claude.ai/artifact/L8kQ1LbsTefsYgbM3RJCzh) : « DC et dc semble meilleure sur beaucoup d'aspects, je comprends pas trop P5 ?? Carnet p5 · écartés visibles · da · un seul champ ; l'IA propose le critère le meilleur les deux autres sont horribles parcontre le champs text en bas ? SI non sur mobile le clavier cache toutp5 · En cours, Choisis ; « ✓ choix » et ↓ 600 CHF pas fan ??? Ca semble pas fini ??? »
+  (lu : la fusion p5 est refusée : da et dc sont meilleurs sur beaucoup d'aspects, et p5 semble inachevé. Pour noter, da (« un seul champ ; l'IA propose le critère ») est le meilleur, et les deux autres sont « horribles ». Le champ doit rester visible avec le clavier ouvert au téléphone. Dans Comparer, les écartés restent visibles. La liste de p5 (« En cours, Choisis ; ✓ choix et ↓ 600 CHF ») ne lui plaît pas. Son « 8.2 ça me va » visait la note annoncée, avant d'avoir vu p5.)
+- **16.11**, mot pour mot : « DC et da* Da semble globalement meilleure »
+  (lu : il corrige son message précédent, qui disait « DC et da ». da devient la base du carnet (règle n° 1) : ra, da retouché, est la piste principale. rac (da avec le journal de dc) n'est qu'une greffe. rc reste seulement pour comparaison.)
+- **16.11**, mot pour mot : « Mais en soit p5 a des bonnes idées mais comment il a pu passer les critiques ??? »
+  (lu : il demande pourquoi nos critiques ont laissé passer p5. Les bonnes idées de p5 sont à greffer sur da retouché (ra) : police chargée, noms entiers, dates lisibles, raisons cochées, offres ailleurs avec prix et stock.)
+- **16.11**, mot pour mot : « En soit peut être faire une p5 mais aller jusqu'au bout et répondent au critère... »
+  (lu : on ajoute une variante p5f, « p5 fini ». Elle garde les bonnes idées de p5 et rend tout ce que da montrait. La liste est refaite, aucun écran ne reste à moitié vide, et chaque critère de CADRE.md est coché avec sa preuve. Elle est montrée à côté de ra, da retouché, qui reste la base.)
+- **16.11**, mot pour mot, sur p5 : « Sur beaucoup d'endroits il est un peu mieux mais certaines écran sont inutilisable en l'état »
+  (lu : p5 est un peu mieux par endroits, mais certains écrans sont inutilisables. Écrans suspects, d'après les critiques : Comparer au téléphone (3ᵉ colonne coupée, noms sur 2 lignes), le journal aux notes repliées en icônes muettes, les écrans à moitié vides et la liste. Je lui demande lesquels.)
+- **16.11**, mot pour mot : « Fait peut être passer un critique, revue, besoin brasseur ECT... Dessus ? »
+  (lu : il ne désigne pas lui-même les écrans de p5 inutilisables : un audit les trouve. Trois regards (critique, UX utilisabilité, besoin brasseur) jouent chaque écran face à da, puis la synthèse va dans CADRE.md. p5f sera corrigé selon cet audit.)
+- **16.11**, mot pour mot : « Comment autant d'erreur cruciale ont pu passer ??? »
+  (lu : il demande pourquoi l'audit trouve 4 écrans inutilisables que les 5 passes avaient laissés passer. Réponse et leçon : les portes notaient des critères au lieu de demander si chaque écran est utilisable. Un parcours scripté réussi ne voit ni le clavier ni l'écran vide. L'audit écran par écran devient obligatoire avant toute page.)
+- **16.11**, mot pour mot : « Le cœur du problème : « En gros j'ai un besoin ou une idée: embouteillages: … » « Comparé les caractéristiques des systèmes » « Mais ça doit pas être uniquement pour ce système, ça doit être générique, un frigo, une ventil, un évier, ECT... Ça doit être dynamique et générique » N'a pas été respecté... »
+  (lu : le besoin central n'est pas tenu. Les prototypes montraient un embouteillage déjà rempli par la fixture, au lieu de lui laisser faire sa recherche. Les façons et le critère ne se créent pas, Comparer est inutilisable au téléphone, et le cas générique (évier, carnet neuf) est vide. Le critère d'acceptation devient son scénario joué de zéro, puis le même scénario sur un autre objet partant de zéro.)
+- **16.11**, mot pour mot : « Okay adapté p5 fini alors »
+  (lu : p5f n'est pas abandonné. Il passe le même traitement que ra, en parallèle : son scénario joué de zéro, Comparer à 390 corrigé avec les 4 écrans de l'audit, l'audit écran par écran, puis sa page. Il choisira entre ra et p5f, tous deux finis.)
+- **16.11**, mot pour mot : « déployer les fonctions serveur (compagnon et Finances) : oui ou non ?oui pousser le tag de la recette du matin : oui ou non ?oui que faire de la vente réelle de 5 695,00 de l'Atelier (constat 12) ? Supprime c'était un test »
+  (lu : trois accords.
+  1. Déployer les fonctions changées du compagnon et de Finances, et seulement elles ; jamais dispatchBrewerHopAdviceV1 ni notifyBrewerHopAdviceAnswerV1.
+  2. Pousser le tag en-ligne/2026-11-16-recette-matin.
+  3. Supprimer la vente de 5 695,00 du constat 12 : c'était un test. Par le bouton de suppression de l'app, sur ce seul enregistrement.)
+- **16.11**, mot pour mot, sur « À tester dans l'app en ligne, au doigt sur ton téléphone » : « Non ça c'est les sessions ou toi... »
+  (lu : tester au toucher réel, c'est notre travail, jamais le sien. Moyens : l'émulation tactile de Chrome (CDP) à 390 sur la version exacte du tag en ligne, jouée en local ; ou le panneau intégré en mode mobile, qui émule le toucher.)
+- **16.11**, mot pour mot : « Moi je parle de mini maquettes à voir et choisir ect.. »
+  (lu : « j'ai quoi à voir, tester ? » visait les mini maquettes à choisir. Aucune n'était prête : calendrier et carnet sont en cours. Un lot est lancé sur les choix ouverts qui ne dépendent pas du calendrier fini : place de l'onglet Calendrier, fiche fournisseur (L16), refus de suppression (L33), qui a reçu ce lot (L36), et l'écart entre la pastille 24 et « 5 à commander » (ST7).)
+- **16.11**, mot pour mot, sur une capture du carnet en cours (r3/c2, façon isobarique, avec un X rouge sur le bloc « Façons possibles · Pistolet à contre-pression ») : « Pourquoi il y a un thème autre que celui de l'app, et pas de couleur ? »
+  (lu : les maquettes doivent porter le thème de l'app (DESIGN.md) : le fond cave sombre par défaut avec son clair, les accents EBC (paille, or, ambre, cuivre), les couleurs de zone (production #E7A070, finances #86B9E6, stocks #A3C97A, agenda #BCA5E8), le houblon et l'eau. Pas de crème neutre sans couleur. Le X rouge vise le bloc « Façons possibles » proposé par l'IA, que je lis comme à retirer ou à revoir : à lui faire confirmer. L'onglet actif était Finances dans le carnet, ce qui est faux aussi.)
+- **16.11**, mot pour mot, sur une capture du calendrier en cours (c85, repos 390, avec une marque rouge entre la ligne des mois « 16 nov. | déc. » et les semaines S50-S51) : « Ça semble bon mais pas très compact... »
+  (lu : la direction est bonne, mais trop haute. L'en-tête (chiffre, courbe, segments, « libre en fin de semaine », ligne des mois, semaines, montants) prend environ 40 % de l'écran. La marque rouge vise la bande des semaines, qui tient sur trois lignes (mois, semaine, montant) : à resserrer. Les rangées de la frise sont espacées. Compacter selon docs/ui-compacte.md, sans rien retirer.)
+- **16.11**, mot pour mot, sur la même capture du calendrier, avec des zones entourées en rouge : « Beaucoup de choses peu utilie pour le brasseur prend beaucoup de place... »
+  (lu : quatre zones entourées. (1) L'en-tête « 113 CHF à dépenser sans passer sous 0 (S24) », avec plein écran et « 2 en retard ». (2) Le bloc des segments (6 sem., 3 mois, 6 mois, An), « libre en fin de semaine », la ligne des mois, les semaines et leurs montants. (3) Les lignes de titre de rangée (« Fêtes + », « Ventes + », « Achats + »), qui prennent chacune une ligne vide. Non entourés : la courbe et les barres de la frise, qu'il garde en avant. Ce qui est entouré passe en petit ou à un toucher, sans être supprimé : chiffre clé fondu dans la courbe, segments remplacés par le pincement, montants par semaine sur l'axe, titres de rangée dans la marge ou sur la même ligne que la première barre.)
+- **16.11**, mot pour mot : « Et le bouton+ est pas au bon endroit btw En bas à gauche un peu au dessus des Tab, c'est genre la 200eme fois que je le dis »
+  (lu : le + volant se place en bas à GAUCHE, juste au-dessus de la barre d'onglets, partout : dans l'app et dans toutes les maquettes. Aujourd'hui l'app le met à droite (src/ui/floating-actions.css : `right: 0.75rem`), et toutes les maquettes aussi. Il le répète depuis longtemps ; ses paroles précédentes sur ce point manquaient à SPEC (L13).)
+- **16.11**, mot pour mot : « Non c'est à droit pardon pas à gauche »
+  (lu : il corrige son message précédent. Le + reste en bas à DROITE, comme dans l'app, mais « un peu au dessus des Tab ». Le défaut visé est sa hauteur : sur la capture c85, il flotte au milieu de la frise, environ 200 px au-dessus des onglets. FAB-GAUCHE est corrigé dans ce sens, et la session Menu a reçu la correction.)
+- **16.11**, mot pour mot : « Mais on perds beaucoup de temps pour pas grand chose, non ? On devrait pas faire des mini maquettes, tout simple pas jouable et tout et juste avoir pleins de versions ?? »
+  (lu : oui. Pour explorer, on fait des mini maquettes statiques, sans jeu ni boucle : beaucoup de versions vite, avec le contrôle des seules règles dures, puis il choisit. Le prototype jouable, le scénario et l'audit ne viennent qu'après son choix, sur la version choisie. C'est le retour à « fil de fer d'abord ».)
+- **16.11**, mot pour mot, sur la page des choix ouverts (https://claude.ai/artifact/MuxnsQKBdfJLoxSjB6iVYK) : « Choix ouverts · Onglet v1 · Fournisseur v1 · Suppression v2 · Lot v1 · 5??? »
+  (lu : il choisit Onglet v1 (6e onglet Calendrier, Bord ne bouge pas), Fournisseur v1 (les prix d'abord), Suppression v2 (les liens réglés un par un) et Lot v1 (les branches vers chaque client). Le sujet 5, l'écart entre la pastille 24 et « 5 à commander », n'est pas compris : l'explication de la page était trop technique. Je le lui réexplique simplement.)
+- **16.11**, mot pour mot, sur la page des 16 calendriers compacts (https://claude.ai/artifact/A5b5ZPhA4ByQ3HRcFZqHem) : « Fan d'aucun et beaucoup de régression. Mais voilà les deux moins pire : Calendrier compact · a3 · d1 Même si ils sont tous très mauvaise, 5/10 je dirais »
+  (lu : les 16 versions sont refusées, à 5/10 : elles régressent par rapport à sources2, qu'il trouvait « bon ». Les moins mauvaises sont a3 (le chiffre couché dans le creux) et d1 (une ligne de tête). Changement de genre (L13) : on ne redessine plus. On retouche sources2 pas à pas, une seule réduction à la fois, montrée à chaque palier, pour qu'il voie où ça cesse d'être bon.)
+- **16.11**, mot pour mot, sur la page des paliers (https://claude.ai/artifact/MLW1E6fAHrpCfYmAb7BZbC) : « Calendrier compact · g-d1 · Ou p4 mais il y a énormément de problème sur ces mini maquettes ???? J'ai l'impression que on s'eparpille et que ce qui a été choisi et qui était bien a été enlevé ? Et là les mini maquettes sont très peu qualitative. Tu as changé qqch dans le workflow ?? »
+  (lu : il choisit g-d1, ou p4, mais ces maquettes ont beaucoup de problèmes. Il sent qu'on s'éparpille et que des choses choisies et bonnes ont disparu. La qualité a baissé. Oui, la méthode a changé dans la journée : critique calibré sauté sur les mini maquettes statiques, concepteurs pressés (« 20 minutes »), correctifs confiés à Sonnet, et une base qui a dérivé de sa maquette choisie (fb, f1, t1b2…) vers la dernière itération (sources2). Suite : inventaire de tous ses choix sur le calendrier, contrôle de g-d1 contre cet inventaire, puis une seule version refaite avec soin, avec critique.)
+- **16.11**, mot pour mot : « J'ai l'impression que beaucoup de travail a été et que beaucoup de choses on été perdu .. »
+  (lu : rien n'est effacé du disque ni de Git. Ce qui s'est perdu est dans les maquettes successives, par dérive de la base. Un état des lieux de tous ses choix des 15 et 16.11 dit, pour chacun, où il vit et s'il est encore présent dans la dernière version. Le calendrier consolidé et les finitions du carnet remettent les perdus.)
+- **16.11**, mot pour mot : « Beaucoup de travail dans le vide »
+  (lu : c'est juste. Les causes : trop de chantiers en parallèle, des méthodes changées en cours de route, et des bases qui dérivaient de ses choix. Désormais : un chantier visible à la fois, chaque version contrôlée contre l'inventaire de ses choix et passée au critique avant d'être montrée, et pas de nouveau chantier sans sa demande.)
+- **16.11**, mot pour mot, sur l'état des lieux (https://claude.ai/artifact/PdCJCSwTjpLAD4uHJCDNrV) : « Pas besoin de focus sur cave, mais utiliser le thème de l'app oui... » ; « Non c'est que par le calendrier la version horizontal ???? Pas besoin pour le carnet... » ; « Et oui j'ai l'impression que pour le calendrier ça confirme beaucoup de choses bien on été perdu... »
+  (lu : (1) THEME-APP veut le thème de l'app tel qu'il s'affiche, avec ses couleurs, sans exiger la version cave. (2) Le paysage ne concerne que le calendrier : l'avoir étendu au carnet était une erreur, retirée. (3) Il confirme les pertes du calendrier : cd1 les remet, et sera montré une fois passé au critique.)
+- **16.11**, mot pour mot : « Mais donc quoi tourne depuis midi ??? »
+  (lu : il demande le bilan honnête du calendrier depuis midi. Depuis 11 h 55, cinq chantiers successifs : calendrier-85, puis calendrier-compact, les 16 fils, les paliers et le consolidé. Aucun n'a dépassé fb (8/10), sa base du matin. Cause : changements de méthode et dérive de la base.)
+- **16.11**, mot pour mot : « Donc plus de 20m de token utiliser, pour rien ??? »
+  (lu : pour le calendrier, l'après-midi n'a rien rapporté de mieux que fb. Les jetons sont surtout partis dans des boucles jouables, des juges et des scénarios lancés avant son choix. Ont servi : les liens, les calendriers de section, les choix ouverts, le cœur du carnet joué de zéro, les corrections en ligne et L9 codée. Pour le calendrier, plus d'exploration en masse : cd1 lui est montré, puis on retouche fb ou cd1 par petits pas, avec lui dans la boucle.)
+- **16.11**, mot pour mot, sur la page cd1 (https://claude.ai/artifact/4Asn377oaJjCegYuo16uP6) : « g-d1 était mieux dans l'esprit compacte et on voit tout d'un coup d'œil cd1 a des bonnes idées mais mais c'est trop le fouillis. Surtout l'entête.. »
+  (lu : la base reste g-d1, compacte et lisible d'un coup d'œil. cd1 apporte de bonnes idées, mais il est trop fouillis, surtout l'en-tête. Suite : on ajoute à g-d1 les idées de cd1 une à une, en paliers montrés avant/après, sans jamais agrandir l'en-tête de g-d1. Il choisit celles qu'il garde.)
+- **16.11**, mot pour mot, sur la page cd1 : « Beaucoup mieux la vue paysage même si l'entête reste trop lourde (Paysage cd1) »
+  (lu : pour le paysage, la base est cd1-paysage (`cd/cd1-paysage.html`), bien meilleure, mais son en-tête est trop lourd et doit s'alléger, comme en portrait. Prochaine étape paysage : cd1-paysage avec un en-tête allégé, montré avant/après.)
+- **16.11**, mot pour mot : « Je pense que l'entête peut encore être amélioré !!! »
+  (lu : l'en-tête est le prochain sujet, en portrait comme en paysage. Lot d'en-têtes seuls, avec le reste figé : la frise de g-d1 en portrait, le reste de cd1-paysage en paysage. Il doit tenir le même contenu (montant à dépenser, au plus serré, en retard, période, courbe et sa fenêtre) en plus léger et plus clair.)
+- **16.11**, mot pour mot, sur l'en-tête : « Plus de place au graph et plus d'info sur ces mouvements, moins d'info sur le reste »
+  (lu : l'en-tête se resserre autour de la courbe de caisse, qui y prend plus de place. La courbe porte ses mouvements : entrées, sorties et ce qui fait monter ou descendre la caisse, nommés sur la courbe ou à un toucher. Le reste (textes, pastilles, segments) diminue. Le lot d'en-têtes est relancé avec ce cap.)
+
+- **16.11**, mot pour mot, sur la page du carnet ra ou p5f (https://claude.ai/artifact/2XTmkaNxtHEBRuvkyvnFsL) : « Carnet · Il y a des choses bien des deux côtés. Je peux pas les départager... Entre ta et p5f »
+  (lu : « ta » = ra. Aucun des deux ne gagne en bloc. On ne refait pas une fusion devinée (la fusion p5 a été refusée) : il choisit étape par étape, ra ou p5f, sur les mêmes captures ; la base du carnet devient l'assemblage de ses choix d'étape, puis on le joue de zéro.)
+- **16.11**, mot pour mot, sur une capture entourée de « tout » (page9, https://claude.ai/artifact/VE966bkeVCnCsBPUX2KREC) : « + pas aligné ni sur la même ligne ??? »
+  (lu : les + des rangées suivaient la longueur de chaque titre. Ils vont dans une seule colonne, au bout d'un titre de largeur fixe, sur la ligne du titre. Contrôle CAL-PLUS-ALIGNE.)
+- **16.11**, mot pour mot, sur la page9 (https://claude.ai/artifact/VE966bkeVCnCsBPUX2KREC) : « Calendrier compact · g-d1 et les idées de cd1, une à la fois · 16.11 À revoir l'entête comme je l'ai dis. On doit pouvoir bien améliorer ça avec plusieurs de mes points cité »
+  (lu : page9 gardait volontairement l'en-tête de g-d1 ; il veut l'en-tête refait selon ses points : plus de place à la courbe, plus d'info sur ses mouvements, moins sur le reste, compact, sans fouillis. C'est le lot de la page10 (q4, p1, q5 ; l5, l1), publié juste après ; ensuite, « tout » de page9 avec l'en-tête choisi.)
+- **16.11**, mot pour mot, sur la page10 des en-têtes (https://claude.ai/artifact/WZjLYHhFfvYWd1mUiD4TEr) : « En gros Calendrier en-tête · portrait q5 · paysage l5 »
+  (lu : en-tête choisi : q5 en portrait (le creux expliqué), l5 en paysage (mouvement de chaque semaine). Inscrit dans maquettes.json. Posé sur « tout » de la page9 pour le voir en entier.)
+- **16.11**, mot pour mot, sur la page11 (q5 sur tout, l5 ; https://claude.ai/artifact/Drad8d1AG4zrxsPKgDaPqP) : « Mais on peut faire bien mieux »
+  (lu : q5 et l5 sont la base choisie, un plancher à enrichir (L07), pas l'arrivée. Lot de versions qui vont plus loin sur ses trois axes : courbe nettement plus grande, mouvements nommés en entier sur la courbe, beaucoup moins sur le reste (la bande des semaines comprise), sans grandir l'en-tête.)
+- **16.11**, mot pour mot, sur la page11 avec une capture de la bande des semaines (S47… 4 032… −148) : « Calendrier en-tête q5 + l5 · à revoir · Graph trop petit donné date trop présente » puis « Mais l'idée est bonne »
+  (lu : « donné date » = données et dates. La courbe est trop petite ; la bande des semaines (mois, n° de semaine, solde, mouvement : trois lignes) prend trop de place. L'idée de la bande (solde et mouvement par semaine) est bonne : elle reste, allégée. Contrôle CAL-GRAPH-PETIT.)
+- **16.11**, mot pour mot, sur la page9 : « Met en valeur les changements, genre avec un rectangle rouge ou autre. Pariel pour les autres artefacts qui sont sans grand changement »
+  (lu : sur toute page où une variante diffère peu de sa référence, les écarts sont entourés en rouge sur la capture. Outil : scripts/agents/surligner-ecarts.mjs (diff d'images tolérant aux décalages). Fait sur la page9 ; règle PAGE-ECARTS pour les suivantes.)
+- **16.11**, mot pour mot, en recopiant la page des choix ouverts : « Choix ouverts · Onglet v1 · Fournisseur v1 · Suppression v2 · Lot v1 · 5. La pastille 24 et « 5 à commander » toujours pas clair et j'ai déjà fait ces choix ??? »
+  (lu : la page lui reposait les quatre choix déjà faits, et la question 5 était dite en une phrase sans montrer ce qu'est la pastille. Nouvelle page à part : la seule question ouverte, l'écran d'aujourd'hui annoté (1 la pastille 24, 2 le « 5 à commander »), puis A, B, C avec les écarts en rouge.)
+- **16.11**, mot pour mot, après la liste des choix « en attente » : « Mais tout les choix que tu m'a présenté je le ai fait ou refusé ??? Sauf un normalement ?? »
+  (lu : il a raison. L14 était dans « Tous » ; Courses, Bord, AC et BO sans réponse = écartés, défaut du plan ; le carnet a eu sa réponse (« je peux pas les départager ») ; la page9 a eu la sienne (l'en-tête). Le seul choix ouvert est la pastille du Stocks (24 ou 5). Les pages carnet étape par étape et page9 restent là s'il veut, sans attente.)
+- **16.11**, mot pour mot, sur la page9 (idées de cd1 sur g-d1, écarts en rouge) : « Calendrier compact · i1 garder · i2 non · i3 garder · i4 garder · i5 non · i6 garder · i7 non · i8 garder · I8 oui mais attention c'est pas très clair... I1 oui mais aligné et fonction pas à cette endroit pour laisser la place aux vrais info. Le plus de faire dans le carré de fêtes, vente, achats ECT.. i2 bonne idée mais mal réalisé »
+  (lu : gardés i1 (titres de rangée à gauche, alignés), i3 (date de la semaine au toucher), i4 (mouvement sous chaque solde), i6 (« 2 en retard » en mots au toucher), i8 (masquer une rangée) ; refusés i5 (jauge des jours) et i7 (« + S47 »). i1 : la colonne des + s'en va pour laisser la place aux vraies infos ; ajouter se fait dans le carré de couleur de la rangée (Fêtes, Ventes, Achats…). i8 : à rendre clair (on doit comprendre qu'on masque et comment réafficher). i2 (résumé par rangée) : bonne idée, à refaire mieux.)
+- **16.11**, mot pour mot, sur la page de la pastille du Stocks (https://claude.ai/artifact/FMLHmLiuovMmcoUNryfYwu) : « Stocks pastille · C · C'est le meilleur mais pas incroyable.... »
+  (lu : C choisi (un réglage de période « S49 · 6 sem. · Tout » règle ensemble le gros chiffre et la pastille). C'est la base, à enrichir : un lot qui part de C, après les deux lots du calendrier en cours.)
+- **16.11**, mot pour mot : « Oui aussi les mini maquettes des interation pour le reste des choses, on es en train d'optimisation l'en-tête du calendrier mais pas le calendrier lui même ni même le graph »
+  (lu : les gestes du calendrier lui-même (la frise : déplacer, étirer, poser, ouvrir, appui long) et de la courbe (fenêtre, toucher une semaine, « et si » qui recalcule) n'ont pas été explorés. Lot de mini maquettes d'interaction statiques, avant et après chaque geste, sur sa base g-d1.)
+- **16.11**, mot pour mot, sur la page13 (https://claude.ai/artifact/Joxat3gJk6CpdEhM1whFdK) : « Calendrier compact gi2 · choisi-a · r2-c »
+  (lu : choisi-a (le + dans le carré de couleur plein, l'œil pour masquer, « n choses cachées ») et r2-c (résumé par rangée en étiquette remplie en proportion). Nouvelle base du corps du calendrier : gi2/r2-c.html (= choisi-a + r2-c), avec l'en-tête choisi q5 / l5 à poser dessus.)
+- **16.11**, mot pour mot : « Pas besoin des mini maquettes en cave »
+  (lu : les mini maquettes se font et se montrent en clair seul. Les deux thèmes restent pour l'app réelle et le jouable (CLAUDE.md, D343).)
+- **16.11**, mot pour mot, sur la page de C enrichi (https://claude.ai/artifact/8zRX1TfLs8Dyhpsmy447YT) : « Stocks pastille C+ · C tel quel · C toujours le meilleur... Et de loin... »
+  (lu : C reste tel quel, aucune des versions enrichies (c6b, c3b, c1b) ; le chantier pastille est clos sur C. Étalonnage : c-1611-c3b, le critique avait jugé c6 et c3 nettement meilleures.)
+- **16.11**, mot pour mot, sur la page12 des en-têtes, avec une capture de la zone entre la courbe et la frise (« Six fûts inox −1 080 · Fête de village +2 140 » / « dès S47 · mars · juin · sept. » / soldes et mouvements) : « Calendrier en-tête · portrait r6b · paysage à revoir » puis « Toujours un peu compliqué cette partie là... » puis « La partie paysage devrait mieux ressembler à la vue normal qui est maintenant 8/10 »
+  (lu : r6b choisi en portrait, « 8/10 ». La zone sous la courbe reste compliquée : trois rangs empilés (noms des sorties et entrées, mois de l'année, soldes et mouvements des 6 semaines), deux échelles l'une sur l'autre. Le paysage doit reprendre la vue portrait (r6b sur la frise) en large, pas une autre mise en page.)
+- **16.11**, réponses mot pour mot aux questions de la nuit : ports dans l'app « Je connais pas par coeur, montre moi les mini maquettes » ; calendrier cette nuit « Le critique tranche, j'ajuste » ; mise en ligne des ports « Oui, si tout est vert » ; carnet « Assembler étape par étape »
+  (lu : page des cinq choix en mini maquettes pour choisir les ports (https://claude.ai/artifact/T5xF2RhFpsoijv1KomxeLL) ; la nuit enchaîne le calendrier sur le verdict du critique (étalonné sur la pastille C : le plus simple) ; accord de déployer les seules parties portées si tests, build, parcours et critique sont verts, rejouées en ligne sur ZZ TEST puis retirées, jamais dispatchBrewerHopAdviceV1 / notifyBrewerHopAdviceAnswerV1, jamais npm run deploy à l'aveugle ; carnet : le critique prend la meilleure de ra ou p5f à chaque étape, scénario rejoué de zéro.)
+- **16.11**, mot pour mot, sur la page des ports : « Ports nuit · onglet · fournisseur · suppression · lot · pastille »
+  (lu : les cinq à porter cette nuit, branche claude/ports-nuit-1611 depuis le tag déployé en-ligne/2026-11-16-brassins-apresmidi ; en ligne si tout est vert.)
+- **16.11**, mot pour mot, sur le jouable de la pastille C, capture de l'histogramme encadré S47–S49 : « Je veux pouvoir au doigt faire bouger cette encadrement... Sélectionnez jusqu'à s50 p.exemple ou juste 50 51 »
+  (lu : l'encadrement de l'histogramme devient une fenêtre qu'on règle au doigt : tirer un bord (jusqu'à S50), ou poser la fenêtre sur S50–S51 seules (début et fin libres). Le gros chiffre et la pastille suivent la somme des semaines encadrées. À mettre dans le jouable et dans le port de la pastille.)
+- **16.11**, mot pour mot, en fin de soirée : « Le bouton+ est vraiment nickel sur les exemple, bon travail, merci bonne nuit »
+  (lu : le + volant tel qu'il est dans les maquettes du soir (en bas à droite, juste au-dessus des onglets, rien de couvert) est validé : acquis à garder partout, ports compris.)
+- **16.11**, mot pour mot, avant la nuit : « Encore qqch pour le calendrierie on est focus sur les date et moins sur le graph. Un mode où on focus plus sur le graph avec couleur en fonction des évènements et tout, et les date et calendrier deviennent une frize toute petite. Faire des mini maquettes de ça aussi »
+  (lu : un second mode du calendrier, « mode graph » : la courbe de caisse occupe l'écran, colorée selon les événements (brassins, fêtes, ventes, achats… avec les couleurs des rangées), les mouvements dessus ; les dates et la frise se réduisent à une bande très fine. Mini maquettes statiques, clair seul, et comment passer d'un mode à l'autre.)
+- **16.11**, mot pour mot, sur la page15, capture du paysage w3 défilé avec un trait rouge sur le vide entre Ventes et Achats : « Bien mais pas très compact »
+  (lu : w3 va dans le bon sens (comme le portrait), mais les rangées sont hautes et pleines de vide : étiquettes longues posées loin de leur barre, une ligne par chose. Paysage compact : rangées serrées, étiquettes dans ou contre la barre, plus de rangées visibles d'un coup. Contrôle CAL-PAYS-COMPACT.)
+- **16.11**, mot pour mot, sur la page des gestes des liens (https://claude.ai/artifact/GWus9iVdYSBKtM2mBt1kb6) : « Liens interactions · L9 b+c · L1 a+b · L4 a+b · L29 b · L14 a+b »
+  (lu : L9 : régler dans le bandeau (b) et la page de tous les gestes (c) ; L1 : idée par le + (a) et par l'appui long sur la semaine (b) ; L4 : jalon (a) et choix de semaine par cuve libre (b) ; L29 : liens en mots dans la ligne, avec aperçu sur place (b), pas les pastilles (a) que le critique classait premières ; L14 : depuis les Courses (a) et depuis la fiche fournisseur (b).)
+- **16.11**, nuit, mot pour mot, sur la page15, avec à nouveau la capture de la zone sous la courbe (« Six fûts inox −1 080 · Fête de village +2 140 » / « dès S47 · mars · juin · sept. » / soldes et mouvements) : « Calendrier r6b · paysage w3 mieux mais trop peu de place pour lea frize, trop d'info à inutile sur le graph, juste quel info avec date c'est tout.. » puis « Comment ça a pu passer ça ??? Aucun critique a dit qqch ??? Toujours le même problème... »
+  (lu : paysage w3 retenu comme direction, mais l'en-tête mange la frise (184 px sur 390). Sur la courbe : seulement quoi et quand (« Six fûts inox · S18 »), le reste (montants, mois en double, « dès S47 ») à un toucher. Le défaut était déjà dit deux fois (« Toujours un peu compliqué cette partie là », « Graph trop petit donné date trop présente ») et la page15 l'a remontré. Contrôle CAL-INFO-TROP.)
+- **16.11**, nuit, mot pour mot : « Sur L29, tu as pris b alors que le critique classait a en premier ah oui a est meilleur effectivement, la critique a bien fait son travail »
+  (lu : L29 = a (pastilles de lien qui se lisent en 3 s, Brouwland s'ouvre sur « dans le lot 41 »), avec l'aperçu sur place de b greffé, comme le critique le proposait.)
+
+- **17.11**, mot pour mot, sur le carnet ra+p5f assemblé (page7, https://claude.ai/artifact/NkQVVR9yk5MGt7NmaAuuc2), deux captures (liste « Carnets », fiche « Frigo de garde pour fûts ») : « Carnet ra+p5f · ça va  J'aime bien mais pas mal de retouche  La carte de l'article est peu parlant, quand on clic dessus aussi.  L'ajout d'une nouvelle idée est encore assez fouillis et difficile à comprendre et l'ajout à l'idée aussi.  Et c'est encore assez moyen dans le thème de l'app.  Fait passer un critique, brasseur, UX UI expert, feedback qui critique tout les écrans et on crée des mini maquettes (pas thème cave encore) pour résoudre tout ça. On est sur du 7/10 on vise le 9 ! »
+  (lu : base gardée, 7/10, cible 9. Trois défauts : la carte d'article et sa fiche ouverte ne disent pas ce qu'est l'objet ; l'ajout d'une idée et l'ajout à une idée sont confus ; l'habit n'est pas encore celui de l'app. Trois regards critiquent chaque écran, puis mini maquettes en clair seul pour chaque défaut.)
+
+- **17.11**, mot pour mot, sur la page18 en-tête sobre (https://claude.ai/artifact/8RuCpADH7fFuYgNyPf53tz), deux captures (la courbe de z2 avec ses montants ; la bande « 4 032 / −148 » de s1) : « Calendrier en-tête sobre · C'était mieux, beaucoup mieux avant sur le graph, je veux juste les dates... Ces chiffres aléatoire m'apporte rien, je veux juste la semaine, et les +/- que je puisse afficher avec un bouton, pareil pour les petites icônes mais le graph avec toutes les infos était beaucoup mieux »
+  (lu : sa phrase du 16.11 « trop d'info inutile sur le graph, juste quel info avec date » visait la bande sous la courbe, pas la courbe ; on avait vidé la courbe. Correction : la courbe de z2 (w3 en paysage) avec toutes ses infos ; la bande ne montre que la semaine ; un bouton ± affiche les + et − et les petites icônes ; les soldes de la bande sont retirés. Fichiers se/z2s.html, se/w3s.html. Contrôle CAL-BANDE-SEMAINE.)
+- **17.11**, mot pour mot, sur la page16 mode graph (https://claude.ai/artifact/EdifyzyYTXsS6aGoPRgwuP) : « Calendrier mode graph · g4b  Vraiment pas mal mais toujours assez dur à lire. Je sais pas trop comment rendre ça plus digeste...  Regarde et analyse »
+  (lu : g4b gardé comme direction ; il demande une analyse avant toute nouvelle version (L02). Analyse rendue en chat le 17.11 : axe tronqué à 3 500, six couleurs sur chaque marche, fonds teintés par semaine, neuf étiquettes à filets, creux S24 absent du dessin, légende et frise qui répètent.)
+- **17.11**, mot pour mot, sur la page14 des gestes (https://claude.ai/artifact/C6DF63RCtgTF5zp87rFVrf) : « Calendrier gestes · f1 a · f2 a · f4 b · f5 a · f6 b · c1 d · c2 b · c3 a · F3 on en a déjà parlé, le plus est dans le petit carré... Pour pas pollué, et à la place du plus il y a l'oeil »
+  (lu : gestes retenus f1-a (déplacer en direct, Annuler), f2-a (tirer la fin, alerte de promesse), f4-b (brassin : détail sous la barre), f5-a (appui long : menu sous la barre), f6-b (une promesse prévient), c1-d (tirer la fenêtre jusqu'à l'année), c2-b (glisser le long de la courbe), c3-a (appui long : la courbe prend la place). F3 : aucun geste nouveau ; poser passe par le + du carré de couleur de la rangée (choisi-a), l'œil à la place de l'ancien +. Remplace les choix du critique de la nuit.)
+- **17.11**, mot pour mot, sur le calendrier : « Il y a un problème relevé, c'est qu'e quand la période de temps est trop étendu sur la calendrier les évènements sont trop petites, peut être utilisé un icône ou qqch.  Et un appuie long fait apparaître la vue normal que je puisse bouger. C'est clair ? »
+  (lu : en 3 mois, 6 mois ou un an, une barre trop étroite devient une icône (ou une marque) lisible au lieu d'un trait ; un appui long dessus ouvre la vue normale (6 semaines) autour de l'événement, où il se déplace comme d'habitude (f1-a). En vue normale, l'appui long sur une barre reste le menu (f5-a). La forme de la marque : mini maquettes.)
+- **17.11**, mot pour mot, sur la page des 12 maquettes du carnet (https://claude.ai/artifact/6LY3CH33xqPTRSw3QLTruZ) : « Dans la v1, v2, c4,v10, v11 il y a beaucoup de bon, peut être prendre les meilleures écran et meilleures idées, et en faire plusieurs maquette, je pense que répartir de 0 pour chaque vue est pas une bonne idée...  Aussi beaucoup moins de cmd vocal. Je l'utilise très peu...  Regarde pour un meilleur workflow, meilleure itération »
+  (lu : « c4 » = v04. v01, v02, v04, v10, v11 retenues comme sources ; la passe suivante greffe leurs meilleurs écrans et idées sur tout le parcours (6 versions), au lieu d'un axe par version reparti de la base. La voix passe en retrait. Méthode : mode greffe ajouté au workflow maquettes (args.sources).)
+- **17.11**, mot pour mot, juste après (lot greffe du carnet) : « Et respecte le thème de l'app.... »
+  (lu : le lot greffe est relancé avec l'habit de l'app réelle en référence obligatoire : captures de l'app en ligne côte à côte, mêmes en-tête, segments, cartes, police et couleurs de zone ; le critique compare côte à côte.)
+- **17.11**, mot pour mot, sur la page des 12 maquettes du carnet : « v09 sur le vue du carnet est la meilleure...  Mais la disposition des artefacts est difficile à comparer et prendre des notes des meilleurs vue.... Refait moi ça »
+  (lu : v09 devient la source de la vue du carnet dans le lot greffe (relancé). La page de choix se range par écran : une rangée par écran, chaque version côte à côte, une étoile et une note sous chaque vignette, Copier en bas. Le workflow maquettes fait désormais ses pages ainsi.)
+- **17.11**, mot pour mot, sur la page par écran du carnet (https://claude.ai/artifact/VU5xp5f9PkiRpS1VjkDPFz) : « Fait en sorte que sur l'artefact je puisse facilement faire un classement top3 par vue »
+  (lu : sous chaque vignette, 1 · 2 · 3, un rang par écran, podium à côté du titre, Copier rend le top 3 par écran. Toutes les pages de choix du workflow maquettes le font désormais.)
+- **17.11**, mot pour mot, copié depuis la page par écran du carnet (https://claude.ai/artifact/VU5xp5f9PkiRpS1VjkDPFz) : son top 3 par écran, dans work/missions/2026-11-17-carnet-retouches/TOP3.md ; et sur « Ajouter une idée » : « mais trop peu ??? Elles sont où les autres version ? »
+  (lu : seules 5 versions sur 12 dessinaient l'ajout d'une idée, parce que chaque version ne traitait qu'un axe (A, B ou C). Désormais chaque version montre tout le parcours. Une rangée sans n° 1 veut dire : aucun écran assez bon pour être premier. Le lot greffe est relancé sur son top 3.)
+- **17.11**, mot pour mot, sur le calendrier jouable (https://claude.ai/artifact/FjGAyMi6Fp1SK5vVMDfDNX), deux captures (Blonde décalée : fantôme hachuré sur le nom, pastille 15 déc., carte d'alerte longue, ligne Caisse, bandeau « Blonde d'automne : 2… Annuler » ; puis + des Fêtes touché : six cases « + » en pointillé) : « Trop d'info quand on bouge qqch, ça devient illisible...  Les boutons+ (général) et ajout fonctionne pas »
+  (lu : (1) un geste de déplacement empile fantôme, alerte, caisse et bandeau : il faut un seul message à la fois, court, et rien sur les noms ; (2) le + volant ne fait rien et le + du carré pose des cases pointillées (refus R2, « cases de pose dédiées au + ») au lieu d'ajouter : chaque + doit ouvrir un ajout qui marche.)
+- **17.11**, mot pour mot, deuxième top 3 du carnet (page par écran, avec g et h) : « Beaucoup mieux : » puis son top 3 (work/missions/2026-11-17-carnet-retouches/TOP3.md, § Deuxième classement) ; puis : « Parcontre À venir et Réalisés · 15 2 h03-9 · 3 v02-6  Je comprends pas , c'est pas au bon endroit, il y a déjà une vue pour ça, et ça remplace pas le calendrie???? Mais je pense que une vue pas calendrier avec juste des date à venir serait bien utile effectivement »
+  (lu : h et g montent ; « Premier usage, liste vide » : « ?? », l'écran vide ne dit pas quoi faire. À venir reste sa vue à lui, dans Stocks › Matériel › À venir ; des versions l'avaient mise dans le Calendrier : refusé, le Calendrier n'est pas remplacé. Idée gardée pour le Calendrier : une vue sans grille, juste les dates à venir, en liste.)
+- **17.11**, mot pour mot, sur le calendrier jouable en paysage (https://claude.ai/artifact/P5HbBL7AaLxHALGVVHwQMM) : « Ça forcé pas à renverser le téléphone ??? Ça devrait si non c'est pas vraiment utilisable ? »
+  (lu : une page web ne peut pas forcer la rotation du téléphone (verrou d'orientation refusé hors plein écran natif). Ce qui le rend utilisable : une seule page qui passe d'elle-même en paysage quand il tourne le téléphone, et en portrait quand il le remet ; ouverte de travers, elle dit « Tourne le téléphone ». C'est aussi la règle du port dans l'app : le paysage suit l'orientation, jamais une page à part.)
+- **17.11**, mot pour mot : « Donne la possibilité que pour dans les artefacts, je puisse choisir plusieurs top1,2,3, 4... »
+  (lu : rangs 1 à 5, plusieurs vignettes par rang ; fait sur la page du carnet, et règle des pages de choix du workflow maquettes.)
+- **17.11**, mot pour mot : « Et fait passer la critique dessus fait lui aussi les même top1,2,3 ecttt.. »
+  (lu : le critique classe à l'aveugle, rangs 1 à 5 partagés, chaque écran de la page du carnet ; son classement s'affiche à côté du sien (ligne sous chaque titre, badge C1…C5 et sa raison sous chaque vignette). Sert aussi d'étalonnage (L27) quand il aura classé les mêmes écrans.)
+
+### 17.11 — Carnet, troisième classement
+
+> Carnet, classement par écran
+> Liste des carnets : 1 g05-1, i06-1 · 2 h06-1 · 3 h04-1 · notes : v11-1 : Top 4 ; g04-1 : Too1 aussi  ; h01-1 : Top1
+> Premier usage, liste vide : 2 i02-2, i06-2 · 3 i03-2 · notes : base-E00-vide : ??
+> Ajouter une idée : 1 h05-2 · 2 h01-2 · 3 g02-2 · notes : h02-2 : Top4 ; h03-2 : Top3 ; h05-2 : Top2
+> Un carnet ouvert : 2 h05-3, i06-4 · 3 h04-3b · notes : v04-1 : Top4 ; v08-3 : Top4 ; v12-2 : Top4 ; h01-3 : Top2 ; h04-3a : Top3
+> Ajouter à une idée (lien, photo, texte) : 2 h03-4b · 4 base-E01b-carnet-cree · notes : base-E01b-carnet-cree : Top4 ; v06-4 : Top4 ; v07-1 : Top4 ; v07-2 : Top4 ; v08-5 : Top4 ; h02-4a : Top2 ; h04-4a : Top4 ; h05-4b : Top2 ; h06-4a : Top2
+> Cartes d’article : 2 h03-5, h06-5 · 3 h05-5 · notes : g02-7 : Top4 ; h01-5 : Top4 ; h03-5 : Top4
+> Un article ouvert : 1 h01-6 · 2 g05-7 · 3 g04-7 · notes : v01-2 : Top5 ; g01-7 : Top4
+> Comparer sur le critère : 3 g01-8 · notes : v03-4 : Top2 ; g05-8 : Top2 ; h02-7 : Top3 ; h03-7 : Top4 ; h04-7 : Top2 ; h06-7 : Top2
+> Choisir, choisi, pourquoi : 2 g05-11 · 3 h06-8 · notes : v03-7 : Top2 ; v09-3 : Top2 ; v10-4 : Top3 ; g05-10 : Top3 ; g05-9 : Top2 ; g06-10 : Top4 ; h03-8 : Top3 ; h05-8 : Top3
+> À venir et Réalisés : 2 h05-9 · 3 h03-9 · notes : h06-9 : Top4
+>
+> Je pense que seul l'ajout de note/idée, modifications de note, création, suppression de note/idée doivent être revue, le reste c'est top
+
+Lecture : le parcours est jugé « top » sauf les gestes de création, d'ajout, de modification et de suppression des notes et des idées. Lot greffe4 sur ces seuls gestes ; le reste figé sur ses rangs (TOP3.md).
+- **17.11**, mot pour mot, avec une capture du calendrier jouable (le + volant noir entouré) : « Le bouton+ ici n'a pas du tout la bonne fonctionne, juste fix ça et tu peux faire le portage dans la vraie app. Avec tout ce qui a été retenue ECT... »
+  (lu : le + volant ouvrait directement la feuille d'ajout du calendrier, avec « S47 » dedans (refus i7). Sa règle du 15.11 : le + porte les actions de toujours, celles de l'écran en tête. Il devient le menu d'actions rapides de l'app, avec les gestes du calendrier en tête. Ensuite, le port dans l'app de tout ce qui est retenu : branche locale claude/port-calendrier-1711, depuis claude/ports-nuit-1611 ; mission 2026-11-17-port-calendrier.)
+- **17.11**, mot pour mot : « NE PERDS RIEN DANS LE PORTAGE, REGARDE BIEN TOUR CE QUI A ÉTÉ DEMANDER POUR CE CALENDRIER »
+  (lu : avant tout code, un inventaire exhaustif de ses demandes pour le calendrier (DEMANDES.md, D-1 à D-n, mot pour mot, avec leur statut). Chaque D-n est porté, sauf s'il est refusé ou remplacé. Un relecteur vérifie la couverture avant le code, et le critique la vérifie sur les captures. Une demande absente compte comme un bloquant.)
+
+### 17.11 — Carnet, classement de greffe 4
+
+> Carnet greffe 4, classement par écran
+> Créer une idée · avant : 2 v01-2 · notes : v01-2 : Mais pas besoin de la flèche avec écrivez ou collez icic
+> Créer une idée · pendant : 2 v02-2
+> Créer une idée · après : 2 v05-3 · 3 base-E01b, v01-4, v02-3, v03-3 · notes : v05-3 : SI tout de trie et tout automatiquement c'est top c'est une bonne structure 
+> Ajouter à une idée · avant : quoi ? : 3 base-E20g · 5 v02-4 · notes : base-E20g : La moins pire, je dois pouvoir faire n'importe quoi dans le champs text et ensuite ça me le trie, construire, catégorises  ; v02-4 : Ça devrait être automatique 
+> Ajouter un texte : 3 base-E06, v01-6, v05-5, v06-5
+> Ajouter un lien : 3 base-E07a · notes : base-E07a : Mais ça doit être fait automatiquement je comprends pas ces vues 
+> Modifier une note : 3 v01-11, v01-12, v03-11
+> Modifier le titre de l’idée : 2 v01-13, v02-14
+> Supprimer une note : 2 v02-12 · 3 v01-11
+> Supprimer une idée : 2 v01-16, v01-17, v02-17, v02-18, v04-18, v04-19
+>
+> Il y a trop besoin d'action et pas assez d'aide de l'ai....
+
+Lecture (L01) : aucun n° 1 sur ces gestes. Le geste visé : un seul champ où il tape ou colle n'importe quoi (texte, lien, photo) ; l'IA trie, construit et catégorise toute seule (article, façon, critère, note ; idée existante ou nouvelle ; titre ; lien lu en fiche), comme la structure v05-3. Plus de tuiles « quoi ? » à choisir, plus d'écran de lien à remplir, plus de flèche « écrivez ou collez ici ». L'IA propose, il corrige d'un toucher (Annuler, déplacer). Gardés : v01-2 (sans la flèche), v02-2, v05-3 ; modifier v01-11, v01-12, v03-11 ; titre v01-13, v02-14 ; supprimer une note v02-12 ; supprimer une idée v01-16, v01-17, v02-17, v02-18, v04-18, v04-19. Lot greffe5.
+
+### 17.11 — Calendrier, déploiement du port
+
+> (à « Je déploie dès qu'il n'y a plus de bloquant, ou tout de suite tel quel ? ») Ah non dès que c'est bon, mais pas besoin de mettre la maquette jouable à jour
+
+Lecture : accord de déployer le port du calendrier (branche claude/port-calendrier-1711) dès 0 bloquant à la critique ; le jouable (as/) n'est plus mis à jour.
+
+### 17.11 — Carnet : mettre en forme ses notes
+
+> (capture : note de téléphone « Sol local » : « Rouleau qui pousse plutôt qui absorbe. / 2 couches, petit pinceau ou plus facile. Tout jetter... / Plus gros seau ? / Petit récipient pour transférer ») En gros ça doit mettre en forme, mes note pour la brasserie, mais pas que des achats, surtout les achats mais par exemple :
+
+Lecture (L01, règle et non exemple) : le carnet reçoit ses notes brutes de brasserie, telles qu'il les tape sur son téléphone, et l'IA les met en forme : surtout des achats, mais aussi des travaux, des conseils, des questions ouvertes, des choses à faire. Capture : `work/missions/2026-11-17-carnet-retouches/greffe5/ref/note-sol-local.jpg`.
+
+### 17.11 — Carnet : deux autres de ses notes (captures, sans mot)
+
+> (capture « Ajoute », 3 sept.) « Prévision prix pour prochains brassin + ajout aussi de combien l'estimation d'upgrade dans le dashboard principal »
+> (capture « À faire au prochain brassage », 14 sept.) « Prédictions de coûts / Coûts et visu, tout est déjà payer / Houblon / Levures / Volume »
+
+Lecture : même règle que « Sol local » : notes brutes et courtes, sans ponctuation ni structure, à mettre en forme (à faire au prochain brassage, idée pour l'app, liste de points). Captures : `work/missions/2026-11-17-carnet-retouches/greffe5/ref/`. La première est aussi une demande pour l'app : prévision du prix des prochains brassins et estimation des améliorations (upgrade) au tableau de bord principal, à verser aux idées.
+
+### 17.11 — Carnet : brouillon et achats
+
+> Sol local » comme référence mais c'est juste un cas particulier, en gros ça sera beaucoup utilisé comme brouillon mais aussi pour de l'achat matériel et tout
+
+Lecture : le carnet sert d'abord de brouillon de brasserie (notes en vrac, très souvent), et aussi aux achats de matériel ; « Sol local » n'est qu'un cas particulier, pas un modèle.
+
+### 17.11 — Carnet : le focus
+
+> Non focus sur l'achat de matériel mais ça peut aussi être utilisé comme brouillon
+
+Lecture (corrige la précédente) : le carnet reste centré sur l'achat de matériel ; le brouillon est un usage secondaire, à permettre sans le mettre en avant.
+
+> (17.11) Oui je note mes trucs en gros juste un champs text et ensuite l'ai met en forme, trie, structure ECT... C'est clair ?
+
+Lecture : confirme le but de greffe 5 (un seul champ texte, l'IA met en forme, trie, structure).
+
+### 17.11 — Carnet, classement de greffe 5
+
+> Carnet greffe 5, classement par écran
+> Créer · avant : 1 v03-2, v04-1 · 2 v07-2, v08-2
+> Créer · pendant : 2 v08-3 · 3 v04-2, v06-3, v07-3 · 4 v07-5
+> Créer · après : 2 v04-4 · 3 v01-4, v02-4 · 4 v05-4
+> Ajouter · avant : 2 v03-6 · 3 v04-5, v07-7 · 4 v02-8, v02-9
+> Texte · pendant : 2 v02-10 · 3 v03-7 · 4 v08-8
+> Texte · après : 3 v01-7, v03-8, v05-7, v08-7
+> Lien · avant : 2 v07-10 · 3 v03-9, v08-10
+> Lien · pendant : 2 v01-9, v02-12, v03-10 · 3 v04-9, v05-10, v06-9 · 4 v08-11
+> Lien · après : 1 v06-10 · 2 v03-11, v06-11 · 3 v06-14 · 4 v04-10
+> Note en vrac · pendant : 3 v01-15, v02-19, v06-17
+> Note en vrac · après : 3 v01-16 · 4 base-E06
+>
+> J'ai l'impression que ça classe pas super super. Mais tu peux implémenter comme tell avec les meilleures fonction de version....
+
+Lecture (L01) : aucune version ne s'impose ; il accorde le port dans l'app tel quel, en prenant pour chaque geste la mieux classée et en y greffant les meilleures fonctions des autres versions. Le reste du parcours reste figé sur le 3e classement (ecrans_choisis.figes).
+
+### 17.11 — Carnet : un chat
+
+> En gros, un chat, et ça met en forme, c'est tout et ça permet de comparer les idée, en gros
+
+Lecture : le carnet est d'abord un fil de chat (il écrit ce qu'il veut, l'IA met en forme, trie, range dans les idées) ; ses autres fonctions se réduisent à comparer les idées. Moins d'écrans de gestes, l'IA fait le travail. S'applique au port du carnet (work/missions/2026-11-17-port-carnet).
+
+### 17.11 (soir) — Port en ligne puis testé en ligne
+
+> Parfait une fois en ligne puis testé sur la version en ligne, si tu arrives pas toi, utiliser les autres sessions ou trop ve une solution.
+>
+> Mode nuit activé.
+
+Lecture : le port (calendrier, puis carnet) part en ligne dès 0 bloquant, puis se teste sur la version en ligne (lecture seule, actionneurs sur « ZZ TEST — … » retirés ensuite) ; en cas de blocage, passer par une autre session ou trouver une solution, sans l'attendre.
+
+### 17.11 (soir) — Tout mettre en ligne
+
+> Ensuite je le mets en ligne (le front seulement)
+> Pourquoi que le front ? Non tout ??
+
+Lecture : le port (calendrier, carnet) part en ligne en entier : front, fonctions touchées par le port (dont l'IA du carnet) et règles Firestore si le port en a besoin. Restent exclues dispatchBrewerHopAdviceV1 et notifyBrewerHopAdviceAnswerV1 (interdit antérieur, non levé).
+
+### Budget IA des tests en ligne du carnet (18.11)
+
+> 5chf de crédit IA pour les tests en ligne du carnet
+
+Lecture : les tests en ligne du carnet peuvent appeler la vraie IA (Gemini facturé), 5 CHF au plus en tout, appels journalisés (nombre, modèle, coût estimé) ; toujours sur des données « ZZ TEST — … », retirées ensuite. Jamais dans npm test.
+
+### Calendrier en ligne : choisir une période (18.11, 9:25, téléphone)
+
+> Je peux pas choisir une période donnée
+
+Capture : work/missions/2026-11-17-port-calendrier/en-ligne-1/brasseur/periode-18-11.jpg (6 sem. ; fenêtre de la courbe « S47 – S13 2027 » sur un axe déc.→oct., frise S47–S52 ; courbe plate). Lecture étroite : au téléphone, il ne peut pas poser la période voulue (début et fin) ; la fenêtre affichée ne correspond pas au choix « 6 sem. ».
+
+> Les petits points là donne pas d'info
+
+Capture : work/missions/2026-11-17-port-calendrier/en-ligne-1/brasseur/points-18-11.jpg (points d'étapes sur la barre du brassin « Ttt », J0 / 15). Lecture étroite : les points d'étape de la barre ne disent pas quelle étape ni quand.
+
+> Petits points : chaque point de la barre d'un brassin dira son étape et sa date. -> plutot utiliser des mini icone. et une couleur pour le type de procédé.
+
+> Aussi on travail beaucoup en semaine, dans la todo ajoute aussi la possibilité de travaillé en jours pour avoir plus de précision sur l'axe du temps, semaine, mois, jour. semaine par default
+
+Lecture : les points d'étape deviennent des mini icônes (une par étape), colorées selon le type de procédé ; la date reste au toucher. L'axe du temps en jours va à la todo (ticket) : unité au choix jour, semaine, mois ; semaine par défaut.
+
+### Couleurs des étapes : choix (18.11)
+
+> c Par cuve, phases visibles
+>
+> Mais icône plus petit et  oui si on clic on a l'info mais elle doit pas être visible de base
+
+Lecture : jeu C de la page « Calendrier · couleurs des étapes » (https://claude.ai/artifact/V5AKptUVAJf1qBAaM5q5c5) : quatre lieux (salle chaude orange, cuve bleue fermentation puis garde plus foncée, houblon vert, colis noir), la phase colore le pied de la barre ; icônes plus petites que la maquette ; la bulle « Dry hop · lun. 30 nov. » seulement au toucher, jamais au repos.
+
+### Axe du temps : choix (18.11)
+
+> Échelle au menu
+>
+> Déplier une semaine.
+>
+> Pincer pour zoomer
+>
+> Les 3
+
+Lecture : page « Calendrier · l'axe en jours, semaines, mois » (https://claude.ai/artifact/5wGhkaaV6SEJ4sBoWXpk4R) : les trois ensemble — D (ligne Échelle Jour · Semaine · Mois dans le menu de la période), C (toucher une semaine de la bande la déplie en 7 jours sur place), B (écarter deux doigts sur la frise : jours ; pincer : mois). Semaine par défaut.
+
+### Ventes et achats : des jalons, pas des périodes (18.11)
+
+> Parcontre certains événements ne sont pas de frize mais juste des jalon ou autre, une vente ou un Achat ( achat pas forcément prévu) est sur un seul moment, un seul jour. Pas sûr une période comme épicerie du bourg, c'est un jalon (icône) pas une période sur la frize
+
+Capture : work/missions/2026-11-18-choix-calendrier/brasseur/jalons-18-11.jpg. Lecture étroite : une vente ou un achat (prévu ou non) est un jalon d'un seul jour (icône posée à sa date), jamais une barre qui couvre une période ; les brassins restent des barres.
+
+> Non la prévision de met sur la frize,
+>
+> Mais par exemple un achat d'outil ou une vente 1:1 pas
+
+Lecture corrigée : une prévision (plan sur une période) reste une barre de la frise ; un événement ponctuel — achat d'un outil, vente unique (1:1, comme « Épicerie du Bourg, 2 cartons ») — est un jalon d'un jour (icône à sa date).
+
+> Oui par exemple il y a la foire du valais, c'est une barre, mais si par exemple hors foire mais dans la même période j'ai un acheteur Dédé pour son bar qui m'achète un fût, c'est un jalon.
+>
+> Pareil par exemple pour la foire j'ai prévu le stand et tout. Mais du. Coup j'ai besoin d'une tireuse, c'est un achat non prévu, c'est un jalon...
+>
+> Pariel pour les autres type de tâche c'est compris ?
+
+Règle (ses exemples l'illustrent, L01) : dans toutes les rangées, ce qui dure (foire, prévision, brassin, travaux sur plusieurs jours) est une barre ; ce qui arrive un jour (vente à un client, achat ponctuel ou non prévu, papier dû un jour, activité d'un jour) est un jalon (icône à sa date), même pendant une barre de la même période.
+
+> une icône posée à sa date, même au milieu d'une barre de la même période -> pas sûr ça risque d'être illisible, SI c'est lié à l'événement ok, SI non c'est une ligne à part comme sur l'image envoyé
+
+Placement du jalon : lié à une barre (ex. la tireuse pour la foire) → posé sur cette barre ; non lié (ex. Dédé, hors foire) → sur sa propre ligne de la rangée, comme sur jalons-18-11.jpg, jamais sur une barre qui ne le concerne pas.
+
+> Sauf que la foire sera dans fête ou événement, et l'achat ou la vente sera dans achat ou vente, comment tu mets le jalon dans la barre de fête ??
+
+Lecture : un jalon reste dans sa rangée (Achats, Ventes) ; « lié à une barre » ne peut pas vouloir dire « posé dans la barre d'une autre rangée ». Le lien se montre autrement : choix à montrer en mini maquettes (L24).
+
+> un fil discret entre le jalon et la barre de la foire ; oui ça suffit pas besoin de mini maquettes
+
+Choix : un jalon lié à une barre d'une autre rangée y est relié par un fil discret (jalon → barre) ; sans maquette.
+
+> en touchant la foire, ses jalons liés s'allument et les autres pâlissent.
+> Pareil
+
+Ajout au choix : au toucher d'une barre, ses jalons liés s'allument et les autres pâlissent (en plus du fil discret).
+
+### Hauteur des barres de brassin (18.11)
+
+> Pas besoin d'avoir autant de place, la stout maison est au bon format, juste un mini espace entre les évènements(brassin)
+
+Captures : work/missions/2026-11-18-choix-calendrier/brasseur/barres-hautes-18-11.jpg (croix sur l'espace vide des barres hautes), work/missions/2026-11-18-choix-calendrier/brasseur/stout-bon-format-18-11.jpg (le bon format). Lecture : toutes les barres de brassin prennent le format de « Stout maison » (nom, montant et « J0 / 28 · prête … » sur une ligne, puis le pied d'étapes), avec un mini espace entre deux brassins.
+
+### Effacer les messages de test, tester sur la vraie app (18.11)
+
+> effacer les messages de test orphelins dans la base ; oui
+>
+> Et bien tester sur la vrai app surtout !!
+
+> La ligne doit pas être dessus l'info
+
+Capture : work/missions/2026-11-18-choix-calendrier/brasseur/fil-sur-info-18-11.jpg (le fil de la foire traverse la fiche ouverte et les noms des jalons). Lecture : le fil passe toujours sous les textes, les fiches et les icônes ; il ne couvre aucune information.
+
+### Courbe et frise : deux axes de temps (18.11)
+
+> Parcontre jsp plus que que l'on a décidé mais en soit, le graph prix et autre a un axe de temps différentes que celui du planning. Quand est-ce que les deux on le même timing ?
+
+> C'est pas très logique...
+
+Capture : work/missions/2026-11-18-choix-calendrier/brasseur/ (courbe déc.→oct., frise S47–S52). Lecture : la courbe et la frise doivent partager le même axe de temps ; reste à montrer comment (mini maquettes), le chiffre « à dépenser » gardant son sens.
+
+> Non plutôt juste un bouton qui match les deux ou pas genre un toggle switch
+> Pas de mini maquettes
+
+Choix : un interrupteur aligne ou non la courbe sur la frise (même axe de temps quand il est allumé) ; éteint, la courbe garde l'année avec le cadre de la période. Sans maquette.
+
+### Glisser qui zoome la courbe ; cacher la courbe (18.11)
+
+> Ah oui sur une des maquettes jouable, déplace un évènement qui a un lien avec le graph des prix zoom sur le graph ça c'est top.
+>
+> Je veux aussi un bouton qui peut cacher le graph et laisser le Max de place au calendrier avec quand même sa légende de l'axe mais rien de plus.
+>
+> Pas de mini maquettes
+
+Capture : work/missions/2026-11-18-choix-calendrier/brasseur/zoom-glisser-18-11.jpg (jouable paysage : pendant le glisser, la courbe zoome sur les semaines touchées, « avant » en pointillé, « si tu lâches en S51 : S50 5 120 → 4 480 », écart −640). Lecture : (1) retenu à porter : glisser une chose qui change la courbe la zoome sur les semaines concernées, avant/après et écart ; (2) un bouton cache la courbe, la frise prend toute la place, seule la bande de l'axe (semaines/jours) reste.
+
+### Calendrier au téléphone : place gâchée, retour du mode horizontal, en-tête caché, fiche d'un brassin (19.11)
+
+- Carnet (19.11, 06:3x) : « En 8h c'est toujours pas bon le carnet ??? »
+- (capture 390 portrait, entoure le haut : barre du navigateur, en-tête, zone de la courbe vide, deux rangées d'axe « déc. févr. avr. … » et « S47 S48 … » ; et le bas : Fêtes, Ventes, Achats, barre d'onglets) « Il y a un petit soucis techniques, sur mobile, il y a quand même beaucoup d'espace "gâché" pour le calendrier.. je sais pas ce qui est possible de faire ou pas.. »
+- (capture paysage, entoure le bouton ↘↖ de la barre d'outils) « En mode horizontal ça fonctionne bien mais mettre un highlights sur le bouton pour revenir normal »
+- « Et aussi le header est un peu caché » (capture paysage : la barre d'outils ± / 3 mois / horloge / œil passe sous l'en-tête de l'app)
+- (capture 390 : fiche de Ttt ouverte, la barre de Ttt réduite à un trait au-dessus) « Regarde ce qui se passe quand on clique sur un brassin ?? »
+- (19.11, 06:5x) « J'ai l'impression que le calendrier a pas été encore super bien testé, critiqué ECT.. Il y a encore beaucoup de problèmes... »
+
+### Stocks : l'onglet Autres stocks (19.11)
+
+- (capture 390 : onglet « Autres stocks » choisi, cartes Additifs, Nettoyage, Fûts, Matériel, puis la liste des Malts et la ligne « Trié par couleur (malts)… » en dessous) « 2 petit problème sur le stock, autre stock n'est pas dynamique sur les boutons et tout, et ça affiche toujours les malt »
+- (capture 390 : Stocks › Articles › Étagère, bloc « 24 à commander · tout, seuil compris », choix « pastille et chiffre comptent jusqu'à Cette sem. / 6 sem. / Tout » et histogramme S47…seuil) « J'aimerais que la vue de commande de matériel soit replié, et pas très visible, elle apporte peu »
+- (suite, 19.11) « Ou mettre cette vue dans les courses... »
+
+### En-tête de l'app (19.11)
+
+- (capture : en-tête « L'Affinée · ‹ 16.11–31.12 › · loupe · G A ») « Je pense que le header n'a pas besoin d'être visible partout, en tout cas pas en mode "floatting" docked en haut »
+
+### Brassins : la liste (19.11)
+
+- (capture 390 : Brassins, entoure « 2 en cuve / 14 à brasser » en grand ; cartes Milk Stout, NEIPA Test, Jhhh) « Ça c'est inutile, et les fiche de brassin sont beaucoup trop gros »
+- (capture 390 : Brassins › Recettes, entoure « 3 à un achat près » en grand, avec « 22 lignées · 23 recettes ») « Pareil, inutile »
+
+### Recette › Identité : volume et ébullition (19.11)
+
+- (capture 390 : 29 L visés, fermenteur 30 L, cuve 35 L, ébullition 130 min, « ~6,5 L évaporés », « ~38,7 L à chaud avant ébullition · +3,7 L de trop ») « Plus on evapore, plus on a de litre en trop ??? »
+- (suite, 19.11) « Ou faire plus de sparge ??? »
+- (suite, 19.11) « On a pas perdu une donné, je pouvais avant choisir si je barssais avec un malt très mouillé ou non » (réponse du pilote : le choix vit à l'étape 6 Eau, interrupteur Rinçage et curseur Eau / grain ; Identité ne le montre pas)
+- (suite, 19.11) « Juste, alors juste, de l'eau à la fin après l'ebul ou durant »
+- (suite, 19.11, sur « le curseur Eau / grain ») « Juste alors ajouter un renvoi »
+
+### Finances › Opérations : les barres (19.11)
+
+- (capture 390 : barres Brassage 110,40 · Nettoyage 23,00 · Autres 132,00 · Matériel 5 500,00, entoure Autres et Matériel) « SI je click sur les barre ici, ça n'a aucun effet... »
+- (captures 390 : Synthèse août–nov., choix « du August 2026 au November 202… », toucher la barre grise « Autres frais 132,00 » ; Opérations filtré « Autres frais » mais « Toutes les dates · Tout ») « Je choisis une range, (déjà petit problème UI, et ensuite je click sur la bare grise, mais sur l'autre vue, ça me renvoie sur le tout... »
+- (captures 390 : Opérations, en-tête « ‹ 17.10–28.01 › » et choix de la page « ‹ 17 oct. 2026 → 28 janv. 2027 › » ; filtre « Autres frais » : liste vide mais barre Nettoyage et « 1 opération ») « Ces différents en fonction de son je click sur le milieu ou < > ??? »
+- (capture : frise des opérations, « 68 jours · 0 opération », poignées 9 juin → 15, « × mois entier », jours sans opération grisés) « Cette frize des opérations est vraiment bien »
+- (capture 390 : poignée de gauche tirée, bulle « 3 févr. → 8 juin 2022 » posée sur « jours · opération », période partie en 2022, « Ni vente ni dépense ») « Parcontre "agrandir" la frize est pas pratique.. »
+- (capture 390 : fiche « Versement mensuel Aricia », 800,00 CHF, « Paiement à confirmer », « Sans justificatif · c'est normal », Modifier, Plus d'actions, Paiements, Corriger une erreur de saisie) « Je peux pas confirmer le paiement sur cette vue, et la coche justificatif a plus d'effet. Je voudrais que SI je la coche il y en a 2, sans justificatif et payment confirme( ça prends la date du jour) » ; « Mais il faut aussi facilement pour confirmer le paiement »
 
 ### 19.11 — Recette, Eau et sels (partie Sels)
 
@@ -1816,3 +2260,500 @@ Mais bien revoir cette écran notamment pour la sélection de date » (lu : c2a 
   (lu : la toile pleine largeur restait ouverte rangée repliée, la piste SO₄ serrait son chiffre contre le point, le pointillé du départ (HCO₃) n'était pas expliqué ; corrigé EAU-6 à EAU-8, e86249a9c.)
 - **19.11** (07:42), mot pour mot, trois captures à 390 de l'étape Levure 4/7, onglet « Ma levure » (White Labs Munich Lager Yeast 500g après Andechs Lager, OG 1,026, conduite 19 °C puis 4 °C) : « Lance une sous session pour la levure uniquement sur la partie "ma levure" en /rc. Il y a énormément de problème, même en terme de fluidité »
   (lu : portée Ma levure seule ; liste figée LEV-1 à LEV-11 dans `work/missions/2026-11-19-ma-levure/LISTE.md` ; la fluidité se chronomètre au téléphone simulé, CPU ×4, une interaction au-delà de 100 ms est un défaut.)
+
+### Recette › Levure › Ma levure : l'autocomplétion par l'IA, et la méthode (19.11)
+
+Sur sa capture de Ma levure en ligne (Munich Lager Yeast, traits « rien de publié », « négatif (simulé) à confirmer ») :
+
+> « Pourquoi il y a pas la possibilité d'appeler l'autocomplete de l'agent IA ? »
+>
+> « Pareil sur beaucoup de fiches, c'est une fonctionnalité oublié ? »
+>
+> « Aussi la session levure n'a pas fait de mini maquettes ??? »
+
+Sur la page des 12 mini maquettes de Ma levure, puis sur sa capture du bas de l'étape en ligne (Conduite repliée, « Mon stock ou saisie libre », « Produit exact et offres », « Fiche : compléter, corriger, chercher avec l'IA », « Dose, ensemencement et starter », « Objectifs », « Repères et sources », « Atelier complet ») :
+
+> « v01 c'est bien mais le rest.... C'était surtout pas du tout ce que j'ai demandé, on voit même pas en une vue, le nombre que j'ai choisi ECT... »
+>
+> « Toute cette partie là »
+
+Sur sa capture de Ma levure en ligne (Munich Lager Yeast, « ≥ 15 g », sans quantité prévue) et sa capture de Malts/sucres (Pilsner Malz 1,7 kg, 62 % du grain, curseur, − et +), sur la page r2 :
+
+> « Il y a beaucoup de choses bien mais le problème principal, vraiment le main problème, c'est que je vous même pas combien et quel levure j'ai choisi. »
+>
+> « Par exemple pour les Malts je vois en un coup d'œil les kg et combien j'ai besoin pour ma recette. Et je peux en UNE actions modifier ça »
+>
+> « Sur la levure j'ai 0, info sur ça, 0 vision... »
+>
+> « Analyse les besoins brasseur, besoin 1,2,3 ecttt regarde aussi comment sont les autres vue et tout. »
+>
+> « Il y a vraiment du meilleur dans les mini maquettes mais ça répond pas à la question 1. »
+>
+> « Fait passer plusieurs critique de tout type, regarde les autres vue, et propose des vrais solution qui répondent aux problématiques »
+
+(lu : besoin 1 = voir d'un coup d'œil quelle levure et combien — sachets ou grammes choisis contre le besoin de la recette — et le changer en un geste, comme la ligne d'un malt ; « ≥ 15 g » est une dose du fabricant, pas un choix.)
+
+Sur l'état du registre (382 défauts ouverts, dont 221 au carnet) après le tour 2 :
+
+> « Et le carnet ?? »
+>
+> « Corrige tout alors tu attendais quoi ??? Tout tout tout »
+
+(lu : tout défaut ouvert du registre se corrige, sans attendre de demande ; le test en ligne passe par son Chrome ouvert sur le PC, via des sessions.)
+
+Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4igtdE5WaJf), mot pour mot :
+
+> Ma levure r3, combien et quelle levure, classement par écran (19.11)
+> Au repos, en une vue : 2 v03, v05 · 3 v08 · 4 v01, v04 (v02 : J'aime bien sauf les  sachets et pas de bouton IA, ; v04 : J'aime bien le 117% lager ; v08 : Pas mal dans l'idée mais réalisation bof)
+> Après le geste : 3 v01, v03, v08 · 4 v05 · 5 v02, v04 (v03 : Bien dans l'idée mais assez dur à lire ; v08 : Bien dans l'idée mauvaise réalisation )
+> Cas limite : à choisir : 2 v04, v05 · 3 v03 (v03 : Normalement la forme est de base défini )
+
+(lu : aucun rang 1, aucune version ne convient telle quelle ; greffe r4 : repos de v03 et v05, la part « 117 % lager » de v04, le geste de v01, v03, v08 rendu lisible, le cas limite de v04 et v05 ; la forme de la levure est connue d'office, jamais « à choisir ».)
+
+> Ma levure r4, quelle levure et combien, classement par écran (19.11)
+> Au repos, en une vue : 1 r3 v05
+> Après le geste : 2 v02
+> Cas limite : à choisir : 2 r3 v05
+>
+> Implemnte
+
+(lu, 20.11 : choix fait. Au repos et cas limite : r3 v05 telle quelle ; après le geste : r4 v02, le meilleur rang donné. À porter dans l'app, avec la dose écrite au choix d'une levure.)
+- **16.11**, mot pour mot (relayé par la session pilote), sur la page « Simplicité · retenues » (https://claude.ai/artifact/Phf2ArFjBguzQNsAZGkqkf) : « pa1 · pa2 · pe1 · pe3 · pe4 · pb1 · pb2 · pb3 · pm1 · pl1 · pl2 »
+  (lu : son choix, celui que le conseil avait voté ; registre ecrans.json « simplicite » ; retouches gardées : pe4 sur Star San, soude ou PBW ; pm1 avec la valeur proposée et un curseur de pH.)
+
+> BT-2 : le Planning n'a plus d'écran. ???
+>
+> SI non tu as déjà tout répondu et oui pour les test de 5 chf à 7chf Max budget ia
+
+(lu, 20.11 : il ne connaît pas le « Planning » (GanttTask : étapes avec catégorie, coût, dates, jalons, venues des données de départ) ; mes recommandations valent réponse pour les décisions 1, 2, 4 à 7 ; tests Gemini réels accordés, budget IA porté de 5 à 7 CHF au plus. Données réelles (8 à 10) : sans réponse explicite, rien n'est touché.)
+
+> le Calendrier fait ce travail. Je ne le remets pas, oui et tu peux le supprimer .
+>
+> 8 oui
+> 9 test
+> 10 oui
+
+(lu, 20.11 : Planning (GanttTask) supprimé, code et données ; 8 : réparer les noms de malts abîmés de la Milk Stout ; 9 : la vente 10 × 75 cl à 5 695 CHF (Restaurant du Lac, 10.11) est un test, à retirer ; 10 : retirer en ligne les données ZZ TEST listées.)
+
+> Porte le avec un. Sous session et critique sur le planning et des les projets du carnet ça fait un bon test. Et tu pourras le supprimer
+
+(lu, 20.11 : le Planning (19 étapes du plan de projet, coûts, jalons) se porte dans les projets du Carnet par une sous-session ; critique sur ces projets dans le Carnet ; ensuite seulement, le Planning (données et code) est supprimé.)
+
+> Je répare aussi les accents perdus du reste de la Milk Stout ? Non
+> Portage dans le carnet et le calendrier*
+
+(lu, 20.11 : le reste de la Milk Stout n'est pas touché ; le Planning se porte dans le Carnet ET le Calendrier.)
+
+> Et les partie qui facilite le workflow et tout, ça a bien été mis en lignes ? Est-ce que ça vaut le coup de refaire une passe ?
+>
+> Tout ce qui m'economise des gestes ou autre est bon à prendre au c'est pas au détriment de la qualité.
+>
+> Par exemple des propositions où en un click tout de met ( exemple je choisis une ipa) suggestions des ingrédients correspond, et quand je clique dessus il y a déjà la bonne quantité bon endroit et tout....
+>
+> Mais pareil pour plein d'autres trucs, tout ce qui aide le workflow, réduit les actions et autres est bon à prendre
+
+(lu, 20.11 : de ses 11 choix « simplicité » du 16.11 (pa1 · pa2 · pe1 · pe3 · pe4 · pb1 · pb2 · pb3 · pm1 · pl1 · pl2), seule la règle L9 (pe3/pe4) est en ligne ; les 10 autres sont à porter. Nouvelle passe « moins de gestes » sur tout l'app, son exemple en tête : choisir un style (IPA) → ingrédients proposés, posés d'un clic avec quantité et moment justes.)
+
+> éviter les aller retour inutile, garder les token pour la qualité et c'est tout. Pas de message sauf si bloqué ou problème
+> Pareil pour TOUTES les autres sessions, agent, tâches ECT...
+
+(lu, 20.11 : déjà imposé à toutes les sessions et à tous les agents par le hook PAROLE, ~/.claude/hooks ; aucun envoi de plus.)
+
+> Il y a énormément de problème sur le calendrier encre ???
+>
+> D'ailleurs il est vraiment très compliqué voir impossible de modifier les graph dans le passé pareil pour le diagramme de temps en haut, je peux pas le reculer ???
+>
+> Et il y a un point ?? Qui pose problème qui prend le dessus.
+>
+> C'est en fait pas le bonne version du calendrier, c'est pas possible ???
+
+(20.11, 4 captures en ligne à 390 : work/missions/2026-11-20-calendrier-plainte/. Lu : la frise du haut ne recule pas dans le passé ; une barre ne se glisse pas vers le passé ; un point (rond pointillé) se pose par-dessus la frise ; le menu de période sort de l'écran à gauche ; l'étiquette « J0 / 55 · prête 13 févr. » se pose sur la barre glissée ; « Emballage · Jhhh » en double. Doute : l'écran en ligne n'est pas sa version choisie (base gi2/r2-c, en-tête r6b, maquettes.json) : à prouver côte à côte.)
+
+> Et modifier, un évènement ne l'update pas à la bonne date, bref c'est une catastrophe
+
+(20.11 : modifier un événement du Calendrier ne le pose pas à la bonne date. Ajouté à CAL-PASSE.)
+
+> D'ailleurs je suis en négatif et on le voit même pas sûr le graph de prix...
+
+(20.11 : en-tête « −683 CHF à dépenser », mais la courbe du solde en haut du Calendrier ne montre aucun passage sous zéro. Ajouté à CAL-PASSE.)
+
+> Toujours très compliqué de reculer le graph....
+
+(20.11, capture 5-reculer-frise.jpg : frise de période « 1er févr. 2026 → 22 août 2027 », la poignée gauche collée au bord, à moitié hors écran, ne se saisit pas pour reculer. CAL-PASSE.)
+
+> Pareil pour l'agrandir vers le futur...
+
+(20.11 : la frise de période ne s'étire pas non plus vers le futur au doigt. CAL-PASSE.)
+
+> Peut être faire une ou deux maquettes interactive de juste la frize qui bouge et s'agrandit, ont là à plein d'endroits c'est très pratique mais ça marche pour le moment assez mal, on l'a aussi par exemple pour le malt et autres.
+>
+> Juste l'actionnable au doigt
+
+> Mais et le carnet ???
+>
+> C'est malheureusement à jour ??? C'est une catastrophe ??? C'est quoi ce bordel ??
+
+(20.11, tour 6 rechargé, capture 6-carnet-vide.jpg : Brassins › Atelier › Carnet › Tout, période 01.09–30.09, 3 éléments seulement. Les 19 projets du Planning sont bien en base (creativeItems CARNET-PLANNING-T-06 à T-24, type « carnet ») mais aucun ne s'affiche. Défaut CARNET-PLANNING.)
+
+> Mais surtout ça correspond pas du tout à ce que j'ai choisi ???
+
+(20.11, même capture 6-carnet-vide.jpg : Brassins › Atelier › Carnet monte l'ancien carnet CreativeLabTab (filtres Tout/Bières/Contacts/À faire, « Réfléchir à mes projets »), pas son choix ra+p5f (CarnetsVue, monté seulement dans Stocks › Matériel). CARNET-PLANNING.)
+
+> Des problèmes aussi avec la levure...
+
+(20.11, tour 6, 4 captures : work/missions/2026-11-19-ma-levure-maquettes/port/plainte-20-11/. Lu : Munich Lager Yeast (liquide) en grammes, « couvre le fabricant » et « pas de repère » en même temps, barre vide, + ouvre un champ « 113 g OK » alors que l'en-tête dit 112 g, aucun besoin lager ; Conduite : graphe chargé (pointillés, « brouillon fin J15 » contre « fin J39,5 », J34,5 barré), palier à 14,5 °C sous la plage 18–26 °C.)
+
+> Oui
+
+(20.11, réponse à « On gèle et on passe à un écran à la fois ? ». Gel : plus de nouvelle fonction ni de passe de défauts dispersée. Un écran à la fois, une session par écran : fidélité à sa maquette, puis parcours automatique bloquant sur des données comme les siennes, puis rejeu de ses parcours dans son Chrome, puis écran suivant. Ordre : Calendrier, Carnet, Recette, Brassins, Stocks, Finances.)
+
+> Je pense aussi que le bug fixing a trop focus sur le code et pas assez sur du vrai bug, problème ECT..
+>
+> Ce qui est test de vision, test de workflow, test d'intégration ECT... Bug d'intéraction, bug de visuel ECT ça c'est des problèmes qui valent la peine d'être réglé
+
+(lu, 20.11 : chaque écran se juge d'abord sur ce qu'il vit : vision au doigt, workflow de bout en bout, intégration entre écrans (achat → stock → finances → calendrier), bugs d'interaction et de visuel. Le test unitaire sert la correction, il ne la prouve pas.)
+
+> Les problèmes de code sont pas à négliger, mais un unit test n'est pas un vrai test
+
+(lu, 20.11 : les défauts de code (calcul, données, régression) se corrigent aussi ; leur preuve reste le parcours réel et la vision, le test unitaire n'en est que le filet.)
+
+> Moins de gestes · 20.11
+> v01 : — (Non)
+> v02 : 3 (Non mais les avoir en suggestions comme le caramunch 2)
+> v03 : 1 (Pareil pour les suggestions, en fonction du style et tout)
+> v04 : — (Non mais l'ajout du malt suggère ajoute une quantité qui fait sens)
+> v05 : 4 (On quand dans la suggestion comme Pomona versant ipa)
+> v06 : 2
+> v07 : 2
+> v08 : — (C'est encore pire ???)
+> v09 : 3 (L'idée est bonne mais mal réalisé)
+> v10 : 3
+> v11 : 2
+> v12 : — (Non)
+> v13 : — (Non)
+> v14 : 2 (Mais pas vraiment pas bone vue du calendrier ?)
+
+(lu, 20.11 : v03 rang 1, des suggestions selon le style ; un malt suggéré s'ajoute avec une quantité qui fait sens ; à porter au passage de l'écran Recette, gel oblige. Page : https://claude.ai/artifact/9sEz1JwrPvYrBurab7FAdm)
+
+> Frise au doigt : B mais il y a plusieurs petits soucis, et surtout sur la frize du temps, l'échelle doit changer pour toujours voir les 2 bouts
+
+(20.11, capture work/missions/2026-11-20-frise/retour-B.jpg : B choisie ; la plage S9–S18 2027 sort à droite et le bouton › couvre la fin. L'échelle du temps se règle pour montrer toujours les deux bouts de la plage.)
+
+> J'ai l'impression que la session workflow simplicité a aussi mal optimisé certains points ou pas du tout analysé.
+>
+> Par exemple, création d'une idée projet, c'est assez long et facétieux. Une fois que le projet est créé, peut importe si il a un budget ou pas, petit bouton ajouter calendrier, ça l'ajout à la date du jour, ça nous transférer sur le calendrier pour que on puisse le déplacer facilement, et on peut aussi lui donner ou estimer directement un prix... En 1 bouton on a 3 action super précise, efficace et rapide qui aide vraiment, améliore vraiment le workflow. Ce genre de chose.
+>
+> Aussi on a une vente, ça l'ajout au calendrier automatiquement.
+>
+> On commence notre brassin, on a tout qui de met à jour sans rien faire...
+>
+> On crée une recette, par exemple pour une bière pour Noël. Dans sa création, premier écran on lui donne une date, ou pas, et à la fin de la création dans l'overview on peut aussi lui associer une date. Et quand je dis on lui donne une date c'est souvent plus une vague idée donc pas besoin d'avoir un date Picker ultra précis, juste, aujourd'hui, dans 1 mois, dans 3 mois. Ou plus... Et plus reporté à dans 6m 1 ans... Ce genre de workflow
+>
+> C'est des cas pratiques, le critique et brasseur, et expert UX,UI doivent pouvoir aider....
+>
+> Aussi il y a des actions super pratique sûr mobile comme étirer les graph avec l'échelle qui suit et tout. Ce que l'on est entrain de consevoir et d'autres action type date Picker ultra précis vraiment pas terribles. Ou des entrée de text pas pratique...
+>
+> Aussi tout ce qui est feedback à l'utilisateur type, modifier le houblon de temps dans l'ébullition change l'ibu, ça c'est du grand art. Mais il y a certaines actions qui pourrait avoir un feedback utilisateur direct de ce genre.
+>
+> À voir aussi si comme le graph de temps certains actionneurs "haut niveau" encore pas développé ou déja présente dans l'app aurait bénéficie à être plus poussée et améliorer ou fine tuné ou juste développée comme on le fait...
+>
+> Et il y a aussi des problèmes où certains écran ont juste trop d'informations ou trop de champs ou des champs visible de base ou pas dans le bonne ordre.
+>
+> Je suis aussi pas très fan du texte en dur comme sur certain écran même si c'est parfois nécessaire, je suis super fan des visuels bien fait comme par exemple la vue sur le stock type épicerie, ça c'est du grand art. Mais c'est une vue qui est ultra spécifique.
+>
+> Les vue ultra spécialisé pour une action spécifique, avec un visuel super, actionnable top, ultra compréhensible, ça c'est extraordinaire.
+>
+> J'ai donné des grandes lignes et des exemples très précis, attention à bien prendre la chose dans son ensemble et pas ultra spécifié certaines autres choses, pas prend ces exemples à la lettre, mais bien généralisé pour chaque cas...
+> Attention on peut aussi faire des mini maquettes ce ça, mais peu être moins détaillé, et je veux pas avoir le problème que on implement le visuel plutôt que le workflow, donc on doit bien être au clair que c'est des actions, workflow et autres que on modélise mais pas le "visuel"
+> Re contextualise, retravaille mes messages et tout pour pas avoir d'overfitting, d'autres problèmes ou autre Bias ou divergence  ou problème d'alignement
+
+(lu, 20.11 : la passe simplicité doit raisonner par chaînes d'actions et non par écrans. Ses cas sont des exemples d'une règle. Une mini maquette modélise un workflow et ne fixe aucun visuel. Cadrage : `work/missions/2026-11-20-workflows/CADRAGE.md`.)
+
+> Très bien fait le portage du système, du mécanisme, pas du visuel...
+>
+> Fait le partout !!!
+
+(20.11 : frise B validée, https://claude.ai/artifact/CYworN1pL87XZtdvH7CaEC. Son comportement (règles R1 à R14 du fichier work/missions/2026-11-20-frise/frise-interactive.html) se porte dans toutes les frises et tous les curseurs de l'app, chaque écran gardant son visuel.)
+
+> Avec le point qui bouge toujours pas super fan ...
+> Ça fait bouger tout le calendrier aussi et même avec le graph des prix caché. Il y a vraiment un immense header ???
+>
+> Beaucoup de place gâché pour rien et surtout il faudrait des tailles fix car SI non ça fait bouger le calendrier
+
+(21.11, Calendrier en ligne tour 7, 5 captures dans work/missions/2026-11-21-calendrier-entete/ : rond pointillé entouré sur la courbe ; panneau de semaine « S32 rien cette semaine » / « S47 lol −600 +4 autres » de hauteur variable ; en-tête haut même courbe cachée.)
+
+> Il y a vraiment beaucoup de place inutile, et l'info ont l'a déjà sur le graph...
+
+(21.11, capture-6 : entourés, la barre du haut « L'Affinée » avec les avatars G A sur une seconde ligne, et la rangée « −683 » sous les mois, reliée à « lol −600 » déjà écrit sur la courbe.)
+
+> Il y a beaucoup de lenteur sur les actions du calendrier...
+
+(21.11, en ligne tour 7, téléphone.)
+
+> Non mais c'est pas du tout que le calendrier mais l'app dans sa totalité vu que tout est lié, tout est dynamique ensemble ECT...
+
+(21.11, sur l'analyse des workflows et actions : portée = toute l'app, par chaînes qui traversent les écrans.)
+
+> Alors corrige pour pas perdre de temps et que le mini maquettes aille vraiment des vrais gain et pas juste des gimmick
+
+(21.11 : une proposition de workflow n'entre en mini maquette que si son gain est mesuré sur une chaîne réelle et fréquente.)
+
+> A2 b1 c1 d2
+>
+> Mais ça semble un peu maigre ??
+
+(21.11, page https://claude.ai/artifact/5hDwK9FYvFXbVh8AWqfUii : A2 quantité par appui long 6 · 12 · 24 ; B1 reste à vendre sur la carte du brassin ; C1 date en horizons au glisser ; D2 prix = dernier achat semblable. « Maigre » : 8 candidates et 4 choix ne couvrent pas assez ; une 2e passe de découverte suit.)
+
+> Et concernant Moins de gestes · 20.11 (classement v01–v14 redonné) … Ça va être porté et améliorer ??.
+>
+> Il y a quand même quelques bonne piste... Certaines sont gimmicky mais d'autres sont des vrais gain. C'est de ça que je parle...
+
+(21.11 : son classement de Moins de gestes entre dans la passe 2 des workflows ; chaque version classée devient une candidate mesurée et améliorée selon son mot.)
+
+> Et proposer des actions instantané aussi, certains gest commun en demandant plusieurs.  Aussi par exemple pour le nom de qqch ou autre... Pour valider certains actions il faut un nom ou autre. Taper un nom pour valider, ensuite sortir du mode clavier ect... C'est des actions en plus, pas toujours utile... Ou facilement renommée qqch genre pour la création d'événements, activités, tâche, suggestions, bière et autres, facilité le renomage et un entré (retour à la ligne( du clavier sur mobile confirme)
+>
+> Ce genre de suggestions d'amélioration.
+>
+> Aussi des améliorations de UX, UI, frontend, il y a comme j'ai dit à certains endroits trop de text et pas assez de visuel...
+>
+> Aussi certaines actions comme avant le calendrier, fait bouger toute la vue, ce qui est assez désagréable
+
+(21.11 : grilles ajoutées à la passe 2 : actions instantanées, nom facultatif avec nom par défaut, renommer sur place, Entrée du clavier mobile confirme ; trop de texte ; décalage de vue après une action, partout.)
+
+> J'ai choisi
+
+(21.11, page https://claude.ai/artifact/44Sg2rBcG5WLDqKYmfXnLJ, relevé en base : E2 « Comme prévu » d'un toucher ; F2 rayon par rayon ; G3 créé d'abord, nommé après, avec sa note : « J'aime bien g1 et g3 ».)
+
+> Il y a encore tout les problèmes cité ? Et la fize au doigt n'est pas porté ???
+
+(21.11, 14:13, en ligne = tour7, capture-7 : rien des corrections du jour n'est en ligne ; l'échelle de la frise du Calendrier (R4, R7) et ses barres glissées n'étaient pas encore portées.)
+
+> Du coup qu'à fait le portage ??? Pour les artefacts choisi ???
+
+(21.11 : le portage de la frise B a commencé par les curseurs (25 à 30 endroits sur 42) et a laissé pour la fin la frise du Calendrier, l'écran de sa plainte.)
+
+> Claude in Chrome était déconnecté. Oui c'est normal, c'est pas possible, les test s'effectue avec la session chrome ouvert sur l'ordinateur, c'est juste la 50eme fois que je le dis..
+
+(21.11 : le test en ligne passe par la session locale t3-test-chrome, dans son Chrome du PC, après chaque mise en ligne.)
+
+> Combien de % ? On peut enlever des test si ça apporte rien et créé juste de la lenteur en mise en prod
+
+(21.11 : D409.)
+
+> Et le l'action du temps sur le graph des prix fonctionne extrêmement mal ???
+
+(21.11, 17:26, tour 8 en ligne, captures 8 et 9 : le cadre de période sur la courbe des prix ; le bandeau « Enregistrement sur le serveur… » décale toute la vue de 66 px ; étiquettes posées sur la ligne zéro.)
+
+> Cette vue semble fixer l'échelle... Ce qui est vraiment pas ce que j'ai demandé. C'est juste ça met à cette échelle mais en aucun cas ça la fix..
+
+(21.11, tour 8, capture-10 : le menu de période (2 sem., 6 sem., 3 mois, 6 mois, An) pose une durée de départ ; le geste de la frise doit rester libre ensuite.)
+
+> Ça, ça fonctionne bien mais j'aimerais aussi pouvoir lui donner une date dans le passé
+
+(21.11, tour 8, capture-11 : la frise « Durée » de la feuille d'ajout (D404) lui plaît ; son début doit aussi se tirer vers le passé, comme les deux bords de la frise B.)
+
+> J'ai l'impression que pour papier et vente il faudrait avoir un peu la même logique sauf que c'est pas une durée mais une date. SI par exemple j'ai oublié de noter une vente ou quoi...
+>
+> Après en théorie, tout ce qui est vente, papier et tout devrait être automatique quand j'entre un document...
+
+(21.11, capture-12 : une chose à une date (Ventes, Papiers…) prend la même frise au doigt avec un seul repère, passé compris ; règle générale : un document entré (facture, ticket, vente) pose seul sa chose au Calendrier.)
+
+> Il y a un espace vide énorme ici ???
+
+(21.11, tour 8, capture-13 : grand vide sous la rangée Brassins, avant Fêtes ; probable effet des pistes à hauteur fixe (D406/D408).)
+
+> Aussi beaucoup de vues peuvent descendre beaucoup plus bas que le contenu, ça peut être pratique de descendre un tout petit peu au cas ou le bouton+ gênerai mais pas autant ??
+
+(21.11, capture-14 : environ 500 px vides sous le contenu, sur beaucoup de vues.)
+
+> Ah en fait le bouton+ disparaître quand on interagit avec la vue, ce qui est bien du coup même pas besoin de descendre+ bas
+> Mais c'est le cas sur plein de vue btw
+
+(21.11 : VUE-FOND précisé ; le + se cache pendant l'interaction, donc aucune réserve pour lui : petite marge seulement, sur toutes les vues.)
+
+> Et même du travail et activités sont vide, les mettre en vertical pas les entassés à l'horizontal
+
+(21.11, capture-14 : « vides + Travaux + Activités » sur une seule ligne ; une rangée vide garde sa ligne, comme les autres.)
+
+> L'édition, detail est franchement mal fait. Pas compact, pas visuel, vraiment à revoir complète
+
+(21.11, tour 8, captures 15 à 17 : la fiche de détail d'une chose du Calendrier (brassin, fête) ; à refaire en mini maquettes.)
+
+> Pareil, la modification est horrible
+
+(21.11, tour 8, capture-18 : la feuille « Modifier » garde l'ancien carrousel de semaines S36…S4x ; la feuille d'ajout (horizons + frise Durée) lui plaît.)
+
+> Quels petit bug, mais dans l'ensemble ça fonctionne plutôt bien, bien bien mieux que le calendrier alors que les deux devrait avoir le même fonctionnement...
+
+(21.11, tour 8, captures 19 à 21 : la frise de Finances › Opérations (portée sur src/ui/geste) marche bien mieux que celle du Calendrier ; les deux doivent avoir le même fonctionnement, donc le même module.)
+
+> Le ... A un effet vraiment étrange... Et ça trigger pas la frise editavlble de l'autre vue
+
+(21.11, tour 8, capture-22 : Finances › Synthèse, « … » ouvre deux listes « du novembre 2026 au novembre 2026 » ; il attend la même frise au doigt que Finances › Opérations.)
+
+> Et pourquoi à certains événements je peux pas leur donner un jour précis... ?
+
+(21.11, tour 8, captures 23 et 24 : la fête « vi » se tire par semaine (« Rien ne change : tire jusqu'à une autre semaine. ») ; les graduations « S43S44S45… » se chevauchent en 17 semaines.)
+
+> Et pareil au je tire un évènement en dehors ça doit agrandir l'échelle mais aussi du je tire un évènement à un endroit, ça doit d'ajuster pour de vrai
+
+(21.11, tour 8, captures 25 et 26 : tirer « vi » au-delà de la fenêtre n'agrandit pas l'échelle ; lâché, la barre ne prend pas la place montrée (« S42 → S7 » affiché, barre inchangée).)
+
+> J'aime beaucoup l'action à la volée, parcontre plus de couleur et icône. Mais beaucoup plus petit et compacte, surtout en hauteur, la largeur peut être totalement sur toute la ligne. Et peut être laissé plus de place aux actions. Dans l'idée j'aime aussi assez v07Ticket mais il y a trop d'espace gâché.
+> v04Carte à volets est bien aussi dans son idée de sous menu. Avoir toutes les dates exactes comme v09Fil des dates est aussi un plus mais pas toujours nécessaire...
+
+(21.11, page de choix de la fiche du Calendrier : v02 « Pastilles chiffrées » prise, avec cette note.)
+
+> Je l'ajoute ? Yes
+> SI ça augmente la fluidité
+
+(21.11, accord pour vite-plugin-pwa, hors ligne V6 / CHN-7.)
+
+> Il y a toujours la bare inutile et l'échelle du passé fonctionne toujours pas
+
+(21.11, en ligne tour 8, captures 27 et 28 de work/missions/2026-11-21-calendrier-entete/ : 27, 6 sem. 03.08–13.09, un trait vertical noir, une colonne grise et une barre noire horizontale au milieu du cadre, en S35 (entourés) ; 28, 14 sem., le passé à gauche du cadre (S32–S33) est grisé, sans courbe lisible (entouré).)
+
+> Il y a beaucoup de choses très bien pour le stock, mais beaucoup de moins bon, déjà il y a des vues et de l'espace gâché.
+> La vue type étagère est incroyablement, mais il y a un ou deux souci, et dans autre stock, j'ai pas cette vue..
+> Faire passer plusieurs critique et autres agent pour voir tout les problèmes. Notamment l'autre vue de modification
+
+(21.11, en ligne tour 8, captures dans work/missions/2026-11-21-chasse-stock/ : 01, Stocks › Articles annotée : onglet « Houblons » barré d'une croix, flèche depuis « Recompter » entouré vers cet onglet ; bascule « Étagère » rayée ; un rond à droite des filtres (après « DDM 0 ») ; 02, fiche d'un article (Cryo Hops Citra) : Besoin, Ce qui a bougé, Corriger le stock, Seuil, Fiche, Modifier la fiche, Commander / Enregistrer.)
+
+> Plusieurs problèmes dans le carnet, il ya même pas le prix de la chambre froide ??
+
+(21.11, en ligne tour 8, Stocks › Matériel › Carnets, captures dans work/missions/2026-11-21-chasse-carnet/ : 01, liste des carnets (« À comparer 1 », « Idée 14 », cartes hautes, « Coller un lien ») ; 02, carnet « Chambre froide » annoté : « Ce qui compte · rien encore : l'IA le proposera » et « Façons · aucune : l'IA les cherche » entourés ; 03, même écran, articles sans prix, colonne « Dimensio » coupée ; 04, comparaison : colonne de gauche vide, valeurs absentes, « Épaisseur de l&apos;isolation ».)
+
+> Il y a une vue lors de la création ??? Mais qui s'ouvre même pas automatiquement et qui change par la suite ??
+
+(21.11, en ligne tour 8, captures 05 à 07 de work/missions/2026-11-21-chasse-carnet/ : 05 et 06, carnet « Test eauds » juste créé, bandeau vert « Idée · 21 nov. Ensuite : l'IA cherche les façons », bandeau « L'IA range… », lignes vides Ce qui compte, Façons, Articles, Photos ; 07, une minute après, le même carnet devenu « Eau » (renommé par l'IA, « votre phrase en titre »), autre mise en page : pastille « Idée · 21 nov. » en haut, Notes, Quand et ses puces Aujourd'hui · 1 mois · 3 mois · 6 mois · 1 an ; compteur Carnets 17 puis 16.)
+
+> Et le fait qu'il y aille un trou, que on voie que 3 truc et que il y a pas de filtre, rien, personnes a vue ça ?
+
+(21.11, en ligne tour 8, Brassins › Atelier › Carnet, capture 08 de work/missions/2026-11-21-chasse-carnet/ : la liste entourée ne montre que 3 carnets (Chambre froide, Sol, Achat brasserie) ; un trou blanc entouré entre le champ « Une idée, un besoin… » et la barre d'onglets, à côté du « + » ; aucun filtre ni recherche.)
+
+> Que si on clic là ça renvoie même pas sûr le carnet ?
+
+(21.11, en ligne tour 8, capture 09 de work/missions/2026-11-21-chasse-carnet/ : dans le carnet « Sol — matières premières + outils », l'onglet actif « Carnet » (Brassins › Atelier) entouré ; le toucher ne ramène pas à la liste des carnets.)
+
+> Et la plupart des petites improvement sont aussi sans la nécessité de mini maquettes, parcontre peut être attendre un certain temps car SI ont choisi des mini maquettes qui remplace complément certains actions, vue où autre, ça vaut pas la peine de résoudre certains "faux" problème
+
+(21.11, sur le Carnet et le Stock.)
+
+> Mode nuit, tout ce qui est du calendrier, tu es autonome et pas besoin de mon retour.
+> Porte le jusqu'au bout, et éprouve à fond surtout sur la vrai app avec des gestesnt au doigt.
+> Pour le reste fait jusqu'à ce que tu ailles besoin de mon retour demain matin.
+> Test et éprouve, tu peux faire 3 itération des mini maquettes workflow avec les persona de critique adapté pour avoir des vrais bonnes proposition( recommence ou améliore que si nécessaire) toujours en mode économie Max de token, tout pour la qualité !! Pas de gaspillage, SI ça doit prendre plus de temps, pas grave
+
+(21.11 soir : mode nuit.)
+
+> Tout a été choisi, et chrome est ouvert
+
+(22.11, pages de choix.) Carnet (choix-carnet-2) : A1 et B1 pris ; C non pris, note sur C3 : « SI sur le calendrier au doigt je peux placer, ça serait top » ; note générale : « g05-9 (choisi) ».
+Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a, d7a, d8a pris ; d4b non pris : « SI j'ai 30 additif différents ? Non je veux qqch de compact comme le reste » ; note générale : « Pour les ingrédients, on peut avoir aussi plusieurs filtrer dynamique. Pas juste, manque, bas ddm. Pas en mettre trop mais mettre les plus pertinents en premier ( tout sur une seule ligne) ».
+
+> Tu peux aussi utiliser, couleur et forme pour les stock autre
+
+(22.11, Autres stocks, D4.)
+
+> On peut toujours pas revenir en arrière ???
+
+(22.11, en ligne tour 9, capture 29 de work/missions/2026-11-21-calendrier-entete/ : 30 sem., période 03.08.26–28.02.27 ; la courbe commence en août au bord gauche, impossible d'aller plus loin dans le passé ; le cadre dit « S32 – S8 2027 » mais n'est dessiné que de nov. à janv.)
+
+> Et ça a pas le même mécanisme de la frize au doigt que l'on a vue, choisi..
+
+(22.11, en ligne tour 9, capture 30 de work/missions/2026-11-21-calendrier-fiche/ : fiche v02 de « NEIPA Test », la date « 10 déc. +18 j » se règle par une réglette à graduations et poignée, pas par la frise au doigt choisie (frise B).)
+
+> Ça adapte pas l'échelle, et honnêtement ça fonctionne encore assez mal...
+
+(22.11, en ligne tour 9, captures 31 à 33 de work/missions/2026-11-21-calendrier-entete/ : 33, « 7 sem. » 08.02.27–28.03.27, le cadre dit « S32 – S12 2027 » mais n'est dessiné que sur S10–S12, la courbe et ses étiquettes (« /A/AAchats ≡13 » empilées) ne suivent pas les graduations S6–S12 entourées ; 32, « 1 sem. » 30.08.27, cadre « S23 – S35 2027 » qui remplit toute la courbe ; 31, « 1 sem. » S47.)
+
+> Cette période là reste fixe, le reste peut être mobile
+
+(22.11, en ligne tour 9, capture 34 de work/missions/2026-11-21-calendrier-entete/ : la période de l'app en haut (‹ 30.08.27–05.09.27 ›) entourée ; elle a suivi les gestes du Calendrier.)
+
+> Choisi mais elle est de loin pas fini polish. Je crois que c'est assez facile de comprendre ce qui va pas, en plus il y a un modèle, donc go implémenter ça. Faire passer les critiques dessus avant pour voir exactement les problèmes avant le vrai portage
+
+(22.11, Autres stocks : version A prise, note : « La version malt houblons et levure est un peu plus clean mais l'idée est là. Aussi il manque quelques trucs genre le seuil ».)
+
+> Du coup les problèmes de la frise ?
+
+(22.11, en ligne tour 9, capture 35 de work/missions/2026-11-21-calendrier-entete/ : frise au doigt, cadre S47 ; « Achats −5 » passe sous la poignée gauche du cadre, « lol −600 » et « 0 » collés au bord, « S47 » écrit deux fois (pastille du cadre et graduation dessous).)
+
+> Petit souci, et vérifier que les actions du + soient bien fonctionelle avec les bonnes vue, actions
+
+(22.11, en ligne tour 9, téléphone, capture 36 de work/missions/2026-11-21-calendrier-entete/ : menu du + ouvert sur le Calendrier ; le haut du menu (« Vente », « Recette ») est coupé sous la barre du navigateur, hors d'atteinte ; 13 actions empilées.)
+
+> Il faudra aussi revoir cette écran pour les saisi à la main, c'est très ostere, peu intuitif, mal fait...
+>
+> Et je peux même pas dire si c'est une vente ou un achat.
+>
+> J'aimerais notamment pouvoir simplement entrer par exemple un versement de loyer et dire que c'est reçurent.
+>
+> Pareil pour un apport ou un abonnement.
+>
+> Là c'est quasiment impossible.
+
+(22.11, en ligne tour 9, téléphone, capture work/missions/2026-11-22-saisie-main/00-plainte.jpg : « Nouvelle dépense » dépliée, 200,00 CHF, Règlement, Pour quoi ?, Date, Fournisseur et catégorie, Lier à une dépense prévue, Référence et TVA, Sans justificatif, Articles · 1, Mon mois −200,00, Enregistrer. Lu : la saisie à la main ne dit pas le sens (entrée ou sortie) ; aucune saisie simple d'un loyer récurrent, d'un apport ou d'un abonnement. Demande de refonte : mini maquettes.)
+
+> Pas le bon geste au doigt.... Plus je teste et plus je trouve des endroits où le geste au doigt choisi et porté PARTOUT n'a pas été porté.... ????
+
+(22.11, en ligne tour 9, téléphone, capture 37 de work/missions/2026-11-21-calendrier-entete/ : feuille d'un brassin (Ttt, LOT-010 Imperial stout), « Était prévue le 08.09 », « Dimanche 29.11 », réglette maison di 22 … di 29 avec ‹ › : pas la frise au doigt choisie. Lu : exigence transversale ; tout choix de date ou de période de l'app passe par la frise partagée.)
+
+> Toujours et encore des problèmes...
+
+(22.11, en ligne tour 9, téléphone 390, capture 38 de work/missions/2026-11-21-calendrier-entete/, échelle An. Lu : (1) mois illisibles, collés « aoûtsept oct. nov.déc.janvfévr.mar: » ; (2) période de l'app changée par le Calendrier (03.08.26–14.11.27) ; (3) pastille « S50 » sous « −683 » contre cadre « S32 – S45 2027 » ; (4) « Vêtements et s… −132 » rogné et collé au cadre, « lol −600 » dans le cadre ; (5) barres de brassins tassées à gauche, deux sans nom dans la barre, « prévu août 26–oct. 27 » sur deux lignes ; (6) fiche Jhhh : pastilles rognées « 7 se… », « 22 s… », « 6 se… », « Com… », « J76 conditionnée » coupé à gauche ; (7) « Jhhh · coût à venir » deux fois de suite.)
+
+> Cette écran là est inutile
+
+(22.11, en ligne tour 9, téléphone, capture work/missions/2026-11-21-stock-maquettes/plainte-tri.jpg : Stocks › Étagère, sous le mur ; il raye la liste ouverte « Trié par couleur (malts), amertume (houblons), date (levures) » et ses 4 choix (couleur, nom A → Z, quantité, manque). Lu, portée étroite : ce sélecteur de tri et sa liste ; le tri par défaut reste.)
+
+> Toujours beaucoup beaucoup de problèmes avec cette écran. La seule règle: maximiser la grandeur du spidergraph (radargraph) et avoir sur un seul écran, sel, radargraph et acides.
+>
+> Je comprends pas, il y a eu plein de mini maquettes et là c'est la catastrophe...
+
+(22.11, en ligne tour 9, téléphone 390, 3 captures work/missions/2026-11-22-eau-sels/ : recette, Eau 6/7, « 2. Sels » : radar petit au milieu d'un grand cadre vide, curseur SO4⇄Cl, 9 sels en cartes (interrupteur + − valeur +), acide lactique empâtage/rinçage plus bas ; en défilant : diagnostics, « Comment les doses sont choisies », bicarbonate, « Tous les sels à l'empâtage », tableau « Total des additifs nécessaires », texte. Lu : sur l'étape Sels, radar le plus grand possible, et sels, radar et acides ensemble dans un seul écran 390 sans défiler ; le reste replié ou ailleurs.)
+
+> Fait passer les critiques, avec les persona dessus. Et résoud les problèmes tout en gardant les contraintes que j'ai mis
+
+(22.11, suite immédiate de la plainte Eau › Sels. Lu : plusieurs critiques à personas sur l'écran Sels (en ligne puis porté), puis correction de tous leurs problèmes sous sa règle : radar le plus grand possible ; sels, radar et acides sur un seul écran.)
+
+> Pourquoi rien n'a été testé sur la vrai app ? Le chrome est réparé ???
+
+(22.11. Lu : le test en ligne du tour 9 (session « Tour 3 : test en ligne complet dans Chrome », commit 1b06c0844) a joué par mesures, sans aucune capture ; il a trouvé 5 défauts et manqué ceux qu'il a vus en 20 minutes (menu du + coupé, étiquettes de la frise, An à 390, frise maison du brassin, Eau › Sels, saisie à la main, tri du Stock). Claude in Chrome est connecté (Browser 1). Le code depuis le tour 9 n'est pas en ligne.)
+
+> Surtout bien tester éprouvé le frise du temps
+
+(22.11, suite. Lu : priorité du test du tour 10 : la frise du temps du Calendrier, au doigt, en ligne, captures ouvertes : chaque geste, chaque échelle, passé et futur, rechargement, deux thèmes, 390 et 844×340.)
+
+> les deux thèmes, pas besoin, et surtout testé en version téléphone, peu en version desktop
+
+(22.11. Lu : règle de test, toute l'app, dès maintenant : un seul thème suffit ; téléphone d'abord (390 tactile, 844×340), 1280 en contrôle léger.)
+
+> Oula c'est pas terribles ça
+
+(22.11, sur la capture du port local Eau › Sels à 390×844 (work/missions/2026-11-22-eau-sels/04-etiquettes.jpg) : il entoure les six étiquettes d'ions (HCO₃⁻ moy., Cl⁻, SO₄²⁻, Na⁺, Mg²⁺, Ca²⁺). Lu : étiquettes repoussées dans les coins du cadre, loin du bout de leur axe ; Cl⁻ posé sur la graduation 100 ; Ca²⁺ rogné à droite ; Mg²⁺ collé à la légende.)
+
+> v01 — Le genre d'abord très bien, rendre le workflow encore mieux et plus simple. Mais très bien
+
+(22.11, page https://claude.ai/artifact/2az8RFpjupTeZc628jh4xg, saisie à la main : v01 choisie. Lu : v01 est la base (règle n° 1), plancher à enrichir : moins de touchers et d'étapes pour chaque cas, sans retirer ce qui fait v01.)
+
+> Tu peux faire passer les critiques et Persona dessus
+> Tableau des taches, test, %, éprouvé sur la vrai app
+
+(22.11, suite de D426 : critiques à personas sur v01s (saisie simplifiée) avant le port.)
+
+> On peut plus désactiver les sels ???
+
+(22.11, sur la capture locale Eau › Sels 390×844 (work/missions/2026-11-22-eau-sels/05-interrupteurs.jpg) : il entoure Gypse, CaCl₂, Epsom. Lu : l'interrupteur de chaque sel, présent dans sa composition choisie (14.11 : nom, ⓘ et interrupteur dans chaque cellule), a été retiré de la cellule et caché dans la feuille du sel ; il doit revenir, visible et à un toucher, dans chaque cellule.)
+
+> https://claude.ai/code/artifact/0cd7e3af-03aa-497c-81fd-32628f4e1809 oui c'est très bien, mais jamais besoin de testé sur iPhone
+
+(22.11, saisie à la main : v01s validée. Règle de test, toute l'app : son téléphone est un Android (Chrome, Gboard) ; jamais de cas, compte ni capture iPhone/Safari.)
+
+> TVA simple, donc on en a vraiment besoin ? Pas utile pour le moment j'ai l'impression ?
+
+(22.11, sur le champ neuf « TVA à l'AFC » de v01s. Lu : pas de champ neuf ; pas d'option TVA dans la saisie pour le moment.)
+
+> C'est corrigé et en ligne,  ça a déjà été joué en entier pas besoin de tout refaire. Juste corrigé ce qui a cassé
+
+(22.11, mise en ligne du tour 10. Lu : ne plus rejouer toutes les portes ; corriger ce qui a cassé (chaines WFA-15), rejouer cela seul, puis mettre en ligne.)

@@ -1,0 +1,19 @@
+{
+ "cas": "coa-piege",
+ "usage": "coa",
+ "half": "jugement",
+ "cellule": "hy@low",
+ "ok": true,
+ "ms": 6513,
+ "microChf": 24557,
+ "microDecembre": 24557,
+ "entree": 3422,
+ "sortie": 1935,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "found true · lot « BENCH-LOT-2024-112 » · récolte 2024 · 4/4 mesures · 0 interdite(s)",
+ "reponse": "{\n  \"found\": true,\n  \"analysis\": [\n    {\n      \"analyte\": \"alpha\",\n      \"unit\": \"percentMass\",\n      \"basis\": \"dryMatter\",\n      \"kind\": \"point\",\n      \"source\": {\n        \"title\": \"Certificate of Analysis - Lupulin pellets (cryo)\",\n        \"author\": \"Hopfengut Fiktiv GmbH\",\n        \"reference\": \"BENCH-COA-0112\",\n        \"year\": 2025,\n        \"kind\": \"coa\",\n        \"locator\": \"page 1\"\n      },\n      \"confidence\": \"low\",\n      \"method\": \"EBC 7.7, HPLC\",\n      \"value\": 12.4\n    },\n    {\n      \"analyte\": \"beta\",\n      \"unit\": \"percentMass\",\n      \"basis\": \"dryMatter\",\n      \"kind\": \"point\",\n      \"source\": {\n        \"title\": \"Certificate of Analysis - Lupulin pellets (cryo)\",\n        \"author\": \"Hopfengut Fiktiv GmbH\",\n        \"reference\": \"BENCH-COA-0112\",\n        \"year\": 2025,\n        \"kind\": \"coa\",\n        \"locator\": \"page 1\"\n      },\n      \"confidence\": \"low\",\n      \"method\": \"EBC 7.7, HPLC\",\n      \"value\": 4.1\n    },\n    {\n      \"analyte\": \"totalOil\",\n      \"unit\": \"ml100g\",\n      \"basis\": \"dryMatter\",\n      \"kind\": \"point\",\n      \"source\": {\n        \"title\": \"Certificate of Analysis - Lupulin pellets (cryo)\",\n        \"author\": \"Hopfengut Fiktiv GmbH\",\n        \"reference\": \"BENCH-COA-0112\",\n        \"year\": 2025,\n        \"kind\": \"coa\",\n        \"locator\": \"page 1\"\n      },\n      \"confidence\": \"low\",\n      \"method\": \"EBC 7.10\",\n      \"value\": 2.6\n    },\n    {\n      \"analyte\": \"myrcene\",\n      \"unit\": \"percentOil\",\n      \"basis\": \"oil\",\n      \"kind\": \"point\",\n      \"source\": {\n        \"title\": \"Certificate of Analysis - Lupulin pellets (cryo)\",\n        \"author\": \"Hopfengut Fiktiv GmbH\",\n        \"reference\": \"BENCH-COA-0112\",\n        \"year\": 2025,\n        \"kind\": \"coa\",\n        \"locator\": \"page 1\"\n      },\n      \"confidence\": \"low\",\n      \"method\": \"GC\",\n      \"value\": 48\n    },\n    {\n      \"analyte\": \"linalool\",\n      \"unit\": \"percentOil\",\n      \"basis\": \"oil\",\n      \"kind\": \"below\",\n      \"source\": {\n        \"title\": \"Certificate of Analysis - Lupulin pellets (cryo)\",\n        \"author\": \"Hopfengut Fiktiv GmbH\",\n        \"reference\": \"BENCH-COA-0112\",\n        \"year\": 2025,\n        \"kind\": \"coa\",\n        \"locator\": \"page 1\"\n      },\n      \"confidence\": \"low\",\n      \"limit\": 0.1,\n      \"limitKind\": \"lod\",\n      \"method\": \"GC\"\n    }\n  ],\n  \"form\": \"cryo\",\n  \"grower\": \"Hopfengut Fiktiv GmbH\",\n  \"growingRegion\": \"Hallertau, Germany\",\n  \"harvestYear\": 2024,\n  \"lotNumber\": \"BENCH-LOT-2024-112\",\n  \"note\": \"Date d'analyse : 2025-11-03. Hop Storage Index : non déterminé. L'annexe en page 2 contient des informations générales (plages typiques variétales, kit sensoriel, seuil olfactif) qui ne sont pas des résultats de ce lot.\",\n  \"storageNotes\": \"kept at -2 °C under nitrogen since pelletising\"\n}"
+}

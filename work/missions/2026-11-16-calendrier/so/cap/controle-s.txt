@@ -1,0 +1,4 @@
+ok s1 : frise à 168 px, bande 35 px, 21 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c
+ok s2 : frise à 160 px, bande 35 px, 21 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c
+ok s3 : frise à 168 px, bande 35 px, 24 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c
+ok s4 : frise à 168 px, bande 35 px, 20 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c

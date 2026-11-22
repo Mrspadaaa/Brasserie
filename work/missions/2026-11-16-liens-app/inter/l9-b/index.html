@@ -1,0 +1,325 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>L9 b · chaque geste décompte ce qu’il use (exemple)</title><style>/* Mini maquettes d'interaction, 16.11 soir. Thème de l'app (DESIGN.md) : clair par défaut, cave au choix.
+   Formes reprises de ses bases : Stocks (seuil v3, « C »), fiche brassin et fûts (proto des liens), bandeau pe1, trace pe3, question pe4. */
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--line2:#bfbfbf;--trait:#9e9e9e;--mut:#5f5f5f;--ink:#111;--act:#111;--onact:#fff;--fin:#1f64a3;--finbg:#e8f0f8;--stk:#4c6b2a;--hop:#567f45;--att:#8a5f06;--attbg:#fbf1dc;--botOn:#efe8e1;--ok:#2f7d6b;--okbg:#e3f1ec;--bad:#b3261e;--prod:#9a4f1e;--cli:#2f7d6b;--sheet:#fff;--dim:rgba(0,0,0,.28);--doigt:rgba(17,17,17,.20);--doigtb:rgba(17,17,17,.55)}
+html[data-theme=cave]{--bg:#12100e;--s1:#1a1613;--s2:#221d19;--line:#2c2521;--line2:#3d342e;--trait:#574a42;--mut:#a39385;--ink:#f5f0ea;--act:#f2c14e;--onact:#12100e;--fin:#86b9e6;--finbg:#172634;--stk:#a3c97a;--hop:#8fbf6a;--att:#e0a02e;--attbg:#2e2310;--botOn:#2c2521;--ok:#6fc3ad;--okbg:#14302a;--bad:#f08a80;--prod:#e7a070;--cli:#6fc3ad;--sheet:#1a1613;--dim:rgba(0,0,0,.55);--doigt:rgba(245,240,234,.26);--doigtb:rgba(245,240,234,.7)}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:16px;-webkit-tap-highlight-color:transparent;overflow-x:clip}
+body{max-width:430px;margin:0 auto;min-height:844px;position:relative;padding-bottom:170px}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.m{font-family:"IBM Plex Mono",Consolas,ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+/* barre du bas (b1r) et + volant */
+.ix-nav{position:fixed;left:0;right:0;bottom:0;max-width:430px;margin:0 auto;height:78px;display:grid;grid-template-columns:repeat(6,1fr);background:var(--bg);border-top:1.5px solid var(--line);z-index:40}
+.ix-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:14px;color:var(--ink);position:relative;white-space:nowrap;letter-spacing:-.2px}
+.ix-nav a.on{background:var(--botOn);font-weight:700}.ix-nav a.on::before{content:'';position:absolute;top:-1.5px;left:0;right:0;height:4px;background:var(--prod)}
+.ix-nav a .ico{width:26px;height:26px}.ix-nav a.st .ico{color:var(--stk)}.ix-nav a.br .ico{color:var(--prod)}
+.ix-pas{position:absolute;top:2px;left:calc(50% + 4px);min-width:28px;height:26px;padding:0 6px;border-radius:13px;font-size:15px;line-height:22px;font-weight:800;text-align:center;color:#fff;background:var(--att);border:2px solid var(--bg);font-variant-numeric:tabular-nums}
+html[data-theme=cave] .ix-pas{color:#12100e}
+.ix-pas.neuf{box-shadow:0 0 0 4px color-mix(in srgb,var(--att) 35%,transparent)}
+.ix-fab{position:fixed;right:12px;bottom:92px;width:58px;height:58px;border-radius:50%;background:var(--act);color:var(--onact);display:grid;place-items:center;z-index:35;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.ix-fab .ico{width:28px;height:28px;stroke-width:2.5}
+/* onglets de Stocks (seuil v3) */
+.ix-tabs{display:flex;gap:2px;margin:8px 12px 0;padding:4px;background:var(--s2);border-radius:14px}
+.ix-tabs span{flex:none;height:38px;padding:0 9px;border-radius:10px;font-size:16px;color:var(--mut);display:grid;place-items:center;letter-spacing:-.2px}
+.ix-tabs span.on{background:var(--act);color:var(--onact);font-weight:700}
+/* page, titres, lignes (proto des liens) */
+.ix-pg{display:flex;align-items:center;gap:10px;padding:10px 12px 4px;min-height:58px}
+.ix-back{height:44px;border:1.5px solid var(--line2);border-radius:999px;padding:0 14px 0 6px;font-size:16px;display:inline-flex;align-items:center;gap:2px;flex:none}
+.ix-pg h1{margin:0;font-size:24px;line-height:1.1;min-width:0}
+.ix-pg .sub{margin-left:auto;font-size:16px;color:var(--mut);white-space:nowrap}
+.ix-gt{margin:16px 12px 2px;font-size:16px;font-weight:700;color:var(--c,var(--ink));display:flex;align-items:center;gap:7px}.ix-gt i{width:12px;height:12px;border-radius:3px;background:var(--c,var(--ink))}
+.ix-gt .r{margin-left:auto;font-weight:400;color:var(--mut);font-size:15px}
+.ix-li{display:flex;align-items:center;gap:10px;min-height:54px;padding:5px 12px;border-bottom:1px solid var(--line);font-size:16px}
+.ix-li .n{flex:1;min-width:0}.ix-li .n b{display:block;font-weight:600}.ix-li .n em{font-style:normal;color:var(--mut)}
+.ix-li .n small{display:block;font-size:14px;color:var(--mut);line-height:1.25}
+.ix-li .v{font-size:16px;text-align:right;white-space:nowrap}
+.ix-li.neuf{background:var(--okbg)}
+.ix-sec{height:44px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line2);font-size:16px;font-weight:600;display:inline-flex;align-items:center;gap:6px;flex:none;background:var(--bg)}
+.ix-sec .ico{width:20px;height:20px}
+.ix-ib{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line2);display:grid;place-items:center;flex:none}
+.ix-ok{color:var(--ok)}
+.ix-keg{width:22px;height:26px;flex:none;fill:none;stroke:var(--c);stroke-width:1.8;stroke-linejoin:round}
+.ix-kegs{display:flex;flex-wrap:wrap;gap:8px;padding:8px 12px}.ix-kegs .ix-keg{width:30px;height:36px}
+.ix-kegs .ix-keg.neuf{border-radius:6px;box-shadow:0 0 0 4px var(--okbg);background:var(--okbg)}
+/* jalons de fiche */
+.ix-jl{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:10px;min-height:54px;padding:4px 12px;border-bottom:1px solid var(--line);font-size:16px}
+.ix-jl>span:first-child{display:grid;place-items:center;color:var(--prod)}
+.ix-jl .ico{color:var(--prod)}.ix-jl .d{font-size:16px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.ix-jl small{display:block;font-size:14px;color:var(--mut)}
+.ix-jl.prov .d{color:var(--mut);border-bottom:1.5px dashed var(--line2)}
+.ix-jl.neuf{background:var(--okbg)}
+.ix-lies{display:flex;gap:8px;flex-wrap:wrap;padding:6px 12px}.ix-lie{height:40px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line2);font-size:16px}.ix-lie .ico{color:var(--mut);width:20px;height:20px}
+/* bandeau d'effet pe1 (lignes serrées v6a) */
+.ix-be{position:fixed;left:8px;right:8px;bottom:158px;max-width:414px;margin:0 auto;z-index:60;background:var(--s1);border:1.5px solid var(--line2);border-radius:16px;padding:10px 12px;box-shadow:0 12px 30px rgba(0,0,0,.22)}
+.ix-be .t{margin:0 0 6px;font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}.ix-be .t .ico{width:20px;height:20px;color:var(--ok)}
+.ix-be ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.ix-be li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:baseline;column-gap:10px}
+.ix-be li .nm{font-size:16px;white-space:nowrap}
+.ix-be li .dl{font-size:15px;font-weight:700;color:var(--ink);white-space:nowrap}
+.ix-be li .aa{font-size:15px;color:var(--mut);white-space:nowrap}.ix-be li .aa b{color:var(--ink)}
+.ix-be li .br{grid-column:1/-1;height:5px;border-radius:3px;background:var(--s2);position:relative;overflow:hidden;margin-top:3px}
+.ix-be li .br i{position:absolute;inset:0 auto 0 0;background:var(--trait);border-radius:3px}.ix-be li .br i.ap{background:var(--hop)}
+.ix-be li.sous .br i.ap{background:var(--att)}
+.ix-be li.grp{display:block;font-size:14px;color:var(--mut);margin-top:2px;font-weight:600}
+.ix-be .al{margin:8px 0 0;font-size:15px;color:var(--att);font-weight:600;display:flex;gap:6px;align-items:center}.ix-be .al .ico{width:18px;height:18px}
+.ix-be .ft{display:flex;align-items:center;gap:8px;margin-top:10px}
+.ix-be .ft .sp{flex:1}
+.ix-be .ann{height:44px;padding:0 16px;border-radius:12px;border:1.5px solid var(--line2);font-size:16px;font-weight:600;background:var(--bg)}
+.ix-be .okb{height:44px;padding:0 20px;border-radius:12px;background:var(--act);color:var(--onact);font-size:16px;font-weight:700}
+.ix-be .reg{height:44px;padding:0 10px;font-size:16px;font-weight:600;display:inline-flex;align-items:center;gap:6px;color:var(--fin)}.ix-be .reg .ico{width:20px;height:20px}
+/* question pe4 */
+.ix-q{margin-top:10px;padding:10px;border:1.5px solid var(--att);border-radius:12px;background:var(--attbg)}
+.ix-q p{margin:0;font-size:16px}.ix-q p b{font-weight:700}
+.ix-rail{position:relative;height:28px;margin:6px 4px 0}.ix-rail::before{content:'';position:absolute;left:0;right:0;top:12px;height:5px;border-radius:3px;background:var(--line2)}
+.ix-rail i{position:absolute;top:2px;width:24px;height:24px;border-radius:50%;background:var(--bg);border:2.5px solid var(--act);transform:translateX(-50%)}
+.ix-rail s{position:absolute;left:0;top:12px;height:5px;border-radius:3px;background:var(--act)}
+.ix-q .rq{display:flex;align-items:center;gap:8px;margin-top:6px}.ix-q .rq .val{flex:1;font-size:16px}
+.ix-q small{display:block;font-size:14px;color:var(--mut);margin-top:6px}
+.ix-q .ghost{height:44px;padding:0 10px;font-size:15px;color:var(--mut)}
+.ix-q .ret{height:44px;padding:0 16px;border-radius:12px;background:var(--act);color:var(--onact);font-weight:700;font-size:16px}
+/* trace pe3 */
+.ix-tr{display:flex;width:max-content;align-items:center;gap:6px;margin-top:3px;font-size:14px;line-height:22px;padding:0 4px 0 8px;border-radius:999px;border:1.5px solid var(--line2);color:var(--mut);white-space:nowrap}
+.ix-tr b{color:var(--ink);font-weight:700}.ix-tr .u{display:inline-grid;place-items:center;width:22px;height:22px;font-size:16px;color:var(--ink)}
+/* toast des liens (proto) */
+.ix-toast{position:fixed;left:12px;right:12px;bottom:158px;max-width:406px;margin:0 auto;min-height:56px;border-radius:14px;background:var(--ink);color:var(--bg);display:flex;align-items:center;gap:6px;padding:6px 6px 6px 14px;z-index:60;font-size:16px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.ix-toast .tx{flex:1;min-width:0;line-height:1.2}.ix-toast .tx small{display:block;font-size:14px;opacity:.85}
+.ix-toast .an{height:44px;padding:0 8px;text-decoration:underline;text-underline-offset:3px;font-weight:600}
+.ix-toast .go{height:44px;padding:0 8px 0 12px;border-radius:11px;border:1.5px solid color-mix(in srgb,var(--bg) 55%,transparent);font-weight:700;display:inline-flex;align-items:center;gap:2px;white-space:nowrap}
+/* feuille */
+.ix-dim{position:fixed;inset:0;background:var(--dim);z-index:55}
+.ix-sheet{position:fixed;left:0;right:0;bottom:0;max-width:430px;margin:0 auto;background:var(--sheet);border-radius:20px 20px 0 0;padding:6px 14px 18px;z-index:70;box-shadow:0 -10px 30px rgba(0,0,0,.25)}
+.ix-sheet::before{content:'';display:block;width:40px;height:5px;border-radius:3px;background:var(--line2);margin:0 auto 8px}
+.ix-sh{display:flex;align-items:center;gap:8px;margin-bottom:4px}.ix-sh h2{flex:1;margin:0;font-size:20px;line-height:1.15}
+.ix-note{font-size:14px;color:var(--mut);margin:4px 0 0;line-height:1.3}
+/* dose réglée (table) */
+.ix-dose{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ix-dose .nm{font-size:16px;font-weight:600}.ix-dose .nm small{display:block;font-weight:400;font-size:14px;color:var(--mut)}
+.ix-dose .val{font-size:17px;font-weight:700;white-space:nowrap}
+.ix-dose .ix-rail{grid-column:1/-1;margin:0 12px}
+.ix-step{display:inline-flex;align-items:center;border:1.5px solid var(--line2);border-radius:12px;overflow:hidden;height:44px}
+.ix-step button{width:44px;height:44px;font-size:20px;font-weight:700;display:grid;place-items:center}
+.ix-step span{min-width:76px;text-align:center;font-weight:700;font-size:16px;border-left:1px solid var(--line);border-right:1px solid var(--line);line-height:44px;padding:0 6px}
+.ix-pri{height:52px;width:100%;border-radius:14px;background:var(--act);color:var(--onact);font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px}
+/* doigt */
+.ix-doigt{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:var(--doigt);border:2.5px solid var(--doigtb);z-index:200;pointer-events:none}
+.ix-doigt.long::after{content:'';position:absolute;inset:-14px;border-radius:50%;border:2.5px dashed var(--doigtb)}
+.neufo{outline:3px solid var(--ok);outline-offset:2px;border-radius:10px}
+/* passe 2 (16.11) : voile sous le bandeau, pastilles « lié à » sous le titre (place de la base lot v1), lien de feuille */
+.ix-voile{position:fixed;left:0;right:0;top:0;bottom:78px;max-width:430px;margin:0 auto;z-index:55;pointer-events:none;background:color-mix(in srgb,var(--bg) 58%,transparent)}
+.ix-chips{display:flex;gap:6px;margin:8px 12px 2px;flex-wrap:nowrap;align-items:center}
+.ix-chip{display:inline-flex;align-items:center;gap:5px;height:42px;padding:0 11px 0 9px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--c) 50%,var(--line));background:color-mix(in srgb,var(--c) 10%,var(--bg));font-size:15px;font-weight:600;color:var(--ink);white-space:nowrap}
+.ix-chip .ico{width:18px;height:18px;color:var(--c)}
+.ix-gt .lnk{margin-left:auto;height:44px;display:inline-flex;align-items:center;gap:2px;padding:0 4px 0 10px;font-size:16px;font-weight:600;color:var(--fin)}
+.ix-gt .lnk .ico{width:18px;height:18px}
+.ix-shf{display:flex;align-items:center;gap:10px;margin-top:12px}.ix-shf .ix-pri{flex:1;margin:0}
+.ix-tous{height:52px;padding:0 6px 0 12px;border-radius:14px;border:1.5px solid var(--line2);font-size:16px;font-weight:600;display:inline-flex;align-items:center;gap:2px;flex:none;color:var(--ink)}
+.ix-tous .ico{width:18px;height:18px}
+</style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M7.5 14h2M11 14h2M14.5 14h2M7.5 17.5h2M11 17.5h2"/></symbol>
+<symbol id="i-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M14 7.5c-1 0-1.4.5-3 .5s-2-.5-3-.5-1.7.5-2.5.5a2.5 2.5 0 0 1 0-5c.8 0 1.6.5 2.5.5S9.4 2 11 2s2 1.5 3 1.5 1.7-.5 2.5-.5a2.5 2.5 0 0 1 0 5c-.8 0-1.5-.5-2.5-.5Z"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/></symbol>
+<symbol id="i-boxes" viewBox="0 0 24 24"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-g" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-d" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-cuve" viewBox="0 0 24 24"><path d="M7 3h10v13a5 5 0 0 1-10 0z"/><path d="M7 8h10M12 21v-2"/></symbol>
+<symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></symbol>
+<symbol id="i-cam" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol>
+<symbol id="i-camion" viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4"/></symbol>
+<symbol id="i-idee" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4"/><path d="M15 14c.2-1 .7-1.7 1.5-2.5A6 6 0 1 0 7.5 11.5c.8.8 1.3 1.5 1.5 2.5"/></symbol>
+<symbol id="i-panier" viewBox="0 0 24 24"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 2h3l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></symbol>
+<symbol id="i-feuille" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.2-6"/></symbol>
+<symbol id="i-goutte" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7z"/></symbol>
+<symbol id="i-fut" viewBox="0 0 22 26"><path d="M4 2h14c1 3 1.6 6.5 1.6 11S19 21 18 24H4C3 21 2.4 17.5 2.4 13S3 5 4 2Z" fill="var(--kf,none)"/><path d="M3 8.5h16M3 17.5h16"/></symbol>
+<symbol id="i-vente" viewBox="0 0 24 24"><path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></symbol>
+<symbol id="i-retour" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
+<symbol id="i-sablier" viewBox="0 0 24 24"><path d="M6 2h12M6 22h12M7 2v4l5 6-5 6v4M17 2v4l-5 6 5 6v4"/></symbol>
+<symbol id="i-bout" viewBox="0 0 24 24"><path d="M10 2h4v4l2 3v12a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9l2-3z"/><path d="M8 13h8"/></symbol></svg><div id="app"></div>
+<script>(()=>{window.VERSION="b";
+/* Aides communes aux mini maquettes (statiques : ?s=<état>&theme=cave). */
+const P = new URLSearchParams(location.search);
+if (P.get('theme') === 'cave') document.documentElement.dataset.theme = 'cave';
+const ico = (id, c = '') => `<svg class="ico ${c}" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+const fut = (c = 'var(--prod)', plein = true, cls = '') => `<svg class="ix-keg ${cls}" viewBox="0 0 22 26" style="--c:${c};--kf:${plein ? 'color-mix(in srgb,' + c + ' 55%,transparent)' : 'none'}" aria-hidden="true"><use href="#i-fut"/></svg>`;
+const NAV = [['bord', 'bord', 'Bord', ''], ['fin', 'wallet', 'Finances', ''], ['cal', 'cal', 'Calendrier', 'br'], ['brs', 'beer', 'Brassins', 'br'], ['stk', 'boxes', 'Stocks', 'st'], ['cli', 'users', 'Clients', '']];
+const nav = (on, pas = 0, pasNeuf = false) => `<nav class="ix-nav" aria-label="Barre du bas">${NAV.map(([k, i, l, c]) => `<a class="${k === on ? 'on ' : ''}${c}"${k === on ? ' aria-current="page"' : ''}>${ico(i)}${k === 'stk' && pas ? `<span class="ix-pas${pasNeuf ? ' neuf' : ''}">${pas}</span>` : ''}<span>${l}</span></a>`).join('')}</nav>`;
+const fab = () => `<button class="ix-fab" aria-label="Ajouter">${ico('plus')}</button>`;
+const tabs = on => `<nav class="ix-tabs" aria-label="Stocks">${['Articles', 'Courses', 'Fûts', 'Houblons', 'Matériel'].map(t => `<span class="${t === on ? 'on' : ''}">${t}</span>`).join('')}</nav>`;
+const back = t => `<button class="ix-back">${ico('g')}${t}</button>`;
+const chips = l => `<div class="ix-chips" aria-label="Lié à">${l.map(([c, i, t]) => `<span class="ix-chip" style="--c:${c}">${ico(i)}${t}</span>`).join('')}</div>`;
+const D = (d) => d ? ` data-doigt="${d}"` : '';
+/* bandeau pe1 : lignes { nm, dl, av, ap, pa, pb, sous } ; options { titre, al, q, regler } */
+const bandeau = o => `<div class="ix-voile"></div><div class="ix-be" role="status" data-bandeau-effets>
+<p class="t">${ico('check')}${o.titre}</p>
+<ul>${o.lignes.map(l => l.grp ? `<li class="grp">${l.grp}</li>` : `<li class="${l.sous ? 'sous' : ''}"><span class="nm">${l.nm}</span><span class="dl m">${l.dl}</span><span class="aa m">${l.av} → <b>${l.ap}</b></span>${l.pa != null ? `<span class="br"><i style="width:${l.pa}%"></i><i class="ap" style="width:${l.pb}%"></i></span>` : ''}</li>`).join('')}</ul>
+${o.al ? `<p class="al">${ico('panier')}${o.al}</p>` : ''}
+${o.q || ''}
+<div class="ft">${o.regler ? `<button class="reg"${D(o.reglerDoigt)}>${ico('regle')}Régler</button>` : ''}<span class="sp"></span><button class="ann">Annuler</button><button class="okb">OK</button></div></div>`;
+const toast = (tx, sous, go) => `<div class="ix-toast" role="status"><span class="tx">${tx}${sous ? `<small>${sous}</small>` : ''}</span><button class="an">Annuler</button>${go ? `<button class="go">${go}${ico('d')}</button>` : ''}</div>`;
+const SPRITE_PLUS = `<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-regle" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+<symbol id="i-four" viewBox="0 0 24 24"><path d="M3 21V10l5 3V10l5 3V7l8 4v10zM3 21h18M7 17h2M12 17h2M17 17h1"/></symbol>
+<symbol id="i-plein" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+<symbol id="i-eau" viewBox="0 0 24 24"><path d="M7 16.3c2.2 0 4-1.8 4-4.1 0-1.2-.6-2.3-1.8-3.3S7.2 6.6 7 5.3c-.3 1.3-1 2.6-2.2 3.6S3 11 3 12.2c0 2.3 1.8 4.1 4 4.1z"/><path d="M12.6 6.6A11 11 0 0 0 14 3.6c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.9 4.98"/></symbol>
+</svg>`;
+/* rendu, puis doigt posé au centre de chaque [data-doigt] (tap / long), décalable par data-dx, data-dy */
+function rendre(ETATS) {
+  const s = P.get('s') || Object.keys(ETATS)[0];
+  document.body.insertAdjacentHTML('afterbegin', SPRITE_PLUS);
+  const app = document.getElementById('app');
+  app.innerHTML = ETATS[s]();
+  document.body.dataset.etat = s;
+  requestAnimationFrame(() => {
+    document.querySelectorAll('[data-doigt]').forEach(el => {
+      const r = el.getBoundingClientRect();
+      const d = document.createElement('i');
+      d.className = 'ix-doigt' + (el.dataset.doigt === 'long' ? ' long' : '');
+      const lg = el.dataset.doigt === 'long'; const dx = el.dataset.dx != null ? +el.dataset.dx : lg ? 0 : Math.max(0, r.width / 2 - 8); const dy = el.dataset.dy != null ? +el.dataset.dy : lg ? 0 : Math.max(0, r.height / 2 - 6);
+      d.style.left = (r.left + r.width / 2 + dx + scrollX) + 'px';
+      d.style.top = (r.top + r.height / 2 + dy + scrollY) + 'px';
+      document.body.appendChild(d);
+    });
+    document.body.dataset.pret = '1';
+  });
+}
+
+/* L9 « chaque geste décompte ce qu'il use » : trois gestes (fût, brassin, cuve) et la table réglée une fois.
+   Chaîne du 16.11 (mêmes chiffres dans les trois versions) :
+   Soude caustique 1,20 → 1,15 (fût) → 1,05 (brassin) → 0,85 L (cuve, sous le seuil de 1 L : aux Courses)
+   Star San 950 → 945 → 930 → 920 ml ; Pilsner 42 → 30 kg ; Saaz 400 → 250 g ; US-05 4 → 3 sachets ; eau 40 L par cuve. */
+const V = window.VERSION;
+const pct = (v, rep) => Math.round(v / rep * 100);
+
+/* ---------- Stocks › Fûts ---------- */
+const futs = (o = {}) => `${tabs('Fûts')}
+<h2 class="ix-gt" style="--c:var(--prod)"><i></i>Pleins<span class="r m">8</span></h2>
+<div class="ix-li">${fut()}<span class="n"><b>Ambrée</b><small>F-03 → F-08 · 16.11</small></span><span class="v m">6</span></div>
+<div class="ix-li">${fut()}<span class="n"><b>F-12</b><em>Blonde</em></span><button class="ix-ib" aria-label="Livrer F-12">${ico('camion')}</button></div>
+<div class="ix-li">${fut()}<span class="n"><b>F-07</b><em>Porter</em></span><button class="ix-ib" aria-label="Livrer F-07">${ico('camion')}</button></div>
+<h2 class="ix-gt" style="--c:var(--cli)"><i></i>Chez clients</h2>
+<div class="ix-li">${fut('var(--cli)')}<span class="n"><b>F-02</b><em>Café du Pont</em></span><span class="v m" style="color:var(--mut)">reprise 30.11</span></div>
+${o.lave ? '' : `<h2 class="ix-gt" style="--c:var(--att)"><i></i>À laver</h2>
+<div class="ix-li">${fut('var(--att)', false)}<span class="n"><b>F-09</b><small>rentré 14.11</small></span><button class="ix-sec"${D(o.doigt)}>${ico('goutte')}Lavé</button></div>`}
+<h2 class="ix-gt" style="--c:var(--stk)"><i></i>Propres<span class="r m">${o.lave ? 9 : 8}</span></h2>
+<div class="ix-kegs">${Array.from({ length: 8 }, () => fut('var(--stk)', false)).join('')}${o.lave ? fut('var(--stk)', false, 'neuf') : ''}</div>`;
+
+/* ---------- Brassins › Blonde d'automne ---------- */
+const brassin = (o = {}) => `<div class="ix-pg">${back('Brassins')}<h1>Blonde d’automne</h1></div>
+<p style="margin:0 12px;font-size:16px;color:var(--mut)">Lot 43 · 120 L · Cuve 2 · J0 / 28</p>
+${chips([['var(--prod)', 'doc', 'Recette'], ['var(--stk)', 'cuve', 'Cuve 2'], ['var(--fin)', 'four', 'Brouwland']])}
+<div class="ix-jl${o.fait ? ' neuf' : ''}"><span>${ico('cuve')}</span><span>Brassage<small>aujourd’hui</small></span>${o.fait ? `<span class="d m">16.11 ${ico('check', 'ix-ok')}</span>` : `<button class="ix-sec"${D(o.doigt)}>${ico('check')}Brassé</button>`}</div>
+<div class="ix-jl prov"><span>${ico('feuille')}</span><span>Dry hop</span><span class="d m">23.11</span></div>
+<div class="ix-jl prov"><span>${ico('sablier')}</span><span>Garde</span><span class="d m">30.11</span></div>
+<div class="ix-jl prov"><span>${fut()}</span><span>Fûts</span><span class="d m">14.12</span></div>
+<h2 class="ix-gt">Pour ce brassin</h2>
+<div class="ix-li"><span class="n">Malt Pilsner</span><span class="v m">12 kg</span></div>
+<div class="ix-li"><span class="n">Saaz <em>· 3,2 % α</em></span><span class="v m">150 g</span></div>
+<div class="ix-li"><span class="n">Levure US-05</span><span class="v m">1 sachet</span></div>`;
+
+/* ---------- Stocks › Matériel (cuves) ---------- */
+const cuves = (o = {}) => `${tabs('Matériel')}
+<h2 class="ix-gt" style="--c:var(--prod)"><i></i>Cuves</h2>
+<div class="ix-li${o.fait ? ' neuf' : ''}">${ico('cuve')}<span class="n"><b>Cuve 1 <em>· 120 L</em></b><small>${o.fait ? 'propre · 16.11' : 'à nettoyer · Ambrée en fûts 16.11'}</small></span>${o.fait ? ico('check', 'ix-ok') : `<button class="ix-sec"${D(o.doigt)}>${ico('goutte')}Nettoyée</button>`}</div>
+<div class="ix-li">${ico('cuve')}<span class="n"><b>Cuve 2 <em>· 120 L</em></b><small>Blonde d’automne · J0 / 28</small></span></div>
+<div class="ix-li">${ico('cuve')}<span class="n"><b>Cuve 3 <em>· 60 L</em></b><small>propre · 2.11</small></span>${ico('check', 'ix-ok')}</div>
+<h2 class="ix-gt" style="--c:var(--mut)"><i></i>Salle de brassage</h2>
+<div class="ix-li">${ico('cuve')}<span class="n"><b>Brasseur 120 L</b><small>Blonde d’automne · 16.11</small></span></div>
+<div class="ix-li">${ico('regle')}<span class="n"><b>Moulin à malt</b><small>2 cylindres</small></span></div>
+<div class="ix-li">${ico('eau')}<span class="n"><b>Pompe de transfert</b><small>inox, 230 V</small></span></div>`;
+
+/* ---------- bandeaux ---------- */
+const bFut = (x = {}) => bandeau({ titre: 'Fût F-09 lavé', regler: V === 'b', reglerDoigt: x.doigt, lignes: [
+  { nm: 'Soude caustique', dl: '−0,05 L', av: '1,20', ap: '1,15 L', pa: pct(1.2, 5), pb: pct(1.15, 5) },
+  { nm: 'Star San', dl: '−5 ml', av: '950', ap: '945 ml', pa: pct(950, 1000), pb: pct(945, 1000) }] });
+const bBrassin = () => bandeau({ titre: 'Blonde d’automne brassée', regler: V === 'b', lignes: [
+  { grp: 'La recette' },
+  { nm: 'Malt Pilsner', dl: '−12 kg', av: '42', ap: '30 kg', pa: pct(42, 50), pb: pct(30, 50) },
+  { nm: 'Saaz', dl: '−150 g', av: '400', ap: '250 g', pa: pct(400, 500), pb: pct(250, 500) },
+  { nm: 'Levure US-05', dl: '−1', av: '4', ap: '3 sachets' },
+  { grp: 'Le nettoyage' },
+  { nm: 'Star San', dl: '−15 ml', av: '945', ap: '930 ml', pa: pct(945, 1000), pb: pct(930, 1000) },
+  { nm: 'Soude caustique', dl: '−0,10 L', av: '1,15', ap: '1,05 L', pa: pct(1.15, 5), pb: pct(1.05, 5) }] });
+const qEau = `<div class="ix-q"><p><b>Eau</b> : combien par cuve, d’habitude ?</p>
+<div class="ix-rail"><s style="width:0"></s><i style="left:0"></i></div>
+<div class="rq"><span class="val m">— L</span><button class="ghost">Pas maintenant</button><button class="ret">Retenir</button></div>
+<small>Une seule fois. Ensuite, décompté seul.</small></div>`;
+const bCuve = () => bandeau({ titre: 'Cuve 1 nettoyée', regler: V === 'b', lignes: [
+  { nm: 'Soude caustique', dl: '−0,20 L', av: '1,05', ap: '0,85 L', pa: pct(1.05, 5), pb: pct(0.85, 5), sous: true },
+  { nm: 'Star San', dl: '−10 ml', av: '930', ap: '920 ml', pa: pct(930, 1000), pb: pct(920, 1000) },
+  ...(V === 'b' ? [] : [{ nm: 'Eau', dl: '+40 L', av: 'ce mois 1 240', ap: '1 280 L' }])],
+  al: 'Soude sous 1 L : ajoutée aux Courses', q: V === 'b' ? qEau : '' });
+
+/* ---------- la table, une fois ---------- */
+const GESTES = [
+  ['goutte', 'Laver un fût', 'par fût', [['Soude caustique', '0,05 L'], ['Star San', '5 ml']], '9 ce mois'],
+  ['beer', 'Brasser', 'par brassin, en plus de la recette', [['Soude caustique', '0,10 L'], ['Star San', '15 ml']], '2 ce mois'],
+  ['cuve', 'Nettoyer une cuve', 'par cuve', [['Soude caustique', '0,20 L'], ['Star San', '10 ml'], ['Eau', '40 L']], '3 ce mois'],
+  ['fut', 'Mettre en fût', 'par fût', [['Star San', '5 ml'], ['CO₂', '0,1 kg']], '6 ce mois'],
+  ['bout', 'Embouteiller', 'par bouteille', [['Capsules', '1'], ['Étiquettes', '1'], ['Star San', null]], 'pas encore']];
+
+/* a : sur l'article. La liste des articles porte la trace pe3 ; la fiche d'un consommable dit quels gestes l'usent. */
+const articlesA = () => `${tabs('Articles')}
+<h2 class="ix-gt" style="--c:var(--att)"><i></i>Nettoyage</h2>
+<div class="ix-li" data-doigt="tap" data-dx="92" data-dy="6"><span class="n"><b>Soude caustique</b><span class="ix-tr"><b>−0,20 L</b> · Cuve 1 nettoyée<span class="u">↺</span></span></span><span class="v m" style="color:var(--att)">0,85 L</span></div>
+<div class="ix-li"><span class="n"><b>Star San</b><span class="ix-tr"><b>−10 ml</b> · Cuve 1 nettoyée<span class="u">↺</span></span></span><span class="v m">920 ml</span></div>
+<h2 class="ix-gt" style="--c:var(--prod)"><i></i>Malts</h2>
+<div class="ix-li"><span class="n"><b>Malt Pilsner</b><span class="ix-tr"><b>−12 kg</b> · Blonde d’automne<span class="u">↺</span></span></span><span class="v m">30 kg</span></div>
+<div class="ix-li"><span class="n"><b>Munich</b></span><span class="v m">2 kg</span></div>
+<h2 class="ix-gt" style="--c:var(--stk)"><i></i>Houblons</h2>
+<div class="ix-li"><span class="n"><b>Saaz <em style="font-weight:400">· 3,2 % α</em></b><span class="ix-tr"><b>−150 g</b> · Blonde d’automne<span class="u">↺</span></span></span><span class="v m">250 g</span></div>`;
+const ficheSoude = () => `<div class="ix-pg">${back('Articles')}<h1>Soude caustique</h1></div>
+<div style="display:flex;align-items:baseline;gap:10px;padding:2px 12px 6px"><b class="m" style="font-size:44px;line-height:1;color:var(--att);letter-spacing:-1.5px">0,85</b><span style="font-size:18px;font-weight:700">L</span><span style="font-size:16px;color:var(--mut)">sous 1 L · aux Courses</span></div>
+<h2 class="ix-gt">Chaque geste en use</h2>
+<div style="padding:0 12px">${[['goutte', 'Laver un fût', 'par fût', '0,05 L'], ['beer', 'Brasser', 'par brassin', '0,10 L'], ['cuve', 'Nettoyer une cuve', 'par cuve', '0,20 L']].map(([i, n, p, v], k) => `<div class="ix-dose"><span class="nm" style="display:flex;gap:10px;align-items:center">${i === 'beer' ? ico('beer') : ico(i)}<span>${n}<small>${p}</small></span></span><span class="ix-step"><button aria-label="Moins">−</button><span class="m">${v}</span><button aria-label="Plus"${k === 2 ? ' data-doigt="tap"' : ''}>+</button></span></div>`).join('')}</div>
+<p class="ix-note" style="margin:8px 12px 0">Réglé une fois ; chaque geste décompte seul. Un geste qui n’use pas de soude n’est pas listé.</p>
+<h2 class="ix-gt">Derniers mouvements</h2>
+${[['−0,20 L', 'Cuve 1 nettoyée', '16.11'], ['−0,10 L', 'Blonde d’automne brassée', '16.11'], ['−0,05 L', 'Fût F-09 lavé', '16.11']].map(([d, n, j]) => `<div class="ix-li"><span class="n">${n}<small>${j}</small></span><span class="v m"><b>${d}</b></span><button class="ix-ib" aria-label="Annuler ce mouvement" style="font-size:20px">↺</button></div>`).join('')}`;
+
+/* b : au geste. Le bandeau porte « Régler » ; la feuille règle ce que ce geste use (appui long sur Lavé : la même). */
+const feuilleFut = () => `<div class="ix-dim"></div><div class="ix-sheet">
+<div class="ix-sh"><h2>Laver un fût, à chaque fois</h2><button class="ix-ib" aria-label="Fermer">${ico('x')}</button></div>
+${[['Soude caustique', 'stock 1,15 L', '0,05 L'], ['Star San', 'stock 945 ml', '5 ml']].map(([n, st, v]) => `<div class="ix-dose"><span class="nm">${n}<small>${st}</small></span><span class="ix-step"><button aria-label="Moins">−</button><span class="m">${v}</span><button aria-label="Plus">+</button></span></div>`).join('')}
+<div class="ix-dose"><span class="nm">Eau<small>pas comptée pour ce geste</small></span><span class="ix-step"><button aria-label="Moins" disabled style="color:var(--line2)">−</button><span class="m" style="color:var(--mut)">0 L</span><button aria-label="Plus">+</button></span></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><span class="ix-lie">${ico('plus')}PBW</span><span class="ix-lie">${ico('plus')}Acide peracétique</span></div>
+<div class="ix-shf"><button class="ix-tous">Tous les gestes${ico('d')}</button><button class="ix-pri">${ico('check')}Retenir</button></div></div>`;
+
+/* c : une page pour tous les gestes, depuis Stocks › Articles. */
+const articlesC = () => `${tabs('Articles')}
+<h2 class="ix-gt" style="--c:var(--att)"><i></i>Nettoyage<button class="lnk" data-doigt="tap" data-dx="36" data-dy="14">${ico('regle')}Par geste${ico('d')}</button></h2>
+<div class="ix-li"><span class="n"><b>Soude caustique</b><span class="ix-tr"><b>−0,20 L</b> · Cuve 1 nettoyée<span class="u">↺</span></span></span><span class="v m" style="color:var(--att)">0,85 L</span></div>
+<div class="ix-li"><span class="n"><b>Star San</b><span class="ix-tr"><b>−10 ml</b> · Cuve 1 nettoyée<span class="u">↺</span></span></span><span class="v m">920 ml</span></div>
+<h2 class="ix-gt" style="--c:var(--prod)"><i></i>Malts</h2>
+<div class="ix-li"><span class="n"><b>Malt Pilsner</b><span class="ix-tr"><b>−12 kg</b> · Blonde d’automne<span class="u">↺</span></span></span><span class="v m">30 kg</span></div>
+<div class="ix-li"><span class="n"><b>Munich</b></span><span class="v m">2 kg</span></div>`;
+const pageGestes = () => `<div class="ix-pg">${back('Articles')}<h1 style="font-size:22px">Ce que chaque geste use</h1></div>
+${GESTES.map(([i, n, p, arts, f]) => `<div style="padding:8px 12px 10px;border-bottom:1px solid var(--line)">
+<div style="display:flex;align-items:center;gap:10px">${i === 'fut' ? fut() : ico(i)}<b style="font-size:17px">${n}</b><span style="margin-left:auto;font-size:14px;color:var(--mut)">${f}</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;padding-left:32px">${arts.map(([a, d]) => d ? `<span class="ix-lie" style="height:36px;font-size:15px">${a} <b class="m">${d}</b></span>` : `<span class="ix-lie" style="height:36px;font-size:15px;border-style:dashed;color:var(--att);border-color:var(--att)"${n === 'Embouteiller' ? ' data-doigt="tap"' : ''}>${a} · à donner</span>`).join('')}</div>
+<p style="margin:4px 0 0 32px;font-size:14px;color:var(--mut)">${p}</p></div>`).join('')}
+<p class="ix-note" style="margin:8px 84px 8px 12px">Toucher une dose pour la changer ; elle vaut dès le geste suivant.</p>`;
+
+window.ETATS = {
+  'fut-avant': () => `${futs({ doigt: 'tap' })}${fab()}${nav('stk')}`,
+  'fut-apres': () => `${futs({ lave: true })}${fab()}${bFut()}${nav('stk')}`,
+  'brassin-avant': () => `${brassin({ doigt: 'tap' })}${fab()}${nav('brs')}`,
+  'brassin-apres': () => `${brassin({ fait: true })}${fab()}${bBrassin()}${nav('brs')}`,
+  'cuve-avant': () => `${cuves({ doigt: 'tap' })}${fab()}${nav('stk')}`,
+  'cuve-apres': () => `${cuves({ fait: true })}${fab()}${bCuve()}${nav('stk', 1, true)}`,
+  ...(V === 'a' ? {
+    'table-avant': () => `${articlesA()}${fab()}${nav('stk', 1)}`,
+    'table-apres': () => `${ficheSoude()}${fab()}${nav('stk', 1)}`
+  } : V === 'b' ? {
+    'table-avant': () => `${futs({ lave: true })}${fab()}${bFut({ doigt: 'tap' })}${nav('stk')}`,
+    'table-apres': () => `${futs({ lave: true })}${fab()}${feuilleFut()}${nav('stk')}`
+  } : {
+    'table-avant': () => `${articlesC()}${fab()}${nav('stk', 1)}`,
+    'table-apres': () => `${pageGestes()}${fab()}${nav('stk', 1)}`
+  })
+};
+
+rendre(window.ETATS);})();</script></body></html>

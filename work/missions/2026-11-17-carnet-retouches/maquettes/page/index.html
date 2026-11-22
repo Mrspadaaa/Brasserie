@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Carnet · retouches vers 9/10 · 12 versions · 17.11</title>
+<style>
+:root{--f:#f7f5f0;--c:#fff;--t:#22201c;--d:#5f594f;--l:#e2dbcf;--a:#b8641c;--ab:#9a4f12;--A:#2c5a86;--Ab:#e6eef6;--B:#3f6b2a;--Bb:#e8f1e1;--C:#8a4b14;--Cb:#f6e9dc;color-scheme:light}
+*{box-sizing:border-box}html{overflow-x:hidden}
+body{margin:0;background:var(--f);color:var(--t);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1240px;margin:0 auto;padding:16px max(14px,env(safe-area-inset-left)) 40px}
+h1{font-size:24px;margin:4px 0 10px;text-wrap:balance}
+h2{font-size:20px;margin:26px 0 6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h3{font-size:18px;margin:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+p{margin:6px 0}
+.g{background:var(--c);border:1px solid var(--l);border-radius:12px;padding:12px 14px;margin:10px 0}
+.g p b{font-weight:700}
+.axe{display:inline-flex;align-items:center;font-size:15px;font-weight:800;border-radius:999px;padding:2px 10px}
+.axe.A{color:var(--A);background:var(--Ab)}.axe.B{color:var(--B);background:var(--Bb)}.axe.C{color:var(--C);background:var(--Cb)}
+.ref{border:2px solid var(--t)}
+.v{background:var(--c);border:1px solid var(--l);border-radius:12px;padding:12px;margin:12px 0}
+.v .nom{font-family:ui-monospace,Consolas,monospace;font-weight:800}
+.v .pp{color:var(--d);font-size:16px}
+.note{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:15px;margin-top:4px}
+.note .n{font:800 16px ui-monospace,Consolas,monospace;background:var(--t);color:#fff;border-radius:8px;padding:1px 8px}
+.note .pour{color:var(--B)}.note .contre{color:#a3341f}
+.grille{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+@media (min-width:760px){.grille{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (min-width:1100px){.grille{grid-template-columns:repeat(8,minmax(0,1fr))}}
+.grille a{display:block;border:1px solid var(--l);border-radius:8px;overflow:hidden;background:#fff}
+.grille a:focus-visible{outline:3px solid var(--a);outline-offset:2px}
+.grille img{display:block;width:100%;height:auto}
+.leg{font-size:14px;color:var(--d)}
+</style>
+<main>
+<h1>Carnet · 12 versions pour passer de 7 à 9 · 17.11</h1>
+
+<div id="a-choisir" class="g">
+<p><b>À choisir :</b> une version par axe, ou rien sur un axe. Dis par exemple « A v02 · B v06 · C v10 ».</p>
+<p><span class="axe A">A</span> carte et article ouvert · <span class="axe B">B</span> ajouter une idée, ajouter à une idée · <span class="axe C">C</span> habit de l'app.</p>
+<p class="leg">Toutes partent de ra+p5f (ta base, en haut) et corrigent aussi les « autres » : À venir qui marche, contenu juste, plus de pastilles « exemple » partout. Clair seul. Touche une vignette pour l'agrandir.</p>
+<p class="leg">Notes sur 10 : celles du critique calibré sur toi, après sa critique et une correction. Aucune n'atteint encore 9 : le 9 viendra de la version que tu choisis, finie et jouée.</p>
+</div>
+
+<section data-choix="carnet-retouches">
+
+<h2>Ta base · ra+p5f</h2>
+<div class="v ref" data-reference>
+<h3><span class="nom">base</span> « J'aime bien mais pas mal de retouche »</h3>
+<p class="pp">Assemblage ra+p5f, page 7. Les trois regards : brasseur 7, UX/UI 6,5, premier usage 5. Cible 9.</p>
+<div class="grille" data-vignette>
+<a href="img/base-E17a-liste.webp"><img src="img/base-E17a-liste.webp" alt="Base : liste des carnets"></a>
+<a href="img/base-E00-vide.webp"><img src="img/base-E00-vide.webp" alt="Base : liste vide"></a>
+<a href="img/base-E01b-carnet-cree.webp"><img src="img/base-E01b-carnet-cree.webp" alt="Base : carnet créé"></a>
+<a href="img/base-E12b-articles.webp"><img src="img/base-E12b-articles.webp" alt="Base : cartes d'article"></a>
+<a href="img/base-E14a-oxygene.webp"><img src="img/base-E14a-oxygene.webp" alt="Base : comparer"></a>
+<a href="img/base-E15-dispo.webp"><img src="img/base-E15-dispo.webp" alt="Base : article ouvert"></a>
+</div>
+</div>
+
+<h2><span class="axe A">A</span> La carte d'article, et l'article ouvert</h2>
+
+<article class="v" data-variante="v01">
+<h3><span class="nom">v01</span> L'article se déplie sur place</h3>
+<p class="pp">Toucher la carte l'ouvre dans la liste : photo, lien « Ouvrir la page ↗ », valeur du critère en tête.</p>
+<p class="note"><span class="n">critique 7/10</span> <span class="pour">+ photo, « 1re sur 5 », deux vendeurs réunis, côte à côte</span> <span class="contre">− article déplié très long, mots du carnet en glossaire</span></p>
+<div class="grille" data-vignette>
+<a href="img/v01-1.webp"><img src="img/v01-1.webp" alt="v01 écran 1"></a>
+<a href="img/v01-2.webp"><img src="img/v01-2.webp" alt="v01 écran 2"></a>
+<a href="img/v01-3.webp"><img src="img/v01-3.webp" alt="v01 écran 3"></a>
+<a href="img/v01-4.webp"><img src="img/v01-4.webp" alt="v01 écran 4"></a>
+<a href="img/v01-5.webp"><img src="img/v01-5.webp" alt="v01 écran 5"></a>
+</div>
+</article>
+
+<article class="v" data-variante="v02">
+<h3><span class="nom">v02</span> Les articles classés par ce qui compte</h3>
+<p class="pp">Cinq rangs au premier écran, le meilleur en haut ; la même machine chez deux vendeurs ne fait qu'une carte.</p>
+<p class="note"><span class="n">critique 7/10</span> <span class="pour">+ le meilleur en haut, 3 vendeurs en une carte, la preuve dans À venir</span> <span class="contre">− garde le champ et le + collés en bas</span></p>
+<div class="grille" data-vignette>
+<a href="img/v02-1.webp"><img src="img/v02-1.webp" alt="v02 : au repos, les rangs"></a>
+<a href="img/v02-2.webp"><img src="img/v02-2.webp" alt="v02 : ouvert en place"></a>
+<a href="img/v02-3.webp"><img src="img/v02-3.webp" alt="v02 : choisir"></a>
+<a href="img/v02-4.webp"><img src="img/v02-4.webp" alt="v02 : choisi"></a>
+<a href="img/v02-5.webp"><img src="img/v02-5.webp" alt="v02 : pourquoi ce choix"></a>
+<a href="img/v02-6.webp"><img src="img/v02-6.webp" alt="v02 : dans À venir"></a>
+</div>
+</article>
+
+<article class="v" data-variante="v03">
+<h3><span class="nom">v03</span> L'article par son rang sur le critère</h3>
+<p class="pp">Chaque carte porte son rang (1, 2, 3…) sur le critère ; Comparer met les articles côte à côte.</p>
+<p class="note"><span class="n">critique 7/10</span> <span class="pour">+ rang sur la règle, vrai tableau côte à côte, ce qui part est écrit</span> <span class="contre">− carte en tête chargée, champ et + collés</span></p>
+<div class="grille" data-vignette>
+<a href="img/v03-1.webp"><img src="img/v03-1.webp" alt="v03 écran 1"></a>
+<a href="img/v03-2.webp"><img src="img/v03-2.webp" alt="v03 écran 2"></a>
+<a href="img/v03-3.webp"><img src="img/v03-3.webp" alt="v03 écran 3"></a>
+<a href="img/v03-4.webp"><img src="img/v03-4.webp" alt="v03 écran 4"></a>
+<a href="img/v03-5.webp"><img src="img/v03-5.webp" alt="v03 écran 5"></a>
+<a href="img/v03-6.webp"><img src="img/v03-6.webp" alt="v03 écran 6"></a>
+<a href="img/v03-7.webp"><img src="img/v03-7.webp" alt="v03 écran 7"></a>
+</div>
+</article>
+
+<article class="v" data-variante="v04">
+<h3><span class="nom">v04</span> L'article sur la règle de son critère</h3>
+<p class="pp">Une règle graduée du critère : chaque article y tombe à sa valeur, le meilleur se voit sans lire.</p>
+<p class="note"><span class="n">critique 7,5/10</span> <span class="pour">+ règle graduée lisible sans chiffre, fourchettes « annoncé / estimé » honnêtes</span> <span class="contre">− trois écrans seulement, champ et + collés</span></p>
+<div class="grille" data-vignette>
+<a href="img/v04-1.webp"><img src="img/v04-1.webp" alt="v04 écran 1"></a>
+<a href="img/v04-2.webp"><img src="img/v04-2.webp" alt="v04 écran 2"></a>
+<a href="img/v04-3.webp"><img src="img/v04-3.webp" alt="v04 écran 3"></a>
+</div>
+</article>
+
+<h2><span class="axe B">B</span> Ajouter une idée, ajouter à une idée</h2>
+
+<article class="v" data-variante="v05">
+<h3><span class="nom">v05</span> Le + demande d'abord où</h3>
+<p class="pp">On choisit la cible (nouvelle idée, façon, article, critère, note) avant d'écrire ; l'IA la propose, on la change.</p>
+<p class="note"><span class="n">critique 7/10</span> <span class="pour">+ cible choisie avant d'écrire, voix avec onde et Arrêter, Retenir / Écarter visibles</span> <span class="contre">− tuiles de compteurs encore là</span></p>
+<div class="grille" data-vignette>
+<a href="img/v05-1.webp"><img src="img/v05-1.webp" alt="v05 écran 1"></a>
+<a href="img/v05-2.webp"><img src="img/v05-2.webp" alt="v05 écran 2"></a>
+<a href="img/v05-3.webp"><img src="img/v05-3.webp" alt="v05 écran 3"></a>
+<a href="img/v05-4.webp"><img src="img/v05-4.webp" alt="v05 écran 4"></a>
+<a href="img/v05-5.webp"><img src="img/v05-5.webp" alt="v05 écran 5"></a>
+<a href="img/v05-6.webp"><img src="img/v05-6.webp" alt="v05 écran 6"></a>
+</div>
+</article>
+
+<article class="v" data-variante="v06">
+<h3><span class="nom">v06</span> Le dépôt devient une carte à ranger</h3>
+<p class="pp">Ce qu'on écrit, photographie ou dicte devient une carte qui dit où elle va ; un seul bouton la range.</p>
+<p class="note"><span class="n">critique 7/10</span> <span class="pour">+ dépôt visible en carte, photo à valider case par case, voix en trois états</span> <span class="contre">− champ et + collés, quatre cibles à chaque dépôt</span></p>
+<div class="grille" data-vignette>
+<a href="img/v06-1.webp"><img src="img/v06-1.webp" alt="v06 écran 1"></a>
+<a href="img/v06-2.webp"><img src="img/v06-2.webp" alt="v06 écran 2"></a>
+<a href="img/v06-3.webp"><img src="img/v06-3.webp" alt="v06 écran 3"></a>
+<a href="img/v06-4.webp"><img src="img/v06-4.webp" alt="v06 écran 4"></a>
+<a href="img/v06-5.webp"><img src="img/v06-5.webp" alt="v06 écran 5"></a>
+<a href="img/v06-6.webp"><img src="img/v06-6.webp" alt="v06 écran 6"></a>
+<a href="img/v06-7.webp"><img src="img/v06-7.webp" alt="v06 écran 7"></a>
+</div>
+</article>
+
+<article class="v" data-variante="v07">
+<h3><span class="nom">v07</span> On voit où ça atterrit avant de poser</h3>
+<p class="pp">Chaque dépôt s'affiche en pointillé là où il va atterrir ; « Changer » le déplace avant de poser.</p>
+<p class="note"><span class="n">critique 7/10</span> <span class="pour">+ pointillé « va atterrir ici » compris d'un coup d'œil</span> <span class="contre">− exemple « moulin à malt » hors sujet, champ et + collés</span></p>
+<div class="grille" data-vignette>
+<a href="img/v07-1.webp"><img src="img/v07-1.webp" alt="v07 écran 1"></a>
+<a href="img/v07-2.webp"><img src="img/v07-2.webp" alt="v07 écran 2"></a>
+<a href="img/v07-3.webp"><img src="img/v07-3.webp" alt="v07 écran 3"></a>
+<a href="img/v07-4.webp"><img src="img/v07-4.webp" alt="v07 écran 4"></a>
+<a href="img/v07-5.webp"><img src="img/v07-5.webp" alt="v07 écran 5"></a>
+<a href="img/v07-6.webp"><img src="img/v07-6.webp" alt="v07 écran 6"></a>
+</div>
+</article>
+
+<article class="v" data-variante="v08">
+<h3><span class="nom">v08</span> On voit où ça tombe</h3>
+<p class="pp">Des puces « Va dans » au-dessus du champ choisissent la cible ; le dépôt arrive en pointillé à sa place.</p>
+<p class="note"><span class="n">critique 7/10</span> <span class="pour">+ puces « Va dans » avant d'envoyer, photo « Juste / Corriger », + volant sur la liste</span> <span class="contre">− clavier ouvert sur presque chaque écran</span></p>
+<div class="grille" data-vignette>
+<a href="img/v08-1.webp"><img src="img/v08-1.webp" alt="v08 écran 1"></a>
+<a href="img/v08-2.webp"><img src="img/v08-2.webp" alt="v08 écran 2"></a>
+<a href="img/v08-3.webp"><img src="img/v08-3.webp" alt="v08 écran 3"></a>
+<a href="img/v08-4.webp"><img src="img/v08-4.webp" alt="v08 écran 4"></a>
+<a href="img/v08-5.webp"><img src="img/v08-5.webp" alt="v08 écran 5"></a>
+<a href="img/v08-6.webp"><img src="img/v08-6.webp" alt="v08 écran 6"></a>
+<a href="img/v08-7.webp"><img src="img/v08-7.webp" alt="v08 écran 7"></a>
+<a href="img/v08-8.webp"><img src="img/v08-8.webp" alt="v08 écran 8"></a>
+</div>
+</article>
+
+<h2><span class="axe C">C</span> L'habit de l'app</h2>
+
+<article class="v" data-variante="v09">
+<h3><span class="nom">v09</span> L'étagère : chaque carnet est une rangée de Stocks</h3>
+<p class="pp">La liste des carnets prend l'habit des rangées de Stocks : une ligne, une couleur de zone, un chiffre en mono.</p>
+<p class="note"><span class="n">critique 6,5/10</span> <span class="pour">+ listes en rangées Stocks, écartés avec leur raison</span> <span class="contre">− champ et + collés : le défaut 20 reste</span></p>
+<div class="grille" data-vignette>
+<a href="img/v09-1.webp"><img src="img/v09-1.webp" alt="v09 écran 1"></a>
+<a href="img/v09-2.webp"><img src="img/v09-2.webp" alt="v09 écran 2"></a>
+<a href="img/v09-3.webp"><img src="img/v09-3.webp" alt="v09 écran 3"></a>
+</div>
+</article>
+
+<article class="v" data-variante="v10">
+<h3><span class="nom">v10</span> Le carnet en rangées de Stocks, jusque dans la fiche</h3>
+<p class="pp">Plus de tuiles de compteurs : la fiche aussi est en rangées, triées par le critère ; le choix dit une fois.</p>
+<p class="note"><span class="n">critique 7/10</span> <span class="pour">+ + volant, segments de Stocks, fiche en rangées triées, choix dit une fois</span> <span class="contre">− violet d'À venir à vérifier (couleur Événements)</span></p>
+<div class="grille" data-vignette>
+<a href="img/v10-1.webp"><img src="img/v10-1.webp" alt="v10 : carnets"></a>
+<a href="img/v10-2.webp"><img src="img/v10-2.webp" alt="v10 : + touché"></a>
+<a href="img/v10-3.webp"><img src="img/v10-3.webp" alt="v10 : fiche en cours"></a>
+<a href="img/v10-4.webp"><img src="img/v10-4.webp" alt="v10 : fiche choisie"></a>
+<a href="img/v10-5.webp"><img src="img/v10-5.webp" alt="v10 écran 5"></a>
+</div>
+</article>
+
+<article class="v" data-variante="v11">
+<h3><span class="nom">v11</span> Un seul rang d'onglets, celui de Stocks</h3>
+<p class="pp">L'en-tête de l'app et ses segments remplacent fil d'Ariane, gros titre et onglets soulignés.</p>
+<p class="note"><span class="n">critique 7/10</span> <span class="pour">+ le plus compact, Retenir / Écarter en tête, tableau par article</span> <span class="contre">− titre coupé (« Ventilation de la salle de bras… »)</span></p>
+<div class="grille" data-vignette>
+<a href="img/v11-1.webp"><img src="img/v11-1.webp" alt="v11 : liste"></a>
+<a href="img/v11-2.webp"><img src="img/v11-2.webp" alt="v11 : fiche choisie"></a>
+<a href="img/v11-3.webp"><img src="img/v11-3.webp" alt="v11 : fiche en cours"></a>
+<a href="img/v11-4.webp"><img src="img/v11-4.webp" alt="v11 : + touché"></a>
+</div>
+</article>
+
+<article class="v" data-variante="v12">
+<h3><span class="nom">v12</span> Une liste à sections, plus d'onglets</h3>
+<p class="pp">Carnets, À venir et Réalisés en sections l'une sous l'autre, dans Matériel ; plus de segments.</p>
+<p class="note"><span class="n">critique 6,5/10</span> <span class="pour">+ un seul écran sans onglets, À venir visible sous les carnets</span> <span class="contre">− champ et + collés ; listes longues à faire défiler</span></p>
+<div class="grille" data-vignette>
+<a href="img/v12-1.webp"><img src="img/v12-1.webp" alt="v12 écran 1"></a>
+<a href="img/v12-2.webp"><img src="img/v12-2.webp" alt="v12 écran 2"></a>
+<a href="img/v12-3.webp"><img src="img/v12-3.webp" alt="v12 écran 3"></a>
+</div>
+</article>
+
+</section>
+
+<div class="g">
+<p class="leg">Prix, stocks et réponses de l'IA : données d'exemple. Les maquettes sont statiques : rien ne se joue avant ton choix. Sources : maquettes/v01.html à v12.html.</p>
+</div>
+</main>
+</html>

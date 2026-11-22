@@ -1,0 +1,19 @@
+{
+ "cas": "imp-photo-metrique",
+ "usage": "import",
+ "half": "choix",
+ "cellule": "ca@low",
+ "ok": true,
+ "ms": 15031,
+ "microChf": 30785,
+ "microDecembre": 61570,
+ "entree": 7599,
+ "sortie": 943,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 0.7962962962962964,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "id 0.67 · vol 20 · fer 2/2 · hops 2/2 · levure ok · paliers 0/2",
+ "reponse": "{\n  \"name\": \"Blonde du Moulin\",\n  \"style\": \"\",\n  \"volumeL\": 20,\n  \"fermentables\": [\n    {\n      \"name\": \"Malt Pilsner\",\n      \"weightKg\": 4.0,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    },\n    {\n      \"name\": \"Malt Munich\",\n      \"weightKg\": 0.5,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    }\n  ],\n  \"hops\": [\n    {\n      \"name\": \"Saaz\",\n      \"weightG\": 30,\n      \"stage\": \"boil\",\n      \"alpha\": 3.5,\n      \"timeMin\": 60\n    },\n    {\n      \"name\": \"Saaz\",\n      \"weightG\": 20,\n      \"stage\": \"boil\",\n      \"alpha\": 3.5,\n      \"timeMin\": 10\n    }\n  ],\n  \"ogTarget\": 1.048,\n  \"source\": \"Fermentis (fiche produit SafAle™ US-05)\" ,\n  \"yeast\": {\n    \"name\": \"SafAle US-05\",\n    \"fermTempMaxC\": 26,\n    \"fermTempMinC\": 18,\n    \"flocculation\": \"Medium\",\n    \"lab\": \"Fermentis\",\n    \"strain\": \"US-05\",\n    \"technicalFacts\": [\n      {\n        \"key\": \"attenuation\",\n        \"reported\": \"78-82%\",\n        \"origin\": \"ai\",\n        \"qualifier\": \"range\",\n        \"range\": {\n          \"min\": 78,\n          \"max\": 82\n        },\n        \"source\": \"Fermentis - SafAle™ US-05\",\n        \"unit\": \"%\"\n      },\n      {\n        \"key\": \"temperature\",\n        \"reported\": \"18-26°C\",\n        \"origin\": \"ai\",\n        \"context\": \"Température de fermentation idéale recommandée\",\n        \"qualifier\": \"range\",\n        \"range\": {\n          \"min\": 18,\n          \"max\": 26\n        },\n        \"source\": \"Fermentis - SafAle™ US-05\",\n        \"unit\": \"°C\"\n      },\n      {\n        \"key\": \"alcoholTolerance\",\n        \"reported\": \"9-11%\",\n        \"origin\": \"ai\",\n        \"qualifier\": \"range\",\n        \"range\": {\n          \"min\": 9,\n          \"max\": 11\n        },\n        \"source\": \"Fermentis - SafAle™ US-05\",\n        \"unit\": \"%\"\n      },\n      {\n        \"key\": \"pitchRate\",\n        \"reported\": \"50 to 80 g/hl\",\n        \"origin\": \"ai\",\n        \"qualifier\": \"range\",\n        \"range\": {\n          \"min\": 50,\n          \"max\": 80\n        },\n        \"source\": \"Fermentis - SafAle™ US-05\",\n        \"unit\": \"g/hl\"\n      },\n      {\n        \"key\": \"flocculation\",\n        \"reported\": \"Medium\",\n        \"origin\": \"ai\",\n        \"qualifier\": \"reportedPoint\",\n        \"source\": \"Fermentis - SafAle™ US-05\"\n      },\n      {\n        \"key\": \"species\",\n        \"reported\": \"Saccharomyces cerevisiae\",\n        \"origin\": \"ai\",\n        \"qualifier\": \"reportedPoint\",\n        \"source\": \"Fermentis - SafAle™ US-05\"\n      }\n    ],\n    \"technicalSource\": \"Fermentis - SafAle™ US-05\"\n  }\n  }"
+}

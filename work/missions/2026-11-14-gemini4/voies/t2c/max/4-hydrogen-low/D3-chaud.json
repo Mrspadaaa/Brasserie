@@ -1,0 +1,40 @@
+{
+ "reglage": "4-hydrogen@low",
+ "cas": "D3-chaud",
+ "tache": "diagnoseBatch",
+ "moitie": "choix",
+ "note": {
+  "qualite": 0.8,
+  "utilisable": true,
+  "passes": [
+   "atténuation apparente 51 % (±2)",
+   "cause : température trop élevée",
+   "esters, alcools supérieurs, solvant",
+   "action : refroidir"
+  ],
+  "manques": [
+   "gravité surveiller ou agir"
+  ]
+ },
+ "ms": 6984,
+ "coutMicro": 9494,
+ "etat": "STOP",
+ "valeur": {
+  "verdict": "Fermentation emballée à température excessive (27-28 °C) pour la SafAle US-05, générant des alcools supérieurs (solvant) et des esters (banane).",
+  "severity": "urgent",
+  "causes": [
+   {
+    "cause": "Température de fermentation trop élevée (24 °C à l'ensemencement, montée exothermique à 28 °C au jour 2 alors que la plage idéale de l'US-05 est 18-22 °C)",
+    "probability": 0.9,
+    "action": "Refroidir immédiatement le fermenteur vers 19-20 °C (chambre froide, bain d'eau glacée ou serpentin) et vérifier la sonde de régulation."
+   },
+   {
+    "cause": "Sous-ensemencement léger (1 sachet de 11,5 g pour 24 L à 1,065 DI) accentuant le stress de la levure et la production d'esters",
+    "probability": 0.35,
+    "action": "Pour les prochains brassins à cette densité et ce volume, utiliser 2 sachets (23 g) ou réhydrater correctement et ensemencer à 18-19 °C."
+   }
+  ],
+  "apparentAttenuationPct": 50.8,
+  "immediateAction": "Abaisser sans délai la température du moût sous les 20 °C pour stopper la production d'alcools de fusel et d'esters, puis laisser la fermentation se terminer autour de 1,012."
+ }
+}

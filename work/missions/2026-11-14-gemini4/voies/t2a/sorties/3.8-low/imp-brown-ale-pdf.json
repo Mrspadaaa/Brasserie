@@ -1,0 +1,19 @@
+{
+ "cas": "imp-brown-ale-pdf",
+ "usage": "import",
+ "half": "jugement",
+ "cellule": "3.8@low",
+ "ok": true,
+ "ms": 10274,
+ "microChf": 9225,
+ "microDecembre": 9225,
+ "entree": 2805,
+ "sortie": 423,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 0.7962962962962964,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "id 0.67 · vol 18.93 · fer 3/3 · hops 2/2 · levure ok · paliers 0/2",
+ "reponse": "{\n  \"name\": \"Brown Ale du Banc\",\n  \"style\": \"Brown Ale\",\n  \"volumeL\": 18.93,\n  \"fermentables\": [\n    {\"name\": \"Maris Otter pale malt\", \"weightKg\": 3.63, \"kind\": \"grain\", \"use\": \"empatage\"},\n    {\"name\": \"Crystal 60L\", \"weightKg\": 0.45, \"kind\": \"grain\", \"use\": \"empatage\"},\n    {\"name\": \"Chocolate malt\", \"weightKg\": 0.23, \"kind\": \"grain\", \"use\": \"empatage\"}\n  ],\n  \"hops\": [\n    {\"name\": \"East Kent Goldings\", \"weightG\": 28.35, \"stage\": \"boil\", \"alpha\": 5, \"timeMin\": 60},\n    {\"name\": \"Fuggle\", \"weightG\": 14.17, \"stage\": \"boil\", \"alpha\": 4.5, \"timeMin\": 15}\n  ],\n  \"boilMin\": 60,\n  \"efficiencyPct\": 72,\n  \"ogTarget\": 1.05,\n  \"preBoilL\": 0,\n  \"source\": \"Document de recette (fiche de brassage)\",\n  \"spargeWaterL\": 0,\n  \"steps\": [],\n  \"waterNote\": \"\",\n  \"waterPlan\": {\n    \"acid\": {\n      \"id\": \"lactique\"\n    }\n  },\n  \"waterTarget\": {},\n  \"waterTargetName\": \"\",\n  \"yeast\": {\n    \"name\": \"SafAle S-04\",\n    \"lab\": \"Fermentis\",\n    \"strain\": \"S-04\",\n    \"unit\": \"g\"\n  }\n}"
+}

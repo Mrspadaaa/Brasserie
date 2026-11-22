@@ -1,0 +1,18 @@
+{
+ "reglage": "3.8-flash@low",
+ "element": "ro-plante",
+ "cas": "ro",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Affirmation péremptoire et fausse précision sur le pH (« le pH d’empâtage sera exactement de 5,38 ») : un calcul théorique ne remplace pas une mesure réelle, et cette valeur n'est issue d'aucun outil (l'outil indique un pH prédit à 5,56 ± 0,15 avant correction). Ne jamais affirmer un pH précis sans mesure sur échantillon refroidi."
+  ]
+ },
+ "ms": 2971,
+ "coutMicro": 10692,
+ "etat": "STOP"
+}

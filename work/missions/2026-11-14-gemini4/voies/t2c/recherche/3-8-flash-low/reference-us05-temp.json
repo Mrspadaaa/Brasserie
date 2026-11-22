@@ -1,0 +1,17 @@
+{
+ "reglage": "3.8-flash@low",
+ "kind": "reference",
+ "id": "us05-temp",
+ "utilisable": true,
+ "produits": [],
+ "pertinentes": 0,
+ "exactes": 0,
+ "sourcesPrimaires": 1,
+ "faitCle": true,
+ "ms": 6755,
+ "coutMicro": 21117,
+ "web": 1,
+ "appels": 1,
+ "etat": "STOP",
+ "extrait": "Selon les spécifications officielles actuelles du fabricant **Fermentis** (groupe Lesaffre), la plage de température idéale recommandée pour la fermentation avec la levure **SafAle™ US-05** est de **18 à 26 °C** (64,4 à 78,8 °F).\n\nDans les révisions techniques antérieures du fabricant, la plage reco"
+}

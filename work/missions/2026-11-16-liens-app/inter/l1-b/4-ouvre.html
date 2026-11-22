@@ -1,0 +1,2363 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Carnets — r3 · c5 (retouche de c4)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* r3 · c5 (THEME-APP) : les jetons de DESIGN.md, rien d'autre. Cave (sombre) par défaut, clair par ?theme=clair. Un fond teinté =
+   un jeton de zone ou d'état mêlé au fond (DESIGN : « fonds légèrement teintés »). Zone du carnet : Stocks › Matériel (vert).
+   IA : violet du jeton agenda ; validé : hop ; erreur : alert ; attente : attention. Plus de crème (#fbf8f2) ni de sarcelle (#26695a). */
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--line2:#bfbfbf;--mut:#666;--ink:#111;--act:#111;--onact:#fff;--prod:#9a4f1e;--fin:#1f64a3;--stk:#4c6b2a;--att:#7f5b10;--ok:#3f6b2e;--bad:#a8291f;--sheet:#fff;--dim:rgba(0,0,0,.18);--ia:#6a4fb0;--bdg:#8a5212;--bar:#bfbfbf}
+html[data-theme=cave]{--bg:#12100e;--s1:#1a1613;--s2:#221d19;--line:#2c2521;--line2:#3d342e;--mut:#9a8a7e;--ink:#f5f0ea;--act:#f2c14e;--onact:#12100e;--prod:#e7a070;--fin:#86b9e6;--stk:#a3c97a;--att:#e3b55d;--ok:#6e9b5b;--bad:#dc5f58;--sheet:#1a1613;--dim:rgba(0,0,0,.5);--ia:#bca5e8;--bdg:#c87a2c;--bar:#9a8a7e}
+:root,html[data-theme=cave]{--finbg:color-mix(in srgb,var(--fin) 12%,var(--bg));--attbg:color-mix(in srgb,var(--att) 12%,var(--bg));--okbg:color-mix(in srgb,var(--ok) 13%,var(--bg));--badbg:color-mix(in srgb,var(--bad) 12%,var(--bg));--iabg:color-mix(in srgb,var(--ia) 11%,var(--bg));--botOn:color-mix(in srgb,var(--stk) 12%,var(--s1));--zone:color-mix(in srgb,var(--stk) 8%,var(--bg));--pap:var(--s1);--marg:color-mix(in srgb,var(--prod) 40%,var(--bg))}
+*{box-sizing:border-box}html{overflow-x:hidden}html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;overflow-x:hidden;padding-bottom:140px;font-size:15px;line-height:1.3}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}input,textarea{font:inherit;color:inherit}
+.da-ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.da-ex{display:inline-block;border:1.5px solid var(--ia);color:var(--ia);border-radius:999px;font-size:10.5px;line-height:14px;padding:0 5px;font-weight:700;vertical-align:1px;white-space:nowrap;letter-spacing:.2px}
+/* coque */
+.da-bot{position:fixed;left:0;right:0;bottom:0;height:56px;display:flex;background:var(--s1);border-top:1px solid var(--line);z-index:30}
+.da-bot a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;position:relative;min-width:0;color:inherit;text-decoration:none}
+.da-bot a.on{background:var(--botOn);font-weight:600;box-shadow:inset 0 3px 0 var(--stk);color:var(--stk)}
+.da-bot .bdg{position:absolute;top:4px;left:calc(50% + 4px);background:var(--bdg);color:var(--onact);font-size:11px;font-weight:600;border-radius:999px;padding:0 5px;line-height:16px}
+.da-fab{position:fixed;right:14px;bottom:70px;z-index:33;display:inline-flex;align-items:center;justify-content:center;height:56px;width:56px;border-radius:28px;background:var(--act);color:var(--onact);box-shadow:0 6px 18px rgba(0,0,0,.35),0 0 0 3px var(--bg)}
+.da-fab .da-ico{width:26px;height:26px;stroke-width:2.4;transition:transform .15s}.da-fab[aria-expanded=true] .da-ico{transform:rotate(45deg)}
+.da-scrim{position:fixed;left:0;right:0;top:0;bottom:56px;background:color-mix(in srgb,var(--bg) 55%,rgba(0,0,0,.35));backdrop-filter:blur(2px);z-index:31}
+.da-dial{position:fixed;right:14px;bottom:136px;z-index:32;display:flex;flex-direction:column;gap:8px;width:min(362px,calc(100vw - 28px))}
+.da-dh{align-self:flex-end;font-size:13px;font-weight:700;background:var(--sheet);color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:2px 11px;line-height:20px}.da-dh.ici{color:var(--ink)}
+.da-dg{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.da-pp{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:54px;border-radius:27px;padding:0 6px 0 16px;font-size:16px;font-weight:600;background:color-mix(in srgb,var(--c,var(--ink)) 7%,var(--sheet));border:1px solid var(--line);box-shadow:0 3px 10px rgba(0,0,0,.18)}
+.da-pp small{display:block;font-size:12.5px;font-weight:400;color:var(--mut)}
+.da-pp i{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:color-mix(in srgb,var(--c,var(--ink)) 16%,var(--sheet));color:var(--c,var(--ink));flex:none}
+.da-pp.main{background:var(--act);color:var(--onact);border-color:transparent}.da-pp.main small{color:inherit;opacity:.8}.da-pp.main i{background:color-mix(in srgb,var(--onact) 18%,transparent);color:var(--onact)}
+.da-pc{display:flex;align-items:center;justify-content:space-between;min-height:44px;border-radius:22px;padding:0 4px 0 12px;font-size:13.5px;font-weight:600;background:var(--sheet);border:1px solid var(--line);box-shadow:0 3px 10px rgba(0,0,0,.15)}
+.da-pc i{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--s2)}.da-pc .da-ico{width:17px;height:17px}
+/* en-tête */
+.da-top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);padding:8px 14px 0}
+.da-crumb{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mut);min-height:22px}
+.da-crumb b{color:var(--ink);font-weight:600}
+.da-seg{display:flex;gap:2px;margin-top:6px}
+.da-seg button{flex:1;text-align:center;min-height:40px;font-weight:600;font-size:15px;color:var(--mut);border-bottom:3px solid transparent}
+.da-seg button.on{color:var(--ink);border-color:var(--stk)}.da-crumb>.da-ico{color:var(--stk)}
+.da-back{display:inline-flex;align-items:center;gap:4px;min-height:44px;font-weight:600;font-size:15px;padding-right:10px}
+/* liste */
+.da-wrap{padding:12px 14px}
+.da-h1{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:2px 0 2px}
+.da-sub{color:var(--mut);font-size:13.5px}
+.da-comp{display:flex;align-items:center;gap:6px;background:var(--pap);border:1.5px solid var(--line2);border-radius:16px;padding:4px 4px 4px 12px;margin:12px 0 4px;min-height:52px}
+.da-comp input{flex:1;min-width:0;border:0;background:transparent;font-size:16.5px;outline:none;padding:8px 0}
+.da-comp input::placeholder{color:var(--mut)}
+.da-cb{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;color:var(--mut)}
+.da-go{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--act);color:var(--onact)}
+.da-hint{font-size:12.5px;color:var(--mut);margin:0 2px 10px}
+.da-card{display:block;width:100%;position:relative;border:1px solid var(--line);border-radius:16px;background:var(--sheet);padding:12px 12px 12px 16px;margin:0 0 10px;overflow:hidden}
+.da-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--st)}
+.da-cl1{display:flex;align-items:center;gap:8px}
+.da-cl1 b{font-size:18px;font-weight:700;flex:1;min-width:0;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.da-cl0{margin-top:4px}
+.da-st{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:var(--st);white-space:nowrap}
+.da-dots{display:inline-flex;gap:3px}.da-dots i{width:6px;height:6px;border-radius:50%;background:var(--line2)}.da-dots i.f{background:var(--st)}
+.da-cl2{font-size:14.5px;margin-top:4px;line-height:1.3}
+.da-cl2 em{font-style:normal;color:var(--mut)}
+.da-cl3{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}
+.da-thumbs{display:flex}.da-thumbs svg{width:28px;height:28px;border-radius:7px;border:2px solid var(--sheet);margin-right:-8px;background:var(--s2)}
+.da-meta{font-size:12.5px;color:var(--mut);margin-left:10px}
+.da-eye{margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:var(--mut)}
+.da-eye.new{color:var(--ok)}.da-eye .pt{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+/* carnet */
+.da-ch{padding:4px 14px 10px;background:var(--zone);border-bottom:1px solid var(--line)}
+.da-ch h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.1}
+.da-ch .l{display:flex;align-items:center;gap:10px;margin-top:4px}
+.da-choix{display:block;width:100%;margin-top:10px;border-radius:14px;background:var(--okbg);border:1.5px solid color-mix(in srgb,var(--ok) 40%,transparent);padding:10px 12px}
+.da-choix.wait{background:var(--attbg);border-color:color-mix(in srgb,var(--att) 40%,transparent)}
+.da-choix .k{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ok)}.da-choix.wait .k{color:var(--att)}
+.da-choix .v{font-size:16.5px;font-weight:700;margin-top:2px}
+.da-choix .w{font-size:14.5px;margin-top:3px}
+.da-choix .w b{font-weight:700}
+.da-crit{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14.5px}
+.da-crit .da-ico{color:var(--prod)}.da-crit b{font-weight:700}
+.da-rail{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 14px 4px}
+.da-rail::-webkit-scrollbar{display:none}
+.da-pz{display:flex;flex-direction:column;gap:4px;min-height:64px;min-width:0;border:1.5px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--sheet)}
+.da-pz .t{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--mut)}
+.da-pz .n{font-size:22px;font-weight:800;line-height:1}
+.da-pz .row{display:flex;flex-wrap:wrap;gap:4px}
+.da-fc{display:inline-flex;align-items:center;gap:3px;font-size:13px;font-weight:600;border-radius:999px;padding:1px 8px;background:var(--okbg);color:var(--ok)}
+.da-fc.out{background:var(--s2);color:var(--mut);text-decoration:line-through}.da-fc.open{background:var(--finbg);color:var(--fin)}
+.da-pz.cmp{border-color:var(--fin);background:var(--finbg)}.da-pz.cmp .t{color:var(--fin)}
+.da-pz.dec{border-color:color-mix(in srgb,var(--ok) 50%,transparent)}
+.da-cbar{padding:8px 14px 2px}
+.da-cbar .da-comp{margin:0}
+.da-try{display:flex;gap:6px;overflow-x:auto;padding:8px 14px 2px;scrollbar-width:none}
+.da-try button{flex:none;display:inline-flex;align-items:center;gap:4px;font-size:13.5px;border:1.5px dashed var(--ia);color:var(--ia);border-radius:999px;padding:0 10px;min-height:34px;white-space:nowrap}
+.da-fil{position:relative;padding:6px 14px 0 66px}
+.da-fil:before{content:"";position:absolute;left:56px;top:0;bottom:0;width:2px;background:var(--marg)}
+.da-day{position:relative;margin:14px 0 2px}
+.da-day span{position:absolute;left:-60px;top:0;width:46px;text-align:right;font-size:12.5px;font-weight:700;color:var(--mut);line-height:1.1}
+.da-e{position:relative;margin:0 0 9px}
+.da-e:before{content:"";position:absolute;left:-14px;top:10px;width:8px;height:8px;border-radius:50%;background:var(--bg);border:2px solid var(--marg)}
+.da-note{font-size:16px;line-height:1.35;padding:2px 0}
+.da-tag{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;color:var(--ia);font-weight:600;margin-top:3px}
+.da-ia{font-size:13.5px;color:var(--mut);background:var(--iabg);border-radius:10px;padding:7px 9px}
+.da-ia b{color:var(--ia)}
+.da-art{display:flex;gap:10px;align-items:stretch;border:1px solid var(--line);border-radius:14px;padding:8px;background:var(--sheet);width:100%}
+.da-art svg.ph{width:68px;height:68px;border-radius:10px;flex:none;background:var(--s2)}
+.da-art .i{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.da-art .nm{font-size:15px;font-weight:700;line-height:1.2}
+.da-art .fr{font-size:13px;color:var(--mut)}
+.da-art .px{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:800;margin-top:auto;white-space:nowrap;padding-right:2px}
+.da-dsp{white-space:nowrap;font-size:12px;font-weight:700;border-radius:999px;padding:0 7px;line-height:18px}
+.da-dsp.ok{background:var(--okbg);color:var(--ok)}.da-dsp.att{background:var(--attbg);color:var(--att)}.da-dsp.bad{background:var(--badbg);color:var(--bad)}
+.da-art.choisi{border:2px solid var(--ok)}
+.da-art.rate{border-style:dashed}
+.da-sw{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--mut);min-height:44px;margin:-10px -4px -10px auto;padding:0 4px}
+.da-sw .tr{width:38px;height:22px;border-radius:11px;background:var(--line2);position:relative;transition:background .15s;flex:none}
+.da-sw .tr:after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s}
+.da-sw[aria-checked=true]{color:var(--ok)}.da-sw[aria-checked=true] .tr{background:var(--ok)}.da-sw[aria-checked=true] .tr:after{left:19px}
+.da-vl{display:flex;align-items:flex-start;gap:8px;border-radius:12px;padding:8px 10px;background:var(--okbg);font-size:14px}
+.da-vl .da-ico{color:var(--ok);margin-top:1px}
+.da-dc{border-left:4px solid var(--ok);background:var(--sheet);border-radius:4px 12px 12px 4px;padding:8px 10px;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.da-dc .k{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ok)}
+.da-dc .v{font-size:15px;font-weight:700}.da-dc .w{font-size:14px}
+.da-dc.rem{border-left-color:var(--line2)}.da-dc.rem .v,.da-dc.rem .w{text-decoration:line-through;color:var(--mut)}.da-dc.rem .k{color:var(--mut)}
+.da-sug{border:1.5px solid var(--ia);border-radius:12px;padding:9px 10px;background:var(--iabg)}
+.da-sug p{margin:0 0 7px;font-size:14.5px}
+.da-sug .bt{display:flex;gap:6px;flex-wrap:wrap}
+.da-b{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 13px;border-radius:12px;font-weight:700;font-size:14.5px;border:1.5px solid var(--line2);background:var(--sheet)}
+.da-b.p{background:var(--act);color:var(--onact);border-color:transparent}.da-b.ia{border-color:var(--ia);color:var(--ia);background:var(--sheet)}
+.da-chip{display:inline-flex;align-items:center;gap:4px;min-height:34px;border-radius:999px;padding:0 6px 0 11px;font-size:13.5px;font-weight:600;border:1.5px solid var(--line2);background:var(--sheet)}
+.da-chip .x{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;color:var(--mut)}
+.da-chip.off{border-style:dashed;color:var(--mut);text-decoration:line-through}
+.da-chip.crit{border-color:var(--prod);color:var(--prod)}
+.da-chips{display:flex;flex-wrap:wrap;gap:6px}.da-chips.sm .da-chip{min-height:34px;font-size:13px}.da-line{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -14px;padding:0 14px}.da-line::-webkit-scrollbar{display:none}.da-line>*{flex:none}
+.da-load{display:flex;gap:10px;border:1px dashed var(--line2);border-radius:14px;padding:8px}
+.da-load i{width:68px;height:68px;border-radius:10px;background:linear-gradient(90deg,var(--s2),var(--s1),var(--s2));background-size:200% 100%;animation:da-sh 1s infinite linear}
+@keyframes da-sh{to{background-position:-200% 0}}
+/* vues dérivées */
+.da-vh{padding:4px 14px 10px;border-bottom:1px solid var(--line)}
+.da-vh h1{font-size:22px;font-weight:800;margin:0}
+.da-k{border:1px solid var(--line);border-radius:16px;padding:10px 12px;margin:0 0 10px;background:var(--sheet)}
+.da-k.crit{border:2px solid var(--prod)}
+.da-kh{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+.da-kh b{font-size:16.5px}.da-kh small{color:var(--mut);font-size:12.5px}
+.da-kh .cr{margin-left:auto;font-size:11.5px;font-weight:800;color:var(--prod);text-transform:uppercase;letter-spacing:.05em}
+.da-r{display:grid;grid-template-columns:128px 1fr 64px;align-items:center;gap:8px;min-height:34px;font-size:13.5px;border-radius:8px;margin:0 -6px;padding:0 6px;cursor:pointer}
+.da-r:active{background:var(--s1)}
+.da-r.rt{grid-template-columns:128px 1fr auto;cursor:default}.da-r.rt .q{color:var(--mut);font-weight:700}
+.da-mini{min-height:30px;padding:0 10px;border-radius:999px;border:1.5px solid var(--line2);font-size:13px;font-weight:600;background:var(--sheet);color:inherit}
+.da-mine{display:inline-flex;align-items:center;gap:2px;font-size:11.5px;font-weight:700;color:var(--prod);margin-left:2px}.da-mine .da-ico{width:12px;height:12px}
+.da-dn{display:inline-flex;align-items:center;font-size:12.5px;font-weight:800;color:var(--ok);background:var(--okbg);border-radius:999px;padding:1px 8px;white-space:nowrap}
+.da-spark{display:block;width:100%;height:64px;margin:6px 0 2px}
+.da-par b{font-weight:700}
+.da-r .n{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.da-r .b{height:15px;border-radius:6px;background:var(--s2);position:relative;overflow:hidden}
+.da-r .b i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--line2)}
+.da-r.best .b i{background:var(--ok)}.da-r.best .n{font-weight:700}
+.da-r .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.da-r.unk .v{color:var(--mut)}.da-r.ch .n:after{content:" ✓";color:var(--ok)}
+.da-par{font-size:13px;color:var(--att);background:var(--attbg);border-radius:10px;padding:6px 9px;margin:0 0 10px}
+.da-sheet{position:fixed;left:0;right:0;bottom:0;z-index:40;max-height:88vh;overflow:auto;background:var(--sheet);border-radius:20px 20px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.3);padding:8px 16px 24px}
+.da-sheet .gr{width:40px;height:5px;border-radius:3px;background:var(--line2);margin:0 auto 8px}
+.da-sscrim{position:fixed;inset:0;z-index:39;background:var(--dim)}
+.da-big svg.ph{width:100%;height:150px;border-radius:14px;background:var(--s2)}
+.da-kv{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:14.5px;margin:6px 0}
+.da-kv span{color:var(--mut)}.da-kv b{text-align:right}
+.da-row{display:flex;align-items:center;gap:8px}
+.da-hist{display:flex;align-items:flex-end;gap:4px;height:44px;margin:6px 0}
+.da-in{width:100%;border:1.5px solid var(--line2);border-radius:12px;padding:10px 12px;background:var(--pap);font-size:16px;outline:none}
+.da-ta{display:block;resize:none;field-sizing:content;min-height:46px;font:inherit;font-size:16px;line-height:1.35;color:inherit}
+.da-lab{font-size:12.5px;font-weight:700;color:var(--mut);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.05em}
+.da-q{border-radius:12px;background:var(--iabg);padding:10px 12px;font-size:14.5px;margin-top:8px}
+.da-toast{position:fixed;left:14px;right:84px;bottom:74px;z-index:35;background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 12px;font-size:14px;font-weight:600}
+/* ===== r2 · ra : retouches de da (lisibilité par typo, espace, contraste ; champ en bas au-dessus du clavier ;
+   écartés en gris ; paysage). Rien n'est retiré : les règles ci-dessous surchargent celles de da. ===== */
+:root{--kb:0px;--dock:0px}
+body{font-size:16px;line-height:1.4;padding-bottom:calc(150px + var(--dock))}
+.ra-mono,.da-r .v,.ra-rl .v,.da-pz .n,.da-art .px .ra-px,.ra-mx td .v,.da-dn{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.da-ex{font-size:14px;line-height:18px;border-width:1px;padding:0 6px;font-weight:600;letter-spacing:0;vertical-align:1px}
+.da-crumb{font-size:14px}.da-back{font-size:16px}
+.da-h1{font-size:28px;line-height:1.15}
+.da-sub{font-size:15px;line-height:1.4}
+.da-hint{font-size:15px;margin:4px 0 14px;color:var(--mut)}
+.da-wrap{padding:14px 14px}
+.da-card{padding:14px 14px 14px 18px;margin:0 0 12px}
+.da-cl1 b{font-size:19px}
+.da-cl0{margin-top:6px}
+.da-st{font-size:14px}.da-dots{gap:4px}.da-dots i{width:7px;height:7px}
+.da-cl2{font-size:16px;line-height:1.4;margin-top:6px}
+.da-cl3{margin-top:10px}
+.da-meta,.da-eye{font-size:14px}
+.da-ch{padding:6px 14px 14px}
+.da-ch h1{font-size:28px}
+.da-choix{padding:12px 14px;margin-top:12px}
+.da-choix .k,.da-dc .k{font-size:14px;letter-spacing:0;text-transform:none;font-weight:700}
+.da-choix .v{font-size:17px;line-height:1.3;margin-top:3px}
+.da-choix .w{font-size:16px;line-height:1.4;margin-top:4px}
+.da-crit{font-size:16px;margin-top:10px}
+.da-rail{gap:10px;padding:14px 14px 6px}
+.da-pz{padding:10px 12px;gap:6px}
+.da-pz .t{font-size:14px;letter-spacing:0;text-transform:none;font-weight:700}
+.da-pz .n{font-size:24px;font-weight:600}
+.da-fc{font-size:14px;padding:2px 9px}
+.da-try{padding:12px 14px 4px;align-items:center}
+.da-try button{font-size:14px;min-height:36px}
+.ra-demo{flex:none;font-size:14px;font-weight:700;color:var(--ia)}
+/* dates du fil : jour en gros, mois dessous, encre */
+.da-fil{padding:10px 14px 0 76px}
+.da-fil:before{left:64px}
+.da-day{margin:24px 0 6px}
+.da-day span{left:-76px;width:52px;font-size:14px;font-weight:600;color:var(--ink);line-height:1.15;top:-2px}
+.da-day span b{display:block;font-size:22px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.da-e{margin:0 0 14px}
+.da-e:before{left:-17px;top:11px}
+.da-note{font-size:16.5px;line-height:1.45}
+.da-tag{font-size:14px;margin-top:4px}
+.da-ia{font-size:15px;line-height:1.45;padding:10px 12px}
+.da-art{padding:10px;gap:12px}
+.da-art .nm{font-size:16.5px;line-height:1.25}
+.da-art .fr{font-size:14px;line-height:1.35}
+.da-art .px{font-size:16px;font-weight:600;gap:8px;flex-wrap:wrap}
+.da-dsp{font-size:14px;line-height:20px;padding:0 8px;font-weight:600}
+.da-sw{font-size:14px}
+.da-vl{font-size:15.5px;line-height:1.45;padding:10px 12px}
+.da-dc{padding:10px 12px}
+.da-dc .v{font-size:16.5px;line-height:1.3;margin-top:2px}.da-dc .w{font-size:15.5px;line-height:1.45}
+.da-sug{padding:11px 12px}
+.da-sug p{font-size:16px;line-height:1.4;margin:0 0 9px}
+.da-b{font-size:15.5px;min-height:44px;padding:0 14px}
+.da-chip{font-size:15px;min-height:40px}
+.da-chips{gap:8px}.da-chips.sm .da-chip{font-size:15px;min-height:40px}
+.da-vh{padding:6px 14px 14px}.da-vh h1{font-size:28px;line-height:1.15}
+.da-k{padding:12px 14px;margin:0 0 14px}
+.da-kh{margin-bottom:4px;flex-wrap:wrap;row-gap:0}
+.da-kh b{font-size:18px}.da-kh small{font-size:14.5px;color:var(--mut)}
+.da-kh .cr{font-size:14px;letter-spacing:0;text-transform:none}
+.da-mini{font-size:14px;min-height:34px}
+.da-mine{font-size:14px}
+.da-dn{font-size:14px;padding:1px 8px}
+.da-par{font-size:15px;line-height:1.45;padding:9px 11px;margin:0 0 14px}
+.da-kv{font-size:15.5px;gap:4px 12px}
+.da-lab{font-size:15px;letter-spacing:0;text-transform:none;color:var(--ink);font-weight:700;margin:16px 0 6px}
+.da-q{font-size:16px;line-height:1.45}
+.da-toast{font-size:15px;bottom:calc(66px + var(--dock))}
+.da-dh{font-size:14px}.da-pp small{font-size:14px}.da-pc{font-size:14.5px}
+.da-sheet{bottom:var(--kb);max-height:calc(88vh - var(--kb))}
+/* tableaux de Comparer : nom entier sur sa ligne, valeur à droite, barre pleine largeur dessous */
+.da-r.ra-r{display:block;min-height:46px;padding:8px 6px 9px;font-size:15px;border-radius:8px}
+.da-r.ra-r+.da-r.ra-r{border-top:1px solid var(--line);border-radius:0}
+.ra-rl{display:flex;align-items:baseline;gap:12px}
+.ra-rl .n{flex:1;min-width:0;white-space:normal;overflow:visible;line-height:1.3}
+.ra-rl .v{font-size:16px;font-weight:600;text-align:right;white-space:nowrap}
+.da-r.ra-r .b{display:block;height:8px;border-radius:4px;margin-top:6px}
+.da-r.ra-r .b i{border-radius:4px}
+.da-r.best .ra-rl .v{color:var(--ok)}
+.da-r.ra-r.txt .ra-rl .v{font-family:inherit;font-weight:600;white-space:normal;text-align:right;max-width:55%}
+.da-r.out .n,.da-r.out .ra-rl .v{color:var(--mut);font-weight:400}
+.da-r.out .b i,.da-r.best.out .b i{background:color-mix(in srgb,var(--line2) 70%,var(--sheet))}
+.ra-out{display:inline-flex;align-items:center;gap:3px;margin-left:6px;font-size:14px;color:var(--mut);white-space:nowrap}
+html[data-theme=cave] .da-r .b{background:var(--line)}html[data-theme=cave] .da-r .b i{background:var(--bar)}html[data-theme=cave] .da-r.best .b i{background:var(--ok)}html[data-theme=cave] .da-r.out .b i,html[data-theme=cave] .da-r.best.out .b i{background:color-mix(in srgb,var(--bar) 40%,var(--sheet))}
+html.ra-bas .da-fab{transform:translateY(160px)}
+.da-fab{transition:transform .2s}
+html.dock .da-fab{z-index:36;bottom:64px;width:52px;height:52px;right:12px;box-shadow:0 4px 12px rgba(0,0,0,.28)}
+html.dock .da-dial{bottom:126px}
+html.dock #ra-dock .da-comp{margin-right:60px}
+html.kb #ra-dock .da-comp{margin-right:0}
+#ra-dock form[data-form=note]:not(.txt) .da-go{display:none}
+#ra-dock form[data-form=note].txt .da-cb{display:none}
+html.kb .da-fil .da-sug{display:none}
+/* le champ, en bas, au-dessus du clavier (CARNET-CLAV) */
+#ra-dock{position:fixed;left:0;right:0;bottom:56px;z-index:34;background:var(--bg);border-top:1px solid var(--line);box-shadow:0 -6px 16px rgba(0,0,0,.07);padding:8px 12px 8px}
+#ra-dock:empty{display:none}
+#ra-dock .da-comp{margin:0;min-height:52px}
+#ra-dock .da-comp input{font-size:16px}
+.ra-echo{display:none;max-height:calc(100vh - var(--kb) - 210px);overflow:auto;padding:4px 2px 10px}
+.ra-eh{font-size:14px;font-weight:700;color:var(--mut);margin:0 0 6px}
+.ra-echo .da-e{margin:0 0 8px}.ra-echo .da-e:before{display:none}
+.ra-echo .ra-last{margin-bottom:0}
+html.kb #ra-dock{bottom:var(--kb)}
+html.kb .ra-echo{display:block}
+html.kb .da-bot,html.kb .da-fab{visibility:hidden}
+html.kb .da-toast{top:64px;bottom:auto}
+#ra-kbd{display:none;position:fixed;left:0;right:0;bottom:0;height:var(--kb);z-index:70;background:#cfd3d9;padding:8px 4px;font:600 13px system-ui;color:#333}
+#ra-kbd .rg{display:flex;gap:5px;justify-content:center;margin:0 0 9px}#ra-kbd .rg i{flex:1;max-width:34px;height:44px;border-radius:6px;background:#fff;box-shadow:0 1px 0 #8e9298;font-style:normal;display:grid;place-items:center;font-size:18px;font-weight:400}
+#ra-kbd .rg i.w{max-width:none;flex:5}#ra-kbd .lb{text-align:center;opacity:.7}
+/* pourquoi en propositions, écartés avec raison proposée */
+.ra-props{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.ra-prop{border-color:var(--ia);color:var(--ia);padding:0 12px}.ra-prop.on{background:var(--iabg);color:var(--ink);border-width:2px}
+.ra-garde{display:flex;gap:8px;margin-top:10px;padding:10px 12px;border:1px solid var(--bad);border-radius:10px;font-size:15px;line-height:1.35}.ra-garde>.da-ico{width:18px;height:18px;flex:none;color:var(--bad);margin-top:2px}.ra-garde b{color:var(--bad)}
+.ra-need{display:flex;align-items:flex-start;gap:6px;margin-top:6px;font-size:15px;font-weight:600;color:var(--bad)}.ra-need[hidden]{display:none}.ra-need .da-ico{width:16px;height:16px;flex:none}
+.da-chip.dup{outline:2px solid var(--bad);outline-offset:1px}
+.ra-ec{border:1px solid var(--line);border-radius:12px;padding:8px 6px 8px 12px;margin:0 0 8px}
+.ra-ecl{display:flex;align-items:center;gap:8px;font-size:16px}.ra-ecl b{flex:1;font-weight:700}
+.ra-ecl .x{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;color:var(--mut)}
+.ra-rz{display:flex;align-items:center;gap:8px;width:100%;min-height:40px;font-size:15px;color:var(--mut);border-radius:10px;padding:0 8px;margin-top:4px;border:1.5px dashed var(--line2)}
+.ra-rz .da-ico{width:18px;height:18px;opacity:.35}
+.ra-rz[aria-pressed=true]{color:var(--ink);border-style:solid;border-color:var(--ok);background:var(--okbg)}.ra-rz[aria-pressed=true] .da-ico{opacity:1;color:var(--ok)}
+/* paysage : Comparer en matrice, articles côte à côte */
+.ra-mx{display:none}
+@media (orientation:landscape) and (min-width:700px) and (max-height:520px){
+  .ra-tables{display:none}
+  .ra-mx{display:block;margin:0 -14px 14px;overflow-x:auto;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+  body.v-comparer .da-vh{display:flex;align-items:baseline;gap:12px;padding:2px 14px 8px}
+  body.v-comparer .da-vh h1{font-size:22px}
+  body.v-comparer .da-fab{top:4px;bottom:auto;width:44px;height:44px;right:10px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+  body.v-comparer .da-top{padding-right:64px}
+  .da-bot{height:48px}.da-bot a{flex-direction:row;gap:6px;font-size:13px}
+  body{padding-bottom:70px}
+}
+.ra-mx table{border-collapse:separate;border-spacing:0;font-size:15px}
+.ra-mx th,.ra-mx td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left;background:var(--bg)}
+.ra-mx .ra-mk{position:sticky;left:0;z-index:2;width:178px;min-width:178px;padding-left:14px;box-shadow:1px 0 0 var(--line)}
+.ra-mx .ra-mk b{display:block;font-size:15px;line-height:1.25}.ra-mx .ra-mk small{display:block;font-size:14px;color:var(--mut);font-weight:400}
+.ra-mx thead th{font-weight:700;font-size:14px;line-height:1.25;width:128px;min-width:128px;max-width:128px;scroll-snap-align:start}
+.ra-mx thead th svg.ph{display:block;width:38px;height:30px;border-radius:6px;margin-bottom:4px}
+.ra-mx thead th.out,.ra-mx td.out{color:var(--mut)}.ra-mx thead th.out{font-weight:600}
+.ra-mx thead th.ch{box-shadow:inset 0 3px 0 var(--ok)}
+.ra-mx tr.crit th.ra-mk{box-shadow:inset 3px 0 0 var(--prod),1px 0 0 var(--line)}.ra-mx tr.crit th.ra-mk b{color:var(--prod)}
+.ra-mx td .v{display:block;font-size:15.5px;font-weight:600;text-align:right}
+.ra-mx td.best:not(.out) .v{color:var(--ok)}
+.ra-mx td.txt .v{font-family:inherit;text-align:left;font-weight:400;font-size:14.5px}
+.ra-mx td .b{display:block;height:5px;border-radius:3px;background:var(--s2);margin-top:4px;overflow:hidden}.ra-mx td .b i{display:block;height:100%;background:var(--line2)}
+.ra-mx td.best:not(.out) .b i{background:var(--ok)}
+/* r3 · c1 : le scénario de zéro */
+.da-try{flex-wrap:wrap;overflow:visible}
+.ra-zero{display:inline-block;margin:10px 0 0;font-size:14px;color:var(--ia);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.ra-vide{margin-top:14px;border-style:dashed}
+.ra-kf{all:unset;display:inline-flex;align-items:center;gap:4px;cursor:pointer;min-height:40px}
+.da-chip.foc{border-color:var(--fin);background:var(--finbg);color:var(--fin)}
+.da-k.foc{border:2px solid var(--fin)}
+.ra-keep{position:sticky;bottom:-24px;margin:14px -16px -24px;padding:10px 16px 16px;background:var(--sheet);border-top:1px solid var(--line);z-index:2}
+/* r3 · c5 : le + ne cache plus aucune valeur. Sans champ en bas (Comparer), une bande au fond porte le +, comme le champ le porte
+   ailleurs ; la marge du bas la compte (--dock). Le + ne s'efface plus en descendant : il ne recouvre plus rien. */
+#ra-band{display:none;position:fixed;left:0;right:0;bottom:56px;min-height:68px;z-index:34;background:var(--bg);border-top:1px solid var(--line);box-shadow:0 -6px 16px rgba(0,0,0,.07);padding:0 76px 0 14px;align-items:center;font-size:15px;color:var(--mut)}
+#ra-band b{color:var(--ink);font-weight:700;margin-left:4px}
+html.band #ra-band{display:flex}
+html.band .da-fab{z-index:36;bottom:64px;width:52px;height:52px;right:12px;box-shadow:0 4px 12px rgba(0,0,0,.28)}
+html.band.ra-bas .da-fab{transform:none}
+html.kb #ra-band{display:none}
+@media (orientation:landscape) and (min-width:700px) and (max-height:520px){html.band #ra-band{display:none}html.band .da-fab{top:4px;bottom:auto;width:44px;height:44px;right:10px}}
+/* r3 · c5 : un toast porte ses boutons quand il pose une question ; il vit dans la bande du bas (champ ou bande du +), qui grandit
+   d'autant avec la marge du bas : il ne recouvre plus aucune carte. Clavier ouvert ou feuille ouverte, il flotte comme avant. */
+.ra-tslot:empty{display:none}
+#ra-dock .da-toast.ra-in,#ra-band .da-toast.ra-in{position:static;left:auto;right:auto;top:auto;bottom:auto;margin:0;width:100%}
+#ra-dock .ra-tslot{margin:0 0 8px}
+#ra-band:has(.ra-in){padding-top:8px;padding-bottom:8px;align-items:flex-end}
+.da-toast{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.ra-tb{display:flex;gap:8px;margin-left:auto}
+.ra-tb button{min-height:44px;padding:0 14px;border-radius:10px;font-weight:700;font-size:15px;border:1.5px solid color-mix(in srgb,var(--bg) 50%,transparent);color:var(--bg);text-align:center}
+.ra-tb button.p{background:var(--bg);color:var(--ink);border-color:transparent}
+/* r3 · c4 : clavier ouvert dans une feuille, « Garder ce choix » quitte le bas et reprend sa place en fin de feuille :
+   plus rien de fixe ne recouvre le champ que le doigt vise (dernier jeu, E16, E19, E20). Clavier fermé, il revient en bas. */
+html.kb .da-sheet .ra-keep{position:static;margin:18px 0 0;padding:0;border-top:0;background:none}
+.da-sheet{scroll-padding:8px 0 96px}html.kb .da-sheet{scroll-padding-bottom:12px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8a2.5 2.5 0 0 1 1-4.5c.8-1.5 3-2 4-1 1-1 3.5-1 4.5.5A2.5 2.5 0 0 1 17 8z"/></symbol>
+<symbol id="i-boxes" viewBox="0 0 24 24"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+<symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+<symbol id="i-bars" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></symbol>
+<symbol id="i-fork" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="12" cy="20" r="2"/><path d="M6 7v2a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7M12 12v6"/></symbol>
+<symbol id="i-stamp" viewBox="0 0 24 24"><path d="M9 3h6l-1 7h4v4H6v-4h4z"/><path d="M5 20h14"/></symbol>
+<symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+<symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12z"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3z"/><path d="M4 17a3 3 0 0 1 3-3h11"/><path d="M8 8h6"/></symbol>
+</svg>
+<div id="da-app"></div>
+<nav class="da-bot" aria-label="Navigation">
+<a href="#"><svg class="da-ico"><use href="#i-bord"/></svg>Bord</a>
+<a href="#"><svg class="da-ico"><use href="#i-wallet"/></svg>Finances</a>
+<a href="#" data-act="cal"><svg class="da-ico"><use href="#i-cal"/></svg>Calendrier</a>
+<a href="#"><svg class="da-ico"><use href="#i-beer"/></svg>Brassins</a>
+<a href="#" class="on" aria-current="page"><svg class="da-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+<a href="#"><svg class="da-ico"><use href="#i-users"/></svg>Clients</a>
+</nav>
+<div id="ra-dock"></div>
+<div id="ra-band" aria-live="polite"></div>
+<div id="ra-kbd" aria-hidden="true"><div class="rg"><i>a</i><i>z</i><i>e</i><i>r</i><i>t</i><i>y</i><i>u</i><i>i</i><i>o</i><i>p</i></div><div class="rg"><i>q</i><i>s</i><i>d</i><i>f</i><i>g</i><i>h</i><i>j</i><i>k</i><i>l</i><i>m</i></div><div class="rg"><i>⇧</i><i>w</i><i>x</i><i>c</i><i>v</i><i>b</i><i>n</i><i>’</i><i>⌫</i></div><div class="rg"><i>123</i><i>,</i><i class="w">espace</i><i>.</i><i>↵</i></div><div class="lb">clavier simulé · 300 px</div></div>
+<div id="da-dial"></div>
+<button class="da-fab" id="da-fab" aria-expanded="false" aria-label="Ajouter"><svg class="da-ico"><use href="#i-plus"/></svg></button>
+<div id="da-over"></div>
+<div id="ra-toast"></div>
+<script id="da-fx" type="application/json">{
+  "meta": {
+    "version": 1,
+    "date": "2026-11-16",
+    "note": "Fixture commune des séries « carnet de recherche et de décision ». Tous les produits, prix, valeurs, aperçus et réponses de veille sont simulés et marqués exemple. Fournisseurs fictifs.",
+    "devise": "CHF",
+    "veilleIntervalleJours": 3
+  },
+  "statuts": [
+    "idee",
+    "recherche",
+    "compare",
+    "choisi",
+    "abandonne"
+  ],
+  "carnets": [
+    {
+      "id": "c-embouteillage",
+      "titre": "Embouteillage",
+      "categorie": "embouteillage",
+      "statut": "choisi",
+      "creeLe": "2026-10-20",
+      "resume": "Iso 4 becs pré-évac. (CH) — oxygène le plus bas, SAV suisse",
+      "critere": {
+        "texte": "minimiser l'oxygène",
+        "caracteristique": "oxygene"
+      },
+      "facons": [
+        {
+          "id": "f-gravite",
+          "nom": "Gravité",
+          "etat": "ecartee",
+          "pourquoi": "trop d'oxygène capté",
+          "note": "vu chez un collègue, pas mal"
+        },
+        {
+          "id": "f-iso",
+          "nom": "Isobarique (contre-pression)",
+          "etat": "retenue",
+          "pourquoi": "oxygène le plus bas"
+        }
+      ],
+      "caracteristiques": [
+        {
+          "id": "oxygene",
+          "nom": "Oxygène capté",
+          "unite": "ppb",
+          "sens": "moins",
+          "source": "ia"
+        },
+        {
+          "id": "cadence",
+          "nom": "Cadence",
+          "unite": "bt/h",
+          "sens": "plus",
+          "source": "ia"
+        },
+        {
+          "id": "becs",
+          "nom": "Becs",
+          "unite": "",
+          "sens": "plus",
+          "source": "ia"
+        },
+        {
+          "id": "co2",
+          "nom": "CO₂ par bouteille",
+          "unite": "g",
+          "sens": "moins",
+          "source": "ia"
+        },
+        {
+          "id": "nettoyage",
+          "nom": "Nettoyage",
+          "unite": "",
+          "sens": "texte",
+          "source": "ia"
+        },
+        {
+          "id": "encombrement",
+          "nom": "Encombrement",
+          "unite": "cm",
+          "sens": "texte",
+          "source": "ia"
+        },
+        {
+          "id": "prix",
+          "nom": "Prix",
+          "unite": "CHF",
+          "sens": "moins",
+          "source": "ia"
+        },
+        {
+          "id": "formats",
+          "nom": "Formats",
+          "unite": "",
+          "sens": "texte",
+          "source": "ia",
+          "retiree": true
+        }
+      ],
+      "articles": [
+        {
+          "id": "a-e1",
+          "facon": "f-iso",
+          "nom": "Remplisseuse contre-pression manuelle 1 bec",
+          "fournisseur": "Brauladen Nord",
+          "lieu": "DE",
+          "lien": "https://exemple.invalid/e1",
+          "apercu": {
+            "ok": true,
+            "photo": "bouteille-manuelle"
+          },
+          "prix": 190,
+          "dispo": "en_stock",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "oxygene": 220,
+            "cadence": 60,
+            "becs": 1,
+            "co2": 6,
+            "nettoyage": "à la main",
+            "encombrement": "30×20",
+            "prix": 190
+          },
+          "marque": "moins bien partout sauf prix"
+        },
+        {
+          "id": "a-e2",
+          "facon": "f-iso",
+          "nom": "Isobarique 2 becs de table",
+          "fournisseur": "Enotecnica Sud",
+          "lieu": "IT",
+          "lien": "https://exemple.invalid/e2",
+          "apercu": {
+            "ok": true,
+            "photo": "iso-2"
+          },
+          "prix": 1850,
+          "dispo": "en_stock",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "oxygene": 120,
+            "cadence": 150,
+            "becs": 2,
+            "co2": 5,
+            "nettoyage": "démontage partiel",
+            "encombrement": "60×40",
+            "prix": 1850
+          }
+        },
+        {
+          "id": "a-e3",
+          "facon": "f-iso",
+          "nom": "Isobarique 4 becs semi-auto",
+          "fournisseur": "Enotecnica Sud",
+          "lieu": "IT",
+          "lien": "https://exemple.invalid/e3",
+          "apercu": {
+            "ok": true,
+            "photo": "iso-4"
+          },
+          "prix": 6400,
+          "dispo": "delai_6_semaines",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "oxygene": 90,
+            "cadence": 380,
+            "becs": 4,
+            "co2": 5,
+            "nettoyage": "NEP partiel",
+            "encombrement": "90×60",
+            "prix": 6400
+          }
+        },
+        {
+          "id": "a-e4",
+          "facon": "f-iso",
+          "nom": "Isobarique 4 becs pré-évacuation",
+          "fournisseur": "Abfülltechnik West",
+          "lieu": "DE",
+          "lien": "https://exemple.invalid/e4",
+          "apercu": {
+            "ok": true,
+            "photo": "iso-4-pre"
+          },
+          "prix": 11200,
+          "dispo": "en_stock",
+          "surveiller": true,
+          "exemple": true,
+          "valeurs": {
+            "oxygene": 40,
+            "cadence": 400,
+            "becs": 4,
+            "co2": 7,
+            "nettoyage": "NEP",
+            "encombrement": "100×70",
+            "prix": 11200
+          },
+          "veille": [
+            {
+              "le": "2026-11-10",
+              "prix": 11200,
+              "dispo": "en_stock",
+              "autres": []
+            },
+            {
+              "le": "2026-11-13",
+              "prix": 11200,
+              "dispo": "en_stock",
+              "autres": [
+                {
+                  "fournisseur": "Getränketechnik Ost",
+                  "lieu": "AT",
+                  "prix": 11600,
+                  "dispo": "en_stock"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "a-e5",
+          "facon": "f-iso",
+          "nom": "Isobarique 4 becs pré-évacuation",
+          "fournisseur": "Revendeur Brassage Romandie",
+          "lieu": "CH",
+          "lien": "https://exemple.invalid/e5",
+          "apercu": {
+            "ok": true,
+            "photo": "iso-4-pre"
+          },
+          "prix": 11700,
+          "dispo": "en_stock",
+          "surveiller": true,
+          "exemple": true,
+          "valeurs": {
+            "oxygene": 40,
+            "cadence": 400,
+            "becs": 4,
+            "co2": 7,
+            "nettoyage": "NEP",
+            "encombrement": "100×70",
+            "prix": 11700
+          },
+          "veille": [
+            {
+              "le": "2026-11-10",
+              "prix": 12300,
+              "dispo": "en_stock",
+              "autres": []
+            },
+            {
+              "le": "2026-11-13",
+              "prix": 11700,
+              "dispo": "en_stock",
+              "autres": [
+                {
+                  "fournisseur": "Getränketechnik Ost",
+                  "lieu": "AT",
+                  "prix": 11600,
+                  "dispo": "en_stock"
+                }
+              ]
+            }
+          ],
+          "alerte": {
+            "le": "2026-11-13",
+            "texte": "−600 CHF ; aussi en stock chez Getränketechnik Ost (AT)",
+            "lue": true
+          }
+        },
+        {
+          "id": "a-e6",
+          "facon": "f-iso",
+          "nom": "Monobloc isobarique 6 becs",
+          "fournisseur": "Macchine Lago",
+          "lieu": "IT",
+          "lien": "https://exemple.invalid/e6",
+          "apercu": {
+            "ok": true,
+            "photo": "monobloc"
+          },
+          "prix": 21500,
+          "dispo": "sur_commande",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "oxygene": 50,
+            "cadence": 900,
+            "becs": 6,
+            "co2": 6,
+            "nettoyage": "NEP",
+            "encombrement": "180×90",
+            "prix": 21500
+          }
+        }
+      ],
+      "notes": [
+        {
+          "le": "2026-10-20",
+          "par": "brasseur",
+          "texte": "embouteillage"
+        },
+        {
+          "le": "2026-10-21",
+          "par": "brasseur",
+          "texte": "gravité 4 becs vu chez un collègue, pas mal"
+        },
+        {
+          "le": "2026-10-22",
+          "par": "brasseur",
+          "texte": "il faut minimiser l'oxygène"
+        },
+        {
+          "le": "2026-10-29",
+          "par": "ia",
+          "texte": "Lu 2 liens : 2 articles ajoutés, cadence non trouvée pour l'un.",
+          "exemple": true
+        },
+        {
+          "le": "2026-11-13",
+          "par": "veille",
+          "texte": "Iso 4 becs pré-évac. : −600 CHF chez le revendeur suisse ; en stock chez un 3ᵉ fournisseur (AT).",
+          "exemple": true
+        }
+      ],
+      "decisions": [
+        {
+          "id": "d1",
+          "le": "2026-10-22",
+          "statut": "valide",
+          "sujet": "façon",
+          "choix": "f-iso",
+          "pourquoi": "minimiser l'oxygène",
+          "ecartes": [
+            {
+              "ref": "f-gravite",
+              "raison": "trop d'oxygène capté"
+            }
+          ]
+        },
+        {
+          "id": "d2",
+          "le": "2026-11-14",
+          "statut": "valide",
+          "sujet": "produit et fournisseur",
+          "choix": "a-e5",
+          "pourquoi": "oxygène le plus bas à 4 becs ; SAV en Suisse ; −600 CHF à la veille",
+          "ecartes": [
+            {
+              "ref": "a-e2",
+              "raison": "cadence trop basse pour 300 L"
+            },
+            {
+              "ref": "a-e6",
+              "raison": "double prix pour une cadence inutile"
+            },
+            {
+              "ref": "a-e4",
+              "raison": "même machine, SAV à l'étranger"
+            }
+          ],
+          "revoirSi": "le volume dépasse 1 000 L par mois"
+        }
+      ],
+      "aVenir": {
+        "envoye": false
+      }
+    },
+    {
+      "id": "c-frigo",
+      "titre": "Frigo de garde pour fûts",
+      "categorie": "froid",
+      "statut": "choisi",
+      "creeLe": "2026-09-30",
+      "resume": "Chambre froide en kit (CH) — assez pour 6 fûts, 2 °C stable en été",
+      "critere": {
+        "texte": "tenir 2 °C stable en été",
+        "caracteristique": "ambiante"
+      },
+      "facons": [
+        {
+          "id": "f-chambre",
+          "nom": "Chambre froide en kit",
+          "etat": "retenue",
+          "pourquoi": "stable et passe la porte en panneaux"
+        },
+        {
+          "id": "f-vitrine",
+          "nom": "Frigo vitrine pro",
+          "etat": "ecartee",
+          "pourquoi": "ne passe pas la porte de 80 cm"
+        }
+      ],
+      "caracteristiques": [
+        {
+          "id": "volume",
+          "nom": "Volume utile",
+          "unite": "L",
+          "sens": "plus",
+          "source": "ia"
+        },
+        {
+          "id": "futs",
+          "nom": "Fûts de 20 L",
+          "unite": "",
+          "sens": "plus",
+          "source": "ia"
+        },
+        {
+          "id": "ambiante",
+          "nom": "Température ambiante max",
+          "aide": "classe climatique",
+          "unite": "°C",
+          "sens": "plus",
+          "source": "ia"
+        },
+        {
+          "id": "plage",
+          "nom": "Plage de température",
+          "unite": "°C",
+          "sens": "texte",
+          "source": "ia"
+        },
+        {
+          "id": "conso",
+          "nom": "Consommation",
+          "unite": "kWh/an",
+          "sens": "moins",
+          "source": "ia"
+        },
+        {
+          "id": "bruit",
+          "nom": "Bruit",
+          "unite": "dB",
+          "sens": "moins",
+          "source": "ia"
+        },
+        {
+          "id": "porte",
+          "nom": "Passe une porte de 80 cm",
+          "unite": "",
+          "sens": "oui",
+          "source": "brasseur"
+        },
+        {
+          "id": "prix",
+          "nom": "Prix",
+          "unite": "CHF",
+          "sens": "moins",
+          "source": "ia"
+        }
+      ],
+      "articles": [
+        {
+          "id": "a-f1",
+          "facon": "f-chambre",
+          "nom": "Chambre froide en kit 2 m³",
+          "fournisseur": "Froid Léman",
+          "lieu": "CH",
+          "lien": "https://exemple.invalid/f1",
+          "apercu": {
+            "ok": true,
+            "photo": "chambre"
+          },
+          "prix": 4900,
+          "dispo": "en_stock",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "volume": 1600,
+            "futs": 30,
+            "plage": "0 à 8",
+            "conso": 1400,
+            "bruit": 45,
+            "porte": true,
+            "prix": 4900,
+            "ambiante": 43
+          }
+        },
+        {
+          "id": "a-f2",
+          "facon": "f-vitrine",
+          "nom": "Vitrine pro 700 L",
+          "fournisseur": "Gastrokälte Süd",
+          "lieu": "DE",
+          "lien": "https://exemple.invalid/f2",
+          "apercu": {
+            "ok": true,
+            "photo": "vitrine"
+          },
+          "prix": 2300,
+          "dispo": "rupture",
+          "surveiller": true,
+          "exemple": true,
+          "valeurs": {
+            "volume": 560,
+            "futs": 8,
+            "plage": "2 à 10",
+            "conso": 900,
+            "bruit": 52,
+            "porte": false,
+            "prix": 2300,
+            "ambiante": 30
+          },
+          "veille": [
+            {
+              "le": "2026-10-08",
+              "prix": 2300,
+              "dispo": "rupture",
+              "autres": [
+                {
+                  "fournisseur": "Horeca Froid",
+                  "lieu": "FR",
+                  "prix": 2390,
+                  "dispo": "en_stock"
+                }
+              ]
+            }
+          ],
+          "alerte": {
+            "le": "2026-10-08",
+            "texte": "rupture ici ; dispo chez Horeca Froid (FR) à +90 CHF",
+            "lue": true
+          }
+        },
+        {
+          "id": "a-f3",
+          "facon": "f-vitrine",
+          "nom": "Vitrine d'occasion 600 L",
+          "fournisseur": "Annonce locale",
+          "lieu": "CH",
+          "lien": "https://exemple.invalid/f3",
+          "apercu": {
+            "ok": true,
+            "photo": "vitrine-occ"
+          },
+          "prix": 650,
+          "dispo": "en_stock",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "volume": 480,
+            "futs": 6,
+            "plage": "?",
+            "conso": null,
+            "bruit": null,
+            "porte": false,
+            "prix": 650,
+            "ambiante": null
+          }
+        },
+        {
+          "id": "a-f4",
+          "facon": "f-chambre",
+          "nom": "Chambre froide en kit 2,5 m³",
+          "fournisseur": "Celle Frigo",
+          "lieu": "IT",
+          "lien": "https://exemple.invalid/f4",
+          "apercu": {
+            "ok": true,
+            "photo": "chambre"
+          },
+          "prix": 4300,
+          "dispo": "delai_4_semaines",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "volume": 2000,
+            "futs": 40,
+            "plage": "0 à 10",
+            "conso": 1650,
+            "bruit": 48,
+            "porte": true,
+            "prix": 4300,
+            "ambiante": 38
+          }
+        }
+      ],
+      "notes": [
+        {
+          "le": "2026-09-30",
+          "par": "brasseur",
+          "texte": "frigo de garde pour fûts"
+        },
+        {
+          "le": "2026-10-01",
+          "par": "brasseur",
+          "texte": "la porte du local fait 80 cm"
+        },
+        {
+          "le": "2026-10-02",
+          "par": "ia",
+          "texte": "Occasion : bruit et consommation non trouvés.",
+          "exemple": true
+        }
+      ],
+      "decisions": [
+        {
+          "id": "d1",
+          "le": "2026-10-03",
+          "statut": "remplacee",
+          "remplaceePar": "d2",
+          "sujet": "façon",
+          "choix": "f-vitrine",
+          "pourquoi": "moins cher"
+        },
+        {
+          "id": "d2",
+          "le": "2026-10-10",
+          "statut": "valide",
+          "sujet": "produit et fournisseur",
+          "choix": "a-f1",
+          "pourquoi": "assez pour 6 fûts, stable à 2 °C en été ; la vitrine ne passe pas la porte",
+          "ecartes": [
+            {
+              "ref": "a-f3",
+              "raison": "pas de garantie sur le compresseur"
+            },
+            {
+              "ref": "a-f4",
+              "raison": "délai de 4 semaines, SAV en Italie"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c-ventilation",
+      "titre": "Ventilation de la salle de brassage",
+      "categorie": "ventilation",
+      "statut": "compare",
+      "creeLe": "2026-11-02",
+      "resume": "Hotte ou extracteur — attendre l'avis du ferblantier",
+      "critere": {
+        "texte": "plus de condensation au plafond",
+        "caracteristique": "debit"
+      },
+      "facons": [
+        {
+          "id": "f-hotte",
+          "nom": "Hotte inox + extracteur",
+          "etat": "ouverte"
+        },
+        {
+          "id": "f-mural",
+          "nom": "Extracteur mural seul",
+          "etat": "ouverte"
+        }
+      ],
+      "caracteristiques": [
+        {
+          "id": "debit",
+          "nom": "Débit",
+          "unite": "m³/h",
+          "sens": "plus",
+          "source": "ia"
+        },
+        {
+          "id": "bruit",
+          "nom": "Bruit",
+          "unite": "dB",
+          "sens": "moins",
+          "source": "ia"
+        },
+        {
+          "id": "gaine",
+          "nom": "Diamètre de gaine",
+          "unite": "mm",
+          "sens": "texte",
+          "source": "ia",
+          "vide": "sans gaine"
+        },
+        {
+          "id": "humidite",
+          "nom": "Tient l'humidité",
+          "unite": "",
+          "sens": "oui",
+          "source": "ia"
+        },
+        {
+          "id": "prix",
+          "nom": "Prix",
+          "unite": "CHF",
+          "sens": "moins",
+          "source": "ia"
+        },
+        {
+          "id": "conso",
+          "nom": "Consommation",
+          "unite": "W",
+          "sens": "moins",
+          "source": "ia",
+          "retiree": true
+        }
+      ],
+      "articles": [
+        {
+          "id": "a-v1",
+          "facon": "f-hotte",
+          "nom": "Hotte inox 120 cm + moteur",
+          "fournisseur": "Inox Broye",
+          "lieu": "CH",
+          "lien": "https://exemple.invalid/v1",
+          "apercu": {
+            "ok": true,
+            "photo": "hotte"
+          },
+          "prix": 2600,
+          "dispo": "sur_commande",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "debit": 1800,
+            "bruit": 58,
+            "gaine": "250",
+            "humidite": true,
+            "prix": 2600
+          }
+        },
+        {
+          "id": "a-v2",
+          "facon": "f-hotte",
+          "nom": "Hotte murale 100 cm",
+          "fournisseur": "Gastro Lüftung",
+          "lieu": "DE",
+          "lien": "https://exemple.invalid/v2",
+          "apercu": {
+            "ok": true,
+            "photo": "hotte"
+          },
+          "prix": 1450,
+          "dispo": "en_stock",
+          "surveiller": true,
+          "exemple": true,
+          "valeurs": {
+            "debit": 1200,
+            "bruit": 55,
+            "gaine": "200",
+            "humidite": true,
+            "prix": 1450
+          },
+          "veille": [
+            {
+              "le": "2026-11-14",
+              "prix": 1450,
+              "dispo": "en_stock",
+              "autres": []
+            }
+          ]
+        },
+        {
+          "id": "a-v3",
+          "facon": "f-mural",
+          "nom": "Extracteur mural hélicoïde",
+          "fournisseur": "Ventil Jura",
+          "lieu": "CH",
+          "lien": "https://exemple.invalid/v3",
+          "apercu": {
+            "ok": true,
+            "photo": "extracteur"
+          },
+          "prix": 420,
+          "dispo": "en_stock",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "debit": 1500,
+            "bruit": 62,
+            "gaine": "—",
+            "humidite": true,
+            "prix": 420
+          }
+        },
+        {
+          "id": "a-v4",
+          "facon": "f-mural",
+          "nom": "Extracteur centrifuge en ligne",
+          "fournisseur": "Aéro Rhône",
+          "lieu": "FR",
+          "lien": "https://exemple.invalid/v4",
+          "apercu": {
+            "ok": true,
+            "photo": "extracteur"
+          },
+          "prix": 690,
+          "dispo": "en_stock",
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {
+            "debit": 1100,
+            "bruit": 49,
+            "gaine": "200",
+            "humidite": null,
+            "prix": 690
+          }
+        },
+        {
+          "id": "a-v5",
+          "facon": null,
+          "nom": "lien seul",
+          "fournisseur": null,
+          "lieu": null,
+          "lien": "https://exemple.invalid/v5",
+          "apercu": {
+            "ok": false,
+            "raison": "aucune métadonnée lue"
+          },
+          "prix": null,
+          "dispo": null,
+          "surveiller": false,
+          "exemple": true,
+          "valeurs": {}
+        }
+      ],
+      "notes": [
+        {
+          "le": "2026-11-02",
+          "par": "brasseur",
+          "texte": "buées au-dessus de la cuve"
+        },
+        {
+          "le": "2026-11-05",
+          "par": "ia",
+          "texte": "Un lien sans aperçu : à compléter à la main ou à me redonner.",
+          "exemple": true
+        },
+        {
+          "le": "2026-11-12",
+          "par": "brasseur",
+          "texte": "attendre l'avis du ferblantier"
+        }
+      ],
+      "decisions": []
+    },
+    {
+      "id": "c-evier",
+      "titre": "Évier inox",
+      "categorie": "evier",
+      "statut": "idee",
+      "creeLe": "2026-11-15",
+      "resume": "Idée notée",
+      "critere": null,
+      "facons": [],
+      "caracteristiques": [
+        {
+          "id": "bacs",
+          "nom": "Bacs",
+          "unite": "",
+          "sens": "plus",
+          "source": "ia",
+          "propose": true
+        },
+        {
+          "id": "matiere",
+          "nom": "Matière",
+          "unite": "",
+          "sens": "texte",
+          "source": "ia",
+          "propose": true
+        },
+        {
+          "id": "profondeur",
+          "nom": "Profondeur de bac",
+          "unite": "cm",
+          "sens": "plus",
+          "source": "ia",
+          "propose": true
+        },
+        {
+          "id": "douchette",
+          "nom": "Douchette",
+          "unite": "",
+          "sens": "oui",
+          "source": "ia",
+          "propose": true
+        },
+        {
+          "id": "prix",
+          "nom": "Prix",
+          "unite": "CHF",
+          "sens": "moins",
+          "source": "ia",
+          "propose": true
+        }
+      ],
+      "articles": [],
+      "notes": [
+        {
+          "le": "2026-11-15",
+          "par": "brasseur",
+          "texte": "évier inox 2 bacs pour laver les fûts"
+        }
+      ],
+      "decisions": []
+    }
+  ]
+}
+</script>
+<script>
+(function(){
+'use strict';
+var FX = JSON.parse(document.getElementById('da-fx').textContent);
+var AUJ = '2026-11-16';
+var Q = new URLSearchParams(location.search);
+// r3 · c1 : ?vide=1 part d'un carnet vide. Rien ne vient de la fixture : chaque donnée naît d'un geste.
+var VIDE = Q.get('vide') === '1';
+if (VIDE) FX.carnets = [];
+if (Q.get('theme') !== 'clair') document.documentElement.setAttribute('data-theme', 'cave'); // r3 · c5 : cave par défaut (THEME-APP)
+var $ = function (s, r) { return (r || document).querySelector(s); };
+var ico = function (n, cls) { return '<svg class="da-ico' + (cls ? ' ' + cls : '') + '"><use href="#i-' + n + '"/></svg>'; };
+var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+var MOIS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+var jour = function (d) { var p = d.split('-'); return (+p[2]) + ' ' + MOIS[+p[1] - 1]; };
+var chf = function (n) { return n == null ? '?' : String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' CHF'; };
+var nb = function (v) { var p = String(v).split('.'); return p[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + (p[1] ? ',' + p[1] : ''); };
+var lc1 = function (t) { return t.charAt(0).toLowerCase() + t.slice(1); };
+// Baisse de prix vue par la veille : premier passage contre dernier.
+var baisse = function (a) { var vs = a.veille || []; if (vs.length < 2) return null; var d = vs[0].prix - vs[vs.length - 1].prix; return d > 0 ? { d: d, le: vs[0].le } : null; };
+var plusJ = function (d, n) { var t = new Date(d + 'T12:00:00'); t.setDate(t.getDate() + n); return t.toISOString().slice(0, 10); };
+
+/* ---- Données : la fixture, plus ce qu'un prototype doit savoir pour la rejouer ---- */
+var C = JSON.parse(JSON.stringify(FX.carnets));
+var SRC = JSON.parse(JSON.stringify(FX.carnets));
+// Noms courts pour les tableaux (dans l'app : tirés par l'IA du nom lu, modifiables).
+var COURT = { 'a-e1': 'Manuelle 1 bec', 'a-e2': 'Iso 2 becs', 'a-e3': 'Iso 4 semi-auto', 'a-e4': 'Iso 4 pré-év. DE', 'a-e5': 'Iso 4 pré-év. CH', 'a-e6': 'Monobloc 6 becs',
+  'a-f1': 'Chambre 2 m³ CH', 'a-f2': 'Vitrine 700 L', 'a-f3': 'Vitrine occasion', 'a-f4': 'Chambre 2,5 m³ IT',
+  'a-v1': 'Hotte 120 CH', 'a-v2': 'Hotte 100 DE', 'a-v3': 'Hélicoïde CH', 'a-v4': 'Centrifuge FR', 'a-v5': 'lien seul' };
+// Date de dépôt de chaque lien dans le fil (la fixture ne la donne pas).
+var DEPOT = { 'a-e1': '2026-10-29', 'a-e2': '2026-10-29', 'a-e3': '2026-11-02', 'a-e4': '2026-11-05', 'a-e5': '2026-11-08', 'a-e6': '2026-11-10',
+  'a-f1': '2026-10-01', 'a-f2': '2026-10-02', 'a-f3': '2026-10-02', 'a-f4': '2026-10-03',
+  'a-v1': '2026-11-03', 'a-v2': '2026-11-04', 'a-v3': '2026-11-05', 'a-v4': '2026-11-06', 'a-v5': '2026-11-05' };
+/* Correctifs de la passe 2 (critique) appliqués à la copie de la fixture, pas au fichier commun :
+   encombrement en surface au sol (m², moins = mieux) ; ventilation : critère sans ambiguïté.
+   (Frigo : la fixture commune porte déjà « Température ambiante max » et des fûts plausibles.) */
+function corriger(L) {
+  L.forEach(function (c) {
+    c.caracteristiques.forEach(function (k) {
+      if (k.id === 'encombrement') { k.nom = 'Encombrement au sol'; k.unite = 'm²'; k.sens = 'moins';
+        c.articles.forEach(function (a) { var m = /^(\d+)×(\d+)$/.exec(a.valeurs.encombrement || ''); if (m) a.valeurs.encombrement = Math.round(m[1] * m[2] / 100) / 100; }); }
+    });
+    if (c.id === 'c-ventilation') c.critere.texte = 'zéro condensation au plafond';
+    // r2 · ra : noms non abrégés, jusque dans les textes de la veille.
+    var plein = function (t) { return typeof t === 'string' ? t.replace(/Iso 4 becs pré-évac\./g, 'Isobarique 4 becs pré-évacuation') : t; };
+    c.notes.forEach(function (n) { n.texte = plein(n.texte); });
+    c.articles.forEach(function (a) { if (a.alerte) a.alerte.texte = plein(a.alerte.texte); });
+    if (c.resume) c.resume = plein(c.resume);
+  });
+}
+corriger(C); corriger(SRC);
+C.forEach(function (c) {
+  c.articles.forEach(function (a) { a.court = COURT[a.id] || a.nom; a.le = DEPOT[a.id] || c.creeLe; });
+  c.extra = []; // ce qui s'ajoute au fil pendant le jeu
+  if (c.caracteristiques.some(function (k) { return k.propose; })) { c.caracteristiques.forEach(function (k) { delete k.propose; }); c.extra.push({ le: c.creeLe, t: 'ia', n: { texte: 'Catégorie : ' + c.categorie + '. Je propose ces caractéristiques à comparer ; retirez celles qui ne comptent pas, ajoutez les vôtres.' }, carac: true });
+    c.extra.push({ le: c.creeLe, t: 'sug', html: 'Je peux chercher les <b>façons de faire</b> courantes pour « ' + c.titre.toLowerCase() + ' » et des liens à comparer.', bt: '<button class="da-b ia" data-act="iafacons">Chercher</button><button class="da-b" data-act="nonsug">Plus tard</button>' }); }
+});
+C.forEach(function (c) { rafraichirChips(c); });
+// Pour montrer l'alerte discrète au repos : la dernière veille de l'embouteillage n'est pas encore lue.
+if (!VIDE) C[0].articles[4].alerte.lue = false;
+var byId = function (id) { return C.filter(function (c) { return c.id === id; })[0]; };
+var art = function (c, id) { return c.articles.filter(function (a) { return a.id === id; })[0]; };
+var facon = function (c, id) { return c.facons.filter(function (f) { return f.id === id; })[0]; };
+// r2 · ra : le nom entier partout ; le pays seulement pour départager deux mêmes machines.
+var nomA = function (c, a) {
+  if (!a) return '';
+  if (!a.apercu || !a.apercu.ok) return 'Lien sans aperçu';
+  var dup = c.articles.filter(function (b) { return b !== a && b.nom === a.nom; }).length;
+  return a.nom + (dup ? ' · ' + a.lieu : '');
+};
+// r3 · c3 : mots comparés sans accent ni casse ; deux mots « proches » si l'un est le début de l'autre (romand / romandie),
+// jamais un mot plus long qui le contient (ventil / ventilation). Les mots du titre du carnet ne désignent rien.
+var sansAcc = function (t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''); };
+var motsDe = function (t) { return sansAcc(t).split(/[^a-z0-9]+/).filter(Boolean); };
+var proches = function (w, m) { return w === m || (w.length >= 5 && m.indexOf(w) === 0) || (m.length >= 5 && w.indexOf(m) === 0 && w.length - m.length <= 1); };
+var MOTS_FACON_VIDES = /^(seul|seule|pour|avec|contre|kit|inox|sans|plus|moins)$/;
+var faconEcartee = function (c, a) { var f = a && a.facon && facon(c, a.facon); return f && f.etat === 'ecartee' ? f : null; };
+var decFacon = function (c, f) { return c.decisions.filter(function (d) { return d.sujet === 'façon' && (d.choix === f.id || (d.ecartes || []).some(function (e) { return e.ref === f.id; })); }).pop(); };
+// Écartés : cités dans une décision en vigueur, ou d'une façon écartée. Ils restent visibles, en gris.
+var ecartesDe = function (c) {
+  var s = {};
+  c.decisions.forEach(function (d) { if (d.statut === 'valide') (d.ecartes || []).forEach(function (e) { s[e.ref] = 1; }); });
+  c.articles.forEach(function (a) { var f = a.facon && facon(c, a.facon); if (f && f.etat === 'ecartee') s[a.id] = 1; });
+  return s;
+};
+var jourHtml = function (d) { if (d === AUJ) return '<b>auj.</b>'; var p = d.split('-'); return '<b>' + (+p[2]) + '</b>' + MOIS[+p[1] - 1]; };
+
+/* Réponses simulées de l'IA (exemple). Dans l'app : un appel par geste ; ici, des tables d'exemples par catégorie,
+   et un repli générique pour toute catégorie inconnue. Rien dans le modèle n'est propre à une catégorie. */
+var IA_CARAC = {
+  embouteillage: [['Oxygène capté', 'ppb', 'moins'], ['Cadence', 'bt/h', 'plus'], ['Becs', '', 'plus'], ['CO₂ par bouteille', 'g', 'moins'], ['Nettoyage', '', 'texte'], ['Encombrement au sol', 'm²', 'moins'], ['Prix', 'CHF', 'moins'], ['Formats', '', 'texte']],
+  froid: [['Volume utile', 'L', 'plus'], ['Fûts de 20 L', '', 'plus'], ['Température ambiante max', '°C', 'plus'], ['Consommation', 'kWh/j', 'moins'], ['Bruit', 'dB', 'moins'], ['Prix', 'CHF', 'moins']],
+  ventilation: [['Débit', 'm³/h', 'plus'], ['Bruit', 'dB', 'moins'], ['Consommation', 'W', 'moins'], ['Pression disponible', 'Pa', 'plus'], ['Prix', 'CHF', 'moins']], // r3 · c3 : « Hotte inox » était une façon
+  evier: [['Bacs', '', 'plus'], ['Matière', '', 'texte'], ['Profondeur de bac', 'cm', 'plus'], ['Douchette', '', 'oui'], ['Prix', 'CHF', 'moins']],
+  etiquetage: [['Cadence', 'bt/h', 'plus'], ['Formats d\'étiquette', '', 'texte'], ['Précision de pose', 'mm', 'moins'], ['Prix', 'CHF', 'moins']],
+  _: [['Dimensions', 'cm', 'texte'], ['Consommation', 'W', 'moins'], ['Délai', 'jours', 'moins'], ['Garantie', 'ans', 'plus'], ['Prix', 'CHF', 'moins']]
+};
+var categorieDe = function (t) {
+  t = t.toLowerCase();
+  if (/embout|bouteill|remplis/.test(t)) return 'embouteillage';
+  if (/évier|evier|lavabo/.test(t)) return 'evier';
+  if (/étiquet|etiquet/.test(t)) return 'etiquetage';
+  if (/frigo|froid/.test(t)) return 'froid';
+  if (/ventil|buée|hotte|extract/.test(t)) return 'ventilation';
+  return 'divers';
+};
+// Façons reconnues dans une phrase (exemple ; l'IA réelle n'a pas de liste).
+// r3 · c2 : chaque façon type porte sa catégorie ; une note ne range que les façons de la catégorie du carnet.
+// r3 · c5 : une partie du critère qu'aucune caractéristique ne mesure reçoit la sienne (oui / non), lue ensuite sur chaque lien.
+var BESOINS = [[/buée|condensation|vapeur|humidit/, /buée|humidit|vapeur/, 'Capte la buée à la source', 'ventilation']];
+var FACONS_MOTS = [[/gravit/, 'Gravité', 'embouteillage'], [/isobar|\biso\b|contre-pression/, 'Isobarique (contre-pression)', 'embouteillage'], [/monobloc/, 'Monobloc', 'embouteillage'], [/chambre froide/, 'Chambre froide en kit', 'froid'], [/vitrine/, 'Frigo vitrine pro', 'froid'], [/hotte/, 'Hotte inox + extracteur', 'ventilation'], [/extracteur mural/, 'Extracteur mural seul', 'ventilation'], [/(évier|evier|bac)s? (à|a) poser/, 'Évier à poser', 'evier'], [/sur pieds/, 'Évier sur pieds', 'evier']];
+var CAT_NOM = { embouteillage: 'embouteillage', froid: 'froid', ventilation: 'ventilation', evier: 'évier', etiquetage: 'étiquetage' };
+// Façons types que l'IA sait proposer (exemple) ; une catégorie inconnue n'en a pas : on écrit les siennes.
+var FACONS_IA = { embouteillage: ['Gravité', 'Isobarique (contre-pression)', 'Monobloc'], froid: ['Chambre froide en kit', 'Frigo vitrine pro'], ventilation: ['Hotte inox + extracteur', 'Extracteur mural seul'], evier: ['Évier à poser', 'Évier sur pieds'] };
+/* r3 · c1 : le Web simulé (exemple). Ce n'est pas la fixture : ce sont les pages que le brasseur ouvre et dont il colle
+   le lien. Dans l'app, l'aperçu vient de la page (og:title, og:image, prix) et l'IA lit les caractéristiques ; ici, une
+   table par adresse. Fournisseurs fictifs, valeurs plausibles. Un lien inconnu donne « Lien sans aperçu », jamais une
+   copie inventée. Valeurs par NOM de caractéristique : un carnet ne reçoit que celles qu'il compare. */
+var WEB = {
+  // Embouteillage : 6 systèmes isobariques, 5 fournisseurs, 4 pays
+  'brasserie-shop-valais.ch/isobarique-2-becs': { nom: 'Isobarique 2 becs de table', fournisseur: 'Brasserie-Shop Valais', lieu: 'CH', photo: 'iso-2', prix: 3900, dispo: 'en_stock', facon: /isobar/, v: { 'Oxygène capté': 120, 'Cadence': 250, 'Becs': 2, 'CO₂ par bouteille': 9, 'Nettoyage': 'à la main', 'Encombrement au sol': 0.4, 'Formats': '33 cl' }, x: { suisse: true } },
+  'brassage-romandie.ch/iso-4-semi-auto': { nom: 'Isobarique 4 becs semi-auto', fournisseur: 'Revendeur Brassage Romandie', lieu: 'CH', photo: 'iso-4', prix: 8900, dispo: 'en_stock', facon: /isobar/, v: { 'Oxygène capté': 90, 'Cadence': 400, 'Becs': 4, 'CO₂ par bouteille': 8, 'Nettoyage': 'NEP', 'Encombrement au sol': 0.6, 'Formats': '33 et 50 cl' }, x: { suisse: true } },
+  'brassage-romandie.ch/iso-4-pre-evacuation': { nom: 'Isobarique 4 becs pré-évacuation', fournisseur: 'Revendeur Brassage Romandie', lieu: 'CH', photo: 'iso-4-pre', prix: 12300, dispo: 'sur_commande', facon: /isobar/, v: { 'Oxygène capté': 40, 'Cadence': 400, 'Becs': 4, 'CO₂ par bouteille': 7, 'Nettoyage': 'NEP', 'Encombrement au sol': 0.7, 'Formats': '33 et 50 cl' }, x: { suisse: true }, autres: [{ fournisseur: 'Abfülltechnik West', lieu: 'DE', prix: 11400, dispo: 'en_stock' }] },
+  'abfuelltechnik-west.de/iso4-vorevakuierung': { nom: 'Isobarique 4 becs pré-évacuation', fournisseur: 'Abfülltechnik West', lieu: 'DE', photo: 'iso-4-pre', prix: 11400, dispo: 'en_stock', facon: /isobar/, v: { 'Oxygène capté': 40, 'Cadence': 400, 'Becs': 4, 'CO₂ par bouteille': 7, 'Nettoyage': 'NEP', 'Encombrement au sol': 0.7, 'Formats': '33 et 50 cl' }, x: { suisse: false }, autres: [{ fournisseur: 'Revendeur Brassage Romandie', lieu: 'CH', prix: 12300, dispo: 'sur_commande' }] },
+  'imbottigliatrici-nord.it/monoblocco-6': { nom: 'Monobloc isobarique 6 becs', fournisseur: 'Imbottigliatrici Nord', lieu: 'IT', photo: 'monobloc', prix: 24800, dispo: 'delai_6_semaines', facon: /isobar|monobloc/, v: { 'Oxygène capté': 50, 'Cadence': 900, 'Becs': 6, 'CO₂ par bouteille': 6, 'Nettoyage': 'NEP automatique', 'Encombrement au sol': 1.6, 'Formats': '33, 50 et 75 cl' }, x: { suisse: false } },
+  'brew-equip-lyon.fr/isobare-4-compact': { nom: 'Isobarique 4 becs compact', fournisseur: 'Brew Equip Lyon', lieu: 'FR', photo: 'iso-4', prix: 9600, dispo: 'delai_4_semaines', facon: /isobar/, v: { 'Oxygène capté': 70, 'Cadence': 350, 'Becs': 4, 'Nettoyage': 'NEP', 'Encombrement au sol': 0.5, 'Formats': '33 cl' }, x: { suisse: false } },
+  // Frigo de garde
+  'froid-riviera.ch/chambre-kit-2m3': { nom: 'Chambre froide en kit 2 m³', fournisseur: 'Froid Service Riviera', lieu: 'CH', photo: 'chambre', prix: 6900, dispo: 'en_stock', facon: /chambre/, v: { 'Volume utile': 2000, 'Fûts de 20 L': 30, 'Température ambiante max': 43, 'Consommation': 6.5, 'Bruit': 52 }, x: { porte: true } },
+  'celle-sud.it/cella-kit-2-5': { nom: 'Chambre froide en kit 2,5 m³', fournisseur: 'Celle Frigorifere Sud', lieu: 'IT', photo: 'chambre', prix: 5600, dispo: 'delai_4_semaines', facon: /chambre/, v: { 'Volume utile': 2500, 'Fûts de 20 L': 38, 'Température ambiante max': 38, 'Consommation': 7.8, 'Bruit': 55 }, x: { porte: false } },
+  'gastro-froid.ch/vitrine-700': { nom: 'Frigo vitrine pro 700 L', fournisseur: 'Gastro-Froid Lausanne', lieu: 'CH', photo: 'vitrine', prix: 2400, dispo: 'en_stock', facon: /vitrine/, v: { 'Volume utile': 700, 'Fûts de 20 L': 6, 'Température ambiante max': 32, 'Consommation': 3.1, 'Bruit': 48 }, x: { porte: true } },
+  // Ventilation
+  'inox-ventil.ch/hotte-120': { nom: 'Hotte inox 120 cm + extracteur', fournisseur: 'Inox Ventil', lieu: 'CH', photo: 'hotte', prix: 4200, dispo: 'en_stock', facon: /hotte/, v: { 'Débit': 1800, 'Bruit': 58, 'Consommation': 550, 'Pression disponible': 250, 'Capte la buée à la source': true } },
+  'lueftung-profi.de/haube-100': { nom: 'Hotte inox 100 cm + extracteur', fournisseur: 'Lüftung Profi', lieu: 'DE', photo: 'hotte', prix: 3100, dispo: 'delai_4_semaines', facon: /hotte/, v: { 'Débit': 1200, 'Bruit': 61, 'Consommation': 420, 'Pression disponible': 200, 'Capte la buée à la source': true } },
+  'ventil-express.ch/helicoide-mural': { nom: 'Extracteur mural hélicoïde', fournisseur: 'Ventil Express', lieu: 'CH', photo: 'extracteur', prix: 690, dispo: 'en_stock', facon: /mural/, v: { 'Débit': 900, 'Bruit': 49, 'Consommation': 120, 'Pression disponible': 60, 'Capte la buée à la source': false } },
+  // Évier
+  'inox-pro-fribourg.ch/evier-2-bacs': { nom: 'Évier inox 2 bacs à poser', fournisseur: 'Inox Pro Fribourg', lieu: 'CH', photo: 'evier', prix: 1450, dispo: 'en_stock', facon: /poser/, v: { 'Bacs': 2, 'Matière': 'inox 18/10', 'Profondeur de bac': 40, 'Douchette': true } },
+  'gastro-inox-discount.de/spuele-standfuss': { nom: 'Évier sur pieds 2 bacs', fournisseur: 'Gastro Inox Discount', lieu: 'DE', photo: 'evier', prix: 890, dispo: 'en_stock', facon: /pieds/, v: { 'Bacs': 2, 'Matière': 'inox 18/10', 'Profondeur de bac': 45, 'Douchette': false } },
+  'equip-brasserie-annecy.fr/plonge-1-bac': { nom: 'Évier sur pieds 1 grand bac', fournisseur: 'Équip Brasserie Annecy', lieu: 'FR', photo: 'evier', prix: 1190, dispo: 'sur_commande', facon: /pieds/, v: { 'Bacs': 1, 'Matière': 'inox 304', 'Profondeur de bac': 60, 'Douchette': true } }
+};
+// Liens que la maquette sait « lire » pour un carnet neuf : on rejoue les articles de la fixture de même catégorie.
+var POOL = function (cat) { var src = SRC.filter(function (c) { return c.categorie === cat && c.articles.length; })[0]; return src ? src.articles.filter(function (a) { return a.apercu.ok; }) : []; };
+
+/* ---- Statut : déduit, jamais saisi ---- */
+var STATUTS = { idee: ['idée', 'var(--att)', 1], recherche: ['recherche', 'var(--fin)', 2], compare: ['compare', 'var(--ia)', 3], choisi: ['choisi', 'var(--ok)', 4], abandonne: ['abandonné', 'var(--mut)', 0] }; // r3 · c5 : jetons du thème
+var choixValide = function (c) { var d = c.decisions.filter(function (d) { return d.statut === 'valide' && /produit/.test(d.sujet); }); return d[d.length - 1]; };
+var statutDe = function (c) {
+  if (choixValide(c)) return 'choisi';
+  if (c.articles.length >= 2) return 'compare';
+  if (c.facons.length || c.critere || c.articles.length) return 'recherche';
+  return 'idee';
+};
+var stHtml = function (c) {
+  var s = STATUTS[statutDe(c)], dots = '';
+  for (var i = 1; i <= 4; i++) dots += '<i class="' + (i <= s[2] ? 'f' : '') + '"></i>';
+  return '<span class="da-st" style="--st:' + s[1] + '"><span class="da-dots">' + dots + '</span>' + s[0] + '</span>';
+};
+var veilleDe = function (c) {
+  var on = c.articles.filter(function (a) { return a.surveiller; });
+  var al = c.articles.filter(function (a) { return a.alerte && !a.alerte.lue; })[0];
+  return { n: on.length, al: al };
+};
+var resumeDe = function (c) {
+  var d = choixValide(c);
+  if (d) { var a = art(c, d.choix); return { k: 'choisi', v: a.nom + ' · ' + a.fournisseur + ' (' + a.lieu + ')', w: d.pourquoi, le: d.le }; }
+  var last = c.notes.filter(function (n) { return n.par === 'brasseur'; }).pop();
+  // r3 · c5 : tant que deux façons restent ouvertes, la suite est de trancher entre elles (pas de coller des liens).
+  var ouv = c.facons.filter(function (f) { return f.etat === 'ouverte'; }), retenue = c.facons.some(function (f) { return f.etat === 'retenue'; });
+  if (ouv.length >= 2 && !retenue) { var nms = ouv.map(function (f) { return f.nom.split(' (')[0]; }); return { k: 'prochaine', v: 'trancher entre ' + nms.slice(0, -1).join(', ') + ' et ' + nms[nms.length - 1], w: c.critere ? 'le critère peut décider' : 'dites ce qui compte, en une phrase' }; }
+  if (statutDe(c) === 'compare') return { k: 'prochaine', v: c.articles.length + ' articles à comparer', w: last ? last.texte : '' };
+  if (statutDe(c) === 'recherche') return { k: 'prochaine', v: 'coller des liens d\'articles', w: c.facons.length ? c.facons.map(function (f) { return f.nom.split(' (')[0] + (f.etat === 'ecartee' ? ' écartée' : f.etat === 'retenue' ? ' retenue' : ''); }).join(' · ') : '' };
+  return { k: 'idee', v: last ? last.texte : c.titre, w: '' };
+};
+
+/* ---- Photos d'aperçu : dessins d'exemple (l'app montrera og:image) ---- */
+var PH = function (kind) {
+  var bot = function (x, y) { return '<rect x="' + x + '" y="' + y + '" width="7" height="20" rx="2" fill="#6a4a2a"/><rect x="' + (x + 2) + '" y="' + (y - 6) + '" width="3" height="7" fill="#6a4a2a"/>'; };
+  var g = '', bg = '#dfe6ec';
+  var becs = { 'bouteille-manuelle': 1, 'iso-2': 2, 'iso-4': 4, 'iso-4-pre': 4, monobloc: 6 }[kind];
+  if (becs) {
+    var w = kind === 'monobloc' ? 70 : 20 + becs * 11;
+    var x0 = 50 - w / 2;
+    g += '<rect x="' + x0 + '" y="14" width="' + w + '" height="22" rx="3" fill="#9aa7b2"/>';
+    if (kind === 'iso-4-pre') g += '<circle cx="' + (x0 + w - 6) + '" cy="20" r="4" fill="#2f7d6b"/>';
+    for (var i = 0; i < becs; i++) { var bx = x0 + 6 + i * ((w - 12) / Math.max(1, becs - 1 || 1)) - (becs === 1 ? -((w - 12) / 2) : 0); g += '<rect x="' + (bx - 1) + '" y="36" width="3" height="8" fill="#55616b"/>' + bot(bx - 4, 50); }
+    g += '<rect x="' + (x0 - 4) + '" y="72" width="' + (w + 8) + '" height="5" rx="2" fill="#55616b"/>';
+  } else if (kind === 'chambre') { bg = '#e2ecf3'; g = '<rect x="18" y="14" width="64" height="62" rx="3" fill="#c9d6df" stroke="#7e93a3" stroke-width="2"/><rect x="40" y="26" width="22" height="46" rx="2" fill="#f4f8fb" stroke="#7e93a3" stroke-width="2"/><rect x="56" y="46" width="3" height="8" fill="#55616b"/><path d="M24 20h10M24 25h10" stroke="#7e93a3" stroke-width="2"/>'; }
+  else if (kind === 'vitrine' || kind === 'vitrine-occ') { bg = kind === 'vitrine-occ' ? '#ece6dc' : '#e2ecf3'; g = '<rect x="32" y="8" width="36" height="72" rx="4" fill="#55616b"/><rect x="36" y="12" width="28" height="56" rx="2" fill="#bfe0ef"/>' + bot(40, 22) + bot(52, 22) + bot(40, 46) + bot(52, 46) + (kind === 'vitrine-occ' ? '<text x="70" y="86" font-size="11" fill="#7f5b10" font-weight="700">occ.</text>' : ''); }
+  else if (kind === 'hotte') { bg = '#e9e9e6'; g = '<path d="M14 52 30 26h40l16 26z" fill="#b8bec3" stroke="#6d757b" stroke-width="2"/><rect x="42" y="6" width="16" height="20" fill="#9aa1a7"/><path d="M30 64c6-6 6-10 0-14M50 66c6-6 6-10 0-14M70 64c6-6 6-10 0-14" stroke="#9aa1a7" stroke-width="2" fill="none"/>'; }
+  else if (kind === 'extracteur') { bg = '#e6ebe4'; g = '<rect x="20" y="14" width="60" height="60" rx="6" fill="#c7cfc3" stroke="#6b7a66" stroke-width="2"/><circle cx="50" cy="44" r="22" fill="#eef2ec" stroke="#6b7a66" stroke-width="2"/><path d="M50 44 50 26M50 44l16 9M50 44l-16 9" stroke="#4c6b2a" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="44" r="4" fill="#4c6b2a"/>'; }
+  else if (kind === 'evier') { bg = '#e6eaee'; g = '<rect x="10" y="28" width="80" height="12" rx="2" fill="#b7c0c8" stroke="#6d7880" stroke-width="2"/><rect x="18" y="40" width="28" height="20" rx="3" fill="#dfe5ea" stroke="#6d7880" stroke-width="2"/><rect x="54" y="40" width="28" height="20" rx="3" fill="#dfe5ea" stroke="#6d7880" stroke-width="2"/><path d="M50 28V12h12v7" stroke="#55616b" stroke-width="3" fill="none"/><path d="M16 60v20M84 60v20" stroke="#6d7880" stroke-width="3"/>'; }
+  else if (kind === 'photo') { bg = '#d9d2c6'; g = '<rect x="16" y="20" width="68" height="50" rx="4" fill="#efe9de" stroke="#8a7a60" stroke-width="2"/><path d="M24 32h30M24 40h44M24 48h36M24 56h20" stroke="#8a7a60" stroke-width="3"/>'; }
+  else { bg = '#ececec'; g = '<path d="M38 48a10 10 0 0 0 14 0l8-8a10 10 0 0 0-14-14l-3 3M62 40a10 10 0 0 0-14 0l-8 8a10 10 0 0 0 14 14l3-3" stroke="#999" stroke-width="4" fill="none" stroke-linecap="round"/>'; }
+  return '<svg class="ph" viewBox="0 0 100 88" preserveAspectRatio="xMidYMid meet" style="background:' + bg + '">' + g + '</svg>';
+};
+var DISPO = { en_stock: ['en stock', 'ok'], rupture: ['rupture', 'bad'], sur_commande: ['sur commande', 'att'], delai_6_semaines: ['6 semaines', 'att'], delai_4_semaines: ['4 semaines', 'att'] };
+var dsp = function (d) { var x = DISPO[d]; return x ? '<span class="da-dsp ' + x[1] + '">' + x[0] + '</span>' : ''; };
+var sw = function (a) { return '<button class="da-sw" role="switch" aria-checked="' + !!a.surveiller + '" data-act="veille" data-a="' + a.id + '" aria-label="Surveiller ' + esc(a.court) + '">' + ico('eye') + '<span class="tr"></span></button>'; };
+
+/* ---- État de la vue ---- */
+var S = { vue: 'liste', cid: null, sheet: null, dial: false, saisie: '', sug: null, rep: null, toast: null, chargement: false };
+var cur = function () { return byId(S.cid); };
+
+/* ============ LISTE (premier plan sans détails) ============ */
+function vListe() {
+  var h = '<header class="da-top"><div class="da-crumb">' + ico('boxes') + ' Stocks › Matériel</div>' +
+    '<div class="da-seg"><button data-act="avenir">À venir</button><button class="on">Carnets</button><button>Réalisés</button></div></header>';
+  h += '<div class="da-wrap"><div class="da-h1">Carnets</div><div class="da-sub">' + C.length + (C.length > 1 ? ' idées et besoins · ' : ' idée ou besoin · ') + 'le choix et son pourquoi d\'un coup d\'œil</div>';
+  // r2 · ra : le champ « Une idée, un besoin… » vit en bas (#ra-dock), au-dessus du clavier.
+  h += '<div class="da-hint">Une ligne suffit (ex. étiqueteuse), dans le champ en bas. L\'IA range ensuite ce que vous déposez.</div>';
+  if (!C.length) h += '<div class="da-k ra-vide" data-vide="1"><b>Aucun carnet encore.</b><div class="da-sub">Une idée, un besoin, en une ligne dans le champ en bas : « embouteillage », « frigo de garde », « évier ». L\'IA propose ensuite quoi comparer pour ce genre d\'objet.</div></div>';
+  else if (!VIDE) h += '<a class="ra-zero" href="?vide=1' + (SIMKB ? '&clavier=' + SIMKB : '') + '" data-zero="1">Démo : repartir d\'un carnet vide</a>';
+  var recent = function (c) { return [c.creeLe].concat(c.notes.map(function (n) { return n.le; }), c.decisions.map(function (d) { return d.le; }), c.extra.map(function (x) { return x.le; })).sort().pop(); };
+  // Une alerte de veille non lue d'abord, puis le carnet le plus récemment touché.
+  C.slice().sort(function (a, b) { return (veilleDe(b).al ? 1 : 0) - (veilleDe(a).al ? 1 : 0) || (recent(a) < recent(b) ? 1 : -1); }).forEach(function (c) {
+    var s = STATUTS[statutDe(c)], r = resumeDe(c), v = veilleDe(c);
+    var l2 = r.k === 'choisi' ? '<b>' + esc(r.v) + '</b> <em>— ' + esc(r.w) + '</em>' : r.k === 'prochaine' ? '<em>Ensuite :</em> ' + esc(r.v) + (r.w ? ' <em>· ' + esc(r.w) + '</em>' : '') : '<em>« ' + esc(r.v) + ' »</em>';
+    var th = c.articles.filter(function (a) { return a.apercu.ok; }).slice(0, 4).map(function (a) { return PH(a.apercu.photo); }).join('');
+    var meta = [c.facons.length ? c.facons.length + ' façons' : '', c.articles.length ? c.articles.length + ' articles' : '', c.decisions.length ? c.decisions.length + ' décisions' : ''].filter(Boolean).join(' · ') || 'rien de rangé encore';
+    var eye = v.al ? '<span class="da-eye new"><span class="pt"></span>' + esc(v.al.alerte.texte.split(';')[0]) + '</span>' : v.n ? '<span class="da-eye">' + ico('eye') + v.n + '</span>' : '';
+    h += '<button class="da-card" style="--st:' + s[1] + '" data-act="ouvrir" data-c="' + c.id + '"><div class="da-cl1"><b>' + esc(c.titre) + '</b></div><div class="da-cl0">' + stHtml(c) + '</div>' +
+      '<div class="da-cl2">' + l2 + '</div><div class="da-cl3">' + (th ? '<span class="da-thumbs">' + th + '</span>' : '') + '<span class="da-meta">' + meta + '</span>' + eye + '</div></button>';
+  });
+  h += '</div>';
+  return h;
+}
+
+/* ============ CARNET : le fil ============ */
+function filDe(c) {
+  var e = [];
+  c.notes.forEach(function (n) { e.push({ le: n.le, t: n.par === 'brasseur' ? 'note' : n.par === 'veille' ? 'veille' : 'ia', n: n }); });
+  c.articles.forEach(function (a) { if (!a._x) e.push({ le: a.le, t: 'lien', a: a }); });
+  c.decisions.forEach(function (d) { e.push({ le: d.le, t: 'dec', d: d }); });
+  c.extra.forEach(function (x) { e.push(x); });
+  e.forEach(function (x, i) { x.o = i; });
+  return e.sort(function (a, b) { return a.le < b.le ? 1 : a.le > b.le ? -1 : (x2(b) - x2(a)); });
+  function x2(x) { var r = { sug: 5, load: 6 }[x.t] || 0; return r * 1000 + x.o; }
+}
+function tagDe(c, n) { // ce que l'IA a tiré d'une note : façon, critère ou caractéristique
+  var t = n.texte.toLowerCase(), tags = [];
+  if (c.critere && t.indexOf(c.critere.texte.toLowerCase()) >= 0) tags.push('critère qui oriente');
+  c.facons.forEach(function (f) { if (t.indexOf(f.nom.toLowerCase().split(' ')[0].slice(0, 6)) >= 0) tags.push('façon ' + f.nom.split(' (')[0]); });
+  c.caracteristiques.forEach(function (k) { if (k.source === 'brasseur' && /porte/.test(t) && /porte/i.test(k.nom)) tags.push('caractéristique « ' + k.nom + ' »'); });
+  if (!tags.length && /attendre|avis|demander/.test(t)) tags.push('prochaine étape');
+  return tags;
+}
+function eArt(c, a) {
+  if (!a.apercu.ok) return '<div class="da-art rate"><svg class="ph" viewBox="0 0 100 88">' + PH('lien').replace(/^<svg[^>]*>|<\/svg>$/g, '') + '</svg><div class="i"><div class="nm">Lien sans aperçu</div><div class="fr">' + esc(a.lien.replace('https://', '')) + ' · ' + esc(a.apercu.raison) + '</div>' +
+    '<div class="da-row" style="margin-top:6px;flex-wrap:wrap"><button class="da-b" data-act="completer" data-a="' + a.id + '">' + ico('pen') + 'Compléter</button><button class="da-b ia" data-act="relire" data-a="' + a.id + '">' + ico('spark') + 'Redonner à l\'IA</button></div></div></div>';
+  var ch = choixValide(c), f = a.facon && facon(c, a.facon);
+  return '<div class="da-art' + (ch && ch.choix === a.id ? ' choisi' : '') + '" data-act="article" data-a="' + a.id + '" role="button">' + PH(a.apercu.photo) + '<div class="i"><div class="nm">' + esc(a.nom) + '</div><div class="fr">' + esc(a.fournisseur) + ' · ' + esc(a.lieu) + (f ? ' · ' + esc(f.nom.split(' (')[0]) : '') + ' <span class="da-ex">exemple</span></div>' +
+    '<div class="px"><span class="ra-px">' + chf(a.prix) + '</span> ' + (baisse(a) ? '<span class="da-dn">−' + nb(baisse(a).d) + '</span> ' : '') + dsp(a.dispo) + sw(a) + '</div></div></div>';
+}
+function vCarnet() {
+  var c = cur(), r = resumeDe(c), v = veilleDe(c);
+  var h = '<header class="da-top" style="border:0;background:var(--zone)"><div class="da-crumb"><button class="da-back" data-act="liste">' + ico('left') + 'Carnets</button><span style="margin-left:auto">' + stHtml(c) + '</span></div></header>';
+  h += '<div class="da-ch"><h1>' + esc(c.titre) + '</h1>';
+  if (r.k === 'choisi') h += '<button class="da-choix" data-act="decisions"><div class="k">Choisi · ' + jour(r.le) + '</div><div class="v">' + esc(r.v) + '</div><div class="w"><b>Pourquoi :</b> ' + esc(r.w) + '</div></button>';
+  else h += '<button class="da-choix wait" data-act="decisions"><div class="k">' + (r.k === 'idee' ? 'Idée · ' + jour(c.creeLe) : 'Pas encore choisi') + '</div><div class="v">' + (r.k === 'idee' ? 'Déposez ce que vous trouvez : liens, photos, phrases' : 'Ensuite : ' + esc(r.v)) + '</div>' + (r.w ? '<div class="w">' + esc(r.w) + '</div>' : '') + '</button>';
+  if (c.critere) h += '<div class="da-crit">' + ico('target') + '<span>Critère qui oriente : <b>' + esc(c.critere.texte) + '</b></span></div>';
+  h += '</div>';
+  // Pastilles rangées par l'IA
+  var fac = c.facons.map(function (f) { return '<span class="da-fc ' + (f.etat === 'ecartee' ? 'out' : f.etat === 'ouverte' ? 'open' : '') + '">' + (f.etat === 'retenue' ? '✓ ' : '') + esc(f.nom.split(' (')[0]) + '</span>'; }).join('');
+  var act = c.caracteristiques.filter(function (k) { return !k.retiree && !k.propose; });
+  var nprop = c.caracteristiques.filter(function (k) { return k.propose && !k.retiree; }).length;
+  h += '<div class="da-rail" aria-label="Rangé par l\'IA">';
+  h += '<button class="da-pz" data-act="facons"><span class="t">' + ico('fork') + 'Façons</span>' + (fac ? '<span class="row">' + fac + '</span>' : '<span class="da-sub">aucune encore</span>') + '</button>';
+  h += '<button class="da-pz" data-act="articles"><span class="t">' + ico('link') + 'Articles</span><span class="da-row"><span class="n">' + c.articles.length + '</span><span class="da-thumbs">' + c.articles.filter(function (a) { return a.apercu.ok; }).slice(0, 3).map(function (a) { return PH(a.apercu.photo); }).join('') + '</span></span>' + (v.n ? '<span class="da-sub">' + ico('eye') + ' ' + v.n + ' surveillé' + (v.n > 1 ? 's' : '') + '</span>' : '') + '</button>';
+  h += '<button class="da-pz cmp" data-act="comparer"><span class="t">' + ico('bars') + 'Comparer</span><span class="n">' + (act.length || nprop) + '</span>' + (nprop ? '<span class="da-sub" style="color:var(--ia)">proposées par l\'IA ›</span>' : '<span class="da-sub" style="color:var(--fin)">caractéristiques ›</span>') + '</button>';
+  h += '<button class="da-pz dec" data-act="decisions"><span class="t">' + ico('stamp') + 'Décisions</span><span class="n">' + c.decisions.length + '</span><span class="da-sub">et leur pourquoi ›</span></button>';
+  h += '</div>';
+  // Saisie : le geste roi
+  // r2 · ra : le champ « Écrire, ou coller un lien… » vit en bas (#ra-dock), au-dessus du clavier.
+  if (essais(c).length) h += '<div class="da-try"><span class="ra-demo">Démo</span><span class="da-ex">à jouer</span>' + essais(c).map(function (t) { return '<button data-act="essai" data-t="' + esc(t) + '">' + (/^https?:/.test(t) ? ico('link') + (/sans/.test(t) ? ' lien sans aperçu' : ' coller un lien d’article') : '« ' + esc(t.length > 30 ? t.slice(0, 28) + '…' : t) + ' »') + '</button>'; }).join('') + '</div>';
+  // Fil
+  h += '<div class="da-fil">';
+  var last = '';
+  filDe(c).forEach(function (x) {
+    if (x.le !== last) { last = x.le; h += '<div class="da-day"><span>' + jourHtml(x.le) + '</span></div>'; }
+    h += '<div class="da-e">' + entree(c, x) + '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+function essais(c) { // phrases d'essai, tirées du scénario de la catégorie (exemple)
+  if (VIDE) return []; // r3 · c1 : de zéro, tout se joue par de vrais gestes
+  if (c.categorie === 'embouteillage' && !c.articles.length) return ['gravité 4 becs vu chez un collègue, pas mal', 'isobarique', 'il faut minimiser l\'oxygène', 'https://exemple.invalid/e5'];
+  if (c.categorie === 'evier') return ['inox 2 bacs, profond pour les fûts', 'https://exemple.invalid/ev1', 'il faut une douchette'];
+  return ['https://exemple.invalid/nouveau', 'https://exemple.invalid/sans-apercu', 'à voir avec le fournisseur'];
+}
+function entree(c, x) {
+  if (x.t === 'note') { var tg = x.tags || (x.n.tags && x.n.tags.length ? x.n.tags : tagDe(c, x.n)); return '<div class="da-note">' + esc(x.n.texte) + '</div>' + (tg.length ? '<div class="da-tag">' + ico('spark') + 'rangé : ' + tg.map(esc).join(', ') + '</div>' : ''); }
+  if (x.t === 'ia') return '<div class="da-ia"><b>IA</b> ' + esc(x.n.texte) + ' <span class="da-ex">exemple</span>' + (x.chips ? '<div class="da-chips" style="margin-top:7px">' + x.chips + '</div>' : '') + (x.carac && c.caracteristiques.some(function (k) { return k.propose; }) ? '<div class="da-row" style="margin-top:9px;flex-wrap:wrap;gap:6px"><button class="da-b p" data-act="toutgarder">' + ico('check') + 'Tout garder</button>' + (FACONS_IA[c.categorie] && !c.facons.length ? '<button class="da-b ia" data-act="iafacons">' + ico('spark') + 'Chercher les façons</button>' : '') + '</div>' : x.carac && x.chips ? '<div class="da-sub" style="margin-top:6px">' + ico('check') + ' gardées : un tableau chacune dans Comparer</div>' : '') + '</div>';
+  if (x.t === 'veille') return '<div class="da-vl">' + ico('eye') + '<div><b>Veille</b> · ' + esc(x.n.texte) + ' <span class="da-ex">exemple</span></div></div>';
+  if (x.t === 'lien') return eArt(c, x.a);
+  if (x.t === 'photo') return '<div class="da-art">' + PH('photo') + '<div class="i"><div class="nm">Photo · plaque signalétique</div><div class="fr">IA : lu « 230 V · 1,1 kW · 1 200 m³/h » → valeurs proposées</div><div class="px"><span class="da-ex">exemple</span></div></div></div>';
+  if (x.t === 'voix') return '<div class="da-note">' + ico('mic') + ' <i>0:12</i> — ' + esc(x.texte) + '</div><div class="da-tag">' + ico('spark') + 'transcrit <span class="da-ex">exemple</span></div>';
+  if (x.t === 'load') return '<div class="da-load"><i></i><div class="i" style="flex:1"><div class="nm">Lecture du lien…</div><div class="da-sub">' + esc(x.url) + '</div></div></div>';
+  if (x.t === 'sug') return '<div class="da-sug" data-s="' + (x.k || '') + '"><p>' + ico('spark') + ' ' + x.html + ' <span class="da-ex">exemple</span></p><div class="bt">' + x.bt + '</div></div>';
+  if (x.t === 'dec') {
+    var d = x.d, lab = d.sujet === 'façon' ? (facon(c, d.choix) || {}).nom : (art(c, d.choix) || {}).nom;
+    return '<button class="da-dc' + (d.statut === 'remplacee' ? ' rem' : '') + '" data-act="decisions" style="width:100%"><div class="k">' + ico('stamp') + ' Décision · ' + esc(d.sujet) + (d.statut === 'remplacee' ? ' · remplacée' : '') + '</div><div class="v">' + esc(lab) + '</div><div class="w">' + esc(d.pourquoi) + '</div>' + (d.sujet === 'façon' && !d.ecartee && d.ecartes && d.ecartes.length ? '<div class="da-sub">✕ ' + d.ecartes.map(function (e) { return esc(((facon(c, e.ref) || {}).nom || '').split(' (')[0]); }).join(', ') + ' écartée' + (d.ecartes.length > 1 ? 's' : '') + '</div>' : '') + '</button>';
+  }
+  return '';
+}
+
+/* ============ COMPARER : un tableau par caractéristique ============ */
+var valNum = function (k, v) { if (v == null || v === '?') return null; if (k.sens === 'oui') return v ? 1 : 0; return typeof v === 'number' ? v : null; };
+function domine(c, act) { // dominance de Pareto, générique : moins bien qu'un autre partout sauf sur une caractéristique
+  var num = act.filter(function (k) { return k.sens === 'plus' || k.sens === 'moins' || k.sens === 'oui'; }), out = [];
+  var arts = c.articles.filter(function (a) { return a.apercu.ok; });
+  var ck = c.critere && c.caracteristiques.filter(function (k) { return k.id === c.critere.caracteristique; })[0], critNom = ck ? ck.nom : null;
+  arts.forEach(function (a) {
+    arts.forEach(function (b) {
+      if (a === b || out.some(function (o) { return o.a === a; })) return;
+      var pire = [], mieux = [], egal = [], inc = [];
+      num.forEach(function (k) {
+        var va = valNum(k, a.valeurs[k.id]), vb = valNum(k, b.valeurs[k.id]), nm = lc1(k.nom); if (va == null || vb == null) { inc.push(nm); return; }
+        var bon = k.sens === 'moins' ? va < vb : va > vb, mal = k.sens === 'moins' ? va > vb : va < vb;
+        (bon ? mieux : mal ? pire : egal).push(nm);
+      });
+      var txt = act.filter(function (k) { return num.indexOf(k) < 0; }).map(function (k) { return lc1(k.nom); });
+      // « partout » seulement si toutes les caractéristiques actives sont connues et départagent.
+      var partout = !egal.length && !inc.length && !txt.length;
+      if (mieux.length === 1 && pire.length >= 3 && !(critNom && mieux[0] === lc1(critNom))) out.push({ a: a, b: b, sauf: mieux[0], pire: pire, egal: egal, inc: inc, txt: txt, partout: partout });
+    });
+  });
+  return out.slice(0, 2);
+}
+function vComparer() {
+  var c = cur(), ch = choixValide(c), OUT = ecartesDe(c);
+  var tous = c.caracteristiques.filter(function (k) { return !k.propose; });
+  var act = tous.filter(function (k) { return !k.retiree; });
+  var crit = c.critere && c.critere.caracteristique;
+  act.sort(function (a, b) { return (b.id === S.kfocus) - (a.id === S.kfocus) || (b.id === crit) - (a.id === crit); });
+  var h = '<header class="da-top"><div class="da-crumb"><button class="da-back" data-act="carnet">' + ico('left') + esc(c.titre) + '</button></div></header>';
+  var nr = c.articles.filter(function (a) { return !a.apercu.ok; }).length, no = c.articles.filter(function (a) { return OUT[a.id]; }).length;
+  h += '<div class="da-vh"><h1>Comparer</h1><div class="da-sub">' + c.articles.length + ' articles' + (nr ? ' (dont ' + nr + ' sans aperçu)' : '') + (no ? ', ' + no + ' écarté' + (no > 1 ? 's' : '') + ' en gris' : '') + ' · un tableau par caractéristique, meilleur en tête · barre longue = meilleur · toucher une ligne pour choisir</div></div>';
+  h += '<div class="da-wrap">' + matrice(c, act, crit, ch, OUT);
+  var kp = c.caracteristiques.filter(function (k) { return k.propose; });
+  if (kp.length) h += '<div class="da-sug" data-s="carac" style="margin-bottom:14px"><p>' + ico('spark') + ' Pour « ' + esc(CAT_NOM[c.categorie] || c.categorie) + ' », je propose ' + kp.length + ' caractéristiques <span class="da-ex">exemple</span>. × retire celles qui ne comptent pas.</p><div class="da-chips" style="margin-bottom:10px">' + chipsCarac(c, true) + '</div><div class="bt"><button class="da-b p" data-act="toutgarder">' + ico('check') + 'Tout garder</button></div></div>';
+  if (!act.length && !kp.length) h += '<div class="da-k">Aucune caractéristique : « Ajouter » ou « Proposer ».</div>';
+  h += '<div class="da-lab" style="margin-top:0">Caractéristiques · toucher pour classer · × pour retirer</div><div class="da-chips sm"><button class="da-chip" data-act="ajcarac" style="padding-right:11px">' + ico('plus') + 'Ajouter</button><button class="da-chip" data-act="iacarac" style="padding-right:11px;border-color:var(--ia);color:var(--ia)">' + ico('spark') + 'Proposer</button>';
+  tous.forEach(function (k) { h += '<span class="da-chip' + (k.retiree ? ' off' : '') + (k.id === crit ? ' crit' : '') + (k.id === S.kfocus ? ' foc' : '') + '"><button type="button" class="ra-kf" data-act="kfocus" data-k="' + k.id + '" aria-pressed="' + (k.id === S.kfocus) + '">' + (k.id === crit ? ico('target') : '') + esc(k.nom) + '</button>' + (k.source === 'brasseur' ? '<span class="da-mine">' + ico('pen') + 'à vous</span>' : '') + '<button class="x" data-act="carac" data-k="' + k.id + '" aria-label="' + (k.retiree ? 'Remettre ' : 'Retirer ') + esc(k.nom) + '">' + ico(k.retiree ? 'plus' : 'x') + '</button></span>'; });
+  h += '</div>';
+  // r2 · ra : « Ajouter » ouvre le champ en bas (#ra-dock), au-dessus du clavier.
+  h += '<div style="height:14px"></div><div class="ra-tables">';
+  var dom = domine(c, act).map(function (o) { return '<div class="da-par">⚠ <b>' + esc(nomA(c, o.a)) + '</b> : moins bien que ' + esc(nomA(c, o.b)) + (o.partout ? ' partout, sauf ' + esc(o.sauf) + '.' : ' sur ' + esc(o.pire.join(', ')) + ' ; mieux seulement sur ' + esc(o.sauf) + '.' + (o.egal.length ? ' Égal : ' + esc(o.egal.join(', ')) + '.' : '') + (o.inc.length ? ' ' + o.inc.length + ' inconnue' + (o.inc.length > 1 ? 's' : '') + ' (' + esc(o.inc.join(', ')) + ').' : '') + (o.txt.length ? ' À lire : ' + esc(o.txt.join(', ')) + '.' : '')) + '</div>'; }).join('');
+  var ligne = function (r, txt, w, cls) {
+    var out = OUT[r.a.id];
+    return '<div class="da-r ra-r' + cls + (out ? ' out' : '') + (ch && ch.choix === r.a.id ? ' ch' : '') + '" data-act="article" data-a="' + r.a.id + '" role="button"><div class="ra-rl"><span class="n">' + esc(nomA(c, r.a)) + (out ? '<span class="ra-out">✕ écarté</span>' : '') + '</span><span class="v">' + txt + '</span></div>' + (w == null ? '' : '<span class="b"><i style="width:' + w + '%"></i></span>') + '</div>';
+  };
+  act.forEach(function (k, ki) {
+    if (ki === 1 || (ki === 0 && k.id !== crit)) { h += dom; dom = ''; }
+    var rows = c.articles.map(function (a) { return { a: a, v: a.valeurs[k.id] }; });
+    var rt = function (r) { return '<div class="da-r ra-r rt unk"><div class="ra-rl"><span class="n">Lien sans aperçu</span><span class="v">?</span></div><button class="da-mini" style="margin-top:6px" data-act="completer" data-a="' + r.a.id + '">Compléter</button></div>'; };
+    var isNum = k.sens === 'plus' || k.sens === 'moins' || k.sens === 'oui';
+    h += '<div class="da-k' + (k.id === crit ? ' crit' : '') + (k.id === S.kfocus ? ' foc' : '') + '" data-table="' + esc(k.nom) + '"><div class="da-kh"><b>' + esc(k.nom) + '</b><small>' + (k.unite ? esc(k.unite) + ' · ' : '') + (k.sens === 'moins' ? 'moins = mieux' : k.sens === 'plus' ? 'plus = mieux' : k.sens === 'oui' ? 'oui / non' : 'à lire') + '</small>' + (k.id === crit ? '<span class="cr">critère</span>' : '') + (k.id === S.kfocus && k.id !== crit ? '<span class="cr" style="color:var(--fin)">classé par</span>' : '') + '</div>';
+    if (isNum) {
+      rows.sort(function (x, y) { var fx = !!faconEcartee(c, x.a), fy = !!faconEcartee(c, y.a); if (fx !== fy) return fx ? 1 : -1; if (!x.a.apercu.ok) return 1; if (!y.a.apercu.ok) return -1; var a = valNum(k, x.v), b = valNum(k, y.v); if (a == null) return 1; if (b == null) return -1; return k.sens === 'moins' ? a - b : b - a; });
+      var vals = rows.map(function (r) { return valNum(k, r.v); }).filter(function (v) { return v != null; });
+      var mx = Math.max.apply(null, vals.concat([1])), mnv = Math.min.apply(null, vals.length ? vals : [1]), best = rows[0] && !faconEcartee(c, rows[0].a) ? valNum(k, rows[0].v) : null;
+      rows.forEach(function (r) {
+        if (!r.a.apercu.ok) { h += rt(r); return; }
+        var v = valNum(k, r.v), unk = v == null, isB = !unk && v === best;
+        var w = unk ? 0 : k.sens === 'oui' ? (v ? 100 : 6) : k.sens === 'moins' ? Math.max(4, (v > 0 ? mnv / v : 1) * 100) : Math.max(4, v / mx * 100);
+        h += ligne(r, unk ? '?' : k.sens === 'oui' ? (v ? 'oui' : 'non') : nb(v), w, (isB ? ' best' : '') + (unk ? ' unk' : ''));
+      });
+      if (rows.some(function (r) { return valNum(k, r.v) == null; })) h += '<button class="da-b ia" style="margin-top:8px;min-height:40px" data-act="iaval">' + ico('spark') + 'Chercher les « ? »</button>';
+    } else {
+      rows.sort(function (x, y) { return !!faconEcartee(c, x.a) - !!faconEcartee(c, y.a); }); rows.forEach(function (r) { if (!r.a.apercu.ok) { h += rt(r); return; } h += ligne(r, esc(r.v == null ? '?' : r.v), null, ' txt'); });
+    }
+    h += '</div>';
+  });
+  h += '</div><div class="da-sub" style="margin-top:4px">Valeurs lues sur les liens par l\'IA <span class="da-ex">exemple</span> ; touchez une ligne pour la fiche, corriger ou « Choisir celui-ci ».</div></div>';
+  return h;
+}
+// Paysage : les articles côte à côte (5 visibles à 844 px), critère en tête, meilleur en vert, écartés en gris.
+function matrice(c, act, crit, ch, OUT) {
+  var ck = act.filter(function (k) { return k.id === crit; })[0];
+  var rang = function (a) { if (!ck) return 0; var v = valNum(ck, a.valeurs[ck.id]); return v == null ? 1e9 : (ck.sens === 'moins' ? v : -v); };
+  var grp = function (x) { return !x.apercu.ok ? 3 : OUT[x.id] ? 2 : (ch && ch.choix === x.id) ? 0 : 1; };
+  var arts = c.articles.slice().sort(function (a, b) { return grp(a) - grp(b) || rang(a) - rang(b); });
+  var h = '<div class="ra-mx" aria-label="Articles côte à côte"><table><thead><tr><th class="ra-mk">' + arts.length + ' articles</th>';
+  arts.forEach(function (a) { var o = OUT[a.id], isC = ch && ch.choix === a.id;
+    h += '<th class="' + (o ? 'out' : '') + (isC ? ' ch' : '') + '"' + (a.apercu.ok ? ' data-act="article" data-a="' + a.id + '"' : '') + '>' + PH(a.apercu.ok ? a.apercu.photo : 'lien') + esc(nomA(c, a)) + (isC ? ' <span style="color:var(--ok)">✓</span>' : '') + (o ? '<span class="ra-out" style="display:flex;margin:2px 0 0">✕ écarté</span>' : '') + '</th>'; });
+  h += '</tr></thead><tbody>';
+  act.forEach(function (k) {
+    var isNum = k.sens === 'plus' || k.sens === 'moins' || k.sens === 'oui';
+    var vals = arts.filter(function (a) { return a.apercu.ok; }).map(function (a) { return valNum(k, a.valeurs[k.id]); }).filter(function (v) { return v != null; });
+    var mx = Math.max.apply(null, vals.concat([1])), mnv = Math.min.apply(null, vals.length ? vals : [1]), best = k.sens === 'moins' ? mnv : mx;
+    h += '<tr class="' + (k.id === crit ? 'crit' : '') + '"><th class="ra-mk"><b>' + esc(k.nom) + '</b><small>' + (k.unite ? esc(k.unite) + ' · ' : '') + (k.sens === 'moins' ? 'moins = mieux' : k.sens === 'plus' ? 'plus = mieux' : k.sens === 'oui' ? 'oui / non' : 'à lire') + (k.id === crit ? ' · critère' : '') + '</small></th>';
+    arts.forEach(function (a) {
+      if (!a.apercu.ok) { h += '<td class="out"><span class="v">?</span></td>'; return; }
+      var raw = a.valeurs[k.id], o = OUT[a.id] ? ' out' : '';
+      if (!isNum) { h += '<td class="txt' + o + '"><span class="v">' + esc(raw == null ? '?' : raw) + '</span></td>'; return; }
+      var v = valNum(k, raw), unk = v == null, isB = !unk && v === best && vals.length > 1;
+      var w = unk ? 0 : k.sens === 'oui' ? (v ? 100 : 6) : k.sens === 'moins' ? Math.max(4, (v > 0 ? mnv / v : 1) * 100) : Math.max(4, v / mx * 100);
+      h += '<td class="' + (isB ? 'best' : '') + o + '"><span class="v">' + (unk ? '?' : k.sens === 'oui' ? (v ? 'oui' : 'non') : nb(v)) + '</span><span class="b"><i style="width:' + w + '%"></i></span></td>';
+    });
+    h += '</tr>';
+  });
+  return h + '</tbody></table></div>';
+}
+
+/* ============ DÉCISIONS : le pourquoi, daté ============ */
+function vDecisions() {
+  var c = cur();
+  var h = '<header class="da-top"><div class="da-crumb"><button class="da-back" data-act="carnet">' + ico('left') + esc(c.titre) + '</button></div></header>';
+  h += '<div class="da-vh"><h1>Pourquoi ?</h1><div class="da-sub">Chaque choix garde sa date, son pourquoi et ce qui a été écarté. Rien ne s\'efface.</div></div><div class="da-wrap">';
+  // r2 · ra : « Demander : pourquoi… » vit dans le champ en bas (#ra-dock).
+  h += '<div class="da-chips" style="margin-bottom:8px">' + ['Pourquoi ce fournisseur ?', 'Pourquoi cette façon ?', 'Qu\'est-ce que j\'ai écarté ?'].map(function (q) { return '<button class="da-chip" style="padding-right:11px" data-act="qq" data-t="' + esc(q) + '">' + esc(q) + '</button>'; }).join('') + '</div>';
+  if (S.rep) h += '<div class="da-q">' + S.rep + ' <span class="da-ex">exemple</span></div>';
+  if (!c.decisions.length) h += '<div class="da-k" style="margin-top:12px"><b>Aucune décision encore.</b><div class="da-sub">Rien ne presse : ' + esc(resumeDe(c).w || 'le carnet attend vos trouvailles') + '. Une décision se prend d\'un article (« Choisir celui-ci ») ou d\'une façon (Écarter / Retenir).</div></div>';
+  c.decisions.slice().reverse().forEach(function (d) {
+    var lab = d.sujet === 'façon' ? (facon(c, d.choix) || {}).nom : (function (a) { return a.nom + ' · ' + a.fournisseur + ' (' + a.lieu + ')'; })(art(c, d.choix));
+    var ref = function (id) { var a = art(c, id), f = facon(c, id); return a ? nomA(c, a) : f ? f.nom.split(' (')[0] : id; };
+    h += '<div class="da-dc' + (d.statut === 'remplacee' ? ' rem' : '') + '" style="margin-top:12px"><div class="k">' + jour(d.le) + ' · ' + esc(d.sujet) + (d.statut === 'remplacee' ? ' · remplacée par la suivante' : '') + '</div><div class="v" style="font-size:17px;margin:2px 0">' + esc(lab) + '</div><div class="w"><b>Pourquoi :</b> ' + esc(d.pourquoi) + '</div>';
+    if (d.ecartes && d.ecartes.length) h += '<div class="da-lab" style="margin-top:8px">Écartés</div>' + d.ecartes.map(function (e) { return '<div class="w" style="text-decoration:none">✕ <b>' + esc(ref(e.ref)) + '</b>' + (e.raison && e.raison !== d.pourquoi ? ' — ' + esc(e.raison) : '') + '</div>'; }).join('');
+    if (d.revoirSi) h += '<div class="w" style="margin-top:6px;color:var(--att);text-decoration:none">↻ À revoir si ' + esc(d.revoirSi) + '</div>';
+    h += '</div>';
+  });
+  return h + '</div>';
+}
+function faconsNommees(c, q) {
+  var ws = motsDe(q), tit = motsDe(c.titre), best = 0, r = [];
+  c.facons.forEach(function (f) {
+    var ts = motsDe(f.nom.split(' (')[0]).concat(motsDe((f.nom.match(/\((.*)\)/) || [])[1] || '')).filter(function (m) { return m.length >= 4 && !MOTS_FACON_VIDES.test(m) && !tit.some(function (w) { return proches(w, m); }); });
+    var n = ts.filter(function (m) { return ws.some(function (w) { return proches(w, m) || (w.length >= 4 && m.indexOf(w) === 0); }); }).length;
+    if (n > best) { best = n; r = [f]; } else if (n && n === best) r.push(f);
+  });
+  return r;
+}
+function repFacon(c, f) {
+  var d = decFacon(c, f), nm = esc(f.nom.split(' (')[0]);
+  if (f.etat === 'ecartee') { var ret = c.facons.filter(function (x) { return x.etat === 'retenue'; })[0]; return (d ? 'Le ' + jour(d.le) + ', v' : 'V') + 'ous avez <b>écarté ' + nm + '</b> : « ' + esc(f.pourquoi || (d && d.pourquoi) || '') + ' ».' + (ret ? ' Retenue : <b>' + esc(ret.nom.split(' (')[0]) + '</b>.' : ''); }
+  if (f.etat === 'retenue') { var ec = c.facons.filter(function (x) { return x.etat === 'ecartee'; }); return (d ? 'Le ' + jour(d.le) + ', v' : 'V') + 'ous avez <b>retenu ' + nm + '</b> : « ' + esc(f.pourquoi || (d && d.pourquoi) || '') + ' ».' + (ec.length ? ' Écartée : ' + ec.map(function (x) { return esc(x.nom.split(' (')[0]); }).join(', ') + '.' : ''); }
+  return '<b>' + nm + '</b> : pas encore tranchée. Retenez-la ou écartez-la dans « Façons », avec son pourquoi.';
+}
+function repondre(c, q) {
+  q = q.toLowerCase();
+  var fn = /fournisseur|revendeur|écart|ecart/.test(q) ? [] : faconsNommees(c, q);
+  if (fn.length) return fn.map(function (f) { return repFacon(c, f); }).join(' ');
+  var dp = c.decisions.filter(function (d) { return d.statut === 'valide' && /produit/.test(d.sujet); }).pop();
+  var df = c.decisions.filter(function (d) { return d.sujet === 'façon' && !d.ecartee && d.statut === 'valide'; }).pop() || c.decisions.filter(function (d) { return d.sujet === 'façon'; }).pop();
+  if (/fournisseur|revendeur/.test(q) && dp && dp.pourquoiFournisseur) { var a2 = art(c, dp.choix), jm = c.articles.filter(function (x) { return x !== a2 && x.nom === a2.nom; }); return 'Le ' + jour(dp.le) + ', <b>' + esc(a2.fournisseur) + ' (' + esc(a2.lieu) + ')</b> pour ' + esc(a2.nom) + ' : « ' + esc(dp.pourquoiFournisseur) + ' ».' + (jm.length && !jm.some(function (x) { return dp.pourquoiFournisseur.indexOf(x.fournisseur) >= 0; }) ? ' Même machine ailleurs : ' + jm.map(function (x) { return esc(x.fournisseur) + ' (' + esc(x.lieu) + ') ' + chf(x.prix); }).join(', ') + ', contre ' + chf(a2.prix) + ' ici.' : '') + ' Produit : « ' + esc(dp.pourquoi) + ' ».'; }
+  if (/écart|ecart/.test(q)) { var all = []; c.decisions.forEach(function (d) { (d.ecartes || []).forEach(function (e) { var a = art(c, e.ref), f = facon(c, e.ref); all.push('<b>' + esc(a ? nomA(c, a) : f ? f.nom : e.ref) + '</b> (' + esc(e.raison) + ', ' + jour(d.le) + ')'); }); }); c.facons.filter(function (f) { return f.etat === 'ecartee'; }).forEach(function (f) { if (!all.some(function (s) { return s.indexOf(f.nom) >= 0; })) all.push('<b>' + esc(f.nom) + '</b> (' + esc(f.pourquoi) + ')'); }); return all.length ? 'Écartés : ' + all.join(' ; ') + '.' : 'Rien d\'écarté pour l\'instant.'; }
+  if (/façon|facon|système|systeme|iso|pourquoi.*(type|genre)/.test(q) && df) { var f = facon(c, df.choix); return 'Le ' + jour(df.le) + ', vous avez retenu <b>' + esc(f.nom) + '</b> : « ' + esc(df.pourquoi) + ' ».' + (df.ecartes && df.ecartes.length ? ' Écarté : ' + df.ecartes.map(function (e) { return esc((facon(c, e.ref) || {}).nom) + (e.raison && e.raison !== df.pourquoi ? ' (' + esc(e.raison) + ')' : ''); }).join(', ') + '.' : '') + (df.statut === 'remplacee' ? ' Ce choix a été remplacé ensuite.' : ''); }
+  if (dp) { var a = art(c, dp.choix), al = c.notes.filter(function (n) { return n.par === 'veille'; }).pop(); return 'Le ' + jour(dp.le) + ', <b>' + esc(a.fournisseur) + ' (' + esc(a.lieu) + ')</b> : « ' + esc(dp.pourquoi) + ' ».' + ((dp.ecartes || []).filter(function (e) { return /fournisseur|SAV|étranger|Italie/.test(e.raison); }).map(function (e) { return ' Même produit ailleurs écarté : ' + esc(art(c, e.ref).fournisseur) + ' — ' + esc(e.raison) + '.'; }).join('')) + (al ? ' Veille du ' + jour(al.le) + ' : ' + esc(al.texte) : ''); }
+  return 'Pas encore de choix dans ce carnet. Dernière note : « ' + esc((c.notes[c.notes.length - 1] || {}).texte) + ' ».';
+}
+
+/* ============ Feuilles : article, façons, choisir ============ */
+function shArticle(c, a) {
+  var h = '<div class="da-big">' + PH(a.apercu.photo) + '</div><div style="font-size:19px;font-weight:800;margin-top:8px;line-height:1.15">' + esc(a.nom) + '</div>';
+  h += '<div class="da-sub">' + esc(a.fournisseur) + ' · ' + esc(a.lieu) + ' · ' + esc(a.lien.replace('https://', '')) + '</div>';
+  h += '<div class="da-row" style="margin-top:6px;font-size:20px;font-weight:800;flex-wrap:wrap">' + chf(a.prix) + ' ' + (baisse(a) ? '<span class="da-dn" style="font-size:13.5px">−' + nb(baisse(a).d) + ' CHF depuis le ' + jour(baisse(a).le) + '</span>' : '') + dsp(a.dispo) + '<span class="da-ex">exemple</span></div>';
+  h += '<div class="da-k" style="margin-top:10px;padding:8px 12px"><div class="da-row"><div style="flex:1"><b>Surveiller</b><div class="da-sub">Tous les 3 jours : stock ici et chez d\'autres fournisseurs, baisse de prix. Alerte discrète dans le carnet.</div></div>' + sw(a) + '</div>';
+  if (a.surveiller) {
+    var vs = a.veille || [], last = vs[vs.length - 1];
+    h += '<div class="da-sub" style="margin-top:6px">' + (last ? 'Dernier passage ' + jour(last.le) + ' · ' : '') + 'prochain ' + jour(plusJ(last ? last.le : AUJ, 3)) + '</div>';
+    if (!vs.length) h += '<div class="da-sub">Premier passage aujourd\'hui : le prix du jour sert de départ.</div>';
+    if (vs.length) {
+      h += courbe(vs);
+      (last.autres || []).forEach(function (o) { h += '<div class="da-vl" style="margin-top:6px">' + ico('eye') + '<div>Aussi chez <b>' + esc(o.fournisseur) + ' (' + esc(o.lieu) + ')</b> · ' + chf(o.prix) + ' · ' + (DISPO[o.dispo] || [o.dispo])[0] + '</div></div>'; });
+    }
+  }
+  h += '</div>';
+  h += '<button class="da-b ia" data-act="dispo" data-a="' + a.id + '" style="width:100%;min-height:46px">' + ico('spark') + (S.chargement ? 'Recherche en cours…' : 'Vérifier la disponibilité maintenant') + '</button>';
+  if (S.rep && S.sheet === 'article') h += '<div class="da-q">' + S.rep + ' <span class="da-ex">exemple</span></div>';
+  h += '<div class="da-lab">Caractéristiques lues</div><div class="da-kv">' + c.caracteristiques.filter(function (k) { return !k.retiree && !k.propose; }).map(function (k) { var v = a.valeurs[k.id]; return '<span>' + esc(k.nom) + '</span><b>' + (v == null ? '<span style="color:var(--mut)">? </span>' : k.sens === 'oui' ? (v ? 'oui' : 'non') : esc(typeof v === 'number' ? nb(v) : v) + ' ' + esc(k.unite)) + '</b>'; }).join('') + '</div>';
+  var ch = choixValide(c);
+  var fe = faconEcartee(c, a), dfe = fe && decFacon(c, fe);
+  if (fe && !(ch && ch.choix === a.id)) return h + '<div class="ra-garde" data-garde="facon" data-etat="alerte">' + ico('x') + '<div><b>Façon écartée' + (dfe ? ' le ' + jour(dfe.le) : '') + ' : ' + esc(fe.nom.split(' (')[0]) + '</b><div>« ' + esc(fe.pourquoi || 'sans pourquoi') + ' »</div><div class="da-sub">Pour choisir cet article, retenez d\'abord sa façon, avec son pourquoi.</div></div></div><button class="da-b" data-act="facons" style="width:100%;min-height:50px;margin-top:6px">' + ico('target') + 'Revoir les façons</button>';
+  h += ch && ch.choix === a.id ? '<div class="da-vl">' + ico('check') + '<div><b>Choisi le ' + jour(ch.le) + '</b> — ' + esc(ch.pourquoi) + '</div></div>' : '<button class="da-b p" data-act="choisir" data-a="' + a.id + '" style="width:100%;min-height:50px;margin-top:6px">' + ico('stamp') + 'Choisir celui-ci</button>';
+  return h;
+}
+// Mini-courbe du prix suivi : axe resserré sur l'écart réel (pas depuis zéro), valeur à chaque passage.
+function courbe(vs) {
+  var ps = vs.map(function (x) { return x.prix; }), mn = Math.min.apply(null, ps), mx = Math.max.apply(null, ps), pad = (mx - mn) * 0.35 || mx * 0.02;
+  var lo = mn - pad, hi = mx + pad, W = 300, H = 64, X = function (i) { return vs.length < 2 ? W / 2 : 34 + i * (W - 68) / (vs.length - 1); }, Y = function (p) { return 16 + (hi - p) / (hi - lo) * (H - 34); };
+  var pts = vs.map(function (x, i) { return X(i).toFixed(1) + ',' + Y(x.prix).toFixed(1); }).join(' ');
+  var g = '<polyline points="' + pts + '" fill="none" stroke="var(--ok)" stroke-width="2.5" stroke-linejoin="round"/>';
+  vs.forEach(function (x, i) { var y = Y(x.prix); g += '<circle cx="' + X(i) + '" cy="' + y + '" r="4" fill="var(--ok)"/><text x="' + X(i) + '" y="' + (y - 7) + '" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">' + nb(x.prix) + '</text><text x="' + X(i) + '" y="' + (H - 2) + '" text-anchor="middle" font-size="11.5" fill="var(--mut)">' + jour(x.le) + '</text>'; });
+  return '<svg class="da-spark" viewBox="0 0 ' + W + ' ' + H + '" aria-label="Prix suivi par la veille">' + g + '</svg>';
+}
+function shFacons(c) {
+  var h = '<div style="font-size:19px;font-weight:800">Façons de faire</div><div class="da-sub">Tirées de vos notes. Retenir ou écarter garde le pourquoi.</div>';
+  if (c.critere) h += '<div class="da-crit">' + ico('target') + '<span>Critère : <b>' + esc(c.critere.texte) + '</b></span></div>';
+  h += '<form class="da-comp" data-form="facon" style="margin:10px 0 4px">' + ico('plus') + '<input id="da-nf" placeholder="Ajouter une façon" autocomplete="off" enterkeyhint="done"><button class="da-go" aria-label="Ajouter la façon">' + ico('check') + '</button></form>';
+  if (!c.facons.length) h += '<div class="da-k" style="margin-top:10px">Aucune façon encore. Écrivez par exemple « chambre froide » ou « gravité » dans le fil : l\'IA la range ici.</div>';
+  c.facons.forEach(function (f) {
+    var n = c.articles.filter(function (a) { return a.facon === f.id; }).length;
+    h += '<div class="da-k" style="margin-top:10px' + (f.etat === 'ecartee' ? ';opacity:.8' : '') + '"><div class="da-row"><b style="font-size:16.5px;flex:1' + (f.etat === 'ecartee' ? ';text-decoration:line-through' : '') + '">' + esc(f.nom) + '</b><span class="da-fc ' + (f.etat === 'ecartee' ? 'out' : f.etat === 'ouverte' ? 'open' : '') + '" style="text-decoration:none">' + { retenue: 'retenue', ecartee: 'écartée', ouverte: 'ouverte' }[f.etat] + '</span></div>' +
+      (f.pourquoi ? '<div class="w" style="margin-top:3px"><b>Pourquoi :</b> ' + esc(f.pourquoi) + '</div>' : '') + (f.note ? '<div class="da-sub">« ' + esc(f.note) + ' »</div>' : '') + '<div class="da-sub">' + n + ' article' + (n > 1 ? 's' : '') + '</div>' +
+      '<div class="da-row" style="margin-top:8px">' + (f.etat !== 'retenue' ? '<button class="da-b" data-act="fetat" data-f="' + f.id + '" data-e="retenue">' + ico('check') + 'Retenir</button>' : '') + (f.etat !== 'ecartee' ? '<button class="da-b" data-act="fetat" data-f="' + f.id + '" data-e="ecartee">' + ico('x') + 'Écarter</button>' : '') + '</div></div>';
+  });
+  return h;
+}
+function raisonProposee(c, x, a) {
+  var crit = c.critere && c.critere.caracteristique;
+  var ks = c.caracteristiques.filter(function (k) { return !k.retiree && !k.propose && (k.sens === 'plus' || k.sens === 'moins'); });
+  ks.sort(function (p, q) { return (q.id === crit) - (p.id === crit); });
+  for (var i = 0; i < ks.length; i++) { var k = ks[i], vx = valNum(k, x.valeurs[k.id]), va = valNum(k, a.valeurs[k.id]); if (vx == null || va == null) continue; if (k.sens === 'moins' ? vx > va : vx < va) return lc1(k.nom) + (k.unite ? ' ' : ' : ') + nb(vx) + ' contre ' + nb(va) + (k.unite ? ' ' + k.unite : ''); }
+  if (x.nom === a.nom) return 'même machine, fournisseur en ' + x.lieu + (a.lieu === 'CH' && x.lieu !== 'CH' ? ' (SAV hors de Suisse)' : '');
+  return '';
+}
+// r3 · c2 : pourquoi CE fournisseur — seulement des arguments en sa faveur, lus dans ses données et vos notes.
+var MOTS_VIDES = /^(revendeur|brassage|brasserie|shop|equip|équip|froid|inox|gastro|service|profi|express|discount|nord|sud|west|lyon)$/i;
+function propsFournisseur(c, a, jum) {
+  var r = [];
+  if (a.lieu === 'CH') r.push('SAV et pièces en Suisse');
+  if (jum && a.prix != null && jum.prix != null && a.prix < jum.prix) r.push('même machine, moins chère qu\'en ' + jum.lieu);
+  if (a.dispo === 'en_stock') r.push('en stock chez eux');
+  // r3 · c3 : « ventil » (Inox Ventil) citait « ventilation salle de brassage » : un mot du titre ne nomme pas un fournisseur.
+  var tit = motsDe(c.titre), ms = motsDe(a.fournisseur).filter(function (m) { return m.length >= 5 && !MOTS_VIDES.test(m) && !tit.some(function (w) { return w.indexOf(m) === 0 || m.indexOf(w) === 0; }); });
+  c.notes.forEach(function (n) { if (n.par === 'veille' || sansAcc(n.texte).trim() === sansAcc(c.titre).trim()) return; n.texte.split(/[,:;.]/).forEach(function (cl) { cl = cl.trim(); if (cl && motsDe(cl).some(function (w) { return ms.some(function (m) { return proches(w, m); }); }) && r.length < 5) r.push('vos notes : « ' + cl + ' »'); }); });
+  return r;
+}
+// r3 · c3 : « le plus de fûts », « plus gros débit », « moins cher »… relus contre les tableaux du carnet.
+var SYN_K = [[/\bcher|prix|budget/, /^prix/], [/silenc|bruit/, /^bruit/], [/\bo2\b|oxyg/, /oxyg/], [/conso/, /^consommation/]];
+// r3 · c4 : un superlatif se rapporte à la caractéristique nommée le plus près de lui (« oxygène capté le plus bas, même à 30
+// bouteilles par heure » parle de l'oxygène, pas du CO2 par bouteille). Avant : la 1re caractéristique nommée, où qu'elle soit.
+function posMention(k, q, ws) {
+  var kn = sansAcc(k.nom), i, m;
+  for (i = 0; i < SYN_K.length; i++) if (SYN_K[i][1].test(kn)) { m = SYN_K[i][0].exec(q); if (m) return m.index; }
+  var best = -1;
+  motsDe(k.nom).forEach(function (mk) { if (mk.length < 4 || /^(par|pour)$/.test(mk)) return; ws.forEach(function (w) { if (w.length >= 4 && (w.indexOf(mk.slice(0, 5)) === 0 || mk.indexOf(w) === 0)) { var j = q.indexOf(w); if (j >= 0 && (best < 0 || j < best)) best = j; } }); });
+  return best;
+}
+function contredit(c, a, t) {
+  var q = sansAcc(t), ws = motsDe(t), out = null;
+  var ks = c.caracteristiques.filter(function (k) { return !k.retiree && !k.propose && (k.sens === 'plus' || k.sens === 'moins'); });
+  var si = q.search(/moins cher|meilleur marche|le moins|la moins|le plus|la plus|plus (bas|petit|faible|silencieux|econome|de |d.|gros|grand|haut|fort|eleve|cher)|moins (de |d.)|silencieux|max|meilleur/), proche = null;
+  if (si >= 0) ks.forEach(function (k) { var p = posMention(k, q, ws); if (p >= 0 && (!proche || Math.abs(p - si) < proche.d)) proche = { k: k, d: Math.abs(p - si) }; });
+  ks.forEach(function (k) {
+    if (out) return;
+    if (proche && k !== proche.k) return;
+    var kn = sansAcc(k.nom), parle = SYN_K.some(function (p) { return p[0].test(q) && p[1].test(kn); }) || motsDe(k.nom).some(function (m) { return m.length >= 4 && !/^(par|pour)$/.test(m) && ws.some(function (w) { return w.length >= 4 && (w.indexOf(m.slice(0, 5)) === 0 || m.indexOf(w) === 0); }); });
+    if (!parle) return;
+    var bas = /moins cher|meilleur marche|le moins|la moins|plus (bas|petit|faible|silencieux|econome)|moins (de |d.)|silencieux/.test(q), haut = !bas && /le plus|la plus|plus (de |d.|gros|grand|grande|haut|fort|eleve)|max|meilleur/.test(q);
+    if (/^prix/.test(kn) && /plus cher/.test(q)) { bas = false; haut = true; }
+    if (!bas && !haut) return;
+    var va = valNum(k, a.valeurs[k.id]); if (va == null) return;
+    var autres = c.articles.filter(function (x) { return x !== a && x.apercu.ok && valNum(k, x.valeurs[k.id]) != null; });
+    var mieux = autres.filter(function (x) { var v = valNum(k, x.valeurs[k.id]); return bas ? v < va : v > va; });
+    mieux.sort(function (x, y) { var e = !!faconEcartee(c, x) - !!faconEcartee(c, y); if (e) return e; var p = valNum(k, x.valeurs[k.id]), r = valNum(k, y.valeurs[k.id]); return bas ? p - r : r - p; });
+    if (mieux.length) out = { k: k, va: va, x: mieux[0], vx: valNum(k, mieux[0].valeurs[k.id]) };
+  });
+  return out;
+}
+var ditContredit = function (c, o) { return 'Vos tableaux disent l\'inverse : ' + o.k.nom + ' ' + nb(o.va) + (o.k.unite ? ' ' + o.k.unite : '') + ' ici, ' + nb(o.vx) + (o.k.unite ? ' ' + o.k.unite : '') + ' chez ' + nomA(c, o.x) + (faconEcartee(c, o.x) ? ' (façon écartée)' : '') + '. Corrigez le pourquoi, ou touchez une proposition.'; };
+function shChoisir(c, a) {
+  var feg = faconEcartee(c, a); if (feg) return '<div style="font-size:20px;font-weight:800;line-height:1.25">Choisir · ' + esc(a.nom) + '</div><div class="ra-garde" data-garde="facon" data-etat="alerte">' + ico('x') + '<div><b>Façon écartée : ' + esc(feg.nom.split(' (')[0]) + '</b><div>« ' + esc(feg.pourquoi || '') + ' »</div><div class="da-sub">Retenez d\'abord sa façon, avec son pourquoi.</div></div></div><button class="da-b" data-act="facons" style="width:100%;min-height:50px;margin-top:8px">' + ico('target') + 'Revoir les façons</button>';
+  var crit = c.critere && c.caracteristiques.filter(function (k) { return k.id === c.critere.caracteristique; })[0];
+  var autres = c.articles.filter(function (x) { return x !== a && x.apercu.ok; });
+  var props = [];
+  if (crit && (crit.sens === 'plus' || crit.sens === 'moins')) {
+    var va = valNum(crit, a.valeurs[crit.id]), vs = [a].concat(autres).map(function (x) { return valNum(crit, x.valeurs[crit.id]); }).filter(function (v) { return v != null; });
+    var bst = crit.sens === 'moins' ? Math.min.apply(null, vs) : Math.max.apply(null, vs);
+    if (va != null) props.crit = va === bst ? lc1(crit.nom) + (crit.sens === 'moins' ? ' le plus bas' : ' le plus haut') : (crit.unite ? lc1(crit.nom) + ' ' + nb(va) + ' ' + crit.unite : nb(va) + ' ' + lc1(crit.nom));
+    if (props.crit) props.push(props.crit);
+  }
+  c.caracteristiques.filter(function (k) { return !k.retiree && !k.propose && k.nom !== 'Prix' && (!crit || k.id !== crit.id) && (k.sens === 'plus' || k.sens === 'moins'); }).forEach(function (k) {
+    if (props.length >= 3) return;
+    var v = valNum(k, a.valeurs[k.id]), ws = autres.map(function (x) { return valNum(k, x.valeurs[k.id]); }).filter(function (w) { return w != null; });
+    if (v != null && ws.length && ws.every(function (w) { return k.sens === 'moins' ? v < w : v > w; })) props.push(lc1(k.nom) + (k.sens === 'moins' ? ' le plus bas' : ' le plus haut'));
+  });
+  if (a.alerte) props.push(a.alerte.texte.split(';')[0] + ' à la veille');
+  if (a.prix != null && a.prix === Math.min.apply(null, [a].concat(autres).map(function (x) { return x.prix == null ? Infinity : x.prix; }))) props.push('le moins cher');
+  var h = '<div style="font-size:20px;font-weight:800;line-height:1.25">Choisir · ' + esc(a.nom) + '</div><div class="da-sub">' + esc(a.fournisseur) + ' (' + esc(a.lieu) + ') · <span class="ra-mono">' + chf(a.prix) + '</span></div>';
+  h += '<div class="da-lab">Pourquoi, en une ligne</div><textarea class="da-in da-ta" id="da-pq" rows="1" placeholder="Écrivez, ou touchez une proposition" autocomplete="off" enterkeyhint="next"></textarea><div class="ra-need" id="da-pq-faux" data-etat="alerte" data-faux hidden></div><div class="ra-need" id="da-pq-err" data-etat="alerte" hidden>' + ico('x') + 'Il manque le pourquoi : écrivez-le, ou touchez une proposition.</div>';
+  h += '<div class="ra-props">' + props.map(function (p) { return '<button class="da-chip ra-prop" data-act="prop" data-in="da-pq" data-t="' + esc(p) + '">' + ico('plus') + esc(p) + '</button>'; }).join('') + '</div><div class="da-sub" style="margin-top:6px">' + ico('spark') + ' proposé d\'après le critère et vos tableaux <span class="da-ex">exemple</span> — un toucher l\'écrit dans le champ, un second l\'enlève.</div>';
+  var jum = autres.filter(function (x) { return x.nom === a.nom && x.fournisseur !== a.fournisseur; })[0];
+  h += '<div class="da-lab">Pourquoi ce fournisseur ? (facultatif)</div><textarea class="da-in da-ta" id="da-pf" rows="1" placeholder="ex. SAV en Suisse, délai, contact" autocomplete="off" enterkeyhint="done"></textarea>';
+  var fp = propsFournisseur(c, a, jum);
+  if (fp.length) h += '<div class="ra-props">' + fp.map(function (p) { return '<button class="da-chip ra-prop" data-act="prop" data-in="da-pf" data-t="' + esc(p) + '">' + ico('plus') + esc(p) + '</button>'; }).join('') + '</div>';
+  if (jum && a.prix != null && jum.prix != null && jum.prix !== a.prix) h += '<div class="da-sub" style="margin-top:6px">À savoir : même machine chez ' + esc(jum.fournisseur) + ' (' + esc(jum.lieu) + ') à <span class="ra-mono">' + chf(jum.prix) + '</span>, soit <span class="ra-mono">' + chf(Math.abs(a.prix - jum.prix)) + '</span> de ' + (jum.prix < a.prix ? 'moins' : 'plus') + ' qu\'ici.</div>';
+  h += '<div class="da-lab">Écartés, avec leur raison</div><div class="da-sub" style="margin:-2px 0 8px">Raison lue dans vos tableaux, gardée avec le choix. Toucher : l\'enlever. × : ne pas l\'écarter.</div>' + autres.map(function (x) {
+    var r = raisonProposee(c, x, a);
+    return '<div class="ra-ec" data-ec="' + x.id + '" data-r="' + esc(r) + '"><div class="ra-ecl"><b>✕ ' + esc(nomA(c, x)) + '</b><button class="x" data-act="untag" aria-label="Ne pas écarter ' + esc(nomA(c, x)) + '">' + ico('x') + '</button></div>' +
+      (r ? '<button class="ra-rz" data-act="raison" aria-pressed="true">' + ico('check') + '<span style="flex:1">' + esc(r) + '</span><span class="da-ex">exemple</span></button>' : '<div class="da-sub">aucune raison lisible dans les tableaux</div>') + '</div>';
+  }).join('');
+  h += '<div class="da-lab">À revoir si… (facultatif)</div><input class="da-in" id="da-rv" placeholder="' + esc(c.critere ? 'ex. le critère n\'est plus tenu' : 'ex. un prix baisse ailleurs') + '" autocomplete="off">';
+  h += '<div class="ra-keep"><button class="da-b p" data-act="valchoix" data-a="' + a.id + '" style="width:100%;min-height:50px">' + ico('check') + 'Garder ce choix</button></div>';
+  if (choixValide(c)) h += '<div class="da-sub" style="margin-top:6px">Le choix actuel restera lisible, barré, dans « Pourquoi ? ».</div>';
+  return h;
+}
+function shArticles(c) {
+  return '<div style="font-size:19px;font-weight:800">Articles · ' + c.articles.length + '</div><div class="da-sub" style="margin-bottom:8px">Tous les liens déposés, avec leur aperçu et leur veille.</div>' + c.articles.map(function (a) { return '<div style="margin-bottom:8px">' + eArt(c, a) + '</div>'; }).join('');
+}
+
+/* ============ + volant (b1r) ============ */
+function vDial() {
+  if (!S.dial) return '';
+  var ici = S.vue === 'liste'
+    ? '<span class="da-dh ici">Sur Carnets</span><button class="da-pp main" data-act="d-neuf"><span>Nouvelle idée<small>une ligne suffit</small></span><i>' + ico('pen') + '</i></button>'
+    : '<span class="da-dh ici">Dans « ' + esc(cur().titre) + ' »</span><div class="da-dg"><button class="da-pp" style="--c:var(--fin)" data-act="d-lien"><span>Coller un lien</span><i>' + ico('link') + '</i></button><button class="da-pp" style="--c:var(--prod)" data-act="photo"><span>Photo</span><i>' + ico('cam') + '</i></button><button class="da-pp" data-act="voix"><span>Note vocale</span><i>' + ico('mic') + '</i></button><button class="da-pp" style="--c:var(--ia)" data-act="comparer"><span>Comparer</span><i>' + ico('bars') + '</i></button></div><button class="da-pp main" data-act="d-ecrire"><span>Écrire une note<small>une phrase, un mot</small></span><i>' + ico('pen') + '</i></button>';
+  return '<div class="da-scrim" data-act="dial"></div><div class="da-dial"><span class="da-dh">Partout</span><div class="da-dg"><button class="da-pc">Nouvelle écriture<i>' + ico('pen') + '</i></button><button class="da-pc">Facture<i>' + ico('doc') + '</i></button><button class="da-pc">Lancer un brassin<i>' + ico('beer') + '</i></button><button class="da-pc">Compagnon<i>' + ico('chat') + '</i></button></div>' + ici + '</div>';
+}
+
+/* ============ r2 · ra : le champ en bas, au-dessus du clavier ============ */
+function compo(form, id, ph, lead, extra, val, lab) {
+  return '<form class="da-comp' + (val ? ' txt' : '') + '" data-form="' + form + '">' + (lead ? ico(lead) : '') + '<input id="' + id + '" placeholder="' + esc(ph) + '" autocomplete="off" enterkeyhint="send" value="' + esc(val || '') + '">' + (extra || '') + '<button class="da-go" aria-label="' + lab + '">' + ico('send') + '</button></form>';
+}
+function echoCarnet(c) {
+  var d = c.dernier;
+  if (!d) { var fil = filDe(c); for (var i = 0; i < fil.length; i++) if (/^(note|voix|photo|lien)$/.test(fil[i].t)) { d = fil[i]; break; } }
+  var it = d ? [d] : [];
+  if (c.dernierIa) it.push(c.dernierIa);
+  c.extra.forEach(function (x) { if ((x.t === 'sug' || x.t === 'load') && it.indexOf(x) < 0) it.push(x); });
+  if (!it.length) return '<div class="ra-eh ra-last">Rien encore : une phrase, un lien, une photo.</div>';
+  return '<div class="ra-eh">Dernier dépôt · ' + (d && d.le !== AUJ ? jour(d.le) : 'aujourd\'hui') + '</div>' + it.map(function (x, i) { return '<div class="da-e' + (i === it.length - 1 ? ' ra-last' : '') + '">' + entree(c, x) + '</div>'; }).join('');
+}
+function echoListe() {
+  if (!C.length) return '<div class="ra-eh ra-last">Rien encore : un besoin, un objet, une idée.</div>';
+  var c = C.slice().sort(function (a, b) { return a.creeLe < b.creeLe ? 1 : -1; })[0], r = resumeDe(c);
+  return '<div class="ra-eh">Dernière idée notée · ' + jour(c.creeLe) + '</div><div class="da-e ra-last"><div class="da-note"><b>' + esc(c.titre) + '</b> ' + stHtml(c) + '</div>' + (r.k === 'idee' ? '<div class="da-sub">« ' + esc(r.v) + ' »</div>' : '') + '</div>';
+}
+function echoDecisions(c) {
+  if (S.rep) return '<div class="ra-eh">Réponse</div><div class="da-q ra-last" style="margin:0">' + S.rep + ' <span class="da-ex">exemple</span></div>';
+  var d = c.decisions.filter(function (d) { return d.statut === 'valide'; }).pop();
+  if (!d) return '<div class="ra-eh ra-last">Aucune décision encore : la réponse viendra des notes.</div>';
+  var lab = d.sujet === 'façon' ? (facon(c, d.choix) || {}).nom : nomA(c, art(c, d.choix));
+  return '<div class="ra-eh">Dernière décision · ' + jour(d.le) + '</div><div class="da-dc ra-last"><div class="v">' + esc(lab) + '</div><div class="w">' + esc(d.pourquoi) + '</div></div>';
+}
+function vDock() {
+  var c = cur();
+  if (S.vue === 'liste') return { m: 'neuf', f: compo('neuf', 'da-neuf', 'Une idée, un besoin…', 'pen', '', S.saisie, 'Noter'), e: echoListe() };
+  if (S.vue === 'carnet' && S.ask) { var fa = facon(c, S.ask.f), aut = c.facons.filter(function (x) { return x !== fa && x.etat !== 'ecartee'; }), nm = fa.nom.split(' (')[0], ec = S.ask.t === 'ecarter';
+    var ph = 'Pourquoi, en une ligne', titre = ec ? 'Écarter ' + nm : 'Retenir ' + nm + (aut.length ? ' plutôt que ' + aut.map(function (x) { return x.nom.split(' (')[0]; }).join(' ou ') : '');
+    return { m: 'pq-' + S.ask.t + S.ask.f, f: compo('pourquoi', 'da-pz', ph, 'stamp', '<button type="button" class="da-cb" data-act="annask" aria-label="Annuler">' + ico('x') + '</button>', '', 'Garder'), e: '<div class="ra-eh">' + esc(titre) + ' : pourquoi ?</div><div class="da-sug ra-last"><p>' + (ec ? '' : aut.length ? 'Écartée' + (aut.length > 1 ? 's' : '') + ' avec ce pourquoi : <b>' + aut.map(function (x) { return esc(x.nom.split(' (')[0]); }).join(', ') + '</b>. ' : '') + 'Une ligne suffit ; elle reste datée dans « Pourquoi ? ».</p></div>' }; }
+  if (S.vue === 'carnet') return { m: 'note', f: compo('note', 'da-note', 'Écrire, ou coller un lien…', '', '<button type="button" class="da-cb" data-act="photo" aria-label="Photo">' + ico('cam') + '</button><button type="button" class="da-cb" data-act="voix" aria-label="Voix">' + ico('mic') + '</button>', S.saisie, 'Déposer'), e: echoCarnet(c) };
+  if (S.vue === 'decisions') return { m: 'question', f: compo('question', 'da-qq', 'Demander pourquoi ce choix', 'spark', '', '', 'Demander'), e: echoDecisions(c) };
+  if (S.vue === 'comparer' && S.sheet === 'ajcarac-inline') return { m: 'carac', f: '<form class="da-comp" data-form="carac">' + ico('plus') + '<input id="da-k" placeholder="ex. Passe une porte de 80 cm" autocomplete="off" enterkeyhint="done"><button class="da-go" aria-label="Ajouter">' + ico('check') + '</button></form>', e: '<div class="ra-eh">Nouvelle caractéristique · « ' + esc(c.titre) + ' »</div>' + (S.carMsg ? '<div class="ra-need" data-etat="alerte" data-dup>' + ico('x') + esc(S.carMsg) + '</div>' : '') + '<div class="da-chips ra-last">' + chipsCarac(c) + '</div>' };
+  return null;
+}
+function rendreDock() {
+  var dk = vDock(), el = $('#ra-dock');
+  if (!dk) { if (el.innerHTML) el.innerHTML = ''; el.removeAttribute('data-m'); S.echo = ''; return; }
+  var m = dk.m + '|' + (S.cid || '');
+  S.echo = dk.e;
+  if (el.getAttribute('data-m') !== m) { el.setAttribute('data-m', m); el.innerHTML = '<div class="ra-echo" aria-live="polite"></div>' + dk.f; }
+}
+// Clavier : visualViewport en vrai ; ?clavier=300 le simule (même chemin de code, clavier dessiné).
+var SIMKB = +(Q.get('clavier') || 0);
+var vvInset = function () { var v = window.visualViewport; if (!v) return 0; var d = Math.round(window.innerHeight - v.height - v.offsetTop); return d > 80 ? d : 0; };
+var champ = function () { var a = document.activeElement; return a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA') ? a : null; };
+function majClavier() {
+  var kb = SIMKB ? ((champ() || S.kbForce) ? SIMKB : 0) : vvInset(), R = document.documentElement, d = $('#ra-dock');
+  R.classList.toggle('kb', kb > 0); R.classList.toggle('dock', !!(d && d.firstChild)); R.style.setProperty('--kb', kb + 'px');
+  var bd = $('#ra-band'), band = S.vue === 'comparer' && !(d && d.firstChild); R.classList.toggle('band', band);
+  // r3 · c5 : le toast, dans la bande du bas quand il y en a une ; sinon (clavier, feuille) il flotte.
+  var tH = S.toast ? '<div class="da-toast ra-in">' + S.toast + '</div>' : '', flot = !!tH && (kb > 0 || (!!S.sheet && S.sheet !== 'ajcarac-inline') || !((d && d.firstChild) || band));
+  var sl = d && d.firstChild ? d.querySelector('.ra-tslot') : null; if (d && d.firstChild && !sl) { sl = document.createElement('div'); sl.className = 'ra-tslot'; d.insertBefore(sl, d.querySelector('form')); }
+  if (sl) { var sh = flot || band ? '' : tH; if (sl.innerHTML !== sh) sl.innerHTML = sh; }
+  var tf = $('#ra-toast'), fh = flot ? tH.replace(' ra-in', '') : ''; if (tf.innerHTML !== fh) tf.innerHTML = fh;
+  if (!band && bd.innerHTML) bd.innerHTML = '';
+  if (band && tH && !flot) { if (bd.innerHTML !== tH) bd.innerHTML = tH; } else if (band) { var cb = cur(), kid = S.kfocus || (cb && cb.critere && cb.critere.caracteristique), ck = cb && cb.caracteristiques.filter(function (k) { return k.id === kid; })[0], bt = ck ? 'Classé par<b>' + esc(ck.nom) + '</b>' : 'Toucher un titre pour classer'; if (bd.innerHTML !== bt) bd.innerHTML = bt; }
+  R.style.setProperty('--dock', (d && d.firstChild && !kb ? d.offsetHeight : band && !kb ? bd.offsetHeight : 0) + 'px');
+  $('#ra-kbd').style.display = SIMKB && kb ? 'block' : 'none';
+  var ec = d && d.querySelector('.ra-echo'), eh = kb ? (S.echo || '') : ''; if (ec && ec.innerHTML !== eh) ec.innerHTML = eh;
+  var a = champ(); if (kb && a && a.closest('.da-sheet')) placerChamp(a); if (!a) focPrec = null;
+}
+// r3 · c4 : un champ de feuille qui prend le clavier monte en haut de la partie visible, son libellé compris ; le champ suivant
+// reste ainsi visible dessous, entier, loin de tout bouton. En tapant, il ne descend jamais sous le bord visible.
+var focPrec = null;
+function placerChamp(a) {
+  var sh = a.closest('.da-sheet'); if (!sh) return;
+  var s = sh.getBoundingClientRect(), r = a.getBoundingClientRect(), lb = a.previousElementSibling, top = lb && lb.classList.contains('da-lab') ? lb.getBoundingClientRect().top : r.top;
+  if (a !== focPrec) { focPrec = a; sh.scrollTop += top - s.top - 8; }
+  else if (r.bottom > s.bottom - 12) sh.scrollTop += r.bottom - s.bottom + 12;
+}
+if (window.visualViewport) { visualViewport.addEventListener('resize', majClavier); visualViewport.addEventListener('scroll', majClavier); }
+window.addEventListener('resize', majClavier);
+document.addEventListener('focusin', majClavier);
+document.addEventListener('focusout', function () { S.kbForce = false; setTimeout(majClavier, 30); }); // r3 · c1 : quitter le champ ferme le clavier simulé
+// Toucher un bouton du champ ou de l'écho ne ferme pas le clavier.
+document.addEventListener('mousedown', function (e) { if (e.target.closest('#ra-dock button')) e.preventDefault(); });
+// Comparer : le + s'efface quand on descend, revient quand on remonte (il ne cache plus les valeurs).
+var lastY = 0;
+window.addEventListener('scroll', function () { var y = window.scrollY; if (Math.abs(y - lastY) < 6) return; document.documentElement.classList.toggle('ra-bas', S.vue === 'comparer' && y > lastY && y > 80); lastY = y; }, { passive: true });
+
+/* ============ Rendu ============ */
+function rendre() {
+  var v = { liste: vListe, carnet: vCarnet, comparer: vComparer, decisions: vDecisions }[S.vue];
+  document.body.className = 'v-' + S.vue;
+  $('#da-app').innerHTML = v();
+  rendreDock();
+  $('#da-dial').innerHTML = vDial();
+  $('#da-fab').setAttribute('aria-expanded', S.dial);
+  var o = '';
+  var c = cur();
+  if (S.sheet && S.sheet !== 'ajcarac-inline') {
+    var a = S.aid && c && art(c, S.aid);
+    var body = S.sheet === 'article' ? shArticle(c, a) : S.sheet === 'facons' ? shFacons(c) : S.sheet === 'choisir' ? shChoisir(c, a) : S.sheet === 'articles' ? shArticles(c) : '';
+    o = '<div class="da-sscrim" data-act="fermer"></div><div class="da-sheet" role="dialog"><div class="gr"></div>' + body + '</div>';
+  }
+  $('#da-over').innerHTML = o;
+  majClavier();
+}
+var toast = function (t, ms) { S.toast = t; rendre(); clearTimeout(toast.t); toast.t = setTimeout(function () { S.toast = null; rendre(); }, ms || 2600); };
+// r3 · c5 : un toast ne suit pas la navigation. Le geste suivant (changer d'écran, classer, ouvrir) l'efface avant de rendre.
+var oterToast = function () { if (S.toast) { S.toast = null; clearTimeout(toast.t); } };
+
+/* ============ Gestes ============ */
+function nouveauCarnet(t) {
+  t = t.trim(); if (!t) return;
+  var cat = categorieDe(t), base = IA_CARAC[cat] || IA_CARAC._;
+  var c = { id: 'c-' + Date.now(), titre: t.charAt(0).toUpperCase() + t.slice(1), categorie: cat, statut: 'idee', creeLe: AUJ, critere: null, facons: [], articles: [], decisions: [], extra: [],
+    caracteristiques: base.map(function (k, i) { return { id: 'k' + i, nom: k[0], unite: k[1], sens: k[2], source: 'ia', propose: true }; }),
+    notes: [{ le: AUJ, par: 'brasseur', texte: t }] };
+  C.unshift(c);
+  c.extra.push({ le: AUJ, t: 'ia', n: { texte: 'Catégorie : ' + (cat === 'divers' ? 'à préciser' : CAT_NOM[cat] || cat) + '. Je propose ' + base.length + ' caractéristiques à comparer ; × retire celles qui ne comptent pas.' }, chips: chipsCarac(c), carac: true });
+  c.dernierIa = { le: AUJ, t: 'ia', n: { texte: 'Catégorie : ' + (cat === 'divers' ? 'à préciser' : CAT_NOM[cat] || cat) + '. ' + base.length + ' caractéristiques proposées (' + base.slice(0, 3).map(function (k) { return k[0]; }).join(', ') + '…) : à garder ou retirer dans Comparer.' } };
+  S.cid = c.id; S.vue = 'carnet'; S.saisie = ''; S.ask = null; S.kfocus = null; rendre();
+}
+function chipsCarac(c, prop) { return c.caracteristiques.filter(function (k) { return !prop || k.propose; }).map(function (k) { return '<span class="da-chip' + (k.retiree ? ' off' : '') + (S && S.dupK === k.id ? ' dup' : '') + '">' + esc(k.nom) + '<button class="x" data-act="carac" data-k="' + k.id + '" aria-label="Retirer">' + ico(k.retiree ? 'plus' : 'x') + '</button></span>'; }).join(''); }
+function rafraichirChips(c) { c.extra.forEach(function (x) { if (x.carac) x.chips = chipsCarac(c); }); }
+function deposer(c, t) {
+  t = t.trim(); if (!t) return;
+  S.saisie = '';
+  if (/^(https?:\/\/|www\.)/i.test(t)) return lien(c, t);
+  var low = t.toLowerCase(), tags = [];
+  c.notes.push({ le: AUJ, par: 'brasseur', texte: t });
+  var note = c.notes[c.notes.length - 1];
+  c.dernier = { le: AUJ, t: 'note', n: note }; c.dernierIa = null;
+  FACONS_MOTS.forEach(function (m) {
+    if (m[2] === c.categorie && m[0].test(low) && !c.facons.some(function (f) { return f.nom === m[1]; })) { c.facons.push({ id: 'f' + c.facons.length + Date.now(), nom: m[1], etat: 'ouverte', note: t }); tags.push('façon ' + m[1].split(' (')[0]); }
+  });
+  var mf = /^(?:façon|autre façon|option)\s*:\s*(.+)$/i.exec(t);
+  if (mf && !c.facons.some(function (f) { return f.nom.toLowerCase() === mf[1].toLowerCase(); })) { var nf0 = mf[1].charAt(0).toUpperCase() + mf[1].slice(1); c.facons.push({ id: 'f' + c.facons.length + Date.now(), nom: nf0, etat: 'ouverte', note: t }); tags.push('façon ' + nf0); }
+  if (/il faut|minimis|maximis|doit|surtout|critère/.test(low)) {
+    var bz = BESOINS.filter(function (b) { return b[3] === c.categorie && b[0].test(low) && !c.caracteristiques.some(function (k) { return !k.retiree && b[1].test(k.nom.toLowerCase()); }); })[0];
+    var bzp = bz && t.split(/[,;]/).filter(function (x) { return bz[0].test(x.toLowerCase()); })[0].trim().replace(/^il faut /i, '');
+    var k = c.caracteristiques.filter(function (k) { return !k.retiree && k.sens !== 'texte' && k.nom.toLowerCase().split(/[ ’']/).some(function (m) { return m.length > 3 && low.indexOf(m.slice(0, 5)) >= 0; }); })[0];
+    c.extra = c.extra.filter(function (x) { return x.k !== 'crit'; });
+    var opens = c.facons.filter(function (f) { return f.etat === 'ouverte'; });
+    c.extra.push({ le: AUJ, t: 'sug', k: 'crit', html: 'En faire le <b>critère qui oriente</b> : « ' + esc(t.replace(/^il faut /i, '')) + ' » ?' + (k ? ' Relié à « ' + esc(k.nom) + ' »' + (bz ? ' ; « ' + esc(bzp) + ' » à « ' + esc(bz[2]) + ' », ajoutée à Comparer' : '') + '.' : bz ? ' « ' + esc(bzp) + ' » relié à « ' + esc(bz[2]) + ' », ajoutée à Comparer.' : ''), bt: '<button class="da-b p" data-act="crit" data-t="' + esc(t) + '" data-k="' + (k ? k.id : '') + '" data-b="' + (bz ? esc(bz[2]) : '') + '">' + ico('target') + 'Oui, critère</button><button class="da-b" data-act="nonsug">Juste une note</button>' });
+    if (opens.length >= 2) tags.push('peut trancher entre ' + opens.map(function (f) { return f.nom.split(' (')[0]; }).join(' et '));
+  }
+  if (!tags.length && /attendre|avis|demander|voir avec/.test(low)) tags.push('prochaine étape');
+  note.tags = tags;
+  rendre();
+}
+function lien(c, url) {
+  var x = { le: AUJ, t: 'load', url: url.replace(/^https?:\/\//, '') };
+  c.extra.push(x); c.dernier = null; c.dernierIa = null; rendre();
+  setTimeout(function () {
+    c.extra.splice(c.extra.indexOf(x), 1);
+    var wk = url.replace(/^https?:\/\/(www\.)?/i, '').replace(/\/$/, ''), w = WEB[wk];
+    if (w) { lienWeb(c, url, wk, w); return; }
+    var pool = POOL(c.categorie).filter(function (a) { return !c.articles.some(function (b) { return b.nom === a.nom && b.fournisseur === a.fournisseur; }); });
+    var a;
+    var base = c.articles.filter(function (b) { return b.apercu.ok; }).pop();
+    if (!VIDE && !pool.length && base && !/sans|v5|rate/.test(url)) { a = JSON.parse(JSON.stringify(base)); a.id = 'n' + Date.now(); a.le = AUJ; a.nom += ' (autre fournisseur)'; a.court = base.court.slice(0, 11) + ' bis'; a.fournisseur = 'Fournisseur lu sur la page'; a.prix = Math.round(base.prix * 1.05); a.valeurs.prix = a.prix; a.surveiller = false; delete a.alerte; delete a.veille; a.lien = url; }
+    else if (/sans|v5|rate/.test(url) || !pool.length) a = { id: 'n' + Date.now(), nom: 'lien seul', court: 'lien seul', lien: url, apercu: { ok: false, raison: 'aucune métadonnée lue' }, valeurs: {}, le: AUJ };
+    else { a = JSON.parse(JSON.stringify(pool[/e5/.test(url) ? pool.length - 2 : 0])); var court0 = COURT[a.id]; a.id = 'n' + Date.now(); a.le = AUJ; a.surveiller = false; delete a.alerte; delete a.veille; a.lien = url;
+      var f = c.facons.filter(function (f) { return f.etat !== 'ecartee'; })[0]; a.facon = f ? f.id : null;
+      // ne garder que les valeurs des caractéristiques de CE carnet
+      var sc = SRC.filter(function (s) { return s.categorie === c.categorie; })[0].caracteristiques, v = {}; c.caracteristiques.forEach(function (k) { var m = sc.filter(function (s) { return s.nom === k.nom; })[0]; v[k.id] = m && a.valeurs[m.id] != null ? a.valeurs[m.id] : null; }); a.valeurs = v; a.court = court0 || a.nom; }
+    var lus = Object.keys(a.valeurs).filter(function (k) { return a.valeurs[k] != null; }).length, manq = c.caracteristiques.length - lus;
+    c.extra.push({ le: AUJ, t: 'ia', n: { texte: a.apercu.ok ? 'Lu : photo, nom, prix, fournisseur. ' + lus + ' valeurs remplies' + (manq ? ', ' + manq + ' restent « ? »' : '') + '.' : 'Ce lien ne dit rien de lisible. Complétez à la main, ou redonnez-le moi.' } });
+    c.dernierIa = c.extra[c.extra.length - 1];
+    c.articles.push(a); c.extra.push({ le: AUJ, t: 'lien', a: a }); a._x = 1; c.dernier = c.extra[c.extra.length - 1];
+    rendre();
+  }, Q.get('etat') ? 0 : 900);
+}
+function lienWeb(c, url, wk, w) {
+  var a = { id: 'n' + Date.now(), web: wk, nom: w.nom, court: w.court || w.nom, fournisseur: w.fournisseur, lieu: w.lieu, lien: url, apercu: { ok: true, photo: w.photo }, prix: w.prix, dispo: w.dispo, autres: w.autres || [], le: AUJ, surveiller: false, exemple: true, valeurs: {} };
+  c.caracteristiques.forEach(function (k) { var v = k.nom === 'Prix' ? w.prix : w.v[k.nom]; a.valeurs[k.id] = v == null ? null : v; });
+  var f = c.facons.filter(function (f) { return w.facon.test(f.nom.toLowerCase()); })[0]; a.facon = f ? f.id : null;
+  var lus = c.caracteristiques.filter(function (k) { return a.valeurs[k.id] != null; }).length, manq = c.caracteristiques.length - lus;
+  var x = { le: AUJ, t: 'ia', n: { texte: 'Lu sur la page : ' + w.fournisseur + ' (' + w.lieu + '), ' + chf(w.prix) + (f ? ', façon ' + f.nom.split(' (')[0].toLowerCase() : '') + '. ' + lus + ' valeur' + (lus > 1 ? 's' : '') + ' lue' + (lus > 1 ? 's' : '') + (manq ? ', ' + manq + ' « ? » (non publiée' + (manq > 1 ? 's' : '') + ')' : '') + '.' } };
+  c.extra.push(x); c.dernierIa = x;
+  c.articles.push(a); c.extra.push({ le: AUJ, t: 'lien', a: a }); a._x = 1; c.dernier = c.extra[c.extra.length - 1];
+  rendre();
+}
+function trancher(c, ask, pz) {
+  var fa = facon(c, ask.f), aut = c.facons.filter(function (x) { return x !== fa && x.etat !== 'ecartee'; }), d;
+  if (ask.t === 'ecarter') { fa.etat = 'ecartee'; fa.pourquoi = pz; d = { id: 'd' + Date.now(), le: AUJ, statut: 'valide', sujet: 'façon', choix: fa.id, ecartee: true, pourquoi: 'écartée : ' + pz, ecartes: [{ ref: fa.id, raison: pz }] }; }
+  else { c.decisions.forEach(function (o) { if (o.sujet === 'façon' && o.statut === 'valide' && !o.ecartee) o.statut = 'remplacee'; }); fa.etat = 'retenue'; fa.pourquoi = pz; aut.forEach(function (x) { x.etat = 'ecartee'; x.pourquoi = pz; }); d = { id: 'd' + Date.now(), le: AUJ, statut: 'valide', sujet: 'façon', choix: fa.id, pourquoi: pz, ecartes: aut.map(function (x) { return { ref: x.id, raison: pz }; }) }; }
+  c.decisions.push(d);
+  c.extra = c.extra.filter(function (x) { return x.k !== 'trancher'; });
+  c.dernier = { le: AUJ, t: 'dec', d: d }; c.dernierIa = null; S.ask = null;
+  rendre();
+}
+function decider(c, a) {
+  var pq = $('#da-pq').value.trim(), rv = $('#da-rv').value.trim();
+  // r2 · ra : une raison n'est gardée que touchée ; sinon « sans raison notée », jamais une raison inventée.
+  var ec = [].map.call(document.querySelectorAll('[data-ec]'), function (n) { var b = n.querySelector('.ra-rz'); return { ref: n.getAttribute('data-ec'), raison: b && b.getAttribute('aria-pressed') === 'true' ? n.getAttribute('data-r') : 'sans raison notée' }; });
+  c.decisions.forEach(function (d) { if (d.statut === 'valide' && /produit/.test(d.sujet)) { d.statut = 'remplacee'; } });
+  var pf = $('#da-pf') ? $('#da-pf').value.trim() : '';
+  c.decisions.push({ id: 'd' + Date.now(), le: AUJ, statut: 'valide', sujet: 'produit et fournisseur', choix: a.id, pourquoi: pq, pourquoiFournisseur: pf || null, ecartes: ec, revoirSi: rv || null });
+  c.dernier = { le: AUJ, t: 'dec', d: c.decisions[c.decisions.length - 1] }; c.dernierIa = null;
+  S.sheet = null; S.avenirDe = a.id; toast('<span>Choix gardé, avec son pourquoi. Envoyer dans À venir ?</span><span class="ra-tb"><button class="p" data-act="avenir-oui">Envoyer</button><button data-act="avenir-non">Non</button></span>', 8000);
+}
+
+// r3 · c4 : Entrée dans « Pourquoi » passe au champ fournisseur (Suivant), sans viser ; dans le fournisseur, elle ferme le clavier.
+document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.classList && e.target.classList.contains('da-ta')) { e.preventDefault(); var nx = e.target.id === 'da-pq' && $('#da-pf'); if (nx) nx.focus({ preventScroll: true }); else e.target.blur(); } });
+document.addEventListener('input', function (e) { var t = e.target; if (document.documentElement.classList.contains('kb') && t.closest && t.closest('.da-sheet')) placerChamp(t); });
+document.addEventListener('submit', function (e) {
+  e.preventDefault();
+  var f = e.target.getAttribute('data-form'), garder = !!e.target.closest('#ra-dock') && !!champ();
+  if (f === 'neuf') nouveauCarnet($('#da-neuf').value);
+  if (f === 'note') deposer(cur(), $('#da-note').value);
+  if (f === 'pourquoi') { var pz = $('#da-pz').value.trim(); if (pz) trancher(cur(), S.ask, pz); }
+  if (f === 'facon') { var nf = $('#da-nf').value.trim(), cf = cur(); if (nf && !cf.facons.some(function (x) { return x.nom.toLowerCase() === nf.toLowerCase(); })) cf.facons.push({ id: 'f' + cf.facons.length + Date.now(), nom: nf.charAt(0).toUpperCase() + nf.slice(1), etat: 'ouverte' }); rendre(); var nfi = $('#da-nf'); if (nfi) nfi.focus(); }
+  if (f === 'question') { S.rep = repondre(cur(), $('#da-qq').value || 'fournisseur'); rendre(); }
+  if (f === 'carac') { var n = $('#da-k').value.trim(), nrm = function (x) { return x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim(); }, dup = n && cur().caracteristiques.filter(function (k) { return nrm(k.nom) === nrm(n); })[0];
+    if (dup) { S.carMsg = dup.retiree ? '« ' + dup.nom + ' » était retirée : elle revient.' : '« ' + dup.nom + ' » est déjà comparée : pas de double. Un autre nom ?'; dup.retiree = false; S.dupK = dup.id; rendre(); var dk = $('#da-k'); if (dk) dk.focus({ preventScroll: true }); return; }
+    S.carMsg = null; S.dupK = null;
+    if (n) { var c = cur(); c.caracteristiques.push({ id: 'u' + Date.now(), nom: n, unite: '', sens: /passe|oui|a-t-il|avec|en suisse/i.test(n) ? 'oui' : 'texte', source: 'brasseur' }); c.articles.forEach(function (a) { a.valeurs[c.caracteristiques[c.caracteristiques.length - 1].id] = null; }); } S.sheet = null; rendre(); }
+  var ch0 = $('#ra-dock input'); if (ch0 && f !== 'neuf') { ch0.value = ''; ch0.closest('form').classList.remove('txt'); }
+  if (garder && ch0) { ch0.focus({ preventScroll: true }); majClavier(); }
+});
+document.addEventListener('input', function (e) { if (e.target.id === 'da-pq') { var fq = $('#da-pq-faux'); if (fq && !fq.hidden && !contredit(cur(), art(cur(), S.aid), e.target.value)) fq.hidden = true; } });
+document.addEventListener('input', function (e) { if (e.target.id === 'da-note' || e.target.id === 'da-neuf') S.saisie = e.target.value; var fm = e.target.closest('#ra-dock form'); if (fm) fm.classList.toggle('txt', !!e.target.value); });
+document.addEventListener('click', function (e) {
+  var t = e.target.closest('[data-act]'); if (!t) { if (e.target.closest('#da-fab')) { oterToast(); S.dial = !S.dial; rendre(); } return; }
+  var act = t.getAttribute('data-act'), c = cur();
+  if (!/^(raison|untag|prop)$/.test(act)) oterToast();
+  if (!t.closest('#ra-dock') && !t.closest('.da-sheet')) S.kbForce = false;
+  if (act !== 'veille' && act !== 'untag' && t.tagName === 'A') e.preventDefault();
+  var A = t.getAttribute('data-a');
+  switch (act) {
+    case 'ouvrir': S.ask = null; S.kfocus = null; S.cid = t.getAttribute('data-c'); byId(S.cid).articles.forEach(function (a) { if (a.alerte) a.alerte.lue = true; }); S.vue = 'carnet'; S.rep = null; window.scrollTo(0, 0); break;
+    case 'liste': S.vue = 'liste'; S.cid = null; S.ask = null; S.kfocus = null; break;
+    case 'retenir': S.ask = { t: 'retenir', f: t.getAttribute('data-f') }; S.sheet = null; rendre(); var pz1 = $('#da-pz'); if (pz1) pz1.focus({ preventScroll: true }); majClavier(); return;
+    case 'annask': S.ask = null; break;
+    case 'toutgarder': c.caracteristiques.forEach(function (k) { delete k.propose; }); rafraichirChips(c); var xg = { le: AUJ, t: 'ia', n: { texte: c.caracteristiques.filter(function (k) { return !k.retiree; }).length + ' caractéristiques gardées. Chaque lien collé les remplit ; ajoutez les vôtres.' } }; c.extra.push(xg); c.dernierIa = xg; break;
+    case 'kfocus': S.kfocus = t.getAttribute('data-k'); rendre(); var tb = document.querySelector('.ra-tables'); if (tb) window.scrollTo(0, tb.getBoundingClientRect().top + scrollY - 60); return;
+    case 'carnet': S.vue = 'carnet'; S.rep = null; break;
+    case 'comparer': S.vue = 'comparer'; S.dial = false; window.scrollTo(0, 0); break;
+    case 'decisions': S.vue = 'decisions'; S.rep = null; window.scrollTo(0, 0); break;
+    case 'facons': S.sheet = 'facons'; break;
+    case 'articles': S.sheet = 'articles'; break;
+    case 'article': if (e.target.closest('.da-sw')) return; S.sheet = 'article'; S.aid = A; S.rep = null; break;
+    case 'fermer': S.sheet = null; S.rep = null; break;
+    case 'dial': S.dial = false; break;
+    case 'veille': e.stopPropagation(); var a = art(c, A); a.surveiller = !a.surveiller; if (a.surveiller && !a.veille) a.veille = []; rendre(); toast(a.surveiller ? 'Veille activée · tous les 3 jours · prochain passage ' + jour(plusJ(AUJ, 3)) : 'Veille arrêtée'); return;
+    case 'essai': deposer(c, t.getAttribute('data-t')); return;
+    case 'crit': c.critere = { texte: t.getAttribute('data-t').replace(/^il faut /i, ''), caracteristique: t.getAttribute('data-k') || null };
+      var bn = t.getAttribute('data-b'); if (bn && !c.caracteristiques.some(function (k) { return k.nom === bn; })) { var kb0 = { id: 'b' + Date.now(), nom: bn, unite: '', sens: 'oui', source: 'ia', relie: true }; c.caracteristiques.push(kb0); c.articles.forEach(function (a) { var w = a.web && WEB[a.web]; a.valeurs[kb0.id] = w && w.v[bn] != null ? w.v[bn] : null; }); if (!c.critere.caracteristique) c.critere.caracteristique = kb0.id; rafraichirChips(c); }
+      c.extra = c.extra.filter(function (x) { return x.t !== 'sug' || (x.k && x.k !== 'crit' && x.k !== 'trancher'); });
+      var op = c.facons.filter(function (f) { return f.etat === 'ouverte'; });
+      // r3 · c1 : l'IA ne dit pas laquelle est « moins adaptée » ; le brasseur retient, et dit pourquoi.
+      if (op.length >= 2) c.extra.push({ le: AUJ, t: 'sug', k: 'trancher', html: 'Le critère « ' + esc(c.critere.texte) + ' » peut trancher entre ' + op.map(function (f) { return '<b>' + esc(f.nom.split(' (')[0]) + '</b>'; }).join(' et ') + '. Laquelle retenir ? Vous direz pourquoi.', bt: op.map(function (f) { return '<button class="da-b" data-act="retenir" data-f="' + f.id + '">' + ico('check') + 'Retenir ' + esc(f.nom.split(' (')[0]) + '</button>'; }).join('') + '<button class="da-b" data-act="nonsug">Plus tard</button>' });
+      break;
+    case 'ecarter': var f = facon(c, t.getAttribute('data-f')), rest = c.facons.filter(function (x) { return x !== f; })[0]; f.etat = 'ecartee'; f.pourquoi = c.critere ? 'critère : ' + c.critere.texte : 'écartée'; if (rest) { rest.etat = 'retenue'; rest.pourquoi = c.critere ? c.critere.texte : ''; }
+      c.decisions.push({ id: 'd' + Date.now(), le: AUJ, statut: 'valide', sujet: 'façon', choix: rest ? rest.id : f.id, pourquoi: c.critere ? c.critere.texte : '', ecartes: [{ ref: f.id, raison: f.pourquoi }] });
+      c.extra = c.extra.filter(function (x) { return x.t !== 'sug'; }); break;
+    case 'nonsug': var sk = t.closest('[data-s]'), sky = sk && sk.getAttribute('data-s'); c.extra = c.extra.filter(function (x) { return x.t !== 'sug' || (sky ? x.k !== sky : false); }); break;
+    case 'fetat': S.ask = { t: t.getAttribute('data-e') === 'ecartee' ? 'ecarter' : 'retenir', f: t.getAttribute('data-f') }; S.sheet = null; rendre(); var pz2 = $('#da-pz'); if (pz2) pz2.focus({ preventScroll: true }); majClavier(); return;
+    case 'fetat-ancien': var ff = facon(c, t.getAttribute('data-f')); ff.etat = t.getAttribute('data-e'); ff.pourquoi = ff.pourquoi || (c.critere ? 'critère : ' + c.critere.texte : ''); c.decisions.push({ id: 'd' + Date.now(), le: AUJ, statut: 'valide', sujet: 'façon', choix: ff.id, pourquoi: (ff.etat === 'ecartee' ? 'écartée : ' : '') + (ff.pourquoi || 'à préciser') }); break;
+    case 'carac': var k = c.caracteristiques.filter(function (k) { return k.id === t.getAttribute('data-k'); })[0]; k.retiree = !k.retiree; rafraichirChips(c); break;
+    case 'ajcarac': S.carMsg = null; S.dupK = null; S.sheet = S.sheet === 'ajcarac-inline' ? null : 'ajcarac-inline'; rendre(); var i = $('#da-k'); if (i) i.focus(); return;
+    case 'iacarac': if (!c.caracteristiques.some(function (k) { return k.nom === 'Garantie'; })) { c.caracteristiques.push({ id: 'g' + Date.now(), nom: 'Garantie', unite: 'ans', sens: 'plus', source: 'ia' }); } toast('IA (exemple) : « Garantie » ajoutée, valeurs à chercher'); return;
+    case 'iafacons': c.extra = c.extra.filter(function (x) { return x.t !== 'sug' || x.k; }); var fi = (FACONS_IA[c.categorie] || []).filter(function (n) { return !c.facons.some(function (f) { return f.nom.split(' (')[0] === n.split(' (')[0]; }); }); fi.forEach(function (n, i) { c.facons.push({ id: 'fi' + i + Date.now(), nom: n, etat: 'ouverte' }); }); var xi = { le: AUJ, t: 'ia', n: { texte: fi.length ? fi.length + ' façons trouvées : ' + fi.map(function (n) { return n.split(' (')[0].toLowerCase(); }).join(', ') + '. Retenez-en une avec son pourquoi, puis collez vos liens.' : 'Pas d\'autre façon type connue ; écrivez les vôtres.' } }; c.extra.push(xi); c.dernierIa = xi; break;
+    case 'iaval': var nv = 0, nq = 0; c.caracteristiques.forEach(function (k) { if (k.retiree || k.propose) return; c.articles.forEach(function (a) { if (!a.apercu.ok || a.valeurs[k.id] != null) return; var w = a.web && WEB[a.web], m = w && w.x && Object.keys(w.x).filter(function (kw) { return k.nom.toLowerCase().indexOf(kw) >= 0; })[0]; if (m) { a.valeurs[k.id] = w.x[m]; nv++; } else nq++; }); }); if (!VIDE && !nv) { toast('IA (exemple) : 2 valeurs trouvées, 1 reste « ? » (non publiée)'); return; } toast('IA (exemple) : ' + nv + ' valeur' + (nv > 1 ? 's' : '') + ' trouvée' + (nv > 1 ? 's' : '') + (nq ? ', ' + nq + ' reste' + (nq > 1 ? 'nt' : '') + ' « ? » (non publiée' + (nq > 1 ? 's' : '') + ')' : '')); return;
+    case 'dispo': S.chargement = true; S.rep = null; rendre(); setTimeout(function () { var a = art(c, A); S.chargement = false; var o = (a.veille && a.veille.length && a.veille[a.veille.length - 1].autres) || a.autres || []; S.rep = '<b>' + (DISPO[a.dispo] || ['?'])[0] + '</b> chez ' + esc(a.fournisseur) + ' à ' + chf(a.prix) + '. ' + (o.length ? 'Aussi : ' + o.map(function (x) { return esc(x.fournisseur) + ' (' + esc(x.lieu) + ') ' + chf(x.prix); }).join(', ') + '.' : a.web ? 'Pas trouvé chez un autre fournisseur.' : 'Trouvé chez 2 autres fournisseurs, plus cher (+4 % et +9 %).') + ' Pas de baisse depuis le dernier passage.'; rendre(); }, Q.get('etat') ? 0 : 1100); return;
+    case 'choisir': S.sheet = 'choisir'; S.aid = A; rendre(); var pq0 = $('#da-pq'); if (pq0) { focPrec = pq0; pq0.focus({ preventScroll: true }); } majClavier(); return; // r3 · c5 : focus à l'ouverture
+    case 'untag': t.closest('[data-ec]').remove(); return;
+    case 'raison': t.setAttribute('aria-pressed', String(t.getAttribute('aria-pressed') !== 'true')); return;
+    case 'prop': var pi = document.getElementById(t.getAttribute('data-in') || 'da-pq'), tx = t.getAttribute('data-t'), parts = pi.value ? pi.value.split(' ; ') : [], pk = parts.indexOf(tx); if (pk >= 0) parts.splice(pk, 1); else parts.push(tx); pi.value = parts.join(' ; '); t.classList.toggle('on', pk < 0); t.innerHTML = ico(pk < 0 ? 'check' : 'plus') + esc(tx); if (pk < 0 && pi.id === 'da-pq') { var er0 = $('#da-pq-err'); if (er0) er0.hidden = true; } return;
+    case 'valchoix': var cx = $('#da-pq').value.trim() && contredit(c, art(c, A), $('#da-pq').value); if (cx) { var fx = $('#da-pq-faux'); fx.innerHTML = ico('x') + '<span>' + esc(ditContredit(c, cx)) + '</span>'; fx.hidden = false; $('#da-pq-err').hidden = true; $('#da-pq').scrollIntoView({ block: 'center' }); return; } if (!$('#da-pq').value.trim()) { var er = $('#da-pq-err'); er.hidden = false; $('#da-pq').scrollIntoView({ block: 'center' }); $('#da-pq').focus({ preventScroll: true }); return; } decider(c, art(c, A)); return;
+    case 'qq': S.rep = repondre(c, t.getAttribute('data-t')); break;
+    case 'photo': S.dial = false; c.extra.push({ le: AUJ, t: 'photo' }); c.dernier = c.extra[c.extra.length - 1]; c.dernierIa = null; break;
+    case 'voix': S.dial = false; c.extra.push({ le: AUJ, t: 'voix', texte: 'vu au salon : le revendeur fait la mise en service sur place' }); c.dernier = c.extra[c.extra.length - 1]; c.dernierIa = null; break;
+    case 'd-neuf': S.dial = false; rendre(); $('#da-neuf').focus(); return;
+    case 'd-ecrire': S.dial = false; rendre(); $('#da-note').focus(); return;
+    case 'd-lien': S.dial = false; deposer(c, 'https://exemple.invalid/presse-papiers'); return;
+    case 'completer': toast('Saisie libre : nom, prix, fournisseur (champs texte)'); return;
+    case 'relire': toast('IA (exemple) : toujours rien de lisible ; essayez une capture'); return;
+    case 'avenir': toast('À venir (kyh1) : inchangé'); return;
+    case 'avenir-oui': var av = c && art(c, S.avenirDe); if (c) c.enAvenir = AUJ; toast(av ? 'Dans À venir : ' + esc(av.nom) + ' · ' + chf(av.prix) + ' <span class="da-ex">exemple</span>' : 'Dans À venir'); return;
+    case 'avenir-non': break;
+    case 'cal': e.preventDefault(); toast('Calendrier : un carnet choisi s\'y pose comme achat'); return;
+  }
+  rendre();
+});
+// La veille marque l'alerte comme lue quand on ouvre le carnet ; l'alerte reste dans le fil.
+
+
+/* ============ États pour les captures (?etat=) ============ */
+var E = Q.get('etat') || 'repos';
+var ouvrir = function (id) { S.cid = id; S.vue = 'carnet'; };
+var etats = {
+  repos: function () {},
+  carnet: function () { ouvrir('c-embouteillage'); },
+  nouveau: function () { nouveauCarnet('embouteillage'); var c = cur(); c.caracteristiques[7].retiree = true; rafraichirChips(c); C.splice(C.indexOf(byId('c-embouteillage')), 1); },
+  note: function () { nouveauCarnet('embouteillage'); var c = cur(); C.splice(C.indexOf(byId('c-embouteillage')), 1); c.caracteristiques[7].retiree = true; rafraichirChips(c); deposer(c, 'gravité 4 becs vu chez un collègue, pas mal'); deposer(c, 'isobarique'); deposer(c, 'il faut minimiser l\'oxygène'); },
+  critere: function () { etats.note(); var c = cur(); c.critere = { texte: 'minimiser l\'oxygène', caracteristique: 'k0' }; c.extra = c.extra.filter(function (x) { return x.t !== 'sug'; }); c.extra.push({ le: AUJ, t: 'sug', html: 'Avec ce critère, <b>Gravité</b> semble moins adapté que Isobarique. L\'écarter, en gardant pourquoi ?', bt: '<button class="da-b p" data-act="ecarter" data-f="' + c.facons[0].id + '">' + ico('x') + 'Écarter Gravité</button><button class="da-b" data-act="nonsug">Garder les deux</button>' }); },
+  lien: function () { etats.critere(); var c = cur(); c.extra = c.extra.filter(function (x) { return x.t !== 'sug'; }); c.facons[0].etat = 'ecartee'; c.facons[0].pourquoi = 'trop d\'oxygène capté'; c.facons[1].etat = 'retenue'; c.decisions.push({ id: 'dx', le: AUJ, statut: 'valide', sujet: 'façon', choix: c.facons[1].id, pourquoi: 'minimiser l\'oxygène', ecartes: [{ ref: c.facons[0].id, raison: 'trop d\'oxygène capté' }] }); lien(c, 'https://exemple.invalid/e5'); },
+  rate: function () { ouvrir('c-ventilation'); },
+  comparer: function () { ouvrir('c-embouteillage'); S.vue = 'comparer'; },
+  carac: function () { ouvrir('c-ventilation'); S.vue = 'comparer'; },
+  frigo: function () { ouvrir('c-frigo'); S.vue = 'comparer'; },
+  article: function () { ouvrir('c-embouteillage'); S.sheet = 'article'; S.aid = 'a-e5'; },
+  dispo: function () { ouvrir('c-embouteillage'); S.sheet = 'article'; S.aid = 'a-e4'; S.rep = null; setTimeout(function () { document.querySelector('[data-act=dispo]').click(); }, 0); },
+  choisir: function () { ouvrir('c-ventilation'); S.sheet = 'choisir'; S.aid = 'a-v1'; },
+  decisions: function () { ouvrir('c-embouteillage'); S.vue = 'decisions'; S.rep = repondre(cur(), 'Pourquoi ce fournisseur ?'); },
+  remplacee: function () { ouvrir('c-frigo'); S.vue = 'decisions'; S.rep = repondre(cur(), 'Qu\'est-ce que j\'ai écarté ?'); },
+  evier: function () { ouvrir('c-evier'); },
+  plus: function () { ouvrir('c-embouteillage'); S.dial = true; },
+  ajout: function () { ouvrir('c-ventilation'); S.vue = 'comparer'; S.sheet = 'ajcarac-inline'; }
+};
+(etats[E] || etats.repos)();
+rendre();
+if (SIMKB) { S.kbForce = true; setTimeout(function () { var i = $('.da-sheet #da-pq') || $('#ra-dock input'); if (i) i.focus({ preventScroll: true }); majClavier(); }, 60); }
+if (E === 'rate') setTimeout(function () { var n = document.querySelector('.da-art.rate'); if (n) window.scrollTo(0, n.getBoundingClientRect().top + scrollY - 260); }, 0);
+if (E === 'note') setTimeout(function () { var n = document.querySelector('.da-fil'); if (n) window.scrollTo(0, n.getBoundingClientRect().top + scrollY - 70); }, 0);
+if (E === 'dispo') setTimeout(function () { var q = document.querySelector('.da-q'), sh = document.querySelector('.da-sheet'); if (q && sh) sh.scrollTop = q.offsetTop - 330; }, 40);
+})();
+</script>
+<style id="lk-css">
+:root{--lki:#8a5d00}html[data-theme=cave]{--lki:#e8b84a}
+.lk-ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.lk-doigt{position:fixed;z-index:9990;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(20,20,20,.22);border:2px solid rgba(20,20,20,.6);box-shadow:0 0 0 8px rgba(20,20,20,.08);pointer-events:none}
+html[data-theme=cave] .lk-doigt{background:rgba(255,255,255,.28);border-color:rgba(255,255,255,.85);box-shadow:0 0 0 8px rgba(255,255,255,.1)}
+.lk-doigt.long::after{content:'';position:absolute;inset:-11px;border-radius:50%;background:conic-gradient(var(--lki) 0 74%,transparent 0);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3.5px));mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3.5px))}
+.lk-tip{position:fixed;z-index:60;display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px 0 10px;border-radius:999px;background:var(--sheet,var(--bg));border:1.5px solid var(--line2);color:var(--ink);font-size:15px;font-weight:700;white-space:nowrap;box-shadow:0 8px 20px rgba(0,0,0,.22)}
+.lk-tip .lk-ic{color:var(--lki)}
+.lk-pop{position:fixed;z-index:60;width:296px;background:var(--sheet,var(--bg));border:1.5px solid var(--line2);border-radius:16px;box-shadow:0 14px 30px rgba(0,0,0,.28);padding:12px 14px 12px}
+.lk-pop::before{content:'';position:absolute;top:-8.5px;left:var(--ax,50%);width:14px;height:14px;background:var(--sheet,var(--bg));border-left:1.5px solid var(--line2);border-top:1.5px solid var(--line2);transform:translateX(-50%) rotate(45deg)}
+.lk-pk{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--lki)}.lk-pk .lk-ic{width:18px;height:18px}
+.lk-pt{display:block;font-size:19px;font-weight:700;margin:4px 0 2px;color:var(--ink);line-height:1.25}
+.lk-pm{display:block;font-size:15px;color:var(--mut);line-height:1.35}
+.lk-pa{display:flex;justify-content:flex-end;gap:8px;margin-top:10px}
+.lk-b1{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px;border-radius:12px;background:var(--act);color:var(--onact);font-weight:700;font-size:16px;white-space:nowrap}
+.lk-b2{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line2);color:var(--ink);font-weight:600;font-size:16px;white-space:nowrap;background:none}
+.lk-b1 .lk-ic,.lk-b2 .lk-ic{width:18px;height:18px}
+.lk-pr{display:flex;align-items:center;gap:10px;min-height:52px;border-top:1px solid var(--line);font-size:17px;color:var(--ink)}
+.lk-pr:first-of-type{border-top:0}.lk-pr span{flex:1;min-width:0}.lk-pr small{display:block;font-size:14px;color:var(--mut)}.lk-pr .lk-ic{color:var(--mut)}.lk-pr .lk-ic.i{color:var(--lki)}
+.lk-pr.neuf b{color:var(--ink)}.lk-pr.neuf small{color:var(--lki);font-weight:600}
+.lk-halo{border-radius:50%;box-shadow:0 0 0 3px color-mix(in srgb,var(--lki) 30%,transparent);background:color-mix(in srgb,var(--lki) 16%,transparent)}
+.lk-n{position:absolute;top:-15px;right:-9px;min-width:18px;height:18px;border-radius:9px;background:var(--lki);color:var(--bg);font-size:14px;font-weight:800;line-height:18px;text-align:center;padding:0 4px;font-style:normal}
+/* feuille de dictée (vocabulaire k13 de la base) */
+.lk-f .k13-said{flex:1;min-width:0}.lk-f .k13-said small{display:block;font-size:14px;color:var(--mut);font-style:normal;margin-top:2px}
+.lk-wk{display:grid!important;grid-template-columns:repeat(6,1fr);gap:6px;overflow:visible!important}.lk-wk .k13-v{min-width:0;padding:0;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;font-size:16px}.lk-wk .k13-v small{font-size:14px;font-weight:400;opacity:.8}
+.lk-act{display:flex;gap:8px;margin-top:10px}.lk-act .lk-b2{flex:none}.lk-act .lk-b1{flex:1;justify-content:center}
+.lk-car{display:inline-block;width:2px;height:20px;background:var(--ink);vertical-align:-4px;margin-left:2px}
+/* bulle d'appui long (l1-b) */
+.lk-bul{position:fixed;z-index:60;left:12px;right:12px;background:var(--sheet,var(--bg));border:1.5px solid var(--line2);border-radius:18px;box-shadow:0 16px 34px rgba(0,0,0,.3);padding:10px 12px 12px}
+.lk-bul::before{content:'';position:absolute;top:-8.5px;left:var(--ax,50%);width:14px;height:14px;background:var(--sheet,var(--bg));border-left:1.5px solid var(--line2);border-top:1.5px solid var(--line2);transform:translateX(-50%) rotate(45deg)}
+.lk-bh{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:700;color:var(--lki);min-height:28px}.lk-bh .lk-ic{width:18px;height:18px}.lk-bh span{margin-left:auto;color:var(--mut);font-weight:400;font-size:14px}
+.lk-bd{display:flex;align-items:center;gap:12px;padding:6px 0 4px}
+.lk-mic{width:52px;height:52px;border-radius:50%;background:var(--bad);color:#fff;display:grid;place-items:center;flex:none;box-shadow:0 0 0 8px color-mix(in srgb,var(--bad) 20%,transparent)}
+.lk-mic .lk-ic{width:24px;height:24px}
+.lk-said{margin:0;font-size:18px;line-height:1.3;color:var(--ink);flex:1;min-width:0}
+.lk-bf{display:flex;align-items:center;gap:8px;margin-top:6px}.lk-bf .lk-b1{margin-left:auto}
+/* glisser le + (l1-c) */
+.lk-ghost{position:fixed;z-index:34;width:56px;height:56px;border-radius:50%;border:2px dashed var(--line2);background:color-mix(in srgb,var(--bg) 60%,transparent)}
+.lk-drag{position:fixed;z-index:61;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;background:var(--act);color:var(--onact);display:grid;place-items:center;box-shadow:0 14px 28px rgba(0,0,0,.35);transform:scale(1.06)}
+.lk-drag .lk-ic{width:28px;height:28px;stroke-width:2.2}
+.lk-trail{position:fixed;left:0;top:0;width:390px;height:844px;z-index:33;opacity:.85;pointer-events:none}
+/* « lié à » (L29) */
+.lk-lies{display:flex;gap:6px;margin:10px 12px 0;flex-wrap:nowrap;align-items:center}
+.lk-chip{display:inline-flex;align-items:center;gap:5px;height:42px;padding:0 11px 0 9px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--c) 50%,var(--line));background:color-mix(in srgb,var(--c) 10%,var(--bg));font-size:15px;font-weight:600;color:var(--ink);white-space:nowrap}
+.lk-chip .lk-ic{width:18px;height:18px;color:var(--c)}
+.lk-chip.n{padding:0 13px;color:var(--mut);border-color:var(--line2);background:none}
+.lk-meta{margin:6px 12px 0;font-size:16px;color:var(--mut);line-height:1.55}
+.lk-ln{color:var(--ink);font-weight:600;text-decoration:underline;text-decoration-color:var(--c);text-decoration-thickness:2px;text-underline-offset:4px;padding:10px 0;white-space:nowrap}
+.lk-ln .lk-ic{width:16px;height:16px;color:var(--c);vertical-align:-2px;margin-right:3px}
+.lk-ici{background:color-mix(in srgb,var(--prod) 11%,var(--bg))!important;border-radius:10px}
+.lk-tag{display:inline-flex!important;align-items:center;gap:4px;margin-top:3px;font-style:normal!important;font-size:14px!important;font-weight:700;color:var(--prod)!important}
+/* Courses (L14) */
+.lk-gr{display:flex;align-items:center;gap:10px;min-height:62px;padding:8px 8px 8px 14px;background:var(--s1);border-top:1px solid var(--line)}
+.lk-gr:first-child{border-top:0}
+.lk-gn{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.lk-gn b{font-size:17px;color:var(--ink)}
+.lk-gn i{font-style:normal;font-size:14px;color:var(--mut);display:flex;align-items:center;gap:5px;white-space:nowrap}.lk-gn i .lk-ic{width:16px;height:16px;color:var(--ok)}
+.lk-gn i.ok{color:var(--ok);font-weight:600}
+.lk-cmd{flex:none;height:44px;padding:0 14px;border-radius:12px;border:1.5px solid var(--fin);color:var(--fin);font-weight:700;font-size:16px;display:inline-flex;align-items:center;gap:6px;background:var(--bg)}
+.lk-cmd.on{background:var(--okbg);border-color:var(--ok);color:var(--ok)}.lk-cmd .lk-ic{width:18px;height:18px}
+.lk-route{opacity:.5}
+.lk-toast{position:fixed;left:12px;right:84px;z-index:50;background:var(--ink);color:var(--bg);border-radius:14px;min-height:52px;display:flex;align-items:center;gap:8px;padding:6px 6px 6px 14px;font-size:15px;font-weight:600;line-height:1.25;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+.lk-toast span{flex:1;min-width:0}.lk-toast button{flex:none;height:40px;padding:0 10px;border-radius:10px;font-weight:800;font-size:15px;color:var(--bg);text-decoration:underline;text-underline-offset:3px;background:none;border:0}
+.lk-cc{margin:12px 12px 0;border:1.5px solid color-mix(in srgb,var(--fin) 55%,var(--line));border-radius:14px;background:var(--finbg);padding:12px 12px 12px 14px}
+.lk-cc.ok{border-color:color-mix(in srgb,var(--ok) 60%,var(--line));background:var(--okbg)}
+.lk-cch{display:flex;align-items:center;gap:8px}.lk-cch .lk-ic{color:var(--fin)}.lk-cc.ok .lk-cch .lk-ic{color:var(--ok)}
+.lk-cch b{font-size:18px;color:var(--ink)}.lk-cch em{margin-left:auto;font-style:normal;font-size:20px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.lk-ccl{font-size:15px;color:var(--mut);margin-top:4px;line-height:1.35}
+.lk-ccf{display:flex;align-items:center;gap:10px;margin-top:10px}.lk-ccf .lk-cmd{margin-left:auto}
+.lk-ccf small{font-size:14px;color:var(--mut)}
+.lk-attl{display:flex;align-items:flex-start;gap:6px;margin:6px 0 0;font-size:15px;font-weight:600;color:var(--ok);line-height:1.3}.lk-attl .lk-ic{width:18px;height:18px;margin-top:1px}.lk-att{position:absolute;top:-30px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;font-size:14px;font-weight:700;color:var(--ok);white-space:nowrap;pointer-events:none}
+.lk-att i{display:block;width:30px;height:30px;border-radius:50%;border:2.5px dashed var(--ok);margin-top:3px;background:var(--bg)}
+.lk-hl{display:flex;align-items:center;gap:10px;margin:10px 12px 0;padding:8px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.lk-hl>.lk-ic{color:var(--fin);width:22px;height:22px}.lk-hl.ok>.lk-ic{color:var(--ok)}
+.lk-hlt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}.lk-hlt b{font-size:17px;color:var(--ink)}.lk-hlt small{font-size:14px;color:var(--mut);line-height:1.3}
+.lk-hl.ok .lk-hlt small{color:var(--ok);font-weight:600}
+.lk-cmd.lk-ann{border-color:var(--line2);color:var(--ink)}
+.lk-dim{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:70}html[data-theme=cave] .lk-dim{background:rgba(0,0,0,.55)}
+.lk-sh{position:fixed;left:0;right:0;bottom:0;z-index:71;background:var(--sheet,var(--bg));border-radius:20px 20px 0 0;padding:6px 14px 18px;box-shadow:0 -10px 30px rgba(0,0,0,.25);color:var(--ink)}
+.lk-sh::before{content:'';display:block;width:40px;height:5px;border-radius:3px;background:var(--line2);margin:0 auto 8px}
+.lk-shh{display:flex;align-items:center;gap:8px}.lk-shh b{flex:1;font-size:20px}
+.lk-x{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line2);display:grid;place-items:center;background:none;color:var(--ink)}
+.lk-grp{border:1.5px solid var(--line);border-radius:14px;padding:2px 12px 10px;margin-top:10px}
+.lk-gh{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:8px 0 6px}.lk-gh b{font-size:17px}.lk-gh span{font-size:14px;color:var(--mut);white-space:nowrap}
+.lk-gl{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;border-top:1px solid var(--line);font-size:16px}.lk-gl small{display:block;font-size:14px;color:var(--mut)}.lk-gl .mono{font-size:15px;white-space:nowrap}
+.lk-gf{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:8px}.lk-gf b{font-size:17px}.lk-gf small{display:block;font-size:14px;color:var(--mut)}
+.lk-voile{position:fixed;left:0;right:0;bottom:56px;z-index:58;pointer-events:none;background:color-mix(in srgb,var(--bg) 58%,transparent)}
+</style><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="lk-idee" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z"/></symbol><symbol id="lk-micro" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol><symbol id="lk-clavier" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h1M10 10h1M14 10h1M18 10h.01M7 14h10"/></symbol><symbol id="lk-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol><symbol id="lk-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol><symbol id="lk-camion" viewBox="0 0 24 24"><path d="M2.5 6.5h11v9.5h-11zM13.5 10h4l3 3.2V16h-7"/><circle cx="7" cy="17.8" r="1.8"/><circle cx="17" cy="17.8" r="1.8"/></symbol><symbol id="lk-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol><symbol id="lk-biere" viewBox="0 0 24 24"><path d="M6 8h10v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2zM16 11h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2M6 8a3 3 0 0 1 5-2.2A3 3 0 0 1 16 8M10 12v5M13 12v5"/></symbol><symbol id="lk-four" viewBox="0 0 24 24"><path d="M3 21V10l5 3V10l5 3V7l8 4v10zM3 21h18M7 17h2M12 17h2M17 17h1"/></symbol><symbol id="lk-cal" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></symbol><symbol id="lk-fut" viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="3"/><path d="M6 8h12M6 16h12"/></symbol><symbol id="lk-chariot" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11h10.2L20 7H6.2"/><circle cx="9" cy="19.5" r="1.5"/><circle cx="17" cy="19.5" r="1.5"/></symbol><symbol id="lk-retour" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol><symbol id="lk-doc" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M10 12h5M10 16h5"/></symbol></defs></svg><script>(()=>{
+const verif=()=>(() => {
+  const vis = e => { const r = e.getBoundingClientRect(), cs = getComputedStyle(e); return r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight && cs.visibility !== 'hidden' && cs.display !== 'none'; };
+  const out = { sousPlus: [], tranche: [] };
+  const fab = [...document.querySelectorAll('#fab,.fab,.s-fab,.ix-fab')].find(vis);
+  const OV = [...document.querySelectorAll('.ix-be,.ix-toast,.ix-bulle,.ix-sheet,.lk-pop,.lk-bul,.lk-tip,.lk-toast,.lk-sh,#toast,#s-toast')].filter(e => !e.hidden && vis(e));
+  const voile = [...document.querySelectorAll('.ix-voile,.ix-dim,.lk-dim,.lk-voile,.scrim')].some(vis);
+  const dans = (el, top) => !!top && (top === el || el.contains(top));
+  const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let t;
+  while ((t = tw.nextNode())) {
+    const s = t.textContent.trim(); if (!s) continue;
+    const e = t.parentElement; if (!e || !vis(e) || e.closest('svg,.ix-doigt,.lk-doigt')) continue;
+    const rg = document.createRange(); rg.selectNodeContents(t);
+    for (const r of rg.getClientRects()) {
+      if (r.width < 2 || r.bottom < 0 || r.top > innerHeight) continue;
+      if (fab && !fab.contains(e)) {
+        const f = fab.getBoundingClientRect();
+        const x0 = Math.max(r.left, f.left), x1 = Math.min(r.right, f.right), y0 = Math.max(r.top, f.top), y1 = Math.min(r.bottom, f.bottom);
+        if (x1 - x0 > 2 && y1 - y0 > 2 && dans(fab, document.elementFromPoint((x0 + x1) / 2, (y0 + y1) / 2))) out.sousPlus.push(s.slice(0, 30));
+      }
+      if (voile) continue;
+      for (const o of OV) {
+        if (o.contains(e)) continue;
+        const b = o.getBoundingClientRect();
+        const x0 = Math.max(r.left, b.left + 12), x1 = Math.min(r.right, b.right - 12); if (x1 - x0 < 3) continue;
+        const xm = (x0 + x1) / 2;
+        if (r.top < b.top - 1 && r.bottom > b.top + 2 && dans(o, document.elementFromPoint(xm, b.top + 2))) out.tranche.push(s.slice(0, 30));
+        else if (r.top < b.bottom - 2 && r.bottom > b.bottom + 1 && dans(o, document.elementFromPoint(xm, b.bottom - 2))) out.tranche.push(s.slice(0, 30));
+      }
+    }
+  }
+  out.sousPlus = [...new Set(out.sousPlus)]; out.tranche = [...new Set(out.tranche)];
+  return out;
+})();
+const caser=(de,a,pas=2)=>{for(let y=de;y<=a;y+=pas){window.scrollTo(0,y);const v=verif();if(!v.sousPlus.length&&!v.tranche.length)return y}window.scrollTo(0,de);document.title='LKERR caser '+de+'-'+a;return -1};
+const voileFrise=()=>{const y=Math.max(...$$('[data-libre-sem]').map(e=>R(e).bottom))+2;add('<div class="lk-voile" style="top:'+y+'px"></div>')};
+const Q=new URLSearchParams(location.search);if(Q.get('theme')==='cave')document.documentElement.dataset.theme='cave';
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const ic=(id,c='')=>'<svg class="lk-ic '+c+'" viewBox="0 0 24 24"><use href="#'+id+'"/></svg>';
+const R=e=>e.getBoundingClientRect();
+const add=(h,par=document.body)=>{const t=document.createElement('div');t.innerHTML=h.trim();const e=t.firstElementChild;par.appendChild(e);return e};
+const doigt=(x,y,c='')=>add('<div class="lk-doigt '+c+'" style="left:'+x+'px;top:'+y+'px"></div>');
+const doigtSur=(e,c='',dx=0,dy=0)=>{const r=R(e);return doigt(r.left+r.width/2+dx,r.top+r.height/2+dy,c)};
+const sousSoldes=(pop,cible)=>{const y=Math.max(...$$('[data-libre-sem]').map(e=>R(e).bottom))+12,r=R(cible),w=pop.offsetWidth,cx=r.left+r.width/2;let l=Math.max(12,Math.min(390-12-w,cx-w/2));pop.style.left=l+'px';pop.style.top=y+'px';pop.style.setProperty('--ax',(cx-l)+'px')};
+const sousPlus=()=>{const f=$$('#fab,.fab,.s-fab').find(e=>{const r=R(e);return r.width>0&&getComputedStyle(e).visibility!=='hidden'});if(!f)return 0;const fr=R(f);let n=0;const tw=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let t;while((t=tw.nextNode())){if(!t.textContent.trim())continue;const e=t.parentElement;if(!e||f.contains(e)||e.closest('.lk-toast,#s-toast,#toast,nav,.lk-doigt'))continue;const cs=getComputedStyle(e);if(cs.visibility==='hidden'||cs.display==='none')continue;const rg=document.createRange();rg.selectNodeContents(t);for(const r of rg.getClientRects()){if(r.width<2)continue;if(Math.min(r.right,fr.right)-Math.max(r.left,fr.left)>2&&Math.min(r.bottom,fr.bottom)-Math.max(r.top,fr.top)>2)n++}}return n};
+const caserPlus=(de,a,pas=4)=>{for(let y=de;y<=a;y+=pas){window.scrollTo(0,y);if(!sousPlus())return y}window.scrollTo(0,de);return -1};
+const sous=(pop,cible,dy=12)=>{const r=R(cible),w=pop.offsetWidth,cx=r.left+r.width/2;let l=Math.max(12,Math.min(390-12-w,cx-w/2));pop.style.left=l+'px';pop.style.top=(r.bottom+dy)+'px';pop.style.setProperty('--ax',(cx-l)+'px')};
+
+const go=()=>{try{window.LK_CARNET=true;const all=$$('body *');const t=all.find(e=>e.children.length===0&&/^\s*Évier inox\s*$/.test(e.textContent));let card=t;while(card.parentElement&&!(R(card).height>90&&R(card).width>300))card=card.parentElement;
+const c=card.cloneNode(true);const par=card.parentElement;const first=[...par.children].find(e=>R(e).height>90&&R(e).width>300);par.insertBefore(c,first);
+const w=document.createTreeWalker(c,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode())){const v=n.textContent;if(/Évier inox/.test(v))n.textContent=v.replace('Évier inox','Frigo pour la garde');else if(/évier inox/.test(v))n.textContent=v.replace(/«.*»/,'« regarder un frigo pour la garde »');else if(/rien de rangé encore/.test(v)){const e=n.parentElement;e.innerHTML=ic('lk-cal')+' <b style="color:var(--ink)">S49 · 30 nov.</b> · retour au calendrier';e.style.display='flex';e.style.alignItems='center';e.style.gap='6px';e.style.color='var(--fin)';break}}
+c.style.boxShadow='0 0 0 3px color-mix(in srgb,var(--lki) 50%,transparent)';
+for(const e of all)if(e.children.length===0&&/idées et besoins/.test(e.textContent))e.textContent=e.textContent.replace(/\d+ idées/,m=>(parseInt(m)+1)+' idées');
+const demo=all.find(e=>e.children.length===0&&/^Démo/.test(e.textContent));if(demo)demo.style.visibility='hidden';
+add('<style>nav a,nav a *{font-size:14px!important}</style>');
+for(const e of $$('nav *'))if(e.children.length===0&&e.textContent.trim()==='24')e.textContent='3';}catch(e){document.title='LKERR '+e.message;console.error(e)}};
+const d=1600;if(document.readyState==='complete')setTimeout(go,d);else addEventListener('load',()=>setTimeout(go,d));})()</script></body>
+</html>

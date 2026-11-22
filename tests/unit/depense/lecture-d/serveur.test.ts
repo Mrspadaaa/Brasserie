@@ -9,7 +9,8 @@ import { scanInvoiceSafely } from '../../../../functions/src/ai';
 import { lireCsv8, type Csv8Io } from '../../../../functions/src/invoiceScanVote';
 import { alignerLignes, ScanReadCutError } from '../../../../functions/src/invoiceVisionReview';
 import { existsSync, readFileSync } from 'node:fs';
-import { SCAN_MODEL, engineDigestOf, normalizeInvoiceScan } from '../../../../functions/src/invoiceScanCore';
+import { engineDigestOf, normalizeInvoiceScan } from '../../../../functions/src/invoiceScanCore';
+import { INVOICE_STRONG_MODEL } from '../../../../functions/src/models';
 import { INVOICE_SCAN_PROMPTS } from '../../../../functions/src/invoiceScanPrompts';
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -197,7 +198,7 @@ describe('s-serveur — scanInvoiceSafely et le jeton', () => {
     expect(events).toEqual(['provisoire', '3.8 demandée', '3.8 rend']);   // le morceau part avant la 3.8, qui ne l'attend pas
     expect(recu).toHaveLength(1);
     expect(recu[0].data).toMatchObject({ provisoire: true, review: { readers: 2 } });
-    expect(recu[0].meta).toMatchObject({ model: SCAN_MODEL });
+    expect(recu[0].meta).toMatchObject({ model: INVOICE_STRONG_MODEL });
     expect(recu[0].meta.elapsedMs).toEqual(expect.any(Number));
     expect(recu[0].meta).not.toHaveProperty('pages');
     expect(final).toMatchObject({ ok: true, data: { provisoireJeton: jeton, review: { readers: 3 } } });

@@ -1,0 +1,288 @@
+<title>Simplicité · tes parcours · 15.11</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Une rangée par problème : sa citation, puis aujourd'hui (référence) et 2 à 4 propositions côte à côte ; barre fixe Choisir / Copier. */
+:root{
+  --bg:#F5F0EA;--fg:#1A1613;--mut:#5E5047;--line:#D8CEC5;--card:#FFFFFF;
+  --ph:#F7F4F0;--ph2:#FFFFFF;--ph3:#E4DCD3;--phfg:#1A1613;--phmut:#6A5C52;
+  --acc:#B86A1F;--acc-on:#FFFFFF;--ok:#4F7D3E;--warn:#A9781E;--warnbg:#F6EBD3;--sel:#1A1613;--sel-on:#F5F0EA;
+  --sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12100E;--fg:#F5F0EA;--mut:#B3A396;--line:#3D342E;--card:#1A1613;--ph:#221D19;--ph2:#2C2521;--ph3:#3D342E;--phfg:#F5F0EA;--phmut:#A8988B;--acc:#E0A02E;--acc-on:#12100E;--ok:#8DBB6F;--warn:#E3B55D;--warnbg:#3A2F1C;--sel:#F5F0EA;--sel-on:#12100E;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#12100E;--fg:#F5F0EA;--mut:#B3A396;--line:#3D342E;--card:#1A1613;--ph:#221D19;--ph2:#2C2521;--ph3:#3D342E;--phfg:#F5F0EA;--phmut:#A8988B;--acc:#E0A02E;--acc-on:#12100E;--ok:#8DBB6F;--warn:#E3B55D;--warnbg:#3A2F1C;--sel:#F5F0EA;--sel-on:#12100E;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.45 var(--sans);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 120px}
+main{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
+h1{font-size:1.6rem;margin:0;text-wrap:balance;line-height:1.2}
+h2{font-size:1.2rem;margin:0;text-wrap:balance}
+p{margin:0;max-width:68ch}
+.mut{color:var(--mut)}
+#a-choisir{display:flex;flex-direction:column;gap:6px}
+.row{display:flex;flex-direction:column;gap:10px;padding-top:18px;border-top:1px solid var(--line)}
+.dit{display:flex;flex-direction:column;gap:3px}
+.dit q{font-style:italic;quotes:"« " " »"}
+.dit small{font-size:14px;color:var(--mut)}
+.grp{display:flex;gap:14px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x proximity}
+figure{margin:0;flex:0 0 272px;display:flex;flex-direction:column;gap:8px;scroll-snap-align:start;min-width:0}
+figcaption{font-size:15px;display:flex;flex-direction:column;gap:2px}
+figcaption b{font-weight:700}
+figcaption code{font:500 14px var(--mono);color:var(--mut)}
+.pick{font:600 15px var(--sans);border:1.5px solid var(--sel);background:transparent;color:var(--fg);border-radius:99px;padding:6px 14px;cursor:pointer;align-self:flex-start}
+.pick[aria-pressed="true"]{background:var(--sel);color:var(--sel-on)}
+.pick:focus-visible,.copy:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.ref-tag{font:600 14px var(--sans);color:var(--mut)}
+figure:has(.shot){flex-basis:342px}
+.shot{display:block;border:1px solid var(--line);border-radius:14px;overflow:hidden;height:470px;background:var(--ph)}
+.shot img{width:100%;display:block}
+/* téléphone dessiné */
+.ph{background:var(--ph);color:var(--phfg);border:1px solid var(--ph3);border-radius:18px;height:470px;padding:12px 10px;display:flex;flex-direction:column;gap:7px;font-size:14px;line-height:1.3;position:relative;overflow:hidden}
+.bar{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:15px}
+.bar span.m{font-weight:400}
+.m{color:var(--phmut)}
+.n{font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums}
+.big{font:600 26px var(--mono)}
+.r{background:var(--ph2);border:1px solid var(--ph3);border-radius:9px;padding:7px 9px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.r.col{flex-direction:column;align-items:stretch}
+.r.warn{background:var(--warnbg);border-color:var(--warn)}
+.r.dim{opacity:.6}
+.btn{background:var(--sel);color:var(--sel-on);font-weight:700;border-radius:10px;padding:9px;text-align:center}
+.btn.acc{background:var(--acc);color:var(--acc-on)}
+.btn.gh{background:transparent;color:var(--phfg);border:1px solid var(--ph3);font-weight:600}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.chip{display:inline-block;border-radius:99px;padding:2px 9px;background:var(--ph3);font-size:14px;white-space:nowrap}
+.chip.ok{background:var(--ok);color:var(--acc-on)}
+.chip.ac{background:var(--acc);color:var(--acc-on);font-weight:600}
+.chip.w{background:var(--warnbg);color:var(--phfg);border:1px dashed var(--warn)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.low{margin-top:auto;display:flex;flex-direction:column;gap:7px}
+.tab{position:absolute;left:0;right:0;bottom:0;background:var(--ph2);border-top:2px solid var(--acc);border-radius:14px 14px 0 0;padding:10px;display:flex;flex-direction:column;gap:5px;box-shadow:0 -6px 16px rgb(0 0 0/.18)}
+.ok-t{color:var(--ok)}
+.sl{display:grid;grid-template-columns:1fr auto;gap:2px 6px;font-size:14px}
+.sl i{grid-column:1/-1;height:5px;border-radius:3px;background:linear-gradient(90deg,var(--ph3) var(--a),transparent var(--a));position:relative}
+.sl i::after{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--b);border-bottom:2px solid var(--acc)}
+.rail{height:6px;border-radius:3px;background:var(--ph3);position:relative}
+.rail i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--acc)}
+.knob{position:absolute;top:-6px;width:18px;height:18px;border-radius:50%;background:var(--phfg);border:3px solid var(--acc)}
+.tgt{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ok)}
+.sansc{display:flex;flex-direction:column;gap:6px}
+.sansc li{max-width:68ch}
+/* barre de réponse */
+.ans{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;gap:10px;align-items:center;z-index:5}
+.ans output{flex:1;min-width:0;font:500 15px var(--mono);overflow-wrap:anywhere}
+.copy{font:700 15px var(--sans);background:var(--acc);color:var(--acc-on);border:0;border-radius:10px;padding:9px 16px;cursor:pointer}
+</style>
+<main>
+<header id="a-choisir">
+  <h1>Simplicité : tes parcours, avec tes mots</h1>
+  <p>Cinq problèmes tirés de tes messages du 02 au 15.11, pas de parcours supposés. Pour chacun : aujourd'hui, puis 2 à 4 astuces. Touche « Choisir », puis « Copier » en bas.</p>
+  <p class="mut">Aucune fonction ni donnée retirée. Rien n'est codé avant ton choix.</p>
+</header>
+
+<!-- A : saisir une pièce -->
+<section class="row" data-choix="piece">
+  <div class="dit"><h2>1. Saisir une facture, ligne par ligne</h2>
+    <q>une quantité il faut entre 1, écrit 2 validé 3 action sur téléphone</q><small>02.11 · aussi « on perd du coup le focus sur l'item » (09.11)</small></div>
+  <div class="grp">
+    <figure data-reference><span class="ref-tag">Aujourd'hui · app locale, 390</span>
+      <a class="shot" href="img/avant-depense.png" target="_blank" data-agrandir><img src="img/avant-depense.png" alt="Nouvelle dépense : 23 lignes, cinq doutes numérotés, 14 proposés, contrôles ouverts"></a>
+      <figcaption><b>Tout s'ouvre d'un coup</b><span class="mut">5 doutes, 14 proposés, TVA et lectures avant la 1re ligne.</span></figcaption></figure>
+    <figure data-variante="pa1"><div class="ph">
+        <div class="bar"><span>Brau- und Rauchshop</span><span class="m">27.04</span></div>
+        <div class="big">86,50 <span class="m" style="font-size:14px">CHF</span></div>
+        <div class="r"><span class="ok-t">✓ 18 lignes sûres</span><span class="m">repliées</span></div>
+        <div class="r col warn"><span class="m">Doute 1 sur 5 · TVA 8,1 %</span><span>Imprimé <b class="n">1,95</b> · recalculé <b class="n">0,84</b></span>
+          <div class="two"><div class="btn gh">Garder 1,95</div><div class="btn gh">Prendre 0,84</div></div></div>
+        <div class="r dim"><span>Puis : date supposée</span><span class="m">2 / 5</span></div>
+        <div class="low"><div class="btn">Terminé · 4 doutes à revoir</div></div></div>
+      <figcaption><b>Un doute à la fois</b><code>pa1</code><span class="mut">Le sûr se replie ; chaque doute a ses deux réponses.</span></figcaption>
+      <button class="pick" type="button" data-id="pa1">Choisir</button></figure>
+    <figure data-variante="pa2"><div class="ph">
+        <div class="bar"><span>Malts · 7 lignes</span><span class="m">36,85</span></div>
+        <div class="r"><span>Maris Otter</span><span class="n">6 kg</span></div>
+        <div class="r"><span>Pilsner Malz</span><span class="n">5 kg</span></div>
+        <div class="r"><span>Röstgerste</span><span class="n">1 kg</span></div>
+        <div class="r col"><span class="m">Comme la dernière fois (12.10)</span><span>7 → <b>Malts de ton stock</b></span></div>
+        <div class="low"><div class="btn acc">Relier les 14 comme avant</div><div class="btn gh">Voir un par un</div></div></div>
+      <figcaption><b>Comme la dernière fois</b><code>pa2</code><span class="mut">L'article, l'unité et la quantité reviennent de tes factures passées.</span></figcaption>
+      <button class="pick" type="button" data-id="pa2">Choisir</button></figure>
+    <figure data-variante="pa3"><div class="ph">
+        <div class="bar"><span>Ligne 4 / 23</span><span class="m">Suivant ›</span></div>
+        <div class="r"><span>Citra</span><span class="m">prix <span class="n">18,40</span></span></div>
+        <div class="chips"><span class="chip ac">g</span><span class="chip">kg</span><span class="chip">pce</span><span class="chip">L</span></div>
+        <div class="r"><span class="m">Quantité</span><span class="big" style="font-size:22px">1</span></div>
+        <div class="chips"><span class="chip">+1</span><span class="chip">+5</span><span class="chip">+10</span><span class="chip">+100</span><span class="chip">−1</span></div>
+        <div class="low"><div class="btn">Ligne suivante ›</div></div></div>
+      <figcaption><b>Ton astuce de l'unité, étendue</b><code>pa3</code><span class="mut">L'unité met 1 ; les tuiles suivent l'unité (g : 1, 5, 10, 100 ; pièces : 1, 2, 3, 5, 10).</span></figcaption>
+      <button class="pick" type="button" data-id="pa3">Choisir</button></figure>
+  </div>
+</section>
+
+<!-- B : voir ce que ça change -->
+<section class="row" data-choix="effets">
+  <div class="dit"><h2>2. Voir ce qu'une action change ailleurs</h2>
+    <q>Création de recette, met à jour les stock et besoin. Achat du matériel, met à jour le stock, brassage, met à jour les stock. Vente, met à jour les finances</q><small>10.11 · « je veux un Tab en bas, qui me montrer le changement dans mes finances type un peu comme Lignes serrées v6a » (10.11) ; « ça a des conséquences sur tout » (15.11)</small></div>
+  <div class="grp">
+    <figure data-reference><span class="ref-tag">Aujourd'hui · dessiné d'après le code</span><div class="ph">
+        <div class="bar"><span>Nouvelle dépense</span><span class="m">✕</span></div>
+        <div class="r"><span>Brau- und Rauchshop</span><span class="n">86,50</span></div>
+        <div class="r dim"><span>23 lignes</span><span class="m">relues</span></div>
+        <div class="low"><div class="r"><span class="ok-t">✓ Dépense enregistrée</span></div><p class="m">Le stock, la caisse et le besoin changent, mais rien ne le dit.</p></div></div>
+      <figcaption><b>L'effet est invisible</b><span class="mut">Brasser décompte les ingrédients seuls ; laver un fût, rien.</span></figcaption></figure>
+    <figure data-variante="pe1"><div class="ph">
+        <div class="bar"><span>Finances</span><span class="m">nov.</span></div>
+        <div class="r"><span>Caisse</span><span class="n">3 913,50</span></div>
+        <div class="tab"><b>Tes finances, avant → après</b>
+          <div class="sl"><span>Caisse</span><span class="n">4 000,00 → <b>3 913,50</b></span><i style="--a:80%;--b:78%"></i></div>
+          <div class="sl"><span>Dépenses nov.</span><span class="n">1 240,00 → <b>1 326,50</b></span><i style="--a:48%;--b:52%"></i></div>
+          <div class="sl"><span>Brassage nov.</span><span class="n">410,00 → <b>496,50</b></span><i style="--a:30%;--b:37%"></i></div>
+          <div class="two"><div class="btn gh">Annuler</div><div class="btn">OK</div></div></div></div>
+      <figcaption><b>L'onglet du bas, en lignes serrées</b><code>pe1</code><span class="mut">À la manière de v6a, reprise 1:1 au port ; un toucher annule.</span></figcaption>
+      <button class="pick" type="button" data-id="pe1">Choisir</button></figure>
+    <figure data-variante="pe2"><div class="ph">
+        <div class="bar"><span>Nouvelle dépense</span><span class="m">✕</span></div>
+        <div class="r"><span>Brau- und Rauchshop</span><span class="n">86,50</span></div>
+        <div class="r dim"><span>23 lignes</span><span class="m">relues</span></div>
+        <div class="low"><span class="m">En enregistrant :</span><div class="chips"><span class="chip">caisse −86,50</span><span class="chip">malts +18 kg</span><span class="chip">houblons +300 g</span></div><div class="btn">Terminé</div></div></div>
+      <figcaption><b>Avant de valider</b><code>pe2</code><span class="mut">Les effets se recalculent en direct au-dessus de Terminé.</span></figcaption>
+      <button class="pick" type="button" data-id="pe2">Choisir</button></figure>
+    <figure data-variante="pe3"><div class="ph">
+        <div class="bar"><span>Stocks</span><span class="m">Malts</span></div>
+        <div class="r col"><span>Maris Otter <b class="n">31 kg</b></span><span class="chip ok" style="align-self:flex-start">+6 · facture 27.04 ↺</span></div>
+        <div class="r col"><span>Pilsner <b class="n">8 kg</b></span><span class="chip" style="align-self:flex-start">−6 · Milk Stout 12.11 ↺</span></div>
+        <div class="r"><span>Citra</span><span class="n">400 g</span></div></div>
+      <figcaption><b>La trace sur place</b><code>pe3</code><span class="mut">Chaque chiffre dit quelle action l'a bougé ; ↺ l'annule.</span></figcaption>
+      <button class="pick" type="button" data-id="pe3">Choisir</button></figure>
+    <figure data-variante="pe4"><div class="ph">
+        <div class="bar"><span>Brassins</span><span class="m">Milk Stout</span></div>
+        <div class="r"><span class="ok-t">✓ Brassage fini</span><span class="m">malts, houblons −</span></div>
+        <div class="r col warn"><span>Acide phospho. : combien par brassin, d'habitude ?</span>
+          <div class="rail" style="margin:12px 4px 4px"><span class="knob" style="left:0"></span></div>
+          <div style="display:flex;justify-content:space-between"><span class="n">— ml</span><span class="m">glisse</span></div><div class="btn">Retenir</div><span class="m">Une seule fois. Ensuite, décompté seul.</span></div>
+        <div class="r dim"><span>Pas maintenant</span></div></div>
+      <figcaption><b>La question une fois</b><code>pe4</code><span class="mut">Un consommable sans dose connue : tu la donnes au curseur, une fois, jamais inventée.</span></figcaption>
+      <button class="pick" type="button" data-id="pe4">Choisir</button></figure>
+    <figure data-variante="pe5"><div class="ph">
+        <div class="bar"><span>Effets de la semaine</span><span class="m">↺</span></div>
+        <div class="r col"><span>Recette Milk Stout créée</span><span class="m">→ À acheter : lactose 1 kg</span></div>
+        <div class="r col"><span>Facture Brau-Rauchshop</span><span class="m">→ stock malts +18 kg · caisse −86,50</span></div>
+        <div class="r col"><span>Brassage Milk Stout</span><span class="m">→ stock malts −8,6 kg</span></div>
+        <div class="r col"><span>Vente 2 fûts</span><span class="m">→ caisse +360,00</span></div></div>
+      <figcaption><b>Toute ta chaîne</b><code>pe5</code><span class="mut">Recette, achat, brassage, vente : chaque action, son effet, au même endroit.</span></figcaption>
+      <button class="pick" type="button" data-id="pe5">Choisir</button></figure>
+  </div>
+</section>
+
+<!-- C : créer un brassin -->
+<section class="row" data-choix="brassin">
+  <div class="dit"><h2>3. Créer un brassin ou une recette sans détour</h2>
+    <q>Créer : aucune · … · Recettes : aucune Refait pour celle aucune... Ça resoud aucune de mes problématique</q><small>15.11 · en ligne, RL-8 : Nouvelle recette s'ouvre à l'étape 3/7 ; en local : « Créer » refuse et renvoie modifier la recette</small></div>
+  <div class="grp">
+    <figure data-reference><span class="ref-tag">Aujourd'hui · app locale, 390</span>
+      <a class="shot" href="img/avant-brassin.png" target="_blank" data-agrandir><img src="img/avant-brassin.png" alt="Préparer un brassin : message rouge, matériel non figé, il faut quitter pour modifier la recette" style="margin-top:-190px"></a>
+      <figcaption><b>Bloqué, il faut ressortir</b><span class="mut">« Matériel non figé » : quitter, modifier la recette, revenir.</span></figcaption></figure>
+    <figure data-variante="pb1"><div class="ph">
+        <div class="bar"><span>Préparer un brassin</span><span class="m">✕</span></div>
+        <div class="r"><span>Milk Stout</span><span class="n">30 L</span></div>
+        <div class="r col warn"><span>Ton matériel actuel tient 27 L</span></div>
+        <div class="chips"><span class="chip ac">À définir</span><span class="chip">Aujourd'hui</span><span class="chip">Autre date</span></div>
+        <div class="low"><div class="btn acc">Créer à 27 L</div><div class="btn gh">Garder 30 L et régler après</div></div></div>
+      <figcaption><b>Adapter et créer</b><code>pb1</code><span class="mut">Le bouton fait l'adaptation lui-même, sans quitter la feuille.</span></figcaption>
+      <button class="pick" type="button" data-id="pb1">Choisir</button></figure>
+    <figure data-variante="pb2"><div class="ph">
+        <div class="bar"><span>Brassins</span><span class="m">Terminés</span></div>
+        <div class="r"><span>Milk Stout · 12.11</span><span class="chip ac">↻ Rebrasser</span></div>
+        <div class="r"><span>NEIPA · 28.10</span><span class="chip">↻</span></div>
+        <div class="r"><span>Pale Ale · 14.10</span><span class="chip">↻</span></div>
+        <div class="low"><div class="r"><span class="ok-t">✓ Milk Stout créé, à brasser</span><span class="m">Annuler</span></div></div></div>
+      <figcaption><b>Rebrasser</b><code>pb2</code><span class="mut">Un toucher sur un brassin passé : même recette, même matériel.</span></figcaption>
+      <button class="pick" type="button" data-id="pb2">Choisir</button></figure>
+    <figure data-variante="pb3"><div class="ph">
+        <div class="bar"><span>Brassins</span><span class="m">À brasser</span></div>
+        <div class="r col"><span>Milk Stout · 30 L</span><span class="chip w" style="align-self:flex-start">matériel à régler</span></div>
+        <div class="r"><span>NEIPA</span><span class="m">jeudi</span></div>
+        <p class="m">Créé tout de suite ; le réglage attend le jour J.</p></div>
+      <figcaption><b>Créer, régler plus tard</b><code>pb3</code><span class="mut">Plus de refus : le point reste sur la carte jusqu'au brassage.</span></figcaption>
+      <button class="pick" type="button" data-id="pb3">Choisir</button></figure>
+    <figure data-variante="pb4"><div class="ph">
+        <div class="bar"><span>Nouvelle recette</span><span class="m">✕</span></div>
+        <div class="r col"><span>Partir de ta dernière NEIPA ?</span><span class="m">neipa v3 · 24 L</span></div>
+        <div class="two"><div class="btn acc">Copier en v4</div><div class="btn gh">De zéro</div></div>
+        <div class="r dim"><span>Étape 1 · Nom</span><span>neipa v4</span></div></div>
+      <figcaption><b>Depuis ta dernière du style</b><code>pb4</code><span class="mut">La recette copiée s'ouvre à l'étape 1, nom déjà posé.</span></figcaption>
+      <button class="pick" type="button" data-id="pb4">Choisir</button></figure>
+  </div>
+</section>
+
+<!-- D : la mesure au jour J -->
+<section class="row" data-choix="mesure">
+  <div class="dit"><h2>4. Le jour J, la mesure qui t'appelle</h2>
+    <q>Ça invite pas au mesures, c'est pas bien fait, pas de renvoi...</q><small>10.11, sur ta capture de la saccharification · « utilise des slider plutot que de chiffre des input de chiffre sur téléphone » (10.11) ; m2 choisie</small></div>
+  <div class="grp">
+    <figure data-reference><span class="ref-tag">Ta capture du 10.11</span>
+      <a class="shot" href="img/avant-mesure.jpg" target="_blank" data-agrandir><img src="img/avant-mesure.jpg" alt="Saccharification 59:36, maintien 67 °C, relevé vide, Moût à mesurer, petit bouton Relever le moût" style="margin-top:-150px"></a>
+      <figcaption><b>« relevé — » et un petit bouton</b><span class="mut">Rien ne mène de « à mesurer » à la mesure.</span></figcaption></figure>
+    <figure data-variante="pm1"><div class="ph">
+        <div class="bar"><span>Saccharification</span><span class="n">59:36</span></div>
+        <div class="r col warn"><span><b>Température du palier</b> · à relever</span>
+          <div class="rail" style="margin:12px 4px 6px"><i style="width:50%"></i><span class="tgt" style="left:50%"></span><span class="knob" style="left:47%"></span></div>
+          <div style="display:flex;justify-content:space-between"><span class="n">— °C</span><span class="m">cible 67 °C</span></div></div>
+        <div class="r col"><span><b>pH d'empâtage</b> · à 15′</span><span class="m">cible 5,2 à 5,4</span></div>
+        <div class="two"><div class="btn">Relever</div><div class="btn gh">Plus tard</div></div></div>
+      <figcaption><b>Le palier appelle</b><code>pm1</code><span class="mut">Au palier, la mesure attendue vient en tête, curseur sur sa cible (geste de m2).</span></figcaption>
+      <button class="pick" type="button" data-id="pm1">Choisir</button></figure>
+    <figure data-variante="pm2"><div class="ph">
+        <div class="bar"><span>Fin de journée</span><span class="m">Milk Stout</span></div>
+        <div class="r"><span>Temp. saccharification</span><span class="chip w">à relever</span></div>
+        <div class="r"><span>pH d'empâtage</span><span class="n">5,3 ✓</span></div>
+        <div class="r"><span>DO</span><span class="chip w">à relever</span></div>
+        <div class="low"><div class="btn">Relever les 2 au curseur</div></div></div>
+      <figcaption><b>Ce qui manque, à la fin</b><code>pm2</code><span class="mut">Rien ne bloque pendant le brassage ; les oublis attendent ici.</span></figcaption>
+      <button class="pick" type="button" data-id="pm2">Choisir</button></figure>
+  </div>
+</section>
+
+<!-- E : le besoin relié -->
+<section class="row" data-choix="besoin">
+  <div class="dit"><h2>5. Le besoin se relie seul au scan</h2>
+    <q>Je scane devis ou achat, et l'ai fait le lien et l'enlève de la "Todo"</q><small>15.11 · « en théorie il y en a pas besoin ?? » (15.11) ; kyg1 choisie, sans étape</small></div>
+  <div class="grp">
+    <figure data-reference><span class="ref-tag">Aujourd'hui · app locale, 390</span>
+      <a class="shot" style="height:300px" href="img/avant-lien.png" target="_blank" data-agrandir><img src="img/avant-lien.png" alt="Bas de Nouvelle dépense : Lier à une dépense prévue, facultatif" style="margin-top:-436px"></a>
+      <figcaption><b>Lien à la main</b><span class="mut">« Lier à une dépense prévue · facultatif », dans une liste.</span></figcaption></figure>
+    <figure data-variante="pl1"><div class="ph">
+        <div class="bar"><span>Nouvelle dépense</span><span class="m">✕</span></div>
+        <div class="r"><span>Inox &amp; Co</span><span class="n">750,00</span></div>
+        <div class="r col"><span class="m">Pour</span><span><b>Fermenteur supplémentaire</b> <span class="chip ok">trouvé</span></span><span class="m">✕ pour délier</span></div>
+        <div class="low"><div class="btn">Terminé</div></div></div>
+      <figcaption><b>Déjà relié, défaisable</b><code>pl1</code><span class="mut">L'IA remplit la ligne ; le besoin sort de la liste à Terminé.</span></figcaption>
+      <button class="pick" type="button" data-id="pl1">Choisir</button></figure>
+    <figure data-variante="pl2"><div class="ph">
+        <div class="bar"><span>À venir</span><span class="m">Réalisés</span></div>
+        <div class="r col"><span><b>Fermenteur supplémentaire</b></span><span class="ok-t">payé · facture du 15.11</span></div>
+        <div class="r"><span>Hotte de brassage</span><span class="m">devis</span></div>
+        <span class="m">Caisse fin de mois</span>
+        <svg viewBox="0 0 240 70" style="width:100%;height:70px" aria-hidden="true"><path d="M4 18 H70 V44 H150 V40 H236" fill="none" stroke="var(--acc)" stroke-width="2.5"/><text x="74" y="62" font-size="17" fill="var(--phmut)">Fermenteur −750</text></svg></div>
+      <figcaption><b>Silencieux, tracé</b><code>pl2</code><span class="mut">Rien dans la dépense : le lien se lit dans Réalisés et sur la courbe de kh1r.</span></figcaption>
+      <button class="pick" type="button" data-id="pl2">Choisir</button></figure>
+  </div>
+</section>
+
+<section class="row">
+  <h2>Sans choix à faire</h2>
+  <ul class="sansc">
+    <li>Retirer les entrées « Atelier Houblons V5.5 » (15.11 : « moi plus du tout ») ; le code et les données restent.</li>
+    <li>Le + et la période sont déjà choisis (b1 et m3) : ces astuces s'y greffent sans les changer.</li>
+    <li>Le besoin d'équipement et le planificateur ont leur propre mission.</li>
+  </ul>
+</section>
+</main>
+<div class="ans"><output id="rep" aria-live="polite">Rien de choisi</output><button class="copy" id="copier" type="button">Copier</button></div>
+<script>
+(function(){
+  var rep=document.getElementById('rep');
+  function maj(){var ids=[].slice.call(document.querySelectorAll('.pick[aria-pressed="true"]')).map(function(b){return b.dataset.id;});rep.textContent=ids.length?ids.join(' · '):'Rien de choisi';}
+  document.querySelectorAll('.pick').forEach(function(b){b.setAttribute('aria-pressed','false');b.addEventListener('click',function(){var on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',String(on));b.textContent=on?'Choisi ✓':'Choisir';maj();});});
+  document.getElementById('copier').addEventListener('click',function(){var t=rep.textContent;var sel=function(){var r=document.createRange();r.selectNodeContents(rep);var s=getSelection();s.removeAllRanges();s.addRange(r);};try{navigator.clipboard.writeText(t).then(function(){document.getElementById('copier').textContent='Copié';setTimeout(function(){document.getElementById('copier').textContent='Copier';},1500);},sel);}catch(e){sel();}});
+})();
+</script>

@@ -1,0 +1,44 @@
+{
+ "reglage": "4-hydrogen@high",
+ "cas": "D4-donnees-rares",
+ "tache": "diagnoseBatch",
+ "moitie": "jugement",
+ "note": {
+  "qualite": 0.75,
+  "utilisable": true,
+  "passes": [
+   "gravité normal ou surveiller (pas agir, pas urgent)",
+   "dit qu’il manque des relevés / mesurer la densité",
+   "pistes : étanchéité du couvercle, patience, délai de démarrage"
+  ],
+  "manques": [
+   "aucune atténuation inventée (un seul relevé)"
+  ]
+ },
+ "ms": 7896,
+ "coutMicro": 14564,
+ "etat": "STOP",
+ "valeur": {
+  "verdict": "Situation à surveiller sans inquiétude immédiate : à 36 heures et 18 °C, l'absence de bulles dans le barboteur n'indique pas une fermentation bloquée, d'autant qu'aucune mesure de densité n'a encore été relevée depuis le jour 0.",
+  "severity": "surveiller",
+  "causes": [
+   {
+    "cause": "Manque d'étanchéité du fermenteur (couvercle ou joint du barboteur) laissant échapper le CO2 alors que la fermentation est active",
+    "probability": 0.5,
+    "action": "Vérifier l'apparition d'un krausen (mousse en surface) et contrôler la densité actuelle au densimètre (ou réfractomètre avec correction) pour confirmer si la densité a baissé sous 1.048."
+   },
+   {
+    "cause": "Phase de latence normale un peu longue pour SafAle US-05 ensemencée à 48 g/hL (11,5 g pour 24 L à 1.048) dans le bas de sa plage thermique (18 °C)",
+    "probability": 0.4,
+    "action": "Monter la consigne de température à 19-20 °C et mesurer la densité à 48-60 heures post-ensemencement pour vérifier une baisse mesurable (au moins 2 à 4 points de densité)."
+   },
+   {
+    "cause": "Baisse de viabilité du sachet de levure (péremption dépassée, stockage inadéquat ou choc thermique à l'ensemencement)",
+    "probability": 0.1,
+    "action": "Contrôler la date limite d'utilisation sur le sachet ; si la densité reste strictement à 1.048 et qu'aucun krausen n'est visible après 60 heures à 19-20 °C, réensemencer avec un sachet neuf de SafAle US-05."
+   }
+  ],
+  "apparentAttenuationPct": 0,
+  "immediateAction": "Inspecter visuellement le fermenteur à la recherche d'un krausen, vérifier l'étanchéité du joint du barboteur et effectuer une mesure de densité réelle avant toute intervention sur le moût."
+ }
+}

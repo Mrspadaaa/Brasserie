@@ -1,0 +1,12 @@
+import { createRequire } from 'node:module';
+const require = createRequire('C:/Users/mrspa/Documents/Brasserie/.claude/worktrees/optimistic-ptolemy-2d1278/package.json');
+const puppeteer = require('puppeteer-core');
+const D='C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-11-17-carnet-retouches/maquettes/';
+const nav = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: 'new' });
+const p = await nav.newPage();
+await p.setViewport({ width: 390, height: 844, isMobile:true, hasTouch:true, deviceScaleFactor: 1 });
+await p.goto('file:///'+D+'v01.html',{waitUntil:'networkidle0'}).catch(()=>{});
+await new Promise(r=>setTimeout(r,600));
+console.log(await p.evaluate(()=>[...document.body.children].map(e=>e.tagName+'.'+e.className+' '+JSON.stringify(e.getBoundingClientRect().toJSON?.()??{})).join('\n')));
+await p.screenshot({path:'cap/v01-page.png',fullPage:true});
+await nav.close();

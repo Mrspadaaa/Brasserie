@@ -1,0 +1,128 @@
+[
+ {
+  "v": "l1-a",
+  "f": "1-menu",
+  "base": "gd1",
+  "legende": "Le + volant, ouvert sur le calendrier : « Idée » en tête de « Poser en S47 ». Le doigt touche Idée."
+ },
+ {
+  "v": "l1-a",
+  "f": "2-dire",
+  "base": "gd1",
+  "legende": "La dictée écoute déjà, sans clavier. La semaine se change d’un toucher (S47 par défaut) : le doigt prend S49."
+ },
+ {
+  "v": "l1-a",
+  "f": "3-pose",
+  "base": "gd1",
+  "legende": "Gardée : une ampoule sur l’en-tête de S49, comme « Bière au sapin » en S50. Rien d’autre ne bouge. Bandeau Annuler."
+ },
+ {
+  "v": "l1-a",
+  "f": "4-ouvre",
+  "base": "gd1",
+  "legende": "Un toucher sur l’ampoule : une bulle sous les soldes, le temps de lire. « Ouvrir au carnet » mène à l’idée."
+ },
+ {
+  "v": "l1-b",
+  "f": "1-appui",
+  "base": "gd1",
+  "legende": "Appui long sur la semaine S49 (son en-tête) : la colonne s’éclaire, l’anneau se remplit, « Idée en S49 » s’annonce."
+ },
+ {
+  "v": "l1-b",
+  "f": "2-dire",
+  "base": "gd1",
+  "legende": "Doigt levé : la bulle reste accrochée à S49 et écoute déjà. Il parle, « Garder ». Le clavier reste possible, jamais imposé."
+ },
+ {
+  "v": "l1-b",
+  "f": "3-pose",
+  "base": "gd1",
+  "legende": "Même trace discrète : l’ampoule de S49. Pas de rangée, pas de case : la frise garde ses 7 rangées."
+ },
+ {
+  "v": "l1-b",
+  "f": "4-ouvre",
+  "base": "carnet",
+  "legende": "Un toucher sur l’ampoule ouvre directement l’idée dans Carnets (Stocks › Matériel), datée « S49 · 30 nov. », avec le retour au calendrier."
+ },
+ {
+  "v": "l1-c",
+  "f": "1-glisse",
+  "base": "gd1",
+  "legende": "On tire le + volant sur une semaine : la colonne S50 s’allume en cible, « Lâcher : idée en S50 » s’annonce."
+ },
+ {
+  "v": "l1-c",
+  "f": "2-dire",
+  "base": "gd1",
+  "legende": "Lâché : la dictée écoute, la semaine vient du lâcher (pas de puces à choisir). « Garder au carnet »."
+ },
+ {
+  "v": "l1-c",
+  "f": "3-pose",
+  "base": "gd1",
+  "legende": "S50 avait déjà « Bière au sapin » : son ampoule porte maintenant « 2 ». Toujours un seul signe par semaine."
+ },
+ {
+  "v": "l1-c",
+  "f": "4-ouvre",
+  "base": "gd1",
+  "legende": "Un toucher sur l’ampoule : les idées de la semaine, une ligne chacune ; une ligne ouvre l’idée au carnet."
+ },
+ {
+  "v": "l29-a",
+  "f": "1-lot",
+  "base": "lot",
+  "legende": "Fiche du lot 41 : trois pastilles « lié à » sous le titre (recette, fournisseur des malts, idée), « +2 » pour le reste. Les clients, déjà dans l’arbre, ne sont pas répétés."
+ },
+ {
+  "v": "l29-a",
+  "f": "2-brouwland",
+  "base": "four",
+  "legende": "Le toucher ouvre la fiche Brouwland, au bon endroit : le Pilsner du lot 41 marqué, « ‹ Lot 41 » pour revenir. Le retour reste collé en haut pendant qu’on lit."
+ },
+ {
+  "v": "l29-b",
+  "f": "1-lot",
+  "base": "lot",
+  "legende": "Mêmes pastilles sous le titre du lot 41. Le doigt touche « Idée »."
+ },
+ {
+  "v": "l29-b",
+  "f": "2-apercu",
+  "base": "lot",
+  "legende": "Le toucher montre l’idée sur place, sans quitter le lot ; « Ouvrir au carnet » pour aller plus loin. Le reste de la fiche ne bouge pas."
+ },
+ {
+  "v": "l14-a",
+  "f": "1-courses",
+  "base": "stk",
+  "legende": "Stocks, à commander (base C telle quelle, liste par semaine) : chaque ligne porte son fournisseur. Le doigt touche « Commander ces 3 »."
+ },
+ {
+  "v": "l14-a",
+  "f": "2-feuille",
+  "base": "stk",
+  "legende": "« Commander ces 3 » : la feuille range par fournisseur, avec la dépense prévue et le délai appris. Le doigt touche « Commandé » chez Brouwland."
+ },
+ {
+  "v": "l14-a",
+  "f": "3-commande",
+  "base": "stk",
+  "legende": "Munich et Fuggles passent « en route · attendu 22 nov. » (souvent 6 j). Pastille 3 → 1 : la soude reste. Bandeau Annuler."
+ },
+ {
+  "v": "l14-b",
+  "f": "1-fiche",
+  "base": "four",
+  "legende": "Fiche Brouwland : une ligne d’en-tête dit ce qui est à commander chez lui (Munich, Fuggles du Porter), dépense prévue comprise. Un toucher sur « Commandé », facultatif."
+ },
+ {
+  "v": "l14-b",
+  "f": "2-commande",
+  "base": "four",
+  "legende": "La ligne passe au vert : attendu ≈ 22 nov., −55 posé au calendrier, Annuler sur place. Sous son délai appris (souvent 6 j), la livraison attendue : une date, pas un compteur."
+ }
+]

@@ -1,0 +1,48 @@
+ETAPE 0 OK — carnet vide, aucune donnée · 0 touchers, 0 frappes
+ETAPE 1 OK — créer l’idée « embouteillage » · 1 touchers, 14 frappes
+ETAPE 2 OK — façon « gravité », avec ce qu’il en pense · 0 touchers, 38 frappes
+ETAPE 3 OK — façon « isobarique » · 0 touchers, 51 frappes
+ETAPE 4 OK — critère « minimiser l’oxygène » ; l’IA penche pour Isobarique · 1 touchers, 28 frappes
+ETAPE 5 OK — retenir Isobarique, avec son pourquoi · 1 touchers, 42 frappes
+ETAPE 6 OK — noter une recherche · 1 touchers, 74 frappes
+ETAPE 7 OK — coller le lien 1 (www.brasserie-shop-valais.ch) · 1 touchers, 0 frappes
+ETAPE 8 OK — coller le lien 2 (brassage-romandie.ch) · 1 touchers, 0 frappes
+ETAPE 9 OK — coller le lien 3 (brassage-romandie.ch) · 1 touchers, 0 frappes
+ETAPE 10 OK — coller le lien 4 (abfuelltechnik-west.de) · 1 touchers, 0 frappes
+ETAPE 11 OK — coller le lien 5 (imbottigliatrici-nord.it) · 1 touchers, 0 frappes
+ETAPE 12 OK — coller le lien 6 (brew-equip-lyon.fr) · 1 touchers, 0 frappes
+ETAPE 7-12 OK — les 6 articles : 5 fournisseurs, 4 pays · 2 touchers, 0 frappes
+ETAPE 13 OK — caractéristiques de l’IA gardées, une à soi · 5 touchers, 25 frappes
+ETAPE 14 OK — comparer sur l’oxygène puis le prix, noms courts · 2 touchers, 0 frappes
+ETAPE 15 OK — demander à l’IA si c’est disponible · 3 touchers, 0 frappes
+ETAPE 16 OK — choisir produit et fournisseur, pourquoi coché (0 frappe) · 6 touchers, 0 frappes
+ETAPE 17 OK — plus tard : la liste, puis pourquoi iso · 4 touchers, 0 frappes
+ETAPE 18 OK — pourquoi ce fournisseur · 1 touchers, 0 frappes
+ETAPE 19.1 OK — frigo de garde pour fûts : créer l’idée · 3 touchers, 25 frappes
+ETAPE 19.2 OK — frigo de garde pour fûts : deux façons · 0 touchers, 82 frappes
+ETAPE 19.3 OK — frigo de garde pour fûts : critère, façon retenue avec pourquoi · 2 touchers, 80 frappes
+ETAPE 19.4 OK — frigo de garde pour fûts : 3 liens collés · 4 touchers, 0 frappes
+ETAPE 19.5 OK — frigo de garde pour fûts : comparer sur le critère puis le prix · 4 touchers, 0 frappes
+ETAPE 19.6 OK — frigo de garde pour fûts : disponibilité par l’IA · 3 touchers, 0 frappes
+ETAPE 19.7 OK — frigo de garde pour fûts : choisir, pourquoi coché · 3 touchers, 0 frappes
+ETAPE 19.7b OK — frigo de garde pour fûts : piège — un pourquoi tapé que les tableaux contredisent · 2 touchers, 16 frappes
+ETAPE 19.8 OK — frigo de garde pour fûts : retrouver pourquoi · 4 touchers, 0 frappes
+ETAPE 20.1 OK — ventilation : créer l’idée · 3 touchers, 36 frappes
+ETAPE 20.2 OK — ventilation : deux façons · 3 touchers, 46 frappes
+ETAPE 20.3 OK — ventilation : toucher Ensuite, écrire ce qui compte avec ses mots · 2 touchers, 32 frappes
+ETAPE 20.4 OK — ventilation : cinq liens, un sans aperçu · 6 touchers, 0 frappes
+ETAPE 20.5 OK — ventilation : comparer, « consommation » retirée · 4 touchers, 0 frappes
+ETAPE 20.6 OK — ventilation : rien de choisi, « attendre l’avis du ferblantier » · 2 touchers, 31 frappes
+ETAPE 20.7 OK — ventilation : la ligne de la liste · 1 touchers, 0 frappes
+ETAPE 21.1 OK — évier inox pour laver les fûts : créer l’idée · 1 touchers, 31 frappes
+ETAPE 21.2 OK — évier inox pour laver les fûts : deux façons · 1 touchers, 0 frappes
+ETAPE 21.3 OK — évier inox pour laver les fûts : critère, façon retenue avec pourquoi · 3 touchers, 98 frappes
+ETAPE 21.4 OK — évier inox pour laver les fûts : 3 liens collés · 4 touchers, 0 frappes
+ETAPE 21.5 OK — évier inox pour laver les fûts : comparer sur le critère puis le prix · 4 touchers, 0 frappes
+ETAPE 21.6 OK — évier inox pour laver les fûts : disponibilité par l’IA · 3 touchers, 0 frappes
+ETAPE 21.7 OK — évier inox pour laver les fûts : choisir, pourquoi coché · 3 touchers, 0 frappes
+ETAPE 21.7b OK — évier inox pour laver les fûts : piège — un pourquoi tapé que les tableaux contredisent · 2 touchers, 14 frappes
+ETAPE 21.8 OK — évier inox pour laver les fûts : retrouver pourquoi · 4 touchers, 0 frappes
+DEFAUTS 0
+BILAN 0:0t/0f 1:1t/14f 2:0t/38f 3:0t/51f 4:1t/28f 5:1t/42f 6:1t/74f 7:1t/0f 8:1t/0f 9:1t/0f 10:1t/0f 11:1t/0f 12:1t/0f 7-12:2t/0f 13:5t/25f 14:2t/0f 15:3t/0f 16:6t/0f 17:4t/0f 18:1t/0f 19.1:3t/25f 19.2:0t/82f 19.3:2t/80f 19.4:4t/0f 19.5:4t/0f 19.6:3t/0f 19.7:3t/0f 19.7b:2t/16f 19.8:4t/0f 20.1:3t/36f 20.2:3t/46f 20.3:2t/32f 20.4:6t/0f 20.5:4t/0f 20.6:2t/31f 20.7:1t/0f 21.1:1t/31f 21.2:1t/0f 21.3:3t/98f 21.4:4t/0f 21.5:4t/0f 21.6:3t/0f 21.7:3t/0f 21.7b:2t/14f 21.8:4t/0f
+COEUR OK (45 étapes, 53 captures)

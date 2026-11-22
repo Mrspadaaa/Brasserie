@@ -1,0 +1,54 @@
+{
+ "reglage": "4-argon@low",
+ "kind": "fournisseurs",
+ "id": "citra",
+ "utilisable": true,
+ "produits": [
+  {
+   "name": "Citra (USA) 100 g Hopfenpellets Typ 90",
+   "url": "https://www.sios.ch/Citra-USA-100-g-Hopfenpellets-Typ-90_2",
+   "supplier": "SIOS",
+   "packageLabel": "100 g"
+  },
+  {
+   "name": "Citra 13.6% 5kg",
+   "url": "https://www.brauundrauchshop.ch/citra-136-2#stock-availability-value-12393",
+   "supplier": "Brau- und Rauchshop",
+   "packageLabel": "5kg"
+  },
+  {
+   "name": "Citra 13.6% 20kg",
+   "url": "https://www.brauundrauchshop.ch/citra-136-2#stock-availability-value-12394",
+   "supplier": "Brau- und Rauchshop",
+   "packageLabel": "20kg"
+  },
+  {
+   "name": "Citra 13.6%",
+   "url": "https://www.brauundrauchshop.ch/citra-136-2#stock-availability-value-2582",
+   "supplier": "Brau- und Rauchshop",
+   "packageLabel": "Preis/Gramm"
+  },
+  {
+   "name": "Citra® – Houblon aromatique américain 10 g",
+   "url": "https://brewstore.ch/ingredients-de-brassage-fr/houblons-fr/citra-10g-fr/",
+   "supplier": "Brewstore Suisse",
+   "packageLabel": "10 g"
+  },
+  {
+   "name": "Citra (USA) 12.5% AA Pellets Typ 90",
+   "url": "https://www.bierbrauzubehoer.ch/produktkategorien/hopfenshop/usa-pelletstyp-90/1257/citra-usa-12.5-aa-pellets-typ-90",
+   "supplier": "Sevibräu",
+   "packageLabel": "Gramm"
+  }
+ ],
+ "pertinentes": 6,
+ "exactes": 1,
+ "sourcesPrimaires": 0,
+ "faitCle": false,
+ "ms": 17688,
+ "coutMicro": 44965,
+ "web": 2,
+ "appels": 1,
+ "etat": "STOP",
+ "extrait": "Voici les fiches produit trouvées pour le houblon Citra en pellets :\n\n1. **Sios.ch** (Conditionnement exact confirmé)\n* **Nom :** Citra (USA) 100 g Hopfenpellets Typ 90\n* **Variété :** Citra (Pellets Typ 90)\n* **Conditionnement :** 100 g\n* **Prix :** Non affiché dans l'extrait (à vérifier par le ser"
+}

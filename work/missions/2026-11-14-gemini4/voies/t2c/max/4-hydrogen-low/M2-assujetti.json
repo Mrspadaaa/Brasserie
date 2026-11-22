@@ -1,0 +1,70 @@
+{
+ "reglage": "4-hydrogen@low",
+ "cas": "M2-assujetti",
+ "tache": "monthlySummary",
+ "moitie": "jugement",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [
+   "charges 2 251,20",
+   "recettes 1 621,50 (apport privé exclu)",
+   "solde −629,70",
+   "TVA collectée 121,50",
+   "TVA déductible 51,20",
+   "loyer 1 500,00"
+  ],
+  "manques": []
+ },
+ "ms": 4353,
+ "coutMicro": 15216,
+ "etat": "STOP",
+ "valeur": {
+  "period": "2026-10",
+  "totalCharges": 2251.2,
+  "totalRecettes": 1621.5,
+  "solde": -629.7,
+  "byCategory": [
+   {
+    "category": "Ventes",
+    "total": 1621.5,
+    "count": 2
+   },
+   {
+    "category": "Apport privé",
+    "total": 5000,
+    "count": 1
+   },
+   {
+    "category": "Matières premières",
+    "total": 102.6,
+    "count": 1
+   },
+   {
+    "category": "Énergie",
+    "total": 108.1,
+    "count": 1
+   },
+   {
+    "category": "Loyer",
+    "total": 1500,
+    "count": 1
+   },
+   {
+    "category": "Équipement",
+    "total": 540.5,
+    "count": 1
+   }
+  ],
+  "attentionPoints": [
+   "L'écriture V03 (5000 CHF) est un apport privé : elle est exclue des recettes d'exploitation et du calcul de la TVA.",
+   "L'écriture A04 (Cuve inox 300 L, 540.50 CHF TTC) est saisie en charge ; vérifier si elle relève d'un investissement à immobiliser.",
+   "Le résultat d'exploitation de la période est déficitaire (-629.70 CHF), bien que la trésorerie soit soutenue par l'apport privé."
+  ],
+  "highlights": [
+   "Assujettissement TVA (méthode effective) : TVA collectée de 121.50 CHF et TVA déductible de 51.20 CHF, soit une TVA nette due de 70.30 CHF."
+  ],
+  "tvaCollected": 121.5,
+  "tvaDeductible": 51.2
+ }
+}

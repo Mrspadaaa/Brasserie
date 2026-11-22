@@ -1,0 +1,895 @@
+{
+ "taches": [
+  {
+   "tache": "T1",
+   "depart": "repos",
+   "touchers": 0,
+   "frappes": 0,
+   "reussi": true,
+   "note": "sections En cours / Choisis ; états compare, idee, choisi, choisi"
+  },
+  {
+   "tache": "T2",
+   "depart": "repos",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "carnet créé : Étiqueteuse, propositions 5"
+  },
+  {
+   "tache": "T2b",
+   "depart": "raccourci",
+   "touchers": 1,
+   "frappes": 0,
+   "reussi": true,
+   "note": "raccourci « Nouvelle idée » : 1 toucher"
+  },
+  {
+   "tache": "T3",
+   "depart": "carnet",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "note dictée en tête du journal"
+  },
+  {
+   "tache": "T4",
+   "depart": "ventilation",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "aperçu : photo, Extracteur EC silencieux 1400, 780 CHF, Lüftung Basel · CH"
+  },
+  {
+   "tache": "T5",
+   "depart": "partage",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "Hotte compacte inox 80 cm → Rangé dans ventilation (IA, exemple)"
+  },
+  {
+   "tache": "T5b",
+   "depart": "partage",
+   "touchers": 4,
+   "frappes": 0,
+   "reussi": true,
+   "note": "Changer : puces des carnets, puis « Rangé dans évier inox » + Annuler"
+  },
+  {
+   "tache": "T6",
+   "depart": "ventilation",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "œil plein (encre), Veille tous les 3 jours : prix et stock, ici et ailleurs"
+  },
+  {
+   "tache": "T7",
+   "depart": "repos",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "liste « −600 » (0 toucher), puis fiche : baisse et offre Getränketechnik Ost"
+  },
+  {
+   "tache": "T8",
+   "depart": "ventilation",
+   "touchers": 1,
+   "frappes": 0,
+   "reussi": true,
+   "note": "colonne ★ « Débitm³/h · plus = mieux », meneur a-v1"
+  },
+  {
+   "tache": "T9",
+   "depart": "ventilation-comparer",
+   "touchers": 1,
+   "frappes": 0,
+   "reussi": true,
+   "note": "colonne « BruitdB · moins = mieux », meneur a-v4"
+  },
+  {
+   "tache": "T10",
+   "depart": "ventilation-comparer",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "gaine retirée"
+  },
+  {
+   "tache": "T10b",
+   "depart": "ventilation-comparer",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "critère ★ posé sur bruit ; ★ Critère : bruit + Annuler"
+  },
+  {
+   "tache": "T11",
+   "depart": "ventilation",
+   "touchers": 1,
+   "frappes": 0,
+   "reussi": true,
+   "note": "hotte retenue ; Façon retenue : Hotte inox + extracteur"
+  },
+  {
+   "tache": "T11b",
+   "depart": "ventilation",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "écartée, raison tirée du tableau : Écartée : débit 1’500 contre 1’800 m³/h"
+  },
+  {
+   "tache": "T11c",
+   "depart": "ventilation",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "dictée → façon ajoutée ; Façon ajoutée : VMC double flux (IA, exemple)"
+  },
+  {
+   "tache": "T12",
+   "depart": "ventilation-comparer",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "ligne puis Choisir : choisi, raisons « débit 1’800 m³/h, le plus haut ; SAV en Suisse », écarté « Extracteur hélicoïde−2’180 CHF, débit 1’500 »"
+  },
+  {
+   "tache": "T13",
+   "depart": "repos",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "Pourquoi : Pré-évacuation 4 becs, Brassage Romandie, « SAV en Suisse », lien « Façon : Isobarique »"
+  },
+  {
+   "tache": "T14",
+   "depart": "frigo",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "note dictée au journal"
+  },
+  {
+   "tache": "T14b",
+   "depart": "evier",
+   "touchers": 3,
+   "frappes": 0,
+   "reussi": true,
+   "note": "dictée « il faut… » → « Critère ? » → Oui : jalon « Critère : profondeur de bac »"
+  },
+  {
+   "tache": "T15",
+   "depart": "repos",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "calendrier global : 2 déc.Achat, embouteillage11’700"
+  }
+ ],
+ "ecrans": [
+  {
+   "ecran": "repos",
+   "ok": true,
+   "mots": 35,
+   "police": 14,
+   "pe": "En cours",
+   "cmin": 7.24,
+   "ce": "En cours",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "repos (cave)",
+   "ok": true,
+   "mots": 35,
+   "police": 14,
+   "pe": "En cours",
+   "cmin": 7.26,
+   "ce": "En cours",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "carnet",
+   "ok": true,
+   "mots": 40,
+   "police": 14,
+   "pe": "Achat le 2 déc.",
+   "cmin": 7.24,
+   "ce": "Articles",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "carnet (cave)",
+   "ok": true,
+   "mots": 40,
+   "police": 14,
+   "pe": "Achat le 2 déc.",
+   "cmin": 7.26,
+   "ce": "Articles",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "articles",
+   "ok": true,
+   "mots": 35,
+   "police": 14,
+   "pe": "CHF",
+   "cmin": 7.24,
+   "ce": "Journal",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "articles (cave)",
+   "ok": true,
+   "mots": 35,
+   "police": 14,
+   "pe": "CHF",
+   "cmin": 7.26,
+   "ce": "Journal",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "comparer",
+   "ok": true,
+   "mots": 40,
+   "police": 14,
+   "pe": "Oxygène",
+   "cmin": 6.15,
+   "ce": "40",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "comparer (cave)",
+   "ok": true,
+   "mots": 40,
+   "police": 14,
+   "pe": "Oxygène",
+   "cmin": 7.26,
+   "ce": "Journal",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "pourquoi",
+   "ok": true,
+   "mots": 37,
+   "police": 14,
+   "pe": "Brassage Romandie · CH, ",
+   "cmin": 7.24,
+   "ce": "Brassage Romandie · CH, ",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "pourquoi (cave)",
+   "ok": true,
+   "mots": 37,
+   "police": 14,
+   "pe": "Brassage Romandie · CH, ",
+   "cmin": 6.94,
+   "ce": "Brassage Romandie · CH, ",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "pourquoi-facon",
+   "ok": true,
+   "mots": 14,
+   "police": 14,
+   "pe": "Façon, 22 oct.",
+   "cmin": 7.24,
+   "ce": "Façon, 22 oct.",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "pourquoi-facon (cave)",
+   "ok": true,
+   "mots": 14,
+   "police": 14,
+   "pe": "Façon, 22 oct.",
+   "cmin": 6.94,
+   "ce": "Façon, 22 oct.",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "fiche",
+   "ok": true,
+   "mots": 38,
+   "police": 14,
+   "pe": "Brassage Romandie · CH",
+   "cmin": 7.24,
+   "ce": "Brassage Romandie · CH",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "fiche (cave)",
+   "ok": true,
+   "mots": 38,
+   "police": 14,
+   "pe": "Brassage Romandie · CH",
+   "cmin": 6.94,
+   "ce": "Brassage Romandie · CH",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "choisi-feuille",
+   "ok": true,
+   "mots": 40,
+   "police": 14,
+   "pe": "Inox Broye · CH",
+   "cmin": 7.24,
+   "ce": "Inox Broye · CH",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "choisi-feuille (cave)",
+   "ok": true,
+   "mots": 40,
+   "police": 14,
+   "pe": "Inox Broye · CH",
+   "cmin": 6.94,
+   "ce": "Inox Broye · CH",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "carac",
+   "ok": true,
+   "mots": 23,
+   "police": 14,
+   "pe": "★ = critère qui tranche",
+   "cmin": 7.24,
+   "ce": "★ = critère qui tranche",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "carac (cave)",
+   "ok": true,
+   "mots": 23,
+   "police": 14,
+   "pe": "★ = critère qui tranche",
+   "cmin": 6.94,
+   "ce": "★ = critère qui tranche",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "ventilation",
+   "ok": true,
+   "mots": 33,
+   "police": 14,
+   "pe": "Façons",
+   "cmin": 7.24,
+   "ce": "Articles",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "ventilation (cave)",
+   "ok": true,
+   "mots": 33,
+   "police": 14,
+   "pe": "Façons",
+   "cmin": 7.26,
+   "ce": "Articles",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "ventilation-articles",
+   "ok": true,
+   "mots": 40,
+   "police": 14,
+   "pe": "CHF",
+   "cmin": 7.24,
+   "ce": "Journal",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "ventilation-articles (cave)",
+   "ok": true,
+   "mots": 40,
+   "police": 14,
+   "pe": "CHF",
+   "cmin": 7.26,
+   "ce": "Journal",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "ventilation-comparer",
+   "ok": true,
+   "mots": 33,
+   "police": 14,
+   "pe": "Débit",
+   "cmin": 6.15,
+   "ce": "1’800",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "ventilation-comparer (cave)",
+   "ok": true,
+   "mots": 33,
+   "police": 14,
+   "pe": "Débit",
+   "cmin": 7.26,
+   "ce": "Journal",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "frigo",
+   "ok": true,
+   "mots": 33,
+   "police": 14,
+   "pe": "Planifier l’achat",
+   "cmin": 7.24,
+   "ce": "Articles",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "frigo (cave)",
+   "ok": true,
+   "mots": 33,
+   "police": 14,
+   "pe": "Planifier l’achat",
+   "cmin": 7.26,
+   "ce": "Articles",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "frigo-comparer",
+   "ok": true,
+   "mots": 37,
+   "police": 14,
+   "pe": "Ambiante max",
+   "cmin": 6.15,
+   "ce": "43",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "frigo-comparer (cave)",
+   "ok": true,
+   "mots": 37,
+   "police": 14,
+   "pe": "Ambiante max",
+   "cmin": 7.26,
+   "ce": "Journal",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "frigo-pourquoi",
+   "ok": true,
+   "mots": 34,
+   "police": 14,
+   "pe": "Froid Léman · CH, 10 oct",
+   "cmin": 7.24,
+   "ce": "Froid Léman · CH, 10 oct",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "frigo-pourquoi (cave)",
+   "ok": true,
+   "mots": 34,
+   "police": 14,
+   "pe": "Froid Léman · CH, 10 oct",
+   "cmin": 6.94,
+   "ce": "Froid Léman · CH, 10 oct",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "evier",
+   "ok": true,
+   "mots": 31,
+   "police": 14,
+   "pe": "15 nov.",
+   "cmin": 7.24,
+   "ce": "Articles",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "evier (cave)",
+   "ok": true,
+   "mots": 31,
+   "police": 14,
+   "pe": "15 nov.",
+   "cmin": 7.26,
+   "ce": "Articles",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "cal",
+   "ok": true,
+   "mots": 26,
+   "police": 14,
+   "pe": "Aujourd’hui",
+   "cmin": 7.24,
+   "ce": "nov.",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "cal (cave)",
+   "ok": true,
+   "mots": 26,
+   "police": 14,
+   "pe": "Aujourd’hui",
+   "cmin": 6.94,
+   "ce": "nov.",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "lien",
+   "ok": true,
+   "mots": 20,
+   "police": 14,
+   "pe": "Lüftung Basel · CH",
+   "cmin": 7.24,
+   "ce": "Lüftung Basel · CH",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "lien (cave)",
+   "ok": true,
+   "mots": 20,
+   "police": 14,
+   "pe": "Lüftung Basel · CH",
+   "cmin": 6.94,
+   "ce": "Lüftung Basel · CH",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "completer",
+   "ok": true,
+   "mots": 12,
+   "police": 14,
+   "pe": "exemple.invalid : aucune",
+   "cmin": 7.24,
+   "ce": "exemple.invalid : aucune",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "completer (cave)",
+   "ok": true,
+   "mots": 12,
+   "police": 14,
+   "pe": "exemple.invalid : aucune",
+   "cmin": 6.94,
+   "ce": "exemple.invalid : aucune",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "nouveau",
+   "ok": true,
+   "mots": 28,
+   "police": 14,
+   "pe": "16 nov.",
+   "cmin": 7.24,
+   "ce": "Articles",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  },
+  {
+   "ecran": "nouveau (cave)",
+   "ok": true,
+   "mots": 28,
+   "police": 14,
+   "pe": "16 nov.",
+   "cmin": 7.26,
+   "ce": "Articles",
+   "tailles": [
+    14,
+    16,
+    24
+   ],
+   "familles": [
+    "\"Source Sans 3\""
+   ],
+   "coupes": []
+  }
+ ],
+ "erreurs": []
+}

@@ -1,0 +1,18 @@
+{
+ "reglage": "3.5-flash-lite@low",
+ "element": "grassy-plante",
+ "cas": "grassy",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": false,
+  "issues": [
+   "Le conseil propose de refroidir à 2C tout de suite dans l'action, alors que le texte et les consignes interdisent le cold crash avant la fin de fermentation confirmée et la stabilité de la densité."
+  ]
+ },
+ "ms": 874,
+ "coutMicro": 1760,
+ "etat": "STOP"
+}

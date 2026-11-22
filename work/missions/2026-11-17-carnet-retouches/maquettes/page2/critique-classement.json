@@ -1,0 +1,412 @@
+{
+ "vide": [
+  {
+   "cle": "i03-2",
+   "rang": 1,
+   "pourquoi": "Montre le résultat : vraies cartes photo, statuts, exemples touchables"
+  },
+  {
+   "cle": "i04-2",
+   "rang": 2,
+   "pourquoi": "Exemples en cartes photo, clair ; flèche « le champ » superflue"
+  },
+  {
+   "cle": "i02-2",
+   "rang": 2,
+   "pourquoi": "Explique ce que garde un carnet ; bulle verte un peu bavarde"
+  },
+  {
+   "cle": "i06-2",
+   "rang": 3,
+   "pourquoi": "Carte fantôme parlante, mais texte gris et une seule"
+  },
+  {
+   "cle": "i01-2",
+   "rang": 4,
+   "pourquoi": "Exemples en mots, pictos petits, texte IA en trop"
+  },
+  {
+   "cle": "i05-2",
+   "rang": 5,
+   "pourquoi": "Cases vides grises : peu parlant, rien à comprendre"
+  }
+ ],
+ "articles": [
+  {
+   "cle": "h03-5",
+   "rang": 1,
+   "pourquoi": "O2 en gros, rang, curseur : on choisit en 3 s"
+  },
+  {
+   "cle": "i06-6",
+   "rang": 1,
+   "pourquoi": "Intervalles honnêtes, vendeurs comparés, non publié rangé en dernier"
+  },
+  {
+   "cle": "i04-6",
+   "rang": 2,
+   "pourquoi": "Vendeurs à cocher, pastilles O2 nettes, veille lisible"
+  },
+  {
+   "cle": "i03-6",
+   "rang": 2,
+   "pourquoi": "Curseur et façon écartée reprenable ; un peu chargé"
+  },
+  {
+   "cle": "h01-5",
+   "rang": 3,
+   "pourquoi": "Cartes parlantes, pictos clairs, O2 et rang visibles"
+  },
+  {
+   "cle": "i02-6",
+   "rang": 3,
+   "pourquoi": "Bon tri par O2, TVA expliquée ; deux toggles par ligne"
+  },
+  {
+   "cle": "g06-7",
+   "rang": 4,
+   "pourquoi": "Segments critère et ? sur l'estimé ; reste la fiche carnet"
+  },
+  {
+   "cle": "h05-5",
+   "rang": 5,
+   "pourquoi": "Choix du vendeur clair, mais en-tête machine à écrire"
+  }
+ ],
+ "comparer": [
+  {
+   "cle": "h04-7",
+   "rang": 1,
+   "pourquoi": "Barres de sa base gardées, tableau net, lisible d'un coup"
+  },
+  {
+   "cle": "i05-8",
+   "rang": 2,
+   "pourquoi": "Base fidèle, estimé en pointillé honnête, mais long"
+  },
+  {
+   "cle": "i01-8",
+   "rang": 2,
+   "pourquoi": "Base claire, trois premiers seulement, non publié dit franchement"
+  },
+  {
+   "cle": "i03-8",
+   "rang": 3,
+   "pourquoi": "Barres compactes plus tableau complet, un peu dense"
+  },
+  {
+   "cle": "h03-7",
+   "rang": 3,
+   "pourquoi": "Compromis en tête utile, pastilles numérotées chargent l'écran"
+  },
+  {
+   "cle": "g03-9",
+   "rang": 4,
+   "pourquoi": "Tableau simple et propre, mais perd les barres choisies"
+  },
+  {
+   "cle": "i04-8",
+   "rang": 4,
+   "pourquoi": "Fourchettes honnêtes, barres flottantes moins lisibles en 3 secondes"
+  },
+  {
+   "cle": "g02-8",
+   "rang": 5,
+   "pourquoi": "Le plus simple, lisible, mais sec et sans pictos"
+  }
+ ],
+ "article": [
+  {
+   "cle": "i03-7",
+   "rang": 1,
+   "pourquoi": "Rangs colorés lisibles, offres TVA honnêtes, thème app, sans micro"
+  },
+  {
+   "cle": "i01-7",
+   "rang": 2,
+   "pourquoi": "Page claire, place parmi les 5 complète, prix rendu"
+  },
+  {
+   "cle": "i05-7",
+   "rang": 2,
+   "pourquoi": "Fourchette 30–50 et inconnu dit : honnête, lisible"
+  },
+  {
+   "cle": "h01-6",
+   "rang": 3,
+   "pourquoi": "Photo, O2 en tête, vendeurs nets ; rangs partiels"
+  },
+  {
+   "cle": "i04-7",
+   "rang": 3,
+   "pourquoi": "Inconnus en pointillé, prix TTC ; caractéristiques peu classées"
+  },
+  {
+   "cle": "i02-7",
+   "rang": 4,
+   "pourquoi": "Intervalle honnête, mais rangs absents des valeurs"
+  },
+  {
+   "cle": "h02-6",
+   "rang": 4,
+   "pourquoi": "Feuille compacte lisible, mais quitte la page"
+  },
+  {
+   "cle": "h04-6",
+   "rang": 5,
+   "pourquoi": "Feuille complète mais serrée, prix rendu utile"
+  }
+ ],
+ "liste": [
+  {
+   "cle": "i04-1",
+   "rang": 1,
+   "pourquoi": "Photos parlantes, états en couleur, veille entière, rien de coupé"
+  },
+  {
+   "cle": "h04-1",
+   "rang": 1,
+   "pourquoi": "États colorés distincts, « + Idée » dit enfin quoi ajouter"
+  },
+  {
+   "cle": "h05-1",
+   "rang": 2,
+   "pourquoi": "Très lisible, grandes photos, moins de lignes répétées"
+  },
+  {
+   "cle": "i03-1",
+   "rang": 2,
+   "pourquoi": "« Les deux dans À venir » regroupé, veille compacte lisible"
+  },
+  {
+   "cle": "h06-1",
+   "rang": 3,
+   "pourquoi": "À venir nommé en bouton, action Évier claire"
+  },
+  {
+   "cle": "i02-1",
+   "rang": 3,
+   "pourquoi": "Habit de l'app, veille complète, mais lignes À venir répétées"
+  },
+  {
+   "cle": "g03-1",
+   "rang": 4,
+   "pourquoi": "v09 propre à l'habit de l'app, titres simples"
+  },
+  {
+   "cle": "v10-1",
+   "rang": 5,
+   "pourquoi": "« À trancher » utile, mais onglet vert hors thème"
+  }
+ ],
+ "a-venir": [
+  {
+   "cle": "h03-9",
+   "rang": 1,
+   "pourquoi": "Carte claire, deux gestes nets, habit de l'app, peu de mots"
+  },
+  {
+   "cle": "g05-12",
+   "rang": 1,
+   "pourquoi": "Sans date / Datés lisible, action principale évidente, thème tenu"
+  },
+  {
+   "cle": "h01-9",
+   "rang": 2,
+   "pourquoi": "Deux achats lisibles, date fixée visible, un peu chargé"
+  },
+  {
+   "cle": "i03-10",
+   "rang": 2,
+   "pourquoi": "Dense utile : raisons, délai, encore en carnet ; micro superflu"
+  },
+  {
+   "cle": "i05-10",
+   "rang": 3,
+   "pourquoi": "Sans date et Daté clairs ; texte Réalisés en trop"
+  },
+  {
+   "cle": "g04-12",
+   "rang": 3,
+   "pourquoi": "Liste propre et lisible, total, mais aucune action directe"
+  },
+  {
+   "cle": "i02-10",
+   "rang": 4,
+   "pourquoi": "Montre un Réalisé réel ; fond gris hors thème"
+  },
+  {
+   "cle": "g01-12",
+   "rang": 5,
+   "pourquoi": "Propre mais pas d'action ; renvoi Calendrier inutile"
+  }
+ ],
+ "ajouter": [
+  {
+   "cle": "i01-3",
+   "rang": 1,
+   "pourquoi": "Onglets gardés, arrivée visible, Y ajouter clair, liste lisible"
+  },
+  {
+   "cle": "h01-2",
+   "rang": 2,
+   "pourquoi": "Habit de l'app, suggestion compacte, une seule action Créer"
+  },
+  {
+   "cle": "i05-3",
+   "rang": 2,
+   "pourquoi": "Picto parlant, bandes de statut ; mais À venir disparaît"
+  },
+  {
+   "cle": "h03-2",
+   "rang": 3,
+   "pourquoi": "Très simple, statuts colorés, mais rien pour ajouter à l'existant"
+  },
+  {
+   "cle": "i03-3",
+   "rang": 3,
+   "pourquoi": "Clair, Entrée = Créer ; mais onglets À venir absents"
+  },
+  {
+   "cle": "g04-2",
+   "rang": 4,
+   "pourquoi": "Va dans lisible, mais liste grisée sous la feuille"
+  },
+  {
+   "cle": "g01-2",
+   "rang": 5,
+   "pourquoi": "Même feuille, champ vide : on voit mal le résultat"
+  },
+  {
+   "cle": "h05-2",
+   "rang": 5,
+   "pourquoi": "Bonne suggestion, mais sans onglets ni À venir"
+  }
+ ],
+ "ajouter-a": [
+  {
+   "cle": "i01-5b",
+   "rang": 1,
+   "pourquoi": "Dans Matériel › Carnets, où ça atterrit, un bouton clair"
+  },
+  {
+   "cle": "i02-5b",
+   "rang": 2,
+   "pourquoi": "Ajout net, rappel de ce qui compte, lisible"
+  },
+  {
+   "cle": "g01-6",
+   "rang": 2,
+   "pourquoi": "Rangé à sa place, sobre, habit de l'app"
+  },
+  {
+   "cle": "h03-4a",
+   "rang": 3,
+   "pourquoi": "Atterrissage clair, mais pas de bouton Ajouter"
+  },
+  {
+   "cle": "i02-5c",
+   "rang": 3,
+   "pourquoi": "Photo lue par l'IA, deux boutons, un peu chargé"
+  },
+  {
+   "cle": "h03-4b",
+   "rang": 4,
+   "pourquoi": "Photo déjà rangée, Annuler ; l'ajout est moins guidé"
+  },
+  {
+   "cle": "i05-5d",
+   "rang": 4,
+   "pourquoi": "Fiche vide, « Où ? » redondant dans l'idée"
+  },
+  {
+   "cle": "h02-4b",
+   "rang": 5,
+   "pourquoi": "Clavier ouvert, quatre choix « Va dans » : encore fouillis"
+  }
+ ],
+ "choisi": [
+  {
+   "cle": "i04-9b",
+   "rang": 1,
+   "pourquoi": "Choisi, pourquoi chiffré, six écartés dessinés avec prix : lisible"
+  },
+  {
+   "cle": "h01-8",
+   "rang": 1,
+   "pourquoi": "Carte verte claire, pourquoi en puces, écartés classés dessinés"
+  },
+  {
+   "cle": "i01-9a",
+   "rang": 2,
+   "pourquoi": "Comme i04, geste Envoyer net ; dernière ligne coupée"
+  },
+  {
+   "cle": "g04-10",
+   "rang": 2,
+   "pourquoi": "Colonne O2 et CHF : compare d'un coup d'œil"
+  },
+  {
+   "cle": "g03-12",
+   "rang": 3,
+   "pourquoi": "Clic parlant : rang O2 et prix ; polices mêlées"
+  },
+  {
+   "cle": "h03-8",
+   "rang": 3,
+   "pourquoi": "Chiffres clés utiles ; écartés sans dessin, deux rangs 1"
+  },
+  {
+   "cle": "v04-2",
+   "rang": 4,
+   "pourquoi": "Bon choix fait, mais sans en-tête de l'app"
+  },
+  {
+   "cle": "g02-10",
+   "rang": 5,
+   "pourquoi": "Correct mais moins informatif que g04, oxygène absent"
+  }
+ ],
+ "carnet": [
+  {
+   "cle": "h03-3",
+   "rang": 1,
+   "pourquoi": "Façons tranchées, articles classés, O2 en grand : lisible, brasseur"
+  },
+  {
+   "cle": "h05-3",
+   "rang": 1,
+   "pourquoi": "Rangs, débit, prix ; ajout clair en quatre choix"
+  },
+  {
+   "cle": "h06-3",
+   "rang": 2,
+   "pourquoi": "Bonne idée, mais tableau dense en petits chiffres"
+  },
+  {
+   "cle": "i04-4b",
+   "rang": 2,
+   "pourquoi": "Ajout enfin compréhensible, mais feuille un peu bavarde"
+  },
+  {
+   "cle": "g02-4",
+   "rang": 3,
+   "pourquoi": "Retenir/Écarter par façon, mais articles peu parlants"
+  },
+  {
+   "cle": "g04-4",
+   "rang": 4,
+   "pourquoi": "Propre, À compléter utile ; aucun classement, peu informatif"
+  },
+  {
+   "cle": "v12-2",
+   "rang": 4,
+   "pourquoi": "Critère qui tranche, mais pictos identiques, en-tête app absent"
+  },
+  {
+   "cle": "g03-4",
+   "rang": 5,
+   "pourquoi": "Liste sobre, rien ne dit lequel prendre"
+  }
+ ]
+}

@@ -55,7 +55,7 @@ function comparisonKey(field: string, value: unknown): string {
 }
 
 /**
- * Vote d'un nombre de contrôle (payé, terminal, comptes) : la valeur lue par au moins deux lectures ; à défaut la 3ᵉ lecture (la 3.8 qui tranche) si elle en porte une ; sinon `undefined`
+ * Vote d'un nombre de contrôle (payé, terminal, comptes) : la valeur lue par au moins deux lectures ; à défaut la 3ᵉ lecture (la 3ᵉ lecture qui tranche) si elle en porte une ; sinon `undefined`
  * (le champ reste absent : inconnu, jamais 0). Une lecture vide ne pèse pas contre deux lectures qui concordent.
  */
 export function voterChampControle(valeurs: unknown[]): number | undefined {
@@ -509,11 +509,11 @@ export function reconcileInvoiceVision(readings: InvoiceScanResult[]): {
   }
 
   // c1 : les champs des contrôles croisés ne se votent pas ; la lecture de base les porte, une valeur absente se prend dans une autre lecture (jamais inventée), une photo incomplète pour une lecture l'est.
-  // Comme le total : deux lectures qui concordent l'emportent (une 3.8 vide ne les efface pas) ; sans concordance, la 3.8 seule (la 3ᵉ lecture) ; sinon rien : jamais une valeur lue une seule fois par une Flash-Lite.
+  // Comme le total : deux lectures qui concordent l'emportent (une 3ᵉ lecture vide ne les efface pas) ; sans concordance, la 3ᵉ lecture seule (la 3ᵉ lecture) ; sinon rien : jamais une valeur lue une seule fois par une Flash-Lite.
   for (const champ of ['amountPaid', 'terminalAmount', 'printedItemCount', 'countedAmounts', 'countedEans'] as const) {
     const valeur = voterChampControle(readings.map((r: any) => r[champ]));
     if (valeur !== undefined) merged[champ] = valeur;
-    // Limite 2 : un comptage de montants n'est « confirmé » que si la 3.8 (la 3ᵉ lecture) l'a lu aussi, au même nombre.
+    // Limite 2 : un comptage de montants n'est « confirmé » que si la 3ᵉ lecture (la 3ᵉ lecture) l'a lu aussi, au même nombre.
     if (champ === 'countedAmounts') {
       if (valeur !== undefined && readings.length === 3 && (readings[2] as any).countedAmounts === valeur) merged.countedAmountsConfirmed = true; else delete merged.countedAmountsConfirmed;
     }

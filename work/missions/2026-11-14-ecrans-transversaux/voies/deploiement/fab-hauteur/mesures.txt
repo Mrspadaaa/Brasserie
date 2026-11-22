@@ -1,0 +1,29 @@
+390 bord : écart 12 px, droite 12 px, 56 px
+390 finances : écart 12 px, droite 12 px, 56 px, recouvre Compagnon brasseur
+390 brassins : écart 12 px, droite 12 px, 56 px
+390 recettes : écart 12 px, droite 12 px, 56 px
+390 atelier : écart 12 px, droite 12 px, 56 px
+390 volumes : écart 12 px, droite 12 px, 56 px
+390 stock : écart 12 px, droite 12 px, 56 px
+390 courses : écart 12 px, droite 12 px, 56 px
+390 futs : écart 12 px, droite 12 px, 56 px
+390 materiel : écart 12 px, droite 12 px, 56 px
+390 houblons : écart 12 px, droite 12 px, 56 px
+390 clients : écart 12 px, droite 12 px, 56 px
+390 impot : écart 12 px, droite 12 px, 56 px
+390 tarifs : écart 12 px, droite 12 px, 56 px, recouvre Prix du fût 20 L
+Sans prix, pa / Prix du fût 20 L
+844 bord : écart 12 px, droite 12 px, 56 px, recouvre Gérer / Marché d'Automne de Villars-su / 10.10.2026
+844 finances : écart 12 px, droite 12 px, 56 px
+844 brassins : écart 12 px, droite 12 px, 56 px
+844 recettes : écart 12 px, droite 12 px, 56 px
+844 atelier : écart 12 px, droite 12 px, 56 px
+844 volumes : écart 12 px, droite 12 px, 56 px
+844 stock : écart 12 px, droite 12 px, 56 px, recouvre Autres stocks
+844 courses : écart 12 px, droite 12 px, 56 px
+844 futs : écart 12 px, droite 12 px, 56 px
+844 materiel : écart 12 px, droite 12 px, 56 px, recouvre Projets d'équipement
+844 houblons : écart 12 px, droite 12 px, 56 px
+844 clients : écart 12 px, droite 12 px, 56 px
+844 impot : écart 12 px, droite 12 px, 56 px
+844 tarifs : écart 12 px, droite 12 px, 56 px

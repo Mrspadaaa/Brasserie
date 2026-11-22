@@ -1,0 +1,19 @@
+{
+ "cas": "rel-lager-bicarbonate",
+ "usage": "relecture",
+ "half": "jugement",
+ "cellule": "hy@low",
+ "ok": true,
+ "ms": 6109,
+ "microChf": 13559,
+ "microDecembre": 13559,
+ "entree": 1491,
+ "sortie": 1148,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "1/1 défauts · 0 bloquant(s) dont 0 injustifié(s)",
+ "reponse": "{\"verdict\":\"La recette n'est pas prête à brasser en l'état en raison d'une alcalinité de l'eau beaucoup trop élevée pour une Helles.\",\"findings\":[{\"severity\":\"gout\",\"topic\":\"Eau\",\"observation\":\"Le taux de bicarbonate après traitement est de 350 ppm sans aucun ajout d'acide prévu dans le waterPlan, ce qui est excessif pour une bière composée à 100 % de malt Pilsner (3.5 EBC) et fera monter le pH d'empâtage.\",\"suggestion\":\"Prévoir une dilution à l'eau osmosée ou une acidification de l'eau (acide lactique ou phosphorique) et contrôler le pH sur un échantillon refroidi le jour du brassage.\"}],\"missing\":[],\"styleFit\":\"Avec 1.047 de densité initiale, 20 IBU et 7 EBC, la recette correspond bien au style Helles, mais l'excès de bicarbonate risque d'apporter une amertume âpre et un manque de finesse.\"}"
+}

@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ma levure — r3 · v08 : doses proposées en puces</title>
+<!--
+  r3, version 8 sur 8, parti « Doses proposées en puces » : choisir plutôt que régler. Passe de correction (cinq critiques), même parti.
+  Base (règle n° 1) : v01.html, son haut tel quel (en-tête, carte à bord noir, cases FG / fiche · conduite / floculation,
+  Compléter la fiche, Changer de levure et ses puces, pied, + volant, onglets). Plancher enrichi (L07).
+  Ligne comme celle d'un malt (sa capture Malts) : nom, nombre choisi en grand à droite, dessous sa part du besoin (« 153 % du besoin »,
+  comme « 62 % du grain ») avec une barre et un repère, le verdict (sous / couvre / sur-dosé), le stock en icône ou « manque 1 ».
+  Éditeur sur place : cinq puces d'un seul chiffre, posées sur la piste du besoin (zones sous / couvre / sur-dosé), et l'unité sachets | g.
+  Le besoin : celui que yeastPitching.ts calcule pour une levure sèche, la dose du fabricant en g/hL × le volume de la recette
+  (≥ 75 g/hL × 20 L = ≥ 15 g, sa capture). Il dépend du volume, pas de l'OG : c'est dit dans la légende (« 75 g/hL × 20 L »).
+  Le seuil « sur-dosé » à ×2 du minimum est une hypothèse : le fabricant ne donne qu'un minimum (décision du brasseur).
+  W-34/70 : fiche Fermentis 80–120 g/hL, soit 16–24 g ; le moteur rend packs 2–3 (plafond de 24 / 11,5), mais 34,5 g dépasse 24 g :
+  seul 2 est conseillé ici, l'écart du moteur est signalé au pilote. FG et atténuation de W-34/70 : exemple, à prendre du moteur.
+  Données : exemple. Sachet de 11,5 g d'une White Labs : forme non vérifiée (L14), marqué « 11,5 g ? forme ». Statique : HTML et CSS seuls.
+-->
+<style>
+
+  :root{
+    --page:#FFFFFF; --panneau:#F5F5F5; --sur:#EBEBEB; --bord:#DDDDDD; --bord2:#BFBFBF; --trait:#9E9E9E;
+    --t2:#666666; --t1:#333333; --t0:#111111;
+    --or:#7A5A12; --or-aplat:#F2C14E; --att:#9C7020; --alerte:#C8382F; --alerte-t:#A8291F; --prod:#9A4F1E; --eau:#4F7E9B;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--page);color:var(--t0)}
+  body{font:15px/1.3 "Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-text-size-adjust:100%}
+  .v1-mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;letter-spacing:-.01em}
+  .v1-app{max-width:390px;min-height:844px;margin:0 auto;padding-bottom:132px}
+
+  /* En-tête et étapes : comme la base */
+  .v1-tete{position:sticky;top:0;z-index:5;background:var(--page);border-bottom:1px solid var(--bord)}
+  .v1-l1{display:flex;align-items:center;gap:8px;height:46px;padding:0 10px 0 6px}
+  .v1-retour{width:32px;height:32px;display:grid;place-items:center;color:var(--t0)}
+  .v1-titre{font-size:20px;font-weight:600;letter-spacing:-.01em}
+  .v1-titre span{font-weight:400;color:var(--t2);margin-left:4px}
+  .v1-ex{font-size:14px;color:var(--t2);border:1px solid var(--bord2);border-radius:999px;padding:0 7px;margin-left:4px}
+  .v1-l1 .v1-esp{flex:1}
+  .v1-lien{font-size:15px;color:var(--t0);text-decoration:underline;text-underline-offset:3px}
+  .v1-ico{width:32px;height:32px;display:grid;place-items:center;color:var(--t1)}
+  .v1-etapes{display:flex;justify-content:space-between;gap:6px;padding:0 8px;overflow:hidden;white-space:nowrap}
+  .v1-etapes span{font-size:14px;color:var(--t2);padding:4px 0 6px;border-bottom:4px solid var(--bord2);border-radius:0}
+  .v1-etapes span.fait{border-color:#555}
+  .v1-etapes span.ici{color:var(--t0);font-weight:600;border-color:var(--t0)}
+  .v1-etapes span.apres{border-color:var(--bord)}
+
+  /* Carte Ma levure : bord noir, fond panneau, comme la base */
+  .v1-carte{margin:10px 8px 0;border:2px solid var(--t0);border-radius:16px;background:var(--panneau);overflow:hidden}
+  .v1-hd{display:grid;grid-template-columns:40px 1fr auto 28px;column-gap:8px;align-items:center;padding:10px 6px 10px 10px}
+  .v1-pastille{grid-row:1 / span 2;width:40px;height:40px;border-radius:50%;background:#FBEBC0;border:2px solid var(--or-aplat);display:grid;place-items:center;color:var(--or)}
+  .v1-nom{min-width:0}
+  .v1-marque{grid-column:2 / span 3;font-size:14px;color:var(--t2);white-space:nowrap;margin-top:1px}
+  .v1-nom b{display:block;font-size:20px;font-weight:600;line-height:1.15;letter-spacing:-.01em}
+  .v1-nom small{display:block;font-size:14px;color:var(--t2);margin-top:2px}
+  .v1-dose{text-align:right;white-space:nowrap}
+  .v1-dose .v1-mono{font-size:22px;font-weight:600}
+  .v1-dose em{font-style:normal;font-size:14px;color:var(--t2);margin-left:2px}
+  .v1-dose small{display:block;font-size:14px;color:var(--t2)}
+  .v1-x{width:32px;height:32px;display:grid;place-items:center;color:var(--t1)}
+
+  .v1-cases{display:grid;grid-template-columns:1fr 1.18fr .86fr;border-top:1px solid var(--bord2);border-bottom:1px solid var(--bord2)}
+  .v1-case{padding:8px 8px 9px;min-width:0}
+  .v1-case + .v1-case{border-left:1px solid var(--bord2)}
+  .v1-et{font-size:14px;color:var(--t2);white-space:nowrap}
+  .v1-val{font-size:16px;font-weight:600;margin-top:2px;white-space:nowrap}
+  .v1-sous{font-size:14px;color:var(--t2);white-space:nowrap}
+  .v1-ech{display:flex;justify-content:space-between;font-size:14px;color:var(--t2);margin-top:3px}
+  .v1-jauge{position:relative;height:8px;border-radius:4px;background:var(--sur);margin-top:8px}
+  .v1-jauge i{position:absolute;top:0;bottom:0;border-radius:4px;background:repeating-linear-gradient(135deg,var(--or-aplat) 0 3px,#F7DC93 3px 6px)}
+  .v1-hors{color:var(--alerte-t)}
+  .v1-plage{position:relative;height:8px;border-radius:4px;margin-top:7px;background:linear-gradient(90deg,#4F7E9B,#A9C6D8 30%,#F2C14E 62%,#D6453D)}
+  .v1-plage .fiche{position:absolute;top:-3px;bottom:-3px;left:24%;width:12%;border:2px solid var(--t0);border-radius:3px;background:rgba(255,255,255,.35)}
+  .v1-plage .ici{position:absolute;top:-5px;bottom:-5px;left:74%;width:3px;border-radius:2px;background:var(--alerte)}
+  .v1-caler{display:inline-flex;align-items:center;gap:5px;margin-top:8px;height:32px;padding:0 9px;border:1.5px solid var(--att);border-radius:10px;background:var(--page);color:var(--or);font-size:14px;font-weight:600;white-space:nowrap}
+  .v1-floc{display:flex;gap:3px;margin-top:10px}
+  .v1-floc i{flex:1;height:8px;border-radius:3px;background:#8C8C8C}
+  .v1-floc i.non{background:var(--bord2)}
+
+  /* LA décision de cette version : un seul geste IA pour la fiche entière */
+  .v1-ia{display:flex;align-items:center;gap:10px;margin:10px 8px 4px;padding:0 10px 0 12px;height:48px;border-radius:12px;border:1.5px dashed var(--att);background:#FFF8E6;color:var(--t0)}
+  .v1-ia .v1-etoile{flex:none;color:var(--att)}
+  .v1-ia b{font-size:16px;font-weight:600}
+  .v1-ia .v1-esp{flex:1}
+  .v1-ia .v1-cpt{font-size:14px;color:var(--or);white-space:nowrap}
+  .v1-ia.pendant{border:1.5px solid var(--t1);background:var(--sur)}
+  .v1-ia.pendant .v1-cpt{color:var(--t1);font-weight:600}
+  .v1-ia.apres{border-style:solid;border-color:var(--t0);background:var(--page)}
+  .v1-prog{flex:1;height:6px;border-radius:3px;background:var(--sur);overflow:hidden}
+  .v1-prog i{display:block;height:100%;width:60%;background:var(--att)}
+  .v1-btn{display:inline-flex;align-items:center;height:34px;padding:0 12px;border-radius:10px;font-size:15px;font-weight:600;white-space:nowrap}
+  .v1-btn.noir{background:var(--t0);color:#fff}
+  .v1-btn.trait{border:1px solid var(--bord2);background:var(--page);color:var(--t0)}
+  .v1-lienpetit{font-size:15px;color:var(--t1);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+
+  .v1-traits{list-style:none;margin:0;padding:2px 0 6px}
+  .v1-traits li{display:flex;align-items:center;gap:6px;height:40px;padding:0 10px}
+  .v1-traits li.prop{background:#FFF8E6}
+  .v1-crans{flex:none;display:flex;gap:2px;width:40px}
+  .v1-crans i{flex:1;height:8px;border-radius:2px;background:var(--bord)}
+  .v1-crans i.on{background:var(--c)}
+  .v1-crans.vide i{background:transparent;border:1px dashed var(--bord2)}
+  .v1-traits .v1-tv{width:58px;flex:none}
+  .v1-traits .v1-tv.vide{width:auto}
+  .v1-tag{flex:none;display:inline-flex;align-items:center;height:24px;padding:0 6px;border-radius:6px;font-size:14px;font-weight:600;white-space:nowrap}
+  .v1-tag.fiche{border:1.5px solid var(--t1);color:var(--t1);background:var(--page)}
+  .v1-tag.ia{border:1.5px dashed var(--att);color:var(--or);background:#FFF8E6}
+  .v1-act{flex:none;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--bord2);background:var(--page);display:grid;place-items:center;color:var(--t1)}
+  .v1-act.remettre{border-color:var(--t1)}
+  .v1-traits li + li{border-top:1px solid #E4E4E4}
+  .v1-dot{flex:none;width:12px;height:12px;border-radius:50%;background:var(--c)}
+  .v1-tn{flex:1;min-width:0;font-size:15px;color:var(--t1);white-space:nowrap}
+  .v1-tv{font-size:16px;font-weight:600;white-space:nowrap}
+  .v1-tv.vide{font-weight:400;color:var(--t2)}
+  .v1-src{font-size:14px;color:var(--t2);white-space:nowrap}
+  .v1-prop{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 8px;border:1.5px dashed var(--att);border-radius:8px;background:#FFF8E6;font-size:16px;font-weight:600;white-space:nowrap}
+  .v1-prop .v1-iatag{font-size:14px;font-weight:600;color:var(--or)}
+  .v1-ecarte{width:58px;flex:none;font-size:16px;color:var(--t2);text-decoration:line-through;white-space:nowrap}
+  .v1-attente{flex:none;display:inline-block;width:98px;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--sur),#F7F7F7,var(--sur))}
+
+  /* Changer de levure : comme la base */
+  .v1-chg{margin:12px 8px 0;padding:10px;border-radius:16px;background:var(--panneau)}
+  .v1-champ{display:flex;align-items:center;gap:10px;height:46px;padding:0 14px;border:1.5px dashed var(--trait);border-radius:999px;background:var(--page);color:var(--t2);font-size:17px}
+  .v1-puces{display:flex;gap:6px;margin-top:10px}
+  .v1-puce{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 9px;border:1.5px solid var(--bord2);border-radius:12px;background:var(--page);font-size:15px;color:var(--t0);white-space:nowrap}
+  .v1-puce svg{color:var(--eau)}
+  .v1-puce.hc{margin-left:auto;border-style:dashed}
+
+
+
+  
+  /* ===== r3 · v08b-passe de correction : doses proposées en puces (préfixe p8-) ===== */
+  body{background:#FFFFFF}
+  .p8-intro{max-width:1720px;margin:0 auto;padding:14px 12px 10px}
+  .p8-intro h1{margin:0;font-size:18px;font-weight:600}
+  .p8-intro p{margin:4px 0 0;font-size:14px;color:var(--t2);max-width:980px}
+  .p8-rang{display:flex;flex-wrap:wrap;justify-content:center;gap:24px 20px;align-items:flex-start;padding:0 0 40px}
+  .p8-col{flex:none;width:390px}
+  .p8-tel{position:relative;width:390px;height:844px;overflow:hidden;background:var(--page);outline:1px solid var(--bord2)}
+  .p8-tel .v1-tete{position:relative}
+  .p8-cap{padding:10px 4px 0}
+  .p8-cap h3{margin:0;font-size:15px;font-weight:600;color:var(--t0)}
+  .p8-cap h3 span{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 4px;margin-right:6px;border-radius:12px;background:var(--t0);color:#fff;font-size:14px}
+  .p8-cap p{margin:4px 0 0;font-size:14px;color:var(--t2)}
+
+  /* bandeau partagé, aéré comme sur sa capture Malts */
+  .p8-bande{display:flex;align-items:center;gap:3px;height:40px;margin:6px 8px 0;padding:0 11px;border:1.5px solid var(--bord);border-radius:999px;background:var(--panneau);font-size:14px;color:var(--t2);white-space:nowrap}
+  .p8-bande b{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:14px;font-weight:600;color:var(--t0);margin:0 5px 0 2px;letter-spacing:-.03em}
+  .p8-bande .p8-ibu{flex:none;width:30px;height:8px;border-radius:4px;background:var(--bord);position:relative;margin-right:8px}
+  .p8-bande .p8-ibu i{position:absolute;left:9px;width:13px;top:0;bottom:0;border-radius:4px;background:#8C8C8C}
+  .p8-bande .p8-ibu u{position:absolute;left:21px;top:-5px;bottom:-5px;width:3px;background:var(--t0)}
+  .p8-bande .p8-ebc{flex:none;width:12px;height:12px;border-radius:50%;background:#E0A02E;display:inline-block;margin:0 0 0 5px}
+
+  /* ligne de la levure : nom et nombre choisi, puis sa part du besoin (comme « 62 % du grain ») */
+  .p8 .v1-hd{grid-template-columns:40px 1fr auto 28px;grid-template-rows:auto auto auto;row-gap:1px;padding:8px 6px 6px 10px}
+  .p8 .v1-pastille{grid-row:1 / span 3;align-self:start;margin-top:2px}
+  .p8 .v1-nom b{font-size:19px}
+  .p8 .v1-marque{grid-column:2 / span 3}
+  .p8-choix{text-align:right;white-space:nowrap;line-height:1}
+  .p8-choix .p8-n{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:30px;font-weight:600;letter-spacing:-.02em}
+  .p8-choix em{font-style:normal;font-size:15px;color:var(--t2);margin-left:3px}
+  .p8-choix.flash{background:#FBEBC0;border-radius:10px;box-shadow:0 0 0 3px #FBEBC0,0 0 0 5px #F2C14E}
+  .p8-choix.vide{display:inline-flex;align-items:center;height:36px;padding:0 10px;border:1.5px dashed var(--trait);border-radius:10px;background:var(--page);color:var(--t1);font-size:16px;font-weight:600}
+  .p8-part{grid-column:2 / span 3;display:flex;align-items:center;gap:6px;height:22px;font-size:15px;color:var(--t1);white-space:nowrap}
+  .p8-part .v1-mono{font-weight:600;color:var(--t0)}
+  .p8-part .p8-pb{flex:1;min-width:24px;position:relative;height:10px;border-radius:5px;background:var(--page);border:1.5px solid var(--bord2)}
+  .p8-part .p8-pb i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;background:var(--or-aplat)}
+  .p8-part .p8-pb u{position:absolute;top:-5px;bottom:-5px;width:3px;border-radius:2px;background:var(--t0)}
+  .p8-part .p8-pb.vide{border-style:dashed}
+  .p8-v{display:inline-flex;align-items:center;gap:3px;font-weight:600}
+  .p8-v.sous{color:var(--alerte-t)} .p8-v.couvre{color:#3F6B2E} .p8-v.sur{color:#8A5A00} .p8-v.rien{color:var(--t2);font-weight:400}
+  .p8-stock{display:inline-flex;align-items:center;gap:3px;color:#3F6E8C;font-size:14px}
+  .p8-manque{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 7px;border-radius:999px;border:1.5px solid var(--alerte);color:var(--alerte-t);background:#FFF1EF;font-size:14px;font-weight:600}
+
+  /* l'éditeur sur place : cinq puces d'un chiffre posées sur la piste du besoin, et l'unité */
+  .p8-dose{border-top:1px solid var(--bord2);padding:6px 8px 6px}
+  .p8-ed{display:grid;grid-template-columns:1fr 64px;column-gap:8px;align-items:start}
+  .p8-puces{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .p8-d{height:42px;display:grid;place-items:center;border:1.5px solid var(--bord2);border-radius:12px;background:var(--page);font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:19px;font-weight:600;color:var(--t0);position:relative}
+  .p8-d.conseil{border:2px solid var(--att);background:#FFF8E6}
+  .p8-d.plein{background:var(--t0);border-color:var(--t0);color:#fff}
+  .p8-doigt{position:absolute;right:-12px;bottom:-14px;width:34px;height:34px;border-radius:50%;border:3px solid #5B8AA6;background:rgba(91,138,166,.18)}
+  .p8-unite{height:42px;display:flex;flex-direction:column;border:1.5px solid var(--t1);border-radius:12px;overflow:hidden;background:var(--page)}
+  .p8-unite span{flex:1;display:grid;place-items:center;font-size:15px;font-weight:600;color:var(--t1);line-height:1}
+  .p8-unite span + span{border-top:1px solid var(--bord2)}
+  .p8-unite span.on{background:var(--t0);color:#fff}
+  .p8-piste{position:relative;display:flex;height:20px;margin-top:5px;border-radius:6px;overflow:hidden;font-size:14px;font-weight:600;line-height:20px;white-space:nowrap}
+  .p8-piste > span{display:block;text-align:center;overflow:hidden}
+  .p8-piste .z-sous{background:#F6D3CF;color:var(--alerte-t)}
+  .p8-piste .z-ok{background:#D5E8C4;color:#2F5222}
+  .p8-piste .z-sur{background:#F7E2B0;color:#7A5200}
+  .p8-legende{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:14px;color:var(--t2);white-space:nowrap}
+  .p8-legende b{color:var(--t0);font-weight:600}
+  .p8-legende .v1-esp{flex:1}
+  .p8-verif{display:inline-flex;align-items:center;height:24px;padding:0 6px;border:1.5px dashed var(--att);border-radius:6px;background:#FFF8E6;color:var(--or);font-weight:600}
+  .p8-avant{display:flex;align-items:center;gap:8px;margin-top:6px;height:34px;padding:0 6px 0 10px;border-radius:10px;background:var(--sur);font-size:14px;color:var(--t1);white-space:nowrap}
+  .p8-avant .v1-esp{flex:1}
+  .p8-avant .p8-lien{display:inline-flex;align-items:center;height:30px;padding:0 10px;border-radius:8px;border:1.5px solid var(--t1);background:var(--page);font-size:15px;font-weight:600;color:var(--t0)}
+
+  /* bas de la carte : cases v01, conduite en une ligne, effets en crans, puis le geste IA */
+  .p8 .v1-case{padding:5px 8px 5px}
+  .p8 .v1-caler{margin-top:5px;height:30px}
+  .p8-cond{display:flex;align-items:center;gap:8px;height:34px;padding:0 8px 0 10px;border-bottom:1px solid var(--bord2);white-space:nowrap}
+  .p8-cond .v1-mono{font-size:15px;font-weight:600}
+  .p8-cond .v1-esp{flex:1}
+  .p8-cond .p8-fin{font-size:14px;color:var(--t2)}
+  .p8-effets{display:grid;grid-template-columns:repeat(3,1fr)}
+  .p8-ef{padding:3px 8px 4px;min-width:0;white-space:nowrap}
+  .p8-ef + .p8-ef{border-left:1px solid #E4E4E4}
+  .p8-ef .p8-en{display:flex;align-items:center;gap:5px;font-size:14px;color:var(--t1)}
+  .p8-ef .p8-ev{display:flex;align-items:center;gap:6px;margin-top:2px;font-size:15px;font-weight:600}
+  .p8-ef .p8-ev.vide{font-weight:400;color:var(--t2)}
+  .p8-ef .v1-crans{width:30px}
+  .p8 .v1-ia{height:38px;margin:2px 8px 6px}
+  .p8 .v1-chg{margin-top:6px;padding:6px}
+  .p8 .v1-champ{height:40px}
+  .p8 .v1-puces{margin-top:6px}
+  .p8 .v1-puce{height:34px}
+  /* offres, repères, atelier : trois portes sur une rangée, à un toucher (R1 : jamais trois volets empilés) */
+  .p8-portes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 8px 0}
+  .p8-portes span{display:flex;align-items:center;justify-content:center;gap:5px;height:38px;border:1.5px solid var(--bord2);border-radius:12px;background:var(--page);font-size:15px;font-weight:600;color:var(--t1)}
+  .p8-portes small{font-size:14px;font-weight:400;color:var(--t2)}
+
+  /* pied, + volant, onglets : dans le cadre du téléphone */
+  .p8-pied{position:absolute;left:0;right:0;bottom:62px;z-index:6;height:58px;display:flex;align-items:center;gap:10px;padding:0 90px 0 10px;background:var(--page);border-top:1px solid var(--bord)}
+  .p8-pied .v1-btn{height:42px;padding:0 16px;font-size:16px}
+  .p8-pied .v1-esp{flex:1}
+  .p8-fab{position:absolute;z-index:8;bottom:70px;right:16px;width:56px;height:56px;border-radius:50%;background:var(--t0);color:#fff;display:grid;place-items:center;font-size:32px;font-weight:300;line-height:1;box-shadow:0 4px 12px rgba(0,0,0,.28)}
+  .p8-onglets{position:absolute;left:0;right:0;bottom:0;z-index:7;height:62px;background:var(--page);border-top:1px solid var(--bord)}
+  .p8-onglets > div{height:100%;display:grid;grid-template-columns:repeat(6,1fr)}
+  .p8-onglets a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--t2);text-decoration:none;font-size:14px;letter-spacing:-.02em}
+  .p8-onglets a.ici{color:var(--prod);font-weight:600}
+  .p8-onglets svg{width:22px;height:22px}
+</style>
+</head>
+<body>
+<div class="p8-intro">
+  <h1>Ma levure · v08 — doses proposées en puces <span class="v1-ex">exemple</span></h1>
+  <p>Comme un malt : le nombre choisi en grand, sa part du besoin dessous, et un toucher sur une puce pour le changer. Cinq états : repos, après un toucher, rien de choisi, changement de levure, en g.</p>
+</div>
+<div class="p8-rang">
+<div class="p8-col">
+<div class="p8-tel p8" aria-label="Écran 1">
+  <header class="v1-tete">
+    <div class="v1-l1"><span class="v1-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span><span class="v1-titre">Levure<span class="v1-mono">4/7</span></span><span class="v1-esp"></span><span class="v1-lien">Abandonner</span><span class="v1-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span><span class="v1-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span></div>
+    <nav class="v1-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  </header>
+  <div class="p8-bande" aria-label="Bandeau de la recette">Grain<b>2,75 kg</b>OG<b>1,026</b>IBU<b>65</b><span class="p8-ibu"><i></i><u></u></span><span class="v1-esp" style="flex:1"></span>EBC<span class="p8-ebc"></span><b style="margin-right:0">11,9</b></div>
+  <section class="v1-carte" aria-label="Ma levure">
+    <div class="v1-hd">
+      <span class="v1-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="v1-nom"><b>Munich Lager Yeast</b></div>
+      <div class="p8-choix" aria-label="Dose choisie : 2 sachets"><span class="p8-n">2</span><em>sachets</em></div>
+      <span class="v1-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      <div class="p8-part"><span><span class="v1-mono">23 g</span> · <span class="v1-mono">153 %</span> du besoin</span><span class="p8-pb" aria-hidden="true"><i style="width:51%"></i><u style="left:33.3%"></u></span><span class="p8-v couvre"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>couvre</span><span class="p8-stock" aria-label="En stock : 2 sachets"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>2</span></div>
+      <div class="v1-marque">White Labs · vendue par Lallemand · <span class="v1-ex">exemple</span></div>
+    </div>
+    <div class="p8-dose">
+      <div class="p8-ed">
+        <div>
+          <div class="p8-puces" role="group" aria-label="Dose : un toucher choisit"><span class="p8-d" role="button" aria-label="1 sachet">1</span><span class="p8-d plein" role="button" aria-label="2 sachets">2</span><span class="p8-d" role="button" aria-label="3 sachets">3</span><span class="p8-d" role="button" aria-label="4 sachets">4</span><span class="p8-d" role="button" aria-label="5 sachets">5</span></div>
+          <div class="p8-piste" aria-label="Piste du besoin"><span class="z-sous" style="width:16.1%">sous</span><span class="z-ok" style="width:26.1%">couvre</span><span class="z-sur" style="width:57.8%">sur-dosé · seuil ×2</span></div>
+        </div>
+        <div class="p8-unite" role="group" aria-label="Unité"><span class="on">sachets</span><span>g</span></div>
+      </div>
+      <div class="p8-legende">besoin <b class="v1-mono">≥ 15 g</b> · 75 g/hL × 20 L<span class="v1-esp"></span><span class="p8-verif">11,5 g ? forme</span></div>
+      
+    </div>
+    <div class="v1-cases">
+      <div class="v1-case"><div class="v1-et">FG</div><div class="v1-val v1-mono">1,006–1,007</div><div class="v1-sous">≈ 2,5–2,7 % vol</div>
+        <div class="v1-jauge" aria-label="FG 1,006–1,007 sur 1,000 à 1,030"><i style="left:20%;width:5%"></i></div></div>
+      <div class="v1-case"><div class="v1-et">fiche · conduite</div><div class="v1-val v1-mono">9–11 · <span class="v1-hors">19 °C</span></div>
+        <div class="v1-plage" aria-label="Plage de la fiche 9–11 °C, conduite 19 °C hors plage"><span class="fiche" style="left:20%;width:10%"></span><span class="ici" style="left:70%"></span></div>
+        <span class="v1-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span></div>
+      <div class="v1-case"><div class="v1-et">floculation</div><div class="v1-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+        <div class="v1-floc"><i></i><i></i><i class="non"></i></div></div>
+    </div>
+    <div class="p8-cond" role="button" aria-label="Conduite de fermentation"><svg width="46" height="22" viewBox="0 0 46 22" aria-hidden="true"><rect x="0" y="3" width="21" height="6" rx="2" fill="#C87A2C"/><rect x="22" y="15" width="24" height="6" rx="2" fill="#5B8AA6"/><path d="M21 6v12" stroke="#9E9E9E" stroke-width="1.5" stroke-dasharray="2 2"/></svg><span class="v1-mono">19 °C · 7 j → 4 °C · 8 j</span><span class="v1-esp"></span><span class="p8-fin">fin J15</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></div>
+    <div class="p8-effets" aria-label="Effets de fermentation"><div class="p8-ef" style="--c:#7A4A3A"><div class="p8-en"><i class="v1-dot"></i>phénols</div><div class="p8-ev"><span class="v1-crans"><i></i><i></i><i></i></span>négatif</div></div><div class="p8-ef" style="--c:#6CC4A0"><div class="p8-en"><i class="v1-dot"></i>thiols</div><div class="p8-ev"><span class="v1-crans"><i class="on"></i><i></i><i></i></span>faible</div></div><div class="p8-ef" style="--c:#A8C040"><div class="p8-en"><i class="v1-dot"></i>terpènes</div><div class="p8-ev"><span class="v1-crans"><i class="on"></i><i></i><i></i></span>faible</div></div></div>
+    <div class="v1-ia" role="button" aria-label="Compléter la fiche par l'IA"><svg class="v1-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/><path d="M19 15l.9 2.3L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.7z"/></svg><b>Compléter la fiche</b><span class="v1-esp"></span><span class="v1-cpt">IA · 2 non documentés</span></div>
+  </section>
+  <section class="v1-chg" aria-label="Changer de levure">
+    <div class="v1-champ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</div>
+    <div class="v1-puces"><span class="v1-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Pomona</span><span class="v1-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Verdant IPA</span><span class="v1-puce hc">Hors catalogue</span></div>
+  </section>
+  <nav class="p8-portes" aria-label="À un toucher"><span role="button">Offres <small>CH·FR·DE</small></span><span role="button">Repères</span><span role="button">Atelier</span></nav>
+  <div class="p8-pied"><span class="v1-btn trait">Retour</span><span class="v1-esp"></span><span class="v1-btn noir">Suivant — Paliers</span></div>
+  <span class="fab p8-fab" aria-label="Ajouter">+</span>
+  <nav class="v1-onglets p8-onglets" aria-label="Onglets"><div>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</div></nav>
+</div>
+<div class="p8-cap"><h3><span>1</span>Au repos : 2 sachets choisis, 153 % du besoin</h3><p>Comme « 1,7 kg · 62 % du grain » : le nombre en grand, sa part du besoin dessous, le stock en icône (2 sachets). Un toucher sur une puce change la dose. La piste dit ce que vaut chaque puce : sous, couvre, sur-dosé.</p></div>
+</div>
+<div class="p8-col">
+<div class="p8-tel p8" aria-label="Écran 2">
+  <header class="v1-tete">
+    <div class="v1-l1"><span class="v1-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span><span class="v1-titre">Levure<span class="v1-mono">4/7</span></span><span class="v1-esp"></span><span class="v1-lien">Abandonner</span><span class="v1-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span><span class="v1-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span></div>
+    <nav class="v1-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  </header>
+  <div class="p8-bande" aria-label="Bandeau de la recette">Grain<b>2,75 kg</b>OG<b>1,026</b>IBU<b>65</b><span class="p8-ibu"><i></i><u></u></span><span class="v1-esp" style="flex:1"></span>EBC<span class="p8-ebc"></span><b style="margin-right:0">11,9</b></div>
+  <section class="v1-carte" aria-label="Ma levure">
+    <div class="v1-hd">
+      <span class="v1-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="v1-nom"><b>Munich Lager Yeast</b></div>
+      <div class="p8-choix flash" aria-label="Dose choisie : 3 sachets"><span class="p8-n">3</span><em>sachets</em></div>
+      <span class="v1-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      <div class="p8-part"><span><span class="v1-mono">230 %</span> · 34,5 g</span><span class="p8-pb" aria-hidden="true"><i style="width:76.7%"></i><u style="left:33.3%"></u></span><span class="p8-v sur">sur-dosé</span><span class="p8-manque" aria-label="Stock : 2 sachets, il en manque 1"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>manque 1</span></div>
+      <div class="v1-marque">White Labs · vendue par Lallemand · <span class="v1-ex">exemple</span></div>
+    </div>
+    <div class="p8-dose">
+      <div class="p8-ed">
+        <div>
+          <div class="p8-puces" role="group" aria-label="Dose : un toucher choisit"><span class="p8-d" role="button" aria-label="1 sachet">1</span><span class="p8-d" role="button" aria-label="2 sachets">2</span><span class="p8-d plein" role="button" aria-label="3 sachets">3<i class="p8-doigt" aria-hidden="true"></i></span><span class="p8-d" role="button" aria-label="4 sachets">4</span><span class="p8-d" role="button" aria-label="5 sachets">5</span></div>
+          <div class="p8-piste" aria-label="Piste du besoin"><span class="z-sous" style="width:16.1%">sous</span><span class="z-ok" style="width:26.1%">couvre</span><span class="z-sur" style="width:57.8%">sur-dosé · seuil ×2</span></div>
+        </div>
+        <div class="p8-unite" role="group" aria-label="Unité"><span class="on">sachets</span><span>g</span></div>
+      </div>
+      <div class="p8-legende">besoin <b class="v1-mono">≥ 15 g</b> · 75 g/hL × 20 L<span class="v1-esp"></span><span class="p8-verif">11,5 g ? forme</span></div>
+      
+    </div>
+    <div class="v1-cases">
+      <div class="v1-case"><div class="v1-et">FG</div><div class="v1-val v1-mono">1,006–1,007</div><div class="v1-sous">≈ 2,5–2,7 % vol</div>
+        <div class="v1-jauge" aria-label="FG 1,006–1,007 sur 1,000 à 1,030"><i style="left:20%;width:5%"></i></div></div>
+      <div class="v1-case"><div class="v1-et">fiche · conduite</div><div class="v1-val v1-mono">9–11 · <span class="v1-hors">19 °C</span></div>
+        <div class="v1-plage" aria-label="Plage de la fiche 9–11 °C, conduite 19 °C hors plage"><span class="fiche" style="left:20%;width:10%"></span><span class="ici" style="left:70%"></span></div>
+        <span class="v1-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span></div>
+      <div class="v1-case"><div class="v1-et">floculation</div><div class="v1-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+        <div class="v1-floc"><i></i><i></i><i class="non"></i></div></div>
+    </div>
+    <div class="p8-cond" role="button" aria-label="Conduite de fermentation"><svg width="46" height="22" viewBox="0 0 46 22" aria-hidden="true"><rect x="0" y="3" width="21" height="6" rx="2" fill="#C87A2C"/><rect x="22" y="15" width="24" height="6" rx="2" fill="#5B8AA6"/><path d="M21 6v12" stroke="#9E9E9E" stroke-width="1.5" stroke-dasharray="2 2"/></svg><span class="v1-mono">19 °C · 7 j → 4 °C · 8 j</span><span class="v1-esp"></span><span class="p8-fin">fin J15</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></div>
+    <div class="p8-effets" aria-label="Effets de fermentation"><div class="p8-ef" style="--c:#7A4A3A"><div class="p8-en"><i class="v1-dot"></i>phénols</div><div class="p8-ev"><span class="v1-crans"><i></i><i></i><i></i></span>négatif</div></div><div class="p8-ef" style="--c:#6CC4A0"><div class="p8-en"><i class="v1-dot"></i>thiols</div><div class="p8-ev"><span class="v1-crans"><i class="on"></i><i></i><i></i></span>faible</div></div><div class="p8-ef" style="--c:#A8C040"><div class="p8-en"><i class="v1-dot"></i>terpènes</div><div class="p8-ev"><span class="v1-crans"><i class="on"></i><i></i><i></i></span>faible</div></div></div>
+    <div class="v1-ia" role="button" aria-label="Compléter la fiche par l'IA"><svg class="v1-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/><path d="M19 15l.9 2.3L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.7z"/></svg><b>Compléter la fiche</b><span class="v1-esp"></span><span class="v1-cpt">IA · 2 non documentés</span></div>
+  </section>
+  <section class="v1-chg" aria-label="Changer de levure">
+    <div class="v1-champ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</div>
+    <div class="v1-puces"><span class="v1-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Pomona</span><span class="v1-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Verdant IPA</span><span class="v1-puce hc">Hors catalogue</span></div>
+  </section>
+  <nav class="p8-portes" aria-label="À un toucher"><span role="button">Offres <small>CH·FR·DE</small></span><span role="button">Repères</span><span role="button">Atelier</span></nav>
+  <div class="p8-pied"><span class="v1-btn trait">Retour</span><span class="v1-esp"></span><span class="v1-btn noir">Suivant — Paliers</span></div>
+  <span class="fab p8-fab" aria-label="Ajouter">+</span>
+  <nav class="v1-onglets p8-onglets" aria-label="Onglets"><div>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</div></nav>
+</div>
+<div class="p8-cap"><h3><span>2</span>Un toucher sur « 3 »</h3><p>La puce devient le nombre en grand, aussitôt. 34,5 g passe le seuil ×2 : « sur-dosé », en ambre, sans bloquer. Le stock passe de l’icône à « manque 1 ». Pour revenir, un toucher sur « 2 ».</p></div>
+</div>
+<div class="p8-col">
+<div class="p8-tel p8" aria-label="Écran 3">
+  <header class="v1-tete">
+    <div class="v1-l1"><span class="v1-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span><span class="v1-titre">Levure<span class="v1-mono">4/7</span></span><span class="v1-esp"></span><span class="v1-lien">Abandonner</span><span class="v1-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span><span class="v1-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span></div>
+    <nav class="v1-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  </header>
+  <div class="p8-bande" aria-label="Bandeau de la recette">Grain<b>2,75 kg</b>OG<b>1,026</b>IBU<b>65</b><span class="p8-ibu"><i></i><u></u></span><span class="v1-esp" style="flex:1"></span>EBC<span class="p8-ebc"></span><b style="margin-right:0">11,9</b></div>
+  <section class="v1-carte" aria-label="Ma levure">
+    <div class="v1-hd">
+      <span class="v1-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="v1-nom"><b>Munich Lager Yeast</b></div>
+      <div class="p8-choix vide" aria-label="Dose à choisir">à choisir</div>
+      <span class="v1-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      <div class="p8-part"><span class="p8-v rien">rien de choisi · besoin ≥ 15 g</span><span class="p8-pb vide" aria-hidden="true"><u style="left:33.3%"></u></span><span class="p8-stock" aria-label="En stock : 2 sachets"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>2</span></div>
+      <div class="v1-marque">White Labs · vendue par Lallemand · <span class="v1-ex">exemple</span></div>
+    </div>
+    <div class="p8-dose">
+      <div class="p8-ed">
+        <div>
+          <div class="p8-puces" role="group" aria-label="Dose : un toucher choisit"><span class="p8-d" role="button" aria-label="1 sachet">1</span><span class="p8-d conseil" role="button" aria-label="2 sachets">2</span><span class="p8-d" role="button" aria-label="3 sachets">3</span><span class="p8-d" role="button" aria-label="4 sachets">4</span><span class="p8-d" role="button" aria-label="5 sachets">5</span></div>
+          <div class="p8-piste" aria-label="Piste du besoin"><span class="z-sous" style="width:16.1%">sous</span><span class="z-ok" style="width:26.1%">couvre</span><span class="z-sur" style="width:57.8%">sur-dosé · seuil ×2</span></div>
+        </div>
+        <div class="p8-unite" role="group" aria-label="Unité"><span class="on">sachets</span><span>g</span></div>
+      </div>
+      <div class="p8-legende">besoin <b class="v1-mono">≥ 15 g</b> · 75 g/hL × 20 L<span class="v1-esp"></span><span class="p8-verif">11,5 g ? forme</span></div>
+      
+    </div>
+    <div class="v1-cases">
+      <div class="v1-case"><div class="v1-et">FG</div><div class="v1-val v1-mono">1,006–1,007</div><div class="v1-sous">≈ 2,5–2,7 % vol</div>
+        <div class="v1-jauge" aria-label="FG 1,006–1,007 sur 1,000 à 1,030"><i style="left:20%;width:5%"></i></div></div>
+      <div class="v1-case"><div class="v1-et">fiche · conduite</div><div class="v1-val v1-mono">9–11 · <span class="v1-hors">19 °C</span></div>
+        <div class="v1-plage" aria-label="Plage de la fiche 9–11 °C, conduite 19 °C hors plage"><span class="fiche" style="left:20%;width:10%"></span><span class="ici" style="left:70%"></span></div>
+        <span class="v1-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span></div>
+      <div class="v1-case"><div class="v1-et">floculation</div><div class="v1-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+        <div class="v1-floc"><i></i><i></i><i class="non"></i></div></div>
+    </div>
+    <div class="p8-cond" role="button" aria-label="Conduite de fermentation"><svg width="46" height="22" viewBox="0 0 46 22" aria-hidden="true"><rect x="0" y="3" width="21" height="6" rx="2" fill="#C87A2C"/><rect x="22" y="15" width="24" height="6" rx="2" fill="#5B8AA6"/><path d="M21 6v12" stroke="#9E9E9E" stroke-width="1.5" stroke-dasharray="2 2"/></svg><span class="v1-mono">19 °C · 7 j → 4 °C · 8 j</span><span class="v1-esp"></span><span class="p8-fin">fin J15</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></div>
+    <div class="p8-effets" aria-label="Effets de fermentation"><div class="p8-ef" style="--c:#7A4A3A"><div class="p8-en"><i class="v1-dot"></i>phénols</div><div class="p8-ev"><span class="v1-crans"><i></i><i></i><i></i></span>négatif</div></div><div class="p8-ef" style="--c:#6CC4A0"><div class="p8-en"><i class="v1-dot"></i>thiols</div><div class="p8-ev"><span class="v1-crans"><i class="on"></i><i></i><i></i></span>faible</div></div><div class="p8-ef" style="--c:#A8C040"><div class="p8-en"><i class="v1-dot"></i>terpènes</div><div class="p8-ev"><span class="v1-crans"><i class="on"></i><i></i><i></i></span>faible</div></div></div>
+    <div class="v1-ia" role="button" aria-label="Compléter la fiche par l'IA"><svg class="v1-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/><path d="M19 15l.9 2.3L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.7z"/></svg><b>Compléter la fiche</b><span class="v1-esp"></span><span class="v1-cpt">IA · 2 non documentés</span></div>
+  </section>
+  <section class="v1-chg" aria-label="Changer de levure">
+    <div class="v1-champ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</div>
+    <div class="v1-puces"><span class="v1-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Pomona</span><span class="v1-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Verdant IPA</span><span class="v1-puce hc">Hors catalogue</span></div>
+  </section>
+  <nav class="p8-portes" aria-label="À un toucher"><span role="button">Offres <small>CH·FR·DE</small></span><span role="button">Repères</span><span role="button">Atelier</span></nav>
+  <div class="p8-pied"><span class="v1-btn trait">Retour</span><span class="v1-esp"></span><span class="v1-btn noir">Suivant — Paliers</span></div>
+  <span class="fab p8-fab" aria-label="Ajouter">+</span>
+  <nav class="v1-onglets p8-onglets" aria-label="Onglets"><div>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</div></nav>
+</div>
+<div class="p8-cap"><h3><span>3</span>Sa vraie recette : rien de choisi</h3><p>La recette n’a pas de quantité. En haut : « à choisir », jamais 0, jamais « ≥ 15 g » à la place d’un choix. Aucune puce pleine ; « 2 » en or : le premier nombre de sachets qui atteint le besoin. Un toucher la pose.</p></div>
+</div>
+<div class="p8-col">
+<div class="p8-tel p8" aria-label="Écran 3b">
+  <header class="v1-tete">
+    <div class="v1-l1"><span class="v1-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span><span class="v1-titre">Levure<span class="v1-mono">4/7</span></span><span class="v1-esp"></span><span class="v1-lien">Abandonner</span><span class="v1-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span><span class="v1-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span></div>
+    <nav class="v1-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  </header>
+  <div class="p8-bande" aria-label="Bandeau de la recette">Grain<b>2,75 kg</b>OG<b>1,026</b>IBU<b>65</b><span class="p8-ibu"><i></i><u></u></span><span class="v1-esp" style="flex:1"></span>EBC<span class="p8-ebc"></span><b style="margin-right:0">11,9</b></div>
+  <section class="v1-carte" aria-label="Ma levure">
+    <div class="v1-hd">
+      <span class="v1-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="v1-nom"><b>SafLager W-34/70</b></div>
+      <div class="p8-choix vide" aria-label="Dose à choisir">à choisir</div>
+      <span class="v1-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      <div class="p8-part"><span class="p8-v rien">besoin <span class="v1-mono">16–24 g</span> · 80–120 g/hL</span><span class="v1-esp" style="flex:1"></span><span class="p8-manque" aria-label="Pas en stock"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>manque 2</span></div>
+      <div class="v1-marque">Fermentis · sèche · sachet 11,5 g · <span class="v1-ex">exemple</span></div>
+    </div>
+    <div class="p8-dose">
+      <div class="p8-ed">
+        <div>
+          <div class="p8-puces" role="group" aria-label="Dose : un toucher choisit"><span class="p8-d" role="button" aria-label="1 sachet">1</span><span class="p8-d conseil" role="button" aria-label="2 sachets">2</span><span class="p8-d" role="button" aria-label="3 sachets">3</span><span class="p8-d" role="button" aria-label="4 sachets">4</span><span class="p8-d" role="button" aria-label="5 sachets">5</span></div>
+          <div class="p8-piste" aria-label="Piste du besoin"><span class="z-sous" style="width:17.8%">sous</span><span class="z-ok" style="width:13.9%">plage</span><span class="z-sur" style="width:68.3%">au-dessus de 24 g</span></div>
+        </div>
+        <div class="p8-unite" role="group" aria-label="Unité"><span class="on">sachets</span><span>g</span></div>
+      </div>
+      
+      <div class="p8-avant"><span>avant : <b class="v1-mono">2</b> sachets · Munich Lager</span><span class="v1-esp"></span><span class="p8-lien" role="button">Reprendre 2</span></div>
+    </div>
+    <div class="v1-cases">
+      <div class="v1-case"><div class="v1-et">FG</div><div class="v1-val v1-mono">1,004–1,005</div><div class="v1-sous">≈ 2,7–2,9 % vol</div>
+        <div class="v1-jauge" aria-label="FG 1,004–1,005 sur 1,000 à 1,030"><i style="left:13%;width:5%"></i></div></div>
+      <div class="v1-case"><div class="v1-et">fiche · conduite</div><div class="v1-val v1-mono">12–18 · <span class="v1-hors">19 °C</span></div>
+        <div class="v1-plage" aria-label="Plage de la fiche 12–18 °C, conduite 19 °C hors plage"><span class="fiche" style="left:35%;width:30%"></span><span class="ici" style="left:70%"></span></div>
+        <span class="v1-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 18 °C</span></div>
+      <div class="v1-case"><div class="v1-et">floculation</div><div class="v1-val" style="font-weight:400;color:var(--t1)">haute</div>
+        <div class="v1-floc"><i></i><i></i><i></i></div></div>
+    </div>
+    <div class="p8-cond" role="button" aria-label="Conduite de fermentation"><svg width="46" height="22" viewBox="0 0 46 22" aria-hidden="true"><rect x="0" y="3" width="21" height="6" rx="2" fill="#C87A2C"/><rect x="22" y="15" width="24" height="6" rx="2" fill="#5B8AA6"/><path d="M21 6v12" stroke="#9E9E9E" stroke-width="1.5" stroke-dasharray="2 2"/></svg><span class="v1-mono">19 °C · 7 j → 4 °C · 8 j</span><span class="v1-esp"></span><span class="p8-fin">fin J15</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></div>
+    <div class="p8-effets" aria-label="Effets de fermentation"><div class="p8-ef" style="--c:#7A4A3A"><div class="p8-en"><i class="v1-dot"></i>phénols</div><div class="p8-ev vide"><span class="v1-crans vide"><i></i><i></i><i></i></span>à lire</div></div><div class="p8-ef" style="--c:#6CC4A0"><div class="p8-en"><i class="v1-dot"></i>thiols</div><div class="p8-ev vide"><span class="v1-crans vide"><i></i><i></i><i></i></span>à lire</div></div><div class="p8-ef" style="--c:#A8C040"><div class="p8-en"><i class="v1-dot"></i>terpènes</div><div class="p8-ev vide"><span class="v1-crans vide"><i></i><i></i><i></i></span>à lire</div></div></div>
+    <div class="v1-ia" role="button" aria-label="Compléter la fiche par l'IA"><svg class="v1-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/><path d="M19 15l.9 2.3L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.7z"/></svg><b>Compléter la fiche</b><span class="v1-esp"></span><span class="v1-cpt">IA · 3 à lire</span></div>
+  </section>
+  <section class="v1-chg" aria-label="Changer de levure">
+    <div class="v1-champ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</div>
+    <div class="v1-puces"><span class="v1-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Pomona</span><span class="v1-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Verdant IPA</span><span class="v1-puce hc">Hors catalogue</span></div>
+  </section>
+  <nav class="p8-portes" aria-label="À un toucher"><span role="button">Offres <small>CH·FR·DE</small></span><span role="button">Repères</span><span role="button">Atelier</span></nav>
+  <div class="p8-pied"><span class="v1-btn trait">Retour</span><span class="v1-esp"></span><span class="v1-btn noir">Suivant — Paliers</span></div>
+  <span class="fab p8-fab" aria-label="Ajouter">+</span>
+  <nav class="v1-onglets p8-onglets" aria-label="Onglets"><div>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</div></nav>
+</div>
+<div class="p8-cap"><h3><span>3b</span>Changer de levure : une plage</h3><p>W-34/70 : 80–120 g/hL, soit 16–24 g pour 20 L. Seul « 2 » (23 g) tombe dans la plage ; 34,5 g la dépasse de 44 %. L’ancienne dose est rappelée, jamais effacée en silence : « Reprendre 2 » la pose en un toucher.</p></div>
+</div>
+<div class="p8-col">
+<div class="p8-tel p8" aria-label="Écran 4">
+  <header class="v1-tete">
+    <div class="v1-l1"><span class="v1-retour" aria-label="Retour"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span><span class="v1-titre">Levure<span class="v1-mono">4/7</span></span><span class="v1-esp"></span><span class="v1-lien">Abandonner</span><span class="v1-ico" aria-label="Importer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 3h8l3 3v14H5V6z"/><path d="M11 13h8m-3-3 3 3-3 3"/></svg></span><span class="v1-ico" aria-label="Thème"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span></div>
+    <nav class="v1-etapes" aria-label="Étapes de la recette"><span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span></nav>
+  </header>
+  <div class="p8-bande" aria-label="Bandeau de la recette">Grain<b>2,75 kg</b>OG<b>1,026</b>IBU<b>65</b><span class="p8-ibu"><i></i><u></u></span><span class="v1-esp" style="flex:1"></span>EBC<span class="p8-ebc"></span><b style="margin-right:0">11,9</b></div>
+  <section class="v1-carte" aria-label="Ma levure">
+    <div class="v1-hd">
+      <span class="v1-pastille"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="v1-nom"><b>Munich Lager Yeast</b></div>
+      <div class="p8-choix" aria-label="Dose choisie : 20 g"><span class="p8-n">20</span><em>g</em></div>
+      <span class="v1-x" aria-label="Retirer la levure"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></span>
+      <div class="p8-part"><span><span class="v1-mono">133 %</span> du besoin</span><span class="p8-pb" aria-hidden="true"><i style="width:44.4%"></i><u style="left:33.3%"></u></span><span class="p8-v couvre"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>couvre</span><span class="p8-stock" aria-label="En stock"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg></span></div>
+      <div class="v1-marque">White Labs · brique de 500 g · <span class="v1-ex">exemple</span></div>
+    </div>
+    <div class="p8-dose">
+      <div class="p8-ed">
+        <div>
+          <div class="p8-puces" role="group" aria-label="Dose : un toucher choisit"><span class="p8-d" role="button" aria-label="10 g">10</span><span class="p8-d" role="button" aria-label="15 g">15</span><span class="p8-d plein" role="button" aria-label="20 g">20</span><span class="p8-d" role="button" aria-label="25 g">25</span><span class="p8-d" role="button" aria-label="30 g">30</span></div>
+          <div class="p8-piste" aria-label="Piste du besoin"><span class="z-sous" style="width:30%">sous</span><span class="z-ok" style="width:60%">couvre</span><span class="z-sur" style="width:10%"></span></div>
+        </div>
+        <div class="p8-unite" role="group" aria-label="Unité"><span>sachets</span><span class="on">g</span></div>
+      </div>
+      <div class="p8-legende">besoin <b class="v1-mono">≥ 15 g</b> · puces au pas de 5 g<span class="v1-esp"></span>appui long : ± 1 g</div>
+      
+    </div>
+    <div class="v1-cases">
+      <div class="v1-case"><div class="v1-et">FG</div><div class="v1-val v1-mono">1,006–1,007</div><div class="v1-sous">≈ 2,5–2,7 % vol</div>
+        <div class="v1-jauge" aria-label="FG 1,006–1,007 sur 1,000 à 1,030"><i style="left:20%;width:5%"></i></div></div>
+      <div class="v1-case"><div class="v1-et">fiche · conduite</div><div class="v1-val v1-mono">9–11 · <span class="v1-hors">19 °C</span></div>
+        <div class="v1-plage" aria-label="Plage de la fiche 9–11 °C, conduite 19 °C hors plage"><span class="fiche" style="left:20%;width:10%"></span><span class="ici" style="left:70%"></span></div>
+        <span class="v1-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>Caler à 11 °C</span></div>
+      <div class="v1-case"><div class="v1-et">floculation</div><div class="v1-val" style="font-weight:400;color:var(--t1)">moyenne</div>
+        <div class="v1-floc"><i></i><i></i><i class="non"></i></div></div>
+    </div>
+    <div class="p8-cond" role="button" aria-label="Conduite de fermentation"><svg width="46" height="22" viewBox="0 0 46 22" aria-hidden="true"><rect x="0" y="3" width="21" height="6" rx="2" fill="#C87A2C"/><rect x="22" y="15" width="24" height="6" rx="2" fill="#5B8AA6"/><path d="M21 6v12" stroke="#9E9E9E" stroke-width="1.5" stroke-dasharray="2 2"/></svg><span class="v1-mono">19 °C · 7 j → 4 °C · 8 j</span><span class="v1-esp"></span><span class="p8-fin">fin J15</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg></div>
+    <div class="p8-effets" aria-label="Effets de fermentation"><div class="p8-ef" style="--c:#7A4A3A"><div class="p8-en"><i class="v1-dot"></i>phénols</div><div class="p8-ev"><span class="v1-crans"><i></i><i></i><i></i></span>négatif</div></div><div class="p8-ef" style="--c:#6CC4A0"><div class="p8-en"><i class="v1-dot"></i>thiols</div><div class="p8-ev"><span class="v1-crans"><i class="on"></i><i></i><i></i></span>faible</div></div><div class="p8-ef" style="--c:#A8C040"><div class="p8-en"><i class="v1-dot"></i>terpènes</div><div class="p8-ev"><span class="v1-crans"><i class="on"></i><i></i><i></i></span>faible</div></div></div>
+    <div class="v1-ia" role="button" aria-label="Compléter la fiche par l'IA"><svg class="v1-etoile" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.6L21 11l-6.8 2.4L12 20l-2.2-6.6L3 11l6.8-2.4z"/><path d="M19 15l.9 2.3L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.7z"/></svg><b>Compléter la fiche</b><span class="v1-esp"></span><span class="v1-cpt">IA · 2 non documentés</span></div>
+  </section>
+  <section class="v1-chg" aria-label="Changer de levure">
+    <div class="v1-champ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>Changer de levure</div>
+    <div class="v1-puces"><span class="v1-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Pomona</span><span class="v1-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Verdant IPA</span><span class="v1-puce hc">Hors catalogue</span></div>
+  </section>
+  <nav class="p8-portes" aria-label="À un toucher"><span role="button">Offres <small>CH·FR·DE</small></span><span role="button">Repères</span><span role="button">Atelier</span></nav>
+  <div class="p8-pied"><span class="v1-btn trait">Retour</span><span class="v1-esp"></span><span class="v1-btn noir">Suivant — Paliers</span></div>
+  <span class="fab p8-fab" aria-label="Ajouter">+</span>
+  <nav class="v1-onglets p8-onglets" aria-label="Onglets"><div>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16a8 8 0 1 1 16 0"/><path d="M12 16l4-5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4" stroke-linecap="round"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="ici"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>Clients</a>
+</div></nav>
+</div>
+<div class="p8-cap"><h3><span>4</span>En g : une brique entamée</h3><p>Un toucher sur « g » : les puces passent au pas de 5 g, autour du besoin ; un appui long sur une puce règle au gramme. Même ligne, même geste qu’en sachets. Un pack liquide se compte de la même façon, en packs.</p></div>
+</div>
+</div>
+</body>
+</html>

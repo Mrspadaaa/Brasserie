@@ -1,0 +1,351 @@
+{
+ "p-repos": [
+  "brassage:true",
+  "evenement:true",
+  "vente:true",
+  "achat:true",
+  "renovation:true",
+  "activite:true",
+  "charge:true"
+ ],
+ "p-repos.err": [],
+ "p-r-brassage": {
+  "feuille": "Ajouterdans BrassinsBrassinVenteFêteAchatTravauxActivitéPapierNomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.Ajouter en S47",
+  "cases": 0,
+  "ok": "Ajouter en S47",
+  "pose": "Essai brassage −100",
+  "m1": [
+   "as-toast: S47 : 4 032 → 3 932Annuler"
+  ],
+  "tete": "13CHF à dépenser ·S24"
+ },
+ "p-r-brassage.err": [],
+ "p-r-evenement": {
+  "feuille": "Ajouterdans FêtesBrassinVenteFêteAchatTravauxActivitéPapierNomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.Ajouter en S47",
+  "cases": 0,
+  "ok": "Ajouter en S47",
+  "pose": "Essai evenement +100",
+  "m1": [
+   "as-toast: S47 : 4 032 → 4 132Annuler"
+  ],
+  "tete": "213CHF à dépenser ·S24"
+ },
+ "p-r-evenement.err": [],
+ "p-r-vente": {
+  "feuille": "Ajouterdans VentesBrassinVenteFêteAchatTravauxActivitéPapierCafé du Pont 1 fût · 10 déc.+130NomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.Ajouter en S50",
+  "cases": 0,
+  "ok": "Ajouter en S50",
+  "pose": "Café du Pont +130",
+  "m1": [
+   "as-toast: S50 : 5 120 → 5 250Annuler"
+  ],
+  "tete": "243CHF à dépenser ·S24"
+ },
+ "p-r-vente.err": [],
+ "p-r-achat": {
+  "feuille": "Ajouterdans AchatsBrassinVenteFêteAchatTravauxActivitéPapierNomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.Ajouter en S47",
+  "cases": 0,
+  "ok": "Ajouter en S47",
+  "pose": "Essai achat −100",
+  "m1": [
+   "as-toast: S47 : 4 032 → 3 932Annuler"
+  ],
+  "tete": "13CHF à dépenser ·S24"
+ },
+ "p-r-achat.err": [],
+ "p-r-renovation": {
+  "feuille": "Ajouterdans TravauxBrassinVenteFêteAchatTravauxActivitéPapierNomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.Ajouter en S47",
+  "cases": 0,
+  "ok": "Ajouter en S47",
+  "pose": "Essai renovation −100",
+  "m1": [
+   "as-toast: S47 : 4 032 → 3 932Annuler"
+  ],
+  "tete": "13CHF à dépenser ·S24"
+ },
+ "p-r-renovation.err": [],
+ "p-r-activite": {
+  "feuille": "Ajouterdans ActivitésBrassinVenteFêteAchatTravauxActivitéPapierNomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.Ajouter en S47",
+  "cases": 0,
+  "ok": "Ajouter en S47",
+  "pose": "Essai activite 1 j",
+  "m1": [
+   "as-toast: Posé en S47Annuler"
+  ],
+  "tete": "113CHF à dépenser ·S24"
+ },
+ "p-r-activite.err": [],
+ "p-r-charge": {
+  "feuille": "Ajouterdans PapiersBrassinVenteFêteAchatTravauxActivitéPapierNomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.Ajouter en S47",
+  "cases": 0,
+  "ok": "Ajouter en S47",
+  "pose": "Essai charge −100",
+  "m1": [
+   "as-toast: S47 : 4 032 → 3 932Annuler"
+  ],
+  "tete": "13CHF à dépenser ·S24"
+ },
+ "p-r-charge.err": [],
+ "p-fab": {
+  "f1": "AjouterBrassinVenteFêteAchatTravauxActivitéPapierNomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.Ajouter",
+  "ty": [
+   "brassage:Brassin",
+   "vente:Vente",
+   "evenement:Fête",
+   "achat:Achat",
+   "renovation:Travaux",
+   "activite:Activité",
+   "charge:Papier"
+  ],
+  "se": [
+   "0:S4716 nov.",
+   "1:S4823 nov.",
+   "2:S4930 nov.",
+   "3:S507 déc.",
+   "4:S5114 déc.",
+   "5:S5221 déc."
+  ],
+  "ok": "Ajouter en S50",
+  "pose": "Saison de printemps −420",
+  "m1": [
+   "as-toast: S50 : 5 120 → 4 700Annuler"
+  ],
+  "det": [
+   "as-toast: S50 : 5 120 → 4 700Annuler"
+  ],
+  "vide": [],
+  "sh": ""
+ },
+ "p-fab.err": [],
+ "p-f6b": {
+  "m1": [
+   "as-tag: 15 déc.",
+   "as-al: 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde brassée dès le 7 déc.Caisse : S47 4 032 → 4 180, la suite inchangéeLivrer le 5 janv.Annuler"
+  ],
+  "m2": [
+   "as-tag: 15 déc.",
+   "as-al: 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde brassée dès le 7 déc.Caisse : S47 4 032 → 4 180, la suite inchangéeLivrer le 5 janv.Annuler"
+  ]
+ },
+ "p-f6b.err": [],
+ "p-f1a": {
+  "m1": [
+   "as-toast: S51 : 5 064 → 4 524Annuler"
+  ],
+  "m2": [
+   "as-tag: 15 déc.",
+   "as-al: 3 fûts promis le 15 déc. · prête le 21 déc.La Cigogne · la Blonde tirée à 35 jLivrer le 22 déc.Annuler"
+  ],
+  "m3": [
+   "as-tag: 15 déc.",
+   "as-al: 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde brassée dès le 30 nov.Caisse : S47 4 032 → 4 180, la suite inchangéeLivrer le 5 janv.Annuler"
+  ]
+ },
+ "p-f1a.err": [],
+ "p-f2a": {
+  "m1": [
+   "as-tag: 15 déc.",
+   "as-al: 3 fûts promis le 15 déc. · prête le 21 déc.La Cigogne · la Blonde tirée à 35 jLivrer le 22 déc.Annuler"
+  ],
+  "m2": [
+   "as-tag: 15 déc.",
+   "as-al: 3 fûts promis le 15 déc. · prête le 21 déc.La Cigogne · la Blonde tirée à 35 jLivrer le 22 déc.Annuler"
+  ]
+ },
+ "p-f2a.err": [],
+ "p-autres": {
+  "e-01": [
+   "as-toast: S50 : 5 120 → 3 940Annuler"
+  ],
+  "v-03": [
+   "as-toast: S50 : 3 940 → 3 300Annuler"
+  ],
+  "a-04": [],
+  "t-01": [
+   "as-toast: Ranger la réserve : S48 → S49Annuler"
+  ],
+  "c-01": [
+   "as-toast: Charge fixe : elle se règle dans Finances"
+  ]
+ },
+ "p-autres.err": [],
+ "l-repos": [
+  "brassage:true",
+  "evenement:true",
+  "vente:true",
+  "achat:true",
+  "renovation:true",
+  "activite:true",
+  "charge:true"
+ ],
+ "l-repos.err": [],
+ "l-r-brassage": {
+  "feuille": "Ajouterdans BrassinsBrassinVenteFêteAchatTravauxActivitéPapierNomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.S5328 déc.S14 janv.S211 janv.S318 janv.S425 janv.S51 févr.S68 févr.Ajouter en S47",
+  "cases": 0,
+  "ok": "Ajouter en S47",
+  "pose": "Essai brassage −100",
+  "m1": [
+   "as-toast: S47 : 4 032 → 3 932Annuler"
+  ],
+  "tete": "13CHF à dépenser ·S24"
+ },
+ "l-r-brassage.err": [],
+ "l-r-evenement": {
+  "feuille": "Ajouterdans FêtesBrassinVenteFêteAchatTravauxActivitéPapierNomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.S5328 déc.S14 janv.S211 janv.S318 janv.S425 janv.S51 févr.S68 févr.Ajouter en S47",
+  "cases": 0,
+  "ok": "Ajouter en S47",
+  "pose": "Essai evenement +100",
+  "m1": [
+   "as-toast: S47 : 4 032 → 4 132Annuler"
+  ],
+  "tete": "213CHF à dépenser ·S24"
+ },
+ "l-r-evenement.err": [],
+ "l-r-vente": {
+  "feuille": "Ajouterdans VentesBrassinVenteFêteAchatTravauxActivitéPapierCafé du Pont 1 fût · 10 déc.+130NomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.S5328 déc.S14 janv.S211 janv.S318 janv.S425 janv.S51 févr.S68 févr.Ajouter en S50",
+  "cases": 0,
+  "ok": "Ajouter en S50",
+  "pose": "Café du Pont +130",
+  "m1": [
+   "as-toast: S50 : 5 120 → 5 250Annuler"
+  ],
+  "tete": "243CHF à dépenser ·S24"
+ },
+ "l-r-vente.err": [],
+ "l-r-achat": {
+  "feuille": "Ajouterdans AchatsBrassinVenteFêteAchatTravauxActivitéPapierNomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.S5328 déc.S14 janv.S211 janv.S318 janv.S425 janv.S51 févr.S68 févr.Ajouter en S47",
+  "cases": 0,
+  "ok": "Ajouter en S47",
+  "pose": "Essai achat −100",
+  "m1": [
+   "as-toast: S47 : 4 032 → 3 932Annuler"
+  ],
+  "tete": "13CHF à dépenser ·S24"
+ },
+ "l-r-achat.err": [],
+ "l-r-renovation": {
+  "feuille": "Ajouterdans TravauxBrassinVenteFêteAchatTravauxActivitéPapierNomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.S5328 déc.S14 janv.S211 janv.S318 janv.S425 janv.S51 févr.S68 févr.Ajouter en S47",
+  "cases": 0,
+  "ok": "Ajouter en S47",
+  "pose": "Essai renovation −100",
+  "m1": [
+   "as-toast: S47 : 4 032 → 3 932Annuler"
+  ],
+  "tete": "13CHF à dépenser ·S24"
+ },
+ "l-r-renovation.err": [],
+ "l-r-activite": {
+  "feuille": "Ajouterdans ActivitésBrassinVenteFêteAchatTravauxActivitéPapierNomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.S5328 déc.S14 janv.S211 janv.S318 janv.S425 janv.S51 févr.S68 févr.Ajouter en S47",
+  "cases": 0,
+  "ok": "Ajouter en S47",
+  "pose": "Essai activite 1 j",
+  "m1": [
+   "as-toast: Posé en S47Annuler"
+  ],
+  "tete": "113CHF à dépenser ·S24"
+ },
+ "l-r-activite.err": [],
+ "l-r-charge": {
+  "feuille": "Ajouterdans PapiersBrassinVenteFêteAchatTravauxActivitéPapierNomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.S5328 déc.S14 janv.S211 janv.S318 janv.S425 janv.S51 févr.S68 févr.Ajouter en S47",
+  "cases": 0,
+  "ok": "Ajouter en S47",
+  "pose": "Essai charge −100",
+  "m1": [
+   "as-toast: S47 : 4 032 → 3 932Annuler"
+  ],
+  "tete": "13CHF à dépenser ·S24"
+ },
+ "l-r-charge.err": [],
+ "l-fab": {
+  "f1": "AjouterBrassinVenteFêteAchatTravauxActivitéPapierNomCHFS4716 nov.S4823 nov.S4930 nov.S507 déc.S5114 déc.S5221 déc.S5328 déc.S14 janv.S211 janv.S318 janv.S425 janv.S51 févr.S68 févr.Ajouter",
+  "ty": [
+   "brassage:Brassin",
+   "vente:Vente",
+   "evenement:Fête",
+   "achat:Achat",
+   "renovation:Travaux",
+   "activite:Activité",
+   "charge:Papier"
+  ],
+  "se": [
+   "0:S4716 nov.",
+   "1:S4823 nov.",
+   "2:S4930 nov.",
+   "3:S507 déc.",
+   "4:S5114 déc.",
+   "5:S5221 déc.",
+   "6:S5328 déc.",
+   "7:S14 janv.",
+   "8:S211 janv.",
+   "9:S318 janv.",
+   "10:S425 janv.",
+   "11:S51 févr.",
+   "12:S68 févr."
+  ],
+  "ok": "Ajouter en S50",
+  "pose": "Saison de printemps −420",
+  "m1": [
+   "as-toast: S50 : 5 120 → 4 700Annuler"
+  ],
+  "det": [
+   "as-toast: S50 : 5 120 → 4 700Annuler"
+  ],
+  "vide": [],
+  "sh": ""
+ },
+ "l-fab.err": [],
+ "l-f6b": {
+  "m1": [
+   "as-tag: 15 déc.",
+   "as-al: 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde brassée dès le 7 déc.Caisse : S47 4 032 → 4 180, la suite inchangéeLivrer le 5 janv.Annuler"
+  ],
+  "m2": [
+   "as-tag: 15 déc.",
+   "as-al: 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde brassée dès le 7 déc.Caisse : S47 4 032 → 4 180, la suite inchangéeLivrer le 5 janv.Annuler"
+  ]
+ },
+ "l-f6b.err": [],
+ "l-f1a": {
+  "m1": [
+   "as-toast: S51 : 5 064 → 4 524Annuler"
+  ],
+  "m2": [
+   "as-tag: 15 déc.",
+   "as-al: 3 fûts promis le 15 déc. · prête le 21 déc.La Cigogne · la Blonde tirée à 35 jLivrer le 22 déc.Annuler"
+  ],
+  "m3": [
+   "as-tag: 15 déc.",
+   "as-al: 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde brassée dès le 30 nov.Caisse : S47 4 032 → 4 180, la suite inchangéeLivrer le 5 janv.Annuler"
+  ]
+ },
+ "l-f1a.err": [],
+ "l-f2a": {
+  "m1": [
+   "as-tag: 15 déc.",
+   "as-al: 3 fûts promis le 15 déc. · prête le 21 déc.La Cigogne · la Blonde tirée à 35 jLivrer le 22 déc.Annuler"
+  ],
+  "m2": [
+   "as-tag: 15 déc.",
+   "as-al: 3 fûts promis le 15 déc. · prête le 21 déc.La Cigogne · la Blonde tirée à 35 jLivrer le 22 déc.Annuler"
+  ]
+ },
+ "l-f2a.err": [],
+ "l-autres": {
+  "e-01": [
+   "as-toast: S50 : 5 120 → 3 940Annuler"
+  ],
+  "v-03": [
+   "as-toast: S50 : 3 940 → 3 300Annuler"
+  ],
+  "a-04": [
+   "as-toast: S52 : 5 550 → 6 090Annuler"
+  ],
+  "t-01": [
+   "as-toast: Ranger la réserve : S48 → S49Annuler"
+  ],
+  "c-01": [
+   "as-toast: Charge fixe : elle se règle dans Finances"
+  ]
+ },
+ "l-autres.err": []
+}

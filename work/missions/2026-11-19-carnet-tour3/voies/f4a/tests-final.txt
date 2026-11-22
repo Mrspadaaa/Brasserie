@@ -1,0 +1,968 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/carnetsEcrans.test.tsx[2m > [22m[2mCorrection 1, lot L2 : le champ dans le vrai conteneur (fixture, magasin mémoire, IA simulée)[2m > [22m[2mP13 : sur Ventilation par défaut, la bulle G8 se tait (rien à trancher) ; avec l’option g8 (critique 5, n° 21), elle paraît au focus, picto local, sans ✻
+[22m[39mAn update to CarnetsVue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/carnetsCritique4Fil.test.tsx[2m > [22m[2mP28 (R09) et P33 (R20)[2m > [22m[2mCréer · avant : le champ de la liste pris montre la phrase, les exemples touchables et « Une note en vrac marche aussi. »
+[22m[39mAn update to CarnetsVue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to CarnetsVue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[2m[90m-[39m[22m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/unit/carnetsRattacher.test.ts[2m > [22m[2mrattacher (A5)[2m > [22m[2mle seuil du module est dans la plage optimale trouvée sur la moitié de réglage
+[22m[39mA5 réglage : 11/12 au mieux, seuils optimaux 1.2 à 1.4 ; module 1.25
+A5 scores réglage : hotte 100 cm vue chez un autre fournisseur → ZZ TEST — Ventilation de la salle de brassage 1.414 | isobarique 4 becs d’occasion → ZZ TEST — Embouteillage 1.732 | chambre froide 3 m³ → ZZ TEST — Frigo de garde pour fûts 2.121 | douchette pour l’évier → ZZ TEST — Évier inox 2.121 | extracteur plus silencieux → ZZ TEST — Extracteur pour la salle de fermentation 2.121 | remplisseuse contre-pression → ZZ TEST — Embouteillage 1.732 | vitrine pro d’occasion → ZZ TEST — Frigo de garde pour fûts 1.732 | acheter du houblon Citra → — 0 | nettoyer la cuve de fermentation → ZZ TEST — Extracteur pour la salle de fermentation 1.155 | bacs profonds pour laver les fûts → ZZ TEST — Évier inox 4 | tabouret inox → ZZ TEST — Évier inox 1.061 | évier : robinet à pédale → ZZ TEST — Évier inox 1.732
+
+[33m[39m[32m·[39m[90mstdout[2m | tests/unit/carnetsRattacher.test.ts[2m > [22m[2mrattacher (A5)[2m > [22m[2mjugé sur l’autre moitié : au moins 80 % de bons carnets proposés
+[22m[39mA5 jugement : 13/14 au seuil 1.25 ; ratés : chariot inox pour les fûts
+A5 scores jugement : hotte inox moins chère → ZZ TEST — Ventilation de la salle de brassage 1.732 | monobloc 6 becs → ZZ TEST — Embouteillage 1.414 | frigo pour les fûts → ZZ TEST — Frigo de garde pour fûts 3.536 | évier sur pieds → ZZ TEST — Évier inox 2.121 | condensation au plafond → ZZ TEST — Ventilation de la salle de brassage 2.828 | oxygène dans les bouteilles → ZZ TEST — Embouteillage 2.923 | température en été dans le local → ZZ TEST — Frigo de garde pour fûts 2.887 | prix des levures → — 0 | pinceau et rouleau pour le sol → — 0 | isobarique pré-évacuation → ZZ TEST — Embouteillage 2.309 | prochain brassage jeudi → ZZ TEST — Ventilation de la salle de brassage 1.061 | chariot inox pour les fûts → ZZ TEST — Évier inox 2.021 | ventilation : hotte 120 cm au-dessus de la cuve → ZZ TEST — Ventilation de la salle de brassage 4.5 | densimètre portable moins cher → ZZ TEST — Densimètre de paillasse 2.309
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/unit/carnetsDoublons.test.ts[2m > [22m[2mdoublons (A10)[2m > [22m[2mle seuil du module est dans la plage optimale de la moitié de réglage
+[22m[39mA10 réglage : seuils optimaux 0.35 à 0.5 ({"trouves":5,"faux":0}) ; module 0.4
+A10 similarités réglage : D 0.50 D 1.00 D 0.67 D 1.00 D 0.50 v 0.17 v 0.33 v 0.20 v 0.25 v 0.33
+
+[90mstdout[2m | tests/unit/carnetsDoublons.test.ts[2m > [22m[2mdoublons (A10)[2m > [22m[2mjugé sur l’autre moitié : au moins 4 doublons sur 5, au plus 1 faux sur 5
+[22m[39mA10 jugement : 5/5 doublons trouvés, 1/5 faux, au seuil 0.4
+A10 similarités jugement : D 0.75 D 0.60 D 1.00 D 1.00 D 0.75 v 0.14 v 0.20 v 0.17 v 0.25 v 0.50
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 8 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/integration/carnetsParcours.test.tsx[2m > [22mD3 et D7 : sortie vers À venir, liens, Suppression v2[2m > [22mG8 au banc : la fixture Ventilation se tait par défaut ; avec l’option g8 (`&g8=1`, critique 5 n° 21), elle montre la bulle « peut trancher » (calcul local, R44)
+[31m[1mAssertionError[22m: expected ' CarnetsZZ TEST — Ventilation de la s…' to match /peut trancher/[39m
+
+[32m- Expected:[39m 
+/peut trancher/
+
+[31m+ Received:[39m 
+" CarnetsZZ TEST — Ventilation de la salle de brassage2 façons à comparer · attendre l’avis du ferblantierCritère : tient 80 °C, puis le débit, puis pas trop de bruit · proposé par l'IA · 1 critère sans valeur à comparer Articles6·Comparer Hotte inox + extracteur1 450 à 2 600 CHFtient 80 °Crang · articlem³/hCHF1Hotte inox 120 cm + moteurCH · en stock1 8002 6002Hotte murale 100 cmDE · délai 4 sem. · veille1 2001 450Extracteur mural seul420 à 690 CHFne tient pas 80 °C3Extracteur mural hélicoïdeCH · en stock1 5004204Extracteur centrifuge en ligneFR · en stock1 100690?Lien sans aperçuexemple.invalid/v5 · à relireOuvrir  Le critère sépare les deux façons : seule la hotte tient 80 °C.Retenir la hotteVentilateur de plafond180 CHFbrasse la buée sans la sortir–Ventilateur de plafond 130 cmécarté : brasse la buée sans la sortir–180votre phrase : « buées au-dessus de la cuve » Notes 3attendre l’avis du ferblantierà fairesurtout la buée de la cuve pendant l’ébullition, pas tant la sallenoteil faudrait au moins 1 500 m³/hnote« pas trop de bruit » tranche entre Hotte inox + extracteur et Extracteur mural seulAjouter à ZZ TEST — Ventilation de la salle de brassage…"
+
+[36m [2m❯[22m tests/integration/carnetsParcours.test.tsx:[2m156:39[22m[39m
+    [90m154| [39m    const vue = render(<CarnetsVue {...m.props} ouvrir={{ id: ID_VENTI…
+    [90m155| [39m    await act(async () => { (vue.container.querySelector('.cn-champ te…
+    [90m156| [39m    [34mexpect[39m(vue[33m.[39mcontainer[33m.[39mtextContent)[33m.[39m[34mtoMatch[39m([36m/tranche entre/[39m)[33m;[39m
+    [90m   | [39m                                      [31m^[39m
+    [90m157| [39m  })[33m;[39m
+    [90m158| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsCritique5Figes.test.tsx[2m > [22m3 · IA indisponible : aucun « Ensuite : l’IA … » (n° 24)[2m > [22mhors-ligne : ni « Ensuite : l’IA », ni « l’IA le proposera », ni « l’IA les cherche »
+[31m[1mAssertionError[22m: expected ' CarnetsIdée · 17 nov.Moulin à maltL\…' to contain 'Façons · aucune'[39m
+
+Expected: [32m"Façons · aucune"[39m
+Received: [31m" CarnetsIdée · 17 nov.Moulin à maltL'IA le range au retour du réseau : ce qui compte, façons, articles. Rien n'est perdu.Le champ en bas range tout ici : une phrase, un lien collé, une photo."[39m
+
+[36m [2m❯[22m tests/unit/carnetsCritique5Figes.test.tsx:[2m104:15[22m[39m
+    [90m102| [39m    [34mexpect[39m(t)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m"l'IA les cherche"[39m)[33m;[39m
+    [90m103| [39m    /* critique 6, n° 16 : plus d'encadré « Ensuite… » ; les rubriques…
+    [90m104| [39m    /* tour 3, PCN-113 : hors ligne, une ligne « au retour du réseau »…
+    [90m   | [39m              [31m^[39m
+    [90m105| [39m    expect(t).toContain(sorte === 'hors-ligne' ? 'au retour du réseau'…
+    [90m106| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsEcrans.test.tsx[2m > [22mC6 · G8, G29, pastilles, G30, G32[2m > [22mG8 bulle au focus, picto local sans ✻ ; un toucher remplit le champ ; sans suggestion, rien
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "button" and name `/peut trancher entre/`
+
+Here are the accessible roles:
+
+  button:
+
+  Name "calculé sur place« plus de condensation au plafond » tranche entre Hotte inox + extracteur et Extracteur mural seul":
+  [36m<button[39m
+    [33mclass[39m=[32m"cn-bulle"[39m
+    [33mtitle[39m=[32m"Le critère « plus de condensation au plafond » tranche entre Hotte inox + extracteur et Extracteur mural seul"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  img:
+
+  Name "calculé sur place":
+  [36m<span[39m
+    [33maria-label[39m=[32m"calculé sur place"[39m
+    [33mclass[39m=[32m"cn-prov cn-prov-local"[39m
+    [33mdata-picto[39m=[32m"local"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Ajouter à Ventilation…":
+  [36m<textarea[39m
+    [33mautocapitalize[39m=[32m"sentences"[39m
+    [33menterkeyhint[39m=[32m"send"[39m
+    [33mid[39m=[32m"_r_2_"[39m
+    [33mplaceholder[39m=[32m"Ajouter à Ventilation…"[39m
+    [33mrows[39m=[32m"1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div[39m
+    [33mstyle[39m=[32m"--cn-champ-h: 0px; --cn-clavier: 0px;"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"cn-champ-zone"[39m
+      [33mstyle[39m=[32m"bottom: 0px; margin-bottom: 0px;"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"cnf-aides-ligne"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"cn-bulle"[39m
+          [33mtitle[39m=[32m"Le critère « plus de condensation au plafond » tranche entre Hotte inox + extracteur et Extracteur mural seul"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33maria-label[39m=[32m"calculé sur place"[39m
+            [33mclass[39m=[32m"cn-prov cn-prov-local"[39m
+            [33mdata-picto[39m=[32m"local"[39m
+            [33mrole[39m=[32m"img"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-calculator"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"14"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"14"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mrx[39m=[32m"2"[39m
+                [33mwidth[39m=[32m"16"[39m
+                [33mx[39m=[32m"4"[39m
+                [33my[39m=[32m"2"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [33mx1[39m=[32m"8"[39m
+                [33mx2[39m=[32m"16"[39m
+                [33my1[39m=[32m"6"[39m
+                [33my2[39m=[32m"6"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [33mx1[39m=[32m"16"[39m
+                [33mx2[39m=[32m"16"[39m
+                [33my1[39m=[32m"14"[39m
+                [33my2[39m=[32m"18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M16 10h.01"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 10h.01"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 10h.01"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 14h.01"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 14h.01"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M12 18h.01"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M8 18h.01"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</span>[39m
+          [36m<span>[39m
+            [0m« [0m
+            [0mplus de condensation au plafond[0m
+            [0m » tranche entre [0m
+            [0mHotte inox + extracteur[0m
+            [0m et [0m
+            [0mExtracteur mural seul[0m
+          [36m</span>[39m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33mclass[39m=[32m"cn-champ cn-champ-focus"[39m
+      [36m>[39m
+        [36m<label[39m
+          [33mclass[39m=[32m"cn-cache"[39m
+          [33mfor[39m=[32m"_r_2_"[39m
+        [36m>[39m
+          [0mAjouter à Ventilation…[0m
+        [36m</label>[39m
+        [36m<textarea[39m
+          [33mautocapitalize[39m=[32m"sentences"[39m
+          [33menterkeyhint[39m=[32m"send"[39m
+          [33mid[39m=[32m"_r_2_"[39m
+          [33mplaceholder[39m=[32m"Ajouter à Ventilation…"[39m
+          [33mrows[39m=[32m"1"[39m
+        [36m/>[39m
+      [36m</form>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+[90m [2m❯[22m Object.getElementError ../ports-nuit/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/unit/carnetsEcrans.test.tsx:[2m474:26[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsEcrans.test.tsx[2m > [22mCorrection 1, lot L2 : le champ dans le vrai conteneur (fixture, magasin mémoire, IA simulée)[2m > [22mP13 : sur Ventilation par défaut, la bulle G8 se tait (rien à trancher) ; avec l’option g8 (critique 5, n° 21), elle paraît au focus, picto local, sans ✻
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "button" and name `/peut trancher entre/`
+
+Here are the accessible roles:
+
+  article:
+
+  Name "ZZ TEST — Ventilation de la salle de brassage":
+  [36m<article[39m
+    [33maria-label[39m=[32m"ZZ TEST — Ventilation de la salle de brassage"[39m
+    [33mclass[39m=[32m"cn-page cn-ouvert"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Carnets":
+  [36m<button[39m
+    [33mclass[39m=[32m"cn-retour"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Plus":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"Plus"[39m
+    [33mclass[39m=[32m"cn-ico"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Renommer":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Renommer"[39m
+    [33mclass[39m=[32m"cn-ico"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "1 critère sans valeur à comparer":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"cn-lien cn-critere-plus"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Articles6":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-haspopup[39m=[32m"dialog"[39m
+    [33mclass[39m=[32m"cn-tete-bouton"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Comparer":
+  [36m<button[39m
+    [33mclass[39m=[32m"cn-lien cn-comparer-lien"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Retenir la hotte":
+  [36m<button[39m
+    [33mclass[39m=[32m"cn-action cn-action-vert"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Note : attendre l’avis du ferblantier, actions":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Note : attendre l’avis du ferblantier, actions"[39m
+    [33mclass[39m=[32m"cn-ico"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Note : surtout la buée de la cuve pendant l’ébullition, pas tant la salle, actions":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Note : surtout la buée de la cuve pendant l’ébullition, pas tant la salle, actions"[39m
+    [33mclass[39m=[32m"cn-ico"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Note : il faudrait au moins 1 500 m³/h, actions":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Note : il faudrait au moins 1 500 m³/h, actions"[39m
+    [33mclass[39m=[32m"cn-ico"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "calculé sur place« pas trop de bruit » tranche entre Hotte inox + extracteur et Extracteur mural seul":
+  [36m<button[39m
+    [33mclass[39m=[32m"cn-bulle"[39m
+    [33mtitle[39m=[32m"Le critère « pas trop de bruit » tranche entre Hotte inox + extracteur et Extracteur mural seul"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Photo":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Photo"[39m
+    [33mclass[39m=[32m"cn-ico"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "ZZ TEST — Ventilation de la salle de brassage":
+  [36m<h2[39m
+    [33mclass[39m=[32m"cn-titre"[39m
+  [36m/>[39m
+
+  Name "Notes 3":
+  [36m<h3[39m
+    [33mclass[39m=[32m"cn-rubrique-tete"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"cn-ligne-etat"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"cn-critere cn-critere-une"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"cn-cite"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "Ce qui compte":
+  [36m<section[39m
+    [33maria-label[39m=[32m"Ce qui compte"[39m
+    [33mclass[39m=[32m"cn-critere-bloc"[39m
+  [36m/>[39m
+
+  Name "Articles":
+  [36m<section[39m
+    [33maria-label[39m=[32m"Articles"[39m
+    [33mclass[39m=[32m"cn-rubrique"[39m
+  [36m/>[39m
+
+  Name "Notes":
+  [36m<section[39m
+    [33maria-label[39m=[32m"Notes"[39m
+    [33mclass[39m=[32m"cn-rubrique"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  table:
+
+  Name "Articles, rangés dans leur façon":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Articles, rangés dans leur façon"[39m
+    [33mclass[39m=[32m"cn-tab"[39m
+    [33mrole[39m=[32m"table"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  rowgroup:
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"cn-tab-bloc cn-tab-retenue"[39m
+    [33mrole[39m=[32m"rowgroup"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"cn-tab-bloc"[39m
+    [33mrole[39m=[32m"rowgroup"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"cn-tab-bloc cn-tab-ecartee"[39m
+    [33mrole[39m=[32m"rowgroup"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  row:
+
+  Name "Hotte inox + extracteur1 450 à 2 600 CHFtient 80 °C":
+  [36m<div[39m
+    [33mclass[39m=[32m"cn-tab-facon"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "rang · articledébit, m³/hprix, CHF":
+  [36m<div[39m
+    [33mclass[39m=[32m"cn-tab-ligne cn-tab-cols"[39m
+    [33mrole[39m=[32m"row"[39m
+    [33mstyle[39m=[32m"grid-template-columns: var(--cn-rangl, 32px) var(--cn-vignl, 34px) minmax(0, 1fr) var(--cn-col, 54px) var(--cn-col, 54px);"[39m
+  [36m/>[39m
+
+  Name "1Hotte inox 120 cm + moteurCH · en stock1 8002 600":
+  [36m<button[39m
+    [33mclass[39m=[32m"cn-tab-ligne"[39m
+    [33mrole[39m=[32m"row"[39m
+    [33mstyle[39m=[32m"grid-template-columns: var(--cn-rangl, 32px) var(--cn-vignl, 34px) minmax(0, 1fr) var(--cn-col, 54px) var(--cn-col, 54px);"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "2Hotte murale 100 cmDE · délai 4 sem.· veille1 2001 450":
+  [36m<button[39m
+    [33mclass[39m=[32m"cn-tab-ligne"[39m
+    [33mrole[39m=[32m"row"[39m
+    [33mstyle[39m=[32m"grid-template-columns: var(--cn-rangl, 32px) var(--cn-vignl, 34px) minmax(0, 1fr) var(--cn-col, 54px) var(--cn-col, 54px);"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Extracteur mural seul420 à 690 CHFne tient pas 80 °C":
+  [36m<div[39m
+    [33mclass[39m=[32m"cn-tab-facon"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "3Extracteur mural hélicoïdeCH · en stock1 500420":
+  [36m<button[39m
+    [33mclass[39m=[32m"cn-tab-ligne"[39m
+    [33mrole[39m=[32m"row"[39m
+    [33mstyle[39m=[32m"grid-template-columns: var(--cn-rangl, 32px) var(--cn-vignl, 34px) minmax(0, 1fr) var(--cn-col, 54px) var(--cn-col, 54px);"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "4Extracteur centrifuge en ligneFR · en stock1 100690":
+  [36m<button[39m
+    [33mclass[39m=[32m"cn-tab-ligne"[39m
+    [33mrole[39m=[32m"row"[39m
+    [33mstyle[39m=[32m"grid-template-columns: var(--cn-rangl, 32px) var(--cn-vignl, 34px) minmax(0, 1fr) var(--cn-col, 54px) var(--cn-col, 54px);"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "sans rangLien sans aperçuexemple.invalid/v5 · à relireOuvrir":
+  [36m<div[39m
+    [33mclass[39m=[32m"cn-tab-ligne cn-tab-relire-ligne"[39m
+    [33mdata-lecture[39m=[32m"illisible"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "Ventilateur de plafond180 CHFbrasse la buée sans la sortir":
+  [36m<div[39m
+    [33mclass[39m=[32m"cn-tab-facon"[39m
+    [33mrole[39m=[32m"row"[39m
+  [36m/>[39m
+
+  Name "écartéVentilateur de plafond 130 cmécarté : brasse la buée sans la sortirinconnu180":
+  [36m<button[39m
+    [33mclass[39m=[32m"cn-tab-ligne cn-ecarte"[39m
+    [33mrole[39m=[32m"row"[39m
+    [33mstyle[39m=[32m"grid-template-columns: var(--cn-rangl, 32px) var(--cn-vignl, 34px) minmax(0, 1fr) var(--cn-col, 54px) var(--cn-col, 54px);"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  rowheader:
+
+  Name "Hotte inox + extracteur1 450 à 2 600 CHF":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-sp"[39m
+    [33mrole[39m=[32m"rowheader"[39m
+  [36m/>[39m
+
+  Name "Extracteur mural seul420 à 690 CHF":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-sp"[39m
+    [33mrole[39m=[32m"rowheader"[39m
+  [36m/>[39m
+
+  Name "Ventilateur de plafond180 CHF":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-sp"[39m
+    [33mrole[39m=[32m"rowheader"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  columnheader:
+
+  Name "rang · article":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-mut cn-tab-rangart"[39m
+    [33mrole[39m=[32m"columnheader"[39m
+  [36m/>[39m
+
+  Name "débit, m³/h":
+  [36m<span[39m
+    [33maria-label[39m=[32m"débit, m³/h"[39m
+    [33mclass[39m=[32m"cn-mut cn-tab-num"[39m
+    [33mrole[39m=[32m"columnheader"[39m
+    [33mtitle[39m=[32m"débit"[39m
+  [36m/>[39m
+
+  Name "prix, CHF":
+  [36m<span[39m
+    [33maria-label[39m=[32m"prix, CHF"[39m
+    [33mclass[39m=[32m"cn-mut cn-tab-num"[39m
+    [33mrole[39m=[32m"columnheader"[39m
+    [33mtitle[39m=[32m"prix"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  cell:
+
+  Name "Hotte inox 120 cm + moteurCH · en stock":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-nom"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "1 800":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-num cn-meilleur"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "2 600":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-num"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "Hotte murale 100 cmDE · délai 4 sem.· veille":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-nom"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "1 200":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-num"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "1 450":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-num"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "Extracteur mural hélicoïdeCH · en stock":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-nom"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "1 500":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-num"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "420":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-num cn-meilleur"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "Extracteur centrifuge en ligneFR · en stock":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-nom"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "1 100":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-num"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "690":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-num"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "Lien sans aperçuexemple.invalid/v5 · à relire":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-nom"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "Ventilateur de plafond 130 cmécarté : brasse la buée sans la sortir":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-nom"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "inconnu":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-num"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  Name "180":
+  [36m<span[39m
+    [33mclass[39m=[32m"cn-tab-num"[39m
+    [33mrole[39m=[32m"cell"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  presentation:
+
+  Name "":
+  [36m<img[39m
+    [33malt[39m=[32m""[39m
+    [33mclass[39m=[32m"cn-vignette cn-vignette-petite"[39m
+    [33mloading[39m=[32m"lazy"[39m
+    [33msrc[39m=[32m"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20640%20360%22%20width%3D%22640%22%20height%3D%22360%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22m%22%20x1%3D%220%22%20x2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%239aa6ad%22%2F%3E%3Cstop%20offset%3D%22.5%22%20stop-color%3D%22%23e4e9ec%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%238d989f%22%2F%3E%3C%2FlinearGradient%3E%3Cpattern%20id%3D%22c%22%20width%3D%2240%22%20height%3D%2240%22%20patternUnits%3D%22userSpaceOnUse%22%3E%3Crect%20width%3D%2240%22%20height%3D%2240%22%20fill%3D%22%23eef1ee%22%2F%3E%3Cpath%20d%3D%22M40%200H0V40%22%20fill%3D%22none%22%20stroke%3D%22%23d3d9d4%22%20stroke-width%3D%222%22%2F%3E%3C%2Fpattern%3E%3C%2Fdefs%3E%3Crect%20width%3D%22640%22%20height%3D%22360%22%20fill%3D%22url(%23c)%22%2F%3E%3Crect%20y%3D%22300%22%20width%3D%22640%22%20height%3D%2260%22%20fill%3D%22%23c9c2b6%22%2F%3E%3Crect%20x%3D%22290%22%20y%3D%220%22%20width%3D%2260%22%20height%3D%2270%22%20fill%3D%22url(%23m)%22%20stroke%3D%22%237d878d%22%20stroke-width%3D%222%22%2F%3E%3Cpath%20d%3D%22M200%20150%20L270%2070%20H370%20L440%20150%20Z%22%20fill%3D%22url(%23m)%22%20stroke%3D%22%236f797f%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%22186%22%20y%3D%22150%22%20width%3D%22268%22%20height%3D%2218%22%20rx%3D%224%22%20fill%3D%22%23b8c1c6%22%20stroke%3D%22%236f797f%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M260%20190%20q10%20-14%200%20-28%20M320%20196%20q10%20-14%200%20-28%20M380%20190%20q10%20-14%200%20-28%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%20opacity%3D%22.9%22%2F%3E%3Crect%20x%3D%22236%22%20y%3D%22205%22%20width%3D%22168%22%20height%3D%2295%22%20rx%3D%228%22%20fill%3D%22url(%23m)%22%20stroke%3D%22%236f797f%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%22226%22%20y%3D%22198%22%20width%3D%22188%22%20height%3D%2214%22%20rx%3D%225%22%20fill%3D%22%23a9b3b8%22%20stroke%3D%22%236f797f%22%20stroke-width%3D%223%22%2F%3E%3C%2Fsvg%3E"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Ouvrir":
+  [36m<a[39m
+    [33mclass[39m=[32m"cn-lien cn-tab-ouvrir"[39m
+    [33mhref[39m=[32m"https://exemple.invalid/v5"[39m
+    [33mrel[39m=[32m"noreferrer noopener"[39m
+    [33mtarget[39m=[32m"_blank"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  note:
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"cn-encart cn-separe"[39m
+    [33mrole[39m=[32m"note"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  img:
+
+  Name "calculé sur place":
+  [36m<span[39m
+    [33maria-label[39m=[32m"calculé sur place"[39m
+    [33mclass[39m=[32m"cn-prov cn-prov-local"[39m
+    [33mdata-picto[39m=[32m"local"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  Name "calculé sur place":
+  [36m<span[39m
+    [33maria-label[39m=[32m"calculé sur place"[39m
+    [33mclass[39m=[32m"cn-prov cn-prov-local"[39m
+    [33mdata-picto[39m=[32m"local"[39m
+    [33mrole[39m=[32m"img"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name "Ajouter à ZZ TEST — Ventilation de la salle de brassage…":
+  [36m<textarea[39m
+    [33mautocapitalize[39m=[32m"sentences"[39m
+    [33menterkeyhint[39m=[32m"send"[39m
+    [33mid[39m=[32m"_r_8_"[39m
+    [33mplaceholder[39m=[32m"Ajouter à ZZ TEST — Ventilation…"[39m
+    [33mrows[39m=[32m"1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"cn "[39m
+      [33mdata-carnets[39m=[32m"true"[39m
+      [33mdata-vue[39m=[32m"carnet"[39m
+      [33mstyle[39m=[32m"display: flex; flex-direction: column; min-height: 0px; --cn-champ-h: 0px; --cn-clavier: 0px;"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mstyle[39m=[32m"flex: 1 1 0%; min-height: 0px; overflow-y: auto;"[39m
+      [36m>[39m
+        [36m<article[39m
+          [33maria-label[39m=[32m"ZZ TEST — Ventilation de la salle de brassage"[39m
+          [33mclass[39m=[32m"cn-page cn-ouvert"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"cn-tete"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"cn-retour"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-chevron-left"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m15 18-6-6 6-6"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0m Carnets[0m
+            [36m</button>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"cn-sp"[39m
+            [36m/>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-label[39m=[32m"Plus"[39m
+              [33mclass[39m=[32m"cn-ico"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-ellipsis"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"22"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"22"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"12"[39m
+                  [33mr[39m=[32m"1"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"19"[39m
+                  [33mcy[39m=[32m"12"[39m
+                  [33mr[39m=[32m"1"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"5"[39m
+                  [33mcy[39m=[32m"12"[39m
+                  [33mr[39m=[32m"1"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"cn-titre-ligne"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"cn-titre"[39m
+            [36m>[39m
+              [0mZZ TEST — Ventilation de la salle de brassage[0m
+            [36m</h2>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Renommer"[39m
+              [33mclass[39m=[32m"cn-ico"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-pencil"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m15 5 4 4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"cn-ligne-etat"[39m
+          [36m>[39m
+            [36m<span>[39m
+              [0m2 façons à comparer[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"cn-mut"[39m
+            [36m>[39m
+              [0m · [0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"cn-mut"[39m
+            [36m>[39m
+              [0mattendre l’avis du ferblantier[0m
+            [36m</span>[39m
+          [36m</p>[39m
+          [36m<section[39m
+            [33maria-label[39m=[32m"Ce qui compte"[39m
+            [33mclass[39m=[32m"cn-critere-bloc"[39m
+          [36m>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"cn-critere cn-critere-une"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-target cn-vert cn-critere-ico"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"18"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"12"[39m
+                  [33mr[39m=[32m"10"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"12"[39m
+    ...
+[90m [2m❯[22m Object.getElementError ../ports-nuit/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/unit/carnetsEcrans.test.tsx:[2m726:26[22m[39m
+    [90m724| [39m    expect(screen.queryByRole('button', { name: /tranche entre/ })).to…
+    [90m725| [39m    fireEvent[33m.[39m[34mfocus[39m([34mchamp[39m())[33m;[39m
+    [90m726| [39m    const bulle = screen.getByRole('button', { name: /tranche entre/ }…
+    [90m   | [39m                         [31m^[39m
+    [90m727| [39m    /* corr. 4 (lot A, critique 15) : la fixture dit désormais ce qu'i…
+    [90m728| [39m    expect(bulle.textContent).toMatch(/« [^»]+ » tranche entre Hotte i…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsEcrans.test.tsx[2m > [22mCorr. 2 (L2) : phrase en titre, Comparer, Choisi, cadre visible[2m > [22mL4-5 carnet : titre = phrase → « votre phrase en titre » une fois ; tout juste créé, seul le bandeau le dit
+[31m[1mAssertionError[22m: expected 2 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 2[39m
+
+[36m [2m❯[22m tests/unit/carnetsEcrans.test.tsx:[2m765:31[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4a.test.ts[2m > [22mv2-neuf 4 : un titre tiré de sa phrase commence par une majuscule[2m > [22m« frigo de garde pour 6 fûts » → « Frigo de garde pour 6 fûts » ; la marque de test et un domaine restent
+[31m[1mAssertionError[22m: expected 'frigo de garde pour 6 fûts' to be 'Frigo de garde pour 6 fûts' // Object.is equality[39m
+
+Expected: [32m"[7mF[27mrigo de garde pour 6 fûts"[39m
+Received: [31m"[7mf[27mrigo de garde pour 6 fûts"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4a.test.ts:[2m25:57[22m[39m
+    [90m 23| [39mdescribe('v2-neuf 4 : un titre tiré de sa phrase commence par une maju…
+    [90m 24| [39m  it('« frigo de garde pour 6 fûts » → « Frigo de garde pour 6 fûts » …
+    [90m 25| [39m    expect(titreDePhrase('frigo de garde pour 6 fûts')).toBe('Frigo de…
+    [90m   | [39m                                                        [31m^[39m
+    [90m 26| [39m    expect(titreDePhrase('ZZ TEST — évier 2 bacs')).toBe('ZZ TEST — Év…
+    [90m 27| [39m    expect(titreDePhrase('https://exemple.invalid/pompe-inox')).toBe('…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4a.test.ts[2m > [22mv2-neuf 1 : ?dev-local garde sa base après un rechargement[2m > [22mun carnet écrit, puis la page rechargée (module neuf) : le carnet est relu, la graine ne se rejoue pas
+[31m[1mReferenceError[22m: window is not defined[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F4a.test.ts:[2m65:5[22m[39m
+    [90m 63| [39m  afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); sessionStor…
+    [90m 64| [39m  it('un carnet écrit, puis la page rechargée (module neuf) : le carne…
+    [90m 65| [39m    window[33m.[39mhistory[33m.[39m[34mreplaceState[39m([35mnull[39m[33m,[39m [32m''[39m[33m,[39m [32m'/?dev-local'[39m)[33m;[39m
+    [90m   | [39m    [31m^[39m
+    [90m 66| [39m    vi[33m.[39m[34museFakeTimers[39m()[33m;[39m
+    [90m 67| [39m    const a = (await import('../../src/services/firestoreRepo')).Fires…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4a.test.ts[2m > [22mv2-neuf 1 : ?dev-local garde sa base après un rechargement[2m > [22mun carnet écrit, puis la page rechargée (module neuf) : le carnet est relu, la graine ne se rejoue pas
+[31m[1mReferenceError[22m: sessionStorage is not defined[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F4a.test.ts:[2m63:60[22m[39m
+    [90m 61| [39m
+    [90m 62| [39mdescribe('v2-neuf 1 : ?dev-local garde sa base après un rechargement',…
+    [90m 63| [39m  afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); sessionStor…
+    [90m   | [39m                                                           [31m^[39m
+    [90m 64| [39m  it('un carnet écrit, puis la page rechargée (module neuf) : le carne…
+    [90m 65| [39m    window[33m.[39mhistory[33m.[39m[34mreplaceState[39m([35mnull[39m[33m,[39m [32m''[39m[33m,[39m [32m'/?dev-local'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4b.test.tsx[2m > [22mv1-neuf 6 : « votre phrase en titre » ne paraît jamais seul sous le tableau[2m > [22mFrigo (titre = sa phrase), avec tableau : rien sous le tableau ; le titre est la phrase
+[31m[1mAssertionError[22m: expected ' CarnetsChoisi le 10 oct.ZZ TEST — Fr…' not to contain 'votre phrase en titre'[39m
+
+Expected: [32m"[7mvotre phrase en titr[27me"[39m
+Received: [31m"[7m CarnetsChoisi le 10 oct.ZZ TEST — Frigo de garde pour fûtsCritère : tenir 2 °C stable en été, puis passe la porte de 80 cm · de votre phraseChoisi : Chambre froide en kit 2 m³tient 2 °C en été, 6 fûtsPourquoi Dans À venir depuis le 16 nov.Articles4·Comparer Chambre froide en kit4 300 à 4 900 CHFpasse la porte de 80 cmrang · articleamb. max °CCHF1Chambre froide en kit 2 m³CH434 900–Chambre froide en kit 2,5 m³écarté : délai de 4 semaines, SAV en Italie384 300Frigo vitrine pro650 à 2 300 CHFne passe pas la porte–Vitrine pro 700 Lécarté : façon frigo vitrine pro, ne passe pas la porte302 300–Vitrine d’occasion 600 Lécarté : pas de garantie sur le compresseur–650« frigo de garde pour fûts » · votre phrase en titre Notes 1la porte du local fait 80 cmnot[27me"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4b.test.tsx:[2m119:34[22m[39m
+    [90m117| [39m    [35mconst[39m { container } [33m=[39m [34mouvrir[39m(c)[33m;[39m
+    [90m118| [39m    [34mexpect[39m(container[33m.[39m[34mquerySelector[39m([32m'.cn-tab'[39m))[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m119| [39m    [34mexpect[39m([34mtexte[39m(container))[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'votre phrase en titre'[39m)[33m;[39m
+    [90m   | [39m                                 [31m^[39m
+    [90m120| [39m    expect(texte(container.querySelector('.cn-titre')!).toLowerCase())…
+    [90m121| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m39 passed[39m[22m[90m (44)[39m
+[2m      Tests [22m [1m[31m8 failed[39m[22m[2m | [22m[1m[32m691 passed[39m[22m[2m | [22m[90m1 todo[39m[90m (700)[39m
+[2m   Start at [22m 19:13:23
+[2m   Duration [22m 27.57s[2m (transform 8.26s, setup 8.53s, collect 29.72s, tests 40.90s, environment 20.04s, prepare 3.43s)[22m
+

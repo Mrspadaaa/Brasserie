@@ -1,0 +1,544 @@
+{
+ "journal": {
+  "390-clair-entete": "Compagnon hors connexion · mode local Base initialisée avec 11 enregistrements. 🍺 L'Affinée Nov. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Novembre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Mar",
+  "390-clair-plus": "Compagnon hors connexion · mode local Base initialisée avec 11 enregistrements. 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Assistant de brassage Aucun en cuve Atelier R&D 1 idée nouvelle Mes conversations hors ligne Journal des modifications 0 en novembre Connexions cloud et IA Drive",
+  "390-clair-periode-plus": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Assistant de brassage Aucun en cuve Atelier R&D 1 idée nouvelle Mes conversations hors ligne Journal de",
+  "390-clair-periode-finances": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local Période : Octobre 2026 · toute l’app 🍺 L'Affinée Oct. A G Synthèse Opérations Prévisions Annuel Octobre sept. oct. nov. tout … Entré 0,00 Aucune écriture sur cette période. Dépensé 0,00 Revoir le mois Caisse jour par jour"
+  },
+  "390-clair-periode-brassins": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local Période : Octobre 2026 · toute l’app 🍺 L'Affinée Oct. A G Brassins Recettes Atelier Volumes Les brassins 0 brassin Aucun brassin pour le moment Crée une recette, puis planifie son brassin. Bord Finances Brassins Stocks Cl"
+  },
+  "390-clair-periode-bord": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local Période : Octobre 2026 · toute l’app 🍺 L'Affinée Oct. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Octobre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Marché d'"
+  },
+  "390-clair-recherche-vide": "Compagnon hors connexion · mode local Base initialisée avec 11 enregistrements. 🍺 L'Affinée Nov. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Novembre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Marché d'Automne de Villars-sur-Glâne 10.10.2026 Échéances et démarches 6 points à suivre · Fribourg / OFDF Bord Finances Brassins Stocks Clients Recherche univers",
+  "390-clair-recherche-cit": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Novembre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Marché d'Automne de Villars-sur-Glâne 10.10.2026 Échéances et démarches 6 points à suivre · Fribourg / OFDF Bord Finances Brassins Stocks Clients Recherche universelle 0 résultat Rien pour « cit ». Nouvell",
+  "390-clair-recherche-geste": null,
+  "390-clair-plus-visibles-bord": [
+   "Actions rapides@322,736"
+  ],
+  "390-clair-plus-ouvert-bord": {
+   "ok": true,
+   "entrees": [
+    "Nouvelle écriture facture ou à la main",
+    "Courses",
+    "Facture",
+    "Vente",
+    "Recette",
+    "Brassin",
+    "Compagnon hors connexion"
+   ]
+  },
+  "390-clair-plus-visibles-finances": [
+   "Actions rapides@322,736"
+  ],
+  "390-clair-plus-ouvert-finances": {
+   "ok": true,
+   "entrees": [
+    "Nouvelle écriture facture ou à la main",
+    "Estimer un brassin coût du litre",
+    "Entrer une facture photo ou PDF",
+    "Encaisser une vente",
+    "Recette",
+    "Brassin",
+    "Compagnon hors connexion"
+   ]
+  },
+  "390-clair-plus-visibles-brassins": [
+   "Actions rapides@322,736"
+  ],
+  "390-clair-plus-ouvert-brassins": {
+   "ok": true,
+   "entrees": [
+    "Nouveau brassin sera LOT-001",
+    "Courses",
+    "Écriture",
+    "Facture",
+    "Vente",
+    "Recette",
+    "Compagnon hors connexion"
+   ]
+  },
+  "390-clair-plus-visibles-stocks": [
+   "Actions rapides@322,736"
+  ],
+  "390-clair-plus-ouvert-stocks": {
+   "ok": true,
+   "entrees": [
+    "Nouvel article",
+    "Courses",
+    "Écriture",
+    "Facture",
+    "Vente",
+    "Recette",
+    "Brassin",
+    "Compagnon hors connexion"
+   ]
+  },
+  "390-clair-plus-visibles-atelier": [
+   "Poser Chambre chaude régulée (20-22°C) s@12,266",
+   "Poser Système d'embouteillage 4 becs ino@12,316",
+   "Actions rapides@322,736"
+  ],
+  "390-clair-plus-ouvert-atelier": {
+   "ok": true,
+   "entrees": [
+    "Nouvelle idée",
+    "Lancer un brassin sera LOT-001",
+    "Écriture",
+    "Facture",
+    "Vente",
+    "Recette",
+    "Compagnon hors connexion"
+   ]
+  },
+  "390-clair-reglages-Fiscalité": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "390-clair-reglages-Brasserie": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "390-clair-reglages-Accès": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "390-clair-reglages-Sauvegardes": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "390-clair-journal": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "390-clair-connexions": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "390-clair-conversations": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "390-clair-saisir-au-nom": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "390-clair-caisse-v3a": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 0,00 Aucune écriture sur cette période. Dépensé 0,00 Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse À compléter Solde de départ à renseigner Origine et limites des montants Estimer un brassin pour c"
+  },
+  "390-cave-entete": "Compagnon hors connexion · mode local Base initialisée avec 11 enregistrements. 🍺 L'Affinée Nov. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Novembre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Mar",
+  "390-cave-plus": "Compagnon hors connexion · mode local Base initialisée avec 11 enregistrements. 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Assistant de brassage Aucun en cuve Atelier R&D 1 idée nouvelle Mes conversations hors ligne Journal des modifications 0 en novembre Connexions cloud et IA Drive",
+  "390-cave-periode-plus": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Assistant de brassage Aucun en cuve Atelier R&D 1 idée nouvelle Mes conversations hors ligne Journal de",
+  "390-cave-periode-finances": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local Période : Octobre 2026 · toute l’app 🍺 L'Affinée Oct. A G Synthèse Opérations Prévisions Annuel Octobre sept. oct. nov. tout … Entré 0,00 Aucune écriture sur cette période. Dépensé 0,00 Revoir le mois Caisse jour par jour"
+  },
+  "390-cave-periode-brassins": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local Période : Octobre 2026 · toute l’app 🍺 L'Affinée Oct. A G Brassins Recettes Atelier Volumes Les brassins 0 brassin Aucun brassin pour le moment Crée une recette, puis planifie son brassin. Bord Finances Brassins Stocks Cl"
+  },
+  "390-cave-periode-bord": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local Période : Octobre 2026 · toute l’app 🍺 L'Affinée Oct. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Octobre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Marché d'"
+  },
+  "390-cave-recherche-vide": "Compagnon hors connexion · mode local Base initialisée avec 11 enregistrements. 🍺 L'Affinée Nov. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Novembre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Marché d'Automne de Villars-sur-Glâne 10.10.2026 Échéances et démarches 6 points à suivre · Fribourg / OFDF Bord Finances Brassins Stocks Clients Recherche univers",
+  "390-cave-recherche-cit": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Novembre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Marché d'Automne de Villars-sur-Glâne 10.10.2026 Échéances et démarches 6 points à suivre · Fribourg / OFDF Bord Finances Brassins Stocks Clients Recherche universelle 0 résultat Rien pour « cit ». Nouvell",
+  "390-cave-recherche-geste": null,
+  "390-cave-plus-visibles-bord": [
+   "Actions rapides@322,736"
+  ],
+  "390-cave-plus-ouvert-bord": {
+   "ok": true,
+   "entrees": [
+    "Nouvelle écriture facture ou à la main",
+    "Courses",
+    "Facture",
+    "Vente",
+    "Recette",
+    "Brassin",
+    "Compagnon hors connexion"
+   ]
+  },
+  "390-cave-plus-visibles-finances": [
+   "Actions rapides@322,736"
+  ],
+  "390-cave-plus-ouvert-finances": {
+   "ok": true,
+   "entrees": [
+    "Nouvelle écriture facture ou à la main",
+    "Estimer un brassin coût du litre",
+    "Entrer une facture photo ou PDF",
+    "Encaisser une vente",
+    "Recette",
+    "Brassin",
+    "Compagnon hors connexion"
+   ]
+  },
+  "390-cave-plus-visibles-brassins": [
+   "Actions rapides@322,736"
+  ],
+  "390-cave-plus-ouvert-brassins": {
+   "ok": true,
+   "entrees": [
+    "Nouveau brassin sera LOT-001",
+    "Courses",
+    "Écriture",
+    "Facture",
+    "Vente",
+    "Recette",
+    "Compagnon hors connexion"
+   ]
+  },
+  "390-cave-plus-visibles-stocks": [
+   "Actions rapides@322,736"
+  ],
+  "390-cave-plus-ouvert-stocks": {
+   "ok": true,
+   "entrees": [
+    "Nouvel article",
+    "Courses",
+    "Écriture",
+    "Facture",
+    "Vente",
+    "Recette",
+    "Brassin",
+    "Compagnon hors connexion"
+   ]
+  },
+  "390-cave-plus-visibles-atelier": [
+   "Poser Chambre chaude régulée (20-22°C) s@12,266",
+   "Poser Système d'embouteillage 4 becs ino@12,316",
+   "Actions rapides@322,736"
+  ],
+  "390-cave-plus-ouvert-atelier": {
+   "ok": true,
+   "entrees": [
+    "Nouvelle idée",
+    "Lancer un brassin sera LOT-001",
+    "Écriture",
+    "Facture",
+    "Vente",
+    "Recette",
+    "Compagnon hors connexion"
+   ]
+  },
+  "390-cave-reglages-Fiscalité": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "390-cave-reglages-Brasserie": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "390-cave-reglages-Accès": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "390-cave-reglages-Sauvegardes": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "390-cave-journal": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "390-cave-connexions": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "390-cave-conversations": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "390-cave-saisir-au-nom": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "390-cave-caisse-v3a": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 0,00 Aucune écriture sur cette période. Dépensé 0,00 Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse À compléter Solde de départ à renseigner Origine et limites des montants Estimer un brassin pour c"
+  },
+  "1280-clair-entete": "Compagnon hors connexion · mode local Base initialisée avec 11 enregistrements. 🍺 L'Affinée Nov. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Novembre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Mar",
+  "1280-clair-plus": "Compagnon hors connexion · mode local Base initialisée avec 11 enregistrements. 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Assistant de brassage Aucun en cuve Atelier R&D 1 idée nouvelle Mes conversations hors ligne Journal des modifications 0 en novembre Connexions cloud et IA Drive",
+  "1280-clair-periode-plus": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Assistant de brassage Aucun en cuve Atelier R&D 1 idée nouvelle Mes conversations hors ligne Journal de",
+  "1280-clair-periode-finances": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local Période : Octobre 2026 · toute l’app 🍺 L'Affinée Oct. A G Synthèse Opérations Prévisions Annuel Octobre sept. oct. nov. tout … Entré 0,00 Aucune écriture sur cette période. Dépensé 0,00 Revoir le mois Caisse jour par jour"
+  },
+  "1280-clair-periode-brassins": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local Période : Octobre 2026 · toute l’app 🍺 L'Affinée Oct. A G Brassins (0) Recettes (0) Atelier R&D Volumes Les brassins Carnet Bilan Filtres Tous 0 En cuve 0 À brasser 0 Mesures manquantes 0 Notes à compléter 0 Conditionnés "
+  },
+  "1280-clair-periode-bord": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local Période : Octobre 2026 · toute l’app 🍺 L'Affinée Oct. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Octobre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Marché d'"
+  },
+  "1280-clair-recherche-vide": "Compagnon hors connexion · mode local Base initialisée avec 11 enregistrements. 🍺 L'Affinée Nov. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Novembre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Marché d'Automne de Villars-sur-Glâne 10.10.2026 Échéances et démarches 6 points à suivre · Fribourg / OFDF Bord Finances Brassins Stocks Clients Compagnon hors co",
+  "1280-clair-recherche-cit": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Novembre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Marché d'Automne de Villars-sur-Glâne 10.10.2026 Échéances et démarches 6 points à suivre · Fribourg / OFDF Bord Finances Brassins Stocks Clients Compagnon hors connexion Recherche universelle Bord 0 résul",
+  "1280-clair-recherche-geste": null,
+  "1280-clair-plus-visibles-bord": [
+   "Actions rapides@1200,720"
+  ],
+  "1280-clair-plus-ouvert-bord": {
+   "ok": true,
+   "entrees": [
+    "Nouvelle écriture facture ou à la main N",
+    "Courses L",
+    "Entrer une facture F",
+    "Encaisser une vente V",
+    "Créer une recette R",
+    "Lancer un brassin B",
+    "Compagnon hors connexion C"
+   ]
+  },
+  "1280-clair-plus-visibles-finances": [
+   "Actions rapides@1200,720"
+  ],
+  "1280-clair-plus-ouvert-finances": {
+   "ok": true,
+   "entrees": [
+    "Nouvelle écriture facture ou à la main N",
+    "Estimer un brassin coût du litre S",
+    "Entrer une facture photo ou PDF F",
+    "Encaisser une vente V",
+    "Créer une recette R",
+    "Lancer un brassin B",
+    "Compagnon hors connexion C"
+   ]
+  },
+  "1280-clair-plus-visibles-brassins": [
+   "Actions rapides@1200,720"
+  ],
+  "1280-clair-plus-ouvert-brassins": {
+   "ok": true,
+   "entrees": [
+    "Nouveau brassin sera LOT-001 N",
+    "Courses L",
+    "Nouvelle écriture E",
+    "Entrer une facture F",
+    "Encaisser une vente V",
+    "Créer une recette R",
+    "Compagnon hors connexion C"
+   ]
+  },
+  "1280-clair-plus-visibles-stocks": [
+   "Ajouter un article@1119,178",
+   "Actions rapides@1200,720"
+  ],
+  "1280-clair-plus-ouvert-stocks": {
+   "ok": true,
+   "entrees": [
+    "Nouvel article N",
+    "Courses L",
+    "Nouvelle écriture E",
+    "Entrer une facture F",
+    "Encaisser une vente V",
+    "Créer une recette R",
+    "Lancer un brassin B",
+    "Compagnon hors connexion C"
+   ]
+  },
+  "1280-clair-plus-visibles-atelier": [
+   "Poser Chambre chaude régulée (20-22°C) s@248,325",
+   "Poser Système d'embouteillage 4 becs ino@248,375",
+   "Actions rapides@1200,720"
+  ],
+  "1280-clair-plus-ouvert-atelier": {
+   "ok": true,
+   "entrees": [
+    "Nouvelle idée N",
+    "Lancer un brassin sera LOT-001 B",
+    "Nouvelle écriture E",
+    "Entrer une facture F",
+    "Encaisser une vente V",
+    "Créer une recette R",
+    "Compagnon hors connexion C"
+   ]
+  },
+  "1280-clair-reglages-Fiscalité": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "1280-clair-reglages-Brasserie": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "1280-clair-reglages-Accès": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "1280-clair-reglages-Sauvegardes": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "1280-clair-journal": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "1280-clair-connexions": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "1280-clair-conversations": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "1280-clair-saisir-au-nom": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "1280-clair-caisse-v3a": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 0,00 Aucune écriture sur cette période. Dépensé 0,00 Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse À compléter Solde de départ à renseigner Origine et limites des montants Estimer un brassin pour c"
+  },
+  "1280-cave-entete": "Compagnon hors connexion · mode local Base initialisée avec 11 enregistrements. 🍺 L'Affinée Nov. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Novembre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Mar",
+  "1280-cave-plus": "Compagnon hors connexion · mode local Base initialisée avec 11 enregistrements. 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Assistant de brassage Aucun en cuve Atelier R&D 1 idée nouvelle Mes conversations hors ligne Journal des modifications 0 en novembre Connexions cloud et IA Drive",
+  "1280-cave-periode-plus": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Assistant de brassage Aucun en cuve Atelier R&D 1 idée nouvelle Mes conversations hors ligne Journal de",
+  "1280-cave-periode-finances": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local Période : Octobre 2026 · toute l’app 🍺 L'Affinée Oct. A G Synthèse Opérations Prévisions Annuel Octobre sept. oct. nov. tout … Entré 0,00 Aucune écriture sur cette période. Dépensé 0,00 Revoir le mois Caisse jour par jour"
+  },
+  "1280-cave-periode-brassins": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local Période : Octobre 2026 · toute l’app 🍺 L'Affinée Oct. A G Brassins (0) Recettes (0) Atelier R&D Volumes Les brassins Carnet Bilan Filtres Tous 0 En cuve 0 À brasser 0 Mesures manquantes 0 Notes à compléter 0 Conditionnés "
+  },
+  "1280-cave-periode-bord": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local Période : Octobre 2026 · toute l’app 🍺 L'Affinée Oct. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Octobre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Marché d'"
+  },
+  "1280-cave-recherche-vide": "Compagnon hors connexion · mode local Base initialisée avec 11 enregistrements. 🍺 L'Affinée Nov. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Novembre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Marché d'Automne de Villars-sur-Glâne 10.10.2026 Échéances et démarches 6 points à suivre · Fribourg / OFDF Bord Finances Brassins Stocks Clients Compagnon hors co",
+  "1280-cave-recherche-cit": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir Stocks suffisants Finances Novembre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Marché d'Automne de Villars-sur-Glâne 10.10.2026 Échéances et démarches 6 points à suivre · Fribourg / OFDF Bord Finances Brassins Stocks Clients Compagnon hors connexion Recherche universelle Bord 0 résul",
+  "1280-cave-recherche-geste": null,
+  "1280-cave-plus-visibles-bord": [
+   "Actions rapides@1200,720"
+  ],
+  "1280-cave-plus-ouvert-bord": {
+   "ok": true,
+   "entrees": [
+    "Nouvelle écriture facture ou à la main N",
+    "Courses L",
+    "Entrer une facture F",
+    "Encaisser une vente V",
+    "Créer une recette R",
+    "Lancer un brassin B",
+    "Compagnon hors connexion C"
+   ]
+  },
+  "1280-cave-plus-visibles-finances": [
+   "Actions rapides@1200,720"
+  ],
+  "1280-cave-plus-ouvert-finances": {
+   "ok": true,
+   "entrees": [
+    "Nouvelle écriture facture ou à la main N",
+    "Estimer un brassin coût du litre S",
+    "Entrer une facture photo ou PDF F",
+    "Encaisser une vente V",
+    "Créer une recette R",
+    "Lancer un brassin B",
+    "Compagnon hors connexion C"
+   ]
+  },
+  "1280-cave-plus-visibles-brassins": [
+   "Actions rapides@1200,720"
+  ],
+  "1280-cave-plus-ouvert-brassins": {
+   "ok": true,
+   "entrees": [
+    "Nouveau brassin sera LOT-001 N",
+    "Courses L",
+    "Nouvelle écriture E",
+    "Entrer une facture F",
+    "Encaisser une vente V",
+    "Créer une recette R",
+    "Compagnon hors connexion C"
+   ]
+  },
+  "1280-cave-plus-visibles-stocks": [
+   "Ajouter un article@1119,178",
+   "Actions rapides@1200,720"
+  ],
+  "1280-cave-plus-ouvert-stocks": {
+   "ok": true,
+   "entrees": [
+    "Nouvel article N",
+    "Courses L",
+    "Nouvelle écriture E",
+    "Entrer une facture F",
+    "Encaisser une vente V",
+    "Créer une recette R",
+    "Lancer un brassin B",
+    "Compagnon hors connexion C"
+   ]
+  },
+  "1280-cave-plus-visibles-atelier": [
+   "Poser Chambre chaude régulée (20-22°C) s@248,325",
+   "Poser Système d'embouteillage 4 becs ino@248,375",
+   "Actions rapides@1200,720"
+  ],
+  "1280-cave-plus-ouvert-atelier": {
+   "ok": true,
+   "entrees": [
+    "Nouvelle idée N",
+    "Lancer un brassin sera LOT-001 B",
+    "Nouvelle écriture E",
+    "Entrer une facture F",
+    "Encaisser une vente V",
+    "Créer une recette R",
+    "Compagnon hors connexion C"
+   ]
+  },
+  "1280-cave-reglages-Fiscalité": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "1280-cave-reglages-Brasserie": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "1280-cave-reglages-Accès": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "1280-cave-reglages-Sauvegardes": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 "
+  },
+  "1280-cave-journal": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "1280-cave-connexions": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "1280-cave-conversations": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "1280-cave-saisir-au-nom": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Plus Ma Brasserie Je saisis G Gaëtan 0 écriture A Aricia 0 écriture Thème Clair Cave Période Novembre 2026 Ce mois Mois dernier Exercice 2026 Tout 30 jours · 0 opération 1er 30 auj. 16 du 1er au 30 nov. · aucune opération saisie Du … au Ass"
+  },
+  "1280-cave-caisse-v3a": {
+   "ok": true,
+   "t": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 0,00 Aucune écriture sur cette période. Dépensé 0,00 Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse À compléter Solde de départ à renseigner Origine et limites des montants Estimer un brassin pour c"
+  }
+ },
+ "erreurs": [
+  "390-clair console: Failed to load resource: the server responded with a status of 403 ()",
+  "390-clair console: Failed to load resource: the server responded with a status of 403 ()",
+  "390-cave console: Failed to load resource: the server responded with a status of 403 ()",
+  "390-cave console: Failed to load resource: the server responded with a status of 403 ()",
+  "1280-clair console: Failed to load resource: the server responded with a status of 403 ()",
+  "1280-clair console: Failed to load resource: the server responded with a status of 403 ()",
+  "1280-cave console: Failed to load resource: the server responded with a status of 403 ()",
+  "1280-cave console: Failed to load resource: the server responded with a status of 403 ()"
+ ]
+}

@@ -1,0 +1,431 @@
+{
+ "log": [
+  [
+   "p-f4b porter",
+   "Porter d’hiver−176Brassagelun. 14 déc.En cuve15 déc. → 11 janv.Prête18 janv.Munich 4 kg, Fuggles 200 g : manquent au stock, à acheter avant le 7 déc.Ouvrir le brassinCommander"
+  ],
+  [
+   "p-f5a appui",
+   {
+    "m": "ÉpinglerÉtoileFêtes seulesDupliquer en S51+1 180 · 2 jLier à un brassin, un clientRetirerS50 : 5 120 → 3 940",
+    "apres": "113CHF à dépenser ·S24"
+   }
+  ],
+  [
+   "p-f1a",
+   {
+    "ts": "S51 : 5 064 → 4 524Annuler",
+    "tr": {
+     "t": 734,
+     "b": 780,
+     "l": 8,
+     "r": 265,
+     "pos": "fixed"
+    },
+    "av": [
+     180,
+     313,
+     377,
+     463,
+     520,
+     552,
+     609
+    ],
+    "pe": [
+     180,
+     313,
+     377,
+     463,
+     520,
+     552,
+     609
+    ],
+    "ap": [
+     180,
+     313,
+     377,
+     463,
+     520,
+     552,
+     609
+    ]
+   }
+  ],
+  [
+   "p-blonde",
+   {
+    "al": "3 fûts promis le 15 déc. · prête le 11 janv.La Cigogne · la Blonde brassée dès le 7 déc.Caisse : S47 4 032 → 4 180, la suite inchangéeLivrer le 12 janv.Annuler",
+    "toast": "La Cigogne : 12 janv. · S2, hors vueAnnuler",
+    "bl": "J0 / 35",
+    "pins": [
+     "+260",
+     ""
+    ],
+    "venteTxt": "Ventes4 choses cachées+900Noël privés +640+2603Livraison La Cigogne ·S2"
+   }
+  ],
+  [
+   "p-fab-brassin",
+   {
+    "t": "Prête le 4 janv. · S50 : 5 120 → 4 700Annuler",
+    "det": "Blonde d’automne−420Brassagelun. 7 déc.En cuve8 déc. → 28 déc.Prête4 janv.Stock : à vérifier en ouvrant le brassinOuvrirModifierRetirer",
+    "barre": "J0 / 28 · prête 4 janv.Blonde d’automne −420"
+   }
+  ],
+  [
+   "p-plus-brassage",
+   {
+    "sheet": "Ajouterdans BrassinsBrassinVenteFêteAchatTravauxActivitéPapierBlonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéRecetteCHF−En cuve21 j28 j35 j42 jprête le 14 déc.S4716 nov.S4823 nov.S",
+    "toast": "Prête le 14 déc. · S47 : 4 180 → 3 880Annuler",
+    "pill": "−1 044"
+   }
+  ],
+  [
+   "p-plus-vente",
+   {
+    "sheet": "Ajouterdans VentesBrassinVenteFêteAchatTravauxActivitéPapierCafé du Pont 1 fût · 10 déc.+130Blonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéNomCHF+En cuve21 j28 j35 j42 jprête le 4 ",
+    "toast": "S50 : 4 400 → 4 530Annuler",
+    "pill": "+1 030"
+   }
+  ],
+  [
+   "p-plus-evenement",
+   {
+    "sheet": "Ajouterdans FêtesBrassinVenteFêteAchatTravauxActivitéPapierBlonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéNomCHF+En cuve21 j28 j35 j42 jprête le 14 déc.S4716 nov.S4823 nov.S4930 no",
+    "toast": "S47 : 3 880 → 3 980Annuler"
+   }
+  ],
+  [
+   "p-plus-achat",
+   {
+    "sheet": "Ajouterdans AchatsBrassinVenteFêteAchatTravauxActivitéPapierBlonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéNomCHF−En cuve21 j28 j35 j42 jprête le 14 déc.S4716 nov.S4823 nov.S4930 n",
+    "toast": "S47 : 3 980 → 3 880Annuler"
+   }
+  ],
+  [
+   "p-plus-renovation",
+   {
+    "sheet": "Ajouterdans TravauxBrassinVenteFêteAchatTravauxActivitéPapierBlonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéNomCHF−En cuve21 j28 j35 j42 jprête le 14 déc.S4716 nov.S4823 nov.S4930 ",
+    "toast": "S47 : 3 880 → 3 730Annuler"
+   }
+  ],
+  [
+   "p-plus-activite",
+   {
+    "sheet": "Ajouterdans ActivitésBrassinVenteFêteAchatTravauxActivitéPapierBlonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéNomCHF+En cuve21 j28 j35 j42 jprête le 14 déc.S4716 nov.S4823 nov.S493",
+    "toast": "Nettoyer les fûts en S47Annuler"
+   }
+  ],
+  [
+   "p-plus-charge",
+   {
+    "sheet": "Ajouterdans PapiersBrassinVenteFêteAchatTravauxActivitéPapierBlonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéNomCHF−En cuve21 j28 j35 j42 jprête le 14 déc.S4716 nov.S4823 nov.S4930 ",
+    "toast": "S47 : 3 730 → 3 630Annuler",
+    "pill": "−906"
+   }
+  ],
+  [
+   "p-fete-moins",
+   {
+    "sh": "Ajouterdans FêtesBrassinVenteFêteAchatTravauxActivitéPapierBlonde d’automnePorter d’hiverIPA houblon à cruIPA de printempsBière d’étéBlanche d’étéNomCHF−En cuve21 j28 j35 j42 jprête le 28 déc.S4716 no",
+    "toast": "S49 : 3 730 → 3 580Annuler",
+    "lane": "Fêtes1 chose cachéeMarché de Noël +1 180Apéro des voisins +100Stand au marché −150",
+    "tete": "−877CHF ·S24"
+   }
+  ],
+  [
+   "p-modifier-fete",
+   "Stand au marché : S49 → S51Annuler"
+  ],
+  [
+   "p-deuxieme-vente",
+   {
+    "t": "",
+    "pins": [
+     "+260",
+     "+130",
+     "Bar du Lac +200"
+    ],
+    "lane": "Ventes4 choses cachées+1 230Noël privés +640+260+1303Bar du Lac +200Livraison La Cigogne ·S2"
+   }
+  ],
+  [
+   "p-modifier-achat",
+   "Houblon Citra 1 kg : S47 → S51Annuler"
+  ],
+  [
+   "p-retirer-activite",
+   "Retiré : Nettoyer les fûtsAnnuler"
+  ],
+  [
+   "p-c2b",
+   ""
+  ],
+  [
+   "p-c3a",
+   "S24 · 14 → 20 juinlibre −677Sols : colle et joints−320Ventes de la semaine+128la semaine−192"
+  ],
+  [
+   "l-fab-brassin",
+   "Prête le 18 janv. · S52 : 4 760 → 4 380Annuler"
+  ],
+  [
+   "l-plus-achat",
+   "S47 : 3 730 → 3 670Annuler"
+  ],
+  [
+   "l-blonde",
+   "3 fûts promis le 12 janv. · prête le 18 janv.La Cigogne · la Blonde tirée à 42 jLivrer le 19 janv.Annuler"
+  ],
+  [
+   "l-c1d",
+   "An"
+  ]
+ ],
+ "p0": {
+  "tete": "113CHF à dépenser ·S24",
+  "nouv": [],
+  "pills": {
+   "brassage": "−324",
+   "vente": "+900",
+   "charge": "−806"
+  },
+  "blonde": "J0 / 28",
+  "pins": [
+   "+260",
+   "",
+   "3"
+  ],
+  "toast": null,
+  "per": "6 sem.",
+  "scrollY": 0
+ },
+ "pAvantRotation": {
+  "tete": "−677CHF ·S24",
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne ",
+   "J0 / 28 · prête 14 déc.Saison de printem",
+   "Apéro des voisins +100",
+   "Stand au marché −150",
+   "+130",
+   "Bar du Lac +200",
+   "Houblon Citra 1 kg −100",
+   "Peinture de la cave −150",
+   "Nettoyer les fûts 1 j",
+   "Facture Brouwland −100"
+  ],
+  "pills": {
+   "brassage": "−1 044",
+   "vente": "+1 230",
+   "charge": "−906"
+  },
+  "blonde": "J0 / 35",
+  "pins": [
+   "+260",
+   "+130",
+   "Bar du Lac +200"
+  ],
+  "toast": null,
+  "per": "6 sem.",
+  "scrollY": 0
+ },
+ "lAvantRotation": {
+  "tete": "−677CHF ·S24",
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne ",
+   "J0 / 28 · prête 14 déc.Saison de printem",
+   "Apéro des voisins +100",
+   "Stand au marché −150",
+   "+130",
+   "Bar du Lac +200",
+   "Houblon Citra 1 kg −100",
+   "Peinture de la cave −150",
+   "Nettoyer les fûts 1 j",
+   "Facture Brouwland −100"
+  ],
+  "pills": {
+   "brassage": "−1 276",
+   "vente": "+1 230",
+   "charge": "−2 086"
+  },
+  "blonde": "J0 / 35 · prête 11 janv.",
+  "pins": [
+   "+260",
+   "+130",
+   "3",
+   "Bar du Lac +200"
+  ],
+  "toast": null,
+  "per": "3 mois",
+  "scrollY": 0
+ },
+ "rotation1": {
+  "vue": "paysage",
+  "l": {
+   "tete": "−677CHF ·S24",
+   "nouv": [
+    "J0 / 28 · prête 4 janv.Blonde d’automne ",
+    "J0 / 28 · prête 14 déc.Saison de printem",
+    "Apéro des voisins +100",
+    "Stand au marché −150",
+    "+130",
+    "Bar du Lac +200",
+    "Houblon Citra 1 kg −100",
+    "Peinture de la cave −150",
+    "Nettoyer les fûts 1 j",
+    "Facture Brouwland −100"
+   ],
+   "pills": {
+    "brassage": "−1 276",
+    "vente": "+1 230",
+    "charge": "−2 086"
+   },
+   "blonde": "J0 / 35 · prête 11 janv.",
+   "pins": [
+    "+260",
+    "+130",
+    "3",
+    "Bar du Lac +200"
+   ],
+   "toast": null,
+   "per": "3 mois",
+   "scrollY": 0
+  }
+ },
+ "lAvantRetour": {
+  "tete": "−1 117CHF ·S24",
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne ",
+   "J0 / 28 · prête 14 déc.Saison de printem",
+   "J0 / 28 · prête 18 janv.Blonde d’automne",
+   "Apéro des voisins +100",
+   "Stand au marché −150",
+   "+130",
+   "Bar du Lac +200",
+   "Houblon Citra 1 kg −100",
+   "Malt pils 25 kg −60",
+   "Peinture de la cave −150",
+   "Nettoyer les fûts 1 j",
+   "Facture Brouwland −100"
+  ],
+  "pills": {
+   "brassage": "−1 656",
+   "vente": "+1 230",
+   "charge": "−2 086"
+  },
+  "blonde": "J0 / 42 · prête 18 janv.",
+  "pins": [],
+  "toast": null,
+  "per": "An",
+  "scrollY": 0
+ },
+ "pCacheAvantRetour": {
+  "tete": "−1 117CHF ·S24",
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne ",
+   "J0 / 28 · prête 14 déc.Saison de printem",
+   "J0 / 28Blonde d’automne −380 · prête 18 ",
+   "Apéro des voisins +100",
+   "Stand au marché −150",
+   "+130",
+   "Bar du Lac +200",
+   "Houblon Citra 1 kg −100",
+   "Malt pils 25 kg −60",
+   "Peinture de la cave −150",
+   "Nettoyer les fûts 1 j",
+   "Facture Brouwland −100"
+  ],
+  "pills": {
+   "brassage": "−1 424",
+   "vente": "+1 230",
+   "charge": "−906"
+  },
+  "blonde": "J0 / 42",
+  "pins": [
+   "+260",
+   "+130",
+   "Bar du Lac +200"
+  ],
+  "toast": null,
+  "per": "6 sem.",
+  "scrollY": 0
+ },
+ "pApresRetour": {
+  "tete": "−1 117CHF ·S24",
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne ",
+   "J0 / 28 · prête 14 déc.Saison de printem",
+   "J0 / 28Blonde d’automne −380 · prête 18 ",
+   "Apéro des voisins +100",
+   "Stand au marché −150",
+   "+130",
+   "Bar du Lac +200",
+   "Houblon Citra 1 kg −100",
+   "Malt pils 25 kg −60",
+   "Peinture de la cave −150",
+   "Nettoyer les fûts 1 j",
+   "Facture Brouwland −100"
+  ],
+  "pills": {
+   "brassage": "−1 424",
+   "vente": "+1 230",
+   "charge": "−906"
+  },
+  "blonde": "J0 / 42",
+  "pins": [
+   "+260",
+   "+130",
+   "Bar du Lac +200"
+  ],
+  "toast": null,
+  "per": "6 sem.",
+  "scrollY": 0
+ },
+ "d1280": {
+  "tete": "−1 117CHF ·S24",
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne ",
+   "J0 / 28 · prête 14 déc.Saison de printem",
+   "J0 / 28 · prête 18 janv.Blonde d’automne",
+   "Apéro des voisins +100",
+   "Stand au marché −150",
+   "+130",
+   "Bar du Lac +200",
+   "Houblon Citra 1 kg −100",
+   "Malt pils 25 kg −60",
+   "Peinture de la cave −150",
+   "Nettoyer les fûts 1 j",
+   "Facture Brouwland −100"
+  ],
+  "pills": {
+   "brassage": "−1 656",
+   "vente": "+1 230",
+   "charge": "−2 086"
+  },
+  "blonde": "J0 / 42 · prête 18 janv.",
+  "pins": [
+   "+260",
+   "+130",
+   "3",
+   "Bar du Lac +200"
+  ],
+  "toast": null,
+  "per": "3 mois",
+  "scrollY": 0
+ },
+ "dims": [
+  [
+   "v-portrait",
+   "",
+   800,
+   1280
+  ],
+  [
+   "v-paysage",
+   "on",
+   844,
+   800
+  ]
+ ],
+ "errs": []
+}

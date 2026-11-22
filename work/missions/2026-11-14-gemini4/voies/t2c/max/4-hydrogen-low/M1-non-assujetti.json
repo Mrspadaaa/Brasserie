@@ -1,0 +1,70 @@
+{
+ "reglage": "4-hydrogen@low",
+ "cas": "M1-non-assujetti",
+ "tache": "monthlySummary",
+ "moitie": "choix",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [
+   "charges 2 159,50",
+   "recettes 1 910,50",
+   "solde −249,00",
+   "matières premières 263,00",
+   "loyer 1 200,00",
+   "aucune TVA inventée (non assujetti)",
+   "montant manquant de la levure signalé, non complété"
+  ],
+  "manques": []
+ },
+ "ms": 6863,
+ "coutMicro": 14275,
+ "etat": "STOP",
+ "valeur": {
+  "period": "2026-10",
+  "totalCharges": 2159.5,
+  "totalRecettes": 1910.5,
+  "solde": -249,
+  "byCategory": [
+   {
+    "category": "Ventes",
+    "total": 1910.5,
+    "count": 3
+   },
+   {
+    "category": "Matières premières",
+    "total": 263,
+    "count": 4
+   },
+   {
+    "category": "Énergie",
+    "total": 101.2,
+    "count": 1
+   },
+   {
+    "category": "Loyer",
+    "total": 1200,
+    "count": 1
+   },
+   {
+    "category": "Emballage",
+    "total": 412.3,
+    "count": 1
+   },
+   {
+    "category": "Assurances",
+    "total": 183,
+    "count": 1
+   }
+  ],
+  "attentionPoints": [
+   "L'écriture A07 (Levure SafAle US-05 x10) a un montant manquant (null) : le total des charges et le solde sont incomplets.",
+   "Solde provisoire déficitaire de -249.00 CHF sur la période avant saisie du montant de A07.",
+   "Brasserie non assujettie à la TVA : aucune ventilation de TVA effectuée."
+  ],
+  "highlights": [
+   "Total des recettes : 1910.50 CHF sur 3 écritures.",
+   "Total des charges connues : 2159.50 CHF (le loyer représente 1200.00 CHF)."
+  ]
+ }
+}

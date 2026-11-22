@@ -1,0 +1,88 @@
+g-d1      tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,728 44×44 «  » · largeur 390
+          lien 295→321 (barre 294, chariot 308-334) · marge 1re rangée 2 · pastille 46×32 · + à 16 px des onglets
+          défauts 0
+choisi-a  tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · vides 18
+          défauts 0
+choisi-a-ajout tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 0,0 0×0 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 788 px des onglets · + volant caché pendant la pose · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · vides 18
+          défauts 0
+choisi-a-masque tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 6, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · vides 18
+          défauts 0
+choisi-a-semaine tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · bulle « S507 – 13 déc. » · vides 18
+          défauts 0
+choisi-a-retard tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 0,0 0×0 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 788 px des onglets · + volant caché pendant la pose · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · feuille « Maintenant2 fûts au Café du Ponten retard de 7 j · FûtsRendusFacture M » · vides 18
+          défauts 0
+choisi-a-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · vides 18
+          défauts 0
+choisi-a-ajout-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 0,0 0×0 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 788 px des onglets · + volant caché pendant la pose · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · vides 18
+          défauts 0
+choisi-a-masque-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 6, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · vides 18
+          défauts 0
+choisi-a-semaine-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · bulle « S507 – 13 déc. » · vides 18
+          défauts 0
+choisi-a-retard-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 0,0 0×0 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 788 px des onglets · + volant caché pendant la pose · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · feuille « Maintenant2 fûts au Café du Ponten retard de 7 j · FûtsRendusFacture M » · vides 18
+          défauts 0
+choisi-b  tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · vides 18
+          défauts 0
+choisi-b-ajout tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 0,0 0×0 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 788 px des onglets · + volant caché pendant la pose · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · vides 18
+          défauts 0
+choisi-b-masque tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 6, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · vides 18
+          défauts 0
+choisi-b-semaine tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · bulle « S507 – 13 déc. » · vides 18
+          défauts 0
+choisi-b-retard tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 0,0 0×0 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 788 px des onglets · + volant caché pendant la pose · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · feuille « Maintenant2 fûts au Café du Ponten retard de 7 j · FûtsRendusFacture M » · vides 18
+          défauts 0
+choisi-b-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · vides 18
+          défauts 0
+choisi-b-ajout-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 0,0 0×0 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 788 px des onglets · + volant caché pendant la pose · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · vides 18
+          défauts 0
+choisi-b-masque-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 6, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · vides 18
+          défauts 0
+choisi-b-semaine-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · bulle « S507 – 13 déc. » · vides 18
+          défauts 0
+choisi-b-retard-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 0,0 0×0 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 788 px des onglets · + volant caché pendant la pose · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · feuille « Maintenant2 fûts au Café du Ponten retard de 7 j · FûtsRendusFacture M » · vides 18
+          défauts 0
+r2-a      tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · légende 198-357 × 207-226 · résumés 3 bords droits 186/186/186 · vides 18
+          défauts 0
+r2-a-masque tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 6, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · légende 198-357 × 207-226 · résumés 2 bords droits 186/186 · vides 18
+          défauts 0
+r2-a-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · légende 198-357 × 207-226 · résumés 3 bords droits 186/186/186 · vides 18
+          défauts 0
+r2-a-masque-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 6, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · légende 198-357 × 207-226 · résumés 2 bords droits 186/186 · vides 18
+          défauts 0
+r2-c      tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · légende 192-347 × 207-226 · résumés 3 bords droits 180/180/180 · vides 18
+          défauts 0
+r2-c-masque tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 6, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · légende 192-347 × 207-226 · résumés 2 bords droits 180/180 · vides 18
+          défauts 0
+r2-c-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 7, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · légende 192-347 × 207-226 · résumés 3 bords droits 180/180/180 · vides 18
+          défauts 0
+r2-c-masque-cave tête 202 px (côté 144 + bande 55) = g-d1 · rangées titre 7/7, entières 7/7 · tailles 14/15/17/30 px · + 295,730 44×44 «  » · largeur 390
+          lien 318→344 (barre 317, chariot 331-357) · marge 1re rangée 7 · pastille 46×32 · + à 14 px des onglets · carrés 6, colonne ±0 px, cible 28 px, hors ligne max 2 · écart min carrés 32 · yeux 7, colonne ±0 px · légende 192-347 × 207-226 · résumés 2 bords droits 180/180 · vides 18
+          défauts 0
+CONTROLE OK

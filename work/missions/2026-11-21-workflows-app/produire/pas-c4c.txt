@@ -1,0 +1,23 @@
+# C4-C5 : démarrage, fermeture de la feuille, Calendrier, puis Finances (fixture ZZ TEST)
+t=Brassins
+w=Brassins
+c=Brasser · B-ZZ-PLAN
+w=Prévu le
+c=Commencer aujourd
+w=Maintenant|Ensuite|Conduite
+c=Fermer
+c=Retour
+w=Brassins|Calendrier
+cap=05-retour-liste
+t=Bord
+w=Bord
+d
+t=Calendrier
+w=Calendrier
+d
+cap=06-calendrier
+t=Finances
+w=Finances
+d
+cap=07-finances
+inp

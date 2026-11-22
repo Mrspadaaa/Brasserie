@@ -1,0 +1,1032 @@
+{
+ "fin": {
+  "nav": "#fin",
+  "tabs": [
+   "Synthèse",
+   "*Calendrier",
+   "Opérations",
+   "Annuel"
+  ],
+  "g": [
+   "charge",
+   "vente",
+   "achat",
+   "brassage",
+   "evenement"
+  ],
+  "mnt": [
+   [
+    "k0",
+    "facture",
+    "doc",
+    "Brewferm −86",
+    "échue · 3 j"
+   ],
+   [
+    "k1",
+    "facture",
+    "doc",
+    "Malterie −312",
+    "due S49"
+   ],
+   [
+    "k2",
+    "vente",
+    "vente",
+    "Café du Pont +215",
+    "à encaisser S48"
+   ],
+   [
+    "n",
+    "+2"
+   ]
+  ],
+  "dialH": "Appui long sur + · Sur Finances, en S47",
+  "dial": [
+   [
+    "var(--fin)",
+    "doc",
+    "Facture à payer",
+    "échéance posée sur la frise"
+   ],
+   [
+    "var(--ok)",
+    "vente",
+    "Encaisser",
+    "client récent en puce"
+   ],
+   [
+    "var(--fin)",
+    "tirelire",
+    "Prévoir une dépense",
+    "m3pr-c, pré-remplie"
+   ]
+  ],
+  "main": [
+   "var(--fin)",
+   "doc",
+   "Nouvelle écriture",
+   "scanner la pièce · un toucher sur +"
+  ]
+ },
+ "bra": {
+  "nav": "#bra",
+  "tabs": [
+   "*Brassins",
+   "Recettes",
+   "Atelier",
+   "Volumes"
+  ],
+  "g": [
+   "brassage"
+  ],
+  "big": [
+   "S49",
+   "prochain créneau",
+   "cuve 2 libre",
+   "stock complet"
+  ],
+  "stp": [
+   [
+    "S51",
+    "cuve 1 libre"
+   ],
+   [
+    "S2",
+    "Porter : malt manquant"
+   ]
+  ],
+  "mnt": [
+   [
+    "k1",
+    "brassage",
+    "beer",
+    "Porter",
+    "malt manquant · S51"
+   ],
+   [
+    "k2",
+    "brassage",
+    "beer",
+    "Blonde",
+    "brassage mar. 17"
+   ],
+   [
+    "k2",
+    "brassage",
+    "cuve",
+    "Starter Porter",
+    "lancer S50"
+   ],
+   [
+    "n",
+    "+1"
+   ]
+  ],
+  "cap": [
+   "cuves occupées",
+   "sur 2 ↓"
+  ],
+  "lib": [
+   [
+    "1/2",
+    "Blonde"
+   ],
+   [
+    "1/2",
+    ""
+   ],
+   [
+    "2/2",
+    "Porter"
+   ],
+   [
+    "2/2",
+    ""
+   ],
+   [
+    "1/2",
+    "garde"
+   ],
+   [
+    "2/2",
+    "IPA"
+   ]
+  ],
+  "mini": [
+   "cuves occupées sur 2",
+   [
+    1,
+    1,
+    2,
+    2,
+    1,
+    2,
+    2,
+    1,
+    1,
+    0,
+    1,
+    2,
+    2,
+    1,
+    1,
+    1,
+    2,
+    2,
+    1,
+    0,
+    1,
+    1,
+    2,
+    1,
+    1,
+    2,
+    2,
+    1,
+    1,
+    0,
+    1,
+    2,
+    2,
+    1,
+    1,
+    1,
+    2,
+    1,
+    1,
+    0,
+    1,
+    2,
+    2,
+    1,
+    1,
+    1,
+    0,
+    1,
+    2,
+    1,
+    1,
+    0
+   ],
+   2,
+   "var(--prod)"
+  ],
+  "dialH": "Sur Brassins · prochain créneau S49",
+  "dial": [
+   [
+    "var(--prod)",
+    "check",
+    "Fait",
+    "la phase en cours"
+   ],
+   [
+    "var(--prod)",
+    "cuve",
+    "Starter",
+    "perles avant le brassin"
+   ],
+   [
+    "var(--ok)",
+    "bulle",
+    "Idée datée",
+    "va au carnet"
+   ]
+  ],
+  "main": [
+   "var(--prod)",
+   "beer",
+   "Brassin",
+   "feuille Brasser d1b, au créneau"
+  ]
+ },
+ "ach": {
+  "nav": "#stk",
+  "tabs": [
+   "Articles",
+   "*Courses",
+   "Fûts",
+   "Houblons",
+   "Matériel"
+  ],
+  "g": [
+   "achat",
+   "charge",
+   "brassage"
+  ],
+  "big": [
+   "412",
+   "à commander",
+   "avant mar. 24",
+   "Malterie · 3 articles"
+  ],
+  "stp": [
+   [
+    "140",
+    "Hopfen avant S50"
+   ],
+   [
+    "?",
+    "Brewferm · prix inconnu"
+   ]
+  ],
+  "mnt": [
+   [
+    "k1",
+    "achat",
+    "panier",
+    "Malterie",
+    "avant mar. 24"
+   ],
+   [
+    "k0",
+    "facture",
+    "doc",
+    "Brewferm −86",
+    "échue · 3 j"
+   ],
+   [
+    "k2",
+    "achat",
+    "panier",
+    "Levure US-05",
+    "livraison attendue S48"
+   ],
+   [
+    "n",
+    "+3"
+   ]
+  ],
+  "cap": [
+   "à commander",
+   "dessous : libre en fin ↓"
+  ],
+  "lib": [
+   [
+    "412",
+    "3 946"
+   ],
+   [
+    "0",
+    "4 066"
+   ],
+   [
+    "140",
+    "3 786"
+   ],
+   [
+    "0",
+    "5 086"
+   ],
+   [
+    "96",
+    "5 030"
+   ],
+   [
+    "0",
+    "5 610"
+   ]
+  ],
+  "mini": [
+   "à commander par semaine",
+   [
+    412,
+    0,
+    140,
+    0,
+    96,
+    0,
+    0,
+    180,
+    0,
+    60,
+    0,
+    0,
+    220,
+    0,
+    0,
+    90,
+    0,
+    140,
+    0,
+    0,
+    260,
+    0,
+    0,
+    80,
+    0,
+    0,
+    190,
+    0,
+    70,
+    0,
+    0,
+    0,
+    240,
+    0,
+    0,
+    110,
+    0,
+    150,
+    0,
+    0,
+    90,
+    0,
+    210,
+    0,
+    0,
+    60,
+    0,
+    0,
+    170,
+    0,
+    0,
+    80
+   ],
+   412,
+   "var(--e-achat)"
+  ],
+  "dialH": "Sur Courses · jalon le plus proche",
+  "dial": [
+   [
+    "var(--e-achat)",
+    "outil",
+    "Achat ou travaux",
+    "puces ou lien collé"
+   ],
+   [
+    "var(--ok)",
+    "bulle",
+    "Besoin ou idée",
+    "va au carnet"
+   ],
+   [
+    "var(--fin)",
+    "doc",
+    "Facture fournisseur",
+    "le scan actuel"
+   ]
+  ],
+  "main": [
+   "var(--e-achat)",
+   "panier",
+   "Commander · Malterie",
+   "copie la liste · commandé · livraison S48"
+  ]
+ },
+ "ate": {
+  "nav": "#stk",
+  "tabs": [
+   "Articles",
+   "Courses",
+   "Fûts",
+   "Houblons",
+   "*Matériel"
+  ],
+  "g": [
+   "renovation",
+   "activite"
+  ],
+  "big": [
+   "3",
+   "à traiter",
+   "1 en retard",
+   "cuve 2 libre dès S49"
+  ],
+  "bigKo": true,
+  "stp": [
+   [
+    "2 400",
+    "matériel à payer d’ici S52"
+   ]
+  ],
+  "mnt": [
+   [
+    "k0",
+    "entretien",
+    "outil",
+    "Balance METAS",
+    "échue le 4 nov."
+   ],
+   [
+    "k2",
+    "entretien",
+    "outil",
+    "Détartrer",
+    "à faire le 18 nov."
+   ],
+   [
+    "k2",
+    "entretien",
+    "cuve",
+    "Joints cuve 2",
+    "au 4e brassin · S49"
+   ],
+   [
+    "n",
+    "+1"
+   ]
+  ],
+  "cap": [
+   "à traiter",
+   "par semaine ↓"
+  ],
+  "lib": [
+   [
+    "3",
+    "1 en retard"
+   ],
+   [
+    "1",
+    ""
+   ],
+   [
+    "2",
+    "joints"
+   ],
+   [
+    "0",
+    ""
+   ],
+   [
+    "1",
+    "pompe"
+   ],
+   [
+    "0",
+    ""
+   ]
+  ],
+  "mini": [
+   "entretiens dus par semaine",
+   [
+    3,
+    1,
+    2,
+    0,
+    1,
+    0,
+    0,
+    1,
+    2,
+    0,
+    0,
+    1,
+    0,
+    1,
+    0,
+    2,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1,
+    0,
+    2,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1,
+    2,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1,
+    0,
+    2,
+    0,
+    0,
+    1,
+    0,
+    0,
+    1,
+    0,
+    2,
+    0,
+    0,
+    1,
+    0,
+    0
+   ],
+   3,
+   "var(--e-entretien)"
+  ],
+  "dialH": "Sur Matériel · poser en S47",
+  "dial": [
+   [
+    "var(--bad)",
+    "alerte",
+    "Signaler une panne",
+    "barre la cuve pour les brassins"
+   ],
+   [
+    "var(--e-achat)",
+    "outil",
+    "Projet ou achat de matériel",
+    "au mois touché"
+   ],
+   [
+    "var(--mut)",
+    "tache",
+    "Tâche",
+    "ou Nouveau matériel"
+   ]
+  ],
+  "main": [
+   "var(--e-entretien)",
+   "check",
+   "Entretien fait",
+   "Balance METAS · Détartrer en puces"
+  ]
+ },
+ "stk": {
+  "nav": "#stk",
+  "tabs": [
+   "*Articles",
+   "Courses",
+   "Fûts",
+   "Houblons",
+   "Matériel"
+  ],
+  "g": [
+   "achat",
+   "fut",
+   "brassage"
+  ],
+  "big": [
+   "5",
+   "à commander",
+   "avant S49",
+   "Citra pour Porter"
+  ],
+  "stp": [
+   [
+    "3/5",
+    "fûts propres S51"
+   ],
+   [
+    "2",
+    "livraisons attendues"
+   ]
+  ],
+  "mnt": [
+   [
+    "k1",
+    "stock",
+    "panier",
+    "Citra",
+    "manque S49 · Porter"
+   ],
+   [
+    "k0",
+    "fut",
+    "fut",
+    "Fût 7",
+    "à rendre · 1 sem."
+   ],
+   [
+    "k2",
+    "fut",
+    "fut",
+    "Fûts propres 3/5",
+    "remplir S51"
+   ],
+   [
+    "n",
+    "+2"
+   ]
+  ],
+  "cap": [
+   "en manque",
+   "fûts propres ↓"
+  ],
+  "lib": [
+   [
+    "2",
+    "fûts 5/5"
+   ],
+   [
+    "2",
+    "fûts 5/5"
+   ],
+   [
+    "5",
+    "fûts 4/5"
+   ],
+   [
+    "1",
+    "fûts 4/5"
+   ],
+   [
+    "3",
+    "fûts 3/5"
+   ],
+   [
+    "0",
+    "fûts 5/5"
+   ]
+  ],
+  "mini": [
+   "articles en manque par semaine",
+   [
+    2,
+    2,
+    5,
+    1,
+    3,
+    0,
+    0,
+    1,
+    2,
+    0,
+    1,
+    3,
+    1,
+    0,
+    0,
+    2,
+    1,
+    0,
+    2,
+    1,
+    0,
+    1,
+    3,
+    0,
+    0,
+    1,
+    2,
+    0,
+    1,
+    0,
+    2,
+    1,
+    0,
+    0,
+    3,
+    1,
+    0,
+    1,
+    2,
+    0,
+    0,
+    1,
+    0,
+    2,
+    1,
+    0,
+    0,
+    3,
+    1,
+    0,
+    1,
+    0
+   ],
+   5,
+   "var(--stk)"
+  ],
+  "dialH": "Sur Stocks · le manque le plus urgent",
+  "dial": [
+   [
+    "var(--e-fut)",
+    "fut",
+    "Livrer un fût",
+    "client proposé, vente cochée"
+   ],
+   [
+    "var(--e-fut)",
+    "fut",
+    "Remplir des fûts",
+    "depuis le lot de la semaine"
+   ],
+   [
+    "var(--mut)",
+    "boxes",
+    "Nouvel article",
+    "ou Nouveau fût"
+   ]
+  ],
+  "main": [
+   "var(--stk)",
+   "panier",
+   "Commander ce qui manque",
+   "Citra · reçu avant S49"
+  ]
+ },
+ "ven": {
+  "nav": "#cli",
+  "tabs": [
+   "*Agenda",
+   "Clients",
+   "Impôt bière",
+   "Prix"
+  ],
+  "g": [
+   "vente",
+   "evenement",
+   "fut",
+   "charge"
+  ],
+  "big": [
+   "430",
+   "à encaisser",
+   "215 en retard",
+   "ventes 6 sem. : 2 755"
+  ],
+  "stp": [
+   [
+    "+1 180",
+    "Marché de Noël S50"
+   ],
+   [
+    "+640",
+    "Noël privés S52"
+   ]
+  ],
+  "mnt": [
+   [
+    "k0",
+    "vente",
+    "vente",
+    "Café du Pont +215",
+    "échue · 5 j"
+   ],
+   [
+    "k0",
+    "fut",
+    "fut",
+    "Fût 7",
+    "à rendre · 1 sem."
+   ],
+   [
+    "k2",
+    "taxe",
+    "doc",
+    "Impôt bière T4",
+    "déclarer avant 20 janv."
+   ],
+   [
+    "n",
+    "+1"
+   ]
+  ],
+  "cap": [
+   "ventes",
+   "par semaine ↓"
+  ],
+  "lib": [
+   [
+    "+120",
+    "prévu"
+   ],
+   [
+    "+335",
+    "Café du Pont"
+   ],
+   [
+    "+120",
+    "prévu"
+   ],
+   [
+    "+1 300",
+    "Marché"
+   ],
+   [
+    "+120",
+    "prévu"
+   ],
+   [
+    "+760",
+    "Noël"
+   ]
+  ],
+  "mini": [
+   "ventes par semaine",
+   [
+    120,
+    335,
+    120,
+    1300,
+    120,
+    760,
+    120,
+    120,
+    200,
+    120,
+    120,
+    120,
+    140,
+    120,
+    120,
+    300,
+    120,
+    120,
+    120,
+    140,
+    120,
+    120,
+    500,
+    120,
+    120,
+    120,
+    300,
+    120,
+    120,
+    600,
+    120,
+    120,
+    120,
+    140,
+    900,
+    120,
+    120,
+    120,
+    140,
+    120,
+    120,
+    120,
+    140,
+    120,
+    120,
+    120,
+    140,
+    700,
+    120,
+    120,
+    140,
+    1200
+   ],
+   1300,
+   "var(--ok)"
+  ],
+  "dialH": "Sur Clients · poser en S47",
+  "dial": [
+   [
+    "var(--e-evenement)",
+    "fete2",
+    "Fête ou marché",
+    "comme l’an dernier"
+   ],
+   [
+    "var(--ok)",
+    "vente",
+    "Encaisser",
+    "au comptoir"
+   ],
+   [
+    "var(--mut)",
+    "users",
+    "Nouveau client",
+    "contact partagé ou dicté"
+   ]
+  ],
+  "main": [
+   "var(--ok)",
+   "vente",
+   "Vente ou livraison",
+   "Café du Pont · fût plein · prix du tarif"
+  ]
+ },
+ "bord": {
+  "nav": "#bord",
+  "tabs": null,
+  "g": null,
+  "big": [
+   "4",
+   "à faire aujourd’hui",
+   "2 en retard",
+   "puis Blonde mar. 17"
+  ],
+  "bigKo": true,
+  "stp": [
+   [
+    "173",
+    "à te permettre, dans Calendrier"
+   ]
+  ],
+  "cap": [
+   "à faire",
+   "par semaine ↓"
+  ],
+  "lib": [
+   [
+    "4",
+    "2 en retard"
+   ],
+   [
+    "3",
+    ""
+   ],
+   [
+    "5",
+    "Porter"
+   ],
+   [
+    "2",
+    ""
+   ],
+   [
+    "3",
+    ""
+   ],
+   [
+    "2",
+    ""
+   ]
+  ],
+  "mini": [
+   "à faire, jour par jour, 2 semaines",
+   [
+    4,
+    2,
+    1,
+    3,
+    0,
+    1,
+    2,
+    3,
+    1,
+    0,
+    2,
+    1,
+    1,
+    2
+   ],
+   5,
+   "var(--act)",
+   true
+  ],
+  "dialH": "Sur Bord · poser aujourd’hui",
+  "dial": [
+   [
+    "var(--e-activite)",
+    "jour",
+    "Activité",
+    "puces apprises"
+   ],
+   [
+    "var(--e-achat)",
+    "panier",
+    "Achat",
+    "payé d’un coup ou mis de côté"
+   ],
+   [
+    "var(--prod)",
+    "beer",
+    "Brassin",
+    "au prochain créneau"
+   ]
+  ],
+  "main": [
+   "var(--act)",
+   "check",
+   "Fait",
+   "la chose en tête · Annuler 5 s"
+  ]
+ }
+}

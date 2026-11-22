@@ -1,0 +1,764 @@
+<!doctype html><html lang="fr" data-theme="clair"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>p2a — compagnon brasseur — passe 2 de s3b : feu, barres avant → après, jauge de durée</title><style>
+:root{--page:#FFFFFF;--pan:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t:#333333;--t0:#111111;
+--act:#111111;--sur-act:#FFFFFF;--hop:#567F45;--hopt:#3F6B2E;--hopf:#EEF4EA;--hopl:rgba(86,127,69,.28);--eau:#4F7E9B;--eaut:#2F5F7D;--eauf:#EAF1F6;
+--alr:#C8382F;--alrt:#A8291F;--alrf:#FBEBEA;--att:#9C7020;--attt:#7F5B10;--attf:#FBF3E2;--fin:#1F64A3;--fint:#1F64A3;--finf:#EAF2FA;
+--fond:#D4D4D4;--voile:rgba(17,17,17,.30);--ombre:0 -6px 24px rgba(0,0,0,.14);
+--sans:"Source Sans 3","Source Sans Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;color-scheme:light}
+[data-theme="cave"]{--page:#12100E;--pan:#1A1613;--sur:#221D19;--bord:#2C2521;--bordm:#3D342E;--trait:#574A42;--t2:#9A8A7E;--t:#D8CEC5;--t0:#F5F0EA;
+--act:#F2C14E;--sur-act:#12100E;--hop:#6E9B5B;--hopt:#86B573;--hopf:#1B2417;--hopl:rgba(110,155,91,.35);--eau:#5B8AA6;--eaut:#5E8CA8;--eauf:#16202A;
+--alr:#D6453D;--alrt:#DC5F58;--alrf:#2A1715;--att:#E3B55D;--attt:#E3B55D;--attf:#2A2114;--fin:#86B9E6;--fint:#86B9E6;--finf:#16212B;
+--fond:#070605;--voile:rgba(0,0,0,.55);--ombre:0 -8px 32px rgba(0,0,0,.6);color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--fond);font-family:var(--sans);color:var(--t);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+svg.p2a-i{width:16px;height:16px;flex:none}
+.p2a-n{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.p2a-m{white-space:nowrap}
+s.p2a-n,.p2a-m s{color:var(--t2);text-decoration-thickness:1.5px}
+.p2a-planche{display:flex;flex-wrap:wrap;gap:28px 20px;padding:20px;align-items:flex-start}
+.p2a-cadre{display:flex;flex-direction:column;gap:8px}
+.p2a-cadre>figcaption{width:390px;font-size:14px;font-weight:600;color:var(--t0)}
+.p2a-cadre>figcaption span{font-weight:400;color:var(--t2)}
+.p2a-tel{position:relative;width:390px;height:760px;border-radius:28px;overflow:hidden;background:var(--page);border:1px solid var(--bordm);flex:none}
+.p2a-tel.p2a-large{width:1280px;border-radius:12px}
+@media (max-width:600px){.p2a-planche{padding:0;gap:16px 0}.p2a-cadre>figcaption{padding:0 8px}.p2a-tel.p2a-large{zoom:.3}}
+/* fond de l'app */
+.p2a-fond{position:absolute;inset:0;filter:blur(2.5px);pointer-events:none}
+.p2a-voile{position:absolute;inset:0;background:var(--voile)}
+.p2a-ap-tete{height:44px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--bord);font-weight:700;color:var(--t0);font-size:16px}
+.p2a-ap-fin{border-top:3px solid var(--fin)}
+.p2a-ap-logo{width:20px;height:20px}
+.p2a-ap-ong{display:flex;gap:16px;padding:8px 12px;font-size:13px;color:var(--t2);border-bottom:1px solid var(--bord)}
+.p2a-ap-ong b{color:var(--t0)}
+.p2a-ap-gros{display:flex;align-items:baseline;gap:12px;padding:16px 12px 8px}
+.p2a-ap-gros .p2a-n{font-size:40px;color:var(--t0)}
+.p2a-ap-barre{margin:12px;height:10px;border-radius:5px;background:var(--sur);position:relative}
+.p2a-ap-barre i{position:absolute;inset:0 62% 0 0;border-radius:5px;background:var(--hop)}
+.p2a-ap-ligne{display:flex;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid var(--bord);font-size:14px}
+/* feuille */
+.p2a-feuille{position:absolute;left:0;right:0;bottom:0;top:40px;background:var(--pan);border-radius:24px 24px 0 0;box-shadow:var(--ombre);display:flex;flex-direction:column;overflow:hidden}
+.p2a-tete{display:flex;align-items:center;gap:4px;padding:10px 6px 4px 12px;min-height:42px}
+.p2a-tete h2{font-size:14px;font-weight:700;color:var(--t0);flex:1}
+.p2a-tete h2 span{font-weight:400;color:var(--t2)}
+.p2a-tete .p2a-ic:first-child{margin-left:-6px}
+.p2a-tete-fin{box-shadow:inset 0 3px 0 var(--fin)}
+.p2a-tete-fin h2 span{color:var(--fint);font-weight:600}
+.p2a-ic{position:relative;width:28px;height:28px;display:grid;place-items:center;border-radius:10px;color:var(--t2);flex:none}
+.p2a-ic.p2a-sel{background:var(--sur);color:var(--t0)}
+.p2a-badge{position:absolute;top:4px;right:3px;width:7px;height:7px;border-radius:50%;background:var(--att);box-shadow:0 0 0 2px var(--pan)}
+.p2a-corps{flex:1;overflow:hidden;padding:4px 10px 10px;display:flex;flex-direction:column;gap:8px}
+.p2a-pied{padding:8px 10px 10px;border-top:1px solid var(--bord);display:flex;flex-direction:column;gap:8px}
+.p2a-pied-duo{flex-direction:row;justify-content:space-between;align-items:center}
+.p2a-pied-duo .p2a-btn{height:36px}
+.p2a-saisie{display:flex;gap:6px;align-items:center}
+.p2a-champ{flex:1;height:40px;border:1px solid var(--bordm);border-radius:10px;background:var(--page);font-size:16px;color:var(--t2);display:flex;align-items:center;padding:0 10px;min-width:0;white-space:nowrap;overflow:hidden}
+.p2a-champ.p2a-plein{color:var(--t0)}
+.p2a-saisie-haute{align-items:flex-end}
+.p2a-zone{height:auto;min-height:88px;white-space:normal;align-items:flex-start;padding:8px 10px;line-height:1.35;border-color:var(--fin)}
+.p2a-env{width:40px;height:40px;border-radius:10px;background:var(--sur);color:var(--t2);display:grid;place-items:center;flex:none}
+.p2a-env.p2a-on{background:var(--act);color:var(--sur-act)}
+/* communs */
+.p2a-carte{background:var(--page);border:1px solid var(--bord);border-radius:16px;padding:10px}
+.p2a-lbl{font-size:12px;font-weight:600;color:var(--t2);display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.p2a-lbl1{font-size:12px;font-weight:600;color:var(--t2);display:flex;align-items:center;gap:4px}
+.p2a-q{align-self:flex-end;max-width:88%;background:var(--sur);color:var(--t0);border-radius:16px 16px 4px 16px;padding:8px 10px;font-size:14px;line-height:1.35}
+.p2a-q small{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:12px;font-weight:600;color:var(--attt)}
+.p2a-q small svg.p2a-i{width:13px;height:13px}
+.p2a-pres h3{font-size:18px;color:var(--t0);line-height:1.2}
+.p2a-pres p{font-size:13px;color:var(--t2);margin-top:2px}
+.p2a-pres{padding:2px 2px 0}
+.p2a-btn{height:32px;padding:0 12px;border-radius:10px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:none}
+.p2a-btn.p2a-p{background:var(--act);color:var(--sur-act)}
+.p2a-btn.p2a-s{border:1px solid var(--bordm);background:var(--page);color:var(--t0)}
+.p2a-btn.p2a-g{color:var(--t)}
+.p2a-btn.p2a-d{color:var(--alrt)}
+.p2a-btn.p2a-d-plein{border:1px solid var(--alr);background:var(--alrf)}
+.p2a-act{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.p2a-act.p2a-gauche{justify-content:flex-start}
+.p2a-ligne{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:28px;font-size:14px;color:var(--t)}
+.p2a-ligne>span:last-child,.p2a-ligne>.p2a-n:last-child{color:var(--t0)}
+.p2a-puce{display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 8px;border-radius:10px;border:1px solid var(--bord);background:var(--page);font-size:12px;color:var(--t)}
+.p2a-puce svg.p2a-i{width:13px;height:13px;color:var(--hopt)}
+.p2a-lit{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.p2a-lit .p2a-lbl1{width:100%}
+.p2a-piste{display:block;height:6px;border-radius:3px;background:var(--bord);position:relative;overflow:hidden}
+.p2a-piste i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--hop);min-width:4px}
+.p2a-piste-l{height:10px;border-radius:5px;margin:6px 0 8px}
+.p2a-grad{display:flex;justify-content:space-between;font-size:12px;color:var(--t2)}
+.p2a-dur{display:inline-flex;gap:2px;margin-right:4px}
+.p2a-dur u{width:8px;height:6px;border-radius:2px;background:var(--bord);text-decoration:none}
+.p2a-dur u.p2a-v{background:var(--t2)}
+.p2a-bascule{width:40px;height:24px;border-radius:12px;background:var(--bordm);position:relative;flex:none}
+.p2a-bascule i{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--page)}
+.p2a-bascule.p2a-on{background:var(--hop)}
+.p2a-bascule.p2a-on i{left:19px}
+.p2a-note{display:flex;gap:6px;align-items:flex-start;font-size:12px;color:var(--t2);line-height:1.35}
+.p2a-note svg.p2a-i{width:14px;height:14px;margin-top:1px}
+/* accueil */
+.p2a-frise{position:relative;height:62px;margin:0 6px 0 4px}
+.p2a-fr-rail{position:absolute;left:0;right:0;top:30px;height:4px;border-radius:2px;background:var(--bord)}
+.p2a-fr-fait{position:absolute;left:0;top:30px;height:4px;border-radius:2px;background:var(--hop)}
+.p2a-fr-pt{position:absolute;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;font-size:12px;color:var(--t2);gap:0}
+.p2a-fr-pt b{font-weight:600;color:var(--t0);height:20px}
+.p2a-fr-pt::after{content:"";order:1;width:12px;height:12px;border-radius:50%;border:2px solid var(--hop);background:var(--page);margin:4px 0 2px}
+.p2a-fr-pt small{order:2;font-size:12px}
+.p2a-fr-pt.p2a-fait::after{background:var(--hop)}
+.p2a-fr-auj{position:absolute;top:16px;width:2px;height:32px;background:var(--t0);transform:translateX(-50%)}
+.p2a-fr-auj b{position:absolute;top:34px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--t0);white-space:nowrap}
+.p2a-fr-bout{position:absolute;right:0;top:40px;font-size:12px;color:var(--t2)}
+.p2a-fr-bout small{font-size:12px}
+.p2a-tuiles{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.p2a-tuile{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left;padding:10px;border-radius:16px;background:var(--page);border:1px solid var(--bord);min-height:112px;font-size:14px;color:var(--t0);line-height:1.25}
+.p2a-tuile>span:not(.p2a-tag){flex:1}
+.p2a-tuile svg.p2a-i{width:20px;height:20px;color:var(--hopt)}
+.p2a-tuiles-fin .p2a-tuile svg.p2a-i{color:var(--fint)}
+.p2a-tuiles-fin .p2a-tuile{min-height:88px}
+.p2a-tag{display:inline-flex;align-items:center;font-size:12px;color:var(--t2)}
+.p2a-duo{display:grid;grid-template-columns:1fr 1.25fr;gap:6px}
+.p2a-mini{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 6px 0 10px;border:1px solid var(--bord);border-radius:10px;background:var(--page);font-size:13px;color:var(--t);text-align:left}
+.p2a-mini svg.p2a-i{color:var(--t2)}
+.p2a-chev{margin-left:auto}
+.p2a-pts{display:flex;align-items:center;gap:4px}
+.p2a-pts i{width:8px;height:8px;border-radius:50%;margin-left:4px}
+.p2a-pts i:first-child{margin-left:0}
+.p2a-pv{background:var(--hop)}.p2a-pa{background:var(--att)}.p2a-pr{background:var(--alr)}
+.p2a-lim{gap:10px}
+.p2a-lim-l{flex:1;display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--t2);min-width:0}
+.p2a-amorces{display:flex;gap:6px;overflow:hidden}
+.p2a-chip{height:28px;padding:0 10px;border-radius:14px;border:1px dashed var(--bordm);font-size:13px;color:var(--t);white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.p2a-chip.p2a-suite{border-style:solid;background:var(--page);color:var(--t0)}
+.p2a-chip svg.p2a-i{width:14px;height:14px;color:var(--t2)}
+.p2a-modes{display:flex;gap:4px;align-items:center;background:var(--sur);border-radius:10px;padding:2px}
+.p2a-mode{flex:1;height:28px;border-radius:8px;font-size:13px;color:var(--t);display:flex;align-items:center;justify-content:center;gap:2px}
+.p2a-mode.p2a-sel{background:var(--page);color:var(--t0);font-weight:600;box-shadow:0 0 0 1px var(--bordm)}
+.p2a-mode.p2a-sel .p2a-dur u.p2a-v{background:var(--t0)}
+.p2a-mode-note{font-size:12px;color:var(--t2);padding:0 6px}
+/* attente */
+.p2a-chrono{display:flex;flex-direction:column;gap:8px}
+.p2a-chrono-h{display:flex;align-items:baseline;gap:8px}
+.p2a-chrono-h .p2a-n{font-size:30px;color:var(--t0);line-height:1}
+.p2a-chrono-h span:last-child{font-size:13px;color:var(--hopt);font-weight:600}
+.p2a-duree{position:relative;height:28px}
+.p2a-rail{position:absolute;left:0;right:0;top:10px;height:8px;border-radius:4px;background:var(--sur)}
+.p2a-hab{position:absolute;top:6px;height:16px;border-radius:4px;background:var(--hopf);border:1px solid var(--hop)}
+.p2a-duree .p2a-fait{position:absolute;left:0;top:10px;height:8px;border-radius:4px;background:var(--hop)}
+.p2a-aig{position:absolute;top:2px;width:3px;height:24px;border-radius:2px;background:var(--t0);transform:translateX(-1px)}
+.p2a-etapes{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.p2a-etapes div{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--t2)}
+.p2a-etapes div i{height:6px;border-radius:3px;background:var(--bord)}
+.p2a-etapes .p2a-f i{background:var(--hop)}
+.p2a-etapes .p2a-f{color:var(--t)}
+.p2a-etapes .p2a-e i{background:linear-gradient(90deg,var(--hop) 55%,var(--bord) 55%)}
+.p2a-etapes .p2a-e{color:var(--t0);font-weight:600}
+.p2a-etapes .p2a-x i{background:repeating-linear-gradient(135deg,var(--alr) 0 3px,transparent 3px 6px);border:1px solid var(--alr)}
+.p2a-etapes-mini{margin-top:6px;width:150px}
+.p2a-etapes-mini div i{height:5px}
+.p2a-marge{display:flex;gap:8px;align-items:center;padding:8px;border-radius:10px;background:var(--hopf);font-size:14px;color:var(--t0)}
+.p2a-marge svg.p2a-i{color:var(--hopt)}
+.p2a-calc{display:flex;flex-direction:column;gap:6px}
+.p2a-pile{display:flex;gap:3px;height:16px}
+.p2a-pile i{border-radius:4px;border:1.5px solid var(--hop);background:repeating-linear-gradient(135deg,var(--hopl) 0 4px,transparent 4px 8px)}
+.p2a-pile i.p2a-fait{background:var(--hop)}
+.p2a-leg{display:grid;grid-template-columns:85fr 43fr 43fr;gap:3px;font-size:12px;color:var(--t2);padding-bottom:4px;border-bottom:1px solid var(--bord)}
+.p2a-leg>span{display:flex;flex-direction:column;white-space:nowrap}
+.p2a-leg b{font-weight:600;color:var(--t0)}
+.p2a-file{display:flex;align-items:center;gap:8px;border:1px dashed var(--bordm);border-radius:16px;padding:8px 6px 8px 10px;font-size:14px;color:var(--t0)}
+.p2a-rang{width:24px;height:24px;border-radius:50%;background:var(--sur);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--t);flex:none}
+.p2a-file div{flex:1}
+.p2a-file small{display:block;font-size:12px;color:var(--t2)}
+/* réponse */
+.p2a-verdict{display:flex;gap:10px;align-items:flex-start;background:var(--page);border:1px solid var(--bord);border-radius:16px;padding:10px}
+.p2a-verdict.p2a-att{border-left:4px solid var(--att)}
+.p2a-verdict.p2a-inf{border-left:4px solid var(--hop)}
+.p2a-verdict>div{flex:1;min-width:0}
+.p2a-feu{display:flex;flex-direction:column;gap:4px;padding:5px;border-radius:10px;background:var(--sur);flex:none}
+.p2a-feu i{width:14px;height:14px;border-radius:50%;background:var(--bord);display:block}
+.p2a-feu i.p2a-on-a{background:var(--att);box-shadow:0 0 0 3px var(--attf)}
+.p2a-feu i.p2a-on-v{background:var(--hop);box-shadow:0 0 0 3px var(--hopf)}
+.p2a-feu i.p2a-on-r{background:var(--alr);box-shadow:0 0 0 3px var(--alrf)}
+.p2a-niv{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--attt)}
+.p2a-niv svg.p2a-i{width:13px;height:13px}
+.p2a-niv-i{color:var(--hopt)}
+.p2a-verdict h3{font-size:17px;color:var(--t0);line-height:1.2;margin:1px 0 6px}
+.p2a-geste{display:flex;align-items:baseline;gap:8px;font-size:14px;color:var(--t0);line-height:1.3;padding:3px 0}
+.p2a-geste+.p2a-geste{border-top:1px solid var(--bord);padding-top:5px}
+.p2a-quand{flex:none;min-width:52px;font-size:12px;font-weight:700;color:var(--eaut)}
+.p2a-prop{display:flex;flex-direction:column;gap:2px}
+.p2a-br{display:grid;grid-template-columns:20px 128px 1fr 76px;align-items:center;gap:6px;min-height:34px;font-size:14px;color:var(--t0)}
+.p2a-br>.p2a-m:last-child{text-align:right;font-size:13px}
+.p2a-br small{display:block;font-size:12px;color:var(--t2);line-height:1}
+.p2a-br-simple{grid-template-columns:20px 1fr auto auto}
+.p2a-facult{color:var(--t)}
+.p2a-case{width:20px;height:20px;border-radius:6px;background:var(--hop);color:#fff;display:grid;place-items:center}
+.p2a-case.p2a-off{background:var(--page);border:1.5px solid var(--bordm)}
+.p2a-case svg.p2a-i{width:14px;height:14px;stroke-width:3}
+.p2a-tr{position:relative;height:14px}
+.p2a-av{position:absolute;left:0;top:0;bottom:0;border:1px dashed var(--t2);border-radius:4px}
+.p2a-ap{position:absolute;left:0;top:3px;bottom:3px;border-radius:3px;background:var(--hop)}
+.p2a-facult .p2a-ap{background:var(--trait)}
+.p2a-jours{display:flex;gap:3px;align-items:center}
+.p2a-jours u{width:14px;height:14px;border-radius:3px;background:var(--hop);text-decoration:none}
+.p2a-jours u.p2a-retire{background:transparent;border:1.5px dashed var(--t2);position:relative}
+.p2a-total{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--t2);padding:6px 0 4px;border-top:1px solid var(--bord);margin-top:2px}
+.p2a-total>span:last-child{color:var(--t0)}
+.p2a-ctl{display:grid;grid-template-columns:auto 1fr;gap:6px 8px;align-items:center;font-size:14px;color:var(--t0);padding:8px 10px}
+.p2a-jalon{height:28px;padding:0 8px;border-radius:10px;background:var(--eauf);color:var(--eaut);font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:4px}
+.p2a-jalon-r{background:var(--alrf);color:var(--alrt)}
+.p2a-ctl-act{grid-column:1 / -1;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.p2a-rap{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t)}
+.p2a-plis{display:flex;align-items:center;gap:8px;min-height:32px;padding:0 4px;font-size:12px;color:var(--t2);flex-wrap:wrap}
+.p2a-plis b{font-size:13px;color:var(--t0);font-weight:600;margin-right:2px}
+.p2a-plis span{display:inline-flex;align-items:center;gap:3px}
+.p2a-plis svg.p2a-i{width:13px;height:13px}
+.p2a-plis span svg.p2a-i{color:var(--hopt)}
+/* erreur */
+.p2a-q-garde{border:1px dashed var(--att)}
+.p2a-chemin{display:flex;flex-direction:column;gap:8px}
+.p2a-noeuds{display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:center;gap:6px}
+.p2a-nd{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--t2);width:76px;text-align:center}
+.p2a-rd{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:2px solid var(--hop);color:var(--hopt)}
+.p2a-loin .p2a-rd{border:2px dashed var(--bordm);color:var(--t2)}
+.p2a-rd svg.p2a-i{width:18px;height:18px}
+.p2a-lien{height:2px;background:var(--hop);border-radius:1px}
+.p2a-lien.p2a-coupe{background:repeating-linear-gradient(90deg,var(--bordm) 0 6px,transparent 6px 10px)}
+.p2a-coupure{width:28px;height:28px;border-radius:50%;background:var(--attf);color:var(--attt);display:grid;place-items:center}
+.p2a-chemin h3{font-size:17px;color:var(--t0)}
+.p2a-chemin p{font-size:14px;color:var(--t)}
+.p2a-garde{display:flex;align-items:center;gap:8px;border-radius:16px;padding:8px 10px;font-size:14px;color:var(--t0);background:var(--hopf)}
+.p2a-garde>svg.p2a-i{color:var(--hopt)}
+.p2a-garde small{display:block;font-size:12px;color:var(--t2);margin-top:2px}
+.p2a-sep{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2);margin-top:4px}
+.p2a-sep::before,.p2a-sep::after{content:"";flex:1;height:1px;background:var(--bord)}
+.p2a-serveur{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:start;border:1px solid var(--alr);background:var(--alrf);border-radius:16px;padding:10px}
+.p2a-serveur b{font-size:14px;color:var(--t0);display:block}
+.p2a-serveur small{font-size:12px;color:var(--alrt);font-weight:600}
+.p2a-srv-ic{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:var(--alrt);background:var(--page)}
+.p2a-srv-act{grid-column:1 / -1;display:flex;gap:6px;justify-content:flex-end}
+.p2a-bandeau{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--attt)}
+.p2a-bandeau-n{color:var(--t2)}
+/* finances */
+.p2a-origine{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t);padding:6px 10px;border-radius:10px;background:var(--finf)}
+.p2a-origine svg.p2a-i{color:var(--fint)}
+.p2a-origine b{color:var(--fint)}
+.p2a-portee{display:flex;flex-direction:column;gap:8px}
+.p2a-cases{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.p2a-cf{display:flex;align-items:center;gap:6px;min-height:36px;padding:0 8px;border-radius:10px;border:1px solid var(--bord);font-size:13px;color:var(--t0);text-align:left}
+.p2a-cf.p2a-on{border-color:var(--fin);background:var(--finf)}
+.p2a-cf svg.p2a-i{color:var(--fint)}
+/* conversations */
+.p2a-resume{display:flex;flex-direction:column;gap:8px}
+.p2a-resume-b{display:flex;gap:3px;height:10px}
+.p2a-resume-b i{border-radius:5px}
+.p2a-resume-l{display:flex;justify-content:space-between;font-size:13px;color:var(--t)}
+.p2a-resume-l span{display:inline-flex;align-items:center;gap:5px}
+.p2a-pt{width:8px;height:8px;border-radius:50%;display:inline-block}
+.p2a-conv{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--page);border:1px solid var(--bord);border-radius:16px;padding:8px 6px 8px 10px}
+.p2a-conv-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.p2a-conv-t b{font-size:14px;color:var(--t0)}
+.p2a-conv-t span{font-size:13px;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p2a-conv-t small{font-size:12px;font-weight:600}
+.p2a-etat{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none}
+.p2a-etat svg.p2a-i{width:15px;height:15px;stroke-width:2.5}
+.p2a-c-pret .p2a-etat{background:var(--hop);color:#fff}
+.p2a-c-pret small{color:var(--hopt)}
+.p2a-c-echec .p2a-etat{border:2px solid var(--alr);color:var(--alrt)}
+.p2a-c-echec small{color:var(--alrt)}
+.p2a-c-cours small{color:var(--attt)}
+.p2a-anneau{background:conic-gradient(var(--att) 0 66%,var(--bord) 66% 100%);position:relative}
+.p2a-anneau i{width:20px;height:20px;border-radius:50%;background:var(--page)}
+.p2a-c-fin{border-left:3px solid var(--fin)}
+.p2a-ouvert{border-color:var(--bordm)}
+.p2a-menu{flex-basis:100%;display:flex;justify-content:space-between;gap:6px;border-top:1px solid var(--bord);padding-top:6px}
+.p2a-reglage-l{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 10px;border-radius:10px;background:var(--page);border:1px solid var(--bord);font-size:14px;color:var(--t0)}
+.p2a-reglage-l>span:not(.p2a-bascule){flex:1}
+.p2a-reglage-l small{display:block;font-size:12px;color:var(--t2)}
+.p2a-reglage-l>svg.p2a-i{color:var(--t2)}
+/* plafond */
+.p2a-plafond{display:flex;flex-direction:column;gap:8px}
+.p2a-pl-h{display:flex;align-items:center;gap:8px;color:var(--attt)}
+.p2a-pl-h h3{font-size:17px;color:var(--t0)}
+.p2a-pleine{position:relative;height:36px;border-radius:10px;background:var(--att);display:flex;align-items:center;justify-content:flex-end;padding:0 10px;font-size:15px;font-weight:600;color:#fff}
+[data-theme="cave"] .p2a-pleine{color:#12100E}
+.p2a-pleine i{position:absolute;left:10px;top:8px;bottom:8px;width:3px;border-radius:2px;background:currentColor;opacity:.5}
+.p2a-lbl-h{margin-top:4px;font-size:13px;color:var(--t)}
+.p2a-lbl-h>span:last-child{color:var(--t0);font-weight:600}
+.p2a-curseur{position:relative;height:28px}
+.p2a-cu-rail{position:absolute;left:0;right:0;top:11px;height:6px;border-radius:3px;background:var(--bord)}
+.p2a-cu-fait{position:absolute;left:0;top:11px;height:6px;border-radius:3px;background:var(--hop)}
+.p2a-cu-ancien{position:absolute;top:6px;width:2px;height:16px;background:var(--t2)}
+.p2a-cu-bouton{position:absolute;top:2px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:var(--page);border:2px solid var(--hop);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.p2a-ligne-btn{display:flex;align-items:center;gap:8px;min-height:40px;padding:0 10px;border-radius:10px;border:1px solid var(--bord);background:var(--page);font-size:14px;color:var(--t0)}
+.p2a-ligne-btn span{flex:1;text-align:left}
+.p2a-ligne-btn svg.p2a-i{color:var(--t2)}
+/* urgent */
+.p2a-urg{background:var(--alr);color:#fff;border-radius:16px;padding:12px 12px 10px;display:flex;flex-direction:column;gap:8px}
+.p2a-urg-niv{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.p2a-urg-niv svg.p2a-i{width:20px;height:20px}
+.p2a-urg h3{font-size:24px;line-height:1.15;font-weight:800}
+.p2a-urg .p2a-n{letter-spacing:-.04em}
+.p2a-thermo{position:relative;height:22px;margin-top:4px}
+.p2a-th-rail{position:absolute;left:0;right:0;top:7px;height:8px;border-radius:4px;background:rgba(255,255,255,.35)}
+.p2a-th-rouge{position:absolute;right:0;top:7px;height:8px;border-radius:0 4px 4px 0;background:repeating-linear-gradient(135deg,#fff 0 3px,rgba(255,255,255,.4) 3px 6px)}
+.p2a-th-vise{position:absolute;top:2px;width:3px;height:18px;background:#fff;border-radius:2px}
+.p2a-th-val{position:absolute;top:0;width:22px;height:22px;margin-left:-11px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.35)}
+.p2a-th-grad{position:relative;height:16px;font-size:12px;color:#fff;font-weight:600}
+.p2a-th-grad>span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap}
+.p2a-urg-geste{display:flex;gap:10px;align-items:flex-start;border:2px solid var(--alr)}
+.p2a-urg-geste p{font-size:18px;line-height:1.3;color:var(--t0);font-weight:600}
+.p2a-urg-ic{width:36px;height:36px;border-radius:10px;background:var(--eauf);color:var(--eaut);display:grid;place-items:center;flex:none}
+.p2a-urg-ic svg.p2a-i{width:22px;height:22px}
+.p2a-gros{height:48px;border-radius:10px;background:var(--act);color:var(--sur-act);font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
+.p2a-gros svg.p2a-i{width:20px;height:20px}
+/* fournisseurs */
+.p2a-four{background:var(--page);border:1px solid var(--bord);border-radius:16px;padding:8px 6px 6px 10px;display:flex;flex-direction:column;gap:4px}
+.p2a-four-h{display:flex;align-items:baseline;gap:6px;font-size:14px;color:var(--t)}
+.p2a-four-h b{color:var(--t0)}
+.p2a-prix{margin-left:auto;padding-right:4px;font-size:15px;font-weight:600;color:var(--t0)}
+.p2a-four-b{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t2)}
+.p2a-four-b>span:first-child{flex:1}
+.p2a-stock{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:12px;font-size:12px;font-weight:600}
+.p2a-stock svg.p2a-i{width:13px;height:13px}
+.p2a-stock.p2a-ok{border:1.5px dashed var(--hop);color:var(--hopt)}
+.p2a-stock.p2a-non{background:var(--alrf);color:var(--alrt)}
+.p2a-four-non .p2a-four-h b,.p2a-four-non .p2a-prix{color:var(--t2)}
+/* limites */
+.p2a-regl{padding:8px 10px}
+.p2a-regl-l{display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--t)}
+.p2a-num{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t2)}
+.p2a-in{width:72px;height:32px;border:1px solid var(--bordm);border-radius:10px;background:var(--pan);font-size:16px;font-family:var(--mono);text-align:right;padding:0 8px;color:var(--t0)}
+.p2a-modes-l{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.p2a-ml{border:1px solid var(--bord);border-radius:10px;padding:6px 8px;display:flex;flex-direction:column;gap:3px;text-align:left;font-size:12px;color:var(--t2)}
+.p2a-ml b{font-size:14px;color:var(--t0)}
+.p2a-ml span{display:flex;align-items:center}
+.p2a-ml.p2a-sel{border:2px solid var(--t0);padding:5px 7px}
+.p2a-ml small{font-size:12px}
+/* zéro */
+.p2a-feuille-dessous{bottom:0}
+.p2a-voile2{position:absolute;inset:0;background:var(--voile)}
+.p2a-dialogue{position:absolute;left:0;right:0;bottom:0;background:var(--pan);border-radius:24px 24px 0 0;box-shadow:var(--ombre);padding:16px 12px 12px;display:flex;flex-direction:column;gap:12px}
+.p2a-dialogue h3{display:flex;align-items:center;gap:8px;font-size:18px;color:var(--t0)}
+.p2a-colonnes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.p2a-col{border-radius:16px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.p2a-col p{display:flex;gap:6px;align-items:flex-start;font-size:14px;line-height:1.25;color:var(--t0)}
+.p2a-col p svg.p2a-i{margin-top:1px}
+.p2a-col-efface{border:1.5px dashed var(--bordm)}
+.p2a-col-efface p{color:var(--t)}
+.p2a-col-efface p svg.p2a-i{color:var(--alrt)}
+.p2a-col-reste{background:var(--hopf)}
+.p2a-col-reste p svg.p2a-i{color:var(--hopt)}
+.p2a-dialogue .p2a-act .p2a-btn{height:40px;flex:1;justify-content:center}
+/* bureau */
+.p2a-bur{display:grid;grid-template-columns:1fr 420px;height:100%}
+.p2a-bur-page{border-right:1px solid var(--bord);overflow:hidden}
+.p2a-bur-j{margin-left:auto;font-weight:400;font-size:14px;color:var(--t2)}
+.p2a-bur-stats{display:flex;gap:32px;padding:16px 20px}
+.p2a-bur-stats div{display:flex;flex-direction:column;font-size:22px;color:var(--t0)}
+.p2a-bur-stats small{font-size:12px;color:var(--t2);font-weight:600}
+.p2a-bur-frise{position:relative;margin:4px 20px 12px;padding:8px 12px 10px;border:1px solid var(--bord);border-radius:16px;background:var(--pan)}
+.p2a-bf-ax{display:grid;grid-template-columns:repeat(13,1fr);margin-left:84px;font-size:12px;color:var(--t2);padding-bottom:6px;border-bottom:1px solid var(--bord)}
+.p2a-bf-l{position:relative;height:32px;display:flex;align-items:center;font-size:14px;color:var(--t0)}
+.p2a-bf-l b{width:84px;font-weight:600}
+.p2a-bf-bar{position:absolute;top:9px;height:14px;border-radius:4px;background:var(--hop)}
+.p2a-bf-fait{opacity:.55}
+.p2a-bf-ancien{background:transparent;border:1.5px dashed var(--t2)}
+.p2a-bf-tag{position:absolute;top:7px;font-size:12px;font-weight:600;color:var(--attt);white-space:nowrap}
+.p2a-vise{background:linear-gradient(90deg,var(--attf),transparent 60%)}
+.p2a-bf-auj{position:absolute;top:8px;bottom:8px;width:2px;background:var(--t0)}
+.p2a-bf-auj b{position:absolute;bottom:-2px;left:6px;font-size:12px}
+.p2a-bur-table{margin:0 20px}
+.p2a-bur-table .p2a-ap-ligne{align-items:center;padding:10px 12px}
+.p2a-bur-table .p2a-ap-ligne>span:first-child{flex:1}
+.p2a-bur-table .p2a-vise{border-left:3px solid var(--att)}
+.p2a-bur-prop{font-size:13px;font-weight:600;color:var(--attt);padding:2px 8px;border-radius:10px;border:1px solid var(--att)}
+.p2a-panneau{display:flex;flex-direction:column;background:var(--pan);overflow:hidden}
+.p2a-pourquoi{display:flex;flex-direction:column;gap:6px}
+.p2a-pourquoi p{font-size:14px;color:var(--t);line-height:1.35}
+.p2a-plis-in{padding:0;min-height:0}
+.p2a-conv{min-height:66px}
+.p2a-pied-t{font-size:12px;color:var(--t2);max-width:180px}
+.p2a-piste-n i{background:var(--t2)}
+.p2a-mois{padding:8px 10px}
+.p2a-releves{grid-column:1 / -1;display:flex;gap:6px}
+.p2a-releves i{font-style:normal;flex:1;height:26px;border-radius:10px;border:1px dashed var(--bordm);display:grid;place-items:center;font-size:12px;color:var(--t)}
+.p2a-releves i.p2a-rl-on{border:0;background:var(--alr);color:#fff;font-weight:700}
+.p2a-gros{height:52px}
+.p2a-bur-stats div{white-space:nowrap}
+.p2a-bur-jour{margin:14px 20px 0}
+.p2a-bur-jour .p2a-lbl1{padding:0 0 6px}
+
+/* passe 2, corrections du verdict */
+.p2a-br>span:nth-child(2){white-space:nowrap}
+.p2a-verdict h3,.p2a-urg h3,.p2a-pres h3{text-wrap:balance}
+.p2a-ech{position:relative;height:28px;align-self:start;margin-top:3px}
+.p2a-ech u{position:absolute;top:4px;width:1px;height:8px;background:var(--t2);text-decoration:none}
+.p2a-ech-fl{position:absolute;top:7px;height:2px;background:var(--hop)}
+.p2a-ech-av{position:absolute;top:2px;width:12px;height:12px;margin-left:-6px;border-radius:50%;border:1.5px dashed var(--t2);background:var(--page)}
+.p2a-ech-ap{position:absolute;top:2px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--hop)}
+.p2a-ech small{position:absolute;top:15px;transform:translateX(-50%);font-size:12px;line-height:1;color:var(--t2)}
+.p2a-curseur{margin-top:22px}
+.p2a-cu-val{position:absolute;bottom:100%;margin-bottom:2px;transform:translateX(-50%);font-size:13px;font-weight:600;color:var(--t0);white-space:nowrap}
+.p2a-modes-w{display:flex;flex-direction:column;gap:4px}
+.p2a-mode-cons{align-self:flex-end;display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--t2)}
+.p2a-mode-cons svg.p2a-i{width:12px;height:12px;color:var(--hopt)}
+.p2a-modes-w .p2a-modes{width:100%}
+.p2a-btn.p2a-suppr{color:var(--t)}
+.p2a-btn.p2a-suppr svg.p2a-i{color:var(--t2)}
+</style></head><body><svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="p2a-i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></symbol><symbol id="p2a-i-fil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></symbol><symbol id="p2a-i-cloche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol><symbol id="p2a-i-bouclier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol><symbol id="p2a-i-zero" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol><symbol id="p2a-i-envoyer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.54 21.69a.5.5 0 0 0 .94-.03l6.5-19a.5.5 0 0 0-.64-.63l-19 6.5a.5.5 0 0 0-.02.93l7.93 3.18a2 2 0 0 1 1.11 1.11z"/><path d="m21.85 2.15-10.94 10.94"/></symbol><symbol id="p2a-i-bas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol><symbol id="p2a-i-droite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></symbol><symbol id="p2a-i-gauche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></symbol><symbol id="p2a-i-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="p2a-i-alerte" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></symbol><symbol id="p2a-i-horsligne" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01M8.5 16.43a5 5 0 0 1 7 0M5 12.86a10 10 0 0 1 5.17-2.69M19 12.86a10 10 0 0 0-2-1.52M2 8.82a15 15 0 0 1 4.18-2.64M22 8.82a15 15 0 0 0-11.29-3.76"/><path d="m2 2 20 20"/></symbol><symbol id="p2a-i-horloge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="p2a-i-journal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M8 7h8M8 11h6"/></symbol><symbol id="p2a-i-eclair" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></symbol><symbol id="p2a-i-loupe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol><symbol id="p2a-i-thermo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></symbol><symbol id="p2a-i-calcul" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01M8 10h.01M12 10h.01M16 10h.01"/></symbol><symbol id="p2a-i-crayon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/></symbol><symbol id="p2a-i-relancer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol><symbol id="p2a-i-fleche" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></symbol><symbol id="p2a-i-telephone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></symbol><symbol id="p2a-i-livre" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol><symbol id="p2a-i-relu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol><symbol id="p2a-i-panier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></symbol><symbol id="p2a-i-feuille" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></symbol><symbol id="p2a-i-pression" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol><symbol id="p2a-i-question" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></symbol><symbol id="p2a-i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></symbol><symbol id="p2a-i-panneau" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/></symbol><symbol id="p2a-i-goutte" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></symbol><symbol id="p2a-i-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/></symbol><symbol id="p2a-i-serveur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2h13a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-5"/><path d="M10 10 2.5 2.5C2 2 2 2.5 2 3v5a2 2 0 0 0 2 2h6z"/><path d="M22 17v-1a2 2 0 0 0-2-2h-1"/><path d="M4 14a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16.5l1-.5.5.5-8-8H4z"/><path d="M6 18h.01"/><path d="m2 2 20 20"/></symbol><symbol id="p2a-i-flocon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20M12 2v20M20 16l-4-4 4-4M4 8l4 4-4 4M16 4l-4 4-4-4M8 20l4-4 4 4"/></symbol><symbol id="p2a-i-minuteur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4M12 14l3-3"/><circle cx="12" cy="14" r="8"/></symbol><symbol id="p2a-i-poubelle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></symbol><symbol id="p2a-i-plus3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol><symbol id="p2a-i-sortie" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10M7 17 17 7"/></symbol><symbol id="p2a-i-portefeuille" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol><symbol id="p2a-i-facture" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8M12 17.5v-11"/></symbol><symbol id="p2a-i-outil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol><symbol id="p2a-i-calendrier" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol><symbol id="p2a-i-doublon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="14" height="14" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol><symbol id="p2a-i-trombone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></symbol><symbol id="p2a-i-graphe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></symbol><symbol id="p2a-i-retour" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7M19 12H5"/></symbol><symbol id="p2a-i-verrou" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol></svg>
+<main class="p2a-planche">
+<figure class="p2a-cadre"><figcaption>accueil <span>· J+1, 36 h après le brassage&nbsp;: la frise, des questions qui portent leur mode</span></figcaption>
+<div class="p2a-tel" data-cadre="accueil"><div class="p2a-fond" aria-hidden="true"><div class="p2a-ap-tete"><img class="p2a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="p2a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="p2a-ap-gros"><span class="p2a-n">19 °C</span><span>J+1 · 19 L</span></div><div class="p2a-ap-barre"><i></i></div>
+<div class="p2a-ap-ligne"><span>Citra · dry hop J+2</span><span class="p2a-n">85 g</span></div>
+<div class="p2a-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Pression</span><span>monte doucement</span></div></div><div class="p2a-voile"></div><section class="p2a-feuille"><header class="p2a-tete"><h2>Compagnon <span>· Brassin 31 · J+1</span></h2>
+<button class="p2a-ic" aria-label="Mes conversations, une en cours"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-fil"/></svg><i class="p2a-badge"></i></button>
+<button class="p2a-ic" aria-label="Repartir à zéro"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-zero"/></svg></button>
+<button class="p2a-ic" aria-label="Fermer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg></button></header>
+<div class="p2a-corps">
+<div class="p2a-pres"><h3>Agir, mesurer ou attendre&nbsp;?</h3><p><span class="p2a-m"><span class="p2a-n">19</span>&nbsp;°C</span> depuis <span class="p2a-m"><span class="p2a-n">36</span>&nbsp;h</span> · <span class="p2a-m"><span class="p2a-n">19</span>&nbsp;L</span> · Citra demain</p></div>
+<div class="p2a-frise" data-booster="frise-brassin" role="img" aria-label="Brassin 31&nbsp;: aujourd'hui J+1, Citra J+2, Galaxy J+6, Mosaic J+9">
+<span class="p2a-fr-rail"></span><span class="p2a-fr-fait" style="width:8.3%"></span>
+<span class="p2a-fr-auj" style="left:8.3%"><b>auj.</b></span>
+<span class="p2a-fr-pt" style="left:16.7%"><b>Citra</b><small>J+2</small></span>
+<span class="p2a-fr-pt" style="left:50%"><b>Galaxy</b><small>J+6</small></span>
+<span class="p2a-fr-pt" style="left:75%"><b>Mosaic</b><small>J+9</small></span>
+<span class="p2a-fr-bout"><small>J+12</small></span></div>
+<div class="p2a-tuiles" data-booster="tuiles-questions">
+<button class="p2a-tuile"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-pression"/></svg><span>La pression monte&nbsp;: je purge&nbsp;?</span><span class="p2a-tag"><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class=""></u><u class=""></u></i>Rapide</span></button>
+<button class="p2a-tuile"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-goutte"/></svg><span>Densité&nbsp;: je mesure quand&nbsp;?</span><span class="p2a-tag"><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class=""></u><u class=""></u></i>Rapide</span></button>
+<button class="p2a-tuile"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-feuille"/></svg><span>Galaxy&nbsp;: je garde <span class="p2a-m"><span class="p2a-n">43</span>&nbsp;g</span>&nbsp;?</span><span class="p2a-tag"><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class="p2a-v"></u><u class=""></u></i>Auto</span></button>
+<button class="p2a-tuile"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-calendrier"/></svg><span>Combien de jours de garde&nbsp;?</span><span class="p2a-tag"><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class=""></u><u class=""></u></i>Rapide</span></button>
+</div>
+<div class="p2a-duo">
+<button class="p2a-mini" data-booster="fil-a-statuts" aria-label="Mes conversations&nbsp;: 2 prêtes, 1 en cours, 1 échec"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-fil"/></svg><span class="p2a-pts"><i class="p2a-pv"></i><span class="p2a-n">2</span><i class="p2a-pa"></i><span class="p2a-n">1</span><i class="p2a-pr"></i><span class="p2a-n">1</span></span><svg class="p2a-i p2a-chev" aria-hidden="true"><use href="#p2a-i-droite"/></svg></button>
+<button class="p2a-mini p2a-lim" data-booster="limites-en-jauges" aria-label="Limites IA, régler"><span class="p2a-lim-l"><span><span class="p2a-n">4</span>/<span class="p2a-n">120</span></span><span class="p2a-piste"><i style="width:3.3%"></i></span></span><span class="p2a-lim-l"><span><span class="p2a-n">2,10</span>/<span class="p2a-m"><span class="p2a-n">15</span>&nbsp;CHF</span></span><span class="p2a-piste"><i style="width:14%"></i></span></span><svg class="p2a-i p2a-chev" aria-hidden="true"><use href="#p2a-i-droite"/></svg></button>
+</div>
+<div class="p2a-lit"><span class="p2a-lbl1">Je lis à chaque question</span><span class="p2a-puce"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-livre"/></svg>Recette</span><span class="p2a-puce"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-thermo"/></svg>Brassin 31</span><span class="p2a-puce"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-journal"/></svg>Journal</span><span class="p2a-puce"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-outil"/></svg>Matériel</span></div>
+</div>
+<footer class="p2a-pied"><div class="p2a-amorces" data-booster="amorces"><button class="p2a-chip">La pression monte…</button><button class="p2a-chip">Ça sent…</button><button class="p2a-chip">La densité…</button></div><div class="p2a-modes" role="radiogroup" aria-label="Mode" data-booster="modes-en-jauges"><button class="p2a-mode" role="radio" aria-checked="false"><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class=""></u><u class=""></u></i>Rapide</button><button class="p2a-mode p2a-sel" role="radio" aria-checked="true"><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class="p2a-v"></u><u class=""></u></i>Auto</button><button class="p2a-mode" role="radio" aria-checked="false"><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class="p2a-v"></u><u class="p2a-v"></u></i>Approfondi</button></div><div class="p2a-saisie"><div class="p2a-champ">Décris ce que tu observes…</div><button class="p2a-env" aria-label="Envoyer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+
+<figure class="p2a-cadre"><figcaption>attente <span>· 2:29 en Approfondi, dans l’habituel&nbsp;; la marge du brassin</span></figcaption>
+<div class="p2a-tel" data-cadre="attente"><div class="p2a-fond" aria-hidden="true"><div class="p2a-ap-tete"><img class="p2a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="p2a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="p2a-ap-gros"><span class="p2a-n">19 °C</span><span>J+1 · 19 L</span></div><div class="p2a-ap-barre"><i></i></div>
+<div class="p2a-ap-ligne"><span>Citra · dry hop J+2</span><span class="p2a-n">85 g</span></div>
+<div class="p2a-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Pression</span><span>monte doucement</span></div></div><div class="p2a-voile"></div><section class="p2a-feuille"><header class="p2a-tete"><h2>Compagnon <span>· Brassin 31 · J+1</span></h2>
+<button class="p2a-ic" aria-label="Mes conversations, une en cours"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-fil"/></svg><i class="p2a-badge"></i></button>
+<button class="p2a-ic" aria-label="Repartir à zéro"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-zero"/></svg></button>
+<button class="p2a-ic" aria-label="Fermer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg></button></header>
+<div class="p2a-corps">
+<div class="p2a-q">La fermentation est à <span class="p2a-m"><span class="p2a-n">19</span>&nbsp;°C</span> depuis <span class="p2a-m"><span class="p2a-n">36</span>&nbsp;h</span> et la pression monte doucement&nbsp;: que faire&nbsp;?</div>
+<div class="p2a-carte p2a-chrono" data-booster="jauge-de-duree">
+<div class="p2a-chrono-h"><span class="p2a-n">2:29</span><span>en Approfondi · dans l'habituel</span></div>
+<div class="p2a-duree" role="img" aria-label="2 min 29 écoulées&nbsp;; habituel 1 à 3 min&nbsp;; arrêt à 3 min 40">
+<span class="p2a-rail"></span><span class="p2a-hab" style="left:27.3%;width:54.5%"></span><span class="p2a-fait" style="width:67.7%"></span><span class="p2a-aig" style="left:67.7%"></span></div>
+<div class="p2a-grad"><span class="p2a-n">0:00</span><span>habituel <span class="p2a-n">1:00–3:00</span></span><span>arrêt <span class="p2a-n">3:40</span></span></div>
+<div class="p2a-etapes" data-booster="etapes-en-segments"><div class="p2a-f"><i></i>Lire</div><div class="p2a-f"><i></i>Calculer</div><div class="p2a-f"><i></i>Sources</div><div class="p2a-e"><i></i>Rédiger</div><div><i></i>Relire</div></div>
+<p class="p2a-marge" data-booster="marge-du-brassin"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-calendrier"/></svg><span>Prochain geste <b>J+2</b>, le Citra&nbsp;: tu as le temps.</span></p>
+<div class="p2a-act"><button class="p2a-btn p2a-g">Annuler</button><button class="p2a-btn p2a-p"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-cloche"/></svg>Fermer · me notifier</button></div>
+</div>
+<div class="p2a-lbl"><span>Déjà lu et calculé</span><span><span class="p2a-m"><span class="p2a-n">171</span>&nbsp;g</span> · <span class="p2a-m"><span class="p2a-n">9,0</span>&nbsp;g/L</span></span></div>
+<div class="p2a-carte p2a-calc" data-booster="deja-calcule">
+<div class="p2a-pile" role="img" aria-label="Citra 85 g demain, Galaxy 43 g et Mosaic 43 g à venir"><i style="flex:85"></i><i style="flex:43"></i><i style="flex:43"></i></div>
+<div class="p2a-leg"><span><b>Citra J+2</b><span><span class="p2a-m"><span class="p2a-n">85</span>&nbsp;g</span> · demain</span></span><span><b>Galaxy J+6</b><span><span class="p2a-m"><span class="p2a-n">43</span>&nbsp;g</span></span></span><span><b>Mosaic J+9</b><span><span class="p2a-m"><span class="p2a-n">43</span>&nbsp;g</span></span></span></div>
+<div class="p2a-ligne"><span>Température</span><span><span class="p2a-m"><span class="p2a-n">19</span>&nbsp;°C</span> depuis <span class="p2a-m"><span class="p2a-n">36</span>&nbsp;h</span></span></div>
+<div class="p2a-ligne"><span>Pression</span><span>monte doucement</span></div>
+</div>
+<div class="p2a-file"><span class="p2a-rang">2</span><div>Et combien de jours de garde à froid&nbsp;?<small>En file · partira après la réponse</small></div><button class="p2a-ic" aria-label="Retirer de la file"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg></button></div>
+</div>
+<footer class="p2a-pied"><div class="p2a-saisie"><div class="p2a-champ">Ajouter une question…</div><button class="p2a-env" aria-label="Envoyer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+
+<figure class="p2a-cadre"><figcaption>reponse <span>· attention, J+8&nbsp;: verdict, gestes datés, barres avant → après</span></figcaption>
+<div class="p2a-tel" data-cadre="reponse"><div class="p2a-fond" aria-hidden="true"><div class="p2a-ap-tete"><img class="p2a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="p2a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="p2a-ap-gros"><span class="p2a-n">19 °C</span><span>J+8 · 19 L</span></div><div class="p2a-ap-barre"><i></i></div>
+<div class="p2a-ap-ligne"><span>Citra · dry hop J+2</span><span class="p2a-n">85 g</span></div>
+<div class="p2a-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>DF relevée</span><span class="p2a-n">1,012</span></div></div><div class="p2a-voile"></div><section class="p2a-feuille"><header class="p2a-tete"><h2>Compagnon <span>· Brassin 31 · J+8</span></h2>
+<button class="p2a-ic" aria-label="Mes conversations, une en cours"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-fil"/></svg><i class="p2a-badge"></i></button>
+<button class="p2a-ic" aria-label="Repartir à zéro"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-zero"/></svg></button>
+<button class="p2a-ic" aria-label="Fermer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg></button></header>
+<div class="p2a-corps">
+<div class="p2a-q">Dégustation J+8&nbsp;: ça sent l'herbe coupée, que faire&nbsp;?</div>
+<div class="p2a-verdict p2a-att" data-booster="feu-de-niveau"><span class="p2a-feu" role="img" aria-label="Niveau&nbsp;: attention"><i class=""></i><i class="p2a-on-a"></i><i class=""></i></span>
+<div><span class="p2a-niv"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-alerte"/></svg>Attention</span><h3>Herbacé&nbsp;: écourte le contact du dry&nbsp;hop.</h3>
+<p class="p2a-geste"><span class="p2a-quand">Ce soir</span><span>Purge les pellets du Galaxy.</span></p>
+<p class="p2a-geste"><span class="p2a-quand">J+9</span><span>Mosaic&nbsp;: <span class="p2a-m"><s class="p2a-n">3</s>&nbsp;→&nbsp;<span class="p2a-n">2</span>&nbsp;jours</span> de contact.</span></p></div></div>
+<div class="p2a-carte p2a-prop" data-booster="avant-apres-barres">
+<div class="p2a-lbl"><span>Proposition · rien n'est appliqué sans toi</span><span><span class="p2a-n">2</span> cochées</span></div>
+<div class="p2a-br"><span class="p2a-case" role="checkbox" aria-checked="true"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg></span><span>Contact Mosaic J+9</span><span class="p2a-jours" role="img" aria-label="3 jours, puis 2"><u></u><u></u><u class="p2a-retire"></u></span><span class="p2a-m"><s class="p2a-n">3</s>&nbsp;→&nbsp;<span class="p2a-n">2</span>&nbsp;j</span></div>
+<div class="p2a-br"><span class="p2a-case" role="checkbox" aria-checked="true"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg></span><span>Temp. dry hop</span><span class="p2a-ech" role="img" aria-label="Échelle de 15 à 20 °C&nbsp;: 19 °C, puis 17 °C"><u style="left:0%"></u><u style="left:20%"></u><u style="left:40%"></u><u style="left:60%"></u><u style="left:80%"></u><u style="left:100%"></u><span class="p2a-ech-fl" style="left:40%;width:40%"></span><span class="p2a-ech-av" style="left:80%"></span><span class="p2a-ech-ap" style="left:40%"></span><small style="left:0">15</small><small style="left:100%">20</small></span><span class="p2a-m"><s class="p2a-n">19</s>&nbsp;→&nbsp;<span class="p2a-n">17</span>&nbsp;°C</span></div>
+<div class="p2a-br p2a-facult"><span class="p2a-case p2a-off" role="checkbox" aria-checked="false"></span><span>Mosaic J+9 <small>facultatif</small></span><span class="p2a-tr"><span class="p2a-av" style="width:86%"></span><span class="p2a-ap" style="width:70%"></span></span><span class="p2a-m"><s class="p2a-n">43</s>&nbsp;→&nbsp;<span class="p2a-n">35</span>&nbsp;g</span></div>
+<div class="p2a-total"><span>Dose totale</span><span><span class="p2a-m"><span class="p2a-n">9,0</span>&nbsp;g/L</span> inchangée · <span class="p2a-m"><span class="p2a-n">8,6</span>&nbsp;g/L</span> si cochée</span></div>
+<div class="p2a-act"><button class="p2a-btn p2a-g">Écarter</button><button class="p2a-btn p2a-p"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg>Valider 2 modifications</button></div></div>
+<div class="p2a-carte p2a-ctl" data-booster="prochain-controle"><span class="p2a-jalon"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-horloge"/></svg>J+10</span><span class="p2a-ctl-t">Goût avant la garde&nbsp;: l'herbacé doit reculer.</span>
+<span class="p2a-ctl-act"><button class="p2a-btn p2a-s"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-journal"/></svg>Au journal</button><span class="p2a-rap">Rappel <span class="p2a-n">09:00</span><span class="p2a-bascule p2a-on" role="switch" aria-checked="true" aria-label="Rappel J+10 à 9 h"><i></i></span></span></span></div>
+<button class="p2a-plis" data-booster="sources-en-puces"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-bas"/></svg><b>Pourquoi</b><span><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-relu"/></svg>relu deux fois</span><span><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-calcul"/></svg>calculs refaits</span><span><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-livre"/></svg><span class="p2a-n">3</span> sources</span></button>
+</div>
+<footer class="p2a-pied"><div class="p2a-amorces"><button class="p2a-chip p2a-suite"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-fleche"/></svg><span>Et la garde à froid&nbsp;?</span></button><button class="p2a-chip">Ça sent encore…</button></div><div class="p2a-saisie"><div class="p2a-champ">Décris ce que tu observes…</div><button class="p2a-env" aria-label="Envoyer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+
+<figure class="p2a-cadre"><figcaption>erreur <span>· hors ligne&nbsp;: le chemin coupé&nbsp;; dessous, l’erreur serveur</span></figcaption>
+<div class="p2a-tel" data-cadre="erreur"><div class="p2a-fond" aria-hidden="true"><div class="p2a-ap-tete"><img class="p2a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="p2a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="p2a-ap-gros"><span class="p2a-n">19 °C</span><span>J+1 · 19 L</span></div><div class="p2a-ap-barre"><i></i></div>
+<div class="p2a-ap-ligne"><span>Citra · dry hop J+2</span><span class="p2a-n">85 g</span></div>
+<div class="p2a-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Pression</span><span>monte doucement</span></div></div><div class="p2a-voile"></div><section class="p2a-feuille"><header class="p2a-tete"><h2>Compagnon <span>· Brassin 31 · J+1</span></h2>
+<button class="p2a-ic" aria-label="Mes conversations, une en cours"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-fil"/></svg><i class="p2a-badge"></i></button>
+<button class="p2a-ic" aria-label="Repartir à zéro"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-zero"/></svg></button>
+<button class="p2a-ic" aria-label="Fermer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg></button></header>
+<div class="p2a-corps">
+<div class="p2a-q p2a-q-garde">La fermentation est à <span class="p2a-m"><span class="p2a-n">19</span>&nbsp;°C</span> depuis <span class="p2a-m"><span class="p2a-n">36</span>&nbsp;h</span> et la pression monte doucement&nbsp;: que faire&nbsp;?<small><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-telephone"/></svg>Gardée sur ce téléphone</small></div>
+<div class="p2a-carte p2a-chemin" data-booster="chemin-coupe">
+<div class="p2a-noeuds"><span class="p2a-nd"><span class="p2a-rd"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-telephone"/></svg></span>Gardée ici</span>
+<span class="p2a-lien"></span><span class="p2a-coupure"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-horsligne"/></svg></span><span class="p2a-lien p2a-coupe"></span>
+<span class="p2a-nd p2a-loin"><span class="p2a-rd"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-fil"/></svg></span>Pas encore partie</span></div>
+<h3>Envoi à confirmer</h3>
+<p>Pas de réseau. Elle part une seule fois, quand tu confirmes.</p>
+<div class="p2a-act p2a-gauche"><button class="p2a-btn p2a-p"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-envoyer"/></svg>Envoyer au retour du réseau</button><button class="p2a-btn p2a-s"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-crayon"/></svg>Reformuler</button></div></div>
+<div class="p2a-garde"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-verrou"/></svg><div>Rien n'est perdu&nbsp;: recette, brassin et notes restent ici.<small>Ce mois · rien de compté · <span class="p2a-n">2,10</span>/<span class="p2a-m"><span class="p2a-n">15</span>&nbsp;CHF</span></small></div></div>
+<div class="p2a-sep"><span>autre état · réseau là, serveur en échec</span></div>
+<div class="p2a-serveur" data-booster="erreur-serveur"><span class="p2a-srv-ic"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-serveur"/></svg></span><div><b>Réponse interrompue</b><small>À l'étape Calculer · rien compté</small>
+<div class="p2a-etapes p2a-etapes-mini"><div class="p2a-f"><i></i></div><div class="p2a-x"><i></i></div><div><i></i></div><div><i></i></div><div><i></i></div></div></div>
+<div class="p2a-srv-act"><button class="p2a-btn p2a-s"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-relancer"/></svg>Relancer</button><button class="p2a-btn p2a-g">Reformuler</button></div></div>
+</div>
+<footer class="p2a-pied"><p class="p2a-bandeau" data-booster="hors-ligne-avant-envoi"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-horsligne"/></svg>Hors ligne · une nouvelle question attendra ici</p><div class="p2a-saisie"><div class="p2a-champ">Décris ce que tu observes…</div><button class="p2a-env" aria-label="Envoyer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+
+<figure class="p2a-cadre"><figcaption>finances <span>· depuis Finances « Vérifier mes opérations »&nbsp;: la question découpée en cases</span></figcaption>
+<div class="p2a-tel" data-cadre="finances"><div class="p2a-fond" aria-hidden="true"><div class="p2a-ap-tete p2a-ap-fin"><img class="p2a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Finances</div>
+<div class="p2a-ap-ong"><span>Résumé</span><b>Opérations</b><span>Factures</span><span>Matériel</span></div>
+<div class="p2a-ap-gros"><span class="p2a-n">Novembre</span><span>opérations</span></div>
+<div class="p2a-ap-ligne"><span>Houblons Suisses SA</span><span class="p2a-n">− 47,50 CHF</span></div>
+<div class="p2a-ap-ligne"><span>Malterie · Pilsner 25 kg</span><span class="p2a-n">− 62,00 CHF</span></div>
+<div class="p2a-ap-ligne"><span>Vente marché</span><span class="p2a-n">+ 240,00 CHF</span></div>
+<div class="p2a-ap-ligne"><span>Fermenteur 30 L</span><span class="p2a-n">− 189,00 CHF</span></div></div><div class="p2a-voile"></div><section class="p2a-feuille"><header class="p2a-tete p2a-tete-fin"><h2>Compagnon <span>· Mes finances</span></h2>
+<button class="p2a-ic" aria-label="Mes conversations, une en cours"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-fil"/></svg><i class="p2a-badge"></i></button>
+<button class="p2a-ic" aria-label="Repartir à zéro"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-zero"/></svg></button>
+<button class="p2a-ic" aria-label="Fermer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg></button></header>
+<div class="p2a-corps">
+<div class="p2a-origine"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-facture"/></svg>Depuis Finances · <b>Vérifier mes opérations</b></div>
+<div class="p2a-carte p2a-portee" data-booster="portee-en-cases"><div class="p2a-lbl"><span>Je vérifie</span><span>4 sur 4</span></div>
+<div class="p2a-cases"><button class="p2a-cf p2a-on"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-doublon"/></svg>Doublons possibles</button><button class="p2a-cf p2a-on"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-portefeuille"/></svg>Paiements</button><button class="p2a-cf p2a-on"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-outil"/></svg>Classement du matériel</button><button class="p2a-cf p2a-on"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-trombone"/></svg>Pièces à compléter</button></div></div>
+<div class="p2a-lbl"><span>Autres questions</span><span>finances</span></div>
+<div class="p2a-tuiles p2a-tuiles-fin" data-booster="tuiles-questions">
+<button class="p2a-tuile"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-graphe"/></svg><span>Comprendre mes dépenses</span><span class="p2a-tag"><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class="p2a-v"></u><u class=""></u></i>Auto</span></button>
+<button class="p2a-tuile"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-panier"/></svg><span>Préparer un achat de matériel</span><span class="p2a-tag"><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class="p2a-v"></u><u class="p2a-v"></u></i>Approfondi</span></button>
+<button class="p2a-tuile"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-calendrier"/></svg><span>Prévoir mes prochains paiements</span><span class="p2a-tag"><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class="p2a-v"></u><u class=""></u></i>Auto</span></button>
+<button class="p2a-tuile"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-livre"/></svg><span>Préparer l'année 2026</span><span class="p2a-tag"><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class="p2a-v"></u><u class="p2a-v"></u></i>Approfondi</span></button>
+</div>
+<div class="p2a-lit"><span class="p2a-lbl1">Je lis</span><span class="p2a-puce"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-facture"/></svg>Opérations</span><span class="p2a-puce"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-trombone"/></svg>Pièces</span><span class="p2a-puce"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-outil"/></svg>Matériel</span><span class="p2a-puce"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-relu"/></svg>Relu deux fois</span></div>
+</div>
+<footer class="p2a-pied"><div class="p2a-modes-w"><span class="p2a-mode-cons"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg>Approfondi conseillé pour cette vérification</span><div class="p2a-modes" role="radiogroup" aria-label="Mode" data-booster="modes-en-jauges"><button class="p2a-mode" role="radio" aria-checked="false"><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class=""></u><u class=""></u></i>Rapide</button><button class="p2a-mode" role="radio" aria-checked="false"><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class="p2a-v"></u><u class=""></u></i>Auto</button><button class="p2a-mode p2a-sel" role="radio" aria-checked="true"><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class="p2a-v"></u><u class="p2a-v"></u></i>Approfondi</button></div></div><div class="p2a-saisie p2a-saisie-haute"><div class="p2a-champ p2a-plein p2a-zone">Vérifie les incohérences de mes opérations enregistrées&nbsp;: doublons possibles, paiements, classement du matériel et pièces à compléter.</div><button class="p2a-env p2a-on" aria-label="Envoyer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+
+<figure class="p2a-cadre"><figcaption>conversations <span>· Mes conversations&nbsp;: statuts en forme, supprimer à un toucher de plus</span></figcaption>
+<div class="p2a-tel" data-cadre="conversations"><div class="p2a-fond" aria-hidden="true"><div class="p2a-ap-tete"><img class="p2a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="p2a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="p2a-ap-gros"><span class="p2a-n">19 °C</span><span>J+8 · 19 L</span></div><div class="p2a-ap-barre"><i></i></div>
+<div class="p2a-ap-ligne"><span>Citra · dry hop J+2</span><span class="p2a-n">85 g</span></div>
+<div class="p2a-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>DF relevée</span><span class="p2a-n">1,012</span></div></div><div class="p2a-voile"></div><section class="p2a-feuille">
+<header class="p2a-tete"><button class="p2a-ic" aria-label="Retour"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-retour"/></svg></button><h2>Mes conversations</h2><button class="p2a-ic" aria-label="Fermer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg></button></header>
+<div class="p2a-corps">
+<button class="p2a-ligne-btn"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-zero"/></svg><span>Repartir à zéro · nouvelle conversation</span><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-droite"/></svg></button>
+<div class="p2a-carte p2a-resume" data-booster="fil-a-statuts"><div class="p2a-resume-b" role="img" aria-label="2 prêtes, 1 en cours, 1 en échec"><i class="p2a-pv" style="flex:2"></i><i class="p2a-pa" style="flex:1"></i><i class="p2a-pr" style="flex:1"></i></div>
+<div class="p2a-resume-l"><span><i class="p2a-pt p2a-pv"></i><span class="p2a-n">2</span> prêtes</span><span><i class="p2a-pt p2a-pa"></i><span class="p2a-n">1</span> en cours</span><span><i class="p2a-pt p2a-pr"></i><span class="p2a-n">1</span> à relancer</span></div></div>
+<div class="p2a-conv p2a-c-pret"><span class="p2a-etat"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg></span><div class="p2a-conv-t"><b>New England IPA</b><span>Dégustation J+8&nbsp;: ça sent l'herbe coupée, que faire&nbsp;?</span><small>Réponse prête · attention</small></div><button class="p2a-ic" aria-label="Plus d'actions"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-plus3"/></svg></button></div>
+<div class="p2a-conv p2a-c-cours"><span class="p2a-etat p2a-anneau" role="img" aria-label="En cours, 0:40"><i></i></span><div class="p2a-conv-t"><b>Brassin 30 · Blonde de garde</b><span>Quelle température de garde&nbsp;?</span><small>En cours · <span class="p2a-n">0:40</span></small></div><button class="p2a-ic" aria-label="Plus d'actions"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-plus3"/></svg></button></div>
+<div class="p2a-conv p2a-c-echec"><span class="p2a-etat"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg></span><div class="p2a-conv-t"><b>Brassin 29 · Stout</b><span>Le lactose ajouté est-il dosé juste&nbsp;?</span><small>Échec · rien compté</small></div><button class="p2a-btn p2a-s"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-relancer"/></svg>Relancer</button></div>
+<div class="p2a-conv p2a-c-pret p2a-c-fin p2a-ouvert"><span class="p2a-etat"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg></span><div class="p2a-conv-t"><b>Mes finances</b><span>Vérifie les incohérences de mes opérations…</span><small>Réponse prête</small></div><button class="p2a-ic p2a-sel" aria-label="Plus d'actions, ouvert"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-plus3"/></svg></button>
+<div class="p2a-menu" data-booster="supprimer-a-un-toucher"><button class="p2a-btn p2a-g"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-cloche"/></svg>Me notifier</button><button class="p2a-btn p2a-g p2a-suppr"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-poubelle"/></svg>Supprimer</button></div></div>
+<div class="p2a-reglage-l"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-cloche"/></svg><span>Me notifier à chaque réponse</span><span class="p2a-bascule p2a-on" role="switch" aria-checked="true" aria-label="Me notifier à chaque réponse"><i></i></span></div>
+</div>
+<footer class="p2a-pied p2a-pied-duo"><span class="p2a-pied-t">Tes questions continuent pendant que tu brasses.</span><button class="p2a-btn p2a-p"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-plus"/></svg>Nouvelle question</button></footer>
+</section></div></figure>
+
+<figure class="p2a-cadre"><figcaption>plafond <span>· budget atteint&nbsp;: la cuve pleine, la question gardée, le plafond à relever</span></figcaption>
+<div class="p2a-tel" data-cadre="plafond"><div class="p2a-fond" aria-hidden="true"><div class="p2a-ap-tete"><img class="p2a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="p2a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="p2a-ap-gros"><span class="p2a-n">19 °C</span><span>J+1 · 19 L</span></div><div class="p2a-ap-barre"><i></i></div>
+<div class="p2a-ap-ligne"><span>Citra · dry hop J+2</span><span class="p2a-n">85 g</span></div>
+<div class="p2a-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Pression</span><span>monte doucement</span></div></div><div class="p2a-voile"></div><section class="p2a-feuille"><header class="p2a-tete"><h2>Compagnon <span>· Brassin 31 · J+1</span></h2>
+<button class="p2a-ic" aria-label="Mes conversations, une en cours"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-fil"/></svg><i class="p2a-badge"></i></button>
+<button class="p2a-ic" aria-label="Repartir à zéro"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-zero"/></svg></button>
+<button class="p2a-ic" aria-label="Fermer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg></button></header>
+<div class="p2a-corps">
+<div class="p2a-q p2a-q-garde">La fermentation est à <span class="p2a-m"><span class="p2a-n">19</span>&nbsp;°C</span> depuis <span class="p2a-m"><span class="p2a-n">36</span>&nbsp;h</span> et la pression monte doucement&nbsp;: que faire&nbsp;?<small><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-telephone"/></svg>Gardée · partira quand tu relèves la limite</small></div>
+<div class="p2a-carte p2a-plafond" data-booster="jauge-pleine">
+<div class="p2a-pl-h"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-portefeuille"/></svg><h3>Budget IA du mois atteint</h3></div>
+<div class="p2a-pleine" role="img" aria-label="15,00 sur 15 CHF"><i></i><span><span class="p2a-n">15,00</span>/<span class="p2a-m"><span class="p2a-n">15</span>&nbsp;CHF</span></span></div>
+<div class="p2a-ligne"><span>Aujourd'hui</span><span><span class="p2a-n">4</span> sur <span class="p2a-n">120</span> questions</span></div>
+<div class="p2a-lbl p2a-lbl-h"><span>Plafond du mois</span><span><span class="p2a-m"><s class="p2a-n">15</s>&nbsp;→&nbsp;<span class="p2a-n">20</span>&nbsp;CHF</span></span></div>
+<div class="p2a-curseur" data-booster="curseur-plafond" role="slider" aria-valuenow="20" aria-valuemin="5" aria-valuemax="50" aria-label="Plafond du mois en CHF"><span class="p2a-cu-rail"></span><span class="p2a-cu-fait" style="width:33.3%"></span><span class="p2a-cu-ancien" style="left:22.2%"></span><span class="p2a-cu-bouton" style="left:33.3%"></span><span class="p2a-cu-val" style="left:33.3%"><span class="p2a-m"><span class="p2a-n">20</span>&nbsp;CHF</span></span></div>
+<div class="p2a-grad"><span><span class="p2a-m"><span class="p2a-n">5</span>&nbsp;CHF</span></span><span><span class="p2a-m"><span class="p2a-n">50</span>&nbsp;CHF</span></span></div>
+<div class="p2a-act"><button class="p2a-btn p2a-g">Plus tard</button><button class="p2a-btn p2a-p"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg>Relever à <span class="p2a-m"><span class="p2a-n">20</span>&nbsp;CHF</span></button></div>
+</div>
+<button class="p2a-ligne-btn"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-bouclier"/></svg><span>Régler toutes les limites</span><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-droite"/></svg></button>
+<div class="p2a-carte p2a-mois" data-booster="mois-en-jauge"><div class="p2a-lbl"><span>Le budget repart le 1er décembre</span><span>dans <span class="p2a-m"><span class="p2a-n">17</span>&nbsp;jours</span></span></div><span class="p2a-piste p2a-piste-l p2a-piste-n"><i style="width:46.7%"></i></span><div class="p2a-grad"><span>1er nov.</span><span>auj. 14.11</span><span>30 nov.</span></div></div>
+<div class="p2a-reglage-l"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-fil"/></svg><span>Les réponses prêtes restent lisibles</span><span class="p2a-pts"><i class="p2a-pv"></i><span class="p2a-n">2</span><i class="p2a-pa"></i><span class="p2a-n">1</span><i class="p2a-pr"></i><span class="p2a-n">1</span></span></div>
+</div>
+<footer class="p2a-pied"><p class="p2a-bandeau p2a-bandeau-n"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-pause"/></svg>Une nouvelle question sera gardée ici</p><div class="p2a-saisie"><div class="p2a-champ">En pause · budget du mois atteint</div><button class="p2a-env" aria-label="Envoyer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+
+<figure class="p2a-cadre"><figcaption>urgent <span>· urgent&nbsp;: la dalle rouge lisible à 2 m, une seule action</span></figcaption>
+<div class="p2a-tel" data-cadre="urgent"><div class="p2a-fond" aria-hidden="true"><div class="p2a-ap-tete"><img class="p2a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="p2a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="p2a-ap-gros"><span class="p2a-n">24 °C</span><span>J+1 · 19 L</span></div><div class="p2a-ap-barre"><i></i></div>
+<div class="p2a-ap-ligne"><span>Citra · dry hop J+2</span><span class="p2a-n">85 g</span></div>
+<div class="p2a-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Pression</span><span>monte doucement</span></div></div><div class="p2a-voile"></div><section class="p2a-feuille"><header class="p2a-tete"><h2>Compagnon <span>· Brassin 31 · J+1</span></h2>
+<button class="p2a-ic" aria-label="Mes conversations, une en cours"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-fil"/></svg><i class="p2a-badge"></i></button>
+<button class="p2a-ic" aria-label="Repartir à zéro"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-zero"/></svg></button>
+<button class="p2a-ic" aria-label="Fermer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg></button></header>
+<div class="p2a-corps">
+<div class="p2a-q">La cuve est montée au-dessus de <span class="p2a-m"><span class="p2a-n">24</span>&nbsp;°C</span>, je fais quoi&nbsp;?</div>
+<div class="p2a-urg" data-booster="dalle-urgente" role="alert">
+<span class="p2a-urg-niv"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-alerte"/></svg>Urgent</span>
+<h3>La cuve dépasse <span class="p2a-m"><span class="p2a-n">24</span>&nbsp;°C</span>&nbsp;: refroidis maintenant.</h3>
+<div class="p2a-thermo" role="img" aria-label="Au-dessus de 24 °C&nbsp;; visée 19 °C"><span class="p2a-th-rail"></span><span class="p2a-th-vise" style="left:25%"></span><span class="p2a-th-rouge" style="left:66.7%"></span><span class="p2a-th-val" style="left:70%"></span></div>
+<div class="p2a-th-grad"><span style="left:25%">visée <span class="p2a-m"><span class="p2a-n">19</span>&nbsp;°C</span></span><span style="left:66.7%"><span class="p2a-m"><span class="p2a-n">24</span>&nbsp;°C</span></span></div>
+</div>
+<div class="p2a-carte p2a-urg-geste"><span class="p2a-urg-ic"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-flocon"/></svg></span><p>Ouvre la circulation de glycol et contrôle la température toutes les <span class="p2a-m"><span class="p2a-n">30</span>&nbsp;min</span>.</p></div>
+<button class="p2a-gros" data-booster="minuteur-30"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-minuteur"/></svg><span>C'est ouvert · rappel dans <span class="p2a-m"><span class="p2a-n">30</span>&nbsp;min</span></span></button>
+<div class="p2a-carte p2a-ctl"><span class="p2a-jalon p2a-jalon-r"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-horloge"/></svg><span class="p2a-m"><span class="p2a-n">30</span>&nbsp;min</span></span><span class="p2a-ctl-t">Relève la température&nbsp;: elle doit redescendre vers <span class="p2a-m"><span class="p2a-n">19</span>&nbsp;°C</span>.</span><div class="p2a-releves" data-booster="releves-30-min"><i class="p2a-rl-on">maintenant</i><i><span class="p2a-m"><span class="p2a-n">+30</span>&nbsp;min</span></i><i><span class="p2a-m"><span class="p2a-n">+1</span>&nbsp;h</span></i><i><span class="p2a-m"><span class="p2a-n">+1,5</span>&nbsp;h</span></i></div></div>
+<button class="p2a-plis" data-booster="sources-en-puces"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-bas"/></svg><b>Pourquoi</b><span><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-relu"/></svg>relu deux fois</span><span><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-calcul"/></svg>calculs refaits</span><span><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-livre"/></svg><span class="p2a-n">3</span> sources</span></button>
+</div>
+<footer class="p2a-pied"><div class="p2a-saisie"><div class="p2a-champ">Décris ce que tu observes…</div><button class="p2a-env" aria-label="Envoyer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+
+<figure class="p2a-cadre"><figcaption>fournisseurs <span>· remplacer le Galaxy&nbsp;: stock « annoncé », jamais confirmé&nbsp;; l’app n’achète rien</span></figcaption>
+<div class="p2a-tel" data-cadre="fournisseurs"><div class="p2a-fond" aria-hidden="true"><div class="p2a-ap-tete"><img class="p2a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="p2a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="p2a-ap-gros"><span class="p2a-n">19 °C</span><span>J+4 · 19 L</span></div><div class="p2a-ap-barre"><i></i></div>
+<div class="p2a-ap-ligne"><span>Citra · dry hop J+2</span><span class="p2a-n">85 g</span></div>
+<div class="p2a-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Densité</span><span>à relever</span></div></div><div class="p2a-voile"></div><section class="p2a-feuille"><header class="p2a-tete"><h2>Compagnon <span>· Brassin 31 · J+4</span></h2>
+<button class="p2a-ic" aria-label="Mes conversations, une en cours"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-fil"/></svg><i class="p2a-badge"></i></button>
+<button class="p2a-ic" aria-label="Repartir à zéro"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-zero"/></svg></button>
+<button class="p2a-ic" aria-label="Fermer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg></button></header>
+<div class="p2a-corps">
+<div class="p2a-q">Galaxy introuvable chez moi, je le remplace&nbsp;?</div>
+<div class="p2a-verdict p2a-inf"><span class="p2a-feu" role="img" aria-label="Niveau&nbsp;: info"><i class=""></i><i class=""></i><i class="p2a-on-v"></i></span><div><span class="p2a-niv p2a-niv-i">Info</span><h3>Le Citra peut remplacer le Galaxy à J+6.</h3><p class="p2a-geste"><span class="p2a-quand">J+6</span><span>Même dose, <span class="p2a-m"><span class="p2a-n">43</span>&nbsp;g</span>&nbsp;: un sachet de <span class="p2a-m"><span class="p2a-n">100</span>&nbsp;g</span> suffit.</span></p></div></div>
+<div class="p2a-lbl"><span>Où acheter</span><span>vérifié le 14.11 · <span class="p2a-n">20:59</span></span></div>
+<div class="p2a-four" data-booster="stock-annonce"><div class="p2a-four-h"><b>Citra T90 pellets</b><span class="p2a-m"><span class="p2a-n">100</span>&nbsp;g</span><span class="p2a-prix"><span class="p2a-m"><span class="p2a-n">9,50</span>&nbsp;CHF</span></span></div>
+<div class="p2a-four-b"><span>Houblons Suisses SA</span><span class="p2a-stock p2a-ok"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-horloge"/></svg>annoncé en stock</span><button class="p2a-ic" aria-label="Voir la fiche du vendeur"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-sortie"/></svg></button></div></div>
+<div class="p2a-four p2a-four-non"><div class="p2a-four-h"><b>Galaxy T90 pellets</b><span class="p2a-m"><span class="p2a-n">100</span>&nbsp;g</span><span class="p2a-prix"><span class="p2a-m"><span class="p2a-n">11,20</span>&nbsp;CHF</span></span></div>
+<div class="p2a-four-b"><span>Brasserie Service Romand</span><span class="p2a-stock p2a-non"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg>indisponible</span><button class="p2a-ic" aria-label="Voir la fiche du vendeur"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-sortie"/></svg></button></div></div>
+<p class="p2a-note"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-panier"/></svg>Stock annoncé par le vendeur, à confirmer à la commande. L'app n'achète rien.</p>
+<div class="p2a-carte p2a-prop"><div class="p2a-br p2a-br-simple"><span class="p2a-case" role="checkbox" aria-checked="true"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg></span><span>Dry hop J+6</span><span class="p2a-m"><s>Galaxy</s>&nbsp;→&nbsp;Citra</span><span class="p2a-m"><span class="p2a-m"><span class="p2a-n">43</span>&nbsp;g</span></span></div>
+<div class="p2a-act"><button class="p2a-btn p2a-g">Écarter</button><button class="p2a-btn p2a-p"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg>Valider 1 modification</button></div></div>
+<button class="p2a-plis" data-booster="sources-en-puces"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-bas"/></svg><b>Pourquoi</b><span><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-relu"/></svg>relu deux fois</span><span><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-calcul"/></svg>calculs refaits</span><span><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-livre"/></svg><span class="p2a-n">3</span> sources</span></button>
+</div>
+<footer class="p2a-pied"><div class="p2a-saisie"><div class="p2a-champ">Décris ce que tu observes…</div><button class="p2a-env" aria-label="Envoyer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-envoyer"/></svg></button></div></footer>
+</section></div></figure>
+
+<figure class="p2a-cadre"><figcaption>limites <span>· limites ouvertes&nbsp;: jauges et curseurs, la suspension sans rouge</span></figcaption>
+<div class="p2a-tel" data-cadre="limites"><div class="p2a-fond" aria-hidden="true"><div class="p2a-ap-tete"><img class="p2a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="p2a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="p2a-ap-gros"><span class="p2a-n">19 °C</span><span>J+8 · 19 L</span></div><div class="p2a-ap-barre"><i></i></div>
+<div class="p2a-ap-ligne"><span>Citra · dry hop J+2</span><span class="p2a-n">85 g</span></div>
+<div class="p2a-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>DF relevée</span><span class="p2a-n">1,012</span></div></div><div class="p2a-voile"></div><section class="p2a-feuille">
+<header class="p2a-tete"><button class="p2a-ic" aria-label="Retour"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-retour"/></svg></button><h2>Limites IA</h2><button class="p2a-ic" aria-label="Fermer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg></button></header>
+<div class="p2a-corps">
+<div class="p2a-carte p2a-regl" data-booster="limites-en-jauges"><div class="p2a-lbl"><span>Questions aujourd'hui</span><span><span class="p2a-n">4</span> sur <span class="p2a-n">120</span></span></div><span class="p2a-piste p2a-piste-l"><i style="width:3.3%"></i></span>
+<div class="p2a-regl-l"><span>Plafond par jour</span><span class="p2a-num"><input class="p2a-in" inputmode="numeric" value="120" aria-label="Plafond de questions par jour"><span>questions</span></span></div></div>
+<div class="p2a-carte p2a-regl"><div class="p2a-lbl"><span>Budget du mois</span><span><span class="p2a-n">2,10</span> sur <span class="p2a-m"><span class="p2a-n">15</span>&nbsp;CHF</span></span></div><span class="p2a-piste p2a-piste-l"><i style="width:14%"></i></span>
+<div class="p2a-regl-l"><span>Plafond du mois</span><span class="p2a-num"><input class="p2a-in" inputmode="decimal" value="15,00" aria-label="Plafond du mois en CHF"><span>CHF</span></span></div></div>
+<div class="p2a-carte p2a-regl"><div class="p2a-lbl"><span>Mode par défaut · durée et coût</span><span>relatifs</span></div>
+<div class="p2a-modes-l"><button class="p2a-ml"><b>Rapide</b><span><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class=""></u><u class=""></u></i>durée</span><span><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class=""></u><u class=""></u></i>coût</span><small>quelques s</small></button><button class="p2a-ml p2a-sel"><b>Auto</b><span><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class="p2a-v"></u><u class=""></u></i>durée</span><span><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class="p2a-v"></u><u class=""></u></i>coût</span><small>15 à 30 s</small></button><button class="p2a-ml"><b>Approfondi</b><span><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class="p2a-v"></u><u class="p2a-v"></u></i>durée</span><span><i class="p2a-dur" aria-hidden="true"><u class="p2a-v"></u><u class="p2a-v"></u><u class="p2a-v"></u></i>coût</span><small>1 à 3 min</small></button></div></div>
+<div class="p2a-reglage-l"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-cloche"/></svg><span>Me notifier à la réponse</span><span class="p2a-bascule p2a-on" role="switch" aria-checked="true" aria-label="Me notifier à la réponse"><i></i></span></div>
+<div class="p2a-reglage-l"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-pause"/></svg><span>Suspendre l'IA<small>Tes questions restent gardées ici</small></span><span class="p2a-bascule" role="switch" aria-checked="false" aria-label="Suspendre l’IA"><i></i></span></div>
+<div class="p2a-carte p2a-mois" data-booster="mois-en-jauge"><div class="p2a-lbl"><span>Le budget repart le 1er décembre</span><span>dans <span class="p2a-m"><span class="p2a-n">17</span>&nbsp;jours</span></span></div><span class="p2a-piste p2a-piste-l p2a-piste-n"><i style="width:46.7%"></i></span><div class="p2a-grad"><span>1er nov.</span><span>auj. 14.11</span><span>30 nov.</span></div></div>
+<p class="p2a-note"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-telephone"/></svg>Limite atteinte&nbsp;: la question reste gardée ici&nbsp;; tu relèves ou tu attends.</p>
+</div>
+<footer class="p2a-pied p2a-pied-duo"><button class="p2a-btn p2a-g">Annuler</button><button class="p2a-btn p2a-p"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg>Enregistrer</button></footer>
+</section></div></figure>
+
+<figure class="p2a-cadre"><figcaption>zero <span>· repartir à zéro&nbsp;: ce qui s’efface, ce qui reste</span></figcaption>
+<div class="p2a-tel" data-cadre="zero"><div class="p2a-fond" aria-hidden="true"><div class="p2a-ap-tete"><img class="p2a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA</div>
+<div class="p2a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="p2a-ap-gros"><span class="p2a-n">19 °C</span><span>J+1 · 19 L</span></div><div class="p2a-ap-barre"><i></i></div>
+<div class="p2a-ap-ligne"><span>Citra · dry hop J+2</span><span class="p2a-n">85 g</span></div>
+<div class="p2a-ap-ligne"><span>Galaxy · dry hop J+6</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Mosaic · dry hop J+9</span><span class="p2a-n">43 g</span></div>
+<div class="p2a-ap-ligne"><span>Pression</span><span>monte doucement</span></div></div><div class="p2a-voile"></div><section class="p2a-feuille p2a-feuille-dessous"><header class="p2a-tete"><h2>Compagnon <span>· Brassin 31 · J+1</span></h2>
+<button class="p2a-ic" aria-label="Mes conversations, une en cours"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-fil"/></svg><i class="p2a-badge"></i></button>
+<button class="p2a-ic" aria-label="Repartir à zéro"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-zero"/></svg></button>
+<button class="p2a-ic" aria-label="Fermer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg></button></header>
+<div class="p2a-corps"><div class="p2a-q">La fermentation est à <span class="p2a-m"><span class="p2a-n">19</span>&nbsp;°C</span> depuis <span class="p2a-m"><span class="p2a-n">36</span>&nbsp;h</span> et la pression monte doucement&nbsp;: que faire&nbsp;?</div><div class="p2a-verdict p2a-inf" data-booster="feu-de-niveau"><span class="p2a-feu" role="img" aria-label="Niveau&nbsp;: info"><i class=""></i><i class=""></i><i class="p2a-on-v"></i></span>
+<div><span class="p2a-niv p2a-niv-i">Info</span><h3>Fermentation normale&nbsp;: laisse monter.</h3>
+<p class="p2a-geste"><span class="p2a-quand">Auj.</span><span>Garde <span class="p2a-m"><span class="p2a-n">19</span>&nbsp;°C</span>.</span></p>
+<p class="p2a-geste"><span class="p2a-quand">J+2</span><span>Le Citra se fait pendant cette activité.</span></p></div></div></div></section>
+<div class="p2a-voile2"></div>
+<section class="p2a-dialogue" role="dialog" aria-label="Repartir à zéro ?" data-booster="efface-reste">
+<h3><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-zero"/></svg>Repartir à zéro&nbsp;?</h3>
+<div class="p2a-colonnes">
+<div class="p2a-col p2a-col-efface"><span class="p2a-lbl1">S'efface</span><p><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg>Les échanges de ce brassin</p><p><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg>La réponse en cours</p><p><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg>La question en file</p></div>
+<div class="p2a-col p2a-col-reste"><span class="p2a-lbl1">Reste</span><p><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg>Recette New England IPA</p><p><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg>Brassin 31 et son journal</p><p><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg>Notes déjà gardées</p></div>
+</div>
+<p class="p2a-note"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-cloche"/></svg>Le contrôle de densité J+4, gardé au journal, reste aussi.</p>
+<div class="p2a-act"><button class="p2a-btn p2a-s">Annuler</button><button class="p2a-btn p2a-d p2a-d-plein"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-zero"/></svg>Effacer les échanges</button></div>
+</section></div></figure>
+
+<figure class="p2a-cadre"><figcaption>bureau <span>· 1280 × 760&nbsp;: la page du brassin éclairée là où la proposition agit, le compagnon en panneau</span></figcaption>
+<div class="p2a-tel p2a-large" data-cadre="bureau"><div class="p2a-bur">
+<div class="p2a-bur-page"><div class="p2a-ap-tete"><img class="p2a-ap-logo" alt="" width="20" height="20" src="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2710%27 fill=%27%23567F45%27/%3E%3C/svg%3E">Brassin 31 · New England IPA<span class="p2a-bur-j">J+8 · <span class="p2a-m"><span class="p2a-n">19</span>&nbsp;L</span></span></div>
+<div class="p2a-ap-ong"><span>Recette</span><span>Brassage</span><b>Fermentation</b><span>Journal</span></div>
+<div class="p2a-bur-stats"><div><small>Température</small><span class="p2a-m"><span class="p2a-n">19</span>&nbsp;°C</span></div><div><small>DF relevée</small><span class="p2a-n">1,012</span></div><div><small>Dry hop</small><span><span class="p2a-m"><span class="p2a-n">171</span>&nbsp;g</span> · <span class="p2a-m"><span class="p2a-n">9,0</span>&nbsp;g/L</span></span></div></div>
+<div class="p2a-bur-frise" data-booster="frise-contacts" role="img" aria-label="Contacts du dry hop sur la frise du brassin">
+<div class="p2a-bf-ax"><span>J+0</span><span>J+1</span><span>J+2</span><span>J+3</span><span>J+4</span><span>J+5</span><span>J+6</span><span>J+7</span><span>J+8</span><span>J+9</span><span>J+10</span><span>J+11</span><span>J+12</span></div>
+<div class="p2a-bf-l"><b>Citra</b><span class="p2a-bf-bar p2a-bf-fait" style="left:calc(84px + (100% - 84px) * 0.1538);width:calc((100% - 84px) * 0.0769)"></span></div>
+<div class="p2a-bf-l p2a-vise"><b>Galaxy</b><span class="p2a-bf-bar p2a-bf-fait" style="left:calc(84px + (100% - 84px) * 0.4615);width:calc((100% - 84px) * 0.1538)"></span><span class="p2a-bf-tag" style="left:calc(84px + (100% - 84px) * 0.6269)">purge ce soir</span></div>
+<div class="p2a-bf-l p2a-vise"><b>Mosaic</b><span class="p2a-bf-bar p2a-bf-ancien" style="left:calc(84px + (100% - 84px) * 0.6923);width:calc((100% - 84px) * 0.2308)"></span><span class="p2a-bf-bar" style="left:calc(84px + (100% - 84px) * 0.6923);width:calc((100% - 84px) * 0.1538)"></span><span class="p2a-bf-tag" style="left:calc(84px + (100% - 84px) * 0.9308)"><span class="p2a-m"><s class="p2a-n">3</s>&nbsp;→&nbsp;<span class="p2a-n">2</span>&nbsp;j</span></span></div>
+<span class="p2a-bf-auj" style="left:calc(96px + (100% - 108px) * 0.6154)"><b>auj.</b></span></div>
+<div class="p2a-bur-table">
+<div class="p2a-ap-ligne"><span>Citra · dry hop J+2</span><span><span class="p2a-m"><span class="p2a-n">85</span>&nbsp;g</span></span></div>
+<div class="p2a-ap-ligne p2a-vise"><span>Galaxy · dry hop J+6</span><span class="p2a-bur-prop">purger ce soir</span><span><span class="p2a-m"><span class="p2a-n">43</span>&nbsp;g</span></span></div>
+<div class="p2a-ap-ligne p2a-vise"><span>Mosaic · dry hop J+9 · contact</span><span class="p2a-bur-prop"><span class="p2a-m"><s class="p2a-n">3</s>&nbsp;→&nbsp;<span class="p2a-n">2</span>&nbsp;j</span></span><span><span class="p2a-m"><span class="p2a-n">43</span>&nbsp;g</span></span></div>
+<div class="p2a-ap-ligne p2a-vise"><span>Température du dry hop</span><span class="p2a-bur-prop"><span class="p2a-m"><s class="p2a-n">19</s>&nbsp;→&nbsp;<span class="p2a-n">17</span>&nbsp;°C</span></span><span><span class="p2a-m"><span class="p2a-n">19</span>&nbsp;°C</span></span></div>
+</div>
+<div class="p2a-bur-jour"><span class="p2a-lbl1"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-journal"/></svg>Journal du brassin</span><div class="p2a-ap-ligne"><span>J+1 · La pression monte doucement</span><span><span class="p2a-m"><span class="p2a-n">19</span>&nbsp;°C</span></span></div><div class="p2a-ap-ligne"><span>J+2 · Citra ajouté</span><span><span class="p2a-m"><span class="p2a-n">85</span>&nbsp;g</span></span></div><div class="p2a-ap-ligne"><span>J+6 · Galaxy ajouté</span><span><span class="p2a-m"><span class="p2a-n">43</span>&nbsp;g</span></span></div><div class="p2a-ap-ligne"><span>J+7 · DF relevée</span><span><span class="p2a-n">1,012</span></span></div><div class="p2a-ap-ligne"><span>J+8 · Dégustation&nbsp;: herbe coupée</span><span>contrôle J+10</span></div></div></div>
+<section class="p2a-panneau"><header class="p2a-tete"><h2>Compagnon <span>· Brassin 31 · J+8</span></h2>
+<button class="p2a-ic" aria-label="Mes conversations, une en cours"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-fil"/></svg><i class="p2a-badge"></i></button>
+<button class="p2a-ic" aria-label="Repartir à zéro"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-zero"/></svg></button>
+<button class="p2a-ic" aria-label="Fermer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-x"/></svg></button></header>
+<div class="p2a-corps">
+<div class="p2a-q">Dégustation J+8&nbsp;: ça sent l'herbe coupée, que faire&nbsp;?</div>
+<div class="p2a-verdict p2a-att" data-booster="feu-de-niveau"><span class="p2a-feu" role="img" aria-label="Niveau&nbsp;: attention"><i class=""></i><i class="p2a-on-a"></i><i class=""></i></span>
+<div><span class="p2a-niv"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-alerte"/></svg>Attention</span><h3>Herbacé&nbsp;: écourte le contact du dry&nbsp;hop.</h3>
+<p class="p2a-geste"><span class="p2a-quand">Ce soir</span><span>Purge les pellets du Galaxy.</span></p>
+<p class="p2a-geste"><span class="p2a-quand">J+9</span><span>Mosaic&nbsp;: <span class="p2a-m"><s class="p2a-n">3</s>&nbsp;→&nbsp;<span class="p2a-n">2</span>&nbsp;jours</span> de contact.</span></p></div></div>
+<div class="p2a-carte p2a-prop" data-booster="avant-apres-barres">
+<div class="p2a-lbl"><span>Proposition · rien n'est appliqué sans toi</span><span><span class="p2a-n">2</span> cochées</span></div>
+<div class="p2a-br"><span class="p2a-case" role="checkbox" aria-checked="true"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg></span><span>Contact Mosaic J+9</span><span class="p2a-jours" role="img" aria-label="3 jours, puis 2"><u></u><u></u><u class="p2a-retire"></u></span><span class="p2a-m"><s class="p2a-n">3</s>&nbsp;→&nbsp;<span class="p2a-n">2</span>&nbsp;j</span></div>
+<div class="p2a-br"><span class="p2a-case" role="checkbox" aria-checked="true"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg></span><span>Temp. dry hop</span><span class="p2a-ech" role="img" aria-label="Échelle de 15 à 20 °C&nbsp;: 19 °C, puis 17 °C"><u style="left:0%"></u><u style="left:20%"></u><u style="left:40%"></u><u style="left:60%"></u><u style="left:80%"></u><u style="left:100%"></u><span class="p2a-ech-fl" style="left:40%;width:40%"></span><span class="p2a-ech-av" style="left:80%"></span><span class="p2a-ech-ap" style="left:40%"></span><small style="left:0">15</small><small style="left:100%">20</small></span><span class="p2a-m"><s class="p2a-n">19</s>&nbsp;→&nbsp;<span class="p2a-n">17</span>&nbsp;°C</span></div>
+<div class="p2a-br p2a-facult"><span class="p2a-case p2a-off" role="checkbox" aria-checked="false"></span><span>Mosaic J+9 <small>facultatif</small></span><span class="p2a-tr"><span class="p2a-av" style="width:86%"></span><span class="p2a-ap" style="width:70%"></span></span><span class="p2a-m"><s class="p2a-n">43</s>&nbsp;→&nbsp;<span class="p2a-n">35</span>&nbsp;g</span></div>
+<div class="p2a-total"><span>Dose totale</span><span><span class="p2a-m"><span class="p2a-n">9,0</span>&nbsp;g/L</span> inchangée · <span class="p2a-m"><span class="p2a-n">8,6</span>&nbsp;g/L</span> si cochée</span></div>
+<div class="p2a-act"><button class="p2a-btn p2a-g">Écarter</button><button class="p2a-btn p2a-p"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-ok"/></svg>Valider 2 modifications</button></div></div>
+<div class="p2a-carte p2a-ctl" data-booster="prochain-controle"><span class="p2a-jalon"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-horloge"/></svg>J+10</span><span class="p2a-ctl-t">Goût avant la garde&nbsp;: l'herbacé doit reculer.</span>
+<span class="p2a-ctl-act"><button class="p2a-btn p2a-s"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-journal"/></svg>Au journal</button><span class="p2a-rap">Rappel <span class="p2a-n">09:00</span><span class="p2a-bascule p2a-on" role="switch" aria-checked="true" aria-label="Rappel J+10 à 9 h"><i></i></span></span></span></div>
+<div class="p2a-carte p2a-pourquoi"><span class="p2a-lbl1"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-bas"/></svg>Pourquoi</span><p>Contact long à <span class="p2a-m"><span class="p2a-n">19</span>&nbsp;°C</span>&nbsp;: les pellets cèdent leur vert. <span class="p2a-m"><span class="p2a-n">9,0</span>&nbsp;g/L</span> reste une dose usuelle de NEIPA&nbsp;: ce n'est pas la dose.</p><div class="p2a-plis p2a-plis-in" data-booster="sources-en-puces"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-bas"/></svg><b>Détails</b><span><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-relu"/></svg>relu deux fois</span><span><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-calcul"/></svg>calculs refaits</span><span><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-livre"/></svg><span class="p2a-n">3</span> sources</span></div></div>
+</div>
+<footer class="p2a-pied"><div class="p2a-saisie"><div class="p2a-champ">Décris ce que tu observes…</div><button class="p2a-env" aria-label="Envoyer"><svg class="p2a-i" aria-hidden="true"><use href="#p2a-i-envoyer"/></svg></button></div></footer>
+</section></div></div></figure>
+
+</main></body></html>

@@ -1,0 +1,44 @@
+{
+ "reglage": "4-hydrogen@high",
+ "cas": "D1-calage",
+ "tache": "diagnoseBatch",
+ "moitie": "choix",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [
+   "atténuation apparente 31 % (±2)",
+   "gravité surveiller ou agir (ni normal, ni urgent)",
+   "cause : température trop basse",
+   "cause : levure (quantité, vitalité, réhydratation)",
+   "action : réchauffer ou remuer"
+  ],
+  "manques": []
+ },
+ "ms": 10329,
+ "coutMicro": 16583,
+ "etat": "STOP",
+ "valeur": {
+  "verdict": "Fermentation bloquée à 1.040 depuis le jour 6 (atténuation apparente de 31,0 % contre 79,3 % visés). La SafAle US-05 est entrée en dormance prématurée principalement à cause d'une température trop basse (15 °C) combinée à un stress d'ensemencement.",
+  "severity": "agir",
+  "causes": [
+   {
+    "cause": "Température de cave trop basse (15 °C constants dès le jour 2) sous la plage optimale de la SafAle US-05 (18-22 °C), entraînant un ralentissement puis un arrêt métabolique et une floculation prématurée.",
+    "probability": 0.65,
+    "action": "Déplacer le fermenteur dans une pièce tempérée pour monter progressivement à 20 °C (maximum 2 °C par 12 h), puis remettre doucement les levures en suspension par un léger mouvement circulaire sans introduire d'oxygène et reprendre la densité après 72 h."
+   },
+   {
+    "cause": "Sous-ensemencement effectif dû au saupoudrage direct d'un seul sachet de 11,5 g sans réhydratation sur 24 L de moût à 1.058 et 17 °C, réduisant fortement la viabilité cellulaire initiale.",
+    "probability": 0.25,
+    "action": "Si la densité ne baisse pas en dessous de 1.036 dans les 72 h suivant le réchauffement à 20 °C, réhydrater un nouveau sachet de 11,5 g de SafAle US-05 dans 115 mL d'eau stérile à 27 °C, réaliser un pied de cuve actif sur un peu de moût et l'incorporer au fermenteur."
+   },
+   {
+    "cause": "Biais de lecture de la densité (usage d'un réfractomètre sans correction liée à la présence d'alcool, ou flotteur bloqué).",
+    "probability": 0.1,
+    "action": "Confirmer la mesure de 1.040 avec un densimètre à flotteur calibré sur un échantillon dégazé à 20 °C ; si un réfractomètre a été utilisé, appliquer le facteur de correction d'alcool (10 °Brix lus pour 14,3 °Brix initiaux correspondraient à une densité réelle proche de 1.012)."
+   }
+  ],
+  "apparentAttenuationPct": 31,
+  "immediateAction": "Monter le fermenteur à 20 °C dès aujourd'hui, remettre délicatement la lie en suspension sans aérer le moût et vérifier l'instrument de mesure de densité."
+ }
+}

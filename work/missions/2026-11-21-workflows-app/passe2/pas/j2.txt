@@ -1,0 +1,6 @@
+t=Brassins
+c=B-ZZ-JOUR
+t=Commencer le brassage
+z=800
+s=batches|status,actualBrewDate
+cap=apres-commencer

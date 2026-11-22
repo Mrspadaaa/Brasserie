@@ -1,0 +1,235 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/carnetsEcrans.test.tsx[2m > [22m[2mCorrection 1, lot L2 : le champ dans le vrai conteneur (fixture, magasin mémoire, IA simulée)[2m > [22m[2mP13 : sur Ventilation par défaut, la bulle G8 se tait (rien à trancher) ; avec l’option g8 (critique 5, n° 21), elle paraît au focus, picto local, sans ✻
+[22m[39mAn update to CarnetsVue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/carnetsCritique4Fil.test.tsx[2m > [22m[2mP28 (R09) et P33 (R20)[2m > [22m[2mCréer · avant : le champ de la liste pris montre la phrase, les exemples touchables et « Une note en vrac marche aussi. »
+[22m[39mAn update to CarnetsVue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to CarnetsVue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/unit/carnetsRattacher.test.ts[2m > [22m[2mrattacher (A5)[2m > [22m[2mle seuil du module est dans la plage optimale trouvée sur la moitié de réglage
+[22m[39mA5 réglage : 11/12 au mieux, seuils optimaux 1.2 à 1.4 ; module 1.25
+A5 scores réglage : hotte 100 cm vue chez un autre fournisseur → ZZ TEST — Ventilation de la salle de brassage 1.414 | isobarique 4 becs d’occasion → ZZ TEST — Embouteillage 1.732 | chambre froide 3 m³ → ZZ TEST — Frigo de garde pour fûts 2.121 | douchette pour l’évier → ZZ TEST — Évier inox 2.121 | extracteur plus silencieux → ZZ TEST — Extracteur pour la salle de fermentation 2.121 | remplisseuse contre-pression → ZZ TEST — Embouteillage 1.732 | vitrine pro d’occasion → ZZ TEST — Frigo de garde pour fûts 1.732 | acheter du houblon Citra → — 0 | nettoyer la cuve de fermentation → ZZ TEST — Extracteur pour la salle de fermentation 1.155 | bacs profonds pour laver les fûts → ZZ TEST — Évier inox 4 | tabouret inox → ZZ TEST — Évier inox 1.061 | évier : robinet à pédale → ZZ TEST — Évier inox 1.732
+
+[33m[39m[32m·[39m[90mstdout[2m | tests/unit/carnetsRattacher.test.ts[2m > [22m[2mrattacher (A5)[2m > [22m[2mjugé sur l’autre moitié : au moins 80 % de bons carnets proposés
+[22m[39mA5 jugement : 13/14 au seuil 1.25 ; ratés : chariot inox pour les fûts
+A5 scores jugement : hotte inox moins chère → ZZ TEST — Ventilation de la salle de brassage 1.732 | monobloc 6 becs → ZZ TEST — Embouteillage 1.414 | frigo pour les fûts → ZZ TEST — Frigo de garde pour fûts 3.536 | évier sur pieds → ZZ TEST — Évier inox 2.121 | condensation au plafond → ZZ TEST — Ventilation de la salle de brassage 2.828 | oxygène dans les bouteilles → ZZ TEST — Embouteillage 2.923 | température en été dans le local → ZZ TEST — Frigo de garde pour fûts 2.887 | prix des levures → — 0 | pinceau et rouleau pour le sol → — 0 | isobarique pré-évacuation → ZZ TEST — Embouteillage 2.309 | prochain brassage jeudi → ZZ TEST — Ventilation de la salle de brassage 1.061 | chariot inox pour les fûts → ZZ TEST — Évier inox 2.021 | ventilation : hotte 120 cm au-dessus de la cuve → ZZ TEST — Ventilation de la salle de brassage 4.5 | densimètre portable moins cher → ZZ TEST — Densimètre de paillasse 2.309
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[2m[90m-[39m[22m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/unit/carnetsDoublons.test.ts[2m > [22m[2mdoublons (A10)[2m > [22m[2mle seuil du module est dans la plage optimale de la moitié de réglage
+[22m[39mA10 réglage : seuils optimaux 0.35 à 0.5 ({"trouves":5,"faux":0}) ; module 0.4
+A10 similarités réglage : D 0.50 D 1.00 D 0.67 D 1.00 D 0.50 v 0.17 v 0.33 v 0.20 v 0.25 v 0.33
+
+[90mstdout[2m | tests/unit/carnetsDoublons.test.ts[2m > [22m[2mdoublons (A10)[2m > [22m[2mjugé sur l’autre moitié : au moins 4 doublons sur 5, au plus 1 faux sur 5
+[22m[39mA10 jugement : 5/5 doublons trouvés, 1/5 faux, au seuil 0.4
+A10 similarités jugement : D 0.75 D 0.60 D 1.00 D 1.00 D 0.75 v 0.14 v 0.20 v 0.17 v 0.25 v 0.50
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/unit/carnetsTour3F4c.test.ts[2m > [22m[2mexplo[2m > [22m[2mx
+[22m[39mPCN19 {"texte":"il faudrait au moins 1 500 m³/h","phrase":"il faudrait au moins 1 500 m³/h","sorte":"critere","genre":"note","quantites":[{"valeur":1500,"unite":"m³/h","texte":"1 500"}],"origine":"locale"}
+PCN20 {"carnetId":"ZZ-CARNET-VENTILATION-SALLE-2","titre":"ZZ TEST — Ventilation de la salle de brassage, 2e idée","score":1.65,"mots":["ventilation","salle","brassage"]} [
+  [32m'ZZ TEST — Ventilation de la salle de brassage'[39m,
+  [32m'ZZ TEST — Évier inox'[39m,
+  [32m'ZZ TEST — Embouteillage'[39m,
+  [32m'ZZ TEST — Frigo de garde pour fûts'[39m,
+  [32m'ZZ TEST — Densimètre de paillasse'[39m,
+  [32m'ZZ TEST — Extracteur pour la salle de fermentation'[39m,
+  [32m'ZZ TEST — Ventilation de la cave de garde'[39m,
+  [32m'ZZ TEST — Ventilation de la salle de brassage, 2e idée'[39m
+]
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 9 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/integration/carnetsParcours.test.tsx[2m > [22mP1, P2, P3 (vision 1) : le bandeau suit le rangement final ; un lien seul ne devient jamais le titre[2m > [22mlien collé depuis la liste, rangé par l’IA dans Ventilation : « Rangé dans Ventilation », le lien cité ; jamais « Carnet créé » ; Annuler défait le rangement réel
+[31m[1mAssertionError[22m: expected undefined to be 'brewshop.invalid' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"brewshop.invalid"
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/integration/carnetsParcours.test.tsx:[2m214:69[22m[39m
+    [90m212| [39m    /* pendant : le carnet neuf porte le domaine, jamais l'URL brute ;…
+    [90m213| [39m    [34mexpect[39m(e[33m.[39m[34mcarnets[39m()[33m.[39m[34msome[39m(c [33m=>[39m c[33m.[39mtitle [33m===[39m url))[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m214| [39m    expect(e.vue.container.querySelector('.cn-titre')?.textContent).to…
+    [90m   | [39m                                                                    [31m^[39m
+    [90m215| [39m    [34mexpect[39m(e[33m.[39mvue[33m.[39mcontainer[33m.[39mtextContent)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/Carnet créé/[39m)[33m;[39m
+    [90m216| [39m    [35mawait[39m e[33m.[39m[34mattendre[39m([34m400[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsCritique6Figes.test.tsx[2m > [22mcritique 6 · figés carnet ouvert, liste, article (lot C)[2m > [22m1 · n° 8 (h05-3) : une ligne « Articles 6 ⌄ · Comparer › » ; le lien sans aperçu dans le tableau, avant la conclusion ; noms sur 2 lignes au plus
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/unit/carnetsCritique6Figes.test.tsx:[2m44:154[22m[39m
+    [90m 42| [39m    [35mconst[39m sep [33m=[39m container[33m.[39m[34mquerySelector[39m([32m'.cn-separe'[39m)[33m![39m[33m;[39m
+    [90m 43| [39m    expect(relire.compareDocumentPosition(sep) & Node.DOCUMENT_POSITIO…
+    [90m 44| [39m    for (const nom of container.querySelectorAll('button.cn-tab-ligne …
+    [90m   | [39m                                                                                                                                                         [31m^[39m
+    [90m 45| [39m  })[33m;[39m
+    [90m 46| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsCritique6Figes.test.tsx[2m > [22mcritique 6 · figés carnet ouvert, liste, article (lot C)[2m > [22m9 · n° 28 : « 1 façon », jamais « 1 façons » (une fonction pluriel)
+[31m[1mAssertionError[22m: expected ' CarnetsIdée · 15 nov.ZZ TEST — Évier…' to contain '1 façon'[39m
+
+Expected: [32m"1 façon"[39m
+Received: [31m" CarnetsIdée · 15 nov.ZZ TEST — Évier inoxvotre phrase : « 2 bacs pour laver les fûts » Ce qui compte · rien encore : l'IA le proposera FaçonsSur piedsaucun article encoreà chercher Articles · aucun : collez un lien Notes · aucune"[39m
+
+[36m [2m❯[22m tests/unit/carnetsCritique6Figes.test.tsx:[2m158:30[22m[39m
+    [90m156| [39m    [34mexpect[39m([34maccord[39m([34m1[39m[33m,[39m [32m'le'[39m[33m,[39m [32m'les'[39m))[33m.[39m[34mtoBe[39m([32m'le'[39m)[33m;[39m
+    [90m157| [39m    const { container } = ouvrir(neuf({ facons: [{ id: 'f', nom: 'Sur …
+    [90m158| [39m    [34mexpect[39m([34mtexte[39m(container))[33m.[39m[34mtoContain[39m([32m'1 façon'[39m)[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m159| [39m    [34mexpect[39m([34mtexte[39m(container))[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/\b1 façons\b/[39m)[33m;[39m
+    [90m160| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4b.test.tsx[2m > [22mPCN-103 : la bulle G8 dit entre quoi, sans « … »[2m > [22mla bulle passe sur deux lignes (jamais d’ellipse sur une seule)
+[31m[1mAssertionError[22m: expected ' min-width: 0; overflow-wrap: anywher…' to match /-webkit-line-clamp:\s*2/[39m
+
+[32m- Expected:[39m 
+/-webkit-line-clamp:\s*2/
+
+[31m+ Received:[39m 
+" min-width: 0; overflow-wrap: anywhere; line-height: 1.25; text-align: left; "
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4b.test.tsx:[2m60:19[22m[39m
+    [90m 58| [39m    [34mexpect[39m(r)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 59| [39m    [34mexpect[39m(r[33m![39m[[34m1[39m])[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/white-space:\s*nowrap/[39m)[33m;[39m
+    [90m 60| [39m    [34mexpect[39m(r[33m![39m[[34m1[39m])[33m.[39m[34mtoMatch[39m([36m/-webkit-line-clamp:\s*2/[39m)[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m 61| [39m    expect(fil).not.toMatch(/\.cnf-aides-ligne > \.cn-bulle\s*\{\s*whi…
+    [90m 62| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5c.test.tsx[2m > [22mf5c n° 6 : Comparer dit la source une fois et ne redit pas les critères[2m > [22m« proposé par l’IA » une seule fois ; « classées » ne garde que ce qui s’ajoute (le prix)
+[31m[1mAssertionError[22m: expected 2 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 2[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5c.test.tsx:[2m66:54[22m[39m
+    [90m 64| [39m    [34mexpect[39m(cqc)[33m.[39m[34mtoContain[39m([32m'tient 80 °C'[39m)[33m;[39m
+    [90m 65| [39m    [34mexpect[39m(cqc)[33m.[39m[34mtoContain[39m([32m'le débit'[39m)[33m;[39m
+    [90m 66| [39m    [34mexpect[39m(cqc[33m.[39m[34msplit[39m([32m"proposé par l'IA"[39m)[33m.[39mlength [33m-[39m [34m1[39m)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                                                     [31m^[39m
+    [90m 67| [39m    const classees = texte(container.querySelector('.cn-cmp-classees')…
+    [90m 68| [39m    [34mexpect[39m(classees)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'tient 80 °C'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5c.test.tsx[2m > [22mf5c n° 7 : Comparer à 390[2m > [22m« sous votre minimum » en forme courte d’une ligne, la phrase entière gardée (title, lecteur d’écran)
+[31m[1mTypeError[22m: Cannot read properties of null (reading 'textContent')[39m
+[36m [2m❯[22m texte tests/unit/carnetsTour3F5c.test.tsx:[2m34:36[22m[39m
+    [90m 32| [39m[34mafterEach[39m(cleanup)[33m;[39m
+    [90m 33| [39m[35mconst[39m rien [33m=[39m () [33m=>[39m undefined[33m;[39m
+    [90m 34| [39mconst texte = (el: Element) => (el.textContent ?? '').replace(/[  ]/g,…
+    [90m   | [39m                                   [31m^[39m
+    [90m 35| [39mconst lire = (id: string): CarnetDoc => lireCarnet(fixtureCarnets().fi…
+    [90m 36| [39m[35mconst[39m [33mV[39m [33m=[39m [34mlire[39m([33mID_VENTILATION[39m)[33m;[39m
+[90m [2m❯[22m tests/unit/carnetsTour3F5c.test.tsx:[2m79:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5c.test.tsx[2m > [22mf5c n° 7 : Comparer à 390[2m > [22mcolonnes entières[2m > [22mquand le tableau déborde, les colonnes d’articles se partagent la place : aucune colonne coupée au repos
+[31m[1mAssertionError[22m: expected '' to be '85px' // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 85px[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5c.test.tsx:[2m106:55[22m[39m
+    [90m104| [39m      const zone = container.querySelector('.cn-tableau-zone') as HTML…
+    [90m105| [39m      /* (342 − 85) / 3 = 85,67 → 3 colonnes de 85 px ; la 4e commence…
+    [90m106| [39m      [34mexpect[39m(zone[33m.[39mstyle[33m.[39m[34mgetPropertyValue[39m([32m'--cn-col'[39m))[33m.[39m[34mtoBe[39m([32m'85px'[39m)[33m;[39m
+    [90m   | [39m                                                      [31m^[39m
+    [90m107| [39m      [34mexpect[39m([33mCSS_DECIDER[39m)[33m.[39m[34mtoMatch[39m([36m/var\(--cn-col\)/[39m)[33m;[39m
+    [90m108| [39m    })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5c.test.tsx[2m > [22mf5c n° 8 : Choisir nomme tous les critères qui classent[2m > [22m« Critères : tient 80 °C, puis le débit, proposé par l’IA »
+[31m[1mAssertionError[22m: expected 'Critère : tient 80 °C, proposé par l\…' to contain 'tient 80 °C, puis le débit'[39m
+
+Expected: [32m"tient 80 °C, p[7muis le débit[27m"[39m
+Received: [31m"[7mCritère : [27mtient 80 °C, p[7mroposé par l'IAFaçon hotte inox + extracteurInox Broye : en stock[27m"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5c.test.tsx:[2m117:21[22m[39m
+    [90m115| [39m    render(<Choisir etape="choisir" titre={TITRE} carnet={V.carnet} ar…
+    [90m116| [39m    const retenus = texte(screen.getByRole('list', { name: 'Retenu' })…
+    [90m117| [39m    [34mexpect[39m(retenus)[33m.[39m[34mtoContain[39m([32m'tient 80 °C, puis le débit'[39m)[33m;[39m
+    [90m   | [39m                    [31m^[39m
+    [90m118| [39m    expect(retenus.split("proposé par l'IA").length - 1).toBeLessThanO…
+    [90m119| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5c.test.tsx[2m > [22mf5c n° 9 : Réalisés et Embouteillage[2m > [22mpayé = prévu : « 11 700 CHF » une seule fois sur la carte, la ligne dit payé en entier au montant prévu
+[31m[1mAssertionError[22m: expected 3 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 3[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5c.test.tsx:[2m139:57[22m[39m
+    [90m137| [39m    const colonne = document.querySelector('[data-colonne-materiel]') …
+    [90m138| [39m    [35mconst[39m carte [33m=[39m colonne[33m.[39m[34mquerySelector[39m([32m'.upgrade-item'[39m)[33m![39m[33m;[39m
+    [90m139| [39m    [34mexpect[39m([34mtexte[39m(carte)[33m.[39m[34msplit[39m([32m'11 700 CHF'[39m)[33m.[39mlength [33m-[39m [34m1[39m)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                                                        [31m^[39m
+    [90m140| [39m    expect(texte(carte.querySelector('[data-paye-prevu]')!)).toBe('Pay…
+    [90m141| [39m    [34mexpect[39m([34mtexte[39m(carte))[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'comme prévu'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m42 passed[39m[22m[90m (46)[39m
+[2m      Tests [22m [1m[31m9 failed[39m[22m[2m | [22m[1m[32m689 passed[39m[22m[2m | [22m[90m1 todo[39m[90m (699)[39m
+[2m   Start at [22m 19:51:38
+[2m   Duration [22m 25.56s[2m (transform 7.62s, setup 7.84s, collect 28.28s, tests 37.61s, environment 18.24s, prepare 3.02s)[22m
+

@@ -8,10 +8,10 @@ import { choisirDate, dateDeLecture } from './invoiceScanCore.js';
  * La lecture de facture en production : C★v8 + N du banc (D247, mission 2026-11-01-bascule-lecture).
  *
  *   - deux lectures Flash-Lite en parallèle (consignes 1 et 2, 8 192 jetons de sortie) ;
- *   - la 3.8 (consigne 3) quand elles divergent (`needsThird`) OU quand une Flash-Lite manque : coupée, refusée, en délai (`needsThirdLite`) ;
- *   - le résultat : les VALEURS de la 3.8 quand elle tranche, le STATUT et les constats du vote à trois, les points de désaccord en plus
- *     (`finalOfStarVote`) ; sinon le repli `finalOfLite` : une Flash-Lite lisible et la 3.8 votent à deux, aucune Flash-Lite lisible, la 3.8
- *     seule en « unavailable » à un lecteur ; jamais « Lecture indisponible » quand la 3.8 a lu ;
+ *   - la 3ᵉ lecture (consigne 3) quand elles divergent (`needsThird`) OU quand une Flash-Lite manque : coupée, refusée, en délai (`needsThirdLite`) ;
+ *   - le résultat : les VALEURS de la 3ᵉ lecture quand elle tranche, le STATUT et les constats du vote à trois, les points de désaccord en plus
+ *     (`finalOfStarVote`) ; sinon le repli `finalOfLite` : une Flash-Lite lisible et la 3ᵉ lecture votent à deux, aucune Flash-Lite lisible, la 3ᵉ lecture
+ *     seule en « unavailable » à un lecteur ; jamais « Lecture indisponible » quand la 3ᵉ lecture a lu ;
  *   - N : la devise en code ISO (`isoCurrency`), appliquée à chaque lecture avant la normalisation (voir `ai.ts`).
  *
  * Module pur : aucun réseau, aucune base. Le banc (`scripts/banc-lecture-facture.ts`) reste l'oracle ; chaque fonction ci-dessous est le
@@ -39,7 +39,7 @@ const finish = (result: any, used: LectureVote[], failure?: string): VoteFinal =
 export function needsThird(r1: LectureVote, r2: LectureVote): boolean {
   return !!(r1.normalized && r2.normalized) && reconcileInvoiceVision([r1.normalized, r2.normalized]).needsCorrection;
 }
-/** La 3.8 est aussi appelée quand une lecture Flash-Lite manque (coupée, refusée, délai). */
+/** La 3ᵉ lecture est aussi appelée quand une lecture Flash-Lite manque (coupée, refusée, délai). */
 export const needsThirdLite = (l1: LectureVote, l2: LectureVote): boolean => !l1.normalized || !l2.normalized || needsThird(l1, l2);
 
 /** Une seule lecture exploitable sur deux : « unavailable » à un lecteur, avec la coupure dite telle quelle. */
@@ -68,8 +68,8 @@ export function finalOfTwo(r1: LectureVote, r2: LectureVote, third?: LectureVote
 }
 
 /**
- * Quand une lecture Flash-Lite manque et que la 3.8 a lu : jamais « Lecture indisponible ». Une Flash-Lite lisible et la 3.8 votent à
- * deux ; aucune Flash-Lite lisible, la 3.8 seule, « unavailable » à un lecteur.
+ * Quand une lecture Flash-Lite manque et que la 3ᵉ lecture a lu : jamais « Lecture indisponible ». Une Flash-Lite lisible et la 3ᵉ lecture votent à
+ * deux ; aucune Flash-Lite lisible, la 3ᵉ lecture seule, « unavailable » à un lecteur.
  */
 export function finalOfLite(r1: LectureVote, r2: LectureVote, third?: LectureVote): VoteFinal {
   if ((r1.normalized && r2.normalized) || !third?.normalized) return finalOfTwo(r1, r2, third);
@@ -78,35 +78,38 @@ export function finalOfLite(r1: LectureVote, r2: LectureVote, third?: LectureVot
   return finish(finalOfTwo(good, third).result, [r1, r2, third]);
 }
 
-/** Le résultat d'une lecture seule : « disputed » si un point pèse, « checked » sinon (la 3.8 qui tranche seule). */
+/** Le résultat d'une lecture seule : « disputed » si un point pèse, « checked » sinon (la 3ᵉ lecture qui tranche seule). */
 function singleResult(single: ReturnType<typeof finirUneLecture>, readers = 1): any {
   const weighing = single.points.filter(point => point.pese);
   return { ...single, review: { status: weighing.length ? 'disputed' : 'checked', readers, correctedFields: [] as string[], findings: [...new Set(weighing.map(point => point.message))].slice(0, 50) }, issues: single.issues };
 }
 
-/** C★ : quand la 3.8 est appelée et lisible sur un désaccord, son résultat TRANCHE SEUL. Sinon le repli `finalOfLite`. */
-function finalOfStar(r1: LectureVote, r2: LectureVote, third?: LectureVote): VoteFinal {
-  if (r1.normalized && r2.normalized && third?.normalized && needsThird(r1, r2))
+/** C★ : quand la 3ᵉ lecture est appelée et lisible sur un désaccord, son résultat TRANCHE SEUL. Sinon le repli `finalOfLite`. */
+function finalOfStar(r1: LectureVote, r2: LectureVote, third?: LectureVote, tranche = false): VoteFinal {
+  // `tranche` : une relecture demandée par l'utilisateur (« Un doute ? ») fait trancher la 3ᵉ lecture même quand les deux Flash-Lite concordent.
+  if (r1.normalized && r2.normalized && third?.normalized && (tranche || needsThird(r1, r2)))
     return finish(singleResult(finirUneLecture(third.normalized), 3), [r1, r2, third]);
   return finalOfLite(r1, r2, third);
 }
 
 /**
- * C★v : les VALEURS de la 3.8 quand elle tranche, mais le STATUT du vote à trois : dès que les lectures ont divergé sur un champ qui pèse,
+ * C★v : les VALEURS de la 3ᵉ lecture quand elle tranche, mais le STATUT du vote à trois : dès que les lectures ont divergé sur un champ qui pèse,
  * le résultat reste « disputed » et garde les phrases du vote. Les points du vote qui sont des désaccords entre lectures s'ajoutent à
- * ceux de la 3.8 seule. Sans 3.8 appelée, c'est `finalOfLite`.
+ * ceux de la 3ᵉ lecture seule. Sans 3ᵉ lecture appelée, c'est `finalOfLite`.
  */
-export function finalOfStarVote(r1: LectureVote, r2: LectureVote, third?: LectureVote): VoteFinal {
-  const star = finalOfStar(r1, r2, third);
+export function finalOfStarVote(r1: LectureVote, r2: LectureVote, third?: LectureVote, tranche = false): VoteFinal {
+  const star = finalOfStar(r1, r2, third, tranche);
   if (star.used.length < 3 || !third?.normalized || !r1.normalized || !r2.normalized) return star;
   const vote = finalOfTwo(r1, r2, third);
   const disagreements = (vote.result.points ?? []).filter((point: any) => point.source === 'désaccord');
   const result = { ...star.result, ...phrasesDuVote(vote.result, star.result), points: [...star.result.points, ...disagreements] };
   dateDuVoteEtoile(result, [r1.normalized!, r2.normalized!, third.normalized]);
+  // Relecture demandée alors que les deux Flash-Lite concordaient : le vote à deux n'a pas appelé la 3ᵉ lecture, mais elle a lu et tranché : trois lecteurs, comme sur un désaccord.
+  if (tranche && !needsThird(r1, r2)) result.review = { ...result.review, readers: star.result.review.readers };
   return { ...star, result };
 }
 /**
- * LT-2 : la 3.8 tranche seule, mais deux lectures qui ne diffèrent que par l'année cèdent à l'année à 4 chiffres, puis à la date plausible aujourd'hui.
+ * LT-2 : la 3ᵉ lecture tranche seule, mais deux lectures qui ne diffèrent que par l'année cèdent à l'année à 4 chiffres, puis à la date plausible aujourd'hui.
  * Exportée pour le banc (`scripts/banc-lecture-facture.ts`), qui rejoue C★v sur des lectures déjà payées : une seule règle, jamais une copie (09.11 : le banc
  * gardait 07.11.2025 sur doc21 là où la production garde 2026).
  */
@@ -116,8 +119,8 @@ export function dateDuVoteEtoile(result: { date?: unknown; dateCourte?: unknown 
 }
 /**
  * D272b : les phrases du vote, sans ses contrôles de calcul. Ceux-ci portent sur le mélange des trois lectures, alors que les valeurs gardées sont
- * celles de la 3.8, dont les contrôles sont déjà dans son résultat (le 01.11, deux Flash-Lite sans la ligne de port faisaient dire « Écart 29,99 CHF »
- * à côté d'une somme juste). Ce qu'une lecture a signalé reste (source « modèle » : une quantité illisible) ; les phrases de la 3.8 s'ajoutent.
+ * celles de la 3ᵉ lecture, dont les contrôles sont déjà dans son résultat (le 01.11, deux Flash-Lite sans la ligne de port faisaient dire « Écart 29,99 CHF »
+ * à côté d'une somme juste). Ce qu'une lecture a signalé reste (source « modèle » : une quantité illisible) ; les phrases de la 3ᵉ lecture s'ajoutent.
  */
 export function phrasesDuVote(vote: any, star: any): { issues: string[]; review: any } {
   const calculs = new Set<string>((vote.points ?? []).filter((point: any) => (point.source ?? 'contrôle') === 'contrôle').map((point: any) => point.message));
@@ -129,24 +132,26 @@ export function phrasesDuVote(vote: any, star: any): { issues: string[]; review:
 export interface Csv8Io {
   /** Lecture Flash-Lite 1 ou 2 (consigne 1 ou 2), normalisée (N comprise) ; rejette si coupée, refusée ou en délai. */
   readLite(lecture: 1 | 2): Promise<InvoiceScanResult>;
-  /** La 3.8 (consigne 3), normalisée (N comprise). */
+  /** La 3ᵉ lecture (consigne 3), normalisée (N comprise). */
   readStrong(): Promise<InvoiceScanResult>;
   /** Pourquoi une lecture a été coupée (limite de sortie, délai), ou null. */
   causeOf(reason: unknown): CauseCoupure | null;
-  /** Le délai global est atteint : la 3.8 n'est plus appelée, et la coupure se dit « delai-saute ». */
+  /** Le délai global est atteint : la 3ᵉ lecture n'est plus appelée, et la coupure se dit « delai-saute ». */
   deadlineReached(): boolean;
   /**
-   * D308 (lenteur D) : le premier écran. Appelé une fois, entre la fin des deux Flash-Lite et le départ de la 3.8, seulement quand les deux sont
-   * lisibles et que la 3.8 va partir. Jamais attendu : la 3.8 ne le retient pas. Un échec (levée ou promesse rejetée) ne change rien à la lecture ;
+   * D308 (lenteur D) : le premier écran. Appelé une fois, entre la fin des deux Flash-Lite et le départ de la 3ᵉ lecture, seulement quand les deux sont
+   * lisibles et que la 3ᵉ lecture va partir. Jamais attendu : la 3ᵉ lecture ne le retient pas. Un échec (levée ou promesse rejetée) ne change rien à la lecture ;
    * une levée dit aussi que le morceau n'est pas parti, donc le final ne porte aucun `rangProvisoire`.
    */
   provisoire?(result: any): unknown;
+  /** Relecture demandée par l'utilisateur : la 3ᵉ lecture part même si les deux Flash-Lite concordent, et elle tranche. Pas de premier écran provisoire (le client a déjà une lecture). */
+  forceThird?: boolean;
 }
 
 /**
- * D308 : le premier écran de la lecture : le rapprochement de `finalOfTwo` des deux Flash-Lite, SANS la coupure (« delai-saute ») : la 3.8 n'a pas échoué,
+ * D308 : le premier écran de la lecture : le rapprochement de `finalOfTwo` des deux Flash-Lite, SANS la coupure (« delai-saute ») : la 3ᵉ lecture n'a pas échoué,
  * elle est en cours. Deux lecteurs, marqué `provisoire: true`. Rien d'autre ne change : mêmes points, mêmes phrases, même ordre de lignes (celui de la
- * première lecture) que `finalOfTwo` quand la 3.8 échoue. Copie neuve : `finalOfTwo` ajoute plus tard sa coupure au final, jamais à ce morceau.
+ * première lecture) que `finalOfTwo` quand la 3ᵉ lecture échoue. Copie neuve : `finalOfTwo` ajoute plus tard sa coupure au final, jamais à ce morceau.
  */
 export function provisoireDeDeux(r1: LectureVote, r2: LectureVote): any | null {
   if (!r1.normalized || !r2.normalized) return null;
@@ -156,13 +161,13 @@ export function provisoireDeDeux(r1: LectureVote, r2: LectureVote): any | null {
 }
 
 /**
- * D308 : pour chaque ligne FINALE, le rang de sa ligne dans le provisoire, ou null si la 3.8 l'ajoute. Le rapprochement est celui de la production
+ * D308 : pour chaque ligne FINALE, le rang de sa ligne dans le provisoire, ou null si la 3ᵉ lecture l'ajoute. Le rapprochement est celui de la production
  * (`alignerLignes` : référence, nom, puis chiffres, jamais la seule position : ce sont les ANCRES).
  * p3 (jeu en ligne 5, BAUHAUS : « GANTS DE TRAVAIL » posé sur « METRE AUGA » à un autre montant) : problème d'école, l'alignement de deux séquences autour d'ancres communes (diff, Needleman-Wunsch).
  * L'ancien repli (même longueur totale, ligne sans paire au même rang des deux côtés) devinait des paires dès que les deux listes avaient le même nombre de lignes, sans regarder si l'espace entre deux ancres
  * avait le même nombre de lignes de chaque côté : sur une photo tachée (10 lignes sans paire de chaque côté) il rapprochait des lignes sans rapport et décalait les corrections. Le repli se fait DANS UN INTERVALLE
  * entre deux ancres voisines (dans l'ordre des deux listes) : les lignes sans paire de l'intervalle se rapprochent une à une, dans l'ordre, seulement s'il y en a le même nombre des deux côtés (le doc13 du banc :
- * la 3.8 change le nom et le montant d'une ligne entre deux lignes sûres). Sinon aucune paire : celle du provisoire est « retirée », celle du final « ajoutée », sans correction inventée.
+ * la 3ᵉ lecture change le nom et le montant d'une ligne entre deux lignes sûres). Sinon aucune paire : celle du provisoire est « retirée », celle du final « ajoutée », sans correction inventée.
  */
 const SEUIL_NOM = 0.7, SEUIL_NOM_MONTANT_EGAL = 0.5, SEUIL_UNE_PAIRE = 0.5;
 const texteDeNom = (v: unknown): string => String(v ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
@@ -188,7 +193,7 @@ export function rangsProvisoires(provisoire: any[], final: any[]): Array<number 
     const deF: number[] = []; for (let f = precedenteF + 1; f < finF; f++) if (rangs[f] === null) deF.push(f);
     const deP: number[] = []; for (let p = precedenteP + 1; p < finP; p++) if (sansPaire.has(p)) deP.push(p);
     if (!deF.length || !deP.length) return;
-    // Une seule ligne sans paire de chaque côté : la même ligne dont la 3.8 a changé le nom et le montant ensemble (doc13) SEULEMENT si la pièce n'a que cette ligne ou si les noms se ressemblent : entre deux ancres,
+    // Une seule ligne sans paire de chaque côté : la même ligne dont la 3ᵉ lecture a changé le nom et le montant ensemble (doc13) SEULEMENT si la pièce n'a que cette ligne ou si les noms se ressemblent : entre deux ancres,
     // la position seule rapprochait « PINCEAU PLAT » de « ROBAN DE MASQUAGE » (BAUHAUS, banc : deux lignes sans rapport, montants 3,40 et 4,50).
     if (deF.length === 1 && deP.length === 1) { if ((final.length === 1 && provisoire.length === 1) || ressemblance(final[deF[0]]?.name, provisoire[deP[0]]?.name) >= SEUIL_UNE_PAIRE) rangs[deF[0]] = deP[0]; return; }
     // Plusieurs : jamais la position (elle décale tout). Seule une ressemblance du nom lu (une faute d'OCR corrigée : BNOSEE / BROSSE) rapproche, la plus forte d'abord, une paire à la fois.
@@ -208,33 +213,33 @@ export function rangsProvisoires(provisoire: any[], final: any[]): Array<number 
 }
 
 /**
- * p2 (jeu en ligne 4, 10.11) : deux tickets Sun Store lus comme deux pages d'UNE dépense, « Total EFT 163,85 » imprimé sur les deux. Les deux Flash-Lite lisent les 7 lignes et 163,85 ; la 3.8, qui tranche SEULE (C★),
+ * p2 (jeu en ligne 4, 10.11) : deux tickets Sun Store lus comme deux pages d'UNE dépense, « Total EFT 163,85 » imprimé sur les deux. Les deux Flash-Lite lisent les 7 lignes et 163,85 ; la 3ᵉ lecture, qui tranche SEULE (C★),
  * rend la page 2 seule : 5 lignes, 149,25, TVA 0,00. Le client voit la perte tant que le flux provisoire est là (« pas retrouvée »), mais le résultat gardé au cache ne la dit plus : relu plus tard, la dépense
- * affiche 149,25 sans aucune trace. Ce que la 3.8 retire est donc écrit dans le résultat lui-même : les lignes que les deux premières lectures avaient et que la 3.8 n'a pas (rapprochement de production,
- * `alignerLignes`), et, avec elles, le total et la TVA d'avant quand la 3.8 les change. Additif : aucune valeur du résultat n'est modifiée ici, le client décide (Garder / Retirer).
+ * affiche 149,25 sans aucune trace. Ce que la 3ᵉ lecture retire est donc écrit dans le résultat lui-même : les lignes que les deux premières lectures avaient et que la 3ᵉ lecture n'a pas (rapprochement de production,
+ * `alignerLignes`), et, avec elles, le total et la TVA d'avant quand la 3ᵉ lecture les change. Additif : aucune valeur du résultat n'est modifiée ici, le client décide (Garder / Retirer).
  */
 export interface Retirees { lignes: Array<{ rang: number; ligne: any }>; amountTTC?: number | null; tvaAmount?: number | null }
 export function retireesParLaTroisieme(l1: LectureVote, l2: LectureVote, third: LectureVote | undefined, final: any): Retirees | null {
   if (!l1.normalized || !l2.normalized || !third?.normalized || !needsThird(l1, l2)) return null;
   const provisoire = provisoireDeDeux(l1, l2);
   if (!provisoire) return null;
-  // p3 : la même table que le flux (`rangsProvisoires`) : une ligne que le repli rapproche est corrigée par la 3.8, pas retirée.
+  // p3 : la même table que le flux (`rangsProvisoires`) : une ligne que le repli rapproche est corrigée par la 3ᵉ lecture, pas retirée.
   const rapprochees = new Set(rangsProvisoires(provisoire.items, final.items ?? []).filter((r): r is number => r !== null));
   const lignes = provisoire.items.map((ligne: any, rang: number) => ({ rang, ligne })).filter((x: { rang: number }) => !rapprochees.has(x.rang));
   const centimes = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v * 100) : null);
   const total = centimes(provisoire.amountTTC) !== null && centimes(provisoire.amountTTC) !== centimes(final.amountTTC);
   const tva = centimes(provisoire.tvaAmount) !== null && centimes(provisoire.tvaAmount) !== centimes(final.tvaAmount);
-  // Seules les LIGNES retirées déclenchent l'écriture (une donnée perdue) ; un total ou une TVA que la 3.8 corrige seul reste, comme avant, une correction ordinaire (le banc `scripts/banc-lecture-facture.ts`, oracle de parité, ne l'écrit pas).
+  // Seules les LIGNES retirées déclenchent l'écriture (une donnée perdue) ; un total ou une TVA que la 3ᵉ lecture corrige seul reste, comme avant, une correction ordinaire (le banc `scripts/banc-lecture-facture.ts`, oracle de parité, ne l'écrit pas).
   if (!lignes.length) return null;
   return { lignes, ...(total ? { amountTTC: provisoire.amountTTC } : {}), ...(tva ? { tvaAmount: provisoire.tvaAmount } : {}) };
 }
 
 /**
  * p3 relance 1 (jeu en ligne 6, BAUHAUS : « OPSHGE CHANTIER » à 8,50 posé sur « CRATONS DE CHARPENTTER · 3,10 », 8 lignes au nom d'une voisine) : preuve sur les lectures réelles du banc (`analyse-decalage-sortie.txt`,
- * 113 tirages à trois lectures, aucun appel) : c'est la 3.8 elle-même, pas le rapprochement : sur le ticket BAUHAUS tâché (doc24) et un second ticket de la même boutique (doc25), jusqu'à 12 lignes sur 29 de sa lecture portent le montant
+ * 113 tirages à trois lectures, aucun appel) : c'est la 3ᵉ lecture elle-même, pas le rapprochement : sur le ticket BAUHAUS tâché (doc24) et un second ticket de la même boutique (doc25), jusqu'à 12 lignes sur 29 de sa lecture portent le montant
  * d'une ligne VOISINE ; ailleurs, aucune. Quand elle tranche seule (C★), ses lignes remplacent celles des deux Flash-Lite, qui s'accordaient sur ces lignes.
- * Détection (pas de modèle de plus) : une ligne de la 3.8 dont le nom est retrouvé (ressemblance ≥ 0,6) dans CHACUNE des deux Flash-Lite, les deux lignes retrouvées s'accordant sur le montant, alors que le montant de la 3.8 diffère
- * de ce montant d'accord ET est celui d'une ligne voisine (rang ± 1 à 2, d'un autre nom) dans chacune des deux. Alors le montant, le prix, la quantité et l'unité d'accord des deux Flash-Lite remplacent ceux de la 3.8 :
+ * Détection (pas de modèle de plus) : une ligne de la 3ᵉ lecture dont le nom est retrouvé (ressemblance ≥ 0,6) dans CHACUNE des deux Flash-Lite, les deux lignes retrouvées s'accordant sur le montant, alors que le montant de la 3ᵉ lecture diffère
+ * de ce montant d'accord ET est celui d'une ligne voisine (rang ± 1 à 2, d'un autre nom) dans chacune des deux. Alors le montant, le prix, la quantité et l'unité d'accord des deux Flash-Lite remplacent ceux de la 3ᵉ lecture :
  * le nom (sa lecture, meilleure) reste. Une correction de nom ne change jamais le montant d'une ligne. Rend les rangs redressés.
  */
 export function redresserDecalage(final: any, l1: LectureVote, l2: LectureVote): { items: any[]; redressees: number[] } {
@@ -251,7 +256,7 @@ export function redresserDecalage(final: any, l1: LectureVote, l2: LectureVote):
     const proches = lites.map(liste => liste.map((x, j) => ({ j, s: ressemblance(it.name, x?.name) })).sort((p, q) => q.s - p.s)[0]);
     if (proches.some(p => !p || p.s < 0.6)) return it;
     const [pa, pb] = proches, xa = lites[0][pa.j], xb = lites[1][pb.j], aF = montant(xa);
-    // les deux Flash-Lite s'accordent sur la ligne ET sur son rang : deux listes de longueurs différentes n'ont pas les mêmes voisines (doc25, tirage p5 : la 3.8 avait raison contre deux listes décalées entre elles)
+    // les deux Flash-Lite s'accordent sur la ligne ET sur son rang : deux listes de longueurs différentes n'ont pas les mêmes voisines (doc25, tirage p5 : la 3ᵉ lecture avait raison contre deux listes décalées entre elles)
     if (aF === null || aF !== montant(xb) || aF === a3 || pa.j !== pb.j) return it;
     const voisine = (liste: any[], p: { j: number }) => [-2, -1, 1, 2].some(dj => liste[p.j + dj] && montant(liste[p.j + dj]) === a3 && ressemblance(liste[p.j + dj].name, it.name) < 0.6);
     if (!voisine(lites[0], pa) || !voisine(lites[1], pb)) return it;
@@ -263,7 +268,7 @@ export function redresserDecalage(final: any, l1: LectureVote, l2: LectureVote):
 
 /**
  * C★v8 : deux Flash-Lite en parallèle (chaque appel en cours est attendu avant de rendre la main : le budget ferme son registre après),
- * la 3.8 sur désaccord ou lecture manquante, le résultat de `finalOfStarVote`. Rien de lisible nulle part : l'erreur de la première
+ * la 3ᵉ lecture sur désaccord ou lecture manquante, le résultat de `finalOfStarVote`. Rien de lisible nulle part : l'erreur de la première
  * lecture remonte, comme avant.
  */
 export async function lireCsv8(io: Csv8Io): Promise<any> {
@@ -272,9 +277,9 @@ export async function lireCsv8(io: Csv8Io): Promise<any> {
     attempt.status === 'fulfilled' ? { normalized: attempt.value, cause: null } : { cause: io.causeOf(attempt.reason) };
   const [l1, l2] = attempts.map(asRead);
   let third: LectureVote | undefined, provisoire: any | null = null;
-  if (needsThirdLite(l1, l2) && !io.deadlineReached()) {
-    // D308 : le premier écran part avant la 3.8 et ne l'attend pas. Seulement si les deux Flash-Lite sont lisibles ; sinon on attend la 3.8.
-    if (io.provisoire && l1.normalized && l2.normalized) {
+  if ((io.forceThird === true || needsThirdLite(l1, l2)) && !io.deadlineReached()) {
+    // D308 : le premier écran part avant la 3ᵉ lecture et ne l'attend pas. Seulement si les deux Flash-Lite sont lisibles ; sinon on attend la 3ᵉ lecture.
+    if (io.provisoire && io.forceThird !== true && l1.normalized && l2.normalized) {
       try {
         const morceau = provisoireDeDeux(l1, l2), sorti = io.provisoire(morceau);
         if (sorti && typeof (sorti as Promise<unknown>).catch === 'function') (sorti as Promise<unknown>).catch(() => undefined);
@@ -283,13 +288,15 @@ export async function lireCsv8(io: Csv8Io): Promise<any> {
     }
     try { third = { normalized: await io.readStrong(), cause: null }; } catch (error) { third = { cause: io.causeOf(error) }; }
   }
-  const final = finalOfStarVote(l1, l2, third);
+  // Une relecture demandée qui n'a pas lu (ni Argon, ni la 3.8, ou délai atteint) n'a rien à rendre : jamais le vote des deux Flash-Lite présenté comme une relecture fine.
+  if (io.forceThird === true && !third?.normalized) throw new Error('La relecture plus fine n’a pas abouti. La lecture actuelle reste valable : vérifie-la sur l’original.');
+  const final = finalOfStarVote(l1, l2, third, io.forceThird === true);
   if (final.result === null) throw (attempts.find(attempt => attempt.status === 'rejected') as PromiseRejectedResult).reason;
   if (third?.normalized) { const { items, redressees } = redresserDecalage(final.result, l1, l2); if (redressees.length) final.result = { ...final.result, items }; }
   const retirees = retireesParLaTroisieme(l1, l2, third, final.result);
   if (retirees) final.result = { ...final.result, retirees };
   if (!provisoire) return final.result;
-  // La 3.8 a lu : ses lignes se rapprochent de celles du provisoire. Elle a échoué : le final EST le provisoire (plus la coupure), chaque rang est le sien.
+  // La 3ᵉ lecture a lu : ses lignes se rapprochent de celles du provisoire. Elle a échoué : le final EST le provisoire (plus la coupure), chaque rang est le sien.
   const rangs = third?.normalized ? rangsProvisoires(provisoire.items, final.result.items) : final.result.items.map((_: unknown, rang: number) => rang);
   return { ...final.result, items: final.result.items.map((ligne: any, rang: number) => ({ ...ligne, rangProvisoire: rangs[rang] })) };
 }

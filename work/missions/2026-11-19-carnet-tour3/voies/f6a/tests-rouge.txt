@@ -1,0 +1,223 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 11 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6a-tour3.test.ts[2m > [22mLR1-5 (en-tête) et v3-3 : le fournisseur lu autrement n’est pas une correction[2m > [22mdoc14 : « Brau- und Rauchshop » puis « BRAU- UND RAUCHSHOP » (la casse seule) : ni barré ni compte ; le nom de la 3.8 est repris
+[31m[1mAssertionError[22m: expected { avant: 'Brau- und Rauchshop', …(1) } to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+{
+  "apres": "BRAU- UND RAUCHSHOP",
+  "avant": "Brau- und Rauchshop",
+}
+
+[36m [2m❯[22m tests/unit/depense/f6a-tour3.test.ts:[2m41:41[22m[39m
+    [90m 39| [39m  it('doc14 : « Brau- und Rauchshop » puis « BRAU- UND RAUCHSHOP » (la…
+    [90m 40| [39m    [35mconst[39m s [33m=[39m [34mdeux[39m([32m'Brau- und Rauchshop'[39m[33m,[39m [32m'BRAU- UND RAUCHSHOP'[39m)[33m;[39m
+    [90m 41| [39m    [34mexpect[39m(s[33m.[39mcorrections[33m.[39mentete[33m.[39mvendor)[33m.[39m[34mtoBeUndefined[39m()[33m;[39m
+    [90m   | [39m                                        [31m^[39m
+    [90m 42| [39m    [34mexpect[39m(s[33m.[39mnCorrigees)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+    [90m 43| [39m    [34mexpect[39m(s[33m.[39mdraft[33m.[39mvendor)[33m.[39m[34mtoBe[39m([32m'BRAU- UND RAUCHSHOP'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6a-tour3.test.ts[2m > [22mLR1-5 (en-tête) et v3-3 : le fournisseur lu autrement n’est pas une correction[2m > [22mdoc2 : le nom court contenu, mots entiers, dans le nom retenu (« … Sàrl » puis « … Sàrl - Médecins vétérinaires ») : variante, pas correction
+[31m[1mAssertionError[22m: expected { …(2) } to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+{
+  "apres": "Drs A. et B. Fictif-Exemple Sàrl - Médecins vétérinaires",
+  "avant": "Drs A. et B. Fictif-Exemple Sàrl",
+}
+
+[36m [2m❯[22m tests/unit/depense/f6a-tour3.test.ts:[2m47:41[22m[39m
+    [90m 45| [39m  it('doc2 : le nom court contenu, mots entiers, dans le nom retenu («…
+    [90m 46| [39m    const s = deux('Drs A. et B. Fictif-Exemple Sàrl', 'Drs A. et B. F…
+    [90m 47| [39m    [34mexpect[39m(s[33m.[39mcorrections[33m.[39mentete[33m.[39mvendor)[33m.[39m[34mtoBeUndefined[39m()[33m;[39m
+    [90m   | [39m                                        [31m^[39m
+    [90m 48| [39m    [34mexpect[39m(s[33m.[39mnCorrigees)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+    [90m 49| [39m    expect(s.draft.vendor).toBe('Drs A. et B. Fictif-Exemple Sàrl - Mé…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6a-tour3.test.ts[2m > [22mLR1-5 (ligne) : « 30 g » barré sous « 30 g » : l’unité lue égale l’unité déduite n’est pas une correction[2m > [22mbanc v3-lent (lenteur-perdue) : Sabro et Citra, unité déduite « g » puis lue « g » : aucune correction d’unité, rien de barré
+[31m[1mAssertionError[22m: Sabro 13.4%: expected [ 'unit' ] to not include 'unit'[39m
+[36m [2m❯[22m tests/unit/depense/f6a-tour3.test.ts:[2m67:57[22m[39m
+    [90m 65| [39m    for (const l of s.draft.lines.filter(x => /Sabro|Citra/.test(x.des…
+    [90m 66| [39m      [35mconst[39m corr [33m=[39m s[33m.[39mcorrections[33m.[39mlignes[l[33m.[39mid] [33m??[39m [][33m;[39m
+    [90m 67| [39m      expect(corr.map(c => c.champ), l.description).not.toContain('uni…
+    [90m   | [39m                                                        [31m^[39m
+    [90m 68| [39m      expect(corr.length ? libelleAvant(base.lignes[l.id], corr, l) : …
+    [90m 69| [39m    }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6a-tour3.test.ts[2m > [22mv3-4 : un règlement SUPPOSÉ par la 1re lecture n’est pas montré barré[2m > [22mdoc2 : 1re lecture sans preuve (« Payé » supposé), 3.8 lit « à payer » : À payer, sans barré ni compte
+[31m[1mAssertionError[22m: expected { avant: 'paid', apres: 'unpaid' } to be undefined[39m
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+{
+  "apres": "unpaid",
+  "avant": "paid",
+}
+
+[36m [2m❯[22m tests/unit/depense/f6a-tour3.test.ts:[2m79:43[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6a-tour3.test.ts[2m > [22mLR3-3 : l’appariement des lignes entre lectures se vérifie sur les noms[2m > [22mdoc25 : les rangs du serveur décalés d’une ligne dès « ROULEAU » : aucune ligne retirée ni ajoutée, aucune valeur de la voisine barrée
+[31m[1mAssertionError[22m: expected [ 'MARQUEUR FICTIF', …(1) ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   "MARQUEUR FICTIF",[39m
+[31m+   "MASQUE DE PROTECT.",[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/unit/depense/f6a-tour3.test.ts:[2m99:53[22m[39m
+    [90m 97| [39m    const final = lecture(NOMS.map((n, k) => item(k + 1, k === 4 ? 'RO…
+    [90m 98| [39m    [35mconst[39m { s } [33m=[39m [34mfusion[39m(provisoire[33m,[39m final)[33m;[39m
+    [90m 99| [39m    [34mexpect[39m(s[33m.[39mperdues[33m.[39m[34mmap[39m(p [33m=>[39m p[33m.[39mligne[33m.[39mdescription))[33m.[39m[34mtoEqual[39m([])[33m;[39m
+    [90m   | [39m                                                    [31m^[39m
+    [90m100| [39m    [34mexpect[39m(s[33m.[39majoutees)[33m.[39m[34mtoEqual[39m([])[33m;[39m
+    [90m101| [39m    [34mexpect[39m(s[33m.[39mcorrections[33m.[39mlignes)[33m.[39m[34mtoEqual[39m({})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6a-tour3.test.ts[2m > [22mLR3-3 : l’appariement des lignes entre lectures se vérifie sur les noms[2m > [22mrepli par position (M4, final sans rang) : « ROULEAU » n’est jamais barré sous un autre nom à un autre montant ; il est retiré et l’autre ajouté
+[31m[1mAssertionError[22m: expected { 'line-2': [ { …(4) }, …(3) ] } to deeply equal {}[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- {}[39m
+[31m+ {[39m
+[31m+   "line-2": [[39m
+[31m+     {[39m
+[31m+       "apres": "DEBOUCHEUR GEL 1L",[39m
+[31m+       "avant": "ROULEAU LAQUE 12CM",[39m
+[31m+       "champ": "description",[39m
+[31m+       "id": "line-2",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "apres": "DEBOUCHEUR GEL",[39m
+[31m+       "avant": "ROULEAU LAQUE 12CM",[39m
+[31m+       "champ": "nomLu",[39m
+[31m+       "id": "line-2",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "apres": 7.5,[39m
+[31m+       "avant": 9.5,[39m
+[31m+       "champ": "unitPrice",[39m
+[31m+       "id": "line-2",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "apres": 7.5,[39m
+[31m+       "avant": 9.5,[39m
+[31m+       "champ": "amount",[39m
+[31m+       "id": "line-2",[39m
+[31m+     },[39m
+[31m+   ],[39m
+[31m+ }[39m
+
+[36m [2m❯[22m tests/unit/depense/f6a-tour3.test.ts:[2m108:34[22m[39m
+    [90m106| [39m    const final = lecture([item(1, 'CUTTER FICTIF', 1, 5.2, 5.2), item…
+    [90m107| [39m    [35mconst[39m { s } [33m=[39m [34mfusion[39m(provisoire[33m,[39m final)[33m;[39m
+    [90m108| [39m    [34mexpect[39m(s[33m.[39mcorrections[33m.[39mlignes)[33m.[39m[34mtoEqual[39m({})[33m;[39m
+    [90m   | [39m                                 [31m^[39m
+    [90m109| [39m    expect(s.perdues.map(p => p.ligne.description)).toEqual(['ROULEAU …
+    [90m110| [39m    [34mexpect[39m(s[33m.[39majoutees[33m.[39mlength)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6a-tour3.test.ts[2m > [22mLR3-3 : l’appariement des lignes entre lectures se vérifie sur les noms[2m > [22malignement : l’ordre est gardé, une paire proposée qui contredit le nom et le montant est refusée
+[31m[1mTypeError[22m: alignerLignesLues is not a function[39m
+[36m [2m❯[22m tests/unit/depense/f6a-tour3.test.ts:[2m118:19[22m[39m
+    [90m116| [39m  it('alignement : l’ordre est gardé, une paire proposée qui contredit…
+    [90m117| [39m    const p = [{ name: 'A FICTIF', amountTTC: 1 }, { name: 'B FICTIF',…
+    [90m118| [39m    expect(finale.alignerLignesLues(p, p, [1, 2, null])).toEqual([0, 1…
+    [90m   | [39m                  [31m^[39m
+    [90m119| [39m    expect(finale.alignerLignesLues(p, [{ name: 'ZZZ AUTRE', amountTTC…
+    [90m120| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6a-tour3.test.ts[2m > [22mLR3-3 : un prix connu n’est jamais remplacé par l’inconnu de la 3.8 (« 1 ? × 4,95 » barré sous « ? × — »)[2m > [22m1re lecture « 1 × total » (ligne divers), 3.8 en matériel sans quantité ni prix : la ligne garde 1 × 4,95, rien de barré
+[31m[1mAssertionError[22m: expected [ undefined, undefined, 4.95 ] to deeply equal [ 1, 4.95, 4.95 ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   1,[39m
+[32m-   4.95,[39m
+[31m+   undefined,[39m
+[31m+   undefined,[39m
+[2m    4.95,[22m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/f6a-tour3.test.ts:[2m127:49[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6a-tour3.test.ts[2m > [22mLR3-3 : un prix connu n’est jamais remplacé par l’inconnu de la 3.8 (« 1 ? × 4,95 » barré sous « ? × — »)[2m > [22mle montant corrigé par la 3.8 (69,95 → 6,95) : seul le montant est barré, le prix « 1 × total » suit le montant
+[31m[1mAssertionError[22m: expected [ 'kind', 'quantity', …(2) ] to deeply equal [ 'amount' ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[31m+   "kind",[39m
+[31m+   "quantity",[39m
+[31m+   "unitPrice",[39m
+[2m    "amount",[22m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/f6a-tour3.test.ts:[2m134:36[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6a-tour3.test.ts[2m > [22mLR2-3 : le compte des désaccords dit ce qu’il compte, en mots du brasseur[2m > [22mdoc25 : 7 valeurs sans accord des lectures : « 3/3 · 7 valeurs en désaccord », en-tête « 7 valeurs en désaccord »
+[31m[1mTypeError[22m: rangDesLectures is not a function or its return value is not iterable[39m
+[36m [2m❯[22m tests/unit/depense/f6a-tour3.test.ts:[2m143:25[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f6a-tour3.test.ts[2m > [22mLR2-3 : le compte des désaccords dit ce qu’il compte, en mots du brasseur[2m > [22mdoc2 : une seule valeur (le fournisseur) : « 1 valeur en désaccord » ; sans désaccord : « d’accord » ; pendant la lecture : 2 sur 3
+[31m[1mTypeError[22m: rangDesLectures is not a function[39m
+[36m [2m❯[22m tests/unit/depense/f6a-tour3.test.ts:[2m147:20[22m[39m
+    [90m145| [39m  })[33m;[39m
+    [90m146| [39m  it('doc2 : une seule valeur (le fournisseur) : « 1 valeur en désacco…
+    [90m147| [39m    expect(croises.rangDesLectures({ attente: false, lectures: 3, nPag…
+    [90m   | [39m                   [31m^[39m
+    [90m148| [39m    expect(croises.rangDesLectures({ attente: false, lectures: 3, nPag…
+    [90m149| [39m    expect(croises.rangDesLectures({ attente: false, lectures: 3, nPag…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m11 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (14)[39m
+[2m   Start at [22m 20:03:49
+[2m   Duration [22m 1.64s[2m (transform 767ms, setup 268ms, collect 1.13s, tests 37ms, environment 0ms, prepare 67ms)[22m
+

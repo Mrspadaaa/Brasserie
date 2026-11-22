@@ -1,0 +1,118 @@
+v3-5 390 t=1621ms pied : Enregistrer · lectures=
+  v35b-0-390-clair.png
+v3-5 390 t=2444ms pied : Lectures | 3e lecture en cours… (inactif) · lectures=Lectures
+  v35b-1-390-clair.png
+v3-5 390 t=26922ms pied : Lectures
+3/3 d'accord | Confirmer · lectures=Lectures
+  v35b-2-390-clair.png
+v3-5 1280 t=788ms pied : Lectures | 3e lecture en cours… (inactif) · lectures=Lectures
+  v35b-0-1280-cave.png
+v3-5 1280 t=25838ms pied : Lectures
+3/3 d'accord | Confirmer · lectures=Lectures
+  v35b-1-1280-cave.png
+LR1-9 clair candidats : ["BUTTON:· Articles lus 6 annoncé par la lecture Somme = imprimé 768,55 · Payé ","SPAN:! Lectures 3/3 · 1 valeur en désaccord Voir le désaccord ›"]
+LR1-9 clair toucher 1 (atteint=true) : {"jaune":[],"ouverts":["Fournisseur et catégorie Drs H. et I. Gauderon-Com @y298","Sedation IM, pose catheter, induction narcose prop @y-397"],"focus":"TEXTAREA","desaccord":["À vérifier · 1 valeur en désaccord","3/3 · 1 valeur en désaccord","Voir le désaccord ›","À confirmer · Fournisseur : lectures divergentes (Drs H. et I. Gauderon-Comment Sàrl / Cabinet Vétérinaire Drs H. et I. Gauderon-Comment Sàrl / Drs H. et I. Gauderon-Comment Sàrl - Médecins vétérinaires), vérifier le justificatif."]}
+  lr19b-1-390-clair.png
+LR1-9 clair toucher 2 (atteint=true) : {"jaune":[],"ouverts":["Fournisseur et catégorie Drs H. et I. Gauderon-Com @y298","Sedation IM, pose catheter, induction narcose prop @y-397"],"focus":"TEXTAREA","desaccord":["À vérifier · 1 valeur en désaccord","3/3 · 1 valeur en désaccord","Voir le désaccord ›","À confirmer · Fournisseur : lectures divergentes (Drs H. et I. Gauderon-Comment Sàrl / Cabinet Vétérinaire Drs H. et I. Gauderon-Comment Sàrl / Drs H. et I. Gauderon-Comment Sàrl - Médecins vétérinaires), vérifier le justificatif."]}
+  lr19b-2-390-clair.png
+LR1-9 clair toucher 3 (atteint=true) : {"jaune":[],"ouverts":["Fournisseur et catégorie Drs H. et I. Gauderon-Com @y298","Sedation IM, pose catheter, induction narcose prop @y-397"],"focus":"TEXTAREA","desaccord":["À vérifier · 1 valeur en désaccord","3/3 · 1 valeur en désaccord","Voir le désaccord ›","À confirmer · Fournisseur : lectures divergentes (Drs H. et I. Gauderon-Comment Sàrl / Cabinet Vétérinaire Drs H. et I. Gauderon-Comment Sàrl / Drs H. et I. Gauderon-Comment Sàrl - Médecins vétérinaires), vérifier le justificatif."]}
+  lr19b-3-390-clair.png
+LR1-9 clair toucher 4 (atteint=true) : {"jaune":[],"ouverts":["Fournisseur et catégorie Drs H. et I. Gauderon-Com @y298","Sedation IM, pose catheter, induction narcose prop @y-397"],"focus":"TEXTAREA","desaccord":["À vérifier · 1 valeur en désaccord","3/3 · 1 valeur en désaccord","Voir le désaccord ›","À confirmer · Fournisseur : lectures divergentes (Drs H. et I. Gauderon-Comment Sàrl / Cabinet Vétérinaire Drs H. et I. Gauderon-Comment Sàrl / Drs H. et I. Gauderon-Comment Sàrl - Médecins vétérinaires), vérifier le justificatif."]}
+  lr19b-4-390-clair.png
+LR1-9 cave candidats : ["BUTTON:· Articles lus 6 annoncé par la lecture Somme = imprimé 768,55 · Payé ","SPAN:! Lectures 3/3 · 1 valeur en désaccord Voir le désaccord ›"]
+LR1-9 cave toucher 1 (atteint=true) : {"jaune":[],"ouverts":["Fournisseur et catégorie Drs H. et I. Gauderon-Com @y298","Sedation IM, pose catheter, induction narcose prop @y-397"],"focus":"TEXTAREA","desaccord":["À vérifier · 1 valeur en désaccord","3/3 · 1 valeur en désaccord","Voir le désaccord ›","À confirmer · Fournisseur : lectures divergentes (Drs H. et I. Gauderon-Comment Sàrl / Cabinet Vétérinaire Drs H. et I. Gauderon-Comment Sàrl / Drs H. et I. Gauderon-Comment Sàrl - Médecins vétérinaires), vérifier le justificatif."]}
+  lr19b-1-390-cave.png
+LR1-9 cave toucher 2 (atteint=true) : {"jaune":[],"ouverts":["Fournisseur et catégorie Drs H. et I. Gauderon-Com @y298","Sedation IM, pose catheter, induction narcose prop @y-397"],"focus":"TEXTAREA","desaccord":["À vérifier · 1 valeur en désaccord","3/3 · 1 valeur en désaccord","Voir le désaccord ›","À confirmer · Fournisseur : lectures divergentes (Drs H. et I. Gauderon-Comment Sàrl / Cabinet Vétérinaire Drs H. et I. Gauderon-Comment Sàrl / Drs H. et I. Gauderon-Comment Sàrl - Médecins vétérinaires), vérifier le justificatif."]}
+  lr19b-2-390-cave.png
+LR1-9 cave toucher 3 (atteint=true) : {"jaune":[],"ouverts":["Fournisseur et catégorie Drs H. et I. Gauderon-Com @y298","Sedation IM, pose catheter, induction narcose prop @y-397"],"focus":"TEXTAREA","desaccord":["À vérifier · 1 valeur en désaccord","3/3 · 1 valeur en désaccord","Voir le désaccord ›","À confirmer · Fournisseur : lectures divergentes (Drs H. et I. Gauderon-Comment Sàrl / Cabinet Vétérinaire Drs H. et I. Gauderon-Comment Sàrl / Drs H. et I. Gauderon-Comment Sàrl - Médecins vétérinaires), vérifier le justificatif."]}
+  lr19b-3-390-cave.png
+LR1-9 cave toucher 4 (atteint=true) : {"jaune":[],"ouverts":["Fournisseur et catégorie Drs H. et I. Gauderon-Com @y298","Sedation IM, pose catheter, induction narcose prop @y-397"],"focus":"TEXTAREA","desaccord":["À vérifier · 1 valeur en désaccord","3/3 · 1 valeur en désaccord","Voir le désaccord ›","À confirmer · Fournisseur : lectures divergentes (Drs H. et I. Gauderon-Comment Sàrl / Cabinet Vétérinaire Drs H. et I. Gauderon-Comment Sàrl / Drs H. et I. Gauderon-Comment Sàrl - Médecins vétérinaires), vérifier le justificatif."]}
+  lr19b-4-390-cave.png
+  v37b-ouverte-390-clair.png
+v3-7 clair « supprimer » : supprimer · aria=Retirer la ligne 3 · 90×28
+  v37b-supprimer-390-clair.png
+  atteint au doigt=true
+v3-8 clair avant {"g":1,"pastille":"—","resumes":31} après {"g":2,"pastille":"—","resumes":30} ; Nouvelle dépense ¦ Plié ¦ Déplié ¦ Brau- und Rauchshop GmbH ¦ 27.04.2026 ¦ CHF ¦ 22 ¦  lignes ¦ À vérifier · TVA recalculée 2 taux ¦ · ¦ Articles lus ¦ 22 · 1 retirée ¦ · ¦ Somme = imprimé − ¦ 1 ligne retirée · 2,40 ¦ · ¦ Payé ¦ — ¦ ! ¦ TVA recalculée ¦ 2 taux1,11 ¦ 8,1 % : 1,95 imprimée, 0,84 recal
+  v38b-apres-390-clair.png
+  v37b-ouverte-390-cave.png
+v3-7 cave « supprimer » : supprimer · aria=Retirer la ligne 3 · 90×28
+  v37b-supprimer-390-cave.png
+  atteint au doigt=true
+v3-8 cave avant {"g":1,"pastille":"—","resumes":31} après {"g":2,"pastille":"—","resumes":30} ; Nouvelle dépense ¦ Plié ¦ Déplié ¦ Brau- und Rauchshop GmbH ¦ 27.04.2026 ¦ CHF ¦ 22 ¦  lignes ¦ À vérifier · TVA recalculée 2 taux ¦ · ¦ Articles lus ¦ 22 · 1 retirée ¦ · ¦ Somme = imprimé − ¦ 1 ligne retirée · 2,40 ¦ · ¦ Payé ¦ — ¦ ! ¦ TVA recalculée ¦ 2 taux1,11 ¦ 8,1 % : 1,95 imprimée, 0,84 recal
+  v38b-apres-390-cave.png
+  champ introuvable [aria-label="Libellé ligne 1"]
+  champ introuvable [aria-label="Quantité ligne 1"]
+  champ introuvable [aria-label="Montant ligne 1"]
+E1-2 390 ligne 1 case unité=false []
+  introuvable : pièce ligne 1
+  ligne 1 unité lue : —
+E1-2 390 ligne 2 case unité=true ["","","","",""]
+  introuvable : kg
+  introuvable : menu Unité ligne 2
+  menu ligne 2 : []
+  pièce (menu) masqué au point (78,834) par « Mon mois, −3,00 CHF » (vh 844)
+  ligne 2 unité lue : DIV:
+E1-2 390 ligne 3 case unité=true ["","","","",""]
+  pièce ligne 3 masqué au point (78,908) par « — » (vh 844)
+  ligne 3 unité lue : DIV:
+  e12b-saisie-390-clair.png
+E1-2 390 après Enregistrer : dialog=true · Nouvelle dépense ¦ Plié ¦ Déplié ¦ À corriger ¦ Chaque ligne doit avoir un libellé et un montant avec deux décimales au maximum. ¦ Joindre des documents ¦ Total TTC en CHF ¦ Règlement ¦ par défaut ¦ Payé le 19.11.2026 ¦ Articles, stock et matériel · 1 ¦ Ingrédients ¦ Ce que tu achètes ¦ Regrouper en une dépense ¦ Ligne sans libellé ¦ ? ¦ × ¦ — ¦ 3,00 ¦ imprimé «  ¦ — ¦  » ¦ ▒ ¦ × ¦ = ¦ +1 ¦ +5 ¦ +
+  e12b-apres-390-clair.png
+  champ introuvable [aria-label="Libellé ligne 1"]
+  champ introuvable [aria-label="Quantité ligne 1"]
+  champ introuvable [aria-label="Montant ligne 1"]
+E1-2 1280 ligne 1 case unité=false []
+  introuvable : pièce ligne 1
+  ligne 1 unité lue : —
+E1-2 1280 ligne 2 case unité=true ["","","","",""]
+  introuvable : kg
+  introuvable : menu Unité ligne 2
+  menu ligne 2 : []
+  pièce (menu) masqué au point (373,806) par « — » (vh 800)
+  ligne 2 unité lue : DIV:
+E1-2 1280 ligne 3 case unité=true ["","","","",""]
+  pièce ligne 3 masqué au point (373,880) par « — » (vh 800)
+  ligne 3 unité lue : DIV:
+  e12b-saisie-1280-cave.png
+E1-2 1280 après Enregistrer : dialog=true · Nouvelle dépense ¦ Plié ¦ Déplié ¦ À corriger ¦ Chaque ligne doit avoir un libellé et un montant avec deux décimales au maximum. ¦ Joindre des documents ¦ Total TTC en CHF ¦ Règlement ¦ par défaut ¦ Payé le 19.11.2026 ¦ Articles, stock et matériel · 1 ¦ Ingrédients ¦ Ce que tu achètes ¦ Regrouper en une dépense ¦ Ligne sans libellé ¦ ? ¦ × ¦ — ¦ 3,00 ¦ imprimé «  ¦ — ¦  » ¦ ▒ ¦ × ¦ = ¦ +1 ¦ +5 ¦ +
+  e12b-apres-1280-cave.png
+BE-23 390 : {"imprime":["imprimé ¦ 13,40 ¦ Payé = imprimé · TWINT ¦ 13,40","imprimé «  ¦ MEFENACIDE cpr pell 500 mg sécables 30 pce ¦  » ¦ "],"stk":false,"unites":[]}
+  be23b-barre-390-cave.png
+BE-23 1280 : {"imprime":["imprimé ¦ 13,40 ¦ Payé = imprimé · TWINT ¦ 13,40","imprimé «  ¦ MEFENACIDE cpr pell 500 mg sécables 30 pce ¦  » ¦ "],"stk":false,"unites":[]}
+  be23b-barre-1280-clair.png
+LR1-14 1280 pied : ["Confirmer aria=Confirmer et enregistrer y=757"]
+  après Confirmer 1 : dialog=true · Nouvelle dépense ¦ Plié ¦ Déplié ¦ 2026-04-27 Brau- und Rauchshop 372765.jpg ¦ L’Affinée / Justificatifs / 2026 ¦ Ouvrir dans Drive ¦ 735 721 octets · taille vérifiée ¦ À revoir : date de paiement supposée gardée ¦ BENU Matran ¦ 10.11.2026 ¦ CHF ¦ 1 ¦  ligne ¦ · ¦ Articles lus ¦ 1 ¦ annoncé par la lecture ¦ Somme = imprimé ¦ 13,40 ¦ Payé = imprimé 
+  lr114b-confirmer1-1280-cave.png
+  introuvable : Confirmer 2
+  après Confirmer 2 : dialog=true · Nouvelle dépense ¦ Plié ¦ Déplié ¦ 2026-04-27 Brau- und Rauchshop 372765.jpg ¦ L’Affinée / Justificatifs / 2026 ¦ Ouvrir dans Drive ¦ 735 721 octets · taille vérifiée ¦ À revoir : date de paiement supposée gardée ¦ BENU Matran ¦ 10.11.2026 ¦ CHF ¦ 1 ¦  ligne ¦ · ¦ Articles lus ¦ 1 ¦ annoncé par la lecture ¦ Somme = imprimé ¦ 13,40 ¦ Payé = imprimé 
+  lr114b-confirmer2-1280-cave.png
+  introuvable : Annuel
+LR1-14 1280 après : — | —
+  lr114b-apres-1280-cave.png
+LR1-14 390 pied : ["Confirmer aria=Confirmer et enregistrer y=801"]
+  après Confirmer 1 : dialog=true · Nouvelle dépense ¦ Plié ¦ Déplié ¦ 2026-04-27 Brau- und Rauchshop 372765.jpg ¦ L’Affinée / Justificatifs / 2026 ¦ Ouvrir dans Drive ¦ 735 721 octets · taille vérifiée ¦ À revoir : date de paiement supposée gardée ¦ BENU Matran ¦ 10.11.2026 ¦ CHF ¦ 1 ¦  ligne ¦ · ¦ Articles lus ¦ 1 ¦ annoncé par la lecture ¦ Somme = imprimé ¦ 13,40 ¦ Payé = imprimé 
+  lr114b-confirmer1-390-clair.png
+  introuvable : Confirmer 2
+  après Confirmer 2 : dialog=true · Nouvelle dépense ¦ Plié ¦ Déplié ¦ 2026-04-27 Brau- und Rauchshop 372765.jpg ¦ L’Affinée / Justificatifs / 2026 ¦ Ouvrir dans Drive ¦ 735 721 octets · taille vérifiée ¦ À revoir : date de paiement supposée gardée ¦ BENU Matran ¦ 10.11.2026 ¦ CHF ¦ 1 ¦  ligne ¦ · ¦ Articles lus ¦ 1 ¦ annoncé par la lecture ¦ Somme = imprimé ¦ 13,40 ¦ Payé = imprimé 
+  lr114b-confirmer2-390-clair.png
+  introuvable : Annuel
+LR1-14 390 après : — | —
+  lr114b-apres-390-clair.png
+TE-35 390 feuille ouverte=true · champs : ["Matériel ou aménagement","Paiement prévu en","Inclure dans mes prévisions"]
+  te35b-feuille-390-clair.png
+  champ introuvable [aria-label="Livraison TTC (CHF)"]
+TE-35 390 Livraison TTC (CHF) « abc » : false
+  champ introuvable [aria-label="Prix estimé TTC (CHF)"]
+TE-35 390 Prix estimé TTC (CHF) « −5 » : false
+  champ introuvable [aria-label="Installation TTC (CHF)"]
+TE-35 390 Installation TTC (CHF) « -5 » : false
+  budget : —
+TE-35 1280 feuille ouverte=true · champs : ["Matériel ou aménagement","Paiement prévu en","Inclure dans mes prévisions"]
+  te35b-feuille-1280-cave.png
+  champ introuvable [aria-label="Livraison TTC (CHF)"]
+TE-35 1280 Livraison TTC (CHF) « abc » : false
+  champ introuvable [aria-label="Prix estimé TTC (CHF)"]
+TE-35 1280 Prix estimé TTC (CHF) « −5 » : false
+  champ introuvable [aria-label="Installation TTC (CHF)"]
+TE-35 1280 Installation TTC (CHF) « -5 » : false
+  budget : —

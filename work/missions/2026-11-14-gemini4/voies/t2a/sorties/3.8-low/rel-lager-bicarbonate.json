@@ -1,0 +1,19 @@
+{
+ "cas": "rel-lager-bicarbonate",
+ "usage": "relecture",
+ "half": "jugement",
+ "cellule": "3.8@low",
+ "ok": true,
+ "ms": 4705,
+ "microChf": 5337,
+ "microDecembre": 5337,
+ "entree": 1006,
+ "sortie": 368,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "1/1 défauts · 0 bloquant(s) dont 0 injustifié(s)",
+ "reponse": "{\"verdict\":\"La recette n'est pas prête à brasser en l'état en raison d'une alcalinité de l'eau excessive pour une bière blonde.\",\"findings\":[{\"severity\":\"gout\",\"topic\":\"Eau\",\"observation\":\"La concentration en bicarbonates (HCO3-) après traitement est de 350 ppm dans waterTreatment.ionsAfterTreatmentPpm, ce qui est beaucoup trop élevé pour une Helles à 100% malt Pilsner (colorEbc 7).\",\"suggestion\":\"Corriger l'eau (acidification avec acide lactique/phosphorique ou dilution à l'eau osmosée) pour réduire l'alcalinité résiduelle et viser un pH d'empâtage entre 5.2 et 5.4 mesuré à température ambiante.\"},{\"severity\":\"detail\",\"topic\":\"Houblons\",\"observation\":\"40 g de Hallertauer Mittelfrüh à 4.2% d'alpha pendant 60 min combinés à 20 g à 10 min dans 20 L donneront environ 24 à 27 IBU selon la formule de calcul, dépassant la cible de 20 IBU indiquée.\",\"suggestion\":\"Réduire la dose amérisante de 60 min à environ 28-30 g pour rester aligné sur la cible de 20 IBU.\"}],\"missing\":[],\"styleFit\":\"La base maltée (100% Pilsner) et la souche W-34/70 correspondent parfaitement au style Munich Helles, mais l'alcalinité très élevée de l'eau risque de provoquer une extraction de tanins, une amertume rêche et un pH de maische trop haut.\"}"
+}

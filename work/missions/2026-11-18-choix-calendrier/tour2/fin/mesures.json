@@ -1,0 +1,334 @@
+[
+ {
+  "cas": "p390-clair",
+  "k": "syn-plage",
+  "entete": "Période : 1er août → 30 nov.. Choisir la plage",
+  "enteteTexte": "1er août → 30 nov.01.08–30.11",
+  "choixPeriode": [
+   "Période",
+   "Autre période",
+   "Du mois",
+   "Au mois"
+  ],
+  "onglet": "Synthèse",
+  "debut": null,
+  "fin": null,
+  "rd": null,
+  "actifs": [],
+  "plage": "d’août 2026au novembre 2026"
+ },
+ {
+  "cas": "p390-clair",
+  "k": "ops-depuis-syn",
+  "barre": "Autres frais 250,20 CHF, voir ces opérations d’août – nov. 2026",
+  "entete": "Période : 1er août → 30 nov.. Choisir la plage",
+  "enteteTexte": "1er août → 30 nov.01.08–30.11",
+  "choixPeriode": [],
+  "onglet": "Opérations",
+  "debut": "1er août 2026",
+  "fin": "30 nov. 2026",
+  "rd": "122 jours · 1 opération× mois entier",
+  "actifs": [
+   "Autres frais"
+  ],
+  "plage": null
+ },
+ {
+  "cas": "p390-clair",
+  "k": "frise-bord",
+  "avant": {
+   "debut": "1er nov. 2026",
+   "fin": "30 nov. 2026",
+   "rd": "30 jours · 5 opérations"
+  },
+  "serie": [
+   "199ms 1er août 2026",
+   "402ms 1er août 2026",
+   "604ms 1er juil. 2026",
+   "806ms 1er juil. 2026",
+   "1007ms 1er juil. 2026",
+   "1208ms 1er juin 2026",
+   "1414ms 1er juin 2026",
+   "1616ms 1er juin 2026"
+  ],
+  "ms": 2707,
+  "bulle": {
+   "bulle": {
+    "l": 20,
+    "r": 122,
+    "t": 276,
+    "b": 294,
+    "txt": "1er juin → 30 nov."
+   },
+   "couvre": []
+  },
+  "apres": {
+   "debut": "1er juin 2026",
+   "fin": "30 nov. 2026",
+   "rd": "183 jours · 5 opérations× mois entier",
+   "entete": "Période : 1er juin → 30 nov.. Choisir la plage"
+  }
+ },
+ {
+  "cas": "p390-clair",
+  "k": "ops-repos",
+  "entete": "Période : Novembre 2026. Choisir la plage",
+  "enteteTexte": "Nov.",
+  "choixPeriode": [],
+  "onglet": "Opérations",
+  "debut": "1er nov. 2026",
+  "fin": "30 nov. 2026",
+  "rd": "30 jours · 5 opérations",
+  "actifs": [],
+  "plage": null
+ },
+ {
+  "cas": "p390-cave",
+  "k": "syn-plage",
+  "entete": "Période : 1er août → 30 nov.. Choisir la plage",
+  "enteteTexte": "1er août → 30 nov.01.08–30.11",
+  "choixPeriode": [
+   "Période",
+   "Autre période",
+   "Du mois",
+   "Au mois"
+  ],
+  "onglet": "Synthèse",
+  "debut": null,
+  "fin": null,
+  "rd": null,
+  "actifs": [],
+  "plage": "d’août 2026au novembre 2026"
+ },
+ {
+  "cas": "p390-cave",
+  "k": "ops-depuis-syn",
+  "barre": "Autres frais 250,20 CHF, voir ces opérations d’août – nov. 2026",
+  "entete": "Période : 1er août → 30 nov.. Choisir la plage",
+  "enteteTexte": "1er août → 30 nov.01.08–30.11",
+  "choixPeriode": [],
+  "onglet": "Opérations",
+  "debut": "1er août 2026",
+  "fin": "30 nov. 2026",
+  "rd": "122 jours · 1 opération× mois entier",
+  "actifs": [
+   "Autres frais"
+  ],
+  "plage": null
+ },
+ {
+  "cas": "p390-cave",
+  "k": "frise-bord",
+  "avant": {
+   "debut": "1er nov. 2026",
+   "fin": "30 nov. 2026",
+   "rd": "30 jours · 5 opérations"
+  },
+  "serie": [
+   "200ms 1er août 2026",
+   "401ms 1er août 2026",
+   "603ms 1er juil. 2026",
+   "804ms 1er juil. 2026",
+   "1005ms 1er juil. 2026",
+   "1206ms 1er juin 2026",
+   "1413ms 1er juin 2026",
+   "1616ms 1er juin 2026"
+  ],
+  "ms": 2688,
+  "bulle": {
+   "bulle": {
+    "l": 20,
+    "r": 122,
+    "t": 276,
+    "b": 294,
+    "txt": "1er juin → 30 nov."
+   },
+   "couvre": []
+  },
+  "apres": {
+   "debut": "1er juin 2026",
+   "fin": "30 nov. 2026",
+   "rd": "183 jours · 5 opérations× mois entier",
+   "entete": "Période : 1er juin → 30 nov.. Choisir la plage"
+  }
+ },
+ {
+  "cas": "p390-cave",
+  "k": "ops-repos",
+  "entete": "Période : Novembre 2026. Choisir la plage",
+  "enteteTexte": "Nov.",
+  "choixPeriode": [],
+  "onglet": "Opérations",
+  "debut": "1er nov. 2026",
+  "fin": "30 nov. 2026",
+  "rd": "30 jours · 5 opérations",
+  "actifs": [],
+  "plage": null
+ },
+ {
+  "cas": "l844-clair",
+  "k": "syn-plage",
+  "entete": "Période : 1er août → 30 nov.. Choisir la plage",
+  "enteteTexte": "1er août → 30 nov.01.08–30.11",
+  "choixPeriode": [
+   "Période",
+   "Autre période",
+   "Du mois",
+   "Au mois"
+  ],
+  "onglet": "Synthèse",
+  "debut": null,
+  "fin": null,
+  "rd": null,
+  "actifs": [],
+  "plage": "d’août 2026au novembre 2026"
+ },
+ {
+  "cas": "l844-clair",
+  "k": "ops-depuis-syn",
+  "barre": "Autres frais 250,20 CHF, voir ces opérations d’août – nov. 2026",
+  "entete": "Période : 1er août → 30 nov.. Choisir la plage",
+  "enteteTexte": "1er août → 30 nov.01.08–30.11",
+  "choixPeriode": [],
+  "onglet": "Opérations",
+  "debut": "1er août 2026",
+  "fin": "30 nov. 2026",
+  "rd": "122 jours · 1 opération× mois entier",
+  "actifs": [
+   "Autres frais"
+  ],
+  "plage": null
+ },
+ {
+  "cas": "l844-clair",
+  "k": "frise-bord",
+  "avant": {
+   "debut": "1er nov. 2026",
+   "fin": "30 nov. 2026",
+   "rd": "30 jours · 5 opérations"
+  },
+  "serie": [
+   "201ms 1er août 2026",
+   "405ms 1er août 2026",
+   "607ms 1er juil. 2026",
+   "815ms 1er juil. 2026",
+   "1018ms 1er juil. 2026",
+   "1221ms 1er juin 2026",
+   "1426ms 1er juin 2026",
+   "1629ms 1er juin 2026"
+  ],
+  "ms": 2721,
+  "bulle": {
+   "bulle": {
+    "l": 20,
+    "r": 122,
+    "t": 143,
+    "b": 161,
+    "txt": "1er juin → 30 nov."
+   },
+   "couvre": []
+  },
+  "apres": {
+   "debut": "1er juin 2026",
+   "fin": "30 nov. 2026",
+   "rd": "183 jours · 5 opérations× mois entier",
+   "entete": "Période : 1er juin → 30 nov.. Choisir la plage"
+  }
+ },
+ {
+  "cas": "l844-clair",
+  "k": "ops-repos",
+  "entete": "Période : Novembre 2026. Choisir la plage",
+  "enteteTexte": "Nov.",
+  "choixPeriode": [],
+  "onglet": "Opérations",
+  "debut": "1er nov. 2026",
+  "fin": "30 nov. 2026",
+  "rd": "30 jours · 5 opérations",
+  "actifs": [],
+  "plage": null
+ },
+ {
+  "cas": "d1280-cave",
+  "k": "syn-plage",
+  "entete": "Période : 1er août → 30 nov.. Choisir la plage",
+  "enteteTexte": "1er août → 30 nov.01.08–30.11",
+  "choixPeriode": [
+   "Période",
+   "Autre période",
+   "Du mois",
+   "Au mois"
+  ],
+  "onglet": "Synthèse",
+  "debut": null,
+  "fin": null,
+  "rd": null,
+  "actifs": [],
+  "plage": "d’août 2026au novembre 2026"
+ },
+ {
+  "cas": "d1280-cave",
+  "k": "ops-depuis-syn",
+  "barre": "Autres frais 250,20 CHF, voir ces opérations d’août – nov. 2026",
+  "entete": "Période : 1er août → 30 nov.. Choisir la plage",
+  "enteteTexte": "1er août → 30 nov.01.08–30.11",
+  "choixPeriode": [],
+  "onglet": "Opérations",
+  "debut": "1er août 2026",
+  "fin": "30 nov. 2026",
+  "rd": "122 jours · 1 opération× mois entier",
+  "actifs": [
+   "Autres frais"
+  ],
+  "plage": null
+ },
+ {
+  "cas": "d1280-cave",
+  "k": "frise-bord",
+  "avant": {
+   "debut": "1er nov. 2026",
+   "fin": "30 nov. 2026",
+   "rd": "30 jours · 5 opérations"
+  },
+  "serie": [
+   "201ms 1er août 2026",
+   "402ms 1er août 2026",
+   "603ms 1er juil. 2026",
+   "804ms 1er juil. 2026",
+   "1005ms 1er juil. 2026",
+   "1206ms 1er juin 2026",
+   "1413ms 1er juin 2026",
+   "1614ms 1er juin 2026"
+  ],
+  "ms": 2764,
+  "bulle": {
+   "bulle": {
+    "l": 256,
+    "r": 358,
+    "t": 398,
+    "b": 416,
+    "txt": "1er juin → 30 nov."
+   },
+   "couvre": []
+  },
+  "apres": {
+   "debut": "1er mai 2026",
+   "fin": "30 nov. 2026",
+   "rd": "214 jours · 5 opérations× mois entier",
+   "entete": "Période : 1er mai → 30 nov.. Choisir la plage"
+  }
+ },
+ {
+  "cas": "d1280-cave",
+  "k": "ops-repos",
+  "entete": "Période : Novembre 2026. Choisir la plage",
+  "enteteTexte": "Nov.",
+  "choixPeriode": [],
+  "onglet": "Opérations",
+  "debut": "1er nov. 2026",
+  "fin": "30 nov. 2026",
+  "rd": "30 jours · 5 opérations",
+  "actifs": [],
+  "plage": null
+ }
+]

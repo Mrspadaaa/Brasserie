@@ -19,7 +19,7 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } fr
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { lireOptions } from '../src/ui/depense/optionsDuNom';
-import { observedGeminiCostDetails, quoteGeminiCost } from '../functions/src/geminiCosts';
+import { devisBanc as quoteGeminiCost, coutObserveBanc as observedGeminiCostDetails, estGemini4 } from './banc-lecture-modeles';
 import {
   BUDGET_CAP_CHF, Budget, BudgetStop, CAS_FILES, DEFAULT_PASS_CAP_CHF, LEXIQUE_FR, LITE_MODEL, MISSION_JOURNAL, REELS_DIR, STRONG_MODEL,
   UNITE_SUFFIXE, appendJournal, canonMot, casPath, genreOfCase, loadCases, motsDe, realTransport, spentInJournal, type BenchCase, type Reading, type Transport
@@ -33,11 +33,13 @@ import { requirePaidAiTestOptIn } from './paid-ai-test-guard.mjs';
 // ---------------------------------------------------------------------------------------------------------------------
 // Constantes : la consigne, le schéma, les deux modèles
 // ---------------------------------------------------------------------------------------------------------------------
-export type ModeleTag = 'lite' | '38';
-export const MODELES: Record<ModeleTag, string> = { lite: LITE_MODEL, '38': STRONG_MODEL };
+export type ModeleTag = 'lite' | '38' | 'p38' | 'ar';
+/** Voie t2a (14.11) : `38` désigne STRONG_MODEL, donc Hydrogen depuis h1 (l'étiquette date de la 3.8) ; `p38` est la 3.8 de production (`traduireNoms`) ; `ar` est Argon. Réflexion basse partout. */
+export const MODELES: Record<ModeleTag, string> = { lite: LITE_MODEL, '38': STRONG_MODEL, p38: 'gemini-3.8-flash', ar: 'gemini-4-argon' };
 export const SOURCE_PAR_DEFAUT = path.join(REELS_DIR, 'banc-d272b-hl');
 export const VARIANTE_SOURCE = 'Csv8+N';
 const TIMEOUT_MS = 45_000;
+const timeoutDe = (model: string): number => (estGemini4(model) ? 90_000 : TIMEOUT_MS);
 
 /**
  * La consigne système. Les exemples sont INVENTÉS : aucun n'est tiré des 14 pièces du banc (L20, « overfit ») ; les mots de la liste viennent de la voie.
@@ -311,7 +313,7 @@ export function reserveTexte(model: string, entrees: Entree[]): number {
 }
 
 export interface OptionsTexte {
-  mode: 'simuler' | 'payant'; modeles: ModeleTag[]; lot?: string; docs?: string[]; out?: string; budgetChf?: number; plafondPasse?: number; source?: string; variante?: string; reprendre?: string;
+  mode: 'simuler' | 'payant'; modeles: ModeleTag[]; lot?: string; docs?: string[]; out?: string; budgetChf?: number; plafondPasse?: number; source?: string; variante?: string; reprendre?: string; journal?: string;
 }
 export interface EstimationTexte { lignes: Array<{ modele: ModeleTag; appels: number; reserveMicro: number }>; appels: number; reserveMicro: number; text: string[] }
 export function estimerTexte(plans: PlanPiece[], modeles: ModeleTag[], plafondPasse?: number, journalise = 0, prets: ReadonlySet<string> = new Set()): EstimationTexte {
@@ -345,7 +347,7 @@ export async function runNomsFr(options: OptionsTexte, deps: DepsTexte = {}): Pr
   if (!pieces.length) throw new Error('Aucune pièce à traduire.');
   const outDir = path.resolve(options.out ?? (simule ? path.join(tmpdir(), `noms-fr-sim-${stamp()}`) : path.join(REELS_DIR, `banc-f5b-${stamp()}`)));
   mkdirSync(path.join(outDir, 'raw'), { recursive: true });
-  const journalPath = deps.journalPath ?? (simule ? path.join(outDir, 'journal-gemini.md') : MISSION_JOURNAL);
+  const journalPath = deps.journalPath ?? (options.journal ? path.resolve(options.journal) : simule ? path.join(outDir, 'journal-gemini.md') : MISSION_JOURNAL);
   const fautesLog: FauteAppliquee[] = [];
 
   let transport: Transport, budget: Budget;
@@ -394,7 +396,7 @@ export async function runNomsFr(options: OptionsTexte, deps: DepsTexte = {}): Pr
     const debut = Date.now();
     let appel: Appel;
     try {
-      const reponse = await transport(model, quote.body, meta, AbortSignal.timeout(TIMEOUT_MS));
+      const reponse = await transport(model, quote.body, meta, AbortSignal.timeout(timeoutDe(model)));
       const cout = observedGeminiCostDetails(quote, reponse.json)?.chargedMicroChf ?? null, lu = parseNoms(reponse.json, plan.entrees);
       const usage = reponse.json?.usageMetadata ?? {};
       appel = { ...base, noms: lu.noms, ms: reponse.ms, inputTokens: usage.promptTokenCount ?? null, outputTokens: (usage.candidatesTokenCount ?? 0) + (usage.thoughtsTokenCount ?? 0), costMicroChf: cout, state: lu.state };
@@ -474,14 +476,14 @@ export function parseArgsTexte(argv: string[]): OptionsTexte & { estimer: boolea
   if (payant && simuler) throw new Error('--payant et --simuler s’excluent.');
   const tags = (value('--modeles') ?? 'lite,38').split(',').map(item => item.trim()).filter(Boolean);
   const inconnus = tags.filter(tag => !(tag in MODELES));
-  if (inconnus.length || !tags.length) throw new Error(`--modeles attend une liste parmi lite, 38 (reçu : ${inconnus.join(', ') || 'rien'}).`);
+  if (inconnus.length || !tags.length) throw new Error(`--modeles attend une liste parmi lite, 38, p38, ar (reçu : ${inconnus.join(', ') || 'rien'}).`);
   const lot = value('--lot');
   if (lot !== undefined && !['impaires', 'paires', 'toutes'].includes(lot)) throw new Error('--lot attend impaires, paires ou toutes.');
   const budgetChf = value('--budget-chf') === undefined ? undefined : Number(value('--budget-chf'));
   const plafond = value('--plafond-passe') === undefined ? undefined : Number(value('--plafond-passe'));
   if (plafond !== undefined && !(plafond > 0)) throw new Error('--plafond-passe attend un montant en CHF supérieur à 0.');
   return { mode: payant ? 'payant' : 'simuler', modeles: [...new Set(tags)] as ModeleTag[], lot, docs: value('--docs')?.split(',').map(item => item.trim()).filter(Boolean), out: value('--out'), budgetChf,
-    plafondPasse: plafond ?? (payant ? DEFAULT_PASS_CAP_CHF : undefined), source: value('--source'), variante: value('--variante'), reprendre: value('--reprendre'), estimer: args.includes('--estimer'), juger: value('--juger') };
+    plafondPasse: plafond ?? (payant ? DEFAULT_PASS_CAP_CHF : undefined), source: value('--source'), variante: value('--variante'), reprendre: value('--reprendre'), journal: value('--journal'), estimer: args.includes('--estimer'), juger: value('--juger') };
 }
 
 /** Lancé seulement comme script (tsx : le nom du script est dans argv[1]) : jamais sous vitest. */

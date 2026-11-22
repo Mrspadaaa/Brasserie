@@ -1,0 +1,19 @@
+{
+ "cas": "rel-ipa-levure-eau",
+ "usage": "relecture",
+ "half": "choix",
+ "cellule": "hy@low",
+ "ok": true,
+ "ms": 5175,
+ "microChf": 14511,
+ "microDecembre": 14511,
+ "entree": 1524,
+ "sortie": 1243,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "2/2 défauts · 1 bloquant(s) dont 0 injustifié(s)",
+ "reponse": "{\"verdict\":\"Recette non prête à brasser en l'état : sous-ensemencement critique en levure, profil d'eau à contresens du style et acides alpha manquants sur le Citra.\",\"findings\":[{\"severity\":\"bloquant\",\"topic\":\"Levure\",\"observation\":\"Seulement 5 g de SafAle US-05 sèche pour 20 L à une densité initiale visée de 1.065, ce qui constitue un fort sous-ensemencement.\",\"suggestion\":\"Passer à au moins 11.5 g (1 sachet standard) et idéalement 15 à 20 g de levure sèche pour 20 L à 1.065.\"},{\"severity\":\"gout\",\"topic\":\"Eau\",\"observation\":\"Le traitement retenu (0 g de gypse, 10 g de chlorure de calcium) donne 40 ppm de sulfates pour 200 ppm de chlorures (ratio SO4/Cl de 0.2), ce qui favorise la rondeur maltée au détriment de la netteté du houblon.\",\"suggestion\":\"Rééquilibrer les sels en réduisant le chlorure de calcium et en ajoutant du gypse pour obtenir un ratio sulfates/chlorures favorable aux sulfates.\"},{\"severity\":\"detail\",\"topic\":\"Houblons\",\"observation\":\"Le Citra utilisé en whirlpool (100 g à 80 °C pendant 20 min) n'a pas de taux d'acides alpha renseigné, empêchant de valider la cible de 60 IBU.\",\"suggestion\":\"Renseigner le taux d'acides alpha du lot de Citra pour recalculer les IBU totaux.\"}],\"missing\":[\"Taux d'acides alpha du Citra (whirlpool et dry hop)\"],\"styleFit\":\"Avec 1.065 de densité initiale, 1.012 de densité finale, 12 EBC et des paliers à 66 °C, la base maltée correspond à une American IPA, mais l'eau très riche en chlorures (200 ppm) et le sous-ensemencement (5 g) risquent de donner une bière trop ronde, mal atténuée et en retrait sur le tranchant du houblon.\"}"
+}

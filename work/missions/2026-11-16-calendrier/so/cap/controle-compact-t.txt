@@ -1,0 +1,4 @@
+ok t1.html : 7 rangées, hauteur médiane 48 px (max 48), hauteurs 24,24,48,48,48,48,72, rangée la plus vide 100 %
+ok t2.html : 7 rangées, hauteur médiane 48 px (max 48), hauteurs 24,24,48,48,48,48,72, rangée la plus vide 100 %
+ok t3.html : 7 rangées, hauteur médiane 48 px (max 48), hauteurs 24,24,48,48,48,48,72, rangée la plus vide 100 %
+COMPACT OK

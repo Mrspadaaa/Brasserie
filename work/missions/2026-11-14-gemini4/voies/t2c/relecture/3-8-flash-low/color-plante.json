@@ -1,0 +1,19 @@
+{
+ "reglage": "3.8-flash@low",
+ "element": "color-plante",
+ "cas": "color",
+ "type": "plante",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "L'action proposée (« Dilue directement avec 6 L d’eau ») contredit directement le résumé (« Ne dilue pas sur la seule couleur ») et le raisonnement « why » qui explique qu'il ne faut pas diluer.",
+   "Il est formellement interdit de prescrire une dilution uniquement sur la perception visuelle de la couleur dans la cuve."
+  ]
+ },
+ "ms": 2665,
+ "coutMicro": 8595,
+ "etat": "STOP"
+}

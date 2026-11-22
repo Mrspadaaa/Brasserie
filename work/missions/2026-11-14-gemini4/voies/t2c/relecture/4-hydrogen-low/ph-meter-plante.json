@@ -1,0 +1,19 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "ph-meter-plante",
+ "cas": "ph-meter",
+ "type": "plante",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Contradiction majeure : l'action prescrit d'ajouter 6 g de gypse et 8 mL d'acide lactique à l'estime sans mesurer, ce qui viole la règle interdisant toute correction à l'aveugle lorsque le pH-mètre est en panne.",
+   "L'action doit être corrigée pour demander de ne faire aucun ajout chimique à l'aveugle et de contrôler l'électrode, son hydratation, les tampons frais et l'étalonnage selon les consignes du fabricant."
+  ]
+ },
+ "ms": 3517,
+ "coutMicro": 13251,
+ "etat": "STOP"
+}

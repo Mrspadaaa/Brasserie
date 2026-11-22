@@ -8,7 +8,7 @@ import { brewerContextForPrompt } from './hopCompanionContext.js';
 import { BREWER_PLAYBOOK, BREWER_SOURCES } from './brewerKnowledge.js';
 import { FINANCE_ADVICE_GUIDANCE } from './prompts.js';
 import { investmentTool, runInvestmentTool } from './brewerFinanceTools.js';
-import { GEMINI_LITE_MODEL, assertGeminiModel, geminiAttempts } from './models.js';
+import { GEMINI_LITE_MODEL, INVOICE_STRONG_MODEL, assertGeminiModel, brewerAnalysisAttempts, geminiAttempts } from './models.js';
 import { BrewerBudgetError, BREWER_AGENT_LIMITS } from './brewerLimits.js';
 import { GeminiApiError, GeminiRequestNotSentError, parseGeminiError } from './geminiErrors.js';
 import { encodeGeminiToolsForRest } from './geminiRequestSchema.js';
@@ -278,6 +278,8 @@ export async function runBrewerHarness(
   // First request refused before sending in this turn. Researchers run under Promise.allSettled and report a generic
   // failure, so the tool loop rethrows this original error instead of turning it into a tool error.
   let requestNotSent: GeminiRequestNotSentError | undefined;
+  // Once Hydrogen has failed in this question, the next analysis steps start on 3.8: no wait on a model that is down.
+  let analysisModelDown = false;
   const call = async (
     body: Record<string, unknown>,
     purpose: 'analysis' | 'research' | 'review' = 'analysis',
@@ -288,11 +290,16 @@ export async function runBrewerHarness(
     const deep = purpose !== 'research' && (purpose === 'review' ? deepReview : deepAnalysis);
     // A slow provider cannot restart the entire waiting time on the new attempt.
     const requestSignal = AbortSignal.any([signal, AbortSignal.timeout(deep ? 60000 : purpose === 'review' ? 30000 : 45000)]);
-    // Every role and mode uses 3.8, except the reference lookup that bench #91 measured on Flash-Lite without loss:
-    // a failure, or an unusable Flash-Lite lookup, gets one new attempt on 3.8, never a third model.
-    const route = geminiAttempts(purpose === 'research' ? tool : purpose);
+    // Review, research and the Approfondi mode use 3.8, except the reference lookup that bench #91 measured on Flash-Lite without loss.
+    // The analysis role outside Approfondi starts on Hydrogen at low reasoning (voie h3; bench g2: judged 0.93 against 0.87 for 3.8).
+    // A failure, or an unusable Flash-Lite lookup or Hydrogen answer, gets one new attempt on 3.8, never a third model.
+    const route = purpose === 'analysis' && !analysisModelDown
+      ? brewerAnalysisAttempts()
+      : geminiAttempts(purpose === 'research' ? tool : purpose);
     for (const [index, attempt] of route.entries()) {
-      const candidate = attempt.model, lite = candidate === GEMINI_LITE_MODEL;
+      const candidate = attempt.model, lite = candidate === GEMINI_LITE_MODEL, strong = candidate === INVOICE_STRONG_MODEL;
+      // Hydrogen answers in 8 to 20 s at the bench: past 25 s, 3.8 still has time left in the 45 s of the call.
+      const attemptSignal = strong && index < route.length - 1 ? AbortSignal.any([requestSignal, AbortSignal.timeout(deep ? 40000 : 25000)]) : requestSignal;
       requestSignal.throwIfAborted();
       if (++modelCalls > BREWER_AGENT_LIMITS.modelCalls)
         throw new BrewerBudgetError(
@@ -329,7 +336,9 @@ export async function runBrewerHarness(
               thinkingConfig: {
                 thinkingLevel: lite
                   ? attempt.thinkingLevel
-                  : !deep
+                  : strong && deep
+                    ? 'medium'
+                    : !deep
                     ? 'low'
                     : repairingAdvice || carefulReview || (purpose === 'analysis' && !model)
                       ? 'high'
@@ -337,8 +346,15 @@ export async function runBrewerHarness(
               }
             }
           },
-          requestSignal
+          attemptSignal
         );
+        // An empty or truncated Hydrogen answer is not served: 3.8 answers the same step if the deadline and the call pool allow it.
+        if (strong && (!result?.candidates?.[0]?.content || unusableGeminiOutput(result)) && index < route.length - 1 && !requestSignal.aborted &&
+            modelCalls < BREWER_AGENT_LIMITS.modelCalls) {
+          analysisModelDown = true;
+          last = new Error('Réponse Hydrogen inutilisable : nouvelle tentative sur 3.8.');
+          continue;
+        }
         // A 3.8 retry must still fit the deadline and the question's call and web pools; otherwise the lookup is kept.
         if (lite && !liteLookupUsable(result) && index < route.length - 1 && !requestSignal.aborted &&
             modelCalls < BREWER_AGENT_LIMITS.modelCalls && groundedCalls < BREWER_AGENT_LIMITS.groundedCalls) {
@@ -356,9 +372,10 @@ export async function runBrewerHarness(
         if (e instanceof GeminiApiError) {
           (diagnostics.providerErrors ??= []).push(e.diagnostic());
           await options.onDiagnostic?.(diagnostics);
-          // A request Flash-Lite refuses (HTTP 400) may still suit 3.8.
-          if (!e.canTryAnotherModel && !(lite && e.kind === 'invalid-request')) throw e;
+          // A request Flash-Lite or Hydrogen refuses (HTTP 400) may still suit 3.8.
+          if (!e.canTryAnotherModel && !((lite || strong) && e.kind === 'invalid-request')) throw e;
         }
+        if (strong) analysisModelDown = true;
         last = e;
         if (requestSignal.aborted) throw e;
         // Independent researchers share a fixed pool of provider attempts. Preserve a
@@ -383,7 +400,7 @@ FERMENTATION : partir du style réel de la recette et de yeastContext (intention
 
 INDEX HOUBLON : les prédictions doivent venir des outils. predict_hop_aroma conserve son modèle reçu : un null n'est pas comblé par ton raisonnement ou une recherche web. Pour extrapoler une combinaison inédite, utiliser prepare_brewing_scenario puis simulate_brewing_scenarios, avec hypothèses de travail selected, origine et raisons explicites. Tu peux proposer des hypothèses numériques modifiables : ne demande pas au brasseur d'inventer tous les coefficients avant de l'aider. Une absence d'essai exact ne ferme pas tout le scénario. Distinguer indices perceptifs du modèle, expression propre de levure, transformation de précurseurs, transfert/pertes et amertume. Un coefficient yeast.aroma/expression n'est pas un rendement chimique. Une description brute n'est pas une mesure en bière. Cite plages, modèle, hypothèses et limites; aucune plage n'est annoncée intervalle statistique. Ni milieu de plage comme fait certain, ni somme des indices comme concentration/IBU. Une culture mixte reste structurée et peut laisser une limite locale. Une prédiction figée garde ses dépendances et versions; une observation opposée s'y ajoute, sans réécrire cette prédiction. Les propositions qui changent programme, matière, souche ou contexte exigent un aperçu recalculé; les ajouts effectués restent protégés.
 CHOIX DU MODÈLE : ${mode === 'deep'
-    ? 'Le brasseur a choisi APPROFONDI : Gemini 3.8 Flash assure analyse et relecture avec une réflexion plus poussée. La recherche web est confiée aux chercheurs Flash.'
+    ? 'Le brasseur a choisi APPROFONDI : Gemini 4 Hydrogen assure l’analyse avec une réflexion moyenne, Gemini 3.8 Flash la relecture avec une réflexion plus poussée. La recherche web est confiée aux chercheurs Flash.'
     : 'Flash assure analyse, recherche web, synthèse, vérification indépendante et correction. Ne demande aucun changement de mode. Garde les calculs et réponds directement.'
   } Pour un achat, find_brewing_suppliers lance trois chercheurs Flash indépendants en parallèle, puis une lecture serveur des fiches. Tu peux faire une seconde recherche ciblée si une information décisive manque ou qu’une correction l’exige, dans la limite de six appels web au total. Réutilise les preuves suffisantes et évite de prolonger une réponse déjà utile. Ne consulte le web que pour une information actuelle manquante. Ne déclenche pas une recherche inutile uniquement pour changer de modèle. Regroupe les appels d’outils indépendants au même tour. Ne répète pas un calcul déjà disponible ; utilise le preview de ta proposition pour conclure.
 Utilise les outils pour TOUT calcul brassicole chiffré et ne transforme pas une cible en fait mesuré. Fais inspect_brewery si un détail manque. Seuls les outils de catalogue disponibles peuvent créer ou enrichir un catalogue à la demande du brasseur, avec un reçu réel. Pour recette, journal, brassin, stock et matériel, aucun enregistrement direct n'est autorisé par ces outils. L'outil propose_changes prépare seulement une proposition : le brasseur voit les valeurs avant/après et doit valider chaque groupe de champs. Si l'utilisateur demande de modifier ou compléter sa fiche, UTILISE cet outil après tes calculs/recherches. Ne réponds pas simplement qu'il doit tout saisir lui-même. Tu peux aussi proposer un ajustement utile à ton conseil. Ne propose jamais une mesure inventée : un relevé exige une observation explicite du brasseur. Ne confonds pas « si j'avais 20 L » avec « j'ai mesuré 20 L ». Une observation dans le chat n'est pas encore consignée. Compléter des cases vides ne remplace pas les valeurs manuelles. Un remplacement d'ingrédient doit aussi revoir ses caractéristiques : ne transfère pas le potentiel, la couleur ou l'alpha de l'ancien à un produit différent. Vérifie les dépendances : eau/grain, durée/houblons, minimum/maximum. Les dates, comptes, stocks, étapes terminées et horloges ne sont pas modifiables par cet outil. Pour une recherche fournisseur sans demande d'adaptation, réponds d'abord avec les options disponibles.

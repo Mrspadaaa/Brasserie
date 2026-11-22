@@ -42,7 +42,7 @@ const ctxAgent = e.agent_id ? contexte(transcriptAgent()) : 0;
 switch (e.hook_event_name) {
   case 'SessionStart':
     delete s.lus; garder();
-    dire('SessionStart', "PAROLE (brasseur, 09.11 : « pas besoin de retour juste un recap à la fin quand la tache est terminé, c'est TOUT ») : aucun rapport de progrès, ni à l'utilisateur ni à la session parente. Une fin de tour en attente (agents, tests) tient en un mot. Un seul récapitulatif quand la tâche est terminée : ce qui est fait, preuve, commit, en 400 caractères au plus. Une note intermédiaire d'une sous-session ne se relaie pas à l'utilisateur. SendMessage seulement pour une question bloquante, 700 caractères au plus.");
+    dire('SessionStart', "PAROLE (brasseur, 09.11 : « pas besoin de retour juste un recap à la fin quand la tache est terminé, c'est TOUT ») : aucun rapport de progrès, ni à l'utilisateur ni à la session parente. Une fin de tour en attente (agents, tests) tient en un mot. Un seul récapitulatif quand la tâche est terminée : ce qui est fait, preuve, commit, en 400 caractères au plus. Une note intermédiaire d'une sous-session ne se relaie pas à l'utilisateur. SendMessage seulement pour une question bloquante, 700 caractères au plus. Session lancée par une autre (20.11 : chaque fin de tour réveille la parente, qui relit tout son contexte) : lance tes agents au premier plan (plusieurs Agent dans un même message, sans run_in_background) et ne finis ton tour qu’au récap final ou sur un blocage ; jamais un tour « En cours ».");
     break;
   case 'PreToolUse':
     // Relecture (10.11 : 3 600 lectures sur 6 871 relisaient un fichier inchangé) : refusée tant que le fichier n'a pas changé

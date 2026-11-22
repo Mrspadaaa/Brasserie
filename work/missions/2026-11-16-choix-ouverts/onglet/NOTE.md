@@ -1,0 +1,10 @@
+# Onglet Calendrier dans la barre du bas — 3 mini maquettes (choix 4, 16.11)
+
+Ses mots : « avoir un onglet calendrier en bas pour le global ferait vraiment sens » ; « Le + n'a jamais été en bas, c'est un bouton "volant" » (SPEC l.1778, l.1780). Base : frise fb (semaines, voies Brassins/Fêtes/Ventes/Achats, + « S47 » flottant) et barre b1r ; le + garde « Ici » en tête et « Toujours » dessous (b1r, 15.11). Un seul facteur libre : la barre et ce qui en découle. 390 tactile, rien sous 14 px (mesuré), sans clavier, pastille « exemple » touchable → état vide.
+
+- **v1 — A, 6e onglet** (Bord, Finances, Calendrier, Brassins, Stocks, Clients ; 65 px chacun, « Calendrier » tient à 14 px) : Bord garde ses tâches et ses chiffres, le Calendrier est un écran à part. `v1/proto.html` ; captures `v1-bord`, `v1-cal` (après toucher), `v1-plus`, `v1-vide` (-390 et -cave-390).
+- **v2 — B, fusionné avec Bord** (5 onglets ; Bord prend l'icône calendrier) : Bord = « Aujourd'hui » au-dessus de la frise ; toucher une semaine (S50) change le bloc du haut, « Aujourd'hui » y ramène. `v2/proto.html` ; captures `v2-bord`, `v2-semaine` (geste), `v2-plus`, `v2-vide`.
+- **v3 — C, à la place de Finances** (5 onglets ; Calendrier s'ouvre par défaut) : rangée de sections Tout · Finances · Brassins · Stocks · Agenda ; « Finances » donne le calendrier fb-fin (259 à te permettre, caisse par semaine, ventes et achats) et « Écritures, TVA, impôt bière » ouvre le reste. Depuis Bord, « À te permettre » mène là aussi. `v3/proto.html` ; captures `v3-cal`, `v3-fin` (geste), `v3-plus`, `v3-vide`.
+
+Contrôles : `node mesure.mjs bord,cal,plus,vide,semaine,fin,ecr` → MESURE OK (21 états : texte ≥ 14 px, aucun libellé coupé, aucun débordement) ; `node capt.mjs` (copie de p8/capt.mjs, proto.html) → CAPTURES OK ×3, 24 images. Construit par `node build.mjs`.
+Prédiction : il hésitera entre v1 (son mot « onglet », lecture étroite, défaut du conseil) et v3 (« calendrier en mode finance », l.1812) ; v2 lui paraîtra trop chargé pour un Bord.

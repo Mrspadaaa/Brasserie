@@ -1,0 +1,159 @@
+{
+ "demarrage": 1504,
+ "C1-planifier-brassin": {
+  "gestes": 7,
+  "murMs": 5278,
+  "journal": [
+   "toucher « Actions rapides » 22ms lt0/0 56×56 y764",
+   "toucher « Poser un brassin » 82ms lt83/83 300×56 y700",
+   "toucher « Fruty » 17ms lt0/0 56×36 y469",
+   "toucher « S50, 7 déc. » 12ms lt0/0 28×48 y747",
+   "toucher « Ajouter en » 220ms lt108/108 249×44 y820",
+   "toucher « Brassins » 364ms lt0/0 64×40 y824",
+   "toucher « Finances » 317ms lt0/0 65×40 y824"
+  ],
+  "notes": [
+   "Fruty à l'écran : 0 → 0 ; toast « Compagnon hors connexion · mode local / Fruty · S50 · prête le 4 janv. · Voir S50 › · Annuler »",
+   "labels Fruty : ",
+   "Brassins : À brasser 9 ; Tous Tous 15",
+   "Finances mentionne Fruty : false"
+  ]
+ },
+ "C2-deplacer-passe-futur": {
+  "gestes": 4,
+  "murMs": 4794,
+  "journal": [
+   "glisser −2 sem. 582ms lt70/70",
+   "glisser +4 sem. 651ms lt141/73",
+   "glisser achat +1 sem. 215ms lt58/58",
+   "toucher « Finances » 48ms lt0/0 64×40 y824"
+  ],
+  "notes": [
+   "passé : « Blonde d’automne, 23 nov., S48, J0 / 28 · prête 21 déc., cou » → « Blonde d’automne, 21 nov., S47, pas brassée · prête le 19 déc., courses : ingréd » ; toast « Compagnon hors connexion · mode local / Blonde d’automne : S48 → S46 · Annuler »",
+   "futur : « undefined » ; toast « Compagnon hors connexion · mode local / Blonde d’automne : S47 → S52 · Annuler »",
+   "achat : « Commande de malt, 1 déc., S49, −540 » → « Commande de malt, 8 déc., S50, −540 » ; en-tête « −18 652 CHF à dépenser S43 ’27 ± 6 sem. 3 0 ZZ TEST — Facture embouteilleuse (exemple) −11 »",
+   "Finances : absent"
+  ]
+ },
+ "C3-dater-projet-carnet": {
+  "gestes": 6,
+  "murMs": 3982,
+  "journal": [
+   "toucher « Brassins » 338ms lt0/0 64×40 y824",
+   "toucher « Atelier » 398ms lt0/0 76×28 y62",
+   "toucher « Carnet » 0ms lt0/0 119×44 y113",
+   "toucher « Sol — matières » 27ms lt0/0 328×80 y419",
+   "toucher « Plus » 8ms lt0/0 44×44 y171",
+   "toucher « Calendrier » 149ms lt104/104 66×40 y824"
+  ],
+  "notes": [
+   "pastille de date : 96×28",
+   "la pastille « Idée · 21 nov. » ne se touche pas",
+   "menu ⋯ : Renommer Supprimer l'idée",
+   "mots « calendrier/dater/prix » dans le projet : Calendrier",
+   "au Calendrier, « Sol — » : absent"
+  ]
+ },
+ "C3b-idee-depuis-calendrier": {
+  "gestes": 8,
+  "murMs": 5134,
+  "journal": [
+   "toucher « Actions rapides » 21ms lt0/0 56×56 y764",
+   "toucher « Noter une idée » 67ms lt67/67 300×48 y318",
+   "toucher champ 8ms lt0/0",
+   "taper « Bière de Noël épicée » 573ms lt0/0",
+   "toucher « Noter » 566ms lt88/88 374×44 y820",
+   "toucher « Brassins » 401ms lt0/0 64×40 y824",
+   "toucher « Atelier » 0ms lt0/0 76×28 y62",
+   "toucher « Carnet » 0ms lt0/0 119×44 y113"
+  ],
+  "notes": [
+   "puce de la semaine choisie (S47) : {\"x\":2360,\"visible\":false,\"pressed\":\"true\"}",
+   "toast « Compagnon hors connexion · mode local / Idée notée en S47 · Annuler » ; au Calendrier « Bière de Noël » : absent",
+   "au Carnet : Bière de Noël épicée Coller un lien Sol — matières premières + outils (pe"
+  ]
+ },
+ "C4-solde-semaine": {
+  "gestes": 3,
+  "murMs": 1684,
+  "journal": [
+   "toucher courbe (S48–49) 22ms lt0/0",
+   "glisser sur la courbe 5ms lt0/0",
+   "toucher « ± » 16ms lt0/0 22×28 y67"
+  ],
+  "notes": [
+   "en-tête au repos : « −18 652 CHF à dépenser S43 ’27 ± 6 sem. 3 0 ZZ TEST — Facture embouteilleuse (exemple) −11 700 Facture Café du Lac +1 200 Sols : colle et joints −320 S45 – S50 S45 S46 S47 S48 S49 S50 »",
+   "après toucher courbe : « −18 652 CHF à dépenser S43 ’27 ± 6 sem. 3 0 ZZ TEST — Facture embouteilleuse (exemple) −11 700 Facture Café du Lac +1 200 Sols : colle et joints −320 S45 – S50 S45 S46 S47 S48 S49 S50 »",
+   "après glisser : « −18 652 CHF à dépenser S43 ’27 ± 6 sem. 3 0 ZZ TEST — Facture embouteilleuse (exemple) −11 700 Facture Café du Lac +1 200 Sols : colle et joints −320 S45 – S50 S45 S46 S47 S48 S49 S50 »",
+   "après ± : « −18 652 CHF à dépenser S43 ’27 ± 6 sem. 3 0 ZZ TEST — Facture embouteilleuse (exemple) −11 700 Facture Café du Lac +1 200 Sols : colle et joints −320 S45 – S50 S45 S46 S47 −11 790 S48 −424 S49 −1 089 S50 −1 365 »",
+   "semaines : S48, 23 – 29 nov. ; mouvement −424 | S49, 30 nov. – 6 déc. ; mouvement −1 089 | S50, 7 – 13 déc. ; mouvement −1 365"
+  ]
+ },
+ "C5-ajouter-depense": {
+  "gestes": 1,
+  "murMs": 628,
+  "journal": [
+   "toucher « Ajouter dans Achats » 90ms lt71/71 24×24 y600"
+  ],
+  "notes": [
+   "ERREUR introuvable : « Autre nom »"
+  ]
+ },
+ "C6-recette-noel-date": {
+  "gestes": 2,
+  "murMs": 2096,
+  "journal": [
+   "toucher « Actions rapides » 21ms lt0/0 56×56 y764",
+   "toucher « Recette » 496ms lt308/135 147×44 y186"
+  ],
+  "notes": [
+   "premier écran : Compagnon hors connexion · mode local 🍺 L'Affinée 02.11–13.12 A G Calendrier −18 652 CHF à dépenser S43 ’27 ± 6 sem. 3 0 ZZ TEST — Facture embouteilleuse (exemple) −11 700 Facture Café du Lac +1 200 Sols : colle et joints −320 S45 – S50 S45 S46 S47 S48 S49 S50 Brassins −228 + coût à venir confirmé ",
+   "mots de date au premier écran : mois",
+   "champs : textarea:Nom de la bière | textarea:Style de la bière | textarea:Volume en fermenteur | range:Volume en fermenteur, curseur | textarea:Durée d’ébullition | range:Durée d’ébullition, curseur"
+  ]
+ },
+ "C6b-recette-vers-date": {
+  "gestes": 4,
+  "murMs": 3738,
+  "journal": [
+   "toucher « Brassins » 377ms lt0/0 64×40 y824",
+   "toucher « Recettes » 30ms lt0/0 101×28 y62",
+   "toucher « Fruty » 30ms lt0/0 212×59 y629",
+   "toucher « Brasser » 27ms lt0/0 71×44 y201"
+  ],
+  "notes": [
+   "recettes : Blonde d’automne v1 jamais brassée prévue le bientôt [201×59 @57,527] | Fruty v1 jamais brassée prévue le 12.07 [212×59 @57,599] | Hefe v1 jamais brassée prévue le bientôt [220×59 @57,671] | Ttt v1 jamais brassée prévue le bientôt [218×59 @57,960]",
+   "actions de date : Brasser [71×44 @296,179] | Brasser [71×44 @296,238] | Brasser [71×44 @296,296] | Brasser [71×44 @296,354] | Brasser [71×44 @296,412] | Brasser [71×44 @296,470] | Calendrier [66×40 @130,804] | Brasser [183×44 @199,798]",
+   "feuille : undefined",
+   "champs : "
+  ]
+ },
+ "C7-cacher-montrer": {
+  "gestes": 4,
+  "murMs": 3524,
+  "journal": [
+   "toucher « Masquer Fêtes » 63ms lt0/0 24×24 y490",
+   "toucher « Afficher Fêtes » 32ms lt0/0 24×24 y490",
+   "toucher « Masquer Brassins » 19ms lt0/0 24×24 y224",
+   "toucher « Afficher Brassins » 41ms lt0/0 24×24 y224"
+  ],
+  "notes": [
+   "rangée Achats y : 588 → 588 (Fêtes cachée) → 588 (montrée)",
+   "après rechargement, Brassins : toujours cachée"
+  ]
+ },
+ "C8-retrouver": {
+  "gestes": 2,
+  "murMs": 2478,
+  "journal": [
+   "toucher « Rechercher (⌘K) » 64ms lt51/51 28×28 y20",
+   "taper « Hotte » 141ms lt0/0",
+   "--- voie 2 : Liste 0ms lt0/0"
+  ],
+  "notes": [
+   "résultats : Hotte, 9 déc., S50, −900 [28×28 @325,700]",
+   "la recherche ne trouve pas la Hotte (travaux du calendrier)",
+   "ERREUR introuvable : « Nov. · période »"
+  ]
+ }
+}

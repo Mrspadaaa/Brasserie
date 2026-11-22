@@ -1,0 +1,16 @@
+{
+ "reglage": "3.8-flash@low",
+ "element": "routing-complex-controle",
+ "cas": "routing-complex",
+ "type": "controle",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 2793,
+ "coutMicro": 15122,
+ "etat": "STOP"
+}

@@ -1,0 +1,62 @@
+@@TITRE
+c6 · La pastille s’explique
+@@CSS
+.c6-head{display:flex;align-items:center;gap:12px;padding:12px 12px 0}
+.c6-big{font-size:56px;line-height:1;font-weight:800;color:var(--fin);letter-spacing:-1.5px;font-variant-numeric:tabular-nums}
+.c6-t{flex:1;min-width:0;font-size:15px;color:var(--mut);line-height:1.3}
+.c6-hz{display:inline-flex;align-items:center;gap:6px;min-height:40px;margin-top:2px;padding:0 10px 0 12px;border-radius:12px;border:1.5px solid var(--fin);color:var(--ink);font-size:17px;font-weight:700;white-space:nowrap}
+.c6-hz .ico{width:18px;height:18px;color:var(--fin)}
+.c6-wk{margin:14px 12px 0;border:1.5px solid var(--line);border-radius:14px;overflow:hidden}
+.c6-w{display:grid;grid-template-columns:52px 1fr 30px;align-items:center;gap:8px;width:100%;min-height:50px;padding:4px 12px;border-top:1px solid var(--line);text-align:left}
+.c6-w:first-child{border-top:0}.c6-w.on{background:var(--finbg)}.c6-w.on.seu{background:var(--attbg)}
+.c6-w .c6-s{font-size:15px;font-weight:700}
+.c6-w .c6-b{display:flex;flex-direction:column;gap:3px;min-width:0}
+.c6-w .c6-b i{display:block;height:12px;border-radius:6px;background:var(--c)}
+.c6-w .c6-b span{font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c6-w .c6-k{font-size:17px;font-weight:800;color:var(--c);text-align:right}.c6-w:not(.on) .c6-k{color:var(--mut)}
+.c6-cut{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--bg);font-size:14px;font-weight:700;color:var(--fin);border-top:2.5px solid var(--fin)}
+.c6-sec{display:flex;align-items:baseline;justify-content:space-between;padding:14px 12px 6px}.c6-sec b{font-size:17px}
+.c6-voile{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:7}
+.c6-pop{position:fixed;right:10px;bottom:90px;width:316px;z-index:8;background:var(--bg);border:1.5px solid var(--line2);border-radius:18px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.c6-pop::after{content:'';position:absolute;bottom:-9px;right:62px;width:16px;height:16px;background:var(--bg);border-right:1.5px solid var(--line2);border-bottom:1.5px solid var(--line2);transform:rotate(45deg)}
+.c6-pop h3{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:17px}
+.c6-pop h3 .c6-pb{min-width:30px;height:26px;padding:0 6px;border-radius:13px;background:var(--fin);color:var(--onfin);font-size:16px;line-height:26px;text-align:center}
+.c6-op{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:10px;width:100%;min-height:52px;padding:4px 8px;border-radius:12px;text-align:left}
+.c6-op+.c6-op{margin-top:4px}.c6-op.on{background:var(--finbg)}
+.c6-op .c6-r{width:20px;height:20px;border-radius:50%;border:2px solid var(--line2)}.c6-op.on .c6-r{border:6px solid var(--fin)}
+.c6-op b{display:block;font-size:16px}.c6-op small{display:block;font-size:14px;color:var(--mut)}
+.c6-op .c6-n{min-width:34px;height:28px;padding:0 6px;border-radius:14px;border:1.5px solid var(--fin);color:var(--fin);font-weight:800;font-size:16px;line-height:25px;text-align:center}
+.c6-op.on .c6-n{background:var(--fin);color:var(--onfin)}
+.c6-ring{position:fixed;z-index:8;width:44px;height:38px;border-radius:19px;border:3px solid var(--fin);pointer-events:none}
+.k-pas{cursor:pointer}
+.c6-ouv .k-nav{z-index:8}
+@@CORPS
+<div class="c6-head"><span class="c6-big" id="c6-big">5</span><div class="c6-t">à commander, comme la pastille<br><button class="c6-hz" id="c6-hz" data-booster="horizon"></button></div><span class="k-ex">exemple</span></div>
+<div class="c6-wk" id="c6-wk"></div>
+<div class="c6-sec"><b id="c6-lt"></b></div>
+<div class="k-rows" id="c6-l"></div>
+@@APRES
+<div class="c6-voile" id="c6-v" hidden></div>
+<div class="c6-pop" id="c6-pop" hidden role="dialog" aria-label="Ce que compte la pastille"><h3>La pastille compte <span class="c6-pb" id="c6-pb"></span></h3><div id="c6-ops"></div></div>
+<i class="c6-ring" id="c6-ring" hidden></i>
+@@JS
+<script>(()=>{const S=STK,{$,$$}=S;let H=49;
+const OP=[[49,'jusqu’au Porter','S49 · prochain brassin'],[52,'6 semaines','jusqu’à S52 · Pils, Marché'],[99,'tout le seuil','même sans brassin prévu']];
+const D={48:'lavage des fûts',49:'Porter',50:'Blonde en bouteilles',51:'Pils de Noël',52:'fûts du Marché',99:'au seuil · sans brassin'};
+function rendre(){const X=S.dans(H);
+$('#c6-big').textContent=X.length;
+$('#c6-hz').innerHTML=(H===99?'tout le seuil':'d’ici S'+H)+'<svg class="ico" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
+let h='';for(const w of [48,49,50,51,52,99]){const k=S.par(w).length,on=w<=H,c=on?(w===99?'var(--att)':'var(--fin)'):'var(--line2)';
+h+='<div class="c6-w'+(on?' on':'')+(w===99?' seu':'')+'" style="--c:'+c+'"><span class="c6-s">'+(w===99?'seuil':'S'+w)+'</span><span class="c6-b"><i style="width:'+(k/13*100)+'%"></i><span>'+D[w]+'</span></span><span class="c6-k">'+k+'</span></div>';
+if(w===H&&w!==99)h+='<div class="c6-cut"><svg class="ico" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M12 19V5M6 11l6-6 6 6"/></svg>comptés dans la pastille</div>'}
+$('#c6-wk').innerHTML=h;
+$('#c6-lt').textContent='Les '+X.length+(H===99?', par urgence':' d’ici S'+H);
+$('#c6-l').innerHTML=X.map(a=>S.row(a,a.sem?'var(--fin)':'var(--att)')).join('');
+$('#c6-pb').textContent=X.length;
+$('#c6-ops').innerHTML=OP.map(([o,a,b])=>'<button class="c6-op'+(o===H?' on':'')+'" data-h="'+o+'"><i class="c6-r"></i><span><b>'+a+'</b><small>'+b+'</small></span><span class="c6-n">'+S.dans(o).length+'</span></button>').join('');
+for(const b of $$('.c6-op'))b.onclick=()=>{H=+b.dataset.h;rendre()};
+S.cta(X.length,'Commander');S.pastille(X.length);place()}
+function place(){const r=$('#k-pas').getBoundingClientRect(),g=$('#c6-ring');g.style.left=(r.left+r.width/2-22)+'px';g.style.top=(r.top+r.height/2-19)+'px'}
+function ouvrir(o){for(const id of ['c6-v','c6-pop','c6-ring'])$('#'+id).hidden=!o;document.body.classList.toggle('c6-ouv',o);place()}
+$('#k-pas').onclick=e=>{e.preventDefault();ouvrir(true)};$('#c6-hz').onclick=()=>ouvrir(true);$('#c6-v').onclick=()=>ouvrir(false);
+rendre();if(S.etat==='geste'){H=52;rendre();ouvrir(true)}})()</script>

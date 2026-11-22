@@ -1,0 +1,16 @@
+{
+ "reglage": "4-carbon@low",
+ "element": "low-ph-controle",
+ "cas": "low-ph",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 3657,
+ "coutMicro": 11250,
+ "etat": "STOP"
+}

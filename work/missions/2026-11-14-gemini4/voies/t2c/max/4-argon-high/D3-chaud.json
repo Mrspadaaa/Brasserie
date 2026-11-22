@@ -1,0 +1,40 @@
+{
+ "reglage": "4-argon@high",
+ "cas": "D3-chaud",
+ "tache": "diagnoseBatch",
+ "moitie": "choix",
+ "note": {
+  "qualite": 0.8,
+  "utilisable": true,
+  "passes": [
+   "atténuation apparente 51 % (±2)",
+   "cause : température trop élevée",
+   "esters, alcools supérieurs, solvant",
+   "action : refroidir"
+  ],
+  "manques": [
+   "gravité surveiller ou agir"
+  ]
+ },
+ "ms": 29221,
+ "coutMicro": 29708,
+ "etat": "STOP",
+ "valeur": {
+  "verdict": "Emballement thermique sévère de la fermentation primaire : après un ensemencement déjà trop chaud à 24 °C, l'exothermie a poussé le moût à 27 °C (J1) puis 28 °C (J2). L'atténuation apparente atteint déjà 50,8 % en 48 heures (passage de 1.065 à 1.032), mais ce stress thermique hors de la plage optimale de la SafAle US-05 (18-22 °C) a généré des alcools supérieurs de fusel (odeur de solvant) et de l'acétate d'isoamyle (banane), totalement hors style pour une American Pale Ale.",
+  "severity": "urgent",
+  "causes": [
+   {
+    "cause": "Absence de contrôle de l'exothermie fermentaire et ensemencement trop haut (24 °C), entraînant une montée à 28 °C qui emballe le métabolisme de la US-05 et provoque un kräusen débordant ainsi que la synthèse d'esters et d'alcools de fusel.",
+    "probability": 0.95,
+    "action": "Refroidir progressivement le fermenteur vers 20-21 °C (maximum 1 à 2 °C par heure pour éviter un choc thermique qui stopperait l'atténuation avant la cible de 1.012) et remplacer le barboteur par un tube de dégazage (blow-off) plongé dans un seau de désinfectant."
+   },
+   {
+    "cause": "Taux d'ensemencement limite basse (11,5 g pour 24 L à 1.065, soit 0,48 g/L) qui, combiné à la haute température, force une multiplication cellulaire excessive en phase aérobie et anaérobie précoce, amplifiant la production d'acétate d'isoamyle (banane).",
+    "probability": 0.65,
+    "action": "Maintenir la bière sur lie à 20-21 °C pendant 4 à 5 jours après l'atteinte de la densité finale pour favoriser la réduction des sous-produits réabsorbables, puis effectuer un test sensoriel avant conditionnement (les alcools de solvant étant hélas irréversibles) ; prévoir 18 à 20 g de levure sèche à 19 °C sur les prochains brassins de 24 L à 1.065."
+   }
+  ],
+  "apparentAttenuationPct": 50.8,
+  "immediateAction": "Installer immédiatement un tube de blow-off pour sécuriser le fermenteur contre le débordement de mousse et abaisser la température du moût de manière contrôlée vers 20-21 °C sans brusquer la levure."
+ }
+}

@@ -1,0 +1,2 @@
+ok w2 : bande en 147 px (35 px de haut, 13 semaines), frise en 182 px, 44 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · + volant 14 px au-dessus des onglets · corps : sous le + 0, sur un lien 0, chevauchés 0 · légende libre
+ok w3 : bande en 149 px (35 px de haut, 13 semaines), frise en 184 px, 44 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · + volant 14 px au-dessus des onglets · corps : sous le + 0, sur un lien 0, chevauchés 0 · légende libre

@@ -1,0 +1,18 @@
+{
+ "reglage": "4-argon@low",
+ "element": "edit-recipe-controle",
+ "cas": "edit-recipe",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "La valeur initiale de 19 IBU (« passant l'estimation de 19 à 17 IBU ») est un calcul arithmétique inventé qui ne figure dans aucune sortie d'outil (seule la cible finale de 17 IBU est présente dans l'aperçu de E1) : retirer le chiffre 19 IBU ou appeler un outil pour calculer l'état initial avant modification."
+  ]
+ },
+ "ms": 8191,
+ "coutMicro": 19518,
+ "etat": "STOP"
+}

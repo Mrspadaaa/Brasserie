@@ -1,0 +1,9 @@
+actif 2274 ms
+  214 ms   9 %  getBoundingClientRect ← mesurer BrewDayPage-CJmGZT9B.js:3078
+  189 ms   8 %  onScroll useLiveData-CsdBuw_g.js:18273
+  169 ms   7 %  focus ← focus useLiveData-CsdBuw_g.js:16305
+  114 ms   5 %  focus ← focusPage FloatingActions-WZnR45Zx.js:2077
+  112 ms   5 %  measure useLiveData-CsdBuw_g.js:14997
+  111 ms   5 %  removeChild ← commitDeletionEffectsOnFiber index-BRf78WRy.js:7567
+   99 ms   4 %  ancestorsShown FloatingActions-WZnR45Zx.js:1928
+   98 ms   4 %  renderWithHooks index-BRf78WRy.js:4154

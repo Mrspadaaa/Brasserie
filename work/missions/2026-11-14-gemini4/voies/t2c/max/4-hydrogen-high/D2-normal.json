@@ -1,0 +1,39 @@
+{
+ "reglage": "4-hydrogen@high",
+ "cas": "D2-normal",
+ "tache": "diagnoseBatch",
+ "moitie": "jugement",
+ "note": {
+  "qualite": 0.75,
+  "utilisable": true,
+  "passes": [
+   "atténuation apparente 78 % (±2)",
+   "gravité normal",
+   "le verdict dit que c’est normal, sans inventer de problème"
+  ],
+  "manques": [
+   "aucune cause probable à plus de 40 % (rien d’inventé)"
+  ]
+ },
+ "ms": 4496,
+ "coutMicro": 10860,
+ "etat": "STOP",
+ "valeur": {
+  "verdict": "Fermentation normale et achevée : la densité s'est stabilisée à 1.011 pendant 3 jours consécutifs (jours 6, 7 et 8), soit juste en dessous de la cible de 1.012, avec une température constante à 19 °C et une atténuation apparente de 78 % cohérente avec la SafAle US-05 (81 % déclarés).",
+  "severity": "normal",
+  "causes": [
+   {
+    "cause": "Fermentation primaire complète et saine de la SafAle US-05 à température optimale constante (19 °C), avec densité finale stabilisée à 1.011 sur 48 heures.",
+    "probability": 0.95,
+    "action": "Effectuer un test organoleptique (vérification de l'absence de diacétyle ou d'acétaldéhyde), puis lancer le cold crash ou passer à l'étape de soutirage et de conditionnement."
+   },
+   {
+    "cause": "Écart minime d'un point de densité par rapport à la DF cible (1.011 mesurée contre 1.012 prévue), lié à une bonne fermentescibilité du moût ou à la vigueur de la souche US-05.",
+    "probability": 0.05,
+    "action": "Aucune intervention nécessaire sur ce brassin ; enregistrer l'atténuation apparente de 78 % dans la fiche de brassage pour ajuster le calcul de la recette Pale du Pont lors du prochain brassin."
+   }
+  ],
+  "apparentAttenuationPct": 78,
+  "immediateAction": "Goûter un échantillon pour confirmer l'absence de faux goûts (diacétyle) puis procéder au refroidissement (cold crash) ou à la mise en fût/bouteille."
+ }
+}

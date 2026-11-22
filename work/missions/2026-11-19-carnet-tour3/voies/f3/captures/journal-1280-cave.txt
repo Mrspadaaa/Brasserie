@@ -1,0 +1,2 @@
+BR-27 1280-cave {"etapes":[true,true],"champ":"","invalide":"true","alertes":["« -1 » : une valeur négative n’existe pas ici. Le champ reste vide."]}
+TE-36 1280-cave {"fiche":true,"sw":"Inclure dans mes prévisions","modif":true,"incl":"Inclure dans mes prévisions","erreurs":[]}

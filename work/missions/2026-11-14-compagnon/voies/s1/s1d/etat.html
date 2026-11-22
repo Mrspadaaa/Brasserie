@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>s1d · La phrase qui agit · 14.11</title>
+<style>
+:root{--c950:#FFFFFF;--c900:#F5F5F5;--c850:#EBEBEB;--c800:#DDDDDD;--c700:#BFBFBF;--c600:#9E9E9E;--c400:#666666;--c200:#333333;--c50:#111111;
+--act:#111111;--sur-act:#FFFFFF;--hop:#567F45;--hop-t:#3F6B2E;--hop-f:rgba(86,127,69,.13);--eau:#4F7E9B;--eau-t:#2F5F7D;--eau-f:rgba(79,126,155,.12);
+--al:#C8382F;--al-t:#A8291F;--al-f:rgba(200,56,47,.10);--at:#9C7020;--at-t:#7F5B10;--at-f:rgba(156,112,32,.13);--fin:#1F64A3;
+--voile:rgba(17,17,17,.28);--ombre:0 -6px 24px rgba(0,0,0,.14);--paper:#7d7d7d;
+--sans:"Source Sans 3","Source Sans Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace}
+[data-theme=cave]{--c950:#12100E;--c900:#1A1613;--c850:#221D19;--c800:#2C2521;--c700:#3D342E;--c600:#574A42;--c400:#9A8A7E;--c200:#D8CEC5;--c50:#F5F0EA;
+--act:#F2C14E;--sur-act:#12100E;--hop:#6E9B5B;--hop-t:#8DB97A;--hop-f:rgba(110,155,91,.18);--eau:#5E8CA8;--eau-t:#7FA9C2;--eau-f:rgba(94,140,168,.18);
+--al:#D6453D;--al-t:#DC5F58;--al-f:rgba(214,69,61,.16);--at:#E3B55D;--at-t:#E3B55D;--at-f:rgba(227,181,93,.15);--fin:#86B9E6;
+--voile:rgba(0,0,0,.62);--ombre:0 -8px 28px rgba(0,0,0,.6);--paper:#2a2622}
+*{box-sizing:border-box}html,body{margin:0}
+::selection{background:var(--hop-f)}
+
+body{background:var(--paper);font-family:var(--sans);color:var(--c200);-webkit-font-smoothing:antialiased}
+.s1d-page{padding:16px 0 24px}
+.s1d-tete{color:#fff;font:600 15px/1.3 var(--sans);margin:0 12px 4px}
+.s1d-idee{color:rgba(255,255,255,.85);font:400 13px/1.35 var(--sans);margin:0 12px 12px;max-width:760px}
+.s1d-rang{display:flex;flex-wrap:wrap;gap:16px}
+.s1d-cad{width:390px;max-width:100%}
+.s1d-cadnom{color:#fff;font:600 13px/1 var(--sans);margin:0 12px 6px}
+.s1d-tel{position:relative;width:390px;max-width:100%;height:760px;overflow:hidden;background:var(--c950);color:var(--c200)}
+.s1d-fond{position:absolute;inset:0;width:100%;height:100%;opacity:.55;filter:blur(1.5px)}
+[data-theme=cave] .s1d-fond{opacity:.16}
+.s1d-voile{position:absolute;inset:0;background:var(--voile)}
+:where(.s1d-tel) :where(button){font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+.s1d-tel :focus-visible{outline:2px solid var(--hop);outline-offset:2px}
+.s1d-tel .s1d-n{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em;word-spacing:-.3em}
+.s1d-tel svg{flex:none}
+
+.s1d-feuille{position:absolute;left:0;right:0;top:32px;bottom:0;background:var(--c950);border-radius:24px 24px 0 0;box-shadow:var(--ombre);display:flex;flex-direction:column;font-size:18px;line-height:1.35;color:var(--c200)}
+.s1d-poignee{width:32px;height:4px;border-radius:2px;background:var(--c700);margin:6px auto 0;flex:none}
+.s1d-haut{display:flex;align-items:center;gap:4px;height:36px;padding:0 4px 0 14px;flex:none;font-size:13px;color:var(--c400)}
+.s1d-esp{flex:1}
+.s1d-ib{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;color:var(--c400)}
+.s1d-niv{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+.s1d-niv-at{color:var(--at-t)}
+.s1d-fil{flex:1;min-height:0;overflow:hidden;padding:4px 14px 12px;display:flex;flex-direction:column;gap:12px}
+.s1d-cite{margin:0;font-size:13px;color:var(--c400);display:flex;gap:6px}
+.s1d-cite>span{display:block;max-height:2.8em;overflow:hidden}
+.s1d-titre{margin:0;font-size:18px;font-weight:600;color:var(--c50);line-height:1.25}
+.s1d-phrase{margin:0;font-size:22px;line-height:1.5;color:var(--c50);font-weight:400}
+.s1d-phrase .s1d-n{letter-spacing:-.03em;word-spacing:-.3em}
+.s1d-old{color:var(--c400);text-decoration:line-through;text-decoration-thickness:2px}
+.s1d-val{display:inline-flex;align-items:center;gap:4px;height:34px;padding:0 8px 0 6px;margin:0 1px;border-radius:10px;border:1px dashed var(--c700)!important;color:var(--c400);vertical-align:baseline;font-size:22px!important}
+.s1d-val-on{background:var(--at-f)!important;border:1px solid var(--at)!important;color:var(--c50)!important}
+.s1d-val-on svg{color:var(--at-t)}
+.s1d-suite{margin:0;font-size:18px;line-height:1.45;color:var(--c200)}
+.s1d-suite b{font-weight:600;color:var(--c50)}
+.s1d-sep{height:1px;background:var(--c800);flex:none}
+.s1d-act{display:flex;align-items:center;gap:8px}
+.s1d-act .s1d-quoi{flex:1;font-size:13px;color:var(--c400)}
+.s1d-btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:10px;font-size:13px;font-weight:600;white-space:nowrap}
+.s1d-btn-s{border:1px solid var(--c700)!important;color:var(--c200)}
+.s1d-btn-p{background:var(--act)!important;color:var(--sur-act)!important}
+.s1d-plis{display:flex;flex-direction:column}
+.s1d-pli{display:flex;align-items:center;gap:8px;min-height:36px;width:100%;font-size:13px;color:var(--c400);border-top:1px solid var(--c800)!important}
+.s1d-pli span{flex:1}
+.s1d-pli b{font-weight:600;color:var(--c200)}
+.s1d-pied{flex:none;padding:6px 8px 8px;border-top:1px solid var(--c800);background:var(--c900)}
+.s1d-modes{display:flex;gap:2px;margin:0 0 6px;padding:2px;border-radius:10px;background:var(--c850);width:max-content}
+.s1d-m{height:28px;padding:0 10px;border-radius:8px;font-size:13px;font-weight:600;color:var(--c400)}
+.s1d-m-on{background:var(--c950)!important;color:var(--c50)!important;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.s1d-champ{display:flex;align-items:center;gap:4px;min-height:44px;padding:4px 4px 4px 10px;background:var(--c950);border:1px solid var(--c700);border-radius:10px}
+.s1d-saisie{flex:1;min-width:0;resize:none;border:0;background:none;outline:0;font:16px/1.3 var(--sans);color:var(--c50);padding:6px 0}
+.s1d-saisie::placeholder{color:var(--c400)}
+.s1d-env{width:36px;height:36px;border-radius:10px;background:var(--c850);color:var(--c400);display:grid;place-items:center}
+.s1d-amorces{display:flex;flex-wrap:wrap;gap:6px}
+.s1d-amorce{display:inline-flex;align-items:center;gap:4px;height:36px;padding:0 12px;border-radius:10px;border:1px solid var(--c700)!important;font-size:18px!important;color:var(--c50)}
+.s1d-amorce i{font-style:normal;color:var(--c400)}
+.s1d-fait{color:var(--c400)}
+.s1d-cur{color:var(--c50);font-weight:600}
+.s1d-cur::after{content:"";display:inline-block;width:2px;height:1em;margin-left:3px;vertical-align:-2px;background:var(--hop);animation:s1d-cl 1s steps(1) infinite}
+@keyframes s1d-cl{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.s1d-cur::after{animation:none}}
+.s1d-chrono{font:600 22px/1 var(--mono);font-variant-numeric:tabular-nums;color:var(--c50)}
+.s1d-bascule{width:36px;height:22px;border-radius:11px;background:var(--hop);position:relative;flex:none}
+.s1d-bascule::after{content:"";position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:#fff}
+.s1d-file{display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px;border:1px dashed var(--c700);border-radius:10px;font-size:13px;color:var(--c400)}
+.s1d-file b{flex:1;font-weight:400;color:var(--c200)}
+.s1d-bandeau{display:flex;align-items:center;gap:6px;min-height:24px;margin:0 0 6px;font-size:13px;color:var(--c200)}
+.s1d-bandeau svg{color:var(--at-t)}
+.s1d-q{margin:0;padding:8px 12px;border-radius:16px;background:var(--c850);color:var(--c50);font-size:18px}
+
+</style></head>
+<body><main class="s1d-page">
+<h1 class="s1d-tete">s1d · La phrase qui agit <span style="font-weight:400;opacity:.8">· chaude</span></h1>
+<p class="s1d-idee">La réponse est une phrase en gros, et ses nombres sont les commandes : chaque valeur proposée est une pastille cochée dans la phrase, qu'on touche pour l'écarter. L'accueil se lit aussi en phrase, et la question s'amorce par une observation.</p>
+<div class="s1d-rang">
+<section class="s1d-cad" data-cadre="accueil">
+  <h2 class="s1d-cadnom">Accueil · jour de brassage, J+4</h2>
+  <div class="s1d-tel">
+    <img class="s1d-fond" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22390%22%20height%3D%22760%22%20viewBox%3D%220%200%20390%20760%22%3E%3Crect%20width%3D%22390%22%20height%3D%22760%22%20fill%3D%22%23e9e9e9%22%2F%3E%3Crect%20x%3D%2212%22%20y%3D%2210%22%20width%3D%22130%22%20height%3D%2214%22%20rx%3D%224%22%20fill%3D%22%238a8a8a%22%2F%3E%3Ccircle%20cx%3D%22330%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Ccircle%20cx%3D%22362%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Cg%20fill%3D%22%23b4b4b4%22%3E%3Crect%20x%3D%2212%22%20y%3D%2234%22%20width%3D%2256%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%2278%22%20y%3D%2234%22%20width%3D%2270%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%2234%22%20width%3D%2248%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22216%22%20y%3D%2234%22%20width%3D%2260%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22286%22%20y%3D%2234%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3C%2Fg%3E%3Crect%20x%3D%2212%22%20y%3D%2256%22%20width%3D%22366%22%20height%3D%22150%22%20rx%3D%2212%22%20fill%3D%22%23d6d6d6%22%2F%3E%3Crect%20x%3D%22290%22%20y%3D%2270%22%20width%3D%2270%22%20height%3D%2244%22%20rx%3D%226%22%20fill%3D%22%239c9c9c%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22340%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%23c4c4c4%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22190%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%238fa884%22%2F%3E%3C%2Fsvg%3E" alt="" width="390" height="760">
+    <div class="s1d-voile"></div>
+    <div class="s1d-feuille">
+    <div class="s1d-poignee"></div>
+    <header class="s1d-haut"><span>Compagnon · New England IPA</span><span class="s1d-esp"></span>
+      <button class="s1d-ib" aria-label="Mes conversations"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></button>
+      <button class="s1d-ib" aria-label="Réglages : notifier, limites, repartir à zéro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
+      <button class="s1d-ib" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </header>
+    <div class="s1d-fil">
+      <p class="s1d-phrase" data-booster="phrase-contexte">Brassin 31, <span class="s1d-n">J+4</span>, à <span class="s1d-n">19 °C</span>. DF <span class="s1d-n">1,012</span>, la cible est atteinte. Prochain geste : <b>Galaxy <span class="s1d-n">43 g</span></b> à <span class="s1d-n">J+6</span>.</p>
+      <div class="s1d-sep"></div>
+      <h3 class="s1d-titre">Qu'est-ce que tu observes ?</h3>
+      <div class="s1d-amorces" data-booster="amorces">
+        <button class="s1d-amorce">La pression monte<i>…</i></button>
+        <button class="s1d-amorce">Ça sent<i>…</i></button>
+        <button class="s1d-amorce">La densité est à<i>…</i></button>
+        <button class="s1d-amorce">Le goût est<i>…</i></button>
+        <button class="s1d-amorce">La mousse<i>…</i></button>
+      </div>
+      <p class="s1d-suite">Commence la phrase, je la lis avec ta recette et ton journal.</p>
+      <div class="s1d-plis" style="margin-top:auto">
+        <button class="s1d-pli"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg><span><b>Mes conversations</b> · 2 réponses prêtes</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+        <button class="s1d-pli"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><span>Rien ne s'applique sans ta validation</span></button>
+      </div>
+    </div>
+    <footer class="s1d-pied">
+      <div class="s1d-modes" role="radiogroup" aria-label="Mode" data-booster="modes"><button role="radio" aria-checked="false" class="s1d-m">Rapide</button><button role="radio" aria-checked="true" class="s1d-m s1d-m-on">Auto</button><button role="radio" aria-checked="false" class="s1d-m">Approfondi</button></div>
+      <div class="s1d-champ"><textarea class="s1d-saisie" rows="1" aria-label="Ta question" placeholder="Décris ce que tu observes…"></textarea><button class="s1d-env" aria-label="Envoyer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button></div>
+    </footer></div>
+  </div>
+</section>
+<section class="s1d-cad" data-cadre="attente">
+  <h2 class="s1d-cadnom">Attente · 2:29, une question en file</h2>
+  <div class="s1d-tel">
+    <img class="s1d-fond" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22390%22%20height%3D%22760%22%20viewBox%3D%220%200%20390%20760%22%3E%3Crect%20width%3D%22390%22%20height%3D%22760%22%20fill%3D%22%23e9e9e9%22%2F%3E%3Crect%20x%3D%2212%22%20y%3D%2210%22%20width%3D%22130%22%20height%3D%2214%22%20rx%3D%224%22%20fill%3D%22%238a8a8a%22%2F%3E%3Ccircle%20cx%3D%22330%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Ccircle%20cx%3D%22362%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Cg%20fill%3D%22%23b4b4b4%22%3E%3Crect%20x%3D%2212%22%20y%3D%2234%22%20width%3D%2256%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%2278%22%20y%3D%2234%22%20width%3D%2270%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%2234%22%20width%3D%2248%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22216%22%20y%3D%2234%22%20width%3D%2260%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22286%22%20y%3D%2234%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3C%2Fg%3E%3Crect%20x%3D%2212%22%20y%3D%2256%22%20width%3D%22366%22%20height%3D%22150%22%20rx%3D%2212%22%20fill%3D%22%23d6d6d6%22%2F%3E%3Crect%20x%3D%22290%22%20y%3D%2270%22%20width%3D%2270%22%20height%3D%2244%22%20rx%3D%226%22%20fill%3D%22%239c9c9c%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22340%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%23c4c4c4%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22190%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%238fa884%22%2F%3E%3C%2Fsvg%3E" alt="" width="390" height="760">
+    <div class="s1d-voile"></div>
+    <div class="s1d-feuille">
+    <div class="s1d-poignee"></div>
+    <header class="s1d-haut"><span class="s1d-chrono">2:29</span><span>&nbsp;· Approfondi, <span class="s1d-n">1 à 3 min</span></span><span class="s1d-esp"></span>
+      <button class="s1d-ib" aria-label="Mes conversations"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></button>
+      <button class="s1d-ib" aria-label="Réglages : notifier, limites, repartir à zéro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
+      <button class="s1d-ib" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </header>
+    <div class="s1d-fil">
+      <p class="s1d-cite"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg><span>La fermentation est à 19 °C depuis 36 h et la pression monte doucement : que faire ?</span></p>
+      <p class="s1d-phrase" data-booster="phrase-en-cours"><span class="s1d-fait">J'ai lu le brassin 31 et son journal. J'ai calculé <span class="s1d-n">9,0 g/L</span> de dry hop, l'IBU et le pH. J'ai lu 3 sources.</span> <span class="s1d-cur">Je relis ma proposition, deuxième fois</span></p>
+      <div class="s1d-sep"></div>
+      <div class="s1d-act"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="s1d-quoi">Tu peux continuer ailleurs. Me notifier à la réponse.</span><i class="s1d-bascule" role="switch" aria-checked="true" aria-label="Me notifier à la réponse"></i></div>
+      <div class="s1d-file"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h11M3 18h7"/><path d="m15 17 3 3 3-3M18 12v8"/></svg><b>Et combien de jours de garde à 18 °C ?</b>en file</div>
+      <p class="s1d-cite" style="margin-top:auto"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>Au plus <span class="s1d-n">3:40</span> ; au-delà, je te dis ce qui bloque.</span></p>
+    </div>
+    <footer class="s1d-pied">
+      <div class="s1d-modes" role="radiogroup" aria-label="Mode" data-booster="modes"><button role="radio" aria-checked="false" class="s1d-m">Rapide</button><button role="radio" aria-checked="false" class="s1d-m">Auto</button><button role="radio" aria-checked="true" class="s1d-m s1d-m-on">Approfondi</button></div>
+      <div class="s1d-champ"><textarea class="s1d-saisie" rows="1" aria-label="Ta question" placeholder="Décris ce que tu observes…"></textarea><button class="s1d-env" aria-label="Envoyer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button></div>
+    </footer></div>
+  </div>
+</section>
+<section class="s1d-cad" data-cadre="reponse">
+  <h2 class="s1d-cadnom">Réponse · attention, proposition</h2>
+  <div class="s1d-tel">
+    <img class="s1d-fond" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22390%22%20height%3D%22760%22%20viewBox%3D%220%200%20390%20760%22%3E%3Crect%20width%3D%22390%22%20height%3D%22760%22%20fill%3D%22%23e9e9e9%22%2F%3E%3Crect%20x%3D%2212%22%20y%3D%2210%22%20width%3D%22130%22%20height%3D%2214%22%20rx%3D%224%22%20fill%3D%22%238a8a8a%22%2F%3E%3Ccircle%20cx%3D%22330%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Ccircle%20cx%3D%22362%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Cg%20fill%3D%22%23b4b4b4%22%3E%3Crect%20x%3D%2212%22%20y%3D%2234%22%20width%3D%2256%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%2278%22%20y%3D%2234%22%20width%3D%2270%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%2234%22%20width%3D%2248%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22216%22%20y%3D%2234%22%20width%3D%2260%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22286%22%20y%3D%2234%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3C%2Fg%3E%3Crect%20x%3D%2212%22%20y%3D%2256%22%20width%3D%22366%22%20height%3D%22150%22%20rx%3D%2212%22%20fill%3D%22%23d6d6d6%22%2F%3E%3Crect%20x%3D%22290%22%20y%3D%2270%22%20width%3D%2270%22%20height%3D%2244%22%20rx%3D%226%22%20fill%3D%22%239c9c9c%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22340%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%23c4c4c4%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22190%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%238fa884%22%2F%3E%3C%2Fsvg%3E" alt="" width="390" height="760">
+    <div class="s1d-voile"></div>
+    <div class="s1d-feuille">
+    <div class="s1d-poignee"></div>
+    <header class="s1d-haut"><span class="s1d-niv s1d-niv-at" data-booster="niveau"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg>Attention</span><span>&nbsp;· relu deux fois</span><span class="s1d-esp"></span>
+      <button class="s1d-ib" aria-label="Mes conversations"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></button>
+      <button class="s1d-ib" aria-label="Réglages : notifier, limites, repartir à zéro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
+      <button class="s1d-ib" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </header>
+    <div class="s1d-fil">
+      <p class="s1d-cite"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg><span>La fermentation est à 19 °C depuis 36 h et la pression monte doucement : que faire ?</span></p>
+      <h3 class="s1d-titre">Dry hop chargé : réduis le dernier apport.</h3>
+      <p class="s1d-phrase" data-booster="valeurs-dans-la-phrase">Passe Mosaic J+9 de <span class="s1d-old s1d-n">43 g</span> à <button class="s1d-val s1d-val-on" role="checkbox" aria-checked="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="s1d-n">21 g</span></button>. Pour la recette, Citra J+2 à <button class="s1d-val s1d-val-on" role="checkbox" aria-checked="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="s1d-n">70 g</span></button> et un dry hop de <button class="s1d-val s1d-val-on" role="checkbox" aria-checked="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span class="s1d-n">3 j</span></button>.</p>
+      <p class="s1d-suite">Puis à <b><span class="s1d-n">J+9</span></b>, à la purge : goûte et sens, note si l'herbacé apparaît.</p>
+      <div class="s1d-act"><span class="s1d-quoi">Touche une valeur pour l'écarter.</span><button class="s1d-btn s1d-btn-s">Écarter</button><button class="s1d-btn s1d-btn-p">Valider 3 modifications</button></div>
+      <div class="s1d-plis">
+        <button class="s1d-pli" data-booster="garder-journal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/><path d="M12 7v6M9 10h6"/></svg><span><b>Garder « J+9, goûter à la purge »</b> au journal</span></button>
+        <button class="s1d-pli"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M8 6h8M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg><span><b>Pourquoi</b> · <span class="s1d-n">9,0 → 7,1 g/L</span>, herbacé en fin de garde</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <button class="s1d-pli"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></svg><span><b>Relu deux fois</b> · calculs refaits · 3 sources</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+      </div>
+    </div>
+    <footer class="s1d-pied">
+      <div class="s1d-modes" role="radiogroup" aria-label="Mode" data-booster="modes"><button role="radio" aria-checked="false" class="s1d-m">Rapide</button><button role="radio" aria-checked="true" class="s1d-m s1d-m-on">Auto</button><button role="radio" aria-checked="false" class="s1d-m">Approfondi</button></div>
+      <div class="s1d-champ"><textarea class="s1d-saisie" rows="1" aria-label="Ta question" placeholder="Décris ce que tu observes…"></textarea><button class="s1d-env" aria-label="Envoyer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button></div>
+    </footer></div>
+  </div>
+</section>
+<section class="s1d-cad" data-cadre="erreur">
+  <h2 class="s1d-cadnom">Erreur · hors ligne, envoi à confirmer</h2>
+  <div class="s1d-tel">
+    <img class="s1d-fond" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22390%22%20height%3D%22760%22%20viewBox%3D%220%200%20390%20760%22%3E%3Crect%20width%3D%22390%22%20height%3D%22760%22%20fill%3D%22%23e9e9e9%22%2F%3E%3Crect%20x%3D%2212%22%20y%3D%2210%22%20width%3D%22130%22%20height%3D%2214%22%20rx%3D%224%22%20fill%3D%22%238a8a8a%22%2F%3E%3Ccircle%20cx%3D%22330%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Ccircle%20cx%3D%22362%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Cg%20fill%3D%22%23b4b4b4%22%3E%3Crect%20x%3D%2212%22%20y%3D%2234%22%20width%3D%2256%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%2278%22%20y%3D%2234%22%20width%3D%2270%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%2234%22%20width%3D%2248%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22216%22%20y%3D%2234%22%20width%3D%2260%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22286%22%20y%3D%2234%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3C%2Fg%3E%3Crect%20x%3D%2212%22%20y%3D%2256%22%20width%3D%22366%22%20height%3D%22150%22%20rx%3D%2212%22%20fill%3D%22%23d6d6d6%22%2F%3E%3Crect%20x%3D%22290%22%20y%3D%2270%22%20width%3D%2270%22%20height%3D%2244%22%20rx%3D%226%22%20fill%3D%22%239c9c9c%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22340%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%23c4c4c4%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22190%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%238fa884%22%2F%3E%3C%2Fsvg%3E" alt="" width="390" height="760">
+    <div class="s1d-voile"></div>
+    <div class="s1d-feuille">
+    <div class="s1d-poignee"></div>
+    <header class="s1d-haut"><span class="s1d-niv"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h.01M8.5 16.43a5 5 0 0 1 7 0M2 8.82a15 15 0 0 1 4.17-2.65M10.66 5c4.01-.36 8.14.9 11.34 3.76M16.85 11.25a10 10 0 0 1 2.22 1.68M5 13a10 10 0 0 1 5.24-2.76M2 2l20 20"/></svg>Hors ligne</span><span class="s1d-esp"></span>
+      <button class="s1d-ib" aria-label="Mes conversations"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></button>
+      <button class="s1d-ib" aria-label="Réglages : notifier, limites, repartir à zéro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
+      <button class="s1d-ib" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </header>
+    <div class="s1d-fil">
+      <p class="s1d-cite"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg><span>Dernier conseil, <span class="s1d-n">22:17</span> : passe Mosaic J+9 de <span class="s1d-n">43 g</span> à <span class="s1d-n">21 g</span>.</span></p>
+      <p class="s1d-q">Et combien de jours de garde à 18 °C ?</p>
+      <p class="s1d-phrase" data-booster="phrase-erreur">Pas de réseau : envoi à confirmer. Ta question reste ici, et ne partira <b>qu'une fois</b>.</p>
+      <div class="s1d-act"><span class="s1d-quoi"><span class="s1d-n">22:31</span> · gardée sur l'appareil</span><button class="s1d-btn s1d-btn-s"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.38 3.62a1 1 0 0 1 3 3L7.37 18.64a2 2 0 0 1-.86.5l-2.87.84a.5.5 0 0 1-.62-.62l.84-2.87a2 2 0 0 1 .5-.86z"/></svg>Reformuler</button><button class="s1d-btn s1d-btn-p"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Réessayer</button></div>
+      <div class="s1d-plis" style="margin-top:auto">
+        <button class="s1d-pli"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/></svg><span>Le fil et les réponses reçues restent lisibles.</span></button>
+      </div>
+    </div>
+    <footer class="s1d-pied"><div class="s1d-bandeau" data-booster="bandeau-hors-ligne"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h.01M8.5 16.43a5 5 0 0 1 7 0M2 8.82a15 15 0 0 1 4.17-2.65M10.66 5c4.01-.36 8.14.9 11.34 3.76M16.85 11.25a10 10 0 0 1 2.22 1.68M5 13a10 10 0 0 1 5.24-2.76M2 2l20 20"/></svg>Hors ligne : la prochaine question attendra le réseau.</div>
+      <div class="s1d-modes" role="radiogroup" aria-label="Mode" data-booster="modes"><button role="radio" aria-checked="false" class="s1d-m">Rapide</button><button role="radio" aria-checked="true" class="s1d-m s1d-m-on">Auto</button><button role="radio" aria-checked="false" class="s1d-m">Approfondi</button></div>
+      <div class="s1d-champ"><textarea class="s1d-saisie" rows="1" aria-label="Ta question" placeholder="Décris ce que tu observes…"></textarea><button class="s1d-env" aria-label="Envoyer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button></div>
+    </footer></div>
+  </div>
+</section>
+</div></main></body></html>

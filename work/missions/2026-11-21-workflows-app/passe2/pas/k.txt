@@ -1,0 +1,9 @@
+t=Brassins
+t=Ouvrir le brassin B-ZZ-GARDE
+t=Conditionner · bouteilles et fût
+t=F-005 20 L
+t=F-006 20 L
+t=Conditionner 40 L
+d
+s=batches|status,packaging,volumePackagedL
+s=kegs|state,batchRef,beerName

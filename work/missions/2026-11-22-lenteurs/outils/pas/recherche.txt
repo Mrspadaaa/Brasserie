@@ -1,0 +1,4 @@
+# WF2-4 : frappe de Cigogne dans la recherche
+t=Rechercher (⌘K)
+type=Cigogne
+inp

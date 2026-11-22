@@ -1,0 +1,114 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>c3b · Un brassin par colonne</title><style>
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--line2:#bfbfbf;--mut:#5f5f5f;--ink:#111;--act:#111;--onact:#fff;--fin:#1f64a3;--finbg:#e8f0f8;--stk:#4c6b2a;--att:#8a5f06;--attbg:#fbf1dc;--botOn:#efe8e1;--ok:#2f7d6b;--okbg:#e3f1ec;--bad:#b3261e;--halo:#fff;--prod:#9a4f1e;--onfin:#fff}
+html[data-theme=cave]{--bg:#12100e;--s1:#1a1613;--s2:#221d19;--line:#2c2521;--line2:#3d342e;--mut:#a39385;--ink:#f5f0ea;--act:#f2c14e;--onact:#12100e;--fin:#86b9e6;--finbg:#172634;--stk:#a3c97a;--att:#e0a02e;--attbg:#2e2310;--botOn:#2c2521;--ok:#6fc3ad;--okbg:#14302a;--bad:#f08a80;--halo:#12100e;--prod:#e7a070;--onfin:#12100e}
+[hidden]{display:none!important}*{box-sizing:border-box}
+html,body{margin:0;overflow-x:clip;background:var(--bg);color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:16px;-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;padding-bottom:172px}button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.mono{font-family:"IBM Plex Mono",Consolas,monospace;font-variant-numeric:tabular-nums}
+.k-tabs{display:flex;gap:2px;margin:8px 12px 0;padding:4px;background:var(--s2);border-radius:14px}
+.k-tabs button{flex:1 1 auto;height:38px;padding:0 5px;border-radius:10px;font-size:16px;color:var(--mut);white-space:nowrap}.k-tabs button.on{background:var(--act);color:var(--onact);font-weight:700}
+.k-ex{display:inline-block;border:1.5px solid var(--fin);color:var(--fin);border-radius:999px;font-size:14px;line-height:20px;padding:0 8px;font-weight:600;white-space:nowrap}
+.k-rows{margin:0 12px;border:1.5px solid var(--line);border-radius:14px;overflow:hidden}
+.k-row{display:flex;align-items:center;gap:10px;min-height:52px;padding:5px 12px;border-top:1px solid var(--line);width:100%;text-align:left}.k-row:first-child{border-top:0}
+.k-row:active{background:var(--s1)}
+.k-row .k-dot{width:12px;height:12px;border-radius:50%;flex:none;background:var(--c)}
+.k-row .k-tx{flex:1;min-width:0}.k-row .k-nm{font-size:16px;font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-row .k-sb{font-size:14px;color:var(--mut);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.k-row .k-sb em{font-style:normal;color:var(--c);font-weight:700}
+.k-row .k-q{font-size:15px;white-space:nowrap}
+/* barre d'action collée au-dessus des onglets : la liste passe dessous, le + ne couvre rien */
+.k-bar{position:fixed;left:0;right:0;bottom:78px;height:74px;background:var(--bg);border-top:1.5px solid var(--line);z-index:4;display:flex;align-items:center;padding:0 84px 0 12px}
+.k-cta{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:50px;border-radius:12px;background:var(--act);color:var(--onact);font-size:17px;font-weight:700;white-space:nowrap;min-width:0}
+.k-cta .k-n{min-width:28px;height:26px;padding:0 7px;border-radius:13px;background:var(--fin);color:var(--onfin);font-size:16px;line-height:26px;font-weight:800;text-align:center}
+.k-fab{position:fixed;right:12px;bottom:86px;width:58px;height:58px;border-radius:50%;background:var(--act);color:var(--onact);display:grid;place-items:center;z-index:6;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.k-fab .ico{width:28px;height:28px;stroke-width:2.5}
+.k-nav{position:fixed;left:0;right:0;bottom:0;height:78px;display:grid;grid-template-columns:repeat(6,1fr);background:var(--bg);border-top:1.5px solid var(--line);z-index:5}
+.k-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:14px;color:var(--ink);text-decoration:none;position:relative}
+.k-nav a.on{background:var(--botOn);font-weight:700}.k-nav a.on::before{content:'';position:absolute;top:-1.5px;left:0;right:0;height:4px;background:var(--prod)}
+.k-nav a .ico{width:26px;height:26px}.k-nav a.st .ico{color:var(--stk)}
+.k-pas{position:absolute;top:2px;left:calc(50% + 4px);min-width:28px;height:26px;padding:0 6px;border-radius:13px;font-size:15px;line-height:22px;font-weight:800;text-align:center;color:var(--onfin);background:var(--fin);border:2px solid var(--bg);font-variant-numeric:tabular-nums;transition:transform .2s}
+.k-pas.pulse{animation:kpu .45s ease}@keyframes kpu{40%{transform:scale(1.25)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.c3-head{display:flex;align-items:center;gap:12px;padding:12px 12px 0}
+.c3-bul{min-width:80px;height:66px;padding:0 14px;border-radius:33px;background:var(--fin);color:var(--onfin);font-size:48px;font-weight:800;line-height:66px;text-align:center;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.c3-bul.seu{background:var(--att);color:var(--onact)}
+.c3-t{flex:1;min-width:0;font-size:15px;color:var(--mut);line-height:1.3}
+.c3-chip{display:inline-flex;align-items:center;gap:6px;margin-top:2px;padding:2px 10px 2px 6px;border-radius:999px;background:var(--finbg);color:var(--ink);font-size:17px;font-weight:700;white-space:nowrap}
+.c3-chip.seu{background:var(--attbg)}.c3-chip .ico{color:var(--prod);width:20px;height:20px}.c3-chip.seu .ico{color:var(--att)}
+.c3-lien{display:flex;align-items:center;gap:6px;margin:14px 12px 0;font-size:15px;color:var(--mut)}
+.c3-lien .c3-mi{position:relative;width:30px;height:24px;color:var(--stk)}.c3-lien .c3-mi .ico{position:absolute;left:0;bottom:0;width:22px;height:22px}
+.c3-lien .c3-mi i{position:absolute;right:-4px;top:-5px;width:14px;height:12px;border-radius:6px;background:var(--fin)}
+.c3-lien b{color:var(--ink)}
+.c3-tl{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:6px 12px 0}
+.c3-col{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px 8px;border-radius:12px;border:1.5px solid transparent;min-height:196px}
+.c3-col.on{background:var(--finbg)}.c3-col.sel{border-color:var(--fin)}
+.c3-col.seu.on{background:var(--attbg)}.c3-col.seu.sel{border-color:var(--att)}
+.c3-col .c3-p{min-width:32px;height:26px;padding:0 5px;border-radius:13px;font-weight:800;font-size:16px;line-height:23px;text-align:center;border:1.5px solid var(--line2);color:var(--mut);background:var(--bg)}
+.c3-col.on .c3-p{border-color:var(--fin);color:var(--fin)}.c3-col.sel .c3-p{background:var(--fin);color:var(--onfin)}
+.c3-col.seu.on .c3-p{border-color:var(--att);color:var(--att)}.c3-col.seu.sel .c3-p{background:var(--att);color:var(--onact)}
+.c3-col .c3-bar{flex:1;width:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:2px}
+.c3-col .c3-bar span{font-size:14px;font-weight:700;color:var(--t,var(--c))}
+.c3-col .c3-bar i{width:30px;border-radius:5px 5px 0 0;background:var(--c)}
+.c3-col .ico{width:24px;height:24px;color:var(--c2)}
+.c3-col .c3-n{font-size:14px;line-height:1.15;text-align:center;color:var(--ink);font-weight:600;min-height:32px}
+.c3-col .c3-w{font-size:14px;color:var(--mut)}
+.c3-g{margin:0 12px 10px}#c3-l{padding-top:14px}
+.c3-gh{display:flex;align-items:baseline;gap:8px;padding:0 4px 4px;font-size:15px;color:var(--mut)}.c3-gh b{color:var(--ink);font-size:16px}
+</style></head><body>
+<nav class="k-tabs" aria-label="Stocks"><button class="on">Articles</button><button>Courses</button><button>Fûts</button><button>Houblons</button><button>Matériel</button></nav>
+<script>window.STK=(()=>{const A=[
+{n:'Soude caustique',q:'1 bidon',sem:48,pour:'lavage des fûts'},
+{n:'Acide peracétique',q:'1 L',sem:48,pour:'lavage des fûts'},
+{n:'Malt chocolat',q:'1,2 kg',sem:49,pour:'Porter'},
+{n:'Munich',q:'6 kg',sem:49,pour:'Porter'},
+{n:'US-05',q:'2 sachets',sem:49,pour:'Porter'},
+{n:'Capsules 26 mm',q:'500',sem:50,pour:'Blonde en bouteilles'},
+{n:'Étiquettes Blonde',q:'200',sem:50,pour:'Blonde en bouteilles'},
+{n:'Pilsner',q:'25 kg',sem:51,pour:'Pils de Noël'},
+{n:'Saaz',q:'0,8 kg',sem:51,pour:'Pils de Noël'},
+{n:'W-34/70',q:'3 sachets',sem:51,pour:'Pils de Noël'},
+{n:'CO₂',q:'1 bouteille',sem:52,pour:'fûts du Marché'},
+{n:'Citra',q:'0,4 kg',sem:null},{n:'Mosaic',q:'0,4 kg',sem:null},{n:'Simcoe',q:'0,3 kg',sem:null},{n:'Malt de Vienne',q:'5 kg',sem:null},
+{n:'Flocons d’avoine',q:'2 kg',sem:null},{n:'Lactose',q:'1 kg',sem:null},{n:'Irish moss',q:'100 g',sem:null},
+{n:'Gypse',q:'250 g',sem:null},{n:'Chlorure de calcium',q:'250 g',sem:null},{n:'Acide lactique',q:'0,5 L',sem:null},
+{n:'Cartons de 6',q:'40',sem:null},{n:'Nottingham',q:'2 sachets',sem:null},{n:'Joints de fût',q:'10',sem:null}];
+const Q=new URLSearchParams(location.search);
+if(Q.get('theme')==='cave')document.documentElement.dataset.theme='cave';
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const W=[47,48,49,50,51,52,99];
+const sem=a=>a.sem||99;
+const dans=H=>A.filter(a=>sem(a)<=H);
+const par=w=>A.filter(a=>sem(a)===w);
+const pour={47:'',48:'lavage',49:'Porter',50:'bouteilles',51:'Pils de Noël',52:'Marché',99:'au seuil'};
+function row(a,c){const w=a.sem?'<em>S'+a.sem+'</em> · '+a.pour:'<em>au seuil</em> · aucun brassin';
+return '<button class="k-row" style="--c:'+c+'" data-booster="article"><i class="k-dot"></i><span class="k-tx"><span class="k-nm">'+a.n+'</span><span class="k-sb">'+w+'</span></span><span class="k-q mono">'+a.q+'</span></button>'}
+function pastille(n){const p=$('#k-pas');p.hidden=!n;p.textContent=n;p.classList.remove('pulse');void p.offsetWidth;p.classList.add('pulse')}
+function cta(n,txt){$('#k-cta').innerHTML='<svg class="ico" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11h10.2L20 7H6.2"/><circle cx="9" cy="19.5" r="1.5"/><circle cx="17" cy="19.5" r="1.5"/></svg>'+(txt||'Commander')+' <span class="k-n">'+n+'</span>'}
+const ic=d=>'<svg class="ico" viewBox="0 0 24 24">'+d+'</svg>';
+const P={lav:ic('<path d="M9 9h6v11a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1z"/><path d="M10 9V6h4l3 1.5"/><path d="M19.5 4.5l1-1M20 7.5h1.5M19.5 10.5l1 1"/><path d="M10.5 14h3"/>'),
+chope:ic('<path d="M6 8h10v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M16 11h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"/><path d="M6 8a3 3 0 0 1 3-4 3 3 0 0 1 5 1 2.5 2.5 0 0 1 2 3"/>'),
+bout:ic('<path d="M10 2.5h4V6l2 3.5V20a1.5 1.5 0 0 1-1.5 1.5h-5A1.5 1.5 0 0 1 8 20V9.5L10 6z"/><path d="M8 13h8v4H8"/>'),
+fut:ic('<path d="M6.5 4h11c.8 2.7.8 13.3 0 16h-11c-.8-2.7-.8-13.3 0-16z"/><path d="M6 9h12M6 15h12"/><path d="M11 2.5h2V4h-2z"/>'),
+jauge:ic('<path d="M5 4h14v15a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/><path d="M5 16.5h14"/><path d="M12 7v5.5M9.5 10l2.5 2.5 2.5-2.5"/>')};
+const EV=[[48,'Lavage','lavage des fûts',P.lav],[49,'Porter','brassin',P.chope],[50,'Blonde','mise en bouteille',P.bout],[51,'Pils de Noël','brassin',P.chope],[52,'Marché','fûts',P.fut],[99,'Sans brassin','au seuil',P.jauge]];
+const cumul=w=>A.filter(a=>sem(a)<=w).length;
+return {P,EV,cumul,A,Q,$,$$,W,sem,dans,par,pour,row,pastille,cta,etat:Q.get('etat')||'repos'}})();</script>
+<div class="c3-head"><span class="c3-bul" id="c3-big">5</span><div class="c3-t">à commander jusqu’à<br><span class="c3-chip" id="c3-chip"></span></div><span class="k-ex">exemple</span></div>
+<div class="c3-lien"><span class="c3-mi"><svg class="ico" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/></svg><i></i></span><b>pastille</b> si tu coupes là</div>
+<div class="c3-tl" id="c3-tl" data-booster="brassin-horizon"></div>
+<div id="c3-l"></div>
+<div class="k-bar"><button class="k-cta" id="k-cta" data-booster="commander"></button></div>
+<button class="k-fab" aria-label="Ajouter"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+<nav class="k-nav"><a><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>Bord</a><a><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M4 7l11-3v3"/><path d="M15 13.5h5"/></svg>Finances</a><a><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4M8 14h2M12 14h2M16 14h0M8 17h2"/></svg>Calendrier</a><a><svg class="ico" viewBox="0 0 24 24"><path d="M6 8h10v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M16 11h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"/><path d="M6 8a3 3 0 0 1 3-4 3 3 0 0 1 5 1 2.5 2.5 0 0 1 2 3"/><path d="M9.5 12v6M12.5 12v6"/></svg>Brassins</a><a class="on st" id="k-st"><svg class="ico" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/></svg>Stocks<b class="k-pas" id="k-pas"></b></a><a><svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3 6"/></svg>Clients</a></nav>
+
+<script>(()=>{const S=STK,{$,$$}=S;let H=49;const m=13;
+function rendre(){const X=S.dans(H),E=S.EV.find(e=>e[0]===H);
+$('#c3-big').textContent=X.length;
+$('#c3-chip').className='c3-chip'+(H===99?' seu':'');$('#c3-chip').innerHTML=E[3]+(H===99?'tout le seuil':E[1]+' · S'+H);
+$('#c3-tl').innerHTML=S.EV.map(([w,n,s,ic])=>{const k=S.par(w).length,on=w<=H,c=on?(w===99?'var(--att)':'var(--fin)'):'var(--line2)';
+return '<button class="c3-col'+(on?' on':'')+(w===H?' sel':'')+(w===99?' seu':'')+'" data-h="'+w+'" style="--c:'+c+(on?'':';--t:var(--mut)')+';--c2:'+(on?(w===99?'var(--att)':'var(--prod)'):'var(--mut)')+'"><span class="c3-p">'+S.cumul(w)+'</span><span class="c3-bar"><span>+'+k+'</span><i style="height:'+Math.max(6,k/m*64)+'px"></i></span>'+ic+'<span class="c3-n">'+n+'</span><span class="c3-w">'+(w===99?'seuil':'S'+w)+'</span></button>'}).join('');
+for(const b of $$('#c3-tl button'))b.onclick=()=>{H=+b.dataset.h;rendre()};
+$('#c3-l').innerHTML=S.EV.filter(e=>e[0]<=H).map(([w,n,s])=>{const L=S.par(w);return '<div class="c3-g"><div class="c3-gh"><b>'+(w===99?'Au seuil':n)+'</b>'+(w===99?'aucun brassin prévu':'S'+w+' · '+s)+' · '+L.length+'</div><div class="k-rows" style="margin:0">'+L.map(a=>S.row(a,w===99?'var(--att)':'var(--fin)')).join('')+'</div></div>'}).join('');
+S.cta(X.length,H===99?'Commander tout':'Commander jusqu’à '+(H===51?'Pils':E[1]));S.pastille(X.length)}
+rendre();if(S.etat==='geste'){H=51;rendre()}if(S.etat==='tout'){H=99;rendre()}})()</script>
+</body></html>

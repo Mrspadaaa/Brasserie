@@ -1,0 +1,3681 @@
+{
+ "date": "2026-11-15 15:52:36",
+ "mode": "payant",
+ "modeles": {
+  "embeddings": [
+   "gemini-embedding-2",
+   "gemini-embedding-001"
+  ],
+  "dimensions": 768,
+  "classeur": "gemini-3.5-flash-lite"
+ },
+ "depenseChf": 0.406104,
+ "plafondChf": 4.5,
+ "arretBudget": null,
+ "taches": [
+  {
+   "tache": "T1",
+   "entrees": 24,
+   "requetes": 44,
+   "avecVerite": 27,
+   "methodes": {
+    "fuse": {
+     "n": 27,
+     "rappel1": 11,
+     "rappel3": 11,
+     "latenceMedianeMs": 0.36950000000001637,
+     "latenceP95Ms": 0.5765000000001237,
+     "coutParPieceChf": 0,
+     "erreurs": 0,
+     "abstention": {
+      "seuil": 0,
+      "sansBesoinRejetes": 0,
+      "sansBesoin": 10,
+      "avecBesoinAcceptes": 12,
+      "avecBesoin": 12,
+      "liensJustes": 6,
+      "fauxLiens": 10
+     }
+    },
+    "emb2": {
+     "n": 27,
+     "rappel1": 26,
+     "rappel3": 27,
+     "latenceMedianeMs": 317,
+     "latenceP95Ms": 384,
+     "coutParPieceChf": 0.000003954545454545454,
+     "erreurs": 0,
+     "abstention": {
+      "seuil": 0.713,
+      "sansBesoinRejetes": 9,
+      "sansBesoin": 10,
+      "avecBesoinAcceptes": 11,
+      "avecBesoin": 12,
+      "liensJustes": 11,
+      "fauxLiens": 1
+     }
+    },
+    "emb001": {
+     "n": 27,
+     "rappel1": 22,
+     "rappel3": 25,
+     "latenceMedianeMs": 239,
+     "latenceP95Ms": 274,
+     "coutParPieceChf": 0.000002477272727272727,
+     "erreurs": 0,
+     "abstention": {
+      "seuil": 0.649,
+      "sansBesoinRejetes": 10,
+      "sansBesoin": 10,
+      "avecBesoinAcceptes": 8,
+      "avecBesoin": 12,
+      "liensJustes": 5,
+      "fauxLiens": 0
+     }
+    },
+    "hybride": {
+     "n": 27,
+     "rappel1": 26,
+     "rappel3": 27,
+     "latenceMedianeMs": 317.48160000000007,
+     "latenceP95Ms": 384.4752000000001,
+     "coutParPieceChf": 0.000003954545454545454,
+     "erreurs": 0,
+     "abstention": {
+      "seuil": 0.033,
+      "sansBesoinRejetes": 10,
+      "sansBesoin": 10,
+      "avecBesoinAcceptes": 6,
+      "avecBesoin": 12,
+      "liensJustes": 6,
+      "fauxLiens": 0
+     }
+    },
+    "classeur": {
+     "n": 27,
+     "rappel1": 27,
+     "rappel3": 27,
+     "latenceMedianeMs": 599,
+     "latenceP95Ms": 691,
+     "coutParPieceChf": 0.00038340909090909094,
+     "erreurs": 0,
+     "abstention": {
+      "seuil": 1,
+      "sansBesoinRejetes": 9,
+      "sansBesoin": 10,
+      "avecBesoinAcceptes": 12,
+      "avecBesoin": 12,
+      "liensJustes": 12,
+      "fauxLiens": 1
+     }
+    },
+    "hybride+llm": {
+     "n": 27,
+     "rappel1": 26,
+     "rappel3": 27,
+     "latenceMedianeMs": 912.3734,
+     "latenceP95Ms": 998.3741,
+     "coutParPieceChf": 0.0002149090909090909,
+     "erreurs": 0,
+     "abstention": {
+      "seuil": 1,
+      "sansBesoinRejetes": 8,
+      "sansBesoin": 10,
+      "avecBesoinAcceptes": 12,
+      "avecBesoin": 12,
+      "liensJustes": 11,
+      "fauxLiens": 2
+     }
+    }
+   },
+   "indexation": {
+    "gemini-embedding-2": {
+     "jetons": 765,
+     "chf": 0.000198
+    },
+    "gemini-embedding-001": {
+     "jetons": 953,
+     "chf": 0.000189
+    }
+   },
+   "detail": [
+    {
+     "id": "L01",
+     "texte": "Hotte aspirante inox",
+     "vérité": [
+      "B03"
+     ],
+     "fuse": [
+      "B03"
+     ],
+     "emb2": [
+      "B03",
+      "B01",
+      "B09"
+     ],
+     "hybride": [
+      "B03",
+      "B01",
+      "B09"
+     ],
+     "classeur": [
+      "B03"
+     ],
+     "hybride+llm": [
+      "B03"
+     ]
+    },
+    {
+     "id": "L02",
+     "texte": "Reparation de la pompe",
+     "vérité": [
+      "B02"
+     ],
+     "fuse": [
+      "B02"
+     ],
+     "emb2": [
+      "B02",
+      "B09",
+      "B08"
+     ],
+     "hybride": [
+      "B02",
+      "B09",
+      "B08"
+     ],
+     "classeur": [
+      "B02"
+     ],
+     "hybride+llm": [
+      "B02"
+     ]
+    },
+    {
+     "id": "L03",
+     "texte": "Frais de livraison",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B05",
+      "B23",
+      "B02"
+     ],
+     "hybride": [
+      "B05",
+      "B23",
+      "B02"
+     ],
+     "classeur": [],
+     "hybride+llm": []
+    },
+    {
+     "id": "L04",
+     "texte": "Remise commerciale",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B10",
+      "B23",
+      "B26"
+     ],
+     "hybride": [
+      "B10",
+      "B23",
+      "B26"
+     ],
+     "classeur": [],
+     "hybride+llm": []
+    },
+    {
+     "id": "L05",
+     "texte": "Malt Pilsner 25 kg",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B22",
+      "B23",
+      "B15"
+     ],
+     "hybride": [
+      "B22",
+      "B23",
+      "B15"
+     ],
+     "classeur": [],
+     "hybride+llm": []
+    },
+    {
+     "id": "L06",
+     "texte": "Detergent alcalin CIP 10 L",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B13",
+      "B24",
+      "B23"
+     ],
+     "hybride": [
+      "B13",
+      "B24",
+      "B23"
+     ],
+     "classeur": [],
+     "hybride+llm": []
+    },
+    {
+     "id": "L07",
+     "texte": "Capsules couronne 26 mm",
+     "vérité": [
+      "B07"
+     ],
+     "fuse": [
+      "B07"
+     ],
+     "emb2": [
+      "B07",
+      "B10",
+      "B14"
+     ],
+     "hybride": [
+      "B07",
+      "B10",
+      "B14"
+     ],
+     "classeur": [
+      "B07"
+     ],
+     "hybride+llm": [
+      "B07"
+     ]
+    },
+    {
+     "id": "L08",
+     "texte": "Bouteilles 33 cl brunes",
+     "vérité": [
+      "B10"
+     ],
+     "fuse": [
+      "B10",
+      "B14",
+      "B26"
+     ],
+     "emb2": [
+      "B10",
+      "B07",
+      "B14"
+     ],
+     "hybride": [
+      "B10",
+      "B14",
+      "B07"
+     ],
+     "classeur": [
+      "B10"
+     ],
+     "hybride+llm": [
+      "B10"
+     ]
+    },
+    {
+     "id": "L09",
+     "texte": "Main d'oeuvre reparation pompe",
+     "vérité": [
+      "B02"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B02",
+      "B08",
+      "B09"
+     ],
+     "hybride": [
+      "B02",
+      "B08",
+      "B09"
+     ],
+     "classeur": [
+      "B02"
+     ],
+     "hybride+llm": [
+      "B02"
+     ]
+    },
+    {
+     "id": "L10",
+     "texte": "Garniture mecanique 25 mm",
+     "vérité": [
+      "B02"
+     ],
+     "fuse": [
+      "B02"
+     ],
+     "emb2": [
+      "B02",
+      "B09",
+      "B07"
+     ],
+     "hybride": [
+      "B02",
+      "B09",
+      "B07"
+     ],
+     "classeur": [
+      "B02"
+     ],
+     "hybride+llm": [
+      "B02"
+     ]
+    },
+    {
+     "id": "L11",
+     "texte": "Raccord Tri-Clamp 1.5 pouce",
+     "vérité": [
+      "B09"
+     ],
+     "fuse": [
+      "B09"
+     ],
+     "emb2": [
+      "B09",
+      "B13",
+      "B01"
+     ],
+     "hybride": [
+      "B09",
+      "B13",
+      "B01"
+     ],
+     "classeur": [
+      "B09"
+     ],
+     "hybride+llm": [
+      "B09"
+     ]
+    },
+    {
+     "id": "L12",
+     "texte": "Frais de deplacement",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B02",
+      "B11",
+      "B13"
+     ],
+     "hybride": [
+      "B02",
+      "B11",
+      "B13"
+     ],
+     "classeur": [
+      "B02"
+     ],
+     "hybride+llm": []
+    },
+    {
+     "id": "L13",
+     "texte": "Reparation pompe circulation",
+     "vérité": [
+      "B02"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B02",
+      "B09",
+      "B20"
+     ],
+     "hybride": [
+      "B02",
+      "B09",
+      "B20"
+     ],
+     "classeur": [
+      "B02"
+     ],
+     "hybride+llm": [
+      "B02"
+     ]
+    },
+    {
+     "id": "L14",
+     "texte": "Bac plastique 40 L",
+     "vérité": [
+      "B25"
+     ],
+     "fuse": [
+      "B25"
+     ],
+     "emb2": [
+      "B25",
+      "B05",
+      "B13"
+     ],
+     "hybride": [
+      "B25",
+      "B05",
+      "B13"
+     ],
+     "classeur": [
+      "B25"
+     ],
+     "hybride+llm": [
+      "B25"
+     ]
+    },
+    {
+     "id": "L15",
+     "texte": "Fut inox 20 L",
+     "vérité": [
+      "B05"
+     ],
+     "fuse": [
+      "B05",
+      "B01"
+     ],
+     "emb2": [
+      "B05",
+      "B01",
+      "B17"
+     ],
+     "hybride": [
+      "B05",
+      "B01",
+      "B17"
+     ],
+     "classeur": [
+      "B05"
+     ],
+     "hybride+llm": [
+      "B05"
+     ]
+    },
+    {
+     "id": "L16",
+     "texte": "Joints de fut (5)",
+     "vérité": [
+      "B05"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B05",
+      "B09",
+      "B02"
+     ],
+     "hybride": [
+      "B05",
+      "B09",
+      "B02"
+     ],
+     "classeur": [
+      "B05",
+      "B09",
+      "B02"
+     ],
+     "hybride+llm": [
+      "B02",
+      "B05",
+      "B09"
+     ]
+    },
+    {
+     "id": "L17",
+     "texte": "Houblon Saaz 500 g",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B15",
+      "B23",
+      "B26"
+     ],
+     "hybride": [
+      "B15",
+      "B23",
+      "B26"
+     ],
+     "classeur": [],
+     "hybride+llm": []
+    },
+    {
+     "id": "L18",
+     "texte": "Levure W-34/70 11.5 g",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B19",
+      "B07",
+      "B15"
+     ],
+     "hybride": [
+      "B19",
+      "B07",
+      "B15"
+     ],
+     "classeur": [],
+     "hybride+llm": []
+    },
+    {
+     "id": "L19",
+     "texte": "Bicchieri degustazione",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B10",
+      "B11",
+      "B07"
+     ],
+     "hybride": [
+      "B10",
+      "B11",
+      "B07"
+     ],
+     "classeur": [],
+     "hybride+llm": []
+    },
+    {
+     "id": "L20",
+     "texte": "Sucre de canne 1 kg",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B23",
+      "B10",
+      "B25"
+     ],
+     "hybride": [
+      "B23",
+      "B10",
+      "B25"
+     ],
+     "classeur": [],
+     "hybride+llm": []
+    },
+    {
+     "id": "L21",
+     "texte": "Pince Hoffmann",
+     "vérité": [
+      "B13"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B13",
+      "B23",
+      "B24"
+     ],
+     "hybride": [
+      "B13",
+      "B23",
+      "B24"
+     ],
+     "classeur": [
+      "B13"
+     ],
+     "hybride+llm": [
+      "B13"
+     ]
+    },
+    {
+     "id": "L22",
+     "texte": "Tuyau silicone 10 mm",
+     "vérité": [
+      "B13"
+     ],
+     "fuse": [
+      "B13"
+     ],
+     "emb2": [
+      "B13",
+      "B09",
+      "B16"
+     ],
+     "hybride": [
+      "B13",
+      "B09",
+      "B16"
+     ],
+     "classeur": [
+      "B13"
+     ],
+     "hybride+llm": [
+      "B13"
+     ]
+    },
+    {
+     "id": "L23",
+     "texte": "Thermometre digital",
+     "vérité": [
+      "B04"
+     ],
+     "fuse": [
+      "B04"
+     ],
+     "emb2": [
+      "B04",
+      "B24",
+      "B20"
+     ],
+     "hybride": [
+      "B04",
+      "B24",
+      "B20"
+     ],
+     "classeur": [
+      "B04"
+     ],
+     "hybride+llm": [
+      "B04"
+     ]
+    },
+    {
+     "id": "L24",
+     "texte": "Brosse a bouteilles",
+     "vérité": [
+      "B14"
+     ],
+     "fuse": [
+      "B14",
+      "B08",
+      "B07"
+     ],
+     "emb2": [
+      "B14",
+      "B10",
+      "B07"
+     ],
+     "hybride": [
+      "B14",
+      "B07",
+      "B08"
+     ],
+     "classeur": [
+      "B14"
+     ],
+     "hybride+llm": [
+      "B14"
+     ]
+    },
+    {
+     "id": "L25",
+     "texte": "Flaschenbuerste",
+     "vérité": [
+      "B14"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B14",
+      "B10",
+      "B07"
+     ],
+     "hybride": [
+      "B14",
+      "B10",
+      "B07"
+     ],
+     "classeur": [
+      "B14"
+     ],
+     "hybride+llm": [
+      "B14"
+     ]
+    },
+    {
+     "id": "L26",
+     "texte": "Gärtank 30 Liter rund mit Deckel",
+     "vérité": [
+      "B01"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B01",
+      "B25",
+      "B16"
+     ],
+     "hybride": [
+      "B01",
+      "B25",
+      "B16"
+     ],
+     "classeur": [
+      "B01"
+     ],
+     "hybride+llm": [
+      "B01"
+     ]
+    },
+    {
+     "id": "L27",
+     "texte": "Auslaufhahn zu Gärfass 10 mm",
+     "vérité": [
+      "B01"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B13",
+      "B16",
+      "B01"
+     ],
+     "hybride": [
+      "B13",
+      "B16",
+      "B01"
+     ],
+     "classeur": [
+      "B01"
+     ],
+     "hybride+llm": [
+      "B01"
+     ]
+    },
+    {
+     "id": "L28",
+     "texte": "Gärglocke Duplex zu Gärfass",
+     "vérité": [
+      "B16"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B16",
+      "B01",
+      "B17"
+     ],
+     "hybride": [
+      "B16",
+      "B01",
+      "B17"
+     ],
+     "classeur": [
+      "B16"
+     ],
+     "hybride+llm": [
+      "B16"
+     ]
+    },
+    {
+     "id": "L29",
+     "texte": "Silikonstopfen gebohrt zu Gärfass",
+     "vérité": [
+      "B16"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B16",
+      "B13",
+      "B01"
+     ],
+     "hybride": [
+      "B16",
+      "B13",
+      "B01"
+     ],
+     "classeur": [
+      "B16"
+     ],
+     "hybride+llm": [
+      "B16"
+     ]
+    },
+    {
+     "id": "L30",
+     "texte": "Gaerroehrchen",
+     "vérité": [
+      "B16"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B16",
+      "B13",
+      "B20"
+     ],
+     "hybride": [
+      "B16",
+      "B13",
+      "B20"
+     ],
+     "classeur": [
+      "B16"
+     ],
+     "hybride+llm": [
+      "B16"
+     ]
+    },
+    {
+     "id": "L31",
+     "texte": "Kronkorken 100 Kapseln Kupfer",
+     "vérité": [
+      "B07"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B07",
+      "B18",
+      "B10"
+     ],
+     "hybride": [
+      "B07",
+      "B18",
+      "B10"
+     ],
+     "classeur": [
+      "B07"
+     ],
+     "hybride+llm": [
+      "B07"
+     ]
+    },
+    {
+     "id": "L32",
+     "texte": "Kronkorken 26 mm 200 St.",
+     "vérité": [
+      "B07"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B07",
+      "B05",
+      "B10"
+     ],
+     "hybride": [
+      "B07",
+      "B05",
+      "B10"
+     ],
+     "classeur": [
+      "B07"
+     ],
+     "hybride+llm": [
+      "B07"
+     ]
+    },
+    {
+     "id": "L33",
+     "texte": "Hopfensack fein",
+     "vérité": [
+      "B15"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B15",
+      "B23",
+      "B26"
+     ],
+     "hybride": [
+      "B15",
+      "B23",
+      "B26"
+     ],
+     "classeur": [
+      "B15"
+     ],
+     "hybride+llm": [
+      "B15"
+     ]
+    },
+    {
+     "id": "L34",
+     "texte": "Hopfensack für Dolden",
+     "vérité": [
+      "B15"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B15",
+      "B23",
+      "B26"
+     ],
+     "hybride": [
+      "B15",
+      "B23",
+      "B26"
+     ],
+     "classeur": [
+      "B15"
+     ],
+     "hybride+llm": [
+      "B15"
+     ]
+    },
+    {
+     "id": "L35",
+     "texte": "Siphon mit Ansaugpumpe",
+     "vérité": [
+      "B08"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B08",
+      "B02",
+      "B13"
+     ],
+     "hybride": [
+      "B08",
+      "B02",
+      "B13"
+     ],
+     "classeur": [
+      "B08"
+     ],
+     "hybride+llm": [
+      "B08"
+     ]
+    },
+    {
+     "id": "L36",
+     "texte": "Malzextraktpulver hell 1 Kg",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B15",
+      "B23",
+      "B22"
+     ],
+     "hybride": [
+      "B15",
+      "B23",
+      "B22"
+     ],
+     "classeur": [],
+     "hybride+llm": []
+    },
+    {
+     "id": "L37",
+     "texte": "Weizenmalz 5 kg",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B22",
+      "B23",
+      "B24"
+     ],
+     "hybride": [
+      "B22",
+      "B23",
+      "B24"
+     ],
+     "classeur": [],
+     "hybride+llm": []
+    },
+    {
+     "id": "L38",
+     "texte": "Hefe WB-06",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B15",
+      "B23",
+      "B04"
+     ],
+     "hybride": [
+      "B15",
+      "B23",
+      "B04"
+     ],
+     "classeur": [],
+     "hybride+llm": []
+    },
+    {
+     "id": "L39",
+     "texte": "Acide citrique 1 kg",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B24",
+      "B23",
+      "B15"
+     ],
+     "hybride": [
+      "B24",
+      "B23",
+      "B15"
+     ],
+     "classeur": [],
+     "hybride+llm": []
+    },
+    {
+     "id": "L40",
+     "texte": "Gants nitrile (100)",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B05",
+      "B23",
+      "B25"
+     ],
+     "hybride": [
+      "B05",
+      "B23",
+      "B25"
+     ],
+     "classeur": [],
+     "hybride+llm": []
+    },
+    {
+     "id": "L41",
+     "texte": "Capsules 26 mm (200)",
+     "vérité": [
+      "B07"
+     ],
+     "fuse": [],
+     "emb2": [
+      "B07",
+      "B16",
+      "B05"
+     ],
+     "hybride": [
+      "B07",
+      "B16",
+      "B05"
+     ],
+     "classeur": [
+      "B07"
+     ],
+     "hybride+llm": [
+      "B07"
+     ]
+    },
+    {
+     "id": "L42",
+     "texte": "Irish Moss 50 g",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B15",
+      "B23",
+      "B24"
+     ],
+     "hybride": [
+      "B15",
+      "B23",
+      "B24"
+     ],
+     "classeur": [],
+     "hybride+llm": [
+      "B23"
+     ]
+    },
+    {
+     "id": "L43",
+     "texte": "Safale US-05 11,5g",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B15",
+      "B23",
+      "B07"
+     ],
+     "hybride": [
+      "B15",
+      "B23",
+      "B07"
+     ],
+     "classeur": [],
+     "hybride+llm": []
+    },
+    {
+     "id": "L44",
+     "texte": "Houblon Perle pellets 1 kg",
+     "vérité": null,
+     "fuse": [],
+     "emb2": [
+      "B15",
+      "B23",
+      "B26"
+     ],
+     "hybride": [
+      "B15",
+      "B23",
+      "B26"
+     ],
+     "classeur": [],
+     "hybride+llm": [
+      "B26",
+      "B23"
+     ]
+    }
+   ]
+  },
+  {
+   "tache": "T2",
+   "entrees": 20,
+   "requetes": 40,
+   "avecVerite": 40,
+   "methodes": {
+    "fuse": {
+     "n": 40,
+     "rappel1": 1,
+     "rappel3": 1,
+     "latenceMedianeMs": 1.3381999999999152,
+     "latenceP95Ms": 1.4273000000000593,
+     "coutParPieceChf": 0,
+     "erreurs": 0
+    },
+    "emb2": {
+     "n": 40,
+     "rappel1": 32,
+     "rappel3": 39,
+     "latenceMedianeMs": 293,
+     "latenceP95Ms": 351,
+     "coutParPieceChf": 0.00000685,
+     "erreurs": 0
+    },
+    "emb001": {
+     "n": 40,
+     "rappel1": 35,
+     "rappel3": 40,
+     "latenceMedianeMs": 234,
+     "latenceP95Ms": 263,
+     "coutParPieceChf": 0.00000755,
+     "erreurs": 0
+    },
+    "hybride": {
+     "n": 40,
+     "rappel1": 32,
+     "rappel3": 39,
+     "latenceMedianeMs": 293.9239,
+     "latenceP95Ms": 352.2455,
+     "coutParPieceChf": 0.00000685,
+     "erreurs": 0
+    },
+    "classeur": {
+     "n": 40,
+     "rappel1": 39,
+     "rappel3": 39,
+     "latenceMedianeMs": 558,
+     "latenceP95Ms": 685,
+     "coutParPieceChf": 0.00022625,
+     "erreurs": 0
+    }
+   },
+   "indexation": {
+    "gemini-embedding-2": {
+     "jetons": 493,
+     "chf": 0.000131
+    },
+    "gemini-embedding-001": {
+     "jetons": 640,
+     "chf": 0.00013
+    }
+   },
+   "detail": [
+    {
+     "id": "N01",
+     "texte": "Le joint de la cuve d'empâtage fuit, voir si on change la cuve entière ou juste le joint",
+     "vérité": [
+      "equipment"
+     ],
+     "fuse": [],
+     "emb2": [
+      "equipment",
+      "recipe-idea",
+      "prospect"
+     ],
+     "hybride": [
+      "equipment",
+      "recipe-idea",
+      "prospect"
+     ],
+     "classeur": [
+      "equipment"
+     ]
+    },
+    {
+     "id": "N02",
+     "texte": "Refroidisseur à plaques 20 plaques chez le fournisseur d'Allemagne, ~900 CHF livré",
+     "vérité": [
+      "equipment"
+     ],
+     "fuse": [],
+     "emb2": [
+      "pricing-test",
+      "equipment",
+      "recipe-idea"
+     ],
+     "hybride": [
+      "pricing-test",
+      "equipment",
+      "recipe-idea"
+     ],
+     "classeur": [
+      "equipment"
+     ]
+    },
+    {
+     "id": "N03",
+     "texte": "Acheter un pH-mètre étalonnable, le papier ne suffit plus",
+     "vérité": [
+      "equipment"
+     ],
+     "fuse": [],
+     "emb2": [
+      "equipment",
+      "pricing-test",
+      "recipe-idea"
+     ],
+     "hybride": [
+      "equipment",
+      "pricing-test",
+      "recipe-idea"
+     ],
+     "classeur": [
+      "equipment"
+     ]
+    },
+    {
+     "id": "N04",
+     "texte": "Moulin à malt à deux rouleaux, motorisé, pour arrêter de passer le grain chez le voisin",
+     "vérité": [
+      "equipment"
+     ],
+     "fuse": [],
+     "emb2": [
+      "equipment",
+      "prospect",
+      "recipe-idea"
+     ],
+     "hybride": [
+      "equipment",
+      "prospect",
+      "recipe-idea"
+     ],
+     "classeur": [
+      "equipment"
+     ]
+    },
+    {
+     "id": "N05",
+     "texte": "Tireuse à fûts 4 robinets pour le caveau, comparer deux modèles",
+     "vérité": [
+      "equipment"
+     ],
+     "fuse": [],
+     "emb2": [
+      "pricing-test",
+      "prospect",
+      "equipment"
+     ],
+     "hybride": [
+      "pricing-test",
+      "prospect",
+      "equipment"
+     ],
+     "classeur": [
+      "equipment"
+     ]
+    },
+    {
+     "id": "N06",
+     "texte": "Besoin d'une balance au 0,01 g pour les doses de houblon en dry hop",
+     "vérité": [
+      "equipment"
+     ],
+     "fuse": [],
+     "emb2": [
+      "recipe-idea",
+      "equipment",
+      "prospect"
+     ],
+     "hybride": [
+      "recipe-idea",
+      "equipment",
+      "prospect"
+     ],
+     "classeur": [
+      "equipment"
+     ]
+    },
+    {
+     "id": "N07",
+     "texte": "Passer le chauffage de la cuve du gaz à l'électrique, devis en cours",
+     "vérité": [
+      "equipment"
+     ],
+     "fuse": [],
+     "emb2": [
+      "equipment",
+      "prospect",
+      "pricing-test"
+     ],
+     "hybride": [
+      "equipment",
+      "prospect",
+      "pricing-test"
+     ],
+     "classeur": [
+      "equipment"
+     ]
+    },
+    {
+     "id": "N08",
+     "texte": "Tuyauterie inox pour le circuit de refroidissement, raccords tri-clamp à commander",
+     "vérité": [
+      "equipment"
+     ],
+     "fuse": [],
+     "emb2": [
+      "equipment",
+      "recipe-idea",
+      "prospect"
+     ],
+     "hybride": [
+      "equipment",
+      "recipe-idea",
+      "prospect"
+     ],
+     "classeur": [
+      "equipment"
+     ]
+    },
+    {
+     "id": "N09",
+     "texte": "Et si on faisait une IPA brumeuse avec de l'avoine et du Citra/Mosaic, 6 % max ?",
+     "vérité": [
+      "recipe-idea"
+     ],
+     "fuse": [],
+     "emb2": [
+      "recipe-idea",
+      "equipment",
+      "event"
+     ],
+     "hybride": [
+      "recipe-idea",
+      "equipment",
+      "event"
+     ],
+     "classeur": [
+      "recipe-idea"
+     ]
+    },
+    {
+     "id": "N10",
+     "texte": "Blanche au sureau de la région, coriandre en moins, un peu de lactose",
+     "vérité": [
+      "recipe-idea"
+     ],
+     "fuse": [],
+     "emb2": [
+      "recipe-idea",
+      "pricing-test",
+      "prospect"
+     ],
+     "hybride": [
+      "recipe-idea",
+      "pricing-test",
+      "prospect"
+     ],
+     "classeur": [
+      "recipe-idea"
+     ]
+    },
+    {
+     "id": "N11",
+     "texte": "Une brune d'hiver avec du miel de sapin ajouté en fin d'ébullition",
+     "vérité": [
+      "recipe-idea"
+     ],
+     "fuse": [],
+     "emb2": [
+      "recipe-idea",
+      "equipment",
+      "pricing-test"
+     ],
+     "hybride": [
+      "recipe-idea",
+      "equipment",
+      "pricing-test"
+     ],
+     "classeur": [
+      "recipe-idea"
+     ]
+    },
+    {
+     "id": "N12",
+     "texte": "Faire une lager ambrée avec du malt Vienne et du Hallertau, 4,8 %",
+     "vérité": [
+      "recipe-idea"
+     ],
+     "fuse": [],
+     "emb2": [
+      "recipe-idea",
+      "equipment",
+      "prospect"
+     ],
+     "hybride": [
+      "recipe-idea",
+      "equipment",
+      "prospect"
+     ],
+     "classeur": [
+      "recipe-idea"
+     ]
+    },
+    {
+     "id": "N13",
+     "texte": "Essayer la levure kveik pour une pale ale rapide en 5 jours à 35 degrés",
+     "vérité": [
+      "recipe-idea"
+     ],
+     "fuse": [],
+     "emb2": [
+      "recipe-idea",
+      "pricing-test",
+      "equipment"
+     ],
+     "hybride": [
+      "recipe-idea",
+      "pricing-test",
+      "equipment"
+     ],
+     "classeur": [
+      "recipe-idea"
+     ]
+    },
+    {
+     "id": "N14",
+     "texte": "Bière de blé au houblon Hallertau Blanc, notes de vin blanc",
+     "vérité": [
+      "recipe-idea"
+     ],
+     "fuse": [],
+     "emb2": [
+      "recipe-idea",
+      "pricing-test",
+      "prospect"
+     ],
+     "hybride": [
+      "recipe-idea",
+      "pricing-test",
+      "prospect"
+     ],
+     "classeur": [
+      "recipe-idea"
+     ]
+    },
+    {
+     "id": "N15",
+     "texte": "Sour rapide à la framboise, kettle sour puis fruits au fermenteur",
+     "vérité": [
+      "recipe-idea"
+     ],
+     "fuse": [],
+     "emb2": [
+      "recipe-idea",
+      "equipment",
+      "event"
+     ],
+     "hybride": [
+      "recipe-idea",
+      "equipment",
+      "event"
+     ],
+     "classeur": [
+      "recipe-idea"
+     ]
+    },
+    {
+     "id": "N16",
+     "texte": "Une session IPA à 3,5 % sans trop perdre de corps, avec du flocon d'avoine",
+     "vérité": [
+      "recipe-idea"
+     ],
+     "fuse": [],
+     "emb2": [
+      "recipe-idea",
+      "pricing-test",
+      "equipment"
+     ],
+     "hybride": [
+      "recipe-idea",
+      "pricing-test",
+      "equipment"
+     ],
+     "classeur": [
+      "recipe-idea"
+     ]
+    },
+    {
+     "id": "N17",
+     "texte": "Fête du 1er août à la commune, ils demandent deux fûts de blonde et un stand",
+     "vérité": [
+      "event"
+     ],
+     "fuse": [],
+     "emb2": [
+      "pricing-test",
+      "event",
+      "prospect"
+     ],
+     "hybride": [
+      "pricing-test",
+      "event",
+      "prospect"
+     ],
+     "classeur": [
+      "event"
+     ]
+    },
+    {
+     "id": "N18",
+     "texte": "Soirée dégustation accords bières et fromages le samedi 8 mars au caveau",
+     "vérité": [
+      "event"
+     ],
+     "fuse": [],
+     "emb2": [
+      "event",
+      "pricing-test",
+      "prospect"
+     ],
+     "hybride": [
+      "event",
+      "pricing-test",
+      "prospect"
+     ],
+     "classeur": [
+      "event"
+     ]
+    },
+    {
+     "id": "N19",
+     "texte": "Brassage collectif avec les amis le dernier week-end d'avril, prévoir 3 brassins",
+     "vérité": [
+      "event"
+     ],
+     "fuse": [],
+     "emb2": [
+      "event",
+      "recipe-idea",
+      "equipment"
+     ],
+     "hybride": [
+      "event",
+      "recipe-idea",
+      "equipment"
+     ],
+     "classeur": [
+      "event"
+     ]
+    },
+    {
+     "id": "N20",
+     "texte": "Concours de bières artisanales en septembre, inscription ouverte jusqu'au 15 juillet",
+     "vérité": [
+      "event"
+     ],
+     "fuse": [],
+     "emb2": [
+      "event",
+      "prospect",
+      "recipe-idea"
+     ],
+     "hybride": [
+      "event",
+      "prospect",
+      "recipe-idea"
+     ],
+     "classeur": [
+      "event"
+     ]
+    },
+    {
+     "id": "N21",
+     "texte": "Marché du terroir, dimanche matin, apporter la tireuse et les verres",
+     "vérité": [
+      "event"
+     ],
+     "fuse": [],
+     "emb2": [
+      "event",
+      "prospect",
+      "equipment"
+     ],
+     "hybride": [
+      "event",
+      "prospect",
+      "equipment"
+     ],
+     "classeur": [
+      "event"
+     ]
+    },
+    {
+     "id": "N22",
+     "texte": "Visite de classe de l'école hôtelière jeudi après-midi",
+     "vérité": [
+      "event"
+     ],
+     "fuse": [],
+     "emb2": [
+      "prospect",
+      "event",
+      "pricing-test"
+     ],
+     "hybride": [
+      "prospect",
+      "event",
+      "pricing-test"
+     ],
+     "classeur": [
+      "event"
+     ]
+    },
+    {
+     "id": "N23",
+     "texte": "Vide-grenier du quartier, location de l'emplacement 20 CHF",
+     "vérité": [
+      "event"
+     ],
+     "fuse": [],
+     "emb2": [
+      "pricing-test",
+      "event",
+      "prospect"
+     ],
+     "hybride": [
+      "pricing-test",
+      "event",
+      "prospect"
+     ],
+     "classeur": [
+      "event"
+     ]
+    },
+    {
+     "id": "N24",
+     "texte": "Fête de la bière de la ville voisine, arriver la veille pour monter le stand",
+     "vérité": [
+      "event"
+     ],
+     "fuse": [],
+     "emb2": [
+      "event",
+      "prospect",
+      "equipment"
+     ],
+     "hybride": [
+      "event",
+      "prospect",
+      "equipment"
+     ],
+     "classeur": [
+      "event"
+     ]
+    },
+    {
+     "id": "N25",
+     "texte": "Vendre l'IPA 5 CHF la bouteille de 33 cl pendant le marché, voir si les ventes baissent",
+     "vérité": [
+      "pricing-test"
+     ],
+     "fuse": [],
+     "emb2": [
+      "pricing-test",
+      "prospect",
+      "event"
+     ],
+     "hybride": [
+      "pricing-test",
+      "prospect",
+      "event"
+     ],
+     "classeur": [
+      "pricing-test",
+      "event"
+     ]
+    },
+    {
+     "id": "N26",
+     "texte": "Prix du litre à emporter avec consigne, essayer 7 CHF le litre",
+     "vérité": [
+      "pricing-test"
+     ],
+     "fuse": [],
+     "emb2": [
+      "pricing-test",
+      "prospect",
+      "equipment"
+     ],
+     "hybride": [
+      "pricing-test",
+      "prospect",
+      "equipment"
+     ],
+     "classeur": [
+      "pricing-test"
+     ]
+    },
+    {
+     "id": "N27",
+     "texte": "Comparer le prix de la stout avec ceux des deux concurrents de la région",
+     "vérité": [
+      "pricing-test"
+     ],
+     "fuse": [],
+     "emb2": [
+      "pricing-test",
+      "recipe-idea",
+      "prospect"
+     ],
+     "hybride": [
+      "pricing-test",
+      "recipe-idea",
+      "prospect"
+     ],
+     "classeur": [
+      "pricing-test",
+      "recipe-idea"
+     ]
+    },
+    {
+     "id": "N28",
+     "texte": "Offrir 10 % de rabais à partir de 3 packs, mesurer si les packs augmentent",
+     "vérité": [
+      "pricing-test"
+     ],
+     "fuse": [],
+     "emb2": [
+      "pricing-test",
+      "prospect",
+      "recipe-idea"
+     ],
+     "hybride": [
+      "pricing-test",
+      "prospect",
+      "recipe-idea"
+     ],
+     "classeur": [
+      "pricing-test"
+     ]
+    },
+    {
+     "id": "N29",
+     "texte": "Tester un tarif de gros à 1,90 CHF la bouteille pour les épiceries",
+     "vérité": [
+      "pricing-test"
+     ],
+     "fuse": [],
+     "emb2": [
+      "pricing-test",
+      "prospect",
+      "event"
+     ],
+     "hybride": [
+      "pricing-test",
+      "prospect",
+      "event"
+     ],
+     "classeur": [
+      "pricing-test",
+      "prospect"
+     ]
+    },
+    {
+     "id": "N30",
+     "texte": "Marge trop faible sur la blanche, essayer +0,50 CHF et suivre le mois",
+     "vérité": [
+      "pricing-test"
+     ],
+     "fuse": [],
+     "emb2": [
+      "pricing-test",
+      "prospect",
+      "equipment"
+     ],
+     "hybride": [
+      "pricing-test",
+      "prospect",
+      "equipment"
+     ],
+     "classeur": [
+      "pricing-test"
+     ]
+    },
+    {
+     "id": "N31",
+     "texte": "Prix d'un verre à la pression à 4 CHF ou 4,50 CHF lors de la fête",
+     "vérité": [
+      "pricing-test",
+      "event"
+     ],
+     "fuse": [],
+     "emb2": [
+      "pricing-test",
+      "event",
+      "prospect"
+     ],
+     "hybride": [
+      "pricing-test",
+      "event",
+      "prospect"
+     ],
+     "classeur": [
+      "pricing-test",
+      "event"
+     ]
+    },
+    {
+     "id": "N32",
+     "texte": "Abonnement caisse mensuelle de 12 bouteilles à 59 CHF, à tester avec 5 clients",
+     "vérité": [
+      "pricing-test"
+     ],
+     "fuse": [
+      "pricing-test"
+     ],
+     "emb2": [
+      "pricing-test",
+      "prospect",
+      "event"
+     ],
+     "hybride": [
+      "pricing-test",
+      "prospect",
+      "event"
+     ],
+     "classeur": [
+      "pricing-test",
+      "recipe-idea",
+      "equipment"
+     ]
+    },
+    {
+     "id": "N33",
+     "texte": "Restaurant du port : le chef veut une bière pour accompagner ses poissons, lui apporter la",
+     "vérité": [
+      "prospect"
+     ],
+     "fuse": [],
+     "emb2": [
+      "prospect",
+      "pricing-test",
+      "recipe-idea"
+     ],
+     "hybride": [
+      "prospect",
+      "pricing-test",
+      "recipe-idea"
+     ],
+     "classeur": [
+      "prospect"
+     ]
+    },
+    {
+     "id": "N34",
+     "texte": "Caviste du centre-ville a demandé le tarif pro, rappeler lundi matin",
+     "vérité": [
+      "prospect"
+     ],
+     "fuse": [],
+     "emb2": [
+      "prospect",
+      "pricing-test",
+      "equipment"
+     ],
+     "hybride": [
+      "prospect",
+      "pricing-test",
+      "equipment"
+     ],
+     "classeur": [
+      "prospect"
+     ]
+    },
+    {
+     "id": "N35",
+     "texte": "Un camping-car boutique à Bulle cherche 3 références, contact par téléphone",
+     "vérité": [
+      "prospect"
+     ],
+     "fuse": [],
+     "emb2": [
+      "prospect",
+      "pricing-test",
+      "event"
+     ],
+     "hybride": [
+      "prospect",
+      "pricing-test",
+      "event"
+     ],
+     "classeur": [
+      "prospect"
+     ]
+    },
+    {
+     "id": "N36",
+     "texte": "Gérante de la coop locale, rendez-vous mardi à 14 h pour présenter la gamme",
+     "vérité": [
+      "prospect"
+     ],
+     "fuse": [],
+     "emb2": [
+      "prospect",
+      "event",
+      "pricing-test"
+     ],
+     "hybride": [
+      "prospect",
+      "event",
+      "pricing-test"
+     ],
+     "classeur": [
+      "prospect",
+      "event"
+     ]
+    },
+    {
+     "id": "N37",
+     "texte": "Bar à tapas à Neuchâtel, ils ont goûté l'IPA au marché et veulent commander",
+     "vérité": [
+      "prospect"
+     ],
+     "fuse": [],
+     "emb2": [
+      "pricing-test",
+      "prospect",
+      "event"
+     ],
+     "hybride": [
+      "pricing-test",
+      "prospect",
+      "event"
+     ],
+     "classeur": [
+      "prospect",
+      "event"
+     ]
+    },
+    {
+     "id": "N38",
+     "texte": "Le traiteur du village organise un mariage en juin, il lui faut 50 L",
+     "vérité": [
+      "prospect"
+     ],
+     "fuse": [],
+     "emb2": [
+      "event",
+      "equipment",
+      "pricing-test"
+     ],
+     "hybride": [
+      "event",
+      "equipment",
+      "pricing-test"
+     ],
+     "classeur": [
+      "event"
+     ]
+    },
+    {
+     "id": "N39",
+     "texte": "Boulangerie qui voudrait une bière au pain pour Noël, demander si elle fournit les restes",
+     "vérité": [
+      "prospect",
+      "recipe-idea"
+     ],
+     "fuse": [],
+     "emb2": [
+      "prospect",
+      "event",
+      "recipe-idea"
+     ],
+     "hybride": [
+      "prospect",
+      "event",
+      "recipe-idea"
+     ],
+     "classeur": [
+      "prospect",
+      "recipe-idea"
+     ]
+    },
+    {
+     "id": "N40",
+     "texte": "Épicier bio de la vallée : envoyer le catalogue et la liste de prix par courriel",
+     "vérité": [
+      "prospect"
+     ],
+     "fuse": [],
+     "emb2": [
+      "prospect",
+      "pricing-test",
+      "event"
+     ],
+     "hybride": [
+      "prospect",
+      "pricing-test",
+      "event"
+     ],
+     "classeur": [
+      "prospect"
+     ]
+    }
+   ]
+  },
+  {
+   "tache": "T3a",
+   "entrees": 181,
+   "requetes": 30,
+   "avecVerite": 30,
+   "methodes": {
+    "fuse": {
+     "n": 30,
+     "rappel1": 3,
+     "rappel3": 6,
+     "latenceMedianeMs": 26.67229999999836,
+     "latenceP95Ms": 32.13669999999911,
+     "coutParPieceChf": 0,
+     "erreurs": 0
+    },
+    "emb2": {
+     "n": 30,
+     "rappel1": 6,
+     "rappel3": 6,
+     "latenceMedianeMs": 303,
+     "latenceP95Ms": 345,
+     "coutParPieceChf": 0.000016533333333333337,
+     "erreurs": 0
+    },
+    "emb001": {
+     "n": 30,
+     "rappel1": 7,
+     "rappel3": 7,
+     "latenceMedianeMs": 231,
+     "latenceP95Ms": 262,
+     "coutParPieceChf": 0.000016933333333333333,
+     "erreurs": 0
+    },
+    "hybride": {
+     "n": 30,
+     "rappel1": 3,
+     "rappel3": 5,
+     "latenceMedianeMs": 330.540100000002,
+     "latenceP95Ms": 372.8087999999989,
+     "coutParPieceChf": 0.000016533333333333337,
+     "erreurs": 0
+    },
+    "classeur": {
+     "n": 30,
+     "rappel1": 3,
+     "rappel3": 7,
+     "latenceMedianeMs": 702,
+     "latenceP95Ms": 909,
+     "coutParPieceChf": 0.004803766666666666,
+     "erreurs": 0
+    },
+    "hybride+llm": {
+     "n": 30,
+     "rappel1": 4,
+     "rappel3": 7,
+     "latenceMedianeMs": 943.5524000000005,
+     "latenceP95Ms": 1071.8914000000004,
+     "coutParPieceChf": 0.0004328333333333333,
+     "erreurs": 0
+    }
+   },
+   "indexation": {
+    "gemini-embedding-2": {
+     "jetons": 10907,
+     "chf": 0.002807
+    },
+    "gemini-embedding-001": {
+     "jetons": 13667,
+     "chf": 0.002644
+    }
+   },
+   "detail": [
+    {
+     "id": "P01",
+     "texte": "Houblon proche de African Queen : double usage. Arômes (0 à 5) : agrumes 3, fruits tropica",
+     "vérité": [
+      "beermaverick-amarillo",
+      "beermaverick-cascade",
+      "beermaverick-simcoe",
+      "beermaverick-citra",
+      "beermaverick-mosaic"
+     ],
+     "fuse": [
+      "beermaverick-mistral",
+      "beermaverick-jarrylo",
+      "beermaverick-styrian-wolf"
+     ],
+     "emb2": [
+      "beermaverick-ahhhroma",
+      "beermaverick-southern-dawn",
+      "beermaverick-southern-passion"
+     ],
+     "hybride": [
+      "beermaverick-southern-dawn",
+      "beermaverick-southern-star",
+      "beermaverick-styrian-wolf"
+     ],
+     "classeur": [
+      "beermaverick-astra",
+      "beermaverick-palisade",
+      "beermaverick-comet"
+     ],
+     "hybride+llm": [
+      "beermaverick-southern-star",
+      "beermaverick-mistral",
+      "beermaverick-styrian-wolf"
+     ]
+    },
+    {
+     "id": "P02",
+     "texte": "Houblon proche de Amarillo : aromatique. Arômes (0 à 5) : agrumes 4, fruits tropicaux 1, f",
+     "vérité": [
+      "beermaverick-cascade",
+      "beermaverick-centennial",
+      "beermaverick-chinook",
+      "beermaverick-simcoe"
+     ],
+     "fuse": [
+      "beermaverick-nectaron",
+      "beermaverick-zamba",
+      "beermaverick-samba"
+     ],
+     "emb2": [
+      "beermaverick-target",
+      "beermaverick-bravo",
+      "beermaverick-relax"
+     ],
+     "hybride": [
+      "beermaverick-nectaron",
+      "beermaverick-southern-passion",
+      "beermaverick-sybilla"
+     ],
+     "classeur": [
+      "beermaverick-centennial",
+      "beermaverick-vista",
+      "beermaverick-hbc-586"
+     ],
+     "hybride+llm": [
+      "beermaverick-wai-iti",
+      "beermaverick-nectaron",
+      "beermaverick-sybilla"
+     ]
+    },
+    {
+     "id": "P03",
+     "texte": "Houblon proche de Aurora : double usage. Arômes (0 à 5) : agrumes 2, floral 3, herbes 3, é",
+     "vérité": [
+      "beermaverick-styrian-golding",
+      "beermaverick-perle-gr",
+      "beermaverick-perle-us",
+      "beermaverick-northern-brewer-us"
+     ],
+     "fuse": [
+      "beermaverick-brewers-gold-us",
+      "beermaverick-brewers-gold",
+      "beermaverick-spalter-select"
+     ],
+     "emb2": [
+      "beermaverick-horizon",
+      "beermaverick-target",
+      "beermaverick-cluster"
+     ],
+     "hybride": [
+      "beermaverick-target",
+      "beermaverick-cluster",
+      "beermaverick-super-pride"
+     ],
+     "classeur": [
+      "beermaverick-summit",
+      "beermaverick-chinook",
+      "beermaverick-columbus"
+     ],
+     "hybride+llm": [
+      "beermaverick-super-pride",
+      "beermaverick-horizon",
+      "beermaverick-challenger"
+     ]
+    },
+    {
+     "id": "P04",
+     "texte": "Houblon proche de Boadicea : double usage. Arômes (0 à 5) : baies 2, floral 2, herbes 2, é",
+     "vérité": [
+      "beermaverick-green-bullet",
+      "beermaverick-cascade",
+      "beermaverick-chinook"
+     ],
+     "fuse": [
+      "beermaverick-southern-promise",
+      "beermaverick-warrior",
+      "beermaverick-cascade"
+     ],
+     "emb2": [
+      "beermaverick-nobility",
+      "beermaverick-super-pride",
+      "beermaverick-target"
+     ],
+     "hybride": [
+      "beermaverick-warrior",
+      "beermaverick-southern-promise",
+      "beermaverick-hort9909"
+     ],
+     "classeur": [
+      "beermaverick-first-gold",
+      "beermaverick-aurora",
+      "beermaverick-opal"
+     ],
+     "hybride+llm": [
+      "beermaverick-southern-promise",
+      "beermaverick-triumph",
+      "beermaverick-ctz"
+     ]
+    },
+    {
+     "id": "P05",
+     "texte": "Houblon proche de Cascade : double usage. Arômes (0 à 5) : agrumes 3, fruits tropicaux 1, ",
+     "vérité": [
+      "beermaverick-amarillo",
+      "beermaverick-centennial",
+      "beermaverick-ahtanum",
+      "beermaverick-summit"
+     ],
+     "fuse": [
+      "beermaverick-columbus",
+      "beermaverick-ctz",
+      "beermaverick-tomahawk"
+     ],
+     "emb2": [
+      "beermaverick-cluster",
+      "beermaverick-challenger",
+      "beermaverick-horizon"
+     ],
+     "hybride": [
+      "beermaverick-ctz",
+      "beermaverick-columbus",
+      "beermaverick-cluster"
+     ],
+     "classeur": [
+      "beermaverick-african-queen",
+      "beermaverick-centennial",
+      "beermaverick-azacca"
+     ],
+     "hybride+llm": [
+      "beermaverick-cluster",
+      "beermaverick-palisade",
+      "beermaverick-horizon"
+     ]
+    },
+    {
+     "id": "P06",
+     "texte": "Houblon proche de Challenger : double usage. Arômes (0 à 5) : agrumes 1, herbes 3, épices ",
+     "vérité": [
+      "beermaverick-northern-brewer-us",
+      "beermaverick-perle-us",
+      "beermaverick-target"
+     ],
+     "fuse": [
+      "beermaverick-wakatu",
+      "beermaverick-whitbread-golding-variety-wgv",
+      "beermaverick-target"
+     ],
+     "emb2": [
+      "beermaverick-target",
+      "beermaverick-cluster",
+      "beermaverick-super-pride"
+     ],
+     "hybride": [
+      "beermaverick-target",
+      "beermaverick-super-pride",
+      "beermaverick-triumph"
+     ],
+     "classeur": [
+      "beermaverick-first-gold",
+      "beermaverick-pilgrim",
+      "beermaverick-glacier"
+     ],
+     "hybride+llm": [
+      "beermaverick-super-pride",
+      "beermaverick-nugget",
+      "beermaverick-wakatu"
+     ]
+    },
+    {
+     "id": "P07",
+     "texte": "Houblon proche de Cluster : double usage. Arômes (0 à 5) : agrumes 3, fruits tropicaux 2, ",
+     "vérité": [
+      "beermaverick-galena",
+      "beermaverick-chinook",
+      "beermaverick-nugget"
+     ],
+     "fuse": [
+      "beermaverick-magnum-us",
+      "beermaverick-sybilla",
+      "beermaverick-ella"
+     ],
+     "emb2": [
+      "beermaverick-challenger",
+      "beermaverick-astra",
+      "beermaverick-horizon"
+     ],
+     "hybride": [
+      "beermaverick-perle-us",
+      "beermaverick-ella",
+      "beermaverick-polaris"
+     ],
+     "classeur": [
+      "beermaverick-comet",
+      "beermaverick-mandarina-bavaria",
+      "beermaverick-elixir"
+     ],
+     "hybride+llm": [
+      "beermaverick-glacier",
+      "beermaverick-cascade",
+      "beermaverick-perle-us"
+     ]
+    },
+    {
+     "id": "P08",
+     "texte": "Houblon proche de Crystal : aromatique. Arômes (0 à 5) : agrumes 1, herbes 4, épices 2, ré",
+     "vérité": [
+      "beermaverick-mount-hood",
+      "beermaverick-hersbrucker",
+      "beermaverick-strisselspalt",
+      "beermaverick-liberty"
+     ],
+     "fuse": [
+      "beermaverick-saaz-cz",
+      "beermaverick-perle-gr",
+      "beermaverick-southern-promise"
+     ],
+     "emb2": [
+      "beermaverick-target",
+      "beermaverick-relax",
+      "beermaverick-tahoma"
+     ],
+     "hybride": [
+      "beermaverick-altus",
+      "beermaverick-perle-gr",
+      "beermaverick-saaz-cz"
+     ],
+     "classeur": [
+      "beermaverick-altus",
+      "beermaverick-tettnanger",
+      "beermaverick-willamette"
+     ],
+     "hybride+llm": [
+      "beermaverick-perle-gr",
+      "beermaverick-hallertau-tradition",
+      "beermaverick-altus"
+     ]
+    },
+    {
+     "id": "P09",
+     "texte": "Houblon proche de Ekuanot : aromatique. Arômes (0 à 5) : agrumes 3, baies 2, floral 1, her",
+     "vérité": [
+      "beermaverick-chinook",
+      "beermaverick-summit",
+      "beermaverick-galena",
+      "beermaverick-cluster"
+     ],
+     "fuse": [
+      "beermaverick-bravo",
+      "beermaverick-palisade",
+      "beermaverick-willamette"
+     ],
+     "emb2": [
+      "beermaverick-target",
+      "beermaverick-nectaron",
+      "beermaverick-ahtanum"
+     ],
+     "hybride": [
+      "beermaverick-bravo",
+      "beermaverick-delta",
+      "beermaverick-ahtanum"
+     ],
+     "classeur": [
+      "beermaverick-talus",
+      "beermaverick-delta",
+      "beermaverick-mistral"
+     ],
+     "hybride+llm": [
+      "beermaverick-lemondrop",
+      "beermaverick-bravo",
+      "beermaverick-akoya"
+     ]
+    },
+    {
+     "id": "P10",
+     "texte": "Houblon proche de Endeavour : double usage. Arômes (0 à 5) : agrumes 1, fruits tropicaux 1",
+     "vérité": [
+      "beermaverick-bramling-cross",
+      "beermaverick-pilgrim"
+     ],
+     "fuse": [
+      "beermaverick-comet",
+      "beermaverick-horizon",
+      "beermaverick-marco-polo"
+     ],
+     "emb2": [
+      "beermaverick-horizon",
+      "beermaverick-cluster",
+      "beermaverick-target"
+     ],
+     "hybride": [
+      "beermaverick-horizon",
+      "beermaverick-ella",
+      "beermaverick-comet"
+     ],
+     "classeur": [
+      "beermaverick-calypso",
+      "beermaverick-comet",
+      "beermaverick-first-gold"
+     ],
+     "hybride+llm": [
+      "beermaverick-pilgrim",
+      "beermaverick-horizon",
+      "beermaverick-southern-promise"
+     ]
+    },
+    {
+     "id": "P11",
+     "texte": "Houblon proche de Fuggle : aromatique. Arômes (0 à 5) : agrumes 2, herbes 2, épices 3, rés",
+     "vérité": [
+      "beermaverick-willamette",
+      "beermaverick-styrian-golding",
+      "beermaverick-east-kent-goldings"
+     ],
+     "fuse": [
+      "beermaverick-willamette",
+      "beermaverick-lemondrop",
+      "beermaverick-southern-star"
+     ],
+     "emb2": [
+      "beermaverick-target",
+      "beermaverick-progress",
+      "beermaverick-pilgrim"
+     ],
+     "hybride": [
+      "beermaverick-pilgrim",
+      "beermaverick-delta",
+      "beermaverick-willamette"
+     ],
+     "classeur": [
+      "beermaverick-tettnanger",
+      "beermaverick-willamette",
+      "beermaverick-spalter-select"
+     ],
+     "hybride+llm": [
+      "beermaverick-target",
+      "beermaverick-willamette",
+      "beermaverick-altus"
+     ]
+    },
+    {
+     "id": "P12",
+     "texte": "Houblon proche de Glacier : double usage. Arômes (0 à 5) : agrumes 2, fruits tropicaux 2, ",
+     "vérité": [
+      "beermaverick-fuggle",
+      "beermaverick-styrian-golding",
+      "beermaverick-willamette"
+     ],
+     "fuse": [
+      "beermaverick-first-gold",
+      "beermaverick-perle-us",
+      "beermaverick-pilgrim"
+     ],
+     "emb2": [
+      "beermaverick-cluster",
+      "beermaverick-polaris",
+      "beermaverick-horizon"
+     ],
+     "hybride": [
+      "beermaverick-pilgrim",
+      "beermaverick-perle-us",
+      "beermaverick-horizon"
+     ],
+     "classeur": [
+      "beermaverick-first-gold",
+      "beermaverick-calypso",
+      "beermaverick-astra"
+     ],
+     "hybride+llm": [
+      "beermaverick-first-gold",
+      "beermaverick-pilgrim",
+      "beermaverick-horizon"
+     ]
+    },
+    {
+     "id": "P13",
+     "texte": "Houblon proche de Hallertau Blanc : aromatique. Arômes (0 à 5) : agrumes 2, baies 3, herbe",
+     "vérité": [
+      "beermaverick-nelson-sauvin",
+      "beermaverick-enigma"
+     ],
+     "fuse": [
+      "beermaverick-wurttemberg",
+      "beermaverick-altus",
+      "beermaverick-hallertau-tradition"
+     ],
+     "emb2": [
+      "beermaverick-hallertau-mittelfruh",
+      "beermaverick-hallertau-tradition",
+      "beermaverick-relax"
+     ],
+     "hybride": [
+      "beermaverick-hallertau-tradition",
+      "beermaverick-tettnang-us",
+      "beermaverick-altus"
+     ],
+     "classeur": [
+      "beermaverick-vanguard",
+      "beermaverick-opal",
+      "beermaverick-delta"
+     ],
+     "hybride+llm": [
+      "beermaverick-delta",
+      "beermaverick-opal",
+      "beermaverick-hallertau-mittelfruh"
+     ]
+    },
+    {
+     "id": "P14",
+     "texte": "Houblon proche de Hallertau Tradition : aromatique. Arômes (0 à 5) : agrumes 2, floral 3, ",
+     "vérité": [
+      "beermaverick-hallertau-mittelfruh",
+      "beermaverick-tettnanger",
+      "beermaverick-crystal",
+      "beermaverick-mount-hood"
+     ],
+     "fuse": [
+      "beermaverick-saaz-cz",
+      "beermaverick-saaz-us",
+      "beermaverick-tahoma"
+     ],
+     "emb2": [
+      "beermaverick-hallertau-mittelfruh",
+      "beermaverick-hallertau-blanc",
+      "beermaverick-relax"
+     ],
+     "hybride": [
+      "beermaverick-tahoma",
+      "beermaverick-crystal",
+      "beermaverick-altus"
+     ],
+     "classeur": [
+      "beermaverick-spalter-select",
+      "beermaverick-sterling",
+      "beermaverick-tettnang-us"
+     ],
+     "hybride+llm": [
+      "beermaverick-hallertau-mittelfruh",
+      "beermaverick-sterling",
+      "beermaverick-tettnang-us"
+     ]
+    },
+    {
+     "id": "P15",
+     "texte": "Houblon proche de Idaho 7 : aromatique. Arômes (0 à 5) : agrumes 3, fruits tropicaux 4, fr",
+     "vérité": [
+      "beermaverick-azacca",
+      "beermaverick-el-dorado",
+      "beermaverick-cashmere",
+      "beermaverick-citra",
+      "beermaverick-idaho-gem",
+      "beermaverick-amarillo",
+      "beermaverick-chinook",
+      "beermaverick-columbus"
+     ],
+     "fuse": [
+      "beermaverick-lotus",
+      "beermaverick-sovereign",
+      "beermaverick-zappa"
+     ],
+     "emb2": [
+      "beermaverick-idaho-gem",
+      "beermaverick-delta",
+      "beermaverick-relax"
+     ],
+     "hybride": [
+      "beermaverick-delta",
+      "beermaverick-zappa",
+      "beermaverick-ariana"
+     ],
+     "classeur": [
+      "beermaverick-styrian-golding",
+      "beermaverick-east-kent-goldings",
+      "beermaverick-fuggle"
+     ],
+     "hybride+llm": [
+      "beermaverick-zappa",
+      "beermaverick-lotus",
+      "beermaverick-bru-1"
+     ]
+    },
+    {
+     "id": "P16",
+     "texte": "Houblon proche de Kohatu : double usage. Arômes (0 à 5) : agrumes 1, fruits tropicaux 3, f",
+     "vérité": [
+      "beermaverick-wai-iti",
+      "beermaverick-motueka"
+     ],
+     "fuse": [
+      "beermaverick-vic-secret",
+      "beermaverick-rakau",
+      "beermaverick-opal"
+     ],
+     "emb2": [
+      "beermaverick-wakatu",
+      "beermaverick-rakau",
+      "beermaverick-ahhhroma"
+     ],
+     "hybride": [
+      "beermaverick-rakau",
+      "beermaverick-wakatu",
+      "beermaverick-opal"
+     ],
+     "classeur": [
+      "beermaverick-astra",
+      "beermaverick-calypso",
+      "beermaverick-african-queen"
+     ],
+     "hybride+llm": [
+      "beermaverick-rakau",
+      "beermaverick-comet",
+      "beermaverick-opal"
+     ]
+    },
+    {
+     "id": "P17",
+     "texte": "Houblon proche de Lubelska : aromatique. Arômes (0 à 5) : agrumes 1, fruits à noyau 1, flo",
+     "vérité": [
+      "beermaverick-saaz-cz",
+      "beermaverick-saaz-us"
+     ],
+     "fuse": [
+      "beermaverick-triskel",
+      "beermaverick-sybilla",
+      "beermaverick-idaho-7"
+     ],
+     "emb2": [
+      "beermaverick-hersbrucker",
+      "beermaverick-sybilla",
+      "beermaverick-relax"
+     ],
+     "hybride": [
+      "beermaverick-sybilla",
+      "beermaverick-triskel",
+      "beermaverick-hersbrucker"
+     ],
+     "classeur": [
+      "beermaverick-saphir",
+      "beermaverick-spalter-select",
+      "beermaverick-triskel"
+     ],
+     "hybride+llm": [
+      "beermaverick-saphir",
+      "beermaverick-triskel",
+      "beermaverick-hersbrucker"
+     ]
+    },
+    {
+     "id": "P18",
+     "texte": "Houblon proche de Marco Polo : double usage. Arômes (0 à 5) : agrumes 2, fruits tropicaux ",
+     "vérité": [
+      "beermaverick-ctz",
+      "beermaverick-columbus",
+      "beermaverick-tomahawk",
+      "beermaverick-zeus"
+     ],
+     "fuse": [
+      "beermaverick-strata",
+      "beermaverick-eclipse",
+      "beermaverick-lotus"
+     ],
+     "emb2": [
+      "beermaverick-polaris",
+      "beermaverick-marynka",
+      "beermaverick-horizon"
+     ],
+     "hybride": [
+      "beermaverick-polaris",
+      "beermaverick-horizon",
+      "beermaverick-eclipse"
+     ],
+     "classeur": [
+      "beermaverick-african-queen",
+      "beermaverick-mistral",
+      "beermaverick-calypso"
+     ],
+     "hybride+llm": [
+      "beermaverick-horizon",
+      "beermaverick-marynka",
+      "beermaverick-sasquatch"
+     ]
+    },
+    {
+     "id": "P19",
+     "texte": "Houblon proche de Mount Hood : aromatique. Arômes (0 à 5) : floral 3, herbe 1, herbes 4, é",
+     "vérité": [
+      "beermaverick-hersbrucker",
+      "beermaverick-liberty",
+      "beermaverick-crystal",
+      "beermaverick-hallertau-mittelfruh"
+     ],
+     "fuse": [
+      "beermaverick-celeia",
+      "beermaverick-tettnang-us",
+      "beermaverick-sterling"
+     ],
+     "emb2": [
+      "beermaverick-target",
+      "beermaverick-mount-rainier",
+      "beermaverick-tahoma"
+     ],
+     "hybride": [
+      "beermaverick-hallertau-mittelfruh",
+      "beermaverick-crystal",
+      "beermaverick-aurora"
+     ],
+     "classeur": [
+      "beermaverick-sterling",
+      "beermaverick-liberty",
+      "beermaverick-tettnanger"
+     ],
+     "hybride+llm": [
+      "beermaverick-crystal",
+      "beermaverick-sterling",
+      "beermaverick-hallertau-mittelfruh"
+     ]
+    },
+    {
+     "id": "P20",
+     "texte": "Houblon proche de Nugget : double usage. Arômes (0 à 5) : agrumes 1, floral 2, herbes 3, é",
+     "vérité": [
+      "beermaverick-galena",
+      "beermaverick-magnum-us",
+      "beermaverick-columbus",
+      "beermaverick-tomahawk",
+      "beermaverick-zeus",
+      "beermaverick-ctz"
+     ],
+     "fuse": [
+      "beermaverick-warrior",
+      "beermaverick-millennium",
+      "beermaverick-wurttemberg"
+     ],
+     "emb2": [
+      "beermaverick-cluster",
+      "beermaverick-target",
+      "beermaverick-pilgrim"
+     ],
+     "hybride": [
+      "beermaverick-super-pride",
+      "beermaverick-warrior",
+      "beermaverick-aurora"
+     ],
+     "classeur": [
+      "beermaverick-saphir",
+      "beermaverick-triskel",
+      "beermaverick-perle-gr"
+     ],
+     "hybride+llm": [
+      "beermaverick-warrior",
+      "beermaverick-super-pride",
+      "beermaverick-aurora"
+     ]
+    },
+    {
+     "id": "P21",
+     "texte": "Houblon proche de Palisade : double usage. Arômes (0 à 5) : agrumes 3, fruits tropicaux 3,",
+     "vérité": [
+      "beermaverick-willamette",
+      "beermaverick-glacier"
+     ],
+     "fuse": [
+      "beermaverick-sorachi-ace",
+      "beermaverick-nzh-107",
+      "beermaverick-el-dorado"
+     ],
+     "emb2": [
+      "beermaverick-cluster",
+      "beermaverick-perle-us",
+      "beermaverick-hbc-586"
+     ],
+     "hybride": [
+      "beermaverick-cluster",
+      "beermaverick-cascade",
+      "beermaverick-ahhhroma"
+     ],
+     "classeur": [
+      "beermaverick-calypso",
+      "beermaverick-comet",
+      "beermaverick-first-gold"
+     ],
+     "hybride+llm": [
+      "beermaverick-southern-promise",
+      "beermaverick-ahhhroma",
+      "beermaverick-perle-us"
+     ]
+    },
+    {
+     "id": "P22",
+     "texte": "Houblon proche de Perle (US) : double usage. Arômes (0 à 5) : agrumes 1, fruits tropicaux ",
+     "vérité": [
+      "beermaverick-perle-gr",
+      "beermaverick-northern-brewer-us",
+      "beermaverick-cluster",
+      "beermaverick-galena"
+     ],
+     "fuse": [
+      "beermaverick-ella",
+      "beermaverick-hbc472",
+      "beermaverick-eclipse"
+     ],
+     "emb2": [
+      "beermaverick-cluster",
+      "beermaverick-perle-gr",
+      "beermaverick-pilgrim"
+     ],
+     "hybride": [
+      "beermaverick-ella",
+      "beermaverick-horizon",
+      "beermaverick-comet"
+     ],
+     "classeur": [
+      "beermaverick-comet",
+      "beermaverick-calypso",
+      "beermaverick-first-gold"
+     ],
+     "hybride+llm": [
+      "beermaverick-southern-star",
+      "beermaverick-comet",
+      "beermaverick-horizon"
+     ]
+    },
+    {
+     "id": "P23",
+     "texte": "Houblon proche de Rakau : double usage. Arômes (0 à 5) : agrumes 1, fruits tropicaux 3, fr",
+     "vérité": [
+      "beermaverick-amarillo",
+      "beermaverick-summit"
+     ],
+     "fuse": [
+      "beermaverick-bitter-gold",
+      "beermaverick-southern-dawn",
+      "beermaverick-spalter-select"
+     ],
+     "emb2": [
+      "beermaverick-astra",
+      "beermaverick-motueka",
+      "beermaverick-wakatu"
+     ],
+     "hybride": [
+      "beermaverick-ahhhroma",
+      "beermaverick-southern-dawn",
+      "beermaverick-nzh-107"
+     ],
+     "classeur": [
+      "beermaverick-yqh-1320",
+      "beermaverick-astra",
+      "beermaverick-calypso"
+     ],
+     "hybride+llm": [
+      "beermaverick-ahhhroma",
+      "beermaverick-bitter-gold",
+      "beermaverick-kohatu"
+     ]
+    },
+    {
+     "id": "P24",
+     "texte": "Houblon proche de Saaz Late : aromatique. Arômes (0 à 5) : agrumes 2, fruits tropicaux 3, ",
+     "vérité": [
+      "beermaverick-saaz-cz",
+      "beermaverick-saaz-us"
+     ],
+     "fuse": [
+      "beermaverick-relax",
+      "beermaverick-harmonie",
+      "beermaverick-monroe"
+     ],
+     "emb2": [
+      "beermaverick-saaz-cz",
+      "beermaverick-saaz-us",
+      "beermaverick-saphir"
+     ],
+     "hybride": [
+      "beermaverick-relax",
+      "beermaverick-harmonie",
+      "beermaverick-saphir"
+     ],
+     "classeur": [
+      "beermaverick-vanguard",
+      "beermaverick-spalter-select",
+      "beermaverick-delta"
+     ],
+     "hybride+llm": [
+      "beermaverick-relax",
+      "beermaverick-harmonie",
+      "beermaverick-spalter-select"
+     ]
+    },
+    {
+     "id": "P25",
+     "texte": "Houblon proche de Sládek : aromatique. Arômes (0 à 5) : agrumes 2, fruits tropicaux 3, fru",
+     "vérité": [
+      "beermaverick-saaz-cz",
+      "beermaverick-saaz-us",
+      "beermaverick-northern-brewer-us"
+     ],
+     "fuse": [
+      "beermaverick-vanguard",
+      "beermaverick-akoya",
+      "beermaverick-contessa"
+     ],
+     "emb2": [
+      "beermaverick-solero",
+      "beermaverick-spalter-select",
+      "beermaverick-relax"
+     ],
+     "hybride": [
+      "beermaverick-akoya",
+      "beermaverick-vanguard",
+      "beermaverick-bobek"
+     ],
+     "classeur": [
+      "beermaverick-vanguard",
+      "beermaverick-delta",
+      "beermaverick-mistral"
+     ],
+     "hybride+llm": [
+      "beermaverick-vanguard",
+      "beermaverick-akoya",
+      "beermaverick-delta"
+     ]
+    },
+    {
+     "id": "P26",
+     "texte": "Houblon proche de Spalter Select : aromatique. Arômes (0 à 5) : agrumes 2, fruits tropicau",
+     "vérité": [
+      "beermaverick-tettnanger",
+      "beermaverick-saaz-cz",
+      "beermaverick-perle-gr",
+      "beermaverick-hallertau-tradition"
+     ],
+     "fuse": [
+      "beermaverick-opal",
+      "beermaverick-perle-gr",
+      "beermaverick-brewers-gold-us"
+     ],
+     "emb2": [
+      "beermaverick-relax",
+      "beermaverick-strisselspalt",
+      "beermaverick-triskel"
+     ],
+     "hybride": [
+      "beermaverick-opal",
+      "beermaverick-relax",
+      "beermaverick-delta"
+     ],
+     "classeur": [
+      "beermaverick-tettnanger",
+      "beermaverick-perle-us",
+      "beermaverick-vanguard"
+     ],
+     "hybride+llm": [
+      "beermaverick-delta",
+      "beermaverick-opal",
+      "beermaverick-perle-gr"
+     ]
+    },
+    {
+     "id": "P27",
+     "texte": "Houblon proche de Strisselspalt : aromatique. Arômes (0 à 5) : agrumes 1, fruits tropicaux",
+     "vérité": [
+      "beermaverick-crystal",
+      "beermaverick-hersbrucker",
+      "beermaverick-mount-hood",
+      "beermaverick-liberty"
+     ],
+     "fuse": [
+      "beermaverick-lublin",
+      "beermaverick-sequoia",
+      "beermaverick-saaz-late"
+     ],
+     "emb2": [
+      "beermaverick-spalter-select",
+      "beermaverick-triskel",
+      "beermaverick-relax"
+     ],
+     "hybride": [
+      "beermaverick-triskel",
+      "beermaverick-relax",
+      "beermaverick-sybilla"
+     ],
+     "classeur": [
+      "beermaverick-tardif-de-bourgogne",
+      "beermaverick-mount-hood",
+      "beermaverick-loral"
+     ],
+     "hybride+llm": [
+      "beermaverick-triskel",
+      "beermaverick-saphir",
+      "beermaverick-hersbrucker"
+     ]
+    },
+    {
+     "id": "P28",
+     "texte": "Houblon proche de Sybilla : aromatique. Arômes (0 à 5) : agrumes 3, fruits tropicaux 2, fr",
+     "vérité": [
+      "beermaverick-perle-us",
+      "beermaverick-perle-gr",
+      "beermaverick-northern-brewer-us",
+      "beermaverick-magnum-gr",
+      "beermaverick-magnum-us",
+      "beermaverick-nugget",
+      "beermaverick-bobek"
+     ],
+     "fuse": [
+      "beermaverick-perle-gr",
+      "beermaverick-cluster",
+      "beermaverick-endeavour"
+     ],
+     "emb2": [
+      "beermaverick-ella",
+      "beermaverick-harmonie",
+      "beermaverick-relax"
+     ],
+     "hybride": [
+      "beermaverick-ella",
+      "beermaverick-relax",
+      "beermaverick-cluster"
+     ],
+     "classeur": [
+      "beermaverick-ariana",
+      "beermaverick-astra",
+      "beermaverick-delta"
+     ],
+     "hybride+llm": [
+      "beermaverick-relax",
+      "beermaverick-horizon",
+      "beermaverick-cluster"
+     ]
+    },
+    {
+     "id": "P29",
+     "texte": "Houblon proche de Tomahawk : double usage. Arômes (0 à 5) : agrumes 1, herbes 3, épices 4.",
+     "vérité": [
+      "beermaverick-columbus",
+      "beermaverick-ctz",
+      "beermaverick-zeus",
+      "beermaverick-centennial",
+      "beermaverick-chinook",
+      "beermaverick-galena",
+      "beermaverick-nugget",
+      "beermaverick-millennium"
+     ],
+     "fuse": [
+      "beermaverick-columbus",
+      "beermaverick-ctz",
+      "beermaverick-zeus"
+     ],
+     "emb2": [
+      "beermaverick-ctz",
+      "beermaverick-columbus",
+      "beermaverick-topaz"
+     ],
+     "hybride": [
+      "beermaverick-columbus",
+      "beermaverick-ctz",
+      "beermaverick-topaz"
+     ],
+     "classeur": [
+      "beermaverick-columbus",
+      "beermaverick-ctz",
+      "beermaverick-zeus"
+     ],
+     "hybride+llm": [
+      "beermaverick-columbus",
+      "beermaverick-ctz",
+      "beermaverick-zeus"
+     ]
+    },
+    {
+     "id": "P30",
+     "texte": "Houblon proche de Vanguard : aromatique. Arômes (0 à 5) : agrumes 2, fruits tropicaux 3, f",
+     "vérité": [
+      "beermaverick-hersbrucker",
+      "beermaverick-mount-hood",
+      "beermaverick-liberty"
+     ],
+     "fuse": [
+      "beermaverick-sladek",
+      "beermaverick-contessa",
+      "beermaverick-nobility"
+     ],
+     "emb2": [
+      "beermaverick-sladek",
+      "beermaverick-target",
+      "beermaverick-akoya"
+     ],
+     "hybride": [
+      "beermaverick-sladek",
+      "beermaverick-akoya",
+      "beermaverick-nobility"
+     ],
+     "classeur": [
+      "beermaverick-calypso",
+      "beermaverick-comet",
+      "beermaverick-elixir"
+     ],
+     "hybride+llm": [
+      "beermaverick-sladek",
+      "beermaverick-x13459",
+      "beermaverick-sovereign"
+     ]
+    }
+   ]
+  },
+  {
+   "tache": "T3b",
+   "entrees": 181,
+   "requetes": 13,
+   "avecVerite": 13,
+   "methodes": {
+    "fuse": {
+     "n": 13,
+     "rappel1": 0,
+     "rappel3": 0,
+     "latenceMedianeMs": 10.843199999999342,
+     "latenceP95Ms": 15.953199999999924,
+     "coutParPieceChf": 0,
+     "erreurs": 0
+    },
+    "emb2": {
+     "n": 13,
+     "rappel1": 8,
+     "rappel3": 8,
+     "latenceMedianeMs": 300,
+     "latenceP95Ms": 370,
+     "coutParPieceChf": 0.000005615384615384615,
+     "erreurs": 0
+    },
+    "emb001": {
+     "n": 13,
+     "rappel1": 3,
+     "rappel3": 7,
+     "latenceMedianeMs": 264,
+     "latenceP95Ms": 359,
+     "coutParPieceChf": 0.000006,
+     "erreurs": 0
+    },
+    "hybride": {
+     "n": 13,
+     "rappel1": 8,
+     "rappel3": 8,
+     "latenceMedianeMs": 311.2482999999993,
+     "latenceP95Ms": 385.73769999999786,
+     "coutParPieceChf": 0.000005615384615384615,
+     "erreurs": 0
+    },
+    "classeur": {
+     "n": 13,
+     "rappel1": 10,
+     "rappel3": 12,
+     "latenceMedianeMs": 696,
+     "latenceP95Ms": 770,
+     "coutParPieceChf": 0.004802846153846154,
+     "erreurs": 0
+    },
+    "hybride+llm": {
+     "n": 13,
+     "rappel1": 8,
+     "rappel3": 10,
+     "latenceMedianeMs": 899.0169000000024,
+     "latenceP95Ms": 1320.0290000000023,
+     "coutParPieceChf": 0.00040146153846153847,
+     "erreurs": 0
+    }
+   },
+   "indexation": {
+    "gemini-embedding-2": {
+     "jetons": 10907,
+     "chf": 0.002807
+    },
+    "gemini-embedding-001": {
+     "jetons": 13667,
+     "chf": 0.002644
+    }
+   },
+   "detail": [
+    {
+     "id": "H01",
+     "texte": "Un houblon pour une IPA brumeuse très tropicale, mangue et ananas, peu amère",
+     "vérité": [
+      "beermaverick-mosaic",
+      "beermaverick-citra",
+      "beermaverick-galaxy",
+      "beermaverick-el-dorado",
+      "beermaverick-azacca",
+      "beermaverick-nectaron",
+      "beermaverick-vic-secret",
+      "beermaverick-strata"
+     ],
+     "fuse": [],
+     "emb2": [
+      "beermaverick-nzh-107",
+      "beermaverick-ahhhroma",
+      "beermaverick-astra"
+     ],
+     "hybride": [
+      "beermaverick-nzh-107",
+      "beermaverick-ahhhroma",
+      "beermaverick-astra"
+     ],
+     "classeur": [
+      "beermaverick-ahhhroma",
+      "beermaverick-samba",
+      "beermaverick-zamba"
+     ],
+     "hybride+llm": [
+      "beermaverick-ahhhroma",
+      "beermaverick-hbc-586",
+      "beermaverick-nzh-107"
+     ]
+    },
+    {
+     "id": "H02",
+     "texte": "Houblon noble floral et épicé léger pour une pilsner tchèque",
+     "vérité": [
+      "beermaverick-saaz-cz",
+      "beermaverick-saaz-late",
+      "beermaverick-hallertau-mittelfruh",
+      "beermaverick-tettnanger",
+      "beermaverick-spalter-select",
+      "beermaverick-sladek",
+      "beermaverick-saphir",
+      "beermaverick-hersbrucker",
+      "beermaverick-lublin"
+     ],
+     "fuse": [],
+     "emb2": [
+      "beermaverick-saaz-cz",
+      "beermaverick-nobility",
+      "beermaverick-saaz-us"
+     ],
+     "hybride": [
+      "beermaverick-saaz-cz",
+      "beermaverick-nobility",
+      "beermaverick-saaz-us"
+     ],
+     "classeur": [
+      "beermaverick-sladek",
+      "beermaverick-saaz-cz",
+      "beermaverick-kazbek"
+     ],
+     "hybride+llm": [
+      "beermaverick-saaz-cz",
+      "beermaverick-saaz-us",
+      "beermaverick-saaz-late"
+     ]
+    },
+    {
+     "id": "H03",
+     "texte": "Vin blanc, groseille à maquereau, style Nouvelle-Zélande",
+     "vérité": [
+      "beermaverick-nelson-sauvin",
+      "beermaverick-hallertau-blanc",
+      "beermaverick-enigma"
+     ],
+     "fuse": [],
+     "emb2": [
+      "beermaverick-nelson-sauvin",
+      "beermaverick-x13459",
+      "beermaverick-sovereign"
+     ],
+     "hybride": [
+      "beermaverick-nelson-sauvin",
+      "beermaverick-x13459",
+      "beermaverick-sovereign"
+     ],
+     "classeur": [
+      "beermaverick-nelson-sauvin",
+      "beermaverick-hallertau-blanc",
+      "beermaverick-motueka"
+     ],
+     "hybride+llm": [
+      "beermaverick-nelson-sauvin",
+      "beermaverick-hallertau-blanc"
+     ]
+    },
+    {
+     "id": "H04",
+     "texte": "Houblon d'amérisation propre et neutre pour une lager, beaucoup d'alpha",
+     "vérité": [
+      "beermaverick-magnum-us",
+      "beermaverick-magnum-gr",
+      "beermaverick-warrior",
+      "beermaverick-herkules",
+      "beermaverick-nugget",
+      "beermaverick-columbus",
+      "beermaverick-hallertau-taurus",
+      "beermaverick-target"
+     ],
+     "fuse": [],
+     "emb2": [
+      "beermaverick-target",
+      "beermaverick-crystal",
+      "beermaverick-tahoma"
+     ],
+     "hybride": [
+      "beermaverick-target",
+      "beermaverick-crystal",
+      "beermaverick-tahoma"
+     ],
+     "classeur": [
+      "beermaverick-herkules",
+      "beermaverick-magnum-us",
+      "beermaverick-warrior"
+     ],
+     "hybride+llm": [
+      "beermaverick-magnum-gr",
+      "beermaverick-liberty",
+      "beermaverick-target"
+     ]
+    },
+    {
+     "id": "H05",
+     "texte": "Houblon anglais terreux pour un bitter, bois et épices douces",
+     "vérité": [
+      "beermaverick-east-kent-goldings",
+      "beermaverick-fuggle",
+      "beermaverick-golding",
+      "beermaverick-whitbread-golding-variety-wgv",
+      "beermaverick-challenger",
+      "beermaverick-target",
+      "beermaverick-first-gold",
+      "beermaverick-progress",
+      "beermaverick-bramling-cross",
+      "beermaverick-sovereign",
+      "beermaverick-pilgrim"
+     ],
+     "fuse": [],
+     "emb2": [
+      "beermaverick-target",
+      "beermaverick-east-kent-goldings",
+      "beermaverick-bitter-gold"
+     ],
+     "hybride": [
+      "beermaverick-target",
+      "beermaverick-east-kent-goldings",
+      "beermaverick-bitter-gold"
+     ],
+     "classeur": [
+      "beermaverick-bramling-cross",
+      "beermaverick-first-gold",
+      "beermaverick-fuggle"
+     ],
+     "hybride+llm": [
+      "beermaverick-east-kent-goldings",
+      "beermaverick-progress",
+      "beermaverick-golding"
+     ]
+    },
+    {
+     "id": "H06",
+     "texte": "Pamplemousse, agrumes et résine pour une West Coast IPA",
+     "vérité": [
+      "beermaverick-centennial",
+      "beermaverick-cascade",
+      "beermaverick-amarillo",
+      "beermaverick-simcoe",
+      "beermaverick-chinook",
+      "beermaverick-columbus",
+      "beermaverick-citra",
+      "beermaverick-summit",
+      "beermaverick-ahtanum"
+     ],
+     "fuse": [],
+     "emb2": [
+      "beermaverick-hort9909",
+      "beermaverick-nzh-107",
+      "beermaverick-vista"
+     ],
+     "hybride": [
+      "beermaverick-hort9909",
+      "beermaverick-nzh-107",
+      "beermaverick-vista"
+     ],
+     "classeur": [
+      "beermaverick-mosaic",
+      "beermaverick-chinook",
+      "beermaverick-simcoe"
+     ],
+     "hybride+llm": [
+      "beermaverick-hort9909",
+      "beermaverick-centennial",
+      "beermaverick-apollo"
+     ]
+    },
+    {
+     "id": "H07",
+     "texte": "Noix de coco et notes inhabituelles, aneth et citron",
+     "vérité": [
+      "beermaverick-sorachi-ace",
+      "beermaverick-sabro"
+     ],
+     "fuse": [],
+     "emb2": [
+      "beermaverick-harmonie",
+      "beermaverick-x13459",
+      "beermaverick-vital"
+     ],
+     "hybride": [
+      "beermaverick-harmonie",
+      "beermaverick-x13459",
+      "beermaverick-vital"
+     ],
+     "classeur": [
+      "beermaverick-hbc472",
+      "beermaverick-sabro",
+      "beermaverick-lemondrop"
+     ],
+     "hybride+llm": [
+      "beermaverick-zappa",
+      "beermaverick-cashmere"
+     ]
+    },
+    {
+     "id": "H08",
+     "texte": "Melon, fruits blancs et pêche pour un blond sec et léger",
+     "vérité": [
+      "beermaverick-huell-melon",
+      "beermaverick-hallertau-blanc",
+      "beermaverick-mandarina-bavaria",
+      "beermaverick-melba",
+      "beermaverick-callista",
+      "beermaverick-ariana"
+     ],
+     "fuse": [],
+     "emb2": [
+      "beermaverick-melba",
+      "beermaverick-x13459",
+      "beermaverick-huell-melon"
+     ],
+     "hybride": [
+      "beermaverick-melba",
+      "beermaverick-x13459",
+      "beermaverick-huell-melon"
+     ],
+     "classeur": [
+      "beermaverick-huell-melon",
+      "beermaverick-solero",
+      "beermaverick-hbc-586"
+     ],
+     "hybride+llm": [
+      "beermaverick-huell-melon",
+      "beermaverick-melba",
+      "beermaverick-yqh-1320"
+     ]
+    },
+    {
+     "id": "H09",
+     "texte": "Orange et mandarine douces, agrumes sucrés",
+     "vérité": [
+      "beermaverick-mandarina-bavaria",
+      "beermaverick-amarillo",
+      "beermaverick-citra",
+      "beermaverick-cascade"
+     ],
+     "fuse": [],
+     "emb2": [
+      "beermaverick-mandarina-bavaria",
+      "beermaverick-tango",
+      "beermaverick-x13459"
+     ],
+     "hybride": [
+      "beermaverick-mandarina-bavaria",
+      "beermaverick-tango",
+      "beermaverick-x13459"
+     ],
+     "classeur": [
+      "beermaverick-mandarina-bavaria",
+      "beermaverick-tango",
+      "beermaverick-citra"
+     ],
+     "hybride+llm": [
+      "beermaverick-mandarina-bavaria",
+      "beermaverick-tango",
+      "beermaverick-citra"
+     ]
+    },
+    {
+     "id": "H10",
+     "texte": "Très citronné, zeste de citron vert",
+     "vérité": [
+      "beermaverick-lemondrop",
+      "beermaverick-sorachi-ace",
+      "beermaverick-citra",
+      "beermaverick-cascade",
+      "beermaverick-centennial"
+     ],
+     "fuse": [],
+     "emb2": [
+      "beermaverick-x13459",
+      "beermaverick-zeus",
+      "beermaverick-saaz-late"
+     ],
+     "hybride": [
+      "beermaverick-x13459",
+      "beermaverick-zeus",
+      "beermaverick-saaz-late"
+     ],
+     "classeur": [
+      "beermaverick-lemondrop",
+      "beermaverick-motueka",
+      "beermaverick-citra"
+     ],
+     "hybride+llm": [
+      "beermaverick-nzh-107",
+      "beermaverick-lemondrop",
+      "beermaverick-x13459"
+     ]
+    },
+    {
+     "id": "H11",
+     "texte": "Double usage australien, fruits à noyau, pêche et abricot, fruit de la passion",
+     "vérité": [
+      "beermaverick-vic-secret",
+      "beermaverick-galaxy",
+      "beermaverick-ella",
+      "beermaverick-topaz",
+      "beermaverick-eclipse",
+      "beermaverick-melba",
+      "beermaverick-enigma"
+     ],
+     "fuse": [],
+     "emb2": [
+      "beermaverick-yqh-1320",
+      "beermaverick-cashmere",
+      "beermaverick-southern-passion"
+     ],
+     "hybride": [
+      "beermaverick-yqh-1320",
+      "beermaverick-cashmere",
+      "beermaverick-southern-passion"
+     ],
+     "classeur": [
+      "beermaverick-enigma",
+      "beermaverick-galaxy",
+      "beermaverick-ella"
+     ],
+     "hybride+llm": [
+      "beermaverick-rakau",
+      "beermaverick-yqh-1320",
+      "beermaverick-cashmere"
+     ]
+    },
+    {
+     "id": "H12",
+     "texte": "Houblon allemand pour une weizen, floral doux sans dominer",
+     "vérité": [
+      "beermaverick-hallertau-mittelfruh",
+      "beermaverick-tettnanger",
+      "beermaverick-perle-gr",
+      "beermaverick-spalter-select",
+      "beermaverick-hersbrucker",
+      "beermaverick-saphir",
+      "beermaverick-hallertau-tradition"
+     ],
+     "fuse": [],
+     "emb2": [
+      "beermaverick-tettnanger",
+      "beermaverick-tettnang-us",
+      "beermaverick-relax"
+     ],
+     "hybride": [
+      "beermaverick-tettnanger",
+      "beermaverick-tettnang-us",
+      "beermaverick-relax"
+     ],
+     "classeur": [
+      "beermaverick-hallertau-tradition",
+      "beermaverick-saphir",
+      "beermaverick-spalter-select"
+     ],
+     "hybride+llm": [
+      "beermaverick-tettnanger",
+      "beermaverick-hallertau-tradition",
+      "beermaverick-opal"
+     ]
+    },
+    {
+     "id": "H13",
+     "texte": "Sapin, pin, résine, forte note de conifère",
+     "vérité": [
+      "beermaverick-chinook",
+      "beermaverick-simcoe",
+      "beermaverick-columbus",
+      "beermaverick-ctz",
+      "beermaverick-tomahawk",
+      "beermaverick-zeus",
+      "beermaverick-apollo"
+     ],
+     "fuse": [],
+     "emb2": [
+      "beermaverick-chinook",
+      "beermaverick-southern-aroma",
+      "beermaverick-target"
+     ],
+     "hybride": [
+      "beermaverick-chinook",
+      "beermaverick-southern-aroma",
+      "beermaverick-target"
+     ],
+     "classeur": [
+      "beermaverick-chinook",
+      "beermaverick-mosaic",
+      "beermaverick-triumph"
+     ],
+     "hybride+llm": [
+      "beermaverick-chinook",
+      "beermaverick-target",
+      "beermaverick-altus"
+     ]
+    }
+   ]
+  }
+ ]
+}

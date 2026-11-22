@@ -1,0 +1,24 @@
+{
+ "reglage": "4-hydrogen@low",
+ "kind": "fournisseurs",
+ "id": "citra",
+ "utilisable": true,
+ "produits": [
+  {
+   "name": "Citra (USA) 100 g Hopfenpellets Typ 90",
+   "url": "https://www.sios.ch/Citra-USA-100-g-Hopfenpellets-Typ-90_2",
+   "supplier": "SIOS",
+   "packageLabel": "100 g"
+  }
+ ],
+ "pertinentes": 1,
+ "exactes": 1,
+ "sourcesPrimaires": 0,
+ "faitCle": false,
+ "ms": 6541,
+ "coutMicro": 31359,
+ "web": 1,
+ "appels": 1,
+ "etat": "STOP",
+ "extrait": "Voici la fiche produit exacte correspondant à votre recherche (Citra, pellets, 100 g) :\n\n* **Sios.ch** : [Citra (USA) 100 g Hopfenpellets Typ 90](https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG-f_eM9Nv7HfsMFxwR-kzFy8omL8khS_VB4WBSHiq44BaGUZhTOsmnxTChLBqV9sZiRN7CO9cxPNUH33DOHoH"
+}

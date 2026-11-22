@@ -1,0 +1,31 @@
+pas                                                  tour7 INP ms                       tour9 INP ms
+brassin › t=Brassins                                    56 (48–88) n=5                     48 (40–56) n=5
+brassin › c=B-ZZ-JOUR                                   40 (40–56) n=5                     40 (24–56) n=5
+brassin › t=Commencer le brassage                      324 (280–408) n=4 échec 1          500 (456–544) n=2 échec 3
+calendrier › t=Bord                                     16 (16–16) n=1                     16 (16–16) n=2
+calendrier › t=Calendrier                               56 (48–56) n=5                     40 (40–56) n=10
+calendrier › p=S49, 30                                   - échec 5                        160 (136–256) n=5
+calendrier › esc                                         -                                 16 (16–16) n=4
+calendrier › t=Actions rapides                          48 (16–608) n=15                  128 (48–248) n=15
+calendrier › p=Poser un brassin                          - échec 5                        560 (416–584) n=5
+calendrier › t=ZZ TEST IPA                               - échec 5                         40 (32–64) n=5
+calendrier › p=Ajouter en                                - échec 5                        664 (448–752) n=5
+calendrier › p=Noter une idée                            - échec 5                        488 (400–576) n=5
+calendrier › e=[role=dialog] textarea|Bière de Noë       - échec 5                         48 (32–64) n=5
+calendrier › t=Noter                                     - échec 5                        472 (240–536) n=5
+calendrier › t=Recette                                 168 (136–304) n=5                  624 (440–656) n=5
+calendrier › t=Brassins                                 16 (16–16) n=2                     16 (16–24) n=5
+calendrier › p=Atelier                                   - échec 5                          - échec 5
+onglets › c=Stocks                                     152 (56–368) n=10                  132 (48–400) n=10
+onglets › t=Calendrier                                  40 (32–48) n=5                     40 (32–72) n=5
+onglets › t=Finances                                    64 (40–88) n=5                     80 (56–80) n=5
+onglets › t=Brassins                                    64 (32–72) n=5                     64 (56–80) n=5
+onglets › t=Clients                                     56 (48–80) n=5                     48 (32–72) n=5
+recherche › t=Rechercher (⌘K)                          104 (80–144) n=5                    72 (64–80) n=5
+vente › t=Actions rapides                               96 (96–120) n=5                    88 (88–128) n=5
+vente › t=Vente                                        152 (144–256) n=5                  168 (152–224) n=5
+vente › c=Cigogne                                       96 (56–152) n=5                   120 (48–144) n=5
+vente › c=fût                                          152 (88–456) n=10                  128 (64–264) n=10
+vente › p=Facturer                                     216 (96–240) n=5                   208 (152–288) n=5
+vente › c=OK                                             - échec 5                          - échec 5
+vente › t=Calendrier                                     -                                  - 

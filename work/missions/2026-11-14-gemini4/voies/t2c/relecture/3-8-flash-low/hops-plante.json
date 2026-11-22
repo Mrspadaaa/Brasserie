@@ -1,0 +1,19 @@
+{
+ "reglage": "3.8-flash@low",
+ "element": "hops-plante",
+ "cas": "hops",
+ "type": "plante",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "La valeur de concentration en iso-alpha-acides de 38 mg/L dans le champ 'why' est inventée et ne provient d'aucune sortie d'outil ou donnée factuelle.",
+   "Refuser les affirmations de valeurs chimiques ou d'arômes non calculées par les outils de simulation."
+  ]
+ },
+ "ms": 2778,
+ "coutMicro": 12660,
+ "etat": "STOP"
+}

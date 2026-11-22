@@ -1,0 +1,44 @@
+{
+ "reglage": "4-argon@high",
+ "cas": "D1-calage",
+ "tache": "diagnoseBatch",
+ "moitie": "choix",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [
+   "atténuation apparente 31 % (±2)",
+   "gravité surveiller ou agir (ni normal, ni urgent)",
+   "cause : température trop basse",
+   "cause : levure (quantité, vitalité, réhydratation)",
+   "action : réchauffer ou remuer"
+  ],
+  "manques": []
+ },
+ "ms": 34664,
+ "coutMicro": 33760,
+ "etat": "STOP",
+ "valeur": {
+  "verdict": "Fermentation bloquée à 1.040 entre le jour 6 et le jour 8, soit une atténuation apparente de seulement 31.03 % contre les 79 à 81 % attendus pour atteindre la cible de 1.012. Le refroidissement du moût de 17 °C à 15 °C en cave a freiné puis stoppé l'activité de la SafAle US-05.",
+  "severity": "agir",
+  "causes": [
+   {
+    "cause": "Température de fermentation trop basse (15 °C constants en cave) combinée à une baisse thermique post-ensemencement (de 17 °C à 15 °C), plaçant la SafAle US-05 sous sa plage optimale d'activité (18–26 °C).",
+    "probability": 0.65,
+    "action": "Sortir le fermenteur de la cave ou installer un système de chauffe régulé pour monter progressivement le brassin à 20–21 °C, puis contrôler la densité après 48 heures."
+   },
+   {
+    "cause": "Floculation et sédimentation prématurées de la levure au fond du fermenteur en raison du froid et de la faible convection liée au ralentissement du dégagement de CO2.",
+    "probability": 0.25,
+    "action": "Une fois le moût réchauffé à 20 °C, faire tournoyer délicatement le fermenteur fermé pour remettre le lit de levure en suspension sans introduire d'oxygène."
+   },
+   {
+    "cause": "Stress osmotique et thermique lié au saupoudrage direct sans réhydratation sur un moût froid (17 °C) à 1.058, réduisant la viabilité d'un taux d'ensemencement initial déjà juste (0,48 g/L pour 24 L).",
+    "probability": 0.1,
+    "action": "Si la densité ne descend pas sous 1.040 dans les 48 heures suivant le réchauffement à 20 °C et la remise en suspension, ensemencer un nouveau sachet de 11,5 g de SafAle US-05 préalablement réhydraté dans de l'eau stérile à 25 °C."
+   }
+  ],
+  "apparentAttenuationPct": 31.03,
+  "immediateAction": "Réchauffer le fermenteur de 15 °C à 20 °C et remettre doucement la levure en suspension par rotation du fût fermé, puis mesurer la densité à J+10 pour confirmer la reprise de la fermentation."
+ }
+}

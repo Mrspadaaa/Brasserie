@@ -1,0 +1,2 @@
+ok s1b : frise à 168 px, bande 35 px, 22 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c
+ok s4b : frise à 168 px, bande 35 px, 21 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c

@@ -1,0 +1,87 @@
+{
+ "puce-brassage": {
+  "avant": "−324 / Brassins, confirmé de S47 à S52 : 2 choses, solde −324 (Blonde d’automne −148 et Porter d’hiver −176)",
+  "apres": "−324 / Brassins, confirmé de S47 à S52 : 2 choses, solde −324 (Blonde d’automne −148 et Porter d’hiver −176)"
+ },
+ "nouv-tap-brassage": [],
+ "nouv-appui-brassage": [
+  "as-menu: Épingler Étoile Brassins seules Dupliquer en S48 −100 Lier à un brassin, un client Retirer S47 : 3 932 → 4 032"
+ ],
+ "nouv-glisse-brassage": {
+  "dx": 122,
+  "m": [
+   "as-toast: S47 : 3 932 → 4 032 Annuler"
+  ]
+ },
+ "err-brassage": [],
+ "puce-vente": {
+  "avant": "+900 / Ventes, confirmé de S47 à S52 : 2 choses, solde +900 (Auberge du Lac +260 et Noël privés +640 ; sans le Café du Pont, prévu, ni les 3 fûts à La Cigogne, pas chiffrés)",
+  "apres": "+900 / Ventes, confirmé de S47 à S52 : 2 choses, solde +900 (Auberge du Lac +260 et Noël privés +640 ; sans le Café du Pont, prévu, ni les 3 fûts à La Cigogne, pas chiffrés)"
+ },
+ "nouv-tap-vente": [],
+ "nouv-appui-vente": [
+  "as-menu: Épingler Étoile Ventes seules Dupliquer en S51 +130 Lier à un brassin, un client Retirer S50 : 5 250 → 5 120"
+ ],
+ "nouv-glisse-vente": {
+  "dx": 122,
+  "m": [
+   "as-toast: S50 : 5 250 → 5 120 Annuler"
+  ]
+ },
+ "err-vente": [],
+ "puce-charge": {
+  "avant": "−806 / Papiers, confirmé de S47 à S52 : 3 choses, solde −806 (loyer de décembre −400, factures −312 et −94)",
+  "apres": "−806 / Papiers, confirmé de S47 à S52 : 3 choses, solde −806 (loyer de décembre −400, factures −312 et −94)"
+ },
+ "nouv-tap-charge": [],
+ "nouv-appui-charge": [
+  "as-menu: Épingler Étoile Papiers seules Dupliquer en S48 −100 Lier à un brassin, un client Retirer S47 : 3 932 → 4 032"
+ ],
+ "nouv-glisse-charge": {
+  "dx": 122,
+  "m": [
+   "as-toast: S47 : 3 932 → 4 032 Annuler"
+  ]
+ },
+ "err-charge": [],
+ "puce-achat": {
+  "avant": "",
+  "apres": ""
+ },
+ "nouv-tap-achat": [],
+ "nouv-appui-achat": [
+  "as-menu: Épingler Étoile Achats seules Dupliquer en S48 −100 Lier à un brassin, un client Retirer S47 : 3 932 → 4 032"
+ ],
+ "nouv-glisse-achat": {
+  "dx": 122,
+  "m": [
+   "as-toast: S47 : 3 932 → 4 032 Annuler"
+  ]
+ },
+ "err-achat": [],
+ "base-tap": [
+  "as-det: Porter d’hiver−176 Brassage lun. 14 déc. En cuve 15 déc. → 11 janv. Prête 18 janv. Munich 4 kg, Fuggles 200 g : manquent au stock, à acheter"
+ ],
+ "blonde-p": {
+  "apresAllonger": "J0 / 35 · prête 21 déc. Blonde d’automne −148",
+  "apresDecaler": "J0 / 35 · prête 21 déc. Blonde d’automne −148",
+  "al": [
+   "as-tag: 15 déc.",
+   "as-al: 3 fûts promis le 15 déc. · prête le 4 janv. Livrer le 5 janv. Annuler"
+  ]
+ },
+ "blonde-l": {
+  "apresAllonger": "J0 / 35 · prête 21 déc. Blonde d’automne −148",
+  "apresDecaler": "J0 / 35 · prête 21 déc. Blonde d’automne −148",
+  "al": [
+   "as-tag: 15 déc.",
+   "as-al: 3 fûts promis le 15 déc. · prête le 4 janv. Livrer le 5 janv. Annuler"
+  ]
+ },
+ "l-achat-chev": {
+  "bar": "12,183",
+  "hit": [
+   "Achats"
+  ]
+ }
+}

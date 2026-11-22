@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
+<title>Carnet v07 · axe B · on voit où ça atterrit avant de poser (17.11, passe de correction)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* v07 · axe B (CARNET-AJOUT-FOUILLIS). Base : ra-p5f/proto.html (thème clair, jetons de DESIGN.md repris tels quels).
+   Parti pris unique : ce qu'on dépose apparaît d'abord en pointillé, À L'ENDROIT où il va atterrir, avec la cible proposée
+   par l'IA, corrigeable d'un toucher ; le + le pose. Un seul champ en bas (C7, C8), photo et micro côte à côte.
+   Passe de correction : barre « L'Affinée » et segments de l'app, + carré arrondi, 3 tailles de texte (14, 16, 20),
+   sens fixe des couleurs : vert = zone Stocks et ce qu'on pose ; ambre = idée ; bleu = compare ; vert foncé = choisi ;
+   violet = IA seulement. Six écrans : nouvelle idée, phrase, posé + voix, photo, lien sans aperçu, façons. */
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--line2:#bfbfbf;--mut:#666;--ink:#111;--act:#111;--onact:#fff;--prod:#9a4f1e;--fin:#1f64a3;--stk:#4c6b2a;--att:#7f5b10;--ok:#3f6b2e;--bad:#a8291f;--ia:#6a4fb0;--bdg:#8a5212;--straw:#F2C14E;
+  --attbg:color-mix(in srgb,var(--att) 12%,var(--bg));--okbg:color-mix(in srgb,var(--ok) 13%,var(--bg));--finbg:color-mix(in srgb,var(--fin) 12%,var(--bg));--iabg:color-mix(in srgb,var(--ia) 10%,var(--bg));--zone:color-mix(in srgb,var(--stk) 8%,var(--bg));--botOn:color-mix(in srgb,var(--stk) 12%,var(--s1));--stkbg:color-mix(in srgb,var(--stk) 10%,var(--bg));--badbg:color-mix(in srgb,var(--bad) 8%,var(--bg))}
+*{box-sizing:border-box}
+html,body{margin:0;overflow-x:hidden;background:#ebebeb;color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:16px;line-height:1.35}
+.v7-page{display:grid;grid-template-columns:repeat(3,390px);column-gap:28px;row-gap:14px;width:max-content;padding:0 0 28px}
+.v7-tel{position:relative;width:390px;height:844px;overflow:hidden;background:var(--bg)}
+.ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* barre de l'app + segments de Stocks */
+.v7-app{display:flex;align-items:center;gap:8px;height:44px;padding:0 10px;border-bottom:1px solid var(--line)}
+.v7-logo{display:grid;place-items:center;width:28px;height:28px;border-radius:10px;background:var(--straw);color:#12100E;font-weight:800;font-size:16px}
+.v7-app b{font-size:16px;font-weight:700;flex:1}
+.v7-app .ico{color:var(--mut)}
+.v7-seg{display:flex;gap:2px;margin:8px 10px 10px;padding:2px;border-radius:10px;background:var(--s1);border:1px solid var(--line)}
+.v7-seg span{flex:1;text-align:center;min-height:32px;line-height:32px;border-radius:10px;font-size:14px;color:var(--mut)}
+.v7-seg span.on{background:var(--bg);color:var(--ink);font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.15),inset 0 -2px 0 var(--stk)}
+.v7-seg i{font-style:normal;font-family:"IBM Plex Mono",monospace;font-size:14px;margin-left:4px}
+.v7-wrap{padding:0 10px}
+/* cartes de carnet (base da-card) : une couleur = une étape, dite en mot */
+.v7-card{position:relative;border:1px solid var(--line);border-radius:10px;padding:8px 10px 8px 14px;margin:0 0 8px;overflow:hidden;background:var(--bg)}
+.v7-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--st)}
+.v7-cl1{display:flex;align-items:center;gap:8px}.v7-cl1 b{flex:1;font-size:16px;font-weight:700;line-height:1.2}
+.v7-st{display:inline-flex;align-items:center;font-size:14px;font-weight:700;color:var(--st);background:color-mix(in srgb,var(--st) 12%,var(--bg));border-radius:999px;padding:0 9px;line-height:22px;white-space:nowrap}
+.v7-cl2{font-size:14px;line-height:1.35;margin-top:2px}.v7-cl2 em{font-style:normal;color:var(--mut)}
+.v7-cl3{display:flex;align-items:center;gap:5px;margin-top:6px;font-size:14px;color:var(--mut)}
+.v7-th{width:30px;height:28px;border-radius:6px;flex:none;background:var(--s2)}
+.v7-vl{margin-left:auto;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;color:var(--ink)}.v7-vl .ico{width:16px;height:16px;color:var(--stk)}
+/* le fantôme : ce qui va atterrir, là où il atterrira */
+.v7-gh{position:relative;border:2px dashed var(--stk);border-radius:10px;background:var(--stkbg);padding:8px 10px 9px;margin:0 0 10px}
+.v7-gk{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--stk)}
+.v7-gk .ico{width:16px;height:16px}
+.v7-gk .r{margin-left:auto;font-weight:600;color:var(--mut)}
+.v7-gk .r.ia{color:var(--ia);display:inline-flex;align-items:center;gap:3px}
+.v7-gk .x{display:grid;place-items:center;width:32px;height:32px;margin:-6px -6px -6px 2px;border-radius:10px;color:var(--mut)}
+.v7-gk .x .ico{width:18px;height:18px}
+.v7-gb{display:flex;gap:10px;margin-top:6px}
+.v7-gb svg.ph{width:64px;height:58px;border-radius:10px;flex:none}
+.v7-gb svg.ph.big{width:96px;height:96px}
+.v7-gt{font-size:16px;font-weight:800;line-height:1.25}
+.v7-gs{font-size:14px;line-height:1.35;margin-top:2px}
+.px{font-family:"IBM Plex Mono",monospace;font-weight:600;white-space:nowrap}
+.v7-gm{font-size:14px;color:var(--mut);margin-top:2px}
+.v7-cib{display:flex;align-items:center;gap:6px;margin-top:8px;overflow:hidden}
+.v7-cib>span:first-child{font-size:14px;font-weight:700;color:var(--mut);flex:none}
+.v7-chip{display:inline-flex;align-items:center;gap:4px;min-height:36px;border-radius:999px;padding:0 11px;font-size:14px;font-weight:600;border:1.5px solid var(--line2);background:var(--bg);white-space:nowrap;flex:none}
+.v7-chip.on{border-color:var(--stk);background:var(--stk);color:#fff}
+.v7-chip .ico{width:16px;height:16px}
+.v7-chip .ia{color:#fff;opacity:.9}
+/* valeurs lues sur la photo, à valider une à une */
+.v7-val{display:flex;align-items:center;gap:8px;min-height:36px;border-top:1px solid color-mix(in srgb,var(--stk) 25%,transparent);font-size:14px}
+.v7-val:first-of-type{margin-top:6px}
+.v7-val .k{width:62px;color:var(--mut);flex:none}
+.v7-val .v{flex:1;font-weight:700}
+.v7-val .ok{display:grid;place-items:center;width:36px;height:32px;border-radius:10px;border:1.5px solid var(--line2);color:var(--mut);background:var(--bg)}
+.v7-val .ok.on{border-color:var(--ok);background:var(--ok);color:#fff}
+.v7-val .ok .ico{width:16px;height:16px}
+.v7-crit{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:14px;color:var(--ok);font-weight:700}
+.v7-crit .ico{width:16px;height:16px}
+/* boutons dans le fantôme */
+.v7-acts{display:flex;gap:8px;margin-top:8px}
+.v7-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:36px;padding:0 12px;border-radius:10px;font-size:14px;font-weight:700;border:1.5px solid var(--line2);background:var(--bg);color:var(--ink)}
+.v7-btn.p{background:var(--act);border-color:var(--act);color:var(--onact)}
+.v7-btn .ico{width:16px;height:16px}
+/* dock : un seul champ, photo et micro au bout ; le + à part, carré arrondi */
+.v7-dock{position:absolute;left:0;right:0;bottom:56px;z-index:4;background:var(--bg);border-top:1px solid var(--line);padding:6px 76px 6px 10px}
+.v7-dock.kb{bottom:300px}
+.v7-field{display:flex;align-items:center;gap:2px;background:var(--s1);border:1.5px solid var(--line2);border-radius:10px;min-height:48px;padding:2px 2px 2px 10px}
+.v7-field.on{border-color:var(--stk);background:var(--bg)}
+.v7-field .tx{flex:1;min-width:0;font-size:16px;line-height:1.3;padding:5px 0}
+.v7-field .tx.ph{color:var(--mut)}
+.v7-field .tx .car{display:inline-block;width:2px;height:18px;background:var(--stk);vertical-align:-3px;margin-left:1px}
+.v7-field .tl{display:grid;place-items:center;width:38px;height:44px;color:var(--mut);flex:none}
+.v7-field .tl.rec{width:auto;padding:0 8px;gap:4px;display:inline-flex;align-items:center;border-radius:10px;background:var(--bad);color:#fff;font-size:14px;font-weight:700}
+.v7-lk{display:inline-flex;align-items:center;gap:6px;max-width:100%;border-radius:10px;background:var(--s2);color:var(--ink);font-size:14px;font-weight:600;padding:5px 8px}
+.v7-lk .ico{width:16px;height:16px;color:var(--mut)}.v7-lk span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v7-fab{position:absolute;right:12px;bottom:64px;z-index:6;display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:var(--act);color:var(--onact);border:0;box-shadow:0 6px 16px rgba(0,0,0,.30)}
+.v7-fab .ico{width:26px;height:26px;stroke-width:2.4}
+.v7-fab.pret{background:var(--stk)}
+.v7-fab.kb{bottom:308px}
+/* enregistrement vocal visible */
+.v7-rec{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.v7-rec .pt{width:10px;height:10px;border-radius:50%;background:var(--bad);flex:none}
+.v7-rec .t{font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600;color:var(--bad)}
+.v7-wave{display:flex;align-items:center;gap:2px;flex:1;height:28px}
+.v7-wave i{display:block;width:3px;border-radius:2px;background:var(--bad);opacity:.75}
+/* barre d'onglets (base) */
+.v7-bot{position:absolute;left:0;right:0;bottom:0;height:56px;display:flex;background:var(--s1);border-top:1px solid var(--line);z-index:5}
+.v7-bot a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;letter-spacing:-.01em;position:relative;min-width:0;color:inherit;text-decoration:none}
+.v7-bot a.on{background:var(--botOn);font-weight:600;box-shadow:inset 0 3px 0 var(--stk);color:var(--stk)}
+.v7-bot .bdg{position:absolute;top:2px;left:calc(50% + 4px);background:var(--bdg);color:#fff;font-size:14px;line-height:18px;font-weight:600;border-radius:999px;padding:0 5px}
+/* clavier simulé (base #ra-kbd) */
+.v7-kbd{position:absolute;left:0;right:0;bottom:0;height:300px;z-index:7;background:#cfd3d9;padding:8px 4px}
+.v7-kbd .rg{display:flex;gap:5px;justify-content:center;margin:0 0 9px}
+.v7-kbd .rg i{flex:1;max-width:34px;height:44px;border-radius:6px;background:#fff;box-shadow:0 1px 0 #8e9298;font-style:normal;display:grid;place-items:center;font-size:16px;color:#333}
+.v7-kbd .rg i.w{max-width:none;flex:5;font-size:14px}
+.v7-kbd .lb{text-align:center;font-size:14px;color:#555}
+/* fiche : retour + titre + étape nommée sur une rangée, puis la suite */
+.v7-fh{background:var(--zone);padding:4px 10px 10px;border-bottom:1px solid var(--line)}
+.v7-fr{display:flex;align-items:center;gap:6px;min-height:40px}
+.v7-back{display:grid;place-items:center;width:32px;height:36px;margin-left:-6px;color:var(--ink)}
+.v7-fr h1{flex:1;font-size:20px;font-weight:800;letter-spacing:-.01em;margin:0;line-height:1.15}
+.v7-steps{display:flex;align-items:center;gap:4px;font-size:14px;color:var(--mut);margin-top:2px}
+.v7-steps b{color:var(--st);background:color-mix(in srgb,var(--st) 14%,var(--bg));border-radius:999px;padding:0 9px;line-height:22px}
+.v7-steps .sep{color:var(--line2)}
+.v7-ens{display:flex;align-items:center;gap:8px;margin-top:8px;border-radius:10px;background:var(--bg);border:1px solid var(--line);padding:6px 6px 6px 10px}
+.v7-ens .v{flex:1;font-size:14px}.v7-ens .v b{font-size:16px;display:block}
+.v7-ia{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:0 11px;border-radius:10px;border:1.5px solid var(--ia);color:var(--ia);background:var(--iabg);font-size:14px;font-weight:700;flex:none}
+.v7-ia .ico{width:16px;height:16px}
+/* fiche : les places où l'on dépose (une rangée par place, rien de caché) */
+.v7-pl{padding:2px 10px 0}
+.v7-p{border-bottom:1px solid var(--line);padding:8px 0}
+.v7-ph{display:flex;align-items:center;gap:7px;font-size:16px;font-weight:700}
+.v7-ph .ico{width:18px;height:18px;color:var(--mut)}
+.v7-ph .n{font-weight:400;font-size:14px;color:var(--mut)}
+.v7-p.crit .v7-ph .ico{color:var(--prod)}
+.v7-pdone{margin:3px 0 0 25px;font-size:16px;font-weight:700;line-height:1.3}
+.v7-pdone small{display:block;font-size:14px;font-weight:400;color:var(--mut)}
+.v7-posed{display:flex;align-items:center;gap:8px;margin:4px 0 0 25px;font-size:14px}
+.v7-posed .ok{display:inline-flex;align-items:center;gap:4px;font-weight:700;color:var(--ok);background:var(--okbg);border-radius:999px;padding:1px 9px}
+.v7-posed .ok .ico{width:16px;height:16px}
+.v7-posed a{font-weight:700;color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+.v7-p .v7-gh{margin:6px 0 2px}
+.v7-p.flash{background:linear-gradient(90deg,var(--okbg),transparent 85%);margin:0 -10px;padding:8px 10px;border-left:4px solid var(--ok)}
+.v7-note{margin:3px 0 0 25px;font-size:14px}
+.v7-note small{font-size:14px;color:var(--mut);font-weight:700;margin-right:6px}
+/* façons : chacune avec son pourquoi en une ligne, Retenir / Écarter */
+.v7-f{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:6px 0 0}
+.v7-f .t{display:flex;align-items:center;gap:6px;font-size:16px;font-weight:700}
+.v7-f .t .ia{margin-left:auto;display:inline-flex;align-items:center;gap:3px;font-size:14px;font-weight:600;color:var(--ia)}
+.v7-f .t .ia .ico{width:14px;height:14px}
+.v7-f .w{font-size:14px;margin-top:1px}.v7-f .w i{font-style:normal;color:var(--mut)}
+.v7-f .v7-acts{margin-top:6px}
+.v7-f.out{background:var(--s1);border-style:dashed}
+.v7-f.out .t{color:var(--mut);text-decoration:line-through;text-decoration-thickness:1.5px}
+.v7-f.out .w b{color:var(--bad)}
+/* légende sous les écrans */
+.v7-leg{font-size:14px;line-height:1.4;padding:0 4px}
+.v7-leg b{display:block;font-size:16px;margin-bottom:2px}
+.v7-leg em{font-style:normal;color:var(--mut)}
+.v7-titre{grid-column:1/-1;font-size:16px;padding:0 4px}.v7-titre b{font-weight:800}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8a2.5 2.5 0 0 1 1-4.5c.8-1.5 3-2 4-1 1-1 3.5-1 4.5.5A2.5 2.5 0 0 1 17 8z"/></symbol>
+<symbol id="i-boxes" viewBox="0 0 24 24"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+<symbol id="i-fork" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="12" cy="20" r="2"/><path d="M6 7v2a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7M12 12v6"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12z"/></symbol>
+<symbol id="i-land" viewBox="0 0 24 24"><path d="M12 3v11M7 9l5 5 5-5"/><path d="M4 20h16"/></symbol>
+<symbol id="i-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1.5" fill="currentColor"/></symbol>
+</svg>
+
+<div class="v7-page">
+
+<!-- ==================== 1 · LISTE : un lien collé, le carnet qui va naître se montre en tête ==================== -->
+<div class="v7-tel" aria-label="Liste des carnets, un lien collé, avant de poser">
+  <header class="v7-app"><span class="v7-logo">A</span><b>L'Affinée</b><svg class="ico"><use href="#i-search"/></svg></header>
+  <div class="v7-seg"><span>À venir<i>1</i></span><span class="on">Carnets</span><span>Réalisés<i>3</i></span></div>
+  <div class="v7-wrap">
+    <!-- fantôme : le carnet qui va naître, à sa place, avant le + -->
+    <div class="v7-gh">
+      <div class="v7-gk"><svg class="ico"><use href="#i-land"/></svg>Va atterrir ici<span class="r">exemple</span><span class="x" aria-label="Annuler"><svg class="ico"><use href="#i-x"/></svg></span></div>
+      <div class="v7-gb">
+        <svg class="ph" viewBox="0 0 100 88" style="background:#ece6dc"><path d="M30 8h40l-10 26H40z" fill="#c9b48a" stroke="#7a6440" stroke-width="2"/><rect x="26" y="36" width="48" height="26" rx="4" fill="#b7c0c8" stroke="#55616b" stroke-width="2"/><circle cx="42" cy="49" r="8" fill="#eef2f5" stroke="#55616b" stroke-width="2"/><circle cx="58" cy="49" r="8" fill="#eef2f5" stroke="#55616b" stroke-width="2"/><path d="M74 46h12v6" stroke="#55616b" stroke-width="3" fill="none"/><rect x="22" y="62" width="56" height="16" rx="2" fill="#8a7a60"/></svg>
+        <div>
+          <div class="v7-gt">Moulin à malt</div>
+          <div class="v7-gs">Moulin 2 cylindres · <span class="px">1 290 CHF</span></div>
+          <div class="v7-gm">en stock · Brauladen Nord (DE)</div>
+        </div>
+      </div>
+      <div class="v7-cib"><span>Où ?</span><span class="v7-chip on"><svg class="ico ia"><use href="#i-spark"/></svg>Nouveau carnet</span><span class="v7-chip">Évier inox</span><span class="v7-chip">Autre…</span></div>
+    </div>
+
+    <div class="v7-card" style="--st:var(--ok)">
+      <div class="v7-cl1"><b>Embouteillage</b><span class="v7-st">choisi</span></div>
+      <div class="v7-cl2" style="display:flex;align-items:center;gap:4px">Isobarique 4 becs <em>· 2 décisions</em><span class="v7-vl"><svg class="ico"><use href="#i-eye"/></svg>prix suivi / 3 j</span></div>
+      <div class="v7-cl3"><svg class="v7-th" viewBox="0 0 100 88" style="background:#dfe6ec"><rect x="21" y="14" width="64" height="22" rx="3" fill="#9aa7b2"/><circle cx="79" cy="20" r="4" fill="#2f7d6b"/><rect x="26" y="50" width="7" height="20" rx="2" fill="#6a4a2a"/><rect x="44" y="50" width="7" height="20" rx="2" fill="#6a4a2a"/><rect x="62" y="50" width="7" height="20" rx="2" fill="#6a4a2a"/><rect x="17" y="72" width="72" height="5" rx="2" fill="#55616b"/></svg><svg class="v7-th" viewBox="0 0 100 88" style="background:#e6e2da"><rect x="40" y="10" width="20" height="62" rx="4" fill="#8a9aa6"/><rect x="30" y="72" width="40" height="8" rx="2" fill="#55616b"/><path d="M60 30h14v20" stroke="#55616b" stroke-width="4" fill="none"/></svg><svg class="v7-th" viewBox="0 0 100 88" style="background:#e3e8dd"><rect x="28" y="22" width="12" height="50" rx="5" fill="#4f6b3a"/><rect x="46" y="22" width="12" height="50" rx="5" fill="#4f6b3a"/><rect x="64" y="22" width="12" height="50" rx="5" fill="#4f6b3a"/></svg><svg class="v7-th" viewBox="0 0 100 88" style="background:#ece6dc"><rect x="18" y="30" width="64" height="34" rx="4" fill="#b7c0c8" stroke="#55616b" stroke-width="2"/><circle cx="34" cy="47" r="7" fill="#eef2f5"/><rect x="48" y="40" width="26" height="6" rx="2" fill="#55616b"/></svg>2 façons · 6 articles</div>
+    </div>
+    <div class="v7-card" style="--st:var(--att)">
+      <div class="v7-cl1"><b>Évier inox</b><span class="v7-st">idée</span></div>
+      <div class="v7-cl2">évier inox 2 bacs pour laver les fûts</div>
+    </div>
+    <div class="v7-card" style="--st:var(--fin)">
+      <div class="v7-cl1"><b>Ventilation de la salle de brassage</b><span class="v7-st">compare</span></div>
+      <div class="v7-cl2"><em>Ensuite :</em> avis du ferblantier</div>
+      <div class="v7-cl3">2 façons · 5 articles</div>
+    </div>
+    <div class="v7-card" style="--st:var(--ok)">
+      <div class="v7-cl1"><b>Frigo de garde pour fûts</b><span class="v7-st">choisi</span></div>
+      <div class="v7-cl2">Chambre froide en kit 2 m³ <em>· 6 fûts</em></div>
+    </div>
+  </div>
+
+  <div class="v7-dock">
+    <div class="v7-field on"><div class="tx"><span class="v7-lk"><svg class="ico"><use href="#i-link"/></svg><span>boutique.exemple/moulin-2-cylindres</span></span></div><span class="tl" aria-label="Photo"><svg class="ico"><use href="#i-cam"/></svg></span><span class="tl" aria-label="Note vocale"><svg class="ico"><use href="#i-mic"/></svg></span></div>
+  </div>
+  <button class="v7-fab pret" aria-label="Poser ici"><svg class="ico"><use href="#i-plus"/></svg></button>
+  <nav class="v7-bot" aria-label="Navigation">
+    <a href="#"><svg class="ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on" aria-current="page"><svg class="ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</div>
+
+<!-- ==================== 2 · DANS « ÉVIER INOX » : on écrit, le fantôme va dans Critère ==================== -->
+<div class="v7-tel" aria-label="Fiche Évier inox, une phrase en cours, avant de poser">
+  <header class="v7-app"><span class="v7-logo">A</span><b>L'Affinée</b><svg class="ico"><use href="#i-search"/></svg></header>
+  <div class="v7-fh" style="--st:var(--att)">
+    <div class="v7-fr"><span class="v7-back" aria-label="Carnets"><svg class="ico"><use href="#i-left"/></svg></span><h1>Évier inox</h1></div>
+    <div class="v7-steps"><b>idée</b><span class="sep">›</span>compare<span class="sep">›</span>choisi</div>
+  </div>
+  <div class="v7-pl">
+    <div class="v7-p crit">
+      <div class="v7-ph"><svg class="ico"><use href="#i-target"/></svg>Critère <span class="n">· rien encore</span></div>
+      <div class="v7-gh">
+        <div class="v7-gk"><svg class="ico"><use href="#i-land"/></svg>Va atterrir ici<span class="r ia"><svg class="ico"><use href="#i-spark"/></svg>tiré de votre phrase</span><span class="x" aria-label="Annuler"><svg class="ico"><use href="#i-x"/></svg></span></div>
+        <div class="v7-gt" style="margin-top:4px">Un fût de 30 L couché entre dans le bac</div>
+        <div class="v7-gm">Comparé sur : profondeur de bac</div>
+        <div class="v7-cib"><span>Changer :</span><span class="v7-chip">Note</span><span class="v7-chip">Façon</span></div>
+      </div>
+    </div>
+    <div class="v7-p"><div class="v7-ph"><svg class="ico"><use href="#i-fork"/></svg>Façons <span class="n">· aucune</span></div></div>
+  </div>
+  <div class="v7-dock kb">
+    <div class="v7-field on"><div class="tx">bacs assez profonds pour laver un fût de 30 L couché<span class="car"></span></div><span class="tl" aria-label="Photo"><svg class="ico"><use href="#i-cam"/></svg></span><span class="tl" aria-label="Note vocale"><svg class="ico"><use href="#i-mic"/></svg></span></div>
+  </div>
+  <button class="v7-fab pret kb" aria-label="Poser dans Critère"><svg class="ico"><use href="#i-plus"/></svg></button>
+  <div class="v7-kbd" aria-hidden="true"><div class="rg"><i>a</i><i>z</i><i>e</i><i>r</i><i>t</i><i>y</i><i>u</i><i>i</i><i>o</i><i>p</i></div><div class="rg"><i>q</i><i>s</i><i>d</i><i>f</i><i>g</i><i>h</i><i>j</i><i>k</i><i>l</i><i>m</i></div><div class="rg"><i>⇧</i><i>w</i><i>x</i><i>c</i><i>v</i><i>b</i><i>n</i><i>’</i><i>⌫</i></div><div class="rg"><i>123</i><i>,</i><i class="w">espace</i><i>.</i><i>↵</i></div><div class="lb">clavier simulé</div></div>
+</div>
+
+<!-- ==================== 3 · POSÉ : le critère est à sa place ; la voix s'enregistre, son fantôme attend dans Notes ==================== -->
+<div class="v7-tel" aria-label="Fiche Évier inox, critère posé, note vocale en cours">
+  <header class="v7-app"><span class="v7-logo">A</span><b>L'Affinée</b><svg class="ico"><use href="#i-search"/></svg></header>
+  <div class="v7-fh" style="--st:var(--att)">
+    <div class="v7-fr"><span class="v7-back" aria-label="Carnets"><svg class="ico"><use href="#i-left"/></svg></span><h1>Évier inox</h1></div>
+    <div class="v7-steps"><b>idée</b><span class="sep">›</span>compare<span class="sep">›</span>choisi</div>
+    <div class="v7-ens"><div class="v"><b>Ensuite : les façons de faire</b>2 ou 3, d'après le critère</div><span class="v7-ia"><svg class="ico"><use href="#i-spark"/></svg>Proposer</span></div>
+  </div>
+  <div class="v7-pl">
+    <div class="v7-p crit flash">
+      <div class="v7-ph"><svg class="ico"><use href="#i-target"/></svg>Critère</div>
+      <div class="v7-pdone">Un fût de 30 L couché entre dans le bac</div>
+      <div class="v7-posed"><span class="ok"><svg class="ico"><use href="#i-check"/></svg>posé à l'instant</span><a href="#">Déplacer</a></div>
+    </div>
+    <div class="v7-p"><div class="v7-ph"><svg class="ico"><use href="#i-fork"/></svg>Façons <span class="n">· aucune</span></div></div>
+    <div class="v7-p"><div class="v7-ph"><svg class="ico"><use href="#i-link"/></svg>Articles <span class="n">· aucun</span></div></div>
+    <div class="v7-p">
+      <div class="v7-ph"><svg class="ico"><use href="#i-chat"/></svg>Notes</div>
+      <div class="v7-gh">
+        <div class="v7-gk"><svg class="ico"><use href="#i-land"/></svg>Note vocale · va atterrir ici</div>
+        <div class="v7-gs" style="margin-top:3px">« …douchette jusqu'au fond du fût… »</div>
+        <div class="v7-gm">Arrêter, relire, puis le +</div>
+      </div>
+      <div class="v7-note"><small>15 nov.</small>évier inox 2 bacs pour laver les fûts</div>
+    </div>
+  </div>
+  <div class="v7-dock">
+    <div class="v7-field on"><div class="v7-rec"><span class="pt"></span><span class="t">0:07</span><span class="v7-wave"><i style="height:8px"></i><i style="height:16px"></i><i style="height:24px"></i><i style="height:12px"></i><i style="height:20px"></i><i style="height:26px"></i><i style="height:14px"></i><i style="height:9px"></i><i style="height:18px"></i><i style="height:22px"></i><i style="height:11px"></i><i style="height:6px"></i></span></div><span class="tl" aria-label="Photo"><svg class="ico"><use href="#i-cam"/></svg></span><span class="tl rec" aria-label="Arrêter la note vocale"><svg class="ico"><use href="#i-mic"/></svg><svg class="ico" style="width:14px;height:14px"><use href="#i-stop"/></svg>Arrêter</span></div>
+  </div>
+  <button class="v7-fab" aria-label="Poser la note"><svg class="ico"><use href="#i-plus"/></svg></button>
+  <nav class="v7-bot" aria-label="Navigation">
+    <a href="#"><svg class="ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on" aria-current="page"><svg class="ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</div>
+
+<div class="v7-leg"><b>1 · Une nouvelle idée</b>Un lien collé : le carnet qui va naître est déjà en tête, avec son objet. <em>L'IA propose la place ; un toucher la change, × renonce.</em></div>
+<div class="v7-leg"><b>2 · Ajouter à une idée</b>Une phrase : l'IA en tire le critère, en pointillé dans Critère. <em>Note ou Façon si elle se trompe, × pour renoncer.</em></div>
+<div class="v7-leg"><b>3 · Posé, et la suite</b>Le critère est à sa place ; l'étape reste « idée ». La voix s'enregistre (durée, onde, Arrêter) ; sa note attend dans Notes.</div>
+
+<!-- ==================== 4 · UNE PHOTO : son aperçu, les valeurs lues, à valider une à une ==================== -->
+<div class="v7-tel" aria-label="Fiche Évier inox, photo d'une étiquette, valeurs à valider">
+  <header class="v7-app"><span class="v7-logo">A</span><b>L'Affinée</b><svg class="ico"><use href="#i-search"/></svg></header>
+  <div class="v7-fh" style="--st:var(--att)">
+    <div class="v7-fr"><span class="v7-back" aria-label="Carnets"><svg class="ico"><use href="#i-left"/></svg></span><h1>Évier inox</h1></div>
+    <div class="v7-steps"><b>idée</b><span class="sep">›</span>compare<span class="sep">›</span>choisi</div>
+  </div>
+  <div class="v7-pl">
+    <div class="v7-p crit"><div class="v7-ph"><svg class="ico"><use href="#i-target"/></svg>Critère</div><div class="v7-pdone">Un fût de 30 L couché entre dans le bac</div></div>
+    <div class="v7-p">
+      <div class="v7-ph"><svg class="ico"><use href="#i-link"/></svg>Articles <span class="n">· aucun</span></div>
+      <div class="v7-gh">
+        <div class="v7-gk"><svg class="ico"><use href="#i-land"/></svg>Va atterrir ici<span class="r">photo · exemple</span><span class="x" aria-label="Annuler"><svg class="ico"><use href="#i-x"/></svg></span></div>
+        <div class="v7-gb">
+          <svg class="ph big" viewBox="0 0 96 96" style="background:#dcdfe2"><rect x="8" y="30" width="80" height="34" rx="3" fill="#c3cad0" stroke="#7d8790" stroke-width="2"/><rect x="14" y="36" width="32" height="22" rx="3" fill="#9aa5ae"/><rect x="50" y="36" width="32" height="22" rx="3" fill="#9aa5ae"/><path d="M48 16v14M48 16h10" stroke="#7d8790" stroke-width="3" fill="none"/><rect x="12" y="64" width="4" height="26" fill="#7d8790"/><rect x="80" y="64" width="4" height="26" fill="#7d8790"/><rect x="54" y="68" width="34" height="22" rx="2" fill="#fff" stroke="#a8291f" stroke-width="2"/><path d="M58 74h20M58 79h26M58 84h14" stroke="#555" stroke-width="2"/></svg>
+          <div>
+            <div class="v7-gt">Évier 2 bacs inox sur pieds</div>
+            <div class="v7-gm">lu sur l'étiquette de la photo</div>
+          </div>
+        </div>
+        <div class="v7-val"><span class="k">Bacs</span><span class="v px">50 × 40 × 30 cm</span><span class="ok on" aria-label="Juste"><svg class="ico"><use href="#i-check"/></svg></span></div>
+        <div class="v7-val"><span class="k">Prix</span><span class="v px">549 CHF</span><span class="ok on" aria-label="Juste"><svg class="ico"><use href="#i-check"/></svg></span></div>
+        <div class="v7-val"><span class="k">Inox</span><span class="v">304 (18/10)</span><span class="ok" aria-label="À valider"><svg class="ico"><use href="#i-check"/></svg></span></div>
+        <div class="v7-val"><span class="k">Vendeur</span><span class="v" style="color:var(--mut);font-weight:400">pas lu : à écrire</span></div>
+        <div class="v7-crit"><svg class="ico"><use href="#i-check"/></svg>Critère : bac de 50 × 40, le fût couché entre</div>
+      </div>
+    </div>
+  </div>
+  <div class="v7-dock">
+    <div class="v7-field"><div class="tx ph">Une idée, un lien…</div><span class="tl" aria-label="Photo" style="color:var(--stk)"><svg class="ico"><use href="#i-cam"/></svg></span><span class="tl" aria-label="Note vocale"><svg class="ico"><use href="#i-mic"/></svg></span></div>
+  </div>
+  <button class="v7-fab pret" aria-label="Poser dans Articles"><svg class="ico"><use href="#i-plus"/></svg></button>
+  <nav class="v7-bot" aria-label="Navigation">
+    <a href="#"><svg class="ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on" aria-current="page"><svg class="ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</div>
+
+<!-- ==================== 5 · UN LIEN SANS APERÇU : un seul message, deux gestes ==================== -->
+<div class="v7-tel" aria-label="Fiche Évier inox, lien sans aperçu">
+  <header class="v7-app"><span class="v7-logo">A</span><b>L'Affinée</b><svg class="ico"><use href="#i-search"/></svg></header>
+  <div class="v7-fh" style="--st:var(--att)">
+    <div class="v7-fr"><span class="v7-back" aria-label="Carnets"><svg class="ico"><use href="#i-left"/></svg></span><h1>Évier inox</h1></div>
+    <div class="v7-steps"><b>idée</b><span class="sep">›</span>compare<span class="sep">›</span>choisi</div>
+  </div>
+  <div class="v7-pl">
+    <div class="v7-p crit"><div class="v7-ph"><svg class="ico"><use href="#i-target"/></svg>Critère</div><div class="v7-pdone">Un fût de 30 L couché entre dans le bac</div></div>
+    <div class="v7-p">
+      <div class="v7-ph"><svg class="ico"><use href="#i-link"/></svg>Articles <span class="n">· 1</span></div>
+      <div class="v7-pdone">Évier 2 bacs inox sur pieds<small><span class="px">549 CHF</span> · bacs 50 × 40 cm · photo</small></div>
+      <div class="v7-gh">
+        <div class="v7-gk"><svg class="ico"><use href="#i-land"/></svg>Va atterrir ici<span class="r">exemple</span><span class="x" aria-label="Annuler"><svg class="ico"><use href="#i-x"/></svg></span></div>
+        <div class="v7-gt" style="margin-top:4px">inox-pro.exemple/evier-lavage-fut</div>
+        <div class="v7-gs">Ce site ne montre pas l'objet. Ajoutez une photo de la page, ou posez le lien seul.</div>
+        <div class="v7-acts"><span class="v7-btn p"><svg class="ico"><use href="#i-cam"/></svg>Photo de la page</span><span class="v7-btn">Lien seul</span></div>
+      </div>
+    </div>
+    <div class="v7-p"><div class="v7-ph"><svg class="ico"><use href="#i-fork"/></svg>Façons <span class="n">· aucune</span></div></div>
+  </div>
+  <div class="v7-dock">
+    <div class="v7-field"><div class="tx ph">Une idée, un lien…</div><span class="tl" aria-label="Photo"><svg class="ico"><use href="#i-cam"/></svg></span><span class="tl" aria-label="Note vocale"><svg class="ico"><use href="#i-mic"/></svg></span></div>
+  </div>
+  <button class="v7-fab" aria-label="Ajouter"><svg class="ico"><use href="#i-plus"/></svg></button>
+  <nav class="v7-bot" aria-label="Navigation">
+    <a href="#"><svg class="ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on" aria-current="page"><svg class="ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</div>
+
+<!-- ==================== 6 · LES FAÇONS : même champ, même fantôme ; chacune son pourquoi, Retenir / Écarter ==================== -->
+<div class="v7-tel" aria-label="Fiche Évier inox, façons proposées, une façon écrite avant de poser">
+  <header class="v7-app"><span class="v7-logo">A</span><b>L'Affinée</b><svg class="ico"><use href="#i-search"/></svg></header>
+  <div class="v7-fh" style="--st:var(--att)">
+    <div class="v7-fr"><span class="v7-back" aria-label="Carnets"><svg class="ico"><use href="#i-left"/></svg></span><h1>Évier inox</h1></div>
+    <div class="v7-steps"><b>idée</b><span class="sep">›</span>compare<span class="sep">›</span>choisi</div>
+  </div>
+  <div class="v7-pl">
+    <div class="v7-p">
+      <div class="v7-ph"><svg class="ico"><use href="#i-fork"/></svg>Façons <span class="n">· 3</span></div>
+      <div class="v7-f">
+        <div class="t">Évier 2 bacs sur pieds<span class="ia"><svg class="ico"><use href="#i-spark"/></svg>IA</span></div>
+        <div class="w"><i>car</i> bacs de 50 cm : le fût couché entre</div>
+        <div class="v7-acts"><span class="v7-btn p"><svg class="ico"><use href="#i-check"/></svg>Retenir</span><span class="v7-btn">Écarter</span></div>
+      </div>
+      <div class="v7-f">
+        <div class="t">Laveuse de fûts debout<span class="ia"><svg class="ico"><use href="#i-spark"/></svg>IA</span></div>
+        <div class="w"><i>car</i> lave sans coucher le fût, rince au jet</div>
+        <div class="v7-acts"><span class="v7-btn p"><svg class="ico"><use href="#i-check"/></svg>Retenir</span><span class="v7-btn">Écarter</span></div>
+      </div>
+      <div class="v7-f out">
+        <div class="t">Évier de cuisine d'occasion</div>
+        <div class="w"><b>Écartée :</b> bacs de 35 cm, le fût n'entre pas</div>
+      </div>
+      <div class="v7-gh" style="margin-top:8px">
+        <div class="v7-gk"><svg class="ico"><use href="#i-land"/></svg>Va atterrir ici<span class="r">votre phrase</span><span class="x" aria-label="Annuler"><svg class="ico"><use href="#i-x"/></svg></span></div>
+        <div class="v7-gt" style="margin-top:4px">Cuve IBC coupée en bac</div>
+        <div class="v7-cib"><span>Changer :</span><span class="v7-chip">Note</span><span class="v7-chip">Critère</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="v7-dock">
+    <div class="v7-field on"><div class="tx">une cuve IBC coupée ?<span class="car"></span></div><span class="tl" aria-label="Photo"><svg class="ico"><use href="#i-cam"/></svg></span><span class="tl" aria-label="Note vocale"><svg class="ico"><use href="#i-mic"/></svg></span></div>
+  </div>
+  <button class="v7-fab pret" aria-label="Poser dans Façons"><svg class="ico"><use href="#i-plus"/></svg></button>
+  <nav class="v7-bot" aria-label="Navigation">
+    <a href="#"><svg class="ico"><use href="#i-bord"/></svg>Bord</a>
+    <a href="#"><svg class="ico"><use href="#i-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="ico"><use href="#i-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="ico"><use href="#i-beer"/></svg>Brassins</a>
+    <a href="#" class="on" aria-current="page"><svg class="ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+    <a href="#"><svg class="ico"><use href="#i-users"/></svg>Clients</a>
+  </nav>
+</div>
+
+<div class="v7-leg"><b>4 · Une photo</b>Son aperçu, et ce qu'on y a lu, à valider ligne à ligne ; ce qui n'est pas lu est dit. <em>Le critère est vérifié au passage.</em></div>
+<div class="v7-leg"><b>5 · Un lien sans aperçu</b>Un seul message, sans jargon, et deux gestes : photo de la page ou lien seul.</div>
+<div class="v7-leg"><b>6 · Les façons</b>Même champ, même fantôme. Chaque façon dit son pourquoi en une ligne, avec Retenir et Écarter ; une écartée garde sa raison.</div>
+
+<div class="v7-titre"><b>v07 · axe B.</b> Ce que vous déposez se montre d'abord en pointillé, là où il va atterrir. Vous changez la place d'un toucher ; le + le pose. Données d'exemple.</div>
+
+</div>
+</body>
+</html>

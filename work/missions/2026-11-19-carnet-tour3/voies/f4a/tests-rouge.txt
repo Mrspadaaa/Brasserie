@@ -1,0 +1,113 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 5 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4a.test.ts[2m > [22mv2-neuf 4 : un titre tiré de sa phrase commence par une majuscule[2m > [22m« frigo de garde pour 6 fûts » → « Frigo de garde pour 6 fûts » ; la marque de test et un domaine restent
+[31m[1mAssertionError[22m: expected 'frigo de garde pour 6 fûts' to be 'Frigo de garde pour 6 fûts' // Object.is equality[39m
+
+Expected: [32m"[7mF[27mrigo de garde pour 6 fûts"[39m
+Received: [31m"[7mf[27mrigo de garde pour 6 fûts"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4a.test.ts:[2m25:57[22m[39m
+    [90m 23| [39mdescribe('v2-neuf 4 : un titre tiré de sa phrase commence par une maju…
+    [90m 24| [39m  it('« frigo de garde pour 6 fûts » → « Frigo de garde pour 6 fûts » …
+    [90m 25| [39m    expect(titreDePhrase('frigo de garde pour 6 fûts')).toBe('Frigo de…
+    [90m   | [39m                                                        [31m^[39m
+    [90m 26| [39m    expect(titreDePhrase('ZZ TEST — évier 2 bacs')).toBe('ZZ TEST — Év…
+    [90m 27| [39m    expect(titreDePhrase('https://exemple.invalid/pompe-inox')).toBe('…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4a.test.ts[2m > [22mv1-neuf 1 : « 2 cylindres » ne se perd pas[2m > [22m« Moulin à malt 2 cylindres, 150 kg/h » : le débit en critère, « 2 cylindres » en façon ; « 2 pièces » jamais une façon
+[31m[1mAssertionError[22m: expected [] to deeply equal [ '2 cylindres' ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   "2 cylindres",[39m
+[32m- ][39m
+[31m+ [][39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4a.test.ts:[2m35:23[22m[39m
+    [90m 33| [39m    [35mconst[39m lu [33m=[39m [34mextraireCriteres[39m([32m'Moulin à malt 2 cylindres, 150 kg/h'[39m)[33m;[39m
+    [90m 34| [39m    expect(lu.criteres.map(k => k.texte)).toEqual(['Débit : 150 kg/h a…
+    [90m 35| [39m    [34mexpect[39m(lu[33m.[39mfacons)[33m.[39m[34mtoEqual[39m([[32m'2 cylindres'[39m])[33m;[39m
+    [90m   | [39m                      [31m^[39m
+    [90m 36| [39m    expect(extraireCriteres('filtre à air G4 2 pièces, 60 dB').facons)…
+    [90m 37| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4a.test.ts[2m > [22mv1-neuf 2 = v2-neuf 2 : la puce acceptée ne recopie pas son verbe[2m > [22m« Comparer sur débit » accepté → critère « le débit » (comme « tient 80 °C, puis le débit »)
+[31m[1mAssertionError[22m: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4a.test.ts:[2m47:55[22m[39m
+    [90m 45| [39m    const textes = lireCarnet(apres.find(d => d.id === premier.id))!.c…
+    [90m 46| [39m    [34mexpect[39m(textes)[33m.[39m[34mtoContain[39m([32m'le débit'[39m)[33m;[39m
+    [90m 47| [39m    [34mexpect[39m(textes[33m.[39m[34msome[39m(t [33m=>[39m [36m/comparer sur/i[39m[33m.[39m[34mtest[39m(t)))[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m   | [39m                                                      [31m^[39m
+    [90m 48| [39m  })[33m;[39m
+    [90m 49| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4a.test.ts[2m > [22mPCN-22 : IA éteinte, la ligne rangée dit son genre[2m > [22m« filtre à air G4, 2 pièces » rangé en note « à acheter » : le détail dit « À acheter : … », pas « Notes : … »
+[31m[1mAssertionError[22m: expected 'Notes : « filtre à air G4, 2 pièces »…' to match /^À acheter : « filtre à air G4, 2 piè…/[39m
+
+[32m- Expected:[39m 
+/^À acheter : « filtre à air G4, 2 pièces » · dans /
+
+[31m+ Received:[39m 
+"Notes : « filtre à air G4, 2 pièces » · dans ZZ TEST — Ventilation de la salle de brassage"
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4a.test.ts:[2m58:15[22m[39m
+    [90m 56| [39m    const effets = (apres.find(d => d.id === 'M-F4A-2') as unknown as …
+    [90m 57| [39m    [35mconst[39m d [33m=[39m [34mdetailDe[39m(apres[33m,[39m effets)[33m![39m[33m;[39m
+    [90m 58| [39m    expect(d).toMatch(/^À acheter : « filtre à air G4, 2 pièces » · da…
+    [90m   | [39m              [31m^[39m
+    [90m 59| [39m  })[33m;[39m
+    [90m 60| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4a.test.ts[2m > [22mv2-neuf 1 : ?dev-local garde sa base après un rechargement[2m > [22mun carnet écrit, puis la page rechargée (module neuf) : le carnet est relu, la graine ne se rejoue pas
+[31m[1mReferenceError[22m: window is not defined[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F4a.test.ts:[2m65:5[22m[39m
+    [90m 63| [39m  afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); sessionStor…
+    [90m 64| [39m  it('un carnet écrit, puis la page rechargée (module neuf) : le carne…
+    [90m 65| [39m    window[33m.[39mhistory[33m.[39m[34mreplaceState[39m([35mnull[39m[33m,[39m [32m''[39m[33m,[39m [32m'/?dev-local'[39m)[33m;[39m
+    [90m   | [39m    [31m^[39m
+    [90m 66| [39m    vi[33m.[39m[34museFakeTimers[39m()[33m;[39m
+    [90m 67| [39m    const a = (await import('../../src/services/firestoreRepo')).Fires…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4a.test.ts[2m > [22mv2-neuf 1 : ?dev-local garde sa base après un rechargement[2m > [22mun carnet écrit, puis la page rechargée (module neuf) : le carnet est relu, la graine ne se rejoue pas
+[31m[1mReferenceError[22m: sessionStorage is not defined[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F4a.test.ts:[2m63:60[22m[39m
+    [90m 61| [39m
+    [90m 62| [39mdescribe('v2-neuf 1 : ?dev-local garde sa base après un rechargement',…
+    [90m 63| [39m  afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); sessionStor…
+    [90m   | [39m                                                           [31m^[39m
+    [90m 64| [39m  it('un carnet écrit, puis la page rechargée (module neuf) : le carne…
+    [90m 65| [39m    window[33m.[39mhistory[33m.[39m[34mreplaceState[39m([35mnull[39m[33m,[39m [32m''[39m[33m,[39m [32m'/?dev-local'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m5 failed[39m[22m[90m (5)[39m
+[2m   Start at [22m 19:12:32
+[2m   Duration [22m 2.20s[2m (transform 1.06s, setup 317ms, collect 1.56s, tests 13ms, environment 0ms, prepare 81ms)[22m
+

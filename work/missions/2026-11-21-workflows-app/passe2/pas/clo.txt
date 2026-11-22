@@ -1,0 +1,4 @@
+t=Finances
+t=Annuel
+t=Continuer
+d

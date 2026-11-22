@@ -1,0 +1,19 @@
+{
+ "cas": "rel-ipa-levure-eau",
+ "usage": "relecture",
+ "half": "choix",
+ "cellule": "3.8@low",
+ "ok": true,
+ "ms": 4915,
+ "microChf": 5830,
+ "microDecembre": 5830,
+ "entree": 1039,
+ "sortie": 414,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "2/2 défauts · 1 bloquant(s) dont 0 injustifié(s)",
+ "reponse": "{\n  \"verdict\": \"La recette n'est pas prête à brasser en l'état : le taux d'ensemencement est insuffisant et le profil d'eau va à l'encontre du style American IPA.\",\n  \"findings\": [\n    {\n      \"severity\": \"bloquant\",\n      \"topic\": \"Levure\",\n      \"observation\": \"Le paquet de SafAle US-05 est dosé à 5 g pour 20 L avec une densité initiale visée de 1.065.\",\n      \"suggestion\": \"Augmenter le taux d'ensemencement à au moins 11.5 g (un sachet complet) pour assurer une fermentation saine sans sous-ensemencement.\"\n    },\n    {\n      \"severity\": \"gout\",\n      \"topic\": \"Eau\",\n      \"observation\": \"Le traitement d'eau affiche 40 ppm de sulfate pour 200 ppm de chlorure (ratio sulfate/chlorure de 0.2), avec un ajout exclusif de 10 g de chlorure de calcium.\",\n      \"suggestion\": \"Inverser le profil minéral en réduisant le chlorure de calcium et en ajoutant du gypse (sulfate de calcium) pour viser un ratio sulfate/chlorure supérieur à 2:1, caractéristique d'une American IPA tranchante et sèche.\"\n    }\n  ],\n  \"missing\": [\n    \"Teneur en acides alpha du houblon Citra (utilisé en whirlpool et dry hop).\"\n  ],\n  \"styleFit\": \"En l'état, le profil minéral très riche en chlorures et le sous-ensemencement donneront une bière à la rondeur excessive, au profil malté trop présent et à l'amertume pâteuse ou étouffée, s'écartant du profil sec et percutant d'une American IPA.\"\n}"
+}

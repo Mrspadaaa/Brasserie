@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carnet v11 : axe C (habit de l'app) : un seul rang d'onglets, celui de Stocks</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<!--
+  v11 · axe C « habit de l'app » (CARNET-THEME). Base : ra-p5f/proto.html (règle n° 1), plancher à enrichir.
+  Parti pris (la seule décision de forme qui varie) : UN SEUL rang d'onglets, celui de l'app. Le carnet vit dans
+  Stocks › Matériel (segment gris, actif noir) ; le second rang « À venir · Carnets · Réalisés » (soulignés verts, inertes)
+  disparaît : À venir et Réalisés deviennent une rangée fixe sous le segment, qui dit ce qu'elle contient (n° 1, 17, 32).
+  Le reste suit la grammaire de l'app : rangées à bordure 1 px et rayon 8 (n° 19, 21), un état nommé au lieu de
+  ●●○○ + mot coloré + liseré (n° 26), compteurs dits en mots (n° 27), vignette de l'objet (photo lue sur le lien) (n° 28),
+  + carré flottant sans champ permanent (n° 20) ; au +, le champ s'ouvre au-dessus du clavier (écran 4, C8).
+  Fiche en sections plates, décision dite une fois (n° 22, 23).
+  Couleurs : le vert de zone Stocks porte le choisi, les titres et la rangée À venir ; ambre d'attention pour la seule chose
+  à trancher ; plus de violet, bleu, brun ni lavande (n° 18). Tailles : 14, 16, 18 px ; mesures en Plex Mono, unités hors mono.
+  Écran 1 : la liste. Écran 2 : la fiche Frigo choisie. Écran 3 : la fiche Ventilation à trancher. Écran 4 : le + touché.
+-->
+<style>
+:root{--bg:#FFFFFF;--s1:#F5F5F5;--s2:#EBEBEB;--line:#DDDDDD;--line2:#BFBFBF;--mut:#666666;--txt:#333333;--ink:#111111;
+  --stk:#4C6B2A;--stkA:#A3C97A;--stkF:#F1F7EA;--stkF2:#E2EFD3;--att:#9C7020;--attT:#7F5B10;--attF:#FBF2E0}
+*{box-sizing:border-box}
+html,body{margin:0;background:#F5F5F5;color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.3}
+.v11-ecran{position:relative;width:390px;height:844px;overflow:hidden;background:var(--bg)}
+.v11-entre{width:390px;padding:18px 12px 10px;color:var(--mut);font-size:14px;margin:0}
+.v11-ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.v11-mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;font-weight:500}
+.v11-f{display:inline-block;width:.2em}
+.v11-u{font-size:14px;color:var(--mut);margin-left:2px}
+
+/* barre de l'app */
+.v11-app{height:44px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--line)}
+.v11-marque{font-size:18px;font-weight:700;letter-spacing:-.2px}
+.v11-app .v11-esp{flex:1}
+.v11-av{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;background:var(--s2);color:var(--txt)}
+.v11-av+.v11-av{margin-left:-8px;box-shadow:0 0 0 2px var(--bg)}
+
+/* segment Stocks : le composant de l'app, seul rang d'onglets */
+.v11-seg{margin:8px 12px 0;display:flex;background:var(--s2);border-radius:10px;padding:2px}
+.v11-seg span{flex:1;text-align:center;height:30px;line-height:30px;font-size:14px;color:var(--txt);border-radius:8px}
+.v11-seg span.on{background:var(--ink);color:#fff;font-weight:600}
+
+/* À venir et Réalisés : rangée fixe sous le segment */
+.v11-sorties{display:flex;gap:8px;margin:8px 12px 0}
+.v11-sortie{flex:1;display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:0 8px;height:40px;text-decoration:none;color:var(--txt);min-width:0;font-size:14px;white-space:nowrap;overflow:hidden}
+.v11-sortie b{color:var(--ink);font-size:14px}
+.v11-sortie .v11-ico{width:18px;height:18px}
+.v11-sortie.vert{border-color:var(--stkA);background:var(--stkF)}
+.v11-sortie.vert .v11-ico,.v11-sortie.vert b{color:var(--stk)}
+.v11-sortie span{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.v11-sortie em{font-style:normal;margin-left:auto;color:var(--mut)}
+
+/* titre de section */
+.v11-sec{display:flex;align-items:center;gap:6px;padding:14px 12px 6px}
+.v11-sec b{font-size:16px;font-weight:700}
+.v11-sec span{font-size:14px;color:var(--mut)}
+.v11-sec .v11-ico{width:18px;height:18px;color:var(--stk)}
+.v11-sec .v11-dr{margin-left:auto}
+
+/* rangées de liste de l'app : rayon 8, bordure 1 px */
+.v11-liste{margin:0 12px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.v11-r{display:flex;gap:10px;padding:10px;align-items:flex-start;text-decoration:none;color:inherit}
+.v11-r+.v11-r,.v11-r+.v11-gr,.v11-gr+.v11-r{border-top:1px solid var(--line)}
+.v11-vig{width:44px;height:44px;border-radius:8px;background:#EEF1F3;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none;overflow:hidden}
+.v11-vig svg{width:40px;height:40px}
+.v11-vig.ch{background:var(--stkF2);border-color:var(--stkA)}
+.v11-vig.vide{border-style:dashed;border-color:var(--line2);background:var(--bg);color:var(--line2)}
+.v11-vig.vide svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.v11-cor{flex:1;min-width:0}
+.v11-l1{display:flex;align-items:baseline;gap:8px}
+.v11-nom{font-size:16px;font-weight:600;flex:1;min-width:0}
+.v11-prix{font-size:16px;white-space:nowrap}
+.v11-l2{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:14px;color:var(--txt);flex-wrap:wrap}
+.v11-l3{display:flex;align-items:center;gap:4px;margin-top:3px;font-size:14px;color:var(--stk)}
+.v11-l3 .v11-ico{width:16px;height:16px}
+
+/* état nommé : un seul signal */
+.v11-etat{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:10px;font-size:14px;font-weight:600;border:1px solid var(--line);color:var(--txt);background:var(--bg);white-space:nowrap}
+.v11-etat.ch{border-color:var(--stkA);color:var(--stk);background:var(--stkF)}
+.v11-etat.att{border-color:var(--att);color:var(--attT);background:var(--attF)}
+.v11-etat.idee{border-style:dashed;border-color:var(--line2);color:var(--mut);font-weight:400}
+.v11-geste{margin-left:auto;font-size:14px;font-weight:600;color:var(--stk);white-space:nowrap;display:inline-flex;align-items:center;gap:3px}
+.v11-geste .v11-ico{width:16px;height:16px}
+.v11-ex{margin:12px 12px 0;font-size:14px;color:var(--mut)}
+
+/* + carré arrondi flottant de l'app, sans champ permanent */
+.v11-plus{position:absolute;right:12px;bottom:68px;width:52px;height:52px;border-radius:16px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.24);z-index:5}
+.v11-plus .v11-ico{width:26px;height:26px;stroke-width:2.4}
+
+/* barre d'onglets de l'app */
+.v11-nav{position:absolute;left:0;right:0;bottom:0;height:56px;display:flex;background:var(--s1);border-top:1px solid var(--line);z-index:4}
+.v11-nav a{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:14px;letter-spacing:-.3px;color:var(--txt);text-decoration:none;position:relative}
+.v11-nav a .v11-ico{width:20px;height:20px}
+.v11-nav a.on{color:var(--stk);font-weight:600;background:color-mix(in srgb,#A3C97A 22%,#fff);box-shadow:inset 0 3px 0 #A3C97A}
+.v11-nav .v11-bdg{position:absolute;top:2px;left:calc(50% + 5px);background:#8A5212;color:#fff;font-size:14px;line-height:16px;font-weight:600;border-radius:8px;padding:0 4px}
+
+/* fiches */
+.v11-tete{height:48px;display:flex;align-items:center;gap:6px;padding:0 12px 0 6px;border-bottom:1px solid var(--line)}
+.v11-tete .v11-ret{display:inline-flex;align-items:center;width:32px;height:32px;justify-content:center;color:var(--txt)}
+.v11-tete h1{margin:0;font-size:18px;font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v11-crit{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;margin:10px 12px 0;font-size:14px;color:var(--mut)}
+.v11-crit b{font-size:16px;color:var(--ink);font-weight:600}
+.v11-choix{margin:0 12px;border:1px solid var(--stkA);border-radius:8px;padding:10px;background:linear-gradient(var(--stkF),var(--bg) 70%)}
+.v11-choix .v11-r{padding:0}
+.v11-choix .v11-vig{width:64px;height:64px}
+.v11-choix .v11-vig svg{width:60px;height:60px}
+.v11-choix .v11-prix{font-size:18px;font-weight:600}
+.v11-pq{margin:8px 0 0;font-size:14px;color:var(--txt)}
+.v11-pq b{color:var(--ink)}
+.v11-lien{color:var(--stk);font-weight:600;font-size:14px;text-decoration:none;white-space:nowrap}
+.v11-envoi{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--stkA);font-size:14px;color:var(--txt)}
+.v11-envoi .v11-ico{width:18px;height:18px;color:var(--stk)}
+.v11-envoi b{color:var(--stk)}
+.v11-envoi .v11-lien{margin-left:auto}
+.v11-btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border-radius:10px;border:1px solid var(--ink);font-size:14px;font-weight:600;color:var(--ink);background:var(--bg);white-space:nowrap}
+.v11-btn.sec{border-color:var(--line2);color:var(--txt);font-weight:400}
+.v11-raison{font-size:14px;color:var(--mut)}
+.v11-retenue{color:var(--stk);font-weight:600;font-size:14px}
+
+/* tableau : colonnes nommées, valeurs alignées */
+.v11-th{display:flex;align-items:flex-end;gap:8px;padding:6px 10px;background:var(--s1);font-size:14px;color:var(--mut);border-bottom:1px solid var(--line)}
+.v11-th .v11-c1{flex:1}
+.v11-col{width:74px;text-align:right;flex:none;line-height:1.15}
+.v11-tr{display:flex;align-items:center;gap:8px;padding:8px 10px}
+.v11-tr+.v11-tr,.v11-gr+.v11-tr{border-top:1px solid var(--line)}
+.v11-tr .v11-vig{width:36px;height:36px}
+.v11-tr .v11-vig svg{width:32px;height:32px}
+.v11-tr .v11-nom{font-size:14px;font-weight:600;display:block;line-height:1.2}
+.v11-tr .v11-sous{display:block;font-size:14px;color:var(--mut);line-height:1.2}
+.v11-tr .v11-col{font-size:16px}
+.v11-tr.ch{background:var(--stkF)}
+.v11-tr.ch .v11-col{font-weight:600;color:var(--stk)}
+.v11-tr.ch .v11-col .v11-mono{font-weight:600}
+.v11-gr{display:flex;align-items:center;gap:6px;padding:6px 10px;font-size:14px;font-weight:600;color:var(--txt);background:var(--s1)}
+.v11-gr span{font-weight:400;color:var(--mut)}
+.v11-best{font-weight:600;color:var(--stk)}
+.v11-col3{width:46px;text-align:right;flex:none;font-size:14px;line-height:1.15}
+.v11-tr .v11-col3{font-size:16px}
+.v11-veille{display:inline-flex;align-items:center;gap:3px;color:var(--stk)}
+.v11-veille .v11-ico{width:14px;height:14px}
+
+/* façons à trancher : deux tuiles côte à côte */
+.v11-duo{display:flex;gap:8px;margin:0 12px}
+.v11-fa{flex:1;border:1px solid var(--line);border-radius:8px;padding:8px;min-width:0}
+.v11-fa.pen{border-color:var(--att);background:var(--attF)}
+.v11-fa h3{margin:0;font-size:16px;font-weight:700}
+.v11-fa p{margin:3px 0 0;font-size:14px;color:var(--txt)}
+.v11-fa .v11-pen{color:var(--attT);font-weight:600}
+.v11-fa .v11-act{display:flex;gap:6px;margin-top:8px}
+.v11-fa .v11-act .v11-btn{flex:1;justify-content:center;padding:0 6px}
+.v11-ligne{display:flex;align-items:center;gap:8px;margin:8px 12px 0;height:44px;padding:0 10px;border:1px solid var(--line);border-radius:8px;font-size:16px;font-weight:600;color:var(--ink);text-decoration:none}
+.v11-ligne span{font-weight:400;font-size:14px;color:var(--mut)}
+.v11-ligne em{font-style:normal;margin-left:auto;color:var(--mut)}
+
+/* écran 4 : champ au-dessus du clavier */
+.v11-voile{position:absolute;left:0;right:0;top:0;bottom:0;background:rgba(17,17,17,.08)}
+.v11-saisie{position:absolute;left:0;right:0;bottom:262px;background:var(--bg);border-top:1px solid var(--line);padding:8px 12px 10px;z-index:6;box-shadow:0 -4px 12px rgba(0,0,0,.08)}
+.v11-cible{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--mut);margin-bottom:6px}
+.v11-cible b{color:var(--stk)}
+.v11-champ{display:flex;align-items:center;gap:8px}
+.v11-champ .v11-in{flex:1;height:40px;border:1px solid var(--stk);border-radius:10px;padding:0 10px;display:flex;align-items:center;font-size:16px;color:var(--ink);box-shadow:0 0 0 2px var(--stkF2)}
+.v11-caret{display:inline-block;width:2px;height:20px;background:var(--stk);margin-left:1px}
+.v11-rond{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--txt);flex:none}
+.v11-rond.go{background:var(--ink);border-color:var(--ink);color:#fff}
+.v11-clavier{position:absolute;left:0;right:0;bottom:0;height:262px;background:#D3D6DB;padding:8px 3px 0;z-index:6}
+.v11-rang{display:flex;justify-content:center;gap:6px;margin-bottom:11px}
+.v11-rang span{width:31px;height:42px;border-radius:5px;background:#fff;box-shadow:0 1px 0 #8F9298;display:flex;align-items:center;justify-content:center;font-size:18px;color:#111}
+.v11-rang span.lg{width:46px;background:#AEB3BB;font-size:14px}
+.v11-rang span.esp{width:190px;font-size:14px;color:#555}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+  <linearGradient id="v11-inox" x1="0" x2="1"><stop offset="0" stop-color="#C9CED3"/><stop offset=".5" stop-color="#F1F3F5"/><stop offset="1" stop-color="#AEB5BC"/></linearGradient>
+  <linearGradient id="v11-panneau" x1="0" x2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DCE2E6"/></linearGradient>
+  <linearGradient id="v11-verre" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8F1F6"/><stop offset="1" stop-color="#B9CBD6"/></linearGradient>
+</defs>
+<symbol id="v11-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="v11-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+<symbol id="v11-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="v11-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8a2.5 2.5 0 0 1 1-4.5c.8-1.5 3-2 4-1 1-1 3.5-1 4.5.5A2.5 2.5 0 0 1 17 8z"/></symbol>
+<symbol id="v11-boxes" viewBox="0 0 24 24"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></symbol>
+<symbol id="v11-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="v11-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="v11-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="v11-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+<symbol id="v11-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="v11-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="v11-done" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="m9 15 2 2 4-4"/></symbol>
+<symbol id="v11-oeil" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="v11-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="v11-micro" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+<symbol id="v11-envoyer" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+<symbol id="v11-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+<!-- vignettes d'objet : dans l'app, la photo lue sur le lien (ici dessinée) -->
+<symbol id="v11-p-chambre" viewBox="0 0 40 40"><path d="M3 35h34" stroke="#9AA5AD" stroke-width="1"/><rect x="5" y="6" width="30" height="29" rx="1" fill="url(#v11-panneau)" stroke="#8D989F" stroke-width="1"/><path d="M5 11h30" stroke="#B9C2C8" stroke-width="1"/><rect x="11" y="13" width="16" height="22" fill="#FFFFFF" stroke="#8D989F" stroke-width="1"/><rect x="23.5" y="20" width="2" height="7" rx="1" fill="#5E6870"/><rect x="28.5" y="14" width="5" height="3" rx=".5" fill="#22313A"/><circle cx="31" cy="15.5" r=".8" fill="#7CC243"/><path d="M8 7.5h4M14 7.5h4M20 7.5h4M26 7.5h4" stroke="#C8D0D5" stroke-width="1"/></symbol>
+<symbol id="v11-p-iso" viewBox="0 0 40 40"><rect x="9" y="4" width="22" height="9" rx="4.5" fill="url(#v11-inox)" stroke="#8D959C" stroke-width="1"/><rect x="6" y="13" width="28" height="3" fill="#5E6870"/><path d="M11 16v5M17 16v5M23 16v5M29 16v5" stroke="#8D959C" stroke-width="1.6"/><path d="M9.5 22h3v2l.8 2v9h-4.6v-9l.8-2zM15.5 22h3v2l.8 2v9h-4.6v-9l.8-2zM21.5 22h3v2l.8 2v9h-4.6v-9l.8-2zM27.5 22h3v2l.8 2v9h-4.6v-9l.8-2z" fill="#7A4A12"/><rect x="4" y="35" width="32" height="2" fill="#5E6870"/></symbol>
+<symbol id="v11-p-vitrine" viewBox="0 0 40 40"><rect x="10" y="3" width="20" height="34" rx="1.5" fill="#2B2F33"/><rect x="12" y="6" width="16" height="25" rx="1" fill="url(#v11-verre)"/><path d="M12 14h16M12 22h16" stroke="#8FA4B1" stroke-width="1"/><path d="M14 13V9h2v4zM18 13V9h2v4zM22 13V9h2v4zM14 21v-4h2v4zM19 21v-4h2v4z" fill="#7A4A12"/><rect x="12" y="32.5" width="16" height="3" fill="#44494E"/><rect x="26" y="15" width="1.2" height="8" fill="#C9CED3"/></symbol>
+<symbol id="v11-p-hotte" viewBox="0 0 40 40"><rect x="16" y="3" width="8" height="11" fill="url(#v11-inox)" stroke="#8D959C" stroke-width="1"/><path d="M8 14h24l5 9H3z" fill="url(#v11-inox)" stroke="#8D959C" stroke-width="1"/><rect x="3" y="23" width="34" height="3" fill="#8D959C"/><path d="M12 30c0-2 2-2 2-4M20 32c0-2 2-2 2-4M28 30c0-2 2-2 2-4" stroke="#AFC1CC" stroke-width="1.4" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="v11-p-extr" viewBox="0 0 40 40"><rect x="4" y="4" width="32" height="32" rx="3" fill="url(#v11-inox)" stroke="#8D959C" stroke-width="1"/><circle cx="20" cy="20" r="12" fill="#3A4147"/><path d="M20 20c0-6 4-8 6-6s-2 6-6 6zM20 20c-6 0-8-4-6-6s6 2 6 6zM20 20c0 6-4 8-6 6s2-6 6-6zM20 20c6 0 8 4 6 6s-6-2-6-6z" fill="#C9CED3"/><circle cx="20" cy="20" r="2" fill="#22313A"/></symbol>
+<symbol id="v11-o-evier" viewBox="0 0 32 32"><path d="M4 16h24l-2 8H6z"/><path d="M16 16v8"/><path d="M12 16V8a3 3 0 0 1 6 0v1"/></symbol>
+</svg>
+
+<!-- ===================== ÉCRAN 1 : la liste des carnets ===================== -->
+<div class="v11-ecran">
+  <div class="v11-app">
+    <span class="v11-marque">L'Affinée</span>
+    <span class="v11-esp"></span>
+    <svg class="v11-ico" aria-label="Chercher"><use href="#v11-search"/></svg>
+    <span style="width:6px"></span>
+    <span class="v11-av">M</span><span class="v11-av">J</span>
+  </div>
+
+  <div class="v11-seg" role="tablist" aria-label="Stocks">
+    <span>Articles</span><span>Courses</span><span>Fûts</span><span class="on">Matériel</span><span>Houblons</span>
+  </div>
+
+  <div class="v11-sorties">
+    <a class="v11-sortie vert" href="#"><svg class="v11-ico"><use href="#v11-cal"/></svg><b>À venir</b><span>Embouteillage, Frigo</span><em>›</em></a>
+    <a class="v11-sortie" href="#" style="flex:none;width:128px"><svg class="v11-ico"><use href="#v11-done"/></svg><b>Réalisés</b><span>0</span><em>›</em></a>
+  </div>
+
+  <div class="v11-sec"><svg class="v11-ico"><use href="#v11-boxes"/></svg><b>Carnets d'achat</b><span>4</span></div>
+  <div class="v11-liste">
+    <a class="v11-r" href="#">
+      <span class="v11-vig ch"><svg><use href="#v11-p-iso"/></svg></span>
+      <span class="v11-cor">
+        <span class="v11-l1"><span class="v11-nom">Embouteillage</span><span class="v11-prix"><span class="v11-mono">12<i class="v11-f"></i>300</span><span class="v11-u">CHF</span></span></span>
+        <span class="v11-l2"><span class="v11-etat ch">choisi</span>Isobarique</span>
+        <span class="v11-l3"><svg class="v11-ico"><use href="#v11-oeil"/></svg>lien baissé à <span class="v11-mono">11<i class="v11-f"></i>700</span></span>
+      </span>
+    </a>
+    <a class="v11-r" href="#">
+      <span class="v11-vig vide"><svg><use href="#v11-o-evier"/></svg></span>
+      <span class="v11-cor">
+        <span class="v11-l1"><span class="v11-nom">Évier inox</span><span class="v11-geste"><svg class="v11-ico"><use href="#v11-link"/></svg>Coller un lien</span></span>
+        <span class="v11-l2"><span class="v11-etat idee">idée notée</span></span>
+      </span>
+    </a>
+    <a class="v11-r" href="#">
+      <span class="v11-vig"><svg><use href="#v11-p-hotte"/></svg></span>
+      <span class="v11-cor">
+        <span class="v11-l1"><span class="v11-nom">Ventilation de la salle de brassage</span></span>
+        <span class="v11-l2"><span class="v11-etat att">à trancher</span>hotte ou extracteur</span>
+        <span class="v11-l3" style="color:var(--mut)">2 façons · 5 articles</span>
+      </span>
+    </a>
+    <a class="v11-r" href="#">
+      <span class="v11-vig ch"><svg><use href="#v11-p-chambre"/></svg></span>
+      <span class="v11-cor">
+        <span class="v11-l1"><span class="v11-nom">Frigo de garde pour fûts</span><span class="v11-prix"><span class="v11-mono">4<i class="v11-f"></i>900</span><span class="v11-u">CHF</span></span></span>
+        <span class="v11-l2"><span class="v11-etat ch">choisi</span>Chambre froide</span>
+      </span>
+    </a>
+  </div>
+
+  <p class="v11-ex">exemple : carnets et prix fictifs</p>
+
+  <a class="v11-plus" href="#" aria-label="Ajouter une idée"><svg class="v11-ico"><use href="#v11-plus"/></svg></a>
+  <nav class="v11-nav" aria-label="Navigation">
+    <a href="#"><svg class="v11-ico"><use href="#v11-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v11-ico"><use href="#v11-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v11-ico"><use href="#v11-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v11-ico"><use href="#v11-beer"/></svg>Brassins</a>
+    <a href="#" class="on" aria-current="page"><svg class="v11-ico"><use href="#v11-boxes"/></svg>Stocks<span class="v11-bdg">24</span></a>
+    <a href="#"><svg class="v11-ico"><use href="#v11-users"/></svg>Clients</a>
+  </nav>
+</div>
+
+<p class="v11-entre">Toucher « Frigo de garde pour fûts » : la fiche choisie, même habit.</p>
+
+<!-- ===================== ÉCRAN 2 : la fiche Frigo, choisie ===================== -->
+<div class="v11-ecran">
+  <div class="v11-tete">
+    <span class="v11-ret" aria-label="Retour à Matériel"><svg class="v11-ico"><use href="#v11-back"/></svg></span>
+    <h1>Frigo de garde pour fûts</h1>
+    <span class="v11-etat ch">choisi le 10 oct.</span>
+  </div>
+
+  <div class="v11-crit">Critère, proposé par l'IA :<b>tenir 2 °C stable en été</b></div>
+
+  <div class="v11-sec"><b>L'objet choisi</b><a class="v11-lien v11-dr" href="#">Ouvrir la page ↗</a></div>
+  <div class="v11-choix">
+    <div class="v11-r">
+      <span class="v11-vig ch"><svg><use href="#v11-p-chambre"/></svg></span>
+      <span class="v11-cor">
+        <span class="v11-l1"><span class="v11-nom">Chambre froide en kit 2 m³</span></span>
+        <span class="v11-l2"><span class="v11-prix"><span class="v11-mono">4<i class="v11-f"></i>900</span><span class="v11-u">CHF</span></span>· Froid Léman (CH) · en stock</span>
+      </span>
+    </div>
+    <p class="v11-pq"><b>Pourquoi :</b> stable à 2 °C en été ; passe la porte de 80 cm en panneaux.</p>
+    <div class="v11-envoi">
+      <svg class="v11-ico"><use href="#v11-check"/></svg><span>Dans <b>À venir</b>, livraison le 24 nov.</span>
+      <a class="v11-lien" href="#">Voir dans À venir ›</a>
+    </div>
+  </div>
+
+  <div class="v11-sec"><b>Écartés</b><span>3, avec leur raison</span></div>
+  <div class="v11-liste">
+    <div class="v11-th"><span class="v11-c1"></span><span class="v11-col">tient 2 °C jusqu'à</span></div>
+    <div class="v11-tr ch">
+      <span class="v11-vig ch"><svg><use href="#v11-p-chambre"/></svg></span>
+      <span class="v11-cor"><span class="v11-nom">Chambre froide 2 m³</span><span class="v11-sous">choisi · 4 900 CHF</span></span>
+      <span class="v11-col"><span class="v11-mono">43</span> °C</span>
+    </div>
+    <div class="v11-tr">
+      <span class="v11-vig"><svg><use href="#v11-p-chambre"/></svg></span>
+      <span class="v11-cor"><span class="v11-nom">Chambre froide 2,5 m³ · 4 300 CHF</span><span class="v11-sous">délai 4 semaines, SAV en Italie</span></span>
+      <span class="v11-col"><span class="v11-mono">38</span> °C</span>
+    </div>
+    <div class="v11-tr">
+      <span class="v11-vig"><svg><use href="#v11-p-vitrine"/></svg></span>
+      <span class="v11-cor"><span class="v11-nom">Vitrine pro 700 L · 2 300 CHF</span><span class="v11-sous">85 cm de large : ne passe pas la porte</span></span>
+      <span class="v11-col"><span class="v11-mono">30</span> °C</span>
+    </div>
+    <div class="v11-tr">
+      <span class="v11-vig"><svg><use href="#v11-p-vitrine"/></svg></span>
+      <span class="v11-cor"><span class="v11-nom">Vitrine d'occasion 600 L · 650 CHF</span><span class="v11-sous">passe la porte, compresseur sans garantie</span></span>
+      <span class="v11-col" style="color:var(--mut)">non lu</span>
+    </div>
+  </div>
+
+  <div class="v11-sec"><b>Façons</b><span>2</span><a class="v11-lien v11-dr" href="#">Retrouver pourquoi ›</a></div>
+  <div class="v11-liste">
+    <div class="v11-r" style="align-items:center;padding:8px 10px">
+      <svg class="v11-ico" style="color:var(--stk)"><use href="#v11-check"/></svg>
+      <span class="v11-cor"><span class="v11-l1"><span class="v11-nom">Chambre froide en kit</span><span class="v11-retenue">retenue</span></span></span>
+    </div>
+    <div class="v11-r" style="align-items:center;padding:8px 10px">
+      <span style="width:20px"></span>
+      <span class="v11-cor"><span class="v11-l1"><span class="v11-nom" style="font-weight:400;color:var(--txt)">Frigo vitrine pro</span><span class="v11-raison">écartée : ne tient pas l'été</span></span></span>
+    </div>
+  </div>
+
+
+  <a class="v11-plus" href="#" aria-label="Ajouter au carnet"><svg class="v11-ico"><use href="#v11-plus"/></svg></a>
+  <nav class="v11-nav" aria-label="Navigation">
+    <a href="#"><svg class="v11-ico"><use href="#v11-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v11-ico"><use href="#v11-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v11-ico"><use href="#v11-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v11-ico"><use href="#v11-beer"/></svg>Brassins</a>
+    <a href="#" class="on" aria-current="page"><svg class="v11-ico"><use href="#v11-boxes"/></svg>Stocks<span class="v11-bdg">24</span></a>
+    <a href="#"><svg class="v11-ico"><use href="#v11-users"/></svg>Clients</a>
+  </nav>
+</div>
+
+<p class="v11-entre">Toucher « Ventilation de la salle de brassage » : la fiche en cours, à trancher.</p>
+
+<!-- ===================== ÉCRAN 3 : la fiche Ventilation, à trancher ===================== -->
+<div class="v11-ecran">
+  <div class="v11-tete">
+    <span class="v11-ret" aria-label="Retour à Matériel"><svg class="v11-ico"><use href="#v11-back"/></svg></span>
+    <h1>Ventilation de la salle de brassage</h1>
+    <span class="v11-etat att">à trancher</span>
+  </div>
+
+  <div class="v11-crit">Critère, proposé par l'IA :<b>capter la buée à la source</b></div>
+
+  <div class="v11-sec"><b>Hotte ou extracteur ?</b></div>
+  <div class="v11-duo">
+    <div class="v11-fa pen">
+      <h3>Hotte + extracteur</h3>
+      <p><span class="v11-mono">1<i class="v11-f"></i>450</span> à <span class="v11-mono">2<i class="v11-f"></i>600</span> CHF</p>
+      <p class="v11-pen">capte au-dessus de la cuve</p>
+      <div class="v11-act"><span class="v11-btn">Retenir</span><span class="v11-btn sec">Écarter</span></div>
+    </div>
+    <div class="v11-fa">
+      <h3>Extracteur mural</h3>
+      <p><span class="v11-mono">420</span> à <span class="v11-mono">690</span> CHF</p>
+      <p>aspire la pièce entière</p>
+      <div class="v11-act"><span class="v11-btn">Retenir</span><span class="v11-btn sec">Écarter</span></div>
+    </div>
+  </div>
+
+  <div class="v11-sec"><b>Articles</b><span>4 lus, 1 lien sans aperçu</span></div>
+  <div class="v11-liste">
+    <div class="v11-th"><span class="v11-c1"></span><span class="v11-col3">débit m³/h</span><span class="v11-col3">bruit dB</span><span class="v11-col3">prix CHF</span></div>
+    <div class="v11-gr">Hotte + extracteur</div>
+    <div class="v11-tr">
+      <span class="v11-vig"><svg><use href="#v11-p-hotte"/></svg></span>
+      <span class="v11-cor"><span class="v11-nom">Hotte murale 100 cm</span><span class="v11-sous"><span class="v11-veille"><svg class="v11-ico"><use href="#v11-oeil"/></svg>veille 3 j</span> · DE</span></span>
+      <span class="v11-col3 v11-mono">1<i class="v11-f"></i>200</span><span class="v11-col3 v11-mono">55</span><span class="v11-col3 v11-mono">1<i class="v11-f"></i>450</span>
+    </div>
+    <div class="v11-tr">
+      <span class="v11-vig"><svg><use href="#v11-p-hotte"/></svg></span>
+      <span class="v11-cor"><span class="v11-nom">Hotte inox 120 cm</span><span class="v11-sous">sur commande · CH</span></span>
+      <span class="v11-col3 v11-mono v11-best">1<i class="v11-f"></i>800</span><span class="v11-col3 v11-mono">58</span><span class="v11-col3 v11-mono">2<i class="v11-f"></i>600</span>
+    </div>
+    <div class="v11-gr">Extracteur mural</div>
+    <div class="v11-tr">
+      <span class="v11-vig"><svg><use href="#v11-p-extr"/></svg></span>
+      <span class="v11-cor"><span class="v11-nom">Hélicoïde mural</span><span class="v11-sous">en stock · CH</span></span>
+      <span class="v11-col3 v11-mono">1<i class="v11-f"></i>500</span><span class="v11-col3 v11-mono">62</span><span class="v11-col3 v11-mono v11-best">420</span>
+    </div>
+    <div class="v11-tr">
+      <span class="v11-vig"><svg><use href="#v11-p-extr"/></svg></span>
+      <span class="v11-cor"><span class="v11-nom">Centrifuge en ligne</span><span class="v11-sous">en stock · FR</span></span>
+      <span class="v11-col3 v11-mono">1<i class="v11-f"></i>100</span><span class="v11-col3 v11-mono v11-best">49</span><span class="v11-col3 v11-mono">690</span>
+    </div>
+    <div class="v11-tr">
+      <span class="v11-vig vide"><svg><use href="#v11-link"/></svg></span>
+      <span class="v11-cor"><span class="v11-nom" style="font-weight:400">exemple.invalid/v5</span><span class="v11-sous">page sans aperçu</span></span>
+      <a class="v11-lien" href="#">Ouvrir ↗</a>
+    </div>
+  </div>
+
+  <a class="v11-ligne" href="#">Comparer côte à côte<span>4 articles, 5 mesures</span><em>›</em></a>
+
+  <a class="v11-plus" href="#" aria-label="Ajouter au carnet"><svg class="v11-ico"><use href="#v11-plus"/></svg></a>
+  <nav class="v11-nav" aria-label="Navigation">
+    <a href="#"><svg class="v11-ico"><use href="#v11-bord"/></svg>Bord</a>
+    <a href="#"><svg class="v11-ico"><use href="#v11-wallet"/></svg>Finances</a>
+    <a href="#"><svg class="v11-ico"><use href="#v11-cal"/></svg>Calendrier</a>
+    <a href="#"><svg class="v11-ico"><use href="#v11-beer"/></svg>Brassins</a>
+    <a href="#" class="on" aria-current="page"><svg class="v11-ico"><use href="#v11-boxes"/></svg>Stocks<span class="v11-bdg">24</span></a>
+    <a href="#"><svg class="v11-ico"><use href="#v11-users"/></svg>Clients</a>
+  </nav>
+</div>
+
+<p class="v11-entre">Toucher le + : le champ s'ouvre en bas, au-dessus du clavier (C8).</p>
+
+<!-- ===================== ÉCRAN 4 : le + touché, champ au-dessus du clavier ===================== -->
+<div class="v11-ecran">
+  <div class="v11-tete">
+    <span class="v11-ret" aria-label="Retour à Matériel"><svg class="v11-ico"><use href="#v11-back"/></svg></span>
+    <h1>Ventilation de la salle de brassage</h1>
+    <span class="v11-etat att">à trancher</span>
+  </div>
+  <div class="v11-crit">Critère, proposé par l'IA :<b>capter la buée à la source</b></div>
+  <div class="v11-sec"><b>Hotte ou extracteur ?</b></div>
+  <div class="v11-duo">
+    <div class="v11-fa pen">
+      <h3>Hotte + extracteur</h3>
+      <p><span class="v11-mono">1<i class="v11-f"></i>450</span> à <span class="v11-mono">2<i class="v11-f"></i>600</span> CHF</p>
+      <p class="v11-pen">capte au-dessus de la cuve</p>
+    </div>
+    <div class="v11-fa">
+      <h3>Extracteur mural</h3>
+      <p><span class="v11-mono">420</span> à <span class="v11-mono">690</span> CHF</p>
+      <p>aspire la pièce entière</p>
+    </div>
+  </div>
+  <div class="v11-voile"></div>
+
+  <div class="v11-saisie">
+    <div class="v11-cible">Ajouter à <b>Ventilation</b> · une note, un lien, une photo</div>
+    <div class="v11-champ">
+      <span class="v11-rond" aria-label="Photo"><svg class="v11-ico"><use href="#v11-cam"/></svg></span>
+      <span class="v11-rond" aria-label="Dicter"><svg class="v11-ico"><use href="#v11-micro"/></svg></span>
+      <span class="v11-in">le ferblantier passe jeudi<span class="v11-caret"></span></span>
+      <span class="v11-rond go" aria-label="Envoyer"><svg class="v11-ico"><use href="#v11-envoyer"/></svg></span>
+    </div>
+  </div>
+  <div class="v11-clavier" aria-hidden="true">
+    <div class="v11-rang"><span>a</span><span>z</span><span>e</span><span>r</span><span>t</span><span>y</span><span>u</span><span>i</span><span>o</span><span>p</span></div>
+    <div class="v11-rang"><span>q</span><span>s</span><span>d</span><span>f</span><span>g</span><span>h</span><span>j</span><span>k</span><span>l</span><span>m</span></div>
+    <div class="v11-rang"><span class="lg">⇧</span><span>w</span><span>x</span><span>c</span><span>v</span><span>b</span><span>n</span><span>'</span><span class="lg">⌫</span></div>
+    <div class="v11-rang"><span class="lg">123</span><span class="esp">espace</span><span class="lg">envoi</span></div>
+  </div>
+</div>
+</body>
+</html>

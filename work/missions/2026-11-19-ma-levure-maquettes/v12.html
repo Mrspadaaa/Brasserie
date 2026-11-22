@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ma levure — v12 : la colonne IA</title>
+<!-- v12, axe n° 12 : une seule décision de forme. Les traits deviennent un tableau à deux colonnes, le trait et l'IA ;
+     l'en-tête de la colonne IA est le geste « Compléter par l'IA ». Ses propositions s'y alignent, une cellule par trait :
+     toucher la cellule la retient seule, ✕ l'écarte, « Retenir tout » au pied de la colonne. Tout le reste reprend la
+     carte en ligne du 19.11.
+     Passe de correction : 7 étapes de la base, flacon, jauge FG hachurée, icônes export et thème, légende et colonne
+     « fiche » vide retirées (« fiche : muette » en tête), nature « simulé » dans chaque cellule, trois états de la tête
+     dans la carte, teinte IA framboise hors des couleurs de zone, + noir comme dans l'app. -->
+<style>
+:root{--page:#FFFFFF;--panneau:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bord2:#BFBFBF;--faible:#9E9E9E;--sec:#666666;--cour:#333333;--titre:#111111;
+--cuivre:#9A4F1E;--or:#7A5A12;--orA:#E3B55D;--attn:#9C7020;--attnT:#7F5B10;--hop:#567F45;--hopT:#3F6B2E;--eau:#4F7E9B;--eauT:#2F5F7D;
+--ia:#A3246B;--iaT:#7E1A52;--iaF:#FBEFF5;--iaB:#E9C3D6}
+*{box-sizing:border-box}
+html,body{margin:0;background:#FFFFFF;color:var(--titre)}
+body{font:14px/1.3 "Source Sans 3",system-ui,sans-serif;width:390px;min-height:844px;padding-bottom:150px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.v12-tete{position:sticky;top:0;z-index:5;background:#FFFFFF;border-bottom:1px solid var(--bord)}
+.v12-l1{display:flex;align-items:center;gap:10px;height:44px;padding:0 12px}
+.v12-l1 .ret{font-size:20px;color:var(--cour)}
+.v12-l1 h1{margin:0;font-size:18px;font-weight:600}
+.v12-l1 h1 span{color:var(--sec);font-weight:400}
+.v12-l1 .ab{margin-left:auto;text-decoration:underline;font-size:14px;color:var(--titre)}
+.v12-l1 .ico{width:24px;height:24px;display:block;flex:none}
+.v12-etapes{display:flex;gap:3px;padding:0 4px 6px}
+.v12-etapes div{flex:1 1 auto;font-size:14px;letter-spacing:-.2px;color:var(--sec);text-align:center;white-space:nowrap}
+.v12-etapes div::after{content:"";display:block;height:4px;border-radius:2px;background:#555;margin-top:3px}
+.v12-etapes .on{color:var(--titre);font-weight:600}
+.v12-etapes .on::after{background:var(--cuivre)}
+.v12-etapes .apres::after{background:var(--bord)}
+.v12-annul{margin:8px 12px 0;font-size:14px;color:var(--titre);text-decoration:underline}
+.v12-carte{margin:8px 12px 0;border:2px solid var(--titre);border-radius:14px;background:var(--panneau);overflow:hidden}
+.v12-id{display:grid;grid-template-columns:44px 1fr auto;column-gap:10px;row-gap:0;align-items:center;padding:12px}.v12-id .v12-pastille{grid-row:1/3}.v12-id .v12-marque{grid-column:2/4;white-space:nowrap}
+.v12-pastille{width:44px;height:44px;border-radius:50%;background:#F6E7B8;border:2px solid var(--orA);display:grid;place-items:center}
+.v12-nom{font-size:18px;font-weight:600;line-height:1.15}
+.v12-marque{color:var(--sec);font-size:14px}
+.v12-dose{text-align:right}
+.v12-dose b{font-size:22px}
+.v12-dose small{font-size:14px;color:var(--sec)}
+.v12-dose .x{display:inline-block;margin-left:6px;color:var(--sec);font-size:14px}
+.v12-chiffres{display:grid;grid-template-columns:1.2fr 1.25fr .8fr;border-top:1px solid var(--bord2);border-bottom:1px solid var(--bord2)}
+.v12-chiffres>div{padding:8px 8px;white-space:nowrap;border-right:1px solid var(--bord2)}
+.v12-chiffres>div:last-child{border-right:none}
+.v12-lab{color:var(--sec);font-size:14px}
+.v12-val{font-size:15px;font-weight:600;margin-top:2px}
+.v12-sub{color:var(--sec);font-size:14px}
+.v12-fgj{position:relative;height:8px;border-radius:4px;background:var(--sur);margin-top:12px}
+.v12-fgj span{position:absolute;left:64%;width:14%;top:0;bottom:0;border-radius:2px;background:repeating-linear-gradient(135deg,#E3B55D 0 3px,#F6E7B8 3px 6px)}
+.v12-hors{color:var(--attnT)}
+.v12-caler{display:inline-block;margin-top:5px;padding:3px 8px;border-radius:999px;border:1.5px solid var(--attn);color:var(--attnT);font-size:14px;font-weight:600;background:#FBF3DF}
+.v12-temp{position:relative;height:6px;border-radius:3px;margin-top:7px;background:linear-gradient(90deg,var(--eau),#86B9E6 30%,#F2C14E 60%,#C87A2C)}
+.v12-temp .plage{position:absolute;left:18%;width:9%;top:-3px;bottom:-3px;border:2px dashed var(--attn);border-radius:3px}
+.v12-temp .ici{position:absolute;left:58%;top:-4px;width:3px;height:14px;background:var(--titre)}
+.v12-flo{display:flex;gap:3px;margin-top:8px}
+.v12-flo i{flex:1;height:8px;border-radius:3px;background:#8A8A8A}
+.v12-flo i:last-child{background:var(--bord2)}
+/* La décision : la colonne IA, dont l'en-tête est le geste */
+.v12-traits{width:100%;border-collapse:collapse;table-layout:fixed}
+.v12-traits col.t{width:134px}
+.v12-traits th{font-weight:400;text-align:left;padding:8px 6px 6px;vertical-align:bottom}
+.v12-traits th.f{color:var(--sec);vertical-align:middle;padding-left:10px}
+.v12-ia{display:flex;align-items:center;gap:6px;justify-content:center;height:36px;border-radius:10px;background:var(--iaF);border:1.5px solid var(--ia);color:var(--iaT);font-weight:600;white-space:nowrap}
+.v12-ia .etoile{color:var(--ia);font-size:16px}
+.v12-ia .n{background:var(--ia);color:#FFFFFF;border-radius:999px;padding:0 7px;font-size:14px}
+.v12-traits thead .v12-ia{justify-content:flex-start;padding-left:10px}
+.v12-ia .rel{margin-left:auto;width:34px;height:34px;display:grid;place-items:center;border-left:1px solid var(--iaB);font-size:18px;color:var(--iaT)}
+.v12-traits td{padding:0 6px;height:42px;border-top:1px solid var(--bord);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v12-traits td.t{font-size:15px;color:var(--cour);padding-left:10px}
+.v12-traits td.t i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+.v12-traits td.ia{background:#FCF6F9;border-left:1.5px solid var(--iaB)}
+.v12-prop{display:flex;align-items:center;gap:8px;height:34px;padding:0 2px 0 9px;border:1.5px dashed var(--ia);border-radius:8px;background:#FFFFFF}
+.v12-prop .co{width:16px;height:16px;border:1.6px solid var(--ia);border-radius:50%;flex:none}
+.v12-prop b{font-weight:600}
+.v12-prop small{font-size:14px;color:var(--sec);font-style:italic}
+.v12-prop .ec{margin-left:auto;width:30px;height:30px;display:grid;place-items:center;color:var(--sec);font-size:16px}
+.v12-rien{color:var(--sec);padding-left:9px}
+.v12-pied td{border-top:1px solid var(--bord)}
+.v12-retenir{display:flex;align-items:center;justify-content:center;height:36px;margin:6px 0;border-radius:9px;background:var(--hop);color:#FFFFFF;font-weight:600}
+.v12-etats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:8px 10px 12px;border-top:1px solid var(--bord2);background:#FFFFFF}
+.v12-etats>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.v12-etats .q{color:var(--sec);font-size:14px;padding-left:2px}
+.v12-mini.v12-ia{height:auto;min-height:52px;justify-content:flex-start;gap:7px;padding:6px 8px;line-height:1.25}
+.v12-mini.pendant{border-style:dashed;background:#FFFFFF;font-weight:400}
+.v12-mini.apres{background:#FFFFFF}
+.v12-mini .n{padding:0 6px}
+.v12-chg{margin:10px 12px 0;padding:10px;border-radius:14px;background:var(--panneau)}
+.v12-rech{display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;border:1.5px dashed var(--bord2);border-radius:999px;background:#FFFFFF;color:var(--sec);font-size:16px}
+.v12-rech .loupe{width:14px;height:14px;border:2px solid var(--sec);border-radius:50%;position:relative}
+.v12-rech .loupe::after{content:"";position:absolute;width:6px;height:2px;background:var(--sec);right:-6px;bottom:-3px;transform:rotate(45deg)}
+.v12-puces{display:flex;gap:8px;margin-top:8px}
+.v12-puces span{padding:6px 12px;border:1.5px solid var(--bord2);border-radius:999px;background:#FFFFFF;color:var(--cour)}
+.v12-puces span.s{border-color:var(--hop);color:var(--hopT)}
+.v12-puces .hc{margin-left:auto;border-style:dashed}
+.v12-ex{margin:10px 12px 0;color:var(--sec);font-size:14px}
+.v12-nav{position:fixed;left:0;width:390px;bottom:56px;height:60px;display:flex;align-items:center;gap:10px;padding:0 84px 0 12px;background:linear-gradient(transparent,#FFFFFF 30%)}
+.v12-nav .r{padding:9px 16px;border:1.5px solid var(--bord2);border-radius:10px;background:#FFFFFF;color:var(--sec)}
+.v12-nav .s{padding:10px 16px;border-radius:10px;background:#111111;color:#FFFFFF;font-weight:600;margin-left:auto}
+.v12-plus{position:fixed;right:14px;bottom:66px;width:56px;height:56px;border-radius:50%;background:#111111;color:#FFFFFF;display:grid;place-items:center;font-size:30px;line-height:1;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.v12-onglets{position:fixed;left:0;bottom:0;width:390px;height:56px;display:grid;grid-template-columns:repeat(6,1fr);background:#F5F5F5;border-top:1px solid var(--bord)}
+.v12-onglets div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:14px;color:var(--sec)}
+.v12-onglets div::before{content:"";width:16px;height:4px;border-radius:2px;background:var(--bord2)}
+.v12-onglets .on{color:var(--cuivre);font-weight:600}
+.v12-onglets .on::before{background:var(--cuivre)}
+.v12-onglets .fi::before{background:#1F64A3}.v12-onglets .st::before{background:#4C6B2A}.v12-onglets .ca::before{background:#6A4FB0}
+</style>
+</head>
+<body>
+<header class="v12-tete">
+  <div class="v12-l1"><span class="ret">‹</span><h1>Levure <span>4/7</span></h1><span class="ab">Abandonner</span><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-label="Exporter"><path d="M15 4h2a2 2 0 0 1 2 2v3"/><path d="M9 4H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-1"/><rect x="9" y="2.5" width="6" height="3.5" rx="1"/><path d="M12 13.5h9"/><path d="M18 10.5l3 3-3 3"/></svg><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-label="Thème"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></div>
+  <div class="v12-etapes"><div>Identité</div><div>Malts/sucres</div><div>Houblons</div><div class="on">Levure</div><div class="apres">Paliers</div><div class="apres">Eau</div><div class="apres">Récap.</div></div>
+</header>
+
+<div class="v12-annul">↶ Annuler le changement</div>
+
+<section class="v12-carte" aria-label="Ma levure">
+  <div class="v12-id">
+    <div class="v12-pastille"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7A5A12" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round" aria-label="Levure"><path d="M9 3h6"/><path d="M10 3v6.2L4.6 18.4A1.7 1.7 0 0 0 6.1 21h11.8a1.7 1.7 0 0 0 1.5-2.6L14 9.2V3"/><path d="M7 15h10"/></svg></div>
+    <div class="v12-nom">Munich Lager Yeast</div>
+    <div class="v12-dose"><b class="mono">≥ 15</b> <small>g</small> <span class="x">✕</span></div>
+    <div class="v12-marque">White Labs · vendue par Lallemand</div>
+  </div>
+
+  <div class="v12-chiffres">
+    <div><div class="v12-lab">FG</div><div class="v12-val mono">1,018–1,021</div><div class="v12-sub mono">≈ 6,0–6,4 % vol</div><div class="v12-fgj" aria-label="plage de FG attendue"><span></span></div></div>
+    <div><div class="v12-lab">fiche · conduite</div><div class="v12-val mono">9–11 · <span class="v12-hors">19 °C</span></div>
+      <span class="v12-caler mono">caler à 11 °C</span>
+      <div class="v12-temp"><span class="plage"></span><span class="ici"></span></div></div>
+    <div><div class="v12-lab">floculation</div><div class="v12-val">moyenne</div><div class="v12-flo"><i></i><i></i><i></i></div></div>
+  </div>
+
+  <table class="v12-traits">
+    <colgroup><col class="t"><col></colgroup>
+    <thead><tr><th class="f">fiche : muette</th><th><div class="v12-ia"><span class="etoile">✦</span>IA <span class="n mono">3</span> à voir<span class="rel" aria-label="Relancer">↻</span></div></th></tr></thead>
+    <tbody>
+      <tr><td class="t"><i style="background:#E0A02E"></i>esters</td><td class="ia"><span class="v12-rien">rien de publié</span></td></tr>
+      <tr><td class="t"><i style="background:#8D442C"></i>phénols</td><td class="ia"><div class="v12-prop"><i class="co"></i><b>négatif</b><small>simulé</small><span class="ec">✕</span></div></td></tr>
+      <tr><td class="t"><i style="background:#5B8AA6"></i>thiols</td><td class="ia"><div class="v12-prop"><i class="co"></i><b>faible</b><small>simulé</small><span class="ec">✕</span></div></td></tr>
+      <tr><td class="t"><i style="background:#A3C97A"></i>terpènes</td><td class="ia"><div class="v12-prop"><i class="co"></i><b>faible</b><small>simulé</small><span class="ec">✕</span></div></td></tr>
+      <tr><td class="t"><i style="background:#C87A2C"></i>sucres restants</td><td class="ia"><span class="v12-rien">rien de publié</span></td></tr>
+    </tbody>
+    <tfoot class="v12-pied"><tr><td></td><td class="ia"><div class="v12-retenir">Retenir tout</div></td></tr></tfoot>
+  </table>
+
+  <div class="v12-etats" aria-label="La tête de la colonne IA : avant, pendant, après">
+    <div><span class="q">avant</span><div class="v12-ia v12-mini"><span class="etoile">✦</span><span>Compléter<br>par l'IA</span></div></div>
+    <div><span class="q">pendant</span><div class="v12-ia v12-mini pendant"><span class="etoile">✦</span><span>lit fiche<br>et sources…</span></div></div>
+    <div><span class="q">après</span><div class="v12-ia v12-mini apres"><span class="etoile">✦</span><span><span class="n mono">3</span> à voir<br>↻ relancer</span></div></div>
+  </div>
+</section>
+
+<section class="v12-chg">
+  <div class="v12-rech"><span class="loupe"></span>Changer de levure</div>
+  <div class="v12-puces"><span class="s">Pomona</span><span class="s">Verdant IPA</span><span class="hc">Hors catalogue</span></div>
+</section>
+
+<p class="v12-ex">Données d'exemple.</p>
+
+<nav class="v12-nav"><span class="r">Retour</span><span class="s">Suivant — Paliers</span></nav>
+<div class="v12-plus" aria-label="Ajouter">+</div>
+<nav class="v12-onglets"><div>Bord</div><div class="fi">Finances</div><div class="ca">Calendrier</div><div class="on">Brassins</div><div class="st">Stocks</div><div>Clients</div></nav>
+</body>
+</html>

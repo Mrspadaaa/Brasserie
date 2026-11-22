@@ -1,0 +1,154 @@
+{
+ "S3a48a4": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 0.7,
+  "ton": 0.5,
+  "note": "spécule ; ~140 mots"
+ },
+ "S61d613": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 1,
+  "ton": 1,
+  "note": "court, niveau « attention »"
+ },
+ "S63f262": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 0.6,
+  "ton": 0.4,
+  "note": "tampons 4,01/7,00 inventés ; trop long"
+ },
+ "S6f107c": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 0.6,
+  "ton": 0.5,
+  "note": "spécule (poche d’acide) ; ~150 mots"
+ },
+ "S852594": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": 1,
+  "invention": 0.7,
+  "ton": 0.7,
+  "note": "« ~40 g » et « 13 % » non calculés par l’outil"
+ },
+ "S9e4efe": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": 1,
+  "invention": 1,
+  "ton": 0.8,
+  "note": "why un peu long"
+ },
+ "Sb13194": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 0.7,
+  "ton": 0.3,
+  "note": "~230 mots, pH « ± 0,15 » repris du solveur"
+ },
+ "Sc90bc5": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": 1,
+  "invention": 1,
+  "ton": 1,
+  "note": "concis, juste"
+ },
+ "Sda54e6": {
+  "faits": 0.9,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 0.8,
+  "ton": 0.4,
+  "note": "beaucoup de nombres ; trop long"
+ },
+ "Sf9cd94": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 1,
+  "ton": 0.9,
+  "note": "pH solveur marqué « prévision, pas une mesure »"
+ },
+ "Sfaa342": {
+  "faits": 0.7,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 1,
+  "ton": 1,
+  "note": "ne dit pas que le pH n’est pas garanti"
+ },
+ "Sfda32a": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": 1,
+  "invention": 0.8,
+  "ton": 0.7,
+  "note": ""
+ },
+ "Sfdd985": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 1,
+  "ton": 0.8,
+  "note": "niveau « urgent » sans raison"
+ },
+ "S0b9e4d": {
+  "faits": 1,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.9,
+  "ton": 0.6,
+  "note": "blow-off, ne pas boucher, cold crash cité ; ~150 mots, deux questions ; niveau urgent fort"
+ },
+ "S0becf0": {
+  "faits": 0.8,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.9,
+  "ton": 0.7,
+  "note": "blow-off, ne pas boucher ; cold crash non cité ; ~120 mots"
+ },
+ "S4ecf13": {
+  "faits": 1,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.8,
+  "ton": 0.6,
+  "note": "hop creep cité en passant ; « hop burn » douteux ; ~140 mots, deux questions"
+ },
+ "Sd326ce": {
+  "faits": 1,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.75,
+  "ton": 0.7,
+  "note": "hop creep expliqué, outil fermentation_check ; « 18-20 °C » et « surpression en bouteille » non fondés ; ~155 mots"
+ },
+ "S8f29ef": {
+  "faits": 0.7,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.9,
+  "ton": 0.9,
+  "note": "refus implicite du stock seulement ; court ; pH 5,2-5,5 non sourcé"
+ },
+ "Sa947ce": {
+  "faits": 1,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 1,
+  "ton": 0.8,
+  "note": "refus explicite des deux demandes ; ~110 mots ; question en ou"
+ }
+}

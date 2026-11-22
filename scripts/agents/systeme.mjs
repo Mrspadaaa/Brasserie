@@ -1500,6 +1500,8 @@ function main(argv) {
       }
       return finir(!e.length, 'MISSION OK', 'MISSION ECHEC', e);
     }
+    // Ses paroles du jour (hook paroles.mjs) absentes de SPEC-BRASSEUR.md (16.11).
+    case 'paroles': return import('./paroles.mjs').then((m) => m.main(args));
     case 'hooks': { const e = verifierHooks(); return finir(!e.length, 'HOOKS OK', 'HOOKS ECHEC', e); }
     case 'cablage': { const e = verifierCablage(); return finir(!e.length, 'CABLAGE OK', 'CABLAGE ECHEC', e); }
     case 'temoins': return finir(temoins(), 'TEMOINS OK', 'TEMOINS ECHEC');

@@ -1,0 +1,102 @@
+{
+ "g02-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets par état"
+ },
+ "g02-2": {
+  "ecran": "ajouter",
+  "legende": "Noter idée, nouveau carnet"
+ },
+ "g02-3": {
+  "ecran": "carnet",
+  "legende": "Idée neuve, critère proposé IA"
+ },
+ "g02-4": {
+  "ecran": "carnet",
+  "legende": "Ventilation, façons et articles groupés"
+ },
+ "g02-5": {
+  "ecran": "ajouter-a",
+  "legende": "Note ajoutée à Ventilation"
+ },
+ "g02-6": {
+  "ecran": "article",
+  "legende": "Article ouvert, vendeurs, veille"
+ },
+ "g02-7": {
+  "ecran": "articles",
+  "legende": "Cartes défilées, choisir ou écarter"
+ },
+ "g02-8": {
+  "ecran": "comparer",
+  "legende": "Tableau côte à côte"
+ },
+ "g02-9": {
+  "ecran": "choisi",
+  "legende": "Feuille choisir cette machine"
+ },
+ "g02-10": {
+  "ecran": "choisi",
+  "legende": "Fiche choisie, écartés"
+ },
+ "g02-11": {
+  "ecran": "choisi",
+  "legende": "Feuille pourquoi ce choix"
+ },
+ "g02-12": {
+  "ecran": "a-venir",
+  "legende": "Calendrier À venir sans date"
+ },
+ "g03-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets par état"
+ },
+ "g03-2": {
+  "ecran": "ajouter",
+  "legende": "Noter idée, nouveau carnet"
+ },
+ "g03-3": {
+  "ecran": "carnet",
+  "legende": "Idée neuve, Chercher des éviers"
+ },
+ "g03-4": {
+  "ecran": "carnet",
+  "legende": "Ventilation, façons et articles"
+ },
+ "g03-5": {
+  "ecran": "ajouter-a",
+  "legende": "Lien collé vers Ventilation"
+ },
+ "g03-6": {
+  "ecran": "articles",
+  "legende": "Lien rangé, nouvelle carte"
+ },
+ "g03-7": {
+  "ecran": "article",
+  "legende": "Feuille article, 1re sur 5"
+ },
+ "g03-8": {
+  "ecran": "article",
+  "legende": "Article, valeurs, veille, choisir"
+ },
+ "g03-9": {
+  "ecran": "comparer",
+  "legende": "Autres cartes, côte à côte"
+ },
+ "g03-10": {
+  "ecran": "choisi",
+  "legende": "Feuille choisir cette machine"
+ },
+ "g03-11": {
+  "ecran": "choisi",
+  "legende": "Fiche choisie, écartés"
+ },
+ "g03-12": {
+  "ecran": "choisi",
+  "legende": "Feuille pourquoi ce choix"
+ },
+ "g03-13": {
+  "ecran": "a-venir",
+  "legende": "Calendrier À venir sans date"
+ }
+}

@@ -1,0 +1,66 @@
+[
+ {
+  "cap": "l14-b-1-fiche-clair.png",
+  "ok": true,
+  "err": "",
+  "petit": [],
+  "coupe": [],
+  "chev": [],
+  "fab": {
+   "droite": 14,
+   "bas": 770,
+   "ecart": 14
+  },
+  "debord": false,
+  "sousPlus": [],
+  "tranche": []
+ },
+ {
+  "cap": "l14-b-1-fiche-cave.png",
+  "ok": true,
+  "err": "",
+  "petit": [],
+  "coupe": [],
+  "chev": [],
+  "fab": {
+   "droite": 14,
+   "bas": 770,
+   "ecart": 14
+  },
+  "debord": false,
+  "sousPlus": [],
+  "tranche": []
+ },
+ {
+  "cap": "l14-b-2-commande-clair.png",
+  "ok": true,
+  "err": "",
+  "petit": [],
+  "coupe": [],
+  "chev": [],
+  "fab": {
+   "droite": 14,
+   "bas": 770,
+   "ecart": 14
+  },
+  "debord": false,
+  "sousPlus": [],
+  "tranche": []
+ },
+ {
+  "cap": "l14-b-2-commande-cave.png",
+  "ok": true,
+  "err": "",
+  "petit": [],
+  "coupe": [],
+  "chev": [],
+  "fab": {
+   "droite": 14,
+   "bas": 770,
+   "ecart": 14
+  },
+  "debord": false,
+  "sousPlus": [],
+  "tranche": []
+ }
+]

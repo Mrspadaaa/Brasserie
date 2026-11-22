@@ -1,0 +1,329 @@
+{
+ "taches": [
+  {
+   "tache": "T1 voir tous les carnets et où ils en sont",
+   "touchers": 0,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « repos » ; statuts compare, idée, choisi, choisi"
+  },
+  {
+   "tache": "T2 créer un carnet depuis une idée",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « repos » ; carnet « Étiqueteuse », propositions 5"
+  },
+  {
+   "tache": "T3 noter une recherche",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « carnet » ; note dictée au journal"
+  },
+  {
+   "tache": "T4 ajouter un article par lien",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « ventilation » ; photo oui, Extracteur EC silencieux 1400, 780CHF, Lüftung Basel · CH"
+  },
+  {
+   "tache": "T5 Partager → L’Affinée (simulé)",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « partage » ; Hotte compacte inox 80 cm → Ajouté à ventilation (choix de l’IA, exemple)"
+  },
+  {
+   "tache": "T6 activer Surveiller",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « ventilation » ; aria-pressed=true"
+  },
+  {
+   "tache": "T7 voir une alerte baisse de prix / stock ailleurs",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « repos » ; fiche : baisse −600 et offre ailleurs"
+  },
+  {
+   "tache": "T8 comparer sur le critère qui oriente",
+   "touchers": 1,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « ventilation » ; critère Débit m³/h, meneur Hotte inox 120"
+  },
+  {
+   "tache": "T9 comparer une autre caractéristique",
+   "touchers": 1,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « ventilation-comparer » ; critère Bruit dB"
+  },
+  {
+   "tache": "T10 ajouter ou retirer une caractéristique",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « ventilation-comparer » ; gaine retirée (aria-checked=false)"
+  },
+  {
+   "tache": "T11 retenir une façon de faire",
+   "touchers": 1,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « ventilation » ; retenue ; Façon retenue : Hotte inox + extracteur"
+  },
+  {
+   "tache": "T11b écarter une façon de faire avec raison",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « ventilation » ; écartée avec raison : Écartée : débit moins bon"
+  },
+  {
+   "tache": "T12 choisir un article avec son pourquoi",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « ventilation-comparer » ; bannière « Hotte inox 120 CHdébit le plus haut »"
+  },
+  {
+   "tache": "T13 retrouver pourquoi ce fournisseur",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « repos » ; fournisseur Romandie, raison « SAV en Suisse »"
+  },
+  {
+   "tache": "T14 dicter une note (simulé)",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « frigo » ; note dictée au journal"
+  },
+  {
+   "tache": "T15 échéance/budget sur le calendrier global (lien simulé)",
+   "touchers": 2,
+   "frappes": 0,
+   "reussi": true,
+   "note": "depuis « repos » ; 2.12Achat prévu, embouteillage11’700"
+  }
+ ],
+ "ecrans": [
+  {
+   "ecran": "repos",
+   "mots": 39,
+   "policeMin": 14,
+   "contrasteMin": 6.15,
+   "ok": true
+  },
+  {
+   "ecran": "repos (cave)",
+   "mots": 39,
+   "policeMin": 14,
+   "contrasteMin": 7.26,
+   "ok": true
+  },
+  {
+   "ecran": "carnet",
+   "mots": 36,
+   "policeMin": 14,
+   "contrasteMin": 6.15,
+   "ok": true
+  },
+  {
+   "ecran": "carnet (cave)",
+   "mots": 36,
+   "policeMin": 14,
+   "contrasteMin": 6.11,
+   "ok": true
+  },
+  {
+   "ecran": "articles",
+   "mots": 40,
+   "policeMin": 14,
+   "contrasteMin": 6.15,
+   "ok": true
+  },
+  {
+   "ecran": "articles (cave)",
+   "mots": 40,
+   "policeMin": 14,
+   "contrasteMin": 7.26,
+   "ok": true
+  },
+  {
+   "ecran": "comparer",
+   "mots": 39,
+   "policeMin": 14,
+   "contrasteMin": 6.15,
+   "ok": true
+  },
+  {
+   "ecran": "comparer (cave)",
+   "mots": 39,
+   "policeMin": 14,
+   "contrasteMin": 6.68,
+   "ok": true
+  },
+  {
+   "ecran": "pourquoi",
+   "mots": 39,
+   "policeMin": 14,
+   "contrasteMin": 7.24,
+   "ok": true
+  },
+  {
+   "ecran": "pourquoi (cave)",
+   "mots": 39,
+   "policeMin": 14,
+   "contrasteMin": 6.94,
+   "ok": true
+  },
+  {
+   "ecran": "fiche",
+   "mots": 37,
+   "policeMin": 14,
+   "contrasteMin": 6.15,
+   "ok": true
+  },
+  {
+   "ecran": "fiche (cave)",
+   "mots": 37,
+   "policeMin": 14,
+   "contrasteMin": 6.94,
+   "ok": true
+  },
+  {
+   "ecran": "choisir",
+   "mots": 38,
+   "policeMin": 14,
+   "contrasteMin": 6.15,
+   "ok": true
+  },
+  {
+   "ecran": "choisir (cave)",
+   "mots": 38,
+   "policeMin": 14,
+   "contrasteMin": 6.94,
+   "ok": true
+  },
+  {
+   "ecran": "carac",
+   "mots": 24,
+   "policeMin": 14,
+   "contrasteMin": 7.24,
+   "ok": true
+  },
+  {
+   "ecran": "carac (cave)",
+   "mots": 24,
+   "policeMin": 14,
+   "contrasteMin": 6.94,
+   "ok": true
+  },
+  {
+   "ecran": "ventilation",
+   "mots": 38,
+   "policeMin": 14,
+   "contrasteMin": 6.48,
+   "ok": true
+  },
+  {
+   "ecran": "ventilation (cave)",
+   "mots": 38,
+   "policeMin": 14,
+   "contrasteMin": 6.68,
+   "ok": true
+  },
+  {
+   "ecran": "frigo",
+   "mots": 39,
+   "policeMin": 14,
+   "contrasteMin": 6.36,
+   "ok": true
+  },
+  {
+   "ecran": "frigo (cave)",
+   "mots": 39,
+   "policeMin": 14,
+   "contrasteMin": 6.11,
+   "ok": true
+  },
+  {
+   "ecran": "evier",
+   "mots": 31,
+   "policeMin": 14,
+   "contrasteMin": 7.24,
+   "ok": true
+  },
+  {
+   "ecran": "evier (cave)",
+   "mots": 31,
+   "policeMin": 14,
+   "contrasteMin": 7.26,
+   "ok": true
+  },
+  {
+   "ecran": "cal",
+   "mots": 22,
+   "policeMin": 14,
+   "contrasteMin": 7.24,
+   "ok": true
+  },
+  {
+   "ecran": "cal (cave)",
+   "mots": 22,
+   "policeMin": 14,
+   "contrasteMin": 6.94,
+   "ok": true
+  },
+  {
+   "ecran": "lien",
+   "mots": 18,
+   "policeMin": 14,
+   "contrasteMin": 7.24,
+   "ok": true
+  },
+  {
+   "ecran": "lien (cave)",
+   "mots": 18,
+   "policeMin": 14,
+   "contrasteMin": 6.94,
+   "ok": true
+  },
+  {
+   "ecran": "completer",
+   "mots": 12,
+   "policeMin": 14,
+   "contrasteMin": 7.24,
+   "ok": true
+  },
+  {
+   "ecran": "completer (cave)",
+   "mots": 12,
+   "policeMin": 14,
+   "contrasteMin": 6.94,
+   "ok": true
+  },
+  {
+   "ecran": "nouveau",
+   "mots": 28,
+   "policeMin": 14,
+   "contrasteMin": 7.24,
+   "ok": true
+  },
+  {
+   "ecran": "nouveau (cave)",
+   "mots": 28,
+   "policeMin": 14,
+   "contrasteMin": 7.26,
+   "ok": true
+  }
+ ],
+ "erreurs": []
+}

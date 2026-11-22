@@ -1,0 +1,652 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/integration/carnetTour3F3.test.tsx[2m > [22mTE-36 : un seul mot pour la case des prévisions, dans la feuille du projet[2m > [22mle libellé lu est celui de l’interrupteur : « Inclure dans mes prévisions », jamais « Dans mes prévisions »
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: Inclure dans mes prévisions, which matches selector 'b'. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body[39m
+  [33mdata-scroll-locked[39m=[32m"1"[39m
+  [33mstyle[39m=[32m"pointer-events: none;"[39m
+[36m>[39m
+  [36m<span[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mdata-aria-hidden[39m=[32m"true"[39m
+    [33mdata-radix-focus-guard[39m=[32m""[39m
+    [33mstyle[39m=[32m"outline: none; opacity: 0; position: fixed; pointer-events: none;"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+  [36m<div[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mdata-aria-hidden[39m=[32m"true"[39m
+  [36m/>[39m
+  [36m<div[39m
+    [33maria-hidden[39m=[32m"true"[39m
+    [33mclass[39m=[32m"fixed inset-0 z-50 bg-cave-950/70 backdrop-blur-sm"[39m
+    [33mdata-aria-hidden[39m=[32m"true"[39m
+    [33mdata-state[39m=[32m"open"[39m
+    [33mdata-vaul-animate[39m=[32m"true"[39m
+    [33mdata-vaul-overlay[39m=[32m""[39m
+    [33mdata-vaul-snap-points[39m=[32m"false"[39m
+    [33mdata-vaul-snap-points-overlay[39m=[32m"true"[39m
+    [33mstyle[39m=[32m"pointer-events: auto;"[39m
+  [36m/>[39m
+  [36m<div[39m
+    [33maria-describedby[39m=[32m"radix-_r_k_"[39m
+    [33maria-labelledby[39m=[32m"radix-_r_j_"[39m
+    [33mclass[39m=[32m"fixed inset-x-0 bottom-0 z-50 flex flex-col
+                   max-h-[94dvh] rounded-t-sheet bg-cave-900 border-t border-cave-700 shadow-sheet
+                   focus:outline-none finance-sheet pjd-sheet"[39m
+    [33mdata-state[39m=[32m"open"[39m
+    [33mdata-vaul-animate[39m=[32m"true"[39m
+    [33mdata-vaul-custom-container[39m=[32m"false"[39m
+    [33mdata-vaul-delayed-snap-points[39m=[32m"false"[39m
+    [33mdata-vaul-drawer[39m=[32m""[39m
+    [33mdata-vaul-drawer-direction[39m=[32m"bottom"[39m
+    [33mdata-vaul-snap-points[39m=[32m"false"[39m
+    [33mid[39m=[32m"radix-_r_i_"[39m
+    [33mrole[39m=[32m"dialog"[39m
+    [33mstyle[39m=[32m"pointer-events: auto;"[39m
+    [33mtabindex[39m=[32m"-1"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"shrink-0 flex justify-center cursor-grab active:cursor-grabbing pt-1 pb-0.5"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"w-8 h-1 rounded-full bg-cave-700"[39m
+      [36m/>[39m
+    [36m</div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"shrink-0 flex items-center gap-2 border-b border-cave-800 min-h-9 px-2 py-1"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"min-w-0 flex-1"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"text-sm font-semibold text-cave-50 leading-tight break-words"[39m
+          [33mid[39m=[32m"radix-_r_j_"[39m
+        [36m>[39m
+          [0mPrévoir du matériel[0m
+        [36m</h2>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"text-xs text-cave-400 leading-tight break-words"[39m
+          [33mid[39m=[32m"radix-_r_k_"[39m
+        [36m>[39m
+          [0mDu besoin à l’achat[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"Fermer"[39m
+        [33mclass[39m=[32m"min-w-touch-sm min-h-touch-sm rounded-control text-cave-400
+                       hover:text-cave-50 hover:bg-cave-850 flex items-center justify-center transition-colors shrink-0"[39m
+      [36m>[39m
+        [36m<svg[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"lucide lucide-x w-4 h-4"[39m
+          [33mfill[39m=[32m"none"[39m
+          [33mheight[39m=[32m"24"[39m
+          [33mstroke[39m=[32m"currentColor"[39m
+          [33mstroke-linecap[39m=[32m"round"[39m
+          [33mstroke-linejoin[39m=[32m"round"[39m
+          [33mstroke-width[39m=[32m"2"[39m
+          [33mviewBox[39m=[32m"0 0 24 24"[39m
+          [33mwidth[39m=[32m"24"[39m
+          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+        [36m>[39m
+          [36m<path[39m
+            [33md[39m=[32m"M18 6 6 18"[39m
+          [36m/>[39m
+          [36m<path[39m
+            [33md[39m=[32m"m6 6 12 12"[39m
+          [36m/>[39m
+        [36m</svg>[39m
+      [36m</button>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"flex-1 overflow-y-auto overscroll-contain scroll-pb-20 p-2 space-y-2"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"pjd"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"pjd-h"[39m
+        [36m>[39m
+          [36m<input[39m
+            [33maria-label[39m=[32m"Matériel ou aménagement"[39m
+            [33mautocapitalize[39m=[32m"none"[39m
+            [33mautocomplete[39m=[32m"off"[39m
+            [33mautocorrect[39m=[32m"off"[39m
+            [33mclass[39m=[32m"pjd-titre"[39m
+            [33mdata-1p-ignore[39m=[32m"true"[39m
+            [33mdata-bwignore[39m=[32m"true"[39m
+            [33mdata-form-type[39m=[32m"other"[39m
+            [33mdata-lpignore[39m=[32m"true"[39m
+            [33mplaceholder[39m=[32m"Hotte, fermenteur, nouvelle cuverie…"[39m
+            [33mspellcheck[39m=[32m"false"[39m
+            [33mvalue[39m=[32m""[39m
+          [36m/>[39m
+          [36m<b[39m
+            [33mclass[39m=[32m"pjd-m pjd-b"[39m
+            [33mtitle[39m=[32m"Budget à estimer"[39m
+          [36m>[39m
+            [0m—[0m
+          [36m</b>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Fermer"[39m
+            [33mclass[39m=[32m"pjd-x"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<ol[39m
+          [33mclass[39m=[32m"pjd-p"[39m
+          [33mdata-booster[39m=[32m"piste-projet"[39m
+        [36m>[39m
+          [36m<li[39m
+            [33maria-current[39m=[32m"step"[39m
+            [33mclass[39m=[32m"pjd-s pjd-ici"[39m
+            [33mdata-station[39m=[32m"idea"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-label[39m=[...
+[90m [2m❯[22m Object.getElementError ../ports-nuit/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/integration/carnetTour3F3.test.tsx:[2m58:19[22m[39m
+    [90m 56| [39m  it('le libellé lu est celui de l’interrupteur : « Inclure dans mes p…
+    [90m 57| [39m    [34mrender[39m([33m<[39m[33mUpgradeSheet[39m [33monClose[39m[33m=[39m[33m{[39m() [33m=>[39m {}[33m}[39m [33m/[39m[33m>[39m)[33m;[39m
+    [90m 58| [39m    expect(screen.getByText('Inclure dans mes prévisions', { selector:…
+    [90m   | [39m                  [31m^[39m
+    [90m 59| [39m    [34mexpect[39m(screen[33m.[39m[34mqueryByText[39m([32m'Dans mes prévisions'[39m))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 60| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/equipmentProjects.test.tsx[2m > [22mProjets de matériel, du besoin à l’achat[2m > [22mTE-36 : la case des prévisions garde le même mot, cochée ou non
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "switch" and name "Inclure dans mes prévisions"
+
+Here are the accessible roles:
+
+  group:
+
+  Name "Afficher les projets":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Afficher les projets"[39m
+    [33mclass[39m=[32m"finance-filter upgrade-scopes"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "Poser Hotte de brassage sur un mois":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Poser Hotte de brassage sur un mois"[39m
+    [33mclass[39m=[32m"kh-mo"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"kh-fold"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"kh-fold"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "À venir":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+  [36m/>[39m
+
+  Name "Réalisés":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+  [36m/>[39m
+
+  Name "Archives":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+  [36m/>[39m
+
+  Name "Ajouter un besoin":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Ajouter un besoin"[39m
+    [33mclass[39m=[32m"kh-new"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Hotte de brassage":
+  [36m<button[39m
+    [33mclass[39m=[32m"kh-hbtn"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Mois de Hotte de brassage : novembre":
+  [36m<button[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"Mois de Hotte de brassage : novembre"[39m
+    [33mclass[39m=[32m"kh-mon"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Modifier Hotte de brassage":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Modifier Hotte de brassage"[39m
+    [33mclass[39m=[32m"kh-cta"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Prévisions":
+  [36m<button[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Fermer":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Fermer"[39m
+    [33mclass[39m=[32m"kh-x"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "pas encore":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "déc.":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "janv.":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "févr.":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "mars":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "avr.":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "mai":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "juin":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Modifier":
+  [36m<button[39m
+    [33mclass[39m=[32m"kh-cta kh-cta-fiche"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Marquer comme réalisé":
+  [36m<button[39m
+    [33mstyle[39m=[32m"color: var(--kh-hop); font-weight: 600;"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Archiver":
+  [36m<button[39m
+    [33mstyle[39m=[32m"color: var(--kh-mut);"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Supprimer":
+  [36m<button[39m
+    [33mclass[39m=[32m"fm-sup-f"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "Prochain achat":
+  [36m<section[39m
+    [33maria-label[39m=[32m"Prochain achat"[39m
+    [33mclass[39m=[32m"kh-hero"[39m
+  [36m/>[39m
+
+  Name "Caisse fin de mois":
+  [36m<section[39m
+    [33maria-label[39m=[32m"Caisse fin de mois"[39m
+    [33mclass[39m=[32m"kh-band"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Hotte de brassage":
+  [36m<h2 />[39m
+
+  Name "Hotte de brassage":
+  [36m<h2 />[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"kh-vide"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"finance-muted"[39m
+    [33mstyle[39m=[32m"margin-top: 8px;"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  dialog:
+
+  Name "Hotte de brassage":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Hotte de brassage"[39m
+    [33mrole[39m=[32m"dialog"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "Étapes : Besoin, Prix ou devis, Réalisé":
+  [36m<ol[39m
+    [33maria-label[39m=[32m"Étapes : Besoin, Prix ou devis, Réalisé"[39m
+    [33mclass[39m=[32m"kh-fr"[39m
+    [33mstyle[39m=[32m"--pc: 50%;"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"ok"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"now"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  switch:
+
+  Name "Dans mes prévisions":
+  [36m<button[39m
+    [33maria-checked[39m=[32m"true"[39m
+    [33mclass[39m=[32m"kh-sw"[39m
+    [33mrole[39m=[32m"switch"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"finance upgrade-workspace"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"kh-views"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0 flex-1 kh-tabs"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"Afficher les projets"[39m
+            [33mclass[39m=[32m"finance-filter upgrade-scopes"[39m
+            [33mrole[39m=[32m"group"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"true"[39m
+            [36m>[39m
+              [0mÀ venir[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+            [36m>[39m
+              [0mRéalisés[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-pressed[39m=[32m"false"[39m
+            [36m>[39m
+              [0mArchives[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33maria-label[39m=[32m"Ajouter un besoin"[39m
+          [33mclass[39m=[32m"kh-new"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"lucide lucide-plus"[39m
+            [33mfill[39m=[32m"none"[39m
+            [33mheight[39m=[32m"20"[39m
+            [33mstroke[39m=[32m"currentColor"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+            [33mstroke-width[39m=[32m"2"[39m
+            [33mviewBox[39m=[32m"0 0 24 24"[39m
+            [33mwidth[39m=[32m"20"[39m
+            [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+          [36m>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M5 12h14"[39m
+            [36m/>[39m
+            [36m<path[39m
+              [33md[39m=[32m"M12 5v14"[39m
+            [36m/>[39m
+          [36m</svg>[39m
+          [0mBesoin[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"kh"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33maria-label[39m=[32m"Prochain achat"[39m
+          [33mclass[39m=[32m"kh-hero"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"kh-ht"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"kh-kick"[39m
+            [36m>[39m
+              [0mProchain achat[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"kh-pill"[39m
+            [36m>[39m
+              [0mD’abord · [0m
+              [0mdevis demandé[0m
+            [36m</span>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"kh-hm"[39m
+          [36m>[39m
+            [36m<h2>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"kh-hbtn"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mHotte de brassage[0m
+              [36m</button>[39m
+            [36m</h2>[39m
+            [36m<b[39m
+              [33mclass[39m=[32m"kh-big kh-m"[39m
+            [36m>[39m
+              [0m1'200[0m
+            [36m</b>[39m
+            [36m<small>[39m
+              [0mCHF TTC[0m
+            [36m</small>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"kh-acts"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-label[39m=[32m"Mois de Hotte de brassage : novembre"[39m
+              [33mclass[39m=[32m"kh-mon"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-calendar"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"18"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M8 2v3"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 2v3"[39m
+                [36m/>[39m
+                [36m<rect[39m
+                  [33mheight[39m=[32m"18"[39m
+                  [33mrx[39m=[32m"2"[39m
+                  [33mwidth[39m=[32m"18"[39m
+                  [33mx[39m=[32m"3"[39m
+                  [33my[39m=[32m"3"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M3 9h18"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mnov.[0m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-chevron-down"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"14"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"14"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 9 6 6 6-6"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Modifier Hotte de brassage"[39m
+              [33mclass[39m=[32m"kh-cta"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-pen-line"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidt...
+[90m [2m❯[22m Object.getElementError ../ports-nuit/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m tests/integration/equipmentProjects.test.tsx:[2m77:26[22m[39m
+    [90m 75| [39m    fireEvent.click(screen.getByRole('button', { name: 'Hotte de brass…
+    [90m 76| [39m    // Carnet tour 3 (f3) : le mot est celui de la feuille du projet e…
+    [90m 77| [39m    const case_ = screen.getByRole('switch', { name: 'Inclure dans mes…
+    [90m   | [39m                         [31m^[39m
+    [90m 78| [39m    [34mexpect[39m(case_)[33m.[39m[34mtoHaveAttribute[39m([32m'aria-checked'[39m[33m,[39m [32m'true'[39m)[33m;[39m
+    [90m 79| [39m    fireEvent[33m.[39m[34mclick[39m(case_)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m23 passed[39m[22m[90m (25)[39m
+[2m   Start at [22m 18:53:19
+[2m   Duration [22m 14.71s[2m (transform 5.56s, setup 1.14s, collect 9.31s, tests 6.00s, environment 2.38s, prepare 171ms)[22m
+

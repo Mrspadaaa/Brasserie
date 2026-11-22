@@ -31,3 +31,8 @@ Corriger chaque copie, ne pas la contourner.
 | `Créer « … » »\? sur chaque ligne\|bouton « Créer » par ligne` | une ligne d'ingrédient sans article devient d'office un nouvel article, picto « nouveau », sans bouton au repos (D275) | 2026-11-01 |
 
 - 02.11 : « aucun nouvel agent dès 98 % hebdo, arrêt à 99 % » (26.10) remplacé par « À 90% d'usage hebdo, terminé tes tâches » ([[fermeture-et-quota]]).
+
+- **17.11** — CAL-INFO-TROP « 12 textes au plus dans l'en-tête du calendrier » (controle-entete-cal.mjs) → retiré : « graph » visait la bande des semaines ; la courbe garde toutes ses infos, la bande montre la semaine seule et un bouton ± (CAL-BANDE-SEMAINE, controle-bande-semaine.mjs). Copies corrigées : controle-entete-cal.mjs, DEFAUTS-RECURRENTS.
+
+- **18.11** — Carnet : « ce qui est annoncé pendant la frappe est ce qui arrive » (critique 6 n° 2, critique 7 n° 3) → remplacé par « le rangement de l'IA fait foi ; l'aperçu local n'est qu'une attente ou le repli hors ligne ; un carnet ou une rubrique corrigés d'un toucher restent le choix du brasseur » (test en ligne 2 : l'IA rangeait juste, l'app l'écrasait ; voies/en-ligne-2-corr).
+- 22.11 : « deux thèmes, 390 tactile et 1280 » pour tout test → un thème, téléphone surtout (390 tactile, 844×340), 1280 peu. Ses mots : « les deux thèmes, pas besoin, et surtout testé en version téléphone, peu en version desktop ».

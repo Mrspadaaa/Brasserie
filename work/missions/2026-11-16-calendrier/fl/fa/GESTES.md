@@ -1,0 +1,35 @@
+# fa : g8 en gestes, le geste exact de chaque tâche (16.11)
+
+Prototype : `fl/fa/proto.html`, autonome (HTML et JS, aucune requête). Pour le rebâtir, lancer `node fl/fa/build.mjs` depuis le dossier de la mission. Le build assemble `proto.src.html`, puis y insère la palette, le moteur d'argent et la fixture de p2, et les pictos de g8. Il échoue s'il trouve un `type="number"`.
+- **Données** : la fixture `fixture-annee.json`, réécrite le 16.11 à 06:29 (malt net). Au repos, on lit **709** à te permettre, au plus serré en S24. g8 lisait 259 sur la fixture d'avant (IPA à cru −232 au lieu de −142).
+- **Hypothèses** : caisse 4 180 et +120 / sem., marquées « exemple ». Présence : 2 j par semaine.
+- **Rangs** : le rang 0 est S46 2026, le rang 1 (T0) est S47, la semaine du 16 nov. Le rang 8 est S1 2027, le dernier (52) S45 2027.
+- **Écran** : 8 semaines visibles à 390 px, 16 en paysage (hauteur < 500 px) et dès 900 px de large. Les rangées : Libre (sticky avec l'en-tête des semaines), Cuve, Comptoir, Achats et travaux, Toi (sans budget), Papiers.
+
+## Tâches
+
+| Tâche | Geste exact | Gestes | Sélecteurs |
+|---|---|---|---|
+| T1 voir ce que je peux me permettre | Rien à faire : au repos, la carte affiche « 709 à te permettre · au plus serré S24 », et chaque semaine a son verre (argent libre et jours libres). Pour une autre semaine : **toucher** son en-tête ou son verre, et la carte passe à cette semaine (« ‹ S47 » pour revenir). | 0, puis 1 | `[data-carte]` ; `[data-permettre]` (valeur dans l'attribut) ; `[data-jours-libres]` ; `[data-sem="<rang>"]` ; `[data-libre="<rang>"]` avec `data-valeur-libre` |
+| T2 ajouter un achat avec budget sur des semaines | **Appui long** (≥ 400 ms, sans bouger de plus de 9 px) dans la voie Achats, sur la semaine de début. Puis **glisser** jusqu'à la semaine de fin et **lâcher**. Une feuille s'ouvre, nom en focus : taper le nom, puis le budget, puis Entrée ou OK. Le budget est mis de côté chaque semaine et payé à la fin, et les verres se mettent à jour pendant la frappe (anciennes valeurs barrées). Autre voie : `+`, puis « Achat ou travaux » (4 semaines dès la semaine du +). | 1 et la saisie (ou 2 touchers) | `[data-zone="achats"]` ; `[data-bulle="neuf"]` ; `[data-champ="nom"]` ; `[data-champ="montant"]` (`type="text" inputmode="decimal"`) ; `[data-type-choix="achat"\|"renovation"]` ; `[data-ok]` ; `[data-plus]` puis `[data-action="achat"]` |
+| T3 ajouter une activité sans budget | Le même geste dans la voie Toi : **appui long**, **glisser**, **lâcher**. La feuille n'a pas de budget, mais elle a ses jours actifs (− / +). | 1 et le nom (ou 2 touchers) | `[data-zone="toi"]` ; `[data-bulle="neuf"]` ; `[data-champ="jours"] [data-plus-jour]` et `[data-moins]` ; `[data-plus]` puis `[data-action="activite"]` |
+| T4 changer la durée | **Tirer un bord** de la barre. On pose le doigt à 16 px au plus de son bord gauche ou droit (10 px de marge à l'extérieur), on glisse, on lâche. Pas d'attente. Une bulle suit le doigt (« Malt groupé · S49 → S1 · 6 sem. · 90 / sem. de côté · serré 709 »). Ensuite, un toast avec Annuler. | 1 | `.fa-barre[data-chose="<id>"]` (bords marqués par `[data-bord="debut"\|"fin"]`) ; `data-debut`, `data-fin` (rangs) et `data-semaines` (« S49 → S1 ») ; `[data-toast]` et `[data-annuler]` |
+| T5 changer le budget ou les jours actifs | **Toucher la valeur** sur la barre (« −540 », « 3 j »). Pour un montant, un champ s'ouvre sur place : taper, puis Entrée ou toucher ailleurs (Échap annule). Le libre suit la frappe. Pour des jours, un sélecteur − / + s'ouvre sur place. On peut aussi toucher le nom pour ouvrir la fiche complète. | 1 et la saisie | `[data-valeur="montant"\|"jours"][data-chose="<id>"]` ; `input.fa-edit[data-champ="montant"]` ; `.fa-stp[data-champ="jours"]` ; fiche : `[data-bulle="fiche"]` |
+| T6 déplacer à d'autres semaines | **Glisser la barre** de côté, depuis son corps, sans attendre. Elle se cale à la semaine. Au bord du tableau, on défile d'une semaine toutes les 320 ms (10 px du bord droit, ou de la colonne des titres). Un fantôme pointillé reste à l'ancienne place, et les verres montrent l'ancien libre barré et le nouveau. | 1 | `.fa-barre[data-chose="<id>"]` ; `.fa-fant` ; `[data-libre]` (avec la classe `bouge` si la valeur change) ; `[data-toast]` |
+| T7 supprimer | **Appui long** sur la barre (elle se soulève, et la bande rouge « Glisse ici pour supprimer » monte), puis **glisser vers le bas** jusqu'à la bande et **lâcher**. La bande s'arme quand le doigt est descendu de plus de 30 px et la touche. Pendant le geste, les verres montrent le libre sans la chose. Ensuite : un toast « … supprimé » et Annuler. Autre voie : la fiche, puis Supprimer. | 1 (+1 pour annuler) | `[data-poubelle]` (classes `on` puis `chaud`) ; `#fa-flotte` ; `[data-toast] [data-annuler]` ; `[data-supprimer]` |
+| T8 filtrer par type | **Toucher** un filtre pour l'activer ou le couper. Un **appui long** (450 ms) ne garde que ce type. Le libre compte toujours tout : la rangée Libre affiche « tout compté » dès qu'un filtre est coupé. | 1 | `[data-filtre="brassage"\|"evenement"\|"achat"\|"renovation"\|"activite"]` avec `aria-pressed` ; « Fêtes » = événements et ventes, « Activités » = activités et fûts |
+
+**Autres gestes**
+- Changer de semaines : balayer l'en-tête, le libre ou le fond d'une voie, ou utiliser ‹ ›, ou toucher et glisser sur la bande de l'année.
+  Sélecteurs : `[data-page="-1"\|"1"]`, `[data-bande]`.
+- Le + volant : il porte la semaine choisie (« + S47 »). Dans son menu, les actions communes sont en haut (« Partout »), puis « Sur Calendrier » (Et si…, Aujourd'hui), puis « Poser en S47 » (Activité, Achat ou travaux, Fête ou vente, Brassin). C'est l'ordre de g8 : les actions du calendrier sont au plus près du pouce et en grand, les communes restent toujours là (b1r).
+  Sélecteurs : `[data-plus]`, `[data-action="etsi"\|"aujourdhui"\|"activite"\|"achat"\|"fete"\|"brassin"\|"commun"]`.
+
+## Mesure
+
+- **État** : `window.__cal.lire()` rend `{sel, r0, nv, permettre, serre, libre[53], filtres, choses[{id,t,n,a,b,sa,sb,j,m}]}`. `window.__cal.geste()` rend `'corps'`, `'debut'`, `'fin'`, `'cree'` ou `null`.
+- **Position** : le centre de la colonne d'un rang vaut `tab.left + 1.5 + LC + (rang − r0 + 0.5) × cw`. `tab` est `[data-cal]`, LC vaut 68 en portrait et 92 en paysage, et `cw = (largeur de tab − 3 − LC) / nv`.
+- **Événements** : des `PointerEvent` de type touch, envoyés sur `elementFromPoint`. `pointermove` et `pointerup` sont écoutés sur `window`, donc ils remontent sans capture. Les gestes simulés sont dans la fonction `demo()` de la page.
+- **Défilement** : il reste natif (`touch-action: pan-y`). Une fois le glisser ou l'appui long engagé, `touchmove` est bloqué.
+- **États de capture** (`?etat=`) : repos, t1, t2, t2g (création tenue, pas encore lâchée), t3, t4, t5, t6, t7, t7b, t8, plus, etsi. Ajouter `&theme=cave` pour la cave. Chaque état est joué par de vrais événements de pointeur ; `window.__pret` passe à vrai à la fin.
+- **Captures** : `FICHIER=proto.html node fl/fa/capt.mjs fl <états> fa` (copie de `p8/capt.mjs`, qui attend `__pret`). Ajouter `PAYSAGE=1` pour le paysage.

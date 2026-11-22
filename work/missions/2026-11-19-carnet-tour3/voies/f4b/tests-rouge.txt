@@ -1,0 +1,147 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 8 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4b.test.tsx[2m > [22mPCN-54 : le picto de l’article tient dans son cadre à 390[2m > [22mà moins de 900 px, le dessin est borné par la hauteur du cadre (104 px)
+[31m[1mAssertionError[22m: règle « .cn-fiche .cn-vignette-fiche svg { max-height } » dans le bloc 899: expected null not to be null[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F4b.test.tsx:[2m40:97[22m[39m
+    [90m 38| [39m    [35mconst[39m m [33m=[39m [34mblocMedia[39m([34mcss[39m([32m'carnets.css'[39m)[33m,[39m [32m'max-width: 899px'[39m)[33m;[39m
+    [90m 39| [39m    const r = /\.cn-fiche \.cn-vignette-fiche svg\s*\{[^}]*max-height:…
+    [90m 40| [39m    expect(r, 'règle « .cn-fiche .cn-vignette-fiche svg { max-height }…
+    [90m   | [39m                                                                                                [31m^[39m
+    [90m 41| [39m    [34mexpect[39m([33mNumber[39m(r[33m![39m[[34m1[39m]))[33m.[39m[34mtoBeLessThanOrEqual[39m([34m96[39m)[33m;[39m
+    [90m 42| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4b.test.tsx[2m > [22mPCN-103 : la bulle G8 dit entre quoi, sans « … »[2m > [22mle texte nomme les deux candidats, sans « peut »
+[31m[1mAssertionError[22m: expected 'Le critère « pas trop de bruit » peut…' to contain '« pas trop de bruit » tranche entre H…'[39m
+
+Expected: [32m"« pas trop de bruit » tranche entre Hotte inox + extracteur et Extracteur mural seul"[39m
+Received: [31m"[7mLe critère [27m« pas trop de bruit »[7m peut[27m tranche[7mr[27m entre Hotte inox + extracteur et Extracteur mural seul"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4b.test.tsx:[2m52:22[22m[39m
+    [90m 50| [39m    [35mconst[39m b [33m=[39m container[33m.[39m[34mquerySelector[39m([32m'.cn-bulle'[39m)[33m![39m[33m;[39m
+    [90m 51| [39m    [34mexpect[39m(b)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 52| [39m    expect(texte(b)).toContain('« pas trop de bruit » tranche entre Ho…
+    [90m   | [39m                     [31m^[39m
+    [90m 53| [39m    [34mexpect[39m([34mtexte[39m(b))[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'peut trancher'[39m)[33m;[39m
+    [90m 54| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4b.test.tsx[2m > [22mPCN-103 : la bulle G8 dit entre quoi, sans « … »[2m > [22mla bulle passe sur deux lignes (jamais d’ellipse sur une seule)
+[31m[1mAssertionError[22m: expected ' min-width: 0; overflow: hidden; whit…' not to match /white-space:\s*nowrap/[39m
+
+[32m- Expected:[39m 
+/white-space:\s*nowrap/
+
+[31m+ Received:[39m 
+" min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; "
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4b.test.tsx:[2m59:23[22m[39m
+    [90m 57| [39m    const r = /\.cnf-aides-ligne > \.cn-bulle > span:last-child\s*\{([…
+    [90m 58| [39m    [34mexpect[39m(r)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 59| [39m    [34mexpect[39m(r[33m![39m[[34m1[39m])[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/white-space:\s*nowrap/[39m)[33m;[39m
+    [90m   | [39m                      [31m^[39m
+    [90m 60| [39m    [34mexpect[39m(r[33m![39m[[34m1[39m])[33m.[39m[34mtoMatch[39m([36m/-webkit-line-clamp:\s*2/[39m)[33m;[39m
+    [90m 61| [39m    expect(fil).not.toMatch(/\.cnf-aides-ligne > \.cn-bulle\s*\{\s*whi…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4b.test.tsx[2m > [22mPCN-108, PCN-132 (G20, g5:v06-11) : au 2e article, le tableau est à l’écran, le dépôt dit sous lui[2m > [22ml’article déposé est une ligne du tableau, pas une carte complète au-dessus
+[31m[1mAssertionError[22m: expected 'Hotte inox + extracteur2 600 CHFtient…' to contain 'Hotte murale 100 cm'[39m
+
+Expected: [32m"Hotte [7mmurale 100 cm[27m"[39m
+Received: [31m"Hotte [7minox + extracteur2 600 CHFtient 80 °Crang · articlem³/hCHF1Hotte inox 120 cm + moteurCH · en stock1 8002 600Extracteur mural seul420 à 690 CHFne tient pas 80 °C3Extracteur mural hélicoïdeCH · en stock1 5004204Extracteur centrifuge en ligneFR · en stock · moins bien que la 3e sur tout1 100690?Lien sans aperçuexemple.invalid/v5 · à relireOuvrir Le critère sépare les deux façons : seule la hotte tient 80 °C.Retenir la hotteVentilateur de plafond180 CHFbrasse la buée sans la sortir–Ventilateur de plafond 130 cmécarté : brasse la buée sans la sortir–180[27m"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4b.test.tsx:[2m72:24[22m[39m
+    [90m 70| [39m    [35mconst[39m tab [33m=[39m container[33m.[39m[34mquerySelector[39m([32m'.cn-tab'[39m)[33m![39m[33m;[39m
+    [90m 71| [39m    [34mexpect[39m(tab)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 72| [39m    [34mexpect[39m([34mtexte[39m(tab))[33m.[39m[34mtoContain[39m(depose[33m.[39mnom[33m![39m)[33m;[39m
+    [90m   | [39m                       [31m^[39m
+    [90m 73| [39m    expect(container.querySelector('.cn-rangee .cn-carte-complete, .cn…
+    [90m 74| [39m    [35mconst[39m rangee [33m=[39m container[33m.[39m[34mquerySelector[39m([32m'.cn-rangee'[39m)[33m![39m[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4b.test.tsx[2m > [22mPCN-113 : hors ligne, le carnet neuf dit que l’IA le range au retour, sans rubriques vides[2m > [22mhors ligne : « au retour du réseau », ni « Façons · aucune », ni « Notes · aucune », ni « Photos · aucune »
+[31m[1mAssertionError[22m: expected ' CarnetsIdée · 19 nov.acheter 2 sache…' to match /au retour du réseau/[39m
+
+[32m- Expected:[39m 
+/au retour du réseau/
+
+[31m+ Received:[39m 
+" CarnetsIdée · 19 nov.acheter 2 sachets de levure Ce qui compte · rien encore Façons · aucune Articles · aucun : collez un lien Photos · aucune Notes · aucuneLe champ en bas range tout ici : une phrase, un lien collé, une photo."
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4b.test.tsx:[2m89:15[22m[39m
+    [90m 87| [39m  it('hors ligne : « au retour du réseau », ni « Façons · aucune », ni…
+    [90m 88| [39m    [35mconst[39m t [33m=[39m [34mtexte[39m([34mmonter[39m([32m'hors-ligne'[39m)[33m.[39mcontainer)[33m;[39m
+    [90m 89| [39m    [34mexpect[39m(t)[33m.[39m[34mtoMatch[39m([36m/au retour du réseau/[39m)[33m;[39m
+    [90m   | [39m              [31m^[39m
+    [90m 90| [39m    for (const r of ['Ce qui compte · rien encore', 'Façons · aucune',…
+    [90m 91| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4b.test.tsx[2m > [22mv1-neuf 3, v2-neuf 5 : la puce proposée ne colle pas à la ligne d’état[2m > [22m.cnf-proposees a une marge basse
+[31m[1mAssertionError[22m: expected ' display: flex; flex-direction: colum…' to match /margin-bottom:\s*([89]|1\d)px/[39m
+
+[32m- Expected:[39m 
+/margin-bottom:\s*([89]|1\d)px/
+
+[31m+ Received:[39m 
+" display: flex; flex-direction: column; gap: 6px; margin-top: 8px; "
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4b.test.tsx:[2m101:19[22m[39m
+    [90m 99| [39m    const r = /\.cnf-proposees\s*\{([^}]*)\}/.exec(css('carnets-fil.cs…
+    [90m100| [39m    [34mexpect[39m(r)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m101| [39m    [34mexpect[39m(r[33m![39m[[34m1[39m])[33m.[39m[34mtoMatch[39m([36m/margin-bottom:\s*([89]|1\d)px/[39m)[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m102| [39m  })[33m;[39m
+    [90m103| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4b.test.tsx[2m > [22mv1-neuf 5 : « À comparer » a une seule couleur (g05-1, g01-8 : vert)[2m > [22mla pastille de statut et la rubrique de la liste prennent le même aplat
+[31m[1mAssertionError[22m: expected ' background: var(--c-attbg); color: v…' to contain 'var(--c-zonebg)'[39m
+
+Expected: [32m"var(--c-zonebg)"[39m
+Received: [31m" background: var(--c-attbg); color: var(--c-att); "[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4b.test.tsx:[2m109:19[22m[39m
+    [90m107| [39m    const r = /\.cn-statut-research\s*\{([^}]*)\}/.exec(css('carnets.c…
+    [90m108| [39m    [34mexpect[39m(r)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m109| [39m    [34mexpect[39m(r[33m![39m[[34m1[39m])[33m.[39m[34mtoContain[39m([32m'var(--c-zonebg)'[39m)[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m110| [39m    [34mexpect[39m(r[33m![39m[[34m1[39m])[33m.[39m[34mtoContain[39m([32m'var(--c-zonet)'[39m)[33m;[39m
+    [90m111| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4b.test.tsx[2m > [22mv1-neuf 6 : « votre phrase en titre » ne paraît jamais seul[2m > [22mFrigo (titre = sa phrase), sous le tableau : la phrase citée précède « votre phrase en titre »
+[31m[1mAssertionError[22m: expected 'votre phrase en titre' to contain '« frigo de garde pour fûts »'[39m
+
+Expected: [32m"« frigo de garde pour fûts »"[39m
+Received: [31m"votre phrase en titre"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F4b.test.tsx:[2m120:26[22m[39m
+    [90m118| [39m    const cite = [...container.querySelectorAll('.cn-cite')].find(e =>…
+    [90m119| [39m    [34mexpect[39m(cite)[33m.[39m[34mtoBeDefined[39m()[33m;[39m
+    [90m120| [39m    [34mexpect[39m([34mtexte[39m(cite[33m![39m))[33m.[39m[34mtoContain[39m([32m`« [39m[36m${[39mc[33m.[39mcarnet[33m.[39mphrase[36m}[39m[32m »`[39m)[33m;[39m
+    [90m   | [39m                         [31m^[39m
+    [90m121| [39m  })[33m;[39m
+    [90m122| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m8 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (9)[39m
+[2m   Start at [22m 19:10:27
+[2m   Duration [22m 1.74s[2m (transform 402ms, setup 298ms, collect 437ms, tests 123ms, environment 661ms, prepare 71ms)[22m
+

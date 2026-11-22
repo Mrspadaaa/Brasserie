@@ -1,0 +1,1 @@
+OK — d3 « Dessiné » (chaude) : 11 cadres + ordinateur, 5 captures regardées, PANEL OK ; controle-serie attend la ligne d3 dans NOTE.md (copier NOTE-d3.md), fichiers d3.html, src/d3.mjs, d3-a-390.png, d3-b-390.png, d3-cave-390.png, d3-1280.png, d3-vues-390.png ; prédiction : « la cuve et la vente coupée, je comprends tout de suite ».

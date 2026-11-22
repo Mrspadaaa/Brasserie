@@ -1,0 +1,22 @@
+[n3 clair] page scrollWidth<=innerWidth : true (390/390) ; décalés hors tableau : ["DIV.:67"] ; débords : ["DIV. sw433 cw366"]
+capture av-comparer-390-clair-glisse.png
+[n2 clair]
+  Hotte murale 100 cm | tx w2 h160 | droite w190 | hors « sous votre minimum de 1 500 m³/h » chevauche:false
+  Extracteur mural hélicoïde | tx w234 h43 | droite w26 | hors - chevauche:false
+  Extracteur centrifuge en ligne | tx w70 h121 | droite w190 | hors « sous votre minimum de 1 500 m³/h » chevauche:false
+capture av-choisir-390-clair-liste.png
+[n1 390 clair] Critère : Moins de condensation au plafond : capter la buée
+capture av-choisi-390-clair.png
+[n1 1280 clair] Critère : Moins de condensation au plafond : capter la buée
+capture av-choisi-1280-clair.png
+[n3 sombre] page scrollWidth<=innerWidth : true (390/390) ; décalés hors tableau : ["DIV.:67"] ; débords : ["DIV. sw433 cw366"]
+capture av-comparer-390-sombre-glisse.png
+[n2 sombre]
+  Hotte murale 100 cm | tx w2 h160 | droite w190 | hors « sous votre minimum de 1 500 m³/h » chevauche:false
+  Extracteur mural hélicoïde | tx w234 h43 | droite w26 | hors - chevauche:false
+  Extracteur centrifuge en ligne | tx w70 h121 | droite w190 | hors « sous votre minimum de 1 500 m³/h » chevauche:false
+capture av-choisir-390-sombre-liste.png
+[n1 390 sombre] Critère : Moins de condensation au plafond : capter la buée
+capture av-choisi-390-sombre.png
+[n1 1280 sombre] Critère : Moins de condensation au plafond : capter la buée
+capture av-choisi-1280-sombre.png

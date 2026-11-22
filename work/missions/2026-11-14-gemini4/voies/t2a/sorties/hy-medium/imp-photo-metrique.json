@@ -1,0 +1,19 @@
+{
+ "cas": "imp-photo-metrique",
+ "usage": "import",
+ "half": "choix",
+ "cellule": "hy@medium",
+ "ok": true,
+ "ms": 12912,
+ "microChf": 42814,
+ "microDecembre": 42814,
+ "entree": 7599,
+ "sortie": 3047,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 0.7962962962962964,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "id 0.67 · vol 20 · fer 2/2 · hops 2/2 · levure ok · paliers 0/2",
+ "reponse": "{\"name\":\"Blonde du Moulin\",\"style\":\"\",\"volumeL\":20,\"fermentables\":[{\"name\":\"Malt Pilsner\",\"weightKg\":4,\"kind\":\"grain\",\"use\":\"empatage\"},{\"name\":\"Malt Munich\",\"weightKg\":0.5,\"kind\":\"grain\",\"use\":\"empatage\"}],\"hops\":[{\"name\":\"Saaz\",\"weightG\":30,\"stage\":\"boil\",\"alpha\":3.5,\"timeMin\":60},{\"name\":\"Saaz\",\"weightG\":20,\"stage\":\"boil\",\"alpha\":3.5,\"timeMin\":10}],\"ogTarget\":1.048,\"preBoilL\":0,\"spargeWaterL\":0,\"waterNote\":\"\",\"yeast\":{\"name\":\"SafAle US-05\",\"lab\":\"Fermentis\",\"strain\":\"US-05\",\"technicalSource\":\"Fermentis\",\"unit\":\"\"}}"
+}

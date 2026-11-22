@@ -1,0 +1,199 @@
+{
+ "mesures": [
+  {
+   "tag": "stock-390-clair-devlocal",
+   "etat": "etagere-repos",
+   "scrollY": 0,
+   "headerTop": 0
+  },
+  {
+   "tag": "stock-390-clair-devlocal",
+   "etat": "defile-400",
+   "scrollY": 156,
+   "headerTop": -156
+  },
+  {
+   "tag": "stock-390-clair-devlocal",
+   "etat": "autres-stocks",
+   "touche": true
+  },
+  {
+   "tag": "stock-390-clair-devlocal",
+   "etat": "autres-carte-touchee",
+   "touche": false
+  },
+  {
+   "tag": "stock-390-clair-devlocal",
+   "etat": "courses-replie",
+   "touche": true,
+   "repliee": "Rien à commander"
+  },
+  {
+   "tag": "stock-390-clair-devlocal",
+   "etat": "courses-deplie",
+   "presente": true,
+   "touche": true,
+   "zone": "Rien à commander0rienà commanderRien à commanderrien au seuil, rien de daté dans cette fenêtreLe stock couvre les brassins planifiés, les recettes écrites et le"
+  },
+  {
+   "tag": "stock-390-cave-devlocal",
+   "etat": "etagere-repos",
+   "scrollY": 0,
+   "headerTop": 0
+  },
+  {
+   "tag": "stock-390-cave-devlocal",
+   "etat": "defile-400",
+   "scrollY": 156,
+   "headerTop": -156
+  },
+  {
+   "tag": "stock-390-cave-devlocal",
+   "etat": "autres-stocks",
+   "touche": true
+  },
+  {
+   "tag": "stock-390-cave-devlocal",
+   "etat": "autres-carte-touchee",
+   "touche": false
+  },
+  {
+   "tag": "stock-390-cave-devlocal",
+   "etat": "courses-replie",
+   "touche": true,
+   "repliee": "Rien à commander"
+  },
+  {
+   "tag": "stock-390-cave-devlocal",
+   "etat": "courses-deplie",
+   "presente": true,
+   "touche": true,
+   "zone": "Rien à commander0rienà commanderRien à commanderrien au seuil, rien de daté dans cette fenêtreLe stock couvre les brassins planifiés, les recettes écrites et le"
+  },
+  {
+   "tag": "finances-390-clair",
+   "etat": "onglet-operations",
+   "touche": true
+  },
+  {
+   "tag": "finances-390-clair",
+   "etat": "ops-liste-confirm",
+   "lignes": []
+  },
+  {
+   "tag": "finances-390-clair",
+   "etat": "fiche-a-confirmer",
+   "touche": false,
+   "confirmer": false,
+   "normal": false
+  },
+  {
+   "tag": "finances-390-clair",
+   "etat": "fiche-c-est-normal",
+   "touche": false,
+   "confirmer": false
+  },
+  {
+   "tag": "finances-390-cave",
+   "etat": "onglet-operations",
+   "touche": true
+  },
+  {
+   "tag": "finances-390-cave",
+   "etat": "ops-liste-confirm",
+   "lignes": []
+  },
+  {
+   "tag": "finances-390-cave",
+   "etat": "fiche-a-confirmer",
+   "touche": false,
+   "confirmer": false,
+   "normal": false
+  },
+  {
+   "tag": "finances-390-cave",
+   "etat": "fiche-c-est-normal",
+   "touche": false,
+   "confirmer": false
+  },
+  {
+   "tag": "identite-390-clair",
+   "etat": "acces",
+   "recettes": false,
+   "creer": false,
+   "identite": false,
+   "champs": [
+    "SPAN:Début",
+    "SPAN:Fin"
+   ]
+  },
+  {
+   "tag": "identite-390-clair",
+   "etat": "message-remede",
+   "saisies": {
+    "volume": false,
+    "minutes": false,
+    "cuve": false
+   },
+   "debordement": null,
+   "preb": null,
+   "remedeBoutons": [],
+   "remedeTexte": null,
+   "eauAjoutee": null,
+   "rectRemede": null,
+   "carteVolume": null
+  },
+  {
+   "tag": "identite-390-clair",
+   "etat": "remede-choisi",
+   "touche": false,
+   "debordement": null,
+   "preb": null,
+   "remedeBoutons": [],
+   "remedeTexte": null,
+   "eauAjoutee": null,
+   "rectRemede": null,
+   "carteVolume": null
+  },
+  {
+   "tag": "identite-390-cave",
+   "etat": "acces",
+   "recettes": false,
+   "creer": false,
+   "identite": false,
+   "champs": [
+    "SPAN:Début",
+    "SPAN:Fin"
+   ]
+  },
+  {
+   "tag": "identite-390-cave",
+   "etat": "message-remede",
+   "saisies": {
+    "volume": false,
+    "minutes": false,
+    "cuve": false
+   },
+   "debordement": null,
+   "preb": null,
+   "remedeBoutons": [],
+   "remedeTexte": null,
+   "eauAjoutee": null,
+   "rectRemede": null,
+   "carteVolume": null
+  },
+  {
+   "tag": "identite-390-cave",
+   "etat": "remede-choisi",
+   "touche": false,
+   "debordement": null,
+   "preb": null,
+   "remedeBoutons": [],
+   "remedeTexte": null,
+   "eauAjoutee": null,
+   "rectRemede": null,
+   "carteVolume": null
+  }
+ ],
+ "erreurs": []
+}

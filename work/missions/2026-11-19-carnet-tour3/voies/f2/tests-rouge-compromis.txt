@@ -1,0 +1,46 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsCritique4Decider.test.tsx[2m > [22mP14 · Comparer = g01-8 : compromis calculé avec les valeurs, « Valeurs annoncées par les vendeurs », vignettes[2m > [22mcompromisDe (tour 3, PCN-106) : la 2e est sous le minimum de 1 500 m³/h, jamais proposée ; la 1re, seule à tenir 80 °C, et son écart
+[31m[1mAssertionError[22m: expected 'la 1re, la seule à tenir 80 °C, pour …' to be 'la 1re, la seule à tenir 80 °C et vot…' // Object.is equality[39m
+
+Expected: [32m"la 1re, la seule à tenir 80 °C[7m et votre minimum[27m, pour 1 150 CHF de plus que la 2e"[39m
+Received: [31m"la 1re, la seule à tenir 80 °C, pour 1 150 CHF de plus que la 2e"[39m
+
+[36m [2m❯[22m tests/unit/carnetsCritique4Decider.test.tsx:[2m97:15[22m[39m
+    [90m 95| [39m    [35mconst[39m c [33m=[39m [34mcompromisDe[39m(t)[33m![39m[33m;[39m
+    [90m 96| [39m    /* la 2e tient aussi 80 °C, mais sous le minimum : la phrase ne di…
+    [90m 97| [39m    expect(c).toBe('la 1re, la seule à tenir 80 °C et votre minimum, p…
+    [90m   | [39m              [31m^[39m
+    [90m 98| [39m    /* l'écart est un écart du tableau (2 600 − 1 450) ; aucune valeur…
+    [90m 99| [39m    [34mexpect[39m(c)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/m³\/h|: oui/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsCritique4Decider.test.tsx[2m > [22mP14 · Comparer = g01-8 : compromis calculé avec les valeurs, « Valeurs annoncées par les vendeurs », vignettes[2m > [22mComparer rend « Compromis : » local (picto local, pas ✻), « Valeurs annoncées par les vendeurs · exemple » et la photo en vignette
+[31m[1mAssertionError[22m: expected 'Compromis : la 1re, la seule à tenir …' to contain 'Compromis : la 1re, la seule à tenir …'[39m
+
+Expected: [32m"Compromis : la 1re, la seule à tenir 80 °C[7m et votre minimum[27m, pour 1 150 CHF de plus que la 2e"[39m
+Received: [31m"Compromis : la 1re, la seule à tenir 80 °C, pour 1 150 CHF de plus que la 2e[7m [27m"[39m
+
+[36m [2m❯[22m tests/unit/carnetsCritique4Decider.test.tsx:[2m113:32[22m[39m
+    [90m111| [39m    [35mconst[39m encart [33m=[39m container[33m.[39m[34mquerySelector[39m([32m'.cn-compromis'[39m)[33m![39m[33m;[39m
+    [90m112| [39m    [34mexpect[39m(encart[33m.[39m[34mgetAttribute[39m([32m'data-source'[39m))[33m.[39m[34mtoBe[39m([32m'locale'[39m)[33m;[39m
+    [90m113| [39m    expect(encart.textContent).toContain('Compromis : la 1re, la seule…
+    [90m   | [39m                               [31m^[39m
+    [90m114| [39m    [34mexpect[39m(encart[33m.[39mtextContent)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'✻'[39m)[33m;[39m
+    [90m115| [39m    expect(container.querySelector('.cn-annonce')!.textContent).toCont…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m22 passed[39m[22m[90m (24)[39m
+[2m   Start at [22m 18:47:11
+[2m   Duration [22m 1.76s[2m (transform 355ms, setup 289ms, collect 378ms, tests 187ms, environment 660ms, prepare 71ms)[22m
+

@@ -1,0 +1,19 @@
+{
+ "cas": "rel-ipa-levure-eau",
+ "usage": "relecture",
+ "half": "choix",
+ "cellule": "ca@low",
+ "ok": true,
+ "ms": 10217,
+ "microChf": 14298,
+ "microDecembre": 28595,
+ "entree": 1524,
+ "sortie": 839,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 0.75,
+ "utilisable": true,
+ "inventes": 1,
+ "detail": "2/2 défauts · 1 bloquant(s) dont 1 injustifié(s)",
+ "reponse": "{\n  \"verdict\": \"Non, la recette présente un sous-ensemencement critique, un profil d'eau à contresens du style et plusieurs données techniques manquantes.\",\n  \"findings\": [\n    {\n      \"severity\": \"bloquant\",\n      \"topic\": \"Eau\",\n      \"observation\": \"Les volumes d'eau d'empâtage et de rinçage ainsi que l'analyse de l'eau du réseau manquent, ce qui empêche de brasser et de vérifier comment 10 g de chlorure de calcium mènent à 90 ppm de calcium et 200 ppm de chlorure.\",\n      \"suggestion\": \"\"\n    },\n    {\n      \"severity\": \"gout\",\n      \"topic\": \"Levure\",\n      \"observation\": \"L'ensemencement avec 5 g de SafAle US-05 sèche pour 20 L à une densité initiale (ogTarget) de 1.065 est nettement insuffisant et risque de bloquer la fermentation avant la cible de 1.012 ou de générer des faux-goûts.\",\n      \"suggestion\": \"Ensemencer entre 11,5 g (1 sachet standard) et 15 g de SafAle US-05 sèche pour 20 L à 1.065.\"\n    },\n    {\n      \"severity\": \"gout\",\n      \"topic\": \"Eau\",\n      \"observation\": \"Le profil après traitement affiche 40 ppm de sulfate pour 200 ppm de chlorure (rapport SO4/Cl de 0,2) avec 0 g de gypse et 10 g de chlorure de calcium, ce qui est à contresens d'une American IPA où l'amertume franche (cible de 60 IBU) doit être soutenue par les sulfates.\",\n      \"suggestion\": \"\"\n    },\n    {\n      \"severity\": \"detail\",\n      \"topic\": \"Houblons\",\n      \"observation\": \"Le taux d'acides alpha du Citra utilisé au whirlpool (100 g pendant 20 min à 80 °C) n'est pas renseigné, ce qui empêche de valider l'atteinte de la cible de 60 IBU (les 25 g de Warrior à 15 % pendant 60 min n'apportent qu'une partie de l'amertume).\",\n      \"suggestion\": \"\"\n    },\n    {\n      \"severity\": \"detail\",\n      \"topic\": \"Fermentation\",\n      \"observation\": \"Aucune température ni durée de fermentation n'est spécifiée, alors que le houblonnage à cru (dryHop de 80 g de Citra) est planifié à J+4.\",\n      \"suggestion\": \"\"\n    }\n  ],\n  \"missing\": [\n    \"Volumes d'eau d'empâtage et de rinçage\",\n    \"Analyse ionique de l'eau source (eau du réseau)\",\n    \"Taux d'acides alpha du houblon Citra (whirlpool et dry hop)\",\n    \"Profil de fermentation (température et durée)\"\n  ],\n  \"styleFit\": \"La base maltée (Pale Ale et 5,5 % de Crystal 20), la densité (1.065) et le schéma de houblonnage correspondent à une American IPA classique, mais l'excès de chlorure (200 ppm contre 40 ppm de sulfate) donnera un profil rond et malté typé NEIPA qui écrasera le tranchant houblonné attendu, tandis que les 5 g de levure compromettent l'atténuation sèche visée (1.012).\"\n}"
+}

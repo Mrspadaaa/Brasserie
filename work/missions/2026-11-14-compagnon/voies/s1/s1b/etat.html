@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>s1b · Carte verdict · 14.11</title>
+<style>
+:root{--c950:#FFFFFF;--c900:#F5F5F5;--c850:#EBEBEB;--c800:#DDDDDD;--c700:#BFBFBF;--c600:#9E9E9E;--c400:#666666;--c200:#333333;--c50:#111111;
+--act:#111111;--sur-act:#FFFFFF;--hop:#567F45;--hop-t:#3F6B2E;--hop-f:rgba(86,127,69,.13);--eau:#4F7E9B;--eau-t:#2F5F7D;--eau-f:rgba(79,126,155,.12);
+--al:#C8382F;--al-t:#A8291F;--al-f:rgba(200,56,47,.10);--at:#9C7020;--at-t:#7F5B10;--at-f:rgba(156,112,32,.13);--fin:#1F64A3;
+--voile:rgba(17,17,17,.28);--ombre:0 -6px 24px rgba(0,0,0,.14);--paper:#7d7d7d;
+--sans:"Source Sans 3","Source Sans Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace}
+[data-theme=cave]{--c950:#12100E;--c900:#1A1613;--c850:#221D19;--c800:#2C2521;--c700:#3D342E;--c600:#574A42;--c400:#9A8A7E;--c200:#D8CEC5;--c50:#F5F0EA;
+--act:#F2C14E;--sur-act:#12100E;--hop:#6E9B5B;--hop-t:#8DB97A;--hop-f:rgba(110,155,91,.18);--eau:#5E8CA8;--eau-t:#7FA9C2;--eau-f:rgba(94,140,168,.18);
+--al:#D6453D;--al-t:#DC5F58;--al-f:rgba(214,69,61,.16);--at:#E3B55D;--at-t:#E3B55D;--at-f:rgba(227,181,93,.15);--fin:#86B9E6;
+--voile:rgba(0,0,0,.62);--ombre:0 -8px 28px rgba(0,0,0,.6);--paper:#2a2622}
+*{box-sizing:border-box}html,body{margin:0}
+::selection{background:var(--hop-f)}
+
+body{background:var(--paper);font-family:var(--sans);color:var(--c200);-webkit-font-smoothing:antialiased}
+.s1b-page{padding:16px 0 24px}
+.s1b-tete{color:#fff;font:600 15px/1.3 var(--sans);margin:0 12px 4px}
+.s1b-idee{color:rgba(255,255,255,.85);font:400 13px/1.35 var(--sans);margin:0 12px 12px;max-width:760px}
+.s1b-rang{display:flex;flex-wrap:wrap;gap:16px}
+.s1b-cad{width:390px;max-width:100%}
+.s1b-cadnom{color:#fff;font:600 13px/1 var(--sans);margin:0 12px 6px}
+.s1b-tel{position:relative;width:390px;max-width:100%;height:760px;overflow:hidden;background:var(--c950);color:var(--c200)}
+.s1b-fond{position:absolute;inset:0;width:100%;height:100%;opacity:.55;filter:blur(1.5px)}
+[data-theme=cave] .s1b-fond{opacity:.16}
+.s1b-voile{position:absolute;inset:0;background:var(--voile)}
+:where(.s1b-tel) :where(button){font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+.s1b-tel :focus-visible{outline:2px solid var(--hop);outline-offset:2px}
+.s1b-tel .s1b-n{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em;word-spacing:-.3em}
+.s1b-tel svg{flex:none}
+
+.s1b-feuille{position:absolute;left:0;right:0;top:36px;bottom:0;background:var(--c900);border-radius:24px 24px 0 0;box-shadow:var(--ombre);display:flex;flex-direction:column;font-size:16px;line-height:1.35}
+.s1b-poignee{width:32px;height:4px;border-radius:2px;background:var(--c700);margin:6px auto 0;flex:none}
+.s1b-entete{display:flex;align-items:center;gap:8px;height:44px;padding:0 4px 0 12px;flex:none}
+.s1b-verre{width:14px;height:20px;border-radius:2px 2px 4px 4px;background:linear-gradient(#F6E3A4,#E8B84E);border:1px solid var(--c700);flex:none}
+.s1b-nom{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.s1b-nom b{color:var(--c50);font-weight:600}
+.s1b-nom span{font-size:13px;color:var(--c400)}
+.s1b-ib{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;color:var(--c400)}
+.s1b-fil{flex:1;min-height:0;overflow:hidden;padding:4px 12px 12px;display:flex;flex-direction:column;gap:12px}
+.s1b-bas{justify-content:flex-end}
+.s1b-pied{flex:none;padding:8px;background:var(--c900);border-top:1px solid var(--c800)}
+.s1b-saisir{display:flex;gap:6px;align-items:stretch}
+.s1b-mode{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:76px;border-radius:10px;border:1px solid var(--c700);background:var(--c950);font-size:13px;font-weight:600;color:var(--c200);text-align:center}
+.s1b-champ{flex:1;min-width:0;display:flex;align-items:center;gap:4px;min-height:44px;padding:4px;background:var(--c950);border:1px solid var(--c700);border-radius:10px}
+.s1b-saisie{flex:1;min-width:0;resize:none;border:0;background:none;outline:0;font:16px/1.3 var(--sans);color:var(--c50);padding:6px 4px}
+.s1b-saisie::placeholder{color:var(--c400)}
+.s1b-env{width:36px;height:36px;border-radius:10px;background:var(--c850);color:var(--c400);display:grid;place-items:center}
+.s1b-ligne-hl{display:flex;align-items:center;gap:6px;min-height:28px;padding:0 2px 6px;font-size:13px;color:var(--c200)}
+.s1b-ligne-hl svg{color:var(--at-t)}
+.s1b-q{align-self:flex-end;max-width:86%;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.s1b-bulle{margin:0;padding:8px 10px;background:var(--c850);border-radius:16px 16px 4px 16px;color:var(--c50)}
+.s1b-meta{font-size:13px;color:var(--c400)}
+.s1b-carte{background:var(--c950);border:1px solid var(--c800);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.s1b-band{display:flex;align-items:center;gap:6px;height:32px;padding:0 10px;font-size:13px;font-weight:600}
+.s1b-band span{flex:1}
+.s1b-band i{font-style:normal;font-weight:400}
+.s1b-b-at{background:var(--at-f);color:var(--at-t)}
+.s1b-b-info{background:var(--hop-f);color:var(--hop-t)}
+.s1b-b-neutre{background:var(--c850);color:var(--c200)}
+.s1b-corps{padding:8px 10px 10px;display:flex;flex-direction:column;gap:8px}
+.s1b-titre{margin:0;font-size:16px;font-weight:600;color:var(--c50)}
+.s1b-geste{display:flex;flex-direction:column;gap:2px}
+.s1b-quoi{color:var(--c200)}
+.s1b-gros{font:600 26px/1.15 var(--mono);font-variant-numeric:tabular-nums;color:var(--c50);letter-spacing:-.02em;display:flex;align-items:baseline;gap:8px}
+.s1b-gros s{color:var(--c400);font-weight:400;text-decoration-thickness:2px}
+.s1b-gros svg{align-self:center;color:var(--c400)}
+.s1b-gros-at{color:var(--at-t)}
+.s1b-effet{font-size:13px;color:var(--c400)}
+.s1b-puce{display:flex;align-items:center;min-height:36px;border-radius:10px;background:var(--c850);font-size:13px;color:var(--c200)}
+.s1b-puce>span{flex:1;display:flex;align-items:center;gap:6px;padding:0 8px;min-width:0}
+.s1b-puce b{font-weight:600;color:var(--c50)}
+.s1b-garder{display:flex;align-items:center;gap:4px;align-self:stretch;padding:0 10px;border-left:1px solid var(--c700)!important;font-weight:600;color:var(--c50)}
+.s1b-garde{color:var(--hop-t)}
+.s1b-pli{display:flex;align-items:center;gap:6px;min-height:28px;width:100%;font-size:13px;color:var(--c400)}
+.s1b-pli span{flex:1}
+.s1b-pli b{color:var(--c200);font-weight:600}
+.s1b-prop{background:var(--c950);border:1px solid var(--c800);border-radius:16px;padding:8px 10px;display:flex;flex-direction:column}
+.s1b-pt{font-size:13px;color:var(--c400);margin:0 0 2px}
+.s1b-mod{display:flex;align-items:center;gap:8px;min-height:34px;color:var(--c50);border-bottom:1px solid var(--c800)}
+.s1b-mod span{flex:1}
+.s1b-case{width:20px;height:20px;border-radius:4px;background:var(--act);color:var(--sur-act);display:grid;place-items:center}
+.s1b-av{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em;word-spacing:-.3em}
+.s1b-av s{color:var(--c400)}
+.s1b-actions{display:flex;justify-content:flex-end;gap:8px;padding-top:8px}
+.s1b-btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:10px;font-size:13px;font-weight:600;white-space:nowrap}
+.s1b-btn-s{border:1px solid var(--c700)!important;color:var(--c200);background:var(--c950)}
+.s1b-btn-p{background:var(--act)!important;color:var(--sur-act)!important}
+.s1b-sous{margin:0;font-size:13px;color:var(--c400)}
+.s1b-h{margin:0;font-size:16px;font-weight:600;color:var(--c50)}
+.s1b-liste{display:flex;flex-direction:column;border:1px solid var(--c800);border-radius:16px;background:var(--c950);overflow:hidden}
+.s1b-sugg{display:flex;align-items:center;gap:8px;min-height:40px;padding:0 10px;color:var(--c50);border-top:1px solid var(--c800)!important}
+.s1b-sugg:first-child{border-top:0!important}
+.s1b-sugg span{flex:1}
+.s1b-sugg svg{color:var(--c400)}
+.s1b-limites{display:flex;align-items:center;gap:8px;min-height:32px;font-size:13px;color:var(--c400);margin-top:auto}
+.s1b-limites span{flex:1}
+.s1b-jauge{display:inline-block;width:40px;height:6px;border-radius:3px;background:var(--c850);position:relative;vertical-align:middle;margin-right:4px}
+.s1b-jauge i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--hop)}
+.s1b-chrono{display:flex;align-items:baseline;gap:8px}
+.s1b-seg{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.s1b-seg i{height:6px;border-radius:3px;background:var(--c850)}
+.s1b-seg .s1b-f{background:var(--hop)}
+.s1b-seg .s1b-c{background:linear-gradient(90deg,var(--hop) 50%,var(--c850) 50%)}
+.s1b-segl{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;font-size:13px;color:var(--c400)}
+.s1b-segl .s1b-cur{color:var(--c50);font-weight:600}
+.s1b-piste{position:relative;height:16px}
+.s1b-piste::before{content:"";position:absolute;left:0;right:0;top:6px;height:4px;border-radius:2px;background:var(--c850)}
+.s1b-zone{position:absolute;top:6px;height:4px;left:27%;right:18%;background:var(--hop-f);border-radius:2px}
+.s1b-marq{position:absolute;top:0;left:68%;width:2px;height:16px;background:var(--c50);border-radius:1px}
+.s1b-bornes{display:flex;justify-content:space-between;font-size:13px;color:var(--c400)}
+.s1b-notif{display:flex;align-items:center;gap:8px;min-height:32px;font-size:13px;color:var(--c200);border-top:1px solid var(--c800);padding-top:6px}
+.s1b-notif span{flex:1}
+.s1b-bascule{width:36px;height:22px;border-radius:11px;background:var(--hop);position:relative;flex:none}
+.s1b-bascule::after{content:"";position:absolute;top:3px;right:3px;width:16px;height:16px;border-radius:50%;background:#fff}
+.s1b-file{display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px;border:1px dashed var(--c700);border-radius:10px;font-size:13px;color:var(--c400)}
+.s1b-file b{font-weight:400;color:var(--c200);flex:1;font-size:16px}
+.s1b-tourne{animation:s1b-rot 1s linear infinite}
+@keyframes s1b-rot{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.s1b-tourne{animation:none}}
+.s1b-cite{margin:0;padding:8px 10px;border-radius:10px;background:var(--c850);color:var(--c50)}
+
+</style></head>
+<body><main class="s1b-page">
+<h1 class="s1b-tete">s1b · Carte verdict <span style="font-weight:400;opacity:.8">· tiède</span></h1>
+<p class="s1b-idee">Chaque réponse est une carte : bandeau de niveau coloré en tête (info, attention, urgent), le geste en gros avec ses nombres, le prochain contrôle en puce qu'on garde au journal d'un geste, le pourquoi replié.</p>
+<div class="s1b-rang">
+<section class="s1b-cad" data-cadre="accueil">
+  <h2 class="s1b-cadnom">Accueil · jour de brassage, J+4</h2>
+  <div class="s1b-tel">
+    <img class="s1b-fond" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22390%22%20height%3D%22760%22%20viewBox%3D%220%200%20390%20760%22%3E%3Crect%20width%3D%22390%22%20height%3D%22760%22%20fill%3D%22%23e9e9e9%22%2F%3E%3Crect%20x%3D%2212%22%20y%3D%2210%22%20width%3D%22130%22%20height%3D%2214%22%20rx%3D%224%22%20fill%3D%22%238a8a8a%22%2F%3E%3Ccircle%20cx%3D%22330%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Ccircle%20cx%3D%22362%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Cg%20fill%3D%22%23b4b4b4%22%3E%3Crect%20x%3D%2212%22%20y%3D%2234%22%20width%3D%2256%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%2278%22%20y%3D%2234%22%20width%3D%2270%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%2234%22%20width%3D%2248%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22216%22%20y%3D%2234%22%20width%3D%2260%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22286%22%20y%3D%2234%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3C%2Fg%3E%3Crect%20x%3D%2212%22%20y%3D%2256%22%20width%3D%22366%22%20height%3D%22150%22%20rx%3D%2212%22%20fill%3D%22%23d6d6d6%22%2F%3E%3Crect%20x%3D%22290%22%20y%3D%2270%22%20width%3D%2270%22%20height%3D%2244%22%20rx%3D%226%22%20fill%3D%22%239c9c9c%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22340%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%23c4c4c4%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22190%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%238fa884%22%2F%3E%3C%2Fsvg%3E" alt="" width="390" height="760">
+    <div class="s1b-voile"></div>
+    <div class="s1b-feuille">
+    <div class="s1b-poignee"></div>
+    <header class="s1b-entete">
+      <i class="s1b-verre" aria-hidden="true"></i>
+      <div class="s1b-nom"><b>New England IPA</b><span>Brassin 31 · fermentation <span class="s1b-n">J+4</span></span></div>
+      <button class="s1b-ib" aria-label="Mes conversations"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></button>
+      <button class="s1b-ib" aria-label="Réglages : notifier, limites, repartir à zéro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
+      <button class="s1b-ib" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </header>
+    <div class="s1b-fil">
+      <article class="s1b-carte" data-booster="carte-verdict">
+        <div class="s1b-band s1b-b-info"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>Info · dernier conseil</span><i>hier <span class="s1b-n">22:00</span></i></div>
+        <div class="s1b-corps">
+          <h3 class="s1b-titre">Densité finale dans la cible.</h3>
+          <div class="s1b-geste"><span class="s1b-quoi">DF relevée = DF visée</span><span class="s1b-gros">1,012</span></div>
+          <div class="s1b-puce"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><b><span class="s1b-n">J+6</span></b> dry hop Galaxy <span class="s1b-n">43 g</span></span><button class="s1b-garder s1b-garde"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Au journal</button></div>
+        </div>
+      </article>
+      <h3 class="s1b-h">On regarde ça ensemble.</h3>
+      <div class="s1b-liste">
+        <button class="s1b-sugg" data-booster="suggestion"><span>La pression monte doucement : que faire ?</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"/></svg></button>
+        <button class="s1b-sugg"><span>Galaxy J+6 : 43 g, c'est assez ?</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"/></svg></button>
+        <button class="s1b-sugg"><span>Combien de jours de garde à 18 °C ?</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"/></svg></button>
+        <button class="s1b-sugg"><span>Le pH de maische visé 5,3 était-il bon ?</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10M7 17 17 7"/></svg></button>
+      </div>
+      <p class="s1b-sous">Je relis le brassin et son journal à chaque question ; rien ne s'applique sans ta validation.</p>
+      <button class="s1b-limites" data-booster="jauge-limites"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><span><i class="s1b-jauge"><i style="width:14%"></i></i><span class="s1b-n">2,10 / 15 CHF</span> ce mois · <span class="s1b-n">4 / 120</span> questions</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+    </div>
+    <footer class="s1b-pied">
+      <div class="s1b-saisir">
+        <button class="s1b-mode" data-booster="mode-cycle" aria-label="Mode Auto, toucher pour changer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg><span>Auto</span></button>
+        <div class="s1b-champ"><textarea class="s1b-saisie" rows="1" aria-label="Ta question" placeholder="Décris ce que tu observes…"></textarea><button class="s1b-env" aria-label="Envoyer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button></div>
+      </div>
+    </footer></div>
+  </div>
+</section>
+<section class="s1b-cad" data-cadre="attente">
+  <h2 class="s1b-cadnom">Attente · 2:29, une question en file</h2>
+  <div class="s1b-tel">
+    <img class="s1b-fond" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22390%22%20height%3D%22760%22%20viewBox%3D%220%200%20390%20760%22%3E%3Crect%20width%3D%22390%22%20height%3D%22760%22%20fill%3D%22%23e9e9e9%22%2F%3E%3Crect%20x%3D%2212%22%20y%3D%2210%22%20width%3D%22130%22%20height%3D%2214%22%20rx%3D%224%22%20fill%3D%22%238a8a8a%22%2F%3E%3Ccircle%20cx%3D%22330%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Ccircle%20cx%3D%22362%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Cg%20fill%3D%22%23b4b4b4%22%3E%3Crect%20x%3D%2212%22%20y%3D%2234%22%20width%3D%2256%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%2278%22%20y%3D%2234%22%20width%3D%2270%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%2234%22%20width%3D%2248%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22216%22%20y%3D%2234%22%20width%3D%2260%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22286%22%20y%3D%2234%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3C%2Fg%3E%3Crect%20x%3D%2212%22%20y%3D%2256%22%20width%3D%22366%22%20height%3D%22150%22%20rx%3D%2212%22%20fill%3D%22%23d6d6d6%22%2F%3E%3Crect%20x%3D%22290%22%20y%3D%2270%22%20width%3D%2270%22%20height%3D%2244%22%20rx%3D%226%22%20fill%3D%22%239c9c9c%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22340%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%23c4c4c4%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22190%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%238fa884%22%2F%3E%3C%2Fsvg%3E" alt="" width="390" height="760">
+    <div class="s1b-voile"></div>
+    <div class="s1b-feuille">
+    <div class="s1b-poignee"></div>
+    <header class="s1b-entete">
+      <i class="s1b-verre" aria-hidden="true"></i>
+      <div class="s1b-nom"><b>New England IPA</b><span>Brassin 31 · fermentation <span class="s1b-n">J+4</span></span></div>
+      <button class="s1b-ib" aria-label="Mes conversations"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></button>
+      <button class="s1b-ib" aria-label="Réglages : notifier, limites, repartir à zéro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
+      <button class="s1b-ib" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </header>
+    <div class="s1b-fil s1b-bas">
+      <article class="s1b-carte">
+        <div class="s1b-band s1b-b-info"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>Info · dernier conseil</span><i>hier <span class="s1b-n">22:00</span></i></div>
+        <div class="s1b-corps">
+          <h3 class="s1b-titre">Densité finale dans la cible.</h3>
+          <div class="s1b-geste"><span class="s1b-quoi">DF relevée = DF visée</span><span class="s1b-gros">1,012</span></div>
+          <div class="s1b-puce"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><b><span class="s1b-n">J+6</span></b> dry hop Galaxy <span class="s1b-n">43 g</span></span><button class="s1b-garder s1b-garde"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Au journal</button></div>
+        </div>
+      </article>
+      <div class="s1b-q"><p class="s1b-bulle">La fermentation est à 19 °C depuis 36 h et la pression monte doucement : que faire ?</p><span class="s1b-meta"><span class="s1b-n">22:14</span></span></div>
+      <article class="s1b-carte" data-booster="carte-attente">
+        <div class="s1b-band s1b-b-neutre"><svg class="s1b-tourne" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></svg><span>En cours · Approfondi</span><i>relecture double prévue</i></div>
+        <div class="s1b-corps">
+          <div class="s1b-chrono"><span class="s1b-gros">2:29</span><span class="s1b-quoi">je relis ma proposition</span></div>
+          <div data-booster="jauge-duree"><div class="s1b-piste"><i class="s1b-zone"></i><i class="s1b-marq"></i></div>
+          <div class="s1b-bornes"><span><span class="s1b-n">0</span></span><span>habituel <span class="s1b-n">1 à 3 min</span></span><span><span class="s1b-n">3:40</span></span></div></div>
+          <div class="s1b-seg" data-booster="frise-etapes"><i class="s1b-f"></i><i class="s1b-f"></i><i class="s1b-f"></i><i class="s1b-f"></i><i class="s1b-c"></i></div>
+          <div class="s1b-segl"><span>Lire</span><span>Calculer</span><span>Sources</span><span>Rédiger</span><span class="s1b-cur">Relire</span></div>
+          <div class="s1b-notif"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span>Me notifier ; tu peux continuer ailleurs</span><i class="s1b-bascule" role="switch" aria-checked="true" aria-label="Me notifier à la réponse"></i></div>
+        </div>
+      </article>
+      <div class="s1b-file"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h11M3 18h7"/><path d="m15 17 3 3 3-3M18 12v8"/></svg><b>Et combien de jours de garde à 18 °C ?</b>en file</div>
+    </div>
+    <footer class="s1b-pied">
+      <div class="s1b-saisir">
+        <button class="s1b-mode" data-booster="mode-cycle" aria-label="Mode Approfondi, toucher pour changer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65M22 12.65l-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg><span>Approfondi</span></button>
+        <div class="s1b-champ"><textarea class="s1b-saisie" rows="1" aria-label="Ta question" placeholder="Décris ce que tu observes…"></textarea><button class="s1b-env" aria-label="Envoyer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button></div>
+      </div>
+    </footer></div>
+  </div>
+</section>
+<section class="s1b-cad" data-cadre="reponse">
+  <h2 class="s1b-cadnom">Réponse · attention, proposition</h2>
+  <div class="s1b-tel">
+    <img class="s1b-fond" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22390%22%20height%3D%22760%22%20viewBox%3D%220%200%20390%20760%22%3E%3Crect%20width%3D%22390%22%20height%3D%22760%22%20fill%3D%22%23e9e9e9%22%2F%3E%3Crect%20x%3D%2212%22%20y%3D%2210%22%20width%3D%22130%22%20height%3D%2214%22%20rx%3D%224%22%20fill%3D%22%238a8a8a%22%2F%3E%3Ccircle%20cx%3D%22330%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Ccircle%20cx%3D%22362%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Cg%20fill%3D%22%23b4b4b4%22%3E%3Crect%20x%3D%2212%22%20y%3D%2234%22%20width%3D%2256%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%2278%22%20y%3D%2234%22%20width%3D%2270%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%2234%22%20width%3D%2248%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22216%22%20y%3D%2234%22%20width%3D%2260%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22286%22%20y%3D%2234%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3C%2Fg%3E%3Crect%20x%3D%2212%22%20y%3D%2256%22%20width%3D%22366%22%20height%3D%22150%22%20rx%3D%2212%22%20fill%3D%22%23d6d6d6%22%2F%3E%3Crect%20x%3D%22290%22%20y%3D%2270%22%20width%3D%2270%22%20height%3D%2244%22%20rx%3D%226%22%20fill%3D%22%239c9c9c%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22340%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%23c4c4c4%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22190%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%238fa884%22%2F%3E%3C%2Fsvg%3E" alt="" width="390" height="760">
+    <div class="s1b-voile"></div>
+    <div class="s1b-feuille">
+    <div class="s1b-poignee"></div>
+    <header class="s1b-entete">
+      <i class="s1b-verre" aria-hidden="true"></i>
+      <div class="s1b-nom"><b>New England IPA</b><span>Brassin 31 · fermentation <span class="s1b-n">J+4</span></span></div>
+      <button class="s1b-ib" aria-label="Mes conversations"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></button>
+      <button class="s1b-ib" aria-label="Réglages : notifier, limites, repartir à zéro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
+      <button class="s1b-ib" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </header>
+    <div class="s1b-fil s1b-bas">
+      <div class="s1b-q"><p class="s1b-bulle">La fermentation est à 19 °C depuis 36 h et la pression monte doucement : que faire ?</p><span class="s1b-meta"><span class="s1b-n">22:14</span></span></div>
+      <article class="s1b-carte" data-booster="carte-verdict">
+        <div class="s1b-band s1b-b-at"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg><span>Attention</span><i>relu deux fois · <span class="s1b-n">22:17</span></i></div>
+        <div class="s1b-corps">
+          <h3 class="s1b-titre">Dry hop chargé : réduis le dernier apport.</h3>
+          <div class="s1b-geste"><span class="s1b-quoi">Mosaic J+9</span><span class="s1b-gros"><s>43 g</s><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span class="s1b-gros-at">21 g</span></span><span class="s1b-effet">dry hop <span class="s1b-n">9,0 → 7,8 g/L</span></span></div>
+          <div class="s1b-puce" data-booster="puce-prochain-controle"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><b><span class="s1b-n">J+9</span></b> goût et odeur à la purge</span><button class="s1b-garder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/><path d="M12 7v6M9 10h6"/></svg>Garder</button></div>
+          <button class="s1b-pli"><span><b>Pourquoi</b> · <span class="s1b-n">9,0 g/L</span>, herbacé possible en fin de garde</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        </div>
+      </article>
+      <section class="s1b-prop" data-booster="proposition">
+        <p class="s1b-pt">Aussi pour la recette · prochain brassin</p>
+        <div class="s1b-mod"><i class="s1b-case"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></i><span>Citra J+2</span><span class="s1b-av"><s>85</s> → 70 g</span></div>
+        <div class="s1b-mod"><i class="s1b-case"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></i><span>Mosaic J+9</span><span class="s1b-av"><s>43</s> → 21 g</span></div>
+        <div class="s1b-mod"><i class="s1b-case"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></i><span>Durée du dry hop</span><span class="s1b-av"><s>2</s> → 3 j</span></div>
+        <div class="s1b-actions"><button class="s1b-btn s1b-btn-s">Écarter</button><button class="s1b-btn s1b-btn-p">Valider 3 modifications</button></div>
+      </section>
+      <button class="s1b-pli"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></svg><span>Relu deux fois · calculs refaits · 3 sources lues</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+    </div>
+    <footer class="s1b-pied">
+      <div class="s1b-saisir">
+        <button class="s1b-mode" data-booster="mode-cycle" aria-label="Mode Auto, toucher pour changer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg><span>Auto</span></button>
+        <div class="s1b-champ"><textarea class="s1b-saisie" rows="1" aria-label="Ta question" placeholder="Décris ce que tu observes…"></textarea><button class="s1b-env" aria-label="Envoyer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button></div>
+      </div>
+    </footer></div>
+  </div>
+</section>
+<section class="s1b-cad" data-cadre="erreur">
+  <h2 class="s1b-cadnom">Erreur · hors ligne, envoi à confirmer</h2>
+  <div class="s1b-tel">
+    <img class="s1b-fond" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22390%22%20height%3D%22760%22%20viewBox%3D%220%200%20390%20760%22%3E%3Crect%20width%3D%22390%22%20height%3D%22760%22%20fill%3D%22%23e9e9e9%22%2F%3E%3Crect%20x%3D%2212%22%20y%3D%2210%22%20width%3D%22130%22%20height%3D%2214%22%20rx%3D%224%22%20fill%3D%22%238a8a8a%22%2F%3E%3Ccircle%20cx%3D%22330%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Ccircle%20cx%3D%22362%22%20cy%3D%2217%22%20r%3D%228%22%20fill%3D%22%23a8a8a8%22%2F%3E%3Cg%20fill%3D%22%23b4b4b4%22%3E%3Crect%20x%3D%2212%22%20y%3D%2234%22%20width%3D%2256%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%2278%22%20y%3D%2234%22%20width%3D%2270%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22158%22%20y%3D%2234%22%20width%3D%2248%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22216%22%20y%3D%2234%22%20width%3D%2260%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3Crect%20x%3D%22286%22%20y%3D%2234%22%20width%3D%2244%22%20height%3D%228%22%20rx%3D%223%22%2F%3E%3C%2Fg%3E%3Crect%20x%3D%2212%22%20y%3D%2256%22%20width%3D%22366%22%20height%3D%22150%22%20rx%3D%2212%22%20fill%3D%22%23d6d6d6%22%2F%3E%3Crect%20x%3D%22290%22%20y%3D%2270%22%20width%3D%2270%22%20height%3D%2244%22%20rx%3D%226%22%20fill%3D%22%239c9c9c%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22340%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%23c4c4c4%22%2F%3E%3Crect%20x%3D%2224%22%20y%3D%22150%22%20width%3D%22190%22%20height%3D%2210%22%20rx%3D%225%22%20fill%3D%22%238fa884%22%2F%3E%3C%2Fsvg%3E" alt="" width="390" height="760">
+    <div class="s1b-voile"></div>
+    <div class="s1b-feuille">
+    <div class="s1b-poignee"></div>
+    <header class="s1b-entete">
+      <i class="s1b-verre" aria-hidden="true"></i>
+      <div class="s1b-nom"><b>New England IPA</b><span>Brassin 31 · fermentation <span class="s1b-n">J+4</span></span></div>
+      <button class="s1b-ib" aria-label="Mes conversations"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></button>
+      <button class="s1b-ib" aria-label="Réglages : notifier, limites, repartir à zéro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></button>
+      <button class="s1b-ib" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </header>
+    <div class="s1b-fil s1b-bas">
+      <article class="s1b-carte">
+        <div class="s1b-band s1b-b-at"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg><span>Attention</span><i><span class="s1b-n">22:17</span></i></div>
+        <div class="s1b-corps">
+          <h3 class="s1b-titre">Dry hop chargé : réduis le dernier apport.</h3>
+          <div class="s1b-geste"><span class="s1b-quoi">Mosaic J+9</span><span class="s1b-gros"><s>43 g</s><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span class="s1b-gros-at">21 g</span></span></div>
+          <div class="s1b-puce"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><b><span class="s1b-n">J+9</span></b> goût et odeur à la purge</span><button class="s1b-garder s1b-garde"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Au journal</button></div>
+        </div>
+      </article>
+      <article class="s1b-carte" data-booster="carte-envoi">
+        <div class="s1b-band s1b-b-neutre"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h.01M8.5 16.43a5 5 0 0 1 7 0M2 8.82a15 15 0 0 1 4.17-2.65M10.66 5c4.01-.36 8.14.9 11.34 3.76M16.85 11.25a10 10 0 0 1 2.22 1.68M5 13a10 10 0 0 1 5.24-2.76M2 2l20 20"/></svg><span>Hors ligne · envoi à confirmer</span><i><span class="s1b-n">22:31</span></i></div>
+        <div class="s1b-corps">
+          <h3 class="s1b-titre">Ta question attend le réseau.</h3>
+          <p class="s1b-cite">Et combien de jours de garde à 18 °C ?</p>
+          <p class="s1b-sous">Gardée sur l'appareil ; elle ne partira qu'une fois.</p>
+          <div class="s1b-actions" style="justify-content:flex-start;padding-top:0"><button class="s1b-btn s1b-btn-p"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Réessayer l'envoi</button><button class="s1b-btn s1b-btn-s"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.38 3.62a1 1 0 0 1 3 3L7.37 18.64a2 2 0 0 1-.86.5l-2.87.84a.5.5 0 0 1-.62-.62l.84-2.87a2 2 0 0 1 .5-.86z"/></svg>Reformuler</button></div>
+        </div>
+      </article>
+    </div>
+    <footer class="s1b-pied"><div class="s1b-ligne-hl" data-booster="bandeau-hors-ligne"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h.01M8.5 16.43a5 5 0 0 1 7 0M2 8.82a15 15 0 0 1 4.17-2.65M10.66 5c4.01-.36 8.14.9 11.34 3.76M16.85 11.25a10 10 0 0 1 2.22 1.68M5 13a10 10 0 0 1 5.24-2.76M2 2l20 20"/></svg>Hors ligne : le fil reste lisible, l'envoi attendra.</div>
+      <div class="s1b-saisir">
+        <button class="s1b-mode" data-booster="mode-cycle" aria-label="Mode Auto, toucher pour changer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg><span>Auto</span></button>
+        <div class="s1b-champ"><textarea class="s1b-saisie" rows="1" aria-label="Ta question" placeholder="Décris ce que tu observes…"></textarea><button class="s1b-env" aria-label="Envoyer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button></div>
+      </div>
+    </footer></div>
+  </div>
+</section>
+</div></main></body></html>

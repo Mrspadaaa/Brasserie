@@ -1,0 +1,19 @@
+{
+ "reglage": "3.5-flash-lite@low",
+ "element": "ro-controle",
+ "cas": "ro",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": false,
+  "issues": [
+   "Le résumé propose de verser les 4L d'eau osmosée dans l'empâtage en complétant par 20L d'eau du réseau, mais la recette initiale prévoit 24L d'empâtage et 10L de rinçage, ce qui fait un total de 34L d'eau. Mélanger tout l'osmosé dans l'empâtage sans garder de part pour le rinçage n'est pas cohérent avec le plan d'eau global.",
+   "La proposition modifie la répartition sans validation formelle des volumes de rinçage et utilise une simulation partielle (E1) alors qu'un plan complet (E2) est disponible, mélangeant les proportions."
+  ]
+ },
+ "ms": 1199,
+ "coutMicro": 2491,
+ "etat": "STOP"
+}

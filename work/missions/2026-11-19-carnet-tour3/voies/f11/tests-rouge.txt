@@ -1,0 +1,115 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 6 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F11.test.tsx[2m > [22mPCN-110 : les valeurs lues sur une page portent leur date, la fiche dit « lues sur la fiche du vendeur, <date> »[2m > [22mdepuisIA : chaque valeur d’une page lue reçoit `luLe` (date ISO de la lecture)
+[31m[1mAssertionError[22m: expected undefined to be '2026-11-19T10:30:00.000Z' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"2026-11-19T10:30:00.000Z"
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/carnetsTour3F11.test.tsx:[2m41:37[22m[39m
+    [90m 39| [39m  it('depuisIA : chaque valeur d’une page lue reçoit `luLe` (date ISO …
+    [90m 40| [39m    const a = depuisIA(ligne('lue', LU) as never, { carnetId: 'c' } as…
+    [90m 41| [39m    [34mexpect[39m(a[33m.[39mvaleurs[[32m'débit'[39m][33m.[39mluLe)[33m.[39m[34mtoBe[39m([35mnew[39m [33mDate[39m([33mLU[39m)[33m.[39m[34mtoISOString[39m())[33m;[39m
+    [90m   | [39m                                    [31m^[39m
+    [90m 42| [39m  })[33m;[39m
+    [90m 43| [39m  [34mit[39m([32m'sans date de lecture (0), aucune date inventée'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F11.test.tsx[2m > [22mPCN-110 : les valeurs lues sur une page portent leur date, la fiche dit « lues sur la fiche du vendeur, <date> »[2m > [22mla fiche de l’article affiche « Caractéristiques lues sur la fiche du vendeur, 19 nov. »
+[31m[1mAssertionError[22m: expected 'Articles · HotteArticles · HotteHotte…' to match /lues sur la fiche du vendeur, 19 nov/[39m
+
+[32m- Expected:[39m 
+/lues sur la fiche du vendeur, 19 nov/
+
+[31m+ Received:[39m 
+"Articles · HotteArticles · HotteHotte 140Caractéristiques débit1 400 m³/hVeille du prix, tous les 3 jours"
+
+[36m [2m❯[22m tests/unit/carnetsTour3F11.test.tsx:[2m51:30[22m[39m
+    [90m 49| [39m    const article = { id: 'A1', url: 'https://exemple.invalid/hotte-14…
+    [90m 50| [39m    const { container } = render(<FicheArticle article={article} titre…
+    [90m 51| [39m    expect(texte(container)).toMatch(/lues sur la fiche du vendeur, 19…
+    [90m   | [39m                             [31m^[39m
+    [90m 52| [39m  })[33m;[39m
+    [90m 53| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F11.test.tsx[2m > [22mv7-1 : « Comparer sur » accorde l’article avec la caractéristique[2m > [22mla température, le volume, le débit, l’oxygène, la cadence
+[31m[1mAssertionError[22m: expected 'Comparer sur le température mini (°C)' to be 'Comparer sur la température mini (°C)' // Object.is equality[39m
+
+Expected: [32m"Comparer sur l[7ma[27m température mini (°C)"[39m
+Received: [31m"Comparer sur l[7me[27m température mini (°C)"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F11.test.tsx:[2m58:41[22m[39m
+    [90m 56| [39m  const p = (nom: string, unite?: string) => libelleProposee({ texte: …
+    [90m 57| [39m  it('la température, le volume, le débit, l’oxygène, la cadence', () …
+    [90m 58| [39m    expect(p('température mini', '°C')).toBe('Comparer sur la températ…
+    [90m   | [39m                                        [31m^[39m
+    [90m 59| [39m    [34mexpect[39m([34mp[39m([32m'volume'[39m[33m,[39m [32m'L'[39m))[33m.[39m[34mtoBe[39m([32m'Comparer sur le volume (L)'[39m)[33m;[39m
+    [90m 60| [39m    [34mexpect[39m([34mp[39m([32m'débit'[39m[33m,[39m [32m'm³/h'[39m))[33m.[39m[34mtoBe[39m([32m'Comparer sur le débit (m³/h)'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F11.test.tsx[2m > [22mv7-1 : « Comparer sur » accorde l’article avec la caractéristique[2m > [22maccepterProposition : le critère rangé est « la température mini », pas « le température mini »
+[31m[1mAssertionError[22m: expected [ '2 bacs', …(2) ] to include 'la température mini'[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F11.test.tsx:[2m70:93[22m[39m
+    [90m 68| [39m    const apres = appliquer(F, ranger(F, { message: { id: 'M-F11', tex…
+    [90m 69| [39m    const fin = appliquer(apres, accepterProposition(apres, { messageI…
+    [90m 70| [39m    expect(lireCarnet(fin.find(d => d.id === ID_EVIER))!.carnet.criter…
+    [90m   | [39m                                                                                            [31m^[39m
+    [90m 71| [39m  })[33m;[39m
+    [90m 72| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F11.test.tsx[2m > [22mv7-2 : un carnet né d’une note de travaux reçoit un objet dessiné, pas une initiale[2m > [22m« Résine pour le sol du local », « Peinture époxy », « Détergent alcalin » : un pot dessiné
+[31m[1mAssertionError[22m: Résine pour le sol du local: expected 'objet' to be 'pot' // Object.is equality[39m
+
+Expected: [32m"[7mp[27mot"[39m
+Received: [31m"o[7mbje[27mt"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F11.test.tsx:[2m76:180[22m[39m
+    [90m 74| [39mdescribe('v7-2 : un carnet né d’une note de travaux reçoit un objet de…
+    [90m 75| [39m  it('« Résine pour le sol du local », « Peinture époxy », « Détergent…
+    [90m 76| [39m    for (const nom of ['Résine pour le sol du local', 'Peinture époxy …
+    [90m   | [39m                                                                                                                                                                                   [31m^[39m
+    [90m 77| [39m    const { container } = render(<PictoObjet nom={pictoDe('Résine pour…
+    [90m 78| [39m    expect(container.querySelector('svg')!.getAttribute('data-picto'))…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F11.test.tsx[2m > [22mv7-3 : à 390, une citation longue passe le bouton « Coller un lien » sous le texte[2m > [22m« Prochain brassin » + « Sachets de levure x2. Prochain brassage mardi. » : cn-carnet-long
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F11.test.tsx:[2m95:56[22m[39m
+    [90m 93| [39m    [35mconst[39m carte [33m=[39m container[33m.[39m[34mquerySelector[39m([32m'.cn-carnet-coller'[39m)[33m![39m[33m;[39m
+    [90m 94| [39m    [34mexpect[39m(carte)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m 95| [39m    [34mexpect[39m(carte[33m.[39mclassList[33m.[39m[34mcontains[39m([32m'cn-carnet-long'[39m))[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   | [39m                                                       [31m^[39m
+    [90m 96| [39m  })[33m;[39m
+    [90m 97| [39m  it('« Évier inox » + « 2 bacs pour laver les fûts » (deux lignes à c…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m6 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (9)[39m
+[2m   Start at [22m 00:03:05
+[2m   Duration [22m 2.63s[2m (transform 968ms, setup 282ms, collect 1.42s, tests 42ms, environment 658ms, prepare 69ms)[22m
+

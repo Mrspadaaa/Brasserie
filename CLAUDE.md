@@ -96,11 +96,11 @@ Système complet : `docs/agents/systeme.md`.
   moins d'appels et un contexte léger. Un lot = un script préparé et un appel groupé, pas une exploration
   pas à pas ; jamais un appel en échec relancé tel quel ; sorties filtrées (`head`, `grep`, champs
   ciblés) ; pas d'outil ni de connecteur activé en cours de session (casse le cache) ; compacter ou
-  passer la main avant que les messages pèsent plus de 450 k ; un agent s'arrête à 200 k (hook) et rend
+  passer la main avant que les messages pèsent plus de 450 k ; un agent s’arrête à 400 k (hook) et rend
   « REPRISE : <fichier> » ; un fichier inchangé ne se relit pas ; un agent générique nomme son modèle ; le pilote relance dans un agent neuf (10.11 : 82 % des 3,8 Md relus venaient d'agents > 250 k). Mesure : `node scripts/agents/jetons.mjs`.
   Appliqué par hooks utilisateur (`~/.claude/hooks/`, source `.claude/hooks/economie.mjs` et `rc-sessions.mjs`) :
   pas de relance d’un échec, allers-retours comptés, messages ≤ 700 car., aucun rapport de progrès,
-  un seul récapitulatif à la fin ; toute session lancée passe en /rc on.
+  un seul récapitulatif à la fin ; toute session lancée passe en /rc on. Session lancée : agents au premier plan, tour clos au récap (20.11).
 - Arrêter la recherche quand les preuves permettent la décision. Grouper les
   lectures indépendantes ; garder les longs journaux en fichiers et remonter
   résultats, erreurs utiles et références. Les tests déjà verts se rejouent pour
@@ -114,7 +114,7 @@ Système complet : `docs/agents/systeme.md`.
   inachevé récupérable (manque précis) / inutilisable ; finir ou brancher plutôt
   qu'ajouter une couche parallèle ; ne rien supprimer sans accord.
 - Tester d'abord par la vision (D343) : vraies pièces, chaque état et geste
-  dans Chrome, deux thèmes, 390 tactile et 1280 ; le critique, puis le
+  dans Chrome, un thème, téléphone surtout, 1280 peu (22.11) ; le critique, puis le
   pilote, fait seulement « combien et quels problèmes ? », liste numérotée
   (D344). Vitest pour les règles de calcul ; peu de fixtures. Local, puis
   émulateurs, puis en ligne, lecture seule.

@@ -1,0 +1,5 @@
+SERIE ECHEC
+s3a: aucune classe préfixée s3a-
+s3b: aucune classe préfixée s3b-
+s3c: aucune classe préfixée s3c-
+s3d: aucune classe préfixée s3d-

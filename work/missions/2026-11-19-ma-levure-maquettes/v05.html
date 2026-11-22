@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ma levure — v05 · l'IA écrit dans la fiche, en texte fantôme</title>
+<style>
+/* v05 — parti pris : l'autocomplete de l'IA s'écrit DANS les lignes de traits, en texte fantôme
+   (comme une suggestion de clavier) ; un seul « Retenir les 3 », un petit × par trait pour écarter ;
+   le reste = la carte en ligne du 19.11. Planche : l'écran (après), puis avant / pendant / écarté,
+   chacun dans sa propre mini maquette d'écran. */
+:root{
+  --page:#FFFFFF;--panneau:#F5F5F5;--surface:#EBEBEB;--texte:#111111;--second:#666666;--trait:#D6D6D6;
+  --attention:#9C7020;--attention-t:#7F5B10;--alerte:#C8382F;--alerte-t:#A8291F;
+  --or:#F2C14E;--or-t:#7A5A12;--eau:#4F7E9B;--eau-t:#2F5F7D;
+  --houblon:#567F45;--prod:#9A4F1E;
+  --mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#FFFFFF;color:var(--texte)}
+body{font:15px/1.3 "Source Sans 3","Segoe UI",system-ui,sans-serif}
+
+/* Planche : l'écran, puis les trois temps, chacun dans son cadre */
+.v5-planche{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:24px 20px;padding-bottom:24px}
+.v5-tel{position:relative;width:390px;max-width:100%;height:844px;overflow:hidden;background:var(--page)}
+.v5-defile{height:100%;overflow-y:auto;padding-bottom:132px}
+.v5-temps{width:370px;max-width:calc(100% - 20px)}
+.v5-temps>p{margin:0 0 6px 4px;font-size:15px;font-weight:600;color:var(--second)}
+.v5-mini{border:1.5px solid #BDBDBD;border-radius:22px;overflow:hidden;background:var(--page);padding-bottom:10px}
+.v5-ecran-leg{display:none}
+@media (min-width:800px){.v5-tel{border:1.5px solid #BDBDBD;border-radius:28px}.v5-ecran-leg{display:block;margin:0 0 6px 4px;font-size:15px;font-weight:600;color:var(--second)}}
+
+/* En-tête de l'assistant de recette */
+.v5-tete{display:flex;align-items:center;gap:10px;height:46px;padding:0 12px}
+.v5-retour{font-size:22px;line-height:1;color:var(--texte)}
+.v5-titre{font-size:20px;font-weight:600}
+.v5-titre small{font-size:16px;font-weight:400;color:var(--second);margin-left:4px}
+.v5-tete-d{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:15px}
+.v5-tete-d u{text-underline-offset:3px}
+.v5-ico{width:21px;height:21px;stroke:var(--texte);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+.v5-etapes{display:flex;justify-content:space-between;gap:4px;padding:0 6px;white-space:nowrap;border-bottom:1px solid var(--trait)}
+.v5-etapes span{font-size:14px;letter-spacing:-.25px;color:var(--second);padding:6px 1px 7px;border-bottom:3px solid #8A8A8A}
+.v5-etapes span.v5-fait{border-color:#555}
+.v5-etapes span.v5-ici{color:var(--texte);font-weight:600;border-color:var(--texte)}
+.v5-etapes span.v5-apres{border-color:var(--surface)}
+
+.v5-annuler{margin:8px 12px 0;font-size:14px;color:var(--second)}
+.v5-annuler u{text-underline-offset:3px}
+
+/* La carte de la levure */
+.v5-carte{margin:8px 10px 0;border:2px solid var(--texte);border-radius:16px;background:var(--panneau);overflow:hidden}
+.v5-entete{display:grid;grid-template-columns:38px minmax(0,1fr) auto auto;column-gap:10px;row-gap:1px;align-items:center;padding:10px 10px 9px 12px;background:var(--page)}
+.v5-pastille{grid-row:1/3;width:38px;height:38px;border-radius:50%;background:#FBEFC8;border:1.5px solid #E0A02E;display:grid;place-items:center}
+.v5-pastille svg{width:20px;height:20px;stroke:var(--or-t);fill:none;stroke-width:1.7}
+.v5-nom{min-width:0;display:contents}
+.v5-nom b{grid-column:2;grid-row:1;font-size:19px;font-weight:600;letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v5-nom span{grid-column:2/5;grid-row:2;font-size:14px;color:var(--second);white-space:nowrap}
+.v5-dose{grid-column:3;grid-row:1;font-family:var(--mono);font-size:22px;font-weight:600;white-space:nowrap}
+.v5-dose small{font-size:14px;font-weight:400;color:var(--second)}
+.v5-dose i{font-style:normal;font-size:18px;margin-right:2px}
+.v5-x{grid-column:4;grid-row:1;font-size:20px;color:var(--second);padding:0 2px}
+
+.v5-chiffres{display:grid;grid-template-columns:114px minmax(0,1fr) 90px;border-top:1px solid var(--trait);border-bottom:1px solid var(--trait)}
+.v5-chiffres>div{padding:7px 7px 8px;border-left:1px solid var(--trait)}
+.v5-chiffres>div:first-child{border-left:0}
+.v5-lbl{font-size:14px;color:var(--second);white-space:nowrap}
+.v5-val{font-family:var(--mono);font-size:15px;font-weight:600;white-space:nowrap}
+.v5-sous{font-size:14px;color:var(--second);white-space:nowrap}
+.v5-jauge{height:7px;border-radius:4px;background:var(--surface);margin-top:7px;position:relative}
+.v5-jauge i{position:absolute;left:62%;width:14%;top:0;bottom:0;border-radius:2px;background:repeating-linear-gradient(135deg,#F2C14E 0 3px,#E3B55D 3px 6px)}
+/* conduite hors plage : plage de la fiche face à la conduite, en rouge d'alerte */
+.v5-conduite{background:#FBEDEC}
+.v5-conduite .v5-val{letter-spacing:-.4px}
+.v5-conduite .v5-val s{text-decoration:none;font-weight:600;color:var(--eau-t)}
+.v5-conduite .v5-val b{color:#FFFFFF;background:var(--alerte);border-radius:5px;padding:0 4px;margin-left:2px}
+.v5-temp{height:8px;border-radius:4px;margin-top:9px;position:relative;background:linear-gradient(90deg,#9FB9CC,#C9D9E4 35%,#EBD9B0 62%,#E2B7A3 85%,#D49C92)}
+.v5-temp .v5-plage{position:absolute;left:12%;width:16%;top:-4px;bottom:-4px;background:var(--eau);border:2px solid #FFFFFF;border-radius:4px;box-shadow:0 0 0 1px var(--eau-t)}
+.v5-temp .v5-ici{position:absolute;left:52%;width:4px;top:-6px;bottom:-6px;background:var(--alerte);border-radius:2px}
+.v5-caler{display:flex;margin-top:9px}
+.v5-caler b{font-size:14px;font-weight:600;color:#FFFFFF;background:var(--eau-t);border-radius:8px;padding:5px 10px;white-space:nowrap}
+.v5-floc .v5-val{font-family:inherit;font-weight:600}
+.v5-floc{padding-right:4px!important}
+.v5-barres{display:flex;gap:3px;margin-top:9px}
+.v5-barres i{flex:1;height:8px;border-radius:2px;background:#8A8A8A}
+.v5-barres i:last-child{background:#CFCFCF}
+
+/* Traits — le parti pris : l'IA écrit dans les lignes */
+.v5-ia{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#EEF4F8;border-bottom:1px solid #CFDDE7}
+.v5-ia-btn{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:600;color:#FFFFFF;background:var(--eau-t);border-radius:999px;padding:6px 12px 6px 10px;white-space:nowrap}
+.v5-ia-btn em{font-style:normal;font-size:15px}
+.v5-ia-btn.v5-relancer{background:var(--page);color:var(--eau-t);border:1.5px solid var(--eau);padding:5px 11px 5px 9px}
+.v5-ia-btn.v5-attente{background:#C9DCEA;color:#1D4560}
+.v5-ia-etat{font-size:14px;color:var(--eau-t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.v5-ia-tout{font-size:14px;font-weight:600;color:#FFFFFF;background:var(--texte);border-radius:999px;padding:6px 12px;white-space:nowrap}
+.v5-ia-arret{font-size:14px;font-weight:600;color:var(--texte);border:1.5px solid var(--texte);border-radius:999px;padding:4px 11px;white-space:nowrap;background:var(--page)}
+
+.v5-traits{list-style:none;margin:0;padding:2px 0}
+.v5-traits li{display:grid;grid-template-columns:130px minmax(0,1fr) 36px;align-items:center;min-height:42px;padding:0 6px 0 12px}
+.v5-traits li+li{border-top:1px solid #E4E4E4}
+.v5-t{display:flex;align-items:center;gap:8px;font-size:15px;white-space:nowrap}
+.v5-t i{width:11px;height:11px;border-radius:50%;flex:none}
+.v5-v{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* texte fantôme = estimé par l'IA, pas encore à la fiche */
+.v5-fantome{color:#5E5E5E;font-style:italic}
+.v5-fantome::before{content:"✦ ";font-style:normal;color:var(--eau)}
+.v5-fantome u{text-decoration:underline dashed #9DB8CB;text-underline-offset:4px}
+.v5-rien{color:#7A7A7A}
+.v5-retenu{font-weight:600;color:var(--texte)}
+.v5-retenu small{font-size:14px;font-weight:400;color:var(--second)}
+.v5-ecart{justify-self:end;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:17px;line-height:1;color:var(--second);border:1px solid #CFCFCF;background:var(--page)}
+.v5-coche{justify-self:end;font-size:17px;font-weight:700;color:var(--houblon)}
+.v5-remettre{justify-self:end;font-size:20px;font-weight:700;color:var(--eau-t)}
+.v5-source{font-size:14px;color:var(--second);padding:6px 12px 9px;border-top:1px solid #E4E4E4}
+.v5-source b{color:var(--eau);font-weight:400}
+.v5-vide{color:#8A8A8A}
+.v5-lit{display:inline-block;width:92px;height:10px;border-radius:5px;background:linear-gradient(90deg,#DCE7EF,#B9CFDD,#DCE7EF)}
+.v5-ecarte{color:#8A8A8A;text-decoration:line-through}
+
+/* Changer de levure */
+.v5-changer{margin:10px 10px 0;padding:10px;border-radius:14px;background:var(--panneau)}
+.v5-champ{display:flex;align-items:center;gap:8px;height:42px;padding:0 12px;border:1.5px dashed #A8A8A8;border-radius:21px;background:var(--page);font-size:16px;color:var(--second)}
+.v5-champ svg{width:18px;height:18px;stroke:var(--second);fill:none;stroke-width:1.8}
+.v5-puces{display:flex;gap:6px;margin-top:8px}
+.v5-puces span{display:inline-flex;align-items:center;gap:5px;font-size:14px;padding:5px 10px 5px 8px;border:1.5px solid #BDBDBD;border-radius:10px;background:var(--page);white-space:nowrap}
+.v5-puces span:last-child{margin-left:auto;border-style:dashed;padding-left:10px}
+.v5-puces svg{width:17px;height:17px;fill:none;stroke:var(--eau);stroke-width:1.6;stroke-linejoin:round}
+
+/* Pied de l'assistant + bouton volant + barre d'onglets (dans l'écran) */
+.v5-pied{position:absolute;left:0;right:0;bottom:60px;height:60px;display:flex;align-items:center;gap:8px;padding:0 12px;background:linear-gradient(rgba(255,255,255,0),#FFFFFF 30%)}
+.v5-b{font-size:15px;padding:9px 14px;border-radius:12px;white-space:nowrap}
+.v5-b-sec{border:1.5px solid #BDBDBD;color:var(--second);background:var(--page)}
+.v5-b-pri{background:var(--texte);color:#FFFFFF;font-weight:600}
+.v5-fab{position:absolute;right:14px;bottom:8px;width:52px;height:52px;border-radius:50%;background:var(--texte);color:#FFFFFF;display:grid;place-items:center;font-size:30px;font-weight:300;line-height:1;box-shadow:0 4px 12px rgba(0,0,0,.22)}
+
+.v5-onglets{position:absolute;left:0;right:0;bottom:0;height:60px;background:var(--page);border-top:1px solid var(--trait);display:grid;grid-template-columns:repeat(6,1fr)}
+.v5-onglets a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;letter-spacing:-.3px;color:var(--second);text-decoration:none}
+.v5-onglets a svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7}
+.v5-onglets a.v5-actif{color:var(--prod);font-weight:600}
+</style>
+</head>
+<body>
+<div class="v5-planche">
+
+<!-- ÉCRAN : après — l'IA a proposé trois traits -->
+<div><p class="v5-ecran-leg">Après : 3 traits estimés</p><div class="v5-tel" aria-label="Écran Levure : traits proposés par l'IA">
+ <div class="v5-defile">
+  <header class="v5-tete">
+    <span class="v5-retour" aria-label="Retour">‹</span>
+    <span class="v5-titre">Levure<small>4/7</small></span>
+    <span class="v5-tete-d"><u>Abandonner</u>
+      <svg class="v5-ico" viewBox="0 0 24 24" aria-label="Exporter la recette"><path d="M8.5 4.5H7A2 2 0 0 0 5 6.5v13A2 2 0 0 0 7 21.5h9a2 2 0 0 0 2-2V16"/><path d="M15.5 4.5H16a2 2 0 0 1 2 2V9"/><rect x="8.5" y="2.5" width="7" height="4" rx="1.2"/><path d="M10 12.5h11m-3-3 3 3-3 3"/></svg>
+      <svg class="v5-ico" viewBox="0 0 24 24" aria-label="Thème"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+    </span>
+  </header>
+  <nav class="v5-etapes" aria-label="Étapes de la recette">
+    <span class="v5-fait">Identité</span><span class="v5-fait">Malts/sucres</span><span class="v5-fait">Houblons</span><span class="v5-ici">Levure</span><span class="v5-apres">Paliers</span><span class="v5-apres">Eau</span><span class="v5-apres">Récap.</span>
+  </nav>
+  <div class="v5-annuler">↶ <u>Annuler le changement</u></div>
+
+  <section class="v5-carte" aria-label="Ma levure">
+    <div class="v5-entete">
+      <span class="v5-pastille"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="v5-nom"><b>Munich Lager Yeast</b><span>White Labs · vendue par Lallemand</span></div>
+      <span class="v5-dose"><i>≥</i>15<small> g</small></span>
+      <span class="v5-x" aria-label="Retirer">×</span>
+    </div>
+
+    <div class="v5-chiffres">
+      <div>
+        <div class="v5-lbl">FG</div>
+        <div class="v5-val">1,018–1,021</div>
+        <div class="v5-sous">≈ 6,0–6,4 % vol</div>
+        <div class="v5-jauge"><i></i></div>
+      </div>
+      <div class="v5-conduite">
+        <div class="v5-lbl">fiche · conduite</div>
+        <div class="v5-val"><s>9–11 °C</s> <b>19 °C</b></div>
+        <div class="v5-temp"><span class="v5-plage"></span><span class="v5-ici"></span></div>
+        <div class="v5-caler"><b>↓ Caler à 11 °C</b></div>
+      </div>
+      <div class="v5-floc">
+        <div class="v5-lbl">floculation</div>
+        <div class="v5-val">moyenne</div>
+        <div class="v5-barres"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+
+    <div class="v5-ia">
+      <span class="v5-ia-btn v5-relancer"><em>↻</em>Relancer l'IA</span>
+      <span class="v5-ia-etat">3 estimés</span>
+      <span class="v5-ia-tout">Retenir les 3</span>
+    </div>
+    <ul class="v5-traits">
+      <li><span class="v5-t"><i style="background:#E0A02E"></i>esters</span><span class="v5-v v5-fantome"><u>faibles · propre</u></span><span class="v5-ecart" aria-label="Écarter">×</span></li>
+      <li><span class="v5-t"><i style="background:#8D442C"></i>phénols</span><span class="v5-v v5-fantome"><u>aucun · POF−</u></span><span class="v5-ecart" aria-label="Écarter">×</span></li>
+      <li><span class="v5-t"><i style="background:#6E9B5B"></i>thiols</span><span class="v5-v v5-fantome"><u>faibles</u></span><span class="v5-ecart" aria-label="Écarter">×</span></li>
+      <li><span class="v5-t"><i style="background:#A3C97A"></i>terpènes</span><span class="v5-v v5-rien">rien de publié</span><span></span></li>
+      <li><span class="v5-t"><i style="background:#A0522D"></i>sucres restants</span><span class="v5-v v5-retenu">moyens <small>· d'après la FG</small></span><span class="v5-coche" aria-label="Retenu">✓</span></li>
+    </ul>
+    <div class="v5-source"><b>✦</b> estimé par l'IA, rien sur la fiche White Labs · exemple</div>
+  </section>
+
+  <section class="v5-changer" aria-label="Changer de levure">
+    <div class="v5-champ"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>Changer de levure</div>
+    <div class="v5-puces">
+      <span><svg viewBox="0 0 24 24" aria-label="en stock"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10M8 5l8 4"/></svg>Pomona</span>
+      <span><svg viewBox="0 0 24 24" aria-label="en stock"><path d="M12 3 4 7v10l8 4 8-4V7z"/><path d="M4 7l8 4 8-4M12 11v10M8 5l8 4"/></svg>Verdant IPA</span>
+      <span>Hors catalogue</span>
+    </div>
+  </section>
+ </div>
+
+  <div class="v5-pied">
+    <span class="v5-b v5-b-sec">Retour</span>
+    <span class="v5-b v5-b-pri">Suivant — Paliers</span>
+    <span class="v5-fab" aria-label="Ajouter">+</span>
+  </div>
+  <nav class="v5-onglets" aria-label="Onglets">
+    <a><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</a>
+    <a><svg viewBox="0 0 24 24"><path d="M4 19V9m6 10V5m6 14v-7m4 7H3"/></svg>Finances</a>
+    <a><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4m6-4v4"/></svg>Calendrier</a>
+    <a class="v5-actif"><svg viewBox="0 0 24 24"><path d="M6 4h12l-1 15a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2z"/><path d="M6.5 9h11"/></svg>Brassins</a>
+    <a><svg viewBox="0 0 24 24"><path d="M4 8l8-4 8 4v10l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v10"/></svg>Stocks</a>
+    <a><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Clients</a>
+  </nav>
+</div></div>
+
+<!-- AVANT -->
+<div class="v5-temps">
+  <p>Avant</p>
+  <div class="v5-mini">
+    <header class="v5-tete"><span class="v5-retour">‹</span><span class="v5-titre">Levure<small>4/7</small></span></header>
+    <section class="v5-carte">
+      <div class="v5-entete">
+        <span class="v5-pastille"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+        <div class="v5-nom"><b>Munich Lager Yeast</b><span>White Labs · vendue par Lallemand</span></div>
+        <span class="v5-dose"><i>≥</i>15<small> g</small></span>
+      </div>
+      <div class="v5-ia">
+        <span class="v5-ia-btn"><em>✦</em>Compléter par l'IA</span>
+        <span class="v5-ia-etat">4 traits vides</span>
+      </div>
+      <ul class="v5-traits">
+        <li><span class="v5-t"><i style="background:#E0A02E"></i>esters</span><span class="v5-v v5-vide">—</span><span></span></li>
+        <li><span class="v5-t"><i style="background:#8D442C"></i>phénols</span><span class="v5-v v5-vide">—</span><span></span></li>
+        <li><span class="v5-t"><i style="background:#6E9B5B"></i>thiols</span><span class="v5-v v5-vide">—</span><span></span></li>
+        <li><span class="v5-t"><i style="background:#A3C97A"></i>terpènes</span><span class="v5-v v5-vide">—</span><span></span></li>
+        <li><span class="v5-t"><i style="background:#A0522D"></i>sucres restants</span><span class="v5-v v5-retenu">moyens <small>· d'après la FG</small></span><span class="v5-coche">✓</span></li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<!-- PENDANT -->
+<div class="v5-temps">
+  <p>Pendant</p>
+  <div class="v5-mini">
+    <header class="v5-tete"><span class="v5-retour">‹</span><span class="v5-titre">Levure<small>4/7</small></span></header>
+    <section class="v5-carte">
+      <div class="v5-entete">
+        <span class="v5-pastille"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+        <div class="v5-nom"><b>Munich Lager Yeast</b><span>White Labs · vendue par Lallemand</span></div>
+        <span class="v5-dose"><i>≥</i>15<small> g</small></span>
+      </div>
+      <div class="v5-ia">
+        <span class="v5-ia-btn v5-attente"><em>✦</em>Lecture…</span>
+        <span class="v5-ia-etat">fiche White Labs</span>
+        <span class="v5-ia-arret">Arrêter</span>
+      </div>
+      <ul class="v5-traits">
+        <li><span class="v5-t"><i style="background:#E0A02E"></i>esters</span><span class="v5-v"><span class="v5-lit"></span></span><span></span></li>
+        <li><span class="v5-t"><i style="background:#8D442C"></i>phénols</span><span class="v5-v"><span class="v5-lit"></span></span><span></span></li>
+        <li><span class="v5-t"><i style="background:#6E9B5B"></i>thiols</span><span class="v5-v"><span class="v5-lit"></span></span><span></span></li>
+        <li><span class="v5-t"><i style="background:#A3C97A"></i>terpènes</span><span class="v5-v"><span class="v5-lit"></span></span><span></span></li>
+        <li><span class="v5-t"><i style="background:#A0522D"></i>sucres restants</span><span class="v5-v v5-retenu">moyens <small>· d'après la FG</small></span><span class="v5-coche">✓</span></li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+<!-- ÉCARTÉ -->
+<div class="v5-temps">
+  <p>Thiols écartés, le reste retenu</p>
+  <div class="v5-mini">
+    <header class="v5-tete"><span class="v5-retour">‹</span><span class="v5-titre">Levure<small>4/7</small></span></header>
+    <section class="v5-carte">
+      <div class="v5-entete">
+        <span class="v5-pastille"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+        <div class="v5-nom"><b>Munich Lager Yeast</b><span>White Labs · vendue par Lallemand</span></div>
+        <span class="v5-dose"><i>≥</i>15<small> g</small></span>
+      </div>
+      <div class="v5-ia">
+        <span class="v5-ia-btn v5-relancer"><em>↻</em>Relancer l'IA</span>
+        <span class="v5-ia-etat">2 retenus · 1 écarté</span>
+      </div>
+      <ul class="v5-traits">
+        <li><span class="v5-t"><i style="background:#E0A02E"></i>esters</span><span class="v5-v v5-retenu">faibles · propre</span><span class="v5-coche">✓</span></li>
+        <li><span class="v5-t"><i style="background:#8D442C"></i>phénols</span><span class="v5-v v5-retenu">aucun · POF−</span><span class="v5-coche">✓</span></li>
+        <li><span class="v5-t"><i style="background:#6E9B5B"></i>thiols</span><span class="v5-v v5-ecarte">faibles</span><span class="v5-remettre" aria-label="Remettre">↶</span></li>
+        <li><span class="v5-t"><i style="background:#A3C97A"></i>terpènes</span><span class="v5-v v5-rien">rien de publié</span><span></span></li>
+        <li><span class="v5-t"><i style="background:#A0522D"></i>sucres restants</span><span class="v5-v v5-retenu">moyens <small>· d'après la FG</small></span><span class="v5-coche">✓</span></li>
+      </ul>
+    </section>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

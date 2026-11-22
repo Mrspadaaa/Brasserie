@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ma levure — v11 : la bande IA au pied de la fiche, avant, pendant, après</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#F5F5F5;color:#111111}
+body{font:15px/1.25 "Source Sans 3","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.v11-mono{font-family:"IBM Plex Mono",Consolas,ui-monospace,monospace;letter-spacing:-.01em}
+.v11-app{width:390px;margin:0 auto;padding-bottom:150px;position:relative}
+
+/* En-tête de l'assistant recette (base) */
+.v11-tete{display:flex;align-items:center;gap:10px;height:46px;padding:0 12px;background:#FFFFFF}
+.v11-tete .v11-ret{width:28px;height:28px;display:grid;place-items:center}
+.v11-tete h1{margin:0;font-size:19px;font-weight:600;flex:1}
+.v11-tete h1 span{color:#666666;font-weight:400;margin-left:6px}
+.v11-tete a{color:#333333;font-size:15px;text-decoration:underline;text-underline-offset:3px}
+.v11-ico{width:24px;height:24px;display:grid;place-items:center;color:#333333}
+.v11-etapes{display:flex;justify-content:space-between;gap:3px;padding:4px 6px 0;background:#FFFFFF;border-bottom:1px solid #EBEBEB;overflow:hidden;white-space:nowrap}
+.v11-etapes span{flex:none;font-size:14px;color:#666666;padding:2px 0 6px;letter-spacing:-.02em;border-bottom:4px solid #9E9E9E;border-radius:0 0 2px 2px}
+.v11-etapes span.v11-ici{color:#111111;font-weight:600;border-color:#111111}
+.v11-etapes span.v11-apres{border-color:#EBEBEB}
+
+/* La carte de la levure choisie */
+.v11-carte{margin:10px 8px 0;background:#FFFFFF;border:2px solid #111111;border-radius:16px;overflow:hidden}
+.v11-id{display:flex;align-items:center;gap:10px;padding:12px 12px 10px}
+.v11-badge{width:44px;height:44px;border-radius:50%;background:#F7E7B5;border:2px solid #E0A02E;display:grid;place-items:center;flex:none}
+.v11-nom{flex:1;min-width:0}
+.v11-nom b{display:block;white-space:nowrap;font-size:19px;font-weight:600;line-height:1.15}
+.v11-nom small{display:block;font-size:14px;color:#666666;margin-top:2px}
+.v11-dose{text-align:right;flex:none}
+.v11-dose .v11-mono{font-size:24px;font-weight:600}
+.v11-dose .v11-mono i{font-style:normal;font-size:15px;color:#666666;margin-left:2px}
+.v11-dose small{display:block;font-size:14px;color:#666666}
+.v11-x{width:32px;height:32px;display:grid;place-items:center;color:#666666;flex:none}
+
+.v11-grille{display:grid;grid-template-columns:1fr 1.15fr .85fr;border-top:1px solid #EBEBEB;border-bottom:1px solid #EBEBEB}
+.v11-case{padding:8px 10px 10px;border-right:1px solid #EBEBEB;min-width:0}
+.v11-case:last-child{border-right:0}
+.v11-case h3{margin:0 0 4px;font-size:14px;font-weight:400;color:#666666;white-space:nowrap}
+.v11-case .v11-val{font-size:17px;font-weight:600;white-space:nowrap}
+.v11-case .v11-sous{font-size:14px;color:#666666;margin-top:2px;white-space:nowrap}
+.v11-jauge{height:8px;border-radius:4px;background:#EBEBEB;margin-top:8px;position:relative;overflow:hidden}
+.v11-jauge i{position:absolute;top:0;bottom:0;left:62%;width:14%;background:repeating-linear-gradient(135deg,#E0A02E 0 3px,#F2C14E 3px 6px)}
+.v11-hors{color:#A8291F;font-weight:600}
+.v11-temp{height:8px;border-radius:4px;margin-top:8px;position:relative;background:linear-gradient(90deg,#4F7E9B,#86B9E6 30%,#F2C14E 60%,#C87A2C 85%,#C8382F)}
+.v11-temp .v11-plage{position:absolute;top:-4px;bottom:-4px;left:18%;width:16%;background:#2F5F7D;border:2px solid #FFFFFF;border-radius:4px;box-shadow:0 0 0 1.5px #2F5F7D}
+.v11-temp .v11-curseur{position:absolute;top:-6px;bottom:-6px;left:80%;width:4px;background:#A8291F;border:1px solid #FFFFFF;border-radius:2px}
+.v11-hp{font-size:14px;color:#A8291F;font-weight:600;margin-top:2px;white-space:nowrap}
+.v11-caler{display:inline-flex;align-items:center;gap:4px;margin-top:8px;height:32px;padding:0 10px;border-radius:10px;border:1.5px solid #2F5F7D;color:#2F5F7D;background:#FFFFFF;font:600 14px/1 "Source Sans 3","Segoe UI",system-ui,sans-serif;white-space:nowrap}
+.v11-floc{display:flex;gap:3px;margin-top:10px}
+.v11-floc i{flex:1;height:8px;border-radius:3px;background:#9E9E9E}
+.v11-floc i:last-child{background:#EBEBEB}
+
+/* Les traits : une ligne chacun, nom · valeur · source */
+.v11-traits{padding:4px 12px 2px}
+.v11-trait{display:grid;grid-template-columns:18px 1fr auto 38px 38px;align-items:center;gap:6px;height:46px;border-bottom:1px solid #F5F5F5;white-space:nowrap}
+.v11-trait:last-child{border-bottom:0}
+.v11-pt{width:14px;height:14px;border-radius:50%}
+.v11-tn{font-size:16px;color:#333333}
+.v11-tv{font-size:15px;font-weight:600}
+.v11-tv.v11-prop{border:1.5px dashed #C87A2C;color:#8A5212;background:#FDF5E6;border-radius:8px;padding:3px 9px}
+.v11-tv.v11-rien{font-weight:400;color:#666666}
+.v11-tv.v11-sim{border:1.5px dashed #9E9E9E;color:#333333;background:#FFFFFF;border-radius:8px;padding:3px 9px;font-weight:600}
+.v11-tv.v11-sim small{font-size:14px;font-weight:400;color:#666666}
+.v11-tv.v11-ok{border:1.5px solid #111111;background:#111111;color:#FFFFFF;border-radius:8px;padding:3px 9px}
+.v11-tv.v11-quete{font-weight:400;color:#8A5212}
+.v11-oui,.v11-non{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;border:1.5px solid #9E9E9E;background:#FFFFFF;color:#333333}
+.v11-oui{border-color:#2E6B4A;color:#2E6B4A}
+.v11-oui.v11-fait{background:#2E6B4A;color:#FFFFFF}
+.v11-oui svg,.v11-non svg{width:16px;height:16px}
+.v11-span3{grid-column:3 / 6;justify-self:end}
+
+/* L'axe de v11 : la bande IA au pied de la fiche */
+.v11-bande{background:#FBEFD6;border-top:2px solid #C87A2C;padding:10px 12px 12px}
+.v11-bande-l1{display:flex;align-items:center;gap:8px}
+.v11-etoile{width:30px;height:30px;border-radius:9px;background:#C87A2C;display:grid;place-items:center;flex:none}
+.v11-bande-l1 p{margin:0;font-size:15px;line-height:1.2}
+.v11-bande-l1 p b{color:#111111}
+.v11-bande-l1 p span{display:block;font-size:14px;color:#7F5B10}
+.v11-bande-l2{display:flex;align-items:center;gap:10px;margin-top:10px}
+.v11-btn{height:44px;padding:0 16px;border-radius:10px;border:0;background:#111111;color:#FFFFFF;font:600 16px/1 "Source Sans 3","Segoe UI",system-ui,sans-serif;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.v11-lien{font-size:15px;color:#333333;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.v11-astuce{font-size:14px;color:#7F5B10;margin-left:auto;text-align:right;line-height:1.15;white-space:nowrap}
+
+/* Changer de levure (base) */
+.v11-changer{margin:10px 8px 0;background:#EBEBEB;border-radius:16px;padding:10px}
+.v11-cherche{height:46px;border:1.5px dashed #9E9E9E;border-radius:23px;background:#FFFFFF;display:flex;align-items:center;gap:10px;padding:0 16px;color:#666666;font-size:18px}
+.v11-puces{display:flex;gap:6px;margin-top:8px}
+.v11-puce{height:36px;padding:0 9px;border-radius:12px;border:1.5px solid #9E9E9E;background:#FFFFFF;display:inline-flex;align-items:center;gap:6px;font-size:15px;color:#333333;white-space:nowrap}
+.v11-puce.v11-hc{border-style:dashed;margin-left:auto}
+
+/* Pied de l'assistant, dans le flux, à gauche du + */
+.v11-pied{display:flex;gap:10px;margin:12px 8px 0;padding-right:84px}
+.v11-pied .v11-retour{height:44px;padding:0 18px;border-radius:10px;border:1.5px solid #EBEBEB;background:#FFFFFF;color:#666666;font-size:16px;display:inline-flex;align-items:center}
+.v11-pied .v11-btn{flex:1;justify-content:center}
+
+/* Autres états de la bande (sous le pli) */
+.v11-etats{margin:22px 8px 0}
+.v11-etats h2{font-size:14px;font-weight:600;color:#666666;margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em}
+.v11-etat{background:#FFFFFF;border:1.5px solid #EBEBEB;border-radius:14px;overflow:hidden;margin-bottom:10px}
+.v11-etat-titre{font-size:14px;color:#666666;padding:6px 12px;border-bottom:1px solid #EBEBEB}
+.v11-avant{background:#FFFFFF;border-top:0}
+.v11-prog{height:6px;border-radius:3px;background:#F7E7B5;margin-top:10px;overflow:hidden}
+.v11-prog i{display:block;height:100%;width:50%;background:#C87A2C}
+
+/* + volant et barre d'onglets de l'app */
+.v11-plus{position:fixed;right:max(16px,calc(50% - 179px));bottom:72px;width:60px;height:60px;border-radius:50%;background:#111111;color:#FFFFFF;display:grid;place-items:center;font-size:34px;line-height:1;box-shadow:0 6px 16px rgba(0,0,0,.28);z-index:3}
+.v11-onglets{position:fixed;left:0;right:0;bottom:0;height:60px;background:#FFFFFF;border-top:1px solid #EBEBEB;display:flex;justify-content:center;z-index:2}
+.v11-onglets div{width:390px;display:flex}
+.v11-onglets a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;color:#666666;text-decoration:none;letter-spacing:-.02em;min-width:0}
+.v11-onglets a.v11-on{color:#9A4F1E;font-weight:600}
+.v11-onglets svg{width:22px;height:22px}
+
+/* Annuler le changement (base) */
+.v11-annul{margin:8px 8px 0;background:#EBEBEB;border-radius:14px;height:40px;display:flex;align-items:center;gap:8px;padding:0 14px;font-size:15px;color:#333333}
+.v11-annul span{text-decoration:underline;text-underline-offset:3px}
+/* Repères d'état entre les cartes */
+.v11-repere{margin:22px 8px 0;display:flex;align-items:center;gap:8px;font-size:14px;color:#666666}
+.v11-repere b{display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:12px;background:#111111;color:#FFFFFF;font-size:14px}
+.v11-repere.v11-premier{margin-top:12px}
+</style>
+</head>
+<body>
+<div class="v11-app">
+
+  <header class="v11-tete">
+    <span class="v11-ret"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#111111" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 6 10l7 7"/></svg></span>
+    <h1>Levure<span class="v11-mono">4/7</span></h1>
+    <a>Abandonner</a>
+    <span class="v11-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="12" height="18" rx="2"/><path d="M9 3v2h4V3M12 13h9M18 10l3 3-3 3"/></svg></span>
+  <span class="v11-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></span>
+  </header>
+  <nav class="v11-etapes">
+    <span>Identité</span><span>Malts/sucres</span><span>Houblons</span><span class="v11-ici">Levure</span><span class="v11-apres">Paliers</span><span class="v11-apres">Eau</span><span class="v11-apres">Récap.</span>
+  </nav>
+
+  <div class="v11-annul"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4 3 8l4 4"/><path d="M3 8h9a5 5 0 0 1 0 10H9"/></svg><span>Annuler le changement</span></div>
+  <div class="v11-repere v11-premier"><b>1</b>avant : la levure vient d’être choisie</div>
+  <section class="v11-carte">
+    <div class="v11-id">
+      <span class="v11-badge"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A5212" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="v11-nom"><b>Munich Lager Yeast</b><small>White Labs · exemple</small></div>
+      <div class="v11-dose"><span class="v11-mono">≥ 15<i>g</i></span><small>50 g/hL</small></div>
+      <span class="v11-x"><svg width="18" height="18" viewBox="0 0 18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m3 3 12 12M15 3 3 15"/></svg></span>
+    </div>
+
+    <div class="v11-grille">
+      <div class="v11-case">
+        <h3>FG</h3>
+        <div class="v11-val v11-mono">1,018–1,021</div>
+        <div class="v11-sous">≈ 6,0–6,4 % vol</div>
+        <div class="v11-jauge"><i></i></div>
+      </div>
+      <div class="v11-case">
+        <h3>fiche · conduite</h3>
+        <div class="v11-val v11-mono">9–11 · <span class="v11-hors">19 °C</span></div>
+        <div class="v11-hp">hors plage +8 °C</div>
+        <div class="v11-temp"><span class="v11-plage"></span><span class="v11-curseur"></span></div>
+        <span class="v11-caler"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h9M8 3.5 11.5 7 8 10.5"/></svg>Caler 11 °C</span>
+      </div>
+      <div class="v11-case">
+        <h3>floculation</h3>
+        <div class="v11-val" style="font-weight:400;color:#333333">moyenne</div>
+        <div class="v11-floc"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+
+    <div class="v11-traits">
+      <div class="v11-trait"><span class="v11-pt" style="background:#E0A02E"></span><span class="v11-tn">esters</span><span class="v11-tv v11-rien v11-span3">rien de publié</span></div>
+      <div class="v11-trait"><span class="v11-pt" style="background:#8D442C"></span><span class="v11-tn">phénols</span><span class="v11-tv v11-sim">négatif <small>simulé</small></span><span class="v11-oui" aria-label="Retenir"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8.5 3 3 7-7"/></svg></span><span class="v11-non" aria-label="Écarter"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg></span></div>
+      <div class="v11-trait"><span class="v11-pt" style="background:#5FB894"></span><span class="v11-tn">thiols</span><span class="v11-tv v11-sim">faible <small>simulé</small></span><span class="v11-oui" aria-label="Retenir"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8.5 3 3 7-7"/></svg></span><span class="v11-non" aria-label="Écarter"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg></span></div>
+      <div class="v11-trait"><span class="v11-pt" style="background:#A3C97A"></span><span class="v11-tn">terpènes</span><span class="v11-tv v11-sim">faible <small>simulé</small></span><span class="v11-oui" aria-label="Retenir"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8.5 3 3 7-7"/></svg></span><span class="v11-non" aria-label="Écarter"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg></span></div>
+      <div class="v11-trait"><span class="v11-pt" style="background:#A08A60"></span><span class="v11-tn">sucres restants</span><span class="v11-tv v11-rien v11-span3">rien de publié</span></div>
+    </div>
+    <div class="v11-bande"><div class="v11-bande-l2" style="margin-top:0">
+          <span class="v11-btn" style="background:#C87A2C;color:#111111"><svg width="16" height="16" viewBox="0 0 24 24" fill="#111111"><path d="M12 2l2.2 6.3L20.5 10l-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-1.7z"/></svg>Compléter la fiche par l'IA</span>
+          <span class="v11-astuce">2 traits vides</span>
+        </div></div>
+  </section>
+
+  <section class="v11-changer">
+    <div class="v11-cherche"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="6"/><path d="m13 13 5 5"/></svg>Changer de levure</div>
+    <div class="v11-puces">
+      <span class="v11-puce"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#4F7E9B" stroke-width="1.6" stroke-linejoin="round"><path d="M8 1.5 14 4.5v7L8 14.5 2 11.5v-7z M2 4.5 8 7.5l6-3M8 7.5v7"/></svg>Pomona</span>
+      <span class="v11-puce"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#4F7E9B" stroke-width="1.6" stroke-linejoin="round"><path d="M8 1.5 14 4.5v7L8 14.5 2 11.5v-7z M2 4.5 8 7.5l6-3M8 7.5v7"/></svg>Verdant IPA</span>
+      <span class="v11-puce v11-hc">Hors catalogue</span>
+    </div>
+  </section>
+
+  <div class="v11-pied">
+    <span class="v11-retour">Retour</span>
+    <span class="v11-btn">Suivant — Paliers</span>
+  </div>
+  <div class="v11-repere"><b>2</b>pendant : la carte reste utilisable</div>
+  <section class="v11-carte">
+    <div class="v11-id">
+      <span class="v11-badge"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A5212" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="v11-nom"><b>Munich Lager Yeast</b><small>White Labs · exemple</small></div>
+      <div class="v11-dose"><span class="v11-mono">≥ 15<i>g</i></span><small>50 g/hL</small></div>
+      <span class="v11-x"><svg width="18" height="18" viewBox="0 0 18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m3 3 12 12M15 3 3 15"/></svg></span>
+    </div>
+
+    <div class="v11-grille">
+      <div class="v11-case">
+        <h3>FG</h3>
+        <div class="v11-val v11-mono">1,018–1,021</div>
+        <div class="v11-sous">≈ 6,0–6,4 % vol</div>
+        <div class="v11-jauge"><i></i></div>
+      </div>
+      <div class="v11-case">
+        <h3>fiche · conduite</h3>
+        <div class="v11-val v11-mono">9–11 · <span class="v11-hors">19 °C</span></div>
+        <div class="v11-hp">hors plage +8 °C</div>
+        <div class="v11-temp"><span class="v11-plage"></span><span class="v11-curseur"></span></div>
+        <span class="v11-caler"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h9M8 3.5 11.5 7 8 10.5"/></svg>Caler 11 °C</span>
+      </div>
+      <div class="v11-case">
+        <h3>floculation</h3>
+        <div class="v11-val" style="font-weight:400;color:#333333">moyenne</div>
+        <div class="v11-floc"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+
+    <div class="v11-traits">
+      <div class="v11-trait"><span class="v11-pt" style="background:#E0A02E"></span><span class="v11-tn">esters</span><span class="v11-tv v11-prop">✦ bas</span><span class="v11-oui" aria-label="Retenir"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8.5 3 3 7-7"/></svg></span><span class="v11-non" aria-label="Écarter"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg></span></div>
+      <div class="v11-trait"><span class="v11-pt" style="background:#8D442C"></span><span class="v11-tn">phénols</span><span class="v11-tv v11-sim">négatif <small>simulé</small></span><span class="v11-oui" aria-label="Retenir"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8.5 3 3 7-7"/></svg></span><span class="v11-non" aria-label="Écarter"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg></span></div>
+      <div class="v11-trait"><span class="v11-pt" style="background:#5FB894"></span><span class="v11-tn">thiols</span><span class="v11-tv v11-sim">faible <small>simulé</small></span><span class="v11-oui" aria-label="Retenir"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8.5 3 3 7-7"/></svg></span><span class="v11-non" aria-label="Écarter"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg></span></div>
+      <div class="v11-trait"><span class="v11-pt" style="background:#A3C97A"></span><span class="v11-tn">terpènes</span><span class="v11-tv v11-sim">faible <small>simulé</small></span><span class="v11-oui" aria-label="Retenir"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8.5 3 3 7-7"/></svg></span><span class="v11-non" aria-label="Écarter"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg></span></div>
+      <div class="v11-trait"><span class="v11-pt" style="background:#A08A60"></span><span class="v11-tn">sucres restants</span><span class="v11-tv v11-quete v11-span3">l'IA cherche…</span></div>
+    </div>
+    <div class="v11-bande"><div class="v11-bande-l1">
+          <span class="v11-etoile"><svg width="18" height="18" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M12 2l2.2 6.3L20.5 10l-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-1.7z"/><path d="M19 15l.9 2.4 2.4.9-2.4.9L19 21.6l-.9-2.4-2.4-.9 2.4-.9z"/></svg></span>
+          <p><b>L'IA lit la fiche White Labs…</b><span>esters trouvé · 1 sur 2</span></p>
+          <span class="v11-lien" style="margin-left:auto">Arrêter</span>
+        </div><div class="v11-prog"><i></i></div></div>
+  </section>
+  <div class="v11-repere"><b>3</b>après : ✓ retient, ✕ écarte (phénols déjà retenu)</div>
+  <section class="v11-carte">
+    <div class="v11-id">
+      <span class="v11-badge"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A5212" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+      <div class="v11-nom"><b>Munich Lager Yeast</b><small>White Labs · exemple</small></div>
+      <div class="v11-dose"><span class="v11-mono">≥ 15<i>g</i></span><small>50 g/hL</small></div>
+      <span class="v11-x"><svg width="18" height="18" viewBox="0 0 18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m3 3 12 12M15 3 3 15"/></svg></span>
+    </div>
+
+    <div class="v11-grille">
+      <div class="v11-case">
+        <h3>FG</h3>
+        <div class="v11-val v11-mono">1,018–1,021</div>
+        <div class="v11-sous">≈ 6,0–6,4 % vol</div>
+        <div class="v11-jauge"><i></i></div>
+      </div>
+      <div class="v11-case">
+        <h3>fiche · conduite</h3>
+        <div class="v11-val v11-mono">9–11 · <span class="v11-hors">19 °C</span></div>
+        <div class="v11-hp">hors plage +8 °C</div>
+        <div class="v11-temp"><span class="v11-plage"></span><span class="v11-curseur"></span></div>
+        <span class="v11-caler"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h9M8 3.5 11.5 7 8 10.5"/></svg>Caler 11 °C</span>
+      </div>
+      <div class="v11-case">
+        <h3>floculation</h3>
+        <div class="v11-val" style="font-weight:400;color:#333333">moyenne</div>
+        <div class="v11-floc"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+
+    <div class="v11-traits">
+      <div class="v11-trait"><span class="v11-pt" style="background:#E0A02E"></span><span class="v11-tn">esters</span><span class="v11-tv v11-prop">✦ bas</span><span class="v11-oui" aria-label="Retenir"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8.5 3 3 7-7"/></svg></span><span class="v11-non" aria-label="Écarter"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg></span></div>
+      <div class="v11-trait"><span class="v11-pt" style="background:#8D442C"></span><span class="v11-tn">phénols</span><span class="v11-tv v11-ok">négatif</span><span class="v11-oui v11-fait" aria-label="Retenu"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8.5 3 3 7-7"/></svg></span><span></span></div>
+      <div class="v11-trait"><span class="v11-pt" style="background:#5FB894"></span><span class="v11-tn">thiols</span><span class="v11-tv v11-sim">faible <small>simulé</small></span><span class="v11-oui" aria-label="Retenir"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8.5 3 3 7-7"/></svg></span><span class="v11-non" aria-label="Écarter"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg></span></div>
+      <div class="v11-trait"><span class="v11-pt" style="background:#A3C97A"></span><span class="v11-tn">terpènes</span><span class="v11-tv v11-sim">faible <small>simulé</small></span><span class="v11-oui" aria-label="Retenir"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8.5 3 3 7-7"/></svg></span><span class="v11-non" aria-label="Écarter"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg></span></div>
+      <div class="v11-trait"><span class="v11-pt" style="background:#A08A60"></span><span class="v11-tn">sucres restants</span><span class="v11-tv v11-rien v11-span3">rien de publié</span></div>
+    </div>
+    <div class="v11-bande"><div class="v11-bande-l1">
+          <span class="v11-etoile"><svg width="18" height="18" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M12 2l2.2 6.3L20.5 10l-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-1.7z"/><path d="M19 15l.9 2.4 2.4.9-2.4.9L19 21.6l-.9-2.4-2.4-.9 2.4-.9z"/></svg></span>
+          <p><b>L'IA a complété 1 trait sur 2</b><span>sucres restants : rien de publié · 3 à confirmer</span></p>
+        </div><div class="v11-bande-l2">
+          <span class="v11-btn">Tout retenir (3)</span>
+          <span class="v11-lien">Tout écarter</span>
+        </div></div>
+  </section>
+
+</div>
+
+<a class="v11-plus" aria-label="Ajouter">+</a>
+
+<nav class="v11-onglets"><div>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 19V11M10 19V6M15 19v-9M20 19V4"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="v11-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 3h10l-1 4v12a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V7z"/><path d="M8 11h8"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z M4 7.5 12 12l8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Clients</a>
+</div></nav>
+
+</body>
+</html>

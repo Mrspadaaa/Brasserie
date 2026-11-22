@@ -16,7 +16,7 @@ export const INVOICE_SCAN_VERSION = 'invoice-v6';
 export const SCAN_MODEL = TIERS.max.primary;
 export const SCAN_MAX_BYTES = 4 * 1024 * 1024;
 /**
- * Plafond de la 3.8. Le pire cas estimé du schéma invoice-v5 (35 lignes : 4 050 jetons, l1, 31.10) oubliait la réflexion, qui compte dans
+ * Plafond de la 3.8 (repli de la 3ᵉ lecture ; Hydrogen a le sien, `INVOICE_STRONG_MAX_OUTPUT`). Le pire cas estimé du schéma invoice-v5 (35 lignes : 4 050 jetons, l1, 31.10) oubliait la réflexion, qui compte dans
  * `maxOutputTokens` : en ligne le 02.11, une commande de 31 lignes sur 3 pages a été coupée à 5 085 jetons sous l'ancien plafond de 5 100.
  * Même plafond que la Flash-Lite.
  */
@@ -26,7 +26,8 @@ export const SCAN_MAX_OUTPUT = 8192;
  * d'une facture de 37 lignes étaient coupées (banc k5, 01.11). 8 192 = `LITE_RAISED_OUTPUT` du banc ; la 3.8 a le même depuis le 02.11.
  */
 export const LITE_SCAN_MAX_OUTPUT = 8192;
-export const SCAN_MAX_CALLS = 3;
+/** Deux Flash-Lite, la 3ᵉ lecture (Hydrogen), et au plus une nouvelle tentative de cette 3ᵉ lecture sur la 3.8 : quatre appels par justificatif. */
+export const SCAN_MAX_CALLS = 4;
 /** D379 : « Pas de plafond du j'ai une facture à 1000 ligne je dois tout avoir ??? » : aucune ligne lue n'est jetée. Garde-fou seulement contre une réponse folle. */
 export const SCAN_MAX_ITEMS = 10000;
 export const SCAN_MAX_VAT_ROWS = 6;
@@ -348,7 +349,7 @@ function readRejets(value: unknown): ScanRejet[] {
  * Une ligne qui n'a qu'UN montant (aucun en-tête de colonne) : les modèles le rangent parfois en `price`, `amountTTC` vide. Quand la
  * quantité est vide ou vaut 1, ce montant est celui de la ligne : `amountTTC = price`. Rien d'autre ne change (la quantité reste vide :
  * aucun stock automatique ; `price` reste). Une quantité > 1 (ou < 1) n'est jamais multipliée ; un `amountTTC` déjà lu n'est jamais touché ;
- * sans `price` fini, rien n'est inventé. Appliquée à chaque lecture avant le vote, donc aussi à la 3.8 qui tranche (voie fn-montant-seul).
+ * sans `price` fini, rien n'est inventé. Appliquée à chaque lecture avant le vote, donc aussi à la 3ᵉ lecture qui tranche (voie fn-montant-seul).
  */
 export function montantDeLigne(amountTTC: number | null, price: number | null, quantity: number | null): number | null {
   if (amountTTC !== null || price === null) return amountTTC;
@@ -461,7 +462,7 @@ export function normalizeInvoiceScan(raw: any) {
     ...(montantTerminal !== null && montantTerminal >= 0 ? { terminalAmount: montantTerminal } : {}),
     ...(entierLu(raw?.printedItemCount) !== null ? { printedItemCount: entierLu(raw?.printedItemCount)! } : {}),
     ...(entierLu(raw?.countedAmounts) !== null ? { countedAmounts: entierLu(raw?.countedAmounts)! } : {}),
-    // Limite 2 : posé par le vote seulement, quand la 3.8 (3ᵉ lecture) confirme le comptage retenu.
+    // Limite 2 : posé par le vote seulement, quand la 3ᵉ lecture (3ᵉ lecture) confirme le comptage retenu.
     ...(entierLu(raw?.countedAmounts) !== null && raw?.countedAmountsConfirmed === true ? { countedAmountsConfirmed: true as const } : {}),
     ...(entierLu(raw?.countedEans) !== null ? { countedEans: entierLu(raw?.countedEans)! } : {}),
     ...(heureLue ? { printedTime: `${heureLue[1].padStart(2, '0')}:${heureLue[2]}` } : {}),

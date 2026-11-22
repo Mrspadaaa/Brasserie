@@ -1,0 +1,526 @@
+{
+ "01-p-repos": {
+  "vue": "portrait",
+  "W": 390,
+  "tete": "113",
+  "pastilles": {
+   "brassage": "−324",
+   "evenement": null,
+   "vente": "+900",
+   "achat": null,
+   "renovation": null,
+   "activite": null,
+   "charge": "−806"
+  },
+  "blonde": 0,
+  "nouv": [],
+  "hors": [],
+  "toast": null,
+  "toastPos": null,
+  "toastSurNav": false,
+  "rangees": [
+   185,
+   313,
+   379,
+   463,
+   520,
+   552,
+   609
+  ]
+ },
+ "02-p-f1a": {
+  "vue": "portrait",
+  "W": 390,
+  "tete": "113",
+  "pastilles": {
+   "brassage": "−324",
+   "evenement": null,
+   "vente": "+900",
+   "achat": null,
+   "renovation": null,
+   "activite": null,
+   "charge": "−806"
+  },
+  "blonde": 0,
+  "nouv": [],
+  "hors": [],
+  "toast": "S51 : 5 064 → 4 524Annuler",
+  "toastPos": [
+   8,
+   734,
+   257,
+   46
+  ],
+  "toastSurNav": false,
+  "rangees": [
+   185,
+   313,
+   379,
+   463,
+   520,
+   552,
+   609
+  ],
+  "rangeesAvant": [
+   185,
+   313,
+   379,
+   463,
+   520,
+   552,
+   609
+  ]
+ },
+ "02-p-f1a-parti": {
+  "vue": "portrait",
+  "W": 390,
+  "tete": "113",
+  "pastilles": {
+   "brassage": "−324",
+   "evenement": null,
+   "vente": "+900",
+   "achat": null,
+   "renovation": null,
+   "activite": null,
+   "charge": "−806"
+  },
+  "blonde": 0,
+  "nouv": [],
+  "hors": [],
+  "toast": null,
+  "toastPos": null,
+  "toastSurNav": false,
+  "rangees": [
+   185,
+   313,
+   379,
+   463,
+   520,
+   552,
+   609
+  ]
+ },
+ "03-p-livrer": {
+  "vue": "portrait",
+  "W": 390,
+  "tete": "113",
+  "pastilles": {
+   "brassage": "−324",
+   "evenement": null,
+   "vente": "+900",
+   "achat": null,
+   "renovation": null,
+   "activite": null,
+   "charge": "−806"
+  },
+  "blonde": 3,
+  "nouv": [],
+  "hors": [
+   "Livraison La Cigogne ·S1"
+  ],
+  "toast": "La Cigogne : 5 janv. · S1, hors vueAnnuler",
+  "toastPos": [
+   8,
+   734,
+   279,
+   46
+  ],
+  "toastSurNav": false,
+  "rangees": [
+   185,
+   313,
+   379,
+   507,
+   564,
+   596,
+   653
+  ]
+ },
+ "04-p-brassin": {
+  "vue": "portrait",
+  "W": 390,
+  "tete": "113",
+  "pastilles": {
+   "brassage": "−324",
+   "evenement": null,
+   "vente": "+900",
+   "achat": null,
+   "renovation": null,
+   "activite": null,
+   "charge": "−806"
+  },
+  "blonde": 3,
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne"
+  ],
+  "hors": [
+   "Livraison La Cigogne ·S1"
+  ],
+  "toast": "Prête le 4 janv.Annuler",
+  "toastPos": [
+   8,
+   231,
+   229,
+   46
+  ],
+  "toastSurNav": false,
+  "rangees": [
+   185,
+   397,
+   463,
+   591,
+   648,
+   680,
+   737
+  ]
+ },
+ "05-p-fete-moins": {
+  "vue": "portrait",
+  "W": 390,
+  "tete": "−37",
+  "pastilles": {
+   "brassage": "−324",
+   "evenement": null,
+   "vente": "+900",
+   "achat": null,
+   "renovation": null,
+   "activite": null,
+   "charge": "−806"
+  },
+  "blonde": 3,
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne",
+   "Stand au marché −150"
+  ],
+  "hors": [
+   "Livraison La Cigogne ·S1"
+  ],
+  "toast": "S49 : 4 280 → 4 130Annuler",
+  "toastPos": [
+   8,
+   459,
+   257,
+   46
+  ],
+  "toastSurNav": false,
+  "rangees": [
+   185,
+   397,
+   549,
+   677,
+   734,
+   766,
+   823
+  ]
+ },
+ "06-p-deux-ventes": {
+  "vue": "portrait",
+  "W": 390,
+  "tete": "313",
+  "pastilles": {
+   "brassage": "−324",
+   "evenement": null,
+   "vente": "+1 250",
+   "achat": null,
+   "renovation": null,
+   "activite": null,
+   "charge": "−806"
+  },
+  "blonde": 3,
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne",
+   "Stand au marché −150",
+   "Bar du Lac +200",
+   "Épicerie Rolle +150"
+  ],
+  "hors": [
+   "Livraison La Cigogne ·S1"
+  ],
+  "toast": "S49 : 4 330 → 4 480Annuler",
+  "toastPos": [
+   8,
+   591,
+   257,
+   46
+  ],
+  "toastSurNav": false,
+  "rangees": [
+   185,
+   397,
+   549,
+   788,
+   845,
+   877,
+   934
+  ]
+ },
+ "07-p-modifier": {
+  "vue": "portrait",
+  "W": 390,
+  "tete": "313",
+  "pastilles": {
+   "brassage": "−324",
+   "evenement": null,
+   "vente": "+1 250",
+   "achat": null,
+   "renovation": null,
+   "activite": null,
+   "charge": "−806"
+  },
+  "blonde": 3,
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne",
+   "Stand au marché −150",
+   "Bar du Lac +200",
+   "Épicerie Rolle +150"
+  ],
+  "hors": [
+   "Livraison La Cigogne ·S1"
+  ],
+  "toast": "Stand au marché : S49 → S51Annuler",
+  "toastPos": [
+   8,
+   355,
+   279,
+   46
+  ],
+  "toastSurNav": false,
+  "rangees": [
+   185,
+   397,
+   549,
+   788,
+   845,
+   877,
+   934
+  ]
+ },
+ "08-l-apres-rotation": {
+  "vue": "paysage",
+  "W": 844,
+  "tete": "313",
+  "pastilles": {
+   "brassage": "−556",
+   "evenement": null,
+   "vente": "+1 250",
+   "achat": null,
+   "renovation": null,
+   "activite": null,
+   "charge": "−1 986"
+  },
+  "blonde": 3,
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne",
+   "Stand au marché −150",
+   "Bar du Lac +200",
+   "Épicerie Rolle +150"
+  ],
+  "hors": [],
+  "toast": null,
+  "toastPos": null,
+  "toastSurNav": false,
+  "rangees": [
+   187,
+   399,
+   509,
+   706,
+   780,
+   812,
+   911
+  ]
+ },
+ "09-l-achat": {
+  "vue": "paysage",
+  "W": 844,
+  "tete": "223",
+  "pastilles": {
+   "brassage": "−556",
+   "evenement": null,
+   "vente": "+1 250",
+   "achat": null,
+   "renovation": null,
+   "activite": null,
+   "charge": "−1 986"
+  },
+  "blonde": 3,
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne",
+   "Stand au marché −150",
+   "Bar du Lac +200",
+   "Épicerie Rolle +150",
+   "Malt Vienne 25 kg −90"
+  ],
+  "hors": [],
+  "toast": "S52 : 5 750 → 5 660Annuler",
+  "toastPos": [
+   327,
+   257,
+   257,
+   46
+  ],
+  "toastSurNav": false,
+  "rangees": [
+   187,
+   399,
+   509,
+   706,
+   780,
+   812,
+   911
+  ]
+ },
+ "09b-l-blonde": {
+  "vue": "paysage",
+  "W": 844,
+  "tete": "223",
+  "pastilles": {
+   "brassage": "−556",
+   "evenement": null,
+   "vente": "+1 250",
+   "achat": null,
+   "renovation": null,
+   "activite": null,
+   "charge": "−1 986"
+  },
+  "blonde": 2,
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne",
+   "Stand au marché −150",
+   "Bar du Lac +200",
+   "Épicerie Rolle +150",
+   "Malt Vienne 25 kg −90"
+  ],
+  "hors": [],
+  "toast": "S49 : 4 630 → 4 482Annuler",
+  "toastPos": [
+   8,
+   223,
+   257,
+   46
+  ],
+  "toastSurNav": false,
+  "rangees": [
+   187,
+   399,
+   509,
+   706,
+   780,
+   812,
+   911
+  ]
+ },
+ "10-p-retour": {
+  "vue": "portrait",
+  "W": 390,
+  "tete": "223",
+  "pastilles": {
+   "brassage": "−324",
+   "evenement": null,
+   "vente": "+1 250",
+   "achat": null,
+   "renovation": null,
+   "activite": null,
+   "charge": "−806"
+  },
+  "blonde": 2,
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne",
+   "Stand au marché −150",
+   "Bar du Lac +200",
+   "Épicerie Rolle +150",
+   "Malt Vienne 25 kg −90"
+  ],
+  "hors": [
+   "Livraison La Cigogne ·S1"
+  ],
+  "toast": null,
+  "toastPos": null,
+  "toastSurNav": false,
+  "rangees": [
+   185,
+   397,
+   549,
+   788,
+   889,
+   921,
+   978
+  ]
+ },
+ "11-d-1280": {
+  "vue": "paysage",
+  "W": 844,
+  "tete": "223",
+  "pastilles": {
+   "brassage": "−556",
+   "evenement": null,
+   "vente": "+1 250",
+   "achat": null,
+   "renovation": null,
+   "activite": null,
+   "charge": "−1 986"
+  },
+  "blonde": 2,
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne",
+   "Stand au marché −150",
+   "Bar du Lac +200",
+   "Épicerie Rolle +150",
+   "Malt Vienne 25 kg −90"
+  ],
+  "hors": [],
+  "toast": null,
+  "toastPos": null,
+  "toastSurNav": false,
+  "rangees": [
+   187,
+   399,
+   509,
+   706,
+   780,
+   812,
+   911
+  ]
+ },
+ "avantRotation": {
+  "vue": "portrait",
+  "W": 390,
+  "tete": "313",
+  "pastilles": {
+   "brassage": "−324",
+   "evenement": null,
+   "vente": "+1 250",
+   "achat": null,
+   "renovation": null,
+   "activite": null,
+   "charge": "−806"
+  },
+  "blonde": 3,
+  "nouv": [
+   "J0 / 28 · prête 4 janv.Blonde d’automne",
+   "Stand au marché −150",
+   "Bar du Lac +200",
+   "Épicerie Rolle +150"
+  ],
+  "hors": [
+   "Livraison La Cigogne ·S1"
+  ],
+  "toast": "Stand au marché : S49 → S51Annuler",
+  "toastPos": [
+   8,
+   355,
+   279,
+   46
+  ],
+  "toastSurNav": false,
+  "rangees": [
+   185,
+   397,
+   549,
+   788,
+   845,
+   877,
+   934
+  ]
+ },
+ "erreurs": []
+}
