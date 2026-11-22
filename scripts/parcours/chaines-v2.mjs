@@ -75,7 +75,14 @@ function lire() {
     const lbl = m.nextElementSibling?.classList.contains('cal-lbl') ? m.nextElementSibling : null;
     const cote = lbl ? (/cal-lbl-(gauche|droite|dedans)/.exec(lbl.className) ?? [])[1] ?? null : null;
     const nom = lbl?.querySelector('.cal-lbl-t');
-    return { titre: m.getAttribute('data-titre') ?? m.getAttribute('aria-label'), rect: R(m), cote, nom: nom?.textContent.trim() ?? null, nomRect: nom ? texteRect(nom) : null };
+    /* CHV-18 : la place à droite se mesure sur l'étiquette ENTIÈRE (nom, montant, pastille « lié à »), jusqu'au bord droit de la frise moins sa marge de
+       8 px, et moins la zone du + volant quand la rangée passe à sa hauteur (Frise.tsx, mesurerSousFab) : le nom seul sous-estimait la place nécessaire. */
+    const rang = m.closest('section[data-rangee]');
+    const fab = [...document.querySelectorAll('button[aria-label]')].find((b) => /^Actions rapides/.test(b.getAttribute('aria-label') ?? ''));
+    const f = fab ? fab.getBoundingClientRect() : null, z = rang ? rang.getBoundingClientRect() : null;
+    const sous = !!(f && z && f.height && z.bottom > f.top - 4 && z.top < f.bottom + 4);
+    const limite = z ? z.right - (sous ? Math.max(0, z.right - (f.left - 8)) : 0) : innerWidth;
+    return { titre: m.getAttribute('data-titre') ?? m.getAttribute('aria-label'), rect: R(m), cote, nom: nom?.textContent.trim() ?? null, nomRect: nom ? texteRect(nom) : null, lblRect: lbl ? R(lbl) : null, limite };
   });
   return { barres, jalons, largeur: innerWidth };
 }
@@ -147,9 +154,10 @@ const ETAPE = {
       const L = m.largeur;
       for (const j of m.jalons) {
         if (!j.nomRect || j.cote !== 'gauche') continue;
-        /* raison lisible : l'étiquette entière ne tient pas à droite du picto avant le bord de l'écran */
-        const largeurNom = j.nomRect.x1 - j.nomRect.x0;
-        if (j.rect.x1 + 6 + largeurNom <= L - 8) pb.push(`« ${j.nom} » à gauche de son picto alors qu'il y a la place à droite`);
+        /* raison lisible : l'étiquette entière (nom, montant, pastille) ne tient pas à droite du picto avant le bord de la frise (ou du +) */
+        const largeurLbl = j.lblRect ? j.lblRect.w : j.nomRect.x1 - j.nomRect.x0;
+        /* 4 px de tolérance : la largeur estimée par Rangee.tsx (largeurEtiquette) dépasse de 1 à 3 px la largeur rendue ; à ce jeu près, la gauche est juste */
+        if (j.rect.x1 + 8 + largeurLbl + 4 <= j.limite) pb.push(`« ${j.nom} » à gauche de son picto alors qu'il y a la place à droite`);
       }
       return pb;
     }
