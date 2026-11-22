@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { WaterIons } from '../types';
 import { ION_LABEL, ION_ROLE, ION_SYMBOL, radarScaleMax } from '../domain/water';
 import { StyleWater, styleIonRange } from '../domain/waterStyles';
@@ -85,6 +85,182 @@ const anchorAt = (cos: number): 'start' | 'end' | 'middle' =>
 /** Halo couleur du fond : une étiquette qui chevauche un anneau ou un secteur reste lisible. */
 const HALO = { paintOrder: 'stroke', stroke: FOND, strokeWidth: 3, strokeLinejoin: 'round' } as const;
 
+/*
+ * ── Pesée sur téléphone : les étiquettes au bout de leur axe (EAU-RADAR-ETIQUETTES, 22.11, « Oula c'est pas terribles ça »).
+ * Décision : work/missions/2026-11-22-eau-sels/ETIQUETTES.md. Placement d'étiquettes à positions candidates : chaque boîte
+ * (mesurée par getBBox sur un gabarit invisible) cherche sa place à ≤ 22 px du bout de son axe, hors du disque, entière dans la
+ * toile, sans toucher une autre ; le plus grand rayon qui laisse une place à toutes est trouvé par dichotomie.
+ */
+/** Forme d'une étiquette : une ligne (Cl, Mg : symbole, valeur, plage), deux (symbole et valeur / plage) ou trois. */
+export type FormeEtiquette = 'ligne' | 'deux' | 'trois';
+/** Boîte d'un groupe dans son repère propre (origine = point d'ancrage). */
+export interface BoiteLocale { x: number; y: number; w: number; h: number }
+interface Rect { x: number; y: number; d: number; b: number }
+export interface Disposition {
+  R: number; CX: number; CY: number;
+  etiquettes: Partial<Record<keyof WaterIons, { forme: FormeEtiquette; ancre: 'start' | 'middle' | 'end'; tx: number; ty: number; r: Rect }>>;
+  legende: { tx: number; ty: number; r: Rect } | null;
+  haut: number; bas: number;
+  /** La légende va en ligne HTML sous la toile (LEGENDE_H px) : la colonne dans la toile aurait coûté plus de rayon. */
+  legendeDessous: boolean;
+}
+const ANGLE: Record<keyof WaterIons, number> = { cl: -90, so4: -30, ca: 30, mg: 90, na: 150, hco3: 210 };
+const FORMES: Record<keyof WaterIons, FormeEtiquette[]> = {
+  cl: ['ligne'], mg: ['ligne'], so4: ['deux', 'trois'], ca: ['deux', 'trois'], na: ['deux', 'trois'], hco3: ['deux', 'trois']
+};
+/** Le plus contraint d'abord : le haut et le bas prennent la hauteur, puis les flancs. */
+const ORDRE: Array<keyof WaterIons> = ['cl', 'mg', 'so4', 'hco3', 'ca', 'na'];
+const MARGE_DISQUE = 3;
+const AIR = 3;
+const BORD = 1;
+const PORTEE = 22;
+const PAS = 2;
+/** Morsure permise sur le bord du disque, et bande gardée libre de part et d'autre de chaque axe. */
+const PROF = 18;
+const BANDE = 7;
+const touche = (a: Rect, c: Rect, m: number) => a.x < c.d + m && c.x < a.d + m && a.y < c.b + m && c.y < a.b + m;
+
+function essai(R: number, w: number, h: number, boites: Record<string, BoiteLocale>, force: boolean, legendeAvant = true): Disposition | null {
+  const CX = w / 2, CY = h / 2;
+  const poses: Rect[] = [];
+  const dirs = IONS.map((ion) => [Math.cos(rad(ANGLE[ion])), Math.sin(rad(ANGLE[ion]))] as const);
+  /*
+   * Une étiquette peut mordre sur le bord du disque (PROF px au plus, au-delà du dernier repère du style) pour que la toile
+   * reste grande sur 390×660 ; jamais sur un axe ni sur ses points (bande de 7 px). −1 : refusée ; sinon la profondeur mordue.
+   */
+  const morsure = (r: Rect, prof: number) => {
+    if (r.x < BORD || r.y < BORD || r.d > w - BORD || r.b > h - BORD) return -1;
+    const nx = Math.min(Math.max(CX, r.x), r.d), ny = Math.min(Math.max(CY, r.y), r.b);
+    const pres = Math.hypot(nx - CX, ny - CY);
+    if (pres < R - prof) return -1;
+    if (poses.some((p) => touche(p, r, AIR))) return -1;
+    if (pres >= R + MARGE_DISQUE) return 0;
+    for (const [c, s] of dirs) {
+      for (let q = Math.max(0, R - prof - 8); q <= R; q += 3) {
+        const px = CX + q * c, py = CY + q * s;
+        if (px > r.x - BANDE && px < r.d + BANDE && py > r.y - BANDE && py < r.b + BANDE) return -1;
+      }
+    }
+    return R + MARGE_DISQUE - pres;
+  };
+  const libre = (r: Rect) => morsure(r, -MARGE_DISQUE) === 0;
+  /*
+   * La légende (et K⁺), posée après Cl et Mg et avant les flancs (ou après eux, second essai), entière hors du disque : au milieu du flanc gauche quand
+   * la toile est large (390×660), sinon dans le coin libre le plus proche. false : aucune place.
+   */
+  let legende: Disposition['legende'] = null;
+  const placerLegende = (): boolean => {
+    const lb = boites.legende;
+    if (!lb) return true;
+    let meilleur: { score: number; r: Rect } | null = null;
+    for (let x = BORD; x <= w - BORD - lb.w; x += PAS) {
+      for (let y = BORD; y <= h - BORD - lb.h; y += PAS) {
+        const r = { x, y, d: x + lb.w, b: y + lb.h };
+        if (!libre(r)) continue;
+        const coin = Math.min(Math.hypot(x, y), Math.hypot(w - r.d, y), Math.hypot(x, h - r.b), Math.hypot(w - r.d, h - r.b));
+        const score = Math.min(Math.hypot(x, y + lb.h / 2 - CY), coin + 10);
+        if (!meilleur || score < meilleur.score) meilleur = { score, r };
+      }
+    }
+    if (!meilleur) return force;
+    poses.push(meilleur.r);
+    legende = { tx: meilleur.r.x - lb.x, ty: meilleur.r.y - lb.y, r: meilleur.r };
+    return true;
+  };
+  const etiquettes: Disposition['etiquettes'] = {};
+  for (const ion of ORDRE) {
+    if (legendeAvant && ion === 'so4' && !placerLegende()) return null;
+    const c = Math.cos(rad(ANGLE[ion])), s = Math.sin(rad(ANGLE[ion]));
+    const tx0 = CX + R * c, ty0 = CY + R * s;
+    let best: { score: number; r: Rect; forme: FormeEtiquette; tx: number; ty: number } | null = null;
+    FORMES[ion].forEach((forme, k) => {
+      const b = boites[`${ion}-${forme}`];
+      if (!b) return;
+      // le centre idéal : dans le prolongement de l'axe, la boîte juste hors du disque
+      const ext = MARGE_DISQUE + 2 + Math.abs(c) * b.w / 2 + Math.abs(s) * b.h / 2;
+      const ix = tx0 + c * ext, iy = ty0 + s * ext;
+      for (let x = Math.floor(tx0 - b.w - PORTEE); x <= tx0 + PORTEE; x += PAS) {
+        for (let y = Math.floor(ty0 - b.h - PORTEE); y <= ty0 + PORTEE; y += PAS) {
+          const r = { x, y, d: x + b.w, b: y + b.h };
+          const dist = Math.hypot(Math.max(r.x - tx0, 0, tx0 - r.d), Math.max(r.y - ty0, 0, ty0 - r.b));
+          if (dist > PORTEE) continue;
+          const mord = force ? 0 : morsure(r, PROF);
+          if (mord < 0) continue;
+          const score = dist + 0.35 * Math.hypot(x + b.w / 2 - ix, y + b.h / 2 - iy) + k * 6 + 0.6 * mord;
+          if (!best || score < best.score) best = { score, r, forme, tx: x - b.x, ty: y - b.y };
+        }
+      }
+    });
+    if (!best) return null;
+    const retenu: { score: number; r: Rect; forme: FormeEtiquette; tx: number; ty: number } = best;
+    poses.push(retenu.r);
+    // le vrai texte (plus court que son gabarit) s'aligne sur le bord de la boîte qui regarde le bout de l'axe
+    const milieu = (retenu.r.x + retenu.r.d) / 2;
+    const ancre = milieu > tx0 + 4 ? 'start' as const : milieu < tx0 - 4 ? 'end' as const : 'middle' as const;
+    etiquettes[ion] = { forme: retenu.forme, ancre, tx: ancre === 'start' ? retenu.r.x : ancre === 'end' ? retenu.r.d : milieu, ty: retenu.ty, r: retenu.r };
+  }
+  if (!legendeAvant && !placerLegende()) return null;
+  const haut = Math.min(CY - R, ...poses.map((p) => p.y)) - BORD;
+  const bas = Math.max(CY + R, ...poses.map((p) => p.b)) + BORD;
+  return { R, CX, CY, etiquettes, legende, haut, bas, legendeDessous: false };
+}
+
+/** Le plus grand rayon qui laisse aux six étiquettes et à la légende une place au bout de leur axe. */
+function plusGrandRayon(w: number, h: number, boites: Record<string, BoiteLocale>): Disposition {
+  let lo = 40, hi = Math.max(40, Math.floor(Math.min(w, h) / 2 - 2));
+  const tente = (r: number) => essai(r, w, h, boites, false) ?? essai(r, w, h, boites, false, false);
+  let retenue = tente(lo);
+  if (!retenue) return essai(lo, w, h, boites, true)!;
+  while (lo < hi) {
+    const mid = Math.ceil((lo + hi) / 2);
+    const d = tente(mid);
+    if (d) { lo = mid; retenue = d; } else hi = mid - 1;
+  }
+  return retenue;
+}
+
+/**
+ * Le plus grand rayon qui laisse aux six étiquettes une place au bout de leur axe. La légende : colonne dans un coin libre
+ * de la toile (large et basse, 390×660), ou ligne HTML sous elle (toile presque carrée, 390×844) — celle des deux qui laisse
+ * le plus grand disque.
+ */
+export function disposerEtiquettes(w: number, h: number, boites: Record<string, BoiteLocale>): Disposition {
+  const dedans = plusGrandRayon(w, h, boites);
+  if (!boites.legende) return dedans;
+  const sansLegende = Object.fromEntries(Object.entries(boites).filter(([cle]) => cle !== 'legende'));
+  const dessous = plusGrandRayon(w, h - LEGENDE_H - 3, sansLegende);
+  // 3 px d'air entre l'étiquette du bas et la ligne de légende
+  return dessous.R > dedans.R ? { ...dessous, bas: dessous.bas + 3, legendeDessous: true } : dedans;
+}
+
+/** Un morceau de ligne d'étiquette : texte, taille, gras, rôle de couleur. */
+interface Morceau { t: string; fs: number; gras?: boolean; role: 'teinte' | 'valeur' | 'plage'; dx?: number }
+/** Lignes d'une étiquette de pesée : la même description sert au rendu, au gabarit et à l'estimation. */
+function lignesEtiquette(forme: FormeEtiquette, symbole: string, valeur: string, fleche: string, plage: string): Array<{ y: number; m: Morceau[] }> {
+  const sym: Morceau = { t: symbole, fs: 12, role: 'teinte' };
+  const val: Morceau[] = [{ t: ` ${valeur}`, fs: 16, gras: true, role: 'valeur' }, ...(fleche ? [{ t: fleche, fs: 11, role: 'valeur' as const }] : [])];
+  const pl: Morceau = { t: plage, fs: 11, role: 'plage' };
+  if (forme === 'ligne') return [{ y: 0, m: [sym, ...val, { ...pl, dx: 5 }] }];
+  if (forme === 'deux') return [{ y: 0, m: [sym, ...val] }, { y: 14, m: [pl] }];
+  return [{ y: 0, m: [sym] }, { y: 17, m: val.map((v, i) => (i === 0 ? { ...v, t: valeur } : v)) }, { y: 31, m: [pl] }];
+}
+/** Estimation de la boîte avant la première mesure (et sous jsdom, sans getBBox). */
+function estimer(lignes: Array<{ y: number; m: Morceau[] }>, ancre: 'start' | 'middle' | 'end'): BoiteLocale {
+  const w = Math.max(...lignes.map((l) => l.m.reduce((s, m) => s + m.t.length * m.fs * 0.56 + (m.dx ?? 0), 0)));
+  const fsMax = Math.max(...lignes[0].m.map((m) => m.fs));
+  const y = -fsMax, b = lignes[lignes.length - 1].y + 4;
+  return { x: ancre === 'start' ? 0 : ancre === 'end' ? -w : -w / 2, y, w, h: b - y };
+}
+const ancreDe = (ion: keyof WaterIons): 'start' | 'middle' | 'end' => {
+  const c = Math.cos(rad(ANGLE[ion]));
+  return c > 0.3 ? 'start' : c < -0.3 ? 'end' : 'middle';
+};
+/** Gabarit de valeur : chaque chiffre devient un 8, au moins trois chiffres — la toile ne bouge pas pendant la pesée. */
+const gabaritValeur = (ion: keyof WaterIons, lecture: string) => {
+  const g = lecture.replace(/\d/g, '8');
+  return g.replace(/\D/g, '').length >= 3 ? g : ion === 'hco3' ? '88,8' : '888';
+};
+
 export const WaterRadar: React.FC<WaterRadarProps> = ({
   start,
   achieved,
@@ -96,22 +272,70 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
   className = ''
 }) => {
   const pese = fitToControls && boite != null && boite.w > 0 && boite.h > 0;
+  /* Les lectures : ce qu'on écrit au bout de chaque axe, indépendant de la géométrie. */
+  const lectures = useMemo(() => IONS.map((ion) => {
+    const band = styleIonRange(style, ion);
+    const targeted = !style.untargetedIons?.includes(ion);
+    const value = achieved[ion];
+    const brut = formatIonReading(value, targeted ? band : undefined, ion === 'hco3' ? 1 : 0);
+    return { ion, band, targeted, value, reading: ion === 'hco3' ? brut.replace(/,0$/, '') : brut };
+  }), [achieved, style]);
+  const plageDe = (ion: keyof WaterIons, targeted: boolean, band: { min: number; max: number }) =>
+    targeted ? `${band.min}–${band.max}` : 'sans cible';
+  const symbolePese = (ion: keyof WaterIons) => `${ION_SYMBOL[ion]}${ion === 'hco3' ? ' moy.' : ''}`;
+
   /*
    * Pesée sur téléphone : la boîte est celle de l'écran, unité SVG = pixel CSS (les tailles de police sont celles qu'on lit).
-   * Le cercle est borné par la hauteur, et par la largeur moins six pixels : les quatre étiquettes de flanc vont dans les
-   * COINS de la boîte, là où le disque ne passe pas ; Cl et Mg se posent à côté de leur pointe.
+   * EAU-RADAR-ETIQUETTES : les gabarits invisibles (valeur « 888 ▲ ») sont mesurés par getBBox ; le rayon le plus grand qui
+   * laisse chaque étiquette au bout de son axe, entière et sans chevauchement, est cherché par `disposerEtiquettes`.
    */
+  const gabarits = useMemo(() => {
+    if (!pese) return [];
+    const out: Array<{ cle: string; ancre: 'start' | 'middle' | 'end'; lignes: ReturnType<typeof lignesEtiquette> }> = [];
+    for (const l of lectures) {
+      for (const forme of FORMES[l.ion]) {
+        out.push({ cle: `${l.ion}-${forme}`, ancre: ancreDe(l.ion), lignes: lignesEtiquette(forme, symbolePese(l.ion), gabaritValeur(l.ion, l.reading), ' ▲', plageDe(l.ion, l.targeted, l.band)) });
+      }
+    }
+    return out;
+  }, [pese, lectures]);
+  const gabaritCle = gabarits.map((g) => `${g.cle}:${g.lignes.map((l) => l.m.map((m) => m.t).join('')).join('|')}`).join(';')
+    + (potassium != null && Number.isFinite(potassium) && potassium > 0 ? ';K' : ''); // la ligne K⁺ change la boîte de la légende
+  const refs = useRef(new Map<string, SVGGraphicsElement>());
+  const attacher = useCallback((cle: string) => (el: SVGGraphicsElement | null) => { if (el) refs.current.set(cle, el); else refs.current.delete(cle); }, []);
+  const [mesures, setMesures] = useState<Record<string, BoiteLocale>>({});
+  const [polices, setPolices] = useState(0);
+  useEffect(() => {
+    let vivant = true;
+    document.fonts?.ready?.then(() => { if (vivant) setPolices((v) => v + 1); }).catch(() => {});
+    return () => { vivant = false; };
+  }, []);
+  useLayoutEffect(() => {
+    if (!pese) return;
+    const m: Record<string, BoiteLocale> = {};
+    refs.current.forEach((el, cle) => {
+      try {
+        const b = el.getBBox();
+        if (b.width > 0 && b.height > 0) m[cle] = { x: b.x, y: b.y, w: Math.ceil(b.width), h: Math.ceil(b.height) };
+      } catch { /* jsdom : pas de getBBox, l'estimation reste */ }
+    });
+    setMesures((avant) => (JSON.stringify(avant) === JSON.stringify(m) ? avant : m));
+  }, [pese, gabaritCle, polices]);
+  const boites = useMemo(() => {
+    const b: Record<string, BoiteLocale> = {};
+    for (const g of gabarits) b[g.cle] = mesures[g.cle] ?? estimer(g.lignes, g.ancre);
+    b.legende = mesures.legende ?? { x: 0, y: -10, w: 62, h: 59 };
+    return b;
+  }, [gabarits, mesures]);
+  const boitesCle = JSON.stringify(boites);
+  const disp = useMemo<Disposition | null>(
+    () => (pese ? disposerEtiquettes(boite!.w, boite!.h, JSON.parse(boitesCle) as Record<string, BoiteLocale>) : null),
+    [pese, boite, boitesCle]
+  );
   const geo = useMemo(() => {
-    if (!pese) return { VW: W, VH: 74 + 2 * R0, R: R0, CX: W / 2, CY: 36 + R0, LABEL_R: R0 + 12, top: -14, dedans: false };
-    /* La légende tient dans le flanc gauche quand le cercle est borné par la hauteur ; sinon, une ligne de 18 px sous la toile (la boîte la compte). */
-    const w = boite!.w;
-    let h = boite!.h;
-    let R = Math.max(40, Math.min((h - 10) / 2, w / 2 - 6));
-    const dedans = w / 2 - R >= COIN;
-    if (!dedans) { h -= LEGENDE_H; R = Math.max(40, Math.min((h - 10) / 2, w / 2 - 6)); }
-    h = Math.min(h, Math.ceil(2 * R + 10)); // une boîte plus haute que le disque laisserait un cadre vide
-    return { VW: w, VH: h, R, CX: w / 2, CY: h / 2, LABEL_R: R + 12, top: 0, dedans };
-  }, [pese, boite]);
+    if (!pese || !disp) return { VW: W, VH: 74 + 2 * R0, R: R0, CX: W / 2, CY: 36 + R0, LABEL_R: R0 + 12, top: -14 };
+    return { VW: boite!.w, VH: disp.bas, R: disp.R, CX: disp.CX, CY: disp.CY, LABEL_R: disp.R + 12, top: disp.haut };
+  }, [pese, boite, disp]);
   const { VW, VH, R, CX, CY, LABEL_R } = geo;
   const xy = useCallback((d: number, r: number): [number, number] => [CX + r * Math.cos(rad(d)), CY + r * Math.sin(rad(d))], [CX, CY]);
   const sector = useCallback((d: number, r0: number, r1: number): string => {
@@ -154,31 +378,20 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
 
   const axes = useMemo(
     () =>
-      IONS.map((ion, i) => {
-        const band = styleIonRange(style, ion);
-        const targeted = !style.untargetedIons?.includes(ion);
-        const value = achieved[ion];
-        const reading = formatIonReading(value, targeted ? band : undefined, ion === 'hco3' ? 1 : 0);
+      lectures.map(({ ion, band, targeted, value, reading }, i) => {
         const d = angle(i);
         const [lx, ly] = xy(d, LABEL_R);
         const [ex, ey] = xy(d, R);
         const cos = Math.cos(rad(d));
         const sin = Math.sin(rad(d));
-        /*
-         * Pesée : Cl et Mg À CÔTÉ de leur pointe (ancre start, deux lignes) ; SO₄, Ca à droite, Na, HCO₃ à gauche, dans les
-         * coins de la boîte (symbole et valeur sur une ligne, plage dessous).
-         */
         const haut = sin < -0.7, bas = sin > 0.7;
-        const coin = pese ? (haut ? { x: CX + 10, y: CY - R + 12, a: 'start' as const }
-          : bas ? { x: CX + 10, y: CY + R - 16, a: 'start' as const }
-            : { x: cos > 0 ? VW - 2 : 2, y: sin < 0 ? 14 : VH - 17, a: cos > 0 ? 'end' as const : 'start' as const }) : null;
         return {
           ion,
           d,
           band,
           targeted,
           value,
-          reading: ion === 'hco3' ? reading.replace(/,0$/, '') : reading,
+          reading,
           ex,
           ey,
           /** −1 sous la fourchette, 1 au-dessus, 0 dedans. */
@@ -189,17 +402,17 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
           rNow: rayon(value),
           rMin: rayon(band.min),
           rMax: rayon(band.max),
-          lx: coin?.x ?? lx,
+          lx,
           /*
            * Hors pesée : en haut et en bas, la place manque, le symbole et la valeur partagent une ligne. Sur les flancs elle
            * ne manque pas, et les trois lignes se centrent sur l'axe.
            */
-          serre: pese || Math.abs(sin) > 0.7,
-          ly: coin?.y ?? (haut ? 16 : bas ? CY + R + 18 : ly - 12),
-          anchor: coin?.a ?? anchorAt(cos)
+          serre: Math.abs(sin) > 0.7,
+          ly: haut ? 16 : bas ? CY + R + 18 : ly - 12,
+          anchor: anchorAt(cos)
         };
       }),
-    [start, achieved, style, rayon, xy, R, CX, CY, VW, VH, LABEL_R, pese, scale]
+    [lectures, start, rayon, xy, R, CY, LABEL_R, scale]
   );
 
   const path = (key: 'rStart' | 'rNow') =>
@@ -212,18 +425,41 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
     )
     .join(', ');
   const kppm = potassium != null && Number.isFinite(potassium) && potassium > 0 ? Math.round(potassium) : null;
-  /* La légende tient dans le flanc gauche quand le cercle est borné par la hauteur ; sinon, une ligne sous la toile. */
-  const legendeDedans = pese && geo.dedans;
-  const symboleTaille = pese ? 12 : fitToControls ? 14 : 12.5;
-  const valeurTaille = pese ? 16 : fitToControls ? 19 : 17;
-  const plageTaille = pese ? 11 : fitToControls ? 13 : 11.5;
+  const symboleTaille = fitToControls ? 14 : 12.5;
+  const valeurTaille = fitToControls ? 19 : 17;
+  const plageTaille = fitToControls ? 13 : 11.5;
+  /* Pesée : boîtes posées (étiquettes, légende) — une graduation qui en touche une se tait. */
+  const posees = disp ? [...Object.values(disp.etiquettes).map((e) => e!.r), ...(disp.legende ? [disp.legende.r] : [])] : [];
+  const teinteDe = (ion: keyof WaterIons) => (lit.has(ion) ? STRAW : 'rgb(var(--cave-texte-200))');
+  /** Les lignes d'une étiquette de pesée, rendues (étiquette visible ou gabarit). */
+  const rendreLignes = (lignes: ReturnType<typeof lignesEtiquette>, ancre: 'start' | 'middle' | 'end', teinte: string, alarme: boolean, gras: boolean) =>
+    lignes.map((l, i) => (
+      <text key={i} x={0} y={l.y} textAnchor={ancre} style={HALO}>
+        {l.m.map((m, j) => (
+          <tspan key={j} fontSize={m.fs} dx={m.dx} fontWeight={m.gras || (gras && m.role === 'teinte') ? 700 : undefined}
+            fill={m.role === 'valeur' ? (alarme ? AMBER : 'rgb(var(--cave-texte-200))') : teinte}>{m.t}</tspan>
+        ))}
+      </text>
+    ));
+  /** La légende de pesée (posée dans la toile) ; `k` : la ligne du potassium, hors des six axes. */
+  const rendreLegende = (k: string | null) => (
+    <>
+      <line x1={0} x2={14} y1={-4} y2={-4} stroke={BLUE} strokeWidth={1.5} strokeDasharray="4 3" />
+      <text x={18} y={0}>départ</text>
+      <line x1={0} x2={14} y1={11} y2={11} stroke={STRAW} strokeWidth={2.5} />
+      <text x={18} y={15}>obtenu</text>
+      <rect x={1} y={22} width={12} height={8} rx={1.5} fill={GREEN} fillOpacity={0.4} />
+      <text x={18} y={30}>style</text>
+      {k != null && <text data-radar-potassium x={0} y={45}>K⁺ <tspan fontWeight={700}>{k}</tspan> ppm</text>}
+    </>
+  );
 
   return (
     <div className={`water-radar ${className}`}>
       <svg
         /* BR-105 : l'étiquette du sommet dépassait le haut du cadre : 14 unités de marge en haut (géométrie d'origine). */
         viewBox={`0 ${geo.top} ${VW} ${VH - geo.top}`}
-        {...(pese ? { width: VW, height: VH } : {})}
+        {...(pese ? { width: VW, height: Math.ceil(VH - geo.top) } : {})}
         className={pese ? 'block mx-auto' : `block w-full mx-auto ${fitToControls ? 'sm:max-w-[30rem]' : 'max-w-[30rem]'}`}
         data-radar-pesee={pese || undefined}
         role="img"
@@ -288,9 +524,9 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
         */}
         {rings.map((ppm) => {
           const [tx, ty] = xy(-60, rayon(ppm));
-          // Pesée, petite toile (390×660) : la graduation qui tomberait sous l'étiquette du chlorure (posée à CX + 10, deux
-          // lignes, ≈ 56 × 29 px) se tait ; les autres anneaux gardent leur valeur.
-          if (pese && tx + 12 > CX + 10 && tx - 12 < CX + 66 && ty > CY - R - 2 && ty - 11 < CY - R + 29) return null;
+          // Pesée : la graduation dont la boîte toucherait une étiquette ou la légende se tait ; les autres gardent leur valeur.
+          const demi = String(ppm).length * 3.4 + 1;
+          if (pese && posees.some((p) => touche(p, { x: tx - demi, y: ty - 12, d: tx + demi, b: ty + 1 }, 2))) return null;
           return (
             <text key={`g-${ppm}`} x={tx} y={ty - 2} textAnchor="middle" fontSize={pese ? 11 : 10}
               fill={pese ? 'rgb(var(--cave-texte-200))' : 'rgb(var(--cave-texte-400))'} style={pese ? HALO : undefined}>
@@ -299,7 +535,35 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
           );
         })}
 
-        {axes.map((a) => {
+        {pese && disp && axes.map((a) => {
+          /* EAU-RADAR-ETIQUETTES : au bout de l'axe, à la place trouvée par `disposerEtiquettes`. */
+          const e = disp.etiquettes[a.ion];
+          if (!e) return null;
+          const fleche = a.out !== 0 || a.value > scale ? (a.out === 1 || a.value > scale ? ' ▲' : ' ▼') : '';
+          const lignes = lignesEtiquette(e.forme, symbolePese(a.ion), a.reading, fleche, plageDe(a.ion, a.targeted, a.band));
+          return (
+            <g key={`t-${a.ion}`} data-radar-etiquette={a.ion} data-forme={e.forme} transform={`translate(${e.tx.toFixed(1)} ${e.ty.toFixed(1)})`}>
+              {rendreLignes(lignes, e.ancre, teinteDe(a.ion), a.alarm, lit.has(a.ion))}
+            </g>
+          );
+        })}
+        {pese && disp?.legende && (
+          <g data-radar-legende aria-hidden fontSize={11} fill="rgb(var(--cave-texte-200))" style={HALO}
+            transform={`translate(${disp.legende.tx.toFixed(1)} ${disp.legende.ty.toFixed(1)})`}>
+            {rendreLegende(kppm != null ? String(kppm) : null)}
+          </g>
+        )}
+        {/* Gabarits invisibles : mesurés par getBBox, jamais vus. Posés au centre, sous le dessin. */}
+        {pese && (
+          <g data-radar-gabarit visibility="hidden" aria-hidden transform={`translate(${CX} ${CY})`}>
+            {gabarits.map((g) => (
+              <g key={g.cle} ref={attacher(g.cle)}>{rendreLignes(g.lignes, g.ancre, STRAW, false, true)}</g>
+            ))}
+            <g ref={attacher('legende')} fontSize={11}>{rendreLegende(kppm != null ? '888' : null)}</g>
+          </g>
+        )}
+
+        {!pese && axes.map((a) => {
           /* Le sens de l'écart, en petit : le chiffre reste le sujet. */
           const flèche = (a.out !== 0 || a.value > scale) && (
             <tspan fontSize={10} dy={-1}>
@@ -337,31 +601,21 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
           );
         })}
 
-        {legendeDedans && (
-          <g data-radar-legende aria-hidden fontSize={11} fill="rgb(var(--cave-texte-200))">
-            <line x1={4} x2={18} y1={CY - 15} y2={CY - 15} stroke={BLUE} strokeWidth={1.5} strokeDasharray="4 3" />
-            <text x={22} y={CY - 11}>départ</text>
-            <line x1={4} x2={18} y1={CY + 1} y2={CY + 1} stroke={STRAW} strokeWidth={2.5} />
-            <text x={22} y={CY + 5}>obtenu</text>
-            <rect x={5} y={CY + 12} width={12} height={8} rx={1.5} fill={GREEN} fillOpacity={0.4} />
-            <text x={22} y={CY + 20}>style</text>
-          </g>
-        )}
-        {pese && kppm != null && (
-          <text data-radar-potassium x={VW - 2} y={CY + 4} textAnchor="end" fontSize={12} fill="rgb(var(--cave-texte-200))" style={HALO}>
-            K⁺ <tspan fontWeight={700}>{kppm}</tspan> ppm
-          </text>
-        )}
       </svg>
       {!pese && <p className="water-radar-caption text-center text-2xs text-cave-400 leading-tight pb-0.5">
         Moyenne des eaux après sels et acides
         <span className="block">Avant apports des malts et ébullition</span>
       </p>}
-      {!legendeDedans && <div className={`water-radar-legend flex flex-wrap justify-center gap-x-3 gap-y-1 py-1 text-2xs text-cave-400 ${pese ? 'water-radar-legend-pesee' : ''}`} style={pese ? { height: LEGENDE_H } : undefined} aria-hidden>
-        <span className="inline-flex items-center gap-1.5"><span className="w-4 border-t-2 border-dashed border-water" />{pese ? 'départ' : 'Départ'}</span>
-        <span className="inline-flex items-center gap-1.5"><span className="w-4 border-t-2 border-ebc-straw" />{pese ? 'obtenu' : 'Après sels et acide'}</span>
-        <span className="inline-flex items-center gap-1.5"><span className="h-2 w-3 rounded-sm bg-hop/50" />{pese ? 'style' : 'Cible'}</span>
-        {pese && kppm != null && <span>K⁺ <strong>{kppm}</strong> ppm</span>}
+      {pese && disp?.legendeDessous && <div className="water-radar-legend water-radar-legend-pesee flex flex-wrap justify-center gap-x-3 gap-y-1 text-2xs text-cave-400" style={{ height: LEGENDE_H }} aria-hidden>
+        <span className="inline-flex items-center gap-1.5"><span className="w-4 border-t-2 border-dashed border-water" />départ</span>
+        <span className="inline-flex items-center gap-1.5"><span className="w-4 border-t-2 border-ebc-straw" />obtenu</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2 w-3 rounded-sm bg-hop/50" />style</span>
+        {kppm != null && <span data-radar-potassium>K⁺ <strong>{kppm}</strong> ppm</span>}
+      </div>}
+      {!pese && <div className="water-radar-legend flex flex-wrap justify-center gap-x-3 gap-y-1 py-1 text-2xs text-cave-400" aria-hidden>
+        <span className="inline-flex items-center gap-1.5"><span className="w-4 border-t-2 border-dashed border-water" />Départ</span>
+        <span className="inline-flex items-center gap-1.5"><span className="w-4 border-t-2 border-ebc-straw" />Après sels et acide</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2 w-3 rounded-sm bg-hop/50" />Cible</span>
       </div>}
     </div>
   );

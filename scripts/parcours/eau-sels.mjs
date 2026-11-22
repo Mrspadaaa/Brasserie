@@ -142,7 +142,7 @@ async function jouer(dir) {
             const anneaux = [...svg.querySelectorAll('circle[fill="none"]')].map((c) => c.getBoundingClientRect().width);
             const echelle = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
             const symboles = [...svg.querySelectorAll('text')].filter((t) => /(Cl|SO|Ca|Mg|Na|HCO)/.test(t.textContent)).map((t) => parseFloat(getComputedStyle(t).fontSize) * Math.min(echelle, svg.getBoundingClientRect().height / svg.viewBox.baseVal.height));
-            res.dessin = { w: x1 - x0, h: y1 - y0, largeurUtile, panneauH: pr.height, panneauW: pr.width, diametre: Math.max(0, ...anneaux), symboleMin: Math.min(...symboles) };
+            res.dessin = { w: x1 - x0, h: y1 - y0, largeurUtile, blocH: svg.closest('.water-radar')?.getBoundingClientRect().height ?? pr.height, panneauH: pr.height, panneauW: pr.width, diametre: Math.max(0, ...anneaux), symboleMin: Math.min(...symboles) };
             // S6 (EAU-RADAR-ETIQUETTES) : chaque étiquette au bout de son axe, entière, sans chevauchement.
             const visible = (e) => vis(e) && getComputedStyle(e).visibility !== 'hidden' && !e.closest('[data-radar-gabarit]');
             const M = svg.getScreenCTM();
@@ -175,6 +175,9 @@ async function jouer(dir) {
               for (const o of autres) if (e.textes.some((t) => touche(t, o.r)) && !chocs.some((c) => c === `${o.nom.replace('étiquette ', '')} / ${e.ion}`)) chocs.push(`${e.ion} / ${o.nom.replace('étiquette ', '')}`);
             });
             res.etiquettes = { n: etiq.length, liste: etiq.map(({ textes, ...r }) => r), chocs };
+            // --radar : la géométrie lue (viewBox, rayon, forme et boîte de chaque étiquette, gabarits mesurés)
+            const bb = (g) => { const b = g.getBBox(); return [b.x, b.y, b.width, b.height].map((v) => Math.round(v)).join(','); };
+            res.radarInfo = { viewBox: svg.getAttribute('viewBox'), R: Math.round(Math.max(0, ...anneaux) / 2 / echelle), etiq: etiq.map((e) => `${e.ion}:${svg.querySelector(`[data-radar-etiquette=${e.ion}]`)?.getAttribute('data-forme')}@${Math.round(e.b.x)},${Math.round(e.b.y)}–${Math.round(e.b.d)},${Math.round(e.b.b)}`), gabarits: [...svg.querySelectorAll('[data-radar-gabarit] > g')].map(bb) };
           }
           res.sels = SELS.map((id) => { const li = document.getElementById(`water-salt-${id}`); const champ = li?.querySelector('input, textarea'); return { id, ...dedans(champ ?? li), type: champ?.getAttribute('type') ?? null }; });
           const acides = [...document.querySelectorAll('[data-water-acids] input, [data-water-acids] textarea')];
@@ -215,11 +218,17 @@ async function jouer(dir) {
           for (const a of m.acides) a.ok ? ok(`S1 acide ${a.nom} ${c}`) : echec(`S1 acide ${a.nom} ${c}`, a.pourquoi);
           if (m.dessin) {
             const d = m.dessin, part = d.w / d.largeurUtile, couv = (d.w * d.h) / (d.panneauW * d.panneauH);
-            part >= 0.9 ? ok(`S2 taille ${c}`, `dessin ${Math.round(d.w)} px / ${Math.round(d.largeurUtile)} (${Math.round(part * 100)} %), cercle ${Math.round(d.diametre)} px`)
+            // « mesure équivalente » (EAU-RADAR-ETIQUETTES, 22.11) : à 390×660 le disque est borné par la HAUTEUR ; les étiquettes au
+            // bout de leur axe ne remplissent plus les coins. Il passe si le cercle prend ≥ 90 % de la hauteur de la toile (svg et ligne de
+            // légende) et le dessin ≥ 85 % de la hauteur du panneau (pas de cadre vide).
+            const parHauteur = d.diametre >= 0.9 * d.blocH && d.h >= 0.85 * d.panneauH;
+            if (parHauteur && (part < 0.9 || couv < 0.75)) ok(`S2-S3 borné par la hauteur ${c}`, `cercle ${Math.round(d.diametre)} px, toile ${Math.round(d.blocH)} px (${Math.round(d.diametre / d.blocH * 100)} %), dessin ${Math.round(d.h)} / panneau ${Math.round(d.panneauH)} px`);
+            else part >= 0.9 ? ok(`S2 taille ${c}`, `dessin ${Math.round(d.w)} px / ${Math.round(d.largeurUtile)} (${Math.round(part * 100)} %), cercle ${Math.round(d.diametre)} px`)
               : echec(`S2 taille ${c}`, `dessin ${Math.round(d.w)} px / ${Math.round(d.largeurUtile)} utiles (${Math.round(part * 100)} % < 90 %), cercle ${Math.round(d.diametre)} px`);
-            couv >= 0.75 ? ok(`S3 cadre ${c}`, `${Math.round(couv * 100)} % de la surface du panneau`) : echec(`S3 cadre ${c}`, `dessin ${Math.round(d.w)}×${Math.round(d.h)} dans un panneau ${Math.round(d.panneauW)}×${Math.round(d.panneauH)} (${Math.round(couv * 100)} % < 75 %) : cadre vide`);
+            if (!(parHauteur && (part < 0.9 || couv < 0.75))) couv >= 0.75 ? ok(`S3 cadre ${c}`, `${Math.round(couv * 100)} % de la surface du panneau`) : echec(`S3 cadre ${c}`, `dessin ${Math.round(d.w)}×${Math.round(d.h)} dans un panneau ${Math.round(d.panneauW)}×${Math.round(d.panneauH)} (${Math.round(couv * 100)} % < 75 %) : cadre vide`);
             d.symboleMin >= 11 ? ok(`S4 étiquettes ${c}`, `${d.symboleMin.toFixed(1)} px`) : echec(`S4 étiquettes ${c}`, `symbole d'ion à ${d.symboleMin.toFixed(1)} px (< 11)`);
           } else echec(`S2 taille ${c}`, 'radar absent');
+          if (drapeau('radar')) console.log(`    radar ${JSON.stringify(m.radarInfo)}`);
           const E = m.etiquettes;
           if (!E || E.n !== 6) echec(`S6 étiquettes ${c}`, `${E?.n ?? 0}/6 étiquettes d'ion`);
           else {
