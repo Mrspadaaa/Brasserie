@@ -149,7 +149,10 @@ async function jouer(dir) {
             pb.length ? echec(C, pb.join(' | ')) : ok(C, `${m.n} lignes, ${m.premiereVue} vues d’emblée${m.defile && m.scrollH > m.clientH + 2 ? `, menu défilant (${m.clientH}/${m.scrollH})` : ''}${m.disposition ? `, ${m.disposition}` : ''}`);
             await s.p.keyboard.press('Escape'); await sleep(300);
           }
-          if (s.erreurs.length) echec(`VISIBLE ${taille} ${theme}`, `erreurs page : ${s.erreurs.slice(0, 2).join(' | ')}`);
+          // Le banc (chaines-outils.mjs l.39) lit localStorage sans garde dans le document initial opaque : à 1280 non tactile,
+          // cela lève une SecurityError qui n'est pas celle de l'app. On l'écarte ; toute autre erreur reste un échec.
+          const vraies = s.erreurs.filter((x) => !/Failed to read the 'localStorage' property/.test(x));
+          if (vraies.length) echec(`VISIBLE ${taille} ${theme}`, `erreurs page : ${vraies.slice(0, 2).map((x) => x.slice(0, 400)).join(' | ')}`);
         } finally { await s.fermer(); }
       }
     }

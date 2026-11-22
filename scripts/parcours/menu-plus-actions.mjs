@@ -161,7 +161,8 @@ export async function jouerActions({ banc, ouvrirPage, sortie, entrees, echec, o
       }
       rangee.vueOk = pb.length === 0; rangee.ecarts = pb;
       if (l.aboutit && pb.length === 0) { const r = await l.aboutit(s); rangee.aboutit = r.oui; rangee.detail += r.detail; await s.cap(`action-${l.id}-fin`); }
-      if (s.erreurs.length) rangee.detail += ` erreurs page : ${s.erreurs.slice(0, 2).join(' | ')}`;
+      const vraies = s.erreurs.filter((x) => !/Failed to read the 'localStorage' property/.test(x));
+      if (vraies.length) rangee.detail += ` erreurs page : ${vraies.slice(0, 2).join(' | ')}`;
       (pb.length || rangee.aboutit === false) ? echec(C, `${pb.join(' ; ')}${rangee.aboutit === false ? ` | n'aboutit pas : ${rangee.detail}` : ''}`) : ok(C, `${rangee.obtenu.slice(0, 110)}${rangee.aboutit ? ' | aboutit' : ''}`);
     } catch (e) { rangee.vueOk = false; rangee.ecarts = [String(e.message ?? e).slice(0, 200)]; echec(C, rangee.ecarts[0]); }
     finally { sortieJson.push(rangee); await s.fermer(); }
