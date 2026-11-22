@@ -11,6 +11,18 @@ describe('CHG-7 : la bulle du tirage', () => {
     expect(etiquetteCadre(numeros, 0, 1, false)).toBe('S40');
     expect(etiquetteCadre(numeros, 0, 2, false)).toBe('S40 – S41');
   });
+  it('T9-2 : la courbe commence un an avant ; l’année se lit par rapport à aujourd’hui, le début reculé dit la sienne', () => {
+    // 58 lundis : S47 2025 (17.11.2025) … S52 2026 (21.12.2026) ; aujourd'hui le 22.11.2026 (S47 2026, index 52)
+    const lundis = Array.from({ length: 58 }, (_, i) => new Date(Date.UTC(2025, 10, 17 + 7 * i)).toISOString().slice(0, 10));
+    const nums = lundis.map((_, i) => ((46 + i) % 52) + 1);
+    expect(nums[52]).toBe(47);
+    expect(etiquetteCadre(nums, 52, 6, false, undefined, lundis, '2026-11-22')).toBe('S47 – S52');
+    expect(etiquetteCadre(nums, 0, 58, false, undefined, lundis, '2026-11-22')).toBe('S47 2025 – S52 2026');
+    expect(etiquetteCadre(nums, 0, 6, false, undefined, lundis, '2026-11-22')).toBe('S47 – S52 2025');
+    expect(etiquetteCadre(nums, 0, 1, false, undefined, lundis, '2026-11-22')).toBe('S47 2025');
+    // sans aujourd'hui : la première semaine de la courbe sert de référence (« S47 – S45 2027 », CRITIQUE-3 n° 24)
+    expect(etiquetteCadre(nums, 52, 6, false, undefined, lundis)).toBe('S47 – S52 2026');
+  });
   it('début tiré : la bulle est à droite du bout, au-delà de sa prise ; fin tirée : à gauche ; corps : centrée', () => {
     const a = boiteTirage('S40', 60, 390, 'a');
     expect(a.l).toBeGreaterThanOrEqual(60 + 10);

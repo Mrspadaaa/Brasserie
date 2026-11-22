@@ -98,6 +98,8 @@ export interface CadreProps {
   onLire?: (clientX: number | null) => void;
   /** Dans l'année, l'étiquette dit les mois (« nov. – oct. »), jamais « S47 – S45 » (c1-d). */
   etiquetteAnnee?: string;
+  /** T9-2 : aujourd'hui (ISO), l'année de référence de l'étiquette. */
+  aujourdhui?: string;
   /** CAL-PASSE : la courbe commence avant aujourd'hui ; la prise de la poignée de début reste dans l'écran même à la première semaine. */
   debutRamenee?: boolean;
   /** R4 : la vue de la courbe (semaines), celle où se posent le cadre et ses poignées. */
@@ -113,14 +115,22 @@ const anneeIso = (lundi: string): number => Number(ajouterJours(lundi, 3).slice(
  * L'étiquette du cadre : les semaines, ou les mois dans l'année. Une semaine de fin dans l'année qui suit la première semaine de la courbe porte
  * son année (« S47 – S45 2027 », CRITIQUE-3 n° 24) : sans elle, S45 se lit comme une semaine passée.
  */
-export function etiquetteCadre(numeros: readonly number[], index: number, nombre: number, annee: boolean, etiquetteAnnee?: string, lundis?: readonly string[]): string {
+export function etiquetteCadre(numeros: readonly number[], index: number, nombre: number, annee: boolean, etiquetteAnnee?: string, lundis?: readonly string[], aujourdhui?: string): string {
   if (annee && etiquetteAnnee) return etiquetteAnnee;
   const total = numeros.length;
   const fin = Math.min(total - 1, index + nombre - 1);
-  const an = lundis && lundis[0] && lundis[fin] && anneeIso(lundis[fin]) > anneeIso(lundis[0]) ? ` ${anneeIso(lundis[fin])}` : '';
+  /*
+   * T9-2 (tour 9, 22.11, « bute sur S47 ») : la courbe commence un an avant aujourd'hui (CAL-PASSE) ; la référence de l'année est celle
+   * d'aujourd'hui, plus la première semaine de la courbe. Un début dans une autre année que la fin, ou hors de l'année en cours, porte la
+   * sienne : « S47 2025 – S52 2026 », jamais « S47 – S52 2026 » qui se lit comme la fenêtre d'avant le geste.
+   */
+  const ref = aujourdhui ? anneeIso(lundiDe(aujourdhui)) : lundis?.[0] ? anneeIso(lundis[0]) : null;
+  const ya = lundis?.[index] ? anneeIso(lundis[index]) : null, yb = lundis?.[fin] ? anneeIso(lundis[fin]) : null;
+  const anA = ya !== null && ref !== null && ya !== ref && ya !== yb ? ` ${ya}` : '';
+  const anB = yb !== null && ref !== null && (yb !== ref || (ya !== null && ya !== yb)) ? ` ${yb}` : '';
   // CHG-7 : une semaine se dit une fois (« S40 »), jamais « S40 – S40 »
-  if (fin <= index) return `S${numeros[index] ?? ''}${an}`;
-  return `S${numeros[index] ?? ''} – S${numeros[fin] ?? ''}${an}`;
+  if (fin <= index) return `S${numeros[index] ?? ''}${anB || anA}`;
+  return `S${numeros[index] ?? ''}${anA} – S${numeros[fin] ?? ''}${anB}`;
 }
 
 /** Zone de prise d'une poignée : 44 px (cible tactile minimale de l'app). */
@@ -194,14 +204,14 @@ interface SaisieCadre {
   minuterie: ReturnType<typeof setTimeout> | null;
 }
 
-export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTirage, etiquetteAnnee, surface, onLire, debutRamenee, vue, onVue }: CadreProps) {
+export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTirage, etiquetteAnnee, surface, onLire, debutRamenee, vue, onVue, aujourdhui }: CadreProps) {
   const total = numeros.length;
   // R4 : une semaine fait `unit` px dans la vue ; la semaine i commence en (i − v0) × unit.
   const unit = largeur / Math.max(1e-6, vue.span);
   const xDe = (i: number) => (i - vue.v0) * unit;
   const [drag, setDrag] = useState<{ index: number; nombre: number; bord: number; cote: 'a' | 'b' | 'corps' } | null>(null);
   const cur = drag ?? { index, nombre };
-  const etiquette = etiquetteCadre(numeros, cur.index, cur.nombre, annee && !drag, etiquetteAnnee, lundis);
+  const etiquette = etiquetteCadre(numeros, cur.index, cur.nombre, annee && !drag, etiquetteAnnee, lundis, aujourdhui);
   const gauche = xDe(cur.index), droite = xDe(cur.index + cur.nombre);
   // Plus large que le cadre (fenêtre de 2 semaines), l'étiquette passe à côté du cadre, sur une ligne, jamais hors de l'écran (placeEtiquette).
   const place = placeEtiquette(etiquette, gauche, cur.nombre * unit, largeur);
@@ -284,6 +294,9 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
         // un bout garde son écart au doigt (R2) ; la semaine sous le doigt se lit dans la vue du moment (elle change au bord, R7)
         const u = Math.round(s.v.v0 + (x + s.off) * parPx);
         const p = poserPlage(s.role, s.a0, s.b0, s.role === 'a' ? u - s.a0 : u - s.b0, o);
+        /* T9-2 : la fenêtre ne dépasse jamais l'An (52 semaines, CAL-PASSE) ; au-delà, l'autre bout suit. Sans cela, le début tenu au bord
+           posait 58 semaines : bouton « An », frise de douze mois, et un cadre plus long qu'elle. */
+        if (p.b - p.a > SEMAINES_ANNEE) { if (s.role === 'a') p.b = p.a + SEMAINES_ANNEE; else p.a = p.b - SEMAINES_ANNEE; }
         // R4 pendant le geste : aucun bout ne sort de la courbe
         if (p.a < s.v.v0) s.v = { ...s.v, v0: p.a };
         if (p.b > s.v.v0 + s.v.span) s.v = { ...s.v, v0: p.b - s.v.span };

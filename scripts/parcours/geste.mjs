@@ -831,8 +831,9 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
       pastille = { du: du.toISOString().slice(0, 10), nums };
     }
     const et = (document.querySelector('[data-cadre-etiquette]')?.textContent ?? '').replace(/\s+/g, ' ').trim();
-    const me = /^S(\d+)(?: – S(\d+))?/.exec(et);
-    const etiquette = me ? { a: Number(me[1]), b: Number(me[2] ?? me[1]) } : null;
+    // « S47 – S52 », « S47 – S45 2027 », « S47 2025 – S52 2026 » (T9-2 : le début dit son année hors de l'année en cours)
+    const me = /^S(\d+)(?: (\d{4}))?(?: – S(\d+))?/.exec(et);
+    const etiquette = me ? { a: Number(me[1]), anA: me[2] ? Number(me[2]) : null, b: Number(me[3] ?? me[1]) } : null;
     // étiquettes de la courbe : deux textes qui se recouvrent = empilées
     const tx = [...cb.querySelectorAll('text')].filter((e) => (e.textContent ?? '').trim()).map((e) => { const r = e.getBoundingClientRect(); return { t: (e.textContent ?? '').trim().slice(0, 18), l: r.left, r: r.right, hh: r.top, b: r.bottom }; }).filter((r) => r.r - r.l > 0);
     const empilees = []; for (let i = 0; i < tx.length; i++) for (let j = i + 1; j < tx.length; j++) { const a = tx[i], b = tx[j], w = Math.min(a.r, b.r) - Math.max(a.l, b.l), h = Math.min(a.b, b.b) - Math.max(a.hh, b.hh); if (w > 2 && h > 2 && (w * h) / Math.min((a.r - a.l) * (a.b - a.hh), (b.r - b.l) * (b.b - b.hh)) > 0.3) empilees.push(`${a.t}/${b.t}`); }
@@ -1090,6 +1091,40 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
         recul >= 8 && recul <= 52 ? ok(`${F} T9-2 recul en un geste`, `« ${c0.label} » → « ${c1.label} » (${recul} sem.)`) : echec(`${F} T9-2 recul en un geste`, `« ${c0.label} » → « ${c1.label} » : ${recul} semaine(s) de recul en 3,6 s tenues (8 au moins attendues)`);
       }
     } catch (e) { echec(`${F} T9-2`, String(e.message ?? e).slice(0, 160)); await echap(); }
+    /* T9-2 doigt IMMOBILE (22.11) : un vrai doigt tenu n'émet aucun touchMove ; le toucher toutes les 100 ms de tenirAuBord masquait le défaut.
+       Tenue 3 s : la fenêtre recule jusqu'au début de la courbe (un an avant aujourd'hui) ; l'étiquette doit le dire (« S47 2025 – S52 2026 »),
+       jamais « S47 – S52 2026 », la même qu'avant le geste (« bute sur S47 »). Rouge sur en-ligne/2026-11-22-tour9. */
+    try {
+      await versCalendrier(); await choisirPeriode('2 sem.'); await sleep(400); await choisirPeriode('6 sem.'); await sleep(500);
+      const c0 = await lireCoherence(), g = await boiteCadre();
+      const cbL = await p.evaluate(() => (document.querySelector('.ent-cbz .ent-cb') ?? document.querySelector('.ent-cb'))?.getBoundingClientRect().left ?? null);
+      if (!g || !c0.etiquette || cbL === null) echec(`${F} T9-2 immobile`, `cadre illisible (« ${c0.label} »)`);
+      else {
+        const x1 = Math.max(2, cbL + 2), xs = pas(g.l + 1, x1, 20);
+        if (tactile) {
+          const cdpT = await p.createCDPSession(), pt = (x) => [{ x: Math.round(x), y: Math.round(g.y), id: 1 }];
+          await cdpT.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pt(g.l + 1) }); await sleep(50);
+          for (const x of xs) { await cdpT.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(x) }); await sleep(16); }
+          await sleep(3000);
+          await cdpT.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        } else {
+          await p.mouse.move(g.l + 1, g.y); await p.mouse.down(); await sleep(40);
+          for (const x of xs) { await p.mouse.move(x, g.y); await sleep(16); }
+          await sleep(3000); await p.mouse.up();
+        }
+        await sleep(900);
+        await cap('t9-2-debut-immobile');
+        const c1 = await verifierCoherence(`${F} T9-2 immobile`, 'cohérence après le début tenu immobile', c0.pt);
+        /* 40 semaines au moins (comme CAL-RETOUR-PASSE) : sur tour9, le passé s'arrêtait au solde d'ouverture (S47 sur ses données, où la caisse
+           s'ouvre cette semaine : « bute sur S47 » ; S34 dans la fixture) ; 3 s tenues mènent au début de la courbe, un an avant. */
+        /* et jamais plus que l'An (52 semaines : au-delà, la fin suit le début ; 58 sem. sous « An » sur l'arbre du 22.11 avant correction) */
+        const recul = c1.points.length - c0.points.length, recule = recul >= 40 && c1.points.length <= 52, tour = !!c1.etiquette && c1.etiquette.a > c0.etiquette.a;
+        const dit = `« ${c0.label} » (${c0.points.length} pts) → « ${c1.label} » (${c1.points.length} pts)`;
+        recule ? ok(`${F} T9-2 immobile recule`, `${dit}, ${recul} sem.`) : echec(`${F} T9-2 immobile recule`, `${dit} : ${recul} semaine(s) de recul sous le doigt immobile (40 au moins : le passé ne s'arrête plus au solde d'ouverture)`);
+        (recule && c1.label !== c0.label && (!tour || c1.etiquette.anA !== null)) ? ok(`${F} T9-2 immobile étiquette`, dit)
+          : echec(`${F} T9-2 immobile étiquette`, `${dit} : l'étiquette ne dit pas la fenêtre reculée${tour ? ' (début dans l\'année d\'avant, sans son année)' : ''}`);
+      }
+    } catch (e) { echec(`${F} T9-2 immobile`, String(e.message ?? e).slice(0, 160)); await echap(); }
     // T9-3 (la fenêtre locale reculée par T9-2 se garde : « 2 sem. » la ramène à cette semaine avant « 3 mois », comme T9-1)
     try {
       await versCalendrier(); await choisirPeriode('2 sem.'); await sleep(400); await choisirPeriode('3 mois'); await sleep(500);
