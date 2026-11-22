@@ -103,11 +103,11 @@ describe('n° 6 : Autres stocks vit', () => {
   it('la liste perd Malts, Houblons, Levures et « Trié par couleur » ; Additifs filtre ; Ingrédients rend tout', async () => {
     const { container } = render(<Catalogue/>);
     await screen.findByText('Munich');
-    expect(screen.getByText(/Trié par couleur/)).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /Trier Malts : couleur/ })[0]).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('tab', { name: 'Autres stocks' }));
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Ouvrir Munich' })).toBeNull());
-    expect(screen.queryByText(/Trié par couleur/)).toBeNull();
+    expect(screen.queryByRole('button', { name: /Trier Malts : couleur/ })).toBeNull();
     for (const nom of ['Malts', 'Houblons', 'Levures']) expect(entetes().some((t) => t.trim().startsWith(nom))).toBe(false);
     expect(screen.queryByRole('button', { name: 'Ouvrir Citra' })).toBeNull();
     expect(screen.getByRole('button', { name: 'Ouvrir Capsules 26 mm' })).toBeVisible();
@@ -130,7 +130,7 @@ describe('n° 6 : Autres stocks vit', () => {
     fireEvent.click(additifs);
     fireEvent.click(screen.getByRole('tab', { name: 'Ingrédients' }));
     await screen.findByRole('button', { name: 'Ouvrir Munich' });
-    expect(screen.getByText(/Trié par couleur/)).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /Trier Malts : couleur/ })[0]).toBeInTheDocument();
     expect(screen.queryByRole('status', { name: 'Filtre en cours' })).toBeNull();
     expect(entetes().some((t) => t.trim().startsWith('Malts'))).toBe(true);
   });

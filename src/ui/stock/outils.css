@@ -17,3 +17,13 @@
 .sz-puces{margin-top:4px}.sz-tri,.sz-tb{min-height:28px}
 /* APP-ENTETE-COLLE (19.11) : Articles et Courses défilent avec la fenêtre ; la hauteur d'écran imposée en paysage bas (stocks.css) ne s'y applique pas. */
 @media (max-height:480px){.stocks-screen.stocks-fenetre{height:auto}}
+
+/* D2a (22.11) : Comparer en rond à droite de la recherche (maquette st1-d2a : 44 px, trait fin, rond) et la puce de tri dans la barre du rayon. */
+.sz-rond{flex:none;width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--l1-strong);border-radius:50%;color:var(--l1-t0);background:transparent}
+.sz-rond[aria-pressed=true]{background:var(--l1-t0);border-color:var(--l1-t0);color:var(--l1-page)}
+.sz-puce-tri{position:relative;flex:none}
+.sz-pt{display:inline-flex;align-items:center;gap:4px;min-height:34px;padding:0 12px;border-radius:17px;background:color-mix(in srgb,var(--l1-t2) 16%,transparent);font-size:15px;color:var(--l1-t0)}
+.sz-pt-menu{position:absolute;z-index:20;left:0;top:100%;margin-top:2px;min-width:250px;border:1px solid var(--l1-strong);border-radius:10px;background:var(--l1-page)}
+.sz-pt-menu button{display:flex;gap:8px;align-items:center;width:100%;min-height:44px;padding:0 12px;text-align:left;font-size:14px;color:var(--l1-t0)}
+.stock-liste .l1-eh .l1-ec{display:none}
+@media (min-width:900px){.stock-liste .l1-eh .sz-puce-tri{display:none}.stock-liste .l1-eh .l1-ec{display:block}}

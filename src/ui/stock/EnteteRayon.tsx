@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ECHELLES, xBarre, type Echelle, type TriListe } from '../../domain/stock/liste';
 import { legendeRayon, LIRE_ECHELLE, familleTeinteGroupe, rayonDuGroupe } from '../../domain/stock/ligne';
+import { PuceTri } from './OutilsStock';
 import './liste.css';
 
 /** Icônes des familles, celles de la maquette sy/fA (traits de 2, 24 px). */
@@ -52,6 +53,7 @@ export const EnteteRayon: React.FC<{ nom: string; compte: number; sur?: number; 
         <h2>{rayon === 'Houblons' && onCatalogue
           ? <button type="button" className="l1-cat" aria-label="Ouvrir le catalogue des houblons" onClick={(ev) => { ev.stopPropagation(); onCatalogue(); }}>{affiche}</button>
           : affiche} <span className="l1-en">{sur !== undefined && sur !== compte ? `${compte} sur ${sur}` : compte}</span></h2>
+        {rayon && onTri && <PuceTri tri={tri ?? 'defaut'} rayon={rayon} onTri={onTri} />}
         {rayon && <span className="l1-ec">{legendeRayon(rayon, tri)}</span>}
         {rayon && <button type="button" className="l1-ib" aria-label="Lire l'échelle" aria-expanded={dit} onClick={(e) => { e.stopPropagation(); setDit((v) => !v); }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5" /><path d="M12 11v6" /><circle cx="12" cy="7.6" r=".6" fill="currentColor" /></svg>

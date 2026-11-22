@@ -118,7 +118,7 @@ describe('filtres du stock (pastilles, ligne de filtre, Recompter)', () => {
     expect(screen.getByRole('searchbox', { name: 'Rechercher dans le stock' })).toHaveValue('malt');
     expect(within(vue).getByText('Malt Pale Ale')).toBeVisible();
     expect(within(vue).queryByText('Citra')).toBeNull();
-    expect(within(vue).getByText(/Trié par/)).toHaveTextContent('nom, A → Z');
+    expect(within(vue).getAllByRole('button', { name: /Trier .* : nom/ }).length).toBeGreaterThan(0);
     fireEvent.click(within(vue).getByRole('button', { name: /^Houblons/ }));
     fireEvent.click(screen.getByRole('tab', { name: 'Étagère' }));
     expect(screen.getByRole('status', { name: 'Filtre en cours' })).toHaveTextContent('Filtre Houblons et recherche « malt »');

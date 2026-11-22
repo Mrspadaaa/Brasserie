@@ -1,7 +1,7 @@
 // Barre d'outils du Stock, reprise de la maquette choisie sy/fA : recherche, pastilles d'état,
 // ligne de filtre « Filtre Houblons : 19 articles · Tout voir », ligne « Trié par … ▾ ». Les règles sont dans domain/stock.
 import React, { useEffect, useState } from 'react';
-import { Search, X, Star } from 'lucide-react';
+import { Search, X, Star, ArrowUpDown } from 'lucide-react';
 import type { ComptesEtats, TriListe } from '../../domain/stock/liste';
 import { TRIS, phraseTri } from '../../domain/stock/liste';
 import { JOURS_RECENTS, type Puce } from '../../domain/stock/filtresDynamiques';
@@ -101,26 +101,26 @@ export function LigneFiltre({ texte, onToutVoir }: { texte: TexteFiltre | null; 
 }
 
 /** « Trié par couleur (malts), amertume (houblons), date (levures) ▾ » : le tri écrit en clair, et le menu des quatre tris. */
-export function LigneTri({ tri, onTri }: { tri: TriListe; onTri: (t: TriListe) => void }) {
+const MOT_TRI: Record<string, string> = { Malts: 'couleur', Houblons: 'α', Levures: 'date' };
+/** D2a : la puce de tri de la barre d'un rayon (« ↕ couleur »), sur la même ligne que le nom ; son menu garde les quatre tris. */
+export function PuceTri({ tri, rayon, onTri }: { tri: TriListe; rayon: string; onTri: (t: TriListe) => void }) {
   const [ouvert, setOuvert] = useState(false);
+  const mot = tri === 'defaut' ? (MOT_TRI[rayon] ?? 'ordre') : tri === 'nom' ? 'nom' : tri === 'quantite' ? 'quantité' : 'manque';
   return (
-    <div className="px-[10px]">
-      <div className="sz-tri">
-        <button type="button" className="sz-tb text-left" aria-expanded={ouvert} aria-haspopup="menu" onClick={() => setOuvert((o) => !o)}>
-          Trié par {phraseTri(tri)}{' '}▾
-        </button>
-      </div>
+    <span className="sz-puce-tri" onClick={(e) => e.stopPropagation()}>
+      <button type="button" className="sz-pt" aria-expanded={ouvert} aria-haspopup="menu" aria-label={`Trier ${rayon} : ${mot}`} onClick={() => setOuvert((o) => !o)}>
+        <ArrowUpDown size={16} aria-hidden="true" /> {mot}
+      </button>
       {ouvert && (
-        <div role="menu" aria-label="Trier la liste" className="mb-1 rounded-[10px] border border-[var(--l1-strong)] bg-[var(--l1-page)]">
+        <div role="menu" aria-label="Trier la liste" className="sz-pt-menu">
           {TRIS.map((t) => (
-            <button key={t.id} type="button" role="menuitemradio" aria-checked={tri === t.id}
-              className="flex min-h-[44px] w-full items-center gap-2 px-3 text-left text-[14px] text-[var(--l1-t0)]"
-              onClick={() => { onTri(t.id); setOuvert(false); }}>
-              <span aria-hidden="true" className="w-4">{tri === t.id ? '●' : '○'}</span>{t.phrase}
+            <button key={t.id} type="button" role="menuitemradio" aria-checked={tri === t.id} onClick={() => { onTri(t.id); setOuvert(false); }}>
+              <span aria-hidden="true">{tri === t.id ? '●' : '○'}</span> {t.phrase}
             </button>
           ))}
         </div>
       )}
-    </div>
+    </span>
   );
 }
+

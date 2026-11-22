@@ -64,11 +64,11 @@ describe('CT4C-2 : étagère à 390, aucun texte sous 12 px', () => {
 });
 
 describe('CT4C-3 : la ligne Levures dit ce que sont ses pictos', () => {
-  it('le bouton de légende porte un mot visible, pas un « ? » seul', () => {
+  it('D2a (22.11) : le bouton de légende est un rond « ? » (maquette choisie), nommé « Légende » pour les lecteurs d’écran', () => {
     const { container } = render(<MurStock items={STOCK} onOpen={vi.fn()} onOnglet={vi.fn()} onglet="ing" />);
     const b = container.querySelector<HTMLButtonElement>('.l1e-r[data-f="f2"] .sx-q')!;
     expect(b).not.toBeNull();
-    expect(b.textContent?.trim()).toMatch(/Légende/);
+    expect(b.textContent?.trim()).toBe('?'); expect(b.getAttribute('aria-label')).toBe('Légende');
   });
   it('la légende des levures dit ce que sont la brique et sa lettre', () => {
     const { container } = render(<MurStock items={STOCK} onOpen={vi.fn()} onOnglet={vi.fn()} onglet="ing" />);

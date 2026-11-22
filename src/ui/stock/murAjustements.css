@@ -101,3 +101,8 @@ html[data-theme="cave"] .stock-mur .l1e-r:not(.l1e-sansc) .l1e-gb::after{border-
 .stock-mur .sx-suite[data-on]{display:flex}
 /* STG-2 et STG-3 : la bulle qui confirme (« toucher ici : la fiche ») se touche au pouce : 44 px de haut au moins */
 .l1x-bul{min-height:44px;justify-content:center}
+
+/* D2a (22.11) : le « ? » de la légende est un rond (maquette st1-d2a), le rayon touché est encadré de sa couleur avec une encoche vers sa liste. */
+.stock-mur .l1e-c1 .sx-q{width:28px;padding:0;border-radius:50%;font:700 15px/25px var(--l1-sans,inherit)}
+.stock-mur .l1e-r:has(.l1e-n[aria-pressed=true]){box-shadow:inset 0 0 0 2px var(--l1-k)}
+.stock-mur .l1e-r:has(.l1e-n[aria-pressed=true])::after{content:"";position:absolute;left:26px;bottom:-8px;width:14px;height:14px;background:var(--l1-page,#fff);transform:rotate(45deg);border-right:2px solid var(--l1-k);border-bottom:2px solid var(--l1-k);z-index:2}

@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useState, useMemo, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
-import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, ClipboardCheck, Undo2, ArrowLeft } from 'lucide-react';
+import { Plus, Scale, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, ClipboardCheck, Undo2, ArrowLeft } from 'lucide-react';
 import { StockItem, EquipmentItem, KegItem, Batch, Recipe, Client } from '../../types';
 import { StorageService } from '../../services/storage';
 import { latestBrewPrices } from '../../domain/finance/brewBudget';
@@ -48,7 +48,7 @@ import { rechercherStock } from '../../domain/stock/recherche';
 import { infoLigne, compterEtats, trierArticles, resumeRayon, familleRecompter, TRIS, type TriListe } from '../../domain/stock/liste';
 import { pucesVisibles, refsBrassin, refsRecents, MAX_PUCES_LARGE, MAX_PUCES_MOBILE } from '../../domain/stock/filtresDynamiques';
 import { GROUPES_LISTE, LIBELLE_FAMILLE, groupeListe, lignesRetenues, texteFiltre, type FiltreListe } from '../../domain/stock/listeFiltres';
-import { Recherche, Pastilles, LigneFiltre, LigneTri, type VueStock } from '../../ui/stock/OutilsStock';
+import { Recherche, Pastilles, LigneFiltre, type VueStock } from '../../ui/stock/OutilsStock';
 import { RecompterStock } from '../../ui/stock/RecompterStock';
 
 /* Carnet d'idées (R01 à R08) : chargé à l'ouverture du segment Carnets seulement. */
@@ -196,6 +196,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     .sort((a, b) => a.name.localeCompare(b.name, 'fr')),
   [savedRecipes]);
   const [recipeId, setRecipeId] = useState('');
+  // D2a (22.11) : « Comparer une recette » est un rond à droite de la recherche ; le panneau s'ouvre dessous.
+  const [comparer, setComparer] = useState(false);
   const selectedRecipe = recipes.find(recipe => recipe.id === recipeId) ?? null;
   const recipeComparison = useMemo(() => selectedRecipe
     ? compareRecipeWithStock(selectedRecipe, batches, allItems, savedRecipes)
@@ -550,7 +552,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const blocOutils = (
     <div className="stock-outils shrink-0 pt-1">
       <div ref={refPanneau} className="sz-pan-h mt-1 px-[10px]">
-        <Recherche q={q} onQ={setQ} action={!mobile && <Button intent="secondary" aria-label="Ajouter un article" onClick={() => setCreating(true)} icon={<Plus className="w-4 h-4" />}><span className="hidden sm:inline">Ajouter un article</span></Button>} />
+        <Recherche q={q} onQ={setQ} action={<>{subTab === 'stock' && <button type="button" className="sz-rond" data-comparer aria-label="Comparer une recette" aria-expanded={comparer} aria-pressed={comparer} onClick={() => setComparer((v) => !v)}><Scale size={20} aria-hidden="true" /></button>}{!mobile && <Button intent="secondary" aria-label="Ajouter un article" onClick={() => setCreating(true)} icon={<Plus className="w-4 h-4" />}><span className="hidden sm:inline">Ajouter un article</span></Button>}</>} />
         <Pastilles puces={pucesVisibles(comptesEtats, ensembles, filtre, mobile ? MAX_PUCES_MOBILE : MAX_PUCES_LARGE)} comptes={comptesEtats} filtre={filtre} onFiltre={setFiltre} nEpingles={nEpingles} />
         <LigneFiltre texte={phraseFiltre} onToutVoir={toutVoir} />
       </div>
@@ -599,12 +601,19 @@ export const StocksTab: React.FC<StocksTabProps> = ({
 
       {((subTab === 'stock' && !catalogue) || subTab === 'recompter') && (
         <>
-        {subTab === 'stock' && <details className="shrink-0 border-b border-cave-800">
-          <summary className="flex min-h-touch cursor-pointer items-center justify-between gap-2 py-1.5 text-sm text-cave-50">
-            <span className="font-semibold">Comparer une recette</span>
-            <span className="min-w-0 text-right text-xs text-cave-400">{selectedRecipe?.name ?? 'Besoin prévu face au stock'}</span>
-          </summary>
-          <div className="space-y-2 pb-2">
+        {vue === 'recompter'
+          ? <>
+            {/* En Recompter, les outils restent sous le doigt : collés en haut de la fenêtre pendant que les tuiles défilent. */}
+            <div className="sticky top-0 z-10 bg-cave-950">{blocOutils}</div>
+            <div className="stock-outils">
+              <RecompterStock items={allItems} retenus={retenus} infos={infos} aCommander={aCommanderParRef} mouvements={movements} filtre={filtre} onFiltre={setFiltre} filtreActif={!!filtre || !!recherche} onOuvrir={setSelected} onCompterRayon={compterRayon} onglet={ongletMur} onOnglet={changerOngletMur} />
+            </div>
+          </>
+          : <div data-testid="stock-defile">
+        <div ref={refHaut}>
+        {blocOutils}
+        {subTab === 'stock' && comparer && <div className="shrink-0 border-b border-cave-800" data-comparer-panneau>
+          <div className="space-y-2 pb-2 px-[10px]">
             {recipes.length === 0
               ? <p className="text-xs text-cave-400">Aucune recette enregistrée.</p>
               : <Combobox
@@ -652,18 +661,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
                   </ul>}
             </>}
           </div>
-        </details>}
-        {vue === 'recompter'
-          ? <>
-            {/* En Recompter, les outils restent sous le doigt : collés en haut de la fenêtre pendant que les tuiles défilent. */}
-            <div className="sticky top-0 z-10 bg-cave-950">{blocOutils}</div>
-            <div className="stock-outils">
-              <RecompterStock items={allItems} retenus={retenus} infos={infos} aCommander={aCommanderParRef} mouvements={movements} filtre={filtre} onFiltre={setFiltre} filtreActif={!!filtre || !!recherche} onOuvrir={setSelected} onCompterRayon={compterRayon} onglet={ongletMur} onOnglet={changerOngletMur} />
-            </div>
-          </>
-          : <div data-testid="stock-defile">
-        <div ref={refHaut}>
-        {blocOutils}
+        </div>}
         {/* STK-COMMANDE-REPLIEE (19.11) : le bloc « à commander » vit replié en tête de Courses ; Articles s'ouvre sur le mur et la liste. */}
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement du mur du stock…</div>}>
           <MurStock items={allItems} equipements={stocks.equipment} futs={stocks.kegs} onOpen={setSelected} onFiltre={(r) => setFiltre(r)} filtre={filtre === 'Malts' || filtre === 'Houblons' || filtre === 'Levures' ? filtre : null} retenus={refsRetenues} onglet={ongletMur} onOnglet={changerOngletMur} infos={infos}
@@ -683,7 +681,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           renderGroupHeader={(nom, compte) => <EnteteRayon nom={nom} compte={compte} sur={totauxGroupes.get(nom)} tri={tri} onTri={setTri} plie={plies.has(nom)} onPli={() => basculerPli(nom)} resume={resumes.get(nom)} onCatalogue={() => setCatalogue(true)} />}
           isFavorite={(i) => !!i.favorite}
           resetKey={tri}
-          header={allItems.length > 0 && !autresStocks && <LigneTri tri={tri} onTri={setTri} />}
+          
           emptyState={
             allItems.length > 0 ? <div className="py-6 text-center space-y-2" role="status">
               <p className="text-sm text-cave-200">Aucun article ne correspond</p>
