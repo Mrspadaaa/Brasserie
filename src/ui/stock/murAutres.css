@@ -1,0 +1,26 @@
+/* Mur d'Autres stocks, version A (D423, D424). Rien dans murAjustements.css : les classes l1e-* de l'étagère valent ici aussi. Préfixe sa-. */
+.sa-mur{grid-column:1/-1;min-width:0;--hm:22px;--hc:14px;--sa-w:8px;padding:0 0 6px}
+.sa-mur .l1e-r{grid-template-columns:72px minmax(0,1fr)!important;min-height:56px}
+.sa-mur .l1e-n b{font:700 13px/15px var(--l1-sans,inherit);letter-spacing:0;color:var(--l1-t0)}
+.sa-mur .l1e-w{font:700 12px/14px var(--l1-sans,inherit);letter-spacing:0}
+.sa-mur .l1e-pl{justify-content:flex-start;gap:8px;align-items:flex-end;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.sa-mur .l1e-gb{gap:2px;height:var(--hm);overflow:visible;border-bottom:2px solid var(--ink)}
+.sa-mur .l1e-r .l1e-gb::after{border-top:1.5px dashed var(--l1-t1);bottom:var(--hc);left:-3px;right:-3px}
+.sa-mur .sa-nt .l1e-gb::after{display:none}
+.sa-mur .sa-p{width:var(--sa-w);height:calc(var(--hm) * var(--h));min-height:3px;background:var(--fill);border-radius:2px 2px 0 0;position:relative;opacity:1}
+.sa-mur .sa-p[data-forme]{border-radius:0}
+.sa-mur .sa-ep{width:10px;height:8px;min-height:0;background:var(--l1-page)!important;box-shadow:inset 0 0 0 1.5px var(--l1-alert)!important;border-radius:0}
+.sa-mur .sa-p.sv-ac{background:var(--l1-page)!important;outline:1.5px dashed var(--l1-t1);outline-offset:-1.5px}
+.sa-mur .sa-td{position:absolute;left:-3px;right:-3px;bottom:var(--hc);border-top:1.5px dashed var(--l1-t1);pointer-events:none}
+.sa-mur .sa-lab{padding-left:30px}
+.sa-mur .sa-lab .sw-rl{left:-30px;bottom:calc(var(--hc) - 7px);color:var(--l1-t0);pointer-events:none}
+.sa-mur .l1e-t{color:var(--l1-t1)}
+.sa-mur .sx-vd{align-self:flex-end;display:flex;gap:8px;font-size:12px;color:var(--l1-t2)}
+.sa-mur .sx-o{display:inline-block;width:8px;height:8px;border:1.5px solid var(--l1-t2);border-radius:50%;margin-right:3px}
+.sa-mur .sv-leg{margin:4px 0 6px 10px;gap:4px 12px}
+.sa-mur .sv-li{display:inline-flex;gap:5px;align-items:center}
+.sa-mur .sa-lg-t{width:12px;border-top:1.5px dashed var(--l1-t1)}
+.sa-mur .sa-lg-p{display:inline-block;width:8px;height:12px}
+.sa-mur .sa-lg-x{display:inline-block;width:10px;border-top:1.5px solid var(--l1-t0);transform:rotate(-32deg)}
+.sa-mur .sa-bul{position:fixed}
+@media(min-width:1000px){.sa-mur{--hm:50px;--hc:31px}.sa-mur .l1e-t{font-size:18px;line-height:21px}}

@@ -7,6 +7,7 @@ import { construireMur, cartesAutres, legendeAutres, BASE_TEINTE, TEINTES_LEGEND
 import { sourcesDeLApp } from '../../domain/stock/murSources';
 import { couleurALaClarte, labDeHex } from '../../domain/stock/mur';
 import { installerMiseEnPage } from './murMiseEnPage';
+import { MurAutres } from './MurAutres';
 import './mur.css';
 import './murAjustements.css';
 
@@ -248,8 +249,8 @@ export function MurStock({ items, equipements = [], futs = [], onOpen, onFiltre,
       </div>
       {onglet === 'autres' && (
         <div className="sv-autres">
-          {autres.length === 0 && <div className="sv-ot"><span>Aucun autre stock enregistré</span></div>}
-          {autres.map((c) => {
+          <MurAutres items={items} onOpen={onOpen} onFiltre={onCarte} carteActive={carteActive} retenus={retenus} />
+          {autres.filter((c) => c.id === 'Fûts' || c.id === 'Matériel').map((c) => {
             // STK-AUTRES-MORT (19.11) : une carte se touche. Additifs, Emballage, Nettoyage filtrent la liste (re-toucher l'ôte) ; Fûts et Matériel ouvrent leur sous-onglet.
             const filtre = c.id !== 'Fûts' && c.id !== 'Matériel';
             const action = filtre ? (carteActive === c.id ? 'retirer le filtre' : 'filtrer la liste') : `ouvrir l'onglet ${c.nom}`;
