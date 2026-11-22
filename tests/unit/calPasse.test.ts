@@ -26,12 +26,8 @@ describe('CAL-PASSE : l’horizon commence avant aujourd’hui', () => {
     const m = anneeEnMois(AUJ, 60, 8);
     expect(m[0]).toMatchObject({ annee: 2026, mois: 9 });
   });
-  it('semainesPassees : borné à 52 et au solde de départ ; sans solde, tout le passé permis (la frise reste visible)', () => {
-    const profil = (date: string) => ({ openingCash: { date, amountCents: 100000, confirmed: true } }) as unknown as FinancialProfile;
-    expect(semainesPassees(AUJ, profil('2025-01-01'), true)).toBe(SEMAINES_PASSEES_MAX);
-    expect(semainesPassees(AUJ, profil('2026-10-01'), true)).toBe(6); // lundi 7 sept. = veille du 8 sept. ≥ 1er oct. ? non : 5 oct. > 1er oct.
-    expect(semainesPassees(AUJ, profil('2026-11-17'), true)).toBe(0);
-    expect(semainesPassees(AUJ, {} as FinancialProfile, false)).toBe(SEMAINES_PASSEES_MAX);
+  it('semainesPassees : toujours le passé permis (52), le solde de départ ne le borne plus (CAL-RETOUR-PASSE)', () => {
+    expect(semainesPassees()).toBe(SEMAINES_PASSEES_MAX);
   });
 });
 

@@ -81,16 +81,12 @@ export function estimationsBudget(plans: readonly FinancialPlan[]): Map<string, 
 const pasCommence = (b: Batch): boolean => b.status === 'planifie' && !hasBrewStarted(b);
 
 /**
- * CAL-PASSE (20.11) : combien de semaines d'avant la semaine courante la frise montre, au plus `SEMAINES_PASSEES_MAX`. La caisse d'une semaine
- * passée est le solde de Finances à cette date (`openingCash` + paiements), jamais inventée : la courbe commence au lundi dont la veille n'est
- * pas avant la date du solde de départ. Sans solde confirmé, il n'y a pas de courbe et la frise reste visible sur tout le passé permis.
+ * CAL-RETOUR-PASSE (22.11) : la frise montre toujours `SEMAINES_PASSEES_MAX` semaines d'avant la semaine courante, comme elle montre l'année à
+ * venir. Le solde de départ ne borne plus le passé (tour 9 : le bord tombait à la date du solde, le cadre ne reculait plus). Avant cette date la
+ * caisse reste plate au solde de départ : `mouvementsPasses` ne compte aucun paiement d'avant lui (voir `construireModele`).
  */
-export function semainesPassees(aujourdhui: string, profile: FinancialProfile, soldeConnu: boolean): number {
-  if (!soldeConnu) return SEMAINES_PASSEES_MAX;
-  const depart = isoDate(profile.openingCash?.date);
-  if (!depart) return 0;
-  const jours = ecartJours(depart, lundiDe(aujourdhui));
-  return jours <= 0 ? 0 : Math.max(0, Math.min(SEMAINES_PASSEES_MAX, Math.ceil(jours / 7) - 1));
+export function semainesPassees(): number {
+  return SEMAINES_PASSEES_MAX;
 }
 
 /** Les paiements réels de la caisse du lundi `depuis` à aujourd'hui inclus : les mouvements des semaines passées de la courbe (les mêmes que `summarizeLedger`). */
@@ -115,7 +111,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   /* CHD-1 (21.11) : « une seule caisse » (K4) : le solde est connu comme Finances et le Bord le disent, la caisse COMPLÈTE (`cashComplete`, `pointBasAVenir`) ;
      une pièce payée sans paiement le rend inconnu : pas de courbe ni de « CHF à dépenser » chiffré, jamais un solde posé comme sûr */
   const soldeConnu = prevision.cashComplete && prevision.openingCashCents !== null;
-  const passe = semainesPassees(aujourdhui, e.profile, soldeConnu);
+  const passe = semainesPassees();
   const semaines = semainesDe(aujourdhui, NB_SEMAINES_COURBE + passe, passe);
   const lundi0 = semaines[0].debut;
   const marques = new Set(echeancesProposees(prevision.items).filter(i => i.proposition === 'echeance').map(i => `argent-${i.id}`));
@@ -190,7 +186,8 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   }));
   const mises = misesDe(chosesBudget);
   /* le passé : le départ de la courbe est la caisse d'aujourd'hui moins les paiements réels d'entre-temps (même formule que le solde de Finances) */
-  const reels = (passe ? mouvementsPasses(e.payments, e.transactions, lundi0, aujourdhui) : []).map(m => (chosesBudget.some(c => c.id === m.id) ? { ...m, choseId: m.id } : m));
+  const ouvertureLe = soldeConnu ? isoDate(e.profile.openingCash?.date) : null; // avant lui, la caisse est plate : aucun paiement ne s'y compte
+  const reels = (passe ? mouvementsPasses(e.payments, e.transactions, ouvertureLe && ouvertureLe > lundi0 ? ouvertureLe : lundi0, aujourdhui) : []).map(m => (chosesBudget.some(c => c.id === m.id) ? { ...m, choseId: m.id } : m));
   const depart = !soldeConnu || prevision.openingCashCents === null ? null : prevision.openingCashCents - reels.reduce((s, m) => s + m.centimes, 0);
   const courbe = courbeCaisse({ depart, lundi0, nbSemaines: NB_SEMAINES_COURBE + passe, passe, mouvements: [...reels, ...mouvements], mises });
   /* CRITIQUE-12 n° 2 (E23, A2) : la règle de l'effet en mots (`effetEnMots`) posée sur la chose : une fête ou une activité chiffrée que la

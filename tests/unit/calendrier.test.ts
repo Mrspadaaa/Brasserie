@@ -758,8 +758,8 @@ describe('CHD-1, CHD-11 (chasse Calendrier 21.11) : le chiffre dit l’inconnu',
     expect(connu.hypotheses.some(h => h.id === 'depart')).toBe(true);
   });
   it('CHD-1, doute : la fenêtre du passé est celle de « pas de solde » (tout le passé permis), la même quand le solde devient inconnu', () => {
-    expect(construireModele(entrees([pompe])).passe).toBe(semainesPassees(aujourdhui, profil, false));
-    expect(construireModele(entrees([])).passe).toBe(semainesPassees(aujourdhui, profil, true));
+    expect(construireModele(entrees([pompe])).passe).toBe(semainesPassees());
+    expect(construireModele(entrees([])).passe).toBe(semainesPassees());
   });
   it('CHD-11 : un brassin en cuve dont la prévision a une ligne sans montant dit « coût à venir » (jamais 0) ; sans aucune ligne, il ne dit rien', () => {
     const ligne = (c: Partial<ChoseCalendrier>) => ({ id: 'argent-x', rangee: 'achats', titre: 'Emballage · neipa v3', debut: '2026-11-25', fin: '2026-11-25', source: { genre: 'prevision-brassin', id: 'B-ZZ-1' }, ouvre: { ecran: 'brassin', id: 'B-ZZ-1' }, posteBrassin: 'frais', ...c }) as ChoseCalendrier;
