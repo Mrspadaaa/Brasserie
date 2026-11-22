@@ -714,7 +714,9 @@ export const StorageService = {
     return {
       rawMaterials: items.filter((i) => i.kind !== 'cleaning').map(strip),
       cleaning: items.filter((i) => i.kind === 'cleaning').map(strip),
-      equipment: clean<EquipmentItem>(FirestoreRepo.all('equipment')),
+      // GESTE-MATERIEL-UNDEFINED : un appareil gardé sans `ref` (champ absent du document) prend celle de son document ; sans elle, `updateEquipment`
+      // écrivait sous la clé « undefined » et la date glissée ne se retrouvait jamais (la fiche disait « Fermentation · undefined »).
+      equipment: FirestoreRepo.all<any>('equipment').map(({ __docId, ...rest }) => ({ ...rest, ref: rest.ref ?? __docId }) as EquipmentItem),
       kegs: clean<KegItem>(FirestoreRepo.all('kegs'))
     };
   },
