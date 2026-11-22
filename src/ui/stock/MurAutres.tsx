@@ -6,7 +6,7 @@ import { construireMurAutres, etatEtSeuil, type ColonneAutre, type PotAutre } fr
 import './murAutres.css';
 
 /** n° 15 et 21 : une seule largeur de pot pour tout le mur (écart de 8 px gardé). On part du plus large (8 px, 12 px dès 700) avec les mots longs ;
- *  tant qu'une rangée déborde au rendu réel, son titre passe au mot court, puis le pot s'amincit d'un pixel, sans descendre sous 4 px. */
+ *  tant qu'une rangée déborde au rendu réel, son titre passe au mot court, ses vides s'abrègent, puis le pot s'amincit d'un pixel, sans descendre sous 4 px. */
 export const LARGEUR_MIN = 4;
 const FORMES: Record<string, string> = {
   bouteille: 'polygon(30% 0,70% 0,70% 28%,100% 42%,100% 100%,0 100%,0 42%,30% 28%)',
@@ -40,9 +40,10 @@ export function MurAutres({ items, onOpen, onFiltre, carteActive = null, ddm, re
     for (const r of mur.querySelectorAll<HTMLElement>('.sa-r')) {
       const pl = r.querySelector<HTMLElement>('.l1e-pl'); if (!pl || pl.scrollWidth <= pl.clientWidth) continue;
       const id = r.dataset.rangeeAutre ?? ''; if (!court[id]) { setCourt((c) => ({ ...c, [id]: true })); return; }
+      // les familles vides s'abrègent (« Cart. », « Cons. ») avant que le pot s'amincisse : une seule rangée trop pleine (Nettoyage) ne doit pas
+      // maigrir tous les pots du mur ; le mot entier reste au survol et à la lecture d'écran
+      if (r.querySelector('.sx-vd') && !court[id + 'v']) { setCourt((c) => ({ ...c, [id + 'v']: true })); return; }
       if (w > LARGEUR_MIN) { setW(w - 1); return; }
-      // dernier recours : les familles vides s'abrègent (« Cart. », « Cons. »), le mot entier reste au survol et à la lecture d'écran
-      if (!court[id + 'v']) { setCourt((c) => ({ ...c, [id + 'v']: true })); return; }
     }
   }, [w, court, cycle]);
   // Le geste de l'app : un toucher sur la rangée vise le pot le plus proche de la colonne, une bulle le nomme, un second toucher ouvre la fiche.
