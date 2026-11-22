@@ -1,7 +1,7 @@
 // D8a — port de la maquette choisie st1-d8a (22.11, D420) : Matériel, le parc. « Parc » et son total, une ligne par appareil
 // (tuile, nom, sous-ligne, prix en mono ou « ? »), puis « À venir ». Plus de frise « aujourd'hui » ni de filtre Tout / À traiter.
 // Rouge sur tour9 (`--ref en-ligne/2026-11-22-tour9 --seulement d8a --rouge D8A-1`), vert sur l'arbre.
-export const passes = ['390-clair', '390-cave', '1280-clair', '1280-cave'];
+export const passes = ['390-clair', '1280-clair']; // 22.11 : un thème (clair), 390 en profondeur, 1280 en simple contrôle
 const lire = () => {
   const txt = (e) => (e?.textContent ?? '').replace(/\s+/g, ' ').trim();
   const tete = document.querySelector('.mp-h');

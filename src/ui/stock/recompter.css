@@ -138,3 +138,9 @@ html[data-theme=cave] .sz-r-ebc.sz-r-u{box-shadow:inset 0 0 0 1.5px var(--l1r-t2
 .sz-r-sc{font-size:15px;color:var(--l1r-t1);padding:0 10px 10px;overflow:visible}
 .sz-r-sc [hidden]{display:none!important}
 @media(min-width:900px){.sz-r-sc{display:block;overflow:visible;padding:0 16px 16px}.sz-r-ls{overflow:visible}}
+/* d1a (22.11) : la barre d'un rayon prend la teinte de sa famille (Malts beige, Houblons vert, Levures fauve), icône et jauge dans la couleur de la famille ; les autres familles gardent le fond neutre. */
+.sz-r-ray[data-fam=Malts]{--fam:#9A6A2A;--fam-bg:#F6EBD9}.sz-r-ray[data-fam=Houblons]{--fam:#5B7D2A;--fam-bg:#EAF0DF}.sz-r-ray[data-fam=Levures]{--fam:#7A6040;--fam-bg:#F0E9DE}
+html[data-theme="cave"] .sz-r-ray[data-fam=Malts]{--fam:#D9A24E;--fam-bg:color-mix(in srgb,#D9A24E 18%,var(--l1r-page))}html[data-theme="cave"] .sz-r-ray[data-fam=Houblons]{--fam:#8DB04A;--fam-bg:color-mix(in srgb,#8DB04A 18%,var(--l1r-page))}html[data-theme="cave"] .sz-r-ray[data-fam=Levures]{--fam:#B8966A;--fam-bg:color-mix(in srgb,#B8966A 18%,var(--l1r-page))}
+.sz-r-ray[data-fam] .sz-r-rh{background:var(--fam-bg,var(--l1r-stocksbg))}.sz-r-ray[data-fam=Malts] .sz-r-rh,.sz-r-ray[data-fam=Houblons] .sz-r-rh,.sz-r-ray[data-fam=Levures] .sz-r-rh{background:var(--fam-bg)}
+.sz-r-ray[data-fam=Malts] .sz-r-ti,.sz-r-ray[data-fam=Houblons] .sz-r-ti,.sz-r-ray[data-fam=Levures] .sz-r-ti{color:var(--fam)}
+.sz-r-ray[data-fam=Malts] .sz-r-bar,.sz-r-ray[data-fam=Houblons] .sz-r-bar,.sz-r-ray[data-fam=Levures] .sz-r-bar{background:color-mix(in srgb,var(--fam) 25%,var(--l1r-page))}.sz-r-ray[data-fam=Malts] .sz-r-bar i,.sz-r-ray[data-fam=Houblons] .sz-r-bar i,.sz-r-ray[data-fam=Levures] .sz-r-bar i{background:var(--fam)}

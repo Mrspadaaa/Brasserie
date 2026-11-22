@@ -114,7 +114,7 @@ export function RecompterStock({ items, retenus, infos, aCommander, mouvements, 
           const epuises = lignes.filter((i) => infos.get(i.ref)?.etats.includes('epuise')).length;
           const premierEpuise = lignes.findIndex((i) => infos.get(i.ref)?.etats.includes('epuise'));
           return (
-            <section key={f} className="sz-r-ray" data-sec={k} aria-label={LIBELLE_FAMILLE[f]}>
+            <section key={f} className="sz-r-ray" data-fam={f} data-sec={k} aria-label={LIBELLE_FAMILLE[f]}>
               <header className="sz-r-rh">
                 <span className="sz-r-ti">{ICONES[f]}</span>
                 <div>
