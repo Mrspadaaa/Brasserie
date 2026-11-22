@@ -807,13 +807,104 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
   };
   // ── CAL-CUVE (VISION-tour9 n° 3, 21.11, brassin en cuve « NEIPA Test » J78) : (a) la date de BRASSAGE se règle depuis sa pastille (la règle lâchée écrit
   //    `brewDate`, plus de refus « le jour de brassage ne bouge pas ») ; (b) « Prête ? » (fin inconnue) se règle depuis la fiche (écrit `finPrevue`). Rouge sur tour8 ──
+  // ── CAL-RETOUR-PASSE et CAL-ECHELLE-COHERENTE (22.11) : le passé se libère, et l'étiquette du cadre, son dessin, la pastille et les graduations
+  //    disent la même période, à chaque échelle et après chaque geste ──
+  const lireCoherence = () => p.evaluate(() => {
+    const cb = document.querySelector('.ent-cbz .ent-cb') ?? document.querySelector('.ent-cb'), cadre = document.querySelector('.ent-cadre');
+    if (!cb || !cadre) return { erreur: 'courbe ou cadre introuvable' };
+    cb.scrollIntoView({ block: 'center' });
+    const iso = (t0) => { const t = new Date(Date.UTC(t0.getUTCFullYear(), t0.getUTCMonth(), t0.getUTCDate())); t.setUTCDate(t.getUTCDate() - ((t.getUTCDay() + 6) % 7) + 3); const a = new Date(Date.UTC(t.getUTCFullYear(), 0, 4)); return 1 + Math.round(((t - a) / 864e5 - 3 + ((a.getUTCDay() + 6) % 7)) / 7); };
+    const c = cadre.getBoundingClientRect();
+    const dans = (e) => { const r = e.getBoundingClientRect(), x = r.left + r.width / 2; return x >= c.left - 0.5 && x <= c.right + 0.5; };
+    const num = (e) => Number(e.getAttribute('data-point-semaine') ?? e.getAttribute('data-semaine'));
+    const points = [...cb.querySelectorAll('[data-point-semaine]')].filter(dans).map(num);
+    const grad = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].filter((e) => e.getBoundingClientRect().width > 0).filter(dans).map(num);
+    const pt = document.querySelector('[data-periode-pastille] .pr-court')?.textContent?.trim() ?? null;
+    let pastille = null;
+    const m = pt && /(\d\d)\.(\d\d)(?:\.(\d\d))?\s*[–-]\s*(\d\d)\.(\d\d)(?:\.(\d\d))?/.exec(pt);
+    if (m) {
+      const an = new Date().getFullYear(), ya = m[3] ? 2000 + Number(m[3]) : m[6] ? 2000 + Number(m[6]) - (Number(m[2]) > Number(m[5]) ? 1 : 0) : an, yb = m[6] ? 2000 + Number(m[6]) : ya;
+      const du = new Date(Date.UTC(ya, Number(m[2]) - 1, Number(m[1]))), au = new Date(Date.UTC(yb, Number(m[5]) - 1, Number(m[4])));
+      const nums = []; for (let t = new Date(du.getTime() - ((du.getUTCDay() + 6) % 7) * 864e5); t <= au; t = new Date(t.getTime() + 7 * 864e5)) nums.push(iso(t));
+      pastille = { du: du.toISOString().slice(0, 10), nums };
+    }
+    const et = (document.querySelector('[data-cadre-etiquette]')?.textContent ?? '').replace(/\s+/g, ' ').trim();
+    const me = /^S(\d+)(?: – S(\d+))?/.exec(et);
+    const etiquette = me ? { a: Number(me[1]), b: Number(me[2] ?? me[1]) } : null;
+    // étiquettes de la courbe : deux textes qui se recouvrent = empilées
+    const tx = [...cb.querySelectorAll('text')].filter((e) => (e.textContent ?? '').trim()).map((e) => { const r = e.getBoundingClientRect(); return { t: (e.textContent ?? '').trim().slice(0, 18), l: r.left, r: r.right, hh: r.top, b: r.bottom }; }).filter((r) => r.r - r.l > 0);
+    const empilees = []; for (let i = 0; i < tx.length; i++) for (let j = i + 1; j < tx.length; j++) { const a = tx[i], b = tx[j], w = Math.min(a.r, b.r) - Math.max(a.l, b.l), h = Math.min(a.b, b.b) - Math.max(a.hh, b.hh); if (w > 2 && h > 2 && (w * h) / Math.min((a.r - a.l) * (a.b - a.hh), (b.r - b.l) * (b.b - b.hh)) > 0.3) empilees.push(`${a.t}/${b.t}`); }
+    return { pt, label: et, pastille, etiquette, points, grad, empilees };
+  });
+  // CAL-PERIODE-APP-FIXE (22.11, « Cette période là reste fixe, le reste peut être mobile ») : la pastille de l'app ne bouge que par ses propres ‹ ›.
+  // La fenêtre du Calendrier est locale : étiquette, dessin et graduations se lisent entre eux, la pastille reste celle du départ (pt0).
+  const jugerCoherence = (c, pt0) => {
+    if (c.erreur) return [c.erreur];
+    const pbl = [], pbs = (l) => l?.length ? `S${l[0]}–S${l[l.length - 1]} (${l.length})` : 'aucune';
+    if (pt0 !== undefined && c.pt !== pt0) pbl.push(`la période de l'app a changé : « ${pt0} » → « ${c.pt} »`);
+    if (c.etiquette && (c.points[0] !== c.etiquette.a || c.points[c.points.length - 1] !== c.etiquette.b)) pbl.push(`étiquette « ${c.label} » ≠ dessin du cadre ${pbs(c.points)}`);
+    if (!c.etiquette && !/\d{4}|janv|févr|mars|avr|mai|juin|juil|août|sept|oct|nov|déc/i.test(c.label)) pbl.push(`étiquette illisible (« ${c.label} »)`);
+    if (!c.points.length) pbl.push('aucun point de courbe dans le cadre');
+    if (c.grad.length && c.grad.join() !== c.points.join()) pbl.push(`graduations ${pbs(c.grad)} ≠ dessin du cadre ${pbs(c.points)}`);
+    if (c.empilees.length) pbl.push(`étiquettes de courbe empilées : ${c.empilees.slice(0, 3).join(', ')}`);
+    return pbl;
+  };
+  const verifierCoherence = async (F, nom, pt0) => {
+    const c = await lireCoherence(), pb = jugerCoherence(c, pt0);
+    pb.length ? echec(`${F} ${nom}`, pb.join(' ; ')) : ok(`${F} ${nom}`, `${c.label} · app ${c.pt}`);
+    return c;
+  };
+  const boiteCadre = () => p.evaluate(() => { const cb = document.querySelector('.ent-cbz .ent-cb') ?? document.querySelector('.ent-cb'), c = document.querySelector('.ent-cadre'); if (!cb || !c) return null; cb.scrollIntoView({ block: 'center' }); const a = cb.getBoundingClientRect(), r = c.getBoundingClientRect(); return { l: r.left, r: r.right, y: a.top + a.height / 2 }; });
+  const sectionPasseLibre = async () => {
+    const F = `retour au passé ${combo}`;
+    try {
+      await versCalendrier();
+      const pt0 = (await lireCoherence()).pt;
+      await choisirPeriode('3 mois'); await sleep(500);
+      let c = await verifierCoherence(F, 'au départ', pt0);
+      // glisser la frise (le corps du cadre) vers le passé, 40 semaines au moins : 26 au-delà du bord de la version rejetée (14 semaines)
+      let recul = 0, prec = c.etiquette?.a ?? null, n = 0, bloque = 0;
+      for (; n < 30 && recul < 40; n++) {
+        const g = await boiteCadre(); if (!g) break;
+        const x0 = (g.l + g.r) / 2; await glisser(x0, g.y, pas(x0, x0 - 120)); await sleep(450);
+        c = await verifierCoherence(F, `glisser le corps à gauche n° ${n + 1}`, pt0);
+        const a = c.etiquette?.a ?? null; if (prec !== null && a !== null) { const d = (prec - a + 53) % 53; if (d <= 30) recul += d; bloque = d === 0 ? bloque + 1 : 0; } prec = a; if (bloque >= 2) { n++; break; }
+      }
+      await cap('retour-passe-bord');
+      recul >= 40 ? ok(`${F} CAL-RETOUR-PASSE`, `${recul} semaines de recul en ${n} gestes`) : echec(`${F} CAL-RETOUR-PASSE`, `le cadre s'arrête après ${recul} semaines de recul (40 attendues) : le passé est borné`);
+      for (const [nom, x, dx] of [['tirer le début', (g) => g.l + 1, -60], ['glisser le corps à droite', (g) => (g.l + g.r) / 2, 80]]) {
+        const g = await boiteCadre(); if (!g) { echec(`${F} ${nom}`, 'cadre introuvable'); continue; }
+        const x0 = x(g); await glisser(x0, g.y, pas(x0, x0 + dx)); await sleep(500);
+        await verifierCoherence(F, nom, pt0);
+      }
+      await cap('retour-passe-fin');
+    } catch (e) { echec(F, String(e.message ?? e).slice(0, 200)); }
+  };
+  const sectionEchelles = async () => {
+    const F = `échelles ${combo}`;
+    try {
+      let pt0;
+      for (const duree of ['6 sem.', '3 mois', '6 mois', 'An']) {
+        await versCalendrier(); if (pt0 === undefined) pt0 = (await lireCoherence()).pt;
+        await choisirPeriode(duree); await sleep(500);
+        await verifierCoherence(`${F} ${duree}`, 'repos', pt0);
+        await cap(`echelle-${duree.replace(/\W+/g, '')}`);
+        const g = await boiteCadre();
+        if (!g) { echec(`${F} ${duree}`, 'cadre introuvable'); continue; }
+        const x0 = g.l + 1; await glisser(x0, g.y, pas(x0, x0 - 40)); await sleep(500);
+        await verifierCoherence(`${F} ${duree}`, 'après avoir tiré le début', pt0);
+        const g2 = await boiteCadre();
+        if (g2) { const x1 = g2.r - 1; await glisser(x1, g2.y, pas(x1, x1 + 40)); await sleep(500); await verifierCoherence(`${F} ${duree}`, 'après avoir tiré la fin', pt0); }
+      }
+    } catch (e) { echec(F, String(e.message ?? e).slice(0, 200)); }
+  };
   const sectionCuve = async () => {
     const CU = `brassin en cuve, fiche ${combo}`;
     const lire = () => p.evaluate((k) => { const e = JSON.parse(localStorage.getItem(k) ?? '[]').find((x) => x.id === 'B-NEIPA-TEST'); const d = e?.data ?? e ?? {}; return { brew: d.brewDate ?? null, fin: d.finPrevue ?? null, vu: JSON.stringify(e ?? null).slice(0, 260) }; }, CLE_CACHE);
     const regler = async (pastille, touches) => {
-      const ouvre = await p.evaluate(async (c) => { const pa = document.querySelector(`[data-detail] [data-pastille="${c}"]`); if (!(pa instanceof HTMLButtonElement)) return false; pa.click(); await new Promise((r) => setTimeout(r, 300)); return !!document.querySelector('[data-detail] [data-regle]'); }, pastille);
+      const ouvre = await p.evaluate(async (c) => { const pa = document.querySelector(`[data-detail] [data-pastille="${c}"]`); if (!(pa instanceof HTMLButtonElement)) return false; pa.click(); await new Promise((r) => setTimeout(r, 300)); return !!document.querySelector('[data-detail] [data-date-point]'); }, pastille);
       if (!ouvre) return false;
-      await p.evaluate(async (ks) => { const r = document.querySelector('[data-detail] [data-regle]'); for (const k of ks) { r.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true })); await new Promise((x) => setTimeout(x, 40)); } }, touches);
+      await p.evaluate(async (ks) => { const r = document.querySelector('[data-detail] [data-date-point]'); for (const k of ks) { r.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true })); await new Promise((x) => setTimeout(x, 40)); } }, touches);
       await sleep(900); return true;
     };
     try {
@@ -838,6 +929,55 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
       await p.evaluate((kf, kc) => { for (const k of [kf, kc]) localStorage.setItem(k, JSON.stringify(JSON.parse(localStorage.getItem(k) ?? '[]').map((x) => (x.id === 'B-NEIPA-TEST' ? { ...x, finPrevue: null, ...(x.data ? { data: { ...x.data, finPrevue: null } } : {}) } : x)))); }, CLE_FIXTURE, CLE_CACHE);
     } catch (e) { echec(CU, String(e.message ?? e).slice(0, 160)); await echap(); }
     await choisirPeriode('3 mois'); await sleep(400);
+  };
+  // ── CAL-FICHE-FRISE (22.11, tour 9, capture 30 : « Et ça a pas le même mécanisme de la frize au doigt que l'on a vue, choisi.. ») : la date
+  //    de la fiche se règle par LE composant partagé de la frise B (`DureeFenetre`, `.cal-f-duree`, un repère `[data-date-point]`), au jour
+  //    (`data-pas="jour"`) ; tirer bouge la date du déplacement (R2) et le lâcher l'écrit ; l'appui tenu au bord fait défiler l'échelle (R7) ;
+  //    Échap pendant le geste rend la date d'avant (R10, 1280). Fiche ≤ 120 px au repos. Rouge sur en-ligne/2026-11-22-tour9 (réglette `[data-regle]`) ──
+  const sectionFicheFrise = async () => {
+    const FF = `fiche frise ${combo}`;
+    const jourPastille = () => p.evaluate(() => document.querySelector('[data-detail] [data-pastille="debut"] time')?.getAttribute('datetime') ?? null);
+    const ecart = (a, b) => (a && b ? Math.round((new Date(b) - new Date(a)) / 864e5) : null);
+    const ouvrirFrise = () => p.evaluate(async () => {
+      const pa = document.querySelector('[data-detail] [data-pastille="debut"]'); if (!(pa instanceof HTMLButtonElement)) return null;
+      if (!document.querySelector('[data-detail] .cal-f-duree')) { pa.click(); await new Promise((r) => setTimeout(r, 400)); }
+      const f = document.querySelector('[data-detail] .cal-f-duree'), poi = f?.querySelector('[data-date-point][role="slider"]'), piste = f?.querySelector('.cal-f-duree-piste');
+      if (!poi || !piste) return { partage: false, regle: !!document.querySelector('[data-detail] [data-date-point]') };
+      piste.scrollIntoView({ block: 'center' });
+      const r = piste.getBoundingClientRect(), q = poi.getBoundingClientRect();
+      return { partage: true, pas: f.getAttribute('data-pas'), pxJour: Number(piste.getAttribute('data-px-jour')), x: q.left + q.width / 2, y: r.top + r.height / 2, g: r.left, d: r.right, h: Math.round(document.querySelector('[data-detail]').getBoundingClientRect().height) };
+    });
+    try {
+      const b = await p.evaluate(() => { const e = document.querySelector('[aria-label^="ZZ TEST Geste,"]'); if (!e) return null; e.scrollIntoView({ block: 'center', inline: 'center' }); const r = e.getBoundingClientRect(); return [r.left + Math.min(r.width / 2, 20), r.top + r.height / 2]; });
+      if (!b) { echec(FF, '« ZZ TEST Geste » introuvable'); return; }
+      await toucherXY(b[0], b[1]); await sleep(600);
+      const h0 = await p.evaluate(() => { const d = document.querySelector('[data-detail]'); return d ? Math.round(d.getBoundingClientRect().height) : null; });
+      if (h0 === null) { echec(FF, 'aucune fiche ouverte'); return; }
+      if (tactile) (h0 <= 120 ? ok(`${FF} ≤ 120 px au repos`, `${h0} px`) : echec(`${FF} ≤ 120 px au repos`, `${h0} px`));
+      const j0 = await jourPastille();
+      const f = await ouvrirFrise();
+      if (!f?.partage) { echec(`${FF} composant partagé`, f === null ? 'aucune pastille de début touchable' : `la date se règle par ${f.regle ? 'la réglette propre [data-regle]' : 'rien'}, pas par la frise B (.cal-f-duree [data-date-point])`); await echap(); return; }
+      ok(`${FF} composant partagé`, `.cal-f-duree, fiche ouverte ${f.h} px`);
+      f.pas === 'jour' && f.pxJour >= 6 ? ok(`${FF} au jour`, `${f.pxJour.toFixed(1)} px par jour`) : echec(`${FF} au jour`, `pas « ${f.pas} », ${f.pxJour} px par jour (jour attendu, ≥ 6 px)`);
+      await cap('fiche-frise');
+      // tirer : +3,4 jours de déplacement depuis le repère (R2 : la valeur suit le déplacement), lâcher écrit
+      await glisser(f.x, f.y, pas(f.x, f.x + 3.4 * f.pxJour, 10)); await sleep(700);
+      const j1 = await jourPastille(), e1 = ecart(j0, j1);
+      e1 === 3 ? ok(`${FF} tirer au jour`, `${j0} → ${j1}`) : echec(`${FF} tirer au jour`, `${j0} → ${j1} (+3 j attendus pour 3,4 jours de déplacement)`);
+      // fermée puis rouverte : la date écrite reste (lue de la chose, plus du brouillon)
+      await p.evaluate(async () => { document.querySelector('[data-detail] [data-pastille="debut"]')?.click(); await new Promise((r) => setTimeout(r, 900)); });
+      const j2 = await jourPastille();
+      j2 === j1 && !(await p.evaluate(() => !!document.querySelector('[data-detail] .cal-f-duree'))) ? ok(`${FF} lâcher écrit`, j2) : echec(`${FF} lâcher écrit`, `après fermeture ${j2} (attendu ${j1})`);
+      // appui tenu au bord droit (R7) : l'échelle défile, la date avance sans bouger le doigt ; à 1280, Échap rend la date d'avant (R10)
+      const f2 = await ouvrirFrise();
+      if (!f2?.partage) { echec(`${FF} appui au bord`, 'frise non rouverte'); await echap(); return; }
+      let v1 = null, v2 = null;
+      await glisser(f2.x, f2.y, pas(f2.x, f2.d - 12, 12), { echap: !tactile, pendant: async () => { await sleep(150); v1 = await jourPastille(); await sleep(1200); v2 = await jourPastille(); } });
+      const e2 = ecart(v1, v2);
+      e2 > 0 ? ok(`${FF} appui au bord`, `${v1} → ${v2} (+${e2} j doigt immobile)`) : echec(`${FF} appui au bord`, `${v1} → ${v2} : l'échelle ne défile pas sous le doigt tenu au bord`);
+      if (!tactile) { await sleep(500); const j3 = await jourPastille(); j3 === j2 ? ok(`${FF} Échap`, j3) : echec(`${FF} Échap`, `${j3} après Échap (attendu ${j2})`); }
+      await cap('fiche-frise-bord'); await echap(); await echap();
+    } catch (e) { echec(FF, String(e.message ?? e).slice(0, 160)); await echap(); }
   };
   // ── CAL-VIDE (21.11, « Il y a un espace vide énorme ici ??? ») et CAL-VIDES-EN-LIGNE (« les mettre en vertical pas les entassés à
   //    l'horizontal ») : en 6 sem., 3 mois et An, une rangée prend la hauteur de ses lignes (écart ≤ 24 px jusqu'à l'en-tête suivant) ; les
@@ -880,9 +1020,9 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
       m.souche ? ok(`${F} souche colorée`) : echec(`${F} souche colorée`, 'aucune [data-souche] : la fiche texte de la version rejetée');
       if (m.vw <= 430) (m.h <= 120 ? ok(`${F} ≤ 120 px au repos`, `${m.h} px`) : echec(`${F} ≤ 120 px au repos`, `${m.h} px de haut à 390 (120 au plus)`));
       m.w >= m.frise - 8 ? ok(`${F} pleine largeur`, `${m.w}/${m.frise}`) : echec(`${F} pleine largeur`, `${m.w} px pour une frise de ${m.frise}`);
-      const regle = await p.evaluate(async () => { const pa = document.querySelector('[data-detail] [data-pastille="debut"]'); if (!(pa instanceof HTMLButtonElement)) return false; pa.click(); await new Promise(r => setTimeout(r, 300)); return !!document.querySelector('[data-detail] [data-regle]'); });
+      const regle = await p.evaluate(async () => { const pa = document.querySelector('[data-detail] [data-pastille="debut"]'); if (!(pa instanceof HTMLButtonElement)) return false; pa.click(); await new Promise(r => setTimeout(r, 300)); return !!document.querySelector('[data-detail] [data-date-point]'); });
       regle ? ok(`${F} date réglée sur place`) : echec(`${F} date réglée sur place`, 'la pastille touchée n\'ouvre aucune règle [data-regle]');
-      await p.evaluate(() => document.querySelector('[data-detail] [data-regle]')?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
+      await p.evaluate(() => document.querySelector('[data-detail] [data-date-point]')?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
       const plus = await p.evaluate(async () => { const pl = document.querySelector('[data-detail] [data-plus]'); if (!pl) return null; pl.click(); await new Promise(r => setTimeout(r, 300)); return !!document.querySelector('[data-detail] [data-supprimer]'); });
       if (!plus) { echec(`${F} Supprimer`, plus === null ? 'aucun « Plus d\'actions » dans la fiche' : 'aucun [data-supprimer] sous Plus d\'actions'); await echap(); return; }
       await p.evaluate(() => document.querySelector('[data-detail] [data-supprimer]').click()); await sleep(700);
@@ -895,7 +1035,8 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
   };
   // --sections a,b : seulement ces sections du Calendrier (itération ; le défaut les joue toutes)
   const SECTIONS = opt('sections', null)?.split(',');
-  for (const [nom, f] of Object.entries({ sectionJourBord, sectionGlisseJour, sectionBarre, sectionCadre, sectionFeuille, sectionFeuilleJour, sectionModifier, sectionFiche, sectionRangees, sectionBarreBord, sectionChg4, sectionChg5, sectionChg6, sectionBarreHors, sectionCuve })) if (!SECTIONS || SECTIONS.includes(nom)) await f();
+  let ptApp0 = await p.evaluate(() => document.querySelector('[data-periode-pastille] .pr-court')?.textContent?.trim() ?? null);
+  for (const [nom, f] of Object.entries({ sectionJourBord, sectionGlisseJour, sectionBarre, sectionCadre, sectionFeuille, sectionFeuilleJour, sectionModifier, sectionFiche, sectionRangees, sectionBarreBord, sectionChg4, sectionChg5, sectionChg6, sectionBarreHors, sectionCuve, sectionFicheFrise, sectionPasseLibre, sectionEchelles })) if (!SECTIONS || SECTIONS.includes(nom)) { await f(); const pt1 = await p.evaluate(() => document.querySelector('[data-periode-pastille] .pr-court')?.textContent?.trim() ?? null); if (ptApp0 === undefined) ptApp0 = pt1; else if (pt1 !== ptApp0) echec(`CAL-PERIODE-APP-FIXE ${combo} après ${nom}`, `la période de l'app a changé : « ${ptApp0} » → « ${pt1} »`); }
   await cap('fin');
 }
 
