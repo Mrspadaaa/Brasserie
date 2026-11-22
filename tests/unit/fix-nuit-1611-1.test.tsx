@@ -23,6 +23,7 @@ vi.mock('../../src/services/firestoreRepo', () => ({ FirestoreRepo: fakeRepo, AL
 
 import { FeuilleBrasser } from '../../src/ui/production/brasser/FeuilleBrasser';
 import { BatchSchedule } from '../../src/ui/production/BatchSchedule';
+import { poserDate } from '../helpers/poserDate';
 import { brewSessionDatePatch, plannedBrewDate } from '../../src/domain/batchSchedule';
 
 let StorageService: typeof import('../../src/services/storage').StorageService;
@@ -98,8 +99,7 @@ describe('constat 1 : la date prévue suit le jour choisi jusqu\'à la Conduite'
     render(<BatchSchedule batch={ouvertALaConduite(base)} onSave={onSave} />);
     fireEvent.click(screen.getByRole('button', { name: 'Planifier' }));
     fireEvent.click(screen.getByText('Autre date'));
-    const champ = document.querySelector('input[type="date"]') as HTMLInputElement;
-    fireEvent.change(champ, { target: { value: '2026-11-30' } });
+    poserDate('Jour prévu', '2026-11-30');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la date' }));
     await vi.waitFor(() => expect(onSave).toHaveBeenCalled());
     expect(onSave.mock.calls[0][0].plannedBrewDate).toBe('30.11.2026');

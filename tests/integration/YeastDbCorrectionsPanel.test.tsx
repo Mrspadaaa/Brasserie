@@ -15,6 +15,7 @@ vi.mock('../../src/ui/Sheet', () => ({
 }));
 
 import { YeastDbCorrectionsPanel } from '../../src/ui/YeastDbCorrectionsPanel';
+import { poserInstant } from '../helpers/poserDate';
 import type { YeastDbCorrectionClientReceipt, YeastDbCorrectionTarget, YeastDbCorrectionProposal } from '../../functions/src/yeastDbCorrectionTypes';
 import type { BrewerTurn } from '../../functions/src/companionTypes';
 
@@ -165,7 +166,7 @@ describe('panneau autonome de correction catalogue', () => {
     fireEvent.change(screen.getByLabelText('Texte vu sur la fiche vendeur'), { target: { value: 'Rupture de stock' } });
     fireEvent.change(screen.getByLabelText('Titre de la source'), { target: { value: 'Fiche fournisseur' } });
     fireEvent.change(screen.getByLabelText('URL directe de la page source'), { target: { value: offerTarget.fallback.offers[0].url } });
-    fireEvent.change(screen.getByLabelText('Date et heure de l’observation'), { target: { value: '2026-09-27T10:00' } });
+    poserInstant('Date de l’observation', '2026-09-27T10:00');
     fireEvent.change(screen.getByLabelText('Motif de la correction'), { target: { value: 'La page indiquait une rupture.' } });
     fireEvent.click(screen.getByRole('button', { name: 'Préparer cette observation' }));
     expect(await screen.findAllByText(/Saisie manuelle/)).not.toHaveLength(0);

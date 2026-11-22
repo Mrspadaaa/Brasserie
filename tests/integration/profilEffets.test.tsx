@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 const etat = vi.hoisted(() => ({ saveProfile: vi.fn(), transactions: [] as unknown[], payments: [] as unknown[], plans: [] as unknown[], stocks: [] as unknown[] }));
 vi.mock('../../src/services/storage', () => ({ StorageService: { getTransactions: () => etat.transactions, getStocks: () => ({ rawMaterials: etat.stocks, cleaning: [], equipment: [] }), getBatches: () => [],
   getConfig: () => ({ fiscal: { isTvaRegistered: false, tvaThresholdTurnover: 100000 } }), subscribe: () => () => {} } }));
@@ -211,12 +211,16 @@ describe('m4pf-c : les renvois', () => {
     try { ouvrir(profil, true); expect(vise).toHaveBeenCalledTimes(1); expect((vise.mock.contexts[0] as HTMLElement).getAttribute('aria-label')).toBe('Tout est noté depuis'); }
     finally { if (avant) Object.defineProperty(Element.prototype, 'scrollIntoView', avant); else delete (Element.prototype as unknown as Record<string, unknown>).scrollIntoView; }
   });
-  it('refuse de continuer sans date valide quand un solde est saisi', async () => {
+  it('un solde saisi ne reste jamais sans date valide : la frise porte toujours un jour, la garde du domaine reste la seconde sécurité', async () => {
     ouvrir();
-    /* GESTE-DATE-PARTOUT : la frise ne vide pas une date ; la feuille s'ouvre sans date, c'est l'état refusé (rien à poser avant d'envoyer) */
-    expect(zoneDate('Date du solde').getAttribute('data-valeur')).toBeNull();
-    fireEvent.submit(document.getElementById('finance-form')!); // le navigateur arrête déjà un champ « required » vide ; le message du domaine est la seconde garde
-    expect(await screen.findByRole('alert')).toHaveTextContent('Choisis la date du solde.');
-    expect(etat.saveProfile).not.toHaveBeenCalled();
+    /* GESTE-DATE-PARTOUT (D425) : la frise ne vide pas une date, donc « sans date » n'est plus atteignable au geste ; ce qui se prouve : le jour porté est un vrai jour ISO,
+     * posé au geste il est écrit tel quel, et rien ne part sans lui. (La garde « Choisis la date du solde. » de `save` reste, pour une pièce corrompue.) */
+    expect(zoneDate('Date du solde').getAttribute('data-valeur')).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    poserDate('Date du solde', '2026-02-10');
+    expect(zoneDate('Date du solde')).toHaveAttribute('data-valeur', '2026-02-10');
+    fireEvent.submit(document.getElementById('finance-form')!);
+    await waitFor(() => expect(etat.saveProfile).toHaveBeenCalledTimes(1));
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(JSON.stringify(etat.saveProfile.mock.calls[0][0].openingCash)).toContain('2026-02-10');
   });
 });

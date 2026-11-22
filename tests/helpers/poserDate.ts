@@ -30,3 +30,17 @@ export function poserDate(label: string, iso: string, racine: ParentNode = docum
   while (n < 0) { fireEvent.keyDown(point(), { key: 'ArrowLeft' }); n += 1; }
   fireEvent.keyDown(point(), { key: 'Enter' });
 }
+
+/**
+ * Un `ChoixInstant` (jour + heure) : le jour se pose à la frise, l'heure dans le champ « Heure — <label> » (un champ d'heure natif, il reste).
+ * `instant` : `AAAA-MM-JJTHH:mm`. Cible la racine du `ChoixInstant` portant ce libellé, pour ne pas confondre deux champs voisins.
+ */
+export function poserInstant(label: string, instant: string, racine: ParentNode = document): void {
+  const [jour, heure] = instant.split('T');
+  poserDate(label, jour, racine);
+  if (!heure) return;
+  const zone = zoneDate(label, racine).closest<HTMLElement>('[data-choix-instant]') ?? (racine as HTMLElement);
+  const champ = Array.from(zone.querySelectorAll<HTMLInputElement>('input[type="time"]')).find(i => (i.getAttribute('aria-label') ?? '') === `Heure — ${label}`);
+  if (!champ) throw new Error(`pas de champ d'heure « Heure — ${label} »`);
+  fireEvent.change(champ, { target: { value: heure } });
+}

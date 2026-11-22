@@ -39,7 +39,7 @@ describe('Projet matériel m3pm-d : l’enregistrement', () => {
     fireEvent.change(screen.getByLabelText('À quoi va-t-il servir ?'), { target: { value: 'Garder fûts et bouteilles au froid' } });
     fireEvent.click(screen.getByRole('button', { name: 'Bientôt', exact: true }));
     saisie('Prix estimé TTC (CHF)', '2800'); saisie('Livraison TTC (CHF)', '200');
-    fireEvent.input(screen.getByLabelText('Paiement prévu en'), { target: { value: '2026-11' } });
+    poserDate('Paiement prévu en', '2026-11-01');
     fireEvent.click(screen.getByRole('button', { name: 'Placer le projet à l’étape Prêt à acheter' }));
     fireEvent.click(screen.getByRole('checkbox', { name: 'Inclure dans mes prévisions' }));
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer le projet' }));

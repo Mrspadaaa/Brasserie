@@ -8,6 +8,7 @@ import { recipe, brewState } from '../fixtures/brewCompanion';
 import { brewAlarms } from '../../src/domain/brewCompanion';
 import { formatAmount } from '../../functions/src/brewAmount';
 import { actualQuantityProblem } from '../../src/domain/brewQuantityBounds';
+import { poserInstant } from '../helpers/poserDate';
 
 vi.mock('../../src/services/aiClient', () => ({ AiClient: { run: vi.fn() } }));
 vi.mock('../../src/services/brewAlarms', () => ({ enableBrewAlerts: vi.fn(), syncBrewAlerts: vi.fn() }));
@@ -85,7 +86,7 @@ describe('VI-8 (rejeu b47cd90b n° 8) : le panneau d’ajustement se lit', () =>
     expect(bouton).toBeDisabled();
     expect(bouton).toHaveClass('brew-consign');
     expect(screen.queryByText(/Choisis d’abord la date/)).not.toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText(/Date et heure réelles d’ajout de Sel d’Epsom/), { target: { value: '2020-01-02T10:30' } });
+    poserInstant('Date et heure réelles d’ajout de Sel d’Epsom', '2020-01-02T10:30');
     expect(bouton).toBeEnabled();
     expect(screen.queryByText(/Choisis d’abord la date/)).not.toBeInTheDocument();
     expect(v.latest()?.additions?.['salt-mash-epsom']?.doneAt).toBeUndefined();

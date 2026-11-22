@@ -4,6 +4,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import type { Batch } from '../../src/types';
 import { BatchDetailSheet } from '../../src/ui/BatchDetailSheet';
 import { StorageService } from '../../src/services/storage';
+import { poserDate, zoneDate } from '../helpers/poserDate';
 
 vi.mock('../../src/ui/BrewerChat', () => ({ BrewerChat: () => null }));
 vi.mock('../../src/ui/hopIndex/HopTastingsPanel', () => ({ HopTastingsPanel: () => null }));
@@ -22,12 +23,13 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.useRealTimers(); });
 describe('BR-122 / BE-48 : « Jour réellement brassé » refuse le futur', () => {
   it('une date après aujourd’hui n’est pas écrite et dit pourquoi ; une date passée s’écrit', () => {
     render(<BatchDetailSheet batch={base()} initialSection="overview" onClose={vi.fn()} />);
-    const champ = screen.getByLabelText('Jour réellement brassé');
-    fireEvent.change(champ, { target: { value: '2026-11-25' } });
+    /* GESTE-DATE-PARTOUT (D425) : le jour se pose à la frise ; un jour futur n'est pas écrit et dit pourquoi (la garde du domaine, atteinte au geste). */
+    poserDate('Jour réellement brassé', '2026-11-25');
     expect(screen.getByText(/dans le futur/)).toBeInTheDocument();
     expect(StorageService.updateBatch).not.toHaveBeenCalled();
-    fireEvent.change(champ, { target: { value: '2026-11-03' } });
+    poserDate('Jour réellement brassé', '2026-11-03');
     expect(screen.queryByText(/dans le futur/)).not.toBeInTheDocument();
+    expect(zoneDate('Jour réellement brassé')).toHaveAttribute('data-valeur', '2026-11-03');
     expect(StorageService.updateBatch).toHaveBeenCalledWith(expect.objectContaining({ brewDate: '03.11.2026' }));
   });
 });

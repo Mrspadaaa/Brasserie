@@ -7,6 +7,7 @@ import { brewerJobs } from '../../src/services/brewerJobs';
 import { brewSystemInsights, measuredWortYield } from '../../src/domain/brewSystemInsights';
 import type { Batch, BrewDayState, RecipeSnapshot } from '../../src/types';
 import { recipe as fixtureRecipe } from '../fixtures/brewCompanion';
+import { poserInstant, zoneDate } from '../helpers/poserDate';
 
 vi.mock('../../src/services/aiClient', () => ({ AiClient: { run: vi.fn() } }));
 const MIN = 60_000;
@@ -87,21 +88,27 @@ describe('navigation depuis le retour système vers les vrais gestes du brassin'
     await waitFor(() => expect(scroll).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' }));
 
     fireEvent.click(additions.getByRole('button', { name: 'Modifier la quantité de Pale' }));
-    const time = () => screen.getByLabelText('Date et heure réelles d’ajout de Pale');
+    const LABEL = 'Date et heure réelles d’ajout de Pale';
+    const heure = () => screen.getByLabelText(`Heure — ${LABEL}`) as HTMLInputElement;
+    const jour = () => zoneDate(LABEL).getAttribute('data-valeur');
+    const instant = () => `${jour()}T${heure().value}`;
     const confirmTime = () => screen.getByRole('button', { name: 'Consigner à cette heure' });
-    expect(time()).toHaveValue('');
+    expect(jour()).toBeNull();
+    expect(heure()).toHaveValue('');
     expect(confirmTime()).toBeDisabled();
-    fireEvent.change(time(), { target: { value: '2026-09-20T13:00' } });
-    expect(time()).toHaveAttribute('aria-invalid', 'true');
-    expect(confirmTime()).toBeDisabled();
+    /* D425 : la frise est bornée à maintenant (`max`) : une heure future ne s'écrit plus invalide, elle est ramenée à 12:00. */
+    expect(zoneDate(LABEL).getAttribute('data-max')).toBe('2026-09-20');
+    poserInstant(LABEL, '2026-09-20T13:00');
+    expect(instant()).toBe('2026-09-20T12:00');
+    expect(confirmTime()).toBeEnabled();
     expect(view.latest().additions).toEqual({});
 
     fireEvent.click(additions.getByRole('checkbox', { name: 'Ajouté : Pale' }));
-    expect(time()).toHaveValue('2026-09-20T12:00');
+    expect(instant()).toBe('2026-09-20T12:00');
     expect(view.latest().additions?.['grain-0'].doneAt).toBe(now);
     expect(measuredWortYield(view.recipe, view.latest(), 'preboil')).toMatchObject({ value: null, missingIngredients: true });
     expect(measuredWortYield(view.recipe, view.latest(), 'preboil').reason).toContain('consignés après le relevé');
-    fireEvent.change(time(), { target: { value: '2026-09-20T08:30' } });
+    poserInstant(LABEL, '2026-09-20T08:30');
     expect(view.latest().additions?.['grain-0'].doneAt).toBe(now);
     fireEvent.click(confirmTime());
     expect(view.latest().additions?.['grain-0']).toMatchObject({ amount: 5, doneAt: new Date('2026-09-20T08:30').getTime() });
@@ -119,9 +126,9 @@ describe('navigation depuis le retour système vers les vrais gestes du brassin'
     const view = mount({ additions: {}, steps: [{ id: 'eau', label: 'Préparation des eaux', durationMin: 0 }, { id: 'ensemencement', label: 'Ensemencement', durationMin: 0 }] });
     fireEvent.click(screen.getByRole('button', { name: 'Modifier la quantité de Eau d’empâtage au mash' }));
     fireEvent.change(screen.getByLabelText('Quantité réelle de Eau d’empâtage au mash'), { target: { value: '0' } });
-    const time = screen.getByLabelText('Date et heure réelles d’ajout de Eau d’empâtage');
-    expect(time).toHaveValue('');
-    fireEvent.change(time, { target: { value: '2026-09-20T08:00' } });
+    const LABEL = 'Date et heure réelles d’ajout de Eau d’empâtage';
+    expect(screen.getByLabelText(`Heure — ${LABEL}`)).toHaveValue('');
+    poserInstant(LABEL, '2026-09-20T08:00');
     expect(view.latest().additions?.['water-mash'].doneAt).toBeUndefined();
     fireEvent.click(screen.getByRole('button', { name: 'Consigner à cette heure' }));
     expect(view.latest().additions?.['water-mash']).toEqual({ amount: 0, doneAt: new Date('2026-09-20T08:00').getTime(), volumeBasis: 'cold' });

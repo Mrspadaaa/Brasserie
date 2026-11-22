@@ -3,6 +3,7 @@ import { act, cleanup, fireEvent, render, screen, within } from '@testing-librar
 import { VirtuosoMockContext } from 'react-virtuoso';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Batch, EquipmentItem, Recipe, StockItem } from '../../src/types';
+import { zoneDate } from '../helpers/poserDate';
 
 /**
  * Voie d-stocks (2026-11-08-defauts), écrans : ce que le brasseur voit. Le service d'écriture est simulé ; aucune donnée réelle.
@@ -94,7 +95,7 @@ describe('TE-46, TE-47, TE-48, BR-94 — la fiche du matériel', () => {
     fireEvent.click(screen.getByRole('menuitem', { name: 'Modifier' }));
     expect(screen.queryByText(/EQ-6c0b6340/)).toBeNull();
     expect(screen.getByText(/01\.02\.2025/)).toBeInTheDocument();
-    expect((document.querySelector('input[type="date"]') as HTMLInputElement).value).toBe('2025-02-01');
+    expect(zoneDate('Date d’achat')).toHaveAttribute('data-valeur', '2025-02-01');
   });
   it('« Matériel déjà possédé » s’ouvre sans reproche, et un prix négatif est refusé', () => {
     const onSave = vi.fn();
