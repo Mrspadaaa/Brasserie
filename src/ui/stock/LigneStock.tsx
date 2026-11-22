@@ -39,6 +39,8 @@ interface LigneStockProps {
   mouvementDit?: string;
   /** pe3 (règle « chaque geste décompte ce qu'il use ») : la trace du dernier geste, ↺ l'annule. */
   trace?: { texte: string; gesteId: string; annuler: () => void };
+  /** Autres stocks (D423) : remplace la 2e ligne (état et seuil) par la sienne, pastille utile comprise. */
+  sousNom?: React.ReactNode;
   onOpen: (item: StockItem) => void;
   onToggleFavorite: (item: StockItem) => void;
 }
@@ -48,7 +50,7 @@ interface LigneStockProps {
  * quantité à droite ; pour les trois rayons, une barre derrière la ligne à deux régimes (à l'échelle jusqu'au coude, resserrée au-delà,
  * coupure « ⫽ » et trait du coude), teintée de la famille (c3b) avec son liseré à gauche.
  */
-export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, niveauDit, description, reserve, durabilite, aujourdhui, mouvementDit, trace, onOpen, onToggleFavorite }) => {
+export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, niveauDit, description, reserve, durabilite, aujourdhui, mouvementDit, trace, sousNom, onOpen, onToggleFavorite }) => {
   const descriptionId = useId();
   const fam = familleTeinte(item);
   const rayon = rayonDuMur(item);
@@ -76,7 +78,7 @@ export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, 
         </span>
         <span className="l1-nm">
           <span className="l1-n1">{item.name}</span>
-          <span className={`l1-n2 l1-s-${dit.classe}`}>{texteSousLeNom(dit)}</span>
+          {sousNom ? <span className="l1-n2 la-sous">{sousNom}</span> : <span className={`l1-n2 l1-s-${dit.classe}`}>{texteSousLeNom(dit)}</span>}
         </span>
         {repere
           ? <span title={repere.titre} className={`l1-rp${repere.inconnu ? ' l1-rp-q' : ''}${repere.alerte ? ' l1-rp-w' : ''}`}>

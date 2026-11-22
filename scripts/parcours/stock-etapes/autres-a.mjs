@@ -91,6 +91,22 @@ export default async function (c) {
       c.controle('AA-5', a.mur && !!act && act.ouverte === 'Nettoyage' && a.btnLeg?.rangee === 'Nettoyage' && a.btnLeg.h >= 17 && a.nomBtn.h >= 44
         && /tirets : le seuil/.test(leg) && /sans seuil : contre le plus gros/.test(leg) && /cadre rouge : épuisé/.test(leg) && /pointillé : à compter/.test(leg) && /barré : DDM dépassée/.test(leg) && /rien en stock/.test(leg),
       `rangée active ${JSON.stringify(act)}, bouton de légende ${JSON.stringify(a.btnLeg)}, nom ${a.nomBtn?.h} px de haut, légende « ${leg.slice(0, 90)} »`);
+      // Bloc 6 : la ligne (n° 28 à 32) : 2e ligne « état · seuil », ligne ouverte sur place, seuil réglé dans la ligne (texte décimal, jamais number)
+      const lireLigne = (nom) => c.mesure((n) => {
+        const l = [...document.querySelectorAll('[data-ligne-autre]')].find((x) => x.querySelector('.l1-n1')?.textContent.includes(n));
+        const t = (e) => (e?.textContent ?? '').replace(/\s+/g, ' ').trim();
+        const o = l?.querySelector('[data-ligne-ouverte]'); const inp = o?.querySelector('input');
+        return l ? { n2: t(l.querySelector('.l1-n2')), ouvert: !!o, input: inp ? { type: inp.type, mode: inp.inputMode, v: inp.value } : null, nombres: l.querySelectorAll('input[type=number]').length, fiche: !!o?.querySelector('.la-fiche'), box: Math.round(l.getBoundingClientRect().height), star: !!l.querySelector('[data-etoile]'), liseret: getComputedStyle(l.querySelector('.l1-li')).boxShadow } : null;
+      }, nom);
+      const avant = await lireLigne('Soude PBW'); const ep = await lireLigne('Nutriment levure');
+      await essayer(() => c.toucher('Soude PBW', { sel: '[data-ligne-autre] .l1-row' })); await c.sleep(500);
+      const ouv = await lireLigne('Soude PBW');
+      await essayer(() => c.toucherSel('[data-ligne-ouverte] .la-seuil .la-pm:last-child')); await c.sleep(700);
+      const apres = await lireLigne('Soude PBW');
+      await c.cap('autres-a-liste-ouverte');
+      c.controle('AA-6', !!avant && /assez/.test(avant.n2) && /seuil 500 g/.test(avant.n2) && !!ep && /épuisé/.test(ep.n2) && /seuil 20 g/.test(ep.n2)
+        && ouv?.ouvert === true && ouv.input?.type === 'text' && ouv.input.mode === 'decimal' && ouv.nombres === 0 && ouv.fiche && ouv.star && /3px/.test(ouv.liseret) && /seuil 550 g/.test(apres?.n2 ?? ''),
+      `ligne ${JSON.stringify(avant?.n2)} / épuisé ${JSON.stringify(ep?.n2)} ; ouverte ${JSON.stringify(ouv)} ; après « + » ${JSON.stringify(apres?.n2)} ${JSON.stringify(apres?.input)}`);
     });
   } finally { await c.p.removeScriptToEvaluateOnNewDocument(script.identifier).catch(() => {}); }
 }

@@ -1,0 +1,22 @@
+/* Ligne d'Autres stocks, version A (D423, D424). Préfixe la-. Les jetons --l1-* viennent de .stock-liste (liste.css). */
+.la-l[data-ouvert]>.stock-liste.l1-li{box-shadow:inset 3px 0 0 var(--l1-k);background:var(--l1-raised)}
+.la-n2{display:block}
+.la-mot{font-weight:600}
+.la-m-epuise{color:var(--l1-alertt)}
+.la-m-bas{color:#8a5a14}
+html[data-theme="cave"] .la-m-bas{color:#d9a45a}
+.la-m-compter{border-bottom:1.5px dashed currentColor}
+.la-m-assez{color:var(--l1-t2);font-weight:400}
+.la-sl{color:var(--l1-t2)}
+.la-pastille{display:flex;align-items:center;gap:5px;margin-top:1px;font:500 12px/16px var(--l1-mono,ui-monospace,monospace);color:var(--l1-t1);min-width:0;white-space:normal}
+.la-pastille i{flex:none;width:8px;height:8px;border-radius:50%}
+.la-ouv{position:relative;display:flex;flex-direction:column;gap:6px;padding:6px 44px 10px 32px;background:var(--l1-raised);box-shadow:inset 3px 0 0 var(--l1-k);border-bottom:1px solid var(--l1-border)}
+.la-besoin{margin:0;font:500 13px/17px var(--l1-mono,ui-monospace,monospace);color:var(--l1-t0)}
+.la-four{margin:0;font-size:13px;line-height:17px;color:var(--l1-t2)}
+.la-seuil{display:flex;align-items:center;gap:6px}
+.la-lib{font-size:13px;color:var(--l1-t1);margin-right:2px}
+.la-pm{min-width:44px;min-height:44px;border:1px solid var(--l1-strong);border-radius:10px;background:var(--l1-page);color:var(--l1-t0);font:600 20px/1 var(--l1-sans,inherit)}
+.la-in{width:84px;min-height:44px;padding:0 8px;border:1px solid var(--l1-strong);border-radius:10px;background:var(--l1-page);color:var(--l1-t0);font:500 16px/1 var(--l1-mono,ui-monospace,monospace);text-align:right}
+.la-un{font-size:13px;color:var(--l1-t2)}
+.la-acts{display:flex;gap:8px}
+.la-fiche{min-height:44px;padding:0 14px;border:1px solid var(--l1-strong);border-radius:10px;background:var(--l1-page);color:var(--l1-t0);font:600 14px/1 var(--l1-sans,inherit)}

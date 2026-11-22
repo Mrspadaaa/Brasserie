@@ -7,6 +7,9 @@ import { libelleDurabilite, quantiteLue } from '../domain/stock/regles';
 import { libellesSources } from '../domain/stock/disponibilite';
 import { todayISO } from '../domain/finance/ledger';
 import { EtoileStock, LigneStock } from './stock/LigneStock';
+import { LigneAutre } from './stock/LigneAutre';
+import { familleRecompter } from '../domain/stock/liste';
+import { estFamilleAutre } from '../domain/stock/murDonnees';
 import { LevelGauge, stockLevelLabel } from './LevelGauge';
 import { annulerGesteDepuisTrace } from './BandeauEffets';
 
@@ -87,7 +90,9 @@ export const StockRow: React.FC<StockRowProps> = ({ item, batches, stockItems, o
   // Hors « Comparer une recette » : la ligne de la maquette choisie sy/fA (barres g6, teintes c3b) ; la comparaison garde sa carte.
   if (!comparison) {
     const ligne = info ?? infoLigne(item, cmd ? new Map([[item.ref, cmd]]) : new Map(), aujourdhui);
-    return <LigneStock item={item} info={ligne} cmd={cmd} level={level} niveauDit={stockLevelLabel(level)} aujourdhui={aujourdhui}
+    // Autres stocks (D423) : la même ligne, avec sa pastille utile, son seuil et son ouverture sur place.
+    const Ligne = estFamilleAutre(familleRecompter(item)) ? LigneAutre : LigneStock;
+    return <Ligne item={item} info={ligne} cmd={cmd} level={level} niveauDit={stockLevelLabel(level)} aujourdhui={aujourdhui}
       description={`${Units.format(item.currentStock, item.unit)} · ${stockLevelLabel(level)}${pendingDescription ? ` · ${pendingDescription}` : ''}`}
       reserve={pendingDescription ? { texte: pendingDescription, connue: pending.known } : undefined}
       durabilite={durabilite} mouvementDit={mouvementDit}
