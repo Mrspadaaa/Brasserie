@@ -125,6 +125,7 @@ async function jouer(dir) {
       await p.setViewport({ width: L, height: tactile ? 844 : 900, isMobile: tactile, hasTouch: tactile, deviceScaleFactor: 1 });
       await p.evaluateOnNewDocument((t) => localStorage.setItem('laffinee.theme', t), theme);
       const erreurs = []; p.on('pageerror', (e) => erreurs.push(String(e).slice(0, 160)));
+      const diag = []; p.on('requestfailed', (q) => diag.push(`req ${q.url().slice(-50)} ${q.failure()?.errorText}`)); p.on('console', (m) => { if (m.type() === 'error') diag.push(`con ${m.text().slice(0, 140)}`); });
       const cdp = await p.createCDPSession();
       const toucherTexte = async (txts) => {
         for (const t of [].concat(txts)) {
@@ -210,7 +211,7 @@ async function jouer(dir) {
           await ouvrir(E.etape); await sleep(600);
           const v6 = await lire(vsel, i);
           v6 && v6.v === garde ? ok(`${c} rechargement`, `${garde}`) : echec(`${c} rechargement`, `${garde} → ${v6?.v}`);
-        } catch (e) { echec(c, String(e.message ?? e).slice(0, 160)); await p.screenshot({ path: path.join(sortie, `${E.nom}-${combo}-erreur.png`) }).catch(() => {}); }
+        } catch (e) { echec(c, String(e.message ?? e).slice(0, 160) + (diag.length ? ` [${diag.slice(-3).join(' ; ')}]` : '')); await p.screenshot({ path: path.join(sortie, `${E.nom}-${combo}-erreur.png`) }).catch(() => {}); }
       }
       if (ENDROITS_JOUES.includes('calendrier')) {
         try { await jouerCalendrier({ p, base: url, combo, tactile, glisser, pas }); }

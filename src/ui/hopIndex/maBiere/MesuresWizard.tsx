@@ -3,16 +3,34 @@
 // À l'étape Houblons, c'est l'étape elle-même qui rend ses mesures (recette du geste en cours, EtapeHoublons `onMesures`).
 // Ce composant ne rend rien ; il lit les mêmes données du brasseur que l'étape (useHopData, configurerDonnees) et la même
 // conversion (toHopRecipe, avec la DI d'ébullition du wizard). Chargé à la demande (import dynamique du wizard).
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Recipe } from '../../../types';
 import { toHopRecipe } from '../../../domain/hopIndex/v4/recipeConversion';
 import { configurerDonnees, lireBiere } from '../parcours/adaptateur';
 import { useHopData } from '../useHopData';
 import type { MesuresEtape } from './EtapeHoublons';
+import { composesCharges, siComposesArrivent } from '../../../domain/hopIndex/v4/composes';
+import { chargerOutils } from '../chargement';
 
 const signature = (r: Recipe) => JSON.stringify([r.hops, r.yeast, r.styleRef, r.style, r.boilMin, r.ogTarget, r.volumeL, r.name, r.colorEbc, r.fermentables?.map((f) => [f.use, f.weightKg, f.kind, f.colorEbc])]);
 
-export default function MesuresWizard({ recipe, boilOg, onMesures }: { recipe: Recipe; boilOg?: number | null; onMesures: (m: MesuresEtape) => void }) {
+type Props = { recipe: Recipe; boilOg?: number | null; onMesures: (m: MesuresEtape) => void };
+
+// c8 : les composés arrivent à part. Le bandeau du wizard peut s’afficher avant eux (chargement des outils au repos, pas encore fait) : le calcul
+// lève alors ComposesAbsents et l’écran entier tombait en « Écran indisponible ». On les demande et on attend ; rien n’est lu comme 0.
+export default function MesuresWizard(props: Props) {
+  const [pret, setPret] = useState(() => composesCharges() !== null);
+  useEffect(() => {
+    if (pret) return;
+    let vivant = true;
+    const arret = siComposesArrivent(() => { if (vivant) setPret(true); });
+    chargerOutils().catch(() => {});
+    return () => { vivant = false; arret(); };
+  }, [pret]);
+  return pret ? <MesuresPretes {...props} /> : null;
+}
+
+function MesuresPretes({ recipe, boilOg, onMesures }: Props) {
   const sig = signature(recipe) + String(boilOg);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const conversion = useMemo(() => toHopRecipe(recipe, boilOg === undefined ? {} : { boilOg }), [sig]);
