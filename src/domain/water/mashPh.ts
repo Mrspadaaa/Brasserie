@@ -1,4 +1,5 @@
 import { CA_DIVISOR, MG_DIVISOR } from './ions';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 
 
@@ -471,7 +472,7 @@ export function targetRaForGrist(
     min: band.min + lift,
     max: band.max + lift,
     from: 'facture',
-    hint: `Relevée de ${lift} ppm par ta facture : elle est plus acide que sa couleur ne le laisse croire — moins d’acide à verser.`
+    hint: `Relevée de ${nombreFr(lift, 1)} ppm par ta facture : elle est plus acide que sa couleur ne le laisse croire — moins d’acide à verser.`
   };
 }
 

@@ -1,0 +1,945 @@
+{
+ "version": 1,
+ "verse": "2026-11-09",
+ "origine": "work/missions/2026-11-09-ecran-levure/savoir/faits-proposes.json (46 faits) + complements (TROUS-COMBLES.md)",
+ "note": "Faits sourcés lus par valeurAxe en plus du catalogue. En cas de conflit, les deux restent : la valeur la mieux sourcée est montrée, l’autre est notée.",
+ "faits": [
+  {
+   "yeastId": "fermentis-us05",
+   "key": "esters",
+   "reported": "Total esters: Low ; 40 ppm at 18°P at 20°C in EBC tubes",
+   "fr": "Faible (page) ; 40 ppm d’esters totaux en essai labo (18 °P, 20 °C)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, SafAle US-05 (page produit)",
+    "auteur": "Fermentis",
+    "reference": "https://fermentis.com/en/product/safale-us-05/",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · fiche"
+   },
+   "lecture": {
+    "niveau": "faible",
+    "ppm": 40
+   }
+  },
+  {
+   "yeastId": "fermentis-us05",
+   "key": "pof",
+   "reported": "Phenolic Off-Flavor : champ présent, sans valeur",
+   "fr": "Non déclaré par Fermentis (champ vide, fiche technique muette) : ne pas inscrire POF−",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, SafAle US-05 (page produit)",
+    "auteur": "Fermentis",
+    "reference": "https://fermentis.com/en/product/safale-us-05/",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · fiche"
+   },
+   "lecture": {
+    "pof": "non-declare"
+   }
+  },
+  {
+   "yeastId": "fermentis-us05",
+   "key": "residualSugar",
+   "reported": "11 g/l* ; *3g maltotriose/L corresponding to an apparent attenuation of 81%",
+   "fr": "11 g/L de sucres résiduels dont 3 g/L de maltotriose (essai labo, atténuation apparente 81 %)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, TDS SafAle US-05, rev. mars 2018",
+    "auteur": "Fermentis",
+    "reference": "https://rahrbsg.ca/wp-content/uploads/2021/12/SPEC-Fermentis-SafAle-US-05-030118.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · TDS"
+   },
+   "lecture": {
+    "gL": 11,
+    "maltotrioseGL": 3
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-s-e2-80-9104",
+   "key": "esters",
+   "reported": "Total esters: Low ; 37 ppm ; Produces balanced fruity and floral notes",
+   "fr": "Faible (37 ppm) ; descripteur du fabricant : notes fruitées et florales équilibrées",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, SafAle S-04 (page produit)",
+    "auteur": "Fermentis",
+    "reference": "https://fermentis.com/en/product/safale-s-04/",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · fiche"
+   },
+   "lecture": {
+    "niveau": "faible",
+    "ppm": 37,
+    "mots": [
+     "fruité",
+     "floral"
+    ]
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-s-e2-80-9104",
+   "key": "pof",
+   "reported": "Phenolic Off-Flavor : « – »",
+   "fr": "Négatif (symbole « – » ; lecture confirmée par le Q&R BE-256) ; aucun POF+ à la fiche technique",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, SafAle S-04 (page produit)",
+    "auteur": "Fermentis",
+    "reference": "https://fermentis.com/en/product/safale-s-04/",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · fiche"
+   },
+   "lecture": {
+    "pof": "negatif"
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-s-e2-80-9104",
+   "key": "residualSugar",
+   "reported": "18 g/l* ; *10g maltotriose/L corresponding to an apparent attenuation of 75%",
+   "fr": "18 g/L résiduels dont 10 g/L de maltotriose (essai labo, atténuation apparente 75 %)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, TDS SafAle S-04, rev. mars 2018",
+    "auteur": "Fermentis",
+    "reference": "https://rahrbsg.ca/wp-content/uploads/2021/12/SPEC-Fermentis-SafAle-S-04-030118.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · TDS"
+   },
+   "lecture": {
+    "gL": 18,
+    "maltotrioseGL": 10
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-be-e2-80-91256",
+   "key": "esters",
+   "reported": "Total esters: High ; produces high levels of isoamyl acetate and other fruity esters",
+   "fr": "Élevé ; acétate d’isoamyle (banane) et autres esters fruités, plus marqués à haute densité et température",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, SafAle BE-256 (page produit)",
+    "auteur": "Fermentis",
+    "reference": "https://fermentis.com/en/product/safale-be-256/",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · fiche"
+   },
+   "lecture": {
+    "niveau": "eleve",
+    "mots": [
+     "acétate d’isoamyle",
+     "banane",
+     "fruité"
+    ]
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-be-e2-80-91256",
+   "key": "esters",
+   "reported": "Total esters : 20 ppm at 18°P at 20°C ; aromas sutiles",
+   "fr": "Fiche technique ancienne : 20 ppm d’esters totaux et « arômes subtils », en désaccord avec la page actuelle (Élevé) ; non tranché chiffre contre mot",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, TDS SafAle BE-256 (version espagnole, rev. mai 2018 selon recherche)",
+    "auteur": "Fermentis",
+    "reference": "https://distributors.fermentis.com/download/127/spanish/755/safale-be-256-es.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · TDS"
+   },
+   "lecture": {
+    "niveau": "faible",
+    "ppm": 20,
+    "mots": [
+     "arômes subtils"
+    ],
+    "ancien": true
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-be-e2-80-91256",
+   "key": "pof",
+   "reported": "Phenolic Off-Flavor : « – » ; won’t produce any spicy flavours",
+   "fr": "Négatif : pas de note épicée (déclaré)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, SafAle BE-256 questions and answers",
+    "auteur": "Fermentis",
+    "reference": "https://fermentis.com/en/knowledge-center/expert-insights/beer/safale-be-256-questions-answers",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · Q&R"
+   },
+   "lecture": {
+    "pof": "negatif"
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-be-e2-80-91256",
+   "key": "residualSugar",
+   "reported": "0 g/l* ; *0g maltotriose/L corresponding to an apparent attenuation of 82%",
+   "fr": "0 g/L résiduel, maltotriose consommé (essai labo, atténuation apparente 82 %)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, TDS SafAle BE-256 (version espagnole, rev. mai 2018 selon recherche)",
+    "auteur": "Fermentis",
+    "reference": "https://distributors.fermentis.com/download/127/spanish/755/safale-be-256-es.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · TDS"
+   },
+   "lecture": {
+    "gL": 0,
+    "maltotrioseGL": 0
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-t-e2-80-9158",
+   "key": "pof",
+   "reported": "estery somewhat peppery and spicy flavor development (POF+), producing clove-like aroma",
+   "fr": "Positif : arôme de clou de girofle, poivré (déclaré)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, TDS SafAle T-58, rev. mars 2018",
+    "auteur": "Fermentis",
+    "reference": "https://rahrbsg.ca/wp-content/uploads/2021/12/SPEC-Fermentis-SafAle-T-58-030118.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · TDS"
+   },
+   "lecture": {
+    "pof": "positif",
+    "mots": [
+     "girofle",
+     "poivré"
+    ]
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-t-e2-80-9158",
+   "key": "esters",
+   "reported": "Total esters: High ; 37 ppm",
+   "fr": "Élevé (page) ; 37 ppm d’esters totaux en essai labo ; banane, girofle, poivre cités",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, SafAle T-58 (page produit)",
+    "auteur": "Fermentis",
+    "reference": "https://fermentis.com/en/product/safale-t-58/",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · fiche"
+   },
+   "lecture": {
+    "niveau": "eleve",
+    "ppm": 37,
+    "mots": [
+     "banane"
+    ]
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-t-e2-80-9158",
+   "key": "residualSugar",
+   "reported": "22 g/l* ; *11g maltotriose/L corresponding to an apparent attenuation of 70%",
+   "fr": "22 g/L résiduels dont 11 g/L de maltotriose (essai labo, atténuation apparente 70 %)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, TDS SafAle T-58, rev. mars 2018",
+    "auteur": "Fermentis",
+    "reference": "https://rahrbsg.ca/wp-content/uploads/2021/12/SPEC-Fermentis-SafAle-T-58-030118.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · TDS"
+   },
+   "lecture": {
+    "gL": 22,
+    "maltotrioseGL": 11
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-saflager-w-34-70",
+   "key": "esters",
+   "reported": "Total esters: Low ; a good balance of floral and fruity aromas",
+   "fr": "Faible ; équilibre floral et fruité (déclaré)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, SafLager W-34/70 (page produit)",
+    "auteur": "Fermentis",
+    "reference": "https://fermentis.com/en/product/saflager-w-34-70/",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · fiche"
+   },
+   "lecture": {
+    "niveau": "faible",
+    "mots": [
+     "floral",
+     "fruité"
+    ]
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-saflager-w-34-70",
+   "key": "pof",
+   "reported": "Phenolic Off-Flavor : « – »",
+   "fr": "Négatif (symbole « – » ; lecture par analogie avec le Q&R BE-256)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, SafLager W-34/70 (page produit)",
+    "auteur": "Fermentis",
+    "reference": "https://fermentis.com/en/product/saflager-w-34-70/",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · fiche"
+   },
+   "lecture": {
+    "pof": "negatif",
+    "parAnalogie": true
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-saflager-w-34-70",
+   "key": "residualSugar",
+   "reported": "5 g/l* ; *2g maltotriose/L corresponding to an apparent attenuation of 83%",
+   "fr": "5 g/L résiduels dont 2 g/L de maltotriose (essai labo à 12 puis 14 °C, atténuation 83 %)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, TDS SafLager W-34/70 (copie distributeur)",
+    "auteur": "Fermentis",
+    "reference": "https://morewine.com/cdn/shop/files/SafLager-W-3470.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · TDS"
+   },
+   "lecture": {
+    "gL": 5,
+    "maltotrioseGL": 2
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-wb-06",
+   "key": "pof",
+   "reported": "subtle estery and phenol flavor notes (POF+) such as clove notes",
+   "fr": "Positif : notes de clou de girofle (déclaré)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, TDS SafAle WB-06, rev. janv. 2018",
+    "auteur": "Fermentis",
+    "reference": "https://rahrbsg.ca/wp-content/uploads/2021/12/SPEC-Fermentis-SafAle-WB-06-010118.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · TDS"
+   },
+   "lecture": {
+    "pof": "positif",
+    "mots": [
+     "girofle"
+    ]
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-wb-06",
+   "key": "esters",
+   "reported": "Total esters: Medium ; 78 ppm",
+   "fr": "Moyen (page) ; 78 ppm d’esters totaux en essai labo, le plus élevé du lot Fermentis testé",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, TDS SafAle WB-06, rev. janv. 2018",
+    "auteur": "Fermentis",
+    "reference": "https://rahrbsg.ca/wp-content/uploads/2021/12/SPEC-Fermentis-SafAle-WB-06-010118.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · TDS"
+   },
+   "lecture": {
+    "niveau": "moyen",
+    "ppm": 78
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-wb-06",
+   "key": "residualSugar",
+   "reported": "0 g/l* ; *0g maltotriose/L ; consume almost all of it (maltotriose)",
+   "fr": "0 g/L résiduel ; consomme presque tout le maltotriose (BE-256 et WB-06)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, Make our yeasts for beers (Make a choice)",
+    "auteur": "Fermentis",
+    "reference": "https://www.CastleMalting.com/Presentations/Fermentis_Make-a-choice_EN.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · présentation"
+   },
+   "lecture": {
+    "gL": 0
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-be-134",
+   "key": "pof",
+   "reported": "fruity aromas with a slight spicy character (POF+) such as clove notes",
+   "fr": "Positif : légère note épicée, girofle (déclaré)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, TDS SafAle BE-134, rev. mars 2018",
+    "auteur": "Fermentis",
+    "reference": "https://rahrbsg.ca/wp-content/uploads/2021/12/SPEC-Fermentis-SafAle-BE-134-030118.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · TDS"
+   },
+   "lecture": {
+    "pof": "positif",
+    "mots": [
+     "girofle"
+    ]
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-be-134",
+   "key": "esters",
+   "reported": "Total esters: Medium ; 45 ppm",
+   "fr": "Moyen ; 45 ppm d’esters totaux (13,5 °P, 20 °C)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, TDS SafAle BE-134, rev. mars 2018",
+    "auteur": "Fermentis",
+    "reference": "https://rahrbsg.ca/wp-content/uploads/2021/12/SPEC-Fermentis-SafAle-BE-134-030118.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · TDS"
+   },
+   "lecture": {
+    "niveau": "moyen",
+    "ppm": 45
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-be-134",
+   "key": "body",
+   "reported": "produces fruity, floral and phenolic notes and a dry character",
+   "fr": "Caractère sec, très buvable (déclaré) ; 0 g/L de sucres résiduels",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, SafAle BE-134 (page produit)",
+    "auteur": "Fermentis",
+    "reference": "https://fermentis.com/en/product/safale-be-134/",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · fiche"
+   },
+   "lecture": {
+    "mots": [
+     "sec",
+     "très buvable"
+    ]
+   }
+  },
+  {
+   "yeastId": "yeast-fermentis-safale-be-134",
+   "key": "residualSugar",
+   "reported": "0 g/l* ; *0g maltotriose/L corresponding to an apparent attenuation of 90%",
+   "fr": "0 g/L résiduel (essai labo, atténuation apparente 90 %)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Fermentis, TDS SafAle BE-134, rev. mars 2018",
+    "auteur": "Fermentis",
+    "reference": "https://rahrbsg.ca/wp-content/uploads/2021/12/SPEC-Fermentis-SafAle-BE-134-030118.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Fermentis · TDS"
+   },
+   "lecture": {
+    "gL": 0
+   }
+  },
+  {
+   "yeastId": "lalbrew-verdant-ipa",
+   "key": "pof",
+   "reported": "This is a POF Negative strain.",
+   "fr": "Négatif (déclaré)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Verdant IPA (A4)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://cdn.shopify.com/s/files/1/0323/8825/1780/files/Verdant_TDS_ENG_Print_A4_LalBrew.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "pof": "negatif"
+   }
+  },
+  {
+   "yeastId": "lalbrew-verdant-ipa",
+   "key": "betaLyase",
+   "reported": "Through expression of a β-lyase enzyme, ... can promote hop biotransformation",
+   "fr": "β-lyase : expression déclarée par Lallemand, sans mesure chiffrée",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Verdant IPA (A4)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://cdn.shopify.com/s/files/1/0323/8825/1780/files/Verdant_TDS_ENG_Print_A4_LalBrew.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "betaLyase": "positif"
+   }
+  },
+  {
+   "yeastId": "lalbrew-verdant-ipa",
+   "key": "biotransformation",
+   "reported": "Verdant IPA : terpène Medium ; thiol High (activité enzymatique relative)",
+   "fr": "Tableau Lallemand : favorise surtout les thiols (High), terpènes Medium",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, Strain Terpene and Thiol Favoring Activity table (2025-05)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2025/05/Strain-Terpene-and-Thiol-Favoring-Activity-table.png",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · tableau"
+   },
+   "lecture": {
+    "thiols": "eleve",
+    "terpenes": "moyen",
+    "tableau": true
+   }
+  },
+  {
+   "yeastId": "lalbrew-verdant-ipa",
+   "key": "body",
+   "reported": "slightly more body than a typical American IPA yeast strain",
+   "fr": "Un peu plus de corps qu’une levure IPA américaine typique (déclaré) ; non chiffré",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Verdant IPA (A4)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://cdn.shopify.com/s/files/1/0323/8825/1780/files/Verdant_TDS_ENG_Print_A4_LalBrew.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "mots": [
+     "un peu plus de corps"
+    ]
+   }
+  },
+  {
+   "yeastId": "lalbrew-nottingham",
+   "key": "pof",
+   "reported": "This is a POF Negative strain.",
+   "fr": "Négatif (déclaré)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Nottingham (copie Scott Laboratories)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://files.scottlab.com/uploads/NOTTINGHAM%20TDS.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "pof": "negatif"
+   }
+  },
+  {
+   "yeastId": "lalbrew-nottingham",
+   "key": "esters",
+   "reported": "Neutral to slightly fruity and estery flavor and aroma.",
+   "fr": "Neutre à légèrement fruité et estérifié (déclaré)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Nottingham (copie Scott Laboratories)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://files.scottlab.com/uploads/NOTTINGHAM%20TDS.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "mots": [
+     "neutre",
+     "légèrement fruité"
+    ]
+   }
+  },
+  {
+   "yeastId": "lalbrew-nottingham",
+   "key": "betaLyase",
+   "reported": "moderate expression of β-glucosidase and β-lyase enzymes",
+   "fr": "β-glucosidase et β-lyase : expression modérée (déclaré)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Nottingham (copie Scott Laboratories)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://files.scottlab.com/uploads/NOTTINGHAM%20TDS.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "betaLyase": "positif",
+    "mots": [
+     "expression modérée"
+    ]
+   }
+  },
+  {
+   "yeastId": "lalbrew-nottingham",
+   "key": "biotransformation",
+   "reported": "Nottingham : terpène Medium ; thiol High",
+   "fr": "Tableau Lallemand : thiols High, terpènes Medium",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, Strain Terpene and Thiol Favoring Activity table (2025-05)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2025/05/Strain-Terpene-and-Thiol-Favoring-Activity-table.png",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · tableau"
+   },
+   "lecture": {
+    "thiols": "eleve",
+    "terpenes": "moyen",
+    "tableau": true
+   }
+  },
+  {
+   "yeastId": "lalbrew-nottingham",
+   "key": "biotransformation",
+   "reported": "Among ale yeasts, LalBrew Nottingham produced beers with the most thiols",
+   "fr": "Étude OSU (Samia et al. 2026) : le plus de thiols parmi les levures ale testées, derrière le lager Diamond (résumé fabricant)",
+   "sourceKind": "study",
+   "source": {
+    "title": "Lallemand Brewing, Which factors influence thiol release? New OSU thiol research (résumé de Samia et al. 2026, J. Am. Soc. Brew. Chem. 84(1):65-76 ; article non lu)",
+    "auteur": "Samia et al.",
+    "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/which-factors-influence-thiol-release-new-osu-thiol-research-published/",
+    "checkedAt": "2026-11-09",
+    "libelle": "Samia 2026"
+   },
+   "lecture": {
+    "mots": [
+     "le plus de thiols parmi les ales testées"
+    ]
+   }
+  },
+  {
+   "yeastId": "lalbrew-pomona",
+   "key": "pof",
+   "reported": "This strain is POF negative",
+   "fr": "Négatif (déclaré)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Pomona (copie Murphy and Son, 2024)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://murphyandson.co.uk/wp-content/uploads/2024/07/Pomona-TDS-ENG-8.5x11-Print-LalBrew.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "pof": "negatif"
+   }
+  },
+  {
+   "yeastId": "lalbrew-pomona",
+   "key": "biotransformation",
+   "reported": "enhances biotransformation and haze ; Pomona : terpène High ; thiol Medium",
+   "fr": "Biotransformation mise en avant ; tableau Lallemand : terpènes High, thiols Medium ; géraniol vers citronellol non documenté pour cette souche",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, Strain Terpene and Thiol Favoring Activity table (2025-05)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2025/05/Strain-Terpene-and-Thiol-Favoring-Activity-table.png",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · tableau"
+   },
+   "lecture": {
+    "thiols": "moyen",
+    "terpenes": "eleve",
+    "tableau": true
+   }
+  },
+  {
+   "yeastId": "lalbrew-belle-saison",
+   "key": "pof",
+   "reported": "This strain is POF Positive.",
+   "fr": "Positif (déclaré) : tranche le conflit du dépôt",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Belle Saison (copie Scott Laboratories)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://files.scottlab.com/uploads/BELLE%20SAISON%20TDS.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "pof": "positif"
+   }
+  },
+  {
+   "yeastId": "lalbrew-belle-saison",
+   "key": "biotransformation",
+   "reported": "Through expression of a β-glucosidase enzyme, ... can promote hop biotransformation",
+   "fr": "β-glucosidase déclarée (pas de β-lyase) ; tableau : terpènes High, thiols Low",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Belle Saison (copie Scott Laboratories)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://files.scottlab.com/uploads/BELLE%20SAISON%20TDS.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "thiols": "faible",
+    "terpenes": "eleve",
+    "tableau": true
+   }
+  },
+  {
+   "yeastId": "lalbrew-belle-saison",
+   "key": "residualSugar",
+   "reported": "Saccharomyces cerevisiae var. diastaticus ... capable of utilizing some types of dextrins",
+   "fr": "Utilise certaines dextrines (diastaticus, STA1 positif) ; atténuation 86-94 % ; pas de valeur en g/L",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Belle Saison (copie Scott Laboratories)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://files.scottlab.com/uploads/BELLE%20SAISON%20TDS.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "mots": [
+     "utilise certaines dextrines"
+    ]
+   }
+  },
+  {
+   "yeastId": "lalbrew-belle-saison",
+   "key": "esters",
+   "reported": "Aroma and flavor is typical of Saisons with citrus and pepper notes.",
+   "fr": "Notes agrumes et poivre (déclaré) ; niveau d’esters non déclaré",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Belle Saison (copie Scott Laboratories)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://files.scottlab.com/uploads/BELLE%20SAISON%20TDS.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "mots": [
+     "agrumes",
+     "poivre"
+    ]
+   }
+  },
+  {
+   "yeastId": "lalbrew-abbaye",
+   "key": "pof",
+   "reported": "This strain is POF Positive.",
+   "fr": "Positif (déclaré)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Abbaye (copie Scott Laboratories)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://files.scottlab.com/uploads/ABBAYE%20TDS.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "pof": "positif"
+   }
+  },
+  {
+   "yeastId": "lalbrew-abbaye",
+   "key": "esters",
+   "reported": "When fermented at higher temperatures, typical flavors and aromas include tropical, spicy and banana.",
+   "fr": "À haute température : tropical, épicé, banane ; à basse : raisin, datte, figue (déclaré) ; profil « équilibré » non sourcé",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Abbaye (copie Scott Laboratories)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://files.scottlab.com/uploads/ABBAYE%20TDS.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "mots": [
+     "tropical",
+     "épicé",
+     "banane"
+    ]
+   }
+  },
+  {
+   "yeastId": "lalbrew-abbaye",
+   "key": "biotransformation",
+   "reported": "Abbaye : terpène Medium ; thiol Low",
+   "fr": "Tableau Lallemand : terpènes Medium, thiols Low",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, Strain Terpene and Thiol Favoring Activity table (2025-05)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2025/05/Strain-Terpene-and-Thiol-Favoring-Activity-table.png",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · tableau"
+   },
+   "lecture": {
+    "thiols": "faible",
+    "terpenes": "moyen",
+    "tableau": true
+   }
+  },
+  {
+   "yeastId": "yeast-mangrove-jacks-132015569",
+   "key": "body",
+   "reported": "finish dry and crisp ; very light ales may turn out thin",
+   "fr": "Finale sèche et nette ; peut paraître mince sur bières très légères (déclaré)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Mangrove Jack’s, Craft Series Yeast (livret : M20 p. 12, M44 p. 25)",
+    "auteur": "Mangrove Jack’s",
+    "reference": "https://cdn.shopify.com/s/files/1/0520/9384/5665/files/Craft_Series_Yeast.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Mangrove Jack’s · livret"
+   },
+   "lecture": {
+    "mots": [
+     "sec",
+     "net"
+    ]
+   }
+  },
+  {
+   "yeastId": "yeast-mangrove-jacks-132015569",
+   "key": "esters",
+   "reported": "A very neutral strain even when fermented in higher gravity worts",
+   "fr": "Très neutre, même à haute densité et chaude (déclaré) ; niveau non chiffré",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Mangrove Jack’s, Craft Series Yeast (livret : M20 p. 12, M44 p. 25)",
+    "auteur": "Mangrove Jack’s",
+    "reference": "https://cdn.shopify.com/s/files/1/0520/9384/5665/files/Craft_Series_Yeast.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Mangrove Jack’s · livret"
+   },
+   "lecture": {
+    "mots": [
+     "très neutre"
+    ]
+   }
+  },
+  {
+   "yeastId": "yeast-mangrove-jacks-132040951",
+   "key": "esters",
+   "reported": "It has abundant classic banana esters, balanced with clove like phenolic aromas",
+   "fr": "Abondants esters de banane (déclaré)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Mangrove Jack’s, Craft Series Yeast (livret : M20 p. 12, M44 p. 25)",
+    "auteur": "Mangrove Jack’s",
+    "reference": "https://cdn.shopify.com/s/files/1/0520/9384/5665/files/Craft_Series_Yeast.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Mangrove Jack’s · livret"
+   },
+   "lecture": {
+    "mots": [
+     "banane"
+    ]
+   }
+  },
+  {
+   "yeastId": "yeast-mangrove-jacks-132040951",
+   "key": "pof",
+   "reported": "clove like phenolic aromas",
+   "fr": "Positif de fait : arômes phénoliques de girofle (déclaré) ; pas de mention « POF+ »",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Mangrove Jack’s, Craft Series Yeast (livret : M20 p. 12, M44 p. 25)",
+    "auteur": "Mangrove Jack’s",
+    "reference": "https://cdn.shopify.com/s/files/1/0520/9384/5665/files/Craft_Series_Yeast.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Mangrove Jack’s · livret"
+   },
+   "lecture": {
+    "pof": "positif",
+    "mots": [
+     "girofle"
+    ]
+   }
+  },
+  {
+   "yeastId": "yeast-mangrove-jacks-132040951",
+   "key": "body",
+   "reported": "creamy, silky mouthfeel with a full and rich medium body",
+   "fr": "Bouche crémeuse et soyeuse, corps moyen plein et riche (déclaré)",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Mangrove Jack’s, Craft Series Yeast (livret : M20 p. 12, M44 p. 25)",
+    "auteur": "Mangrove Jack’s",
+    "reference": "https://cdn.shopify.com/s/files/1/0520/9384/5665/files/Craft_Series_Yeast.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Mangrove Jack’s · livret"
+   },
+   "lecture": {
+    "mots": [
+     "crémeux",
+     "soyeux",
+     "corps plein"
+    ]
+   }
+  }
+ ],
+ "complements": [
+  {
+   "yeastId": "lalbrew-diamond",
+   "key": "biotransformation",
+   "reported": "Lager Diamond : le plus de thiols (2 à 3 fois les ales) ; 3SH de +33 à +72 % entre 15 et 30 °C",
+   "fr": "Étude OSU (Samia et al. 2026) : la lager Diamond donne le plus de thiols, 2 à 3 fois les ales testées ; le 3SH monte de 33 à 72 % entre 15 et 30 °C. Résumé Lallemand : l’article n’est pas lu.",
+   "sourceKind": "study",
+   "source": {
+    "title": "Lallemand Brewing, Which factors influence thiol release? New OSU thiol research (résumé de Samia et al. 2026, J. Am. Soc. Brew. Chem. 84(1):65-76 ; article non lu)",
+    "auteur": "Samia et al.",
+    "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/which-factors-influence-thiol-release-new-osu-thiol-research-published/",
+    "checkedAt": "2026-11-09",
+    "libelle": "Samia 2026"
+   },
+   "lecture": {
+    "thiols": "eleve",
+    "mots": [
+     "le plus de thiols mesurés",
+     "3SH +33 à +72 % de 15 à 30 °C"
+    ],
+    "etude": true
+   },
+   "origine": "work/missions/2026-11-09-ecran-levure/savoir/TROUS-COMBLES.md, § Biotransformation, source 23"
+  },
+  {
+   "yeastId": "lalbrew-verdant-ipa",
+   "key": "esters",
+   "reported": "apricot, tropical (descripteurs de la fiche technique ; niveau non documenté)",
+   "fr": "Fiche technique Lallemand : abricot, tropical ; niveau d’esters non documenté",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Verdant IPA (A4)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://cdn.shopify.com/s/files/1/0323/8825/1780/files/Verdant_TDS_ENG_Print_A4_LalBrew.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "mots": [
+     "abricot",
+     "tropical"
+    ]
+   },
+   "origine": "work/missions/2026-11-09-ecran-levure/savoir/TROUS-COMBLES.md, tableau 14 levures, ligne Verdant IPA : « niveau non documenté ; abricot, tropical [17] » ; remplace la page Escarpment Labs qui était la seule source affichée (VERDICT-port M3)"
+  },
+  {
+   "yeastId": "lalbrew-pomona",
+   "key": "esters",
+   "reported": "peach, citrus (descripteurs de la fiche technique ; niveau non documenté)",
+   "fr": "Fiche technique Lallemand : pêche, agrumes ; niveau d’esters non documenté",
+   "sourceKind": "manufacturer",
+   "source": {
+    "title": "Lallemand Brewing, TDS LalBrew Pomona (copie Murphy and Son, 2024)",
+    "auteur": "Lallemand Brewing",
+    "reference": "https://murphyandson.co.uk/wp-content/uploads/2024/07/Pomona-TDS-ENG-8.5x11-Print-LalBrew.pdf",
+    "checkedAt": "2026-11-09",
+    "libelle": "Lallemand Brewing · TDS"
+   },
+   "lecture": {
+    "mots": [
+     "pêche",
+     "agrumes"
+    ]
+   },
+   "origine": "work/missions/2026-11-09-ecran-levure/savoir/TROUS-COMBLES.md, tableau 14 levures, ligne Pomona : « niveau non documenté ; pêche, agrumes [19] » (absente des 46 de faits-proposes.json)"
+  }
+ ]
+}

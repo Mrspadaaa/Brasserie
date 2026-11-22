@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lecture lente : le total corrigé, la 3e lecture qui n’arrive pas · 02.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Voie l3-cas : forme de choix-lignes-38 (elle-même de choix-lenteur, retouches e-t11, et choix-sousfamilles, e-t12). Deux choix sur la page,
+   quatre options chacun, A la référence ; les vues communes (avant, sombre) une fois. Aucun texte sous 14 px. */
+:root { color-scheme: light; --fond: #f4f6f1; --carte: #fff; --encre: #1c2019; --discret: #5a6155; --trait: #dde2d6; --houblon: #4a7426; --ref: #7f5b10; --const: #2d5f8a; --att: #9c7020; }
+* { box-sizing: border-box; }
+body { background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0; padding: 14px max(12px, env(safe-area-inset-left, 0px)) 56px; }
+.page { max-width: 1180px; margin: 0 auto; display: grid; gap: 18px; }
+h1 { margin: 0; line-height: 1.15; font-size: 1.5rem; font-weight: 800; text-wrap: balance; }
+h2 { margin: 0; font-size: 1.2rem; font-weight: 800; line-height: 1.2; }
+p { margin: 0; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 8px 12px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 4px; }
+#a-choisir p:first-child { font-weight: 700; }
+#a-choisir .mesure, .question .mesure { color: var(--discret); font-size: 0.875rem; }
+.reco { color: var(--houblon); font-weight: 700; }
+.question { display: grid; gap: 10px; padding-top: 6px; border-top: 2px solid var(--trait); }
+.question > header { display: grid; gap: 3px; }
+.options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 8px; align-items: start; }
+@media (min-width: 1000px) { .options { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; } }
+.option { margin: 0; display: grid; grid-template-rows: subgrid; row-gap: 6px; align-content: start; min-width: 0; }
+.q1 .option, .q2 .option { grid-row: span 2; }
+.tete { display: grid; gap: 3px; align-content: start; }
+.tete p { font-size: 0.875rem; line-height: 1.3; }
+.tete .geste { color: var(--discret); }
+.lettre { font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 6px; min-height: 1.7rem; }
+.badge { font-size: 0.875rem; font-weight: 700; border-radius: 999px; padding: 0 8px; }
+.b-ref { color: var(--ref); border: 1.5px solid currentColor; }
+.b-non { color: #a3261e; border: 1.5px solid currentColor; }
+.b-reco { color: #fff; background: var(--houblon); }
+.b-plan { color: var(--const); border: 1.5px solid currentColor; }
+.balises { display: flex; flex-wrap: wrap; gap: 4px; }
+.balises span { font-size: 0.875rem; font-weight: 700; border-radius: 6px; padding: 0 6px; line-height: 1.4; }
+.fiches { color: var(--houblon); border: 1.5px solid currentColor; }
+.fiches.f3 { color: var(--ref); border-style: dashed; }
+.aconst { color: var(--const); background: rgb(45 95 138 / 0.1); }
+.vue { margin: 0; display: grid; gap: 2px; align-content: start; }
+.vue > span { font-size: 0.875rem; color: var(--discret); font-weight: 600; }
+.vide { font-size: 0.875rem; color: var(--discret); border: 1px dashed var(--trait); border-radius: 10px; padding: 10px; align-self: start; }
+.ecran { position: relative; display: block; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: #fff; cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.ecran.egal img { opacity: 0.45; }
+.egal-b { position: absolute; top: 0; right: 6px; margin-top: calc(10.3% + 4px); font-size: 0.875rem; font-weight: 800; color: #fff; background: #3a3f36; border-radius: 6px; padding: 0 6px; }
+[data-reference] .ecran { border: 2px solid var(--ref); }
+.option.reco-col .ecran { border: 2px solid var(--houblon); }
+.m { font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace; font-variant-numeric: tabular-nums; }
+dialog { border: 0; padding: 0; background: #0e100c; color: #eef2ea; width: min(96vw, 520px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: #eef2ea; color: #1c2019; cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 84vh; object-fit: contain; background: #fff; }
+.suite-t { font-size: 0.875rem; font-weight: 700; margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header style="display:grid;gap:8px">
+    <p class="sur-titre">L'Affinée · Dépense · lenteur D</p>
+    <h1>Ta lenteur D : le total que la 3e lecture corrige, et la 3e lecture qui n’arrive pas · 02.11</h1>
+    <div id="a-choisir">
+      <p>Deux choix : réponds par une lettre pour chacun, par exemple « 1 A, 2 D ». Base : ta maquette D, inchangée.</p>
+      <p><span class="reco">Mon avis : 1 A, 2 D.</span> 1 A parle comme tes rangées corrigées. 2 D met le signal à la place de « ↻ corrigées », là où tu regardes à l’arrivée, sans phrase à l’écran.</p>
+      <p class="mesure">Limites : en 1 A, le haut porte deux nombres côte à côte (48,00 et 46,40 barré) ; en 2 D, la raison ne se lit qu’au toucher de la puce.</p>
+    </div>
+  </header>
+
+  <section class="question q1" aria-labelledby="t-total-corrige">
+    <header><h2 id="t-total-corrige">1. Le total que la 3e lecture corrige</h2><p class="mesure">Les lectures rapides lisent 46,40 ; la 3e lit 48,00 : le Malt de Munich est à 2,20, pas à 1,80. Le total compte une fois dans « ↻ 5 corrigées ». Tapé par toi, il ne change pas.</p></header>
+    <div class="options" data-choix="total-corrige">
+    <figure class="option reco-col" data-reference>
+      <div class="tete"><p class="lettre">A <span class="badge b-ref">référence</span><span class="badge b-reco">mon avis</span></p><p class="balises"><span class="fiches f3">fond bleu, l’ancien barré</span></p><p>Comme sur une rangée : 48,00 sur fond bleu, 46,40 barré juste à côté.</p></div>
+      <div class="vue" data-vignette><span>À l’arrivée de la 3e lecture</span><a class="ecran" href="img/q1-a.png" data-agrandir data-titre="Le total que la 3e lecture corrige · A · à l’arrivée de la 3e lecture"><img src="img/q1-a.png" width="780" height="1400" alt="Le total que la 3e lecture corrige · A · à l’arrivée de la 3e lecture"></a></div>
+    </figure>
+    <figure class="option" data-variante="b">
+      <div class="tete"><p class="lettre">B </p><p class="balises"><span class="fiches">« ↻ +1,60 »</span><span class="aconst">à construire</span></p><p>Le total sans fond ; à côté, en bleu, ce que la 3e lecture a trouvé en plus.</p></div>
+      <div class="vue" data-vignette><span>À l’arrivée de la 3e lecture</span><a class="ecran" href="img/q1-b.png" data-agrandir data-titre="Le total que la 3e lecture corrige · B · à l’arrivée de la 3e lecture"><img src="img/q1-b.png" width="780" height="1400" alt="Le total que la 3e lecture corrige · B · à l’arrivée de la 3e lecture"></a></div>
+    </figure>
+    <figure class="option" data-variante="c">
+      <div class="tete"><p class="lettre">C </p><p class="balises"><span class="fiches">souligné bleu</span><span class="aconst">à construire</span></p><p>Le total en bleu, souligné comme un champ du haut à contrôler (en jaune aujourd’hui). Sans l’ancien.</p></div>
+      <div class="vue" data-vignette><span>À l’arrivée de la 3e lecture</span><a class="ecran" href="img/q1-c.png" data-agrandir data-titre="Le total que la 3e lecture corrige · C · à l’arrivée de la 3e lecture"><img src="img/q1-c.png" width="780" height="1400" alt="Le total que la 3e lecture corrige · C · à l’arrivée de la 3e lecture"></a></div>
+    </figure>
+    <figure class="option" data-variante="d">
+      <div class="tete"><p class="lettre">D </p><p class="balises"><span class="fiches">rien sur le total</span><span class="aconst">à construire</span></p><p>Le total tel quel. Seule la puce « ↻ 5 corrigées » le compte.</p></div>
+      <div class="vue" data-vignette><span>À l’arrivée de la 3e lecture</span><a class="ecran" href="img/q1-d.png" data-agrandir data-titre="Le total que la 3e lecture corrige · D · à l’arrivée de la 3e lecture"><img src="img/q1-d.png" width="780" height="1400" alt="Le total que la 3e lecture corrige · D · à l’arrivée de la 3e lecture"></a></div>
+    </figure>
+    </div>
+    <div class="options suite">
+      <div class="vue" data-vignette><span>A en sombre</span><a class="ecran" href="img/q1-a-sombre.png" data-agrandir data-titre="Le total que la 3e lecture corrige · A en sombre"><img src="img/q1-a-sombre.png" width="780" height="1400" alt="Le total que la 3e lecture corrige · A en sombre"></a></div>
+    </div>
+  </section>
+
+  <section class="question q2" aria-labelledby="t-lecture-jamais">
+    <header><h2 id="t-lecture-jamais">2. La 3e lecture n’arrive jamais</h2><p class="mesure">Aucune réponse 150 s après l’envoi (le temps que l’app attend déjà aujourd’hui), ou la reprise a raté ; une erreur après les lectures rapides, pareil. Les valeurs rapides et tes saisies restent, avec leurs drapeaux. « Confirmer » redevient noir et les enregistre.</p></header>
+    <div class="options avant">
+      <div class="vue" data-vignette><span>Avant, pour les quatre : ta maquette D, la 3e lecture en cours</span><a class="ecran" href="img/q2-avant.png" data-agrandir data-titre="La 3e lecture n’arrive jamais · Avant, pour les quatre : ta maquette D, la 3e lecture en cours"><img src="img/q2-avant.png" width="780" height="1400" alt="La 3e lecture n’arrive jamais · Avant, pour les quatre : ta maquette D, la 3e lecture en cours"></a></div>
+    </div>
+    <div class="options" data-choix="lecture-jamais">
+    <figure class="option" data-reference>
+      <div class="tete"><p class="lettre">A <span class="badge b-ref">référence</span></p><p class="balises"><span class="fiches f3">« 2 lectures », « Lecture coupée »</span></p><p>La forme d’aujourd’hui : « 2 lectures », le point « Lecture coupée » en jaune ; la phrase au toucher du point.</p></div>
+      <div class="vue" data-vignette><span>Après : 150 s sans réponse</span><a class="ecran" href="img/q2-a.png" data-agrandir data-titre="La 3e lecture n’arrive jamais · A · après : 150 s sans réponse"><img src="img/q2-a.png" width="780" height="1400" alt="La 3e lecture n’arrive jamais · A · après : 150 s sans réponse"></a></div>
+    </figure>
+    <figure class="option" data-variante="b">
+      <div class="tete"><p class="lettre">B </p><p class="balises"><span class="fiches">●●×</span><span class="aconst">à construire</span></p><p>Le fil part ; tes trois points restent, le troisième devient une croix jaune. Aucun mot.</p></div>
+      <div class="vue" data-vignette><span>Après : 150 s sans réponse</span><a class="ecran" href="img/q2-b.png" data-agrandir data-titre="La 3e lecture n’arrive jamais · B · après : 150 s sans réponse"><img src="img/q2-b.png" width="780" height="1400" alt="La 3e lecture n’arrive jamais · B · après : 150 s sans réponse"></a></div>
+    </figure>
+    <figure class="option" data-variante="c">
+      <div class="tete"><p class="lettre">C </p><p class="balises"><span class="fiches">le fil reste, figé</span><span class="aconst">à construire</span></p><p>Le fil reste, en jaune : « non vérifiée ». Il part quand tu confirmes.</p></div>
+      <div class="vue" data-vignette><span>Après : 150 s sans réponse</span><a class="ecran" href="img/q2-c.png" data-agrandir data-titre="La 3e lecture n’arrive jamais · C · après : 150 s sans réponse"><img src="img/q2-c.png" width="780" height="1400" alt="La 3e lecture n’arrive jamais · C · après : 150 s sans réponse"></a></div>
+    </figure>
+    <figure class="option reco-col" data-variante="d">
+      <div class="tete"><p class="lettre">D <span class="badge b-reco">mon avis</span></p><p class="balises"><span class="fiches">puce « non vérifiée »</span><span class="aconst">à construire</span></p><p>Le fil part. Rien n’est corrigé : à la place de « ↻ N corrigées », une puce jaune « non vérifiée ». Un toucher dit la phrase.</p></div>
+      <div class="vue" data-vignette><span>Après : 150 s sans réponse</span><a class="ecran" href="img/q2-d.png" data-agrandir data-titre="La 3e lecture n’arrive jamais · D · après : 150 s sans réponse"><img src="img/q2-d.png" width="780" height="1400" alt="La 3e lecture n’arrive jamais · D · après : 150 s sans réponse"></a></div>
+    </figure>
+    </div>
+    <div class="options suite">
+      <div class="vue" data-vignette><span>D en sombre</span><a class="ecran" href="img/q2-d-sombre.png" data-agrandir data-titre="La 3e lecture n’arrive jamais · D en sombre"><img src="img/q2-d-sombre.png" width="780" height="1400" alt="La 3e lecture n’arrive jamais · D en sombre"></a></div>
+    </div>
+  </section>
+</div>
+
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut"><p class="titre" id="grand-titre"></p><button type="button" class="fermer">Fermer</button></div>
+  <img id="grand-img" alt="">
+</dialog>
+<script>
+(function () {
+  var dlg = document.getElementById('grand'), img = document.getElementById('grand-img'), titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      if (!dlg.showModal) return;
+      e.preventDefault();
+      img.setAttribute('src', a.getAttribute('href'));
+      img.setAttribute('alt', a.getAttribute('data-titre'));
+      titre.textContent = a.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>
+</body>
+</html>

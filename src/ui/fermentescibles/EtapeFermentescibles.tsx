@@ -2,11 +2,16 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import type { Dispatch, SetStateAction } from 'react';
 import type { Fermentable, FermentableKind, StockItem } from '../../types';
 import type { LearnIngredient } from '../../domain/ingredientFacts';
+import './correctifs.css';
+import { messageSansMaltDeBase } from '../../domain/fermentables/base';
+import { messageJourFermentable } from '../../domain/fermentables/jours';
 import { Ajout, type DefFamille } from './Ajout';
 import { Ligne, type ActionsLigne, type AnnMoment } from './Ligne';
 import { Plateau } from './Plateau';
 import { Reperes } from './Reperes';
-import { FAMILLES, JOUR_PAR_DEFAUT, kgTxt, MASSE_MAX_KG, MOMENT_SUIVANT, pmax, teinte, type Candidat } from './modele';
+import {
+  FAMILLES, JOUR_PAR_DEFAUT, kgTxt, MASSE_MAX_KG, messageMoment, MOMENT_SUIVANT, momentParDefaut, momentsPermis, pmax, teinte, type Candidat,
+} from './modele';
 
 /**
  * L'étape Malts/sucres (s1 : la maquette `v7/s1`, sur p6-b2). Le ticket (une ligne par ingrédient, la barre porte la masse, le moment sans
@@ -37,6 +42,8 @@ export interface EtapeFermentesciblesProps {
   ebcMax?: number | null;
   /** La note du moût qui sature (BrewingMath.efficiencyAtGravity), s'il y en a une. */
   alerteDensite?: string | null;
+  /** Les jours du programme de fermentation (AM-5) : un « J+ » au-delà de sa fin est dit. */
+  programmeJours?: number | null;
   /** Le message d'erreur d'un champ de la validation du brouillon. */
   erreur: (champ: string) => string | undefined;
 }
@@ -50,13 +57,16 @@ const focus = (sel: string) => {
 
 export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   fermentables, onFermentables, stockItems, famille, onFamille, defs, familles = FAMILLES, onCreateStockItem, onLearnIngredient, nolo,
-  og, teinteBiere, rendementPct, rendementDeclare, ogPlage, ebcPlage, styleCode, ebcVise, ebcMax, alerteDensite, erreur,
+  og, teinteBiere, rendementPct, rendementDeclare, ogPlage, ebcPlage, styleCode, ebcVise, ebcMax, alerteDensite, programmeJours, erreur,
 }) => {
   const [sel, setSel] = useState(0);
   const [neuf, setNeuf] = useState<number | null>(null);
   const [couleurLigne, setCouleurLigne] = useState(-1);
   const chaine = useRef(false);
-  const [annule, setAnnule] = useState<{ f: Fermentable; i: number; sel: number } | null>(null);
+  // Les retraits en cours d'annulation, du plus ancien au dernier : « Annuler » rend le dernier, puis le précédent (B1 n° 6 : le second retrait ne perd plus le premier).
+  const [annules, setAnnules] = useState<Array<{ f: Fermentable; i: number; sel: number }>>([]);
+  const retiresEnAttente = useRef(new Set<Fermentable>());
+  const annule = annules.length ? annules[annules.length - 1] : null;
   const [annMom, setAnnMom] = useState<AnnMoment | null>(null);
   const minutRetrait = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const minutMoment = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -67,8 +77,8 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
 
   const n = fermentables.length;
   const selI = n ? Math.min(sel, n - 1) : -1;
-  const aRenseigner = fermentables.filter((f) => f.kind === 'grain' && f.colorEbc == null).length;
-  useEffect(() => () => { clearTimeout(minutRetrait.current); clearTimeout(minutMoment.current); }, []);
+  const aRenseigner = fermentables.filter((f) => f.kind === 'grain' && f.colorEbc == null && f.weightKg !== 0).length;
+  useEffect(() => () => { clearTimeout(minutRetrait.current); clearTimeout(minutMoment.current); clearTimeout(minutPlafond.current); }, []);
 
   // L'ajout mène à la masse de la ligne, sur la ligne (le focus est donné quand la ligne est montée).
   useLayoutEffect(() => {
@@ -78,8 +88,15 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
 
   const patch = useCallback((i: number, p: Partial<Fermentable>) =>
     onFermentables((l) => l.map((f, k) => (k === i ? { ...f, ...p } : f))), [onFermentables]);
+  // Le plafond de la masse (10 t) est dit : « 99999 » devient 10 000 kg et l'écran l'écrit sous la recette, jusqu'à la masse suivante ou 6 s (B1 n° 12).
+  const [plafond, setPlafond] = useState(false);
+  const minutPlafond = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const setKg = useCallback((i: number, brut: number) => {
+    // Un nombre illisible (curseur sur une piste sans largeur : 0 ÷ 0) n'est pas une masse : rien n'est retenu, jamais NaN dans la recette.
+    if (!Number.isFinite(brut)) return;
     const kg = Math.min(MASSE_MAX_KG, brut);
+    clearTimeout(minutPlafond.current);
+    if (brut > MASSE_MAX_KG) { setPlafond(true); minutPlafond.current = setTimeout(() => setPlafond(false), 6000); } else setPlafond(false);
     onFermentables((l) => (l[i] && l[i].weightKg !== kg ? l.map((f, k) => (k === i ? { ...f, weightKg: kg } : f)) : l));
   }, [onFermentables]);
 
@@ -92,36 +109,47 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
 
   const versAjout = () => { focus('[data-role="ajout"]'); };
 
-  // Retirer : sans dialogue ; la place reste 6 s avec « Annuler » ; un nouveau retrait remplace le précédent.
+  // Retirer : sans dialogue ; la place reste 6 s avec « Annuler » ; un nouveau retrait s'empile sur le précédent (6 s après le dernier geste).
   const retirer = (i: number) => {
     const f = fermentables[i];
     if (!f) return;
+    // N-1 : un retrait = une annulation. Un double toucher lit deux fois la même ligne avant le rendu : la ligne déjà retirée (même objet) ne s'empile pas deux fois.
+    if (retiresEnAttente.current.has(f)) return;
+    retiresEnAttente.current.add(f);
     clearTimeout(minutRetrait.current);
-    setAnnule({ f, i, sel });
-    onFermentables((l) => l.filter((_, k) => k !== i));
+    setAnnules((a) => [...a, { f, i, sel }]);
+    onFermentables((l) => l.filter((x) => x !== f));
     if (sel > i) setSel(sel - 1);
     retour.current = -1; setCouleurLigne(-1); setAnnMom(null);
-    minutRetrait.current = setTimeout(() => setAnnule(null), 6000);
+    minutRetrait.current = setTimeout(() => { retiresEnAttente.current.clear(); setAnnules([]); }, 6000);
   };
+  // « Annuler » rend TOUS les retraits en attente, du dernier au premier (banc d'actionneurs N1 : un double toucher sur la corbeille en retire deux, et un seul « Annuler » en rendait un).
   const rendreLigne = () => {
-    const a = annule;
-    if (!a) return;
+    const pile = annules;
+    if (!pile.length) return;
     clearTimeout(minutRetrait.current);
-    setAnnule(null);
-    onFermentables((l) => [...l.slice(0, a.i), a.f, ...l.slice(a.i)]);
-    setSel(a.sel); setNeuf(a.i);
-    requestAnimationFrame(() => focus(`[data-ret="${a.i}"]`));
+    retiresEnAttente.current.clear();
+    setAnnules([]);
+    onFermentables((l) => {
+      let r = [...l];
+      for (let k = pile.length - 1; k >= 0; k--) r = [...r.slice(0, pile[k].i), pile[k].f, ...r.slice(pile[k].i)];
+      return r;
+    });
+    const premier = pile[0];
+    setSel(premier.sel); setNeuf(premier.i);
+    requestAnimationFrame(() => focus(`[data-ret="${premier.i}"]`));
   };
 
   // Un toucher fait tourner le moment ; « Annuler » rend celui d'avant la série de touchers (6 s, comme le retrait).
   const tourner = (i: number) => {
     const f = fermentables[i];
-    if (!f) return;
+    // Le moment suivant parmi ceux que la famille permet (AM 1 et 2) : un grain bien placé ne bouge pas ; un grain mal placé revient à l'empâtage, sans jour J+.
+    const use = f ? MOMENT_SUIVANT(f) : undefined;
+    if (!f || use === undefined || use === f.use) return;
     clearTimeout(minutMoment.current);
     setCouleurLigne(-1);
     setAnnMom((a) => ({ ...(a && a.i === i ? a : { i, use: f.use, dayOffset: f.dayOffset }), t: Date.now() }));
-    const use = MOMENT_SUIVANT(f.use);
-    patch(i, { use, ...(use === 'fermentation' && f.dayOffset == null ? { dayOffset: JOUR_PAR_DEFAUT } : {}) });
+    patch(i, { use, ...(f.kind === 'grain' ? { dayOffset: undefined } : use === 'fermentation' && f.dayOffset == null ? { dayOffset: JOUR_PAR_DEFAUT } : {}) });
     requestAnimationFrame(() => focus(`[data-ml="${i}"]`));
     minutMoment.current = setTimeout(() => setAnnMom(null), 6000);
   };
@@ -139,13 +167,16 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   const finEbc = (i: number, mode: 'ok' | 'echap' | 'sortie', v: number | null) => {
     if (mode !== 'echap' && v != null) patch(i, { colorEbc: v });
     const suite = mode === 'ok' && chaine.current
-      ? fermentables.findIndex((g, k) => k !== i && g.kind === 'grain' && g.colorEbc == null) : -1;
+      ? fermentables.findIndex((g, k) => k !== i && g.kind === 'grain' && g.colorEbc == null && g.weightKg !== 0) : -1;
     if (suite >= 0) { setCouleurLigne(suite); return; }
     chaine.current = false;
     setCouleurLigne(-1);
   };
 
+  // N-4, BR-16 : la saisie refusée d'un champ (« -1 ») se dit en alerte ; le champ rétablit la valeur d'avant, comme VI-9 aux sels.
+  const [refusSaisie, setRefusSaisie] = useState<string | null>(null);
   const a: ActionsLigne = {
+    refus: setRefusSaisie,
     selectionner: (i) => { setSel(i); echelles.current.clear(); },
     retirer, setKg,
     setJour: (i, j) => patch(i, { dayOffset: j }),
@@ -161,19 +192,22 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   };
 
   // Le champ d'ajout : un candidat de la recherche. Il ne crée pas de doublon.
-  const ajouterLigne = (nom: string, article: StockItem | undefined, kg: number | null) => {
-    const def = defs[famille];
+  // `fam` : la famille de la ligne. Celle du champ, sauf pour un article trouvé dans un autre rayon (« dext » en Grain → Dextrose, famille Sucre ; B1 n° 4).
+  const ajouterLigne = (nom: string, article: StockItem | undefined, kg: number | null, fam: FermentableKind = famille) => {
+    const def = defs[fam];
+    // Le moment de la famille, s'il est permis par la table ; sinon le premier permis (jamais un grain hors de l'empâtage).
+    const use = momentsPermis(fam).includes(def.use) ? def.use : momentParDefaut(fam);
     const nouvelle: Fermentable = {
       name: nom,
       stockItemRef: article?.ref,
       // Zéro, pas une quantité plausible : c'est au brasseur de la poser.
       weightKg: kg ?? 0,
-      kind: famille,
-      use: def.use,
+      kind: fam,
+      use,
       fermentabilityPct: def.fermentability,
-      colorEbc: article?.colorEbc ?? (famille === 'grain' ? undefined : 0),
+      colorEbc: article?.colorEbc ?? (fam === 'grain' ? undefined : 0),
       potentialPpg: article?.potentialPpg ?? def.ppg,
-      ...(def.use === 'fermentation' ? { dayOffset: JOUR_PAR_DEFAUT } : {}),
+      ...(use === 'fermentation' ? { dayOffset: JOUR_PAR_DEFAUT } : {}),
     };
     echelles.current.clear();
     setSel(n); setNeuf(n);
@@ -182,14 +216,24 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
     if (kg == null) { retour.current = n; aFocaliser.current = n; } else retour.current = -1;
     onFermentables((l) => [...l, nouvelle]);
   };
+  // RJ-9 : « Pilsner Malz 1,8 » tapé dans la famille Sucre ne réécrit pas en silence la masse du grain déjà là (6,6 → 1,8 kg, OG 1,080 → 1,034) :
+  // la ligne est sélectionnée, l'écran dit ce qui va se passer et demande. Dans sa propre famille, taper un nom et une masse reste le geste de mise à jour.
+  const [aRemplacer, setARemplacer] = useState<{ ligne: number; kg: number } | null>(null);
+  const remplacer = aRemplacer && fermentables[aRemplacer.ligne] && fermentables[aRemplacer.ligne].kind !== famille ? aRemplacer : null;
   const choisir = (c: Candidat, kg: number | null) => {
+    const existante = c.ligne >= 0 ? fermentables[c.ligne] : undefined;
+    if (existante && kg != null && existante.kind !== famille && existante.weightKg > 0 && existante.weightKg !== kg) {
+      setSel(c.ligne); setARemplacer({ ligne: c.ligne, kg });
+      return;
+    }
+    setARemplacer(null);
     if (c.ligne >= 0) {
       setSel(c.ligne);
       if (kg != null) setKg(c.ligne, kg);
       if (kg == null) { retour.current = c.ligne; focus(`[data-kl="${c.ligne}"]`); } else versAjout();
       return;
     }
-    ajouterLigne(c.nom, c.article, kg);
+    ajouterLigne(c.nom, c.article, kg, c.famille);
     if (kg != null) requestAnimationFrame(versAjout);
   };
   const creer = (nom: string, kg: number | null) => {
@@ -207,8 +251,9 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   const lignes: React.ReactNode[] = [...ticket];
   if (annule) {
     lignes.splice(Math.min(annule.i, lignes.length), 0, (
-      <li className="fer-ote" key="ote" aria-live="polite">
+      <li className="fer-ote" key={`ote-${annules.length}`} aria-live="polite">
         <s>{annule.f.name}</s> retiré
+        {annules.length > 1 && <span className="fer-ote-n">· {annules.length - 1} de plus</span>}
         <button type="button" className="fer-ann" data-role="annuler" onClick={rendreLigne}>Annuler</button>
         <i className="fer-file" aria-hidden="true" />
       </li>
@@ -216,6 +261,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
   }
 
   const lactose = fermentables.some((f) => f.kind === 'lactose' && f.weightKg > 0);
+  const sansBase = messageSansMaltDeBase(fermentables);
   const selF = selI >= 0 ? fermentables[selI] : undefined;
   // `ajuster()` de la maquette (D212, D228 : le critère de la maquette) : les repères se replient d'eux-mêmes quand le pied (« Suivant ») sortirait du
   // premier écran avec eux ouverts, et se rouvrent quand il y tient ; jamais si le brasseur les a ouverts ou fermés à la main. Le calcul projette le pied
@@ -254,7 +300,7 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
         aria-label={`Composition : ${fermentables.map((f) => `${f.name} ${kgTxt(f.weightKg)} kg`).join(', ')}`}>
         {fermentables.map((f, i) => (
           <i key={i} className={f.kind !== 'grain' ? 'fer-sucre' : f.colorEbc == null ? 'fer-inc' : ''}
-            style={{ flexGrow: f.weightKg, ...(f.kind === 'grain' && f.colorEbc != null ? { background: teinte(f.colorEbc) } : {}) }} />
+            style={{ flexGrow: messageMoment(f) ? 0 : f.weightKg, ...(f.kind === 'grain' && f.colorEbc != null ? { background: teinte(f.colorEbc) } : {}) }} />
         ))}
       </div>
       <ul className="fer-ticket" data-role="ticket" aria-label="Malts et sucres de la recette" data-booster="ticket-selection">
@@ -262,17 +308,46 @@ export const EtapeFermentescibles: React.FC<EtapeFermentesciblesProps> = ({
       </ul>
       <Ajout famille={famille} familles={familles} defs={defs} onFamille={onFamille} stockItems={stockItems} fermentables={fermentables}
         styleCode={styleCode} ebcVise={ebcVise} ebcMax={ebcMax} onChoisir={choisir} onCreer={creer} />
+      {/* PD-4 : la question se pose juste sous le champ où l'on a tapé (Entrée), pas sous les repères. */}
+      <>
+          {remplacer && (
+            <div className="fer-alerte" role="alert" data-role="remplacer">
+              <p style={{ margin: 0 }}>
+                « {fermentables[remplacer.ligne].name} » est déjà dans la recette ({defs[fermentables[remplacer.ligne].kind].label.toLowerCase()}, {kgTxt(fermentables[remplacer.ligne].weightKg)} kg), pas un {defs[famille].label.toLowerCase()} à ajouter.
+                Remplacer sa masse par {kgTxt(remplacer.kg)} kg ?
+              </p>
+              <div className="fer-remp">
+                <button type="button" className="fer-ann" data-role="remplacer-oui"
+                  onClick={() => { setKg(remplacer.ligne, remplacer.kg); setARemplacer(null); versAjout(); }}>Remplacer par {kgTxt(remplacer.kg)} kg</button>
+                <button type="button" className="fer-ann fer-ann-non" data-role="remplacer-non"
+                  onClick={() => { setARemplacer(null); versAjout(); }}>Garder {kgTxt(fermentables[remplacer.ligne].weightKg)} kg</button>
+              </div>
+            </div>
+          )}
+      </>
       {n > 0 && (
         <Reperes rendementPct={rendementPct} rendementDeclare={rendementDeclare} og={og} ogPlage={ogPlage} teinteBiere={teinteBiere} ebcPlage={ebcPlage}
           aRenseigner={aRenseigner} ouvert={repsVisible} onBascule={() => setRepsOuvert(!repsVisible)}
-          onRenseigner={() => { const i = fermentables.findIndex((f) => f.kind === 'grain' && f.colorEbc == null); if (i >= 0) ouvrirEbc(i, true); }} />
+          onRenseigner={() => { const i = fermentables.findIndex((f) => f.kind === 'grain' && f.colorEbc == null && f.weightKg !== 0); if (i >= 0) ouvrirEbc(i, true); }} />
       )}
       <div data-role="alertes">
+        {refusSaisie && <p id="fer-refus" className="fer-alerte" role="alert" data-hors="refus">{refusSaisie}</p>}
+        {plafond && <p className="fer-alerte" role="status">Masse limitée à {`${MASSE_MAX_KG / 1000} 000`} kg par ligne.</p>}{/* virgule-ok : 1 000 kg, entier écrit en lettres */}
         {lactose && <p className="fer-alerte">Lactose : non fermentescible, il remonte la densité finale.</p>}
+        {/* Une donnée ancienne mal placée (grain bouilli ou au fermenteur) : dite ici, en clair, tout de suite ; la ligne porte « compté 0 ». */}
+        {fermentables.map((f, i) => {
+          const m = messageMoment(f);
+          return m ? <p key={`mom-${i}`} className="fer-alerte" data-hors="moment" data-ah={i}>{m} Touche son moment pour le remettre.</p> : null;
+        })}
+        {fermentables.map((f, i) => {
+          const j = messageJourFermentable(f, programmeJours);
+          return j ? <p key={`jour-${i}`} className="fer-alerte" data-hors="jour" role="status">{j}</p> : null;
+        })}
+        {sansBase && <p className="fer-alerte" data-hors="base" role="status">{sansBase}</p>}
         {alerteDensite && <p className="fer-alerte">{alerteDensite}</p>}
       </div>
       <Plateau f={selF} i={selI} setKg={setKg} setJour={a.setJour} tourner={tourner} retirer={retirer}
-        setCouleur={(i, v) => patch(i, { colorEbc: v })} patch={patch} onLearnIngredient={onLearnIngredient} versAjout={versAjout} />
+        setCouleur={(i, v) => patch(i, { colorEbc: v })} patch={patch} onLearnIngredient={onLearnIngredient} versAjout={versAjout} onRefus={setRefusSaisie} />
     </div>
   );
 };

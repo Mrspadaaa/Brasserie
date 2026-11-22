@@ -1,0 +1,116 @@
+/* Mini maquettes d'interaction, 16.11 soir. Thème de l'app (DESIGN.md) : clair par défaut, cave au choix.
+   Formes reprises de ses bases : Stocks (seuil v3, « C »), fiche brassin et fûts (proto des liens), bandeau pe1, trace pe3, question pe4. */
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--line2:#bfbfbf;--trait:#9e9e9e;--mut:#5f5f5f;--ink:#111;--act:#111;--onact:#fff;--fin:#1f64a3;--finbg:#e8f0f8;--stk:#4c6b2a;--hop:#567f45;--att:#8a5f06;--attbg:#fbf1dc;--botOn:#efe8e1;--ok:#2f7d6b;--okbg:#e3f1ec;--bad:#b3261e;--prod:#9a4f1e;--cli:#2f7d6b;--sheet:#fff;--dim:rgba(0,0,0,.28);--doigt:rgba(17,17,17,.20);--doigtb:rgba(17,17,17,.55)}
+html[data-theme=cave]{--bg:#12100e;--s1:#1a1613;--s2:#221d19;--line:#2c2521;--line2:#3d342e;--trait:#574a42;--mut:#a39385;--ink:#f5f0ea;--act:#f2c14e;--onact:#12100e;--fin:#86b9e6;--finbg:#172634;--stk:#a3c97a;--hop:#8fbf6a;--att:#e0a02e;--attbg:#2e2310;--botOn:#2c2521;--ok:#6fc3ad;--okbg:#14302a;--bad:#f08a80;--prod:#e7a070;--cli:#6fc3ad;--sheet:#1a1613;--dim:rgba(0,0,0,.55);--doigt:rgba(245,240,234,.26);--doigtb:rgba(245,240,234,.7)}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:16px;-webkit-tap-highlight-color:transparent;overflow-x:clip}
+body{max-width:430px;margin:0 auto;min-height:844px;position:relative;padding-bottom:170px}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.m{font-family:"IBM Plex Mono",Consolas,ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+/* barre du bas (b1r) et + volant */
+.ix-nav{position:fixed;left:0;right:0;bottom:0;max-width:430px;margin:0 auto;height:78px;display:grid;grid-template-columns:repeat(6,1fr);background:var(--bg);border-top:1.5px solid var(--line);z-index:40}
+.ix-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:14px;color:var(--ink);position:relative;white-space:nowrap;letter-spacing:-.2px}
+.ix-nav a.on{background:var(--botOn);font-weight:700}.ix-nav a.on::before{content:'';position:absolute;top:-1.5px;left:0;right:0;height:4px;background:var(--prod)}
+.ix-nav a .ico{width:26px;height:26px}.ix-nav a.st .ico{color:var(--stk)}.ix-nav a.br .ico{color:var(--prod)}
+.ix-pas{position:absolute;top:2px;left:calc(50% + 4px);min-width:28px;height:26px;padding:0 6px;border-radius:13px;font-size:15px;line-height:22px;font-weight:800;text-align:center;color:#fff;background:var(--att);border:2px solid var(--bg);font-variant-numeric:tabular-nums}
+html[data-theme=cave] .ix-pas{color:#12100e}
+.ix-pas.neuf{box-shadow:0 0 0 4px color-mix(in srgb,var(--att) 35%,transparent)}
+.ix-fab{position:fixed;right:12px;bottom:92px;width:58px;height:58px;border-radius:50%;background:var(--act);color:var(--onact);display:grid;place-items:center;z-index:35;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.ix-fab .ico{width:28px;height:28px;stroke-width:2.5}
+/* onglets de Stocks (seuil v3) */
+.ix-tabs{display:flex;gap:2px;margin:8px 12px 0;padding:4px;background:var(--s2);border-radius:14px}
+.ix-tabs span{flex:none;height:38px;padding:0 9px;border-radius:10px;font-size:16px;color:var(--mut);display:grid;place-items:center;letter-spacing:-.2px}
+.ix-tabs span.on{background:var(--act);color:var(--onact);font-weight:700}
+/* page, titres, lignes (proto des liens) */
+.ix-pg{display:flex;align-items:center;gap:10px;padding:10px 12px 4px;min-height:58px}
+.ix-back{height:44px;border:1.5px solid var(--line2);border-radius:999px;padding:0 14px 0 6px;font-size:16px;display:inline-flex;align-items:center;gap:2px;flex:none}
+.ix-pg h1{margin:0;font-size:24px;line-height:1.1;min-width:0}
+.ix-pg .sub{margin-left:auto;font-size:16px;color:var(--mut);white-space:nowrap}
+.ix-gt{margin:16px 12px 2px;font-size:16px;font-weight:700;color:var(--c,var(--ink));display:flex;align-items:center;gap:7px}.ix-gt i{width:12px;height:12px;border-radius:3px;background:var(--c,var(--ink))}
+.ix-gt .r{margin-left:auto;font-weight:400;color:var(--mut);font-size:15px}
+.ix-li{display:flex;align-items:center;gap:10px;min-height:54px;padding:5px 12px;border-bottom:1px solid var(--line);font-size:16px}
+.ix-li .n{flex:1;min-width:0}.ix-li .n b{display:block;font-weight:600}.ix-li .n em{font-style:normal;color:var(--mut)}
+.ix-li .n small{display:block;font-size:14px;color:var(--mut);line-height:1.25}
+.ix-li .v{font-size:16px;text-align:right;white-space:nowrap}
+.ix-li.neuf{background:var(--okbg)}
+.ix-sec{height:44px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line2);font-size:16px;font-weight:600;display:inline-flex;align-items:center;gap:6px;flex:none;background:var(--bg)}
+.ix-sec .ico{width:20px;height:20px}
+.ix-ib{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line2);display:grid;place-items:center;flex:none}
+.ix-ok{color:var(--ok)}
+.ix-keg{width:22px;height:26px;flex:none;fill:none;stroke:var(--c);stroke-width:1.8;stroke-linejoin:round}
+.ix-kegs{display:flex;flex-wrap:wrap;gap:8px;padding:8px 12px}.ix-kegs .ix-keg{width:30px;height:36px}
+.ix-kegs .ix-keg.neuf{border-radius:6px;box-shadow:0 0 0 4px var(--okbg);background:var(--okbg)}
+/* jalons de fiche */
+.ix-jl{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:10px;min-height:54px;padding:4px 12px;border-bottom:1px solid var(--line);font-size:16px}
+.ix-jl>span:first-child{display:grid;place-items:center;color:var(--prod)}
+.ix-jl .ico{color:var(--prod)}.ix-jl .d{font-size:16px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.ix-jl small{display:block;font-size:14px;color:var(--mut)}
+.ix-jl.prov .d{color:var(--mut);border-bottom:1.5px dashed var(--line2)}
+.ix-jl.neuf{background:var(--okbg)}
+.ix-lies{display:flex;gap:8px;flex-wrap:wrap;padding:6px 12px}.ix-lie{height:40px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;border-radius:999px;border:1.5px solid var(--line2);font-size:16px}.ix-lie .ico{color:var(--mut);width:20px;height:20px}
+/* bandeau d'effet pe1 (lignes serrées v6a) */
+.ix-be{position:fixed;left:8px;right:8px;bottom:158px;max-width:414px;margin:0 auto;z-index:60;background:var(--s1);border:1.5px solid var(--line2);border-radius:16px;padding:10px 12px;box-shadow:0 12px 30px rgba(0,0,0,.22)}
+.ix-be .t{margin:0 0 6px;font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}.ix-be .t .ico{width:20px;height:20px;color:var(--ok)}
+.ix-be ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.ix-be li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:baseline;column-gap:10px}
+.ix-be li .nm{font-size:16px;white-space:nowrap}
+.ix-be li .dl{font-size:15px;font-weight:700;color:var(--ink);white-space:nowrap}
+.ix-be li .aa{font-size:15px;color:var(--mut);white-space:nowrap}.ix-be li .aa b{color:var(--ink)}
+.ix-be li .br{grid-column:1/-1;height:5px;border-radius:3px;background:var(--s2);position:relative;overflow:hidden;margin-top:3px}
+.ix-be li .br i{position:absolute;inset:0 auto 0 0;background:var(--trait);border-radius:3px}.ix-be li .br i.ap{background:var(--hop)}
+.ix-be li.sous .br i.ap{background:var(--att)}
+.ix-be li.grp{display:block;font-size:14px;color:var(--mut);margin-top:2px;font-weight:600}
+.ix-be .al{margin:8px 0 0;font-size:15px;color:var(--att);font-weight:600;display:flex;gap:6px;align-items:center}.ix-be .al .ico{width:18px;height:18px}
+.ix-be .ft{display:flex;align-items:center;gap:8px;margin-top:10px}
+.ix-be .ft .sp{flex:1}
+.ix-be .ann{height:44px;padding:0 16px;border-radius:12px;border:1.5px solid var(--line2);font-size:16px;font-weight:600;background:var(--bg)}
+.ix-be .okb{height:44px;padding:0 20px;border-radius:12px;background:var(--act);color:var(--onact);font-size:16px;font-weight:700}
+.ix-be .reg{height:44px;padding:0 10px;font-size:16px;font-weight:600;display:inline-flex;align-items:center;gap:6px;color:var(--fin)}.ix-be .reg .ico{width:20px;height:20px}
+/* question pe4 */
+.ix-q{margin-top:10px;padding:10px;border:1.5px solid var(--att);border-radius:12px;background:var(--attbg)}
+.ix-q p{margin:0;font-size:16px}.ix-q p b{font-weight:700}
+.ix-rail{position:relative;height:28px;margin:6px 4px 0}.ix-rail::before{content:'';position:absolute;left:0;right:0;top:12px;height:5px;border-radius:3px;background:var(--line2)}
+.ix-rail i{position:absolute;top:2px;width:24px;height:24px;border-radius:50%;background:var(--bg);border:2.5px solid var(--act);transform:translateX(-50%)}
+.ix-rail s{position:absolute;left:0;top:12px;height:5px;border-radius:3px;background:var(--act)}
+.ix-q .rq{display:flex;align-items:center;gap:8px;margin-top:6px}.ix-q .rq .val{flex:1;font-size:16px}
+.ix-q small{display:block;font-size:14px;color:var(--mut);margin-top:6px}
+.ix-q .ghost{height:44px;padding:0 10px;font-size:15px;color:var(--mut)}
+.ix-q .ret{height:44px;padding:0 16px;border-radius:12px;background:var(--act);color:var(--onact);font-weight:700;font-size:16px}
+/* trace pe3 */
+.ix-tr{display:flex;width:max-content;align-items:center;gap:6px;margin-top:3px;font-size:14px;line-height:22px;padding:0 4px 0 8px;border-radius:999px;border:1.5px solid var(--line2);color:var(--mut);white-space:nowrap}
+.ix-tr b{color:var(--ink);font-weight:700}.ix-tr .u{display:inline-grid;place-items:center;width:22px;height:22px;font-size:16px;color:var(--ink)}
+/* toast des liens (proto) */
+.ix-toast{position:fixed;left:12px;right:12px;bottom:158px;max-width:406px;margin:0 auto;min-height:56px;border-radius:14px;background:var(--ink);color:var(--bg);display:flex;align-items:center;gap:6px;padding:6px 6px 6px 14px;z-index:60;font-size:16px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.ix-toast .tx{flex:1;min-width:0;line-height:1.2}.ix-toast .tx small{display:block;font-size:14px;opacity:.85}
+.ix-toast .an{height:44px;padding:0 8px;text-decoration:underline;text-underline-offset:3px;font-weight:600}
+.ix-toast .go{height:44px;padding:0 8px 0 12px;border-radius:11px;border:1.5px solid color-mix(in srgb,var(--bg) 55%,transparent);font-weight:700;display:inline-flex;align-items:center;gap:2px;white-space:nowrap}
+/* feuille */
+.ix-dim{position:fixed;inset:0;background:var(--dim);z-index:55}
+.ix-sheet{position:fixed;left:0;right:0;bottom:0;max-width:430px;margin:0 auto;background:var(--sheet);border-radius:20px 20px 0 0;padding:6px 14px 18px;z-index:70;box-shadow:0 -10px 30px rgba(0,0,0,.25)}
+.ix-sheet::before{content:'';display:block;width:40px;height:5px;border-radius:3px;background:var(--line2);margin:0 auto 8px}
+.ix-sh{display:flex;align-items:center;gap:8px;margin-bottom:4px}.ix-sh h2{flex:1;margin:0;font-size:20px;line-height:1.15}
+.ix-note{font-size:14px;color:var(--mut);margin:4px 0 0;line-height:1.3}
+/* dose réglée (table) */
+.ix-dose{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ix-dose .nm{font-size:16px;font-weight:600}.ix-dose .nm small{display:block;font-weight:400;font-size:14px;color:var(--mut)}
+.ix-dose .val{font-size:17px;font-weight:700;white-space:nowrap}
+.ix-dose .ix-rail{grid-column:1/-1;margin:0 12px}
+.ix-step{display:inline-flex;align-items:center;border:1.5px solid var(--line2);border-radius:12px;overflow:hidden;height:44px}
+.ix-step button{width:44px;height:44px;font-size:20px;font-weight:700;display:grid;place-items:center}
+.ix-step span{min-width:76px;text-align:center;font-weight:700;font-size:16px;border-left:1px solid var(--line);border-right:1px solid var(--line);line-height:44px;padding:0 6px}
+.ix-pri{height:52px;width:100%;border-radius:14px;background:var(--act);color:var(--onact);font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px}
+/* doigt */
+.ix-doigt{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:var(--doigt);border:2.5px solid var(--doigtb);z-index:200;pointer-events:none}
+.ix-doigt.long::after{content:'';position:absolute;inset:-14px;border-radius:50%;border:2.5px dashed var(--doigtb)}
+.neufo{outline:3px solid var(--ok);outline-offset:2px;border-radius:10px}
+/* passe 2 (16.11) : voile sous le bandeau, pastilles « lié à » sous le titre (place de la base lot v1), lien de feuille */
+.ix-voile{position:fixed;left:0;right:0;top:0;bottom:78px;max-width:430px;margin:0 auto;z-index:55;pointer-events:none;background:color-mix(in srgb,var(--bg) 58%,transparent)}
+.ix-chips{display:flex;gap:6px;margin:8px 12px 2px;flex-wrap:nowrap;align-items:center}
+.ix-chip{display:inline-flex;align-items:center;gap:5px;height:42px;padding:0 11px 0 9px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--c) 50%,var(--line));background:color-mix(in srgb,var(--c) 10%,var(--bg));font-size:15px;font-weight:600;color:var(--ink);white-space:nowrap}
+.ix-chip .ico{width:18px;height:18px;color:var(--c)}
+.ix-gt .lnk{margin-left:auto;height:44px;display:inline-flex;align-items:center;gap:2px;padding:0 4px 0 10px;font-size:16px;font-weight:600;color:var(--fin)}
+.ix-gt .lnk .ico{width:18px;height:18px}
+.ix-shf{display:flex;align-items:center;gap:10px;margin-top:12px}.ix-shf .ix-pri{flex:1;margin:0}
+.ix-tous{height:52px;padding:0 6px 0 12px;border-radius:14px;border:1.5px solid var(--line2);font-size:16px;font-weight:600;display:inline-flex;align-items:center;gap:2px;flex:none;color:var(--ink)}
+.ix-tous .ico{width:18px;height:18px}

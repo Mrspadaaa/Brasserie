@@ -1,0 +1,102 @@
+{
+ "g05-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets par état"
+ },
+ "g05-2": {
+  "ecran": "ajouter",
+  "legende": "+ touché, Nouveau carnet, clavier"
+ },
+ "g05-3": {
+  "ecran": "carnet",
+  "legende": "Carnet neuf Évier, IA propose"
+ },
+ "g05-4": {
+  "ecran": "articles",
+  "legende": "Carnet Ventilation, articles par façon"
+ },
+ "g05-5": {
+  "ecran": "ajouter-a",
+  "legende": "+ dans Ventilation, lien collé"
+ },
+ "g05-6": {
+  "ecran": "articles",
+  "legende": "Lien noté, nouvelle rangée"
+ },
+ "g05-7": {
+  "ecran": "article",
+  "legende": "Article ouvert, vendeurs, veille"
+ },
+ "g05-8": {
+  "ecran": "comparer",
+  "legende": "Côte à côte, 5 machines"
+ },
+ "g05-9": {
+  "ecran": "choisi",
+  "legende": "Bouton Choisir chez, Écarter"
+ },
+ "g05-10": {
+  "ecran": "choisi",
+  "legende": "Carnet choisi, écartés"
+ },
+ "g05-11": {
+  "ecran": "choisi",
+  "legende": "Pourquoi ce choix, feuille"
+ },
+ "g05-12": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
+ },
+ "g06-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets, vue v09"
+ },
+ "g06-2": {
+  "ecran": "ajouter",
+  "legende": "Nouvelle idée, champ au clavier"
+ },
+ "g06-3": {
+  "ecran": "carnet",
+  "legende": "Évier inox, carnet neuf"
+ },
+ "g06-4": {
+  "ecran": "articles",
+  "legende": "Ventilation, critère et groupes"
+ },
+ "g06-5": {
+  "ecran": "ajouter-a",
+  "legende": "Ajouter à Ventilation, lien"
+ },
+ "g06-6": {
+  "ecran": "articles",
+  "legende": "Lien devenu rangée, Déplacer"
+ },
+ "g06-7": {
+  "ecran": "articles",
+  "legende": "Embouteillage, classement par oxygène"
+ },
+ "g06-8": {
+  "ecran": "comparer",
+  "legende": "Côte à côte sous groupes"
+ },
+ "g06-9": {
+  "ecran": "article",
+  "legende": "Article ouvert sur place"
+ },
+ "g06-10": {
+  "ecran": "choisi",
+  "legende": "Feuille Choisir cette machine"
+ },
+ "g06-11": {
+  "ecran": "choisi",
+  "legende": "Carnet choisi, écartés"
+ },
+ "g06-12": {
+  "ecran": "choisi",
+  "legende": "Pourquoi ce choix, feuille"
+ },
+ "g06-13": {
+  "ecran": "a-venir",
+  "legende": "À venir au Calendrier"
+ }
+}

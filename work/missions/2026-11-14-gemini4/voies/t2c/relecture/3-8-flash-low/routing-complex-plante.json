@@ -1,0 +1,20 @@
+{
+ "reglage": "3.8-flash@low",
+ "element": "routing-complex-plante",
+ "cas": "routing-complex",
+ "type": "plante",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Confusion volume cible / mesure : l'affirmation « Tes 24 L mesurés sont saturés en sucres » traite l'objectif de la recette comme un volume mesuré alors qu'aucune mesure n'est enregistrée dans le journal.",
+   "Prescription arbitraire d'un volume de rinçage : affirmer « prévois seulement 12 L de rinçage » sans bilan hydrique calculé ni relevé de premier jus contrevient à la consigne d'arbitrage sans volume précis garanti.",
+   "Affirmation péremptoire de saturation : prétendre qu'un moût est « saturé en sucres » est faux et non fondé techniquement."
+  ]
+ },
+ "ms": 4042,
+ "coutMicro": 16491,
+ "etat": "STOP"
+}

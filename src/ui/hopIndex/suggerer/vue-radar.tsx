@@ -14,6 +14,7 @@ import { houblon } from '../parcours/adaptateur';
 import { Stock } from './briques';
 import { Radar } from './radar';
 import { lireVoie, memeQuand, momentsChauds, nomQuand, verdict, type Groupe, type Ligne, type Objectif } from './voies';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 const MONTREES = 3;
 
@@ -21,8 +22,8 @@ const MONTREES = 3;
 function changement(l: Ligne) {
   const a = l.voie.actions;
   const nom = (k: string) => <span key={k} data-houblon={k}>{houblon(k).nom}</span>;
-  if (l.geste === 'assembler') return <>Assembler {nom(a[0].hopKey)} + {nom(a[1].hopKey)} {a[0].grams} + {a[1].grams} g</>;
-  if (l.geste === 'remplacer') return <>Remplacer {a[0].previousHopKey ? houblon(a[0].previousHopKey).nom : ''} par {nom(a[0].hopKey)} {a[0].grams} g</>;
+  if (l.geste === 'assembler') return <>Assembler {nom(a[0].hopKey)} + {nom(a[1].hopKey)} {a[0].grams} + {nombreFr(a[1].grams, 1)} g</>;
+  if (l.geste === 'remplacer') return <>Remplacer {a[0].previousHopKey ? houblon(a[0].previousHopKey).nom : ''} par {nom(a[0].hopKey)} {nombreFr(a[0].grams, 1)} g</>;
   return <>Ajouter {a.map((x, i) => <span key={x.hopKey}>{i > 0 ? ' + ' : ''}{nom(x.hopKey)}</span>)} {a.reduce((s, x) => s + x.grams, 0)} g</>;
 }
 const texteVoie = (l: Ligne) => l.voie.label.replace(/\./g, ',');

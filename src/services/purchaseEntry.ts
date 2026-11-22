@@ -1,19 +1,25 @@
 import { StorageService } from './storage';
+import { planifierEnrichissement } from './enrichissement';
 import { FirestoreRepo, isConfirmedWriteRejection } from './firestoreRepo';
 import { FinanceService, validateFinancialPayment } from './financeService';
 import { prepareFinanceDocument, saveFinanceDocumentConfirmed, loadDriveProofReceipt, type DriveProofReceipt } from './financeDocuments';
+import { dropQueuedProof, enqueueProof, getProofJob, markQueuedOnTransaction, proofQueueAvailable, runProofQueue, voidProofJob } from './proofQueue';
 import { Units } from './units';
 import type { FinanceCategory, StockItem, EquipmentItem } from '../types';
-import type { FinanceLineKind, FinanceTransaction, FinancialPayment } from '../domain/finance/types';
+import type { FinanceLine, FinanceLineKind, FinanceTransaction, FinancialPayment } from '../domain/finance/types';
+import { sumCheck } from '../domain/finance/invoicePoints';
 import { planOccurrences } from '../domain/finance/forecast';
-import { isoDate, todayISO } from '../domain/finance/ledger';
-import { normalize } from './search';
-import { canonicalStockCategory, linkUnit, nomsPris, pliee, SACHET_MAX_G, type MembreVirtuel } from './stockLineMatching';
-import { articleNeufDe, ligneDeBrouillon, type ArticleNeuf } from '../domain/stock/articleNeuf';
+import { isoDate, todayISO, transactionKind } from '../domain/finance/ledger';
+import { invoiceKey, orderNumbers, paymentReferenceKey, vendorKey } from '../domain/finance/duplicates';
+import { canonicalStockCategory, categorieArticleNeuf, linkUnit, memeNom, nomsPris, pliee, SACHET_MAX_G, STOCK_CATEGORIES, type MembreVirtuel } from './stockLineMatching';
+import { articleNeufDe, ligneDeBrouillon, nomImprimeDe, type ArticleNeuf } from '../domain/stock/articleNeuf';
 import { contexteDe } from './stockLineMatching';
 import type { Catalogues } from '../domain/stock/fiche';
 import { isReadableUnit, pieceUnitsEquivalent, readProductLabel, weightKey } from './ingredientIdentity';
 import { isMillingSurcharge } from './purchasePrefill';
+
+/** D379 : « Pas de plafond » : une dépense porte toutes ses lignes ; garde-fou seulement contre une saisie folle (la limite d'un document Firestore, 1 Mio, vient bien après). */
+export const LIGNES_MAX = 10000;
 
 export interface PurchaseLineDraft {
   id:string; description:string; kind:FinanceLineKind|'maintenance'; amount?:number;
@@ -30,7 +36,30 @@ export interface PurchaseLineDraft {
    * (voie s6-fiche, T3) : le reste (nom proposé, α, EBC, origine, fiche) est dérivé de la ligne et du stock COURANTS à l'écran et à l'enregistrement.
    */
   articleName?:string;
+  /**
+   * D275 : la désignation telle qu'imprimée (nom et variante lus), quand `description` en est la base (sans options ni suffixe d'unité) : rien ne se perd, le plateau la montre.
+   * Facultatif ; brouillon seulement (la dépense enregistrée garde `description`, l'original reste au justificatif).
+   */
+  imprime?:{nom:string;variante?:string};
+  /**
+   * D280 : la désignation en français de la base de l'imprimé (tâche `traduireNoms`, `src/services/nomsFr.ts`), arrivée après la lecture. Affichage seulement :
+   * le rapprochement, le nom de l'article neuf et la validation lisent `description`. Facultatif ; brouillon seulement.
+   */
+  nameFr?:string;
+  /**
+   * Voie n1-nom-fr (choix B) : le nom IMPRIMÉ lu (base sans options, `lireOptions`), gardé une fois à la lecture (`applyOutcome`) : il ne change plus quand le brasseur retape le libellé.
+   * C'est lui qui s'écrit dans `StockItem.nomsFacture` (« Sur la facture : … ») et qui se compare aux noms gardés. Absent (saisie à la main, brouillon d'avant B) : rien n'est gardé ni appris.
+   * Facultatif ; brouillon seulement.
+   */
+  nomLu?:string;
+  /**
+   * D277 (voie f2) : l'unité DÉDUITE quand `unit` (l'imprimé, jamais réécrit, D213) est illisible ; `sur` ou `repris` seulement (une unité inconnue n'en a pas).
+   * Lue par la validation, le mouvement de stock et l'article neuf (`uniteEffective`) ; le prix unitaire n'est jamais gardé sur elle.
+   */
+  uniteDeduite?:{unite:string;niveau:'sur'|'repris';regle:string;raison:string};
 }
+/** L'unité que le stock lit pour une ligne : l'imprimée (ou tapée) si elle est lisible, sinon l'unité déduite (D277), sinon l'imprimée telle quelle (illisible : refusée). */
+export const uniteEffective=(line:Pick<PurchaseLineDraft,'unit'|'uniteDeduite'>):string=>isReadableUnit(line.unit)?line.unit:line.uniteDeduite&&isReadableUnit(line.uniteDeduite.unite)?line.uniteDeduite.unite:line.unit;
 export interface PurchaseDraft {
   submissionId:string; date:string; vendor:string; invoiceNumber:string; description:string;
   /** `typed` : saisie dans « Pour quoi ? » (jamais remplacée par une lecture) ; `scan` : proposée par le code. Absent : origine inconnue. */
@@ -42,6 +71,8 @@ export interface PurchaseDraft {
   proofDataUrl?:string; proofFileName?:string; proofType?:string; documentHash?:string;
   sourceCurrency?:string; sourceAmount?:number; sourceVatRate?:number; sourceVatAmount?:number; sourceNetAmount?:number;
   scanModel?:string; duplicateConfirmed?:boolean;
+  /** Référence de paiement du QR-facture (QRR ou SCOR), quand le document en porte une : elle identifie la facture (AM n° 7). */
+  paymentReference?:string;
   sourceDocumentType?:string; sourceOrderNumber?:string; sourceTotalBasis?:'printed'|'line_sum';
   planId?:string; occurrenceId?:string;
 }
@@ -53,18 +84,8 @@ export function purchaseIsoDate(raw:string):string {
   const date=new Date(Date.UTC(+match[3],+match[2]-1,+match[1]));
   return date.getUTCFullYear()===+match[3] && date.getUTCMonth()===+match[2]-1 && date.getUTCDate()===+match[1] ? `${match[3]}-${match[2]}-${match[1]}` : '';
 }
-const LEGAL_FORMS=new Set(['sa','ag','gmbh','sarl','sagl','snc','sas','srl','spa','ltd','llc','inc','kg','co','cie','ohg','ug','se','bv','nv','plc']);
-/** « MALTERIE DU BANC » et « Malterie du Banc SA » désignent le même fournisseur : casse, accents, ponctuation et
- * forme juridique finale ne comptent pas (« Moulin Co Brasserie » garde son « co »). Les initiales séparées (« S.à r.l. »)
- * forment une seule forme juridique. */
-export function purchaseVendorKey(vendor:string):string {
-  const tokens=normalize(vendor).split(/[^a-z0-9]+/).filter(Boolean);
-  const merged=tokens.reduce<string[]>((out,token,index)=>{if(token.length===1&&index>0&&tokens[index-1].length===1)out[out.length-1]+=token;else out.push(token);return out;},[]);
-  while(merged.length>1&&LEGAL_FORMS.has(merged[merged.length-1]))merged.pop();
-  return merged.join(' ');
-}
-/** « MB-131 », « mb 131 » et « MB.131 » sont le même numéro de facture ; une lecture « MB-1O1 » vaut « MB-101 ». */
-const invoiceKey=(invoice:string|undefined)=>normalize(invoice??'').replace(/[^a-z0-9]/g,'').replace(/o/g,'0').replace(/[il]/g,'1');
+/** « MALTERIE DU BANC » et « Malterie du Banc SA » désignent le même fournisseur (domain/finance/duplicates : casse, accents, ponctuation, forme juridique finale). */
+export const purchaseVendorKey=vendorKey;
 /** Deux numéros renseignés et différents : deux factures, donc deux achats (abonnement, commande répétée). */
 const otherInvoice=(draft:PurchaseDraft,tx:FinanceTransaction)=>{const mine=invoiceKey(draft.invoiceNumber),theirs=invoiceKey(tx.finance?.invoiceNumber);return Boolean(mine&&theirs&&mine!==theirs);};
 const DAY=86_400_000;
@@ -80,12 +101,20 @@ interface DuplicateMatch { reasons:string[]; rank:number; gap:number }
  */
 function duplicateMatch(draft:PurchaseDraft,tx:FinanceTransaction,today:()=>string):DuplicateMatch|undefined {
   if (tx.id===`TX-${draft.submissionId}` || tx.finance?.voidedAt) return undefined;
-  const vendor=draft.vendor.trim().toLowerCase(), invoice=invoiceKey(draft.invoiceNumber);
+  const vendor=draft.vendor.trim().toLowerCase(), vendorId=purchaseVendorKey(draft.vendor), invoice=invoiceKey(draft.invoiceNumber), reference=paymentReferenceKey(draft.paymentReference);
   const from=purchaseIsoDate(draft.date), to=isoDate(tx.date), days=from&&to?Math.round(Math.abs(Date.parse(from)-Date.parse(to))/DAY):undefined;
   // Sans date lue, l'âge de la dépense (saisie, sinon date) borne le rapprochement : une commande d'il y a un an n'est pas ce récapitulatif.
   const since=(tx.finance?.recordedAt??'').slice(0,10)||to, gap=()=>days??(since?Math.round((Date.parse(today())-Date.parse(since))/DAY):Infinity);
   if (draft.documentHash && tx.finance?.sourceDocumentHash===draft.documentHash) return {reasons:['Même fichier déjà joint'],rank:0,gap:gap()};
-  if (invoice && invoiceKey(tx.finance?.invoiceNumber)===invoice && tx.finance?.vendor?.toLowerCase()===vendor) return {reasons:[`Même facture n° ${draft.invoiceNumber.trim()}`],rank:1,gap:gap()};
+  // AM n° 7 : la facture s'identifie par (fournisseur normalisé, n°), quel que soit le total ; ou par sa référence QR de paiement.
+  if (tx.finance?.kind==='expense' && tx.finance.sourceDocumentType!=='credit_note') {
+    if (invoice && vendorId && invoiceKey(tx.finance.invoiceNumber)===invoice && purchaseVendorKey(tx.finance.vendor??'')===vendorId) return {reasons:[`Même facture n° ${draft.invoiceNumber.trim()}`],rank:1,gap:gap()};
+    // RF-2 : une référence QR n'identifie une facture qu'avec le même fournisseur normalisé ; un créancier à référence constante n'est pas un doublon (deux n° différents = deux factures).
+    if (reference && paymentReferenceKey(tx.finance.paymentReference)===reference && !otherInvoice(draft,tx)) {
+      if (vendorId && purchaseVendorKey(tx.finance.vendor??'')===vendorId) return {reasons:['Même référence de paiement QR'],rank:1,gap:gap()};
+      return {reasons:['Même référence de paiement QR','Fournisseur différent ou absent : à vérifier'],rank:3,gap:gap()};
+    }
+  }
   if (vendor && tx.date===draft.date && cents(tx.amountTTC)===cents(draft.amount??0) && tx.finance?.vendor?.toLowerCase()===vendor) return {reasons:['Même fournisseur, même date et même total'],rank:2,gap:gap()};
   // Seule une dépense au même total est comparée plus loin : une vente au nom d'un client homonyme n'est pas un achat.
   if (tx.finance?.kind!=='expense' || !isMoney(draft.amount) || draft.amount<=0 || cents(tx.amountTTC)!==cents(draft.amount) || otherInvoice(draft,tx)) return undefined;
@@ -96,14 +125,74 @@ function duplicateMatch(draft:PurchaseDraft,tx:FinanceTransaction,today:()=>stri
   if (sameItems ? gap()>60 : days===undefined || days>14) return undefined;
   return {reasons:['Même fournisseur et même total',...(sameItems?[`${shared} référence${shared>1?'s':''} d’article en commun`]:[]),days===undefined?'Date absente':days===0?'Même date':`${days} jour${days>1?'s':''} d’écart`],rank:3,gap:gap()};
 }
+/**
+ * D264a (AUDIT R1) : un achat déjà au registre sous la forme HISTORIQUE. Ses écritures (`B-001`, `B-002`… : une par ligne de la commande) n'ont ni `finance`,
+ * ni lignes, ni fournisseur, ni numéro de facture ; leur libellé commence par la référence d'article. La pièce = les écritures de même série et de même date
+ * (hors apports et recettes). Elle est reconnue quand la somme de ses écritures vaut le total du brouillon (à 5 centimes près : Rundung), que des références
+ * d'articles sont en commun (au moins la moitié du plus petit des deux jeux) et que les dates sont à 14 jours au plus. Le fournisseur n'existe pas sur ces
+ * écritures : il n'est pas comparé (donc total, références et date, jamais le total seul). Rien n'est écrit, aucune écriture n'est modifiée ni supprimée.
+ * Limite : une autre commande de la même série le même jour fausse la somme, et rien n'est signalé (prudent). Une entrée par pièce : sa première écriture.
+ */
+const SERIE_HISTORIQUE=/^([A-Za-z]+)-(\d+)$/;
+const referenceDuLibelle=(description:string)=>(description.trim().split(/[\s,;:|]+/)[0]??'').toLowerCase().replace(/[^a-z0-9]/g,'');
+const raisonsHistoriques=new WeakMap<FinanceTransaction,{draft:PurchaseDraft;reasons:string[]}>();
+function historicDuplicates(draft:PurchaseDraft,transactions:FinanceTransaction[]):Array<{tx:FinanceTransaction;match:DuplicateMatch}> {
+  if (!isMoney(draft.amount) || draft.amount<=0) return [];
+  const mine=lineReferences(draft.lines), from=purchaseIsoDate(draft.date);
+  if (!mine.size || !from) return [];
+  const pieces=new Map<string,FinanceTransaction[]>();
+  for (const tx of transactions) {
+    if (tx.finance || !SERIE_HISTORIQUE.test(tx.id) || tx.category==='apports' || tx.category==='recettes' || !isMoney(tx.amountTTC) || tx.amountTTC<=0 || !isoDate(tx.date)) continue;
+    const key=`${tx.id.split('-')[0].toLowerCase()}|${tx.date}`;
+    pieces.set(key,[...(pieces.get(key)??[]),tx]);
+  }
+  const found:Array<{tx:FinanceTransaction;match:DuplicateMatch}>=[];
+  for (const group of pieces.values()) {
+    const sum=group.reduce((total,tx)=>total+cents(tx.amountTTC),0);
+    if (Math.abs(sum-cents(draft.amount))>5) continue;
+    const days=Math.round(Math.abs(Date.parse(from)-Date.parse(isoDate(group[0].date)!))/DAY);
+    if (days>14) continue;
+    const theirs=new Set(group.map(tx=>referenceDuLibelle(tx.description)).filter(Boolean)), shared=[...mine].filter(ref=>theirs.has(ref)).length;
+    if (!shared || shared*2<Math.min(mine.size,theirs.size)) continue;
+    const ordered=[...group].sort((a,b)=>a.id.localeCompare(b.id,undefined,{numeric:true}));
+    const reasons=[
+      'Même total et mêmes références qu’un achat déjà au registre',
+      `${ordered.length} ${ordered.length>1?'écritures historiques':'écriture historique'} (${ordered[0].id}${ordered.length>1?` à ${ordered[ordered.length-1].id}`:''})`,
+      `${shared} référence${shared>1?'s':''} d’article en commun`,
+      days===0?'Même date':`${days} jour${days>1?'s':''} d’écart`,
+    ];
+    raisonsHistoriques.set(ordered[0],{draft,reasons});
+    found.push({tx:ordered[0],match:{reasons,rank:3,gap:days}});
+  }
+  return found;
+}
+/**
+ * TR-NOTE-1 : la facture lue porte un n° de commande (« Onlinebestellung-686863 ») et le registre a déjà, sous forme ancienne, des écritures dont le libellé
+ * le porte (« Cmd 686863 … », B-001…) et qui n'ont pas de n° de commande lu : c'est la même commande. Une entrée par n° de commande : sa première écriture.
+ */
+function legacyOrderDuplicates(draft:PurchaseDraft,transactions:FinanceTransaction[]):Array<{tx:FinanceTransaction;match:DuplicateMatch}> {
+  const found:Array<{tx:FinanceTransaction;match:DuplicateMatch}>=[];
+  for (const number of orderNumbers(draft.sourceOrderNumber)) {
+    const pattern=new RegExp(`(^|\\D)${number}(\\D|$)`);
+    const group=transactions.filter(tx=>tx.id!==`TX-${draft.submissionId}` && !tx.finance?.voidedAt && transactionKind(tx)==='expense' && !tx.finance?.sourceOrderNumber && pattern.test(tx.description??''));
+    if (!group.length) continue;
+    const ordered=[...group].sort((a,b)=>a.id.localeCompare(b.id,undefined,{numeric:true}));
+    const reasons=[`Même commande ${number} déjà au registre`,`${ordered.length} ${ordered.length>1?'écritures anciennes':'écriture ancienne'} (${ordered[0].id}${ordered.length>1?` à ${ordered[ordered.length-1].id}`:''})`];
+    raisonsHistoriques.set(ordered[0],{draft,reasons});
+    found.push({tx:ordered[0],match:{reasons,rank:3,gap:0}});
+  }
+  return found;
+}
 export function purchaseDuplicateReasons(draft:PurchaseDraft,tx:FinanceTransaction):string[] {
-  return duplicateMatch(draft,tx,todayISO)?.reasons??[];
+  const historic=raisonsHistoriques.get(tx);
+  return duplicateMatch(draft,tx,todayISO)?.reasons??(historic?.draft===draft?historic.reasons:[]);
 }
 /** Dépenses proches, la plus forte d'abord : règle la plus sûre, puis plus petit écart de dates. */
 export function purchaseDuplicates(draft:PurchaseDraft,transactions:FinanceTransaction[]):FinanceTransaction[] {
   let day='';
   const today=()=>day||(day=todayISO());
-  return transactions.flatMap(tx=>{const match=duplicateMatch(draft,tx,today);return match?[{tx,match}]:[];})
+  const all=[...transactions.flatMap(tx=>{const match=duplicateMatch(draft,tx,today);return match?[{tx,match}]:[];}),...historicDuplicates(draft,transactions),...legacyOrderDuplicates(draft,transactions)];
+  return all.filter((entry,index)=>all.findIndex(other=>other.tx===entry.tx)===index)
     .sort((a,b)=>a.match.rank-b.match.rank||a.match.gap-b.match.gap).map(entry=>entry.tx);
 }
 /** Règle écrite sur le paiement quand sa date est supposée : la date de paiement n'est pas imprimée sur le document. */
@@ -138,6 +227,64 @@ export function purchaseSimilarOrders(draft:PurchaseDraft,transactions:FinanceTr
       `Autre n° de facture : ${draft.invoiceNumber.trim()} (déjà ${(finance.invoiceNumber??'').trim()})`,days===undefined?'Date absente':days===0?'Même date':`${days} jour${days>1?'s':''} d’écart`];
     return [{tx,reasons,days,gap}];
   }).sort((a,b)=>a.gap-b.gap).map(({tx,reasons,days})=>({tx,reasons,days}));
+}
+
+/**
+ * Le fichier choisi est, octet pour octet, l'original d'une dépense non annulée : certain, sans lecture (dp-doublon, 01.11).
+ * Seule l'empreinte compte (une dépense ancienne sans empreinte n'est jamais trouvée ici : les règles après lecture la gardent).
+ * Plusieurs dépenses au même fichier : la dernière saisie d'abord. La saisie courante est écartée.
+ */
+export function purchaseSameFile(documentHash:string|undefined,transactions:FinanceTransaction[],submissionId?:string):FinanceTransaction|undefined {
+  if (!documentHash) return undefined;
+  return transactions.filter(tx=>tx.finance && !tx.finance.voidedAt && tx.id!==`TX-${submissionId}` && tx.finance.sourceDocumentHash===documentHash)
+    .sort((a,b)=>(b.finance?.recordedAt??'').localeCompare(a.finance?.recordedAt??''))[0];
+}
+
+/** Ce à quoi une dépense est liée : ses articles de stock (regroupés par article, quantités additionnées à unité égale) et son matériel. */
+export interface PurchaseLinks {
+  stock:Array<{ref:string;name?:string;quantity?:number;unit?:string}>;
+  equipment:Array<{ref:string;name?:string}>;
+}
+export function purchaseLinks(tx:FinanceTransaction,stocks:{rawMaterials:StockItem[];cleaning:StockItem[];equipment:EquipmentItem[]}):PurchaseLinks {
+  const items=[...stocks.rawMaterials,...stocks.cleaning], stock=new Map<string,PurchaseLinks['stock'][number]&{mixed?:boolean}>(), equipment=new Map<string,PurchaseLinks['equipment'][number]>();
+  for (const line of tx.finance?.lines??[]) {
+    if (line.stockItemRef) {
+      const seen=stock.get(line.stockItemRef), unit=(line.unit??'').trim();
+      if (!seen) stock.set(line.stockItemRef,{ref:line.stockItemRef,name:items.find(item=>item.ref===line.stockItemRef)?.name,quantity:line.quantity,unit:unit||undefined});
+      else if (seen.mixed || (seen.unit??'')!==unit || seen.quantity===undefined || line.quantity===undefined) {seen.mixed=true;seen.quantity=undefined;}
+      else seen.quantity=Math.round((seen.quantity+line.quantity)*1000)/1000;
+    }
+    if (line.equipmentRef && !equipment.has(line.equipmentRef)) equipment.set(line.equipmentRef,{ref:line.equipmentRef,name:stocks.equipment.find(item=>item.ref===line.equipmentRef)?.name});
+  }
+  return {stock:[...stock.values()].map(({mixed:_mixed,...entry})=>entry),equipment:[...equipment.values()]};
+}
+
+export interface SameOrder { tx:FinanceTransaction; reasons:string[]; days?:number; gapCents:number }
+/**
+ * Le même n° de commande chez le même fournisseur, 60 jours au plus, même si les totaux diffèrent : la facture PDF et la page web d'une
+ * commande (un supplément arrondi autrement, la page sans n° de facture). Un signal, jamais un blocage. Sans n° de commande lu des deux
+ * côtés : rien (les règles existantes seules). Ce que `purchaseDuplicates` et `purchaseSimilarOrders` signalent déjà est écarté.
+ * `gapCents` : ce document moins la dépense enregistrée.
+ */
+export function purchaseSameOrder(draft:PurchaseDraft,transactions:FinanceTransaction[]):SameOrder[] {
+  const key=purchaseVendorKey(draft.vendor), order=invoiceKey(draft.sourceOrderNumber);
+  if (draft.sourceDocumentType==='credit_note' || !key || !order || !isMoney(draft.amount) || draft.amount<=0) return [];
+  let day='';
+  const today=()=>day||(day=todayISO());
+  const already=new Set(purchaseSimilarOrders(draft,transactions).map(item=>item.tx.id));
+  return transactions.flatMap(tx=>{
+    const finance=tx.finance;
+    if (!finance || finance.kind!=='expense' || finance.voidedAt || tx.id===`TX-${draft.submissionId}` || already.has(tx.id)) return [];
+    if (invoiceKey(finance.sourceOrderNumber)!==order || purchaseVendorKey(finance.vendor??'')!==key || duplicateMatch(draft,tx,today)) return [];
+    const from=purchaseIsoDate(draft.date), to=isoDate(tx.date), days=from&&to?Math.round(Math.abs(Date.parse(from)-Date.parse(to))/DAY):undefined;
+    const since=(finance.recordedAt??'').slice(0,10)||to, gap=days??(since?Math.round((Date.parse(today())-Date.parse(since))/DAY):Infinity);
+    if (gap>60) return [];
+    const gapCents=cents(draft.amount!)-cents(tx.amountTTC), mine=draft.invoiceNumber.trim(), theirs=(finance.invoiceNumber??'').trim();
+    const reasons=[`Même commande n° ${draft.sourceOrderNumber!.trim()}`,'Même fournisseur',gapCents?'Autre total':'Même total',
+      mine&&theirs&&invoiceKey(mine)!==invoiceKey(theirs)?`Autre n° de facture : ${mine} (déjà ${theirs})`:!mine?'Ce document sans n° de facture':!theirs?'Dépense enregistrée sans n° de facture':`Même facture n° ${mine}`,
+      days===undefined?'Date absente':days===0?'Même date':`${days} jour${days>1?'s':''} d’écart`];
+    return [{tx,reasons,days,gapCents,gap}];
+  }).sort((a,b)=>a.gap-b.gap).map(({gap:_gap,...entry})=>entry);
 }
 
 export { isMillingSurcharge };
@@ -249,12 +396,14 @@ function newArticleUnit(unit:string):string {
  * Une clé sans valeur n'est pas écrite. L'unité de l'article est celle de la table de l'appariement (D213) ; la ligne de la dépense garde l'unité imprimée.
  */
 export function newStockItem(line:PurchaseLineDraft,draft:Pick<PurchaseDraft,'vendor'>,ref:string,derive?:ArticleNeuf):StockItem {
-  return {id:ref,ref,name:derive?.name??line.description.trim(),category:canonicalStockCategory(line.stockCategory)||(line.kind==='packaging'?'Emballage':line.kind==='cleaning'?'Consommable':'Divers'),unit:newArticleUnit(line.unit),currentStock:line.quantity as number,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined,
+  const nom=derive?.name??line.description.trim(), garde=nomImprimeDe(line);
+  // Choix B : le nom imprimé lu est gardé à la fiche, sauf s'il égale le nom de l'article (jamais de doublon, ni ici ni à l'apprentissage).
+  return {id:ref,ref,name:nom,...(garde&&!memeNom(garde,nom)?{nomsFacture:[garde]}:{}),category:categorieArticleNeuf({description:line.description,stockCategory:line.stockCategory,reference:line.sourceReference,kind:line.kind}),unit:newArticleUnit(uniteEffective(line)),currentStock:line.quantity as number,minStock:0,reorder:false,supplier:draft.vendor.trim()||undefined,
     ...(derive?.alphaPct!==undefined?{alphaPct:derive.alphaPct}:{}),...(derive?.colorEbc!==undefined?{colorEbc:derive.colorEbc}:{}),...(derive?.origin!==undefined?{origin:derive.origin}:{}),...(derive?.fiche?{fiche:derive.fiche}:{})};
 }
 /** L'article neuf d'une ligne sur le stock courant : la même fonction que l'écran (ce qui est montré est ce qui est écrit). */
 function articleNeufDeLigne(line:PurchaseLineDraft,existants:readonly StockItem[],virtuels:readonly MembreVirtuel[],catalogues:Catalogues={},vendor?:string):ArticleNeuf {
-  return articleNeufDe(ligneDeBrouillon(line,vendor),existants,catalogues,line.articleName,virtuels);
+  return articleNeufDe(ligneDeBrouillon({...line,unit:uniteEffective(line)},vendor),existants,catalogues,line.articleName,virtuels);
 }
 /**
  * Le stock « existant » d'une saisie : sans les articles que CETTE saisie a déjà écrits (ref `MP-<saisie>-<ligne>`). Une saisie refusée puis rejouée retrouve ses articles dans le
@@ -271,11 +420,57 @@ export function articlesNeufsDe(draft:PurchaseDraft,existants:readonly StockItem
     return [{lineId:line.id,index,ref,type:line.kind==='cleaning'?'cleaning' as const:'rawMaterials' as const,item:newStockItem(line,draft,ref,article)}];
   });
 }
+/** Les noms imprimés gardés par article : 8 au plus (au-delà, rien n'est écrit et rien n'est retiré). */
+const NOMS_FACTURE_MAX=8;
+/**
+ * N4 (voie n1-nom-fr) : ce que « Confirmer » apprend. Pour chaque ligne reliée à un article existant dont le nom imprimé LU (`nomLu`) n'est pas le nom de l'article ni déjà gardé :
+ * le nom s'ajoute aux noms gardés de l'article (une fois, sans doublon). Un nom déjà gardé sur un AUTRE article en est retiré (lien manuel vers B : le nom se déplace, l'erreur se corrige par le geste ordinaire).
+ * Un article de catégorie inconnue (« Divers ») n'apprend rien : un nom gardé y serait un lien « sûr » sur un fourre-tout. Rien sans `nomLu`. Pur : rend les listes à écrire, article par article.
+ */
+export function nomsAppris(draft:Pick<PurchaseDraft,'lines'>,items:readonly StockItem[]):Array<{ref:string;noms:string[]}> {
+  const sorties=new Map<string,string[]>();
+  const courant=(item:StockItem)=>sorties.get(item.ref)??[...(item.nomsFacture??[])];
+  for (const line of draft.lines) {
+    const nom=nomImprimeDe(line), cible=line.stockAction==='existing'?items.find(item=>item.ref===line.stockRef):undefined;
+    if (!nom || !cible || !STOCK_CATEGORIES.includes(canonicalStockCategory(cible.category))) continue;
+    const cle=pliee(nom);
+    if (memeNom(nom,cible.name)) continue;
+    const deja=courant(cible).some(gardé=>pliee(gardé)===cle);
+    if (!deja && courant(cible).length>=NOMS_FACTURE_MAX) continue;
+    for (const autre of items) if (autre.ref!==cible.ref && courant(autre).some(gardé=>pliee(gardé)===cle)) sorties.set(autre.ref,courant(autre).filter(gardé=>pliee(gardé)!==cle));
+    if (!deja) sorties.set(cible.ref,[...courant(cible),nom]);
+  }
+  return [...sorties].map(([ref,noms])=>({ref,noms}));
+}
 /** Le chargement du catalogue plein des houblons, seulement quand une ligne de houblon crée un article ; échec ou hors ligne : rien, donc aucune fiche. */
 async function cataloguesPour(draft:PurchaseDraft):Promise<Catalogues|undefined> {
   if(!draft.lines.some(line=>line.stockAction==='new' && contexteDe(ligneDeBrouillon(line))==='Houblon'))return undefined;
   try { const data=await import('../domain/hopIndex/v4/data'); return {houblons:await data.chargerCataloguePlein()}; }
   catch { return undefined; }
+}
+
+/** Une ligne d'arrondi déjà imprimée sur le document (français, allemand, anglais, italien). */
+const LIGNE_ARRONDI=/arrondi|rundung|rounding|arrotondamento/i;
+/**
+ * k7 (D261b, relais de la pastille) : l'écart signé, en centimes, entre le total et la somme des lignes quand c'est un arrondi suisse à 5 centimes ; 0 quand
+ * la somme est exacte ; `undefined` pour tout autre écart (refusé comme avant). La règle est celle de `sumCheck` (total multiple de 5 ct, égal à la somme
+ * arrondie à 5 ct, écart de 2 ct au plus) : l'importer garde une seule source. Une ligne d'arrondi déjà imprimée n'autorise rien de plus : l'écart reste un écart.
+ */
+export function arrondiDuTotal(draft:Pick<PurchaseDraft,'amount'|'lines'>):number|undefined {
+  if(!isMoney(draft.amount) || draft.lines.some(line=>!isMoney(line.amount)))return undefined;
+  const ecart=cents(draft.amount)-draft.lines.reduce((sum,line)=>sum+cents(line.amount!),0);
+  if(ecart===0)return 0;
+  if(draft.lines.some(line=>LIGNE_ARRONDI.test(line.description)))return undefined;
+  return sumCheck(draft.lines.map(line=>({amountTTC:line.amount!})),draft.amount,null,0).sum.statut==='ok'?ecart:undefined;
+}
+/** La ligne que l'enregistrement ajoute pour un arrondi : « Arrondi à 5 centimes », au montant signé (`discount` si négatif, `other` si positif), sans stock. */
+function ligneArrondi(draft:PurchaseDraft):FinanceLine[] {
+  const ecart=arrondiDuTotal(draft);
+  if(!ecart)return [];
+  const pris=new Set(draft.lines.map(line=>line.id));
+  let id='arrondi-5ct';
+  for(let n=2;pris.has(id);n++)id=`arrondi-5ct-${n}`;
+  return [{id,description:'Arrondi à 5 centimes',kind:ecart<0?'discount':'other',amountCents:ecart}];
 }
 
 /** Checks every mutation first. No stock/equipment is created during matching. */
@@ -285,35 +480,40 @@ export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof St
   if (!purchaseIsoDate(draft.date)) errors.push('Renseigne une date valide.');
   if (!draft.description.trim()) errors.push('Décris cette dépense.');
   if (!isMoney(draft.amount) || draft.amount<=0) errors.push('Renseigne le total payé ou facturé en CHF, avec deux décimales au maximum.');
-  if (!draft.lines.length || draft.lines.length>35) errors.push('Prévois entre 1 et 35 lignes.');
+  if (!draft.lines.length || draft.lines.length>LIGNES_MAX) errors.push(`Prévois entre 1 et ${LIGNES_MAX} lignes.`);
   if (new Set(draft.lines.map(line=>line.id)).size!==draft.lines.length || draft.lines.some(line=>!/^[A-Za-z0-9-]{1,80}$/.test(line.id))) errors.push('Les identifiants des lignes sont invalides. Rouvre la saisie.');
   if (draft.lines.some(line=>!line.description.trim() || !isMoney(line.amount))) errors.push('Chaque ligne doit avoir un libellé et un montant avec deux décimales au maximum.');
   if (draft.lines.some(line=>line.kind==='discount' ? line.amount>0 : line.amount<0)) errors.push('Une remise est négative; les autres lignes sont positives.');
-  if (cents(draft.amount??0)!==draft.lines.reduce((sum,line)=>sum+cents(line.amount??0),0)) errors.push('Le détail des lignes doit correspondre exactement au total TTC.');
+  if (cents(draft.amount??0)!==draft.lines.reduce((sum,line)=>sum+cents(line.amount??0),0) && arrondiDuTotal(draft)===undefined) errors.push('Le détail des lignes doit correspondre exactement au total TTC.');
   if (draft.paymentStatus==='paid' && !purchaseIsoDate(draft.paymentDate)) errors.push('Renseigne la date du paiement.');
   if (draft.paymentStatus==='paid' && purchaseIsoDate(draft.paymentDate)>todayISO()) errors.push('Le paiement est futur : utilise « À payer ».');
   if (draft.dueDate && !purchaseIsoDate(draft.dueDate)) errors.push('L’échéance est invalide.');
   if (draft.sourceVatAmount!==undefined && (!isMoney(draft.sourceVatAmount) || draft.sourceVatAmount<0 || (draft.sourceCurrency==='CHF' && draft.sourceVatAmount>(draft.amount??0)))) errors.push('Vérifie le montant de TVA : il doit être positif ou nul et ne pas dépasser le TTC du document.');
+  /* AM-58 : pour un assujetti, une TVA absente n'est pas « 0 » : l'impôt préalable à récupérer serait faux sans alerte. Il faut la lire ou saisir 0 en le sachant. */
+  if (draft.sourceVatAmount===undefined && (draft.sourceCurrency===undefined || draft.sourceCurrency==='CHF') && StorageService.getConfig?.()?.fiscal?.isTvaRegistered===true) errors.push('Brasserie assujettie à la TVA : indique la TVA du document (0 si le document n’en porte vraiment aucune). Sans elle, la TVA à récupérer serait fausse.');
   if (draft.sourceVatRate!==undefined && (!Number.isFinite(draft.sourceVatRate) || draft.sourceVatRate<0 || draft.sourceVatRate>1)) errors.push('Vérifie le taux de TVA du document (entre 0 et 100 %).');
   const existants=sansCetteSaisie([...stocks.rawMaterials,...stocks.cleaning],draft.submissionId), virtuels:MembreVirtuel[]=[];
   for (const line of draft.lines) {
     if (line.stockAction!=='none') {
       if (!['ingredient','cleaning','packaging'].includes(line.kind)) errors.push(`${line.description} : cette nature ne peut pas entrer en stock.`);
-      const quantityOk=Number.isFinite(line.quantity) && (line.quantity as number)>0, unitOk=isReadableUnit(line.unit);
+      // D277 : une unité déduite (sûre, ou reprise : il l'a vue en jaune) s'enregistre ; une unité inconnue, jamais.
+      const unit=uniteEffective(line), quantityOk=Number.isFinite(line.quantity) && (line.quantity as number)>0, unitOk=isReadableUnit(unit);
       if (!quantityOk) errors.push(`${line.description} : indique la quantité reçue et son unité.`);
-      // D214 : une unité illisible ('', '-', 'n/a') n'entre jamais en stock, article existant ou nouveau ; jamais devinée.
+      // D214 : une unité illisible ('', '-', 'n/a') sans unité déduite n'entre jamais en stock, article existant ou nouveau ; jamais devinée.
       if (!unitOk) errors.push(`${line.description} : unité à préciser (illisible ou absente). Rien n’entre en stock tant qu’elle manque.`);
       if (line.stockAction==='existing') {
         const target=[...stocks.rawMaterials,...stocks.cleaning].find(item=>item.ref===line.stockRef);
         if (!target) errors.push(`${line.description} : sélectionne l’article de stock.`);
-        else if (quantityOk && unitOk && !stockQuantityFor({description:line.description,quantity:line.quantity as number,unit:line.unit},target).ok) errors.push(`${line.description} : ${line.unit} ne se convertit pas en ${target.unit}.`);
+        else if (quantityOk && unitOk && !stockQuantityFor({description:line.description,quantity:line.quantity as number,unit},target).ok) errors.push(`${line.description} : ${unit} ne se convertit pas en ${target.unit}.`);
       } else if (line.stockAction==='new' && ['ingredient','cleaning','packaging'].includes(line.kind)) {
         // S6 (T4) : jamais deux articles du même nom. Un nom tapé vide ou déjà pris (stock, autre ligne neuve de la saisie) est refusé ; un houblon ou un malt que
         // l'appariement relierait à un article existant ne crée pas de « bis » inventé : on relie la ligne.
-        const article=articleNeufDeLigne(line,existants,virtuels,{},draft.vendor), tape=line.articleName;
+        const article=articleNeufDeLigne(line,existants,virtuels,{},draft.vendor), tape=line.articleName, francais=Boolean(line.nameFr?.trim());
         if (tape!==undefined && !tape.trim()) errors.push(`${line.description} : renseigne le nom de l’article.`);
         else if (tape!==undefined && nomsPris(existants,virtuels).has(pliee(tape))) errors.push(`${line.description} : Un article porte déjà ce nom : relie-le ou change le nom (« ${tape.trim()} »).`);
-        else if (tape===undefined && article.derive && article.regle.cas==='meme') errors.push(`${line.description} : cet article existe déjà (« ${article.regle.article.name} ») : relie la ligne à cet article.`);
+        else if (tape===undefined && (article.derive || francais) && article.regle.cas==='meme') errors.push(`${line.description} : cet article existe déjà (« ${article.regle.article.name} ») : relie la ligne à cet article.`);
+        // Choix B : un article NON dérivé qui prend son nom français ne double ni un article du stock ni une autre ligne neuve de la saisie (« plein de fiches du même produit »).
+        else if (tape===undefined && francais && !article.derive && nomsPris(existants,virtuels).has(pliee(article.name))) errors.push(`${line.description} : Un article porte déjà ce nom : relie-le ou change le nom (« ${article.name.trim()} »).`);
         virtuels.push({nom:article.name});
       }
     }
@@ -328,6 +528,9 @@ export function validatePurchase(draft:PurchaseDraft,stocks:ReturnType<typeof St
 const submitted=new Set<string>();
 const replayable=new Set<string>();
 const confirmedProofs=new WeakMap<PurchaseDraft,{dataUrl:string;fileName?:string;mimeType?:string}>();
+/** Le fichier de cette saisie est durable dans la file locale (IndexedDB) : `savePurchase` accepte alors ce garde à la place de l'original confirmé dans Drive. */
+const queuedProofs=new Map<string,{uid:string;dataUrl:string;fileName?:string;mimeType?:string}>();
+export { setProofFileStore, proofQueueAvailable } from './proofQueue';
 function purchasePayment(draft:PurchaseDraft, at=new Date().toISOString()):FinancialPayment|undefined {
   return draft.paymentStatus==='paid'?{id:`PAY-${draft.submissionId}`,transactionId:`TX-${draft.submissionId}`,date:purchaseIsoDate(draft.paymentDate),amountCents:cents(draft.amount!),direction:'out',method:draft.paymentMethod,recordedAt:at,...(draft.paymentDateBasis==='document_date'?{note:PAYMENT_DATE_ASSUMED_NOTE}:{})}:undefined;
 }
@@ -349,14 +552,46 @@ function validatePurchaseCommit(draft:PurchaseDraft) {
   return stocks;
 }
 /** The original is confirmed on Drive before the atomic purchase/stock/payment batch. */
-export interface PurchaseSaveResult { transactionId:string; proof?:DriveProofReceipt }
+export interface PurchaseSaveResult { transactionId:string; proof?:DriveProofReceipt; /** Le fichier part au Drive plus tard, en arrière-plan : aucun reçu à montrer, la dépense porte `proofUpload`. */ queued?:true }
+/**
+ * Met le fichier de la saisie dans la file locale (durable avant la dépense). `undefined` quand la file est indisponible ou qu'elle refuse
+ * (pas d'IndexedDB, plafond, écriture en échec, pas de session) : l'appelant suit alors le chemin synchrone d'avant, rien n'est perdu.
+ */
+async function queueProof(draft:PurchaseDraft):Promise<boolean> {
+  if(!draft.proofDataUrl || !proofQueueAvailable())return false;
+  const driveName=proofDriveName(draft), proofType=draft.proofType||'application/pdf';
+  // La même validation que l'envoi synchrone : un fichier invalide est refusé tout de suite, pas en arrière-plan.
+  prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl,driveName,proofType);
+  try {
+    const uid=(await import('./firebaseAuth')).FirebaseAuthService.getCurrentUser()?.uid;
+    if(!uid)return false;
+    await enqueueProof({submissionId:draft.submissionId,dataUrl:draft.proofDataUrl,mimeType:proofType,driveName,originalName:draft.proofFileName,year:+purchaseIsoDate(draft.date).slice(0,4),uid});
+    // Le nom lisible prévu est celui que `savePurchase` écrit sur la dépense (`proofFileName`) ; Drive le confirmera.
+    driveNames.set(draft.submissionId,driveName);
+    queuedProofs.set(draft.submissionId,{uid,dataUrl:draft.proofDataUrl,fileName:draft.proofFileName,mimeType:draft.proofType});
+    return true;
+  } catch { return false; }
+}
 /** Comme `savePurchaseWithProof`, et rend aussi la preuve Drive du justificatif (dossier, nom, octets, empreinte vérifiée, `webViewLink`). */
 export async function savePurchaseWithProofReceipt(draft:PurchaseDraft):Promise<PurchaseSaveResult> {
   const txId=`TX-${draft.submissionId}`;
-  if(!replayable.has(draft.submissionId)&&(submitted.has(draft.submissionId)||StorageService.getTransactions().some(tx=>tx.id===txId)))return {transactionId:txId,proof:proofReceipts.get(draft.submissionId)};
+  if(!replayable.has(draft.submissionId)&&(submitted.has(draft.submissionId)||StorageService.getTransactions().some(tx=>tx.id===txId)))return {transactionId:txId,proof:proofReceipts.get(draft.submissionId),...(queuedProofs.has(draft.submissionId)?{queued:true as const}:{})};
   validatePurchaseCommit(draft);
   // S6 (T8) : le catalogue plein des houblons est attendu AVANT d'écrire ; s'il manque, aucune fiche (jamais une fiche différente selon le moment).
   const catalogues=await cataloguesPour(draft);
+  if(draft.proofDataUrl && await queueProof(draft)) {
+    try {
+      const transactionId=savePurchase(draft,{catalogues});
+      void runProofQueue('save');
+      planifierEnrichissement(draft);
+      return {transactionId,queued:true};
+    } catch(error) {
+      // La dépense n'a pas été écrite : le fichier est encore dans la feuille, la ligne de la file n'a plus d'objet.
+      queuedProofs.delete(draft.submissionId);
+      await dropQueuedProof(draft.submissionId);
+      throw error;
+    }
+  }
   if(draft.proofDataUrl) {
     // Le nom lisible part à Drive ; le nom d'origine reste dans le brouillon et sur la dépense.
     const proof=prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl,proofDriveName(draft),draft.proofType||'application/pdf');
@@ -367,7 +602,7 @@ export async function savePurchaseWithProofReceipt(draft:PurchaseDraft):Promise<
     }
     confirmedProofs.set(draft,{dataUrl:draft.proofDataUrl,fileName:draft.proofFileName,mimeType:draft.proofType});
   }
-  return {transactionId:savePurchase(draft,{catalogues}),proof:proofReceipts.get(draft.submissionId)};
+  const transactionId=savePurchase(draft,{catalogues}); planifierEnrichissement(draft); return {transactionId,proof:proofReceipts.get(draft.submissionId)};
 }
 export async function savePurchaseWithProof(draft:PurchaseDraft):Promise<string> {
   return (await savePurchaseWithProofReceipt(draft)).transactionId;
@@ -395,7 +630,8 @@ async function confirmProof(proof:ReturnType<typeof prepareFinanceDocument>,year
     throw Object.assign(Error('Hors connexion : le justificatif n’a pas pu être envoyé sur ton Drive, donc rien n’est enregistré. Ta saisie reste ouverte : réessaie une fois en ligne.'),{code:'unavailable'});
   }
 }
-const acceptsProof=(tx:FinanceTransaction)=>tx.finance?.kind==='expense' && !tx.finance.voidedAt && !tx.finance.proofDocumentId && !tx.proofUrl;
+/** Une dépense qui porte `proofUpload` a un envoi en cours ou à renvoyer : « Rattacher » ne peut pas envoyer sous un second identifiant (d3c). */
+const acceptsProof=(tx:FinanceTransaction)=>tx.finance?.kind==='expense' && !tx.finance.voidedAt && !tx.finance.proofDocumentId && !tx.proofUrl && !tx.finance.proofUpload;
 /** Le justificatif lu peut rejoindre cette dépense : même achat au même total, dépense sans original, pas un avoir et
  * pas une autre facture (numéros différents). */
 export function purchaseProofAttachable(draft:PurchaseDraft,tx:FinanceTransaction):boolean {
@@ -449,23 +685,24 @@ export function savePurchase(draft:PurchaseDraft,options:{catalogues?:Catalogues
   const neufs=new Map(articlesNeufsDe(draft,[...stocks.rawMaterials,...stocks.cleaning],options.catalogues).map(neuf=>[neuf.lineId,neuf]));
   const at=new Date().toISOString(), newStocks:Array<{item:StockItem;type:'rawMaterials'|'cleaning'}>=[], newEquipment:EquipmentItem[]=[], receipts:Array<{ref:string;qty:number;unit:string;lineId:string;type:string}>=[];
   const proof=draft.proofDataUrl?prepareFinanceDocument(`proof-${draft.submissionId}`,draft.proofDataUrl,draft.proofFileName||'Justificatif',draft.proofType||'application/pdf'):undefined;
-  const confirmed=confirmedProofs.get(draft);
-  if(proof && (!confirmed || confirmed.dataUrl!==draft.proofDataUrl || confirmed.fileName!==draft.proofFileName || confirmed.mimeType!==draft.proofType))throw Error('Confirme d’abord l’envoi du justificatif sur Drive. Aucun achat n’a été enregistré.');
+  const confirmed=confirmedProofs.get(draft), queued=queuedProofs.get(draft.submissionId);
+  const inQueue=Boolean(proof && queued && queued.dataUrl===draft.proofDataUrl && queued.fileName===draft.proofFileName && queued.mimeType===draft.proofType);
+  if(proof && !inQueue && (!confirmed || confirmed.dataUrl!==draft.proofDataUrl || confirmed.fileName!==draft.proofFileName || confirmed.mimeType!==draft.proofType))throw Error('Confirme d’abord l’envoi du justificatif sur Drive. Aucun achat n’a été enregistré.');
   const lines=draft.lines.map((line,index)=>{
     let stockRef=line.stockRef,equipmentRef=line.equipmentRef;
     if (line.stockAction==='new') {
       stockRef=`MP-${draft.submissionId}-${index}`;
       const type=line.kind==='cleaning'?'cleaning' as const:'rawMaterials' as const;
       // L'article neuf prend l'unité de la table de l'appariement (« Kilo » → kg) ; la ligne de la dépense garde l'unité imprimée (D213).
-      const articleUnit=newArticleUnit(line.unit);
+      const articleUnit=newArticleUnit(uniteEffective(line));
       // S6 : le nom et les valeurs lues sont dérivés de la ligne et du stock COURANTS (la même fonction que l'écran) ; le nom tapé prime.
       newStocks.push({ type,item:neufs.get(line.id)!.item });
       receipts.push({ref:stockRef,qty:line.quantity,unit:articleUnit,lineId:line.id,type});
     } else if (line.stockAction==='existing') {
       const item=[...stocks.rawMaterials,...stocks.cleaning].find(item=>item.ref===line.stockRef)!;
       // Même fonction que la validation : la quantité écrite est celle qui a été acceptée (inatteignable en erreur après `validatePurchaseCommit`).
-      const converted=stockQuantityFor({description:line.description,quantity:line.quantity!,unit:line.unit},item);
-      if (!converted.ok) throw Error(`${line.description} : ${line.unit||'unité absente'} ne se convertit pas en ${item.unit}.`);
+      const converted=stockQuantityFor({description:line.description,quantity:line.quantity!,unit:uniteEffective(line)},item);
+      if (!converted.ok) throw Error(`${line.description} : ${uniteEffective(line)||'unité absente'} ne se convertit pas en ${item.unit}.`);
       receipts.push({ref:item.ref,qty:converted.quantity,unit:item.unit,lineId:line.id,type:stocks.cleaning.some(s=>s.ref===item.ref)?'cleaning':'rawMaterials'});
     }
     if (line.equipmentAction==='new') {
@@ -481,7 +718,7 @@ export function savePurchase(draft:PurchaseDraft,options:{catalogues?:Catalogues
   const amount=draft.amount!,registered=StorageService.getConfig().fiscal.isTvaRegistered;
   const vat=registered && draft.sourceCurrency==='CHF' && Number.isFinite(draft.sourceVatAmount) ? draft.sourceVatAmount : 0;
   const tx:FinanceTransaction={id:txId,date:draft.date,description:draft.description.trim(),category:draft.category,subcategory:draft.lines.some(line=>line.kind==='maintenance')?'Entretien':'',amountHT:cents(amount-vat)/100,tvaRate:registered?(draft.sourceVatRate??0):0,tvaAmount:vat,amountTTC:amount,proofFileName:storedProofName,proofType:draft.proofType,
-    finance:{version:1,kind:'expense',amountCents:cents(amount),lines,vendor:draft.vendor.trim()||undefined,invoiceNumber:draft.invoiceNumber.trim()||undefined,dueDate:purchaseIsoDate(draft.dueDate)||undefined,paymentStatus:draft.paymentStatus,recordedAt:at,planId:draft.planId,occurrenceId:draft.occurrenceId,sourceCurrency:draft.sourceCurrency,sourceAmount:draft.sourceAmount,sourceDocumentType:draft.sourceDocumentType,sourceOrderNumber:draft.sourceOrderNumber?.slice(0,70)||undefined,sourceTotalBasis:draft.sourceTotalBasis,sourceVatRate:draft.sourceVatRate,sourceVatAmount:draft.sourceVatAmount,sourceNetAmount:draft.sourceNetAmount,sourceDocumentHash:draft.documentHash,proofDocumentId:proof?.id,proofOriginalFileName:proof&&draft.proofFileName?draft.proofFileName:undefined,paymentDateBasis:draft.paymentStatus==='paid'?draft.paymentDateBasis:undefined,scanProvenance:draft.scanModel?{model:draft.scanModel,scannedAt:at,promptVersion:'invoice-v5'}:undefined}}
+    finance:{version:1,kind:'expense',amountCents:cents(amount),lines:[...lines,...ligneArrondi(draft)],vendor:draft.vendor.trim()||undefined,invoiceNumber:draft.invoiceNumber.trim()||undefined,dueDate:purchaseIsoDate(draft.dueDate)||undefined,paymentStatus:draft.paymentStatus,recordedAt:at,planId:draft.planId,occurrenceId:draft.occurrenceId,sourceCurrency:draft.sourceCurrency,sourceAmount:draft.sourceAmount,sourceDocumentType:draft.sourceDocumentType,sourceOrderNumber:draft.sourceOrderNumber?.slice(0,70)||undefined,paymentReference:paymentReferenceKey(draft.paymentReference)||undefined,sourceTotalBasis:draft.sourceTotalBasis,sourceVatRate:draft.sourceVatRate,sourceVatAmount:draft.sourceVatAmount,sourceNetAmount:draft.sourceNetAmount,sourceDocumentHash:draft.documentHash,proofDocumentId:inQueue?undefined:proof?.id,...(inQueue&&queued?{proofUpload:{state:'queued' as const,uid:queued.uid,at}}:{}),proofOriginalFileName:proof&&draft.proofFileName?draft.proofFileName:undefined,paymentDateBasis:draft.paymentStatus==='paid'?draft.paymentDateBasis:undefined,scanProvenance:draft.scanModel?{model:draft.scanModel,scannedAt:at,promptVersion:'invoice-v6'}:undefined}}
   const payment=purchasePayment(draft,at);
   // All validation and material preparation above precede the first synchronous write.
   if (payment) FinanceService.stageNewTransactionPayment(tx,payment);
@@ -495,7 +732,58 @@ export function savePurchase(draft:PurchaseDraft,options:{catalogues?:Catalogues
     if (!newStocks.some(entry=>entry.item.ref===receipt.ref)) FirestoreRepo.adjustNumber('stockItems',receipt.ref,'currentStock',receipt.qty);
     FirestoreRepo.put('movements',`receipt-${draft.submissionId}-${receipt.lineId}`,{id:`receipt-${draft.submissionId}-${receipt.lineId}`,type:'receipt',stockItemRef:receipt.ref,stockKind:receipt.type,quantity:receipt.qty,unit:receipt.unit,transactionId:txId,date:purchaseIsoDate(draft.date),createdAt:at});
   }
+  // N4 : les noms imprimés appris, un `put` de champ (`merge`) par article ; jamais `updateStockItem` (il réécrirait `currentStock` en concurrence avec `adjustNumber`).
+  for (const appris of nomsAppris(draft,[...stocks.rawMaterials,...stocks.cleaning])) FirestoreRepo.put('stockItems',appris.ref,{nomsFacture:appris.noms},{merge:true});
   submitted.add(draft.submissionId);
   replayable.delete(draft.submissionId);
   return txId;
+}
+
+/** Hors ligne, l'écriture de la dépense est en file locale (durable) : la feuille se ferme sans attendre l'accusé du serveur (T5). */
+export function canCloseWithoutAck(transactionId:string):boolean {
+  if(typeof navigator==='undefined' || navigator.onLine!==false)return false;
+  const status=FirestoreRepo.documentWriteState('transactions',transactionId).status;
+  return status==='pending' || status==='queued';
+}
+/**
+ * L'accusé de la dépense, attendu hors de la feuille. Un refus plus tard met le job en `voided` (le lien ne s'écrit jamais) ; le bandeau d'écriture
+ * existant (`App.tsx`) le dit. Un délai sans réponse ne conclut rien : le travailleur relit l'état de l'écriture à chaque réveil.
+ */
+export function watchPurchaseConfirmation(draft:PurchaseDraft):void {
+  void confirmPurchase(draft).catch(error=>{ if(isConfirmedWriteRejection(error))void voidProofJob(draft.submissionId,'refused'); });
+}
+
+const RESEND_TYPES=['image/jpeg','image/png','image/webp','application/pdf'];
+/**
+ * Renvoyer un justificatif depuis la fiche d'une dépense « sans justificatif » (envoi échoué, ou fichier perdu / autre appareil). Mêmes gardes que
+ * `attach` de la feuille : 4 Mo au plus, JPG, PNG, WebP ou PDF ; refus clair, rien n'est mis en file. Même fichier (même empreinte) = même identifiant
+ * Drive ; un autre fichier prend `fileNo + 1` (lu aussi sur Firestore : valable depuis un autre appareil).
+ */
+export async function resendProof(transactionId:string,file:File):Promise<void> {
+  const tx=StorageService.getTransactions().find(item=>item.id===transactionId);
+  if(!tx?.finance || tx.finance.kind!=='expense')throw Error('Cette dépense est introuvable.');
+  if(tx.finance.voidedAt)throw Error('Cette écriture est annulée : aucun justificatif ne peut lui être joint.');
+  if(tx.finance.proofDocumentId || tx.proofUrl)throw Error('Cette dépense a déjà un justificatif.');
+  const {GeminiScannerService}=await import('./geminiScanner');
+  const mimeType=GeminiScannerService.normalizeMimeType(file);
+  if(file.size>4*1024*1024 || !RESEND_TYPES.includes(mimeType))throw Error('Choisis un JPG, PNG, WebP ou PDF de 4 Mo maximum.');
+  if(!proofQueueAvailable())throw Error('L’envoi en arrière-plan n’est pas disponible sur cet appareil. Rouvre l’application depuis un navigateur à jour.');
+  const dataUrl=await GeminiScannerService.fileToDataUrl(file);
+  const submissionId=transactionId.replace(/^TX-/,''), previous=await getProofJob(submissionId);
+  const digest=await crypto.subtle.digest('SHA-256',await file.arrayBuffer()), sha256=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
+  if(previous && (previous.state==='sending'||previous.state==='queued')){
+    if(previous.sha256===sha256)return;
+    throw Error('Un envoi est en cours pour cette dépense. Attends son résultat avant de choisir un autre fichier.');
+  }
+  const uid=(await import('./firebaseAuth')).FirebaseAuthService.getCurrentUser()?.uid;
+  if(!uid)throw Error('Reconnecte-toi à la brasserie avant de renvoyer un justificatif.');
+  const lastNo=Math.max(previous?.fileNo??1,tx.finance.proofUpload?.fileNo??1);
+  const fileNo=previous && previous.sha256===sha256 ? previous.fileNo??1 : previous||tx.finance.proofUpload ? lastNo+1 : 1;
+  // Le nom suit la dépense (sa date, son fournisseur, son numéro), le nom d'origine en repli.
+  const driveName=driveProofFileName({date:tx.date,vendor:tx.finance.vendor??'',invoiceNumber:tx.finance.invoiceNumber??'',mimeType,originalName:file.name});
+  const year=+(isoDate(tx.date)??todayISO()).slice(0,4);
+  prepareFinanceDocument(`proof-${submissionId}`,dataUrl,driveName,mimeType);
+  const job=await enqueueProof({submissionId,dataUrl,mimeType,driveName,originalName:file.name,year,uid,fileNo});
+  if(await markQueuedOnTransaction(job)==='voided'){await dropQueuedProof(submissionId);throw Error('Cette écriture est annulée : aucun justificatif ne peut lui être joint.');}
+  void runProofQueue('resend');
 }

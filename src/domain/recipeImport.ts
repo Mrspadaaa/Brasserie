@@ -2,6 +2,9 @@ import { Fermentable, MashProfile, Recipe, WaterIons, WaterPlan } from '../types
 import { RecipeTextParser } from '../services/recipeParser';
 import { readRecipeFields, readRecipeText, RecipeContent } from './recipeTransfer';
 import { yeastRecipeDesignChanged } from './yeastRecipeDesign';
+import { momentParDefaut } from './fermentables/moments';
+import { normaliserAdditif } from './bornesProcede';
+import { nombreFr } from '../domain/nombreAffiche';
 
 export interface ImportedRecipe extends Omit<Partial<RecipeContent>, 'waterPlan' | 'mash'> {
   fermentables: RecipeContent['fermentables'];
@@ -116,7 +119,7 @@ export function normalizeRecipeImport(
     clean.mash?.ratioLPerKg != null &&
     Math.abs(mashLitres / grainKg - clean.mash.ratioLPerKg) > 0.05
   ) {
-    const note = `Épaisseur annoncée : ${clean.mash.ratioLPerKg} L/kg ; les volumes et le grain donnent ${(mashLitres / grainKg).toFixed(2)} L/kg. Les volumes sont conservés.`;
+    const note = `Épaisseur annoncée : ${nombreFr(clean.mash.ratioLPerKg, 1)} L/kg ; les volumes et le grain donnent ${nombreFr((mashLitres / grainKg), 2)} L/kg. Les volumes sont conservés.`;
     warnings.push(note);
     clean.notesCreation = [clean.notesCreation, note].filter(Boolean).join('\n');
   }
@@ -156,7 +159,8 @@ export function normalizeRecipeImport(
   }
   const fermentables = (clean.fermentables ?? [])
     .filter((f) => typeof f.name === 'string' && f.weightKg != null)
-    .map((f) => ({ ...f, kind: f.kind ?? 'grain', use: f.use ?? 'empatage' }));
+    // Sans moment lu : celui de sa famille (table domain/fermentables/moments.ts) ; un sucre n'est jamais posé à l'empâtage d'office.
+    .map((f) => ({ ...f, kind: f.kind ?? 'grain', use: f.use ?? momentParDefaut(f.kind ?? 'grain') }));
   const hops = (clean.hops ?? [])
     .filter((h) => typeof h.name === 'string' && h.weightG != null)
     .map((h) => ({ ...h, alpha: h.alpha ?? 0, stage: h.stage ?? 'boil' }));
@@ -224,7 +228,8 @@ export function normalizeRecipeImport(
       : {}),
     adjuncts: clean.adjuncts
       ?.filter((a) => a.name != null && a.amount != null && a.unit != null)
-      .map((a) => ({ ...a, step: a.step ?? '' })),
+      // AM-32 : unité et moment du texte libre ramenés aux valeurs connues (« ml » → « mL », « Empattage » → « Empâtage ») ; inconnus, ils restent tels quels.
+      .map((a) => normaliserAdditif({ ...a, step: a.step ?? '' })),
     waterTarget,
     waterTargetName: string(d.waterTargetName),
     waterNote: string(d.waterNote),
@@ -253,7 +258,7 @@ export function parseLocalRecipe(raw: string): ImportedRecipe {
   const fermentables: Fermentable[] = p.malts.map((m) => ({
     ...m,
     kind: m.kind ?? 'grain',
-    use: m.use ?? 'empatage'
+    use: m.use ?? momentParDefaut(m.kind ?? 'grain')
   }));
   const adjuncts = p.adjuncts.filter((a) => {
     const kind = /lactose/i.test(a.name)

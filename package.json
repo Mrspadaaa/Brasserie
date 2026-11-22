@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && node scripts/check-private-research.mjs",
+    "build": "tsc && vite build && node scripts/check-private-research.mjs && node scripts/check-build-flags.mjs dist",
     "preview": "vite preview",
     "check:hop-perf": "node scripts/check-hop-tools-perf.mjs",
     "lint:design": "node tools/design-lint/lancer.mjs DESIGN.md",
-    "deploy": "npm run build && node scripts/build-rules.mjs && firebase deploy --only firestore --non-interactive && firebase deploy --only functions --non-interactive && firebase deploy --only hosting --non-interactive",
+    "deploy": "npm run build && node scripts/build-rules.mjs && firebase deploy --only firestore --non-interactive && firebase deploy --only functions --non-interactive && node scripts/garder-morceaux.mjs dist && firebase deploy --only hosting --non-interactive",
     "test": "node scripts/check-test-boundary.mjs && node scripts/audit_inputs.mjs && vitest run",
     "test:inputs": "node scripts/audit_inputs.mjs && vitest run tests/integration/inputProtection.test.tsx tests/integration/textInput.test.tsx tests/unit/numericInput.test.ts",
     "test:science": "node scripts/check-hop-science.mjs",
@@ -40,13 +40,16 @@
     "jspdf": "^3.0.0",
     "lucide-react": "^1.16.0",
     "motion": "^13.2.0",
+    "pdfjs-dist": "4.10.38",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-virtuoso": "^4.18.12",
+    "react-zoom-pan-pinch": "4.2.0",
     "recharts": "^3.10.1",
     "swissqrbill": "^4.4.1",
     "vaul": "^1.1.2",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zxing-wasm": "3.1.5"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^7.0.1",

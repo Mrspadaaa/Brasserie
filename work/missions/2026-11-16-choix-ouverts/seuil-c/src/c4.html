@@ -1,0 +1,41 @@
+@@TITRE
+c4 · La ligne dans la liste
+@@CSS
+.c4-head{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:12px;padding:10px 12px 10px;background:var(--bg);border-bottom:1.5px solid var(--line)}
+.c4-big{font-size:52px;line-height:1;font-weight:800;color:var(--fin);letter-spacing:-1.5px;font-variant-numeric:tabular-nums;min-width:58px}
+.c4-t{flex:1;min-width:0;font-size:15px;color:var(--mut);line-height:1.25;white-space:nowrap}.c4-t b{display:block;color:var(--ink);font-size:17px}
+.c4-mh{display:grid;grid-template-columns:repeat(7,10px);gap:3px;align-items:end;height:52px;padding-bottom:2px;border-bottom:1.5px solid var(--line2)}
+.c4-mh i{display:block;border-radius:3px 3px 0 0;background:var(--c)}
+.c4-l{margin:10px 12px 0}
+.c4-gh{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:0 4px;font-size:15px;color:var(--mut);text-align:left}
+.c4-gh b{color:var(--ink);font-size:16px}.c4-gh .c4-k{margin-left:auto;min-width:26px;height:24px;border-radius:12px;padding:0 6px;text-align:center;line-height:24px;font-weight:800;color:var(--c);border:1.5px solid var(--c)}
+.c4-g .k-rows{margin:0 0 4px}
+.c4-g.out .k-row .k-nm,.c4-g.out .k-row .k-q{color:var(--mut)}
+.c4-line{position:relative;display:flex;align-items:center;gap:10px;height:56px;margin:4px -12px;padding:0 12px;touch-action:none;cursor:ns-resize}
+.c4-line::before{content:'';position:absolute;left:0;right:0;top:50%;height:3px;margin-top:-1.5px;background:var(--fin)}
+.c4-line .c4-pb{position:relative;min-width:44px;height:36px;padding:0 10px;border-radius:18px;background:var(--fin);color:var(--onfin);font-size:20px;font-weight:800;line-height:36px;text-align:center}
+.c4-line .c4-lb{position:relative;padding:2px 8px;background:var(--bg);font-size:15px;color:var(--fin);font-weight:700;border-radius:8px;white-space:nowrap}
+.c4-line .c4-gr{position:relative;margin-left:auto;width:48px;height:40px;border-radius:12px;background:var(--fin);color:var(--onfin);display:grid;place-items:center}
+@@CORPS
+<div class="c4-head"><span class="c4-big" id="c4-big">5</span><span class="c4-t" id="c4-t"></span><span class="c4-mh" id="c4-mh" aria-hidden="true"></span></div>
+<div class="c4-l" id="c4-l"></div>
+@@APRES
+@@JS
+<script>(()=>{const S=STK,{$,$$}=S;let H=49;
+const G=[[48,'S48','lavage des fûts'],[49,'S49','Porter'],[50,'S50','Blonde en bouteilles'],[51,'S51','Pils de Noël'],[52,'S52','fûts du Marché'],[99,'Au seuil','sans brassin']];
+const LIGNE='<div class="c4-line" id="c4-line" data-booster="ligne-pastille" role="slider" tabindex="0" aria-label="Ligne de la pastille"><span class="c4-pb" id="c4-pb"></span><span class="c4-lb">↑ comptés</span><span class="c4-gr"><svg class="ico" viewBox="0 0 24 24"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"/></svg></span></div>';
+function rendre(){const X=S.dans(H);
+$('#c4-big').textContent=X.length;
+$('#c4-t').innerHTML='à commander <span class="k-ex">exemple</span><b>'+(H===99?'tout le seuil':'d’ici S'+H)+'</b>';
+$('#c4-mh').innerHTML=S.W.map(w=>{const k=S.par(w).length,c=w<=H?(w===99?'var(--att)':'var(--fin)'):'var(--line2)';return '<i style="--c:'+c+';height:'+(k?Math.max(4,k/13*48):0)+'px"></i>'}).join('');
+let h='';for(const [w,s,p] of G){const L=S.par(w),on=w<=H,c=on?(w===99?'var(--att)':'var(--fin)'):'var(--line2)';
+const rc=on?c:'var(--mut)';h+='<div class="c4-g'+(on?'':' out')+'"><button class="c4-gh" data-h="'+w+'" style="--c:'+(on?c:'var(--mut)')+'"><b>'+s+'</b>'+p+'<span class="c4-k">'+L.length+'</span></button><div class="k-rows">'+L.map(a=>S.row(a,rc)).join('')+'</div></div>';
+if(w===H)h+=LIGNE}
+$('#c4-l').innerHTML=h;$('#c4-pb').textContent=X.length;
+for(const b of $$('.c4-gh'))b.onclick=()=>{H=+b.dataset.h;rendre()};
+const li=$('#c4-line');let tir=false;
+li.addEventListener('pointerdown',e=>{tir=true;li.setPointerCapture(e.pointerId)});
+li.addEventListener('pointerup',e=>{if(!tir)return;tir=false;const y=e.clientY;let best=H,d=1e9;for(const g of $$('.c4-g')){const r=g.getBoundingClientRect(),dd=Math.abs(r.bottom-y);if(dd<d){d=dd;best=+g.querySelector('.c4-gh').dataset.h}}if(best!==H){H=best;rendre()}});
+li.addEventListener('keydown',e=>{const i=G.findIndex(g=>g[0]===H);if(e.key==='ArrowDown'&&i<5){H=G[i+1][0];rendre()}if(e.key==='ArrowUp'&&i>0){H=G[i-1][0];rendre()}});
+S.cta(X.length,'Commander');S.pastille(X.length)}
+rendre();if(S.etat==='geste'){H=52;rendre();const r=$('#c4-line').getBoundingClientRect();scrollTo(0,r.top+scrollY-545)}})()</script>

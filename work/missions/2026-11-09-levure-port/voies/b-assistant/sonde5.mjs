@@ -1,0 +1,24 @@
+// Vérification visuelle après correctifs : Identité (refus dit), Malts/sucres (EBC hors échelle, barre), Eau (refus dit), à 390 et 1280.
+import { ouvrir, etape, texte, taper, valeurChamp, capture, dormir } from './banc.mjs';
+const largeur = Number(process.argv[2] ?? 1280);
+const theme = process.argv[3] ?? 'clair';
+const { browser, page } = await ouvrir({ largeur, hauteur: largeur < 600 ? 844 : 900, theme });
+const alertes = () => page.evaluate(() => [...document.querySelectorAll('[role=alert]')].map((e) => e.textContent.trim().slice(0, 150)));
+await etape(page, 'Identité');
+await taper(page, 'Volume en fermenteur', '-1'); await page.keyboard.press('Tab'); await dormir(700);
+console.log(`ID ${largeur} ${theme} volume -1 ->`, await valeurChamp(page, 'Volume en fermenteur'), JSON.stringify(await alertes()));
+await capture(page, `s5-identite-${largeur}-${theme}`);
+await taper(page, 'Durée d’ébullition', '-1'); await page.keyboard.press('Tab'); await dormir(700);
+console.log('ID ébullition -1 ->', await valeurChamp(page, 'Durée d’ébullition'), JSON.stringify(await alertes()));
+await etape(page, 'Malts');
+await dormir(500);
+const hors = await page.evaluate(() => document.querySelector('[data-hors="ebc"]')?.textContent ?? null);
+console.log('FERM repère EBC hors échelle ->', hors);
+await capture(page, `s5-ferm-${largeur}-${theme}`, { fullPage: true });
+await etape(page, 'Eau');
+await taper(page, 'Dose de Gypse', '-1'); await page.keyboard.press('Tab'); await dormir(700);
+console.log('EAU gypse -1 ->', await valeurChamp(page, 'Dose de Gypse'), JSON.stringify(await alertes()));
+await taper(page, 'Rapport eau grain', '2,5'); await page.keyboard.press('Tab'); await dormir(700);
+console.log('EAU ratio 2,5 ->', await valeurChamp(page, 'Rapport eau grain'));
+await capture(page, `s5-eau-${largeur}-${theme}`, { fullPage: true });
+await browser.close();

@@ -1,0 +1,16 @@
+{
+ "reglage": "4-argon@low",
+ "element": "low-ph-controle",
+ "cas": "low-ph",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 5496,
+ "coutMicro": 11275,
+ "etat": "STOP"
+}

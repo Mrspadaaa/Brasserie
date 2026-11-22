@@ -1,0 +1,29 @@
+puce-avant 390 : {"tableau":392,"champ":747} ; critère : Critère : Supporter le moût chaud · proposé par l'IA
+capture puce-390-clair-avant.png
+puce-apres 390 : critère : Critère : Supporter le moût chaud, puis le débit · proposé par l'IA ; « Comparer sur » restant=false
+capture puce-390-clair-apres.png
+p19 390 : menu=true ; feuille=✻ Ressemble à un critère · Passer en Ce qui compte
+capture p19-390-clair.png
+coller 390 : presse-papier=true ; puce=true
+capture coller-390-clair-a.png
+coller-apres 390 : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 6 ¦ Réalisés ¦ 0 ¦ Nouveau carnet · Idée ¦ arrive ici ¦ exemple.invalid ¦ ✻ Déjà un carnet proche : ZZ TEST — Ventilation de la salle de brassage ¦ Y ajouter en façon ¦ À comparer ¦ 1 ¦ ZZ TEST — Ventilation de la salle de brassage ¦ Ensuite : attendre l’avis du ferblantier ¦ 2 façons · 6 articles · 1 en veille ¦ dès ¦ 420 ¦ CHF ¦ Idée ¦ 2 ¦ pas encore d'article ¦ ZZ TEST — Évier inox ¦ « 2 bacs pour laver les fûts » ¦ Coller un lien ¦ ZZ TEST — Extracteur pour la salle de fermentation ¦ « sortir le CO₂ de la salle de fermentation avec un extracteur mural » ¦ Coller un lien ¦ C
+capture coller-390-clair-b.png
+puce-avant 1280 : {"tableau":434,"champ":743} ; critère : Critère : Supporter le moût chaud · proposé par l'IA
+capture puce-1280-clair-avant.png
+puce-apres 1280 : critère : Critère : Supporter le moût chaud, puis le débit · proposé par l'IA ; « Comparer sur » restant=false
+capture puce-1280-clair-apres.png
+p19 1280 : menu=true ; feuille=✻ Ressemble à un critère · Passer en Ce qui compte
+capture p19-1280-clair.png
+coller 1280 : presse-papier=true ; puce=true
+capture coller-1280-clair-a.png
+coller-apres 1280 : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 6 ¦ Réalisés ¦ 0 ¦ Nouveau carnet · Idée ¦ arrive ici ¦ exemple.invalid ¦ ✻ Déjà un carnet proche : ZZ TEST — Ventilation de la salle de brassage ¦ Y ajouter en façon ¦ À comparer ¦ 1 ¦ ZZ TEST — Ventilation de la salle de brassage ¦ Ensuite : attendre l’avis du ferblantier ¦ 2 façons · 6 articles · 1 en veille ¦ dès ¦ 420 ¦ CHF ¦ Idée ¦ 2 ¦ pas encore d'article ¦ ZZ TEST — Évier inox ¦ « 2 bacs pour laver les fûts » ¦ Coller un lien ¦ ZZ TEST — Extracteur pour la salle de fermentation ¦ « sortir le CO₂ de la salle de fermentation avec un extracteur mural » ¦ Coller un lien ¦ C
+capture coller-1280-clair-b.png
+notes1280 chargé : true
+capture notes-1280-clair-feuille.png
+capture notes-1280-clair-modifier.png
+modifiée 1280 : 1600=true 1500=false bandeau=true
+capture notes-1280-clair-modifiee.png
+supprimée 1280 : buée=false bandeau=true
+capture notes-1280-clair-supprimee.png
+annulée 1280 : buée=true bandeau=true
+capture notes-1280-clair-annulee.png

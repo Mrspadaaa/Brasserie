@@ -1,0 +1,5 @@
+[
+  ["repere-armoire", "encours", "[data-pin=\"3\"] circle"],
+  ["avancer-evier", "encours", "[data-monte=\"2\"]"],
+  ["enveloppe-a-fixer", "encours", "[data-env]"]
+]

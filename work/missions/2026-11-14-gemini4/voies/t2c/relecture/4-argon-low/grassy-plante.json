@@ -1,0 +1,20 @@
+{
+ "reglage": "4-argon@low",
+ "element": "grassy-plante",
+ "cas": "grassy",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Contradiction majeure et conseil dangereux dans `action` : il est prescrit de « Refroidis le fermenteur à 2 °C tout de suite : la densité n’a plus besoin de baisser », alors que la densité baisse encore et que `summary`/`why` expliquent à juste titre qu'il ne faut pas faire de cold crash avant une densité stable (risque d'arrêt de fermentation et de hop creep).",
+   "Pour un profil herbeux, il manque la distinction explicite entre note végétale, astringence et hop burn / particules en suspension.",
+   "La question posée doit aussi permettre de préciser les paramètres du dry-hop qui changent le diagnostic et la conduite (température actuelle de la bière, forme du houblon / liberté ou sac) en complément du suivi de densité, en restant dans la limite d'une à deux questions."
+  ]
+ },
+ "ms": 7892,
+ "coutMicro": 13923,
+ "etat": "STOP"
+}

@@ -1,0 +1,65 @@
+E1-2 390 ligne 1 stock : ok Nouvel article
+  champs : ["select:Nature ligne 1=ingredient","select:Stock ligne 1=new","textarea:Quantité ligne 1=","textarea:Unité ligne 1="]
+E1-2 390 ligne 2 stock : select absent
+  champs : ["span:Unité ligne 1","summary:title=libellé à remplir · quantité absente : unité non déductible · prix unitaire absent · montant absent · classée dans « Autres » : rien ne dit mieux","textarea:Libellé ligne 2=","textarea:Quantité ligne 2=","textarea:Prix ligne 2=","textarea:Montant ligne 2=","span:Quantité en un toucher, ligne 2","div:Unité à remplir, ligne 2","div:Type d’achat, ligne 2","button:Ajouter au stock, ligne 2=","button:Ligne suivante, après la ligne 2=","button:Retirer la ligne 2="]
+  champ introuvable [aria-label="Unité ligne 2"]
+E1-2 390 ligne 3 stock : select absent
+  champs : ["span:Unité ligne 1","summary:title=libellé à remplir · quantité absente : unité non déductible · prix unitaire absent · montant absent · classée dans « Autres » : rien ne dit mieux","div:Unité à remplir, ligne 2"]
+  champ introuvable [aria-label="Quantité ligne 3"]
+  champ introuvable [aria-label="Unité ligne 3"]
+E1-2 390 avant Enregistrer : ["textarea:Libellé ligne 1=","textarea:Quantité ligne 1=1","span:Unité ligne 1","textarea:Prix ligne 1=","textarea:Montant ligne 1=3,00","div:Type d’achat, ligne 1","button:Retirer l’article, ligne 1=","button:Ligne suivante, après la ligne 1=","button:Retirer la ligne 1=","textarea:Libellé ligne 2=","textarea:Quantité ligne 2=","textarea:Prix ligne 2=","textarea:Montant ligne 2=","span:Quantité en un toucher, ligne 2","div:Unité à remplir, ligne 2","div:Type d’achat, ligne 2","button:Ajouter au stock, ligne 2=","button:Ligne suivante, après la ligne 2=","button:Retirer la ligne 2="]
+  e12-saisie-390-clair.png
+  après Enregistrer : dialog=true · Nouvelle dépense ¦ Plié ¦ Déplié ¦ À corriger ¦ Chaque ligne doit avoir un libellé et un montant avec deux décimales au maximum. ¦ Joindre des documents ¦ Total TTC en CHF ¦ Règlement ¦ par défaut ¦ Payé le 19.11.2026 ¦ Articles, stock et matériel · 1 ¦ Ingrédients ¦ 1 entrée en stock ¦ Ce que tu achètes ¦ Regrouper en une dépense ¦ Ligne sans libellé ¦ 1 pièce ¦ × ¦ 3,00 ¦ 3,00 ¦ imprimé «  ¦ — ¦  » ¦ pièce ¦ g ¦ Kg ¦ × ¦ = ¦ Ingrédient ¦ Service ¦ Matériel ¦ 0 → 1 pièce ¦ article « à choisir »
+  e12-apres-390-clair.png
+  introuvable : Opérations
+  rouvert=true : Nouvelle dépense ¦ Plié ¦ Déplié ¦ À corriger ¦ Chaque ligne doit avoir un libellé et un montant avec deux décimales au maximum. ¦ Joindre des documents ¦ Total TTC en CHF ¦ Règlement ¦ par défaut ¦ Payé le 19.11.2026 ¦ Articles, stock et matériel · 1 ¦ Ingrédients ¦ 1 entrée en stock ¦ Ce que tu achètes ¦ Regrouper en une dépense ¦ Ligne sans libellé ¦ 1 pièce ¦ × ¦ 3,00 ¦ 3,00 ¦ imprimé «  ¦ — ¦  » ¦ pièce ¦ g ¦ Kg ¦ × ¦ = ¦ Ingrédient ¦ Service ¦ Matériel ¦ 0 → 1 pièce ¦ article « à choisir » · relié ¦ Retirer ¦ Suivant ¦ plus ¦ supprimer ¦ Ligne sans libellé ¦ ? ¦ × ¦ — ¦ — ¦ Ajouter une ligne ¦ Détail : 3,00 CHF / 3,00 CHF ¦ Pour quoi ? ¦ Date de l’achat ¦ 19.11.2026 · aujourd’hui, par défaut ¦ Fournisseur et catégorie ¦ Fournisseur facultatif · Brassage ¦ Lier à une dépense prévue ¦ facultatif ¦ Référence et TVA du document ¦ — ¦ Sans justificatif, c’est normal ¦ n
+  unités : ["textarea:Quantité ligne 1=1","span:Unité ligne 1","summary:title=libellé à remplir · quantité absente : unité non déductible · prix unitaire absent · montant absent · classée dans « Autres » : rien ne dit mieux","textarea:Quantité ligne 2=","div:Unité à remplir, ligne 2"]
+  e12-rouvert-390-clair.png
+E1-2 1280 ligne 1 stock : ok Nouvel article
+  champs : ["select:Nature ligne 1=ingredient","select:Stock ligne 1=new","input:Quantité ligne 1=","input:Unité ligne 1="]
+E1-2 1280 ligne 2 stock : select absent
+  champs : ["span:Unité ligne 1","summary:title=libellé à remplir · quantité absente : unité non déductible · prix unitaire absent · montant absent · classée dans « Autres » : rien ne dit mieux","input:Libellé ligne 2=","input:Quantité ligne 2=","input:Prix ligne 2=","input:Montant ligne 2=","span:Quantité en un toucher, ligne 2","div:Unité à remplir, ligne 2","div:Type d’achat, ligne 2","button:Ajouter au stock, ligne 2=","button:Ligne suivante, après la ligne 2=","button:Retirer la ligne 2="]
+  champ introuvable [aria-label="Unité ligne 2"]
+E1-2 1280 ligne 3 stock : select absent
+  champs : ["span:Unité ligne 1","summary:title=libellé à remplir · quantité absente : unité non déductible · prix unitaire absent · montant absent · classée dans « Autres » : rien ne dit mieux","div:Unité à remplir, ligne 2","summary:title=libellé à remplir · quantité absente : unité non déductible · prix unitaire absent · montant absent · classée dans « Autres » : rien ne dit mieux","input:Libellé ligne 3=","input:Quantité ligne 3=","input:Prix ligne 3=","input:Montant ligne 3=","span:Quantité en un toucher, ligne 3","div:Unité à remplir, ligne 3","div:Type d’achat, ligne 3","button:Ajouter au stock, ligne 3=","button:Ligne suivante, après la ligne 3=","button:Retirer la ligne 3="]
+  case unité 3 ouverte : ["span:1 pièce × 3,00","span:Unité ligne 1","summary:title=libellé à remplir · quantité absente : unité non déductible · prix unitaire absent · montant absent · classée dans « Autres » : rien ne dit mieux","div:Unité à remplir, ligne 2","span:Unité ligne 3"]
+E1-2 1280 avant Enregistrer : ["input:Libellé ligne 1=","input:Quantité ligne 1=1","span:Unité ligne 1","input:Prix ligne 1=","input:Montant ligne 1=3,00","div:Type d’achat, ligne 1","button:Retirer l’article, ligne 1=","button:Ligne suivante, après la ligne 1=","button:Retirer la ligne 1=","input:Libellé ligne 2=","input:Quantité ligne 2=","input:Prix ligne 2=","input:Montant ligne 2=","span:Quantité en un toucher, ligne 2","div:Unité à remplir, ligne 2","div:Type d’achat, ligne 2","button:Ajouter au stock, ligne 2=","button:Ligne suivante, après la ligne 2=","button:Retirer la ligne 2=","input:Libellé ligne 3=","input:Quantité ligne 3=1","span:Unité ligne 3","input:Prix ligne 3=1,00","input:Montant ligne 3=1,00","div:Quantité, ligne 3","div:Type d’achat, ligne 3","button:Ajouter au stock, ligne 3=","button:Ligne suivante, après la ligne 3=","button:Retirer la ligne 3="]
+  e12-saisie-1280-cave.png
+  après Enregistrer : dialog=true · Nouvelle dépense ¦ Plié ¦ Déplié ¦ À corriger ¦ Décris cette dépense. ¦ Chaque ligne doit avoir un libellé et un montant avec deux décimales au maximum. ¦ Le détail des lignes doit correspondre exactement au total TTC. ¦ Joindre des documents ¦ Total TTC en CHF ¦ Règlement ¦ par défaut ¦ Payé le 19.11.2026 ¦ Articles, stock et matériel · 2 ¦ Ingrédients ¦ 1 entrée en stock ¦ Ce que tu achètes ¦ Regrouper en une dépense ¦ Ligne sans libellé ¦ 1 pièce ¦ × ¦ 3,00 ¦ 3,00 ¦ Ligne sans libellé ¦ ? ¦ ×
+  e12-apres-1280-cave.png
+  introuvable : Opérations
+  rouvert=true : Nouvelle dépense ¦ Plié ¦ Déplié ¦ À corriger ¦ Décris cette dépense. ¦ Chaque ligne doit avoir un libellé et un montant avec deux décimales au maximum. ¦ Le détail des lignes doit correspondre exactement au total TTC. ¦ Joindre des documents ¦ Total TTC en CHF ¦ Règlement ¦ par défaut ¦ Payé le 19.11.2026 ¦ Articles, stock et matériel · 2 ¦ Ingrédients ¦ 1 entrée en stock ¦ Ce que tu achètes ¦ Regrouper en une dépense ¦ Ligne sans libellé ¦ 1 pièce ¦ × ¦ 3,00 ¦ 3,00 ¦ Ligne sans libellé ¦ ? ¦ × ¦ — ¦ — ¦ Ligne sans libellé ¦ 1 pièce ¦ × ¦ 1,00 ¦ 1,00 ¦ imprimé «  ¦ — ¦  » ¦ pièce ¦ g ¦ Kg ¦ × ¦ = ¦ quantité ¦ 1 ¦ pièce ¦ 2 ¦ pièces ¦ 3 ¦ pièces ¦ 5 ¦ pièces ¦ 10 ¦ pièces ¦ Ingrédient ¦ Service ¦ Matériel ¦ article — · hors stock ¦ Ajouter au stock ¦ Suivant ¦ plus ¦ supprimer ¦ Ajouter une ligne ¦ Détail : 4,00 CHF / 3,00 CHF · dépasse le total de 1,00 CHF ¦ Pour quoi ?
+  unités : ["input:Quantité ligne 1=1","span:Unité ligne 1","summary:title=libellé à remplir · quantité absente : unité non déductible · prix unitaire absent · montant absent · classée dans « Autres » : rien ne dit mieux","input:Quantité ligne 2=","div:Unité à remplir, ligne 2","input:Quantité ligne 3=1","span:Unité ligne 3"]
+  e12-rouvert-1280-cave.png
+BE-23 390 boutons stock : ["Stocks","Ajouter au stock, ligne 1"]
+  barre : [] · Stk=false
+  be23-barre-390-cave.png
+BE-23 1280 boutons stock : ["Stocks","Ajouter au stock, ligne 1"]
+  barre : [] · Stk=false
+  be23-barre-1280-clair.png
+LR1-14 1280 avant : Clôture 2026 0 / 9 prêtes | Clôture : 0 étapes sur 9 prêtes
+  lr114-avant-1280-cave.png
+  pied : Confirmer
+  après Confirmer : dialog=true Nouvelle dépense ¦ Plié ¦ Déplié ¦ 2026-04-27 Brau- und Rauchshop 372765.jpg ¦ L’Affinée / Justificatifs / 2026 ¦ Ouvrir dans Drive ¦ 735 721 octets · taille vérifiée ¦ À revoir : date de paiement supposée gardée ¦ BENU Matran ¦ 10.11.2026 ¦ CHF ¦ 1 ¦  ligne ¦ · ¦ Articles lus ¦ 1 ¦ annoncé par la l
+LR1-14 1280 après : Clôture 2026 0 / 9 prêtes | Clôture : 0 étapes sur 9 prêtes
+  lr114-apres-1280-cave.png
+LR1-14 390 avant : Clôture 2026 0 / 9 prêtes | Clôture : 0 étapes sur 9 prêtes
+  lr114-avant-390-clair.png
+  pied : Confirmer
+  après Confirmer : dialog=true Nouvelle dépense ¦ Plié ¦ Déplié ¦ 2026-04-27 Brau- und Rauchshop 372765.jpg ¦ L’Affinée / Justificatifs / 2026 ¦ Ouvrir dans Drive ¦ 735 721 octets · taille vérifiée ¦ À revoir : date de paiement supposée gardée ¦ BENU Matran ¦ 10.11.2026 ¦ CHF ¦ 1 ¦  ligne ¦ · ¦ Articles lus ¦ 1 ¦ annoncé par la l
+LR1-14 390 après : Clôture 2026 0 / 9 prêtes | Clôture : 0 étapes sur 9 prêtes
+  lr114-apres-390-clair.png
+file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/api/ElementHandle.js:692
+                throw new Error('Node is either not clickable or not an Element');
+                      ^
+
+Error: Node is either not clickable or not an Element
+    at CdpElementHandle.clickablePoint (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/api/ElementHandle.js:692:23)
+    at async CdpElementHandle.<anonymous> (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/api/ElementHandle.js:118:20)
+    at async CdpElementHandle.click (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/api/ElementHandle.js:722:30)
+    at async CdpElementHandle.<anonymous> (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/puppeteer-core/lib/puppeteer/api/ElementHandle.js:129:24)
+    at async taper (file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-11-19-carnet-tour3/voies/v5b/g2.mjs:7:196)
+    at async file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-11-19-carnet-tour3/voies/v5b/g2.mjs:59:18
+
+Node.js v24.19.0
+fini

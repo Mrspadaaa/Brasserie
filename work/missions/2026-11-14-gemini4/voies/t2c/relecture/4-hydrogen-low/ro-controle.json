@@ -1,0 +1,16 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "ro-controle",
+ "cas": "ro",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 4442,
+ "coutMicro": 16529,
+ "etat": "STOP"
+}

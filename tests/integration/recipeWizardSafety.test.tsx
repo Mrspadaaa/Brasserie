@@ -110,7 +110,7 @@ describe('Recipe wizard submission safeguards', () => {
 
     replace(titleField(), 'Recette au clavier');
     fireEvent.keyDown(titleField(), { key: 'Enter', [modifier]: true });
-    expect(screen.getByRole('main', { name: 'Fermentescibles' })).toBeInTheDocument();
+    expect(screen.getByRole('main', { name: 'Malts/sucres' })).toBeInTheDocument();
     recap();
     fireEvent.click(saveButton());
     expect(onSave).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ name: 'Recette au clavier' }), false);
@@ -167,7 +167,7 @@ describe('Recipe wizard submission safeguards', () => {
   it('enregistre une dose effacée comme plan incomplet et revient au champ avant le brassin', async () => {
     const draftKey = 'safety:ingredient-quantity';
     const { onSave } = wizard({ draftKey });
-    allerEtape(/^Fermentescibles$/);
+    allerEtape(/^Malts.sucres$/);
     const quantity = () => screen.getAllByRole('textbox', { name: /^Quantité en kg$/ })[0];
     await userEvent.clear(quantity());
     fireEvent.blur(quantity());

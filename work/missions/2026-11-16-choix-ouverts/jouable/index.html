@@ -1,0 +1,40 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Tes choix du 16.11 · à jouer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--line2:#bfbfbf;--mut:#5c5c5c;--ink:#111;--act:#111;--onact:#fff;--prod:#9a4f1e;--fin:#1f64a3;--stk:#4c6b2a;--ok:#2f7d6b;--att:#7f5b10;--bad:#b3261e}
+html[data-theme=cave]{--bg:#12100e;--s1:#1a1613;--s2:#221d19;--line:#2c2521;--line2:#3d342e;--mut:#a89a8e;--ink:#f5f0ea;--act:#f2c14e;--onact:#12100e;--prod:#e7a070;--fin:#86b9e6;--stk:#a3c97a;--ok:#6fc3ad;--att:#e0a02e;--bad:#f08a80}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.3 "Source Sans 3","Segoe UI",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+body{padding:0 0 32px;max-width:560px;margin:0 auto}
+.hd{display:flex;align-items:center;gap:10px;padding:14px 14px 4px}
+.hd h1{margin:0;flex:1;font-size:28px;line-height:1.1;font-weight:800;letter-spacing:-.4px}
+.th{min-height:40px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line2);background:none;color:var(--ink);font:inherit;font-size:15px;font-weight:600;cursor:pointer}
+.sous{margin:2px 14px 14px;font-size:16px;color:var(--mut)}
+.sous b{color:var(--fin);font-weight:600}
+.t{display:flex;align-items:center;gap:14px;margin:0 12px 10px;padding:14px 12px 14px 14px;min-height:96px;border:1.5px solid var(--line);border-radius:16px;background:var(--s1);color:var(--ink);text-decoration:none}
+.t:active{transform:scale(.98)}
+.ic{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;flex:none;color:var(--c);background:color-mix(in srgb,var(--c) 15%,var(--bg))}
+.ic svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tx{flex:1;min-width:0}
+.tx b{display:flex;align-items:baseline;gap:8px;font-size:20px;font-weight:700}
+.tx b i{font-style:normal;font-size:14px;font-weight:700;color:var(--mut);border:1.5px solid var(--line2);border-radius:999px;padding:0 8px;line-height:20px}
+.tx span{display:block;margin-top:3px;font-size:16px;line-height:1.3;color:var(--mut)}
+.go{flex:none;color:var(--mut);font-size:26px;line-height:1}
+.pied{margin:16px 14px 0;font-size:15px;color:var(--mut);line-height:1.35}
+</style></head><body>
+<header class="hd"><h1>Tes choix, à jouer</h1><button class="th" type="button" id="th">Cave</button></header>
+<p class="sous">16.11 · cinq écrans, au doigt · données <b>exemple</b></p>
+<nav aria-label="Les cinq choix">
+<a class="t" data-h="onglet/index.html" href="onglet/index.html" style="--c:var(--prod)"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7.5 14h2M11 14h2M14.5 14h2M7.5 17.5h2"/></svg></span><span class="tx"><b>Onglet <i>v1</i></b><span>Le Calendrier en 6e onglet : touche une semaine, pose un brassin.</span></span><span class="go">›</span></a>
+<a class="t" data-h="fournisseur/index.html" href="fournisseur/index.html" style="--c:var(--fin)"><span class="ic"><svg viewBox="0 0 24 24"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg></span><span class="tx"><b>Fournisseur <i>v1</i></b><span>Brouwland : touche un prix pour son histoire, réunis ses 4 noms.</span></span><span class="go">›</span></a>
+<a class="t" data-h="suppression/index.html" href="suppression/index.html" style="--c:var(--bad)"><span class="ic"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></span><span class="tx"><b>Suppression <i>v2</i></b><span>Supprime le fût F-07 : règle ses 3 liens, « Vidé » ouvre le stock.</span></span><span class="go">›</span></a>
+<a class="t" data-h="lot/index.html" href="lot/index.html" style="--c:var(--ok)"><span class="ic"><svg viewBox="0 0 24 24"><path d="M6 3h12M6 21h12M7 3c-1.4 3-1.4 15 0 18M17 3c1.4 3 1.4 15 0 18M5.7 8.5h12.6M5.7 15.5h12.6"/></svg></span><span class="tx"><b>Lot <i>v1</i></b><span>Blonde lot 28 : ouvre un client, Appeler, livre ou rentre un fût.</span></span><span class="go">›</span></a>
+<a class="t" data-h="pastille/index.html" href="pastille/index.html" style="--c:var(--stk)"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><circle cx="16" cy="15" r="4"/><circle cx="12" cy="8" r="4"/></svg></span><span class="tx"><b>Pastille <i>C</i></b><span>Stocks : S49, 6 sem. ou Tout, la pastille suit le chiffre.</span></span><span class="go">›</span></a>
+</nav>
+<p class="pied">Chaque écran a « ← les choix » en haut pour revenir ici. Le thème suit d’un écran à l’autre.</p>
+<script>(function(){var d=document.documentElement,b=document.getElementById('th');
+function maj(){var c=d.getAttribute('data-theme')==='cave';b.textContent=c?'Clair':'Cave';Array.prototype.forEach.call(document.querySelectorAll('[data-h]'),function(a){a.href=a.getAttribute('data-h')+(c?'?theme=cave':'')})}
+try{if(new URLSearchParams(location.search).get('theme')==='cave')d.setAttribute('data-theme','cave')}catch(e){}
+b.addEventListener('click',function(){if(d.getAttribute('data-theme')==='cave')d.removeAttribute('data-theme');else d.setAttribute('data-theme','cave');try{var u=new URL(location.href);if(d.getAttribute('data-theme'))u.searchParams.set('theme','cave');else u.searchParams.delete('theme');history.replaceState(null,'',u)}catch(e){}maj()});
+maj()})();</script>
+</body></html>

@@ -1,0 +1,327 @@
+copie : C:/Users/mrspa/AppData/Local/Temp/qr-app-copie
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/AppData/Local/Temp/qr-app-copie[39m
+
+[90mstderr[2m | tests/unit/depense/lecture-d/serveur.test.ts
+[22m[39m[IA] AUTHORIZED_ACCOUNTS est vide : la passerelle refusera tout le monde. Renseigne-la dans functions/.env, puis redéploie les Functions.
+
+ [31m❯[39m tests/unit/depense/lecture-d/serveur.test.ts [2m([22m[2m25 tests[22m[2m | [22m[31m15 failed[39m[2m)[22m[33m 1632[2mms[22m[39m
+[31m   [31m×[31m s-serveur — le provisoire part entre les Flash-Lite et la 3.8[2m > [22mT1 : deux Flash-Lite en désaccord appellent io.provisoire une fois, AVANT que la 3.8 ne rende[39m[32m 59[2mms[22m[39m
+[31m     → expected [] to have a length of 1 but got +0[39m
+   [32m✓[39m s-serveur — le provisoire part entre les Flash-Lite et la 3.8[2m > [22mT2 : deux Flash-Lite d’accord : aucun provisoire, et un résultat sans rang ni drapeau[32m 2[2mms[22m[39m
+   [32m✓[39m s-serveur — le provisoire part entre les Flash-Lite et la 3.8[2m > [22mT3 : une Flash-Lite coupée : aucun provisoire (on attend la 3.8), le final garde sa forme d’aujourd’hui[32m 1[2mms[22m[39m
+   [32m✓[39m s-serveur — le provisoire part entre les Flash-Lite et la 3.8[2m > [22mT3 bis : les deux Flash-Lite coupées : aucun provisoire non plus[32m 0[2mms[22m[39m
+[31m   [31m×[31m s-serveur — le provisoire part entre les Flash-Lite et la 3.8[2m > [22mT4 : le provisoire ne contient aucun point « lecture-coupee » ni la phrase du contrôle complémentaire[39m[32m 1[2mms[22m[39m
+[31m     → Cannot read properties of undefined (reading 'points')[39m
+[31m   [31m×[31m s-serveur — le provisoire part entre les Flash-Lite et la 3.8[2m > [22mT4 bis : le provisoire est une copie : le final ne le mute pas[39m[32m 1[2mms[22m[39m
+[31m     → Cannot read properties of undefined (reading 'points')[39m
+[31m   [31m×[31m s-serveur — la 3.8 en échec[2m > [22mT5 : les valeurs finales égalent celles du provisoire, avec le point de coupure en plus[39m[32m 1[2mms[22m[39m
+[31m     → Cannot read properties of undefined (reading 'items')[39m
+[31m   [31m×[31m s-serveur — rangProvisoire[2m > [22mT6 : une ligne ajoutée par la 3.8 a rangProvisoire null ; une ligne permutée garde son rang[39m[32m 2[2mms[22m[39m
+[31m     → expected [ [ 'Levure US-05', undefined ], …(2) ] to deeply equal [ [ 'Levure US-05', null ], …(2) ][39m
+[31m   [31m×[31m s-serveur — rangProvisoire[2m > [22mT6 bis : une ligne que la 3.8 ne lit plus disparaît du final, les autres gardent leur rang[39m[32m 1[2mms[22m[39m
+[31m     → expected [ undefined, undefined ] to deeply equal [ +0, 2 ][39m
+[31m   [31m×[31m s-serveur — rangProvisoire[2m > [22mT7 : une pièce d’une ligne dont la 3.8 change le nom et le montant : le repli par la position donne rangProvisoire 0[39m[32m 0[2mms[22m[39m
+[31m     → alignerLignes is not a function[39m
+[31m   [31m×[31m s-serveur — rangProvisoire[2m > [22mT7 bis : le repli par la position ne s’applique pas quand les listes n’ont pas la même longueur[39m[32m 1[2mms[22m[39m
+[31m     → expected [ undefined, undefined ] to deeply equal [ null, null ][39m
+   [32m✓[39m s-serveur — rangProvisoire[2m > [22mT7 ter : sans io.provisoire (client sans flux), le final n’a aucun rang : forme d’aujourd’hui[32m 1[2mms[22m[39m
+[31m   [31m×[31m s-serveur — scanInvoiceSafely et le jeton[2m > [22mT8 : scanInvoiceSafely(uid, file, apiKey, undefined, { jeton, onProvisoire }) l’appelle sur un désaccord, avant la 3.8 ; le final porte provisoireJeton === jeton[39m[33m 1504[2mms[22m[39m
+[31m     → expected [ '3.8 demandée', '3.8 rend' ] to deeply equal [ 'provisoire', '3.8 demandée', …(1) ][39m
+[31m   [31m×[31m s-serveur — scanInvoiceSafely et le jeton[2m > [22mT8 bis : plusieurs pages : le morceau le dit (pages)[39m[32m 2[2mms[22m[39m
+[31m     → appel imprévu : 0[39m
+   [32m✓[39m s-serveur — scanInvoiceSafely et le jeton[2m > [22mT8 ter : sans flux (ancien client, ou serveur sans SSE), ni jeton ni rang : la forme d’aujourd’hui[32m 1[2mms[22m[39m
+   [32m✓[39m s-serveur — scanInvoiceSafely et le jeton[2m > [22mT8 quater : deux Flash-Lite d’accord : pas de provisoire, pas de jeton[32m 1[2mms[22m[39m
+[31m   [31m×[31m s-serveur — scanInvoiceSafely et le jeton[2m > [22mT9 : un final servi du cache ne porte pas le jeton de l’appel, et aucun morceau ne part[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to be 'jeton-de-cet-appel' // Object.is equality[39m
+[31m   [31m×[31m s-serveur — scanInvoiceSafely et le jeton[2m > [22mT9 bis : un résultat dégradé resservi après une relecture ratée (cached: true alors qu’un morceau est parti) ne porte pas le jeton[39m[32m 1[2mms[22m[39m
+[31m     → expected "spy" to be called 1 times, but got 0 times[39m
+[31m   [31m×[31m s-serveur — scanInvoiceSafely et le jeton[2m > [22mT9 ter : le jeton n’entre pas dans ce que le registre garde (le résultat gardé est celui du travail, pas la copie rendue)[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to be 'j' // Object.is equality[39m
+[31m   [31m×[31m s-serveur — scanInvoiceSafely et le jeton[2m > [22mT10 : un onProvisoire qui lève ne change pas le final : celui d’un appel sans flux, sans jeton ni rang[39m[32m 1[2mms[22m[39m
+[31m     → expected "spy" to be called 1 times, but got 0 times[39m
+   [32m✓[39m s-serveur — scanInvoiceSafely et le jeton[2m > [22mT10 bis : un onProvisoire qui rend une promesse rejetée ne fait ni échouer la lecture ni rejet non traité[32m 21[2mms[22m[39m
+[31m   [31m×[31m s-serveur — scanInvoiceSafely et le jeton[2m > [22mT10 ter : sur Lite lisible, la 3.8 en échec : le final est le provisoire plus la coupure, avec jeton et rangs identité[39m[32m 1[2mms[22m[39m
+[31m     → expected undefined to be 'j' // Object.is equality[39m
+   [32m✓[39m s-serveur — l’empreinte du moteur suit ces modules[2m > [22mune ligne de plus dans ai change l’empreinte, donc la clé de cache[32m 9[2mms[22m[39m
+   [32m✓[39m s-serveur — l’empreinte du moteur suit ces modules[2m > [22mune ligne de plus dans invoiceScanVote change l’empreinte, donc la clé de cache[32m 8[2mms[22m[39m
+   [32m✓[39m s-serveur — l’empreinte du moteur suit ces modules[2m > [22mune ligne de plus dans invoiceVisionReview change l’empreinte, donc la clé de cache[32m 9[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 15 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — le provisoire part entre les Flash-Lite et la 3.8[2m > [22mT1 : deux Flash-Lite en désaccord appellent io.provisoire une fois, AVANT que la 3.8 ne rende
+[31m[1mAssertionError[22m: expected [] to have a length of 1 but got +0[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m56:18[22m[39m
+    [90m 54| [39m    [35mconst[39m attente [33m=[39m [34mlireCsv8[39m(io)[33m;[39m
+    [90m 55| [39m    [35mawait[39m vi[33m.[39m[34mwaitFor[39m(() [33m=>[39m [34mexpect[39m(events)[33m.[39m[34mtoContain[39m([32m'3.8 part'[39m))[33m;[39m
+    [90m 56| [39m    expect(recu).toHaveLength(1);              // parti pendant que la…
+    [90m   | [39m                 [31m^[39m
+    [90m 57| [39m    [34mexpect[39m(events)[33m.[39m[34mtoEqual[39m([[32m'provisoire'[39m[33m,[39m [32m'3.8 part'[39m])[33m;[39m
+    [90m 58| [39m    [34mouvrir[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — le provisoire part entre les Flash-Lite et la 3.8[2m > [22mT4 : le provisoire ne contient aucun point « lecture-coupee » ni la phrase du contrôle complémentaire
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'points')[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m90:23[22m[39m
+    [90m 88| [39m    [35mawait[39m [34mlireCsv8[39m(io)[33m;[39m
+    [90m 89| [39m    [35mconst[39m [provisoire] [33m=[39m recu[33m;[39m
+    [90m 90| [39m    expect(provisoire.points.some((p: any) => p.code === 'lecture-coup…
+    [90m   | [39m                      [31m^[39m
+    [90m 91| [39m    expect([...provisoire.issues, ...provisoire.review.findings].join(…
+    [90m 92| [39m    expect(provisoire.review.status).toBe('disputed');          // les…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — le provisoire part entre les Flash-Lite et la 3.8[2m > [22mT4 bis : le provisoire est une copie : le final ne le mute pas
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'points')[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m98:20[22m[39m
+    [90m 96| [39m    const { io } = banc({ ...EN_DESACCORD([MALT]), s3: CUT }, { provis…
+    [90m 97| [39m    await lireCsv8(io);                                           // 3…
+    [90m 98| [39m    expect(recu[0].points.some((p: any) => p.code === 'lecture-coupee'…
+    [90m   | [39m                   [31m^[39m
+    [90m 99| [39m  })[33m;[39m
+    [90m100| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — la 3.8 en échec[2m > [22mT5 : les valeurs finales égalent celles du provisoire, avec le point de coupure en plus
+[31m[1mTypeError[22m: Cannot read properties of undefined (reading 'items')[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m111:54[22m[39m
+    [90m109| [39m    [35mconst[39m final [33m=[39m [35mawait[39m [34mlireCsv8[39m(io)[33m;[39m
+    [90m110| [39m    [35mconst[39m [provisoire] [33m=[39m recu[33m;[39m
+    [90m111| [39m    [34mexpect[39m([34msansRang[39m(final[33m.[39mitems))[33m.[39m[34mtoEqual[39m(provisoire[33m.[39mitems)[33m;[39m
+    [90m   | [39m                                                     [31m^[39m
+    [90m112| [39m    [34mexpect[39m(final[33m.[39mamountTTC)[33m.[39m[34mtoBe[39m(provisoire[33m.[39mamountTTC)[33m;[39m
+    [90m113| [39m    [34mexpect[39m(final[33m.[39mvendor)[33m.[39m[34mtoBe[39m(provisoire[33m.[39mvendor)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — rangProvisoire[2m > [22mT6 : une ligne ajoutée par la 3.8 a rangProvisoire null ; une ligne permutée garde son rang
+[31m[1mAssertionError[22m: expected [ [ 'Levure US-05', undefined ], …(2) ] to deeply equal [ [ 'Levure US-05', null ], …(2) ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    [[22m
+[2m      "Levure US-05",[22m
+[32m-     null,[39m
+[31m+     undefined,[39m
+[2m    ],[22m
+[2m    [[22m
+[2m      "Houblon Citra",[22m
+[32m-     1,[39m
+[31m+     undefined,[39m
+[2m    ],[22m
+[2m    [[22m
+[2m      "Malt Pilsner",[22m
+[32m-     0,[39m
+[31m+     undefined,[39m
+[2m    ],[22m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m131:81[22m[39m
+    [90m129| [39m    const { io } = banc({ ...EN_DESACCORD([MALT, HOUBLON]), s3: piece(…
+    [90m130| [39m    [35mconst[39m final [33m=[39m [35mawait[39m [34mlireCsv8[39m(io)[33m;[39m
+    [90m131| [39m    expect(final.items.map((ligne: any) => [ligne.name, ligne.rangProv…
+    [90m   | [39m                                                                                [31m^[39m
+    [90m132| [39m  })[33m;[39m
+    [90m133| [39m  it('T6 bis : une ligne que la 3.8 ne lit plus disparaît du final, le…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — rangProvisoire[2m > [22mT6 bis : une ligne que la 3.8 ne lit plus disparaît du final, les autres gardent leur rang
+[31m[1mAssertionError[22m: expected [ undefined, undefined ] to deeply equal [ +0, 2 ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   0,[39m
+[32m-   2,[39m
+[31m+   undefined,[39m
+[31m+   undefined,[39m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m136:67[22m[39m
+    [90m134| [39m    const { io } = banc({ ...EN_DESACCORD([MALT, HOUBLON, LEVURE]), s3…
+    [90m135| [39m    [35mconst[39m final [33m=[39m [35mawait[39m [34mlireCsv8[39m(io)[33m;[39m
+    [90m136| [39m    expect(final.items.map((ligne: any) => ligne.rangProvisoire)).toEq…
+    [90m   | [39m                                                                  [31m^[39m
+    [90m137| [39m  })[33m;[39m
+    [90m138| [39m  it('T7 : une pièce d’une ligne dont la 3.8 change le nom et le monta…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — rangProvisoire[2m > [22mT7 : une pièce d’une ligne dont la 3.8 change le nom et le montant : le repli par la position donne rangProvisoire 0
+[31m[1mTypeError[22m: alignerLignes is not a function[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m141:19[22m[39m
+    [90m139| [39m    const corrigee = { ...MALT, name: 'Malt Pilsner bio, sac de 25 kg'…
+    [90m140| [39m    // sans repli : la ligne n'a aucune paire (ni nom, ni référence, n…
+    [90m141| [39m    const paire = alignerLignes(lu(piece([MALT])).items, lu(piece([cor…
+    [90m   | [39m                  [31m^[39m
+    [90m142| [39m    [34mexpect[39m(paire[33m.[39mmatch[33m.[39msize)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+    [90m143| [39m    const { io } = banc({ ...EN_DESACCORD([MALT]), s3: piece([corrigee…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — rangProvisoire[2m > [22mT7 bis : le repli par la position ne s’applique pas quand les listes n’ont pas la même longueur
+[31m[1mAssertionError[22m: expected [ undefined, undefined ] to deeply equal [ null, null ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   null,[39m
+[32m-   null,[39m
+[31m+   undefined,[39m
+[31m+   undefined,[39m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m152:67[22m[39m
+    [90m150| [39m    const { io } = banc({ ...EN_DESACCORD([MALT]), s3: piece([autre, H…
+    [90m151| [39m    [35mconst[39m final [33m=[39m [35mawait[39m [34mlireCsv8[39m(io)[33m;[39m
+    [90m152| [39m    expect(final.items.map((ligne: any) => ligne.rangProvisoire)).toEq…
+    [90m   | [39m                                                                  [31m^[39m
+    [90m153| [39m  })[33m;[39m
+    [90m154| [39m  it('T7 ter : sans io.provisoire (client sans flux), le final n’a auc…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — scanInvoiceSafely et le jeton[2m > [22mT8 : scanInvoiceSafely(uid, file, apiKey, undefined, { jeton, onProvisoire }) l’appelle sur un désaccord, avant la 3.8 ; le final porte provisoireJeton === jeton
+[31m[1mAssertionError[22m: expected [ '3.8 demandée', '3.8 rend' ] to deeply equal [ 'provisoire', '3.8 demandée', …(1) ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "provisoire",[39m
+[2m    "3.8 demandée",[22m
+[2m    "3.8 rend",[22m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m196:20[22m[39m
+    [90m194| [39m    const final: any = await scanInvoiceSafely('u', fichier, 'fake-tes…
+    [90m195| [39m      jeton, onProvisoire: (data: any, meta: any) => { events.push('pr…
+    [90m196| [39m    expect(events).toEqual(['provisoire', '3.8 demandée', '3.8 rend'])…
+    [90m   | [39m                   [31m^[39m
+    [90m197| [39m    [34mexpect[39m(recu)[33m.[39m[34mtoHaveLength[39m([34m1[39m)[33m;[39m
+    [90m198| [39m    expect(recu[0].data).toMatchObject({ provisoire: true, review: { r…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — scanInvoiceSafely et le jeton[2m > [22mT8 bis : plusieurs pages : le morceau le dit (pages)
+[31m[1mError[22m: appel imprévu : 0[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m174:37[22m[39m
+    [90m172| [39m    [35mif[39m (n [33m===[39m [34m3[39m) [35mawait[39m [34mavantTroisieme[39m[33m?.[39m()[33m;[39m
+    [90m173| [39m    [35mconst[39m valeur [33m=[39m plan[n][33m;[39m
+    [90m174| [39m    [35mif[39m (valeur [33m===[39m undefined) [35mthrow[39m [35mnew[39m [33mError[39m([32m`appel imprévu : [39m[36m${[39mn[36m}[39m[32m`[39m)[33m;[39m
+    [90m   | [39m                                    [31m^[39m
+    [90m175| [39m    [35mreturn[39m [34mreponse[39m(valeur)[33m;[39m
+    [90m176| [39m  })[33m;[39m
+[90m [2m❯[22m provider functions/src/ai.ts:[2m161:28[22m[39m
+[90m [2m❯[22m read functions/src/ai.ts:[2m190:14[22m[39m
+[90m [2m❯[22m Object.readLite functions/src/ai.ts:[2m196:28[22m[39m
+[90m [2m❯[22m lireCsv8 functions/src/invoiceScanVote.ts:[2m134:49[22m[39m
+[90m [2m❯[22m functions/src/ai.ts:[2m195:12[22m[39m
+[90m [2m❯[22m Object.budget.run tests/unit/depense/lecture-d/serveur.test.ts:[2m182:92[22m[39m
+[90m [2m❯[22m runBudgetedInvoiceScan tests/unit/depense/lecture-d/serveur.test.ts:[2m6:116[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — scanInvoiceSafely et le jeton[2m > [22mT9 : un final servi du cache ne porte pas le jeton de l’appel, et aucun morceau ne part
+[31m[1mAssertionError[22m: expected undefined to be 'jeton-de-cet-appel' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"jeton-de-cet-appel"
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m232:40[22m[39m
+    [90m230| [39m    [34mjouer[39m([33mDESACCORD[39m)[33m;[39m
+    [90m231| [39m    const frais: any = await scanInvoiceSafely('u', fichier, 'fake-tes…
+    [90m232| [39m    [34mexpect[39m(frais[33m.[39mdata[33m.[39mprovisoireJeton)[33m.[39m[34mtoBe[39m([32m'jeton-de-cet-appel'[39m)[33m;[39m
+    [90m   | [39m                                       [31m^[39m
+    [90m233| [39m    fetchMock[33m.[39m[34mmockReset[39m()[33m;[39m
+    [90m234| [39m    const deCache = { ...lu(piece([MALT])), items: [{ ...lu(piece([MAL…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — scanInvoiceSafely et le jeton[2m > [22mT9 bis : un résultat dégradé resservi après une relecture ratée (cached: true alors qu’un morceau est parti) ne porte pas le jeton
+[31m[1mAssertionError[22m: expected "spy" to be called 1 times, but got 0 times[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m252:26[22m[39m
+    [90m250| [39m    [35mconst[39m onProvisoire [33m=[39m vi[33m.[39m[34mfn[39m()[33m;[39m
+    [90m251| [39m    const final: any = await scanInvoiceSafely('u', fichier, 'fake-tes…
+    [90m252| [39m    [34mexpect[39m(onProvisoire)[33m.[39m[34mtoHaveBeenCalledTimes[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                         [31m^[39m
+    [90m253| [39m    [34mexpect[39m(final[33m.[39mdata)[33m.[39mnot[33m.[39m[34mtoHaveProperty[39m([32m'provisoireJeton'[39m)[33m;[39m
+    [90m254| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — scanInvoiceSafely et le jeton[2m > [22mT9 ter : le jeton n’entre pas dans ce que le registre garde (le résultat gardé est celui du travail, pas la copie rendue)
+[31m[1mAssertionError[22m: expected undefined to be 'j' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"j"
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m260:40[22m[39m
+    [90m258| [39m    budget.run = async (_uid: any, _file: any, work: any, provider: an…
+    [90m259| [39m    const final: any = await scanInvoiceSafely('u', fichier, 'fake-tes…
+    [90m260| [39m    [34mexpect[39m(final[33m.[39mdata[33m.[39mprovisoireJeton)[33m.[39m[34mtoBe[39m([32m'j'[39m)[33m;[39m
+    [90m   | [39m                                       [31m^[39m
+    [90m261| [39m    [34mexpect[39m(garde)[33m.[39mnot[33m.[39m[34mtoHaveProperty[39m([32m'provisoireJeton'[39m)[33m;[39m
+    [90m262| [39m    expect(garde.items[0].rangProvisoire).toBe(0);                  //…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — scanInvoiceSafely et le jeton[2m > [22mT10 : un onProvisoire qui lève ne change pas le final : celui d’un appel sans flux, sans jeton ni rang
+[31m[1mAssertionError[22m: expected "spy" to be called 1 times, but got 0 times[39m
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m272:26[22m[39m
+    [90m270| [39m    const onProvisoire = vi.fn(() => { throw new Error('canal fermé');…
+    [90m271| [39m    const leve: any = await scanInvoiceSafely('u', fichier, 'fake-test…
+    [90m272| [39m    expect(onProvisoire).toHaveBeenCalledTimes(1);                 // …
+    [90m   | [39m                         [31m^[39m
+    [90m273| [39m    [34mexpect[39m(leve[33m.[39mok)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m274| [39m    [34mexpect[39m({ [33m...[39mleve[33m.[39mdata })[33m.[39m[34mtoEqual[39m({ [33m...[39msans[33m.[39mdata })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — scanInvoiceSafely et le jeton[2m > [22mT10 ter : sur Lite lisible, la 3.8 en échec : le final est le provisoire plus la coupure, avec jeton et rangs identité
+[31m[1mAssertionError[22m: expected undefined to be 'j' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"j"
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m289:40[22m[39m
+    [90m287| [39m    [35mconst[39m recu[33m:[39m any[] [33m=[39m [][33m;[39m
+    [90m288| [39m    const final: any = await scanInvoiceSafely('u', fichier, 'fake-tes…
+    [90m289| [39m    [34mexpect[39m(final[33m.[39mdata[33m.[39mprovisoireJeton)[33m.[39m[34mtoBe[39m([32m'j'[39m)[33m;[39m
+    [90m   | [39m                                       [31m^[39m
+    [90m290| [39m    [34mexpect[39m([34msansRang[39m(final[33m.[39mdata[33m.[39mitems))[33m.[39m[34mtoEqual[39m(recu[[34m0[39m][33m.[39mitems)[33m;[39m
+    [90m291| [39m    expect(final.data.items.map((ligne: any) => ligne.rangProvisoire))…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/15]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m15 failed[39m[22m[2m | [22m[1m[32m10 passed[39m[22m[90m (25)[39m
+[2m   Start at [22m 14:03:01
+[2m   Duration [22m 2.39s[2m (transform 140ms, setup 98ms, collect 489ms, tests 1.63s, environment 0ms, prepare 55ms)[22m
+

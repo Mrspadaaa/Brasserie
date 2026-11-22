@@ -1,0 +1,205 @@
+{
+  "version": 1,
+  "verifieLe": "2026-11-09",
+  "regle": "« fabricant présent en Europe » : un siège européen, une distribution européenne ou un marché européen déclaré, chacun avec sa preuve (champ `preuve` : fait du catalogue, URL ou offre). Preuves admises, dans l’ordre : (1) une offre CH, FR, DE ou d’un autre pays d’Europe (src/data/yeastSupplyBootstrap.json) ; (2) le domaine de l’URL source du fabricant (.de, .pl, .be, .no, .fr, .ch, .nl, .it, .es, .cz, .dk, .se, .fi, .at, .uk) ou une catégorie « Marché : » européenne du catalogue ; (3) la page du fabricant (siège, mentions légales, « Available in the UK & EU ») ; (4) à défaut de page lisible, la connaissance du métier du pilote, marquée `aConfirmer`. Lallemand (CA) et Mangrove Jack’s (NZ) n’entrent que sur une preuve de distribution.",
+  "fabricants": [
+    {
+      "fabricant": "Fermentis",
+      "type": "distributeur",
+      "force": "forte",
+      "preuve": "Offres de levures Fermentis dans une boutique suisse (Brau- und Rauchshop) et une boutique allemande (Braupartner).",
+      "source": {
+        "libelle": "Offres relevées le 27.09",
+        "url": "https://www.brauundrauchshop.ch/safale-us-05-115g-4",
+        "fichier": "src/data/yeastSupplyBootstrap.json"
+      }
+    },
+    {
+      "fabricant": "Lallemand Brewing",
+      "type": "distributeur",
+      "force": "forte",
+      "preuve": "Offres LalBrew (Verdant, NovaLager, Pomona) dans une boutique suisse (Brau- und Rauchshop) et une boutique française (Rolling Beers). Siège au Canada : la présence en Europe ne tient qu’à cette distribution.",
+      "source": {
+        "libelle": "Offres relevées le 27.09",
+        "url": "https://www.brauundrauchshop.ch/lallemand-verdant-ipa-11g",
+        "fichier": "src/data/yeastSupplyBootstrap.json"
+      }
+    },
+    {
+      "fabricant": "Wyeast",
+      "type": "distributeur",
+      "force": "forte",
+      "preuve": "Offres Wyeast en Suisse (1084 et 1007 chez Brau- und Rauchshop) et aux Pays-Bas (1056 chez Brouwmaatje).",
+      "source": {
+        "libelle": "Offres relevées le 27.09",
+        "url": "https://www.brauundrauchshop.ch/",
+        "fichier": "src/data/yeastSupplyBootstrap.json"
+      }
+    },
+    {
+      "fabricant": "White Labs",
+      "type": "siege",
+      "force": "forte",
+      "preuve": "« White Labs Copenhagen ApS produces over 50 White Labs yeast strains and bacteria in certified organic format for European professional brewers and homebrewers ».",
+      "source": {
+        "libelle": "White Labs · contact",
+        "url": "https://www.whitelabs.com/contact"
+      }
+    },
+    {
+      "fabricant": "Doemens",
+      "type": "siege",
+      "force": "forte",
+      "preuve": "Mentions légales : Doemens e.V., Lohenstraße 3, 82166 Gräfelfing / München (Allemagne).",
+      "source": {
+        "libelle": "Doemens · impressum",
+        "url": "https://www.doemens.org/impressum"
+      }
+    },
+    {
+      "fabricant": "VLB Berlin",
+      "type": "siege",
+      "force": "forte",
+      "preuve": "Mentions légales : Versuchs- und Lehranstalt für Brauerei in Berlin (VLB) e.V., Seestraße 13, 13353 Berlin (Allemagne).",
+      "source": {
+        "libelle": "VLB Berlin · impressum",
+        "url": "https://www.vlb-berlin.org/impressum"
+      }
+    },
+    {
+      "fabricant": "Hefebank Weihenstephan",
+      "type": "siege",
+      "force": "forte",
+      "preuve": "Mentions légales : Hefebank Weihenstephan GmbH, Eschenring 4, 84072 Au i. d. Hallertau (Allemagne).",
+      "source": {
+        "libelle": "Hefebank Weihenstephan · impressum",
+        "url": "https://www.hefebank-weihenstephan.de/impressum"
+      }
+    },
+    {
+      "fabricant": "Fermentum Mobile",
+      "type": "siege",
+      "force": "moyenne",
+      "preuve": "Page d’accueil : « Fermentum Mobile Sp. z o.o. est une firme biotechnologique du secteur brassicole » ; Sp. z o.o. est la forme de société à responsabilité limitée polonaise. Adresse non relevée.",
+      "source": {
+        "libelle": "Fermentum Mobile · accueil",
+        "url": "https://fermentum-mobile.pl/"
+      }
+    },
+    {
+      "fabricant": "Mangrove Jack’s",
+      "type": "distributeur",
+      "force": "moyenne",
+      "preuve": "Siège en Nouvelle-Zélande. Le site du fabricant indique « Available in the UK & EU » pour ses produits (kits de recettes) ; la distribution des levures seules n’est pas détaillée.",
+      "source": {
+        "libelle": "Mangrove Jack’s · accueil",
+        "url": "https://mangrovejacks.com/"
+      }
+    },
+    {
+      "fabricant": "WHC Lab",
+      "type": "distributeur",
+      "force": "faible",
+      "preuve": "Le menu du site du fabricant propose un « Product Catalogue Europe » à côté d’un catalogue Chine. Siège non relevé.",
+      "source": {
+        "libelle": "WHC Lab · accueil",
+        "url": "https://www.whclab.com/"
+      }
+    },
+    {
+      "fabricant": "Yeastflow",
+      "type": "distributeur",
+      "force": "faible",
+      "preuve": "Le site du fabricant indique que ses levures ont servi à plus de 20 000 hl de bière « across Europe ». Siège non relevé.",
+      "source": {
+        "libelle": "Yeastflow · accueil",
+        "url": "https://yeastflow.com/"
+      }
+    },
+    {
+      "fabricant": "Kveik Yeastery",
+      "type": "siege",
+      "force": "moyenne",
+      "preuve": "Page contact du fabricant : liste de diffusion « Enzyferm AS » (AS : forme de société norvégienne) ; page d'accueil : « authentic Norwegian kveik », « 20+ countries », « 75+ retailers », « Norway ».",
+      "source": {
+        "libelle": "Kveik Yeastery · contact",
+        "url": "https://www.kveikyeastery.com/contact"
+      }
+    },
+    {
+      "fabricant": "Brewferm / Brouwland",
+      "type": "siege",
+      "force": "moyenne",
+      "aConfirmer": true,
+      "preuve": "Brouwland, fournisseur de brassage belge (Beverlo, Belgique) : connaissance du métier posée par le pilote le 09.11 (L14). La page du fabricant (brouwland.com) refuse la lecture automatique (403) et le domaine n'est pas un ccTLD : ni la page ni un fait du catalogue ne la prouvent encore.",
+      "source": {
+        "libelle": "Décision du pilote 09.11 ; à confirmer sur brouwland.com",
+        "url": "https://www.brouwland.com/"
+      }
+    },
+    {
+      "fabricant": "Lallemand Wine",
+      "type": "distributeur",
+      "force": "forte",
+      "horsBiere": true,
+      "preuve": "Catalogue : catégorie « Marché : switzerland » (et site de distribution weintechnologie.at, domaine .at). Levures de vin : hors bière.",
+      "source": {
+        "libelle": "Catalogue · Marché : switzerland",
+        "url": "https://products.lallemandwine.com/"
+      }
+    },
+    {
+      "fabricant": "Lallemand Distilling",
+      "type": "distributeur",
+      "force": "forte",
+      "horsBiere": true,
+      "preuve": "Catalogue : catégorie « Marché : eu ». Levures de distillerie : hors bière.",
+      "source": {
+        "libelle": "Catalogue · Marché : eu",
+        "url": "https://www.lallemanddistilling.com/"
+      }
+    }
+  ],
+  "ecartes": [
+    {
+      "fabricant": "Escarpment Labs",
+      "raison": "Canada ; aucune preuve de distribution européenne dans le dépôt."
+    },
+    {
+      "fabricant": "Bootleg Biology",
+      "raison": "Australie ; aucune preuve de distribution européenne dans le dépôt."
+    },
+    {
+      "fabricant": "Brewing Science Institute",
+      "raison": "États-Unis ; aucune preuve de distribution européenne dans le dépôt."
+    },
+    {
+      "fabricant": "CellarScience",
+      "raison": "États-Unis ; aucune preuve de distribution européenne dans le dépôt."
+    },
+    {
+      "fabricant": "Imperial Yeast",
+      "raison": "États-Unis ; aucune preuve de distribution européenne dans le dépôt."
+    },
+    {
+      "fabricant": "Omega Yeast",
+      "raison": "États-Unis ; aucune preuve de distribution européenne dans le dépôt."
+    },
+    {
+      "fabricant": "The Yeast Bay",
+      "raison": "États-Unis ; aucune preuve de distribution européenne dans le dépôt."
+    },
+    {
+      "fabricant": "AEB",
+      "raison": "Levures de vin : hors bière ; aucune preuve dans le catalogue (aeb-group.com, domaine .com)."
+    },
+    {
+      "fabricant": "AB Biotek / Maurivin",
+      "raison": "Levures de vin : hors bière ; domaine .com, aucune preuve dans le catalogue."
+    },
+    {
+      "fabricant": "AB Biotek / Pinnacle",
+      "raison": "Distillerie : hors bière ; domaine .com, aucune preuve dans le catalogue."
+    }
+  ]
+}

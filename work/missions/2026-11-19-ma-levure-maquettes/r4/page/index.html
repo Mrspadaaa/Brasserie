@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Ma levure r4 · quelle levure et combien, changé en un geste · 6 versions · 19.11</title>
+<style>
+:root{--bg:#f6f4ef;--carte:#fff;--fg:#1f1b16;--doux:#675e54;--ligne:#e2dbd0;--accent:#4f6f2f;--base:#efe9df;--or:#b07a12;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16130f;--carte:#221e18;--fg:#f1ece4;--doux:#b3a898;--ligne:#3a332a;--accent:#9cc06b;--base:#2b261f;--or:#f0b83a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#16130f;--carte:#221e18;--fg:#f1ece4;--doux:#b3a898;--ligne:#3a332a;--accent:#9cc06b;--base:#2b261f;--or:#f0b83a;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+.page{padding-block:18px 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:100vw;overflow-x:clip}
+h1{font-size:22px;margin:0 0 6px;text-wrap:balance}
+h2{text-wrap:balance}
+.doux{color:var(--doux)}
+#a-choisir{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:12px 14px;margin:10px 0 14px;max-width:900px}
+#a-choisir p{margin:0 0 6px}
+#a-choisir p:last-child{margin:0}
+q{font-style:italic}
+.besoins{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:12px 14px;margin:0 0 14px;max-width:900px}
+.besoins h2{font-size:18px;margin:0 0 6px}
+.besoins h2+ol,.besoins h2+ul{margin-top:0}
+.besoins h2:not(:first-child){margin-top:12px}
+.besoins ol,.besoins ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+.besoins li{font-size:14px;color:var(--doux)}
+.besoins ul.mots li{color:var(--fg);padding:4px 8px;margin-left:-8px;border-left:4px solid var(--or);background:var(--base);border-radius:0 8px 8px 0;list-style:none}
+.besoins ul.mots{padding-left:8px}
+.besoins li b{color:var(--fg)}
+.besoins p{margin:8px 0 0;font-size:14px;color:var(--doux)}
+.vers{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px;margin:0 0 8px;max-width:1240px;padding:0;list-style:none}
+.v{background:var(--carte);border:1px solid var(--ligne);border-radius:10px;padding:8px 10px;font-size:14px;margin:0;min-width:0}
+.v b{font-size:15px}
+.v .n{display:block;color:var(--doux);font-size:14px}
+.notes{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.notes span{font-size:14px;padding:1px 7px;border-radius:6px;background:var(--base);color:var(--fg);white-space:nowrap}
+.notes span i{font-style:normal;color:var(--doux)}
+.notes span.haut{background:var(--accent);color:var(--carte)}
+.notes span.haut i{color:inherit}
+nav.som{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 0;max-width:1240px}
+nav.som a{font-size:14px;color:var(--fg);text-decoration:none;border:1px solid var(--ligne);background:var(--carte);border-radius:16px;padding:6px 10px;min-height:32px}
+section.rang{margin-top:26px;padding-top:10px;border-top:2px solid var(--ligne)}
+section.rang h2{font-size:18px;margin:0 0 2px}
+section.rang .sous{margin:0 0 8px;font-size:14px;color:var(--doux);max-width:900px}
+.podium{font-size:15px;font-weight:600;color:var(--accent);margin-left:6px}
+.bande{display:grid;grid-template-columns:repeat(auto-fill,minmax(164px,1fr));gap:8px;max-width:1240px}
+figure{margin:0;min-width:0;background:var(--carte);border:1px solid var(--ligne);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+figure.base{background:var(--base)}
+figure button.zoom{all:unset;cursor:zoom-in;display:block}
+figure img{display:block;width:100%;aspect-ratio:390/844;height:auto;object-fit:contain;object-position:top center;background:var(--carte);border-bottom:1px solid var(--ligne)}
+figcaption{padding:6px 8px;display:flex;flex-direction:column;gap:6px;font-size:14px;flex:1}
+figcaption .t{font-weight:700;font-size:16px}
+figcaption .d{color:var(--doux);font-size:14px}
+.rgs{display:flex;gap:4px;margin-top:auto}
+.rg{flex:1;min-width:0;height:40px;border:1.5px solid var(--ligne);border-radius:20px;background:var(--carte);color:var(--doux);font:inherit;font-weight:700;font-size:15px;cursor:pointer;padding:0}
+.rg[aria-pressed="true"]{color:#1f1b16;border-color:transparent}
+.rg[data-n="1"][aria-pressed="true"]{background:#e2b23a}
+.rg[data-n="2"][aria-pressed="true"]{background:#c4c8cc}
+.rg[data-n="3"][aria-pressed="true"]{background:#d49a6a}
+.rg[data-n="4"][aria-pressed="true"]{background:#b9c7d8}
+.rg[data-n="5"][aria-pressed="true"]{background:#d9d2c2}
+figcaption input{width:100%;height:36px;border:1.5px solid var(--ligne);border-radius:8px;padding:0 8px;font:inherit;font-size:14px;background:var(--carte);color:var(--fg)}
+figure[data-rang="1"]{outline:3px solid #e2b23a;outline-offset:-1px}
+figure[data-rang="2"]{outline:3px solid #a9adb2;outline-offset:-1px}
+figure[data-rang="3"]{outline:3px solid #c98b58;outline-offset:-1px}
+figure[data-rang="4"]{outline:3px solid #8fa4bd;outline-offset:-1px}
+figure[data-rang="5"]{outline:3px solid #b8ad96;outline-offset:-1px}
+.pied{position:fixed;left:0;right:0;bottom:0;background:var(--carte);border-top:1px solid var(--ligne);padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:10px;align-items:center;z-index:5}
+.pied button{height:44px;padding:0 16px;border-radius:10px;border:0;background:var(--accent);color:var(--carte);font:inherit;font-weight:700;cursor:pointer}
+.pied button.theme{background:transparent;color:var(--fg);border:1.5px solid var(--ligne);margin-left:auto}
+.pied span{color:var(--doux);font-size:14px}
+#sortie{width:100%;min-height:150px;margin-top:14px;font:14px/1.4 ui-monospace,monospace;background:var(--carte);color:var(--fg);border:1px solid var(--ligne);border-radius:8px;padding:8px}
+#loupe{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:flex-start;justify-content:center;z-index:9;padding:16px;overflow:auto}
+#loupe img{max-width:100%;width:420px;border-radius:8px;background:#fff}
+[hidden]{display:none!important}
+</style>
+<body>
+<div class="page">
+<h1>Ma levure r4 · quelle levure et combien, changé en un geste · 6 versions · 19.11</h1>
+<div id="a-choisir">
+<p><b>À choisir :</b> <span class="doux">ton classement, écran par écran. Tu n'as donné aucun rang 1 en r3 : chaque version r4 vise ce rang 1.</span></p>
+<p class="doux">Chaque rangée commence par tes meilleures de r3 pour cet écran et ta capture Malts (fond beige). Puis v01 à v06. Touche une image pour l'agrandir.</p>
+<p class="doux">Sous chaque vignette : 1 à 5 (plusieurs au même rang ; retouche pour l'enlever), une note si tu veux, puis Copier en bas.</p>
+</div>
+
+<div class="besoins">
+<h2>Ton classement r3, mot pour mot</h2>
+<ul class="mots">
+<li>« Au repos, en une vue : 2 v03, v05 · 3 v08 · 4 v01, v04 »</li>
+<li>« (v02 : J'aime bien sauf les sachets et pas de bouton IA, ; v04 : J'aime bien le 117% lager ; v08 : Pas mal dans l'idée mais réalisation bof) »</li>
+<li>« Après le geste : 3 v01, v03, v08 · 4 v05 · 5 v02, v04 (v03 : Bien dans l'idée mais assez dur à lire ; v08 : Bien dans l'idée mauvaise réalisation) »</li>
+<li>« Cas limite : à choisir : 2 v04, v05 · 3 v03 (v03 : Normalement la forme est de base défini) »</li>
+</ul>
+<h2>Ce que r4 en tire</h2>
+<ol>
+<li><b>Au repos</b> : la bande de v03 et de v05, avec la part « 117 % du besoin lager » de v04, comme « 62 % du grain ».</li>
+<li><b>Après le geste</b> : l'idée de v01, v03 et v08, la conséquence sur la ligne même, mais lisible : un seul verdict (lager), le manque en aplat, le remède est le +.</li>
+<li><b>À choisir</b> : depuis v04 et v05, « à choisir » à la place du nombre, un toucher pose 2 sachets.</li>
+<li><b>Partout</b> : le haut de ta v01, « Compléter · IA » toujours là, pas de jetons de sachets. La forme vient de la fiche, jamais un « à choisir ».</li>
+</ol>
+<p>Même exemple partout (ta capture) : 20 L à 1,026, FG 1,006–1,007, fiche 9–11 °C, conduite 19 °C. Sachet 11,5 g : 1 = 59 %, 2 = 117 %, 3 = 176 % du besoin lager. Tout est « exemple », non vérifié.</p>
+</div>
+
+<ul class="vers">
+<li class="v"><b>v01</b> La bande de v03, rendue lisible<span class="n">− barre +, besoin en tiret discret dans la barre ; le − peint le manque en hachuré, le + passe en or ; « Mettre 2 sachets · 117 % ».</span><span class="notes"><span class="haut"><i>brasseur</i> 8</span><span><i>cohérence</i> 7</span><span><i>métier</i> 6,5</span><span class="haut"><i>lisibilité</i> 7,5</span><span class="haut"><i>contradicteur</i> 7</span></span></li>
+<li class="v"><b>v02</b> v05 recentrée sur le besoin<span class="n">« 117 % du besoin » et le mot « couvre » en grand ; le besoin étiqueté au-dessus de la barre, la poignée et les grammes dessous ; « → 2 sachets ».</span><span class="notes"><span><i>brasseur</i> 7</span><span class="haut"><i>cohérence</i> 7,5</span><span><i>métier</i> 5</span><span><i>lisibilité</i> 6,5</span><span><i>contradicteur</i> 4</span></span></li>
+<li class="v"><b>v03</b> Les puces de v08, calées sur la piste<span class="n">Piste 0 à 4 et, dessous, les puces 1 à 4 alignées sur leur cran ; « conseillé » sous la 2 ; un toucher choisit.</span><span class="notes"><span><i>brasseur</i> 6,5</span><span><i>cohérence</i> 6</span><span><i>métier</i> 6</span><span><i>lisibilité</i> 7</span><span><i>contradicteur</i> 6</span></span></li>
+<li class="v"><b>v04</b> La piste du malt, un trait de besoin<span class="n">Piste neutre, remplissage or, poignée noire, un seul trait « besoin 1,7 » ; seul le manque se peint ; « → 2 sachets » en or.</span><span class="notes"><span><i>brasseur</i> 7</span><span><i>cohérence</i> 6</span><span><i>métier</i> 6,5</span><span class="haut"><i>lisibilité</i> 7,5</span><span><i>contradicteur</i> 6</span></span></li>
+<li class="v"><b>v05</b> Le verdict en phrase d'abord<span class="n">« Couvert · 117 % du besoin lager » en une ligne, la barre en appui dessous ; « Sous-dosé » en rouge après −, le + en or.</span><span class="notes"><span class="haut"><i>brasseur</i> 8</span><span><i>cohérence</i> 7</span><span><i>métier</i> 6,5</span><span><i>lisibilité</i> 7</span><span><i>contradicteur</i> 6</span></span></li>
+<li class="v"><b>v06</b> L'éditeur du malt, copié<span class="n">Ta capture Malts à la lettre : piste blanche, graduation fine, − et + de 48 px ; « +1 → 117 % » après − ; bouton noir au cas limite.</span><span class="notes"><span><i>brasseur</i> 6</span><span><i>cohérence</i> 6,5</span><span class="haut"><i>métier</i> 7</span><span><i>lisibilité</i> 7</span><span><i>contradicteur</i> 6</span></span></li>
+</ul>
+<p class="doux" style="font-size:14px;margin:0;max-width:900px">Notes sur 10 de cinq critiques : brasseur, cohérence, métier, lisibilité, contradicteur. En vert : la meilleure note de chaque critique.</p>
+<nav class="som" aria-label="Écrans">
+<a href="#e-repos">Au repos</a><a href="#e-apres">Après le geste</a><a href="#e-limite">À choisir</a>
+</nav>
+
+<section class="rang" id="e-repos" data-choix="Au repos, en une vue">
+<h2>1 · Au repos, en une vue <span class="podium"></span></h2>
+<p class="sous">Ta levure ouverte, sans rien toucher (390 × 844), 2 sachets choisis (exemple). Lis-tu quelle levure, combien, et ce que ça couvre, en trois secondes ?</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="repos|r3 v03"><button class="zoom" type="button" data-agrandir aria-label="Agrandir r3 v03"><img src="img/r3-repos-v03.png" alt="r3 v03 au repos, ton rang 2 : barre des cellules, repères ale et lager"></button><figcaption><b class="t">r3 v03</b><span class="d">ton rang 2</span><div class="rgs"></div><input aria-label="Note r3 v03" placeholder="note"></figcaption></figure>
+<figure class="base" data-reference data-vignette data-cle="repos|r3 v05"><button class="zoom" type="button" data-agrandir aria-label="Agrandir r3 v05"><img src="img/r3-repos-v05.png" alt="r3 v05 au repos, ton rang 2 : 2 sachets, manque 1"></button><figcaption><b class="t">r3 v05</b><span class="d">ton rang 2</span><div class="rgs"></div><input aria-label="Note r3 v05" placeholder="note"></figcaption></figure>
+<figure class="base" data-reference data-vignette data-cle="repos|en ligne malts"><button class="zoom" type="button" data-agrandir aria-label="Agrandir ta capture Malts"><img src="img/en-ligne-malts.jpg" alt="Ta capture Malts en ligne du 19.11 : 1,7 kg, 62 % du grain, − 1,7 kg +"></button><figcaption><b class="t">en ligne · malts</b><span class="d">1,7 kg · 62 % du grain</span><div class="rgs"></div><input aria-label="Note en ligne malts" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v01"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v01"><img src="img/repos-v01.png" alt="v01 au repos : 2 sachets, − barre +, 117 % du besoin lager, 2 en stock"></button><figcaption><b class="t">v01</b><span class="d">− barre + · 117 %</span><div class="rgs"></div><input aria-label="Note v01" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v02"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v02"><img src="img/repos-v02.png" alt="v02 au repos : 117 % du besoin, couvre, besoin lager 1,7 au-dessus de la barre"></button><figcaption><b class="t">v02</b><span class="d">117 % · couvre</span><div class="rgs"></div><input aria-label="Note v02" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v03"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v03"><img src="img/repos-v03.png" alt="v03 au repos : piste et puces 1 à 4, la 2 pleine, conseillé"></button><figcaption><b class="t">v03</b><span class="d">puces sur la piste</span><div class="rgs"></div><input aria-label="Note v03" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v04"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v04"><img src="img/repos-v04.png" alt="v04 au repos : piste du malt, trait besoin 1,7, 117 % du besoin lager, 23 g"></button><figcaption><b class="t">v04</b><span class="d">trait besoin 1,7</span><div class="rgs"></div><input aria-label="Note v04" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v05"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v05"><img src="img/repos-v05.png" alt="v05 au repos : Couvert, 117 % du besoin lager, barre dessous"></button><figcaption><b class="t">v05</b><span class="d">« Couvert » d'abord</span><div class="rgs"></div><input aria-label="Note v05" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="repos|v06"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v06"><img src="img/repos-v06.png" alt="v06 au repos : 117 % du besoin lager, couvre, éditeur du malt"></button><figcaption><b class="t">v06</b><span class="d">éditeur du malt</span><div class="rgs"></div><input aria-label="Note v06" placeholder="note"></figcaption></figure>
+</div>
+</section>
+
+<section class="rang" id="e-apres" data-choix="Après le geste">
+<h2>2 · Après le geste <span class="podium"></span></h2>
+<p class="sous">Un seul toucher, de 2 à 1 sachet (exemple) : sous le besoin lager, 59 %. Le manque et son remède se lisent-ils sur la ligne, sans effort ?</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="apres|r3 v01"><button class="zoom" type="button" data-agrandir aria-label="Agrandir r3 v01"><img src="img/r3-apres-v01.png" alt="r3 v01 après +, ton rang 3 : 3 sachets, sur-dosé"></button><figcaption><b class="t">r3 v01</b><span class="d">ton rang 3</span><div class="rgs"></div><input aria-label="Note r3 v01" placeholder="note"></figcaption></figure>
+<figure class="base" data-reference data-vignette data-cle="apres|r3 v03"><button class="zoom" type="button" data-agrandir aria-label="Agrandir r3 v03"><img src="img/r3-apres-v03.png" alt="r3 v03 après −, ton rang 3 : 1 sachet, manque en pointillé"></button><figcaption><b class="t">r3 v03</b><span class="d">rang 3 · dur à lire</span><div class="rgs"></div><input aria-label="Note r3 v03" placeholder="note"></figcaption></figure>
+<figure class="base" data-reference data-vignette data-cle="apres|r3 v08"><button class="zoom" type="button" data-agrandir aria-label="Agrandir r3 v08"><img src="img/r3-apres-v08.png" alt="r3 v08 après la puce 3, ton rang 3"></button><figcaption><b class="t">r3 v08</b><span class="d">rang 3 · réalisation</span><div class="rgs"></div><input aria-label="Note r3 v08" placeholder="note"></figcaption></figure>
+<figure class="base" data-reference data-vignette data-cle="apres|en ligne malts"><button class="zoom" type="button" data-agrandir aria-label="Agrandir ta capture Malts"><img src="img/en-ligne-malts.jpg" alt="Ta capture Malts : éditeur − 1,7 kg + avec piste"></button><figcaption><b class="t">en ligne · malts</b><span class="d">− 1,7 kg +</span><div class="rgs"></div><input aria-label="Note en ligne malts" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v01"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v01"><img src="img/apres-v01.png" alt="v01 après − : 1 sachet, 59 % du besoin lager, manque hachuré, + en or"></button><figcaption><b class="t">v01</b><span class="d">59 % · + en or</span><div class="rgs"></div><input aria-label="Note v01" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v02"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v02"><img src="img/apres-v02.png" alt="v02 après − : 59 % du besoin, sous, bouton → 2 sachets"></button><figcaption><b class="t">v02</b><span class="d">« sous » · → 2 sachets</span><div class="rgs"></div><input aria-label="Note v02" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v03"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v03"><img src="img/apres-v03.png" alt="v03 après la puce 1 : 59 % du besoin lager, + 1 sachet"></button><figcaption><b class="t">v03</b><span class="d">puce 1 · + 1 sachet</span><div class="rgs"></div><input aria-label="Note v03" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v04"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v04"><img src="img/apres-v04.png" alt="v04 après − : 59 % du besoin lager, manque hachuré, → 2 sachets"></button><figcaption><b class="t">v04</b><span class="d">manque · → 2 sachets</span><div class="rgs"></div><input aria-label="Note v04" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v05"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v05"><img src="img/apres-v05.png" alt="v05 après − : Sous-dosé, 59 % du besoin lager, + en or"></button><figcaption><b class="t">v05</b><span class="d">« Sous-dosé » · + or</span><div class="rgs"></div><input aria-label="Note v05" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="apres|v06"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v06"><img src="img/apres-v06.png" alt="v06 après − : 59 % du besoin lager, sous, +1 → 117 %"></button><figcaption><b class="t">v06</b><span class="d">« +1 → 117 % »</span><div class="rgs"></div><input aria-label="Note v06" placeholder="note"></figcaption></figure>
+</div>
+</section>
+
+<section class="rang" id="e-limite" data-choix="Cas limite : à choisir">
+<h2>3 · Cas limite : à choisir <span class="podium"></span></h2>
+<p class="sous">Ta recette d'aujourd'hui : la levure est choisie, aucune quantité écrite. La forme vient de la fiche. Le vide se voit-il, et 2 sachets se posent-ils en un toucher ?</p>
+<div class="bande">
+<figure class="base" data-reference data-vignette data-cle="limite|r3 v04"><button class="zoom" type="button" data-agrandir aria-label="Agrandir r3 v04"><img src="img/r3-limite-v04.png" alt="r3 v04 à choisir, ton rang 2 : → 2 sachets"></button><figcaption><b class="t">r3 v04</b><span class="d">ton rang 2</span><div class="rgs"></div><input aria-label="Note r3 v04" placeholder="note"></figcaption></figure>
+<figure class="base" data-reference data-vignette data-cle="limite|r3 v05"><button class="zoom" type="button" data-agrandir aria-label="Agrandir r3 v05"><img src="img/r3-limite-v05.png" alt="r3 v05 à choisir, ton rang 2 : Mettre 2 sachets"></button><figcaption><b class="t">r3 v05</b><span class="d">ton rang 2</span><div class="rgs"></div><input aria-label="Note r3 v05" placeholder="note"></figcaption></figure>
+<figure class="base" data-reference data-vignette data-cle="limite|en ligne malts"><button class="zoom" type="button" data-agrandir aria-label="Agrandir ta capture Malts"><img src="img/en-ligne-malts.jpg" alt="Ta capture Malts du 19.11"></button><figcaption><b class="t">en ligne · malts</b><span class="d">référence</span><div class="rgs"></div><input aria-label="Note en ligne malts" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="limite|v01"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v01"><img src="img/limite-v01.png" alt="v01 à choisir : aucune dose, Mettre 2 sachets · 117 %"></button><figcaption><b class="t">v01</b><span class="d">« Mettre 2 sachets · 117 % »</span><div class="rgs"></div><input aria-label="Note v01" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="limite|v02"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v02"><img src="img/limite-v02.png" alt="v02 à choisir : grand bouton Mettre 2 sachets, couvre 117 %, les 2 en stock"></button><figcaption><b class="t">v02</b><span class="d">grand bouton or</span><div class="rgs"></div><input aria-label="Note v02" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="limite|v03"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v03"><img src="img/limite-v03.png" alt="v03 à choisir : aucune dose écrite, puces vides, Écrire 2 sachets"></button><figcaption><b class="t">v03</b><span class="d">« Écrire 2 sachets »</span><div class="rgs"></div><input aria-label="Note v03" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="limite|v04"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v04"><img src="img/limite-v04.png" alt="v04 à choisir : aucune dose, → 2 sachets · 117 %"></button><figcaption><b class="t">v04</b><span class="d">« → 2 sachets · 117 % »</span><div class="rgs"></div><input aria-label="Note v04" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="limite|v05"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v05"><img src="img/limite-v05.png" alt="v05 à choisir : aucune dose, la lager demande 1,7 sachet, Mettre 2 sachets · 117 %"></button><figcaption><b class="t">v05</b><span class="d">la phrase, puis le bouton</span><div class="rgs"></div><input aria-label="Note v05" placeholder="note"></figcaption></figure>
+<figure data-variante data-vignette data-cle="limite|v06"><button class="zoom" type="button" data-agrandir aria-label="Agrandir v06"><img src="img/limite-v06.png" alt="v06 à choisir : bouton noir Mettre 2 sachets · 117 % lager, piste vide"></button><figcaption><b class="t">v06</b><span class="d">bouton noir</span><div class="rgs"></div><input aria-label="Note v06" placeholder="note"></figcaption></figure>
+</div>
+</section>
+
+<textarea id="sortie" hidden aria-label="Classement à copier"></textarea>
+</div>
+<div class="pied"><button type="button" id="copier">Copier</button><span id="compte">0 rang donné</span><button type="button" class="theme" id="theme">Thème</button></div>
+<div id="loupe" hidden><img alt="Vignette agrandie"></div>
+<script>
+(function () {
+  // Classement par écran : 1 à 5 sous chaque vignette, plusieurs au même rang ; retoucher enlève le rang.
+  var K = 'ma-levure-r4-1911', etat = {};
+  try { etat = JSON.parse(localStorage.getItem(K) || '{}'); } catch (e) {}
+  etat.r = etat.r || {}; etat.note = etat.note || {};
+  var RANGS = [1, 2, 3, 4, 5];
+  var sections = [].slice.call(document.querySelectorAll('section.rang'));
+  function sauver() { try { localStorage.setItem(K, JSON.stringify(etat)); } catch (e) {} }
+  function nom(f) { return f.getAttribute('data-cle').split('|')[1]; }
+  function podium(sec) {
+    var par = {}, out = [];
+    [].forEach.call(sec.querySelectorAll('figure[data-cle]'), function (f) { var n = etat.r[f.getAttribute('data-cle')]; if (n) (par[n] = par[n] || []).push(nom(f)); });
+    RANGS.forEach(function (n) { if (par[n]) out.push(n + ' ' + par[n].join(', ')); });
+    return out;
+  }
+  function rendre() {
+    var total = 0;
+    sections.forEach(function (sec) {
+      [].forEach.call(sec.querySelectorAll('figure[data-cle]'), function (f) {
+        var mon = etat.r[f.getAttribute('data-cle')] || 0; if (mon) total++;
+        f.setAttribute('data-rang', mon || '');
+        [].forEach.call(f.querySelectorAll('.rg'), function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-n') === mon ? 'true' : 'false'); });
+      });
+      var p = podium(sec);
+      sec.querySelector('.podium').textContent = p.length ? p.join(' · ') : '';
+    });
+    document.getElementById('compte').textContent = total + (total > 1 ? ' rangs donnés' : ' rang donné');
+  }
+  sections.forEach(function (sec) {
+    [].forEach.call(sec.querySelectorAll('figure[data-cle]'), function (f) {
+      var k = f.getAttribute('data-cle'), i = f.querySelector('input'), rgs = f.querySelector('.rgs');
+      RANGS.forEach(function (n) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'rg'; b.textContent = n; b.setAttribute('data-n', n);
+        b.setAttribute('aria-label', 'Rang ' + n + ' pour ' + nom(f));
+        b.addEventListener('click', function () { if (etat.r[k] === n) delete etat.r[k]; else etat.r[k] = n; sauver(); rendre(); });
+        rgs.appendChild(b);
+      });
+      if (etat.note[k]) i.value = etat.note[k];
+      i.addEventListener('input', function () { etat.note[k] = i.value; sauver(); });
+      f.querySelector('.zoom').addEventListener('click', function () { var l = document.getElementById('loupe'); l.querySelector('img').src = f.querySelector('img').src; l.hidden = false; });
+    });
+  });
+  document.getElementById('loupe').addEventListener('click', function () { this.hidden = true; });
+  document.getElementById('copier').addEventListener('click', function () {
+    var lignes = [];
+    sections.forEach(function (sec) {
+      var titre = sec.getAttribute('data-choix'), p = podium(sec);
+      var notes = [].slice.call(sec.querySelectorAll('figure[data-cle]')).filter(function (f) { return etat.note[f.getAttribute('data-cle')]; })
+        .map(function (f) { return nom(f) + ' : ' + etat.note[f.getAttribute('data-cle')]; });
+      if (p.length || notes.length) lignes.push(titre + ' : ' + (p.join(' · ') || '—') + (notes.length ? ' (' + notes.join(' ; ') + ')' : ''));
+    });
+    var t = 'Ma levure r4, quelle levure et combien, classement par écran (19.11)\n' + (lignes.join('\n') || 'rien de classé');
+    var o = document.getElementById('sortie'); o.value = t; o.hidden = false; o.select();
+    try { navigator.clipboard.writeText(t).catch(function () {}); } catch (e) {}
+  });
+  var racine = document.documentElement;
+  try { var th = localStorage.getItem(K + '-theme'); if (th) racine.setAttribute('data-theme', th); } catch (e) {}
+  document.getElementById('theme').addEventListener('click', function () {
+    var sombre = racine.getAttribute('data-theme') ? racine.getAttribute('data-theme') === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    var n = sombre ? 'light' : 'dark'; racine.setAttribute('data-theme', n);
+    try { localStorage.setItem(K + '-theme', n); } catch (e) {}
+  });
+  rendre();
+})();
+</script>
+</body>
+</html>

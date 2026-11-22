@@ -1,4 +1,5 @@
 import { HopIngredient, HopStage } from '../types';
+import { nombreFr } from '../domain/nombreAffiche';
 
 /**
  * Le moment d'ajout d'un houblon, déclaré une seule fois.
@@ -144,7 +145,7 @@ export function describeMoment(hop: HopIngredient): string {
       return hop.timeMin === 0 ? 'flameout' : `${hop.timeMin ?? 0} min`;
     case 'whirlpool':
       return hop.tempC
-        ? `${hop.timeMin ?? 20} min à ${hop.tempC} °C`
+        ? `${hop.timeMin ?? 20} min à ${nombreFr(hop.tempC, 1)} °C`
         : `${hop.timeMin ?? 20} min`;
     case 'dryHop':
       return hop.dayOffset === undefined || !Number.isFinite(hop.dayOffset) || hop.dayOffset < 0 ? 'jour à préciser'

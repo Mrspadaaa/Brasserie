@@ -2,7 +2,7 @@
 name: fil-de-fer-d-abord
 description: 18.10 soir — lots d'exploration en fils de fer légers en planche ; fidélité (générateur, toutes les pages, batterie) seulement pour la variante choisie ; 19.10 : pas « gris, un seul accent ».
 type: brasseur
-maj: 2026-10-22
+maj: 2026-11-16
 sources: mémoire locale affinee-fil-de-fer-d-abord.md ; tournoi/outils/planche.mjs (absent de ce worktree)
 ---
 
@@ -15,3 +15,5 @@ Vérifié la nuit du 18 au 19.10 : 46 fils de fer (lots 6 à 11), 130–350 k je
 Le 19.10 au soir, sur Suggestions en Barres : « Tu t'es trop limité, m'eme au niveau des couleurs et tout... ». « Fil de fer » veut dire léger et rapide (pages statiques, pas le générateur), **pas** gris avec un seul accent. Les mini maquettes osent la couleur (code des familles, couleur par houblon, « atteint »), la hiérarchie et la forme. L'orangé reste réservé à l'alerte (ma bière hors du style). Contrôle D74 (`controle-couleurs.mjs`).
 
 **Comment l'appliquer** : avant d'écrire un brief de lot, vérifier qu'il demande un fil de fer et non une copie du générateur, et qu'il n'impose pas « gris, un seul accent ». La planche (`tournoi/outils/planche.mjs --vue=`) est le premier livrable montré. Voir [[methode-ui-v3]], [[le-brasseur-choisit]] et (leçon L13).
+
+**16.11 — explorer en mini maquettes statiques nombreuses ; le jouable seulement après son choix** (ex-L30). Erreur : prototypes jouables bouclés (mesures, juges, scénarios) pendant des heures avant qu'il ait choisi une direction. « on perds beaucoup de temps pour pas grand chose… juste avoir pleins de versions ?? ». Cause : la vérification d'une version finie a été appliquée à l'exploration. Faire : HTML et CSS statiques, 12 à 16 versions, avec le seul contrôle des règles dures (thème, +, compacité, police) ; il choisit ; le jouable, le scénario de zéro et l'audit viennent après, sur la version choisie. Rôles : pilote, concepteur. Contrôle : aucun.

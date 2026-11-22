@@ -24,6 +24,7 @@ import { YeastCandidatePicker } from './YeastCandidatePicker';
 import { yeastStrainInformation } from '../domain/yeastStrainInformation';
 import { YeastPitchingPanel, yeastPitchingSummary } from './YeastPitchingPanel';
 import './yeast-recipe.css';
+import { nombreFr } from '../domain/nombreAffiche';
 
 export type YeastRecipeDestination = 'identite' | 'fermentescibles' | 'houblons' | 'paliers' | 'eau';
 const number = (n?: number | null, digits = 1) => Number.isFinite(n)
@@ -93,7 +94,7 @@ export function YeastRecipeWorkbench({ recipe, onChange, onNavigate, simulationO
     // its own proposal interface and permits an explicit out-of-range target.
     const window = value.projection?.dossier.temperature?.range;
     if (window && draft.temperatureC != null && (draft.temperatureC < window.min || draft.temperatureC > window.max)) {
-      return { ...value, errors: [...value.errors, `Température principale hors de la fenêtre documentée (${window.min}–${window.max} °C).`] };
+      return { ...value, errors: [...value.errors, `Température principale hors de la fenêtre documentée (${window.min}–${nombreFr(window.max, 1)} °C).`] };
     }
     return value;
   }, [recipe, draft, refs]);

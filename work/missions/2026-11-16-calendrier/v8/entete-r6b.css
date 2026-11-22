@@ -1,0 +1,71 @@
+#lhead .gd-hd, #side #mini { display: none !important; }
+.qh { position: relative; margin: 0px 12px; color: var(--ink); }
+.qh svg text { font-family: inherit; font-variant-numeric: tabular-nums; }
+.qh .t14 { font-size: 14px; fill: var(--mut); paint-order: stroke; stroke: var(--halo); stroke-width: 3px; }
+.qh .tp { font-size: 14px; font-weight: 700; fill: var(--ok); paint-order: stroke; stroke: var(--halo); stroke-width: 4px; stroke-linejoin: round; }
+.qh .tm { font-size: 14px; font-weight: 700; fill: var(--bad); paint-order: stroke; stroke: var(--halo); stroke-width: 4px; stroke-linejoin: round; }
+.qh .tn { font-size: 14px; font-weight: 400; fill: var(--ink); paint-order: stroke; stroke: var(--halo); stroke-width: 4px; stroke-linejoin: round; }
+.qh .tf { font-size: 14px; font-weight: 700; fill: var(--fin); paint-order: stroke; stroke: var(--halo); stroke-width: 4px; stroke-linejoin: round; }
+.qh button { font: inherit; color: inherit; }
+.q-pil { height: 26px; min-width: 26px; border-radius: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 2px; border: 1.5px solid var(--line2); padding: 0px 6px; font-size: 14px; font-weight: 700; white-space: nowrap; background: var(--bg); }
+.q-pil .ico { width: 16px; height: 16px; }
+.q-pil.bad { border-color: var(--bad); color: var(--bad); background: var(--badbg); }
+.q-pil.nu { border-color: transparent; background: none; padding: 0px; }
+.q-per { height: 26px; border-radius: 13px; background: var(--ink); font-size: 14px; font-weight: 700; padding: 0px 3px 0px 9px; display: inline-flex; align-items: center; white-space: nowrap; color: var(--bg) !important; }
+.q-per .ico { width: 16px; height: 16px; }
+.q-brosse { position: absolute; border: 2px solid var(--fin); border-radius: 8px; background: color-mix(in srgb,var(--fin) 8%,transparent); touch-action: none; }
+.q-brosse i { position: absolute; top: 50%; width: 6px; height: 22px; margin-top: -11px; background: var(--fin); border-radius: 3px; }
+.q-brosse i:first-child { left: -4px; }
+.q-brosse i:last-child { right: -4px; }
+.q-mk { cursor: pointer; }
+.q5-t { height: 28px; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.q5-n { display: flex; align-items: baseline; gap: 4px; white-space: nowrap; height: 28px; line-height: 28px; }
+.q5-n b { font-size: 24px; font-weight: 800; color: var(--fin); font-variant-numeric: tabular-nums; letter-spacing: -0.5px; }
+.q5-n span { font-size: 14px; font-weight: 500; color: var(--mut); }
+.q5-n em { font-style: normal; font-size: 14px; font-weight: 700; color: var(--fin); }
+.q5-t .d { margin-left: auto; display: flex; gap: 4px; }
+.q5-w { position: absolute; left: 0px; right: 0px; top: 0px; z-index: 2; height: 24px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; white-space: nowrap; color: var(--ink); font-variant-numeric: tabular-nums; }
+.q5-w .m { color: var(--bad); }
+.q5-w .dc { color: var(--fin); }
+.q5-w .dc i { display: inline-block; width: 12px; height: 12px; margin-right: 3px; vertical-align: -1px; border: 1.5px solid var(--fin); background: repeating-linear-gradient(45deg,var(--fin) 0 2px,transparent 2px 5px); }
+.q5-g { position: relative; height: 104px; }
+.q5-g > svg { position: absolute; left: 0px; top: 0px; }
+.qh .tfn { font-size: 14px; font-weight: 400; fill: var(--fin); paint-order: stroke; stroke: var(--halo); stroke-width: 4px; stroke-linejoin: round; }
+.qh .t14 { stroke-width: 4px; stroke-linejoin: round; }
+#fh.rb { padding: 0px 12px; height: auto !important; }
+#fh.rb .fg { display: none; }
+.rb-g { display: grid; grid-template-columns: repeat(6, 1fr); }
+.rb-c { color-scheme: unset; forced-color-adjust: unset; math-depth: unset; position-anchor: unset; text-size-adjust: unset; appearance: unset; font-family: unset; font-feature-settings: unset; font-kerning: unset; font-language-override: unset; font-optical-sizing: unset; font-palette: unset; font-size-adjust: unset; font-stretch: unset; font-style: unset; font-synthesis: unset; font-variant-alternates: unset; font-variant-caps: unset; font-variant-east-asian: unset; font-variant-emoji: unset; font-variant-ligatures: unset; font-variant-position: unset; font-variation-settings: unset; font-weight: unset; position-area: unset; text-orientation: unset; text-rendering: unset; text-spacing-trim: unset; -webkit-font-smoothing: unset; -webkit-locale: unset; -webkit-text-orientation: unset; -webkit-writing-mode: unset; writing-mode: unset; zoom: unset; accent-color: unset; align-content: unset; place-self: unset; alignment-baseline: unset; anchor-name: unset; anchor-scope: unset; animation-composition: unset; animation: unset; animation-trigger: unset; app-region: unset; aspect-ratio: unset; backdrop-filter: unset; backface-visibility: unset; background: unset; background-blend-mode: unset; baseline-shift: unset; baseline-source: unset; block-size: unset; border-block: unset; border: unset; border-radius: unset; border-collapse: unset; border-end-end-radius: unset; border-end-start-radius: unset; border-inline: unset; border-shape: unset; border-start-end-radius: unset; border-start-start-radius: unset; inset: unset; box-decoration-break: unset; box-shadow: unset; break-after: unset; break-before: unset; break-inside: unset; buffered-rendering: unset; caption-side: unset; caret-animation: unset; caret-color: unset; caret-shape: unset; clear: unset; clip: unset; clip-path: unset; clip-rule: unset; color-interpolation: unset; color-interpolation-filters: unset; color-rendering: unset; columns: unset; column-fill: unset; gap: unset; rule-break: unset; rule: unset; rule-inset: unset; rule-visibility-items: unset; column-span: unset; contain: unset; contain-intrinsic-block-size: unset; contain-intrinsic-size: unset; contain-intrinsic-inline-size: unset; container: unset; content: unset; content-visibility: unset; corner-shape: unset; corner-block-end-shape: unset; corner-block-start-shape: unset; counter-increment: unset; counter-reset: unset; counter-set: unset; cx: unset; cy: unset; d: unset; dominant-baseline: unset; dynamic-range-limit: unset; empty-cells: unset; field-sizing: unset; fill: unset; fill-opacity: unset; fill-rule: unset; filter: unset; flex: unset; flex-line-count: unset; flex-wrap: unset; float: unset; flood-color: unset; flood-opacity: unset; frame-sizing: unset; grid: unset; grid-area: unset; height: unset; hyphenate-character: unset; hyphenate-limit-chars: unset; hyphens: unset; image-orientation: unset; image-rendering: unset; initial-letter: unset; inline-size: unset; inset-block: unset; inset-inline: unset; interactivity: unset; interest-delay: unset; interpolate-size: unset; isolation: unset; justify-items: unset; letter-spacing: unset; lighting-color: unset; line-break: unset; list-style: unset; margin-block: unset; margin: unset; margin-inline: unset; margin-trim: unset; marker: unset; mask: unset; mask-type: unset; math-shift: unset; math-style: unset; max-block-size: unset; max-height: unset; max-inline-size: unset; max-width: unset; min-block-size: unset; min-inline-size: unset; min-width: unset; mix-blend-mode: unset; object-fit: unset; object-position: unset; object-view-box: unset; offset: unset; opacity: unset; order: unset; orphans: unset; outline: unset; outline-offset: unset; overflow-anchor: unset; overflow-block: unset; overflow-clip-margin: unset; overflow-inline: unset; overflow-wrap: unset; overflow: unset; overlay: unset; overscroll-behavior-block: unset; overscroll-behavior-inline: unset; overscroll-behavior: unset; padding-block: unset; padding: unset; padding-inline: unset; page: unset; page-margin-safety: unset; page-orientation: unset; paint-order: unset; perspective: unset; perspective-origin: unset; pointer-events: unset; position-try: unset; position-visibility: unset; print-color-adjust: unset; quotes: unset; r: unset; reading-flow: unset; reading-order: unset; resize: unset; rotate: unset; ruby-align: unset; ruby-overhang: unset; ruby-position: unset; rule-overlap: unset; rx: unset; ry: unset; scale: unset; scroll-axis-lock: unset; scroll-behavior: unset; scroll-initial-target: unset; scroll-margin-block: unset; scroll-margin: unset; scroll-margin-inline: unset; scroll-marker-group: unset; scroll-padding-block: unset; scroll-padding: unset; scroll-padding-inline: unset; scroll-snap-align: unset; scroll-snap-stop: unset; scroll-snap-type: unset; scroll-target-group: unset; scroll-timeline: unset; scrollbar-color: unset; scrollbar-gutter: unset; scrollbar-width: unset; shape-image-threshold: unset; shape-margin: unset; shape-outside: unset; shape-rendering: unset; size: unset; speak: unset; stop-color: unset; stop-opacity: unset; stroke: unset; stroke-dasharray: unset; stroke-dashoffset: unset; stroke-linecap: unset; stroke-linejoin: unset; stroke-miterlimit: unset; stroke-opacity: unset; stroke-width: unset; tab-size: unset; table-layout: unset; text-align: unset; text-align-last: unset; text-anchor: unset; text-autospace: unset; text-box: unset; text-combine-upright: unset; text-decoration: unset; text-decoration-inset: unset; text-decoration-skip-ink: unset; text-emphasis: unset; text-emphasis-position: unset; text-fit: unset; text-indent: unset; text-justify: unset; text-overflow: unset; text-shadow: unset; text-transform: unset; text-underline-offset: unset; text-underline-position: unset; text-wrap-style: unset; timeline-scope: unset; timeline-trigger: unset; touch-action: unset; transform: unset; transform-box: unset; transform-origin: unset; transform-style: unset; transition: unset; translate: unset; trigger-scope: unset; user-select: unset; vector-effect: unset; vertical-align: unset; view-timeline: unset; view-transition-class: unset; view-transition-group: unset; view-transition-name: unset; view-transition-scope: unset; visibility: unset; border-spacing: unset; -webkit-box-align: unset; -webkit-box-decoration-break: unset; -webkit-box-direction: unset; -webkit-box-flex: unset; -webkit-box-ordinal-group: unset; -webkit-box-orient: unset; -webkit-box-pack: unset; -webkit-box-reflect: unset; -webkit-line-break: unset; -webkit-line-clamp: unset; -webkit-mask-box-image: unset; -webkit-rtl-ordering: unset; -webkit-ruby-position: unset; -webkit-tap-highlight-color: unset; -webkit-text-combine: unset; -webkit-text-decorations-in-effect: unset; -webkit-text-fill-color: unset; -webkit-text-security: unset; -webkit-text-stroke: unset; -webkit-user-drag: unset; widows: unset; width: unset; will-change: unset; window-drag: unset; word-break: unset; word-spacing: unset; x: unset; y: unset; z-index: unset; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 14px; line-height: 16px; font-variant-numeric: tabular-nums; white-space: nowrap; cursor: pointer; color: var(--ink); min-height: 32px; position: relative; }
+.rb-c .s { font-weight: 600; display: inline-flex; align-items: center; }
+.rb-c .m { font-weight: 700; display: inline-flex; align-items: center; }
+.rb-c .p { color: var(--ok); }
+.rb-c .n { color: var(--bad); }
+.rb-c .ico { width: 14px; height: 14px; stroke-width: 2.2; }
+.rb-pers { color: var(--bad); margin-left: 1px; }
+.rb-idee { display: inline-flex; color: var(--att); margin-left: 1px; }
+.rb-idee .ico { width: 14px; height: 14px; }
+.rb-c.inv .s { font-weight: 400; color: var(--mut); }
+.rb-jauge .rb-c { min-height: 22px; gap: 2px; }
+.rb-jauge .j { display: block; height: 3px; border-radius: 2px; }
+.rb-jauge .j.p { background: var(--ok); }
+.rb-jauge .j.n { background: var(--bad); }
+.rb-mvt .rb-c { min-height: 22px; }
+.rb-on { background: var(--s2); border-radius: 6px; }
+.r-tip { position: fixed; z-index: 40; background: var(--sheet); color: var(--ink); border: 1.5px solid var(--line2); border-radius: 10px; padding: 5px 10px; font-size: 14px; line-height: 18px; white-space: nowrap; box-shadow: rgba(0, 0, 0, 0.35) 0px 6px 16px -6px; font-variant-numeric: tabular-nums; }
+.r-tip .p { color: var(--ok); }
+.r-tip .n { color: var(--bad); }
+.qh.r6b { margin: 0px; height: 152px; }
+.r6b > svg { position: absolute; left: 0px; top: 0px; }
+.r6b .q5-t { position: absolute; left: 12px; right: 12px; top: 1px; z-index: 3; }
+.rb-s47 { font-weight: 700; fill: var(--fin); }
+[data-theme="cave"] .qh pattern rect { opacity: 0.9; }
+.rb-z { cursor: pointer; }
+.rb-carte { display: none; position: fixed; left: 50%; transform: translateX(-50%); z-index: 40; background: var(--sheet); color: var(--ink); border: 1.5px solid var(--line2); border-radius: 12px; padding: 6px 10px 7px; font-size: 14px; line-height: 20px; box-shadow: rgba(0, 0, 0, 0.4) 0px 8px 20px -8px; font-variant-numeric: tabular-nums; min-width: 250px; }
+.rb-on .rb-carte { display: block; }
+.rb-ch { color: var(--mut); margin-bottom: 2px; }
+.rb-ch b { color: var(--fin); }
+.rb-l { display: grid; grid-template-columns: 34px 1fr auto; gap: 6px; white-space: nowrap; }
+.rb-l .w { color: var(--mut); }
+.rb-l .n { color: var(--bad); }
+.rb-l .f { color: var(--fin); }
+.rb-l .hh { display: inline-block; width: 12px; height: 12px; vertical-align: -1px; border: 1.5px solid var(--fin); background: repeating-linear-gradient(45deg,var(--fin) 0 2px,transparent 2px 5px); }

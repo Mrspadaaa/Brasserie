@@ -6,7 +6,7 @@ import { Sheet, ConfirmSheet } from './Sheet';
 import { FormNav, Field, TextInput, inputClass } from './FormNav';
 import { Trash2, AlertTriangle, ChevronDown } from 'lucide-react';
 import { useSyncedDraft } from '../hooks/useLiveData';
-import { parseDecimal } from './numericInput';
+import { messageRefus, parseDecimal, raisonHorsBornes } from './numericInput';
 import './clients.css';
 
 interface TarifSheetProps {
@@ -23,7 +23,9 @@ type TarifDraft = Omit<PricingItem, MoneyKey> & Record<MoneyKey, number | undefi
 const chf = (value: number | undefined) => value === undefined || !Number.isFinite(value)
   ? 'À renseigner'
   : value.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const validAmount = (value: number | undefined): value is number => value !== undefined && Number.isFinite(value) && value >= 0;
+/* BE-98 : un prix ou un coût UNITAIRE (une bouteille, un fût) va de 0 à 10 000 CHF (estimé : un fût de 30 L ~150 CHF, une palette ~5 000 CHF) ; « 99 999 » n'est plus accepté. */
+const PRIX_UNITAIRE_MAX = 10_000;
+const validAmount = (value: number | undefined): value is number => value !== undefined && Number.isFinite(value) && value >= 0 && value <= PRIX_UNITAIRE_MAX;
 // saveTarifs adresse les documents avec cette normalisation. Vérifier la clé
 // effective empêche aussi les collisions d'accents, de ponctuation ou de casse.
 const productKey = (value: string) => value.toLowerCase().normalize('NFD')
@@ -33,9 +35,12 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
   const [draft, setDraft] = useSyncedDraft<TarifDraft | null>(item, item?.product);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [attempted, setAttempted] = useState(false);
+  const [refusMoney, setRefusMoney] = useState<Partial<Record<MoneyKey, string>>>({});
   const [invalidMoney, setInvalidMoney] = useState<Partial<Record<MoneyKey, string>>>({});
+  // TE-6 : un montant jamais touché reste vide, sans reproche ; l'erreur vient à la frappe ou à l'enregistrement.
+  const [touched, setTouched] = useState<Partial<Record<MoneyKey, boolean>>>({});
   const form = useRef<HTMLDivElement>(null);
-  useEffect(() => { setConfirmDelete(false); setAttempted(false); setInvalidMoney({}); }, [item?.product]);
+  useEffect(() => { setConfirmDelete(false); setAttempted(false); setInvalidMoney({}); setTouched({}); }, [item?.product]);
   if (!item || !draft) return null;
 
   const isNew = !item.product;
@@ -56,6 +61,8 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
     : attempted && (draft.product.trim().length < 2 || !productKey(draft.product)) ? 'Indique un nom de produit d’au moins 2 caractères, avec des lettres ou des chiffres.' : undefined;
   const moneyErrors = (['costIngredients', 'costFixed', 'priceHT'] as const).filter(key => invalidMoney[key] || !validAmount(draft[key]));
 
+  const montrerErreur = (key: MoneyKey) => moneyErrors.includes(key) && (attempted || Boolean(touched[key]) || Boolean(invalidMoney[key]));
+
   const save = () => {
     setAttempted(true);
     if (draft.product.trim().length < 2 || !productKey(draft.product) || duplicate) {
@@ -70,7 +77,7 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
     // la chaîne pendant une frappe incomplète (« - », « 12, »).
     const invalidInput = Array.from(form.current?.querySelectorAll<InputElement>('[data-tarif-money] input, [data-tarif-money] textarea') ?? [])
       .find(input => !validAmount(parseDecimal(input.value) ?? undefined));
-    if (invalidInput) { invalidInput.focus(); invalidInput.setCustomValidity('Indique un montant positif ou nul en CHF.'); invalidInput.reportValidity(); return; }
+    if (invalidInput) { invalidInput.focus(); invalidInput.setCustomValidity('Indique un montant entre 0 et 10 000 CHF.'); invalidInput.reportValidity(); return; }
     if (!validAmount(costIngredients) || !validAmount(costFixed) || !validAmount(priceHT) || costTotal === undefined || marginCHF === undefined || marginPercent === undefined) {
       form.current?.querySelector<HTMLElement>(`#tf-${moneyErrors[0]}`)?.focus();
       return;
@@ -78,6 +85,11 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
     onSave({ ...draft, product: draft.product.trim(), costIngredients, costFixed, priceHT, costLabor: 0, costTotal, marginCHF, marginPercent });
     onClose();
   };
+
+  // BE-98 (rejeu 649bcc54) : le message d'enregistrement dit la vraie raison (au-delà du plafond, négatif, ou champ vide), pas toujours « positif ou nul ».
+  const raisonMontant = (value: number | undefined) => value === undefined || !Number.isFinite(value)
+    ? 'Champ vide : indique un montant de 0 à 10 000 CHF.' // BE-98 (rejeu 73db7eaa) : « positif ou nul » sur un champ vide se lisait comme le refus du prix voisin
+    : raisonHorsBornes(value, { min: 0, max: PRIX_UNITAIRE_MAX, unite: 'CHF' });
 
   const money = (label: string, key: MoneyKey) => (
     <Field label={`${label} (CHF)`} htmlFor={`tf-${key}`}>
@@ -90,12 +102,15 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
         setInvalidMoney(current => ({ ...current, [key]: entered.trim() && parseDecimal(entered) === null ? entered : undefined }));
       }}>
         <NumberInput id={`tf-${key}`} value={draft[key]} emptyValue={undefined}
-          onValue={(value: number | undefined) => setDraft(current => current && ({ ...current, [key]: value }))}
+          onValue={(value: number | undefined) => { setTouched(current => ({ ...current, [key]: true })); setDraft(current => current && ({ ...current, [key]: value })); }}
+          // BE-98 : au-delà du plafond (ou sous zéro), la saisie est refusée : la valeur d'avant revient ET le message dit le plafond et la valeur gardée.
+          min={0} max={PRIX_UNITAIRE_MAX} rejeter
+          onRefus={(r) => setRefusMoney(current => ({ ...current, [key]: r ? messageRefus(r.saisi, r.retenu, { min: 0, max: PRIX_UNITAIRE_MAX, unite: 'CHF' }) : undefined }))}
           pad required className={`${inputClass} font-mono text-right`}
-          aria-invalid={moneyErrors.includes(key)}
-          aria-describedby={moneyErrors.includes(key) ? `tf-${key}-error` : undefined} />
+          aria-invalid={montrerErreur(key) || Boolean(refusMoney[key])}
+          aria-describedby={montrerErreur(key) || refusMoney[key] ? `tf-${key}-error` : undefined} />
       </div>
-      {moneyErrors.includes(key) && <p id={`tf-${key}-error`} role="alert" className="text-xs text-alert-strong">{invalidMoney[key] ? `Montant « ${invalidMoney[key]} » non reconnu. Corrige le champ.` : 'Indique un montant positif ou nul.'}</p>}
+      {(montrerErreur(key) || refusMoney[key]) && <p id={`tf-${key}-error`} role="alert" className="text-xs text-alert-strong">{refusMoney[key] ?? (invalidMoney[key] ? `Montant « ${invalidMoney[key]} » non reconnu. Corrige le champ.` : raisonMontant(draft[key]))}</p>}
     </Field>
   );
 
@@ -121,7 +136,7 @@ export const TarifSheet: React.FC<TarifSheetProps> = ({ item, config, existingPr
           {money('Prix de vente HT', 'priceHT')}
           <dl className="tarif-results">
             <div className="tarif-result-row"><dt>Coût de revient</dt><dd><output className="font-mono" aria-label="Coût de revient">{chf(costTotal)}{costTotal !== undefined && ' CHF'}</output></dd></div>
-            <div className="tarif-result-row"><dt>Marge brute</dt><dd><output aria-label="Marge brute" className={`font-mono tarif-result-margin ${marginCHF !== undefined && marginCHF <= 0 ? 'tarif-result-loss' : ''}`}>
+            <div className="tarif-result-row"><dt>Marge brute</dt><dd><output aria-label="Marge brute" className={`font-mono ${marginCHF !== undefined ? 'tarif-result-margin' : ''} ${marginCHF !== undefined && marginCHF <= 0 ? 'tarif-result-loss' : ''}`}>
               {marginCHF !== undefined && marginCHF > 0 ? '+' : ''}{chf(marginCHF)}{marginCHF !== undefined && ' CHF'}{marginPercent !== undefined && <span className="tarif-percent">{marginPercent.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} % du prix HT</span>}
             </output></dd></div>
             <div className="tarif-result-row"><dt>Prix TTC <span className="block text-xs">{config.fiscal.isTvaRegistered ? `TVA ${(tvaRate * 100).toLocaleString('fr-FR', { maximumFractionDigits: 1 })} %` : 'Non assujettie à la TVA'}</span></dt><dd><output className="font-mono" aria-label="Prix TTC">{chf(priceTTC)}{priceTTC !== undefined && ' CHF'}</output></dd></div>

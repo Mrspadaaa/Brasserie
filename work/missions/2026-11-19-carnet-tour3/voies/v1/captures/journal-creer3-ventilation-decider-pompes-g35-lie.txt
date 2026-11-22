@@ -1,0 +1,79 @@
+=== creer3
+[creer3 1 1280] ouvert ouvert ouvert ouvert ouvert ouvert ouvert ouvert
+[creer3 2 390] ouvert ouvert ouvert ouvert ouvert ouvert ouvert ouvert
+[creer3 3 1280] ouvert ouvert ouvert ouvert ouvert ouvert ouvert ouvert
+[creer3 4 390] ouvert ouvert ouvert ouvert ouvert ouvert ouvert ouvert
+=== ventilation
+[vent 390] Critère : [{"t":"Critère : tient 80 °C, puis le débit · proposé par l'IA","lignes":1,"y":196,"x":38,"w":338,"h":20}]
+[vent 390] tableau y : 280 ; hauteur écran 844
+[vent 390] noms 2 lignes : ["Hotte inox 120 cm + moteur:2","Hotte murale 100 cm:1","Extracteur mural hélicoïde:1","Extracteur centrifuge en lig:2","Ventilateur de plafond 130 c:2"]
+[vent 390] tient 80 °C : [{"t":"tient 80 °C","lignes":1,"y":196,"x":94,"w":74,"h":20},{"t":"tient 80 °C","lignes":2,"y":289,"x":280,"w":87,"h":28}]
+[vent 390] colonnes : []
+[vent-bas 390] champ : {"top":747,"bottom":791,"vh":844,"w":154}
+suivi [vent 80 390] ROUE|- → -|Rangé ici ; roue+bandeau simultanés : 0 relevés
+[vent-80 390] Ce qui compte : parer · attendre l'avis du ferblantier /  / Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer /  / Articles / 6 / · / Comparer / Hotte inox + extracteur / 1 450 à 2 600 CHF / tient 80 °C / rang · article / m³/h / CHF / 1 / Hotte inox 120 cm + moteur
+[vent-80 390] « doit tenir 80 » ailleurs : h / note / ✓ / Rangé ici, à l'instant / Annuler / doit tenir 80 °C / note /  / votre phrase : « doit tenir 80 °C » /  / Ajouter à ZZ TEST — Ventilation de la salle de brassage… / Bor
+suivi [vent 60dB 390] ROUE|- → -|Rangé ici ; roue+bandeau simultanés : 0 relevés
+[vent-60dB 390] Ressemble à un critère : false ; extrait : lus · de votre phrase /  / votre phrase : « moins de 60 dB » /  / Articles / 6 / · / Comparer / Hotte inox + extracteur / 1 450 à 2 600 CHF / tient 80 °C / rang · article / m³/h / CHF / 1 / Hotte inox 120 cm + moteur / CH · en stock / 1 800 / 2 600 / 2 / Hotte murale 100 cm / DE · 
+[vent 1280] Critère : [{"t":"Critère : tient 80 °C, puis le débit · proposé par l'IA","lignes":1,"y":216,"x":342,"w":361,"h":21}]
+[vent 1280] tableau y : 302 ; hauteur écran 800
+[vent 1280] noms 2 lignes : ["Hotte inox 120 cm + moteur:1","Hotte murale 100 cm:1","Extracteur mural hélicoïde:1","Extracteur centrifuge en lig:1","Ventilateur de plafond 130 c:1"]
+[vent 1280] tient 80 °C : [{"t":"tient 80 °C","lignes":1,"y":216,"x":401,"w":79,"h":21},{"t":"tient 80 °C","lignes":2,"y":318,"x":952,"w":87,"h":28}]
+[vent 1280] colonnes : ["relative:736","cn-page:760","cn-champ-zone:760"]
+[vent-bas 1280] champ : {"top":743,"bottom":787,"vh":800,"w":612}
+suivi [vent 80 1280] ROUE|- → -|Rangé ici ; roue+bandeau simultanés : 0 relevés
+[vent-80 1280] Ce qui compte : parer · attendre l'avis du ferblantier /  / Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer /  / Articles / 6 / · / Comparer / Hotte inox + extracteur / 1 450 à 2 600 CHF / tient 80 °C / rang · article / m³/h / CHF / 1 / Hotte inox 120 cm + moteur
+[vent-80 1280] « doit tenir 80 » ailleurs : h / note / ✓ / Rangé ici, à l'instant / Annuler / doit tenir 80 °C / note /  / votre phrase : « doit tenir 80 °C » /  / Ajouter à ZZ TEST — Ventilation de la salle de brassage… / Bor
+suivi [vent 60dB 1280] ROUE|- → -|Rangé ici ; roue+bandeau simultanés : 0 relevés
+[vent-60dB 1280] Ressemble à un critère : false ; extrait : lus · de votre phrase /  / votre phrase : « moins de 60 dB » /  / Articles / 6 / · / Comparer / Hotte inox + extracteur / 1 450 à 2 600 CHF / tient 80 °C / rang · article / m³/h / CHF / 1 / Hotte inox 120 cm + moteur / CH · en stock / 1 800 / 2 600 / 2 / Hotte murale 100 cm / DE · 
+=== decider
+[decider 390] carnet colonnes : [] ; placeholders ["Ajouter à ZZ TEST…"]
+[comparer 390] Compromis :  ligne : moins bien que la 3e sur tout /  / Compromis : la 1re, la seule à tenir 80 °C et votre minimum, pour 1 150 CHF de plus que la 2e  /  / Valeurs annoncées par les vendeurs · exemple | Valeurs annoncées : true | de plus : /h / 	– / prix CHF	2 600	1 450	420	690	180 /  / → 2 de plus /  / la 4e, Extracteur | img : 0
+[comparer 390] écartés : e / 	 / 4e / Extracteur centrifuge en ligne / 	 / écarté / Ventilateur de plafond 130 cm /  / tient 80 °C	oui	oui	non	non	non / débit m³/h	1 800	1 200 / sous votre minimum de 1 500 m³/h / 	1 500	1 100 / sous votre minimum de 1 500 m³/h / 	– / prix CHF	2 600	1 450	420	
+[comparer 390] colonnes : [] ; placeholders ["Ajouter à ZZ TEST…"]
+[comparer 390] défilement horizontal : ["cn-tableau-zone 340/497","cn-cache 1/99","cn-cache 1/375"]
+introuvable : Choisir
+introuvable : Choisir
+[article 390] ouvre : Hotte inox 120 cm + moteur
+[article 390] texte : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 6 / Réalisés / 0 / Articles · ZZ TEST — Ventilation… / 1re sur 4 / Hotte inox 120 cm + moteur /  / façon hotte inox + extracteur /  / le débit / 1 800 m³/h / 1 800 la plus haute des 4 / 1 100 / Offre / Inox Broye · CH / en stock / 2 600 CHF / Ouvrir / Caractéristiques / tient 80 °C / oui / exemple / Disponibilité / en stock / Origine / CH / Veille du prix, tous les 3 jours / Choisir · Inox Broye /  / Part dans À venir : Hotte inox 120 cm + moteur, Inox Broye, 2 600 CHF, en stock, avec le po
+[article 390] Choisir : [{"t":"Choisir · Inox Broye","disabled":false,"color":"rgb(255, 255, 255)","fond":"rgb(76, 107, 42)","opacite":"1","ratio":6.1}] ; img : 
+[decider 1280] carnet colonnes : ["relative:736","cn-page:760","cn-champ-zone:760"] ; placeholders ["Ajouter à ZZ TEST — Ventilation de la salle de brassage…"]
+[comparer 1280] Compromis :  ligne : moins bien que la 3e sur tout /  / Compromis : la 1re, la seule à tenir 80 °C et votre minimum, pour 1 150 CHF de plus que la 2e  /  / Valeurs annoncées par les vendeurs · exemple | Valeurs annoncées : true | de plus : (absent : → \d+ de plus|\d+ de plus) | img : 0
+[comparer 1280] écartés : e / 	 / 4e / Extracteur centrifuge en ligne / 	 / écarté / Ventilateur de plafond 130 cm /  / tient 80 °C	oui	oui	non	non	non / débit m³/h	1 800	1 200 / sous votre minimum de 1 500 m³/h / 	1 500	1 100 / sous votre minimum de 1 500 m³/h / 	– / prix CHF	2 600	1 450	420	
+[comparer 1280] colonnes : ["relative:736","cn-page:760","cn-champ-zone:760"] ; placeholders ["Ajouter à ZZ TEST — Ventilation de la salle de brassage…"]
+[comparer 1280] défilement horizontal : ["cn-cache 1/99","cn-cache 1/375"]
+introuvable : Choisir
+introuvable : Choisir
+[article 1280] ouvre : Hotte inox 120 cm + moteur
+[article 1280] texte : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 6 / Réalisés / 0 / Articles · ZZ TEST — Ventilation de la salle de brassage / 1re sur 4 / Hotte inox 120 cm + moteur /  / façon hotte inox + extracteur /  / le débit / 1 800 m³/h / 1 800 la plus haute des 4 / 1 100 / Offre / Inox Broye · CH / en stock / 2 600 CHF / Ouvrir / Caractéristiques / tient 80 °C / oui / exemple / Disponibilité / en stock / Origine / CH / Veille du prix, tous les 3 jours / Choisir · Inox Broye /  / Part dans À venir : Hotte inox 120 cm + moteur, Inox Broye, 2 600 CH
+[article 1280] Choisir : [{"t":"Choisir · Inox Broye","disabled":false,"color":"rgb(255, 255, 255)","fond":"rgb(76, 107, 42)","opacite":"1","ratio":6.1}] ; img : 
+=== pompes
+suivi [pompe1 390] -|- → -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[pompe1 390] texte : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 7 / Réalisés / 0 / Carnets / À comparer / Pompe pour le moût / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « https://exemple.invalid/pompe-inox » · titre mis en forme par l'IA /  / Critère : Supporter le moût chaud · proposé par l'IA /  / Façons / · aucune : l'IA les cherche /  / Articles / 1 / Pompe de transfert inox / exemple.invalid exemple / 40 L/min · 90 °C · tien
+suivi [pompe2 390] -|Carnet créé → -|- ; roue+bandeau simultanés : 0 relevés
+[pompe2 390] texte : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 7 / Réalisés / 0 / Carnets / Pompe pour le moût / ✻ / Comparer sur le débit (L/min)exemple / Ajouter / × /  / 2 articles à comparer /  / Critère : Supporter le moût chaud · proposé par l'IA /  / Façons / · aucune : l'IA les cherche /  / Articles / 2 / · / Comparer / ✓ / Article rangé ici, à l'instant · 1er sur 2 · température max 100 °C / Annuler / Pompe magnétique 12 V / exemple.invalid exemple / 25 L/min · 100 °C · tient 80 °C oui / 245 CHF / en stock / Veille du prix, tous les 3 jours /  / ✻ lu sur la page : nom, prix, débit, température max, tient 80 °C /  / votre phrase : « https://exemple.invalid/pompe-magnetique » /  / rang · article / max °C / CHF / 2 / Pompe de transfert inox / en stock · moins bien
+introuvable : Comparer sur
+suivi [pompe1 1280] -|- → -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[pompe1 1280] texte : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 7 / Réalisés / 0 / Carnets / À comparer / Pompe pour le moût / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « https://exemple.invalid/pompe-inox » · titre mis en forme par l'IA /  / Critère : Supporter le moût chaud · proposé par l'IA /  / Façons / · aucune : l'IA les cherche /  / Articles / 1 / Pompe de transfert inox / exemple.invalid exemple / 40 L/min · 90 °C · tien
+suivi [pompe2 1280] -|Carnet créé → -|- ; roue+bandeau simultanés : 0 relevés
+[pompe2 1280] texte : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 7 / Réalisés / 0 / Carnets / Pompe pour le moût / ✻ / Comparer sur le débit (L/min)exemple / Ajouter / × /  / 2 articles à comparer /  / Critère : Supporter le moût chaud · proposé par l'IA /  / Façons / · aucune : l'IA les cherche /  / Articles / 2 / · / Comparer / ✓ / Article rangé ici, à l'instant · 1er sur 2 · température max 100 °C / Annuler / Pompe magnétique 12 V / exemple.invalid exemple / 25 L/min · 100 °C · tient 80 °C oui / 245 CHF / en stock / Veille du prix, tous les 3 jours /  / ✻ lu sur la page : nom, prix, débit, température max, tient 80 °C /  / votre phrase : « https://exemple.invalid/pompe-magnetique » /  / rang · article / max °C / CHF / 2 / Pompe de transfert inox / en stock · moins bien
+introuvable : Comparer sur
+=== g35
+[g35 390] :  façons, 1 façon écartée et 3 notes. La veille du prix, tous les 3 jours, s'arrête. /  /  ni dans À venir, ni en commande /  / Supprimer / Garder /  / 2 façons à comparer · attendre l'avis du ferblantier /  / Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer /  / Article
+[g35 1280] :  façons, 1 façon écartée et 3 notes. La veille du prix, tous les 3 jours, s'arrête. /  /  ni dans À venir, ni en commande /  / Supprimer / Garder /  / 2 façons à comparer · attendre l'avis du ferblantier /  / Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer /  / Article
+=== lie
+introuvable : Supprimer l'idée
+[lie 390] phrase en titre : arantie sur le compresseur / – / 650 /  / votre phrase en titre /  / Notes / 1 / la porte du local fait 80 cm / note / Ajouter à ZZ TEST — Frigo de garde pour fûts… / Bord / Finances / C
+[lie 390] page : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 6 / Réalisés / 0 / Carnets / Choisi le 10 oct. / Renommer / Supprimer le carnet / ZZ TEST — Frigo de garde pour fûts /  / Critère : tenir 2 °C stable en été, puis passe la porte de 80 cm · de votre phrase /  / À venir · ZZ TEST — Frigo de garde pour fûts / Choisi : Chambre froide en kit 2 m³ / tient 2 °C en été, 6 fûts / Pourquoi / Articles / 4 / · / Comparer / Chambre froide en kit / 4 300 à 4 900 CHF / passe la porte de 80 cm / rang · article / amb. max °C / CHF / 1 / Chambre froide en kit 2 m³ / CH / 43 / 4 900 / – / Chambre froide en kit 2,5 m³ / écarté : délai de 4 semaines, SAV en Italie / 
+[lie 390] lignes lien : [{"t":"À venir","lignes":1,"y":41,"x":46,"w":45,"h":20},{"t":"À venir · ZZ TEST — Frigo de garde pour fûts","lignes":2,"y":220,"x":12,"w":297,"h":44}]
+[lie 390 clair] bouton Supprimer : [{"t":"Supprimer le carnet","disabled":false,"color":"rgb(168, 41, 31)","fond":"rgb(255, 255, 255)","opacite":"1","ratio":7}]
+introuvable : Supprimer l'idée
+[lie 390 sombre] bouton Supprimer : [{"t":"Supprimer le carnet","disabled":false,"color":"rgb(220, 95, 88)","fond":"rgb(18, 16, 14)","opacite":"1","ratio":5.26}]
+introuvable : Plus
+introuvable : Supprimer l'idée
+[lie 1280] phrase en titre : (absent : phrase en titre)
+[lie 1280] page : Chargement de la brasserie…
+[lie 1280] lignes lien : []
+[lie 1280 clair] bouton Supprimer : []
+introuvable : Supprimer l'idée
+[lie 1280 sombre] bouton Supprimer : [{"t":"Supprimer le carnet","disabled":false,"color":"rgb(220, 95, 88)","fond":"rgb(18, 16, 14)","opacite":"1","ratio":5.26}]

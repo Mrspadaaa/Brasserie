@@ -9,6 +9,7 @@ import type { HoublonLu } from '../parcours/adaptateur';
 import type { FamilyId } from '../../../domain/hopIndex/v4';
 import { hopRole } from '../parcours/v4';
 import { autresDe, ligneAutres } from '../fiche/autres';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 /** « lot » quand l'α vient du lot en stock (il fait la dose), « fiches » quand c'est le milieu de la plage variétale. */
 export const sourceAlpha = (h: HoublonLu): 'lot' | 'fiches' | null =>
@@ -124,12 +125,12 @@ export function Autres({ h, largeur = 56, petit = false, balise = h.nom, onTouch
   return (
     <>
       <button type="button" data-role="autres-bouton" aria-expanded={ouvert} aria-controls={dehors ? undefined : id}
-        aria-label={`autres ${pc} % : expliquer ces mots sans famille`}
+        aria-label={`autres ${nombreFr(pc, 1)} % : expliquer ces mots sans famille`}
         onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { e.stopPropagation(); if (dehors) onToucher!(); else setOuvert((v) => !v); }}
         className={`pq-fiche-autres-b relative inline-flex items-center gap-1 ${petit ? 'text-2xs' : 'text-xs'} text-cave-400 whitespace-nowrap`}>
-        <i data-role="autres" data-houblon={balise} data-part={part.toFixed(2)} role="img" aria-label={`autres : ${pc} % des mots sans famille`}
+        <i data-role="autres" data-houblon={balise} data-part={part.toFixed(2)} role="img" aria-label={`autres : ${nombreFr(pc, 1)} % des mots sans famille`}
           className="pq-fiche-autres block h-2 rounded-sm" style={{ width: Math.max(24, Math.round(largeur * part)) }} />
-        autres {pc} %
+        autres {nombreFr(pc, 1)} %
       </button>
       {!dehors && ouvert && <ExplicationAutres cle={h.cle} id={id} />}
     </>

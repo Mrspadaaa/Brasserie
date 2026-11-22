@@ -1,0 +1,205 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>s2b — la réponse en gestes à cocher (tiède)</title><style>
+:root{--pg:#FFFFFF;--pn:#F5F5F5;--su:#EBEBEB;--bd:#DDDDDD;--bdm:#BFBFBF;--tf:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--act:#111111;--acttx:#FFFFFF;--hop:#567F45;--hoptx:#3F6B2E;--hopbg:#EEF4EA;--att:#9C7020;--atttx:#7F5B10;--attbg:#FBF3E2;
+--al:#C8382F;--altx:#A8291F;--albg:#FBEAE8;--eau:#4F7E9B;--eautx:#2F5F7D;--eaubg:#EAF1F6;--fin:#1F64A3;
+--sh-sheet:0 -12px 40px -16px rgba(0,0,0,.28);--sh-lift:0 8px 24px -12px rgba(0,0,0,.3);--scrim:rgba(17,17,17,.30);
+--planche:#7A7A7A;--planche-tx:#FFFFFF;
+--sans:"Source Sans 3","Source Sans Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+--mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace}
+[data-theme=cave]{--pg:#12100E;--pn:#1A1613;--su:#221D19;--bd:#2C2521;--bdm:#3D342E;--tf:#574A42;--t2:#9A8A7E;--t1:#D8CEC5;--t0:#F5F0EA;
+--act:#F2C14E;--acttx:#12100E;--hop:#6E9B5B;--hoptx:#7FAE6B;--hopbg:#1C2618;--att:#E3B55D;--atttx:#E3B55D;--attbg:#2A2113;
+--al:#D6453D;--altx:#DC5F58;--albg:#2C1614;--eau:#5E8CA8;--eautx:#6F9CB8;--eaubg:#17222A;--fin:#86B9E6;
+--sh-sheet:0 -12px 40px -16px rgba(0,0,0,.8);--sh-lift:0 8px 24px -12px rgba(0,0,0,.8);--scrim:rgba(0,0,0,.45);
+--planche:#0A0908;--planche-tx:#D8CEC5}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--planche);font-family:var(--sans);color:var(--t1);-webkit-font-smoothing:antialiased;padding:20px 20px 28px}
+::selection{background:var(--hop);color:#fff}
+.s2b-pl-titre{color:var(--planche-tx);font-size:18px;font-weight:700;margin:0 0 4px}
+.s2b-pl-sous{color:var(--planche-tx);opacity:.85;font-size:14px;margin:0 0 16px}
+.s2b-pl{display:flex;gap:24px;align-items:flex-start}
+.s2b-pl-col{width:390px;flex:none}
+.s2b-pl-lib{color:var(--planche-tx);font-size:14px;font-weight:600;margin:0 0 6px}
+.s2b-pl-lib span{font-weight:400;opacity:.85}
+.s2b-tel{width:390px;height:760px;position:relative;overflow:hidden;border-radius:14px;background:var(--pg);box-shadow:0 10px 30px -14px rgba(0,0,0,.6)}
+.s2b-fond{position:absolute;inset:0;filter:blur(1.6px);opacity:.75;padding:10px 12px;color:var(--t1)}
+.s2b-fond-b{display:flex;align-items:center;gap:8px;height:36px;font-weight:700;font-size:16px;color:var(--t0)}
+.s2b-fond-t{display:flex;gap:6px;margin:4px 0 12px}
+.s2b-fond-t i{flex:1;height:26px;border-radius:6px;background:var(--pn);border:1px solid var(--bd)}
+.s2b-fond-t i:nth-child(2){background:var(--hopbg);border-color:var(--hop)}
+.s2b-fond-big{font:600 28px var(--mono);color:var(--t0)}
+.s2b-fond-r{height:30px;border-bottom:1px solid var(--bd)}
+.s2b-scrim{position:absolute;inset:0;background:var(--scrim)}
+.s2b-feuille{position:absolute;left:0;right:0;bottom:0;top:44px;background:var(--pg);border-radius:14px 14px 0 0;box-shadow:var(--sh-sheet);display:flex;flex-direction:column;overflow:hidden}
+.s2b-poignee{width:36px;height:4px;border-radius:2px;background:var(--bdm);margin:6px auto 0;flex:none}
+.s2b-ic{flex:none;display:block}
+.s2b-mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.s2b-vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.s2b-pl-titre{display:flex;align-items:center;gap:8px}
+.s2b-pl-logo{width:20px;height:20px;flex:none}
+@media (max-width:500px){body{padding:0 0 16px}.s2b-pl{flex-direction:column;gap:16px}.s2b-pl-titre,.s2b-pl-sous,.s2b-pl-lib{padding:0 8px}.s2b-pl-titre{padding-top:8px}.s2b-tel{border-radius:0}}
+
+.s2b-tete{display:flex;align-items:center;gap:10px;padding:6px 6px 6px 12px;flex:none;border-bottom:1px solid var(--bd)}
+.s2b-jour{display:flex;flex-direction:column;align-items:center;justify-content:center;width:52px;height:40px;border-radius:6px;background:var(--hopbg);color:var(--hoptx);line-height:1.05}
+.s2b-jour b{font:700 16px var(--mono)}
+.s2b-jour span{font-size:12px}
+.s2b-tete-tx{flex:1;min-width:0;line-height:1.2}
+.s2b-tete-tx b{display:block;font-size:16px;color:var(--t0)}
+.s2b-tete-tx span{font-size:12px;color:var(--t2)}
+.s2b-bi{width:32px;height:32px;display:grid;place-items:center;border-radius:6px;color:var(--t1)}
+.s2b-fil{flex:1;min-height:0;overflow:hidden;padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.s2b-pied{flex:none;border-top:1px solid var(--bd);padding:8px 10px 10px;display:flex;gap:6px;align-items:center}
+.s2b-champ{flex:1;display:flex;align-items:center;gap:6px;min-height:40px;border:1px solid var(--bdm);border-radius:20px;background:var(--pn);padding:0 4px 0 12px}
+.s2b-champ span{flex:1;font-size:16px;color:var(--t2)}
+.s2b-mode{display:inline-flex;align-items:center;gap:3px;height:28px;padding:0 8px;border-radius:14px;background:var(--pg);border:1px solid var(--bd);font-size:12px;color:var(--t1);white-space:nowrap}
+.s2b-env{width:40px;height:40px;border-radius:20px;background:var(--act);color:var(--acttx);display:grid;place-items:center}
+.s2b-env[disabled]{background:var(--su);color:var(--t2)}
+.s2b-h{font-size:12px;color:var(--t2);display:flex;justify-content:space-between;align-items:baseline;margin:0}
+.s2b-h b{font-size:14px;color:var(--t0)}
+.s2b-liste{display:flex;flex-direction:column;border-top:1px solid var(--bd)}
+.s2b-g{display:grid;grid-template-columns:44px 24px 1fr auto;gap:8px;align-items:center;min-height:44px;border-bottom:1px solid var(--bd);padding:4px 0}
+.s2b-d{font:12px/1.15 var(--mono);color:var(--t2);text-align:left}
+.s2b-d b{display:block;font-size:13px;color:var(--t0)}
+.s2b-g.s2b-auj .s2b-d b{color:var(--hoptx)}
+.s2b-cb{width:22px;height:22px;border-radius:5px;border:2px solid var(--bdm);display:grid;place-items:center;color:transparent;background:var(--pg)}
+.s2b-cb.s2b-oui{background:var(--act);border-color:var(--act);color:var(--acttx)}
+.s2b-cb.s2b-fait{background:var(--hop);border-color:var(--hop);color:#fff}
+.s2b-gt{font-size:14px;color:var(--t0);line-height:1.25;min-width:0}
+.s2b-gt small{display:block;font-size:12px;color:var(--t2)}
+.s2b-g.s2b-passe .s2b-gt{color:var(--t2)}
+.s2b-dem{height:28px;padding:0 8px;border-radius:14px;border:1px solid var(--hop);color:var(--hoptx);font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.s2b-sw{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--t1);min-height:36px}
+.s2b-sw span{flex:1}
+.s2b-sw small{display:block;font-size:12px;color:var(--t2)}
+.s2b-int{width:36px;height:22px;border-radius:11px;background:var(--bdm);position:relative;flex:none}
+.s2b-int::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:8px;background:var(--pg)}
+.s2b-int.s2b-on{background:var(--hop)}
+.s2b-int.s2b-on::after{left:17px}
+.s2b-q{align-self:flex-end;max-width:84%;background:var(--su);color:var(--t0);border-radius:10px 10px 2px 10px;padding:7px 10px;font-size:14px;line-height:1.35}
+.s2b-q.s2b-court{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s2b-prep{display:flex;flex-direction:column;gap:6px}
+.s2b-prep-h{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--t0);font-weight:600}
+.s2b-prep-h span{flex:1}
+.s2b-prep-h .s2b-mono{font-size:16px}
+.s2b-barre{height:4px;border-radius:2px;background:var(--su);position:relative;overflow:hidden}
+.s2b-barre i{position:absolute;left:0;top:0;bottom:0;background:var(--hop)}
+.s2b-etapes{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--t2)}
+.s2b-etapes span{display:inline-flex;align-items:center;gap:3px}
+.s2b-etapes .s2b-ok{color:var(--hoptx)}
+.s2b-etapes .s2b-cours{color:var(--t0);font-weight:600}
+.s2b-sq{display:block;height:10px;border-radius:5px;background:var(--su)}
+.s2b-g.s2b-squel .s2b-cb{border-style:dashed}
+.s2b-file{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--t1);border:1px dashed var(--bdm);border-radius:8px;padding:6px 6px 6px 10px}
+.s2b-file span{flex:1}
+.s2b-file small{display:block;font-size:12px;color:var(--t2)}
+.s2b-verdict{display:flex;flex-direction:column;gap:4px}
+.s2b-niv{align-self:flex-start;display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:11px;background:var(--attbg);color:var(--atttx);font-weight:700;font-size:12px}
+.s2b-verdict h2{font-size:18px;line-height:1.25;color:var(--t0);margin:0}
+.s2b-dose{font:13px var(--mono);color:var(--t0);text-align:right;white-space:nowrap}
+.s2b-dose s{color:var(--t2)}
+.s2b-g.s2b-princ{background:var(--attbg);margin:0 -12px;padding:4px 12px;border-bottom-color:transparent}
+.s2b-g.s2b-princ .s2b-gt{font-weight:700}
+.s2b-note{font-size:12px;color:var(--atttx)}
+.s2b-rappel{display:grid;grid-template-columns:44px 1fr auto;gap:8px;align-items:center;border:1px solid var(--eau);border-radius:8px;padding:8px 10px 8px 6px;background:var(--eaubg)}
+.s2b-rappel-d{display:flex;flex-direction:column;align-items:center;color:var(--eautx);line-height:1.1}
+.s2b-rappel-d b{font:700 18px var(--mono)}
+.s2b-rappel-d span{font-size:12px}
+.s2b-rappel-t{font-size:14px;color:var(--t0);line-height:1.3}
+.s2b-rappel-t small{display:block;font-size:12px;color:var(--eautx);font-weight:600}
+.s2b-pli{display:flex;align-items:center;gap:6px;min-height:28px;font-size:14px;color:var(--t1);text-align:left;border-bottom:1px solid var(--bd)}
+.s2b-pli span{flex:1}
+.s2b-pli b{color:var(--t0)}
+.s2b-barre-act{display:flex;gap:6px;align-items:center}
+.s2b-barre-act span{flex:1;font-size:12px;color:var(--t2)}
+.s2b-bt2{height:32px;padding:0 10px;border:1px solid var(--bdm);border-radius:6px;font-size:13px;color:var(--t1);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.s2b-prim{height:32px;padding:0 12px;border-radius:6px;background:var(--act);color:var(--acttx);font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.s2b-hors{display:flex;align-items:center;gap:8px;background:var(--pn);border-radius:8px;padding:8px 10px;font-size:14px;color:var(--t0)}
+.s2b-hors small{display:block;font-size:12px;color:var(--t2)}
+.s2b-att{border:1px solid var(--bdm);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.s2b-att p{margin:0;font-size:14px;color:var(--t1)}
+.s2b-att .s2b-q{align-self:stretch;max-width:none;border-radius:8px}
+.s2b-sw .s2b-int,.s2b-ligne .s2b-int{flex:none;width:36px}
+</style></head><body>
+<h1 class="s2b-pl-titre"><img class="s2b-pl-logo" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236E9B5B%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M9.937%2015.5A2%202%200%200%200%208.5%2014.063l-6.135-1.582a.5.5%200%200%201%200-.962L8.5%209.936A2%202%200%200%200%209.937%208.5l1.582-6.135a.5.5%200%200%201%20.963%200L14.063%208.5A2%202%200%200%200%2015.5%209.937l6.135%201.581a.5.5%200%200%201%200%20.964L15.5%2014.063a2%202%200%200%200-1.437%201.437l-1.582%206.135a.5.5%200%200%201-.963%200z%22%2F%3E%3C%2Fsvg%3E" alt="" width="20" height="20">s2b — la réponse en gestes à cocher (tiède)</h1><p class="s2b-pl-sous">Série s2 « le geste et le temps » · chaque conseil devient un geste daté, une dose, une case ; le prochain contrôle devient un rappel</p><div class="s2b-pl"><div class="s2b-pl-col"><p class="s2b-pl-lib">Accueil <span>· les gestes du brassin, J+4</span></p>
+<div class="s2b-tel" data-cadre="accueil"><div class="s2b-fond" aria-hidden="true"><div class="s2b-fond-b">Brassin 31 · New England IPA</div>
+<div class="s2b-fond-t"><i></i><i></i><i></i></div><div class="s2b-fond-big">19 °C</div>
+<div class="s2b-fond-r"></div><div class="s2b-fond-r"></div><div class="s2b-fond-r"></div><div class="s2b-fond-r"></div></div><div class="s2b-scrim"></div><section class="s2b-feuille" aria-label="Compagnon brasseur"><div class="s2b-poignee"></div><header class="s2b-tete"><div class="s2b-jour"><b>J+4</b><span>sam.</span></div>
+<div class="s2b-tete-tx"><b>Compagnon</b><span>Brassin 31 · New England IPA · 19 °C</span></div>
+<button class="s2b-bi" aria-label="Mes conversations"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></button><button class="s2b-bi" aria-label="Plus : limites, repartir à zéro"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></header><div class="s2b-fil">
+<p class="s2b-h"><b>Gestes du brassin 31</b><span>demande sur un geste</span></p>
+<div class="s2b-liste" data-booster="liste-gestes">
+<div class="s2b-g s2b-passe"><span class="s2b-d"><b>J+2</b>jeu. 12</span><span class="s2b-cb s2b-fait" role="checkbox" aria-checked="true"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2b-gt">Dry hop Citra <span class="s2b-mono">85 g</span><small>fait</small></span><span></span></div>
+<div class="s2b-g s2b-passe"><span class="s2b-d"><b>J+4</b>auj.</span><span class="s2b-cb s2b-fait" role="checkbox" aria-checked="true"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2b-gt">Relever la densité<small>DF <span class="s2b-mono">1,012</span> notée</small></span><button class="s2b-dem"><svg class="s2b-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/></svg>Fini ?</button></div>
+<div class="s2b-g s2b-auj"><span class="s2b-d"><b>J+4</b>auj.</span><span class="s2b-cb " role="checkbox" aria-checked="false"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2b-gt">Contrôler la pression<small>elle monte doucement</small></span><button class="s2b-dem"><svg class="s2b-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/></svg>Je purge ?</button></div>
+<div class="s2b-g"><span class="s2b-d"><b>J+6</b>lun. 16</span><span class="s2b-cb " role="checkbox" aria-checked="false"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2b-gt">Dry hop Galaxy <span class="s2b-mono">43 g</span></span><button class="s2b-dem"><svg class="s2b-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/></svg>La dose ?</button></div>
+<div class="s2b-g"><span class="s2b-d"><b>J+9</b>jeu. 19</span><span class="s2b-cb " role="checkbox" aria-checked="false"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2b-gt">Dry hop Mosaic <span class="s2b-mono">43 g</span><small>total <span class="s2b-mono">171 g · 9,0 g/L</span></small></span><button class="s2b-dem"><svg class="s2b-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/></svg>La dose ?</button></div>
+</div>
+<div class="s2b-sw" data-booster="rappel"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><path d="M17.5 17.5 16 16.3V14"/><circle cx="16" cy="16" r="6"/></svg><span>Rappel la veille de chaque dry hop<small>dim. 15.11 et mer. 18.11 à 08:00</small></span><span class="s2b-int s2b-on" role="switch" aria-checked="true"></span></div>
+<div class="s2b-sw"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span>Me notifier à la réponse<small>tu peux fermer pendant que je cherche</small></span><span class="s2b-int s2b-on" role="switch" aria-checked="true"></span></div>
+</div><footer class="s2b-pied"><div class="s2b-champ"><span>Décris ce que tu observes…</span>
+<button class="s2b-mode" aria-label="Mode : Auto">Auto<svg class="s2b-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><button class="s2b-env" disabled aria-label="Envoyer"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg></button></footer></section></div></div>
+<div class="s2b-pl-col"><p class="s2b-pl-lib">Attente <span>· 2:29, la liste se prépare</span></p>
+<div class="s2b-tel" data-cadre="attente"><div class="s2b-fond" aria-hidden="true"><div class="s2b-fond-b">Brassin 31 · New England IPA</div>
+<div class="s2b-fond-t"><i></i><i></i><i></i></div><div class="s2b-fond-big">19 °C</div>
+<div class="s2b-fond-r"></div><div class="s2b-fond-r"></div><div class="s2b-fond-r"></div><div class="s2b-fond-r"></div></div><div class="s2b-scrim"></div><section class="s2b-feuille" aria-label="Compagnon brasseur"><div class="s2b-poignee"></div><header class="s2b-tete"><div class="s2b-jour"><b>J+4</b><span>sam.</span></div>
+<div class="s2b-tete-tx"><b>Compagnon</b><span>Brassin 31 · New England IPA · 19 °C</span></div>
+<button class="s2b-bi" aria-label="Mes conversations"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></button><button class="s2b-bi" aria-label="Plus : limites, repartir à zéro"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></header><div class="s2b-fil">
+<div class="s2b-q">La fermentation est à 19 °C depuis 36 h et la pression monte doucement : que faire ?</div>
+<div class="s2b-prep">
+<div class="s2b-prep-h"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg><span>Je prépare tes gestes</span><span class="s2b-mono">2:29</span></div>
+<div class="s2b-barre"><i style="width:68%"></i></div>
+<div class="s2b-etapes"><span class="s2b-ok"><svg class="s2b-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>brassin lu</span><span class="s2b-ok"><svg class="s2b-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>calculs faits</span><span class="s2b-cours"><svg class="s2b-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>sources : 2 lues</span><span>rédiger</span><span>relire deux fois</span></div>
+<p class="s2b-h"><span>Approfondi · <span class="s2b-mono">1 à 3 min</span> d'habitude, au plus <span class="s2b-mono">3:40</span></span></p>
+</div>
+<div class="s2b-liste" aria-label="Gestes en préparation">
+<div class="s2b-g s2b-squel"><span class="s2b-d"><span class="s2b-sq" style="width:30px"></span></span><span class="s2b-cb " role="checkbox" aria-checked="false"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2b-gt"><span class="s2b-sq" style="width:80%"></span></span><span class="s2b-sq" style="width:52px"></span></div>
+<div class="s2b-g s2b-squel"><span class="s2b-d"><span class="s2b-sq" style="width:30px"></span></span><span class="s2b-cb " role="checkbox" aria-checked="false"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2b-gt"><span class="s2b-sq" style="width:64%"></span></span><span class="s2b-sq" style="width:52px"></span></div>
+<div class="s2b-g s2b-squel"><span class="s2b-d"><span class="s2b-sq" style="width:30px"></span></span><span class="s2b-cb " role="checkbox" aria-checked="false"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2b-gt"><span class="s2b-sq" style="width:72%"></span></span><span class="s2b-sq" style="width:52px"></span></div>
+</div>
+<div class="s2b-rappel" style="opacity:.55"><span class="s2b-rappel-d"><svg class="s2b-ic " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h5"/><path d="M17.5 17.5 16 16.3V14"/><circle cx="16" cy="16" r="6"/></svg></span><span class="s2b-rappel-t"><small>Rappel daté</small>Le prochain contrôle arrivera ici, avec sa date.</span><span></span></div>
+<div class="s2b-file"><svg class="s2b-ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>Et combien de jours de garde à 18 °C ?<small>En file · partira après celle-ci</small></span><button class="s2b-bi" aria-label="Retirer"><svg class="s2b-ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+<div class="s2b-sw"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg><span>Tu peux continuer ailleurs<small>je te notifie, la réponse reste dans ce fil</small></span><span class="s2b-int s2b-on" role="switch" aria-checked="true"></span></div>
+</div><footer class="s2b-pied"><div class="s2b-champ"><span>Ajoute une question…</span>
+<button class="s2b-mode" aria-label="Mode : Approfondi">Approfondi<svg class="s2b-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><button class="s2b-env" disabled aria-label="Envoyer"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg></button></footer></section></div></div>
+<div class="s2b-pl-col"><p class="s2b-pl-lib">Réponse <span>· gestes cochés, rappel daté</span></p>
+<div class="s2b-tel" data-cadre="reponse"><div class="s2b-fond" aria-hidden="true"><div class="s2b-fond-b">Brassin 31 · New England IPA</div>
+<div class="s2b-fond-t"><i></i><i></i><i></i></div><div class="s2b-fond-big">19 °C</div>
+<div class="s2b-fond-r"></div><div class="s2b-fond-r"></div><div class="s2b-fond-r"></div><div class="s2b-fond-r"></div></div><div class="s2b-scrim"></div><section class="s2b-feuille" aria-label="Compagnon brasseur"><div class="s2b-poignee"></div><header class="s2b-tete"><div class="s2b-jour"><b>J+4</b><span>sam.</span></div>
+<div class="s2b-tete-tx"><b>Compagnon</b><span>Brassin 31 · New England IPA · 19 °C</span></div>
+<button class="s2b-bi" aria-label="Mes conversations"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></button><button class="s2b-bi" aria-label="Plus : limites, repartir à zéro"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></header><div class="s2b-fil">
+<div class="s2b-q s2b-court">La fermentation est à 19 °C depuis 36 h et la pression…</div>
+<div class="s2b-verdict"><span class="s2b-niv"><svg class="s2b-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Attention</span><h2>Dry hop chargé : réduis le dernier apport.</h2></div>
+<p class="s2b-h"><b>3 gestes · coche ce que tu fais</b><span><span class="s2b-mono">2</span> sur <span class="s2b-mono">3</span></span></p>
+<div class="s2b-liste" data-booster="gestes-a-cocher">
+<div class="s2b-g s2b-princ"><span class="s2b-d"><b>J+9</b>jeu. 19</span><span class="s2b-cb s2b-oui" role="checkbox" aria-checked="true"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2b-gt">Réduis Mosaic</span><span class="s2b-dose"><s>43</s> → 21 g</span></div>
+<div class="s2b-g"><span class="s2b-d"><b>J+9</b>→ J+12</span><span class="s2b-cb s2b-oui" role="checkbox" aria-checked="true"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2b-gt">Laisse le dry hop 3 jours</span><span class="s2b-dose"><s>2</s> → 3 j</span></div>
+<div class="s2b-g s2b-passe"><span class="s2b-d"><b>J+2</b>passé</span><span class="s2b-cb " role="checkbox" aria-checked="false"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2b-gt">Citra, pour la recette<small class="s2b-note">déjà ajouté sur ce brassin</small></span><span class="s2b-dose"><s>85</s> → 70 g</span></div>
+</div>
+<div class="s2b-rappel" data-booster="rappel-date"><span class="s2b-rappel-d"><b>19</b><span>nov. · jeu.</span></span><span class="s2b-rappel-t"><small>Rappel · 09:00 · à la purge</small>Goût et odeur : note si l'herbacé apparaît.</span><span class="s2b-int s2b-on" role="switch" aria-checked="true" aria-label="Rappel actif"></span></div>
+<button class="s2b-pli"><span><b>Pourquoi</b> · <span class="s2b-mono">171 g</span> pour <span class="s2b-mono">19 L</span> = <span class="s2b-mono">9,0 g/L</span></span><svg class="s2b-ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+<button class="s2b-pli"><span>Conseil relu deux fois · calculs refaits</span><svg class="s2b-ic " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+<div class="s2b-barre-act"><span>Rien ne change sans ta validation.</span><button class="s2b-bt2">Écarter</button><button class="s2b-prim"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Valider 2 gestes</button></div>
+</div><footer class="s2b-pied"><div class="s2b-champ"><span>Décris ce que tu observes…</span>
+<button class="s2b-mode" aria-label="Mode : Auto">Auto<svg class="s2b-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><button class="s2b-env" disabled aria-label="Envoyer"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg></button></footer></section></div></div>
+<div class="s2b-pl-col"><p class="s2b-pl-lib">Erreur <span>· hors ligne, envoi à confirmer</span></p>
+<div class="s2b-tel" data-cadre="erreur"><div class="s2b-fond" aria-hidden="true"><div class="s2b-fond-b">Brassin 31 · New England IPA</div>
+<div class="s2b-fond-t"><i></i><i></i><i></i></div><div class="s2b-fond-big">19 °C</div>
+<div class="s2b-fond-r"></div><div class="s2b-fond-r"></div><div class="s2b-fond-r"></div><div class="s2b-fond-r"></div></div><div class="s2b-scrim"></div><section class="s2b-feuille" aria-label="Compagnon brasseur"><div class="s2b-poignee"></div><header class="s2b-tete"><div class="s2b-jour"><b>J+4</b><span>sam.</span></div>
+<div class="s2b-tete-tx"><b>Compagnon</b><span>Brassin 31 · New England IPA · 19 °C</span></div>
+<button class="s2b-bi" aria-label="Mes conversations"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></button><button class="s2b-bi" aria-label="Plus : limites, repartir à zéro"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></header><div class="s2b-fil">
+<div class="s2b-hors"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/></svg><span>Hors ligne<small>tes gestes et ton rappel restent sur ce téléphone</small></span></div>
+<p class="s2b-h"><b>Gestes validés · 22:07</b><span>toujours là</span></p>
+<div class="s2b-liste">
+<div class="s2b-g"><span class="s2b-d"><b>J+9</b>jeu. 19</span><span class="s2b-cb s2b-oui" role="checkbox" aria-checked="true"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2b-gt">Réduis Mosaic</span><span class="s2b-dose">21 g</span></div>
+<div class="s2b-g"><span class="s2b-d"><b>J+9</b>→ J+12</span><span class="s2b-cb s2b-oui" role="checkbox" aria-checked="true"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span><span class="s2b-gt">Dry hop 3 jours</span><span class="s2b-dose">3 j</span></div>
+</div>
+<div class="s2b-rappel"><span class="s2b-rappel-d"><b>19</b><span>nov. · jeu.</span></span><span class="s2b-rappel-t"><small>Rappel · 09:00 · gardé sur l'appareil</small>Goût et odeur à la purge.</span><span class="s2b-int s2b-on" role="switch" aria-checked="true" aria-label="Rappel actif"></span></div>
+<div class="s2b-att" data-booster="envoi-a-confirmer">
+<div class="s2b-q">Et combien de jours de garde à 18 °C ?</div>
+<p><b>Pas envoyée : pas de réseau.</b> Elle partira une seule fois, quand tu confirmes.</p>
+<div class="s2b-barre-act"><span></span><button class="s2b-bt2"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg>Reformuler</button><button class="s2b-prim"><svg class="s2b-ic " width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg>Envoyer au retour du réseau</button></div>
+</div>
+</div><footer class="s2b-pied"><div class="s2b-champ"><span>Ajoute une question…</span>
+<button class="s2b-mode" aria-label="Mode : Auto">Auto<svg class="s2b-ic " width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></div><button class="s2b-env" disabled aria-label="Envoyer"><svg class="s2b-ic " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/></svg></button></footer></section></div></div></div></body></html>

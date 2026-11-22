@@ -22,6 +22,7 @@ import {
 import { produitDArome } from './substitution';
 import { facteurIntensite, type FacteurIntensite } from './intensite';
 import { medianeAuFrais, palierDansLaCle, typiciteDe, typiciteDeVoie, usageAuFraisDe, type Typicite } from './typicite-acces';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 /** D105 (B1) : le nombre de houblons « à acheter » que les listes principales classent (ajouter, remplacer), pris dans l'ordre de qualité du pool. Mesuré : voir RESULTAT.md de f2. */
 export const POOL_BORNE = 80;
@@ -503,7 +504,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       for (const grams of doses) {
         const a: Addition = { id: `v-${key}-${m}`, hopKey: key, moment: m, grams: round(grams) };
         const next = { ...recipe, additions: [...recipe.additions, a] };
-        const v = evaluate('ajouter', `Ajouter ${nameOf(key)} · ${MOMENTS[m].label} · ${round(a.grams, 0)} g`, [act('ajouter', a)], [{ addition: a, sign: 1 }], next);
+        const v = evaluate('ajouter', `Ajouter ${nameOf(key)} · ${MOMENTS[m].label} · ${nombreFr(a.grams, 0)} g`, [act('ajouter', a)], [{ addition: a, sign: 1 }], next);
         // g2d 'c' (rang seul) : la dose gardée pour un houblon ne suit pas overflowRang, sinon les barres changeraient ; seul l'ordre des voies le lit.
         if (!best || compareVoies(v, best, false) < 0) best = v;
       }
@@ -518,7 +519,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       const b: Addition = { ...a, grams };
       const next = { ...recipe, additions: recipe.additions.map((x) => (x.id === a.id ? b : x)).filter((x) => x.grams > 0) };
       const changes: Change[] = k === 0 ? [{ addition: a, sign: -1 }] : [{ addition: b, sign: 1 }, { addition: a, sign: -1 }];
-      const label = k === 0 ? `Retirer ${nameOf(a.hopKey)} · ${MOMENTS[a.moment].label}` : `${type === 'augmenter' ? 'Augmenter' : 'Diminuer'} ${nameOf(a.hopKey)} · ${MOMENTS[a.moment].label} · ${round(a.grams, 0)} → ${round(grams, 0)} g`;
+      const label = k === 0 ? `Retirer ${nameOf(a.hopKey)} · ${MOMENTS[a.moment].label}` : `${type === 'augmenter' ? 'Augmenter' : 'Diminuer'} ${nameOf(a.hopKey)} · ${MOMENTS[a.moment].label} · ${round(a.grams, 0)} → ${nombreFr(grams, 0)} g`;
       all.push(evaluate(type, label, [k === 0 ? act('retirer', a) : act('modifier', b, { previousGrams: round(a.grams) })], changes, next));
     }
     // 3. Remplacer : à IBU égal (amertume, à 0,5 IBU près) ou à masse égale (arôme).
@@ -530,7 +531,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       if (grams > 0 && grams < a.grams) {
         const b: Addition = { ...a, grams };
         const next = { ...recipe, additions: recipe.additions.map((x) => (x.id === a.id ? b : x)) };
-        all.push(evaluate('diminuer', `Diminuer ${nameOf(a.hopKey)} · ${MOMENTS[a.moment].label} · ${round(a.grams, 0)} → ${round(grams, 1)} g (bas de la bande d’IBU)`,
+        all.push(evaluate('diminuer', `Diminuer ${nameOf(a.hopKey)} · ${MOMENTS[a.moment].label} · ${round(a.grams, 0)} → ${nombreFr(grams, 1)} g (bas de la bande d’IBU)`,
           [act('modifier', b, { previousGrams: round(a.grams) })], [{ addition: b, sign: 1 }, { addition: a, sign: -1 }], next));
       }
     }
@@ -546,7 +547,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       const b: Addition = { id: a.id, hopKey: key, moment: a.moment, grams: round(grams) };
       const next = { ...recipe, additions: recipe.additions.map((x) => (x.id === a.id ? b : x)) };
       const type: VoieType = bitter ? 'remplacer à IBU égal' : 'remplacer à masse égale';
-      const remplacement = evaluate(type, `Remplacer ${nameOf(a.hopKey)} par ${ref.name} · ${MOMENTS[a.moment].label} · ${round(b.grams, 1)} g`,
+      const remplacement = evaluate(type, `Remplacer ${nameOf(a.hopKey)} par ${ref.name} · ${MOMENTS[a.moment].label} · ${nombreFr(b.grams, 1)} g`,
         [act('modifier', b, { previousGrams: round(a.grams), previousHopKey: a.hopKey })], [{ addition: b, sign: 1 }, { addition: a, sign: -1 }], next);
       // g2b : « remplacer à IBU égal » suit la règle d'usage du palier 60′ (un houblon d'arôme à 60′ perd son arôme : il passe après les amérisants).
       if (options.palier60 && bitter) remplacement.palier = infoPalierDe(key, b.grams, remplacement.ibu.after, { ibu: target.value, moment: a.moment, original: a.hopKey });
@@ -565,7 +566,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
       const a1: Addition = { id: `v-${lead.hopKey}-${lead.moment}`, hopKey: lead.hopKey, moment: lead.moment, grams: round(half) };
       const a2: Addition = { id: `v-${other.hopKey}-${lead.moment}`, hopKey: other.hopKey, moment: lead.moment, grams: round(half) };
       const next = { ...recipe, additions: [...recipe.additions, a1, a2] };
-      all.push(evaluate('assemblage', `Assembler ${lead.hopName} + ${other.hopName} · ${lead.momentLabel} · ${round(half, 0)} g + ${round(half, 0)} g`,
+      all.push(evaluate('assemblage', `Assembler ${lead.hopName} + ${other.hopName} · ${lead.momentLabel} · ${nombreFr(half, 0)} g + ${nombreFr(half, 0)} g`,
         [act('ajouter', a1), act('ajouter', a2)], [{ addition: a1, sign: 1, share: 0.5 }, { addition: a2, sign: 1, share: 0.5 }], next,
         ['Assemblage : apports des deux houblons additionnés, interactions du mélange non quantifiées (hypothèse).']));
     }
@@ -655,7 +656,7 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
         const grams = [1, 0.5, 0.1].map((step) => Math.round(exact / step) * step).find((g) => Math.abs(g * k - ibuVise) <= 0.5) ?? exact;
         const a: Addition = { id: `v-${key}-b60`, hopKey: key, moment: 'b60', grams: round(grams) };
         const next = { ...recipe, additions: [...recipe.additions, a] };
-        const v = evaluate('ajouter', `Ajouter ${nameOf(key)} · ${MOMENTS.b60.label} · ${round(a.grams, 1)} g (+${round(ibuVise, 1)} IBU)`, [act('ajouter', a)], [{ addition: a, sign: 1 }], next, [], undefined, true);
+        const v = evaluate('ajouter', `Ajouter ${nameOf(key)} · ${MOMENTS.b60.label} · ${nombreFr(a.grams, 1)} g (+${nombreFr(ibuVise, 1)} IBU)`, [act('ajouter', a)], [{ addition: a, sign: 1 }], next, [], undefined, true);
         if (v.conflicts.length) { exclus++; continue; } // le conflit de famille reste une exclusion (D88 B, D90)
         v.palier = infoPalierDe(key, exact, v.ibu.after, { ibu: ibuVise, moment: 'b60' }); // le rang lit les grammes EXACTS : deux α voisins ne sont pas ex æquo parce que le gramme les arrondit pareil
         v.enStock = enStockDe(key);
@@ -696,12 +697,12 @@ export function proposeVoies(recipe: Recipe, direction: Direction, options: Voie
         if (!dose) continue;
         const a: Addition = { id: `v-${key}-${m}`, hopKey: key, moment: m, grams: round(dose.gPerL * recipe.volumeL) };
         const next = { ...recipe, additions: [...recipe.additions, a] };
-        const v = evaluate('ajouter', `Ajouter ${nameOf(key)} · ${MOMENTS[m].label} · ${round(a.grams, 0)} g (${round(dose.gPerL, 1)} g/L)`, [act('ajouter', a)], [{ addition: a, sign: 1 }], next);
+        const v = evaluate('ajouter', `Ajouter ${nameOf(key)} · ${MOMENTS[m].label} · ${nombreFr(a.grams, 0)} g (${nombreFr(dose.gPerL, 1)} g/L)`, [act('ajouter', a)], [{ addition: a, sign: 1 }], next);
         if (!progress(v)) continue;
         v.dose = dose;
         v.enStock = enStockDe(key);
         const cumul = (dejaDry + a.grams) / recipe.volumeL;
-        if (cumul > BORNES_DRYHOP_GL.revueCumuleGL + 1e-9) v.drapeaux = [`dry hop cumulé ${round(cumul, 1)} g/L : au-dessus du repère de revue de ${BORNES_DRYHOP_GL.revueCumuleGL} g/L (un repère, pas un plafond).`];
+        if (cumul > BORNES_DRYHOP_GL.revueCumuleGL + 1e-9) v.drapeaux = [`dry hop cumulé ${nombreFr(cumul, 1)} g/L : au-dessus du repère de revue de ${nombreFr(BORNES_DRYHOP_GL.revueCumuleGL, 1)} g/L (un repère, pas un plafond).`];
         vs.push(v);
       }
       return garder(vs, compareVoies, compareRankKeys);

@@ -3,6 +3,7 @@ import { brewIngredients, actualAmount } from '../brewCompanion';
 import { Units } from '../../services/units';
 import { demandKey, resolveBudgetStock, type BrewBudgetDemand } from './brewBudget';
 import { yeastQuantityInStockUnit } from '../yeastPitching';
+import { grainHorsEmpatage } from '../fermentables/moments';
 
 export interface BrewStockConsumptionItem { stockItemRef: string; quantity: number; unit: string }
 export interface BrewStockConsumption {
@@ -45,6 +46,11 @@ export function prepareBrewStockConsumption(batch: Batch & { stockConsumption?: 
   if (previous?.completedStages?.includes(stage)) return empty('already-applied');
   if (stage === 'brewday' && previous?.appliedAt) return empty('already-applied');
   if (!batch.recipeSnapshot) return empty('needs-review', ['Recette figée absente : vérifier les ingrédients avant de déstocker ce brassin historique.']);
+  // Un grain prévu bouilli ou au fermenteur (donnée ancienne) n'est ni réservé au fermenteur ni déstocké en silence : le moment se corrige d'abord
+  // (table domain/fermentables/moments.ts, audit du 08.11, AM 1 et 2).
+  const malPlaces = (batch.recipeSnapshot.fermentables ?? []).filter(grainHorsEmpatage);
+  if (malPlaces.length) return empty('needs-review', malPlaces.map((f) =>
+    `${f.name} : grain prévu à ${f.use === 'fermentation' ? 'la fermentation' : 'l’ébullition'} ; un grain s’empâte. Corriger le moment de la recette avant de déstocker.`));
   if (stage === 'remaining' && !previous) return empty('needs-review', ['La consommation du jour de brassage doit être vérifiée avant les ajouts restants.']);
   const now = options.now ?? new Date().toISOString();
   const eventId = `BREW-STOCK-${batch.id}-${stage}`;

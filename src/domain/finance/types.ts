@@ -46,6 +46,8 @@ export interface TransactionFinance {
   sourceAmount?: number;
   sourceDocumentType?: string;
   sourceOrderNumber?: string;
+  /** Référence de paiement QR (QRR ou SCOR) de la facture : elle identifie la facture, quel que soit le total (AM n° 7). */
+  paymentReference?: string;
   sourceTotalBasis?: 'printed' | 'line_sum';
   exchangeRate?: number;
   sourceDocumentHash?: string;
@@ -58,7 +60,14 @@ export interface TransactionFinance {
   proofOriginalFileName?: string;
   /** Une date de paiement n'est pas imprimée sur le document : `document_date` = supposée égale à la date du document, `typed` = saisie. Absent = inconnu. */
   paymentDateBasis?: 'document_date' | 'typed';
+  /** L'envoi du justificatif au Drive en arrière-plan (d3c). Posé tant que `proofDocumentId` ne l'est pas ; Firestore ne reçoit que `queued` et `failed`. */
+  proofUpload?: ProofUpload;
 }
+/** `sending` est transitoire et `voided` interdit d'écriture (dépense annulée) : ces deux états vivent seulement dans le job local. */
+export type ProofUploadState = 'queued' | 'sending' | 'failed' | 'voided';
+export type ProofUploadReason = 'auth' | 'quota' | 'forbidden' | 'not-found' | 'network' | 'file' | 'unknown' | 'expired'
+  | 'cancelled' | 'refused' | 'abandoned';
+export interface ProofUpload { state: ProofUploadState; reason?: ProofUploadReason; uid: string; at: string; failures?: number; fileNo?: number }
 export type FinanceTransaction = Transaction & { finance?: TransactionFinance };
 /** Filing policy only: original documents and financial calculations remain intact. */
 export interface FinancialArchive {

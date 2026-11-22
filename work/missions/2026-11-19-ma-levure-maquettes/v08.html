@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ma levure — v08 : l'IA en colonne, marquée à chaque valeur</title>
+<!--
+  Version 8 sur 12. Base : work/missions/2026-11-19-ma-levure-maquettes/base/proto.html (carte en ligne du 19.11).
+  Parti pris (axe n° 8) : une seule décision de forme. Les traits deviennent un petit tableau à trois colonnes
+  « trait | fiche | IA » : ce que publie le fabricant à côté de ce que propose l'IA. Un bouton « Compléter par l'IA »
+  remplit la colonne d'un coup ; les propositions se confirment d'un seul geste (« Retenir 4 »), on touche une
+  proposition pour l'écarter. Les dix « Retenir / Écarter » de la base deviennent un seul bouton ; plus de retour à la
+  ligne. Passe de correction : une seule mention « la fiche ne publie aucun trait », chaque valeur marquée IA ou
+  simulé (moteur), sources IA nommées, sucres restants déduits de la FG, état après, en-tête de la base complet.
+  Tout le reste suit la base : en-tête levure, FG, fiche · conduite (avec le calage), floculation, Changer de
+  levure, Retour / Suivant. Données d'exemple.
+-->
+<style>
+  :root{
+    --page:#FFFFFF; --panneau:#F5F5F5; --surface:#EBEBEB; --bord:#DDDDDD; --bord-fort:#BFBFBF; --trait:#9E9E9E;
+    --t2:#666666; --t1:#333333; --t0:#111111;
+    --paille:#F2C14E; --or:#E0A02E; --or-t:#7A5A12; --or-b:#9C7020; --cuivre:#C87A2C; --cuivre-t:#8D442C;
+    --eau:#4F7E9B; --eau-t:#1F64A3; --houblon:#567F45;
+    --mono:ui-monospace,"Cascadia Mono","Consolas",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--page);color:var(--t0)}
+  body{font:15px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;width:390px;margin:0 auto;padding-bottom:164px}
+
+  /* En-tête de l'assistant de recette, comme la base */
+  .w8-top{display:flex;align-items:center;gap:8px;padding:10px 12px 4px}
+  .w8-retour{width:44px;height:44px;display:grid;place-items:center;margin-left:-10px;color:var(--t0)}
+  .w8-titre{font-size:22px;font-weight:700;letter-spacing:-.01em}
+  .w8-titre span{font-weight:400;color:var(--t2);font-size:18px;margin-left:4px}
+  .w8-ex{font-size:14px;color:var(--or-t);border:1px dashed var(--or-b);border-radius:999px;padding:1px 8px;margin-left:2px}
+  .w8-aband{margin-left:auto;font-size:15px;color:var(--t1);text-decoration:underline;text-underline-offset:3px;padding:10px 0}
+  .w8-ico{width:36px;height:44px;display:grid;place-items:center;color:var(--t1);flex:none}
+  .w8-etapes{display:flex;gap:7px;letter-spacing:-.015em;padding:0 12px;overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--bord)}
+  .w8-etapes span{font-size:14px;color:var(--t2);padding:6px 0 8px;border-bottom:4px solid var(--trait);flex:none}
+  .w8-etapes span.fait{border-color:#5A5A5A;color:var(--t1)}
+  .w8-etapes span.ici{border-color:var(--t0);color:var(--t0);font-weight:700}
+  .w8-etapes span.apres{border-color:var(--surface)}
+
+  .w8-annuler{display:flex;align-items:center;gap:6px;margin:8px 12px 0;min-height:40px;font-size:14px;color:var(--t1)}
+  .w8-annuler u{text-underline-offset:3px}
+  .w8-annuler .w8-ex{margin-left:auto}
+
+  /* La carte de la levure choisie */
+  .w8-carte{margin:6px 12px 0;border:2px solid var(--t0);border-radius:16px;background:var(--panneau);overflow:hidden}
+  .w8-tete{display:grid;grid-template-columns:44px 1fr auto 36px;column-gap:12px;row-gap:2px;align-items:center;padding:14px 12px 12px}
+  .w8-pastille{width:44px;height:44px;border-radius:50%;background:#FBEBC0;border:2px solid var(--or);display:grid;place-items:center}
+  .w8-nom{min-width:0}
+  .w8-nom b{display:block;font-size:19px;line-height:1.15;letter-spacing:-.01em;white-space:nowrap}
+  .w8-marque{grid-column:2 / 5;font-size:14px;color:var(--t2);white-space:nowrap;margin-top:-6px}
+  .w8-dose{display:flex;align-items:baseline;gap:4px;font-family:var(--mono)}
+  .w8-dose i{font-style:normal;font-size:16px;font-weight:700;text-decoration:underline}
+  .w8-dose strong{font-size:24px}
+  .w8-dose em{font-style:normal;font-size:14px;color:var(--t2)}
+  .w8-x{width:44px;height:44px;display:grid;place-items:center;margin-right:-8px;color:var(--t1)}
+
+  .w8-grille{display:grid;grid-template-columns:122px 1fr 90px;border-top:1px solid var(--bord-fort);border-bottom:1px solid var(--bord-fort)}
+  .w8-cell{padding:10px 8px 12px;border-left:1px solid var(--bord-fort);display:flex;flex-direction:column;gap:4px;min-width:0}
+  .w8-cell:first-child{border-left:0;padding-left:12px}
+  .w8-lab{font-size:14px;color:var(--t2)}
+  .w8-val{font-family:var(--mono);font-size:15px;font-weight:700;white-space:nowrap}
+  .w8-sous{font-size:14px;color:var(--t2);white-space:nowrap}
+  .w8-jauge{position:relative;height:10px;border-radius:5px;background:var(--surface);margin-top:auto}
+  .w8-jauge::before,.w8-jauge::after{content:"";position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--trait)}
+  .w8-jauge::before{left:0}.w8-jauge::after{right:0}
+  .w8-jauge .zone{position:absolute;top:-2px;bottom:-2px;left:60%;width:10%;border-radius:2px;border:1.5px solid var(--or-b);
+    background:repeating-linear-gradient(135deg,var(--paille) 0 3px,#FFF3D1 3px 6px)}
+  .w8-axe{display:flex;justify-content:space-between;font:14px var(--mono);color:var(--t2);margin-top:2px}
+  .w8-hors{color:var(--cuivre-t)}
+  .w8-temp{position:relative;height:10px;border-radius:5px;margin:4px 0 2px;
+    background:linear-gradient(90deg,var(--eau) 0%,#86B9E6 30%,var(--paille) 58%,var(--cuivre) 82%,#A0522D 100%)}
+  .w8-temp .fiche{position:absolute;top:-3px;bottom:-3px;left:36%;width:8%;border:2px dashed var(--t0);border-radius:3px;background:rgba(255,255,255,.55)}
+  .w8-temp .cond{position:absolute;top:-5px;bottom:-5px;left:76%;width:4px;margin-left:-2px;border-radius:2px;background:var(--t0)}
+  .w8-caler{margin-top:6px;min-height:40px;border-radius:10px;border:1.5px solid var(--cuivre-t);background:#FBEDE4;color:var(--cuivre-t);
+    font:600 14px system-ui,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 8px;white-space:nowrap}
+  .w8-floc{display:flex;gap:3px;margin-top:auto}
+  .w8-floc span{flex:1;height:10px;border-radius:3px;background:#8C8C8C}
+  .w8-floc span.vide{background:var(--bord-fort)}
+
+  /* Les traits : un tableau trait | fiche | IA */
+  .w8-traits{padding:10px 12px 12px}
+  .w8-ttete{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .w8-ttete b{font-size:16px}
+  .w8-ia{margin-left:auto;min-height:44px;border-radius:999px;border:0;background:var(--paille);color:var(--t0);
+    font:700 15px system-ui,sans-serif;display:flex;align-items:center;gap:7px;padding:0 16px;box-shadow:0 1px 0 rgba(0,0,0,.12)}
+  .w8-ligne{display:grid;grid-template-columns:132px 1fr;align-items:center}
+  .w8-fiche0{font-size:14px;color:var(--t2);padding:2px 0 6px;border-bottom:1px solid var(--bord)}
+  .w8-src{font-size:14px;font-weight:600;border-radius:6px;padding:1px 6px;white-space:nowrap}
+  .w8-src.ia{background:var(--paille);color:var(--t0)}
+  .w8-src.sim{background:#DDE8F0;color:var(--eau-t)}
+  .w8-src.fg{background:var(--surface);color:var(--t1)}
+  .w8-val2{display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .w8-fixe{font-size:15px;font-weight:700;color:var(--t0)}
+  .w8-relancer{margin-left:auto;min-height:44px;display:flex;align-items:center;gap:6px;padding:0 10px;border:1.5px solid var(--or-b);border-radius:10px;
+    font:600 14px system-ui,sans-serif;color:var(--or-t);background:#FFF6DC;white-space:nowrap}
+  .w8-ligne{min-height:48px;border-bottom:1px solid var(--bord)}
+  .w8-ligne:last-of-type{border-bottom:0}
+  .w8-trait{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--t1);white-space:nowrap}
+  .w8-trait i{width:12px;height:12px;border-radius:50%;flex:none}
+  .w8-rien{font-size:14px;color:var(--t2);white-space:nowrap}
+  .w8-prop{flex:none;min-height:38px;display:inline-flex;align-items:center;gap:8px;padding:0 10px 0 12px;border-radius:10px;
+    border:1.5px dashed var(--or-b);background:#FFF6DC;color:var(--or-t);font-weight:700;font-size:15px;white-space:nowrap}
+  .w8-prop .ec{font-weight:400;color:var(--or-b);font-size:16px}
+  .w8-prop.ecarte{border:1.5px dotted var(--bord-fort);background:transparent;color:var(--t2);font-weight:400}
+  .w8-prop.ecarte b{text-decoration:line-through;font-weight:400}
+  .w8-prop.ecarte .ec{color:var(--t2)}
+  .w8-pied{display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--or-b)}
+  .w8-pied p{margin:0;flex:1;font-size:14px;color:var(--t1);line-height:1.45}
+  .w8-pied{flex-wrap:wrap}
+  .w8-pied p{flex:1 1 100%}
+  .w8-leg{font-size:14px;color:var(--t1)}
+  .w8-pied p u{text-underline-offset:3px}
+  .w8-retenir{margin-left:auto;min-height:44px;border-radius:12px;border:2px solid var(--t0);background:var(--t0);color:#FFFFFF;
+    font:700 15px system-ui,sans-serif;padding:0 14px;white-space:nowrap;display:flex;align-items:center;gap:6px}
+
+  /* Changer de levure, comme la base */
+  .w8-changer{margin:12px 12px 0;background:var(--panneau);border-radius:16px;padding:12px}
+  .w8-champ{min-height:52px;border:1.5px dashed var(--trait);border-radius:999px;background:var(--page);display:flex;align-items:center;gap:10px;padding:0 16px;font-size:17px;color:var(--t2)}
+  .w8-puces{display:flex;gap:5px;margin-top:10px;overflow-x:auto}
+  .w8-puce{min-height:44px;display:flex;align-items:center;gap:5px;padding:0 8px;border:1.5px solid var(--bord-fort);border-radius:12px;background:var(--page);font-size:15px;color:var(--t1);white-space:nowrap;flex:none}
+  .w8-puce.libre{margin-left:auto;border-style:dashed}
+
+  .w8-nav{display:flex;gap:10px;margin:14px 12px 0}
+  .w8-nav .ret{min-height:48px;padding:0 20px;border:1.5px solid var(--bord-fort);border-radius:12px;display:flex;align-items:center;color:var(--t1);font-size:16px}
+  .w8-nav .suiv{min-height:48px;padding:0 18px;border-radius:12px;background:var(--t0);color:#FFFFFF;font-weight:700;font-size:16px;display:flex;align-items:center}
+
+  /* Le même bloc, avant et pendant (états du geste) */
+  .w8-etats{margin:22px 12px 0;border-top:1px solid var(--bord);padding-top:12px}
+  .w8-etats h2{margin:0 0 8px;font-size:14px;font-weight:600;color:var(--t2);letter-spacing:.02em}
+  .w8-mini{border:1.5px solid var(--bord-fort);border-radius:14px;background:var(--panneau);padding:8px 12px;margin-bottom:10px}
+  .w8-mini .w8-ligne{min-height:44px}
+  .w8-mini .etat{font-size:14px;color:var(--t2);margin-bottom:2px}
+  .w8-vide{font-size:15px;color:var(--trait)}
+  .w8-lit{height:14px;width:86px;border-radius:7px;background:linear-gradient(90deg,#FBEBC0 0%,var(--paille) 45%,#FBEBC0 90%)}
+  .w8-encours{margin-left:auto;display:flex;align-items:center;gap:8px;min-height:44px;font-size:14px;color:var(--or-t);font-weight:600}
+  .w8-encours u{color:var(--t1);font-weight:400;text-underline-offset:3px;padding:10px 0 10px 6px}
+  .w8-mini .w8-pied{margin-top:4px}
+  .w8-defaire{font-size:14px;color:var(--t1);min-height:44px;display:flex;align-items:center;gap:5px}
+  .w8-defaire u{text-underline-offset:3px}
+  .w8-spin{width:18px;height:18px;border-radius:50%;border:3px solid #FBEBC0;border-top-color:var(--or)}
+
+  /* Barre d'onglets et bouton volant (règles dures) */
+  .w8-onglets{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:390px;height:64px;background:var(--panneau);border-top:1px solid var(--bord);
+    display:grid;grid-template-columns:repeat(6,1fr);z-index:5}
+  .w8-onglets a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:14px;color:var(--t2);text-decoration:none;letter-spacing:-.02em}
+  .w8-onglets a svg{width:20px;height:20px}
+  .w8-onglets a.actif{color:var(--t0);font-weight:700}
+  .w8-onglets a.actif svg{color:var(--or-t)}
+  .w8-fab{position:fixed;right:max(16px,calc(50% - 195px + 16px));bottom:76px;width:56px;height:56px;border-radius:50%;background:var(--t0);color:#FFFFFF;
+    display:grid;place-items:center;font-size:32px;line-height:1;font-weight:300;box-shadow:0 6px 16px rgba(0,0,0,.28);z-index:6;text-decoration:none}
+</style>
+</head>
+<body>
+
+<header class="w8-top">
+  <span class="w8-retour" aria-label="Retour"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+  <span class="w8-titre">Levure<span>4/7</span></span>
+  <span class="w8-aband">Abandonner</span>
+  <span class="w8-ico" aria-label="Exporter la fiche"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h2a2 2 0 012 2v3M9 4H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-2"/><rect x="9" y="2.5" width="6" height="3.5" rx="1"/><path d="M13 12.5h8M18 9.5l3 3-3 3"/></svg></span>
+  <span class="w8-ico" aria-label="Thème clair ou sombre"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></svg></span>
+</header>
+<nav class="w8-etapes" aria-label="Étapes de la recette">
+  <span class="fait">Identité</span><span class="fait">Malts/sucres</span><span class="fait">Houblons</span><span class="ici">Levure</span><span class="apres">Paliers</span><span class="apres">Eau</span><span class="apres">Récap.</span>
+</nav>
+
+<div class="w8-annuler"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg><u>Annuler le changement</u><span class="w8-ex">exemple</span></div>
+
+<section class="w8-carte" aria-label="Ma levure">
+  <div class="w8-tete">
+    <span class="w8-pastille"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7A5A12" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M9 3h6M10 3v6l-5 9a2 2 0 002 3h10a2 2 0 002-3l-5-9V3"/><path d="M7.5 15h9"/></svg></span>
+    <div class="w8-nom"><b>Munich Lager Yeast</b></div>
+    <div class="w8-dose"><i>≥</i><strong>15</strong><em>g</em></div>
+    <span class="w8-x" aria-label="Retirer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+    <span class="w8-marque">White Labs · vendue par Lallemand</span>
+  </div>
+
+  <div class="w8-grille">
+    <div class="w8-cell">
+      <span class="w8-lab">FG</span>
+      <span class="w8-val">1,018–1,021</span>
+      <span class="w8-sous">≈ 6,0–6,4 % vol</span>
+      <span class="w8-jauge" aria-label="FG 1,018 à 1,021 sur 1,000 à 1,030"><span class="zone"></span></span>
+      <span class="w8-axe"><span>1,000</span><span>1,030</span></span>
+    </div>
+    <div class="w8-cell">
+      <span class="w8-lab">fiche · conduite</span>
+      <span class="w8-val">9–11 · <span class="w8-hors">19 °C</span></span>
+      <span class="w8-temp" aria-label="plage de la fiche 9 à 11 °C, conduite 19 °C"><span class="fiche"></span><span class="cond"></span></span>
+      <span class="w8-sous w8-hors">hors fiche · +8 °C</span>
+      <span class="w8-caler"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>Primaire à 11 °C</span>
+    </div>
+    <div class="w8-cell">
+      <span class="w8-lab">floculation</span>
+      <span class="w8-val" style="font-weight:400">moyen</span>
+      <span class="w8-floc"><span></span><span></span><span class="vide"></span></span>
+    </div>
+  </div>
+
+  <div class="w8-traits">
+    <div class="w8-ttete">
+      <b>Traits</b>
+      <span class="w8-retenir"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Retenir 3</span>
+    </div>
+    <div class="w8-fiche0">La fiche White Labs ne publie aucun trait. Touchez une valeur pour l'écarter.</div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#E0A02E"></i>esters</span><span class="w8-val2"><span class="w8-prop"><b>faible</b></span><span class="w8-src ia">IA</span></span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#A0522D"></i>phénols</span><span class="w8-val2"><span class="w8-prop"><b>négatif</b></span><span class="w8-src sim">simulé</span></span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#6E9B5B"></i>thiols</span><span class="w8-val2"><span class="w8-prop ecarte"><b>faible</b><span class="ec">↺</span></span><span class="w8-src sim">simulé</span></span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#A3C97A"></i>terpènes</span><span class="w8-val2"><span class="w8-prop"><b>faible</b></span><span class="w8-src sim">simulé</span></span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#C8A27A"></i>sucres restants</span><span class="w8-val2"><span class="w8-fixe">moyens</span><span class="w8-src fg">de la FG</span></span></div>
+    <div class="w8-pied">
+      <p><span class="w8-src ia">IA</span> lu sur <u>BeerMaverick</u> et <u>Brewer's Friend</u></p>
+      <span class="w8-leg"><span class="w8-src sim">simulé</span> calcul du moteur</span>
+      <span class="w8-relancer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 12a8 8 0 11-2.3-5.7"/><path d="M20 4v4h-4"/></svg>Relancer</span>
+    </div>
+  </div>
+</section>
+
+<section class="w8-changer" aria-label="Changer de levure">
+  <div class="w8-champ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Changer de levure</div>
+  <div class="w8-puces">
+    <span class="w8-puce"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4F7E9B" stroke-width="2" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Pomona</span>
+    <span class="w8-puce"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4F7E9B" stroke-width="2" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Verdant IPA</span>
+    <span class="w8-puce libre">Hors catalogue</span>
+  </div>
+</section>
+
+<div class="w8-nav"><span class="ret">Retour</span><span class="suiv">Suivant — Paliers</span></div>
+
+<section class="w8-etats" aria-label="Le geste IA : avant, pendant, après">
+  <h2>Le même tableau, avant, pendant et après le geste</h2>
+  <div class="w8-mini">
+    <div class="w8-ttete"><span class="etat">avant</span>
+      <span class="w8-ia"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 6.1L20 10l-6.1 1.9L12 18l-1.9-6.1L4 10l6.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>Compléter par l'IA</span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#E0A02E"></i>esters</span><span class="w8-vide">—</span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#A0522D"></i>phénols</span><span class="w8-val2"><span class="w8-prop"><b>négatif</b></span><span class="w8-src sim">simulé</span></span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#C8A27A"></i>sucres restants</span><span class="w8-val2"><span class="w8-fixe">moyens</span><span class="w8-src fg">de la FG</span></span></div>
+  </div>
+  <div class="w8-mini">
+    <div class="w8-ttete"><span class="etat">pendant</span>
+      <span class="w8-encours"><span class="w8-spin"></span>l'IA lit 2 sources <u>Arrêter</u></span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#E0A02E"></i>esters</span><span class="w8-lit"></span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#A0522D"></i>phénols</span><span class="w8-val2"><span class="w8-prop"><b>négatif</b></span><span class="w8-src sim">simulé</span></span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#C8A27A"></i>sucres restants</span><span class="w8-val2"><span class="w8-fixe">moyens</span><span class="w8-src fg">de la FG</span></span></div>
+  </div>
+  <div class="w8-mini">
+    <div class="w8-ttete"><span class="etat">après « Retenir 3 »</span>
+      <span class="w8-relancer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 12a8 8 0 11-2.3-5.7"/><path d="M20 4v4h-4"/></svg>Relancer</span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#E0A02E"></i>esters</span><span class="w8-val2"><span class="w8-fixe">faible</span><span class="w8-src ia">IA ✓</span></span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#A0522D"></i>phénols</span><span class="w8-val2"><span class="w8-fixe">négatif</span><span class="w8-src sim">simulé ✓</span></span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#6E9B5B"></i>thiols</span><span class="w8-vide">— écarté</span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#A3C97A"></i>terpènes</span><span class="w8-val2"><span class="w8-fixe">faible</span><span class="w8-src sim">simulé ✓</span></span></div>
+    <div class="w8-ligne"><span class="w8-trait"><i style="background:#C8A27A"></i>sucres restants</span><span class="w8-val2"><span class="w8-fixe">moyens</span><span class="w8-src fg">de la FG</span></span></div>
+    <div class="w8-pied"><span class="w8-defaire"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg><u>Défaire</u></span></div>
+  </div>
+</section>
+
+<a class="w8-fab" aria-label="Ajouter">+</a>
+
+<nav class="w8-onglets" aria-label="Onglets">
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Bord</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19V11M12 19V5M19 19v-6"/></svg>Finances</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="actif"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 4h10l-1 16H8z"/><path d="M7.5 9h9"/></svg>Brassins</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>Clients</a>
+</nav>
+
+</body>
+</html>

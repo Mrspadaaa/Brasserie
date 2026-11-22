@@ -1,0 +1,313 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>g6 · mode graph · bulles</title><style>*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fff;--ink:#111;--mut:#666;--line:#ddd;--line2:#bfbfbf;--s1:#f5f5f5;--s2:#ebebeb;--fin:#1f64a3;--ok:#2f7d6b;--bad:#b3261e;--badbg:#fbeae8;--botOn:#efe8e1;--prod:#9a4f1e;--act:#111;--onact:#fff}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:15px;-webkit-tap-highlight-color:transparent}
+.ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.bot{position:fixed;left:0;right:0;bottom:0;height:56px;display:flex;background:var(--s1);border-top:1px solid var(--line);z-index:30}
+.bot a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;position:relative;min-width:0}
+.bot a.on{background:var(--botOn);font-weight:600;box-shadow:inset 0 3px 0 var(--prod)}
+.badge{position:absolute;top:1px;left:calc(50% + 4px);background:#8a5a1c;color:#fff;font-size:14px;font-style:normal;font-weight:600;border-radius:999px;padding:0 5px;line-height:18px}
+.fab{position:fixed;right:14px;bottom:72px;z-index:33;width:56px;height:56px;border-radius:28px;border:0;background:var(--act);color:var(--onact);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:inherit;font-weight:700;font-size:14px;line-height:1;box-shadow:0 6px 18px rgba(0,0,0,.28)}
+.fab .ico{width:24px;height:24px;stroke-width:2.6}
+body.land .bot{height:44px}body.land .bot a{flex-direction:row;gap:6px}body.land .bot a .ico{width:18px;height:18px}body.land .bot a .badge{position:static;order:3;margin-left:-2px}
+body.land .fab{bottom:56px;width:48px;height:48px}body.land .fab .ico{width:20px;height:20px}
+.tt{display:flex;align-items:baseline;gap:6px;white-space:nowrap}.big{font-size:32px;line-height:1;color:var(--fin);font-weight:800;letter-spacing:-.5px}.u{font-size:16px;color:var(--mut)}.u b{color:var(--fin)}
+.per{height:28px;border-radius:14px;border:0;background:var(--ink);color:#fff;font-family:inherit;font-weight:700;font-size:14px;padding:0 4px 0 10px;display:inline-flex;align-items:center;gap:2px;white-space:nowrap}.per .ico{width:16px;height:16px}
+.pil{height:28px;min-width:28px;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;gap:3px;border:1.5px solid var(--line2);padding:0 7px;font-family:inherit;font-weight:700;font-size:14px;background:#fff;white-space:nowrap}
+.pil .ico{width:16px;height:16px}.pil.bad{border-color:var(--bad);color:var(--bad);background:var(--badbg)}
+.hd{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 10px;height:48px}
+.hd .rt{display:flex;gap:6px;align-items:center}
+#plot,#band{position:absolute;display:block;overflow:visible}
+svg text{font-family:inherit;font-variant-numeric:tabular-nums}
+.lab{font-size:14px;font-weight:600;paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}.lab .mt{font-weight:800}
+.tk{font-size:14px;fill:#777}.mo{font-size:14px;fill:#555}
+.leg{position:absolute;display:flex;flex-wrap:wrap;gap:4px 10px;align-content:flex-start}
+.ch{display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:600;color:var(--c);white-space:nowrap;height:20px}.ch i{width:12px;height:12px;border-radius:3px;background:var(--c);flex:none}.ch b{font-weight:800}
+.cle{display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--mut);height:20px;white-space:nowrap}</style></head>
+<body class="g6"><div class="hd"><div class="tt"><b class="big">113</b><span class="u">CHF à dépenser · <b>S24</b></span></div><div class="rt"><button type="button" class="per" aria-label="Période : 6 mois">6 mois<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><button type="button" class="pil bad" aria-label="2 en retard"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>2</button></div></div><svg id="plot"></svg><svg id="band"></svg><div class="leg" id="leg"></div><nav class="bot" aria-label="Barre du bas"><a><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Bord</span></a><a><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="color:#1f64a3"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg><span>Finances</span></a><a class="on" aria-current="page"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="color:#9a4f1e"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M7.5 14h2M11 14h2M14.5 14h2M7.5 17.5h2M11 17.5h2"/></svg><span>Calendrier</span></a><a><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="color:#9a4f1e"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M14 7.5c-1 0-1.4.5-3 .5s-2-.5-3-.5-1.7.5-2.5.5a2.5 2.5 0 0 1 0-5c.8 0 1.6.5 2.5.5S9.4 2 11 2s2 1.5 3 1.5 1.7-.5 2.5-.5a2.5 2.5 0 0 1 0 5c-.8 0-1.5-.5-2.5-.5Z"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/></svg><span>Brassins</span></a><a><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="color:#4c6b2a"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></svg><i class="badge">24</i><span>Stocks</span></a><a><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg><span>Clients</span></a></nav>
+<button type="button" class="fab" aria-label="Ajouter en S47"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>S47</span></button>
+<script>window.MG_DATA={"C":[null,4032,4152,4132,5120,5064,5730,5850,5030,4770,4890,4778,4498,5038,5158,5278,5380,5500,5620,5740,4560,4304,4424,5454,5574,4214,4144,4644,4764,1684,1804,1396,1516,3376,3496,3616,3508,3628,4448,4568,7138,7258,5022,5142,5262,4902,5632,4581,4701,4821,4941,4661,4461],"L":[null,4032,4152,4132,5120,5064,5550,5490,5030,4770,4890,4778,4498,4978,5038,5098,4960,4625,4289,3800,2910,2224,1915,2515,2205,1496,1150,1270,1010,350,306,113,145,1916,1947,1979,1782,1814,2545,2577,5058,5089,4565,4656,4508,4359,5061,4581,4701,4821,4834,4448,4461],"caisse0":4180,"ventesSem":120,"sem":[null,[{"n":"Blonde d’automne","g":"brassins","m":-148}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Loyer du local (400 par mois)","g":"papiers","m":-400},{"n":"Bouteilles au comptoir","g":"ventes","m":260}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Marché de Noël","g":"fetes","m":1180},{"n":"Facture Houblons Suisse","g":"papiers","m":-312}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Porter d’hiver","g":"brassins","m":-176}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Bouteilles de Noël aux privés","g":"ventes","m":640},{"n":"Facture Brouwland","g":"papiers","m":-94}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Commande groupée de malt","g":"achats","m":-540},{"n":"Loyer du local (400 par mois)","g":"papiers","m":-400}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Assurance annuelle","g":"papiers","m":-380}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"IPA houblon à cru","g":"brassins","m":-232}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Loyer du local (400 par mois)","g":"papiers","m":-400}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Dégustation à la brasserie","g":"fetes","m":420}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Blanche de printemps","g":"brassins","m":-138},{"n":"Fûts du Café du Pont","g":"ventes","m":520},{"n":"Loyer du local (400 par mois)","g":"papiers","m":-400}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Hotte","g":"travaux","m":-900},{"n":"Loyer du local (400 par mois)","g":"papiers","m":-400}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Pale ale","g":"brassins","m":-166},{"n":"Impôt sur la bière","g":"papiers","m":-210}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Marché de printemps","g":"fetes","m":910}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Six fûts inox de 20 L","g":"achats","m":-1080},{"n":"Loyer du local (400 par mois)","g":"papiers","m":-400}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Saison d’été","g":"brassins","m":-190}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Livraison restaurant La Cigogne","g":"ventes","m":380}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Embouteilleuse","g":"achats","m":-2800},{"n":"Loyer du local (400 par mois)","g":"papiers","m":-400}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Blonde des moissons","g":"brassins","m":-148},{"n":"Pompe de transfert","g":"achats","m":-380}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Fête de village","g":"fetes","m":2140},{"n":"Loyer du local (400 par mois)","g":"papiers","m":-400}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"IPA d’été","g":"brassins","m":-228}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Commande de mariage","g":"ventes","m":1100},{"n":"Loyer du local (400 par mois)","g":"papiers","m":-400}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Festival de la bière","g":"fetes","m":2450}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Ambrée de rentrée","g":"brassins","m":-156},{"n":"Frigo (chambre froide)","g":"achats","m":-1800},{"n":"Loyer du local (400 par mois)","g":"papiers","m":-400}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Houblons de la récolte","g":"achats","m":-480}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Portes ouvertes","g":"fetes","m":610}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Bière d’octobre","g":"brassins","m":-171},{"n":"Sols","g":"travaux","m":-600},{"n":"Loyer du local (400 par mois)","g":"papiers","m":-400}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Loyer du local (400 par mois)","g":"papiers","m":-400}],[{"n":"Ventes de la semaine","g":"ventes","m":120},{"n":"Éclairage du local","g":"travaux","m":-320}]],"act":[[],["brassins"],["brassins","activites"],["brassins","activites","ventes"],["brassins","fetes","activites","ventes","papiers"],["brassins","activites","ventes"],["brassins","achats","activites","ventes","papiers"],["brassins","achats"],["brassins","achats","activites"],["brassins","papiers"],["activites"],["brassins","activites"],["brassins","activites"],["brassins","fetes","achats"],["brassins","achats","activites"],["brassins","achats","activites","ventes"],["brassins","achats","travaux","ventes"],["brassins","achats","travaux"],["brassins","achats","travaux"],["brassins","achats","travaux"],["achats","travaux"],["brassins","achats","papiers"],["brassins","achats"],["brassins","fetes","achats"],["brassins","achats"],["achats"],["brassins","achats","ventes"],["brassins","achats","travaux","ventes"],["brassins","achats","travaux"],["brassins","achats","travaux"],["brassins","achats","travaux"],["brassins","achats","travaux"],["brassins","achats","travaux","activites"],["brassins","fetes","achats","travaux"],["brassins","achats","travaux"],["achats","travaux","activites"],["brassins","achats","travaux"],["brassins","achats","travaux","activites","ventes"],["brassins","achats","travaux","ventes"],["brassins","fetes","achats","travaux"],["brassins","fetes","achats","travaux"],["achats","travaux"],["brassins","achats","travaux"],["brassins","travaux"],["brassins","achats","travaux"],["brassins","achats","travaux"],["fetes","travaux"],["brassins","travaux"],["brassins","activites"],["brassins"],["brassins","travaux"],["brassins","travaux"],["travaux"]],"mois":[{"r":0,"k":10},{"r":3,"k":11},{"r":8,"k":0},{"r":12,"k":1},{"r":16,"k":2},{"r":20,"k":3},{"r":25,"k":4},{"r":29,"k":5},{"r":33,"k":6},{"r":38,"k":7},{"r":42,"k":8},{"r":47,"k":9},{"r":51,"k":10}],"MV":[{"r":4,"m":1180,"n":"Marché de Noël","sh":"Noël","t":"evenement","g":"fetes"},{"r":6,"m":640,"n":"Noël privés","sh":"Noël pr.","t":"vente","g":"ventes"},{"r":8,"m":-540,"n":"Commande groupée de malt","sh":"Malt","t":"achat","g":"achats"},{"r":9,"m":-380,"n":"Assurance","sh":"Assur.","t":"charge","g":"papiers"},{"r":13,"m":420,"n":"Dégustation","sh":"Dégust.","t":"evenement","g":"fetes"},{"r":16,"m":520,"n":"Café du Pont","sh":"Café","t":"vente","g":"ventes"},{"r":20,"m":-900,"n":"Hotte","sh":"Hotte","t":"renovation","g":"travaux"},{"r":23,"m":910,"n":"Marché de printemps","sh":"Marché","t":"evenement","g":"fetes"},{"r":25,"m":-1080,"n":"Six fûts inox","sh":"Fûts","t":"achat","g":"achats"},{"r":27,"m":380,"n":"La Cigogne","sh":"Cigogne","t":"vente","g":"ventes"},{"r":29,"m":-2800,"n":"Embouteilleuse","sh":"Embout.","t":"achat","g":"achats"},{"r":31,"m":-380,"n":"Pompe","sh":"Pompe","t":"achat","g":"achats"},{"r":33,"m":2140,"n":"Fête de village","sh":"Fête","t":"evenement","g":"fetes"},{"r":38,"m":1100,"n":"Mariage","sh":"Mariage","t":"vente","g":"ventes"},{"r":40,"m":2450,"n":"Festival","sh":"Festival","t":"evenement","g":"fetes"},{"r":42,"m":-1800,"n":"Frigo","sh":"Frigo","t":"achat","g":"achats"},{"r":45,"m":-480,"n":"Houblons","sh":"Houbl.","t":"achat","g":"achats"},{"r":46,"m":610,"n":"Portes ouvertes","sh":"Portes","t":"evenement","g":"fetes"},{"r":47,"m":-600,"n":"Sols","sh":"Sols","t":"renovation","g":"travaux"}],"pb":{"r":31,"v":113}};</script><script>/* mode graph : moteur commun des six versions (données, échelles, étiquettes sans chevauchement). Injecté dans chaque page. */
+(function () {
+  'use strict';
+  var D = window.MG_DATA;
+  var GEN = {
+    brassins: { n: 'Brassins', c: '#9a4f1e' }, fetes: { n: 'Fêtes', c: '#a3365c' }, ventes: { n: 'Ventes', c: '#2f7d6b' },
+    achats: { n: 'Achats', c: '#1f64a3' }, travaux: { n: 'Travaux', c: '#7f5b10' }, activites: { n: 'Activités', c: '#4a4a4a' }, papiers: { n: 'Papiers', c: '#6b6b6b' }
+  };
+  var ORDRE = ['brassins', 'fetes', 'ventes', 'achats', 'travaux', 'activites', 'papiers'];
+  var MO = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+  var NS = 'http://www.w3.org/2000/svg';
+  function fmt(n) { return String(Math.abs(Math.round(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+  function sg(n) { return (n >= 0 ? '+' : '−') + fmt(n); }
+  function sn(r) { return r < 8 ? 46 + r : r - 7; }
+  function el(tag, at, par) { var e = document.createElementNS(NS, tag); for (var k in at) if (at[k] != null) e.setAttribute(k, at[k]); if (par) par.appendChild(e); return e; }
+  function flux(r) { return (D.sem[r] || []); }
+  function entrees(r) { return flux(r).filter(function (i) { return i.m > 0; }).sort(function (a, b) { return b.m - a.m; }); }
+  function sorties(r) { return flux(r).filter(function (i) { return i.m < 0; }).sort(function (a, b) { return a.m - b.m; }); }
+  /* genre qui fait le plus bouger la caisse cette semaine (hors ventes courantes) ; sinon ce qui est au calendrier */
+  function dominant(r, avecActivite) {
+    var f = flux(r).filter(function (i) { return i.n !== 'Ventes de la semaine' && !/^Loyer/.test(i.n); });
+    if (f.length) return f.sort(function (a, b) { return Math.abs(b.m) - Math.abs(a.m); })[0].g;
+    if (!avecActivite) return null;
+    var pr = ['fetes', 'ventes', 'brassins', 'travaux', 'activites', 'papiers', 'achats'], a = D.act[r] || [];
+    for (var k = 0; k < pr.length; k++) if (a.indexOf(pr[k]) >= 0) return pr[k];
+    return null;
+  }
+  function totaux(r0, r1) {
+    var t = {}; ORDRE.forEach(function (g) { t[g] = 0; });
+    for (var r = r0; r <= r1; r++) flux(r).forEach(function (i) { t[i.g] += i.m; });
+    return t;
+  }
+  /* contrôle d'honnêteté : chaque semaine, caisse précédente + flux = caisse ; somme des totaux = écart de caisse */
+  function honnete(r0, r1) {
+    var bad = [];
+    for (var r = Math.max(2, r0); r <= r1; r++) { var s = flux(r).reduce(function (a, i) { return a + i.m; }, 0); if (Math.abs(D.C[r - 1] + s - D.C[r]) > .5) bad.push(r); }
+    var t = totaux(r0, r1), som = 0; for (var g in t) som += t[g];
+    var dep = r0 <= 1 ? 4180 : D.C[r0 - 1];
+    if (Math.abs(dep + som - D.C[r1]) > .5) bad.push('totaux');
+    return { ok: !bad.length, bad: bad, depart: dep, fin: D.C[r1], som: som };
+  }
+  /* mesure d'un texte svg */
+  var mesureSvg = null;
+  function largeur(txt, cls) {
+    if (!mesureSvg) { mesureSvg = el('svg', { width: 10, height: 10, style: 'position:absolute;left:-9999px;top:0' }); document.body.appendChild(mesureSvg); }
+    var t = el('text', { class: cls || 'lab', x: 0, y: 20 }, mesureSvg); var mm = (cls || 'lab') === 'lab' ? /^(.*?)([+−][d ]+(?: · Sd+)?)$/.exec(txt) : null;
+    if (mm) { var a = el('tspan', {}, t); a.textContent = mm[1]; var b = el('tspan', { class: 'mt' }, t); b.textContent = mm[2]; } else t.textContent = txt;
+    var w = t.getBBox().width; mesureSvg.removeChild(t); return Math.ceil(w) + 1;
+  }
+  function inter(a, b, p) { p = p || 0; return a.x < b.x + b.w + p && b.x < a.x + a.w + p && a.y < b.y + b.h + p && b.y < a.y + a.h + p; }
+  function segRect(x1, y1, x2, y2, b) { /* segment coupe-t-il la boîte (échantillonnage fin) */
+    var n = Math.ceil(Math.hypot(x2 - x1, y2 - y1) / 2) + 1;
+    for (var i = 0; i <= n; i++) { var x = x1 + (x2 - x1) * i / n, y = y1 + (y2 - y1) * i / n; if (x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h) return true; }
+    return false;
+  }
+  /* placement : candidats valides d'abord (cadre, traits, longueur du lien), puis plusieurs ordres essayés ; on garde le moins de cachées, puis les liens les plus courts */
+  function placer(svg, items, obst, cadre, opts) {
+    opts = opts || {}; var H1 = 18;
+    if (!svg.__pris) { svg.__pris = []; svg.__liens = []; }
+    var base = svg.__pris, baseL = svg.__liens, g = el('g', { class: 'labs' }, svg);
+    var prep = items.map(function (it) {
+      var w1 = largeur(it.nom + ' ' + it.mt, 'lab'), mots = it.nom.split(' '), coupe = null, bestW = 1e9;
+      for (var s = 1; s < mots.length; s++) { var l1 = mots.slice(0, s).join(' '), l2 = mots.slice(s).join(' ') + ' ' + it.mt, ww = Math.max(largeur(l1, 'lab'), largeur(l2, 'lab')); if (ww < bestW) { bestW = ww; coupe = [l1, l2, ww]; } }
+      if (mots.length === 1) coupe = [it.nom, it.mt, Math.max(largeur(it.nom, 'lab'), largeur(it.mt, 'lab'))];
+      var formes = [[w1, H1, null]]; if (coupe && coupe[2] < w1 - 8) formes.push([coupe[2], 36, coupe]);
+      var ok = [];
+      formes.forEach(function (fm, fi) {
+        var w = fm[0], H = fm[1], cands = it.cands ? it.cands(w, H) : candsDefaut(it, w, H, opts);
+        cands.forEach(function (cd) {
+          var bx = { x: cd.x, y: cd.y, w: w, h: H }, A = cd.a || [it.ax, it.ay], ia = { ax: A[0], ay: A[1] };
+          if (bx.x < cadre.x0 || bx.x + w > cadre.x1 || bx.y < cadre.y0 || bx.y + H > cadre.y1) return;
+          var lk = lien(ia, bx), lg = lk ? Math.hypot(lk[2] - lk[0], lk[3] - lk[1]) : 0;
+          if (lg > (opts.lienMax || 150)) return;
+          if (obst.some(function (o) { return inter(bx, o, 2); })) return;
+          if (lk && obst.some(function (o) { var dedans = ia.ax >= o.x - 3 && ia.ax <= o.x + o.w + 3 && ia.ay >= o.y - 3 && ia.ay <= o.y + o.h + 3; return !dedans && !o.mou && !(it.grp != null && o.grp === it.grp) && segRect(lk[0], lk[1], lk[2], lk[3], o); })) return;
+          ok.push({ b: bx, lk: lk, deux: fm[2], cout: (cd.s || 0) + (opts.deuxLignes ? (fi ? 0 : 25) : fi * 60) + lg * 1.2, d: cd.d || 0 });
+        });
+      });
+      ok.sort(function (p, q) { return p.cout - q.cout; });
+      var okB = ok.slice().sort(function (p, q) { return (p.cout + (p.d ? 0 : 400)) - (q.cout + (q.d ? 0 : 400)); });
+      return { it: it, ok: ok, okB: okB };
+    });
+    function essai(ordre, inv) {
+      var pris = base.slice(), liens = baseL.slice(), res = [], cach = 0, cout = 0, crois = 0;
+      ordre.forEach(function (i) {
+        var P = prep[i], pick = null, L = inv && inv[i] ? P.okB : P.ok, vus = [], lim = inv ? 1 + Math.floor(alea() * 4) : 1;
+        for (var k = 0; k < L.length && vus.length < lim; k++) {
+          var c = L[k], bx = c.b;
+          if (pris.some(function (o) { return inter(bx, o, 3) || (Math.abs((bx.y + bx.h / 2) - (o.y + o.h / 2)) < 12 && inter(bx, o, 7)); })) continue;
+          if (liens.some(function (l) { return segRect(l[0], l[1], l[2], l[3], bx); })) continue;
+          if (c.lk && pris.some(function (o) { return segRect(c.lk[0], c.lk[1], c.lk[2], c.lk[3], o); })) continue;
+          vus.push(c);
+        }
+        if (vus.length) pick = vus[vus.length - 1];
+        if (!pick) { cach++; res[i] = null; return; }
+        var x2 = pick.lk ? liens.filter(function (l) { return croise(l, pick.lk); }).length : 0;
+        pris.push(pick.b); if (pick.lk) liens.push(pick.lk); res[i] = pick; cout += pick.cout + x2 * 400; crois += x2;
+      });
+      return { res: res, score: cach * 1e5 + cout, pris: pris, liens: liens, cach: cach, crois: crois };
+    }
+    var idx = prep.map(function (_, i) { return i; }), ordres = [];
+    ordres.push(idx.slice().sort(function (p, q) { return Math.abs(items[q].mtv || 0) - Math.abs(items[p].mtv || 0); }));
+    ordres.push(idx.slice().sort(function (p, q) { return items[q].ax - items[p].ax; }));
+    ordres.push(idx.slice().sort(function (p, q) { return items[p].ax - items[q].ax; }));
+    ordres.push(idx.slice().sort(function (p, q) { return prep[p].ok.length - prep[q].ok.length; }));
+    var graine = 7; function alea() { graine = (graine * 16807) % 2147483647; return graine / 2147483647; }
+    for (var e = 0; e < (opts.essais || 160); e++) { var o2 = idx.slice(); for (var j = o2.length - 1; j > 0; j--) { var z = Math.floor(alea() * (j + 1)), tmp = o2[j]; o2[j] = o2[z]; o2[z] = tmp; } ordres.push(o2); }
+    var best = null; ordres.forEach(function (o, oi) { var inv = oi < 4 ? null : prep.map(function () { return alea() < .3; }); [null, inv].forEach(function (iv) { if (oi < 4 && iv) return; var r = essai(o, iv); if (!best || r.score < best.score) best = r; }); });
+    /* reprise des cachées : une étiquette peut passer sur un lien (le halo blanc le masque), jamais sur un texte ni un trait */
+    prep.forEach(function (P, i) {
+      if (best.res[i]) return;
+      for (var k = 0; k < P.ok.length; k++) {
+        var c = P.ok[k], bx = c.b;
+        if (best.pris.some(function (o) { return inter(bx, o, 3); })) continue;
+        if (c.lk && best.pris.some(function (o) { return segRect(c.lk[0], c.lk[1], c.lk[2], c.lk[3], o); })) continue;
+        best.res[i] = c; best.pris.push(bx); if (c.lk) best.liens.push(c.lk); window.__mg.reprises = (window.__mg.reprises || 0) + 1; break;
+      }
+    });
+    svg.__pris = best.pris; svg.__liens = best.liens;
+    var out = [];
+    prep.forEach(function (P, i) {
+      var c = best.res[i], it = P.it;
+      if (!c) { out.push({ it: it, cache: true }); (window.__mg.why = window.__mg.why || []).push(it.nom + ':' + P.ok.length); return; }
+      if (c.lk) el('line', { x1: c.lk[0], y1: c.lk[1], x2: c.lk[2], y2: c.lk[3], stroke: it.c, 'stroke-width': 1.3, 'stroke-dasharray': opts.pointille ? '1 2.5' : null, class: 'lien' }, g);
+      var t = el('text', { class: 'lab', x: c.b.x, y: c.b.y + 14, fill: it.c }, g);
+      if (c.deux) {
+        var rest = c.deux[1].slice(0, c.deux[1].length - it.mt.length);
+        el('tspan', { class: 'nm' }, t).textContent = c.deux[0];
+        if (rest.trim()) { el('tspan', { class: 'nm', x: c.b.x, dy: 18 }, t).textContent = rest; el('tspan', { class: 'mt' }, t).textContent = it.mt; }
+        else el('tspan', { class: 'mt', x: c.b.x, dy: 18 }, t).textContent = it.mt;
+      } else { el('tspan', { class: 'nm' }, t).textContent = it.nom + ' '; el('tspan', { class: 'mt' }, t).textContent = it.mt; }
+      out.push({ it: it, b: c.b });
+    });
+    window.__mg.labs = svg.__pris; window.__mg.croisements = (window.__mg.croisements || 0) + best.crois;
+    window.__mg.caches = (window.__mg.caches || []).concat(out.filter(function (o) { return o.cache; }).map(function (o) { return o.it.nom; }));
+    return out;
+  }
+  function croise(a, b) {
+    function o(p, q, r) { return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]); }
+    var p1 = [a[0], a[1]], p2 = [a[2], a[3]], p3 = [b[0], b[1]], p4 = [b[2], b[3]];
+    return o(p1, p2, p3) * o(p1, p2, p4) < 0 && o(p3, p4, p1) * o(p3, p4, p2) < 0;
+  }
+  function lien(it, b) {
+    var ax = it.ax, ay = it.ay;
+    if (ax >= b.x - 1 && ax <= b.x + b.w + 1 && ay >= b.y - 1 && ay <= b.y + b.h + 1) return null;
+    var cx = Math.max(b.x, Math.min(ax, b.x + b.w)), cy = ay < b.y ? b.y : ay > b.y + b.h ? b.y + b.h : ay;
+    if (Math.hypot(cx - ax, cy - ay) < 7) return null;
+    var d = Math.hypot(cx - ax, cy - ay), ox = ax + (cx - ax) * 3 / d, oy = ay + (cy - ay) * 3 / d;
+    return [ox, oy, cx, cy];
+  }
+  function candsDefaut(it, w, H, opts) {
+    var c = [], st = opts.pas || 19, n = opts.loin || 14, pref = it.pref || -1;
+    for (var k = 0; k <= n; k++) {
+      [k * pref, -k * pref].forEach(function (d, j) {
+        if (k === 0 && j) return;
+        var y = it.ay + d * st - H / 2;
+        c.push({ x: it.ax + 7, y: y, s: k * 10 + j * 4 }, { x: it.ax - 7 - w, y: y, s: k * 10 + j * 4 + 1 }, { x: it.ax - w / 2, y: y, s: k * 10 + j * 4 + 2 });
+      });
+    }
+    return c.sort(function (a, b) { return a.s - b.s; });
+  }
+  /* au-dessus (dir -1) ou au-dessous (dir 1) de tout ce qui est dessiné dans la largeur de l'étiquette : lien vertical court */
+  function cielH(it, obst, dirs, cadre) {
+    return function (w, H) {
+      var c = [], xs = [[it.ax - 4, 0], [it.ax - w + 4, 1], [it.ax - w / 2, 1], [it.ax - w / 2 + 30, 3], [it.ax - w / 2 - 30, 3], [it.ax + 8, 4], [it.ax - w - 8, 4], [it.ax - w / 2 + 70, 6], [it.ax - w / 2 - 70, 6], [it.ax + 50, 8], [it.ax - w - 50, 8], [it.ax - w / 2 + 120, 10], [it.ax - w / 2 - 120, 10]];
+      dirs.forEach(function (dir, di) {
+        xs.forEach(function (xx) {
+          var x = Math.max(cadre.x0 + 1, Math.min(cadre.x1 - w - 1, xx[0]));
+          /* l'étiquette glisse depuis l'ancre vers l'extérieur ; le placeur garde la première place libre */
+          var A = dir < 0 ? (it.up || [it.ax, it.ay]) : (it.dn || [it.ax, it.ay]);
+          for (var k = 0; k < 70; k++) c.push({ x: x, y: dir < 0 ? A[1] - 4 - H - k * 5 : A[1] + 4 + k * 5, s: k * 2 + xx[1] * 3 + di * 8, a: A, d: di });
+        });
+      });
+      return c.sort(function (p, q) { return p.s - q.s; });
+    };
+  }
+  function cielV(it, obst, dirs, cadre) {
+    return function (w, H) {
+      var c = [];
+      for (var k = 0; k < 12; k++) [k, -k].forEach(function (dk, j) {
+        if (!k && j) return;
+        var y = it.ay - H / 2 + dk * 18;
+        dirs.forEach(function (dir, di) {
+          var A = dir > 0 ? (it.rt || [it.ax, it.ay]) : (it.lf || [it.ax, it.ay]);
+          for (var q = 0; q < 50; q++) c.push({ x: dir > 0 ? A[0] + 6 + q * 6 : A[0] - 6 - w - q * 6, y: y, s: k * 9 + q * 1.5 + di * 8 + j, a: A, d: di });
+        });
+      });
+      return c.sort(function (p, q) { return p.s - q.s; });
+    };
+  }
+  /* courbe en marches (temps horizontal) ; renvoie les obstacles */
+  function echelleH(o) {
+    var n = o.r1 - o.r0 + 1;
+    var X = function (r) { return o.x0 + (o.x1 - o.x0) * (r - o.r0) / n; };
+    var Y = function (v) { return o.y0 + (o.y1 - o.y0) * (1 - (v - o.vmin) / (o.vmax - o.vmin)); };
+    return { X: X, Y: Y, wk: (o.x1 - o.x0) / n, o: o };
+  }
+  function grille(svg, S, pas, obst, gauche) {
+    for (var v = S.o.vmin; v <= S.o.vmax + .1; v += pas) {
+      el('line', { x1: S.o.x0, x2: S.o.x1, y1: S.Y(v), y2: S.Y(v), stroke: v === 0 ? '#bfbfbf' : '#e4e4e4', 'stroke-width': 1 }, svg);
+      var t = el('text', { class: 'tk', x: gauche ? S.o.x0 - 5 : S.o.x0 + 2, y: S.Y(v) + 5, 'text-anchor': gauche ? 'end' : 'start' }, svg); t.textContent = v ? fmt(v) : '0';
+      var tw = largeur(v ? fmt(v) : '0', 'tk') + 4; obst.push({ x: gauche ? S.o.x0 - 5 - tw : S.o.x0, y: S.Y(v) - 10, w: tw, h: 18 });
+    }
+  }
+  function marches(svg, S, opts, obst) {
+    opts = opts || {}; var d = '', r;
+    for (r = S.o.r0; r <= S.o.r1; r++) {
+      var a = S.X(r), b = S.X(r + 1), y = S.Y(D.C[r]);
+      d += (r === S.o.r0 ? 'M' + a + ' ' + y : 'L' + a + ' ' + y) + 'L' + b + ' ' + y;
+      obst.push({ x: a, y: y - 2, w: b - a, h: 4 });
+    }
+    el('path', { d: d, fill: 'none', stroke: opts.trait || '#111', 'stroke-width': opts.ep || 2.2, 'stroke-linejoin': 'round' }, svg);
+    if (opts.libre) {
+      var dl = '';
+      for (r = S.o.r0; r <= S.o.r1; r++) { var yl = S.Y(D.L[r]); dl += (r === S.o.r0 ? 'M' : 'L') + S.X(r) + ' ' + yl + 'L' + S.X(r + 1) + ' ' + yl; obst.push({ x: S.X(r), y: yl - 1.5, w: S.wk, h: 3, mou: 1 }); if (r > S.o.r0) { var yp = S.Y(D.L[r - 1]); obst.push({ x: S.X(r) - 1, y: Math.min(yp, yl), w: 2, h: Math.abs(yl - yp), mou: 1 }); } }
+      el('path', { d: dl, fill: 'none', stroke: '#111', 'stroke-width': 1.4, 'stroke-dasharray': '3 3', opacity: .75 }, svg);
+    }
+    return d;
+  }
+  /* marche colorée : entrées à gauche du pas (montent), sorties à droite (descendent), même échelle que la courbe */
+  function contremarche(svg, S, r, ep, obst) {
+    var x = S.X(r), lvl = D.C[r - 1], e = entrees(r), s = sorties(r), haut = lvl, k;
+    for (k = 0; k < e.length; k++) { var y0 = S.Y(haut), y1 = S.Y(haut + e[k].m); el('rect', { x: x - ep, y: y1, width: ep, height: Math.max(.8, y0 - y1), fill: GEN[e[k].g].c }, svg); haut += e[k].m; }
+    var bas = haut;
+    for (k = 0; k < s.length; k++) { var z0 = S.Y(bas), z1 = S.Y(bas + s[k].m); el('rect', { x: x, y: z0, width: ep, height: Math.max(.8, z1 - z0), fill: GEN[s[k].g].c }, svg); bas += s[k].m; }
+    if (e.length && s.length) el('line', { x1: x - ep, x2: x + ep, y1: S.Y(haut), y2: S.Y(haut), stroke: '#fff', 'stroke-width': 1 }, svg);
+    var top = S.Y(Math.max(lvl, haut)), bot = S.Y(Math.min(lvl, bas, D.C[r]));
+    obst.push({ x: x - ep - 1, y: top - 1, w: 2 * ep + 2, h: bot - top + 2, grp: 'r' + r });
+    return { x: x, top: top, bot: bot, haut: haut };
+  }
+  function creux(svg, S, obst, cadre) {
+    var r = D.pb.r; if (r < S.o.r0 || r > S.o.r1) return;
+    var x = S.X(r) + S.wk / 2, y = S.Y(D.L[r]);
+    el('circle', { cx: x, cy: y, r: 5, fill: '#1f64a3', stroke: '#fff', 'stroke-width': 2 }, svg);
+    obst.push({ x: x - 6, y: y - 6, w: 12, h: 12 });
+    var it = { nom: 'à dépenser', mt: fmt(D.pb.v) + ' · S' + sn(r), c: '#1f64a3', ax: x, ay: y + 6 }; it.cands = cielH(it, obst, [1, -1], cadre);
+    placer(svg, [it], obst, cadre);
+  }
+  function moisAxe(svg, S, y, obst, cls, xmax) {
+    var fin = -1e9; xmax = xmax || +svg.getAttribute('width');
+    D.mois.forEach(function (m) {
+      if (m.r <= S.o.r0 || m.r > S.o.r1) return;
+      var x = S.X(m.r), nm = MO[m.k], lw = largeur(nm, cls || 'mo');
+      el('line', { x1: x, x2: x, y1: y - 16, y2: y - 11, stroke: '#bfbfbf', 'stroke-width': 1.5 }, svg);
+      if (x + 2 < fin + 5 || x + 2 + lw > xmax - 1) return; fin = x + 2 + lw;
+      var t = el('text', { class: cls || 'mo', x: x + 2, y: y }, svg); t.textContent = nm;
+      if (obst) obst.push({ x: x, y: y - 14, w: largeur(MO[m.k], cls || 'mo') + 2, h: 17 });
+    });
+  }
+  function mvDans(r0, r1) { return D.MV.filter(function (m) { return m.r >= r0 && m.r <= r1; }); }
+  function legende(box, r0, r1, opts) {
+    opts = opts || {}; var t = totaux(r0, r1), h = '';
+    (opts.ordre || ORDRE).forEach(function (g) {
+      var v = t[g]; if (opts.sansVide && !v && g !== 'activites') return;
+      h += '<span class="ch" style="--c:' + GEN[g].c + '"><i></i>' + GEN[g].n + (opts.sansTotal || !v ? '' : ' <b>' + sg(v) + '</b>') + '</span>';
+    });
+    box.innerHTML = h;
+  }
+  window.MG = { D: D, GEN: GEN, ORDRE: ORDRE, MO: MO, fmt: fmt, sg: sg, sn: sn, el: el, flux: flux, entrees: entrees, sorties: sorties, dominant: dominant, totaux: totaux, honnete: honnete, largeur: largeur, inter: inter, placer: placer, cielH: cielH, cielV: cielV, echelleH: echelleH, grille: grille, marches: marches, contremarche: contremarche, creux: creux, moisAxe: moisAxe, mvDans: mvDans, legende: legende, segRect: segRect };
+  window.__mg = { labs: [], caches: [] };
+})();
+</script>
+<script>(function(){var M=window.MG,D=M.D,el=M.el;var W=innerWidth,H=innerHeight,land=W>H;if(land)document.body.classList.add('land');
+var NAVH=land?44:56,U=H-NAVH,FABH=land?48:56,FABTOP=U-(land?12:16)-FABH;window.__mg.U=U;window.__mg.fabTop=FABTOP;
+function box(e,x,y,w,h){e.style.left=x+'px';e.style.top=y+'px';if(w!=null)e.style.width=w+'px';if(h!=null)e.style.height=h+'px';if(e.tagName.toLowerCase()==='svg'){e.setAttribute('width',w);e.setAttribute('height',h);}}
+var r0=1,r1=26,leg=document.getElementById('leg'),plot=document.getElementById('plot'),band=document.getElementById('band');
+var bandH=35,obst=[];M.legende(leg,r0,r1,{sansVide:true});
+leg.insertAdjacentHTML('beforeend','<span class="cle"><svg width="44" height="20"><circle cx="8" cy="10" r="7.6" fill="#888"/><circle cx="30" cy="10" r="7.6" fill="#fff" stroke="#888" stroke-width="3"/></svg>entrée · sortie</span>');
+if(!land){box(leg,10,46,W-20,null);var lt=46+leg.offsetHeight+2;var bt=FABTOP-6-bandH;box(band,0,bt,W,bandH);box(plot,0,lt,W,bt-4-lt);}
+else{leg.style.flexDirection='column';box(leg,W-196,46,190,null);var bt=U-4-bandH;box(band,0,bt,W-206,bandH);box(plot,0,44,W-206,bt-4-44);}
+var pw=+plot.getAttribute('width'),ph=+plot.getAttribute('height');
+var S=M.echelleH({r0:r0,r1:r1,x0:44,x1:pw-10,y0:14,y1:ph-22,vmin:0,vmax:7000});
+M.grille(plot,S,1000,obst,true);M.marches(plot,S,{ep:1.6},obst);
+function R(m){return 3+19*Math.sqrt(Math.abs(m)/2800)}
+var bul=[];for(var r=r0+1;r<=r1;r++){var h=D.C[r-1],x=S.X(r);M.entrees(r).forEach(function(i){bul.push({x:x,y:S.Y(h+i.m/2),i:i,r:r});h+=i.m});M.sorties(r).forEach(function(i){bul.push({x:x,y:S.Y(h+i.m/2),i:i,r:r});h+=i.m});}
+var b1=D.sem[1][0];bul.push({x:S.X(1)+3,y:S.Y(4180+b1.m/2),i:b1,r:1});
+bul.sort(function(a,b){return Math.abs(b.i.m)-Math.abs(a.i.m)}).forEach(function(b){var rr=R(b.i.m),c=M.GEN[b.i.g].c;M.el('circle',{cx:b.x,cy:b.y,r:b.i.m>0?rr:rr-1.5,fill:b.i.m>0?c:'#fff','fill-opacity':b.i.m>0?.9:1,stroke:b.i.m>0?'#fff':c,'stroke-width':b.i.m>0?1:3},plot);obst.push({x:b.x-rr,y:b.y-rr,w:2*rr,h:2*rr,grp:'w'+b.r});});
+M.moisAxe(plot,S,ph-2,obst);
+var cadre={x0:2,x1:pw-2,y0:0,y1:ph-20},vu={};
+var nomsMV={};D.MV.forEach(function(m){nomsMV[m.r+'|'+m.m]=m.n});var it=bul.filter(function(b){if(/^Loyer/.test(b.i.n)){if(vu.l)return false;vu.l=1;return true}return !!nomsMV[b.r+'|'+b.i.m]}).sort(function(a,b){return Math.abs(b.i.m)-Math.abs(a.i.m)}).map(function(b){var rr=R(b.i.m),nm=/^Loyer/.test(b.i.n)?'Loyer':nomsMV[b.r+'|'+b.i.m];var o={nom:nm,mt:M.sg(b.i.m),c:M.GEN[b.i.g].c,ax:b.x,ay:b.i.m>0?b.y-rr:b.y+rr,up:[b.x,b.y-rr],dn:[b.x,b.y+rr],grp:'w'+b.r};o.cands=M.cielH(o,obst,b.i.m>0?[-1,1]:[1,-1],cadre);return o});
+M.placer(plot,it,obst,cadre,{lienMax:420,essais:1500,deuxLignes:true});
+var B=M.echelleH({r0:r0,r1:r1,x0:44,x1:pw-10,y0:0,y1:1,vmin:0,vmax:1});
+M.ORDRE.forEach(function(g,k){for(var r=r0;r<=r1;r++)if((D.act[r]||[]).indexOf(g)>=0||D.sem[r].some(function(i){return i.g===g&&i.n!=='Ventes de la semaine'&&!/^Loyer/.test(i.n)}))M.el('rect',{x:B.X(r),y:k*5,width:B.wk+.3,height:4,fill:M.GEN[g].c},band);});
+window.__mg.courbe=plot.getBoundingClientRect();window.__mg.bande=band.getBoundingClientRect();window.__mg.hon=M.honnete(r0,r1);
+})();</script></body></html>

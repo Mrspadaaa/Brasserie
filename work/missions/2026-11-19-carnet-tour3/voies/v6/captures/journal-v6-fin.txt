@@ -1,0 +1,13 @@
+=== choisir 390 clair
+boutons 390 : Choisir chez Inox Broye
+capture fin-choisir-390-clair-a.png
+apres 390 : À venir / Choisi le 19 nov. / Pourquoi ce choix / Critère : Moins de condensation au plafond : capter la buée / Envoyer dans À venir
+capture fin-choisir-390-clair-b-choisi.png
+=== choisir 1280 sombre
+boutons 1280 : Choisir chez Inox Broye
+capture fin-choisir-1280-sombre-a.png
+apres 1280 : À venir / Choisi le 19 nov. / Pourquoi ce choix / Critère : Moins de condensation au plafond : capter la buée / Envoyer dans À venir
+capture fin-choisir-1280-sombre-b-choisi.png
+=== glisse 390
+glisse titre : [["DIV","",67]]
+capture fin-comparer-390-clair-glisse.png

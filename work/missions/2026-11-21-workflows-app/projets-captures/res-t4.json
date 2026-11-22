@@ -1,0 +1,175 @@
+{
+ "demarrage": 2459,
+ "C1-planifier-brassin": {
+  "gestes": 7,
+  "murMs": 7403,
+  "journal": [
+   "toucher « Actions rapides » 159ms lt141/88 56×56 y764",
+   "toucher « Poser un brassin » 574ms lt650/650 300×56 y700",
+   "toucher « Fruty » 683ms lt360/360 56×36 y469",
+   "toucher « S50, 7 déc. » 31ms lt0/0 28×48 y747",
+   "toucher « Ajouter en » 923ms lt719/719 249×44 y820",
+   "toucher « Brassins » 728ms lt178/178 64×40 y824",
+   "toucher « Finances » 359ms lt80/80 65×40 y824"
+  ],
+  "notes": [
+   "période au départ : Période : Novembre 2026. Choisir la plag",
+   "Fruty à l'écran : 0 → 0 ; toast « Compagnon hors connexion · mode local / Fruty · S50 · prête le 4 janv. · Voir S50 › · Annuler »",
+   "labels Fruty : ",
+   "Brassins : À brasser 9 ; Tous Tous 15",
+   "Finances mentionne Fruty : false"
+  ]
+ },
+ "C2-deplacer-passe-futur": {
+  "gestes": 4,
+  "murMs": 10047,
+  "journal": [
+   "glisser −2 sem. 878ms lt723/723",
+   "glisser +4 sem. 960ms lt408/408",
+   "glisser achat +1 sem. 620ms lt490/490",
+   "toucher « Finances » 350ms lt389/271 64×40 y824"
+  ],
+  "notes": [
+   "période au départ : Période : Novembre 2026. Choisir la plag",
+   "passé : « Blonde d’automne, 23 nov., S48, J0 / 28 · prête 21 déc., cou » → « Blonde d’automne, 21 nov., S47, pas brassée · prête le 19 déc., courses : ingréd » ; toast « Compagnon hors connexion · mode local / Blonde d’automne : S48 → S46 · Annuler »",
+   "futur : « undefined » ; toast « Compagnon hors connexion · mode local / Blonde d’automne : S47 → S1 · Annuler »",
+   "achat : « Commande de malt, 1 déc., S49, −540 » → « Commande de malt, 8 déc., S50, −540 » ; en-tête « −18 652 CHF à dépenser S43 ’27 ± 6 sem. 3 0 ZZ TEST — Facture embouteilleuse (exemple) −11 »",
+   "Finances : absent"
+  ]
+ },
+ "C3-dater-projet-carnet": {
+  "gestes": 6,
+  "murMs": 5465,
+  "journal": [
+   "toucher « Brassins » 576ms lt50/50 64×40 y824",
+   "toucher « Atelier » 1056ms lt260/260 76×28 y62",
+   "toucher « Carnet » 0ms lt0/0 119×44 y113",
+   "toucher « Sol — matières » 174ms lt120/120 328×80 y419",
+   "toucher « Plus » 16ms lt0/0 44×44 y171",
+   "toucher « Calendrier » 702ms lt789/720 66×40 y824"
+  ],
+  "notes": [
+   "période au départ : Période : 16 nov. → 27 déc. Choisir la p",
+   "pastille de date : 96×28",
+   "la pastille « Idée · 21 nov. » ne se touche pas",
+   "menu ⋯ : Renommer Supprimer l'idée",
+   "mots « calendrier/dater/prix » dans le projet : Calendrier",
+   "au Calendrier, « Sol — » : absent"
+  ]
+ },
+ "C3b-idee-depuis-calendrier": {
+  "gestes": 8,
+  "murMs": 7290,
+  "journal": [
+   "toucher « Actions rapides » 107ms lt51/51 56×56 y764",
+   "toucher « Noter une idée » 530ms lt595/595 300×48 y318",
+   "toucher champ 12ms lt0/0",
+   "taper « Bière de Noël épicée » 1164ms lt330/270",
+   "toucher « Noter » 968ms lt585/530 374×44 y820",
+   "toucher « Brassins » 1022ms lt664/235 64×40 y824",
+   "toucher « Atelier » 0ms lt0/0 76×28 y62",
+   "toucher « Carnet » 0ms lt0/0 119×44 y113"
+  ],
+  "notes": [
+   "période au départ : Période : 16 nov. → 27 déc. Choisir la p",
+   "puce de la semaine choisie (S47) : {\"x\":2360,\"visible\":false,\"pressed\":\"true\"}",
+   "toast « Compagnon hors connexion · mode local / Idée notée en S47 · Annuler » ; au Calendrier « Bière de Noël » : absent",
+   "au Carnet : Bière de Noël épicée Coller un lien Sol — matières premières + outils (pe"
+  ]
+ },
+ "C4-solde-semaine": {
+  "gestes": 5,
+  "murMs": 4974,
+  "journal": [
+   "toucher courbe (S48–49) 30ms lt84/84",
+   "glisser sur la courbe 0ms lt0/0",
+   "toucher « S49, 30 » 1141ms lt1119/741 61×28 y187",
+   "toucher « S49 30 » 430ms lt427/427 214×18 y182",
+   "toucher « ± » 86ms lt104/104 22×28 y67"
+  ],
+  "notes": [
+   "période au départ : Période : 16 nov. → 27 déc. Choisir la p",
+   "en-tête au repos : « −18 652 CHF à dépenser S43 ’27 ± 6 sem. 3 0 ZZ TEST — Facture embouteilleuse (exemple) −11 700 TVA T4 −300 Emballage · Jhhh −45 Impôt sur la bière −24 S47 – S52 S47 S48 S49 S50 S51 S52 »",
+   "après toucher courbe : « −18 652 CHF à dépenser S43 ’27 ± 6 sem. 3 0 ZZ TEST — Facture embouteilleuse (exemple) −11 700 TVA T4 −300 Emballage · Jhhh −45 Impôt sur la bière −24 S47 – S52 S47 S48 S49 S50 S51 S52 »",
+   "après glisser : « −17 452 CHF · S31 · 2 août ± 6 sem. 3 0 ZZ TEST — Facture embouteilleuse (exemple) −11 700 TVA T4 −300 Emballage · Jhhh −45 Impôt sur la bière −24 S47 – S52 S47 S48 S49 S50 S51 S52 S31, 2 – 8 août rien cette semaine »",
+   "après toucher S49 : « −17 452 CHF · S31 · 2 août ± 6 sem. 3 0 ZZ TEST — Facture embouteilleuse (exemple) −11 700 TVA T4 −300 Emballage · Jhhh −45 Impôt sur la bière −24 S47 – S52 S47 S48 S49 30 nov.–6 déc. · toucher pour replier L 30 M 1 M 2  » ; dialogue « null »",
+   "après ± : « −17 452 CHF · S31 · 2 août ± 6 sem. 3 0 ZZ TEST — Facture embouteilleuse (exemple) −11 700 TVA T4 −300 Emballage · Jhhh −45 Impôt sur la bière −24 S47 – S52 S47 −11 790 S48 −424 S49 −1 089 S50 −1 365 S51 +900 S52 −685 S3 »",
+   "semaines : S48, 23 – 29 nov. ; mouvement −424 | S49, 30 nov. – 6 déc. ; mouvement −1 089 | S50, 7 – 13 déc. ; mouvement −1 365"
+  ]
+ },
+ "C5-ajouter-depense": {
+  "gestes": 1,
+  "murMs": 1260,
+  "journal": [
+   "toucher « Ajouter dans Achats » 675ms lt733/585 24×24 y692"
+  ],
+  "notes": [
+   "période au départ : Période : 16 nov. → 27 déc. Choisir la p",
+   "ERREUR champ Autre nom introuvable"
+  ]
+ },
+ "C6-recette-noel-date": {
+  "gestes": 2,
+  "murMs": 4239,
+  "journal": [
+   "toucher « Actions rapides » 90ms lt0/0 56×56 y764",
+   "toucher « Recette » 946ms lt1170/925 147×44 y186"
+  ],
+  "notes": [
+   "période au départ : Période : 16 nov. → 27 déc. Choisir la p",
+   "premier écran : Compagnon hors connexion · mode local 🍺 L'Affinée 16.11–27.12 A G Calendrier −18 652 CHF à dépenser S43 ’27 ± 6 sem. 3 0 ZZ TEST — Facture embouteilleuse (exemple) −11 700 TVA T4 −300 Emballage · Jhhh −45 Impôt sur la bière −24 S47 – S52 S47 S48 S49 S50 S51 S52 Brassins −183 + coût à venir confirmé",
+   "mots de date au premier écran : Noël, mois",
+   "champs : textarea:Nom de la bière | textarea:Style de la bière | textarea:Volume en fermenteur | range:Volume en fermenteur, curseur | textarea:Durée d’ébullition | range:Durée d’ébullition, curseur"
+  ]
+ },
+ "C6b-recette-vers-date": {
+  "gestes": 4,
+  "murMs": 5347,
+  "journal": [
+   "toucher « Brassins » 841ms lt358/130 64×40 y824",
+   "toucher « Recettes » 160ms lt191/134 101×28 y62",
+   "toucher « Fruty » 108ms lt66/66 212×59 y629",
+   "toucher Brasser (fiche) 695ms lt527/234"
+  ],
+  "notes": [
+   "période au départ : Période : 16 nov. → 27 déc. Choisir la p",
+   "recettes : Blonde d’automne v1 jamais brassée prévue le 01.04 [201×59 @57,527] | Fruty v1 jamais brassée prévue le 12.07 [212×59 @57,599] | Hefe v1 jamais brassée prévue le bientôt [220×59 @57,671] | Ttt v1 jamais brassée prévue le bientôt [218×59 @57,960]",
+   "actions de date : Brasser [71×44 @296,179] | Brasser [71×44 @296,238] | Brasser [71×44 @296,296] | Brasser [71×44 @296,354] | Brasser [71×44 @296,412] | Brasser [71×44 @296,470] | Calendrier [66×40 @130,804] | Brasser [183×44 @199,798]",
+   "feuille : Brasser Fruty · v1 100 L · cuve de 30 L · le stock se réserve à la planification Ton matériel actuel tient 29,5 L À définir Aujourd'hui Autre date Tout est en stock · rien à vérifier Nov. – déc.la cuve et la cave, jour par jour lu ma me je ve sa di 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 1 2 3 ",
+   "champs : file"
+  ]
+ },
+ "C7-cacher-montrer": {
+  "gestes": 4,
+  "murMs": 5011,
+  "journal": [
+   "toucher « Masquer Fêtes » 323ms lt314/176 24×24 y550",
+   "toucher « Afficher Fêtes » 103ms lt99/99 24×24 y550",
+   "toucher « Masquer Brassins » 86ms lt79/79 24×24 y224",
+   "toucher « Afficher Brassins » 327ms lt299/187 24×24 y224"
+  ],
+  "notes": [
+   "période au départ : Période : 16 nov. → 27 déc. Choisir la p",
+   "rangée Achats y : 680 → 648 (Fêtes cachée) → 680 (montrée)",
+   "après rechargement, Brassins : toujours cachée"
+  ]
+ },
+ "C8-retrouver": {
+  "gestes": 4,
+  "murMs": 5378,
+  "journal": [
+   "toucher « Rechercher (⌘K) » 445ms lt376/376 28×28 y20",
+   "taper « Hotte » 371ms lt195/144",
+   "--- voie 2 : Liste 0ms lt0/0",
+   "toucher menu de période 144ms lt92/92",
+   "toucher « Liste » 264ms lt265/265 286×44 y265"
+  ],
+  "notes": [
+   "période au départ : Période : 16 nov. → 27 déc. Choisir la p",
+   "résultats : Hotte, 9 déc., S50, −900 [28×28 @203,822]",
+   "liste de la recherche : Retour au tableau de bord [86×28 @8,6] | Période précédente [34×34 @148,3] | Période : 16 nov. → 27 déc. Choisir la plage [77×34 @182,3] | Période suivante [34×34 @259,3] | Rechercher (⌘K) [28×28 @298,6] | Plus : saisie au nom de Gaëtan [52×36 @330,2] | −18 652 CHF à dépenser sans passer sous 0 (S43 ’27) : voir s [161×28 @16,53] | ± [22×28 @179,53] | 6 sem. · période, liste, tri et filtre [67×28 @203,53] | Maintenant : 3 en retard [28×28 @272,53] | Aligner la courbe sur la frise [24×28 @302,53] | Cacher la courbe [24×28 @328,53] | Plein écran [24×28 @354,53] | Poignée de début : déplacer la fenêtre, elle commence en S47 [44×68 @148,99]",
+   "la recherche ne trouve pas la Hotte (travaux du calendrier)",
+   "Liste contient Hotte : true ; début : .12 A G Calendrier −18 652 CHF à dépenser S43 ’27 ± 6 sem. 3 0 ZZ TEST — Facture embouteilleuse (exemple) −11 700 TVA T4 −300 Emballage · Jhhh −45 Impôt sur la bière −24 S47 – S52 S47 S48 S49 S50 S51 S52 En retard · 3 Hefe Brassins · pas brassée · prévue le 27 oct. · S44 coût à venir Ssr Brassins · "
+  ]
+ }
+}

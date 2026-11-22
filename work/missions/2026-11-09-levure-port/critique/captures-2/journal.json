@@ -1,0 +1,757 @@
+{
+  "base": "http://127.0.0.1:5660",
+  "erreurs": [
+    "console: Failed to load resource: net::ERR_FAILED",
+    "console: Failed to load resource: net::ERR_FAILED",
+    "console: Failed to load resource: net::ERR_FAILED",
+    "console: Failed to load resource: net::ERR_FAILED"
+  ],
+  "bloques": [
+    "http://127.0.0.1:5001",
+    "http://127.0.0.1:5001",
+    "http://127.0.0.1:5001",
+    "http://127.0.0.1:5001"
+  ],
+  "captures": [
+    "l1-repos-1280-clair",
+    "l2-palier2-touche-1280-clair",
+    "l3-croix-1280-clair",
+    "l4-plus-entre-1280-clair",
+    "l5-plus-fin-1280-clair",
+    "l6-loupe-1280-clair",
+    "l6b-loupe-issue-1280-clair",
+    "c1-1056-1280-clair",
+    "c2-feuille-1280-clair",
+    "c3-feuille-3filtres-1280-clair",
+    "c3-3filtres-1280-clair",
+    "m1-repos-1280-clair",
+    "m1-plus-feuille-1280-clair",
+    "m1-feuille-tape-verdant-1280-clair",
+    "m1-verdant-ajoute-1280-clair",
+    "m1b-pied-malevure-1280-clair",
+    "m1c-pied-malevure-bas-1280-clair",
+    "m2-trois-colonnes-1280-clair",
+    "m2-croix-1280-clair",
+    "m3-loupe-1280-clair",
+    "m3b-loupe-issue-1280-clair",
+    "s1-repos-1280-clair",
+    "s2-moins-attenuation-1280-clair",
+    "s3-deux-axes-1280-clair",
+    "l1-repos-1280-cave",
+    "l2-palier2-touche-1280-cave",
+    "l3-croix-1280-cave",
+    "l4-plus-entre-1280-cave",
+    "l5-plus-fin-1280-cave",
+    "l6-loupe-1280-cave",
+    "l6b-loupe-issue-1280-cave",
+    "c1-1056-1280-cave",
+    "c2-feuille-1280-cave",
+    "c3-feuille-3filtres-1280-cave",
+    "c3-3filtres-1280-cave",
+    "m1-repos-1280-cave",
+    "m1-plus-feuille-1280-cave",
+    "m1-feuille-tape-verdant-1280-cave",
+    "m1-verdant-ajoute-1280-cave",
+    "m1b-pied-malevure-1280-cave",
+    "m1c-pied-malevure-bas-1280-cave",
+    "m2-trois-colonnes-1280-cave",
+    "m2-croix-1280-cave",
+    "m3-loupe-1280-cave",
+    "m3b-loupe-issue-1280-cave",
+    "s1-repos-1280-cave",
+    "s2-moins-attenuation-1280-cave",
+    "s3-deux-axes-1280-cave"
+  ],
+  "notes": {
+    "l1-1280-clair": {
+      "pied": {
+        "boutons": [
+          {
+            "t": "Retour",
+            "x": 76,
+            "y": 860,
+            "w": 62,
+            "h": 32,
+            "visible": true
+          },
+          {
+            "t": "Suivant — Paliers",
+            "x": 1028,
+            "y": 860,
+            "w": 112,
+            "h": 32,
+            "visible": true
+          }
+        ],
+        "comparer": null,
+        "fab": {
+          "x": 255,
+          "y": 627,
+          "w": 24
+        },
+        "chevauche": false,
+        "innerHeight": 900
+      },
+      "effets": [
+        "faible",
+        "non documenté",
+        "non documenté",
+        "non documenté",
+        "11 g/L · mesure fabricant"
+      ],
+      "dose": "2–3sachets"
+    },
+    "l2-1280-clair": {
+      "sous": "4 paliersfin J12US-05 · 18–26 °C",
+      "moins": 1
+    },
+    "l3-1280-clair": {
+      "ok": true,
+      "sous": "3 paliersfin J9US-05 · 18–26 °C"
+    },
+    "l4-1280-clair": {
+      "ok": true,
+      "sous": "5 paliersfin ?US-05 · 18–26 °C",
+      "champs": "Palier 3 · GardeTempérature °CDurée j Retirer",
+      "dit": "Palier 3 · Garde ajouté : température et durée à renseigner Annuler"
+    },
+    "l5-1280-clair": {
+      "ok": true,
+      "n": 5,
+      "sous": "5 paliersfin ?US-05 · 18–26 °C"
+    },
+    "l6-1280-clair": {
+      "ok": true,
+      "enVol": null,
+      "issue": [
+        "Service IA momentanément indisponible.OK"
+      ],
+      "vue": "ma-levure",
+      "replisOuverts": 0
+    },
+    "c1-1280-clair": {
+      "resume": "bière·repères 19 °C·7,1 %·proche de 10561 308",
+      "puces": [],
+      "premier": "US-05",
+      "tapee": "Wyeast 1056 American Ale"
+    },
+    "c2-1280-clair": {
+      "panneau": "Tolérance à l’alcoolfiches bière457262326≈ 7,1 % vol · ta bière< 88–1010–12≥ 12ne garder que ≥ 7,1 % vol vendues ici · ficheUS-059–11Pomona10Verdant IPA121084 Irish Ale12LalBrew NovaLager Brewers Yeast13non documentée 659chercher",
+      "idx": [
+        "Boisson—",
+        "Familleestimé",
+        "Style1 075",
+        "°C608",
+        "Atténuation430",
+        "Tolérance659",
+        "Effetsestimé",
+        "Floculation425",
+        "Forme1 011",
+        "Disponibilité—",
+        "En stock—",
+        "Plus de filtresSans STA1770",
+        "Laboratoire1",
+        "Vitesse1 154",
+        "Rondeur1 301",
+        "Soufre1 307",
+        "Nutriments1 307",
+        "Sans alcoolestimé"
+      ]
+    },
+    "c3-1280-clair": {
+      "phrase": "57ale US · neutre·15–18 °C·sans STA1",
+      "verif": "STA1 non documentée 81 · dont 4 vendues icichercher",
+      "rayons": [
+        "Vendue CH · FR · DE4à vérifier",
+        "Fabricant présent en Europe12",
+        "Rare en Europe45"
+      ]
+    },
+    "m1-1280-clair": {
+      "okTape": true,
+      "listeTapee": [
+        "Verdant IPALallemand BrewingCH",
+        "PomonaLallemand BrewingFR",
+        "1084 Irish AleCH",
+        "LalBrew NovaLager Brewers YeastCH",
+        "1007 German AleCH",
+        "Yeastflow yf-202-priest-dvelEurope",
+        "White Labs California Ale Yeast 500gEurope",
+        "White Labs California Ale Yeast Sachet 11gEurope",
+        "WLP095 Burlington Ale YeastEurope",
+        "WLP4040 Midwestern Ale YeastEurope",
+        "Yeastflow yf-112-vermonterEurope",
+        "Yeastflow yf-205-holy-colibateEurope"
+      ],
+      "colonnes": [],
+      "piedComparer": {
+        "boutons": [
+          {
+            "t": "Comparer (1)",
+            "x": 641,
+            "y": 120,
+            "w": 217,
+            "h": 28,
+            "visible": true
+          },
+          {
+            "t": "Retour",
+            "x": 76,
+            "y": 854,
+            "w": 62,
+            "h": 32,
+            "visible": true
+          },
+          {
+            "t": "Comparer (1)",
+            "x": 534,
+            "y": 854,
+            "w": 99,
+            "h": 32,
+            "visible": true
+          },
+          {
+            "t": "Suivant — Paliers",
+            "x": 1028,
+            "y": 854,
+            "w": 112,
+            "h": 32,
+            "visible": true
+          }
+        ],
+        "comparer": {
+          "t": "Comparer (1)",
+          "x": 534,
+          "y": 854,
+          "w": 99,
+          "h": 32,
+          "visible": true
+        },
+        "fab": {
+          "x": 928,
+          "y": 232,
+          "w": 36
+        },
+        "chevauche": false,
+        "innerHeight": 900
+      },
+      "piedMaLevure": {
+        "boutons": [
+          {
+            "t": "Comparer (1)",
+            "x": 641,
+            "y": 120,
+            "w": 217,
+            "h": 28,
+            "visible": true
+          },
+          {
+            "t": "Retour",
+            "x": 76,
+            "y": 860,
+            "w": 62,
+            "h": 32,
+            "visible": true
+          },
+          {
+            "t": "Comparer (1)",
+            "x": 534,
+            "y": 860,
+            "w": 99,
+            "h": 32,
+            "visible": true
+          },
+          {
+            "t": "Suivant — Paliers",
+            "x": 1028,
+            "y": 860,
+            "w": 112,
+            "h": 32,
+            "visible": true
+          }
+        ],
+        "comparer": {
+          "t": "Comparer (1)",
+          "x": 534,
+          "y": 860,
+          "w": 99,
+          "h": 32,
+          "visible": true
+        },
+        "fab": {
+          "x": 255,
+          "y": 627,
+          "w": 24
+        },
+        "chevauche": false,
+        "innerHeight": 900
+      },
+      "piedMaLevureBas": {
+        "boutons": [
+          {
+            "t": "Comparer (1)",
+            "x": 641,
+            "y": -386,
+            "w": 217,
+            "h": 28,
+            "visible": false
+          },
+          {
+            "t": "Retour",
+            "x": 76,
+            "y": 848,
+            "w": 62,
+            "h": 32,
+            "visible": true
+          },
+          {
+            "t": "Comparer (1)",
+            "x": 534,
+            "y": 848,
+            "w": 99,
+            "h": 32,
+            "visible": true
+          },
+          {
+            "t": "Suivant — Paliers",
+            "x": 1028,
+            "y": 848,
+            "w": 112,
+            "h": 32,
+            "visible": true
+          }
+        ],
+        "comparer": {
+          "t": "Comparer (1)",
+          "x": 534,
+          "y": 848,
+          "w": 99,
+          "h": 32,
+          "visible": true
+        },
+        "fab": {
+          "x": 255,
+          "y": 121,
+          "w": 24
+        },
+        "chevauche": false,
+        "innerHeight": 900
+      }
+    },
+    "m2-1280-clair": {
+      "ok": true,
+      "lignes": [
+        "US-05réf.FermentisCH DEVerdant IPALallemandCH1056WyeastEurope",
+        "Estersbanane · fruitesters faiblesFermentis · fichetropical · abricotLallemand Brewing · TDSneutreWyeast · fiche",
+        "Phénolsclou · épicénon déclarésphénols faiblesLallemand Brewing · TDSnon déclarés",
+        "Houblonthiols · terpènesnon documentéβ-lyase · thiolsLallemand Brewing · tableauterpènes moyensLallemand Brewing · tableaunon documenté",
+        "Sucres rest.0–25 g/L · fab.11 g/Lchercherchercher",
+        "Fiche",
+        "Atténuation70–90 %78–82 %75–82 %73–77 %",
+        "Température5–30 °C18–26 °C18–25 °C16–22 °C",
+        "Floculationcherchermoyennefaible à moyen",
+        "Ma bière 30 L · 1,066",
+        "FG · alcool1,012–1,0156,8–7,2 %1,012–1,0176,6–7,2 %1,015–1,0186,4–6,8 %",
+        "Dose2–3 sachets2–3 sachetsà renseigner",
+        ""
+      ],
+      "colonnes": [
+        "US-05réf.FermentisCH DE",
+        "1056WyeastEurope"
+      ]
+    },
+    "m3-1280-clair": {
+      "ok": true,
+      "enVol": "Phénolsclou · épicé Service IA momentanément indisponible.OKphénols faiblesLallemand Brewing · TDS",
+      "issue": "Phénolsclou · épicé Service IA momentanément indisponible.OKphénols faiblesLallemand Brewing · TDS",
+      "vue": "comparer"
+    },
+    "s1-1280-clair": {
+      "cartes": [
+        "Estersfaible−73+303",
+        "Phénols? chercher−189+209",
+        "Thiols? chercher−37+48",
+        "Terpènes? chercher−0+4",
+        "Atténuation78–82 %−492+124",
+        "Clarté? chercher−197+110",
+        "Tolérance9–11 % vol−267+326",
+        "Rondeur11 g/L−4+2",
+        "°C18–26 °C−428+251",
+        "Vitesse? chercher−35+38",
+        "Soufre? chercher−1+0",
+        "Nutrimentssans donnéechercher"
+      ],
+      "liste": [
+        "Vendue CH · FR · DE 6CH DEUS-05ta levurela référence°C%esters faiblesFRPomonaLallemand Brewing°C%thiolsclarté moyensCH1007 German Aleépuisée au relevé du 27.09°C%neutreclarté faiblesCHVerdant IPALallemand Brewing°C%tropical · abricotβ-lyase · thiolsclarté moyensCHLalBrew NovaLager Brewers Yeast°C%clarté moyensCH1084 Irish Ale°C%fruitéclarté moyens",
+        "Fabricant présent en Europe · sans offre vue 9EuropeSafBrew LA‑02°C%esters faibles20–25 °C · 19 hors plageEuropeYeastflow yf-205-holy-colibate°C%clarté moyensEuropeYeastflow yf-501-kingster°C%clarté faiblesEuropeSafBrew LA‑01°C%esters faiblesEuropeWhite Labs California Ale Yeast 500g°C%clarté moyensEuropeWhite Labs California Ale Yeast Sachet 11g°C%clarté moyensEuropeYeastflow yf-201-st-colibate°C%clarté faiblesEuropeLalBrew Munich Classic Yeast°C%clarté faibles"
+      ]
+    },
+    "s2-1280-clair": {
+      "ok": true,
+      "titre": "US-05Moins d'atténuation30 L19 °C",
+      "carte": "AtténuationUS-05 78–82 %levier : empâtage → Malts/sucres−492+124",
+      "liste": [
+        "Vendue CH · FR · DE 260 · 65 · 70 · 75 · 80 · 85 %CH1084 Irish AleWyeast · fiche−7 pts71–75 %fruitéCH1007 German Aleépuisée au relevé du 27.09Wyeast · fiche−5 pts73–77 %neutre",
+        "Fabricant présent en Europe · sans offre vue 193EuropeWHC Lab Low Rider: Session Low Attenuating Dry YeastWHC Lab · fiche−14,5 pts63–68 %EuropeWLP002 English AleWhite Labs · fiche−13,5 pts63–70 %fruitéEuropeWLP011 European Ale YeastWhite Labs · fiche−12,5 pts65–70 %neutreEuropeYeastflow yf-111-pacificationYeastflow · fiche−12,5 pts65–70 %EuropeWLP546 Marañón Canyon Wild Cacao YeastWhite Labs · fiche−12,5 pts65–70 %fruitéEuropeWLP036 Dusseldorf Alt Ale YeastWhite Labs · fiche−11,5 pts65–72 %EuropeYeastflow yf-108-jawohlYeastflow · fiche−11,5 pts65–72 %EuropeLalBrew Windsor YeastLallemand Brewing · fiche−11,5 pts65–72 %"
+      ]
+    },
+    "s3-1280-clair": {
+      "ok1": true,
+      "ok2": true,
+      "titre": "US-05Plus de thiols · plus clair30 L19 °C",
+      "leviers": [
+        "levier : °C : plus chaud, dans la fenêtre de la levure",
+        "levier : aucun documenté"
+      ],
+      "liste": [
+        "Vendue CH · FR · DE 3CH DEUS-05ta levurela référencethiols ?clarté ?CHVerdant IPALallemand BrewingthiolsclartéFRPomonaLallemand Brewingthiolsclarté",
+        "Fabricant présent en Europe · sans offre vue 2EuropeDiamondLallemand BrewingSamia 2026thiolsclarté10–15 °C · 19 hors plageEuropeNottinghamLallemand BrewingLallemand Brewing · tableauthiolsclarté"
+      ]
+    },
+    "l1-1280-cave": {
+      "pied": {
+        "boutons": [
+          {
+            "t": "Retour",
+            "x": 76,
+            "y": 860,
+            "w": 62,
+            "h": 32,
+            "visible": true
+          },
+          {
+            "t": "Suivant — Paliers",
+            "x": 1028,
+            "y": 860,
+            "w": 112,
+            "h": 32,
+            "visible": true
+          }
+        ],
+        "comparer": null,
+        "fab": {
+          "x": 255,
+          "y": 627,
+          "w": 24
+        },
+        "chevauche": false,
+        "innerHeight": 900
+      },
+      "effets": [
+        "faible",
+        "non documenté",
+        "non documenté",
+        "non documenté",
+        "11 g/L · mesure fabricant"
+      ],
+      "dose": "2–3sachets"
+    },
+    "l2-1280-cave": {
+      "sous": "4 paliersfin J12US-05 · 18–26 °C",
+      "moins": 1
+    },
+    "l3-1280-cave": {
+      "ok": true,
+      "sous": "3 paliersfin J9US-05 · 18–26 °C"
+    },
+    "l4-1280-cave": {
+      "ok": true,
+      "sous": "5 paliersfin ?US-05 · 18–26 °C",
+      "champs": "Palier 3 · GardeTempérature °CDurée j Retirer",
+      "dit": "Palier 3 · Garde ajouté : température et durée à renseigner Annuler"
+    },
+    "l5-1280-cave": {
+      "ok": true,
+      "n": 5,
+      "sous": "5 paliersfin ?US-05 · 18–26 °C"
+    },
+    "l6-1280-cave": {
+      "ok": true,
+      "enVol": null,
+      "issue": [
+        "Service IA momentanément indisponible.OK"
+      ],
+      "vue": "ma-levure",
+      "replisOuverts": 0
+    },
+    "c1-1280-cave": {
+      "resume": "bière·repères 19 °C·7,1 %·proche de 10561 308",
+      "puces": [],
+      "premier": "US-05",
+      "tapee": "Wyeast 1056 American Ale"
+    },
+    "c2-1280-cave": {
+      "panneau": "Tolérance à l’alcoolfiches bière457262326≈ 7,1 % vol · ta bière< 88–1010–12≥ 12ne garder que ≥ 7,1 % vol vendues ici · ficheUS-059–11Pomona10Verdant IPA121084 Irish Ale12LalBrew NovaLager Brewers Yeast13non documentée 659chercher",
+      "idx": [
+        "Boisson—",
+        "Familleestimé",
+        "Style1 075",
+        "°C608",
+        "Atténuation430",
+        "Tolérance659",
+        "Effetsestimé",
+        "Floculation425",
+        "Forme1 011",
+        "Disponibilité—",
+        "En stock—",
+        "Plus de filtresSans STA1770",
+        "Laboratoire1",
+        "Vitesse1 154",
+        "Rondeur1 301",
+        "Soufre1 307",
+        "Nutriments1 307",
+        "Sans alcoolestimé"
+      ]
+    },
+    "c3-1280-cave": {
+      "phrase": "57ale US · neutre·15–18 °C·sans STA1",
+      "verif": "STA1 non documentée 81 · dont 4 vendues icichercher",
+      "rayons": [
+        "Vendue CH · FR · DE4à vérifier",
+        "Fabricant présent en Europe12",
+        "Rare en Europe45"
+      ]
+    },
+    "m1-1280-cave": {
+      "okTape": true,
+      "listeTapee": [
+        "Verdant IPALallemand BrewingCH",
+        "PomonaLallemand BrewingFR",
+        "1084 Irish AleCH",
+        "LalBrew NovaLager Brewers YeastCH",
+        "1007 German AleCH",
+        "Yeastflow yf-202-priest-dvelEurope",
+        "White Labs California Ale Yeast 500gEurope",
+        "White Labs California Ale Yeast Sachet 11gEurope",
+        "WLP095 Burlington Ale YeastEurope",
+        "WLP4040 Midwestern Ale YeastEurope",
+        "Yeastflow yf-112-vermonterEurope",
+        "Yeastflow yf-205-holy-colibateEurope"
+      ],
+      "colonnes": [],
+      "piedComparer": {
+        "boutons": [
+          {
+            "t": "Comparer (1)",
+            "x": 641,
+            "y": 120,
+            "w": 217,
+            "h": 28,
+            "visible": true
+          },
+          {
+            "t": "Retour",
+            "x": 76,
+            "y": 854,
+            "w": 62,
+            "h": 32,
+            "visible": true
+          },
+          {
+            "t": "Comparer (1)",
+            "x": 534,
+            "y": 854,
+            "w": 99,
+            "h": 32,
+            "visible": true
+          },
+          {
+            "t": "Suivant — Paliers",
+            "x": 1028,
+            "y": 854,
+            "w": 112,
+            "h": 32,
+            "visible": true
+          }
+        ],
+        "comparer": {
+          "t": "Comparer (1)",
+          "x": 534,
+          "y": 854,
+          "w": 99,
+          "h": 32,
+          "visible": true
+        },
+        "fab": {
+          "x": 928,
+          "y": 232,
+          "w": 36
+        },
+        "chevauche": false,
+        "innerHeight": 900
+      },
+      "piedMaLevure": {
+        "boutons": [
+          {
+            "t": "Comparer (1)",
+            "x": 641,
+            "y": 120,
+            "w": 217,
+            "h": 28,
+            "visible": true
+          },
+          {
+            "t": "Retour",
+            "x": 76,
+            "y": 860,
+            "w": 62,
+            "h": 32,
+            "visible": true
+          },
+          {
+            "t": "Comparer (1)",
+            "x": 534,
+            "y": 860,
+            "w": 99,
+            "h": 32,
+            "visible": true
+          },
+          {
+            "t": "Suivant — Paliers",
+            "x": 1028,
+            "y": 860,
+            "w": 112,
+            "h": 32,
+            "visible": true
+          }
+        ],
+        "comparer": {
+          "t": "Comparer (1)",
+          "x": 534,
+          "y": 860,
+          "w": 99,
+          "h": 32,
+          "visible": true
+        },
+        "fab": {
+          "x": 255,
+          "y": 627,
+          "w": 24
+        },
+        "chevauche": false,
+        "innerHeight": 900
+      },
+      "piedMaLevureBas": {
+        "boutons": [
+          {
+            "t": "Comparer (1)",
+            "x": 641,
+            "y": -386,
+            "w": 217,
+            "h": 28,
+            "visible": false
+          },
+          {
+            "t": "Retour",
+            "x": 76,
+            "y": 848,
+            "w": 62,
+            "h": 32,
+            "visible": true
+          },
+          {
+            "t": "Comparer (1)",
+            "x": 534,
+            "y": 848,
+            "w": 99,
+            "h": 32,
+            "visible": true
+          },
+          {
+            "t": "Suivant — Paliers",
+            "x": 1028,
+            "y": 848,
+            "w": 112,
+            "h": 32,
+            "visible": true
+          }
+        ],
+        "comparer": {
+          "t": "Comparer (1)",
+          "x": 534,
+          "y": 848,
+          "w": 99,
+          "h": 32,
+          "visible": true
+        },
+        "fab": {
+          "x": 255,
+          "y": 121,
+          "w": 24
+        },
+        "chevauche": false,
+        "innerHeight": 900
+      }
+    },
+    "m2-1280-cave": {
+      "ok": true,
+      "lignes": [
+        "US-05réf.FermentisCH DEVerdant IPALallemandCH1056WyeastEurope",
+        "Estersbanane · fruitesters faiblesFermentis · fichetropical · abricotLallemand Brewing · TDSneutreWyeast · fiche",
+        "Phénolsclou · épicénon déclarésphénols faiblesLallemand Brewing · TDSnon déclarés",
+        "Houblonthiols · terpènesnon documentéβ-lyase · thiolsLallemand Brewing · tableauterpènes moyensLallemand Brewing · tableaunon documenté",
+        "Sucres rest.0–25 g/L · fab.11 g/Lchercherchercher",
+        "Fiche",
+        "Atténuation70–90 %78–82 %75–82 %73–77 %",
+        "Température5–30 °C18–26 °C18–25 °C16–22 °C",
+        "Floculationcherchermoyennefaible à moyen",
+        "Ma bière 30 L · 1,066",
+        "FG · alcool1,012–1,0156,8–7,2 %1,012–1,0176,6–7,2 %1,015–1,0186,4–6,8 %",
+        "Dose2–3 sachets2–3 sachetsà renseigner",
+        ""
+      ],
+      "colonnes": [
+        "US-05réf.FermentisCH DE",
+        "1056WyeastEurope"
+      ]
+    },
+    "m3-1280-cave": {
+      "ok": true,
+      "enVol": "Phénolsclou · épicé Service IA momentanément indisponible.OKphénols faiblesLallemand Brewing · TDS",
+      "issue": "Phénolsclou · épicé Service IA momentanément indisponible.OKphénols faiblesLallemand Brewing · TDS",
+      "vue": "comparer"
+    },
+    "s1-1280-cave": {
+      "cartes": [
+        "Estersfaible−73+303",
+        "Phénols? chercher−189+209",
+        "Thiols? chercher−37+48",
+        "Terpènes? chercher−0+4",
+        "Atténuation78–82 %−492+124",
+        "Clarté? chercher−197+110",
+        "Tolérance9–11 % vol−267+326",
+        "Rondeur11 g/L−4+2",
+        "°C18–26 °C−428+251",
+        "Vitesse? chercher−35+38",
+        "Soufre? chercher−1+0",
+        "Nutrimentssans donnéechercher"
+      ],
+      "liste": [
+        "Vendue CH · FR · DE 6CH DEUS-05ta levurela référence°C%esters faiblesFRPomonaLallemand Brewing°C%thiolsclarté moyensCH1007 German Aleépuisée au relevé du 27.09°C%neutreclarté faiblesCHVerdant IPALallemand Brewing°C%tropical · abricotβ-lyase · thiolsclarté moyensCHLalBrew NovaLager Brewers Yeast°C%clarté moyensCH1084 Irish Ale°C%fruitéclarté moyens",
+        "Fabricant présent en Europe · sans offre vue 9EuropeSafBrew LA‑02°C%esters faibles20–25 °C · 19 hors plageEuropeYeastflow yf-205-holy-colibate°C%clarté moyensEuropeYeastflow yf-501-kingster°C%clarté faiblesEuropeSafBrew LA‑01°C%esters faiblesEuropeWhite Labs California Ale Yeast 500g°C%clarté moyensEuropeWhite Labs California Ale Yeast Sachet 11g°C%clarté moyensEuropeYeastflow yf-201-st-colibate°C%clarté faiblesEuropeLalBrew Munich Classic Yeast°C%clarté faibles"
+      ]
+    },
+    "s2-1280-cave": {
+      "ok": true,
+      "titre": "US-05Moins d'atténuation30 L19 °C",
+      "carte": "AtténuationUS-05 78–82 %levier : empâtage → Malts/sucres−492+124",
+      "liste": [
+        "Vendue CH · FR · DE 260 · 65 · 70 · 75 · 80 · 85 %CH1084 Irish AleWyeast · fiche−7 pts71–75 %fruitéCH1007 German Aleépuisée au relevé du 27.09Wyeast · fiche−5 pts73–77 %neutre",
+        "Fabricant présent en Europe · sans offre vue 193EuropeWHC Lab Low Rider: Session Low Attenuating Dry YeastWHC Lab · fiche−14,5 pts63–68 %EuropeWLP002 English AleWhite Labs · fiche−13,5 pts63–70 %fruitéEuropeWLP011 European Ale YeastWhite Labs · fiche−12,5 pts65–70 %neutreEuropeYeastflow yf-111-pacificationYeastflow · fiche−12,5 pts65–70 %EuropeWLP546 Marañón Canyon Wild Cacao YeastWhite Labs · fiche−12,5 pts65–70 %fruitéEuropeWLP036 Dusseldorf Alt Ale YeastWhite Labs · fiche−11,5 pts65–72 %EuropeYeastflow yf-108-jawohlYeastflow · fiche−11,5 pts65–72 %EuropeLalBrew Windsor YeastLallemand Brewing · fiche−11,5 pts65–72 %"
+      ]
+    },
+    "s3-1280-cave": {
+      "ok1": true,
+      "ok2": true,
+      "titre": "US-05Plus de thiols · plus clair30 L19 °C",
+      "leviers": [
+        "levier : °C : plus chaud, dans la fenêtre de la levure",
+        "levier : aucun documenté"
+      ],
+      "liste": [
+        "Vendue CH · FR · DE 3CH DEUS-05ta levurela référencethiols ?clarté ?CHVerdant IPALallemand BrewingthiolsclartéFRPomonaLallemand Brewingthiolsclarté",
+        "Fabricant présent en Europe · sans offre vue 2EuropeDiamondLallemand BrewingSamia 2026thiolsclarté10–15 °C · 19 hors plageEuropeNottinghamLallemand BrewingLallemand Brewing · tableauthiolsclarté"
+      ]
+    }
+  }
+}

@@ -278,12 +278,6 @@ ecran('feuille-comparer-recettes', 'Comparer les recettes', 'feuille', 'Brassins
   { houblons: NON, usage: [2, 'comparer'], risque: ['faible', 'lecture seule'], depend: ['brassins-recettes'] });
 
 // --- Ce qui existe dans le code sans être branché -----------------------------------------------------------------------
-ecran('modale-brassin-modifier', 'Modale « modifier un brassin » (EditBatchModal)', 'modale', 'Aucun accès : personne ne l\'importe', 'src/components/EditBatchModal.tsx',
-  { houblons: NON, usage: [1, 'aucun'], risque: ['faible', 'non branchée'], depend: [] });
-ecran('modale-article-modifier', 'Modale « modifier un article » (EditStockItemModal)', 'modale', 'Aucun accès : personne ne l\'importe', 'src/components/EditStockItemModal.tsx',
-  { houblons: NON, usage: [1, 'aucun'], risque: ['faible', 'non branchée'], depend: [] });
-ecran('modale-article-ajouter', 'Modale « ajouter un article » (AddStockItemModal)', 'modale', 'Aucun accès : personne ne l\'importe', 'src/components/AddStockItemModal.tsx',
-  { houblons: NON, usage: [1, 'aucun'], risque: ['faible', 'non branchée'], depend: [] });
 ecran('modale-confirmation', 'Modale de confirmation générique (ConfirmModal)', 'modale', 'Aucun accès : personne ne l\'importe', 'src/components/ConfirmModal.tsx',
   { houblons: NON, usage: [1, 'aucun'], risque: ['faible', 'non branchée'], depend: [] });
 

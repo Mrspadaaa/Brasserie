@@ -1,0 +1,7 @@
+=== photo
+[photo 390] input file : true ; boutons photo : ["Photo"]
+suivi [photo 390] -|Photo rangée ; roue+bandeau simultanés : 0 relevés
+[photo 390] : — Ventilation de la salle de brassage / ✓ / Photo rangée ici / Annuler /  / 2 façons à comparer · attendre l'avis du ferblantier /  / Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer /  / Articles / 6 / · / Comparer / Hotte  ; non lue : true
+[photo 1280] input file : true ; boutons photo : ["Photo"]
+suivi [photo 1280] -|Photo rangée ; roue+bandeau simultanés : 0 relevés
+[photo 1280] : — Ventilation de la salle de brassage / ✓ / Photo rangée ici / Annuler /  / 2 façons à comparer · attendre l'avis du ferblantier /  / Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer /  / Articles / 6 / · / Comparer / Hotte  ; non lue : true

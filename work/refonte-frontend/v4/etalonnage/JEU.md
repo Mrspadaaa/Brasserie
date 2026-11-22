@@ -96,3 +96,15 @@ Usage : montrer à l'aveugle au critique les deux captures d'une **paire** (ordr
 | « Les icône sont pas parlant du tout » ; « Ça c'est inutile » (l8e) | éléments entourés sur ses captures, non archivées ; un élément n'est pas un écran |
 | « C'est mieux mais pas encore meilleur que le site original » (Comparer, lot 5a) | variante visée non nommée |
 | variantes non citées d'un lot | silence : jamais déduit |
+
+## Ajouts du 16.11 (hors de la clé en cours)
+
+Classes avec sa note sur 10 et celle de nos juges. Elles entrent à la prochaine épreuve (`systeme.mjs epreuve`) ; la clé actuelle ne change pas.
+
+| id | sujet | variante | verdict | sa note | nos juges (moyenne) | ses mots | date |
+|---|---|---|---|---|---|---|---|
+| c-1511-f1 | calendrier | f1 | aime | 8 | — | « Caisse et semaines f1 top ! » ; « c'est du 8/10 » | 2026-11-15 |
+| c-1611-fb | calendrier | fb | aime | 8 (lu de « pas 9/10 ») | 8,0 (8,5 · 7,5 · 8,5 · 7,5 · 8) | « Est le meilleur mais pas 9/10... » | 2026-11-16 |
+| c-1611-dc | carnet | dc | mitige | 7,5 | 8,25 (9 · 8 · 7,5 · 8,5) | « pas trop Mal » ; « l'ux UI assez mauvaise, et difficile à lire, voir » | 2026-11-16 |
+| c-1611-da | carnet | da | mitige | 7,5 | 8,0 (8,5 · 8 · 7,5 · 8) | même phrase | 2026-11-16 |
+| c-1611-s2a2 | besoin | s2a2 | rejette (hors_image) | — | ACCEPT, 0 bloquant | « Ça correspond pas du tout à mes besoins ?? » | 2026-11-16 |

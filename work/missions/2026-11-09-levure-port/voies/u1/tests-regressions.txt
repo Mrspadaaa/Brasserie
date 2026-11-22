@@ -1,0 +1,28 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [32m✓[39m tests/integration/etapeLevure/vues.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 1487[2mms[22m[39m
+   [33m[2m✓[22m[39m Chercher (c6b)[2m > [22mposer trois filtres donne le compte, retirer un filtre rend la liste [33m 359[2mms[22m[39m
+ [32m✓[39m tests/integration/etapeLevure/etapeCoque.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 1222[2mms[22m[39m
+   [33m[2m✓[22m[39m Ma levure (l5b)[2m > [22mla ligne de la levure, sa dose en plage de sachets, les effets là où la source les donne [33m 423[2mms[22m[39m
+ [32m✓[39m tests/integration/etapeLevure/vues-reel.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1223[2mms[22m[39m
+   [33m[2m✓[22m[39m les vues sur l’API de d1[2m > [22mChercher : « 1056 » tapé, la carte de la levure tapée puis US-05 en tête de la liste (ordre c4) [33m 574[2mms[22m[39m
+   [33m[2m✓[22m[39m les vues sur l’API de d1[2m > [22mChercher : trois filtres posés (famille, °C, sans STA1) donnent un compte, et le retirer rend la liste [33m 515[2mms[22m[39m
+ [32m✓[39m tests/integration/yeastPitchingWizardOwnership.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 5155[2mms[22m[39m
+   [33m[2m✓[22m[39m Moût opérationnel et propriétaire documentaire du Wizard[2m > [22mconserve le même moût mesuré lors du choix stock, sans reprendre produit ni lot de la souche précédente [33m 1429[2mms[22m[39m
+   [33m[2m✓[22m[39m Moût opérationnel et propriétaire documentaire du Wizard[2m > [22mconserve le même moût mesuré lors du choix free, sans reprendre produit ni lot de la souche précédente [33m 904[2mms[22m[39m
+   [33m[2m✓[22m[39m Moût opérationnel et propriétaire documentaire du Wizard[2m > [22mmodifie et qualifie au clavier, rouvre puis efface le moût sans remplacer la fiche locale stock [33m 1455[2mms[22m[39m
+   [33m[2m✓[22m[39m Moût opérationnel et propriétaire documentaire du Wizard[2m > [22mmodifie et qualifie au clavier, rouvre puis efface le moût sans remplacer la fiche locale free [33m 1367[2mms[22m[39m
+ [32m✓[39m tests/unit/hopIndexV4/etapeHoublons.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 824[2mms[22m[39m
+   [33m[2m✓[22m[39m étape Houblons v4 (T12)[2m > [22mrend l'écran choisi sur la recette du brouillon : bandeau, frise, carte, profil [33m 319[2mms[22m[39m
+ [32m✓[39m tests/integration/etapeLevure/vues-corrections.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 770[2mms[22m[39m
+ [32m✓[39m tests/integration/etapeLevure/vues-reel-d1.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 657[2mms[22m[39m
+   [33m[2m✓[22m[39m les livraisons de d1[2m > [22mlevier °C : la plage de `levierDetail` trace l’axe, avec ta conduite (19) et la source [33m 475[2mms[22m[39m
+ [32m✓[39m tests/integration/etapeLevure/etapeDose.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m      Tests [22m [1m[32m69 passed[39m[22m[90m (69)[39m
+[2m   Start at [22m 14:44:25
+[2m   Duration [22m 13.27s[2m (transform 3.29s, setup 713ms, collect 7.52s, tests 11.34s, environment 4.38s, prepare 411ms)[22m
+

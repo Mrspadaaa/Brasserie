@@ -1,0 +1,245 @@
+<title>Vue détail d'une ligne · passe 4 · 02.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* La vue détail d'une ligne de « Dépense » (le plateau) : le panel v0, seize idées classées par le critique, une rangée par cas.
+   Chaque vignette s'ouvre en grand au toucher (PUBLIER.md, D126). Modèle : choix-tva. */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --choisir: #2d5f8a;
+  --alerte: #9a4a1c;
+  --voile: #0e100c;
+  --voile-encre: #eef2ea;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+    --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #151812; --carte: #1f241b; --encre: #e9eee4; --discret: #a7ae9f; --trait: #333a2d; --houblon: #8cc062;
+  --choisir: #8ab8e0; --alerte: #e8a878; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; margin: 0;
+  padding-block: 16px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { margin: 0; line-height: 1.15; text-wrap: balance; }
+h1 { font-size: 1.7rem; font-weight: 800; }
+h2 { font-size: 1.1rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--choisir); font-weight: 700; }
+button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 10px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+#a-choisir { border-left: 4px solid var(--houblon); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 6px; }
+#a-choisir p:first-child { font-size: 1.05rem; font-weight: 700; }
+.partout { display: grid; gap: 6px; }
+.partout ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; max-width: 70ch; }
+.rangee { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--trait); }
+.tete { display: grid; gap: 6px; align-content: start; justify-items: start; }
+.tete p { font-size: 0.875rem; color: var(--discret); }
+.id { font-size: 0.875rem; font-weight: 700; color: var(--discret); }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 8px; align-items: start; min-width: 0; }
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.ref .ecran { border: 2px solid var(--houblon); }
+figcaption { font-size: 0.875rem; line-height: 1.35; display: grid; gap: 2px; }
+figcaption b { font-weight: 800; }
+.legende { color: var(--discret); }
+.pastille { display: inline-flex; align-items: center; gap: 5px; font-weight: 700; font-size: 0.875rem; }
+.pastille::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.p-propose { color: var(--houblon); }
+.p-choisir { color: var(--choisir); }
+.p-reserve { color: var(--alerte); }
+@media (min-width: 760px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; }
+  .planche { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+dialog { border: 0; padding: 0; background: var(--voile); color: var(--voile-encre); width: min(96vw, 1100px); max-height: 94vh; border-radius: 12px; }
+dialog::backdrop { background: rgb(0 0 0 / 80%); }
+dialog .haut { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; }
+dialog .titre { font-size: 0.875rem; font-weight: 700; margin: 0; }
+dialog button { font: 700 0.875rem system-ui, sans-serif; border: 0; border-radius: 999px; padding: 8px 14px; background: var(--voile-encre); color: var(--voile); cursor: pointer; }
+dialog img { display: block; width: 100%; height: auto; max-height: 82vh; object-fit: contain; background: var(--carte); }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · Dépense · vue détail d'une ligne</p>
+    <h1>Vue détail d'une ligne · passe 4 · 02.11</h1>
+    <div id="a-choisir">
+      <p>Trois versions retenues, corrigées sur tes six remarques. Dis laquelle tu veux, ou quels morceaux prendre dans chacune.</p>
+      <p>Elles sont dans l'ordre du critique. Toutes les trois sont acceptées.</p>
+    </div>
+    <p class="legende">Base : ton choix p3c-3 (<a href="https://claude.ai/artifact/DFn4eoEbiUiD1orENfkDoF">page du 01.11</a>). Panel v0 : <a href="https://claude.ai/artifact/HxaxpDdzztLYPrCCnwnMAs">page du 02.11</a>.</p>
+  </header>
+
+  <section class="partout" aria-labelledby="t-partout">
+    <h2 id="t-partout">Tes remarques, corrigées dans les trois</h2>
+    <ul>
+      <li>Aucun menu déroulant : chaque choix se fait en un toucher.</li>
+      <li>Plus de « au centime » quand le calcul tombe juste.</li>
+      <li>Les unités de la bande et des rangées sont alignées.</li>
+      <li>La pièce est offerte dans chaque choix d'unité. Un « Stk » imprimé se lit pièce (cas c).</li>
+      <li>Une relecture acceptée ne se marque plus. Le bleu et l'ancien barré restent seulement tant qu'ils attendent ton geste (cas e).</li>
+      <li>Le détail d'une ligne ne nomme plus aucune autre ligne.</li>
+    </ul>
+  </section>
+
+  <section class="partout" aria-labelledby="t-diff">
+    <h2 id="t-diff">Ce qui les distingue</h2>
+    <ul>
+      <li><b>pu4d</b>, n° 1 : la facture et le stock face à face, sur tes champs. Pour aller à la ligne suivante, tu touches une pastille du récap.</li>
+      <li><b>pa1d</b>, n° 2 : ta maquette au plus près. Le récap ne donne qu'un compte. Au téléphone, il faut remonter au récap pour la ligne suivante.</li>
+      <li><b>pz2d</b>, n° 3 : le détail s'ouvre en bandeau sous le pouce, et pas sous la rangée. Sur une ligne à régler, « ‹ 1 sur 2 › » passe à la suivante sans la nommer.</li>
+    </ul>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-a">
+    <div class="tete">
+      <h2 id="t-a">Un malt sûr, relié au stock</h2>
+      <p>Cas <span class="id">a</span> · Maris Otter, 6 Kg, la mouture · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue ref" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/ref-p3c-3.png" data-titre="Ton choix p3c-3 · le plateau"><img src="img/ref-p3c-3.png" alt="Ton choix p3c-3, le plateau"></button><figcaption><span class="pastille p-choisir">ton choix</span><span><b>p3c-3, le plateau</b></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4d-a.png" data-titre="pu4d · malt sûr"><img src="img/pu4d-a.png" alt="pu4d, malt sûr"></button><figcaption><span><b>pu4d</b> <span class="id">n° 1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1d-a.png" data-titre="pa1d · malt sûr"><img src="img/pa1d-a.png" alt="pa1d, malt sûr"></button><figcaption><span><b>pa1d</b> <span class="id">n° 2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2d-a.png" data-titre="pz2d · malt sûr"><img src="img/pz2d-a.png" alt="pz2d, malt sûr"></button><figcaption><span><b>pz2d</b> <span class="id">n° 3</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-b">
+    <div class="tete">
+      <h2 id="t-b">Un houblon absent du stock</h2>
+      <p>Cas <span class="id">b</span> · « Citra 12.5% », le stock a Citra à α 13,1 : le bis proposé · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4d-b.png" data-titre="pu4d · houblon absent"><img src="img/pu4d-b.png" alt="pu4d, houblon absent"></button><figcaption><span><b>pu4d</b> <span class="id">n° 1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1d-b.png" data-titre="pa1d · houblon absent"><img src="img/pa1d-b.png" alt="pa1d, houblon absent"></button><figcaption><span><b>pa1d</b> <span class="id">n° 2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2d-b.png" data-titre="pz2d · houblon absent"><img src="img/pz2d-b.png" alt="pz2d, houblon absent"></button><figcaption><span><b>pz2d</b> <span class="id">n° 3</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-c">
+    <div class="tete">
+      <h2 id="t-c">Un objet imprimé en « Stk »</h2>
+      <p>Cas <span class="id">c</span> · le détartrant, « 1 Stk » sur le papier, lu pièce · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4d-c.png" data-titre="pu4d · objet en Stk"><img src="img/pu4d-c.png" alt="pu4d, objet en Stk"></button><figcaption><span><b>pu4d</b> <span class="id">n° 1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1d-c.png" data-titre="pa1d · objet en Stk"><img src="img/pa1d-c.png" alt="pa1d, objet en Stk"></button><figcaption><span><b>pa1d</b> <span class="id">n° 2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2d-c.png" data-titre="pz2d · objet en Stk"><img src="img/pz2d-c.png" alt="pz2d, objet en Stk"></button><figcaption><span><b>pz2d</b> <span class="id">n° 3</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-d">
+    <div class="tete">
+      <h2 id="t-d">Une unité illisible</h2>
+      <p>Cas <span class="id">d</span> · le lactose, « 1 » sans unité : à remplir, en rouge · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4d-d.png" data-titre="pu4d · unité illisible"><img src="img/pu4d-d.png" alt="pu4d, unité illisible"></button><figcaption><span><b>pu4d</b> <span class="id">n° 1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1d-d.png" data-titre="pa1d · unité illisible"><img src="img/pa1d-d.png" alt="pa1d, unité illisible"></button><figcaption><span><b>pa1d</b> <span class="id">n° 2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2d-d.png" data-titre="pz2d · unité illisible"><img src="img/pz2d-d.png" alt="pz2d, unité illisible"></button><figcaption><span><b>pz2d</b> <span class="id">n° 3</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-e">
+    <div class="tete">
+      <h2 id="t-e">Une relecture qui attend ton geste</h2>
+      <p>Cas <span class="id">e</span> · la levure, 2 sachets relus 3 : la marque reste jusqu'à ton geste · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4d-e.png" data-titre="pu4d · relecture à accepter"><img src="img/pu4d-e.png" alt="pu4d, relecture à accepter"></button><figcaption><span><b>pu4d</b> <span class="id">n° 1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1d-e.png" data-titre="pa1d · relecture à accepter"><img src="img/pa1d-e.png" alt="pa1d, relecture à accepter"></button><figcaption><span><b>pa1d</b> <span class="id">n° 2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2d-e.png" data-titre="pz2d · relecture à accepter"><img src="img/pz2d-e.png" alt="pz2d, relecture à accepter"></button><figcaption><span><b>pz2d</b> <span class="id">n° 3</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-f">
+    <div class="tete">
+      <h2 id="t-f">L'extrait du papier</h2>
+      <p>Cas <span class="id">f</span> · le détartrant, l'extrait ouvert, sa ligne surlignée · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4d-f.png" data-titre="pu4d · extrait"><img src="img/pu4d-f.png" alt="pu4d, extrait"></button><figcaption><span><b>pu4d</b> <span class="id">n° 1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1d-f.png" data-titre="pa1d · extrait"><img src="img/pa1d-f.png" alt="pa1d, extrait"></button><figcaption><span><b>pa1d</b> <span class="id">n° 2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2d-f.png" data-titre="pz2d · extrait"><img src="img/pz2d-f.png" alt="pz2d, extrait"></button><figcaption><span><b>pz2d</b> <span class="id">n° 3</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-repos">
+    <div class="tete">
+      <h2 id="t-repos">La liste au repos</h2>
+      <p>Aucune ligne ouverte · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4d-repos.png" data-titre="pu4d · repos"><img src="img/pu4d-repos.png" alt="pu4d, repos"></button><figcaption><span><b>pu4d</b> <span class="id">n° 1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1d-repos.png" data-titre="pa1d · repos"><img src="img/pa1d-repos.png" alt="pa1d, repos"></button><figcaption><span><b>pa1d</b> <span class="id">n° 2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2d-repos.png" data-titre="pz2d · repos"><img src="img/pz2d-repos.png" alt="pz2d, repos"></button><figcaption><span><b>pz2d</b> <span class="id">n° 3</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-sombre">
+    <div class="tete">
+      <h2 id="t-sombre">En sombre</h2>
+      <p>pu4d et pa1d au cas d, pz2d au cas b · 390 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4d-d-cave.png" data-titre="pu4d · sombre"><img src="img/pu4d-d-cave.png" alt="pu4d, sombre"></button><figcaption><span><b>pu4d</b> <span class="id">n° 1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1d-d-sombre.png" data-titre="pa1d · sombre"><img src="img/pa1d-d-sombre.png" alt="pa1d, sombre"></button><figcaption><span><b>pa1d</b> <span class="id">n° 2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2d-b-cave.png" data-titre="pz2d · sombre"><img src="img/pz2d-b-cave.png" alt="pz2d, sombre"></button><figcaption><span><b>pz2d</b> <span class="id">n° 3</span></span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-1280">
+    <div class="tete">
+      <h2 id="t-1280">Au bureau</h2>
+      <p>Cas b · 1280 px</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pu4d-1280-b.png" data-titre="pu4d · 1280"><img src="img/pu4d-1280-b.png" alt="pu4d, 1280"></button><figcaption><span><b>pu4d</b> <span class="id">n° 1</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pa1d-1280-b.png" data-titre="pa1d · 1280"><img src="img/pa1d-1280-b.png" alt="pa1d, 1280"></button><figcaption><span><b>pa1d</b> <span class="id">n° 2</span></span></figcaption></figure>
+      <figure class="vue" data-vignette><button class="ecran" type="button" data-agrandir data-src="img/pz2d-b-1280.png" data-titre="pz2d · 1280"><img src="img/pz2d-b-1280.png" alt="pz2d, 1280"></button><figcaption><span><b>pz2d</b> <span class="id">n° 3</span></span></figcaption></figure>
+    </div>
+  </section>
+</div>
+
+<dialog id="grand" aria-label="Capture en grand">
+  <div class="haut">
+    <p class="titre" id="grand-titre"></p>
+    <button type="button" class="fermer">Fermer</button>
+  </div>
+  <img id="grand-img" alt="">
+</dialog>
+
+<script>
+(function () {
+  var dlg = document.getElementById('grand');
+  var img = document.getElementById('grand-img');
+  var titre = document.getElementById('grand-titre');
+  document.querySelectorAll('[data-agrandir]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      img.setAttribute('src', b.getAttribute('data-src'));
+      img.setAttribute('alt', b.getAttribute('data-titre'));
+      titre.textContent = b.getAttribute('data-titre');
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.fermer').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>

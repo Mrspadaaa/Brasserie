@@ -1,0 +1,22 @@
+== controle-plus-agit
+ok cal.html + Travaux : feuille (2 champ(s), 16 choix, pressé « Travaux / S4716 nov. ») ; cases « + » visibles : 0
+ok cal.html + Activités : feuille (1 champ(s), 16 choix, pressé « Activité / S4716 nov. ») ; cases « + » visibles : 0
+ok cal.html + Papiers : feuille (2 champ(s), 16 choix, pressé « Papier / S4716 nov. ») ; cases « + » visibles : 0
+PLUS-AGIT OK
+== controle-geste-bruit
+ok cal.html f6-b, après f6-b : messages [1 l.] 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde bras
+ok cal.html f1-a puis f6-b, après f1-a : messages [1 l.] S51 : 5 064 → 4 524Annuler
+ok cal.html f1-a puis f6-b, après f6-b : messages [1 l.] 3 fûts promis le 15 déc. · prête le 4 janv.La Cigogne · la Blonde bras
+BRUIT OK
+== controle-bande-semaine
+ok cal.html : repos « S47 S48 S49 S50 S51 S52 » (0 icône(s)) ; bouton présent, ± montre les mouvements
+BANDE OK
+== controle-entete-cal
+ok cal.html : courbe 87 px (min 80), bande des semaines 33 px (max 40, présente), en-tête 180 px (max 180), 24 textes (max 12), mois → bande sans mois au-dessus
+ENTETE OK
+== controle-plus-rangees
+ok cal.html : 7 rangées, colonnes du + écart 0 px ; hors ligne : aucune ; x = 22,22,22,22,22,22,22
+PLUS OK
+== bande paysage
+ok cal-paysage.html : repos « S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 » (0 icône(s)) ; bouton présent, ± montre les mouvements
+BANDE OK

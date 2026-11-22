@@ -1,0 +1,26 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F11.test.tsx[2m > [22mPCN-110 : les valeurs lues sur une page portent leur date, la fiche dit « lues sur la fiche du vendeur, <date> »[2m > [22mcomme h01-6 : la ligne suit « Caractéristiques » sur la même ligne, en maigre et plus petite (pas en titre gras)
+[31m[1mAssertionError[22m: expected -1 to be greater than -1[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F11.test.tsx:[2m58:15[22m[39m
+    [90m 56| [39m    const css = fs.readFileSync(path.resolve(__dirname, '../../src/ui/…
+    [90m 57| [39m    [35mconst[39m i [33m=[39m css[33m.[39m[34mindexOf[39m([32m'.cn-sous > .cn-mut {'[39m)[33m;[39m
+    [90m 58| [39m    [34mexpect[39m(i)[33m.[39m[34mtoBeGreaterThan[39m([33m-[39m[34m1[39m)[33m;[39m
+    [90m   | [39m              [31m^[39m
+    [90m 59| [39m    [35mconst[39m r [33m=[39m css[33m.[39m[34mslice[39m(i[33m,[39m css[33m.[39m[34mindexOf[39m([32m'}'[39m[33m,[39m i))[33m;[39m
+    [90m 60| [39m    [34mexpect[39m(r)[33m.[39m[34mtoMatch[39m([36m/font-weight: 400/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m9 passed[39m[22m[90m (10)[39m
+[2m   Start at [22m 00:11:04
+[2m   Duration [22m 2.89s[2m (transform 1.13s, setup 282ms, collect 1.68s, tests 42ms, environment 648ms, prepare 65ms)[22m
+

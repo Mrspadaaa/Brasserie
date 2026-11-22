@@ -1,0 +1,51 @@
+=== n12 390 clair
+presse ok
+n12-a 390 clair : puce=Coller : exemple.invalid/hotte-…
+capture n12-390-clair-a.png
+n12-b 390 clair : champ=https://exemple.invalid/hotte-140 ¦ va dans / ZZ TEST — Ventilation de la salle de brassage / exemple.invalid/hotte-140 / ZZ TEST — Ventilation de la salle de brassage / 2 façons · 6 articles · 1 en veille / fournisseurs et prix : exemple / le 10 nov. · Mesure Exemple / Hotte murale 100 cm / dans ZZ TEST — Ventilation de la salle de brassage / Ajouter
+capture n12-390-clair-b.png
+n12-c 390 clair : Rangé dans ZZ TEST — Ventilation de la salle de brassage, à l'instant · 1er sur 5 · tient 80 °C oui / Annuler / Hotte inox 140 cm + extracteur · exemple.invalid · 1 980 CHF / votre message : « https://exemple.invalid/hotte-140 » / ✻ la page parle de « hotte » : comme Ventilation de la salle de brassage / ZZ TEST — Ventilation de la salle de brassage / fournisseurs et prix : exemple / dans ZZ TEST — Ventilation de la salle de brassage
+capture n12-390-clair-c-apres.png
+=== n12 1280 clair
+presse ok
+n12-a 1280 clair : puce=Coller : exemple.invalid/hotte-…
+capture n12-1280-clair-a.png
+n12-b 1280 clair : champ= ¦ ZZ TEST — Ventilation de la salle de brassage / 2 façons · 6 articles · 1 en veille / fournisseurs et prix : exemple / le 10 nov. · Mesure Exemple / Hotte murale 100 cm / dans ZZ TEST — Ventilation de la salle de brassage
+capture n12-1280-clair-b.png
+n12-c 1280 clair : ZZ TEST — Ventilation de la salle de brassage / fournisseurs et prix : exemple / dans ZZ TEST — Ventilation de la salle de brassage
+capture n12-1280-clair-c-apres.png
+=== n9 390 sombre
+n9 390 sombre : Réalisés / Réalisé le 16 nov. / Réalisés · ZZ TEST — Embouteillage / 190 à 21 500 CHF / CHF
+capture n9-390-sombre-realise.png
+=== n1 390 clair
+n1-frappe 390 clair : va dans / Notes : un frigo de garde pour 20 fûts / Notes / Ce qui compte / Note
+capture n1b-390-clair-a-frappe.png
+n1-apres 390 clair : Rangé dans ZZ TEST — Frigo de garde pour fûts, à l'instant / Annuler / votre message : « un frigo de garde pour 20 fûts » / Notes
+capture n1b-390-clair-b-apres.png
+=== n3 1280 sombre
+n3 1280 sombre : Nouveau carnet · Idée / ✻ Déjà un carnet proche : ZZ TEST — Ventilation de la salle de brassage / Ouvrir ce carnet / 2 façons · 6 articles · 1 en veille
+capture n3b-1280-sombre-a.png
+n3-ouvert 1280 sombre : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 6 ¦ Réalisés ¦ 0 ¦ Carnets ¦ ZZ TEST — Ventilation de la salle de brassage ¦ 2 façons à comparer · attendre l’avis du ferblantier ¦ Critère : tient
+capture n3b-1280-sombre-b-ouvert.png
+=== pompe 1280 clair
+pompe-1 1280 clair : Pompe pour le moût / Pompe de transfert inox / Ajouter à Pompe pour le moût…
+pompe-2 1280 clair : Comparer sur le débit (L/min)exemple / 2 articles à comparer / rang · article / votre lien : « https://exemple.invalid/pompe-magnetique »
+capture pompe2-1280-clair.png
+pompe-comparer 1280 clair : Ce qui compte Supporter le moût chaud · proposé par l'IA / à égalité, le moins cher / débit L/min	25	40
+capture pompe2-1280-clair-comparer.png
+=== ventil 390 clair
+ventil 390 clair : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 6 ¦ Réalisés ¦ 0 ¦ Carnets ¦ ZZ TEST — Ventilation de la salle de brassage ¦ 2 façons à comparer · attendre l’avis du ferblantier ¦ Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer ¦ Articles ¦ 6 ¦ · ¦ Comparer ¦ H
+capture ens2-ventil-390-clair.png
+ventil-bas 390 clair : conteneurs=1
+capture ens2-ventil-390-clair-bas.png
+=== ventil 390 sombre
+ventil 390 sombre : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 6 ¦ Réalisés ¦ 0 ¦ Carnets ¦ ZZ TEST — Ventilation de la salle de brassage ¦ 2 façons à comparer · attendre l’avis du ferblantier ¦ Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer ¦ Articles ¦ 6 ¦ · ¦ Comparer ¦ H
+capture ens2-ventil-390-sombre.png
+ventil-bas 390 sombre : conteneurs=1
+capture ens2-ventil-390-sombre-bas.png
+=== listebas 390 clair
+liste-bas 390 clair : teillage ¦ oxygène le plus bas, SAV suisse ¦ le 14 nov. · Brassage Romandie ¦ 11 700 ¦ CHF ¦ ZZ TEST — Frigo de garde pour fûts ¦ tient 2 °C en été, 6 fûts ¦ le 10 oct. · Froid Léman ¦ 4 900 ¦ CHF ¦ Dans À venir depuis le 16 nov. ¦ Voir ¦ En veille ¦ 2 ¦ demandée · pas encore relevée ¦ Isobarique 4 becs pré-évacuation ¦ 2 offres · 11 200 à 11 700 CHF ¦ dans ZZ TEST — Embouteillage ¦ Hotte murale 100 cm ¦ 1 450 CHF ¦ dans ZZ TEST — Ventilation de la salle de brassage ¦ Une idée, un besoin… ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ Stocks ¦ Clients
+capture ens2-liste-390-clair-bas.png
+=== listebas 1280 sombre
+liste-bas 1280 sombre : xygène le plus bas, SAV suisse ¦ le 14 nov. · Brassage Romandie ¦ 11 700 ¦ CHF ¦ ZZ TEST — Frigo de garde pour fûts ¦ tient 2 °C en été, 6 fûts ¦ le 10 oct. · Froid Léman ¦ 4 900 ¦ CHF ¦ Dans À venir depuis le 16 nov. ¦ Voir ¦ En veille ¦ 2 ¦ demandée · pas encore relevée ¦ Isobarique 4 becs pré-évacuation ¦ 2 offres · 11 200 à 11 700 CHF ¦ dans ZZ TEST — Embouteillage ¦ Hotte murale 100 cm ¦ 1 450 CHF ¦ dans ZZ TEST — Ventilation de la salle de brassage ¦ Une idée, un besoin… ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ Stocks ¦ Clients ¦ Compagnon
+capture ens2-liste-1280-sombre-bas.png

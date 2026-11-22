@@ -1,0 +1,62 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F9.test.tsx[2m > [22mf9 n° 1 : le carnet choisi dit le critère qui a classé le choix[2m > [22m« Critères : tient 80 °C, puis le débit », jamais « capter la buée » (sans valeur à comparer)
+[31m[1mAssertionError[22m: expected 'Critère : Moins de condensation au pl…' to contain 'tient 80 °C, puis le débit'[39m
+
+Expected: [32m"tient 80 °C, puis le débit"[39m
+Received: [31m"Critère : Moins de condensation au plafond : capter la buée"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F9.test.tsx:[2m33:19[22m[39m
+    [90m 31| [39m      choix={{ articleId: 'ZZ-V-A1', le: '2026-11-19T10:00:00.000Z', p…
+    [90m 32| [39m    const ligne = texte(screen.getByRole('img', { name: 'critère' }).p…
+    [90m 33| [39m    [34mexpect[39m(ligne)[33m.[39m[34mtoContain[39m([32m'tient 80 °C, puis le débit'[39m)[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m 34| [39m    [34mexpect[39m(ligne)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'capter la buée'[39m)[33m;[39m
+    [90m 35| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F9.test.tsx[2m > [22mf9 n° 2 : Choisir, la liste reste lisible à 390[2m > [22mle seuil se dit court sous la valeur (« < min. 1 500 »), la phrase entière pour le lecteur d’écran ; la colonne de droite est bornée
+[31m[1mTypeError[22m: Cannot read properties of null (reading 'textContent')[39m
+[36m [2m❯[22m texte tests/unit/carnetsTour3F9.test.tsx:[2m21:36[22m[39m
+    [90m 19| [39m[34mafterEach[39m(cleanup)[33m;[39m
+    [90m 20| [39m[35mconst[39m rien [33m=[39m () [33m=>[39m undefined[33m;[39m
+    [90m 21| [39mconst texte = (el: Element) => (el.textContent ?? '').replace(/[\u00a0…
+    [90m   | [39m                                   [31m^[39m
+    [90m 22| [39mconst V: CarnetDoc = lireCarnet(fixtureCarnets().find(i => i.id === ID…
+    [90m 23| [39m[35mconst[39m [33mTITRE[39m [33m=[39m [32m'ZZ TEST — Ventilation de la salle de brassage'[39m[33m;[39m
+[90m [2m❯[22m tests/unit/carnetsTour3F9.test.tsx:[2m45:14[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F9.test.tsx[2m > [22mf9 n° 3 : Comparer à 390, seul le tableau défile[2m > [22mla zone du tableau contient ses textes cachés (position: relative) : rien ne déborde dans la page
+[31m[1mAssertionError[22m: expected '.cn-tableau-zone { overflow-x: auto; …' to match /position: relative/[39m
+
+[32m- Expected:[39m 
+/position: relative/
+
+[31m+ Received:[39m 
+".cn-tableau-zone { overflow-x: auto; border: 1px solid var(--c-line); border-radius: 16px; "
+
+[36m [2m❯[22m tests/unit/carnetsTour3F9.test.tsx:[2m56:59[22m[39m
+    [90m 54| [39m[34mdescribe[39m([32m'f9 n° 3 : Comparer à 390, seul le tableau défile'[39m[33m,[39m () [33m=>[39m {
+    [90m 55| [39m  it('la zone du tableau contient ses textes cachés (position: relativ…
+    [90m 56| [39m    expect(regle(css('carnets.css'), '.cn-tableau-zone')).toMatch(/pos…
+    [90m   | [39m                                                          [31m^[39m
+    [90m 57| [39m  })[33m;[39m
+    [90m 58| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[90m (3)[39m
+[2m   Start at [22m 23:54:41
+[2m   Duration [22m 1.69s[2m (transform 375ms, setup 308ms, collect 386ms, tests 100ms, environment 668ms, prepare 71ms)[22m
+

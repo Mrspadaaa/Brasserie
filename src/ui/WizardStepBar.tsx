@@ -60,7 +60,7 @@ export const WizardStepRail: React.FC<
     observer.observe(element);
     return () => observer.disconnect();
   }, [currentIndex, compactLabels]);
-  return <nav ref={rail} aria-label="Étapes" className={`wizard-step-rail flex w-full gap-1 ${compactLabels ? 'overflow-x-auto overscroll-x-contain' : ''}`}>
+  return <nav ref={rail} aria-label="Étapes" className={`wizard-step-rail flex w-full ${compactLabels ? 'gap-0.5 overflow-x-auto overscroll-x-contain' : 'gap-1'}`}>
     {steps.map((s, i) => (
       <button
         key={s.id}
@@ -71,7 +71,7 @@ export const WizardStepRail: React.FC<
         aria-label={s.label}
         // La cible reste dans sa rangée pour ne pas recouvrir les actions du titre.
         title={s.label}
-        className={`group flex min-h-touch min-w-0 ${compactLabels ? 'shrink-0 px-1' : 'flex-1'} items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
+        className={`group flex min-h-touch min-w-0 ${compactLabels ? 'shrink-0 grow px-0.5' : 'flex-1'} items-center rounded-control focus-visible:outline focus-visible:outline-2 focus-visible:outline-water
                    disabled:opacity-40 disabled:pointer-events-none ${showLabels ? 'flex-col justify-center gap-1' : ''}`}
       >
         {showLabels && <span className={`max-w-full ${compactLabels ? 'whitespace-nowrap' : 'truncate'} text-xs ${i === currentIndex ? 'text-cave-50 font-semibold' : 'text-cave-400'}`}>{compactLabels ? s.shortLabel ?? s.label : s.label}</span>}

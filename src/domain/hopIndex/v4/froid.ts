@@ -19,6 +19,7 @@ import { recipeIbu, type Addition, type MomentId, type Recipe } from './recipe';
 import { getStyleScale } from './style/scale';
 import type { Tasting } from './tasting';
 import { valueVerdict, type ValueVerdict } from './style/verdict';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 const FROID: MomentId[] = ['dryActive', 'dryPost'];
 const estFroid = (a: Pick<Addition, 'moment'>) => FROID.includes(a.moment);
@@ -80,7 +81,7 @@ export function amertumeAFroid(recipe: Recipe, ajout: Addition, options: { scien
   if (m.status === 'conditional') {
     const j = (ajout as AjoutPouvoir).dureeJours, t = (ajout as AjoutPouvoir).temperatureC;
     if (j != null && (j < 1 || j > 5)) raisons.push(`Contact de ${j} j : hors des essais (1 à 5 j).`);
-    if (t != null && Math.abs(t - 16) > 2) raisons.push(`Contact à ${t} °C : les essais sont à 16 °C.`);
+    if (t != null && Math.abs(t - 16) > 2) raisons.push(`Contact à ${nombreFr(t, 1)} °C : les essais sont à 16 °C.`);
   }
   return { ...base, statut: m.status, doseGL: m.doseGL, ibuChaud: { plage: { min: ibu.min, max: ibu.max }, centre: ibu.value },
     equivalentFinal: m.finalEquivalent, delta: m.deltaEquivalent, equivalentFinalAuCentre: c.finalEquivalent, deltaAuCentre: c.deltaEquivalent,
@@ -170,7 +171,7 @@ export function hopCreepDe(recipe: Recipe, ajout: Addition, options: { levureVia
   // Dose.
   const dosePts = doseGL >= S.doseGL.valeur ? 1 : 0;
   facteurs.push({ id: 'dose', libelle: 'Dose à cru', connu: Number.isFinite(doseGL), points: dosePts, valeur: `${fr(doseGL)} g/L`,
-    pourquoi: doseGL >= S.doseGL.valeur ? `À partir de ${S.doseGL.valeur} g/L, la dose des essais publiés. ${S.doseGL.ancre}` : `Sous ${S.doseGL.valeur} g/L, hors de la dose des essais publiés : aucune mesure, ce n’est pas un zéro. ${S.doseGL.ancre}`, sources: src(...S.doseGL.sources) });
+    pourquoi: doseGL >= S.doseGL.valeur ? `À partir de ${nombreFr(S.doseGL.valeur, 1)} g/L, la dose des essais publiés. ${S.doseGL.ancre}` : `Sous ${nombreFr(S.doseGL.valeur, 1)} g/L, hors de la dose des essais publiés : aucune mesure, ce n’est pas un zéro. ${S.doseGL.ancre}`, sources: src(...S.doseGL.sources) });
   // Durée.
   const j = a.dureeJours;
   facteurs.push({ id: 'duree', libelle: 'Durée de contact', connu: j != null, points: j == null ? null : j >= S.jours.valeur ? 1 : 0, valeur: j == null ? 'inconnue' : `${fr(j)} j`,
@@ -179,7 +180,7 @@ export function hopCreepDe(recipe: Recipe, ajout: Addition, options: { levureVia
   // Température.
   const t = a.temperatureC;
   facteurs.push({ id: 'temperature', libelle: 'Température de contact', connu: t != null, points: t == null ? null : t >= S.temperatureC.valeur ? 1 : 0, valeur: t == null ? 'inconnue' : `${fr(t)} °C`,
-    pourquoi: t == null ? 'Température non renseignée : aucun point.' : `${t >= S.temperatureC.valeur ? `À partir de ${S.temperatureC.valeur} °C` : `Sous ${S.temperatureC.valeur} °C`}. ${S.temperatureC.ancre}`, sources: src(...S.temperatureC.sources) });
+    pourquoi: t == null ? 'Température non renseignée : aucun point.' : `${t >= S.temperatureC.valeur ? `À partir de ${nombreFr(S.temperatureC.valeur, 1)} °C` : `Sous ${nombreFr(S.temperatureC.valeur, 1)} °C`}. ${S.temperatureC.ancre}`, sources: src(...S.temperatureC.sources) });
   if (t == null) inconnus.push('Température de contact : l’activité monte avec elle (H80), la refermentation finit plus tôt au chaud (H85).');
   // Variété.
   const nom = ref?.catalogue.name ?? null;
@@ -193,7 +194,7 @@ export function hopCreepDe(recipe: Recipe, ajout: Addition, options: { levureVia
   if (plafonne) risque = 'moyen';
   const raisons = [
     viable === false ? 'Levure déclarée non viable : pas de hop creep sans levure vivante.' : `${points} point${points > 1 ? 's' : ''} sur 6 possibles : ${risque}.`,
-    ...(plafonne ? [`Plafonné à « moyen » : ${fr(doseGL)} g/L est sous les ${S.doseGL.valeur} g/L des essais publiés.`] : []),
+    ...(plafonne ? [`Plafonné à « moyen » : ${fr(doseGL)} g/L est sous les ${nombreFr(S.doseGL.valeur, 1)} g/L des essais publiés.`] : []),
     'Le niveau est une convention ordinale du prototype, à valider par le brasseur ; l’ampleur pour ce brassin n’est pas chiffrée.',
   ];
   return { statut: 'évalué', risque, points, plafonne, facteurs, inconnus, effets: viable === false ? [] : effets(), raisons, nature: NATURE_CREEP };

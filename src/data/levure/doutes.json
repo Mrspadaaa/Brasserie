@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "verifieLe": "2026-11-09",
+  "origine": "work/missions/2026-11-09-ecran-levure/critique/p2/SYNTHESE-P4.md (doutes du critique, passes 3 et 4)",
+  "doutes": [
+    {
+      "id": "w68-banane",
+      "doute": "W-68 « + banane »",
+      "statut": "partiel",
+      "constat": "La fiche Fermentis SafAle W-68 porte « esters : High » et « POF : positive » : « + esters » et « + phénols » sont sourcés. Le mot « banane » n’est pas dans cette fiche : il n’est pas affiché pour elle. La fiche Brewing Science Institute W-68 German Weizen écrit « clove, vanilla, and banana » : banane sourcée pour celle-là.",
+      "sources": [
+        {
+          "libelle": "Fermentis · fiche W-68",
+          "url": "https://fermentis.com/en/product/safale-w-68/"
+        },
+        {
+          "libelle": "BSI · fiche W-68",
+          "url": "https://brewingscience.com/product/german-weizen/"
+        }
+      ],
+      "affiche": "Fermentis W-68 : esters élevés, phénols +, sans le mot banane. BSI W-68 : banane."
+    },
+    {
+      "id": "3068-esters-chaud",
+      "doute": "3068 « esters ↑ à chaud »",
+      "statut": "source",
+      "constat": "Wyeast relie une température plus élevée (et une densité plus haute, un inoculum plus faible) à davantage d’esters pour le 3068 ; le girofle peut ressortir quand les esters baissent. Le levier est dans le moteur (fermentationScienceBootstrap, levier banana-3068) et la recherche du dépôt (docs/research/hop-yeast-interactions-research.md, §4, note 4). La page Wyeast n’est pas relue ici : elle est citée par la recherche du dépôt.",
+      "sources": [
+        {
+          "libelle": "Wyeast · fiche 3068",
+          "url": "https://wyeastlab.com/product/weihenstephan-weizen/"
+        }
+      ],
+      "yeastIds": [
+        "wyeast-3068"
+      ],
+      "axe": "esters",
+      "sens": 1,
+      "levier": "°C : plus chaud, plus d’esters (Wyeast 3068)",
+      "levierAxe": "temperature"
+    },
+    {
+      "id": "diamond-thiols",
+      "doute": "Diamond (thiols, °C)",
+      "statut": "source",
+      "constat": "Samia et al. 2026 (résumé Lallemand) : la lager Diamond donne le plus de thiols mesurés, 2 à 3 fois les ales ; Samia et al. 2024 (BrewingScience 77) : ce n’est pas le plus tropical perçu (soufre). Sa fenêtre de fermentation est 10–15 °C (fiche Lallemand) : le levier « plus chaud » ne s’applique pas, il sortirait de la fenêtre.",
+      "sources": [
+        {
+          "libelle": "Samia 2026",
+          "url": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/which-factors-influence-thiol-release-new-osu-thiol-research-published/"
+        },
+        {
+          "libelle": "Samia 2024",
+          "url": "https://brewingscience.de/index.php/brewingscience/article/view/241"
+        }
+      ],
+      "yeastIds": [
+        "lalbrew-diamond"
+      ],
+      "affiche": "Thiols élevés (étude) ; perçu moins tropical, soufre ; 10–15 °C."
+    },
+    {
+      "id": "levier-c-thiols",
+      "doute": "levier °C des thiols",
+      "statut": "source",
+      "constat": "Même moût à 15, 22 et 30 °C : le 3SH monte de 33 à 72 % avec la température ; goût tropical maximal pour les ales entre 22 et 30 °C. Cinq souches Lallemand ; hors de la fenêtre du fabricant, le levier ne vaut pas.",
+      "sources": [
+        {
+          "libelle": "Samia 2026",
+          "url": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/which-factors-influence-thiol-release-new-osu-thiol-research-published/"
+        }
+      ],
+      "axe": "thiols",
+      "sens": 1,
+      "levier": "°C : plus chaud, dans la fenêtre de la levure (3SH +33 à +72 % de 15 à 30 °C, Samia 2026)",
+      "levierAxe": "temperature",
+      "levierPlage": {
+        "min": 15,
+        "max": 30
+      }
+    },
+    {
+      "id": "levier-attenuation",
+      "doute": "empâtage → Malts/sucres pour l’atténuation",
+      "statut": "source",
+      "constat": "166 fiches du catalogue écrivent « L’atténuation dépend de la recette et de l’empâtage » ; le profil d’empâtage se règle dans l’étape Malts/sucres.",
+      "sources": [
+        {
+          "libelle": "Fiches du catalogue · usage",
+          "url": "src/data/yeastCatalogueBootstrap.json"
+        }
+      ],
+      "axe": "attenuation",
+      "levier": "empâtage → Malts/sucres (l’atténuation dépend de l’empâtage)"
+    },
+    {
+      "id": "regle-c-c5b",
+      "doute": "règle °C de c5b (NovaLager 10–20 °C sous un filtre 15–25 °C)",
+      "statut": "non-source",
+      "constat": "Aucune source : c’est une règle de produit, pas une donnée. Choix du domaine, réversible : un filtre de plage °C garde les fiches dont la plage recoupe la plage demandée (NovaLager 10–20 reste sous 15–25) ; un repère ponctuel (19 °C de la recette) ne filtre jamais : il marque les fiches dont la plage le contient. Rien de cette règle n’est présenté comme un fait de levure.",
+      "sources": [],
+      "affiche": "rien (règle interne)"
+    }
+  ]
+}

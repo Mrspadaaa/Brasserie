@@ -14,6 +14,7 @@ import { HopV55DecisionPreparation, HopV55SemanticDecisionPreparation, HopV55Dec
   type HopV55DecisionProgramComparisonRequest, type HopV55DecisionProgramPreparationRequest,
   type HopV55DecisionProgramResumeRequestV1 } from './DecisionPreparation';
 import './decision-response.css';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 type DecisionReading = HopV55QuestionReading | HopV55SemanticQuestionReadingV1;
 export type HopV55DecisionResponseReading = DecisionReading;
@@ -268,7 +269,7 @@ function OperationDraftSummary({ operations }: { operations: HopV55ProgramOperat
         {'sourceUse' in operation && operation.sourceUse ? <p>Emploi source · {useLabels[operation.sourceUse]}</p> : null}
         {'conditions' in operation && operation.conditions ? <p>Conditions fournies · {[operation.conditions.boilMinutes !== undefined ? `${operation.conditions.boilMinutes ?? 'inconnu'} min d’ébullition` : '',
           operation.conditions.contactHours !== undefined ? `${operation.conditions.contactHours ?? 'inconnu'} h de contact` : '',
-          operation.conditions.temperatureC !== undefined ? `${operation.conditions.temperatureC ?? 'inconnue'} °C` : '',
+          operation.conditions.temperatureC !== undefined ? `${operation.conditions.temperatureC == null ? 'inconnue' : nombreFr(operation.conditions.temperatureC, 1)} °C` : '',
           operation.conditions.dayOffset !== undefined ? `jour ${operation.conditions.dayOffset ?? 'inconnu'}` : ''].filter(Boolean).join(' · ')}</p> : null}
       </details>
     </li>)}</ol>

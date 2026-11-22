@@ -14,6 +14,7 @@ import { refreshCompanionRecipe } from './brewerRecipeRefresh';
 import { replanRecipeWater } from './recipeWater';
 import { brewingStyles, resolveBrewingStyle } from './brewingStyles';
 import { noloYeastCandidates, noloYeastProcessSources } from './noloYeastSelection';
+import { nombreFr } from '../domain/nombreAffiche';
 
 export const FERMENTATION_PLANNER_VERSION = 'fermentation-planner-v1';
 export interface FermentationDiagnostic {
@@ -39,10 +40,10 @@ export function fermentationReadiness(recipe: TrialRecipe, saved: HopKnowledge[]
     add('mash-protocol', 'mash', 'La relation LA-01 exige le programme d’empâtage de sa référence. Une proposition complète permet de le reprendre.', science.la01.source);
   const temperature = agreedFermentationFact(yeast, 'temperature', '°C');
   if (temperature && (recipe.yeast.fermTempMinC != null && recipe.yeast.fermTempMinC !== temperature.range.min || recipe.yeast.fermTempMaxC != null && recipe.yeast.fermTempMaxC !== temperature.range.max))
-    add('temperature-reference', 'yeast', `Fiche saisie : ${recipe.yeast.fermTempMinC ?? '?'}–${recipe.yeast.fermTempMaxC ?? '?'} °C ; référence actuelle : ${temperature.range.min}–${temperature.range.max} °C. Valeurs personnelles conservées.`, temperature.source, 'notice');
+    add('temperature-reference', 'yeast', `Fiche saisie : ${recipe.yeast.fermTempMinC ?? '?'}–${recipe.yeast.fermTempMaxC == null ? '?' : nombreFr(recipe.yeast.fermTempMaxC, 1)} °C ; référence actuelle : ${temperature.range.min}–${nombreFr(temperature.range.max, 1)} °C. Valeurs personnelles conservées.`, temperature.source, 'notice');
   const range = strain?.temperatureC ?? temperature?.range;
   if (range && recipe.nolo?.process !== 'coldContact' && recipe.fermentation?.some(p => p.kind === 'primaire' && (p.tempC == null || p.tempC < range.min || p.tempC > range.max)))
-    add('primary-temperature', 'fermentation', `Prévoir la fermentation primaire dans la plage ${range.min}–${range.max} °C, ou documenter l’écart.`, strain?.source ?? temperature?.source);
+    add('primary-temperature', 'fermentation', `Prévoir la fermentation primaire dans la plage ${range.min}–${nombreFr(range.max, 1)} °C, ou documenter l’écart.`, strain?.source ?? temperature?.source);
   const fruitStyle = resolveBrewingStyle(recipe.style, recipe.styleRef, brewingStyles(saved))?.id === 'fruit-lambic';
   if (fruitStyle && !recipe.fermentables.some(f => f.kind === 'fruit') && !recipe.nolo?.operations.some(o => o.kind === 'sugar'))
     add('fruit', 'fruit', 'Préciser le fruit et sa quantité ; ses sucres rejoindront le bilan alcoolique. Un arôme fruité de levure ne remplace pas cet apport.', undefined, 'notice');
@@ -121,7 +122,7 @@ export function proposeNoloFermentation(recipe: TrialRecipe, strain: NoloStrain,
   // the experimental mash/ABV relation; it is never transferred to another yeast.
   if (targetPlato !== null) {
     sources.push(science.la01.source);
-    assumptions.push(`Moût neuf proposé à ${targetPlato} °P : borne basse du domaine LA-01, point de départ d’essai pour les autres souches.`);
+    assumptions.push(`Moût neuf proposé à ${nombreFr(targetPlato, 1)} °P : borne basse du domaine LA-01, point de départ d’essai pour les autres souches.`);
     const scalable = recipe.fermentables.filter(f => f.kind === 'grain' && (f.use ?? 'empatage') === 'empatage' && f.weightKg > 0);
     const points = BrewingMath.extractPoints(recipe.fermentables.filter(f => f.use !== 'fermentation'), recipe.volumeL, recipe.efficiencyPct ?? recipe.brewhouse?.efficiencyPct ?? 75, 'full');
     if (points && scalable.length && recipe.volumeL > 0 && science.planningModels) {
@@ -159,7 +160,7 @@ export function proposeNoloFermentation(recipe: TrialRecipe, strain: NoloStrain,
   change('Souche', recipe.yeast.name, next.yeast.name);
   change('Ensemencement', recipe.yeast, next.yeast, y => `${label(y.qty, y.unit)} · ${label(y.pitchTempC, '°C')}`);
   next.fermentables.forEach((f, i) => change(f.name, recipe.fermentables[i].weightKg, f.weightKg, n => label(n, 'kg')));
-  change('Empâtage', recipe.mash?.steps, next.mash?.steps, s => s?.map(p => `${p.tempC} °C · ${p.durationMin} min`).join(' → ') || 'À renseigner');
+  change('Empâtage', recipe.mash?.steps, next.mash?.steps, s => s?.map(p => `${nombreFr(p.tempC, 1)} °C · ${p.durationMin} min`).join(' → ') || 'À renseigner');
   change('Fermentation', recipe.fermentation, next.fermentation, s => s?.map(p => `${p.name} ${label(p.tempC, '°C')} · ${label(p.days, 'j')}`).join(' → ') || 'À renseigner');
   change('Conditionnement', recipe.carboTarget ?? '', next.carboTarget);
   change('Eau et traitement', recipe.waterPlan, next.waterPlan, p => p ? `${label(p.mashWaterL, 'L empâtage')} + ${label(p.spargeWaterL, 'L rinçage')} · sels ${Object.entries(p.mash ?? {}).map(([k, v]) => `${k} ${label(v as number, 'g')}`).join(', ')} · acides ${label(p.acid?.mash)} / ${label(p.acid?.sparge)}` : 'À préparer');

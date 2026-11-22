@@ -1,0 +1,46 @@
+OK    390 · la section certaine « Déjà enregistré » est visible à l’écran
+OK    390 · « Déjà enregistré », pas « peut-être »
+OK    390 · les noms des articles lus : Maris Otter25 kg | Citra 12.5%100 g
+OK    390 · n° de facture, date, total et règlement dits
+OK    390 · ni « empreinte » ni « hash » à l’écran
+OK    390 · aucune lecture (simulée : 0) et aucune requête aiTask (0)
+OK    390 · le formulaire vide n’est pas montré
+OK    390 · aucun débordement horizontal
+OK    390 · lignes visibles, libellé de la fiche : 2 (Maris Otter 25 kg25 kg60,00 CHF | Citra T90 100 g100 g30,00 CHF)
+OK    390 · « Lire quand même » : une lecture simulée (1)
+OK    390 · la section actuelle dit le lien : « Lié au stock : Maris Otter, Citra 12.5% »
+OK    390 · au même fichier, le titre est certain : « Achat déjà enregistré · même fichier »
+OK    390 · « Document lu » porte la date de la fixture : ["Date","12.10.2026","12.10.2026"]
+OK    390 · « Ouvrir la dépense » : la feuille fermée, la fiche de la dépense existante ouverte
+OK    390 · « Ouvrir la dépense » : aucune lecture ni requête aiTask
+OK    390 · aucune erreur de page à l’ouverture ()
+OK    390 · même commande : « Même commande 7001, autre total », les deux totaux
+OK    390 · ligne Date entière : « Date14.10.2026 +2 j12.10.2026 » (coupée : false)
+OK    390 · l’écart souligné à côté du total : « +0,25 »
+OK    390 · le lien de la dépense existante : « Lié au stock : Maris Otter, Citra 12.5% »
+OK    390 · autre fichier : pas de section certaine
+OK    390 · aucune erreur de page ()
+OK    1280 · la section certaine « Déjà enregistré » est visible à l’écran
+OK    1280 · « Déjà enregistré », pas « peut-être »
+OK    1280 · les noms des articles lus : Maris Otter25 kg | Citra 12.5%100 g
+OK    1280 · n° de facture, date, total et règlement dits
+OK    1280 · ni « empreinte » ni « hash » à l’écran
+OK    1280 · aucune lecture (simulée : 0) et aucune requête aiTask (0)
+OK    1280 · le formulaire vide n’est pas montré
+OK    1280 · aucun débordement horizontal
+OK    1280 · lignes visibles, libellé de la fiche : 2 (Maris Otter 25 kg25 kg60,00 CHF | Citra T90 100 g100 g30,00 CHF)
+OK    1280 · vide à droite de la carte et des lignes : 13 px (≤ 300)
+OK    1280 · « Lire quand même » : une lecture simulée (1)
+OK    1280 · la section actuelle dit le lien : « Lié au stock : Maris Otter, Citra 12.5% »
+OK    1280 · au même fichier, le titre est certain : « Achat déjà enregistré · même fichier »
+OK    1280 · « Document lu » porte la date de la fixture : ["Date","12.10.2026","12.10.2026"]
+OK    1280 · « Ouvrir la dépense » : la feuille fermée, la fiche de la dépense existante ouverte
+OK    1280 · « Ouvrir la dépense » : aucune lecture ni requête aiTask
+OK    1280 · aucune erreur de page à l’ouverture ()
+OK    1280 · même commande : « Même commande 7001, autre total », les deux totaux
+OK    1280 · ligne Date entière : « Date14.10.2026 +2 j12.10.2026 » (coupée : false)
+OK    1280 · l’écart souligné à côté du total : « +0,25 »
+OK    1280 · le lien de la dépense existante : « Lié au stock : Maris Otter, Citra 12.5% »
+OK    1280 · autre fichier : pas de section certaine
+OK    1280 · aucune erreur de page ()
+OK    aucune requête aiTask sur tout le banc (0)

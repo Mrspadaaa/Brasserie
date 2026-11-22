@@ -1,0 +1,38 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4a.test.ts[2m > [22mv2-neuf 1 : ?dev-local garde sa base après un rechargement[2m > [22mun carnet écrit, puis la page rechargée (module neuf) : le carnet est relu, la graine ne se rejoue pas
+[31m[1mReferenceError[22m: window is not defined[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F4a.test.ts:[2m65:5[22m[39m
+    [90m 63| [39m  afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); sessionStor…
+    [90m 64| [39m  it('un carnet écrit, puis la page rechargée (module neuf) : le carne…
+    [90m 65| [39m    window[33m.[39mhistory[33m.[39m[34mreplaceState[39m([35mnull[39m[33m,[39m [32m''[39m[33m,[39m [32m'/?dev-local'[39m)[33m;[39m
+    [90m   | [39m    [31m^[39m
+    [90m 66| [39m    vi[33m.[39m[34museFakeTimers[39m()[33m;[39m
+    [90m 67| [39m    const a = (await import('../../src/services/firestoreRepo')).Fires…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F4a.test.ts[2m > [22mv2-neuf 1 : ?dev-local garde sa base après un rechargement[2m > [22mun carnet écrit, puis la page rechargée (module neuf) : le carnet est relu, la graine ne se rejoue pas
+[31m[1mReferenceError[22m: sessionStorage is not defined[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F4a.test.ts:[2m63:60[22m[39m
+    [90m 61| [39m
+    [90m 62| [39mdescribe('v2-neuf 1 : ?dev-local garde sa base après un rechargement',…
+    [90m 63| [39m  afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); sessionStor…
+    [90m   | [39m                                                           [31m^[39m
+    [90m 64| [39m  it('un carnet écrit, puis la page rechargée (module neuf) : le carne…
+    [90m 65| [39m    window[33m.[39mhistory[33m.[39m[34mreplaceState[39m([35mnull[39m[33m,[39m [32m''[39m[33m,[39m [32m'/?dev-local'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m4 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 19:12:43
+[2m   Duration [22m 2.26s[2m (transform 965ms, setup 289ms, collect 1.42s, tests 11ms, environment 0ms, prepare 81ms)[22m
+

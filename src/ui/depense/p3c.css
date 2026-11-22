@@ -1,0 +1,82 @@
+/* Écran « Nouvelle dépense » (p3c-3) : seulement ce que Tailwind rend mal. Préfixe dp-p3c- (L26). Jetons de l'app uniquement (le thème suit). */
+/* La colonne « qté × prix » : 94 px, quantité à droite (en gras), × centré, prix tel qu'imprimé ; le sous-total de bande tombe dans la même colonne (marge droite 57 px). */
+/* D273f : une quantité plus longue que sa colonne (« 100 Stk ») l'élargit vers la gauche ; le × et le prix gardent leur place, jamais recouverts. */
+.dp-p3c-dq { margin-left: auto; flex: none; min-width: 94px; display: inline-grid; grid-template-columns: minmax(37px, max-content) 7px 44px; column-gap: 3px; font-family: ui-monospace, "IBM Plex Mono", monospace; font-size: 12px; color: rgb(var(--cave-400, 120 120 120)); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.dp-p3c-dq > span:first-child { text-align: right; }
+.dp-p3c-dq > span:last-child { text-align: left; }
+.dp-p3c-dq > i { font-style: normal; text-align: center; }
+/* l'en-tête de bande reste sous le haut du corps qui défile */
+.dp-p3c-bande-entete { position: sticky; top: 0; z-index: 5; height: 28px; }
+.dp-p3c-filtre { position: sticky; top: 0; z-index: 6; }
+/* la frise de la lecture (« envoi ✓ · lecture · vérification ») : l'étape en cours défile en pointillés ; sans animation si le système la refuse */
+@keyframes dp-p3c-frise { from { background-position: 0 0; } to { background-position: 24px 0; } }
+.dp-p3c-frise-cours { background: repeating-linear-gradient(90deg, rgb(var(--cave-200)) 0 6px, rgb(var(--cave-800)) 6px 12px); background-size: 24px 6px; animation: dp-p3c-frise 1s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .dp-p3c-frise-cours { animation: none; } }
+/* hachure d'un point ouvert dans la barre */
+.dp-p3c-hachure { background-image: repeating-linear-gradient(135deg, rgba(0,0,0,.35) 0 2px, transparent 2px 5px) !important; }
+/* l'éclair d'une ligne visée (1,6 s) */
+@keyframes dp-p3c-eclair { 0% { background-color: rgba(243, 210, 122, .6); } 100% { background-color: transparent; } }
+.dp-p3c-garde { animation: dp-p3c-eclair 1.6s ease-out 1; outline: 2px solid rgb(var(--attention, 180 120 20)); outline-offset: -2px; }
+@media (prefers-reduced-motion: reduce) { .dp-p3c-garde { animation: none; background-color: rgba(243, 210, 122, .35); } }
+.dp-p3c-visee { outline: 2px solid rgb(var(--attention, 180 120 20)); outline-offset: 1px; }
+/* le « Détail » et les rangées ne dépassent jamais la largeur */
+.dp-p3c-corps { overscroll-behavior: contain; }
+/* L'en-tête de bande est collant : son fond doit être OPAQUE (la page + une teinte), sinon les rangées passent dessous et se lisent à travers. */
+.dp-p3c-bande-entete { background-color: rgb(var(--cave-950)); background-image: linear-gradient(var(--dp-p3c-teinte, transparent), var(--dp-p3c-teinte, transparent)); }
+.dp-p3c-t-malt { --dp-p3c-teinte: rgb(224 160 46 / .22); }
+.dp-p3c-t-houblon { --dp-p3c-teinte: rgb(var(--hop) / .2); }
+.dp-p3c-t-levure { --dp-p3c-teinte: rgb(var(--area-finances) / .2); }
+.dp-p3c-t-autres { --dp-p3c-teinte: rgb(var(--cave-400) / .25); }
+/* Les familles de plus (D262c, D262d) : une teinte par jeton de l'app, distincte de ses voisines dans l'ordre des bandes ; le thème suit. */
+.dp-p3c-t-sucre { --dp-p3c-teinte: rgb(200 122 44 / .24); }
+.dp-p3c-t-additif { --dp-p3c-teinte: rgb(var(--area-agenda) / .22); }
+.dp-p3c-t-materiel { --dp-p3c-teinte: rgb(var(--water) / .24); }
+/* D306 : la Rénovation, kaki (clair 120 112 28, cave 196 186 90), distincte des onze autres et du rouge d'alerte. Cinq familles ont leur propre couleur par thème (critique du 01.11 pour les quatre premières : Consommables = Autres en sombre, Nettoyage = vert du houblon en clair, Emballage et Services presque invisibles en sombre). */
+:root, [data-theme='clair'] { --dp-fam-emballage: 107 58 30; --dp-fam-nettoyage: 14 138 122; --dp-fam-consommable: 168 62 108; --dp-fam-service: 160 82 45; --dp-fam-renovation: 120 112 28; }
+[data-theme='cave'] { --dp-fam-emballage: 168 112 72; --dp-fam-nettoyage: 80 200 170; --dp-fam-consommable: 222 128 166; --dp-fam-service: 214 110 70; --dp-fam-renovation: 196 186 90; }
+.dp-p3c-t-emballage { --dp-p3c-teinte: rgb(var(--dp-fam-emballage) / .26); }
+.dp-p3c-t-nettoyage { --dp-p3c-teinte: rgb(var(--dp-fam-nettoyage) / .2); }
+.dp-p3c-t-consommable { --dp-p3c-teinte: rgb(var(--dp-fam-consommable) / .2); }
+.dp-p3c-t-service { --dp-p3c-teinte: rgb(var(--dp-fam-service) / .24); }
+.dp-p3c-t-renovation { --dp-p3c-teinte: rgb(var(--dp-fam-renovation) / .22); }
+.dp-p3c-pt-emballage { background-color: rgb(var(--dp-fam-emballage)); }
+.dp-p3c-pt-nettoyage { background-color: rgb(var(--dp-fam-nettoyage)); }
+.dp-p3c-pt-consommable { background-color: rgb(var(--dp-fam-consommable)); }
+.dp-p3c-pt-service { background-color: rgb(var(--dp-fam-service)); }
+.dp-p3c-pt-renovation { background-color: rgb(var(--dp-fam-renovation)); }
+.dp-p3c-fi-emballage { border-left-color: rgb(var(--dp-fam-emballage)); }
+.dp-p3c-fi-nettoyage { border-left-color: rgb(var(--dp-fam-nettoyage)); }
+.dp-p3c-fi-consommable { border-left-color: rgb(var(--dp-fam-consommable)); }
+.dp-p3c-fi-service { border-left-color: rgb(var(--dp-fam-service)); }
+.dp-p3c-fi-renovation { border-left-color: rgb(var(--dp-fam-renovation)); }
+.dp-p3c-t-papier { --dp-p3c-teinte: rgb(var(--cave-400) / .2); }
+/* D275c : le nom d'une rangée tient sur une ligne, deux au plus pour un nom long ; il passe à la ligne entre deux mots, jamais au milieu d'un mot. L'imprimé entier est au plateau. */
+.dp-p3c-nom { overflow-wrap: normal; word-break: normal; hyphens: none; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+/* D307 (son choix D) : la ligne d'une sous-famille repliée sous l'en-tête de bande, à la hauteur d'une rangée. `--dp-sg-c` : la couleur de la famille de la bande (le fond de la ligne ouverte). */
+.dp-p3c-sg-c-malt { --dp-sg-c: 224 160 46; }
+.dp-p3c-sg-c-houblon { --dp-sg-c: var(--hop); }
+.dp-p3c-sg-c-levure { --dp-sg-c: var(--area-finances); }
+.dp-p3c-sg-c-sucre { --dp-sg-c: 200 122 44; }
+.dp-p3c-sg-c-additif { --dp-sg-c: var(--area-agenda); }
+.dp-p3c-sg-c-materiel { --dp-sg-c: var(--water); }
+.dp-p3c-sg-c-emballage { --dp-sg-c: var(--dp-fam-emballage); }
+.dp-p3c-sg-c-nettoyage { --dp-sg-c: var(--dp-fam-nettoyage); }
+.dp-p3c-sg-c-consommable { --dp-sg-c: var(--dp-fam-consommable); }
+.dp-p3c-sg-c-renovation { --dp-sg-c: var(--dp-fam-renovation); }
+.dp-p3c-sg-c-service { --dp-sg-c: var(--dp-fam-service); }
+.dp-p3c-sg-c-autres { --dp-sg-c: var(--cave-400); }
+.dp-p3c-sg[aria-expanded='true'] { background: rgb(var(--dp-sg-c, var(--cave-400)) / .1); }
+.dp-p3c-sg:focus-visible { outline-offset: -2px; border-radius: 0; }
+/* D331 : la puce de filtre ACTIVE (aria-pressed) : fond plein de son jeton, bord plein, texte « sur-aplat » ; les textes colorés des jetons de texte (clair et cave) tiennent 4,5:1 sur leur fond. */
+.dp-p3c-on { background-color: rgb(var(--dp-on)); border: 1.5px solid rgb(var(--dp-on)); color: rgb(var(--sur-paille)); }
+.dp-p3c-on b, .dp-p3c-on svg { color: inherit; }
+.dp-p3c-on i[aria-hidden] { background-color: rgb(var(--sur-paille)); }
+.dp-p3c-on-straw { --dp-on: var(--ebc-straw); }
+.dp-p3c-on-alert { --dp-on: var(--alert-strong-texte); }
+.dp-p3c-on-attention { --dp-on: var(--attention-texte); }
+.dp-p3c-on-finances { --dp-on: var(--area-finances-texte); }
+/* D311 (son choix E) : le segment « Plié | Déplié » est rogné par son cadre (overflow caché) : le contour de focus se dessine à l'intérieur. */
+.dp-p3c-seg:focus-visible { outline-offset: -2px; border-radius: 0; }
+/* D328d (g7-reste) : sous un filtre, en sombre, la rangée gardée avait un fond ambre à 15 % : le texte secondaire (154,138,126) n'y tenait que 3,9 à 4,0:1 et le vert « ✓ au centime » 4,0:1.
+   À 5 % le même texte tient 4,5:1 au moins sur le fond le plus clair de la feuille ; le repère de la rangée gardée reste son bord de 1,5 px (et l'éclair de 1,6 s). Le clair ne change pas. */
+[data-theme='cave'] [data-dp-filtree] { background-color: rgb(var(--attention) / .05); }

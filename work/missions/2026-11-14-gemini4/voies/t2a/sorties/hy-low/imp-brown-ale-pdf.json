@@ -1,0 +1,19 @@
+{
+ "cas": "imp-brown-ale-pdf",
+ "usage": "import",
+ "half": "jugement",
+ "cellule": "hy@low",
+ "ok": true,
+ "ms": 5978,
+ "microChf": 28182,
+ "microDecembre": 28182,
+ "entree": 7315,
+ "sortie": 1543,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 0.7962962962962964,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "id 0.67 · vol 18.93 · fer 3/3 · hops 2/2 · levure ok · paliers 0/2",
+ "reponse": "{\n  \"name\": \"Brown Ale du Banc\",\n  \"style\": \"Brown Ale\",\n  \"volumeL\": 18.93,\n  \"fermentables\": [\n    {\n      \"name\": \"Maris Otter pale malt\",\n      \"weightKg\": 3.63,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    },\n    {\n      \"name\": \"Crystal 60L\",\n      \"weightKg\": 0.45,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    },\n    {\n      \"name\": \"Chocolate malt\",\n      \"weightKg\": 0.23,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    }\n  ],\n  \"hops\": [\n    {\n      \"name\": \"East Kent Goldings\",\n      \"weightG\": 28.35,\n      \"stage\": \"boil\",\n      \"alpha\": 5.0,\n      \"timeMin\": 60\n    },\n    {\n      \"name\": \"Fuggle\",\n      \"weightG\": 14.18,\n      \"stage\": \"boil\",\n      \"alpha\": 4.5,\n      \"timeMin\": 15\n    }\n  ],\n  \"boilMin\": 60,\n  \"efficiencyPct\": 72,\n  \"ogTarget\": 1.050,\n  \"preBoilL\": 0,\n  \"spargeWaterL\": 0,\n  \"waterNote\": \"\",\n  \"yeast\": {\n    \"name\": \"Fermentis SafAle S-04\",\n    \"lab\": \"Fermentis\",\n    \"strain\": \"SafAle S-04\",\n    \"unit\": \"g\"\n  }\n}"
+}

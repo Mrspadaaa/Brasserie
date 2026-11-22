@@ -6,6 +6,7 @@ import { BREW_ALARM_VIBRATION, scheduleBrewAlarm } from './brewSound';
 import { noloExecutionRecipe } from '../domain/noloBrewDay';
 import { noloScenarioInput } from '../domain/nolo';
 import { matchingNoloSimulation } from '../../functions/src/noloSimulation';
+import { nombreFr } from '../domain/nombreAffiche';
 
 /**
  * Le déroulé minuté du jour de brassage.
@@ -69,7 +70,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
   const doseLine = (doses: Partial<Record<SaltId, number>> | undefined) =>
     Object.entries(doses ?? {})
       .filter(([, g]) => (g ?? 0) > 0)
-      .map(([id, g]) => `${SALTS[id as SaltId].name} ${g} g`)
+      .map(([id, g]) => `${SALTS[id as SaltId].name} ${nombreFr(g, 1)} g`)
       .join(' · ');
 
   steps.push({
@@ -99,21 +100,21 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
           const mashWaterDesc =
             mashL > 0
               ? mashDi > 0
-                ? `empâtage ${mashL} L (${mashReseauL} L réseau + ${mashOsmoseL} L osmosée)`
-                : `empâtage ${mashL} L`
+                ? `empâtage ${nombreFr(mashL, 1)} L (${nombreFr(mashReseauL, 1)} L réseau + ${nombreFr(mashOsmoseL, 1)} L osmosée)`
+                : `empâtage ${nombreFr(mashL, 1)} L`
               : '';
 
           const spargeWaterDesc =
             spargeL > 0
               ? spargeDi > 0
-                ? `rinçage ${spargeL} L (${spargeReseauL} L réseau + ${spargeOsmoseL} L osmosée)`
-                : `rinçage ${spargeL} L`
+                ? `rinçage ${nombreFr(spargeL, 1)} L (${nombreFr(spargeReseauL, 1)} L réseau + ${nombreFr(spargeOsmoseL, 1)} L osmosée)`
+                : `rinçage ${nombreFr(spargeL, 1)} L`
               : '';
 
-          const globalOsmose = totalOsmoseL > 0 ? `Total osmosée : ${totalOsmoseL} L` : '';
+          const globalOsmose = totalOsmoseL > 0 ? `Total osmosée : ${nombreFr(totalOsmoseL, 1)} L` : '';
 
           return [
-            globalOsmose || (mashDi > 0 ? `${mashDi} % d’osmosée` : ''),
+            globalOsmose || (mashDi > 0 ? `${nombreFr(mashDi, 1)} % d’osmosée` : ''),
             mashWaterDesc ? `${mashWaterDesc} : ${doseLine(plan.mash) || 'aucun sel'}` : '',
             plan.acid && plan.acid.mash > 0
               ? `acidifier l’empâtage : ${plan.acid.mash} ${ACIDS[plan.acid.id].unit} de ${ACIDS[plan.acid.id].name}`
@@ -127,7 +128,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
             .join(' — ');
         })()
       : recipe.water
-        ? `${recipe.water.diRatioPct} % d’osmosée · gypse ${recipe.water.salts.gypseG} g · CaCl₂ ${recipe.water.salts.cacl2G} g · acide ${recipe.water.salts.acidLacticMl} mL`
+        ? `${nombreFr(recipe.water.diRatioPct, 1)} % d’osmosée · gypse ${nombreFr(recipe.water.salts.gypseG, 1)} g · CaCl₂ ${nombreFr(recipe.water.salts.cacl2G, 1)} g · acide ${nombreFr(recipe.water.salts.acidLacticMl, 1)} mL`
         : 'Préparer et traiter l’eau de brassage.',
     durationMin: 0
   });
@@ -150,7 +151,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
       id: secondRunnings ? 'nolo-second-runnings' : 'nolo-extraction',
       label: secondRunnings ? 'Seconde extraction des drêches' : 'Extraction à froid et filtration',
       detail: simulation
-        ? `Consigne : ${simulation.settings.extractionTempC} °C · ${simulation.settings.extractionHours} h. Viser ${simulation.volumeL} L ; relever volume, densité et pH réellement obtenus.`
+        ? `Consigne : ${nombreFr(simulation.settings.extractionTempC, 1)} °C · ${simulation.settings.extractionHours} h. Viser ${nombreFr(simulation.volumeL, 1)} L ; relever volume, densité et pH réellement obtenus.`
         : secondRunnings
         ? 'Identifier le brassin d’origine, puis relever volume, densité et pH du moût récupéré.'
         : 'Consigner le temps et la température du protocole choisi. Mesurer le volume et la densité après filtration ; aucun palier à chaud repris automatiquement.',
@@ -161,7 +162,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
     steps.push({
       id: `mash-${i}`,
       label: s.name,
-      detail: mashWaterL ? `${mashWaterL} L d’eau d’empâtage` : undefined,
+      detail: mashWaterL ? `${nombreFr(mashWaterL, 1)} L d’eau d’empâtage` : undefined,
       durationMin: s.durationMin,
       ...('tempC' in s ? { tempC: s.tempC } : {})
     });
@@ -199,7 +200,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
     steps.push({
       id: 'sparge',
       label: mash.spargeType === 'fly' ? 'Rinçage continu' : 'Rinçage par bacs',
-      detail: plan?.spargeWaterL ? `${plan.spargeWaterL} L d’eau de rinçage` : undefined,
+      detail: plan?.spargeWaterL ? `${nombreFr(plan.spargeWaterL, 1)} L d’eau de rinçage` : undefined,
       durationMin: 0,
       ...(mash.spargeTempC != null ? { tempC: mash.spargeTempC } : nolo ? {} : { tempC: 76 })
     });
@@ -229,7 +230,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
     steps.push({
       id: 'preboil',
       label: 'Contrôle avant ébullition',
-      detail: `Environ ${preBoilL} L ${recipe.preBoilHotL != null ? `à froid, soit ≈ ${recipe.preBoilHotL} L à ébullition` : 'collectés'}. Relève le volume et la densité : c’est ici qu’un rinçage court ou un rendement bas se rattrape encore.`,
+      detail: `Environ ${nombreFr(preBoilL, 1)} L ${recipe.preBoilHotL != null ? `à froid, soit ≈ ${nombreFr(recipe.preBoilHotL, 1)} L à ébullition` : 'collectés'}. Relève le volume et la densité : c’est ici qu’un rinçage court ou un rendement bas se rattrape encore.`,
       durationMin: 0
     });
   }
@@ -321,7 +322,7 @@ export function buildTimeline(recipe: Recipe | RecipeSnapshot): BrewDayStep[] {
     id: 'refroidissement',
     label: 'Refroidissement',
     detail: recipe.yeast?.pitchTempC
-      ? `Descendre à ${recipe.yeast.pitchTempC} °C avant d’ensemencer.`
+      ? `Descendre à ${nombreFr(recipe.yeast.pitchTempC, 1)} °C avant d’ensemencer.`
       : 'Descendre à la température d’ensemencement.',
     durationMin: 0,
     tempC: recipe.yeast?.pitchTempC

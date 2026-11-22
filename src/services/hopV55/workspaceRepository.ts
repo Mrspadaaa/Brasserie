@@ -1166,14 +1166,7 @@ function hasUnsupportedDocumentaryRecordForReading(
   });
 }
 
-function validateWorkspace(value: unknown, assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1,
-  scope?: HopV55OperationValidationScope): asserts value is HopV55Workspace {
-  validateWorkspaceIndexed(value, assistedAdviceContract, scope);
-}
-
-function validateWorkspaceIndexed(value: unknown, assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1,
-  scope?: HopV55OperationValidationScope): ValidatedWorkspaceIndex {
-  if (!isRecord(value) || !onlyKeys(value, ['format', 'id', 'ownerKey', 'revision', 'title', 'intent', 'sourceRecipeId', 'sourceBatchId',
+const WORKSPACE_KEYS: readonly string[] = ['format', 'id', 'ownerKey', 'revision', 'title', 'intent', 'sourceRecipeId', 'sourceBatchId',
     'decisionReadings', 'wizardOrigin', 'wizardSourceSnapshots', 'futureDrafts', 'activeFutureDraftSource', 'futureRecipeMaterializations', 'futureRecipeSaveReceipts',
     'documentaryAnswers', 'documentaryDossiers',
     'qualifiedStudyPreparations', 'qualifiedStudyLinks', 'qualifiedStudyPreferenceCommands',
@@ -1185,13 +1178,36 @@ function validateWorkspaceIndexed(value: unknown, assistedAdviceContract?: HopV5
     'observationAnchors', 'observationProjections', 'observationSupportRecords', 'observationSupportSelections',
     'assistedAdviceTickets', 'assistedAdviceRecords', 'assistedSemanticAdviceTickets', 'assistedSemanticAdviceRecords',
     'semanticAdoptionCommits',
-    'copies', 'fullCopyReceipts', 'copyRecomputations', 'programCopies', 'activeProgramCopyId', 'activeCopyId', 'updatedAt'])
-    || value.format !== 'hop-v55-workspace-v1' || !isId(value.id) || !isText(value.ownerKey)
-    || value.ownerKey.trim() !== value.ownerKey || !Number.isSafeInteger(value.revision) || (value.revision as number) < 0
-    || !isText(value.title) || !Array.isArray(value.scenarioIds)
-    || !Array.isArray(value.referenceHypotheses) || !Array.isArray(value.copies) || !isText(value.updatedAt)
-    || !Number.isFinite(Date.parse(value.updatedAt))) {
-    throw new HopV55WorkspaceRepositoryError('invalidInput', 'Structure du workspace houblon invalide.');
+    'copies', 'fullCopyReceipts', 'copyRecomputations', 'programCopies', 'activeProgramCopyId', 'activeCopyId', 'updatedAt'];
+
+/** Ce qui manque ou déborde dans un dossier local de l'atelier, en une phrase du brasseur (BR-38 : « Structure du workspace houblon invalide » ne disait rien). null = forme valide. */
+export function workspaceShapeProblem(value: unknown): string | null {
+  if (!isRecord(value)) return 'le contenu du dossier n’est pas un document';
+  const inconnus = Object.keys(value).filter(key => !WORKSPACE_KEYS.includes(key));
+  if (inconnus.length) return `champ inattendu « ${inconnus.slice(0, 3).join('», « ')} » (écrit par une autre version de l’app ?)`;
+  if (value.format !== 'hop-v55-workspace-v1') return `format « ${String(value.format)} » au lieu de « hop-v55-workspace-v1 »`;
+  if (!isId(value.id)) return 'identifiant du dossier absent ou illisible';
+  if (!isText(value.ownerKey) || value.ownerKey.trim() !== value.ownerKey) return 'propriétaire du dossier absent ou mal écrit';
+  if (!Number.isSafeInteger(value.revision) || (value.revision as number) < 0) return 'numéro de révision absent ou négatif';
+  if (!isText(value.title)) return 'titre du dossier absent';
+  if (!Array.isArray(value.scenarioIds)) return 'liste des scénarios absente';
+  if (!Array.isArray(value.referenceHypotheses)) return 'liste des hypothèses de référence absente';
+  if (!Array.isArray(value.copies)) return 'liste des copies absente';
+  if (!isText(value.updatedAt) || !Number.isFinite(Date.parse(value.updatedAt))) return 'date de mise à jour absente ou illisible';
+  return null;
+}
+
+function validateWorkspace(value: unknown, assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1,
+  scope?: HopV55OperationValidationScope): asserts value is HopV55Workspace {
+  validateWorkspaceIndexed(value, assistedAdviceContract, scope);
+}
+
+function validateWorkspaceIndexed(value: unknown, assistedAdviceContract?: HopV55AssistedAdviceBackendContractV1,
+  scope?: HopV55OperationValidationScope): ValidatedWorkspaceIndex {
+  const probleme = workspaceShapeProblem(value);
+  if (probleme) throw new HopV55WorkspaceRepositoryError('invalidInput', `Le dossier local de l’atelier houblons est illisible : ${probleme}. Rien n’a été perdu ; recharge la page, ou crée un nouveau dossier.`);
+  if (!isRecord(value) || !Array.isArray(value.scenarioIds) || !Array.isArray(value.referenceHypotheses) || !Array.isArray(value.copies)) {
+    throw new HopV55WorkspaceRepositoryError('invalidInput', 'Le dossier local de l’atelier houblons est illisible.'); // déjà exclu ci-dessus ; le type l'apprend ici
   }
   try { assertHopV55ObservationCollections(value); }
   catch (error) { throw new HopV55WorkspaceRepositoryError('invalidInput', error instanceof Error ? error.message : 'Collections d’observation invalides.'); }

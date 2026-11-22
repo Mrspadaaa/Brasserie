@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { applyProposal, prepareProposal } from '../../functions/src/brewerProposals';
 import { runBrewerTool } from '../../src/domain/brewerTools';
 import { yeastRecipeComputedOg } from '../../src/domain/yeastProjection';
+import { alcoholByVolume } from '../../src/domain/alcohol';
 import { companionContext } from '../fixtures/companionRecipe';
 
 const args = (...changes: [string, unknown][]) => ({ target: 'recipe', title: 'Ajustement demandé', changes:
@@ -11,7 +12,7 @@ describe('Application des propositions à la recette', () => {
     const c = companionContext(), before = structuredClone(c);
     const proposal = prepareProposal(c, args(['yeast.attenuationPct', 75], ['fermentation.0.tempC', 20], ['fermentation.0.days', 12]));
     const result = applyProposal(c, proposal, proposal.changes.map(ch => ch.id));
-    expect(result.fgTarget).toBeCloseTo(1.0085, 10); expect(result.abvTarget).toBeCloseTo(3.346875, 10);
+    expect(result.fgTarget).toBeCloseTo(1.0085, 10); expect(result.abvTarget).toBeCloseTo(alcoholByVolume(1.034, 1.0085), 10); // ASBC (CF-6), 3.346875 par (OG − FG) × 131,25
     expect(result.ogTarget).toBe(c.recipe.ogTarget); expect(result.ibuTarget).toBe(c.recipe.ibuTarget);
     expect(result.yeast.technicalFacts).toEqual(c.recipe.yeast.technicalFacts);
     expect(result.hops).toEqual(c.recipe.hops); expect(c).toEqual(before);

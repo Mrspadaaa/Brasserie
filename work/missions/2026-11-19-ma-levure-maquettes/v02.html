@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=390,initial-scale=1">
+<title>Ma levure — v02 : les traits en profil à cinq colonnes, complété par l'IA</title>
+<!-- Axe 2, une seule décision de forme : les cinq traits (esters, phénols, thiols, terpènes, sucres restants)
+     quittent leurs cinq rangées à liens (Retenir / Écarter / OK, LEV-5, LEV-7, LEV-11) pour un profil
+     à cinq colonnes sur une ligne, en tête duquel vit le geste « Compléter par l'IA ». Tout le reste suit la base
+     (carte en ligne du 19.11) : en-tête du wizard, levure en tête, FG / fiche·conduite / floculation, Changer de levure,
+     Retour / Suivant. Données : exemple.
+     Passe de correction (critique 1 à 12) : repos compact « vide », échelle faible · moyen · fort dite une fois,
+     « non publié » distinct de « aucun », pied opaque, légendes écrites retirées, Relancer en lien, état « calé »,
+     repères chiffrés, « vendue par », dose au taux de la fiche, couleurs stables, colonnes égales, « Écarter les 3 ». -->
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#FFFFFF}
+body{font:15px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#333333;width:390px;margin:0 auto;padding-bottom:128px}
+.v2-mono{font-family:ui-monospace,"SF Mono",Consolas,monospace}
+button{font:inherit;color:inherit;background:none;border:0;padding:0}
+
+/* En-tête du wizard (base) */
+.v2-top{display:flex;align-items:center;gap:8px;height:48px;padding:0 12px}
+.v2-back{font-size:22px;color:#111111;width:24px}
+.v2-titre{font-size:20px;font-weight:600;color:#111111}
+.v2-titre span{font-weight:400;color:#666666;font-size:17px;margin-left:4px}
+.v2-top-d{margin-left:auto;display:flex;align-items:center;gap:14px}
+.v2-lien{text-decoration:underline;font-size:15px;color:#111111}
+.v2-ico{width:20px;height:20px;stroke:#333333;fill:none;stroke-width:1.8}
+.v2-etapes{display:flex;gap:5px;padding:0 8px;border-bottom:1px solid #DDDDDD}
+.v2-etapes div{flex:auto;text-align:center;font-size:14px;color:#666666;padding:2px 0 6px;white-space:nowrap}
+.v2-etapes div::after{content:"";display:block;height:4px;border-radius:2px;background:#666666;margin-top:5px}
+.v2-etapes .v2-ici{color:#111111;font-weight:600}
+.v2-etapes .v2-ici::after{background:#111111}
+.v2-etapes .v2-apres::after{background:#DDDDDD}
+.v2-annuler{margin:0 10px;background:#F5F5F5;border-radius:0 0 12px 12px;padding:6px 12px;font-size:14px;color:#333333}
+.v2-annuler u{color:#111111}
+
+/* Carte Ma levure (base) */
+.v2-carte{margin:10px;border:2px solid #111111;border-radius:14px;background:#F5F5F5;overflow:hidden}
+.v2-tete{display:grid;grid-template-columns:40px 1fr auto 18px;column-gap:8px;row-gap:1px;align-items:center;padding:10px 10px 8px 12px;background:#FFFFFF}
+.v2-pic{grid-row:span 2;width:40px;height:40px;border-radius:50%;background:#F4E7B8;border:1.5px solid #C9A227;display:grid;place-items:center}
+.v2-pic svg{width:20px;height:20px;stroke:#6E5409;fill:none;stroke-width:1.8}
+.v2-nom{font-size:18px;font-weight:600;color:#111111;white-space:nowrap}
+.v2-marque{grid-column:2 / 4;font-size:14px;color:#666666;white-space:nowrap}
+.v2-ex{display:inline-block;font-size:14px;color:#7F5B10;border:1px dashed #9C7020;border-radius:6px;padding:0 5px;margin-left:4px;line-height:18px}
+.v2-dose{font-size:15px;color:#111111;white-space:nowrap;text-align:right;line-height:1.1}
+.v2-dose b{font-size:22px;font-weight:600;margin:0 2px}
+.v2-dose small{display:block;font-size:14px;color:#666666}
+.v2-x{grid-row:span 2;font-size:20px;color:#666666;text-align:center}
+
+.v2-trio{display:grid;grid-template-columns:1.12fr 1.12fr .86fr;border-top:1px solid #DDDDDD;border-bottom:1px solid #DDDDDD}
+.v2-trio > div{padding:8px 9px 6px;border-right:1px solid #DDDDDD;min-width:0}
+.v2-trio > div:last-child{border-right:0}
+.v2-cle{font-size:14px;color:#666666;white-space:nowrap}
+.v2-val{font-size:17px;font-weight:600;color:#111111;margin-top:3px;white-space:nowrap}
+.v2-sous{font-size:14px;color:#666666;margin-top:2px;white-space:nowrap}
+.v2-piste{position:relative;height:9px;border-radius:5px;background:#DDDDDD;margin-top:9px}
+.v2-hach{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(135deg,#E2BE45 0 2px,rgba(226,190,69,.18) 2px 6px)}
+.v2-temp{background:linear-gradient(90deg,#3A7BD5,#8FB6E8 30%,#F2D27A 58%,#D9532B)}
+.v2-temp .v2-hach{border-top:1.5px dashed #B8901E;border-bottom:1.5px dashed #B8901E;background:rgba(201,162,39,.22);top:-2px;bottom:-2px}
+.v2-aig{position:absolute;top:-4px;bottom:-4px;width:3px;margin-left:-1.5px;border-radius:2px;background:#111111}
+.v2-rep{position:relative;height:18px;margin-top:3px;font-size:14px;line-height:18px;color:#666666}
+.v2-rep span{position:absolute;top:0;white-space:nowrap}
+.v2-rep .v2-mil{transform:translateX(-50%)}
+.v2-hors{color:#A8291F}
+.v2-ok{color:#2F7A4F}
+.v2-caler{display:inline-flex;align-items:center;gap:4px;margin-top:5px;border:1.5px solid #9C7020;border-radius:9px;padding:2px 7px;font-size:14px;color:#7F5B10;font-weight:600;white-space:nowrap;background:#FFFFFF}
+.v2-flo{display:flex;gap:3px;margin-top:9px}
+.v2-flo i{flex:1;height:9px;border-radius:3px;background:#666666}
+.v2-flo i.v2-off{background:#BFBFBF}
+
+/* LA décision : le profil à cinq colonnes, avec son geste IA */
+.v2-prof{padding:10px 10px 12px;background:#F5F5F5}
+.v2-prof-h{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.v2-prof-t{font-size:15px;font-weight:600;color:#111111}
+.v2-prof-t small{display:block;font-size:14px;font-weight:400;color:#7F5B10}
+.v2-ia{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px;border-radius:20px;background:#F2C14E;color:#111111;font-size:15px;font-weight:600;white-space:nowrap;box-shadow:0 1px 0 #C9A227}
+.v2-ia svg{width:18px;height:18px;fill:#111111}
+.v2-ia.v2-encours{background:#FFFFFF;border:1.5px dashed #9C7020;color:#7F5B10;box-shadow:none}
+.v2-ia.v2-encours svg{fill:#9C7020}
+.v2-relancer{display:inline-flex;align-items:center;gap:5px;height:40px;font-size:15px;color:#111111;text-decoration:underline;white-space:nowrap}
+.v2-relancer svg{width:16px;height:16px;stroke:#111111;fill:none;stroke-width:2}
+.v2-cols{display:grid;grid-template-columns:repeat(5,1fr);margin-top:10px;padding:8px 2px 6px;background:#FFFFFF;border-radius:10px;border:1px solid #DDDDDD}
+.v2-col{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.v2-lab{font-size:14px;color:#333333;white-space:nowrap;text-align:center;line-height:17px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.v2-lab i{width:34px;height:4px;border-radius:2px;background:var(--c)}
+/* repos : une case « vide » par trait, pas d'échelle à lire */
+.v2-vid{height:26px;min-width:50px;padding:0 8px;border:1.5px dashed #BFBFBF;border-radius:13px;font-size:14px;line-height:23px;color:#666666;text-align:center}
+.v2-vid.v2-shim{border-style:solid;border-color:#EBEBEB;color:#7F5B10;background:linear-gradient(90deg,#EBEBEB,#F7F7F7 45%,#EBEBEB)}
+/* après : trois crans, échelle dite une fois */
+.v2-ech{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:14px;color:#666666}
+.v2-ech span{display:inline-flex;align-items:center;gap:4px}
+.v2-ech i{display:inline-flex;flex-direction:column-reverse;gap:1px}
+.v2-ech b{display:block;width:10px;height:4px;border-radius:1px;background:#BFBFBF}
+.v2-ech b.v2-n{background:#666666}
+.v2-bar{display:flex;flex-direction:column-reverse;gap:3px;width:30px}
+.v2-bar i{height:11px;border-radius:3px;border:1.5px solid var(--c);background:transparent}
+.v2-bar i.v2-on{background:repeating-linear-gradient(135deg,var(--c) 0 2px,transparent 2px 5px)}
+.v2-bar.v2-np i{border:1.5px dotted #CFCFCF}
+.v2-bar.v2-zero i:first-child{position:relative}
+.v2-bar.v2-zero i:first-child::after{content:"";position:absolute;left:-3px;right:-3px;top:50%;height:2px;background:var(--c);transform:rotate(-20deg)}
+.v2-niv{font-size:14px;color:#111111;font-weight:600;white-space:nowrap;line-height:17px}
+.v2-niv.v2-gris{color:#666666;font-weight:400;font-style:italic}
+
+.v2-conf{display:flex;align-items:center;gap:10px;margin-top:10px}
+.v2-conf-t{font-size:14px;color:#7F5B10;white-space:nowrap}
+.v2-ret{margin-left:auto;height:40px;padding:0 14px;border-radius:10px;background:#111111;color:#FFFFFF;font-size:15px;font-weight:600;white-space:nowrap}
+.v2-eca{font-size:15px;text-decoration:underline;color:#111111;white-space:nowrap}
+.v2-src{font-size:14px;color:#666666;margin-top:6px}
+
+/* Changer de levure (base) */
+.v2-chg{margin:10px;background:#F5F5F5;border-radius:14px;padding:10px}
+.v2-champ{display:flex;align-items:center;gap:10px;height:46px;border:1.5px dashed #BFBFBF;border-radius:23px;padding:0 14px;background:#FFFFFF;color:#666666;font-size:17px}
+.v2-champ svg{width:18px;height:18px;stroke:#666666;fill:none;stroke-width:2}
+.v2-puces{display:flex;gap:6px;margin-top:10px}
+.v2-puce{display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 9px;border:1.5px solid #BFBFBF;border-radius:10px;background:#FFFFFF;font-size:15px;color:#111111;white-space:nowrap}
+.v2-puce svg{width:16px;height:16px;stroke:#4F7E9B;fill:none;stroke-width:1.8}
+.v2-puce.v2-hc{margin-left:auto;border-style:dashed}
+
+/* États du même bloc, sous le pli */
+.v2-etat{margin:18px 10px 0}
+.v2-etat h2{font-size:15px;font-weight:600;color:#111111;margin:0 0 6px;display:flex;align-items:center;gap:8px}
+.v2-etat h2 span{font-size:14px;font-weight:400;color:#666666}
+.v2-etat .v2-prof{border:1.5px solid #DDDDDD;border-radius:12px}
+.v2-cale{border:1.5px solid #DDDDDD;border-radius:12px;background:#F5F5F5;padding:8px 12px 6px}
+.v2-cale-h{display:flex;align-items:baseline;gap:10px}
+.v2-cale-h .v2-annul{margin-left:auto}
+.v2-annul{font-size:14px;color:#111111;text-decoration:underline;white-space:nowrap}
+
+/* Pied du wizard (bande opaque) + bouton volant + barre d'onglets (fixes) */
+.v2-pied{position:fixed;left:50%;transform:translateX(-50%);bottom:58px;width:390px;height:60px;background:#FFFFFF;border-top:1px solid #DDDDDD}
+.v2-retour{position:absolute;left:12px;top:10px;height:40px;padding:0 16px;border:1.5px solid #DDDDDD;border-radius:10px;background:#FFFFFF;color:#666666;font-size:15px;display:flex;align-items:center}
+.v2-suiv{position:absolute;left:112px;top:10px;height:40px;padding:0 16px;border-radius:10px;background:#111111;color:#FFFFFF;font-size:15px;font-weight:700;display:flex;align-items:center;white-space:nowrap}
+.v2-plus{position:fixed;right:max(14px,calc(50% - 181px));bottom:72px;width:56px;height:56px;border-radius:50%;background:#111111;color:#FFFFFF;font-size:32px;line-height:56px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.v2-onglets{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:390px;height:58px;background:#FFFFFF;border-top:1px solid #DDDDDD;display:grid;grid-template-columns:repeat(6,1fr);align-items:center}
+.v2-onglets div{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:14px;color:#666666;letter-spacing:-.3px;white-space:nowrap}
+.v2-onglets svg{width:20px;height:20px;stroke:#666666;fill:none;stroke-width:1.8}
+.v2-onglets .v2-on{color:#9A4F1E;font-weight:600}
+.v2-onglets .v2-on svg{stroke:#9A4F1E}
+</style></head>
+<body>
+
+<header class="v2-top">
+  <span class="v2-back">‹</span>
+  <div class="v2-titre">Levure<span>4/7</span></div>
+  <div class="v2-top-d">
+    <span class="v2-lien">Abandonner</span>
+    <svg class="v2-ico" viewBox="0 0 24 24"><rect x="5" y="4" width="12" height="16" rx="2"/><path d="M9 4V2.5h4V4M13 12h8m-3-3 3 3-3 3"/></svg>
+    <svg class="v2-ico" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z"/></svg>
+  </div>
+</header>
+<nav class="v2-etapes">
+  <div>Identité</div><div>Malts/sucres</div><div>Houblons</div><div class="v2-ici">Levure</div><div class="v2-apres">Paliers</div><div class="v2-apres">Eau</div><div class="v2-apres">Récap.</div>
+</nav>
+<div class="v2-annuler">↶ <u>Annuler le changement</u><span class="v2-ex" style="float:right">données : exemple</span></div>
+
+<section class="v2-carte" aria-label="Ma levure">
+  <div class="v2-tete">
+    <div class="v2-pic"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L5 18.5A1.7 1.7 0 0 0 6.5 21h11a1.7 1.7 0 0 0 1.5-2.5L14 9V3M7.5 15h9"/></svg></div>
+    <div class="v2-nom">Munich Lager Yeast</div>
+    <div class="v2-dose">≥<b class="v2-mono">15</b>g</div>
+    <div class="v2-x">×</div>
+    <div class="v2-marque">White Labs <span style="float:right"><span class="v2-mono" style="color:#111111">50 g/hL</span> · 30 L</span></div>
+  </div>
+
+  <div class="v2-trio">
+    <div>
+      <div class="v2-cle">FG</div>
+      <div class="v2-val v2-mono">1,018–1,021</div>
+      <div class="v2-sous">≈ 6,0–6,4 % vol</div>
+      <div class="v2-piste"><span class="v2-hach" style="left:52%;width:12%"></span></div>
+      <div class="v2-rep"><span style="left:0">sec</span><span style="right:0">sucré</span></div>
+    </div>
+    <div>
+      <div class="v2-cle">fiche · conduite</div>
+      <div class="v2-val v2-mono">9–11 · <span class="v2-hors">19 °C</span></div>
+      <div class="v2-caler">→ caler à 11 °C</div>
+      <div class="v2-piste v2-temp"><span class="v2-hach" style="left:36%;width:8%"></span><span class="v2-aig" style="left:76%"></span></div>
+      <div class="v2-rep"><span class="v2-mil v2-mono" style="left:40%">9–11</span><span class="v2-mil v2-mono v2-hors" style="left:76%">19</span></div>
+    </div>
+    <div>
+      <div class="v2-cle">floculation</div>
+      <div class="v2-val" style="font-weight:400">moyenne</div>
+      <div class="v2-sous" style="visibility:hidden">.</div>
+      <div class="v2-flo"><i></i><i></i><i class="v2-off"></i></div>
+      <div class="v2-rep"><span style="left:0">faible</span><span style="right:0">forte</span></div>
+    </div>
+  </div>
+
+  <div class="v2-prof">
+    <div class="v2-prof-h">
+      <div class="v2-prof-t">Profil de la levure</div>
+      <button class="v2-ia"><svg viewBox="0 0 24 24"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8zM19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/></svg>Compléter par l'IA</button>
+    </div>
+    <div class="v2-cols">
+      <div class="v2-col" style="--c:#E0A02E"><div class="v2-vid">vide</div><div class="v2-lab"><i></i>esters</div></div>
+      <div class="v2-col" style="--c:#A0522D"><div class="v2-vid">vide</div><div class="v2-lab"><i></i>phénols</div></div>
+      <div class="v2-col" style="--c:#3F9A78"><div class="v2-vid">vide</div><div class="v2-lab"><i></i>thiols</div></div>
+      <div class="v2-col" style="--c:#6E9B5B"><div class="v2-vid">vide</div><div class="v2-lab"><i></i>terpènes</div></div>
+      <div class="v2-col" style="--c:#A88B5F"><div class="v2-vid">vide</div><div class="v2-lab"><i></i>sucres<br>restants</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="v2-chg">
+  <div class="v2-champ"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>Changer de levure</div>
+  <div class="v2-puces">
+    <span class="v2-puce"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7zM4 7l8 4 8-4M12 11v10"/></svg>Pomona</span>
+    <span class="v2-puce"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7zM4 7l8 4 8-4M12 11v10"/></svg>Verdant IPA</span>
+    <span class="v2-puce v2-hc">Hors catalogue</span>
+  </div>
+</section>
+
+<section class="v2-etat" aria-label="Pendant la recherche">
+  <h2>Pendant <span>— la carte reste utilisable</span></h2>
+  <div class="v2-prof">
+    <div class="v2-prof-h">
+      <div class="v2-prof-t">Profil de la levure<small>lit la fiche White Labs</small></div>
+      <button class="v2-ia v2-encours"><svg viewBox="0 0 24 24"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg>L'IA cherche…</button>
+    </div>
+    <div class="v2-cols">
+      <div class="v2-col" style="--c:#E0A02E"><div class="v2-vid v2-shim">…</div><div class="v2-lab"><i></i>esters</div></div>
+      <div class="v2-col" style="--c:#A0522D"><div class="v2-vid v2-shim">…</div><div class="v2-lab"><i></i>phénols</div></div>
+      <div class="v2-col" style="--c:#3F9A78"><div class="v2-vid v2-shim">…</div><div class="v2-lab"><i></i>thiols</div></div>
+      <div class="v2-col" style="--c:#6E9B5B"><div class="v2-vid v2-shim">…</div><div class="v2-lab"><i></i>terpènes</div></div>
+      <div class="v2-col" style="--c:#A88B5F"><div class="v2-vid v2-shim">…</div><div class="v2-lab"><i></i>sucres<br>restants</div></div>
+    </div>
+    <div class="v2-src"><span class="v2-annul">Annuler</span></div>
+  </div>
+</section>
+
+<section class="v2-etat" aria-label="Après la recherche">
+  <h2>Après <span>— proposé en hachuré, à confirmer</span></h2>
+  <div class="v2-prof">
+    <div class="v2-prof-h">
+      <div class="v2-prof-t">Profil de la levure<small>3 proposés · 2 non publiés</small></div>
+      <span class="v2-relancer"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></svg>Relancer</span>
+    </div>
+    <div class="v2-ech">
+      <span><i><b class="v2-n"></b><b></b><b></b></i>faible</span>
+      <span><i><b class="v2-n"></b><b class="v2-n"></b><b></b></i>moyen</span>
+      <span><i><b class="v2-n"></b><b class="v2-n"></b><b class="v2-n"></b></i>fort</span>
+    </div>
+    <div class="v2-cols">
+      <div class="v2-col" style="--c:#E0A02E"><div class="v2-bar v2-np"><i></i><i></i><i></i></div><div class="v2-niv v2-gris">non publié</div><div class="v2-lab"><i></i>esters</div></div>
+      <div class="v2-col" style="--c:#A0522D"><div class="v2-bar v2-zero"><i></i><i></i><i></i></div><div class="v2-niv">aucun</div><div class="v2-lab"><i></i>phénols</div></div>
+      <div class="v2-col" style="--c:#3F9A78"><div class="v2-bar"><i class="v2-on"></i><i></i><i></i></div><div class="v2-niv">faible</div><div class="v2-lab"><i></i>thiols</div></div>
+      <div class="v2-col" style="--c:#6E9B5B"><div class="v2-bar"><i class="v2-on"></i><i></i><i></i></div><div class="v2-niv">faible</div><div class="v2-lab"><i></i>terpènes</div></div>
+      <div class="v2-col" style="--c:#A88B5F"><div class="v2-bar v2-np"><i></i><i></i><i></i></div><div class="v2-niv v2-gris">non publié</div><div class="v2-lab"><i></i>sucres<br>restants</div></div>
+    </div>
+    <div class="v2-conf">
+      <span class="v2-conf-t">3 à confirmer</span>
+      <button class="v2-ret">Retenir les 3</button>
+      <span class="v2-eca">Écarter les 3</span>
+    </div>
+    <div class="v2-src">Source : fiche White Labs (exemple)</div>
+  </div>
+</section>
+
+<section class="v2-etat" aria-label="Conduite calée">
+  <h2>Calé <span>— après « caler à 11 °C »</span></h2>
+  <div class="v2-cale">
+    <div class="v2-cle">fiche · conduite</div>
+    <div class="v2-cale-h">
+      <div class="v2-val v2-mono">9–11 · <span class="v2-ok">11 °C</span></div>
+      <div class="v2-sous v2-ok">✓ dans la plage</div>
+      <span class="v2-annul">annuler</span>
+    </div>
+    <div class="v2-piste v2-temp"><span class="v2-hach" style="left:36%;width:8%"></span><span class="v2-aig" style="left:44%"></span></div>
+    <div class="v2-rep"><span class="v2-mil v2-mono" style="left:40%">9–11</span><span class="v2-mil" style="left:76%;color:#666666">avant : 19</span></div>
+  </div>
+</section>
+
+<div class="v2-pied">
+  <span class="v2-retour">Retour</span>
+  <span class="v2-suiv">Suivant — Paliers</span>
+</div>
+<div class="v2-plus" aria-label="Ajouter">+</div>
+<nav class="v2-onglets" aria-label="Onglets">
+  <div><svg viewBox="0 0 24 24"><path d="M4 13a8 8 0 0 1 16 0M12 13l4-4M3 17h18"/></svg>Bord</div>
+  <div><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg>Finances</div>
+  <div><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</div>
+  <div class="v2-on"><svg viewBox="0 0 24 24"><path d="M6 4h12v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2zM6 9h12M10 13v3M14 13v3"/></svg>Brassins</div>
+  <div><svg viewBox="0 0 24 24"><path d="M12 3 4 7v10l8 4 8-4V7zM4 7l8 4 8-4M12 11v10"/></svg>Stocks</div>
+  <div><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Clients</div>
+</nav>
+</body></html>

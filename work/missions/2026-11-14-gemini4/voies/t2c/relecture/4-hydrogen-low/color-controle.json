@@ -1,0 +1,16 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "color-controle",
+ "cas": "color",
+ "type": "controle",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 3020,
+ "coutMicro": 12824,
+ "etat": "STOP"
+}

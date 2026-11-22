@@ -1,0 +1,21 @@
+LR1-7 sonde : ["TEXTAREA ro=false dis=false val=1 vis=48x36@36,561 dessus=SUMMARY.flex min-h-9 cursor-pointer list-none items-center «Pour quoi ?\nBENU Matran · prop»"] | ["TEXTAREA ro=false dis=false val=13,40 vis=70x36@190,561 dessus=SUMMARY.flex min-h-9 cursor-pointer list-none items-center «Pour quoi ?\nBENU Matran · prop»"]
+  après toucher la ligne : ["TEXTAREA ro=false dis=false val=1 vis=48x36@36,545 dessus=lui"]
+  champs : ["Quantité ligne 1=2","Prix ligne 1=25,00","Montant ligne 1=50"]
+  déduit : aucun
+  texte : MEFENACIDE cpr pell 500 mg sécables 30 pce ¦ 2 pièces ¦ × ¦ 25,00 ¦ 50,00 ¦ imprimé «  ¦ MEFENACIDE cpr pell 500 mg sécables 30 pce ¦  » ¦ pièce ¦ L ¦ × ¦ = ¦ Ingrédient ¦ Service ¦ Matériel ¦ pas un achat de brasserie ? ¦ Apport ou prélèvement privé › ¦ article — · hors stock ¦ Ajouter au stock ¦ Suivant ¦ e
+  lr17-deduit-390-clair.png
+M9-3 sonde : ["BUTTON ro=undefined dis=false val= vis=90x28@290,988 dessus=undefined.undefined «»"]
+  m93-bouton-390-clair.png
+  après tap : 23 ¦  lignes
+BE-23 3 : Stk=false barres=[]
+BE-23 reel-doc25 : Stk=false barres=[]
+BE-23 reel-doc14 : Stk=false barres=[]
+BE-27 390 : Acheter du matériel ¦ Plié ¦ Déplié ¦ Joindre des documents ¦ Total TTC en CHF ¦ Règlement ¦ par défaut ¦ Payé le 19.11.2026 ¦ Articles, stock et matériel ¦ Matériel durable ¦ 1 fiche de matériel ¦ Ce que tu achètes ¦ Type d’achat ¦ Ingrédients ¦ Emballages ¦ Nettoyage ¦ Matériel durable ¦ Entretien / réparation ¦ Service ¦ Livraison ¦ Remise ¦ Autre ¦ Fiche matériel ¦ Ne pas lier de matériel ¦ Créer la fiche de ce matériel ¦ Lier un matériel déjà présent ¦ La fiche reprendra le prix et la date 
+  champs : ["num_purchase-total=","Nature ligne 1=equipment","Matériel ligne 1=new","Pour quoi ?=","date_picker_field=2026-11-19","Mois — Date de l’achat=11","Année — Date de l’achat=2026","=materiel","=","=","=","=","=","=on"]
+  phrase : La fiche reprendra le prix et la date de cet achat. L’amortissement se renseigne dans Fina | p 696-728 | bouton 275 | viewport 844
+  be27-bas-390-clair.png
+BE-27 1280 : Acheter du matériel ¦ Plié ¦ Déplié ¦ Joindre des documents ¦ Total TTC en CHF ¦ Règlement ¦ par défaut ¦ Payé le 19.11.2026 ¦ Articles, stock et matériel ¦ Matériel durable ¦ 1 fiche de matériel ¦ Ce que tu achètes ¦ Type d’achat ¦ Ingrédients ¦ Emballages ¦ Nettoyage ¦ Matériel durable ¦ Entretien / réparation ¦ Service ¦ Livraison ¦ Remise ¦ Autre ¦ Fiche matériel ¦ Ne pas lier de matériel ¦ Créer la fiche de ce matériel ¦ Lier un matériel déjà présent ¦ La fiche reprendra le prix et la date 
+  champs : ["num_purchase-total=","Nature ligne 1=equipment","Matériel ligne 1=new","Pour quoi ?=","date_picker_field=2026-11-19","Mois — Date de l’achat=11","Année — Date de l’achat=2026","=materiel","=","=","=","=","=","=on"]
+  phrase : La fiche reprendra le prix et la date de cet achat. L’amortissement se renseigne dans Fina | p 668-684 | bouton 137 | viewport 800
+  be27-bas-1280-cave.png
+E1-2 labels : ["Nature ligne 1","Stock ligne 1"]

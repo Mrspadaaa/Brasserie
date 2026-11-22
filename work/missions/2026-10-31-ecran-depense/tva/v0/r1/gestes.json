@@ -1,0 +1,5 @@
+[
+  ["douteuse-ouverte", "douteuse", "[data-booster=douteuse]"],
+  ["filtre-inconnues", "annee", "[data-booster=inconnues]"],
+  ["annee-precedente", "annee", "#tvar1-moins"]
+]

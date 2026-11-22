@@ -1,0 +1,21 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [32m✓[39m tests/integration/etapeLevure/vues.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 1536[2mms[22m[39m
+   [33m[2m✓[22m[39m Chercher (c6b)[2m > [22mposer trois filtres donne le compte, retirer un filtre rend la liste [33m 363[2mms[22m[39m
+ [32m✓[39m tests/integration/etapeLevure/etapeCoque.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[33m 1540[2mms[22m[39m
+   [33m[2m✓[22m[39m Ma levure (l5b)[2m > [22mla ligne de la levure, sa dose en plage de sachets, les effets là où la source les donne [33m 439[2mms[22m[39m
+ [32m✓[39m tests/integration/etapeLevure/vues-reel.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1375[2mms[22m[39m
+   [33m[2m✓[22m[39m les vues sur l’API de d1[2m > [22mChercher : « 1056 » tapé, la carte de la levure tapée puis US-05 en tête de la liste (ordre c4) [33m 620[2mms[22m[39m
+   [33m[2m✓[22m[39m les vues sur l’API de d1[2m > [22mChercher : trois filtres posés (famille, °C, sans STA1) donnent un compte, et le retirer rend la liste [33m 585[2mms[22m[39m
+ [32m✓[39m tests/integration/etapeLevure/vues-corrections.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[33m 796[2mms[22m[39m
+ [32m✓[39m tests/integration/etapeLevure/etapeDose.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/integration/etapeLevure/vues-reel-d1.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 679[2mms[22m[39m
+   [33m[2m✓[22m[39m les livraisons de d1[2m > [22mlevier °C : la plage de `levierDetail` trace l’axe, avec ta conduite (19) et la source [33m 485[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m6 passed[39m[22m[90m (6)[39m
+[2m      Tests [22m [1m[32m51 passed[39m[22m[90m (51)[39m
+[2m   Start at [22m 14:43:01
+[2m   Duration [22m 7.63s[2m (transform 1.18s, setup 552ms, collect 3.91s, tests 5.93s, environment 3.49s, prepare 327ms)[22m
+

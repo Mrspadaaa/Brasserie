@@ -1,0 +1,1174 @@
+{
+ "base-E00-vide": {
+  "ecran": "vide",
+  "legende": "Aucun carnet encore, champ idée"
+ },
+ "base-E01b-carnet-cree": {
+  "ecran": "ajouter-a",
+  "legende": "Carnet créé, coller lien, clavier"
+ },
+ "base-E12b-articles": {
+  "ecran": "articles",
+  "legende": "Feuille Articles 6 cartes"
+ },
+ "base-E14a-oxygene": {
+  "ecran": "comparer",
+  "legende": "Critère oxygène capté, barres classées"
+ },
+ "base-E15-dispo": {
+  "ecran": "article",
+  "legende": "Fiche article, surveiller, Choisir celui-ci"
+ },
+ "base-E17a-liste": {
+  "ecran": "liste",
+  "legende": "Liste carnets, Embouteillage choisi"
+ },
+ "v01-1": {
+  "ecran": "articles",
+  "legende": "Feuille Articles, carte 1re ouverte"
+ },
+ "v01-2": {
+  "ecran": "article",
+  "legende": "Détail article, surveiller, Choisir"
+ },
+ "v01-3": {
+  "ecran": "comparer",
+  "legende": "Côte à côte, compromis, écartés"
+ },
+ "v01-4": {
+  "ecran": "liste",
+  "legende": "Autres carnets en cartes, mots"
+ },
+ "v01-5": {
+  "ecran": "liste",
+  "legende": "Autres carnets, glossaire du carnet"
+ },
+ "v02-1": {
+  "ecran": "comparer",
+  "legende": "Critère O2 et rangs, jauges"
+ },
+ "v02-2": {
+  "ecran": "article",
+  "legende": "Rang 1 déplié, vendeurs, valeurs"
+ },
+ "v02-3": {
+  "ecran": "choisi",
+  "legende": "Choisir cette machine, vendeur, pourquoi"
+ },
+ "v02-4": {
+  "ecran": "choisi",
+  "legende": "Carnet choisi, lignes À venir"
+ },
+ "v02-5": {
+  "ecran": "choisi",
+  "legende": "Feuille Pourquoi ce choix"
+ },
+ "v02-6": {
+  "ecran": "a-venir",
+  "legende": "Calendrier À venir, ligne ajoutée"
+ },
+ "v03-1": {
+  "ecran": "carnet",
+  "legende": "Carnet: critère, façons, 5 rangs"
+ },
+ "v03-2": {
+  "ecran": "article",
+  "legende": "Carte n°1 ouverte, vendeurs, Choisir"
+ },
+ "v03-3": {
+  "ecran": "article",
+  "legende": "Rangs valeurs, veille, début Comparer"
+ },
+ "v03-4": {
+  "ecran": "comparer",
+  "legende": "Tableau côte à côte, meilleur en vert"
+ },
+ "v03-5": {
+  "ecran": "choisi",
+  "legende": "Feuille Choisir cette machine, raisons"
+ },
+ "v03-6": {
+  "ecran": "choisi",
+  "legende": "Pas maintenant, carnet après choix"
+ },
+ "v03-7": {
+  "ecran": "choisi",
+  "legende": "Carnet choisi, écartés et pourquoi"
+ },
+ "v04-1": {
+  "ecran": "carnet",
+  "legende": "Carnet comparaison, article ouvert sur place"
+ },
+ "v04-2": {
+  "ecran": "choisi",
+  "legende": "Carnet choisi, pourquoi, 4 autres"
+ },
+ "v04-3": {
+  "ecran": "choisi",
+  "legende": "Feuille Pourquoi ce choix, jauges"
+ },
+ "v05-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets par étape, Nouveau carnet"
+ },
+ "v05-2": {
+  "ecran": "ajouter",
+  "legende": "Nouveau carnet, champ, clavier"
+ },
+ "v05-3": {
+  "ecran": "carnet",
+  "legende": "Carnet neuf Évier inox, note"
+ },
+ "v05-4": {
+  "ecran": "ajouter-a",
+  "legende": "Ajouter ici, voix, ranger dans"
+ },
+ "v05-5": {
+  "ecran": "ajouter-a",
+  "legende": "Lien collé, objet avant rangement"
+ },
+ "v05-6": {
+  "ecran": "carnet",
+  "legende": "Façons, retenir/écarter, raisons"
+ },
+ "v06-1": {
+  "ecran": "ajouter",
+  "legende": "Idée saisie, nouveau carnet ou Ventilation"
+ },
+ "v06-2": {
+  "ecran": "ajouter-a",
+  "legende": "Photo déposée, ranger comme"
+ },
+ "v06-3": {
+  "ecran": "articles",
+  "legende": "Articles, bandeau rangée, Annuler"
+ },
+ "v06-4": {
+  "ecran": "ajouter-a",
+  "legende": "Menu + : Article Façon Critère Note"
+ },
+ "v06-5": {
+  "ecran": "ajouter-a",
+  "legende": "Voix en cours d'écoute"
+ },
+ "v06-6": {
+  "ecran": "ajouter-a",
+  "legende": "Note vocale, ranger comme critère"
+ },
+ "v06-7": {
+  "ecran": "ajouter-a",
+  "legende": "Lien sans aperçu, nommer, veille"
+ },
+ "v07-1": {
+  "ecran": "ajouter-a",
+  "legende": "Lien collé, Où ? Nouveau carnet"
+ },
+ "v07-2": {
+  "ecran": "ajouter-a",
+  "legende": "Phrase devient critère, clavier"
+ },
+ "v07-3": {
+  "ecran": "ajouter-a",
+  "legende": "Note vocale en cours, va atterrir"
+ },
+ "v07-4": {
+  "ecran": "ajouter-a",
+  "legende": "Photo lue, valeurs à cocher"
+ },
+ "v07-5": {
+  "ecran": "ajouter-a",
+  "legende": "Lien sans aperçu, photo ou seul"
+ },
+ "v07-6": {
+  "ecran": "ajouter-a",
+  "legende": "Façons IA, phrase atterrit, clavier"
+ },
+ "v08-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets par étape colorées"
+ },
+ "v08-2": {
+  "ecran": "ajouter",
+  "legende": "Tireuse 4 becs, arrive ici, Créer"
+ },
+ "v08-3": {
+  "ecran": "carnet",
+  "legende": "Carnet neuf, critère et façons proposés"
+ },
+ "v08-4": {
+  "ecran": "ajouter-a",
+  "legende": "Façon tapée, Va dans, clavier"
+ },
+ "v08-5": {
+  "ecran": "ajouter-a",
+  "legende": "Lien article, Va dans Article"
+ },
+ "v08-6": {
+  "ecran": "ajouter-a",
+  "legende": "Voix, relecture, Arrêter"
+ },
+ "v08-7": {
+  "ecran": "ajouter-a",
+  "legende": "Photo avant l'envoi, Juste/Corriger"
+ },
+ "v08-8": {
+  "ecran": "a-venir",
+  "legende": "À venir, remplisseuse, Ouvrir carnet"
+ },
+ "v09-1": {
+  "ecran": "liste",
+  "legende": "Carnets groupés par étape, Chercher"
+ },
+ "v09-2": {
+  "ecran": "articles",
+  "legende": "Articles groupés par façon, À compléter"
+ },
+ "v09-3": {
+  "ecran": "choisi",
+  "legende": "Embouteillage choisi, Envoyer dans À venir"
+ },
+ "v10-1": {
+  "ecran": "liste",
+  "legende": "Carnets avec veille, Coller un lien"
+ },
+ "v10-2": {
+  "ecran": "ajouter",
+  "legende": "Va dans, champ, clavier, Noter"
+ },
+ "v10-3": {
+  "ecran": "carnet",
+  "legende": "fiche en cours"
+ },
+ "v10-4": {
+  "ecran": "choisi",
+  "legende": "fiche choisie"
+ },
+ "v10-5": {
+  "ecran": "a-venir",
+  "legende": "À venir, ce qui est parti"
+ },
+ "v11-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "v11-2": {
+  "ecran": "choisi",
+  "legende": "fiche choisie"
+ },
+ "v11-3": {
+  "ecran": "carnet",
+  "legende": "fiche en cours"
+ },
+ "v11-4": {
+  "ecran": "ajouter",
+  "legende": "+ touché"
+ },
+ "v12-1": {
+  "ecran": "liste",
+  "legende": "carnets et À venir sur un écran"
+ },
+ "v12-2": {
+  "ecran": "carnet",
+  "legende": "deux façons, critère, Retenir"
+ },
+ "v12-3": {
+  "ecran": "choisi",
+  "legende": "choisi, pourquoi, écartés"
+ },
+ "g01-1": {
+  "ecran": "liste",
+  "legende": "liste v09"
+ },
+ "g01-2": {
+  "ecran": "ajouter",
+  "legende": "ajouter, sur v09"
+ },
+ "g01-3": {
+  "ecran": "carnet",
+  "legende": "carnet neuf, vide"
+ },
+ "g01-4": {
+  "ecran": "carnet",
+  "legende": "fiche à trancher"
+ },
+ "g01-5": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée"
+ },
+ "g01-6": {
+  "ecran": "ajouter-a",
+  "legende": "lien collé, rangée neuve"
+ },
+ "g01-7": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "g01-8": {
+  "ecran": "comparer",
+  "legende": "côte à côte"
+ },
+ "g01-9": {
+  "ecran": "choisi",
+  "legende": "choisir sur place"
+ },
+ "g01-10": {
+  "ecran": "choisi",
+  "legende": "fiche choisie"
+ },
+ "g01-11": {
+  "ecran": "choisi",
+  "legende": "pourquoi ce choix"
+ },
+ "g01-12": {
+  "ecran": "a-venir",
+  "legende": "À venir, sans violet"
+ },
+ "g01-13": {
+  "ecran": "choisi",
+  "legende": "écarter, reprendre"
+ },
+ "g04-1": {
+  "ecran": "liste",
+  "legende": "liste v09"
+ },
+ "g04-2": {
+  "ecran": "ajouter",
+  "legende": "noter une idée"
+ },
+ "g04-3": {
+  "ecran": "carnet",
+  "legende": "carnet neuf"
+ },
+ "g04-4": {
+  "ecran": "carnet",
+  "legende": "fiche à trancher"
+ },
+ "g04-5": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée"
+ },
+ "g04-6": {
+  "ecran": "ajouter-a",
+  "legende": "lien collé, sa rangée"
+ },
+ "g04-7": {
+  "ecran": "article",
+  "legende": "article ouvert défilé"
+ },
+ "g04-8": {
+  "ecran": "comparer",
+  "legende": "côte à côte, tableau"
+ },
+ "g04-9": {
+  "ecran": "choisi",
+  "legende": "choisir"
+ },
+ "g04-10": {
+  "ecran": "choisi",
+  "legende": "fiche choisie"
+ },
+ "g04-11": {
+  "ecran": "choisi",
+  "legende": "pourquoi ce choix"
+ },
+ "g04-12": {
+  "ecran": "a-venir",
+  "legende": "À venir, sans violet"
+ },
+ "g02-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets par état"
+ },
+ "g02-2": {
+  "ecran": "ajouter",
+  "legende": "Noter idée, nouveau carnet"
+ },
+ "g02-3": {
+  "ecran": "carnet",
+  "legende": "Idée neuve, critère proposé IA"
+ },
+ "g02-4": {
+  "ecran": "carnet",
+  "legende": "Ventilation, façons et articles groupés"
+ },
+ "g02-5": {
+  "ecran": "ajouter-a",
+  "legende": "Note ajoutée à Ventilation"
+ },
+ "g02-6": {
+  "ecran": "article",
+  "legende": "Article ouvert, vendeurs, veille"
+ },
+ "g02-7": {
+  "ecran": "articles",
+  "legende": "Cartes défilées, choisir ou écarter"
+ },
+ "g02-8": {
+  "ecran": "comparer",
+  "legende": "Tableau côte à côte"
+ },
+ "g02-9": {
+  "ecran": "choisi",
+  "legende": "Feuille choisir cette machine"
+ },
+ "g02-10": {
+  "ecran": "choisi",
+  "legende": "Fiche choisie, écartés"
+ },
+ "g02-11": {
+  "ecran": "choisi",
+  "legende": "Feuille pourquoi ce choix"
+ },
+ "g02-12": {
+  "ecran": "a-venir",
+  "legende": "Calendrier À venir sans date"
+ },
+ "g03-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets par état"
+ },
+ "g03-2": {
+  "ecran": "ajouter",
+  "legende": "Noter idée, nouveau carnet"
+ },
+ "g03-3": {
+  "ecran": "carnet",
+  "legende": "Idée neuve, Chercher des éviers"
+ },
+ "g03-4": {
+  "ecran": "carnet",
+  "legende": "Ventilation, façons et articles"
+ },
+ "g03-5": {
+  "ecran": "ajouter-a",
+  "legende": "Lien collé vers Ventilation"
+ },
+ "g03-6": {
+  "ecran": "articles",
+  "legende": "Lien rangé, nouvelle carte"
+ },
+ "g03-7": {
+  "ecran": "article",
+  "legende": "Feuille article, 1re sur 5"
+ },
+ "g03-8": {
+  "ecran": "article",
+  "legende": "Article, valeurs, veille, choisir"
+ },
+ "g03-9": {
+  "ecran": "comparer",
+  "legende": "Autres cartes, côte à côte"
+ },
+ "g03-10": {
+  "ecran": "choisi",
+  "legende": "Feuille choisir cette machine"
+ },
+ "g03-11": {
+  "ecran": "choisi",
+  "legende": "Fiche choisie, écartés"
+ },
+ "g03-12": {
+  "ecran": "choisi",
+  "legende": "Feuille pourquoi ce choix"
+ },
+ "g03-13": {
+  "ecran": "a-venir",
+  "legende": "Calendrier À venir sans date"
+ },
+ "g05-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets par état"
+ },
+ "g05-2": {
+  "ecran": "ajouter",
+  "legende": "+ touché, Nouveau carnet, clavier"
+ },
+ "g05-3": {
+  "ecran": "carnet",
+  "legende": "Carnet neuf Évier, IA propose"
+ },
+ "g05-4": {
+  "ecran": "articles",
+  "legende": "Carnet Ventilation, articles par façon"
+ },
+ "g05-5": {
+  "ecran": "ajouter-a",
+  "legende": "+ dans Ventilation, lien collé"
+ },
+ "g05-6": {
+  "ecran": "articles",
+  "legende": "Lien noté, nouvelle rangée"
+ },
+ "g05-7": {
+  "ecran": "article",
+  "legende": "Article ouvert, vendeurs, veille"
+ },
+ "g05-8": {
+  "ecran": "comparer",
+  "legende": "Côte à côte, 5 machines"
+ },
+ "g05-9": {
+  "ecran": "choisi",
+  "legende": "Bouton Choisir chez, Écarter"
+ },
+ "g05-10": {
+  "ecran": "choisi",
+  "legende": "Carnet choisi, écartés"
+ },
+ "g05-11": {
+  "ecran": "choisi",
+  "legende": "Pourquoi ce choix, feuille"
+ },
+ "g05-12": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
+ },
+ "g06-1": {
+  "ecran": "liste",
+  "legende": "Liste carnets, vue v09"
+ },
+ "g06-2": {
+  "ecran": "ajouter",
+  "legende": "Nouvelle idée, champ au clavier"
+ },
+ "g06-3": {
+  "ecran": "carnet",
+  "legende": "Évier inox, carnet neuf"
+ },
+ "g06-4": {
+  "ecran": "articles",
+  "legende": "Ventilation, critère et groupes"
+ },
+ "g06-5": {
+  "ecran": "ajouter-a",
+  "legende": "Ajouter à Ventilation, lien"
+ },
+ "g06-6": {
+  "ecran": "articles",
+  "legende": "Lien devenu rangée, Déplacer"
+ },
+ "g06-7": {
+  "ecran": "articles",
+  "legende": "Embouteillage, classement par oxygène"
+ },
+ "g06-8": {
+  "ecran": "comparer",
+  "legende": "Côte à côte sous groupes"
+ },
+ "g06-9": {
+  "ecran": "article",
+  "legende": "Article ouvert sur place"
+ },
+ "g06-10": {
+  "ecran": "choisi",
+  "legende": "Feuille Choisir cette machine"
+ },
+ "g06-11": {
+  "ecran": "choisi",
+  "legende": "Carnet choisi, écartés"
+ },
+ "g06-12": {
+  "ecran": "choisi",
+  "legende": "Pourquoi ce choix, feuille"
+ },
+ "g06-13": {
+  "ecran": "a-venir",
+  "legende": "À venir au Calendrier"
+ },
+ "h01-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "h01-2": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "h01-3": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert"
+ },
+ "h01-4": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée"
+ },
+ "h01-5": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "h01-6": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "h01-7": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "h01-8": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi"
+ },
+ "h01-9": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
+ },
+ "h02-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "h02-2": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "h02-3": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert"
+ },
+ "h02-4a": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (a)"
+ },
+ "h02-4b": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (b)"
+ },
+ "h02-5": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "h02-6": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "h02-7": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "h02-8a": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi (a)"
+ },
+ "h02-8b": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi (b)"
+ },
+ "h02-9": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
+ },
+ "h03-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "h03-2": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "h03-3": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert"
+ },
+ "h03-4a": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (a)"
+ },
+ "h03-4b": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (b)"
+ },
+ "h03-4c": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (c)"
+ },
+ "h03-5": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "h03-6": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "h03-7": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "h03-8": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi"
+ },
+ "h03-9": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
+ },
+ "h04-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "h04-2": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "h04-3a": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert (a)"
+ },
+ "h04-3b": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert (b)"
+ },
+ "h04-4a": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (a)"
+ },
+ "h04-4b": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (b)"
+ },
+ "h04-4c": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (c)"
+ },
+ "h04-5": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "h04-6": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "h04-7": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "h04-8a": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi (a)"
+ },
+ "h04-8b": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi (b)"
+ },
+ "h04-9": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
+ },
+ "h05-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "h05-2": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "h05-3": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert"
+ },
+ "h05-4a": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (a)"
+ },
+ "h05-4b": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (b)"
+ },
+ "h05-5": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "h05-6": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "h05-7": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "h05-8": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi"
+ },
+ "h05-9": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
+ },
+ "h06-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "h06-2": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "h06-3": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert"
+ },
+ "h06-4a": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (a)"
+ },
+ "h06-4b": {
+  "ecran": "ajouter-a",
+  "legende": "ajouter à l’idée (b)"
+ },
+ "h06-5": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "h06-6": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "h06-7": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "h06-8": {
+  "ecran": "choisi",
+  "legende": "choisir, choisi"
+ },
+ "h06-9": {
+  "ecran": "a-venir",
+  "legende": "À venir, Réalisés"
+ },
+ "i01-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "i02-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "i03-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "i04-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "i05-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "i06-1": {
+  "ecran": "liste",
+  "legende": "liste des carnets"
+ },
+ "i01-2": {
+  "ecran": "vide",
+  "legende": "liste vide"
+ },
+ "i02-2": {
+  "ecran": "vide",
+  "legende": "liste vide"
+ },
+ "i03-2": {
+  "ecran": "vide",
+  "legende": "liste vide"
+ },
+ "i04-2": {
+  "ecran": "vide",
+  "legende": "liste vide"
+ },
+ "i05-2": {
+  "ecran": "vide",
+  "legende": "liste vide"
+ },
+ "i06-2": {
+  "ecran": "vide",
+  "legende": "liste vide"
+ },
+ "i01-3": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "i02-3": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "i03-3": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "i04-3": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "i05-3": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "i06-3": {
+  "ecran": "ajouter",
+  "legende": "ajouter une idée"
+ },
+ "i01-4": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert"
+ },
+ "i02-4": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert"
+ },
+ "i03-4": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert"
+ },
+ "i04-4a": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert au repos"
+ },
+ "i04-4b": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert, le + ouvert"
+ },
+ "i06-4": {
+  "ecran": "carnet",
+  "legende": "carnet ouvert"
+ },
+ "i01-5a": {
+  "ecran": "ajouter-a",
+  "legende": "le + touché"
+ },
+ "i01-5b": {
+  "ecran": "ajouter-a",
+  "legende": "un lien"
+ },
+ "i01-5c": {
+  "ecran": "ajouter-a",
+  "legende": "une photo"
+ },
+ "i01-5d": {
+  "ecran": "ajouter-a",
+  "legende": "un texte"
+ },
+ "i02-5b": {
+  "ecran": "ajouter-a",
+  "legende": "un lien"
+ },
+ "i02-5c": {
+  "ecran": "ajouter-a",
+  "legende": "une photo"
+ },
+ "i02-5d": {
+  "ecran": "ajouter-a",
+  "legende": "un texte"
+ },
+ "i03-5a": {
+  "ecran": "ajouter-a",
+  "legende": "une photo"
+ },
+ "i03-5b": {
+  "ecran": "ajouter-a",
+  "legende": "un lien"
+ },
+ "i03-5c": {
+  "ecran": "ajouter-a",
+  "legende": "un texte"
+ },
+ "i04-5b": {
+  "ecran": "ajouter-a",
+  "legende": "un lien"
+ },
+ "i04-5c": {
+  "ecran": "ajouter-a",
+  "legende": "une photo"
+ },
+ "i04-5d": {
+  "ecran": "ajouter-a",
+  "legende": "un texte"
+ },
+ "i05-5a": {
+  "ecran": "ajouter-a",
+  "legende": "un texte"
+ },
+ "i05-5b": {
+  "ecran": "ajouter-a",
+  "legende": "une photo"
+ },
+ "i05-5c": {
+  "ecran": "ajouter-a",
+  "legende": "le + touché"
+ },
+ "i05-5d": {
+  "ecran": "ajouter-a",
+  "legende": "un lien collé"
+ },
+ "i06-5a": {
+  "ecran": "ajouter-a",
+  "legende": "un lien"
+ },
+ "i06-5b": {
+  "ecran": "ajouter-a",
+  "legende": "une photo"
+ },
+ "i06-5c": {
+  "ecran": "ajouter-a",
+  "legende": "un texte"
+ },
+ "i01-6": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "i02-6": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "i03-6": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "i04-6": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "i05-6": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "i06-6": {
+  "ecran": "articles",
+  "legende": "cartes d’article"
+ },
+ "i01-7": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "i02-7": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "i03-7": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "i04-7": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "i05-7": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "i06-7": {
+  "ecran": "article",
+  "legende": "article ouvert"
+ },
+ "i01-8": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "i02-8": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "i03-8": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "i04-8": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "i05-8": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "i06-8": {
+  "ecran": "comparer",
+  "legende": "comparer"
+ },
+ "i01-9a": {
+  "ecran": "choisi",
+  "legende": "choisi"
+ },
+ "i01-9b": {
+  "ecran": "choisi",
+  "legende": "pourquoi ce choix"
+ },
+ "i02-9a": {
+  "ecran": "choisi",
+  "legende": "choisi"
+ },
+ "i02-9b": {
+  "ecran": "choisi",
+  "legende": "pourquoi ce choix"
+ },
+ "i03-9": {
+  "ecran": "choisi",
+  "legende": "choisi et pourquoi"
+ },
+ "i04-9a": {
+  "ecran": "choisi",
+  "legende": "choisir"
+ },
+ "i04-9b": {
+  "ecran": "choisi",
+  "legende": "choisi"
+ },
+ "i04-9c": {
+  "ecran": "choisi",
+  "legende": "pourquoi ce choix"
+ },
+ "i05-9a": {
+  "ecran": "choisi",
+  "legende": "choisi"
+ },
+ "i05-9b": {
+  "ecran": "choisi",
+  "legende": "pourquoi ce choix"
+ },
+ "i06-9a": {
+  "ecran": "choisi",
+  "legende": "choisi"
+ },
+ "i06-9b": {
+  "ecran": "choisi",
+  "legende": "pourquoi ce choix"
+ },
+ "i01-10": {
+  "ecran": "a-venir",
+  "legende": "À venir"
+ },
+ "i02-10": {
+  "ecran": "a-venir",
+  "legende": "À venir"
+ },
+ "i03-10": {
+  "ecran": "a-venir",
+  "legende": "À venir"
+ },
+ "i04-10": {
+  "ecran": "a-venir",
+  "legende": "À venir"
+ },
+ "i05-10": {
+  "ecran": "a-venir",
+  "legende": "À venir"
+ },
+ "i06-10": {
+  "ecran": "a-venir",
+  "legende": "À venir"
+ },
+ "i05-4a": {
+  "ecran": "carnet",
+  "legende": "carnet tout neuf"
+ },
+ "i05-4b": {
+  "ecran": "carnet",
+  "legende": "carnet rempli"
+ },
+ "i02-5a": {
+  "ecran": "ajouter-a",
+  "legende": "le + ouvert"
+ },
+ "i03-5d": {
+  "ecran": "ajouter-a",
+  "legende": "le menu du +"
+ },
+ "i04-5a": {
+  "ecran": "ajouter-a",
+  "legende": "le + dit quoi"
+ }
+}

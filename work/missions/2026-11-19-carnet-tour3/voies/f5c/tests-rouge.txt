@@ -1,0 +1,127 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 7 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5c.test.tsx[2m > [22mf5c n° 5 : « Façons · 1 façon » ne redit pas la carte unique[2m > [22mune façon : pas de compte ; deux : « 2 façons » reste
+[31m[1mAssertionError[22m: expected ' Façons 1 façon' not to contain '1 façon'[39m
+
+Expected: [32m"1 façon"[39m
+Received: [31m"[7m Façons [27m1 façon"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5c.test.tsx:[2m52:29[22m[39m
+    [90m 50| [39m    const un = ouvrir(neuf({ facons: [{ id: 'f1', nom: '2 cylindres', …
+    [90m 51| [39m    const tete = un.container.querySelector('section[aria-label="Façon…
+    [90m 52| [39m    [34mexpect[39m([34mtexte[39m(tete))[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'1 façon'[39m)[33m;[39m
+    [90m   | [39m                            [31m^[39m
+    [90m 53| [39m    [34mexpect[39m([34mtexte[39m(un[33m.[39mcontainer))[33m.[39m[34mtoContain[39m([32m'2 cylindres'[39m)[33m;[39m
+    [90m 54| [39m    [34mcleanup[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5c.test.tsx[2m > [22mf5c n° 6 : Comparer dit la source une fois et ne redit pas les critères[2m > [22m« proposé par l’IA » une seule fois ; « classées » ne garde que ce qui s’ajoute (le prix)
+[31m[1mAssertionError[22m: expected 2 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 2[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5c.test.tsx:[2m66:54[22m[39m
+    [90m 64| [39m    [34mexpect[39m(cqc)[33m.[39m[34mtoContain[39m([32m'tient 80 °C'[39m)[33m;[39m
+    [90m 65| [39m    [34mexpect[39m(cqc)[33m.[39m[34mtoContain[39m([32m'le débit'[39m)[33m;[39m
+    [90m 66| [39m    [34mexpect[39m(cqc[33m.[39m[34msplit[39m([32m"proposé par l'IA"[39m)[33m.[39mlength [33m-[39m [34m1[39m)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                                                     [31m^[39m
+    [90m 67| [39m    const classees = texte(container.querySelector('.cn-cmp-classees')…
+    [90m 68| [39m    [34mexpect[39m(classees)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'tient 80 °C'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5c.test.tsx[2m > [22mf5c n° 7 : Comparer à 390[2m > [22m« sous votre minimum » en forme courte d’une ligne, la phrase entière gardée (title, lecteur d’écran)
+[31m[1mTypeError[22m: Cannot read properties of null (reading 'textContent')[39m
+[36m [2m❯[22m texte tests/unit/carnetsTour3F5c.test.tsx:[2m34:36[22m[39m
+    [90m 32| [39m[34mafterEach[39m(cleanup)[33m;[39m
+    [90m 33| [39m[35mconst[39m rien [33m=[39m () [33m=>[39m undefined[33m;[39m
+    [90m 34| [39mconst texte = (el: Element) => (el.textContent ?? '').replace(/[  ]/g,…
+    [90m   | [39m                                   [31m^[39m
+    [90m 35| [39mconst lire = (id: string): CarnetDoc => lireCarnet(fixtureCarnets().fi…
+    [90m 36| [39m[35mconst[39m [33mV[39m [33m=[39m [34mlire[39m([33mID_VENTILATION[39m)[33m;[39m
+[90m [2m❯[22m tests/unit/carnetsTour3F5c.test.tsx:[2m79:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5c.test.tsx[2m > [22mf5c n° 7 : Comparer à 390[2m > [22mcolonnes entières[2m > [22mquand le tableau déborde, les colonnes d’articles se partagent la place : aucune colonne coupée au repos
+[31m[1mAssertionError[22m: expected '' to be '85px' // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 85px[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5c.test.tsx:[2m106:55[22m[39m
+    [90m104| [39m      const zone = container.querySelector('.cn-tableau-zone') as HTML…
+    [90m105| [39m      /* (342 − 85) / 3 = 85,67 → 3 colonnes de 85 px ; la 4e commence…
+    [90m106| [39m      [34mexpect[39m(zone[33m.[39mstyle[33m.[39m[34mgetPropertyValue[39m([32m'--cn-col'[39m))[33m.[39m[34mtoBe[39m([32m'85px'[39m)[33m;[39m
+    [90m   | [39m                                                      [31m^[39m
+    [90m107| [39m      [34mexpect[39m([33mCSS_DECIDER[39m)[33m.[39m[34mtoMatch[39m([36m/var\(--cn-col\)/[39m)[33m;[39m
+    [90m108| [39m    })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5c.test.tsx[2m > [22mf5c n° 8 : Choisir nomme tous les critères qui classent[2m > [22m« Critères : tient 80 °C, puis le débit, proposé par l’IA »
+[31m[1mAssertionError[22m: expected 'Critère : tient 80 °C, proposé par l\…' to contain 'tient 80 °C, puis le débit'[39m
+
+Expected: [32m"tient 80 °C, p[7muis le débit[27m"[39m
+Received: [31m"[7mCritère : [27mtient 80 °C, p[7mroposé par l'IAFaçon hotte inox + extracteurInox Broye : en stock[27m"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5c.test.tsx:[2m117:21[22m[39m
+    [90m115| [39m    render(<Choisir etape="choisir" titre={TITRE} carnet={V.carnet} ar…
+    [90m116| [39m    const retenus = texte(screen.getByRole('list', { name: 'Retenu' })…
+    [90m117| [39m    [34mexpect[39m(retenus)[33m.[39m[34mtoContain[39m([32m'tient 80 °C, puis le débit'[39m)[33m;[39m
+    [90m   | [39m                    [31m^[39m
+    [90m118| [39m    expect(retenus.split("proposé par l'IA").length - 1).toBeLessThanO…
+    [90m119| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5c.test.tsx[2m > [22mf5c n° 9 : Réalisés et Embouteillage[2m > [22mpayé = prévu : « 11 700 CHF » une seule fois sur la carte, la ligne dit payé en entier au montant prévu
+[31m[1mAssertionError[22m: expected 3 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 3[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F5c.test.tsx:[2m139:57[22m[39m
+    [90m137| [39m    const colonne = document.querySelector('[data-colonne-materiel]') …
+    [90m138| [39m    [35mconst[39m carte [33m=[39m colonne[33m.[39m[34mquerySelector[39m([32m'.upgrade-item'[39m)[33m![39m[33m;[39m
+    [90m139| [39m    [34mexpect[39m([34mtexte[39m(carte)[33m.[39m[34msplit[39m([32m'11 700 CHF'[39m)[33m.[39mlength [33m-[39m [34m1[39m)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                                                        [31m^[39m
+    [90m140| [39m    expect(texte(carte.querySelector('[data-paye-prevu]')!)).toBe('Pay…
+    [90m141| [39m    [34mexpect[39m([34mtexte[39m(carte))[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'comme prévu'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F5c.test.tsx[2m > [22mf5c n° 9 : Réalisés et Embouteillage[2m > [22mles noms du tableau du carnet sont entiers (deux articles de même nom se distinguent par leur vendeur)
+[31m[1mAssertionError[22m: expected 'cn-deux-lignes' not to contain 'cn-deux-lignes'[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F5c.test.tsx:[2m147:51[22m[39m
+    [90m145| [39m    const noms = [...container.querySelectorAll('.cn-tab-nom > span:fi…
+    [90m146| [39m    [34mexpect[39m(noms[33m.[39mlength)[33m.[39m[34mtoBeGreaterThan[39m([34m0[39m)[33m;[39m
+    [90m147| [39m    for (const n of noms) expect(n.className).not.toContain('cn-deux-l…
+    [90m   | [39m                                                  [31m^[39m
+    [90m148| [39m  })[33m;[39m
+    [90m149| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m7 failed[39m[22m[90m (7)[39m
+[2m   Start at [22m 19:50:26
+[2m   Duration [22m 7.08s[2m (transform 3.60s, setup 312ms, collect 5.41s, tests 440ms, environment 667ms, prepare 72ms)[22m
+

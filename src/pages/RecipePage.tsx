@@ -1,12 +1,16 @@
 import { batchDisplayDate } from '../domain/batchSchedule';
-import { hotBitterness } from '../domain/hopBitterness';
+import { ibuDeLAjout } from '../domain/hopBitterness';
+import { amertumeRecette, fgRecette, formatDensite, formatLitres, nombreAccorde, ogRecette } from '../domain/recipeMetrics';
+import { formatDecimal } from '../ui/numericInput';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
 import { mashPhDiagnostic } from '../domain/water/readiness';
 import React, { useMemo, useState } from 'react';
 import { Recipe, Batch, HopIngredient, AppConfig } from '../types';
 import { Units } from '../services/units';
+import { nombreFr } from '../domain/stock/regles';
+import { deNom } from '../domain/elision';
 import { BrewingMath } from '../services/brewingMath';
-import { computeBeerColor, missingColorData } from '../domain/beerColor';
+import { recipeBeerColor, missingColorData } from '../domain/beerColor';
 import { HOP_STAGE, groupByStage, describeMoment, normalizeHop } from '../domain/hopStage';
 import { SALTS, SALT_IDS, ACIDS, ALKALINE_SALTS, savedWaterDisplay } from '../domain/water';
 import { styleByCode, styleFromTargetIons } from '../domain/waterStyles';
@@ -107,7 +111,10 @@ const Metric: React.FC<{
         {note && <dd className="text-xs text-cave-400 leading-tight">{note}</dd>}
       </>
     ) : (
-      <dd className="text-xs text-cave-400 leading-tight">{hint ?? 'incalculable'}</dd>
+      // Une case de chiffre ne porte jamais une consigne : « — », et la raison en une ligne sous la carte (test en ligne n° 11).
+      <dd className="reading text-sm text-cave-400" title={hint ?? 'incalculable'}>
+        —<span className="sr-only"> {hint ?? 'incalculable'}</span>
+      </dd>
     )}
   </div>
 );
@@ -115,6 +122,7 @@ const Metric: React.FC<{
 import { BrewEquipmentSummary } from '../ui/BrewEquipmentSummary';
 import { RecipeThermalPlan } from '../ui/RecipeThermalPlan';
 import { measuredWortYield } from '../domain/brewSystemInsights';
+import { partsEntieres, resumeAjouts, uniteAccordee } from '../domain/fermentables/parts';
 
 export const RecipePage: React.FC<RecipePageProps> = ({
   recipe,
@@ -163,11 +171,13 @@ export const RecipePage: React.FC<RecipePageProps> = ({
   const others = useMemo(() => fermentables.filter((f) => f.kind !== 'grain'), [fermentables]);
   const totalGrist = useMemo(() => grains.reduce((s, f) => s + f.weightKg, 0), [grains]);
 
-  // La couleur ne vient que du grain — un sucre clair n'en apporte pas.
+  // La couleur vient de tout ce qui colore le moût, sirop candi compris (CF-1) : la même fonction que l'assistant et la liste.
   const color = useMemo(
-    () => measuredExtraction ? null : computeBeerColor(grains, recipe.volumeL),
-    [grains, recipe.volumeL, measuredExtraction]
+    () => measuredExtraction ? null : recipeBeerColor(fermentables, recipe.volumeL),
+    [fermentables, recipe.volumeL, measuredExtraction]
   );
+  // TL-17 : parts entières qui font 100 % (plus forts restes), pas chaque part arrondie seule.
+  const partsGrain = useMemo(() => partsEntieres(grains.map((g) => g.weightKg)), [grains]);
   const colorMissing = useMemo(() => missingColorData(grains), [grains]);
 
   const points = useMemo(
@@ -181,11 +191,13 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     [fermentables, recipe.volumeL, brewhouse, recipe.efficiencyPct, recipe.nolo?.enabled]
   );
 
-  const og = recipe.nolo?.enabled ? noloWort?.range.max ?? 0 : recipe.ogTarget || ogPredicted || 0;
+  // Règle unique de la liste, de la fiche et de l'assistant : domain/recipeMetrics.ts (test en ligne du 07.11).
+  const og = recipe.nolo?.enabled ? noloWort?.range.max ?? 0 : ogRecette(recipe, recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75) || ogPredicted || 0;
 
   const boilOg = useMemo(() => recipe.nolo?.enabled ? og || null : yeastRecipeBoilOg({ ...recipe, efficiencyPct: recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75 }, { og: og || null }).og, [recipe, og, brewhouse?.efficiencyPct]);
-  const bitterness = useMemo(() => hotBitterness(hops, recipe.volumeL, boilOg, recipe.boilMin ?? 60), [hops, recipe.volumeL, boilOg, recipe.boilMin]);
-  const ibuOf = (hop: HopIngredient) => hotBitterness([hop], recipe.volumeL, boilOg, recipe.boilMin ?? 60).additions[0].ibu;
+  const bitterness = useMemo(() => amertumeRecette(recipe, recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75, { og: og || null, nolo: !!recipe.nolo?.enabled }),
+    [recipe, og, brewhouse?.efficiencyPct]);
+  const ibuOf = (hop: HopIngredient) => ibuDeLAjout(hops, hop, recipe.volumeL, boilOg, recipe.boilMin ?? 60);
   const ibuTotal = bitterness.total == null ? null : Math.round(bitterness.total);
 
   const hopsMissingAlpha = hops.filter((h) => h.stage !== 'dryHop' && !h.alpha).map((h) => h.name);
@@ -194,10 +206,25 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     efficiencyPct: recipe.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75 }, { og,
     reference: resolveFermentationYeast(recipe, yeastReferences(knowledge)) }), [recipe, brewhouse?.efficiencyPct, knowledge, og]);
   const fgPredicted = projection?.fg.range?.min === projection?.fg.range?.max ? projection?.fg.range?.min ?? null : null;
-  const fg = recipe.nolo?.enabled ? null : recipe.fgTarget || fgPredicted;
+  const fg = recipe.nolo?.enabled ? null : fgRecette(recipe, fgPredicted);
 
   const projectedAbv = projection?.abv.range?.min === projection?.abv.range?.max ? projection?.abv.range?.min ?? null : null;
   const abv = recipe.nolo?.enabled ? null : recipe.abvTarget ?? projectedAbv;
+
+  /** Les mesures de tête sans chiffre, groupées par raison : une ligne sous la carte, jamais du texte dans une case (n° 11). */
+  const raisonsDeTete = (() => {
+    const nolo = !!recipe.nolo?.enabled;
+    const brut: [string, string][] = [];
+    if (!(og > 1)) brut.push(['OG', nolo ? 'moût à caractériser' : 'potentiel des malts à renseigner']);
+    if (!nolo && !fg) brut.push(['FG', projection?.fg.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure']);
+    if (ibuTotal === null) brut.push(['IBU', 'ajouts de houblon à vérifier']);
+    if (!color && colorMissing.length === 0) brut.push(['EBC', measuredExtraction ? 'extraction à caractériser' : 'couleur des malts à renseigner']);
+    if (!nolo && !abv) brut.push(['ABV', projection?.abv.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure']);
+    if (!nolo && abv && !projection?.abv.range && recipe.abvTarget != null) brut.push(['ABV', 'cible conservée, projection indisponible · voir Levure']);
+    const parRaison = new Map<string, string[]>();
+    for (const [nom, raison] of brut) parRaison.set(raison, [...(parRaison.get(raison) ?? []), nom]);
+    return [...parRaison].map(([raison, noms]) => `${noms.join(', ')} : ${raison}`);
+  })();
 
   const relatedBatches = batches.filter(
     (b) => b.recipeRef === recipe.id || b.recipeSnapshot?.sourceRecipeId === recipe.id
@@ -211,7 +238,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
     <PageShell
       className="recipe-reference"
       title={recipe.name}
-      subtitle={[recipe.style, `${recipe.volumeL} L`].filter(Boolean).join(' · ')}
+      subtitle={[recipe.style, formatLitres(recipe.volumeL)].filter(Boolean).join(' · ')}
       onClose={onClose}
       actions={
         <>
@@ -262,11 +289,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         <dl aria-label="Repères de la recette" className="grid gap-x-2 gap-y-1" style={{gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,3.5rem),1fr))'}}>
           <Metric
             label={recipe.nolo?.enabled ? og > 1 ? noloWort?.origin === 'measurement' ? 'OG mesurée' : 'OG calculée' : 'OG à mesurer' : 'OG'}
-            value={og > 1 ? recipe.nolo?.enabled ? og.toLocaleString('fr-FR', {minimumFractionDigits:3, maximumFractionDigits:3}) : og.toFixed(3) : null}
+            value={og > 1 ? formatDensite(og) : null}
             hint={recipe.nolo?.enabled ? 'moût à caractériser' : 'renseigne le potentiel des malts'}
             tone="text-ebc-straw"
           />
-          {!recipe.nolo?.enabled&&<Metric label="FG" value={fg ? fg.toFixed(3) : null} hint={projection?.fg.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'} />}
+          {!recipe.nolo?.enabled&&<Metric label="FG" value={fg ? formatDensite(fg) : null} hint={projection?.fg.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'} />}
           {/*
             L'IBU affiché est CALCULÉ, pas recopié : il bouge quand on change un
             houblon. Quand la recette d'origine en annonce un autre, on montre
@@ -288,15 +315,15 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           />
           <Metric
             label="EBC"
-            value={color ? String(color.ebc) : null}
+            value={color ? formatDecimal(color.ebc) : null}
             hint={measuredExtraction ? 'extraction à caractériser' : 'renseigne la couleur des malts'}
             swatch={color?.swatch}
           />
           {!recipe.nolo?.enabled&&<Metric
             label="ABV"
-            value={abv ? `${abv.toFixed(1)} %` : null}
+            value={abv ? `${formatDecimal(abv, 1)} %` : null}
             hint={projection?.abv.range ? 'plage dans la conduite de levure' : 'projection indisponible · voir Levure'}
-            note={!projection?.abv.range && recipe.abvTarget != null ? 'Cible conservée · projection indisponible' : undefined}
+            note={!projection?.abv.range && recipe.abvTarget != null ? 'cible' : undefined}
             tone="text-ebc-amber"
           />}
         </dl>
@@ -324,9 +351,12 @@ export const RecipePage: React.FC<RecipePageProps> = ({
           </div>
         )}
 
+        {raisonsDeTete.length > 0 && (
+          <p className="mt-1 text-xs text-cave-400" data-role="raisons-tete">{raisonsDeTete.join(' · ')}</p>
+        )}
         {color && (
           <p className="mt-1 text-xs text-cave-400">
-            Couleur attendue : <span className="text-cave-200">{color.label}</span> — SRM {color.srm}.
+            Couleur attendue : <span className="text-cave-200">{color.label}</span> — {nombreFr(color.ebc, 1)} EBC.
           </p>
         )}
       </section>
@@ -337,7 +367,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       <Section
         title={recipe.nolo?.enabled&&recipe.nolo.process==='secondRunnings' ? 'Drêches d’origine' : 'Grain'}
         hint={recipe.nolo?.enabled&&recipe.nolo.process==='secondRunnings' ? 'Malt du brassin d’origine · aucun nouveau débit' : measuredExtraction ? `${Units.format(totalGrist, 'kg')} à extraire · rendement à mesurer` : `${Units.format(totalGrist, 'kg')} au total · ${
-          (recipe.efficiencyPct ?? brewhouse?.efficiencyPct) != null ? `${recipe.efficiencyPct ?? brewhouse?.efficiencyPct} % d’efficacité` : 'efficacité inconnue'
+          (recipe.efficiencyPct ?? brewhouse?.efficiencyPct) != null ? `${nombreFr((recipe.efficiencyPct ?? brewhouse?.efficiencyPct) as number, 1)} % d’efficacité` : 'efficacité inconnue'
         }`}
       >
         {grains.length === 0 ? (
@@ -345,16 +375,16 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         ) : (
           <ul className="divide-y divide-cave-850">
             {grains.map((m, i) => {
-              const pct = totalGrist > 0 ? (m.weightKg / totalGrist) * 100 : 0;
+              const pct = partsGrain[i] ?? 0;
               return (
                 <li key={`${m.name}-${i}`} className="py-1.5 flex items-baseline gap-2">
                   <span className="reading text-sm text-cave-400 w-12 shrink-0 text-right">
-                    {pct.toFixed(0)} %
+                    {nombreFr(pct, 0)} %
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm text-cave-50 break-words">{m.name}</span>
                     {m.colorEbc != null && (
-                      <span className="block text-sm text-cave-400">{m.colorEbc} EBC</span>
+                      <span className="block text-sm text-cave-400">{nombreFr(m.colorEbc, 1)} EBC</span>
                     )}
                   </span>
                   <span className="reading text-sm text-cave-50 shrink-0">
@@ -375,12 +405,11 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       {others.length > 0 && (
         <Section
           title="Sucres et ajouts"
-          hint={
-            (points?.unfermentable ?? 0) > 2
-              ? `${Math.round(points!.unfermentable)} points de densité que la levure ne peut pas manger — ils restent dans la bière.`
-              : undefined
-          }
+          hint={resumeAjouts(others)}
         >
+          {(points?.unfermentable ?? 0) > 2 && (
+            <p className="pb-1 text-sm text-cave-400">{nombreFr(points!.unfermentable, 0)} points de densité que la levure ne peut pas manger : ils restent dans la bière.</p>
+          )}
           <ul className="divide-y divide-cave-850">
             {others.map((f, i) => (
               <li key={`${f.name}-${i}`} className="py-1.5 flex items-baseline gap-2">
@@ -395,7 +424,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     {' · '}
                     {f.fermentabilityPct === 0
                       ? 'non fermentescible'
-                      : `${f.fermentabilityPct ?? 100} % fermentescible`}
+                      : `${nombreFr(f.fermentabilityPct ?? 100, 1)} % fermentescible`}
                   </span>
                 </span>
                 <span className="reading text-sm shrink-0">
@@ -413,7 +442,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         hint={
           dryHopTotal > 0
             ? `dont ${Units.format(dryHopTotal, 'g')} à cru · effet simulé séparément`
-            : `${hops.length} ajout(s) · ${Units.format(hops.reduce((total,h)=>total+h.weightG,0), 'g')}`
+            : `${nombreAccorde(hops.length, 'ajout')} · ${Units.format(hops.reduce((total,h)=>total+h.weightG,0), 'g')}`
         }
       >
         <HopBitternessPanel hops={hops} volumeL={recipe.volumeL} og={og || null} boilMin={recipe.boilMin ?? 60} hot={bitterness}/>
@@ -447,7 +476,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                             <span className="block text-sm text-cave-50 break-words">{h.name}</span>
                             <span className="block text-sm text-cave-400">
                               {describeMoment(h)}
-                              {h.alpha ? ` · ${h.alpha} % AA` : ' · alpha inconnu'}
+                              {h.alpha ? ` · ${nombreFr(h.alpha, 2)} % α` : ' · alpha inconnu'}
                             </span>
                           </span>
                           <span className="text-right shrink-0">
@@ -456,7 +485,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                             </span>
                             {style.bitters && (
                               <span className="block reading text-sm text-cave-400">
-                                {ibu != null ? `${ibu.toFixed(1)} IBU` : '— IBU'}
+                                {ibu != null ? `${formatDecimal(ibu, 1)} IBU` : '— IBU'}
                               </span>
                             )}
                           </span>
@@ -497,7 +526,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               <div>
                 <dt className="text-sm text-cave-400">Quantité</dt>
                 <dd className="reading text-sm">
-                  {recipe.yeast.qty > 0 ? `${recipe.yeast.qty.toLocaleString('fr-FR', { maximumFractionDigits: 20 })} ${recipe.yeast.unit ?? ''}`.trim() : 'À renseigner'}
+                  {recipe.yeast.qty > 0 ? `${recipe.yeast.qty.toLocaleString('fr-FR', { maximumFractionDigits: 20 })} ${uniteAccordee(recipe.yeast.unit, recipe.yeast.qty)}`.trim() : 'À renseigner'}
                 </dd>
               </div>
               <div>
@@ -507,7 +536,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               <div>
                 <dt className="text-sm text-cave-400">Ensemencement</dt>
                 <dd className="reading text-sm">
-                  {recipe.yeast.pitchTempC != null ? `${recipe.yeast.pitchTempC} °C` : '—'}
+                  {recipe.yeast.pitchTempC != null ? `${nombreFr(recipe.yeast.pitchTempC, 1)} °C` : '—'}
                 </dd>
               </div>
             </dl>
@@ -550,7 +579,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
            * jamais : la fiche affichait « personnalisé » sur toutes les
            * recettes. C'est `styleByCode` qui connaît ces codes.
            */
-          hint={`${Number(recipe.waterPlan.diRatioPct.toFixed(2))} % d’osmosée · ${
+          hint={`${nombreFr(recipe.waterPlan.diRatioPct, 2)} % d’osmosée · ${
             recipe.waterPlan.targetIons
               ? recipe.waterPlan.targetName ?? 'cible de la recette'
               : styleByCode(recipe.waterPlan.targetProfileId).name
@@ -564,16 +593,16 @@ export const RecipePage: React.FC<RecipePageProps> = ({
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
                 <div className="text-cave-400">{coldPilot ? 'Extraction' : 'Empâtage'}</div>
-                <div className="reading text-sm">{recipe.waterPlan.mashWaterL} L</div>
+                <div className="reading text-sm">{nombreFr(recipe.waterPlan.mashWaterL, 1)} L</div>
                 {((recipe.waterPlan.diRatioPct ?? 0) > 0) && (
                   <div className="text-2xs text-cave-400 font-mono mt-0.5">
-                    {Math.round((recipe.waterPlan.mashWaterL * (100 - (recipe.waterPlan.diRatioPct ?? 0))) / 10) / 10} L réseau · {Math.round((recipe.waterPlan.mashWaterL * (recipe.waterPlan.diRatioPct ?? 0)) / 10) / 10} L osmosée ({Number(recipe.waterPlan.diRatioPct.toFixed(2))} %)
+                    {nombreFr(Math.round((recipe.waterPlan.mashWaterL * (100 - (recipe.waterPlan.diRatioPct ?? 0))) / 10) / 10, 1)} L réseau · {nombreFr(Math.round((recipe.waterPlan.mashWaterL * (recipe.waterPlan.diRatioPct ?? 0)) / 10) / 10, 1)} L osmosée ({nombreFr(recipe.waterPlan.diRatioPct, 2)} %)
                   </div>
                 )}
               </div>
               <div>
                 <div className="text-cave-400">{coldPilot ? 'Eau complémentaire' : 'Rinçage'}</div>
-                <div className="reading text-sm">{recipe.waterPlan.spargeWaterL} L</div>
+                <div className="reading text-sm">{nombreFr(recipe.waterPlan.spargeWaterL, 1)} L</div>
                 {recipe.waterPlan.spargeWaterL > 0 && (
                   (() => {
                     const spargeDi = recipe.waterPlan.spargeDiRatioPct ?? recipe.waterPlan.diRatioPct ?? 0;
@@ -582,7 +611,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                     const reseauL = Math.round((recipe.waterPlan.spargeWaterL - osmoseeL) * 10) / 10;
                     return (
                       <div className="text-2xs text-cave-400 font-mono mt-0.5">
-                        {reseauL} L réseau · {osmoseeL} L osmosée ({Number(spargeDi.toFixed(2))} %)
+                        {nombreFr(reseauL, 1)} L réseau · {nombreFr(osmoseeL, 1)} L osmosée ({nombreFr(spargeDi, 2)} %)
                       </div>
                     );
                   })()
@@ -623,10 +652,10 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                         )}
                       </th>
                       <td className="py-1.5 px-2 reading text-right">
-                        {recipe.waterPlan!.mash[id] ?? 0} g
+                        {nombreFr(recipe.waterPlan!.mash[id] ?? 0, 2)} g
                       </td>
                       <td className="py-1.5 pl-2 reading text-cave-400 text-right">
-                        {recipe.waterPlan!.sparge[id] ?? 0} g
+                        {nombreFr(recipe.waterPlan!.sparge[id] ?? 0, 2)} g
                       </td>
                     </tr>
                   ))}
@@ -646,27 +675,27 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                   {recipe.waterPlan.mashWaterL > 0 && (retainedMashAcid == null
                     ? <p>Acidification de l’empâtage à déterminer après mesure ou titrage du pH.</p>
                     : <p>Dose d’acide d’empâtage retenue : <span className="reading text-water">
-                        {retainedMashAcid}{acidUnit ? ` ${acidUnit}` : ''}
-                      </span>{acidProduct ? ` de ${ACIDS[acidProduct].name}` : ' (produit ou unité non enregistré)'}. pH à mesurer ou titrer.</p>)}
+                        {nombreFr(retainedMashAcid, 2)}{acidUnit ? ` ${acidUnit}` : ''}
+                      </span>{acidProduct ? ` ${deNom(ACIDS[acidProduct].name)}` : ' (produit ou unité non enregistré)'}. pH à mesurer ou titrer.</p>)}
                   {recipe.waterPlan.spargeWaterL > 0 && (retainedSpargeAcid == null
                     ? <p>Acidification de l’eau de rinçage à déterminer après mesure ou titrage du pH.</p>
                     : <p>Dose d’acide de rinçage retenue : <span className="reading text-water">
-                        {retainedSpargeAcid}{acidUnit ? ` ${acidUnit}` : ''}
-                      </span>{acidProduct ? ` de ${ACIDS[acidProduct].name}` : ' (produit ou unité non enregistré)'}. pH à mesurer ou titrer.</p>)}
+                        {nombreFr(retainedSpargeAcid, 2)}{acidUnit ? ` ${acidUnit}` : ''}
+                      </span>{acidProduct ? ` ${deNom(ACIDS[acidProduct].name)}` : ' (produit ou unité non enregistré)'}. pH à mesurer ou titrer.</p>)}
                 </> : <>
                   {recipe.waterPlan.acid && recipe.waterPlan.acid.mash > 0 && (
                     <p>
                       <span className="reading text-water">
-                        {recipe.waterPlan.acid.mash} {ACIDS[recipe.waterPlan.acid.id].unit}
+                        {nombreFr(recipe.waterPlan.acid.mash, 2)} {ACIDS[recipe.waterPlan.acid.id].unit}
                       </span>{' '}
-                      de {ACIDS[recipe.waterPlan.acid.id].name} dans l’eau d’empâtage, pour
+                      {deNom(ACIDS[recipe.waterPlan.acid.id].name)} dans l’eau d’empâtage, pour
                       l’alcalinité résiduelle.
                     </p>
                   )}
                   {recipe.waterPlan.acid && recipe.waterPlan.acid.sparge > 0 && (
                     <p>
                       <span className="reading text-water">
-                        {recipe.waterPlan.acid.sparge} {ACIDS[recipe.waterPlan.acid.id].unit}
+                        {nombreFr(recipe.waterPlan.acid.sparge, 2)} {ACIDS[recipe.waterPlan.acid.id].unit}
                       </span>{' '}
                       dans l’eau de rinçage, pour ne pas extraire les tanins des drêches.
                     </p>
@@ -726,24 +755,24 @@ export const RecipePage: React.FC<RecipePageProps> = ({
       {(!recipe.nolo?.enabled||recipe.nolo.process!=='secondRunnings') && !recipe.waterPlan && recipe.water?.salts && (
         <Section
           title="Eau"
-          hint={`${recipe.water.sourceName} · ${recipe.water.diRatioPct} % d’osmosée`}
+          hint={`${recipe.water.sourceName} · ${nombreFr(recipe.water.diRatioPct, 1)} % d’osmosée`}
         >
           <dl className="grid grid-cols-2 sm:grid-cols-5 gap-3">
             <div>
               <dt className="text-sm text-cave-400">Gypse</dt>
-              <dd className="reading text-sm">{recipe.water.salts.gypseG} g</dd>
+              <dd className="reading text-sm">{nombreFr(recipe.water.salts.gypseG, 2)} g</dd>
             </div>
             <div>
               <dt className="text-sm text-cave-400">CaCl₂</dt>
-              <dd className="reading text-sm">{recipe.water.salts.cacl2G} g</dd>
+              <dd className="reading text-sm">{nombreFr(recipe.water.salts.cacl2G, 2)} g</dd>
             </div>
             <div>
               <dt className="text-sm text-cave-400">MgSO₄</dt>
-              <dd className="reading text-sm">{recipe.water.salts.mgso4G} g</dd>
+              <dd className="reading text-sm">{nombreFr(recipe.water.salts.mgso4G, 2)} g</dd>
             </div>
             <div>
               <dt className="text-sm text-cave-400">Acide lactique</dt>
-              <dd className="reading text-sm">{recipe.water.salts.acidLacticMl} mL</dd>
+              <dd className="reading text-sm">{nombreFr(recipe.water.salts.acidLacticMl, 2)} mL</dd>
             </div>
             <div>
               <dt className="text-sm text-cave-400">pH visé</dt>
@@ -761,7 +790,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
               <p className="text-sm text-cave-50">Maintenir {coldPilot.settings.extractionTempC.toLocaleString('fr-FR')} °C pendant {coldPilot.settings.extractionHours.toLocaleString('fr-FR')} h, puis filtrer.</p>
               <p className="text-xs text-cave-200">Consignes du pilote ; relever la température, le volume, la densité et le pH réellement obtenus.</p>
             </Section> :
-              <Section title={measuredExtraction ? 'Paliers chauds de référence' : 'Empâtage'} hint={`${recipe.mash.steps.length} paliers`}>
+              <Section title={measuredExtraction ? 'Paliers chauds de référence' : 'Empâtage'} hint={nombreAccorde(recipe.mash.steps.length, 'palier')}>
                 {measuredExtraction && <p className="text-xs text-cave-200">Ce programme enregistré ne définit pas le protocole de {recipe.nolo?.process === 'coldExtraction' ? 'l’extraction à froid' : 'la seconde extraction'}.</p>}
                 <h3 className="text-sm text-cave-400 mb-1.5">
                   Empâtage
@@ -776,20 +805,20 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                   {[...recipe.mash.steps, ...(recipe.mash.mashoutEnabled !== false && recipe.mash.mashoutTempC != null && !recipe.mash.steps.some(s=>/mash.?out/i.test(s.name) && s.tempC === recipe.mash.mashoutTempC) ? [{name:'Mash-out',tempC:recipe.mash.mashoutTempC,durationMin:recipe.mash.mashoutDurationMin ?? 10}] : [])].map((s, i) => (
                     <li key={i} className="py-1.5 flex items-baseline gap-2">
                       <span className="flex-1 text-base text-cave-50">{s.name}</span>
-                      <span className="reading text-sm text-water">{s.tempC} °C</span>
+                      <span className="reading text-sm text-water">{nombreFr(s.tempC, 1)} °C</span>
                       <span className="reading text-sm text-cave-400 w-16 text-right">
                         {s.durationMin} min
                       </span>
                     </li>
                   ))}
                 </ul>
-                <p className="text-sm text-water mt-2">Eau de rinçage : {recipe.mash.spargeTempC ?? 76} °C · les durées indiquent le maintien à la consigne.</p>
-                {recipe.mash.heatingRateCPerMin != null && <p className="text-sm text-cave-400 mt-1">Repère de chauffe : {recipe.mash.heatingRateCPerMin.toFixed(2)} °C/min. La montée est suivie séparément dans le journal.</p>}
+                <p className="text-sm text-water mt-2">Eau de rinçage : {nombreFr(recipe.mash.spargeTempC ?? 76, 1)} °C · les durées indiquent le maintien à la consigne.</p>
+                {recipe.mash.heatingRateCPerMin != null && <p className="text-sm text-cave-400 mt-1">Repère de chauffe : {nombreFr(recipe.mash.heatingRateCPerMin, 2)} °C/min. La montée est suivie séparément dans le journal.</p>}
               </Section>
             )}
 
             {recipe.fermentation && recipe.fermentation.length > 0 && (
-              <Section title="Fermentation" hint={`${recipe.fermentation.length} étapes`}>
+              <Section title="Fermentation" hint={nombreAccorde(recipe.fermentation.length, 'phase')}>
                 <h3 className="text-sm text-cave-400 mb-1.5">Fermentation</h3>
                 <ul className="divide-y divide-cave-850">
                   {recipe.fermentation.map((s, i) => {
@@ -811,7 +840,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                             )}
                           </span>
                         </span>
-                        <span className="reading text-sm text-water shrink-0">{s.tempC} °C</span>
+                        <span className="reading text-sm text-water shrink-0">{nombreFr(s.tempC, 1)} °C</span>
                         <span className="reading text-sm text-cave-400 w-16 text-right shrink-0">
                           {Number.isFinite(s.days) ? `${s.days} j` : '—'}
                         </span>
@@ -858,7 +887,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
                       </span>
                       <span className="block text-sm text-cave-400">
                         {batchDisplayDate(b) ?? 'Date à définir'}
-                        {observed?.value != null ? ` · ${observed.value.toFixed(1)} % ${observed.scope === 'grain' ? 'de rendement mesuré' : 'd’extrait global'}` : ' · rendement : mesures à compléter'}
+                        {observed?.value != null ? ` · ${nombreFr(observed.value, 1)} % ${observed.scope === 'grain' ? 'de rendement mesuré' : 'd’extrait global'}` : ' · rendement : mesures à compléter'}
                       </span>
                     </span>
                     <span className="text-right shrink-0">
@@ -886,7 +915,7 @@ export const RecipePage: React.FC<RecipePageProps> = ({
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
         title="Supprimer cette recette ?"
-        what={`${recipe.name} — ${recipe.style}, ${recipe.volumeL} L`}
+        what={`${recipe.name} — ${recipe.style}, ${formatLitres(recipe.volumeL)}`}
         consequence={
           relatedBatches.length > 0
             ? `${relatedBatches.length} brassin${relatedBatches.length > 1 ? 's ont' : ' a'} été lancé${relatedBatches.length > 1 ? 's' : ''} depuis cette recette. Chacun garde sa propre copie figée : leur historique reste intact.`

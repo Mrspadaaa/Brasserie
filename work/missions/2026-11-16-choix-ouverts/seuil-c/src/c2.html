@@ -1,0 +1,53 @@
+@@TITRE
+c2 · Glisser la période
+@@CSS
+.c2-head{display:flex;align-items:flex-end;gap:12px;padding:12px 12px 0}
+.c2-big{font-size:60px;line-height:.9;font-weight:800;color:var(--fin);letter-spacing:-1.5px;font-variant-numeric:tabular-nums}
+.c2-t{flex:1;min-width:0;font-size:15px;color:var(--mut);line-height:1.25;padding-bottom:2px}.c2-t b{display:block;color:var(--ink);font-size:18px}
+.c2-zone{position:relative;margin:14px 12px 0;height:212px;touch-action:none;user-select:none;-webkit-user-select:none;cursor:ew-resize}
+.c2-band{position:absolute;left:0;top:34px;bottom:44px;background:var(--finbg);border-radius:12px 0 0 12px;transition:width .2s}
+.c2-cols{position:absolute;left:0;right:0;top:34px;bottom:44px;display:grid;grid-template-columns:repeat(7,1fr);align-items:end;border-bottom:1.5px solid var(--line2)}
+.c2-cols div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:2px;padding:0 6px}
+.c2-cols i{width:100%;max-width:34px;border-radius:5px 5px 0 0;background:var(--c)}
+.c2-cols span{font-size:14px;font-weight:700;color:var(--t,var(--c))}
+.c2-cols em{font-style:normal;font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap}
+.c2-wk{position:absolute;left:0;right:0;bottom:0;height:42px;display:grid;grid-template-columns:repeat(7,1fr);font-size:14px;color:var(--mut);text-align:center;padding-top:6px;line-height:1.1}
+.c2-wk b{display:block;color:var(--ink);font-weight:600}
+.c2-h{position:absolute;top:0;bottom:40px;width:0;transition:left .2s}
+.c2-h::before{content:'';position:absolute;left:-1.5px;top:30px;bottom:0;width:3px;background:var(--fin);border-radius:2px}
+.c2-knob{position:absolute;left:-26px;top:0;width:52px;height:34px;border-radius:17px;background:var(--fin);color:var(--onfin);display:flex;align-items:center;justify-content:center;gap:2px;font-size:20px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.c2-knob svg{width:14px;height:14px;stroke-width:2.6}
+.c2-hint{display:flex;align-items:center;gap:8px;margin:8px 12px 0;font-size:15px;color:var(--mut)}
+.c2-hint .ico{color:var(--fin)}
+.c2-sec{display:flex;align-items:baseline;justify-content:space-between;padding:14px 12px 6px}.c2-sec b{font-size:17px}
+@@CORPS
+<div class="c2-head"><span class="c2-big" id="c2-big">5</span><span class="c2-t" id="c2-t"></span><span class="k-ex">exemple</span></div>
+<div class="c2-zone" id="c2-z" data-booster="glisser-periode" role="slider" aria-label="Période comptée" tabindex="0">
+<b class="c2-band" id="c2-band"></b><div class="c2-cols" id="c2-cols"></div><div class="c2-wk" id="c2-wk"></div>
+<div class="c2-h" id="c2-h"><span class="c2-knob"><svg class="ico" viewBox="0 0 24 24"><path d="M9 6l-6 6 6 6"/></svg><span id="c2-kn">5</span><svg class="ico" viewBox="0 0 24 24"><path d="M15 6l6 6-6 6"/></svg></span></div>
+</div>
+<div class="c2-hint"><svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M9 8l-4 4 4 4M15 8l4 4-4 4"/></svg>glisse : l’onglet compte pareil</div>
+<div class="c2-sec"><b id="c2-lt"></b></div>
+<div class="k-rows" id="c2-l"></div>
+@@APRES
+@@JS
+<script>(()=>{const S=STK,{$}=S;let H=49;const W=S.W;
+function rendre(){const X=S.dans(H),k=W.indexOf(H)+1,pc=k/7*100;
+$('#c2-big').textContent=X.length;$('#c2-kn').textContent=X.length;
+$('#c2-t').innerHTML='à commander<b>'+(H===99?'tout, seuil compris':'d’ici S'+H+(S.pour[H]&&H<99?' · '+S.pour[H]:''))+'</b>';
+$('#c2-band').style.width=pc+'%';$('#c2-h').style.left=pc+'%';
+const n=W.map(w=>S.par(w).length),m=Math.max(...n);
+$('#c2-cols').innerHTML=W.map((w,i)=>{const on=w<=H,c=on?(w===99?'var(--att)':'var(--fin)'):'var(--line2)';return '<div style="--c:'+c+(on?'':';--t:var(--mut)')+'"><span>'+(n[i]||'')+'</span><i style="height:'+(n[i]?Math.max(6,n[i]/m*104):0)+'px"></i></div>'}).join('');
+$('#c2-wk').innerHTML=W.map(w=>'<span>'+(w===99?'seuil':'S'+w)+(w===49?'<b>Porter</b>':w===51?'<b>Pils</b>':'')+'</span>').join('');
+$('#c2-lt').textContent=H===99?'Les '+X.length+', par urgence':'Les '+X.length+' d’ici S'+H;
+$('#c2-l').innerHTML=X.map(a=>S.row(a,a.sem?'var(--fin)':'var(--att)')).join('');
+$('#c2-z').setAttribute('aria-valuetext',X.length+' articles');
+S.cta(X.length,'Commander');S.pastille(X.length)}
+const z=$('#c2-z');let tir=false;
+function vers(x){const r=z.getBoundingClientRect(),i=Math.max(0,Math.min(6,Math.round((x-r.left)/r.width*7)-1));const h=W[Math.max(i,0)];if(h!==H){H=h;rendre()}}
+z.addEventListener('pointerdown',e=>{tir=true;z.setPointerCapture(e.pointerId);vers(e.clientX+r7())});
+z.addEventListener('pointermove',e=>{if(tir)vers(e.clientX+r7())});
+z.addEventListener('pointerup',()=>{tir=false});
+function r7(){return z.getBoundingClientRect().width/14}
+z.addEventListener('keydown',e=>{const i=W.indexOf(H);if(e.key==='ArrowRight'&&i<6){H=W[i+1];rendre()}if(e.key==='ArrowLeft'&&i>0){H=W[i-1];rendre()}});
+rendre();if(S.etat==='geste'){H=52;rendre()}})()</script>

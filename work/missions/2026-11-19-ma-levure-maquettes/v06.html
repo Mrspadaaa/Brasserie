@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ma levure — v06 : une seule relecture des propositions IA</title>
+<!--
+  Mini maquette statique v06 (chantier ma-levure, 19.11). Base : la carte en ligne du 19.11 (base/en-ligne-1911.png).
+  Parti pris (axe n° 6, une seule décision de forme) : les propositions de l'IA et du moteur se confirment EN BLOC,
+  dans un bandeau unique au pied de la carte, au lieu de « à confirmer · Retenir · Écarter » sur chaque ligne de trait.
+  Passe de correction : état « après » dans la carte (Relancer en petit), « Retenir les 2 » sur les seules valeurs lues, × par étiquette, accent IA cuivre Brassins, jauge à 3 crans, FG bornée par l'OG, dose sourcée, états avant et pendant montrés en carte.
+  Tout le reste suit la base : en-tête de la levure, FG, fiche · conduite avec son geste de calage, floculation,
+  Changer de levure et ses puces, Retour / Suivant, le + volant.
+-->
+<style>
+  :root{
+    --page:#FFFFFF; --panneau:#F5F5F5; --sureleve:#EBEBEB; --bord:#DDDDDD; --bord-fort:#BFBFBF; --trait:#9E9E9E;
+    --t2:#666666; --t1:#333333; --t0:#111111;
+    --or:#F2C14E; --or-t:#7A5A12; --ambre:#E0A02E; --cuivre:#8D442C;
+    --houblon:#567F45; --houblon-t:#3F6B2E; --eau:#4F7E9B;
+    --alerte:#C8382F; --alerte-t:#A8291F; --attention:#9C7020; --attention-t:#7F5B10;
+    --ia:#9A4F1E; --ia-fond:#FBF1EA;
+    --mono:ui-monospace,"IBM Plex Mono","Cascadia Mono",Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--page);color:var(--t0)}
+  body{font:16px/1.3 "Source Sans 3","Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .v6-app{max-width:390px;margin:0 auto;padding-bottom:156px}
+
+  /* En-tête de l'assistant, comme la base */
+  .v6-tete{display:flex;align-items:center;gap:8px;height:44px;padding:0 12px 0 8px}
+  .v6-tete .v6-ret{width:28px;height:28px;display:grid;place-items:center}
+  .v6-tete h1{margin:0;font-size:22px;font-weight:600;letter-spacing:-.2px}
+  .v6-tete h1 span{font-weight:400;color:var(--t2);font-size:18px;margin-left:4px}
+  .v6-tete .v6-abandon{margin-left:auto;font-size:16px;color:var(--t1);text-decoration:underline;text-underline-offset:3px}
+  .v6-tete svg{display:block}
+  .v6-pas{display:flex;gap:6px;padding:0 10px;border-bottom:1px solid var(--bord)}
+  .v6-pas div{flex:1 1 auto;text-align:center;font-size:14px;color:var(--t2);padding:4px 0 0}
+  .v6-pas div::after{content:"";display:block;height:4px;border-radius:2px;background:#5C5C5C;margin-top:5px}
+  .v6-pas div.v6-ici{color:var(--t0);font-weight:600}
+  .v6-pas div.v6-ici::after{background:var(--t0)}
+  .v6-pas div.v6-apres::after{background:var(--sureleve)}
+
+  .v6-annuler{display:flex;align-items:center;justify-content:space-between;margin:8px 12px 0;padding:6px 10px;background:var(--panneau);border-radius:10px;font-size:15px}
+  .v6-annuler a{color:var(--t1);text-decoration:underline;text-underline-offset:3px;display:flex;align-items:center;gap:6px}
+  .v6-ex{font-size:14px;color:var(--t2);border:1px dashed var(--bord-fort);border-radius:6px;padding:0 6px}
+
+  /* La carte */
+  .v6-carte{margin:8px 12px 0;border:2px solid var(--t0);border-radius:16px;background:var(--panneau);overflow:hidden}
+  .v6-id{display:grid;grid-template-columns:40px 1fr auto 28px;grid-template-rows:auto auto;column-gap:10px;align-items:center;padding:10px 10px 8px 12px}
+  .v6-id .v6-flacon{grid-row:1 / span 2}
+  .v6-id .v6-marque{grid-column:2 / span 3;font-size:15px;color:var(--t2);white-space:nowrap;margin-top:-2px}
+  .v6-flacon{flex:none;width:40px;height:40px;border-radius:50%;background:#F7E4A6;border:2px solid var(--or);display:grid;place-items:center}
+  .v6-nom{flex:1;min-width:0}
+  .v6-nom b{display:block;white-space:nowrap;font-size:19px;font-weight:600;line-height:1.15;letter-spacing:-.2px}
+  .v6-nom small{display:block;font-size:15px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .v6-dose{flex:none;font-family:var(--mono);text-align:right;line-height:1}
+  .v6-dose b{font-size:24px;font-weight:600}
+  .v6-dose span{font-size:14px;color:var(--t2)}
+  .v6-dose em{display:block;font-style:normal;font-size:14px;color:var(--t2);margin-top:4px;font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;white-space:nowrap}
+  .v6-x{flex:none;width:28px;height:28px;display:grid;place-items:center;color:var(--t1)}
+
+  .v6-chiffres{display:grid;grid-template-columns:1.12fr 1.18fr .7fr;border-top:1px solid var(--bord-fort);border-bottom:1px solid var(--bord-fort)}
+  .v6-chiffres > div{padding:8px 6px 9px 9px;min-width:0}
+  .v6-chiffres > div + div{border-left:1px solid var(--bord-fort)}
+  .v6-lib{font-size:14px;color:var(--t2);white-space:nowrap}
+  .v6-val{font-family:var(--mono);font-size:16px;letter-spacing:-.3px;font-weight:600;margin-top:2px;white-space:nowrap}
+  .v6-sous{font-size:14px;color:var(--t2);margin-top:1px;white-space:nowrap}
+  .v6-jfg{position:relative;height:8px;border-radius:4px;background:var(--sureleve);margin-top:9px}
+  .v6-jfg i{position:absolute;left:27%;width:6%;min-width:7px;top:0;bottom:0;border-radius:2px;background:repeating-linear-gradient(135deg,var(--or) 0 3px,#F7E4A6 3px 6px)}
+  .v6-born{display:flex;justify-content:space-between;font-family:var(--mono);font-size:14px;color:var(--t2);margin-top:3px;white-space:nowrap;letter-spacing:-.4px}
+  .v6-hors{display:flex;align-items:baseline;gap:5px;white-space:nowrap}
+  .v6-hors .v6-val{margin-top:2px}
+  .v6-hors .v6-c{color:var(--alerte-t)}
+  .v6-hors .v6-sep{color:var(--t2);font-weight:400}
+  .v6-temp{position:relative;height:8px;border-radius:4px;margin-top:7px;background:linear-gradient(90deg,#4F7E9B,#86B9E6 25%,#F2C14E 55%,#E0A02E 75%,#C8382F)}
+  .v6-temp .v6-plage{position:absolute;left:14%;width:9%;top:-3px;bottom:-3px;border:2px solid var(--t0);border-radius:3px;background:rgba(255,255,255,.35)}
+  .v6-temp .v6-ici{position:absolute;left:62%;width:3px;top:-5px;bottom:-5px;background:var(--alerte);border-radius:2px}
+  .v6-caler{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:9px;height:32px;border-radius:9px;border:1.5px solid var(--attention);background:#FFF6DE;color:var(--attention-t);font-size:15px;font-weight:600;white-space:nowrap}
+  .v6-floc{display:flex;gap:3px;margin-top:22px}
+  .v6-floc i{flex:1;height:8px;border-radius:2px;background:#8A8A8A}
+  .v6-floc i:last-child{background:var(--bord-fort)}
+
+  /* Les traits : une ligne chacun, jamais coupée */
+  .v6-profil{display:flex;align-items:center;gap:8px;padding:9px 10px 4px 12px}
+  .v6-profil h2{margin:0;font-size:15px;font-weight:600;color:var(--t1);letter-spacing:.2px}
+  .v6-ia{margin-left:auto;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 11px 0 9px;border-radius:16px;background:#fff;border:1.5px solid var(--ia);color:var(--ia);font-size:15px;font-weight:600;white-space:nowrap}
+  .v6-ia em{font-style:normal;font-weight:400;color:var(--t2);font-size:14px}
+  .v6-traits{list-style:none;margin:0;padding:0 10px 4px 12px}
+  .v6-traits li{display:flex;align-items:center;height:38px;gap:8px;white-space:nowrap;border-bottom:1px solid var(--bord)}
+  .v6-traits li:last-child{border-bottom:0}
+  .v6-pt{flex:none;width:12px;height:12px;border-radius:50%}
+  .v6-nt{flex:1 1 auto;min-width:0;font-size:16px;color:var(--t1)}
+  .v6-niv{flex:none;display:flex;gap:2px;width:42px}
+  .v6-niv i{flex:1;height:8px;border-radius:2px;background:var(--sureleve)}
+  .v6-niv i.v6-on{background:var(--c)}
+  .v6-sim{flex:none;width:76px;font-size:16px;color:var(--t1);padding-left:2px}
+  .v6-prop b{font-weight:600}
+  .v6-px{display:grid;place-items:center;width:20px;height:20px;margin:0 -4px 0 7px;border-radius:50%;background:#fff;border:1px solid var(--bord-fort)}
+  .v6-src{width:50px;text-align:right}
+  .v6-relancer{margin-left:auto;display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 4px;font-size:14px;color:var(--t2);text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+  .v6-inconnu{flex:none;display:inline-flex;align-items:center;height:28px;padding:0 9px;border-radius:8px;border:1.5px dotted var(--trait);font-size:16px;color:var(--t2)}
+  .v6-lit{flex:none;display:inline-block;width:76px;height:22px;border-radius:7px;background:linear-gradient(90deg,var(--sureleve),var(--ia-fond) 50%,var(--sureleve))}
+  .v6-cours{margin-left:auto;display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 11px;border-radius:16px;background:var(--ia-fond);border:1.5px solid var(--ia);color:var(--ia);font-size:15px;font-weight:600;white-space:nowrap}
+  .v6-cours i{display:block;width:44px;height:5px;border-radius:3px;background:linear-gradient(90deg,var(--ia) 58%,#E8D3C3 58%)}
+  .v6-frag{border-width:1.5px;border-color:var(--bord-fort)}
+  .v6-prop{flex:none;display:inline-flex;align-items:center;height:28px;padding:0 9px;border-radius:8px;border:1.5px dashed var(--ia);background:var(--ia-fond);font-size:16px;font-weight:600;color:var(--t0)}
+  .v6-src{margin-left:auto;flex:none;font-size:14px;color:var(--t2)}
+  .v6-src.v6-s-ia{color:var(--ia)}
+
+  /* La décision n° 6 : un seul bandeau de relecture */
+  .v6-releve{display:flex;align-items:center;gap:8px;margin:2px 8px 8px;padding:7px 7px 7px 11px;border-radius:12px;background:#fff;border:1.5px solid var(--ia)}
+  .v6-releve p{margin:0;flex:1;min-width:0;font-size:15px;line-height:1.2;color:var(--t1)}
+  .v6-releve p b{color:var(--t0)}
+  .v6-releve p span{font-size:14px;color:var(--t2);white-space:nowrap}
+  .v6-retenir{flex:none;height:36px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-size:15px;font-weight:600;display:grid;place-items:center;white-space:nowrap}
+  .v6-ecarter{flex:none;font-size:15px;color:var(--t1);text-decoration:underline;text-underline-offset:3px;padding:0 4px}
+
+  /* Changer de levure, comme la base */
+  .v6-changer{margin:10px 12px 0;padding:8px;border-radius:14px;background:var(--panneau)}
+  .v6-champ{display:flex;align-items:center;gap:10px;height:46px;padding:0 14px;border-radius:23px;border:1.5px dashed var(--bord-fort);background:#fff;font-size:18px;color:var(--t2)}
+  .v6-puces{display:flex;gap:6px;margin-top:9px}
+  .v6-puce{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 9px;border-radius:12px;border:1.5px solid var(--bord-fort);background:#fff;font-size:14px;color:var(--t1);white-space:nowrap}
+  .v6-puce.v6-libre{margin-left:auto;border-style:dashed}
+
+  /* États du geste IA (sous la ligne de flottaison) */
+  .v6-etats{margin:18px 12px 0}
+  .v6-etats h3{margin:0 0 -2px;font-size:15px;font-weight:600;color:var(--t2)}
+  .v6-etat{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;background:var(--panneau);margin-bottom:6px;font-size:15px;color:var(--t1)}
+  .v6-etat .v6-mot{flex:none;width:56px;font-size:14px;color:var(--t2)}
+  .v6-inc{font-size:15px;color:var(--t2);border-bottom:1.5px dotted var(--trait)}
+  .v6-barre{flex:1;height:6px;border-radius:3px;background:var(--sureleve);overflow:hidden}
+  .v6-barre i{display:block;width:58%;height:100%;background:var(--ia)}
+  .v6-ok{color:var(--houblon-t);font-weight:600}
+
+  /* Pied : assistant, + volant, onglets */
+  .v6-pied{position:fixed;left:0;right:0;bottom:56px;display:flex;justify-content:center;pointer-events:none}
+  .v6-pied > div{width:100%;max-width:390px;display:flex;align-items:center;gap:10px;height:84px;align-items:flex-end;padding:0 92px 10px 10px;background:#fff;border-top:1px solid var(--bord)}
+  .v6-retour{height:42px;padding:0 14px;border-radius:12px;border:1.5px solid var(--bord-fort);background:#fff;font-size:16px;color:var(--t2);display:grid;place-items:center}
+  .v6-suivant{margin-left:auto;height:42px;padding:0 14px;border-radius:12px;background:var(--t0);color:#fff;font-size:16px;font-weight:600;display:grid;place-items:center;white-space:nowrap}
+  .v6-fab{position:fixed;bottom:68px;left:calc(50% + 195px - 76px);width:64px;height:64px;border-radius:50%;background:var(--t0);color:#fff;display:grid;place-items:center;font-size:34px;font-weight:300;line-height:1;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+  .v6-onglets{position:fixed;left:0;right:0;bottom:0;height:56px;background:#fff;border-top:1px solid var(--bord);display:flex;justify-content:center}
+  .v6-onglets > div{width:100%;max-width:390px;display:flex}
+  .v6-onglets a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;letter-spacing:-.35px;color:var(--t2);text-decoration:none}
+  .v6-onglets a svg{display:block}
+  .v6-onglets a.v6-actif{color:#9A4F1E;font-weight:600}
+</style>
+</head>
+<body>
+<div class="v6-app">
+
+  <header class="v6-tete">
+    <span class="v6-ret" aria-label="Retour"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></span>
+    <h1>Levure<span>4/7</span></h1>
+    <span class="v6-abandon">Abandonner</span>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="Exporter"><rect x="5" y="4" width="12" height="16" rx="2"/><path d="M9 4V3h4v1M13 12h8M18 9l3 3-3 3"/></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="Thème"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+  </header>
+  <nav class="v6-pas" aria-label="Étapes de la recette">
+    <div>Identité</div><div>Malts/sucres</div><div>Houblons</div><div class="v6-ici">Levure</div><div class="v6-apres">Paliers</div><div class="v6-apres">Eau</div><div class="v6-apres">Récap.</div>
+  </nav>
+
+  <div class="v6-annuler">
+    <a><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>Annuler le changement</a>
+    <span class="v6-ex">exemple</span>
+  </div>
+
+  <section class="v6-carte" aria-label="Ma levure">
+    <div class="v6-id">
+      <span class="v6-flacon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7A5A12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"/><path d="M7 15h10"/></svg></span>
+      <div class="v6-nom"><b>Munich Lager Yeast</b></div>
+      <div class="v6-dose"><b>≥ 15</b><span> g</span><em>fiche, 25 L</em></div>
+      <span class="v6-x" aria-label="Retirer Munich Lager Yeast"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+      <div class="v6-marque">White Labs · vendue par Lallemand</div>
+    </div>
+
+    <div class="v6-chiffres">
+      <div>
+        <div class="v6-lib">FG</div>
+        <div class="v6-val">1,018–1,021</div>
+        <div class="v6-sous">≈ 6,0–6,4 % vol</div>
+        <div class="v6-jfg"><i></i></div>
+        <div class="v6-born"><span>1,000</span><span>OG 1,066</span></div>
+      </div>
+      <div>
+        <div class="v6-lib">fiche · conduite</div>
+        <div class="v6-hors"><span class="v6-val">9–11</span><span class="v6-val v6-sep">·</span><span class="v6-val v6-c">19 °C</span></div>
+        <div class="v6-temp"><span class="v6-plage"></span><span class="v6-ici"></span></div>
+        <div class="v6-caler"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7F5B10" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>Caler à 11 °C</div>
+      </div>
+      <div>
+        <div class="v6-lib">floculation</div>
+        <div class="v6-val" style="font-weight:400;color:#333">moyen</div>
+        <div class="v6-floc"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+
+    <div class="v6-profil">
+      <h2>Profil</h2>
+      <span class="v6-relancer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></svg>Relancer l'IA</span>
+    </div>
+    <ul class="v6-traits">
+      <li><span class="v6-pt" style="background:#E0A02E"></span><span class="v6-nt">esters</span><span class="v6-niv" style="--c:#E0A02E"><i class="v6-on"></i><i></i><i></i></span><span class="v6-prop"><b>faible</b><span class="v6-px" aria-label="Écarter"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span></span><span class="v6-src v6-s-ia">fiche</span></li>
+      <li><span class="v6-pt" style="background:#8D442C"></span><span class="v6-nt">phénols</span><span class="v6-niv" style="--c:#8D442C"><i></i><i></i><i></i></span><span class="v6-sim">nul</span><span class="v6-src">simulé</span></li>
+      <li><span class="v6-pt" style="background:#6E9B5B"></span><span class="v6-nt">thiols</span><span class="v6-niv" style="--c:#6E9B5B"><i class="v6-on"></i><i></i><i></i></span><span class="v6-sim">faible</span><span class="v6-src">simulé</span></li>
+      <li><span class="v6-pt" style="background:#A3C97A"></span><span class="v6-nt">terpènes</span><span class="v6-niv" style="--c:#A3C97A"><i class="v6-on"></i><i></i><i></i></span><span class="v6-sim">faible</span><span class="v6-src">simulé</span></li>
+      <li><span class="v6-pt" style="background:#9C7020"></span><span class="v6-nt">sucres restants</span><span class="v6-niv" style="--c:#9C7020"><i class="v6-on"></i><i class="v6-on"></i><i></i></span><span class="v6-prop"><b>moyen</b><span class="v6-px" aria-label="Écarter"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span></span><span class="v6-src v6-s-ia">fiche</span></li>
+    </ul>
+
+    <div class="v6-releve">
+      <p><b>2 lus sur la fiche</b><br><span><svg width="12" height="12" viewBox="0 0 24 24" fill="#9A4F1E"><path d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9z"/></svg> IA · le simulé reste simulé</span></p>
+      <span class="v6-retenir">Retenir les 2</span>
+    </div>
+  </section>
+
+  <section class="v6-changer" aria-label="Changer de levure">
+    <div class="v6-champ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20 20"/></svg>Changer de levure</div>
+    <div class="v6-puces">
+      <span class="v6-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F7E9B" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Pomona</span>
+      <span class="v6-puce"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F7E9B" stroke-width="1.9" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Verdant IPA</span>
+      <span class="v6-puce v6-libre">Hors catalogue</span>
+    </div>
+  </section>
+
+  <div class="v6-etats"><h3>avant (exemple)</h3></div>
+  <section class="v6-carte v6-frag" aria-label="Profil, état avant">
+    <div class="v6-profil">
+      <h2>Profil</h2>
+      <span class="v6-ia"><svg width="16" height="16" viewBox="0 0 24 24" fill="#9A4F1E"><path d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9z"/></svg>Compléter par l'IA</span>
+    </div>
+    <ul class="v6-traits">
+      <li><span class="v6-pt" style="background:#E0A02E"></span><span class="v6-nt">esters</span><span class="v6-niv" style="--c:#E0A02E"><i></i><i></i><i></i></span><span class="v6-inconnu">inconnu</span><span class="v6-src">—</span></li>
+      <li><span class="v6-pt" style="background:#8D442C"></span><span class="v6-nt">phénols</span><span class="v6-niv" style="--c:#8D442C"><i></i><i></i><i></i></span><span class="v6-sim">nul</span><span class="v6-src">simulé</span></li>
+      <li><span class="v6-pt" style="background:#6E9B5B"></span><span class="v6-nt">thiols</span><span class="v6-niv" style="--c:#6E9B5B"><i class="v6-on"></i><i></i><i></i></span><span class="v6-sim">faible</span><span class="v6-src">simulé</span></li>
+      <li><span class="v6-pt" style="background:#A3C97A"></span><span class="v6-nt">terpènes</span><span class="v6-niv" style="--c:#A3C97A"><i class="v6-on"></i><i></i><i></i></span><span class="v6-sim">faible</span><span class="v6-src">simulé</span></li>
+      <li><span class="v6-pt" style="background:#9C7020"></span><span class="v6-nt">sucres restants</span><span class="v6-niv" style="--c:#9C7020"><i></i><i></i><i></i></span><span class="v6-inconnu">inconnu</span><span class="v6-src">—</span></li>
+    </ul>
+  </section>
+  <div class="v6-etats"><h3>pendant (exemple)</h3></div>
+  <section class="v6-carte v6-frag" aria-label="Profil, état pendant">
+    <div class="v6-profil">
+      <h2>Profil</h2>
+      <span class="v6-cours"><svg width="14" height="14" viewBox="0 0 24 24" fill="#9A4F1E"><path d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9z"/></svg>Lit la fiche<i></i></span>
+    </div>
+    <ul class="v6-traits">
+      <li><span class="v6-pt" style="background:#E0A02E"></span><span class="v6-nt">esters</span><span class="v6-niv" style="--c:#E0A02E"><i></i><i></i><i></i></span><span class="v6-lit" aria-label="lecture en cours"></span><span class="v6-src v6-s-ia">lecture</span></li>
+      <li><span class="v6-pt" style="background:#8D442C"></span><span class="v6-nt">phénols</span><span class="v6-niv" style="--c:#8D442C"><i></i><i></i><i></i></span><span class="v6-sim">nul</span><span class="v6-src">simulé</span></li>
+      <li><span class="v6-pt" style="background:#6E9B5B"></span><span class="v6-nt">thiols</span><span class="v6-niv" style="--c:#6E9B5B"><i class="v6-on"></i><i></i><i></i></span><span class="v6-sim">faible</span><span class="v6-src">simulé</span></li>
+      <li><span class="v6-pt" style="background:#A3C97A"></span><span class="v6-nt">terpènes</span><span class="v6-niv" style="--c:#A3C97A"><i class="v6-on"></i><i></i><i></i></span><span class="v6-sim">faible</span><span class="v6-src">simulé</span></li>
+      <li><span class="v6-pt" style="background:#9C7020"></span><span class="v6-nt">sucres restants</span><span class="v6-niv" style="--c:#9C7020"><i></i><i></i><i></i></span><span class="v6-lit" aria-label="lecture en cours"></span><span class="v6-src v6-s-ia">lecture</span></li>
+    </ul>
+  </section>
+</div>
+
+<div class="v6-pied"><div><span class="v6-retour">Retour</span><span class="v6-suivant">Suivant — Paliers</span></div></div>
+<span class="v6-fab" aria-label="Ajouter">+</span>
+
+<nav class="v6-onglets" aria-label="Onglets"><div>
+  <a><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9H4z"/></svg>Bord</a>
+  <a><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 19V11M12 19V5M19 19v-6"/></svg>Finances</a>
+  <a><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Calendrier</a>
+  <a class="v6-actif"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M6 4h12l-1 16H7z"/><path d="M6.4 9h11.2"/></svg>Brassins</a>
+  <a><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stocks</a>
+  <a><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Clients</a>
+</div></nav>
+</body>
+</html>

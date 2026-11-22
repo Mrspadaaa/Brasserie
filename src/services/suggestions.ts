@@ -229,9 +229,13 @@ export const Suggestions = {
 
   knownUnits(): string[] {
     const stocks = StorageService.getStocks();
-    const set = new Set<string>(['kg', 'g', 'L', 'sachet', 'pièce']);
-    [...stocks.rawMaterials, ...stocks.cleaning].forEach((i) => i.unit && set.add(i.unit));
-    return Array.from(set);
+    // RL-4 : une unité n'a qu'une écriture à l'écran (« kg » et « Kg » sont la même) ; la première vue gagne, et les écritures canoniques passent d'abord.
+    const vues = new Map<string, string>();
+    ['kg', 'g', 'L', 'sachet', 'pièce', ...[...stocks.rawMaterials, ...stocks.cleaning].map((i) => i.unit)].forEach((u) => {
+      const t = (u ?? '').trim();
+      if (t && !vues.has(t.toLocaleLowerCase('fr'))) vues.set(t.toLocaleLowerCase('fr'), t);
+    });
+    return Array.from(vues.values());
   },
 
   /** Catégories réellement présentes dans le stock. */

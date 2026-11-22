@@ -69,7 +69,7 @@ it('applique la sélection au vrai brouillon, conserve date et dossier, puis enr
   expect(saved.yeast).toEqual({ ...initial.yeast, attenuationPct: 75, pitchTempC: 20 });
   expect(saved.fermentation).toEqual([{ ...initial.fermentation[0], tempC: 20, days: 12 }, initial.fermentation[1]]);
   expect(saved.hops).toEqual([{ ...initial.hops[0], weightG: 10 }, initial.hops[1]]);
-  expect(saved.fgTarget).toBeCloseTo(1.0085, 10); expect(saved.abvTarget).toBeCloseTo(3.346875, 10); expect(saved.ibuTarget).toBe(8);
+  expect(saved.fgTarget).toBeCloseTo(1.0085, 10); expect(saved.abvTarget).toBeCloseTo(3.363036, 6) /* ASBC (CF-6, 0c3f4d41) : 1,034 → 1,0085 ; 3,347 avec (OG − FG) × 131,25 */; expect(saved.ibuTarget).toBe(8);
   view.unmount(); const reopened = vi.fn(); mount(JSON.parse(JSON.stringify(saved)), reopened); allerEtape('Récapitulatif');
   fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la recette' }));
   expect(reopened.mock.calls[0][0]).toMatchObject({ brewDate: initial.brewDate, yeast: saved.yeast, fermentation: saved.fermentation, hops: saved.hops,

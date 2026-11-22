@@ -1,0 +1,19 @@
+{
+ "cas": "imp-saison-sucre",
+ "usage": "import",
+ "half": "jugement",
+ "cellule": "hy@low",
+ "ok": true,
+ "ms": 4781,
+ "microChf": 22461,
+ "microDecembre": 22461,
+ "entree": 6684,
+ "sortie": 1059,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 0.8166666666666668,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "id 0.67 · vol 23 · fer 3/3 · hops 2/2 · levure ok · paliers 0/1",
+ "reponse": "{\"name\": \"Saison de la Gruyère (test)\", \"style\": \"Saison\", \"volumeL\": 23, \"fermentables\": [{\"name\": \"Pilsner\", \"weightKg\": 4.5, \"kind\": \"grain\", \"use\": \"empatage\"}, {\"name\": \"Froment malté\", \"weightKg\": 0.5, \"kind\": \"grain\", \"use\": \"empatage\"}, {\"name\": \"Sucre candi blond\", \"weightKg\": 0.5, \"kind\": \"sucre\", \"use\": \"ebullition\"}], \"hops\": [{\"name\": \"Styrian Goldings\", \"weightG\": 40, \"stage\": \"boil\", \"alpha\": 4.5, \"timeMin\": 60}, {\"name\": \"Saaz\", \"weightG\": 30, \"stage\": \"boil\", \"alpha\": 3.5, \"timeMin\": 5}], \"adjuncts\": [{\"name\": \"Écorce d'orange amère\", \"amount\": 10, \"unit\": \"g\", \"step\": \"ébullition (5 min)\"}], \"ogTarget\": 1.058, \"preBoilL\": 0, \"spargeWaterL\": 0, \"waterNote\": \"\", \"yeast\": {\"name\": \"Belle Saison\", \"qty\": 11, \"unit\": \"g\"}}"
+}

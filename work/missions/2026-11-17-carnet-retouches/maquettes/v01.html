@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Carnet · v01 — l'article se déplie sur place (axe A, 17.11, passe de correction)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* v01 · axe A (carte d'article et article ouvert). Base : ra-p5f/proto.html (17.11), jetons clairs de DESIGN.md repris tels quels.
+   Une seule décision de forme : l'article ne s'ouvre plus dans une seconde feuille ; sa carte se déplie sur place, dans la liste
+   des articles, elle-même classée par ce qui compte (le critère). L'article ouvert est donc toujours la carte, en plus riche.
+   Passe de correction (17.11) : 3 tailles de texte (14, 16, 20) ; teintes : encre, gris, vert de la zone Stocks, vert « meilleur »,
+   ocre d'attente ; la photo de la page en grand ; un vendeur coché ; côte à côte ; écartés et leur raison ; annexe hors écran. */
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--line2:#bfbfbf;--mut:#666;--ink:#111;--act:#111;--onact:#fff;--prod:#9a4f1e;--fin:#1f64a3;--stk:#4c6b2a;--att:#7f5b10;--ok:#3f6b2e;--bad:#a8291f;--sheet:#fff;--dim:rgba(0,0,0,.18);--ia:#6a4fb0;--bdg:#8a5212;
+  --okbg:color-mix(in srgb,var(--ok) 12%,var(--bg));--attbg:color-mix(in srgb,var(--att) 12%,var(--bg));--zone:color-mix(in srgb,var(--stk) 8%,var(--bg));--botOn:color-mix(in srgb,var(--stk) 12%,var(--s1));--stkbg:color-mix(in srgb,var(--stk) 12%,var(--bg))}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+html{overflow-x:hidden}
+body{font-size:16px;line-height:1.35;padding-bottom:140px;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.v1-ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.v1-mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.v1-ph{display:block;border-radius:8px;background:#e8ecef;overflow:hidden}
+symbol{overflow:visible}
+.v1-lk{color:var(--stk);font-weight:700}
+
+/* coque de l'app (base) */
+.v1-bot{position:fixed;left:0;right:0;bottom:0;height:56px;display:flex;background:var(--s1);border-top:1px solid var(--line);z-index:30}
+.v1-bot a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;letter-spacing:-.01em;position:relative;min-width:0}
+.v1-bot a.on{background:var(--botOn);font-weight:600;box-shadow:inset 0 3px 0 var(--stk);color:var(--stk)}
+.v1-bot .bdg{position:absolute;top:2px;left:calc(50% + 4px);background:var(--bdg);color:var(--onact);font-size:14px;font-weight:600;border-radius:999px;padding:0 5px;line-height:18px}
+.v1-fab{position:fixed;right:14px;bottom:66px;z-index:36;display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:var(--act);color:var(--onact);box-shadow:0 4px 12px rgba(0,0,0,.28),0 0 0 3px var(--bg)}
+.v1-fab .v1-ico{width:26px;height:26px;stroke-width:2.4}
+
+/* la fiche, derrière la feuille (base : en-tête teinté de la zone Stocks) */
+.v1-peek{position:relative;background:var(--zone);padding:2px 14px 22px}
+.v1-peek:after{content:"";position:absolute;inset:0;background:var(--dim)}
+.v1-crumb{display:flex;align-items:center;gap:4px;min-height:44px;font-size:20px;font-weight:800;letter-spacing:-.01em}
+.v1-step{margin-left:auto;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--stk);background:var(--stkbg);border-radius:999px;padding:0 10px;line-height:26px}
+.v1-step i{width:7px;height:7px;border-radius:50%;background:var(--stk)}.v1-step i.o{background:var(--line2)}
+
+/* la feuille Articles */
+.v1-sheet{position:relative;z-index:2;margin-top:-16px;background:var(--sheet);border-radius:20px 20px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.22);padding:8px 14px 8px}
+.v1-gr{width:40px;height:5px;border-radius:3px;background:var(--line2);margin:0 auto 4px}
+.v1-sh{display:flex;align-items:center;gap:8px}
+.v1-sh h2{font-size:20px;font-weight:800;margin:0}
+.v1-sh .c{font-size:14px;color:var(--mut);flex:1}
+.v1-ex{display:inline-block;border:1px solid var(--line2);color:var(--mut);border-radius:999px;font-size:14px;line-height:18px;padding:0 7px;font-weight:600}
+.v1-close{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 4px 0 6px;font-size:14px;font-weight:700;color:var(--mut)}
+.v1-by{display:flex;align-items:center;gap:7px;font-size:14px;margin:0 0 10px;color:var(--ink)}
+.v1-by>.v1-ico{color:var(--stk);width:18px;height:18px}.v1-by b{font-weight:700}
+.v1-tri{margin-left:auto;display:inline-flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden;flex:none}
+.v1-tri span{padding:0 9px;line-height:30px;font-weight:600;color:var(--mut)}.v1-tri span.on{background:var(--ink);color:var(--onact)}
+
+/* carte dépliée : l'article ouvert, sur place */
+.v1-open{border:1.5px solid var(--ink);border-radius:12px;padding:8px;margin:0 0 8px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.v1-hero{position:relative}
+.v1-hero .v1-ph{width:100%;height:150px}
+.v1-rk{position:absolute;left:8px;top:8px;display:inline-flex;align-items:center;font-size:14px;font-weight:700;color:var(--onact);background:var(--ok);border-radius:6px;padding:0 8px;line-height:24px}
+.v1-up{position:absolute;right:6px;top:6px;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.92);color:var(--ink)}
+.v1-cap{position:absolute;left:8px;bottom:8px;display:inline-flex;align-items:center;gap:4px;font-size:14px;background:rgba(255,255,255,.92);border-radius:6px;padding:0 7px;line-height:24px;color:var(--ink)}
+.v1-cap .v1-ico{width:15px;height:15px}
+.v1-on{font-size:20px;font-weight:800;line-height:1.15;margin:8px 0 2px;letter-spacing:-.01em}
+.v1-why{font-size:14px;color:var(--mut);line-height:1.3}.v1-why b{color:var(--ink);font-weight:600}
+.v1-crit{display:grid;grid-template-columns:auto 1fr;align-items:end;gap:0 14px;background:var(--okbg);border-radius:8px;padding:6px 10px 8px;margin:8px 0 0}
+.v1-crit .k{font-size:14px;font-weight:700;line-height:1.2}
+.v1-crit .big{font-size:20px;font-weight:600;color:var(--ok);line-height:1.15}.v1-crit .big small{font-size:14px}
+.v1-scale{position:relative;height:38px}
+.v1-scale:before{content:"";position:absolute;left:0;right:0;top:9px;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--ok),var(--line2) 40%,var(--line2))}
+.v1-scale i{position:absolute;top:5px;width:11px;height:11px;margin-left:-5px;border-radius:50%;background:var(--sheet);border:2px solid var(--line2)}
+.v1-scale i.me{width:15px;height:15px;top:3px;margin-left:-7px;background:var(--ok);border-color:var(--sheet);box-shadow:0 0 0 1.5px var(--ok)}
+.v1-scale span{position:absolute;top:21px;font-size:14px;color:var(--mut);line-height:15px;white-space:nowrap}
+.v1-sec{font-size:14px;color:var(--mut);margin:10px 0 2px}
+.v1-sec b{color:var(--ink)}
+.v1-vd{display:grid;grid-template-columns:22px 1fr auto;align-items:center;gap:0 8px;min-height:52px;border-top:1px solid var(--line);padding:3px 0}
+.v1-rd{width:20px;height:20px;border-radius:50%;border:2px solid var(--line2)}
+.v1-rd.on{border:6px solid var(--ink)}
+.v1-vd .n{display:inline-flex;align-items:center;gap:3px;font-size:16px;font-weight:600;line-height:1.2}.v1-vd .n .v1-ico{width:15px;height:15px;color:var(--stk)}
+.v1-vd .s{font-size:14px;color:var(--mut);line-height:1.3}
+.v1-vd .p{font-size:16px;font-weight:600;text-align:right;white-space:nowrap}
+.v1-vd .p small{display:block;font-family:"Source Sans 3",system-ui,sans-serif;font-size:14px;font-weight:700;color:var(--ok);letter-spacing:0}
+.v1-vd .p small.m{color:var(--mut);font-weight:400}
+.v1-vw{display:flex;align-items:center;gap:7px;font-size:14px;border-top:1px dashed var(--line2);padding:4px 0;min-height:44px}
+.v1-vw .v1-ico{width:16px;height:16px;color:var(--stk)}
+.v1-vw .t{flex:1;min-width:0;line-height:1.3}
+.v1-vw .v1-lk{white-space:nowrap;min-height:40px;display:inline-flex;align-items:center}
+.v1-kh{font-size:14px;font-weight:700;margin:8px 0 0}
+.v1-kv{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;margin:2px 62px 0 0}
+.v1-kv div{display:flex;flex-direction:column;border-top:1px solid var(--line);padding:4px 0 5px}
+.v1-kv span{font-size:14px;color:var(--mut);line-height:1.25}
+.v1-kv b{font-size:16px;font-weight:600;line-height:1.3}
+.v1-kv b em{font-style:normal;font-family:"Source Sans 3",system-ui,sans-serif;font-size:14px;font-weight:700;letter-spacing:0;margin-left:5px}
+.v1-kv .g{color:var(--ok)}.v1-kv .w{color:var(--att)}.v1-kv .q{color:var(--mut);font-weight:400;font-family:"Source Sans 3",system-ui,sans-serif;letter-spacing:0}
+.v1-sv{display:flex;align-items:center;gap:10px;min-height:52px;border-top:1px solid var(--line);margin-top:2px}
+.v1-sv>.v1-ico{color:var(--stk)}
+.v1-sv .t{flex:1;min-width:0;font-size:16px;font-weight:600;line-height:1.25}.v1-sv .t small{display:block;font-size:14px;font-weight:400;color:var(--mut)}
+.v1-sv .t small a{color:var(--stk);font-weight:700}
+.v1-sw{width:44px;height:26px;border-radius:13px;background:var(--stk);position:relative;flex:none}
+.v1-sw:after{content:"";position:absolute;right:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff}
+.v1-go{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;border-radius:10px;background:var(--act);color:var(--onact);font-size:16px;font-weight:700;margin-top:4px;text-align:center;line-height:1.2;padding:4px 10px}
+.v1-gon{font-size:14px;color:var(--mut);margin:5px 2px 2px;line-height:1.3}
+
+/* cartes pliées : même gabarit, même hauteur ; la valeur qui compte d'abord, la photo de la page ensuite */
+.v1-row{display:grid;grid-template-columns:52px 64px minmax(0,1fr) 20px;align-items:center;gap:8px;min-height:96px;border:1px solid var(--line);border-radius:12px;padding:8px 6px 8px 10px;margin:0 0 8px}
+.v1-row .v1-ph{width:64px;height:64px}
+.v1-sc{display:flex;flex-direction:column;align-items:flex-start;line-height:1.1}
+.v1-sc b{font-size:20px;font-weight:600;white-space:nowrap}.v1-sc small{font-size:14px;color:var(--mut);font-family:"Source Sans 3",system-ui,sans-serif;letter-spacing:0;line-height:1.15}.v1-sc.top b{color:var(--ok)}
+.v1-sc .r{font-size:14px;font-weight:700;color:var(--mut);margin-bottom:2px;font-family:"Source Sans 3",system-ui,sans-serif;letter-spacing:0}
+.v1-row .n{display:block;font-size:16px;font-weight:600;line-height:1.2}
+.v1-row .p{display:block;font-size:14px;font-weight:600;margin-top:2px;white-space:nowrap}
+.v1-row .f{display:block;font-size:14px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v1-row .eye{display:inline-flex;align-items:center;gap:3px;color:var(--stk);font-weight:600}.v1-row .eye .v1-ico{width:15px;height:15px}
+.v1-row>.v1-ico{color:var(--mut)}
+.d-ok{color:var(--ok)}.d-att{color:var(--att)}
+.v1-row.last .v1-sc b{color:var(--mut)}
+
+/* côte à côte : les 5 machines, une colonne chacune */
+.v1-cmp{margin:14px 0 0}
+.v1-cmp h3,.v1-out h3{font-size:16px;font-weight:800;margin:0 0 4px}
+.v1-tb{width:100%;border-collapse:collapse;font-size:14px}
+.v1-tb th,.v1-tb td{padding:5px 2px;text-align:right;border-top:1px solid var(--line);white-space:nowrap}
+.v1-tb th:first-child,.v1-tb td:first-child{text-align:left;color:var(--mut);font-weight:400}
+.v1-tb thead th{border-top:0;font-weight:700;color:var(--ink)}
+.v1-tb td{font-family:"IBM Plex Mono",ui-monospace,monospace;letter-spacing:-.03em}
+.v1-tb td.b{color:var(--ok);font-weight:600;background:var(--okbg)}
+.v1-tb td small{font-size:14px;color:var(--mut)}
+.v1-cpr{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.3;margin:6px 0 0;padding:8px 10px;border-radius:8px;background:var(--s1)}
+.v1-cpr b{font-weight:700}
+
+/* écartés et leur raison */
+.v1-out{margin:16px 0 0}
+.v1-ec{display:grid;grid-template-columns:1fr;gap:1px;border-top:1px solid var(--line);padding:6px 0;font-size:14px;line-height:1.3}
+.v1-ec .n{font-size:16px;font-weight:600;color:var(--mut)}
+.v1-ec .r{color:var(--ink)}
+
+/* annexe de maquette, hors écran */
+.v1-ann{margin:26px 0 0;background:var(--s2);padding:14px 14px 20px;border-top:4px solid var(--ink)}
+.v1-ann>p{margin:0 0 4px;font-size:14px;color:var(--mut)}
+.v1-ann>h2{margin:0 0 6px;font-size:16px;font-weight:800}
+.v1-pan{background:var(--sheet);border-radius:12px;padding:10px 12px;margin:10px 0 0}
+.v1-cn{display:flex;align-items:baseline;gap:8px;margin:0 0 2px;font-size:16px}
+.v1-cn b{font-weight:800}.v1-cn span{font-size:14px;color:var(--mut);white-space:nowrap}
+.v1-cby{font-size:14px;color:var(--ink);margin:0 0 8px}.v1-cby b{font-weight:700}
+.v1-row.ch{border:1.5px solid var(--ok);background:var(--okbg)}
+.v1-chl{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--ok);font-weight:700;margin:-2px 0 4px;padding:0 2px;flex-wrap:wrap}
+.v1-chl a{margin-left:auto;color:var(--stk);min-height:40px;display:inline-flex;align-items:center}
+.v1-av{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:6px 0 0;font-size:14px}
+.v1-seg{display:flex;border:1px solid var(--line2);border-radius:8px;overflow:hidden;margin:0 0 8px}
+.v1-seg span{flex:1;text-align:center;line-height:34px;font-weight:600;color:var(--mut)}.v1-seg span.on{background:var(--ink);color:var(--onact)}
+.v1-avl{display:grid;grid-template-columns:auto 1fr auto;gap:0 10px;align-items:baseline;line-height:1.3}
+.v1-avl .dt{font-weight:700}.v1-avl .n{font-size:16px;font-weight:600}.v1-avl .s{color:var(--mut)}
+.v1-avw{margin:6px 0 0;padding:6px 0 0;border-top:1px dashed var(--line2);line-height:1.3}
+.v1-empty{border:1.5px dashed var(--line2);border-radius:12px;padding:10px 12px;font-size:16px;line-height:1.3}
+.v1-empty .ia{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--s1);font-size:14px}
+.v1-empty .ia>span:first-of-type{flex:1 1 calc(100% - 30px)}
+.v1-mini{display:inline-flex;align-items:center;min-height:40px;padding:0 12px;border-radius:10px;border:1.5px solid var(--line2);background:var(--sheet);font-size:14px;font-weight:700}
+.v1-mini.p{background:var(--act);color:var(--onact);border-color:transparent}
+.v1-lex{margin:10px 0 0;font-size:14px;line-height:1.35}
+.v1-lex div{border-top:1px solid var(--line);padding:5px 0}.v1-lex b{font-weight:700}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8a2.5 2.5 0 0 1 1-4.5c.8-1.5 3-2 4-1 1-1 3.5-1 4.5.5A2.5 2.5 0 0 1 17 8z"/></symbol>
+<symbol id="i-boxes" viewBox="0 0 24 24"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></symbol>
+<symbol id="i-out" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+<symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+
+<!-- photos des pages collées (exemple) : chaque machine a sa silhouette, dessinée dans 120 × 100 -->
+<symbol id="p-a"><rect x="-220" width="560" height="100" fill="#e4e9ee"/><rect x="-220" y="84" width="560" height="16" fill="#cfd6dc"/><rect x="22" y="12" width="76" height="30" rx="3" fill="#b9c3cc" stroke="#7f8d99" stroke-width="1.5"/><rect x="74" y="17" width="18" height="11" rx="1.5" fill="#22313b"/><rect x="76" y="19" width="14" height="7" fill="#5fae8c"/><circle cx="30" cy="20" r="3" fill="#c0392b"/><circle cx="38" cy="20" r="3" fill="#2f7d6b"/><g fill="#7f8d99"><rect x="30" y="42" width="4" height="12"/><rect x="47" y="42" width="4" height="12"/><rect x="64" y="42" width="4" height="12"/><rect x="81" y="42" width="4" height="12"/></g><g fill="#5b3d22"><rect x="27" y="58" width="10" height="26" rx="3"/><rect x="44" y="58" width="10" height="26" rx="3"/><rect x="61" y="58" width="10" height="26" rx="3"/><rect x="78" y="58" width="10" height="26" rx="3"/></g><g fill="#5b3d22"><rect x="30" y="53" width="4" height="6"/><rect x="47" y="53" width="4" height="6"/><rect x="64" y="53" width="4" height="6"/><rect x="81" y="53" width="4" height="6"/></g><rect x="18" y="84" width="84" height="4" fill="#7f8d99"/><rect x="20" y="88" width="4" height="10" fill="#7f8d99"/><rect x="96" y="88" width="4" height="10" fill="#7f8d99"/></symbol>
+<symbol id="p-b"><rect x="-220" width="560" height="100" fill="#e9e6e1"/><rect x="-220" y="80" width="560" height="20" fill="#d5d0c8"/><rect x="6" y="18" width="70" height="52" rx="4" fill="#c8cdd1" stroke="#7d868d" stroke-width="1.5"/><rect x="10" y="22" width="62" height="30" rx="2" fill="#dfe7ec" stroke="#9aa5ad"/><circle cx="41" cy="37" r="12" fill="none" stroke="#7d868d" stroke-width="2"/><g fill="#5b3d22"><rect x="31" y="32" width="5" height="11" rx="1.5"/><rect x="38" y="30" width="5" height="11" rx="1.5"/><rect x="45" y="32" width="5" height="11" rx="1.5"/></g><rect x="80" y="10" width="20" height="14" rx="2" fill="#22313b"/><rect x="82" y="12" width="16" height="10" fill="#7fb3d5"/><rect x="88" y="24" width="4" height="12" fill="#7d868d"/><rect x="-220" y="62" width="560" height="6" fill="#4d565c"/><g fill="#5b3d22"><rect x="78" y="50" width="6" height="12" rx="2"/><rect x="88" y="50" width="6" height="12" rx="2"/><rect x="98" y="50" width="6" height="12" rx="2"/><rect x="108" y="50" width="6" height="12" rx="2"/></g><rect x="10" y="70" width="5" height="12" fill="#7d868d"/><rect x="66" y="70" width="5" height="12" fill="#7d868d"/></symbol>
+<symbol id="p-c"><rect x="-220" width="560" height="100" fill="#ecebe6"/><rect x="-220" y="86" width="560" height="14" fill="#d7d5cc"/><rect x="24" y="14" width="72" height="18" rx="3" fill="#c3c9ce" stroke="#7d868d" stroke-width="1.5"/><g stroke="#3a3f43" stroke-width="3" stroke-linecap="round"><path d="M33 32l-6-10M51 32l-6-10M69 32l-6-10M87 32l-6-10"/></g><g fill="#7d868d"><rect x="31" y="32" width="4" height="12"/><rect x="49" y="32" width="4" height="12"/><rect x="67" y="32" width="4" height="12"/><rect x="85" y="32" width="4" height="12"/></g><g fill="#5b3d22"><rect x="28" y="48" width="10" height="24" rx="3"/><rect x="46" y="48" width="10" height="24" rx="3"/><rect x="64" y="48" width="10" height="24" rx="3"/><rect x="82" y="48" width="10" height="24" rx="3"/></g><rect x="22" y="72" width="76" height="4" fill="#7d868d"/><path d="M28 76l-6 22M92 76l6 22" stroke="#7d868d" stroke-width="3"/></symbol>
+<symbol id="p-d"><rect x="-220" width="560" height="100" fill="#efe9df"/><rect x="-220" y="70" width="560" height="30" fill="#b98d5e"/><rect x="-220" y="70" width="560" height="4" fill="#9a7148"/><rect x="38" y="20" width="44" height="16" rx="3" fill="#c3c9ce" stroke="#7d868d" stroke-width="1.5"/><rect x="58" y="8" width="4" height="12" fill="#7d868d"/><circle cx="60" cy="8" r="4" fill="#b9c3cc" stroke="#7d868d"/><g fill="#7d868d"><rect x="46" y="36" width="4" height="10"/><rect x="70" y="36" width="4" height="10"/></g><g fill="#5b3d22"><rect x="43" y="48" width="10" height="22" rx="3"/><rect x="67" y="48" width="10" height="22" rx="3"/></g><rect x="36" y="66" width="48" height="4" fill="#7d868d"/></symbol>
+<symbol id="p-e"><rect x="-220" width="560" height="100" fill="#e6ebe5"/><rect x="-220" y="82" width="560" height="18" fill="#cfd8cc"/><circle cx="26" cy="30" r="12" fill="#8b9aa6" stroke="#5a6670" stroke-width="1.5"/><text x="26" y="34" font-size="10" text-anchor="middle" fill="#fff" font-family="sans-serif">CO₂</text><path d="M38 30c14 0 20 6 26 14" stroke="#2f3a42" stroke-width="3" fill="none"/><rect x="62" y="16" width="8" height="40" rx="3" fill="#b9c3cc" stroke="#5a6670" stroke-width="1.5" transform="rotate(8 66 36)"/><rect x="70" y="22" width="12" height="5" rx="2" fill="#2f3a42" transform="rotate(8 66 36)"/><rect x="62" y="54" width="10" height="28" rx="3" fill="#5b3d22"/></symbol>
+<symbol id="p-f"><rect x="-220" width="560" height="100" fill="#e2ecf3"/><rect x="-220" y="86" width="560" height="14" fill="#cbd8e2"/><rect x="24" y="8" width="72" height="78" rx="3" fill="#d6e0e7" stroke="#6f8597" stroke-width="2"/><rect x="30" y="14" width="36" height="66" rx="2" fill="#f4f8fb" stroke="#6f8597" stroke-width="1.5"/><rect x="60" y="40" width="3" height="12" fill="#55616b"/><rect x="72" y="16" width="18" height="8" rx="1" fill="#22313b"/><text x="81" y="23" font-size="7" text-anchor="middle" fill="#7fe0b0" font-family="monospace">2.0</text></symbol>
+<symbol id="p-g"><rect x="-220" width="560" height="100" fill="#ebebe8"/><rect x="-220" y="84" width="560" height="16" fill="#d6d6d1"/><path d="M18 58 36 28h48l18 30z" fill="#c4cacf" stroke="#6d757b" stroke-width="2"/><rect x="50" y="4" width="20" height="24" fill="#a9b0b6" stroke="#6d757b" stroke-width="1.5"/><path d="M34 72c6-6 6-10 0-14M60 74c6-6 6-10 0-14M86 72c6-6 6-10 0-14" stroke="#9aa1a7" stroke-width="2" fill="none"/></symbol>
+</svg>
+
+<!-- la fiche du carnet, derrière la feuille (base ra-p5f) -->
+<header class="v1-peek" aria-hidden="true">
+  <div class="v1-crumb"><svg class="v1-ico"><use href="#i-left"/></svg>Embouteillage<span class="v1-step" aria-label="Où en est l'idée : on compare les articles"><i></i><i></i><i></i><i class="o"></i>On compare</span></div>
+</header>
+
+<main class="v1-sheet" aria-label="Articles">
+  <div class="v1-gr"></div>
+  <div class="v1-sh"><h2>Articles</h2><span class="c">5 machines · 6 offres</span><span class="v1-ex">exemple</span><a class="v1-close" href="#"><svg class="v1-ico"><use href="#i-x"/></svg>Fermer</a></div>
+  <div class="v1-by"><svg class="v1-ico"><use href="#i-target"/></svg><span>Classées par ce qui compte</span><span class="v1-tri" aria-label="Trier par"><span class="on">moins d'O₂</span><span>prix</span></span></div>
+
+  <!-- 1re : touchée, elle s'est dépliée ici même -->
+  <article class="v1-open">
+    <div class="v1-hero">
+      <svg class="v1-ph" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid meet" aria-label="Photo de la page : remplisseuse isobarique 4 becs"><use href="#p-a"/></svg>
+      <span class="v1-rk">1re sur 5</span>
+      <a class="v1-up" href="#" aria-label="Replier"><svg class="v1-ico"><use href="#i-up"/></svg></a>
+      <span class="v1-cap"><svg class="v1-ico"><use href="#i-cam"/></svg>photo de la page collée</span>
+    </div>
+    <div class="v1-on">Isobarique 4 becs pré-évacuation</div>
+    <div class="v1-why"><b>façon isobarique</b> : remplir sous pression de CO₂ · lien collé le 10 nov.</div>
+
+    <div class="v1-crit">
+      <div><div class="k">O₂ pris au remplissage</div><div class="big v1-mono">40<small> ppb</small></div></div>
+      <div class="v1-scale" aria-label="40 ppb, la plus basse des 5 ; la plus haute 220 ppb">
+        <i style="left:96%"></i><i style="left:47%"></i><i style="left:30%"></i><i style="left:7%"></i><i class="me" style="left:3%"></i>
+        <span style="left:0">la plus basse des 5</span><span style="right:0">220</span>
+      </div>
+    </div>
+
+    <div class="v1-sec"><b>2 offres</b> · même machine, 500 CHF d'écart</div>
+    <div class="v1-vd">
+      <span class="v1-rd on" role="radio" aria-checked="true" aria-label="Abfülltechnik West"></span>
+      <div><a class="n" href="#">Abfülltechnik West<svg class="v1-ico"><use href="#i-out"/></svg></a><div class="s">DE · <span class="d-ok">en stock</span></div></div>
+      <div class="p v1-mono">11 200 CHF<small>le moins cher</small></div>
+    </div>
+    <div class="v1-vd">
+      <span class="v1-rd" role="radio" aria-checked="false" aria-label="Revendeur Brassage Romandie"></span>
+      <div><a class="n" href="#">Brassage Romandie<svg class="v1-ico"><use href="#i-out"/></svg></a><div class="s">CH · <span class="d-ok">en stock</span> · SAV en Suisse</div></div>
+      <div class="p v1-mono">11 700 CHF<small class="m">était 12 300</small></div>
+    </div>
+    <div class="v1-vw"><svg class="v1-ico"><use href="#i-eye"/></svg><span class="t">La veille a trouvé : Getränketechnik Ost (AT), 11 600 CHF</span><a class="v1-lk" href="#">Ajouter ›</a></div>
+
+    <div class="v1-kh">Caractéristiques</div>
+    <div class="v1-kv">
+      <div><span>Cadence</span><b class="v1-mono">400 bt/h<em class="g">2e</em></b></div>
+      <div><span>Becs</span><b class="v1-mono">4</b></div>
+      <div><span>CO₂ / bouteille</span><b class="v1-mono">7 g<em class="w">4e</em></b></div>
+      <div><span>Nettoyage</span><b>NEP</b></div>
+      <div><span>Encombrement</span><b class="v1-mono">100 × 70 cm</b></div>
+      <div><span>Formats</span><b class="q">à demander</b></div>
+    </div>
+
+    <div class="v1-sv"><svg class="v1-ico"><use href="#i-eye"/></svg><div class="t">Surveiller prix et stock<small>tous les 3 jours · revu le 13 nov. · <a href="#">Revérifier</a></small></div><span class="v1-sw" role="switch" aria-checked="true" aria-label="Surveiller"></span></div>
+    <a class="v1-go" href="#"><svg class="v1-ico"><use href="#i-check"/></svg>Choisir · Abfülltechnik West</a>
+    <div class="v1-gon">Part dans À venir : cette machine, Abfülltechnik West, 11 200 CHF, en stock. Autre vendeur : cochez-le.</div>
+  </article>
+
+  <!-- les suivantes, pliées : même gabarit, la valeur qui compte d'abord -->
+  <a class="v1-row" href="#">
+    <span class="v1-sc v1-mono"><span class="r">2e</span><b>50</b><small>ppb</small></span>
+    <svg class="v1-ph" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice"><use href="#p-b"/></svg>
+    <span><span class="n">Monobloc isobarique 6 becs</span><span class="p v1-mono">21 500 CHF · IT</span><span class="f d-att">délai à demander</span></span>
+    <svg class="v1-ico"><use href="#i-down"/></svg>
+  </a>
+  <a class="v1-row" href="#">
+    <span class="v1-sc v1-mono"><span class="r">3e</span><b>90</b><small>ppb</small></span>
+    <svg class="v1-ph" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice"><use href="#p-c"/></svg>
+    <span><span class="n">Isobarique 4 becs semi-auto</span><span class="p v1-mono">6 400 CHF · IT</span><span class="f d-att">6 semaines de délai</span></span>
+    <svg class="v1-ico"><use href="#i-down"/></svg>
+  </a>
+  <a class="v1-row" href="#">
+    <span class="v1-sc v1-mono"><span class="r">4e</span><b>120</b><small>ppb</small></span>
+    <svg class="v1-ph" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice"><use href="#p-d"/></svg>
+    <span><span class="n">Isobarique 2 becs de table</span><span class="p v1-mono">1 850 CHF · IT</span><span class="f d-ok">en stock</span></span>
+    <svg class="v1-ico"><use href="#i-down"/></svg>
+  </a>
+  <a class="v1-row last" href="#">
+    <span class="v1-sc v1-mono"><span class="r">5e</span><b>220</b><small>ppb</small></span>
+    <svg class="v1-ph" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice"><use href="#p-e"/></svg>
+    <span><span class="n">Contre-pression 1 bec à main</span><span class="p v1-mono">190 CHF · DE</span><span class="f d-ok">en stock</span></span>
+    <svg class="v1-ico"><use href="#i-down"/></svg>
+  </a>
+
+  <!-- côte à côte : la qualité contre le prix -->
+  <section class="v1-cmp" aria-label="Côte à côte">
+    <h3>Côte à côte</h3>
+    <table class="v1-tb">
+      <thead><tr><th></th><th>1re</th><th>2e</th><th>3e</th><th>4e</th><th>5e</th></tr></thead>
+      <tbody>
+        <tr><th>O₂ ppb</th><td class="b">40</td><td>50</td><td>90</td><td>120</td><td>220</td></tr>
+        <tr><th>Prix CHF</th><td>11 200</td><td>21 500</td><td>6 400</td><td>1 850</td><td class="b">190</td></tr>
+        <tr><th>bt/h</th><td>400</td><td class="b">600</td><td>250</td><td>120</td><td>60</td></tr>
+        <tr><th>CO₂ g/bt</th><td>7</td><td class="b">5</td><td>6</td><td>6</td><td>9</td></tr>
+      </tbody>
+    </table>
+    <div class="v1-cpr"><span>Compromis : <b>la 3e</b>, 90 ppb pour 6 400 CHF, soit 4 800 CHF de moins que la 1re pour 50 ppb de plus.</span></div>
+  </section>
+
+  <!-- écartés : visibles, avec leur raison (C7) -->
+  <section class="v1-out" aria-label="Écartés">
+    <h3>Écartés · 2</h3>
+    <div class="v1-ec"><span class="n">Façon gravité (remplir par écoulement)</span><span class="r">Écartée : la mousse monte, O₂ autour de 400 ppb.</span></div>
+    <div class="v1-ec"><span class="n">Tireuse 3 becs à tube long</span><span class="r">Écartée : pas de pré-évacuation de l'air.</span></div>
+  </section>
+</main>
+
+<!-- annexe de maquette, hors écran : la même carte dans les autres carnets (générique : frigo, ventil, évier) -->
+<aside class="v1-ann" aria-label="Annexe de maquette">
+  <p>Annexe de maquette, hors écran</p>
+  <h2>La même carte dans les autres carnets (exemple)</h2>
+
+  <div class="v1-pan">
+    <div class="v1-cn"><b>Frigo de garde pour fûts</b><span>2 façons · 4 articles</span></div>
+    <div class="v1-cby">Ce qui compte : <b>tenir 2 °C même en été</b></div>
+    <a class="v1-row ch" href="#">
+      <span class="v1-sc v1-mono top"><span class="r">1re</span><b>2 °C</b><small>même à 43 °C</small></span>
+      <svg class="v1-ph" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice"><use href="#p-f"/></svg>
+      <span><span class="n">Chambre froide en kit 2 m³</span><span class="p v1-mono">4 900 CHF · CH</span><span class="f d-ok">en stock</span></span>
+      <svg class="v1-ico"><use href="#i-down"/></svg>
+    </a>
+    <div class="v1-chl"><svg class="v1-ico"><use href="#i-check"/></svg>Choisie le 10 oct.<a href="#">Voir dans À venir ›</a></div>
+    <div class="v1-av" aria-label="Calendrier, À venir">
+      <div class="v1-seg"><span class="on">À venir · 3</span><span>Réalisés · 12</span></div>
+      <div class="v1-avl"><span class="dt v1-mono">24 oct.</span><span><span class="n">Chambre froide en kit 2 m³</span><br><span class="s">Froid Léman · livraison</span></span><span class="v1-mono">4 900 CHF</span></div>
+      <div class="v1-avw">Pourquoi : tient 2 °C même à 43 °C dehors. Écarté : frigo vitrine 700 L, ne passe pas la porte de 80 cm.</div>
+    </div>
+  </div>
+
+  <div class="v1-pan">
+    <div class="v1-cn"><b>Ventilation de la salle de brassage</b><span>2 façons · 5 articles</span></div>
+    <div class="v1-cby">Ce qui compte : <b>capter la buée à la source</b></div>
+    <a class="v1-row" href="#">
+      <span class="v1-sc v1-mono top"><span class="r">1re</span><b>1 800</b><small>m³/h</small></span>
+      <svg class="v1-ph" viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice"><use href="#p-g"/></svg>
+      <span><span class="n">Hotte inox 120 cm + moteur</span><span class="p v1-mono">2 600 CHF · CH</span><span class="f"><span class="eye"><svg class="v1-ico"><use href="#i-eye"/></svg>surveillée</span> · <span class="d-att">délai ?</span></span></span>
+      <svg class="v1-ico"><use href="#i-down"/></svg>
+    </a>
+  </div>
+
+  <div class="v1-pan">
+    <div class="v1-cn"><b>Évier inox</b><span>nouveau, rien encore</span></div>
+    <div class="v1-empty">Collez le lien d'un évier avec le +&nbsp;: sa carte se range ici, classée.
+      <div class="ia"><svg class="v1-ico"><use href="#i-spark"/></svg><span><b>L'IA propose</b> ce qui compte : un bac assez profond pour un fût de 20 L.</span><span class="v1-mini p">Garder</span><span class="v1-mini">Autre</span></div>
+    </div>
+  </div>
+
+  <div class="v1-pan v1-lex" aria-label="Les mots du carnet">
+    <b>Les mots du carnet</b>
+    <div><b>Façon</b> : une manière de résoudre l'idée (isobarique, gravité…). Chaque article en suit une.</div>
+    <div><b>Ce qui compte</b> : la valeur qui classe les articles, proposée par l'IA, gardée par vous.</div>
+    <div><b>Écarté</b> : laissé de côté, toujours visible, avec sa raison.</div>
+  </div>
+</aside>
+
+<a class="v1-fab" href="#" aria-label="Ajouter un article : coller un lien"><svg class="v1-ico"><use href="#i-plus"/></svg></a>
+<nav class="v1-bot" aria-label="Navigation">
+  <a href="#"><svg class="v1-ico"><use href="#i-bord"/></svg>Bord</a>
+  <a href="#"><svg class="v1-ico"><use href="#i-wallet"/></svg>Finances</a>
+  <a href="#"><svg class="v1-ico"><use href="#i-cal"/></svg>Calendrier</a>
+  <a href="#"><svg class="v1-ico"><use href="#i-beer"/></svg>Brassins</a>
+  <a href="#" class="on" aria-current="page"><svg class="v1-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a>
+  <a href="#"><svg class="v1-ico"><use href="#i-users"/></svg>Clients</a>
+</nav>
+</body>
+</html>

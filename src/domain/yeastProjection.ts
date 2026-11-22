@@ -3,6 +3,8 @@ import type { HopYeast } from '../../functions/src/hopPredictionSchema';
 import type { YeastFactKey } from '../../functions/src/yeastCatalogueSchema';
 import { alcoholPercentUnit, readYeastFactValue, readYeastTechnicalFacts, type YeastFactQualifier, type YeastFactReading, type YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 import type { Fermentable, YeastSpec } from '../types';
+import { grainHorsEmpatage } from './fermentables/moments';
+import { alcoholByVolume } from './alcohol';
 import type { TrialRecipe } from './hopIndex/trials';
 import { yeastAcidifyingProductSource, yeastCultureComposition, yeastStyleEvidence } from './yeastStyleEvidence';
 import { resolveBrewingStyle } from './brewingStyles';
@@ -12,6 +14,7 @@ import { beerSheetContext, readYeastDocumentaryView, yeastFactScope, type YeastH
 import type { NoloSugar } from '../../functions/src/noloSchema';
 import { yeastTechnicalFactIdentity } from '../../functions/src/yeastDocumentarySheet';
 import { effectiveYeastTechnicalFactSources, effectiveYeastTechnicalFacts } from './yeastReferences';
+import { nombreFr } from '../domain/nombreAffiche';
 
 export type YeastFermentationProcess = 'unspecified' | 'preacidified' | 'acidifying-yeast' | 'mixed-culture';
 export type YeastCultureRole = { name: string; role: 'alcoholic' | 'acidifying' | 'conditioning' | 'mixed' };
@@ -118,6 +121,9 @@ export function yeastRecipeStyleText(recipe: TrialRecipe): string {
 type ExtractInputs = { fermentables?: readonly Fermentable[]; volumeL: number; efficiencyPct?: number };
 function ingredientPoints(f: Fermentable, recipe: ExtractInputs): number | undefined {
   if (f.weightKg === 0) return 0;
+  // Un grain hors de l'empâtage (bouilli, ou au fermenteur) ne donne pas d'extrait : sans les enzymes de la maische, son amidon reste amidon.
+  // Il compte 0, et la validation le dit sur sa ligne (table `domain/fermentables/moments.ts`, audit du 08.11, AM 1 et 2).
+  if (grainHorsEmpatage(f)) return 0;
   const grain = (f.kind ?? 'grain') === 'grain';
   if (!finite(f.weightKg) || f.weightKg < 0 || !finite(f.potentialPpg) || f.potentialPpg < 0 || !finite(recipe.volumeL) || recipe.volumeL <= 0 ||
     grain && (!finite(recipe.efficiencyPct) || recipe.efficiencyPct <= 0 || recipe.efficiencyPct > 100)) return;
@@ -342,7 +348,7 @@ export function projectYeastRecipe(recipe: TrialRecipe, options: {
     }
     // A malt/extract row's overall fermentability is not an additional inert
     // mass fraction to multiply by the yeast's apparent attenuation.
-    if ((grain || f.kind === 'extrait') && explicitFraction !== undefined && explicitFraction < 100) compositionNotes.push(`${f.name} : la fermentabilité de ligne (${explicitFraction} %) et l’atténuation du moût ne sont pas multipliées ; l’hypothèse d’atténuation retenue décrit le moût.`);
+    if ((grain || f.kind === 'extrait') && explicitFraction !== undefined && explicitFraction < 100) compositionNotes.push(`${f.name} : la fermentabilité de ligne (${nombreFr(explicitFraction, 1)} %) et l’atténuation du moût ne sont pas multipliées ; l’hypothèse d’atténuation retenue décrit le moût.`);
     let fraction = grain || f.kind === 'extrait' ? 1 : (explicitFraction ?? (f.kind === 'lactose' ? 0 : 100)) / 100;
     if (!globalApparent && f.kind === 'sucre' && explicitFraction === undefined && (!simpleSugar(f.name) || /malto[ -]?dextrin|dextrine/i.test(f.name))) {
       specialIncomplete = true; markFermentableGap(index, f.name, 'fermentabilityPct');
@@ -378,7 +384,7 @@ export function projectYeastRecipe(recipe: TrialRecipe, options: {
   if (!['range', 'reportedPoint'].includes(calculationAttenuation.qualifier)) {
     const bound = calculationAttenuation.qualifier === 'greaterThan' ? 'strictement supérieure à' : calculationAttenuation.qualifier === 'atLeast' ? 'au moins'
       : calculationAttenuation.qualifier === 'lessThan' ? 'strictement inférieure à' : calculationAttenuation.qualifier === 'upTo' ? 'au plus' : 'une borne';
-    return stop(`L’atténuation publiée indique ${bound} ${calculationAttenuation.range.min} %, pas une valeur à appliquer : choisir explicitement une hypothèse pour projeter cette recette.`);
+    return stop(`L’atténuation publiée indique ${bound} ${nombreFr(calculationAttenuation.range.min, 1)} %, pas une valeur à appliquer : choisir explicitement une hypothèse pour projeter cette recette.`);
   }
   const totalPoints = (og - 1) * 1000;
   const wortPoints = totalPoints - unfermentablePoints - sugarPoints;
@@ -428,7 +434,7 @@ export function projectYeastRecipe(recipe: TrialRecipe, options: {
   const sourUnspecified = process === 'unspecified' && (/sour|berliner|gose|lambic|gueuze|geuze|oud bruin|flanders|mixed fermentation|wild ale/i.test(yeastRecipeStyleText(recipe)) || cultureNeedsProcess);
   const abv: YeastProjectionEstimate = !knownProcess || !knownRoles ? unavailable('Procédé ou rôle de culture non reconnu : le préciser avant de projeter l’alcool.') : sourUnspecified ? unavailable('Procédé acidulé non précisé : distinguer une fermentation alcoolique sur moût pré-acidifié d’une culture produisant des acides avant de projeter l’alcool.') : mixed || cultureNeedsProcess
     ? unavailable('Culture acidifiante ou mixte : une baisse de densité peut aussi produire des acides. La répartition alcool/acides n’est pas documentée ; aucune teneur en alcool n’est déduite de la DF seule.')
-    : { range: { min: (og - range.max) * 131.25, max: (og - range.min) * 131.25 }, reasons: ['Approximation (DI équivalente − DF) × 131,25 ; ni analyse d’alcool ni prévision de refermentation au conditionnement.', ...reasons], sources, confidence: 'low' };
+    : { range: { min: alcoholByVolume(og, range.max), max: alcoholByVolume(og, range.min) }, reasons: ['Approximation ASBC (Balling) depuis la DI équivalente et la DF ; ni analyse d’alcool ni prévision de refermentation au conditionnement.', ...reasons], sources, confidence: 'low' };
   if (mixed) warnings.push('Procédé acidifiant ou mixte : DF conditionnelle à l’atténuation choisie ; pH, durée et stabilité finale non simulés.');
   if (!knownProcess) warnings.push('Procédé non reconnu : vérifier les données de fermentation.');
   if (!knownRoles) warnings.push('Rôle de culture non reconnu : vérifier les données de fermentation.');
@@ -439,9 +445,9 @@ export function projectYeastRecipe(recipe: TrialRecipe, options: {
   const toleranceFloor = Math.min(...dossier.facts.filter(f => f.key === 'alcoholTolerance' && alcoholPercentUnit(f.unit) && f.range).map(f => f.range!.min));
   if (og > 1.1 || abv.range && abv.range.max > toleranceFloor) warnings.push(...dossier.warnings.filter(w => w.startsWith('Tolérance à l’alcool')));
   if (abv.range && tolerance && abv.range.max > tolerance.range.min) {
-    if (tolerance.qualifier === 'atLeast') warnings.push(`Alcool projeté au-delà de ${tolerance.range.min} % vol. La fiche annonce « au moins » cette tolérance ; la limite supérieure reste inconnue.`);
-    else if (tolerance.qualifier === 'greaterThan') warnings.push(`Alcool projeté au-delà de ${tolerance.range.min} % vol. La fiche annonce strictement plus que ce seuil ; la limite supérieure reste inconnue.`);
-    else warnings.push(`Alcool projeté ${abv.range.max > tolerance.range.max ? 'au-delà de la tolérance' : 'dans la zone de tolérance'} annoncée (${tolerance.range.min === tolerance.range.max ? tolerance.range.max : `${tolerance.range.min}–${tolerance.range.max}`} % vol${tolerance.qualifier === 'lessThan' ? ' ; strictement sous cette borne' : tolerance.qualifier === 'upTo' ? ' au plus' : ''}). Atténuation non garantie ; aucun plafond d’alcool artificiel n’est appliqué.`);
+    if (tolerance.qualifier === 'atLeast') warnings.push(`Alcool projeté au-delà de ${nombreFr(tolerance.range.min, 1)} % vol. La fiche annonce « au moins » cette tolérance ; la limite supérieure reste inconnue.`);
+    else if (tolerance.qualifier === 'greaterThan') warnings.push(`Alcool projeté au-delà de ${nombreFr(tolerance.range.min, 1)} % vol. La fiche annonce strictement plus que ce seuil ; la limite supérieure reste inconnue.`);
+    else warnings.push(`Alcool projeté ${abv.range.max > tolerance.range.max ? 'au-delà de la tolérance' : 'dans la zone de tolérance'} annoncée (${tolerance.range.min === tolerance.range.max ? nombreFr(tolerance.range.max, 1) : `${nombreFr(tolerance.range.min, 1)}–${nombreFr(tolerance.range.max, 1)}`} % vol${tolerance.qualifier === 'lessThan' ? ' ; strictement sous cette borne' : tolerance.qualifier === 'upTo' ? ' au plus' : ''}). Atténuation non garantie ; aucun plafond d’alcool artificiel n’est appliqué.`);
   }
   if (finite(og) && og > 1.1 && !tolerance) warnings.push('Moût de forte densité : tolérance à l’alcool non renseignée ; confirmer la souche, l’inoculum et sa conduite.');
   return { ...base, fg, abv, extract: { totalPoints, wortPoints: wort, sugarPoints, unfermentablePoints, lateAdditionPoints } };

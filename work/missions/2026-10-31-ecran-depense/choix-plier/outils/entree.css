@@ -1,0 +1,5 @@
+/* Feuille des maquettes : la feuille de l'app, p3c.css, les règles de D (sf-, reprises telles quelles de choix-sousfamilles), puis les seules règles neuves (pl-). */
+@import '../../../../../src/index.css';
+@import '../../../../../src/ui/depense/p3c.css';
+@import './sf.css';
+@import './pl.css';

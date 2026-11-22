@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Calendrier · L'Affinée</title>
+<style>
+/* Une page, deux vues (CAL-PAYS-ROTATION, 17.11) : le téléphone en hauteur montre le portrait, en largeur le paysage.
+   Passe 8 : un seul calendrier. Chaque vue envoie ses données à chaque changement ; cette page garde le dernier état et le passe à l'autre vue
+   (et à la vue qui redevient visible) : ce qu'on pose d'un côté se retrouve de l'autre. La hauteur suit l'écran visible (100dvh, barre
+   d'adresse comprise). La vue en largeur est dessinée pour 844 px : au-delà (tablette, ordinateur), elle reste à 844 px, centrée. */
+html,body{margin:0;height:100%;overflow:hidden;background:#fff}
+iframe{position:fixed;top:0;border:0;display:block;background:#fff;visibility:hidden;pointer-events:none;z-index:1}
+#v-portrait{left:0;width:100vw;height:100vh;height:100dvh}
+#v-paysage{left:50%;transform:translateX(-50%);width:min(100vw,844px);height:100vh;height:100dvh}
+/* la vue cachée garde les dimensions de l'autre sens : rien ne se recalcule au moment de tourner */
+@media (orientation:portrait){#v-paysage{width:min(100vh,844px);width:min(100dvh,844px);height:100vw;height:100dvw}}
+@media (orientation:landscape){#v-portrait{width:100vh;width:100dvh;height:100vw;height:100dvw}}
+iframe.on{visibility:visible;pointer-events:auto;z-index:2}
+</style></head>
+<body>
+<iframe id="v-portrait" src="portrait.html" title="Calendrier, téléphone en hauteur"></iframe>
+<iframe id="v-paysage" src="paysage.html" title="Calendrier, téléphone en largeur"></iframe>
+<script>
+(function(){
+ var mq=matchMedia('(orientation: landscape)'),P=document.getElementById('v-portrait'),L=document.getElementById('v-paysage'),ETAT=null;
+ function envoie(f){if(ETAT)try{f.contentWindow.postMessage({asCal:'etat',etat:ETAT},'*');}catch(_){}}
+ function vue(){var l=mq.matches,on=l?L:P,off=l?P:L;on.classList.add('on');off.classList.remove('on');
+  on.removeAttribute('aria-hidden');off.setAttribute('aria-hidden','true');on.tabIndex=0;off.tabIndex=-1;
+  document.documentElement.dataset.vue=l?'paysage':'portrait';envoie(on);}
+ /* une vue a changé : on garde ses données et on les passe à l'autre ; le fond des marges suit le thème de la vue visible */
+ addEventListener('message',function(e){var d=e.data;if(!d||!d.asCal)return;var de=e.source===P.contentWindow?P:e.source===L.contentWindow?L:null;if(!de)return;
+  if(d.asCal==='etat'&&d.etat&&(!ETAT||d.etat.ver>ETAT.ver)){ETAT=d.etat;envoie(de===P?L:P);}
+  else if(d.asCal==='fond'&&de.classList.contains('on'))document.body.style.background=d.c;});
+ if(mq.addEventListener)mq.addEventListener('change',vue);else mq.addListener(vue);
+ vue();
+})();
+</script>
+</body></html>

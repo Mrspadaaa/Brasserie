@@ -1,0 +1,46 @@
+# Contrôles de la passe b (so/), rejoués le 16.11 23:00
+
+## Construction
+s1 Embouteilleuse · S22 | Festival · S33 | Fête de village · S26 | Frigo · S35
+  sans place : Marché de printemps · S16
+  sans place : Marché de printemps · S16
+s4 Embouteilleuse · S22 | Festival · S33 | Fête de village · S26 | Frigo · S35
+  sans place : Marché de printemps · S16
+  sans place : Marché de printemps · S16
+so/s* écrit { r: 187, d: 229, dw: 149 }
+t1 82 Embouteilleuse · S22 | Festival · S33 | Fête de village · S26 | Frigo · S35 | Mariage · S31 | Six fûts inox · S18 | (au toucher) Marché de printemps · S16 | (au toucher) Hotte · S13
+t3 82 Embouteilleuse · S22 | Festival · S33 | Fête de village · S26 | Frigo · S35 | Mariage · S31 | (au toucher) Six fûts inox · S18 | (au toucher) Marché de printemps · S16 | (au toucher) Hotte · S13
+
+## controle-entete-cal (portrait)
+### s1b
+ok s1b.html : courbe 90 px (min 80), bande des semaines 35 px (max 40, présente), en-tête 168 px (max 180), 10 textes (max 12), mois → bande sans mois au-dessus
+ENTETE OK
+### s4b
+ok s4b.html : courbe 90 px (min 80), bande des semaines 35 px (max 40, présente), en-tête 168 px (max 180), 9 textes (max 12), mois → bande sans mois au-dessus
+ENTETE OK
+
+## controle-entete-cal --paysage
+### t1b
+ok t1b.html : courbe 70 px (min 70), bande des semaines 35 px (max 40, présente), en-tête 120 px (max 120), 12 textes (max 14), mois → bande sans mois au-dessus
+ENTETE OK
+### t3b
+ok t3b.html : courbe 70 px (min 70), bande des semaines 35 px (max 40, présente), en-tête 120 px (max 120), 11 textes (max 14), mois → bande sans mois au-dessus
+ENTETE OK
+
+## controle-pays-compact
+### t1b
+ok t1b.html : 7 rangées, hauteur médiane 48 px (max 48), hauteurs 24,24,48,48,48,48,72, rangée la plus vide 100 %
+COMPACT OK
+### t3b
+ok t3b.html : 7 rangées, hauteur médiane 48 px (max 48), hauteurs 24,24,48,48,48,48,72, rangée la plus vide 100 %
+COMPACT OK
+
+## cap-sb (contrôle de page v8 : petits, hors, chevauchés, sur trait, brosse, +, corps r2-c)
+ok s1b : frise à 168 px, bande 35 px, 22 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c
+ok s4b : frise à 168 px, bande 35 px, 21 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la brosse 0 · + à 14 px des onglets, 51 px du bord · corps identique à r2-c
+
+## cap-b (repos, défilé, chaque toucher : chevauchés, hors, bulle ; + : écart, tiers droit, rien de la frise dessous)
+t1b VUE OK {"repos":{"petits":[],"chev":[],"hors":[],"fab":{"ecart":14,"tiersDroit":true,"sous":[]}},"defile":{"fab":{"ecart":14,"tiersDroit":true,"sous":[]},"petits":[]},"toucher":{"20":"Hotte −900","23":"Marché de printemps +910","25":"Six fûts inox −1 080","29":"Embouteilleuse −2 800","33":"Fête de village +2 140","38":"Mariage +1 100","40":"Festival +2 450","42":"Frigo −1 800"}}
+t3b VUE OK {"repos":{"petits":[],"chev":[],"hors":[],"fab":{"ecart":14,"tiersDroit":true,"sous":[]}},"defile":{"fab":{"ecart":14,"tiersDroit":true,"sous":[]},"petits":[]},"toucher":{"20":"Hotte −900","23":"Marché de printemps +910","25":"Six fûts inox −1 080","29":"Embouteilleuse −2 800","33":"Fête de village +2 140","38":"Mariage +1 100","40":"Festival +2 450","42":"Frigo −1 800"}}
+s1b VUE OK {"repos":{"petits":[],"chev":[],"hors":[],"fab":{"ecart":14,"tiersDroit":true,"sous":[]}},"defile":{"fab":{"ecart":14,"tiersDroit":true,"sous":[]},"petits":[]},"toucher":{"20":"Hotte  −900","23":"Marché  +910","25":"Six fûts inox  −1 080","29":"Embouteilleuse  −2 800","33":"Fête de village  +2 140","38":"Mariage  +1 100","40":"Festival  +2 450","42":"Frigo  −1 800"}}
+s4b VUE OK {"repos":{"petits":[],"chev":[],"hors":[],"fab":{"ecart":14,"tiersDroit":true,"sous":[]}},"defile":{"fab":{"ecart":14,"tiersDroit":true,"sous":[]},"petits":[]},"toucher":{"20":"Hotte  −900","23":"Marché  +910","25":"Six fûts inox  −1 080","29":"Embouteilleuse  −2 800","33":"Fête de village  +2 140","38":"Mariage  +1 100","40":"Festival  +2 450","42":"Frigo  −1 800"}}

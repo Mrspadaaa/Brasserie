@@ -24,11 +24,18 @@ export const GEMINI_SEARCH_COST_POLICY = {
 } as const;
 const MODEL_CONTEXT = 1_048_576;
 /** A call is quoted and settled at the rate of the model that serves it: gemini-3.8-flash, or
- * gemini-3.5-flash-lite where models.ts routes a usage to it (LITE_ROUTES). Older models keep their
- * rates only to read past usage and settlements; none is called anymore.
+ * gemini-3.5-flash-lite where models.ts routes a usage to it (LITE_ROUTES), or gemini-4-hydrogen for the
+ * third invoice reading (INVOICE_STRONG_MODEL), or gemini-4-argon for a reading the user asked to redo
+ * (INVOICE_ARGON_MODEL; its rate changes on 2026-12-01, see RATE_CHANGES). Older models keep their rates only to read past usage
+ * and settlements; none is called anymore.
  */
 const PRICES: Record<string, { input: number; output: number; largeInput?: number; largeOutput?: number; audioInput?: number }> = {
   'gemini-3.5-flash-lite': { input: 300_000, output: 2_500_000 },
+  // Hydrogen: 1.50 / 7.50 USD per million tokens, output counting the reasoning (https://ai.google.dev/gemini-api/docs/pricing, read 14.11.2026).
+  // Same rate as 3.8; never the free tier, whose data may be used by Google.
+  'gemini-4-hydrogen': { input: 1_500_000, output: 7_500_000 },
+  // Argon (relecture demandée par l'utilisateur) : 2 / 10 USD par million jusqu'au 30.11.2026 ; le tarif de ce tableau est celui d'AUJOURD'HUI, `RATE_CHANGES` porte la suite.
+  'gemini-4-argon': { input: 2_000_000, output: 10_000_000 },
   'gemini-3.1-flash-lite': { input: 250_000, audioInput: 500_000, output: 1_500_000 },
   // Provision at the announced January 2027 standard rate already: never rely
   // on the temporary 50% discount, and no automatic annual maintenance cliff.
@@ -36,6 +43,10 @@ const PRICES: Record<string, { input: number; output: number; largeInput?: numbe
   'gemini-3.7-flash': { input: 1_500_000, output: 7_500_000 },
   'gemini-3.8-flash': { input: 1_500_000, output: 7_500_000 },
   'gemini-3.1-pro-preview': { input: 2_000_000, output: 12_000_000, largeInput: 4_000_000, largeOutput: 18_000_000 }
+};
+/** Les tarifs qui changent à une date : le tarif suit la date du devis, jamais celle du règlement ni un tarif « d'aujourd'hui » figé. Argon passe de 2 / 10 à 4 / 20 USD le 1er décembre 2026 (Europe/Zurich). */
+export const RATE_CHANGES: Record<string, Array<{ from: number; input: number; output: number }>> = {
+  'gemini-4-argon': [{ from: Date.parse('2026-12-01T00:00:00+01:00'), input: 4_000_000, output: 20_000_000 }]
 };
 const unavailable = (message: string) => new BrewerBudgetError('ai-cost-unavailable', message);
 export const aiBudgetMonth = (at = Date.now()) => new Intl.DateTimeFormat('en-CA', {
@@ -54,9 +65,12 @@ export function readMonthlyUsage(raw: any = {}) {
   if (!nonnegative(usedMicroChf) || !nonnegative(reservedMicroChf)) throw unavailable('Le suivi mensuel IA est indisponible. Aucun nouvel appel Gemini.');
   return { usedMicroChf, reservedMicroChf };
 }
-function amount(model: string, input: number, output: number, audioInput = false): number {
-  const rate = PRICES[model];
-  if (!rate) throw unavailable('Tarif de ce modèle Gemini inconnu. Aucun appel non couvert par le budget.');
+function amount(model: string, input: number, output: number, audioInput = false, at = Date.now()): number {
+  const base = PRICES[model];
+  if (!base) throw unavailable('Tarif de ce modèle Gemini inconnu. Aucun appel non couvert par le budget.');
+  // Le dernier changement déjà entré en vigueur à la date `at` remplace le tarif de base (jamais zéro : un tarif absent lève plus haut).
+  const change = (RATE_CHANGES[model] ?? []).filter(c => c.from <= at).sort((a, b) => b.from - a.from)[0];
+  const rate = change ? { ...base, input: change.input, output: change.output } : base;
   const inputRate = Math.max(input > 200_000 ? rate.largeInput ?? rate.input : rate.input, audioInput ? rate.audioInput ?? 0 : 0);
   const outputRate = input > 200_000 ? rate.largeOutput ?? rate.output : rate.output;
   // All operands are integers. Divide only once and round upward to micro-CHF.
@@ -66,6 +80,8 @@ export interface GeminiCostQuote {
   model: string; inputTokens: number; outputTokens: number; reservedMicroChf: number;
   searchQueriesReserved: number;
   audioInput: boolean;
+  /** La date du devis : le règlement (`observedGeminiCostDetails`) reprend le tarif de CE jour. */
+  at?: number;
   body: Record<string, unknown>;
 }
 export function quoteGeminiCost(model: string, body: Record<string, unknown>, at = Date.now()): GeminiCostQuote {
@@ -110,8 +126,8 @@ export function quoteGeminiCost(model: string, body: Record<string, unknown>, at
   const bytes = Buffer.byteLength(json) + 4096;
   if (bytes > MODEL_CONTEXT) throw unavailable('Contexte trop volumineux pour estimer le coût de cette analyse.');
   const inputTokens = media ? MODEL_CONTEXT : bytes;
-  return { model, inputTokens, outputTokens: requested, searchQueriesReserved, audioInput,
-    reservedMicroChf: amount(model, inputTokens, requested, audioInput) + searchQueriesReserved * GEMINI_SEARCH_COST_POLICY.microChfPerQuery,
+  return { model, inputTokens, outputTokens: requested, searchQueriesReserved, audioInput, at,
+    reservedMicroChf: amount(model, inputTokens, requested, audioInput, at) +searchQueriesReserved * GEMINI_SEARCH_COST_POLICY.microChfPerQuery,
     body: normalized };
 }
 export interface GeminiObservedCost {
@@ -147,7 +163,7 @@ export function observedGeminiCostDetails(quote: GeminiCostQuote, response: any)
   const searchQueries = proven ?? quote.searchQueriesReserved;
   const output = Math.max(usage.candidatesTokenCount + (usage.thoughtsTokenCount ?? 0), usage.totalTokenCount - usage.promptTokenCount);
   // Cached input is deliberately charged at the undiscounted input rate.
-  const tokenMicroChf = amount(quote.model, usage.promptTokenCount, output, quote.audioInput);
+  const tokenMicroChf = amount(quote.model, usage.promptTokenCount, output, quote.audioInput, quote.at);
   const searchMicroChf = searchQueries * GEMINI_SEARCH_COST_POLICY.microChfPerQuery;
   const chargedMicroChf = tokenMicroChf + searchMicroChf;
   if (!Number.isSafeInteger(chargedMicroChf)) return null;

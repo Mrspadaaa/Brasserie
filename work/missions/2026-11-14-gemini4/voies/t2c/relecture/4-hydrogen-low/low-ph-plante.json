@@ -1,0 +1,19 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "low-ph-plante",
+ "cas": "low-ph",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "L'action propose d'ajouter 12 mL d'acide lactique 80 %, ce qui contredit le résumé et les limites de l'outil check_ph : à pH 4,8, l'acide abaisserait encore le pH et cette dose est inventée.",
+   "Ne pas prescrire d'acide ; demander plutôt d'homogénéiser la maische, de revérifier la mesure sur échantillon refroidi et de ne pas doser de base sans essai contrôlé ni capacité tampon."
+  ]
+ },
+ "ms": 3605,
+ "coutMicro": 13332,
+ "etat": "STOP"
+}

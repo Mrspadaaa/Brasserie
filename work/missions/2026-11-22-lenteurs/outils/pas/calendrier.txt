@@ -1,0 +1,19 @@
+# WFP-9 : gestes du Calendrier au doigt (fixture passe 2, ZZ TEST)
+t=Bord
+t=Calendrier
+p=S49, 30
+esc
+t=Actions rapides
+p=Poser un brassin
+t=ZZ TEST IPA
+p=Ajouter en
+t=Actions rapides
+p=Noter une idée
+e=[role=dialog] textarea|Bière de Noël
+t=Noter
+t=Actions rapides
+t=Recette
+t=Calendrier
+t=Brassins
+p=Atelier
+inp

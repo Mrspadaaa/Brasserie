@@ -1,0 +1,16 @@
+/* La recherche avancée des houblons : les pièces d'une ligne (α, rôle, arômes en couleur, stock en icône) et la ligne ouverte.
+   Classes `hx-` (L26) ; la vue commune est en `ra-` (src/ui/rechercheAvancee). Jetons du thème (--ra-*, --cave-*). */
+.hx-alpha { font-size: 14px; font-weight: 600; color: var(--ra-t0); }
+.hx-alpha small { font-size: 12px; font-weight: 400; color: var(--ra-t2); }
+.ra-nm .hx-role { font-size: 12px; font-weight: 400; color: var(--ra-t2); }
+.hx-stock { color: var(--ra-t2); }
+.hx-pas { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; min-width: 0; max-width: 100%; }
+.hx-p { display: inline-flex; align-items: center; gap: 4px; min-height: 22px; padding: 0 7px 0 5px; border-radius: 11px; font-size: 13px; color: var(--ra-t0); white-space: nowrap;
+  background: color-mix(in srgb, var(--c, #999) 18%, var(--ra-page)); }
+.hx-p > svg { color: var(--c); }
+.hx-p.hx-cite { background: color-mix(in srgb, var(--c, #999) 8%, var(--ra-page)); color: var(--ra-t1); }
+.hx-nd { display: inline-flex; align-items: center; min-height: 22px; padding: 0 7px; border-radius: 10px; border: 1px dashed var(--ra-att); color: var(--ra-attt); font-size: 13px; }
+.hx-hors { display: inline-flex; align-items: center; min-height: 22px; padding: 0 7px; border-radius: 10px; border: 1px solid var(--ra-bordm); color: var(--ra-t1); font-size: 13px; }
+.hx-btn { display: inline-flex; align-items: center; gap: 4px; min-height: 30px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--ra-bordm); background: var(--ra-page); font-size: 13px; font-weight: 600; color: var(--ra-t0); }
+.hx-btn-prim { background: var(--ra-t0); border-color: var(--ra-t0); color: var(--ra-sur); }
+.hx-btn-prim small { font-weight: 400; font-size: 12px; opacity: 0.85; }

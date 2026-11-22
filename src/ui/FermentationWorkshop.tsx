@@ -90,7 +90,7 @@ function FermentationPreview({ recipe, guide, yeast, goal, science, onChange, on
     </div>
     <details><summary className="cursor-pointer min-h-touch flex items-center text-water">Ajuster l’ensemencement et les paliers</summary><div className="space-y-4 pt-3">
     <HopField label="Ensemencement proposé (°C)" hint={`Réglage proposé : ${rangeLabel(plan.pitchTemperatureC.range, '°C')}. Température du moût à l’ajout de levure.`}>
-      <NumberInput className={inputClass} value={draft.pitchTempC} emptyValue={undefined} disabled={busy} onValue={pitchTempC => setDraft({ ...draft, pitchTempC })} />
+      <NumberInput id="wz-yeast-pitch" className={inputClass} value={draft.pitchTempC} emptyValue={undefined} disabled={busy} onValue={pitchTempC => setDraft({ ...draft, pitchTempC })} />
     </HopField>
     <ol className="space-y-4">
       {plan.phases.map((phase, i) => <li key={phase.id} className="border-l-2 border-ebc-straw/40 pl-3 space-y-2">

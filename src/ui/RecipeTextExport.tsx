@@ -1,6 +1,7 @@
 import { Textarea } from './Input';
 import React, { useMemo, useState } from 'react';
 import { Check, ClipboardCopy, Download } from 'lucide-react';
+import { RECIPE_REIMPORT_MARKER } from '../domain/recipeTransfer';
 
 export function RecipeTextExport({ buildText }: { buildText: () => string }) {
   const [state, setState] = useState<'ready' | 'copying' | 'copied'>('ready');
@@ -11,6 +12,13 @@ export function RecipeTextExport({ buildText }: { buildText: () => string }) {
     try { return { text: buildText(), error: '' }; }
     catch (error) { return { text: '', error: error instanceof Error ? error.message : 'Impossible de préparer la recette.' }; }
   }, [buildText, showText]);
+  // BR-24 : l'aperçu se lit ; le bloc de données de réimport (une ligne de JSON) reste dans la copie et dans le fichier .txt, pas à l'écran.
+  const visible = useMemo(() => {
+    const i = preview.text.indexOf(RECIPE_REIMPORT_MARKER);
+    return i < 0 ? preview.text : `${preview.text.slice(0, i).trimEnd()}
+
+(Les données de réimport sont dans la copie et dans le fichier .txt.)`;
+  }, [preview.text]);
   const copy = async () => {
     setError(''); setState('copying');
     try {
@@ -40,7 +48,7 @@ export function RecipeTextExport({ buildText }: { buildText: () => string }) {
     <details open={showText} onToggle={event => setShowText(event.currentTarget.open)}>
       <summary className="min-h-touch cursor-pointer text-xs text-cave-200">Texte complet et fichier .txt</summary>
       {preview.error ? <p role="alert" className="text-xs text-alert-strong">{preview.error}</p> : showText && <div className="space-y-1">
-        <Textarea aria-label="Texte complet de la recette" readOnly value={preview.text} rows={6}
+        <Textarea aria-label="Texte complet de la recette" readOnly value={visible} rows={6}
           className="w-full min-w-0 rounded-control border border-cave-700 bg-cave-850 p-2 text-base text-cave-200"/>
         <button type="button" className="min-h-touch inline-flex items-center gap-1 rounded-control border border-cave-700 px-2 text-xs text-cave-200" onClick={download}><Download className="w-3.5 h-3.5"/>Télécharger .txt</button>
       </div>}

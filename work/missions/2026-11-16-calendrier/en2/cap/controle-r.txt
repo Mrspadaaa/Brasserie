@@ -1,0 +1,6 @@
+ok r1 : en-tête 190 px, bande 35 px, 27 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la fenêtre 0
+ok r2 : en-tête 190 px, bande 24 px, 22 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la fenêtre 0
+ok r3 : en-tête 190 px, bande 35 px, 28 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la fenêtre 0
+ok r4 : en-tête 190 px, bande 35 px, 26 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la fenêtre 0
+ok r5 : en-tête 190 px, bande 23 px, 22 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la fenêtre 0
+ok r6 : en-tête 190 px, bande 35 px, 28 textes · petits 0 · hors 0 · chevauchés 0 · sur trait 0 · dans la fenêtre 0

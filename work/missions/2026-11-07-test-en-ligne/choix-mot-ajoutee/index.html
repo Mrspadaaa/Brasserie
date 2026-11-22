@@ -1,0 +1,86 @@
+<title>Mot « ajoutée »</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Mise en page : une colonne de cartes, chacune montre la vraie barre de décision de l'écran Dépense avec un libellé. */
+:root {
+  --fond: #faf6f0; --panneau: #f2ebe1; --trait: #ddd2c3; --texte: #2a211b; --doux: #75685b;
+  --ambre: #a8650f; --ambre-fond: #fbefd9; --ambre-trait: #d9a34d; --ref: #5f7d4e;
+  --sans: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --fond: #17120f; --panneau: #221b16; --trait: #3a2f27; --texte: #f1e7da; --doux: #a8998a;
+  --ambre: #e3a641; --ambre-fond: #2c2116; --ambre-trait: #8a6326; --ref: #9cbf86; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --fond: #17120f; --panneau: #221b16; --trait: #3a2f27; --texte: #f1e7da; --doux: #a8998a;
+  --ambre: #e3a641; --ambre-fond: #2c2116; --ambre-trait: #8a6326; --ref: #9cbf86; color-scheme: dark }
+body { background: var(--fond); color: var(--texte); font-family: var(--sans); margin: 0 }
+main { max-width: 720px; margin: 0 auto; padding-block: 24px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 18px }
+h1 { font-size: 20px; margin: 0; text-wrap: balance }
+.chapeau { color: var(--doux); font-size: 14px; line-height: 1.5; margin: 0 }
+.carte { display: grid; gap: 10px }
+.tete { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap }
+.lettre { font-family: var(--mono); font-weight: 600; font-size: 15px }
+.etiquette { font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--ref);
+  border: 1px solid var(--ref); border-radius: 999px; padding: 1px 8px }
+.sens { color: var(--doux); font-size: 13px; margin: 0 }
+/* La barre de décision, telle que dans l'app (bas de la liste des lignes). */
+.barre { background: var(--ambre-fond); border: 1.5px dashed var(--ambre-trait); border-radius: 10px;
+  padding: 10px 12px; display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: center }
+.ligne { font-family: var(--mono); font-weight: 600; font-size: 14px; min-width: 0 }
+.etat { font-size: 12.5px; color: var(--ambre); margin-top: 2px }
+.boutons { grid-column: 1 / -1; display: flex; gap: 8px }
+.bouton { font: 500 13px var(--sans); color: var(--texte); background: var(--panneau); border: 1px solid var(--trait);
+  border-radius: 999px; padding: 4px 12px }
+.tout { font: 500 12.5px var(--sans); color: var(--ambre); border: 1px solid var(--ambre-trait); border-radius: 999px;
+  padding: 3px 10px; background: transparent; white-space: nowrap }
+.pied { color: var(--doux); font-size: 12.5px; border-top: 1px solid var(--trait); padding-top: 12px; margin: 0 }
+</style>
+<main>
+  <h1>Le mot sous « Shipping 15,00 »</h1>
+  <p class="chapeau">Facture B&amp;R lue le 08.11 : la ligne de port, réelle (la même que « Porto und Verpackung 15,00 » sur la facture), arrive avec la lecture complète, après la lecture rapide. Aujourd'hui l'app la marque « ajoutée », ce qui fait croire à une invention. Choisis le mot ; le reste de la barre ne change pas.</p>
+
+  <section class="carte" aria-label="Variante A, aujourd'hui">
+    <div class="tete"><span class="lettre">A</span><span class="etiquette">aujourd'hui</span></div>
+    <div class="barre"><div><div class="ligne">Shipping 15,00</div><div class="etat">ajoutée · 1/2</div></div>
+      <span class="tout">↻ Tout valider</span>
+      <div class="boutons"><span class="bouton">✓ Garder</span><span class="bouton">✕ Retirer</span></div></div>
+    <p class="sens">Se lit comme « l'app l'a ajoutée ».</p>
+  </section>
+
+  <section class="carte" aria-label="Variante B">
+    <div class="tete"><span class="lettre">B</span></div>
+    <div class="barre"><div><div class="ligne">Shipping 15,00</div><div class="etat">2ᵉ lecture · 1/2</div></div>
+      <span class="tout">↻ Tout valider</span>
+      <div class="boutons"><span class="bouton">✓ Garder</span><span class="bouton">✕ Retirer</span></div></div>
+    <p class="sens">Le plus court : dit d'où vient la ligne.</p>
+  </section>
+
+  <section class="carte" aria-label="Variante C">
+    <div class="tete"><span class="lettre">C</span></div>
+    <div class="barre"><div><div class="ligne">Shipping 15,00</div><div class="etat">vue à la 2ᵉ lecture · 1/2</div></div>
+      <span class="tout">↻ Tout valider</span>
+      <div class="boutons"><span class="bouton">✓ Garder</span><span class="bouton">✕ Retirer</span></div></div>
+    <p class="sens">Dit qu'elle est sur le document, vue plus tard.</p>
+  </section>
+
+  <section class="carte" aria-label="Variante D">
+    <div class="tete"><span class="lettre">D</span></div>
+    <div class="barre"><div><div class="ligne">Shipping 15,00</div><div class="etat">trouvée ensuite · 1/2</div></div>
+      <span class="tout">↻ Tout valider</span>
+      <div class="boutons"><span class="bouton">✓ Garder</span><span class="bouton">✕ Retirer</span></div></div>
+    <p class="sens">Sans jargon de « lecture ».</p>
+  </section>
+
+  <section class="carte" aria-label="Variante E">
+    <div class="tete"><span class="lettre">E</span></div>
+    <div class="barre"><div><div class="ligne">Shipping 15,00</div><div class="etat">en plus, à vérifier · 1/2</div></div>
+      <span class="tout">↻ Tout valider</span>
+      <div class="boutons"><span class="bouton">✓ Garder</span><span class="bouton">✕ Retirer</span></div></div>
+    <p class="sens">Dit ce que tu dois faire, pas d'où elle vient.</p>
+  </section>
+
+  <p class="pied">Réponds par la lettre (A, B, C, D ou E), ou propose ton mot. 08.11.2026.</p>
+</main>

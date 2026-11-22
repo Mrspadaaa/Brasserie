@@ -4,6 +4,7 @@
  "documentTypeRetenu": "invoice",
  "proForma": true,
  "paymentEvidence": "paid",
+ "paymentMethod": "unknown",
  "fieldWarnings": [
   {
    "field": "tvaAmount",

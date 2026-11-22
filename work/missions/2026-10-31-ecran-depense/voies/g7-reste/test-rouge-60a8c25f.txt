@@ -1,0 +1,655 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+ [31m❯[39m tests/unit/depense/g7/regles-g7.test.ts [2m([22m[2m7 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[32m 12[2mms[22m[39m
+[31m   [31m×[31m M1 (D328a, D353) — le désaccord sur la nature d'une ligne sans stock ne marque rien[2m > [22mmatériel sans unité imprimée, q × prix = montant, lectures en désaccord sur la nature (equipment / other / stock) : la rangée est sûre[39m[32m 8[2mms[22m[39m
+[31m     → expected 'repris' to be 'sur' // Object.is equality[39m
+[31m   [31m×[31m M1 (D328a, D353) — le désaccord sur la nature d'une ligne sans stock ne marque rien[2m > [22mrénovation (vernis, brosse) : même règle[39m[32m 1[2mms[22m[39m
+[31m     → expected 'repris' to be 'sur' // Object.is equality[39m
+   [32m✓[39m M1 (D328a, D353) — le désaccord sur la nature d'une ligne sans stock ne marque rien[2m > [22mce qui entre en stock garde son désaccord : un nettoyant, un ingrédient restent à contrôler[32m 1[2mms[22m[39m
+[31m   [31m×[31m M1 (D328a, D353) — le désaccord sur la nature d'une ligne sans stock ne marque rien[2m > [22mun désaccord sur une autre cellule (le prix) ou une autre ligne reste signalé[39m[32m 0[2mms[22m[39m
+[31m     → (0 , natureSansEnjeu) is not a function[39m
+[31m   [31m×[31m M11 (D334) — un lien demandé et laissé vide est « à remplir », quelle que soit la nature[2m > [22mnettoyant : « Choisir un autre article » touché sans choisir (existing, sans référence) : la rangée est rouge, le champ « article à choisir » est nommé[39m[32m 1[2mms[22m[39m
+[31m     → (0 , articleCompte) is not a function[39m
+[31m   [31m×[31m M11 (D334) — un lien demandé et laissé vide est « à remplir », quelle que soit la nature[2m > [22mrien d'incomplet pour une nature sans stock : « aucun mouvement », un article relié ou un nouvel article ne sont pas un doute[39m[32m 1[2mms[22m[39m
+[31m     → (0 , articleCompte) is not a function[39m
+[31m   [31m×[31m M11 (D334) — un lien demandé et laissé vide est « à remplir », quelle que soit la nature[2m > [22mun ingrédient garde sa règle : lien vide = à remplir[39m[32m 0[2mms[22m[39m
+[31m     → (0 , articleCompte) is not a function[39m
+ [31m❯[39m tests/unit/depense/g7/ecran-g7.test.tsx [2m([22m[2m7 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[33m 1742[2mms[22m[39m
+[31m   [31m×[31m D357 — « Regrouper en une dépense » : un lien discret au bout du « Détail », et le retour reste[2m > [22mil n'est plus dans la rangée de « + Ajouter une ligne » : sans cadre, texte secondaire, 12 px, cible de 24 px, au bout de la ligne « Détail »[39m[32m 194[2mms[22m[39m
+[31m     → expected <div data-dp="fin" …(1)>…(3)</div> not to be <div data-dp="fin" …(1)>…(3)</div> // Object.is equality[39m
+   [32m✓[39m D357 — « Regrouper en une dépense » : un lien discret au bout du « Détail », et le retour reste[2m > [22mtoujours réversible : « Regrouper » puis « ↶ Rétablir » rend les deux lignes[32m 128[2mms[22m[39m
+[31m   [31m×[31m D358 — l'arrondi suisse à 5 centimes est sa propre ligne neutre[2m > [22mlignes 120,21, total imprimé 120,20 : une ligne « Arrondi à 5 centimes −0,01 » à la fin, le détail égale le total, aucune couleur d'alerte[39m[32m 90[2mms[22m[39m
+[31m     → expected null not to be null[39m
+[31m   [31m×[31m D358 — l'arrondi suisse à 5 centimes est sa propre ligne neutre[2m > [22mlignes 124,48, total 124,50 : « +0,02 » (le sens suit l'écart)[39m[32m 87[2mms[22m[39m
+[31m     → Cannot read properties of null (reading 'textContent')[39m
+   [32m✓[39m D358 — l'arrondi suisse à 5 centimes est sa propre ligne neutre[2m > [22mtout autre écart reste signalé : 120,21 pour 121,20 : aucune ligne d'arrondi, le détail garde l'écart et la couleur d'attention[32m 88[2mms[22m[39m
+   [32m✓[39m D358 — l'arrondi suisse à 5 centimes est sa propre ligne neutre[2m > [22mune somme exacte n'a aucune ligne d'arrondi[32m 86[2mms[22m[39m
+[31m   [31m×[31m D334, M11 — « ⇄ Choisir un autre article » sur un nettoyant, sans choisir[2m > [22mla puce « 1 à remplir » existe ; elle ouvre la rangée, le champ « Article » est rouge, nommé, et le focus y est[39m[33m 1068[2mms[22m[39m
+[31m     → expected null not to be null
+
+Ignored nodes: comments, script, style
+[36m<html>[31m
+  [36m<head />[31m
+  [36m<body[31m
+    [33mstyle[31m=[32m"overflow: hidden;"[31m
+  [36m>[31m
+    [36m<div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33maria-labelledby[31m=[32m"_r_o_"[31m
+          [33maria-modal[31m=[32m"true"[31m
+          [33mclass[31m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[31m
+          [33mrole[31m=[32m"dialog"[31m
+          [33mtabindex[31m=[32m"-1"[31m
+        [36m>[31m
+          [36m<header[31m
+            [33mclass[31m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33maria-label[31m=[32m"Fermer"[31m
+              [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[31m
+              [33mtype[31m=[32m"button"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-x"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"20"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"20"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M18 6 6 18"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"m6 6 12 12"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+            [36m<h2[31m
+              [33mclass[31m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[31m
+              [33mid[31m=[32m"_r_o_"[31m
+            [36m>[31m
+              [0mNouvelle dépense[0m
+            [36m</h2>[31m
+            [36m<button[31m
+              [33maria-expanded[31m=[32m"false"[31m
+              [33maria-label[31m=[32m"Justificatif : voir l’original, changer"[31m
+              [33mclass[31m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200"[31m
+              [33mtype[31m=[32m"button"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"lucide lucide-file-text"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mheight[31m=[32m"20"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+                [33mstroke-width[31m=[32m"2"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mwidth[31m=[32m"20"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M10 9H8"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M16 13H8"[31m
+                [36m/>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M16 17H8"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+            [36m</button>[31m
+          [36m</header>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m""[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"hidden space-y-1.5 rounded-panel border border-cave-800 bg-cave-900/60 p-2"[31m
+                [33mdata-dp[31m=[32m"justificatif"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex flex-wrap items-center gap-1.5"[31m
+                [36m>[31m
+                  [36m<a[31m
+                    [33mclass[31m=[32m"inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw"[31m
+                    [33mdownload[31m=[32m"facture-travaux.pdf"[31m
+                    [33mhref[31m=[32m"data:application/pdf;base64,JVBERi0xLjQK"[31m
+                  [36m>[31m
+                    [0mOuvrir le PDF original[0m
+                  [36m</a>[31m
+                  [36m<button[31m
+                    [33maria-label[31m=[32m"Changer"[31m
+                    [33mclass[31m=[32m"ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"[31m
+                    [33mtitle[31m=[32m"Changer le fichier"[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [36m<svg[31m
+                      [33maria-hidden[31m=[32m"true"[31m
+                      [33mclass[31m=[32m"lucide lucide-file-text"[31m
+                      [33mfill[31m=[32m"none"[31m
+                      [33mheight[31m=[32m"14"[31m
+                      [33mstroke[31m=[32m"currentColor"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                      [33mstroke-width[31m=[32m"2"[31m
+                      [33mviewBox[31m=[32m"0 0 24 24"[31m
+                      [33mwidth[31m=[32m"14"[31m
+                      [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                    [36m>[31m
+                      [36m<path[31m
+                        [33md[31m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[31m
+                      [36m/>[31m
+                  ...[39m
+ [31m❯[39m tests/unit/depense/g2a/tout-valider.test.tsx [2m([22m[2m11 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[33m 1825[2mms[22m[39m
+   [32m✓[39m D329 : les valeurs corrigées passent par le bandeau[2m > [22mtrois corrections, aucune ligne perdue : le bandeau existe, « 2 valeurs corrigées · 1/3 » sur Pilsner, « Tout valider » dès 2 éléments[32m 298[2mms[22m[39m
+[31m   [31m×[31m D329 : les valeurs corrigées passent par le bandeau[2m > [22m« Garder » : la correction n’est plus marquée (D354 : ni bleu, ni ancienne valeur, un de moins à la puce) et le bandeau passe à la suivante (2/3) ; « Annuler » rend la valeur du provisoire et ôte le bleu et un de la puce[39m[32m 245[2mms[22m[39m
+[31m     → expected <span data-dp-qte="true" …(2)></span> to be null[39m
+   [32m✓[39m D329 : les valeurs corrigées passent par le bandeau[2m > [22m« Annuler » sur Pilsner : quantité et prix du provisoire reviennent (10 Kg × 1,45)[32m 139[2mms[22m[39m
+[31m   [31m×[31m D329 : les valeurs corrigées passent par le bandeau[2m > [22m« Tout valider » garde tout d’un toucher : le bandeau part et plus rien ne se marque (D354 : ni bleu, ni ancienne valeur, plus de puce « corrigées »)[39m[32m 91[2mms[22m[39m
+[31m     → line-1: expected true to be false // Object.is equality[39m
+   [32m✓[39m D329 : les valeurs corrigées passent par le bandeau[2m > [22m« Confirmer » sans trancher : tout est gardé (la quantité corrigée est enregistrée)[32m 87[2mms[22m[39m
+   [32m✓[39m D329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22mdeux lignes pas retrouvées puis les trois corrections : « 1/5 », « 2/5 », « 3/5 » ; Retirer reste pour une ligne perdue[32m 125[2mms[22m[39m
+[31m   [31m×[31m D329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22m« Tout valider » : les lignes perdues partent, les corrections gardées ne se marquent plus (D354)[39m[32m 225[2mms[22m[39m
+[31m     → expected <span data-dp-qte="true" …(2)></span> to be null[39m
+[31m   [31m×[31m D329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22mla ligne ajoutée vient après les corrections : « ajoutée », Garder ou Retirer (la ligne et un de la puce partent)[39m[33m 357[2mms[22m[39m
+[31m     → expected <button type="button" …(3)>…(2)</button> to be null[39m
+   [32m✓[39m D329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22mun désaccord qui pèse vient en dernier ; c’est une valeur reprise : il compte dans « à contrôler » (pas de puce à part) ; « Garder » règle le point et le bandeau part[32m 79[2mms[22m[39m
+   [32m✓[39m D329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22m« Voir » ouvre la rangée du désaccord et le bandeau reste jusqu’à « Garder »[32m 74[2mms[22m[39m
+   [32m✓[39m B1 (remplace D328g) : une traduction n’est pas une correction[2m > [22mle français que la 3e lecture rend d’un nom : la rangée le porte seul, sans nom barré, sans bleu, hors de « ↻ corrigées »[32m 105[2mms[22m[39m
+ [31m❯[39m tests/unit/depense/lecture-d/ecran.test.tsx [2m([22m[2m16 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 2739[2mms[22m[39m
+   [33m[2m✓[22m[39m E5, E6 : après le provisoire, l’écran arrive et « Confirmer » attend[2m > [22mles lignes sont là, le fil et « Lectures ●●◌ » aussi ; « Confirmer » est désactivé avec la roue (aria « Vérification en cours ») ; « Fermer » reste actif [33m 328[2mms[22m[39m
+   [32m✓[39m E5, E6 : après le provisoire, l’écran arrive et « Confirmer » attend[2m > [22mles champs restent modifiables pendant l’attente : sa saisie est prise[32m 201[2mms[22m[39m
+   [32m✓[39m E7 : le final arrive : bouton noir, puce « N corrigées », valeurs bleues, ancienne valeur barrée[2m > [22mle fil part, « Lectures 3/3 », la puce compte les rangées (3), l’ancienne valeur est « 10 Kg × 1,45 », et la fusion garde les rangées en place (m3)[32m 202[2mms[22m[39m
+   [32m✓[39m E7 : le final arrive : bouton noir, puce « N corrigées », valeurs bleues, ancienne valeur barrée[2m > [22mE8 : une ligne qu’il a supprimée pendant l’attente ne revient pas[32m 136[2mms[22m[39m
+   [32m✓[39m E7 : le final arrive : bouton noir, puce « N corrigées », valeurs bleues, ancienne valeur barrée[2m > [22mune cellule qu’il a tapée pendant l’attente reste la sienne, sans bleu ; l’autre cellule de la rangée est corrigée[32m 101[2mms[22m[39m
+   [32m✓[39m E9 et son choix 1 B : une ligne que la 3.8 ajoute[2m > [22mune rangée de plus (id `line-${n+1}`), toute sur le bleu avec ↻, comptée dans la puce (4 corrigées)[32m 164[2mms[22m[39m
+   [33m[2m✓[22m[39m son choix 2 D : une ligne que la 3.8 ne lit plus[2m > [22mbarrée, hors des sommes, au bandeau ; « Confirmer » sans trancher : elle part (elle n’est pas enregistrée) [33m 335[2mms[22m[39m
+   [32m✓[39m son choix 2 D : une ligne que la 3.8 ne lit plus[2m > [22m« Garder » la remet en rangée ordinaire à sa place, dans les sommes ; « Retirer » la fait partir[32m 237[2mms[22m[39m
+   [32m✓[39m « Tout valider » (sa maquette B, D316) à deux lignes[2m > [22mle bandeau défile (« 1/2 » puis « 2/2 »), « Tout valider » à côté ; Garder puis Retirer un à un[32m 166[2mms[22m[39m
+[31m   [31m×[31m « Tout valider » (sa maquette B, D316) à deux lignes[2m > [22m« Tout valider » : toutes les lignes pas retrouvées partent d’un toucher[39m[32m 106[2mms[22m[39m
+[31m     → expected <button type="button" …(3)>…(2)</button> to be null[39m
+   [32m✓[39m le total corrigé (défaut A, D315)[2m > [22mle champ d’en-tête que la 3.8 corrige est sur le bleu, l’ancien total barré à côté, et compte une fois dans la puce[32m 167[2mms[22m[39m
+   [32m✓[39m E12, E13 : sans 3.8 et 3.8 en échec[2m > [22mE12 : le final arrive avec les valeurs du provisoire et le point « lecture coupée » : « 2 lectures » en attention, aucune puce, bouton noir[32m 202[2mms[22m[39m
+   [32m✓[39m E12, E13 : sans 3.8 et 3.8 en échec[2m > [22mE13 : une pièce sans 3.8 (le final seul, aucun morceau) : aucun fil, bouton noir, « Lectures 2/2 » comme aujourd’hui[32m 155[2mms[22m[39m
+   [32m✓[39m E14 et la 3.8 qui n’arrive jamais (défaut A, D315) : la fin de partie[2m > [22mle final rend `ok:false` après le morceau : le fil part, le bouton est noir, la forme est celle d’une 3.8 coupée (point « lecture coupée », « 2 lectures »)[32m 107[2mms[22m[39m
+   [32m✓[39m E14 et la 3.8 qui n’arrive jamais (défaut A, D315) : la fin de partie[2m > [22mune erreur levée après le morceau ne laisse jamais le bouton gris[32m 65[2mms[22m[39m
+   [32m✓[39m E11 (M6) : la traduction du provisoire qui arrive après la fusion est jetée ; un nom changé est retraduit[2m > [22mle nom de base changé par la 3.8 efface `nameFr` et la seconde traduction ne porte que ce qui n’a pas de français[32m 65[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 15 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/tout-valider.test.tsx[2m > [22mD329 : les valeurs corrigées passent par le bandeau[2m > [22m« Garder » : la correction n’est plus marquée (D354 : ni bleu, ni ancienne valeur, un de moins à la puce) et le bandeau passe à la suivante (2/3) ; « Annuler » rend la valeur du provisoire et ôte le bleu et un de la puce
+[31m[1mAssertionError[22m: expected <span data-dp-qte="true" …(2)></span> to be null[39m
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+<span
+  class="font-semibold rounded-control bg-area-finances/15 px-1 text-area-finances"
+  data-dp-corrige="1"
+  data-dp-qte="true"
+>
+  5 Kg
+</span>
+
+[36m [2m❯[22m tests/unit/depense/g2a/tout-valider.test.tsx:[2m73:68[22m[39m
+    [90m 71| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mnom[39m(v))[33m.[39m[34mtoBe[39m([32m'Sabro'[39m))[33m;[39m
+    [90m 72| [39m    expect(rang(v)).toBe('2/3'); expect(mot(v)).toMatch(/^quantité cor…
+    [90m 73| [39m    expect(ligne(v, 'line-1')!.querySelector('[data-dp-corrige]')).toB…
+    [90m   | [39m                                                                   [31m^[39m
+    [90m 74| [39m    [34mexpect[39m([34mchamp[39m(v[33m,[39m [32m'line-1'[39m[33m,[39m [32m'Quantité'[39m[33m,[39m [34m1[39m))[33m.[39m[34mtoMatch[39m([36m/^5/[39m)[33m;[39m
+    [90m 75| [39m    expect(ligne(v, 'line-4')!.querySelector('[data-dp-corrige]')).not…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/tout-valider.test.tsx[2m > [22mD329 : les valeurs corrigées passent par le bandeau[2m > [22m« Tout valider » garde tout d’un toucher : le bandeau part et plus rien ne se marque (D354 : ni bleu, ni ancienne valeur, plus de puce « corrigées »)
+[31m[1mAssertionError[22m: line-1: expected true to be false // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- false[39m
+[31m+ true[39m
+
+[36m [2m❯[22m tests/unit/depense/g2a/tout-valider.test.tsx:[2m97:128[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/tout-valider.test.tsx[2m > [22mD329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22m« Tout valider » : les lignes perdues partent, les corrections gardées ne se marquent plus (D354)
+[31m[1mAssertionError[22m: expected <span data-dp-qte="true" …(2)></span> to be null[39m
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+<span
+  class="font-semibold rounded-control bg-area-finances/15 px-1 text-area-finances"
+  data-dp-corrige="1"
+  data-dp-qte="true"
+>
+  5 Kg
+</span>
+
+[36m [2m❯[22m tests/unit/depense/g2a/tout-valider.test.tsx:[2m128:68[22m[39m
+    [90m126| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mbandeau[39m(v))[33m.[39m[34mtoBeNull[39m())[33m;[39m
+    [90m127| [39m    expect(v.container.querySelectorAll('[data-dp-perdue]')).toHaveLen…
+    [90m128| [39m    expect(ligne(v, 'line-1')!.querySelector('[data-dp-corrige]')).toB…
+    [90m   | [39m                                                                   [31m^[39m
+    [90m129| [39m  })[33m;[39m
+    [90m130| [39m  it('la ligne ajoutée vient après les corrections : « ajoutée », Gard…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g2a/tout-valider.test.tsx[2m > [22mD329 : l’ordre — pas retrouvées, corrigées, ajoutées, désaccords[2m > [22mla ligne ajoutée vient après les corrections : « ajoutée », Garder ou Retirer (la ligne et un de la puce partent)
+[31m[1mAssertionError[22m: expected <button type="button" …(3)>…(2)</button> to be null[39m
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+<button
+  aria-pressed="false"
+  class="inline-flex min-h-6 items-center gap-0.5 rounded-control px-1 text-xs text-cave-200 border-[1.5px] border-solid border-area-finances bg-area-finances/10 text-area-finances"
+  data-va="corrigees"
+  type="button"
+>
+  <svg
+    aria-hidden="true"
+    class="lucide lucide-refresh-cw mr-0.5 shrink-0"
+    fill="none"
+    height="14"
+    stroke="currentColor"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="2.2"
+    viewBox="0 0 24 24"
+    width="14"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"
+    />
+    <path
+      d="M21 3v5h-5"
+    />
+    <path
+      d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"
+    />
+    <path
+      d="M8 16H3v5"
+    />
+  </svg>
+  <b
+    class="font-mono font-semibold text-cave-50"
+  >
+    3
+  </b>
+   
+  corrigées
+</button>
+
+[36m [2m❯[22m tests/unit/depense/g2a/tout-valider.test.tsx:[2m142:64[22m[39m
+    [90m140| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m([34mbandeau[39m(v))[33m.[39m[34mtoBeNull[39m())[33m;[39m
+    [90m141| [39m    [34mexpect[39m([34mligne[39m(v[33m,[39m [32m'line-8'[39m))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m142| [39m    expect(v.container.querySelector('[data-va="corrigees"]')).toBeNul…
+    [90m   | [39m                                                               [31m^[39m
+    [90m143| [39m  })[33m;[39m
+    [90m144| [39m  it('un désaccord qui pèse vient en dernier ; c’est une valeur repris…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g7/ecran-g7.test.tsx[2m > [22mD357 — « Regrouper en une dépense » : un lien discret au bout du « Détail », et le retour reste[2m > [22mil n'est plus dans la rangée de « + Ajouter une ligne » : sans cadre, texte secondaire, 12 px, cible de 24 px, au bout de la ligne « Détail »
+[31m[1mAssertionError[22m: expected <div data-dp="fin" …(1)>…(3)</div> not to be <div data-dp="fin" …(1)>…(3)</div> // Object.is equality[39m
+[36m [2m❯[22m tests/unit/depense/g7/ecran-g7.test.tsx:[2m39:41[22m[39m
+    [90m 37| [39m    const ajouter = bouton(fin(), /Ajouter une ligne/), regrouper = bo…
+    [90m 38| [39m    [34mexpect[39m(regrouper)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m 39| [39m    [34mexpect[39m(regrouper[33m.[39mparentElement)[33m.[39mnot[33m.[39m[34mtoBe[39m(ajouter[33m.[39mparentElement)[33m;[39m
+    [90m   | [39m                                        [31m^[39m
+    [90m 40| [39m    [34mexpect[39m(regrouper[33m.[39mparentElement[33m![39m[33m.[39mtextContent)[33m.[39m[34mtoMatch[39m([36m/Détail/[39m)[33m;[39m
+    [90m 41| [39m    [35mconst[39m cls [33m=[39m regrouper[33m.[39mclassName[33m.[39m[34msplit[39m([36m/\s+/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g7/ecran-g7.test.tsx[2m > [22mD358 — l'arrondi suisse à 5 centimes est sa propre ligne neutre[2m > [22mlignes 120,21, total imprimé 120,20 : une ligne « Arrondi à 5 centimes −0,01 » à la fin, le détail égale le total, aucune couleur d'alerte
+[31m[1mAssertionError[22m: expected null not to be null[39m
+[36m [2m❯[22m tests/unit/depense/g7/ecran-g7.test.tsx:[2m61:25[22m[39m
+    [90m 59| [39m    await lirePiece(state.scanned, deux, r => { r.amountTTC = 120.2; }…
+    [90m 60| [39m    [35mconst[39m arrondi [33m=[39m [34mq[39m([32m'[data-dp-arrondi]'[39m)[33m![39m[33m;[39m
+    [90m 61| [39m    [34mexpect[39m(arrondi)[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m   | [39m                        [31m^[39m
+    [90m 62| [39m    expect(arrondi.textContent).toMatch(/Arrondi à 5 centimes/); expec…
+    [90m 63| [39m    [35mconst[39m detail [33m=[39m [34mdetailDe[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g7/ecran-g7.test.tsx[2m > [22mD358 — l'arrondi suisse à 5 centimes est sa propre ligne neutre[2m > [22mlignes 124,48, total 124,50 : « +0,02 » (le sens suit l'écart)
+[31m[1mTypeError[22m: Cannot read properties of null (reading 'textContent')[39m
+[36m [2m❯[22m tests/unit/depense/g7/ecran-g7.test.tsx:[2m73:33[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g7/ecran-g7.test.tsx[2m > [22mD334, M11 — « ⇄ Choisir un autre article » sur un nettoyant, sans choisir[2m > [22mla puce « 1 à remplir » existe ; elle ouvre la rangée, le champ « Article » est rouge, nommé, et le focus y est
+[31m[1mAssertionError[22m[39m: expected null not to be null
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body[39m
+    [33mstyle[39m=[32m"overflow: hidden;"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"_r_o_"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[39m
+          [33mrole[39m=[32m"dialog"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<header[39m
+            [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Fermer"[39m
+              [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-x"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M18 6 6 18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 6 12 12"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+              [33mid[39m=[32m"_r_o_"[39m
+            [36m>[39m
+              [0mNouvelle dépense[0m
+            [36m</h2>[39m
+            [36m<button[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33maria-label[39m=[32m"Justificatif : voir l’original, changer"[39m
+              [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"lucide lucide-file-text"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M10 9H8"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 13H8"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 17H8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+            [36m</button>[39m
+          [36m</header>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m""[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"hidden space-y-1.5 rounded-panel border border-cave-800 bg-cave-900/60 p-2"[39m
+                [33mdata-dp[39m=[32m"justificatif"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex flex-wrap items-center gap-1.5"[39m
+                [36m>[39m
+                  [36m<a[39m
+                    [33mclass[39m=[32m"inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw"[39m
+                    [33mdownload[39m=[32m"facture-travaux.pdf"[39m
+                    [33mhref[39m=[32m"data:application/pdf;base64,JVBERi0xLjQK"[39m
+                  [36m>[39m
+                    [0mOuvrir le PDF original[0m
+                  [36m</a>[39m
+                  [36m<button[39m
+                    [33maria-label[39m=[32m"Changer"[39m
+                    [33mclass[39m=[32m"ml-auto inline-flex min-h-7 items-center gap-1 rounded-control border border-cave-600 px-2.5 text-sm text-cave-50 disabled:opacity-40"[39m
+                    [33mtitle[39m=[32m"Changer le fichier"[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [36m<svg[39m
+                      [33maria-hidden[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"lucide lucide-file-text"[39m
+                      [33mfill[39m=[32m"none"[39m
+                      [33mheight[39m=[32m"14"[39m
+                      [33mstroke[39m=[32m"currentColor"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                      [33mstroke-width[39m=[32m"2"[39m
+                      [33mviewBox[39m=[32m"0 0 24 24"[39m
+                      [33mwidth[39m=[32m"14"[39m
+                      [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                    [36m>[39m
+                      [36m<path[39m
+                        [33md[39m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[39m
+                      [36m/>[39m
+                  ...
+[36m [2m❯[22m tests/unit/depense/g7/ecran-g7.test.tsx:[2m95:62[22m[39m
+    [90m 93| [39m    [35mconst[39m rangee [33m=[39m [34mq[39m([32m'[data-dp-ligne="line-1"]'[39m)[33m![39m[33m;[39m
+    [90m 94| [39m    fireEvent.click(rangee.querySelector('[aria-label="Choisir un autr…
+    [90m 95| [39m    await waitFor(() => expect(q('[data-va="remplir"]')).not.toBeNull(…
+    [90m   | [39m                                                             [31m^[39m
+    [90m 96| [39m    expect(q('[data-va="remplir"]')!.textContent).toMatch(/1\s*à rempl…
+    [90m 97| [39m    fireEvent[33m.[39m[34mclick[39m([34mq[39m([32m'[data-va="remplir"]'[39m)[33m![39m)[33m;[39m
+[90m [2m❯[22m runWithExpensiveErrorDiagnosticsDisabled ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/config.js:[2m47:12[22m[39m
+[90m [2m❯[22m checkCallback ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m124:77[22m[39m
+[90m [2m❯[22m Timeout.checkRealTimersCallback ../../../../Documents/Brasserie/node_modules/@testing-library/dom/dist/wait-for.js:[2m118:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g7/regles-g7.test.ts[2m > [22mM1 (D328a, D353) — le désaccord sur la nature d'une ligne sans stock ne marque rien[2m > [22mmatériel sans unité imprimée, q × prix = montant, lectures en désaccord sur la nature (equipment / other / stock) : la rangée est sûre
+[31m[1mAssertionError[22m: expected 'repris' to be 'sur' // Object.is equality[39m
+
+Expected: [32m"sur"[39m
+Received: [31m"repris"[39m
+
+[36m [2m❯[22m tests/unit/depense/g7/regles-g7.test.ts:[2m24:30[22m[39m
+    [90m 22| [39m    const c = confianceLigne(l, { lignes: [l], points: [p], categorie:…
+    [90m 23| [39m    [34mexpect[39m(c[33m.[39munite)[33m.[39m[34mtoMatchObject[39m({ niveau[33m:[39m [32m'sur'[39m[33m,[39m valeur[33m:[39m [32m'Stk'[39m })[33m;[39m
+    [90m 24| [39m    [34mexpect[39m(c[33m.[39mfamille[33m.[39mniveau)[33m.[39m[34mtoBe[39m([32m'sur'[39m)[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m 25| [39m    [34mexpect[39m(c[33m.[39mpire)[33m.[39m[34mtoBe[39m([32m'sur'[39m)[33m;[39m
+    [90m 26| [39m    expect(natureSansEnjeu(p, { lignes: [l], points: [p], categorie: '…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g7/regles-g7.test.ts[2m > [22mM1 (D328a, D353) — le désaccord sur la nature d'une ligne sans stock ne marque rien[2m > [22mrénovation (vernis, brosse) : même règle
+[31m[1mAssertionError[22m: expected 'repris' to be 'sur' // Object.is equality[39m
+
+Expected: [32m"sur"[39m
+Received: [31m"repris"[39m
+
+[36m [2m❯[22m tests/unit/depense/g7/regles-g7.test.ts:[2m31:20[22m[39m
+    [90m 29| [39m    [35mconst[39m l [33m=[39m [34mligneC[39m([34m5[39m[33m,[39m [32m'Brosse plate 50 mm'[39m[33m,[39m [32m'equipment'[39m[33m,[39m [34m2[39m[33m,[39m [34m3.9[39m)[33m;[39m
+    [90m 30| [39m    const c = confianceLigne(l, { lignes: [l], points: [desaccord(5, '…
+    [90m 31| [39m    [34mexpect[39m(c[33m.[39mpire)[33m.[39m[34mtoBe[39m([32m'sur'[39m)[33m;[39m
+    [90m   | [39m                   [31m^[39m
+    [90m 32| [39m  })[33m;[39m
+    [90m 33| [39m  it('ce qui entre en stock garde son désaccord : un nettoyant, un ing…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g7/regles-g7.test.ts[2m > [22mM1 (D328a, D353) — le désaccord sur la nature d'une ligne sans stock ne marque rien[2m > [22mun désaccord sur une autre cellule (le prix) ou une autre ligne reste signalé
+[31m[1mTypeError[22m: (0 , natureSansEnjeu) is not a function[39m
+[36m [2m❯[22m tests/unit/depense/g7/regles-g7.test.ts:[2m42:12[22m[39m
+    [90m 40| [39m    const l = ligneC(3, 'Fermenteur 30 L fictif', 'equipment', 1, 89, …
+    [90m 41| [39m    [35mconst[39m prix [33m=[39m [34mdesaccord[39m([34m3[39m[33m,[39m [32m'price'[39m[33m,[39m [[32m'89'[39m[33m,[39m [32m'98'[39m[33m,[39m [32m'89'[39m])[33m;[39m
+    [90m 42| [39m    expect(natureSansEnjeu(prix, { lignes: [l], points: [prix] })).toB…
+    [90m   | [39m           [31m^[39m
+    [90m 43| [39m    expect(confianceLigne(l, { lignes: [l], points: [prix], categorie:…
+    [90m 44| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g7/regles-g7.test.ts[2m > [22mM11 (D334) — un lien demandé et laissé vide est « à remplir », quelle que soit la nature[2m > [22mnettoyant : « Choisir un autre article » touché sans choisir (existing, sans référence) : la rangée est rouge, le champ « article à choisir » est nommé
+[31m[1mTypeError[22m: (0 , articleCompte) is not a function[39m
+[36m [2m❯[22m lireNiveaux tests/unit/depense/g7/regles-g7.test.ts:[2m51:112[22m[39m
+    [90m 49| [39m[35mconst[39m lireNiveaux [33m=[39m (line[33m:[39m [33mPurchaseLineDraft[39m) [33m=>[39m {
+    [90m 50| [39m  const conf = confianceLigne(ligneConfianceDe(line), contexteConfianc…
+    [90m 51| [39m  return { conf, nv: niveauxRangee(line, conf), rouges: champsARemplir…
+    [90m   | [39m                                                                                                               [31m^[39m
+    [90m 52| [39m}[33m;[39m
+    [90m 53| [39m
+[90m [2m❯[22m tests/unit/depense/g7/regles-g7.test.ts:[2m56:28[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g7/regles-g7.test.ts[2m > [22mM11 (D334) — un lien demandé et laissé vide est « à remplir », quelle que soit la nature[2m > [22mrien d'incomplet pour une nature sans stock : « aucun mouvement », un article relié ou un nouvel article ne sont pas un doute
+[31m[1mTypeError[22m: (0 , articleCompte) is not a function[39m
+[36m [2m❯[22m lireNiveaux tests/unit/depense/g7/regles-g7.test.ts:[2m51:112[22m[39m
+    [90m 49| [39m[35mconst[39m lireNiveaux [33m=[39m (line[33m:[39m [33mPurchaseLineDraft[39m) [33m=>[39m {
+    [90m 50| [39m  const conf = confianceLigne(ligneConfianceDe(line), contexteConfianc…
+    [90m 51| [39m  return { conf, nv: niveauxRangee(line, conf), rouges: champsARemplir…
+    [90m   | [39m                                                                                                               [31m^[39m
+    [90m 52| [39m}[33m;[39m
+    [90m 53| [39m
+[90m [2m❯[22m tests/unit/depense/g7/regles-g7.test.ts:[2m63:30[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/g7/regles-g7.test.ts[2m > [22mM11 (D334) — un lien demandé et laissé vide est « à remplir », quelle que soit la nature[2m > [22mun ingrédient garde sa règle : lien vide = à remplir
+[31m[1mTypeError[22m: (0 , articleCompte) is not a function[39m
+[36m [2m❯[22m tests/unit/depense/g7/regles-g7.test.ts:[2m69:12[22m[39m
+    [90m 67| [39m  })[33m;[39m
+    [90m 68| [39m  [34mit[39m([32m'un ingrédient garde sa règle : lien vide = à remplir'[39m[33m,[39m () [33m=>[39m {
+    [90m 69| [39m    expect(articleCompte({ kind: 'ingredient', stockAction: 'existing'…
+    [90m   | [39m           [31m^[39m
+    [90m 70| [39m    expect(articleCompte({ kind: 'cleaning', stockAction: 'existing', …
+    [90m 71| [39m    expect(articleCompte({ kind: 'cleaning', stockAction: 'existing', …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/ecran.test.tsx[2m > [22m« Tout valider » (sa maquette B, D316) à deux lignes[2m > [22m« Tout valider » : toutes les lignes pas retrouvées partent d’un toucher
+[31m[1mAssertionError[22m: expected <button type="button" …(3)>…(2)</button> to be null[39m
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+<button
+  aria-pressed="false"
+  class="inline-flex min-h-6 items-center gap-0.5 rounded-control px-1 text-xs text-cave-200 border-[1.5px] border-solid border-area-finances bg-area-finances/10 text-area-finances"
+  data-va="corrigees"
+  type="button"
+>
+  <svg
+    aria-hidden="true"
+    class="lucide lucide-refresh-cw mr-0.5 shrink-0"
+    fill="none"
+    height="14"
+    stroke="currentColor"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="2.2"
+    viewBox="0 0 24 24"
+    width="14"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"
+    />
+    <path
+      d="M21 3v5h-5"
+    />
+    <path
+      d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"
+    />
+    <path
+      d="M8 16H3v5"
+    />
+  </svg>
+  <b
+    class="font-mono font-semibold text-cave-50"
+  >
+    3
+  </b>
+   
+  corrigées
+</button>
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/ecran.test.tsx:[2m202:67[22m[39m
+    [90m200| [39m    await waitFor(() => expect(view.container.querySelector('[data-dp=…
+    [90m201| [39m    expect(view.container.querySelector('[data-dp-perdue]')).toBeNull(…
+    [90m202| [39m    expect(view.container.querySelector('[data-va="corrigees"]')).toBe…
+    [90m   | [39m                                                                  [31m^[39m
+    [90m203| [39m  })[33m;[39m
+    [90m204| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/15]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m4 failed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[31m15 failed[39m[22m[2m | [22m[1m[32m26 passed[39m[22m[90m (41)[39m
+[2m   Start at [22m 20:23:34
+[2m   Duration [22m 4.62s[2m (transform 1.55s, setup 428ms, collect 4.28s, tests 6.32s, environment 1.80s, prepare 228ms)[22m
+

@@ -1,7 +1,11 @@
-import React, { useState, useEffect, useMemo, useRef, useContext, lazy } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useMemo, useRef, useContext, lazy } from 'react';
 import { StorageService, defaultConfig } from './services/storage';
 import { Header } from './components/Header';
 import { PersistenceStatus } from './ui/PersistenceStatus';
+import { NouvelleVersion } from './ui/NouvelleVersion';
+import { ProofUploadNotice } from './ui/finance/ProofUploadNotice';
+import { startProofQueue } from './services/proofQueue';
+import { startEnrichissement } from './services/enrichissement';
 import { BrewerActivity } from './ui/BrewerActivity';
 import { brewerAppScreen } from '../functions/src/brewerAppScreens';
 import { BottomNav, TabType } from './components/BottomNav';
@@ -11,6 +15,7 @@ import { ModalOpenerContext } from './ui/ModalShell';
 import type { WizardSeed } from './pages/BrewWizard';
 
 import { useFullScreenRoute, type LayerRoute, type Route } from './pages/useFullScreenRoute';
+import { readRecipeDraftState } from './services/recipeDraft';
 import { useHopPileDevHook } from './ui/hopIndex/devHook';
 import { CommandPalette, type CommandGroup } from './ui/CommandPalette';
 import { useStorageValue } from './hooks/useLiveData';
@@ -23,6 +28,8 @@ import { batchDisplayDate } from './domain/batchSchedule';
 import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from './domain/recipeInstallation';
 import { isCurrent } from './domain/catalogOrganization';
 import { nextUniqueRef } from './services/refs';
+import { articlesACommander } from './domain/stockLevel';
+import { formatLitres } from './domain/recipeMetrics';
 
 import { Units } from './services/units';
 import { saveRecipeConfirmed } from './services/recipeSave';
@@ -59,6 +66,7 @@ import { Sheet } from './ui/Sheet';
 import { ActionDock, PageShell } from './pages/PageShell';
 import { loadRecipePage, preparedRecipePage } from './pages/recipePageLoader';
 import { HopV55SemanticAdviceCapabilityContext, qualifyHopV55SemanticAdviceCapabilityV3 } from './ui/hopV55/assistedAdviceUiContracts';
+import { montantChf } from './domain/finance/ledger';
 
 const QuickActionModal = lazy(() => import('./components/QuickActionModal').then(module => ({ default: module.QuickActionModal })));
 const SettingsModal = lazy(() => import('./components/SettingsModal').then(module => ({ default: module.SettingsModal })));
@@ -225,11 +233,15 @@ export const App: React.FC = () => {
   }, [activeTab, productionSubTab]);
   const [wizardSeed, setWizardSeed] = useState<WizardSeed | undefined>(undefined);
   /** Sous-onglet courant, remonté par l'onglet actif. */
-  const [subTab, setSubTab] = useState<AnySubTab>(null);
+  /* BX-4 (09.11) : le sous-onglet de CHAQUE onglet, gardé. Le vider au changement d'onglet (et au toucher de l'onglet déjà actif) laissait le + sur
+     la première action (« Nouveau brassin » sous Recettes) : un écran resté monté ne renvoie son sous-onglet que s'il change. */
+  const [subTabs, setSubTabs] = useState<Partial<Record<TabType, AnySubTab>>>({});
+  const subTab: AnySubTab = subTabs[activeTab] ?? null;
+  const setSubTabOf = React.useCallback((tab: TabType, sub: AnySubTab) => setSubTabs(s => s[tab] === sub ? s : { ...s, [tab]: sub }), []);
   const handleProductionSubTabChange = React.useCallback((sub: string) => {
-    setSubTab(sub as AnySubTab);
+    setSubTabOf('production', sub as AnySubTab);
     setProductionSubTab(sub as 'batches' | 'recipes' | 'lab' | 'scaler');
-  }, []);
+  }, [setSubTabOf]);
   /**
    * Demande de création adressée à l'écran courant.
    *
@@ -304,6 +316,8 @@ export const App: React.FC = () => {
     }
 
     StorageService.startSync();
+    const stopProofQueue = startProofQueue();
+    const stopFiches = startEnrichissement();
 
     let cancelled = false;
     runMigrationIfNeeded().then((report) => {
@@ -322,6 +336,8 @@ export const App: React.FC = () => {
 
     return () => {
       cancelled = true;
+      stopProofQueue();
+      stopFiches();
     };
   }, [currentUser]);
 
@@ -418,10 +434,8 @@ export const App: React.FC = () => {
   }, [activeTab, route.route]);
 
   // Critical stock count
-  const criticalStockCount = [
-    ...stocks.rawMaterials.filter((s) => s.currentStock <= s.minStock),
-    ...stocks.cleaning.filter((s) => s.currentStock <= s.minStock)
-  ].length;
+  // LE comptage du « manque » : la même fonction que Stocks et le Bord (test en ligne n° 49 : 26 au badge, 12 à Stocks).
+  const criticalStockCount = articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches).length;
 
   // Pending To-Do count from Creative Lab
   const pendingTodosCount = creativeItems.filter(
@@ -459,6 +473,15 @@ export const App: React.FC = () => {
     if (import.meta.env.DEV) {
       if (!isDevLocal || !isDataReady || apercuOuvert.current) return;
       const q = new URLSearchParams(location.search);
+      if (q.get('etape') === 'levure') {
+        // Banc de l'étape Levure (mission levure-port, u1) : une recette de démonstration (US-05, OG 1,066, 30 L, 19 °C), ou `&recette=vide`.
+        apercuOuvert.current = true;
+        import('./ui/etapeLevure/apercuDev').then(({ recetteApercuEtapeLevure, recetteApercuSansLevure, rechercheSimulee }) => {
+          if (q.get('recherche') === 'simulee') (window as unknown as { __lvRechercheSimulee?: unknown }).__lvRechercheSimulee = rechercheSimulee;
+          openWizard({ recipe: q.get('recette') === 'vide' ? recetteApercuSansLevure() : recetteApercuEtapeLevure(), step: 'levure' });
+        });
+        return;
+      }
       if (q.get('etape') !== 'houblons') return;
       apercuOuvert.current = true;
       if (q.get('recette') === 'vide') { openWizard({ step: 'houblons' }); return; }
@@ -472,6 +495,40 @@ export const App: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDevLocal, isDataReady]);
 
+  /*
+   * Reprise après rechargement (critique B1 n° 14, 07.11 ; rejeu ff0f822e, B1-14 et B1-NOTE-5) : la page ouverte au moment du rechargement était le
+   * wizard, et l'app retombait sur le carnet, brouillon oublié. L'entrée d'historique garde sa route (`laffinee-route`) : si c'était le wizard ET que son
+   * brouillon existe sur cet appareil, on le rouvre à l'étape où il était (l'étape est dans le brouillon, `restoredDraft.step`). Sans brouillon (rien n'a
+   * été modifié), rien n'est rouvert : un wizard vide sous une clé de recette existante se prendrait pour sa modification.
+   * La reprise attend les données (elle lit la recette enregistrée) et se joue avant la première peinture (`useLayoutEffect`) : pas de carnet entrevu.
+   * - Recette modifiée : la fiche enregistrée redevient la base du wizard (`seed.recipe`), comme après « Modifier » ; elle donne l'empreinte (`serverBase`)
+   *   et laisse le wizard dire si la recette a changé ailleurs. Une recette supprimée entre-temps ne rouvre rien : le brouillon l'enregistrerait de nouveau.
+   * - Idée : titre et description de la route sont la base ; copie : le brouillon seul (la copie n'existe pas ailleurs).
+   * Une seule fois ; jamais sur un lien `?brewday=`, ni sur le banc local `?etape=` (qui ouvre sa propre page). Rien n'est écrit sur le serveur.
+   * `replaceTop` ne pousse aucune entrée : le retour ferme la page sur place.
+   */
+  const repriseTentee = useRef(false);
+  useLayoutEffect(() => {
+    if (!currentUser || !isDataReady || repriseTentee.current) return;
+    repriseTentee.current = true;
+    if (route.pile?.length !== 1) return;
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('etape') || q.get('brewday')) return;
+    // La clé « laffinee-route » est celle qu'écrit `useFullScreenRoute.ts` dans l'état de l'entrée d'historique (« pour une future reprise en avant »).
+    const state = window.history.state as Record<string, unknown> | null;
+    const stored = state && typeof state === 'object' ? state['laffinee-route'] as Route | undefined : undefined;
+    if (!stored || stored.view !== 'wizard') return;
+    const id = stored.recipeId ? `${stored.duplicate ? 'duplicate:' : ''}${stored.recipeId}` : stored.title ? `idea:${stored.title}` : 'new';
+    if (readRecipeDraftState(`${currentUser.uid}:${id}`).status !== 'available') return;
+    const modification = !!stored.recipeId && !stored.duplicate;
+    const modifiee = modification ? StorageService.getRecipes().find(r => r.id === stored.recipeId) : undefined;
+    if (modification && !modifiee) return;
+    if (modifiee) setWizardSeed({ recipe: modifiee });
+    else if (!stored.recipeId) setWizardSeed({ title: stored.title, description: stored.description });
+    route.replaceTop(stored);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, isDataReady]);
+
   /**
    * Le bouton + conserve l'action de création de l'écran courant
    * (article, recette, écriture…). Le compagnon dispose de son propre bouton.
@@ -481,6 +538,9 @@ export const App: React.FC = () => {
   const runFabAction = () => {
     switch (fabAction.intent) {
       case 'newBatch':
+        // BX-4 (09.11) : « Nouveau brassin » ouvrait l'assistant de RECETTE (le même geste que « Créer une recette ») ; il lance un brassin.
+        setQuickAction('brew-batch', actionLauncherRef.current);
+        break;
       case 'newRecipe':
         openWizard();
         break;
@@ -501,8 +561,9 @@ export const App: React.FC = () => {
         setCreateRequest({ kind: fabAction.intent, at: Date.now() });
         break;
       case 'newTransaction':
-        // Le formulaire d'écriture directement, sans repasser par le sommaire.
-        setQuickAction('quick-expense', actionLauncherRef.current);
+        // 09.11, ses mots : « entrer une facture ouvre la bonne vue tandis que nouvelle écriture, non » : la même entrée que « Entrer une facture »
+        // (document, photo, ou « Saisir sans justificatif » d'un toucher), sans repasser par le sommaire.
+        setQuickAction('scan', actionLauncherRef.current);
         break;
       case 'quickAction':
       default:
@@ -595,7 +656,11 @@ export const App: React.FC = () => {
 
     if (!thenBrew) {
       showToast(`Recette « ${recipe.name} » enregistrée.`);
-      if (currentRoute.current === sourceRoute) route.close();
+      if (currentRoute.current === sourceRoute) {
+        // BR-7 : une recette modifiée depuis sa fiche revient à sa fiche (la pile pose le wizard sur les onglets : `close` ramenait à la liste, défilée).
+        if (sourceRoute.view === 'wizard' && sourceRoute.recipeId && !sourceRoute.duplicate) route.replaceTop({ view: 'recipe', recipeId: recipe.id });
+        else route.close();
+      }
       return;
     }
 
@@ -638,7 +703,7 @@ export const App: React.FC = () => {
       items: recipes.filter(isCurrent).map((r) => ({
         id: `rec-${r.id}`,
         label: r.name,
-        detail: [r.style, `${r.volumeL} L`].filter(Boolean).join(' · '),
+        detail: [r.style, formatLitres(r.volumeL)].filter(Boolean).join(' · '),
         icon: <Beaker className="w-4 h-4" />,
         keywords: [r.style, r.id],
         onSelect: () => openRecipe(r)
@@ -682,7 +747,7 @@ export const App: React.FC = () => {
       items: [...transactions].sort((a, b) => (isoDate(b.date) ?? '').localeCompare(isoDate(a.date) ?? '') || b.id.localeCompare(a.id)).map((t) => ({
         id: `tx-${t.id}`,
         label: t.description,
-        detail: `${t.date} · ${t.amountTTC.toFixed(2)} CHF · ${t.subcategory}`,
+        detail: `${t.date} · ${montantChf(t.amountTTC)} CHF · ${t.subcategory}`,
         icon: <Receipt className="w-4 h-4" />,
         keywords: [t.id, t.category, t.subcategory, t.finance?.vendor ?? '', t.finance?.invoiceNumber ?? ''],
         archived: isTransactionArchived(t, financialArchiveIndex),
@@ -851,6 +916,9 @@ export const App: React.FC = () => {
 
       {/* Main App Header with Global Time Filter, Direct Quick-Nav & To-Do Badge */}
       <PersistenceStatus />
+      <NouvelleVersion />
+      {/* L'envoi des justificatifs au Drive se fait en arrière-plan : un échec reste ici, avec ses deux gestes (D235). */}
+      <ProofUploadNotice hidden={view.view === 'wizard' || view.view === 'hopV55'} onResend={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }} />
       <Header
         compactLayout
         hidePeriod={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'}
@@ -945,7 +1013,7 @@ export const App: React.FC = () => {
             batches={batches}
             onOpenHopV55={() => route.open({ view: 'hopV55' })}
             onOpenEquipmentProjects={() => { StorageService.setUiState('finances_workspace', 'projects'); setFinanceOpenRequest(null); setActiveTab('finances'); }}
-            onSubTabChange={(sub) => setSubTab(sub as never)}
+            onSubTabChange={(sub) => setSubTabOf('stocks', sub as AnySubTab)}
             openItemRequest={stockOpenRequest}
             onOpenItemRequestHandled={() => setStockOpenRequest(null)}
             createRequest={createRequest}
@@ -959,7 +1027,7 @@ export const App: React.FC = () => {
             batches={batches}
             tarifs={tarifs}
             config={config}
-            onSubTabChange={(sub) => setSubTab(sub as never)}
+            onSubTabChange={(sub) => setSubTabOf('clients', sub as AnySubTab)}
             createRequest={createRequest}
             onSuccessMessage={showToast}
           />
@@ -973,9 +1041,7 @@ export const App: React.FC = () => {
         <BottomNav
           activeTab={activeTab}
           onChangeTab={(tab) => {
-            // Le sous-onglet du nouvel écran se remontera tout seul ; on le vide
-            // en attendant pour ne pas garder celui de l'onglet qu'on quitte.
-            setSubTab(null);
+            // Le sous-onglet de chaque onglet est gardé (BX-4) : rien à vider.
             setActiveTab(tab);
           }}
           criticalStockCount={criticalStockCount}
@@ -1012,6 +1078,7 @@ export const App: React.FC = () => {
         onClose={() => { setQuickAction(null); setBrewRecipeId(undefined); }}
         initialRecipeId={brewRecipeId}
         onBatchCreated={batch => route.open({ view: 'brewday', batchId: batch.id })}
+        onOpenExpense={id => { setQuickAction(null); setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }}
         recipes={recipes}
         geminiApiKey={config.geminiApiKey}
         onSuccessMessage={showToast}

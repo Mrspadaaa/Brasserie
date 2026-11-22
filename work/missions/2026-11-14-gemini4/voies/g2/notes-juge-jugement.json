@@ -1,0 +1,146 @@
+{
+ "S1c234b": {
+  "faits": 0.9,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.9,
+  "ton": 0.7,
+  "note": "130 mots ; « 65 min » à 28 L non vérifié"
+ },
+ "S2db5d2": {
+  "faits": 0.9,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.8,
+  "ton": 0.8,
+  "note": "« cuve de 45 L » : source non vue"
+ },
+ "S3bd59f": {
+  "faits": 1,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 1,
+  "ton": 0.7,
+  "note": "163 mots"
+ },
+ "S467b61": {
+  "faits": 0.7,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 0.9,
+  "ton": 0.8,
+  "note": "pas d’hypothèse sur les relevés manquants"
+ },
+ "S5df166": {
+  "faits": 1,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.7,
+  "ton": 0.3,
+  "note": "237 mots ; 5,89 ± 0,15 du solveur repris"
+ },
+ "S83ddcf": {
+  "faits": 0.8,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 1,
+  "ton": 1,
+  "note": ""
+ },
+ "S94acab": {
+  "faits": 1,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.9,
+  "ton": 0.4,
+  "note": "221 mots, 4 étapes numérotées"
+ },
+ "S95bbc3": {
+  "faits": 0.9,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.7,
+  "ton": 0.3,
+  "note": "284 mots ; 78 °C, 35 L, rendement : hors preuves"
+ },
+ "S974ef8": {
+  "faits": 0.6,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 1,
+  "ton": 1,
+  "note": "ni électrode ni étalonnage ; bandelettes seulement en question"
+ },
+ "Sacd32f": {
+  "faits": 1,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 1,
+  "ton": 0.7,
+  "note": "151 mots"
+ },
+ "Sb0f49f": {
+  "faits": 0.8,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.8,
+  "ton": 1,
+  "note": "affirme « sans élimination possible »"
+ },
+ "Sc0dd72": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 1,
+  "ton": 0.6,
+  "note": "164 mots"
+ },
+ "Scd7fde": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 0.8,
+  "ton": 1,
+  "note": "« 26 minutes » en action (arrondi de 25,4)"
+ },
+ "Sd13c88": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 1,
+  "ton": 0.5,
+  "note": "198 mots"
+ },
+ "Se18ee4": {
+  "faits": 1,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.8,
+  "ton": 0.4,
+  "note": "220 mots ; digression levure / Cascade"
+ },
+ "See0052": {
+  "faits": 1,
+  "chiffres": 1,
+  "proposition": null,
+  "invention": 1,
+  "ton": 1,
+  "note": ""
+ },
+ "Sf5c60d": {
+  "faits": 1,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 0.9,
+  "ton": 0.8,
+  "note": ""
+ },
+ "Sf61499": {
+  "faits": 0.9,
+  "chiffres": null,
+  "proposition": null,
+  "invention": 1,
+  "ton": 0.8,
+  "note": ""
+ }
+}

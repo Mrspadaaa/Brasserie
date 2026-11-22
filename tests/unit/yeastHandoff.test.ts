@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { alcoholByVolume } from '../../src/domain/alcohol';
 import { runBrewerTool, brewerToolDeclarations } from '../../src/domain/brewerTools';
 import { projectYeastRecipe, yeastRecipeBoilOg } from '../../src/domain/yeastProjection';
 import { yeastReferences } from '../../src/domain/yeastReferences';
@@ -36,7 +37,7 @@ describe('Levure : compagnon, copie et brassin partagent les données', () => {
     const r = recipe(), before = structuredClone(r), result = calculate(r);
     expect(result.og).toBe(1.065);
     expect(result.fg).toBeCloseTo(1.0143, 10);
-    expect(result.abv).toBeCloseTo(6.654375, 10);
+    expect(result.abv).toBeCloseTo(alcoholByVolume(1.065, 1.0143), 10);
     expect(result.fermentationProjection).toEqual(projectYeastRecipe(r));
     expect(r).toEqual(before);
   });

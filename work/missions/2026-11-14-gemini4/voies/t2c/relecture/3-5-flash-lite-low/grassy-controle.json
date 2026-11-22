@@ -1,0 +1,16 @@
+{
+ "reglage": "3.5-flash-lite@low",
+ "element": "grassy-controle",
+ "cas": "grassy",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 692,
+ "coutMicro": 1648,
+ "etat": "STOP"
+}

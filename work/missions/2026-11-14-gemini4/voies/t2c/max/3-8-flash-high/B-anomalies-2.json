@@ -1,0 +1,75 @@
+{
+ "reglage": "3.8-flash@high",
+ "cas": "B-anomalies-2",
+ "tache": "detectAnomalies",
+ "moitie": "jugement",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [],
+  "manques": [],
+  "detail": {
+   "rappel": 1,
+   "precision": 1,
+   "types": 1,
+   "fauxPositifs": 0,
+   "anomalies": 5,
+   "manques": [],
+   "qualite": 1
+  }
+ },
+ "ms": 22681,
+ "coutMicro": 32620,
+ "etat": "STOP",
+ "valeur": {
+  "anomalies": [
+   {
+    "transactionIds": [
+     "U01",
+     "U02"
+    ],
+    "type": "doublon",
+    "severity": "attention",
+    "explanation": "Deux écritures identiques le 04.08.2026 pour le fournisseur Hopfen Müller (Houblon Hallertau 1 kg) pour un montant de 96.00 CHF chacune.",
+    "suggestion": "Contrôler auprès du fournisseur s'il s'agit d'une double commande livrée ou d'une saisie en double de la même facture."
+   },
+   {
+    "transactionIds": [
+     "U05"
+    ],
+    "type": "montant",
+    "severity": "grave",
+    "explanation": "Le montant de 4800.00 CHF pour un transport de palette chez Transports Dupont est aberrant au regard des montants habituels de ce tiers (48.00 CHF et 55.00 CHF pour les écritures U03 et U04). Il s'agit très probablement d'une virgule omise (48.00 CHF saisis 4800).",
+    "suggestion": "Vérifier la facture Transports Dupont du 07.09.2026 et corriger le montant s'il s'agit bien de 48.00 CHF."
+   },
+   {
+    "transactionIds": [
+     "U10"
+    ],
+    "type": "justificatif",
+    "severity": "attention",
+    "explanation": "Facture Imprimerie Sarine d'un montant élevé de 1920.00 CHF sans justificatif rattaché.",
+    "suggestion": "Retrouver et joindre la facture originale pour documenter cette dépense d'emballage."
+   },
+   {
+    "transactionIds": [
+     "U11"
+    ],
+    "type": "date",
+    "severity": "grave",
+    "explanation": "Date de transaction enregistrée au 02.05.1999, manifestement incohérente avec l'exercice 2026.",
+    "suggestion": "Vérifier la facture Brewstore et corriger la date (vraisemblablement 02.05.2026)."
+   },
+   {
+    "transactionIds": [
+     "U12"
+    ],
+    "type": "tva",
+    "severity": "info",
+    "explanation": "L'achat de malt Pilsner 25 kg est saisi au taux normal de 8.1 %, alors que les matières premières alimentaires relèvent du taux réduit suisse de 2.6 % (comme sur les écritures U13 et U14 chez le même fournisseur).",
+    "suggestion": "Contrôler le taux de TVA imprimé sur la facture Brau- und Rauchshop du 02.10.2026 et rectifier à 2.6 % si le document source l'indique."
+   }
+  ],
+  "checkedCount": 18
+ }
+}

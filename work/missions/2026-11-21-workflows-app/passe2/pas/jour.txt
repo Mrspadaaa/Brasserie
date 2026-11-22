@@ -1,0 +1,24 @@
+t=Brassins
+t=Brasser · B-ZZ-JOUR
+c=Commencer aujourd
+t=Reprendre · B-ZZ-JOUR
+t=Terminer et continuer
+t=Terminer et continuer
+t=Terminer et continuer
+t=Terminer et continuer
+t=Terminer et continuer
+t=Terminer et continuer
+t=Terminer et continuer
+t=Terminer et continuer
+t=Terminer et continuer
+t=Terminer et continuer
+t=Terminer et continuer
+t=Terminer et continuer
+t=Terminer et continuer
+t=Terminer et continuer
+t=Terminer et continuer
+t=Terminer et continuer
+cap=fin-jour
+dd
+s=batches|status,og,volumeBrewedL
+s=stockItems|currentStock

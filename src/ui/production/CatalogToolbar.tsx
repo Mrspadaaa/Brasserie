@@ -243,7 +243,7 @@ export function CatalogToolbar({
       </div>
       <div className="flex gap-2">
         <div
-          className="flex flex-1 min-w-0 gap-1.5 overflow-x-auto pb-1 scrollbar-none"
+          className="flex flex-1 min-w-0 gap-1.5 overflow-x-auto pb-1 scrollbar-none lg:flex-wrap lg:overflow-visible"
           aria-label={kind === 'batches' ? 'Avancement des brassins' : 'Usage des recettes'}
         >
           {quick.map(([value, label]) => {
@@ -281,7 +281,8 @@ export function CatalogToolbar({
                 className={`min-h-touch shrink-0 rounded-full px-3 text-sm border ${current === value ? 'border-ebc-straw/60 bg-ebc-straw/10 text-ebc-straw' : 'border-cave-800 text-cave-400'}`}
               >
                 {label}{' '}
-                <span className="ml-1 tabular-nums opacity-75" aria-hidden>
+                {/* BR-120 : pas d'opacité sur un chiffre de 14 px (le gris #666 à 75 % ne tenait plus 4,5:1). */}
+                <span className="ml-1 tabular-nums" aria-hidden>
                   {quantity}
                 </span>
               </button>

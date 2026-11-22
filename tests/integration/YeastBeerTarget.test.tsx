@@ -160,7 +160,7 @@ describe('Cible de bière, levure personnelle et variantes explicites', () => {
     const changed = vi.fn(); render(<Host initial={initial} changed={changed} />); example('session'); targets(); click('Essayer mes réglages');
     expect(screen.getAllByText(/Atténuation absente/).length).toBeGreaterThan(0);
     change('Hypothèse d’atténuation de la variante', '60');
-    expect(screen.getByRole('figure', { name: 'Alcool estimé' })).toHaveTextContent('4,7');
+    expect(screen.getByRole('figure', { name: 'Alcool estimé' })).toHaveTextContent('4,8'); // ASBC (CF-6) : 4,7 avec (OG − FG) × 131,25
     expect(changed).not.toHaveBeenCalled();
   });
 

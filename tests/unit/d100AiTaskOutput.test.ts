@@ -50,7 +50,8 @@ describe('#100.1 — fiche levure sans boucle numérique', () => {
     expect(yeastSchema.attenuationPct).toMatchObject({ minimum: 0, maximum: 100 });
     expect(yeastSchema.alcoholTolerancePct).toMatchObject({ minimum: 0, maximum: expect.any(Number) });
     fetchMock.mockClear();
-    await aiTask.run(call({ task: 'lookupIngredient', instruction: 'malt : Pale Ale', context: { kind: 'malt', name: 'Pale Ale' } }) as any);
+    /* Le schéma de base (partagé) se lit sur un houblon : le malt a son schéma à lui depuis D303 (f4b-malts), testé dans depense/enrichir/malts.test.ts. */
+    await aiTask.run(call({ task: 'lookupIngredient', instruction: 'houblon : Citra', context: { kind: 'houblon', name: 'Citra' } }) as any);
     const shared = postedBody().generationConfig.responseSchema.properties;
     for (const key of ['colorEbc', 'potentialPpg', 'diastaticPower', 'alphaPct', 'betaPct', 'tempMinC', 'tempMaxC'])
       expect(shared[key], key).toMatchObject({ minimum: expect.any(Number), maximum: expect.any(Number) });

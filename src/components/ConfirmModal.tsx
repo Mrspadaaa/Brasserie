@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { AlertTriangle, HelpCircle, X } from 'lucide-react';
 import { ModalShell } from '../ui/ModalShell';
 
@@ -25,9 +26,15 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  return (
+  /*
+   * VI-12 : posée sous <body>. Le Header (`backdrop-blur-md`) est le bloc conteneur de ses descendants `position: fixed` : la boîte s'y
+   * centrait dans 48 px et sortait par le haut de la fenêtre (« Saisir au nom de Aricia ? » hors écran). Toute confirmation posée dans un
+   * bandeau flouté, transformé ou filtré a le même piège : le portail le règle ici, à la coque commune des confirmations.
+   */
+  return createPortal(
     <ModalShell open={isOpen} onClose={onCancel} size="md">
-      <div className="p-4 sm:p-5 space-y-4">
+      {/* Marge basse : jamais sous la barre de gestes ou l'encoche quand la boîte est ancrée en bas (tactile). */}
+      <div className="p-4 sm:p-5 pb-[max(1rem,env(safe-area-inset-bottom))] sm:pb-5 space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
@@ -71,7 +78,8 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
           </button>
         </div>
       </div>
-    </ModalShell>
+    </ModalShell>,
+    document.body
   );
 };
 

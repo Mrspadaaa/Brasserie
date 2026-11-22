@@ -1,0 +1,75 @@
+{
+ "reglage": "4-hydrogen@high",
+ "cas": "B-anomalies-2",
+ "tache": "detectAnomalies",
+ "moitie": "jugement",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [],
+  "manques": [],
+  "detail": {
+   "rappel": 1,
+   "precision": 1,
+   "types": 1,
+   "fauxPositifs": 0,
+   "anomalies": 5,
+   "manques": [],
+   "qualite": 1
+  }
+ },
+ "ms": 8419,
+ "coutMicro": 26674,
+ "etat": "STOP",
+ "valeur": {
+  "anomalies": [
+   {
+    "transactionIds": [
+     "U01",
+     "U02"
+    ],
+    "type": "doublon",
+    "severity": "attention",
+    "explanation": "Écritures identiques le même jour (2026-08-04) chez Hopfen Müller pour « Houblon Hallertau 1 kg » au montant TTC de 96 CHF chacune.",
+    "suggestion": "Vérifier s'il s'agit d'une double saisie ou de deux factures distinctes de 1 kg chacune."
+   },
+   {
+    "transactionIds": [
+     "U05"
+    ],
+    "type": "montant",
+    "severity": "grave",
+    "explanation": "Montant TTC de 4800 CHF pour « Transport palette » chez Transports Dupont le 2026-09-07, alors que les transports précédents chez le même fournisseur (U03 à 48 CHF et U04 à 55 CHF) sont environ cent fois inférieurs. Probable erreur de virgule lors de la saisie (48.00 CHF).",
+    "suggestion": "Contrôler la facture originale de Transports Dupont et corriger le montant si une erreur de saisie est confirmée."
+   },
+   {
+    "transactionIds": [
+     "U10"
+    ],
+    "type": "justificatif",
+    "severity": "grave",
+    "explanation": "Montant élevé de 1920 CHF TTC (Imprimerie Sarine, « Étiquettes x5000 » du 2026-09-27) enregistré sans justificatif.",
+    "suggestion": "Retrouver et rattacher la facture d'Imprimerie Sarine à l'écriture U10."
+   },
+   {
+    "transactionIds": [
+     "U11"
+    ],
+    "type": "date",
+    "severity": "grave",
+    "explanation": "Date saisie au 1999-05-02 pour l'achat d'un fût inox 30 L chez Brewstore, incohérente avec l'exercice 2026 (date du jour : 2026-11-14).",
+    "suggestion": "Vérifier la date sur le justificatif Brewstore et corriger l'année de l'écriture."
+   },
+   {
+    "transactionIds": [
+     "U12"
+    ],
+    "type": "tva",
+    "severity": "attention",
+    "explanation": "Taux de TVA de 8.1 % appliqué à « Malt Pilsner 25 kg » chez Brau- und Rauchshop (79.90 CHF TTC), alors que le malt relève en principe du taux réduit de 2.6 % et que les achats identiques U13 et U14 chez ce fournisseur sont à 2.6 %. La brasserie n'étant pas assujettie à la TVA, aucune TVA n'est récupérable, mais le taux enregistré paraît incohérent.",
+    "suggestion": "Vérifier le taux réellement mentionné sur la facture originale et ajuster à 2.6 % si le document source l'indique."
+   }
+  ],
+  "checkedCount": 18
+ }
+}

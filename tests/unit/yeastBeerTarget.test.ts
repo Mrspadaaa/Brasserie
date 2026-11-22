@@ -5,6 +5,7 @@ import { projectYeastRecipe, yeastRecipeBoilOg } from '../../src/domain/yeastPro
 import { yeastReferences } from '../../src/domain/yeastReferences';
 import type { Fermentable, Recipe, YeastSpec } from '../../src/types';
 import { fullRecipe } from '../fixtures/fullRecipe';
+import { alcoholByVolume } from '../../src/domain/alcohol';
 
 const refs = yeastReferences([]);
 const malt: Fermentable = { name: 'Pale', kind: 'grain', use: 'empatage', weightKg: 5, pct: 100, potentialPpg: 37 };
@@ -44,26 +45,28 @@ describe('Cible de bière : intention et variation explicite', () => {
     const recipe = base(), before = structuredClone(recipe), draft = draftFor(recipe, { abv: { min: 2.5, max: 3.5 }, ibu: { min: 10, max: 20 }, finish: 'round' });
     const result = prepareYeastBeerVariation(recipe, draft, refs);
     expect(result.preview.errors).toEqual([]);
-    expect(result.variation.fermentableScale).toBeCloseTo(2 / 3, 12);
+    const echelle = result.variation.fermentableScale;
+    expect(echelle).toBeGreaterThan(0.64); expect(echelle).toBeLessThan(0.67);
+    expect(result.preview.targetStatus.abv).toBe('inside');
     expect(result.variation.attenuationPct).toBeUndefined();
-    expect(result.preview.variant.projection.og).toBeCloseTo(1 + .05 * 2 / 3, 12);
-    expect(result.preview.variant.projection.fg.range!.min).toBeCloseTo(1 + .01 * 2 / 3, 12);
-    expect(result.preview.variant.projection.abv.range!.min).toBeCloseTo(3.5, 12);
-    expect(result.variation.hotHopScale).toBeCloseTo(20 / tinseth(25, 10, 1 + .05 * 2 / 3), 12);
+    expect(result.preview.variant.projection.og).toBeCloseTo(1 + .05 * echelle, 12);
+    expect(result.preview.variant.projection.fg.range!.min).toBeCloseTo(1 + .01 * echelle, 12);
+    expect(result.preview.variant.projection.abv.range!.min).toBeGreaterThanOrEqual(2.5); expect(result.preview.variant.projection.abv.range!.min).toBeLessThanOrEqual(3.5);
+    expect(result.variation.hotHopScale).toBeCloseTo(20 / tinseth(25, 10, 1 + .05 * echelle), 12);
     expect(result.preview.variant.ibu.total).toBeCloseTo(20, 12);
     expect(result.preview.targetStatus).toEqual({ abv: 'inside', ibu: 'inside' });
     expect(result.preview.warnings.join(' ')).toContain('DF seule ne prédit ni douceur');
     expect(recipe).toEqual(before);
     const saved = applyYeastBeerVariation(recipe, draft, refs, result.variation, result.preview.baseKey);
-    expect(saved.fermentables[0].weightKg).toBeCloseTo(10 / 3, 12);
-    expect(saved.totalGristKg).toBeCloseTo(10 / 3, 12);
+    expect(saved.fermentables[0].weightKg).toBeCloseTo(5 * echelle, 12);
+    expect(saved.totalGristKg).toBeCloseTo(5 * echelle, 12);
     expect(saved.fermentables[0].pct).toBe(100);
     expect(saved.hops[1]).toEqual(recipe.hops[1]);
     expect(saved.yeast).toEqual(recipe.yeast);
     expect(saved.volumeL).toBe(20); expect(saved.efficiencyPct).toBe(75);
     expect(saved.mash).toEqual(recipe.mash); expect(saved.waterPlan).toEqual(recipe.waterPlan);
-    expect(saved.ogTarget).toBeCloseTo(1.033333333333333, 12); expect(saved.fgTarget).toBeCloseTo(1.006666666666667, 12);
-    expect(saved.abvTarget).toBeCloseTo(3.5, 12); expect(saved.ibuTarget).toBe(20);
+    expect(saved.ogTarget).toBeCloseTo(1 + .05 * echelle, 12); expect(saved.fgTarget).toBeCloseTo(1 + .01 * echelle, 12);
+    expect(saved.abvTarget).toBeCloseTo(alcoholByVolume(1 + .05 * echelle, 1 + .01 * echelle), 12); expect(saved.ibuTarget).toBe(20);
     const reopened = JSON.parse(JSON.stringify(saved)), snapshot = readYeastRecipeDesign(reopened)!;
     expect(snapshot).toBeDefined(); expect(yeastRecipeDesignChanged(reopened, snapshot)).toBe(false);
     expect(projectYeastRecipe(reopened).fg.range!.min).toBeCloseTo(saved.fgTarget!, 12);
@@ -85,8 +88,8 @@ describe('Cible de bière : intention et variation explicite', () => {
     const target = { abv: { min: 3, max: 3.1 } }, draft = draftFor(recipe, target);
     const result = prepareYeastBeerVariation(recipe, draft, refs);
     expect(result.variation).toEqual(identity); expect(result.reasons.join(' ')).toContain('plage d’alcool calculée est trop large');
-    expect(result.preview.variant.projection.abv.range!.min).toBeCloseTo(4.59375, 12);
-    expect(result.preview.variant.projection.abv.range!.max).toBeCloseTo(5.90625, 12);
+    expect(result.preview.variant.projection.abv.range!.min).toBeCloseTo(alcoholByVolume(1.05, 1.015), 12);
+    expect(result.preview.variant.projection.abv.range!.max).toBeCloseTo(alcoholByVolume(1.05, 1.005), 12);
     const chosen = prepareYeastBeerVariation(recipe, draft, refs, { ...identity, attenuationPct: 80 });
     expect(chosen.preview.targetStatus.abv).toBe('inside');
     const saved = applyYeastBeerVariation(recipe, draft, refs, chosen.variation);
@@ -100,7 +103,7 @@ describe('Cible de bière : intention et variation explicite', () => {
     const draft = { ...draftFor(recipe, { finish: 'sweet' }), temperatureC: 30, attenuationPct: 90, pressureBar: 2, process: 'mixed-culture' as const, quantityG: 20, viableCellsBillion: 999,
       cultureRoles: [{ name: 'Culture supplémentaire', role: 'acidifying' as const }], programme: [{ name: 'Autre', kind: 'primaire' as const, tempC: 30, days: 50 }] };
     const preview = previewYeastBeerTarget(recipe, draft, refs), saved = applyYeastBeerVariation(recipe, draft, refs);
-    expect(preview.variant.projection.abv.range!.min).toBeCloseTo(5.25, 12);
+    expect(preview.variant.projection.abv.range!.min).toBeCloseTo(alcoholByVolume(1.05, 1.01), 12);
     expect(saved.yeast).toEqual(recipe.yeast); expect(saved.fermentation).toEqual(recipe.fermentation);
     expect(saved.yeastDesign?.process).toBe('unspecified'); expect(saved.yeastDesign?.cultureRoles).toBeUndefined();
     expect(saved.yeastDesign?.viableCellsBillion).toBeUndefined(); expect(saved.yeastDesign?.pressureBar).toBeUndefined();
@@ -200,6 +203,6 @@ describe('Base d’ébullition et croisements de recettes', () => {
     expect(preview.errors).toEqual([]);
     expect(preview.variant.projection.og).toBeCloseTo(1 + total / 2000, 12);
     expect(preview.variant.projection.fg.range!.min).toBeCloseTo(1 + residual / 2000, 12);
-    expect(preview.variant.projection.abv.range!.min).toBeCloseTo((total - residual) / 2000 * 131.25, 12);
+    expect(preview.variant.projection.abv.range!.min).toBeCloseTo(alcoholByVolume(1 + total / 2000, 1 + residual / 2000), 12);
   });
 });

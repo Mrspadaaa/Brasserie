@@ -1,0 +1,162 @@
+[
+ {
+  "tache": "T1 Voir ce que je peux me permettre",
+  "touchers": 0,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "big=173 colle=\"à te permettre 173\""
+ },
+ {
+  "tache": "T2 Achat avec budget sur des semaines",
+  "touchers": 2,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "173 -> -367, choses 14->15, toast=\"173 → −367 · Malt groupé posé · S48 → S51 · −540 Annuler\""
+ },
+ {
+  "tache": "T3 Activite sans budget, avec jours",
+  "touchers": 2,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "big 173->173, choses 14->15, toast=\"Nettoyer les cuves posé · S47 · 1 j Annuler\""
+ },
+ {
+  "tache": "T4 Changer la duree",
+  "touchers": 1,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "a04 \"Malt groupé −540\" -> \"Malt groupé −540\", toast=\"Malt groupé : 3 → 6 sem. (S49 → S1) Annuler\""
+ },
+ {
+  "tache": "T5 Changer le budget",
+  "touchers": 1,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "173 -> 393, toast=\"173 → 393 · Marché de Noël : +1 180 → +1 400 Annuler\""
+ },
+ {
+  "tache": "T5b Changer les jours",
+  "touchers": 2,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "avant=\"3 j | cellule  null rgba(0, 0, 0, 0)\" apres=\"4 j | cellule on null rgb(74, 74, 74)\""
+ },
+ {
+  "tache": "T6 Deplacer",
+  "touchers": 1,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "toast=\"Blonde déplacé : S47 → S49 Annuler\""
+ },
+ {
+  "tache": "T7 Supprimer",
+  "touchers": 1,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "173 -> 713, choses 14->13, toast=\"173 → 713 · Malt groupé retiré Annuler\""
+ },
+ {
+  "tache": "T8 Filtrer par type",
+  "touchers": 1,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "bandeau=\"Montré : Achats\" voies \"brassage evenement vente achat renovation activite fut charge\" -> \"achat\""
+ },
+ {
+  "tache": "T9 Trier",
+  "touchers": 1,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "tri fixe->urgent, voies \"brassage fut charge evenement vente achat renovation activite\""
+ },
+ {
+  "tache": "T10 Epingler",
+  "touchers": 2,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "epingles e-01,a-04 toast=\"★ Malt groupé épinglé Annuler\" mnt=x-01,k-07,b-02,b-01,m-01,e-01,a-04,a-02"
+ },
+ {
+  "tache": "T11 Retrouver une chose epinglee",
+  "touchers": 2,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "bandeau=\"Montré : ★ épinglés\" fiche=\"\" bulle=false toast=\"\""
+ },
+ {
+  "tache": "T12 Voir brassin, facture, fut venus de l app",
+  "touchers": 0,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "Maintenant=x-01,k-07,b-02,b-01,m-01,e-01,a-02 voies=brassage evenement vente achat renovation activite fut charge"
+ },
+ {
+  "tache": "T13 Detail facture (Maintenant) puis retour",
+  "touchers": 2,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "fiche ouverte=x-01, apres retour=\"\""
+ },
+ {
+  "tache": "T13b Detail brassin (barre) puis retour",
+  "touchers": 2,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "fiche=b-01, apres=\"\""
+ },
+ {
+  "tache": "T13c Vers l app puis retour",
+  "touchers": 3,
+  "frappes": 0,
+  "inputs": 0,
+  "clavierOuvert": false,
+  "nombre": 0,
+  "reussi": true,
+  "note": "app ouverte=true, apres retour app=false"
+ }
+]

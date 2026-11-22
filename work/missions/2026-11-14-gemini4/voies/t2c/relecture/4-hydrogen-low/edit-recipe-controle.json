@@ -1,0 +1,18 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "edit-recipe-controle",
+ "cas": "edit-recipe",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "L'ancienne valeur de 19 IBU n'est pas issue d'une sortie d'outil présente dans les preuves ; ne citer que l'amertume calculée par l'outil (17 IBU)."
+  ]
+ },
+ "ms": 5121,
+ "coutMicro": 21135,
+ "etat": "STOP"
+}

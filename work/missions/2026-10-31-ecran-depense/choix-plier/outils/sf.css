@@ -1,0 +1,25 @@
+/* Voie r2-sousfamilles (D306) : les seules règles neuves des maquettes. Préfixe sf- (L26). */
+/* La famille neuve « Rénovation », après Consommables, teinte kaki (D306). */
+:root, [data-theme='clair'] { --sf-fam-renovation: 120 112 28; }
+[data-theme='cave'] { --sf-fam-renovation: 196 186 90; }
+.sf-t-renovation { --dp-p3c-teinte: rgb(var(--sf-fam-renovation) / .22); }
+.sf-pt-renovation { background-color: rgb(var(--sf-fam-renovation)); }
+.sf-fi-renovation { border-left-color: rgb(var(--sf-fam-renovation)); }
+/* La couleur de la famille de la bande, pour ce qui y est posé (sous-titre, pastille, sous-groupe). */
+.sf-c-nettoyage { --sf-c: var(--dp-fam-nettoyage); }
+.sf-c-consommable { --sf-c: var(--dp-fam-consommable); }
+.sf-c-renovation { --sf-c: var(--sf-fam-renovation); }
+.sf-c-houblon { --sf-c: var(--hop); }
+/* B : le sous-titre d'un groupe. */
+.sf-st { background: rgb(var(--sf-c) / .07); }
+/* C : la pastille de sous-famille sur la rangée. */
+.sf-mot { background: rgb(var(--sf-c) / .14); box-shadow: inset 0 0 0 1px rgb(var(--sf-c) / .5); }
+/* D : la ligne d'un sous-groupe, et son ouverture. */
+.sf-sg[aria-expanded='true'] { background: rgb(var(--sf-c) / .1); }
+/* E : la pastille-filtre active. */
+.sf-ch[aria-pressed='true'] { background: rgb(var(--cave-50)); color: rgb(var(--cave-950)); border-color: rgb(var(--cave-50)); }
+.sf-ch[aria-pressed='true'] .sf-ch-n { color: rgb(var(--cave-950)); }
+/* Cadre de la page de choix : ce qui change (repris de choix-captures). */
+.sf-vise { outline: 2.5px solid #2d5f8a; outline-offset: -2.5px; }
+/* E : une quantité « repris » dans la pastille active (fond noir) garde son jaune pointillé, éclairci pour rester lisible. */
+.sf-ch[aria-pressed='true'] [data-dp-niveau='repris'] { color: rgb(243 210 122); text-decoration-color: rgb(243 210 122); }

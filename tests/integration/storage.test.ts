@@ -254,6 +254,26 @@ describe('Recettes et brassins', () => {
     expect(fakeRepo.all('movements')).toHaveLength(2);
   });
 
+  it('AM 4 : un déstockage refusé ne fait pas passer le brassin en fermentation (relevés gardés, étape inchangée)', () => {
+    // Aucun article de stock : « Pale » ne se rapproche de rien, la consommation est à revoir.
+    const planned = StorageService.planRecipeBatch(recipe, 'LOT-REFUS');
+    const pitched = { ...planned, status: 'fermentation' as const, og: '1.061', brewDay: { currentIndex: 0, pitchedAt: 1, steps: [], readings: [] } };
+    const result = StorageService.completeBrewStock(pitched);
+    expect(result.success).toBe(false);
+    const stored = StorageService.getBatches().find(b => b.id === 'LOT-REFUS')!;
+    expect(stored.status).toBe('planifie');
+    expect(stored.stockReviewIssues).toEqual(result.issues);
+    expect(stored.og).toBe('1.061');
+    expect(stored.brewDay?.pitchedAt).toBe(1);
+  });
+
+  it('AM 4 : un brassin historique refusé garde aussi son étape', () => {
+    const historical = { id: 'LOT-OLD2', name: 'NEIPA', style: 'NEIPA', volumeL: 20, brewDate: '01.03.2026', status: 'fermentation' as const };
+    StorageService.addBatch(historical);
+    expect(StorageService.completeBrewStock({ ...historical, status: 'conditionne' }).success).toBe(false);
+    expect(StorageService.getBatches().find(b => b.id === 'LOT-OLD2')?.status).toBe('fermentation');
+  });
+
   it('ne reconstruit pas automatiquement le stock d’un brassin historique', () => {
     const historical = { id: 'LOT-OLD', name: 'NEIPA', style: 'NEIPA', volumeL: 20, brewDate: '01.03.2026', status: 'fermentation' as const, recipeSnapshot: captureSnapshot(recipe) };
     StorageService.addBatch(historical);
@@ -416,6 +436,20 @@ describe('Recettes et brassins', () => {
   });
 });
 
+describe('Écritures comptables : sens et zéro', () => {
+  const ecriture = (over: Record<string, unknown> = {}) => ({ id: 'T-1', date: '2026-11-01', description: 'Test', category: 'divers', amountHT: 10, amountTTC: 10, tvaRate: 0, tvaAmount: 0, ...over }) as any;
+  it('AM-62 : une charge ne devient pas une recette (ni l’inverse) en changeant de catégorie', () => {
+    store.set('transactions', new Map([['T-1', ecriture()]]));
+    expect(() => StorageService.updateTransaction(ecriture({ category: 'recettes' }))).toThrow(/ne se transforment pas/);
+    expect(() => StorageService.updateTransaction(ecriture({ category: 'apports' }))).toThrow(/ne se transforment pas/);
+    expect(() => StorageService.updateTransaction(ecriture({ category: 'materiel' }))).not.toThrow();
+  });
+  it('AM-63 : une écriture à 0 CHF reste dans la liste', () => {
+    store.set('transactions', new Map([['T-0', ecriture({ id: 'T-0', amountHT: 0, amountTTC: 0 })], ['T-X', ecriture({ id: 'T-X', amountTTC: undefined, amountHT: undefined })]]));
+    expect(StorageService.getTransactions().map(t => t.id)).toEqual(['T-0']);
+  });
+});
+
 describe('Journal d’audit', () => {
   it('garde trace de chaque écriture, la plus récente en tête', () => {
     StorageService.addStockItem('rawMaterials', stockItem());
@@ -430,5 +464,13 @@ describe('Journal d’audit', () => {
   it('note l’utilisateur qui a saisi', () => {
     StorageService.addStockItem('rawMaterials', stockItem());
     expect(['Gaëtan', 'Aricia']).toContain(StorageService.getAuditLogs()[0].user);
+  });
+
+  it('TE-58 : une ancienne entrée à identifiant d’un autre format ne passe pas devant les récentes', () => {
+    store.set('auditLogs', new Map([['LOG-zzzz-ancien', { id: 'LOG-zzzz-ancien', timestamp: '03.09.2026, 23:15:15', action: 'Création', category: 'Finances', entityId: 'OLD', summary: 'ancienne', user: 'Gaëtan' }]]));
+    StorageService.addStockItem('rawMaterials', stockItem());
+    const logs = StorageService.getAuditLogs();
+    expect(logs[0].summary).not.toBe('ancienne');
+    expect(logs[logs.length - 1].summary).toBe('ancienne');
   });
 });

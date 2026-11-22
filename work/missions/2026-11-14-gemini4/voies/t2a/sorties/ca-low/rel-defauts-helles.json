@@ -1,0 +1,19 @@
+{
+ "cas": "rel-defauts-helles",
+ "usage": "relecture",
+ "half": "choix",
+ "cellule": "ca@low",
+ "ok": true,
+ "ms": 13546,
+ "microChf": 14945,
+ "microDecembre": 29890,
+ "entree": 1508,
+ "sortie": 894,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "3/3 défauts · 1 bloquant(s) dont 0 injustifié(s)",
+ "reponse": "{\"verdict\":\"La recette n'est pas prête à brasser : le palier d'empâtage dénaturera les enzymes et tant le houblonnage que le profil d'eau sont à l'opposé d'une Munich Helles.\",\"findings\":[{\"severity\":\"bloquant\",\"topic\":\"Paliers\",\"observation\":\"Le palier de saccharification est réglé à 78 °C pendant 60 min (identique au mash-out à 78 °C), ce qui dénature immédiatement l'alpha- et la bêta-amylase et empêche la conversion de l'amidon.\",\"suggestion\":\"Abaisser le palier de saccharification vers 65–67 °C (puis monter à 78 °C pour le mash-out de 10 min) afin d'atteindre la cible de densité finale de 1.010.\"},{\"severity\":\"gout\",\"topic\":\"Houblons\",\"observation\":\"L'ajout de 60 g de Magnum à 14 % d'acides alpha pendant 60 min dans 20 L (DI 1.048) génère environ 95–100 IBU (Tinseth), pulvérisant la cible de 20 IBU et le style Munich Helles (16–22 IBU).\",\"suggestion\":\"Réduire le Magnum (14 % AA, 60 min) à environ 10–12 g, à ajuster une fois le taux d'acides alpha des 30 g de Hallertauer Mittelfrüh (10 min) renseigné pour totaliser 20 IBU.\"},{\"severity\":\"gout\",\"topic\":\"Eau\",\"observation\":\"L'ajout de 12 g de gypse amène l'eau traitée à 350 ppm de sulfates pour 20 ppm de chlorures (rapport SO4/Cl de 17,5) et 160 ppm de calcium, un profil d'IPA très sèche et minérale à contresens d'une Munich Helles orientée sur la douceur du malt.\",\"suggestion\":\"Supprimer les 12 g de gypse et recalculer le traitement d'eau dès que l'analyse de l'eau du réseau est connue, pour viser une eau peu minéralisée avec un rapport sulfate/chlorure équilibré ou orienté chlorures.\"},{\"severity\":\"detail\",\"topic\":\"Eau\",\"observation\":\"Aucun acide n'est prévu dans waterPlan alors que la facture est très pâle (4,2 kg de Pilsner à 3,5 EBC et 0,3 kg de Munich clair à 15 EBC, couleur 8 EBC) avec 60 ppm de bicarbonates résiduels.\",\"suggestion\":\"Contrôler le pH de la maische sur un échantillon refroidi le jour du brassage et prévoir de l'acide lactique ou du malt acide si nécessaire pour viser 5,2–5,5.\"},{\"severity\":\"detail\",\"topic\":\"Levure\",\"observation\":\"La température de fermentation n'est pas précisée pour les 23 g de SafLager W-34/70.\",\"suggestion\":\"Préciser la consigne de fermentation basse (par ex. 10–12 °C) ainsi que la garde à froid.\"}],\"missing\":[\"Taux d'acides alpha (%) du houblon Hallertauer Mittelfrüh (30 g à 10 min).\",\"Analyse complète de l'eau source (« eau du réseau ») et volumes d'eau d'empâtage et de rinçage.\",\"Profil de fermentation (température et durée).\"],\"styleFit\":\"Incohérent avec une Munich Helles : le brassin échouera à l'empâtage (78 °C donnant un moût amidonné non fermentescible), et même avec un palier corrigé, l'amertume (~100 IBU) couplée à 350 ppm de sulfates donnerait une bière extrêmement amère, sèche et âpre au lieu d'une lager pâle douce et délicatement maltée.\"}"
+}

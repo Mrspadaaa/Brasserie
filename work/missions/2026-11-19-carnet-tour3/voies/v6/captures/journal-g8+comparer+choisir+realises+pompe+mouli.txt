@@ -1,0 +1,135 @@
+=== g8 390 clair
+g8-haut 390 clair : {"titre":["ZZ TEST — Ventilation de la salle de brassage",122]}
+capture g8-390-clair-haut.png
+capture g8-390-clair-bas.png
+=== g8 390 sombre
+g8-haut 390 sombre : {"titre":["ZZ TEST — Ventilation de la salle de brassage",122]}
+capture g8-390-sombre-haut.png
+capture g8-390-sombre-bas.png
+=== g8 1280 clair
+g8-haut 1280 clair : {"titre":["ZZ TEST — Ventilation de la salle de brassage",143]}
+capture g8-1280-clair-haut.png
+capture g8-1280-clair-bas.png
+=== g8 1280 sombre
+g8-haut 1280 sombre : {"titre":["ZZ TEST — Ventilation de la salle de brassage",143]}
+capture g8-1280-sombre-haut.png
+capture g8-1280-sombre-bas.png
+=== comparer 390 clair
+comparer 390 clair : Ce qui compte tient 80 °C, puis le débit · proposé par l'IA / à égalité, le moins cher / < min. 1 500 / sous votre minimum de 1 500 m³/h / < min. 1 500 / sous votre minimum de 1 500 m³/h / la 4e, Extracteur centrifuge en ligne : moins bien que la 3e sur tout / Compromis : la 1re, la seule à tenir 80 °C et votre minimum, pour 1 150 CHF de plus que la 2e
+comparer-defile 390 clair : [["",433,366],["cn-tableau-zone",510,340]]
+capture comparer-390-clair.png
+capture comparer-390-clair-plein.png
+capture comparer-390-clair-droite.png
+=== comparer 390 sombre
+comparer 390 sombre : Ce qui compte tient 80 °C, puis le débit · proposé par l'IA / à égalité, le moins cher / < min. 1 500 / sous votre minimum de 1 500 m³/h / < min. 1 500 / sous votre minimum de 1 500 m³/h / la 4e, Extracteur centrifuge en ligne : moins bien que la 3e sur tout / Compromis : la 1re, la seule à tenir 80 °C et votre minimum, pour 1 150 CHF de plus que la 2e
+comparer-defile 390 sombre : [["",433,366],["cn-tableau-zone",510,340]]
+capture comparer-390-sombre.png
+capture comparer-390-sombre-plein.png
+capture comparer-390-sombre-droite.png
+=== comparer 1280 clair
+comparer 1280 clair : Ce qui compte tient 80 °C, puis le débit · proposé par l'IA / à égalité, le moins cher / < min. 1 500 / sous votre minimum de 1 500 m³/h / < min. 1 500 / sous votre minimum de 1 500 m³/h / la 4e, Extracteur centrifuge en ligne : moins bien que la 3e sur tout / Compromis : la 1re, la seule à tenir 80 °C et votre minimum, pour 1 150 CHF de plus que la 2e
+comparer-defile 1280 clair : []
+capture comparer-1280-clair.png
+capture comparer-1280-clair-plein.png
+=== comparer 1280 sombre
+comparer 1280 sombre : Ce qui compte tient 80 °C, puis le débit · proposé par l'IA / à égalité, le moins cher / < min. 1 500 / sous votre minimum de 1 500 m³/h / < min. 1 500 / sous votre minimum de 1 500 m³/h / la 4e, Extracteur centrifuge en ligne : moins bien que la 3e sur tout / Compromis : la 1re, la seule à tenir 80 °C et votre minimum, pour 1 150 CHF de plus que la 2e
+comparer-defile 1280 sombre : []
+capture comparer-1280-sombre.png
+capture comparer-1280-sombre-plein.png
+=== choisir 390 clair
+ERREUR choisir 390 clair : Execution context was destroyed, most likely because of a navigation.
+=== choisir 390 sombre
+choisir 390 sombre : Critères : tient 80 °C, puis le débit, proposé par l'IA / Pourquoi
+capture choisir-390-sombre-a.png
+introuvable : Confirmer
+introuvable : Choisir celle-ci
+introuvable : Oui, choisir
+choisi 390 sombre : Critères : tient 80 °C, puis le débit, proposé par l'IA / Pourquoi / Choisir chez Inox Broye
+capture choisir-390-sombre-b-choisi.png
+=== choisir 1280 clair
+choisir 1280 clair : Critères : tient 80 °C, puis le débit, proposé par l'IA / Pourquoi
+capture choisir-1280-clair-a.png
+introuvable : Confirmer
+introuvable : Choisir celle-ci
+introuvable : Oui, choisir
+choisi 1280 clair : Critères : tient 80 °C, puis le débit, proposé par l'IA / Pourquoi / Choisir chez Inox Broye
+capture choisir-1280-clair-b-choisi.png
+=== choisir 1280 sombre
+choisir 1280 sombre : Critères : tient 80 °C, puis le débit, proposé par l'IA / Pourquoi
+capture choisir-1280-sombre-a.png
+introuvable : Confirmer
+introuvable : Choisir celle-ci
+introuvable : Oui, choisir
+choisi 1280 sombre : Critères : tient 80 °C, puis le débit, proposé par l'IA / Pourquoi / Choisir chez Inox Broye
+capture choisir-1280-sombre-b-choisi.png
+=== realises 390 clair
+realises 390 clair : Payé · facture du 16 nov. 2026 / 11 700 CHF / Payé en entier, au montant prévu
+capture realises-390-clair.png
+realise 390 clair : Réalisés / Réalisé le 16 nov. / Réalisés · ZZ TEST — Embouteillage / 190 à 21 500 CHF / CHF
+realise-coupes 390 clair : []
+capture realise-390-clair.png
+=== realises 390 sombre
+realises 390 sombre : Payé · facture du 16 nov. 2026 / 11 700 CHF / Payé en entier, au montant prévu
+capture realises-390-sombre.png
+realise 390 sombre : Réalisés / Réalisé le 16 nov. / Réalisés · ZZ TEST — Embouteillage / 190 à 21 500 CHF / CHF
+realise-coupes 390 sombre : []
+capture realise-390-sombre.png
+=== realises 1280 clair
+realises 1280 clair : Payé · facture du 16 nov. 2026 / 11 700 CHF / Payé en entier, au montant prévu
+capture realises-1280-clair.png
+realise 1280 clair : Réalisés / Réalisé le 16 nov. / Réalisés · ZZ TEST — Embouteillage / 190 à 21 500 CHF / CHF
+realise-coupes 1280 clair : []
+capture realise-1280-clair.png
+=== realises 1280 sombre
+realises 1280 sombre : Payé · facture du 16 nov. 2026 / 11 700 CHF / Payé en entier, au montant prévu
+capture realises-1280-sombre.png
+realise 1280 sombre : Réalisés / Réalisé le 16 nov. / Réalisés · ZZ TEST — Embouteillage / 190 à 21 500 CHF / CHF
+realise-coupes 1280 sombre : []
+capture realise-1280-sombre.png
+=== pompe 390 clair
+pompe 390 clair : Comparer sur le débit (L/min)exemple / Article rangé ici, à l'instant · 1er sur 2 · température max 100 °C / votre lien : « https://exemple.invalid/pompe-magnetique »
+capture pompe-390-clair.png
+capture pompe-390-clair-plein.png
+pompe-comparer 390 clair : Ce qui compte Supporter le moût chaud · proposé par l'IA / à égalité, le moins cher / débit L/min	25	40
+capture pompe-390-clair-comparer.png
+=== pompe 390 sombre
+pompe 390 sombre : 
+capture pompe-390-sombre.png
+capture pompe-390-sombre-plein.png
+introuvable : Comparer
+=== pompe 1280 clair
+pompe 1280 clair : Comparer sur le débit (L/min)exemple / Article rangé ici, à l'instant · 1er sur 2 · température max 100 °C / votre lien : « https://exemple.invalid/pompe-magnetique »
+capture pompe-1280-clair.png
+capture pompe-1280-clair-plein.png
+pompe-comparer 1280 clair : Ce qui compte Supporter le moût chaud · proposé par l'IA / à égalité, le moins cher / débit L/min	25	40
+capture pompe-1280-clair-comparer.png
+=== pompe 1280 sombre
+pompe 1280 sombre : Comparer sur le débit (L/min)exemple / Article rangé ici, à l'instant · 1er sur 2 · température max 100 °C / votre lien : « https://exemple.invalid/pompe-magnetique »
+capture pompe-1280-sombre.png
+capture pompe-1280-sombre-plein.png
+pompe-comparer 1280 sombre : Ce qui compte Supporter le moût chaud · proposé par l'IA / à égalité, le moins cher / débit L/min	25	40
+capture pompe-1280-sombre-comparer.png
+=== moulin 390 clair
+texte moulin-390 : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 7 ¦ Réalisés ¦ 0 ¦ Carnets ¦ Idée · 19 nov. ¦ Moulin à malt 2 cylindres, 150 kg/h ¦ ✓ ¦ Carnet créé, en tête des Carnets ¦ Annuler ¦ « Moulin à malt 2 cylindres, 150 kg/h » · votre phrase en titre ¦ Ce qui compte ¦ · Débit : 150 kg/h au moins · de votre phrase ¦ Façons ¦ 2 cylindres ¦ aucun article encore ¦ à chercher ¦ Articles ¦ · aucun : collez un lien ¦ Photos ¦ · aucune ¦ Notes ¦ · aucune ¦ Le champ en bas range tout ici : une phrase, un lien collé, une photo. ¦ Ajouter à Moulin à malt 2 cylindres, 150 kg/h… ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ Stocks ¦ Clients
+capture moulin-390-clair.png
+=== moulin 390 sombre
+texte moulin-390 : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 7 ¦ Réalisés ¦ 0 ¦ Carnets ¦ Idée · 19 nov. ¦ Moulin à malt 2 cylindres, 150 kg/h ¦ ✓ ¦ Carnet créé, en tête des Carnets ¦ Annuler ¦ « Moulin à malt 2 cylindres, 150 kg/h » · votre phrase en titre ¦ Ce qui compte ¦ · Débit : 150 kg/h au moins · de votre phrase ¦ Façons ¦ 2 cylindres ¦ aucun article encore ¦ à chercher ¦ Articles ¦ · aucun : collez un lien ¦ Photos ¦ · aucune ¦ Notes ¦ · aucune ¦ Le champ en bas range tout ici : une phrase, un lien collé, une photo. ¦ Ajouter à Moulin à malt 2 cylindres, 150 kg/h… ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ Stocks ¦ Clients
+capture moulin-390-sombre.png
+=== moulin 1280 clair
+texte moulin-1280 : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 7 ¦ Réalisés ¦ 0 ¦ Carnets ¦ Idée · 19 nov. ¦ Moulin à malt 2 cylindres, 150 kg/h ¦ ✓ ¦ Carnet créé, en tête des Carnets ¦ Annuler ¦ « Moulin à malt 2 cylindres, 150 kg/h » · votre phrase en titre ¦ Ce qui compte ¦ · Débit : 150 kg/h au moins · de votre phrase ¦ Façons ¦ 2 cylindres ¦ aucun article encore ¦ à chercher ¦ Articles ¦ · aucun : collez un lien ¦ Photos ¦ · aucune ¦ Notes ¦ · aucune ¦ Le champ en bas range tout ici : une phrase, un lien collé, une photo. ¦ Ajouter à Moulin à malt 2 cylindres, 150 kg/h… ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ Stocks ¦ Clients ¦ Compagn
+capture moulin-1280-clair.png
+=== moulin 1280 sombre
+texte moulin-1280 : Banc — données simulées · Stocks › Matériel ¦ À venir ¦ 1 ¦ Carnets ¦ 7 ¦ Réalisés ¦ 0 ¦ Carnets ¦ Idée · 19 nov. ¦ Moulin à malt 2 cylindres, 150 kg/h ¦ ✓ ¦ Carnet créé, en tête des Carnets ¦ Annuler ¦ « Moulin à malt 2 cylindres, 150 kg/h » · votre phrase en titre ¦ Ce qui compte ¦ · Débit : 150 kg/h au moins · de votre phrase ¦ Façons ¦ 2 cylindres ¦ aucun article encore ¦ à chercher ¦ Articles ¦ · aucun : collez un lien ¦ Photos ¦ · aucune ¦ Notes ¦ · aucune ¦ Le champ en bas range tout ici : une phrase, un lien collé, une photo. ¦ Ajouter à Moulin à malt 2 cylindres, 150 kg/h… ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ Stocks ¦ Clients ¦ Compagn
+capture moulin-1280-sombre.png
+=== frigo 390 clair
+frigo 390 clair : À venir / Choisi le 10 oct. / Critère : tenir 2 °C stable en été, puis passe la porte de 80 cm · de votre phrase / À venir · ZZ TEST — Frigo de garde pour fûts / Choisi : Chambre froide en kit 2 m³
+capture frigo-390-clair.png
+=== frigo 390 sombre
+frigo 390 sombre : À venir / Choisi le 10 oct. / Critère : tenir 2 °C stable en été, puis passe la porte de 80 cm · de votre phrase / À venir · ZZ TEST — Frigo de garde pour fûts / Choisi : Chambre froide en kit 2 m³
+capture frigo-390-sombre.png
+=== frigo 1280 clair
+frigo 1280 clair : À venir / Choisi le 10 oct. / Critère : tenir 2 °C stable en été, puis passe la porte de 80 cm · de votre phrase / À venir · ZZ TEST — Frigo de garde pour fûts / Choisi : Chambre froide en kit 2 m³
+capture frigo-1280-clair.png
+=== frigo 1280 sombre
+frigo 1280 sombre : À venir / Choisi le 10 oct. / Critère : tenir 2 °C stable en été, puis passe la porte de 80 cm · de votre phrase / À venir · ZZ TEST — Frigo de garde pour fûts / Choisi : Chambre froide en kit 2 m³
+capture frigo-1280-sombre.png

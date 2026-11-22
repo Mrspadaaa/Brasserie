@@ -53,7 +53,7 @@ export type AnySubTab = SubTabOf[keyof SubTabOf];
 const A = (intent: FabIntent, label: string, hint?: string): FabAction => ({ intent, label, hint });
 
 /** Le formulaire ouvert est celui d'une dépense : la seconde ligne le dit avant l'appui. */
-const NEW_TRANSACTION = A('newTransaction', 'Nouvelle écriture', 'Dépense saisie à la main');
+const NEW_TRANSACTION = A('newTransaction', 'Nouvelle écriture', 'Facture ou saisie à la main');
 
 /**
  * Le tableau complet. Chaque onglet donne soit une action unique, soit une
@@ -71,8 +71,8 @@ const ACTIONS: {
     batches: A('newBatch', 'Nouveau brassin'),
     recipes: A('newRecipe', 'Nouvelle recette'),
     lab: A('newIdea', 'Nouvelle idée'),
-    // Le calculateur ne crée rien : il met une recette existante à l'échelle.
-    scaler: A('newRecipe', 'Nouvelle recette')
+    // Le calculateur ne crée rien : il met une recette existante à l'échelle. BX-4 (09.11) : pas d'action d'écran (« Nouvelle recette » ici n'était pas la bonne).
+    scaler: A('quickAction', 'Saisie rapide')
   },
 
   stocks: {
@@ -86,8 +86,8 @@ const ACTIONS: {
 
   clients: {
     crm: A('newClient', 'Nouveau client'),
-    // La fiscalité OFDF se calcule depuis les brassins : rien à y créer.
-    ofdf: A('newClient', 'Nouveau client'),
+    // La fiscalité OFDF se calcule depuis les brassins : rien à y créer (BX-4 : pas de « Nouveau client » ici).
+    ofdf: A('quickAction', 'Saisie rapide'),
     tarifs: A('newTarif', 'Nouveau tarif')
   }
 };

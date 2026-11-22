@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r3 — QR-facture : le talon détachable et son sceau (chaude, 01.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--qrr3-fond:#F3F3F3;--qrr3-carte:#FAFAFA;--qrr3-blanc:#FFFFFF;--qrr3-bord:#DCDCDC;--qrr3-bordm:#BDBDBD;--qrr3-t2:#5E5E5E;--qrr3-t1:#2E2E2E;--qrr3-t0:#111111;
+--qrr3-att:#7A560C;--qrr3-attf:#FBF3E2;--qrr3-ok:#2B6541;--qrr3-okf:#E6F2E9;--qrr3-sans:"Source Sans 3",system-ui,sans-serif;--qrr3-mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#D9D9D9;color:var(--qrr3-t1);font-family:var(--qrr3-sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:#E9D8B0}
+:focus-visible{outline:2px solid var(--qrr3-t0);outline-offset:2px}
+.qrr3-m{font-family:var(--qrr3-mono);font-variant-numeric:tabular-nums}
+.qrr3-sheet{max-width:960px;margin:0 auto;min-height:100vh;background:var(--qrr3-fond);border-radius:24px 24px 0 0;display:flex;flex-direction:column}
+.qrr3-hd{position:sticky;top:0;z-index:5;background:var(--qrr3-fond);display:flex;align-items:center;gap:4px;height:48px;padding:0 8px 0 12px;border-bottom:1px solid var(--qrr3-bord);border-radius:24px 24px 0 0}
+.qrr3-hd h1{flex:1;font-size:20px;font-weight:600;color:var(--qrr3-t0)}
+.qrr3-ib{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--qrr3-t1)}
+.qrr3-corps{flex:1;padding:6px 12px 72px;display:flex;flex-direction:column;gap:8px}
+.qrr3-colA,.qrr3-colB{display:flex;flex-direction:column;gap:8px;min-width:0}
+.qrr3-just{display:flex;align-items:center;gap:8px;min-height:28px;font-size:14px}
+.qrr3-just span{flex:1}
+/* Le ticket : le bandeau de l'app en haut, et sous la perforation, la section paiement du bulletin suisse : ce que le QR porte. */
+.qrr3-ticket{border:1px solid var(--qrr3-bord);border-radius:16px;background:var(--qrr3-carte);overflow:hidden}
+.qrr3-bd{padding:6px 10px 8px;display:flex;flex-direction:column;gap:4px}
+.qrr3-bd1{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.qrr3-four{font-size:16px;font-weight:600;color:var(--qrr3-t0)}
+.qrr3-bd2{display:flex;align-items:center;gap:8px}
+.qrr3-tot{font-family:var(--qrr3-mono);font-variant-numeric:tabular-nums;font-size:32px;font-weight:600;line-height:1.1;color:var(--qrr3-t0)}
+.qrr3-tot.qrr3-doute{color:var(--qrr3-att);text-decoration:underline dashed 1.5px;text-underline-offset:6px}
+.qrr3-dev{font-size:12px;color:var(--qrr3-t2)}
+.qrr3-chip{margin-left:auto;min-height:28px;display:inline-flex;align-items:center;gap:4px;padding:0 8px;border-radius:10px;border:1px solid var(--qrr3-bordm);background:var(--qrr3-blanc);font-size:14px}
+.qrr3-barre{display:flex;height:10px;border-radius:9px;overflow:hidden;border:1px solid var(--qrr3-bord)}
+.qrr3-barre i{height:100%;border-right:1.5px solid var(--qrr3-blanc)}
+.qrr3-barre i:last-child{border-right:0}
+.qrr3-l-relie{background:#9C7A2E}.qrr3-l-neuf{background:#4F74B0}.qrr3-l-aucun{background:#2B2B2B}
+.qrr3-perf{position:relative;height:12px;background:var(--qrr3-blanc)}
+.qrr3-perf::before{content:"";position:absolute;left:22px;right:0;top:5px;border-top:1.5px dashed var(--qrr3-t2)}
+.qrr3-perf svg{position:absolute;left:4px;top:-1px;background:var(--qrr3-blanc)}
+.qrr3-talon{background:var(--qrr3-blanc);padding:2px 10px 8px;display:flex;flex-direction:column;gap:4px}
+.qrr3-t1{display:grid;grid-template-columns:48px 1fr;gap:10px;align-items:center;text-align:left;width:100%}
+.qrr3-t1 strong{display:flex;align-items:baseline;gap:6px;font-size:14px;font-weight:600;color:var(--qrr3-t0)}
+.qrr3-t1 strong b{font-family:var(--qrr3-mono);font-weight:600}
+.qrr3-faits{display:flex;flex-wrap:wrap;gap:2px 10px;font-size:12px;color:var(--qrr3-t1)}
+.qrr3-faits span{display:inline-flex;align-items:center;gap:2px}
+.qrr3-faits .qrr3-f-ok svg{color:var(--qrr3-ok)}
+.qrr3-faits .qrr3-f-ko{color:var(--qrr3-att);font-weight:600}
+.qrr3-faits .qrr3-f-vide{color:var(--qrr3-t2);text-decoration:line-through}
+.qrr3-pay{display:grid;grid-template-columns:34px 1fr 28px;gap:6px;align-items:center;min-height:28px;border-top:1px solid var(--qrr3-bord)}
+.qrr3-pay small{font-size:12px;color:var(--qrr3-t2)}
+.qrr3-pay span{font-family:var(--qrr3-mono);font-size:12px;color:var(--qrr3-t0);letter-spacing:.01em}
+.qrr3-cp{width:28px;height:28px;border-radius:10px;border:1px solid var(--qrr3-bordm);display:flex;align-items:center;justify-content:center;color:var(--qrr3-t1)}
+.qrr3-cp.qrr3-copie{border-color:var(--qrr3-ok);color:var(--qrr3-ok);background:var(--qrr3-okf)}
+/* Le désaccord : la valeur du QR proposée, la lue barrée ; le champ ne change qu'au toucher. */
+.qrr3-prop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1.5px dashed var(--qrr3-att);background:var(--qrr3-attf);border-radius:10px;padding:5px 8px}
+.qrr3-prop s{font-family:var(--qrr3-mono);font-size:14px;color:var(--qrr3-att)}
+.qrr3-prop b{font-family:var(--qrr3-mono);font-size:24px;font-weight:600;color:var(--qrr3-t0);line-height:1.1}
+.qrr3-prop small{font-size:12px;color:var(--qrr3-t1)}
+.qrr3-prop .qrr3-sp{flex:1}
+.qrr3-btn{min-height:28px;padding:0 10px;border-radius:10px;border:1px solid var(--qrr3-bordm);font-size:14px;background:var(--qrr3-blanc)}
+.qrr3-btn.qrr3-plein{background:var(--qrr3-t0);border-color:var(--qrr3-t0);color:#fff;font-weight:600}
+.qrr3-tu{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.qrr3-tile{border:1px solid var(--qrr3-bord);border-radius:16px;padding:6px 10px;display:flex;flex-direction:column;gap:2px;min-height:52px;background:var(--qrr3-carte)}
+.qrr3-tile small{font-size:12px;color:var(--qrr3-t2)}
+.qrr3-tile span{font-size:14px;color:var(--qrr3-t0)}
+.qrr3-lt{display:flex;align-items:center;justify-content:space-between;min-height:28px;border-top:1px solid var(--qrr3-bord);padding-top:4px}
+.qrr3-li{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:10px;padding:6px 4px;border-bottom:1px solid var(--qrr3-bord);min-height:52px}
+.qrr3-li b{font-size:16px;font-weight:600;color:var(--qrr3-t0)}
+.qrr3-li .qrr3-pas{font-size:12px;border-radius:10px;padding:0 6px;background:#E4E4E4;color:var(--qrr3-t1);margin-left:6px}
+.qrr3-li .qrr3-pas.qrr3-neuf{background:#E3EAF6;color:#2C4F86}
+.qrr3-li .qrr3-q2{display:block;font-family:var(--qrr3-mono);font-size:12px;color:var(--qrr3-t1)}
+.qrr3-li .qrr3-mt{font-family:var(--qrr3-mono);font-variant-numeric:tabular-nums;font-size:14px;color:var(--qrr3-t0);text-align:right}
+.qrr3-sq{display:grid;grid-template-columns:24px 1fr 40px;gap:10px;align-items:center;min-height:48px;border-bottom:1px solid var(--qrr3-bord)}
+.qrr3-sq i{display:block;height:12px;border-radius:9px;background:#E2E2E2}
+.qrr3-sq i:first-child{height:20px;border-radius:6px}
+.qrr3-anneau{animation:qrr3-t 1.2s linear infinite;transform-origin:22px 22px}
+@keyframes qrr3-t{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.qrr3-anneau{animation:none}}
+.qrr3-ft{position:sticky;bottom:0;z-index:5;display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--qrr3-fond);border-top:1px solid var(--qrr3-bord)}
+.qrr3-ft span{flex:1;font-size:12px;color:var(--qrr3-t1)}
+.qrr3-go{min-height:32px;padding:0 12px;border-radius:10px;background:var(--qrr3-t0);color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+@media (min-width:900px){
+ html,body{padding-top:24px}
+ .qrr3-sheet{min-height:calc(100vh - 24px);border-radius:24px}
+ .qrr3-corps{display:grid;grid-template-columns:440px minmax(0,1fr);gap:16px;align-items:start}
+}
+</style></head>
+<body>
+<div class="qrr3-sheet" id="qrr3-racine"></div>
+<script>
+(function () {
+  'use strict';
+  var ETATS = ['confirme', 'contredit', 'partiel', 'illisible', 'sans', 'lecture'];
+  var q = new URLSearchParams(location.search).get('etat');
+  var etat = ETATS.indexOf(q) >= 0 ? q : 'confirme';
+  var ui = { garde: null, copie: null };
+  var LIGNES = [
+    ['Pilsner Malz', '10 kg', '+10 kg', 32.0, 'relie'], ['Pale Ale Malz', '5 kg', '+5 kg', 17.5, 'relie'],
+    ['Münchner Malz', '3 kg', '+3 kg', 11.4, 'relie'], ['Carapils', '1 kg', '+1 kg', 4.2, 'relie'],
+    ['Carafa Spezial 2', '1 kg', 'nouveau', 5.6, 'neuf'], ['Citra', '100 g · α 12,5', '+100 g', 14.8, 'relie'],
+    ['Saaz', '100 g · α 3,4', '+100 g', 9.6, 'relie'], ['SafAle US-05', '2 Stk', '+2 sachets', 9.8, 'relie'],
+    ['Whirlfloc', '1 Stk', '', 5.5, 'aucun']
+  ];
+  function chf(n) { return n.toFixed(2).split('.').join(','); }
+  function cube(lien) {
+    var c = '<path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/>';
+    var coul = lien === 'neuf' ? '#3F67A8' : lien === 'aucun' ? '#8A8A8A' : '#111';
+    var badge = lien === 'relie' ? '<circle cx="15" cy="15" r="4.6" fill="currentColor" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/>'
+      : lien === 'neuf' ? '<circle cx="15" cy="15" r="4.6" fill="currentColor" stroke="none"/><path d="M15 12.6v4.8M12.6 15h4.8" stroke="#fff"/>' : '';
+    var mot = lien === 'relie' ? 'relié' : lien === 'neuf' ? 'nouvel article' : 'aucun mouvement de stock';
+    return '<svg role="img" aria-label="' + mot + '" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" style="color:' + coul + '">' + c + badge + '</svg>';
+  }
+  var V = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 6.4 4.8 9 10 3"/></svg>';
+  var CHEV = function (o) { return '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" style="transform:rotate(' + (o ? 180 : 0) + 'deg)"><path d="M3 5.2 7 9.2 11 5.2"/></svg>'; };
+  var COPIE = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="4.5" y="4.5" width="7.5" height="7.5" rx="1.5"/><path d="M9.5 4.5V3a1.5 1.5 0 0 0-1.5-1.5H3A1.5 1.5 0 0 0 1.5 3v5A1.5 1.5 0 0 0 3 9.5h1.5"/></svg>';
+  var CISEAUX = '<svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="var(--qrr3-t2)" stroke-width="1.5" aria-hidden="true"><circle cx="3" cy="3" r="2"/><circle cx="3" cy="9" r="2"/><path d="M4.6 4.2 15 9.5M4.6 7.8 15 2.5"/></svg>';
+  /* Le sceau : le picto du QR-facture (trois repères, croix suisse), entouré de quatre arcs : montant, devise, n°, date. */
+  function sceau(arcs, barre, tourne) {
+    var col = { ok: 'var(--qrr3-ok)', ko: 'var(--qrr3-att)', vide: 'var(--qrr3-bordm)' };
+    var a = [[-80, -10], [10, 80], [100, 170], [190, 260]].map(function (ang, i) {
+      var r = 20, c = 22, d2r = Math.PI / 180;
+      var x1 = c + r * Math.cos(ang[0] * d2r), y1 = c + r * Math.sin(ang[0] * d2r), x2 = c + r * Math.cos(ang[1] * d2r), y2 = c + r * Math.sin(ang[1] * d2r);
+      var g = arcs[i];
+      return '<path d="M' + x1.toFixed(2) + ' ' + y1.toFixed(2) + ' A' + r + ' ' + r + ' 0 0 1 ' + x2.toFixed(2) + ' ' + y2.toFixed(2) + '" fill="none" stroke="' + col[g] + '" stroke-width="3.2" stroke-linecap="round"' + (g === 'vide' ? ' stroke-dasharray="2 3"' : '') + '/>';
+    }).join('');
+    var rep = function (x, y) { return '<rect x="' + (x + 0.6) + '" y="' + (y + 0.6) + '" width="4.3" height="4.3" rx="0.6" fill="none" stroke="currentColor" stroke-width="1.5"/><rect x="' + (x + 2) + '" y="' + (y + 2) + '" width="1.5" height="1.5" fill="currentColor"/>'; };
+    var picto = '<g transform="translate(12.5 12.5) scale(1.19)" style="color:' + (barre ? 'var(--qrr3-t2)' : 'var(--qrr3-t0)') + '">' + rep(0.5, 0.5) + rep(10, 0.5) + rep(0.5, 10) +
+      '<rect x="6" y="6" width="4" height="4" fill="currentColor"/><path d="M7.6 6.7h.8v2.6h-.8zM6.7 7.6h2.6v.8H6.7z" fill="#fff"/>' +
+      '<rect x="11" y="11" width="1.6" height="1.6" fill="currentColor"/><rect x="13.6" y="13.4" width="1.6" height="1.6" fill="currentColor"/><rect x="11" y="13.8" width="1.6" height="1.6" fill="currentColor"/><rect x="13.6" y="10.6" width="1.6" height="1.6" fill="currentColor"/>' +
+      (barre ? '<path d="M1.5 14.5 14.5 1.5" stroke="currentColor" stroke-width="1.5"/>' : '') + '</g>';
+    return '<svg role="img" aria-label="Sceau du QR-facture" width="44" height="44" viewBox="0 0 44 44"><g' + (tourne ? ' class="qrr3-anneau"' : '') + '>' + a + '</g>' + picto + '</svg>';
+  }
+  function talon() {
+    if (etat === 'sans') return '';
+    var perf = '<div class="qrr3-perf">' + CISEAUX + '</div>';
+    if (etat === 'illisible') {
+      return perf + '<div class="qrr3-talon"><div class="qrr3-t1">' + sceau(['vide', 'vide', 'vide', 'vide'], true) + '<div><strong>QR illisible</strong><div class="qrr3-faits"><span>la lecture fait foi</span></div></div></div></div>';
+    }
+    var ko = etat === 'contredit' && !ui.garde;
+    var keptLu = etat === 'contredit' && ui.garde === 'lu';
+    var arcs, faits, titre;
+    if (etat === 'partiel') {
+      arcs = ['vide', 'ok', 'vide', 'vide'];
+      titre = 'Section paiement <b>2/2</b>';
+      faits = '<span class="qrr3-f-vide">montant</span><span class="qrr3-f-ok">' + V + 'devise</span><span class="qrr3-f-ok">' + V + 'créancier</span><span class="qrr3-f-vide">n°</span><span class="qrr3-f-vide">date</span>';
+    } else if (etat === 'lecture') {
+      arcs = ['vide', 'vide', 'vide', 'vide'];
+      titre = 'QR lu · <b>0,4 s</b>';
+      faits = '<span><b class="qrr3-m">110,40</b>&nbsp;CHF</span><span class="qrr3-m">F-1001</span><span>à comparer</span>';
+    } else {
+      arcs = [ko || keptLu ? 'ko' : 'ok', 'ok', 'ok', 'ok'];
+      titre = 'Section paiement <b>' + (ko || keptLu ? '3/4' : '4/4') + '</b>';
+      faits = '<span class="' + (ko || keptLu ? 'qrr3-f-ko' : 'qrr3-f-ok') + '">' + (ko || keptLu ? '≠ ' : V) + (etat === 'contredit' && ui.garde === 'qr' ? 'montant pris du QR' : 'montant') + '</span><span class="qrr3-f-ok">' + V + 'devise</span><span class="qrr3-f-ok">' + V + 'n°</span><span class="qrr3-f-ok">' + V + 'date</span>';
+    }
+    var tete = '<div class="qrr3-t1" data-booster="sceau">' + sceau(arcs, false, etat === 'lecture') + '<div style="display:flex;flex-direction:column;gap:2px"><strong>' + titre + '</strong><div class="qrr3-faits">' + faits + '</div></div></div>';
+    var prop = '';
+    if (ko) {
+      prop = '<div class="qrr3-prop" id="qrr3-prop"><small>Montant</small><s aria-label="lu 110,04">110,04</s><b>110,40</b><span class="qrr3-sp"></span>' +
+        '<button type="button" class="qrr3-btn qrr3-plein" data-booster="prendre" data-garde="qr">Prendre</button><button type="button" class="qrr3-btn" data-garde="lu">Garder 110,04</button></div>';
+    } else if (keptLu) {
+      prop = '<div class="qrr3-faits" style="padding-left:58px"><span>QR&nbsp;<b class="qrr3-m">110,40</b>&nbsp;· lu gardé</span></div>';
+    }
+    var cp = function (id, k, v) {
+      var fait = ui.copie === id;
+      return '<div class="qrr3-pay"><small>' + k + '</small><span>' + v + '</span><button type="button" class="qrr3-cp' + (fait ? ' qrr3-copie' : '') + '" data-booster="copier" data-copie="' + id + '" aria-label="' + (fait ? 'Copié : ' : 'Copier ') + k + '">' + (fait ? V : COPIE) + '</button></div>';
+    };
+    var pay = etat === 'lecture' ? '' : cp('iban', 'IBAN', 'CH44 3199 9123 0008 8901 2') + cp('ref', 'Réf.', '21 00000 00003 13947 14300 09017');
+    return perf + '<div class="qrr3-talon">' + tete + prop + pay + '</div>';
+  }
+  function ticket() {
+    var doute = etat === 'contredit' && !ui.garde;
+    var tot = etat === 'contredit' && ui.garde !== 'qr' ? 110.04 : 110.4;
+    var lec = etat === 'lecture';
+    var barre = lec ? '<div class="qrr3-barre" aria-hidden="true"><i style="flex-grow:1;background:#E2E2E2"></i></div>'
+      : '<div class="qrr3-barre" aria-label="Les 9 lignes, à la largeur de leur montant">' + LIGNES.map(function (l) { return '<i class="qrr3-l-' + l[4] + '" style="flex-grow:' + l[3] + '"></i>'; }).join('') + '</div>';
+    var bd = '<div class="qrr3-bd"><div class="qrr3-bd1">' + (lec ? '<i aria-hidden="true" style="display:block;width:55%;height:14px;border-radius:9px;background:#E2E2E2"></i><i aria-hidden="true" style="display:block;width:22%;height:14px;border-radius:9px;background:#E2E2E2"></i>' : '<span class="qrr3-four">Malterie Fictive SA</span><span class="qrr3-m" style="font-size:14px">12.10.2026</span>') + '</div>' +
+      '<div class="qrr3-bd2"><span class="qrr3-tot' + (doute ? ' qrr3-doute' : '') + '">' + (lec ? '—' : chf(tot)) + '</span><span class="qrr3-dev">CHF</span>' +
+      (lec ? '' : '<button type="button" class="qrr3-chip" aria-label="Détails de la lecture">' + (doute ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--qrr3-att)" stroke-width="1.5" aria-hidden="true"><circle cx="7" cy="7" r="5.7"/><path d="M7 4v3.6M7 9.6v.4"/></svg>' : V) + '<span class="qrr3-m">9</span>&nbsp;lignes</button>') + '</div>' + barre + '</div>';
+    return '<section class="qrr3-ticket" aria-label="Récapitulatif et section paiement">' + bd + talon() + '</section>';
+  }
+  function tuiles() {
+    if (etat === 'lecture') return '<div class="qrr3-tu" style="opacity:.8"><div class="qrr3-tile"><small>Règlement</small><span>verrouillé</span></div><div class="qrr3-tile"><small>Pour quoi ?</small><span>verrouillé</span></div></div>';
+    var cond = '<span>À payer</span>';
+    return '<div class="qrr3-tu"><div class="qrr3-tile"><small>TVA · 2,6 %</small><span class="qrr3-m">2,80</span></div><div class="qrr3-tile"><small>Règlement</small>' + cond + '</div></div>';
+  }
+  function lignes() {
+    if (etat === 'lecture') {
+      return '<div class="qrr3-lt"><span role="status">Lecture des lignes…</span><span class="qrr3-m" style="font-size:12px;color:var(--qrr3-t2)">F-1001.pdf · 0,2 Mo</span></div>' +
+        [0, 1, 2, 3, 4, 5, 6].map(function () { return '<div class="qrr3-sq" aria-hidden="true"><i></i><span style="display:flex;flex-direction:column;gap:4px"><i style="width:60%"></i><i style="width:35%;height:10px"></i></span><i></i></div>'; }).join('');
+    }
+    return '<div class="qrr3-lt"><span>Lignes de la facture · <span class="qrr3-m">9</span></span>' + CHEV(true) + '</div>' +
+      LIGNES.map(function (l) {
+        var pas = l[2] ? '<span class="qrr3-pas' + (l[4] === 'neuf' ? ' qrr3-neuf' : '') + '">' + l[2] + '</span>' : '';
+        return '<div class="qrr3-li">' + cube(l[4]) + '<span><b>' + l[0] + '</b>' + pas + '<span class="qrr3-q2">' + l[1] + '</span></span><span class="qrr3-mt">' + chf(l[3]) + '</span></div>';
+      }).join('');
+  }
+  function rendre() {
+    var hd = '<header class="qrr3-hd"><h1>Nouvelle dépense</h1><button type="button" class="qrr3-ib" aria-label="Justificatif"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1.8h6.5L14 5.3v10.9H4z"/><path d="M10.3 1.8v3.7H14M6.5 9h5M6.5 12h5"/></svg></button><button type="button" class="qrr3-ib" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M3 3l10 10M13 3 3 13"/></svg></button></header>';
+    var just = '<div class="qrr3-just"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 1.8h6.5L14 5.3v10.9H4z"/><path d="M10.3 1.8v3.7H14"/></svg><span>Voir le justificatif</span>' + CHEV(false) + '</div>';
+    var corps = '<div class="qrr3-corps"><div class="qrr3-colA">' + just + ticket() + tuiles() + '</div><div class="qrr3-colB" data-mots="lignes">' + lignes() + '</div></div>';
+    var ft = '<footer class="qrr3-ft"><span>' + (etat === 'lecture' ? 'Lecture en cours' : 'Drive prêt') + '</span><button type="button" class="qrr3-go"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2.5 7.4 5.6 10.4 11.5 3.8"/></svg>Confirmer</button></footer>';
+    document.getElementById('qrr3-racine').innerHTML = hd + corps + ft;
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('button');
+    if (!t) return;
+    if (t.getAttribute('data-garde')) ui.garde = t.getAttribute('data-garde');
+    else if (t.getAttribute('data-copie')) {
+      ui.copie = t.getAttribute('data-copie');
+      var txt = ui.copie === 'iban' ? 'CH4431999123000889012' : '210000000003139471430009017';
+      if (navigator.clipboard) navigator.clipboard.writeText(txt).catch(function () {});
+    } else return;
+    rendre();
+  });
+  rendre();
+})();
+</script>
+</body></html>

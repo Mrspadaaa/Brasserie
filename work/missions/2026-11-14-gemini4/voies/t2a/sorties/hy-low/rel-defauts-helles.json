@@ -1,0 +1,19 @@
+{
+ "cas": "rel-defauts-helles",
+ "usage": "relecture",
+ "half": "choix",
+ "cellule": "hy@low",
+ "ok": true,
+ "ms": 5376,
+ "microChf": 14237,
+ "microDecembre": 14237,
+ "entree": 1508,
+ "sortie": 1217,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "3/3 défauts · 1 bloquant(s) dont 0 injustifié(s)",
+ "reponse": "{\"verdict\":\"Recette non prête à brasser : le palier de saccharification à 78 °C bloquera la conversion enzymatique, et l'amertume comme le profil d'eau sont hors style pour une Munich Helles.\",\"findings\":[{\"severity\":\"bloquant\",\"topic\":\"Paliers\",\"observation\":\"Le palier de saccharification est fixé à 78 °C pendant 60 min, température qui dénature les amylases et empêche la conversion de l'amidon en sucres fermentescibles.\",\"suggestion\":\"Abaisser le palier de saccharification entre 64 °C et 66 °C pendant 60 min, et conserver le mash-out à 78 °C pendant 10 min.\"},{\"severity\":\"gout\",\"topic\":\"Houblons\",\"observation\":\"60 g de Magnum à 14 % d'acides alpha pendant 60 min sur 20 L génèrent une amertume largement supérieure à la cible de 20 IBU (environ 90 à 100 IBU).\",\"suggestion\":\"Réduire l'ajout de Magnum à 60 min autour de 10 g à 12 g pour rester proche des 20 IBU.\"},{\"severity\":\"gout\",\"topic\":\"Eau\",\"observation\":\"L'ajout de 12 g de gypse porte les sulfates à 350 ppm pour 20 ppm de chlorures (ratio SO4/Cl de 17.5), ce qui donnera une amertume sèche et tranchante contraire à la rondeur maltée d'une Munich Helles.\",\"suggestion\":\"Supprimer ou réduire fortement le gypse et utiliser du chlorure de calcium pour obtenir un profil équilibré ou orienté vers les chlorures.\"}],\"missing\":[\"Taux d'acides alpha du houblon Hallertauer Mittelfrüh.\"],\"styleFit\":\"En l'état, la bière ne fermentera pas faute de saccharification ; même avec un palier corrigé, l'amertume excessive et l'excès de sulfates la rendraient très sèche et amère, loin de la douceur maltée d'une Munich Helles.\"}"
+}

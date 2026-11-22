@@ -4,10 +4,11 @@ import type { Transaction } from '../../types';
 import type { FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import { Sheet } from '../Sheet';
 import { DocumentProofLink } from './DocumentProofLink';
+import { ProofResendPanel } from './ProofUploadNotice';
 import { Field, MoneyInput } from './FinanceForms';
 import { CategoryTag } from './CategoryTag';
 import { longDate } from './financeFormat';
-import { formatCHF, isoDate, todayISO, transactionAmount, transactionKind, transactionVendor, transactionDirection, paymentState } from '../../domain/finance/ledger';
+import { dateAffichee, formatCHF, isoDate, todayISO, transactionAmount, transactionKind, transactionVendor, transactionDirection, paymentState } from '../../domain/finance/ledger';
 import { planOccurrences } from '../../domain/finance/forecast';
 import { StorageService } from '../../services/storage';
 import { FinanceService } from '../../services/financeService';
@@ -43,6 +44,7 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
         <div className="finance-actions">{state.remainingCents>0&&<button className="finance-action" onClick={onPay}>{outgoing?'Noter un paiement':'Noter un encaissement'}</button>}<button className="finance-action secondary" onClick={onEdit}>Modifier les informations</button></div>
         {state.state==='unknown'&&<button className="finance-action secondary" onClick={()=>update({paymentStatus:'unpaid'})}>Confirmer que cette pièce reste à régler</button>}
       </>}
+      <ProofResendPanel transaction={tx}/>
       <DocumentProofLink transaction={tx} className="finance-action secondary"/>
       {/* ⚠️ Le détail d'un achat est l'endroit où le brasseur se demande « il
           m'en reste combien ? ». La ligne qui sait de quel article elle parle
@@ -65,7 +67,7 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
         <Field label="Échéance de la facture"><input type="date" value={tx.finance?.dueDate??''} onChange={e=>update({dueDate:e.target.value||undefined})}/></Field>
         <Field label="Rattacher à une prévision"><select value={tx.finance?.planId??''} onChange={e=>update({planId:e.target.value||undefined,occurrenceId:undefined,planAllocatedCents:undefined})}><option value="">Aucune</option>{plans.filter(p=>(p.status==='active'||p.source==='equipment'&&p.status==='draft'||p.id===tx.finance?.planId)&&p.direction===transactionDirection(tx,transactions)).map(p=><option key={p.id} value={p.id}>{p.title} · {formatCHF(p.amountCents)}</option>)}</select></Field>
         {plan&&<MoneyInput label="Montant de cette facture qui remplace la prévision (CHF)" value={tx.finance?.planAllocatedCents} onChange={v=>update({planAllocatedCents:v})}/>}
-        {plan?.recurrence&&<Field label="Échéance prévue remplacée par cette facture"><select value={tx.finance?.occurrenceId??''} onChange={e=>update({occurrenceId:e.target.value||undefined})}><option value="">Choisir la période concernée</option>{occurrences.map(o=><option key={o.id} value={o.id}>{o.date}</option>)}</select></Field>}
+        {plan?.recurrence&&<Field label="Échéance prévue remplacée par cette facture"><select value={tx.finance?.occurrenceId??''} onChange={e=>update({occurrenceId:e.target.value||undefined})}><option value="">Choisir la période concernée</option>{occurrences.map(o=><option key={o.id} value={o.id}>{dateAffichee(o.date)}</option>)}</select></Field>}
         </div></details>
         {['expense','income'].includes(transactionKind(tx))&&<button className="finance-link" onClick={onRefund}>Enregistrer un avoir ou remboursement</button>}
       </>}

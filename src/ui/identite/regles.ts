@@ -108,6 +108,19 @@ export function lireSaisie(texte: string, o: { min: number; max: number; arrondi
   return { genre: 'valeur', valeur: val };
 }
 
+/**
+ * BR-65 : un texte refusé à la sortie du champ ne se perd pas en silence. Dit la plage permise, et la valeur gardée.
+ * Les bornes sont dites avec le mot « de … à … » (jamais « −1 → 30 L » sans un mot).
+ */
+export function messageRefusSaisie(genre: Exclude<Saisie['genre'], 'valeur'>, o: { min: number; max: number; unite?: string; gardee: number }): string {
+  const u = o.unite ? ` ${o.unite}` : '';
+  const garde = fini(o.gardee) ? ` Valeur gardée : ${fr(o.gardee)}${u}.` : '';
+  const plage = `de ${fr(o.min)} à ${fr(o.max)}${u}`;
+  if (genre === 'illisible') return `Un nombre est attendu, ${plage}.${garde}`;
+  if (genre === 'vide') return `Une valeur est attendue, ${plage}.${garde}`;
+  return `Valeur hors limites, ${plage}.${garde}`;
+}
+
 /** ↑ ↓ : ajoute ou retire un pas, sans sortir de [min, max]. Une valeur inconnue part de `min`. */
 export function pasClavier(valeur: number, pas: number, sens: 1 | -1, o: { min: number; max: number }): number {
   const base = fini(valeur) ? valeur : o.min;

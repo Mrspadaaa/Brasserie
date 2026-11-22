@@ -1,0 +1,23 @@
+# Contre-relecture des corrections de f4 (relecteur, 01.11)
+
+Verdict : **REVUE OK** (0 bloquant, 0 majeur, 2 détails). Les trois majeurs de REVUE-code.md sont fermés.
+
+Preuve rejouée : `vitest run tests/unit/depense/enrichir --maxWorkers=2` en copie isolée : `Test Files 2 failed | 8 passed (10)`, `Tests 5 failed | 102 passed (107)` ; les 5 rouges sont les témoins attendus (a), (b), (c2), (d) et E4. Même compte que RESULTAT.
+
+## 1. Les trois majeurs
+- **M1 fermé.** `enrichissement.ts` (boucle de `runOnce`) : `try/catch` par travail, sauf `ExecutantInterdit` relancé ; `essaiQuiALeve` (`enrichissementTravail.ts:177`) note le jour d'échec, `dernier` et `vie`, passe en `echec/troisJours` au 3ᵉ jour, puis le travail suivant est traité. La réponse payante est écrite dans `reponses` AVANT `valeursDeReponse` (`enrichissementTravail.ts:296-299`) ; si l'adaptation lève, le tour suivant relit `deja.facts` (l. 257) et lève de nouveau sans nouvel appel : le paiement n'est pas répété (lu sur le code ; le test « ne bloque pas le suivant… » compte 2 appels, puis 2 encore après 2 jours). Réserve : le travail fautif est réessayé à chaque réveil le même jour (sans réseau ni coût) : acceptable.
+- **M2 fermé.** `ficheRetenueDe` ne sert plus que Malt et Levure (le houblon rend `undefined`, test `cle.test` et `learn.test`). Le chemin recette passe par `apprendreSurFicheRetenue` : `faitsEcrivables` = `CHAMPS_ECRIVABLES` (jamais `alphaPct`, `yeastNotes`), puis `patchDeTrous` (champs vides seulement, `remplis` avec `par: 'retenue'`, `niveau: 'repris'`). Le test passe par un vrai `learnIngredient` (copie de `storage.ts` branchée, ancre unique vérifiée) : houblon + α → aucun `put` sur le lot ; malt à EBC vide → `colorEbc` tracé, `alphaPct` absent. Hors périmètre, resté comme avant : le chemin d'un article de nom exact (`matches[0]`) écrit toujours ses champs sans trace (comportement d'origine, non modifié par f4).
+- **M3 fermé.** Sur `proche` : rien sur un article, `noter(...)` au journal (« Faits acceptés gardés à contrôler »), et `garderFaitsProches` écrit un travail `RECETTE-<clé>` (`etat: aControler`, `raison: proche`, `faits` fusionnés avec un éventuel ancien). `aReprendre` ne reprend jamais `aControler` : la file ne le traite pas. Le résumé le compte (`aControler: 1`, testé). Famille houblon exclue.
+
+## 2. « Journal qui lève après l'écriture » : juste
+`noter` enveloppe le journal dans un `try/catch` ; l'écriture (`FirestoreRepo.put`) est faite avant et le retour est `true` quoi qu'il arrive ensuite. Les `return false` ne subsistent qu'avant toute écriture (échec de `ficheRetenueDe`, `faitsEcrivables`, `patchDeTrous`, ou `put` qui lève) : l'ancien chemin `FICHE-…` n'est donc jamais ajouté à une écriture déjà faite. Le test remplace bien `Storage.logAction` par une fonction qui lève, et le branchement l'appelle par `this.logAction` : il exerce le vrai chemin.
+
+## 3. Texte des branchements 2 et 3 : juste
+- Branchement 2 : la ligne donnée est identique mot pour mot à la constante `BRANCHE` du test ; l'ancre `    const item = matches[0];` existe une seule fois (`storage.ts:735`) ; `stock`, `name`, `facts`, `matches` sont dans la portée à cet endroit ; `this.logAction(type, module, ref, résumé, détails)` correspond à la signature. Pas de cycle : `enrichissementRecette` n'importe `enrichissement` que par `import()`. Comportement sur données existantes : avant tout enrichissement, `ficheRetenueDe` rend `undefined` (aucun `fiche.cle`), `apprendreSurFicheRetenue` rend `false`, rien ne change ; l'effet de l'import dans `storage.ts` est une dépendance statique de plus (`ficheCle`, `ficheValeurs`, `firestoreRepo` déjà présent).
+- Branchement 3 : ancres retrouvées sur l'arbre courant (`purchaseEntry.ts:529` et `:548`), texte inchangé et cohérent avec ma première lecture.
+
+## Détails restants (non bloquants)
+- D-a : `relancerFiche('RECETTE-…')` (`enrichissement.ts`) accepte un travail `aControler` sans dépense : il repasse `attend`, `portes` ne trouve pas `TX-` (transactionId vide) et le rend `attend` à chaque réveil, sans appel ni écriture. À refuser dans `relancerFiche` (`ref.startsWith('RECETTE-')`) avant que f3 n'expose « Relancer ».
+- D-b : `apprendreSurFicheRetenue` écrit `yeastTechnicalFacts` et `yeastFermentationFacts` bruts d'une recette sur un champ vide, là où le chemin d'origine les passe par `mergeYeastTechnicalFacts` / `readIngredientFermentationFacts`. Écrits `repris` et tracés, donc sans danger, mais non normalisés : à aligner si un lecteur attend la forme fusionnée.
+
+Non vérifié : la copie branchée de 381 verts, `tsc` et le build annoncés dans RESULTAT (non rejoués) ; aucun émulateur lancé.

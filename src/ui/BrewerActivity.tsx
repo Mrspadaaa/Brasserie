@@ -88,7 +88,7 @@ export function BrewerActivity({ context = brewerAppScreen('dashboard'), hideAct
     : pending.length ? `${pending.length} ${pending.length > 1 ? 'questions en cours' : 'question en cours'}`
     : 'Mes conversations';
   if (localOnly)
-    return <p role="status" className="pointer-events-none fixed top-1 left-1/2 z-40 -translate-x-1/2 rounded-control bg-cave-850 px-2 py-1 text-2xs text-cave-400">Compagnon hors connexion · mode local</p>;
+    return <p role="status" className="pointer-events-none fixed bottom-[4.25rem] left-1/2 z-30 -translate-x-1/2 whitespace-nowrap rounded-control bg-cave-850 px-2 py-0.5 text-2xs text-cave-400">Compagnon hors connexion · mode local</p>;
   const remove = async () => {
     if (!removal || deleting) return;
     setDeleting(true);

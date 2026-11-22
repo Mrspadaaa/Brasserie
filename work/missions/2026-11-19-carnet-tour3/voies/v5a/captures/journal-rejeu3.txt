@@ -1,0 +1,9 @@
+n12-1280 puce {"x":451.7265625,"y":708}
+n12-1280 apres souris : champ=https://exemple.invalid/hotte-140 ¦ va dans / exemple.invalid/hotte-140 / Ajouter
+capture n12m-1280-clair-b.png
+n12-1280 rangé : Rangé dans ZZ TEST — Ventilation de la salle de brassage, à l'instant · 1er sur 5 · tient 80 °C oui / Annuler / votre message : « https://exemple.invalid/hotte-140 »
+capture n12m-1280-clair-c-apres.png
+ventil 390 : contenu après 744 ms (domcontentloaded) ; 2e chargement networkidle 1028 ms puis +900 ms, contenu=true
+capture ventil-t-390.png
+ventil 1280 : contenu après 621 ms (domcontentloaded) ; 2e chargement networkidle 1026 ms puis +900 ms, contenu=true
+capture ventil-t-1280.png

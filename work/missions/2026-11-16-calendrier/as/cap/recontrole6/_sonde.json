@@ -1,0 +1,76 @@
+{
+ "p": {
+  "ouvrir": {
+   "url": "cal.html",
+   "det": "Blonde d’automne−420Brassagelun. 7 déc.En cuve8 déc. → 28 déc.Prête4 janv.Stock : à vérifier en ouvrant le brassinOuvrirModifierRetirer",
+   "toast": "Ouvre la fiche Blonde d’automne (Brassins)",
+   "dialogs": "Maintenant2 fûts au Café du Ponten retard de 7 j · FûtsRendusFacture Malterie Suisseen retard de 4 j · Compta−1 280PayéeLevure US-05 (Blonde)aujourd’hui · Stock−36Commandée+1 ensuite"
+  },
+  "modifier": {
+   "feuille": {
+    "nom": "Houblon Citra 1 kg",
+    "chf": "−100",
+    "ok": "Enregistrer en S47"
+   },
+   "okTxt": "Enregistrer en S51",
+   "n": 1,
+   "x0": 12,
+   "x": 256,
+   "toast": "S51 : 4 964 → 4 964Annuler",
+   "tete": "13"
+  },
+  "deuxVentes": {
+   "ok": "Ajouter en S49",
+   "pastilles": [
+    "+260 [149-180 y417]",
+    " [213-239 y417]",
+    "3 [274-300 y417]",
+    "+200 [149-180 y417]"
+   ]
+  },
+  "livrer": {
+   "toast": "La Cigogne : 29 déc.Annuler",
+   "al": "",
+   "reperes": "+260@149 @213 3@396"
+  },
+  "porter": "Brassins2 choses cachées−324solde confirmé S47 – S52J0 / 28Blonde d’automne −148Porter d’hiver −176Porter d’hiver−176Brassagelun. 14 déc.En cuve15 déc. → 11 janv.Prête18 janv.Munich 4 kg, Fuggles 200 ",
+  "errs": []
+ },
+ "l": {
+  "ouvrir": {
+   "url": "cal-paysage.html",
+   "det": "Blonde d’automne−420Brassagelun. 7 déc.En cuve8 déc. → 28 déc.Prête4 janv.Stock : à vérifier en ouvrant le brassinOuvrirModifierRetirer",
+   "toast": "Ouvre la fiche Blonde d’automne (Brassins)",
+   "dialogs": "Maintenant2 fûts au Café du Ponten retard de 7 j · FûtsRendusFacture Malterie Suisseen retard de 4 j · Compta−1 280PayéeLevure US-05 (Blonde)aujourd’hui · Stock−36Commandée+1 ensuite"
+  },
+  "modifier": {
+   "feuille": {
+    "nom": "Houblon Citra 1 kg",
+    "chf": "−100",
+    "ok": "Enregistrer en S47"
+   },
+   "okTxt": "Enregistrer en S51",
+   "n": 1,
+   "x0": 12,
+   "x": 264,
+   "toast": "S51 : 4 964 → 4 964Annuler",
+   "tete": "13"
+  },
+  "deuxVentes": {
+   "ok": "Ajouter en S49",
+   "pastilles": [
+    "+260 [154-185 y192]",
+    " [220-246 y192]",
+    "3 [283-309 y192]",
+    "+200 [154-185 y192]"
+   ]
+  },
+  "livrer": {
+   "toast": "La Cigogne : 29 déc.Annuler",
+   "al": "",
+   "reperes": "+260@154 @220 3@409"
+  },
+  "porter": "Brassins3 choses cachées−556solde confirmé S47 – S6J0 / 28Blonde d’automne −148Porter d’hiver −176IPA houblon à cru −232Porter d’hiver−176Brassagelun. 14 déc.En cuve15 déc. → 11 janv.Prête18 janv.Muni",
+  "errs": []
+ }
+}

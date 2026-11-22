@@ -1,0 +1,415 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/carnetsEcrans.test.tsx[2m > [22m[2mCorrection 1, lot L2 : le champ dans le vrai conteneur (fixture, magasin mémoire, IA simulée)[2m > [22m[2mP13 : sur Ventilation par défaut, la bulle G8 se tait (rien à trancher) ; avec l’option g8 (critique 5, n° 21), elle paraît au focus, picto local, sans ✻
+[22m[39mAn update to CarnetsVue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/carnetsCritique4Fil.test.tsx[2m > [22m[2mP28 (R09) et P33 (R20)[2m > [22m[2mCréer · avant : le champ de la liste pris montre la phrase, les exemples touchables et « Une note en vrac marche aussi. »
+[22m[39mAn update to CarnetsVue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to CarnetsVue inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[2m[90m-[39m[22m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/unit/carnetsDoublons.test.ts[2m > [22m[2mdoublons (A10)[2m > [22m[2mle seuil du module est dans la plage optimale de la moitié de réglage
+[22m[39mA10 réglage : seuils optimaux 0.35 à 0.5 ({"trouves":5,"faux":0}) ; module 0.4
+A10 similarités réglage : D 0.50 D 1.00 D 0.67 D 1.00 D 0.50 v 0.17 v 0.33 v 0.20 v 0.25 v 0.33
+
+[90mstdout[2m | tests/unit/carnetsDoublons.test.ts[2m > [22m[2mdoublons (A10)[2m > [22m[2mjugé sur l’autre moitié : au moins 4 doublons sur 5, au plus 1 faux sur 5
+[22m[39mA10 jugement : 5/5 doublons trouvés, 1/5 faux, au seuil 0.4
+A10 similarités jugement : D 0.75 D 0.60 D 1.00 D 1.00 D 0.75 v 0.14 v 0.20 v 0.17 v 0.25 v 0.50
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/unit/carnetsRattacher.test.ts[2m > [22m[2mrattacher (A5)[2m > [22m[2mle seuil du module est dans la plage optimale trouvée sur la moitié de réglage
+[22m[39mA5 réglage : 11/12 au mieux, seuils optimaux 1.2 à 1.4 ; module 1.25
+A5 scores réglage : hotte 100 cm vue chez un autre fournisseur → ZZ TEST — Ventilation de la salle de brassage 1.414 | isobarique 4 becs d’occasion → ZZ TEST — Embouteillage 1.732 | chambre froide 3 m³ → ZZ TEST — Frigo de garde pour fûts 2.121 | douchette pour l’évier → ZZ TEST — Évier inox 2.121 | extracteur plus silencieux → ZZ TEST — Extracteur pour la salle de fermentation 2.121 | remplisseuse contre-pression → ZZ TEST — Embouteillage 1.732 | vitrine pro d’occasion → ZZ TEST — Frigo de garde pour fûts 1.732 | acheter du houblon Citra → — 0 | nettoyer la cuve de fermentation → ZZ TEST — Extracteur pour la salle de fermentation 1.155 | bacs profonds pour laver les fûts → ZZ TEST — Évier inox 4 | tabouret inox → ZZ TEST — Évier inox 1.061 | évier : robinet à pédale → ZZ TEST — Évier inox 1.732
+
+[33m[39m[32m·[39m[90mstdout[2m | tests/unit/carnetsRattacher.test.ts[2m > [22m[2mrattacher (A5)[2m > [22m[2mjugé sur l’autre moitié : au moins 80 % de bons carnets proposés
+[22m[39mA5 jugement : 13/14 au seuil 1.25 ; ratés : chariot inox pour les fûts
+A5 scores jugement : hotte inox moins chère → ZZ TEST — Ventilation de la salle de brassage 1.732 | monobloc 6 becs → ZZ TEST — Embouteillage 1.414 | frigo pour les fûts → ZZ TEST — Frigo de garde pour fûts 3.536 | évier sur pieds → ZZ TEST — Évier inox 2.121 | condensation au plafond → ZZ TEST — Ventilation de la salle de brassage 2.828 | oxygène dans les bouteilles → ZZ TEST — Embouteillage 2.923 | température en été dans le local → ZZ TEST — Frigo de garde pour fûts 2.887 | prix des levures → — 0 | pinceau et rouleau pour le sol → — 0 | isobarique pré-évacuation → ZZ TEST — Embouteillage 2.309 | prochain brassage jeudi → ZZ TEST — Ventilation de la salle de brassage 1.061 | chariot inox pour les fûts → ZZ TEST — Évier inox 2.021 | ventilation : hotte 120 cm au-dessus de la cuve → ZZ TEST — Ventilation de la salle de brassage 4.5 | densimètre portable moins cher → ZZ TEST — Densimètre de paillasse 2.309
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 11 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/integration/carnetsParcours.test.tsx[2m > [22mD2 CARNET-COEUR : de zéro, magasin mémoire vide, IA simulée[2m > [22membouteillage, deux façons, le critère, 6 liens, une note ; comparer ; puis frigo, ventilation, évier ; au plus 2 gestes par ajout
+[31m[1mAssertionError[22m: expected 'idea' to be 'research' // Object.is equality[39m
+
+Expected: [32m"research"[39m
+Received: [31m"idea"[39m
+
+[36m [2m❯[22m tests/integration/carnetsParcours.test.tsx:[2m70:24[22m[39m
+    [90m 68| [39m    [34mexpect[39m([33mMath[39m[33m.[39m[34mmax[39m([33m...[39majouts))[33m.[39m[34mtoBeLessThanOrEqual[39m([34m2[39m)[33m;[39m
+    [90m 69| [39m    [90m/* Comparer : le tableau existe dès le 2e article (R26) */[39m
+    [90m 70| [39m    [34mexpect[39m([34me[39m()[33m.[39mstatus)[33m.[39m[34mtoBe[39m([32m'research'[39m)[33m;[39m
+    [90m   | [39m                       [31m^[39m
+    [90m 71| [39m    m[33m.[39mvue[33m.[39m[34munmount[39m()[33m;[39m
+    [90m 72| [39m    [35mconst[39m m2 [33m=[39m { [33m...[39mm[33m,[39m [33m...[39m[34mmonterSur[39m(m[33m.[39mmagasin) }[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/carnetsParcours.test.tsx[2m > [22mD3 et D7 : sortie vers À venir, liens, Suppression v2[2m > [22mpastille « À venir · … » sur le Frigo envoyé (R47), et un seul plan par idée (clé idempotente)
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: /À venir · /. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"cn "[39m
+    [33mdata-carnets[39m=[32m"true"[39m
+    [33mdata-vue[39m=[32m"carnet"[39m
+    [33mstyle[39m=[32m"display: flex; flex-direction: column; min-height: 0px; --cn-champ-h: 0px; --cn-clavier: 0px;"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mstyle[39m=[32m"flex: 1 1 0%; min-height: 0px; overflow-y: auto;"[39m
+    [36m>[39m
+      [36m<article[39m
+        [33maria-label[39m=[32m"ZZ TEST — Frigo de garde pour fûts"[39m
+        [33mclass[39m=[32m"cn-page cn-ouvert"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"cn-tete"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"cn-retour"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-chevron-left"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"20"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m15 18-6-6 6-6"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Carnets[0m
+          [36m</button>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"cn-sp"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"cn-pastille cn-statut-validated"[39m
+          [36m>[39m
+            [0mChoisi le 10 oct.[0m
+          [36m</span>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"Plus"[39m
+            [33mclass[39m=[32m"cn-ico"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-ellipsis"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"22"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"22"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"12"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"19"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"5"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"cn-titre-ligne"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"cn-titre"[39m
+          [36m>[39m
+            [0mZZ TEST — Frigo de garde pour fûts[0m
+          [36m</h2>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Renommer"[39m
+            [33mclass[39m=[32m"cn-ico"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-pencil"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"20"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m15 5 4 4"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<section[39m
+          [33maria-label[39m=[32m"Ce qui compte"[39m
+          [33mclass[39m=[32m"cn-critere-bloc"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"cn-critere cn-critere-une"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-target cn-vert cn-critere-ico"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"18"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"12"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"10"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"12"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"6"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"12"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"2"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"cn-sp"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"cn-critere-tx"[39m
+              [36m>[39m
+                [0mCritère : [0m
+                [36m<b>[39m
+                  [0mtenir 2 °C stable en été[0m
+                [36m</b>[39m
+                [0m, puis [0m
+                [36m<b>[39m...
+[90m [2m❯[22m Object.getElementError ../ports-nuit/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m109:15[22m[39m
+[36m [2m❯[22m tests/integration/carnetsParcours.test.tsx:[2m107:34[22m[39m
+    [90m105| [39m    const m = monter(fixtureCarnets(), { plans: fixturePlans(), transa…
+    [90m106| [39m    const vue = render(<CarnetsVue {...m.props} ouvrir={{ id: ID_FRIGO…
+    [90m107| [39m    expect(within(vue.container).getAllByText(/À venir · /).length).to…
+    [90m   | [39m                                 [31m^[39m
+    [90m108| [39m  })[33m;[39m
+    [90m109| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsCritique4Decider.test.tsx[2m > [22mP10 et P32 · l'ordre suit les critères, puis le prix croissant ; l'en-tête dit la même règle[2m > [22mrangePar = l'ordre réel : Ventilation, critères puis prix ; l'en-tête de Comparer affiche la même chaîne et le critère qui classe
+[31m[1mAssertionError[22m: expected 'Ce qui compte tient 80 °C · proposé p…' to be 'Ce qui compte tient 80 °C · proposé p…' // Object.is equality[39m
+
+Expected: [32m"Ce qui compte tient 80 °C · proposé par l'IA"[39m
+Received: [31m"Ce qui compte tient 80 °C · proposé par l'IA[7m, puis le débit · proposé par l'IA[27m"[39m
+
+[36m [2m❯[22m tests/unit/carnetsCritique4Decider.test.tsx:[2m88:69[22m[39m
+    [90m 86| [39m    expect(container.textContent).toContain(`classées par ${t.rangePar…
+    [90m 87| [39m    /* « Ce qui compte » nomme le critère qui classe d'abord, pas une …
+    [90m 88| [39m    expect(container.querySelector('.cn-cmp-critere')!.textContent).to…
+    [90m   | [39m                                                                    [31m^[39m
+    [90m 89| [39m  })[33m;[39m
+    [90m 90| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsCritique4Decider.test.tsx[2m > [22mP14 · Comparer = g01-8 : compromis calculé avec les valeurs, « Valeurs annoncées par les vendeurs », vignettes[2m > [22mcompromisDe cite des valeurs du tableau (Ventilation : la 2e, moins chère, même tenue à 80 °C)
+[31m[1mAssertionError[22m: expected 'la 1re, la seule à tenir 80 °C, pour …' to be 'la 2e, 1 450 CHF, soit 1 150 CHF de m…' // Object.is equality[39m
+
+Expected: [32m"la [7m2e, 1 450 CHF, soit[27m 1 150 CHF de [7mmoin[27ms que la [7m1re ; le débit 1 200 m³/h au lieu de 1 800 m³/h ; tient 80 °C : oui, comme la 1r[27me"[39m
+Received: [31m"la [7m1re, la seule à tenir 80 °C, pour[27m 1 150 CHF de [7mplu[27ms que la [7m2[27me"[39m
+
+[36m [2m❯[22m tests/unit/carnetsCritique4Decider.test.tsx:[2m96:15[22m[39m
+    [90m 94| [39m    [35mconst[39m t [33m=[39m [34mtableau[39m([33mV[39m)[33m![39m[33m;[39m
+    [90m 95| [39m    [35mconst[39m c [33m=[39m [34mcompromisDe[39m(t)[33m![39m[33m;[39m
+    [90m 96| [39m    expect(c).toBe('la 2e, 1 450 CHF, soit 1 150 CHF de moins que la 1…
+    [90m   | [39m              [31m^[39m
+    [90m 97| [39m    [90m/* chaque nombre cité est une valeur ou un écart du tableau */[39m
+    [90m 98| [39m    for (const n of ['1 450', '1 150', '1 200', '1 800']) expect(c).to…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsCritique4Decider.test.tsx[2m > [22mP14 · Comparer = g01-8 : compromis calculé avec les valeurs, « Valeurs annoncées par les vendeurs », vignettes[2m > [22mComparer rend « Compromis : » local (picto local, pas ✻), « Valeurs annoncées par les vendeurs · exemple » et la photo en vignette
+[31m[1mAssertionError[22m: expected 'Compromis : la 1re, la seule à tenir …' to contain 'Compromis : la 2e, 1 450 CHF'[39m
+
+Expected: [32m"Compromis : la [7m2e,[27m 1 [7m4[27m50 CHF"[39m
+Received: [31m"Compromis : la [7m1re, la seule à tenir 80 °C, pour[27m 1 [7m1[27m50 CHF[7m de plus que la 2e [27m"[39m
+
+[36m [2m❯[22m tests/unit/carnetsCritique4Decider.test.tsx:[2m112:32[22m[39m
+    [90m110| [39m    [35mconst[39m encart [33m=[39m container[33m.[39m[34mquerySelector[39m([32m'.cn-compromis'[39m)[33m![39m[33m;[39m
+    [90m111| [39m    [34mexpect[39m(encart[33m.[39m[34mgetAttribute[39m([32m'data-source'[39m))[33m.[39m[34mtoBe[39m([32m'locale'[39m)[33m;[39m
+    [90m112| [39m    expect(encart.textContent).toContain('Compromis : la 2e, 1 450 CHF…
+    [90m   | [39m                               [31m^[39m
+    [90m113| [39m    [34mexpect[39m(encart[33m.[39mtextContent)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'✻'[39m)[33m;[39m
+    [90m114| [39m    expect(container.querySelector('.cn-annonce')!.textContent).toCont…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsCritique5Decider.test.tsx[2m > [22m(1) Comparer, n° 9, 22, 23 : colonnes de g01-8, critère qui range nommé, « moins bien que la 3e sur tout », écartés à la fin[2m > [22mn° 22 : « rangé par » nomme le critère qui range ; le premier critère, sans valeur, est dit sans valeur
+[31m[1mAssertionError[22m: expected 'Ce qui compte tient 80 °C · proposé p…' to be 'Ce qui compte tient 80 °C · proposé p…' // Object.is equality[39m
+
+Expected: [32m"Ce qui compte tient 80 °C · proposé par l'IA"[39m
+Received: [31m"Ce qui compte tient 80 °C · proposé par l'IA[7m, puis le débit · proposé par l'IA[27m"[39m
+
+[36m [2m❯[22m tests/unit/carnetsCritique5Decider.test.tsx:[2m49:69[22m[39m
+    [90m 47| [39m  it('n° 22 : « rangé par » nomme le critère qui range ; le premier cr…
+    [90m 48| [39m    [35mconst[39m { container } [33m=[39m [34mvue[39m()[33m;[39m
+    [90m 49| [39m    expect(container.querySelector('.cn-cmp-critere')!.textContent).to…
+    [90m   | [39m                                                                    [31m^[39m
+    [90m 50| [39m    [90m/* critique 6, n° 4 (g01-8) : « classées par … » */[39m
+    [90m 51| [39m    expect(container.textContent).toContain('classées par tient 80 °C …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsCritique6Decider.test.tsx[2m > [22mcritique 6, lot B (Décider, Stocks › Matériel)[2m > [22m15 · doute D-122 : sous le minimum de sa note (1 200 contre 1 500 m³/h), « sous votre minimum »
+[31m[1mAssertionError[22m: expected { Object (débit) } to deeply equal { 'débit': 'sous votre minimum' }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "débit": "sous votre minimum",[39m
+[31m+   "débit": "sous votre minimum de 1 500 m³/h",[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/carnetsCritique6Decider.test.tsx:[2m173:70[22m[39m
+    [90m171| [39m    expect(seuilDuCarnet(V, k3)).toMatchObject({ valeur: 1500, unite: …
+    [90m172| [39m    [35mconst[39m t [33m=[39m [34mtableau[39m([33mV[39m)[33m![39m[33m;[39m
+    [90m173| [39m    expect(t.lignes.find(l => l.articleId === 'ZZ-V-A2')!.horsSeuil).t…
+    [90m   | [39m                                                                     [31m^[39m
+    [90m174| [39m    expect(t.lignes.find(l => l.articleId === 'ZZ-V-A1')!.horsSeuil).t…
+    [90m175| [39m    expect(t.lignes.find(l => l.articleId === 'ZZ-V-A3')!.horsSeuil).t…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsCritique6Decider.test.tsx[2m > [22mcritique 6, lot B (Décider, Stocks › Matériel)[2m > [22m16 · Comparer et Choisir lisent sourceDuCritere : « proposé par l'IA » pour un critère de l'IA, rien pour sa phrase
+[31m[1mAssertionError[22m: expected 'Ce qui compte tient 80 °C · proposé p…' to be 'Ce qui compte tient 80 °C · proposé p…' // Object.is equality[39m
+
+Expected: [32m"Ce qui compte tient 80 °C · proposé par l'IA"[39m
+Received: [31m"Ce qui compte tient 80 °C · proposé par l'IA[7m, puis le débit · proposé par l'IA[27m"[39m
+
+[36m [2m❯[22m tests/unit/carnetsCritique6Decider.test.tsx:[2m186:69[22m[39m
+    [90m184| [39m  it('16 · Comparer et Choisir lisent sourceDuCritere : « proposé par …
+    [90m185| [39m    [35mconst[39m { container } [33m=[39m [34mcomparerV[39m()[33m;[39m
+    [90m186| [39m    expect(container.querySelector('.cn-cmp-critere')!.textContent).to…
+    [90m   | [39m                                                                    [31m^[39m
+    [90m187| [39m    [34mcleanup[39m()[33m;[39m
+    [90m188| [39m    const sienne = avec(V, { criteres: V.carnet.criteres.map(k => (k.i…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsCritique8.test.ts[2m > [22mcritique 8, n° 2 : un seuil s’ajoute au critère débit sans effacer les valeurs[2m > [22maprès : les valeurs restent, le critère garde le débit, le rang se recalcule sur elles
+[31m[1mAssertionError[22m: expected 'sous votre minimum de 1 200 m³/h' to be 'sous votre minimum' // Object.is equality[39m
+
+Expected: [32m"sous votre minimum"[39m
+Received: [31m"sous votre minimum[7m de 1 200 m³/h[27m"[39m
+
+[36m [2m❯[22m tests/unit/carnetsCritique8.test.ts:[2m42:81[22m[39m
+    [90m 40| [39m    [34mexpect[39m(enLice[[34m0[39m][33m.[39marticleId)[33m.[39m[34mtoBe[39m([32m'ZZ-V-A1'[39m)[33m;[39m
+    [90m 41| [39m    /* le seuil est lu : 1 100 m³/h est sous le minimum écrit, 1 500 e…
+    [90m 42| [39m    expect(t.lignes.find(l => l.articleId === 'ZZ-V-A4')?.horsSeuil?.[…
+    [90m   | [39m                                                                                [31m^[39m
+    [90m 43| [39m    expect(t.lignes.find(l => l.articleId === 'ZZ-V-A3')?.horsSeuil?.[…
+    [90m 44| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsStore.test.ts[2m > [22mmagasin Firestore (port injecté)[2m > [22mécrit document par document ; journalise la suppression
+[31m[1mAssertionError[22m: expected [ 'ZZ-CARNET-EVIER', 'ZZ-MSG-E1' ] to deeply equal [ 'ZZ-CARNET-EVIER' ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    "ZZ-CARNET-EVIER",[22m
+[31m+   "ZZ-MSG-E1",[39m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/carnetsStore.test.ts:[2m48:23[22m[39m
+    [90m 46| [39m    [35mif[39m ([33m![39ms[33m.[39mok) [35mthrow[39m [35mnew[39m [33mError[39m(s[33m.[39mraison)[33m;[39m
+    [90m 47| [39m    m[33m.[39m[34mappliquer[39m(s[33m.[39mecritures[33m,[39m s[33m.[39mjournal)[33m;[39m
+    [90m 48| [39m    [34mexpect[39m(p[33m.[39mretires)[33m.[39m[34mtoEqual[39m([[33mID_EVIER[39m])[33m;[39m
+    [90m   | [39m                      [31m^[39m
+    [90m 49| [39m    [34mexpect[39m(p[33m.[39mposes)[33m.[39m[34mtoEqual[39m([[32m'ZZ-MSG-E1'[39m])[33m;[39m
+    [90m 50| [39m    expect(p.journal).toEqual([{ action: 'Suppression', entityId: ID_E…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsSuppression.test.ts[2m > [22mplan à venir : refusé, détacher, puis supprimer (aucune écriture hors de creativeItems)[2m > [22mla suppression retire articles, notes, façons, photos ; les messages restent, effet « carnet supprimé »
+[31m[1mTypeError[22m: Cannot read properties of null (reading 'carnetMessage')[39m
+[36m [2m❯[22m tests/unit/carnetsSuppression.test.ts:[2m75:16[22m[39m
+    [90m 73| [39m    [34mexpect[39m(apres[33m.[39m[34mfind[39m(i [33m=>[39m i[33m.[39mid [33m===[39m [33mID_EMBOUTEILLAGE[39m))[33m.[39m[34mtoBeUndefined[39m()[33m;[39m
+    [90m 74| [39m    [35mconst[39m msg [33m=[39m [34mlireMessage[39m(apres[33m.[39m[34mfind[39m(i [33m=>[39m i[33m.[39mid [33m===[39m [32m'ZZ-MSG-B2'[39m))[33m![39m[33m;[39m
+    [90m 75| [39m    expect(msg.carnetMessage.effets.every(e => e.carnetSupprime === tr…
+    [90m   | [39m               [31m^[39m
+    [90m 76| [39m    expect(msg.title).toBe('gravité 4 becs vu chez un collègue, pas ma…
+    [90m 77| [39m    expect(filDe(apres, ID_EMBOUTEILLAGE).map(e => e.carnetSupprime)).…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m7 failed[39m[22m[2m | [22m[1m[32m36 passed[39m[22m[90m (43)[39m
+[2m      Tests [22m [1m[31m11 failed[39m[22m[2m | [22m[1m[32m686 passed[39m[22m[2m | [22m[90m1 todo[39m[90m (698)[39m
+[2m   Start at [22m 18:32:07
+[2m   Duration [22m 45.15s[2m (transform 18.42s, setup 10.69s, collect 62.14s, tests 54.20s, environment 25.38s, prepare 3.67s)[22m
+

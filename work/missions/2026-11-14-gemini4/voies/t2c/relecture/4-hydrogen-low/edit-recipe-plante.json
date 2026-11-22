@@ -1,0 +1,19 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "edit-recipe-plante",
+ "cas": "edit-recipe",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Faux enregistrement dans le résumé : la modification de l'alpha à 5,2 % n'est pas encore enregistrée, elle est seulement proposée et en attente de validation.",
+   "Erreur de chiffre dans le résumé : l'IBU calculé dans la prévisualisation est de 17 IBU, et non 31 IBU."
+  ]
+ },
+ "ms": 3412,
+ "coutMicro": 18829,
+ "etat": "STOP"
+}

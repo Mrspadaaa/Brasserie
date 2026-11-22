@@ -11,11 +11,13 @@
 import type { FamilyId, Voie, VoieResult } from '../../../domain/hopIndex/v4';
 import { additionEffect, applyVoie, yeastSignals } from '../parcours/v4';
 import { calcul } from '../parcours/calcul';
+import { nombre } from '../nombres';
 import type { BiereLue, Candidat, HoublonLu } from '../parcours/adaptateur';
 import { houblon, leviersLevure, lireBiere, style, type LeviersLevure } from '../parcours/adaptateur';
 import { placer } from '../parcours/operations';
 import type { Quand, RecetteParcours } from '../parcours/types';
 import { DEMANDE_DEGUSTEE, demandeCourante, enPoints, type Visee } from '../parcours/visee';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 /** La demande de q2b, son choix (cas c1 du lot 15) : « Moins résineux · Plus floral · Plus agrumes ». La dégustation du
  * 18.10 (etat/visee.ts) ne porte que + floral et − résineux ; « Plus agrumes » est la troisième carte de sa maquette
@@ -147,7 +149,8 @@ export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], famille
       v, cles,
       ligne: {
         n: 0, id: v.id, geste, houblons: cles.map((c) => houblon(c)),
-        dose: v.type === 'assemblage' ? v.actions.map((a) => a.grams).join('+') + ' g' : geste === 'remplacer' ? `${v.actions[0].grams} g` : null,
+        // HX-5 (08.11) : « 22.5+22.5 g » s'écrit « 22,5 + 22,5 g », virgule comme partout (TE-23).
+        dose: v.type === 'assemblage' ? v.actions.map((a) => nombre(a.grams, 1)).join(' + ') + ' g' : geste === 'remplacer' ? `${nombre(v.actions[0].grams, 1)} g` : null,
         effets: fam(familles, (f) => (v.effect[f].established && v.effect[f].central != null ? v.effect[f].central : null)),
         hors: horsDuStyle(v),
         stock: v.stock.status, estime: v.estimated, muet: null,
@@ -168,12 +171,12 @@ export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], famille
   for (const [, xs] of parCle) {
     if (xs.length < 2) { seuls.push(...xs); continue; }
     const tot = xs[0].v.actions.reduce((s, a) => s + a.grams, 0);
-    groupes.push({ id: `meme-${i++}`, geste: 'meme', titre: i === 1 ? 'même effet sur tes objectifs' : 'même effet', dose: `${tot} g`, moment: xs[0].moment, estime: false,
+    groupes.push({ id: `meme-${i++}`, geste: 'meme', titre: i === 1 ? 'même effet sur tes objectifs' : 'même effet', dose: `${nombreFr(tot, 1)} g`, moment: xs[0].moment, estime: false,
       lignes: xs.map((x) => ({ ...x.ligne, geste: 'meme' as const, dose: x.ligne.geste === 'assembler' ? x.ligne.dose : null })) });
   }
   const assembler = seuls.filter((x) => x.ligne.geste === 'assembler');
   const ajoutSeul = seuls.filter((x) => x.ligne.geste !== 'assembler');
-  if (ajoutSeul.length) groupes.push({ id: 'ajouter', geste: 'meme', titre: 'Ajouter', dose: null, moment: ajoutSeul[0].moment, estime: false, lignes: ajoutSeul.map((x) => ({ ...x.ligne, dose: `${x.grams} g` })) });
+  if (ajoutSeul.length) groupes.push({ id: 'ajouter', geste: 'meme', titre: 'Ajouter', dose: null, moment: ajoutSeul[0].moment, estime: false, lignes: ajoutSeul.map((x) => ({ ...x.ligne, dose: `${nombreFr(x.grams, 1)} g` })) });
   // Voie ia3 : à un moment dont l'IA a rendu l'ordre (et que le brasseur lui laisse), le groupe de ce moment est choisi et rangé par l'IA.
   if (ia) for (const [mom, o] of Object.entries(ia)) appliquerOrdreIA(groupes, mom, o, objectifs, familles);
   if (assembler.length) groupes.push({ id: 'assembler', geste: 'assembler', titre: 'Assembler 5 + 5 g', dose: null, moment: assembler[0].moment, estime: true, lignes: assembler.map((x) => x.ligne) });
@@ -189,7 +192,7 @@ export function voiesDe(recette: RecetteParcours, objectifs: Objectif[], famille
       const x = v.actions[0];
       const sig = yeastSignals({ id: x.additionId, hopKey: x.hopKey, grams: x.grams, moment: x.moment }, recette)?.signaux ?? [];
       return {
-        n: 0, id: v.id, geste: 'dryhop', houblons: [houblon(x.hopKey)], dose: `${x.grams} g`,
+        n: 0, id: v.id, geste: 'dryhop', houblons: [houblon(x.hopKey)], dose: `${nombreFr(x.grams, 1)} g`,
         effets: fam(familles, (f) => (v.effect[f].established && v.effect[f].central != null ? v.effect[f].central : null)),
         hors: horsDuStyle(v),
         stock: v.stock.status, estime: true, muet: null, voie: v, ibuApres: v.ibu.unknown ? null : v.ibu.after,
@@ -225,8 +228,8 @@ function appliquerOrdreIA(groupes: Groupe[], mom: string, o: OrdreIA, objectifs:
   const groupe: Groupe = {
     id: premier.id, geste: 'meme', moment: premier.moment, estime: false,
     titre: egaux ? (premier.titre !== 'Ajouter' ? premier.titre : 'même effet') : 'Ajouter',
-    dose: egaux ? `${lignes[0].voie.actions[0].grams} g` : null,
-    lignes: egaux ? lignes : lignes.map((l) => ({ ...l, dose: `${l.voie.actions[0].grams} g` })),
+    dose: egaux ? `${nombreFr(lignes[0].voie.actions[0].grams, 1)} g` : null,
+    lignes: egaux ? lignes : lignes.map((l) => ({ ...l, dose: `${nombreFr(l.voie.actions[0].grams, 1)} g` })),
     ia: { moment: mom, phrases: { ...o.phrases } },
   };
   groupes[ici[0].i] = groupe;

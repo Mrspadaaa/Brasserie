@@ -1,0 +1,44 @@
+{
+ "reglage": "3.8-flash@high",
+ "cas": "D4-donnees-rares",
+ "tache": "diagnoseBatch",
+ "moitie": "jugement",
+ "note": {
+  "qualite": 0.75,
+  "utilisable": true,
+  "passes": [
+   "gravité normal ou surveiller (pas agir, pas urgent)",
+   "dit qu’il manque des relevés / mesurer la densité",
+   "pistes : étanchéité du couvercle, patience, délai de démarrage"
+  ],
+  "manques": [
+   "aucune atténuation inventée (un seul relevé)"
+  ]
+ },
+ "ms": 20378,
+ "coutMicro": 21381,
+ "etat": "STOP",
+ "valeur": {
+  "verdict": "Absence d'activité visible au barboteur après 36 heures, situation courante qui n'indique pas forcément un arrêt de fermentation.",
+  "severity": "surveiller",
+  "causes": [
+   {
+    "cause": "Défaut d'étanchéité du fermenteur laissant échapper le CO2 par le joint ou l'œillet sans passer par le barboteur",
+    "probability": 0.6,
+    "action": "Inspecter le joint du couvercle et mesurer la densité réelle au densimètre pour vérifier si l'atténuation a commencé."
+   },
+   {
+    "cause": "Phase de latence (lag phase) prolongée due à la température basse de la plage cible (18 °C) combinée à un ensemencement direct sans réhydratation",
+    "probability": 0.3,
+    "action": "Augmenter légèrement la consigne de régulation thermique vers 19-20 °C pour stimuler l'activité métabolique de l'US-05."
+   },
+   {
+    "cause": "Problème de viabilité des levures (sachet altéré ou choc au pitching)",
+    "probability": 0.1,
+    "action": "Si la densité reste rigoureusement à 1.048 après 48 heures de garde, réensemencer avec un sachet frais d'US-05 préalablement réhydraté."
+   }
+  ],
+  "apparentAttenuationPct": 0,
+  "immediateAction": "Prélever un échantillon stérile pour mesurer la densité au densimètre afin de confirmer si la chute de densité a débuté indépendamment du barboteur."
+ }
+}

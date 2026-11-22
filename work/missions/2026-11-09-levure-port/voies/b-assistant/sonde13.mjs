@@ -1,0 +1,25 @@
+// Ouvre le banc de la fiche (RecipePage réelle) : PD-9 (EBC), « phases », « 2 sachets », parts à 100 %, contrastes et cibles.
+import puppeteer from 'puppeteer-core';
+import fs from 'node:fs';
+import path from 'node:path';
+import { BASE, SORTIE, dormir } from './banc.mjs';
+const largeur = Number(process.argv[2] ?? 1280);
+const theme = process.argv[3] ?? 'clair';
+const url = `${BASE}/work/missions/2026-11-09-levure-port/voies/b-assistant/fiche.html?theme=${theme}${process.argv[4] ? `&fixture=${process.argv[4]}` : ''}`;
+const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
+const page = await browser.newPage();
+await page.setViewport({ width: largeur, height: largeur < 600 ? 844 : 900, deviceScaleFactor: 1, isMobile: largeur < 600, hasTouch: largeur < 600 });
+page.setDefaultNavigationTimeout(120000);
+const erreurs = []; page.on('pageerror', (e) => erreurs.push(String(e?.stack ?? e).split('\n').slice(0, 6).join(' <- ')));
+await page.setRequestInterception(true);
+page.on('request', (r) => { const u = r.url(); if (/^(https?|ws)s?:\/\/(localhost|127\.0\.0\.1)/i.test(u) || /^(data|blob|about):/i.test(u)) r.continue(); else r.abort('blockedbyclient'); });
+await page.goto(url, { waitUntil: 'load' });
+await page.waitForFunction(() => /Couleur attendue|Ingrédients|Fermentation|Stout|Eau/.test(document.body.innerText), { timeout: 150000 }).catch(() => {});
+await dormir(2500);
+const t = await page.evaluate(() => document.body.innerText);
+const l = t.split('\n').filter((x) => /Couleur attendue|phase|palier|sachet|% *$|^\d+ %|Mash|Alcool cible|FG|ABV|IBU/i.test(x)).slice(0, 22);
+console.log('lignes ->', JSON.stringify(l));
+console.log('erreurs ->', JSON.stringify(erreurs.slice(0, 3)));
+fs.mkdirSync(SORTIE, { recursive: true });
+await page.screenshot({ path: path.join(SORTIE, `s13-fiche-${process.argv[4] ?? 'demo'}-${largeur}-${theme}.png`), fullPage: true });
+await browser.close();

@@ -9,6 +9,8 @@ export { thermalEstimate, rampExposure } from './brewThermal';
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 export const round = (n: number, digits = 1) => Number(n.toFixed(digits));
+/** BR-56 : le même arrondi, écrit pour l'écran à la virgule suisse (« 16,8 »), jamais « 16.8 ». */
+export const roundFr = (n: number, digits = 1) => String(round(n, digits)).replace('.', ',');
 
 export function actualWater(recipe: Pick<RecipeSnapshot,'waterPlan'>, state: BrewDayState, side: 'mash' | 'sparge') {
   const p = recipe.waterPlan;

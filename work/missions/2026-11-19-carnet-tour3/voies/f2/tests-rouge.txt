@@ -1,0 +1,992 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 18 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-159 : le titre local garde la fin de la phrase[2m > [22m« pompe de transfert magnétique pour le moût chaud » garde « moût chaud »
+[31m[1mAssertionError[22m: expected 'Pompe de transfert magnétique pour le' to be 'Pompe de transfert magnétique pour le…' // Object.is equality[39m
+
+Expected: [32m"Pompe de transfert magnétique pour le[7m moût chaud[27m"[39m
+Received: [31m"Pompe de transfert magnétique pour le"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m41:73[22m[39m
+    [90m 39| [39m[34mdescribe[39m([32m'PCN-159 : le titre local garde la fin de la phrase'[39m[33m,[39m () [33m=>[39m {
+    [90m 40| [39m  it('« pompe de transfert magnétique pour le moût chaud » garde « moû…
+    [90m 41| [39m    expect(objetDe('pompe de transfert magnétique pour le moût chaud')…
+    [90m   | [39m                                                                        [31m^[39m
+    [90m 42| [39m  })[33m;[39m
+    [90m 43| [39m  it('trop long : coupé sur un mot plein, jamais sur « pour le »', () …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-159 : le titre local garde la fin de la phrase[2m > [22mtrop long : coupé sur un mot plein, jamais sur « pour le »
+[31m[1mAssertionError[22m: expected 'Pompe de transfert magnétique inox à' not to match /\s(pour|le|la|de|du|des|à|au|et|en|a…/i[39m
+
+[32m- Expected:[39m 
+/\s(pour|le|la|de|du|des|à|au|et|en|avec)$/i
+
+[31m+ Received:[39m 
+"Pompe de transfert magnétique inox à"
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m45:19[22m[39m
+    [90m 43| [39m  it('trop long : coupé sur un mot plein, jamais sur « pour le »', () …
+    [90m 44| [39m    const o = objetDe('pompe de transfert magnétique inox à entraîneme…
+    [90m 45| [39m    expect(o).not.toMatch(/\s(pour|le|la|de|du|des|à|au|et|en|avec)$/i…
+    [90m   | [39m                  [31m^[39m
+    [90m 46| [39m  })[33m;[39m
+    [90m 47| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-164 : la mention dit d'où viennent les valeurs[2m > [22mprix écrits dans sa phrase : « écrites par vous »
+[31m[1mAssertionError[22m: expected undefined to be type of 'function'[39m
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m52:61[22m[39m
+    [90m 50| [39m  const sansPage = V.carnet.articles.slice(0, 2).map(a => ({ ...a, url…
+    [90m 51| [39m  [34mit[39m([32m'prix écrits dans sa phrase : « écrites par vous »'[39m[33m,[39m () [33m=>[39m {
+    [90m 52| [39m    expect((CMP as Record<string, unknown>).mentionValeurs).toBeTypeOf…
+    [90m   | [39m                                                            [31m^[39m
+    [90m 53| [39m    const m = (CMP as unknown as { mentionValeurs: (a: unknown[]) => s…
+    [90m 54| [39m    [34mexpect[39m([34mm[39m(sansPage))[33m.[39m[34mtoBe[39m([32m'Valeurs écrites par vous'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-164 : la mention dit d'où viennent les valeurs[2m > [22mComparer affiche la mention reçue
+[31m[1mAssertionError[22m: expected 'Valeurs annoncées par les vendeurs' to contain 'Valeurs écrites par vous'[39m
+
+Expected: [32m"Valeurs [7mécrites par vou[27ms"[39m
+Received: [31m"Valeurs [7mannoncées par les vendeur[27ms"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m60:65[22m[39m
+    [90m 58| [39m  [34mit[39m([32m'Comparer affiche la mention reçue'[39m[33m,[39m () [33m=>[39m {
+    [90m 59| [39m    const { container } = render(<Comparer titre="T" statut="research"…
+    [90m 60| [39m    expect(container.querySelector('.cn-annonce')!.textContent).toCont…
+    [90m   | [39m                                                                [31m^[39m
+    [90m 61| [39m    expect(container.textContent).not.toContain('annoncées par les ven…
+    [90m 62| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-167 : supprimer un carnet emporte ses messages (et Annuler les rend)[2m > [22mles messages qui ne visent que ce carnet partent ; l'inverse les remet
+[31m[1mAssertionError[22m: expected [] to include 'ZZ-MSG-E1'[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m72:130[22m[39m
+    [90m 70| [39m    [35mif[39m ([33m![39mr[33m.[39mok) [35mthrow[39m [35mnew[39m [33mError[39m([32m'refusé'[39m)[33m;[39m
+    [90m 71| [39m    const retires = r.ecritures.filter(w => w.op === 'delete').map(w =…
+    [90m 72| [39m    for (const m of avant.filter((x: MessageDoc) => x.carnetMessage.ef…
+    [90m   | [39m                                                                                                                                 [31m^[39m
+    [90m 73| [39m    const remis = r.inverse.filter(w => w.op === 'put').map(w => (w as…
+    [90m 74| [39m    [35mfor[39m ([35mconst[39m m [35mof[39m avant) [34mexpect[39m(remis)[33m.[39m[34mtoContain[39m(m[33m.[39mid)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-100 : un dépôt depuis la liste dit sa place[2m > [22m« Rangé dans X, à l'instant · 2e sur 3 »
+[31m[1mAssertionError[22m: expected 'Rangé dans Ventilation, à l\'instant' to be 'Rangé dans Ventilation, à l\'instant …' // Object.is equality[39m
+
+Expected: [32m"Rangé dans Ventilation, à l'instant[7m · 2e sur 3[27m"[39m
+Received: [31m"Rangé dans Ventilation, à l'instant"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m80:99[22m[39m
+    [90m 78| [39m[34mdescribe[39m([32m'PCN-100 : un dépôt depuis la liste dit sa place'[39m[33m,[39m () [33m=>[39m {
+    [90m 79| [39m  [34mit[39m([32m'« Rangé dans X, à l\'instant · 2e sur 3 »'[39m[33m,[39m () [33m=>[39m {
+    [90m 80| [39m    expect(texteBandeau({ sorte: 'ailleurs', carnet: 'Ventilation', ra…
+    [90m   | [39m                                                                                                  [31m^[39m
+    [90m 81| [39m  })[33m;[39m
+    [90m 82| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-106 : le compromis dit la raison, n'aligne pas les valeurs[2m > [22mla 1re seule à tenir 80 °C : « la seule à tenir 80 °C », sans « tient 80 °C : oui »
+[31m[1mAssertionError[22m: expected 'la 1re, tient 80 °C : oui ; le débit …' to contain 'la seule à tenir 80 °C'[39m
+
+Expected: [32m"la [7mseule à tenir 80 °C[27m"[39m
+Received: [31m"la [7m1re, tient 80 °C : oui ; le débit 1 800 m³/h ; 2 600 CHF[27m"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m88:15[22m[39m
+    [90m 86| [39m    const t = tableau(avec(V, { articles: V.carnet.articles.filter(a =…
+    [90m 87| [39m    [35mconst[39m c [33m=[39m [34mcompromisDe[39m(t)[33m![39m[33m;[39m
+    [90m 88| [39m    [34mexpect[39m(c)[33m.[39m[34mtoContain[39m([32m'la seule à tenir 80 °C'[39m)[33m;[39m
+    [90m   | [39m              [31m^[39m
+    [90m 89| [39m    [34mexpect[39m(c)[33m.[39m[34mtoContain[39m([32m'de plus'[39m)[33m;[39m
+    [90m 90| [39m    [34mexpect[39m(c)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/tient 80 °C : oui/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-106 : le compromis dit la raison, n'aligne pas les valeurs[2m > [22mjamais une proposition sous son minimum
+[31m[1mAssertionError[22m: expected 'la 2e, 1 450 CHF, soit 1 150 CHF de m…' not to match /la 2e, 1 450/[39m
+
+[32m- Expected:[39m 
+/la 2e, 1 450/
+
+[31m+ Received:[39m 
+"la 2e, 1 450 CHF, soit 1 150 CHF de moins que la 1re ; le débit 1 200 m³/h au lieu de 1 800 m³/h ; tient 80 °C : oui, comme la 1re"
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m94:47[22m[39m
+    [90m 92| [39m  [34mit[39m([32m'jamais une proposition sous son minimum'[39m[33m,[39m () [33m=>[39m {
+    [90m 93| [39m    expect(compromisDe(tableau(V)) ?? '').not.toContain('Hotte murale'…
+    [90m 94| [39m    [34mexpect[39m([34mcompromisDe[39m([34mtableau[39m([33mV[39m)) [33m??[39m [32m''[39m)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/la 2e, 1 450/[39m)[33m;[39m
+    [90m   | [39m                                              [31m^[39m
+    [90m 95| [39m  })[33m;[39m
+    [90m 96| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-136 : « sous votre minimum » écrit le minimum[2m > [22mla valeur et l'unité du seuil
+[31m[1mAssertionError[22m: expected 'sous votre minimum' to match /^sous votre minimum de [\d  ]+ m³\/…/h$[39m
+
+[32m- Expected:[39m 
+/^sous votre minimum de [\d  ]+ m³\/h$/
+
+[31m+ Received:[39m 
+"sous votre minimum"
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m101:44[22m[39m
+    [90m 99| [39m  [34mit[39m([32m'la valeur et l\'unité du seuil'[39m[33m,[39m () [33m=>[39m {
+    [90m100| [39m    [35mconst[39m l [33m=[39m [34mtableau[39m([33mV[39m)[33m![39m[33m.[39mlignes[33m.[39m[34mfind[39m(x [33m=>[39m x[33m.[39mhorsSeuil)[33m![39m[33m;[39m
+    [90m101| [39m    expect(Object.values(l.horsSeuil!)[0]).toMatch(/^sous votre minimu…
+    [90m   | [39m                                           [31m^[39m
+    [90m102| [39m  })[33m;[39m
+    [90m103| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-155 : un lien non lu ne fait pas « À comparer »[2m > [22mstatutDe : article à lire seul → Idée
+[31m[1mAssertionError[22m: expected 'research' to be 'idea' // Object.is equality[39m
+
+Expected: [32m"idea"[39m
+Received: [31m"research"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m107:124[22m[39m
+    [90m105| [39m[34mdescribe[39m([32m'PCN-155 : un lien non lu ne fait pas « À comparer »'[39m[33m,[39m () [33m=>[39m {
+    [90m106| [39m  [34mit[39m([32m'statutDe : article à lire seul → Idée'[39m[33m,[39m () [33m=>[39m {
+    [90m107| [39m    expect(statutDe({ articles: [{ id: 'a', url: 'https://x.ch/p', val…
+    [90m   | [39m                                                                                                                           [31m^[39m
+    [90m108| [39m    expect(statutDe({ articles: [{ id: 'a', nom: 'Pompe', valeurs: {},…
+    [90m109| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-151, PCN-109, PCN-154 : carnet ouvert[2m > [22m151 : réalisé, la pastille dit « Réalisé le … », jamais « Choisi le »
+[31m[1mAssertionError[22m: expected 'Choisi le 10 oct.' to match /^Réalisé le 16 nov\.$/[39m
+
+[32m- Expected:[39m 
+/^Réalisé le 16 nov\.$/
+
+[31m+ Received:[39m 
+"Choisi le 10 oct."
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m120:75[22m[39m
+    [90m118| [39m    const c = avec(FRIGO, { sortie: { planId: 'P1', le: '2026-11-15', …
+    [90m119| [39m    [35mconst[39m { container } [33m=[39m [34mouvrir[39m(c)[33m;[39m
+    [90m120| [39m    expect(container.querySelector('.cn-tete .cn-pastille')!.textConte…
+    [90m   | [39m                                                                          [31m^[39m
+    [90m121| [39m  })[33m;[39m
+    [90m122| [39m  it('109 : le lien À venir dit une fois (la ligne de sortie), pas aus…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-151, PCN-109, PCN-154 : carnet ouvert[2m > [22m109 : le lien À venir dit une fois (la ligne de sortie), pas aussi en pastille
+[31m[1mAssertionError[22m: expected <button type="button" …(2)></button> to have a length of +0 but got 1[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m125:61[22m[39m
+    [90m123| [39m    const c = avec(FRIGO, { sortie: { planId: 'P1', le: '2026-11-16' }…
+    [90m124| [39m    const { container } = ouvrir(c, { liens: [{ sorte: 'a-venir', id: …
+    [90m125| [39m    expect(container.querySelectorAll('.cn-pastille-lien')).toHaveLeng…
+    [90m   | [39m                                                            [31m^[39m
+    [90m126| [39m    expect((container.textContent!.match(/À venir/g) ?? []).length).to…
+    [90m127| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-151, PCN-109, PCN-154 : carnet ouvert[2m > [22m154 : le menu ··· flotte dans la tête, le titre ne bouge pas
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m132:63[22m[39m
+    [90m130| [39m    [34mact[39m(() [33m=>[39m { [34mgetByRole[39m([32m'button'[39m[33m,[39m { name[33m:[39m [32m'Plus'[39m })[33m.[39m[34mclick[39m()[33m;[39m })[33m;[39m
+    [90m131| [39m    [35mconst[39m menu [33m=[39m container[33m.[39m[34mquerySelector[39m([32m'.cn-menu'[39m)[33m![39m[33m;[39m
+    [90m132| [39m    expect(menu.parentElement!.classList.contains('cn-tete')).toBe(tru…
+    [90m   | [39m                                                              [31m^[39m
+    [90m133| [39m    expect(container.querySelector('.cn-tete')!.nextElementSibling!.cl…
+    [90m134| [39m    expect(css('carnets.css')).toMatch(/\.cn-tete > \.cn-menu \{[^}]*p…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-118 : « Ce qui compte » cite chaque critère qui classe[2m > [22mtient 80 °C et le débit
+[31m[1mAssertionError[22m: expected 'Ce qui compte tient 80 °C · proposé p…' to contain 'débit'[39m
+
+Expected: [32m"débit"[39m
+Received: [31m"Ce qui compte tient 80 °C · proposé par l'IA"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m143:18[22m[39m
+    [90m141| [39m    const tete = container.querySelector('.cn-cmp-critere')!.textConte…
+    [90m142| [39m    [34mexpect[39m(tete)[33m.[39m[34mtoContain[39m([32m'tient 80 °C'[39m)[33m;[39m
+    [90m143| [39m    [34mexpect[39m(tete)[33m.[39m[34mtoContain[39m([32m'débit'[39m)[33m;[39m
+    [90m   | [39m                 [31m^[39m
+    [90m144| [39m  })[33m;[39m
+    [90m145| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-133 : puces proposées, sans doublon ni empilement[2m > [22mdédoublonnées, sans critère déjà là, 3 au plus
+[31m[1mAssertionError[22m: expected undefined to be type of 'function'[39m
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m150:15[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-120, PCN-121 : liste et rangée « Va dans »[2m > [22m120 : carte Idée, le titre prend toute la largeur au-dessus de « Coller un lien »
+[31m[1mAssertionError[22m: expected '/* Carnet d\'idées (port du 17.11, lo…' to match /\.cn-carnet-coller \{[^}]*grid-templa…/[39m
+
+[32m- Expected:[39m 
+/\.cn-carnet-coller \{[^}]*grid-template-areas/
+
+[31m+ Received:[39m 
+"/* Carnet d'idées (port du 17.11, lot C) : figés ra+p5f et greffe 5, repris avec les jetons de l'app (clair et cave).
+   Classes préfixées `cn-` (L26). Repère de zone Stocks (vert). Aucun texte sous 14 px (CARNET-LIS) ; cibles de 44 px au moins,
+   8 px entre voisines (Q4) ; rouge réservé à Supprimer et à l'alerte (Q12) ; chiffres en mono tabulaire (DESIGN « Typography »). */
+.cn-page, .cn-champ-zone, .cn-feuille, .cn-bandeau, .cn-cadre, .cn-supprimer {
+  --c-bg: rgb(var(--cave-950)); --c-s1: rgb(var(--cave-900)); --c-s2: rgb(var(--cave-850));
+  --c-line: rgb(var(--cave-800)); --c-line2: rgb(var(--cave-700));
+  --c-ink: rgb(var(--cave-texte-50)); --c-ink2: rgb(var(--cave-texte-200)); --c-mut: rgb(var(--cave-texte-400));
+  --c-act: rgb(var(--ebc-straw)); --c-onact: rgb(var(--sur-paille));
+  --c-zone: rgb(var(--area-stocks)); --c-zonet: rgb(var(--area-stocks-texte)); --c-zonebg: rgb(var(--area-stocks) / .12);
+  --c-ia: rgb(var(--area-agenda-texte)); --c-iabg: rgb(var(--area-agenda) / .10);
+  --c-att: rgb(var(--attention-texte)); --c-attbg: rgb(var(--attention) / .14);
+  --c-rouge: rgb(var(--alert-texte)); --c-rougebg: rgb(var(--alert) / .07);
+  --c-lien: rgb(var(--water-texte));
+  --c-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  color: var(--c-ink); font-size: 15px; line-height: 1.3;
+}
+:where(.cn-page, .cn-champ-zone, .cn-feuille, .cn-bandeau, .cn-cadre, .cn-supprimer) button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left; }
+:where(.cn-page, .cn-champ-zone, .cn-feuille, .cn-bandeau, .cn-cadre, .cn-supprimer) :is(p, h2, h3, ul, dl, dd, figure) { margin: 0; padding: 0; }
+:where(.cn-page) ul { list-style: none; }
+.cn-sp { flex: 1; min-width: 0; }
+.cn-mut { color: var(--c-mut); }
+.cn-encre { color: var(--c-ink); }
+.cn-encre-2 { color: var(--c-ink2); }
+.cn-vert, .cn-mut-vert { color: var(--c-zonet); }
+.cn-ia { color: var(--c-ia); }
+.cn-att { color: var(--c-att); }
+.cn-rouge { color: var(--c-rouge) !important; }
+.cn-mono { font-family: var(--c-mono); font-variant-numeric: tabular-nums lining-nums; }
+.cn-cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.cn-inline { vertical-align: -3px; display: inline; }
+.cn-nowrap { white-space: nowrap; }
+.cn-cite { font-style: italic; color: var(--c-mut); }
+.cn-exemple { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border: 1px dashed var(--c-line2); border-radius: 999px; font-size: 14px; color: var(--c-ink2); }
+.cn-prov { display: inline-flex; vertical-align: -2px; }
+.cn-prov-ia { color: var(--c-ia); font-weight: 700; }
+.cn-prov-local, .cn-prov-page { color: var(--c-zonet); }
+
+/* Page */
+.cn-page { display: flex; flex-direction: column; gap: 12px; padding: 8px 12px 16px; background: var(--c-bg); }
+.cn-tete { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+.cn-retour { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; color: var(--c-lien) !important; font-size: 16px; }
+.cn-titre { font-size: 22px; font-weight: 700; line-height: 1.15; color: var(--c-ink); }
+.cn-titre-grand { font-size: 28px; font-weight: 700; }
+.cn-titre-ligne { display: flex; align-items: center; gap: 8px; }
+.cn-sous { font-size: 16px; font-weight: 700; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.cn-accroche { font-size: 16px; color: var(--c-ink2); }
+.cn-vide { color: var(--c-mut); padding: 12px; border: 1px dashed var(--c-line2); border-radius: 12px; }
+.cn-g6 { padding: 8px 0; }
+.cn-grise > :not(.cn-supprimer):not(.cn-tete) { opacity: .45; pointer-events: none; }
+
+/* Commandes */
+.cn-ico { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 10px; color: var(--c-mut) !important; flex: none; }
+.cn-ico[aria-pressed=true] { color: var(--c-zonet) !important; background: var(--c-zonebg) !important; }
+.cn-x { display: inline-grid; place-items: center; width: 44px; height: 44px; margin: -8px -8px -8px 0; color: var(--c-mut) !important; flex: none; }
+.cn-lien { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 4px; color: var(--c-lien) !important; font-weight: 600; text-decoration: none; white-space: nowrap; }
+.cn-action { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: 12px; background: var(--c-act) !important; color: var(--c-onact) !important; font-weight: 700; }
+.cn-action:disabled { opacity: .45; cursor: default; }
+.cn-large { width: 100%; }
+.cn-second { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1.5px solid var(--c-zone) !important; color: var(--c-zonet) !important; font-weight: 600; }
+.cn-puce { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--c-line2) !important; font-size: 15px; white-space: nowrap; }
+.cn-puce[aria-pressed=true] { background: var(--c-zone) !important; border-color: var(--c-zone) !important; color: rgb(var(--cave-950)); font-weight: 600; }
+.cn-puce-ia { border-color: var(--c-ia) !important; color: var(--c-ia) !important; }
+.cn-rang-boutons { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.cn-entree { min-height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); font-size: 16px; }
+
+/* Pastilles et groupes */
+.cn-pastille { display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 0 10px; border-radius: 999px; background: var(--c-s2); color: var(--c-ink2); font-size: 14px; white-space: nowrap; }
+.cn-pastille-vert, .cn-pastille-plein { background: var(--c-zonebg); color: var(--c-zonet); font-weight: 600; }
+.cn-pastille-plein { background: var(--c-zone); color: rgb(var(--cave-950)); }
+.cn-pastille-att { background: var(--c-attbg); color: var(--c-att); }
+.cn-pastille-ajout { background: var(--c-iabg); color: var(--c-ia); font-weight: 600; align-self: flex-start; }
+.cn-pastille-lien { min-height: 44px; border: 1px solid var(--c-line2); }
+.cn-statut-research { background: var(--c-attbg); color: var(--c-att); }
+.cn-statut-idea { background: var(--c-s2); color: var(--c-ink2); }
+.cn-statut-validated { background: var(--c-zonebg); color: var(--c-zonet); }
+.cn-entete-groupe { display: flex; align-items: center; gap: 8px; min-height: 32px; }
+.cn-groupe { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 12px; border-radius: 999px; background: var(--c-zonebg); color: var(--c-zonet); font-weight: 700; font-size: 15px; }
+/* P43 (g05-1) : les pastilles de groupe de la liste sont toutes vertes (À comparer compris) ; l'en-tête du carnet garde sa teinte (i06-4) */
+.cn-groupe.cn-statut-research, .cn-groupe.cn-statut-idea { background: var(--c-zonebg); color: var(--c-zonet); }
+.cn-groupe-bloc { display: flex; flex-direction: column; gap: 8px; }
+
+/* Liste des carnets (R01) */
+.cn-cartes { display: flex; flex-direction: column; border: 1px solid var(--c-line); border-radius: 16px; overflow: hidden; background: var(--c-bg); }
+.cn-cartes > * + * { border-top: 1px solid var(--c-line); }
+.cn-carnet { display: flex; align-items: center; gap: 8px; padding-right: 12px; }
+.cn-carnet-corps { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; min-height: 72px; padding: 12px; }
+.cn-carnet-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.cn-carnet-titre { font-size: 17px; font-weight: 600; color: var(--c-ink); }
+.cn-carnet-prix { display: flex; flex-direction: column; align-items: flex-end; flex: none; }
+.cn-prix { font-size: 16px; font-weight: 600; color: var(--c-ink); white-space: nowrap; }
+.cn-prix-grand { font-size: 20px; font-weight: 600; }
+.cn-vignette { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; background: var(--c-s2); flex: none; }
+.cn-vignette-vide { display: grid; place-items: center; color: var(--c-zonet); background: var(--c-zonebg); }
+.cn-coller-lien { flex: none; }
+.cn-avenir { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 0 12px 0 80px; border-top: 1px dashed var(--c-line2) !important; color: var(--c-zonet) !important; font-weight: 600; }
+.cn-veille-rangee { display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 8px 12px; width: 100%; }
+.cn-eclaire { background: var(--c-zonebg); }
+.cn-eclaire-pied { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 0 12px 8px; }
+
+/* Liste vide (R02, geste 1) */
+.cn-vide-page { gap: 14px; }
+.cn-fantome { display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px dashed var(--c-zone); border-radius: 16px; background: var(--c-zonebg); }
+.cn-fantome b { display: block; color: var(--c-ink2); }
+.cn-exemples { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* Carnet ouvert (R03) */
+.cn-rubrique { display: flex; flex-direction: column; gap: 8px; }
+.cn-rubrique-tete { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; min-height: 32px; font-size: 16px; font-weight: 700; color: var(--c-ink); }
+.cn-rubrique-tete .cn-mut { font-weight: 400; }
+.cn-encart-critere { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-radius: 12px; background: var(--c-zonebg); }
+.cn-critere { display: flex; gap: 8px; align-items: flex-start; }
+.cn-facons { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.cn-facon { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; padding: 12px; border: 1px solid var(--c-line); border-radius: 12px; }
+.cn-facon b { font-size: 16px; }
+.cn-facon-retenue { border: 2px solid var(--c-zone); }
+.cn-facon-ecartee { background: var(--c-s1); }
+.cn-encart { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--c-s1); border: 1px solid var(--c-line); }
+.cn-liens { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.cn-apercu { flex-basis: 100%; display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border: 1px solid var(--c-line2); border-radius: 12px; background: var(--c-s1); }
+.cn-apercu .cn-second { align-self: flex-start; }
+.cn-choisi-resume { display: flex; flex-direction: column; gap: 8px; }
+.cn-choisi-ligne { display: flex; align-items: center; gap: 8px; padding: 10px 12px; min-height: 56px; }
+.cn-choisi-ligne .cn-sp { display: flex; flex-direction: column; }
+.cn-avenir-ligne { display: flex; align-items: center; gap: 8px; color: var(--c-zonet); font-weight: 600; }
+.cn-carte { border: 1px solid var(--c-line); border-radius: 16px; background: var(--c-bg); }
+.cn-notes { display: flex; flex-direction: column; border: 1px solid var(--c-line); border-radius: 16px; overflow: hidden; }
+.cn-notes > * + * { border-top: 1px solid var(--c-line); }
+.cn-note { display: flex; align-items: center; gap: 10px; padding: 8px 4px 8px 12px; min-height: 60px; }
+.cn-note-picto { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; background: var(--c-attbg); color: var(--c-att); flex: none; }
+.cn-note-tx { display: flex; flex-direction: column; gap: 2px; }
+.cn-doublon { color: var(--c-ia); font-weight: 600; }
+
+/* Tableaux (R06, i06-4) */
+.cn-tableau-zone { overflow-x: auto; border: 1px solid var(--c-line); border-radius: 16px; }
+.cn-tableau { border-collapse: collapse; width: 100%; font-size: 15px; }
+.cn-tableau th, .cn-tableau td { padding: 8px; text-align: left; vertical-align: middle; border-top: 1px solid var(--c-line); }
+.cn-tableau thead th { border-top: 0; font-weight: 400; vertical-align: bottom; }
+.cn-tableau td { text-align: right; white-space: nowrap; }
+.cn-tableau tbody th { font-weight: 400; color: var(--c-ink2); }
+.cn-col-tete { display: flex; flex-direction: column; gap: 2px; min-width: 88px; min-height: 44px; }
+.cn-meilleur { background: var(--c-zonebg); color: var(--c-zonet); font-weight: 600; }
+.cn-ecarte { color: var(--c-mut); background: var(--c-s1); }
+.cn-ecarte .cn-mono { color: var(--c-mut); }
+.cn-inconnu { color: var(--c-mut); }
+.cn-ligne-critere th { color: var(--c-zonet) !important; font-weight: 600 !important; }
+.cn-tableau-carnet { border: 1px solid var(--c-line); border-radius: 16px; border-collapse: separate; border-spacing: 0; overflow: hidden; }
+.cn-tableau-groupe th { background: var(--c-s1); font-weight: 600 !important; }
+.cn-tableau-nom { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+.cn-tableau-nom > span:last-child { display: flex; flex-direction: column; }
+.cn-rang { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 999px; border: 1.5px solid var(--c-line2); font-weight: 700; font-size: 15px; flex: none; }
+.cn-rang-1 { background: var(--c-zone); border-color: var(--c-zone); color: rgb(var(--cave-950)); }
+.cn-rang-vide { border-style: dashed; color: var(--c-mut); }
+
+/* Articles (R04, R05) */
+.cn-article { display: flex; align-items: center; gap: 12px; padding: 12px; width: 100%; min-height: 72px; }
+.cn-article-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.cn-ligne { display: flex; align-items: baseline; gap: 8px; }
+.cn-article-pied { align-items: center; flex-wrap: wrap; }
+.cn-veille { display: inline-flex; align-items: center; gap: 4px; color: var(--c-zonet); font-weight: 600; }
+.cn-article-complet { display: flex; flex-direction: column; }
+.cn-article-complet > * + * { border-top: 1px solid var(--c-line); }
+.cn-veille-ligne { display: flex; align-items: center; gap: 10px; padding: 0 12px; min-height: 56px; }
+.cn-veille-etat { padding: 0 12px 10px 40px; border-top: 0 !important; }
+.cn-veille-bloc { border: 1px solid var(--c-line); border-radius: 16px; }
+.cn-lu { padding: 10px 12px; }
+.cn-bascule { display: inline-grid; place-items: center; width: 64px; height: 44px; flex: none; }
+.cn-bascule-piste { position: relative; width: 52px; height: 30px; border-radius: 999px; background: var(--c-line2); transition: background .15s; }
+.cn-bascule-rond { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 999px; background: #fff; box-shadow: 0 1px 2px rgb(0 0 0 / .25); transition: left .15s; }
+.cn-bascule[aria-checked=true] .cn-bascule-piste { background: var(--c-zone); }
+.cn-bascule[aria-checked=true] .cn-bascule-rond { left: 25px; }
+.cn-fiche-photo { position: relative; border-radius: 16px; overflow: hidden; background: var(--c-s2); }
+.cn-fiche-photo img { display: block; width: 100%; max-height: 220px; object-fit: contain; }
+.cn-fiche-photo figcaption { position: absolute; left: 12px; bottom: 12px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 10px; background: var(--c-bg); font-size: 14px; }
+.cn-mesure { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 16px; background: var(--c-zonebg); }
+.cn-mesure > div:first-child { display: flex; flex-direction: column; }
+.cn-mesure-val { font-size: 28px; font-weight: 600; color: var(--c-zonet); }
+.cn-mesure-val small { font-size: 16px; font-weight: 400; }
+.cn-piste { position: relative; height: 44px; margin: 0 10px; }
+.cn-piste-trait { position: absolute; left: 0; right: 0; top: 10px; height: 2px; background: var(--c-line2); }
+.cn-piste-rond { position: absolute; top: 4px; width: 14px; height: 14px; margin-left: -7px; border-radius: 999px; border: 2px solid var(--c-line2); background: var(--c-bg); }
+.cn-piste-moi { width: 20px; height: 20px; top: 1px; margin-left: -10px; background: var(--c-zone); border-color: var(--c-zone); }
+.cn-piste-legende { position: absolute; left: 0; right: 0; top: 22px; display: flex; justify-content: space-between; font-size: 14px; }
+.cn-offre { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--c-line); border-radius: 12px; }
+.cn-offre .cn-sp { display: flex; flex-direction: column; }
+.cn-carac { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+.cn-carac > div { padding: 8px 0; border-top: 1px solid var(--c-line); }
+.cn-carac dt { color: var(--c-mut); }
+.cn-carac dd { font-size: 16px; }
+.cn-droite { display: flex; flex-direction: column; align-items: flex-end; }
+
+/* Choisir (R07) */
+.cn-choisir-cadre { display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 2px dashed var(--c-ink2); border-radius: 16px; }
+.cn-choisir-cadre .cn-offre { border: 0; padding: 0; }
+.cn-radio { width: 22px; height: 22px; border-radius: 999px; border: 6px solid var(--c-ink); flex: none; }
+.cn-place { width: 100%; border-collapse: collapse; }
+.cn-place caption { display: flex; justify-content: space-between; padding: 6px 0; font-weight: 700; text-align: left; }
+.cn-place th, .cn-place td { padding: 8px 0; border-top: 1px solid var(--c-line); font-weight: 400; text-align: left; }
+.cn-place td:last-child { text-align: right; }
+.cn-pourquoi-champ { display: flex; flex-direction: column; gap: 4px; font-weight: 600; }
+.cn-pourquoi-champ textarea { min-height: 64px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); font: inherit; font-size: 16px; font-weight: 400; resize: vertical; }
+.cn-choisi-carte { display: flex; align-items: center; gap: 12px; padding: 12px; }
+.cn-choisi-carte .cn-sp { display: flex; flex-direction: column; }
+.cn-pourquoi { display: flex; flex-direction: column; gap: 10px; }
+.cn-raisons { display: flex; flex-direction: column; }
+.cn-raisons li { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid var(--c-line); }
+.cn-ok { color: var(--c-zonet); flex: none; }
+.cn-avant summary, .cn-origine summary { min-height: 44px; display: flex; align-items: center; color: var(--c-mut); cursor: pointer; }
+
+/* Gestes : cadre, bandeau, ligne rangée, note en vrac, feuille, suppression */
+.cn-cadre { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 2px dashed var(--c-zone); border-radius: 16px; background: var(--c-zonebg); }
+.cn-cadre-tete { display: flex; align-items: center; gap: 8px; min-height: 32px; flex-wrap: wrap; }
+.cn-cadre-titre { font-size: 17px; font-weight: 700; color: var(--c-ink); }
+.cn-proche { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px solid var(--c-ia); border-radius: 12px; background: var(--c-iabg); color: var(--c-ia); }
+.cn-proche b { color: var(--c-ia); }
+.cn-lien-clair { color: var(--c-lien); word-break: break-all; }
+.cn-squelette { display: flex; gap: 12px; padding: 8px 0; }
+.cn-sq-photo { width: 56px; height: 56px; border-radius: 12px; background: var(--c-s2); }
+.cn-sq-lignes { flex: 1; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+.cn-sq-lignes i { display: block; height: 12px; border-radius: 6px; background: var(--c-s2); }
+.cn-sq-lignes i:nth-child(2) { width: 70%; } .cn-sq-lignes i:nth-child(3) { width: 45%; }
+.cn-progression { font-weight: 600; }
+.cn-aide { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 10px; border-radius: 12px; background: var(--c-iabg); color: var(--c-ia); }
+.cn-consequence-sous { display: flex; gap: 6px; align-items: center; color: var(--c-zonet); font-weight: 600; padding: 0 4px; }
+.cn-bandeau { display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--c-zone); border-radius: 14px; background: var(--c-bg); overflow: hidden; }
+.cn-bandeau-tete { display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 8px 0 12px; background: var(--c-zonebg); color: var(--c-zonet); font-weight: 600; }
+.cn-bandeau > p, .cn-bandeau-pied, .cn-consequence { padding: 0 12px 8px; }
+.cn-bandeau-pied { display: flex; align-items: center; gap: 8px; }
+.cn-bandeau-ligne { border-style: dashed; border-color: var(--c-line2); }
+.cn-bandeau-ligne .cn-bandeau-tete { background: var(--c-s1); color: var(--c-ink2); font-weight: 400; }
+.cn-consequence { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--c-zonet); }
+.cn-rangee { display: flex; flex-direction: column; border: 1.5px solid var(--c-zone); border-radius: 16px; overflow: hidden; background: var(--c-bg); }
+.cn-rangee > .cn-bandeau { border: 0; border-radius: 0; }
+.cn-rangee-corps { display: flex; flex-direction: column; gap: 4px; padding: 8px 12px; }
+.cn-rangee-corps .cn-critere, .cn-rangee-corps .cn-facon, .cn-rangee-corps .cn-note { padding: 0; border: 0; min-height: 0; }
+.cn-corrections { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 12px 10px; }
+.cn-vrac { display: flex; flex-direction: column; gap: 6px; }
+.cn-vrac-apres { border: 1.5px solid var(--c-zone); border-radius: 16px; overflow: hidden; }
+.cn-vrac-apres > .cn-bandeau { border: 0; border-radius: 0; }
+.cn-vrac-lignes { display: flex; flex-direction: column; list-style: none; }
+.cn-vrac-ligne { display: flex; gap: 10px; align-items: flex-start; padding: 8px 12px; border-top: 1px solid var(--c-line); }
+.cn-cadre .cn-vrac-ligne { padding: 8px 0; }
+.cn-vrac-ligne .cn-sp { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.cn-genre { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 10px; border-radius: 999px; background: var(--c-s2); color: var(--c-ink2); font-weight: 600; white-space: nowrap; flex: none; }
+.cn-genre-a-acheter { background: var(--c-zonebg); color: var(--c-zonet); }
+.cn-genre-a-faire { background: var(--c-attbg); color: var(--c-att); }
+.cn-origine { padding: 0 12px; }
+.cn-feuille { display: flex; flex-direction: column; gap: 4px; padding: 8px; border: 1px solid var(--c-line2); border-radius: 14px; background: var(--c-bg); box-shadow: 0 6px 20px rgb(0 0 0 / var(--ombre-sheet, .18)); }
+.cn-feuille-item { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 10px; border-radius: 10px; }
+.cn-menu { align-self: flex-end; min-width: 220px; }
+.cn-supprimer { display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1.5px solid var(--c-rouge); border-radius: 16px; background: var(--c-rougebg); }
+.cn-supprimer-bouton { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; border-radius: 12px; border: 1.5px solid var(--c-rouge) !important; color: var(--c-rouge) !important; font-weight: 700; }
+.cn-supprimer-bouton:disabled { border-color: var(--c-line2) !important; color: var(--c-mut) !important; cursor: default; }
+.cn-liens-retiennent { display: flex; flex-direction: column; gap: 6px; }
+.cn-lien-retient { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 0; border-top: 1px solid var(--c-line); }
+.cn-renommer { gap: 8px; }
+
+/* Champ (R24, R27) */
+.cn-champ-zone { position: sticky; z-index: 5; display: flex; flex-direction: column; gap: 8px; padding: 8px 76px 8px 12px; background: var(--c-bg); border-top: 1px solid var(--c-line); }
+.cn-champ-zone[aria-disabled=true] { opacity: .45; }
+.cn-champ { display: flex; align-items: flex-end; gap: 8px; min-height: 52px; padding: 4px 4px 4px 14px; border: 1.5px solid var(--c-line2); border-radius: 16px; background: var(--c-bg); }
+.cn-champ-focus { border-color: var(--c-zone); box-shadow: 0 0 0 3px rgb(var(--area-stocks) / .2); }
+.cn-champ textarea { flex: 1; min-width: 0; min-height: 44px; max-height: 128px; padding: 11px 0; border: 0; outline: 0; resize: none; background: transparent; color: var(--c-ink); font: inherit; font-size: 16px; line-height: 22px; height: 44px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cn-champ-plein textarea { height: auto; white-space: pre-wrap; overflow: auto; field-sizing: content; }
+.cn-critere svg, .cn-rubrique-tete svg { flex: none; }
+.cn-champ textarea::placeholder { color: var(--c-mut); }
+.cn-envoi { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 999px; background: var(--c-zone) !important; color: rgb(var(--cave-950)) !important; flex: none; }
+.cn-envoi-mot { min-height: 44px; padding: 0 16px; border-radius: 12px; background: var(--c-zone) !important; color: rgb(var(--cave-950)) !important; font-weight: 700; flex: none; }
+.cn-bulle { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--c-zone) !important; background: var(--c-zonebg) !important; color: var(--c-ink2); min-height: 44px; }
+.cn-coller { align-self: flex-start; color: var(--c-ink2); }
+/* P6 (tour 3) : « Va dans » ne se coupe jamais ; les puces passent à la ligne s'il le faut (390 et 1280). */
+.cn-vadans { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cn-vadans-libelle { flex: none; white-space: nowrap; }
+.cn-etat { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border-radius: 12px; background: var(--c-s1); color: var(--c-ink2); }
+/* P10, 40b : en cours = violet de l'IA, ✻, « L'IA range… », sa phrase sur une ligne, trois points qui respirent, ✕ « Arrêter l'IA » ;
+   fini = vert de zone, ✓, sans ✻ ni mouvement. Sous `prefers-reduced-motion`, les points restent immobiles. */
+.cn-etat-cours { color: var(--c-ia); background: var(--c-iabg); border: 1px dashed var(--c-ia); }
+.cn-etat-texte { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cn-etat-quoi { font-weight: 400; opacity: .85; }
+.cn-actif { display: inline-flex; gap: 4px; flex: none; }
+.cn-actif i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .3; animation: cn-respire 1.2s ease-in-out infinite; }
+.cn-actif i:nth-child(2) { animation-delay: .2s; } .cn-actif i:nth-child(3) { animation-delay: .4s; }
+@keyframes cn-respire { 0%, 80%, 100% { opacity: .3; } 40% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .cn-actif i { animation: none; opacity: .7; } }
+.cn-etat-fini { color: var(--c-zonet); background: var(--c-zonebg); font-weight: 600; }
+
+/* P7 : la photo jointe dans le champ, avant l'envoi ; la dictée en cours se voit (couleur de zone et « Arrêter la dictée »). */
+.cn-champ-joint { flex-wrap: wrap; }
+.cn-jointe { flex: 1 0 100%; display: flex; align-items: center; gap: 10px; padding-top: 4px; color: var(--c-ink2); font-weight: 600; }
+.cn-jointe img, .cn-jointe-vide { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: var(--c-s2); flex: none; }
+.cn-jointe .cn-x { margin: 0; }
+.cn-champ-ecoute { border-color: var(--c-zone); background: var(--c-zonebg); }
+.cn-ico.cn-ecoute { width: auto; display: inline-flex; gap: 6px; padding: 0 12px 0 10px; border-radius: 999px; background: var(--c-zone) !important; color: rgb(var(--cave-950)) !important; }
+.cn-ecoute-mot { font-size: 14px; font-weight: 700; white-space: nowrap; }
+/* d1280-18 : amené en vue à son arrivée, ni sous la barre du haut ni sous le champ et le clavier. */
+.cn-bandeau, .cn-etat { scroll-margin-top: var(--cn-haut, 88px); scroll-margin-bottom: calc(var(--cn-champ-h, 0px) + var(--cn-clavier, 0px) + 12px); }
+
+/* P11 : plusieurs critères, « Ce qui compte » une fois en tête, puis une ligne courte par critère, alignée sous le texte. */
+.cn-criteres { display: flex; flex-direction: column; gap: 6px; padding-left: 26px; }
+.cn-critere-court { display: block; }
+
+/* P10 : en-tête Articles ; le compte ne se laisse jamais recouvrir, « Comparer côte à côte › » passe à la ligne, à droite. */
+.cn-tete-articles .cn-compte { flex: 0 1 auto; min-width: auto; }
+.cn-tete-articles .cn-comparer-lien { margin-left: auto; }
+/* La raison d'une façon (pastille) se replie dans sa carte au lieu d'en sortir (vu à 390 : « brasse la buée sans la sortir »). */
+.cn-facon .cn-pastille { white-space: normal; max-width: 100%; padding-top: 4px; padding-bottom: 4px; }
+
+/* Photos */
+.cn-photos { display: flex; gap: 8px; overflow-x: auto; }
+.cn-photo { display: flex; flex-direction: column; gap: 4px; width: 112px; }
+.cn-photo img { width: 112px; height: 84px; object-fit: cover; border-radius: 10px; background: var(--c-s2); }
+
+/* Corr. 2 (L2) — Comparer : tout le tableau tient dans sa colonne à 1280 (noms, pastilles et raisons d'écart se replient) ; à 390,
+   la colonne des noms reste fixe et un fondu à droite dit qu'il y a une suite. Les écartés restent à la fin (D-52). */
+.cn-tableau-cadre { position: relative; }
+.cn-tableau-cadre[data-suite]::after { content: ''; position: absolute; top: 1px; right: 1px; bottom: 1px; width: 40px; border-radius: 0 15px 15px 0; background: linear-gradient(to right, rgb(var(--cave-950) / 0), var(--c-bg)); pointer-events: none; }
+.cn-tableau-comparer thead th:first-child, .cn-tableau-comparer tbody th { position: sticky; left: 0; z-index: 1; background: var(--c-bg); box-shadow: 1px 0 0 var(--c-line); }
+.cn-tableau-comparer th, .cn-tableau-comparer td { padding: 8px 6px; }
+.cn-tableau-comparer .cn-col-tete { min-width: 64px; max-width: 150px; overflow-wrap: break-word; }
+.cn-tableau-comparer .cn-col-tete .cn-pastille { white-space: normal; min-height: 24px; padding: 2px 8px; }
+.cn-tableau-comparer thead th.cn-ecarte .cn-col-tete, .cn-ecarte-raison { min-width: 100px; max-width: 160px; }
+.cn-ecarte-raison { white-space: normal !important; text-align: left !important; }
+
+/* Corr. 2 (L2) — le cadre « ↓ va atterrir ici » et l'état « choisi » se rendent visibles sans passer sous la barre du haut, ni sous
+   le champ et le clavier (`--cn-champ-h`, `--cn-clavier` publiés par ChampCarnet). */
+.cn-cadre-bloc { display: flex; flex-direction: column; gap: 12px; scroll-margin-top: var(--cn-haut, 88px); scroll-margin-bottom: calc(var(--cn-champ-h, 0px) + var(--cn-clavier, 0px) + 12px); }
+.cn-choisi { scroll-margin-top: var(--cn-haut, 88px); }
+
+/* Corr. 2 (L2) — liste à 390 (p2:g05-1) : le titre tient sur 2 lignes au plus, la phrase citée aussi ; « Coller un lien » garde sa place
+   à droite, resserré. */
+.cn-carnet-titre, .cn-deux-lignes { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+.cn-coller-lien { padding: 0 10px; gap: 4px; }
+.cn-carnet-coller .cn-carnet-corps { padding-right: 0; }
+/* « Côte à côte 5 » sur une ligne, « rangé par … » se replie à droite (p2:g01-8). */
+.cn-comparer .cn-entete-groupe .cn-groupe { flex: none; white-space: nowrap; }
+.cn-comparer .cn-entete-groupe .cn-mut { text-align: right; }
+
+@media (min-width: 900px) {
+  .cn-page { max-width: 760px; margin: 0 auto; }
+  /* Comparer est un tableau : sur grand écran il prend la place qu'il faut pour que tout tienne, écartés compris (d1280-2). */
+  .cn-page.cn-comparer { max-width: 920px; }
+  .cn-champ-zone { max-width: 760px; margin: 0 auto; }
+}
+
+/* ---------- Correction 4, lot B : figés liste, carnet, articles (P1 à P43) ---------- */
+/* P1 : pictos d'objet (pictos.tsx) ; tailles de vignette */
+.cn-picto { display: block; }
+.cn-vignette-petite { width: 40px; height: 40px; border-radius: 10px; }
+.cn-vignette-grande { width: 72px; height: 72px; border-radius: 14px; }
+.cn-vignette-lien { display: grid; place-items: center; color: var(--c-mut); background: transparent; border: 1.5px dashed var(--c-line2); }
+.cn-vignette-fiche { width: 100%; height: 160px; border-radius: 0; background: transparent; }
+/* P43 : « 3 façons · 6 articles · 1 en veille » sur une ligne à 390 */
+.cn-compte-ligne { white-space: nowrap; font-size: 14px; letter-spacing: -.01em; }
+.cn-oeil { margin-left: 4px; }
+.cn-liste .cn-carnet-corps { gap: 10px; padding: 12px 10px; }
+.cn-liste .cn-carnet-prix { min-width: 0; }
+/* P2 : liste vide (i02-2) */
+.cn-premier { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 4px 12px; padding: 14px 16px; border: 2px dashed var(--c-zone); border-radius: 12px; background: var(--c-zonebg); }
+.cn-premier-titre { font-size: 18px; font-weight: 600; color: var(--c-mut); }
+.cn-premier-ici { color: var(--c-zonet); font-weight: 600; }
+.cn-premier-sous { grid-column: 1 / -1; }
+.cn-garde-titre { font-size: 17px; font-weight: 700; padding-bottom: 6px; }
+.cn-garde ul { display: flex; flex-direction: column; }
+.cn-garde li { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 6px 0; border-top: 1px solid var(--c-line); }
+.cn-garde-ico { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--c-zonebg); color: var(--c-zonet); flex: none; }
+/* la zone qui défile s'arrête au haut du champ (le champ vit hors d'elle) : 14 px suffisent pour que la flèche touche le champ */
+.cn-bulle-champ { position: sticky; bottom: 14px; margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 14px; background: var(--c-zone); color: rgb(var(--cave-950)); max-width: min(420px, 80%); z-index: 2; }
+.cn-bulle-champ::after { content: ''; position: absolute; left: 32px; bottom: -9px; border: 9px solid transparent; border-bottom: 0; border-top-color: var(--c-zone); }
+.cn-bulle-champ b { color: inherit; }
+.cn-bulle-petit { font-size: 14px; }
+.cn-puce-bulle { min-height: 40px; border-color: rgb(var(--cave-950) / .55) !important; color: inherit; background: rgb(var(--cave-950) / .08); }
+/* la bulle se pose juste au-dessus du champ : la page vide descend jusqu'à lui ; si l'en-tête est plus haut, la bulle reste collée (sticky) */
+.cn-vide-page { min-height: calc(100dvh - 60px); }
+/* P27 : carnet tout juste créé (g5:v04-4) */
+.cn-etapes { display: inline-flex; align-items: center; gap: 4px; }
+.cn-etapes > span:not(.cn-lien-texte) { width: 8px; height: 8px; border-radius: 999px; background: var(--c-line2); }
+.cn-etapes > span.cn-etape-on { background: var(--c-lien); }
+.cn-lien-texte { color: var(--c-lien); font-weight: 600; margin-left: 4px; }
+.cn-encadre-idee { display: flex; flex-direction: column; gap: 2px; padding: 12px 16px; border-radius: 14px; background: var(--c-attbg); border: 1px solid rgb(var(--attention) / .35); font-size: 17px; }
+.cn-rubrique-ligne { padding: 6px 0; border-bottom: 1px solid var(--c-line); }
+/* P5, P38 : tableau du carnet (h05-3) */
+.cn-tab { display: flex; flex-direction: column; gap: 12px; }
+.cn-tab-bloc { display: flex; flex-direction: column; border: 1px solid var(--c-line); border-radius: 16px; overflow: hidden; background: var(--c-bg); }
+.cn-tab-retenue { border-color: var(--c-zone); }
+.cn-tab-ecartee { opacity: .85; }
+.cn-tab-facon { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--c-s1); }
+.cn-tab-facon > .cn-sp { display: flex; flex-direction: column; }
+.cn-tab-facon b { font-size: 16px; }
+.cn-tab-facon .cn-pastille { white-space: normal; text-align: center; max-width: 52%; padding-top: 4px; padding-bottom: 4px; }
+.cn-pastille-neutre { background: var(--c-s2); color: var(--c-ink2); }
+.cn-tab-etendue { font-size: 14px; }
+.cn-tab-ligne { display: grid; align-items: center; gap: 6px; width: 100%; min-height: 56px; padding: 8px 10px 8px 8px; border-top: 1px solid var(--c-line); text-align: left; }
+.cn-tab-ligne .cn-vignette-petite { width: 34px; height: 34px; border-radius: 9px; }
+.cn-tab-cols { min-height: 32px; padding-top: 4px; padding-bottom: 4px; font-size: 14px; }
+.cn-tab-rangart { grid-column: 1 / span 3; padding-left: 4px; }
+.cn-tab-num { text-align: right; white-space: nowrap; }
+/* critique 7, n° 4 : « amb. max °C » : l'en-tête d'une température dit ce qu'elle mesure, sur deux lignes au plus */
+.cn-tab-cols .cn-tab-num { white-space: normal; line-height: 1.15; overflow-wrap: normal; }
+.cn-tab-nom { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
+.cn-tab-nom > .cn-mut { font-size: 14px; }
+.cn-tab-ligne .cn-meilleur { color: var(--c-zonet); font-weight: 700; }
+.cn-tab-relire-ligne { grid-template-columns: 32px 40px minmax(0, 1fr) auto; border-top: 0; }
+.cn-tab-relire-ligne + .cn-tab-relire-ligne { border-top: 1px solid var(--c-line); }
+.cn-tab-ouvrir { justify-self: end; }
+.cn-action-vert { background: var(--c-zone) !important; color: rgb(var(--cave-950)) !important; }
+.cn-separe { align-items: center; background: var(--c-zonebg); border-color: rgb(var(--area-stocks) / .35); }
+.cn-tete-bouton { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; }
+/* P12 : feuille des cartes (h03-5) */
+.cn-voile { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-end; justify-content: center; background: rgb(0 0 0 / .38); }
+.cn-feuille-cartes { --c-bg: rgb(var(--cave-950)); width: 100%; max-width: 760px; max-height: 88dvh; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 8px 16px 24px; border-radius: 20px 20px 0 0; background: rgb(var(--cave-950)); color: rgb(var(--cave-texte-50)); }
+.cn-poignee { align-self: center; width: 40px; height: 5px; border-radius: 999px; background: rgb(var(--cave-700)); }
+.cn-feuille-cartes-tete { display: flex; align-items: center; gap: 8px; }
+.cn-feuille-cartes-tete h3 { font-size: 20px; }
+.cn-classees { display: flex; flex-direction: column; gap: 10px; }
+.cn-classee { border: 1px solid rgb(var(--cave-800)); border-radius: 16px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.cn-classee-corps { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: start; width: 100%; }
+.cn-classee-photo { position: relative; padding: 6px 0 0 6px; }
+.cn-classee-rang { position: absolute; top: -4px; left: -6px; background: rgb(var(--cave-950)); }
+.cn-classee-rang.cn-rang-1 { background: rgb(var(--area-stocks)); }
+.cn-classee-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cn-classee-tx b { font-size: 17px; font-weight: 600; }
+.cn-classee-val { display: flex; flex-direction: column; align-items: flex-end; }
+.cn-classee-gros { font-size: 26px; font-weight: 700; line-height: 1.1; }
+.cn-classee-pied { display: flex; align-items: center; gap: 10px; }
+.cn-classee-carac { font-size: 14px; max-width: 30%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cn-reglette { position: relative; flex: 1; height: 4px; border-radius: 999px; background: rgb(var(--cave-800)); }
+.cn-reglette-plein { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: rgb(var(--area-stocks)); }
+.cn-reglette-rond { position: absolute; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 999px; background: rgb(var(--area-stocks)); }
+.cn-classee.cn-ecarte { background: rgb(var(--cave-900)); }
+.cn-classee-relire { padding: 0; }
+.cn-dispo { font-weight: 600; }
+/* P8 : carte après lien (g5:v06-10) */
+.cn-article-grand { align-items: flex-start; }
+.cn-article-nom { font-size: 17px; }
+/* P13 : fiche (h01-6) */
+.cn-fiche-picto { display: grid; place-items: center; color: var(--c-zonet); background: var(--c-s2); }
+.cn-heros .cn-mesure-val { font-size: 34px; }
+.cn-offres { display: flex; flex-direction: column; border: 1px solid var(--c-line); border-radius: 14px; overflow: hidden; }
+.cn-offres .cn-offre { border: 0; border-radius: 0; }
+.cn-offres .cn-offre + .cn-offre { border-top: 1px solid var(--c-line); }
+.cn-offre-moi { background: var(--c-s1); }
+.cn-offre-corps { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.cn-offre-corps .cn-sp { display: flex; flex-direction: column; }
+.cn-radio { width: 22px; height: 22px; border-radius: 999px; border: 2px solid var(--c-line2); flex: none; }
+.cn-radio-on { border: 6px solid var(--c-ink); }
+.cn-carac-rang { font-weight: 700; }
+/* P11 : genre des notes (G22) */
+.cn-genre-a-acheter.cn-note-picto { background: var(--c-zonebg); color: var(--c-zonet); }
+.cn-genre-question.cn-note-picto { background: var(--c-iabg); color: var(--c-ia); }
+.cn-genre-conseil.cn-note-picto { background: var(--c-attbg); color: var(--c-att); }
+.cn-genre-note.cn-note-picto { background: var(--c-s2); color: var(--c-ink2); }
+.cn-picto-question { font-weight: 800; font-size: 18px; }
+.cn-genre-mot { font-weight: 600; color: var(--c-ink2); }
+/* P21 : photo rangée, « non lue » */
+.cn-photo-cadre { position: relative; display: block; }
+.cn-photo-etat { position: absolute; left: 6px; bottom: 6px; padding: 2px 8px; border-radius: 8px; background: var(--c-bg); font-size: 14px; color: var(--c-ink2); }
+@media (min-width: 900px) {
+  .cn-tab { --cn-col: 88px; }
+  .cn-voile { align-items: center; }
+  .cn-feuille-cartes { border-radius: 20px; }
+}
+
+/* ---------- Correction 5, lot B : figés h05-3, v04-4, v06-10, h01-6, i06-2 (critique 5) ---------- */
+/* n° 29 : l'objet dessiné, surfaces pleines, teintes par thème ; lisible à 40 px. Rouge exclu (Q12). */
+.cn-picto { --pm: #cdd5db; --pm2: #9eaab3; --pk: #39424a; --pb: #5b8ec4; --pv: #7a4a22; --po: #d9a03f; --pf: #f6f8f9; --pt: #4a545c; }
+[data-theme='cave'] .cn-picto { --pm: #8c98a1; --pm2: #66727b; --pk: #1d2226; --pb: #6d9fd3; --pv: #a56c3b; --po: #e0ac52; --pf: #c9d1d6; --pt: #d4dbe0; }
+.cn-picto :is(.m, .m2, .k, .a, .b, .v, .o, .f) { stroke: var(--pt); stroke-width: .9; stroke-linejoin: round; }
+.cn-picto .m { fill: var(--pm); } .cn-picto .m2 { fill: var(--pm2); } .cn-picto .k { fill: var(--pk); }
+.cn-picto .a { fill: rgb(var(--area-stocks)); } .cn-picto .b { fill: var(--pb); } .cn-picto .v { fill: var(--pv); }
+.cn-picto .o { fill: var(--po); } .cn-picto .f { fill: var(--pf); }
+.cn-picto .ac { fill: none; stroke: rgb(var(--area-stocks)); stroke-width: 2.6; }
+.cn-picto :is(.tl, .tg, .tt) { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.cn-picto .tl { stroke: var(--pt); stroke-width: 1.4; }
+.cn-picto .tg { stroke: var(--pm2); stroke-width: 3; }
+.cn-picto .tt { stroke: rgb(var(--area-stocks)); stroke-width: 4.5; }
+.cn-picto-initiale text { fill: var(--c-ink2, currentColor); font-family: inherit; }
+.cn-vignette-vide { background: rgb(var(--cave-850)); color: var(--c-ink2); }
+[data-theme='clair'] .cn-vignette-vide, :root:not([data-theme='cave']) .cn-vignette-vide { background: #e9eef1; }
+
+/* n° 19 et 1 : ligne d'état, puis la ligne Critère (h05-3) */
+.cn-ligne-etat { font-size: 16px; color: var(--c-ink); margin-top: -6px; }
+.cn-critere-bloc { display: flex; flex-direction: column; gap: 6px; }
+.cn-critere-une { align-items: baseline; font-size: 16px; color: var(--c-ink2); }
+.cn-critere-une .cn-critere-ico { flex: none; align-self: center; }
+.cn-critere-une b { color: var(--c-ink); }
+.cn-critere-plus { display: inline; min-height: 0; padding: 0; font-size: 15px; }
+.cn-criteres-derriere { display: flex; flex-direction: column; gap: 6px; padding: 8px 12px 8px 26px; border-left: 2px solid var(--c-line2); }
+.cn-cqc-ligne .cn-cqc-texte { font-weight: 400; color: var(--c-ink2); }
+.cn-cqc-ligne .cn-cqc-texte b { font-weight: 700; color: var(--c-ink); }
+/* une ligne pour « Articles 5 lus ⌄ · Comparer côte à côte › » à 390 */
+.cn-tete-articles .cn-comparer-lien { white-space: nowrap; }
+.cn-valeurs-lues { font-size: 14px; }
+.cn-carte-complete { border: 1px solid var(--c-line); border-radius: 16px; overflow: hidden; }
+.cn-carte-complete .cn-article-grand { width: 100%; text-align: left; }
+
+/* n° 11 : liste vide = i06-2, sans flèche ni bulle */
+.cn-vide-page { min-height: 0; gap: 12px; }
+.cn-vide-titre { font-size: 30px; font-weight: 800; line-height: 1.1; color: var(--c-ink); }
+.cn-vide-phrase { font-size: 17px; color: var(--c-ink2); }
+.cn-exemple-carte { display: flex; align-items: center; gap: 12px; padding: 14px; border: 2px dashed rgb(var(--area-stocks) / .7); border-radius: 14px; background: var(--c-zonebg); }
+.cn-exemple-tx { display: flex; flex-direction: column; gap: 4px; }
+.cn-exemple-tx b { font-size: 17px; color: var(--c-ink2); }
+.cn-arrive { display: inline-flex; align-items: center; gap: 4px; flex: none; color: var(--c-zonet); font-weight: 700; }
+.cn-par-exemple { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.cn-puce-exemple { min-height: 44px; border-style: dashed !important; color: var(--c-ink2); }
+
+/* n° 32 : en veille, une ligne par machine */
+.cn-veille-tx { display: flex; flex-direction: column; }
+.cn-veille-prix { align-self: center; }
+
+/* n° 8, 28, 36 : l'article ouvert (h01-6) */
+.cn-fiche-picto { min-height: 150px; background: #e9eef1; }
+[data-theme='cave'] .cn-fiche-picto { background: rgb(var(--cave-850)); }
+.cn-vignette-fiche { width: 100%; height: 150px; border-radius: 0; background: transparent !important; display: grid; place-items: center; }
+.cn-heros-val .cn-heros-place { font-size: 15px; }
+.cn-heros .cn-piste { height: 52px; }
+.cn-piste-legende { top: 24px; align-items: baseline; }
+.cn-piste-borne { white-space: nowrap; }
+.cn-carac { grid-template-columns: 1fr 1fr; }
+.cn-carac dd { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 4px; }
+.cn-prix-mono .cn-prix { font-weight: 600; }
+/* v04-4 : « Ce qui compte · rien encore : l'IA le proposera » sur la ligne de son titre */
+.cn-rubrique-ligne .cn-rubrique-tete { flex-wrap: nowrap; align-items: baseline; }
+.cn-rubrique-ligne .cn-rubrique-tete > svg { flex: none; align-self: center; }
+.cn-rubrique-ligne .cn-rubrique-tete > b { flex: none; }
+.cn-rubrique-ligne .cn-rubrique-tete > .cn-mut, .cn-rubrique-ligne .cn-rubrique-tete > .cn-cqc-texte { min-width: 0; }
+
+/* ---------- Correction 6, lot C : figés h05-3 et h01-6 à 390 (critique 6, n° 8, 33, 34) ---------- */
+/* n° 8 : « Articles 6 ⌄ · Comparer › » sur une ligne, Comparer juste après le point (h05-3). */
+.cn-tete-articles { flex-wrap: nowrap; gap: 8px; }
+.cn-tete-articles .cn-comparer-lien { margin-left: 0; white-space: nowrap; }
+.cn-tete-articles .cn-compte { font-size: 16px; }
+/* n° 34 : « 1 critère sans valeur à comparer ⌄ », une ligne à part, sous la ligne Critère, alignée sur son texte. */
+.cn-critere-bloc > .cn-critere-plus { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; margin-left: 26px; min-height: 32px; }
+.cn-critere-une .cn-critere-plus { display: inline-flex; align-items: center; gap: 2px; min-height: 0; padding: 0; font-size: inherit; vertical-align: baseline; }
+.cn-critere-plus .cn-tourne { transform: rotate(180deg); }
+/* n° 33 : le fil d'Ariane de l'article sur une ligne : court à 390, entier à 1280. */
+.cn-fil-ariane { min-width: 0; white-space: nowrap; overflow: hidden; }
+.cn-fil-ariane > span { overflow: hidden; text-overflow: ellipsis; }
+.cn-fil-long { display: none; }
+@media (min-width: 900px) {
+  .cn-fil-court { display: none; }
+  .cn-fil-long { display: inline; }
+}
+@media (max-width: 899px) {
+  /* h05-3 et h01-6 : la marge de la maquette (12 px du bord), contenu resserré pour que deux façons et « Retenir la hotte » (h05-3),
+     « Choisir · fournisseur » et la veille (h01-6) tiennent au-dessus du champ. */
+  .cn-page.cn-ouvert, .cn-page.cn-fiche { padding-left: 0; padding-right: 0; gap: 8px; }
+  .cn-page.cn-ouvert, .cn-page.cn-fiche { padding-top: 2px; }
+  .cn-page.cn-ouvert { gap: 6px; }
+  .cn-ouvert .cn-tete, .cn-fiche .cn-tete { min-height: 34px; }
+  .cn-ouvert .cn-titre { font-size: 21px; line-height: 1.12; }
+  .cn-ouvert .cn-ligne-etat { margin-top: -4px; font-size: 15px; }
+  .cn-ouvert .cn-critere-une { font-size: 15px; }
+  .cn-ouvert .cn-tete-articles { min-height: 30px; }
+  .cn-ouvert .cn-tete-articles .cn-tete-bouton, .cn-ouvert .cn-tete-articles .cn-comparer-lien { min-height: 30px; }
+  .cn-ouvert .cn-tab { --cn-col: 46px; --cn-rangl: 28px; --cn-vignl: 30px; gap: 6px; }
+  .cn-ouvert .cn-tab-facon { padding: 4px 10px; }
+  .cn-ouvert .cn-tab-facon b { font-size: 15px; }
+  .cn-ouvert .cn-tab-ligne { gap: 6px; min-height: 40px; padding: 4px 8px 4px 6px; }
+  .cn-ouvert .cn-tab-cols { min-height: 20px; padding-top: 1px; padding-bottom: 1px; font-size: 13px; }
+  .cn-ouvert .cn-tab-ligne .cn-rang { width: 28px; height: 28px; font-size: 14px; }
+  .cn-ouvert .cn-tab-ligne .cn-vignette-petite { width: 30px; height: 30px; }
+  .cn-ouvert .cn-tab-nom { font-size: 15px; line-height: 1.15; gap: 0; }
+  .cn-ouvert .cn-tab-nom > .cn-mut { font-size: 13px; }
+  .cn-ouvert .cn-tab-num { font-size: 14px; }
+  .cn-ouvert .cn-tab-relire-ligne { grid-template-columns: 28px 30px minmax(0, 1fr) auto; }
+  .cn-ouvert .cn-separe { padding: 6px 10px; font-size: 14px; line-height: 1.25; }
+  .cn-ouvert .cn-separe .cn-action { min-height: 40px; }
+  /* h01-6 : photo basse, la valeur et sa réglette côte à côte, la grille serrée */
+  .cn-page.cn-fiche { gap: 6px; }
+  .cn-fiche .cn-fiche-photo img { height: 104px; max-height: 104px; object-fit: contain; }
+  .cn-fiche .cn-fiche-picto { min-height: 104px; }
+  .cn-fiche .cn-vignette-fiche { height: 104px; }
+  .cn-fiche .cn-titre { font-size: 21px; }
+  .cn-fiche .cn-heros { flex-direction: row; align-items: center; gap: 10px; padding: 6px 12px; }
+  .cn-fiche .cn-heros .cn-heros-val > .cn-mut, .cn-fiche .cn-heros .cn-heros-place { font-size: 13px; }
+  .cn-fiche .cn-heros .cn-piste { margin: 0 4px; }
+  .cn-fiche .cn-heros .cn-piste-legende { font-size: 13px; gap: 8px; }
+  .cn-fiche .cn-heros > .cn-heros-val { flex: none; }
+  .cn-fiche .cn-heros .cn-mesure-val { font-size: 28px; line-height: 1.1; }
+  .cn-fiche .cn-heros .cn-piste { flex: 1; min-width: 0; }
+  .cn-fiche .cn-offre { padding: 5px 10px; }
+  .cn-fiche .cn-carac > div { padding: 3px 0; line-height: 1.25; }
+  .cn-fiche .cn-veille-ligne { min-height: 48px; }
+  .cn-fiche .cn-action.cn-large { min-height: 44px; }
+}
+
+/* h01-6 : la veille dit son état sous son réglage, dans la même ligne */
+.cn-veille-tx { display: flex; flex-direction: column; min-width: 0; padding: 6px 0; }
+.cn-veille-tx > .cn-veille-etat { padding: 0; font-size: 14px; }
+"
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m164:32[22m[39m
+    [90m162| [39m[34mdescribe[39m([32m'PCN-120, PCN-121 : liste et rangée « Va dans »'[39m[33m,[39m () [33m=>[39m {
+    [90m163| [39m  it('120 : carte Idée, le titre prend toute la largeur au-dessus de «…
+    [90m164| [39m    expect(css('carnets.css')).toMatch(/\.cn-carnet-coller \{[^}]*grid…
+    [90m   | [39m                               [31m^[39m
+    [90m165| [39m  })[33m;[39m
+    [90m166| [39m  it('121 : la rangée « Va dans » dit qu\'elle défile (fondu à droite)…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-120, PCN-121 : liste et rangée « Va dans »[2m > [22m121 : la rangée « Va dans » dit qu'elle défile (fondu à droite)
+[31m[1mAssertionError[22m: expected '/*\n * Carnet d\'idées : le fil, le c…' to match /\.cn-champ-zone \.cn-vadans \{[^}]*ma…/[39m
+
+[32m- Expected:[39m 
+/\.cn-champ-zone \.cn-vadans \{[^}]*mask-image/
+
+[31m+ Received:[39m 
+"/*
+ * Carnet d'idées : le fil, le champ et les gestes (correction du tour 4, lot D). Classes préfixées `cnf-` (L26) ; `carnets.css` reste
+ * au lot B. Importé par CarnetsVue.tsx et EtatIA.tsx.
+ */
+
+/* P29, P30, P31 (R27, G7) : le champ prend toute la largeur de la colonne. Dans la vue en colonne (`.cn`, flex), des marges auto
+   réduisaient la zone à son contenu (270 px à 1280) ; `width: 100%` la rend à la colonne, centrée et bornée comme la page. */
+[data-carnets] > .cn-champ-zone { width: 100%; box-sizing: border-box; flex: none; }
+@media (min-width: 900px) {
+  [data-carnets] > .cn-champ-zone { max-width: 760px; margin-left: auto; margin-right: auto; padding-right: 12px; }
+}
+
+/* P37 : clavier ouvert, la bulle G8 et « Coller » sur une seule ligne ; chacune se tronque plutôt que de prendre deux lignes. */
+.cnf-aides { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
+.cnf-aides > .cn-coller { align-self: flex-start; }
+.cnf-aides-ligne { display: flex; gap: 6px; align-items: center; min-width: 0; }
+.cnf-aides-ligne > .cn-bulle { flex: 1 1 auto; min-width: 0; min-height: 36px; padding: 6px 10px; align-items: center; }
+.cnf-aides-ligne > .cn-bulle > span:last-child { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cnf-aides-ligne > .cn-coller { flex: 0 1 auto; min-width: 0; max-width: 55%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-height: 36px; }
+.cn-champ-zone[data-clavier] { gap: 6px; padding-top: 6px; padding-bottom: 6px; }
+
+/* P28 (R09, g5:v03-2) : Créer · avant */
+.cnf-avant { display: flex; flex-direction: column; gap: 10px; }
+.cnf-avant-phrase { color: var(--c-ink); font-size: 15px; line-height: 21px; }
+.cnf-fantome { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1.5px dashed var(--c-line2); border-radius: 12px; opacity: .8; }
+.cnf-fantome-photo { width: 36px; height: 36px; flex: none; border-radius: 8px; background: var(--c-s1); border: 1px solid var(--c-line); }
+.cnf-exemples { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* P33 (R20) : « Se modifie ici » prend la place de la note modifiée (la ligne de note juste avant le cadre ne s'affiche plus). */
+.cn-note:has(+ .cnf-cadre-modifier) { display: none; }
+.cnf-modifie-texte { font-weight: 400; color: var(--c-ink2); font-style: italic; }
+
+/* P9 (R25) : le lien rangé, en clair, et « Ouvrir ↗ » */
+.cnf-bandeau-lien { display: flex; align-items: center; gap: 10px; margin-top: 4px; min-width: 0; }
+.cnf-lien-clair { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; color: var(--c-ink2); font-size: 14px; }
+.cnf-ouvrir { flex: none; min-height: 44px; display: inline-flex; align-items: center; }
+
+/* P22, P36 : l'avis de l'IA dans le bandeau même ; l'échec se distingue de « L'IA range… » (aucune roue, filet orangé) */
+.cnf-avis { display: flex; gap: 8px; align-items: flex-start; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--c-line); color: var(--c-ink2); font-size: 14px; line-height: 20px; }
+.cnf-avis > svg { flex: none; margin-top: 2px; }
+.cnf-avis[data-avis=\"echec\"] { color: var(--c-warn, #a15c00); }
+.cnf-avis-detail { color: var(--c-ink2); }
+.cn-etat[data-etat=\"echec\"] { border: 1px solid var(--c-warn, #a15c00); color: var(--c-ink); background: var(--c-s1); }
+
+/* P23 (D-35) : les puces que l'IA propose, un toucher les range */
+.cnf-proposees { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.cnf-proposee { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 2px 4px 2px 12px; border: 1px dashed var(--c-ia); border-radius: 12px; background: var(--c-iabg); color: var(--c-ink); }
+.cnf-proposee-ia { color: var(--c-ia); flex: none; }
+.cnf-proposee-texte { flex: 1 1 auto; min-width: 0; }
+.cnf-proposee .cn-x { flex: none; min-width: 44px; min-height: 44px; font-size: 20px; color: var(--c-mut); }
+
+/* P11 (g5:v01-16) : type ▾ et carnet ▾ ; le choix natif couvre la puce, un toucher l'ouvre */
+.cnf-choix { position: relative; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; min-height: 36px; max-width: 100%; box-sizing: border-box; }
+.cnf-choix > span:not([aria-hidden]) { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cnf-choix > select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+.cnf-choix:focus-within { outline: 2px solid var(--c-zone); outline-offset: 2px; }
+
+/* Critique 5, n° 5 et 21 : la bulle G8 sur une ligne, au focus seulement ; le texte entier est dans `title` */
+.cnf-aides-ligne > .cn-bulle { white-space: nowrap; }
+
+/* Critique 5, n° 3 : la ligne du carnet visé, au-dessus des rubriques ; « en » relie les deux lignes */
+.cnf-vadans-carnet .cn-puce[aria-pressed=\"true\"] { font-weight: 700; }
+
+/* Critique 5, n° 26 (g4:v01-13) : « Se renomme ici » se pose à la place du titre ; l'en-tête et le contenu restent */
+.cn-ouvert:has(> .cnf-renommer) { display: flex; flex-direction: column; }
+.cn-ouvert:has(> .cnf-renommer) > .cn-tete,
+.cn-ouvert:has(> .cnf-renommer) > .cn-menu { order: -2; }
+.cn-ouvert > .cnf-renommer { order: -1; margin-bottom: 8px; }
+.cn-ouvert:has(> .cnf-renommer) > .cn-titre-ligne { display: none; }
+.cnf-renommer-tete { display: inline-flex; align-items: center; gap: 6px; }
+.cnf-renommer-tete > svg { flex: none; }
+.cnf-renommer-titre { font-size: 24px; line-height: 30px; font-weight: 800; color: var(--c-ink); margin: 4px 0 0; overflow-wrap: anywhere; }
+.cnf-renommer-pied { display: flex; align-items: center; gap: 8px; padding: 0 4px; min-height: 36px; }
+.cnf-renommer-pied .cn-lien { min-height: 44px; display: inline-flex; align-items: center; }
+
+/* Critique 5 : la flèche ou le crayon d'une tête de cadre reste sur la ligne de son libellé (« ↓ va dans Évier inox ») */
+.cn-cadre-bloc .cn-cadre-tete > .cn-vert { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.cn-cadre-bloc .cn-cadre-tete > .cn-vert > svg { flex: none; }
+
+/* Critique 6, n° 29 : les puces « Va dans » tiennent sur un rang à 390 ; au-delà, le rang défile, il ne passe jamais à la ligne */
+.cn-champ-zone .cn-vadans { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 6px; }
+.cn-champ-zone .cn-vadans::-webkit-scrollbar { display: none; }
+.cn-champ-zone .cn-vadans > .cn-puce { flex: none; white-space: nowrap; }
+
+/* Critique 6, n° 24 : « Ranger maintenant », au retour du réseau */
+.cnf-reprise .cn-bandeau-tete { gap: 8px; }
+
+/* g5:v01-15, v01-16 : « › Texte d’origine », la flèche en tête */
+.cnf-origine-fleche { margin-right: 6px; }
+"
+
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m167:36[22m[39m
+    [90m165| [39m  })[33m;[39m
+    [90m166| [39m  it('121 : la rangée « Va dans » dit qu\'elle défile (fondu à droite)…
+    [90m167| [39m    expect(css('carnets-fil.css')).toMatch(/\.cn-champ-zone \.cn-vadan…
+    [90m   | [39m                                   [31m^[39m
+    [90m168| [39m  })[33m;[39m
+    [90m169| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/18]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsTour3F2.test.tsx[2m > [22mPCN-124 : Réalisés porte la vignette (Stocks › Matériel)[2m > [22mchaque ligne a sa vignette
+[31m[1mAssertionError[22m: expected null not to be null[39m
+[36m [2m❯[22m tests/unit/carnetsTour3F2.test.tsx:[2m184:88[22m[39m
+    [90m182| [39m    const items2 = document.querySelectorAll('[data-colonne-materiel] …
+    [90m183| [39m    [34mexpect[39m(items2[33m.[39mlength)[33m.[39m[34mtoBeGreaterThan[39m([34m0[39m)[33m;[39m
+    [90m184| [39m    for (const it2 of items2) expect(it2.querySelector('[data-vignette…
+    [90m   | [39m                                                                                       [31m^[39m
+    [90m185| [39m  })[33m;[39m
+    [90m186| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/18]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m18 failed[39m[22m[90m (18)[39m
+[2m   Start at [22m 18:25:32
+[2m   Duration [22m 13.27s[2m (transform 6.82s, setup 314ms, collect 10.95s, tests 974ms, environment 713ms, prepare 71ms)[22m
+

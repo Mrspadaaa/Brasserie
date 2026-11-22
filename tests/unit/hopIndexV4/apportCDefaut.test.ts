@@ -119,7 +119,7 @@ describe('les barres ne changent pas : voie par voie, à chaque moment, sur deux
       expect(d.length).toBe(a.length);
       for (const v of a) { expect(parId.get(v.id)).toBeDefined(); expect(lu(parId.get(v.id)!)).toBe(lu(v)); expect(parId.get(v.id)!.dose).toEqual(v.dose); }
     }
-  });
+  }, 60_000); // PI-NOTE-3 : calcul sur tout le catalogue, 8 s seul ; sous une suite chargée il dépassait les 15 s par défaut
   it('additionEffect : défaut = \'aucun\' (aucune barre de Ma bière ne change)', () => {
     const a = { id: 'x', hopKey: NS, moment: 'dryActive' as const, grams: 40 };
     expect(JSON.stringify(m.additionEffect(a, R21C))).toBe(JSON.stringify(m.additionEffect(a, R21C, 'aucun')));

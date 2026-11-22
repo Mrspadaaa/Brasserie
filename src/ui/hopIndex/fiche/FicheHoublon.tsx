@@ -27,6 +27,7 @@ import { MarquesCatalogue } from './marques';
 import { Replis, ReplisBoutons, useReplis } from './Replis';
 import { sourcesFiche, type SourcesFiche } from './sources';
 import './fiche.css';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 /** Goûts du brasseur, en mémoire (maquette) : « j'aime » ou « pas pour moi » par houblon (D20). */
 const GOUTS = new Map<string, 'aime' | 'non'>();
@@ -52,7 +53,7 @@ function Gout({ cle, nom }: { cle: string; nom: string }) {
 
 /** La réglette de g1 : la plage de chaque fiche sur 0 à 25 %, la plus récente foncée, mon lot en trait. */
 function Reglette({ s, lot }: { s: SourcesFiche; lot: number | null }) {
-  const x = (v: number) => `${(Math.max(0, Math.min(1, v / 25)) * 100).toFixed(1)}%`;
+  const x = (v: number) => `${nombreFr((Math.max(0, Math.min(1, v / 25)) * 100), 1)}%`;
   return (
     <span role="img" aria-label={`plages des fiches${lot != null ? ` et mon lot ${nombre(lot, 1)} %` : ''}, sur 0 à 25 %`}
       className="relative self-center w-16 h-3 shrink-0">

@@ -21,8 +21,11 @@ export const CouleurChamp: React.FC<{
   useEffect(() => { if (mise) ref.current?.focus(); }, [mise]);
   const v = lit(t);
   const ok = v !== null && v >= 1 && v <= 1500;
+  // Une valeur tapée hors de 1 à 1500 n'est pas avalée (critique B1 n° 5) : Entrée la refuse, le champ reste sur sa ligne, marqué invalide, et la dit en infobulle.
+  const [ko, setKo] = useState(false);
   const finir = (mode: 'ok' | 'echap' | 'sortie') => {
     if (fini.current) return;
+    if (mode === 'ok' && t.trim() !== '' && !ok) { setKo(true); return; }
     fini.current = true;
     onFin(mode, mode === 'echap' ? null : ok ? Math.round((v as number) * 10) / 10 : null);
   };
@@ -35,10 +38,12 @@ export const CouleurChamp: React.FC<{
       enterKeyHint="done"
       aria-label={libelle}
       placeholder={courante == null ? 'EBC' : fr(courante, 1).replace(',0', '')}
-      className={className}
+      className={`${className}${ko ? ' fer-ebc-ko' : ''}`}
+      aria-invalid={ko || undefined}
+      title={ko ? 'La couleur va de 1 à 1500 EBC' : undefined}
       style={ok ? { background: teinte(v as number), color: texteSurTeinte(v as number), borderStyle: 'solid', borderColor: 'rgb(var(--cave-50))' } : undefined}
       value={t}
-      onChange={(e) => setT(e.target.value)}
+      onChange={(e) => { setT(e.target.value); setKo(false); }}
       onKeyDown={(e) => {
         if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); finir('ok'); }
         else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); finir('echap'); }

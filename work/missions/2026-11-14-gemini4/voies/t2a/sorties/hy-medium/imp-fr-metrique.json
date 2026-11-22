@@ -1,0 +1,19 @@
+{
+ "cas": "imp-fr-metrique",
+ "usage": "import",
+ "half": "choix",
+ "cellule": "hy@medium",
+ "ok": true,
+ "ms": 17246,
+ "microChf": 44179,
+ "microDecembre": 44179,
+ "entree": 6702,
+ "sortie": 3372,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 0.7962962962962964,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "id 0.67 · vol 20 · fer 3/3 · hops 3/3 · levure ok · paliers 0/3",
+ "reponse": "{\"name\":\"Blonde des Alpes\",\"style\":\"Blonde Lager\",\"volumeL\":20,\"fermentables\":[{\"name\":\"Pilsner\",\"weightKg\":4.2,\"kind\":\"grain\",\"use\":\"empatage\"},{\"name\":\"Munich clair\",\"weightKg\":0.5,\"kind\":\"grain\",\"use\":\"empatage\"},{\"name\":\"Flocons d'avoine\",\"weightKg\":0.2,\"kind\":\"grain\",\"use\":\"empatage\"}],\"hops\":[{\"name\":\"Saaz\",\"weightG\":30,\"stage\":\"boil\",\"alpha\":3.5,\"timeMin\":60},{\"name\":\"Saaz\",\"weightG\":20,\"stage\":\"boil\",\"timeMin\":10},{\"name\":\"Hallertau Mittelfrüh\",\"weightG\":20,\"stage\":\"whirlpool\",\"timeMin\":0}],\"ogTarget\":1.05,\"waterNote\":\"\",\"yeast\":{\"name\":\"SafLager W-34/70\",\"lab\":\"Fermentis\",\"strain\":\"W-34/70\",\"technicalSource\":\"Fermentis\"}}"
+}

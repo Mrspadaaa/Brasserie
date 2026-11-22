@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>z1 — Nouvelle dépense · la pastille QR sur chaque champ (v0 froide, 01.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--att:#9C7020;--attt:#7F5B10;--attf:#FBF6EA;--hop:#567F45;--hopt:#3F6B2E;--hopf:#E3EDDC;--fin:#1F64A3;--finf:#E4EDF7;--stk:#4C6B2A;--malt:#C9933A;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;border-radius:10px}
+button:active{transform:scale(.97)}
+svg{display:block}
+[hidden]{display:none!important}
+.qrz1-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.qrz1-sheet{max-width:480px;margin:0 auto;min-height:100vh;position:relative;overflow-x:hidden}
+.qrz1-hd{position:sticky;top:0;z-index:5;background:var(--page);display:flex;align-items:center;gap:6px;height:40px;padding:0 6px 0 12px;border-bottom:1px solid var(--bord)}
+.qrz1-hd h1{flex:1;font-size:18px;font-weight:600;color:var(--t0)}
+.qrz1-ib{width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.qrz1-c{padding:8px 10px 60px;display:flex;flex-direction:column;gap:8px}
+.qrz1-just{display:flex;align-items:center;gap:8px;min-height:28px;color:var(--t2);font-size:14px}
+.qrz1-just span{flex:1}
+/* Le bandeau de la base (r2b) : fournisseur, date, total, « n lignes », barre. */
+.qrz1-band{background:var(--panel);border:1px solid var(--bord);border-radius:16px;padding:6px 10px;display:flex;flex-direction:column;gap:4px}
+.qrz1-l1{display:flex;align-items:baseline;gap:8px;min-width:0}
+.qrz1-vend{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-flex;align-items:center;gap:4px;min-width:0}
+.qrz1-vend small{font-family:var(--mono);font-weight:500;font-size:14px;color:var(--t1)}
+.qrz1-date{margin-left:auto;font-family:var(--mono);font-size:14px;color:var(--t1);display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.qrz1-l2{display:flex;align-items:center;gap:6px}
+.qrz1-tot{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:28px;font-weight:600;color:var(--t0);line-height:32px;display:inline-flex;align-items:center;gap:4px}
+.qrz1-dev{font-size:12px;color:var(--t2);display:inline-flex;align-items:center;gap:3px}
+.qrz1-nl{margin-left:auto;height:28px;padding:0 8px;border:1px solid var(--bordm);background:#fff;display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--t1);white-space:nowrap}
+.qrz1-nl b{font-family:var(--mono);font-weight:500}
+.qrz1-barre{display:flex;height:10px;border-radius:9px;overflow:hidden;border:1px solid var(--bord);margin-top:2px}
+.qrz1-barre i{display:block;height:100%;border-right:1px solid #fff}
+.qrz1-barre i:last-child{border-right:0}
+/* La pastille QR : le picto, et son état en pastille d'angle (comme le cube des lignes). */
+.qrz1-p{position:relative;width:16px;height:16px;flex-shrink:0;color:var(--t1)}
+.qrz1-p svg{width:16px;height:16px}
+.qrz1-p i{position:absolute;right:-4px;bottom:-4px;width:10px;height:10px;border-radius:50%;background:var(--hopt);display:flex;align-items:center;justify-content:center}
+.qrz1-p i svg{width:7px;height:7px}
+.qrz1-p[data-q="diff"]{color:var(--attt)}
+.qrz1-p[data-q="diff"] i{background:var(--attt)}
+.qrz1-p[data-q="off"]{color:var(--trait)}
+.qrz1-p[data-q="off"] i{background:#fff;border:1px solid var(--trait)}
+.qrz1-p[data-q="off"] i svg{color:var(--t2)}
+.qrz1-p[data-q="wait"]{color:var(--bordm);animation:qrz1-pulse 1s ease-in-out infinite}
+.qrz1-p[data-q="wait"] i{display:none}
+@keyframes qrz1-pulse{50%{opacity:.35}}
+button.qrz1-p{padding:0;border-radius:4px}
+.qrz1-tot .qrz1-p{width:18px;height:18px}.qrz1-tot .qrz1-p>svg{width:18px;height:18px}
+/* La ligne du QR dans le bandeau, seulement quand il a quelque chose à dire d'autre que « confirmé ». */
+.qrz1-ql{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2);min-height:20px}
+.qrz1-ql b{color:var(--t1);font-weight:600}
+/* Le désaccord : lu et QR côte à côte, chacun se choisit ; le champ ne bouge qu'au toucher. */
+.qrz1-deux{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:2px 0 2px}
+.qrz1-deux button{height:36px;border:1.5px solid var(--bordm);background:#fff;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--t2)}
+.qrz1-deux button b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:16px;font-weight:600;color:var(--t0)}
+.qrz1-deux button[data-src="qr"]{border-color:var(--att);background:var(--attf)}
+.qrz1-deux button[aria-pressed="true"]{border-color:var(--t0);background:var(--t0);color:#ddd}
+.qrz1-deux button[aria-pressed="true"] b{color:#fff}
+/* Les chips numérotées de la base. */
+.qrz1-chips{display:flex;flex-wrap:wrap;gap:6px}
+.qrz1-chip{height:28px;padding:0 8px;border:1px dashed var(--att);background:var(--attf);display:inline-flex;align-items:center;gap:5px;font-size:14px;color:var(--t0);white-space:nowrap}
+.qrz1-chip i{width:18px;height:18px;border-radius:50%;border:1px dashed var(--att);color:var(--attt);font-style:normal;font-family:var(--mono);font-size:12px;display:flex;align-items:center;justify-content:center}
+.qrz1-chip em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--t1)}
+.qrz1-chip small{font-size:12px;color:var(--attt);border:1px dashed var(--att);border-radius:9px;padding:0 5px;line-height:15px}
+.qrz1-chip.qrz1-fait{border-style:solid;border-color:var(--bord);background:#fff;color:var(--t2);text-decoration:line-through}
+.qrz1-chip.qrz1-fait i{background:var(--hopt);border:0;color:#fff;text-decoration:none}
+/* La preuve de la base, ouverte par « n lignes » ; une ligne de plus : celle du QR. */
+.qrz1-preuve{border:1px solid var(--bord);border-radius:16px;padding:6px 10px;display:flex;flex-direction:column}
+.qrz1-preuve h2{font-size:14px;font-weight:600;color:var(--t0);min-height:24px;display:flex;align-items:center}
+.qrz1-row{display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:6px;min-height:28px;border-bottom:1px solid var(--bord);font-size:14px;color:var(--t1)}
+.qrz1-row:last-of-type{border-bottom:0}
+.qrz1-row b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;color:var(--t0)}
+.qrz1-row .qrz1-ok{color:var(--hopt)}
+.qrz1-row.qrz1-qr{background:var(--panel);margin:0 -10px;padding:0 10px;grid-template-columns:18px 1fr auto}
+.qrz1-pay{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:2px 6px;padding:6px 0 2px;font-size:12px;color:var(--t2)}
+.qrz1-pay .qrz1-cp{grid-row:1/3}
+.qrz1-pay b{font-family:var(--mono);font-weight:500;color:var(--t1);font-size:12px}
+.qrz1-cp{height:24px;padding:0 8px;border:1px solid var(--bordm);background:#fff;font-size:12px;color:var(--t1)}
+.qrz1-cnt{display:flex;flex-wrap:wrap;gap:4px 10px;padding-top:6px;font-size:12px;color:var(--t1)}
+.qrz1-cnt span{display:inline-flex;align-items:center;gap:3px}
+.qrz1-cnt b{font-family:var(--mono);font-weight:500}
+/* Le règlement : la carte de la base. */
+.qrz1-reg{border:1px solid var(--bord);border-radius:16px;padding:6px 10px;display:flex;flex-direction:column;gap:6px}
+.qrz1-reg>div{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--t2);white-space:nowrap}
+.qrz1-reg b{font-family:var(--mono);font-weight:500;color:var(--t0)}
+.qrz1-sup{font-size:12px;color:var(--attt);border:1px dashed var(--att);border-radius:9px;padding:0 5px;line-height:15px}
+.qrz1-seg{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:28px;margin-left:auto}
+.qrz1-seg button{padding:0 7px;font-size:14px;color:var(--t1);border-radius:0;white-space:nowrap}
+.qrz1-seg button[aria-pressed="true"]{background:var(--t0);color:#fff;font-weight:600}
+/* Les lignes de la base, puis une bande figée. */
+.qrz1-lt{display:flex;align-items:baseline;gap:8px;padding:2px 0 0;border-top:1px solid var(--bord);font-size:14px;color:var(--t2)}
+.qrz1-lt b{color:var(--t1);font-weight:600}.qrz1-lt span{margin-left:auto;color:var(--t2)}
+.qrz1-li{display:grid;grid-template-columns:22px 1fr auto;align-items:center;column-gap:8px;min-height:40px;padding:2px 4px;border-bottom:1px solid var(--bord)}
+.qrz1-li .qrz1-n{font-size:16px;color:var(--t0);display:flex;flex-direction:column}
+.qrz1-li .qrz1-n small{font-family:var(--mono);font-size:12px;color:var(--t2)}
+.qrz1-li .qrz1-a{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:500;color:var(--t0)}
+.qrz1-cube{width:20px;height:20px;color:var(--t1);position:relative}
+.qrz1-cube i{position:absolute;right:-3px;bottom:-3px;width:9px;height:9px;border-radius:50%;background:var(--t0)}
+.qrz1-cube.qrz1-neuf i{background:var(--stk)}
+.qrz1-fade{height:120px;background:linear-gradient(#fff,rgba(255,255,255,0)),repeating-linear-gradient(0deg,var(--panel) 0 32px,#fff 32px 40px);border-radius:0 0 16px 16px;opacity:.7}
+.qrz1-pli{display:flex;align-items:center;gap:8px;min-height:32px;border-top:1px solid var(--bord);font-size:14px;color:var(--t2)}
+.qrz1-pli span{flex:1}.qrz1-pli em{font-style:normal;color:var(--t1)}
+.qrz1-sk{height:14px;border-radius:7px;background:var(--haut);animation:qrz1-pulse 1s ease-in-out infinite}
+/* Le pied de la base. */
+.qrz1-pied{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.96);border-top:1px solid var(--bord);font-size:14px;color:var(--t2)}
+.qrz1-go{margin-left:auto;height:32px;padding:0 12px;background:var(--t0);color:#fff;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+@media (min-width:900px){
+  body{background:#E9E9E9}
+  .qrz1-sheet{max-width:1200px;margin:16px auto;background:#fff;border-radius:16px;box-shadow:0 12px 40px -20px rgba(0,0,0,.4);min-height:0;overflow:hidden}
+  .qrz1-c{display:grid;grid-template-columns:400px 1fr;grid-template-rows:auto auto auto auto 1fr;column-gap:16px;padding:10px 16px 56px}
+  .qrz1-c>*{grid-column:1}
+  .qrz1-c>.qrz1-lignes{grid-column:2;grid-row:1/7;align-self:start}
+  .qrz1-preuve{display:flex!important}
+  .qrz1-pied{position:sticky}
+  .qrz1-fade{display:none}
+}
+</style></head>
+<body><div class="qrz1-sheet" id="qrz1-root" data-etat="confirme">
+<header class="qrz1-hd"><h1>Nouvelle dépense</h1>
+  <span class="qrz1-ib" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.65"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3M7.5 9h5M7.5 12h5"/></svg></span>
+  <button class="qrz1-ib" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+</header>
+<main class="qrz1-c">
+  <div class="qrz1-just"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3"/></svg><span>Voir le justificatif</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5l4 4 4-4"/></svg></div>
+
+  <!-- Le bandeau : la base, et une pastille QR sur chaque champ que le QR porte. -->
+  <section class="qrz1-band" data-dp="bandeau">
+    <div class="qrz1-l1">
+      <span class="qrz1-vend"><span>Malterie Fictive SA</span><button class="qrz1-p" data-pastille="creancier" data-booster="pastille-qr" aria-label="Créancier confirmé par le QR"></button><small>· F-1001</small><button class="qrz1-p" data-pastille="numero" data-booster="pastille-qr" aria-label="N° de facture confirmé par le QR"></button></span>
+      <span class="qrz1-date">12.10.2026<button class="qrz1-p" data-pastille="date" data-booster="pastille-qr" aria-label="Date confirmée par le QR"></button></span>
+    </div>
+    <div class="qrz1-l2">
+      <span class="qrz1-tot"><span id="qrz1-total">110,40</span><button class="qrz1-p" data-pastille="montant" data-booster="pastille-qr" aria-label="Montant confirmé par le QR"></button></span>
+      <span class="qrz1-dev">CHF<button class="qrz1-p" data-pastille="devise" data-booster="pastille-qr" aria-label="Devise confirmée par le QR"></button></span>
+      <button class="qrz1-nl" data-booster="ouvrir-preuve" data-geste="ouvrir" aria-expanded="false" aria-label="Détails de la lecture"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--hopt)" stroke-width="1.7"><path d="M2 7l3.5 3.5L12 3"/></svg><b id="qrz1-nbl">7</b>&nbsp;lignes</button>
+    </div>
+    <div class="qrz1-ql" data-ql="partiel" hidden><b>QR sans montant</b> · devise et créancier confirmés</div>
+    <div class="qrz1-ql" data-ql="illisible" hidden><b>QR vu, illisible</b> · la lecture seule fait foi</div>
+    <div class="qrz1-ql" data-ql="lecture" hidden><b>QR lu en 0,5 s</b> · lignes en lecture…</div>
+    <div class="qrz1-deux" data-ql="contredit" data-booster="deux-valeurs" hidden>
+      <button data-src="lu" aria-pressed="false">lu <b>110,04</b></button>
+      <button data-src="qr" data-geste="prendre-qr" aria-pressed="false">QR <b>110,40</b></button>
+    </div>
+    <div class="qrz1-barre" aria-label="Les 7 lignes, à la largeur de leur montant" data-booster="barre-lignes">
+      <i style="flex-grow:52.5;background:var(--malt)"></i><i style="flex-grow:18;background:var(--malt)"></i><i style="flex-grow:6.4;background:var(--malt)"></i><i style="flex-grow:9.8;background:var(--hop)"></i><i style="flex-grow:9.2;background:var(--fin)"></i><i style="flex-grow:3.75;background:var(--bordm)"></i><i style="flex-grow:10.75;background:var(--bordm)"></i>
+    </div>
+  </section>
+
+  <!-- Les points numérotés de la base ; en désaccord, le QR en est un, le premier (l'argent). -->
+  <div class="qrz1-chips" data-dp="chips">
+    <button class="qrz1-chip" data-chip="qr" data-booster="chip-qr" hidden><i>1</i>Total <em>110,04 ≠ 110,40</em></button>
+    <button class="qrz1-chip"><i data-n="1">1</i>Payé <em>12.10</em><small>supposée</small></button>
+    <button class="qrz1-chip"><i data-n="2">2</i>mouture <em>×1 +3,75</em></button>
+  </div>
+
+  <!-- La preuve de la base, à un toucher sur « 7 lignes » ; la ligne du QR y vit, avec ce qu'il donne pour payer. -->
+  <section class="qrz1-preuve" data-dp="preuve" id="qrz1-preuve" hidden>
+    <h2 id="qrz1-ph">Lecture vérifiée</h2>
+    <div class="qrz1-row"><svg class="qrz1-ok" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 7l3.5 3.5L12 3"/></svg><span>Somme des lignes = imprimé</span><b>110,40</b></div>
+    <div class="qrz1-row"><svg class="qrz1-ok" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 7l3.5 3.5L12 3"/></svg><span>Quantité × prix, au centime</span><b>7/7</b></div>
+    <div class="qrz1-row qrz1-qr" data-pr="confirme"><span class="qrz1-p" data-q="ok"></span><span>QR-facture = lecture : montant, devise, n°, date</span><b>4/4</b></div>
+    <div class="qrz1-row qrz1-qr" data-pr="contredit" hidden><span class="qrz1-p" data-q="diff"></span><span>QR-facture : montant ≠ lu ; devise, n°, date d'accord</span><b>3/4</b></div>
+    <div class="qrz1-row qrz1-qr" data-pr="partiel" hidden><span class="qrz1-p" data-q="ok"></span><span>QR sans montant : devise et créancier d'accord</span><b>2/2</b></div>
+    <div class="qrz1-row qrz1-qr" data-pr="illisible" hidden><span class="qrz1-p" data-q="off"></span><span>QR vu, illisible (tampon) · rien contrôlé</span><b>—</b></div>
+    <div class="qrz1-row qrz1-qr" data-pr="sans" hidden><span class="qrz1-p" data-q="off"></span><span>Pas de QR sur cette pièce</span><b>—</b></div>
+    <div class="qrz1-row qrz1-qr" data-pr="lecture" hidden><span class="qrz1-p" data-q="wait"></span><span>QR lu · lignes en lecture…</span><b>0,5 s</b></div>
+    <div class="qrz1-pay" data-pay><span>IBAN</span><b>CH93 0076 2011 6238 5295 7</b><button class="qrz1-cp" data-booster="copier-iban">Copier</button><span>réf.</span><b>21 00000 00003 13947 14300 09017 · 30 jours</b></div>
+    <div class="qrz1-cnt"><span><span class="qrz1-cube" style="width:20px;height:20px;transform:scale(.7);margin:-3px"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg></span><b>4</b> reliés</span><span><b>1</b> nouveau</span><span><b>1</b> mouture</span><span><b>1</b> sans stock</span></div>
+  </section>
+
+  <!-- Le règlement de la base. -->
+  <section class="qrz1-reg" data-dp="reglement">
+    <div><span>Payé le</span><b>12.10.2026</b><span class="qrz1-sup">supposée</span><div class="qrz1-seg" data-booster="bascule-reglement"><button aria-pressed="true">Déjà payé</button><button aria-pressed="false">À payer</button></div></div>
+  </section>
+
+  <!-- Les lignes de la base (quatre, puis une bande figée). -->
+  <section class="qrz1-lignes" data-mots="lignes">
+    <div class="qrz1-lt"><b>Lignes de la facture</b> · 7</div>
+    <div class="qrz1-li"><span class="qrz1-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz1-n">Maris Otter<small>25 kg</small></span><span class="qrz1-a">52,50</span></div>
+    <div class="qrz1-li"><span class="qrz1-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz1-n">Pilsner Malz<small>10 kg</small></span><span class="qrz1-a">18,00</span></div>
+    <div class="qrz1-li"><span class="qrz1-cube qrz1-neuf"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz1-n">Carafa II<small>2 kg</small></span><span class="qrz1-a">6,40</span></div>
+    <div class="qrz1-li"><span class="qrz1-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz1-n">Citra 12,5 %<small>100 g</small></span><span class="qrz1-a">9,80</span></div>
+    <div class="qrz1-li"><span class="qrz1-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz1-n">Safale US-05<small>2 sachets</small></span><span class="qrz1-a">9,20</span></div>
+    <div class="qrz1-li"><span class="qrz1-cube" style="color:var(--t2)"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 3v8a3 3 0 0 0 3 3h8"/><path d="M13 11l3 3-3 3"/></svg></span><span class="qrz1-n">Mouture<small>25 kg</small></span><span class="qrz1-a">3,75</span></div>
+    <div class="qrz1-li"><span class="qrz1-cube" style="color:var(--t2)"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h10l4 4v5H3z"/><path d="M13 6v4h4M6 15v1.5M14 15v1.5"/></svg></span><span class="qrz1-n">Port<small>1 ×</small></span><span class="qrz1-a">10,75</span></div>
+    <div class="qrz1-lt" style="border-top:0"><span style="margin-left:0">Détail</span><b class="qrz1-m" style="margin-left:auto">110,40 / 110,40</b></div>
+    <div class="qrz1-pli"><span>Pour quoi ?</span><small class="qrz1-sup">proposé</small><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5l4 4 4-4"/></svg></div>
+    <div class="qrz1-pli"><span>Fournisseur et catégorie</span><em>Malts</em><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5l4 4 4-4"/></svg></div>
+    <div class="qrz1-pli"><span>Référence et TVA</span><em class="qrz1-m">F-1001 · 8,1 %</em><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5l4 4 4-4"/></svg></div>
+  </section>
+</main>
+<footer class="qrz1-pied"><span id="qrz1-drv">Drive prêt</span><button class="qrz1-go" data-booster="action-unique"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 7l3.5 3.5L12 3"/></svg>Confirmer</button></footer>
+</div>
+<template id="qrz1-tpl-qr"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="5" height="5"/><rect x="3.3" y="3.3" width="1.4" height="1.4" fill="currentColor" stroke="none"/><rect x="9.5" y="1.5" width="5" height="5"/><rect x="11.3" y="3.3" width="1.4" height="1.4" fill="currentColor" stroke="none"/><rect x="1.5" y="9.5" width="5" height="5"/><rect x="3.3" y="11.3" width="1.4" height="1.4" fill="currentColor" stroke="none"/><rect x="9.5" y="9.5" width="1.6" height="1.6" fill="currentColor" stroke="none"/><rect x="12.9" y="9.5" width="1.6" height="1.6" fill="currentColor" stroke="none"/><rect x="11.2" y="11.2" width="1.6" height="1.6" fill="currentColor" stroke="none"/><rect x="9.5" y="12.9" width="1.6" height="1.6" fill="currentColor" stroke="none"/><rect x="12.9" y="12.9" width="1.6" height="1.6" fill="currentColor" stroke="none"/></svg></template>
+<template id="qrz1-tpl-ok"><i><svg viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="3"><path d="M2 7l3.5 3.5L12 3"/></svg></i></template>
+<template id="qrz1-tpl-diff"><i><svg viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="3"><path d="M3 5h8M3 9h8M9 3l-4 8"/></svg></i></template>
+<template id="qrz1-tpl-off"><i><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 3l8 8M11 3l-8 8"/></svg></i></template>
+<script>
+(function(){
+  var root=document.getElementById('qrz1-root');
+  var etat=new URLSearchParams(location.search).get('etat')||'confirme';
+  if(['confirme','contredit','partiel','illisible','sans','lecture'].indexOf(etat)<0)etat='confirme';
+  root.setAttribute('data-etat',etat);
+  // Ce que le QR porte, par état : la pastille n'est posée que sur un champ qu'il porte vraiment (honnêteté).
+  var PORTE={confirme:{montant:'ok',devise:'ok',numero:'ok',date:'ok',creancier:'ok'},
+    contredit:{montant:'diff',devise:'ok',numero:'ok',date:'ok',creancier:'ok'},
+    partiel:{devise:'ok',creancier:'ok'},
+    illisible:{montant:'off'},
+    sans:{},
+    lecture:{montant:'wait',devise:'wait',numero:'wait',date:'wait',creancier:'wait'}};
+  function dessine(el,q){
+    el.textContent='';
+    el.appendChild(document.getElementById('qrz1-tpl-qr').content.cloneNode(true));
+    var t=q==='ok'?'qrz1-tpl-ok':q==='diff'?'qrz1-tpl-diff':q==='off'?'qrz1-tpl-off':null;
+    if(t)el.appendChild(document.getElementById(t).content.cloneNode(true));
+    el.setAttribute('data-q',q);
+  }
+  var porte=PORTE[etat];
+  Array.prototype.forEach.call(root.querySelectorAll('[data-pastille]'),function(b){
+    var q=porte[b.getAttribute('data-pastille')];
+    if(!q){b.hidden=true;return;}
+    dessine(b,q);
+    if(q==='off')b.setAttribute('aria-label','QR vu, illisible');
+    if(q==='diff')b.setAttribute('aria-label','Montant du QR différent du montant lu');
+    if(q==='wait')b.setAttribute('aria-label','Lu par le QR, lignes en lecture');
+    b.addEventListener('click',ouvrePreuve);
+  });
+  Array.prototype.forEach.call(root.querySelectorAll('.qrz1-preuve .qrz1-p'),function(s){dessine(s,s.getAttribute('data-q'));});
+  Array.prototype.forEach.call(root.querySelectorAll('[data-ql]'),function(l){l.hidden=l.getAttribute('data-ql')!==etat;});
+  Array.prototype.forEach.call(root.querySelectorAll('[data-pr]'),function(l){l.hidden=l.getAttribute('data-pr')!==etat;});
+  var pay=root.querySelector('[data-pay]');
+  pay.hidden=!(etat==='confirme'||etat==='contredit'||etat==='partiel');
+  if(etat==='contredit'){
+    document.getElementById('qrz1-total').textContent='110,04';
+    document.getElementById('qrz1-ph').textContent='Lecture à confirmer';
+    var chipQr=root.querySelector('[data-chip="qr"]');chipQr.hidden=false;
+    Array.prototype.forEach.call(root.querySelectorAll('[data-n]'),function(i){i.textContent=String(Number(i.getAttribute('data-n'))+1);});
+    Array.prototype.forEach.call(root.querySelectorAll('.qrz1-deux button'),function(b){
+      b.addEventListener('click',function(){
+        var src=b.getAttribute('data-src');
+        Array.prototype.forEach.call(root.querySelectorAll('.qrz1-deux button'),function(o){o.setAttribute('aria-pressed',String(o===b));});
+        document.getElementById('qrz1-total').textContent=src==='qr'?'110,40':'110,04';
+        chipQr.classList.add('qrz1-fait');
+        var p=root.querySelector('[data-pastille="montant"]');dessine(p,src==='qr'?'ok':'diff');
+      });
+    });
+    chipQr.addEventListener('click',function(){root.querySelector('.qrz1-deux').scrollIntoView({block:'center'});});
+  }
+  if(etat==='illisible'){document.getElementById('qrz1-ph').textContent='Lecture à confirmer';}
+  if(etat==='lecture'){
+    document.getElementById('qrz1-nbl').textContent='…';
+    document.getElementById('qrz1-ph').textContent='Lecture en cours';
+    root.querySelector('.qrz1-barre').hidden=true;
+    Array.prototype.forEach.call(root.querySelectorAll('.qrz1-li'),function(li){var n=li.querySelector('.qrz1-n'),a=li.querySelector('.qrz1-a');n.innerHTML='';a.innerHTML='';var s1=document.createElement('span');s1.className='qrz1-sk';s1.style.width='60%';var s2=document.createElement('span');s2.className='qrz1-sk';s2.style.width='40px';n.appendChild(s1);a.appendChild(s2);});
+    root.querySelector('.qrz1-chips').hidden=true;
+    root.querySelector('.qrz1-lt').appendChild(document.createTextNode(' · lecture…'));
+  }
+  var nl=root.querySelector('.qrz1-nl'),pr=document.getElementById('qrz1-preuve');
+  function ouvrePreuve(){pr.hidden=false;nl.setAttribute('aria-expanded','true');pr.scrollIntoView({block:'nearest'});}
+  nl.addEventListener('click',function(){if(pr.hidden)ouvrePreuve();else{pr.hidden=true;nl.setAttribute('aria-expanded','false');}});
+  var cp=root.querySelector('[data-booster="copier-iban"]');
+  cp.addEventListener('click',function(){cp.textContent='Copié';setTimeout(function(){cp.textContent='Copier';},1200);});
+  Array.prototype.forEach.call(root.querySelectorAll('.qrz1-seg button'),function(b){b.addEventListener('click',function(){Array.prototype.forEach.call(b.parentNode.children,function(o){o.setAttribute('aria-pressed',String(o===b));});});});
+  if(matchMedia('(min-width:900px)').matches){pr.hidden=false;nl.setAttribute('aria-expanded','true');}
+})();
+</script>
+</body></html>

@@ -1,0 +1,8 @@
+BR-27 390-clair {"etapes":[true,true],"champ":"","invalide":"true","alertes":["« -1 » : une valeur négative n’existe pas ici. Le champ reste vide."]}
+TE-36 390-clair {"fiche":true,"sw":"Inclure dans mes prévisions","modif":true,"incl":"Inclure dans mes prévisions","erreurs":[]}
+BR-27 1280-cave {"etapes":[true,true],"champ":"","invalide":"true","alertes":["« -1 » : une valeur négative n’existe pas ici. Le champ reste vide."]}
+TE-36 1280-cave {"fiche":true,"sw":"Inclure dans mes prévisions","modif":true,"incl":"Inclure dans mes prévisions","erreurs":[]}
+BR-27 390-cave {"etapes":[true,true],"champ":"","invalide":"true","alertes":["« -1 » : une valeur négative n’existe pas ici. Le champ reste vide."]}
+TE-36 390-cave {"fiche":true,"sw":"Inclure dans mes prévisions","modif":true,"incl":"Inclure dans mes prévisions","erreurs":[]}
+BR-27 1280-clair {"etapes":[true,true],"champ":"","invalide":"true","alertes":["« -1 » : une valeur négative n’existe pas ici. Le champ reste vide."]}
+TE-36 1280-clair {"fiche":true,"sw":"Inclure dans mes prévisions","modif":true,"incl":"Inclure dans mes prévisions","erreurs":[]}

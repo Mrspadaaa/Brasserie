@@ -1,0 +1,55 @@
+copie : C:/Users/mrspa/AppData/Local/Temp/qr-app-copie
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/AppData/Local/Temp/qr-app-copie[39m
+
+[90mstdout[2m | tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m[2m(a) majeur 1 : « Qté × prix n/n » lit sa frappe, pas le serveur[2m > [22m[2m(a’) le même geste sur une lecture ordinaire, sans lenteur : « 7/7 » coché avant, « 6/7 » sans coche après
+[22m[39mWarning: Please use the `legacy` build in Node.js environments.
+
+ [31m❯[39m tests/unit/depense/lecture-d/finitions.test.tsx [2m([22m[2m17 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 1978[2mms[22m[39m
+   [33m[2m✓[22m[39m (a) majeur 1 : « Qté × prix n/n » lit sa frappe, pas le serveur[2m > [22m(a) il tape 12 dans la quantité de Pilsner pendant l’attente : après le final, « Qté × prix 6/7 », sans coche [33m 326[2mms[22m[39m
+   [32m✓[39m (a) majeur 1 : « Qté × prix n/n » lit sa frappe, pas le serveur[2m > [22m(a’) le même geste sur une lecture ordinaire, sans lenteur : « 7/7 » coché avant, « 6/7 » sans coche après[32m 246[2mms[22m[39m
+[31m   [31m×[31m (a’’) devise étrangère : le récap garde les contrôles de la lecture[2m > [22mune lecture en EUR à 7 lignes justes : « Qté × prix 7/7 » avec sa coche (les montants de lignes n’existent pas en CHF : jamais « 0/7 »)[39m[32m 132[2mms[22m[39m
+[31m     → expected '·Qté × prix0/7' to match /Qté × prix\s*7\/7/7[39m
+   [32m✓[39m (b), (c) majeur 2 : une cellule d’en-tête corrigée porte sa marque, ou n’est pas comptée[2m > [22m(b) une 3.8 qui corrige la TVA seule : la case TVA en bleu, l’ancienne valeur barrée, puce « 1 corrigée »[32m 88[2mms[22m[39m
+   [32m✓[39m (b), (c) majeur 2 : une cellule d’en-tête corrigée porte sa marque, ou n’est pas comptée[2m > [22m(b’) le règlement corrigé par la 3.8 : sa case en bleu, l’ancien état barré, compté[32m 72[2mms[22m[39m
+   [32m✓[39m (b), (c) majeur 2 : une cellule d’en-tête corrigée porte sa marque, ou n’est pas comptée[2m > [22m(c) un champ sans case (n° de facture) corrigé : appliqué, mais pas compté, aucune puce[32m 69[2mms[22m[39m
+   [32m✓[39m (d) mineur 2 : le barré ne montre que ce qui a changé[2m > [22m(d) quantité tapée par lui, seul le prix corrigé : « × 1,45 », jamais « 12 Kg × 1,45 »[32m 185[2mms[22m[39m
+   [32m✓[39m (d) mineur 2 : le barré ne montre que ce qui a changé[2m > [22m(d’) pur : quantité à lui + prix corrigé → « × 1,45 » ; quantité inchangée → « 10 Kg × 1,45 » ; quantité corrigée → l’ancienne[32m 0[2mms[22m[39m
+   [32m✓[39m (e) hors ligne pendant la 3.8 : relancer une fois au retour du réseau[2m > [22mle fil et la roue restent pendant la coupure ; au retour, UN seul second appel, et le final s’applique[32m 261[2mms[22m[39m
+   [32m✓[39m (e) hors ligne pendant la 3.8 : relancer une fois au retour du réseau[2m > [22mla relance échoue : la forme de la 3.8 coupée (« 2 lectures », « Lecture coupée »), et pas de troisième appel[32m 156[2mms[22m[39m
+   [32m✓[39m (e) hors ligne pendant la 3.8 : relancer une fois au retour du réseau[2m > [22men ligne, un échec de la 3.8 ne relance rien : la fin de partie est immédiate[32m 62[2mms[22m[39m
+   [32m✓[39m (f) le message du serveur après un provisoire sans final[2m > [22m(f) flux fermé sans résultat : la fin de partie dit le message, à côté de « Lecture coupée »[32m 68[2mms[22m[39m
+   [32m✓[39m (g) pièce HT : les deux phrases restent visibles, la plus grave d’abord[2m > [22m(g) « Les totaux HT + TVA ne correspondent pas… » puis « Lignes imprimées hors taxe, passées au TTC. »[32m 57[2mms[22m[39m
+   [32m✓[39m (g) pièce HT : les deux phrases restent visibles, la plus grave d’abord[2m > [22m(g’) seule, la phrase HT reste visible[32m 53[2mms[22m[39m
+   [32m✓[39m (h) sa saisie, cellule par cellule[2m > [22m(h) le focus posé dans une rangée sans changer la valeur : la 3.8 corrige toute la rangée (nom et quantité)[32m 96[2mms[22m[39m
+   [32m✓[39m (h) sa saisie, cellule par cellule[2m > [22m(h’) la quantité changée : seule la quantité est gardée, le nom et le prix sont corrigés[32m 102[2mms[22m[39m
+   [32m✓[39m (h) sa saisie, cellule par cellule[2m > [22m(h’’) pur : `registres.focus` ne rend plus une rangée « touchée »[32m 3[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/finitions.test.tsx[2m > [22m(a’’) devise étrangère : le récap garde les contrôles de la lecture[2m > [22mune lecture en EUR à 7 lignes justes : « Qté × prix 7/7 » avec sa coche (les montants de lignes n’existent pas en CHF : jamais « 0/7 »)
+[31m[1mAssertionError[22m: expected '·Qté × prix0/7' to match /Qté × prix\s*7\/7/7[39m
+
+[32m- Expected:[39m 
+/Qté × prix\s*7\/7/
+
+[31m+ Received:[39m 
+"·Qté × prix0/7"
+
+[36m [2m❯[22m tests/unit/depense/lecture-d/finitions.test.tsx:[2m98:32[22m[39m
+    [90m 96| [39m    [35mawait[39m [34marrive[39m()[33m;[39m [35mawait[39m [34mattendre[39m()[33m;[39m
+    [90m 97| [39m    [35mconst[39m rangee [33m=[39m [34mrangeePreuve[39m(view[33m,[39m [32m'Qté × prix'[39m)[33m;[39m
+    [90m 98| [39m    [34mexpect[39m(rangee[33m.[39mtextContent)[33m.[39m[34mtoMatch[39m([36m/Qté × prix\s*7\/7/[39m)[33m;[39m
+    [90m   | [39m                               [31m^[39m
+    [90m 99| [39m    [34mexpect[39m(rangee[33m.[39m[34mquerySelector[39m([32m'svg'[39m))[33m.[39mnot[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m100| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m16 passed[39m[22m[90m (17)[39m
+[2m   Start at [22m 16:23:51
+[2m   Duration [22m 3.78s[2m (transform 612ms, setup 101ms, collect 934ms, tests 1.98s, environment 577ms, prepare 56ms)[22m
+

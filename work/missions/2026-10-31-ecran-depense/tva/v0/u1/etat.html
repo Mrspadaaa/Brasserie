@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>u1 · TVA, troisième lecture de la Synthèse</title>
+<style>
+:root{--tvau1-ink:#111;--tvau1-mute:#666;--tvau1-line:#DDDDDD;--tvau1-surf:#F5F5F5;--tvau1-surf2:#EBEBEB;--tvau1-fin:#1F64A3;--tvau1-red:#7A5A12;--tvau1-redf:#C99A2E;--tvau1-nor:#2F5FB0;--tvau1-norf:#4F7FD0;--tvau1-att:#8A5A00;--tvau1-attf:#E3B55D;--tvau1-etr:#6A4FB0;--tvau1-ok:#4C6B2A;--tvau1-mono:"IBM Plex Mono",Consolas,ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.3;color:var(--tvau1-ink);background:#fff}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.tvau1-mono{font-family:var(--tvau1-mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.tvau1-head{border-bottom:1px solid var(--tvau1-line);background:#fff}
+.tvau1-head-in{max-width:880px;margin:0 auto;height:40px;display:flex;align-items:center;gap:8px;padding:0 8px}
+.tvau1-logo{width:30px;height:30px;border-radius:10px;background:#111;color:#fff;display:grid;place-items:center}
+.tvau1-brand{font-size:18px;font-weight:500;flex:1}
+.tvau1-hbtn{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#333}
+.tvau1-hbtn.tvau1-filled{background:var(--tvau1-surf2);border:1px solid #BFBFBF}
+.tvau1-wrap{max-width:872px;margin:0 auto;padding:0 12px 76px}
+.tvau1-tabs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--tvau1-line)}
+.tvau1-tabs button{height:34px;font-size:14px;color:#333;border-bottom:2px solid transparent}
+.tvau1-tabs button[aria-selected=true]{color:var(--tvau1-fin);border-color:var(--tvau1-fin);background:rgba(31,100,163,.05);font-weight:600}
+.tvau1-bar{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--tvau1-line)}
+.tvau1-bar h2{font-size:16px;font-weight:600;margin:0}
+.tvau1-seg{display:flex;gap:2px;margin-left:auto}
+.tvau1-seg button{height:28px;padding:0 10px;border-radius:10px;border:1px solid transparent;font-size:13px;color:#333}
+.tvau1-seg button[aria-pressed=true]{background:var(--tvau1-surf2);border-color:#BFBFBF;color:var(--tvau1-fin);font-weight:600}
+.tvau1-gear{width:28px;height:28px;display:grid;place-items:center;color:#333}
+.tvau1-offline{display:flex;align-items:center;gap:6px;margin:8px 0 0;padding:6px 10px;border-radius:10px;background:var(--tvau1-surf);font-size:13px;color:#333}
+.tvau1-per{display:flex;align-items:center;gap:4px;padding:6px 0 2px}
+.tvau1-step{width:28px;height:28px;display:grid;place-items:center;color:#333;border-radius:10px}
+.tvau1-per strong{font-family:var(--tvau1-mono);font-size:15px}
+.tvau1-per .tvau1-span{color:var(--tvau1-mute);font-size:13px}
+.tvau1-per .tvau1-n{margin-left:auto;font-size:13px;color:var(--tvau1-mute)}
+.tvau1-ans{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;padding:4px 0 8px}
+.tvau1-ans small{display:block;font-size:13px;color:#333}
+.tvau1-big{font-family:var(--tvau1-mono);font-variant-numeric:tabular-nums;font-size:28px;font-weight:600;line-height:32px;letter-spacing:-.02em}
+.tvau1-big em{font-style:normal;font-size:16px;font-weight:500;margin-left:4px}
+.tvau1-big.tvau1-range{font-size:22px}
+.tvau1-side{text-align:right;font-size:13px;color:var(--tvau1-mute);line-height:1.35}
+.tvau1-side b{font-family:var(--tvau1-mono);color:#111;font-weight:600}
+.tvau1-rate{display:flex;height:14px;border-radius:7px;overflow:hidden;background:#fff}
+.tvau1-rate i{display:block;height:100%}
+.tvau1-hatch{background:repeating-linear-gradient(135deg,#B8B8B8 0 3px,#fff 3px 6px)}
+.tvau1-doubt{background:repeating-linear-gradient(135deg,var(--tvau1-attf) 0 3px,#fff 3px 6px)}
+.tvau1-leg{display:flex;flex-wrap:wrap;gap:4px 14px;padding:6px 0 10px;font-size:13px}
+.tvau1-leg span{display:inline-flex;align-items:center;gap:5px}
+.tvau1-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.tvau1-leg b{font-family:var(--tvau1-mono);font-weight:600}
+.tvau1-panel{background:var(--tvau1-surf);border-radius:16px;padding:2px 10px 0;margin:8px 0 6px}
+.tvau1-list{border-top:0}
+.tvau1-row{position:relative;isolation:isolate;display:grid;grid-template-columns:1fr 92px 16px;align-items:center;gap:8px;width:100%;min-height:44px;padding:5px 0;border-bottom:1px solid var(--tvau1-line);text-align:left}
+.tvau1-db{position:absolute;left:0;top:3px;bottom:3px;z-index:-1;border-radius:0 10px 10px 0}
+.tvau1-dbh{background:repeating-linear-gradient(135deg,#D6D6D6 0 3px,#fff 3px 7px)}
+.tvau1-row .tvau1-nm{display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px;min-width:0}
+.tvau1-row .tvau1-sub{display:block;font-size:12px;color:#4A4A4A;margin-top:1px}
+.tvau1-row .tvau1-v{font-family:var(--tvau1-mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;text-align:right}
+.tvau1-row .tvau1-v small{display:block;font-weight:400;font-size:12px;color:var(--tvau1-mute)}
+.tvau1-chev{color:#666}
+.tvau1-flag{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:10px;font-size:12px;font-weight:600}
+.tvau1-flag-unk{background:var(--tvau1-surf2);color:#333}
+.tvau1-flag-att{background:#FBEFD5;color:var(--tvau1-att)}
+.tvau1-flag-etr{background:#EEE9F8;color:var(--tvau1-etr)}
+.tvau1-pick{display:flex;gap:6px;margin-top:6px}
+.tvau1-pick button{height:28px;padding:0 10px;border-radius:10px;border:1px solid #BFBFBF;font-size:13px}
+.tvau1-pick button.tvau1-main{background:#111;color:#fff;border-color:#111}
+.tvau1-ask{display:grid;grid-template-columns:22px 1fr auto 16px;gap:8px;align-items:center;width:100%;min-height:44px;border-bottom:1px solid var(--tvau1-line);text-align:left}
+.tvau1-ask strong{font-size:15px}
+.tvau1-ask span.tvau1-hint{font-size:13px;color:var(--tvau1-ok);font-weight:600}
+.tvau1-ico-ok{color:var(--tvau1-ok)}
+details.tvau1-disc{border-bottom:1px solid var(--tvau1-line)}
+details.tvau1-disc summary{list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:40px;font-weight:600;cursor:pointer}
+details.tvau1-disc summary::-webkit-details-marker{display:none}
+details.tvau1-disc p{margin:0 0 10px;font-size:13px;color:#333}
+.tvau1-comp{display:flex;align-items:center;gap:10px;min-height:44px;width:100%;text-align:left}
+.tvau1-comp strong{font-size:15px;font-weight:500;flex:1}
+.tvau1-comp span{font-size:13px;color:var(--tvau1-mute)}
+.tvau1-empty{padding:28px 8px 20px;text-align:center}
+.tvau1-empty h3{margin:10px 0 4px;font-size:16px}
+.tvau1-empty p{margin:0;color:#333}
+.tvau1-ghost{display:flex;flex-direction:column;gap:8px;padding:8px 0 4px}
+.tvau1-ghost i{display:block;height:10px;border-radius:5px;background:repeating-linear-gradient(90deg,var(--tvau1-surf2) 0 18px,#fff 18px 22px)}
+.tvau1-nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--tvau1-line);z-index:5}
+.tvau1-nav-in{max-width:872px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr) 76px;align-items:stretch;height:46px;padding:0 0 0 0}
+.tvau1-nav a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:12px;color:#333;text-decoration:none}
+.tvau1-nav a.tvau1-on{background:rgba(31,100,163,.12);color:#111;box-shadow:inset 0 3px 0 var(--tvau1-fin)}
+.tvau1-fab{align-self:center;justify-self:center;width:64px;height:40px;border-radius:20px;background:#111;color:#fff;display:grid;place-items:center}
+.tvau1-scrim{position:fixed;inset:0;background:rgba(17,17,17,.42);z-index:8}
+.tvau1-sheet{position:fixed;left:0;right:0;bottom:0;z-index:9;background:#fff;border-radius:24px 24px 0 0;max-width:620px;margin:0 auto;padding:6px 14px 18px;max-height:88vh;overflow:auto}
+.tvau1-grab{width:40px;height:4px;border-radius:2px;background:#BFBFBF;margin:4px auto 8px}
+.tvau1-sh-h{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tvau1-sh-h h3{margin:0;font-size:18px}
+.tvau1-x{width:30px;height:30px;border-radius:50%;background:var(--tvau1-surf2);display:grid;place-items:center}
+.tvau1-verdict{font-size:16px;font-weight:600;margin:10px 0 2px}
+.tvau1-verdict b{font-family:var(--tvau1-mono)}
+.tvau1-scen{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.tvau1-card{border:1px solid var(--tvau1-line);border-radius:16px;padding:10px}
+.tvau1-card.tvau1-now{border-color:#111}
+.tvau1-card h4{margin:0 0 6px;font-size:13px;color:#333;font-weight:600}
+.tvau1-card dl{margin:0;display:grid;gap:6px}
+.tvau1-card dt{font-size:12px;color:var(--tvau1-mute)}
+.tvau1-card dd{margin:0;font-family:var(--tvau1-mono);font-size:15px;font-weight:600}
+.tvau1-card dd.tvau1-plus{color:var(--tvau1-ok)}
+.tvau1-card dd.tvau1-min{color:var(--tvau1-etr)}
+.tvau1-card .tvau1-tot{border-top:1px solid var(--tvau1-line);padding-top:6px}
+.tvau1-tug{margin:8px 0 4px}
+.tvau1-tug-l{display:flex;justify-content:space-between;font-size:12px;color:#333;margin-bottom:3px}
+.tvau1-tug-b{display:flex;height:16px;border-radius:8px;overflow:hidden}
+.tvau1-seuil{margin-top:10px;padding:8px 10px;border-radius:10px;background:var(--tvau1-surf);font-size:13px}
+.tvau1-seuil b{font-family:var(--tvau1-mono)}
+.tvau1-fine{font-size:12px;color:var(--tvau1-mute);margin:8px 0 0}
+.tvau1-cta{display:flex;gap:8px;margin-top:12px}
+.tvau1-cta button{height:32px;padding:0 12px;border-radius:10px;border:1px solid #BFBFBF;font-size:13px;font-weight:600}
+.tvau1-cta button.tvau1-main{background:#111;border-color:#111;color:#fff}
+@media (min-width:900px){.tvau1-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}.tvau1-head-in{padding:0}}
+</style>
+</head>
+<body>
+<div id="tvau1-root"></div>
+<script>
+(function(){
+  var etat=new URLSearchParams(location.search).get('etat')||'annee';
+  var ETATS=['annee','inconnues','douteuse','etrangere','vide','si','horsligne'];
+  if(ETATS.indexOf(etat)<0)etat='annee';
+  // Icônes : viewBox 24, trait rendu de 1,5 px quelle que soit la taille.
+  var P={
+    mug:'<path d="M6 7h9v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z"/><path d="M15 10h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2"/><path d="M6 7c0-2 1.5-3 3-3 1 0 1.6.5 2 1 .5-.6 1.2-1 2-1 1.4 0 2 1 2 3"/>',
+    moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+    search:'<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/>',
+    bulle:'<path d="M5 18.5V7a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H8z"/><path d="M9 9.5h6M9 12.5h4"/>',
+    grid:'<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+    wallet:'<path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect x="4" y="8" width="16" height="11" rx="2"/><path d="M15 13.5h2"/>',
+    cubes:'<path d="M12 3 8 5v4l4 2 4-2V5z"/><path d="M8 11 4 13v4l4 2 4-2v-4z"/><path d="M16 11l-4 2v4l4 2 4-2v-4z"/>',
+    users:'<circle cx="9" cy="8" r="3.5"/><path d="M3 19c.7-3.4 3-5 6-5s5.3 1.6 6 5"/><path d="M15.5 4.8a3.5 3.5 0 0 1 0 6.4M17.5 14.3c1.7.8 2.9 2.4 3.3 4.7"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    right:'<path d="m9 6 6 6-6 6"/>',
+    left:'<path d="m15 6-6 6 6 6"/>',
+    down:'<path d="m6 9 6 6 6-6"/>',
+    sliders:'<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+    spark:'<path d="M12 4c.6 3.6 2.4 5.4 6 6-3.6.6-5.4 2.4-6 6-.6-3.6-2.4-5.4-6-6 3.6-.6 5.4-2.4 6-6z"/><path d="M18.5 3.5v3M17 5h3"/><circle cx="6" cy="18.5" r="1.5"/>',
+    x:'<path d="M6 6l12 12M18 6 6 18"/>',
+    cloud:'<path d="M7 18h10a4 4 0 0 0 .5-8A5.5 5.5 0 0 0 7 9.5 4.3 4.3 0 0 0 7 18z"/><path d="M4 4l16 16"/>',
+    alerte:'<path d="M12 4 3 19.5h18z"/><path d="M12 10v4.5M12 17v.5"/>',
+    help:'<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.6M12 16.8v.4"/>',
+    globe:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.4 5.2 3.4 8.5s-1 6.1-3.4 8.5c-2.4-2.4-3.4-5.2-3.4-8.5s1-6.1 3.4-8.5z"/>',
+    balance:'<path d="M12 4v16M7 20h10M5 7h14"/><path d="m5 7-3 6h6zM19 7l-3 6h6z"/>',
+    recu:'<path d="M6 3h12v18l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5L6 21z"/><path d="M9 8h6M9 12h6M9 16h3"/>'
+  };
+  function ico(n,s,cls){s=s||16;return '<svg class="'+(cls||'')+'" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(36/s).toFixed(3)+'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[n]+'</svg>';}
+  function chf(v){var s=Math.abs(v).toFixed(2).split('.');var e=s[0].replace(/\B(?=(\d{3})+(?!\d))/g,' ');return (v<0?'−':'')+e+','+s[1];}
+
+  var RED='#C99A2E',NOR='#4F7FD0';
+  var POSTES=[
+    {n:'Matériel',t:'8,1',ttc:5908,tva:442.69,f:'4 factures'},
+    {n:'Bouteilles et capsules',t:'8,1',ttc:2640,tva:197.82,f:'9 factures'},
+    {n:'Malt',t:'2,6',ttc:3420,tva:86.67,f:'8 factures'},
+    {n:'Étiquettes',t:'8,1',ttc:860,tva:64.44,f:'3 factures'},
+    {n:'CO₂ et nettoyage',t:'8,1',ttc:540,tva:40.46,f:'6 tickets'},
+    {n:'Houblons',t:'2,6',ttc:1180,tva:29.90,f:'5 factures'},
+    {n:'Levures',t:'2,6',ttc:312,tva:7.91,f:'3 factures'}
+  ];
+  var MAXP=442.69;
+
+  function header(){
+    return '<header class="tvau1-head"><div class="tvau1-head-in">'+
+      '<span class="tvau1-logo" aria-hidden="true">'+ico('mug',20)+'</span><span class="tvau1-brand">L’Affinée</span>'+
+      '<button class="tvau1-hbtn" aria-label="Thème sombre">'+ico('moon',18)+'</button>'+
+      '<button class="tvau1-hbtn tvau1-filled" aria-label="Rechercher">'+ico('search',18)+'</button>'+
+      '<button class="tvau1-hbtn tvau1-filled" aria-label="Compagnon">'+ico('bulle',18)+'</button></div></header>';
+  }
+  function tabs(){
+    var t=['Synthèse','Opérations','Prévisions','Annuel'];
+    return '<nav class="tvau1-tabs" role="tablist" aria-label="Finances">'+t.map(function(x,i){return '<button role="tab" aria-selected="'+(i===0)+'">'+x+'</button>';}).join('')+'</nav>'+
+      '<div class="tvau1-bar"><h2>Situation financière</h2><button class="tvau1-gear" aria-label="Solde et paramètres financiers">'+ico('sliders',16)+'</button>'+
+      '<div class="tvau1-seg" role="group" aria-label="Lecture de la synthèse"><button aria-pressed="false">Situation</button><button aria-pressed="false">Coûts</button><button aria-pressed="true">TVA</button></div></div>';
+  }
+  function nav(){
+    var it=[['grid','Bord','#333'],['wallet','Finances','#1F64A3'],['mug','Brassins','#9A4F1E'],['cubes','Stocks','#4C6B2A'],['users','Clients','#333']];
+    return '<nav class="tvau1-nav" aria-label="Navigation principale"><div class="tvau1-nav-in">'+it.map(function(x){return '<a href="#" class="'+(x[1]==='Finances'?'tvau1-on':'')+'"><span style="color:'+x[2]+'">'+ico(x[0],18)+'</span>'+x[1]+'</a>';}).join('')+
+      '<button class="tvau1-fab" data-commun aria-label="Actions rapides">'+ico('plus',22)+'</button></div></nav>';
+  }
+  function periode(n){
+    return '<div class="tvau1-per"><button class="tvau1-step" aria-label="Année précédente">'+ico('left',16)+'</button><strong>2026</strong><button class="tvau1-step" aria-label="Année suivante">'+ico('right',16)+'</button><span class="tvau1-span">janv.–oct.</span><span class="tvau1-n">'+n+'</span></div>';
+  }
+  function ligne(p,opt){
+    opt=opt||{};
+    var col=p.t==='2,6'?RED:NOR;
+    var val=opt.val!==undefined?opt.val:chf(p.tva);
+    var w=opt.w!==undefined?opt.w:Math.max(3,p.tva/MAXP*100);
+    var tint=p.t==='2,6'?'#F3E6C4':'#DCE6F8';
+    return '<button class="tvau1-row" data-mots="lignes"><i class="tvau1-db '+(opt.cls?'tvau1-dbh':'')+'" style="width:'+w+'%;'+(opt.cls?'':'background:'+tint)+'" aria-hidden="true"></i><span><span class="tvau1-nm"><span class="tvau1-dot" style="background:'+col+'"></span>'+p.n+(opt.flag||'')+'</span>'+
+      '<span class="tvau1-sub">'+p.f+' · '+chf(p.ttc)+' d’achats · '+p.t+' %</span>'+
+      '</span>'+
+      '<span class="tvau1-v">'+val+(opt.small?'<small>'+opt.small+'</small>':'')+'</span><span class="tvau1-chev">'+ico('right',16)+'</span></button>';
+  }
+  function demande(){
+    return '<button class="tvau1-ask" id="tvau1-ask" aria-haspopup="dialog"><span class="tvau1-ico-ok">'+ico('balance',20)+'</span><strong>Me la faire rembourser ?</strong><span class="tvau1-hint">Voir le calcul</span><span class="tvau1-chev">'+ico('right',16)+'</span></button>';
+  }
+  function pied(){
+    return '<details class="tvau1-disc" ontoggle="this.lastChild.hidden=!this.open"><summary>Origine et limites des montants'+ico('down',16)+'</summary><p hidden>TVA lue sur chaque facture enregistrée (photo, PDF ou saisie). Une facture sans TVA lisible n’est jamais comptée à zéro : elle reste à part jusqu’à ce que tu la complètes.</p></details>'+
+      '<button class="tvau1-comp"><span style="color:#333">'+ico('spark',20)+'</span><strong>Comprendre ma TVA</strong><span>Compagnon brasseur</span>'+ico('right',16)+'</button>';
+  }
+  function legende(a,b,extra){
+    return '<div class="tvau1-leg"><span><i class="tvau1-dot" style="background:'+RED+'"></i>2,6 % <b>'+a+'</b></span><span><i class="tvau1-dot" style="background:'+NOR+'"></i>8,1 % <b>'+b+'</b></span>'+(extra||'')+'</div>';
+  }
+
+  var body='';
+  if(etat==='vide'){
+    body=periode('0 facture')+
+      '<div class="tvau1-empty">'+'<span style="color:#666">'+ico('recu',28)+'</span>'+'<h3>Aucun achat enregistré en 2026</h3><p>Le bouton + enregistre un achat ; sa TVA apparaîtra ici.</p></div>'+
+      
+      '<button class="tvau1-row" style="grid-template-columns:1fr auto 16px"><span><span class="tvau1-nm">Voir 2025</span><span class="tvau1-sub">41 factures · TVA lue</span></span><span class="tvau1-v">1 204,30</span><span class="tvau1-chev">'+ico('right',16)+'</span></button>'+
+      pied();
+  } else {
+    var n='38 factures', big, side, bar, leg, rows, extraTop='';
+    if(etat==='inconnues'){
+      n='32 + 6 sans TVA';
+      big='<div class="tvau1-big tvau1-range">776,98 à 869,89<em>CHF</em></div>';
+      side='<b>13 620,00</b> lus<br><b>1 240,00</b> sans TVA';
+      bar='<div class="tvau1-rate" role="img" aria-label="2,6 % 124,48, 8,1 % 652,50, inconnu au plus 92,91"><i style="width:14.3%;background:'+RED+'"></i><i style="width:75%;background:'+NOR+'"></i><i class="tvau1-hatch" style="width:10.7%"></i></div>';
+      leg=legende('124,48','652,50','<span><i class="tvau1-dot tvau1-hatch" style="border:1px solid #999"></i>inconnue <b>≤ 92,91</b></span>');
+      var P2=POSTES.map(function(p){return Object.assign({},p);});
+      rows=ligne(P2[0])+ligne(P2[1])+ligne(P2[2])+
+        ligne({n:'Étiquettes',t:'8,1',ttc:860,tva:11.99,f:'1 lue, 2 sans TVA'},{flag:' <span class="tvau1-flag tvau1-flag-unk">2 ?</span>',val:'11,99 + ?',small:'≤ 64,44',cls:'tvau1-hatch',w:14.6})+
+        ligne({n:'CO₂ et nettoyage',t:'8,1',ttc:540,tva:0,f:'4 tickets sans TVA'},{flag:' <span class="tvau1-flag tvau1-flag-unk">4 ?</span>',val:'?',small:'≤ 40,46',cls:'tvau1-hatch',w:9.1})+
+        ligne(P2[5])+ligne(P2[6]);
+    } else if(etat==='douteuse'){
+      big='<div class="tvau1-big tvau1-range">869,89 ou 901,98<em>CHF</em></div>';
+      side='<b>14 860,00</b><br>d’achats';
+      bar='<div class="tvau1-rate" role="img" aria-label="2,6 % 124,48, 8,1 % 649,50, à vérifier 95,91 ou 128,00"><i style="width:13.8%;background:'+RED+'"></i><i style="width:72%;background:'+NOR+'"></i><i class="tvau1-doubt" style="width:14.2%"></i></div>';
+      leg=legende('124,48','649,50','<span><i class="tvau1-dot" style="background:#E3B55D"></i>à vérifier <b>1</b></span>');
+      extraTop='<div class="tvau1-row" style="grid-template-columns:1fr;border-top:0" data-mots="lignes"><span><span class="tvau1-nm"><span class="tvau1-flag tvau1-flag-att">'+ico('alerte',14)+'À vérifier</span>Vetropack · 12.06</span>'+
+        '<span class="tvau1-sub">1 280,00 TTC · TVA lue <b class="tvau1-mono">128,00</b> = 10 % · attendu à 8,1 % <b class="tvau1-mono">95,91</b></span>'+
+        '<span class="tvau1-pick"><button class="tvau1-main">Garder <b class="tvau1-mono">95,91</b></button><button>Garder <b class="tvau1-mono">128,00</b></button><button>Voir la facture</button></span></span></div>';
+      rows=ligne(POSTES[0])+ligne(POSTES[1],{flag:' <span class="tvau1-flag tvau1-flag-att">1 !</span>',val:'197,82',small:'ou 229,91'})+ligne(POSTES[2])+ligne(POSTES[3])+ligne(POSTES[4])+ligne(POSTES[5])+ligne(POSTES[6]);
+    } else {
+      big='<div class="tvau1-big">869,89<em>CHF</em></div>';
+      side='<b>5,9 %</b> de<br><b>14 860,00</b> d’achats';
+      bar='<div class="tvau1-rate" role="img" aria-label="2,6 % 124,48 CHF, 8,1 % 745,41 CHF"><i style="width:14.3%;background:'+RED+'"></i><i style="width:85.7%;background:'+NOR+'"></i></div>';
+      leg=legende('124,48','745,41');
+      rows=POSTES.map(function(p){return ligne(p);}).join('');
+      if(etat==='etrangere'){
+        leg=legende('124,48','745,41','<span><i class="tvau1-dot" style="background:#6A4FB0"></i>étrangère <b>38,00 EUR</b></span>');
+        rows=ligne(POSTES[0],{flag:' <span class="tvau1-flag tvau1-flag-etr">'+ico('globe',13)+'import</span>',small:'dont 47,20'})+
+          '<div class="tvau1-row" data-mots="lignes" style="grid-template-columns:1fr auto 16px"><span><span class="tvau1-nm"><span class="tvau1-dot" style="background:#6A4FB0"></span>Hors Suisse <span class="tvau1-flag tvau1-flag-etr">'+ico('globe',13)+'DE</span></span><span class="tvau1-sub">Brauzubehör, Konstanz · MwSt 19 % · pas une TVA suisse, hors total</span></span><span class="tvau1-v" style="color:#6A4FB0">38,00<small>EUR</small></span><span class="tvau1-chev">'+ico('right',16)+'</span></div>'+
+          POSTES.slice(1).map(function(p){return ligne(p);}).join('');
+      }
+      if(etat==='horsligne'){
+        n='38 + 2 en attente';
+        extraTop='';
+        big='<div class="tvau1-big">869,89<em>CHF</em></div>';
+        side='<b>+ 2 photos</b><br>pas encore lues';
+      }
+    }
+    var off=etat==='horsligne'?'<div class="tvau1-offline">'+ico('cloud',16)+'<span>Hors ligne · chiffres de ce téléphone, 31.10 à 18:42</span></div>':'';
+    body=off+'<div class="tvau1-panel">'+periode(n)+
+      '<div class="tvau1-ans"><div><small>TVA payée sur tes achats</small>'+big+'</div><div class="tvau1-side">'+side+'</div></div>'+
+      bar+leg+'</div>'+extraTop+'<div class="tvau1-list">'+rows+'</div>'+
+      (etat==='horsligne'?'<div class="tvau1-row" data-mots="lignes" style="grid-template-columns:1fr auto"><span><span class="tvau1-nm"><span class="tvau1-flag tvau1-flag-unk">2 ?</span>Photos en attente de lecture</span><span class="tvau1-sub">Lues au retour du réseau ; leur TVA n’est pas comptée</span></span><span class="tvau1-v">?</span></div>':'')+
+      demande()+pied();
+  }
+
+  function feuille(){
+    return '<div class="tvau1-scrim" data-close></div><div class="tvau1-sheet" role="dialog" aria-modal="true" aria-labelledby="tvau1-sh-t"><div class="tvau1-grab"></div>'+
+      '<div class="tvau1-sh-h"><h3 id="tvau1-sh-t">Me la faire rembourser ?</h3><button class="tvau1-x" data-close aria-label="Fermer">'+ico('x',16)+'</button></div>'+
+      '<p class="tvau1-verdict">Non, pas en restant non assujetti. En t’assujettissant, 2026 t’aurait coûté <b>1 470,94</b> CHF de plus.</p>'+
+      '<div class="tvau1-scen"><div class="tvau1-card tvau1-now"><h4>Aujourd’hui</h4><dl><div><dt>TVA de tes achats</dt><dd>869,89 payés</dd></div><div><dt>TVA sur tes ventes</dt><dd>aucune</dd></div><div class="tvau1-tot"><dt>Coût TVA 2026</dt><dd>869,89</dd></div></dl></div>'+
+      '<div class="tvau1-card"><h4>Assujetti volontaire</h4><dl><div><dt>TVA de tes achats</dt><dd class="tvau1-plus">869,89 récupérés</dd></div><div><dt>8,1 % de 31 240,00 vendus</dt><dd class="tvau1-min">2 340,83 versés</dd></div><div class="tvau1-tot"><dt>Coût TVA 2026</dt><dd>2 340,83</dd></div></dl></div></div>'+
+      '<div class="tvau1-tug" role="img" aria-label="Récupéré 869,89 contre 2 340,83 à verser"><div class="tvau1-tug-l"><span>Récupéré 869,89</span><span>À verser 2 340,83</span></div><div class="tvau1-tug-b"><i style="width:27.1%;background:#4C6B2A"></i><i style="width:72.9%;background:#6A4FB0"></i></div></div>'+
+      '<div class="tvau1-seuil">Gagnant seulement sous <b>11 609</b> CHF de ventes par an, à achats égaux.</div>'+
+      '<p class="tvau1-fine">Estimation à prix TTC inchangés, bière au taux normal de 8,1 %. Obligatoire dès 100 000 CHF de chiffre d’affaires. À confirmer avec ta fiduciaire.</p>'+
+      '<div class="tvau1-cta"><button class="tvau1-main" data-close>Compris</button><button>Demander au compagnon</button></div></div>';
+  }
+
+  var root=document.getElementById('tvau1-root');
+  root.innerHTML=header()+'<main class="tvau1-wrap">'+tabs()+'<section aria-label="TVA de mes achats">'+body+'</section></main>'+nav()+(etat==='si'?feuille():'');
+  function ouvrir(){if(document.querySelector('.tvau1-sheet'))return;var d=document.createElement('div');d.id='tvau1-sh';d.innerHTML=feuille();document.body.appendChild(d);lier();}
+  function lier(){[].forEach.call(document.querySelectorAll('[data-close]'),function(b){b.onclick=function(){var s=document.querySelector('.tvau1-sheet'),c=document.querySelector('.tvau1-scrim');if(s)s.remove();if(c)c.remove();};});}
+  var a=document.getElementById('tvau1-ask');if(a)a.onclick=ouvrir;
+  lier();
+})();
+</script>
+</body>
+</html>

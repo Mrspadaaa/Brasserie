@@ -1,0 +1,127 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 6 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f12-tour3.test.tsx[2m > [22mP-1 : un acte rangé sous « Services » a la nature Service, à l’écran et à l’enregistrement[2m > [22mle choix de nature allume « Service » sur les actes ; la collerette garde « Matériel »
+[31m[1mAssertionError[22m: expected [ undefined, undefined, …(2) ] to deeply equal [ 'Service', 'Service', …(2) ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "Service",[39m
+[32m-   "Service",[39m
+[32m-   "Service",[39m
+[32m-   "Matériel",[39m
+[31m+   undefined,[39m
+[31m+   undefined,[39m
+[31m+   undefined,[39m
+[31m+   undefined,[39m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/depense/f12-tour3.test.tsx:[2m63:66[22m[39m
+    [90m 61| [39m    [35mconst[39m view [33m=[39m [35mawait[39m [34mlireVeto[39m()[33m;[39m
+    [90m 62| [39m    const allume = (id: string) => view.container.querySelector(`artic…
+    [90m 63| [39m    expect(['line-1', 'line-2', 'line-3', 'line-4'].map(allume)).toEqu…
+    [90m   | [39m                                                                 [31m^[39m
+    [90m 64| [39m  })[33m;[39m
+    [90m 65| [39m  it('« Confirmer » enregistre `kind: service` pour les actes, `equipm…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f12-tour3.test.tsx[2m > [22mP-1 : un acte rangé sous « Services » a la nature Service, à l’écran et à l’enregistrement[2m > [22m« Confirmer » enregistre `kind: service` pour les actes, `equipment` pour la collerette
+[31m[1mAssertionError[22m: expected [ [ 'Sedation IM,', 'other' ], …(3) ] to deeply equal [ [ 'Sedation IM,', 'service' ], …(3) ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -1,17 +1,17 @@[39m
+[2m  [[22m
+[2m    [[22m
+[2m      "Sedation IM,",[22m
+[32m-     "service",[39m
+[31m+     "other",[39m
+[2m    ],[22m
+[2m    [[22m
+[2m      "Sterilisatio",[22m
+[32m-     "service",[39m
+[31m+     "equipment",[39m
+[2m    ],[22m
+[2m    [[22m
+[2m      "Injection so",[22m
+[32m-     "service",[39m
+[31m+     "other",[39m
+[2m    ],[22m
+[2m    [[22m
+[2m      "Collerette R",[22m
+[2m      "equipment",[22m
+[2m    ],[22m
+
+[36m [2m❯[22m tests/unit/depense/f12-tour3.test.tsx:[2m70:19[22m[39m
+    [90m 68| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m(state[33m.[39msaved)[33m.[39m[34mtoHaveBeenCalled[39m())[33m;[39m
+    [90m 69| [39m    const kinds = state.saved.mock.calls[0][0].lines.map((l: any) => […
+    [90m 70| [39m    expect(kinds).toEqual([['Sedation IM,', 'service'], ['Sterilisatio…
+    [90m   | [39m                  [31m^[39m
+    [90m 71| [39m  })[33m;[39m
+    [90m 72| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f12-tour3.test.tsx[2m > [22mP-2 : un barré dont la seule différence est une valeur inconnue ne s’affiche pas[2m > [22m« Collerette Velfast ROUGE 25cm · ? » sous le même nom (montant lu ensuite) : muet
+[31m[1mTypeError[22m: barreSansInfo is not a function[39m
+[36m [2m❯[22m tests/unit/depense/f12-tour3.test.tsx:[2m80:12[22m[39m
+    [90m 78| [39m    [35mconst[39m courant [33m=[39m { [33m...[39mavant[33m,[39m amount[33m:[39m [34m18.05[39m[33m,[39m unitPrice[33m:[39m [34m18.05[39m }[33m;[39m
+    [90m 79| [39m    expect(libelleAvant(avant, cs, courant)).toBe('Collerette Velfast …
+    [90m 80| [39m    [34mexpect[39m([34mbarreSansInfo[39m(avant[33m,[39m cs[33m,[39m courant))[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   | [39m           [31m^[39m
+    [90m 81| [39m  })[33m;[39m
+    [90m 82| [39m  it('« 3 cp × ? · ? » (quantité identique, prix et montant lus ensuit…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f12-tour3.test.tsx[2m > [22mP-2 : un barré dont la seule différence est une valeur inconnue ne s’affiche pas[2m > [22m« 3 cp × ? · ? » (quantité identique, prix et montant lus ensuite) : muet
+[31m[1mTypeError[22m: barreSansInfo is not a function[39m
+[36m [2m❯[22m tests/unit/depense/f12-tour3.test.tsx:[2m87:12[22m[39m
+    [90m 85| [39m    [35mconst[39m courant [33m=[39m { [33m...[39mbase[33m,[39m unitPrice[33m:[39m [34m1.5[39m[33m,[39m amount[33m:[39m [34m4.5[39m }[33m;[39m
+    [90m 86| [39m    [34mexpect[39m([34mlibelleAvant[39m(base[33m,[39m cs[33m,[39m courant))[33m.[39m[34mtoBe[39m([32m'3 cp × ? · ?'[39m)[33m;[39m
+    [90m 87| [39m    [34mexpect[39m([34mbarreSansInfo[39m(base[33m,[39m cs[33m,[39m courant))[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   | [39m           [31m^[39m
+    [90m 88| [39m  })[33m;[39m
+    [90m 89| [39m  [34mit[39m([32m'« Combiclav 250 /cp · 8 cp × ? · ? » : muet'[39m[33m,[39m () [33m=>[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f12-tour3.test.tsx[2m > [22mP-2 : un barré dont la seule différence est une valeur inconnue ne s’affiche pas[2m > [22m« Combiclav 250 /cp · 8 cp × ? · ? » : muet
+[31m[1mTypeError[22m: barreSansInfo is not a function[39m
+[36m [2m❯[22m tests/unit/depense/f12-tour3.test.tsx:[2m94:12[22m[39m
+    [90m 92| [39m    [35mconst[39m courant [33m=[39m { [33m...[39mbase[33m,[39m unitPrice[33m:[39m [34m1.9[39m[33m,[39m amount[33m:[39m [34m15.2[39m }[33m;[39m
+    [90m 93| [39m    expect(libelleAvant(base, cs, courant)).toBe('Combiclav 250 /cp · …
+    [90m 94| [39m    [34mexpect[39m([34mbarreSansInfo[39m(base[33m,[39m cs[33m,[39m courant))[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   | [39m           [31m^[39m
+    [90m 95| [39m  })[33m;[39m
+    [90m 96| [39m  it('un barré qui parle reste : autre nom, autre quantité, autre prix…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f12-tour3.test.tsx[2m > [22mP-2 : un barré dont la seule différence est une valeur inconnue ne s’affiche pas[2m > [22mun barré qui parle reste : autre nom, autre quantité, autre prix
+[31m[1mTypeError[22m: barreSansInfo is not a function[39m
+[36m [2m❯[22m tests/unit/depense/f12-tour3.test.tsx:[2m98:12[22m[39m
+    [90m 96| [39m  it('un barré qui parle reste : autre nom, autre quantité, autre prix…
+    [90m 97| [39m    const base = { description: 'Malt Pilsner', quantity: 10, unit: 'k…
+    [90m 98| [39m    expect(barreSansInfo(base, [{ champ: 'quantity' }, { champ: 'unitP…
+    [90m   | [39m           [31m^[39m
+    [90m 99| [39m    expect(barreSansInfo(base, [{ champ: 'unitPrice' }], { ...base, un…
+    [90m100| [39m    expect(barreSansInfo({ ...base, description: 'Colerette bleue' }, …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m6 failed[39m[22m[90m (6)[39m
+[2m   Start at [22m 00:21:06
+[2m   Duration [22m 4.14s[2m (transform 1.29s, setup 291ms, collect 1.99s, tests 874ms, environment 692ms, prepare 71ms)[22m
+

@@ -90,7 +90,7 @@ describe('dashboard daily overview', () => {
     const { props } = mount({ batches: [porter, { ...porter, id: 'COLD', name: 'Saison en garde', status: 'garde' }] });
     const row = screen.getByRole('button', { name: /Ancienne Porter/ });
     expect(within(row).getByText('Fermentation')).toBeVisible();
-    expect(within(row).getByText('SG 1,024')).toBeVisible();
+    expect(within(row).getByText('Densité 1,024')).toBeVisible();
     expect(screen.getByText('Garde froide')).toBeVisible();
     expect(screen.queryByText(/Prêt|21 jours|FG Actuelle/)).not.toBeInTheDocument();
     fireEvent.click(row);
@@ -103,7 +103,7 @@ describe('dashboard daily overview', () => {
       { ...porter, id: 'NONE', name: 'Sans relevé', og: undefined, gravityLog: [] },
       { ...porter, id: 'ARCHIVE', name: 'Archivé', archivedAt: '2026-09-01' }
     ] });
-    expect(screen.getByText('SG non relevée')).toBeVisible();
+    expect(screen.getByText('Densité non relevée')).toBeVisible();
     expect(screen.queryByText('Archivé')).not.toBeInTheDocument();
   });
 

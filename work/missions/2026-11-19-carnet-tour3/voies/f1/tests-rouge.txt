@@ -1,0 +1,306 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 7 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f1-tour3.test.tsx[2m > [22mLR1-6 : pendant la 3e lecture, le bloc de contrôles ne se rouge pas sur le provisoire[2m > [22mcontrolesProvisoires : chaque écart devient « en cours », neutre, sans écart, sans geste ni ton ; un « ≠ » ne reste pas dans le libellé
+[31m[1mTypeError[22m: controlesProvisoires is not a function[39m
+[36m [2m❯[22m tests/unit/depense/f1-tour3.test.tsx:[2m86:15[22m[39m
+    [90m 84| [39m  ][33m;[39m
+    [90m 85| [39m  it('controlesProvisoires : chaque écart devient « en cours », neutre…
+    [90m 86| [39m    [35mconst[39m p [33m=[39m [34mcontrolesProvisoires[39m(rangs)[33m;[39m
+    [90m   | [39m              [31m^[39m
+    [90m 87| [39m    [34mexpect[39m(p)[33m.[39m[34mtoHaveLength[39m([34m4[39m)[33m;[39m
+    [90m 88| [39m    [35mfor[39m ([35mconst[39m r [35mof[39m p[33m.[39m[34mslice[39m([34m0[39m[33m,[39m [34m3[39m)) {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f1-tour3.test.tsx[2m > [22mLR1-6 : pendant la 3e lecture, le bloc de contrôles ne se rouge pas sur le provisoire[2m > [22mà l’écran, provisoire (somme 313,10 / total 163,85) : ni drapeau ni pastille d’erreur, « en cours » ; la 3.8 finie, les contrôles reviennent
+[31m[1mAssertionError[22m: expected '1' to be null[39m
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+"1"
+
+[36m [2m❯[22m tests/unit/depense/f1-tour3.test.tsx:[2m100:47[22m[39m
+    [90m 98| [39m    const { view, ouvrir } = await lireEnFlux([{ l: LIGNES_PROV[7], i:…
+    [90m 99| [39m    [35mconst[39m p [33m=[39m [34mpreuve[39m(view)[33m;[39m
+    [90m100| [39m    [34mexpect[39m(p[33m.[39m[34mgetAttribute[39m([32m'data-dp-drapeau'[39m))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m   | [39m                                              [31m^[39m
+    [90m101| [39m    [34mexpect[39m(p[33m.[39m[34mquerySelector[39m([32m'[data-dp-verdict="ecart"]'[39m))[33m.[39m[34mtoBeNull[39m()[33m;[39m
+    [90m102| [39m    expect(p.textContent).not.toMatch(/Ouvrir la ligne fausse|manquant…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f1-tour3.test.tsx[2m > [22mLR1-7 : quantité et montant lus sans prix unitaire : le prix se déduit, dit déduit[2m > [22mprixDeLaRangee : 2 et 50,00 → 25 déduit ; un prix lu reste lu ; ni quantité ni montant : rien ; un rabais : rien
+[31m[1mTypeError[22m: prixDeLaRangee is not a function[39m
+[36m [2m❯[22m tests/unit/depense/f1-tour3.test.tsx:[2m112:12[22m[39m
+    [90m110| [39m  it('prixDeLaRangee : 2 et 50,00 → 25 déduit ; un prix lu reste lu ; …
+    [90m111| [39m    const l = (o: Partial<PurchaseLineDraft>) => ({ kind: 'other', ...…
+    [90m112| [39m    expect(prixDeLaRangee(l({ quantity: 2, amount: 50 }))).toEqual({ v…
+    [90m   | [39m           [31m^[39m
+    [90m113| [39m    expect(prixDeLaRangee(l({ quantity: 3, amount: 10 }))).toEqual({ v…
+    [90m114| [39m    expect(prixDeLaRangee(l({ quantity: 2, unitPrice: 24, amount: 50 }…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f1-tour3.test.tsx[2m > [22mLR1-7 : quantité et montant lus sans prix unitaire : le prix se déduit, dit déduit[2m > [22mà l’écran, ligne H21 « 2 × 25,00 · 50,00 », le prix marqué déduit (jamais « 2 × — »)
+[31m[1mAssertionError[22m: expected '—' to be '25,00' // Object.is equality[39m
+
+Expected: [32m"25,00"[39m
+Received: [31m"—"[39m
+
+[36m [2m❯[22m tests/unit/depense/f1-tour3.test.tsx:[2m126:30[22m[39m
+    [90m124| [39m    [34mexpect[39m(rangee)[33m.[39m[34mtoBeTruthy[39m()[33m;[39m
+    [90m125| [39m    [35mconst[39m prix [33m=[39m rangee[33m.[39mquerySelector[33m<[39m[33mHTMLElement[39m[33m>[39m([32m'[data-dp-prix]'[39m)[33m![39m[33m;[39m
+    [90m126| [39m    [34mexpect[39m(prix[33m.[39mtextContent)[33m.[39m[34mtoBe[39m([32m'25,00'[39m)[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m127| [39m    [34mexpect[39m(prix[33m.[39m[34mgetAttribute[39m([32m'data-dp-prix-deduit'[39m))[33m.[39m[34mtoBe[39m([32m'1'[39m)[33m;[39m
+    [90m128| [39m    [34mexpect[39m(prix[33m.[39m[34mgetAttribute[39m([32m'title'[39m))[33m.[39m[34mtoMatch[39m([36m/déduit/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f1-tour3.test.tsx[2m > [22mLR1-10 : « Chercher une ligne » trouve aussi les références des lectures écartées[2m > [22mchercherLignes : une référence lue avant (avant la 3.8) trouve sa ligne ; sans elle, rien
+[31m[1mAssertionError[22m: expected [] to deeply equal [ 'a' ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   "a",[39m
+[32m- ][39m
+[31m+ [][39m
+
+[36m [2m❯[22m tests/unit/depense/f1-tour3.test.tsx:[2m138:98[22m[39m
+    [90m136| [39m    const lignes = [ligne({ id: 'a', sourceReference: REF_APRES }), li…
+    [90m137| [39m    [34mexpect[39m([34mchercherLignes[39m(lignes[33m,[39m [33mREF_AVANT[39m))[33m.[39m[34mtoEqual[39m([])[33m;[39m
+    [90m138| [39m    expect(chercherLignes(lignes, REF_AVANT, undefined, l => (l.id ===…
+    [90m   | [39m                                                                                                 [31m^[39m
+    [90m139| [39m    expect(chercherLignes(lignes, REF_APRES, undefined, () => [])).toE…
+    [90m140| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f1-tour3.test.tsx[2m > [22mLR1-10 : « Chercher une ligne » trouve aussi les références des lectures écartées[2m > [22mà l’écran : l’EAN d’une ligne barrée (pas retrouvée par la 3.8) la montre ; la référence d’avant d’une ligne corrigée trouve sa ligne
+[31m[1mAssertionError[22m[39m: expected <article …(5)>…(1)</article> to be null
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body[39m
+    [33mstyle[39m=[32m"overflow: hidden;"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"fixed inset-0 z-50 flex justify-center bg-cave-950/80 backdrop-blur-sm
+                  animate-in fade-in
+                  items-stretch"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-labelledby[39m=[32m"_r_1q_"[39m
+          [33maria-modal[39m=[32m"true"[39m
+          [33mclass[39m=[32m"w-full max-w-none h-full rounded-none border-0 flex flex-col overflow-hidden
+                    bg-cave-900 border-cave-800 shadow-2xl
+                    "[39m
+          [33mrole[39m=[32m"dialog"[39m
+          [33mtabindex[39m=[32m"-1"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex min-h-0 w-full flex-1 flex-col lg:mx-auto lg:max-w-[760px] lg:border-x lg:border-cave-700"[39m
+            [33mdata-dp[39m=[32m"colonne"[39m
+          [36m>[39m
+            [36m<header[39m
+              [33mclass[39m=[32m"flex h-10 shrink-0 items-center gap-1 border-b border-cave-800 bg-cave-950 pl-1 pr-1"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33maria-label[39m=[32m"Fermer"[39m
+                [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200 disabled:opacity-40"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-x"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"20"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"20"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M18 6 6 18"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"m6 6 12 12"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</button>[39m
+              [36m<h2[39m
+                [33mclass[39m=[32m"min-w-0 flex-1 truncate text-base font-semibold text-cave-50"[39m
+                [33mid[39m=[32m"_r_1q_"[39m
+              [36m>[39m
+                [0mNouvelle dépense[0m
+              [36m</h2>[39m
+              [36m<div[39m
+                [33maria-label[39m=[32m"Sous-groupes"[39m
+                [33mclass[39m=[32m"inline-flex shrink-0 overflow-hidden rounded-control border border-cave-600"[39m
+                [33mdata-dp-plier[39m=[32m"true"[39m
+                [33mrole[39m=[32m"group"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33maria-pressed[39m=[32m"false"[39m
+                  [33mclass[39m=[32m"dp-p3c-seg min-h-7 px-2 text-sm text-cave-200"[39m
+                  [33mdata-dp-plier-bouton[39m=[32m"plie"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [0mPlié[0m
+                [36m</button>[39m
+                [36m<button[39m
+                  [33maria-pressed[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"dp-p3c-seg min-h-7 px-2 text-sm bg-ebc-straw text-cave-950"[39m
+                  [33mdata-dp-plier-bouton[39m=[32m"deplie"[39m
+                  [33mtype[39m=[32m"button"[39m
+                [36m>[39m
+                  [0mDéplié[0m
+                [36m</button>[39m
+              [36m</div>[39m
+              [36m<button[39m
+                [33maria-expanded[39m=[32m"false"[39m
+                [33maria-label[39m=[32m"Justificatif : voir l’original, changer"[39m
+                [33mclass[39m=[32m"flex size-8 items-center justify-center rounded-control text-cave-200"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"lucide lucide-file-text"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mheight[39m=[32m"20"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                  [33mstroke-width[39m=[32m"2"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mwidth[39m=[32m"20"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M14 2v5a1 1 0 0 0 1 1h5"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M10 9H8"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M16 13H8"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M16 17H8"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</button>[39m
+            [36m</header>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"dp-p3c-corps flex-1 min-h-0 overflow-y-auto overscroll-contain scroll-pt-10 lg:scroll-pt-0 [&_input:not([type=checkbox])]:min-h-8 [&_input]:py-0.5 [&_select]:min-h-8 [&_select]:py-0.5 [&_[role=textbox]]:min-h-8 [&_[role=textbox]]:py-0.5 [&_label]:text-xs [&_summary]:text-[13px]"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m""[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"hidden space-y-1.5 rounded-panel border border-cave-800 bg-cave-900/60 p-2"[39m
+                  [33mdata-dp[39m=[32m"justificatif"[39m
+                [36m>[39m
+                  [36m<div[39m
+                    [33mclass[39m=[32m"flex flex-wrap items-center gap-1.5"[39m
+                  [36m>[39m
+                    [36m<a[39m
+                      [33mclass[39m=[32m"inline-flex min-h-7 items-center rounded-control border border-cave-600 px-2.5 text-sm text-ebc-straw"[39m
+                      [33mdownload[39m=[32m"facture.pdf"[39m
+                      [33mhref[39m=[32m"data:ap...
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+<article
+  aria-label="Vaccin covid B : pas retrouvée, barrée"
+  class="dp-p3c-li border-b border-cave-800 border-l-4 border-l-cave-400"
+  data-dp-groupe="autres"
+  data-dp-perdue="line-3"
+  hidden=""
+>
+  <div
+    class="dp-p3c-r relative flex min-h-7 items-center gap-1.5 px-2.5 text-cave-400"
+  >
+    <span
+      class="min-w-0 flex-1 py-0.5 text-sm leading-tight line-through"
+    >
+      Vaccin covid B
+    </span>
+    <span
+      class="dp-p3c-dq line-through"
+    >
+      <span
+        class="font-semibold"
+      >
+        1 pièce
+      </span>
+      <i>
+        ×
+      </i>
+      <span>
+        75,15
+      </span>
+    </span>
+    <span
+      class="w-[54px] shrink-0 text-right font-mono text-sm line-through"
+    >
+      75,15
+    </span>
+  </div>
+</article>
+
+[36m [2m❯[22m tests/unit/depense/f1-tour3.test.tsx:[2m149:59[22m[39m
+    [90m147| [39m    [34mchercher[39m(view[33m,[39m [33mEAN_BARRE[39m)[33m;[39m
+    [90m148| [39m    const covid = [...view.container.querySelectorAll<HTMLElement>('[d…
+    [90m149| [39m    [35mawait[39m [34mwaitFor[39m(() [33m=>[39m [34mexpect[39m(covid[33m.[39m[34mclosest[39m([32m'[hidden]'[39m))[33m.[39m[34mtoBeNull[39m())[33m;[39m
+    [90m   | [39m                                                          [31m^[39m
+    [90m150| [39m    const autres = [...view.container.querySelectorAll<HTMLElement>('[…
+    [90m151| [39m    [34mexpect[39m(autres[33m.[39m[34mevery[39m(e [33m=>[39m e[33m.[39mhidden))[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+[90m [2m❯[22m runWithExpensiveErrorDiagnosticsDisabled ../ports-nuit/node_modules/@testing-library/dom/dist/config.js:[2m47:12[22m[39m
+[90m [2m❯[22m checkCallback ../ports-nuit/node_modules/@testing-library/dom/dist/wait-for.js:[2m124:77[22m[39m
+[90m [2m❯[22m Timeout.checkRealTimersCallback ../ports-nuit/node_modules/@testing-library/dom/dist/wait-for.js:[2m118:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f1-tour3.test.tsx[2m > [22mLR1-12 : un message repris du serveur s’écrit en virgule décimale suisse[2m > [22m« (2.6% base … TVA 0,44 / 2.6% …) » → « (2,6 % base … ) » ; les dates et le nom hors parenthèses ne changent pas
+[31m[1mAssertionError[22m: expected 'Bloc TVA : lectures divergentes (2.6%…' to be 'Bloc TVA : lectures divergentes (2,6 …' // Object.is equality[39m
+
+Expected: [32m"Bloc TVA : lectures divergentes (2[7m,6 [27m% base non lu TVA 0,44 / 2[7m,6 [27m% base non lu TVA 0,44), vérifier le justificatif."[39m
+Received: [31m"Bloc TVA : lectures divergentes (2[7m.6[27m% base non lu TVA 0,44 / 2[7m.6[27m% base non lu TVA 0,44), vérifier le justificatif."[39m
+
+[36m [2m❯[22m tests/unit/depense/f1-tour3.test.tsx:[2m165:8[22m[39m
+    [90m163| [39m  it('« (2.6% base … TVA 0,44 / 2.6% …) » → « (2,6 % base … ) » ; les …
+    [90m164| [39m    expect(sansMotsBruts('Bloc TVA : lectures divergentes (2.6% base n…
+    [90m165| [39m      .toBe('Bloc TVA : lectures divergentes (2,6 % base non lu TVA 0,…
+    [90m   | [39m       [31m^[39m
+    [90m166| [39m    expect(sansMotsBruts('Taux : lectures divergentes (8.1% / 2.6%)'))…
+    [90m167| [39m    expect(sansMotsBruts('Montant : lectures divergentes (0.44 / 12.5)…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m7 failed[39m[22m[90m (7)[39m
+[2m   Start at [22m 18:22:51
+[2m   Duration [22m 19.42s[2m (transform 6.11s, setup 430ms, collect 10.00s, tests 6.76s, environment 1.13s, prepare 86ms)[22m
+

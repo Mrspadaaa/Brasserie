@@ -1,0 +1,18 @@
+{
+ "reglage": "3.5-flash-lite@low",
+ "element": "color-plante",
+ "cas": "color",
+ "type": "plante",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": false,
+  "issues": [
+   "La proposition suggère de diluer à tort, ce qui va à l'encontre des consignes métier."
+  ]
+ },
+ "ms": 686,
+ "coutMicro": 1679,
+ "etat": "STOP"
+}

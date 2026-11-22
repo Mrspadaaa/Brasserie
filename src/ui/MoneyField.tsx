@@ -64,7 +64,9 @@ export const MoneyField: React.FC<MoneyFieldProps> = ({
   const showSplit = isTvaRegistered && tvaRate > 0 && valueTTC > 0;
 
   const inputRef = useRef<InputElement>(null);
-  const { draft, push, settle } = useNumericDraft(valueTTC, onChange);
+  /* Un champ pas encore touché ne montre pas « 0 » : le montant inconnu n'est pas un zéro (TE-55). Le parent garde son 0. */
+  const touched = useRef(false);
+  const { draft, push, settle } = useNumericDraft(touched.current ? valueTTC : valueTTC || undefined, (ttc: number) => { touched.current = true; onChange(ttc); });
 
   return (
     <Field label={label} hint={hint} error={error} htmlFor={id}>
@@ -93,7 +95,7 @@ export const MoneyField: React.FC<MoneyFieldProps> = ({
             autoFocus={!coarse && autoFocus}
             value={draft}
             disabled={disabled}
-            placeholder="0.00"
+            placeholder="0,00"
             onFocus={(e) => e.currentTarget.select()}
             onBlur={() => {
               settle({ min: 0 });

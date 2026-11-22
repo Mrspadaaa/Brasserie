@@ -1,0 +1,932 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carnet · greffe 2 · v06 · G6 L'objet d'abord · 9 écrans</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* v06 · recette G6 « L'objet d'abord ». Base : ra+p5f (proto.html). Parcours complet, 9 écrans (4 en deux temps), habit de l'app
+   (ref-app : en-tête logo, ‹ Nov. ›, loupe, avatars ; segment gris à onglet noir ; retour bleu ; grands titres noirs ; rangées à filet ;
+   mesures et prix en IBM Plex Mono ; bouton plein vert de zone Stocks ; + carré noir au-dessus des onglets). Statique : HTML et CSS seuls.
+   Dessins des machines : ceux de v04 (v4-*) ; hotte, extracteur, chambre froide : ceux de v09 (ph-*) ; évier : celui de v08-5. */
+:root{--bg:#FFFFFF;--s1:#F5F5F5;--s2:#EBEBEB;--line:#DDDDDD;--line2:#BFBFBF;--faint:#9E9E9E;--mut:#666666;--txt:#333333;--ink:#111111;
+  --stk:#4C6B2A;--hop:#567F45;--ok:#3F6B2E;--fin:#1F64A3;--cop:#C87A2C;--prod:#9A4F1E;--att:#7F5B10;--attA:#9C7020;--straw:#F2C14E;
+  --cuivre:#8D442C;--or:#7A5A12;
+  --stkbg:color-mix(in srgb,#4C6B2A 8%,#FFFFFF);--stkbg2:color-mix(in srgb,#4C6B2A 15%,#FFFFFF);--attbg:color-mix(in srgb,#9C7020 12%,#FFFFFF)}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--s2);color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:16px;line-height:1.3}
+a{color:inherit;text-decoration:none}
+body{width:100vw;overflow-x:hidden}
+.g6-rail{display:flex;gap:24px;align-items:flex-start;width:100vw;overflow-x:auto;scroll-snap-type:x mandatory}
+.g6-rail>.g6-cad{scroll-snap-align:start}
+.g6-cad{margin:0;width:390px;flex:none}
+.g6-cad figcaption{padding:10px 6px 18px;font-size:14px;line-height:1.4;color:var(--txt)}
+.g6-cad figcaption b{color:var(--ink)}
+.g6-scr{position:relative;width:390px;height:844px;overflow:hidden;background:var(--bg)}
+.g6-i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.g6-m{font-family:"IBM Plex Mono",Consolas,Menlo,ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+
+/* en-tête de l'app */
+.g6-top{display:flex;align-items:center;gap:8px;height:56px;padding:0 10px;border-bottom:1px solid var(--line);background:var(--bg)}
+.g6-logo{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--ink)}
+.g6-logo svg{width:24px;height:24px}
+.g6-marque{font-size:18px;font-weight:600;letter-spacing:-.01em}
+.g6-mois{margin-left:auto;display:flex;height:38px;border:1px solid var(--line2);border-radius:12px;overflow:hidden}
+.g6-mois i{font-style:normal;display:grid;place-items:center;width:30px;color:var(--txt)}
+.g6-mois i svg{width:18px;height:18px}
+.g6-mois b{display:grid;place-items:center;width:52px;font-size:16px;font-weight:500;border-left:1px solid var(--line2);border-right:1px solid var(--line2)}
+.g6-loupe{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;border:1px solid var(--line2);background:var(--s1)}
+.g6-avs{position:relative;display:flex;width:52px}
+.g6-avs span{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;font-size:14px;font-weight:700}
+.g6-avs .g{background:var(--ink);color:#fff;position:relative;z-index:1}
+.g6-avs .a{background:var(--s2);color:var(--txt);margin-left:-8px}
+.g6-avs i{position:absolute;right:-1px;top:-3px;z-index:2;width:9px;height:9px;border-radius:50%;background:var(--ink);border:1.5px solid #fff}
+
+/* segments de l'app : gris, onglet actif noir */
+.g6-seg{display:flex;gap:2px;margin:8px 12px 0;padding:3px;border-radius:12px;background:var(--s1);border:1px solid var(--line)}
+.g6-seg a{flex:1 1 auto;display:flex;align-items:center;justify-content:center;gap:5px;height:36px;padding:0 6px;border-radius:9px;font-size:14px;color:var(--txt);white-space:nowrap}
+.g6-seg a.on{background:var(--ink);color:#fff;font-weight:600}
+.g6-seg .n{font-family:"IBM Plex Mono",Consolas,monospace;font-size:14px;color:var(--mut)}
+.g6-seg a.on .n{color:#fff}
+
+/* bandeau À venir · Réalisés (I3, v11-1) */
+.g6-sorties{display:flex;gap:8px;margin:8px 12px 0}
+.g6-so{flex:1;min-width:0;display:flex;align-items:center;gap:6px;height:44px;padding:0 8px 0 10px;border:1px solid var(--line2);border-radius:10px;background:var(--bg)}
+.g6-so b{font-size:16px;font-weight:600;white-space:nowrap}
+.g6-so span{font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.g6-so em{margin-left:auto;font-style:normal;color:var(--mut)}
+.g6-so em svg{width:16px;height:16px;display:block}
+.g6-so.r{flex:none;width:118px}
+.g6-so.r span{flex:none}
+.g6-so .g6-i{color:var(--hop)}
+
+/* titres et groupes */
+.g6-main{padding:0 12px}
+.g6-h2{display:flex;align-items:baseline;gap:6px;margin:12px 0 0;font-size:18px;font-weight:700}
+.g6-h2 .n{font-size:14px;font-weight:500;color:var(--mut)}
+.g6-gh{display:flex;align-items:center;margin:10px 0 6px}
+.g6-gh .t{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;background:var(--stkbg2);font-size:14px;font-weight:700;color:var(--ok)}
+.g6-gh .t .n{font-family:"IBM Plex Mono",Consolas,monospace;font-weight:500}
+.g6-gh .r{margin-left:auto;font-size:14px;color:var(--mut)}
+
+/* panneaux à filet */
+.g6-pan{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg)}
+.g6-row{display:flex;align-items:center;gap:12px;min-height:66px;padding:8px 12px}
+.g6-row+.g6-row{border-top:1px solid var(--line)}
+.g6-vg{flex:none;width:52px;height:52px;border-radius:8px;overflow:hidden;background:var(--s1);display:grid;place-items:center}
+.g6-vg>svg{width:100%;height:100%;display:block}
+.g6-vg.pic{background:var(--stkbg2);color:var(--ok)}
+.g6-vg.pic>svg{width:36px;height:36px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.g6-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.g6-tx b{font-size:16px;font-weight:600;line-height:1.25}
+.g6-tx span{font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-tx .nx{color:var(--txt)}.g6-tx .nx em{font-style:normal;font-weight:600;color:var(--ok)}
+.g6-tx .q{font-style:italic}
+.g6-tx .why{color:var(--txt)}
+.g6-tx .ve{display:inline-flex;align-items:center;gap:4px}
+.g6-tx .ve svg{width:16px;height:16px}
+.g6-fig{flex:none;display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.g6-fig .p{font-size:16px;font-weight:600}
+.g6-fig .u,.g6-fig .d{font-size:14px;color:var(--mut)}
+.g6-go{flex:none;display:inline-flex;align-items:center;gap:4px;height:36px;padding:0 10px;border-radius:10px;border:1px solid var(--stk);font-size:14px;font-weight:600;color:var(--ok)}
+.g6-go svg{width:16px;height:16px}
+.g6-col{flex-direction:column;align-items:stretch;gap:0;padding-bottom:0}
+.g6-col>.g6-ln{display:flex;align-items:center;gap:12px}
+.g6-avl{display:flex;align-items:center;gap:6px;height:38px;margin:8px -12px 0;padding:0 12px 0 76px;border-top:1px dashed var(--line);font-size:14px;font-weight:600;color:var(--ok)}
+.g6-avl svg{width:16px;height:16px}
+.g6-avl .go{margin-left:auto;display:inline-flex;align-items:center;gap:2px}
+.g6-ex{margin:10px 2px 0;font-size:14px;color:var(--mut)}
+
+/* retour, grand titre */
+.g6-backl{display:flex;align-items:center;height:42px;padding:0 12px 0 6px}
+.g6-back{display:inline-flex;align-items:center;gap:2px;font-size:16px;color:var(--fin)}
+.g6-etat{margin-left:auto;display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 10px;border-radius:999px;background:var(--s1);border:1px solid var(--line);font-size:14px;color:var(--txt)}
+.g6-etat svg{width:16px;height:16px;color:var(--ok)}
+.g6-h1{margin:0;font-size:28px;font-weight:700;line-height:1.15;letter-spacing:-.01em}
+.g6-sub{margin-top:2px;font-size:14px;color:var(--mut)}
+
+/* champ (C8) + bouton volant + onglets */
+.g6-fond{position:absolute;left:0;right:0;bottom:52px;height:86px;background:linear-gradient(rgba(255,255,255,0),#fff 38%);z-index:29}
+.g6-dock{position:absolute;left:12px;right:76px;bottom:62px;height:52px;display:flex;align-items:center;gap:2px;padding:0 6px 0 14px;border:1px solid var(--line2);border-radius:12px;background:var(--bg);box-shadow:0 4px 14px -8px rgba(0,0,0,.3);z-index:31}
+.g6-dock .ph{flex:1;min-width:0;font-size:16px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-dock .tx{flex:1;min-width:0;font-size:16px;color:var(--ink);white-space:nowrap}
+.g6-dock .ic{flex:none;display:grid;place-items:center;width:32px;height:34px;color:var(--mut)}
+.g6-dock .ic svg{width:19px;height:19px}
+.g6-dock .lkc>span{overflow:hidden;text-overflow:ellipsis}
+.g6-dock .lkc{flex:1;min-width:0;display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 10px;border-radius:999px;background:var(--s1);border:1px solid var(--line);font-size:14px;color:var(--txt);white-space:nowrap;overflow:hidden}
+.g6-dock .lkc svg{width:16px;height:16px}
+.g6-dock.kb{bottom:224px;right:12px;padding-right:6px}
+.g6-fab{position:absolute;right:12px;bottom:62px;width:52px;height:52px;border-radius:14px;background:var(--ink);color:#fff;display:grid;place-items:center;z-index:32;box-shadow:0 8px 18px -8px rgba(0,0,0,.55)}
+.g6-fab svg{width:26px;height:26px;stroke-width:2.4}
+.g6-nav{position:absolute;left:0;right:0;bottom:0;height:52px;display:flex;background:var(--s1);border-top:1px solid var(--line);z-index:30}
+.g6-nav a{flex:1;min-width:0;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:14px;letter-spacing:-.02em;color:var(--txt)}
+.g6-nav a svg{width:20px;height:20px}
+.g6-nav .fin svg{color:var(--fin)}.g6-nav .cal svg,.g6-nav .bra svg{color:var(--cop)}.g6-nav .stk svg{color:var(--hop)}
+.g6-nav .stk{--z:#567F45}.g6-nav .cal{--z:#9A4F1E}
+.g6-nav a.on{font-weight:600;color:var(--ink);background:color-mix(in srgb,var(--z) 13%,#F5F5F5);box-shadow:inset 0 3px 0 var(--z)}
+.g6-nav .bdg{position:absolute;top:1px;left:calc(50% + 2px);min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:var(--fin);color:#fff;font-size:14px;font-weight:600;line-height:20px;text-align:center;border:1px solid #F5F5F5;letter-spacing:0}
+
+/* boutons */
+.g6-btns{display:flex;gap:8px;margin-top:8px}
+.g6-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:38px;padding:0 10px;border-radius:10px;border:1px solid var(--line2);background:var(--bg);font-size:16px;font-weight:600;color:var(--ink);white-space:nowrap}
+.g6-btn svg{width:17px;height:17px}
+.g6-cta{display:flex;align-items:center;justify-content:center;gap:8px;height:46px;border-radius:10px;background:var(--stk);color:#fff;font-size:16px;font-weight:600}
+.g6-cta svg{width:19px;height:19px}
+.g6-tg{flex:none;position:relative;width:42px;height:24px;border-radius:12px;background:var(--stk)}
+.g6-tg:after{content:"";position:absolute;right:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff}
+
+/* 2 · ajouter une idée (v08-2 + I5) */
+.g6-ghost{margin-top:12px;padding:10px 12px;border:2px dashed var(--stk);border-radius:12px;background:var(--stkbg)}
+.g6-ghost .l1{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.g6-ghost .l1 b{font-size:18px;font-weight:700}
+.g6-ghost .ici{display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:600;color:var(--ok);white-space:nowrap}
+.g6-ghost .ici svg{width:16px;height:16px}
+.g6-ghost .l2{font-size:14px;color:var(--txt);margin-top:2px}
+.g6-ghost .l2 b{color:var(--ok)}
+.g6-caret{display:inline-block;width:2px;height:19px;background:var(--ink);margin-left:1px;vertical-align:-3px}
+.g6-ou{margin-top:10px}
+.g6-ou .q{font-size:14px;color:var(--mut);margin-bottom:6px}
+.g6-opts{display:flex;gap:8px}
+.g6-opt{flex:1;display:flex;align-items:center;gap:8px;min-height:56px;padding:6px 10px;border:1px solid var(--line2);border-radius:10px;font-size:14px;background:var(--bg)}
+.g6-opt b{font-weight:600}
+.g6-opt.on{border:2px solid var(--stk);background:var(--stkbg)}
+.g6-rad{flex:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--line2);background:#fff}
+.g6-opt.on .g6-rad{border:5px solid var(--stk)}
+.g6-opt em{display:flex;align-items:center;gap:4px;font-style:normal;font-size:14px;color:var(--mut)}
+.g6-opt em svg{width:15px;height:15px;color:var(--hop)}
+.g6-mini{margin-top:0}
+.g6-mr{display:flex;justify-content:space-between;align-items:center;height:42px;padding:0 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;font-size:16px}
+.g6-mr .st{font-size:14px;font-weight:600}
+.g6-mr .cu{color:var(--cuivre)}.g6-mr .or{color:var(--or)}.g6-mr .okk{color:var(--ok)}
+.g6-creer{flex:none;display:inline-flex;align-items:center;gap:4px;height:38px;padding:0 12px;border-radius:10px;background:var(--stk);color:#fff;font-size:16px;font-weight:600}
+.g6-creer svg{width:18px;height:18px}
+.g6-kbd{position:absolute;left:0;right:0;bottom:0;height:214px;padding:8px 3px 0;background:#D5D8DD;z-index:30}
+.g6-kbd .rg{display:flex;justify-content:center;gap:5px;margin-bottom:9px}
+.g6-kbd i{font-style:normal;display:grid;place-items:center;width:33px;height:42px;border-radius:6px;background:#fff;font-size:16px;color:var(--ink);box-shadow:0 1px 0 #9A9EA5}
+.g6-kbd i.k{width:44px;background:#B5BAC2;font-size:16px}
+.g6-kbd i.w{width:170px;font-size:16px}
+.g6-kbd i.go{width:60px;background:var(--stk);color:#fff}
+
+/* 3 · carnet ouvert (v04-1) */
+.g6-crit{display:flex;gap:8px;align-items:flex-start;margin-top:8px;padding:7px 10px;border-radius:10px;background:var(--s1);border:1px solid var(--line)}
+.g6-crit svg{color:var(--hop);margin-top:2px}
+.g6-crit em{display:block;font-style:normal;font-size:14px;color:var(--mut)}
+.g6-crit b{display:block;font-size:16px;font-weight:600;line-height:1.25}
+.g6-sep{margin-top:6px;padding:8px 12px 9px;border-radius:12px;background:var(--stkbg);border:1px solid color-mix(in srgb,#4C6B2A 28%,#FFFFFF)}
+.g6-crit2{display:flex;gap:8px;align-items:flex-start;padding-bottom:5px;margin-bottom:5px;border-bottom:1px solid color-mix(in srgb,#4C6B2A 25%,#FFFFFF)}
+.g6-crit2 svg{color:var(--hop);margin-top:2px}
+.g6-crit2 em{display:block;font-style:normal;font-size:14px;color:var(--mut)}
+.g6-crit2 b{display:block;font-size:16px;font-weight:600;line-height:1.25;color:var(--ink)}
+.g6-sep .g6-btn{height:34px}
+.g6-sep p{margin:0;font-size:14px;line-height:1.35;color:var(--txt)}
+.g6-sep p b{color:var(--ok)}
+.g6-sep s{color:var(--mut)}
+.g6-lh{display:flex;align-items:baseline;justify-content:space-between;margin:7px 0 5px}
+.g6-lh b{font-size:16px;font-weight:700}
+.g6-lh span{font-size:14px;color:var(--mut)}
+.g6-art{display:grid;grid-template-columns:44px 1fr auto;column-gap:10px;row-gap:0;align-items:center;padding:4px 10px;line-height:1.16}
+.g6-art+.g6-art{border-top:1px solid var(--line)}
+.g6-art>.g6-vg{grid-row:1/4;align-self:start;overflow:visible;position:relative;width:44px;height:44px;margin-top:3px}
+.g6-art>.g6-vg>svg{border-radius:8px}
+.g6-rk{position:absolute;left:-5px;top:-5px;min-width:22px;height:22px;border-radius:11px;background:var(--bg);border:1px solid var(--line2);font-size:14px;font-weight:700;display:grid;place-items:center;line-height:1}
+.g6-rk.best{background:var(--hop);border-color:var(--hop);color:#fff}
+.g6-rk.nv{color:var(--att);border-color:var(--attA)}
+.g6-art .nm{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-art .px{font-size:16px;font-weight:600;text-align:right;white-space:nowrap}
+.g6-art .vd{grid-column:2/4;font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-dl{color:var(--att)}.g6-dl.ok{color:var(--ok)}
+.g6-art .mini{grid-column:2/4;display:flex;align-items:center;gap:6px;margin-top:1px}
+.g6-o2{font-size:14px;font-weight:700;color:var(--ok)}
+.g6-rule{position:relative;height:16px;flex:1;min-width:70px}
+.g6-rule:before{content:"";position:absolute;left:0;right:0;top:7px;height:2px;border-radius:1px;background:var(--line)}
+.g6-dot{position:absolute;z-index:2;top:4px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--bg);border:2px solid var(--faint)}
+.g6-dot.out{border-style:dotted}
+.g6-dot.me{top:2px;width:12px;height:12px;margin-left:-6px;border:0;background:var(--hop);box-shadow:0 0 0 2px var(--bg)}
+.g6-rng{position:absolute;top:3px;height:10px;border-radius:5px;background:var(--ink)}
+.g6-rng.best{background:var(--hop)}
+.g6-rng.est{background:repeating-linear-gradient(90deg,var(--ink) 0 6px,var(--faint) 6px 9px)}
+.g6-rng.off{background:var(--faint)}
+.g6-mv{font-size:14px;color:var(--mut);white-space:nowrap}
+.g6-mv b{font-weight:600;color:var(--ink)}
+.g6-mv .nv{color:var(--att);font-weight:600}
+.g6-art.out{background:var(--s1)}
+.g6-art.out .nm,.g6-art.out .px{color:var(--mut)}
+.g6-art .why{grid-column:2/4;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;color:var(--txt)}
+.g6-art .why a{font-weight:600;color:var(--fin);white-space:nowrap}
+.g6-cmp{display:flex;align-items:center;gap:8px;margin-top:6px;height:38px;padding:0 10px 0 12px;border:1px solid var(--line2);border-radius:10px;font-size:16px;font-weight:600}
+.g6-cmp span{font-size:14px;font-weight:400;color:var(--mut)}
+.g6-cmp em{margin-left:auto;font-style:normal;color:var(--mut)}
+.g6-cmp em svg{width:18px;height:18px;display:block}
+
+/* 4 · ajouter à une idée (base E01b + v06-4 + v07-1) */
+.g6-q{margin-top:4px;font-size:16px;font-style:italic;color:var(--txt)}
+.g6-vide{display:flex;align-items:center;gap:8px;min-height:44px;border-bottom:1px solid var(--line);font-size:14px;color:var(--mut)}
+.g6-vide b{color:var(--ink);font-weight:600}
+.g6-vide svg{color:var(--mut)}
+.g6-vide:first-of-type{margin-top:10px;border-top:1px solid var(--line)}
+.g6-voile{position:absolute;left:0;right:0;top:0;bottom:52px;background:rgba(17,17,17,.38);z-index:20}
+.g6-menu{position:absolute;left:10px;right:10px;bottom:124px;z-index:25;background:var(--bg);border-radius:24px;padding:14px 14px 4px;box-shadow:0 -12px 40px -16px rgba(0,0,0,.4)}
+.g6-menu h3{margin:0;font-size:18px;font-weight:700}
+.g6-menu p{margin:2px 0 6px;font-size:14px;color:var(--mut)}
+.g6-mi{display:flex;align-items:center;gap:12px;min-height:56px;border-top:1px solid var(--line)}
+.g6-mi .ico{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--s1);color:var(--ink)}
+.g6-mi .t{flex:1;min-width:0;display:flex;flex-direction:column}
+.g6-mi .t b{font-size:16px;font-weight:600}
+.g6-mi .t span{font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-mi>svg:last-child{color:var(--faint)}
+.g6-coller{display:flex;align-items:center;gap:8px;margin:0 0 10px 48px;padding:5px 5px 5px 10px;border:1px solid var(--line);border-radius:10px;background:var(--s1);font-size:14px;color:var(--txt)}
+.g6-coller svg{width:16px;height:16px}
+.g6-coller .lk{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-coller .go{flex:none;display:grid;place-items:center;height:34px;padding:0 14px;border-radius:10px;background:var(--stk);color:#fff;font-weight:600;font-size:14px}
+.g6-land{margin-top:2px;padding:10px 12px;border:2px dashed var(--stk);border-radius:12px;background:var(--stkbg)}
+.g6-land .hd{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.g6-land .hd .g{display:inline-flex;align-items:center;gap:4px;font-weight:700;color:var(--ok)}
+.g6-land .hd .g svg{width:16px;height:16px}
+.g6-land .hd .s{color:var(--mut)}
+.g6-land .bd{display:flex;gap:12px;margin-top:8px}
+.g6-land .ph{flex:none;width:100px;height:92px;border-radius:8px;overflow:hidden;background:#e9edf0}
+.g6-land .ph svg{width:100%;height:100%;display:block}
+.g6-land .bt{display:flex;flex-direction:column;gap:1px;min-width:0;font-size:14px;color:var(--mut)}
+.g6-land .bt b{font-size:16px;font-weight:700;color:var(--ink);line-height:1.2}
+.g6-land .bt .pr{font-size:14px;color:var(--txt)}
+.g6-land .bt .pr .g6-m{font-size:16px;font-weight:600;color:var(--ink)}
+.g6-land .bt .ok{color:var(--ok)}
+.g6-land .vl{display:flex;align-items:center;gap:6px;margin-top:9px;padding-top:9px;border-top:1px solid color-mix(in srgb,#4C6B2A 25%,#FFFFFF);font-size:14px;color:var(--txt)}
+.g6-land .vl svg{width:17px;height:17px;color:var(--ok)}
+.g6-land .vl .g6-tg{margin-left:auto}
+.g6-land .ou{display:flex;align-items:center;gap:6px;margin-top:8px}
+.g6-land .ou b{font-size:14px}
+.g6-chip{display:inline-flex;align-items:center;gap:4px;height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line2);background:var(--bg);font-size:14px;font-weight:600;white-space:nowrap}
+.g6-chip svg{width:16px;height:16px}
+.g6-chip.on{background:var(--stk);border-color:var(--stk);color:#fff}
+
+/* 5 · cartes d'article (base E12b) */
+.g6-feuille{position:absolute;left:0;right:0;top:98px;bottom:52px;z-index:25;background:var(--bg);border-radius:24px 24px 0 0;box-shadow:0 -12px 40px -16px rgba(0,0,0,.35);padding:0 12px}
+.g6-grab{width:40px;height:4px;border-radius:2px;background:var(--line2);margin:8px auto 4px}
+.g6-fh{display:flex;align-items:center;justify-content:space-between}
+.g6-fh b{font-size:18px;font-weight:700}
+.g6-fh a{display:inline-flex;align-items:center;gap:2px;font-size:14px;color:var(--fin)}
+.g6-fh a svg{width:18px;height:18px}
+.g6-fs{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--mut);margin:1px 0 0}
+.g6-fs svg{width:16px;height:16px;color:var(--hop)}
+.g6-fs b{color:var(--ink);font-weight:600}
+.g6-ca{display:grid;grid-template-columns:76px 1fr auto;column-gap:10px;align-items:center;padding:7px 10px}
+.g6-ca+.g6-ca{border-top:1px solid var(--line)}
+.g6-ca .ph{grid-row:1/4;align-self:start;position:relative;width:76px;height:66px;border-radius:8px;background:var(--s1)}
+.g6-ca .ph svg{width:100%;height:100%;display:block}
+.g6-ca .nm{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-ca .p{font-size:16px;font-weight:600;text-align:right;white-space:nowrap}
+.g6-ca .vd{grid-column:2/4;font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-ca .tg{grid-column:2/4;display:flex;align-items:center;gap:8px;margin-top:3px;font-size:14px}
+.g6-crt{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:999px;background:var(--stkbg2);color:var(--ok);font-size:14px;font-weight:600;white-space:nowrap}
+.g6-crt.nv{background:var(--attbg);color:var(--att)}
+.g6-crt.gr{background:var(--s2);color:var(--txt)}
+.g6-ve{margin-left:auto;display:inline-flex;align-items:center;gap:3px;color:var(--ok);font-weight:600}
+.g6-ve svg{width:16px;height:16px}
+.g6-ca.out{background:var(--s1)}
+.g6-ca.out .nm,.g6-ca.out .p{color:var(--mut)}
+
+/* 6 · article ouvert (v01-2 + v02-2) */
+.g6-photo{position:relative;height:126px;border-radius:12px;overflow:hidden;background:#E4EAEE;display:grid;place-items:center;margin-top:2px}
+.g6-photo svg{width:156px;height:126px}
+.g6-photo .r1{position:absolute;left:8px;top:8px;display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:var(--hop);color:#fff;font-size:14px;font-weight:700}
+.g6-photo .src{position:absolute;left:8px;bottom:8px;display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 8px;border-radius:999px;background:rgba(255,255,255,.94);font-size:14px;color:var(--txt)}
+.g6-photo .src svg{width:16px;height:16px}
+.g6-photo .ext{position:absolute;right:8px;bottom:8px;display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.94);font-size:14px;font-weight:600;color:var(--fin)}
+.g6-an{margin-top:6px;font-size:18px;font-weight:700;line-height:1.2}
+.g6-as{font-size:14px;color:var(--mut)}
+.g6-regle{margin-top:6px;padding:6px 10px 6px;border-radius:10px;background:var(--stkbg)}
+.g6-regle .hd{display:flex;align-items:baseline;justify-content:space-between;font-size:14px;color:var(--txt)}
+.g6-regle .hd b{font-size:18px;color:var(--ok)}
+.g6-regle .hd b small{font-size:14px;font-weight:600}
+.g6-regle .bn{display:flex;justify-content:space-between;font-size:14px;color:var(--mut)}
+.g6-h4{display:flex;align-items:baseline;justify-content:space-between;margin:8px 0 0;font-size:16px;font-weight:700}
+.g6-h4 span{font-size:14px;font-weight:400;color:var(--mut)}
+.g6-of{display:flex;align-items:center;gap:10px;min-height:48px;border-bottom:1px solid var(--line)}
+.g6-of .vn{flex:1;min-width:0;display:flex;flex-direction:column}
+.g6-of .vn b{font-size:16px;font-weight:600}
+.g6-of .vn span{font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-of .pr{font-size:16px;font-weight:600}
+.g6-of .op{display:inline-flex;align-items:center;gap:2px;font-size:14px;font-weight:600;color:var(--fin);white-space:nowrap}
+.g6-of .op svg{width:15px;height:15px}
+.g6-of.sel .g6-rad{border:5px solid var(--stk)}
+.g6-car{display:grid;grid-template-columns:1fr 1fr;column-gap:12px;margin-top:2px}
+.g6-car div{display:flex;justify-content:space-between;align-items:baseline;min-height:30px;border-bottom:1px solid var(--line);font-size:14px;color:var(--mut)}
+.g6-car div span:last-child{color:var(--ink)}
+.g6-car .g6-m{font-size:14px;font-weight:600}
+.g6-car em{font-style:normal;font-weight:600;color:var(--ok);margin-left:4px;font-family:"Source Sans 3","Segoe UI",sans-serif}
+.g6-sv{display:flex;align-items:center;gap:8px;min-height:44px;font-size:14px;color:var(--txt)}
+.g6-sv svg{color:var(--ok)}
+.g6-sv>span:not(.g6-tg){flex:1;min-width:0}
+.g6-sv span b{font-weight:600;color:var(--ink)}
+.g6-part{margin-top:4px;font-size:14px;color:var(--txt)}
+
+/* 7 · comparer (base E14a + v03-4 + v01-3) */
+.g6-cl{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border-radius:999px;background:var(--stkbg2);color:var(--ok);font-size:14px;font-weight:600;margin-top:6px}
+.g6-cl svg{width:16px;height:16px}
+.g6-cl b{color:var(--ink)}
+.g6-bars{margin-top:6px;padding:4px 10px;border:1px solid var(--line);border-radius:12px}
+.g6-bar{display:grid;grid-template-columns:150px 1fr 70px;gap:8px;align-items:center;min-height:31px}
+.g6-bar+.g6-bar{border-top:1px solid var(--line)}
+.g6-bar .n{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-bar .n b{font-weight:600}
+.g6-bar .tk{height:10px;border-radius:5px;background:var(--s2);overflow:hidden}
+.g6-bar .tk i{display:block;height:100%;border-radius:5px;background:var(--faint)}
+.g6-bar .tk i.best{background:var(--hop)}
+.g6-bar .v{font-size:14px;font-weight:600;text-align:right;white-space:nowrap}
+.g6-bar .v.nv{color:var(--att);font-family:"Source Sans 3","Segoe UI",sans-serif}
+.g6-bar.out .n,.g6-bar.out .v{color:var(--mut)}
+.g6-tab{width:100%;margin-top:4px;border-collapse:collapse;font-size:14px}
+.g6-tab th{font-weight:600;padding:0 1px;vertical-align:bottom}
+.g6-tab thead th{text-align:center;font-size:14px;line-height:1.1;color:var(--txt)}
+.g6-tab thead svg{display:block;width:46px;height:40px;margin:0 auto 1px;border-radius:6px;background:var(--s1)}
+.g6-tab tbody th{text-align:left;font-weight:400;color:var(--mut);white-space:nowrap}
+.g6-tab td{text-align:center;height:27px;border-top:1px solid var(--line);font-family:"IBM Plex Mono",Consolas,monospace;font-size:14px;letter-spacing:-.03em;white-space:nowrap}
+.g6-tab tbody th{border-top:1px solid var(--line);height:27px}
+.g6-tab td.best{background:var(--stkbg2);color:var(--ok);font-weight:600}
+.g6-tab td.x,.g6-tab thead th.x{color:var(--mut)}
+.g6-cpr{margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--s1);font-size:14px;line-height:1.35;color:var(--txt)}
+.g6-cpr b{color:var(--ink)}
+
+/* 8 · choisi (v09-3 + v10-4 + v03-6) */
+.g6-hero{margin-top:8px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.g6-hero .top{display:flex;align-items:center;justify-content:space-between;height:32px;padding:0 12px;background:var(--stkbg);border-bottom:1px solid var(--line);font-size:14px}
+.g6-hero .top b{display:inline-flex;align-items:center;gap:4px;color:var(--ok)}
+.g6-hero .top b svg{width:16px;height:16px}
+.g6-hero .top a{font-weight:600;color:var(--fin)}
+.g6-hero .bd{display:flex;gap:12px;padding:8px 12px 4px}
+.g6-hero .bd .g6-vg{width:80px;height:70px}
+.g6-hero .bd .t{display:flex;flex-direction:column;gap:1px;min-width:0}
+.g6-hero .bd .t b{font-size:16px;font-weight:700;line-height:1.2}
+.g6-hero .bd .t span{font-size:14px;color:var(--mut)}
+.g6-hero .bd .t .pr{font-size:14px;color:var(--mut)}
+.g6-hero .bd .t .pr .g6-m{font-size:16px;font-weight:600;color:var(--ink)}
+.g6-hero .bd .t .pr s{margin-left:4px}
+.g6-coches{margin:0;padding:2px 12px 7px;list-style:none}
+.g6-coches li{display:flex;align-items:flex-start;gap:6px;font-size:14px;line-height:1.25;color:var(--txt);margin-top:2px}
+.g6-coches li svg{width:16px;height:16px;color:var(--ok);margin-top:1px}
+.g6-coches li b{font-weight:600;color:var(--ink)}
+.g6-cc{padding:6px 12px;border-top:1px solid var(--line);font-size:14px;color:var(--mut)}
+.g6-cc b{color:var(--ink);font-weight:600}
+.g6-send{margin-top:8px;padding:6px 12px 6px;border-radius:12px;background:var(--stkbg)}
+.g6-send p{margin:0 0 7px;font-size:14px;color:var(--txt)}
+.g6-ec .g6-row{min-height:40px;padding:3px 12px;gap:10px}
+.g6-ec .g6-tx span{white-space:normal;line-height:1.2}
+.g6-ec .g6-vg{width:38px;height:34px}
+.g6-ec .g6-tx b{font-size:16px;color:var(--txt)}
+.g6-ec .g6-fig .p{font-size:14px;font-weight:500;color:var(--mut)}
+
+/* 9 · À venir (v02-6 + v10-5) */
+.g6-gt{display:flex;align-items:center;gap:8px;margin:8px 0 6px;font-size:18px;font-weight:700;color:var(--fin)}
+.g6-gt i{width:14px;height:14px;border-radius:3px;background:var(--fin)}
+.g6-gt .g6-m{margin-left:auto;font-size:16px;font-weight:600}
+.g6-av{border:1px solid var(--line2);border-radius:12px;padding:10px 12px 12px}
+.g6-av .hd{display:flex;justify-content:space-between;align-items:baseline;font-size:14px}
+.g6-av .hd b{color:var(--fin);font-weight:600}
+.g6-av .hd span{color:var(--mut)}
+.g6-av .bd{display:flex;gap:12px;margin-top:8px;align-items:center}
+.g6-av .bd .g6-vg{width:64px;height:58px}
+.g6-av .bd .t{display:flex;flex-direction:column;gap:1px;min-width:0}
+.g6-av .bd .t b{font-size:16px;font-weight:600;line-height:1.2}
+.g6-av .bd .t span{font-size:14px;color:var(--mut)}
+.g6-av .bd .t .g6-m{font-size:16px;font-weight:600;color:var(--ink)}
+.g6-wh{margin:16px 0 2px;font-size:16px;font-weight:700}
+.g6-wk{display:flex;align-items:center;gap:10px;min-height:48px;border-bottom:1px solid var(--line)}
+.g6-wk .d{flex:none;width:96px;white-space:nowrap;font-size:14px;color:var(--txt)}
+.g6-wk i{flex:none;width:10px;height:10px;border-radius:3px}
+.g6-wk .t{flex:1;min-width:0;display:flex;flex-direction:column}
+.g6-wk .t b{font-size:16px;font-weight:600}
+.g6-wk .t span{font-size:14px;color:var(--mut)}
+.g6-wk>svg{color:var(--faint)}
+.g6-re{margin-top:14px;padding:10px 12px;border-radius:12px;background:var(--s1);font-size:14px;color:var(--txt)}
+.g6-re b{font-size:16px;color:var(--ink)}
+.g6-re b .g6-m{font-weight:500;color:var(--mut)}
+
+/* passe de correction (critique greffe2 v06) */
+.g6-h2 .x{margin-left:auto;font-size:14px;font-weight:400;color:var(--mut)}
+.g6-mh{margin:14px 0 6px;font-size:14px;color:var(--mut)}
+.g6-mr{color:var(--ink)}
+.g6-mr .rt{display:inline-flex;align-items:center;gap:4px}
+.g6-mr .rt svg{width:16px;height:16px;color:var(--faint)}
+.g6-crl{display:flex;gap:8px;align-items:flex-start;margin-top:8px}
+.g6-crl svg{color:var(--hop);margin-top:2px}
+.g6-crl em{display:block;font-style:normal;font-size:14px;color:var(--mut)}
+.g6-crl b{display:block;font-size:16px;font-weight:600;line-height:1.25}
+.g6-fq{margin:10px 0 6px;font-size:16px;font-weight:700}
+.g6-fcs{display:flex;gap:8px}
+.g6-fc{flex:1;min-width:0;padding:8px 10px;border:1px solid var(--line2);border-radius:12px;background:var(--bg)}
+.g6-fc.ret{border:2px solid var(--stk);background:var(--stkbg)}
+.g6-fc.out{background:var(--s1)}
+.g6-fc>b{display:block;font-size:16px;font-weight:700}
+.g6-fc.out>b{color:var(--mut)}
+.g6-fc .p{display:block;font-size:14px;color:var(--txt)}
+.g6-fc .w{display:block;font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-fc.ret .w{color:var(--ok);font-weight:600}
+.g6-rx{display:flex;margin-top:6px;border:1px solid var(--line2);border-radius:10px;overflow:hidden;background:var(--bg)}
+.g6-rx a{flex:1;display:grid;place-items:center;height:34px;font-size:14px;font-weight:600;color:var(--txt)}
+.g6-rx a+a{border-left:1px solid var(--line2)}
+.g6-rx a.on{background:var(--ink);color:#fff}
+.g6-at{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.g6-ath,.g6-atr{display:grid;grid-template-columns:40px minmax(0,1fr) 52px 34px 52px;column-gap:8px;align-items:center;padding:0 10px}
+.g6-ath{min-height:38px;background:var(--s1);border-bottom:1px solid var(--line);font-size:14px;line-height:1.1;color:var(--mut)}
+.g6-ath span{text-align:right}
+.g6-ath span:nth-child(2){text-align:left}
+.g6-atr{min-height:50px;padding-top:4px;padding-bottom:4px}
+.g6-atr+.g6-atr{border-top:1px solid var(--line)}
+.g6-atr>.g6-vg{position:relative;width:40px;height:38px;overflow:visible}
+.g6-atr>.g6-vg>svg{border-radius:8px}
+.g6-atr .t{min-width:0;display:flex;flex-direction:column}
+.g6-atr .t b{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-atr .t span{font-size:14px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-atr .t a{font-weight:600;color:var(--fin)}
+.g6-atr .c{font-family:"IBM Plex Mono",Consolas,monospace;font-size:14px;text-align:right;white-space:nowrap;letter-spacing:-.03em}
+.g6-atr .c.best{color:var(--ok);font-weight:600}
+.g6-atr .c.est{color:var(--mut)}
+.g6-atr .c.nv{font-family:"Source Sans 3","Segoe UI",sans-serif;font-weight:600;color:var(--att)}
+.g6-atr.out{background:var(--s1)}
+.g6-atr.out .t b,.g6-atr.out .c{color:var(--mut)}
+.g6-dock .g6-creer{height:38px}
+.g6-chip.sel{border:2px solid var(--stk);color:var(--ok)}
+.g6-chip.sel .g6-rad{width:16px;height:16px;border:5px solid var(--stk)}
+.g6-tg.off{background:var(--line2)}
+.g6-tg.off:after{right:auto;left:3px}
+.g6-sw{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--mut)}
+.g6-sw svg{width:16px;height:16px}
+.g6-sw.on{color:var(--ok);font-weight:600}
+.g6-sc{position:relative;display:block;height:14px}
+.g6-sc:before{content:"";position:absolute;left:0;right:0;top:6px;height:2px;border-radius:1px;background:var(--line)}
+.g6-sc i{position:absolute;top:2px;height:10px;border-radius:5px;background:var(--line2)}
+.g6-sc i.me{background:var(--hop)}
+.g6-sc i.est{background:repeating-linear-gradient(90deg,var(--faint) 0 6px,transparent 6px 9px)}
+.g6-sc em{position:absolute;left:0;top:-3px;font-style:normal;font-size:14px;font-weight:600;color:var(--att);background:var(--bg);padding-right:6px}
+.g6-iv{margin-top:6px;padding:2px 10px 4px;border:1px solid var(--line);border-radius:12px}
+.g6-ivr,.g6-ax{display:grid;grid-template-columns:112px 1fr 56px;gap:8px;align-items:center}
+.g6-ivr{min-height:31px;border-top:1px solid var(--line)}
+.g6-ax{min-height:24px;font-size:14px;color:var(--mut)}
+.g6-axs{position:relative;display:block;height:18px}.g6-axs b{position:absolute;top:0;font-weight:400;transform:translateX(-50%)}.g6-axs b:first-child{transform:none}.g6-axs b:last-child{transform:translateX(-100%)}
+.g6-ax>span:last-child{text-align:right}
+.g6-ivr .n{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g6-ivr .n b{font-weight:600}
+.g6-ivr .v{font-family:"IBM Plex Mono",Consolas,monospace;font-size:14px;font-weight:600;text-align:right;white-space:nowrap}
+.g6-ivr .v.best{color:var(--ok)}
+.g6-ivr .v.est{color:var(--mut);font-weight:500}
+.g6-ivr .v.nv{font-family:"Source Sans 3","Segoe UI",sans-serif;color:var(--att)}
+.g6-tab thead th.lg{text-align:left;font-weight:600;color:var(--ok);font-size:14px;line-height:1.15}
+.g6-tab thead svg{height:30px}.g6-tab td,.g6-tab tbody th{height:25px}
+.g6-xh{margin:10px 0 0;padding-bottom:4px;border-bottom:1px solid var(--line);font-size:16px;font-weight:700}
+.g6-xr{padding:4px 0 5px;border-bottom:1px solid var(--line);font-size:14px;color:var(--mut)}
+.g6-xr b{display:block;font-size:16px;font-weight:600;color:var(--txt)}
+.g6-xr a{font-weight:600;color:var(--fin)}
+.g6-av{display:block}
+.g6-av+.g6-av{margin-top:8px}
+.g6-av .hd .fx{display:inline-flex;align-items:center;gap:4px;font-weight:600;color:var(--fin)}
+.g6-av .hd .fx svg{width:16px;height:16px}
+.g6-av .bd>svg{margin-left:auto;color:var(--faint)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<linearGradient id="v4-inox" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E4E8EB"/><stop offset=".55" stop-color="#B7C0C7"/><stop offset="1" stop-color="#8E99A2"/></linearGradient>
+<linearGradient id="v4-bt" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5A3A14"/><stop offset=".45" stop-color="#9A6526"/><stop offset="1" stop-color="#5A3A14"/></linearGradient>
+<linearGradient id="v4-vit" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E3EEF3"/><stop offset="1" stop-color="#BFD3DD"/></linearGradient>
+<symbol id="v4-btl" viewBox="0 0 8 26"><rect x="2.6" y="0" width="2.8" height="7" fill="#4A2F10"/><path d="M2.6 7 Q0 10 0 13 V25 Q0 26 1 26 H7 Q8 26 8 25 V13 Q8 10 5.4 7Z" fill="url(#v4-bt)"/><rect x="0" y="15" width="8" height="5" fill="#E9DCC0"/></symbol>
+<!-- 1 · isobarique 4 becs pré‑évacuation : pompe à vide à gauche, manomètre vert -->
+<symbol id="v4-m-pre" viewBox="0 0 100 88"><ellipse cx="52" cy="82" rx="42" ry="4" fill="#00000018"/><rect x="6" y="40" width="14" height="22" rx="2" fill="#5E6A73"/><circle cx="13" cy="51" r="4" fill="#2E3A42"/><path d="M20 46h6" stroke="#5E6A73" stroke-width="3"/><rect x="24" y="10" width="68" height="24" rx="3" fill="url(#v4-inox)" stroke="#7E8A93"/><circle cx="83" cy="22" r="6" fill="#FFFFFF" stroke="#5E6A73" stroke-width="1.5"/><path d="M83 22l3-3" stroke="#3F6B2E" stroke-width="2"/><g fill="#55616B"><rect x="33" y="34" width="3" height="10"/><rect x="47" y="34" width="3" height="10"/><rect x="61" y="34" width="3" height="10"/><rect x="75" y="34" width="3" height="10"/></g><use href="#v4-btl" x="30.5" y="44" width="8" height="26"/><use href="#v4-btl" x="44.5" y="44" width="8" height="26"/><use href="#v4-btl" x="58.5" y="44" width="8" height="26"/><use href="#v4-btl" x="72.5" y="44" width="8" height="26"/><rect x="22" y="70" width="72" height="6" rx="2" fill="#7E8A93"/><path d="M28 76v6M88 76v6" stroke="#5E6A73" stroke-width="3"/></symbol>
+<!-- 2 · monobloc 6 becs : caisson vitré, carrousel -->
+<symbol id="v4-m-mono" viewBox="0 0 100 88"><ellipse cx="50" cy="83" rx="46" ry="4" fill="#00000018"/><rect x="4" y="6" width="92" height="72" rx="4" fill="url(#v4-inox)" stroke="#7E8A93"/><rect x="10" y="14" width="80" height="48" rx="3" fill="url(#v4-vit)" stroke="#8EA7B4"/><path d="M14 52 Q50 62 86 52" stroke="#7E8A93" stroke-width="3" fill="none"/><use href="#v4-btl" x="17" y="28" width="7" height="22"/><use href="#v4-btl" x="29" y="31" width="7" height="22"/><use href="#v4-btl" x="41" y="33" width="7" height="22"/><use href="#v4-btl" x="53" y="33" width="7" height="22"/><use href="#v4-btl" x="65" y="31" width="7" height="22"/><use href="#v4-btl" x="77" y="28" width="7" height="22"/><rect x="70" y="66" width="18" height="7" rx="1.5" fill="#2E3A42"/><circle cx="16" cy="70" r="3" fill="#3F6B2E"/></symbol>
+<!-- 3 · isobarique 4 becs compact : sur roulettes -->
+<symbol id="v4-m-cpt" viewBox="0 0 100 88"><ellipse cx="50" cy="84" rx="38" ry="3.5" fill="#00000018"/><rect x="18" y="16" width="64" height="18" rx="3" fill="url(#v4-inox)" stroke="#7E8A93"/><g fill="#55616B"><rect x="26" y="34" width="3" height="8"/><rect x="40" y="34" width="3" height="8"/><rect x="54" y="34" width="3" height="8"/><rect x="68" y="34" width="3" height="8"/></g><use href="#v4-btl" x="23.5" y="42" width="8" height="24"/><use href="#v4-btl" x="37.5" y="42" width="8" height="24"/><use href="#v4-btl" x="51.5" y="42" width="8" height="24"/><use href="#v4-btl" x="65.5" y="42" width="8" height="24"/><rect x="16" y="66" width="68" height="8" rx="2" fill="#7E8A93"/><circle cx="24" cy="79" r="4" fill="#2E3A42"/><circle cx="76" cy="79" r="4" fill="#2E3A42"/></symbol>
+<!-- 4 · isobarique 4 becs semi-auto : levier et manomètre -->
+<symbol id="v4-m-semi" viewBox="0 0 100 88"><ellipse cx="50" cy="83" rx="40" ry="3.5" fill="#00000018"/><rect x="14" y="14" width="66" height="20" rx="3" fill="url(#v4-inox)" stroke="#7E8A93"/><path d="M80 22h8l6-12" stroke="#2E3A42" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="94" cy="9" r="3.5" fill="#C8382F"/><circle cx="24" cy="24" r="5" fill="#FFFFFF" stroke="#5E6A73" stroke-width="1.5"/><g fill="#55616B"><rect x="34" y="34" width="3" height="8"/><rect x="46" y="34" width="3" height="8"/><rect x="58" y="34" width="3" height="8"/><rect x="70" y="34" width="3" height="8"/></g><use href="#v4-btl" x="31.5" y="42" width="8" height="25"/><use href="#v4-btl" x="43.5" y="42" width="8" height="25"/><use href="#v4-btl" x="55.5" y="42" width="8" height="25"/><use href="#v4-btl" x="67.5" y="42" width="8" height="25"/><rect x="12" y="67" width="72" height="6" rx="2" fill="#7E8A93"/><path d="M20 73v8M76 73v8" stroke="#5E6A73" stroke-width="3"/></symbol>
+<!-- 5 · isobarique 2 becs de table -->
+<symbol id="v4-m-two" viewBox="0 0 100 88"><rect x="6" y="66" width="88" height="6" fill="#C9B79A"/><path d="M12 72v14M88 72v14" stroke="#A8957A" stroke-width="4"/><rect x="30" y="18" width="40" height="18" rx="3" fill="url(#v4-inox)" stroke="#7E8A93"/><path d="M50 18V8h10" stroke="#5E6A73" stroke-width="2.5" fill="none"/><g fill="#55616B"><rect x="38" y="36" width="3" height="7"/><rect x="59" y="36" width="3" height="7"/></g><use href="#v4-btl" x="35.5" y="42" width="8" height="24"/><use href="#v4-btl" x="56.5" y="42" width="8" height="24"/></symbol>
+<symbol id="ph-chambre" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e2ecf3"/><rect x="18" y="14" width="64" height="62" rx="3" fill="#c9d6df" stroke="#7e93a3" stroke-width="2"/><rect x="40" y="26" width="22" height="46" rx="2" fill="#f4f8fb" stroke="#7e93a3" stroke-width="2"/><rect x="56" y="46" width="3" height="8" fill="#55616b"/><path d="M24 20h10M24 25h10" stroke="#7e93a3" stroke-width="2"/></symbol>
+<symbol id="ph-hotte" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e9e9e6"/><path d="M14 52 30 26h40l16 26z" fill="#b8bec3" stroke="#6d757b" stroke-width="2"/><rect x="42" y="6" width="16" height="20" fill="#9aa1a7"/><path d="M30 64c6-6 6-10 0-14M50 66c6-6 6-10 0-14M70 64c6-6 6-10 0-14" stroke="#9aa1a7" stroke-width="2" fill="none"/></symbol>
+<symbol id="ph-extr" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e6ebe4"/><rect x="20" y="14" width="60" height="60" rx="6" fill="#c7cfc3" stroke="#6b7a66" stroke-width="2"/><circle cx="50" cy="44" r="22" fill="#eef2ec" stroke="#6b7a66" stroke-width="2"/><path d="M50 44 50 26M50 44l16 9M50 44l-16 9" stroke="#4c6b2a" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="44" r="4" fill="#4c6b2a"/></symbol>
+<symbol id="g6-evier" viewBox="0 0 76 76"><rect width="76" height="76" fill="#e9edf0"/><rect x="8" y="22" width="60" height="9" rx="1.5" fill="#c9d1d8" stroke="#6d7880" stroke-width="1.5"/><rect x="13" y="31" width="22" height="14" rx="2" fill="#eef2f5" stroke="#6d7880" stroke-width="1.5"/><rect x="41" y="31" width="22" height="14" rx="2" fill="#eef2f5" stroke="#6d7880" stroke-width="1.5"/><path d="M14 45v22M62 45v22M14 58h48" stroke="#6d7880" stroke-width="2"/><path d="M38 22V10h8v5" stroke="#55616b" stroke-width="2" fill="none"/></symbol>
+<symbol id="g6-mug" viewBox="0 0 24 24"><path d="M6 8h10v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z" fill="#F2C14E"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16" fill="none" stroke="#F2C14E" stroke-width="2"/><path d="M5.5 8.5a2.3 2.3 0 0 1 1.6-3.6 2.8 2.8 0 0 1 4.4-1.3 2.6 2.6 0 0 1 4.3.9 2 2 0 0 1 .7 4z" fill="#FFFFFF"/><path d="M9 12v6M13 12v6" stroke="#C87A2C" stroke-width="1.4"/></symbol>
+<symbol id="g6-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="g6-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+<symbol id="g6-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="g6-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8a2.5 2.5 0 0 1 1-4.5c.8-1.5 3-2 4-1 1-1 3.5-1 4.5.5A2.5 2.5 0 0 1 17 8z"/></symbol>
+<symbol id="g6-boxes" viewBox="0 0 24 24"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></symbol>
+<symbol id="g6-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="g6-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="g6-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="g6-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="g6-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="g6-down" viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+<symbol id="g6-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="g6-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+<symbol id="g6-calin" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></symbol>
+<symbol id="g6-done" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></symbol>
+<symbol id="g6-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+<symbol id="g6-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="g6-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+<symbol id="g6-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+<symbol id="g6-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="g6-fork" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="12" cy="20" r="2"/><path d="M6 7v2a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7M12 12v6"/></symbol>
+<symbol id="g6-tag" viewBox="0 0 24 24"><path d="M20 12 12 20 4 12V4h8z"/><circle cx="8.5" cy="8.5" r="1.5"/></symbol>
+<symbol id="g6-note" viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></symbol>
+<symbol id="g6-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+<symbol id="g6-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+</defs>
+</svg>
+
+<div class="g6-rail">
+
+<!-- ================= 1 · LISTE DES CARNETS · v09-1 (son n° 1) ; en tête I3 (v11-1) ================= -->
+<figure class="g6-cad">
+<section class="g6-scr" aria-label="1 · Liste des carnets">
+<header class="g6-top"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#g6-mug"/></svg></span><span class="g6-marque">L'Affinée</span><span class="g6-mois"><i><svg class="g6-i"><use href="#g6-left"/></svg></i><b>Nov.</b><i><svg class="g6-i"><use href="#g6-right"/></svg></i></span><span class="g6-loupe"><svg class="g6-i"><use href="#g6-search"/></svg></span><span class="g6-avs"><span class="g">G</span><span class="a">A</span><i></i></span></header>
+<nav class="g6-seg" aria-label="Vue des stocks"><a href="#">Articles</a><a href="#">Courses</a><a href="#">Fûts</a><a href="#" class="on" aria-current="page">Matériel</a><a href="#">Houblons</a></nav>
+<div class="g6-sorties">
+  <a class="g6-so" href="#"><svg class="g6-i"><use href="#g6-calin"/></svg><b>À venir</b><span>Embouteillage, Frigo</span><em><svg class="g6-i"><use href="#g6-right"/></svg></em></a>
+  <a class="g6-so r" href="#"><b>Réalisés</b><span class="g6-m">0</span><em><svg class="g6-i"><use href="#g6-right"/></svg></em></a>
+</div>
+<main class="g6-main">
+  <h2 class="g6-h2">Carnets <span class="n g6-m">4</span><span class="x">fournisseurs et prix : exemple</span></h2>
+  <div class="g6-gh"><span class="t">À comparer <span class="n">1</span></span></div>
+  <div class="g6-pan">
+    <a class="g6-row" href="#">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-hotte"/></svg></span>
+      <span class="g6-tx"><b>Ventilation de la salle de brassage</b><span class="nx"><em>Ensuite :</em> avis du ferblantier</span><span class="ve">2 façons · 5 articles · <svg class="g6-i"><use href="#g6-eye"/></svg>1 en veille</span></span>
+      <span class="g6-fig"><span class="d">dès</span><span class="p g6-m">420</span><span class="u">CHF</span></span>
+    </a>
+  </div>
+  <div class="g6-gh"><span class="t">Idée <span class="n">1</span></span><span class="r">pas encore d'article</span></div>
+  <div class="g6-pan">
+    <div class="g6-row g6-col">
+      <a class="g6-ln" href="#">
+        <span class="g6-vg pic"><svg viewBox="0 0 40 40"><path d="M4 18h32"/><path d="M6 18v9a3 3 0 0 0 3 3h22a3 3 0 0 0 3-3v-9"/><path d="M20 18v12"/><path d="M20 18V9h7v4"/></svg></span>
+        <span class="g6-tx"><b>Évier inox</b><span class="q">« 2 bacs pour laver les fûts »</span></span>
+      </a>
+      <a class="g6-avl" href="#"><svg class="g6-i"><use href="#g6-search"/></svg>Chercher des éviers à 2 bacs en ligne<span class="go"><svg class="g6-i"><use href="#g6-right"/></svg></span></a>
+    </div>
+  </div>
+  <div class="g6-gh"><span class="t">Choisi <span class="n">2</span></span></div>
+  <div class="g6-pan">
+    <div class="g6-row g6-col">
+      <a class="g6-ln" href="#">
+        <span class="g6-vg"><svg viewBox="0 0 100 88"><use href="#v4-m-pre"/></svg></span>
+        <span class="g6-tx"><b>Embouteillage</b><span class="why">oxygène le plus bas, SAV suisse</span><span>le 17 nov. · Brassage Romandie</span></span>
+        <span class="g6-fig"><span class="p g6-m">11 700</span><span class="u">CHF</span></span>
+      </a>
+      <a class="g6-avl" href="#"><svg class="g6-i"><use href="#g6-calin"/></svg>Dans À venir depuis le 17 nov.<span class="go">Voir<svg class="g6-i"><use href="#g6-right"/></svg></span></a>
+    </div>
+    <div class="g6-row g6-col">
+      <a class="g6-ln" href="#">
+        <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-chambre"/></svg></span>
+        <span class="g6-tx"><b>Frigo de garde pour fûts</b><span class="why">tient 2 °C en été, 6 fûts</span><span>le 10 oct. · Froid Léman</span></span>
+        <span class="g6-fig"><span class="p g6-m">4 900</span><span class="u">CHF</span></span>
+      </a>
+      <a class="g6-avl" href="#"><svg class="g6-i"><use href="#g6-calin"/></svg>Dans À venir depuis le 16 nov.<span class="go">Voir<svg class="g6-i"><use href="#g6-right"/></svg></span></a>
+    </div>
+  </div>
+</main>
+<div class="g6-fond"></div>
+<div class="g6-dock"><span class="ph">Une idée, un besoin…</span><span class="ic"><svg class="g6-i"><use href="#g6-cam"/></svg></span><span class="ic"><svg class="g6-i"><use href="#g6-mic"/></svg></span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#g6-plus"/></svg></a>
+<nav class="g6-nav" aria-label="Navigation"><a href="#"><svg class="g6-i"><use href="#g6-bord"/></svg>Bord</a><a href="#" class="fin"><svg class="g6-i"><use href="#g6-wallet"/></svg>Finances</a><a href="#" class="cal"><svg class="g6-i"><use href="#g6-cal"/></svg>Calendrier</a><a href="#" class="bra"><svg class="g6-i"><use href="#g6-beer"/></svg>Brassins</a><a href="#" class="stk on" aria-current="page"><svg class="g6-i"><use href="#g6-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#"><svg class="g6-i"><use href="#g6-users"/></svg>Clients</a></nav>
+</section>
+<figcaption><b>1 · Liste des carnets</b> — v09-1 (son n° 1), une ligne par carnet, groupé par état. En tête, I3 (v11-1) : les deux sorties, À venir et Réalisés. L'idée dit ce qu'elle cherche : des éviers à 2 bacs, en ligne.</figcaption>
+</figure>
+
+<!-- ================= 2 · AJOUTER UNE IDÉE · v08-2 (n° 1) ; sous la carte I5 (v06-1) ================= -->
+<figure class="g6-cad">
+<section class="g6-scr" aria-label="2 · Ajouter une idée">
+<header class="g6-top"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#g6-mug"/></svg></span><span class="g6-marque">L'Affinée</span><span class="g6-mois"><i><svg class="g6-i"><use href="#g6-left"/></svg></i><b>Nov.</b><i><svg class="g6-i"><use href="#g6-right"/></svg></i></span><span class="g6-loupe"><svg class="g6-i"><use href="#g6-search"/></svg></span><span class="g6-avs"><span class="g">G</span><span class="a">A</span><i></i></span></header>
+<nav class="g6-seg" aria-label="Vue des stocks"><a href="#">Articles</a><a href="#">Courses</a><a href="#">Fûts</a><a href="#" class="on" aria-current="page">Matériel</a><a href="#">Houblons</a></nav>
+<main class="g6-main">
+  <div class="g6-ghost">
+    <div class="l1"><b>Condenseur de buée<span class="g6-caret"></span></b><span class="ici"><svg class="g6-i"><use href="#g6-down"/></svg>arrive ici</span></div>
+    <div class="l2">Nouveau carnet · <b>Idée</b></div>
+  </div>
+  <div class="g6-ou">
+    <div class="q">Où ranger « condenseur de buée » ?</div>
+    <div class="g6-opts">
+      <span class="g6-opt on"><i class="g6-rad"></i><b>Nouveau carnet</b></span>
+      <span class="g6-opt"><i class="g6-rad"></i><span><b>Dans Ventilation</b><em><svg class="g6-i"><use href="#g6-spark"/></svg>IA : proche</em></span></span>
+    </div>
+  </div>
+  <div class="g6-mh">ou dans un autre carnet, d'un toucher</div>
+  <div class="g6-mini">
+    <a class="g6-mr" href="#"><span>Évier inox</span><span class="rt"><span class="st or">Idée</span><svg class="g6-i"><use href="#g6-right"/></svg></span></a>
+    <a class="g6-mr" href="#"><span>Embouteillage</span><span class="rt"><span class="st okk">Choisi</span><svg class="g6-i"><use href="#g6-right"/></svg></span></a>
+    <a class="g6-mr" href="#"><span>Frigo de garde pour fûts</span><span class="rt"><span class="st okk">Choisi</span><svg class="g6-i"><use href="#g6-right"/></svg></span></a>
+  </div>
+</main>
+<div class="g6-dock kb"><span class="tx">condenseur de buée<span class="g6-caret"></span></span><span class="ic"><svg class="g6-i"><use href="#g6-cam"/></svg></span><span class="ic"><svg class="g6-i"><use href="#g6-mic"/></svg></span><span class="g6-creer"><svg class="g6-i"><use href="#g6-plus"/></svg>Créer</span></div>
+<div class="g6-kbd" aria-hidden="true">
+  <div class="rg"><i>a</i><i>z</i><i>e</i><i>r</i><i>t</i><i>y</i><i>u</i><i>i</i><i>o</i><i>p</i></div>
+  <div class="rg"><i>q</i><i>s</i><i>d</i><i>f</i><i>g</i><i>h</i><i>j</i><i>k</i><i>l</i><i>m</i></div>
+  <div class="rg"><i class="k">⇧</i><i>w</i><i>x</i><i>c</i><i>v</i><i>b</i><i>n</i><i>’</i><i class="k">⌫</i></div>
+  <div class="rg"><i class="k">123</i><i>,</i><i class="w">espace</i><i>.</i><i class="go">↵</i></div>
+</div>
+</section>
+<figcaption><b>2 · Ajouter une idée</b> — v08-2 (son n° 1) : la carte « arrive ici » dit avant le geste qu'on crée un carnet ; la rangée de Stocks reste celle de l'écran 1. Sous la carte, I5 (v06-1) : nouveau carnet, ou dans Ventilation, que l'IA voit proche ; les autres carnets se touchent. Le champ reste au-dessus du clavier.</figcaption>
+</figure>
+
+<!-- ================= 3 · UN CARNET OUVERT · v04-1 (Top4) en cadre ; v11-3 « Comparer côte à côte » ; v12-2 conclusion ================= -->
+<figure class="g6-cad">
+<section class="g6-scr" aria-label="3 · Un carnet ouvert">
+<header class="g6-top"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#g6-mug"/></svg></span><span class="g6-marque">L'Affinée</span><span class="g6-mois"><i><svg class="g6-i"><use href="#g6-left"/></svg></i><b>Nov.</b><i><svg class="g6-i"><use href="#g6-right"/></svg></i></span><span class="g6-loupe"><svg class="g6-i"><use href="#g6-search"/></svg></span><span class="g6-avs"><span class="g">G</span><span class="a">A</span><i></i></span></header>
+<div class="g6-backl"><a class="g6-back" href="#"><svg class="g6-i"><use href="#g6-left"/></svg>Carnets</a><span class="g6-etat">on compare</span></div>
+<main class="g6-main">
+  <h1 class="g6-h1">Embouteillage</h1>
+  <div class="g6-sub">Soutireuse à bouteilles · 2 façons · 6 articles · exemple</div>
+  <div class="g6-crl"><svg class="g6-i"><use href="#g6-target"/></svg><span><em>Critère, proposé par l'IA et gardé</em><b>le moins d'oxygène capté au remplissage</b></span></div>
+  <div class="g6-fq">Isobarique ou gravité ?</div>
+  <div class="g6-fcs">
+    <div class="g6-fc ret"><b>Isobarique</b><span class="p"><span class="g6-m">3 900–24 800</span> CHF</span><span class="w">remplit sous CO₂</span><div class="g6-rx"><a href="#" class="on">Retenue</a><a href="#">Écarter</a></div></div>
+    <div class="g6-fc out"><b>Gravité</b><span class="p">O₂ ≈ <span class="g6-m">400</span> ppb</span><span class="w">la bière prend l'air</span><div class="g6-rx"><a href="#">Retenir</a><a href="#" class="on">Écartée</a></div></div>
+  </div>
+  <div class="g6-lh"><b>Articles</b><span>5 lus, 1 lien sans aperçu</span></div>
+  <div class="g6-at">
+    <div class="g6-ath"><span></span><span>du moins au plus d'O₂</span><span>O₂<br>ppb</span><span>bt/h</span><span>prix<br>CHF</span></div>
+    <div class="g6-atr"><span class="g6-vg"><svg viewBox="0 0 100 88"><use href="#v4-m-pre"/></svg><b class="g6-rk best">1</b></span><span class="t"><b>Pré-évacuation</b><span>4 becs · DE et CH</span></span><span class="c best">30–50</span><span class="c">600</span><span class="c">11 400</span></div>
+    <div class="g6-atr"><span class="g6-vg"><svg viewBox="0 0 100 88"><use href="#v4-m-mono"/></svg><b class="g6-rk ">2</b></span><span class="t"><b>Monobloc 6 becs</b><span>IT · délai 6 sem.</span></span><span class="c">40–70</span><span class="c best">900</span><span class="c">24 800</span></div>
+    <div class="g6-atr"><span class="g6-vg"><svg viewBox="0 0 100 88"><use href="#v4-m-cpt"/></svg><b class="g6-rk ">3</b></span><span class="t"><b>Compact</b><span>4 becs · FR · O₂ estimé</span></span><span class="c est">60–100</span><span class="c">400</span><span class="c">9 600</span></div>
+    <div class="g6-atr"><span class="g6-vg"><svg viewBox="0 0 100 88"><use href="#v4-m-semi"/></svg><b class="g6-rk nv">?</b></span><span class="t"><b>Semi-auto</b><span>4 becs · CH · en stock</span></span><span class="c nv">?</span><span class="c">250</span><span class="c best">8 900</span></div>
+    <div class="g6-atr out"><span class="g6-vg"><svg viewBox="0 0 100 88"><use href="#v4-m-two"/></svg></span><span class="t"><b>Table 2 becs</b><span>trop lent · <a href="#">Reprendre</a></span></span><span class="c">80–150</span><span class="c">100</span><span class="c">3 900</span></div>
+  </div>
+  <a class="g6-cmp" href="#">Comparer côte à côte <span>4 gardés, 6 mesures</span><em><svg class="g6-i"><use href="#g6-right"/></svg></em></a>
+</main>
+<div class="g6-fond"></div>
+<div class="g6-dock"><span class="ph">Ajouter à Embouteillage…</span><span class="ic"><svg class="g6-i"><use href="#g6-cam"/></svg></span><span class="ic"><svg class="g6-i"><use href="#g6-mic"/></svg></span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#g6-plus"/></svg></a>
+<nav class="g6-nav" aria-label="Navigation"><a href="#"><svg class="g6-i"><use href="#g6-bord"/></svg>Bord</a><a href="#" class="fin"><svg class="g6-i"><use href="#g6-wallet"/></svg>Finances</a><a href="#" class="cal"><svg class="g6-i"><use href="#g6-cal"/></svg>Calendrier</a><a href="#" class="bra"><svg class="g6-i"><use href="#g6-beer"/></svg>Brassins</a><a href="#" class="stk on" aria-current="page"><svg class="g6-i"><use href="#g6-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#"><svg class="g6-i"><use href="#g6-users"/></svg>Clients</a></nav>
+</section>
+<figcaption><b>3 · Un carnet ouvert</b> — v11-3 (son n° 2) : le critère proposé par l'IA, les deux façons côte à côte avec Retenir / Écarter, les articles en tableau O₂, cadence, prix, le meilleur en vert, « Comparer côte à côte ». De v04-1 (Top4) : le dessin et le rang de chaque machine, l'écarté en bas avec Reprendre. Le carnet garde son nom, Embouteillage.</figcaption>
+</figure>
+
+<!-- ================= 4a · AJOUTER À UNE IDÉE · base E01b (n° 3) ; le + dit QUOI (v06-4) ================= -->
+<figure class="g6-cad">
+<section class="g6-scr" aria-label="4a · Ajouter à une idée, le + ouvert">
+<header class="g6-top"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#g6-mug"/></svg></span><span class="g6-marque">L'Affinée</span><span class="g6-mois"><i><svg class="g6-i"><use href="#g6-left"/></svg></i><b>Nov.</b><i><svg class="g6-i"><use href="#g6-right"/></svg></i></span><span class="g6-loupe"><svg class="g6-i"><use href="#g6-search"/></svg></span><span class="g6-avs"><span class="g">G</span><span class="a">A</span><i></i></span></header>
+<div class="g6-backl"><a class="g6-back" href="#"><svg class="g6-i"><use href="#g6-left"/></svg>Carnets</a><span class="g6-etat">Idée · 16 nov.</span></div>
+<main class="g6-main">
+  <h1 class="g6-h1">Évier inox</h1>
+  <div class="g6-q">« 2 bacs pour laver les fûts »</div>
+  <div class="g6-vide"><svg class="g6-i"><use href="#g6-fork"/></svg><b>Façons</b> aucune encore</div>
+  <div class="g6-vide"><svg class="g6-i"><use href="#g6-tag"/></svg><b>Articles</b> aucun encore</div>
+</main>
+<div class="g6-voile"></div>
+<div class="g6-menu">
+  <h3>Ajouter à Évier inox</h3>
+  <p>Qu'est-ce que c'est ? Photo, voix ou texte viennent ensuite, dans le champ.</p>
+  <div class="g6-mi"><span class="ico"><svg class="g6-i"><use href="#g6-tag"/></svg></span><span class="t"><b>Article</b><span>un objet à acheter : lien, photo ou nom</span></span><svg class="g6-i"><use href="#g6-right"/></svg></div>
+  <div class="g6-coller"><svg class="g6-i"><use href="#g6-link"/></svg><span class="lk">Lien copié : <span class="g6-m">inox-riviera.ch/evier-2-bacs</span></span><span class="go">Coller</span></div>
+  <div class="g6-mi"><span class="ico"><svg class="g6-i"><use href="#g6-fork"/></svg></span><span class="t"><b>Façon</b><span>une manière de faire : encastré, sur pieds…</span></span><svg class="g6-i"><use href="#g6-right"/></svg></div>
+  <div class="g6-mi"><span class="ico"><svg class="g6-i"><use href="#g6-target"/></svg></span><span class="t"><b>Critère</b><span>ce qui départage : profondeur de bac, prix…</span></span><svg class="g6-i"><use href="#g6-right"/></svg></div>
+  <div class="g6-mi"><span class="ico"><svg class="g6-i"><use href="#g6-note"/></svg></span><span class="t"><b>Note</b><span>un rappel, une remarque</span></span><svg class="g6-i"><use href="#g6-right"/></svg></div>
+</div>
+<a class="g6-fab" href="#" aria-label="Fermer"><svg class="g6-i"><use href="#g6-x"/></svg></a>
+<nav class="g6-nav" aria-label="Navigation"><a href="#"><svg class="g6-i"><use href="#g6-bord"/></svg>Bord</a><a href="#" class="fin"><svg class="g6-i"><use href="#g6-wallet"/></svg>Finances</a><a href="#" class="cal"><svg class="g6-i"><use href="#g6-cal"/></svg>Calendrier</a><a href="#" class="bra"><svg class="g6-i"><use href="#g6-beer"/></svg>Brassins</a><a href="#" class="stk on" aria-current="page"><svg class="g6-i"><use href="#g6-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#"><svg class="g6-i"><use href="#g6-users"/></svg>Clients</a></nav>
+</section>
+<figcaption><b>4a · Ajouter à une idée, le + touché</b> — base E01b (n° 3) en cadre : carnet neuf, grand titre, « Idée · 16 nov. », sans bulle IA. Le + dit QUOI (v06-4) : Article, Façon, Critère, Note ; « Coller » n'apparaît que parce qu'un lien est copié.</figcaption>
+</figure>
+
+<!-- ================= 4b · AJOUTER À UNE IDÉE · après le geste : « Va atterrir ici » (v07-1) ================= -->
+<figure class="g6-cad">
+<section class="g6-scr" aria-label="4b · Ajouter à une idée, après le geste">
+<header class="g6-top"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#g6-mug"/></svg></span><span class="g6-marque">L'Affinée</span><span class="g6-mois"><i><svg class="g6-i"><use href="#g6-left"/></svg></i><b>Nov.</b><i><svg class="g6-i"><use href="#g6-right"/></svg></i></span><span class="g6-loupe"><svg class="g6-i"><use href="#g6-search"/></svg></span><span class="g6-avs"><span class="g">G</span><span class="a">A</span><i></i></span></header>
+<div class="g6-backl"><a class="g6-back" href="#"><svg class="g6-i"><use href="#g6-left"/></svg>Carnets</a><span class="g6-etat">Idée · 16 nov.</span></div>
+<main class="g6-main">
+  <h1 class="g6-h1">Évier inox</h1>
+  <div class="g6-q">« 2 bacs pour laver les fûts »</div>
+  <div class="g6-vide"><svg class="g6-i"><use href="#g6-fork"/></svg><b>Façons</b> aucune encore</div>
+  <div class="g6-lh"><b>Articles</b><span>1 en arrivée</span></div>
+  <div class="g6-land">
+    <div class="hd"><span class="g"><svg class="g6-i"><use href="#g6-down"/></svg>Va atterrir ici</span><span class="s">lu sur la page collée</span></div>
+    <div class="bd">
+      <span class="ph"><svg viewBox="0 0 76 76" preserveAspectRatio="xMidYMid slice"><use href="#g6-evier"/></svg></span>
+      <span class="bt"><b>Évier 2 bacs sur pieds</b><span class="pr"><span class="g6-m">1 290</span> CHF · <span class="ok">en stock</span></span><span>Inox Riviera · CH</span><span>bacs <span class="g6-m">2 × 50×40×30 cm</span> · inox 304</span></span>
+    </div>
+    <div class="vl"><svg class="g6-i"><use href="#g6-eye"/></svg>Veille du prix et du stock, tous les 3 jours<span class="g6-tg" aria-label="Veille active"></span></div>
+    <div class="ou"><b>Où ?</b><span class="g6-chip sel"><i class="g6-rad"></i>Évier inox</span><span class="g6-chip">Autre carnet…</span></div>
+  </div>
+  <p class="g6-ex">Vendeur, prix et cotes : exemple</p>
+</main>
+<div class="g6-fond"></div>
+<div class="g6-dock"><span class="lkc"><svg class="g6-i"><use href="#g6-link"/></svg><span class="g6-m">inox-riviera.ch/evier-2-bacs</span></span><span class="ic"><svg class="g6-i"><use href="#g6-mic"/></svg></span><span class="g6-creer"><svg class="g6-i"><use href="#g6-check"/></svg>Ajouter</span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#g6-plus"/></svg></a>
+<nav class="g6-nav" aria-label="Navigation"><a href="#"><svg class="g6-i"><use href="#g6-bord"/></svg>Bord</a><a href="#" class="fin"><svg class="g6-i"><use href="#g6-wallet"/></svg>Finances</a><a href="#" class="cal"><svg class="g6-i"><use href="#g6-cal"/></svg>Calendrier</a><a href="#" class="bra"><svg class="g6-i"><use href="#g6-beer"/></svg>Brassins</a><a href="#" class="stk on" aria-current="page"><svg class="g6-i"><use href="#g6-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#"><svg class="g6-i"><use href="#g6-users"/></svg>Clients</a></nav>
+</section>
+<figcaption><b>4b · Après « Coller »</b> — de v07-1 : la carte « Va atterrir ici » montre l'objet avant de le poser (photo, prix, dispo, cotes lues sur la page, veille tous les 3 jours) et « Où ? ». De v08-5 : « Ajouter » dans le champ range l'article.</figcaption>
+</figure>
+
+<!-- ================= 5 · CARTES D'ARTICLE · base E12b (n° 1) ; v01-1 photo, critère et rang ; v09-2 À compléter ================= -->
+<figure class="g6-cad">
+<section class="g6-scr" aria-label="5 · Cartes d'article">
+<header class="g6-top"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#g6-mug"/></svg></span><span class="g6-marque">L'Affinée</span><span class="g6-mois"><i><svg class="g6-i"><use href="#g6-left"/></svg></i><b>Nov.</b><i><svg class="g6-i"><use href="#g6-right"/></svg></i></span><span class="g6-loupe"><svg class="g6-i"><use href="#g6-search"/></svg></span><span class="g6-avs"><span class="g">G</span><span class="a">A</span><i></i></span></header>
+<div class="g6-backl"><a class="g6-back" href="#"><svg class="g6-i"><use href="#g6-left"/></svg>Carnets</a><span class="g6-etat">on compare</span></div>
+<div class="g6-voile"></div>
+<div class="g6-feuille">
+  <div class="g6-grab"></div>
+  <div class="g6-fh"><b>Articles · 6</b><a href="#"><svg class="g6-i"><use href="#g6-x"/></svg>Fermer</a></div>
+  <div class="g6-fs"><svg class="g6-i"><use href="#g6-target"/></svg>classés par <b>oxygène capté</b>, du moins au plus</div>
+  <div class="g6-gh"><span class="t">Façon isobarique <span class="n">5</span></span><span class="r">dès 8 900 CHF</span></div>
+  <div class="g6-pan">
+    <div class="g6-ca">
+      <span class="ph"><svg viewBox="0 0 100 88"><use href="#v4-m-pre"/></svg></span>
+      <span class="nm">4 becs pré-évacuation</span><span class="p g6-m">11 400</span>
+      <span class="vd">DE 11 400 · CH 11 700 · <span class="g6-dl ok">en stock</span></span>
+      <span class="tg"><span class="g6-crt"><span class="g6-m">30–50</span> ppb · 1re</span><span class="g6-sw on"><svg class="g6-i"><use href="#g6-eye"/></svg>veille<span class="g6-tg" aria-label="Veille active"></span></span></span>
+    </div>
+    <div class="g6-ca">
+      <span class="ph"><svg viewBox="0 0 100 88"><use href="#v4-m-mono"/></svg></span>
+      <span class="nm">Monobloc 6 becs</span><span class="p g6-m">24 800</span>
+      <span class="vd">Imbottigliatrici Nord · IT · <span class="g6-dl">délai 6 sem.</span></span>
+      <span class="tg"><span class="g6-crt"><span class="g6-m">40–70</span> ppb · 2e</span><span class="g6-sw on"><svg class="g6-i"><use href="#g6-eye"/></svg>veille<span class="g6-tg" aria-label="Veille active"></span></span></span>
+    </div>
+    <div class="g6-ca">
+      <span class="ph"><svg viewBox="0 0 100 88"><use href="#v4-m-cpt"/></svg></span>
+      <span class="nm">4 becs compact</span><span class="p g6-m">9 600</span>
+      <span class="vd">Brew Equip Lyon · FR · <span class="g6-dl">délai 4 sem.</span></span>
+      <span class="tg"><span class="g6-crt gr"><span class="g6-m">60–100</span> estimé · 3e</span><span class="g6-sw"><svg class="g6-i"><use href="#g6-eye"/></svg>veille<span class="g6-tg off" aria-label="Veille arrêtée"></span></span></span>
+    </div>
+    <div class="g6-ca">
+      <span class="ph"><svg viewBox="0 0 100 88"><use href="#v4-m-semi"/></svg></span>
+      <span class="nm">4 becs semi-auto</span><span class="p g6-m">8 900</span>
+      <span class="vd">Brassage Romandie · CH · <span class="g6-dl ok">en stock</span></span>
+      <span class="tg"><span class="g6-crt nv">O₂ non publié</span><span class="g6-sw on"><svg class="g6-i"><use href="#g6-eye"/></svg>veille<span class="g6-tg" aria-label="Veille active"></span></span></span>
+    </div>
+    <div class="g6-ca out">
+      <span class="ph"><svg viewBox="0 0 100 88"><use href="#v4-m-two"/></svg></span>
+      <span class="nm">2 becs de table</span><span class="p g6-m">3 900</span>
+      <span class="vd">écarté : <span class="g6-m">100 bt/h</span>, trop lent</span>
+      <span class="tg"><span class="g6-crt gr"><span class="g6-m">80–150</span> estimé · 4e</span><span class="g6-sw"><svg class="g6-i"><use href="#g6-eye"/></svg>veille<span class="g6-tg off" aria-label="Veille arrêtée"></span></span></span>
+    </div>
+  </div>
+  <div class="g6-gh"><span class="t">À compléter <span class="n">1</span></span></div>
+  <div class="g6-pan">
+    <div class="g6-row">
+      <span class="g6-vg pic"><svg viewBox="0 0 24 24" style="width:24px;height:24px"><use href="#g6-link"/></svg></span>
+      <span class="g6-tx"><b>Lien sans aperçu</b><span>nom et prix à saisir</span></span>
+      <span class="g6-go">Compléter</span>
+    </div>
+  </div>
+  <p class="g6-ex">Vendeurs, prix et photos : exemple</p>
+</div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#g6-plus"/></svg></a>
+<nav class="g6-nav" aria-label="Navigation"><a href="#"><svg class="g6-i"><use href="#g6-bord"/></svg>Bord</a><a href="#" class="fin"><svg class="g6-i"><use href="#g6-wallet"/></svg>Finances</a><a href="#" class="cal"><svg class="g6-i"><use href="#g6-cal"/></svg>Calendrier</a><a href="#" class="bra"><svg class="g6-i"><use href="#g6-beer"/></svg>Brassins</a><a href="#" class="stk on" aria-current="page"><svg class="g6-i"><use href="#g6-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#"><svg class="g6-i"><use href="#g6-users"/></svg>Clients</a></nav>
+</section>
+<figcaption><b>5 · Cartes d'article</b> — base E12b (son n° 1), la feuille « Articles · 6 » : dessin agrandi (v01-1), la valeur du critère et son rang, la dispo dans la ligne du vendeur, l'interrupteur de veille sur chaque carte. Même machine chez deux vendeurs : une carte. Groupe « À compléter » de v09-2.</figcaption>
+</figure>
+
+<!-- ================= 6 · UN ARTICLE OUVERT · v01-2 (n° 2) ; v02-2 Ouvrir ↗ et source ================= -->
+<figure class="g6-cad">
+<section class="g6-scr" aria-label="6 · Un article ouvert">
+<header class="g6-top"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#g6-mug"/></svg></span><span class="g6-marque">L'Affinée</span><span class="g6-mois"><i><svg class="g6-i"><use href="#g6-left"/></svg></i><b>Nov.</b><i><svg class="g6-i"><use href="#g6-right"/></svg></i></span><span class="g6-loupe"><svg class="g6-i"><use href="#g6-search"/></svg></span><span class="g6-avs"><span class="g">G</span><span class="a">A</span><i></i></span></header>
+<div class="g6-backl"><a class="g6-back" href="#"><svg class="g6-i"><use href="#g6-left"/></svg>Articles · Embouteillage</a></div>
+<main class="g6-main">
+  <div class="g6-photo"><svg viewBox="0 0 100 88"><use href="#v4-m-pre"/></svg><span class="r1">1re sur 5</span><span class="src"><svg class="g6-i"><use href="#g6-cam"/></svg>photo de la page collée</span></div>
+  <div class="g6-an">Isobarique 4 becs pré-évacuation</div>
+  <div class="g6-as">lu sur la fiche technique du vendeur, 12 nov.</div>
+  <div class="g6-regle">
+    <div class="hd"><span>O₂ capté au remplissage, annoncé</span><b class="g6-m">30–50 <small>ppb</small></b></div>
+    <span class="g6-sc"><i style="left:25%;width:18.75%"></i><i class="est" style="left:37.5%;width:25%"></i><i class="me" style="left:18.75%;width:12.5%"></i></span>
+    <div class="bn"><span><span class="g6-m">0</span> ‹ mieux</span><span>le plus bas du carnet</span><span class="g6-m">160</span></div>
+  </div>
+  <div class="g6-h4">2 offres <span>même machine, 300 CHF d'écart</span></div>
+  <div class="g6-of"><i class="g6-rad"></i><span class="vn"><b>Abfülltechnik West · DE</b><span>en stock · SAV en Allemagne</span></span><span class="pr g6-m">11 400</span><a class="op" href="#">Ouvrir<svg class="g6-i"><use href="#g6-ext"/></svg></a></div>
+  <div class="g6-of sel"><i class="g6-rad"></i><span class="vn"><b>Brassage Romandie · CH</b><span>en stock · SAV en Suisse · <s class="g6-m">12 300</s></span></span><span class="pr g6-m">11 700</span><a class="op" href="#">Ouvrir<svg class="g6-i"><use href="#g6-ext"/></svg></a></div>
+  <div class="g6-car">
+    <div><span>Cadence</span><span><span class="g6-m">600 bt/h</span><em>2e</em></span></div>
+    <div><span>CO₂ / bouteille</span><span><span class="g6-m">7 g</span><em>2e</em></span></div>
+    <div><span>Au sol</span><span><span class="g6-m">120×70 cm</span><em>4e</em></span></div>
+    <div><span>Nettoyage</span><span>NEP</span></div>
+  </div>
+  <div class="g6-sv"><svg class="g6-i"><use href="#g6-eye"/></svg><span><b>Surveiller prix et stock</b> · tous les 3 jours · revu le 13 nov.</span><span class="g6-tg" aria-label="Veille active"></span></div>
+  <a class="g6-cta" href="#"><svg class="g6-i"><use href="#g6-check"/></svg>Choisir · Brassage Romandie</a>
+  <div class="g6-part">Part dans À venir : cette machine, <span class="g6-m">11 700</span> CHF, en stock, avec le pourquoi.</div>
+</main>
+<div class="g6-fond"></div>
+<div class="g6-dock"><span class="ph">Ajouter à Embouteillage…</span><span class="ic"><svg class="g6-i"><use href="#g6-cam"/></svg></span><span class="ic"><svg class="g6-i"><use href="#g6-mic"/></svg></span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#g6-plus"/></svg></a>
+<nav class="g6-nav" aria-label="Navigation"><a href="#"><svg class="g6-i"><use href="#g6-bord"/></svg>Bord</a><a href="#" class="fin"><svg class="g6-i"><use href="#g6-wallet"/></svg>Finances</a><a href="#" class="cal"><svg class="g6-i"><use href="#g6-cal"/></svg>Calendrier</a><a href="#" class="bra"><svg class="g6-i"><use href="#g6-beer"/></svg>Brassins</a><a href="#" class="stk on" aria-current="page"><svg class="g6-i"><use href="#g6-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#"><svg class="g6-i"><use href="#g6-users"/></svg>Clients</a></nav>
+</section>
+<figcaption><b>6 · Un article ouvert</b> — v01-2 (n° 2) : la photo d'abord, « 1re sur 5 », sa fourchette d'O₂ parmi celles du carnet (pointillé : estimé), les 2 offres, les caractéristiques avec leur rang, la veille, Choisir en vert et ce qui part dans À venir. De v02-2 : « Ouvrir ↗ » par vendeur et la source lue, datée.</figcaption>
+</figure>
+
+<!-- ================= 7 · COMPARER · base E14a (n° 3) en cadre ; v03-4 tableau à dessins ; v01-3 compromis ================= -->
+<figure class="g6-cad">
+<section class="g6-scr" aria-label="7 · Comparer sur le critère">
+<header class="g6-top"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#g6-mug"/></svg></span><span class="g6-marque">L'Affinée</span><span class="g6-mois"><i><svg class="g6-i"><use href="#g6-left"/></svg></i><b>Nov.</b><i><svg class="g6-i"><use href="#g6-right"/></svg></i></span><span class="g6-loupe"><svg class="g6-i"><use href="#g6-search"/></svg></span><span class="g6-avs"><span class="g">G</span><span class="a">A</span><i></i></span></header>
+<div class="g6-backl"><a class="g6-back" href="#"><svg class="g6-i"><use href="#g6-left"/></svg>Embouteillage</a></div>
+<main class="g6-main">
+  <h1 class="g6-h1">Comparer</h1>
+  <span class="g6-cl"><svg class="g6-i"><use href="#g6-target"/></svg>Classé par <b>Oxygène capté</b> · moins = mieux</span>
+  <div class="g6-iv">
+    <div class="g6-ax"><span>‹ mieux à gauche</span><span class="g6-axs"><b class="g6-m" style="left:0">0</b><b class="g6-m" style="left:50%">80</b><b class="g6-m" style="left:100%">160</b></span><span>ppb</span></div>
+    <div class="g6-ivr"><span class="n"><b>Pré-évac.</b> · 2 vend.</span><span class="g6-sc"><i class="me" style="left:18.75%;width:12.5%"></i></span><span class="v best">30–50</span></div>
+    <div class="g6-ivr"><span class="n">Monobloc 6 becs</span><span class="g6-sc"><i style="left:25%;width:18.75%;background:var(--faint)"></i></span><span class="v">40–70</span></div>
+    <div class="g6-ivr"><span class="n">Compact · estimé</span><span class="g6-sc"><i class="est" style="left:37.5%;width:25%"></i></span><span class="v est">60–100</span></div>
+    <div class="g6-ivr"><span class="n">Semi-auto</span><span class="g6-sc"><em>non publié</em></span><span class="v nv">?</span></div>
+  </div>
+  <table class="g6-tab">
+    <thead><tr><th class="lg">en vert,<br>le meilleur</th><th><svg viewBox="0 0 100 88"><use href="#v4-m-pre"/></svg>pré-év.</th><th><svg viewBox="0 0 100 88"><use href="#v4-m-mono"/></svg>mono.</th><th><svg viewBox="0 0 100 88"><use href="#v4-m-cpt"/></svg>compact</th><th><svg viewBox="0 0 100 88"><use href="#v4-m-semi"/></svg>semi</th></tr></thead>
+    <tbody>
+      <tr><th>Prix CHF</th><td>11 400</td><td>24 800</td><td>9 600</td><td class="best">8 900</td></tr>
+      <tr><th>Délai sem.</th><td class="best">0</td><td>6</td><td>4</td><td class="best">0</td></tr>
+      <tr><th>Cadence bt/h</th><td>600</td><td class="best">900</td><td>400</td><td>250</td></tr>
+      <tr><th>CO₂ g/bt</th><td>7</td><td class="best">6</td><td>8</td><td>9</td></tr>
+      <tr><th>Au sol m²</th><td>0,8</td><td>2,4</td><td class="best">0,5</td><td>0,6</td></tr>
+    </tbody>
+  </table>
+  <div class="g6-cpr"><b>Compromis :</b> le compact, <span class="g6-m">60–100</span> ppb estimé pour <span class="g6-m">9 600</span> CHF : <span class="g6-m">1 800</span> CHF de moins que la 1re, environ deux fois plus d'O₂. Tous en NEP.</div>
+  <div class="g6-xh">Écartés · 2</div>
+  <div class="g6-xr"><b>Façon gravité, remplir par écoulement</b>Écartée : la bière prend l'air, O₂ ≈ <span class="g6-m">400</span> ppb. <a href="#">Reprendre</a></div>
+  <div class="g6-xr"><b>Table 2 becs · <span class="g6-m">3 900</span> CHF</b>Écarté : <span class="g6-m">100</span> bt/h, trop lent. <a href="#">Reprendre</a></div>
+</main>
+<div class="g6-fond"></div>
+<div class="g6-dock"><span class="ph">Ajouter à Embouteillage…</span><span class="ic"><svg class="g6-i"><use href="#g6-cam"/></svg></span><span class="ic"><svg class="g6-i"><use href="#g6-mic"/></svg></span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#g6-plus"/></svg></a>
+<nav class="g6-nav" aria-label="Navigation"><a href="#"><svg class="g6-i"><use href="#g6-bord"/></svg>Bord</a><a href="#" class="fin"><svg class="g6-i"><use href="#g6-wallet"/></svg>Finances</a><a href="#" class="cal"><svg class="g6-i"><use href="#g6-cal"/></svg>Calendrier</a><a href="#" class="bra"><svg class="g6-i"><use href="#g6-beer"/></svg>Brassins</a><a href="#" class="stk on" aria-current="page"><svg class="g6-i"><use href="#g6-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#"><svg class="g6-i"><use href="#g6-users"/></svg>Clients</a></nav>
+</section>
+<figcaption><b>7 · Comparer sur le critère</b> — base E14a (n° 3) en cadre : le critère d'abord, en fourchettes sur une échelle de 0 à 160 ppb, mieux à gauche. Le tableau à dessins de v03-4 (Top2) ne garde que les 4 retenus, le meilleur en vert. De v01-3 (son n° 2) : la phrase de compromis et « Écartés · 2 » avec leur raison.</figcaption>
+</figure>
+
+<!-- ================= 8 · CHOISIR, CHOISI, POURQUOI · v09-3 (Top2) en cadre ; v10-4 coches et écarts chiffrés ; v03-6 Changer d'avis ================= -->
+<figure class="g6-cad">
+<section class="g6-scr" aria-label="8 · Choisi et pourquoi">
+<header class="g6-top"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#g6-mug"/></svg></span><span class="g6-marque">L'Affinée</span><span class="g6-mois"><i><svg class="g6-i"><use href="#g6-left"/></svg></i><b>Nov.</b><i><svg class="g6-i"><use href="#g6-right"/></svg></i></span><span class="g6-loupe"><svg class="g6-i"><use href="#g6-search"/></svg></span><span class="g6-avs"><span class="g">G</span><span class="a">A</span><i></i></span></header>
+<div class="g6-backl"><a class="g6-back" href="#"><svg class="g6-i"><use href="#g6-left"/></svg>Carnets</a><span class="g6-etat"><svg class="g6-i"><use href="#g6-check"/></svg>choisi</span></div>
+<main class="g6-main">
+  <h1 class="g6-h1">Embouteillage</h1>
+  <div class="g6-hero">
+    <div class="top"><b><svg class="g6-i"><use href="#g6-check"/></svg>Choisi le 17 nov.</b><a href="#">Changer d'avis</a></div>
+    <div class="bd">
+      <span class="g6-vg"><svg viewBox="0 0 100 88"><use href="#v4-m-pre"/></svg></span>
+      <span class="t"><b>Isobarique 4 becs pré-évacuation</b><span>Brassage Romandie · CH · en stock</span><span class="pr"><span class="g6-m">11 700</span> CHF · était <s class="g6-m">12 300</s></span></span>
+    </div>
+    <ul class="g6-coches">
+      <li><svg class="g6-i"><use href="#g6-check"/></svg><span>oxygène capté <b class="g6-m">30–50</b> ppb, le plus bas</span></li>
+      <li><svg class="g6-i"><use href="#g6-check"/></svg><span>SAV et pièces en Suisse</span></li>
+          </ul>
+    <div class="g6-cc">Ce qui comptait : <b>le moins d'O₂ capté au remplissage</b></div>
+  </div>
+  <div class="g6-send">
+    <a class="g6-cta" href="#"><svg class="g6-i"><use href="#g6-calin"/></svg>Envoyer dans À venir · <span class="g6-m">11 700</span> CHF</a>
+  </div>
+  <div class="g6-gh"><span class="t">Écartés <span class="n">6</span></span><span class="r">1 façon, 5 articles, et pourquoi</span></div>
+  <div class="g6-pan g6-ec">
+    <div class="g6-row"><span class="g6-vg pic"><svg viewBox="0 0 24 24" style="width:22px;height:22px"><use href="#g6-fork"/></svg></span><span class="g6-tx"><b>Façon gravité</b><span>la bière prend l'air, O₂ ≈ 400 ppb</span></span><span class="g6-fig"><span class="p">façon</span></span></div>
+    <div class="g6-row"><span class="g6-vg"><svg viewBox="0 0 100 88"><use href="#v4-m-pre"/></svg></span><span class="g6-tx"><b>Même machine, en DE</b><span>≈ 12 320 CHF avec la TVA d'import</span></span><span class="g6-fig"><span class="p g6-m">11 400</span></span></div>
+    <div class="g6-row"><span class="g6-vg"><svg viewBox="0 0 100 88"><use href="#v4-m-mono"/></svg></span><span class="g6-tx"><b>Monobloc 6 becs</b><span>2 fois le prix, cadence inutile</span></span><span class="g6-fig"><span class="p g6-m">24 800</span></span></div>
+    <div class="g6-row"><span class="g6-vg"><svg viewBox="0 0 100 88"><use href="#v4-m-cpt"/></svg></span><span class="g6-tx"><b>4 becs compact</b><span>60–100 ppb estimé, délai 4 sem.</span></span><span class="g6-fig"><span class="p g6-m">9 600</span></span></div>
+    <div class="g6-row"><span class="g6-vg"><svg viewBox="0 0 100 88"><use href="#v4-m-semi"/></svg></span><span class="g6-tx"><b>4 becs semi-auto</b><span>n'annonce pas son oxygène</span></span><span class="g6-fig"><span class="p g6-m">8 900</span></span></div>
+    <div class="g6-row"><span class="g6-vg"><svg viewBox="0 0 100 88"><use href="#v4-m-two"/></svg></span><span class="g6-tx"><b>2 becs de table</b><span>100 bt/h, trop lent</span></span><span class="g6-fig"><span class="p g6-m">3 900</span></span></div>
+  </div>
+</main>
+<div class="g6-fond"></div>
+<div class="g6-dock"><span class="ph">Ajouter à Embouteillage…</span><span class="ic"><svg class="g6-i"><use href="#g6-cam"/></svg></span><span class="ic"><svg class="g6-i"><use href="#g6-mic"/></svg></span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#g6-plus"/></svg></a>
+<nav class="g6-nav" aria-label="Navigation"><a href="#"><svg class="g6-i"><use href="#g6-bord"/></svg>Bord</a><a href="#" class="fin"><svg class="g6-i"><use href="#g6-wallet"/></svg>Finances</a><a href="#" class="cal"><svg class="g6-i"><use href="#g6-cal"/></svg>Calendrier</a><a href="#" class="bra"><svg class="g6-i"><use href="#g6-beer"/></svg>Brassins</a><a href="#" class="stk on" aria-current="page"><svg class="g6-i"><use href="#g6-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#"><svg class="g6-i"><use href="#g6-users"/></svg>Clients</a></nav>
+</section>
+<figcaption><b>8 · Choisir, choisi, pourquoi</b> — v09-3 (Top2) en cadre : l'objet, son prix, « Ce qui comptait », le bouton vert vers À venir, les écartés avec raison, la façon gravité en tête. De v10-4 : le pourquoi en trois coches, l'écart chiffré (TVA d'import). De v03-6 : « Changer d'avis ».</figcaption>
+</figure>
+
+<!-- ================= 9 · À VENIR ET RÉALISÉS · v02-6 (n° 3) en cadre ; v10-5 titre de groupe et Réalisés vide ================= -->
+<figure class="g6-cad">
+<section class="g6-scr" aria-label="9 · À venir et Réalisés">
+<header class="g6-top"><span class="g6-logo"><svg viewBox="0 0 24 24"><use href="#g6-mug"/></svg></span><span class="g6-marque">L'Affinée</span><span class="g6-mois"><i><svg class="g6-i"><use href="#g6-left"/></svg></i><b>Nov.</b><i><svg class="g6-i"><use href="#g6-right"/></svg></i></span><span class="g6-loupe"><svg class="g6-i"><use href="#g6-search"/></svg></span><span class="g6-avs"><span class="g">G</span><span class="a">A</span><i></i></span></header>
+<nav class="g6-seg" aria-label="Vue du calendrier"><a href="#" class="on" aria-current="page">À venir <span class="n">6</span></a><a href="#">Réalisés <span class="n">0</span></a></nav>
+<main class="g6-main">
+  <div class="g6-gt"><i></i>À commander · 2<span class="g6-m">16 600 CHF</span></div>
+  <a class="g6-av" href="#">
+    <div class="hd"><span><b>17 nov.</b> · carnet Embouteillage</span><span class="fx"><svg class="g6-i"><use href="#g6-cal"/></svg>Fixer la date</span></div>
+    <div class="bd">
+      <span class="g6-vg"><svg viewBox="0 0 100 88"><use href="#v4-m-pre"/></svg></span>
+      <span class="t"><b>Soutireuse 4 becs</b><span><span class="g6-m">11 700</span> CHF · Brassage Romandie</span></span><svg class="g6-i"><use href="#g6-right"/></svg>
+    </div>
+  </a>
+  <a class="g6-av" href="#">
+    <div class="hd"><span><b>16 nov.</b> · carnet Frigo de garde</span><span class="fx"><svg class="g6-i"><use href="#g6-cal"/></svg>Fixer la date</span></div>
+    <div class="bd">
+      <span class="g6-vg"><svg viewBox="0 0 100 88" preserveAspectRatio="xMidYMid slice"><use href="#ph-chambre"/></svg></span>
+      <span class="t"><b>Chambre froide 2 m³</b><span><span class="g6-m">4 900</span> CHF · Froid Léman</span></span><svg class="g6-i"><use href="#g6-right"/></svg>
+    </div>
+  </a>
+  <div class="g6-wh">Cette semaine et après</div>
+  <a class="g6-wk" href="#"><span class="d g6-m">ven. 20</span><i style="background:var(--prod)"></i><span class="t"><b>Brassin · IPA Nelson</b><span>200 L · cuve 2</span></span><svg class="g6-i"><use href="#g6-right"/></svg></a>
+  <a class="g6-wk" href="#"><span class="d g6-m">lun. 23</span><i style="background:var(--fin)"></i><span class="t"><b>Livraison malt</b><span>Pale Ale 75 kg</span></span><svg class="g6-i"><use href="#g6-right"/></svg></a>
+  <a class="g6-wk" href="#"><span class="d g6-m">ven. 27</span><i style="background:var(--prod)"></i><span class="t"><b>Mise en bouteille · Blanche</b><span>180 L</span></span><svg class="g6-i"><use href="#g6-right"/></svg></a>
+  <a class="g6-wk" href="#"><span class="d g6-m">mar. 1 déc.</span><i style="background:var(--fin)"></i><span class="t"><b>Facture houblons à payer</b><span>Achats et charges</span></span><svg class="g6-i"><use href="#g6-right"/></svg></a>
+  <div class="g6-re"><b>Réalisés <span class="g6-m">0</span></b><br>Rien d'acheté encore. La facture enregistrée dans Finances fait passer l'achat ici.</div>
+  <p class="g6-ex">Dates, prix et brassins : exemple</p>
+</main>
+<div class="g6-fond"></div>
+<div class="g6-dock"><span class="ph">Une idée, un besoin…</span><span class="ic"><svg class="g6-i"><use href="#g6-cam"/></svg></span><span class="ic"><svg class="g6-i"><use href="#g6-mic"/></svg></span></div>
+<a class="g6-fab" href="#" aria-label="Ajouter"><svg class="g6-i"><use href="#g6-plus"/></svg></a>
+<nav class="g6-nav" aria-label="Navigation"><a href="#"><svg class="g6-i"><use href="#g6-bord"/></svg>Bord</a><a href="#" class="fin"><svg class="g6-i"><use href="#g6-wallet"/></svg>Finances</a><a href="#" class="cal on" aria-current="page"><svg class="g6-i"><use href="#g6-cal"/></svg>Calendrier</a><a href="#" class="bra"><svg class="g6-i"><use href="#g6-beer"/></svg>Brassins</a><a href="#" class="stk"><svg class="g6-i"><use href="#g6-boxes"/></svg>Stocks<span class="bdg">4</span></a><a href="#"><svg class="g6-i"><use href="#g6-users"/></svg>Clients</a></nav>
+</section>
+<figcaption><b>9 · À venir et Réalisés</b> — v02-6 (n° 3) en cadre : Calendrier › À venir, les deux achats arrivés des carnets (Embouteillage, Frigo) avec leur dessin et « Fixer la date », puis la semaine. De v10-5 : « À commander · 2 · 16 600 CHF » et Réalisés vide qui dit comment s'y remplir.</figcaption>
+</figure>
+
+</div>
+</body>
+</html>

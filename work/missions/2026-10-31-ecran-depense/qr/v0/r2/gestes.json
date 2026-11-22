@@ -1,0 +1,5 @@
+[
+  ["pastille-ouverte", "confirme", "[data-pq]"],
+  ["garde-qr", "contredit", "[data-garde=\"qr\"]"],
+  ["garde-lu-detail", "contredit", ["[data-garde=\"lu\"]", "[data-pq]"]]
+]

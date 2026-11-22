@@ -48,11 +48,42 @@ const ALIASES: Record<string, string> = {
   quarts: 'qt',
   'fl oz': 'floz',
   'fl. oz': 'floz',
-  'fl.oz': 'floz'
+  'fl.oz': 'floz',
+
+  // Écritures en toutes lettres ou abrégées d'une facture ou d'un scan (contre-calcul du 08.11, CF-8). Sans elles, « litres » devenait
+  // « ls » et « kilogramme » restait inconnu : la conversion rendait `null` et l'achat était ignoré. Même liste que `ingredientIdentity.ts`.
+  litre: 'l',
+  litres: 'l',
+  lt: 'l',
+  lts: 'l',
+  ltr: 'l',
+  millilitre: 'ml',
+  millilitres: 'ml',
+  centilitre: 'cl',
+  centilitres: 'cl',
+  decilitre: 'dl',
+  decilitres: 'dl',
+  kilogramme: 'kg',
+  kilogrammes: 'kg',
+  kilogram: 'kg',
+  kilograms: 'kg',
+  kgs: 'kg',
+  gramme: 'g',
+  grammes: 'g',
+  gram: 'g',
+  grams: 'g',
+  gr: 'g',
+  grs: 'g',
+  milligramme: 'mg',
+  milligrammes: 'mg',
+  milligram: 'mg',
+  milligrams: 'mg'
 };
 
 function normalizeKey(unit: string): string {
-  const k = (unit || '').trim().toLowerCase().replace('litre', 'l');
+  // Casse et accents (« décilitre ») ne distinguent pas deux écritures de la même unité. « Kilo », « Kg. » et « Liter » restent hors d'ici :
+  // D214, tests/unit/depense/stock/relecture.test.ts (la lecture des liens de stock a sa propre table).
+  const k = (unit || '').trim().toLowerCase().normalize('NFD').split('̀').join('').split('́').join('').split('̂').join('');
   return ALIASES[k] ?? k;
 }
 

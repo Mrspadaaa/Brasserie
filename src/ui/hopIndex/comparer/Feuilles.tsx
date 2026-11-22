@@ -26,6 +26,7 @@ import {
 } from './icones';
 import { useComplements } from '../fiche/complements-ui';
 import { CHIMIE, acides, compose, huile, linalolEnBiere, panelOSU, titreRef, type ValeurReelle } from './valeurs';
+import { nombreFr } from '../../../domain/nombreAffiche';
 
 const cx = (...c: (string | false | null | undefined)[]) => c.filter(Boolean).join(' ');
 export const signeCran = (x: number) => `~${x >= 0 ? '+' : '−'}${nombre(Math.abs(x), 1)}`;
@@ -256,14 +257,14 @@ export function FeuilleEgaler({ cols, sel, critere, etapes }: { cols: ColonneLue
                   <i className="pq-comparer-eg-trait" style={{ left: pc(CONDITIONS.doseGL) }} />
                 </span>
                 {jamais
-                  ? <span className="pq-comparer-eg-jamais" data-nature="simule">~jamais, même à {DOSE_MAX} g/L</span>
+                  ? <span className="pq-comparer-eg-jamais" data-nature="simule">~jamais, même à {nombreFr(DOSE_MAX, 1)} g/L</span>
                   : <span data-nature={estRef ? 'fixe' : 'simule'} className="pq-comparer-nb">{estRef ? `${nombre(r.doseGL!)} g/L · réf.` : `~${nombre(r.doseGL!, 1)} g/L`}</span>}
               </p>
             );
           })}
         </section>
       ))}
-      <p className="pq-comparer-vsrc">~ simulé par le moteur ; trait : {nombre(CONDITIONS.doseGL)} g/L, ta dose égale ; échelle 0–{DOSE_MAX} g/L, au-delà, inconnu ; après fermentation, {CONDITIONS.jours} j, {nomLevure(recette.yeastId)}.</p>
+      <p className="pq-comparer-vsrc">~ simulé par le moteur ; trait : {nombre(CONDITIONS.doseGL)} g/L, ta dose égale ; échelle 0–{nombreFr(DOSE_MAX, 1)} g/L, au-delà, inconnu ; après fermentation, {CONDITIONS.jours} j, {nomLevure(recette.yeastId)}.</p>
       <p className="pq-comparer-carte-st"><b>la même amertume en ébullition</b><Calcule /></p>
       <p className="pq-comparer-eg-l pq-comparer-note"><span className="ml-auto" />10 IBU à 10′<span className="w-24 text-right">5 IBU au whirlpool</span></p>
       {cols.map((c) => (
@@ -610,7 +611,7 @@ export function FeuilleAjouter({ disponibles, exclus, verbe, suite, onAjouter }:
         const familles = (Object.keys(h.familles) as FamilyId[]).filter((f) => h.familles[f].niveau !== 'non décrit')
           .sort((x, y) => (h.familles[y].niveau === 'marqué' ? 1 : 0) - (h.familles[x].niveau === 'marqué' ? 1 : 0)).slice(0, 6);
         const part = h.partSansFamille;
-        const lot = !!h.stock && hopRef(cle)?.stock?.alphaFrom === 'fiche de stock';
+        const lot = !!h.stock && hopRef(cle)?.stock?.alphaFrom != null; // HX-6
         return (
           <section key={cle} className="pq-comparer-ajout-c" style={{ ['--pq-h' as string]: couleurHoublon(cle) }} data-houblon-carte={cle}>
             <p className="pq-comparer-ajout-n"><Point couleur={couleurHoublon(cle)} /><b>{h.nom}</b>{h.stock != null && h.stock > 0 ? <IconeStock /> : <IconePanier />}</p>

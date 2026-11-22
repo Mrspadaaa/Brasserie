@@ -1,0 +1,8 @@
+/* Voie r3-plier (D307) : les seules règles neuves des maquettes, préfixe pl- (L26). Les règles de D (sf-) restent celles de choix-sousfamilles. */
+/* Ce qui porte le geste « tout plier, déplier », cerclé sur la mini maquette pour qu'il le trouve d'un coup d'œil (forme de choix-captures). */
+.pl-vise { outline: 2.5px solid #2d5f8a; outline-offset: 1px; border-radius: 6px; }
+[data-theme='cave'] .pl-vise { outline-color: #7fb2de; }
+/* B : la zone touchable de l'en-tête de bande (point, nom, compte, double chevron), sans changer la bande. */
+.pl-bande-geste { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; background: none; border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; }
+/* D : le chevron double dans le segment « Catégorie » allumé. */
+.pl-seg-ico { display: inline-flex; margin-left: 3px; }

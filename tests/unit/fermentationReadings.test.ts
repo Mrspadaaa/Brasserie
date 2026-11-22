@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fermentationReadings } from '../../src/domain/fermentationReadings';
+import { displayDate, fermentationReadings } from '../../src/domain/fermentationReadings';
 import { Batch } from '../../src/types';
 import { fullRecipe } from '../fixtures/fullRecipe';
 import { captureSnapshot } from '../../src/domain/recipeSnapshot';
@@ -45,5 +45,17 @@ describe('Fermentation observations', () => {
     });
     expect(result.points.map((p) => p.sg)).toEqual([1.04, 1.02]);
     expect(result.points[1].tempC).toBe(0);
+  });
+  it('BR-121 : une date ISO du stockage s’écrit 02.11.2026, comme « Brassé le » ; une date illisible reste telle quelle', () => {
+    const result = fermentationReadings({
+      ...batch,
+      status: 'fermentation',
+      brewDate: '2026-10-30',
+      og: '1.060',
+      gravityLog: [{ date: '2026-11-02', sg: 1.03 }]
+    });
+    expect(result.points.map((p) => p.date)).toEqual(['30.10.2026', '02.11.2026']);
+    expect(displayDate('2026-13-45')).toBe('2026-13-45');
+    expect(displayDate('Date non renseignée')).toBe('Date non renseignée');
   });
 });

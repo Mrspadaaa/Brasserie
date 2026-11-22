@@ -1,0 +1,24 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[90mstdout[2m | tests/unit/carnetsTour3F4c.test.ts[2m > [22m[2mexplo[2m > [22m[2mx
+[22m[39mPCN19 {"texte":"il faudrait au moins 1 500 m³/h","phrase":"il faudrait au moins 1 500 m³/h","sorte":"critere","genre":"note","quantites":[{"valeur":1500,"unite":"m³/h","texte":"1 500"}],"origine":"locale"}
+PCN20 {"carnetId":"ZZ-CARNET-VENTILATION-SALLE-2","titre":"ZZ TEST — Ventilation de la salle de brassage, 2e idée","score":1.65,"mots":["ventilation","salle","brassage"]} [
+  [32m'ZZ TEST — Ventilation de la salle de brassage'[39m,
+  [32m'ZZ TEST — Évier inox'[39m,
+  [32m'ZZ TEST — Embouteillage'[39m,
+  [32m'ZZ TEST — Frigo de garde pour fûts'[39m,
+  [32m'ZZ TEST — Densimètre de paillasse'[39m,
+  [32m'ZZ TEST — Extracteur pour la salle de fermentation'[39m,
+  [32m'ZZ TEST — Ventilation de la cave de garde'[39m,
+  [32m'ZZ TEST — Ventilation de la salle de brassage, 2e idée'[39m
+]
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m9 passed[39m[22m[90m (9)[39m
+[2m   Start at [22m 19:43:27
+[2m   Duration [22m 3.60s[2m (transform 1.43s, setup 822ms, collect 3.72s, tests 791ms, environment 1.46s, prepare 196ms)[22m
+

@@ -1,0 +1,359 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/integration/recapM2.test.tsx[2m > [22m[2mRécap m2 : rien de caché ne garde sa hauteur[2m > [22m[2mla relecture est masquée par `display: none` (classe `rc2-cache`), jamais par visibility ni une hauteur gardée ; elle apparaît au toucher de « Relire »
+[22m[39mAn update to RecipeReview inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to RecipeReview inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/depense/ecran/tri.test.tsx[2m > [22m[2mR1 : un prix « avec mouture » n’est montré que si le catalogue l’écrira[2m > [22m[2mmalt relié + mouture de service rattachée : « 2,40/Kg avec mouture » ; malt non relié : rien
+[22m[39mAn update to ExpenseSheet inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to ExpenseSheet inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to DriveConnection inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/banc-lecture-facture.test.ts
+[22m[39m[IA] AUTHORIZED_ACCOUNTS est vide : la passerelle refusera tout le monde. Renseigne-la dans functions/.env, puis redéploie les Functions.
+
+[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le corps du banc pour Csv8 est celui de scanInvoiceSafely, champ par champ[2m > [22m[2mlectures 1, 2 et 3 : même JSON, même ordre de clés, même URL de modèle, même plafond de sortie
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":1,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":6,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le corps du banc pour Csv8 est celui de scanInvoiceSafely, champ par champ[2m > [22m[2mlectures 1, 2 et 3 : même JSON, même ordre de clés, même URL de modèle, même plafond de sortie
+[22m[39m{"lecture":3,"etape":"troisieme","elapsedMs":0,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.8-flash","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mdeux lectures qui concordent
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":0,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":0,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mmajorité de deux sur trois
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":5,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":5,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mmajorité de deux sur trois
+[22m[39m{"lecture":3,"etape":"troisieme","elapsedMs":0,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.8-flash","severity":"INFO","message":"Lecture de facture"}
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mdivergence non résolue après trois lectures : la 3.8 tranche seule
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":1,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":1,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mdivergence non résolue après trois lectures : la 3.8 tranche seule
+[22m[39m{"lecture":3,"etape":"troisieme","elapsedMs":1,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.8-flash","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mdevise étrangère transcrite à l’identique
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":1,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":0,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2m« Fr. » et « CHF » : N évite la 3.8
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":0,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":0,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mune Flash-Lite refusée par le fournisseur : la 3.8 est appelée, vote à deux
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":1,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstderr[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mune Flash-Lite refusée par le fournisseur : la 3.8 est appelée, vote à deux
+[22m[39m{"lecture":2,"etape":"parallele","model":"gemini-3.5-flash-lite","elapsedMs":2,"cause":"erreur","erreur":"Gemini HTTP 503 · server","severity":"WARNING","message":"Lecture de facture en échec"}
+
+[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mune Flash-Lite refusée par le fournisseur : la 3.8 est appelée, vote à deux
+[22m[39m{"lecture":3,"etape":"troisieme","elapsedMs":1,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.8-flash","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mune Flash-Lite coupée et la 3.8 refusée : « unavailable », la phrase de coupure et le point
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":0,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":0,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"MAX_TOKENS","coupee":true,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstderr[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mune Flash-Lite coupée et la 3.8 refusée : « unavailable », la phrase de coupure et le point
+[22m[39m{"lecture":3,"etape":"troisieme","model":"gemini-3.8-flash","elapsedMs":0,"cause":"erreur","erreur":"Gemini HTTP 503 · server","severity":"WARNING","message":"Lecture de facture en échec"}
+
+[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mles deux Flash-Lite coupées : la 3.8 seule, « unavailable » à un lecteur
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":0,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"MAX_TOKENS","coupee":true,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":0,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"MAX_TOKENS","coupee":true,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mles deux Flash-Lite coupées : la 3.8 seule, « unavailable » à un lecteur
+[22m[39m{"lecture":3,"etape":"troisieme","elapsedMs":0,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.8-flash","severity":"INFO","message":"Lecture de facture"}
+
+[90mstdout[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mun arbitrage refusé : les divergences restent explicites
+[22m[39m{"lecture":1,"etape":"parallele","elapsedMs":1,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+{"lecture":2,"etape":"parallele","elapsedMs":1,"promptTokens":2000,"outputTokens":800,"thoughtsTokens":0,"totalTokens":2800,"finishReason":"STOP","coupee":false,"model":"gemini-3.5-flash-lite","severity":"INFO","message":"Lecture de facture"}
+
+[90mstderr[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le parcours Csv8 du banc rend ce que rend la production, sur les mêmes réponses[2m > [22m[2mun arbitrage refusé : les divergences restent explicites
+[22m[39m{"lecture":3,"etape":"troisieme","model":"gemini-3.8-flash","elapsedMs":0,"cause":"erreur","erreur":"Gemini HTTP 503 · server","severity":"WARNING","message":"Lecture de facture en échec"}
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/banc-lecture-facture.test.ts[2m > [22m[2mk1 — le transport réel (fetch simulé : aucun réseau)[2m > [22m[2mappelle generateContent d’un modèle admis, clé en en-tête seulement, jamais dans l’URL ni dans l’erreur
+[22m[39mGemini HTTP 429 (gemini-3.8-flash) : «clé masquée» refusée
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstderr[2m | tests/unit/invoiceScanBudget.test.ts[2m > [22m[2mBudget scan isolé, fournisseur simulé[2m > [22m[2mréserve avant génération, partage le quota global, conserve les jobs du compagnon
+[22m[39mEmpreinte du moteur de lecture illisible : le cache de lecture est ignoré sur cette instance. Error: ENOENT: no such file or directory, open 'C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\functions\src\hopAdviceContentReference.ts'
+[90m    at readFileSync (node:fs:484:20)[39m
+    at [90mC:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\[39mfunctions\src\invoiceScanCore.ts:145:45
+    at engineDigestOf [90m(C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\[39mfunctions\src\invoiceScanCore.ts:132:18[90m)[39m
+    at invoiceEngineDigest [90m(C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\[39mfunctions\src\invoiceScanCore.ts:145:20[90m)[39m
+    at invoiceScanId [90m(C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\[39mfunctions\src\invoiceScanCore.ts:157:38[90m)[39m
+    at Module.runBudgetedInvoiceScan [90m(C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\[39mfunctions\src\invoiceScanBudget.ts:31:35[90m)[39m
+    at [90mC:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\[39mtests\unit\invoiceScanBudget.test.ts:24:11
+    at file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:155:11
+    at file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:26
+    at file:///C:/Users/mrspa/.codex/worktrees/openai-clean-start/ports-nuit/node_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:1897:20 {
+  errno: [33m-4058[39m,
+  code: [32m'ENOENT'[39m,
+  syscall: [32m'open'[39m,
+  path: [32m'C:\\Users\\mrspa\\.codex\\worktrees\\openai-clean-start\\port-carnet\\functions\\src\\hopAdviceContentReference.ts'[39m
+}
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[90mstdout[2m | tests/unit/depense/stock/chasse-17-10.test.ts[2m > [22m[2mchasse du 17.10 rejouée : aucune fausse proposition[2m > [22m[2mbilan : 0 fausse proposition ; les manquées sont comptées à part
+[22m[39mCHASSE 17.10 : 27 cas, 0 fausse(s) [], 1 manquée(s) [A9 (témoin)]
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/integration/carnetsParcours.test.tsx[2m > [22mD2 CARNET-COEUR : de zéro, magasin mémoire vide, IA simulée[2m > [22membouteillage, deux façons, le critère, 6 liens, une note ; comparer ; puis frigo, ventilation, évier ; au plus 2 gestes par ajout
+[31m[1mAssertionError[22m: expected 'idea' to be 'research' // Object.is equality[39m
+
+Expected: [32m"research"[39m
+Received: [31m"idea"[39m
+
+[36m [2m❯[22m tests/integration/carnetsParcours.test.tsx:[2m70:24[22m[39m
+    [90m 68| [39m    [34mexpect[39m([33mMath[39m[33m.[39m[34mmax[39m([33m...[39majouts))[33m.[39m[34mtoBeLessThanOrEqual[39m([34m2[39m)[33m;[39m
+    [90m 69| [39m    [90m/* Comparer : le tableau existe dès le 2e article (R26) */[39m
+    [90m 70| [39m    [34mexpect[39m([34me[39m()[33m.[39mstatus)[33m.[39m[34mtoBe[39m([32m'research'[39m)[33m;[39m
+    [90m   | [39m                       [31m^[39m
+    [90m 71| [39m    m[33m.[39mvue[33m.[39m[34munmount[39m()[33m;[39m
+    [90m 72| [39m    [35mconst[39m m2 [33m=[39m { [33m...[39mm[33m,[39m [33m...[39m[34mmonterSur[39m(m[33m.[39mmagasin) }[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/integration/carnetsParcours.test.tsx[2m > [22mD3 et D7 : sortie vers À venir, liens, Suppression v2[2m > [22mpastille « À venir · … » sur le Frigo envoyé (R47), et un seul plan par idée (clé idempotente)
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: /À venir · /. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"cn "[39m
+    [33mdata-carnets[39m=[32m"true"[39m
+    [33mdata-vue[39m=[32m"carnet"[39m
+    [33mstyle[39m=[32m"display: flex; flex-direction: column; min-height: 0px; --cn-champ-h: 0px; --cn-clavier: 0px;"[39m
+  [36m>[39m
+    [36m<div[39m
+      [33mstyle[39m=[32m"flex: 1 1 0%; min-height: 0px; overflow-y: auto;"[39m
+    [36m>[39m
+      [36m<article[39m
+        [33maria-label[39m=[32m"ZZ TEST — Frigo de garde pour fûts"[39m
+        [33mclass[39m=[32m"cn-page cn-ouvert"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"cn-tete"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"cn-retour"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-chevron-left"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"20"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m15 18-6-6 6-6"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0m Carnets[0m
+          [36m</button>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"cn-sp"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"cn-pastille cn-statut-validated"[39m
+          [36m>[39m
+            [0mChoisi le 10 oct.[0m
+          [36m</span>[39m
+          [36m<button[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"Plus"[39m
+            [33mclass[39m=[32m"cn-ico"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-ellipsis"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"22"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"22"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"12"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"19"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"5"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"1"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"cn-titre-ligne"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"cn-titre"[39m
+          [36m>[39m
+            [0mZZ TEST — Frigo de garde pour fûts[0m
+          [36m</h2>[39m
+          [36m<button[39m
+            [33maria-label[39m=[32m"Renommer"[39m
+            [33mclass[39m=[32m"cn-ico"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-pencil"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"20"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"20"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m15 5 4 4"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<section[39m
+          [33maria-label[39m=[32m"Ce qui compte"[39m
+          [33mclass[39m=[32m"cn-critere-bloc"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"cn-critere cn-critere-une"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-target cn-vert cn-critere-ico"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"18"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"18"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"12"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"10"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"12"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"6"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"12"[39m
+                [33mcy[39m=[32m"12"[39m
+                [33mr[39m=[32m"2"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"cn-sp"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"cn-critere-tx"[39m
+              [36m>[39m
+                [0mCritère : [0m
+                [36m<b>[39m
+                  [0mtenir 2 °C stable en été[0m
+                [36m</b>[39m
+                [0m, puis [0m
+                [36m<b>[39m...
+[90m [2m❯[22m Object.getElementError ../ports-nuit/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../ports-nuit/node_modules/@testing-library/dom/dist/query-helpers.js:[2m109:15[22m[39m
+[36m [2m❯[22m tests/integration/carnetsParcours.test.tsx:[2m107:34[22m[39m
+    [90m105| [39m    const m = monter(fixtureCarnets(), { plans: fixturePlans(), transa…
+    [90m106| [39m    const vue = render(<CarnetsVue {...m.props} ouvrir={{ id: ID_FRIGO…
+    [90m107| [39m    expect(within(vue.container).getAllByText(/À venir · /).length).to…
+    [90m   | [39m                                 [31m^[39m
+    [90m108| [39m  })[33m;[39m
+    [90m109| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m62 passed[39m[22m[90m (63)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m1431 passed[39m[22m[90m (1433)[39m
+[2m   Start at [22m 18:30:35
+[2m   Duration [22m 224.02s[2m (transform 57.20s, setup 16.06s, collect 148.64s, tests 500.83s, environment 31.66s, prepare 5.14s)[22m
+

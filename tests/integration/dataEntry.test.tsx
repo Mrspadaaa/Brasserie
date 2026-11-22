@@ -609,7 +609,7 @@ describe('Nommage des champs de l’assistant', () => {
    * chaque sélection. Sur l'étape Identité il valait « NEIPA, Stout, Saison… »
    * — une liste d'exemples, pas un nom.
    */
-  const ETAPES = ['Identité', 'Fermentescibles', 'Houblons', 'Levure', 'Paliers', 'Récapitulatif'];
+  const ETAPES = ['Identité', 'Malts/sucres', 'Houblons', 'Levure', 'Paliers', 'Récapitulatif'];
 
   ETAPES.forEach((etape) => {
     it(`⚠️ étape ${etape} — chaque champ porte un nom`, () => {
@@ -752,7 +752,7 @@ describe('Ajout d’un fermentescible — où va le curseur', () => {
     );
 
   const ajouterUnMalt = () => {
-    allerEtape(/Fermentescibles/);
+    allerEtape(/Malts.sucres/);
     const combo = screen.getByLabelText(/Ajouter un fermentescible/i) as HTMLInputElement;
     fireEvent.click(combo);
     fireEvent.click(combo);

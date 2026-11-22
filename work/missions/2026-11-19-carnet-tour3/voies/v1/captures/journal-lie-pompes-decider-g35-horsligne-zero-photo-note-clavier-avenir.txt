@@ -1,0 +1,135 @@
+=== decider
+[decider 390] carnet colonnes : [] ; placeholders ["Ajouter à ZZ TEST…"]
+[comparer 390] Compromis :  ligne : moins bien que la 3e sur tout /  / Compromis : la 1re, la seule à tenir 80 °C et votre minimum, pour 1 150 CHF de plus que la 2e  /  / Valeurs annoncées par les vendeurs · exemple | Valeurs annoncées : true | de plus : /h / 	– / prix CHF	2 600	1 450	420	690	180 /  / → 2 de plus /  / la 4e, Extracteur | img : 0
+[comparer 390] écartés : e / 	 / 4e / Extracteur centrifuge en ligne / 	 / écarté / Ventilateur de plafond 130 cm /  / tient 80 °C	oui	oui	non	non	non / débit m³/h	1 800	1 200 / sous votre minimum de 1 500 m³/h / 	1 500	1 100 / sous votre minimum de 1 500 m³/h / 	– / prix CHF	2 600	1 450	420	
+[comparer 390] colonnes : [] ; placeholders ["Ajouter à ZZ TEST…"]
+[comparer 390] défilement horizontal : ["cn-tableau-zone 340/497","cn-cache 1/99","cn-cache 1/375"]
+[choisir 390] écartés : (absent : écarté) ; placeholders ["une phrase suffit","Ajouter à ZZ TEST…"]
+[choisir 390] prix :  120  | 2 600 CHF |  80  | 1 800  |  1 800
+ | 1 100  | 2 600 CHF |  420
+ | 2 600 CHF |  80  |  130  |  2 600 CHF
+[pourquoi 390] texte :  en kit 2 m³ / Froid Léman · CH / 4 900 CHF / Pourquoi ce choix /  /  L'ambiance max la plus haute des deux à passer la porte de 80 cm ; Froid Léman (CH). /  / « tient 2 °C en été, 6 fûts » /  / Ambiance max / 43 °C · 1er sur 2 / ‹ mieux · 43 / 38 °C / Prix / 4 900 CHF · 3e sur 3 / ‹ moins cher · 650 / 4 900 CHF / Critère : tenir 2 °C stable en été / Façon chambre froide en ; placeholders ["Ajouter à ZZ TEST…"]
+[article 390] ouvre : Hotte inox 120 cm + moteur
+[article 390] texte : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 6 / Réalisés / 0 / Articles · ZZ TEST — Ventilation… / 1re sur 4 / Hotte inox 120 cm + moteur /  / façon hotte inox + extracteur /  / le débit / 1 800 m³/h / 1 800 la plus haute des 4 / 1 100 / Offre / Inox Broye · CH / en stock / 2 600 CHF / Ouvrir / Caractéristiques / tient 80 °C / oui / exemple / Disponibilité / en stock / Origine / CH / Veille du prix, tous les 3 jours / Choisir · Inox Broye /  / Part dans À venir : Hotte inox 120 cm + moteur, Inox Broye, 2 600 CHF, en stock, avec le po
+[article 390] Choisir : [{"t":"Choisir · Inox Broye","disabled":false,"color":"rgb(255, 255, 255)","fond":"rgb(76, 107, 42)","opacite":"1","ratio":6.1}] ; img : 
+[decider 1280] carnet colonnes : ["relative:736","cn-page:760","cn-champ-zone:760"] ; placeholders ["Ajouter à ZZ TEST — Ventilation de la salle de brassage…"]
+[comparer 1280] Compromis :  ligne : moins bien que la 3e sur tout /  / Compromis : la 1re, la seule à tenir 80 °C et votre minimum, pour 1 150 CHF de plus que la 2e  /  / Valeurs annoncées par les vendeurs · exemple | Valeurs annoncées : true | de plus : (absent : → \d+ de plus|\d+ de plus) | img : 0
+[comparer 1280] écartés : e / 	 / 4e / Extracteur centrifuge en ligne / 	 / écarté / Ventilateur de plafond 130 cm /  / tient 80 °C	oui	oui	non	non	non / débit m³/h	1 800	1 200 / sous votre minimum de 1 500 m³/h / 	1 500	1 100 / sous votre minimum de 1 500 m³/h / 	– / prix CHF	2 600	1 450	420	
+[comparer 1280] colonnes : ["relative:736","cn-page:760","cn-champ-zone:760"] ; placeholders ["Ajouter à ZZ TEST — Ventilation de la salle de brassage…"]
+[comparer 1280] défilement horizontal : ["cn-cache 1/99","cn-cache 1/375"]
+[choisir 1280] écartés : (absent : écarté) ; placeholders ["une phrase suffit","Ajouter à ZZ TEST — Ventilation de la salle de brassage…"]
+[choisir 1280] prix :  120  | 2 600 CHF |  80  | 1 800  |  1 800
+ | 1 100  | 2 600 CHF |  420
+ | 2 600 CHF |  80  |  130  |  2 600 CHF
+[pourquoi 1280] texte :  en kit 2 m³ / Froid Léman · CH / 4 900 CHF / Pourquoi ce choix /  /  L'ambiance max la plus haute des deux à passer la porte de 80 cm ; Froid Léman (CH). /  / « tient 2 °C en été, 6 fûts » /  / Ambiance max / 43 °C · 1er sur 2 / ‹ mieux · 43 / 38 °C / Prix / 4 900 CHF · 3e sur 3 / ‹ moins cher · 650 / 4 900 CHF / Critère : tenir 2 °C stable en été / Façon chambre froide en ; placeholders ["Ajouter à ZZ TEST — Frigo de garde pour fûts…"]
+[article 1280] ouvre : Hotte inox 120 cm + moteur
+[article 1280] texte : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 6 / Réalisés / 0 / Articles · ZZ TEST — Ventilation de la salle de brassage / 1re sur 4 / Hotte inox 120 cm + moteur /  / façon hotte inox + extracteur /  / le débit / 1 800 m³/h / 1 800 la plus haute des 4 / 1 100 / Offre / Inox Broye · CH / en stock / 2 600 CHF / Ouvrir / Caractéristiques / tient 80 °C / oui / exemple / Disponibilité / en stock / Origine / CH / Veille du prix, tous les 3 jours / Choisir · Inox Broye /  / Part dans À venir : Hotte inox 120 cm + moteur, Inox Broye, 2 600 CH
+[article 1280] Choisir : [{"t":"Choisir · Inox Broye","disabled":false,"color":"rgb(255, 255, 255)","fond":"rgb(76, 107, 42)","opacite":"1","ratio":6.1}] ; img : 
+=== pompes
+suivi [pompe1 390] -|- → -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[pompe1 390] texte : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 7 / Réalisés / 0 / Carnets / À comparer / Pompe pour le moût / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « https://exemple.invalid/pompe-inox » · titre mis en forme par l'IA /  / Critère : Supporter le moût chaud · proposé par l'IA /  / Façons / · aucune : l'IA les cherche /  / Articles / 1 / Pompe de transfert inox / exemple.invalid exemple / 40 L/min · 90 °C · tien
+suivi [pompe2 390] -|Carnet créé → -|- ; roue+bandeau simultanés : 0 relevés
+[pompe2 390] texte : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 7 / Réalisés / 0 / Carnets / Pompe pour le moût / ✻ / Comparer sur le débit (L/min)exemple / Ajouter / × /  / 2 articles à comparer /  / Critère : Supporter le moût chaud · proposé par l'IA /  / Façons / · aucune : l'IA les cherche /  / Articles / 2 / · / Comparer / ✓ / Article rangé ici, à l'instant · 1er sur 2 · température max 100 °C / Annuler / Pompe magnétique 12 V / exemple.invalid exemple / 25 L/min · 100 °C · tient 80 °C oui / 245 CHF / en stock / Veille du prix, tous les 3 jours /  / ✻ lu sur la page : nom, prix, débit, température max, tient 80 °C /  / votre phrase : « https://exemple.invalid/pompe-magnetique » /  / rang · article / max °C / CHF / 2 / Pompe de transfert inox / en stock · moins bien
+[pompe2 390] tableau : l'IA les cherche /  / Articles / 2 / · / Comparer / rang · article / max °C / CHF / 1 / Pompe magnétique 12 V / en stock / 100 / 245 / 2 / Pompe de transfert inox / en stock / 90 / 690 /  / Notes / · aucune /  / Le champ en bas range tout ici : une phrase, un lien collé, une photo. /  / Ajouter à Pompe pour le moût… / Bord / Finances / Calendrier / Brassins / Stocks / Clients
+suivi [puce 390] -|Rangé ici ; roue+bandeau simultanés : 0 relevés
+[puce 390] après : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 7 / Réalisés / 0 / Carnets / Pompe pour le moût / ✓ / Rangé ici, à l'instant / Annuler /  / 2 articles à comparer /  / Critère : Supporter le moût chaud, puis Comparer sur débit · proposé par l'IA /  / Façons / · aucune : l'IA les cherche /  / Articles / 2 / · / Comparer / rang · article / max °C / CHF / 1 / Pompe magnétique 12 V / en stock / 100 / 245 / 2 / Pompe de transfert inox / en stock / 90 / 690 /  / Notes / · aucune /  / Le champ en bas range tout ici : une phrase, un lien collé, une photo. /  / Ajout
+suivi [pompe1 1280] -|- → -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[pompe1 1280] texte : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 7 / Réalisés / 0 / Carnets / À comparer / Pompe pour le moût / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « https://exemple.invalid/pompe-inox » · titre mis en forme par l'IA /  / Critère : Supporter le moût chaud · proposé par l'IA /  / Façons / · aucune : l'IA les cherche /  / Articles / 1 / Pompe de transfert inox / exemple.invalid exemple / 40 L/min · 90 °C · tien
+suivi [pompe2 1280] -|Carnet créé → -|- ; roue+bandeau simultanés : 0 relevés
+[pompe2 1280] texte : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 7 / Réalisés / 0 / Carnets / Pompe pour le moût / ✻ / Comparer sur le débit (L/min)exemple / Ajouter / × /  / 2 articles à comparer /  / Critère : Supporter le moût chaud · proposé par l'IA /  / Façons / · aucune : l'IA les cherche /  / Articles / 2 / · / Comparer / ✓ / Article rangé ici, à l'instant · 1er sur 2 · température max 100 °C / Annuler / Pompe magnétique 12 V / exemple.invalid exemple / 25 L/min · 100 °C · tient 80 °C oui / 245 CHF / en stock / Veille du prix, tous les 3 jours /  / ✻ lu sur la page : nom, prix, débit, température max, tient 80 °C /  / votre phrase : « https://exemple.invalid/pompe-magnetique » /  / rang · article / max °C / CHF / 2 / Pompe de transfert inox / en stock · moins bien
+[pompe2 1280] tableau : l'IA les cherche /  / Articles / 2 / · / Comparer / rang · article / max °C / CHF / 1 / Pompe magnétique 12 V / en stock / 100 / 245 / 2 / Pompe de transfert inox / en stock / 90 / 690 /  / Notes / · aucune /  / Le champ en bas range tout ici : une phrase, un lien collé, une photo. /  / Ajouter à Pompe pour le moût… / Bord / Finances / Calendrier / Brassins / Stocks / Clients / Compagnon
+suivi [puce 1280] -|Rangé ici ; roue+bandeau simultanés : 0 relevés
+[puce 1280] après : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 7 / Réalisés / 0 / Carnets / Pompe pour le moût / ✓ / Rangé ici, à l'instant / Annuler /  / 2 articles à comparer /  / Critère : Supporter le moût chaud, puis Comparer sur débit · proposé par l'IA /  / Façons / · aucune : l'IA les cherche /  / Articles / 2 / · / Comparer / rang · article / max °C / CHF / 1 / Pompe magnétique 12 V / en stock / 100 / 245 / 2 / Pompe de transfert inox / en stock / 90 / 690 /  / Notes / · aucune /  / Le champ en bas range tout ici : une phrase, un lien collé, une photo. /  / Ajout
+=== g35
+[g35 390] :  façons, 1 façon écartée et 3 notes. La veille du prix, tous les 3 jours, s'arrête. /  /  ni dans À venir, ni en commande /  / Supprimer / Garder /  / 2 façons à comparer · attendre l'avis du ferblantier /  / Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer /  / Article
+[g35 1280] :  façons, 1 façon écartée et 3 notes. La veille du prix, tous les 3 jours, s'arrête. /  /  ni dans À venir, ni en commande /  / Supprimer / Garder /  / 2 façons à comparer · attendre l'avis du ferblantier /  / Critère : tient 80 °C, puis le débit · proposé par l'IA · 1 critère sans valeur à comparer /  / Article
+=== lie
+[lie 390] phrase en titre : arantie sur le compresseur / – / 650 /  / votre phrase en titre /  / Notes / 1 / la porte du local fait 80 cm / note / Ajouter à ZZ TEST — Frigo de garde pour fûts… / Bord / Finances / C
+[lie 390] page : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 6 / Réalisés / 0 / Carnets / Choisi le 10 oct. / ZZ TEST — Frigo de garde pour fûts / Supprimer le carnet ZZ TEST — Frigo de garde pour fûts ? /  / Il part avec 2 critères, 4 articles, 1 façon, 1 façon écartée et 1 note. /  / 1 lien le retient /  / ZZ TEST — Frigo de garde pour fûts · plan dans À venir / Garder le plan sans ce carnet / Supprimer / Garder /  / Critère : tenir 2 °C stable en été, puis passe la porte de 80 cm · de votre phrase /  / À venir · ZZ TEST — Frigo de garde pour fûts / Choisi : Chambre froide en kit 2 m³ / tient 2 °C en été, 6 fûts / Pourquoi / Articles / 
+[lie 390] lignes lien : [{"t":"À venir","lignes":1,"y":41,"x":46,"w":45,"h":20},{"t":" · plan dans À venir","lignes":2,"y":322,"x":25,"w":327,"h":40},{"t":"À venir · ZZ TEST — Frigo de garde pour fûts","lignes":2,"y":544,"x":12,"w":297,"h":44}]
+[lie 390 clair] bouton Supprimer : [{"t":"Supprimer","disabled":true,"color":"rgb(102, 102, 102)","fond":"rgba(200, 56, 47, 0.07)","opacite":"1","ratio":1.11}]
+[lie 390 sombre] bouton Supprimer : [{"t":"Supprimer","disabled":true,"color":"rgb(154, 138, 126)","fond":"rgba(214, 69, 61, 0.07)","opacite":"1","ratio":1.32}]
+[lie 1280] phrase en titre : arantie sur le compresseur / – / 650 /  / votre phrase en titre /  / Notes / 1 / la porte du local fait 80 cm / note / Ajouter à ZZ TEST — Frigo de garde pour fûts… / Bord / Finances / C
+[lie 1280] page : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 6 / Réalisés / 0 / Carnets / Choisi le 10 oct. / ZZ TEST — Frigo de garde pour fûts / Supprimer le carnet ZZ TEST — Frigo de garde pour fûts ? /  / Il part avec 2 critères, 4 articles, 1 façon, 1 façon écartée et 1 note. /  / 1 lien le retient /  / ZZ TEST — Frigo de garde pour fûts · plan dans À venir / Garder le plan sans ce carnet / Supprimer / Garder /  / Critère : tenir 2 °C stable en été, puis passe la porte de 80 cm · de votre phrase /  / À venir · ZZ TEST — Frigo de garde pour fûts / Choisi : Chambre froide en kit 2 m³ / tient 2 °C en été, 6 fûts / Pourquoi / Articles / 
+[lie 1280] lignes lien : [{"t":"À venir","lignes":1,"y":41,"x":411,"w":45,"h":20},{"t":" · plan dans À venir","lignes":1,"y":309,"x":581,"w":126,"h":20},{"t":"À venir · ZZ TEST — Frigo de garde pour fûts","lignes":2,"y":466,"x":316,"w":297,"h":44}]
+[lie 1280 clair] bouton Supprimer : [{"t":"Supprimer","disabled":true,"color":"rgb(102, 102, 102)","fond":"rgba(200, 56, 47, 0.07)","opacite":"1","ratio":1.11}]
+[lie 1280 sombre] bouton Supprimer : [{"t":"Supprimer","disabled":true,"color":"rgb(154, 138, 126)","fond":"rgba(214, 69, 61, 0.07)","opacite":"1","ratio":1.32}]
+=== horsligne
+[horsligne 390] avant : (absent : IA|hors ligne|Hors ligne)
+suivi [horsligne 390] -|rangé sur l'appareil ; roue+bandeau simultanés : 0 relevés
+[horsligne 390] bandeau : oct. / ZZ TEST — Frigo de garde pour fûts / Hors ligne : rangé sur l'appareil, tel quel / Annuler /  / Notes : « filtre à air G4, 2 pièces » · dans ZZ TEST — Frigo de garde pour fûts /  / Critère : tenir 2 °C stabl ; filtre : l'appareil, tel quel / Annuler /  / Notes : « filtre à air G4, 2 pièces » · dans ZZ TEST — Frigo de garde pour fûts /  / Critère : tenir 2 °C stable en été, puis passe la
+[horsligne 390] rubriques : ["ZZ TEST — Frigo de garde pour fûts"]
+[horsligne 1280] avant : (absent : IA|hors ligne|Hors ligne)
+suivi [horsligne 1280] -|rangé sur l'appareil ; roue+bandeau simultanés : 0 relevés
+[horsligne 1280] bandeau : oct. / ZZ TEST — Frigo de garde pour fûts / Hors ligne : rangé sur l'appareil, tel quel / Annuler /  / Notes : « filtre à air G4, 2 pièces » · dans ZZ TEST — Frigo de garde pour fûts /  / Critère : tenir 2 °C stabl ; filtre : l'appareil, tel quel / Annuler /  / Notes : « filtre à air G4, 2 pièces » · dans ZZ TEST — Frigo de garde pour fûts /  / Critère : tenir 2 °C stable en été, puis passe la
+[horsligne 1280] rubriques : ["ZZ TEST — Frigo de garde pour fûts"]
+[iaeteinte 390] avant : (absent : IA|hors ligne|Hors ligne)
+suivi [iaeteinte 390] -|rangé sur l'appareil ; roue+bandeau simultanés : 0 relevés
+[iaeteinte 390] bandeau : oct. / ZZ TEST — Frigo de garde pour fûts / IA éteinte : rangé sur l'appareil, tel quel / Annuler /  / Notes : « filtre à air G4, 2 pièces » · dans ZZ TEST — Frigo de garde pour fûts /  / Critère : tenir 2 °C stabl ; filtre : l'appareil, tel quel / Annuler /  / Notes : « filtre à air G4, 2 pièces » · dans ZZ TEST — Frigo de garde pour fûts /  / Critère : tenir 2 °C stable en été, puis passe la
+[iaeteinte 390] rubriques : ["ZZ TEST — Frigo de garde pour fûts"]
+[iaeteinte 1280] avant : (absent : IA|hors ligne|Hors ligne)
+suivi [iaeteinte 1280] -|rangé sur l'appareil ; roue+bandeau simultanés : 0 relevés
+[iaeteinte 1280] bandeau : oct. / ZZ TEST — Frigo de garde pour fûts / IA éteinte : rangé sur l'appareil, tel quel / Annuler /  / Notes : « filtre à air G4, 2 pièces » · dans ZZ TEST — Frigo de garde pour fûts /  / Critère : tenir 2 °C stabl ; filtre : l'appareil, tel quel / Annuler /  / Notes : « filtre à air G4, 2 pièces » · dans ZZ TEST — Frigo de garde pour fûts /  / Critère : tenir 2 °C stable en été, puis passe la
+[iaeteinte 1280] rubriques : ["ZZ TEST — Frigo de garde pour fûts"]
+=== zero
+suivi [zero 390 frigo de garde] -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[zero 390 1] frigo de garde → Banc — données simulées · Stocks › Matériel /  / À venir / 0 / Carnets / 1 / Réalisés / 0 / Carnets / Idée · 19 nov. / frigo de garde / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « frigo de garde » · votre phrase en titre /  / Ce qui compte / · rien encore : l'IA le proposera /  / Façons / · 
+introuvable : Carnets
+introuvable : ‹ Carnets
+suivi [zero 390 hotte 1 200 m³/h] -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[zero 390 2] hotte 1 200 m³/h → Banc — données simulées · Stocks › Matériel /  / À venir / 0 / Carnets / 2 / Réalisés / 0 / Carnets / Idée · 19 nov. / hotte 1 200 m³/h / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « hotte 1 200 m³/h » · votre phrase en titre /  / Ce qui compte / · Hotte 1 200 m³/h au moins · de votre p
+introuvable : Carnets
+introuvable : ‹ Carnets
+suivi [zero 390 évier inox 2 bacs] -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[zero 390 3] évier inox 2 bacs → Banc — données simulées · Stocks › Matériel /  / À venir / 0 / Carnets / 3 / Réalisés / 0 / Carnets / Idée · 19 nov. / évier inox 2 bacs / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « évier inox 2 bacs » · votre phrase en titre /  / Ce qui compte / · 2 bacs · de votre phrase /  / Façons / · a
+introuvable : Carnets
+introuvable : ‹ Carnets
+suivi [zero 390 tuyau silicone 8 mm 5 m] -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[zero 390 4] tuyau silicone 8 mm 5 m → Banc — données simulées · Stocks › Matériel /  / À venir / 0 / Carnets / 4 / Réalisés / 0 / Carnets / Idée · 19 nov. / tuyau silicone 8 mm 5 m / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « tuyau silicone 8 mm 5 m » · votre phrase en titre /  / Ce qui compte / · Tuyau silicone 8 mm au m
+introuvable : Carnets
+introuvable : ‹ Carnets
+suivi [zero 390 résine pour le sol] -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[zero 390 5] résine pour le sol → Banc — données simulées · Stocks › Matériel /  / À venir / 0 / Carnets / 5 / Réalisés / 0 / Carnets / Idée · 19 nov. / résine pour le sol / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « résine pour le sol » · votre phrase en titre /  / Ce qui compte / · rien encore : l'IA le proposera /  / F
+introuvable : Carnets
+introuvable : ‹ Carnets
+[zero 390] liste : Banc — données simulées · Stocks › Matériel /  / À venir / 0 / Carnets / 5 / Réalisés / 0 / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « résine pour le sol » · votre phrase en titre /  / Idée / 5 / pas encore d'article / R / résine pour le sol / Coller un lien / évier inox 2 bacs / Coller un lien / hotte 1 200 m³/h / Coller un lien / frigo de garde / Coller un lien / tuyau silicone 8 mm 5 m / Coller un lien / Une idée, un besoin… / Bord / Finances / Calendrier / Brassins / Stocks / Clients
+suivi [zero 1280 frigo de garde] -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[zero 1280 1] frigo de garde → Banc — données simulées · Stocks › Matériel /  / À venir / 0 / Carnets / 1 / Réalisés / 0 / Carnets / Idée · 19 nov. / frigo de garde / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « frigo de garde » · votre phrase en titre /  / Ce qui compte / · rien encore : l'IA le proposera /  / Façons / · 
+introuvable : Carnets
+introuvable : ‹ Carnets
+suivi [zero 1280 hotte 1 200 m³/h] -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[zero 1280 2] hotte 1 200 m³/h → Banc — données simulées · Stocks › Matériel /  / À venir / 0 / Carnets / 2 / Réalisés / 0 / Carnets / Idée · 19 nov. / hotte 1 200 m³/h / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « hotte 1 200 m³/h » · votre phrase en titre /  / Ce qui compte / · Hotte 1 200 m³/h au moins · de votre p
+introuvable : Carnets
+introuvable : ‹ Carnets
+suivi [zero 1280 évier inox 2 bacs] -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[zero 1280 3] évier inox 2 bacs → Banc — données simulées · Stocks › Matériel /  / À venir / 0 / Carnets / 3 / Réalisés / 0 / Carnets / Idée · 19 nov. / évier inox 2 bacs / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « évier inox 2 bacs » · votre phrase en titre /  / Ce qui compte / · 2 bacs · de votre phrase /  / Façons / · a
+introuvable : Carnets
+introuvable : ‹ Carnets
+suivi [zero 1280 tuyau silicone 8 mm 5 m] -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[zero 1280 4] tuyau silicone 8 mm 5 m → Banc — données simulées · Stocks › Matériel /  / À venir / 0 / Carnets / 4 / Réalisés / 0 / Carnets / Idée · 19 nov. / tuyau silicone 8 mm 5 m / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « tuyau silicone 8 mm 5 m » · votre phrase en titre /  / Ce qui compte / · Tuyau silicone 8 mm au m
+introuvable : Carnets
+introuvable : ‹ Carnets
+suivi [zero 1280 résine pour le sol] -|Carnet créé ; roue+bandeau simultanés : 0 relevés
+[zero 1280 5] résine pour le sol → Banc — données simulées · Stocks › Matériel /  / À venir / 0 / Carnets / 5 / Réalisés / 0 / Carnets / Idée · 19 nov. / résine pour le sol / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « résine pour le sol » · votre phrase en titre /  / Ce qui compte / · rien encore : l'IA le proposera /  / F
+introuvable : Carnets
+introuvable : ‹ Carnets
+[zero 1280] liste : Banc — données simulées · Stocks › Matériel /  / À venir / 0 / Carnets / 5 / Réalisés / 0 / ✓ / Carnet créé, en tête des Carnets / Annuler /  / « résine pour le sol » · votre phrase en titre /  / Idée / 5 / pas encore d'article / R / résine pour le sol / Coller un lien / hotte 1 200 m³/h / Coller un lien / tuyau silicone 8 mm 5 m / Coller un lien / frigo de garde / Coller un lien / évier inox 2 bacs / Coller un lien / Une idée, un besoin… / Bord / Finances / Calendrier / Brassins / Stocks / Clients / Compagnon
+=== photo
+[photo 390] input file : true ; boutons photo : ["Photo"]
+suivi [photo 390] -|- ; roue+bandeau simultanés : 0 relevés
+[photo 390] : te / il faudrait au moins 1 500 m³/h / note / photo jointe / Ajouter à ZZ TEST — Ventilation de la salle de brassage… / Ajouter / Bord / Finances / Calendrier / Brassins / Stocks / Clients ; non lue : false
+[photo 1280] input file : true ; boutons photo : ["Photo"]
+suivi [photo 1280] -|- ; roue+bandeau simultanés : 0 relevés
+[photo 1280] : te / il faudrait au moins 1 500 m³/h / note / photo jointe / Ajouter à ZZ TEST — Ventilation de la salle de brassage… / Ajouter / Bord / Finances / Calendrier / Brassins / Stocks / Clients / Compagnon ; non lue : false
+=== note
+[note 390] menus : ["Actions rapides"]
+[note 390] Se modifie ici : [{"t":"Se modifie ici","lignes":1,"y":577,"x":27,"w":109,"h":20}] ; scrollY 0 ; vh 844 ; champ : il faudrait au moins 1 500 m³/h
+[note 1280] menus : ["Actions rapides"]
+[note 1280] Se modifie ici : [{"t":"Se modifie ici","lignes":1,"y":615,"x":331,"w":109,"h":20}] ; scrollY 0 ; vh 800 ; champ : il faudrait au moins 1 500 m³/h
+=== clavier
+[clavier] visualViewport 660/660 ; bulle : h / note / Le critère « pas trop de bruit » peut trancher entre Hotte inox + extracteur et Extracteur mural seul / Ajouter à ZZ TEST — Ventilation ; champ+bulle : {"top":563,"bas":607}
+=== avenir
+[avenir 390] « Ouvrir le carnet » ×1 ; « + » visibles :  ; À venir ×2
+[avenir 390] texte : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 6 / Réalisés / 0 / Sans date · 1 / Prochain achat /  / Ajouté le 16 nov. · depuis son carnet /  / ZZ TEST — Frigo de garde pour fûts /  / 4 900 CHF TTC · Froid Léman /  / Fixer la date / Ouvrir le carnet /  / Il passe seul dans Réalisés quand sa dépense liée est payée. /  / Choisis, pas encore dans À venir · 2 / ZZ TEST — Embouteillage / Isobarique 4 becs pré-évacuation · choisi le 14 nov. / ZZ TEST — Densimètre de paillasse / Densimètre de paillasse à oscillation · choisi l
+[avenir 1280] « Ouvrir le carnet » ×1 ; « + » visibles :  ; À venir ×2
+[avenir 1280] texte : Banc — données simulées · Stocks › Matériel /  / À venir / 1 / Carnets / 6 / Réalisés / 0 / Sans date · 1 / Prochain achat /  / Ajouté le 16 nov. · depuis son carnet /  / ZZ TEST — Frigo de garde pour fûts /  / 4 900 CHF TTC · Froid Léman /  / Fixer la date / Ouvrir le carnet /  / Il passe seul dans Réalisés quand sa dépense liée est payée. /  / Choisis, pas encore dans À venir · 2 / ZZ TEST — Embouteillage / Isobarique 4 becs pré-évacuation · choisi le 14 nov. / ZZ TEST — Densimètre de paillasse / Densimètre de paillasse à oscillation · choisi l

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r4 — QR-facture : le total chiffre à chiffre (chaude, 01.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--qrr4-fond:#F3F3F3;--qrr4-carte:#FAFAFA;--qrr4-blanc:#FFFFFF;--qrr4-bord:#DCDCDC;--qrr4-bordm:#BDBDBD;--qrr4-t2:#5E5E5E;--qrr4-t1:#2E2E2E;--qrr4-t0:#111111;
+--qrr4-att:#7A560C;--qrr4-attf:#FBF3E2;--qrr4-ok:#2B6541;--qrr4-okf:#E6F2E9;--qrr4-sans:"Source Sans 3",system-ui,sans-serif;--qrr4-mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#D9D9D9;color:var(--qrr4-t1);font-family:var(--qrr4-sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:#E9D8B0}
+:focus-visible{outline:2px solid var(--qrr4-t0);outline-offset:2px}
+.qrr4-m{font-family:var(--qrr4-mono);font-variant-numeric:tabular-nums}
+.qrr4-sheet{max-width:960px;margin:0 auto;min-height:100vh;background:var(--qrr4-fond);border-radius:24px 24px 0 0;display:flex;flex-direction:column}
+.qrr4-hd{position:sticky;top:0;z-index:5;background:var(--qrr4-fond);display:flex;align-items:center;gap:4px;height:48px;padding:0 8px 0 12px;border-bottom:1px solid var(--qrr4-bord);border-radius:24px 24px 0 0}
+.qrr4-hd h1{flex:1;font-size:20px;font-weight:600;color:var(--qrr4-t0)}
+.qrr4-ib{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--qrr4-t1)}
+.qrr4-corps{flex:1;padding:6px 12px 72px;display:flex;flex-direction:column;gap:8px}
+.qrr4-colA,.qrr4-colB{display:flex;flex-direction:column;gap:8px;min-width:0}
+.qrr4-just{display:flex;align-items:center;gap:8px;min-height:28px;font-size:14px}
+.qrr4-just span{flex:1}
+.qrr4-bd{background:var(--qrr4-carte);border:1px solid var(--qrr4-bord);border-radius:16px;padding:6px 10px 8px;display:flex;flex-direction:column;gap:4px}
+.qrr4-bd1{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.qrr4-four{font-size:16px;font-weight:600;color:var(--qrr4-t0)}
+/* Le total chiffre à chiffre : chaque témoin sur sa rangée, les chiffres en colonnes ; la colonne qui diffère se voit. */
+.qrr4-cmp{display:grid;grid-template-columns:40px auto 1fr;column-gap:6px;align-items:center;position:relative}
+.qrr4-rg{display:contents}
+.qrr4-rg>button,.qrr4-rg>div{display:contents}
+.qrr4-src{font-size:12px;color:var(--qrr4-t2);display:inline-flex;align-items:center;gap:3px;min-height:24px}
+.qrr4-src.qrr4-ok{color:var(--qrr4-ok);font-weight:600}
+.qrr4-dg{display:flex;font-family:var(--qrr4-mono);font-variant-numeric:tabular-nums;font-weight:600;color:var(--qrr4-t0)}
+.qrr4-dg span{display:inline-flex;justify-content:center;width:21px;border-radius:4px}
+.qrr4-big .qrr4-dg{font-size:32px;line-height:1.15}
+.qrr4-sm .qrr4-dg{font-size:24px;line-height:1.15;color:var(--qrr4-ok)}
+.qrr4-sm.qrr4-neutre .qrr4-dg{color:var(--qrr4-t1)}
+.qrr4-dg span.qrr4-x{background:var(--qrr4-attf);outline:1.5px dashed var(--qrr4-att);color:var(--qrr4-att)}
+.qrr4-dg span.qrr4-vd{color:var(--qrr4-bordm)}
+.qrr4-dg.qrr4-lu-barre{text-decoration:line-through;text-decoration-thickness:2px;color:var(--qrr4-t2)}
+.qrr4-fin{display:flex;align-items:center;gap:6px;justify-content:flex-end;min-width:0}
+.qrr4-dev{font-size:12px;color:var(--qrr4-t2)}
+.qrr4-chip{min-height:28px;display:inline-flex;align-items:center;gap:4px;padding:0 8px;border-radius:10px;border:1px solid var(--qrr4-bordm);background:var(--qrr4-blanc);font-size:14px}
+.qrr4-garde{min-height:28px;padding:0 10px;border-radius:10px;border:1px solid var(--qrr4-bordm);background:var(--qrr4-blanc);font-size:14px;white-space:nowrap}
+.qrr4-garde.qrr4-plein{background:var(--qrr4-t0);border-color:var(--qrr4-t0);color:#fff;font-weight:600}
+.qrr4-ligne{grid-column:1 / -1;border-top:1px solid var(--qrr4-bord);margin:2px 0}
+.qrr4-autres{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:12px;color:var(--qrr4-t1);padding-top:2px}
+.qrr4-autres span{display:inline-flex;align-items:center;gap:3px}
+.qrr4-autres b{font-family:var(--qrr4-mono);font-weight:600;color:var(--qrr4-t0)}
+.qrr4-autres svg{color:var(--qrr4-ok)}
+.qrr4-barre{display:flex;height:10px;border-radius:9px;overflow:hidden;border:1px solid var(--qrr4-bord)}
+.qrr4-barre i{height:100%;border-right:1.5px solid var(--qrr4-blanc)}
+.qrr4-barre i:last-child{border-right:0}
+.qrr4-l-relie{background:#9C7A2E}.qrr4-l-neuf{background:#4F74B0}.qrr4-l-aucun{background:#2B2B2B}
+/* Le règlement enrichi par S1 : conditions, échéance, le temps qui reste. */
+.qrr4-tu{display:grid;grid-template-columns:1fr 1.25fr;gap:8px}
+.qrr4-tile{border:1px solid var(--qrr4-bord);border-radius:16px;padding:6px 10px;display:flex;flex-direction:column;gap:3px;min-height:52px;background:var(--qrr4-carte);text-align:left}
+.qrr4-tile small{font-size:12px;color:var(--qrr4-t2);display:flex;justify-content:space-between;gap:4px}
+.qrr4-tile span{font-size:14px;color:var(--qrr4-t0)}
+.qrr4-ech{position:relative;height:8px;border-radius:9px;background:#E4E4E4;overflow:visible}
+.qrr4-ech i{position:absolute;left:0;top:0;bottom:0;border-radius:9px;background:#9C7A2E}
+.qrr4-ech b{position:absolute;top:-3px;width:2px;height:14px;background:var(--qrr4-t0);border-radius:1px}
+.qrr4-lt{display:flex;align-items:center;justify-content:space-between;min-height:28px;border-top:1px solid var(--qrr4-bord);padding-top:4px}
+.qrr4-li{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:10px;padding:6px 4px;border-bottom:1px solid var(--qrr4-bord);min-height:52px}
+.qrr4-li b{font-size:16px;font-weight:600;color:var(--qrr4-t0)}
+.qrr4-li .qrr4-pas{font-size:12px;border-radius:10px;padding:0 6px;background:#E4E4E4;color:var(--qrr4-t1);margin-left:6px}
+.qrr4-li .qrr4-pas.qrr4-neuf{background:#E3EAF6;color:#2C4F86}
+.qrr4-li .qrr4-q2{display:block;font-family:var(--qrr4-mono);font-size:12px;color:var(--qrr4-t1)}
+.qrr4-li .qrr4-mt{font-family:var(--qrr4-mono);font-variant-numeric:tabular-nums;font-size:14px;color:var(--qrr4-t0);text-align:right}
+.qrr4-sq{display:grid;grid-template-columns:24px 1fr 40px;gap:10px;align-items:center;min-height:48px;border-bottom:1px solid var(--qrr4-bord)}
+.qrr4-sq i{display:block;height:12px;border-radius:9px;background:#E2E2E2}
+.qrr4-sq i:first-child{height:20px;border-radius:6px}
+.qrr4-pulse{animation:qrr4-p 1.1s ease-in-out infinite alternate}
+@keyframes qrr4-p{to{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.qrr4-pulse{animation:none}}
+.qrr4-ft{position:sticky;bottom:0;z-index:5;display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--qrr4-fond);border-top:1px solid var(--qrr4-bord)}
+.qrr4-ft span{flex:1;font-size:12px;color:var(--qrr4-t1)}
+.qrr4-go{min-height:32px;padding:0 12px;border-radius:10px;background:var(--qrr4-t0);color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+@media (min-width:900px){
+ html,body{padding-top:24px}
+ .qrr4-sheet{min-height:calc(100vh - 24px);border-radius:24px}
+ .qrr4-corps{display:grid;grid-template-columns:440px minmax(0,1fr);gap:16px;align-items:start}
+}
+</style></head>
+<body>
+<div class="qrr4-sheet" id="qrr4-racine"></div>
+<script>
+(function () {
+  'use strict';
+  var ETATS = ['confirme', 'contredit', 'partiel', 'illisible', 'sans', 'lecture'];
+  var q = new URLSearchParams(location.search).get('etat');
+  var etat = ETATS.indexOf(q) >= 0 ? q : 'confirme';
+  var ui = { garde: null, ech: false };
+  var LIGNES = [
+    ['Pilsner Malz', '10 kg', '+10 kg', 32.0, 'relie'], ['Pale Ale Malz', '5 kg', '+5 kg', 17.5, 'relie'],
+    ['Münchner Malz', '3 kg', '+3 kg', 11.4, 'relie'], ['Carapils', '1 kg', '+1 kg', 4.2, 'relie'],
+    ['Carafa Spezial 2', '1 kg', 'nouveau', 5.6, 'neuf'], ['Citra', '100 g · α 12,5', '+100 g', 14.8, 'relie'],
+    ['Saaz', '100 g · α 3,4', '+100 g', 9.6, 'relie'], ['SafAle US-05', '2 Stk', '+2 sachets', 9.8, 'relie'],
+    ['Whirlfloc', '1 Stk', '', 5.5, 'aucun']
+  ];
+  function chf(n) { return n.toFixed(2).split('.').join(','); }
+  function cube(lien) {
+    var c = '<path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/>';
+    var coul = lien === 'neuf' ? '#3F67A8' : lien === 'aucun' ? '#8A8A8A' : '#111';
+    var badge = lien === 'relie' ? '<circle cx="15" cy="15" r="4.6" fill="currentColor" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/>'
+      : lien === 'neuf' ? '<circle cx="15" cy="15" r="4.6" fill="currentColor" stroke="none"/><path d="M15 12.6v4.8M12.6 15h4.8" stroke="#fff"/>' : '';
+    var mot = lien === 'relie' ? 'relié' : lien === 'neuf' ? 'nouvel article' : 'aucun mouvement de stock';
+    return '<svg role="img" aria-label="' + mot + '" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" style="color:' + coul + '">' + c + badge + '</svg>';
+  }
+  var V = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 6.4 4.8 9 10 3"/></svg>';
+  var ALERTE = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--qrr4-att)" stroke-width="1.5" aria-hidden="true"><circle cx="7" cy="7" r="5.7"/><path d="M7 4v3.6M7 9.6v.4"/></svg>';
+  var CHEV = function (o) { return '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" style="transform:rotate(' + (o ? 180 : 0) + 'deg)"><path d="M3 5.2 7 9.2 11 5.2"/></svg>'; };
+  /* Les chiffres en colonnes ; `ref` = la valeur à laquelle on compare, colonne par colonne. */
+  function chiffres(txt, ref, cls) {
+    return '<span class="qrr4-dg' + (cls ? ' ' + cls : '') + '">' + txt.split('').map(function (c, i) {
+      var x = ref && ref.charAt(i) !== c ? ' class="qrr4-x"' : c === '·' ? ' class="qrr4-vd"' : '';
+      return '<span' + x + '>' + c + '</span>';
+    }).join('') + '</span>';
+  }
+  function comparaison() {
+    var lec = etat === 'lecture';
+    var ko = etat === 'contredit' && !ui.garde;
+    var lu = etat === 'contredit' && ui.garde !== 'qr' ? '110,04' : '110,40';
+    var chip = lec ? '' : '<button type="button" class="qrr4-chip" aria-label="Détails de la lecture">' + (ko ? ALERTE : V) + '<span class="qrr4-m">9</span>&nbsp;lignes</button>';
+    var rows = '';
+    if (ko) {
+      rows += '<div class="qrr4-rg qrr4-big"><span class="qrr4-src">lu</span>' + chiffres('110,04', '110,40') + '<span class="qrr4-fin"><button type="button" class="qrr4-garde" data-garde="lu">Garder</button></span></div>';
+      rows += '<div class="qrr4-rg qrr4-sm"><span class="qrr4-src qrr4-ok">' + V + 'QR</span>' + chiffres('110,40') + '<span class="qrr4-fin"><button type="button" class="qrr4-garde qrr4-plein" data-booster="garder" data-garde="qr">Garder</button></span></div>';
+      rows += '<div class="qrr4-rg qrr4-sm qrr4-neutre"><span class="qrr4-src">lignes</span>' + chiffres('110,40') + '<span class="qrr4-fin"><span class="qrr4-dev">CHF</span>' + chip + '</span></div>';
+    } else if (lec) {
+      rows += '<div class="qrr4-rg qrr4-big"><span class="qrr4-src">lu</span><span class="qrr4-dg qrr4-pulse" style="color:#CFCFCF">···,··</span><span class="qrr4-fin"><span class="qrr4-dev">CHF</span></span></div>';
+      rows += '<div class="qrr4-rg qrr4-sm qrr4-neutre"><span class="qrr4-src">QR</span>' + chiffres('110,40') + '<span class="qrr4-fin"><span class="qrr4-dev"><span class="qrr4-m">0,4</span> s</span></span></div>';
+    } else {
+      var luCls = etat === 'contredit' && ui.garde === 'lu' ? '' : '';
+      rows += '<div class="qrr4-rg qrr4-big"><span class="qrr4-src">' + (etat === 'contredit' && ui.garde === 'qr' ? 'QR' : 'lu') + '</span>' + chiffres(lu, null, luCls) + '<span class="qrr4-fin"><span class="qrr4-dev">CHF</span>' + chip + '</span></div>';
+      if (etat === 'confirme') rows += '<div class="qrr4-rg qrr4-sm" data-booster="chiffres"><span class="qrr4-src qrr4-ok">' + V + 'QR</span>' + chiffres('110,40') + '<span class="qrr4-fin"></span></div>';
+      if (etat === 'contredit' && ui.garde === 'qr') rows += '<div class="qrr4-rg qrr4-sm qrr4-neutre"><span class="qrr4-src">lu</span>' + chiffres('110,04', null, 'qrr4-lu-barre') + '<span class="qrr4-fin"><span class="qrr4-dev">remplacé</span></span></div>';
+      if (etat === 'contredit' && ui.garde === 'lu') rows += '<div class="qrr4-rg qrr4-sm qrr4-neutre"><span class="qrr4-src">QR</span>' + chiffres('110,40', '110,04') + '<span class="qrr4-fin"><span class="qrr4-dev">non pris</span></span></div>';
+      if (etat === 'partiel') rows += '<div class="qrr4-rg qrr4-sm qrr4-neutre"><span class="qrr4-src">QR</span>' + chiffres('···,··') + '<span class="qrr4-fin"><span class="qrr4-dev">sans montant</span></span></div>';
+      if (etat === 'illisible') rows += '<div class="qrr4-rg qrr4-sm qrr4-neutre"><span class="qrr4-src" style="text-decoration:line-through">QR</span><span class="qrr4-dev" style="font-size:14px">illisible · la lecture fait foi</span><span class="qrr4-fin"></span></div>';
+    }
+    var autres = '';
+    if (etat === 'confirme' || etat === 'contredit') autres = '<div class="qrr4-autres"><span>' + V + '<b>CHF</b></span><span>' + V + '<b>F-1001</b></span><span>' + V + 'date</span><span>' + V + 'créancier</span></div>';
+    if (etat === 'partiel') autres = '<div class="qrr4-autres"><span>' + V + '<b>CHF</b></span><span>' + V + 'créancier</span></div>';
+    if (lec) autres = '<div class="qrr4-autres" style="color:var(--qrr4-t2)"><span><b>CHF</b></span><span><b>F-1001</b></span><span>à comparer</span></div>';
+    return '<div class="qrr4-cmp" aria-label="Le total, chiffre à chiffre">' + rows + '</div>' + autres;
+  }
+  function bandeau() {
+    var lec = etat === 'lecture';
+    var barre = lec ? '<div class="qrr4-barre" aria-hidden="true"><i style="flex-grow:1;background:#E2E2E2"></i></div>'
+      : '<div class="qrr4-barre" aria-label="Les 9 lignes, à la largeur de leur montant">' + LIGNES.map(function (l) { return '<i class="qrr4-l-' + l[4] + '" style="flex-grow:' + l[3] + '"></i>'; }).join('') + '</div>';
+    var tete = lec ? '<div class="qrr4-bd1"><i aria-hidden="true" style="display:block;width:55%;height:14px;border-radius:9px;background:#E2E2E2"></i><i aria-hidden="true" style="display:block;width:22%;height:14px;border-radius:9px;background:#E2E2E2"></i></div>'
+      : '<div class="qrr4-bd1"><span class="qrr4-four">Malterie Fictive SA</span><span class="qrr4-m" style="font-size:14px">12.10.2026</span></div>';
+    return '<section class="qrr4-bd" aria-label="Récapitulatif">' + tete + comparaison() + barre + '</section>';
+  }
+  function tuiles() {
+    if (etat === 'lecture') return '<div class="qrr4-tu" style="opacity:.8;grid-template-columns:1fr 1fr"><div class="qrr4-tile"><small>Règlement</small><span>verrouillé</span></div><div class="qrr4-tile"><small>Pour quoi ?</small><span>verrouillé</span></div></div>';
+    var s1 = etat === 'confirme' || etat === 'contredit';
+    var regl = s1
+      ? '<button type="button" class="qrr4-tile" data-booster="echeance" id="qrr4-ech" aria-expanded="' + ui.ech + '"><small><span>Règlement · <span class="qrr4-m">30</span> j net</span><span>QR</span></small><span>À payer · <span class="qrr4-m">11.11</span></span>' +
+        '<span class="qrr4-ech" aria-label="10 jours restants sur 30"><i style="width:66.7%"></i><b style="left:66.7%"></b></span></button>'
+      : '<div class="qrr4-tile"><small>Règlement</small><span>À payer</span></div>';
+    var pan = s1 && ui.ech ? '<div class="qrr4-tile" style="grid-column:1/-1;border:2px solid var(--qrr4-t0);background:var(--qrr4-blanc)"><small><span>Conditions du QR (S1)</span></small><span>30 jours net · échéance <span class="qrr4-m">11.11.2026</span> · reste <span class="qrr4-m">10</span> j</span></div>' : '';
+    return '<div class="qrr4-tu"><div class="qrr4-tile"><small>TVA · 2,6 %</small><span class="qrr4-m">2,80</span></div>' + regl + pan + '</div>';
+  }
+  function lignes() {
+    if (etat === 'lecture') {
+      return '<div class="qrr4-lt"><span role="status">Lecture des lignes…</span><span class="qrr4-m" style="font-size:12px;color:var(--qrr4-t2)">F-1001.pdf · 0,2 Mo</span></div>' +
+        [0, 1, 2, 3, 4, 5, 6, 7].map(function () { return '<div class="qrr4-sq" aria-hidden="true"><i></i><span style="display:flex;flex-direction:column;gap:4px"><i style="width:60%"></i><i style="width:35%;height:10px"></i></span><i></i></div>'; }).join('');
+    }
+    return '<div class="qrr4-lt"><span>Lignes de la facture · <span class="qrr4-m">9</span></span>' + CHEV(true) + '</div>' +
+      LIGNES.map(function (l) {
+        var pas = l[2] ? '<span class="qrr4-pas' + (l[4] === 'neuf' ? ' qrr4-neuf' : '') + '">' + l[2] + '</span>' : '';
+        return '<div class="qrr4-li">' + cube(l[4]) + '<span><b>' + l[0] + '</b>' + pas + '<span class="qrr4-q2">' + l[1] + '</span></span><span class="qrr4-mt">' + chf(l[3]) + '</span></div>';
+      }).join('');
+  }
+  function rendre() {
+    var hd = '<header class="qrr4-hd"><h1>Nouvelle dépense</h1><button type="button" class="qrr4-ib" aria-label="Justificatif"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1.8h6.5L14 5.3v10.9H4z"/><path d="M10.3 1.8v3.7H14M6.5 9h5M6.5 12h5"/></svg></button><button type="button" class="qrr4-ib" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.5"><path d="M3 3l10 10M13 3 3 13"/></svg></button></header>';
+    var just = '<div class="qrr4-just"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 1.8h6.5L14 5.3v10.9H4z"/><path d="M10.3 1.8v3.7H14"/></svg><span>Voir le justificatif</span>' + CHEV(false) + '</div>';
+    var corps = '<div class="qrr4-corps"><div class="qrr4-colA">' + just + bandeau() + tuiles() + '</div><div class="qrr4-colB" data-mots="lignes">' + lignes() + '</div></div>';
+    var ft = '<footer class="qrr4-ft"><span>' + (etat === 'lecture' ? 'Lecture en cours' : 'Drive prêt') + '</span><button type="button" class="qrr4-go"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2.5 7.4 5.6 10.4 11.5 3.8"/></svg>Confirmer</button></footer>';
+    document.getElementById('qrr4-racine').innerHTML = hd + corps + ft;
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('button');
+    if (!t) return;
+    if (t.getAttribute('data-garde')) ui.garde = t.getAttribute('data-garde');
+    else if (t.id === 'qrr4-ech') ui.ech = !ui.ech;
+    else return;
+    rendre();
+  });
+  rendre();
+})();
+</script>
+</body></html>

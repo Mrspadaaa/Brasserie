@@ -28,6 +28,7 @@ import { programFingerprint } from './programs';
 import type { HopDecisionProgram } from './types';
 import type { HopQualifiedAssemblyInput } from './qualifiedDecision';
 import type { HopColdBeerContext } from './coldIbuContact';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 export const COLD_BU_PROTOCOL_SUPPLEMENT_FORMAT = 'cold-bu-protocol-supplement-v1' as const;
 export const HOP_COLD_CONTACT_EVIDENCE_FORMAT = 'hop-cold-contact-evidence-v1' as const;
@@ -166,7 +167,7 @@ function validateKnownColdHopBuReferenceV2(value: unknown): ColdHopBuReferenceRe
     const comparisonToMin = compareColdDecimals(coordinate, min);
     const comparisonToMax = compareColdDecimals(coordinate, max);
     if (result.status === 'outOfDomain') {
-      const expectedLimit = `Dose hors domaine publié ${result.domainGPerHL.min}–${result.domainGPerHL.max} g/hL : aucune extrapolation ou saturation appliquée.`;
+      const expectedLimit = `Dose hors domaine publié ${result.domainGPerHL.min}–${nombreFr(result.domainGPerHL.max, 1)} g/hL : aucune extrapolation ou saturation appliquée.`;
       if (comparisonToMin >= 0 && comparisonToMax <= 0 || result.valueBU !== null || result.contrastToControlBU !== null
         || result.nodesUsed.length !== 0 || !same(result.limitations, [...calibration.limitations, expectedLimit])) {
         return 'Résultat hors domaine incohérent ou extrapolé.';

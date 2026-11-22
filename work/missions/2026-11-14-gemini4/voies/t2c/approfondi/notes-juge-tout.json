@@ -1,0 +1,20 @@
+{
+ "S0070f4": { "faits": 1, "chiffres": null, "proposition": null, "invention": 0.9, "ton": 1, "note": "blow-off, ne pas boucher, pas de cold crash ; 30 L et 6 L d'espace libre de la fixture" },
+ "S0becf0": { "faits": 0.67, "chiffres": null, "proposition": null, "invention": 0.9, "ton": 1, "note": "blow-off et purge, mais aucun mot sur le cold crash" },
+ "S1f48b1": { "faits": 1, "chiffres": null, "proposition": null, "invention": 1, "ton": 1, "note": "volume cible traité en hypothèse (attendu), pas de cold crash" },
+ "S2ab2f3": { "faits": 1, "chiffres": 1, "proposition": 1, "invention": 1, "ton": 1, "note": "alpha 5,2, 19 à 17 IBU de l'outil, à valider" },
+ "S40d805": { "faits": 1, "chiffres": 1, "proposition": 1, "invention": 1, "ton": 1, "note": "idem, plus question utile sur 17 ou 19 IBU" },
+ "Sc90bc5": { "faits": 1, "chiffres": 1, "proposition": 1, "invention": 0.8, "ton": 1, "note": "« environ 40 g » : calcul non fait par l'outil" },
+ "S332383": { "faits": 1, "chiffres": null, "proposition": null, "invention": 0.9, "ton": 1, "note": "pas de froid, hop creep, densités à 48–72 h" },
+ "Sd326ce": { "faits": 1, "chiffres": null, "proposition": null, "invention": 0.6, "ton": 1, "note": "« 18–22 °C » comme température actuelle inventée ; mécanisme diacétyle/enzymes spéculatif, « risque majeur »" },
+ "Sf43b6f": { "faits": 1, "chiffres": null, "proposition": null, "invention": 0.8, "ton": 1, "note": "correct, un peu d'explication hors preuves (oxydation)" },
+ "Sc81c97": { "faits": 1, "chiffres": null, "proposition": null, "invention": 0.9, "ton": 1, "note": "aucun acide, pas de dose de base sans essai" },
+ "Scc7356": { "faits": 1, "chiffres": null, "proposition": null, "invention": 0.9, "ton": 1, "note": "idem" },
+ "Sfdd985": { "faits": 1, "chiffres": null, "proposition": null, "invention": 0.8, "ton": 1, "note": "idem, « moût » pour maische, « grains acides » hors sujet" },
+ "S8d831c": { "faits": 1, "chiffres": 1, "proposition": null, "invention": 0.9, "ton": 1, "note": "25,4 min minimum, rien de garanti ; 6 kg de grain supposés dans la question" },
+ "Sbc71cd": { "faits": 1, "chiffres": 1, "proposition": null, "invention": 1, "ton": 1, "note": "25,4 min, non garanti" },
+ "Scd7fde": { "faits": 1, "chiffres": 1, "proposition": null, "invention": 1, "ton": 1, "note": "25,4 min, plancher" },
+ "S2db5d2": { "faits": 0.75, "chiffres": null, "proposition": null, "invention": 0.9, "ton": 1, "note": "pas de dilution, échantillon mince, densité ; volume absent" },
+ "S9b78dc": { "faits": 1, "chiffres": null, "proposition": null, "invention": 1, "ton": 1, "note": "échantillon mince, densité et volume, pas de dilution" },
+ "Sb2f43a": { "faits": 1, "chiffres": null, "proposition": null, "invention": 0.9, "ton": 1, "note": "échantillon mince, densité et volume ; 9,9 EBC de l'outil" }
+}

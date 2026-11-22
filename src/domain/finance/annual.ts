@@ -64,6 +64,16 @@ export function depreciationForYear(asset: FinancialAsset, year: number): Deprec
   }
   return row;
 }
+export const FISCAL_YEAR_MIN = 1900;
+export const FISCAL_YEAR_MAX = 2200;
+/** Texte saisi → exercice. Une année entière à quatre chiffres, entre 1900 et 2200 ; sinon un message, jamais une exception. */
+export function parseFiscalYear(text: string): { year: number } | { error: string } {
+  const t = text.trim();
+  if (!/^\d{4}$/.test(t)) return { error: `« ${t || 'vide'} » n’est pas une année : tape quatre chiffres, par exemple ${new Date().getFullYear()}.` };
+  const year = Number(t);
+  if (year < FISCAL_YEAR_MIN || year > FISCAL_YEAR_MAX) return { error: `L’exercice va de ${FISCAL_YEAR_MIN} à ${FISCAL_YEAR_MAX}.` };
+  return { year };
+}
 export function buildAnnualReport(input: { year: number; transactions: FinanceTransaction[]; payments: FinancialPayment[]; assets: FinancialAsset[]; profile: FinancialProfile; closing?: FinancialClosing; generatedAt?: string }): AnnualReport {
   const { year, transactions, payments, assets, profile, closing } = input;
   if (!Number.isInteger(year) || year < 1900 || year > 2200) throw new Error('Exercice invalide.');

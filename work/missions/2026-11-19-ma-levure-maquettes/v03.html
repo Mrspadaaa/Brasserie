@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ma levure — v03 : une barre IA, une confirmation groupée</title>
+<!--
+  v03 — axe n° 3. Une seule décision de forme change par rapport à la base (carte en ligne du 19.11) :
+  le geste IA et ses propositions vivent dans UNE barre d'une ligne en tête des traits. Au repos, la barre est
+  le bouton « Compléter la fiche par l'IA » (traits « ? »). Pendant : lecture. Après : 5 proposés, « Tout retenir »
+  ou « Revoir » (un trait à la fois, ✓ / ✕). Passe de correction (critique 1 à 10) : états repos, pendant, proposé,
+  retenu, revu dans de vraies cartes ; Identité remise ; une famille, tailles 14, 16, 20 ; jauges graduées.
+  Les trois paires Retenir / Écarter par ligne disparaissent : chaque trait tient sur une ligne à 390 (LEV-11).
+  Le reste est la base : en-tête Levure 4/7 et étapes, levure en tête (nom, marque, dose, ×), FG, fiche · conduite
+  avec son geste de calage (LEV-3), floculation, Changer de levure, Retour / Suivant — Paliers, le +.
+  Données d'exemple.
+-->
+<style>
+:root{
+  --page:#FFFFFF;--pan:#F5F5F5;--sur:#EBEBEB;--bord:#DDDDDD;--bord2:#BFBFBF;--trait:#9E9E9E;
+  --t2:#666666;--t1:#333333;--t0:#111111;--act:#111111;--onact:#FFFFFF;
+  --att:#9C7020;--att-t:#7F5B10;--alerte:#C8382F;--alerte-t:#A8291F;
+  --straw:#F2C14E;--gold:#E0A02E;--amber:#C87A2C;--copper:#8D442C;--hop:#567F45;--hop-t:#3F6B2E;
+  --eau:#4F7E9B;--prod:#9A4F1E;--fin:#1F64A3;--stk:#4C6B2A;--agenda:#6A4FB0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--page)}
+body{font:16px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--t1);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+.v3-app{max-width:390px;margin:0 auto;padding-bottom:150px}
+.v3-ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* En-tête de l'assistant : la base, Identité comprise */
+.v3-tete{display:flex;align-items:center;gap:10px;padding:10px 12px 4px;color:var(--t0)}
+.v3-tete b{font-size:20px}
+.v3-tete .v3-n{color:var(--t2);font-size:16px}
+.v3-tete .v3-abandon{margin-left:auto;font-size:16px;text-decoration:underline;text-underline-offset:3px}
+.v3-etapes{display:flex;gap:5px;padding:2px 8px 0;overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--bord)}
+.v3-etapes span{flex:auto;text-align:center;font-size:14px;letter-spacing:-.4px;color:var(--t2);padding:4px 0 8px;border-bottom:4px solid #666}
+.v3-etapes span.v3-ici{color:var(--t0);font-weight:700;border-color:var(--t0)}
+.v3-etapes span.v3-afaire{border-color:var(--bord)}
+.v3-annuler{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;font-size:14px}
+.v3-annuler a{color:var(--t0);text-decoration:underline;text-underline-offset:3px}
+.v3-ex{font-size:14px;color:var(--t2);border:1px dashed var(--bord2);border-radius:6px;padding:0 6px}
+
+/* Carte de la levure */
+.v3-carte{margin:4px 10px 0;border:2px solid var(--t0);border-radius:16px;background:var(--pan);overflow:hidden}
+.v3-haut{display:grid;grid-template-columns:44px 1fr auto 24px;gap:0 8px;align-items:center;padding:12px 10px 10px 12px}
+.v3-flacon{grid-row:span 2;width:44px;height:44px;border-radius:50%;background:#F7E6B0;border:1.5px solid var(--gold);display:grid;place-items:center;color:var(--att-t)}
+.v3-nom{font-size:20px;font-weight:700;color:var(--t0);line-height:1.15}
+.v3-dose{font-size:16px;color:var(--t0);white-space:nowrap}
+.v3-dose strong{font-size:20px;margin:0 2px}
+.v3-dose small{font-size:14px;color:var(--t2)}
+.v3-x{color:var(--t2);display:grid;place-items:center;height:44px}
+.v3-marque{grid-column:2 / 5;font-size:16px;color:var(--t2)}
+
+.v3-trois{display:grid;grid-template-columns:1fr 1.32fr .78fr;border-top:1px solid var(--bord2);border-bottom:1px solid var(--bord2)}
+.v3-trois>div{padding:8px 8px 10px;border-right:1px solid var(--bord2);min-width:0}
+.v3-trois>div:last-child{border-right:0}
+.v3-lab{font-size:14px;color:var(--t2)}
+.v3-val{font-size:16px;font-weight:700;color:var(--t0);white-space:nowrap}
+.v3-val small{font-size:14px;font-weight:400;color:var(--t2);margin-right:4px}
+.v3-sous{font-size:14px;color:var(--t2)}
+.v3-jauge{height:10px;border-radius:5px;background:var(--sur);margin-top:8px;position:relative;box-shadow:inset 0 0 0 1px var(--bord2)}
+.v3-jauge i{position:absolute;left:40%;width:15%;top:-2px;bottom:-2px;border-radius:3px;background:var(--gold);border:1.5px solid var(--att)}
+.v3-grad{display:flex;justify-content:space-between;font-size:14px;color:var(--t2);margin-top:2px}
+.v3-hors,.v3-hors small{color:var(--alerte-t)}
+.v3-caler{display:inline-flex;align-items:center;gap:4px;margin-top:4px;min-height:36px;padding:0 10px;border:1.5px solid var(--alerte);border-radius:10px;background:var(--page);font-size:14px;font-weight:700;color:var(--alerte-t);white-space:nowrap}
+.v3-temp{height:10px;border-radius:5px;margin-top:10px;position:relative;background:linear-gradient(90deg,#4F7E9B,#86B9E6 30%,#F2C14E 60%,#C8382F)}
+.v3-temp .v3-plage{position:absolute;left:36%;width:9%;top:-4px;bottom:-4px;background:var(--page);border:2.5px solid var(--t0);border-radius:3px}
+.v3-temp .v3-cond{position:absolute;left:75%;width:4px;top:-6px;bottom:-6px;background:var(--alerte);border-radius:2px;box-shadow:0 0 0 1.5px var(--page)}
+.v3-floc{font-size:16px;color:var(--t0)}
+.v3-barres{display:flex;gap:3px;margin-top:22px}
+.v3-barres i{flex:1;height:10px;border-radius:3px;background:#8a8a8a}
+.v3-barres i:last-child{background:var(--bord2)}
+
+/* LA décision de forme : une barre IA d'une ligne en tête des traits */
+.v3-ia{display:flex;align-items:center;gap:8px;margin:8px 10px 2px;min-height:44px;padding:0 6px 0 12px;border-radius:12px;font-size:16px;color:var(--t0);white-space:nowrap;background:var(--page)}
+.v3-ia .v3-etoile{color:var(--att-t)}
+.v3-ia.v3-repos{border:1.5px solid var(--att);font-weight:700}
+.v3-ia.v3-repos small{margin-left:auto;margin-right:6px;font-size:14px;font-weight:400;color:var(--t2)}
+.v3-ia.v3-pend,.v3-ia.v3-prop{border:1.5px dashed var(--att)}
+.v3-ia .v3-pts{display:flex;gap:4px;margin-left:auto;margin-right:8px}
+.v3-ia .v3-pts i{width:8px;height:8px;border-radius:50%;background:var(--att)}
+.v3-ia .v3-pts i:nth-child(2){opacity:.6}.v3-ia .v3-pts i:nth-child(3){opacity:.3}
+.v3-ia .v3-lien{margin-left:auto;min-height:44px;display:inline-grid;place-items:center;padding:0 6px;text-decoration:underline;text-underline-offset:3px;color:var(--t0)}
+.v3-ia .v3-garde{min-height:36px;display:inline-grid;place-items:center;padding:0 10px;border:1.5px solid var(--att);border-radius:10px;color:var(--att-t);font-weight:700}
+.v3-ia.v3-fait{border:1px solid var(--bord2);color:var(--hop-t);font-weight:700}
+.v3-ia.v3-fait .v3-lien{font-weight:400}
+
+.v3-traits{list-style:none;margin:0;padding:2px 10px 8px}
+.v3-traits li{display:grid;grid-template-columns:12px auto 1fr auto;gap:8px;align-items:center;min-height:40px;border-bottom:1px solid var(--bord)}
+.v3-traits li:last-child{border-bottom:0}
+.v3-pt{width:12px;height:12px;border-radius:50%}
+.v3-tn{font-size:16px;color:var(--t1);white-space:nowrap}
+.v3-tv{font-size:16px;font-weight:700;color:var(--t0);white-space:nowrap;text-align:right}
+.v3-tv.v3-vide{color:var(--t2);font-weight:400}
+.v3-tv.v3-attente{color:var(--trait);font-weight:400;letter-spacing:2px}
+.v3-tv.v3-propose{color:var(--att-t);font-weight:400;font-style:italic}
+.v3-src{font-size:14px;white-space:nowrap;padding:1px 7px;border-radius:999px}
+.v3-src.v3-p{color:var(--att-t);border:1px dashed var(--att)}
+.v3-src.v3-ret{color:var(--hop-t);background:#E4EEDD;border:1px solid var(--hop)}
+.v3-src.v3-vide{color:var(--t2);border:1px dashed var(--bord2)}
+/* revue : un trait à la fois, ✓ / ✕ sur la ligne */
+.v3-traits.v3-revue li{grid-template-columns:12px auto 1fr 40px 40px;gap:6px}
+.v3-g{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;border:1.5px solid var(--bord2);background:var(--page);color:var(--t1)}
+.v3-g.v3-oui-on{background:var(--hop);border-color:var(--hop);color:#fff}
+.v3-g.v3-non-on{border-color:var(--alerte);color:var(--alerte-t)}
+.v3-traits li.v3-ecarte .v3-tv{color:var(--trait);text-decoration:line-through;font-weight:400}
+
+/* Changer de levure : la base */
+.v3-changer{margin:12px 10px 0;background:var(--pan);border-radius:16px;padding:12px}
+.v3-cherche{display:flex;align-items:center;gap:10px;min-height:48px;border:1.5px dashed var(--bord2);border-radius:24px;background:var(--page);padding:0 16px;font-size:16px;color:var(--t2)}
+.v3-puces{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center;padding-right:60px}
+.v3-puces em{font-style:normal;font-size:14px;color:var(--t2);width:100%}
+.v3-puces span{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 9px;border:1.5px solid var(--bord2);border-radius:12px;background:var(--page);font-size:14px;color:var(--t0)}
+.v3-puces span .v3-ico{width:18px;height:18px;color:var(--eau)}
+.v3-puces .v3-hc{border-style:dashed}
+
+.v3-pied{display:flex;justify-content:space-between;align-items:center;margin:14px 74px 0 10px}
+.v3-pied span{min-height:44px;display:inline-grid;place-items:center;padding:0 16px;border-radius:10px;font-size:16px}
+.v3-retour{border:1px solid var(--bord2);color:var(--t1);background:var(--page)}
+.v3-suivant{background:var(--act);color:var(--onact);font-weight:700}
+
+/* Les états suivants du même geste, dans la même carte */
+.v3-etat{margin:26px 10px 6px;font-size:14px;color:var(--t2);display:flex;align-items:center;gap:8px}
+.v3-etat b{display:inline-grid;place-items:center;min-width:28px;height:24px;padding:0 4px;border-radius:12px;background:var(--t0);color:var(--onact);font-size:14px}
+.v3-mini{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--bord2)}
+.v3-mini .v3-flacon{grid-row:auto;width:36px;height:36px}
+.v3-mini b{font-size:16px;color:var(--t0)}
+.v3-mini span{font-size:14px;color:var(--t2)}
+.v3-mini span.v3-d{margin-left:auto;color:var(--t0);font-size:16px}
+
+/* + volant et barre d'onglets */
+.v3-plus{position:fixed;right:max(14px,calc(50% - 181px));bottom:72px;z-index:3;width:56px;height:56px;border-radius:28px;background:var(--act);color:var(--onact);display:grid;place-items:center;box-shadow:0 6px 16px rgba(0,0,0,.28),0 0 0 3px var(--page)}
+.v3-plus .v3-ico{width:28px;height:28px;stroke-width:2.4}
+.v3-nav{position:fixed;left:0;right:0;bottom:0;z-index:2;background:var(--page);border-top:1px solid var(--bord);display:flex;justify-content:center}
+.v3-nav>div{display:flex;width:100%;max-width:390px}
+.v3-nav span{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 8px;font-size:14px;letter-spacing:-.3px;color:var(--t2)}
+.v3-nav span.v3-on{color:var(--t0);font-weight:700}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="v3-flacon" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"/><path d="M7 15h10"/></symbol>
+  <symbol id="v3-loupe" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+  <symbol id="v3-colis" viewBox="0 0 24 24"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></symbol>
+  <symbol id="v3-etincelle" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 15l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/></symbol>
+  <symbol id="v3-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
+  <symbol id="v3-fin" viewBox="0 0 24 24"><path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 7l12-4v4M17 14h1"/></symbol>
+  <symbol id="v3-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+  <symbol id="v3-biere" viewBox="0 0 24 24"><path d="M6 8h10v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M16 11h2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-2M6 8a3 3 0 0 1 4-4 3 3 0 0 1 6 2"/></symbol>
+  <symbol id="v3-stock" viewBox="0 0 24 24"><path d="M3 9l9-5 9 5v11H3z"/><path d="M8 20v-7h8v7"/></symbol>
+  <symbol id="v3-clients" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></symbol>
+  <symbol id="v3-retour" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
+  <symbol id="v3-export" viewBox="0 0 24 24"><rect x="5" y="3" width="12" height="18" rx="2"/><path d="M13 12h8m-3-3 3 3-3 3"/></symbol>
+  <symbol id="v3-lune" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+  <symbol id="v3-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="v3-chev" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="v3-ok" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+  <symbol id="v3-non" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+</svg>
+
+<div class="v3-app">
+  <header class="v3-tete">
+    <svg class="v3-ico" aria-label="Retour"><use href="#v3-chev"/></svg>
+    <b>Levure</b><span class="v3-n">4/7</span>
+    <span class="v3-abandon">Abandonner</span>
+    <svg class="v3-ico" style="color:var(--t1)"><use href="#v3-export"/></svg>
+    <svg class="v3-ico" style="color:var(--t1)"><use href="#v3-lune"/></svg>
+  </header>
+  <nav class="v3-etapes" aria-label="Étapes de la recette">
+    <span>Identité</span><span>Malts/sucres</span><span>Houblons</span><span class="v3-ici">Levure</span><span class="v3-afaire">Paliers</span><span class="v3-afaire">Eau</span><span class="v3-afaire">Récap.</span>
+  </nav>
+  <div class="v3-annuler">
+    <a><svg class="v3-ico" style="width:16px;height:16px;vertical-align:-3px"><use href="#v3-retour"/></svg> Annuler le changement</a>
+    <span class="v3-ex">exemple</span>
+  </div>
+
+  <section class="v3-carte" aria-label="Ma levure, au repos">
+    <div class="v3-haut">
+      <span class="v3-flacon"><svg class="v3-ico" style="width:24px;height:24px"><use href="#v3-flacon"/></svg></span>
+      <span class="v3-nom">Munich Lager Yeast</span>
+      <span class="v3-dose">≥<strong>15</strong><small>g</small></span>
+      <span class="v3-x" aria-label="Retirer la levure"><svg class="v3-ico"><use href="#v3-non"/></svg></span>
+      <span class="v3-marque">White Labs · vendue par Lallemand</span>
+    </div>
+
+    <div class="v3-trois">
+      <div>
+        <div class="v3-lab">FG</div>
+        <div class="v3-val">1,018–1,021</div>
+        <div class="v3-sous">≈ 6,0–6,4 % vol</div>
+        <div class="v3-jauge"><i></i></div>
+        <div class="v3-grad"><span>1,010</span><span>1,030</span></div>
+      </div>
+      <div>
+        <div class="v3-lab">température</div>
+        <div class="v3-val"><small>fiche</small>9–11 °C</div>
+        <div class="v3-val v3-hors"><small>conduite</small>19 °C</div>
+        <span class="v3-caler">→ Caler à 11 °C</span>
+        <div class="v3-temp"><span class="v3-plage"></span><span class="v3-cond"></span></div>
+      </div>
+      <div>
+        <div class="v3-lab">floculation</div>
+        <div class="v3-floc">moyenne</div>
+        <div class="v3-barres"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+
+    <!-- LA décision : le geste IA vit dans une barre d'une ligne en tête des traits. Au repos : le bouton. -->
+    <div class="v3-ia v3-repos" role="button"><svg class="v3-ico v3-etoile"><use href="#v3-etincelle"/></svg>Compléter la fiche par l'IA<small>5 vides</small></div>
+    <ul class="v3-traits">
+      <li><i class="v3-pt" style="background:#E0A02E"></i><span class="v3-tn">esters</span><span class="v3-tv v3-vide">?</span><span class="v3-src v3-vide">rien de publié</span></li>
+      <li><i class="v3-pt" style="background:#8D442C"></i><span class="v3-tn">phénols</span><span class="v3-tv v3-vide">?</span><span class="v3-src v3-vide">rien de publié</span></li>
+      <li><i class="v3-pt" style="background:#6DBF9E"></i><span class="v3-tn">thiols</span><span class="v3-tv v3-vide">?</span><span class="v3-src v3-vide">rien de publié</span></li>
+      <li><i class="v3-pt" style="background:#A3C97A"></i><span class="v3-tn">terpènes</span><span class="v3-tv v3-vide">?</span><span class="v3-src v3-vide">rien de publié</span></li>
+      <li><i class="v3-pt" style="background:#A08A62"></i><span class="v3-tn">sucres restants</span><span class="v3-tv v3-vide">?</span><span class="v3-src v3-vide">rien de publié</span></li>
+    </ul>
+  </section>
+
+  <section class="v3-changer" aria-label="Changer de levure">
+    <div class="v3-cherche"><svg class="v3-ico"><use href="#v3-loupe"/></svg>Changer de levure</div>
+    <div class="v3-puces">
+      <em>en stock</em>
+      <span><svg class="v3-ico"><use href="#v3-colis"/></svg>Pomona</span>
+      <span><svg class="v3-ico"><use href="#v3-colis"/></svg>Verdant IPA</span>
+      <span class="v3-hc">Hors catalogue</span>
+    </div>
+  </section>
+
+  <div class="v3-pied"><span class="v3-retour">Retour</span><span class="v3-suivant">Suivant — Paliers</span></div>
+
+  <p class="v3-etat"><b>2</b>pendant : un toucher sur « Compléter »</p>
+  <section class="v3-carte" aria-label="Ma levure, IA en cours">
+    <div class="v3-mini"><span class="v3-flacon"><svg class="v3-ico"><use href="#v3-flacon"/></svg></span><b>Munich Lager Yeast</b><span>White Labs</span><span class="v3-d">≥ 15 g</span></div>
+    <div class="v3-ia v3-pend"><svg class="v3-ico v3-etoile"><use href="#v3-etincelle"/></svg>Lecture de la fiche White Labs<span class="v3-pts"><i></i><i></i><i></i></span></div>
+    <ul class="v3-traits">
+      <li style="grid-template-columns:12px auto 1fr"><i class="v3-pt" style="background:#E0A02E"></i><span class="v3-tn">esters</span><span class="v3-tv v3-attente">···</span></li>
+      <li style="grid-template-columns:12px auto 1fr"><i class="v3-pt" style="background:#8D442C"></i><span class="v3-tn">phénols</span><span class="v3-tv v3-attente">···</span></li>
+      <li style="grid-template-columns:12px auto 1fr"><i class="v3-pt" style="background:#6DBF9E"></i><span class="v3-tn">thiols</span><span class="v3-tv v3-attente">···</span></li>
+      <li style="grid-template-columns:12px auto 1fr"><i class="v3-pt" style="background:#A3C97A"></i><span class="v3-tn">terpènes</span><span class="v3-tv v3-attente">···</span></li>
+      <li style="grid-template-columns:12px auto 1fr"><i class="v3-pt" style="background:#A08A62"></i><span class="v3-tn">sucres restants</span><span class="v3-tv v3-attente">···</span></li>
+    </ul>
+  </section>
+
+  <p class="v3-etat"><b>3</b>après : 5 traits proposés, à confirmer</p>
+  <section class="v3-carte" aria-label="Ma levure, traits proposés">
+    <div class="v3-mini"><span class="v3-flacon"><svg class="v3-ico"><use href="#v3-flacon"/></svg></span><b>Munich Lager Yeast</b><span>White Labs</span><span class="v3-d">≥ 15 g</span></div>
+    <div class="v3-ia v3-prop"><svg class="v3-ico v3-etoile"><use href="#v3-etincelle"/></svg>5 proposés<span class="v3-lien">Revoir</span><span class="v3-garde">Tout retenir</span></div>
+    <ul class="v3-traits">
+      <li><i class="v3-pt" style="background:#E0A02E"></i><span class="v3-tn">esters</span><span class="v3-tv v3-propose">faibles, propres</span><span class="v3-src v3-p">fiche ?</span></li>
+      <li><i class="v3-pt" style="background:#8D442C"></i><span class="v3-tn">phénols</span><span class="v3-tv v3-propose">aucun</span><span class="v3-src v3-p">estimé ?</span></li>
+      <li><i class="v3-pt" style="background:#6DBF9E"></i><span class="v3-tn">thiols</span><span class="v3-tv v3-propose">faibles</span><span class="v3-src v3-p">estimé ?</span></li>
+      <li><i class="v3-pt" style="background:#A3C97A"></i><span class="v3-tn">terpènes</span><span class="v3-tv v3-propose">faibles</span><span class="v3-src v3-p">estimé ?</span></li>
+      <li><i class="v3-pt" style="background:#A08A62"></i><span class="v3-tn">sucres restants</span><span class="v3-tv v3-propose">moyens</span><span class="v3-src v3-p">fiche ?</span></li>
+    </ul>
+  </section>
+
+  <p class="v3-etat"><b>4a</b>« Tout retenir »</p>
+  <section class="v3-carte" aria-label="Ma levure, traits retenus">
+    <div class="v3-mini"><span class="v3-flacon"><svg class="v3-ico"><use href="#v3-flacon"/></svg></span><b>Munich Lager Yeast</b><span>White Labs</span><span class="v3-d">≥ 15 g</span></div>
+    <div class="v3-ia v3-fait"><svg class="v3-ico"><use href="#v3-ok"/></svg>5 traits retenus<span class="v3-lien">Annuler</span></div>
+    <ul class="v3-traits">
+      <li><i class="v3-pt" style="background:#E0A02E"></i><span class="v3-tn">esters</span><span class="v3-tv">faibles, propres</span><span class="v3-src v3-ret">✓ fiche</span></li>
+      <li><i class="v3-pt" style="background:#8D442C"></i><span class="v3-tn">phénols</span><span class="v3-tv">aucun</span><span class="v3-src v3-ret">✓ estimé</span></li>
+      <li><i class="v3-pt" style="background:#6DBF9E"></i><span class="v3-tn">thiols</span><span class="v3-tv">faibles</span><span class="v3-src v3-ret">✓ estimé</span></li>
+      <li><i class="v3-pt" style="background:#A3C97A"></i><span class="v3-tn">terpènes</span><span class="v3-tv">faibles</span><span class="v3-src v3-ret">✓ estimé</span></li>
+      <li><i class="v3-pt" style="background:#A08A62"></i><span class="v3-tn">sucres restants</span><span class="v3-tv">moyens</span><span class="v3-src v3-ret">✓ fiche</span></li>
+    </ul>
+  </section>
+
+  <p class="v3-etat"><b>4b</b>« Revoir » : un trait à la fois</p>
+  <section class="v3-carte" aria-label="Ma levure, revue un par un">
+    <div class="v3-mini"><span class="v3-flacon"><svg class="v3-ico"><use href="#v3-flacon"/></svg></span><b>Munich Lager Yeast</b><span>White Labs</span><span class="v3-d">≥ 15 g</span></div>
+    <div class="v3-ia v3-prop"><svg class="v3-ico v3-etoile"><use href="#v3-etincelle"/></svg>2 revus · 3 à revoir<span class="v3-garde" style="margin-left:auto">Retenir les 3</span></div>
+    <ul class="v3-traits v3-revue">
+      <li><i class="v3-pt" style="background:#E0A02E"></i><span class="v3-tn">esters</span><span class="v3-tv">faibles, propres</span><span class="v3-g v3-oui-on" aria-label="Retenir"><svg class="v3-ico"><use href="#v3-ok"/></svg></span><span class="v3-g" aria-label="Écarter"><svg class="v3-ico"><use href="#v3-non"/></svg></span></li>
+      <li class="v3-ecarte"><i class="v3-pt" style="background:#8D442C"></i><span class="v3-tn">phénols</span><span class="v3-tv">aucun</span><span class="v3-g" aria-label="Retenir"><svg class="v3-ico"><use href="#v3-ok"/></svg></span><span class="v3-g v3-non-on" aria-label="Écarter"><svg class="v3-ico"><use href="#v3-non"/></svg></span></li>
+      <li><i class="v3-pt" style="background:#6DBF9E"></i><span class="v3-tn">thiols</span><span class="v3-tv v3-propose">faibles</span><span class="v3-g" aria-label="Retenir"><svg class="v3-ico"><use href="#v3-ok"/></svg></span><span class="v3-g" aria-label="Écarter"><svg class="v3-ico"><use href="#v3-non"/></svg></span></li>
+      <li><i class="v3-pt" style="background:#A3C97A"></i><span class="v3-tn">terpènes</span><span class="v3-tv v3-propose">faibles</span><span class="v3-g" aria-label="Retenir"><svg class="v3-ico"><use href="#v3-ok"/></svg></span><span class="v3-g" aria-label="Écarter"><svg class="v3-ico"><use href="#v3-non"/></svg></span></li>
+      <li><i class="v3-pt" style="background:#A08A62"></i><span class="v3-tn">sucres restants</span><span class="v3-tv v3-propose">moyens</span><span class="v3-g" aria-label="Retenir"><svg class="v3-ico"><use href="#v3-ok"/></svg></span><span class="v3-g" aria-label="Écarter"><svg class="v3-ico"><use href="#v3-non"/></svg></span></li>
+    </ul>
+  </section>
+</div>
+
+<span class="v3-plus" aria-label="Ajouter"><svg class="v3-ico"><use href="#v3-plus"/></svg></span>
+<nav class="v3-nav" aria-label="Barre du bas"><div>
+  <span><svg class="v3-ico"><use href="#v3-bord"/></svg>Bord</span>
+  <span><svg class="v3-ico" style="color:var(--fin)"><use href="#v3-fin"/></svg>Finances</span>
+  <span><svg class="v3-ico" style="color:var(--agenda)"><use href="#v3-cal"/></svg>Calendrier</span>
+  <span class="v3-on"><svg class="v3-ico" style="color:var(--prod)"><use href="#v3-biere"/></svg>Brassins</span>
+  <span><svg class="v3-ico" style="color:var(--stk)"><use href="#v3-stock"/></svg>Stocks</span>
+  <span><svg class="v3-ico"><use href="#v3-clients"/></svg>Clients</span>
+</div></nav>
+</body>
+</html>

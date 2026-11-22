@@ -1,0 +1,48 @@
+{
+ "reglage": "4-argon@low",
+ "kind": "fournisseurs",
+ "id": "us05",
+ "utilisable": true,
+ "produits": [
+  {
+   "name": "Safale US-05 11,5g",
+   "url": "https://www.brauundrauchshop.ch/safale-us-05-115g-4",
+   "supplier": "Brau- und Rauchshop",
+   "packageLabel": "11,5g"
+  },
+  {
+   "name": "Fermentis SafAle™ US-05 – American Ale Hefe 11,5 g",
+   "url": "https://brewstore.ch/biergrundstoff-de/levures/safale-us-05-11-5-g/",
+   "supplier": "Brewstore Suisse",
+   "packageLabel": "11,5 g"
+  },
+  {
+   "name": "Safale US-05, Trockenhefe 11.5 g , obergärig",
+   "url": "https://www.sios.ch/Safale-US-05-Trockenhefe-115-g-obergaerig_1",
+   "supplier": "SIOS",
+   "packageLabel": "11.5 g"
+  },
+  {
+   "name": "Spring Blanch 10g Eigenabfüllung",
+   "url": "https://www.brauundrauchshop.ch/spring-blanch-10g-eigenabf%C3%BCllung",
+   "supplier": "Brau- und Rauchshop",
+   "packageLabel": "10g"
+  },
+  {
+   "name": "Safbrew Abbaye, 11.5 g Trockenhefe, obergärig",
+   "url": "https://www.sios.ch/Safbrew-Abbaye-115-g-Trockenhefe-obergaerig_1",
+   "supplier": "SIOS",
+   "packageLabel": "11.5 g"
+  }
+ ],
+ "pertinentes": 3,
+ "exactes": 3,
+ "sourcesPrimaires": 0,
+ "faitCle": false,
+ "ms": 27583,
+ "coutMicro": 52420,
+ "web": 2,
+ "appels": 1,
+ "etat": "STOP",
+ "extrait": "Les fiches produit exactes trouvées auprès des fournisseurs suisses pour la levure sèche Safale US-05 en conditionnement de 11,5 g :\n\n1. **Brau- und Rauchshop**\n* **Nom :** Safale US-05 11,5g\n* **Variété :** Levure sèche de fermentation haute (American Ale, Fermentis)\n* **Conditionnement :** 11,5 g\n"
+}

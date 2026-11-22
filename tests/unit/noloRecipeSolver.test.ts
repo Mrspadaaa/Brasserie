@@ -200,10 +200,11 @@ describe('Préparer une recette NOLO comme une consigne de traitement',()=>{
     const p=prepareNoloRecipe(source,science,conventional,{process:'arrested'});
     const changes=new Map(p.changes.map(c=>[c.label,c]));
     expect(changes.get('Procédé')).toMatchObject({before:'Fermentation limitée',after:'Fermentation interrompue'});
-    expect(changes.get('OG prévue')!.before).toBe('1,0346');
-    expect(changes.get('OG prévue')!.after).toMatch(/^1,\d{4}$/);
+    // BR-66 : trois décimales, comme l'OG de l'app partout (jamais « 1,0100 » à côté de « 1,01 »).
+    expect(changes.get('OG prévue')!.before).toBe('1,035');
+    expect(changes.get('OG prévue')!.after).toMatch(/^1,\d{3}$/);
     expect(changes.get('SG d’arrêt indicative')!.before).toBe('À renseigner');
-    expect(changes.get('SG d’arrêt indicative')!.after).toMatch(/^1,\d{4}–1,\d{4}$/);
+    expect(changes.get('SG d’arrêt indicative')!.after).toMatch(/^1,\d{3}–1,\d{3}$/);
     expect(changes.get('Ensemencement')!.before).toBe('1,5 sachet · À renseigner');
     expect(changes.get('Ensemencement')!.before).not.toContain('0 °C');
     source.yeast.pitchTempC=0;

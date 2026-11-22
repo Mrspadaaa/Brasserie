@@ -1,0 +1,8 @@
+# Calendrier sans démarrage de brassin : sert à séparer le défaut de la fixture de celui du démarrage (21.11)
+t=Bord
+w=Bord
+t=Calendrier
+w=Calendrier
+d
+cap=01-calendrier-direct
+inp

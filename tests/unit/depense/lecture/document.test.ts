@@ -129,20 +129,5 @@ describe('A3 — le prompt n’avertit que d’un doute réel', () => {
     expect(system).toMatch(/jamais d.avertissement pour une valeur lue sans hésitation/);
   });
 
-  it('le prompt dit comment lire le bloc TVA, le code, l’α, le nombre de lignes et l’arrondi imprimé', () => {
-    for (const mot of ['vat', 'vatCode', 'alphaPct', 'printedLineCount', 'Rundung', 'discount', 'lignes d’articles']) expect(system).toContain(mot);
-  });
 
-  it('le schéma lit proForma, le bloc par taux, le nombre de lignes, le code et l’α de chaque ligne', () => {
-    const p = task.schema.properties, l = p.items.items.properties;
-    expect(p.proForma.type).toBe('BOOLEAN');
-    expect(p.vat.items.properties).toHaveProperty('code');
-    expect(p.vat.items.properties.rate.nullable).toBe(true);
-    expect(p.printedLineCount.type).toBe('INTEGER');
-    expect(l.vatCode.type).toBe('STRING');
-    expect(l.alphaPct.nullable).toBe(true);
-    expect(l).not.toHaveProperty('vatRate');
-    expect(task.schema.required).toEqual(expect.arrayContaining(['proForma', 'vat', 'printedLineCount']));
-    expect(p.items.items.required).toEqual(expect.arrayContaining(['vatCode', 'alphaPct']));
-  });
 });

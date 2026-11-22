@@ -1,0 +1,16 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "hops-controle",
+ "cas": "hops",
+ "type": "controle",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 4393,
+ "coutMicro": 17950,
+ "etat": "STOP"
+}

@@ -1,0 +1,27 @@
+{
+ "l1": {
+  "titre": "Rives",
+  "h": 171,
+  "idee": "Rives : au-dessus de la courbe, ce qui entre (vert, montant et nom) ; dessous, ce qui sort (rouge). Chaque étiquette tombe en pointillé sur sa marche ; la caisse grise et le hachuré du mis de côté restent. Mois sur une bande teintée sous la courbe, S47… et la date sous un filet."
+ },
+ "l2": {
+  "titre": "Flux",
+  "h": 137,
+  "idee": "Flux : sous la courbe, une barre par semaine (vert monte, rouge descend), le mouvement net de la caisse libre ; les plus fortes chiffrées ; une accolade rouge explique la descente S6 → S24."
+ },
+ "l3": {
+  "titre": "Le creux raconté",
+  "h": 152,
+  "idee": "Le creux raconté : courbe sur toute la largeur, plus haute ; au-dessus du creux, sa cause en une ligne (« payés : hotte, fûts, embouteilleuse −4 780 ») reliée au point S24 ; seules les remontées chiffrées."
+ },
+ "l4": {
+  "titre": "Genres",
+  "h": 140,
+  "idee": "Genres : chaque mouvement est un picto rond à la couleur de sa rangée (fête rose, vente verte, achat bleu, travaux) posé sur sa marche, montant à côté ; le chiffre à dépenser passe à droite."
+ },
+ "l5": {
+  "titre": "Loupe",
+  "h": 165,
+  "idee": "Loupe : l'année en haut, entrées nommées dessus, sorties de l1 dessous ; la fenêtre s'évase vers la frise, et sous chaque colonne de semaine, son mouvement (+988, −460…)."
+ }
+}

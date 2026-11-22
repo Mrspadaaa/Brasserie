@@ -1,10 +1,16 @@
 import type { FinanceKind, FinanceTransaction, FinancialPayment, FinancialProfile } from './types';
 import { compte } from '../../services/plural';
+import { messageDateHorsBornes, messageMontantHorsBornes } from './bornesFinance';
 
 export const toCents = (value: number): number => Number.isFinite(value) ? Math.round((value + Number.EPSILON) * 100) : 0;
 export const fromCents = (value: number): number => value / 100;
 const chfFormatter = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'CHF' });
 export const formatCHF = (value: number): string => chfFormatter.format(value / 100);
+const montantFr = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+/** Un montant en francs (pas en centimes) pour une phrase : « 1,00 », jamais « 1.00 ». Le point décimal est le défaut du `toFixed(2)` (TE-8, TE-55, MV-39). */
+export const montantChf = (chf: number): string => Number.isFinite(chf) ? montantFr.format(chf) : '—';
+/** BE-67 : la date telle que l'app l'écrit partout, JJ.MM.AAAA ; une date ISO (AAAA-MM-JJ) est réécrite, tout autre texte reste tel quel (le champ se tape, on ne le corrige pas). */
+export const dateAffichee = (value?: string): string => { const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value ?? ''); return iso ? `${iso[3]}.${iso[2]}.${iso[1]}` : value ?? ''; };
 export function isoDate(value?: string): string | null {
   if (!value) return null;
   const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
@@ -18,6 +24,27 @@ export function isoDate(value?: string): string | null {
 export function todayISO(): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Zurich', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 }
+/**
+ * AM-62 : le sens d'une écriture (charge, recette, apport) ne se change pas en changeant sa catégorie. Une charge ne devient pas une recette : ce serait
+ * inverser l'effet sur la trésorerie et sur le résultat. Les catégories se rangent par sens ; on ne passe d'une catégorie qu'à une autre du même sens.
+ */
+export const CATEGORIES_PAR_SENS = {
+  charge: ['brassage', 'materiel', 'nettoyage', 'chargesFixes', 'renovation', 'divers'],
+  recette: ['recettes'],
+  apport: ['apports'],
+} as const;
+export const sensDeCategorie = (category: string): keyof typeof CATEGORIES_PAR_SENS =>
+  category === 'recettes' ? 'recette' : category === 'apports' ? 'apport' : 'charge';
+export const categorieChangeLeSens = (avant: string, apres: string): boolean => sensDeCategorie(avant) !== sensDeCategorie(apres);
+
+/** La ventilation HT / TVA d'un avoir, au prorata de sa facture d'origine (même taux, même part de TVA). Facture sans TVA : tout en HT. */
+export function ventilationAvoir(original: FinanceTransaction, avoirCents: number): { amountHT: number; tvaRate: number; tvaAmount: number } {
+  const ttc = avoirCents / 100;
+  const part = original.amountTTC > 0 && Number.isFinite(original.tvaAmount) && original.tvaAmount > 0 ? original.tvaAmount / original.amountTTC : 0;
+  const tvaAmount = Math.round(ttc * part * 100) / 100;
+  return { amountHT: Math.round((ttc - tvaAmount) * 100) / 100, tvaRate: tvaAmount > 0 ? original.tvaRate : 0, tvaAmount };
+}
+
 export function transactionKind(tx: FinanceTransaction): FinanceKind {
   return tx.finance?.kind ?? (tx.category === 'recettes' ? 'income' : tx.category === 'apports' ? 'contribution' : 'expense');
 }
@@ -162,8 +189,12 @@ export function summarizeLedger(transactions: FinanceTransaction[], payments: Fi
 
 export function validateFinanceTransaction(tx: FinanceTransaction): void {
   if (!isoDate(tx.date)) throw new Error('Date comptable invalide.');
+  const dateHorsBornes = messageDateHorsBornes(isoDate(tx.date)!, todayISO());
+  if (dateHorsBornes) throw new Error(dateHorsBornes);
   const finance = tx.finance;
   if (!finance || finance.version !== 1 || !Number.isSafeInteger(finance.amountCents) || finance.amountCents <= 0) throw new Error('Montant CHF invalide.');
+  const montantHorsBornes = messageMontantHorsBornes(finance.amountCents, finance.kind);
+  if (montantHorsBornes) throw new Error(montantHorsBornes);
   if (!Number.isFinite(tx.amountTTC) || toCents(tx.amountTTC) !== finance.amountCents) throw new Error('Le total TTC ne correspond pas au montant comptable.');
   if (!tx.description.trim()) throw new Error('Description requise.');
   if (finance.lines.some(l => !Number.isSafeInteger(l.amountCents) || !l.description.trim())) throw new Error('Une ligne est incomplète.');

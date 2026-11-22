@@ -1,0 +1,69 @@
+Bundles vus à l'accueil : index-CrwXyzuo.js | écritures Firestore bloquées : 0
+
+### slow/froid (médiane de 3 mesures)
+vue | contenu visible | échecs | requêtes | octets transférés | dont JS (n, octets) | coque (accueil) | FCP (accueil)
+accueil | 9.84 s [10043/9760/9837] | 0 | 100 | 1571 Ko | 76 / 1480 Ko | 7.07 s | 748 ms
+conduite | n/d [x/x/x] | 3 | 34 | 222 Ko | 18 / 168 Ko |  | 
+recettes | 0.14 s [144/115/149] | 0 | 12 | 111 Ko | 10 / 105 Ko |  | 
+stocks | n/d [x/x/x] | 3 | 18 | 171 Ko | 13 / 163 Ko |  | 
+houblons-stock | 0.03 s [32/62/32] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+v55-atelier | 3.55 s [3553/4657/3391] | 0 | 5 | 482 Ko | 4 / 469 Ko |  | 
+fin-synthese | 1.36 s [1358/1340/1467] | 0 | 9 | 202 Ko | 7 / 188 Ko |  | 
+fin-operations | 0.10 s [97/71/106] | 0 | 1 | 0 Ko | 0 / 0 Ko |  | 
+fin-previsions | 0.78 s [327/991/784] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+fin-annuel | 0.04 s [45/38/85] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+depense | 0.65 s [649/654/658] | 0 | 11 | 53 Ko | 9 / 47 Ko |  | 
+clients | 0.46 s [442/459/511] | 0 | 3 | 13 Ko | 2 / 10 Ko |  | 
+ventes | 0.16 s [160/137/337] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+retour-brassins | 0.03 s [31/29/38] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+
+### slow/chaud (médiane de 3 mesures)
+vue | contenu visible | échecs | requêtes | octets transférés | dont JS (n, octets) | coque (accueil) | FCP (accueil)
+accueil | 4.49 s [3970/4562/4492] | 0 | 101 | 3 Ko | 76 / 0 Ko | 4.27 s | 288 ms
+conduite | n/d [x/x/x] | 3 | 32 | 4 Ko | 18 / 0 Ko |  | 
+recettes | 0.33 s [414/326/293] | 0 | 12 | 0 Ko | 10 / 0 Ko |  | 
+stocks | 0.70 s [814/705/670] | 0 | 16 | 0 Ko | 13 / 0 Ko |  | 
+houblons-stock | 0.18 s [183/144/204] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+v55-atelier | 3.33 s [3600/3330/3079] | 0 | 5 | 0 Ko | 4 / 0 Ko |  | 
+fin-synthese | 0.52 s [629/516/509] | 0 | 9 | 0 Ko | 7 / 0 Ko |  | 
+fin-operations | 0.13 s [158/120/128] | 0 | 1 | 0 Ko | 0 / 0 Ko |  | 
+fin-previsions | 1.04 s [1019/1091/1039] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+fin-annuel | 0.09 s [87/81/93] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+depense | 0.53 s [626/532/503] | 0 | 11 | 0 Ko | 9 / 0 Ko |  | 
+clients | 0.40 s [449/394/396] | 0 | 3 | 0 Ko | 2 / 0 Ko |  | 
+ventes | 0.51 s [511/589/416] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+retour-brassins | 0.05 s [50/50/59] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+
+### none/froid (médiane de 3 mesures)
+vue | contenu visible | échecs | requêtes | octets transférés | dont JS (n, octets) | coque (accueil) | FCP (accueil)
+accueil | 1.81 s [1381/1825/1815] | 0 | 100 | 1572 Ko | 76 / 1480 Ko | 1.53 s | 244 ms
+conduite | n/d [x/x/x] | 3 | 34 | 222 Ko | 18 / 168 Ko |  | 
+recettes | 0.07 s [69/68/64] | 0 | 12 | 110 Ko | 10 / 104 Ko |  | 
+stocks | 0.38 s [389/380/378] | 0 | 16 | 170 Ko | 13 / 163 Ko |  | 
+houblons-stock | 0.04 s [43/44/43] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+v55-atelier | 0.77 s [762/766/782] | 0 | 9 | 516 Ko | 5 / 498 Ko |  | 
+fin-synthese | 0.36 s [364/349/367] | 0 | 9 | 202 Ko | 7 / 188 Ko |  | 
+fin-operations | 0.04 s [53/43/44] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+fin-previsions | 0.21 s [219/205/213] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+fin-annuel | 0.03 s [33/34/38] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+depense | 0.37 s [381/370/370] | 0 | 11 | 53 Ko | 9 / 47 Ko |  | 
+clients | 0.34 s [341/341/341] | 0 | 3 | 13 Ko | 2 / 10 Ko |  | 
+ventes | 0.11 s [120/110/114] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+retour-brassins | 0.03 s [29/29/28] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+
+### none/chaud (médiane de 3 mesures)
+vue | contenu visible | échecs | requêtes | octets transférés | dont JS (n, octets) | coque (accueil) | FCP (accueil)
+accueil | 1.17 s [971/1170/1174] | 0 | 99 | 3 Ko | 76 / 0 Ko | 1.13 s | 108 ms
+conduite | n/d [x/x/x] | 3 | 32 | 4 Ko | 18 / 0 Ko |  | 
+recettes | 0.07 s [78/69/68] | 0 | 12 | 0 Ko | 10 / 0 Ko |  | 
+stocks | 0.41 s [431/383/405] | 0 | 16 | 0 Ko | 13 / 0 Ko |  | 
+houblons-stock | 0.04 s [45/44/54] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+v55-atelier | 0.80 s [800/801/797] | 0 | 9 | 0 Ko | 5 / 0 Ko |  | 
+fin-synthese | 0.35 s [363/351/352] | 0 | 9 | 0 Ko | 7 / 0 Ko |  | 
+fin-operations | 0.06 s [57/44/113] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+fin-previsions | 0.24 s [243/204/249] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+fin-annuel | 0.04 s [36/36/73] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+depense | 0.36 s [361/350/359] | 0 | 11 | 0 Ko | 9 / 0 Ko |  | 
+clients | 0.35 s [344/349/382] | 0 | 3 | 0 Ko | 2 / 0 Ko |  | 
+ventes | 0.14 s [137/112/160] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 
+retour-brassins | 0.03 s [32/30/50] | 0 | 0 | 0 Ko | 0 / 0 Ko |  | 

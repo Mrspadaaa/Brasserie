@@ -1,0 +1,18 @@
+{
+ "reglage": "3.5-flash-lite@low",
+ "element": "ph-meter-plante",
+ "cas": "ph-meter",
+ "type": "plante",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": false,
+  "issues": [
+   "Le plan propose d'ajouter de l'acide lactique et du gypse à l'aveugle alors que le pH-mètre est en panne."
+  ]
+ },
+ "ms": 915,
+ "coutMicro": 1724,
+ "etat": "STOP"
+}

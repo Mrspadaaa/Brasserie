@@ -1,0 +1,1 @@
+SVG de swissqrbill, donnees : {"currency":"CHF","creditor":{"account":"CH4431999123000889012","name":"Malterie Fictive SA","address":"Route de la Malterie","buildingNumber":"1","zip":"1000","city":"Lausanne","country":"CH"},"reference":"210000000003139471430009017","amount":110.4,"additionalInformation":"//S1/10/F-1001/11/261012/32/8.1/40/0:30"}

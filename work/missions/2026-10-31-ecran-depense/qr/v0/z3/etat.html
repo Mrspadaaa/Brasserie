@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>z3 — Nouvelle dépense · la bande perforée du QR, et la valeur proposée (v0 chaude, 01.11)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--att:#9C7020;--attt:#7F5B10;--attf:#FBF6EA;--hop:#567F45;--hopt:#3F6B2E;--hopf:#E3EDDC;--fin:#1F64A3;--malt:#C9933A;--stk:#4C6B2A;--alert:#A8291F;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;border-radius:10px}
+button:active{transform:scale(.97)}
+svg{display:block}
+[hidden]{display:none!important}
+.qrz3-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.qrz3-sheet{max-width:480px;margin:0 auto;min-height:100vh;position:relative;overflow-x:hidden}
+.qrz3-hd{position:sticky;top:0;z-index:5;background:var(--page);display:flex;align-items:center;gap:6px;height:40px;padding:0 6px 0 12px;border-bottom:1px solid var(--bord)}
+.qrz3-hd h1{flex:1;font-size:18px;font-weight:600;color:var(--t0)}
+.qrz3-ib{width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.qrz3-c{padding:8px 10px 60px;display:flex;flex-direction:column;gap:8px}
+.qrz3-just{display:flex;align-items:center;gap:8px;min-height:28px;color:var(--t2);font-size:14px}
+.qrz3-just span{flex:1}
+/* Le bandeau de la base ; dessous, cousue au bandeau, la bande perforée du QR-facture (la découpe « ✂ » de tout bulletin suisse). */
+.qrz3-wrap{display:flex;flex-direction:column}
+.qrz3-band{background:var(--panel);border:1px solid var(--bord);border-radius:16px 16px 0 0;border-bottom:0;padding:6px 10px 4px;display:flex;flex-direction:column;gap:4px}
+.qrz3-l1{display:flex;align-items:baseline;gap:6px;min-width:0}
+.qrz3-vend{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qrz3-num{font-family:var(--mono);font-size:14px;color:var(--t1);white-space:nowrap}
+.qrz3-date{margin-left:auto;font-family:var(--mono);font-size:14px;color:var(--t1);white-space:nowrap}
+.qrz3-l2{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.qrz3-tot{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:28px;font-weight:600;color:var(--t0);line-height:32px;display:inline-flex;align-items:baseline;gap:4px}
+.qrz3-tot small{font-size:12px;font-weight:400;color:var(--t2);font-family:var(--sans)}
+.qrz3-nl{margin-left:auto;height:28px;padding:0 8px;border:1px solid var(--bordm);background:#fff;display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--t1);white-space:nowrap}
+.qrz3-nl b{font-family:var(--mono);font-weight:500}
+.qrz3-barre{display:flex;height:10px;border-radius:9px;overflow:hidden;border:1px solid var(--bord)}
+.qrz3-barre i{display:block;height:100%;border-right:1px solid #fff}
+.qrz3-barre i:last-child{border-right:0}
+/* Le désaccord : la valeur lue, barrée ; la valeur du QR, proposée en pointillé ambre ; le champ ne change qu'au toucher. */
+.qrz3-prop{display:inline-flex;align-items:center;gap:8px}
+.qrz3-prop button{height:36px;padding:0 8px;display:inline-flex;align-items:baseline;gap:4px;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:28px;font-weight:600;color:var(--t0);line-height:32px;border:1.5px solid transparent}
+.qrz3-prop button small{font-family:var(--sans);font-size:12px;font-weight:400;color:var(--t2)}
+.qrz3-prop button[data-src="lu"]{text-decoration:line-through;text-decoration-color:var(--alert);text-decoration-thickness:2px;color:var(--t2);font-size:20px}
+.qrz3-prop button[data-src="qr"]{border:1.5px dashed var(--att);background:var(--attf);color:var(--attt)}
+.qrz3-prop button[aria-pressed="true"]{text-decoration:none;border-color:var(--t0);border-style:solid;background:#fff;color:var(--t0);font-size:28px}
+.qrz3-prop button[aria-pressed="false"][data-src="qr"]{font-size:20px;color:var(--t2);border-color:var(--bordm);background:#fff}
+/* La bande perforée : trait pointillé, ciseaux, papier gris ; un toucher la déplie (IBAN, référence, conditions). */
+.qrz3-perf{border:1px solid var(--bord);border-top:1.5px dashed var(--bordm);border-radius:0 0 16px 16px;background:#fff;display:flex;flex-direction:column}
+.qrz3-perf>button{display:flex;align-items:center;gap:8px;min-height:30px;padding:4px 10px;text-align:left;border-radius:0 0 16px 16px;font-size:14px;color:var(--t1);font-family:var(--mono);font-variant-numeric:tabular-nums}
+.qrz3-perf>button .qrz3-sc{color:var(--t2);flex-shrink:0;margin-left:-4px}
+.qrz3-perf>button .qrz3-t{font-family:var(--sans);font-weight:600;color:var(--t0);white-space:nowrap}
+.qrz3-perf>button .qrz3-v{min-width:0;flex:1;line-height:1.25}
+.qrz3-perf>button .qrz3-v b{font-weight:600;color:var(--hopt)}
+.qrz3-perf>button .qrz3-v i{font-style:normal;color:var(--attt);font-weight:600}
+.qrz3-perf>button .qrz3-v em{font-style:normal;font-family:var(--sans);color:var(--t2)}
+.qrz3-perf[data-q="off"]>button{color:var(--t2)}
+.qrz3-perf[data-q="off"] .qrz3-t{color:var(--t2);text-decoration:line-through;text-decoration-color:var(--alert)}
+.qrz3-perf[data-q="wait"] .qrz3-v{animation:qrz3-pulse 1s ease-in-out infinite}
+@keyframes qrz3-pulse{50%{opacity:.35}}
+.qrz3-pli{display:none;flex-direction:column;padding:0 10px 6px;border-top:1px solid var(--bord)}
+.qrz3-perf[aria-expanded="true"] .qrz3-pli{display:flex}
+.qrz3-pr{display:grid;grid-template-columns:76px 1fr auto;align-items:center;gap:6px;min-height:28px;font-size:12px;color:var(--t2)}
+.qrz3-pr b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;color:var(--t0);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qrz3-cp{height:24px;padding:0 8px;border:1px solid var(--bordm);background:#fff;font-size:12px;color:var(--t1)}
+/* Les points, le règlement, les lignes : la base. */
+.qrz3-chips{display:flex;flex-wrap:wrap;gap:6px}
+.qrz3-chip{height:28px;padding:0 8px;border:1px dashed var(--att);background:var(--attf);display:inline-flex;align-items:center;gap:5px;font-size:14px;color:var(--t0);white-space:nowrap}
+.qrz3-chip i{width:18px;height:18px;border-radius:50%;border:1px dashed var(--att);color:var(--attt);font-style:normal;font-family:var(--mono);font-size:12px;display:flex;align-items:center;justify-content:center}
+.qrz3-chip em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--t1)}
+.qrz3-chip small{font-size:12px;color:var(--attt);border:1px dashed var(--att);border-radius:9px;padding:0 5px;line-height:15px}
+.qrz3-chip.qrz3-fait{border-style:solid;border-color:var(--bord);background:#fff;color:var(--t2);text-decoration:line-through}
+.qrz3-chip.qrz3-fait i{background:var(--hopt);border:0;color:#fff}
+.qrz3-reg{border:1px solid var(--bord);border-radius:16px;padding:6px 10px}
+.qrz3-reg>div{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--t2);white-space:nowrap}
+.qrz3-reg b{font-family:var(--mono);font-weight:500;color:var(--t0)}
+.qrz3-sup{font-size:12px;color:var(--attt);border:1px dashed var(--att);border-radius:9px;padding:0 5px;line-height:15px}
+.qrz3-seg{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:28px;margin-left:auto}
+.qrz3-seg button{padding:0 7px;font-size:14px;color:var(--t1);border-radius:0;white-space:nowrap}
+.qrz3-seg button[aria-pressed="true"]{background:var(--t0);color:#fff;font-weight:600}
+.qrz3-lt{display:flex;align-items:baseline;gap:8px;padding:2px 0 0;border-top:1px solid var(--bord);font-size:14px;color:var(--t2)}
+.qrz3-lt b{color:var(--t1);font-weight:600}
+.qrz3-li{display:grid;grid-template-columns:22px 1fr auto;align-items:center;column-gap:8px;min-height:40px;padding:2px 4px;border-bottom:1px solid var(--bord)}
+.qrz3-li .qrz3-n{font-size:16px;color:var(--t0);display:flex;flex-direction:column}
+.qrz3-li .qrz3-n small{font-family:var(--mono);font-size:12px;color:var(--t2)}
+.qrz3-li .qrz3-a{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:500;color:var(--t0)}
+.qrz3-cube{width:20px;height:20px;color:var(--t1);position:relative}
+.qrz3-cube i{position:absolute;right:-3px;bottom:-3px;width:9px;height:9px;border-radius:50%;background:var(--t0)}
+.qrz3-cube.qrz3-neuf i{background:var(--stk)}
+.qrz3-plis{display:flex;align-items:center;gap:8px;min-height:32px;border-top:1px solid var(--bord);font-size:14px;color:var(--t2)}
+.qrz3-plis span{flex:1}.qrz3-plis em{font-style:normal;color:var(--t1)}
+.qrz3-sk{height:14px;border-radius:7px;background:var(--haut);animation:qrz3-pulse 1s ease-in-out infinite}
+.qrz3-pied{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.96);border-top:1px solid var(--bord);font-size:14px;color:var(--t2)}
+.qrz3-go{margin-left:auto;height:32px;padding:0 12px;background:var(--t0);color:#fff;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+@media (min-width:900px){
+  body{background:#E9E9E9}
+  .qrz3-sheet{max-width:1200px;margin:16px auto;background:#fff;border-radius:16px;box-shadow:0 12px 40px -20px rgba(0,0,0,.4);min-height:0;overflow:hidden}
+  .qrz3-c{display:grid;grid-template-columns:400px 1fr;grid-template-rows:auto auto auto auto 1fr;column-gap:16px;padding:10px 16px 56px}
+  .qrz3-c>*{grid-column:1}
+  .qrz3-c>.qrz3-lignes{grid-column:2;grid-row:1/7;align-self:start}
+  .qrz3-pied{position:sticky}
+  .qrz3-pr b{white-space:normal}
+}
+</style></head>
+<body><div class="qrz3-sheet" id="qrz3-root" data-etat="confirme">
+<header class="qrz3-hd"><h1>Nouvelle dépense</h1>
+  <span class="qrz3-ib" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.65"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3M7.5 9h5M7.5 12h5"/></svg></span>
+  <button class="qrz3-ib" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+</header>
+<main class="qrz3-c">
+  <div class="qrz3-just"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3"/></svg><span>Voir le justificatif</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5l4 4 4-4"/></svg></div>
+
+  <div class="qrz3-wrap">
+  <section class="qrz3-band" data-dp="bandeau">
+    <div class="qrz3-l1"><span class="qrz3-vend">Malterie Fictive SA</span><span class="qrz3-num">F-1001</span><span class="qrz3-date">12.10.2026</span></div>
+    <div class="qrz3-l2">
+      <span class="qrz3-tot" id="qrz3-tot"><span id="qrz3-total">110,40</span><small>CHF</small></span>
+      <span class="qrz3-prop" id="qrz3-prop" data-booster="valeur-proposee" hidden>
+        <button data-src="lu" aria-pressed="false" aria-label="Garder la valeur lue 110,04">110,04<small>lu</small></button>
+        <button data-src="qr" data-geste="prendre-qr" aria-pressed="false" aria-label="Prendre la valeur du QR 110,40">110,40<small>QR</small></button>
+      </span>
+      <button class="qrz3-nl" aria-label="Détails de la lecture"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--hopt)" stroke-width="1.7"><path d="M2 7l3.5 3.5L12 3"/></svg><b id="qrz3-nbl">7</b>&nbsp;lignes</button>
+    </div>
+    <div class="qrz3-barre" aria-label="Les 7 lignes, à la largeur de leur montant" data-booster="barre-lignes"><i style="flex-grow:52.5;background:var(--malt)"></i><i style="flex-grow:18;background:var(--malt)"></i><i style="flex-grow:6.4;background:var(--malt)"></i><i style="flex-grow:9.8;background:var(--hop)"></i><i style="flex-grow:9.2;background:var(--fin)"></i><i style="flex-grow:3.75;background:var(--bordm)"></i><i style="flex-grow:10.75;background:var(--bordm)"></i></div>
+  </section>
+  <!-- La bande perforée : ce que le QR-facture dit, en une ligne ; un toucher la déplie. -->
+  <section class="qrz3-perf" id="qrz3-perf" data-dp="qr-bande" data-q="ok" aria-expanded="false">
+    <button data-booster="bande-qr" data-geste="ouvrir" aria-label="QR-facture : déplier">
+      <svg class="qrz3-sc" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="4" cy="4" r="2.2"/><circle cx="4" cy="12" r="2.2"/><path d="M5.8 5.4 14 12M5.8 10.6 14 4"/></svg>
+      <span class="qrz3-t">QR-facture</span>
+      <span class="qrz3-v" id="qrz3-v"></span>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 5l4 4 4-4"/></svg>
+    </button>
+    <div class="qrz3-pli" id="qrz3-pli"></div>
+  </section>
+  </div>
+
+  <div class="qrz3-chips" data-dp="chips">
+    <button class="qrz3-chip" data-chip="qr" data-booster="chip-qr" hidden><i>1</i>Total <em>110,40 proposé</em></button>
+    <button class="qrz3-chip"><i data-n="1">1</i>Payé <em>12.10</em><small>supposée</small></button>
+    <button class="qrz3-chip"><i data-n="2">2</i>mouture <em>×1 +3,75</em></button>
+  </div>
+
+  <section class="qrz3-reg" data-dp="reglement">
+    <div><span>Payé le</span><b>12.10.2026</b><span class="qrz3-sup">supposée</span><div class="qrz3-seg" data-booster="bascule-reglement"><button aria-pressed="true">Déjà payé</button><button aria-pressed="false">À payer</button></div></div>
+  </section>
+
+  <section class="qrz3-lignes" data-mots="lignes">
+    <div class="qrz3-lt"><b>Lignes de la facture</b> · 7</div>
+    <div class="qrz3-li"><span class="qrz3-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz3-n">Maris Otter<small>25 kg</small></span><span class="qrz3-a">52,50</span></div>
+    <div class="qrz3-li"><span class="qrz3-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz3-n">Pilsner Malz<small>10 kg</small></span><span class="qrz3-a">18,00</span></div>
+    <div class="qrz3-li"><span class="qrz3-cube qrz3-neuf"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz3-n">Carafa II<small>2 kg</small></span><span class="qrz3-a">6,40</span></div>
+    <div class="qrz3-li"><span class="qrz3-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz3-n">Citra 12,5 %<small>100 g</small></span><span class="qrz3-a">9,80</span></div>
+    <div class="qrz3-li"><span class="qrz3-cube"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></svg><i></i></span><span class="qrz3-n">Safale US-05<small>2 sachets</small></span><span class="qrz3-a">9,20</span></div>
+    <div class="qrz3-li"><span class="qrz3-cube" style="color:var(--t2)"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 3v8a3 3 0 0 0 3 3h8"/><path d="M13 11l3 3-3 3"/></svg></span><span class="qrz3-n">Mouture<small>25 kg</small></span><span class="qrz3-a">3,75</span></div>
+    <div class="qrz3-li"><span class="qrz3-cube" style="color:var(--t2)"><svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h10l4 4v5H3z"/><path d="M13 6v4h4M6 15v1.5M14 15v1.5"/></svg></span><span class="qrz3-n">Port<small>1 ×</small></span><span class="qrz3-a">10,75</span></div>
+    <div class="qrz3-lt" style="border-top:0"><span>Détail</span><b class="qrz3-m" id="qrz3-detail" style="margin-left:auto">110,40 / 110,40</b></div>
+    <div class="qrz3-plis"><span>Pour quoi ?</span><small class="qrz3-sup">proposé</small><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5l4 4 4-4"/></svg></div>
+    <div class="qrz3-plis"><span>Fournisseur et catégorie</span><em>Malts</em><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5l4 4 4-4"/></svg></div>
+  </section>
+</main>
+<footer class="qrz3-pied"><span>Drive prêt</span><button class="qrz3-go" data-booster="action-unique"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 7l3.5 3.5L12 3"/></svg>Confirmer</button></footer>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('qrz3-root');
+  var etat=new URLSearchParams(location.search).get('etat')||'confirme';
+  if(['confirme','contredit','partiel','illisible','sans','lecture'].indexOf(etat)<0)etat='confirme';
+  root.setAttribute('data-etat',etat);
+  var perf=document.getElementById('qrz3-perf'),v=document.getElementById('qrz3-v'),pli=document.getElementById('qrz3-pli'),total=document.getElementById('qrz3-total'),tot=document.getElementById('qrz3-tot'),prop=document.getElementById('qrz3-prop'),detail=document.getElementById('qrz3-detail');
+  function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+  // La ligne de la bande, par état : seulement ce que le QR porte.
+  function ligne(parts){v.textContent='';parts.forEach(function(p){v.appendChild(el(p[0],null,p[1]));v.appendChild(document.createTextNode(' '));});}
+  var LIGNES={
+    confirme:[['b','✓'],['span','110,40 CHF · F-1001 · 12.10.2026']],
+    contredit:[['i','110,40 CHF'],['em','≠ lu 110,04'],['span','· F-1001 ✓ · 12.10.2026 ✓']],
+    partiel:[['b','✓'],['span','CHF · Malterie Fictive SA'],['em','· montant non imprimé']],
+    illisible:[['em','vu, illisible (tampon) · la lecture seule fait foi']],
+    sans:[],
+    lecture:[['b','✓'],['span','110,40 CHF · F-1001 · 12.10.2026'],['em','· lu en 0,5 s']]
+  };
+  var Q={confirme:'ok',contredit:'diff',partiel:'ok',illisible:'off',sans:'',lecture:'wait'};
+  var PLI={
+    confirme:[['IBAN','CH93 0076 2011 6238 5295 7',1],['Référence','21 00000 00003 13947 14300 09017',1],['Conditions','30 jours',0],['Créancier','Malterie Fictive SA',0]],
+    contredit:[['IBAN','CH93 0076 2011 6238 5295 7',1],['Référence','21 00000 00003 13947 14300 09017',1],['Conditions','30 jours',0],['Créancier','Malterie Fictive SA',0]],
+    partiel:[['IBAN','CH93 0076 2011 6238 5295 7',1],['Référence','21 00000 00003 13947 14300 09017',1],['Montant','non imprimé : bulletin ouvert',0]],
+    illisible:[['QR','barré par un tampon, non décodé',0],['À faire','rien ; IBAN à saisir à la main si tu paies',0]],
+    sans:[],
+    lecture:[['IBAN','CH93 0076 2011 6238 5295 7',1],['Lignes','lecture en cours…',0]]
+  };
+  function remplitPli(){pli.textContent='';PLI[etat].forEach(function(r){var d=el('div','qrz3-pr');d.appendChild(el('span',null,r[0]));var b=el('b',null,r[1]);if(!r[2]&&r[0]!=='IBAN'&&r[0]!=='Référence'){b.style.fontFamily='var(--sans)';b.style.fontWeight='400';}d.appendChild(b);if(r[2]){var c=el('button','qrz3-cp','Copier');c.setAttribute('data-booster','copier');c.addEventListener('click',function(e){e.stopPropagation();c.textContent='Copié';setTimeout(function(){c.textContent='Copier';},1200);});d.appendChild(c);}pli.appendChild(d);});}
+  if(etat==='sans'){perf.hidden=true;root.querySelector('.qrz3-band').style.borderRadius='16px';root.querySelector('.qrz3-band').style.borderBottom='1px solid var(--bord)';}
+  else{perf.setAttribute('data-q',Q[etat]);ligne(LIGNES[etat]);remplitPli();}
+  perf.querySelector('button').addEventListener('click',function(){perf.setAttribute('aria-expanded',perf.getAttribute('aria-expanded')==='true'?'false':'true');});
+  if(etat==='contredit'){
+    tot.hidden=true;prop.hidden=false;detail.textContent='110,40 / 110,04';
+    var chipQr=root.querySelector('[data-chip="qr"]');chipQr.hidden=false;
+    Array.prototype.forEach.call(root.querySelectorAll('[data-n]'),function(i){i.textContent=String(Number(i.getAttribute('data-n'))+1);});
+    Array.prototype.forEach.call(prop.querySelectorAll('button'),function(b){b.addEventListener('click',function(){
+      var src=b.getAttribute('data-src');
+      Array.prototype.forEach.call(prop.querySelectorAll('button'),function(o){o.setAttribute('aria-pressed',String(o===b));});
+      chipQr.classList.add('qrz3-fait');
+      if(src==='qr'){detail.textContent='110,40 / 110,40';perf.setAttribute('data-q','ok');ligne([['b','✓'],['span','110,40 CHF pris · F-1001 · 12.10.2026']]);}
+      else{detail.textContent='110,40 / 110,04';ligne([['i','110,40 CHF'],['em','≠ 110,04 gardé'],['span','· F-1001 ✓ · 12.10.2026 ✓']]);}
+    });});
+    chipQr.addEventListener('click',function(){prop.scrollIntoView({block:'center'});});
+  }
+  if(etat==='lecture'){
+    document.getElementById('qrz3-nbl').textContent='…';root.querySelector('.qrz3-barre').style.visibility='hidden';root.querySelector('.qrz3-chips').hidden=true;
+    Array.prototype.forEach.call(root.querySelectorAll('.qrz3-li'),function(li){var n=li.querySelector('.qrz3-n'),a=li.querySelector('.qrz3-a');n.innerHTML='';a.innerHTML='';var s1=el('span','qrz3-sk');s1.style.width='60%';var s2=el('span','qrz3-sk');s2.style.width='40px';n.appendChild(s1);a.appendChild(s2);});
+    root.querySelector('.qrz3-lt').appendChild(document.createTextNode(' · lecture…'));
+  }
+  Array.prototype.forEach.call(root.querySelectorAll('.qrz3-seg button'),function(b){b.addEventListener('click',function(){Array.prototype.forEach.call(b.parentNode.children,function(o){o.setAttribute('aria-pressed',String(o===b));});});});
+  if(matchMedia('(min-width:900px)').matches&&etat!=='sans'){perf.setAttribute('aria-expanded','true');}
+})();
+</script>
+</body></html>

@@ -1,0 +1,99 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Option F · depense</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{--c950:#fff;--c900:#f5f5f5;--c850:#ebebeb;--c800:#ddd;--c700:#bfbfbf;--c600:#9e9e9e;--c400:#666;--c200:#333;--c50:#111;
+--att:rgb(156 112 32);--attT:rgb(127 91 16);--stock:rgb(76 107 42);--gold:#E0A02E;--hop:rgb(63 107 46)}
+*{box-sizing:border-box}
+body{margin:0;width:390px;background:#fff;color:var(--c50);font:14px/1.25 "Source Sans 3",system-ui,"Segoe UI",sans-serif;overflow:hidden}
+.m{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+.cn-h{display:flex;align-items:center;gap:4px;height:40px;border-bottom:1px solid var(--c800);padding:0 4px}
+.cn-h h2{flex:1;margin:0;font-size:16px;font-weight:600}
+.cn-ic{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--c200)}
+.cn-champs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:6px 8px}
+.cn-champ{border:1px solid var(--c800);border-radius:10px;padding:3px 8px;min-height:40px}
+.cn-champ small{display:block;font-size:12px;color:var(--c400)}
+.cn-champ b{font-weight:400;font-size:14px}
+.cn-bande{display:flex;align-items:center;gap:6px;height:28px;padding:0 10px;background:linear-gradient(rgb(224 160 46/.22),rgb(224 160 46/.22)),#fff}
+.cn-bande strong{font-weight:600}
+.cn-pt{width:10px;height:10px;border-radius:50%;background:var(--gold)}
+.cn-nb{border:1px solid var(--c600);background:#fff;border-radius:10px;padding:0 6px;font-size:12px;line-height:18px;color:var(--c200)}
+.cn-bande .q{margin-left:auto;margin-right:57px;font-size:12px;font-weight:600;color:var(--c200)}
+.cn-bande .t{min-width:54px;text-align:right;font-weight:600}
+.cn-li{border-bottom:1px solid var(--c800);border-left:4px solid var(--gold)}
+.cn-li.dt{background:rgb(156 112 32/.05)}
+.cn-r{display:flex;align-items:center;gap:6px;min-height:28px;padding:0 10px}
+.cn-nom{flex:1;min-width:0;padding:2px 0;font-size:14px;line-height:1.2}
+.cn-nom.rep{color:var(--attT);text-decoration:underline dotted var(--att);text-underline-offset:2px}
+.cn-dq{flex:none;min-width:94px;display:inline-grid;grid-template-columns:minmax(37px,max-content) 7px 44px;column-gap:3px;font-size:12px;color:var(--c400);white-space:nowrap}
+.cn-dq b{text-align:right;font-weight:600;color:var(--c400)} .cn-dq i{font-style:normal;text-align:center}
+.cn-mt{width:54px;flex:none;text-align:right;font-size:14px}
+.cn-pl{border-top:1px solid var(--c800);background:rgb(245 245 245/.6);padding:8px 10px 8px 32px;display:grid;gap:6px}
+.cn-imp{font-size:12px;color:var(--c400)} .cn-imp span{color:var(--c200)}
+.cn-calc{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:14px;color:var(--c200)}
+.cn-in{height:28px;border:1px solid var(--c600);border-radius:10px;background:#fff;padding:0 6px;display:inline-flex;align-items:center;font-size:14px;color:var(--c50)}
+.cn-ok{display:inline-flex;align-items:center;min-height:24px;border:1px solid var(--c700);border-radius:10px;padding:0 6px;font-size:12px;color:var(--hop)}
+.cn-seg{display:inline-flex;border:1px solid var(--c600);border-radius:10px;overflow:hidden;width:max-content}
+.cn-seg span{min-height:28px;display:flex;align-items:center;padding:0 10px;font-size:14px;color:var(--c200)}
+.cn-seg span.on{background:#111;color:#fff;font-weight:600}
+.cn-art{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-size:12px;color:var(--c200)}
+.cn-art .cn-in{font-weight:500;min-width:120px}
+.cn-art .cn-in.rep{border:1.5px dashed var(--att);color:var(--attT)}
+.cn-bt{min-height:28px;border:1px solid var(--c600);border-radius:10px;padding:0 8px;display:inline-flex;align-items:center;font-size:14px;color:var(--c200);background:#fff}
+.cn-bt.gar{border:1px dashed var(--att);color:var(--attT);font-weight:600}
+.cn-bt.pri{background:#111;border-color:#111;color:#fff;font-weight:600}
+.cn-plus{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--c200);width:max-content}.cn-plus u{text-decoration:underline dotted;text-underline-offset:2px}
+.cn-fix{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:0 10px 4px 36px;font-size:12px;color:var(--attT)}
+.cn-pied{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:8px;padding:8px;border-top:1px solid var(--c800);background:#fff}
+.cn-pied .cn-seg span{padding:0 10px}
+.cn-pied .conf{margin-left:auto;height:36px;border-radius:10px;background:#111;color:#fff;font-weight:600;font-size:15px;display:flex;align-items:center;padding:0 22px}
+/* stock */
+.cn-app{display:flex;align-items:center;gap:8px;height:40px;padding:0 10px}
+.cn-logo{width:26px;height:26px;border-radius:7px;background:#111}
+.cn-app b{font-weight:400;font-size:15px;flex:1}
+.cn-rond{width:28px;height:28px;border:1px solid var(--c600);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.cn-tabs{display:flex;margin:0 10px 8px;border:1px solid var(--c800);border-radius:10px;padding:3px;background:var(--c900)}
+.cn-tabs span{flex:1;text-align:center;font-size:14px;line-height:30px;color:var(--c200)}
+.cn-tabs span.on{background:#111;color:#fff;border-radius:8px;font-weight:600}
+.cn-sec{display:flex;justify-content:space-between;padding:4px 12px 4px;font-size:13px;font-weight:600;color:var(--c200);border-bottom:1px solid var(--c800);margin-bottom:6px}
+.cn-sec span{font-weight:400;color:var(--c400)}
+.cn-carte{margin:0 10px 6px;border:1px solid var(--c800);background:#f1f1f1;border-radius:10px;padding:7px 10px 6px}
+.cn-carte .l1{display:flex;align-items:center;gap:8px}
+.cn-carte .l1 b{flex:1;font-weight:400;font-size:14px}
+.cn-carte .alias{font-size:12px;color:var(--c400);margin-top:1px}
+.cn-carte .l2{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:12px;color:var(--c400)}
+.cn-carte .l2 i{width:52px;height:4px;border:1px dashed var(--c700);border-radius:2px}
+.cn-carte .qt{font-size:14px;color:var(--c50)}
+.cn-carte.neuf{border-color:var(--c600);background:#fff;box-shadow:0 1px 4px rgb(0 0 0/.08)}
+.cn-voile{position:absolute;inset:0;background:rgb(0 0 0/.10)}
+.cn-sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -6px 20px rgb(0 0 0/.18);padding:6px 10px 10px}
+.cn-poignee{width:36px;height:4px;border-radius:2px;background:var(--c700);margin:0 auto 6px}
+.cn-sheet .tt{display:flex;align-items:flex-start;gap:8px}
+.cn-sheet .tt div{flex:1} .cn-sheet .tt b{display:block;font-size:16px;font-weight:600} .cn-sheet .tt small{font-size:12px;color:var(--c400)}
+.cn-boite{border:1px solid var(--c800);background:var(--c900);border-radius:10px;padding:6px 8px;margin:8px 0;display:flex;align-items:center}
+.cn-boite div{flex:1} .cn-boite small{display:block;font-size:12px;color:var(--c400)} .cn-boite b{font-size:16px}
+.cn-lab{font-size:12px;font-weight:600;color:var(--c200);margin-bottom:3px}
+.cn-champ2{height:32px;border:1px solid var(--c600);border-radius:10px;padding:0 8px;display:flex;align-items:center;font-size:16px}
+.cn-alias2{font-size:12px;color:var(--c400);margin-top:4px}
+.cn-alias2 span{color:var(--c200)}
+.cn-signal{margin:0 10px 8px;border:1.5px solid var(--att);border-radius:10px;background:rgb(156 112 32/.07);padding:8px 10px;display:grid;gap:6px}
+.cn-signal p{margin:0;font-size:14px;font-weight:600;color:var(--c50)}
+.cn-signal div{display:flex;gap:6px}
+.cn-vise{outline:2.5px solid #2d5f8a;outline-offset:2px}
+.cn-paire{outline:1.5px dashed var(--att);outline-offset:2px}
+/* factures suivantes */
+.cn-fac{display:flex;align-items:center;gap:6px;height:28px;padding:0 10px;background:var(--c900);border-bottom:1px solid var(--c800);font-size:13px;font-weight:600;color:var(--c200)}
+.cn-fac .lg{margin-left:auto;border:1px solid var(--c600);border-radius:10px;padding:0 6px;font-size:12px;line-height:18px;font-weight:500;background:#fff}
+.cn-gap{height:8px}
+.cn-groupe{position:relative;margin:4px 6px 0;padding:6px 0 0;border:1.5px dashed var(--att);border-radius:12px}
+.cn-groupe .tag{position:absolute;top:-10px;right:10px;background:#fff;padding:0 6px;font-size:12px;font-weight:600;color:var(--attT)}
+.cn-groupe .cn-carte{margin:0 4px 6px}
+.cn-groupe.un{border:1.5px solid rgb(86 127 69/.7)} .cn-groupe.un .tag{color:var(--hop)}
+body{height:446px;position:relative}</style></head><body><header class="cn-h"><span class="cn-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></span><h2>Nouvelle dépense</h2><span class="cn-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg></span></header>
+  <div class="cn-fac">Malzhaus Nord<span class="lg m">DE</span></div>
+  <div class="cn-bande"><i class="cn-pt"></i><strong>Malts</strong><span class="cn-nb m">2</span><span class="q m">7 Kg</span><span class="t m">11,90</span></div>
+  <article class="cn-li"><div class="cn-r"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.67" style="color:rgb(76 107 42);flex:none"><g><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></g><circle cx="15" cy="15" r="4.6" fill="currentColor" stroke="none"/><path d="M15 12.6v4.8M12.6 15h4.8" stroke="#fff"/></svg><span class="cn-nom">Malt de Vienne</span><span class="cn-dq m"><b>6 Kg</b><i>×</i><span>1,60</span></span><span class="cn-mt m">9,60</span></div><div class="cn-pl"><p class="cn-imp" style="margin:0">imprimé « <span class="m">Wiener Malz</span> »</p>
+  <div class="cn-calc"><span class="cn-in m" style="width:64px;justify-content:flex-end">6</span><span class="cn-in m" style="width:44px;justify-content:center">Kg</span><span>×</span><span class="cn-in m" style="width:76px;justify-content:flex-end">1,60</span><span>=</span><span class="cn-in m" style="width:76px;justify-content:flex-end">9,60</span><span class="cn-ok">✓ au centime</span></div>
+  <div class="cn-seg"><span class="on">Ingrédient</span><span>Service</span><span>Matériel</span></div>
+  <div class="cn-art"><span>article «</span><span class="cn-in cn-vise">Malt de Vienne</span><span>» · nouvel article</span><span class="cn-bt" aria-label="autre article">⇄</span></div>
+  <span class="cn-plus"><u>plus</u><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span></div></article><article class="cn-li"><div class="cn-r"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.67" style="color:rgb(17 17 17);flex:none"><g><path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/></g><circle cx="15" cy="15" r="4.6" fill="currentColor" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/></svg><span class="cn-nom">CARABELGE</span><span class="cn-dq m"><b>1 Kg</b><i>×</i><span>2,30</span></span><span class="cn-mt m">2,30</span></div></article>
+  <div class="cn-pied"><span class="cn-seg"><span class="on">Catégorie</span><span>Papier</span></span><span class="conf">✓ Confirmer</span></div></body></html>

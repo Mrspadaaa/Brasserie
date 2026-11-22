@@ -1,0 +1,22 @@
+[n3 clair] page scrollWidth<=innerWidth : true (390/390) ; décalés hors tableau : [] ; débords : []
+capture ap-comparer-390-clair-glisse.png
+[n2 clair]
+  Hotte murale 100 cm | tx w125 h82 | droite w67 | hors « < min. 1 500 sous votre minimum de 1 500 m³/h » chevauche:false
+  Extracteur mural hélicoïde | tx w234 h43 | droite w26 | hors - chevauche:false
+  Extracteur centrifuge en ligne | tx w193 h63 | droite w67 | hors « < min. 1 500 sous votre minimum de 1 500 m³/h » chevauche:false
+capture ap-choisir-390-clair-liste.png
+[n1 390 clair] Critères : tient 80 °C, puis le débit, proposé par l'IA
+capture ap-choisi-390-clair.png
+[n1 1280 clair] Critères : tient 80 °C, puis le débit, proposé par l'IA
+capture ap-choisi-1280-clair.png
+[n3 sombre] page scrollWidth<=innerWidth : true (390/390) ; décalés hors tableau : [] ; débords : []
+capture ap-comparer-390-sombre-glisse.png
+[n2 sombre]
+  Hotte murale 100 cm | tx w125 h82 | droite w67 | hors « < min. 1 500 sous votre minimum de 1 500 m³/h » chevauche:false
+  Extracteur mural hélicoïde | tx w234 h43 | droite w26 | hors - chevauche:false
+  Extracteur centrifuge en ligne | tx w193 h63 | droite w67 | hors « < min. 1 500 sous votre minimum de 1 500 m³/h » chevauche:false
+capture ap-choisir-390-sombre-liste.png
+[n1 390 sombre] Critères : tient 80 °C, puis le débit, proposé par l'IA
+capture ap-choisi-390-sombre.png
+[n1 1280 sombre] Critères : tient 80 °C, puis le débit, proposé par l'IA
+capture ap-choisi-1280-sombre.png

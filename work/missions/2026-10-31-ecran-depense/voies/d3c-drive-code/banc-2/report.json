@@ -1,0 +1,609 @@
+{
+  "project": "demo-jus",
+  "rulesSha": "a29dda39a7999991c19e5be00e1805d342451090658b08d837d91bfbbb41552f",
+  "widths": [
+    390
+  ],
+  "cases": [
+    "drive-fond"
+  ],
+  "startedAt": "2026-11-01T08:52:17.003Z",
+  "replay": {
+    "doc1": {
+      "fichier": "..\\doc1-facture-ecran.jpg",
+      "sha256": "b34c2807eba4"
+    },
+    "doc2": {
+      "fichier": "..\\doc2-facture-papier-2tva.jpg",
+      "sha256": "bc11da61aafa"
+    },
+    "doc3": {
+      "fichier": "..\\doc3-bulletins-qr-tournes.jpg",
+      "sha256": "1f3262d77203"
+    },
+    "doc4": {
+      "fichier": "..\\doc4-bordereau-livraison.jpg",
+      "sha256": "ee741f3f353f"
+    },
+    "doc5": {
+      "fichier": "..\\doc5-facture-fournisseur-3pages-qr.jpg",
+      "sha256": "c8a6241e22a8"
+    },
+    "doc6": {
+      "fichier": "..\\doc6-commande-en-ligne-ecran.jpg",
+      "sha256": "13865170131e"
+    }
+  },
+  "seeds": {
+    "derivesDeLaLecture": [
+      {
+        "id": "jus0-existant-accent",
+        "unit": "kg",
+        "category": "Malt"
+      },
+      {
+        "id": "jus0-existant-houblon",
+        "unit": "g",
+        "category": "Houblon"
+      },
+      {
+        "id": "jus0-existant-levure",
+        "unit": "sachet",
+        "category": "Levure"
+      }
+    ],
+    "accentTrouve": true
+  },
+  "runs": [
+    {
+      "width": 390,
+      "steps": [
+        {
+          "label": "connexion émulée",
+          "at": "2026-11-01T08:53:25.743Z",
+          "uid": "Dv3cjXtPgcUaPESM9GqFgm6lTGU2"
+        },
+        {
+          "label": "semis du stock (dérivés de la lecture rejouée)",
+          "at": "2026-11-01T08:53:25.926Z",
+          "seeds": [
+            "jus0-existant-accent",
+            "jus0-existant-houblon",
+            "jus0-existant-levure"
+          ]
+        },
+        {
+          "label": "cas drive-fond",
+          "at": "2026-11-01T08:53:27.280Z"
+        },
+        {
+          "label": "page rechargée en plein envoi",
+          "at": "2026-11-01T08:53:35.935Z"
+        },
+        {
+          "label": "réseau coupé",
+          "at": "2026-11-01T08:54:01.663Z"
+        },
+        {
+          "label": "réseau rétabli",
+          "at": "2026-11-01T08:54:06.371Z"
+        },
+        {
+          "label": "réseau coupé",
+          "at": "2026-11-01T08:54:12.005Z"
+        },
+        {
+          "label": "réseau rétabli",
+          "at": "2026-11-01T08:54:20.023Z"
+        }
+      ],
+      "captures": [
+        "390-01-drive-fond-1-feuille-avant.png",
+        "390-02-drive-fond-1-feuille-fermee.png",
+        "390-03-drive-fond-2-notification-echec.png",
+        "390-04-drive-fond-2-notification-finances.png",
+        "390-05-drive-fond-3-fiche-a-renvoyer.png",
+        "390-06-drive-fond-3-justificatif-ouvert.png",
+        "390-07-drive-fond-4-reconnecter.png",
+        "390-08-drive-fond-5-hors-ligne-fermee.png",
+        "390-09-drive-fond-11-fichier-refuse.png"
+      ],
+      "errors": [
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: [2026-11-01T08:54:42.822Z]  @firebase/firestore: Firestore (11.10.0): Could not reach Cloud Firestore backend. Connection failed 1 times. Most recent error: FirebaseError: [code=unavailable]: The operation could not be completed\nThis typically indicates that your device does not have a healthy Inter",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED",
+        "console: Failed to load resource: net::ERR_FAILED"
+      ],
+      "records": {
+        "drive-fond-4-etats": [
+          "queued",
+          "lié"
+        ],
+        "drive-fond-9-appels-drive-pendant-le-blocage": 62
+      },
+      "measures": {
+        "drive-fond-1-fermeture-ms": 549
+      },
+      "services": {
+        "ai": [
+          {
+            "task": "scanInvoice",
+            "tier": "fast",
+            "file": {
+              "mimeType": "application/pdf",
+              "bytes": 100,
+              "sha256": "6f80a31c8b2829d0f296a16e8b80a8e221ebd2ad46b553436ccbba4612aa6989"
+            },
+            "mode": "refus",
+            "doc": null,
+            "at": "2026-11-01T08:53:28.145Z",
+            "expectedFile": false
+          },
+          {
+            "task": "scanInvoice",
+            "tier": "fast",
+            "file": {
+              "mimeType": "application/pdf",
+              "bytes": 101,
+              "sha256": "9d960592bb894910a8553368cca268a250f5986c856c55a227594e39a2e0180f"
+            },
+            "mode": "refus",
+            "doc": null,
+            "at": "2026-11-01T08:53:36.522Z",
+            "expectedFile": false
+          },
+          {
+            "task": "scanInvoice",
+            "tier": "fast",
+            "file": {
+              "mimeType": "application/pdf",
+              "bytes": 101,
+              "sha256": "f19d4dffe96973aef4223e3b1ce206bac3bab611b6fe19743982cfeda85c358f"
+            },
+            "mode": "refus",
+            "doc": null,
+            "at": "2026-11-01T08:53:55.713Z",
+            "expectedFile": false
+          },
+          {
+            "task": "scanInvoice",
+            "tier": "fast",
+            "file": {
+              "mimeType": "application/pdf",
+              "bytes": 106,
+              "sha256": "8d644e0fbc949e2e2a4ec90bb887f336deb330e9a50c75c4a2eb4e2768e98efb"
+            },
+            "mode": "refus",
+            "doc": null,
+            "at": "2026-11-01T08:53:59.828Z",
+            "expectedFile": false
+          },
+          {
+            "task": "scanInvoice",
+            "tier": "fast",
+            "file": {
+              "mimeType": "application/pdf",
+              "bytes": 103,
+              "sha256": "2124998f8867c0be1b3eca1c8926aca90191c9e926597569493c2c10ce9501de"
+            },
+            "mode": "refus",
+            "doc": null,
+            "at": "2026-11-01T08:54:08.095Z",
+            "expectedFile": false
+          },
+          {
+            "task": "scanInvoice",
+            "tier": "fast",
+            "file": {
+              "mimeType": "application/pdf",
+              "bytes": 103,
+              "sha256": "309791ceff727f3d2386d398e8387dc166723d90aee7da959b2665b03325d830"
+            },
+            "mode": "refus",
+            "doc": null,
+            "at": "2026-11-01T08:54:21.227Z",
+            "expectedFile": false
+          },
+          {
+            "task": "scanInvoice",
+            "tier": "fast",
+            "file": {
+              "mimeType": "application/pdf",
+              "bytes": 114,
+              "sha256": "d4aba42c5ce415c6b26cf4ea7e18dae895c41533ba77f8af4af413e7c96783d2"
+            },
+            "mode": "refus",
+            "doc": null,
+            "at": "2026-11-01T08:54:27.624Z",
+            "expectedFile": false
+          }
+        ],
+        "driveAuthorization": [
+          {
+            "action": "config"
+          },
+          {
+            "action": "token"
+          },
+          {
+            "action": "token"
+          },
+          {
+            "action": "token"
+          },
+          {
+            "action": "config"
+          },
+          {
+            "action": "token"
+          },
+          {
+            "action": "token"
+          },
+          {
+            "action": "config"
+          },
+          {
+            "action": "token"
+          },
+          {
+            "action": "token"
+          }
+        ],
+        "drive": {
+          "uploads": [
+            {
+              "id": "jus0f000001",
+              "bytes": 100,
+              "sha256": "6f80a31c8b2829d0f296a16e8b80a8e221ebd2ad46b553436ccbba4612aa6989"
+            },
+            {
+              "id": "jus0f000006",
+              "bytes": 101,
+              "sha256": "9d960592bb894910a8553368cca268a250f5986c856c55a227594e39a2e0180f"
+            },
+            {
+              "id": "jus0f000008",
+              "bytes": 101,
+              "sha256": "f19d4dffe96973aef4223e3b1ce206bac3bab611b6fe19743982cfeda85c358f"
+            },
+            {
+              "id": "jus0f000010",
+              "bytes": 106,
+              "sha256": "8d644e0fbc949e2e2a4ec90bb887f336deb330e9a50c75c4a2eb4e2768e98efb"
+            },
+            {
+              "id": "jus0f000012",
+              "bytes": 103,
+              "sha256": "2124998f8867c0be1b3eca1c8926aca90191c9e926597569493c2c10ce9501de"
+            },
+            {
+              "id": "jus0f000014",
+              "bytes": 101,
+              "sha256": "24a87944bec6dabae3d6e8c9ca49458e9816699a6144b1f8bb03fe33f56cb264"
+            },
+            {
+              "id": "jus0f000016",
+              "bytes": 114,
+              "sha256": "d4aba42c5ce415c6b26cf4ea7e18dae895c41533ba77f8af4af413e7c96783d2"
+            }
+          ],
+          "downloads": 1,
+          "requests": 72
+        }
+      }
+    }
+  ],
+  "checks": [
+    {
+      "width": 390,
+      "ok": true,
+      "label": "banc : réécriture émulateur appliquée telle que prévue"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 1 : Drive lent, la feuille se ferme en moins de 2 s après « Enregistrer »"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 1 : la dépense est écrite, en file, sans proofDocumentId (l’envoi n’a pas fini)"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 1 : aucune notification pendant que ça marche"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 7 : rechargement en plein envoi, la file reprend au démarrage, un seul fichier dans le Drive factice"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 7 : aucune notification après la reprise"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 2 : Drive plein, la feuille se ferme quand même"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 2 : la notification d’échec paraît, dit la cause et propose « Renvoyer le justificatif »"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 2 : elle est toujours là après 10 s (persistante)"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 2 : le clavier (Tab) atteint ses boutons"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 2 : elle est aussi sur Finances"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 2 : elle est aussi sur le tableau de bord"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 2 : l’état « failed / quota » est écrit sur la dépense (visible depuis tout appareil)"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 3 : « Renvoyer le justificatif » ouvre la fiche de CETTE dépense, avec la cause, « Renvoyer maintenant » et « Abandonner »"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 3 : après « Renvoyer maintenant », le justificatif est lié, un seul fichier dans le Drive factice"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 3 : la fiche montre « Justificatif » et il s’ouvre"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 3 : plus de notification"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 4 : jeton refusé, la feuille se ferme quand même"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 4 : motif « auth » : la notification dit que Drive n’est plus connecté et offre « Reconnecter Drive »"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 4 : après la reconnexion factice la file repart et la dépense est liée (un seul fichier)"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 4 : plus de notification"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 5 : hors ligne, la feuille se ferme sans attendre l’accusé (moins de 5 s)"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 5 : rien au serveur pendant la coupure, aucune notification"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 5 : au retour du réseau, une dépense synchronisée, un envoi, un lien"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 6 : la feuille se ferme"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 6 : réseau coupé pendant l’envoi, aucune notification"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 6 : l’envoi reprend au retour du réseau, jamais « failed », un seul fichier"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 11 : un fichier de plus de 4 Mo choisi dans la fiche est refusé clairement, rien en file"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 8 : après un échec, un autre fichier prend un autre identifiant (fileNo+1) : un seul fichier lié, le premier n’est jamais parti"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 10 : renouvellement du jeton indisponible, la feuille se ferme"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 10 : functions/unavailable : pas d’alerte, la dépense reste « queued » (la file réessaie au réveil suivant)"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 9 : redémarrage avec Firestore injoignable : aucun job effacé (IndexedDB relue)"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond 10 : le jeton revient, la file repart au réveil suivant : lié, un seul fichier"
+    },
+    {
+      "width": 390,
+      "ok": true,
+      "label": "drive-fond : sept dépenses créées, aucune de trop (pas de doublon)"
+    }
+  ],
+  "findings": [],
+  "blocked": [
+    "390 GET https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "390 GET https://accounts.google.com/gsi/client",
+    "390 GET https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "390 OPTIONS https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=demo-jus-key",
+    "390 GET https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "390 OPTIONS https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=demo-jus-key",
+    "390 GET chrome://resources/css/text_defaults_md.css",
+    "390 GET chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.css",
+    "390 GET chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/main.js",
+    "390 GET chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js",
+    "390 GET https://accounts.google.com/gsi/client",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=x85ja0t2sinh",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=hid8kpqvw1x5",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=91beot6vot51",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=cemw643mlwob",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=afdy7k8uv002",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=tnnjr826eikm",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=gzf3curx4hor",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=nnznaw8c0bs9",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=dq2z6kzdcs1r",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=62nocyns61wu",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=eosc20vv0y5y",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=frsep98nejrp",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=kcskgqtbsde0",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=i1fl0t5pemxj",
+    "390 GET https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "390 OPTIONS https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=demo-jus-key",
+    "390 GET https://accounts.google.com/gsi/client",
+    "390 GET https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "390 OPTIONS https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=demo-jus-key",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=tg5pz358v3q3",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=38eji2xngmcb",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=a153iokimt6",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=2b8vvlkob3zn",
+    "390 GET https://www.google.com/images/cleardot.gif?zx=8h2v1cu4g38c",
+    "390 GET https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;5",
+    "390 OPTIONS https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=demo-jus-key"
+  ],
+  "rewrites": [
+    {
+      "width": 390,
+      "path": "/src/services/firestoreRepo.ts",
+      "count": 2,
+      "expected": 2
+    },
+    {
+      "width": 390,
+      "path": "/src/services/firestoreRepo.ts",
+      "count": 2,
+      "expected": 2
+    },
+    {
+      "width": 390,
+      "path": "/src/services/firestoreRepo.ts",
+      "count": 2,
+      "expected": 2
+    },
+    {
+      "width": 390,
+      "path": "/src/services/firestoreRepo.ts",
+      "count": 2,
+      "expected": 2
+    },
+    {
+      "width": 390,
+      "path": "/src/services/firestoreRepo.ts",
+      "count": 2,
+      "expected": 2
+    },
+    {
+      "width": 390,
+      "path": "/src/services/firestoreRepo.ts",
+      "count": 2,
+      "expected": 2
+    }
+  ],
+  "pids": {
+    "vite": 1988,
+    "chrome": 24188
+  },
+  "closed": {
+    "chrome": true,
+    "vitePortFree": true
+  },
+  "endedAt": "2026-11-01T08:55:27.783Z"
+}

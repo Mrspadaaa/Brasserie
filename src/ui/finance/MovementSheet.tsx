@@ -4,7 +4,7 @@ import type { Transaction } from '../../types';
 import type { FinancialPayment } from '../../domain/finance/types';
 import { Sheet } from '../Sheet';
 import { Field, MoneyInput, idFor } from './FinanceForms';
-import { formatCHF, todayISO, transactionAmount, transactionDirection, validateFinanceTransaction } from '../../domain/finance/ledger';
+import { formatCHF, todayISO, transactionAmount, transactionDirection, validateFinanceTransaction, ventilationAvoir } from '../../domain/finance/ledger';
 import { FinanceService, validateFinancialPayment, validateRefundTransaction } from '../../services/financeService';
 import { FirestoreRepo, isConfirmedWriteRejection } from '../../services/firestoreRepo';
 import { StorageService } from '../../services/storage';
@@ -24,7 +24,9 @@ export function MovementSheet({original,onClose,onSaved}:{original?:Transaction;
       const txs=StorageService.getTransactions(),currentOriginal=original?txs.find(t=>t.id===original.id):undefined;
       const direction=original?(transactionDirection(currentOriginal??original,txs)==='out'?'in':'out'):(kind==='contribution'?'in':'out');
       const at=new Date().toISOString();
-      const tx:Transaction={id,date,description:note.trim(),category:currentOriginal?.category??original?.category??'apports',subcategory:original?'Avoir':kind==='contribution'?'Apport privé':'Prélèvement privé',amountHT:amount/100,amountTTC:amount/100,tvaRate:0,tvaAmount:0,
+      /* AM-64 : un avoir reprend la ventilation de TVA de sa facture (au prorata) ; HT = TTC effaçait la TVA à récupérer ou à reverser. Un apport ou prélèvement privé n'a pas de TVA. */
+      const ventile=original?ventilationAvoir(currentOriginal??original,amount):{amountHT:amount/100,tvaRate:0,tvaAmount:0};
+      const tx:Transaction={id,date,description:note.trim(),category:currentOriginal?.category??original?.category??'apports',subcategory:original?'Avoir':kind==='contribution'?'Apport privé':'Prélèvement privé',amountHT:ventile.amountHT,amountTTC:amount/100,tvaRate:ventile.tvaRate,tvaAmount:ventile.tvaAmount,
         finance:{version:1,kind:original?'refund':kind,amountCents:amount,lines:[],refundOfId:original?.id,refundDirection:original?direction:undefined,refundApplication:original?(application as 'cash'|'offset'):undefined,paymentStatus:'unpaid',recordedAt:at,vendor:currentOriginal?.finance?.vendor,notes:note.trim()}};
       validateFinanceTransaction(tx);
       if(original)validateRefundTransaction(tx,txs,FinanceService.getPayments());

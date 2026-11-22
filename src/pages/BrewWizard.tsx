@@ -1,5 +1,6 @@
 import { RecipeDisclosure } from '../ui/RecipeDisclosure';
 import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
+import { RecapEtat } from '../ui/RecapEtat';
 import './recipe-wizard.css';
 import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { NumberInput } from '../ui/NumberInput';
@@ -23,6 +24,7 @@ import {
 import { Units } from '../services/units';
 import { formatDecimal } from '../ui/numericInput';
 import { recipeFieldIssues, recipeReadiness, recipeSaveIssues, type RecipeFieldIssue } from '../domain/recipeValidation';
+import { recipeAdvice } from '../domain/bornesProcede';
 import { adoptedDocumentaryFromCandidateSheet, clearRecipeDraft, extractYeastCandidateSheet, mergeYeastCandidateSheet, readRecipeDraft, readYeastDocumentaryView, serializeRecipeDraft,
   tryAcceptYeastCandidateSheet, tryAdoptYeastDocumentary, writeRecipeDraft, readRecipeDraftState, yeastWithAdoptedDocumentary,
   recipeDraftResumeCheck, recipeServerBase, RecipeDraftWriteBlockedError, type RecipeDraftReadState, type RecipeWizardDraft, type YeastCandidateSheets, type YeastDocumentaryIntent } from '../services/recipeDraft';
@@ -31,7 +33,7 @@ import { defaultBrewVolume, equipmentCheck } from '../domain/brewEquipment';
 import { RecipeInstallationChoice } from '../ui/RecipeInstallationChoice';
 import { RecipeThermalPlan } from '../ui/RecipeThermalPlan';
 import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from '../domain/recipeInstallation';
-import { currentInstallation, snapshotBrewhouse } from '../domain/brewPreferences';
+import { currentInstallation, snapshotBrewhouse, snapshotMashRatio } from '../domain/brewPreferences';
 import { adaptRecipeEquipment } from '../domain/adaptRecipeEquipment';
 import { normalizeRecipeImport } from '../domain/recipeImport';
 import { BrewEquipmentSummary } from '../ui/BrewEquipmentSummary';
@@ -47,11 +49,12 @@ import { evaporation, avantEbullitionDuPlan, barreCuve, etatVolume } from '../ui
 import { aAdopter, alertesDeMateriel, lignePremierPlan, resumeVolumes } from '../ui/identite/alertes';
 import { teinteDuStyle } from '../ui/identite/teinteStyle';
 import { fermenterRecommendation } from '../domain/fermenterPlanning';
-import { computeBeerColor } from '../domain/beerColor';
+import { recipeBeerColor } from '../domain/beerColor';
 import { recipeToText } from '../domain/recipeText';
 import { readRecipeFields } from '../domain/recipeTransfer';
 import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
 import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
+import { champsMomentNeuf, changerMoment } from '../domain/hopIndex/momentDefauts';
 import { HopRecipeGuide as SyncHopRecipeGuide } from '../ui/hopIndex/HopRecipeGuide';
 import { HopRecipeSnapshot } from '../ui/hopIndex/HopRecipeSnapshot';
 import { FermentationWorkshop as SyncFermentationWorkshop } from '../ui/FermentationWorkshop';
@@ -61,6 +64,9 @@ import { YeastRecipeDossier, YeastRecipeQuantity } from '../ui/YeastRecipeDossie
 import { keepIndependentPitchingWort, yeastPlannedInFormat } from '../domain/yeastPitching';
 import type { RecipeYeastAcceptance } from '../ui/RecipeAutoComplete';
 import { projectYeastRecipe, yeastRecipeBoilOg, yeastRecipeComputedOg } from '../domain/yeastProjection';
+import { fgRecette, formatDensite, formatOgEnTete } from '../domain/recipeMetrics';
+import { BORNES, ogHorsBornes, saisieHoublonRetenue } from '../domain/bornesMetier';
+import { oublierRepere } from '../ui/hopIndex/maBiere/repere';
 import { yeastReferences } from '../domain/yeastReferences';
 import { resolveFermentationYeast } from '../domain/fermentationScenario';
 import { NoloPanel as SyncNoloPanel } from '../ui/NoloPanel';
@@ -68,6 +74,7 @@ import { NoloRecipeOverview as SyncNoloRecipeOverview } from '../ui/NoloRecipeOv
 import { FermentationRecipeAdvice as SyncFermentationRecipeAdvice } from '../ui/FermentationSciencePanel';
 import { brewingStyles, matchBrewingStyles, resolveBrewingStyle } from '../domain/brewingStyles';
 import { StorageService } from '../services/storage';
+import { noterArticleCree, oublierArticlesCrees, retirerArticlesDuBrouillon } from '../services/articlesDuBrouillon';
 import type { HopV55RecipeColdContactChange, HopV55RecipeDraftChange } from '../ui/hopV55/RecipeStep';
 import { assertHopV55RecipeDraftApplicationTarget } from '../services/hopV55/recipeDraftApplication';
 import { preparerEcritureHoublons, type ChangementHoublonsV4 } from '../domain/hopIndex/v4/recipeConversion';
@@ -77,7 +84,11 @@ import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
 import { hopV4Enabled } from '../ui/hopIndex/flags';
 import { poserPorteEtape } from '../ui/hopIndex/comparer/porte';
 import { HopBitternessPanel } from '../ui/HopBitternessPanel';
-import { hotBitterness } from '../domain/hopBitterness';
+import { hotBitterness, ibuDeLAjout, ibuEnTete } from '../domain/hopBitterness';
+import { alphaAConfirmer, alphaProbable } from '../domain/hopAlpha';
+import { grainEmpate } from '../domain/fermentables/moments';
+import { joursProgramme } from '../domain/bornesMetier';
+import { messageSansSaccharification, nomPalierAjoute } from '../domain/fermentables/empatage';
 import {
   MASH_PROGRAMS,
   FERMENT_PROGRAMS,
@@ -108,6 +119,11 @@ import { EtapeFermentescibles } from '../ui/fermentescibles/EtapeFermentescibles
 import { plageEbc } from '../ui/identite/plages';
 import { teinte as teinteEbc } from '../ui/fermentescibles/modele';
 import { applyCatalogueYeast } from '../domain/yeastCatalogue';
+import type { YeastReference } from '../domain/yeastReferences';
+import { doseApresChoix } from '../ui/etapeLevure/dose';
+import { EtapeLevure as SyncEtapeLevure } from '../ui/etapeLevure/EtapeLevure';
+import type { VueLevure } from '../ui/etapeLevure/props';
+import { useYeastSupply } from '../hooks/useYeastSupply';
 import { completeFromStockReferences } from '../domain/localStockFacts';
 import { completeFromLocalReferences as SyncCompleteFromLocalReferences } from '../domain/localIngredientFacts';
 import { completeYeastRecipeDesignApplication } from '../domain/yeastRecipeDesign';
@@ -127,6 +143,7 @@ import { admitImportedWaterSnapshot, declaredWaterSourceId, frozenWaterSource, h
   retainedWaterCache, sameYeastForTargets, waterCacheBelongsToReference, waterProfileModeOf, waterProfileOrigin, withoutImportedAnalysis,
   type WaterProfileMode } from '../domain/wizardSourceValues';
 import { Trash2, Plus, AlertTriangle, ClipboardPaste, ClipboardList, ChevronLeft } from 'lucide-react';
+import { AvisRetrait, useRetraitAnnulable } from '../ui/useRetraitAnnulable';
 import { ThemeToggle } from '../theme/ThemeToggle';
 
 // Vitest exercises the wizard with immediate, cross-step assertions. Keep
@@ -156,7 +173,7 @@ function IbuEnPlage({ mesures }: { mesures: MesuresEtape }) {
     <>
       <span data-role="ibu-bandeau" data-valeur={ibu.toFixed(2)} className={cls} title={l.titre}>{l.texte}</span>
       {b && (
-        <span data-role="ibu-piste" role="img" aria-label={`style ${b[0]}–${b[1]} IBU`} className="relative self-center w-12 h-2 rounded-full bg-cave-800">
+        <span data-role="ibu-piste" role="img" aria-label={`style ${b[0]}–${nombreFr(b[1], 1)} IBU`} className="relative self-center w-12 h-2 rounded-full bg-cave-800">
           <i className="absolute inset-y-0 rounded-full bg-cave-600" style={{ left: pc(b[0]), width: `calc(${pc(b[1])} - ${pc(b[0])})` }} />
           <i className="absolute -top-1 -bottom-1 w-0.5 rounded-sm bg-cave-50" style={{ left: pc(ibu) }} />
         </span>
@@ -168,11 +185,15 @@ const chargerEtapeHoublonsV4 = () => import('../ui/hopIndex/maBiere/EtapeHoublon
 const EtapeHoublonsV4 = lazy(chargerEtapeHoublonsV4);
 import type { MesuresEtape } from '../ui/hopIndex/maBiere/EtapeHoublons';
 import { libelleIbu } from '../domain/hopIndex/v4/recipeConversion';
+import { kettleHopGrammesBornes, ogAffichable } from '../domain/hopIndex/v4/bornesV4';
+import { nombreFr } from '../domain/nombreAffiche';
 const MesuresWizardV4 = lazy(() => import('../ui/hopIndex/maBiere/MesuresWizard'));
 const HopV55RecipeStep = lazy(() => import('../ui/hopV55/RecipeStep').then(({ HopV55RecipeStep: Panel }) => ({ default: Panel })));
 const HopRecipeGuide = syncWizardPanels ? SyncHopRecipeGuide : lazy(() => import('../ui/hopIndex/HopRecipeGuide').then(({ HopRecipeGuide: Panel }) => ({ default: Panel })));
 const FermentationWorkshop = syncWizardPanels ? SyncFermentationWorkshop : lazy(() => import('../ui/FermentationWorkshop').then(({ FermentationWorkshop: Panel }) => ({ default: Panel })));
 const YeastRecipeChoice = syncWizardPanels ? SyncYeastRecipeChoice : lazy(() => import('../ui/YeastRecipeChoice').then(({ YeastRecipeChoice: Panel }) => ({ default: Panel })));
+// L'étape Levure (mission levure-port, voie u1) : la coque des quatre vues ; l'ancienne étape reste dans son repli « Atelier complet ».
+const EtapeLevure = syncWizardPanels ? SyncEtapeLevure : lazy(() => import('../ui/etapeLevure/EtapeLevure').then(({ EtapeLevure: Panel }) => ({ default: Panel })));
 const YeastRecipeContext = syncWizardPanels ? SyncYeastRecipeContext : lazy(() => import('../ui/YeastRecipeWorkbench').then(({ YeastRecipeContext: Panel }) => ({ default: Panel })));
 const YeastRecipeHeading = syncWizardPanels ? SyncYeastRecipeHeading : lazy(() => import('../ui/YeastRecipeWorkbench').then(({ YeastRecipeHeading: Panel }) => ({ default: Panel })));
 const YeastIngredientPicker = syncWizardPanels ? SyncYeastIngredientPicker : lazy(() => import('../ui/YeastIngredientPicker').then(({ YeastIngredientPicker: Panel }) => ({ default: Panel })));
@@ -348,7 +369,7 @@ const KIND_TONE: Record<FermentableKind, string> = {
  * de plusieurs points sur un ingrédient qui, en réalité, fermente entièrement.
  * Le rayon de chaque famille est maintenant déclaré, et ne se recoupe pas.
  *
- * Les catégories nommées ici sont celles du stock (`AddStockItemModal`) : Malt,
+ * Les catégories nommées ici sont celles du stock : Malt,
  * Houblon, Levure, Sucre. Les autres sont tolérées pour un stock personnalisé.
  */
 const KIND_DEF: Record<
@@ -389,7 +410,8 @@ const KIND_DEF: Record<
     newCat: 'Sucre'
   },
   lactose: {
-    label: 'Lactose',
+    // « Sucre de lait » : la famille ne porte pas le nom d'un produit (B1 n° 11 : « Lactose · Lactose » ; l'article Lactose du stock s'y range).
+    label: 'Sucre de lait',
     use: 'ebullition',
     fermentability: 0,
     ppg: 35,
@@ -401,7 +423,7 @@ const KIND_DEF: Record<
     label: 'Fruit',
     use: 'fermentation',
     fermentability: 90,
-    ppg: 8,
+    // Pas de potentiel inventé (AM-6, PRODUCT.md) : il varie d'un fruit à l'autre ; il se renseigne dans la fiche de la ligne (« PPG — · fiche »).
     hint: 'Apporte peu de sucre et beaucoup d’eau. À ajouter en fermentation.',
     stock: ['Fruit', 'Additif'],
     newCat: 'Sucre'
@@ -410,7 +432,7 @@ const KIND_DEF: Record<
     label: 'Extrait',
     use: 'ebullition',
     fermentability: 75,
-    ppg: 36,
+    // Idem : un extrait liquide, sec ou un sirop n'ont pas le même potentiel (de ~36 à ~44 ppg) ; à renseigner dans la fiche.
     hint: 'Moût concentré, déjà empâté.',
     stock: ['Extrait', 'Sucre'],
     newCat: 'Sucre'
@@ -447,7 +469,8 @@ export type StepId =
 
 const STEPS: Array<{ id: StepId; label: string; shortLabel?: string }> = [
   { id: 'identite', label: 'Identité' },
-  { id: 'fermentescibles', label: 'Fermentescibles', shortLabel: 'Malts/sucres' },
+  // B1-10 : un seul nom, celui du rail (rejeu ff0f822e : le titre disait « Fermentescibles — étape 2 sur 7 »). `fermentescibles` reste l'identifiant.
+  { id: 'fermentescibles', label: 'Malts/sucres' },
   { id: 'houblons', label: 'Houblons' },
   { id: 'levure', label: 'Levure' },
   { id: 'paliers', label: 'Paliers' },
@@ -590,6 +613,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const [yeastChange, setYeastChange] = useState<YeastChoiceChange>();
   const base = restoredDraft?.recipe ?? seed?.recipe;
   const [draftRecipeId] = useState(() => base?.id ?? `REC-${Date.now().toString(36).toUpperCase()}`);
+  // Fermer l'assistant efface le « repère » de Ma bière (ce qui a changé depuis qu'elle a été quittée) : il ne doit pas passer dans la recette suivante (test en ligne n° 4).
+  useEffect(() => () => oublierRepere(), []);
   const [details, setDetailsRaw] = useState<Partial<Recipe>>(restoredDraft?.details ?? base ?? {});
   const configuredBrewhouse = useMemo(() => {
     const profile=config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
@@ -610,8 +635,14 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const [stockApercu, setStockApercu] = useState<StockItem[] | null>(null);
   const stockPourEtape = stockApercu ?? stockItems;
   const [creerApercu, setCreerApercu] = useState<((s: StockItem[], n: string, c: string, u: string) => StockItem) | null>(null);
+  // RL-12 : un article créé par cet assistant est noté pour ce brouillon ; « Abandonner » le retire (src/services/articlesDuBrouillon.ts).
+  const creerArticleDuBrouillon = (name: string, category: string, unit: string): StockItem => {
+    const cree = onCreateStockItem(name, category, unit);
+    noterArticleCree(draftKey, cree.ref);
+    return cree;
+  };
   const creerArticleEtape = (name: string, category: string, unit: string): StockItem => {
-    if (!stockApercu || !creerApercu) return onCreateStockItem(name, category, unit);
+    if (!stockApercu || !creerApercu) return creerArticleDuBrouillon(name, category, unit);
     const cree = creerApercu(stockApercu, name, category, unit);
     setStockApercu([...stockApercu, cree]);
     return cree;
@@ -674,6 +705,10 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   // T12 : l'étape Houblons v4 est demandée dès l'ouverture du wizard (drapeau allumé), pour être prête à l'étape 3.
   useEffect(() => { if (hopV4Actif) chargerEtapeHoublonsV4().catch(() => {}); }, []);
   const [yeastSelection, setYeastSelection] = useState(0);
+  // Étape Levure : la vue choisie et les levures posées dans Comparer vivent ici, pour que le pied « Comparer (n) » les lise.
+  const [vueLevure, setVueLevure] = useState<VueLevure>('ma-levure');
+  const [levuresComparees, setLevuresComparees] = useState<string[]>([]);
+  const yeastSupply = useYeastSupply();
   const knowledge = useStorageValue(StorageService.getHopKnowledge);
   const styles = useMemo(() => brewingStyles(knowledge), [knowledge]);
   /* Clavier ouvert : le bandeau de mesures passe sur une seule ligne. */
@@ -711,6 +746,10 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
    */
   const coarse = useCoarsePointer();
   const [focusHop, setFocusHop] = useState<number | null>(null);
+  // Les houblons retirés, du plus ancien au dernier : « Annuler » les rend pendant 6 s (TE-24, BR-2 : Malts/sucres l'offrait déjà ; un double toucher en retire deux).
+  const [hopsRetires, setHopsRetires] = useState<Array<{ h: HopIngredient; i: number }>>([]);
+  const minutHopRetrait = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(minutHopRetrait.current), []);
 
   /*
    * `autoFocus` de React ne s'applique qu'au MONTAGE du champ : le focus est
@@ -871,11 +910,12 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   // --- Calculs en direct ----------------------------------------------------
 
   /** Le grain seul. Un brasseur ne met pas le sucre dans sa facture de grain. */
-  const grains = useMemo(() => fermentables.filter((f) => f.kind === 'grain'), [fermentables]);
+  // Le grain EMPÂTÉ : un grain bouilli ou au fermenteur (donnée ancienne) ne donne ni couleur ni absorption d'eau (AM 1, 2 et A7, 08.11).
+  const grains = useMemo(() => fermentables.filter(grainEmpate), [fermentables]);
   const totalGrist = useMemo(() => grains.reduce((s, f) => s + f.weightKg, 0), [grains]);
 
-  // La couleur ne vient que du grain : le sucre clair n'en apporte pas.
-  const color = useMemo(() => Number.isFinite(volumeL) ? computeBeerColor(grains, volumeL) : null, [grains, volumeL]);
+  // La couleur vient de tout ce qui colore le moût, sirop candi compris (CF-1) : la même fonction que sur la fiche et la liste.
+  const color = useMemo(() => Number.isFinite(volumeL) ? recipeBeerColor(fermentables, volumeL) : null, [fermentables, volumeL]);
 
   const efficiency = details.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75;
   // Preserve the author's stated targets until the recipe they describe changes.
@@ -916,6 +956,9 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const setMashSteps = useMemo(() => brewerSetter(setMashStepsRaw), [brewerSetter]);
   const setSpargeType = useMemo(() => brewerSetter(setSpargeTypeRaw), [brewerSetter]);
   const setFerment = useMemo(() => brewerSetter(setFermentRaw), [brewerSetter]);
+  // BR-30 : un toucher = un retrait, avec « Annuler » (src/ui/useRetraitAnnulable.tsx).
+  const retraitPalier = useRetraitAnnulable(mashSteps, setMashSteps, (s) => s.name || 'Palier');
+  const retraitPhase = useRetraitAnnulable(ferment, setFerment, (s) => s.name || 'Phase');
   const setRecipeWaterSource = useMemo(() => brewerSetter(setRecipeWaterSourceRaw), [brewerSetter]);
   const setWater = useMemo(() => brewerSetter(setWaterRaw), [brewerSetter]);
   const setVolumesEdited = useMemo(() => brewerSetter(setVolumesEditedRaw), [brewerSetter]);
@@ -949,6 +992,14 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     [fermentables, volumeL, efficiency,details.efficiencyPct,brewhouse?.efficiencyPct,details.nolo?.enabled,details.nolo?.process,details.nolo?.secondRunnings?.sg,details.nolo?.planning?.exactExtract]
   );
   const og = (keepOgTarget ? details.ogTarget : undefined) ?? ogPredicted ?? 0;
+  // Option A (décision du pilote, test en ligne n° 5/6) : la cible retenue gagne PARTOUT (bandeau, alertes, fiche) ; si elle diffère du calcul en direct, l'écran
+  // le dit en une ligne courte, au lieu de montrer 1,068 à une étape et 1,066 à l'autre. Règle unique : `recipeMetrics.ts`.
+  const ogRetenue = keepOgTarget && typeof details.ogTarget === 'number' && details.ogTarget > 1 ? details.ogTarget : null;
+  // BR-22 : sans aucun fermentescible, la cible retenue s'affichait comme une OG calculée (« Grain 0 kg · OG 1,066 ») : l'écran dit qu'elle est retenue, pas calculée.
+  const ecartOg = ogRetenue != null && ogPredicted != null && formatDensite(ogRetenue) !== formatDensite(ogPredicted)
+    ? `OG retenue ${formatDensite(ogRetenue)} · calculée ${formatDensite(ogPredicted)}`
+    : ogRetenue != null && ogPredicted == null && !(totalGrist > 0)
+      ? `OG retenue ${formatDensite(ogRetenue)} · aucun fermentescible pour la calculer` : null;
 
   const boilOg = useMemo(() => details.nolo?.enabled ? og || null : yeastRecipeBoilOg({ fermentables, volumeL, efficiencyPct: efficiency } as Recipe, { og: og || null }).og,
     [details.nolo?.enabled, og, fermentables, volumeL, efficiency]);
@@ -967,10 +1018,6 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   const fgPredicted = yeastProjection?.fg.range?.min === yeastProjection?.fg.range?.max ? yeastProjection?.fg.range?.min ?? null : null;
   const abvPredicted = yeastProjection?.abv.range?.min === yeastProjection?.abv.range?.max ? yeastProjection?.abv.range?.min ?? null : null;
 
-  const gravityWarning = useMemo(
-    () => (og > 1 ? BrewingMath.efficiencyAtGravity(efficiency, og) : null),
-    [og, efficiency]
-  );
 
   /**
    * Volumes d'eau, déduits du grain tant que Gaëtan ne les a pas posés.
@@ -998,7 +1045,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
   );
 
   /** Ce que le houblon boira dans la cuve — le houblonnage à cru en est exclu. */
-  const kettleHopG = useMemo(() => kettleHopGrams(hops), [hops]);
+  const kettleHopG = useMemo(() => kettleHopGrammesBornes(hops, volumeL), [hops, volumeL]);
 
   useEffect(() => {
     if (volumesEdited || !Number.isFinite(totalGrist) || totalGrist <= 0 || !Number.isFinite(volumeL) || !Number.isFinite(boilMin) || (details.nolo?.enabled&&details.nolo.process==='secondRunnings')) return;
@@ -1444,15 +1491,40 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
         ...(variety ? { hopVarietyId: variety.id } : {}),
         weightG: 0,
         stage: hopStage,
-        ...(hopStage === 'boil' ? { timeMin: boilMin } : {}),
-        ...(hopStage === 'whirlpool' ? { timeMin: 20, tempC: 80 } : {}),
-        ...(hopStage === 'dryHop' ? { dayOffset: 3 } : {})
+        ...Object.fromEntries(Object.entries(champsMomentNeuf(hopStage, boilMin)).filter(([, v]) => v !== undefined))
       }
     ]);
   };
 
-  const patchHop = (index: number, patch: Partial<HopIngredient>) =>
-    setHops(hops.map((h, i) => (i === index ? patchIndexedHop(h, patch) : h)));
+  const retirerHop = (index: number) => {
+    const h = hops[index];
+    if (!h) return;
+    clearTimeout(minutHopRetrait.current);
+    setHopsRetires(a => [...a, { h, i: index }]);
+    setHops(current => current.filter((_, j) => j !== index));
+    minutHopRetrait.current = setTimeout(() => setHopsRetires([]), 6000);
+  };
+  const rendreHops = () => {
+    const pile = hopsRetires;
+    if (!pile.length) return;
+    clearTimeout(minutHopRetrait.current);
+    setHopsRetires([]);
+    setHops(current => {
+      const r = [...current];
+      for (let k = pile.length - 1; k >= 0; k--) r.splice(Math.min(pile[k].i, r.length), 0, pile[k].h);
+      return r;
+    });
+  };
+
+  const patchHop = (index: number, patch: Partial<HopIngredient>) => {
+    // Un nombre négatif ne se retient pas (α −2 %, −5 min, −1 g : MV-18, TE-21, BR-42) ; la valeur d'avant reste, le champ la reprend à la sortie.
+    const retenu = saisieHoublonRetenue(patch as Record<string, unknown>) as Partial<HopIngredient>;
+    if (!Object.keys(retenu).length) return;
+    // Un autre moment pose les champs de ce moment (durée seule, durée et °C, jour) et retire ceux de l'ancien : 60 min d'ébullition ne deviennent pas un whirlpool d'une heure (BR-3, TE-26).
+    setHops(hops.map((h, i) => (i !== index ? h : retenu.stage && retenu.stage !== h.stage
+      ? patchIndexedHop(changerMoment(patchIndexedHop(h, { stage: retenu.stage }), retenu.stage, boilMin), { ...retenu, stage: retenu.stage })
+      : patchIndexedHop(h, retenu))));
+  };
 
   /**
    * Writes a V5.5 application already proven against this exact draft (owner,
@@ -1643,7 +1715,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     preBoilHotL: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:
       volumesEdited && details.preBoilHotL != null && water.mashWaterL===details.waterPlan?.mashWaterL && water.spargeWaterL===details.waterPlan?.spargeWaterL ? details.preBoilHotL :
       rig?.equipment ? Math.round((water.mashWaterL+water.spargeWaterL-totalGrist*rig.equipment.grainAbsorptionLPerKg)/(1-rig.equipment.coolingShrinkagePct/100)*10)/10 : details.preBoilHotL,
-    brewhouse: installationNeedsAdoption ? details.brewhouse : rig?.equipment ? snapshotBrewhouse(rig) : details.brewhouse,
+    brewhouse: installationNeedsAdoption ? details.brewhouse : rig?.equipment ? snapshotBrewhouse(snapshotMashRatio(rig, mashRatioOverride, volumesEdited, water.mashWaterL, totalGrist)) : details.brewhouse,
     installation: {
       ...details.installation,
       // Retaining old volumes does not turn them into an explicit manual choice.
@@ -1843,9 +1915,19 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     </aside>);
   const readiness = recipeReadiness(build());
   const fieldIssues = [...readiness.invalid, ...readiness.missing];
-  const visibleIssues = validationRequested ? fieldIssues : [];
-  const hopIssueCount = visibleIssues.filter(issue => issue.step === 'houblons').length;
+  // Une valeur hors bornes (`live`) se dit dès la frappe ; le reste attend « Suivant » ou « Enregistrer ».
+  const visibleIssues = validationRequested ? fieldIssues : fieldIssues.filter(issue => issue.live);
   const fieldError = (field: string) => visibleIssues.find(issue => issue.field === field)?.message;
+  // AM-25, AM-28 : ordre des paliers, mash-out, ordre des phases. Des conseils : ils ne bloquent rien.
+  // BR-31 : le dernier palier retiré (ou aucun dans la plage des amylases) laissait un empâtage de grain sans saccharification, sans un mot.
+  const sansSaccharification = step === 'paliers' && !details.nolo?.enabled
+    ? messageSansSaccharification(mashSteps, fermentables.filter(grainEmpate).reduce((s, f) => s + f.weightKg, 0)) : null;
+  const advice = step === 'paliers' ? [...recipeAdvice({ mash: { steps: mashSteps }, fermentation: ferment }),
+    ...(sansSaccharification ? [{ field: 'wz-mash-saccharification', step: 'paliers' as const, message: sansSaccharification }] : [])] : [];
+  const adviceList = (prefix: string) => {
+    const items = advice.filter(item => item.field.startsWith(prefix));
+    return items.length ? <ul data-role={'conseils-' + prefix} className="space-y-0.5 text-xs text-ebc-amber leading-snug">{items.map(item => <li key={item.field + item.message} role="status">{item.message}</li>)}</ul> : null;
+  };
 
   const requestCorrection = (issues: RecipeFieldIssue[]) => {
     setValidationRequested(true);
@@ -2071,6 +2153,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     try {
       clearRecipeDraft(draftKey);
       draftFinished.current = true;
+      // RL-12 : un brouillon abandonné ne laisse rien — les articles qu'il a créés, liés à rien, partent avec lui.
+      retirerArticlesDuBrouillon(draftKey);
       onClose();
     } catch { setDraftError('Le brouillon n’a pas pu être supprimé. Réessaie.'); }
   };
@@ -2087,6 +2171,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
     // recipe, and keeps its draft.
     const writesAtSubmit = seenEdits.current;
     const finish = () => {
+      // RL-12 : la recette est enregistrée, ses articles créés lui appartiennent.
+      oublierArticlesCrees(draftKey);
       // Settings applied automatically while saving (completions, props renewed by the App) do not keep the draft; a
       // change of the brewer since the click, or not rendered yet, does (#97, D8).
       const automaticOnly = brewerWrites.current === writesAtSubmit;
@@ -2203,6 +2289,12 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       >
         Retour
       </button>
+      {step === 'levure' && !details.nolo?.enabled && levuresComparees.length > 0 && (
+        <button type="button" onClick={() => setVueLevure('comparer')} data-lv="pied-comparer"
+          className="min-h-touch-sm px-3 rounded-control border border-cave-50 text-cave-50 text-sm font-semibold transition-colors hover:bg-cave-850">
+          {`Comparer (${levuresComparees.length})`}
+        </button>
+      )}
       <button
         type="button"
         onClick={() => go(1)}
@@ -2217,11 +2309,14 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
 
   return (
     <PageShell
-      title={draftReadOnly ? 'Brouillon en lecture seule' : seed?.recipe ? `Modifier « ${seed.recipe.name} »` : 'Nouvelle recette'}
+      // Un seul nom d'écran, celui de sa maquette, à toutes les largeurs (B1 n° 10) : « Fermentescibles 2/7 » (le même haut d'écran qu'au téléphone, `WizardStepName`),
+      // et le fil dit « Malts/sucres » (libellés courts, comme au téléphone). Avant : « Nouvelle recette » ou « Modifier « … » » au-dessus de 640 px.
+      title={draftReadOnly ? 'Brouillon en lecture seule' : `${STEPS[stepIndex].label} ${stepIndex + 1}/${STEPS.length}`}
       subtitle={STEPS[stepIndex].label}
       onClose={onClose}
       mobileHeader={mobileHeader}
       endActions={stepActions}
+      endActionsCollant={step === 'levure' && !details.nolo?.enabled}
       compactDock
       className="recipe-wizard"
       actions={abandonner && isDesktop ? abandonner : undefined}
@@ -2234,7 +2329,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
        * pas en visant une barre de 6 px.
        */
       progress={
-        <WizardStepRail steps={STEPS} currentIndex={stepIndex} onSelect={id => setStep(id as StepId)} disabled={hopGuideBusy || saving} showLabels />
+        <WizardStepRail steps={STEPS} currentIndex={stepIndex} onSelect={id => setStep(id as StepId)} disabled={hopGuideBusy || saving} showLabels compactLabels />
       }
       footer={
         step === 'recap' ? (
@@ -2308,28 +2403,30 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">OG</span>
             <span className="reading text-sm sm:text-base text-ebc-straw">
-              {(step === 'levure' ? og : ogPredicted) ? (step === 'levure' ? og : ogPredicted)!.toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) : '—'}
+              {formatOgEnTete(og)}
             </span>
           </div>
           <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">{!(hopV4Actif && mesuresV4) && hops.some(h=>h.stage==='dryHop') ? 'IBU chaud' : 'IBU'}</span>
-            {hopV4Actif && mesuresV4 ? <IbuEnPlage mesures={mesuresV4} /> : <span className="reading text-sm sm:text-base">{ibu ?? '—'}</span>}
+            {hopV4Actif && mesuresV4 ? <IbuEnPlage mesures={mesuresV4} /> : <span className="reading text-sm sm:text-base">{ibuEnTete(ibu, hops)}</span>}
           </div>
           <div className="flex items-baseline gap-1 sm:items-center">
             <span className="text-sm text-cave-400">EBC</span>
             <span className="flex items-center gap-1">
-              {color && (
+              {color && !ogHorsBornes(og) && (
                 <span
                   className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full border border-cave-700"
                   style={{ background: teinteEbc(color.ebc) }}
                   aria-hidden
                 />
               )}
-              <span className="reading text-sm sm:text-base">{color ? formatDecimal(color.ebc) : '—'}</span>
+              {/* RJ-4 : « EBC 1170,8 » pour 10 000 kg de grain : comme l'OG, une couleur hors bornes n'est pas une valeur. */}
+              <span className="reading text-sm sm:text-base">{color && !ogHorsBornes(og) ? formatDecimal(color.ebc) : '—'}</span>
             </span>
           </div>
         </div>
       )}
+      {hasMetrics && ecartOg && step !== 'eau' && <p data-role="ecart-og" className="px-2.5 -mt-1 text-xs text-cave-400">{ecartOg}</p>}
 
       {!localOnly && <BrewerChat hideLauncher scope={{kind:'draft',id:draftRecipeId}} label={name || 'Nouvelle recette'} phase={STEPS[stepIndex].label} draft={build()}
         onDraftApply={value => {
@@ -2402,7 +2499,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 aria-label="Nom de la bière"
                 className="idn-nom"
                 data-element="r4a-nom"
-                placeholder="Milk Stout #2, NEIPA Tropicale…"
+                placeholder={style.trim() ? `${style.trim()} #2, version d’été…` : 'Milk Stout #2, NEIPA Tropicale…'}
                 value={name}
                 onChange={setName}
                 required
@@ -2433,7 +2530,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               recipe={recette}
               style={styleRepere}
               styles={styles}
-              valeurs={{ og: ogPredicted, ibu, fg: fgPredicted, abv: abvPredicted, ebc: color?.ebc }}
+              valeurs={{ og: og > 1 ? og : null, ibu, fg: fgPredicted, abv: abvPredicted, ebc: color?.ebc }}
               onChange={next=>{setMashSteps(next.mash?.steps??mashSteps);setFerment(next.fermentation??ferment);setDetails(d=>({...d,yeastGuide:next.yeastGuide}));}}
             />
 
@@ -2480,7 +2577,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                       Les deux adaptations tiennent sur une ligne de liens ; le résumé des volumes, avec ses alertes, est replié sur une ligne. */}
                   {((volumeL!==volumeAdapte) || ((equipmentDiffers || installationNeedsAdoption && configuredBrewhouse?.equipment) && !noloNeedsEquipmentAdoption)) && (
                     <div className="idn-liens" data-role="adapter">
-                      {volumeL!==volumeAdapte&&<button type="button" className="idn-lien-ligne" onClick={()=>resizeForEquipment(cible)}>Adapter la recette à {volumeAdapte} L</button>}
+                      {volumeL!==volumeAdapte&&<button type="button" className="idn-lien-ligne" onClick={()=>resizeForEquipment(cible)}>Adapter la recette à {nombreFr(volumeAdapte, 1)} L</button>}
                       {(equipmentDiffers || installationNeedsAdoption && configuredBrewhouse?.equipment) && !noloNeedsEquipmentAdoption && <button type="button" className="idn-lien-ligne" onClick={()=>resizeForEquipment(configuredBrewhouse, volumeL)}>Adapter à mon matériel actuel · {configuredBrewhouse!.name}</button>}
                     </div>
                   )}
@@ -2515,8 +2612,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             onCreateStockItem={creerArticleEtape}
             onLearnIngredient={onLearnIngredient}
             nolo={!!details.nolo?.enabled}
-            og={ogPredicted ?? null}
-            teinteBiere={color ? { ebc: color.ebc, label: color.label } : null}
+            og={ogAffichable(og)}
+            teinteBiere={color && !ogHorsBornes(og) ? { ebc: color.ebc, label: color.label } : null}
             rendementPct={efficiency}
             rendementDeclare={details.efficiencyPct != null || brewhouse?.efficiencyPct != null}
             ogPlage={styleRepere?.stats.og}
@@ -2524,7 +2621,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             styleCode={styleRepere?.code ?? null}
             ebcVise={ebcPlage ? (ebcPlage.min + ebcPlage.max) / 2 : null}
             ebcMax={ebcPlage?.max ?? null}
-            alerteDensite={gravityWarning?.note ?? null}
+            programmeJours={joursProgramme(ferment)}
+            alerteDensite={og > 1 ? BrewingMath.efficiencyAtGravity(efficiency, og, styleRepere?.stats.og?.max).note : null}
             erreur={fieldError}
           />
         );
@@ -2549,43 +2647,13 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               ligne sans défiler sous tout l'atelier V5.5.
             */}
             <HopRecipeSnapshot recipe={{ ...build(), ogTarget: boilOg ?? undefined }} />
-            {/*
-              Les lignes écrites à la main restent le geste de correction : un
-              alpha de lot, une durée ou une phase à cru que la V5.5 refuse
-              d'inventer se corrigent ici, sans quitter la recette. Une
-              demande de correction ouvre ce volet par sa bascule native.
-            */}
-            <details id="recipe-hop-lines" className="recipe-hop-lines border-t border-cave-700 pt-2 scroll-mt-20" open={hopLinesOpen} onToggle={e => setHopLinesOpen(e.currentTarget.open)}>
-              <summary className="flex items-center justify-between gap-2 cursor-pointer min-h-touch text-cave-200" onClick={e => { if (hopGuideBusy) e.preventDefault(); }}>
-                <span>Corriger les lignes de houblon · {hops.length}{hopIssueCount ? ` · ${hopIssueCount} à corriger` : ''}</span>
-              </summary>
-              <div className="space-y-2 sm:space-y-3 pt-2">
-            <h3 id="recipe-hop-additions" className="scroll-mt-20 text-sm font-semibold text-cave-50">Mes ajouts de houblons</h3>
-            <SegmentedControl
-              label="Moment d’ajout"
-              layout="row"
-              className="hop-stage-tabs"
-              value={hopStage}
-              onChange={setHopStage}
-              options={HOP_STAGES.map((s) => ({ value: s, label: s === 'dryHop' ? 'À cru' : HOP_STAGE[s].label }))}
-            />
-            {!tight && <p className="text-sm text-cave-400 leading-snug">{HOP_STAGE[hopStage].hint}</p>}
-
-            <HopIngredientPicker
-              items={stockItems}
-              recipe={build()}
-              onChange={addHop}
-              onBusyChange={setHopGuideBusy}
-              onReference={variety => addHop(variety.name, undefined, variety)}
-              onCreate={(n) => {
-                const created = onCreateStockItem(n, 'Houblon', 'g');
-                addHop(created.name, created);
-              }}
-              // « en houblonnage à cru… » passait sous le chevron à 320 px.
-              placeholder={hopStage === 'dryHop' ? 'Ajouter un houblon à cru…' : `Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}…`}
-              ariaLabel={`Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}`}
-            />
-
+            <h3 id="recipe-hop-additions" className="scroll-mt-20 text-sm font-semibold text-cave-50">Mes ajouts de houblons · {hops.length}</h3>
+            {hopsRetires.length > 0 && (
+              <p role="status" data-role="hop-retire" className="flex flex-wrap items-center gap-2 text-sm text-cave-200">
+                <span><s>{hopsRetires[hopsRetires.length - 1].h.name}</s> retiré{hopsRetires.length > 1 ? ` · ${hopsRetires.length - 1} de plus` : ''}</span>
+                <button type="button" data-role="hop-annuler" className="rounded-full border border-current px-3 min-h-touch" onClick={rendreHops}>Annuler</button>
+              </p>
+            )}
             {hops.length === 0 ? (
               <p className="text-sm text-cave-400 py-1">Aucun houblon.</p>
             ) : (
@@ -2627,9 +2695,10 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                                 {describeMoment(h)}
                               </span>
                             )}
-                            {style.bitters && bitterness.additions[i].ibu != null && (
+                            {/* RJ-3 : quand l'en-tête refuse (houblon au-delà de la borne par litre), la ligne le dit aussi : « — IBU ». */}
+                            {style.bitters && (bitterness.additions[i].ibu != null || (bitterness.total == null && bitterness.missing.length > 0)) && (
                               <span className="text-sm text-cave-200 font-mono">
-                                {bitterness.additions[i].ibu!.toLocaleString('fr-FR', { maximumFractionDigits: 1 })} IBU
+                                {bitterness.additions[i].ibu != null ? bitterness.additions[i].ibu!.toLocaleString('fr-FR', { maximumFractionDigits: 1 }) : '—'} IBU
                               </span>
                             )}
                           </span>
@@ -2653,7 +2722,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                           </div>
                           <button
                             type="button"
-                            onClick={() => setHops(hops.filter((_, j) => j !== i))}
+                            onClick={() => retirerHop(i)}
                             aria-label={`Retirer ${h.name}`}
                             className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
                           >
@@ -2706,8 +2775,21 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                                 max={100}
                                 value={h.alpha === 0 ? undefined : h.alpha}
                                 onValue={(v) => patchHop(i, { alpha: v })}
+                                refus={(saisi, retenu) => saisi < 0
+                                  ? `α ${String(saisi).replace('.', ',')} % : un alpha négatif n’existe pas. Champ ramené à ${String(retenu).replace('.', ',')} % : à renseigner depuis le sachet.`
+                                  : `α ${String(saisi).replace('.', ',')} % : au-delà de 100 %, impossible ; au-delà de ${nombreFr(BORNES.alphaPct.max, 1)} %, aucun houblon du commerce (seuls les extraits). ${String(retenu).replace('.', ',')} % retenu : corrige-le d’après le sachet.`}
                                 missing={style.bitters && !h.alpha}
                               />
+                              {/* AM 9 (08.11) : « 80 » pour 8,0. Au-delà de 30 %, l'IBU attend : corriger d'un toucher, ou confirmer (un extrait). */}
+                              {alphaAConfirmer(h) && (
+                                <p role="status" data-role="alpha-a-confirmer" className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-attention">
+                                  <span>α {String(h.alpha).replace('.', ',')} % ?</span>
+                                  <button type="button" className="rounded-full border border-current px-2 py-0.5"
+                                    onClick={() => patchHop(i, { alpha: Math.round(h.alpha * 10) / 100 })}>{alphaProbable(h.alpha)} %</button>
+                                  <button type="button" className="rounded-full px-2 py-0.5 underline"
+                                    onClick={() => patchHop(i, { alphaConfirme: h.alpha } as Partial<HopIngredient>)}>Confirmer {String(h.alpha).replace('.', ',')} %</button>
+                                </p>
+                              )}
                             </div>
                           )}
 
@@ -2723,6 +2805,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                                 name={`Minutes avant la fin pour ${h.name}`}
                                 unit="min"
                                 min={0}
+                                max={BORNES.ebullitionMin.max}
                                 integer
                                 value={h.timeMin}
                                 onValue={(v) => patchHop(i, { timeMin: v })}
@@ -2743,6 +2826,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                                   name={`Durée de contact de ${h.name}`}
                                   unit="min"
                                   min={0}
+                                  max={BORNES.whirlpoolMin.max}
                                   integer
                                   value={h.timeMin}
                                   onValue={(v) => patchHop(i, { timeMin: v })}
@@ -2758,8 +2842,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                                   label="à"
                                   name={`Température de whirlpool pour ${h.name}`}
                                   unit="°C"
-                                  min={0}
-                                  max={100}
+                                  min={BORNES.whirlpoolTempC.min}
+                                  max={BORNES.whirlpoolTempC.max}
                                   integer
                                   value={h.tempC}
                                   onValue={(v) => patchHop(i, { tempC: v })}
@@ -2779,6 +2863,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                                   label="jour"
                                   name={`Jour en cuve pour ${h.name}`}
                                   min={0}
+                                  max={BORNES.dryHopJour.max}
                                   integer
                                   value={h.dayOffset}
                                   onValue={(v) => patchHop(i, { dayOffset: v })}
@@ -2796,13 +2881,49 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                         <label className="block text-sm text-cave-200">Phase de {h.name}<select className="block w-full rounded-control bg-cave-950 border border-cave-700 p-2 mt-1 min-h-touch" value={h.aromaTiming ?? ''} onChange={e => patchHop(i, { aromaTiming: e.target.value as HopIngredient['aromaTiming'] || undefined })}>
                           <option value="">À préciser · J+ ne suffit pas</option><option value="fermentation">Fermentation active</option><option value="postFermentation">Après fermentation</option>
                         </select></label>
-                        <div className="flex flex-wrap gap-3"><InlineNum id={`wz-hop-contact-${i}`} emptyValue={undefined} aria-invalid={!!fieldError(`wz-hop-contact-${i}`)} aria-describedby={fieldError(`wz-hop-contact-${i}`) ? 'wz-validation' : undefined} label="contact" name={`Contact à cru de ${h.name}, en heures`} unit="h" min={0} value={h.aromaContactHours} onValue={v => patchHop(i, { aromaContactHours: v })} /><InlineNum emptyValue={undefined} label="à" name={`Température à cru de ${h.name}`} unit="°C" value={h.aromaTemperatureC} onValue={v => patchHop(i, { aromaTemperatureC: v })} /></div>
+                        <div className="flex flex-wrap gap-3"><InlineNum id={`wz-hop-contact-${i}`} emptyValue={undefined} aria-invalid={!!fieldError(`wz-hop-contact-${i}`)} aria-describedby={fieldError(`wz-hop-contact-${i}`) ? 'wz-validation' : undefined} label="contact" name={`Contact à cru de ${h.name}, en heures`} unit="h" min={0} max={BORNES.dryHopContactH.max} value={h.aromaContactHours} onValue={v => patchHop(i, { aromaContactHours: v })} /><InlineNum emptyValue={undefined} label="à" name={`Température à cru de ${h.name}`} unit="°C" min={BORNES.dryHopTempC.min} max={BORNES.dryHopTempC.max} value={h.aromaTemperatureC} onValue={v => patchHop(i, { aromaTemperatureC: v })} /></div>
                       </div>}
                     </li>
                   );
                 })}
               </ul>
             )}
+            {/*
+              RX-4 (08.11) : les lignes de la recette sont au premier plan, jamais
+              dans un repli — un brasseur ne devine pas qu'un houblon l'attend sous
+              un volet. Seul l'outillage d'ajout (moment, recherche, lots, COA) se
+              replie ; une demande de correction ouvre ce volet par sa bascule native.
+            */}
+            <details id="recipe-hop-lines" className="recipe-hop-lines border-t border-cave-700 pt-2 scroll-mt-20" open={hopLinesOpen} onToggle={e => setHopLinesOpen(e.currentTarget.open)}>
+              <summary className="flex items-center justify-between gap-2 cursor-pointer min-h-touch text-cave-200" onClick={e => { if (hopGuideBusy) e.preventDefault(); }}>
+                <span>Ajouter un houblon · lots et conditions de contact</span>
+              </summary>
+              <div className="space-y-2 sm:space-y-3 pt-2">
+            <SegmentedControl
+              label="Moment d’ajout"
+              layout="row"
+              className="hop-stage-tabs"
+              value={hopStage}
+              onChange={setHopStage}
+              options={HOP_STAGES.map((s) => ({ value: s, label: s === 'dryHop' ? 'À cru' : HOP_STAGE[s].label }))}
+            />
+            {!tight && <p className="text-sm text-cave-400 leading-snug">{HOP_STAGE[hopStage].hint}</p>}
+
+            <HopIngredientPicker
+              items={stockItems}
+              recipe={build()}
+              onChange={addHop}
+              onBusyChange={setHopGuideBusy}
+              onReference={variety => addHop(variety.name, undefined, variety)}
+              onCreate={(n) => {
+                const created = creerArticleDuBrouillon(n, 'Houblon', 'g');
+                addHop(created.name, created);
+              }}
+              // « en houblonnage à cru… » passait sous le chevron à 320 px.
+              placeholder={hopStage === 'dryHop' ? 'Ajouter un houblon à cru…' : `Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}…`}
+              ariaLabel={`Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}`}
+            />
+
             <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des fiches de houblon…</p>}>
               <RecipeAutoComplete active nolo={details.nolo?.enabled} scope="houblon"
                 onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
@@ -2846,11 +2967,17 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       )}
 
       {/* ---------------------------------------------------- ÉTAPE 4 */}
-      {step === 'levure' && (
-        <Section title="Levure">
-          {noloNeedsEquipmentAdoption ? noloEquipmentPrompt() :
-          <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement du comparatif de levures…</p>}>
-            <YeastRecipeChoice key={`${yeastSelection}-${yeastFocus?.goal ?? ''}-${yeastFocus?.yeastId ?? ''}`} recipe={build()} savedRecipe={seed?.recipe} initialGoal={yeastFocus?.goal} initialYeastId={yeastFocus?.yeastId} onChange={applyYeastChoice} onNavigate={setStep}
+      {step === 'levure' && (() => {
+        /* Choisir une levure du catalogue : la dose se recalcule pour la nouvelle levure et le volume de la recette (#132, `etapeLevure/dose.ts`). */
+        const choisirLevure = (reference: YeastReference) => {
+          const avant = build();
+          if (!details.nolo?.enabled) setYeastChange(startYeastChoiceChange(avant, 'catalogue'));
+          applyYeastChoice(doseApresChoix(applyCatalogueYeast(avant, reference, reference.form), avant.yeast, yeastSupply), 'replace-selection');
+          setYeastSelection(n => n + 1);
+        };
+        // L'ancienne étape entière : le mode NOLO la garde (NoloPanel), l'étape Levure la garde dans son repli « Atelier complet ».
+        const ancienne = (cible?: string) => (
+          <YeastRecipeChoice key={`${yeastSelection}-${yeastFocus?.goal ?? ''}-${cible ?? yeastFocus?.yeastId ?? ''}`} recipe={build()} savedRecipe={seed?.recipe} initialGoal={yeastFocus?.goal} initialYeastId={cible ?? yeastFocus?.yeastId} onChange={applyYeastChoice} onNavigate={setStep}
               candidateSheets={candidateSheets} onCandidateSheetsChange={retainCandidateSheets} candidateSheetsWarning={candidateSheetsWarning}
               yeastChange={yeastChange} onYeastChange={setYeastChange}
               quantityEditor={<YeastRecipeQuantity yeast={yeast} onChange={next => updateSelectedYeastDocumentation(next, 'documentary')} invalid={!!fieldError('wz-yeast-qty')} />}
@@ -2862,15 +2989,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                   if (!details.nolo?.enabled) setYeastChange(startYeastChoiceChange(build(), 'free'));
                   selectYeast(n);
                 }}
-                onReference={reference => {
-                  if (!details.nolo?.enabled) setYeastChange(startYeastChoiceChange(build(), 'catalogue'));
-                  const next = applyCatalogueYeast(build(), reference, reference.form);
-                  if (yeast.hopIndexId !== reference.id) {
-                    delete next.yeast.qty; delete next.yeast.unit;
-                  }
-                  applyYeastChoice(next, 'replace-selection');
-                  setYeastSelection(n => n + 1);
-                }} /></Suspense>}
+                onReference={reference => choisirLevure(reference)} /></Suspense>}
               factsEditor={<YeastRecipeDossier yeast={yeast} onChange={updateSelectedYeastDocumentation} />}
               aiEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la recherche…</p>}><RecipeAutoComplete active embedded yeastEnrichment nolo={details.nolo?.enabled} scope="levure" reviewScope="recipe"
                 reviewRevisionToken={yeastReviewTokenFor(yeast, selectedCandidateRevision)}
@@ -2884,9 +3003,43 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               </>}
               programEditor={!details.nolo?.enabled && <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement du programme…</p>}><FermentationWorkshop key={yeastSelection} currentRecipeOnly recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => applyYeastChoice(next, 'conduct')} /></Suspense>}
             />
-          </Suspense>}
-        </Section>
-      )}
+        );
+        // Le mode NOLO garde l'ancienne étape dans sa section ; sinon la coque des quatre vues se pose sans cadre (maquettes l5b, s7a).
+        if (noloNeedsEquipmentAdoption || details.nolo?.enabled) return (
+          <Section title="Levure">
+            {noloNeedsEquipmentAdoption ? noloEquipmentPrompt() :
+            <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement du comparatif de levures…</p>}>{ancienne()}</Suspense>}
+          </Section>
+        );
+        return (
+          <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement de l’étape Levure…</p>}>
+            <EtapeLevure recipe={build()} vue={vueLevure} onVue={setVueLevure}
+              comparees={levuresComparees} onComparees={setLevuresComparees}
+              onChoisir={choisirLevure} onChange={applyYeastChoice} onNavigate={setStep}
+              stockItems={stockItems}
+              onStock={item => { setYeastChange(startYeastChoiceChange(build(), 'stock')); selectYeast(item.name, item); }}
+              onRetirer={() => { setYeastChange(startYeastChoiceChange(build(), 'free')); selectYeast(''); }}
+              yeastChange={yeastChange} onYeastChange={setYeastChange}
+              identityEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des articles de levure…</p>}><YeastIngredientPicker items={stockItems} yeast={yeast} onStock={(name, item) => {
+                  setYeastChange(startYeastChoiceChange(build(), 'stock'));
+                  selectYeast(name, item);
+                }} personalChoice
+                onCreate={n => {
+                  setYeastChange(startYeastChoiceChange(build(), 'free'));
+                  selectYeast(n);
+                }}
+                onReference={reference => choisirLevure(reference)} /></Suspense>}
+              factsEditor={<YeastRecipeDossier yeast={yeast} onChange={updateSelectedYeastDocumentation} />}
+              aiEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la recherche…</p>}><RecipeAutoComplete active embedded yeastEnrichment scope="levure" reviewScope="recipe"
+                reviewRevisionToken={yeastReviewTokenFor(yeast, selectedCandidateRevision)}
+                stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
+                hops={hops} onHops={setHops} yeast={yeast} onYeast={updateSelectedYeastDocumentation} /></Suspense>}
+              quantityEditor={<YeastRecipeQuantity yeast={yeast} onChange={next => updateSelectedYeastDocumentation(next, 'documentary')} invalid={!!fieldError('wz-yeast-qty')} />}
+              doseInvalide={!!fieldError('wz-yeast-qty')} atelier={ancienne}
+              onRetenir={fait => { try { return (updateSelectedYeastDocumentation({ ...yeast, technicalFacts: [...(yeast.technicalFacts ?? []), fait] }, 'documentary') as { accepted: boolean }).accepted !== false; } catch { return false; } }} />
+          </Suspense>
+        );
+      })()}
 
       {/* ---------------------------------------------------- ÉTAPE 5 */}
       {step === 'paliers' && (
@@ -2896,7 +3049,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
             title="Empâtage"
             hint="Le palier de saccharification décide de la sécheresse de la bière."
           >
-            <div className="space-y-2 sm:space-y-3">
+            <div className={`space-y-2 sm:space-y-3${retraitPalier.verrou ? ' pointer-events-none' : ''}`}>
               <PresetChips
                 name="Programme d’empâtage"
                 presets={MASH_PROGRAMS}
@@ -2927,7 +3080,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                       />
                       <button
                         type="button"
-                        onClick={() => setMashSteps(mashSteps.filter((_, j) => j !== i))}
+                        onClick={() => retraitPalier.retirer(i)}
                         aria-label={`Retirer le palier ${s.name}`}
                         className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
                       >
@@ -3002,7 +3155,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               <button
                 type="button"
                 onClick={() =>
-                  setMashSteps([...mashSteps, { name: 'Palier', tempC: 67, durationMin: 30 }])
+                  setMashSteps([...mashSteps, { name: nomPalierAjoute(mashSteps), tempC: 67, durationMin: 30 }])
                 }
                 className="w-full min-h-touch rounded-control border border-cave-700
                            text-cave-200 text-sm font-medium flex items-center justify-center gap-1.5 py-1.5 hover:bg-cave-850 transition-colors"
@@ -3027,11 +3180,19 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               {attenuation != null && yeast.attenuationPct != null && (
                 <p className="text-sm text-cave-400 leading-relaxed">
                   Atténuation retenue pour ce moût :{' '}
-                  <span className="reading text-ebc-straw">{attenuation} %</span>
-                  {fgPredicted ? ` · FG estimée ${fgPredicted.toFixed(3).replace('.', ',')}.` : '.'}
+                  <span className="reading text-ebc-straw">{nombreFr(attenuation, 1)} %</span>
+                  {(() => {
+                    // FG retenue (la cible de la recette, entrées inchangées) ou estimée ; si elles diffèrent, l'écart est dit.
+                    const retenue = fgRecette({ fgTarget: keepTargets ? details.fgTarget : undefined }, null);
+                    if (retenue != null && fgPredicted && formatDensite(retenue) !== formatDensite(fgPredicted)) return ` · FG retenue ${formatDensite(retenue)} · calculée ${formatDensite(fgPredicted)}.`;
+                    const fg = retenue ?? fgPredicted;
+                    return fg ? ` · FG ${retenue != null ? 'retenue' : 'estimée'} ${formatDensite(fg)}.` : '.';
+                  })()}
                 </p>
               )}
             </div>
+            {adviceList('wz-mash-')}
+            <AvisRetrait dernier={retraitPalier.dernier} onAnnuler={retraitPalier.annuler} />
           </Section>
 
           <Section
@@ -3040,7 +3201,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           >
             <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères de fermentation…</p>}><FermentationRecipeAdvice recipe={build()} /></Suspense>
             <YeastRecipeContext recipe={build()} onChooseYeast={() => setStep('levure')} />
-            <div className="space-y-2 sm:space-y-3">
+            <div className={`space-y-2 sm:space-y-3${retraitPhase.verrou ? ' pointer-events-none' : ''}`}>
               <PresetChips
                 name="Programme de fermentation"
                 presets={FERMENT_PROGRAMS}
@@ -3069,7 +3230,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                         </span>
                         <button
                           type="button"
-                          onClick={() => setFerment(ferment.filter((_, j) => j !== i))}
+                          onClick={() => retraitPhase.retirer(i)}
                           aria-label={`Retirer ${s.name}`}
                           className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
                         >
@@ -3119,6 +3280,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
                 })}
               </ul>
             </div>
+            {adviceList('wz-ferment-')}
+            <AvisRetrait dernier={retraitPhase.dernier} onAnnuler={retraitPhase.annuler} />
           </Section>
         </>
       )}
@@ -3227,11 +3390,8 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
       */}
       {step === 'recap' && (
         <>
-        <div role="status" aria-label="État de la recette" className={`px-2 py-1 text-xs border rounded-control ${readiness.status === 'invalid' ? 'border-alert-strong/50 text-alert-strong' : readiness.status === 'incomplete' ? 'border-attention/50 text-attention' : 'border-hop/50 text-cave-200'}`}>
-          {readiness.status === 'invalid' ? `${readiness.invalid.length} valeur${readiness.invalid.length > 1 ? 's' : ''} à corriger avant enregistrement`
-            : readiness.status === 'incomplete' ? `À compléter · ${readiness.missing.length} repère${readiness.missing.length > 1 ? 's' : ''} avant brassin · enregistrement possible`
-            : 'Données prêtes pour le brassin'}
-        </div>
+        <RecapEtat readiness={readiness} etape={issue => STEPS.find(s => s.id === issue.step)?.label ?? issue.step}
+          onCorriger={issue => requestCorrection([issue])} />
         {waterSourceNotice}
         {/*
           Un seul geste pour aller chercher tout ce qui manque encore — couleurs,
@@ -3275,9 +3435,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
           totalGristKg={totalGrist}
           hops={hops}
           onHops={setHops}
-          hopIbu={(h) =>
-            hotBitterness([h], volumeL, boilOg, boilMin).additions[0].ibu
-          }
+          hopIbu={(h) => ibuDeLAjout(hops, h, volumeL, boilOg, boilMin)}
           yeast={yeast}
           onYeast={setYeast}
           mashSteps={mashSteps}
@@ -3327,7 +3485,7 @@ const BrewWizardEditor: React.FC<BrewWizardProps & {
               fermentables,
               totalGristKg: totalGrist,
               hops,
-              hopIbu: (h) => hotBitterness([h], volumeL, boilOg, boilMin).additions[0].ibu,
+              hopIbu: (h) => ibuDeLAjout(hops, h, volumeL, boilOg, boilMin),
               yeast,
               mashSteps,
               fermentation: ferment,

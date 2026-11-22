@@ -1,0 +1,94 @@
+{
+ "journal": {
+  "1280-clair-semis": 2,
+  "1280-clair-recherche": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G À la brasserie Brassins 2 en cuve Tous ZZ TEST — NEIPA B-901 Fermentation J+4 Densité 1,062 ZZ TEST — Pils B-902 Garde froide J+16 Densité 1,048 Stocks Voir Stocks suffisants Finances Novembre 2026 Charges 0,00 CHF Agenda 1 à faire Gérer Ma",
+  "1280-clair-brassins-champ": {
+   "champ": "",
+   "rienPour": false,
+   "texte": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Brassins 2 Recettes 0 Atelier Volumes 2 en cuve 2 brassins Tous 2 En cuve 2 À brasser 0 Conditionnés 0 ★ 0 Terminés 0 Mesures manquantes 0 Notes à compléter 0 À suivre d’abord À suivre d’abord Date ↓ "
+  },
+  "1280-clair-plus-bord": {
+   "ok": true,
+   "zone": "Sur Bord",
+   "partout": [
+    "Nouvelle écriture",
+    "Entrer une facture",
+    "Encaisser une vente",
+    "Créer une recette",
+    "Lancer un brassin",
+    "Compagnon"
+   ],
+   "renvois": [
+    "Nouvelle écriture"
+   ],
+   "ouvert": true
+  },
+  "1280-clair-plus-finances": {
+   "ok": true,
+   "zone": "Sur Finances",
+   "partout": [
+    "Nouvelle écriture",
+    "Entrer une facture",
+    "Encaisser une vente",
+    "Créer une recette",
+    "Lancer un brassin",
+    "Compagnon"
+   ],
+   "renvois": [
+    "Nouvelle écriture",
+    "Entrer une facture",
+    "Encaisser une vente"
+   ],
+   "ouvert": true
+  },
+  "1280-clair-plus-brassins": {
+   "ok": true,
+   "zone": "Sur Brassins",
+   "partout": [
+    "Nouvelle écriture",
+    "Entrer une facture",
+    "Encaisser une vente",
+    "Créer une recette",
+    "Lancer un brassin",
+    "Compagnon"
+   ],
+   "renvois": [
+    "Créer une recette",
+    "Lancer un brassin"
+   ],
+   "ouvert": true
+  },
+  "1280-clair-atelier-texte": "Compagnon hors connexion · mode local 🍺 L'Affinée Nov. A G Brassins 2 Recettes 0 Atelier Volumes Atelier R&D Matériel Carnet Tarifs À venir Réalisés Archives P",
+  "1280-clair-plus-atelier": {
+   "ok": true,
+   "zone": "Sur Atelier R&D",
+   "partout": [
+    "Nouvelle écriture",
+    "Entrer une facture",
+    "Encaisser une vente",
+    "Créer une recette",
+    "Lancer un brassin",
+    "Compagnon"
+   ],
+   "renvois": [
+    "Lancer un brassin"
+   ],
+   "ouvert": true
+  },
+  "1280-clair-plus-stocks": {
+   "ok": true,
+   "zone": "Sur Articles",
+   "partout": [
+    "Nouvelle écriture",
+    "Entrer une facture",
+    "Encaisser une vente",
+    "Créer une recette",
+    "Lancer un brassin",
+    "Compagnon"
+   ],
+   "renvois": [],
+   "ouvert": true
+  }
+ },
+ "erreurs": []
+}

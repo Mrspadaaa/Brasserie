@@ -1,0 +1,75 @@
+{
+ "reglage": "4-hydrogen@low",
+ "cas": "B-anomalies-2",
+ "tache": "detectAnomalies",
+ "moitie": "jugement",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [],
+  "manques": [],
+  "detail": {
+   "rappel": 1,
+   "precision": 1,
+   "types": 1,
+   "fauxPositifs": 0,
+   "anomalies": 5,
+   "manques": [],
+   "qualite": 1
+  }
+ },
+ "ms": 4668,
+ "coutMicro": 17084,
+ "etat": "STOP",
+ "valeur": {
+  "anomalies": [
+   {
+    "transactionIds": [
+     "U01",
+     "U02"
+    ],
+    "type": "doublon",
+    "severity": "attention",
+    "explanation": "Deux écritures identiques le 2026-08-04 chez Hopfen Müller pour « Houblon Hallertau 1 kg » au montant de 96 CHF.",
+    "suggestion": "Vérifier s'il s'agit d'une double saisie ou de deux livraisons distinctes et supprimer le doublon le cas échéant."
+   },
+   {
+    "transactionIds": [
+     "U05"
+    ],
+    "type": "montant",
+    "severity": "grave",
+    "explanation": "Le montant de 4800 CHF pour « Transport palette » chez Transports Dupont est environ 100 fois supérieur à l'historique de cette catégorie (48 CHF pour U03 et 55 CHF pour U04).",
+    "suggestion": "Vérifier la facture originale : il s'agit probablement d'une erreur de virgule (48.00 CHF saisi en 4800 CHF)."
+   },
+   {
+    "transactionIds": [
+     "U10"
+    ],
+    "type": "justificatif",
+    "severity": "attention",
+    "explanation": "Montant élevé de 1920 CHF chez Imprimerie Sarine (« Étiquettes x5000 ») sans justificatif joint.",
+    "suggestion": "Retrouver et joindre la facture correspondante pour justifier la dépense en comptabilité."
+   },
+   {
+    "transactionIds": [
+     "U11"
+    ],
+    "type": "date",
+    "severity": "grave",
+    "explanation": "La date du 1999-05-02 pour « Fût inox 30 L » chez Brewstore est incohérente avec l'exercice 2026.",
+    "suggestion": "Corriger l'année de la date d'écriture d'après le justificatif."
+   },
+   {
+    "transactionIds": [
+     "U12"
+    ],
+    "type": "tva",
+    "severity": "attention",
+    "explanation": "Taux de TVA de 8.1 % appliqué sur « Malt Pilsner 25 kg » (Brau- und Rauchshop), alors que le malt relève du taux réduit de 2.6 % comme sur les écritures U13 et U14.",
+    "suggestion": "Vérifier le taux figurant sur la facture et corriger à 2.6 % si nécessaire."
+   }
+  ],
+  "checkedCount": 18
+ }
+}

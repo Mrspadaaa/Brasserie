@@ -2,6 +2,7 @@ import { ION_LABEL } from './labels';
 import type { WaterIons } from '../../types';
 import type { RaBand } from './mashPh';
 import type { calculateWaterTreatment } from './treatment';
+import { nombreFr } from '../../domain/nombreAffiche';
 export type SolveIssue =
   | { code: 'volume' | 'iteration' }
   | { code: 'grist'; target: number; colour: number }
@@ -16,7 +17,7 @@ export function describeSolveIssue(issue: SolveIssue): string {
   switch (issue.code) {
     case 'volume': return 'Aucune eau à traiter : pose d’abord les volumes d’empâtage et de rinçage. Les sels et l’acide se dosent au litre.';
     case 'iteration': return 'Sels et alcalinité : compromis entre les deux objectifs. Vérifie le pH à l’empâtage avant de corriger.';
-    case 'grist': return `Alcalinité : la facture limite l’objectif à ${issue.target} ppm au lieu des ${issue.colour} que demanderait la couleur. Le HCO₃ peut rester sous la fourchette du style — c’est le pH qui commande, pas la teinte.`;
+    case 'grist': return `Alcalinité : la facture limite l’objectif à ${nombreFr(issue.target, 1)} ppm au lieu des ${issue.colour} que demanderait la couleur. Le HCO₃ peut rester sous la fourchette du style — c’est le pH qui commande, pas la teinte.`;
     case 'alkalinity-low': return `Alcalinité résiduelle : ${Math.round(issue.value)} ppm sous la fenêtre — ${issue.excluded ? 'sels alcalins écartés' : 'les plafonds de calcium ou de sodium limitent les ajouts'}.`;
     case 'alkalinity-high': return `Alcalinité résiduelle à ${Math.round(issue.value)} ppm — vise ${issue.min} à ${issue.max}. À traiter à l’acide, pas au sel.`;
     case 'bicarbonate-target': return `HCO₃ : ${Math.max(0, Math.round(issue.value))} ppm pour ${Math.round(issue.target)} visés — ${issue.excluded ? 'sels alcalins écartés' : issue.limitedByAlkalinity ? 'la limite d’alcalinité de l’empâtage borne les ajouts' : 'les sels disponibles et les plafonds minéraux limitent les ajouts'}.`;

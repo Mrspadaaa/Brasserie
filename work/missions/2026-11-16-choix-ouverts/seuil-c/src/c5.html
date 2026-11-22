@@ -1,0 +1,47 @@
+@@TITRE
+c5 · L’escalier
+@@CSS
+.c5-head{display:flex;align-items:center;gap:12px;padding:12px 12px 0}
+.c5-big{font-size:56px;line-height:1;font-weight:800;color:var(--fin);letter-spacing:-1.5px;font-variant-numeric:tabular-nums}
+.c5-t{flex:1;min-width:0;font-size:15px;color:var(--mut);line-height:1.25}.c5-t b{display:block;color:var(--ink);font-size:18px}
+.c5-svg{display:block;margin:10px 12px 0;width:calc(100% - 24px);height:252px;overflow:visible}
+.c5-svg text{font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:14px;fill:var(--mut)}
+.c5-svg .c5-y{font-size:15px;font-weight:800}
+.c5-svg .c5-r{font-size:14px;font-weight:700}
+.c5-svg .c5-hit{fill:transparent;cursor:pointer}
+.c5-svg .c5-bub{font-size:18px;font-weight:800;fill:var(--onfin)}
+.c5-hint{margin:2px 12px 0;font-size:15px;color:var(--mut)}
+.c5-sec{display:flex;align-items:baseline;justify-content:space-between;padding:12px 12px 6px}.c5-sec b{font-size:17px}
+@@CORPS
+<div class="c5-head"><span class="c5-big" id="c5-big">5</span><span class="c5-t" id="c5-t"></span><span class="k-ex">exemple</span></div>
+<svg class="c5-svg" id="c5-s" viewBox="0 0 366 252" data-booster="escalier"></svg>
+<div class="c5-hint">touche une marche : la pastille prend sa hauteur</div>
+<div class="c5-sec"><b id="c5-lt"></b></div>
+<div class="k-rows" id="c5-l"></div>
+@@APRES
+@@JS
+<script>(()=>{const S=STK,{$,$$}=S;let H=49;const W=S.W;
+const X0=34,X1=360,Y0=210,Y1=26,cw=(X1-X0)/7,y=v=>Y0-(Y0-Y1)*v/24;
+const R={49:'+4 Porter',51:'+3 Pils',99:'+13 seuil'};
+function rendre(){const X=S.dans(H),k=W.indexOf(H);let cum=0;const C=W.map(w=>cum+=S.par(w).length);
+$('#c5-big').textContent=X.length;
+$('#c5-t').innerHTML='à commander<b>'+(H===99?'tout, seuil compris':'d’ici S'+H+(H===49?' · Porter':H===51?' · Pils':''))+'</b>';
+let g='';
+for(const v of [5,11,24]){const on=v===X.length;g+='<line x1="'+X0+'" x2="'+X1+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="var('+(on?'--fin':'--line')+')" stroke-dasharray="'+(on?'0':'3 4')+'" stroke-width="'+(on?1.5:1)+'"/><text class="c5-y" x="'+(X0-6)+'" y="'+(y(v)+5)+'" text-anchor="end" style="fill:var('+(on?'--fin':'--mut')+')">'+v+'</text>'}
+g+='<line x1="'+X0+'" x2="'+X1+'" y1="'+Y0+'" y2="'+Y0+'" stroke="var(--line2)" stroke-width="1.5"/>';
+let pa='M'+X0+' '+Y0,pb='',ar='M'+X0+' '+Y0;
+W.forEach((w,i)=>{const xa=X0+i*cw,xb=xa+cw,yy=y(C[i]);if(i<=k){pa+=' L'+xa+' '+yy+' L'+xb+' '+yy;ar+=' L'+xa+' '+yy+' L'+xb+' '+yy}else{pb+=(pb?' L':'M'+xa+' '+y(C[i-1])+' L')+xa+' '+yy+' L'+xb+' '+yy}});
+const xh=X0+(k+1)*cw;ar+=' L'+xh+' '+Y0+' Z';
+g+='<path d="'+ar+'" fill="var(--finbg)"/>';
+if(pb)g+='<path d="'+pb+'" fill="none" stroke="var(--line2)" stroke-width="3" stroke-dasharray="6 5"/>';
+g+='<path d="'+pa+'" fill="none" stroke="var('+(H===99?'--att':'--fin')+')" stroke-width="3.5" stroke-linejoin="round"/>';
+W.forEach((w,i)=>{if(R[w]){const xa=X0+i*cw;g+='<text class="c5-r" x="'+(xa-5)+'" y="'+((y(C[i])+y(C[i-1]))/2+5)+'" text-anchor="end" style="fill:var('+(w<=H?(w===99?'--att':'--fin'):'--mut')+')">'+R[w]+'</text>'}
+g+='<text x="'+(X0+i*cw+cw/2)+'" y="'+(Y0+20)+'" text-anchor="middle" style="'+(w===H?'fill:var(--ink);font-weight:700':'')+'">'+(w===99?'seuil':'S'+w)+'</text>'});
+const yb=y(C[k]);g+='<line x1="'+xh+'" x2="'+xh+'" y1="'+(yb)+'" y2="'+Y0+'" stroke="var(--fin)" stroke-width="2.5"/>';
+const bx=Math.min(xh,X1-24);g+='<rect x="'+(bx-24)+'" y="'+(yb-17)+'" width="48" height="34" rx="17" fill="var(--fin)" stroke="var(--bg)" stroke-width="2"/><text class="c5-bub" x="'+bx+'" y="'+(yb+6)+'" text-anchor="middle">'+X.length+'</text>';
+W.forEach((w,i)=>{g+='<rect class="c5-hit" data-h="'+w+'" x="'+(X0+i*cw)+'" y="0" width="'+cw+'" height="'+(Y0+30)+'"/>'});
+$('#c5-s').innerHTML=g;for(const r of $$('.c5-hit'))r.onclick=()=>{H=+r.dataset.h;rendre()};
+$('#c5-lt').textContent='Les '+X.length+(H===99?', par urgence':' d’ici S'+H);
+$('#c5-l').innerHTML=X.map(a=>S.row(a,a.sem?'var(--fin)':'var(--att)')).join('');
+S.cta(X.length,'Commander');S.pastille(X.length)}
+rendre();if(S.etat==='geste'){H=52;rendre()}})()</script>

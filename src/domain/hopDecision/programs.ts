@@ -12,6 +12,7 @@ import type {
 import { HOP_DECISION_VERSION } from './types';
 import { HOP_FORMS } from '../../../functions/src/hopIndexSchema';
 import { hopAlphaModelParameterError } from './modelInputs';
+import { nombreFr } from '../../domain/nombreAffiche';
 
 type StockLine = HopProgramProposal['stock'][number];
 type ApplyOptions = { allowFutureProcurement?: boolean };
@@ -234,7 +235,7 @@ function summarizeRemainingStock(program: HopDecisionProgram, materials: Map<str
       conditions.push(`${materialId} : lot documentaire uniquement ; il ne prouve pas un stock possédé.`);
     } else if (conflictingBalances) {
       status = 'unknown';
-      const references = [...new Set(balanceEvidence.map(material => `${material?.id ?? 'référence absente'}=${material?.availableGrams ?? 'non renseigné'} g`))];
+      const references = [...new Set(balanceEvidence.map(material => `${material?.id ?? 'référence absente'}=${material?.availableGrams == null ? 'non renseigné' : nombreFr(material?.availableGrams, 1)} g`))];
       conditions.push(`${entry.stockItemRef ?? materialId} : matières liées au même stock avec quantités inconnues ou contradictoires (${references.join(' ; ')}).`);
     } else if (neededGrams === 0) status = 'available';
     else if (!entry.materials.every(Boolean) || neededGrams === null || availableGrams === null) {
@@ -242,7 +243,7 @@ function summarizeRemainingStock(program: HopDecisionProgram, materials: Map<str
       conditions.push(`${entry.stockItemRef ?? materialId} : besoin ou stock restant inconnu.`);
     } else if (availableGrams + Number.EPSILON * Math.max(1, availableGrams, neededGrams) * 4 < neededGrams) {
       status = 'insufficient';
-      conditions.push(`${entry.stockItemRef ?? materialId} : ${neededGrams} g prévus, ${availableGrams} g disponibles.`);
+      conditions.push(`${entry.stockItemRef ?? materialId} : ${nombreFr(neededGrams, 1)} g prévus, ${nombreFr(availableGrams, 1)} g disponibles.`);
     } else status = 'available';
     if (materialIds.length > 1) conditions.push(`${entry.stockItemRef} : besoin cumulé sur ${materialIds.join(', ')}.`);
     return { materialId, ...(materialIds.length > 1 ? { materialIds } : {}), ...(entry.stockItemRef ? { stockItemRef: entry.stockItemRef } : {}),
@@ -296,7 +297,7 @@ function assessProductDoseLimits(program: HopDecisionProgram, materials: Map<str
     const remainingGrams = remaining.reduce((sum, addition) => sum + (addition.grams ?? 0), 0);
     if (program.volumeL === null) {
       if (historicalGrams > 0 || remainingGrams > 0 || hasUnknownHistoricalMass || hasUnknownRemainingMass) {
-        conditions.push(`${group.product.name} : volume inconnu ; plafond de ${maxDoseGL} g/L non évaluable.`);
+        conditions.push(`${group.product.name} : volume inconnu ; plafond de ${nombreFr(maxDoseGL, 1)} g/L non évaluable.`);
       }
       continue;
     }
@@ -304,12 +305,12 @@ function assessProductDoseLimits(program: HopDecisionProgram, materials: Map<str
     const remainingGL = remainingGrams / program.volumeL;
     const pastExceeded = historicalGL > maxDoseGL;
     if (pastExceeded) {
-      conditions.push(`${group.product.name} : ${historicalGL} g/L figurent déjà dans les opérations effectuées ou passées ; elles sont conservées.`);
+      conditions.push(`${group.product.name} : ${nombreFr(historicalGL, 1)} g/L figurent déjà dans les opérations effectuées ou passées ; elles sont conservées.`);
       if (remainingGL > 0) exceeded = true;
     }
     if (historicalGL + remainingGL > maxDoseGL && remainingGL > 0) {
       exceeded = true;
-      conditions.push(`${group.product.name} : dose planifiée cumulée (${historicalGL + remainingGL} g/L) au-delà du maximum documenté de ${maxDoseGL} g/L pour ${rule.uses.join(', ')}.`);
+      conditions.push(`${group.product.name} : dose planifiée cumulée (${nombreFr(historicalGL + remainingGL, 1)} g/L) au-delà du maximum documenté de ${nombreFr(maxDoseGL, 1)} g/L pour ${rule.uses.join(', ')}.`);
     }
     if (hasUnknownHistoricalMass || hasUnknownRemainingMass) {
       conditions.push(`${group.product.name} : une masse comprise dans le plafond cumulé est inconnue.`);

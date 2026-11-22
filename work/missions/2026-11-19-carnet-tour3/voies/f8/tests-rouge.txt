@@ -1,0 +1,119 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet[39m
+
+[90mstderr[2m | tests/unit/depense/lecture-d/serveur.test.ts
+[22m[39m[IA] AUTHORIZED_ACCOUNTS est vide : la passerelle refusera tout le monde. Renseigne-la dans functions/.env, puis redéploie les Functions.
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 7 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/integration/expenseSheet.test.tsx[2m > [22mLecture et vérification visuelle du justificatif[2m > [22mlit dès le choix du fichier et attend une confirmation explicite des valeurs corrigées
+[31m[1mAssertionError[22m: expected { …(29) } to match object { amount: 555, …(2) }
+(37 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -1,10 +1,10 @@[39m
+[2m  {[22m
+[2m    "amount": 555,[22m
+[2m    "lines": [[22m
+[2m      {[22m
+[32m-       "equipmentAction": "none",[39m
+[31m+       "equipmentAction": "new",[39m
+[2m        "kind": "equipment",[22m
+[2m      },[22m
+[2m      {[22m
+[2m        "equipmentAction": "none",[22m
+[2m        "kind": "maintenance",[22m
+
+[36m [2m❯[22m tests/integration/expenseSheet.test.tsx:[2m155:42[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f8-tour3.test.tsx[2m > [22mv3-6 : un retrait volontaire n’est pas un manque (contrôles)[2m > [22m1 ligne retirée par le brasseur (2,40) : ni manque, ni geste d’ajout, ni drapeau ; la somme dit « 1 ligne retirée · 2,40 »
+[31m[1mAssertionError[22m: expected '2,40 CHF manquants' not to match /manquant/[39m
+
+[32m- Expected:[39m 
+/manquant/
+
+[31m+ Received:[39m 
+"2,40 CHF manquants"
+
+[36m [2m❯[22m tests/unit/depense/f8-tour3.test.tsx:[2m34:26[22m[39m
+    [90m 32| [39m  it('1 ligne retirée par le brasseur (2,40) : ni manque, ni geste d’a…
+    [90m 33| [39m    const c = controlesCroises({ ...base, retraitsBrasseur: { n: 1, ce…
+    [90m 34| [39m    [34mexpect[39m(c[33m.[39mresume)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/manquant/[39m)[33m;[39m
+    [90m   | [39m                         [31m^[39m
+    [90m 35| [39m    [34mexpect[39m(c[33m.[39mrangs[33m.[39m[34mevery[39m(r [33m=>[39m r[33m.[39mverdict [33m!==[39m [32m'ecart'[39m))[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m 36| [39m    [34mexpect[39m(c[33m.[39mdrapeau)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f8-tour3.test.tsx[2m > [22mv3-6 : un retrait volontaire n’est pas un manque (contrôles)[2m > [22mle pied : « Lignes 84,10 = total 86,50 − 2,40 retiré (Bouchons) », sans attention
+[31m[1mAssertionError[22m: expected { …(2) } to deeply equal { …(2) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "attention": false,[39m
+[32m-   "texte": "Lignes 84,10 = total 86,50 − 2,40 retiré (Bouchons)",[39m
+[31m+   "attention": true,[39m
+[31m+   "texte": "Lignes 84,10 · total 86,50 · 2,40 de moins",[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/depense/f8-tour3.test.tsx:[2m53:15[22m[39m
+    [90m 51| [39m    [35mconst[39m fr [33m=[39m (n[33m:[39m number) [33m=>[39m (n [33m/[39m [34m100[39m)[33m.[39m[34mtoFixed[39m([34m2[39m)[33m.[39m[34mreplace[39m([32m'.'[39m[33m,[39m [32m','[39m)[33m;[39m
+    [90m 52| [39m    const p = phraseDuPied(8410, 8650, [], fr, [{ nom: 'Bouchons', cen…
+    [90m 53| [39m    expect(p).toEqual({ texte: 'Lignes 84,10 = total 86,50 − 2,40 reti…
+    [90m   | [39m              [31m^[39m
+    [90m 54| [39m    [34mexpect[39m([34mphraseDuPied[39m([34m8410[39m[33m,[39m [34m8650[39m[33m,[39m [][33m,[39m fr)[33m.[39mattention)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m 55| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/f8-tour3.test.tsx[2m > [22mv3-6 : la feuille Dépense après « Retirer la ligne 3 »[2m > [22mdit « 1 ligne retirée · 2,40 », jamais « manquants » ni « Ajouter la ligne manquante » ; « ↶ Annuler » rend le contrôle d’avant
+[31m[1mAssertionError[22m: expected 'Nouvelle dépensePliéDépliéOuvrir le P…' not to match /manquants?\b/[39m
+
+[32m- Expected:[39m 
+/manquants?\b/
+
+[31m+ Received:[39m 
+"Nouvelle dépensePliéDépliéOuvrir le PDF originalChangerFournisseur fictif09.09.2026CHF2 lignesÀ vérifier · 2,40 CHF manquants!Articles lus ≠ annoncés2 / 3−1Ajouter la ligne manquante ›!Somme ≠ imprimé84,10 / 86,50−2,40Ajouter la ligne manquante ›·Payé—·Qté × prix2/2 justesLectures2/2 d'accord2 à remplirUn doute ? Relire plus finementTVA—1Règlementdate supposéePayé le 09.09.2026sans TVA—— HT non imprimé. Aucune valeur n’est déduite.payé le · supposée09.09facture09.09Date de paiement non imprimée.Déjà payéÀ payerMoyen · Compte bancaire / carteC’est la dateAutre dateMoyen de paiementCompte bancaire / carteEspècesTWINTAutrePour quoi ?Fournisseur fictif · TEST-F8 · matériel · proposéDate de l’achat09.09.2026Date de l’achatChanger le mois, garder le jour←janvierfévriermarsavrilmaijuinjuilletaoûtseptembreoctobrenovembredécembre2022202320242025202620272028→Aujourd’huiMois passéMois suivantFournisseur et catégorieFournisseur fictif · MatérielCatégorieBrassageMatérielNettoyageCharges fixesLocalAutreFournisseurRéférence et TVA du documentTEST-F8N° de factureTVA source (CHF)Taux source (%)Le justificatif sera rangé dans ton Drive privé à l’enregistrement.Matériel de brassage22 pièces84,10Tuyau silicone1 pièce×60,0060,00imprimé « Tuyau silicone »pièceL×=IngrédientServiceMatérielarticle — · hors stockAjouter au stockSuivantextraitplussupprimerCollier inox1 pièce×24,1024,10imprimé « Collier inox »pièceL×=IngrédientServiceMatérielarticle — · hors stockAjouter au stockSuivantextraitplussupprimer+ Ajouter une ligne↶ Annuler « Bouchons »Regrouper en une dépenseMon mois−86,50CatégoriePapier Confirmer"
+
+[36m [2m❯[22m tests/unit/depense/f8-tour3.test.tsx:[2m84:22[22m[39m
+    [90m 82| [39m    await waitFor(() => expect(view.container.querySelectorAll('articl…
+    [90m 83| [39m    [35mconst[39m tout [33m=[39m view[33m.[39mcontainer[33m.[39mtextContent [33m??[39m [32m''[39m[33m;[39m
+    [90m 84| [39m    [34mexpect[39m(tout)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/manquants?\b/[39m)[33m;[39m
+    [90m   | [39m                     [31m^[39m
+    [90m 85| [39m    expect(screen.queryByRole('button', { name: /Ajouter la ligne manq…
+    [90m 86| [39m    [34mexpect[39m(tout)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/2,40 de moins|non retrouvé/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — l’empreinte du moteur suit ces modules[2m > [22mune ligne de plus dans ai change l’empreinte, donc la clé de cache
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — l’empreinte du moteur suit ces modules[2m > [22mune ligne de plus dans invoiceScanVote change l’empreinte, donc la clé de cache
+[41m[1m FAIL [22m[49m tests/unit/depense/lecture-d/serveur.test.ts[2m > [22ms-serveur — l’empreinte du moteur suit ces modules[2m > [22mune ligne de plus dans invoiceVisionReview change l’empreinte, donc la clé de cache
+[31m[1mError[22m: ENOENT: no such file or directory, open 'C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\functions\src\hopAdviceContentReference.ts'[39m
+[36m [2m❯[22m source tests/unit/depense/lecture-d/serveur.test.ts:[2m301:38[22m[39m
+    [90m299| [39m  // Ce port modifie ai.ts, invoiceScanVote.ts et invoiceVisionReview.…
+    [90m300| [39m  // relue, environ 0,0445 CHF). Le test le dit sans figer une valeur …
+    [90m301| [39m  const source = (module: string) => readFileSync(new URL(`../../../..…
+    [90m   | [39m                                     [31m^[39m
+    [90m302| [39m  it.each(['ai', 'invoiceScanVote', 'invoiceVisionReview'])('une ligne…
+    [90m303| [39m    [35mconst[39m avant [33m=[39m [34mengineDigestOf[39m(source)[33m.[39mdigest[33m;[39m
+[90m [2m❯[22m Module.engineDigestOf functions/src/invoiceScanCore.ts:[2m132:18[22m[39m
+[90m [2m❯[22m tests/unit/depense/lecture-d/serveur.test.ts:[2m303:19[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[31m7 failed[39m[22m[2m | [22m[1m[32m46 passed[39m[22m[90m (53)[39m
+[2m   Start at [22m 20:38:08
+[2m   Duration [22m 17.45s[2m (transform 2.53s, setup 955ms, collect 8.16s, tests 13.50s, environment 2.52s, prepare 282ms)[22m
+

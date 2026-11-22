@@ -13,10 +13,7 @@ const items = (lecture.items as any[]).map(i => ({ description: [i.name, i.varia
 
 describe('les 23 lignes de la facture 372765 face au stock simulé', () => {
   const lignes = items.map((l, i) => ({ n: i + 1, l, s1: (STOCK_PROPOSAL_KINDS as readonly string[]).includes(l.kind) ? matchStockLine(l, stock) : undefined, regle: (STOCK_PROPOSAL_KINDS as readonly string[]).includes(l.kind) ? regleProduit(l, stock) : undefined }));
-  it('affiche le tableau (pour RESULTAT)', () => {
-    // eslint-disable-next-line no-console
-    console.log(lignes.filter(x => x.regle).map(x => `${String(x.n).padStart(2)} ${x.l.description.padEnd(34)} s1=${x.s1?.item.name ?? '—'} · règle=${x.regle!.cas}${'voisin' in x.regle! ? ` voisin=${(x.regle as any).voisin.name}` : ''}${'nom' in x.regle! ? ` nom=« ${(x.regle as any).nom} »` : ''}`).join('\n'));
-  });
+
   it('s1 ne change pas : mêmes lignes reliées qu’avant S6', () => {
     expect(lignes.filter(x => x.s1).map(x => x.n)).toEqual(lignes.filter(x => x.regle?.cas === 'meme').map(x => x.n));
   });

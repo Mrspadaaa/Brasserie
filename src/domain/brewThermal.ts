@@ -1,6 +1,7 @@
 import type { BrewDayReading, BrewDayState, BrewDayStep, RecipeSnapshot } from '../types';
 import type { BrewThermalSegment, ThermalMethod } from '../types/brewSystem';
 import { effectivePitchTarget } from './pitchingPlan';
+import { nombreFr } from '../domain/nombreAffiche';
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 const median = (values: number[]) => { const sorted = [...values].sort((a, b) => a - b); const i = Math.floor(sorted.length / 2); return sorted.length % 2 ? sorted[i] : (sorted[i - 1] + sorted[i]) / 2; };
@@ -27,7 +28,7 @@ export function startThermalSegment(state: BrewDayState, step: BrewDayStep, meth
     ...(method !== 'heating' ? { thermalChoices: { ...state.thermalChoices, coolingMethod: method, changedAt: now } } : {}),
     steps: state.steps.map(s => s.id === step.id ? { ...s, rampStartedAt: s.rampStartedAt ?? now } : s),
     notes: [...state.notes ?? [], { id: crypto.randomUUID(), at: now, stepId: step.id,
-      text: `${THERMAL_METHOD_LABELS[method]} · cible ${targetC} °C${detail.note ? ` · ${detail.note}` : ''}. Nouvelle série de relevés.` }] };
+      text: `${THERMAL_METHOD_LABELS[method]} · cible ${nombreFr(targetC, 1)} °C${detail.note ? ` · ${detail.note}` : ''}. Nouvelle série de relevés.` }] };
 }
 
 export function thermalSamples(state: BrewDayState, step: BrewDayStep, now = Number.POSITIVE_INFINITY): BrewDayReading[] {
@@ -57,9 +58,9 @@ export function thermalEstimate(state: BrewDayState, step: BrewDayStep, target: 
   if (Math.abs(last.value - target) <= .5) return { ...basis, status: 'reached' as const, minutes: 0,
     message: 'Cible atteinte sur le dernier relevé. Homogénéise et confirme avant de poursuivre.' };
   if (!cooling && last.value > target + .5) return { ...basis, status: 'overshoot' as const,
-    message: `Le dernier relevé dépasse la consigne de ${Math.round((last.value - target) * 10) / 10} °C. Réduis ou coupe la chauffe, homogénéise et remesure. Ne rallonge pas automatiquement le palier.` };
+    message: `Le dernier relevé dépasse la consigne de ${nombreFr(Math.round((last.value - target) * 10) / 10, 1)} °C. Réduis ou coupe la chauffe, homogénéise et remesure. Ne rallonge pas automatiquement le palier.` };
   if (method === 'immersion' && finite(coolant) && target <= coolant + .5) return { ...basis, status: 'unreachable' as const,
-    message: `L’eau de refroidissement à ${coolant} °C ne permet pas d’atteindre ${target} °C avec une marge utile. Un circuit plus froid ou une enceinte adaptée est nécessaire.` };
+    message: `L’eau de refroidissement à ${nombreFr(coolant, 1)} °C ne permet pas d’atteindre ${nombreFr(target, 1)} °C avec une marge utile. Un circuit plus froid ou une enceinte adaptée est nécessaire.` };
   const slopes: number[] = [], rates: number[] = [];
   for (let i = 1; i < points.length; i++) {
     const a = points[i - 1], b = points[i], dt = (b.at - a.at) / 60000;
