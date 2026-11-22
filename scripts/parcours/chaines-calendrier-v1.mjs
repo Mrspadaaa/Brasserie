@@ -55,7 +55,10 @@ export function etapesV1({ echec, ok, sleep, pageNeuve, sortie }) {
         await s.cap('CH-D9-1-jhhh');
         const duree = l.filter((x) => /J\d+/.test(x));
         if (!duree.length) return echec('CH-D9', `aucune barre « Jhhh » avec sa durée (barres lues : ${l.join(' / ').slice(0, 200) || 'aucune'})`);
-        const faux = duree.find((x) => /J34 \/ 34/.test(x));
+        // seule la barre brassée à J−40 (la plus avancée) est jugée : le second Jhhh (J−33) touche J34 / 34 le jour de « prête », ce qui est exact
+        const jour = (x) => Number((x.match(/\bJ(\d+)/) || [0, -1])[1]);
+        const plusAvancee = duree.reduce((a, b) => (jour(b) > jour(a) ? b : a));
+        const faux = /J34 \/ 34/.test(plusAvancee) ? plusAvancee : null;
         if (faux) return echec('CH-D9', `la barre plafonne le jour à la durée : « ${faux.slice(0, 120)} »`);
         if (!duree.some((x) => /J40\b|prête depuis 6 j/.test(x))) return echec('CH-D9', `aucune barre ne dit « J40 » ni « prête depuis 6 j » : ${duree.join(' / ').slice(0, 220)}`);
         ok('CH-D9', `la barre dit le retard : ${duree.find((x) => /J40\b|prête depuis 6 j/.test(x)).slice(0, 100)}`);
