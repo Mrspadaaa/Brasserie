@@ -4,7 +4,8 @@
 export const passes = ['390-clair', '390-cave', '1280-clair', '1280-cave'];
 
 const lireOutils = () => {
-  const onglets = [...document.querySelectorAll('button')].map((b) => b.textContent.trim()).filter((t) => ['Articles', 'Recompter', 'Courses', 'Fûts', 'Matériel', 'Houblons'].includes(t));
+  const onglets = [...document.querySelectorAll('button')].filter((b) => !(b.textContent.trim() === 'Houblons' && !b.closest('nav'))) // à 1280 le titre du rayon Houblons du mur est un bouton (D422), pas un onglet
+    .map((b) => b.textContent.trim()).filter((t) => ['Articles', 'Recompter', 'Courses', 'Fûts', 'Matériel', 'Houblons'].includes(t));
   const pu = [...document.querySelectorAll('.sz-pu')].map((b) => { const r = b.getBoundingClientRect(); return { f: b.dataset.f, n: b.querySelector('b')?.textContent.trim(), top: Math.round(r.top), right: Math.round(r.right), vis: r.width > 0 && r.height > 0 }; });
   const et = document.querySelector('.sz-etoile'); const er = et?.getBoundingClientRect();
   return { onglets, pu, vueBtn: document.querySelectorAll('[data-vue-btn]').length,

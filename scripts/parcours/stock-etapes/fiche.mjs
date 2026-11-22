@@ -56,10 +56,10 @@ export default async function (c) {
     await saisir(c, SEUIL, '0');
     const zero = await c.mesure(() => document.querySelector('.sfp-seuil p')?.innerText.trim() ?? '');
     await c.cap('fiche-seuil-zero');
-    c.controle('STM-9', !/sans seuil/i.test(zero), `seuil « 0 » saisi : la ligne dit « ${zero} » (0 est un seuil écrit, pas « sans seuil »)`);
+    c.controle('STM-9', !/sans seuil|aucune alerte/i.test(zero) && /épuisement/.test(zero), `seuil « 0 » saisi : la ligne dit « ${zero} » (0 est un seuil écrit : « alerte à l'épuisement », pas « aucune alerte »)`);
     await c.p.keyboard.press('Backspace'); await c.sleep(250);
     const vide = await c.mesure(() => ({ p: document.querySelector('.sfp-seuil p')?.innerText.trim() ?? '', v: document.querySelector('#stock-min')?.value ?? '' }));
-    c.controle('STM-9', /sans seuil/i.test(vide.p) && vide.v === '', `seuil vidé : champ « ${vide.v} », la ligne dit « ${vide.p} »`);
+    c.controle('STM-9', /sans seuil|aucune alerte/i.test(vide.p) && vide.v === '', `seuil vidé : champ « ${vide.v} », la ligne dit « ${vide.p} »`);
     await c.taper('7');
     const apres = await bouton(c);
     c.controle('STM-5', apres !== null && apres.off === false, `seuil 7 tapé : Enregistrer ${apres?.off ? 'GRISÉ' : 'actif'}`);
@@ -113,7 +113,7 @@ export default async function (c) {
 
   await c.etape('STM-13 le refus d\'une perte, près du bouton', async () => {
     await rouvrirCryo(c);
-    await c.toucher('+1', { exact: true }); await c.sleep(300);
+    await c.toucherSel('[data-corriger] [data-plus]'); await c.sleep(300);
     await c.toucher('Perte', { exact: true }); await c.sleep(500);
     const m = await c.mesure(() => {
       const b = document.querySelector('.sfp-b1'); const rb = b.getBoundingClientRect();
@@ -150,8 +150,9 @@ export default async function (c) {
   });
 
   await c.etape('STC-19 STC-6 Bouteille : « 200 pièces », l\'axe, les mots du graphe', async () => {
-    await c.demarrer(); await c.versStocks(); await c.sousOnglet('Autres stocks'); await c.chercher('Bouteille');
-    await ouvrir(c, 'ZZ TEST Bouteille 33 cl');
+    await c.demarrer(); await c.versStocks(); await c.toucher('Autres stocks', { sel: '[role=tab]' }); await c.sleep(700); await c.chercher('Bouteille');
+    await ouvrir(c, 'ZZ TEST Bouteille 33 cl'); // Autres stocks A : la ligne s'ouvre sur place ; la fiche vient par « Fiche › »
+    await c.sleep(400); await c.toucher('Fiche ›', { sel: '.la-fiche' });
     await c.sleep(500);
     const titre = await c.mesure(() => document.querySelector('[data-fiche-page] .sfp-nom')?.textContent ?? '');
     if (!/Bouteille 33 cl/.test(titre)) throw new Error(`la fiche ouverte n'est pas celle de Bouteille 33 cl mais « ${titre} »`);
