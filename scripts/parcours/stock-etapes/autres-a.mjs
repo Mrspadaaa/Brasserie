@@ -176,5 +176,9 @@ export default async function (c) {
         && ouv?.ouvert === true && ouv.input?.type === 'text' && ouv.input.mode === 'decimal' && ouv.nombres === 0 && ouv.fiche && ouv.star && /3px/.test(ouv.liseret) && /seuil 550 g/.test(apres?.n2 ?? ''),
       `ligne ${JSON.stringify(avant)} / épuisé ${JSON.stringify(ep)} ; ouverte ${JSON.stringify(ouv)} ; après « + » ${JSON.stringify(apres?.n2)} ${JSON.stringify(apres?.input)}`);
     });
-  } finally { await c.p.removeScriptToEvaluateOnNewDocument(script.identifier).catch(() => {}); }
+  } finally {
+    await c.p.removeScriptToEvaluateOnNewDocument(script.identifier).catch(() => {});
+    // le localStorage de l'origine garde la fixture de l'étape : sans ce retrait, les étapes suivantes (STC-2 : « à compter 1 » = Coriandre) la lisent ; le banc repose la sienne au chargement suivant
+    await c.p.evaluate(() => { try { localStorage.removeItem('parcours-chaines:fixture'); localStorage.removeItem('parcours-chaines:cache'); } catch { /* sans stockage */ } }).catch(() => {});
+  }
 }
