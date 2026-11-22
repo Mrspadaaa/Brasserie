@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { aBouge, vitesseBord } from './moteur';
+import { aBouge, armerSens, vitesseBord } from './moteur';
 
 /**
  * Le geste d'une frise ou d'un curseur, un seul pour toute l'app (Pointer Events W3C : doigt, souris, stylet ; `setPointerCapture`).
@@ -29,7 +29,7 @@ export interface OptionsGlisse {
   natif?: boolean;
 }
 
-interface Saisie<S> { id: number; x0: number; x: number; bouge: boolean; arme: number; s: S; raf: number; t: number }
+interface Saisie<S> { id: number; x0: number; x: number; bouge: boolean; arme: number; pivot: number; s: S; raf: number; t: number }
 
 /** Branche le geste sur `el` ; rend la fonction qui le retire. `r()` rend les rappels du moment (les props les plus récentes). */
 export function attacherGlisse<S>(el: HTMLElement, r: () => RappelsGlisse<S>, o: OptionsGlisse = {}): () => void {
@@ -64,16 +64,17 @@ export function attacherGlisse<S>(el: HTMLElement, r: () => RappelsGlisse<S>, o:
     if (s == null) return;
     if (o.natif) e.preventDefault();
     try { el.setPointerCapture(e.pointerId); } catch { /* pointeur synthétique */ }
-    g = { id: e.pointerId, x0: x, x, bouge: false, arme: 0, s, raf: 0, t: 0 };
+    g = { id: e.pointerId, x0: x, x, bouge: false, arme: 0, pivot: x, s, raf: 0, t: 0 };
     avaler = false;
     window.addEventListener('keydown', echap, true);
     if (o.natif) el.focus({ preventScroll: true });
   };
   const bouge = (e: PointerEvent) => {
     if (!g || e.pointerId !== g.id) return;
-    const x = xDe(e), d = x - g.x; g.x = x;
+    const x = xDe(e); g.x = x;
     if (!g.bouge) { if (!aBouge(x - g.x0)) return; g.bouge = true; }
-    if (d < -0.5) g.arme = -1; else if (d > 0.5) g.arme = 1;
+    // T9-1 : le tremblement d'un doigt tenu (±1 px) ne retourne pas le sens (hystérésis de 6 px, armerSens)
+    const a = armerSens(g.arme, g.pivot, x); g.arme = a.arme; g.pivot = a.pivot;
     r().suivre(x - g.x0, g.s, x);
     if (r().bord && !g.raf && vitesseBord(x, cadre().getBoundingClientRect().width, g.arme).sens) g.raf = requestAnimationFrame(image);
   };

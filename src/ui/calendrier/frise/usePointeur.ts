@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { avalerClicSuivant, DELAI_CLIC_AVALE } from '../usePointeurCourbe';
-import { aBouge, BANDE_PX, vitesseBord } from '../../geste';
+import { aBouge, armerSens, BANDE_PX, vitesseBord } from '../../geste';
 import type React from 'react';
 
 /**
@@ -117,12 +117,16 @@ interface Etat {
   parJour: boolean;
   /** CAL-BARRE-BORD : la gauche de la frise, la largeur d'une colonne et d'un jour, à l'appui (le pas se lit par la position). */
   L: number;
+  /** T9-1 : la droite visible de la frise à l'appui ; un doigt au bord de l'écran, au-delà de la dernière colonne, la vise encore (jamais une colonne hors de la fenêtre). */
+  R: number;
   w0: number;
   d0: number;
   /** R1 : le bord ne suit qu'après 6 px. */
   bouge: boolean;
   /** R7 : sens du dernier mouvement (−1, 0, 1), dernière abscisse, colonnes accumulées, image en cours et son heure. */
   arme: number;
+  /** T9-1 : le point le plus avancé dans le sens armé (hystérésis du sens, armerSens). */
+  pivot: number;
   xPrec: number;
   acc: number;
   raf: number;
@@ -210,7 +214,8 @@ export function usePointeur(options: OptionsPointeur) {
   const pasDe = (s: Etat): number => {
     const w = opts.current.largeurColonne || 1;
     /* CAL-BARRE-BORD : par la position (la fenêtre a pu grandir sous le doigt : la colonne d'origine n'a plus la même largeur) */
-    const cols = (s.xPrec - s.L) / w - (s.x0 - s.L) / (s.w0 || w);
+    const xv = Number.isFinite(s.R) ? Math.min(s.xPrec, s.R - w / 2) : s.xPrec;
+    const cols = (xv - s.L) / w - (s.x0 - s.L) / (s.w0 || w);
     /* CAL-JOUR : au jour, le pas est 1/7 de colonne ; `k` reste en semaines (3 jours = 3/7), la barre et sa bulle se posent sans autre calcul */
     const brut = s.parJour ? Math.round(cols * 7) / 7 : Math.round(cols);
     return bornes(brut - s.recul, plage(opts.current.borne?.(), opts.current.marge));
@@ -249,8 +254,8 @@ export function usePointeur(options: OptionsPointeur) {
     if (!bord && !cibleEl?.closest?.('[data-jalon]') && surLeBordDebut(e.currentTarget, e.clientX, opts.current.zoneBordDebut ?? 0)) { bord = true; cote = 'debut'; }
     const o0 = opts.current, L = e.currentTarget.closest?.('[data-frise]')?.getBoundingClientRect().left ?? 0;
     const s: Etat = { id: e.pointerId, cible: e.target instanceof Element ? e.target : null, x0: e.clientX, y0: e.clientY, t0: Date.now(), mode: bord ? 'bord' : 'appui', cote, k: 0, minuterie: null, dx: 0, recul: 0, parJour: !!o0.parJour,
-      L, w0: o0.largeurColonne, d0: largeurJourDe(o0),
-      bouge: false, arme: 0, xPrec: e.clientX, acc: 0, raf: 0, tPrec: 0, echap: null };
+      L, R: cadreDe(e.currentTarget).right, w0: o0.largeurColonne, d0: largeurJourDe(o0),
+      bouge: false, arme: 0, pivot: e.clientX, xPrec: e.clientX, acc: 0, raf: 0, tPrec: 0, echap: null };
     etat.current = s;
     const annuler = () => {
       if (etat.current !== s) return;
@@ -337,9 +342,9 @@ export function usePointeur(options: OptionsPointeur) {
     /* f1-a au vrai toucher (CRITIQUE-2 n° 1) : un doigt qui a tenu 500 ms puis part de côté glisse quand même ; le menu ouvert se ferme
        (`onDebutGlisse` ou le premier `onGlisse` le dit à l'appelant). Au-delà de 8 px avant 500 ms, c'est un glisser et le menu ne s'ouvre pas. */
     // R7 : le sens du dernier mouvement arme le défilement au bord
-    const pas = e.clientX - s.xPrec;
     s.xPrec = e.clientX;
-    if (pas < -0.5) s.arme = -1; else if (pas > 0.5) s.arme = 1;
+    // T9-1 : le tremblement d'un doigt tenu (±1 px) ne retourne pas le sens (hystérésis de 6 px, armerSens)
+    const sa = armerSens(s.arme, s.pivot, e.clientX); s.arme = sa.arme; s.pivot = sa.pivot;
     if (s.mode === 'appui' || s.mode === 'long') {
       if (s.mode === 'appui' && Math.abs(dy) > SEUIL_VERTICAL_PX && Math.abs(dy) > Math.abs(dx)) { stopMinuterie(); stopDefile(s); etat.current = null; return; }
       // Frise B, R1 : la barre ne part qu'après 6 px de déplacement horizontal

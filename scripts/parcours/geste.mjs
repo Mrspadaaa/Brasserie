@@ -832,8 +832,8 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     }
     const et = (document.querySelector('[data-cadre-etiquette]')?.textContent ?? '').replace(/\s+/g, ' ').trim();
     // « S47 – S52 », « S47 – S45 2027 », « S47 2025 – S52 2026 » (T9-2 : le début dit son année hors de l'année en cours)
-    const me = /^S(\d+)(?: (\d{4}))?(?: – S(\d+))?/.exec(et);
-    const etiquette = me ? { a: Number(me[1]), anA: me[2] ? Number(me[2]) : null, b: Number(me[3] ?? me[1]) } : null;
+    const me = /^S(\d+)(?: (\d{4}))?(?: – S(\d+)(?: (\d{4}))?)?/.exec(et);
+    const etiquette = me ? { a: Number(me[1]), anA: me[2] ? Number(me[2]) : null, b: Number(me[3] ?? me[1]), anB: me[4] ? Number(me[4]) : null } : null;
     // étiquettes de la courbe : deux textes qui se recouvrent = empilées
     const tx = [...cb.querySelectorAll('text')].filter((e) => (e.textContent ?? '').trim()).map((e) => { const r = e.getBoundingClientRect(); return { t: (e.textContent ?? '').trim().slice(0, 18), l: r.left, r: r.right, hh: r.top, b: r.bottom }; }).filter((r) => r.r - r.l > 0);
     const empilees = []; for (let i = 0; i < tx.length; i++) for (let j = i + 1; j < tx.length; j++) { const a = tx[i], b = tx[j], w = Math.min(a.r, b.r) - Math.max(a.l, b.l), h = Math.min(a.b, b.b) - Math.max(a.hh, b.hh); if (w > 2 && h > 2 && (w * h) / Math.min((a.r - a.l) * (a.b - a.hh), (b.r - b.l) * (b.b - b.hh)) > 0.3) empilees.push(`${a.t}/${b.t}`); }
@@ -1059,6 +1059,40 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     const F = `T9 ${combo}`;
     const lundisT = () => p.evaluate(() => [...document.querySelectorAll('[data-bande-semaines] [data-lundi]')].map((e) => e.getAttribute('data-lundi')));
     const datePapierT = () => p.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? '[]').find((x) => x.id === 'P-PAPIER')?.data.date ?? null, CLE_CACHE);
+    /* T9-1 au doigt TREMBLANT (22.11) : un vrai doigt tenu au bord bouge de ±1 px à 60-120 Hz (0, −1, 0, +1 : le sens change sans cesse). Le sens
+       armé au moindre pas de 0,5 px s'inversait, le défilement s'arrêtait. Deux variantes : bande du bord de la frise (8 ms) et bord de l'écran
+       (x = largeur − 1, 16 ms). Chaque essai part de la date de la fixture (la chose posée est rendue par « Annuler »). Rouge sur tour9. */
+    for (const [nom, auBordEcran, periodeMs] of [['bande', false, 8], ['écran', true, 16]]) {
+      try {
+        await versCalendrier(); await choisirPeriode('2 sem.'); await sleep(400); await choisirPeriode('6 sem.'); await sleep(500);
+        const l0 = await lundisT(), d0 = await datePapierT();
+        const m = await p.evaluate(() => { const e = document.querySelector('[data-frise] [data-chose$="P-PAPIER"]'); if (!e) return null; e.scrollIntoView({ block: 'center', inline: 'center' }); const r = e.getBoundingClientRect(); return { x: r.left + Math.min(r.width / 2, 12), y: r.top + r.height / 2 }; });
+        const fr = await p.evaluate(() => { const f = document.querySelector('[data-frise]').getBoundingClientRect(); return { l: f.left, r: Math.min(f.right, innerWidth) }; });
+        if (!m || !d0) { echec(`${F} T9-1 tremblant ${nom}`, `« lol » introuvable (date ${d0})`); continue; }
+        const x1 = auBordEcran ? (await p.evaluate(() => innerWidth)) - 1 : fr.r - 6, xs = pas(m.x, x1, 20), bruit = [0, -1, 0, 1];
+        if (tactile) {
+          const cdpT = await p.createCDPSession(), pt = (x) => [{ x, y: Math.round(m.y), id: 1 }];
+          await cdpT.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pt(Math.round(m.x)) }); await sleep(50);
+          for (const x of xs) { await cdpT.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(Math.round(x)) }); await sleep(16); }
+          for (let t = 0, i = 0; t < 2100; t += periodeMs, i++) { await sleep(periodeMs); await cdpT.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pt(Math.round(x1) + bruit[i % 4]) }); }
+          await cdpT.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        } else {
+          await p.mouse.move(m.x, m.y); await p.mouse.down(); await sleep(40);
+          for (const x of xs) { await p.mouse.move(x, m.y); await sleep(16); }
+          for (let t = 0, i = 0; t < 2100; t += periodeMs, i++) { await sleep(periodeMs); await p.mouse.move(x1 + bruit[i % 4], m.y); }
+          await p.mouse.up();
+        }
+        await sleep(800);
+        await cap(`t9-1-tremblant-${auBordEcran ? 'ecran' : 'bande'}`);
+        const l1 = await lundisT(), d1 = await datePapierT(), fin = l1.length ? ajouter(l1[l1.length - 1], 6) : null;
+        const dit = `${l0[0]}+${l0.length} sem. → ${l1[0]}+${l1.length} sem. ; ${d0} → ${d1}`;
+        /* même début tant qu'elle grandit ; à 6 mois (26 sem., CAL-BARRE-BORD) elle défile comme avant : le début peut alors avancer */
+        (l1.length > l0.length && (l1[0] === l0[0] || l1.length >= 26) && d1 && d1 !== d0 && d1 >= l1[0] && d1 <= fin) ? ok(`${F} T9-1 tremblant ${nom}`, dit) : echec(`${F} T9-1 tremblant ${nom}`, `${dit} : doigt tremblant (±1 px toutes les ${periodeMs} ms) tenu 2,1 s au bord, la fenêtre doit grandir et la chose y rester`);
+        if (d1 !== d0) { await toucherTexte('Annuler'); await sleep(700); }
+        const d2 = await datePapierT();
+        if (d2 !== d0) echec(`${F} T9-1 tremblant ${nom} annuler`, `« Annuler » n'a pas rendu la date : ${d0} → ${d2}`);
+      } catch (e) { echec(`${F} T9-1 tremblant ${nom}`, String(e.message ?? e).slice(0, 160)); await echap(); }
+    }
     // T9-1
     try {
       await versCalendrier(); await choisirPeriode('2 sem.'); await sleep(400); await choisirPeriode('6 sem.'); await sleep(500);
@@ -1086,8 +1120,9 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
         await tenirAuBord(g.l + 1, g.y, Math.max(2, cbL + 2), 3600);
         await cap('t9-2-debut-tenu');
         const c1 = await verifierCoherence(`${F} T9-2`, 'après le début tenu au bord', c0.pt);
-        const recul = c1.etiquette ? (c0.etiquette.a - c1.etiquette.a + 53) % 53 : 0;
-        /* la borne haute évite seulement le tour d'année (modulo 53) : 36 et 44 sem. mesurées sur l'arbre selon le rythme du banc */
+        /* le début en semaines absolues : son année est celle qu'il porte, sinon celle de la fin, sinon l'année en cours (T9-2 : « S47 2025 – S46 2026 ») */
+        const semAbs = (e) => { const an = e.anA ?? e.anB ?? new Date().getFullYear(), j4 = Date.UTC(an, 0, 4), l1 = j4 - ((new Date(j4).getUTCDay() + 6) % 7) * 864e5; return Math.round(l1 / (7 * 864e5)) + e.a - 1; };
+        const recul = c1.etiquette ? semAbs(c0.etiquette) - semAbs(c1.etiquette) : 0;
         recul >= 8 && recul <= 52 ? ok(`${F} T9-2 recul en un geste`, `« ${c0.label} » → « ${c1.label} » (${recul} sem.)`) : echec(`${F} T9-2 recul en un geste`, `« ${c0.label} » → « ${c1.label} » : ${recul} semaine(s) de recul en 3,6 s tenues (8 au moins attendues)`);
       }
     } catch (e) { echec(`${F} T9-2`, String(e.message ?? e).slice(0, 160)); await echap(); }

@@ -55,6 +55,17 @@ export function vitesseBord(x: number, largeur: number, arme: number): { sens: -
 }
 
 /**
+ * R7 : le sens du doigt, avec hystérésis (T9-1, 22.11). Un doigt tenu au bord tremble (±1 px à 120 Hz) : armé au moindre pas de 0,5 px, le
+ * sens basculait sans cesse, `vitesseBord` rendait 0 et le défilement s'arrêtait au bord. Le sens ne s'inverse qu'après `SEUIL_PX` de retour
+ * depuis le point le plus avancé (`pivot`) ; le premier pas de plus de 0,5 px l'arme.
+ */
+export function armerSens(arme: number, pivot: number, x: number): { arme: -1 | 0 | 1; pivot: number } {
+  if (arme > 0) return x >= pivot ? { arme: 1, pivot: x } : x < pivot - SEUIL_PX ? { arme: -1, pivot: x } : { arme: 1, pivot };
+  if (arme < 0) return x <= pivot ? { arme: -1, pivot: x } : x > pivot + SEUIL_PX ? { arme: 1, pivot: x } : { arme: -1, pivot };
+  return x - pivot > 0.5 ? { arme: 1, pivot: x } : x - pivot < -0.5 ? { arme: -1, pivot: x } : { arme: 0, pivot };
+}
+
+/**
  * R4 (temps) : l'échelle qui pose le début `a` à `marge` px du bord gauche et la fin `b` à `marge` px du bord droit.
  * Rend `span` (unités visibles sur la largeur) et `v0` (unité au bord gauche).
  */
