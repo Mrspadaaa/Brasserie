@@ -9,6 +9,8 @@ export const hco3Affiche = (v: number): string => formatDecimal(Math.max(0, Math
 
 export const AcidDoseControl: React.FC<{
   label: string;
+  /** Libellé court posé devant la dose sur téléphone (« emp. », « rinç. ») ; `label` reste le nom accessible. */
+  court?: string;
   name: string;
   unit: string;
   amount: number;

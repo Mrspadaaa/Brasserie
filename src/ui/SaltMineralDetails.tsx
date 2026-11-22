@@ -13,6 +13,17 @@ interface SaltMineralDetailsProps {
 
 const format = (value: number) => value > 0 && value < 0.1 ? '<0,1' : value.toLocaleString('fr-CH', { maximumFractionDigits: 1 });
 
+/**
+ * L'ion hors des six axes (potassium du KCl), en ppm sur l'eau totale, avec les mêmes facteurs que le solveur.
+ * `null` : pas de tel ion, ou volume inconnu (jamais 0 pour un inconnu).
+ */
+export function apportNonSuivi(saltId: SaltId, grams: number, totalWaterL: number): number | null {
+  const salt = SALTS[saltId];
+  if (!salt.untracked || !Number.isFinite(totalWaterL) || totalWaterL <= 0) return null;
+  const dose = Number.isFinite(grams) ? Math.max(0, grams) : 0;
+  return salt.untracked.ppmPerGramPerLitre * (salt.solubility ?? 1) * (salt.purity ?? 1) * dose / totalWaterL;
+}
+
 /** Détail des apports du produit pesé, avec les mêmes facteurs que le solveur. */
 export const SaltMineralDetails: React.FC<SaltMineralDetailsProps> = ({
   saltId, grams, totalWaterL, disabled = false, onClose
@@ -34,9 +45,7 @@ export const SaltMineralDetails: React.FC<SaltMineralDetailsProps> = ({
     key: 'potassium',
     name: 'Potassium',
     symbol: 'K⁺',
-    amount: hasVolume
-      ? salt.untracked.ppmPerGramPerLitre * (salt.solubility ?? 1) * (salt.purity ?? 1) * dose / totalWaterL
-      : null
+    amount: hasVolume ? apportNonSuivi(saltId, dose, totalWaterL) : null
   });
 
   return (

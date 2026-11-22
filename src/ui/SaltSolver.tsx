@@ -86,9 +86,10 @@ export const SaltSolver: React.FC<SaltSolverProps> = (props) => {
           <span>2 · Les sels — profil, balance SO₄ ⇄ Cl et pesée</span>
         </div>
 
-        <WaterWorkbench {...model} />
-        <WaterFeedback {...model} />
-        <WaterSummary {...model} />
+        <WaterWorkbench {...model}>
+          <WaterFeedback {...model} />
+          <WaterSummary {...model} />
+        </WaterWorkbench>
       </div>
     </div>
   );
