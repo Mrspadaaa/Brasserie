@@ -50,7 +50,10 @@ describe('Imperial stout UI smoke — Doser and live controls', () => {
     expect(state().doses.nahco3 ?? 0).toBe(0);
     expect(screen.getByText(/sels alcalins écartés/)).toBeInTheDocument();
     expect(screen.getByText(/Profil non atteint/)).toBeInTheDocument();
+    // EAU-SELS-UN-ECRAN : l'interrupteur vit dans la feuille « Minéraux du sel », ouverte par le nom du sel.
+    fireEvent.click(screen.getByRole('button', { name: 'Détail des minéraux de Bicarbonate de soude' }));
     fireEvent.click(screen.getByRole('switch', { name: 'Bicarbonate de soude — écarté' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fermer' }));
     expect(state().disabled).not.toContain('nahco3');
     doser();
     expect(state().doses.nahco3).toBeGreaterThan(0);

@@ -55,7 +55,10 @@ describe("Atelier : cibles explicites et commandes", () => {
     dose();
     const selected = SALT_IDS.find(id => (state().doses[id] ?? 0) > 0)!;
     expect(selected).toBeDefined();
+    // EAU-SELS-UN-ECRAN : l’interrupteur vit dans la feuille du sel.
+    fireEvent.click(screen.getByRole("button", { name: "Détail des minéraux de " + SALTS[selected].name }));
     fireEvent.click(screen.getByRole("switch", { name: SALTS[selected].name + " — autorisé" }));
+    fireEvent.click(screen.getByRole("button", { name: "Fermer" }));
     expect(state().disabled).toContain(selected);
     expect(state().doses[selected] ?? 0).toBe(0);
     dose();
@@ -64,7 +67,9 @@ describe("Atelier : cibles explicites et commandes", () => {
     changeWaterRatio(screen.getByRole("slider", { name: "SO₄ ⇄ Cl" }), 1.5);
     expect(state().disabled).toContain(selected);
     expect(state().doses[selected] ?? 0).toBe(0);
+    fireEvent.click(screen.getByRole("button", { name: "Détail des minéraux de " + SALTS[selected].name }));
     fireEvent.click(screen.getByRole("switch", { name: SALTS[selected].name + " — écarté" }));
+    fireEvent.click(screen.getByRole("button", { name: "Fermer" }));
     expect(state().disabled).not.toContain(selected);
     const input = screen.getByRole("textbox", { name: "Dose de " + SALTS[selected].name + " en grammes" });
     fireEvent.change(input, { target: { value: "1,2" } });

@@ -220,6 +220,8 @@ describe('Atelier de l’eau · réglages directs du brouillon', () => {
     expect(changed.saltSplit?.mash.cacl2).toBe(5.2);
     expect(changed.saltSplit?.sparge.cacl2).toBeUndefined();
 
+    // EAU-SELS-UN-ECRAN : l'interrupteur vit dans la feuille du sel, ouverte par son nom.
+    fireEvent.click(screen.getByRole('button', { name: 'Détail des minéraux de Gypse' }));
     fireEvent.click(screen.getByRole('switch', { name: 'Gypse — autorisé' }));
     expect(onChange).toHaveBeenCalledTimes(2);
     const excluded = onChange.mock.calls[1][0] as WaterState;

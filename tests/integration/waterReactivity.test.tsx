@@ -1180,7 +1180,7 @@ describe('Les avertissements de seuil, à l’écran', () => {
     fireEvent.change(mashAcid, { target: { value: '2' } });
     fireEvent.blur(mashAcid);
     expect(screen.queryByText(/Acide lactique cumulé/)).not.toBeInTheDocument();
-    expect(screen.getByText(/son goût commence à se percevoir vers/)).toHaveTextContent('0,3 g par litre');
+    expect(screen.getByText(/son goût commence à se percevoir vers/i)).toHaveTextContent('0,3 g par litre');
     expect(mashAcid).toHaveValue('2');
   });
 
