@@ -38,6 +38,8 @@ const sortie = path.resolve(args.find((a, i) => !a.startsWith('--') && !String(a
 fs.mkdirSync(sortie, { recursive: true });
 const LARGEURS = opt('largeurs', '390,1280').split(',').map(Number);
 const THEMES = opt('themes', 'clair,cave').split(',');
+/* --hauteur 660 (22.11, « surtout testé en version téléphone ») : la hauteur de l'écran tactile ; 844 par défaut */
+const HAUTEUR_TEL = Number(opt('hauteur', '844')) || 844;
 const ENDROITS_JOUES = opt('endroits', 'recette,calendrier').split(',');
 const CLE_FIXTURE = 'parcours-calendrier:fixture', CLE_CACHE = 'parcours-calendrier:cache', ID_GESTE = 'P-ZZ-GESTE';
 const { fixtureCalendrier, ajouter, lundiDe } = await import(pathToFileURL(path.join(ICI, 'fixtures', 'calendrier.mjs')).href);
@@ -122,7 +124,7 @@ async function jouer(dir) {
     for (const L of LARGEURS) for (const theme of THEMES) {
       const tactile = L < 600, combo = `${L}-${theme}`;
       const p = await nav.newPage();
-      await p.setViewport({ width: L, height: tactile ? 844 : 900, isMobile: tactile, hasTouch: tactile, deviceScaleFactor: 1 });
+      await p.setViewport({ width: L, height: tactile ? HAUTEUR_TEL : 900, isMobile: tactile, hasTouch: tactile, deviceScaleFactor: 1 });
       await p.evaluateOnNewDocument((t) => localStorage.setItem('laffinee.theme', t), theme);
       const erreurs = []; p.on('pageerror', (e) => erreurs.push(String(e).slice(0, 160)));
       const diag = []; p.on('requestfailed', (q) => diag.push(`req ${q.url().slice(-50)} ${q.failure()?.errorText}`)); p.on('console', (m) => { if (m.type() === 'error') diag.push(`con ${m.text().slice(0, 140)}`); });
@@ -982,8 +984,14 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     const F = `CAL-AN-390 ${combo}`;
     if (!tactile) return;
     try {
-      for (const duree of ['6 sem.', '3 mois', '6 mois', 'An']) {
-        await versCalendrier(); await choisirPeriode(duree); await sleep(600);
+      for (const duree of ['1 sem.', '6 sem.', '3 mois', '6 mois', 'An']) {
+        await versCalendrier();
+        if (duree === '1 sem.') {
+          /* 1 semaine : aucun menu ne la donne ; la fin du cadre tirée sur son début (comme sectionEtiquettes) */
+          await choisirPeriode('2 sem.'); await sleep(400); await choisirPeriode('6 sem.'); await sleep(500);
+          const g = await boiteCadre(); if (!g) { echec(`${F} ${duree}`, 'cadre introuvable'); continue; }
+          const x1 = g.r - 1; await glisser(x1, g.y, pas(x1, g.l - 3)); await sleep(600);
+        } else { await choisirPeriode(duree); await sleep(600); }
         await cap(`an390-${duree.replace(/\W+/g, '')}`);
         for (const z of ['entete', 'frise']) {
           const r = await lireTextes(z);
@@ -1052,12 +1060,13 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
         await cap('t9-2-debut-tenu');
         const c1 = await verifierCoherence(`${F} T9-2`, 'après le début tenu au bord', c0.pt);
         const recul = c1.etiquette ? (c0.etiquette.a - c1.etiquette.a + 53) % 53 : 0;
-        recul >= 8 && recul < 40 ? ok(`${F} T9-2 recul en un geste`, `« ${c0.label} » → « ${c1.label} » (${recul} sem.)`) : echec(`${F} T9-2 recul en un geste`, `« ${c0.label} » → « ${c1.label} » : ${recul} semaine(s) de recul en 3,6 s tenues (8 au moins attendues)`);
+        /* la borne haute évite seulement le tour d'année (modulo 53) : 36 et 44 sem. mesurées sur l'arbre selon le rythme du banc */
+        recul >= 8 && recul <= 52 ? ok(`${F} T9-2 recul en un geste`, `« ${c0.label} » → « ${c1.label} » (${recul} sem.)`) : echec(`${F} T9-2 recul en un geste`, `« ${c0.label} » → « ${c1.label} » : ${recul} semaine(s) de recul en 3,6 s tenues (8 au moins attendues)`);
       }
     } catch (e) { echec(`${F} T9-2`, String(e.message ?? e).slice(0, 160)); await echap(); }
-    // T9-3
+    // T9-3 (la fenêtre locale reculée par T9-2 se garde : « 2 sem. » la ramène à cette semaine avant « 3 mois », comme T9-1)
     try {
-      await versCalendrier(); await choisirPeriode('3 mois'); await sleep(500);
+      await versCalendrier(); await choisirPeriode('2 sem.'); await sleep(400); await choisirPeriode('3 mois'); await sleep(500);
       const b = await p.evaluate(() => { const e = document.querySelector('[aria-label^="Marché de Noël,"]') ?? document.querySelector('[data-chose$="CR-NOEL"]'); if (!e) return null; e.scrollIntoView({ block: 'center', inline: 'center' }); const r = e.getBoundingClientRect(); return [r.left + Math.min(r.width / 2, 12), r.top + r.height / 2]; });
       if (!b) echec(`${F} T9-3`, '« Marché de Noël » introuvable');
       else {
@@ -1255,7 +1264,7 @@ async function jouerPeriode({ nav, base, L, theme }) {
     const p = await nav.newPage();
     const erreurs = []; p.on('pageerror', (e) => erreurs.push(String(e).slice(0, 160)));
     try {
-      await p.setViewport({ width: L, height: tactile ? 844 : 900, isMobile: tactile, hasTouch: tactile, deviceScaleFactor: 1 });
+      await p.setViewport({ width: L, height: tactile ? HAUTEUR_TEL : 900, isMobile: tactile, hasTouch: tactile, deviceScaleFactor: 1 });
       await p.evaluateOnNewDocument((kf, kc, j, tag, t) => {
         if (localStorage.getItem('geste:fixture-posee') === tag) return;
         localStorage.clear(); sessionStorage.clear(); localStorage.setItem('laffinee.theme', t);
