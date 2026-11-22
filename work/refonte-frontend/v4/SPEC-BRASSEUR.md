@@ -2670,3 +2670,7 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 > Cette période là reste fixe, le reste peut être mobile
 
 (22.11, en ligne tour 9, capture 34 de work/missions/2026-11-21-calendrier-entete/ : la période de l'app en haut (‹ 30.08.27–05.09.27 ›) entourée ; elle a suivi les gestes du Calendrier.)
+
+> Choisi mais elle est de loin pas fini polish. Je crois que c'est assez facile de comprendre ce qui va pas, en plus il y a un modèle, donc go implémenter ça. Faire passer les critiques dessus avant pour voir exactement les problèmes avant le vrai portage
+
+(22.11, Autres stocks : version A prise, note : « La version malt houblons et levure est un peu plus clean mais l'idée est là. Aussi il manque quelques trucs genre le seuil ».)
