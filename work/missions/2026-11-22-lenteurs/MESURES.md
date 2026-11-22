@@ -72,3 +72,44 @@ Profil V8 (200 µs) sur build non minifié de tour9 : `donnees/profil-*.txt` (un
 Poste bruité (min–max larges) ; fixture de la passe 2 (petite, libellés différents du parcours Calendrier) ; INP et non « temps au calme » ;
 profil agrégé par séquence ; 2 pas sur 5 sans valeur en tour7 (geste absent) : le A/B ne vaut que pour semaine, frise, barre, courbe, Recette,
 Commencer, onglets, Vente, Recherche.
+
+## 4. Corrections (23.11, branche claude/port-carnet-1711) — A/B alterné, CPU ×4, 5 tours, médiane (min–max), banc CAL-LENT minifié
+Builds : `outils/construire-arbre.mjs` (HEAD de port-carnet + mes seuls fichiers) ; A/B : `outils/ab2.mjs` ; le poste varie d'un lot à l'autre (charge 17 à 71 %) : comparer au tour9 du MÊME lot.
+
+### Cause 1 — lectures de mise en page dans le commit (commit eb90d630b, Frise.tsx)
+Mesure du profil (build non minifié) : `getBoundingClientRect` 313 ms sur 600 pour « toucher une semaine », appelé par `commitHookEffectListMount`, donc par un effet
+de la frise sans dépendances : `mesurerTraits` ET `mesurerSousFab` (le + volant, D-135), plus un ResizeObserver réobservé à chaque rendu.
+Remède : crochet `useApresPeinture` (image, puis tâche suivante, demandes regroupées), effets sous dépendances, calque des traits mémoïsé qui porte son état
+(un nouveau tracé ne rend plus la frise), observateur réobservé seulement si les rangées changent.
+| geste | tour9 | corrigé |
+|---|---|---|
+| toucher une semaine | 616 (560–720) · 952 (656–1024) | **464** (408–520) · **512** (416–624) : −25 % et −46 % |
+| glisser la frise | 560 (408–640) · 672 (600–760) | 544 (448–752) · **416** (184–568) : −3 % et −38 % |
+| glisser une barre | 456 (400–720) · 304 (256–432) | **304** (240–424) · 296 (288–328) : −33 % et −3 % |
+| lire la courbe | 288 · 328 | 304 · **264** |
+Deux lots (c1 contre tour9, c2 contre tour9). Les gestes restent ROUGES (> 200 ms) : la mise en page de la frise elle-même (~300 ms ×4) reste.
+Le test `calendrierJalonsLies` attend maintenant l'arrivée des traits (après la peinture). 4 échecs de `calendrierPlus.test.tsx` existent aussi sur HEAD sans mon changement.
+Essayé et NON retenu : cache de `largeurTexte` dans Courbe.tsx (police et largeurs retenues) : −12 % semaine, −4 % frise, dans le bruit ; défait.
+
+### Cause 2 — PageShell : isolation et focus dans le commit (commit 108409571, PageShell.tsx + 3 fichiers de test)
+Profil non minifié de « Recette » seul (`outils/pas/recette.txt`, pas `prof`) : `ancestorsShown` (pageVisibilityCheck) 387 ms et `focusPage` 260 ms sur 1 819 ms actifs : la passe d'isolation
+(inert, getComputedStyle sur les ancêtres de chaque couche) et le premier `focus()` forçaient le style de toute la page AVANT la première image.
+Remède : `refreshPageIsolation` + premier focus dans un `requestAnimationFrame` puis une tâche (la page est déjà dans `pageScopes`), annulés au démontage.
+Variantes mesurées (A/B alterné, 5 tours, CPU ×4, Recette) : tout après la peinture **272** (152–376) contre 536 ; seul l'isolation après la peinture, focus tout de suite **840** contre 472 (pire : le focus
+force un style, puis l'inert en force un second) : NON retenue. Lot suivant, A/B complet du Calendrier, c0 (HEAD) contre c5 (retenu) : Recette 472 (232–568) → **280** (184–360) ; Commencer le brassage (fiche B-ZZ-JOUR)
+184 (128–384) → 148 (112–408), 4 essais valides sur 5 : médiane déjà sous 200 ms, le 500 ms de tour9 n'est pas reproduit sur HEAD (poste moins chargé, cause 1 comprise ?).
+Tests : 6 attendent maintenant la peinture (`pageShellPerformance` 3, `recipeAccessibility` 2, `floatingActionsShellLayout` 1) ; tsc sans erreur ; vitest `tests/integration` + `unit/hopIndexV4`, `rejeu-ff0f-b`, `bugs-r3-barre` :
+19 échecs dans 12 fichiers, **les mêmes avec le PageShell de HEAD** (vérifié en remettant HEAD : identiques), aucun de ma cause.
+Essayé et NON retenu : `.cal-tab { pointer-events: auto }` (borner l'héritage du `pointer-events: none` que Radix pose sur le body) : Poser un brassin 448 → 568, Ajouter en 480 → 512 (dans le bruit,
+n=5), et la trace montre le même recalcul de 966 éléments avec ou sans la règle. Défait.
+
+### Feuilles Radix du Calendrier (Poser un brassin, Ajouter en, Noter) — cause mesurée, pas de remède sûr
+Trace `outils/trace-somme.mjs` (devtools.timeline) de « Poser un brassin » seul : un `UpdateLayoutTree` de **966 éléments, 86 à 200 ms** (CPU ×4, même build, deux séries), `Layout` 7 à 28 ms.
+Ce n'est ni la mise en page (petite) ni le JS : c'est le recalcul de style des ~380 nœuds neufs de la feuille et du reste de la page, au `focus()` de Radix FocusScope (natif 153 ms sur 366 de temps actif).
+Coût mesuré en page (`outils/exp-style.mjs`, 296 éléments du calendrier) : `pointer-events:none` sur le body 56–115 ms, `inert` sur la racine 28 ms, attribut ou classe 0 ms. Reste : alléger le DOM de la feuille
+(rendre le détail après la première image) ou une `content-visibility` sur le calendrier derrière la feuille : à mesurer, non fait. INP médian (A/B) : Poser 304–424, Ajouter en 448–456, Noter 256–464 : rouge.
+
+### Recette ×3,7 (tour7 168 → tour9 624)
+Profil de « Recette » seul sur HEAD : 1 819 ms actifs dont 650 ms de PageShell (cause 2), 137 ms `measure` (hook visualViewport), 50 + 30 + 25 ms `yeastReferences` / `assertYeastCatalogue` / `URL`
+(chargement des levures à l'ouverture du magicien, `chargerBibliothequeLevures`). Corrigé pour sa plus grande part par la cause 2 (472 → 280). Le reste (levures ≈ 100 ms, `measure` 137 ms) : précharger
+`yeastReferences` au repos (`prechargeVues.ts`) et mesurer `measure` après la peinture, non fait. Le 168 de tour7 : le geste ouvrait déjà une page préparée (non reproduit).

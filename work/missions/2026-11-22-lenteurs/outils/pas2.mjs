@@ -33,7 +33,8 @@ const RACINE = () => { const ds = [...document.querySelectorAll('[role=dialog],[
 const vue = () => b.p.evaluate((src) => { const z = (0, eval)(src)(); return (z.matches('[role=dialog],[aria-modal=true]') ? '[FEUILLE] ' : '') + z.innerText.replace(/[ \t]+/g, ' ').replace(/\n+/g, ' | '); }, `(${RACINE})`);
 const btns = () => b.p.evaluate((src) => { const z = (0, eval)(src)(); return [...z.querySelectorAll('button,[role=button],[role=tab],[role=option],[role=radio],[role=switch],a,input,select,textarea')].filter((e) => { const q = e.getBoundingClientRect(); return q.width > 0 && q.height > 0; }).map((e) => { const q = e.getBoundingClientRect(); const t = e.tagName === 'BUTTON' ? '' : e.tagName.toLowerCase() + (e.type ? ':' + e.type : '') + ' '; return t + '«' + (e.getAttribute('aria-label') || e.innerText || e.placeholder || e.name || '').replace(/\s+/g, ' ').trim().slice(0, 44) + '» ' + Math.round(q.width) + '×' + Math.round(q.height) + '@' + Math.round(q.y); }); }, `(${RACINE})`);
 const t0 = Date.now(); let gestesSup = 0;
-if (process.env.PROFIL) { await b.cdp.send('Profiler.enable'); await b.cdp.send('Profiler.setSamplingInterval', { interval: 200 }); await b.cdp.send('Profiler.start'); }
+const demarrerProfil = async () => { await b.cdp.send('Profiler.enable'); await b.cdp.send('Profiler.setSamplingInterval', { interval: 200 }); await b.cdp.send('Profiler.start'); };
+if (process.env.PROFIL && !etapes.includes('prof')) await demarrerProfil();
 for (const ligne of etapes) {
   const i = ligne.indexOf('='); const k = i < 0 ? ligne : ligne.slice(0, i); const v = i < 0 ? '' : ligne.slice(i + 1);
   const tt = Date.now(); const avant = (await inpLu()).length; const nt = b.traces.length;
@@ -58,6 +59,7 @@ for (const ligne of etapes) {
     else if (k === 'dd') log('  TXT', (await vue()).slice(0, 3500));
     else if (k === 's') { const [col, ch] = v.split('|'); const r = await b.p.evaluate((c) => JSON.parse(localStorage.getItem('parcours-calendrier:cache') || '[]').filter((e) => e.name === c).map((e) => e.data), col); log(`  STORE ${col} (${r.length})`, JSON.stringify(ch ? r.map((x) => Object.fromEntries(['id', ...ch.split(',')].map((f) => [f, x[f]]))) : r).slice(0, 1500)); }
     else if (k === 'cap') await b.cap(v);
+    else if (k === 'prof') { if (process.env.PROFIL) await demarrerProfil(); if (process.env.TRACE) await b.p.tracing.start({ path: path.join(out, 'trace.json'), screenshots: false, categories: ['devtools.timeline', 'disabled-by-default-devtools.timeline'] }); }
     else if (k === 'inp') { const r = await inpLu(); log('  INP', r.length ? `max ${Math.max(...r)} ms, ${r.length} interactions` : 'aucune'); }
     else throw new Error(`pas inconnu : ${ligne}`);
     const nouv = (await inpLu()).slice(avant); const tr = b.traces[nt];
@@ -65,6 +67,7 @@ for (const ligne of etapes) {
   } catch (e) { log(`  ECHEC ${ligne.slice(0, 80)} : ${e.message.slice(0, 220)}`); await b.cap(`echec`).catch(() => {}); }
 }
 if (process.env.PROFIL) { const { profile } = await b.cdp.send('Profiler.stop'); fs.writeFileSync(path.join(out, `${nom}.cpuprofile`), JSON.stringify(profile)); }
+if (process.env.TRACE) await b.p.tracing.stop();
 const tous = await inpLu();
 log(`[${nom}] gestes ${b.gestes() + gestesSup} ; durée ${Date.now() - t0} ms ; INP max ${tous.length ? Math.max(...tous) : '-'} (${tous.length}) ; erreurs ${b.journal.erreurs.length} ; ${b.journal.erreurs.slice(0, 3).join(' || ').slice(0, 400)}`);
 await b.fin();
