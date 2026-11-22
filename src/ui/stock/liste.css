@@ -117,3 +117,15 @@ html[data-theme="cave"] .stock-liste .l1-sw{box-shadow:0 0 0 1.5px var(--l1-lise
   body:not([data-has-fiche-page]) .stock-liste .l1-th > :nth-child(4){justify-self:end;text-align:right}
   body:not([data-has-fiche-page]) .stock-liste .l1-ech-th{align-self:end;margin:0;--l1-x0:0px;--l1-tw:100%}
 }
+
+/* D3a (22.11, maquette st1-d3a) : à partir de 1024 px, une table par rayon, côte à côte ; chaque table garde article, repère, stock et barre
+   (le dernier mouvement et le fournisseur restent dans la fiche) */
+@media(min-width:1024px){
+  .sz-tables{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:20px;align-items:start;margin-top:8px}
+  .sz-table{min-width:0}
+  body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-row,body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-th{grid-template-columns:10px minmax(0,1fr) 88px 78px minmax(30px,.5fr);column-gap:6px;padding-right:8px}
+  .sz-tables .l1-ech-th{display:none}
+  body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-c-mv,body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-c-fo,
+  body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-th > :nth-child(n+6){display:none}
+  .sz-tables .l1-eh .l1-ec,.sz-tables .l1-eh .l1-ib{display:none}
+}

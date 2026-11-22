@@ -559,6 +559,56 @@ export const StocksTab: React.FC<StocksTabProps> = ({
     </div>
   );
 
+  // D3a (22.11) : à partir de 1024 px, sans filtre sur un seul rayon, une table par rayon côte à côte (maquette st1-d3a) ; sinon une seule liste.
+  const listeDe = (items: typeof visibleItems, ordre: string[], cle: string) => (
+        <EntityList
+          key={cle}
+          className={listeMesuree ? undefined : 'invisible'}
+          repartDuHaut={false}
+          defileFenetre
+          items={items}
+          keyOf={(i) => i.ref}
+          groupOf={groupeListe}
+          groupOrder={ordre}
+          groupesPlies={plies}
+          renderGroupHeader={(nom, compte) => <EnteteRayon nom={nom} compte={compte} sur={totauxGroupes.get(nom)} tri={tri} onTri={setTri} plie={plies.has(nom)} onPli={() => basculerPli(nom)} resume={resumes.get(nom)} onCatalogue={() => setCatalogue(true)} />}
+          isFavorite={(i) => !!i.favorite}
+          resetKey={tri}
+          
+          emptyState={
+            allItems.length > 0 ? <div className="py-6 text-center space-y-2" role="status">
+              <p className="text-sm text-cave-200">Aucun article ne correspond</p>
+              <p className="text-xs text-cave-400">{filtre === 'epingles' ? 'Touchez l’étoile d’un article pour le retrouver ici.' : filtre === 'manque' && aCommander.length === 0 ? 'Les besoins planifiés et les seuils sont couverts.' : 'Changez de filtre ou de recherche.'}</p>
+              <Button size="sm" onClick={toutVoir}>Voir tous les articles</Button>
+            </div> : <div className="py-6 text-center space-y-3">
+              <p className="text-base text-cave-200">Aucun article en stock</p>
+              <p className="text-sm text-cave-400 max-w-xs mx-auto leading-relaxed">
+                Les articles se créent ici, ou automatiquement en enregistrant un achat.
+              </p>
+              <Button intent="primary" onClick={() => setCreating(true)}>
+                Ajouter le premier article
+              </Button>
+            </div>
+          }
+          renderItem={(item) => (
+            <StockRow stockItems={allItems}
+              item={item}
+              info={infos.get(item.ref)}
+              cmd={aCommanderParRef.get(item.ref)}
+              trace={traces.get(item.ref)}
+              batches={batches}
+              mouvementDit={mouvementDit(item)}
+              onOpen={setSelected}
+              onToggleFavorite={(i) => StorageService.toggleFavorite('stockItem', i.ref)}
+            />
+          )}
+        />
+  );
+  const TROIS = ['Malts', 'Houblons', 'Levures'];
+  const rayonsCol = GROUPES_LISTE.filter(g => TROIS.includes(g) && visibleItems.some(i => groupeListe(i) === g));
+  const autresGroupes = GROUPES_LISTE.filter(g => !TROIS.includes(g) && visibleItems.some(i => groupeListe(i) === g));
+  const enColonnes = grandEcran && !autresStocks && vue === 'etagere' && rayonsCol.length > 1;
+
   return (
     // Articles et Courses défilent avec la fenêtre : l'en-tête de l'app part comme ailleurs (APP-ENTETE-COLLE, 19.11). Fûts, Matériel, Houblons gardent leur hauteur.
     <div className={`stocks-screen flex flex-col ${subTab === 'stock' || subTab === 'courses' ? 'stocks-fenetre' : 'h-[calc(100dvh-var(--main-header-box,2.5rem)-var(--main-navigation-height,2.5rem)-1rem)]'} pt-1 gap-1`}>
@@ -668,48 +718,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
             onCarte={toucherCarte} carteActive={estFamilleAutre(filtre) ? filtre : null} />
         </Suspense>
         </div>
-        <EntityList
-          key={ongletMur}
-          className={listeMesuree ? undefined : 'invisible'}
-          repartDuHaut={false}
-          defileFenetre
-          items={visibleItems}
-          keyOf={(i) => i.ref}
-          groupOf={groupeListe}
-          groupOrder={groupesVisibles}
-          groupesPlies={plies}
-          renderGroupHeader={(nom, compte) => <EnteteRayon nom={nom} compte={compte} sur={totauxGroupes.get(nom)} tri={tri} onTri={setTri} plie={plies.has(nom)} onPli={() => basculerPli(nom)} resume={resumes.get(nom)} onCatalogue={() => setCatalogue(true)} />}
-          isFavorite={(i) => !!i.favorite}
-          resetKey={tri}
-          
-          emptyState={
-            allItems.length > 0 ? <div className="py-6 text-center space-y-2" role="status">
-              <p className="text-sm text-cave-200">Aucun article ne correspond</p>
-              <p className="text-xs text-cave-400">{filtre === 'epingles' ? 'Touchez l’étoile d’un article pour le retrouver ici.' : filtre === 'manque' && aCommander.length === 0 ? 'Les besoins planifiés et les seuils sont couverts.' : 'Changez de filtre ou de recherche.'}</p>
-              <Button size="sm" onClick={toutVoir}>Voir tous les articles</Button>
-            </div> : <div className="py-6 text-center space-y-3">
-              <p className="text-base text-cave-200">Aucun article en stock</p>
-              <p className="text-sm text-cave-400 max-w-xs mx-auto leading-relaxed">
-                Les articles se créent ici, ou automatiquement en enregistrant un achat.
-              </p>
-              <Button intent="primary" onClick={() => setCreating(true)}>
-                Ajouter le premier article
-              </Button>
-            </div>
-          }
-          renderItem={(item) => (
-            <StockRow stockItems={allItems}
-              item={item}
-              info={infos.get(item.ref)}
-              cmd={aCommanderParRef.get(item.ref)}
-              trace={traces.get(item.ref)}
-              batches={batches}
-              mouvementDit={mouvementDit(item)}
-              onOpen={setSelected}
-              onToggleFavorite={(i) => StorageService.toggleFavorite('stockItem', i.ref)}
-            />
-          )}
-        />
+        {enColonnes
+          ? <><div className="sz-tables" data-tables>{rayonsCol.map(g => <div className="sz-table" key={g} data-table={g}>{listeDe(visibleItems.filter(i => groupeListe(i) === g), [g], g)}</div>)}</div>{autresGroupes.length > 0 && listeDe(visibleItems.filter(i => autresGroupes.includes(groupeListe(i))), autresGroupes, "autres-groupes")}</>
+          : listeDe(visibleItems, groupesVisibles, ongletMur)}
           </div>}
         </>
       )}
