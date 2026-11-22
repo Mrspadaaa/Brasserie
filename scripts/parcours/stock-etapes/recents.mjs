@@ -7,8 +7,8 @@ const pastilles = () => [...document.querySelectorAll('.sz-pu')].map((b) => ({ f
 const lignes = () => [...document.querySelectorAll('.stock-liste [data-ref], .stock-liste [data-item]')].length;
 const teintes = () => {
   const lire = (nom) => { const h = document.querySelector(`.sz-r-ray[aria-label="${nom}"] .sz-r-rh`); if (!h) return null; const m = getComputedStyle(h).backgroundColor.match(/[\d.]+/g)?.slice(0, 3).map(Number); return m ?? null; };
-  const bar = document.querySelector('.sz-r-ray .sz-r-bar i'); const bb = bar ? getComputedStyle(bar).backgroundColor : null;
-  return { malts: lire('Malts'), houblons: lire('Houblons'), levures: lire('Levures'), barre: bb, entetes: [...document.querySelectorAll('.sz-r-rh')].map((h) => getComputedStyle(h).backgroundColor) };
+  const jauge = (nom) => { const b = document.querySelector(`.sz-r-ray[aria-label="${nom}"] .sz-r-bar i`); return b ? getComputedStyle(b).backgroundColor.match(/[\d.]+/g)?.slice(0, 3).map(Number) ?? null : null; }; const bb = jauge('Malts');
+  return { malts: lire('Malts'), houblons: lire('Houblons'), levures: lire('Levures'), barre: bb, jaugeHoublons: jauge('Houblons'), entetes: [...document.querySelectorAll('.sz-r-rh')].map((h) => getComputedStyle(h).backgroundColor) };
 };
 
 export default async function (c) {
@@ -42,10 +42,12 @@ export default async function (c) {
     await c.demarrer(); await c.versStocks(); await c.sousOnglet('Recompter'); await c.sleep(700);
     const t = await c.mesure(teintes);
     await c.cap('recompter-barre');
-    const chaud = (m) => !!m && m[0] - m[2] >= 12; // beige : rouge nettement au-dessus du bleu
-    const vert = (m) => !!m && m[1] >= m[0] && m[1] - m[2] >= 8;
+    // teintes exactes de la maquette st1-d1a-recompter (écart ≤ 4 par canal) : Malts beige #F6EBD9, Houblons vert #EAF0DF, jauge Malts brun #9A6A2A, jauge Houblons #5B7D2A
+    const proche = (m, ref) => !!m && ref.every((v, i) => Math.abs(m[i] - v) <= 4);
     const distincts = new Set(t.entetes).size >= 2;
-    c.controle('RECOMPTER-TEINTE', (t.malts ? chaud(t.malts) : false) && distincts && (t.houblons ? vert(t.houblons) : true),
-      `barre Malts ${t.malts?.join(',') ?? 'absente'} (beige : R − B ≥ 12) ; Houblons ${t.houblons?.join(',') ?? 'absente'} (vert) ; couleurs de barres distinctes : ${distincts} (${[...new Set(t.entetes)].join(' | ')}) ; jauge ${t.barre}`);
+    const maltsOk = proche(t.malts, [246, 235, 217]); const houbOk = !t.houblons || proche(t.houblons, [234, 240, 223]);
+    const jaugeOk = proche(t.barre, [154, 106, 42]) && (!t.jaugeHoublons || proche(t.jaugeHoublons, [91, 125, 42]));
+    c.controle('RECOMPTER-TEINTE', maltsOk && houbOk && jaugeOk && distincts,
+      `barre Malts ${t.malts?.join(',') ?? 'absente'} (maquette 246,235,217 ±4 : ${maltsOk}) ; Houblons ${t.houblons?.join(',') ?? 'absente'} (234,240,223 : ${houbOk}) ; jauge Malts ${t.barre ?? 'absente'} (154,106,42 : ${jaugeOk}) ; barres distinctes ${distincts} (${[...new Set(t.entetes)].join(' | ')})`);
   });
 }
