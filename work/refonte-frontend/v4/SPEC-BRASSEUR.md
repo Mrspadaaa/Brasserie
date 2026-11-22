@@ -2654,3 +2654,7 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 > Tu peux aussi utiliser, couleur et forme pour les stock autre
 
 (22.11, Autres stocks, D4.)
+
+> On peut toujours pas revenir en arrière ???
+
+(22.11, en ligne tour 9, capture 29 de work/missions/2026-11-21-calendrier-entete/ : 30 sem., période 03.08.26–28.02.27 ; la courbe commence en août au bord gauche, impossible d'aller plus loin dans le passé ; le cadre dit « S32 – S8 2027 » mais n'est dessiné que de nov. à janv.)
