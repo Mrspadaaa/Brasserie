@@ -230,8 +230,10 @@ export function CalendrierTab(props: CalendrierTabProps) {
      « Nov. » au calendrier, les semaines de novembre dans l'horizon). Seuls « Tout » (sans bornes) et une période tout entière passée ne
      se lisent pas en semaines : la fenêtre reste la sienne. */
   const periodeEnTete: Periode = periodeLocale && fenetreDePeriode(periodeLocale, premierLundi, modele.semaines.length || SEMAINES_ANNEE) ? periodeLocale : periodeDeFenetre(fenetre);
-  const onPeriode = useCallback((p: Periode) => { setPeriodeLocale(p); props.onPeriode?.(p); // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.onPeriode]);
+  /* CAL-PERIODE-APP-FIXE (22.11, « Cette période là reste fixe, le reste peut être mobile ») : la fenêtre du Calendrier est locale. Ses gestes (cadre,
+     poignées, durée, ‹ ›, glisser la frise) règlent `periodeLocale`, jamais la période de l'app : celle-ci ne change que par ses propres ‹ › (la barre
+     de l'app, Finances), et la fenêtre la suit alors (effet ci-dessus). */
+  const onPeriode = useCallback((p: Periode) => { setPeriodeLocale(p); }, []);
   /* CHN-9 : le réglage ± se garde au rechargement, comme la courbe cachée et la rangée masquée */
   const [mouvements, setMouvements] = useEtatGarde<boolean>('calendrier_mouvements', false);
   const [epingles, setEpingles] = useEtatGarde<string[]>('calendrier_epingles', []);
@@ -414,6 +416,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   }, [montrer, ouvrir]);
 
   function setDetailFerme() { setSelectionId(null); setMenu(null); }
+  /* CAL-FICHE-FRISE (22.11) : une date réglée sur la fiche l'écrit, puis la fiche se rouvre sur la même chose (comme « Lier »), la date neuve dessus */
+  const rouvrirApres = (id: string) => (ok: boolean) => { if (ok) { ouvertureParGeste.current = Date.now() + 1200; setSelectionId(id); } };
 
   /* ---------- écrire : la source, puis le message avec son inverse ---------- */
   /* CRITIQUE-12 n° 1 : `ancre` (id de la chose touchée, `data-chose`) : le message se pose près d'elle s'il n'y cache aucun texte, sinon en bas */
@@ -894,13 +898,13 @@ export function CalendrierTab(props: CalendrierTabProps) {
             void ecrire({ ok: true, ecritures: [{ op: 'patch', collection: 'batches', id: chose.source.id, patch: { name: nom } }],
               message: { texte, action: 'Annuler', lecture: `${texte} · Annuler` }, effet: null, promesse: null, courbeApres: null }, true, chose.id, true);
           },
-          onDecalerDebut: (jours: number) => { void ecrire(corrigerBrassage(chose, jours, ctxRef.current), true, chose.id, true); },
-          onDecalerFin: (jours: number) => { void ecrire(allonger(chose, jours, ctxRef.current), true, chose.id, true); }
+          onDecalerDebut: (jours: number) => { void ecrire(corrigerBrassage(chose, jours, ctxRef.current), true, chose.id, true).then(rouvrirApres(chose.id)); },
+          onDecalerFin: (jours: number) => { void ecrire(allonger(chose, jours, ctxRef.current), true, chose.id, true).then(rouvrirApres(chose.id)); }
         } : {})}
         {...(editable && !sansDate ? {
           /* D412 : l'action à la volée, la pastille de date réglée sur place ; une chose qui dure garde sa fin quand son début bouge */
-          onDecalerDebut: (jours: number) => { void ecrire(chose.source.genre === 'batch' && chose.deplacable !== true ? corrigerBrassage(chose, jours, ctxRef.current) : chose.fin && chose.fin !== chose.debut ? allongerDebut(chose, jours, ctxRef.current) : deplacerJours(chose, jours, ctxRef.current), true, chose.id, true); },
-          onDecalerFin: (jours: number) => { void ecrire(allonger(chose, jours, ctxRef.current), true, chose.id, true); }
+          onDecalerDebut: (jours: number) => { void ecrire(chose.source.genre === 'batch' && chose.deplacable !== true ? corrigerBrassage(chose, jours, ctxRef.current) : chose.fin && chose.fin !== chose.debut ? allongerDebut(chose, jours, ctxRef.current) : deplacerJours(chose, jours, ctxRef.current), true, chose.id, true).then(rouvrirApres(chose.id)); },
+          onDecalerFin: (jours: number) => { void ecrire(allonger(chose, jours, ctxRef.current), true, chose.id, true).then(rouvrirApres(chose.id)); }
         } : {})}
         {...(editable && (chose.source.genre === 'creative' || chose.source.genre === 'plan') ? { onRenommer: (nom: string) => {
           /* RENOMMER-EVT (R1) : le titre touché devient un champ ; Entrée renomme la chose, le message porte Annuler */

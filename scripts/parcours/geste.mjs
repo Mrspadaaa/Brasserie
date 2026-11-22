@@ -818,7 +818,7 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     const dans = (e) => { const r = e.getBoundingClientRect(), x = r.left + r.width / 2; return x >= c.left - 0.5 && x <= c.right + 0.5; };
     const num = (e) => Number(e.getAttribute('data-point-semaine') ?? e.getAttribute('data-semaine'));
     const points = [...cb.querySelectorAll('[data-point-semaine]')].filter(dans).map(num);
-    const grad = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].filter((e) => e.getBoundingClientRect().width > 0).filter(dans).map(num);
+    const grad = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.left + r.width / 2 >= 0 && r.left + r.width / 2 <= innerWidth; }).map(num);
     const pt = document.querySelector('[data-periode-pastille] .pr-court')?.textContent?.trim() ?? null;
     let pastille = null;
     const m = pt && /(\d\d)\.(\d\d)(?:\.(\d\d))?\s*[–-]\s*(\d\d)\.(\d\d)(?:\.(\d\d))?/.exec(pt);
@@ -964,10 +964,10 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
       await glisser(f.x, f.y, pas(f.x, f.x + 3.4 * f.pxJour, 10)); await sleep(700);
       const j1 = await jourPastille(), e1 = ecart(j0, j1);
       e1 === 3 ? ok(`${FF} tirer au jour`, `${j0} → ${j1}`) : echec(`${FF} tirer au jour`, `${j0} → ${j1} (+3 j attendus pour 3,4 jours de déplacement)`);
-      // fermée puis rouverte : la date écrite reste (lue de la chose, plus du brouillon)
-      await p.evaluate(async () => { document.querySelector('[data-detail] [data-pastille="debut"]')?.click(); await new Promise((r) => setTimeout(r, 900)); });
+      // le lâcher écrit : la fiche se rouvre sur la même chose, frise fermée, la date écrite dessus
+      await sleep(300);
       const j2 = await jourPastille();
-      j2 === j1 && !(await p.evaluate(() => !!document.querySelector('[data-detail] .cal-f-duree'))) ? ok(`${FF} lâcher écrit`, j2) : echec(`${FF} lâcher écrit`, `après fermeture ${j2} (attendu ${j1})`);
+      j2 === j1 && !(await p.evaluate(() => !!document.querySelector('[data-detail] .cal-f-duree'))) ? ok(`${FF} lâcher écrit`, j2) : echec(`${FF} lâcher écrit`, `après le lâcher ${j2} (attendu ${j1}, frise fermée)`);
       // appui tenu au bord droit (R7) : l'échelle défile, la date avance sans bouger le doigt ; à 1280, Échap rend la date d'avant (R10)
       const f2 = await ouvrirFrise();
       if (!f2?.partage) { echec(`${FF} appui au bord`, 'frise non rouverte'); await echap(); return; }
