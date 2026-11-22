@@ -87,6 +87,8 @@ import { EntreeDocuments,RangeePages,FrisePages,ResteDeLecture,MiniPages,FilVeri
 import { allegerPhoto,assemblerPdf,empreinteDePage,empreinteDesPages,refuserPage,PAGES_MAX,PAGE_OCTETS_MAX,type PageRangee,type PdfAssemble } from '../../services/pagesJustificatif';
 
 export interface ExpenseSheetProps { onClose:()=>void;onSaved:(receipt?:DriveProofReceipt)=>void;initialIntent?:'expense'|'equipment';existingEquipmentId?:string;/** Le nom de l'appareil entretenu : « Pour quoi ? » s'ouvre sur « Entretien · nom » (c2, N2). */existingEquipmentName?:string;startWithScan?:boolean;initialPlanId?:string;apercu?:ApercuDepense;
+  /** Saisie à la main v01s (D426) : « Articles » y renvoie, montant, nom, fournisseur, catégorie et date repris. */prefill?:{amount?:number;description:string;vendor:string;category:FinanceCategory;date:string};
+  /** « Saisir sans justificatif » passe à la saisie à la main v01s (le cas sans document) quand l'appelant la fournit. */onSansJustificatif?:()=>void;
   /** dp-doublon : ouvre la fiche d'une dépense déjà enregistrée (la feuille se ferme d'abord). Absent : « Fermer » seulement. */
   onOpenExpense?:(id:string)=>void }
 const kinds:Array<{value:PurchaseLineDraft['kind'];label:string}>=[{value:'ingredient',label:'Ingrédients'},{value:'packaging',label:'Emballages'},{value:'cleaning',label:'Nettoyage'},{value:'equipment',label:'Matériel durable'},{value:'maintenance',label:'Entretien / réparation'},{value:'service',label:'Service'},{value:'shipping',label:'Livraison'},{value:'discount',label:'Remise'},{value:'other',label:'Autre'}];
@@ -151,7 +153,7 @@ function NomArticle({index,line,neuf,prisParAutre,onNom,enLigne}:{index:number;l
 /** LR1-9 : « les lectures diffèrent · variante : « — » / « ROUGE 25cm » » (une valeur absente s'écrit « — », les mots bruts traduits). */
 const CHAMP_DESACCORD:Record<string,string>={variant:'variante',reference:'référence',name:'nom',quantity:'quantité',unit:'unité',price:'prix',amountTTC:'montant',kind:'nature',vatCode:'code TVA'};
 const texteDesaccord=(p:Pick<InvoicePoint,'champ'|'champs'|'valeurs'>):string=>{const k=(p.champs?.[0]??p.champ).split('.').pop()??'';const v=[...new Set((p.valeurs??[]).map(x=>x.valeur===null||x.valeur===undefined||x.valeur===''?'—':String(x.valeur)))];return sansMotsBruts(`les lectures diffèrent · ${CHAMP_DESACCORD[k]??k} : ${v.map(x=>`« ${x} »`).join(' / ')}`);};
-export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEquipmentId,existingEquipmentName,startWithScan=false,initialPlanId,apercu:apercuProp,onOpenExpense}:ExpenseSheetProps) {
+export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEquipmentId,existingEquipmentName,startWithScan=false,initialPlanId,apercu:apercuProp,onOpenExpense,prefill,onSansJustificatif}:ExpenseSheetProps) {
   /* Le banc de développement : la prop n'existe qu'en développement (éliminée du bundle de production) ; elle remplace la lecture et l'enregistrement. */
   const apercu=import.meta.env.DEV?apercuProp:undefined;
   /* G3 et G1 (D396) : l'achat de matériel s'ouvre sur un nom posé, celui du projet lié, sinon de la catégorie (« Matériel », puis « Matériel 2 ») ; il se garde d'un toucher ou se renomme. */
@@ -159,7 +161,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   const [draft,setDraft]=useState<PurchaseDraft>(()=>{
     const plan=initialPlanId?FinanceService.getPlans().find(p=>p.id===initialPlanId):undefined;
     const entretien=initialIntent==='expense'&&existingEquipmentId?existingEquipmentName?.trim()||undefined:undefined;
-    return {submissionId:crypto.randomUUID(),date:swissToday(),vendor:plan?.vendor??'',invoiceNumber:'',description:entretien?'Entretien · '+entretien:nomPose||plan?.title||'',...(entretien?{descriptionSource:'typed' as const}:{}),planId:initialPlanId,category:initialIntent==='equipment'||entretien?'materiel':'brassage',lines:[{...newLine(initialIntent),description:entretien?'Entretien · '+entretien:nomPose||plan?.title||'',...(existingEquipmentId?{equipmentAction:'existing' as const,equipmentRef:existingEquipmentId,...(entretien?{kind:'maintenance' as const}:{})}: {})}],paymentStatus:'paid',paymentMethod:'bank',paymentDate:swissToday(),dueDate:'',sourceCurrency:'CHF'};
+    return {submissionId:crypto.randomUUID(),date:swissToday(),vendor:plan?.vendor??'',invoiceNumber:'',description:entretien?'Entretien · '+entretien:nomPose||plan?.title||'',...(entretien?{descriptionSource:'typed' as const}:{}),planId:initialPlanId,category:initialIntent==='equipment'||entretien?'materiel':'brassage',lines:[{...newLine(initialIntent),description:entretien?'Entretien · '+entretien:nomPose||plan?.title||'',...(existingEquipmentId?{equipmentAction:'existing' as const,equipmentRef:existingEquipmentId,...(entretien?{kind:'maintenance' as const}:{})}: {})}],paymentStatus:'paid',paymentMethod:'bank',paymentDate:swissToday(),dueDate:'',sourceCurrency:'CHF',...(prefill?{amount:prefill.amount,vendor:prefill.vendor,category:prefill.category,date:isoVersSuisse(prefill.date),paymentDate:isoVersSuisse(prefill.date),...(prefill.description?{description:prefill.description,descriptionSource:'typed' as const}:{})}:{})};
   });
   const [scan,setScan]=useState<ScanOutcome|null>(null),[busy,setBusy]=useState(false),[saving,setSaving]=useState(false),[error,setError]=useState(''),[attachment,setAttachment]=useState<File|null>(null),[pendingId,setPendingId]=useState<string|null>(null);
   const [showForm,setShowForm]=useState(!startWithScan);
@@ -1705,7 +1707,7 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
         <EntreeDocuments onChoisir={()=>fileInput.current?.click()}/>
         {coarse?<button type="button" onClick={()=>cameraInput.current?.click()} className={`${button} w-full border-cave-600 text-cave-50 flex justify-center items-center gap-2`}><Camera size={18}/>Photographier le ticket</button>:null}
         {coarse?<p className="text-balance text-xs text-center text-cave-400">Une photo, ou plusieurs du même ticket · <button type="button" onClick={()=>pdfInput.current?.click()} className="min-h-7 underline underline-offset-4 text-cave-200">un PDF</button> · 4&nbsp;Mo max.</p>:<p className="text-balance text-xs text-center text-cave-400">Un fichier, ou plusieurs photos du même ticket · PDF ou image · 4&nbsp;Mo max.</p>}
-        {!showForm?<button type="button" onClick={()=>setShowForm(true)} className="min-h-7 w-full text-sm text-cave-200 underline underline-offset-4">Saisir sans justificatif</button>:null}
+        {!showForm?<button type="button" onClick={()=>{if(onSansJustificatif)onSansJustificatif();else setShowForm(true);}} className="min-h-7 w-full text-sm text-cave-200 underline underline-offset-4">Saisir sans justificatif</button>:null}
       </section>;
   const capt=<>
       {entreeOuverte?entree:null}
@@ -1826,6 +1828,8 @@ export function ExpenseSheet({onClose,onSaved,initialIntent='expense',existingEq
   {prive?<MovementSheet prefill={{kind:'withdrawal',...prive}} onClose={()=>setPrive(null)} onSaved={()=>{onSaved();onClose();}}/>:null}</ModalShell>;
 }
 const todayIsoMois=()=>toIsoDate(swissToday());
+/** `2026-11-22` → `22.11.2026` (la date suisse du brouillon d'achat) ; illisible : aujourd'hui. */
+const isoVersSuisse=(iso:string)=>/^\d{4}-\d{2}-\d{2}$/.test(iso)?`${iso.slice(8,10)}.${iso.slice(5,7)}.${iso.slice(0,4)}`:swissToday();
 const fr2=(n:number)=>(Math.round(n*100)/100).toFixed(2).replace('.',',');
 /** 0.026 → « 2,6 », 0.081 → « 8,1 », 0.077 → « 7,7 », 0.19 → « 19 » (au dixième de point, virgule suisse). */
 const tauxFr=(rate:number)=>String(Math.round(rate*1000)/10).replace('.',',');

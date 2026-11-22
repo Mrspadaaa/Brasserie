@@ -155,7 +155,8 @@ describe('#114 · le + du tableau de bord et de Finances ouvre la nouvelle écri
       }
       expect(items.at(-1)).toHaveAttribute('aria-label', expect.stringContaining('Compagnon brasseur'));
       await user.click(items[0]);
-      expect(await screen.findByRole('dialog', { name: 'Saisie scan' })).toBeInTheDocument();
+      // 22.11 (D426) : la nouvelle écriture est la saisie à la main v01s (le document se lit depuis son icône).
+      expect(await screen.findByRole('dialog', { name: 'Saisie quick-expense' })).toBeInTheDocument();
       expect(screen.queryByRole('dialog', { name: 'Saisie menu' })).not.toBeInTheDocument();
     });
   }

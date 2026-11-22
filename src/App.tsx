@@ -763,7 +763,8 @@ export const App: React.FC = () => {
       }
     };
     switch (cle) {
-      case 'ecriture':
+      /* v01s (D426) : « Écriture » ouvre la saisie à la main (le genre d'abord : sens, rythme, apport) ; « Facture », la lecture du document. */
+      case 'ecriture': setQuickAction('quick-expense', actionLauncherRef.current); break;
       case 'facture': setQuickAction('scan', actionLauncherRef.current); break;
       case 'vente': setQuickAction('quick-sale', actionLauncherRef.current); break;
       case 'brassin': setQuickAction('brew-batch', actionLauncherRef.current); break;
@@ -817,7 +818,8 @@ export const App: React.FC = () => {
       case 'newTransaction':
         // 09.11, ses mots : « entrer une facture ouvre la bonne vue tandis que nouvelle écriture, non » : la même entrée que « Entrer une facture »
         // (document, photo, ou « Saisir sans justificatif » d'un toucher), sans repasser par le sommaire.
-        setQuickAction('scan', actionLauncherRef.current);
+        // 22.11 (D426) : l'écriture est la saisie à la main v01s ; son icône du document mène à la lecture en un toucher.
+        setQuickAction('quick-expense', actionLauncherRef.current);
         break;
       case 'quickAction':
       default:

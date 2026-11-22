@@ -43,6 +43,7 @@ import { NumericField } from '../ui/NumericField';
 import { MoneyField, splitTva } from '../ui/MoneyField';
 import { montantChf } from '../domain/finance/ledger';
 import { ExpenseSheet } from '../ui/finance/ExpenseSheet';
+import { SaisieMain, type PrefillAchat } from '../ui/saisie/SaisieMain';
 import type { ApercuDepense } from '../ui/depense/types';
 import { FirestoreRepo, isConfirmedWriteRejection } from '../services/firestoreRepo';
 import { purchaseIsoDate } from '../services/purchaseEntry';
@@ -111,7 +112,8 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
 }) => {
   const recipes = useMemo(() => allRecipes.filter(isCurrent), [allRecipes]);
   const [screen, setScreen] = useState<ModalScreen>(initialScreen);
-  const [expenseMode, setExpenseMode] = useState<'manual'|'scan'|null>(initialScreen === 'quick-expense' ? 'manual' : initialScreen === 'scan' ? 'scan' : null);
+  const [prefillAchat, setPrefillAchat] = useState<PrefillAchat | null>(null);
+  const [expenseMode, setExpenseMode] = useState<'manual'|'scan'|'articles'|null>(initialScreen === 'quick-expense' ? 'manual' : initialScreen === 'scan' ? 'scan' : null);
   const wasOpen = useRef(false);
   const titleId = useId();
   useLayoutEffect(() => {
@@ -623,7 +625,11 @@ export const QuickActionModal: React.FC<QuickActionModalProps> = ({
   if (!isOpen) return null;
   // Banc local : la feuille attend sa fixture (sinon elle se monterait sans elle et ouvrirait le sélecteur de fichiers).
   if(import.meta.env.DEV && !apercuDepense && new URLSearchParams(location.search).has('depense')) return null;
-  if(expenseMode) return <ExpenseSheet onClose={resetAndClose} onSaved={()=>onSuccessMessage?.('Achat enregistré.')} startWithScan={expenseMode==='scan'} apercu={apercuDepense ?? undefined} onOpenExpense={onOpenExpense}/>;
+  /* Saisie à la main v01s (D426) : le cas sans document. L'icône du document passe à la lecture ; « Articles » passe au formulaire d'achat complet, montant et nom repris.
+     Le banc `?depense=` garde la feuille de lecture (son aperçu). */
+  if(expenseMode==='manual'&&!apercuDepense) return <SaisieMain onClose={resetAndClose} onDocument={()=>setExpenseMode('scan')} onArticles={p=>{setPrefillAchat(p);setExpenseMode('articles');}} onSaved={m=>onSuccessMessage?.(m)}/>;
+  if(expenseMode) return <ExpenseSheet onClose={resetAndClose} onSaved={()=>onSuccessMessage?.('Achat enregistré.')} startWithScan={expenseMode==='scan'} apercu={apercuDepense ?? undefined} onOpenExpense={onOpenExpense}
+    prefill={expenseMode==='articles'?prefillAchat??undefined:undefined} onSansJustificatif={expenseMode==='scan'&&!apercuDepense?()=>setExpenseMode('manual'):undefined}/>;
 
   /* Nouveau brassin : dit AVANT le geste ce qui empêcherait de lancer (recette sans le matériel de la brasserie choisie), et lit ce qui manque à ce volume. */
   const profilLancement = brasserieChoisie ?? brasserieActive;

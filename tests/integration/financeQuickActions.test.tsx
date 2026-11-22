@@ -47,15 +47,19 @@ describe('Entrées financières directes', () => {
     expect(screen.getByLabelText('Importer un justificatif')).not.toHaveAttribute('capture');
   });
 
-  it('ouvre la dépense manuelle immédiatement et quitte le scan en une seule sélection', () => {
+  // 22.11 (D426) : la saisie sans document est la saisie à la main v01s (le genre d'abord) ; « Saisir sans justificatif » de la lecture y mène.
+  it('ouvre la saisie à la main immédiatement et quitte le scan en une seule sélection', () => {
     const view = render(<QuickActionModal isOpen recipes={[]} onClose={() => {}} initialScreen="quick-expense"/>);
-    expect(screen.getByLabelText('Total TTC en CHF')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Saisir à la main' })).toBeVisible();
+    expect(screen.getByLabelText('Montant en CHF')).toHaveAttribute('inputmode', 'decimal');
     expect(screen.queryByRole('button', { name: 'Saisir sans justificatif' })).not.toBeInTheDocument();
     view.unmount();
     render(<QuickActionModal isOpen recipes={[]} onClose={() => {}} initialScreen="scan"/>);
     fireEvent.click(screen.getByRole('button', { name: 'Saisir sans justificatif' }));
-    expect(screen.getByLabelText('Total TTC en CHF')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Saisir à la main' })).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Documents' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Lire un document/ }));
+    expect(screen.getByRole('button', { name: 'Documents' })).toBeVisible();
   });
 
   it('permet de choisir une vente au clavier, confine Tab et restaure le déclencheur à Échap', async () => {
@@ -93,7 +97,7 @@ describe('Entrées financières directes', () => {
     await user.click(trigger);
     await user.click(screen.getByRole('button', { name: /Lire un justificatif/ }));
     await user.click(screen.getByRole('button', { name: 'Saisir sans justificatif' }));
-    expect(screen.getByLabelText('Total TTC en CHF')).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Saisir à la main' })).toBeVisible();
     await user.keyboard('{Escape}');
     expect(trigger).toHaveFocus();
   });

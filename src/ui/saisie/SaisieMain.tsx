@@ -1,0 +1,353 @@
+// « Saisir à la main » — v01s (D426, « Le genre d'abord », simplifiée), portée de `work/missions/2026-11-22-saisie-main/choix-saisie.html`.
+// Repos : habituels en tête, tuiles « Ça sort » / « Ça rentre », Remboursement en pointillés, la carte « Pour quoi ? · date · 0,00 ».
+// Toucher un genre replie les tuiles en bande (« Ça sort [Loyer] changer ») ET ouvre le clavier sur le montant (même champ, focus dans le geste) ;
+// le pied (Mon mois + le bouton qui dit le sens) reste au-dessus du clavier ; Entrée = ce bouton. Nom facultatif, gris par défaut, ou une puce des
+// derniers noms ; « Revient ? » en 4 segments ; la date par la frise partagée (ChoixDate). Écrit par les services de Finances : pièce, paiement,
+// prévision récurrente (rien de neuf dans le schéma). Le cas avec document reste la lecture (ExpenseSheet, p3c-3) : l'icône en haut à droite y passe.
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { ArrowDown, ArrowUp, Briefcase, CalendarDays, Check, ChevronDown, FileText, Home, Landmark, Link2, MoreHorizontal, Pencil, PiggyBank, Percent, Plus, Repeat, Search, ShoppingCart, Tag, Undo2, Wallet, X } from 'lucide-react';
+import { ModalShell } from '../ModalShell';
+import { ChoixDate } from '../ChoixDate';
+import { CategoryTag } from '../finance/CategoryTag';
+import { idFor } from '../finance/FinanceForms';
+import { StorageService } from '../../services/storage';
+import { FinanceService, validateRefundTransaction } from '../../services/financeService';
+import { FirestoreRepo, isConfirmedWriteRejection } from '../../services/firestoreRepo';
+import { todayISO, validateFinanceTransaction } from '../../domain/finance/ledger';
+import type { FinanceTransaction } from '../../domain/finance/types';
+import type { FinanceCategory } from '../../types';
+import { retirerEcriture } from '../finance/modifier/retirerEcriture';
+import {
+  CATEGORIES_ACHAT, GENRES, RENTRE, SORT, avecGenre, brouillonNeuf, chf, dateDeFin, derniersNoms, echeances, finsProposees, habituels, horsResultat,
+  jjmm, lireMontant, nomFinal, piecesRemboursables, preparer, sensDe, signe, sommeDouzeMois,
+  type Brouillon, type Ecriture, type GenreId, type Habituel, type Methode, type Rythme
+} from './modele';
+import '../finance/finance.css';
+import './saisie.css';
+
+/** Ce que l'achat emporte vers le formulaire complet (articles et stock). */
+export interface PrefillAchat { amount?: number; description: string; vendor: string; category: FinanceCategory; date: string }
+
+const ICONE: Record<GenreId, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
+  achat: ShoppingCart, loyer: Home, abo: Repeat, salaire: Briefcase, impot: Percent, prel: Wallet, autreo: MoreHorizontal,
+  vente: Tag, apport: PiggyBank, autrei: MoreHorizontal, rembt: Undo2
+};
+/** Teinte du picto de tuile : celle de la catégorie (DESIGN.md, Finances) ; l'impôt garde sa teinte rouille de la maquette. */
+const TEINTE: Record<string, { fond: string; trait: string; seg: string }> = {
+  chargesFixes: { fond: '#3F2556', trait: '#D8B9F4', seg: '#9856D2' }, apports: { fond: '#562544', trait: '#F4B9DE', seg: '#D256A4' },
+  recettes: { fond: '#255633', trait: '#B9F4CA', seg: '#56D27B' }, brassage: { fond: '#564925', trait: '#F4E5B9', seg: '#D2B356' },
+  materiel: { fond: '#564925', trait: '#F4E5B9', seg: '#D2B356' }, nettoyage: { fond: '#564925', trait: '#F4E5B9', seg: '#D2B356' },
+  renovation: { fond: '#564925', trait: '#F4E5B9', seg: '#D2B356' }, impot: { fond: '#4E2A22', trait: '#F4C6B9', seg: '#D27356' },
+  divers: { fond: '#2C2521', trait: '#D8CEC5', seg: '#9A8A7E' }
+};
+const teinteGenre = (g: GenreId) => TEINTE[g === 'impot' ? 'impot' : GENRES[g].category];
+const RYTHMES: Array<{ id: Rythme; nom: string }> = [{ id: 'une', nom: '1×' }, { id: 'monthly', nom: 'Mois' }, { id: 'quarterly', nom: 'Trim.' }, { id: 'yearly', nom: 'Année' }];
+const RYTHME_LONG: Record<Rythme, string> = { une: 'une fois', monthly: 'chaque mois', quarterly: 'chaque trimestre', yearly: 'chaque année' };
+const METHODES: Array<{ id: Methode; nom: string }> = [{ id: 'bank', nom: 'Banque' }, { id: 'cash', nom: 'Espèces' }, { id: 'twint', nom: 'TWINT' }, { id: 'other', nom: 'Autre' }];
+const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const MOIS_COURT = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+const moisDe = (iso: string) => MOIS[Number(iso.slice(5, 7)) - 1];
+const moisAn = (iso: string) => `${MOIS_COURT[Number(iso.slice(5, 7)) - 1]} ${iso.slice(0, 4)}`;
+const TVA = [0, 0.026, 0.038, 0.081];
+
+function Barres() {
+  return <svg width="20" height="18" viewBox="0 0 20 18" aria-hidden="true"><rect x="0" y="2" width="4" height="16" rx="1" fill="#6E9B5B" /><rect x="5" y="7" width="4" height="11" rx="1" fill="#9856D2" /><rect x="10" y="10" width="4" height="8" rx="1" fill="#D2B356" /><rect x="15" y="14" width="4" height="4" rx="1" fill="#56C1D2" /></svg>;
+}
+function Ic({ g, size = 16 }: { g: GenreId; size?: number }) { const I = ICONE[g]; return <I size={size} strokeWidth={2} />; }
+
+/** Une pastille de date (« 22.11 ») ; touchée, la frise partagée du Calendrier s'ouvre dessous (GESTE-DATE-PARTOUT). */
+function useDate() { const [ouverte, setOuverte] = useState<string | null>(null); return { ouverte, basculer: (k: string) => setOuverte((o) => (o === k ? null : k)), fermer: () => setOuverte(null) }; }
+
+export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
+  onClose: () => void; onDocument: () => void; onArticles: (p: PrefillAchat) => void; onSaved?: (message: string) => void;
+}) {
+  const titreId = useId();
+  const aujourdhui = todayISO();
+  const [version, setVersion] = useState(0);
+  const donnees = useMemo(() => ({ txs: StorageService.getTransactions() as FinanceTransaction[], plans: FinanceService.getPlans() }), [version]); // eslint-disable-line react-hooks/exhaustive-deps
+  const tvaInscrit = useMemo(() => Boolean(StorageService.getConfig()?.fiscal?.isTvaRegistered || FinanceService.getProfile().vatRegistered), []);
+  const [id, setId] = useState(() => idFor('MAIN'));
+  const [b, setB] = useState<Brouillon>(() => brouillonNeuf(aujourdhui));
+  const [choisi, setChoisi] = useState(false);
+  const [brut, setBrut] = useState('');
+  const [nomEdit, setNomEdit] = useState(false);
+  const [plateau, setPlateau] = useState(false);
+  const [recherche, setRecherche] = useState('');
+  const [erreur, setErreur] = useState('');
+  const [avis, setAvis] = useState('');
+  const [occupe, setOccupe] = useState(false);
+  const [fait, setFait] = useState<(Ecriture & { attente: boolean }) | null>(null);
+  const [ombre, setOmbre] = useState(false);
+  const [enLigne, setEnLigne] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine));
+  const dates = useDate();
+  const montantRef = useRef<HTMLInputElement | null>(null);
+  const nomRef = useRef<HTMLInputElement | null>(null);
+  const corps = useRef<HTMLDivElement | null>(null);
+  const focusVoulu = useRef(false);
+
+  useEffect(() => { const on = () => setEnLigne(true), off = () => setEnLigne(false); addEventListener('online', on); addEventListener('offline', off); return () => { removeEventListener('online', on); removeEventListener('offline', off); }; }, []);
+  /* Le focus se pose dans le geste (même champ, gardé d'un état à l'autre) ; s'il a été perdu au rendu, on le repose ici. */
+  useEffect(() => { if (focusVoulu.current) { focusVoulu.current = false; if (document.activeElement !== montantRef.current) montantRef.current?.focus({ preventScroll: true }); } });
+  useEffect(() => { if (nomEdit) nomRef.current?.focus(); }, [nomEdit]);
+  const mesurerOmbre = () => { const c = corps.current; if (c) setOmbre(c.scrollHeight - c.scrollTop - c.clientHeight > 2); };
+  useEffect(mesurerOmbre);
+
+  const G = GENRES[b.genre];
+  const cents = lireMontant(brut);
+  const sens = choisi ? sensDe(b, donnees.txs) : null;
+  const piece = b.pieceId ? donnees.txs.find((t) => t.id === b.pieceId) : undefined;
+  const pieceInfo = useMemo(() => (b.pieceId ? piecesRemboursables(donnees.txs, '', 500).find((p) => p.id === b.pieceId) : undefined), [b.pieceId, donnees.txs]);
+  const habs = useMemo(() => habituels(donnees.txs, donnees.plans, aujourdhui), [donnees, aujourdhui]);
+  const noms = useMemo(() => (choisi && G.qui ? derniersNoms(donnees.txs, b.genre) : []), [choisi, G.qui, donnees.txs, b.genre]);
+  const pieces = useMemo(() => (plateau ? piecesRemboursables(donnees.txs, recherche) : []), [plateau, recherche, donnees.txs]);
+  const recurrent = choisi && !b.solde && G.rythme !== null && b.rythme !== 'une';
+  const fin = recurrent ? dateDeFin(b.date, b.rythme, b.fin, b.finDate) : undefined;
+  const apayer = b.reglement === 'apayer' && !horsResultat(b.genre);
+
+  const garde = (e: React.PointerEvent) => { if (document.activeElement === montantRef.current) e.preventDefault(); };
+  const ouvrirMontant = (selection = false) => { focusVoulu.current = true; const m = montantRef.current; if (m) { m.focus({ preventScroll: true }); if (selection) m.select(); } };
+  const poserGenre = (g: GenreId) => {
+    setErreur(''); setAvis(''); setNomEdit(false); dates.fermer();
+    setB((x) => avecGenre(x, g)); setChoisi(true);
+    if (g === 'rembt') { setPlateau(true); setRecherche(''); return; }
+    ouvrirMontant();
+  };
+  const poserHabituel = (h: Habituel) => {
+    setErreur(''); setAvis(''); setNomEdit(false); dates.fermer();
+    setB((x) => ({ ...avecGenre(x, h.genre), nom: h.nom, vendor: h.vendor, solde: h.solde }));
+    setChoisi(true); setBrut(chf(h.cents).replace(/ /g, ' '));
+    ouvrirMontant(true);
+  };
+  const changer = () => { setChoisi(false); setPlateau(false); setNomEdit(false); dates.fermer(); setB((x) => ({ ...brouillonNeuf(aujourdhui), date: x.date })); };
+  const choisirPiece = (pid: string, reste: number) => {
+    setB((x) => ({ ...x, pieceId: pid })); setPlateau(false);
+    if (!lireMontant(brut)) setBrut(chf(reste).replace(/ /g, ' '));
+    ouvrirMontant(true);
+  };
+  const patch = (p: Partial<Brouillon>) => setB((x) => ({ ...x, ...p }));
+
+  const neuf = (message = '') => { setId(idFor('MAIN')); setB(brouillonNeuf(aujourdhui)); setChoisi(false); setBrut(''); setNomEdit(false); setPlateau(false); setFait(null); setErreur(''); setAvis(message); setVersion((v) => v + 1); dates.fermer(); };
+
+  const enregistrer = async () => {
+    if (occupe || !choisi || !cents) return;
+    if (b.genre === 'rembt' && !b.pieceId) { setPlateau(true); return; }
+    setOccupe(true); setErreur('');
+    try {
+      const txs = StorageService.getTransactions() as FinanceTransaction[];
+      const e = preparer({ ...b, cents }, { id, maintenant: new Date().toISOString(), transactions: txs, tvaInscrit });
+      validateFinanceTransaction(e.transaction);
+      if (e.transaction.finance?.kind === 'refund') {
+        validateRefundTransaction(e.transaction, txs, FinanceService.getPayments());
+        if (pieceInfo && cents > pieceInfo.reste) throw new Error(`Le remboursement dépasse ce qui reste sur la pièce (${chf(pieceInfo.reste)}).`);
+      }
+      if (!txs.some((t) => t.id === id)) {
+        if (e.plan) FinanceService.savePlan(e.plan);
+        if (e.paiement) FinanceService.stageNewTransactionPayment(e.transaction, e.paiement); else StorageService.addTransaction(e.transaction);
+      }
+      let attente = false;
+      try { await FirestoreRepo.waitForDocument<FinanceTransaction>('transactions', id, 15000, (t) => t.finance?.amountCents === cents); }
+      catch (err) { if (isConfirmedWriteRejection(err)) throw err; attente = true; }
+      (document.activeElement as HTMLElement | null)?.blur?.();
+      setFait({ ...e, attente });
+    } catch (err) { setErreur((err as Error).message); } finally { setOccupe(false); }
+  };
+  const annuler = async () => {
+    if (!fait || occupe) return;
+    setOccupe(true);
+    try {
+      await retirerEcriture(fait.transaction.id, FinanceService.getPayments(), { aujourdhui: todayISO(), maintenant: new Date().toISOString(), idPaiement: () => idFor('PAI') });
+      if (fait.plan) FinanceService.cancelPlan(fait.plan.id);
+      neuf('Écriture annulée : rien n’est compté.');
+    } catch (err) { setErreur((err as Error).message); setFait(null); } finally { setOccupe(false); }
+  };
+  const fermer = () => { if (fait) onSaved?.(`${fait.transaction.description} enregistré.`); onClose(); };
+
+  /* le pied : Mon mois (l'effet de ce mouvement) et le bouton qui dit le sens */
+  const mm = !choisi || !cents ? { c: 'vide', t: '—' } : horsResultat(b.genre) ? { c: 'vide', t: 'inchangé' } : apayer ? { c: 'prevu', t: signe(sens!, cents) } : { c: sens!, t: signe(sens!, cents) };
+  const verbe = apayer ? 'À payer' : b.genre === 'prel' ? 'Retiré' : sens === 'out' ? 'Payé' : 'Reçu';
+  const bouton = !choisi
+    ? { texte: cents ? 'Ça sort ou ça rentre ?' : 'Enregistrer', montant: '', off: true }
+    : b.genre === 'rembt' && !b.pieceId ? { texte: 'De quelle pièce ?', montant: '', off: false }
+      : { texte: occupe ? 'Enregistrement…' : verbe, montant: cents ? signe(sens!, cents) : '', off: !cents || occupe };
+
+  const chip = (on: boolean, contenu: React.ReactNode, onClick: () => void, extra: Record<string, string> = {}, cls = '') =>
+    <button type="button" className={`sai-chip${cls ? ` ${cls}` : ''}`} aria-pressed={on} onPointerDown={garde} onClick={onClick} {...extra}>{contenu}</button>;
+  const dateChip = (cle: string, valeur: string, label: string, an = false) =>
+    <button type="button" className="sai-chip dt" aria-expanded={dates.ouverte === cle} aria-label={`${label} : ${jjmm(valeur, true)}`} onPointerDown={garde} onClick={() => dates.basculer(cle)}><CalendarDays size={14} />{jjmm(valeur, an)}</button>;
+  const frise = (cle: string, valeur: string, label: string, onChange: (d: string) => void, o: { min?: string; max?: string; mois?: boolean } = {}) =>
+    dates.ouverte === cle ? <div className="sai-date"><ChoixDate ouvert valeur={valeur} label={label} min={o.min} max={o.max} mois={o.mois} rangee="achats" onChange={(d) => { onChange(d); dates.fermer(); }} /></div> : null;
+
+  const tuile = (g: GenreId) => {
+    const t = teinteGenre(g);
+    return <button key={g} type="button" className="sai-t" data-saisie-genre={g} onClick={() => poserGenre(g)}>
+      <span style={{ color: t.seg }}><Ic g={g} size={20} /></span><span>{GENRES[g].nom}</span>{GENRES[g].sous && g !== 'apport' ? <small>{GENRES[g].sous}</small> : null}
+    </button>;
+  };
+
+  const repos = !choisi;
+  const enfants: React.ReactNode[] = [];
+  if (avis) enfants.push(<p key="avis" className="sai-lk" role="status"><Check size={15} /> {avis}</p>);
+  if (repos) {
+    if (habs.length) enfants.push(<div key="hab" className="sai-hab"><h3>HABITUELS</h3>{habs.map((h) => {
+      const t = teinteGenre(h.genre);
+      return <button key={h.cle} type="button" className="sai-hr" data-saisie-habituel={h.cle} onClick={() => poserHabituel(h)}>
+        <span className="sai-ic" style={{ background: t.fond, color: t.trait }}><Ic g={h.genre} /></span>
+        <span><b>{h.nom}</b><small>{h.sous}</small></span><span className={`sai-pm ${h.sens}`}>{signe(h.sens, h.cents)}</span>
+      </button>;
+    })}</div>);
+    enfants.push(<div key="sort" className="sai-side out"><div className="sai-lab"><ArrowUp size={16} /> Ça sort</div><div className="sai-g">{SORT.map(tuile)}</div></div>);
+    enfants.push(<div key="rentre" className="sai-side in"><div className="sai-lab"><ArrowDown size={16} /> Ça rentre</div><div className="sai-g">{RENTRE.map(tuile)}</div></div>);
+    enfants.push(<button key="rb" type="button" className="sai-rb" data-saisie-genre="rembt" onClick={() => poserGenre('rembt')}><Undo2 size={18} /> Remboursement <span>d’une pièce · le sens suit</span></button>);
+  } else {
+    const neutre = b.genre === 'rembt' && !b.pieceId;
+    enfants.push(<div key="bande" className={`sai-sel ${neutre ? 'neu' : sens}`} data-saisie-bande>
+      {neutre ? <Undo2 size={16} /> : sens === 'out' ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
+      {neutre ? 'Remboursement' : <>{sens === 'out' ? 'Ça sort' : 'Ça rentre'}<span className="g"><span style={{ color: teinteGenre(b.genre).seg, display: 'inline-flex' }}><Ic g={b.genre} size={18} /></span>{G.nom}</span></>}
+      <button type="button" onPointerDown={garde} onClick={changer}>changer</button>
+    </div>);
+  }
+  /* la carte : même nœud au repos et après le genre (le champ montant garde le focus ouvert dans le geste) */
+  const badge = choisi ? (b.genre === 'prel' ? <span className="finance-tag finance-tag-apports">Privé</span> : <CategoryTag category={b.genre === 'rembt' ? (piece?.category ?? 'divers') : b.genre === 'achat' ? b.categorie : G.category} />) : null;
+  enfants.push(<div key="carte" className={`sai-card${choisi && !(b.genre === 'rembt' && !b.pieceId) ? ` ${sens}` : ''}`} data-saisie-carte>
+    <div className="sai-c1">
+      {!choisi || nomEdit
+        ? <input ref={nomRef} aria-label="Nom, facultatif" placeholder={choisi ? (b.genre === 'rembt' && piece ? `Remboursement ${piece.finance?.vendor || piece.description}` : G.nomDefaut(jjmm(b.date))) : 'Pour quoi ?'} value={b.nom} enterKeyHint="done" autoComplete="off"
+          onChange={(e) => patch({ nom: e.target.value })} onBlur={() => setNomEdit(false)} />
+        : <button type="button" className={`sai-nm${b.nom ? '' : ' ph'}`} aria-label="Nom, facultatif" data-saisie-nom onPointerDown={garde} onClick={() => setNomEdit(true)}>
+          <span>{b.nom || (b.genre === 'rembt' ? (piece ? `Remboursement ${piece.finance?.vendor || piece.description}` : 'Remboursement de…') : G.nomDefaut(jjmm(b.date)))}</span><Pencil size={14} /></button>}
+      {badge}
+      {dateChip('date', b.date, b.solde ? 'Date du paiement' : 'Date', !choisi)}
+    </div>
+    {frise('date', b.date, 'Date du mouvement', (d) => patch({ date: d }), { max: aujourdhui })}
+    <label className={`sai-amt${choisi && sens && !(b.genre === 'rembt' && !b.pieceId) ? ` ${sens}` : ''}`}>
+      {choisi && sens && !(b.genre === 'rembt' && !b.pieceId) ? <span aria-hidden="true">{sens === 'out' ? '−' : '+'}</span> : null}
+      <input ref={montantRef} data-saisie-montant inputMode="decimal" enterKeyHint="done" autoComplete="off" aria-label="Montant en CHF" placeholder="0,00" value={brut}
+        style={{ width: brut ? `${brut.length + 0.15}ch` : '4ch' }} onChange={(e) => setBrut(e.target.value.replace(/[^\d,.\s’']/g, ''))} />
+      {brut && !/[.,]/.test(brut) ? <span className="gh" aria-hidden="true">,00</span> : null}
+      <small>CHF</small>
+    </label>
+    {choisi && !horsResultat(b.genre) && b.genre !== 'rembt' ? <div className="sai-row">
+      {chip(b.reglement === 'paye', <>{b.reglement === 'paye' ? <Check size={14} /> : null}{sens === 'in' ? 'Reçu' : 'Payé'}{b.reglement === 'paye' && b.date === aujourdhui ? ' aujourd’hui' : ''}</>, () => patch({ reglement: 'paye' }), { 'data-saisie-reglement': 'paye' })}
+      {chip(b.reglement === 'apayer', <>{b.reglement === 'apayer' ? <Check size={14} /> : null}{sens === 'in' ? 'À recevoir' : 'À payer'}</>, () => patch({ reglement: 'apayer' }), { 'data-saisie-reglement': 'apayer' })}
+      {b.reglement === 'apayer' ? dateChip('echeance', b.echeance, 'Échéance') : chip(false, <><Landmark size={14} />{METHODES.find((m) => m.id === b.methode)!.nom}<ChevronDown size={12} /></>, () => patch({ methode: METHODES[(METHODES.findIndex((m) => m.id === b.methode) + 1) % METHODES.length].id }), { 'aria-label': 'Moyen de paiement, toucher pour changer' })}
+    </div> : null}
+    {choisi && horsResultat(b.genre) ? <div className="sai-row">
+      {chip(true, <><Check size={14} />{b.genre === 'apport' ? 'Reçu' : 'Retiré'}{b.date === aujourdhui ? ' aujourd’hui' : ''}</>, () => undefined)}
+      {chip(false, <><Landmark size={14} />{METHODES.find((m) => m.id === b.methode)!.nom}<ChevronDown size={12} /></>, () => patch({ methode: METHODES[(METHODES.findIndex((m) => m.id === b.methode) + 1) % METHODES.length].id }), { 'aria-label': 'Moyen de paiement, toucher pour changer' })}
+    </div> : null}
+    {choisi && b.genre === 'rembt' && b.pieceId ? <div className="sai-row">
+      {chip(b.reglement === 'paye', <>{b.reglement === 'paye' ? <Check size={14} /> : null}{sens === 'in' ? 'Reçu' : 'Rendu'}{b.reglement === 'paye' && b.date === aujourdhui ? ' aujourd’hui' : ''}</>, () => patch({ reglement: 'paye' }))}
+      {chip(b.reglement === 'apayer', <>{b.reglement === 'apayer' ? <Check size={14} /> : null}{sens === 'in' ? 'À recevoir' : 'À rendre'}</>, () => patch({ reglement: 'apayer' }))}
+      {chip(false, <><Landmark size={14} />{METHODES.find((m) => m.id === b.methode)!.nom}<ChevronDown size={12} /></>, () => patch({ methode: METHODES[(METHODES.findIndex((m) => m.id === b.methode) + 1) % METHODES.length].id }))}
+    </div> : null}
+    {b.reglement === 'apayer' && choisi ? frise('echeance', b.echeance, 'Échéance', (d) => patch({ echeance: d }), { min: b.date }) : null}
+    {choisi && b.genre === 'rembt' && pieceInfo ? <div className="sai-lk"><Link2 size={15} /><span className="t">{pieceInfo.sens === 'out' ? 'Facture' : 'Vente'} {pieceInfo.nom} du {jjmm(pieceInfo.date)} · {chf(pieceInfo.cents)}</span>
+      {chip(false, <>reste : {chf(pieceInfo.reste)}</>, () => setBrut(chf(pieceInfo.reste).replace(/ /g, ' ')))}</div> : null}
+  </div>);
+  if (choisi) {
+    if (G.qui) enfants.push(<div key="qui" className="sai-qui"><small>{G.qui}</small>
+      {noms.map((n) => chip(b.vendor === n, n, () => patch(b.vendor === n ? { vendor: undefined, nom: b.nom === n ? '' : b.nom } : { vendor: n, nom: n }), { 'data-saisie-nom-puce': n }))}
+      {chip(false, <><Plus size={13} />autre</>, () => setNomEdit(true), {}, 'pl')}</div>);
+    if (b.genre === 'achat') enfants.push(<div key="ach" className="sai-blk"><small className="sai-lb"><Tag size={13} /> Catégorie</small>
+      <div className="sai-row">{CATEGORIES_ACHAT.map((c) => chip(b.categorie === c.id, c.nom, () => patch({ categorie: c.id }), { 'data-saisie-categorie': c.id }))}</div>
+      <button type="button" className="sai-art" onClick={() => onArticles({ amount: cents ? cents / 100 : undefined, description: b.nom.trim(), vendor: b.vendor ?? '', category: b.categorie, date: b.date })}>
+        <ShoppingCart size={15} /><b>Articles · aucun</b><span><Plus size={13} />Ajouter, pour le stock</span></button></div>);
+    if (b.genre === 'impot') enfants.push(<div key="imp" className="sai-blk"><small className="sai-lb"><Percent size={13} /> Quel impôt ?</small>
+      <div className="sai-row">{chip(true, 'Impôt sur la bière', () => undefined)}{chip(false, 'Impôts privés → Pour moi', () => { setB((x) => ({ ...avecGenre(x, 'prel'), nom: 'Impôts privés' })); ouvrirMontant(); })}</div></div>);
+    if (b.solde) enfants.push(<div key="hab2" className="sai-lk sai-hab2"><Repeat size={15} /><span className="t">{(() => { const p = donnees.plans.find((x) => x.id === b.solde!.planId); return `${p?.recurrence ? RYTHME_LONG[p.recurrence.frequency].replace(/^./, (c) => c.toUpperCase()) : 'Prévu'} · solde l’échéance de ${moisDe(b.solde!.date)}, prévue le ${jjmm(b.solde!.date)}`; })()}</span></div>);
+    else if (G.rythme !== null) {
+      const fins = finsProposees(b.rythme);
+      const ech = recurrent ? echeances(b.date, b.rythme, fin, 4) : [];
+      enfants.push(<div key="rec" className="sai-rec"><h3><Repeat size={15} /> Revient ?</h3>
+        <div className="sai-seg" role="group" aria-label="Revient ?">{RYTHMES.map((r) => <button key={r.id} type="button" aria-pressed={b.rythme === r.id} data-saisie-rythme={r.id} onPointerDown={garde} onClick={() => patch({ rythme: r.id, fin: 'sans', finDate: undefined })}>{r.nom}</button>)}</div>
+        {recurrent ? <>
+          <div className="sai-row"><small>dès le</small>{dateChip('debut', b.date, 'Début', true)}</div>
+          {frise('debut', b.date, 'Début de la récurrence', (d) => patch({ date: d }), { max: aujourdhui })}
+          <div className="sai-row"><small>jusqu’à</small>{fins.map((f) => chip(b.fin === f.id, f.id === 'date' ? <><CalendarDays size={14} />{b.fin === 'date' && b.finDate ? moisAn(b.finDate) : 'date'}</> : f.nom,
+            () => { if (f.id === 'date') { patch({ fin: 'date', finDate: b.finDate ?? dateDeFin(b.date, b.rythme, '1an') }); dates.basculer('fin'); } else patch({ fin: f.id }); }, { 'data-saisie-fin': f.id }))}</div>
+          {b.fin === 'date' ? frise('fin', b.finDate ?? b.date, 'Dernière échéance', (d) => patch({ finDate: d }), { min: b.date }) : null}
+          {cents ? <div className="sai-row"><span className="sai-sum">Σ 12 mois <b className={sens ?? 'out'}>{signe(sens ?? 'out', sommeDouzeMois(cents, b.date, b.rythme, fin))}</b></span></div> : null}
+          <div className="sai-ap" data-saisie-apercu><b><CalendarDays size={14} />Calendrier</b>{ech.map((d, i) => <i key={d} className={i === 0 ? (sens === 'out' ? 'f' : 'fi') : ''}>{jjmm(d)}{i === 0 && !apayer ? ' ✓' : ''}</i>)}
+            <small>… {fin ? `${jjmm(fin, true)} · ${echeances(b.date, b.rythme, fin, 400).length} fois` : 'sans fin'}</small></div>
+        </> : null}
+      </div>);
+    }
+    enfants.push(<details key="pli" className="sai-fold"><summary>{G.pli}<span>facultatif <ChevronDown size={12} /></span></summary><div className="sai-blk">
+      {tvaInscrit && !horsResultat(b.genre) && b.genre !== 'rembt' ? <div className="sai-row"><small>TVA</small>{TVA.map((t) => chip(b.tvaRate === t, `${String(Math.round(t * 1000) / 10).replace('.', ',')} %`, () => patch({ tvaRate: t })))}</div> : null}
+      {!horsResultat(b.genre) && b.genre !== 'rembt' ? <input className="sai-in" aria-label={b.genre === 'impot' ? 'Période, référence' : 'Référence'} placeholder={b.genre === 'impot' ? 'Période, référence' : 'Référence (n° de facture)'} value={b.reference} onChange={(e) => patch({ reference: e.target.value })} /> : null}
+      <input className="sai-in" aria-label="Note" placeholder="Note" value={b.note} onChange={(e) => patch({ note: e.target.value })} />
+    </div></details>);
+  }
+  if (erreur) enfants.push(<p key="err" className="sai-err" role="alert">{erreur}</p>);
+
+  return <ModalShell open onClose={() => { if (!occupe) fermer(); }} dismissible={!occupe} labelledBy={titreId} size="xl" plein>
+    <div className="sai sai-col" data-saisie-main>
+      <header className="sai-hd">
+        <button type="button" aria-label="Fermer" onClick={fermer}><X size={20} /></button>
+        <h2 id={titreId}>Saisir à la main</h2>
+        {!enLigne ? <span className="sai-hl" title="Hors ligne : écrit sur l’appareil, envoyé à la reconnexion">hors ligne</span> : null}
+        <button type="button" className="sai-doc" aria-label="Lire un document (facture, ticket)" title="Lire un document" onClick={onDocument}><FileText size={18} /></button>
+      </header>
+      <form className="contents" autoComplete="off" onSubmit={(e) => { e.preventDefault(); if (!bouton.off) void enregistrer(); }}>
+        <div ref={corps} className="sai-b" onScroll={mesurerOmbre}>{enfants}</div>
+        <footer className={`sai-ft${ombre ? ' ombre' : ''}`}>
+          <span className="sai-mm" data-saisie-mon-mois><Barres /> Mon mois <span className={`sai-mmv ${mm.c}`}>{mm.t}</span></span>
+          <button type="submit" className="sai-go" data-saisie-enregistrer disabled={bouton.off} onPointerDown={garde}><Check size={18} /> {bouton.texte}{bouton.montant ? <> <b>{bouton.montant}</b></> : null}</button>
+        </footer>
+      </form>
+      {plateau ? <>
+        <div className="sai-voile" onClick={() => setPlateau(false)} />
+        <div className="sai-pl" role="dialog" aria-label="De quelle pièce ?" data-saisie-pieces>
+          <i className="sai-grip" aria-hidden="true" />
+          <h3>De quelle pièce ?<button type="button" aria-label="Fermer" onClick={() => setPlateau(false)}><X size={18} /></button></h3>
+          <label className="sai-q"><Search size={16} /><input inputMode="search" aria-label="Chercher une pièce" placeholder="Chercher un nom, un montant" value={recherche} onChange={(e) => setRecherche(e.target.value)} /></label>
+          <div className="sai-pcs">{pieces.length ? pieces.map((p) => {
+            const t = TEINTE[p.category] ?? TEINTE.divers;
+            return <button key={p.id} type="button" className="sai-pc" data-saisie-piece={p.id} onClick={() => choisirPiece(p.id, p.reste)}>
+              <span className="sai-ic" style={{ background: t.fond, color: t.trait }}>{p.sens === 'out' ? <ShoppingCart size={16} /> : <Tag size={16} />}</span>
+              <span><b>{p.nom}</b><small>{p.sous}</small></span><span className="n">{signe(p.sens, p.cents)}</span>
+              <span className={`sai-dir ${p.sens === 'out' ? 'in' : 'out'}`}>{p.sens === 'out' ? '↓ rentre' : '↑ sort'}</span></button>;
+          }) : <p className="sai-vide">{recherche ? 'Aucune pièce ne correspond.' : 'Aucune pièce à rembourser.'}</p>}</div>
+        </div></> : null}
+      {fait ? <Confirmation fait={fait} txs={donnees.txs} occupe={occupe} onAnnuler={annuler} onAutre={() => neuf()} onFermer={fermer} /> : null}
+    </div>
+  </ModalShell>;
+}
+
+function Confirmation({ fait, txs, occupe, onAnnuler, onAutre, onFermer }: { fait: Ecriture & { attente: boolean }; txs: FinanceTransaction[]; occupe: boolean; onAnnuler: () => void; onAutre: () => void; onFermer: () => void }) {
+  const tx = fait.transaction, f = tx.finance!, cents = f.amountCents;
+  const sens: 'in' | 'out' = f.kind === 'refund' ? (f.refundDirection ?? 'in') : f.kind === 'income' || f.kind === 'contribution' ? 'in' : 'out';
+  const hors = f.kind === 'contribution' || f.kind === 'withdrawal';
+  const apayer = f.paymentStatus === 'unpaid';
+  const verbe = apayer ? (sens === 'out' ? 'à payer' : 'à recevoir') : f.kind === 'withdrawal' ? 'retiré' : sens === 'out' ? 'payé' : 'reçu';
+  const rec = fait.plan?.recurrence;
+  const fin = rec?.endDate;
+  const origine = f.refundOfId ? txs.find((t) => t.id === f.refundOfId) : undefined;
+  const methode = METHODES.find((m) => m.id === fait.paiement?.method)?.nom ?? 'Banque';
+  const ech = rec ? echeances(tx.date, rec.frequency, fin, 4) : [];
+  const dejaAvoirs = origine ? txs.filter((t) => t.finance?.refundOfId === origine.id && !t.finance?.voidedAt && t.id !== tx.id).reduce((n, t) => n + (t.finance?.amountCents ?? 0), 0) : 0;
+  return <>
+    <div className="sai-voile" />
+    <div className="sai-ok" role="dialog" aria-label="Enregistré" data-saisie-ok>
+      <div className="sai-ok-h"><span className="sai-okc"><Check size={20} /></span><div>
+        <b>{tx.description} · {signe(sens, cents)} {verbe}</b>
+        <span>{f.kind === 'withdrawal' ? <span className="finance-tag finance-tag-apports">Privé</span> : <CategoryTag category={tx.category} />} {origine ? `avoir sur ${origine.description} du ${jjmm(origine.date)}` : rec ? `${RYTHME_LONG[rec.frequency]}, dès le ${jjmm(tx.date)}` : `une fois, le ${jjmm(tx.date)}`}</span>
+      </div></div>
+      {hors ? <>
+        <div className="sai-ok-r"><b><Landmark size={16} /> {methode}</b><span className={`sai-mmv ${sens}`}>{signe(sens, cents)}</span><small>{sens === 'in' ? 'argent dispo' : 'sorti de la caisse'}</small></div>
+        <div className="sai-ok-r"><b><Barres /> Mon mois</b><span className="sai-mmv vide">inchangé</span><small>{f.kind === 'contribution' ? 'un apport n’est ni une vente ni une recette' : 'un prélèvement n’est pas une charge'}</small></div>
+      </> : <div className="sai-ok-r"><b><Barres /> Mon mois</b><span className={`sai-mmv ${apayer ? 'prevu' : sens}`}>{signe(sens, cents)}</span><small>{origine ? `${origine.description} réduit de ${chf(cents)}` : apayer ? `prévu, échéance ${f.dueDate ? jjmm(f.dueDate) : ''}` : moisDe(tx.date)}</small></div>}
+      {origine ? <div className="sai-ok-r"><b><Link2 size={16} /> Pièce</b><span className="n">{origine.finance?.vendor || origine.description} {jjmm(origine.date)} · {chf(origine.finance?.amountCents ?? 0)} → net {chf((origine.finance?.amountCents ?? 0) - dejaAvoirs - cents)}</span></div> : null}
+      {rec ? <>
+        <div className="sai-ok-r"><b><CalendarDays size={16} /> Calendrier</b><div className="sai-ap">{ech.map((d, i) => <i key={d} className={i === 0 ? (sens === 'out' ? 'f' : 'fi') : ''}>{jjmm(d)}{i === 0 && !apayer ? ' ✓' : ''}</i>)}<small>… {fin ? `→ ${moisAn(fin)}` : 'sans fin'}</small></div></div>
+        <div className="sai-ok-r"><b>Σ 12 mois</b><span className={`n ${sens}`}>{signe(sens, sommeDouzeMois(cents, tx.date, rec.frequency, fin))}</span><small>sur un an</small></div>
+      </> : null}
+      {fait.attente ? <p className="sai-lk">Écrit sur l’appareil ; envoyé dès la connexion revenue.</p> : null}
+      <div className="sai-ok-a">
+        <button type="button" disabled={occupe} onClick={onAnnuler}><Undo2 size={15} /> Annuler</button>
+        <button type="button" disabled={occupe} onClick={onAutre}><Plus size={15} /> Saisir un autre</button>
+        <button type="button" className="sai-go" data-saisie-fermer autoFocus onClick={onFermer}>Fermer</button>
+      </div>
+    </div>
+  </>;
+}
