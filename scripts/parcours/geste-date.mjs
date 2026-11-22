@@ -18,6 +18,7 @@ const RACINE = path.resolve(ICI, '..', '..');
 const require = createRequire(path.join(RACINE, 'package.json'));
 const puppeteer = require('puppeteer-core');
 const { fixtureStock } = await import(pathToFileURL(path.join(ICI, 'fixtures', 'stock.mjs')).href);
+const { fixtureChaines } = await import(pathToFileURL(path.join(ICI, 'fixtures', 'chaines.mjs')).href);
 const { etapes } = await import(pathToFileURL(path.join(ICI, 'geste-date-etapes.mjs')).href);
 const CHROME = process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const args = process.argv.slice(2);
@@ -73,6 +74,8 @@ async function jouer(dir) {
   try {
     const aujourdhui = new Date().toISOString().slice(0, 10);
     const fx = fixtureStock(aujourdhui);
+    /* + la cuve (brassin en fermentation, fermenteur), la caisse et les ventes de la fixture des chaînes : les écrans de date en ont besoin (ZZ TEST, simulé). */
+    for (const e of fixtureChaines(aujourdhui, { cuve: true, caisseBasse: true, achatPompe: true }).entrees) if (!fx.entrees.some((x) => x.name === e.name && x.id === e.id)) fx.entrees.push(e);
     const erreursPage = [];
     let p = null; let cdp = null; let etape = '';
     const ouvrirPage = async (theme) => {
@@ -90,22 +93,28 @@ async function jouer(dir) {
     /** Le centre de l'élément (défilé au milieu) ; `bien` : c'est lui qui reçoit le toucher. */
     const point = (sel, texteSel = '') => p.evaluate((s, t) => {
       const n = (x) => String(x).replace(/\s+/g, ' ').trim();
-      const e = [...document.querySelectorAll(s)].find((el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && (!t || n(el.innerText).startsWith(t) || (el.getAttribute('aria-label') ?? '').startsWith(t)); });
+      const tous = [...document.querySelectorAll(s)].filter((el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && (!t || n(el.innerText).startsWith(t) || (el.getAttribute('aria-label') ?? '').startsWith(t)); });
+      /* plusieurs boutons de ce nom (la page dessous, la feuille dessus) : celui que le doigt atteint vraiment, le plus haut dans le document */
+      const atteint = (el) => { const r = el.getBoundingClientRect(); const h = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); return !!h && (el === h || el.contains(h) || h.contains(el)); };
+      const e = [...tous].reverse().find(atteint) ?? tous[0];
       if (!e) return null;
-      e.scrollIntoView({ block: 'center' });
+      /* un bouton déjà visible (barre fixe, pied de feuille) ne se défile pas : le défilement le glissait sous un autre pied */
+      { const v = e.getBoundingClientRect(); if (v.top < 0 || v.bottom > window.innerHeight) e.scrollIntoView({ block: 'center' }); }
       const r = e.getBoundingClientRect(); const h = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
-      return { x: r.x + r.width / 2, y: r.y + r.height / 2, bien: !!h && (e === h || e.contains(h) || h.contains(e)) };
+      return { x: r.x + r.width / 2, y: r.y + r.height / 2, bien: !!h && (e === h || e.contains(h) || h.contains(e)), couvre: h ? `${h.tagName}.${String(h.className).slice(0, 40)} « ${(h.getAttribute('aria-label') || h.innerText || '').slice(0, 20)} »` : 'rien' };
     }, sel, texteSel);
     const toucher = async (sel, t = '') => {
       let c = await point(sel, t); if (!c) throw new Error(`introuvable : ${sel} « ${t} »`);
       await sleep(120); c = await point(sel, t);
-      if (!c.bien) throw new Error(`recouvert : ${sel} « ${t} »`);
+      /* une feuille qui glisse ou une frise qui se replie déplace le bouton : on le relit jusqu'à trois fois avant de dire « recouvert » */
+      for (let k = 0; k < 4 && c && !c.bien; k++) { await sleep(500); c = await point(sel, t); }
+      if (!c.bien) throw new Error(`recouvert : ${sel} « ${t} » par ${c.couvre}`);
       await p.touchscreen.tap(c.x, c.y); await sleep(700);
     };
     /** Le toucher sur le plus petit élément visible qui contient ce texte (un nom de brassin dans une liste). */
     const toucherTexte = async (t) => {
       const c = await p.evaluate((txt) => {
-        const n = (x) => String(x).replace(/s+/g, ' ').trim();
+        const n = (x) => String(x).replace(/\s+/g, ' ').trim();
         const l = [...document.querySelectorAll('body *')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && n(e.innerText ?? '').includes(txt) && ![...e.children].some((f) => n(f.innerText ?? '').includes(txt)); });
         const e = l[0]; if (!e) return null; e.scrollIntoView({ block: 'center' }); const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
       }, t);
