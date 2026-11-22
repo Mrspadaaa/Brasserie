@@ -41,6 +41,8 @@ export function MurAutres({ items, onOpen, onFiltre, carteActive = null, ddm, re
       const pl = r.querySelector<HTMLElement>('.l1e-pl'); if (!pl || pl.scrollWidth <= pl.clientWidth) continue;
       const id = r.dataset.rangeeAutre ?? ''; if (!court[id]) { setCourt((c) => ({ ...c, [id]: true })); return; }
       if (w > LARGEUR_MIN) { setW(w - 1); return; }
+      // dernier recours : les familles vides s'abrègent (« Cart. », « Cons. »), le mot entier reste au survol et à la lecture d'écran
+      if (!court[id + 'v']) { setCourt((c) => ({ ...c, [id + 'v']: true })); return; }
     }
   }, [w, court, cycle]);
   // Le geste de l'app : un toucher sur la rangée vise le pot le plus proche de la colonne, une bulle le nomme, un second toucher ouvre la fiche.
@@ -77,7 +79,7 @@ export function MurAutres({ items, onOpen, onFiltre, carteActive = null, ddm, re
                   <span className="l1e-t" data-total>{c.total}</span>
                 </div>
               ))}
-              {r.vides.length > 0 && <span className="sx-vd" role="note" aria-label={`Aucun en stock : ${r.vides.join(', ')}`}>{r.vides.map((v) => <span key={v} className="sx-v"><i className="sx-o" />{v}</span>)}</span>}
+              {r.vides.length > 0 && <span className="sx-vd" role="note" aria-label={`Aucun en stock : ${r.vides.join(', ')}`}>{r.vides.map((v) => <span key={v} className="sx-v" title={v}><i className="sx-o" />{court[r.id + 'v'] && v.length > 5 ? `${v.slice(0, 4)}.` : v}</span>)}</span>}
             </div>
           </div>
         );

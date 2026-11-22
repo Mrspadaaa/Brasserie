@@ -24,3 +24,35 @@
 .sa-mur .sa-lg-x{display:inline-block;width:10px;border-top:1.5px solid var(--l1-t0);transform:rotate(-32deg)}
 .sa-mur .sa-bul{position:fixed}
 @media(min-width:1000px){.sa-mur{--hm:50px;--hc:31px}.sa-mur .l1e-t{font-size:18px;line-height:21px}}
+/* Pastille « à compter » : bord en pointillé (légende « pointillé : à compter », A-PORT-LISTE n° 34) ; les autres gardent le trait plein. */
+.sz-pu[data-f="compter"]:not(.sz-on){border-style:dashed}
+/* Liste : en dessous de 1024 px le seuil reste dans la 2e ligne, pas dans la colonne repère */
+.la-l .stock-liste .l1-rp{display:none}
+/* 1280 (n° 35 à 42) : une table par rayon, 5fr 4fr 3fr, côte à côte sous le mur ; en-têtes « seuil » et « 0 · seuil · 1,6× », barre à l'échelle du seuil */
+@media(min-width:1024px){
+  .sz-tables.sz-autres{grid-template-columns:minmax(0,5fr) minmax(0,4fr) minmax(0,3fr);column-gap:12px}
+  body:not([data-has-fiche-page]) .sz-autres .la-l .stock-liste .l1-rp{display:block;font:13px/20px var(--l1-mono,ui-monospace,monospace);color:var(--l1-t1)}
+  body:not([data-has-fiche-page]) .sz-autres .l1-th>:nth-child(3)::before,body:not([data-has-fiche-page]) .sz-autres .l1-th>:nth-child(5)::before{font:12px/28px var(--l1-sans);color:var(--l1-t2);white-space:nowrap}
+  body:not([data-has-fiche-page]) .sz-autres .l1-th>:nth-child(3)::before{content:"seuil"}
+  body:not([data-has-fiche-page]) .sz-autres .l1-th>:nth-child(5)::before{content:"0 · seuil · 1,6×"}
+  body:not([data-has-fiche-page]) .sz-autres .la-l .l1-n1{font-size:15px}
+  body:not([data-has-fiche-page]) .sz-autres .la-l .l1-q{font-size:16px}
+  .sz-autres .la-sl{display:none}
+  .sz-autres .la-n2{font-size:13px}
+  .sz-autres .la-l .l1-ec-c::before{content:"";position:absolute;left:0;right:0;top:calc(50% - 7px);height:14px;background:color-mix(in srgb,var(--fi) 15%,transparent)}
+  body:not([data-has-fiche-page]) .sz-autres .la-l .l1-ec-c::after{content:"";position:absolute;left:62.5%;top:calc(50% - 10px);height:20px;border-left:1.5px dashed var(--l1-t2);pointer-events:none}
+  .sz-autres .la-l .l1-kg{top:calc(50% - 7px);bottom:auto;height:14px;border-radius:0;background:var(--fi);box-shadow:none}
+}
+/* La même grille que les tables (n° 35) ; les colonnes se resserrent quand la table est étroite (3fr ≈ 300 px), sans cacher ni seuil ni barre */
+@media(min-width:1024px){
+  .stock-mur .sa-mur.l1-mur{grid-template-columns:minmax(0,5fr) minmax(0,4fr) minmax(0,3fr);column-gap:12px}
+  .sz-autres .sz-table{container-type:inline-size;container-name:ta}
+  body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-row,body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-th{grid-template-columns:12px minmax(0,1fr) 52px 58px 40px;column-gap:4px;padding-right:28px}
+  body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-q-c{font-size:12px}
+  body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-th>:nth-child(5)::before{content:"jauge"}
+  @container ta (min-width:400px){
+    body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-row,body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-th{grid-template-columns:12px minmax(0,1fr) 84px 78px minmax(50px,.7fr);column-gap:5px;padding-right:30px}
+    body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-q-c{font-size:16px}
+    body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-th>:nth-child(5)::before{content:"0 · seuil · 1,6×"}
+  }
+}

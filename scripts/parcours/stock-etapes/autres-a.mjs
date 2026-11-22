@@ -25,7 +25,7 @@ const lire = () => {
   const gb = document.querySelector('.sa-mur .l1e-gb');
   const rect = (e) => { const r = e?.getBoundingClientRect(); return r ? { w: Math.round(r.width * 10) / 10, h: Math.round(r.height * 10) / 10, top: r.top } : null; };
   return {
-    mur: !!sel, rangees: rg.map((r) => r.dataset.rangeeAutre),
+    mur: !!sel, murCols: (() => { const w = [...document.querySelectorAll('.sa-r')].map((r) => r.getBoundingClientRect().width); return w.length === 3 ? [Math.round(w[0] / w[2] * 100) / 100, Math.round(w[1] / w[2] * 100) / 100] : null; })(), rangees: rg.map((r) => r.dataset.rangeeAutre),
     seuilMots: [...document.querySelectorAll('.sa-r')].map((r) => [...r.querySelectorAll('.sw-rl')].map(t)),
     hc: gb ? getComputedStyle(document.documentElement).getPropertyValue('--x') + getComputedStyle(sel).getPropertyValue('--hc') : null,
     tiretContinu: (() => { const g = document.querySelector('.sa-r[data-rangee-autre=Nettoyage] .sa-g:not(.sa-nt) .l1e-gb'); return g ? getComputedStyle(g, '::after').bottom : null; })(),
@@ -82,6 +82,62 @@ export default async function (c) {
       // Bloc 4 : typographie et rythme (n° 20 à 23)
       c.controle('AA-4', a.mur && /^700\/13px\/(normal|0px)$/.test(a.nomR ?? '') && /^700\/12px\/14px$/.test(a.titreC ?? '') && a.hRangees.every((x) => x >= 56) && (c.largeur >= 1000 || a.hMur <= 260) && !a.depasse && a.vides.some((v) => /Cartons/.test(v)),
         `nom de rangée ${a.nomR}, titre de colonne ${a.titreC}, rangées ${a.hRangees} px, mur ${a.hMur} px, rien ne déborde : ${!a.depasse} ${a.depDetail.join(' ; ')}, vides ${a.vides}`);
+      // Bloc 7 : les pastilles de filtre (n° 33, 34) : une seule ligne, pas de « +n », « manque N » sans tasse ni liseré, pointillé pour « à compter » seulement
+      const pu = await c.mesure(() => {
+        const g = document.querySelector('.sz-puces'); const ps = [...document.querySelectorAll('.sz-puces .sz-pu')]; const et = document.querySelector('.sz-puces .sz-etoile');
+        const t = (e) => (e?.textContent ?? '').replace(/\s+/g, ' ').trim(); const st = (e) => getComputedStyle(e);
+        const manque = ps.find((p) => p.dataset.f === 'manque'); const autre = ps.find((p) => p.dataset.f !== 'manque' && p.dataset.f !== 'compter');
+        const bord = (e) => (e ? `${st(e).borderTopStyle} ${st(e).borderTopWidth} ${st(e).borderTopColor}` : null);
+        const r = (e) => e.getBoundingClientRect();
+        return {
+          n: ps.length, mots: ps.map((p) => t(p)), plus: ps.some((p) => /\+\s*\d/.test(t(p))) || /\+\s*\d/.test(t(g)),
+          tops: new Set(ps.concat(et ? [et] : []).map((p) => Math.round(r(p).top / 3))).size, debord: g ? g.scrollWidth > g.clientWidth + 1 : null, etoile: !!et && r(et).right <= innerWidth,
+          largeur: ps.length ? Math.round(Math.max(...ps.concat(et ? [et] : []).map((p) => r(p).right)) - Math.min(...ps.map((p) => r(p).left))) : 0,
+          manqueSvg: manque ? manque.querySelectorAll('svg,img').length : null, manqueBord: bord(manque), autreBord: bord(autre), manqueFond: manque ? st(manque).backgroundColor : null, autreFond: autre ? st(autre).backgroundColor : null,
+          compterBord: bord(ps.find((p) => p.dataset.f === 'compter')), autresBords: ps.filter((p) => p.dataset.f !== 'compter').map((p) => st(p).borderTopStyle),
+          ordre: ps.map((p) => p.dataset.f),
+        };
+      });
+      c.controle('AA-7', pu.n >= 2 && !pu.plus && pu.tops === 1 && !pu.debord && pu.etoile && pu.manqueSvg === 0 && pu.manqueBord === pu.autreBord && pu.manqueFond === pu.autreFond
+        && /^dashed/.test(pu.compterBord ?? '') && pu.autresBords.every((b) => b === 'solid'),
+      `pastilles ${JSON.stringify(pu.mots)} (ordre ${pu.ordre}), « +n » : ${pu.plus}, lignes ${pu.tops}, déborde : ${pu.debord}, étoile visible : ${pu.etoile}, largeur ${pu.largeur} px, manque : ${pu.manqueSvg} icône, bord ${pu.manqueBord} / autre ${pu.autreBord}, à compter : ${pu.compterBord}`);
+      // Bloc 8 : 1280, une table par rayon (n° 35 à 42) ; à 390 la liste reste plate, sans table
+      const tb = await c.mesure(() => {
+        const g = document.querySelector('.sz-tables.sz-autres'); if (!g) return { absent: true, plat: !!document.querySelector('[data-ligne-autre]') };
+        const t = (e) => (e?.textContent ?? '').replace(/\s+/g, ' ').trim(); const tables = [...g.querySelectorAll('.sz-table')];
+        const rang = (l) => { const m = t(l.querySelector('.la-mot')); return m === 'épuisé' ? 0 : m === 'bas' ? 1 : m === 'à compter' ? 2 : 3; };
+        const w = tables.map((x) => x.getBoundingClientRect().width);
+        const th = tables.map((x) => x.querySelector('.l1-th')); const pseudo = (e, i) => (e ? getComputedStyle(e.children[i], '::before').content : null);
+        const rows = (x) => [...x.querySelectorAll('[data-ligne-autre]')];
+        const lig = [...g.querySelectorAll('[data-ligne-autre]')]; const fs = (l, s) => parseFloat(getComputedStyle(l.querySelector(s)).fontSize);
+        const pera = lig.find((l) => t(l.querySelector('.l1-n1')).includes('Acide peracétique')); const nutri = lig.find((l) => t(l.querySelector('.l1-n1')).includes('Nutriment levure'));
+        const kg = pera?.querySelector('.l1-kg'); const piste = pera?.querySelector('.l1-ec-c');
+        return {
+          murCols: (() => { const w = [...document.querySelectorAll('.sa-r')].map((r) => r.getBoundingClientRect().width); return w.length === 3 ? [Math.round(w[0] / w[2] * 100) / 100, Math.round(w[1] / w[2] * 100) / 100] : null; })(), colonnes: tables.map((x) => x.dataset.table), largeursT: w.map(Math.round), gap: getComputedStyle(g).columnGap, ratios: [Math.round(w[0] / w[2] * 100) / 100, Math.round(w[1] / w[2] * 100) / 100],
+          titres: tables.map((x) => t(x.querySelector('.l1-eh h2'))), seuilTh: th.map((e) => pseudo(e, 2)), echelleTh: th.map((e) => pseudo(e, 4)),
+          tri: tables.map((x) => { const r = rows(x).map(rang); return r.every((v, i) => i === 0 || v >= r[i - 1]); }),
+          nom: lig.length ? fs(lig[0], '.l1-n1') : null, stock: lig.length ? fs(lig[0], '.l1-q') : null,
+          seuilCol: pera ? t(pera.querySelector('.l1-rp')) : null, etat: pera ? t(pera.querySelector('.la-mot')) : null, nutri: nutri ? t(nutri.querySelector('.l1-q')) : null,
+          barreH: kg ? Math.round(kg.getBoundingClientRect().height) : null, barreX: kg && piste ? Math.round(kg.getBoundingClientRect().width / piste.getBoundingClientRect().width * 1000) / 1000 : null,
+          nbSansBarre: lig.filter((l) => !l.querySelector('.l1-kg')).length, nbLignes: lig.length,
+        };
+      });
+      let table = null;
+      if (c.largeur >= 1000) {
+        await essayer(() => c.toucher('ZZ TEST Acide peracétique', { sel: '.sz-autres [data-ligne-autre] .l1-row' })); await c.sleep(500);
+        table = await c.mesure(() => { const l = [...document.querySelectorAll('.sz-autres [data-ligne-autre]')].find((x) => x.querySelector('.l1-n1')?.textContent.includes('Acide peracétique')); const o = l?.querySelector('[data-ligne-ouverte]'); return { ouverte: !!o, fournisseur: o?.querySelector('.la-four')?.textContent ?? null, input: o?.querySelector('input')?.type ?? null }; });
+        await c.cap('autres-a-table-ouverte');
+        await essayer(() => c.toucher('ZZ TEST Acide peracétique', { sel: '.sz-autres [data-ligne-autre] .l1-row' })); await c.sleep(300);
+      }
+      await c.cap('autres-a-liste');
+      if (c.largeur >= 1000) {
+        c.controle('AA-8', !tb.absent && tb.colonnes.join() === 'Sels et additifs,Emballage,Nettoyage et gaz' && tb.gap === '12px' && Math.abs((tb.murCols?.[0] ?? 0) - 5 / 3) < 0.1 && Math.abs((tb.murCols?.[1] ?? 0) - 4 / 3) < 0.1 && Math.abs(tb.ratios[0] - 5 / 3) < 0.08 && Math.abs(tb.ratios[1] - 4 / 3) < 0.08
+          && tb.seuilTh.every((x) => x === '"seuil"') && tb.echelleTh.every((x, i) => x === (tb.largeursT[i] >= 400 ? '"0 · seuil · 1,6×"' : '"jauge"')) && tb.tri.every(Boolean) && tb.nom === 15 && tb.stock === 16 && tb.barreH === 14 && Math.abs(tb.barreX - 250 / 800) < 0.02
+          && tb.seuilCol === '500 ml' && tb.etat === 'bas' && tb.nutri === '0 g' && table?.ouverte === true && /ZZ TEST/.test(table.fournisseur ?? '') && table.input === 'text',
+        `tables ${tb.colonnes}, écart ${tb.gap}, mur ${tb.murCols}, largeurs ${tb.ratios} (cible 1,67 et 1,33), titres ${tb.titres}, en-têtes ${tb.seuilTh} / ${tb.echelleTh}, tri ${tb.tri}, police nom ${tb.nom} stock ${tb.stock}, barre ${tb.barreH} px à ${tb.barreX} (cible 0,313), seuil ${tb.seuilCol} état ${tb.etat}, zéro ${tb.nutri}, ligne ouverte ${JSON.stringify(table)}, sans barre ${tb.nbSansBarre}/${tb.nbLignes}`);
+      } else {
+        c.controle('AA-8', !!tb.absent && tb.plat, `à ${c.largeur} px : pas de table, liste plate ${tb.plat}`);
+      }
       // Bloc 5 : rangée active, légende (n° 24 à 27)
       await essayer(() => c.toucher('Nettoyage', { sel: '.sa-mur .l1e-n' })); await c.sleep(600);
       const act = await c.mesure(() => { const r = document.querySelector('.sa-mur .l1e-r:has(.l1e-n[aria-pressed=true])'); return r ? { ombre: getComputedStyle(r).boxShadow, ouverte: r.dataset.rangeeAutre } : null; });
@@ -96,17 +152,29 @@ export default async function (c) {
         const l = [...document.querySelectorAll('[data-ligne-autre]')].find((x) => x.querySelector('.l1-n1')?.textContent.includes(n));
         const t = (e) => (e?.textContent ?? '').replace(/\s+/g, ' ').trim();
         const o = l?.querySelector('[data-ligne-ouverte]'); const inp = o?.querySelector('input');
-        return l ? { n2: t(l.querySelector('.l1-n2')), ouvert: !!o, input: inp ? { type: inp.type, mode: inp.inputMode, v: inp.value } : null, nombres: l.querySelectorAll('input[type=number]').length, fiche: !!o?.querySelector('.la-fiche'), box: Math.round(l.getBoundingClientRect().height), star: !!l.querySelector('[data-etoile]'), liseret: getComputedStyle(l.querySelector('.l1-li')).boxShadow } : null;
+        return !l ? { absent: [...document.querySelectorAll('[data-ligne-autre] .l1-n1')].map((x) => t(x)).slice(0, 12), pressed: [...document.querySelectorAll('.sa-mur .l1e-n[aria-pressed=true]')].map((x) => x.dataset.filtre) } : { n2: t(l.querySelector('.l1-n2')), ouvert: !!o, input: inp ? { type: inp.type, mode: inp.inputMode, v: inp.value } : null, nombres: l.querySelectorAll('input[type=number]').length, fiche: !!o?.querySelector('.la-fiche'), box: Math.round(l.getBoundingClientRect().height), star: !!l.querySelector('[data-etoile]'), liseret: getComputedStyle(l.querySelector('.l1-li')).boxShadow };
       }, nom);
-      const avant = await lireLigne('Soude PBW'); const ep = await lireLigne('Nutriment levure');
-      await essayer(() => c.toucher('Soude PBW', { sel: '[data-ligne-autre] .l1-row' })); await c.sleep(500);
+      // La liste est virtualisée : une ligne hors fenêtre n'est pas dans le DOM. On filtre d'abord sur sa rangée (toucher le nom de rangée du mur), seulement si elle n'est pas déjà la rangée active.
+      const filtrer = async (rangee) => {
+        const deja = await c.mesure((r) => document.querySelector(`.sa-r[data-rangee-autre="${r}"] .l1e-n`)?.getAttribute('aria-pressed') === 'true', rangee);
+        if (!deja) { await essayer(() => c.toucherSel(`.sa-r[data-rangee-autre="${rangee}"] .l1e-n`)); await c.sleep(600); }
+      };
+      await filtrer('Nettoyage');
+      const avant = await lireLigne('Soude PBW');
+      await filtrer('Additifs');
+      // la fenêtre de la liste suit le défilement de la page : on la parcourt jusqu'à voir la ligne
+      let ep = await lireLigne('Nutriment levure');
+      await c.mesure(() => window.scrollTo(0, 0)); await c.sleep(300);
+      for (let i = 0; i < 8 && ep?.absent; i++) { ep = await lireLigne('Nutriment levure'); if (!ep.absent) break; await c.mesure(() => window.scrollBy(0, 220)); await c.sleep(300); ep = await lireLigne('Nutriment levure'); }
+      await filtrer('Nettoyage');
+      await essayer(() => c.toucher('ZZ TEST Soude PBW', { sel: '[data-ligne-autre] .l1-row' })); await c.sleep(500);
       const ouv = await lireLigne('Soude PBW');
       await essayer(() => c.toucherSel('[data-ligne-ouverte] .la-seuil .la-pm:last-child')); await c.sleep(700);
       const apres = await lireLigne('Soude PBW');
       await c.cap('autres-a-liste-ouverte');
       c.controle('AA-6', !!avant && /assez/.test(avant.n2) && /seuil 500 g/.test(avant.n2) && !!ep && /épuisé/.test(ep.n2) && /seuil 20 g/.test(ep.n2)
         && ouv?.ouvert === true && ouv.input?.type === 'text' && ouv.input.mode === 'decimal' && ouv.nombres === 0 && ouv.fiche && ouv.star && /3px/.test(ouv.liseret) && /seuil 550 g/.test(apres?.n2 ?? ''),
-      `ligne ${JSON.stringify(avant?.n2)} / épuisé ${JSON.stringify(ep?.n2)} ; ouverte ${JSON.stringify(ouv)} ; après « + » ${JSON.stringify(apres?.n2)} ${JSON.stringify(apres?.input)}`);
+      `ligne ${JSON.stringify(avant)} / épuisé ${JSON.stringify(ep)} ; ouverte ${JSON.stringify(ouv)} ; après « + » ${JSON.stringify(apres?.n2)} ${JSON.stringify(apres?.input)}`);
     });
   } finally { await c.p.removeScriptToEvaluateOnNewDocument(script.identifier).catch(() => {}); }
 }

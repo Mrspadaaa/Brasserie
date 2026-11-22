@@ -3,7 +3,7 @@
 // avec le seuil réglable (champ texte inputMode="decimal", jamais type="number"). Rien n'est inventé : sans besoin ni dose connus, pas de pastille.
 import React, { useState } from 'react';
 import { LigneStock } from './LigneStock';
-import { COLONNES_AUTRES, colonneAutre, etatEtSeuil, pastilleAutre, type BesoinBrassin } from '../../domain/stock/murAutres';
+import { COLONNES_AUTRES, colonneAutre, etatEtSeuil, pastilleAutre, quantitePiece, type BesoinBrassin } from '../../domain/stock/murAutres';
 import { familleRecompter } from '../../domain/stock/liste';
 import { estFamilleAutre } from '../../domain/stock/murDonnees';
 import { StorageService } from '../../services/storage';
@@ -11,6 +11,8 @@ import type { StockItem } from '../../types';
 import './ligneAutre.css';
 
 type Props = React.ComponentProps<typeof LigneStock>;
+/** La barre de table : pleine à 1,6 × le seuil (l'en-tête dit « 0 · seuil · 1,6× »). */
+export const ECHELLE_SEUIL = 1.6;
 const nf = (n: number) => (Math.round(n * 1000) / 1000).toLocaleString('fr-FR');
 const jourMois = (d: string | null) => { const m = d ? /^(\d{4})-(\d{2})-(\d{2})/.exec(d) : null; return m ? `${m[3]}.${m[2]}` : null; };
 
@@ -55,6 +57,9 @@ export const LigneAutre: React.FC<Props> = (p) => {
   const besoin: BesoinBrassin | null = cmd && src ? { manque: cmd.missing, unite: item.unit, brassin: `${src.nom}${jourMois(src.date) ? ` ${jourMois(src.date)}` : ''}` } : null;
   const pastille = pastilleAutre({ besoin });
   const e = etatEtSeuil(item);
+  const seuilN = item.minStock != null && item.minStock > 0 ? item.minStock : null;
+  // La barre de la table : le stock contre 1,6 × le seuil (le seuil à 62,5 %) ; sans seuil ou sans quantité, pas de barre (jamais un 0 inventé).
+  const barre = seuilN != null && Number.isFinite(item.currentStock) && item.currentStock > 0 ? { x: Math.min(1, item.currentStock / (ECHELLE_SEUIL * seuilN)), coupe: null } : null;
   const sousNom = (
     <>
       <span className="la-n2">{e.mot && <b className={`la-mot la-m-${e.mot === 'à compter' ? 'compter' : e.mot === 'épuisé' ? 'epuise' : e.mot === 'bas' ? 'bas' : 'assez'}`}>{e.mot}</b>}<span className="la-sl">{e.mot ? ' · ' : ''}{e.seuil}</span></span>
@@ -64,7 +69,7 @@ export const LigneAutre: React.FC<Props> = (p) => {
   const fournisseur = [item.supplier?.trim(), item.pricePerUnit != null && item.pricePerUnit > 0 ? `${nf(item.pricePerUnit)} CHF le ${item.unit}` : ''].filter(Boolean).join(' · ');
   return (
     <div className="la-l" data-ouvert={ouvert || undefined} data-ligne-autre style={{ ['--l1-k' as string]: k } as React.CSSProperties}>
-      <LigneStock {...p} onOpen={() => setOuvert((v) => !v)} sousNom={sousNom} />
+      <LigneStock {...p} onOpen={() => setOuvert((v) => !v)} sousNom={sousNom} barreAutre={barre} repereAutre={seuilN != null ? e.seuil.replace(/^seuil /, '') : '—'} quantiteAutre={quantitePiece(item)} />
       {ouvert && (
         <div className="stock-liste la-ouv" data-ligne-ouverte>
           {pastille && <p className="la-besoin">{pastille}</p>}

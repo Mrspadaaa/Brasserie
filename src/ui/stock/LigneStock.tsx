@@ -2,7 +2,7 @@ import React, { useId } from 'react';
 import type { StockItem } from '../../types';
 import type { StockLevel } from '../../domain/stockLevel';
 import type { InfoLigne } from '../../domain/stock/liste';
-import { barreLigne, etatDit, familleTeinte, quantiteDeLigne, repereLigne, texteSousLeNom } from '../../domain/stock/ligne';
+import { barreLigne, type BarreLigne, etatDit, familleTeinte, quantiteDeLigne, repereLigne, texteSousLeNom } from '../../domain/stock/ligne';
 import { Star } from 'lucide-react';
 import type { ArticleACommander } from '../../domain/stockLevel';
 import { rayonDuMur } from '../../domain/stock/murRayon';
@@ -41,6 +41,10 @@ interface LigneStockProps {
   trace?: { texte: string; gesteId: string; annuler: () => void };
   /** Autres stocks (D423) : remplace la 2e ligne (état et seuil) par la sienne, pastille utile comprise. */
   sousNom?: React.ReactNode;
+  /** Autres stocks (D423) : la barre de la table (stock contre le seuil) et le seuil en repère ; absents, la ligne garde ceux des trois rayons. */
+  barreAutre?: BarreLigne | null;
+  repereAutre?: string;
+  quantiteAutre?: string | null;
   onOpen: (item: StockItem) => void;
   onToggleFavorite: (item: StockItem) => void;
 }
@@ -50,13 +54,13 @@ interface LigneStockProps {
  * quantité à droite ; pour les trois rayons, une barre derrière la ligne à deux régimes (à l'échelle jusqu'au coude, resserrée au-delà,
  * coupure « ⫽ » et trait du coude), teintée de la famille (c3b) avec son liseré à gauche.
  */
-export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, niveauDit, description, reserve, durabilite, aujourdhui, mouvementDit, trace, sousNom, onOpen, onToggleFavorite }) => {
+export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, niveauDit, description, reserve, durabilite, aujourdhui, mouvementDit, trace, sousNom, barreAutre, repereAutre, quantiteAutre, onOpen, onToggleFavorite }) => {
   const descriptionId = useId();
   const fam = familleTeinte(item);
   const rayon = rayonDuMur(item);
-  const barre = barreLigne(item);
+  const barre = barreAutre !== undefined ? barreAutre : barreLigne(item);
   const dit = etatDit(item, info, cmd, aujourdhui);
-  const repere = repereLigne(item, info, couleurMalt);
+  const repere = repereAutre ? { texte: repereAutre, couleur: null, inconnu: false, alerte: false } : repereLigne(item, info, couleurMalt);
   const inconnu = info.classe === 'compter';
   const pot = info.pot;
   const niveauConnu = level.source !== 'aucune';
@@ -88,7 +92,7 @@ export const LigneStock: React.FC<LigneStockProps> = ({ item, info, cmd, level, 
         <span className="l1-qt">
           {inconnu
             ? <b className="l1-q l1-q-c">à compter</b>
-            : <b className={`l1-q${item.currentStock <= 0 ? ' l1-q-0' : ''}`}>{quantiteDeLigne(item)}</b>}
+            : <b className={`l1-q${item.currentStock <= 0 ? ' l1-q-0' : ''}`}>{quantiteAutre ?? quantiteDeLigne(item)}</b>}
         </span>
         {/* La colonne « échelle » du tableau (≥ 900 px) ; en dessous elle n'a pas de boîte (display:contents) et la barre reste derrière la ligne. */}
         <span className="l1-ec-c" aria-hidden="true">

@@ -12,6 +12,7 @@ import { libellesSources, type SourceBesoin } from '../../domain/stock/disponibi
 import { lignesDeReglage, phraseReglage, vueHorizon } from '../../domain/stock/horizon';
 import { CommandeRepliee } from '../../ui/stock/ChiffreACommander';
 import { estFamilleAutre, FAMILLES_AUTRES } from '../../domain/stock/murDonnees';
+import { trierAutres } from '../../domain/stock/murAutres';
 import { aujourdhuiLocal, useHorizonStock } from '../../ui/stock/useHorizonStock';
 import { nextUniqueRef } from '../../services/refs';
 import { EntityList } from '../../ui/EntityList';
@@ -441,7 +442,10 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const autresStocks = ongletMur === 'autres' && vue === 'etagere';
   const visibleItems = useMemo(() => {
     const tries = trierArticles(retenus, tri, infos);
-    return autresStocks ? tries.filter(i => estFamilleAutre(familleRecompter(i))) : tries;
+    // Autres stocks : par défaut épuisé, bas, à compter, puis alphabétique (A-PORT-LISTE n° 41) ; un tri choisi (nom, quantité, manque) reste celui de l'utilisateur
+    if (!autresStocks) return tries;
+    const autres = tries.filter(i => estFamilleAutre(familleRecompter(i)));
+    return tri === 'defaut' ? trierAutres(autres) : autres;
   }, [retenus, tri, infos, autresStocks]);
   const groupesVisibles = useMemo(() => autresStocks ? FAMILLES_AUTRES.map(f => LIBELLE_FAMILLE[f]) : GROUPES_LISTE, [autresStocks]);
   const changerOngletMur = (o: 'ing' | 'autres') => {
@@ -608,6 +612,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const rayonsCol = GROUPES_LISTE.filter(g => TROIS.includes(g) && visibleItems.some(i => groupeListe(i) === g));
   const autresGroupes = GROUPES_LISTE.filter(g => !TROIS.includes(g) && visibleItems.some(i => groupeListe(i) === g));
   const enColonnes = grandEcran && !autresStocks && vue === 'etagere' && rayonsCol.length > 1;
+  // Autres stocks à 1280 : une table par rayon (Additifs, Emballage, Nettoyage), côte à côte sous le mur, comme les trois rayons d'Ingrédients (A-PORT-LISTE n° 35)
+  const rayonsAutres = groupesVisibles.filter(g => visibleItems.some(i => groupeListe(i) === g));
+  const enColonnesAutres = grandEcran && autresStocks && rayonsAutres.length > 1;
 
   return (
     // Articles et Courses défilent avec la fenêtre : l'en-tête de l'app part comme ailleurs (APP-ENTETE-COLLE, 19.11). Fûts, Matériel, Houblons gardent leur hauteur.
@@ -720,7 +727,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         </div>
         {enColonnes
           ? <><div className="sz-tables" data-tables>{rayonsCol.map(g => <div className="sz-table" key={g} data-table={g}>{listeDe(visibleItems.filter(i => groupeListe(i) === g), [g], g)}</div>)}</div>{autresGroupes.length > 0 && listeDe(visibleItems.filter(i => autresGroupes.includes(groupeListe(i))), autresGroupes, "autres-groupes")}</>
-          : listeDe(visibleItems, groupesVisibles, ongletMur)}
+          : enColonnesAutres
+            ? <div className="sz-tables sz-autres" data-tables>{rayonsAutres.map(g => <div className="sz-table" key={g} data-table={g}>{listeDe(visibleItems.filter(i => groupeListe(i) === g), [g], g)}</div>)}</div>
+            : listeDe(visibleItems, groupesVisibles, ongletMur)}
           </div>}
         </>
       )}
