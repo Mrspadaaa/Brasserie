@@ -9,6 +9,7 @@ vi.mock('../../src/services/firestoreRepo',()=>({isConfirmedWriteRejection:(erro
 vi.mock('../../src/services/geminiScanner',()=>({GeminiScannerService:{scanDocument:(...args:any[])=>state.scanned(...args),fileToDataUrl:async()=>'data:application/pdf;base64,JVBERi0xLjQK',normalizeMimeType:()=>'application/pdf'}}));
 vi.mock('../../src/services/purchaseEntry',async importOriginal=>({...await importOriginal<any>(),savePurchaseWithProofReceipt:async(draft:any)=>{await state.saved(draft);return {transactionId:'TX-test'};},confirmPurchase:()=>state.confirmed(),purchaseDuplicates:()=>[]}));
 import {ExpenseSheet} from '../../src/ui/finance/ExpenseSheet';
+import {poserDate,zoneDate} from '../helpers/poserDate';
 import {FirebaseAuthService} from '../../src/services/firebaseAuth';
 beforeEach(()=>{cleanup();vi.restoreAllMocks();state.saved.mockReset();state.scanned.mockReset().mockResolvedValue({ok:false,error:'Lecture indisponible. Saisie manuelle possible.'});vi.spyOn(FirebaseAuthService,'ensureDriveAccessToken').mockResolvedValue('synthetic-token');vi.spyOn(FirebaseAuthService,'prepareGoogleLogin').mockResolvedValue();state.confirmed.mockReset().mockResolvedValue(undefined);});
 const scannedInvoice=(review?:Record<string,unknown>)=>({vendor:'Fournisseur fictif',date:'09.09.2026',currency:'CHF',invoiceNumber:'TEST-VISION',description:'Fermenteur et entretien',amountHT:508.79,tvaRate:.081,tvaAmount:41.21,amountTTC:550,category:'materiel',subcategory:'Brasserie',issues:[] as string[],review,
@@ -30,7 +31,7 @@ async function openScannedInvoice(result:ReturnType<typeof scannedInvoice>,cache
 describe('Lecture et vérification visuelle du justificatif',()=>{
   it('préremplit un bordereau synthétique, signale la somme proposée et conserve le mois du paiement',async()=>{
     const result=scannedInvoice({status:'disputed',findings:['Total TTC absent.'],readers:2});
-    Object.assign(result,{documentType:'delivery_note',date:'31.08.2020',amountTTC:null,amountHT:null,tvaAmount:null,tvaRate:null,category:'divers',invoiceNumber:'',orderNumber:'COMMANDE-TEST',fieldWarnings:[{field:'amountTTC',message:'Total non imprimé.'}]});
+    Object.assign(result,{documentType:'delivery_note',date:'31.08.2026',amountTTC:null,amountHT:null,tvaAmount:null,tvaRate:null,category:'divers',invoiceNumber:'',orderNumber:'COMMANDE-TEST',fieldWarnings:[{field:'amountTTC',message:'Total non imprimé.'}]});
     result.items=result.items.map((item,index)=>({...item,name:`Article fictif ${index+1}`,kind:'other',amountTTC:index?20:40,reference:`REF-TEST-${index+1}`,variant:'Taille test'}));
     const view=await openScannedInvoice(result);
     expect(screen.getByLabelText('Total TTC en CHF')).toHaveValue('60,00');
@@ -38,25 +39,25 @@ describe('Lecture et vérification visuelle du justificatif',()=>{
     fireEvent.focus(screen.getByLabelText('Total TTC en CHF'));fireEvent.blur(screen.getByLabelText('Total TTC en CHF'));
     expect(screen.getByLabelText('Total TTC en CHF')).toHaveAccessibleDescription(expect.stringContaining('Somme des 2 lignes'));
     expect(screen.getByRole('button',{name:'Déjà payé'})).toHaveAttribute('aria-pressed','true');
-    expect(screen.getByText('Payé le 31.08.2020')).toBeVisible();
+    expect(screen.getByText('Payé le 31.08.2026')).toBeVisible();
     const dateSummary=view.container.querySelector('[data-purchase-date] summary')!; // la rubrique « Date de l’achat » (p3c-3)
     fireEvent.click(dateSummary);
     const datePanel=within(dateSummary.parentElement!);
     // D262b : « Aujourd'hui · Mois passé · Mois suivant », dans cet ordre ; ni « Hier » ni « Demain ».
     expect(datePanel.getAllByRole('button').filter(b=>['Aujourd’hui','Mois passé','Mois suivant','Hier','Demain'].includes(b.textContent??'')).map(b=>b.textContent)).toEqual(['Aujourd’hui','Mois passé','Mois suivant']);
-    fireEvent.change(screen.getByLabelText('Mois — Date de l’achat'),{target:{value:'07'}});
-    expect(screen.getByLabelText('Date de l’achat')).toHaveValue('2020-07-31');
-    expect(screen.getByText('Payé le 31.07.2020')).toBeVisible();
+    poserDate('Date de l’achat','2026-07-31'); // GESTE-DATE-PARTOUT : la frise, plus de sélecteur de mois
+    expect(zoneDate('Date de l’achat')).toHaveAttribute('data-valeur','2026-07-31');
+    expect(screen.getByText('Payé le 31.07.2026')).toBeVisible();
     fireEvent.click(screen.getByRole('button',{name:'Confirmer et enregistrer'}));
     await waitFor(()=>expect(state.saved).toHaveBeenCalledOnce());
-    expect(state.saved.mock.calls[0][0]).toMatchObject({amount:60,date:'31.07.2020',paymentDate:'31.07.2020',paymentStatus:'paid',sourceAmount:undefined,sourceTotalBasis:'line_sum',sourceDocumentType:'delivery_note',sourceOrderNumber:'COMMANDE-TEST',lines:[{kind:'other',description:'Article fictif 1 · Taille test',sourceReference:'REF-TEST-1',stockAction:'none',equipmentAction:'none'},{kind:'other',stockAction:'none',equipmentAction:'none'}]});
+    expect(state.saved.mock.calls[0][0]).toMatchObject({amount:60,date:'31.07.2026',paymentDate:'31.07.2026',paymentStatus:'paid',sourceAmount:undefined,sourceTotalBasis:'line_sum',sourceDocumentType:'delivery_note',sourceOrderNumber:'COMMANDE-TEST',lines:[{kind:'other',description:'Article fictif 1 · Taille test',sourceReference:'REF-TEST-1',stockAction:'none',equipmentAction:'none'},{kind:'other',stockAction:'none',equipmentAction:'none'}]});
     expect(state.scanned).toHaveBeenCalledOnce();
   });
   it('AM-73 : un paiement daté avant la pièce avertit, il ne refuse pas (un acompte est légitime)',async()=>{
     const view=await openScannedInvoice(scannedInvoice({status:'checked',findings:[],readers:2}));
     expect(view.container.querySelector('[data-dp="paye-avant"]')).toBeNull();
     fireEvent.click(screen.getByRole('button',{name:'Autre date'}));
-    fireEvent.change(screen.getByLabelText('Date du paiement'),{target:{value:'2026-09-01'}});
+    poserDate('Date du paiement','2026-09-01');
     const avertissement=view.container.querySelector('[data-dp="paye-avant"]');
     expect(avertissement).not.toBeNull();expect(avertissement).toHaveTextContent('acompte');
     fireEvent.click(screen.getByRole('button',{name:'Confirmer et enregistrer'}));

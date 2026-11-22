@@ -120,7 +120,8 @@ describe('dp-3 : la liaison au stock ne s’ouvre que sur son geste, jamais pour
 
 /* CP-20 (10.11) : « 2 endroit qui ne font pas le lien sur la date d'achat ??? » ; le sélecteur de mois s'écrivait « November 2026 ». */
 import {patchPurchaseDraft} from '../../src/services/purchasePrefill';
-import {DateField,MOIS_FR} from '../../src/ui/DateField';
+import {DateField} from '../../src/ui/DateField';
+import {poserDate,zoneDate} from '../helpers/poserDate';
 describe('dp-4 : la date du paiement suit la date de l’achat tant qu’elle n’est pas choisie',()=>{
   const base:any={date:'10.11.2026',paymentDate:'10.11.2026',paymentStatus:'paid'};
   it('une date de paiement supposée (lue du document) suit la date de l’achat, même si elle en différait',()=>{
@@ -140,8 +141,8 @@ describe('dp-4 : la date du paiement suit la date de l’achat tant qu’elle n�
     const view=await ouvrir(lecturePharmacie({},{date:'05.11.2026'}));
     fireEvent.click(view.container.querySelector<HTMLElement>('[data-dp="tuile-paye"]')!);
     fireEvent.click(await screen.findByRole('button',{name:'Autre date'}));
-    const champ=await screen.findByLabelText('Date du paiement');
-    fireEvent.change(champ,{target:{value:'2026-11-08'}});
+    await waitFor(()=>zoneDate('Date du paiement'));
+    poserDate('Date du paiement','2026-11-08');
     await waitFor(()=>expect(view.container.querySelector('[data-dp="paye-autre-jour"]')!.textContent).toMatch(/payé le 08\.11\.2026, autre jour que l’achat/));
   });
 });
@@ -151,25 +152,24 @@ describe('fx2 : « Autre date » montre le champ et la petite ligne ; « C’est
     fireEvent.click(view.container.querySelector<HTMLElement>('[data-dp="tuile-paye"]')!);
     expect(view.container.querySelector('[data-dp="paye-meme-jour"]')).toBeNull();
     fireEvent.click(await screen.findByRole('button',{name:'Autre date'}));
-    await screen.findByLabelText('Date du paiement');
+    await waitFor(()=>zoneDate('Date du paiement'));
     expect(view.container.querySelector('[data-dp="paye-meme-jour"]')!.textContent).toMatch(/payé le 05\.11\.2026, même jour que l’achat/);
-    fireEvent.change(screen.getByLabelText('Date du paiement'),{target:{value:'2026-11-08'}});
+    poserDate('Date du paiement','2026-11-08');
     await waitFor(()=>expect(view.container.querySelector('[data-dp="paye-autre-jour"]')!.textContent).toMatch(/payé le 08\.11\.2026, autre jour que l’achat \(05\.11\.2026\)/));
     fireEvent.click(screen.getByRole('button',{name:'C’est la date'}));
-    await waitFor(()=>expect(screen.queryByLabelText('Date du paiement')).toBeNull());
+    await waitFor(()=>expect(document.querySelector('[data-choix-date-pastille][aria-label^="Date du paiement"]')).toBeNull());
     expect(view.container.querySelector('[data-dp="paye-autre-jour"]')).toBeNull();
     expect(view.container.querySelector('[data-dp="paye-suit"]')!.textContent).toMatch(/Payé le 05\.11\.2026/);
   });
 });
-describe('dp-5 : le sélecteur « Changer le mois » est en français',()=>{
-  it('les mois s’écrivent en français et le choix garde le jour',()=>{
+describe('dp-5 (GESTE-DATE-PARTOUT, 22.11) : la date se pose à la frise partagée, en français, sans champ natif ni sélecteur de mois',()=>{
+  it('la pastille dit « 10 nov. », la frise est la frise du Calendrier, le geste écrit au format suisse',()=>{
     const onChange=vi.fn();
-    render(<DateField label="Date de l’achat" value="10.11.2026" onChange={onChange} monthShortcuts/>);
-    const sel=screen.getByLabelText('Mois — Date de l’achat') as HTMLSelectElement;
-    expect(Array.from(sel.options).map(o=>o.textContent)).toEqual([...MOIS_FR]);
-    expect(sel.options[sel.selectedIndex].textContent).toBe('novembre');
+    const {container}=render(<DateField label="Date de l’achat" value="10.11.2026" onChange={onChange}/>);
+    expect(container.querySelector('input[type="date"],select')).toBeNull();
+    expect(container.querySelector('[data-choix-date-pastille]')!.textContent).toMatch(/10 nov. 2026/);
     expect(document.body.textContent).not.toMatch(/November|January/);
-    fireEvent.change(sel,{target:{value:'02'}});
+    poserDate('Date de l’achat','2026-02-10',container);
     expect(onChange).toHaveBeenLastCalledWith('10.02.2026');
   });
 });

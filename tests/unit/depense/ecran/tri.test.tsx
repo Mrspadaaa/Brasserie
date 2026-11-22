@@ -4,6 +4,7 @@
  * rapprochement du serveur), stock SIMULÉ, Gemini et Drive jamais touchés. Rouge d'abord : chaque comportement n'existait pas avant (voir RESULTAT, « Tri du pilote »).
  */
 import React from 'react';
+import { poserDate } from '../../../helpers/poserDate';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { webcrypto } from 'node:crypto';
@@ -176,7 +177,7 @@ describe('Reprise (01.11) : les détails du critique et du relecteur', () => {
     await screen.findByRole('alert');
     expect(document.querySelector('[data-dp="tuile-paye"]')!.textContent).toContain('par défaut');
     expect(screen.getByLabelText('Total TTC en CHF')).toHaveAttribute('placeholder', '—');
-    fireEvent.change(screen.getByLabelText('Date de l’achat'), { target: { value: '2026-04-27' } });
+    poserDate('Date de l’achat', '2026-04-27');
     expect(document.querySelector('[data-dp="tuile-paye"]')!.textContent).not.toContain('par défaut');
   });
 

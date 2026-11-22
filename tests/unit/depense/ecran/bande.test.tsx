@@ -5,6 +5,7 @@
  * Le sautillement de la bande (position dans le flux) ne se voit qu'au vrai rendu : `voies/b1-bande/controle-bande.mjs`.
  */
 import React from 'react';
+import { poserDate } from '../../../helpers/poserDate';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { webcrypto } from 'node:crypto';
@@ -55,7 +56,7 @@ describe('D233 : « y aller » va toujours quelque part', () => {
     bloc.open = false;
     fireEvent.click(dateRouge(view)!);
     expect(bloc.open).toBe(true);
-    const champ = bloc.querySelector<HTMLInputElement>('input[type="date"]')!;
+    const champ = bloc.querySelector<HTMLElement>('[data-choix-date-pastille]')!;
     expect(document.activeElement).toBe(champ);
   });
 
@@ -69,24 +70,23 @@ describe('D233 : « y aller » va toujours quelque part', () => {
     expect(view.container.querySelector('[data-dp="bandeau"] button[aria-label^="Achat du "]')).not.toBeNull();
   });
 
-  it('une date effacée après coup rouvre le point (jamais réglé sans date valide)', async () => {
+  it('une date posée au geste règle le point (la frise ne vide pas une date)', async () => {
     const view = await lire();
     const bloc = view.container.querySelector<HTMLDetailsElement>('[data-purchase-date]')!;
     bloc.open = true;
-    fireEvent.change(bloc.querySelector('input[type="date"]')!, { target: { value: '2026-04-27' } });
+    poserDate('Date de l’achat', '2026-04-27', bloc);
     await waitFor(() => expect(dateRouge(view)).toBeNull());
-    fireEvent.change(view.container.querySelector<HTMLDetailsElement>('[data-purchase-date]')!.querySelector('input[type="date"]')!, { target: { value: '' } });
-    await waitFor(() => expect(dateRouge(view)).not.toBeNull());
+    // GESTE-DATE-PARTOUT : la frise ne vide pas une date (rien à effacer) ; sans date valide le point reste rouge tant qu'aucun jour n'est posé
   });
 
   it('une seule date par défaut : la date du paiement n’est pas un champ avant « Autre date » ; le moyen de paiement reste là', async () => {
     const view = await lire();
     const panneau = view.container.querySelector<HTMLElement>('[data-purchase-payment]')!;
-    expect(panneau.querySelector('input[type="date"]')).toBeNull();
+    expect(panneau.querySelector('[data-choix-date]')).toBeNull();
     expect(panneau.querySelector('select')).not.toBeNull();
     expect(panneau.textContent).toMatch(/Payé le/);
     fireEvent.click(Array.from(panneau.querySelectorAll('button')).find(b => b.textContent === 'Autre date')!);
-    expect(panneau.querySelector('input[type="date"]')).not.toBeNull();
+    expect(panneau.querySelector('[data-choix-date]')).not.toBeNull();
   });
 
   it('« y aller » sur Date, panneau Règlement ouvert : le focus va dans la date de l’achat, jamais dans le paiement', async () => {

@@ -34,12 +34,14 @@ export interface ChoixDateProps {
   /** Le jour à chaque mouvement du doigt (aperçu en direct) ; l'écriture, elle, reste au lâcher. */
   onBrouillon?: (iso: string) => void;
   className?: string;
+  /** L'id de la pastille (un `<label for>` qui la désigne). */
+  id?: string;
 }
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
 const aujourdhuiIso = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 
-export const ChoixDate: React.FC<ChoixDateProps> = ({ valeur, onChange, label, min, max, disabled = false, depart, rangee = 'brassins', ouvert = false, vide = 'À poser', onBrouillon, className }) => {
+export const ChoixDate: React.FC<ChoixDateProps> = ({ valeur, onChange, label, min, max, disabled = false, depart, rangee = 'brassins', ouvert = false, vide = 'À poser', onBrouillon, className, id }) => {
   const valide = ISO.test(valeur) ? valeur : '';
   const [ouverte, setOuverte] = useState(false);
   const [brouillon, setBrouillon] = useState(valide || depart || aujourdhuiIso());
@@ -64,7 +66,7 @@ export const ChoixDate: React.FC<ChoixDateProps> = ({ valeur, onChange, label, m
   return (
     <div ref={racine} className={`choix-date${className ? ` ${className}` : ''}`} data-choix-date data-valeur={valide || undefined}>
       {!ouvert && (
-        <button type="button" disabled={disabled} aria-expanded={ouverte} aria-label={`${label} : ${valide ? jourLisible(valide) : vide}`} data-choix-date-pastille
+        <button type="button" id={id} disabled={disabled} aria-expanded={ouverte} aria-label={`${label} : ${valide ? jourLisible(valide) : vide}`} data-choix-date-pastille
           onClick={() => setOuverte(o => !o)}
           className="inline-flex min-h-touch items-center gap-1.5 rounded-control border border-cave-700 bg-cave-900 px-2.5 text-sm text-cave-50">
           <CalendarDays size={16} aria-hidden="true" />

@@ -1,5 +1,6 @@
 import React, { useId, useMemo } from 'react';
-import { Field, inputClass } from './FormNav';
+import { Field } from './FormNav';
+import { ChoixDate } from './ChoixDate';
 
 /**
  * Saisie de date, avec les raccourcis qui couvrent la quasi-totalité des cas.
@@ -8,8 +9,7 @@ import { Field, inputClass } from './FormNav';
  * un achat du matin, ou le lundi pour le marché du samedi. Le sélecteur natif
  * demande trois gestes (ouvrir, naviguer, choisir) pour écrire « hier ». Les
  * pastilles règlent le cas courant en un appui, et le champ natif reste là pour
- * les autres — c'est lui qui garde le clavier numérique du téléphone et le
- * calendrier de l'ordinateur.
+ * les autres — GESTE-DATE-PARTOUT (22.11) : la frise partagée du Calendrier, au jour (`ChoixDate`), à la place du champ natif et des ‹ › de mois.
  *
  * L'application stocke les dates en `JJ.MM.AAAA` (format suisse) ; l'élément
  * natif exige `AAAA-MM-JJ`. La conversion est faite ici, une seule fois, plutôt
@@ -70,7 +70,6 @@ interface DateFieldProps {
   shortcuts?: Array<{ label: string; offsetDays: number; offsetMonths?: number }>;
   /** Optional calendar for this usage; other fields keep the device's local day. */
   shortcutDate?: (offsetDays: number) => string;
-  monthShortcuts?: boolean;
   disabled?: boolean;
 }
 
@@ -88,7 +87,6 @@ export const DateField: React.FC<DateFieldProps> = ({
   error,
   shortcuts = DEFAULT_SHORTCUTS,
   shortcutDate,
-  monthShortcuts = false,
   disabled = false
 }) => {
   const id = useId();
@@ -97,37 +95,7 @@ export const DateField: React.FC<DateFieldProps> = ({
   return (
     <Field label={label} hint={hint} error={error} htmlFor={id}>
       <div className="space-y-1">
-        <input
-          id={id}
-          name="date_picker_field"
-          autoComplete="off"
-          data-form-type="other"
-          data-lpignore="true"
-          data-1p-ignore="true"
-          data-bwignore="true"
-          type="date"
-          value={iso}
-          disabled={disabled}
-          onChange={(e) => onChange(toSwissDate(e.target.value))}
-          className={`${inputClass} [color-scheme:dark]`}
-        />
-
-        {monthShortcuts ? <div className="space-y-1">
-          <span className="text-xs text-cave-400">Changer le mois, garder le jour</span>
-          <div className="grid grid-cols-[auto_1fr_auto] gap-1.5 min-w-0">
-            <button type="button" disabled={disabled || !iso} aria-label={`Mois précédent — ${label}`} onClick={() => onChange(shiftSwissMonth(value, -1))} className="min-h-touch min-w-touch rounded-control border border-cave-700 text-cave-200">←</button>
-            <span className="grid min-w-0 grid-cols-[1fr_auto] gap-1.5">
-              <select aria-label={`Mois — ${label}`} lang="fr-CH" value={iso.slice(5, 7)} disabled={disabled || !iso} onChange={e => onChange(changeSwissMonth(value, `${iso.slice(0, 4)}-${e.target.value}`))} className={`${inputClass} min-w-0 [color-scheme:dark]`}>
-                {iso ? null : <option value="">—</option>}
-                {MOIS_FR.map((nom, i) => <option key={nom} value={String(i + 1).padStart(2, '0')}>{nom}</option>)}
-              </select>
-              <select aria-label={`Année — ${label}`} lang="fr-CH" value={iso.slice(0, 4)} disabled={disabled || !iso} onChange={e => onChange(changeSwissMonth(value, `${e.target.value}-${iso.slice(5, 7)}`))} className={`${inputClass} min-w-0 [color-scheme:dark]`}>
-                {iso ? Array.from({ length: 7 }, (_, k) => +iso.slice(0, 4) - 4 + k).map(a => <option key={a} value={a}>{a}</option>) : <option value="">—</option>}
-              </select>
-            </span>
-            <button type="button" disabled={disabled || !iso} aria-label={`Mois suivant — ${label}`} onClick={() => onChange(shiftSwissMonth(value, 1))} className="min-h-touch min-w-touch rounded-control border border-cave-700 text-cave-200">→</button>
-          </div>
-        </div> : null}
+        <ChoixDate id={id} label={label} valeur={iso} onChange={d => onChange(toSwissDate(d))} disabled={disabled} />
         <div className="flex flex-wrap gap-1">
           {shortcuts.map((s) => {
             const day = shortcutDate ? shortcutDate(s.offsetDays) : swissToday(s.offsetDays);
