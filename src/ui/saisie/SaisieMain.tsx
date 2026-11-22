@@ -9,7 +9,7 @@ import { ArrowDown, ArrowUp, Briefcase, CalendarDays, Check, ChevronDown, FileTe
 import { ModalShell } from '../ModalShell';
 import { ChoixDate } from '../ChoixDate';
 import { CategoryTag } from '../finance/CategoryTag';
-import { idFor } from '../finance/FinanceForms';
+import { CATEGORY_LABELS, idFor } from '../finance/FinanceForms';
 import { StorageService } from '../../services/storage';
 import { FinanceService, validateRefundTransaction } from '../../services/financeService';
 import { FirestoreRepo, isConfirmedWriteRejection } from '../../services/firestoreRepo';
@@ -19,7 +19,7 @@ import type { FinanceCategory } from '../../types';
 import { retirerEcriture } from '../finance/modifier/retirerEcriture';
 import {
   CATEGORIES_ACHAT, GENRES, RENTRE, SORT, avecGenre, brouillonNeuf, chf, dateDeFin, derniersNoms, echeances, finsProposees, habituels, horsResultat,
-  jjmm, lireMontant, nomFinal, piecesRemboursables, preparer, sensDe, signe, sommeDouzeMois,
+  grouper, jjmm, lireMontant, nomFinal, piecesRemboursables, preparer, sensDe, signe, sommeDouzeMois,
   type Brouillon, type Ecriture, type GenreId, type Habituel, type Methode, type Rythme
 } from './modele';
 import '../finance/finance.css';
@@ -102,7 +102,8 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const pieces = useMemo(() => (plateau ? piecesRemboursables(donnees.txs, recherche) : []), [plateau, recherche, donnees.txs]);
   const recurrent = choisi && !b.solde && G.rythme !== null && b.rythme !== 'une';
   const fin = recurrent ? dateDeFin(b.date, b.rythme, b.fin, b.finDate) : undefined;
-  const apayer = b.reglement === 'apayer' && !horsResultat(b.genre);
+  const apayer = b.reglement === 'apayer';
+  const sansPiece = b.genre === 'rembt' && !b.pieceId;
 
   const garde = (e: React.PointerEvent) => { if (document.activeElement === montantRef.current) e.preventDefault(); };
   const ouvrirMontant = (selection = false) => { focusVoulu.current = true; const m = montantRef.current; if (m) { m.focus({ preventScroll: true }); if (selection) m.select(); } };
@@ -119,9 +120,10 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
     ouvrirMontant(true);
   };
   const changer = () => { setChoisi(false); setPlateau(false); setNomEdit(false); dates.fermer(); setB((x) => ({ ...brouillonNeuf(aujourdhui), date: x.date })); };
-  const choisirPiece = (pid: string, reste: number) => {
-    setB((x) => ({ ...x, pieceId: pid })); setPlateau(false);
-    if (!lireMontant(brut)) setBrut(chf(reste).replace(/ /g, ' '));
+  const choisirPiece = (pid: string) => {
+    /* la pièce donne son nom (« Remboursement Malterie ») ; le montant se tape (« reste » le pose d'un toucher) : rembourser tout n'est pas le cas courant */
+    const o = donnees.txs.find((t) => t.id === pid);
+    setB((x) => ({ ...x, pieceId: pid, nom: o ? `Remboursement ${o.finance?.vendor || o.description}` : '' })); setPlateau(false);
     ouvrirMontant(true);
   };
   const patch = (p: Partial<Brouillon>) => setB((x) => ({ ...x, ...p }));
@@ -172,8 +174,8 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
 
   const chip = (on: boolean, contenu: React.ReactNode, onClick: () => void, extra: Record<string, string> = {}, cls = '') =>
     <button type="button" className={`sai-chip${cls ? ` ${cls}` : ''}`} aria-pressed={on} onPointerDown={garde} onClick={onClick} {...extra}>{contenu}</button>;
-  const dateChip = (cle: string, valeur: string, label: string, an = false) =>
-    <button type="button" className="sai-chip dt" aria-expanded={dates.ouverte === cle} aria-label={`${label} : ${jjmm(valeur, true)}`} onPointerDown={garde} onClick={() => dates.basculer(cle)}><CalendarDays size={14} />{jjmm(valeur, an)}</button>;
+  const dateChip = (cle: string, valeur: string, label: string, an = false, avant = '') =>
+    <button type="button" className="sai-chip dt" aria-expanded={dates.ouverte === cle} aria-label={`${label} : ${jjmm(valeur, true)}`} onPointerDown={garde} onClick={() => dates.basculer(cle)}><CalendarDays size={14} />{avant}{jjmm(valeur, an)}</button>;
   const frise = (cle: string, valeur: string, label: string, onChange: (d: string) => void, o: { min?: string; max?: string; mois?: boolean } = {}) =>
     dates.ouverte === cle ? <div className="sai-date"><ChoixDate ouvert valeur={valeur} label={label} min={o.min} max={o.max} mois={o.mois} rangee="achats" onChange={(d) => { onChange(d); dates.fermer(); }} /></div> : null;
 
@@ -210,30 +212,26 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const badge = choisi ? (b.genre === 'prel' ? <span className="finance-tag finance-tag-apports">Privé</span> : <CategoryTag category={b.genre === 'rembt' ? (piece?.category ?? 'divers') : b.genre === 'achat' ? b.categorie : G.category} />) : null;
   enfants.push(<div key="carte" className={`sai-card${choisi && !(b.genre === 'rembt' && !b.pieceId) ? ` ${sens}` : ''}`} data-saisie-carte>
     <div className="sai-c1">
-      {!choisi || nomEdit
+      {sansPiece ? <span className="sai-nm ph fixe"><span>Remboursement de…</span></span> : !choisi || nomEdit
         ? <input ref={nomRef} aria-label="Nom, facultatif" placeholder={choisi ? (b.genre === 'rembt' && piece ? `Remboursement ${piece.finance?.vendor || piece.description}` : G.nomDefaut(jjmm(b.date))) : 'Pour quoi ?'} value={b.nom} enterKeyHint="done" autoComplete="off"
           onChange={(e) => patch({ nom: e.target.value })} onBlur={() => setNomEdit(false)} />
         : <button type="button" className={`sai-nm${b.nom ? '' : ' ph'}`} aria-label="Nom, facultatif" data-saisie-nom onPointerDown={garde} onClick={() => setNomEdit(true)}>
           <span>{b.nom || (b.genre === 'rembt' ? (piece ? `Remboursement ${piece.finance?.vendor || piece.description}` : 'Remboursement de…') : G.nomDefaut(jjmm(b.date)))}</span><Pencil size={14} /></button>}
-      {badge}
-      {dateChip('date', b.date, b.solde ? 'Date du paiement' : 'Date', !choisi)}
+      {sansPiece ? null : badge}
+      {sansPiece ? null : dateChip('date', b.date, b.solde ? 'Date du paiement' : 'Date', !choisi)}
     </div>
     {frise('date', b.date, 'Date du mouvement', (d) => patch({ date: d }), { max: aujourdhui })}
     <label className={`sai-amt${choisi && sens && !(b.genre === 'rembt' && !b.pieceId) ? ` ${sens}` : ''}`}>
       {choisi && sens && !(b.genre === 'rembt' && !b.pieceId) ? <span aria-hidden="true">{sens === 'out' ? '−' : '+'}</span> : null}
       <input ref={montantRef} data-saisie-montant inputMode="decimal" enterKeyHint="done" autoComplete="off" aria-label="Montant en CHF" placeholder="0,00" value={brut}
-        style={{ width: brut ? `${brut.length + 0.15}ch` : '4ch' }} onChange={(e) => setBrut(e.target.value.replace(/[^\d,.\s’']/g, ''))} />
+        onChange={(e) => setBrut(grouper(e.target.value))} />
       {brut && !/[.,]/.test(brut) ? <span className="gh" aria-hidden="true">,00</span> : null}
       <small>CHF</small>
     </label>
-    {choisi && !horsResultat(b.genre) && b.genre !== 'rembt' ? <div className="sai-row">
+    {choisi && b.genre !== 'rembt' ? <div className="sai-row">
       {chip(b.reglement === 'paye', <>{b.reglement === 'paye' ? <Check size={14} /> : null}{sens === 'in' ? 'Reçu' : 'Payé'}{b.reglement === 'paye' && b.date === aujourdhui ? ' aujourd’hui' : ''}</>, () => patch({ reglement: 'paye' }), { 'data-saisie-reglement': 'paye' })}
       {chip(b.reglement === 'apayer', <>{b.reglement === 'apayer' ? <Check size={14} /> : null}{sens === 'in' ? 'À recevoir' : 'À payer'}</>, () => patch({ reglement: 'apayer' }), { 'data-saisie-reglement': 'apayer' })}
-      {b.reglement === 'apayer' ? dateChip('echeance', b.echeance, 'Échéance') : chip(false, <><Landmark size={14} />{METHODES.find((m) => m.id === b.methode)!.nom}<ChevronDown size={12} /></>, () => patch({ methode: METHODES[(METHODES.findIndex((m) => m.id === b.methode) + 1) % METHODES.length].id }), { 'aria-label': 'Moyen de paiement, toucher pour changer' })}
-    </div> : null}
-    {choisi && horsResultat(b.genre) ? <div className="sai-row">
-      {chip(true, <><Check size={14} />{b.genre === 'apport' ? 'Reçu' : 'Retiré'}{b.date === aujourdhui ? ' aujourd’hui' : ''}</>, () => undefined)}
-      {chip(false, <><Landmark size={14} />{METHODES.find((m) => m.id === b.methode)!.nom}<ChevronDown size={12} /></>, () => patch({ methode: METHODES[(METHODES.findIndex((m) => m.id === b.methode) + 1) % METHODES.length].id }), { 'aria-label': 'Moyen de paiement, toucher pour changer' })}
+      {b.reglement === 'apayer' ? dateChip('echeance', b.echeance, 'Échéance', false, 'd’ici le ') : chip(false, <><Landmark size={14} />{METHODES.find((m) => m.id === b.methode)!.nom}<ChevronDown size={12} /></>, () => patch({ methode: METHODES[(METHODES.findIndex((m) => m.id === b.methode) + 1) % METHODES.length].id }), { 'aria-label': 'Moyen de paiement, toucher pour changer' })}
     </div> : null}
     {choisi && b.genre === 'rembt' && b.pieceId ? <div className="sai-row">
       {chip(b.reglement === 'paye', <>{b.reglement === 'paye' ? <Check size={14} /> : null}{sens === 'in' ? 'Reçu' : 'Rendu'}{b.reglement === 'paye' && b.date === aujourdhui ? ' aujourd’hui' : ''}</>, () => patch({ reglement: 'paye' }))}
@@ -245,7 +243,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
       {chip(false, <>reste : {chf(pieceInfo.reste)}</>, () => setBrut(chf(pieceInfo.reste).replace(/ /g, ' ')))}</div> : null}
   </div>);
   if (choisi) {
-    if (G.qui) enfants.push(<div key="qui" className="sai-qui"><small>{G.qui}</small>
+    if (G.qui && !b.solde) enfants.push(<div key="qui" className="sai-qui"><small>{G.qui}</small>
       {noms.map((n) => chip(b.vendor === n, n, () => patch(b.vendor === n ? { vendor: undefined, nom: b.nom === n ? '' : b.nom } : { vendor: n, nom: n }), { 'data-saisie-nom-puce': n }))}
       {chip(false, <><Plus size={13} />autre</>, () => setNomEdit(true), {}, 'pl')}</div>);
     if (b.genre === 'achat') enfants.push(<div key="ach" className="sai-blk"><small className="sai-lb"><Tag size={13} /> Catégorie</small>
@@ -263,7 +261,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
         {recurrent ? <>
           <div className="sai-row"><small>dès le</small>{dateChip('debut', b.date, 'Début', true)}</div>
           {frise('debut', b.date, 'Début de la récurrence', (d) => patch({ date: d }), { max: aujourdhui })}
-          <div className="sai-row"><small>jusqu’à</small>{fins.map((f) => chip(b.fin === f.id, f.id === 'date' ? <><CalendarDays size={14} />{b.fin === 'date' && b.finDate ? moisAn(b.finDate) : 'date'}</> : f.nom,
+          <div className="sai-row"><small>jusqu’à</small>{fins.map((f) => chip(b.fin === f.id, f.id === 'date' ? <><CalendarDays size={14} />date</> : f.nom,
             () => { if (f.id === 'date') { patch({ fin: 'date', finDate: b.finDate ?? dateDeFin(b.date, b.rythme, '1an') }); dates.basculer('fin'); } else patch({ fin: f.id }); }, { 'data-saisie-fin': f.id }))}</div>
           {b.fin === 'date' ? frise('fin', b.finDate ?? b.date, 'Dernière échéance', (d) => patch({ finDate: d }), { min: b.date }) : null}
           {cents ? <div className="sai-row"><span className="sai-sum">Σ 12 mois <b className={sens ?? 'out'}>{signe(sens ?? 'out', sommeDouzeMois(cents, b.date, b.rythme, fin))}</b></span></div> : null}
@@ -272,9 +270,9 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
         </> : null}
       </div>);
     }
-    enfants.push(<details key="pli" className="sai-fold"><summary>{G.pli}<span>facultatif <ChevronDown size={12} /></span></summary><div className="sai-blk">
-      {tvaInscrit && !horsResultat(b.genre) && b.genre !== 'rembt' ? <div className="sai-row"><small>TVA</small>{TVA.map((t) => chip(b.tvaRate === t, `${String(Math.round(t * 1000) / 10).replace('.', ',')} %`, () => patch({ tvaRate: t })))}</div> : null}
-      {!horsResultat(b.genre) && b.genre !== 'rembt' ? <input className="sai-in" aria-label={b.genre === 'impot' ? 'Période, référence' : 'Référence'} placeholder={b.genre === 'impot' ? 'Période, référence' : 'Référence (n° de facture)'} value={b.reference} onChange={(e) => patch({ reference: e.target.value })} /> : null}
+    if (b.genre !== 'rembt' && !b.solde) enfants.push(<details key="pli" className="sai-fold"><summary>{G.pli}<span>facultatif <ChevronDown size={12} /></span></summary><div className="sai-blk">
+      {tvaInscrit && !horsResultat(b.genre) ? <div className="sai-row"><small>TVA</small>{TVA.map((t) => chip(b.tvaRate === t, `${String(Math.round(t * 1000) / 10).replace('.', ',')} %`, () => patch({ tvaRate: t })))}</div> : null}
+      {!horsResultat(b.genre) ? <input className="sai-in" aria-label={b.genre === 'impot' ? 'Période, référence' : 'Référence'} placeholder={b.genre === 'impot' ? 'Période, référence' : 'Référence (n° de facture)'} value={b.reference} onChange={(e) => patch({ reference: e.target.value })} /> : null}
       <input className="sai-in" aria-label="Note" placeholder="Note" value={b.note} onChange={(e) => patch({ note: e.target.value })} />
     </div></details>);
   }
@@ -303,7 +301,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
           <label className="sai-q"><Search size={16} /><input inputMode="search" aria-label="Chercher une pièce" placeholder="Chercher un nom, un montant" value={recherche} onChange={(e) => setRecherche(e.target.value)} /></label>
           <div className="sai-pcs">{pieces.length ? pieces.map((p) => {
             const t = TEINTE[p.category] ?? TEINTE.divers;
-            return <button key={p.id} type="button" className="sai-pc" data-saisie-piece={p.id} onClick={() => choisirPiece(p.id, p.reste)}>
+            return <button key={p.id} type="button" className="sai-pc" data-saisie-piece={p.id} onClick={() => choisirPiece(p.id)}>
               <span className="sai-ic" style={{ background: t.fond, color: t.trait }}>{p.sens === 'out' ? <ShoppingCart size={16} /> : <Tag size={16} />}</span>
               <span><b>{p.nom}</b><small>{p.sous}</small></span><span className="n">{signe(p.sens, p.cents)}</span>
               <span className={`sai-dir ${p.sens === 'out' ? 'in' : 'out'}`}>{p.sens === 'out' ? '↓ rentre' : '↑ sort'}</span></button>;
@@ -336,8 +334,8 @@ function Confirmation({ fait, txs, occupe, onAnnuler, onAutre, onFermer }: { fai
       {hors ? <>
         <div className="sai-ok-r"><b><Landmark size={16} /> {methode}</b><span className={`sai-mmv ${sens}`}>{signe(sens, cents)}</span><small>{sens === 'in' ? 'argent dispo' : 'sorti de la caisse'}</small></div>
         <div className="sai-ok-r"><b><Barres /> Mon mois</b><span className="sai-mmv vide">inchangé</span><small>{f.kind === 'contribution' ? 'un apport n’est ni une vente ni une recette' : 'un prélèvement n’est pas une charge'}</small></div>
-      </> : <div className="sai-ok-r"><b><Barres /> Mon mois</b><span className={`sai-mmv ${apayer ? 'prevu' : sens}`}>{signe(sens, cents)}</span><small>{origine ? `${origine.description} réduit de ${chf(cents)}` : apayer ? `prévu, échéance ${f.dueDate ? jjmm(f.dueDate) : ''}` : moisDe(tx.date)}</small></div>}
-      {origine ? <div className="sai-ok-r"><b><Link2 size={16} /> Pièce</b><span className="n">{origine.finance?.vendor || origine.description} {jjmm(origine.date)} · {chf(origine.finance?.amountCents ?? 0)} → net {chf((origine.finance?.amountCents ?? 0) - dejaAvoirs - cents)}</span></div> : null}
+      </> : <div className="sai-ok-r"><b><Barres /> Mon mois</b><span className={`sai-mmv ${apayer ? 'prevu' : sens}`}>{signe(sens, cents)}</span><small>{origine ? `${CATEGORY_LABELS[origine.category] ?? origine.category} réduit de ${chf(cents)}` : apayer ? `prévu, échéance ${f.dueDate ? jjmm(f.dueDate) : ''}` : moisDe(tx.date)}</small></div>}
+      {origine ? <div className="sai-ok-r"><b><Link2 size={16} /> Pièce</b><span className="sai-pv">{origine.finance?.vendor || origine.description} {jjmm(origine.date)} · {chf(origine.finance?.amountCents ?? 0)} → net {chf((origine.finance?.amountCents ?? 0) - dejaAvoirs - cents)}</span></div> : null}
       {rec ? <>
         <div className="sai-ok-r"><b><CalendarDays size={16} /> Calendrier</b><div className="sai-ap">{ech.map((d, i) => <i key={d} className={i === 0 ? (sens === 'out' ? 'f' : 'fi') : ''}>{jjmm(d)}{i === 0 && !apayer ? ' ✓' : ''}</i>)}<small>… {fin ? `→ ${moisAn(fin)}` : 'sans fin'}</small></div></div>
         <div className="sai-ok-r"><b>Σ 12 mois</b><span className={`n ${sens}`}>{signe(sens, sommeDouzeMois(cents, tx.date, rec.frequency, fin))}</span><small>sur un an</small></div>

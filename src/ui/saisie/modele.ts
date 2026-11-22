@@ -60,6 +60,13 @@ export function chf(cents: number): string {
   const a = Math.abs(cents), e = Math.floor(a / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   return `${e},${String(a % 100).padStart(2, '0')}`;
 }
+/** La frappe du clavier Gboard (« , » et « . ») mise en forme suisse : « 2000.5 » → « 2 000,5 » ; deux décimales au plus. */
+export function grouper(v: string): string {
+  const m = /^(\d*)([.,]\d{0,2})?/.exec(v.replace(/[^\d,.]/g, ''));
+  const ent = (m?.[1] ?? '').replace(/^0+(?=\d)/, '');
+  const dec = (m?.[2] ?? '').replace('.', ',');
+  return ent.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + dec;
+}
 export const signe = (sens: 'in' | 'out', cents: number) => `${sens === 'out' ? '−' : '+'}${chf(cents)}`;
 /** `2026-11-22` → « 22.11 » ; avec l'année : « 22.11.26 ». */
 export const jjmm = (iso: string, an = false) => `${iso.slice(8, 10)}.${iso.slice(5, 7)}${an ? `.${iso.slice(2, 4)}` : ''}`;
@@ -86,7 +93,7 @@ export function finsProposees(rythme: Rythme): Array<{ id: Fin; nom: string }> {
   if (rythme === 'une') return [];
   if (rythme === 'yearly') return [{ id: 'sans', nom: 'sans fin' }, { id: 'date', nom: 'date' }];
   const pas = PAS[rythme];
-  return [{ id: 'sans', nom: 'sans fin' }, { id: '6m', nom: `6 mois · ${6 / pas} fois` }, { id: '1an', nom: `1 an · ${12 / pas} fois` }, { id: 'date', nom: 'date' }];
+  return [{ id: 'sans', nom: 'sans fin' }, { id: '6m', nom: pas === 1 ? '6 mois' : `6 mois · ${6 / pas} fois` }, { id: '1an', nom: `1 an · ${12 / pas} fois` }, { id: 'date', nom: 'date' }];
 }
 
 /* ---------- le brouillon ---------- */
@@ -138,7 +145,7 @@ export function preparer(b: Brouillon, ctx: { id: string; maintenant: string; tr
   const nom = nomFinal(b);
   const sens = sensDe(b, ctx.transactions);
   const ttc = cents / 100;
-  const paye = b.reglement === 'paye' || horsResultat(b.genre);
+  const paye = b.reglement === 'paye';
   const notes = [b.note.trim()].filter(Boolean).join(' ') || undefined;
   let tx: FinanceTransaction;
   if (b.genre === 'rembt') {

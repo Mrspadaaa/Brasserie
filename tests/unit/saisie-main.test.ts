@@ -1,6 +1,6 @@
 // Saisie à la main v01s (D426) : le modèle (genre → nature, sens, catégorie, prévision ; habituels ; pièces remboursables). Fixtures simulées.
 import { describe, expect, it } from 'vitest';
-import { avecGenre, brouillonNeuf, chf, dateDeFin, derniersNoms, echeances, habituels, lireMontant, piecesRemboursables, preparer, sommeDouzeMois } from '../../src/ui/saisie/modele';
+import { avecGenre, brouillonNeuf, chf, grouper, dateDeFin, derniersNoms, echeances, habituels, lireMontant, piecesRemboursables, preparer, sommeDouzeMois } from '../../src/ui/saisie/modele';
 import { planOccurrences } from '../../src/domain/finance/forecast';
 import { validateFinanceTransaction } from '../../src/domain/finance/ledger';
 import type { FinanceTransaction, FinancialPlan } from '../../src/domain/finance/types';
@@ -21,6 +21,11 @@ describe('saisie à la main : montant', () => {
     expect(lireMontant('1,234')).toBeUndefined();
     expect(lireMontant('')).toBeUndefined();
     expect(chf(200000)).toBe('2 000,00');
+    expect(grouper('2000')).toBe('2 000');
+    expect(grouper('2000.5')).toBe('2 000,5');
+    expect(grouper('29,905')).toBe('29,90');
+    expect(grouper('0040')).toBe('40');
+    expect(lireMontant(grouper('12345,6'))).toBe(1234560);
   });
 });
 
@@ -61,11 +66,11 @@ describe('saisie à la main : le genre pose le sens et la nature', () => {
     expect(e.transaction.finance!.planId).toBeUndefined();
     expect(e.plan).toBeUndefined();
   });
-  it('« À payer » : pièce ouverte avec échéance, aucun paiement ; prélèvement : withdrawal toujours réglé', () => {
+  it('« À payer » : pièce ouverte avec échéance, aucun paiement ; prélèvement : withdrawal payé par défaut', () => {
     const e = preparer({ ...avecGenre(brouillonNeuf(J), 'achat'), cents: 18640, reglement: 'apayer' }, ctx());
     expect(e.paiement).toBeUndefined();
     expect(e.transaction.finance).toMatchObject({ paymentStatus: 'unpaid', dueDate: '2026-12-22' });
-    const p = preparer({ ...avecGenre(brouillonNeuf(J), 'prel'), cents: 30000, reglement: 'apayer' }, ctx());
+    const p = preparer({ ...avecGenre(brouillonNeuf(J), 'prel'), cents: 30000 }, ctx());
     expect(p.transaction.finance!.kind).toBe('withdrawal');
     expect(p.paiement!.direction).toBe('out');
   });

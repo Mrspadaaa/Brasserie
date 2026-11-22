@@ -44,7 +44,7 @@
 .sai-sel.out .g{border-color:var(--out)}.sai-sel.in .g{border-color:var(--in)}
 .sai-sel>button{margin-left:auto;height:40px;padding:0 12px !important;border-radius:10px;border:1px solid var(--bordm) !important;background:var(--page) !important;color:var(--val) !important;font-weight:600 !important;font-size:14px !important}
 /* la carte (p3c-3) */
-.sai-card{border:1px solid var(--bordm);border-radius:14px;padding:10px 12px;background:var(--page)}
+.sai-card{border:1px solid var(--bordm);border-radius:14px;padding:8px 12px 10px;background:var(--page)}
 .sai-card.out{border-color:var(--outap)}.sai-card.in{border-color:var(--inap)}
 .sai-c1{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:32px}
 .sai-c1>input{font-size:16px;font-weight:700;color:var(--val);flex:1}
@@ -52,11 +52,12 @@
 .sai-nm{flex:1;min-width:0;display:inline-flex;align-items:center;gap:6px;min-height:32px;font-size:16px !important;font-weight:700 !important;color:var(--val) !important;text-align:left;white-space:nowrap;overflow:hidden}
 .sai-nm>span{overflow:hidden;text-overflow:ellipsis}
 .sai-nm svg{color:var(--trait);flex:none}
+.sai-nm.fixe{cursor:default}
 .sai-nm.ph{color:var(--trait) !important;font-weight:600 !important}
 .sai-c1 .finance-tag{flex:none}
 .sai-amt{display:flex;align-items:center;min-height:56px;font-family:var(--mono);font-size:44px;font-weight:600;letter-spacing:-.02em;color:var(--trait);cursor:text}
 .sai-amt.out{color:var(--out)}.sai-amt.in{color:var(--in)}
-.sai-amt input{font-family:var(--mono);font-size:44px;font-weight:600;letter-spacing:-.02em;color:inherit;caret-color:var(--fin)}
+.sai-amt input{field-sizing:content;min-width:1ch;padding:0 !important;margin:0;border:0 !important;font-family:var(--mono);font-size:44px;font-weight:600;letter-spacing:-.02em;color:inherit;caret-color:var(--fin)}
 .sai-amt input::placeholder{color:var(--trait)}
 .sai-amt .gh{color:var(--trait);font-weight:500}
 .sai-amt small{font-family:inherit;font-size:14px;color:var(--sec);margin-left:auto;font-weight:400;letter-spacing:0}
@@ -84,7 +85,9 @@
 .sai-seg button{height:40px;font-size:14px !important;font-weight:600 !important;border-left:1px solid var(--bord) !important;color:var(--txt) !important}
 .sai-seg button:first-child{border-left:0 !important}
 .sai-seg button[aria-pressed="true"]{background:var(--act) !important;color:var(--acttx) !important}
-.sai-rec .sai-row>small{width:52px}
+.sai-rec .sai-row>small{width:48px}
+.sai-rec .sai-row{gap:5px}
+.sai-rec .sai-chip{padding:0 9px !important}
 .sai-sum{font-size:13px;color:var(--val);display:inline-flex;gap:6px;align-items:center;font-weight:600}
 .sai-sum b{font-family:var(--mono)}
 .sai-sum b.out{color:var(--out)}.sai-sum b.in{color:var(--in)}
@@ -132,7 +135,9 @@
 .sai-ok-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .sai-okc{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--inap);color:#fff;flex:none}
 .sai-ok-h b{font-size:16px;color:var(--val);display:block}
-.sai-ok-h span{font-size:13px;color:var(--sec)}
+.sai-ok-h div>span{font-size:13px;color:var(--sec)}
+.sai-ok-r .sai-ap{flex:1 1 0;min-width:0}
+.sai-pv{font-size:13px;color:var(--val);font-weight:600}
 .sai-ok-r{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--bord);flex-wrap:wrap}
 .sai-ok-r>b{width:96px;font-size:13px;color:var(--val);display:flex;gap:6px;align-items:center}
 .sai-ok-r>small{font-size:13px;color:var(--sec)}
