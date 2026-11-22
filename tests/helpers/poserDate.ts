@@ -11,8 +11,11 @@ const aujourdhui = () => { const d = new Date(); return `${d.getFullYear()}-${St
 
 export function zoneDate(label: string, racine: ParentNode = document): HTMLElement {
   const pastille = Array.from(racine.querySelectorAll<HTMLElement>('[data-choix-date-pastille]')).find(b => (b.getAttribute('aria-label') ?? '').startsWith(`${label} :`));
-  if (!pastille) throw new Error(`pas de choix de date « ${label} »`);
-  return pastille.closest<HTMLElement>('[data-choix-date]')!;
+  if (pastille) return pastille.closest<HTMLElement>('[data-choix-date]')!;
+  /* une frise `ouvert` n'a pas de pastille : son étiquette est sur la racine */
+  const ouverte = Array.from(racine.querySelectorAll<HTMLElement>('[data-choix-date]')).find(z => z.getAttribute('data-choix-date-label') === label);
+  if (!ouverte) throw new Error(`pas de choix de date « ${label} »`);
+  return ouverte;
 }
 
 export function poserDate(label: string, iso: string, racine: ParentNode = document): void {

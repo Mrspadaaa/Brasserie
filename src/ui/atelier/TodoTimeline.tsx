@@ -2,15 +2,18 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Check, ChevronDown, ChevronRight, ChevronUp, GripVertical, LayoutGrid, Plus, X } from 'lucide-react';
 import type { CreativeItem } from '../../types';
 import {
-  ajouterJours, construireFil, joursJusquAu, enSuisse, joursDepuisY, jourComplet, jourMois, MARGE_HAUT, positionY, relatif
+  ajouterJours, construireFil, joursJusquAu, enSuisse, jourComplet, jourMois, MARGE_HAUT, positionY, relatif
 } from '../../domain/todoTimeline';
+import { ChoixDate } from '../ChoixDate';
 import { estDemo } from './demo';
 import './atelier.css';
 
 /**
  * « À faire » : le fil du temps à l'échelle (kd4, choisie le 15.11). Les calculs sont dans `domain/todoTimeline`.
  * La tâche sans date sort du fil (poche au-dessus du trait « aujourd'hui ») : elle ne change aucune distance.
- * Pas de champ neuf : la date se pose en glissant la perle neuve (ou en touchant le fil, ou aux flèches), même champ `date`.
+ * Le fil, la poche et la perle neuve restent à kd4 (le dessin choisi). GESTE-DATE-PARTOUT (D425, 22.11) : seul le geste de CHOIX de la date change,
+ * il passe à la frise partagée du Calendrier (`ChoixDate`, dans la feuille « Nouvelle tâche ») ; la perle neuve de kd4 suit la frise en direct et ne
+ * se glisse plus (même champ `date`).
  */
 interface Props {
   items: CreativeItem[];
@@ -28,25 +31,28 @@ interface Props {
 }
 
 const JOURS_PAR_DEFAUT = 14;
+/** Le fil s'arrête à dix ans (3650 jours) ; une tâche ne se pose pas au passé. */
+const JOURS_MAX = 3650;
+const isoLocal = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreate, onToggle, onEdit, dateDepart, titreDepart, montantDepart }) => {
   const aujourdhui = useMemo(() => new Date(), []);
   const taches = useMemo(() => items.map((i) => ({ id: i.id, title: i.title, date: i.date, status: i.status })), [items]);
   const [jours, setJours] = useState(JOURS_PAR_DEFAUT);
+  /** Le jour ÉCRIT par la frise (au lâcher) ; `jours` suit le doigt en direct (la perle neuve de kd4) : Échap rend celui-ci. */
+  const [joursEcrits, setJoursEcrits] = useState(JOURS_PAR_DEFAUT);
   const fil = useMemo(() => construireFil(taches, aujourdhui, adding ? jours : null), [taches, aujourdhui, adding, jours]);
   const parId = (id: string) => items.find((i) => i.id === id)!;
   const [faitesOuvertes, setFaitesOuvertes] = useState(false);
   const [recent, setRecent] = useState<CreativeItem | null>(null);
   const [titre, setTitre] = useState('');
   const [indiceBord, setIndiceBord] = useState(false);
-  const futRef = useRef<HTMLDivElement>(null);
-  const fantomeRef = useRef<HTMLButtonElement>(null);
-  const glisse = useRef(false);
+  const fantomeRef = useRef<HTMLSpanElement>(null);
   const demo = items.some((i) => estDemo(i.id));
 
   useEffect(() => { if (!recent) return; const t = setTimeout(() => setRecent(null), 9000); return () => clearTimeout(t); }, [recent]);
   useEffect(() => { if (adding && titreDepart) setTitre(titreDepart); }, [adding, titreDepart]);
-  useEffect(() => { if (adding) { setJours((dateDepart ? joursJusquAu(aujourdhui, dateDepart) : null) ?? JOURS_PAR_DEFAUT); setTimeout(() => fantomeRef.current?.scrollIntoView({ block: 'center', behavior: 'auto' }), 60); } }, [adding]);
+  useEffect(() => { if (adding) { const depart = (dateDepart ? joursJusquAu(aujourdhui, dateDepart) : null) ?? JOURS_PAR_DEFAUT; setJours(depart); setJoursEcrits(depart); setTimeout(() => fantomeRef.current?.scrollIntoView({ block: 'center', behavior: 'auto' }), 60); } }, [adding]);
 
   const cocher = (id: string) => {
     const item = parId(id);
@@ -68,16 +74,16 @@ export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreat
   };
   const nbAgenda = items.filter((i) => i.status !== 'done').length;
 
-  const surFil = (e: React.PointerEvent) => {
-    const r = futRef.current?.getBoundingClientRect();
-    if (!r) return;
-    setJours(joursDepuisY(e.clientY - r.top - MARGE_HAUT));
-  };
   const hauteur = adding ? Math.max(fil.hauteur, MARGE_HAUT + positionY(jours) + 70) : fil.hauteur;
   const fantomeY = MARGE_HAUT + positionY(jours);
-  const touches = (e: React.KeyboardEvent) => {
-    const pas = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : e.key === 'PageDown' ? 7 : e.key === 'PageUp' ? -7 : 0;
-    if (pas) { e.preventDefault(); setJours((j) => Math.max(0, Math.min(3650, j + pas))); }
+  /** La frise donne un jour AAAA-MM-JJ : le fil le compte en jours depuis aujourd'hui (jamais au passé : la frise est bornée à aujourd'hui). */
+  const versJours = (iso: string) => joursJusquAu(aujourdhui, iso);
+  const sousFrise = (iso: string) => { const j = versJours(iso); if (j !== null) setJours(j); };
+  const ecritParFrise = (iso: string) => {
+    const j = versJours(iso);
+    if (j === null) return;
+    setJours(j); setJoursEcrits(j);
+    setTimeout(() => fantomeRef.current?.scrollIntoView({ block: 'center', behavior: 'auto' }), 0);
   };
 
   const perle = (cls: string, label: string, onClick: () => void) => (
@@ -118,10 +124,7 @@ export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreat
           </div>
         )}
         <div className="tl-now"><span>aujourd’hui · {jourComplet(aujourdhui)}</span></div>
-        <div ref={futRef} className="tl-fut" style={{ height: hauteur }}
-          onPointerDown={adding ? (e) => { glisse.current = true; (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId); surFil(e); } : undefined}
-          onPointerMove={adding ? (e) => { if (glisse.current) surFil(e); } : undefined}
-          onPointerUp={() => { glisse.current = false; }} onPointerCancel={() => { glisse.current = false; }}>
+        <div className="tl-fut" style={{ height: hauteur }}>
           {fil.reperes.map((r) => <span key={`${r.jours}-${r.etiquette}`} className={`tl-tk${r.rupture ? ' rupt' : ''}`} style={{ top: r.y }}>{r.etiquette}</span>)}
           {fil.noteRupture !== null && <span className="tl-note" style={{ top: fil.noteRupture }}>échelle resserrée</span>}
           {fil.ecarts.map((g) => <span key={g.y} className="tl-gap" style={{ top: g.y }}>{g.texte}</span>)}
@@ -137,9 +140,8 @@ export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreat
           ))}
           {adding && (
             <div className="tl-gh" style={{ top: fantomeY }}>
-              <button ref={fantomeRef} type="button" role="slider" className="tl-bead n" aria-label="Date de la tâche" aria-valuemin={0} aria-valuenow={jours} aria-valuetext={`${jourComplet(dateChoisie)}, ${relatif(jours)}`} onKeyDown={touches}><i /></button>
-              <span className="lab">{jourComplet(dateChoisie)}<small>{relatif(jours)}</small></span>
-              <span className="grip"><GripVertical size={18} aria-hidden="true" /></span>
+              <span ref={fantomeRef} className="tl-bead n" aria-hidden="true"><i /></span>
+              <span className="lab" data-testid="tl-jour-pose">{jourComplet(dateChoisie)}<small>{relatif(jours)}</small></span>
             </div>
           )}
           {fil.futur.length === 0 && !adding && (
@@ -175,6 +177,9 @@ export const TodoTimeline: React.FC<Props> = ({ items, adding, onAdding, onCreat
           <label className="tl-lbl" htmlFor="tl-quoi">Quoi</label>
           <input id="tl-quoi" className="tl-in" type="text" autoFocus autoComplete="off" enterKeyHint="done" value={titre} onChange={(e) => setTitre(e.target.value)} placeholder="Commander les capsules…" />
           {montantDepart && <p className="tl-lbl" data-montant-repris>Montant repris du calendrier : {montantDepart}</p>}
+          <ChoixDate ouvert label="Date de la tâche" className="tl-date" rangee="activites"
+            valeur={isoLocal(ajouterJours(aujourdhui, joursEcrits))} min={isoLocal(aujourdhui)} max={isoLocal(ajouterJours(aujourdhui, JOURS_MAX))}
+            onBrouillon={sousFrise} onChange={ecritParFrise} />
           <div className="tl-row">
             <button type="button" className="tl-sec" disabled={!titre.trim()} onClick={() => poser(false)}>Sans date</button>
             <button type="submit" className="tl-cta" disabled={!titre.trim()}><Plus size={18} aria-hidden="true" />Poser au {jourMois(dateChoisie)}</button>

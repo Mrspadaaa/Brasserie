@@ -69,7 +69,7 @@ export const ChoixDate: React.FC<ChoixDateProps> = ({ valeur, onChange, label, m
     if (!ouvert) setOuverte(false);
   };
   return (
-    <div ref={racine} className={`choix-date${className ? ` ${className}` : ''}`} data-choix-date data-valeur={valide || undefined}>
+    <div ref={racine} className={`choix-date${className ? ` ${className}` : ''}`} data-choix-date data-choix-date-label={label} data-valeur={valide || undefined}>
       {!ouvert && (
         <button type="button" id={id} disabled={disabled} aria-expanded={ouverte} aria-label={`${label} : ${valide ? (mois ? jourLisible(valide).split(' ').slice(1).join(' ') : jourLisible(valide)) : vide}`} data-choix-date-pastille
           onClick={() => setOuverte(o => !o)}
