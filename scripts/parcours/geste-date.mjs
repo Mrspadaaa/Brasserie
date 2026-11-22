@@ -76,6 +76,9 @@ async function jouer(dir) {
     const fx = fixtureStock(aujourdhui);
     /* + la cuve (brassin en fermentation, fermenteur), la caisse et les ventes de la fixture des chaînes : les écrans de date en ont besoin (ZZ TEST, simulé). */
     for (const e of fixtureChaines(aujourdhui, { cuve: true, garde: true, caisseBasse: true, achatPompe: true }).entrees) if (!fx.entrees.some((x) => x.name === e.name && x.id === e.id)) fx.entrees.push(e);
+    /* levure : une recette ZZ TEST à levure liquide Wyeast 1056 (l'étape Levure propose son Activator 125 mL et son starter publié) ; simulé */
+    { const g = fx.entrees.find((x) => x.name === 'recipes' && x.id === 'R-ZZ-IPA');
+      if (g) fx.entrees.push({ name: 'recipes', id: 'R-ZZ-LEVURE', data: { ...structuredClone(g.data), id: 'R-ZZ-LEVURE', name: 'ZZ TEST Levure', hops: [{ name: 'ZZ TEST Citra', weightG: 400, stage: 'boil', timeMin: 10 }], yeast: { name: 'Wyeast 1056', hopIndexId: 'wyeast-1056', form: 'liquide', qty: 125, unit: 'mL' } } }); }
     const erreursPage = [];
     let p = null; let cdp = null; let etape = '';
     const ouvrirPage = async (theme) => {

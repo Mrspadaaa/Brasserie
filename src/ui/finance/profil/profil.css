@@ -27,7 +27,8 @@
 /* u2 (25) : une étiquette par mois, posée à sa date (le 1er du mois) ; la première au bord gauche */
 .pfc-ax span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
 .pfc-ax .pfc-ax0 { transform: none; }
-.pfc-vr { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.pfc-vr { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 4px; }
+.pfc-date { flex: 1 1 100%; min-width: 0; }
 /* pastille : le champ natif, invisible, couvre la pastille (zone tactile 44 px) */
 .pfc-pill { position: relative; display: inline-flex; align-items: center; gap: 3px; min-height: 44px; padding: 0 10px; border: 1px solid var(--pf-bordm); border-radius: 10px; background: var(--pf-fond); font-size: 14px; color: var(--pf-t1); }
 .pfc-pill svg { color: var(--pf-t2); }

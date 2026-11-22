@@ -139,8 +139,8 @@ export function ProfilEffets({ profile, onClose, parametres = false }: { profile
         <div className="pfc-top"><h3>Solde de départ</h3><span className="pfc-val"><ChampMontant aria-label="Solde de départ (CHF)" className="pfc-nb pfc-m" value={cash == null ? undefined : cash / 100} onValue={v => { setCash(v == null ? undefined : Math.round(v * 100)); setConfirmed(false); }} fractionDigits={2} maxDecimales={2} max={99_999_999} negatif /> <small>CHF</small></span></div>
         <FriseSolde points={points} confirme={confirmed} />
         <div className="pfc-vr">
-          <label className="pfc-pill"><span>{isoDate(date) ? jourLong(date) : 'Date'}</span><ChevronDown size={14} aria-hidden="true" />
-            <ChoixDate label="Date du solde" valeur={date} max={aujourdhui} onChange={d => { setDate(d); setConfirmed(false); }} /></label>
+          {/* GESTE-DATE-PARTOUT (22.11) : la pastille et la frise partagées occupent toute la largeur de la carte (7 px par jour au lieu de 2,7 dans la moitié d'une pastille) ; le jour n'est plus dit deux fois */}
+          <div className="pfc-date"><ChoixDate label="Date du solde" vide="Date" valeur={date} max={aujourdhui} onChange={d => { setDate(d); setConfirmed(false); }} /></div>
           <label className="pfc-tg"><input type="checkbox" checked={confirmed} aria-label="J’ai vérifié ce solde, avant les paiements de cette journée." onChange={e => setConfirmed(e.target.checked)} /><span className="pfc-sw" aria-hidden="true" /><b>Vérifié</b></label>
         </div>
         {cash != null && !confirmed && <p className="pfc-cap" role="note">Sans cette case, ce solde n’est compté ni dans la caisse ni dans les prévisions.</p>}

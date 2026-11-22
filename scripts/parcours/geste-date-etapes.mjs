@@ -51,7 +51,8 @@ const trouver = (c, coll, texte) => c.p.evaluate((n, t) => { try { return (JSON.
 /** Le premier champ-jour d'une entrée (échéance, date…), hors création et mise à jour. */
 const premierJour = (o) => { const e = Object.entries(o ?? {}).find(([k, v]) => typeof v === 'string' && /^(\d{4}-\d\d-\d\d|\d\d\.\d\d\.\d{4})/.test(v) && !/creat|updat|modif/i.test(k)); return e ? e[1] : undefined; };
 async function geste(c, { id, label, jours, ouvert = false, valider, lire, coll, rid, nom, charge }) {
-  if (!ouvert) await c.toucher('[data-choix-date-pastille]', `${label} :`);
+  /* la pastille au milieu de l'écran : ni sous l'en-tête fixe, ni sous le pied */
+  if (!ouvert) { await c.p.evaluate((l) => { const e = [...document.querySelectorAll('[data-choix-date-pastille]')].find((x) => (x.getAttribute('aria-label') ?? '').startsWith(`${l} :`)); e?.scrollIntoView({ block: 'center' }); }, label); await c.sleep(300); await c.toucher('[data-choix-date-pastille]', `${label} :`); }
   await c.sleep(700);
   const e = await c.p.evaluate(() => ({ frise: !!document.querySelector('[data-choix-date-frise] [data-date-point]'), natif: document.querySelectorAll('input[type=date],input[type=datetime-local]').length, chevrons: !!document.querySelector('[aria-label^="Un jour plus"]') }));
   c.controle(`${id}-1 frise partagée, sans champ natif ni réglette maison`, e.frise && !e.natif && !e.chevrons, JSON.stringify(e));
@@ -93,19 +94,17 @@ etapes.push(
 const rapide = async (c, ligne) => { await c.toucher('button', 'Actions rapides'); await c.sleep(500); await itemMenu(c, ligne); await c.sleep(900); };
 const ZZ = 'ZZ TEST geste-date';
 etapes.push(
-  { id: 'todo', nom: 'Atelier › À faire › Poser une tâche › « Date de la tâche » (frise ouverte) → Poser',
-    async jouer(c) { await sur(c, 'todo', async () => {
-      await c.bouton('Brassins'); await c.sleep(900); await c.bouton('Atelier'); await c.sleep(900); await c.bouton('Carnet'); await c.sleep(900);
-      await c.toucherTexte('À faire'); await c.sleep(900); await c.cap('todo-repos');
-      try { await c.toucher('button', 'Poser une tâche'); } catch { await c.toucher('button', 'Poser'); } await c.sleep(600);
-      await c.p.focus('#tl-quoi'); await c.p.keyboard.type(ZZ); await c.sleep(300);
-      await geste(c, { id: 'GD-todo', nom: 'todo', label: 'Date de la tâche', ouvert: true, jours: 6, coll: 'todos',
-        valider: () => c.bouton('Poser au'), charge: () => trouver(c, 'todos', ZZ), lire: premierJour });
-    }); } },
-  { id: 'ecriture', nom: 'Finances › Actions rapides › Écriture › « Date de l’achat » → Enregistrer',
+  /* « À faire » (TodoTimeline) : plus de porte depuis h1 (20.11) — AtelierPorte ne monte plus NoteCarnet ; le geste est prouvé au composant (tests/integration/todoTimelineFrise.test.tsx), pas par une entrée. */
+  { id: 'ecriture', nom: 'Finances › Actions rapides › Écriture › Saisir sans justificatif › « Date de l’achat » → Enregistrer (l’écran est refait par saisie-main : seule la date écrite est vérifiée)',
     async jouer(c) { await sur(c, 'ecriture', async () => {
-      await c.bouton('Finances'); await c.sleep(900); await rapide(c, 'Écriture'); await c.toucherTexte('Saisir sans justificatif'); await c.sleep(900); await c.cap('ecriture-ouvert');
-      throw new Error('sonde : valider à écrire');
+      await c.bouton('Finances'); await c.sleep(900); await rapide(c, 'Écriture'); await c.toucherTexte('Saisir sans justificatif'); await c.sleep(900);
+      await c.p.focus('#purchase-total'); await c.p.keyboard.type('12,50');
+      await c.p.focus('[placeholder^="Malt pour"]'); await c.p.keyboard.type(ZZ);
+      try { await c.toucherTexte('Sans justificatif, c’est normal'); } catch { /* case absente */ }
+      try { await c.toucher('summary,button', 'Date de l’achat'); } catch { /* section déjà ouverte */ } await c.sleep(600); await c.cap('ecriture-ouvert');
+      await geste(c, { id: 'GD-ecriture', nom: 'ecriture', label: 'Date de l’achat', jours: -6, coll: 'transactions',
+        valider: async () => { await c.bouton('Enregistrer'); },
+        charge: () => trouver(c, 'transactions', ZZ), lire: (t) => t?.date });
     }); } },
   { id: 'caisse', nom: 'Caisse : « Date de la facture » (frise) → Encaisser',
     async jouer(c) { await sur(c, 'caisse', async () => {
@@ -116,8 +115,9 @@ etapes.push(
     }); } },
   { id: 'solde', nom: 'Finances › Prévisions › Solde et paramètres › « Date du solde » → Enregistrer',
     async jouer(c) { await sur(c, 'solde', async () => {
-      await c.bouton('Finances'); await c.sleep(900); await c.bouton('Prévisions'); await c.sleep(900);
-      for (const t of ['Solde et paramètres', 'Renseigner le solde', 'solde de départ']) { try { await c.toucherTexte(t); break; } catch { /* essai suivant */ } }
+      await c.bouton('Finances'); await c.sleep(900);
+      /* l'entrée : le bouton « Solde et paramètres financiers » de la caisse de la Synthèse (sinon celui des Prévisions) */
+      try { await c.toucher('button', 'Solde et paramètres'); } catch { await c.bouton('Prévisions'); await c.sleep(900); await c.toucher('button', 'Solde et paramètres'); }
       await c.sleep(900); await c.cap('solde-ouvert');
       await saisir(c, 'Solde de départ (CHF)', '1000');
       await geste(c, { id: 'GD-solde', nom: 'solde', label: 'Date du solde', jours: -5, coll: 'financialProfiles', rid: 'current',
@@ -129,5 +129,33 @@ etapes.push(
       await c.bouton('Carnet'); await c.sleep(900); await c.toucherTexte('Noter une dégustation du brassin'); await c.sleep(700); await c.cap('houblon-ouvert');
       await geste(c, { id: 'GD-houblon', nom: 'houblon', label: 'Date de dégustation', jours: -2, coll: 'hopTastings',
         valider: () => c.bouton('Enregistrer la dégustation'), charge: () => trouver(c, 'hopTastings', ''), lire: (t) => t?.date });
+    }); } },
+);
+
+// Levure (lot 4) : Recettes › Modifier la recette › étape Levure › produit retenu › Dose, ensemencement et starter › Planifier la préparation ›
+// « Ensemencement prévu » (le jour, puis l'heure) → Planifier ; la préparation porte `targetPitchAt` (ISO, lu en jour local).
+const jourLocal = (iso) => { const d = new Date(iso); return Number.isFinite(d.getTime()) ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` : ''; };
+etapes.push(
+  { id: 'levure', nom: 'Recette › étape Levure › Planifier la préparation › « Ensemencement prévu » → Planifier',
+    async jouer(c) { await sur(c, 'levure', async () => {
+      await c.bouton('Brassins'); await c.sleep(900); await c.bouton('Recettes'); await c.sleep(900);
+      try { await c.toucher('[aria-label^="Modifier la recette ZZ TEST Levure"]'); } catch { await c.toucherTexte('ZZ TEST Levure'); await c.sleep(700); await c.toucher('button', 'Modifier'); }
+      await c.sleep(1200);
+      await c.toucher('nav[aria-label="Étapes"] button', 'Levure'); await c.sleep(1200);
+      await c.toucher('button', 'Offres'); await c.sleep(1200);
+      const choix = '.yp-products li[data-product="wyeast-1056-activator-125ml"] button.yp-choose';
+      await c.p.evaluate((q) => document.querySelector(q)?.scrollIntoView({ block: 'center' }), choix); await c.sleep(400); /* au milieu de l'écran, hors du pied fixe */
+      await c.toucher(choix); await c.sleep(900);
+      await c.toucher('button[data-lv="dose"]'); await c.sleep(1200);
+      await c.sleep(700); await c.toucher('button', 'Planifier la préparation'); await c.sleep(700); await c.cap('levure-ouvert');
+      await saisir(c, 'Volume de starter retenu en litres', '1');
+      await c.p.focus('[placeholder^="Ex. 1 pack"]'); await c.p.keyboard.type('1 Activator du même produit');
+      await c.p.focus('[placeholder^="Ex. erlenmeyer"]'); await c.p.keyboard.type('Fiole 2 L ZZ TEST');
+      const lireRecette = () => c.ecrit('recipes', 'R-ZZ-LEVURE');
+      await geste(c, { id: 'GD-levure', nom: 'levure', label: 'Ensemencement prévu', jours: 9, coll: 'recipes', rid: 'R-ZZ-LEVURE',
+        valider: async () => { await c.toucher('.yp-prep button', 'Planifier'); await c.sleep(900); await c.cap('levure-planifie');
+          /* la préparation vit dans le brouillon de la recette : elle n'est écrite qu'à « Enregistrer la recette » (étape Récap.) */
+          await c.toucher('nav[aria-label="Étapes"] button', 'Récap'); await c.sleep(1200); await c.cap('levure-recap'); await c.toucher('button', 'Enregistrer la recette'); await c.sleep(1500); },
+        lire: (r) => { const p = r?.yeast?.pitching?.preparation; return p?.targetPitchAt ? jourLocal(p.targetPitchAt) : undefined; } });
     }); } },
 );

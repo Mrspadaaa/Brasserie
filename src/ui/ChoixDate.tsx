@@ -121,7 +121,7 @@ export const ChoixInstant: React.FC<ChoixInstantProps> = ({ valeur, onChange, la
   };
   return (
     <div className={`choix-instant flex flex-wrap items-start gap-2${className ? ` ${className}` : ''}`} data-choix-instant>
-      <ChoixDate id={id} label={label} valeur={jour} min={min?.slice(0, 10)} max={max?.slice(0, 10)} disabled={disabled} vide="Jour à poser"
+      <ChoixDate className="w-full" id={id} label={label} valeur={jour} min={min?.slice(0, 10)} max={max?.slice(0, 10)} disabled={disabled} vide="Jour à poser"
         onChange={j => onChange(borner(j, heure || maintenantHeure()))} />
       <input type="time" aria-label={`Heure — ${label}`} value={heure} disabled={disabled || !jour}
         onChange={e => e.target.value && jour && onChange(borner(jour, e.target.value))}
