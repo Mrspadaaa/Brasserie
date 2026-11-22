@@ -3,9 +3,10 @@ import { Beer, CalendarCheck, CalendarDays, Check, ChevronRight, Ellipsis, Link2
 import { ETAPE_BRASSIN, couleurEtape, encreEtape, type EtapeBrassin } from './etapes';
 import { RenommerSurPlace } from '../../saisie/RenommerSurPlace';
 import { libelleRetirer } from '../../../domain/calendrierGestes';
-import { ajouterJours, dateDeSemaine, ecartJours, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
+import { dateDeSemaine, ecartJours, etiquetteS, francsSignes, jourLisible, lundiDe, type ChoseCalendrier, type JalonBrassin, type JalonId } from '../../../domain/calendrier';
 import { CLASSE_TEINTE, ICONE_RANGEE, apercuSansNom, champ, dureeVue, lieMontre, nomLie } from './Marque';
 import type { LiensPossibles } from './MenuAppuiLong';
+import { DureeFenetre } from './DureeFenetre';
 import './fiche.css';
 
 /**
@@ -59,8 +60,6 @@ const ETAPE = ETAPE_BRASSIN;
 /** Une date sans point final doublé : « 22 nov. » se suit d'un deux-points, d'une virgule ou de rien, jamais de « . ». */
 const date = (iso: string): string => jourLisible(iso);
 /** Px de règle par jour : un glissé de 24 px fait 3 j. */
-export const PX_JOUR = 8;
-const BORNE_JOURS = 120;
 
 /** Le détail sans son morceau « le 10 déc. » quand c'est la date de la chose (déjà dite par « Date ») ; `undefined` s'il ne reste rien. */
 export function sansLaDate(detail: string | undefined, debut: string | undefined): string | undefined {
@@ -181,39 +180,6 @@ export function degagerDuVolant(det: HTMLElement): number {
   return delta;
 }
 
-/**
- * L'action à la volée (D412) : la pastille de date touchée devient une règle avec un pouce. Glisser bouge la date en direct (8 px par jour),
- * lâcher l'écrit ; ← → d'un jour, Entrée écrit, Échap renonce. Les gestes ne remontent pas à la frise (pas de défilement ni de pincement).
- */
-const Regle: React.FC<{ jour: string; mot: string; icone: React.ReactNode; onValider: (jours: number) => void; onAnnuler: () => void }> = ({ jour, mot, icone, onValider, onAnnuler }) => {
-  const [jours, setJours] = React.useState(0);
-  const depart = React.useRef<number | null>(null);
-  const ref = React.useRef<HTMLDivElement | null>(null);
-  React.useEffect(() => { ref.current?.focus({ preventScroll: true }); }, []);
-  const borne = (n: number) => Math.max(-BORNE_JOURS, Math.min(BORNE_JOURS, n));
-  const finir = (n: number) => { depart.current = null; if (n) onValider(n); else onAnnuler(); };
-  const valeur = ajouterJours(jour, jours);
-  return (
-    <div ref={ref} role="slider" tabIndex={0} className="cal-fi-regle" data-regle data-regle-valeur={valeur}
-      aria-label={`${mot} : glisser pour changer la date`} aria-valuemin={-BORNE_JOURS} aria-valuemax={BORNE_JOURS} aria-valuenow={jours} aria-valuetext={date(valeur)}
-      onPointerDown={e => { e.stopPropagation(); depart.current = e.clientX - jours * PX_JOUR; try { e.currentTarget.setPointerCapture?.(e.pointerId); } catch { /* jsdom */ } }}
-      onPointerMove={e => { e.stopPropagation(); if (depart.current !== null) setJours(borne(Math.round((e.clientX - depart.current) / PX_JOUR))); }}
-      onPointerUp={e => { e.stopPropagation(); if (depart.current !== null) finir(jours); }}
-      onPointerCancel={() => { depart.current = null; setJours(0); }}
-      onClick={e => e.stopPropagation()}
-      onKeyDown={e => {
-        if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); setJours(j => borne(j + 1)); }
-        else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); setJours(j => borne(j - 1)); }
-        else if (e.key === 'Enter') { e.preventDefault(); finir(jours); }
-        else if (e.key === 'Escape') { e.preventDefault(); onAnnuler(); }
-      }}>
-      <span className="cal-fi-rv">{icone}<time dateTime={valeur}>{date(valeur)}</time>{jours ? <small>{jours > 0 ? '+' : '−'}{Math.abs(jours)} j</small> : null}</span>
-      <span className="cal-fi-ru" aria-hidden="true" />
-      <span className="cal-fi-th" aria-hidden="true" style={{ left: `calc(50% + ${Math.max(-60, Math.min(60, jours * PX_JOUR))}px)` }} />
-    </div>
-  );
-};
-
 type Volet = 'dates' | 'achats' | 'lier' | 'plus';
 type Action = { cle: string; mot: string; aria?: string; icone: React.ReactNode; onClick: () => void; attrs?: Record<string, string | boolean>; classe?: string; presse?: boolean };
 
@@ -240,7 +206,22 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
   const brassin = chose.source.genre === 'batch';
   const sansEcranPropre = chose.ouvre.ecran === 'agenda' || chose.ouvre.ecran === 'atelier';
   const [volet, setVolet] = React.useState<Volet | null>(null);
+  /* CAL-FICHE-FRISE (22.11) : la pastille touchée ouvre sous elle la frise B au jour (DureeFenetre, `seule`) ; le brouillon suit le doigt,
+     le lâcher écrit l'écart depuis le dernier jour écrit (refs : les rappels du geste sont lus à son début) */
   const [regle, setRegle] = React.useState<'debut' | 'fin' | null>(null);
+  const [brouillon, setBrouillon] = React.useState('');
+  const departRef = React.useRef('');
+  const brouillonRef = React.useRef('');
+  const ecritRef = React.useRef('');
+  const reglerRef = React.useRef<((j: number) => void) | undefined>(undefined);
+  const poserBrouillon = (d: string) => { brouillonRef.current = d; setBrouillon(d); };
+  const ecrire = () => {
+    const n = ecartJours(ecritRef.current, brouillonRef.current);
+    if (n && reglerRef.current) { ecritRef.current = brouillonRef.current; reglerRef.current(n); }
+  };
+  const friseRef = React.useRef<HTMLDivElement | null>(null);
+  React.useEffect(() => { if (regle) friseRef.current?.querySelector<HTMLElement>('[data-date-point]')?.focus({ preventScroll: true }); }, [regle]);
+  const fermerRegle = (avecEcriture: boolean) => { if (avecEcriture) ecrire(); setRegle(null); };
   React.useEffect(() => { setVolet(null); setRegle(null); }, [chose.id]);
   const basculer = (v: Volet) => setVolet(o => (o === v ? null : v));
   const lierPossible = !!(props.onLier && props.liens);
@@ -313,21 +294,30 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
   const finMot = brassin ? (lesEtapes.some(e => e.id === 'conditionnement') ? 'Conditionnement' : 'Prête') : 'Fin';
   const iconeFin = brassin ? (lesEtapes.some(e => e.id === 'conditionnement') ? <IconeEtape id="conditionnement" /> : <Check size={16} aria-hidden="true" />) : <CalendarCheck size={16} aria-hidden="true" />;
   const iconeDebut = brassin ? <Wheat size={16} aria-hidden="true" /> : <CalendarDays size={16} aria-hidden="true" />;
+  const ouvrirRegle = (cle: 'debut' | 'fin', depart: string) => { setVolet(null); departRef.current = depart; ecritRef.current = depart; poserBrouillon(depart); setRegle(cle); };
+  /** La pastille de la date en cours de réglage : un bouton pressé qui dit la date du brouillon et l'écart (« 10 déc. +18 j »). */
+  const pastilleOuverte = (cle: 'debut' | 'fin', mot: string, icone: React.ReactNode) => {
+    const ecart = ecartJours(departRef.current, brouillon);
+    return (
+      <button key={cle} type="button" className="cal-fi-p cal-fi-p-ouverte" data-pastille={cle} aria-expanded="true" aria-label={`${mot} ${date(brouillon)} : fermer la frise`} onClick={() => fermerRegle(true)}>
+        {icone}<b><time dateTime={brouillon}>{date(brouillon)}</time></b>{ecart ? <small>{ecart > 0 ? '+' : '−'}{Math.abs(ecart)} j</small> : null}
+      </button>
+    );
+  };
   const pastilleDate = (cle: 'debut' | 'fin', jour: string, mot: string, icone: React.ReactNode, regler?: (j: number) => void) => {
-    if (regle === cle && regler && jour) {
-      return <div key={cle} className="cal-fi-p cal-fi-p-regle"><Regle jour={jour} mot={mot} icone={icone} onAnnuler={() => setRegle(null)} onValider={j => { setRegle(null); regler(j); }} /></div>;
-    }
+    if (regle === cle && regler && jour) return pastilleOuverte(cle, mot, icone);
     /* CHE-5 : « Prête ? » (fin inconnue) se règle aussi depuis la fiche : la règle part d'aujourd'hui, le lâcher écrit la fin */
     if (!jour && regler && cle === 'fin' && chose.finInconnue) {
       const depart = chose.fin || chose.debut;
-      if (regle === cle && depart) return <div key={cle} className="cal-fi-p cal-fi-p-regle"><Regle jour={depart} mot={mot} icone={icone} onAnnuler={() => setRegle(null)} onValider={j => { setRegle(null); regler(j); }} /></div>;
-      return <button key={cle} type="button" className="cal-fi-p cal-fi-q" data-pastille={cle} aria-label={`${mot} : à préciser, régler`} onClick={() => { setVolet(null); setRegle(cle); }}>{icone}<b>?</b></button>;
+      if (regle === cle && depart) return pastilleOuverte(cle, mot, icone);
+      return <button key={cle} type="button" className="cal-fi-p cal-fi-q" data-pastille={cle} aria-label={`${mot} : à préciser, régler`} onClick={() => { if (regle) ecrire(); ouvrirRegle(cle, depart); }}>{icone}<b>?</b></button>;
     }
     if (!jour) return <span key={cle} className="cal-fi-p cal-fi-q" data-pastille={cle} aria-label={`${mot} : à préciser`}>{icone}<b>?</b></span>;
     return regler
-      ? <button key={cle} type="button" className="cal-fi-p" data-pastille={cle} aria-label={`${mot} ${date(jour)} : régler`} onClick={() => { setVolet(null); setRegle(cle); }}>{icone}<b><time dateTime={jour}>{date(jour)}</time></b></button>
+      ? <button key={cle} type="button" className="cal-fi-p" data-pastille={cle} aria-label={`${mot} ${date(jour)} : régler`} aria-expanded="false" onClick={() => { if (regle) ecrire(); ouvrirRegle(cle, jour); }}>{icone}<b><time dateTime={jour}>{date(jour)}</time></b></button>
       : <span key={cle} className="cal-fi-p" data-pastille={cle} aria-label={`${mot} ${date(jour)}`}>{icone}<b><time dateTime={jour}>{date(jour)}</time></b></span>;
   };
+  reglerRef.current = regle === 'debut' ? props.onDecalerDebut : regle === 'fin' ? props.onDecalerFin : undefined;
   const pastilles: React.ReactNode[] = [];
   if (chose.debut) pastilles.push(pastilleDate('debut', chose.debut, brassin ? 'Brassage' : 'Début', iconeDebut, props.onDecalerDebut));
   if (brassin || finJour) pastilles.push(pastilleDate('fin', finJour, finMot, iconeFin, props.onDecalerFin));
@@ -371,7 +361,7 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
   );
 
   return (
-    <div ref={racine} role="region" aria-label={`Détail : ${chose.titre}`} className={`cal-det cal-fiche ${CLASSE_TEINTE[chose.rangee]}`} data-detail={chose.id}>
+    <div ref={racine} role="region" aria-label={`Détail : ${chose.titre}`} className={`cal-det cal-fiche ${CLASSE_TEINTE[chose.rangee]}${regle ? ' cal-fi-ouverte' : ''}`} data-detail={chose.id}>
       <button type="button" className="cal-fi-souche" data-souche style={souche.style} aria-expanded={volet === 'dates'}
         aria-label={`${souche.mot}, ${souche.chiffre} : ${brassin ? 'les étapes datées' : 'les dates et notes'}`} onClick={() => basculer('dates')}>
         {souche.icone}<b>{souche.chiffre}</b><span>{souche.mot}</span>
@@ -381,7 +371,17 @@ export const DetailChose: React.FC<DetailChoseProps> = props => {
         {montant && <span className={`cal-fi-m ${chose.centimes !== undefined && chose.centimes < 0 ? 'cal-neg' : 'cal-pos'}`} data-montant>{chose.reste ? 'reste ' : ''}{montant}{chose.partiel ? ' + à venir' : ''}</span>}
         <button type="button" className="cal-fi-x" aria-label="Fermer" onClick={props.onFermer}><X size={20} aria-hidden="true" /></button>
       </div>
-      <div className={`cal-fi-b${regle ? ' cal-fi-b-regle' : ''}`}>{pastilles}</div>
+      <div className="cal-fi-b">{pastilles}</div>
+      {regle && (
+        <div ref={friseRef} className="cal-fi-frise" data-frise-fiche
+          onKeyDown={e => {
+            if (e.key === 'Enter') { e.preventDefault(); fermerRegle(true); }
+            else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); fermerRegle(false); }
+          }}>
+          <DureeFenetre seule pas="jour" rangee={chose.rangee} debut={brouillon} fin={null} onFin={() => undefined}
+            onPlage={d => poserBrouillon(d)} onLacher={ecrire} />
+        </div>
+      )}
       <div className="cal-fi-c">
         {bouton(principale, 'cal-fi-pri')}
         {secondaires.map(a => bouton(a, 'cal-fi-act'))}

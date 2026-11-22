@@ -74,3 +74,5 @@
 @media (prefers-reduced-motion: reduce) { .cal-f-duree-poi { transition: none; } }
 .cal-f-duree-tenue .cal-f-duree-rep, .cal-f-duree-tenue .cal-f-duree-barre, .cal-f-duree-tenue .cal-f-duree-fin { transition: none; }
 @media (prefers-reduced-motion: reduce) { .cal-f-duree-rep, .cal-f-duree-barre, .cal-f-duree-fin { transition: none; } }
+/* CAL-FICHE-FRISE (22.11) : la même frise au jour dans la fiche d'une chose ; un trait court par jour, plein aux lundis et au 1er du mois */
+.cal-f-duree-jour .cal-f-duree-rep-court { top: 16px; height: 14px; background: rgb(var(--cave-800)); }
