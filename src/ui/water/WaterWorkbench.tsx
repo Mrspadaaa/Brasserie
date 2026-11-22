@@ -336,6 +336,7 @@ export function WaterWorkbench({
                   onEditEnd={endEdit}
                   onDetails={setDetailsSalt}
                   onDose={(v) => setDose(id, v)}
+                  onToggle={toggleSalt}
                   onActivate={setActiveSalt}
                 />
               );
@@ -536,7 +537,7 @@ export function WaterWorkbench({
             {treatment.bicarbonatePreference?.reason === 'manual-acid' && <p>L’acide manuel est conservé. Le calcul ne rajoute pas de bicarbonate pour annuler cet acide dans le seul but de centrer le graphique.</p>}
             <p>Le calcul rapproche les concentrations de ces repères, parmi les dosages proches du meilleur rapport SO₄/Cl trouvé (marge {formatDecimal(PRACTICAL_RATIO_TOLERANCE)}). À résultats proches, il préfère moins de sels différents. Un écart au repère ne signifie pas que la plage du profil est manquée.</p>
           </>}
-          <p>Les pesées sont vérifiées au dixième de gramme. Un sel autorisé à 0 g n’est pas utilisé dans la proposition. Appuie sur son nom pour voir ses minéraux et l’autoriser ou l’écarter. Le pH reste évalué séparément.</p>
+          <p>Les pesées sont vérifiées au dixième de gramme. Un sel autorisé à 0 g n’est pas utilisé dans la proposition. Son interrupteur l’autorise ou l’écarte ; son nom montre ses minéraux. Le pH reste évalué séparément.</p>
         </div>
       </details>
       {children}
@@ -545,7 +546,7 @@ export function WaterWorkbench({
       <Sheet open={detailsSalt != null} onClose={() => setDetailsSalt(null)} title="Minéraux du sel"
         subtitle="Contribution de la dose à l’eau totale" className="water-workshop">
         {detailsSalt && <>
-          {/* P9 (22.11) : l'interrupteur « autorisé au calcul » quitte la grille pour la feuille du sel ; la cellule écartée est grisée et barrée. */}
+          {/* EAU-SELS-INTERRUPTEUR (22.11) : l'interrupteur vit dans chaque cellule (sa composition) ; celui-ci le répète dans la feuille. */}
           <button type="button" role="switch" aria-checked={!state.disabled.includes(detailsSalt)}
             aria-label={`${SALTS[detailsSalt].name} — ${state.disabled.includes(detailsSalt) ? "écarté" : "autorisé"}`}
             onClick={() => toggleSalt(detailsSalt)}

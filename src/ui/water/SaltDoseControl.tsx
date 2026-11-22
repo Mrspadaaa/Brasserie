@@ -5,7 +5,7 @@ import { SaltId, WaterIons } from "../../types";
 
 import { SaltDef, ION_SYMBOL_SHORT } from "../../domain/water";
 
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Info } from "lucide-react";
 
 import { SALT_SHORT } from "./constants";
 import { actualQuantityMax, actualQuantityProblem } from "../../domain/brewQuantityBounds";
@@ -14,9 +14,10 @@ import { actualQuantityMax, actualQuantityProblem } from "../../domain/brewQuant
 export const SEL_DOSE_MAX_G = actualQuantityMax(0, "g");
 
 /**
- * EAU-SELS-UN-ECRAN (REPRISE-2, 2) : une cellule de 40 px sur téléphone — − [nom / dose g] +. Le nom ouvre la feuille
- * « Minéraux du sel », qui porte aussi l'interrupteur autorisé/écarté (plus d'interrupteur ni de ⓘ dans la cellule).
- * Un sel écarté est grisé et son nom barré.
+ * EAU-SELS-UN-ECRAN (REPRISE-2, 2) puis EAU-SELS-INTERRUPTEUR (22.11, « On peut plus désactiver les sels ??? ») :
+ * sa composition choisie (14/15.11) — nom, ⓘ et interrupteur dans chaque cellule, − dose + dessous. Sur téléphone :
+ * − [nom ⓘ ⏻ / dose g] +, la ligne du nom et celle de la dose à 24 px (cible de l'interrupteur 24 × 24, DESIGN.md).
+ * Le nom (ⓘ) ouvre la feuille « Minéraux du sel » ; l'interrupteur écarte le sel d'un toucher (grisé, nom barré, dose 0).
  */
 export const SaltDoseControl: React.FC<{
   id: SaltId;
@@ -30,6 +31,7 @@ export const SaltDoseControl: React.FC<{
   onEditEnd?: () => void;
   onDetails: (id: SaltId) => void;
   onDose: (v: number) => void;
+  onToggle: (id: SaltId) => void;
   onActivate: (id: SaltId) => void;
 }> = ({
   id,
@@ -43,6 +45,7 @@ export const SaltDoseControl: React.FC<{
   onEditEnd,
   onDetails,
   onDose,
+  onToggle,
   onActivate,
 }) => {
   const related = selectedIon != null && ions.includes(selectedIon);
@@ -52,7 +55,7 @@ export const SaltDoseControl: React.FC<{
   const presse = useHoldRepeat(grams, onDose, (from, delta) =>
     Math.max(0, Math.round((from + delta) * 10) / 10),
   );
-  const bouton = "w-7 sm:w-9 shrink-0 bg-cave-800 active:bg-cave-700 text-cave-50 flex items-center justify-center disabled:opacity-30";
+  const bouton = "w-6 sm:w-9 shrink-0 bg-cave-800 active:bg-cave-700 text-cave-50 flex items-center justify-center disabled:opacity-30";
   return (
     <li
       key={id}
@@ -78,7 +81,7 @@ export const SaltDoseControl: React.FC<{
               : "bg-cave-900/50 border-cave-800"
       }`}
     >
-      <div className="water-salt-dose flex items-stretch h-10 sm:h-14">
+      <div className="water-salt-dose flex items-stretch h-12 sm:h-14">
         <button
           type="button"
           disabled={off || grams <= 0}
@@ -89,18 +92,35 @@ export const SaltDoseControl: React.FC<{
           <Minus className="w-3 h-3" />
         </button>
         <div className="min-w-0 flex-1 flex flex-col items-stretch justify-center">
-          <button
-            type="button"
-            onClick={() => onDetails(id)}
-            aria-label={`Détail des minéraux de ${def.name}`}
-            className={`water-salt-name h-4 sm:h-6 !min-h-0 !py-0 flex items-center justify-center gap-1 min-w-0 px-0.5 !text-[11px] sm:!text-sm font-semibold leading-none
-              ${off ? "text-cave-400 line-through" : "text-cave-50"}`}
-          >
-            <span className="truncate">{SALT_SHORT[id]}</span>
-            {related && <span className="whitespace-nowrap text-[9px] font-normal leading-none text-water">
-              →{ION_SYMBOL_SHORT[selectedIon!]}
-            </span>}
-          </button>
+          {/* `!h-6` : `.recipe-wizard button` impose height: auto (spécificité 0,1,1) ; la cible de l'interrupteur tient ses 24 × 24 px. */}
+          <div className="flex items-center h-6 shrink-0 min-w-0">
+            <button
+              type="button"
+              onClick={() => onDetails(id)}
+              aria-label={`Détail des minéraux de ${def.name}`}
+              className={`water-salt-name !h-6 !min-h-0 !py-0 flex-1 flex items-center justify-center gap-0.5 min-w-0 pl-0.5 pr-0 !text-[11px] sm:!text-sm font-semibold leading-none
+                ${off ? "text-cave-400 line-through" : "text-cave-50"}`}
+            >
+              <span className="truncate">{SALT_SHORT[id]}</span>
+              <Info aria-hidden="true" className="w-2.5 h-2.5 sm:w-3 sm:h-3 shrink-0 text-cave-400" />
+              {related && <span className="whitespace-nowrap text-[9px] font-normal leading-none text-water">
+                →{ION_SYMBOL_SHORT[selectedIon!]}
+              </span>}
+            </button>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={!off}
+              aria-label={`${def.name} — ${off ? "écarté" : "autorisé"}`}
+              title={off ? "Écarté : « Doser » ne l'utilise pas" : "Autorisé : toucher pour l'écarter"}
+              onClick={() => onToggle(id)}
+              className="water-salt-switch w-6 !h-6 sm:w-8 !min-h-0 !p-0 shrink-0 flex items-center justify-center rounded-control"
+            >
+              <span aria-hidden="true" className={`block w-[22px] h-3 rounded-full relative transition-colors ${off ? "bg-cave-700" : "bg-hop"}`}>
+                <span className="absolute top-0.5 w-2 h-2 rounded-full bg-cave-50 transition-all" style={{ left: off ? 2 : 12 }} />
+              </span>
+            </button>
+          </div>
           <span className="flex items-center justify-center min-w-0 h-6 sm:h-7" onFocus={() => { avant.current = grams; }}>
             <NumberInput
               aria-label={`Dose de ${def.name} en grammes`}

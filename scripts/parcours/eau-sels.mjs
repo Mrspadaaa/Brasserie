@@ -17,6 +17,9 @@
 //   S6  (EAU-RADAR-ETIQUETTES, 22.11, « Oula c'est pas terribles ça ») chaque étiquette d'ion à ≤ 24 px du bout de son axe,
 //       sans chevaucher (2 px d'air) une autre étiquette, une graduation, la légende ni K⁺, entière dans la toile et l'écran,
 //       valeur et plage ≥ 11 px. Rouge attendu sur 8172f5c3d (étiquettes dans les coins).
+//   S7  (EAU-SELS-INTERRUPTEUR, 22.11, « On peut plus désactiver les sels ??? ») les 9 interrupteurs dans les cellules, dans la
+//       fenêtre, cible ≥ 24 px ; un toucher écarte le Gypse (dose 0, cellule grisée, sans feuille), « Doser » l'ignore, un second
+//       toucher le réautorise. Rouge attendu sur ba1ba9057 (interrupteur dans la feuille du sel).
 // Rouge attendu sur en-ligne/2026-11-22-tour9 (radar ≈ 160 px dans un cadre de 370, acides sous le pli).
 // --captures : en plus, 390×660, 390×844 et 1280×900, clair et cave, au repos (fichiers `<largeur>x<hauteur>-<thème>.png`).
 import http from 'node:http';
@@ -184,6 +187,15 @@ async function jouer(dir) {
           const champAcide = (mot) => acides.find((c) => (c.getAttribute('aria-label') ?? '').includes(mot));
           res.acides = [['empâtage', 'à l’empâtage'], ['rinçage', 'au rinçage']].map(([nom, mot]) => { const c = champAcide(mot); return { nom, ...dedans(c), type: c?.getAttribute('type') ?? null }; });
           res.nombre = [...(racine?.querySelectorAll('input[type=number]') ?? [])].length;
+          // S7 : l'interrupteur de chaque sel, dans sa cellule, visible, cible ≥ 24 × 24 px
+          res.interrupteurs = SELS.map((id) => {
+            const s = document.querySelector(`#water-salt-${id} [role=switch]`);
+            if (!s || !vis(s)) return { id, ok: false, pourquoi: 'absent de la cellule' };
+            const r = s.getBoundingClientRect(), d = dedans(s);
+            const cible = r.width >= 23.5 && r.height >= 23.5;
+            const cs = getComputedStyle(s);
+            return { id, ok: d.ok && cible, pourquoi: !d.ok ? d.pourquoi : `cible ${Math.round(r.width)}×${Math.round(r.height)} px (< 24 ; height ${cs.height}, max ${cs.maxHeight}, parent ${Math.round(s.parentElement.getBoundingClientRect().height)})` };
+          });
           return res;
         }, SELS);
         if (drapeau('captures')) await p.screenshot({ path: path.join(sortie, `${combo}.png`) });
@@ -243,6 +255,39 @@ async function jouer(dir) {
           }
           const nb = m.nombre + m.sels.filter((s) => s.type === 'number').length + m.acides.filter((a) => a.type === 'number').length;
           nb ? echec(`S5 clavier ${c}`, `${nb} champ(s) type="number"`) : ok(`S5 clavier ${c}`);
+          // S7 (EAU-SELS-INTERRUPTEUR, 22.11, « On peut plus désactiver les sels ??? ») : 9 interrupteurs dans les cellules ; un toucher
+          // sur celui du Gypse l'écarte (dose 0, champ et boutons coupés, cellule grisée, aucune feuille ouverte) ; « Doser » l'ignore.
+          // Rouge attendu sur ba1ba9057 (interrupteur dans la feuille du sel).
+          const sansInter = m.interrupteurs.filter((s) => !s.ok);
+          sansInter.length ? echec(`S7 interrupteurs ${c}`, `${sansInter.length}/9 : ${sansInter.map((s) => `${s.id} (${s.pourquoi})`).join(', ')}`) : ok(`S7 interrupteurs ${c}`, '9/9 dans les cellules, cible ≥ 24 px');
+          const lireGypse = () => p.evaluate(() => {
+            const li = document.getElementById('water-salt-gypse'); const s = li?.querySelector('[role=switch]'); const champ = li?.querySelector('input, textarea');
+            return { coche: s?.getAttribute('aria-checked') ?? null, off: li?.hasAttribute('data-salt-off') ?? false, dose: champ?.value ?? null, champCoupe: champ?.disabled ?? null,
+              plusCoupe: li?.querySelector('[aria-label^="Ajouter"]')?.disabled ?? null, opacite: li ? parseFloat(getComputedStyle(li).opacity) : 1,
+              feuille: [...document.querySelectorAll('[role=dialog]')].some((d) => d.getBoundingClientRect().height > 0), scroll: document.querySelector('main')?.scrollTop ?? scrollY };
+          });
+          const cGypse = await p.evaluate(() => { const s = document.querySelector('#water-salt-gypse [role=switch]'); if (!s) return null; const r = s.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; });
+          if (!cGypse) echec(`S7 toucher ${c}`, 'interrupteur du Gypse absent de sa cellule');
+          else {
+            const avantT = await lireGypse();
+            await p.touchscreen.tap(cGypse[0], cGypse[1]); await sleep(900);
+            const apres = await lireGypse();
+            const doseNulle = apres.dose != null && /^\s*0([.,]0+)?\s*$/.test(apres.dose);
+            const bon = avantT.coche === 'true' && apres.coche === 'false' && apres.off && doseNulle && apres.champCoupe && apres.plusCoupe && apres.opacite < 0.8 && !apres.feuille;
+            bon ? ok(`S7 toucher ${c}`, `Gypse ${avantT.dose} g → écarté, dose ${apres.dose}, grisé (opacité ${apres.opacite})`)
+              : echec(`S7 toucher ${c}`, `avant ${JSON.stringify(avantT)} après ${JSON.stringify(apres)}`);
+            if (drapeau('captures')) await p.screenshot({ path: path.join(sortie, `${combo}-ecarte.png`) });
+            const doser = await toucherTexte('Doser'); await sleep(1500);
+            const apresDoser = await lireGypse();
+            const nulApres = apresDoser.dose != null && /^\s*0([.,]0+)?\s*$/.test(apresDoser.dose);
+            doser && apresDoser.coche === 'false' && nulApres ? ok(`S7 solveur ${c}`, 'Doser laisse le Gypse écarté à 0 g')
+              : echec(`S7 solveur ${c}`, doser ? `après Doser ${JSON.stringify(apresDoser)}` : 'bouton Doser introuvable');
+            if (drapeau('captures')) await p.screenshot({ path: path.join(sortie, `${combo}-ecarte-dose.png`) });
+            const cRetour = await p.evaluate(() => { const s = document.querySelector('#water-salt-gypse [role=switch]'); s?.scrollIntoView({ block: 'nearest' }); const r = s?.getBoundingClientRect(); return r ? [r.x + r.width / 2, r.y + r.height / 2] : null; });
+            if (cRetour) await p.touchscreen.tap(cRetour[0], cRetour[1]); await sleep(700);
+            const retour = await lireGypse();
+            retour.coche === 'true' && !retour.off ? ok(`S7 retour ${c}`, 'un second toucher le réautorise') : echec(`S7 retour ${c}`, JSON.stringify(retour));
+          }
         }
       } catch (e) { echec(combo, String(e.message ?? e).slice(0, 200)); await p.screenshot({ path: path.join(sortie, `${combo}-erreur.png`) }).catch(() => {}); }
       if (erreurs.length) echec(`erreurs de page ${combo}`, erreurs.slice(0, 2).join(' | '));
