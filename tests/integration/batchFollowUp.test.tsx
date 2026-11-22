@@ -7,6 +7,7 @@ import { StorageService } from '../../src/services/storage';
 import type { Batch } from '../../src/types';
 import { captureSnapshot } from '../../src/domain/recipeSnapshot';
 import { fullRecipe } from '../fixtures/fullRecipe';
+import { poserDate, zoneDate } from '../helpers/poserDate';
 
 const batch: Batch = {
   id: 'READING',
@@ -95,13 +96,14 @@ describe('Accessible fermentation follow-up in the active lot sheet', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Saisis une température entre');
     fireEvent.change(screen.getByLabelText('Température du relevé'), { target: { value: '' } });
     fireEvent.change(screen.getByLabelText('Densité du relevé'), { target: { value: '1,024' } });
-    for (const date of ['2026-09-09', '2026-08-31']) {
-      fireEvent.change(screen.getByLabelText('Date du relevé'), { target: { value: date } });
-      fireEvent.click(screen.getByRole('button', { name: 'Ajouter le relevé' }));
-      expect(screen.getByRole('alert')).toHaveTextContent('entre le brassage et aujourd’hui');
-    }
+    // GESTE-DATE-PARTOUT : le futur ne se pose plus (la frise revient sur aujourd'hui, `max`) ; avant le brassage, c'est le message qui refuse
+    poserDate('Date du relevé', '2026-09-09');
+    expect(zoneDate('Date du relevé')).toHaveAttribute('data-valeur', '2026-09-08');
+    poserDate('Date du relevé', '2026-08-31');
+    fireEvent.click(screen.getByRole('button', { name: 'Ajouter le relevé' }));
+    expect(screen.getByRole('alert')).toHaveTextContent('entre le brassage et aujourd’hui');
     expect(onAdd).not.toHaveBeenCalled();
-    fireEvent.change(screen.getByLabelText('Date du relevé'), { target: { value: '2026-09-08' } });
+    poserDate('Date du relevé', '2026-09-08');
     fireEvent.change(screen.getByLabelText('Température du relevé'), { target: { value: '0' } });
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter le relevé' }));
     expect(onAdd).toHaveBeenCalledWith({ date: '2026-09-08', sg: 1.024, tempC: 0 });

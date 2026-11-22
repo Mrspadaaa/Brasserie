@@ -24,6 +24,7 @@ import type { FinancialProfile } from '../../src/domain/finance/types';
 import type { FinanceCategory } from '../../src/types';
 import { construireModele } from '../../src/ui/calendrier/useDonneesCalendrier';
 import { REGLAGES_VIDES } from '../../src/domain/fournisseurs';
+import { zoneDate } from '../helpers/poserDate';
 
 const JOUR = '2026-11-16';
 const profilConnu: FinancialProfile = { id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified', openingCash: { date: '2026-01-01', amountCents: 400_000, confirmed: true } } as FinancialProfile;
@@ -206,7 +207,7 @@ describe('C17 (D-68) : « Plus de détails › » ouvre Prévoir une dépense, d
     poserHorizon('1 mois'); // D404 : l'horizon pose le lundi, S51 au banc (2026-12-14)
     fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
     const plan = within(screen.getByRole('dialog', { name: 'Prévoir une dépense' }));
-    expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue('2026-12-14');
+    expect(zoneDate('Date de paiement prévue')).toHaveAttribute('data-valeur', '2026-12-14');
   });
 
   it('CRITIQUE-5 n° 3 (D-68, E34) : depuis Achats S50, « Plus de détails › » rend le lundi de S50 ET la rangée Achats (la catégorie en vient)', () => {
@@ -257,7 +258,7 @@ describe('C17 (D-68) : « Plus de détails › » ouvre Prévoir une dépense, d
     render(<PlanSheet onClose={() => undefined} />);
     const plan = within(screen.getByRole('dialog', { name: 'Prévoir une dépense' }));
     expect((plan.getByLabelText('Catégorie') as HTMLSelectElement).value).toBe('chargesFixes');
-    expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue('2026-11-15');
+    expect(zoneDate('Date de paiement prévue')).toHaveAttribute('data-valeur', '2026-11-15');
   });
 
   it('CRITIQUE-5 n° 3 : une prévision manuelle « Brassage » tombe dans Achats, jamais dans Papiers ; « Charges fixes » tombe dans Papiers (le défaut d’avant)', () => {
@@ -275,7 +276,7 @@ describe('C17 (D-68) : « Plus de détails › » ouvre Prévoir une dépense, d
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date('2026-11-15T10:00:00Z'));
     render(<PlanSheet onClose={() => undefined} />);
-    expect(within(screen.getByRole('dialog', { name: 'Prévoir une dépense' })).getByLabelText('Date de paiement prévue')).toHaveValue('2026-11-15');
+    expect(zoneDate('Date de paiement prévue')).toHaveAttribute('data-valeur', '2026-11-15');
   });
 
   it('aucune prop dateInitiale n’existe dans le code', () => {
@@ -393,7 +394,7 @@ describe('CRITIQUE-2 n° 40 (E34, D-68, C17) : les feuilles Ventes, Achats, Trav
     const d = dialogue('Travaux');
     poserHorizon('1 mois'); // D404 : l'horizon pose le lundi (S51 au banc)
     fireEvent.click(d.getByRole('button', { name: 'Plus de détails ›' }));
-    expect(within(screen.getByRole('dialog', { name: 'Prévoir une dépense' })).getByLabelText('Date de paiement prévue')).toHaveValue('2026-12-14');
+    expect(zoneDate('Date de paiement prévue')).toHaveAttribute('data-valeur', '2026-12-14');
   });
 });
 

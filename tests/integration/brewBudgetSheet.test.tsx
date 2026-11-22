@@ -5,6 +5,7 @@ import { BrewBudgetSheet } from '../../src/ui/finance/BrewBudgetSheet';
 import type { AppConfig, Batch, Recipe, StockItem } from '../../src/types';
 import type { FinanceTransaction } from '../../src/domain/finance/types';
 import { demandKey, estimateBrewBudget, type BrewBudgetSettings, type BrewBudgetSnapshot } from '../../src/domain/finance/brewBudget';
+import { poserDate, zoneDate } from '../helpers/poserDate';
 
 vi.mock('../../src/ui/BrewerChat', () => ({ BrewerChat: (p: { initialQuestion?: string }) => <div data-testid="chat">{p.initialQuestion}</div> }));
 
@@ -38,8 +39,7 @@ const texte = (sel: string) => document.querySelector(sel)?.textContent ?? '';
 function renderBudgetWithChosenDate(ui: React.ReactElement, net: string | null = '30') {
   const view = render(ui);
   aller.volumes();
-  const date = screen.getByLabelText('Date du scénario budgétaire') as HTMLInputElement;
-  if (!date.value) fireEvent.change(date, { target: { value: '2026-09-15' } });
+  if (!zoneDate('Date du scénario budgétaire').getAttribute('data-valeur')) poserDate('Date du scénario budgétaire', '2026-09-15');
   const n = screen.getByLabelText('Volume net attendu') as HTMLInputElement;
   if (net && !n.value) fireEvent.change(n, { target: { value: net } });
   aller.retour();
@@ -141,7 +141,7 @@ describe('litres nets : un seul net, jamais le volume à brasser', () => {
     const save = vi.fn();
     const { unmount } = renderC3a({ savedEstimate: undefined, settings: c3aSettings, onSave: save });
     aller.volumes();
-    fireEvent.change(screen.getByLabelText('Date du scénario budgétaire'), { target: { value: '2026-09-15' } });
+    poserDate('Date du scénario budgétaire', '2026-09-15');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     await waitFor(() => expect(save).toHaveBeenCalledTimes(1));
     const enregistre = save.mock.calls[0][0] as BrewBudgetSnapshot;
@@ -207,7 +207,7 @@ describe('daily brew budget sheet', () => {
     const save = vi.fn();
     render(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);
     aller.volumes();
-    expect(screen.getByLabelText('Date du scénario budgétaire')).toHaveValue('');
+    expect(zoneDate('Date du scénario budgétaire').getAttribute('data-valeur')).toBeNull();
     expect(screen.getByRole('button', { name: 'Enregistrer', exact: true })).toBeDisabled();
     expect(screen.getByText('Choisis un jour pour enregistrer cette estimation.')).toBeInTheDocument();
     expect(save).not.toHaveBeenCalled();
@@ -217,8 +217,8 @@ describe('daily brew budget sheet', () => {
     const save = vi.fn();
     render(<BrewBudgetSheet open batch={batch} stockItems={[stock]} batches={[]} config={config} settings={settings} onSave={save} onClose={vi.fn()} />);
     aller.volumes();
-    expect(screen.getByLabelText('Date du scénario budgétaire')).toHaveValue('2026-09-22');
-    fireEvent.change(screen.getByLabelText('Date du scénario budgétaire'), { target: { value: '2026-10-01' } });
+    expect(zoneDate('Date du scénario budgétaire')).toHaveAttribute('data-valeur', '2026-09-22');
+    poserDate('Date du scénario budgétaire', '2026-10-01');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer', exact: true }));
     await waitFor(() => expect(save).toHaveBeenCalledWith(expect.objectContaining({ brewDate: '01.10.2026' }), false));
     expect(batch.plannedBrewDate).toBe('22.09.2026'); expect(batch.brewDate).toBe('');
@@ -228,8 +228,8 @@ describe('daily brew budget sheet', () => {
     const saved=estimateBrewBudget({recipe,stockItems:[stock],batches:[],brewDate,settings});
     renderBudgetWithChosenDate(<BrewBudgetSheet open recipe={recipe} stockItems={[stock]} batches={[]} config={config} savedEstimate={saved} onSave={save} onClose={vi.fn()}/>);
     aller.volumes();
-    expect(screen.getByLabelText('Date du scénario budgétaire')).toHaveValue('2026-09-15');
-    fireEvent.change(screen.getByLabelText('Date du scénario budgétaire'),{target:{value:'2026-09-22'}});
+    expect(zoneDate('Date du scénario budgétaire')).toHaveAttribute('data-valeur', '2026-09-15');
+    poserDate('Date du scénario budgétaire', '2026-09-22');
     fireEvent.click(screen.getByRole('button',{name:'Enregistrer',exact:true}));
     await waitFor(()=>expect(save).toHaveBeenCalledWith(expect.objectContaining({brewDate:'22.09.2026',volumeL:30}),false));
     expect(saved.brewDate).toBe(brewDate);

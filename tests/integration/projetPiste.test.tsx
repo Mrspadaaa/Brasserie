@@ -15,6 +15,7 @@ vi.mock('../../src/hooks/useLiveData', () => ({ useStorageValue: (read: () => un
 import { UpgradeSheet } from '../../src/ui/finance/UpgradeSheet';
 import { etatPiste, resumeUsure, quand } from '../../src/ui/finance/projet/piste';
 import type { FinancialPlan } from '../../src/domain/finance/types';
+import { poserDate } from '../helpers/poserDate';
 
 /** Le frigo de la maquette : 2 800,00 + livraison 200,00, payé en novembre 2026, à l'étape « Prêt à acheter ». */
 const frigo = (patch: Partial<FinancialPlan> = {}, upgrade: Partial<NonNullable<FinancialPlan['upgrade']>> = {}): FinancialPlan => ({
@@ -76,7 +77,7 @@ describe('Projet matériel m3pm-d : l’enregistrement', () => {
     fireEvent.change(screen.getByLabelText('Fournisseur'), { target: { value: 'Frigoshop' } });
     fireEvent.change(screen.getByLabelText('Référence ou détails du devis'), { target: { value: 'D-2026-14, valable 30 jours' } });
     fireEvent.change(screen.getByLabelText('Durée d’usage (années)'), { target: { value: '5' } });
-    fireEvent.change(screen.getByLabelText('Mise en service prévue'), { target: { value: '2026-12' } });
+    poserDate('Mise en service prévue', '2026-12-01');
     fireEvent.change(screen.getByLabelText('Catégorie d’usure'), { target: { value: 'furniture' } });
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer le projet' }));
     await waitFor(() => expect(state.saveUpgrade).toHaveBeenCalled());

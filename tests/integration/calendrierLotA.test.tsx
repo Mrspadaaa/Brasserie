@@ -32,6 +32,7 @@ import { StorageService } from '../../src/services/storage';
 import { ajouterJours, etiquetteS, lundiDe, type ChoseCalendrier } from '../../src/domain/calendrier';
 import { brouillonVide, versEnregistrement, versModification, type ContexteAjout } from '../../src/domain/calendrierAjout';
 import { disposer, type Colonne } from '../../src/ui/calendrier/frise/Rangee';
+import { zoneDate } from '../helpers/poserDate';
 
 const JOUR = '2026-11-16';
 const L = lundiDe(JOUR);
@@ -178,7 +179,7 @@ describe('3. « Plus de détails › » garde le nom et le montant déjà tapés
     const plan = within(screen.getByRole('dialog', { name: 'Prévoir une dépense' }));
     expect(plan.getByPlaceholderText(/Loyer, commande de malt/)).toHaveValue('ZZ TEST — Tireuse');
     expect((plan.getByLabelText('Montant (CHF)') as HTMLInputElement).value).toMatch(/^150([.,]00?)?$/);
-    expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue(S51);
+    expect(zoneDate('Date de paiement prévue')).toHaveAttribute('data-valeur', S51);
     expect((plan.getByLabelText('Catégorie') as HTMLSelectElement).value).toBe('brassage');
   });
 

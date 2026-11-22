@@ -22,6 +22,7 @@ import { nomCourtBrassin } from '../../src/ui/finance/profil/brassinProfil';
 import { litreFr } from '../../src/ui/finance/previsions/format';
 import type { FinancialPlan, FinancialProfile } from '../../src/domain/finance/types';
 import type { FinanceTransaction } from '../../src/domain/finance/types';
+import { poserDate, zoneDate } from '../helpers/poserDate';
 
 const AUJ = '2026-11-15';
 const profil: FinancialProfile = { id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified', annualProductionL: 1200, historyCompleteFrom: '2026-01-01',
@@ -60,7 +61,7 @@ describe('m4pf-c : le solde et sa frise', () => {
     ouvrir({ ...profil, openingCash: undefined });
     const champ = dialogue().getByLabelText('Solde de départ (CHF)');
     fireEvent.focus(champ); fireEvent.change(champ, { target: { value: '3250,50' } }); fireEvent.blur(champ);
-    fireEvent.change(dialogue().getByLabelText('Date du solde'), { target: { value: '2026-02-01' } });
+    poserDate('Date du solde', '2026-02-01');
     expect(dialogue().getByRole('note')).toHaveTextContent(/Sans cette case/);
     fireEvent.click(dialogue().getByRole('checkbox', { name: /J’ai vérifié ce solde/ }));
     expect(screen.queryByText(/Sans cette case/)).toBeNull();
@@ -70,7 +71,7 @@ describe('m4pf-c : le solde et sa frise', () => {
   it('une date du solde changée retire la vérification (comme avant)', () => {
     ouvrir();
     expect((dialogue().getByRole('checkbox', { name: /J’ai vérifié ce solde/ }) as HTMLInputElement).checked).toBe(true);
-    fireEvent.change(dialogue().getByLabelText('Date du solde'), { target: { value: '2026-02-01' } });
+    poserDate('Date du solde', '2026-02-01');
     expect((dialogue().getByRole('checkbox', { name: /J’ai vérifié ce solde/ }) as HTMLInputElement).checked).toBe(false);
   });
 });
@@ -212,7 +213,8 @@ describe('m4pf-c : les renvois', () => {
   });
   it('refuse de continuer sans date valide quand un solde est saisi', async () => {
     ouvrir();
-    fireEvent.change(dialogue().getByLabelText('Date du solde'), { target: { value: '' } });
+    /* GESTE-DATE-PARTOUT : la frise ne vide pas une date ; la feuille s'ouvre sans date, c'est l'état refusé (rien à poser avant d'envoyer) */
+    expect(zoneDate('Date du solde').getAttribute('data-valeur')).toBeNull();
     fireEvent.submit(document.getElementById('finance-form')!); // le navigateur arrête déjà un champ « required » vide ; le message du domaine est la seconde garde
     expect(await screen.findByRole('alert')).toHaveTextContent('Choisis la date du solde.');
     expect(etat.saveProfile).not.toHaveBeenCalled();

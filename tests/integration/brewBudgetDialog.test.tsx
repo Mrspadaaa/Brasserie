@@ -7,6 +7,7 @@ import { StorageService } from '../../src/services/storage';
 import { estimateBrewBudget, demandKey, type BrewBudgetSettings } from '../../src/domain/finance/brewBudget';
 import type { AppConfig, Batch, Recipe, StockItem } from '../../src/types';
 import type { FinanceTransaction, FinancialAsset, FinancialPlan } from '../../src/domain/finance/types';
+import { poserDate } from '../helpers/poserDate';
 
 vi.mock('../../src/ui/BrewerChat', () => ({ BrewerChat: () => null }));
 
@@ -71,7 +72,7 @@ describe('budget intention becomes a concrete batch', () => {
     vi.mocked(FinanceService.snapshot).mockReturnValue({ ...FinanceService.snapshot(), plans: [] });
     render(<BrewBudgetDialog recipe={{ ...recipe, brewDate: '15.09.2026' }} onClose={vi.fn()} onOpenForecast={ouvrir} />);
     aller.volumes();
-    fireEvent.change(screen.getByLabelText('Date du scénario budgétaire'), { target: { value: '2026-09-15' } });
+    poserDate('Date du scénario budgétaire', '2026-09-15');
     fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }));
     await waitFor(() => expect(FinanceService.savePlan).toHaveBeenCalledTimes(1));
     expect(FinanceService.savePlan).toHaveBeenCalledWith(expect.objectContaining({ status: 'draft' }));
@@ -95,7 +96,7 @@ describe('usure du litre : linéaire et comptée une seule fois', () => {
     vi.mocked(FinanceService.snapshot).mockReturnValue({ ...FinanceService.snapshot(), assets, plans });
     render(<BrewBudgetDialog recipe={{ ...recipe, brewDate: '15.09.2026' }} onClose={vi.fn()} />);
     aller.volumes();
-    fireEvent.change(screen.getByLabelText('Date du scénario budgétaire'), { target: { value: date } });
+    poserDate('Date du scénario budgétaire', date);
     aller.retour();
   };
   const champUsure = () => screen.getByLabelText('Usure annuelle du matériel', { selector: 'input[type=text]' });
@@ -121,12 +122,12 @@ describe('usure du litre : linéaire et comptée une seule fois', () => {
     aller.noeud('Usure matériel');
     expect(champUsure()).toHaveValue('100');
     aller.retour(); aller.volumes();
-    fireEvent.change(screen.getByLabelText('Date du scénario budgétaire'), { target: { value: '2027-09-15' } });
+    poserDate('Date du scénario budgétaire', '2027-09-15');
     aller.retour(); aller.noeud('Usure matériel');
     expect(champUsure()).toHaveValue('100');
     fireEvent.change(champUsure(), { target: { value: '75' } });
     aller.retour(); aller.volumes();
-    fireEvent.change(screen.getByLabelText('Date du scénario budgétaire'), { target: { value: '2028-09-15' } });
+    poserDate('Date du scénario budgétaire', '2028-09-15');
     aller.retour(); aller.noeud('Usure matériel');
     expect(champUsure()).toHaveValue('75');
     fireEvent.click(screen.getByRole('button', { name: 'Reprendre le registre 2028', hidden: true }));

@@ -16,6 +16,9 @@ import { ReceiptService } from '../../src/services/receiptService';
 import { QrFactureInvalide } from '../../src/services/swissQrBill';
 import { effacerBrouillon } from '../../src/ui/vente/brouillon';
 import type { AppConfig, Batch, Client, PricingItem, Transaction } from '../../src/types';
+import { poserDate } from '../helpers/poserDate';
+/** D425 : la frise va à cinq ans ; au-delà d'un an, c'est le domaine qui refuse (alerte « plus d'un an »). */
+const DANS_DEUX_ANS = (() => { const d = new Date(Date.now() + 730 * 86400000); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })();
 
 // IBAN d'EXEMPLE public du guide SIX (jamais un vrai).
 const IBAN_TEST = 'CH93 0076 2011 6238 5295 7';
@@ -174,12 +177,12 @@ describe('Facture QR', () => {
     expect(screen.getByText('n° UID ?')).toBeTruthy();
     expect(primaire()).toBeDisabled();
   });
-  it('la date de l\'annexe se touche : 2025 donne FAC-2025-0001 et l\'échéance suit ; 2062 est refusée', async () => {
+  it('la date de l\'annexe se touche : 2025 donne FAC-2025-0001 et l\'échéance suit ; une date à deux ans est refusée', async () => {
     ledger = [{ id: `FAC-${ANNEE}-0007`, date: `${ANNEE}-01-05`, description: 'f', amountHT: 1, amountTTC: 1, tvaAmount: 0, tvaRate: 0, category: 'recettes', subcategory: '',
       finance: { version: 1, kind: 'income', amountCents: 100, invoiceNumber: `FAC-${ANNEE}-0007`, lines: [] } } as Transaction];
     ouvrir(); choisirClient(/Martin Rey/); ajouter(/^33 cl/, 1);
     fireEvent.click(screen.getByRole('button', { name: 'Date de la facture' }));
-    fireEvent.change(screen.getByLabelText('Choisir la date'), { target: { value: '2025-03-01' } });
+    poserDate('Choisir la date', '2025-03-01');
     expect(screen.getByText('FAC-2025-0001')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: '10 j' }));
     fireEvent.click(primaire());
@@ -187,10 +190,10 @@ describe('Facture QR', () => {
     expect(state.save.mock.calls[0][0].transaction.id).toBe('FAC-2025-0001');
     expect(state.save.mock.calls[0][0].transaction.finance.dueDate).toBe('2025-03-11');
   });
-  it('une date en 2062 est refusée : alerte, bouton éteint', () => {
+  it('une date en une date à deux ans est refusée : alerte, bouton éteint', () => {
     ouvrir(); choisirClient(/Martin Rey/); ajouter(/^33 cl/, 1);
     fireEvent.click(screen.getByRole('button', { name: 'Date de la facture' }));
-    fireEvent.change(screen.getByLabelText('Choisir la date'), { target: { value: '2062-11-08' } });
+    poserDate('Choisir la date', DANS_DEUX_ANS);
     expect(screen.getByRole('alert')).toHaveTextContent(/plus d’un an/);
     expect(primaire()).toBeDisabled();
   });

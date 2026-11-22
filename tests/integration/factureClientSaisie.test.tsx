@@ -9,6 +9,9 @@ import { Caisse } from '../../src/ui/vente/Caisse';
 import { StorageService } from '../../src/services/storage';
 import { effacerBrouillon } from '../../src/ui/vente/brouillon';
 import type { AppConfig, Client, PricingItem } from '../../src/types';
+import { poserDate } from '../helpers/poserDate';
+/** D425 : la frise va à cinq ans ; au-delà d'un an, c'est le domaine qui refuse (alerte « plus d'un an »). */
+const DANS_DEUX_ANS = (() => { const d = new Date(Date.now() + 730 * 86400000); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })();
 
 // Repris sur la caisse (v3a) : TE-6 prix inconnu ≠ 0, TE-7 prix négatif, article à 0 CHF, AM-67 date hors bornes. La ligne libre « Autre » porte la saisie d'un article.
 const config = { fiscal: { isTvaRegistered: false, tvaNormalRate: .081 }, company: { name: 'Brasserie Test', iban: 'CH93 0076 2011 6238 5295 7', adresse: { rue: 'Rue du Test', numero: '1', npa: '1700', localite: 'Fribourg', pays: 'CH' } }, brewhouses: [] } as unknown as AppConfig;
@@ -56,12 +59,12 @@ describe('Facturer un client (la caisse)', () => {
     expect(state.save).not.toHaveBeenCalled();
     expect(screen.getByLabelText('Total')).toHaveTextContent('—');
   });
-  it('une date en 2062 est refusée', () => {
+  it('une date en une date à deux ans est refusée', () => {
     ouvrir(); autre();
     fireEvent.change(screen.getByLabelText('Prix unitaire'), { target: { value: '50' } });
     fireEvent.click(screen.getByRole('button', { name: 'Ajouter la ligne' }));
     fireEvent.click(screen.getByRole('button', { name: 'Date de la facture' }));
-    fireEvent.change(screen.getByLabelText('Choisir la date'), { target: { value: '2062-11-08' } });
+    poserDate('Choisir la date', DANS_DEUX_ANS);
     expect(screen.getByRole('alert').textContent).toMatch(/plus d’un an/);
     expect(screen.getByRole('button', { name: /^Facturer/ })).toBeDisabled();
     expect(state.generate).not.toHaveBeenCalled();

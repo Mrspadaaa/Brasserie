@@ -11,6 +11,7 @@ import { saveFinanceDocumentConfirmed } from '../../src/services/financeDocument
 import { PaymentSheet } from '../../src/ui/finance/FinanceForms';
 import { paymentState, todayISO } from '../../src/domain/finance/ledger';
 import type { Transaction } from '../../src/types';
+import { poserDate, zoneDate } from '../helpers/poserDate';
 
 const tx = (id: string, description: string, vendor: string | undefined, amountCents: number, dueDate: string, patch: Partial<Transaction> = {}): Transaction => ({
   id, description, date: todayISO(), category: 'chargesFixes', subcategory: '', amountHT: amountCents / 100, amountTTC: amountCents / 100, tvaAmount: 0, tvaRate: 0,
@@ -101,7 +102,7 @@ describe('Payer = m5pa-d : un virement, plusieurs pièces', () => {
     fireEvent.click(screen.getByRole('button', { name: 'autre', exact: true }));
     fireEvent.click(screen.getByRole('button', { name: 'Choisis la date' }));
     expect(FinanceService.getPayments()).toHaveLength(0);
-    fireEvent.change(screen.getByLabelText('Date réelle du paiement'), { target: { value: '2026-01-05' } });
+    poserDate('Date réelle du paiement', '2026-01-05');
     expect(screen.getByRole('button', { name: /^✓ Payer 90,00/ })).toBeEnabled();
   });
   it('décocher une pièce l’exclut du virement', async () => {
@@ -129,7 +130,7 @@ describe('Payer = m5pa-d : un virement, plusieurs pièces', () => {
     const fermer = vi.fn();
     ouvre(autre(), fermer);
     fireEvent.click(screen.getByRole('button', { name: 'autre', exact: true }));
-    fireEvent.change(screen.getByLabelText('Date réelle du paiement'), { target: { value: '2026-01-05' } });
+    poserDate('Date réelle du paiement', '2026-01-05');
     fireEvent.click(screen.getByRole('button', { name: 'Autres moyens de paiement' }));
     fireEvent.click(screen.getByRole('button', { name: 'espèces' }));
     payer();
@@ -140,7 +141,7 @@ describe('Payer = m5pa-d : un virement, plusieurs pièces', () => {
     StorageService.addTransaction(tx('HIST', 'Achat historique', undefined, 5000, todayISO(), { finance: undefined }));
     ouvre(StorageService.getTransactions().find(t => t.id === 'HIST')!);
     expect(screen.getByText(/paiement historique est inconnu/)).toBeVisible();
-    expect(screen.getByLabelText('Date réelle du paiement')).toHaveValue('');
+    expect(zoneDate('Date réelle du paiement').getAttribute('data-valeur')).toBeNull();
     expect(screen.getByRole('button', { name: 'Choisis la date' })).toHaveAttribute('aria-disabled', 'true'); // q6 point 7 : le bouton dit pourquoi
   });
   it('justificatif : un seul original rangé, lié aux deux paiements ; sans justificatif le paiement s’enregistre quand même', async () => {

@@ -16,6 +16,7 @@ import { PaymentSheet } from '../../src/ui/finance/FinanceForms';
 import { TransactionDetails } from '../../src/ui/finance/TransactionDetails';
 import { todayISO, summarizeLedger } from '../../src/domain/finance/ledger';
 import type { Transaction } from '../../src/types';
+import { zoneDate } from '../helpers/poserDate';
 const tx=(patch:Partial<Transaction>={}):Transaction=>({id:'T1',description:'Achat mixte',date:todayISO(),category:'divers',subcategory:'',amountHT:150,amountTTC:150,tvaAmount:0,tvaRate:0,finance:{version:1,kind:'expense',amountCents:15000,paymentStatus:'unpaid',dueDate:todayISO(),lines:[{id:'tool',kind:'equipment',description:'Pompe',amountCents:10000},{id:'malt',kind:'ingredient',description:'Malt',amountCents:5000}]},...patch});
 const read=()=>StorageService.getTransactions();
 function Workspace(){const transactions=useStorageValue(read);return <FinancesTab transactions={transactions} config={defaultConfig} budgetLines={[]} globalTimeFilter="all" onOpenQuickAction={()=>{}}/>;}
@@ -96,16 +97,17 @@ describe('Comptabilité quotidienne intégrée',()=>{
     const unknown=tx({finance:undefined});
     const {unmount}=render(<PaymentSheet transaction={unknown} payments={[]} transactions={[unknown]} onClose={()=>{}}/>);
     // m5pa-d : « Le [aujourd’hui] [autre] avec [banque] ». Une pièce sans suivi (historique) s'ouvre sur « autre » : la date réelle est demandée, vide, obligatoire.
-    expect(screen.getByLabelText('Date réelle du paiement')).toHaveValue('');
-    expect(screen.getByLabelText('Date réelle du paiement')).toBeRequired();
+    expect(zoneDate('Date réelle du paiement').getAttribute('data-valeur')).toBeNull();
+    /* GESTE-DATE-PARTOUT : plus de champ natif « required » ; la date vide reste refusée par le domaine (« Choisis la date… »), la frise est là */
+    expect(zoneDate('Date réelle du paiement').querySelector('[data-date-point]')).not.toBeNull();
     expect(screen.getByRole('button',{name:'autre'})).toHaveAttribute('aria-pressed','true');
     unmount();
     // Une facture suivie s'ouvre sur « aujourd’hui » (date du jour), sans champ ; « autre » ouvre la date réelle, plafonnée à aujourd’hui.
     render(<PaymentSheet transaction={tx()} payments={[]} transactions={[tx()]} onClose={()=>{}}/>);
     expect(screen.getByRole('button',{name:'aujourd’hui'})).toHaveAttribute('aria-pressed','true');
-    expect(screen.queryByLabelText('Date réelle du paiement')).not.toBeInTheDocument();
+    expect(document.querySelector('[data-choix-date-label="Date réelle du paiement"]')).toBeNull();
     fireEvent.click(screen.getByRole('button',{name:'autre'}));
-    expect(screen.getByLabelText('Date réelle du paiement')).toHaveAttribute('max',todayISO());
+    expect(zoneDate('Date réelle du paiement')).toHaveAttribute('data-max',todayISO());
   });
   it('guide la préparation annuelle du solde vers les opérations de l’exercice',()=>{
     StorageService.addTransaction(tx());

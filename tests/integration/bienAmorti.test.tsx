@@ -14,6 +14,7 @@ import { AssetSheet } from '../../src/ui/finance/FinanceForms';
 import { barresDuBien } from '../../src/ui/finance/bien/BienCuve';
 import { depreciationForYear } from '../../src/domain/finance/annual';
 import type { FinancialAsset } from '../../src/domain/finance/types';
+import { poserDate } from '../helpers/poserDate';
 
 const AUJ = '2026-11-15';
 const cuve: FinancialAsset = { id: 'IMMO-CUVE', name: 'Cuve de fermentation', acquisitionDate: '2025-02-01', inServiceDate: '2025-02-01', acquisitionCents: 180_000, businessUsePct: 100, category: 'tanks', method: 'declining', ratePct: 20,
@@ -88,8 +89,8 @@ describe('m3im-c : confirmation, saisie, cession', () => {
     const d = feuille('Refroidisseur');
     const prix = d.getByLabelText('Valeur d’acquisition TTC (CHF)');
     fireEvent.focus(prix); fireEvent.change(prix, { target: { value: '2500,50' } }); fireEvent.blur(prix);
-    fireEvent.change(d.getByLabelText('Date d’achat'), { target: { value: '2026-05-04' } });
-    fireEvent.change(d.getByLabelText('Mise en service'), { target: { value: '2026-05-20' } });
+    poserDate('Date d’achat', '2026-05-04');
+    poserDate('Mise en service', '2026-05-20');
     fireEvent.click(d.getByRole('checkbox', { name: /Je confirme la catégorie/ }));
     fireEvent.click(d.getByRole('button', { name: 'Enregistrer' }));
     await vi.waitFor(() => expect(etat.saveAsset).toHaveBeenCalledWith(expect.objectContaining({ name: 'Refroidisseur', acquisitionCents: 250_050, acquisitionDate: '2026-05-04', inServiceDate: '2026-05-20', openingConfirmed: true, category: 'production', ratePct: 30 })));
@@ -114,7 +115,7 @@ describe('m3im-c : confirmation, saisie, cession', () => {
     const d = feuille('Cuve de fermentation');
     const plis = [...document.querySelectorAll('.bic-row')] as HTMLDetailsElement[];
     expect(plis[1].querySelector('summary em')!.textContent).toBe('non');
-    fireEvent.change(d.getByLabelText('Date de cession'), { target: { value: '2026-09-10' } });
+    poserDate('Date de cession', '2026-09-10');
     const produit = d.getByLabelText('Produit de la cession (CHF)');
     fireEvent.focus(produit); fireEvent.change(produit, { target: { value: '400,05' } }); fireEvent.blur(produit);
     expect(plis[1].querySelector('summary em')!.textContent).toBe('10.09.26');

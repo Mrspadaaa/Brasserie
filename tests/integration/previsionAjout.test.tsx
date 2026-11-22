@@ -15,6 +15,7 @@ import { PlanSheet } from '../../src/ui/finance/FinanceForms';
 import { effetDeLaPrevision } from '../../src/ui/finance/prevision/PlanSheetC';
 import { montant } from '../../src/ui/finance/previsions/format';
 import type { FinancialPlan, FinancialProfile } from '../../src/domain/finance/types';
+import { poserDate, zoneDate } from '../helpers/poserDate';
 
 const AUJ = '2026-11-15';
 const profilConnu: FinancialProfile = { id: 'current', canton: 'FR', legalForm: 'sole-proprietor', vatRegistered: false, accounting: 'simplified', openingCash: { date: '2026-01-01', amountCents: 400_000, confirmed: true } };
@@ -43,7 +44,7 @@ describe('m3pr-c : enregistrer', () => {
     const d = feuille();
     saisir(d, 'Vente de drêche', '120');
     fireEvent.change(d.getByLabelText('Mouvement'), { target: { value: 'in' } });
-    fireEvent.change(d.getByLabelText('Date de paiement prévue'), { target: { value: '2026-12-02' } });
+    poserDate('Date de paiement prévue', '2026-12-02');
     fireEvent.click(d.getByRole('button', { name: 'Enregistrer' }));
     await vi.waitFor(() => expect(etat.savePlan).toHaveBeenCalledWith(expect.objectContaining({ direction: 'in', date: '2026-12-02', amountCents: 12_000, source: 'manual' })));
     expect(etat.savePlan.mock.calls[0][0]).not.toHaveProperty('recurrence');
@@ -118,7 +119,7 @@ describe('Calendrier › « Prévoir une dépense en S50 » : une écriture pré
   it('la feuille s’ouvre sur le lundi 7 déc. 2026 (S50), à payer ; enregistrée, la prévision est active et datée du lundi, jamais d’aujourd’hui', async () => {
     render(<PlanSheet onClose={() => {}} date="2026-12-07" />);
     const d = feuille();
-    expect(d.getByLabelText('Date de paiement prévue')).toHaveValue('2026-12-07');
+    expect(zoneDate('Date de paiement prévue')).toHaveAttribute('data-valeur', '2026-12-07');
     expect(d.getByLabelText('Mouvement')).toHaveValue('out');
     saisir(d, 'Commande de malt', '300');
     fireEvent.click(d.getByRole('button', { name: 'Enregistrer' }));
@@ -127,6 +128,6 @@ describe('Calendrier › « Prévoir une dépense en S50 » : une écriture pré
   });
   it('une date illisible retombe sur aujourd’hui, sans rien inventer', () => {
     render(<PlanSheet onClose={() => {}} date="n’importe quoi" />);
-    expect(feuille().getByLabelText('Date de paiement prévue')).toHaveValue(AUJ);
+    expect(zoneDate('Date de paiement prévue')).toHaveAttribute('data-valeur', AUJ);
   });
 });
