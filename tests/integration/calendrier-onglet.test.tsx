@@ -1,5 +1,6 @@
 import React from 'react';
 import { etirerDuree, joursActifs, lundiPose, poserHorizon } from '../helpers/dureeFeuille';
+import { zoneDate } from '../helpers/poserDate';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { Batch, StockItem } from '../../src/types';
@@ -331,8 +332,9 @@ describe('C19 (D-71) : le bloc calendrier de l’App ouvre le budget du brassin'
     poserHorizon('1 mois');
     expect(lundiPose()).toBe(lundiS50);
     fireEvent.click(achats.getByRole('button', { name: 'Plus de détails ›' }));
-    const plan = within(await screen.findByRole('dialog', { name: 'Prévoir une dépense' }, { timeout: 10000 }));
-    expect(plan.getByLabelText('Date de paiement prévue')).toHaveValue(lundiS50);
+    /* GESTE-DATE-PARTOUT (22.11) : la date de PlanSheetC est un ChoixDate (pastille + frise), plus un `<input type="date">` : sa valeur se lit sur `data-valeur` */
+    const plan = await screen.findByRole('dialog', { name: 'Prévoir une dépense' }, { timeout: 10000 });
+    expect(zoneDate('Date de paiement prévue', plan).getAttribute('data-valeur')).toBe(lundiS50);
     expect(document.body.textContent).not.toMatch(/l’app ouvrirait/);
     /* CRITIQUE-5 n° 3 (D-68) : l'App passe la catégorie d'achat de matières (« Brassage »), jamais « Charges fixes » (rangée Papiers) */
     expect(vu.planSheet[vu.planSheet.length - 1]).toMatchObject({ date: lundiS50, categorie: 'brassage' });
