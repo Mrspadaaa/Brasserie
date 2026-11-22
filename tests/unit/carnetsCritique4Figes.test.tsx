@@ -190,7 +190,7 @@ describe('P5, P6, P38 · tableau du carnet ouvert (h05-3)', () => {
     expect(feuille.textContent).toContain('Classés par ce qui compte');
     const cartes = feuille.querySelectorAll('.cn-classee:not(.cn-classee-relire)');
     expect(cartes.length).toBeGreaterThanOrEqual(5);
-    expect(texte(cartes[0].querySelector('.cn-classee-gros')!)).toBe('1 800');
+    expect(texte(cartes[0].querySelector('.cn-chip-valeur')!)).toContain('1 800'); /* D419 B1 : la valeur du critère passe dans le pied, la pastille prix est le gros */
     expect(cartes[0].querySelector('.cn-reglette-rond')).toBeTruthy();
     expect(cartes[0].querySelector('[data-picto]')).toBeTruthy();
     fireEvent.click(within(cartes[0] as HTMLElement).getByRole('switch'));

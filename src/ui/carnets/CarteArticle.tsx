@@ -15,6 +15,7 @@ import { ExternalLink, Eye, Link2 } from 'lucide-react';
 import { libelleEcarte } from '../../domain/carnets/comparer';
 import { montant, Provenance, rangTexte, valeurTexte, type ArticleV, type CritereV, type ValeurV } from './EtatIA';
 import { VignetteObjet } from './pictos';
+import { PrixPastille, PrixRenduDetail } from './PrixPastille';
 
 export interface CarteArticleProps {
   article: ArticleV;
@@ -219,6 +220,9 @@ export interface CarteClasseeProps {
   ecarte?: { raison: string };
   onOuvrir: () => void;
   onVeille?: (active: boolean) => void;
+  /** D421 : le taux EUR→CHF (Finances, sinon posé une fois) et sa pose ; sans taux, l'euro se dit en euros. */
+  taux?: number;
+  onTaux?: (t: number) => void;
 }
 
 /** Nombre d'une valeur (oui-non exclu) ; null si inconnue. */
@@ -236,7 +240,7 @@ export function CarteClassee(p: CarteClasseeProps) {
   const t = valeurTexte(v);
   const n = nombreValeur(v);
   const pos = n !== null && p.bornes ? (p.bornes.max === p.bornes.min ? 0 : (n - p.bornes.min) / (p.bornes.max - p.bornes.min)) : null;
-  const prix = montant(a.prixCentimes);
+  const [rendu, setRendu] = React.useState(false);
   const qui = [a.vendeur ?? a.domaine, a.pays].filter(Boolean).join(' · ');
   return (
     <div className={`cn-classee${p.ecarte ? ' cn-ecarte' : ''}`}>
@@ -249,15 +253,17 @@ export function CarteClassee(p: CarteClasseeProps) {
           <b className="cn-deux-lignes">{a.nom}</b>
           {/* « exemple » se dit une fois, au pied de la feuille (h06-5 « Vendeurs, prix et photos : exemple ») */}
           <span className="cn-mut">{p.ecarte ? libelleEcarte(p.ecarte.raison) : qui}</span>
-          {(prix || a.dispo) && <span>{prix && <span className="cn-nowrap"><span className="cn-mono cn-prix">{prix}</span> {a.devise ?? 'CHF'}</span>}{a.dispo && <span className={`cn-dispo${/stock/i.test(a.dispo) ? ' cn-vert' : ' cn-att'}`}> {a.dispo}</span>}</span>}
+          {a.dispo && <span><span className={`cn-dispo${/stock/i.test(a.dispo) ? ' cn-vert' : ' cn-att'}`}>{a.dispo}</span></span>}
         </span>
-        <span className="cn-classee-val">
-          {t !== null ? <><span className="cn-mono cn-classee-gros">{t}</span>{(v?.unite ?? p.carac?.unite) && <span className="cn-mut">{v?.unite ?? p.carac?.unite}</span>}</>
-            : p.carac ? <span className="cn-mut">non publié</span> : null}
-        </span>
+        <span className="cn-classee-reserve" aria-hidden />
       </button>
+      {/* B1 : la pastille de prix à droite (hors du bouton de la carte : un bouton ne s'emboîte pas) */}
+      <span className="cn-classee-prix"><PrixPastille article={a} taux={p.taux} onTaux={p.onTaux} ouvert={rendu} onBascule={() => setRendu(x => !x)} onOuvrir={p.onOuvrir} /></span>
+      {rendu && <PrixRenduDetail article={a} taux={p.taux} onTaux={p.onTaux} />}
       <div className="cn-classee-pied">
-        {p.carac && <span className="cn-mut cn-classee-carac">{p.carac.nom}</span>}
+        {t !== null ? <span className="cn-chip-valeur" title={p.carac?.nom}><span className="cn-mono">{t}</span>{(v?.unite ?? p.carac?.unite) ? <span> {v?.unite ?? p.carac?.unite}</span> : null}</span>
+          : p.carac ? <span className="cn-mut cn-classee-carac">{p.carac.nom} : non publié</span> : null}
+        {t !== null && p.carac && <span className="cn-mut cn-classee-carac">{p.carac.nom}</span>}
         <span className="cn-reglette" aria-hidden>
           {pos !== null && <><span className="cn-reglette-plein" style={{ width: `${Math.round(pos * 100)}%` }} /><span className="cn-reglette-rond" style={{ left: `${Math.round(pos * 100)}%` }} /></>}
         </span>

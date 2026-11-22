@@ -23,7 +23,7 @@ export interface FaconV { id: string; nom: string; etat: 'ouverte' | 'retenue' |
 export interface ValeurV { valeur: number | string | boolean; unite?: string; origine: Origine; luLe?: string }
 export interface VeilleV { active: boolean; depuis: string; releveLe?: string }
 export interface ArticleV {
-  id: string; url?: string; domaine?: string; nom?: string; prixCentimes?: number; devise?: string; vendeur?: string; pays?: string;
+  id: string; url?: string; domaine?: string; nom?: string; prixCentimes?: number; prixDes?: true; devise?: string; vendeur?: string; pays?: string;
   dispo?: string; photo?: string; faconId?: string; valeurs: Record<string, ValeurV>;
   lecture: 'a-lire' | 'en-cours' | 'lue' | 'illisible'; veille?: VeilleV; messageId?: string; origine?: Origine; ajouteLe?: string;
 }

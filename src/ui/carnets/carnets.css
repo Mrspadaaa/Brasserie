@@ -441,7 +441,25 @@
 .cn-feuille-cartes-tete { display: flex; align-items: center; gap: 8px; }
 .cn-feuille-cartes-tete h3 { font-size: 20px; }
 .cn-classees { display: flex; flex-direction: column; gap: 10px; }
-.cn-classee { border: 1px solid rgb(var(--cave-800)); border-radius: 16px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.cn-classee { position: relative; border: 1px solid rgb(var(--cave-800)); border-radius: 16px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+/* D419, B1 : la pastille de prix à droite, 96 px ; « dès » au-dessus d'un plancher, pointillée si inconnue ou si le taux manque ; l'estimé en brun */
+.cn-classee-reserve { width: 96px; min-height: 60px; }
+.cn-classee-prix { position: absolute; top: 10px; right: 12px; }
+.cn-pastille-prix { width: 96px; min-height: 60px; border-radius: 14px; background: rgb(var(--cave-900)); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; border: 2px solid transparent; color: inherit; font: inherit; padding: 2px; }
+.cn-pastille-prix .cn-mono { font-size: 18px; font-weight: 600; line-height: 1.1; }
+.cn-pastille-prix small { font-size: 12px; line-height: 1.1; display: flex; align-items: center; gap: 3px; opacity: .75; }
+.cn-pastille-prix b { font-size: 18px; opacity: .7; }
+.cn-pastille-pd { border: 2px dashed rgb(var(--cave-500, 163 163 158)); background: transparent; }
+.cn-pastille-est { background: rgb(var(--cave-900)); outline: 2px dotted rgb(180 120 60); outline-offset: -4px; }
+.cn-pastille-est .cn-mono { color: rgb(180 120 60); }
+.cn-chip-valeur { font-size: 14px; padding: 2px 9px; border-radius: 999px; background: rgb(var(--area-stocks) / .18); white-space: nowrap; font-weight: 600; }
+.cn-rendu { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 14px; background: rgb(180 120 60 / .12); border-radius: 12px; padding: 6px 8px; }
+.cn-rendu-ligne { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.cn-rendu-ligne > span { background: rgb(var(--cave-950) / .35); border-radius: 8px; padding: 2px 7px; }
+.cn-rendu-ligne .cn-rendu-total { background: rgb(180 120 60); color: #fff; font-weight: 700; }
+.cn-rendu small, .cn-rendu p { flex-basis: 100%; font-size: 12px; margin: 0; }
+.cn-rendu-taux { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-basis: 100%; }
+.cn-rendu-taux input { width: 72px; min-height: 44px; font: inherit; border-radius: 10px; border: 1px solid rgb(var(--cave-700, 80 80 80)); background: transparent; color: inherit; padding: 0 8px; text-align: center; }
 .cn-classee-corps { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: start; width: 100%; }
 .cn-classee-photo { position: relative; padding: 6px 0 0 6px; }
 .cn-classee-rang { position: absolute; top: -4px; left: -6px; background: rgb(var(--cave-950)); }

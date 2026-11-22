@@ -86,6 +86,9 @@ export interface CarnetOuvertProps {
   onOuvrirArticle: (articleId: string) => void;
   onComparer: () => void;
   onVeille?: (articleId: string, active: boolean) => void;
+  /** D421 : le taux EUR→CHF (Finances, sinon posé une fois) et sa pose, pour le prix rendu des articles en euros. */
+  taux?: number;
+  onTaux?: (t: number) => void;
   onVoirChoix?: () => void;
   onEnvoyerAVenir?: () => void;
   onOuvrirLien?: (lien: LienV) => void;
@@ -609,7 +612,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
 
       {cartes && p.tableau && (
         <FeuilleCartes carnet={k} titre={c.title} tableau={p.tableau} aRelire={aRelire} onFermer={() => setCartes(false)}
-          onOuvrir={id => { setCartes(false); p.onOuvrirArticle(id); }} onVeille={p.onVeille} />
+          onOuvrir={id => { setCartes(false); p.onOuvrirArticle(id); }} onVeille={p.onVeille} taux={p.taux} onTaux={p.onTaux} />
       )}
     </article>
   );
@@ -818,7 +821,7 @@ function LigneARelire({ article: a }: { article: ArticleV }) {
 
 /* ---------- la feuille des cartes (R04, h03-5) ---------- */
 
-function FeuilleCartes({ carnet: k, titre, tableau, aRelire, onFermer, onOuvrir, onVeille }: { carnet: ContenuCarnetV; titre: string; tableau: TableauV; aRelire: ArticleV[]; onFermer: () => void; onOuvrir: (id: string) => void; onVeille?: (id: string, active: boolean) => void }) {
+function FeuilleCartes({ carnet: k, titre, tableau, aRelire, onFermer, onOuvrir, onVeille, taux, onTaux }: { taux?: number; onTaux?: (t: number) => void; carnet: ContenuCarnetV; titre: string; tableau: TableauV; aRelire: ArticleV[]; onFermer: () => void; onOuvrir: (id: string) => void; onVeille?: (id: string, active: boolean) => void }) {
   useEffect(() => {
     const touche = (e: KeyboardEvent) => { if (e.key === 'Escape') onFermer(); };
     window.addEventListener('keydown', touche);
@@ -845,7 +848,7 @@ function FeuilleCartes({ carnet: k, titre, tableau, aRelire, onFermer, onOuvrir,
             const a = art(l.articleId);
             if (!a) return null;
             return <CarteClassee key={a.id} article={a} rang={l.ecarte ? null : l.rang} carac={carac} bornes={bornes} faconNom={k.facons.find(f => f.id === a.faconId)?.nom} carnetTitre={titre}
-              {...(l.ecarte ? { ecarte: l.ecarte } : {})} onOuvrir={() => onOuvrir(a.id)} onVeille={v => onVeille?.(a.id, v)} />;
+              {...(l.ecarte ? { ecarte: l.ecarte } : {})} onOuvrir={() => onOuvrir(a.id)} onVeille={v => onVeille?.(a.id, v)} taux={taux} onTaux={onTaux} />;
           })}
           {aRelire.map(a => <div key={a.id} className="cn-classee cn-classee-relire"><LigneARelire article={a} /></div>)}
         </div>

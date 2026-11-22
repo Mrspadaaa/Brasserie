@@ -210,6 +210,8 @@ export interface LigneTableau {
   /** Une cellule par colonne ; absente = inconnue (cellule vide, jamais 0). */
   cellules: Record<string, Valeur | undefined>;
   prixCentimes?: number;
+  /** « dès » : le prix lu est un plancher (D419, A1 et B1) */
+  prixDes?: true;
   devise?: string;
   /** Livraison (CRB-13) : ce que l'article porte déjà (dispo, vendeur, pays) ; absent = inconnu, jamais une valeur par défaut. */
   dispo?: string;
@@ -426,7 +428,8 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
     }
     return {
       articleId: a.id, nom: noms.get(a.id) ?? nomArticle(a), rang, cellules,
-      ...(a.prixCentimes !== undefined ? { prixCentimes: a.prixCentimes } : {}), ...(a.devise ? { devise: a.devise } : {}),
+      ...(a.prixCentimes !== undefined ? { prixCentimes: a.prixCentimes } : {}), ...(a.prixDes ? { prixDes: true as const } : {}),
+      ...(a.devise ? { devise: a.devise } : {}),
       ...(a.dispo ? { dispo: a.dispo } : {}), ...(a.vendeur ? { vendeur: a.vendeur } : {}), ...(a.pays ? { pays: a.pays } : {}),
       moinsBienPartout: rang !== null && moinsBienPartout(a, enLice, colonnes),
       ...(dominant !== null ? { moinsBienQue: dominant } : {}),
