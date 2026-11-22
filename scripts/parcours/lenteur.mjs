@@ -191,7 +191,10 @@ async function jouer(dir) {
     await p.keyboard.press('Escape'); await sleep(500);
     await mesurer('courbe-cacher', false, async () => { const c = await point('[data-ent-cacher]'); if (!c) throw new Error('« Cacher la courbe » introuvable'); await tap(c); });
     await sleep(300); { const c = await point('[data-ent-cacher]'); if (c) { await tap(c); await sleep(700); } }
-    // 5. ouvrir un événement, Modifier, la semaine d'avant, Enregistrer
+    // 5. ouvrir un événement, Modifier, la semaine d'avant, Enregistrer. Le glisser de la frise (2) laisse la période à « 3 sem. » : « Marché de Noël »
+    // sort de la fenêtre et les quatre dernières actions échouaient pour cette cause (22.11) ; on revient à 3 mois, puis on le cherche sans l'inventer.
+    await menuDuree('3 mois'); await sleep(500);
+    await p.evaluate(() => { const e = [...document.querySelectorAll('[data-chose-id],button,[role=button]')].find((x) => (x.getAttribute('aria-label') ?? '').startsWith('Marché de Noël,')); e?.scrollIntoView({ block: 'center', inline: 'center' }); });
     await mesurer('evenement-ouvrir', false, async () => { await toucher('Marché de Noël,', true); });
     await mesurer('evenement-modifier', false, async () => { await toucher('Modifier'); });
     await mesurer('evenement-semaine', false, async () => {
