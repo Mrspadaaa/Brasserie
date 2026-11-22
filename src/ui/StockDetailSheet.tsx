@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { manqueRecette, MOT_STOCK_NEGATIF } from '../domain/stock/manqueRecette';
 import { NumberInput } from './NumberInput';
-import { ArrowLeft, ChevronDown, ChevronRight, Package, MoreHorizontal, Star, Trash2, X, ArrowLeftRight, ShoppingCart, CalendarDays, PenLine, Pencil } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronRight, Package, MoreHorizontal, Star, Trash2, X, ArrowLeftRight, ShoppingCart, CalendarDays, PenLine, Pencil, Minus, Plus } from 'lucide-react';
 import { Batch, Recipe, StockItem } from '../types';
 import { DateField, toIsoDate, toSwissDate } from './DateField';
 import { todayISO } from '../domain/finance/ledger';
@@ -126,6 +126,7 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [menu, setMenu] = useState(false);
   const [edition, setEdition] = useState(false);
+  const [besoinOuvert, setBesoinOuvert] = useState(false);
   const [uniteRefus, setUniteRefus] = useState('');
   const [uniteNote, setUniteNote] = useState('');
   // Corriger le stock : le lot, le compté (null = pas touché), le motif.
@@ -161,7 +162,7 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
   const houblon = categorie === 'Houblon';
   const malt = categorie === 'Malt' || /c[ée]r[ée]ale|sucre/i.test(categorie);
   const levure = categorie === 'Levure';
-  const technical = malt || houblon || levure;
+  const technical = malt || levure; // houblon : l'α est sur la ligne Catégorie · Unité (maquette st2-d5a)
   // Le remplaçant concret (k2 : « ou Mosaic · en stock 250 g · proche ») : le moteur de substitution, chargé à la demande ; undefined = en calcul, null = aucun connu.
   const [remplacant, setRemplacant] = useState<RemplacantFiche | null | undefined>(undefined);
   useEffect(() => {
@@ -209,6 +210,7 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
   const [aAbandonner, setAAbandonner] = useState<(() => void) | null>(null);
   const demander = (action: () => void) => { if (dirty) setAAbandonner(() => action); else action(); };
   const pas = pasDe(lotItem.unit);
+  const pas1 = Math.min(...pas.map(Math.abs));
   const poser = (v: number) => setCompte(Math.max(0, arrondi(v)));
 
   const save = () => {
@@ -266,42 +268,16 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
         : manqueAuMoins !== null ? { txt: `manque au moins ${quantiteArticle(manqueAuMoins, unite)}`, ton: 'att' }
           : besoin === null ? { txt: 'besoin inconnu', ton: 'neutre' }
             : total !== null && seuilFixe !== null && total <= seuilFixe ? { txt: total === seuilFixe ? 'au seuil' : 'sous le seuil', ton: 'att' } : null;
-  const hautBarre = Math.max(total ?? 0, seuilFixe ?? 0, besoin ?? 0) * 1.12;
-  const pc = (v: number) => `${(100 * v / (hautBarre || 1)).toFixed(2)}%`;
-  const sachets = unite === 'sachet' && total !== null && Number.isInteger(total) && Math.max(total, seuilFixe ?? 0, besoin ?? 0) <= 24;
-  const ariaBarre = `${quantiteArticle(total, unite)} en stock${seuilFixe !== null ? `, seuil ${quantiteArticle(seuilFixe, unite)}` : ', sans seuil'}${besoin ? `, besoin ${quantiteArticle(besoin, unite)}` : ''}`;
-
-  const barre = total === null
-    ? <p className="sfp-vide-m" data-stock-inconnu>Quantité à compter : le stock de cet article est illisible.</p>
-    : sachets
-      ? <div className="sfp-sacs" data-barre="sachets" role="img" aria-label={ariaBarre}>
-        {Array.from({ length: Math.max(total, seuilFixe ?? 0, besoin ?? 0) }, (_, i) => i + 1).map(i => <React.Fragment key={i}>
-          <svg className={`sfp-sac ${i <= total ? 'sfp-plein' : 'sfp-vide'}`} viewBox="0 0 22 28" aria-hidden="true"><path d="M3 4h16l-1 21H4z"/><path d="M3 4l2-2h12l2 2" fill="none"/></svg>
-          {seuilFixe !== null && i === seuilFixe && <span className="sfp-stick" title="seuil"/>}</React.Fragment>)}
-        <span className="sfp-saclab">{seuilFixe !== null ? <>seuil {quantiteArticle(seuilFixe, unite)}</> : 'sans seuil'}</span>
-      </div>
-      : seuilFixe === null && !besoin && !plusieursLots ? null : <>
-        <div className={`sfp-bar${plusieursLots ? ' sfp-blots' : ''}`} data-barre="stock" role="img" aria-label={ariaBarre}>
-          {plusieursLots
-            ? (() => { let x = 0; return lots.map((l, i) => { const debut = x; x += Number.isFinite(l.stock) ? l.stock : 0; return <React.Fragment key={l.ref}>
-              <span className={`sfp-seg${i ? ' sfp-sb' : ''}`} style={{ left: pc(debut), width: pc(Number.isFinite(l.stock) ? l.stock : 0) }}><b>{nombreSuisse(l.stock)}</b></span>
-              {i < lots.length - 1 && <span className="sfp-cut" style={{ left: pc(x) }}/>}</React.Fragment>; }); })()
-            : <span className="sfp-seg" style={{ left: 0, width: pc(total) }}/>}
-          {manqueNet !== null && manqueNet > 0 && <span className="sfp-hole" style={{ left: pc(total), width: pc(manqueNet) }}/>}
-          {seuilFixe !== null && <span className="sfp-tick" style={{ left: pc(seuilFixe) }}/>}
-        </div>
-        <div className="sfp-axe">
-          {seuilFixe !== null ? <span style={{ left: pc(seuilFixe), transform: 'translateX(-50%)' }}>seuil {quantiteArticle(seuilFixe, unite)}</span> : <span style={{ left: 0 }}>sans seuil</span>}
-          {besoin ? <span style={{ right: 0 }}>besoin {quantiteArticle(besoin, unite)}</span> : plusieursLots ? <span style={{ right: 0 }}>{famille.length} lots</span> : null}
-        </div>
-      </>;
 
   const supplier = item.supplier?.trim();
   const entrees = lots.map(l => l.entree).filter((d): d is string => d !== null);
   const infoEntree = entrees.length === 0 ? 'inconnue'
     : plusieursLots ? `${entrees.map(d => jourCourt(d, aujourdhui)).join(' et ')} · ${famille.length} lots`
       : `${jourCourt(entrees[0], aujourdhui)}${supplier ? ` · ${supplier}` : ''}`;
-  const prix = prixLu(prixDernierAchat(item, achats), unite);
+  const prixUnite = prixDernierAchat(item, achats);
+  const prixBase = unite === 'g' ? 100 : 1;
+  const prixCourt = typeof prixUnite === 'number' && prixUnite > 0 ? (Math.round(prixUnite * prixBase * 100) / 100).toFixed(2).replace('.', ',') : null;
+  const prixSous = `CHF / ${prixBase === 100 ? '100 g' : unite}`;
   const prixLot = (ref: string) => { const a = famille.find(x => x.ref === ref); return a ? prixDernierAchat(a, achats) : null; };
   const libelleLot = (l: Lot, i: number) => l.entree ? `Entré le ${jourCourt(l.entree, aujourdhui)}` : `Lot ${i + 1} · entrée inconnue`;
   const retourLibelle = `Stock · ${PLURIEL[categorie] ?? categorie}`;
@@ -334,11 +310,19 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
               {item.yeastLot?.expiresOn ? <>DDM {toSwissDate(item.yeastLot.expiresOn)}{dur && <> · {dur.texte}</>}</> : 'DDM ?'}</span>}
           </div>
           <div className="sfp-sous">{categorie} · <button type="button" className="sfp-four" onClick={ouvrirEdition}>{supplier || 'fournisseur ?'}<ChevronRight size={14} aria-hidden="true"/></button></div>
-          <div className="sfp-qrow">
-            <span className="sfp-q">{total === null ? '?' : nombreSuisse(total)}</span><span className="sfp-t2">{uniteLue} en stock</span>
-            {etat && <span className={`sfp-etat${etat.ton === 'att' ? ' sfp-att' : etat.ton === 'rouge' ? ' sfp-rouge' : ''}`} data-etat>{etat.txt}</span>}
+          {/* D5a (maquette st2-d5a) : le besoin et le prix ne sont que deux pastilles ; le besoin, touché, ouvre son détail */}
+          <div className="sfp-pavs" data-pavs>
+            <button type="button" className="sfp-pav sfp-pav-b" data-pav-besoin aria-expanded={besoinOuvert} onClick={() => setBesoinOuvert(o => !o)}>
+              <CalendarDays size={26} aria-hidden="true"/>
+              <span className="sfp-pav-t"><b className="sfp-pav-n">{besoin === null ? '?' : nombreSuisse(besoin)}</b>
+                <span>besoin · {sources.length === 0 ? 'aucun brassin' : `${sources.length} ${sources.length === 1 ? 'source' : 'sources'}`}</span></span>
+            </button>
+            <div className="sfp-pav sfp-pav-p" data-pav-prix>
+              <span className="sfp-pav-n">{prixCourt ?? '?'}</span>
+              <span className="sfp-pav-s">{prixCourt ? prixSous : 'prix inconnu'}</span>
+            </div>
           </div>
-          {barre}
+          {etat && etat.ton !== 'neutre' && <p className={`sfp-etat${etat.ton === 'att' ? ' sfp-att' : etat.ton === 'rouge' ? ' sfp-rouge' : ''}`} data-etat>{etat.txt}</p>}
         </div>
 
         <div className="sfp-cols"><div>
@@ -354,7 +338,7 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
               </dl></details>)}
           </section></div>}
 
-          <div className="sfp-card"><section className="sfp-sec" aria-label="Besoin" data-stock-besoin>
+          {besoinOuvert && <div className="sfp-card"><section className="sfp-sec" aria-label="Besoin" data-stock-besoin>
             <h2 className="sfp-lab">Besoin <span>{sources.length === 0 ? 'aucun' : `${sommeSources === null ? 'inconnu' : quantiteArticle(sommeSources, unite)} · ${sources.length} ${sources.length === 1 ? 'source' : 'sources'}`}</span></h2>
             {sources.length > 0
               ? sources.map(s => <SourceLigne key={`${s.genre}:${s.id}`} s={s} unite={unite}/>)
@@ -373,58 +357,67 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
             {houblon && onOpenHops && <button type="button" className="sfp-rempl" onClick={onOpenHops} data-remplacant><ArrowLeftRight size={18} aria-hidden="true"/>{remplacant
               ? <span data-remplacant-nom={remplacant.cle}><b>{phraseRemplacant(remplacant).nom}</b>{phraseRemplacant(remplacant).reste}</span>
               : <span><b>Remplaçants possibles</b> · {remplacant === undefined ? 'en calcul…' : 'dans l’outil houblons'}</span>}<ChevronRight size={16} aria-hidden="true"/></button>}
-          </section></div>
+          </section></div>}
 
           <StockFicheBouge nom={nomAffiche} famille={famille.map(a => ({ ref: a.ref, currentStock: a.currentStock, supplier: a.supplier }))} unite={unite}
             movements={movements} batches={batches} besoin={besoin} seuil={draft.minStock} aujourdhui={aujourdhui}
             onOpenTransaction={onOpenTransaction} onOpenBatch={onOpenBatch}/>
         </div><div>
-          {onCorrect && <div className="sfp-card"><details className="sfp-sec sfp-cord" open data-corriger>
-            <summary className="sfp-lab sfp-cors">Corriger le stock · il en reste <span>écrit un mouvement <ChevronDown size={16} aria-hidden="true"/></span></summary>
-            <section aria-label="Corriger le stock">
+          {/* D5a (maquette st2-d5a) : Stock et Seuil se règlent avec − et + ; le motif ne se demande qu'une fois le stock touché */}
+          <div className="sfp-card sfp-reglage" data-reglage>
+            {onCorrect && <section aria-label="Corriger le stock" data-corriger>
               {plusieursLots && <div className="sfp-seg2" role="group" aria-label="Lot à corriger">{lots.map((l, i) => <button type="button" key={l.ref} aria-pressed={l.ref === lotRef}
                 onClick={() => { setLotRef(l.ref); setCompte(null); }}>{l.entree ? `Lot du ${jourCourt(l.entree, aujourdhui)}` : `Lot ${i + 1}`}</button>)}</div>}
-              <div className="sfp-cpt" style={{ marginTop: plusieursLots ? 8 : 0 }}>
-                <label className="sfp-inp" data-invalide={verdict && !verdict.ok ? '' : undefined} onKeyDown={entreeValide}>
-                  <NumberInput id="stock-compte" aria-label="Il en reste" value={valeur} min={0} emptyValue={undefined} onValue={v => setCompte(v)} className=""/>
-                  <i>{uniteAccordee(valeur ?? lotItem.currentStock, lotItem.unit)}</i></label>
+              <div className="sfp-rg" data-rg="stock">
+                <span className="sfp-rg-l">Stock</span>
+                <div className="sfp-stp">
+                  <button type="button" aria-label="Moins" data-moins onClick={() => poser((valeur ?? lotItem.currentStock) - pas1)}><Minus size={20} aria-hidden="true"/></button>
+                  <label className="sfp-inp" data-invalide={verdict && !verdict.ok ? '' : undefined} onKeyDown={entreeValide}>
+                    <NumberInput id="stock-compte" aria-label="Il en reste" value={valeur} min={0} emptyValue={undefined} onValue={v => setCompte(v)} className=""/>
+                    <i>{uniteAccordee(valeur ?? lotItem.currentStock, lotItem.unit)}</i></label>
+                  <button type="button" aria-label="Plus" data-plus onClick={() => poser((valeur ?? lotItem.currentStock) + pas1)}><Plus size={20} aria-hidden="true"/></button>
+                </div>
+                <p className="sfp-rg-n">{uniteLue}<br/>il en reste</p>
+              </div>
+              {correctionTouchee && <div className="sfp-pq" data-motif>
                 <span className="sfp-delta" aria-live="polite">avant <b>{quantiteArticle(lotItem.currentStock, lotItem.unit)}</b> · <span data-delta>
                   {valeur === undefined ? 'à saisir' : arrondi(valeur - lotItem.currentStock) === 0 ? 'sans changement' : variation(arrondi(valeur - lotItem.currentStock))}</span></span>
+                <div className="sfp-seg2" role="group" aria-label="Motif" style={{ marginTop: 6 }}>
+                  {([['comptage', 'Compté'], ['perte', 'Perte'], ['autre', 'Autre']] as [Motif, string][]).map(([code, label]) =>
+                    <button type="button" key={code} aria-pressed={motif === code} onClick={() => setMotif(code)}>{label}</button>)}
+                </div>
+                {motif === 'autre' && <div className="sfp-seg2" role="group" aria-label="Autre motif" style={{ marginTop: 6 }}>
+                  {AUTRES.map(a => <button type="button" key={a.code} aria-pressed={autre === a.code} onClick={() => setAutre(a.code)}>{a.label}</button>)}</div>}
+                <p className="sfp-note">Enregistre pour écrire le mouvement dans « Ce qui a bougé ».</p>
+              </div>}
+            </section>}
+            <section aria-label="Seuil">
+              <div className="sfp-rg sfp-seuil" data-rg="seuil">
+                <span className="sfp-rg-l">Seuil</span>
+                <div className="sfp-stp">
+                  <button type="button" aria-label="Seuil moins" data-moins onClick={() => setDraft({ ...draft, minStock: draft.minStock === undefined || draft.minStock <= pas1 ? undefined : arrondi(draft.minStock - pas1) })}><Minus size={20} aria-hidden="true"/></button>
+                  <label className="sfp-inp" data-invalide={seuilErreur ? '' : undefined} onKeyDown={entreeValide}>
+                    <NumberInput id="stock-min" aria-label={`Seuil minimum (${draft.unit})`} value={draft.minStock} min={0} emptyValue={undefined} placeholder="aucun" aria-invalid={!seuil.ok}
+                      onValue={minStock => setDraft({ ...draft, minStock })} className=""/><i>{uniteAccordee(draft.minStock ?? 0, draft.unit)}</i></label>
+                  <button type="button" aria-label="Seuil plus" data-plus onClick={() => setDraft({ ...draft, minStock: arrondi((draft.minStock ?? 0) + pas1) })}><Plus size={20} aria-hidden="true"/></button>
+                </div>
+                <p className="sfp-rg-n">{draft.minStock === undefined ? 'aucune alerte' : draft.minStock === 0 ? <>alerte à<br/>l’épuisement</> : <>alerte<br/>sous ce compte</>}</p>
               </div>
-              <div className="sfp-pasr">{pas.map(d => <button type="button" key={d} onClick={() => poser((valeur ?? lotItem.currentStock) + d)}>{variation(d)}</button>)}</div>
-              <div className="sfp-seg2" role="group" aria-label="Motif" style={{ marginTop: 8 }}>
-                {([['comptage', 'Compté'], ['perte', 'Perte'], ['autre', 'Autre']] as [Motif, string][]).map(([code, label]) =>
-                  <button type="button" key={code} aria-pressed={motif === code} onClick={() => setMotif(code)}>{label}</button>)}
-              </div>
-              {motif === 'autre' && <div className="sfp-seg2" role="group" aria-label="Autre motif" style={{ marginTop: 6 }}>
-                {AUTRES.map(a => <button type="button" key={a.code} aria-pressed={autre === a.code} onClick={() => setAutre(a.code)}>{a.label}</button>)}</div>}
-              <p className="sfp-note">{correctionTouchee ? 'Enregistre pour écrire le mouvement dans « Ce qui a bougé ».' : 'Aucune correction en cours.'}</p>
-            </section></details></div>}
-
-          <div className="sfp-card">
-            <section className="sfp-sec" aria-label="Seuil">
-              <h2 className="sfp-lab">Seuil · facultatif</h2>
-              <div className="sfp-seuil"><label className="sfp-inp" data-invalide={seuilErreur ? '' : undefined} onKeyDown={entreeValide}>
-                <NumberInput id="stock-min" aria-label={`Seuil minimum (${draft.unit})`} value={draft.minStock} min={0} emptyValue={undefined} placeholder="aucun" aria-invalid={!seuil.ok}
-                  onValue={minStock => setDraft({ ...draft, minStock })} className=""/><i>{uniteAccordee(draft.minStock ?? 0, draft.unit)}</i></label>
-                <p>{phraseSeuil(draft.minStock)}</p></div>
               {seuilErreur && <p className="sfp-err" role="alert">{seuilErreur}</p>}
             </section>
-            <section className="sfp-sec" aria-label="Fiche">
-              <h2 className="sfp-lab">Fiche</h2>
-              <dl>
-                <div className="sfp-info"><dt>Fournisseur</dt><dd>{supplier ? <button type="button" onClick={ouvrirEdition}>{supplier}<ChevronRight size={14} aria-hidden="true"/></button> : <span>inconnu</span>} <span className="sfp-t2">· <button type="button" onClick={ouvrirEdition} style={{ fontWeight: 400 }}>changer</button></span></dd></div>
-                {levure && <div className="sfp-info"><dt>DDM</dt><dd>{item.yeastLot?.expiresOn ? toSwissDate(item.yeastLot.expiresOn) : 'inconnue'}</dd></div>}
-                <div className="sfp-info"><dt>Dernier prix</dt><dd>{prix ?? 'inconnu'}</dd></div>
-                <div className="sfp-info"><dt>Entrée</dt><dd>{infoEntree}</dd></div>
-              </dl>
+            <section className="sfp-sec" aria-label="Fiche" hidden={!trousIA && !repriseIA}>
               {trousIA && <AiAssist className="mt-2" kind={trousIA.kind} name={nomAffiche} missing={trousIA.missing} sansExplication onApply={facts => reprendreIA(trousIA.kind, facts)}/>}
               {repriseIA && <p className="sfp-note" role="status" data-ia-reprise>Valeurs reprises dans « Modifier la fiche ». Enregistre pour les garder.</p>}
             </section>
           </div>
 
-          <div className="sfp-card"><details id="stock-edit" className="sfp-sec sfp-edit" open={edition} onToggle={e => setEdition((e.currentTarget as HTMLDetailsElement).open)}>
-            <summary>Modifier la fiche<ChevronDown size={18} aria-hidden="true"/></summary>
+          {/* D5a : « Modifier la fiche » est une ligne repliée ; touchée, elle ouvre une feuille par-dessus la fiche (maquette st2-d5a-modif) */}
+          <div className="sfp-card sfp-modrow"><button type="button" className="sfp-modif" data-modif aria-expanded={edition} aria-controls="stock-edit" onClick={() => setEdition(true)}>
+            <Pencil size={22} aria-hidden="true"/><span>Modifier la fiche</span><em>{houblon ? 'nom · unité · α' : malt ? 'nom · unité · EBC' : 'nom · unité'}</em><ChevronDown size={20} aria-hidden="true"/></button></div>
+          {edition && <div className="sfp-fond" data-fond onClick={() => setEdition(false)}/>}
+          <div id="stock-edit" role="dialog" aria-label="Modifier la fiche" className="sfp-feuille" hidden={!edition}>
+            <span className="sfp-poignee" aria-hidden="true"/>
+            <div className="sfp-feuille-t"><h2>Modifier la fiche</h2><button type="button" className="sfp-ico" aria-label="Fermer la feuille" onClick={() => setEdition(false)}><X size={22} aria-hidden="true"/></button></div>
         <div onKeyDownCapture={e => { if (e.key === 'Enter' && (e.target as HTMLElement).id === 'stock-label') { e.preventDefault(); e.stopPropagation(); save(); } }}>
         <FormNav className="stock-form space-y-2" onSubmit={save}>
           <Field label="Nom" htmlFor="stock-label" error={draft.name.trim() ? undefined : 'Indiquez le nom de l’article.'}>
@@ -432,7 +425,7 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
           </Field>
           {nonReconnu && <p data-stock-non-reconnu className="-mt-1 text-xs text-attention">non reconnu</p>}
           {nomsFacture.length > 0 && <p data-stock-noms-facture className="-mt-1 text-xs text-cave-400">Sur la facture : {nomsFacture.join(' · ')}</p>}
-          <div className="grid grid-cols-2 gap-2">
+          <div className={category === 'Houblon' ? 'grid gap-2 grid-cols-[1.35fr_1fr_.9fr]' : 'grid grid-cols-2 gap-2'}>
             <Field label="Catégorie" htmlFor="stock-category">
               <Combobox id="stock-category" ariaLabel="Catégorie" value={draft.category} onChange={category => setDraft({ ...draft, category })}
                 options={categoryOptions} placeholder="Malt, Houblon…" allowCreate onCreate={category => setDraft({ ...draft, category })}/>
@@ -442,6 +435,11 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
                 options={unitOptions} placeholder="kg, g…" allowCreate onCreate={changeUnit}/>
               {uniteNote && !uniteRefus && <p data-stock-unite-note className="mt-1 text-xs text-cave-400">{uniteNote}</p>}
             </Field>
+            {category === 'Houblon' && <Field label="α %" htmlFor="stock-alpha">
+              <NumberInput id="stock-alpha" value={draft.alphaPct} min={0} max={100} emptyValue={undefined}
+                onValue={alphaPct => setDraft({ ...draft, alphaPct })} className={inputClass}/>
+              {aSaisir('alphaPct') && <ASaisir champ="alphaPct"/>}
+            </Field>}
           </div>
           <div className="grid grid-cols-2 gap-2">
             <Field label="Fournisseur" htmlFor="stock-vendor">
@@ -452,16 +450,10 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
 
           {technical && <details className="border-y border-cave-800 py-1">
             <summary className="text-cave-200">Caractéristiques techniques
-              {category === 'Houblon' && draft.alphaPct != null && <span className="text-cave-400"> · α {nombreFr(draft.alphaPct, 2)} %</span>}
-              {malt && draft.colorEbc != null && <span className="text-cave-400"> · {nombreFr(draft.colorEbc, 1)} EBC</span>}
+                            {malt && draft.colorEbc != null && <span className="text-cave-400"> · {nombreFr(draft.colorEbc, 1)} EBC</span>}
               {manque.some(c => aSaisir(c)) && <span data-a-saisir="resume" className="text-attention"> · {MOT_A_SAISIR}</span>}
             </summary>
             <div className="space-y-2 pt-1 pb-2">
-              {category === 'Houblon' && <Field label="Acide alpha (%)" htmlFor="stock-alpha">
-                <NumberInput id="stock-alpha" value={draft.alphaPct} min={0} max={100} emptyValue={undefined}
-                  onValue={alphaPct => setDraft({ ...draft, alphaPct })} className={inputClass}/>
-                {aSaisir('alphaPct') && <ASaisir champ="alphaPct"/>}
-              </Field>}
               {malt && <div className="grid grid-cols-2 gap-2">
                 <Field label="Couleur (EBC)" htmlFor="stock-ebc">
                   <NumberInput id="stock-ebc" value={draft.colorEbc} min={0} emptyValue={undefined}
@@ -493,7 +485,8 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
           </details>}
         </FormNav>
         </div>
-          </details></div>
+            <button type="button" className="sfp-b1 sfp-feuille-b" data-enregistrer-fiche disabled={!canSave || !correctionOk || !dirty} onClick={save}>Enregistrer la fiche</button>
+          </div>
         </div></div>
       </main></div>
 

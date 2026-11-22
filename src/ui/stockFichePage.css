@@ -155,6 +155,8 @@
 .sfp-b2 { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--sfp-strong) !important; font-weight: 600; color: var(--sfp-t0); flex: 1; }
 .sfp-b1 { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 14px; border-radius: 10px; background: var(--sfp-prim) !important; color: var(--sfp-onprim) !important; font-weight: 700; flex: 1; }
 .sfp-b1:disabled { opacity: .45; cursor: not-allowed; }
+/* D5a (maquette st2-d5a) : Enregistrer est noir (encre de la page), pas jaune */
+.sfp .sfp-b1 { background: var(--sfp-t0) !important; color: var(--sfp-page) !important; }
 
 /* « Ce qui a bougé » : le dessin de B4 (escalier, besoin rouge pointillé, seuil ocre tireté, hachures du manque, mouvements avant → après) */
 .sfp-fs { margin-top: 10px; padding: 8px 12px 10px; border-radius: 16px; background: var(--sfp-panel); }
@@ -205,3 +207,48 @@
   .sfp-pied { justify-content: flex-end; }
   .sfp-pied > button { flex: 0 0 200px; }
 }
+
+/* D5a (22.11, maquette st2-d5a) : deux pastilles (besoin, prix), Stock et Seuil à − et +, « Modifier la fiche » en feuille par-dessus la fiche */
+.sfp-pavs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+/* à 390 : Stock et Seuil viennent avant « Ce qui a bougé » (maquette) ; à partir de 900 px les deux colonnes gardent leur place */
+@media (max-width: 899px) {
+  .sfp-cols { display: flex; flex-direction: column; }
+  .sfp-cols > div { display: contents; }
+  .sfp-cols .sfp-reglage { order: 1; }
+  .sfp-cols .sfp-fs { order: 2; }
+  .sfp-cols .sfp-modrow { order: 3; }
+  .sfp-cols .sfp-fond { order: 4; }
+}
+.sfp-reglage > section[hidden] { display: none; }
+.sfp .sfp-pav { display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 8px 12px; border-radius: 16px; background: var(--sfp-panel); text-align: left; color: var(--sfp-t0); }
+.sfp-pav-b > svg { color: var(--sfp-att); }
+.sfp-pav-t { display: flex; flex-direction: column; min-width: 0; font-size: 13px; color: var(--sfp-t2); line-height: 1.15; }
+.sfp-pav-n { font: 600 26px/1.05 var(--sfp-mono, "IBM Plex Mono", ui-monospace, Consolas, monospace); color: var(--sfp-t0); font-variant-numeric: tabular-nums; }
+.sfp-pav-p { flex-direction: column; justify-content: center; gap: 0; text-align: center; font-size: 13px; color: var(--sfp-t2); }
+.sfp-pav-s { font-size: 13px; color: var(--sfp-t2); }
+.sfp-pav[aria-expanded="true"] { box-shadow: inset 0 0 0 2px var(--sfp-strong); }
+.sfp-etat { margin-top: 6px; font-size: 14px; font-weight: 600; color: var(--sfp-t1); }
+.sfp-reglage { padding: 6px 14px 8px; border: 1.5px solid var(--sfp-strong); background: transparent; }
+.sfp-rg { display: grid; grid-template-columns: 56px 174px minmax(0, 1fr); align-items: center; column-gap: 10px; min-height: 64px; }
+.sfp-reglage > section + section .sfp-rg, .sfp-reglage > section + section { border-top: 1px solid var(--sfp-border); }
+.sfp-rg-l { font-weight: 700; color: var(--sfp-t0); font-size: 16px; }
+.sfp-rg-n { margin: 0; text-align: right; font-size: 13px; line-height: 1.25; color: var(--sfp-t2); }
+.sfp-stp { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; height: 44px; border: 1.5px solid var(--sfp-strong); border-radius: 12px; overflow: hidden; background: var(--sfp-page); }
+.sfp-stp > button { display: grid; place-items: center; color: var(--sfp-t0); }
+.sfp-stp > button:active { background: var(--sfp-raised); }
+.sfp-stp > .sfp-inp { width: auto; height: 100%; border: 0; border-left: 1.5px solid var(--sfp-strong); border-right: 1.5px solid var(--sfp-strong); border-radius: 0; padding: 0 4px; justify-content: center; }
+.sfp-stp > .sfp-inp input, .sfp-stp > .sfp-inp textarea { text-align: center; font-size: 20px; }
+.sfp-stp > .sfp-inp i { display: none; }
+.sfp-pq { padding: 0 0 10px; }
+.sfp-pq .sfp-delta { font-size: 13px; color: var(--sfp-t2); }
+.sfp-modrow { padding: 0 12px; background: var(--sfp-panel); }
+.sfp-modif { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; text-align: left; font-size: 17px; color: var(--sfp-t0); }
+.sfp-modif span { flex: none; }
+.sfp-modif em { flex: 1; min-width: 0; text-align: right; font-style: normal; font-size: 13px; color: var(--sfp-t2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sfp-fond { position: absolute; inset: 0; z-index: 60; background: rgb(0 0 0 / .45); }
+.sfp-feuille { position: absolute; left: 0; right: 0; bottom: 0; z-index: 61; max-height: 86%; overflow-y: auto; padding: 8px 16px calc(16px + env(safe-area-inset-bottom)); border-radius: 22px 22px 0 0; background: var(--sfp-page); box-shadow: 0 -8px 30px rgb(0 0 0 / .25); }
+.sfp-feuille[hidden] { display: none; }
+.sfp-poignee { display: block; width: 44px; height: 5px; margin: 0 auto 8px; border-radius: 3px; background: var(--sfp-strong); }
+.sfp-feuille-t { display: flex; align-items: center; justify-content: space-between; min-height: 48px; }
+.sfp-feuille-t h2 { font-size: 22px; font-weight: 700; color: var(--sfp-t0); }
+.sfp-feuille-b { width: 100%; margin-top: 12px; height: 52px; border-radius: 14px; font-size: 17px; font-weight: 700; }

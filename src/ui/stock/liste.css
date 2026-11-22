@@ -121,9 +121,16 @@ html[data-theme="cave"] .stock-liste .l1-sw{box-shadow:0 0 0 1.5px var(--l1-lise
 /* D3a (22.11, maquette st1-d3a) : à partir de 1024 px, une table par rayon, côte à côte ; chaque table garde article, repère, stock et barre
    (le dernier mouvement et le fournisseur restent dans la fiche) */
 @media(min-width:1024px){
-  .sz-tables{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:20px;align-items:start;margin-top:8px}
+  .sz-tables{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr);column-gap:12px;align-items:start;margin-top:8px}
   .sz-table{min-width:0}
-  body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-row,body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-th{grid-template-columns:10px minmax(0,1fr) 88px 78px minmax(30px,.5fr);column-gap:6px;padding-right:8px}
+  body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-row,body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-th{grid-template-columns:12px minmax(0,1fr) 84px 78px minmax(50px,.7fr);column-gap:5px;padding-right:30px}
+  /* la table de la maquette est dense : une ligne par article (le « sans seuil » neutre ne s'écrit pas), le repère sans pastille, l'étoile à 28 px (souris) */
+  body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-row{min-height:34px}
+  .sz-tables .stock-liste .l1-n2.l1-s-sans{display:none}
+  body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-rp{background:none;box-shadow:none;padding:0;gap:4px;overflow:hidden;text-overflow:ellipsis;display:block}
+  body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-rp .l1-sw{display:inline-block;margin-right:4px;vertical-align:-1px}
+  .sz-tables .l1-fav button{min-width:28px !important}
+  .sz-tables .stock-liste .l1-mk{height:22px}
   .sz-tables .l1-ech-th{display:none}
   body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-c-mv,body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-c-fo,
   body:not([data-has-fiche-page]) .sz-tables .stock-liste .l1-th > :nth-child(n+6){display:none}
