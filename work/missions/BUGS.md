@@ -69,6 +69,7 @@ Lire :
 | work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-5.md | T4 | 7 | 1 | d59ca8f31585 |
 | work/missions/2026-11-21-cal-frise-prix/RAPPORT.md | CFP | 8 | 0 | 234441c9f314 |
 | work/missions/2026-11-21-tour8-local/RAPPORT.md | T8 | 3 | 1 | 0f2cab58f609 |
+| work/missions/2026-11-22-tour9-doigt/RAPPORT.md | T9 | 5 | 3 | cc476913e394 |
 | work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-4.md | T3B | 13 | 1 | a5f31f216f81 |
 | work/missions/2026-11-19-carnet-tour3/RAPPORT.md | CT3 | 54 | 0 | 6099acdd8c53 |
 | work/missions/2026-11-20-critique-tour4/c-stocks-carnet-vendre.md | CT4C | 9 | 0 | 91d1da9164e1 |
@@ -2158,7 +2159,7 @@ Versé le 21.11. La colonne constats des Sources compte les lignes versées ici.
 | CHV-15 | CHASSE-visuel 21.11 | Calendrier, Bulle d'étape | Toucher le picto d'étape de « Ssr » : la bulle « Brassage · 2 nov. » se pose sur « Ttt » et cache son nom | D | corrigé | 1167349d8 | ex CH-visuel-15 |
 | CHV-16 | CHASSE-visuel 21.11 | Calendrier, Courbe An aligné | Des rangées de points gris « · · · » suivent les marches de mai à octobre, sans légende | D | corrigé | 06b215e72 | ex CH-visuel-16 |
 | CHV-17 | CHASSE-visuel 21.11 | Calendrier, Courbe 2 sem. | En 2 sem., le cadre est tout rose, le trait du solde est collé sur son bord bas et invisible, aucune étiquette | D | corrigé | 06b215e72 | ex CH-visuel-17 |
-| CHV-18 | CHASSE-visuel 21.11 | Calendrier, Étiquettes de jalons | Le côté de l'étiquette change sans raison visible (« Impôt sur la bière · Fruty » à gauche de son picto en An) | D | ouvert — après V7/V8 (Rangee.tsx, poser : candidats avant lignes ; CH-V18 écrit, rouge) | | ex CH-visuel-18 |
+| CHV-18 | CHASSE-visuel 21.11 | Calendrier, Étiquettes de jalons | Le côté de l'étiquette change sans raison visible (« Impôt sur la bière · Fruty » à gauche de son picto en An) | D | corrigé | 3cfbf196a | ex CH-visuel-18 ; auto : commit 3cfbf196a « CHV-18 : CH-V18 mesure l'étiquette entière (nom, montant, pastille) et la limite » |
 | CHV-19 | CHASSE-visuel 21.11 | Calendrier, Feuille d'ajout, frise Durée | Les graduations « nov. déc. janv. » sous la frise Durée sont minuscules et pâles, surtout en cave | D | corrigé | 6f55de055 | ex CH-visuel-19 ; feuille.css `.cal-f-duree-rep small` : 12 px, `--cave-100`, contraste 12,25:1 (cave) et 12,63:1 (clair) ; étape CH-V19 (chaines-calendrier-v13) |
 | CHE-1 | CHASSE-edition 21.11 | Calendrier, Ajout par le + de rangée | Ajouter une vente à S46 (1 an) : la vue passe de 3 mois à 6 sem., la chose reste hors fenêtre, le message dit « S46 · Annuler » sans rien à l'écran | G | corrigé | 6f55de055 | ex CH-edition-1 ; CalendrierTab.tsx (`ajouterDepuisFeuille`, `voirEtendue`) : « 1 an » tombe sur la 53e semaine, hors des 52 que le Calendrier montre ; la vue ne bouge plus et le message dit « posée en nov. 2027, au-delà de l'année affichée » (sans « Voir » : rien à montrer) ; un horizon dans l'année garde l'échelle choisie ; le + suivant s'ouvre sur aujourd'hui ; étape CH-E1 ; reste : la chose posée à plus de 52 semaines n'a aucun écran dans le Calendrier |
 | CHE-2 | CHASSE-edition 21.11 | Calendrier, Fiche et Modifier d'une chose créée | La fiche d'une chose créée ne propose ni Supprimer ni Retirer, Modifier n'a que Enregistrer ; le brassin n'a ni l'un ni l'autre | G | corrigé | 26b9f4bb3 | ex CH-edition-2 ; DetailChose.tsx:346-348 ; décision « on ne supprime jamais » (MenuAppuiLong.tsx:24) à trancher par le pilote |
@@ -2220,6 +2221,19 @@ Versé le 21.11. La colonne constats des Sources compte les lignes versées ici.
 | T8-2 | tour 8 local, principes.mjs | Calendrier › Papiers, + Ajouter (390) | Le toucher sur le bouton de pose ne valide rien ; deux gestes pour ouvrir ; le nom reste « Papiers · S47 ». | D | ouvert | | captures/pose-cal-papiers-pose-valide.png |
 | T8-3 | tour 8 local, principes.mjs | Calendrier, renommer un événement (390) | Le renommage marche (toast « Renommé : ZZ TEST Nom »), mais la fiche se ferme à Entrée ; 4 gestes avec l'ouverture. | D | ouvert | | captures/renommer-renommer-evenement-fait.png |
 | T8-NOTE-1 | tour 8 local, principes.mjs | principes.mjs | Non joués : le banc ne trouve plus « Atelier R&D » ni « Stocks » depuis Brassins (nom obligé d'une idée et du matériel, horizon d'un projet) : banc à remettre aux noms actuels. | — | ouvert | | banc |
+
+## Tour 9 au doigt, en ligne, 22.11 (tag en-ligne/2026-11-22-tour9, paquet index-B8Mp3grp.js ; Claude in Chrome, iframe 390 puis 1280 ; ZZ TEST créées puis retirées ; CFP-1, 4, 7, 8 et CAL-CUVE vérifiés justes ; source work/missions/2026-11-22-tour9-doigt/RAPPORT.md)
+
+| id | source | écran | constat | gravité | état | commit | note |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| T9-1 | tour 9 en ligne | Calendrier, barre tirée hors du cadre (390) | Tirée au-delà du bord droit et tenue (toucher 2,1 s, souris 3 s), « ZZ TEST Bord » est posée au 20 déc. puis au 27 déc. (S52) hors de la fenêtre S46–S51, qui ne s'agrandit pas ; la chose sort de la vue. CAL-BARRE-BORD (6d22c6115, dans le tag) ne s'observe pas en ligne. | G | ouvert | | mesures DOM |
+| T9-2 | tour 9 en ligne | Calendrier › frise des prix, passé (390) | Poignée de début tenue 3,6 s au bord gauche : la fenêtre bute sur S47 (semaine en cours) ; il faut relâcher et reprendre pour reculer (S44 au geste suivant). | D | ouvert | | 12 relevés « S47 – S3 » |
+| T9-3 | tour 9 en ligne | Calendrier, fiche d'une Fête | La fiche dit « 1 j » ; Modifier, sur la même chose, dit « Durée 1 semaine · jusqu'à S52, 27 déc. ». | D | ouvert | | ZZ TEST Fête |
+| T9-4 | tour 9 en ligne | Stock › Articles, étagère (390) | « Légende » (58×28) recouvre le bas de la case Levures : un toucher à 474 px ouvre la Légende. | m | ouvert | | elementFromPoint |
+| T9-5 | tour 9 en ligne | Calendrier › menu de période ; Stock › fiche d'un article | Cibles sous 44 px : Jour, Semaine, Mois (92×30) ; bouton vendeur « Brau-Rauchshop » (32 de haut). | m | ouvert | | mesures DOM |
+| T9-NOTE-1 | tour 9 en ligne | Stock › fiche Flocons d'Avoine | Le besoin (18,9 kg, 11 sources) compte « Ssr, prévu le 21.09.2026 » (passé) et deux recettes seulement « écrite » : à confirmer avec le brasseur. | — | ouvert | | doute |
+| T9-NOTE-2 | tour 9 en ligne | Calendrier, données d'une autre session | Restent « Vente 1 × ZZ TEST — parcours r2 vente … 10 nov., S46, +45 » et « … parcours 10.11 … » : non créées par le tour 9, à retirer par leur session. | — | ouvert | | ZZ résiduelles |
+| T9-NOTE-3 | tour 9 en ligne | banc | Aucune capture (Page.captureScreenshot expire sur l'iframe) : 390 et 1280 jugés par mesures DOM ; ni vrai doigt ni thème sombre ; un premier glissé synthétique de 4 semaines pour 1 n'a pas été reproduit (5 rejeux justes). | — | ouvert | | limites |
 
 ## Chasse Carnet, 21.11 (regards carnet CRP, besoin CRB, UX CRU, workflow CRW ; tag en-ligne/2026-11-21-tour8 ; plaintes du brasseur CRN-PRIX et CRN-CREATION-VUE de DEFAUTS-RECURRENTS ; sources work/missions/2026-11-21-chasse-carnet/CHASSE-*.md ; un doublon renvoie au premier regard dans l'ordre carnet, besoin, UX, workflow)
 
