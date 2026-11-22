@@ -380,24 +380,35 @@ function listeEtapes() { return [
   {
     id: 'WFA-15', titre: 'La facture de malt (421,57) se lie d\'office à la « Commande de malt » prévue (420) : le Calendrier ne compte plus le malt deux fois (WFA-15)',
     async joue(s) {
-      await s.toucher('Actions rapides'); await s.toucher('Écriture', { prefixe: true }); await sleep(900); await s.toucher('Saisir sans justificatif'); await sleep(1200);
+      // Saisie à la main v01s (D426) : Écriture › Achat › montant › nom › « ✓ Solde l'achat prévu » (cochée d'office, décochable) › Payé
+      await s.toucher('Actions rapides', { dans: 'button[aria-label^="Actions rapides"]', prefixe: true }); await sleep(500);
+      await s.toucher('Écriture', { dans: '[role=menu] [role=menuitem]', prefixe: true, att: 1500 });
+      await s.p.waitForSelector('[data-saisie-genre="achat"]', { timeout: 8000 }).catch(() => null);
       await s.cap('WFA-15-1-depense');
-      await s.ecrire('[aria-label="Pour quoi ?"]', 'ZZ TEST malt pilsner'); await sleep(300);
-      await s.ecrire('#purchase-total', '421.57'); await sleep(500);
-      await s.toucher('Fournisseur', { contient: true }); await sleep(500);
-      await s.ecrire('#purchase-vendor', 'ZZ TEST'); await sleep(500);
-      await s.toucher('Lier à une dépense prévue', { contient: true }); await sleep(800);
+      await s.ecrire('[data-saisie-genre="achat"]', '421,57', { vider: false }); await sleep(400); // la tuile ouvre le clavier sur le montant
+      if (!(await s.p.evaluate(() => /421/.test(document.querySelector('[data-saisie-montant]')?.value ?? '')))) await s.ecrire('[data-saisie-montant]', '421,57');
+      await s.toucher('Nom, facultatif', { dans: '[data-saisie-nom]' }); await sleep(300);
+      await s.ecrire('input[aria-label="Nom, facultatif"]', 'ZZ TEST malt pilsner'); await sleep(600); // pas d'Entrée : dans v01s, Entrée enregistre
+      const ligne = () => s.p.evaluate(() => { const e = document.querySelector('[data-saisie-prevu]'); return e ? { coche: e.getAttribute('aria-pressed') === 'true', texte: e.innerText.replace(/\s+/g, ' ') } : null; });
+      const l1 = await ligne();
       await s.cap('WFA-15-2-lien');
-      const lie = await s.p.evaluate(() => { const c = document.querySelector('#purchase-plan'); return c ? c.options[c.selectedIndex]?.text ?? '' : null; });
       const pb = [];
-      if (lie == null) return echec('WFA-15', `la feuille ne propose pas « Lier à une dépense prévue » (écran : ${(await s.texte(1500)).slice(0, 200)})`);
-      if (!/Commande de malt/.test(lie)) pb.push(`la facture de 421,57 chez ZZ TEST ne se lie pas à la « Commande de malt » prévue (420) : lien « ${lie} »`);
-      await s.toucher('Enregistrer', { prefixe: true, att: 3500 }); await sleep(1500);
+      if (!l1) return echec('WFA-15', `la saisie ne propose pas « ✓ Solde l'achat prévu » : 421,57 chez ZZ TEST et la « Commande de malt » (420) seraient comptées deux fois (écran : ${(await s.texte(1500)).slice(0, 200)})`);
+      if (!l1.coche || !/Commande de malt/.test(l1.texte)) pb.push(`la ligne ne solde pas d'office la « Commande de malt » prévue : « ${l1.texte} » (cochée : ${l1.coche})`);
+      await s.toucher('', { dans: '[data-saisie-prevu]', prefixe: true, att: 400 });
+      const l2 = await ligne();
+      if (l2?.coche !== false || !/Ne solde pas/.test(l2?.texte ?? '')) pb.push(`un toucher ne décoche pas la ligne (« ${l2?.texte ?? 'absente'} »)`);
+      await s.toucher('', { dans: '[data-saisie-prevu]', prefixe: true, att: 400 });
+      if ((await ligne())?.coche !== true) pb.push('un second toucher ne recoche pas la ligne');
+      await s.toucher('', { dans: '[data-saisie-enregistrer]', prefixe: true, att: 2500 });
+      await s.p.waitForSelector('[data-saisie-ok]', { timeout: 15000 }).catch(() => null);
       await s.cap('WFA-15-3-apres');
       const tx = (await s.store('transactions')).find((t) => /ZZ TEST malt pilsner/.test(t.description ?? ''));
       if (!tx) return echec('WFA-15', 'la dépense n’est pas enregistrée');
       if (tx.finance?.planId !== 'P-MALT') pb.push(`la dépense enregistrée n'est pas liée au plan P-MALT (planId : ${tx.finance?.planId ?? 'aucun'})`);
-      if (await s.visible('OK', {})) await s.toucher('OK', { att: 1200 });
+      const pm = (await s.store('financialPlans')).find((p) => p.id === 'P-MALT');
+      if (pm && pm.status !== 'completed') pb.push(`la « Commande de malt » n'est pas soldée (statut : ${pm.status})`);
+      if (await s.visible('Fermer', { dans: '[data-saisie-fermer]' })) await s.toucher('Fermer', { dans: '[data-saisie-fermer]', att: 1200 });
       await s.onglet('Calendrier'); await sleep(1800);
       await s.cap('WFA-15-4-calendrier');
       // tout ce que le Calendrier dit du malt : la facture (réelle) et la commande (prévue) ; les deux ensemble = le malt compté deux fois

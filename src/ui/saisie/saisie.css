@@ -97,6 +97,9 @@
 .sai-ap i.f{background:var(--outbg);color:var(--out);font-weight:600}.sai-ap i.fi{background:var(--inbg);color:var(--in);font-weight:600}
 .sai-ap small{font-size:13px;color:var(--val)}
 .sai-hab2{background:var(--pan);border-radius:12px;padding:9px 10px;margin-top:0}
+.sai .sai-prevu{width:100%;min-height:44px;text-align:left;background:var(--pan);color:var(--val)}
+.sai-prevu .n{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--out)}
+.sai-prevu.non .t,.sai-prevu.non .n{color:var(--sec);text-decoration:line-through}
 /* pli facultatif */
 .sai-fold>summary{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--val);padding:11px 4px;border-top:1px solid var(--bord);border-bottom:1px solid var(--bord);list-style:none;cursor:pointer}
 .sai-fold>summary::-webkit-details-marker{display:none}

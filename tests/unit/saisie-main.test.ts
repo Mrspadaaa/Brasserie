@@ -1,6 +1,6 @@
 // Saisie à la main v01s (D426) : le modèle (genre → nature, sens, catégorie, prévision ; habituels ; pièces remboursables). Fixtures simulées.
 import { describe, expect, it } from 'vitest';
-import { avecGenre, brouillonNeuf, chf, grouper, dateDeFin, derniersNoms, echeances, habituels, lireMontant, piecesRemboursables, preparer, sommeDouzeMois } from '../../src/ui/saisie/modele';
+import { achatPrevu, avecGenre, brouillonNeuf, chf, grouper, dateDeFin, derniersNoms, echeances, habituels, lireMontant, piecesRemboursables, preparer, sommeDouzeMois } from '../../src/ui/saisie/modele';
 import { planOccurrences } from '../../src/domain/finance/forecast';
 import { validateFinanceTransaction } from '../../src/domain/finance/ledger';
 import type { FinanceTransaction, FinancialPlan } from '../../src/domain/finance/types';
@@ -122,5 +122,24 @@ describe('saisie à la main : habituels et derniers noms', () => {
     const e = preparer({ ...avecGenre(brouillonNeuf(J), 'loyer'), cents: 40000, nom: 'Loyer de l’atelier', solde: { planId: 'P-L', occurrenceId: 'P-L:2026-12-22', date: '2026-12-22' } }, ctx());
     expect(e.plan).toBeUndefined();
     expect(e.transaction.finance).toMatchObject({ planId: 'P-L', occurrenceId: 'P-L:2026-12-22' });
+  });
+});
+
+describe('saisie à la main : l’achat prévu soldé (WFA-15)', () => {
+  const malt: FinancialPlan = { id: 'P-MALT', title: 'Commande de malt', date: '2026-11-27', amountCents: 42000, direction: 'out', category: 'brassage', source: 'manual', status: 'active', vendor: 'Malterie Suisse', createdAt: `${J}T08:00:00.000Z` };
+  const achat = (p: Partial<ReturnType<typeof brouillonNeuf>>) => ({ ...avecGenre(brouillonNeuf(J), 'achat'), ...p });
+  it('le nom tapé tient lieu de fournisseur ; montant à 10 % près ; la pièce porte le lien au plan', () => {
+    expect(achatPrevu(achat({ nom: 'Malterie Suisse pilsner' }), 42157, [malt])?.id).toBe('P-MALT');
+    expect(achatPrevu(achat({ vendor: 'Malterie Suisse' }), 42157, [malt])?.id).toBe('P-MALT');
+    expect(achatPrevu(achat({ nom: 'Malterie Suisse' }), 50000, [malt])).toBeNull();
+    expect(achatPrevu(achat({ nom: 'Brouwland' }), 42157, [malt])).toBeNull();
+    const e = preparer({ ...achat({ nom: 'Malterie Suisse pilsner' }), cents: 42157, prevu: 'P-MALT' }, ctx());
+    expect(e.transaction.finance?.planId).toBe('P-MALT');
+    expect(e.plan).toBeUndefined();
+  });
+  it('jamais pour une écriture qui revient, un prélèvement privé ni une entrée', () => {
+    expect(achatPrevu(achat({ nom: 'Malterie Suisse', rythme: 'monthly' }), 42000, [malt])).toBeNull();
+    expect(achatPrevu({ ...avecGenre(brouillonNeuf(J), 'prel'), nom: 'Malterie Suisse' }, 42000, [malt])).toBeNull();
+    expect(achatPrevu({ ...avecGenre(brouillonNeuf(J), 'vente'), nom: 'Malterie Suisse' }, 42000, [malt])).toBeNull();
   });
 });

@@ -17,8 +17,10 @@ import { todayISO, validateFinanceTransaction } from '../../domain/finance/ledge
 import type { FinanceTransaction } from '../../domain/finance/types';
 import type { FinanceCategory } from '../../types';
 import { retirerEcriture } from '../finance/modifier/retirerEcriture';
+import { soldeLeVuPlan } from '../finance/soldePrevu';
+import type { FinancialPlan } from '../../domain/finance/types';
 import {
-  CATEGORIES_ACHAT, GENRES, RENTRE, SORT, avecGenre, brouillonNeuf, chf, dateDeFin, derniersNoms, echeances, finsProposees, habituels, horsResultat,
+  CATEGORIES_ACHAT, GENRES, RENTRE, SORT, achatPrevu, avecGenre, brouillonNeuf, chf, dateDeFin, derniersNoms, echeances, finsProposees, habituels, horsResultat,
   grouper, jjmm, lireMontant, nomFinal, piecesRemboursables, preparer, sensDe, signe, sommeDouzeMois,
   type Brouillon, type Ecriture, type GenreId, type Habituel, type Methode, type Rythme
 } from './modele';
@@ -76,7 +78,9 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const [erreur, setErreur] = useState('');
   const [avis, setAvis] = useState('');
   const [occupe, setOccupe] = useState(false);
-  const [fait, setFait] = useState<(Ecriture & { attente: boolean }) | null>(null);
+  const [fait, setFait] = useState<(Ecriture & { attente: boolean; prevuAvant?: FinancialPlan }) | null>(null);
+  /* WFA-15 : l'achat prévu refusé d'un toucher (« Ne solde pas ») ; un autre prévu proposé ensuite revient coché */
+  const [refusPrevu, setRefusPrevu] = useState<string | null>(null);
   const [ombre, setOmbre] = useState(false);
   const [enLigne, setEnLigne] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine));
   const dates = useDate();
@@ -101,6 +105,8 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const noms = useMemo(() => (choisi && G.qui ? derniersNoms(donnees.txs, b.genre) : []), [choisi, G.qui, donnees.txs, b.genre]);
   const pieces = useMemo(() => (plateau ? piecesRemboursables(donnees.txs, recherche) : []), [plateau, recherche, donnees.txs]);
   const recurrent = choisi && !b.solde && G.rythme !== null && b.rythme !== 'une';
+  const prevu = useMemo(() => (choisi ? achatPrevu(b, cents, donnees.plans) : null), [choisi, b, cents, donnees.plans]);
+  const soldePrevu = !!prevu && refusPrevu !== prevu.id;
   const fin = recurrent ? dateDeFin(b.date, b.rythme, b.fin, b.finDate) : undefined;
   const apayer = b.reglement === 'apayer';
   const sansPiece = b.genre === 'rembt' && !b.pieceId;
@@ -128,7 +134,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   };
   const patch = (p: Partial<Brouillon>) => setB((x) => ({ ...x, ...p }));
 
-  const neuf = (message = '') => { setId(idFor('MAIN')); setB(brouillonNeuf(aujourdhui)); setChoisi(false); setBrut(''); setNomEdit(false); setPlateau(false); setFait(null); setErreur(''); setAvis(message); setVersion((v) => v + 1); dates.fermer(); };
+  const neuf = (message = '') => { setId(idFor('MAIN')); setB(brouillonNeuf(aujourdhui)); setChoisi(false); setBrut(''); setNomEdit(false); setPlateau(false); setFait(null); setErreur(''); setAvis(message); setRefusPrevu(null); setVersion((v) => v + 1); dates.fermer(); };
 
   const enregistrer = async () => {
     if (occupe || !choisi || !cents) return;
@@ -136,7 +142,8 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
     setOccupe(true); setErreur('');
     try {
       const txs = StorageService.getTransactions() as FinanceTransaction[];
-      const e = preparer({ ...b, cents }, { id, maintenant: new Date().toISOString(), transactions: txs, tvaInscrit });
+      const e = preparer({ ...b, cents, prevu: soldePrevu ? prevu!.id : undefined }, { id, maintenant: new Date().toISOString(), transactions: txs, tvaInscrit });
+      let prevuAvant: FinancialPlan | undefined;
       validateFinanceTransaction(e.transaction);
       if (e.transaction.finance?.kind === 'refund') {
         validateRefundTransaction(e.transaction, txs, FinanceService.getPayments());
@@ -145,12 +152,15 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
       if (!txs.some((t) => t.id === id)) {
         if (e.plan) FinanceService.savePlan(e.plan);
         if (e.paiement) FinanceService.stageNewTransactionPayment(e.transaction, e.paiement); else StorageService.addTransaction(e.transaction);
+        /* WFA-15 : le prévu soldé quitte « À venir » (la même suite que la feuille de facture) ; « Annuler » le remet tel qu'il était */
+        const p = e.transaction.finance?.planId && !e.plan && !b.solde ? FinanceService.getPlans().find((x) => x.id === e.transaction.finance!.planId) : undefined;
+        if (p && soldeLeVuPlan(p.id, cents / 100)) prevuAvant = p;
       }
       let attente = false;
       try { await FirestoreRepo.waitForDocument<FinanceTransaction>('transactions', id, 15000, (t) => t.finance?.amountCents === cents); }
       catch (err) { if (isConfirmedWriteRejection(err)) throw err; attente = true; }
       (document.activeElement as HTMLElement | null)?.blur?.();
-      setFait({ ...e, attente });
+      setFait({ ...e, attente, prevuAvant });
     } catch (err) { setErreur((err as Error).message); } finally { setOccupe(false); }
   };
   const annuler = async () => {
@@ -159,6 +169,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
     try {
       await retirerEcriture(fait.transaction.id, FinanceService.getPayments(), { aujourdhui: todayISO(), maintenant: new Date().toISOString(), idPaiement: () => idFor('PAI') });
       if (fait.plan) FinanceService.cancelPlan(fait.plan.id);
+      if (fait.prevuAvant) FinanceService.savePlan(fait.prevuAvant);
       neuf('Écriture annulée : rien n’est compté.');
     } catch (err) { setErreur((err as Error).message); setFait(null); } finally { setOccupe(false); }
   };
@@ -243,6 +254,11 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
       {chip(false, <>reste : {chf(pieceInfo.reste)}</>, () => setBrut(chf(pieceInfo.reste).replace(/ /g, ' ')))}</div> : null}
   </div>);
   if (choisi) {
+    /* WFA-15 : une ligne sous la carte, comme « solde l'échéance » de l'habituel : cochée d'office, un toucher la refuse (le prévu reste au Calendrier) */
+    if (prevu) enfants.push(<button key="prevu" type="button" className={`sai-lk sai-hab2 sai-prevu${soldePrevu ? '' : ' non'}`} aria-pressed={soldePrevu} data-saisie-prevu
+      onPointerDown={garde} onClick={() => setRefusPrevu(soldePrevu ? prevu.id : null)}>
+      <Link2 size={15} /><span className="t">{soldePrevu ? '✓ Solde' : 'Ne solde pas'} l’achat prévu « {prevu.title} »{prevu.date ? `, prévu le ${jjmm(String(prevu.date))}` : ''}</span>
+      <b className="n">{signe('out', prevu.amountCents)}</b></button>);
     if (G.qui && !b.solde) enfants.push(<div key="qui" className="sai-qui"><small>{G.qui}</small>
       {noms.map((n) => chip(b.vendor === n, n, () => patch(b.vendor === n ? { vendor: undefined, nom: b.nom === n ? '' : b.nom } : { vendor: n, nom: n }), { 'data-saisie-nom-puce': n }))}
       {chip(false, <><Plus size={13} />autre</>, () => setNomEdit(true), {}, 'pl')}</div>);
@@ -312,7 +328,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   </ModalShell>;
 }
 
-function Confirmation({ fait, txs, occupe, onAnnuler, onAutre, onFermer }: { fait: Ecriture & { attente: boolean }; txs: FinanceTransaction[]; occupe: boolean; onAnnuler: () => void; onAutre: () => void; onFermer: () => void }) {
+function Confirmation({ fait, txs, occupe, onAnnuler, onAutre, onFermer }: { fait: Ecriture & { attente: boolean; prevuAvant?: FinancialPlan }; txs: FinanceTransaction[]; occupe: boolean; onAnnuler: () => void; onAutre: () => void; onFermer: () => void }) {
   const tx = fait.transaction, f = tx.finance!, cents = f.amountCents;
   const sens: 'in' | 'out' = f.kind === 'refund' ? (f.refundDirection ?? 'in') : f.kind === 'income' || f.kind === 'contribution' ? 'in' : 'out';
   const hors = f.kind === 'contribution' || f.kind === 'withdrawal';
@@ -340,6 +356,7 @@ function Confirmation({ fait, txs, occupe, onAnnuler, onAutre, onFermer }: { fai
         <div className="sai-ok-r"><b><CalendarDays size={16} /> Calendrier</b><div className="sai-ap">{ech.map((d, i) => <i key={d} className={i === 0 ? (sens === 'out' ? 'f' : 'fi') : ''}>{jjmm(d)}{i === 0 && !apayer ? ' ✓' : ''}</i>)}<small>… {fin ? `→ ${moisAn(fin)}` : 'sans fin'}</small></div></div>
         <div className="sai-ok-r"><b>Σ 12 mois</b><span className={`n ${sens}`}>{signe(sens, sommeDouzeMois(cents, tx.date, rec.frequency, fin))}</span><small>sur un an</small></div>
       </> : null}
+      {fait.prevuAvant ? <div className="sai-ok-r"><b><Link2 size={16} /> Prévu</b><span className="sai-pv">« {fait.prevuAvant.title} » soldé, quitte le Calendrier</span></div> : null}
       {fait.attente ? <p className="sai-lk">Écrit sur l’appareil ; envoyé dès la connexion revenue.</p> : null}
       <div className="sai-ok-a">
         <button type="button" disabled={occupe} onClick={onAnnuler}><Undo2 size={15} /> Annuler</button>

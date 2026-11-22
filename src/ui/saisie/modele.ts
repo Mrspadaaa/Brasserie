@@ -7,6 +7,7 @@ import type { FinanceCategory } from '../../types';
 import type { FinanceKind, FinanceTransaction, FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import { isActiveTransaction, transactionAmount, transactionDirection, transactionKind, ventilationAvoir } from '../../domain/finance/ledger';
 import { planOccurrences } from '../../domain/finance/forecast';
+import { planSoldeParDepense } from '../../domain/venteSuites';
 
 export type GenreId = 'achat' | 'loyer' | 'abo' | 'salaire' | 'impot' | 'prel' | 'autreo' | 'vente' | 'apport' | 'autrei' | 'rembt';
 export type Rythme = 'une' | 'monthly' | 'quarterly' | 'yearly';
@@ -118,6 +119,8 @@ export interface Brouillon {
   pieceId?: string;
   /** Habituel récurrent : l'échéance que ce paiement solde. */
   solde?: { planId: string; occurrenceId: string; date: string };
+  /** WFA-15 : l'achat prévu (non récurrent) que cette sortie solde ; posé à l'enregistrement seulement, depuis la ligne « ✓ Solde l'achat prévu ». */
+  prevu?: string;
 }
 export function brouillonNeuf(aujourdhui: string): Brouillon {
   return { genre: 'achat', nom: '', date: aujourdhui, reglement: 'paye', echeance: plusJours(aujourdhui, 30), methode: 'bank', rythme: 'une', fin: 'sans', categorie: 'brassage', reference: '', note: '', tvaRate: 0 };
@@ -173,8 +176,23 @@ export function preparer(b: Brouillon, ctx: { id: string; maintenant: string; tr
     plan = { id: `PLAN-${ctx.id}`, title: nom, date: b.date, amountCents: cents, direction: sens, category: tx.category, source: 'recurring', status: 'active',
       recurrence: { frequency: b.rythme, ...(fin ? { endDate: fin } : {}) }, ...(tx.finance?.vendor ? { vendor: tx.finance.vendor } : {}), createdAt: ctx.maintenant };
     tx.finance = { ...tx.finance!, planId: plan.id, occurrenceId: `${plan.id}:${b.date}` };
+  } else if (b.prevu) {
+    tx.finance = { ...tx.finance!, planId: b.prevu };
   }
   return { transaction: tx, paiement, plan };
+}
+
+/**
+ * WFA-15 : l'achat prévu que cette sortie solde, par la règle de la feuille de facture (`planSoldeParDepense` : même fournisseur, montant à 10 % près ;
+ * sans fournisseur au plan, la catégorie). Ici le fournisseur est la puce « Chez » choisie, sinon le nom tapé (« ZZ TEST malt » solde le prévu de « ZZ TEST »).
+ * Jamais pour une écriture qui revient (elle crée sa propre prévision), un habituel (il solde déjà son échéance), un remboursement ni un prélèvement privé.
+ */
+export function achatPrevu(b: Brouillon, cents: number | undefined, plans: FinancialPlan[]): FinancialPlan | null {
+  const G = GENRES[b.genre];
+  if (!cents || G.sens !== 'out' || b.genre === 'prel' || b.solde || b.rythme !== 'une') return null;
+  const d = { category: b.genre === 'achat' ? b.categorie : G.category, amountCents: cents, dateIso: b.date };
+  return (b.vendor?.trim() ? planSoldeParDepense(plans, { ...d, vendor: b.vendor }) : null)
+    ?? planSoldeParDepense(plans, { ...d, vendor: b.nom.trim() || undefined });
 }
 
 /* ---------- lire l'existant ---------- */
