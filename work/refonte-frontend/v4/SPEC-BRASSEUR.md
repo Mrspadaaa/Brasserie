@@ -2662,3 +2662,7 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 > Et ça a pas le même mécanisme de la frize au doigt que l'on a vue, choisi..
 
 (22.11, en ligne tour 9, capture 30 de work/missions/2026-11-21-calendrier-fiche/ : fiche v02 de « NEIPA Test », la date « 10 déc. +18 j » se règle par une réglette à graduations et poignée, pas par la frise au doigt choisie (frise B).)
+
+> Ça adapte pas l'échelle, et honnêtement ça fonctionne encore assez mal...
+
+(22.11, en ligne tour 9, captures 31 à 33 de work/missions/2026-11-21-calendrier-entete/ : 33, « 7 sem. » 08.02.27–28.03.27, le cadre dit « S32 – S12 2027 » mais n'est dessiné que sur S10–S12, la courbe et ses étiquettes (« /A/AAchats ≡13 » empilées) ne suivent pas les graduations S6–S12 entourées ; 32, « 1 sem. » 30.08.27, cadre « S23 – S35 2027 » qui remplit toute la courbe ; 31, « 1 sem. » S47.)
