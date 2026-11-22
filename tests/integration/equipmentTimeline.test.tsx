@@ -24,78 +24,64 @@ const monter = (over: Partial<React.ComponentProps<typeof EquipmentList>> = {}) 
 };
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 
-describe('le fil du matériel (za3)', () => {
-  it('met la panne d’abord, puis le dû, avec les sous-lignes de la maquette et « À traiter 4 » (le densimètre jamais étalonné compte)', () => {
+describe('le parc du matériel (d8a)', () => {
+  it('met la panne d’abord, puis le dû, avec leurs sous-lignes en ton d’attention ; « prix à saisir » quand le prix manque', () => {
     monter();
-    expect(screen.getByRole('radio', { name: 'Tout 6' })).toBeChecked();
-    expect(screen.getByRole('radio', { name: /À traiter 4/ })).toBeInTheDocument();
     const lignes = screen.getAllByRole('button', { name: /^Ouvrir / }).map(b => b.getAttribute('aria-label'));
     expect(lignes.slice(0, 4)).toEqual(['Ouvrir Pompe de recirculation', 'Ouvrir pH-mètre', 'Ouvrir Refroidisseur à plaques', 'Ouvrir Densimètre + éprouvette']);
     expect(screen.getByRole('button', { name: 'Ouvrir Pompe de recirculation' })).toHaveTextContent(/fuit au raccord.*depuis le 05.11/);
     expect(screen.getByRole('button', { name: 'Ouvrir pH-mètre' })).toHaveTextContent(/étalonner.*prévu le 11.11/);
     expect(screen.getByRole('button', { name: 'Ouvrir Refroidisseur à plaques' })).toHaveTextContent(/détartrer.*après 5 brassins/);
     expect(screen.getByRole('button', { name: 'Ouvrir Densimètre + éprouvette' })).toHaveTextContent('pas encore étalonné');
+    expect(screen.getByRole('button', { name: 'Ouvrir Pompe de recirculation' }).querySelector('.mp-sl')).toHaveClass('mp-alerte');
+    expect(screen.getByRole('button', { name: 'Ouvrir pH-mètre' }).querySelector('.mp-sl')).toHaveClass('mp-attention');
     // l'avenir : le verbe et la date, jamais « dans N j »
     const avenir = screen.getByRole('button', { name: 'Ouvrir Déshumidificateur' });
     expect(avenir).toHaveTextContent('nettoyer le filtre');
     expect(avenir).toHaveTextContent('01.12');
     expect(document.body.textContent).not.toMatch(/dans \d+ ?j/);
-    expect(screen.getByText('sans échéance')).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Ouvrir Moulin à malt' })).toBeVisible();
+    // sans prix : « prix à saisir » et « ? » en pointillé, jamais 0
+    const moulin = screen.getByRole('button', { name: 'Ouvrir Moulin à malt' });
+    expect(moulin).toHaveTextContent('prix à saisir');
+    expect(moulin.querySelector('[data-prix="inconnu"]')).not.toBeNull();
+    expect(moulin).not.toHaveTextContent(/0 CHF/);
   });
 
-  it('propose le bon geste par ligne : Réparée, Étalonner (ouvre la fiche), Fait', () => {
+  it('plus de frise ni de gestes dans la liste : Réparée, Fait et Étalonner vivent dans la fiche', () => {
     const { props } = monter();
-    expect(screen.getByRole('button', { name: 'Réparée : Pompe de recirculation' })).toBeVisible();
-    fireEvent.click(screen.getByRole('button', { name: 'Étalonner : Densimètre + éprouvette' }));
+    expect(screen.queryByRole('button', { name: /^(Réparée|Fait|Étalonner) :/ })).toBeNull();
+    expect(screen.queryByRole('radio', { name: /À traiter/ })).toBeNull();
+    expect(document.body.textContent).not.toMatch(/aujourd'hui/);
+    fireEvent.click(screen.getByRole('button', { name: 'Ouvrir Densimètre + éprouvette' }));
     expect(props.onOpen).toHaveBeenLastCalledWith(parc[2]);
-    expect(props.onWrite).not.toHaveBeenCalled();
-    expect(screen.getByRole('button', { name: 'Fait : Refroidisseur à plaques' })).toBeVisible();
   });
 
-  it('Fait écrit l’appareil neuf et garde l’ancien pour Annuler ; la note dit jusqu’à quand', () => {
-    const { props, ...vue } = monter();
-    fireEvent.click(screen.getByRole('button', { name: 'Fait : Refroidisseur à plaques' }));
-    expect(props.onWrite).toHaveBeenCalledTimes(1);
-    const [suivant, avant, toast] = props.onWrite.mock.calls[0];
-    expect(avant).toBe(parc[5]);
-    expect(suivant.lastDone).toBe(TODAY);
-    expect(suivant.history.at(-1)).toMatchObject({ date: TODAY, kind: 'entretien' });
-    expect(toast).toBe('Fait · à jour pour 5 brassins');
-    vue.rerender(<EquipmentList {...props} equipment={[...parc.slice(0, 5), suivant]} />);
-    expect(screen.getByRole('status')).toHaveTextContent('Refroidisseur à plaques à jour');
-    expect(parc[5].lastDone).toBeUndefined();
-  });
-
-  it('Réparée lève la panne et écrit « Réparée »', () => {
-    const { props } = monter();
-    fireEvent.click(screen.getByRole('button', { name: 'Réparée : Pompe de recirculation' }));
-    const [suivant, avant, toast] = props.onWrite.mock.calls[0];
-    expect(avant).toBe(parc[1]);
-    expect(suivant.brokenSince).toBeUndefined();
-    expect(suivant.state).toBe('Bon');
-    expect(toast).toBe('Réparée');
-  });
-
-  it('la réf. automatique ne s’affiche jamais (TE-46) et l’état « À traiter » garde le reste caché', () => {
+  it('l’en-tête dit le total des prix connus et « + N ? » pour les autres ; la réf. automatique ne s’affiche jamais (TE-46)', () => {
     monter({ equipment: [e({ ref: 'EQ-6c0b6340-dcdb-4e5c-bb04-355931fc1d2e-0', name: 'Cuve de fermentation' }), ...parc] });
     expect(document.body.textContent).not.toMatch(/EQ-6c0b6340/);
-    fireEvent.click(screen.getByRole('radio', { name: /À traiter 4/ }));
-    expect(screen.queryByRole('button', { name: 'Ouvrir Cuve de fermentation' })).toBeNull();
-    expect(screen.getByRole('button', { name: /\d+ à jour/ })).toHaveTextContent('Tout');
+    const tete = document.querySelector('.mp-h')!;
+    expect(tete).toHaveTextContent(/^Parc239 CHF\+ 6 \?/);
+    expect(tete.querySelector('.mp-plus')).toHaveAttribute('data-sans-prix', '6');
   });
 
-  it('parc vide : « Aucun matériel » et les deux chemins d’ajout ; le total ne compte que les prix connus', () => {
+  it('« À venir » sous le parc : une ligne par projet, prix inconnu = « ? », un toucher ouvre À venir', () => {
+    const onAvenir = vi.fn();
+    monter({ onAvenir, avenir: [{ id: 'p1', titre: 'Chambre froide', sousLigne: 'carnet · 3 façons', prixCents: 335000 }, { id: 'p2', titre: 'Tireuse', sousLigne: 'idée', prixCents: null }] });
+    const ch = screen.getByRole('button', { name: 'À venir : Chambre froide' });
+    expect(ch).toHaveTextContent('carnet · 3 façons');
+    expect(ch).toHaveTextContent(/3\s350 CHF/);
+    expect(screen.getByRole('button', { name: 'À venir : Tireuse' }).querySelector('[data-prix="inconnu"]')).not.toBeNull();
+    fireEvent.click(ch);
+    expect(onAvenir).toHaveBeenCalled();
+  });
+
+  it('parc vide : « Aucun matériel » et les deux chemins d’ajout', () => {
     const vide = monter({ equipment: [] });
     expect(screen.getByText('Aucun matériel')).toBeVisible();
     fireEvent.click(screen.getAllByRole('button', { name: 'Enregistrer un achat' })[0]);
     expect(vide.props.onBuy).toHaveBeenCalled();
     expect(screen.getByRole('button', { name: /Projets d'équipement/ })).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Chercher un équipement' })).toBeNull();
-    cleanup();
-    monter();
-    expect(screen.getByText('239 CHF')).toBeVisible();
-    expect(screen.getByText('1 prix connu')).toBeVisible();
   });
 
   it('un picto par nom d’appareil, la clé à molette quand rien ne correspond', () => {
@@ -123,14 +109,14 @@ describe('c1 — corrections du test d’écran (P5, P8, P10, P11, P12)', () => 
 
   it('P10 : le total du parc se lit « 1 739 CHF » (espace, jamais l’apostrophe)', () => {
     monter({ equipment: [...parc, e({ ref: 'EQ-9', name: 'Cuve', purchasePrice: 1500 })] });
-    expect(document.querySelector('.mt-parc b')!.textContent).toMatch(/^1\s739 CHF$/);
+    expect(document.querySelector('.mp-tot')!.textContent).toMatch(/^1\s739 CHF$/);
   });
 
-  it('P12 : « sans échéance » garde le picto et le nom ; le compte de brassins reste dans la fiche', () => {
+  it('P12 : un appareil au rythme en brassins garde son picto et son nom ; le compte de brassins reste dans la fiche', () => {
     monter({ equipment: [e({ ref: 'EQ-6', name: 'Refroidisseur à plaques', task: 'Détartrer', rhythm: { every: 5, unit: 'brassin' }, lastDone: '2026-07-01' }), e({ ref: 'EQ-5', name: 'Moulin à malt' })], batches: [{ brewDate: '2026-08-15' }] });
-    const cellule = screen.getByRole('button', { name: 'Ouvrir Refroidisseur à plaques' });
-    expect(cellule.querySelector('small')).toBeNull();
-    expect(cellule).not.toHaveTextContent(/encore/);
+    const ligne = screen.getByRole('button', { name: 'Ouvrir Refroidisseur à plaques' });
+    expect(ligne.querySelector('svg')).not.toBeNull();
+    expect(ligne).not.toHaveTextContent(/encore/);
   });
 
   it('P11 : « Nouveau matériel » a un titre de feuille gras et un × dans un rond de 44 px', () => {

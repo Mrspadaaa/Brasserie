@@ -1,0 +1,29 @@
+/* Matériel, le parc (d8a, choisie le 22.11) : mesures de la maquette (.m-h, .m-l), jetons de l'app. Classes `mp-` (L26). */
+.mp-h { display: flex; align-items: center; gap: 8px; margin: 10px 12px 2px; font-size: 15px; color: var(--m-mut); min-height: 40px; }
+.mp-h b { font-size: 17px; color: var(--m-ink); }
+.mp-h .mp-tot { color: var(--m-mut); font-size: 15px; }
+.mp-h .mp-plus { color: var(--m-mut); border-bottom: 2px dotted var(--m-mut); font-size: 15px; }
+.mp-h2 { margin-top: 14px; min-height: 0; }
+.mp-o { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--m-line2); display: grid; place-items: center; flex: none; color: var(--m-ink); background: var(--m-bg); }
+.mp-o[aria-pressed="true"] { background: var(--m-ink); color: var(--m-bg); border-color: var(--m-ink); }
+.mp-liste { display: flex; flex-direction: column; }
+.mp-l { position: relative; display: flex; align-items: center; gap: 10px; min-height: 58px; margin: 0 10px; border-bottom: 1px solid var(--m-line); padding: 4px 2px; width: calc(100% - 20px); }
+.mp-l.mt-choisi { background: var(--m-s2); }
+.mp-l.mt-choisi::after { right: -10px; }
+.mp-pi { width: 42px; height: 42px; border-radius: 10px; background: var(--m-s3); display: grid; place-items: center; flex: none; }
+.mp-pi .mt-sil { width: 28px; height: 28px; }
+.mp-pi-av { background: rgb(var(--attention) / .14); }
+.mp-nm { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.mp-nm b { font-weight: 500; font-size: 16px; line-height: 20px; color: var(--m-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mp-sl { font-size: 14px; line-height: 18px; color: var(--m-mut); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mp-sl.mp-attention { color: var(--m-attt); }
+.mp-sl.mp-alerte { color: var(--m-al); }
+.mp-pr { font-size: 16px; color: var(--m-ink); white-space: nowrap; }
+.mp-pr.mp-inc { color: var(--m-mut); border-bottom: 2px dotted var(--m-mut); padding-bottom: 1px; }
+.mp-chev { flex: none; color: var(--m-mut); }
+.mp-vide { display: flex; flex-direction: column; gap: 8px; padding: 22px 12px; }
+.mp-vide h2 { font-size: 17px; font-weight: 600; margin-bottom: 2px; }
+.mp-vide button { height: 48px; border-radius: 12px; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 0 14px; }
+.mp-vide .mt-vlien { height: 44px; font-weight: 400; font-size: 14px; color: var(--m-mut); padding-left: 4px; }
+.mt-wide .mp-h, .mt-wide .mp-l { margin-left: 0; }
+.mt-wide .mp-l { width: calc(100% - 10px); }

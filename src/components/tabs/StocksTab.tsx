@@ -24,7 +24,8 @@ import { EquipmentDetail } from '../../ui/equipment/Detail';
 import { aTraiter } from '../../domain/equipment';
 import type { FinanceTransaction } from '../../domain/finance/types';
 import { FinanceService } from '../../services/financeService';
-import { isUpgradePlan } from '../../domain/finance/upgrades';
+import { isUpgradePlan, upgradeBudget, upgradeDetails } from '../../domain/finance/upgrades';
+import type { AVenirLigne } from '../../ui/equipment/ListeParc';
 import { estRealise } from '../../domain/finance/upgradeRing';
 import { BARRE_BASE, BARRE_MATERIEL, BARRE_SUR_DEFILEMENT, UpgradeWorkspace } from '../../ui/finance/UpgradeWorkspace';
 /* Critique 5, n° 41 : la barre de Matériel ancre le + volant au bord de la colonne (règle dans carnets-decider.css). */
@@ -80,6 +81,20 @@ const readSegments = () => {
     realises: projets.filter(p => p.status === 'completed' || realise(p)).length,
     carnets
   };
+};
+/** d8a : les projets à venir sous le parc (même règle qu'À venir : brouillon ou actif, non réalisé). Carnet source et nombre de façons seulement s'ils existent. */
+const readAvenirParc = (): AVenirLigne[] => {
+  const { plans, payments } = FinanceService.snapshot();
+  const transactions = StorageService.getTransactions() as unknown as FinanceTransaction[];
+  const carnets = StorageService.getCreativeItems().filter(i => i.type === 'carnet') as unknown as { id: string; carnet?: { facons?: { etat: string }[] } }[];
+  const ETAPE: Record<string, string> = { idea: 'idée', research: 'recherche', quote: 'devis', ready: 'prêt' };
+  return plans.filter(isUpgradePlan).filter(p => ['draft', 'active'].includes(p.status) && !estRealise(p, transactions, payments)).map(p => {
+    const u = upgradeDetails(p);
+    const source = u.sourceCarnetId ? carnets.find(c => c.id === u.sourceCarnetId) : undefined;
+    const facons = source?.carnet?.facons?.filter(f => f.etat !== 'ecartee').length ?? 0;
+    const sousLigne = u.sourceCarnetId ? (facons > 0 ? `carnet · ${facons} façon${facons > 1 ? 's' : ''}` : 'carnet') : ETAPE[u.stage] ?? 'projet';
+    return { id: p.id, titre: p.title, sousLigne, prixCents: upgradeBudget(u) };
+  });
 };
 /** Stocks › Matériel : le parc tel qu'il est (Points ouverts 1 : « Parc » en tête, rien ne se perd, D-41), puis le segment figé « À venir · Carnets · Réalisés » (R08). */
 type SegMateriel = 'parc' | 'avenir' | 'carnets' | 'realises';
@@ -172,6 +187,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   });
   const setSegMateriel = (seg: SegMateriel) => { setSegMaterielEtat(seg); StorageService.setUiState('stocks_materiel', seg); };
   const segments = useStorageValue(readSegments);
+  const avenirParc = useStorageValue(readAvenirParc);
   /** Une demande d'ouverture (carnet précis) ou de focus du champ (+ « Nouvelle idée ») pour la vue Carnets. */
   const [carnetOuvert, setCarnetOuvert] = useState<{ id: string; at: number } | null>(null);
   const [focusChamp, setFocusChamp] = useState<number | null>(null);
@@ -834,8 +850,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
               wide={grandEcran}
               selectedRef={grandEcran ? volet?.ref ?? null : null}
               onOpen={(item) => (grandEcran ? setPaneRef(item.ref) : setEquipmentSheet(item))}
-              onWrite={ecrireMateriel}
-              traite={traiteMateriel}
+              avenir={avenirParc}
+              onAvenir={() => setSegMateriel("avenir")}
               onAdd={(item) => { StorageService.addEquipment(item); onSuccessMessage?.(`${item.name} ajouté.`); }}
               onBuy={() => setPurchasingEquipment(true)}
               onProjects={onOpenEquipmentProjects}

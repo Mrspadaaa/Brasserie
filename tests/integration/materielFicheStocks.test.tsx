@@ -82,7 +82,7 @@ describe('Fiche matériel à 390 (feuille) — mêmes données et rappels que le
     expect(depense).toHaveAttribute('data-intent', 'expense');
   });
 
-  it('N1 : après « Étalonné » dans la fiche, la liste dit « pH-mètre à jour jusqu’au » à l’ancienne place et surligne la ligne à sa nouvelle date avec « 4,02 · 7,01 ✓ »', () => {
+  it('N1 (d8a) : après « Étalonné » dans la fiche, la ligne du parc ne porte plus « étalonner · prévu le 11.11 » : la frise et sa note ont quitté la liste', () => {
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date(2026, 10, 15, 12));
     const { maj, rerender } = monter([pompe, ph]);
@@ -92,16 +92,10 @@ describe('Fiche matériel à 390 (feuille) — mêmes données et rappels que le
     const ecrit = maj.mock.calls[0][0] as EquipmentItem;
     rerender([pompe, ecrit]); // le stockage a écrit : la liste reçoit l'appareil d'après
 
-    // la note à l'ancienne place : sous la pompe, avant le « aujourd'hui »
-    const note = screen.getByText(/pH-mètre à jour jusqu'au/);
-    expect(note.textContent).toContain('15.12');
-    expect(note.className).toContain('mt-fantome');
-    // la ligne à sa nouvelle date, surlignée, avec les lectures
+    // la ligne reste au parc, sans l'échéance dépassée ; plus de note « à jour jusqu'au » ni de surlignage dans la liste
     const ligne = screen.getByRole('button', { name: 'Ouvrir pH-mètre' });
-    expect(ligne.className).toContain('mt-flash');
-    expect(ligne.textContent).toContain('4,02 · 7,01 ✓');
-    expect(ligne.textContent).toContain('15.12');
-    // et plus de ligne « étalonner · prévu » dans le haut
-    expect(screen.queryByText(/prévu le 11\.11/)).toBeNull();
+    expect(ligne).not.toHaveTextContent(/prévu le 11\.11/);
+    expect(screen.queryByText(/pH-mètre à jour jusqu'au/)).toBeNull();
+    expect(ligne.className).not.toContain('mt-flash');
   });
 });
