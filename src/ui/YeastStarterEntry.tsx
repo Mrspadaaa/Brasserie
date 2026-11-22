@@ -6,6 +6,7 @@ import { YeastDbCorrectionsPanel } from './YeastDbCorrectionsPanel';
 import { NumberInput } from './NumberInput';
 import { Input, Textarea } from './Input';
 import { YeastEntryErrors, YeastEntryStatus, yeastFreshId, yeastLocalDay, yeastManualSource, type YeastEntryStatusValue } from './YeastSupplyEntry';
+import { ChoixDate } from './ChoixDate';
 
 /* Manual, sourced starter notice of one exact liquid/culture product. The notice is not a plan and not a culture:
    planning stays in « Préparation avant J0 ». Nothing is defaulted from biology: no medium other than malt extract,
@@ -157,7 +158,7 @@ export function YeastStarterEntry({ recipe, product, existing, parentFallback, c
       <fieldset className="yp-entry-source"><legend>Source citée</legend>
         <label className="yp-stack" htmlFor={`${id}-source-title`}>Titre<Input id={`${id}-source-title`} value={draft.sourceTitle} onChange={e => set({ sourceTitle: e.target.value })} placeholder="Notice fabricant du produit exact" /></label>
         <label className="yp-stack" htmlFor={`${id}-source-url`}>Lien https précis<Input id={`${id}-source-url`} type="url" value={draft.sourceUrl} onChange={e => set({ sourceUrl: e.target.value })} placeholder="https://…" /></label>
-        <label className="yp-stack" htmlFor={`${id}-source-date`}>Date indiquée<input id={`${id}-source-date`} type="date" max={yeastLocalDay()} value={draft.checkedAt} onChange={e => set({ checkedAt: e.target.value })} /></label>
+        <label className="yp-stack" htmlFor={`${id}-source-date`}>Date indiquée<ChoixDate id={`${id}-source-date`} label="Date indiquée" max={yeastLocalDay()} valeur={draft.checkedAt} onChange={d => set({ checkedAt: d })} /></label>
         <p className="yeast-small">Source citée et date indiquée par toi : le lien n’est pas une page lue par le serveur. La source du produit reste distincte.</p>
       </fieldset>
     </fieldset>

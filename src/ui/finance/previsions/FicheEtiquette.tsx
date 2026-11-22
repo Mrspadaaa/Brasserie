@@ -9,6 +9,7 @@ import { Confirmation } from '../prevision/base';
 import { supprimerPlan } from '../prevision/supprimerPlan';
 import type { MesureProjet } from './mesureProjet';
 import { centimesDeSaisie, jourCourt, litreFr, moisCourt, montant } from './format';
+import { ChoixMois } from '../../ChoixDate';
 
 const DUREES = [3, 5, 8] as const;
 type Etat = { kind: 'ok' | 'attente' | 'erreur'; texte: string } | null;
@@ -67,7 +68,7 @@ export function FicheProjet({ plan, mesure, titreFin, prix, onPrix, onClose, onO
       {/* CT4-A-11 : une quinzaine de lignes de limites au premier plan « pour rien » ; repliées, à un toucher. Les phrases restent entières. */}
       <button type="button" className="prv-lim-t" aria-expanded={limites} onClick={() => setLimites(o => !o)}><b>Limites ({mesure.avertissements.length})</b><ChevronRight size={14} aria-hidden="true" style={limites ? { transform: 'rotate(90deg)' } : undefined} /></button>
       {limites && <ul>{mesure.avertissements.map(a => <li key={a}>{a}</li>)}</ul>}</div>}
-    {deplace && <div className="prv-row"><label>Payer en <input type="month" value={mois} onChange={e => setMois(e.target.value)} /></label>
+    {deplace && <div className="prv-row"><label>Payer en <ChoixMois label="Payer en" valeur={mois} onChange={setMois} /></label>
       <button type="button" className="prv-prim" disabled={occupe || !/^\d{4}-\d{2}$/.test(mois)} onClick={() => void ecrire({ ...plan, date: `${mois}-01`, upgrade: { ...detail, datePrecision: 'month' } }, () => setDeplace(false))}>Valider</button></div>}
     {etat && <p className={`prv-etat prv-${etat.kind}`} role="status">{etat.texte}</p>}
     {demande ? <Confirmation question={`Supprimer « ${plan.title} » ?`} detail="Ses achats liés restent dans les comptes. Pour le garder sans le compter : Retirer." oui="Oui, supprimer" onOui={supprimer} onGarder={() => { setDemande(false); setRefus(''); }} erreur={refus} />

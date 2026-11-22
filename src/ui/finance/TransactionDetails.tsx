@@ -20,6 +20,7 @@ import { origineDeCreance } from './modifier/origineCreance';
 import { StorageService } from '../../services/storage';
 import { FinanceService } from '../../services/financeService';
 import './fiche/fiche.css';
+import { ChoixDate } from '../ChoixDate';
 
 /**
  * La fiche d'une opération (m5fo-a, 15.11) : la fiche rangée de m2fo-a avec la facture en barre de m2fo-c.
@@ -121,7 +122,7 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
         {equipement&&<div><p className="fiche-note"><strong>Traitement annuel du matériel</strong><br/>Confirme le traitement de chaque achat avec tes règles comptables. Aucun seuil d’immobilisation n’est imposé.</p>{lines.filter(l=>l.kind==='equipment').map(line=><Field key={line.id} label={line.description}><select value={line.capitalTreatment??''} onChange={e=>update({lines:tx.finance!.lines.map(l=>l.id===line.id?{...l,capitalTreatment:e.target.value as 'expense'|'asset'||undefined}:l)})}><option value="">À confirmer</option><option value="expense">Passer en charge (petit matériel)</option><option value="asset">Immobiliser et amortir</option></select></Field>)}</div>}
       </div></details>}
       {!voided&&!prive&&<details className="fiche-dt"><summary><span>Échéance et prévision</span>{plan&&<em>{plan.title}</em>}<ChevronRight size={16} aria-hidden="true"/></summary><div className="fiche-corps">
-        <Field label="Échéance de la facture"><input type="date" value={tx.finance?.dueDate??''} onChange={e=>update({dueDate:e.target.value||undefined})}/></Field>
+        <Field label="Échéance de la facture"><ChoixDate label="Échéance de la facture" valeur={tx.finance?.dueDate??''} onChange={d=>update({dueDate:d||undefined})}/></Field>
         <Field label="Rattacher à une prévision"><select value={tx.finance?.planId??''} onChange={e=>update({planId:e.target.value||undefined,occurrenceId:undefined,planAllocatedCents:undefined})}><option value="">Aucune</option>{plans.filter(p=>(p.status==='active'||p.source==='equipment'&&p.status==='draft'||p.id===tx.finance?.planId)&&p.direction===transactionDirection(tx,transactions)).map(p=><option key={p.id} value={p.id}>{p.title} · {formatCHF(p.amountCents)}</option>)}</select></Field>
         {plan&&<MoneyInput label="Montant de cette facture qui remplace la prévision (CHF)" value={tx.finance?.planAllocatedCents} onChange={v=>update({planAllocatedCents:v})}/>}
         {plan?.recurrence&&<Field label="Échéance prévue remplacée par cette facture"><select value={tx.finance?.occurrenceId??''} onChange={e=>update({occurrenceId:e.target.value||undefined})}><option value="">Choisir la période concernée</option>{occurrences.map(o=><option key={o.id} value={o.id}>{dateAffichee(o.date)}</option>)}</select></Field>}

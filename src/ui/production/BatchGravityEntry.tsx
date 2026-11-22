@@ -6,6 +6,7 @@ import { catalogDate } from '../../domain/productionCatalog';
 import { parseDecimal } from '../numericInput';
 import { GRAVITY_CEILING, GRAVITY_FLOOR } from '../../domain/gravityBounds';
 import { nombreFr } from '../../domain/nombreAffiche';
+import { ChoixDate } from '../ChoixDate';
 
 /** Température d'un échantillon de moût en fermentation : de la chambre froide (−5 °C) au moût encore chaud d'un départ (45 °C). */
 const TEMP_MIN_C = -5;
@@ -93,14 +94,7 @@ export function BatchGravityEntry({
           <h4 className="font-semibold text-cave-50">Relevé de suivi</h4>
           <label className="block space-y-1.5 text-sm text-cave-400">
             Date du relevé
-            <input
-              aria-label="Date du relevé"
-              className={field}
-              type="date"
-              value={date}
-              max={today()}
-              onChange={(e) => setDate(e.target.value)}
-            />
+            <ChoixDate label="Date du relevé" valeur={date} max={today()} onChange={setDate} />
           </label>
           <div className="grid grid-cols-2 gap-3">
             <label className="block space-y-1.5 text-sm text-cave-400">

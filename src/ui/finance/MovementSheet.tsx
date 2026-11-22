@@ -11,6 +11,7 @@ import { StorageService } from '../../services/storage';
 import { ApportPoches } from './mouvement/ApportPoches';
 import { effetMouvement } from './mouvement/effetMois';
 import { lancerEnvoi, lirePiece, placerPiece, preparerEnvoi, retirerDeLaFile, type PieceJointe } from './mouvement/justificatif';
+import { ChoixDate } from '../ChoixDate';
 
 /** Private cash and credit notes never masquerade as sales or new purchases. */
 /** `prefill` (dp, 10.11) : le renvoi d'une ligne « pas un achat de brasserie ? » ouvre la feuille sur un prélèvement, montant et motif déjà posés. */
@@ -76,7 +77,7 @@ export function MovementSheet({original,onClose,onSaved,prefill}:{original?:Tran
     <Field label="Comment appliquer cet avoir ?"><select value={application} onChange={e=>setApplication(e.target.value as typeof application)} required><option value="">Choisir le traitement</option><option value="offset">Déduire de la facture restant à régler</option><option value="cash">Remboursement d’argent, reçu ou attendu</option></select></Field>
     {application==='offset'&&<p className="finance-notice">L’avoir réduit le montant restant de la facture. Il ne crée aucun encaissement ni paiement.</p>}
     <MoneyInput label="Montant (CHF)" value={amount} onChange={setAmount} required/>
-    <Field label="Date"><input type="date" value={date} max={todayISO()} onChange={e=>setDate(e.target.value)} required/></Field>
+    <Field label="Date"><ChoixDate label="Date" valeur={date} max={todayISO()} onChange={setDate}/></Field>
     <Field label="Motif"><Input value={note} onChange={e=>setNote(e.target.value)} required placeholder="Retour, remise du fournisseur…"/></Field>
     {application==='cash'&&<label className="finance-check"><input type="checkbox" checked={paid} onChange={e=>setPaid(e.target.checked)}/>L’argent a réellement été remboursé à cette date.</label>}
     {paid&&application==='cash'&&<Field label="Moyen de paiement"><select value={method} onChange={e=>setMethod(e.target.value as typeof method)}><option value="bank">Banque</option><option value="cash">Espèces</option><option value="twint">TWINT</option><option value="other">Autre</option></select></Field>}

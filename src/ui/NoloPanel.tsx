@@ -25,6 +25,7 @@ import { NoloRecipeOverview } from './NoloRecipeOverview';
 import { NoloOperationList } from './NoloOperationList';
 import { NoloRecipeSimulator } from './NoloRecipeSimulator';
 import { nombreFr } from '../domain/nombreAffiche';
+import { ChoixDate } from './ChoixDate';
 
 const decimal = (n: number) => n.toLocaleString('fr-FR',{maximumFractionDigits:3});
 /** Outward rounding: a narrow interval across 0.5 must never display as 0.5–0.5. */
@@ -180,7 +181,7 @@ export function NoloPanel({recipe,onChange,allowEnable=false,measurementOnly=fal
         <details><summary className="cursor-pointer min-h-touch text-sm text-cave-200">Analyses rattachées à leur étape</summary><div className="space-y-3">
           {c.measurements.map(m=><div key={m.id} className="text-xs text-cave-200 border-b border-cave-800 py-2"><p>{stageLabels[m.stage]} · {m.date} · {m.method}</p><p>{m.abvPct?decimal(m.abvPct.min)+'–'+decimal(m.abvPct.max)+' % vol.':'Alcool non mesuré'}{m.ph!=null?' · pH '+decimal(m.ph):''}</p>{editable&&<Button onClick={()=>update({measurements:c.measurements.filter(x=>x.id!==m.id)})}>Retirer cette mesure</Button>}</div>)}
           {editable&&<><label className="block text-xs">Étape mesurée<select className={inputClass} value={measure.stage} onChange={e=>setMeasure({...measure,stage:e.target.value as NoloStage})}>{Object.entries(stageLabels).map(([k,v])=><option key={k} value={k}>{v}</option>)}</select></label>
-            <label className="block text-xs">Date de l’analyse<input type="date" className={inputClass} value={measure.date} onChange={e=>setMeasure({...measure,date:e.target.value})}/></label>
+            <label className="block text-xs">Date de l’analyse<ChoixDate label="Date de l’analyse" valeur={measure.date} onChange={d=>setMeasure({...measure,date:d})}/></label>
             <label className="block text-xs">Méthode / référence du laboratoire<Input className={inputClass} value={measure.method??''} onChange={e=>setMeasure({...measure,method:e.target.value})}/></label>
             <RangeInput label="Alcool analysé" unit="% vol., marge incluse" max={100} value={measure.abvPct} onChange={r=>setMeasure({...measure,abvPct:r})}/>
             <details><summary className="min-h-touch cursor-pointer text-xs text-water">Sucres mesurés à cette étape</summary><div className="space-y-3">

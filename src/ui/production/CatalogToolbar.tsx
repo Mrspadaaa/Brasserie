@@ -18,6 +18,7 @@ import { catalogCriteria, type CatalogCriterion } from '../../domain/catalogPref
 import { inCatalogFolder } from '../../domain/catalogOrganization';
 import { CatalogFilterNotice } from './CatalogFilterNotice';
 import { CatalogScopeBar } from './CatalogScopeBar';
+import { ChoixDate } from '../ChoixDate';
 
 export const catalogField =
   'w-full min-h-touch-lg rounded-control border border-cave-700 bg-cave-950 px-2 text-base text-cave-50 focus:border-ebc-straw focus:outline-none';
@@ -439,23 +440,11 @@ export function CatalogToolbar({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="space-y-1.5 text-sm text-cave-200 block">
                 Du
-                <input
-                  aria-label="Date de début"
-                  type="date"
-                  value={filters.from}
-                  onChange={(e) => set({ from: e.target.value })}
-                  className={catalogField}
-                />
+                <ChoixDate label="Date de début" valeur={filters.from} max={filters.to || undefined} vide="Début" onChange={(d) => set({ from: d })} />
               </label>
               <label className="space-y-1.5 text-sm text-cave-200 block">
                 Au
-                <input
-                  aria-label="Date de fin"
-                  type="date"
-                  value={filters.to}
-                  onChange={(e) => set({ to: e.target.value })}
-                  className={catalogField}
-                />
+                <ChoixDate label="Date de fin" valeur={filters.to} min={filters.from || undefined} vide="Fin" onChange={(d) => set({ to: d })} />
               </label>
             </div>
           )}

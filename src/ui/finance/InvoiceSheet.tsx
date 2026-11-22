@@ -10,6 +10,7 @@ import { DriveConnection } from './DriveConnection';
 import { invoiceTotals, SwissQrBillService, type InvoiceItem } from '../../services/swissQrBill';
 import { todayISO, isoDate, formatCHF } from '../../domain/finance/ledger';
 import './finance.css';
+import { ChoixDate } from '../ChoixDate';
 
 /** Un article en cours de saisie : le prix inconnu reste `undefined` (TE-6 : « 0 » affiché par défaut était un inconnu en nombre). */
 type Ligne = Omit<InvoiceItem, 'unitPriceHT'> & { unitPriceHT: number | undefined };
@@ -58,7 +59,7 @@ export function InvoiceSheet({ client, config, tarifs, onClose, onSaved }: { cli
     <DriveConnection always={Boolean(error)} />
     {pending.current && <p className="finance-notice">La facture préparée est conservée à l’identique pendant sa confirmation, pour éviter un double enregistrement.</p>}
     <fieldset disabled={busy || Boolean(pending.current)} className="finance-form border-0 p-0 m-0">
-    <div className="finance-form-grid"><label className="finance-field">Date<input type="date" value={date} onChange={e => setDate(e.target.value)} /></label><label className="finance-field">Échéance<input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} /></label></div>
+    <div className="finance-form-grid"><label className="finance-field">Date<ChoixDate label="Date" valeur={date} onChange={setDate} /></label><label className="finance-field">Échéance<ChoixDate label="Échéance" valeur={dueDate} onChange={setDueDate} /></label></div>
     {items.map((item, index) => <fieldset className="finance-item-editor" key={index}><legend>Article {index + 1}</legend>
       <label className="finance-field">Produit<select value={tarifs.some(t => t.product === item.description) ? item.description : ''} onChange={e => { const found = tarifs.find(t => t.product === e.target.value); if (found) update(index, { description: found.product, unitPriceHT: found.priceHT }); }}><option value="">Choisir un tarif ou saisir ci-dessous</option>{tarifs.map(t => <option value={t.product} key={t.product}>{t.product}</option>)}</select></label>
       <label className="finance-field">Désignation<Input value={item.description} onChange={e => update(index, { description: e.target.value })} placeholder="Bouteille, carton ou fût livré" /></label>

@@ -27,6 +27,7 @@ import { actualQuantityMax, actualQuantityProblem, actualQuantityRounded } from 
 import { nombreFr } from '../domain/nombreAffiche';
 import { phraseRetard } from '../services/brewTimer';
 import { BrewPitchJauge, type PitchJaugeInfo } from './BrewPitchJauge';
+import { ChoixInstant } from './ChoixDate';
 
 /** Une quantité à la résolution de l'instrument (`brewAmount`) : 16,5 L et non 16,494 L (BR-54, BE-35, 08.11). Par défaut des litres. */
 const f = (n: number, unit = 'L') => new Intl.NumberFormat('fr-CH', { maximumFractionDigits: amountDecimals(unit, n) }).format(roundAmount(n, unit));
@@ -51,15 +52,7 @@ function AdditionTime({ name, doneAt, onConfirm }: {
     <label className="min-w-0 basis-full text-xs text-cave-400">
       Date et heure réelles (facultatif)
       <span className="bz-heure-reelle">
-        <input
-          type="datetime-local"
-          className={`${brewInput} mt-1 max-w-full`}
-          aria-label={`Date et heure réelles d’ajout de ${name}`}
-          aria-invalid={!!raw && !valid}
-          value={raw}
-          max={localAdditionTime(brewNow())}
-          onChange={(event) => setRaw(event.currentTarget.value)}
-        />
+        <ChoixInstant label={`Date et heure réelles d’ajout de ${name}`} valeur={raw} max={localAdditionTime(brewNow())} onChange={setRaw} />
         {/* p3 (n° 6) : « Maintenant » consigne en un geste, sans passer par « Consigner à cette heure ». */}
         <button type="button" className="bz-maintenant" onClick={() => onConfirm(brewNow())}>Maintenant</button>
       </span>

@@ -14,6 +14,7 @@ import { amountOnly, shortDate } from '../financeFormat';
 import { contrePaiement, echeance } from '../operations/calculs';
 import { GROUPES, type GroupeId } from '../operations/groupes';
 import './payer.css';
+import { ChoixDate } from '../../ChoixDate';
 
 /**
  * Payer = m5pa-d : un seul montant de virement pour toutes les pièces encore à payer du même tiers ; il solde d'abord la plus ancienne
@@ -67,7 +68,6 @@ export function PayerVirement({ transaction, payments: paiementsBruts, transacti
   const valeur = saisi === null ? (choisies.length ? total : undefined) : saisi === undefined ? undefined : Math.min(saisi, total);
   const refus = choisies.length === 0 ? 'Coche au moins une pièce.' : refusDuVirement(choisies, valeur);
   const rep = refus ? null : repartirVirement(choisies, valeur!);
-  const dateRef = useRef<HTMLInputElement>(null);
   const parts = new Map((rep?.parts ?? []).map(p => [p.id, p]));
   const touchees = (rep?.parts ?? []).filter(p => p.partCents > 0);
   const date = modeDate === 'auj' ? aujourdhui : autreDate;
@@ -151,7 +151,7 @@ export function PayerVirement({ transaction, payments: paiementsBruts, transacti
     <div className="pay-ft">
       <button type="button" className="pay-b2" onClick={onClose} disabled={occupe}>Annuler</button>
       <button type="button" className="pay-b1" data-attend={!dateOk && !!rep && !occupe ? '' : undefined} aria-disabled={!dateOk && !!rep && !occupe ? true : undefined}
-        onClick={() => { if (rep && !dateOk && !occupe) { dateRef.current?.focus(); return; } void enregistrer(); }} disabled={occupe || !rep}>{occupe ? 'Enregistrement…' : rep && !dateOk ? 'Choisis la date' : <>✓ {verbe} <span className="pay-m">{valeur != null && rep ? amountOnly(valeur) : '—'}</span></>}</button>
+        onClick={() => { if (rep && !dateOk && !occupe) { document.querySelector<HTMLElement>('.pay-date [data-date-point]')?.focus(); return; } void enregistrer(); }} disabled={occupe || !rep}>{occupe ? 'Enregistrement…' : rep && !dateOk ? 'Choisis la date' : <>✓ {verbe} <span className="pay-m">{valeur != null && rep ? amountOnly(valeur) : '—'}</span></>}</button>
     </div>}>
     <div className="pay-corps">
       {inconnu && <p className="pay-note" role="note">Le paiement historique est inconnu. Indique la date et le montant réellement réglés.</p>}
@@ -201,7 +201,7 @@ export function PayerVirement({ transaction, payments: paiementsBruts, transacti
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden="true"><path d="M5 9l7 7 7-7" /></svg></button>
       </div>
       {(moyensOuverts || moyen !== 'bank') && <div className="pay-moyens" role="group" aria-label="Moyen de paiement">{MOYENS.filter(m => m.id !== 'bank').map(m => <button type="button" key={m.id} aria-pressed={moyen === m.id} onClick={() => setMoyen(m.id)}>{m.texte}</button>)}</div>}
-      {modeDate === 'autre' && <label className="pay-date">Date réelle du paiement<input ref={dateRef} type="date" value={autreDate} max={aujourdhui} onChange={e => setAutreDate(e.target.value)} required /></label>}
+      {modeDate === 'autre' && <label className="pay-date">Date réelle du paiement<ChoixDate ouvert label="Date réelle du paiement" valeur={autreDate} max={aujourdhui} onChange={setAutreDate} /></label>}
       {erreur && <p className="pay-err" role="alert" style={{ marginTop: 8 }}>{erreur}</p>}
     </div>
   </Sheet>;

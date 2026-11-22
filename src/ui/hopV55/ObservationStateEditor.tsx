@@ -10,6 +10,7 @@ import type { BrewingObservedKnownReferenceV1, BrewingObservedProvenanceV1, Brew
 import type { HopV55ObservationAnchorRecordV1 } from '../../services/hopV55/observationSession';
 import { Input, Textarea, noAutofillProps } from '../Input';
 import './observation-state-editor.css';
+import { ChoixInstant } from '../ChoixDate';
 
 type ProvenanceDraft = { kind: string; reference: string; description: string; author: string };
 type ContactMode = 'unknown' | 'activeThrough' | 'ended';
@@ -356,8 +357,8 @@ export function HopV55ObservationStateEditor({ context, observationScope, mode, 
             onChange={event => update({ sampleId: event.target.value })} /></label>
           <label className="hv55-state-field"><span>Version du prélèvement</span><Input autoComplete="off" aria-label="Version du prélèvement" value={form.sampleVersion}
             onChange={event => update({ sampleVersion: event.target.value })} /></label>
-          <label className="hv55-state-field"><span>Prélevé le</span><input type="datetime-local" {...noAutofillProps} aria-label="Instant exact du prélèvement"
-            value={form.sampledAtLocal} onChange={event => update({ sampledAtLocal: event.target.value })} /></label>
+          <label className="hv55-state-field"><span>Prélevé le</span><ChoixInstant label="Instant exact du prélèvement"
+            valeur={form.sampledAtLocal} onChange={sampledAtLocal => update({ sampledAtLocal })} /></label>
           <ProvenanceFields prefix="du prélèvement" value={form.sampleSource} disabled={disabled}
             onChange={sampleSource => update({ sampleSource })} />
           {mode === 'new' ? <>
@@ -370,9 +371,9 @@ export function HopV55ObservationStateEditor({ context, observationScope, mode, 
           </> : null}
         </> : <p className="hv55-state-help">L’ID physique est dérivé du batch canonique. Une recette seule ne peut pas créer cet ID.</p>}
         {mode === 'currentStateOnly' && form.subjectKind === 'beer' ? <label className="hv55-state-field">
-          <span>Instant physique de l’état à conserver</span><input type="datetime-local" {...noAutofillProps}
-            aria-label="Instant physique de l’état à conserver" value={form.physicalAsOfLocal}
-            onChange={event => update({ physicalAsOfLocal: event.target.value })} />
+          <span>Instant physique de l’état à conserver</span><ChoixInstant
+            label="Instant physique de l’état à conserver" valeur={form.physicalAsOfLocal}
+            onChange={physicalAsOfLocal => update({ physicalAsOfLocal })} />
         </label> : null}
       </fieldset>
 
@@ -386,8 +387,8 @@ export function HopV55ObservationStateEditor({ context, observationScope, mode, 
             <option value="unknown">Aucune attestation · durée inconnue</option><option value="activeThrough">Toujours en contact jusqu’à…</option><option value="ended">Retiré à…</option>
           </select></label>
           {form.contactModes[key] && form.contactModes[key] !== 'unknown' ? <label className="hv55-state-field"><span>{form.contactModes[key] === 'ended' ? 'Retrait effectif le' : 'Continuité attestée jusqu’au'}</span>
-            <input type="datetime-local" {...noAutofillProps} aria-label={`Instant de contact ${key}`} value={form.contactAt[key] ?? ''}
-              onChange={event => updateContactAt(key, event.target.value)} /></label> : null}
+            <ChoixInstant label={`Instant de contact ${key}`} valeur={form.contactAt[key] ?? ''}
+              onChange={instant => updateContactAt(key, instant)} /></label> : null}
         </div>)}
         {Object.values(form.contactModes).some(value => value !== 'unknown') ? <ProvenanceFields prefix="des contacts" value={form.contactSource} disabled={disabled}
           onChange={contactSource => update({ contactSource })} /> : null}
@@ -401,8 +402,8 @@ export function HopV55ObservationStateEditor({ context, observationScope, mode, 
         <label className="hv55-state-check"><input type="checkbox" checked={form.completeDependencies.hopContact}
           onChange={event => updateCoverage('hopContact', event.target.checked)} />Je peux attester la durée des contacts · <code>hopContact</code></label>
         {Object.values(form.completeDependencies).some(Boolean) ? <>
-          <label className="hv55-state-field"><span>Période contrôlée depuis</span><input type="datetime-local" {...noAutofillProps}
-            aria-label="Début de la période contrôlée" value={form.coverageFromLocal} onChange={event => update({ coverageFromLocal: event.target.value })} /></label>
+          <label className="hv55-state-field"><span>Période contrôlée depuis</span><ChoixInstant
+            label="Début de la période contrôlée" valeur={form.coverageFromLocal} onChange={coverageFromLocal => update({ coverageFromLocal })} /></label>
           <p className="hv55-state-help">La période se termine à la coupure exacte affichée ci-dessus; aucune autre dépendance n’est incluse.</p>
           <ProvenanceFields prefix="de couverture" value={form.coverageSource} disabled={disabled}
             onChange={coverageSource => update({ coverageSource })} />

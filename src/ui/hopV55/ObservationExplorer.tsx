@@ -19,6 +19,7 @@ import { NumberInput } from '../NumberInput';
 import { HopV55SensoryComparison } from './SensoryComparison';
 import './observation-explorer.css';
 import { hopV55DoseText } from './readings';
+import { ChoixInstant } from '../ChoixDate';
 
 export interface HopV55ObservationFrameChoice {
   id: string;
@@ -1087,8 +1088,8 @@ export function ObservationProjectionEditor({ candidate, options, sourceAnchor, 
               eventReference: '', durationHours: '', instantAt: '' })}>
               <option value="">Choisir</option><option value="instant">Instant local explicite</option><option value="relative">Durée depuis un événement identifié</option>
             </select></label>
-            {state.targetMode === 'instant' ? <label className="hv55-observation-field"><span>Instant cible</span><input type="datetime-local" value={state.instantAt}
-              onChange={event => set({ instantAt: event.target.value })} /><small>Interprété dans le fuseau du navigateur; l’archive conserve l’instant ISO.</small></label> : null}
+            {state.targetMode === 'instant' ? <label className="hv55-observation-field"><span>Instant cible</span><ChoixInstant label="Instant cible" valeur={state.instantAt}
+              onChange={instantAt => set({ instantAt })} /><small>Interprété dans le fuseau du navigateur; l’archive conserve l’instant ISO.</small></label> : null}
             {state.targetMode === 'relative' ? <>
               <label className="hv55-observation-field"><span>Événement de départ</span><select value={state.eventReference} onChange={event => set({ eventReference: event.target.value })}>
                 <option value="">Choisir un événement exact</option>

@@ -40,6 +40,7 @@ import { Input, Textarea } from '../Input';
 import { parseDecimal } from '../numericInput';
 import { HopV55NuancePlanEditor, type NuancePlanDimensionCandidate } from './NuancePlanEditor';
 import './observation-support-panel.css';
+import { ChoixInstant } from '../ChoixDate';
 
 type MeaningKind = HopV55ObservationSupportMeaning['kind'] | '';
 type Orientation = HopV55ObservationSupportMeaning['orientation'] | '';
@@ -728,8 +729,8 @@ export function HopV55ObservationSupportPanel({ workspace, context, prepared, ge
                 : <small>Choix canonique disponible; aucune observation ne l’atteste.</small>}</li>)}</ul>
           </details>
         </fieldset>
-        <label className="hv55-support-field"><span>Début de la période considérée</span><input autoComplete="off" type="datetime-local" aria-label="Début de portée" value={scope.fromAt} disabled={readOnly}
-          onChange={event => updateScope({ fromAt: event.target.value })} /></label>
+        <label className="hv55-support-field"><span>Début de la période considérée</span><ChoixInstant label="Début de portée" valeur={scope.fromAt} disabled={readOnly}
+          onChange={fromAt => updateScope({ fromAt })} /></label>
         <label className="hv55-support-field"><span>Auteur de la portée</span><Input autoComplete="off" aria-label="Auteur de la portée" value={scope.recordedBy} disabled={readOnly}
           onChange={event => updateScope({ recordedBy: event.target.value })} /></label>
         <label className="hv55-support-field hv55-support-wide"><span>Pourquoi ce périmètre et cette période ?</span><Textarea autoComplete="off" aria-label="Motif de la portée" rows={2} value={scope.explanation} disabled={readOnly}

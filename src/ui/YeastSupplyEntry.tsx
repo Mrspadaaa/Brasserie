@@ -7,6 +7,7 @@ import { YeastDbCorrections, type YeastDbCorrectionClientReceipt, type YeastDbCo
 import { YeastDbCorrectionsPanel } from './YeastDbCorrectionsPanel';
 import { NumberInput } from './NumberInput';
 import { Input } from './Input';
+import { ChoixDate, ChoixInstant } from './ChoixDate';
 
 /* Manual definition of an exact product (format) or of one offer, for the recipe's chosen reference.
    Two separate gestures: keep the definition as a recipe copy (offline, no publication), or propose it to the
@@ -153,7 +154,7 @@ export function YeastProductEntry({ recipe, onChange, existing, takenIds, onClos
       <fieldset className="yp-entry-source"><legend>Source · page consultée</legend>
         <label className="yp-stack" htmlFor={`${id}-source-title`}>Titre<Input id={`${id}-source-title`} value={draft.sourceTitle} onChange={e => set({ sourceTitle: e.target.value })} placeholder="Fiche fabricant ou vendeur du format exact" /></label>
         <label className="yp-stack" htmlFor={`${id}-source-url`}>Lien https<Input id={`${id}-source-url`} type="url" value={draft.sourceUrl} onChange={e => set({ sourceUrl: e.target.value })} placeholder="https://…" /></label>
-        <label className="yp-stack" htmlFor={`${id}-source-date`}>Relevé le<input id={`${id}-source-date`} type="date" max={localDay()} value={draft.checkedAt} onChange={e => set({ checkedAt: e.target.value })} /></label>
+        <label className="yp-stack" htmlFor={`${id}-source-date`}>Relevé le<ChoixDate id={`${id}-source-date`} label="Relevé le" max={localDay()} valeur={draft.checkedAt} onChange={d => set({ checkedAt: d })} /></label>
         <p className="yeast-small">Source saisie à la main : elle situe les valeurs, sans prouver leur exactitude ni une lecture serveur.</p>
       </fieldset>
     </fieldset>
@@ -232,7 +233,7 @@ function OwnSource({ id, label, own, source, onOwn, onSource }: { id: string; la
     {own && <div className="yp-entry-fields">
       <label className="yp-stack" htmlFor={`${id}-title`}>Titre de sa source<Input id={`${id}-title`} value={source.title} onChange={e => onSource({ ...source, title: e.target.value })} /></label>
       <label className="yp-stack" htmlFor={`${id}-url`}>Lien https<Input id={`${id}-url`} type="url" value={source.url} onChange={e => onSource({ ...source, url: e.target.value })} placeholder="https://…" /></label>
-      <label className="yp-stack" htmlFor={`${id}-date`}>Relevé le<input id={`${id}-date`} type="datetime-local" max={localMinute()} value={source.checkedAt} onChange={e => onSource({ ...source, checkedAt: e.target.value })} /></label>
+      <label className="yp-stack" htmlFor={`${id}-date`}>Relevé le<ChoixInstant id={`${id}-date`} label="Relevé le" max={localMinute()} valeur={source.checkedAt} onChange={checkedAt => onSource({ ...source, checkedAt })} /></label>
     </div>}
   </div>;
 }
@@ -296,7 +297,7 @@ export function YeastOfferEntry({ recipe, onChange, product, parentFallback, exi
       <fieldset className="yp-entry-source"><legend>Page de l’offre · source commune</legend>
         <label className="yp-stack" htmlFor={`${id}-url`}>Lien https de la page exacte<Input id={`${id}-url`} type="url" value={draft.url} onChange={e => set({ url: e.target.value })} placeholder="https://…" /></label>
         <label className="yp-stack" htmlFor={`${id}-page-title`}>Titre de la page<Input id={`${id}-page-title`} value={draft.pageTitle} onChange={e => set({ pageTitle: e.target.value })} /></label>
-        <label className="yp-stack" htmlFor={`${id}-date`}>Relevé le<input id={`${id}-date`} type="datetime-local" max={localMinute()} value={draft.checkedAt} onChange={e => set({ checkedAt: e.target.value })} /></label>
+        <label className="yp-stack" htmlFor={`${id}-date`}>Relevé le<ChoixInstant id={`${id}-date`} label="Relevé le" max={localMinute()} valeur={draft.checkedAt} onChange={checkedAt => set({ checkedAt })} /></label>
         <label className="yp-stack" htmlFor={`${id}-sku`}>Référence vendeur · facultatif<Input id={`${id}-sku`} value={draft.sku} onChange={e => set({ sku: e.target.value })} /></label>
       </fieldset>
       <fieldset className="yp-entry-source"><legend>Pays du vendeur · facultatif</legend>

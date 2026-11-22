@@ -33,6 +33,7 @@ import { BoutonMois, CarteMois } from '../finance/ongletMois/OngletMois';
 import { useEffetPiece } from '../finance/ongletMois/pieceDeDepense';
 import { FinanceService } from '../../services/financeService';
 import './caisse.css';
+import { ChoixDate } from '../ChoixDate';
 
 /** Lecteurs stables (une identité par module : `useStorageValue` s'abonne dessus). */
 const lireClients = () => StorageService.getClients();
@@ -520,7 +521,7 @@ export function CaisseContenu({ clientIdInitial, batchIdInitial, onClose, onSave
                 <b>{mode === 'qr' ? 'Facture' : 'Quittance'}</b>
                 <small>{mode === 'qr' && <>n° <span className="cs-m">{numero}</span> · </>}
                   <button type="button" className="cs-date cs-m" disabled={fieldsetOff} aria-label="Date de la facture" onClick={() => setDateOuverte(v => !v)}>{dateLongue(dateIso)}</button></small>
-                {dateOuverte && <input type="date" className="cs-dateinput" aria-label="Choisir la date" value={dateIso} onChange={e => choisirDate(e.target.value)} />}
+                {dateOuverte && <ChoixDate ouvert label="Choisir la date" valeur={dateIso} onChange={choisirDate} />}
               </div>
               <div className="cs-dh-r"><b>{company.name || 'Brasserie'}</b><small>{creancier?.localite ?? ''}</small></div>
             </div>

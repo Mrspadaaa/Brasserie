@@ -14,6 +14,7 @@ import { HOP_ANALYTE_LABELS, HOP_FORM_LABELS, HOP_UNIT_LABELS } from '../../doma
 import type { HopV55Services } from '../../services/hopV55/contracts';
 import { Input, Textarea } from '../Input';
 import './catalogue.css';
+import { ChoixDate } from '../ChoixDate';
 
 type Props = {
   services: HopV55Services;
@@ -588,9 +589,9 @@ function ClaimFields({ kind, draft, onChange, source, onSourceChange, styleId, s
     <fieldset className="hv55-fieldset">
       <legend>Dates de la donnée, si connues</legend>
       <div className="hv55-grid three">
-        <label>Publication<input type="date" value={draft.publishedAt} onChange={patch('publishedAt')} /></label>
-        <label>Consultation<input type="date" value={draft.retrievedAt} onChange={patch('retrievedAt')} /></label>
-        <label>Observation<input type="date" value={draft.observedAt} onChange={patch('observedAt')} /></label>
+        <label>Publication<ChoixDate label="Publication" valeur={draft.publishedAt} onChange={d => patch('publishedAt')({ target: { value: d } } as never)} /></label>
+        <label>Consultation<ChoixDate label="Consultation" valeur={draft.retrievedAt} onChange={d => patch('retrievedAt')({ target: { value: d } } as never)} /></label>
+        <label>Observation<ChoixDate label="Observation" valeur={draft.observedAt} onChange={d => patch('observedAt')({ target: { value: d } } as never)} /></label>
       </div>
     </fieldset>
     <details className="hv55-advanced"><summary>Valeur brute et méthode, si la source les fournit</summary>

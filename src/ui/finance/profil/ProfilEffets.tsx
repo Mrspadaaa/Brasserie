@@ -13,6 +13,7 @@ import { litreFr, montant, montantEntier, moisCourt } from '../previsions/format
 import { FormSheet } from '../prevision/base';
 import './profil.css';
 import { refCurseurNatif } from '../../geste';
+import { ChoixDate, ChoixMois } from '../../ChoixDate';
 
 /**
  * Solde et paramètres = m4pf-c (choix du 15.11) : chaque réglage montre ce qu'il change.
@@ -139,7 +140,7 @@ export function ProfilEffets({ profile, onClose, parametres = false }: { profile
         <FriseSolde points={points} confirme={confirmed} />
         <div className="pfc-vr">
           <label className="pfc-pill"><span>{isoDate(date) ? jourLong(date) : 'Date'}</span><ChevronDown size={14} aria-hidden="true" />
-            <input type="date" aria-label="Date du solde" value={date} max={aujourdhui} required onChange={e => { setDate(e.target.value); setConfirmed(false); }} onClick={e => { try { e.currentTarget.showPicker?.(); } catch { /* saisie au clavier */ } }} /></label>
+            <ChoixDate label="Date du solde" valeur={date} max={aujourdhui} onChange={d => { setDate(d); setConfirmed(false); }} /></label>
           <label className="pfc-tg"><input type="checkbox" checked={confirmed} aria-label="J’ai vérifié ce solde, avant les paiements de cette journée." onChange={e => setConfirmed(e.target.checked)} /><span className="pfc-sw" aria-hidden="true" /><b>Vérifié</b></label>
         </div>
         {cash != null && !confirmed && <p className="pfc-cap" role="note">Sans cette case, ce solde n’est compté ni dans la caisse ni dans les prévisions.</p>}
@@ -148,7 +149,7 @@ export function ProfilEffets({ profile, onClose, parametres = false }: { profile
       <section className="pfc-card" ref={carteMois} aria-label="Tout est noté depuis" data-booster="mois-couverts">
         <div className="pfc-top"><h3>Tout est noté depuis</h3>
           <label className="pfc-pill pfc-pill-l"><span>{depuisMois ? moisLong(depuisMois) : 'à choisir'}</span><ChevronDown size={14} aria-hidden="true" />
-            <input type="month" aria-label="Historique des dépenses complet depuis" value={depuisMois ?? ''} onChange={e => setDraft(d => ({ ...d, historyCompleteFrom: e.target.value ? `${e.target.value}-01` : undefined }))} /></label></div>
+            <ChoixMois label="Historique des dépenses complet depuis" vide="Mois à poser" valeur={depuisMois ?? ''} onChange={m => setDraft(d => ({ ...d, historyCompleteFrom: m ? `${m}-01` : undefined }))} /></label></div>
         <div className="pfc-mois" role="group" aria-label={`Mois de ${annee}`}>
           {LETTRES.map((l, m) => {
             const ym = `${annee}-${String(m + 1).padStart(2, '0')}`, futur = ym > moisCourant, courant = ym === moisCourant, plein = !!depuisMois && ym >= depuisMois && ym < moisCourant;

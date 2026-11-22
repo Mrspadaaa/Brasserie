@@ -8,6 +8,7 @@ import { amountOnly, shortDate } from '../financeFormat';
 import { pisteCaisse, pisteResultat, type EffetMouvement } from './effetMois';
 import type { PieceJointe } from './justificatif';
 import './mouvement.css';
+import { ChoixDate } from '../../ChoixDate';
 
 /**
  * Apport ou prélèvement privé = m5ap-a (choisie le 15.11), portée telle quelle : « Ta poche → La brasserie » avec le montant sur la flèche,
@@ -77,7 +78,7 @@ export function ApportPoches(p: ApportPochesProps) {
         <button type="button" role="radio" aria-checked={!autre} className="mvt-c" onClick={() => { setAutre(false); p.onDate(aujourdhui); }}>aujourd’hui · {shortDate(aujourdhui)}</button>
         <button type="button" role="radio" aria-checked={autre} className="mvt-c" onClick={() => setAutre(true)}>{autre && p.date !== aujourdhui ? shortDate(p.date) : 'autre date…'}</button>
       </div>
-      {autre && <label className="mvt-in mvt-date"><input type="date" aria-label="Date" value={p.date} max={aujourdhui} onChange={e => p.onDate(e.target.value)} required /></label>}
+      {autre && <label className="mvt-in mvt-date"><ChoixDate label="Date" valeur={p.date} max={aujourdhui} onChange={p.onDate} /></label>}
     </div>
     <div className="mvt-f"><span id="mvt-compte">Sur quel compte</span>
       <div className="mvt-chips" role="radiogroup" aria-labelledby="mvt-compte">

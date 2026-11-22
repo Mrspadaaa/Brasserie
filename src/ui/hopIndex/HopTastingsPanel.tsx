@@ -13,6 +13,7 @@ import { HOP_CONFIDENCE_LABELS, hopRangeLabel } from './presentation';
 import { Batch } from '../../types';
 import { HopRangePlot } from './HopRangePlot';
 import { BrewTag } from '../BrewTag';
+import { ChoixDate } from '../ChoixDate';
 
 export function HopTastingsPanel({ batch }: { batch?: Batch }) {
   const tastings = useStorageValue(StorageService.getHopTastings), predictions = useStorageValue(StorageService.getHopPredictions), knowledge = useStorageValue(StorageService.getHopKnowledge);
@@ -53,7 +54,7 @@ export function HopTastingsPanel({ batch }: { batch?: Batch }) {
       {draft && <div className="space-y-4 pb-4">
         {error && <p role="alert" className="text-alert">{error}</p>}
         <HopField label="Bière dégustée" error={tried && nameMissing ? 'Indique la bière dégustée.' : undefined}><TextInput value={draft.name} onChange={name => setDraft({ ...draft, name })} /></HopField>
-        <HopField label="Date de dégustation" error={tried && dateMissing ? 'Indique la date de dégustation.' : undefined}><input type="date" className={inputClass} value={draft.date} onChange={e => setDraft({ ...draft, date: e.target.value })} /></HopField>
+        <HopField label="Date de dégustation" error={tried && dateMissing ? 'Indique la date de dégustation.' : undefined}><ChoixDate label="Date de dégustation" valeur={draft.date} onChange={d => setDraft({ ...draft, date: d })} /></HopField>
         {draft.origin === 'commercial' && <><HopField label="Brasserie"><TextInput value={draft.brewery ?? ''} onChange={brewery => setDraft({ ...draft, brewery })} /></HopField><HopField label="Lot commercial ou DDM"><TextInput value={draft.beerLot ?? ''} onChange={beerLot => setDraft({ ...draft, beerLot })} /></HopField></>}
         <HopField label="Prédiction de référence"><select className={inputClass} value={draft.predictionId ?? ''} onChange={e => {
           const snapshot = predictions.find(p => p.id === e.target.value), selectedAxes = snapshot?.evidence.knowledge.filter((k): k is HopAxis => k.kind === 'axis') ?? axes;

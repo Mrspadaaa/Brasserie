@@ -11,6 +11,7 @@ import { yeastCitations, yeastFactLabel, yeastObservationText, yeastShortUrl, ty
 import type { BrewerTurn } from '../../functions/src/companionTypes';
 import type { YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
 import type { YeastStarterProtocol } from '../../functions/src/yeastSupplySchema';
+import { ChoixInstant } from './ChoixDate';
 
 type Props = {
   target: YeastDbCorrectionPanelTarget | null;
@@ -494,7 +495,7 @@ export function YeastDbCorrectionsPanel({ target, initialProposal, onClose, onUp
             <Input type="url" className={`${inputClass} mt-1 w-full`} value={manualSourceUrl} maxLength={2000} onChange={event => setManualSourceUrl(event.target.value)} placeholder="https://vendeur.example/produit/format" />
           </label>
           <label className="block text-sm text-cave-200">Date et heure de l’observation
-            <input type="datetime-local" className={`${inputClass} mt-1 w-full`} value={manualCheckedAt} onChange={event => setManualCheckedAt(event.target.value)} />
+            <ChoixInstant label="Date de l’observation" valeur={manualCheckedAt} onChange={setManualCheckedAt} />
           </label>
           <label className="block text-sm text-cave-200">Motif de la correction
             <Textarea className={`${inputClass} mt-1 w-full`} value={manualReason} maxLength={2000} rows={2} onChange={event => setManualReason(event.target.value)} placeholder="Ex. L’offre indiquait une disponibilité datée ancienne." />

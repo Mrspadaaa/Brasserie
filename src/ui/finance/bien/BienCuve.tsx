@@ -15,6 +15,7 @@ import { montant, montantEntier } from '../previsions/format';
 import { Field, FormSheet, idFor } from '../prevision/base';
 import './bien.css';
 import { refCurseurNatif } from '../../geste';
+import { ChoixDate } from '../../ChoixDate';
 
 /**
  * Bien amorti = m3im-c (choix du 15.11) : la cuve année par année, la manière dont elle s'use sous le doigt.
@@ -101,8 +102,8 @@ export function BienCuve({ asset, initial, onClose }: { asset?: FinancialAsset; 
           style={{ ['--pos' as string]: `${draft.businessUsePct}%` }} onChange={e => field('businessUsePct', Number(e.target.value))} /><b className="bic-m">{nombreFr(draft.businessUsePct, 1)} %</b></div>
       <div className="bic-g3">
         <label className="bic-cell"><span>Prix d’achat</span><ChampMontant fractionDigits={2} aria-label="Valeur d’acquisition TTC (CHF)" className="bic-in bic-m" value={draft.acquisitionCents ? draft.acquisitionCents / 100 : undefined} onValue={v => field('acquisitionCents', v == null ? 0 : Math.round(v * 100))} max={BORNES_FINANCE.operationCents.valeur / 100} maxDecimales={2} dire placeholder="0,00" /></label>
-        <label className="bic-cell bic-date"><span>Achetée</span><b className="bic-m">{court(draft.acquisitionDate)}</b><input type="date" aria-label="Date d’achat" value={draft.acquisitionDate} required onChange={e => field('acquisitionDate', e.target.value)} /></label>
-        <label className="bic-cell bic-date"><span>En service</span><b className="bic-m">{court(draft.inServiceDate)}</b><input type="date" aria-label="Mise en service" value={draft.inServiceDate} required onChange={e => field('inServiceDate', e.target.value)} /></label>
+        <label className="bic-cell bic-date"><span>Achetée</span><ChoixDate label="Date d’achat" valeur={draft.acquisitionDate} onChange={d => field('acquisitionDate', d)} /></label>
+        <label className="bic-cell bic-date"><span>En service</span><ChoixDate label="Mise en service" valeur={draft.inServiceDate} onChange={d => field('inServiceDate', d)} /></label>
       </div>
       <div className="bic-g3">
         <label className="bic-cell"><span>Départ</span><NumberInput aria-label="Première année retenue" className="bic-in bic-m" integer value={draft.openingYear} onValue={v => field('openingYear', v ?? new Date().getFullYear())} min={1900} max={2200} /></label>
@@ -128,7 +129,7 @@ export function BienCuve({ asset, initial, onClose }: { asset?: FinancialAsset; 
         </div></details>
       <details className="bic-row" data-booster="cession"><summary><span>Vendue ou mise au rebut</span><em>{isoDate(draft.disposedDate) ? court(draft.disposedDate) : 'non'}</em><ChevronRight size={18} aria-hidden="true" className="bic-chev" /></summary>
         <div className="bic-ouvert">
-          <Field label="Date de cession"><input type="date" value={draft.disposedDate ?? ''} onChange={e => field('disposedDate', e.target.value || undefined)} /></Field>
+          <Field label="Date de cession"><ChoixDate label="Date de cession" vide="Pas cédé" valeur={draft.disposedDate ?? ''} onChange={d => field('disposedDate', d || undefined)} /></Field>
           <label className="finance-field">Produit de la cession (CHF)<ChampNombre aria-label="Produit de la cession (CHF)" value={draft.disposalProceedsCents == null ? undefined : draft.disposalProceedsCents / 100} onValue={v => field('disposalProceedsCents', v == null ? undefined : Math.round(v * 100))} max={BORNES_FINANCE.operationCents.valeur / 100} maxDecimales={2} dire /></label>
           <Field label="Vente de ce matériel liée"><select value={draft.disposalTransactionId ?? ''} onChange={e => field('disposalTransactionId', e.target.value || undefined)}><option value="">À relier si déjà enregistrée dans les ventes</option>{StorageService.getTransactions().filter(t => t.category === 'recettes' && !t.finance?.voidedAt).map(t => <option key={t.id} value={t.id}>{t.description} · {formatCHF(transactionAmount(t))}</option>)}</select></Field>
           <p className="bic-note">Relie la vente déjà enregistrée pour compter son produit une seule fois.</p>

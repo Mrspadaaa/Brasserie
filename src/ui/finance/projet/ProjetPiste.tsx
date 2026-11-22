@@ -9,6 +9,7 @@ import { Textarea, noAutofillProps } from '../../Input';
 import { Field, MoneyInput } from '../prevision/base';
 import { STATIONS, estEtapeSaisie, etatPiste, moisDe, montant, quand, resumeUsure, texteAns, type StationId } from './piste';
 import './projet.css';
+import { ChoixMois } from '../../ChoixDate';
 
 type Progression = ReturnType<typeof upgradeProgress>;
 export interface ProjetPisteProps {
@@ -82,7 +83,7 @@ export function ProjetPiste(props: ProjetPisteProps) {
         : <>
           <div className="pjd-l"><span>Prévu en</span>
             <label className="pjd-mois"><Calendar aria-hidden="true" /><span>{quandTexte ?? 'Mois'}</span>
-              <input type="month" aria-label="Paiement prévu en" value={draft.date.slice(0, 7)} onInput={e => setMonth(e.currentTarget.value)} onChange={e => setMonth(e.target.value)} onClick={e => { try { e.currentTarget.showPicker?.(); } catch { /* saisie au clavier */ } }} />
+              <ChoixMois label="Paiement prévu en" valeur={draft.date.slice(0, 7)} onChange={setMonth} />
             </label></div>
           <label className="pjd-l pjd-incl"><span><b>Inclure dans mes prévisions</b>
             <small>{draft.status === 'active' ? (missing.length ? missing.join(' ') : quandTexte ? `compté dans les sorties de ${quandTexte}` : 'compté dans les sorties prévues') : 'le projet reste dans tes idées de matériel'}</small></span>
@@ -104,7 +105,7 @@ export function ProjetPiste(props: ProjetPisteProps) {
         <div className="pjd-g2">
           <Field label="Durée d’usage (années)"><input inputMode="decimal" value={detail.usefulLifeYears == null ? '' : String(detail.usefulLifeYears).replace('.', ',')} placeholder="5" autoComplete="off"
             onChange={e => { const v = Number(e.target.value.trim().replace(',', '.')); patch({ usefulLifeYears: e.target.value.trim() && Number.isFinite(v) && v > 0 ? v : undefined }); }} /></Field>
-          <Field label="Mise en service prévue"><span className={detail.inServiceMonth ? 'pjd-mw' : 'pjd-mw pjd-vide'} data-vide="À poser"><input type="month" value={detail.inServiceMonth ?? ''} onChange={e => patch({ inServiceMonth: e.target.value || undefined })} /></span></Field>
+          <Field label="Mise en service prévue"><span className={detail.inServiceMonth ? 'pjd-mw' : 'pjd-mw pjd-vide'} data-vide="À poser"><ChoixMois label="Mise en service prévue" vide="À poser" valeur={detail.inServiceMonth ?? ''} onChange={m => patch({ inServiceMonth: m || undefined })} /></span></Field>
         </div>
         <small className="pjd-muet">L’usure (linéaire) entre dans le coût du litre dès la mise en service. Sans durée, la catégorie donne la durée (100 ÷ taux linéaire AFC) ; sans les deux, elle reste « à renseigner », jamais 0.</small></>;
     }

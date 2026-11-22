@@ -21,6 +21,7 @@ import { YeastOfferEntry, YeastProductEntry } from './YeastSupplyEntry';
 import { YeastStarterEntry } from './YeastStarterEntry';
 import './yeast-recipe.css';
 import './yeast-pitching.css';
+import { ChoixInstant } from './ChoixDate';
 
 type Change = (next: TrialRecipe) => TrialRecipe | void;
 type WortBasis = YeastPitchingWort['basis'];
@@ -768,10 +769,10 @@ function PreparationSection({ recipe, onChange, readOnly, starterBase }: Section
         <button type="button" onClick={openForm}>{!preparation ? 'Planifier la préparation' : preparation.status === 'cancelled' ? 'Replanifier' : 'Corriger ou remplacer'}</button>
         {preparation && preparation.status !== 'cancelled' && <button type="button" className="yeast-link" onClick={cancel}>Annuler la préparation</button>}</div>}
       {editing && !readOnly && <div className="yp-editor">
-        <label className="yp-stack" htmlFor={`${id}-pitch`}>Ensemencement prévu<input id={`${id}-pitch`} type="datetime-local" min={earliest} value={form.targetPitchAt}
-          onChange={event => setForm(previous => ({ ...previous, targetPitchAt: event.target.value }))} /></label>
-        <label className="yp-stack" htmlFor={`${id}-start`}>Début de la préparation · facultatif<input id={`${id}-start`} type="datetime-local" value={form.startAt}
-          max={latestCultureStart ? localInput(latestCultureStart) : undefined} onChange={event => setForm(previous => ({ ...previous, startAt: event.target.value }))} /></label>
+        <label className="yp-stack" htmlFor={`${id}-pitch`}>Ensemencement prévu<ChoixInstant id={`${id}-pitch`} label="Ensemencement prévu" min={earliest} valeur={form.targetPitchAt}
+          onChange={targetPitchAt => setForm(previous => ({ ...previous, targetPitchAt }))} /></label>
+        <label className="yp-stack" htmlFor={`${id}-start`}>Début de la préparation · facultatif<ChoixInstant id={`${id}-start`} label="Début de la préparation" valeur={form.startAt}
+          max={latestCultureStart ? localInput(latestCultureStart) : undefined} onChange={startAt => setForm(previous => ({ ...previous, startAt }))} /></label>
         <p className="yeast-small">{latestCultureStart
           ? <>Vide : début au plus tard à <span className="yp-num">{dateTimeText(new Date(latestCultureStart).toISOString())}</span> (fenêtre {cultureOnly ? 'de culture' : 'totale'} de {fr(protocol.leadHours.max, 0)} h). Plus tôt : ta marge, non calculée.</>
           : 'Vide : début au plus tard selon la fenêtre publiée. Plus tôt : ta marge, non calculée.'}</p>

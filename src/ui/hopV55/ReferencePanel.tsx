@@ -41,6 +41,7 @@ import { HopV55ExactInput } from './ExactInput';
 import { HopV55ObservationStateEditor, type ObservationStateDraft } from './ObservationStateEditor';
 import { HopV55ReferenceEditor } from './ReferenceEditor';
 import './reference-panel.css';
+import { ChoixInstant } from '../ChoixDate';
 
 type ObservationSenseKind = BrewingReferenceObservationV1['sense']['kind'];
 type ScaleMode = 'unknown' | 'declared';
@@ -1112,8 +1113,8 @@ export function HopV55ReferencePanel({ workspace, context, prepared, getWorkspac
                 <label className="hv55-ref-field"><span>Objet observé</span><Input autoComplete="off" aria-label="Objet observé" value={subjectLabel} onChange={event => setSubjectLabel(event.target.value)} /></label>
                 <label className="hv55-ref-field"><span>ID exact de l’objet · facultatif</span><Input autoComplete="off" aria-label="ID de l’objet observé" value={subjectId} onChange={event => setSubjectId(event.target.value)} /></label>
               </> : null}
-              <label className="hv55-ref-field"><span>Date observée</span><input type="datetime-local" autoComplete="off" aria-label="Date observée" aria-invalid={observedAtInvalid || undefined}
-                value={observedAt} onChange={event => setObservedAt(event.target.value)} /></label>
+              <label className="hv55-ref-field"><span>Date observée</span><ChoixInstant label="Date observée"
+                valeur={observedAt} onChange={setObservedAt} /></label>
               <HopV55ObservationStateEditor context={context} observationScope={observationScope} mode="new" observedAtLocal={observedAt} disabled={!canWrite}
                 resetToken={observationStateReset} onDraftChange={draft => setObservationStateDraft(draft)} />
             </> : null}

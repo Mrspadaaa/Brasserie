@@ -15,6 +15,7 @@ import { jourCourt, montant, montantCourt, montantEntier, moisCourt } from '../p
 import { CATEGORY_LABELS, FormSheet, idFor } from './base';
 import { supprimerPlan } from './supprimerPlan';
 import './prevision.css';
+import { ChoixDate } from '../../ChoixDate';
 
 /**
  * Ajouter une prévision = m3pr-c (choix du 15.11) : une ligne de champs, trois pastilles, puis le panneau gris où la répétition se lit sur une frise
@@ -128,7 +129,7 @@ export function PlanSheetC({ plan, onClose, date, categorie, saisie }: { plan?: 
       <div className="pvc-pills">
         <Pastille texte={draft.direction === 'out' ? 'À payer' : 'À recevoir'} className="pvc-pay"><select aria-label="Mouvement" value={draft.direction} onChange={e => field('direction', e.target.value as 'in' | 'out')}><option value="out">À payer</option><option value="in">À recevoir</option></select></Pastille>
         <Pastille texte={CATEGORY_LABELS[draft.category]}><select aria-label="Catégorie" value={draft.category} onChange={e => field('category', e.target.value as FinanceCategory)}>{Object.entries(CATEGORY_LABELS).map(([key, label]) => <option value={key} key={key}>{label}</option>)}</select></Pastille>
-        <Pastille texte={isoDate(draft.date) ? jourLong(draft.date) : 'Date'} icone={<Calendar size={14} aria-hidden="true" />}><input type="date" aria-label="Date de paiement prévue" value={draft.date} onChange={e => field('date', e.target.value)} onClick={e => { try { e.currentTarget.showPicker?.(); } catch { /* le champ reste saisissable au clavier */ } }} required /></Pastille>
+        <ChoixDate label="Date de paiement prévue" valeur={draft.date} vide="Date" onChange={d => field('date', d)} />
       </div>
       <div className="pvc-pan">
         <div className="pvc-seg" role="group" aria-label="Répétition" data-booster="repetition">
@@ -150,7 +151,7 @@ export function PlanSheetC({ plan, onClose, date, categorie, saisie }: { plan?: 
         <div className="pvc-ouvert pvc-champs">
           <label><span className="pvc-lab">Fournisseur ou client</span><input className="pvc-in" value={draft.vendor ?? ''} onChange={e => field('vendor', e.target.value)} /></label>
           <label><span className="pvc-lab">Note</span><Textarea rows={2} className="pvc-in pvc-ta" value={draft.notes ?? ''} onChange={e => field('notes', e.target.value)} /></label>
-          {draft.recurrence && <label><span className="pvc-lab">Fin de la répétition (facultatif)</span><input type="date" className="pvc-in" value={draft.recurrence.endDate ?? ''} onChange={e => field('recurrence', { ...draft.recurrence!, endDate: e.target.value || undefined })} /></label>}
+          {draft.recurrence && <label><span className="pvc-lab">Fin de la répétition (facultatif)</span><ChoixDate label="Fin de la répétition" valeur={draft.recurrence.endDate ?? ''} vide="Sans fin" onChange={d => field('recurrence', { ...draft.recurrence!, endDate: d || undefined })} /></label>}
           {plan && <label><span className="pvc-lab">État</span><select className="pvc-in" value={draft.status} onChange={e => field('status', e.target.value as FinancialPlan['status'])}><option value="draft">Brouillon</option><option value="active">À venir</option><option value="completed">Terminée</option><option value="cancelled">Annulée</option></select></label>}
           <p className="pvc-note">Cette prévision n’ajoute aucune écriture comptable. Relie la facture à cette prévision lors de son enregistrement.</p>
         </div></details>
