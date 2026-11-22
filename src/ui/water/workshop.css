@@ -84,15 +84,34 @@
     margin: 0;
   }
 
+  /* Les mots « Réglage » et « Obtenu » se taisent (font-size 0, toujours lus) ; leur pastille de couleur reste devant le chiffre. */
   .water-ratio-compact .ratio-readings > div {
-    display: block;
-    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
+  }
+
+  .water-ratio-compact .ratio-readings dt {
+    font-size: 0;
+    line-height: 0;
   }
 
   .water-ratio-compact .ratio-readings dd {
+    height: 14px;
     font-size: 12px;
     line-height: 14px;
     white-space: nowrap;
+  }
+
+  .water-ratio-compact .ratio-readings dd .reading-unit {
+    font-size: 11px;
+    line-height: 14px;
+  }
+
+  .water-ratio-compact input[type="range"] {
+    height: 30px;
+    min-height: 30px;
   }
 
   .water-ratio-compact input[type="range"]:focus-visible {
@@ -100,7 +119,6 @@
   }
 
   .water-ratio-compact .ratio-orientation,
-  .water-ratio-compact .ratio-readings dt,
   .water-ratio-compact .ratio-help {
     position: absolute;
     width: 1px;
@@ -204,10 +222,6 @@
     min-height: 36px;
   }
 
-  .water-ratio-compact input[type="range"] {
-    height: 32px;
-    min-height: 32px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

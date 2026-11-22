@@ -288,6 +288,9 @@ export const WaterRadar: React.FC<WaterRadarProps> = ({
         */}
         {rings.map((ppm) => {
           const [tx, ty] = xy(-60, rayon(ppm));
+          // Pesée, petite toile (390×660) : la graduation qui tomberait sous l'étiquette du chlorure (posée à CX + 10, deux
+          // lignes, ≈ 56 × 29 px) se tait ; les autres anneaux gardent leur valeur.
+          if (pese && tx + 12 > CX + 10 && tx - 12 < CX + 66 && ty > CY - R - 2 && ty - 11 < CY - R + 29) return null;
           return (
             <text key={`g-${ppm}`} x={tx} y={ty - 2} textAnchor="middle" fontSize={pese ? 11 : 10}
               fill={pese ? 'rgb(var(--cave-texte-200))' : 'rgb(var(--cave-texte-400))'} style={pese ? HALO : undefined}>

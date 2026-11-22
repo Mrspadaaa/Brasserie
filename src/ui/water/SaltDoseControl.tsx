@@ -93,7 +93,7 @@ export const SaltDoseControl: React.FC<{
             type="button"
             onClick={() => onDetails(id)}
             aria-label={`Détail des minéraux de ${def.name}`}
-            className={`water-salt-name h-4 sm:h-6 flex items-center justify-center gap-1 min-w-0 px-0.5 text-[11px] sm:text-sm font-semibold leading-none
+            className={`water-salt-name h-4 sm:h-6 !min-h-0 !py-0 flex items-center justify-center gap-1 min-w-0 px-0.5 !text-[11px] sm:!text-sm font-semibold leading-none
               ${off ? "text-cave-400 line-through" : "text-cave-50"}`}
           >
             <span className="truncate">{SALT_SHORT[id]}</span>
@@ -117,8 +117,8 @@ export const SaltDoseControl: React.FC<{
                 else if (r.saisi < 0) { onDose(avant.current); setRefus(messageRefus(r.saisi, avant.current, { min: 0, unite: "g" })); }
               }}
               pad
-              className="w-full min-w-0 h-6 sm:h-7 bg-cave-950 border border-cave-700 rounded-sm
-                         reading text-sm sm:text-base font-semibold text-center focus:outline-none focus:border-ebc-straw disabled:opacity-50
+              className="w-full min-w-0 !h-6 sm:!h-7 !min-h-0 !py-0 leading-6 bg-cave-950 border border-cave-700 rounded-sm
+                         reading text-base font-semibold text-center focus:outline-none focus:border-ebc-straw disabled:opacity-50
                          [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none
                          [&::-webkit-inner-spin-button]:appearance-none"
             />

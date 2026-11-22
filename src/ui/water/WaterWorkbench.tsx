@@ -316,7 +316,7 @@ export function WaterWorkbench({
               sur {SALT_IDS.length}
             </span>
           </div>
-          <ul aria-label="Sels à peser" className="water-salt-grid grid grid-cols-3 gap-1 sm:gap-2">
+          <ul aria-label="Sels à peser" className="water-salt-grid grid grid-cols-3 gap-[3px] sm:gap-2">
             {SALT_IDS.map((id) => {
               const def = SALTS[id];
               const off = state.disabled.includes(id);
@@ -354,7 +354,7 @@ export function WaterWorkbench({
                 beginEdit({ kind: 'acid', side, from, to: from });
               }
             }}
-            className={`water-acid-controls rounded-control border p-1.5 sm:p-2.5 transition-colors ${acidDosesIncomplete ? '[&_.water-acid-dose>button]:hidden' : ''} ${
+            className={`water-acid-controls rounded-control border p-1 sm:p-2.5 transition-colors ${acidDosesIncomplete ? '[&_.water-acid-dose>button]:hidden' : ''} ${
               activeSalt === "acide"
                 ? "bg-cave-850 border-ebc-straw/60"
                 : treatment.mashAcid.amount + treatment.spargeAcid.amount > 0

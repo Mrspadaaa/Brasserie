@@ -149,6 +149,28 @@ async function jouer(dir) {
           return res;
         }, SELS);
         if (drapeau('captures')) await p.screenshot({ path: path.join(sortie, `${combo}.png`) });
+        // --geste : réglage au doigt d'un sel (+ deux fois) et de l'acide d'empâtage (+), puis capture `<combo>-geste.png`
+        // et les hauteurs mesurées (cellule de sel, nom, champ ; rangée du rapport ; bas de la ligne pH contre la fenêtre utile).
+        if (drapeau('geste')) {
+          const avant = await p.evaluate(() => document.querySelector('[data-water-ph]')?.innerText.trim() ?? '');
+          const touches = [await toucherTexte('Ajouter 0,5 g de Gypse'), await toucherTexte('Ajouter 0,5 g de Gypse'), await toucherTexte('^Ajouter 0,5 mL — empâtage')];
+          await sleep(1200);
+          const g = await p.evaluate((bas) => {
+            const h = (s) => { const e = document.querySelector(s); if (!e) return null; const r = e.getBoundingClientRect(); return `${Math.round(r.top)}–${Math.round(r.bottom)} (${Math.round(r.height)})`; };
+            return {
+              cellule: h('#water-salt-gypse'), nom: h('#water-salt-gypse .water-salt-name'), champ: h('#water-salt-gypse input, #water-salt-gypse textarea'),
+              rapport: h('.water-ratio-compact'), lectures: h('.water-ratio-compact .ratio-readings'), ph: h('[data-water-ph]'), bas,
+              gypse: document.querySelector('#water-salt-gypse input, #water-salt-gypse textarea')?.value,
+              acide: document.querySelector('[data-water-acids] input, [data-water-acids] textarea')?.value,
+              phTexte: document.querySelector('[data-water-ph]')?.innerText.trim(),
+              styles: ['#water-salt-gypse .water-salt-name', '#water-salt-gypse input, #water-salt-gypse textarea', '.water-ratio-compact .ratio-readings', '.water-ratio-compact .ratio-track', '.water-ratio-compact .ratio-title']
+                .map((s) => { const e = document.querySelector(s); if (!e) return null; const c = getComputedStyle(e); const r = e.getBoundingClientRect(); return `${e.tagName} y${Math.round(r.top)} h${Math.round(r.height)} minH ${c.minHeight} mt ${c.marginTop} pad ${c.paddingTop}/${c.paddingBottom} fs ${c.fontSize} lh ${c.lineHeight} pos ${c.position}`; }),
+            };
+          }, m.bas);
+          console.log(`  · geste ${combo} touches ${touches.join('/')} ; pH avant « ${avant} »`);
+          console.log(`    ${JSON.stringify(g)}`);
+          await p.screenshot({ path: path.join(sortie, `${combo}-geste.png`) });
+        }
         if (tactile) {
           const c = combo;
           console.log(`  · ${c} fenêtre utile ${Math.round(m.haut)}–${Math.round(m.bas)} px, défilement ${Math.round(m.scroll)}`);
