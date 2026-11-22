@@ -44,10 +44,9 @@ function Marque({ a, ink }: { a: MarqueMur; ink: string }) {
   if (a.rayon === 'Malts') {
     const compter = a.etat === 'compter';
     return (
-      <svg {...attrs} data-cer={a.cereale} data-forme={a.forme} {...(compter ? { 'data-etat': 'compter' } : {})} {...(a.sucre ? { 'data-sucre': '1' } : {})} className="l1e-b sw-m" width={w} height={h} viewBox={`0 0 ${w} ${h}`} focusable="false">
+      <svg {...attrs} data-cer={a.cereale} data-forme={a.forme} {...(compter ? { 'data-etat': 'compter' } : {})} className="l1e-b sw-m" width={w} height={h} viewBox={`0 0 ${w} ${h}`} focusable="false">
         <title>{a.titre}</title>
         {compter ? <path d={a.trace} fill="#fff" stroke="#333" strokeWidth="1.5" strokeDasharray="2 1.5" strokeLinejoin="round" transform="translate(0 0)" /> : <path d={a.trace} style={{ fill: a.fill, ...(parseInt(a.fill.slice(1, 3), 16) < 0x70 ? { stroke: 'var(--l1-lisere)', strokeWidth: 1 } : {}) }} />}
-        {a.sucre && !compter && <><defs><pattern id="sw-pts" width="4" height="4" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#fff" /></pattern></defs><path d={a.trace} fill="url(#sw-pts)" /></>}
       </svg>
     );
   }

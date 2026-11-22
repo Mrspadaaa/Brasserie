@@ -907,35 +907,88 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
     const bx = (r) => ({ l: r.left, r: r.right, t: r.top, b: r.bottom });
     const cache = (e) => !!e.closest('.ent-nom-cache');
     const et = [];
-    for (const [sel, k] of [['[data-nom-courbe]', 'nom'], ['[data-niveau-courbe]', 'niveau'], ['[data-sous-zero]', 'zéro'], ['[data-mise-de-cote="etiquette"]', 'mise'], ['.ent-cb .ent-mois', 'mois']]) {
-      for (const e of document.querySelectorAll(sel)) { if (cache(e)) continue; const r = vis(e); if (r) et.push({ k, t: (e.textContent || '').replace(/s+/g, ' ').trim(), ...bx(r) }); }
+    for (const [sel, k] of [['[data-nom-courbe]', 'nom'], ['[data-niveau-courbe]', 'niveau'], ['[data-sous-zero="repere"]', 'zéro'], ['[data-mise-de-cote="etiquette"]', 'mise'], ['.ent-cb .ent-mois', 'mois']]) {
+      for (const e of document.querySelectorAll(sel)) { if (cache(e)) continue; const r = vis(e); if (r) et.push({ k, tx: (e.textContent || '').replace(/\s+/g, ' ').trim(), ...bx(r) }); }
     }
-    const cad = [...document.querySelectorAll('[data-cadre-etiquette]')].map((e) => { const r = vis(e); return r ? { k: 'cadre', t: (e.textContent || '').replace(/s+/g, ' ').trim(), ...bx(r) } : null; }).filter(Boolean);
-    const pog = [...document.querySelectorAll('[data-poignee]')].map((e) => { const i = e.querySelector('i'); const r = i ? vis(i) : null; return r ? { k: 'poignée ' + e.getAttribute('data-poignee'), t: '', ...bx(r) } : null; }).filter(Boolean);
-    const grad = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].map((e) => ({ r: vis(e), t: (e.textContent || '').trim() })).filter((g) => g.r && g.r.right > 0 && g.r.left < innerWidth && /^Sd+$/.test(g.t)).map((g) => g.t);
+    const cad = [...document.querySelectorAll('[data-cadre-etiquette]')].map((e) => { const r = vis(e); return r ? { k: 'cadre', tx: (e.textContent || '').replace(/\s+/g, ' ').trim(), ...bx(r) } : null; }).filter(Boolean);
+    const pog = [...document.querySelectorAll('[data-poignee]')].map((e) => { const i = e.querySelector('i'); const r = i ? vis(i) : null; return r ? { k: 'poignée ' + e.getAttribute('data-poignee'), tx: '', ...bx(r) } : null; }).filter(Boolean);
+    const grad = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].map((e) => ({ r: vis(e), t: (e.textContent || '').trim() })).filter((g) => g.r && g.r.right > 0 && g.r.left < innerWidth && /^S\d+$/.test(g.t)).map((g) => g.t);
     return { et, cad, pog, grad, svg: sr ? bx(sr) : null };
   });
   const verifierEtiquettes = async (quand) => {
     const d = await lireEtiquettes(); const fautes = [];
     const croise = (a, b) => Math.min(a.r, b.r) - Math.max(a.l, b.l) > 1 && Math.min(a.b, b.b) - Math.max(a.t, b.t) > 1;
-    const nom = (a) => `« ${a.t || a.k} »`;
+    const nom = (a) => `« ${a.tx || a.k} »`;
     for (let i = 0; i < d.et.length; i++) {
       const a = d.et[i];
       for (const q of d.pog) if (croise(a, q)) fautes.push(`${nom(a)} croise la ${q.k}`);
-      for (const c of d.cad) if (croise(a, c)) fautes.push(`${nom(a)} croise l'étiquette du cadre « ${c.t} »`);
+      for (const c of d.cad) if (croise(a, c)) fautes.push(`${nom(a)} croise l'étiquette du cadre « ${c.tx} »`);
       for (let j = i + 1; j < d.et.length; j++) if (croise(a, d.et[j])) fautes.push(`${nom(a)} croise ${nom(d.et[j])}`);
       if (d.svg && (a.l < d.svg.l - 0.5 || a.r > d.svg.r + 0.5)) fautes.push(`${nom(a)} sort de la courbe (${Math.round(a.l - d.svg.l)} / ${Math.round(a.r - d.svg.r)} px)`);
     }
-    for (const c of d.cad) if (/^Sd+$/.test(c.t) && d.grad.includes(c.t)) fautes.push(`« ${c.t} » écrit deux fois (cadre et graduation)`);
+    for (const c of d.cad) if (/^S\d+$/.test(c.tx) && d.grad.includes(c.tx)) fautes.push(`« ${c.tx} » écrit deux fois (cadre et graduation)`);
     fautes.length ? echec(`${quand}`, [...new Set(fautes)].slice(0, 4).join(' ; ')) : ok(`${quand}`, `${d.et.length} étiquette(s), ${d.pog.length} poignée(s) : aucun croisement, semaine dite une fois`);
   };
   const sectionEtiquettes = async () => {
     const F = `étiquettes de la frise ${combo}`;
     try {
-      for (const duree of ['1 sem.', '6 sem.', '3 mois', '6 mois', 'An']) {
+      for (const duree of ['6 sem.', '3 mois', '6 mois', 'An']) {
         await versCalendrier(); await choisirPeriode(duree); await sleep(600);
-        await cap(`etiquettes-${duree.replace(/W+/g, '')}`);
+        await cap(`etiquettes-${duree.replace(/\W+/g, '')}`);
         await verifierEtiquettes(`${F} ${duree}`);
+      }
+      /* les échelles qu'aucun menu ne donne : 1 semaine (la fin tirée sur le début) et 7 semaines, 30 semaines (la fin tirée plus loin) */
+      for (const [nom, depart, dx] of [['1 sem.', '6 sem.', -1000], ['7 sem.', '6 sem.', 40], ['30 sem.', '6 mois', 70]]) {
+        await versCalendrier(); await choisirPeriode(depart); await sleep(500);
+        const g = await boiteCadre(); if (!g) { echec(`${F} ${nom}`, 'cadre introuvable'); continue; }
+        const x1 = g.r - 1; await glisser(x1, g.y, pas(x1, dx < -500 ? g.l - 3 : x1 + dx)); await sleep(600);
+        await cap(`etiquettes-${nom.replace(/\W+/g, '')}`);
+        await verifierEtiquettes(`${F} ${nom}`);
+      }
+    } catch (e) { echec(F, String(e.message ?? e).slice(0, 200)); }
+  };
+  /* CAL-AN-390 (22.11, capture 38 : « Toujours et encore des problèmes... », 390, échelle An) : à 390, à chaque échelle, aucun texte rogné ni chevauché
+     dans l'en-tête (mois, graduations, noms, étiquette du cadre), les barres de la frise et la fiche ouverte : ni « … » écrit, ni `text-overflow: ellipsis`
+     qui rogne, ni texte plus large que sa boîte coupée (`overflow` ≠ visible, scrollWidth > clientWidth), ni deux textes qui se recouvrent. */
+  const lireTextes = (zone) => p.evaluate((z) => {
+    const racine = (() => { let e = document.querySelector('.ent-cb'); while (e && !(e.querySelector('[data-periode-pastille]') && e.querySelector('[data-bande-semaines]'))) e = e.parentElement; return e; })();
+    const zones = { entete: racine, frise: document.querySelector('[data-frise]'), fiche: document.querySelector('[data-detail]') };
+    const r0 = zones[z]; if (!r0) return { absent: true };
+    const fautes = [], boites = [];
+    const feuilles = [...r0.querySelectorAll('*')].filter((e) => !e.children.length && (e.textContent || '').trim() && !e.closest('svg title, .ent-nom-cache, [aria-hidden="true"]') && !(e instanceof SVGTitleElement));
+    for (const e of feuilles) {
+      const r = e.getBoundingClientRect(); if (r.width < 1 || r.height < 1 || r.right < 0 || r.left > innerWidth) continue;
+      const t = (e.textContent || '').replace(/\s+/g, ' ').trim(), c = getComputedStyle(e);
+      if (/…|\.\.\./.test(t)) fautes.push(`« ${t.slice(0, 24)} » écrit avec « … »`);
+      for (let a = e; a && a !== r0.parentElement; a = a.parentElement) {
+        if (!(a instanceof HTMLElement)) continue;
+        const s = getComputedStyle(a), rogne = s.textOverflow === 'ellipsis' || s.overflowX === 'hidden' || s.overflowX === 'clip';
+        if (rogne && a.scrollWidth > a.clientWidth + 1 && a.clientWidth > 0 && a.contains(e) && (a === e || a.children.length < 4)) { fautes.push(`« ${t.slice(0, 24)} » rogné (${a.scrollWidth} > ${a.clientWidth} px, ${a.tagName.toLowerCase()}.${String(a.className).split(' ')[0]})`); break; }
+      }
+      if (e.closest('svg') && !(e instanceof SVGTextElement || e instanceof SVGTSpanElement)) continue;
+      boites.push({ t, l: r.left, r: r.right, hi: r.top, b: r.bottom });
+    }
+    for (let i = 0; i < boites.length; i++) for (let j = i + 1; j < boites.length; j++) { const a = boites[i], b = boites[j]; if (Math.min(a.r, b.r) - Math.max(a.l, b.l) > -2 && Math.min(a.b, b.b) - Math.max(a.hi, b.hi) > 3) fautes.push(`« ${a.t.slice(0, 18)} » croise ou touche « ${b.t.slice(0, 18)} »`); }
+    return { fautes: [...new Set(fautes)] };
+  }, zone);
+  const sectionAn390 = async () => {
+    const F = `CAL-AN-390 ${combo}`;
+    if (!tactile) return;
+    try {
+      for (const duree of ['6 sem.', '3 mois', '6 mois', 'An']) {
+        await versCalendrier(); await choisirPeriode(duree); await sleep(600);
+        await cap(`an390-${duree.replace(/\W+/g, '')}`);
+        for (const z of ['entete', 'frise']) {
+          const r = await lireTextes(z);
+          r.absent ? echec(`${F} ${duree} ${z}`, 'zone introuvable') : r.fautes.length ? echec(`${F} ${duree} ${z}`, r.fautes.slice(0, 4).join(' ; ')) : ok(`${F} ${duree} ${z}`, 'aucun texte rogné ni chevauché');
+        }
+        const b = await p.evaluate(() => { const e = [...document.querySelectorAll('[data-chose]')].find((x) => { const r = x.getBoundingClientRect(); return r.width > 20 && r.left >= 0 && r.right <= innerWidth && r.top > 0 && r.bottom < innerHeight; }); if (!e) return null; const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
+        if (!b) { echec(`${F} ${duree} fiche`, 'aucune barre touchable dans la vue'); continue; }
+        await toucherXY(b[0], b[1]); await sleep(700);
+        await cap(`an390-${duree.replace(/\W+/g, '')}-fiche`);
+        const f = await lireTextes('fiche');
+        f.absent ? echec(`${F} ${duree} fiche`, 'aucune fiche ouverte') : f.fautes.length ? echec(`${F} ${duree} fiche`, f.fautes.slice(0, 4).join(' ; ')) : ok(`${F} ${duree} fiche`, 'aucun texte rogné ni chevauché');
+        await echap(); await sleep(300);
       }
     } catch (e) { echec(F, String(e.message ?? e).slice(0, 200)); }
   };
@@ -1077,7 +1130,7 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
   // --sections a,b : seulement ces sections du Calendrier (itération ; le défaut les joue toutes)
   const SECTIONS = opt('sections', null)?.split(',');
   let ptApp0 = await p.evaluate(() => document.querySelector('[data-periode-pastille] .pr-court')?.textContent?.trim() ?? null);
-  for (const [nom, f] of Object.entries({ sectionJourBord, sectionGlisseJour, sectionBarre, sectionCadre, sectionFeuille, sectionFeuilleJour, sectionModifier, sectionFiche, sectionRangees, sectionBarreBord, sectionChg4, sectionChg5, sectionChg6, sectionBarreHors, sectionCuve, sectionFicheFrise, sectionPasseLibre, sectionEchelles, sectionEtiquettes })) if (!SECTIONS || SECTIONS.includes(nom)) { await f(); const pt1 = await p.evaluate(() => document.querySelector('[data-periode-pastille] .pr-court')?.textContent?.trim() ?? null); if (ptApp0 === undefined) ptApp0 = pt1; else if (pt1 !== ptApp0) echec(`CAL-PERIODE-APP-FIXE ${combo} après ${nom}`, `la période de l'app a changé : « ${ptApp0} » → « ${pt1} »`); }
+  for (const [nom, f] of Object.entries({ sectionJourBord, sectionGlisseJour, sectionBarre, sectionCadre, sectionFeuille, sectionFeuilleJour, sectionModifier, sectionFiche, sectionRangees, sectionBarreBord, sectionChg4, sectionChg5, sectionChg6, sectionBarreHors, sectionCuve, sectionFicheFrise, sectionPasseLibre, sectionEchelles, sectionEtiquettes, sectionAn390 })) if (!SECTIONS || SECTIONS.includes(nom)) { await f(); const pt1 = await p.evaluate(() => document.querySelector('[data-periode-pastille] .pr-court')?.textContent?.trim() ?? null); if (ptApp0 === undefined) ptApp0 = pt1; else if (pt1 !== ptApp0) echec(`CAL-PERIODE-APP-FIXE ${combo} après ${nom}`, `la période de l'app a changé : « ${ptApp0} » → « ${pt1} »`); }
   await cap('fin');
 }
 

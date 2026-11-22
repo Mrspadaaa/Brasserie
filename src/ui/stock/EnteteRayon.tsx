@@ -12,7 +12,7 @@ const ICONES: Record<number, string> = {
   4: 'M10 3h4v4l2 3v10a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V10l2-3V3ZM8 13h8',
   5: 'M9 3h6M12 3v4M7 10a5 5 0 0 1 10 0v10a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V10Zm3 5h4',
 };
-const NOM_AFFICHE: Record<string, string> = { Malts: 'Malts et sucres', Houblons: 'Houblons', Levures: 'Levures' };
+const NOM_AFFICHE: Record<string, string> = { Malts: 'Malts', Houblons: 'Houblons', Levures: 'Levures' };
 
 /** La règle de la barre : dessous le titre sur mobile, dans l'en-tête de tableau (colonne « échelle ») à partir de 900 px. */
 const Regle: React.FC<{ e: Echelle; rayon: string; classe: string }> = ({ e, rayon, classe }) => (

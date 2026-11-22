@@ -96,6 +96,15 @@ const RANGEES_SECTION: Record<NonNullable<CalendrierTabProps['section']>, readon
   finances: ['ventes', 'achats', 'travaux', 'papiers'], brassins: ['brassins', 'ventes'], materiel: ['travaux', 'achats', 'activites'], stocks: ['brassins', 'achats'], agenda: ['fetes', 'activites', 'brassins']
 };
 
+/** CAL-PERIODE-APP-FIXE : la fenêtre locale du calendrier, gardée par appareil (hors du cache d'état d'écran : un test qui vide le stockage la vide). */
+const CLE_FENETRE_LOCALE = 'laffinee.calendrier.fenetre-locale';
+function lireFenetreLocale(): { app: string; locale: Periode | null } | null {
+  try { const brut = localStorage.getItem(CLE_FENETRE_LOCALE); return brut ? JSON.parse(brut) : null; } catch { return null; }
+}
+function ecrireFenetreLocale(app: string, locale: Periode | undefined): void {
+  try { localStorage.setItem(CLE_FENETRE_LOCALE, JSON.stringify({ app, locale: locale ?? null })); } catch { /* stockage plein ou refusé : la fenêtre ne se garde pas */ }
+}
+
 /** Un état d'écran gardé par appareil (épingles, étoiles, rangées masquées, ordre : E39). */
 function useEtatGarde<T>(cle: string, defaut: T): [T, (valeur: T) => void] {
   const [valeur, setValeur] = useState<T>(() => StorageService.getUiState<T>(cle, defaut));
@@ -220,10 +229,28 @@ export function CalendrierTab(props: CalendrierTabProps) {
   });
   /* CHN-6 : un saut vers une chose (centrerSur) ne change pas la période de l'app : la fenêtre se pose sur la chose, la période locale se lit
      dans cette fenêtre, et celle de l'app (« Nov. ») reste ce qu'elle était, au retour aussi. Elle ne se rejoint qu'au premier changement venu d'ailleurs. */
-  const [periodeLocale, setPeriodeLocale] = useState<Periode | undefined>(centrerSur ? undefined : props.periode);
   const clePeriode = JSON.stringify(props.periode ?? null);
-  const clePeriodeMontee = useRef(clePeriode);
-  useEffect(() => { if (centrerSur && clePeriode === clePeriodeMontee.current) return; setPeriodeLocale(props.periode); // eslint-disable-next-line react-hooks/exhaustive-deps
+  /* CAL-PERIODE-APP-FIXE : la fenêtre locale se garde par appareil, avec la période de l'app qu'elle accompagnait ; au rechargement elle revient telle
+     quelle, sauf si la période de l'app a changé entre-temps (alors celle-ci l'emporte). */
+  const [periodeLocale, setPeriodeLocaleEtat] = useState<Periode | undefined>(() => {
+    if (centrerSur) return undefined;
+    const gardee = lireFenetreLocale();
+    return gardee && gardee.app === clePeriode && gardee.locale ? gardee.locale : props.periode;
+  });
+  const setPeriodeLocale = useCallback((p: Periode | undefined) => {
+    setPeriodeLocaleEtat(p);
+    ecrireFenetreLocale(clePeriode, p);
+  }, [clePeriode]);
+  const clePeriodeVue = useRef(clePeriode);
+  useEffect(() => {
+    if (clePeriode === clePeriodeVue.current) return;
+    clePeriodeVue.current = clePeriode;
+    /* la période de l'app peut n'arriver qu'après le montage (état d'écran lu en différé) : la fenêtre gardée pour CETTE période se retrouve alors */
+    const gardee = lireFenetreLocale();
+    if (gardee && gardee.app === clePeriode && gardee.locale) { setPeriodeLocaleEtat(gardee.locale); return; }
+    setPeriodeLocaleEtat(props.periode);
+    ecrireFenetreLocale(clePeriode, props.periode);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clePeriode]);
   /* CRITIQUE-6 n° 11 (E07 ET-PER, D-12, D-13) : la période de l'app EST celle du calendrier, dans les deux sens. Une plage, un mois, un
      trimestre ou une année réglés dans la barre de l'app ou dans Finances règlent la fenêtre (l'en-tête la suit : « Nov. » dans la barre,
@@ -506,11 +533,13 @@ export function CalendrierTab(props: CalendrierTabProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modele.courbe]);
   /* CHG-5 : la fenêtre d'avant le premier défilement du geste ; un geste annulé la rend (rien n'est écrit, la fenêtre non plus) */
-  const fenetreAvant = useRef<FenetreSemaines | null>(null);
+  const fenetreAvant = useRef<{ fenetre: FenetreSemaines; periode: Periode | undefined } | null>(null);
+  const periodeLocaleRef = useRef(periodeLocale);
+  periodeLocaleRef.current = periodeLocale;
   const rendreFenetre = (annule: boolean) => {
     const avant = fenetreAvant.current;
     fenetreAvant.current = null;
-    if (annule && avant) { fenetreRef.current = avant; setFenetre(avant); }
+    if (annule && avant) { fenetreRef.current = avant.fenetre; setFenetre(avant.fenetre); setPeriodeLocale(avant.periode); }
   };
   const finGeste = useCallback(() => { parJourRef.current = null; fenetreAvant.current = null; setDrag(null); setIci(null); setApercu(null); setDuree(null); }, []);
   /*
@@ -999,7 +1028,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const defilerFenetre = useCallback((sens: -1 | 1, mode: 'glisse' | 'bord' = 'glisse'): false | number => {
     const f = fenetreRef.current;
     if (mode === 'glisse' && aDesJours(colonnesRef.current)) return false;
-    if (!fenetreAvant.current) fenetreAvant.current = f;
+    if (!fenetreAvant.current) fenetreAvant.current = { fenetre: f, periode: periodeLocaleRef.current };
     const n = f.semaines + 1;
     /* VISION-tour9 n° 2 (CAL-BARRE-BORD, « ça doit agrandir l'échelle ») : une chose glissée au jour faisait GLISSER la fenêtre dès qu'un jour
        passait sous 8 px (390, 6 sem. : S47–S52 devenait S49–S1). Elle grandit comme un bord tiré ; le pas reste celui figé à l'appui. */

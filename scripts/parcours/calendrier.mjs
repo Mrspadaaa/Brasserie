@@ -367,7 +367,7 @@ async function jouer(dir) {
       const colonne = () => p.evaluate(() => { const b = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')]; return b.length > 1 ? b[1].getBoundingClientRect().x - b[0].getBoundingClientRect().x : 26; });
       const menuDuree = async (nom) => { const m = await point('[aria-label$="période, liste, tri et filtre"]'); await p.touchscreen.tap(m[0], m[1]); await sleep(650); await toucher(nom); await sleep(500); };
       // chaque étape part de la période par défaut (« ce mois »), quelle que soit celle laissée par les étapes d'avant
-      const periodeNeuve = () => p.evaluate(() => { for (const k of Object.keys(localStorage)) { try { const o = JSON.parse(localStorage.getItem(k)); if (o && typeof o === 'object' && 'app_global_time_filter' in o) { delete o.app_global_time_filter; localStorage.setItem(k, JSON.stringify(o)); } } catch { /* pas du JSON */ } } });
+      const periodeNeuve = () => p.evaluate(() => { for (const k of Object.keys(localStorage)) { try { const o = JSON.parse(localStorage.getItem(k)); if (o && typeof o === 'object' && 'app_global_time_filter' in o) { delete o.app_global_time_filter; localStorage.removeItem('laffinee.calendrier.fenetre-locale'); localStorage.setItem(k, JSON.stringify(o)); } } catch { /* pas du JSON */ } } });
       const recharger = async () => { await periodeNeuve(); await p.goto(url, { waitUntil: 'load' }); await sleep(1200); await versCalendrier(); };
 
       // B8 / WFP-3 : une barre lâchée une semaine avant la semaine courante se dessine là où le doigt l'a lâchée (pas sur aujourd'hui)
@@ -558,7 +558,7 @@ async function jouer(dir) {
       const CLE = 'parcours-calendrier:cache';
       const lireCache = () => p.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? '[]'), CLE);
       const nouveaux = (avant, apres, ...colls) => apres.filter((e) => colls.includes(e.name) && !avant.some((a) => a.name === e.name && a.id === e.id));
-      const periodeNeuve = () => p.evaluate(() => { for (const k of Object.keys(localStorage)) { try { const o = JSON.parse(localStorage.getItem(k)); if (o && typeof o === 'object' && 'app_global_time_filter' in o) { delete o.app_global_time_filter; localStorage.setItem(k, JSON.stringify(o)); } } catch { /* pas du JSON */ } } });
+      const periodeNeuve = () => p.evaluate(() => { for (const k of Object.keys(localStorage)) { try { const o = JSON.parse(localStorage.getItem(k)); if (o && typeof o === 'object' && 'app_global_time_filter' in o) { delete o.app_global_time_filter; localStorage.removeItem('laffinee.calendrier.fenetre-locale'); localStorage.setItem(k, JSON.stringify(o)); } } catch { /* pas du JSON */ } } });
       const rechargerV = async () => { await periodeNeuve(); await p.goto(url, { waitUntil: 'load' }); await sleep(1200); await versCalendrier(); await fermer(); };
       const message = () => p.evaluate(() => [...document.querySelectorAll('[role=status]')].map((e) => e.innerText.replace(/\s+/g, ' ').trim()).filter(Boolean).join(' | '));
       const feuille = () => p.evaluate(() => { const d = [...document.querySelectorAll('[role=dialog]')].find((e) => e.getBoundingClientRect().width > 0); return d ? d.innerText.replace(/\s+/g, ' ').trim() : null; });
