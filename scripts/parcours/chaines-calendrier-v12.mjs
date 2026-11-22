@@ -11,17 +11,21 @@ const calendrier = (aujourdhui) => fixtureCalendrier(aujourdhui).entrees;
 
 const MENU = '[data-menu-periode] button';
 
-/** La fenêtre dite par la barre de l'app (« 16.11–29.11 » ou « Nov. ») : du, au (ISO) ; le libellé de la pastille ▾ ; ses coches. */
+/** CAL-PERIODE-APP-FIXE (22.11, « Cette période là reste fixe, le reste peut être mobile ») : la barre de l'app (`app`, « Novembre 2026 »)
+ *  ne suit plus le menu du Calendrier ; la fenêtre du Calendrier (du, au : ISO) se lit sur les graduations visibles de sa bande (data-lundi,
+ *  lundi de chaque semaine). Rend aussi le cadre, le libellé de la pastille ▾ et les coches du menu. */
 const lire = (s) => s.p.evaluate(() => {
-  const an = new Date().getFullYear();
   const pr = document.querySelector('[data-periode-pastille]');
-  const court = pr?.querySelector('.pr-court')?.textContent?.trim() ?? '';
-  const m = [...court.matchAll(/(\d{1,2})\.(\d{1,2})(?:\.(\d{2,4}))?/g)];
-  const iso = (x) => { const y = x[3] ? (x[3].length === 2 ? 2000 + Number(x[3]) : Number(x[3])) : an; return `${y}-${x[2].padStart(2, '0')}-${x[1].padStart(2, '0')}`; };
+  const app = [pr?.querySelector('.pr-court')?.textContent?.trim() ?? '', pr?.querySelector('.pr-ce')?.getAttribute('aria-label') ?? ''].join(' | ');
+  const vus = (q, a) => [...document.querySelectorAll(q)].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.right > 0 && r.left < innerWidth; }).map((e) => e.getAttribute(a)).sort();
+  /* en « 2 sem. » et « Jour », la bande est en colonnes de jours (BandeColonnes, data-jour) ; sinon en semaines (BandeSemaines, data-lundi) */
+  const jours = vus('[data-jour]', 'data-jour');
+  const gl = jours.length ? jours : vus('[data-bande-semaines] [data-lundi], [data-semaine-bande]', 'data-lundi');
+  const dimanche = (iso) => (jours.length ? iso : new Date(Date.parse(`${iso}T12:00:00Z`) + 6 * 86400000).toISOString().slice(0, 10));
   const cadre = document.querySelector('.ent-cadre')?.getAttribute('aria-label')?.replace(/^Fenêtre : /, '') ?? '';
   const bouton = document.querySelector('button[aria-label$="période, liste, tri et filtre"]');
   const coches = [...document.querySelectorAll('[data-menu-periode] button[aria-pressed="true"]')].map((b) => b.textContent.trim());
-  return { court, du: m.length >= 2 ? iso(m[0]) : null, au: m.length >= 2 ? iso(m[1]) : null, cadre, pastille: (bouton?.textContent ?? '').replace(/\s+/g, ' ').trim(), coches };
+  return { app, du: gl[0] ?? null, au: gl.length ? dimanche(gl[gl.length - 1]) : null, cadre, pastille: (bouton?.textContent ?? '').replace(/\s+/g, ' ').trim(), coches };
 });
 
 export function etapesV12({ echec, ok, sleep }) {
@@ -44,12 +48,13 @@ export function etapesV12({ echec, ok, sleep }) {
         const l0 = await lire(s);
         const a = await choisir(s, '2 sem.');
         await s.cap('CH-N3-1-nov-2sem');
-        if (!contient(a, aujourdhui)) fautes.push(`depuis « ${l0.court} », « 2 sem. » pose ${a.du} → ${a.au} (cadre « ${a.cadre} »), aujourd'hui (${aujourdhui}) hors champ`);
+        if (!contient(a, aujourdhui)) fautes.push(`depuis « ${l0.pastille} », « 2 sem. » pose ${a.du} → ${a.au} (cadre « ${a.cadre} »), aujourd'hui (${aujourdhui}) hors champ`);
         await choisir(s, 'An');
         const b = await choisir(s, 'Jour');
         await s.cap('CH-N3-2-an-jour');
         if (!contient(b, aujourdhui)) fautes.push(`depuis An, « Jour » pose ${b.du} → ${b.au} (cadre « ${b.cadre} »), aujourd'hui (${aujourdhui}) hors champ`);
         if (a.du && b.du && a.du !== b.du) fautes.push(`deux règles : « 2 sem. » pose ${a.du}, « Jour » pose ${b.du}`);
+        for (const [quand, l] of [['« 2 sem. »', a], ['« Jour »', b]]) if (l.app !== l0.app) fautes.push(`${quand} a bougé la période de l'app : « ${l0.app} » → « ${l.app} » (elle est fixe, CAL-PERIODE-APP-FIXE)`);
         if (fautes.length) return echec('CH-N3', fautes.slice(0, 3).join(' ; '));
         ok('CH-N3', `« 2 sem. » depuis Nov. : ${a.du} → ${a.au} ; « Jour » depuis An : ${b.du} → ${b.au} ; aujourd'hui (${aujourdhui}) dedans, même règle`);
       }

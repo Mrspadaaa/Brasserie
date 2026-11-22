@@ -48,15 +48,38 @@ const fleche = async (s, sleep, nom) => {
 /** Le cadre d'An attendu pour la barre : mois et années des jeudis de la première et de la dernière semaine. */
 const anAttendu = (du, au) => { const a = jeudi(du), b = jeudi(au); return { m1: MOIS[Number(a.slice(5, 7)) - 1], y1: a.slice(0, 4), m2: MOIS[Number(b.slice(5, 7)) - 1], y2: b.slice(0, 4) }; };
 /** La barre et le cadre disent-ils la même fenêtre ? (An : mois et années ; sinon : semaines ISO). Rend le défaut, ou ''. */
-let PASTILLE0 = null; // la pastille de l'app au premier relevé de l'étape : elle ne doit plus bouger (CAL-PERIODE-APP-FIXE)
+/* CAL-PERIODE-APP-FIXE (22.11, « Cette période là reste fixe, le reste peut être mobile ») : les gestes du Calendrier (cadre, échelle) ne changent
+   jamais la période de l'app ; seuls les ‹ › de la barre de l'app la changent (le Calendrier n'a pas de ‹ › à lui), et la fenêtre du Calendrier
+   la suit alors (CalendrierTab, effet sur `clePeriode`). Les étapes ci-dessous touchent les ‹ › de l'app : la barre bouge, le Calendrier suit. */
+const appDe = (l) => `${l.court}|${l.ce}`;
+/** Un geste du Calendrier laisse la période de l'app telle quelle. Rend le défaut, ou ''. */
+const fixe = (avant, apres, geste) => (appDe(avant) === appDe(apres) ? '' : `${geste} a bougé la période de l'app : « ${appDe(avant)} » → « ${appDe(apres)} » (elle est fixe)`);
+/** La fenêtre d'An lue dans le cadre (« nov. 2026 – oct. 2027 » ou « janv. – déc. 2027 ») : premier et dernier jour (ISO), ou null. */
+function anDuCadre(cadre) {
+  const m = /^(\S+)(?: (\d{4}))? – (\S+) (\d{4})$/.exec(cadre.trim());
+  if (!m) return null;
+  const k1 = MOIS.indexOf(m[1]), k2 = MOIS.indexOf(m[3]); if (k1 < 0 || k2 < 0) return null;
+  const y2 = Number(m[4]), y1 = m[2] ? Number(m[2]) : y2;
+  return { d: `${y1}-${String(k1 + 1).padStart(2, '0')}-01`, f: new Date(Date.UTC(y2, k2 + 1, 0)).toISOString().slice(0, 10) };
+}
+/** Le cadre et les graduations de la bande disent-ils la même fenêtre ? (semaines ISO ; An : pas de bande). Rend le défaut, ou ''. */
 function ecart(l) {
-  if (PASTILLE0 === null) PASTILLE0 = l.court + '|' + l.ce;
-  else if (PASTILLE0 !== l.court + '|' + l.ce) return `la pastille de l'app a bougé : « ${PASTILLE0} » → « ${l.court}|${l.ce} » (elle est fixe)`;
-  if (!l.gdu || !l.gau) return l.annee ? '' : `graduations de la bande illisibles (cadre « ${l.cadre} »)`; // An : pas de bande de semaines
+  if (!l.gdu || !l.gau) return l.annee ? '' : `graduations de la bande illisibles (cadre « ${l.cadre} »)`;
   const s1 = semaineIso(l.gdu), s2 = semaineIso(l.gau);
-  const n = /^S(d+)(?: – S(d+))?/.exec(l.cadre);
+  const n = /^S(\d+)(?: – S(\d+))?/.exec(l.cadre);
   if (!n) return `cadre « ${l.cadre} » illisible`;
   return Number(n[1]) === s1 && Number(n[2] ?? n[1]) === s2 ? '' : `graduations ${l.gdu}→${l.gau} (S${s1}–S${s2}), cadre « ${l.cadre} »`;
+}
+/** Après un ‹ › de l'app, la fenêtre du Calendrier montre la période de l'app (elle la contient). Rend le défaut, ou ''. */
+function suit(l) {
+  if (!l.du || !l.au) return `période de l'app illisible (« ${appDe(l)} »)`;
+  const f = l.annee ? anDuCadre(l.cadre) : (l.gdu && l.gau ? { d: l.gdu, f: l.gau } : null);
+  if (!f) return `fenêtre du Calendrier illisible (cadre « ${l.cadre} »)`;
+  if (f.d <= l.du && l.au <= f.f) return '';
+  /* la dernière période de l'app (› éteint : la suivante commencerait après l'horizon) peut finir au-delà de l'horizon : le Calendrier en montre
+     le début jusqu'à son bout ; il doit alors contenir son premier jour */
+  if (l.suivEteinte && f.d <= l.du && l.du <= f.f) return '';
+  return `la période de l'app ${l.du}→${l.au} sort de la fenêtre du Calendrier ${f.d}→${f.f} (cadre « ${l.cadre} »)`;
 }
 
 async function cdpDe(s) { return s.p.createCDPSession ? s.p.createCDPSession() : s.p.target().createCDPSession(); }
@@ -72,19 +95,23 @@ const poignee = (s, q) => s.p.evaluate((q) => { const b = document.querySelector
 const pas = (a, b, n = 8) => Array.from({ length: n }, (_, k) => a + ((b - a) * (k + 1)) / n);
 
 export function etapesV8({ echec, ok, sleep }) {
-  const versCalendrier = async (s) => { PASTILLE0 = null; await s.onglet('Calendrier'); await sleep(1800); };
+  const versCalendrier = async (s) => { await s.onglet('Calendrier'); await sleep(1800); };
   return [
     {
       id: 'CH-V4', titre: 'An : la barre, le cadre de la courbe et les pastilles de rangée nomment la même fenêtre, avec l’année ; › puis ‹ : le cadre suit (CHV-4, CHD-7)',
       entrees: calendrier,
       async joue(s) {
-        await versCalendrier(s); await choisir(s, sleep, 'An');
-        await s.cap('CH-V4-1-an');
+        await versCalendrier(s);
         const fautes = [];
+        const lAvant = await lire(s);
+        await choisir(s, sleep, 'An');
+        await s.cap('CH-V4-1-an');
         const verifier = (l, quand) => {
           const e = ecart(l); if (e) fautes.push(`${quand} : ${e}`);
           if (!l.annee) fautes.push(`${quand} : le cadre n'est pas l'An`);
-          const y = l.du && l.au ? anAttendu(l.du, l.au) : null;
+          const f = anDuCadre(l.cadre); // l'An du Calendrier (sa fenêtre locale), plus celle de la barre de l'app
+          if (l.annee && !f) fautes.push(`${quand} : cadre d'An « ${l.cadre} » illisible`);
+          const y = f ? { y1: f.d.slice(0, 4), y2: f.f.slice(0, 4) } : null;
           for (const p of l.pastilles) {
             const m = /(\S+)(?: (\d{2}))?–(\S+)(?: (\d{2}))?/.exec(p.t.replace(/^(prévu|confirmé|à encaisser|à payer) /, ''));
             if (!/^S\d/.test(p.t.split(' ')[1] ?? '') && y && y.y1 !== y.y2 && (!m || m[2] !== y.y1.slice(2) || m[4] !== y.y2.slice(2))) fautes.push(`${quand} : pastille « ${p.t} » sans les années ${y.y1}–${y.y2}`);
@@ -92,11 +119,20 @@ export function etapesV8({ echec, ok, sleep }) {
           }
         };
         const l0 = await lire(s); verifier(l0, 'An');
-        let avance = false; // dans l'An, › est éteint dès que la fenêtre suivante sortirait de l'horizon (CHN-1) : alors pas de › ni de ‹ de retour (le passé est borné par les données : à faire)
-        if (await fleche(s, sleep, 'Période suivante')) { avance = true; const l1 = await lire(s); await s.cap('CH-V4-2-suivante'); verifier(l1, '›'); if (l1.cadre === l0.cadre && l1.gdu !== l0.gdu) fautes.push(`› : la barre change (${l1.gdu}), le cadre reste « ${l1.cadre} »`); }
-        if (avance && await fleche(s, sleep, 'Période précédente')) { const l2 = await lire(s); await s.cap('CH-V4-3-precedente'); verifier(l2, '‹'); }
+        const f0 = fixe(lAvant, l0, '« An »'); if (f0) fautes.push(f0);
+        let avance = false; // › de l'app : éteint au bout de l'horizon (CHN-1), alors pas de › ni de ‹ de retour
+        if (await fleche(s, sleep, 'Période suivante')) {
+          avance = true; const l1 = await lire(s); await s.cap('CH-V4-2-suivante'); verifier(l1, '›');
+          if (appDe(l1) === appDe(l0)) fautes.push(`› de l'app : sa période ne bouge pas (« ${appDe(l1)} »)`);
+          const e = suit(l1); if (e) fautes.push(`› : ${e}`);
+        }
+        if (avance && await fleche(s, sleep, 'Période précédente')) {
+          const l2 = await lire(s); await s.cap('CH-V4-3-precedente'); verifier(l2, '‹');
+          if (appDe(l2) !== appDe(l0)) fautes.push(`‹ de l'app : sa période ne revient pas (« ${appDe(l0)} » → « ${appDe(l2)} »)`);
+          const e = suit(l2); if (e) fautes.push(`‹ : ${e}`);
+        }
         if (fautes.length) return echec('CH-V4', fautes.slice(0, 4).join(' ; '));
-        ok('CH-V4', `An : barre ${l0.du}→${l0.au}, cadre « ${l0.cadre} », pastilles ${[...new Set(l0.pastilles.map((p) => p.t))].slice(0, 2).join(' / ')} ; › et ‹ suivis`);
+        ok('CH-V4', `An : cadre « ${l0.cadre} », barre de l'app fixe (« ${l0.ce} »), pastilles ${[...new Set(l0.pastilles.map((p) => p.t))].slice(0, 2).join(' / ')} ; › et ‹ de l'app : le Calendrier suit`);
       }
     },
     {
@@ -105,21 +141,30 @@ export function etapesV8({ echec, ok, sleep }) {
       async joue(s) {
         await versCalendrier(s);
         const fautes = [];
-        for (const [echelle, n] of [['An', 11], ['6 sem.', 30]]) {
+        const depart = appDe(await lire(s));
+        /* La période de l'app est un mois : en An, › jusqu'au bout de l'horizon (la flèche s'éteint) ; puis en 6 sem., ‹ jusqu'au mois de départ.
+           À chaque pas, la barre de l'app bouge et le Calendrier la montre ; changer d'échelle ne la bouge pas. */
+        for (const [echelle, signe, nom, n] of [['An', '›', 'Période suivante', 15], ['6 sem.', '‹', 'Période précédente', 15]]) {
+          const lEch = await lire(s);
           await choisir(s, sleep, echelle);
+          const fx = fixe(lEch, await lire(s), `« ${echelle} »`); if (fx) fautes.push(fx);
           let k = 0, bout = false;
           for (; k < n; k++) {
             const avant = await lire(s);
-            if (!(await fleche(s, sleep, 'Période suivante'))) { bout = true; break; }
+            if (signe === '‹' && appDe(avant) === depart) { bout = true; break; }
+            if (!(await fleche(s, sleep, nom))) { bout = true; break; }
             const l = await lire(s);
-            const e = ecart(l); if (e) { fautes.push(`${echelle}, › ×${k + 1} : ${e}`); break; }
-            if (l.gdu === avant.gdu && !l.suivEteinte && !l.msg) { fautes.push(`${echelle}, › ×${k + 1} : la barre ne bouge plus (${l.gdu}) et la flèche reste allumée, sans un mot`); break; }
+            if (appDe(l) === appDe(avant) && !l.suivEteinte && !l.msg) { fautes.push(`${echelle}, ${signe} ×${k + 1} : la barre de l'app ne bouge plus (« ${l.ce} ») et la flèche reste allumée, sans un mot`); break; }
+            const e = ecart(l) || suit(l); if (e) { fautes.push(`${echelle}, ${signe} ×${k + 1} : ${e}`); break; }
           }
           await s.cap(`CH-N1-${echelle === 'An' ? 'an' : '6sem'}-bout`);
-          if (!bout && !fautes.length) { const l = await lire(s); if (!l.suivEteinte && !l.msg) fautes.push(`${echelle} : après ${n} ›, ni flèche éteinte ni borne dite (barre ${l.gdu}→${l.gau})`); }
+          const l = await lire(s);
+          if (signe === '›' && !bout && !fautes.length && !l.suivEteinte && !l.msg) fautes.push(`${echelle} : après ${n} ›, ni flèche éteinte ni borne dite (barre « ${l.ce} », Calendrier « ${l.cadre} »)`);
+          if (signe === '‹' && !fautes.length && appDe(l) !== depart) fautes.push(`${echelle} : après ${k} ‹, la barre de l'app ne revient pas à « ${depart} » (« ${appDe(l)} »)`);
+          if (signe === '›' && !fautes.length && k < 2) fautes.push(`${echelle} : › s'éteint dès ${k} pas (barre « ${l.ce} ») : rien n'a été éprouvé`);
         }
         if (fautes.length) return echec('CH-N1', fautes.slice(0, 3).join(' ; '));
-        ok('CH-N1', 'An et 6 sem. : à chaque › la barre et le cadre disent la même fenêtre ; au bout, la flèche s’éteint');
+        ok('CH-N1', 'échelle choisie : barre de l’app fixe ; An, › de l’app jusqu’au bout (la flèche s’éteint), 6 sem., ‹ jusqu’au départ : à chaque pas le Calendrier montre la période de l’app');
       }
     },
     {
