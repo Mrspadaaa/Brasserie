@@ -2650,3 +2650,7 @@ Classement de la page r3 de Ma levure (https://claude.ai/artifact/DKAJe8ESeMR4ig
 
 (22.11, pages de choix.) Carnet (choix-carnet-2) : A1 et B1 pris ; C non pris, note sur C3 : « SI sur le calendrier au doigt je peux placer, ça serait top » ; note générale : « g05-9 (choisi) ».
 Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a, d7a, d8a pris ; d4b non pris : « SI j'ai 30 additif différents ? Non je veux qqch de compact comme le reste » ; note générale : « Pour les ingrédients, on peut avoir aussi plusieurs filtrer dynamique. Pas juste, manque, bas ddm. Pas en mettre trop mais mettre les plus pertinents en premier ( tout sur une seule ligne) ».
+
+> Tu peux aussi utiliser, couleur et forme pour les stock autre
+
+(22.11, Autres stocks, D4.)
