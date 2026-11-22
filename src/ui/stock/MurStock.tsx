@@ -113,61 +113,20 @@ function Groupe({ g, r }: { g: GroupeMur; r: RayonMur }) {
   );
 }
 
-/* ---------- les légendes (un seul bouton « ? ») ---------- */
+/* ---------- la légende (D3b, 22.11) : le rond « ? » ouvre une bulle sous lui, cinq lignes (maquette st1-d3b-legende) ---------- */
+function BulleLegende() {
+  return (
+    <div className="sv-leg sv-bulle-leg" id="sv-leg-bulle" role="note" aria-label="Légende du mur" hidden>
+      <Li t="seuil"><span className="sv-bl-seuil" aria-hidden="true" /></Li>
+      <Li t="épuisé"><i className="sv-ep" /></Li>
+      <Li t="à compter"><i className="sv-ac" /></Li>
+      <Li t="sachets"><b className="sx-g0 sv-bl-sachet">U</b></Li>
+      <Li t="échelle resserrée"><b className="sv-bl-res" aria-hidden="true">//</b></Li>
+    </div>
+  );
+}
 const Pi = ({ d, fill = '#D9A441', stroke }: { d: string; fill?: string; stroke?: string }) => <svg className="sv-pi" width="8" height="14" viewBox="0 0 8 14" aria-hidden="true"><path d={d} fill={fill} {...(stroke ? { stroke, strokeWidth: 1 } : {})} /></svg>;
 const Li = ({ children, t }: { children: React.ReactNode; t: string }) => <span className="sv-li">{children}<span>{t}</span></span>;
-const degrade = (base: string) => [92, 70, 50, 36, 22].map((L) => couleurALaClarte(base, L));
-function LegendeMalts() {
-  return (
-    <div className="sv-leg" id="sv-leg-f0" role="note" aria-label="Légende de la rangée Malts" hidden>
-      <Li t="droite : orge"><Pi d="M0 14V0H8V14Z" /></Li>
-      <Li t="pointe : blé"><Pi d="M0 14V5L4 0L8 5V14Z" /></Li>
-      <Li t="biseau : seigle"><Pi d="M0 14V5L8 0V14Z" /></Li>
-      <Li t="dôme : avoine"><Pi d="M0 14V4A4 4 0 0 1 8 4V14Z" /></Li>
-      <Li t="creux : autres (épeautre, maïs, riz, sucre)"><Pi d="M0 14V0L4 4L8 0V14Z" /></Li>
-      <Li t="teinte : la couleur du malt (EBC)">{['#ffd98f', '#d58f36', '#995d2c', '#442517'].map((c) => <i key={c} className="sv-dot sv-sq" style={{ background: c }} />)}</Li>
-      <Li t="gris : EBC non connu"><i className="sy-gr" /></Li>
-      <Li t="tirets : 5 kg pour Base ; 1 kg pour Caramel, Torréfiés, Spéciaux"><i className="sv-tir" /></Li>
-      <Li t="pointillé : à compter"><i className="sv-ac" /></Li>
-      <Li t="cadre rouge : épuisé"><i className="sv-ep" /></Li>
-      <Li t="au bout : rien en stock dans ce style"><i className="sx-o" /></Li>
-    </div>
-  );
-}
-function LegendeHoublons() {
-  const teintes: Array<[string, string]> = TEINTES_LEGENDE.map((t) => [t.id, t.mot]); // les sept teintes de la maquette fA (murDonnees)
-  return (
-    <div className="sv-leg" id="sv-leg-f1" role="note" aria-label="Légende de la rangée Houblons" hidden>
-      <Li t="pointe : fruité moderne"><Pi d="M0 14V5L4 0L8 5V14Z" fill="#9AA592" stroke="#858f7e" /></Li>
-      <Li t="creux : américain classique"><Pi d="M0 14V0L4 4.5L8 0V14Z" fill="#9AA592" stroke="#858f7e" /></Li>
-      <Li t="dôme : noble"><Pi d="M0 14V5A4 5 0 0 1 8 5V14Z" fill="#9AA592" stroke="#858f7e" /></Li>
-      <Li t="plat : amérisant"><Pi d="M0 14V0H8V14Z" fill="#9AA592" stroke="#858f7e" /></Li>
-      <Li t="α en % : clair → foncé"><span className="sx-pl">{['#f7ea93', '#d0bc5b', '#a68a17', '#795c00', '#4b3300'].map((c, k) => <Fragment key={c}><i style={{ background: c }} /><small>{3 * (k + 1)}</small></Fragment>)}</span></Li>
-      <Li t="hachuré : α non connu"><i className="sy-hx" /></Li>
-      <Li t="rangés par α : le plus fort à gauche ; le socle aussi"><i className="sy-so0" style={{ background: 'linear-gradient(90deg,#2E5420,#C9D3C3)' }} /></Li>
-      {teintes.map(([k, nom]) => { const c = degrade(BASE_TEINTE[k]); return <Li key={k} t={nom}><i className="sy-dg" data-teinte={k} data-c={c.join(' ')} style={{ background: `linear-gradient(90deg,${c.join(',')})` }} /></Li>; })}
-      <Li t="tirets : 250 g ; hauteur : la quantité"><i className="sv-tir" /></Li>
-      <Li t="cadre rouge : épuisé"><i className="sv-ep" /></Li>
-      <Li t="au bout : rien en stock dans ce style"><i className="sx-o" /></Li>
-    </div>
-  );
-}
-function LegendeLevures({ r }: { r: RayonMur }) {
-  return (
-    <div className="sv-leg" id="sv-leg-f2" role="note" aria-label="Légende de la rangée Levures" hidden>
-      <Li t="sachet : sèche, un par sachet"><i className="sv-sk" /></Li>
-      <Li t="fiole : liquide, une par fiole"><svg viewBox="0 0 8 13" width="8" height="13" aria-hidden="true"><path d="M1.6 2.6V10.4A2.4 2.4 0 0 0 6.4 10.4V2.6Z" fill="#fff" stroke="#6B5426" /><path d="M2.1 6.6Q4 7.6 5.9 6.6V10.4A1.9 1.9 0 0 1 2.1 10.4Z" fill="#B79A63" /><rect x="1.1" y="0" width="5.8" height="2.6" rx=".5" fill="#6B5426" /></svg></Li>
-      <Li t="lettre : la souche (U pour US-05)"><b className="sx-g0">U</b></Li>
-      <Li t="bord : un par souche"><i className="sv-sk" /><i className="sv-sk" style={{ boxShadow: 'none', borderRadius: 3 }} /><i className="sv-sk" style={{ boxShadow: 'inset 0 0 0 2.5px #6B5426' }} /></Li>
-      <Li t={legendeAutres(r)}><i className="sv-sk" style={{ background: '#BDBDBD' }} /></Li>
-      <Li t="rangées par atténuation : la plus forte à gauche ; le socle aussi"><i className="sy-so0" style={{ background: 'linear-gradient(90deg,#5C4515,#E3D6BC)' }} /></Li>
-      <Li t="barré : DDM dépassée"><i className="sv-sk sv-dx" /></Li>
-      <Li t="cadre rouge : épuisé"><i className="sv-ep" /></Li>
-      <Li t="au bout : rien en stock dans ce style"><i className="sx-o" /></Li>
-    </div>
-  );
-}
-
 /* ---------- le mur, avec son comportement mesuré ---------- */
 function Mur({ m, parRef, onOpen, onFiltre, filtre, retenus, ouvertLegende, onLegende, visible }: { m: MurDonnees; parRef: Map<string, StockItem>; onOpen: (i: StockItem) => void; onFiltre?: Props['onFiltre']; filtre?: Props['filtre']; retenus?: Props['retenus']; ouvertLegende: boolean; onLegende: () => void; visible: boolean }) {
   const racine = useRef<HTMLDivElement>(null);
@@ -254,7 +213,7 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, retenus, ouvertLegende, onLe
               <div className="l1e-c1">
                 <button type="button" className="l1e-n" data-filtre={r.nom} data-f={r.id} aria-pressed={filtre === r.nom} aria-label={`${r.nom} : ${retenus ? compteRayon(r, retenus).long : r.total} article${r.total > 1 ? 's' : ''}, ${r.sousTitre} ; filtrer la liste`} onClick={() => onFiltre?.(filtre === r.nom ? null : r.nom)}><b>{r.nom}</b><span data-compte={retenus ? compteRayon(r, retenus).long : undefined}>{retenus ? compteRayon(r, retenus).court : r.total}</span></button>
                 {r.echelle && <span className="l1e-cl" aria-hidden="true">{r.echelle}</span>}
-                {r.id === 'f2' && <button type="button" className="sv-i sx-q" aria-expanded={ouvertLegende} aria-controls="sv-leg-f0 sv-leg-f1 sv-leg-f2" aria-label="Légende" onClick={onLegende}>?</button>}
+                {r.id === 'f2' && <button type="button" className="sv-i sx-q" aria-expanded={ouvertLegende} aria-controls="sv-leg-bulle" aria-label="Légende" onClick={onLegende}>?</button>}
               </div>
               <div className="l1e-pl">
                 {r.groupes.map((g) => <Groupe g={g} key={g.id} r={r} />)}
@@ -264,9 +223,9 @@ function Mur({ m, parRef, onOpen, onFiltre, filtre, retenus, ouvertLegende, onLe
               {/* STG-1 : quand la rangée ne tient pas, la planche défile et cet indice dit qu'il y a une suite (posé par murMiseEnPage) */}
               <i className="sx-suite" data-suite aria-hidden="true">›</i>
             </div>
-            {r.id === 'f0' ? <LegendeMalts /> : r.id === 'f1' ? <LegendeHoublons /> : <LegendeLevures r={r} />}
           </Fragment>
         ))}
+        <BulleLegende />
       </div>
       <div ref={bulle} className="l1x-bul" role="button" aria-live="polite" hidden />
     </div>

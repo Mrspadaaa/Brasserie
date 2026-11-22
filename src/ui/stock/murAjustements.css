@@ -106,3 +106,12 @@ html[data-theme="cave"] .stock-mur .l1e-r:not(.l1e-sansc) .l1e-gb::after{border-
 .stock-mur .l1e-c1 .sx-q{width:28px;padding:0;border-radius:50%;font:700 15px/25px var(--l1-sans,inherit)}
 .stock-mur .l1e-r:has(.l1e-n[aria-pressed=true]){box-shadow:inset 0 0 0 2px var(--l1-k)}
 .stock-mur .l1e-r:has(.l1e-n[aria-pressed=true])::after{content:"";position:absolute;left:26px;bottom:-8px;width:14px;height:14px;background:var(--l1-page,#fff);transform:rotate(45deg);border-right:2px solid var(--l1-k);border-bottom:2px solid var(--l1-k);z-index:2}
+
+/* D3b (22.11) : la légende est une bulle sous le « ? », cinq lignes de 18 px (maquette st1-d3b-legende), par-dessus la liste. */
+.stock-mur .l1-mur{position:relative}
+.stock-mur .sv-bulle-leg{position:absolute;z-index:30;left:12px;bottom:-4px;transform:translateY(100%);display:flex;flex-direction:column;flex-wrap:nowrap;gap:4px;width:max-content;max-width:calc(100% - 24px);margin:0;padding:10px 14px;border-radius:14px;box-shadow:0 0 0 1.5px var(--l1-t0),0 6px 18px rgba(0,0,0,.18)}
+.stock-mur .sv-bulle-leg[hidden]{display:none}
+.stock-mur .sv-bulle-leg .sv-li{gap:10px;min-height:26px;font-size:16px;color:var(--l1-t0)}
+.stock-mur .sv-bl-seuil{display:inline-block;flex:none;width:22px;height:14px;background:linear-gradient(#B7822E,#B7822E) center/8px 100% no-repeat;border-top:1.5px dashed color-mix(in srgb,var(--l1-t1) 70%,transparent)}
+.stock-mur .sv-bl-sachet{width:14px;height:14px}
+.stock-mur .sv-bl-res{display:inline-block;flex:none;width:22px;text-align:center;font:italic 700 15px/1 var(--l1-sans,inherit);color:var(--l1-t1)}

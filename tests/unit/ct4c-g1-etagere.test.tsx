@@ -70,10 +70,12 @@ describe('CT4C-3 : la ligne Levures dit ce que sont ses pictos', () => {
     expect(b).not.toBeNull();
     expect(b.textContent?.trim()).toBe('?'); expect(b.getAttribute('aria-label')).toBe('Légende');
   });
-  it('la légende des levures dit ce que sont la brique et sa lettre', () => {
+  it('D3b : la légende est une bulle de cinq lignes (seuil, épuisé, à compter, sachets, échelle resserrée)', () => {
     const { container } = render(<MurStock items={STOCK} onOpen={vi.fn()} onOnglet={vi.fn()} onglet="ing" />);
-    const leg = container.querySelector('#sv-leg-f2')!;
-    expect(leg.textContent).toMatch(/sachet/);
-    expect(leg.textContent).toMatch(/lettre : la souche/);
+    const leg = container.querySelector('#sv-leg-bulle')!;
+    expect(leg.querySelectorAll('.sv-li').length).toBe(5);
+    expect(leg.textContent).toMatch(/seuil/);
+    expect(leg.textContent).toMatch(/sachets/);
+    expect(leg.textContent).toMatch(/échelle resserrée/);
   });
 });
