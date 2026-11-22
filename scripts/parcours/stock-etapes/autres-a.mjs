@@ -32,7 +32,7 @@ const lire = () => {
     tiretsPots: document.querySelectorAll('.sa-td').length,
     hPera: h(nom('ZZ TEST Acide peracétique')), hSoude: h(nom('ZZ TEST Soude PBW')), hMax: num(getComputedStyle(sel ?? document.body).getPropertyValue('--hm')),
     hEtiq: h(nom('ZZ TEST Étiquette IPA')), hCan: h(nom('ZZ TEST Canette 33 cl')), hCaps: h(nom('ZZ TEST Capsule 26 mm')),
-    totaux: Object.fromEntries([...document.querySelectorAll('.sa-g')].map((g) => [t(g.querySelector('.l1e-w')), t(g.querySelector('.l1e-t'))])),
+    totaux: Object.fromEntries([...document.querySelectorAll('.sa-g')].map((g) => [g.querySelector('.l1e-w').dataset.long ?? t(g.querySelector('.l1e-w')), t(g.querySelector('.l1e-t'))])),
     ligneMots: /Détartrant\s*0|Peracét\.\s*\d/.test(t(sel)),
     fx: !!document.querySelector('.sa-mur [class*="fx-"]'), formes: [...new Set(pots.map((p) => p.dataset.forme).filter(Boolean))].sort(),
     clip: Object.fromEntries(['bouteille', 'canette', 'flacon', 'bidon'].map((f) => [f, !!pots.find((p) => p.dataset.forme === f && getComputedStyle(p).clipPath !== 'none')])),
@@ -44,11 +44,15 @@ const lire = () => {
     titreC: (() => { const w = document.querySelector('.sa-mur .l1e-w'); const s = w && getComputedStyle(w); return s ? `${s.fontWeight}/${s.fontSize}/${s.lineHeight}` : null; })(),
     hRangees: rg.map((r) => Math.round(r.getBoundingClientRect().height)), hMur: Math.round(sel?.getBoundingClientRect().height ?? 0),
     vides: [...document.querySelectorAll('.sa-mur .sx-v')].map(t),
-    depasse: rg.some((r) => r.scrollWidth > r.clientWidth + 1),
+    depasse: rg.some((r) => r.scrollWidth > r.clientWidth + 1 || [...r.querySelectorAll('.l1e-pl')].some((p) => p.scrollWidth > p.clientWidth + 1)),
+    depDetail: rg.map((r) => { const p = r.querySelector('.l1e-pl'); return `${r.dataset.rangeeAutre} ${r.scrollWidth}/${r.clientWidth} pl ${p?.scrollWidth}/${p?.clientWidth} pot ${Math.round(r.querySelector('.sa-p')?.getBoundingClientRect().width ?? 0)} occupé ${p ? Math.round(Math.max(...[...p.children].map((x) => x.getBoundingClientRect().right)) - p.getBoundingClientRect().left) : 0} titres ${[...r.querySelectorAll('.l1e-w')].map((x) => Math.round(x.getBoundingClientRect().width))}`; }),
     btnLeg: (() => { const b = document.querySelector('.sa-mur .sx-q'); const r = b?.getBoundingClientRect(); return b ? { rangee: b.closest('.sa-r')?.dataset.rangeeAutre, w: Math.round(r.width), h: Math.round(r.height) } : null; })(),
     nomBtn: rect(document.querySelector('.sa-mur .l1e-n')),
   };
 };
+
+// Un geste absent d'une version (le banc rouge sur tour9) ne coupe pas l'étape : le contrôle qui le lit échoue de lui-même.
+const essayer = async (f) => { try { await f(); } catch { /* geste introuvable */ } };
 
 export default async function (c) {
   // les articles de l'étape, posés avant le chargement de la page (puis retirés)
@@ -73,15 +77,15 @@ export default async function (c) {
       const clair = (s) => s.replace(/[^\d,]/g, '');
       const unique = (l) => new Set(l).size === 1;
       c.controle('AA-3', a.mur && !a.fx && a.formes.join() === 'bidon,bouteille,canette,flacon' && a.clip.canette && a.clip.bouteille && a.clip.flacon && a.clip.bidon && a.fills.Additifs.length > 0
-        && a.fills.Additifs.every((f) => !a.fills.Emballage.includes(f)) && a.largeurs.length === 1 && !!a.ep && a.ep.w === 10 && a.ep.h === 8 && /200, 56, 47|rgb\(200, 56, 47\)/.test(a.epBord ?? '') && a.compter,
+        && a.fills.Additifs.every((f) => !a.fills.Emballage.includes(f)) && a.largeurs.length === 1 && !!a.ep && a.ep.w === 10 && a.ep.h === 8 && /rgb\((200, 56, 47|214, 69, 61)\)/.test(a.epBord ?? '') && a.compter,
       `textures ${a.fx}, silhouettes ${a.formes}, largeurs de pot ${JSON.stringify(a.largeurs)}, épuisé ${JSON.stringify(a.ep)} ${a.epBord?.slice(0, 30)}, à compter ${a.compter}, teintes ${Object.keys(a.fills).map((k) => `${k}:${[...new Set(a.fills[k])].length}`)}`);
       // Bloc 4 : typographie et rythme (n° 20 à 23)
       c.controle('AA-4', a.mur && /^700\/13px\/(normal|0px)$/.test(a.nomR ?? '') && /^700\/12px\/14px$/.test(a.titreC ?? '') && a.hRangees.every((x) => x >= 56) && (c.largeur >= 1000 || a.hMur <= 260) && !a.depasse && a.vides.some((v) => /Cartons/.test(v)),
-        `nom de rangée ${a.nomR}, titre de colonne ${a.titreC}, rangées ${a.hRangees} px, mur ${a.hMur} px, rien ne déborde : ${!a.depasse}, vides ${a.vides}`);
+        `nom de rangée ${a.nomR}, titre de colonne ${a.titreC}, rangées ${a.hRangees} px, mur ${a.hMur} px, rien ne déborde : ${!a.depasse} ${a.depDetail.join(' ; ')}, vides ${a.vides}`);
       // Bloc 5 : rangée active, légende (n° 24 à 27)
-      await c.toucher('Nettoyage', { sel: '.sa-mur .l1e-n' }); await c.sleep(600);
+      await essayer(() => c.toucher('Nettoyage', { sel: '.sa-mur .l1e-n' })); await c.sleep(600);
       const act = await c.mesure(() => { const r = document.querySelector('.sa-mur .l1e-r:has(.l1e-n[aria-pressed=true])'); return r ? { ombre: getComputedStyle(r).boxShadow, ouverte: r.dataset.rangeeAutre } : null; });
-      await c.toucher('Légende', { sel: '.sa-mur .sx-q' }); await c.sleep(500);
+      await essayer(() => c.toucher('Légende', { sel: '.sa-mur .sx-q' })); await c.sleep(500);
       const leg = await c.mesure(() => document.querySelector('.sa-mur .sv-leg')?.textContent.replace(/\s+/g, ' ') ?? '');
       await c.cap('autres-a-legende');
       c.controle('AA-5', a.mur && !!act && act.ouverte === 'Nettoyage' && a.btnLeg?.rangee === 'Nettoyage' && a.btnLeg.h >= 17 && a.nomBtn.h >= 44

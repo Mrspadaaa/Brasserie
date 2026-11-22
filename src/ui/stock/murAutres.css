@@ -1,5 +1,5 @@
 /* Mur d'Autres stocks, version A (D423, D424). Rien dans murAjustements.css : les classes l1e-* de l'étagère valent ici aussi. Préfixe sa-. */
-.sa-mur{grid-column:1/-1;min-width:0;--hm:22px;--hc:14px;--sa-w:8px;padding:0 0 6px}
+.sa-mur{grid-column:1/-1;min-width:0;--hm:22px;--hc:14px;--sa-w:8px}
 .sa-mur .l1e-r{grid-template-columns:72px minmax(0,1fr)!important;min-height:56px}
 .sa-mur .l1e-n b{font:700 13px/15px var(--l1-sans,inherit);letter-spacing:0;color:var(--l1-t0)}
 .sa-mur .l1e-w{font:700 12px/14px var(--l1-sans,inherit);letter-spacing:0}

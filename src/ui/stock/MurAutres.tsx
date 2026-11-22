@@ -5,16 +5,9 @@ import type { StockItem } from '../../types';
 import { construireMurAutres, etatEtSeuil, type ColonneAutre, type PotAutre } from '../../domain/stock/murAutres';
 import './murAutres.css';
 
-/** n° 15 : une seule largeur de pot pour tout le mur, celle qui fait tenir la rangée la plus large (écart de 8 px gardé, 2 px entre pots, 30 px pour « seuil »). */
-export function largeurPot(rangees: ReturnType<typeof construireMurAutres>, dispo: number, max = 8): number {
-  let w = max;
-  for (const r of rangees) {
-    const pots = r.colonnes.reduce((n, c) => n + c.pots.length, 0); if (!pots) continue;
-    const fixe = 8 * Math.max(0, r.colonnes.length - 1) + 2 * (pots - r.colonnes.length) + 30 + (r.vides.length ? 70 : 0);
-    w = Math.min(w, Math.floor((dispo - fixe) / pots));
-  }
-  return Math.max(4, w);
-}
+/** n° 15 et 21 : une seule largeur de pot pour tout le mur (écart de 8 px gardé). On part du plus large (8 px, 12 px dès 700) avec les mots longs ;
+ *  tant qu'une rangée déborde au rendu réel, son titre passe au mot court, puis le pot s'amincit d'un pixel, sans descendre sous 4 px. */
+export const LARGEUR_MIN = 4;
 const FORMES: Record<string, string> = {
   bouteille: 'polygon(30% 0,70% 0,70% 28%,100% 42%,100% 100%,0 100%,0 42%,30% 28%)',
   canette: 'polygon(8% 0,92% 0,100% 8%,100% 100%,0 100%,0 8%)',
@@ -32,13 +25,24 @@ export function MurAutres({ items, onOpen, onFiltre, carteActive = null, ddm, re
   const rangees = useMemo(() => construireMurAutres(items, ddm), [items, ddm]);
   const parRef = useMemo(() => new Map(items.map((i) => [i.ref, i])), [items]);
   const racine = useRef<HTMLDivElement>(null);
-  const [w, setW] = useState(8); const [legende, setLegende] = useState(false); const [court, setCourt] = useState(true);
+  const [w, setW] = useState(8); const [legende, setLegende] = useState(false); const [court, setCourt] = useState<Record<string, boolean>>({});
+  const [cycle, setCycle] = useState(0);
   useLayoutEffect(() => {
     const mur = racine.current; if (!mur) return;
-    const mesurer = () => { const l = mur.getBoundingClientRect().width; setCourt(l < 700); const dispo = Math.min(l, 760) - 16 - 10 - 72 - 6 - 6; setW(largeurPot(rangees, dispo, l >= 700 ? 12 : 8)); };
-    mesurer(); const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(mesurer) : null; ro?.observe(mur);
+    const repartir = () => { setW(mur.getBoundingClientRect().width >= 700 ? 12 : 8); setCourt({}); setCycle((n) => n + 1); };
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(repartir) : null; ro?.observe(mur);
     return () => ro?.disconnect();
-  }, [rangees]);
+  }, []);
+  useLayoutEffect(() => { setW(racine.current && racine.current.getBoundingClientRect().width >= 700 ? 12 : 8); setCourt({}); setCycle((n) => n + 1); }, [rangees]);
+  // Contre-épreuve sur le vrai rendu (L12) : tant qu'une rangée déborde, mot court d'abord, puis pot plus mince.
+  useLayoutEffect(() => {
+    const mur = racine.current; if (!mur) return;
+    for (const r of mur.querySelectorAll<HTMLElement>('.sa-r')) {
+      const pl = r.querySelector<HTMLElement>('.l1e-pl'); if (!pl || pl.scrollWidth <= pl.clientWidth) continue;
+      const id = r.dataset.rangeeAutre ?? ''; if (!court[id]) { setCourt((c) => ({ ...c, [id]: true })); return; }
+      if (w > LARGEUR_MIN) { setW(w - 1); return; }
+    }
+  }, [w, court, cycle]);
   // Le geste de l'app : un toucher sur la rangée vise le pot le plus proche de la colonne, une bulle le nomme, un second toucher ouvre la fiche.
   const [bulle, setBulle] = useState<{ a: string; ref: string; x: number; y: number } | null>(null);
   const viser = (e: React.PointerEvent<HTMLElement>) => {
@@ -52,12 +56,12 @@ export function MurAutres({ items, onOpen, onFiltre, carteActive = null, ddm, re
   };
   const derniere = rangees[rangees.length - 1]?.id;
   return (
-    <div ref={racine} className="sa-mur" data-mur-autres style={{ ['--sa-w' as string]: `${w}px` } as React.CSSProperties}>
+    <div ref={racine} className="l1-mur l1e-mur sa-mur" data-mur-autres data-sv="fA" style={{ ['--sa-w' as string]: `${w}px` } as React.CSSProperties}>
       {rangees.map((r) => {
         const premier = r.colonnes.find((c) => c.tiret);
         const total = retenus ? r.colonnes.reduce((n, c) => n + c.pots.filter((p) => retenus.has(p.ref)).length, 0) : r.total;
         return (
-          <div key={r.id} className="l1e-r sa-r" data-f={r.id} data-rangee-autre={r.id} style={{ ['--l1-k' as string]: r.k, ['--ink' as string]: r.k } as React.CSSProperties}>
+          <div key={r.id} className="l1-mu l1e-r sa-r" data-f={r.id} data-rangee-autre={r.id} style={{ ['--l1-k' as string]: r.k, ['--ink' as string]: r.k } as React.CSSProperties}>
             <div className="l1e-c1">
               <button type="button" className="l1e-n" data-filtre={r.id} aria-pressed={carteActive === r.id} aria-label={`${r.nom} : ${r.total} article${r.total > 1 ? 's' : ''} ; ${carteActive === r.id ? 'retirer le filtre' : 'filtrer la liste'}`} onClick={() => onFiltre?.(r.id)}><b>{r.nom}</b><span>{total}</span></button>
               {r.id === derniere && <button type="button" className="sv-i sx-q" aria-expanded={legende} aria-label="Légende" onClick={() => setLegende((v) => !v)}>?</button>}
@@ -65,7 +69,7 @@ export function MurAutres({ items, onOpen, onFiltre, carteActive = null, ddm, re
             <div className="l1e-pl" onPointerDown={viser}>
               {r.colonnes.map((c) => (
                 <div key={c.id} className={`l1e-g sa-g${c === premier ? ' sa-lab' : ''}${c.tiret === 'continu' ? '' : ' sa-nt'}`} data-groupe={c.id} style={{ ['--ink' as string]: c.fill, ['--fill' as string]: c.fill } as React.CSSProperties}>
-                  <span className="l1e-w" data-long={c.mot} {...(c.court ? { 'data-court': c.court } : {})} title={c.mot}>{court && c.court ? c.court : c.mot}</span>
+                  <span className="l1e-w" data-long={c.mot} {...(c.court ? { 'data-court': c.court } : {})} title={c.mot}>{court[r.id] && c.court ? c.court : c.mot}</span>
                   <span className="l1e-gb">
                     {c === premier && <i className="sw-rl" aria-hidden="true">seuil</i>}
                     {c.pots.map((p) => <Pot key={p.ref} p={p} c={c} tiretPot={c.tiret === 'pots'} />)}

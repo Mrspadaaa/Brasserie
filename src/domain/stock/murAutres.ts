@@ -24,10 +24,10 @@ export const COLONNES_AUTRES: Record<FamilleAutre, DefColonne[]> = {
     { id: 'epices', mot: 'Épices', fill: '#9db3c8', forme: null, motif: /coriandre|orange|citron|vanille|cacao|cannelle|epice|gingembre|poivre|cafe|feve|zeste|reglisse|camomille|lavande/ },
   ],
   Emballage: [
-    { id: 'bouteilles', mot: 'Bouteilles', fill: '#855632', forme: 'bouteille', motif: /bouteille|bottle|growler|flacon/ },
-    { id: 'canettes', mot: 'Canettes', fill: '#a66c3f', forme: 'canette', motif: /canette|\bcans?\b|couvercle|\blids?\b/ },
-    { id: 'capsules', mot: 'Capsules', fill: '#be8355', forme: null, motif: /capsule|bouchon|crown|\bcap\b/ },
-    { id: 'etiquettes', mot: 'Étiquettes', fill: '#ca9872', forme: null, motif: /etiquette|label/ },
+    { id: 'bouteilles', mot: 'Bouteilles', court: 'Bout.', fill: '#855632', forme: 'bouteille', motif: /bouteille|bottle|growler|flacon/ },
+    { id: 'canettes', mot: 'Canettes', court: 'Canet.', fill: '#a66c3f', forme: 'canette', motif: /canette|\bcans?\b|couvercle|\blids?\b/ },
+    { id: 'capsules', mot: 'Capsules', court: 'Caps.', fill: '#be8355', forme: null, motif: /capsule|bouchon|crown|\bcap\b/ },
+    { id: 'etiquettes', mot: 'Étiquettes', court: 'Étiq.', fill: '#ca9872', forme: null, motif: /etiquette|label/ },
     { id: 'cartons', mot: 'Cartons', fill: '#d5ae90', forme: null, motif: /carton|caisse|box|plateau/ },
   ],
   Nettoyage: [
