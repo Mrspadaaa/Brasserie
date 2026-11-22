@@ -1,0 +1,1015 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Saisie à la main</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Source Sans 3',system-ui,sans-serif;background:#d9d9d9;color:#111}
+button,input{font:inherit;color:inherit;background:none;border:0}
+input{outline:none}
+.mono,.sm-n{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+/* ---------- planche ---------- */
+.pl-top{padding:16px 20px 8px;display:flex;gap:16px;align-items:baseline;flex-wrap:wrap}
+.pl-top h1{font-size:20px}
+.pl-top p{font-size:13px;color:#444}
+.pl-top button{border:1px solid #111;border-radius:8px;padding:4px 10px;font-weight:600;cursor:pointer;background:#fff}
+.pl-v{padding:14px 20px 22px;border-top:1px solid #bbb}
+.pl-v h2{font-size:17px;display:flex;gap:10px;align-items:baseline}
+.pl-v h2 small{font-size:12px;font-weight:600;padding:1px 8px;border-radius:99px;background:#fff}
+.pl-cor{font-size:13px;color:#1d4d1a;background:#e6f2df;border-left:3px solid #567F45;padding:4px 8px;margin:4px 0 2px;max-width:1100px}
+.pl-v>p{font-size:13px;color:#333;margin:2px 0 10px;max-width:900px}
+.pl-row{display:flex;gap:14px;overflow-x:auto;padding-bottom:6px}
+.pl-cell{flex:none}
+.pl-cell>b{display:block;font-size:12px;margin:0 0 4px 2px;color:#333}
+/* ---------- téléphone + jetons ---------- */
+.sm-ph{--page:#fff;--pan:#F5F5F5;--rai:#EBEBEB;--bord:#DDD;--bordm:#BFBFBF;--trait:#9E9E9E;--sec:#666;--txt:#333;--val:#111;
+ --act:#111;--acttx:#fff;--in:#3F6B2E;--inbg:#E4F0DD;--inap:#567F45;--out:#7F5B10;--outbg:#F8ECCF;--outap:#E3B55D;--fin:#1F64A3;--finbg:rgba(31,100,163,.12);
+ width:390px;height:844px;background:var(--page);color:var(--txt);position:relative;overflow:hidden;display:flex;flex-direction:column;font-size:14px;line-height:1.25;border-radius:4px}
+.sm-ph.cave{--page:#12100E;--pan:#1A1613;--rai:#221D19;--bord:#2C2521;--bordm:#3D342E;--trait:#6B5D53;--sec:#9A8A7E;--txt:#D8CEC5;--val:#F5F0EA;
+ --act:#F2C14E;--acttx:#12100E;--in:#8FC27A;--inbg:#18221A;--inap:#6E9B5B;--out:#E8A55A;--outbg:#261C12;--outap:#D9954A;--fin:#86B9E6;--finbg:rgba(134,185,230,.14)}
+.sm-i{flex:none;display:inline-block;vertical-align:middle}
+.sm-hd{height:48px;flex:none;display:flex;align-items:center;gap:10px;padding:0 10px;border-bottom:1px solid var(--bord)}
+.sm-hd b{font-size:18px;color:var(--val);flex:1}
+.sm-hd button{width:36px;height:36px;display:grid;place-items:center;border-radius:8px;color:var(--val)}
+.sm-hd .sm-doc{border:1px solid var(--bordm)}
+.sm-cat{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:1px 7px;border-radius:99px;background:var(--cb);color:var(--ct);white-space:nowrap}
+.sm-mm{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 10px;border:1px solid var(--bordm);border-radius:12px;font-weight:600;color:var(--val);white-space:nowrap}
+.sm-mmv{font-family:'IBM Plex Mono',monospace;font-size:14px;padding:1px 7px;border-radius:7px;font-weight:600}
+.sm-mmv.out{background:var(--outap);color:#2b1f05}
+.sm-mmv.in{background:var(--inap);color:#fff}
+.sm-mmv.vide{background:var(--rai);color:var(--sec);font-family:'Source Sans 3',sans-serif}
+.sm-go{height:44px;padding:0 14px;border-radius:12px;background:var(--act);color:var(--acttx);font-weight:700;font-size:15px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.sm-go b{font-family:'IBM Plex Mono',monospace;font-weight:600}
+.sm-go[disabled]{opacity:.35}
+.sm-chip{height:34px;padding:0 10px;border-radius:99px;border:1px solid var(--bordm);font-size:13px;display:inline-flex;align-items:center;gap:4px;color:var(--val);white-space:nowrap;font-weight:600;flex:none}
+.sm-chip.on{background:var(--val);color:var(--page);border-color:var(--val)}
+.sm-chip.lk{border-color:var(--inap);color:var(--in);background:var(--inbg)}
+.sm-chip.dt{font-family:'IBM Plex Mono',monospace;font-weight:500}
+.sm-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sm-row>small{font-size:13px;color:var(--sec)}
+.sm-sum{font-size:13px;color:var(--val);display:inline-flex;gap:6px;align-items:center;font-weight:600}
+.sm-sum b{font-family:'IBM Plex Mono',monospace;color:var(--out)}
+.sm-fold{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--val);padding:11px 4px;border-top:1px solid var(--bord);border-bottom:1px solid var(--bord)}
+.sm-fold span{font-size:12px;color:var(--sec);display:inline-flex;gap:3px;align-items:center}
+.sm-in.sel{background:var(--finbg);border-radius:6px}
+/* aperçu Calendrier (13 px, noir) */
+.sm-ap{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.sm-ap>b{font-size:13px;color:var(--val);font-weight:600;display:inline-flex;gap:4px;align-items:center;margin-right:2px}
+.sm-ap i{font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:13px;padding:2px 6px;border-radius:6px;background:var(--rai);color:var(--val)}
+.sm-ap i.f{background:var(--outbg);color:var(--out);font-weight:600}.sm-ap i.fi{background:var(--inbg);color:var(--in);font-weight:600}
+.sm-ap small{font-size:13px;color:var(--val)}
+/* frise partagée (FrisePeriode du Calendrier : cadre bleu, deux poignées, pastille de période) */
+.fr{background:var(--pan);border-radius:12px;padding:8px 8px 2px;border:1px solid var(--bord)}
+.fr-top{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.fr-pill{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--fin);border:2px solid var(--fin);border-radius:99px;padding:1px 9px;background:var(--page);white-space:nowrap}
+.fr-top small{font-size:12px;color:var(--sec);margin-left:auto}
+.fr-tr{position:relative;height:40px;background:var(--rai);border-radius:6px;margin:0 6px}
+.fr-fr{position:absolute;top:-2px;bottom:-2px;border:2.5px solid var(--fin);border-radius:9px;background:var(--finbg)}
+.fr-fr.open{border-right:0;border-radius:9px 0 0 9px;background:linear-gradient(90deg,var(--finbg) 80%,transparent)}
+.fr-h{position:absolute;top:50%;width:8px;height:24px;margin-top:-12px;border-radius:4px;background:var(--fin)}
+.fr-h.l{left:-5px}.fr-h.r{right:-5px}
+.fr-d{position:absolute;top:50%;width:6px;height:16px;margin:-8px 0 0 -3px;border-radius:3px}
+.fr-d.out{background:var(--outap)}.fr-d.in{background:var(--inap)}
+.fr-g{position:relative;height:20px;margin:0 6px}
+.fr-g span{position:absolute;top:3px;font-size:12px;color:var(--sec);transform:translateX(-50%);white-space:nowrap}
+.fr-g span.y{color:var(--val);font-weight:600}
+/* confirmation (après Enregistrer) */
+.sm-ok-veil{position:absolute;inset:0;background:rgba(0,0,0,.38)}
+.sm-ok{position:absolute;left:0;right:0;bottom:0;background:var(--page);border-radius:16px 16px 0 0;padding:14px 14px 16px;box-shadow:0 -6px 24px rgba(0,0,0,.25)}
+.sm-ok-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sm-ok-h .sm-okc{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--inap);color:#fff;flex:none}
+.sm-ok-h b{font-size:16px;color:var(--val);display:block}
+.sm-ok-h span{font-size:13px;color:var(--sec)}
+.sm-ok-r{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--bord);flex-wrap:wrap}
+.sm-ok-r>b{width:96px;font-size:13px;color:var(--val);display:flex;gap:6px;align-items:center}
+.sm-ok-r>small{font-size:13px;color:var(--sec)}
+.sm-ok-tl{display:flex;gap:4px;flex:1;align-items:center;flex-wrap:wrap}
+.sm-ok-tl i{font-style:normal;font-size:13px;padding:2px 6px;border-radius:6px;background:var(--rai);font-family:'IBM Plex Mono',monospace;color:var(--val)}
+.sm-ok-tl i.f{background:var(--outbg);color:var(--out);font-weight:600}
+.sm-ok-tl i.fi{background:var(--inbg);color:var(--in);font-weight:600}
+.sm-ok-tl small{font-size:13px;color:var(--val)}
+.sm-ok-a{display:flex;gap:8px;margin-top:10px}
+.sm-ok-a button{height:44px;padding:0 12px;border-radius:12px;border:1px solid var(--bordm);font-weight:600;color:var(--val);display:inline-flex;align-items:center;gap:5px}
+.sm-ok-a .sm-go{border:0;color:var(--acttx);margin-left:auto;padding:0 22px}
+
+/* ================= v01 : le genre d'abord ================= */
+.v01-b{flex:1;padding:10px 10px 0;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.v01-hab h3{font-size:12px;color:var(--sec);font-weight:700;letter-spacing:.03em;margin:0 0 2px 2px}
+.v01-hr{display:flex;align-items:center;gap:10px;height:44px;border-bottom:1px solid var(--bord);padding:0 2px}
+.v01-hr .ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--cb);color:var(--ct);flex:none}
+.v01-hr div{flex:1;min-width:0}.v01-hr div b{display:block;font-size:14px;color:var(--val)}.v01-hr div span{font-size:12px;color:var(--sec)}
+.v01-pm{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;padding:2px 7px;border-radius:7px}
+.v01-pm.out{background:var(--outbg);color:var(--out)}.v01-pm.in{background:var(--inbg);color:var(--in)}
+.v01-side{border-radius:14px;padding:6px 6px 6px}
+.v01-side.out{background:var(--outbg)}.v01-side.in{background:var(--inbg)}
+.v01-lab{font-size:15px;font-weight:700;display:flex;align-items:center;gap:4px;margin:0 0 5px 4px}
+.v01-side.out .v01-lab{color:var(--out)}.v01-side.in .v01-lab{color:var(--in)}
+.v01-g{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.v01-t{height:56px;border-radius:11px;background:var(--page);border:1px solid var(--bord);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12.5px;padding:0 2px;font-weight:600;color:var(--val);line-height:1.1}
+.v01-t .ic{color:var(--cseg)}
+.v01-rb{display:flex;align-items:center;gap:10px;height:44px;border:1px dashed var(--bordm);border-radius:12px;padding:0 12px;font-weight:600;color:var(--val);font-size:14px}
+.v01-rb span{font-weight:400;color:var(--sec);font-size:13px}
+.v01-sel{display:flex;align-items:center;gap:8px;height:52px;border-radius:14px;padding:0 6px 0 12px;font-weight:700;font-size:15px}
+.v01-sel.out{background:var(--outbg);color:var(--out)}.v01-sel.in{background:var(--inbg);color:var(--in)}
+.v01-sel .g{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:10px;background:var(--page);color:var(--val);border:2px solid currentColor}
+.v01-sel .g .ic{color:var(--cseg)}
+.v01-sel button{margin-left:auto;height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--bordm);background:var(--page);color:var(--val);font-weight:600;font-size:14px}
+.v01-card{border:1px solid var(--bordm);border-radius:14px;padding:10px 12px;background:var(--page)}
+.v01-c1{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.v01-c1 input{font-size:16px;font-weight:700;color:var(--val);flex:1;min-width:0}
+.v01-amt{display:flex;align-items:baseline;gap:6px;margin:2px 0 6px}
+.v01-amt input{font-family:'IBM Plex Mono',monospace;font-size:46px;font-weight:600;width:260px;letter-spacing:-.02em}
+.v01-amt input.out{color:var(--out)}.v01-amt input.in{color:var(--in)}.v01-amt input.vide{color:var(--trait)}
+.v01-amt small{font-size:14px;color:var(--sec)}
+.v01-rec{background:var(--pan);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.v01-rec h3{font-size:13px;color:var(--val);font-weight:700;display:flex;gap:5px;align-items:center}
+.v01-seg{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--bordm);border-radius:10px;overflow:hidden;background:var(--page)}
+.v01-seg button{height:40px;font-size:14px;font-weight:600;border-left:1px solid var(--bord);color:var(--txt)}
+.v01-seg button:first-child{border-left:0}
+.v01-seg button.on{background:var(--act);color:var(--acttx)}
+.v01-ft{flex:none;display:flex;justify-content:space-between;align-items:center;padding:10px;border-top:1px solid var(--bord);margin-top:auto}
+/* ================= v01s : le genre d'abord, simplifié (D426) ================= */
+.v1s-b{flex:1;min-height:0;padding:10px 10px 8px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.v1s-b.sc{overflow-y:auto}
+.v1s-card{border:1.5px solid var(--bordm);border-radius:14px;padding:8px 12px 10px;background:var(--page);flex:none}
+.v1s-card.out{border-color:var(--outap)}.v1s-card.in{border-color:var(--inap)}
+.v1s-c1{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:28px}
+.v1s-nm{font-size:16px;font-weight:700;color:var(--val);display:inline-flex;gap:6px;align-items:center;min-width:0}
+.v1s-nm .sm-i{color:var(--trait)}
+.v1s-nm.ph{color:var(--trait);font-weight:600}
+.v1s-amt{display:flex;align-items:center;height:56px;font-family:'IBM Plex Mono',monospace;font-size:44px;font-weight:600;letter-spacing:-.02em;color:var(--val)}
+.v1s-amt.out{color:var(--out)}.v1s-amt.in{color:var(--in)}
+.v1s-amt input{font:inherit;letter-spacing:inherit;color:inherit;padding:0}
+.v1s-amt input.sel{background:var(--finbg);border-radius:6px}
+.v1s-amt .gh{color:var(--trait);font-weight:500}
+.v1s-amt .car{width:3px;height:42px;border-radius:2px;background:var(--fin);margin:0 1px;flex:none}
+.v1s-amt small{font-family:'Source Sans 3',sans-serif;font-size:14px;color:var(--sec);margin-left:auto;font-weight:400;letter-spacing:0}
+.v1s-lk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--val);margin-top:7px;flex-wrap:wrap}
+.v1s-lk .sm-i{color:var(--fin)}
+.v1s-lk>span.t{flex:1;min-width:0}
+.v1s-hab{flex:none}
+.v1s-hab h3{font-size:11px;letter-spacing:.05em;color:var(--sec);font-weight:700;margin:0 0 4px 2px}
+.v1s-hg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.v1s-hc{height:46px;border:1px solid var(--bord);border-radius:12px;padding:0 6px;display:flex;align-items:center;gap:6px;min-width:0;background:var(--page)}
+.v1s-hc .ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--cb);color:var(--ct);flex:none}
+.v1s-hc div{min-width:0;display:flex;flex-direction:column}
+.v1s-hc div b{font-size:13px;color:var(--val);white-space:nowrap}
+.v1s-hc div span{font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600}
+.v1s-hc div span.out{color:var(--out)}.v1s-hc div span.in{color:var(--in)}
+.v1s-side{border-radius:14px;padding:5px 6px 6px;flex:none}
+.v1s-side.out{background:var(--outbg)}.v1s-side.in{background:var(--inbg)}
+.v1s-lab{font-size:15px;font-weight:700;display:flex;align-items:center;gap:4px;margin:0 0 4px 4px}
+.v1s-side.out .v1s-lab{color:var(--out)}.v1s-side.in .v1s-lab{color:var(--in)}
+.v1s-lab small{font-size:12px;font-weight:400;color:var(--sec);margin-left:6px}
+.v1s-g{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.v1s-t{height:54px;border-radius:11px;background:var(--page);border:1px solid var(--bord);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12.5px;padding:0 2px;font-weight:600;color:var(--val);line-height:1.1}
+.v1s-t .ic{color:var(--cseg)}
+.v1s-rb{display:flex;align-items:center;gap:10px;height:40px;border:1px dashed var(--bordm);border-radius:12px;padding:0 12px;font-weight:600;color:var(--val);font-size:14px;flex:none}
+.v1s-rb span{font-weight:400;color:var(--sec);font-size:13px}
+.v1s-sel{display:flex;align-items:center;gap:8px;height:48px;border-radius:14px;padding:0 6px 0 12px;font-weight:700;font-size:15px;flex:none}
+.v1s-sel.out{background:var(--outbg);color:var(--out)}.v1s-sel.in{background:var(--inbg);color:var(--in)}
+.v1s-sel.neu{border:1px dashed var(--bordm);color:var(--val)}
+.v1s-sel .g{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:10px;background:var(--page);color:var(--val);border:2px solid currentColor}
+.v1s-sel.out .g{border-color:var(--out)}.v1s-sel.in .g{border-color:var(--in)}
+.v1s-sel .g .ic{color:var(--cseg)}
+.v1s-sel em{font-style:normal;font-weight:400;font-size:13px;color:var(--sec)}
+.v1s-sel button{margin-left:auto;height:38px;padding:0 12px;border-radius:10px;border:1px solid var(--bordm);background:var(--page);color:var(--val);font-weight:600;font-size:14px}
+.v1s-rec{background:var(--pan);border-radius:14px;padding:9px 10px;display:flex;flex-direction:column;gap:8px;flex:none}
+.v1s-rec .sm-row>small{width:52px}
+.v1s-rc.on{background:var(--act);color:var(--acttx);border-color:var(--act)}
+.v1s-ft{flex:none;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-top:1px solid var(--bord);background:var(--page)}
+.v1s-kb{flex:none;background:#D1D4DA;padding:8px 6px 14px;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:46px;gap:6px}
+.v1s-kb span{background:#fff;border-radius:7px;display:grid;place-items:center;font-size:22px;color:#111;box-shadow:0 1px 0 rgba(0,0,0,.25)}
+.v1s-kb .del{grid-row:span 2;background:#ABB0BA}
+.v1s-kb .ok{grid-row:span 2;background:#3A3A3C;color:#fff;font-size:15px;font-weight:700;display:flex;flex-direction:column;gap:2px}
+.v1s-kb .ok small{font-size:11px;font-weight:400;opacity:.8}
+.v1s-kb .z{grid-column:span 2}
+.v1s-pl{flex:none;background:var(--page);border-top:1px solid var(--bordm);border-radius:16px 16px 0 0;box-shadow:0 -6px 18px rgba(0,0,0,.14);padding:10px 12px 14px;display:flex;flex-direction:column;gap:6px}
+.v1s-pl h4{font-size:15px;color:var(--val);display:flex;justify-content:space-between;align-items:center}
+.v1s-pl h4 small{font-size:12px;font-weight:400;color:var(--sec)}
+.v1s-q{height:40px;border:1px solid var(--bordm);border-radius:10px;display:flex;align-items:center;gap:8px;padding:0 10px;color:var(--sec)}
+.v1s-q input{flex:1;font-size:15px;min-width:0}
+.v1s-pc{display:flex;align-items:center;gap:10px;height:52px;border-bottom:1px solid var(--bord);padding:0 6px}
+.v1s-pc.on{background:var(--inbg);border-radius:10px;border-color:transparent}
+.v1s-pc .ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--cb);color:var(--ct);flex:none}
+.v1s-pc div{flex:1;min-width:0;display:flex;flex-direction:column}
+.v1s-pc div b{font-size:14px;color:var(--val)}.v1s-pc div span{font-size:12px;color:var(--sec)}
+.v1s-pc .n{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--val)}
+.v1s-dir{font-size:12px;font-weight:700;padding:2px 6px;border-radius:7px;white-space:nowrap}
+.v1s-dir.in{background:var(--inbg);color:var(--in)}.v1s-dir.out{background:var(--outbg);color:var(--out)}
+.v1s-pc.on .v1s-dir.in{background:var(--page)}
+.v1s-plok{display:flex;justify-content:flex-end}
+/* tableau des touchers (planche, hors téléphone) */
+.v1s-tab{border-collapse:collapse;font-size:13px;background:#fff;margin:6px 0 4px;max-width:1100px}
+.v1s-tab th,.v1s-tab td{border:1px solid #ccc;padding:4px 8px;text-align:left;vertical-align:top}
+.v1s-tab th{background:#f1f1f1}
+.v1s-tab td.n{font-family:'IBM Plex Mono',monospace;white-space:nowrap;text-align:center}
+.v1s-tab td.g{font-weight:700;color:#2f6b3a}
+.v1s-tab tr.tot td{font-weight:700;background:#f7f7f7}
+.v1s-meth{font-size:12.5px;color:#444;max-width:1100px;margin:2px 0 4px}
+.v1s-ch{font-size:13px;color:#222;max-width:1100px;margin:4px 0 10px 18px}
+.v1s-ch li{margin:1px 0}
+#v01s .pl-row{flex-wrap:wrap}
+/* v01s passe 2 */
+.v1s-t2{gap:2px}.v1s-t2 small{font-size:10.5px;font-weight:400;color:var(--sec);line-height:1}
+.v1s-rep.sc{overflow-y:auto}
+.v1s-hr{width:100%;text-align:left}
+button.v01-rb{width:100%;text-align:left;flex:none}
+.v1s-band{height:48px;flex:none}
+.v1s-band.neu{border:1px dashed var(--bordm);color:var(--val)}
+.v1s-card2{flex:none;padding:8px 12px 10px}
+.v1s-card2.out{border-color:var(--outap)}.v1s-card2.in{border-color:var(--inap)}
+.v1s-nm2{flex:1;min-width:0;display:inline-flex;align-items:center;gap:6px;min-height:32px;font-size:16px;font-weight:700;color:var(--val);text-align:left;white-space:nowrap;overflow:hidden}
+.v1s-nm2 svg{color:var(--trait);flex:none}
+.v1s-nm2.ph{color:var(--trait);font-weight:600}
+.v1s-dt{height:30px;padding:0 8px;font-size:12.5px}
+.v1s-neuf{background:transparent;border:1.5px dashed var(--bordm);color:var(--sec)}
+.v1s-qui{display:flex;align-items:center;gap:6px;flex:none;overflow-x:auto;padding:0 2px}
+.v1s-qui>small{font-size:12px;color:var(--sec);font-weight:600;flex:none;margin-right:2px}
+.v1s-plus{border-style:dashed;color:var(--sec)}
+.v1s-ach2{flex:none;display:flex;flex-direction:column;gap:6px}
+.v1s-lb{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--sec);font-weight:600;margin-left:2px}
+.v1s-art{display:flex;align-items:center;gap:8px;height:36px;border:1px solid var(--bord);border-radius:10px;padding:0 10px;font-size:13.5px;color:var(--val)}
+.v1s-art span{margin-left:auto;color:var(--sec);display:inline-flex;align-items:center;gap:3px;font-size:13px}
+.v1s-rec2{flex:none}
+.v1s-hab2{flex:none;background:var(--pan);border-radius:12px;padding:9px 10px;margin-top:0}
+.v1s-pv{font-size:13px;color:var(--val);font-weight:600}
+.v1s-b+.v1s-ft{box-shadow:0 -8px 12px -8px rgba(0,0,0,.18);position:relative}
+.v1s-kb2{flex:none;height:300px;background:#E8EAED;display:flex;flex-direction:column}
+.v1s-kb2 .g{flex:1;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:6px;padding:8px 6px 4px}
+.v1s-kb2 span{background:#fff;border-radius:8px;display:grid;place-items:center;font-size:24px;color:#202124;box-shadow:0 1px 0 rgba(0,0,0,.2)}
+.v1s-kb2 span.f{background:#D3D6DB;font-size:22px}
+.v1s-kb2 span.ok{background:#3C4043;color:#fff}
+.v1s-kb2 .nav{height:34px;flex:none;display:flex;align-items:center;justify-content:center}
+.v1s-kb2 .nav small{font-size:10.5px;color:#5F6368}
+.v1s-pl2{position:absolute;left:0;right:0;bottom:0;background:var(--page);border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.25);padding:6px 12px 14px;display:flex;flex-direction:column;gap:6px}
+.v1s-grip{display:block;width:40px;height:4px;border-radius:2px;background:var(--bordm);margin:2px auto 2px}
+.v1s-pl2 h4{font-size:16px;color:var(--val);display:flex;justify-content:space-between;align-items:center}
+.v1s-pl2 h4 button{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;color:var(--val);border:1px solid var(--bord)}
+.v1s-b.sc{gap:7px}
+.v1s-b.sc .v1s-band{height:42px}
+.v1s-b.sc .v1s-amt{height:44px;font-size:38px}
+.v1s-b.sc .v1s-card2{padding:6px 12px 8px}
+
+/* ================= v02 : ± sur le montant ================= */
+.v02-b{flex:1;display:flex;flex-direction:column;padding:10px 12px 0;gap:10px;overflow:hidden}
+.v02-hero{display:flex;gap:12px;align-items:stretch;background:var(--pan);border-radius:16px;padding:10px}
+.v02-pm{display:flex;flex-direction:column;width:92px;border-radius:12px;overflow:hidden;border:1px solid var(--bordm);flex:none}
+.v02-pm button{flex:1;min-height:44px;display:flex;align-items:center;justify-content:center;gap:4px;font-weight:700;font-size:14px;color:var(--txt);background:var(--page)}
+.v02-pm button b{font-size:24px;line-height:1;font-family:'IBM Plex Mono',monospace}
+.v02-pm button.out.on{background:var(--outap);color:#2b1f05}
+.v02-pm button.in.on{background:var(--inap);color:#fff}
+.v02-pm button+button{border-top:1px solid var(--bordm)}
+.v02-am{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.v02-am input{font-family:'IBM Plex Mono',monospace;font-size:42px;font-weight:600;width:100%;text-align:right;letter-spacing:-.03em}
+.v02-am input.out{color:var(--out)}.v02-am input.in{color:var(--in)}.v02-am input.vide{color:var(--trait)}
+.v02-am-s{text-align:right;font-size:14px;color:var(--sec)}
+.v02-q{display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--val);padding:4px 2px}
+.v02-q input{flex:1;font-size:17px;color:var(--val);font-weight:600;min-width:0}
+.v02-q input::placeholder{color:var(--sec);font-weight:400}
+.v02-gr{display:flex;align-items:flex-start;gap:6px}
+.v02-gr>b{flex:none;width:68px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:3px;height:34px}
+.v02-gr.out>b{color:var(--out)}.v02-gr.in>b{color:var(--in)}.v02-gr.nt>b{color:var(--sec)}
+.v02-gr div{display:flex;flex-wrap:wrap;gap:5px}
+.v02-gr button{height:34px;padding:0 9px 0 7px;border-radius:10px;background:var(--page);border:1px solid var(--bordm);font-size:13px;font-weight:600;display:inline-flex;gap:5px;align-items:center;color:var(--val)}
+.v02-gr.out button{border-left:4px solid var(--outap)}.v02-gr.in button{border-left:4px solid var(--inap)}.v02-gr.nt button{border-style:dashed}
+.v02-gr button .ic{color:var(--cseg)}
+.v02-gr button.on{background:var(--cb);color:var(--ct);border-color:var(--cb)}.v02-gr button.on .ic{color:var(--ct)}
+.v02-rep{border:1px solid var(--bordm);border-radius:14px;padding:8px 10px;display:flex;flex-direction:column;gap:8px}
+.v02-rep-h{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--val);font-size:15px;min-height:30px}
+.v02-rep-h small{font-size:12px;font-weight:600;color:var(--sec);border:1px solid var(--bordm);border-radius:99px;padding:1px 7px}
+.v02-sw{margin-left:auto;width:48px;height:28px;border-radius:99px;background:var(--rai);border:1px solid var(--bordm);position:relative}
+.v02-sw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--page);box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.v02-sw.on{background:var(--val);border-color:var(--val)}.v02-sw.on::after{left:23px}
+.v02-kb{flex:none;background:var(--rai);padding:6px 4px 10px;display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.v02-kb span{height:44px;border-radius:7px;background:var(--page);display:grid;place-items:center;font-size:20px;color:var(--val);font-family:'IBM Plex Mono',monospace}
+.v02-kb span.k2{background:var(--pan);font-size:14px;font-family:inherit}
+.v02-kb span.ent{background:var(--act);color:var(--acttx);font-size:14px;font-weight:700;font-family:inherit;grid-row:span 2;height:auto;gap:2px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.v02-ft{flex:none;display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-top:1px solid var(--bord);margin-top:auto}
+
+/* ================= v03 : phrase à trous ================= */
+.v03-hd{height:48px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 10px}
+.v03-hd button{width:36px;height:36px;display:grid;place-items:center;color:var(--val);border-radius:8px}
+.v03-hd .sm-doc{border:1px solid var(--bordm)}
+.v03-s{flex:none;padding:8px 14px 0;font-size:26px;line-height:1.8;color:var(--val);font-weight:600;letter-spacing:-.01em}
+.v03-t{margin:0 1px;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 10px;border-radius:10px;line-height:1.35;border:2px solid transparent;vertical-align:baseline;white-space:nowrap}
+.v03-t.out{background:var(--outap);color:#2b1f05;min-width:120px}
+.v03-t.in{background:var(--inap);color:#fff;min-width:120px}
+.v03-t.m{font-family:'IBM Plex Mono',monospace;background:var(--rai);font-weight:600;min-width:150px}
+.v03-t.q{background:var(--cb);color:var(--ct)}
+.v03-t.r{background:var(--pan);color:var(--fin);border-color:var(--fin);font-size:22px}
+.v03-t.d{background:var(--pan);font-family:'IBM Plex Mono',monospace;font-size:21px;color:var(--val);border-color:var(--bordm)}
+.v03-t.p{background:var(--pan);color:var(--val);border-color:var(--bordm);font-size:21px}
+.v03-t.vide{background:var(--pan);border:2px dashed var(--trait);color:var(--sec);font-weight:600}
+.v03-t.act{box-shadow:0 0 0 3px var(--page),0 0 0 5px var(--val)}
+.v03-nm{margin:6px 14px 0;display:flex;align-items:center;gap:8px;height:40px;border-bottom:1px solid var(--bordm);color:var(--val);font-size:16px;font-weight:600}
+.v03-nm span{color:var(--sec);font-size:13px;font-weight:600;width:36px}
+.v03-res{margin:10px 14px 0;display:flex;flex-direction:column;gap:8px}
+.v03-res .sm-fold{margin-top:2px}
+.v03-tray{flex:none;margin-top:auto;background:var(--pan);border-top:1px solid var(--bord);padding:10px 10px 12px;border-radius:16px 16px 0 0}
+.v03-tray h4{font-size:13px;color:var(--val);font-weight:700;margin:0 0 8px 2px;display:flex;gap:5px;align-items:center}
+.v03-op{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.v03-op button{height:60px;border-radius:12px;background:var(--page);border:1px solid var(--bord);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:13px;font-weight:600;color:var(--val);line-height:1.1;text-align:center}
+.v03-op button.on{background:var(--val);color:var(--page);border-color:var(--val)}
+.v03-op button.o{border-top:4px solid var(--outap)}.v03-op button.i{border-top:4px solid var(--inap)}.v03-op button.n{border-style:dashed}
+.v03-op button.o.on{background:var(--outap);color:#2b1f05;border-color:var(--outap)}.v03-op button.i.on{background:var(--inap);color:#fff;border-color:var(--inap)}
+.v03-go{display:flex;gap:8px;margin-top:10px}
+.v03-go .sm-go{flex:1;justify-content:center}
+
+/* ================= v04 : habituels en un toucher ================= */
+.v04-b{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.v04-search{margin:10px 10px 6px;height:44px;border-radius:12px;background:var(--pan);display:flex;align-items:center;gap:8px;padding:0 10px;color:var(--sec)}
+.v04-search input{flex:1;font-size:16px;color:var(--val)}
+.v04-new{margin:2px 10px 8px;border-radius:14px;overflow:hidden;border:1px solid var(--bord)}
+.v04-nr{display:grid;grid-template-columns:34px repeat(5,1fr);gap:4px;padding:5px 5px}
+.v04-nr.out{background:var(--outbg)}.v04-nr.in{background:var(--inbg)}
+.v04-nr>b{display:grid;place-items:center}
+.v04-nr.out>b{color:var(--out)}.v04-nr.in>b{color:var(--in)}
+.v04-nr button{height:54px;border-radius:10px;background:var(--page);border:1px solid var(--bord);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11.5px;font-weight:600;color:var(--val);letter-spacing:-.01em}
+.v04-nr button .ic{color:var(--cseg)}
+.v04-nr button.n{border-style:dashed;grid-column:span 2}
+.v04-sec{font-size:12px;font-weight:700;color:var(--sec);padding:6px 12px 4px;letter-spacing:.03em}
+.v04-row{display:flex;align-items:center;gap:10px;padding:7px 12px;border-top:1px solid var(--bord);min-height:52px}
+.v04-ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--cb);color:var(--ct);flex:none}
+.v04-nm{flex:1;min-width:0}
+.v04-nm b{display:block;color:var(--val);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v04-nm span{font-size:12px;color:var(--sec);display:flex;gap:4px;align-items:center}
+.v04-am{font-size:14px;font-weight:600;padding:3px 8px;border-radius:8px}
+.v04-am.out{color:var(--out);background:var(--outbg)}.v04-am.in{color:var(--in);background:var(--inbg)}
+.v04-open{margin:4px 8px 6px;border:2px solid var(--val);border-radius:16px;padding:10px;background:var(--page);display:flex;flex-direction:column;gap:8px}
+.v04-open .v04-row{border:0;padding:0;min-height:0}
+.v04-ed{display:flex;align-items:baseline;gap:6px;border-bottom:2px solid var(--val)}
+.v04-ed input{font-family:'IBM Plex Mono',monospace;font-size:36px;font-weight:600;width:240px;padding:0 4px}
+.v04-ed input.out{color:var(--out)}.v04-ed input.in{color:var(--in)}
+.v04-ed small{font-size:12px;color:var(--sec);margin-left:auto}
+.v04-seg{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--bordm);border-radius:10px;overflow:hidden}
+.v04-seg button{height:40px;font-size:14px;font-weight:600;border-left:1px solid var(--bord);color:var(--txt);display:flex;align-items:center;justify-content:center;gap:3px}
+.v04-seg button:first-child{border-left:0}
+.v04-seg button.on{background:var(--act);color:var(--acttx)}
+.v04-act{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.v04-nmi{font-size:16px;font-weight:700;color:var(--val);border-bottom:1px solid var(--bordm);width:100%;padding:2px 0 4px;margin-bottom:2px}
+.v04-done{margin:4px 8px 6px;border:2px solid var(--inap);border-radius:16px;padding:10px;background:var(--inbg);display:flex;flex-direction:column;gap:8px}
+
+/* ================= v05 : deux côtés ================= */
+.v05-amt0{flex:none;display:flex;align-items:baseline;justify-content:flex-end;gap:8px;padding:8px 14px;border-bottom:1px solid var(--bord)}
+.v05-amt0 input{font-family:'IBM Plex Mono',monospace;font-size:38px;font-weight:600;flex:1;min-width:0;text-align:right}
+.v05-amt0 input.vide{color:var(--trait)}.v05-amt0 input.out{color:var(--out)}.v05-amt0 input.in{color:var(--in)}
+.v05-amt0 small{font-size:14px;color:var(--sec)}
+.v05-b{flex:1;display:flex;overflow:hidden;flex-direction:column}
+.v05-two{flex:1;display:flex;overflow:hidden}
+.v05-col{display:flex;flex-direction:column;padding:10px 8px;gap:7px;overflow:hidden;flex:1}
+.v05-col.in{background:var(--inbg)}.v05-col.out{background:var(--outbg)}
+.cave .v05-col.in{background:#141C15;box-shadow:inset 3px 0 0 var(--inap)}.cave .v05-col.out{background:#1E1711;box-shadow:inset 3px 0 0 var(--outap)}
+.v05-h{display:flex;align-items:center;gap:6px;font-size:19px;font-weight:700;padding:2px 2px 4px}
+.v05-col.in .v05-h,.v05-strip.in{color:var(--in)}.v05-col.out .v05-h,.v05-strip.out{color:var(--out)}
+.sg{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:22px;flex:none}
+.in .sg{background:var(--inap)}.out .sg{background:var(--outap);color:#2b1f05}
+.v05-gb{min-height:52px;border-radius:12px;background:var(--page);display:flex;align-items:center;gap:8px;padding:0 10px;font-size:15px;font-weight:700;color:var(--val);border:1px solid var(--bord)}
+.v05-gb .ic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--cb);color:var(--ct);flex:none}
+.v05-rb{flex:none;display:flex;align-items:center;gap:8px;height:52px;padding:0 14px;font-weight:700;color:var(--val);border-top:1px dashed var(--bordm);background:var(--page)}
+.v05-rb span{font-weight:400;color:var(--sec);font-size:13px}
+.v05-strip{flex:none;display:flex;align-items:center;gap:8px;height:46px;padding:0 10px;font-weight:700;font-size:15px}
+.v05-strip.in{background:var(--inbg)}.v05-strip.out{background:var(--outbg)}
+.v05-strip button{margin-left:auto;height:36px;padding:0 10px;border-radius:10px;border:1px solid currentColor;background:var(--page);font-weight:600;display:inline-flex;gap:4px;align-items:center}
+.v05-sel{display:flex;align-items:center;gap:10px;background:var(--page);border-radius:14px;padding:6px 6px 6px 10px}
+.v05-sel b{font-size:17px;color:var(--val);flex:1}
+.v05-sel .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--cb);color:var(--ct)}
+.v05-sel button{height:38px;padding:0 12px;border-radius:10px;border:1px solid var(--bordm);font-size:14px;font-weight:600;color:var(--val)}
+.v05-q{background:var(--page);border-radius:12px;padding:0 12px;height:42px;display:flex;align-items:center;gap:8px;color:var(--sec)}
+.v05-q input{font-size:16px;color:var(--val);width:100%;font-weight:600}
+.v05-rt{background:var(--page);border-radius:14px;padding:3px}
+.v05-rt>div{display:flex;align-items:center;gap:10px;width:100%;min-height:40px;padding:0 8px;border-radius:10px;font-size:15px;color:var(--val)}
+.v05-rt .rd{width:18px;height:18px;border-radius:50%;border:2px solid var(--bordm);flex:none}
+.v05-rt>div.on{background:var(--rai);font-weight:700}
+.v05-rt>div.on .rd{border:6px solid var(--val)}
+.v05-rt .sm-chip{margin-left:auto;height:32px}
+.v05-ft{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:6px;padding-top:4px}
+.v05-card{background:var(--page);border-radius:12px;padding:8px 10px}
+
+/* ================= v06 : qui paie qui ================= */
+.v06-dia{flex:none;position:relative;background:var(--pan);border-bottom:1px solid var(--bord)}
+.v06-dia svg.f{position:absolute;inset:0}
+.v06-node{position:absolute;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px;font-weight:700;color:var(--val);transform:translate(-50%,-50%);text-align:center;line-height:1.1}
+.v06-node small{font-size:12px;font-weight:600;color:var(--sec)}
+.v06-node .c{border-radius:50%;display:grid;place-items:center;background:var(--page);border:2px solid var(--bordm);color:var(--val);margin-bottom:2px}
+.v06-node.me .c{width:84px;height:84px;background:var(--act);color:var(--acttx);border:0}
+.v06-node.k .c{width:62px;height:62px;background:var(--cb);color:var(--ct);border:0}
+.v06-node.o .c{width:48px;height:48px}
+.v06-tag{position:absolute;transform:translate(-50%,-50%);font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:18px;padding:2px 10px;border-radius:10px;white-space:nowrap}
+.v06-tag.out{background:var(--outap);color:#2b1f05}.v06-tag.in{background:var(--inap);color:#fff}
+.v06-flip{position:absolute;transform:translate(-50%,-50%);height:36px;padding:0 10px;border-radius:99px;background:var(--page);border:1px solid var(--bordm);display:inline-flex;align-items:center;gap:4px;color:var(--val);font-size:13px;font-weight:600}
+.v06-b{flex:1;padding:4px 12px 0;display:flex;flex-direction:column;overflow:hidden;gap:2px}
+.v06-r{display:flex;align-items:center;gap:10px;min-height:52px;border-bottom:1px solid var(--bord)}
+.v06-r>.ic{color:var(--sec);width:24px;display:grid;place-items:center;flex:none;font-size:13px;font-weight:600}
+.v06-r input{flex:1;font-size:16px;color:var(--val);font-weight:600;min-width:0}
+.v06-r input.amt{font-family:'IBM Plex Mono',monospace;font-size:40px;letter-spacing:-.02em}
+.v06-r input.out{color:var(--out)}.v06-r input.in{color:var(--in)}.v06-r input.vide{color:var(--trait)}
+.v06-r input::placeholder{color:var(--trait);font-weight:400}
+.v06-ft{flex:none;display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-top:1px solid var(--bord);margin-top:auto}
+
+/* ================= v07 : quand ça tombe ================= */
+.v07-top{flex:none;display:flex;align-items:center;gap:8px;padding:8px 10px 6px}
+.v07-top input.a{font-family:'IBM Plex Mono',monospace;font-size:34px;font-weight:600;flex:1;min-width:0;width:auto}
+.v07-top input.a.out{color:var(--out)}.v07-top input.a.in{color:var(--in)}.v07-top input.a.vide{color:var(--trait)}
+.v07-top small{color:var(--sec);font-size:13px}
+.v07-pm{display:flex;border-radius:12px;border:1px solid var(--bordm);overflow:hidden;flex:none}
+.v07-pm button{width:48px;height:44px;font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:600;color:var(--sec)}
+.v07-pm button.o.on{background:var(--outap);color:#2b1f05}.v07-pm button.i.on{background:var(--inap);color:#fff}
+.v07-gen{margin:0 10px;display:flex;flex-wrap:wrap;gap:5px}
+.v07-gen button{height:34px;padding:0 9px 0 7px;border-radius:10px;border:1px solid var(--bordm);font-size:13px;font-weight:600;display:inline-flex;gap:4px;align-items:center;color:var(--val)}
+.v07-gen button .ic{color:var(--cseg)}
+.v07-gen button.o{border-bottom:3px solid var(--outap)}.v07-gen button.i{border-bottom:3px solid var(--inap)}.v07-gen button.n{border-style:dashed}
+.v07-gen button.on{background:var(--cb);color:var(--ct);border-color:var(--cb)}.v07-gen button.on .ic{color:var(--ct)}
+.v07-q{margin:8px 10px 0;display:flex;align-items:center;gap:8px;height:40px;border-radius:12px;background:var(--pan);padding:0 10px;color:var(--sec)}
+.v07-q input{flex:1;font-size:16px;color:var(--val);font-weight:600;min-width:0}
+.v07-q input::placeholder{color:var(--sec);font-weight:400}
+.v07-rt{display:grid;grid-template-columns:repeat(4,1fr);margin:8px 10px 0;border:1px solid var(--bordm);border-radius:12px;overflow:hidden}
+.v07-rt button{height:40px;font-size:14px;font-weight:600;border-left:1px solid var(--bord);display:flex;align-items:center;justify-content:center;gap:4px;color:var(--txt)}
+.v07-rt button:first-child{border-left:0}
+.v07-rt button.on{background:var(--act);color:var(--acttx)}
+.v07-yr{display:flex;justify-content:space-between;font-size:12px;color:var(--sec);margin:8px 12px 3px;font-weight:600}
+.v07-g{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:0 10px}
+.v07-g.strip{grid-template-columns:repeat(12,1fr);gap:3px}
+.v07-m{height:70px;border-radius:10px;background:var(--pan);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:5px 2px}
+.v07-g.strip .v07-m{height:46px;padding:4px 0}
+.v07-m>b{font-size:13px;color:var(--val)}
+.v07-g.strip .v07-m>b{font-size:11px}
+.v07-m.now{box-shadow:inset 0 0 0 2px var(--val)}
+.v07-m.off{opacity:.4}
+.v07-m .bar{width:24px;height:22px;border-radius:5px}
+.v07-g.strip .bar{width:12px;height:14px}
+.v07-m .bar.out{background:var(--outap)}.v07-m .bar.in{background:var(--inap)}
+.v07-m .v{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600}
+.v07-m .v.out{color:var(--out)}.v07-m .v.in{color:var(--in)}
+.v07-fr{margin:8px 10px 0}
+.v07-sum{margin:8px 10px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.v07-ft{margin-top:auto;flex:none;display:flex;justify-content:space-between;align-items:center;padding:10px;border-top:1px solid var(--bord)}
+
+/* ================= v08 : pavé de caisse ================= */
+.v08-gen{flex:none;margin:8px 10px 0;border-radius:14px;overflow:hidden;border:1px solid var(--bord)}
+.v08-gr{display:grid;grid-template-columns:26px repeat(5,1fr);gap:4px;padding:4px}
+.v08-gr.out{background:var(--outbg)}.v08-gr.in{background:var(--inbg)}
+.v08-gr>b{display:grid;place-items:center}
+.v08-gr.out>b{color:var(--out)}.v08-gr.in>b{color:var(--in)}
+.v08-gr button{height:44px;border-radius:10px;background:var(--page);border:1px solid var(--bord);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:11.5px;font-weight:600;color:var(--val);letter-spacing:-.01em;line-height:1.1}
+.v08-gr button .ic{color:var(--cseg)}
+.v08-gr button.n{border-style:dashed;grid-column:span 2;flex-direction:row;gap:5px}
+.v08-gr button.on{background:var(--cb);color:var(--ct);border-color:var(--cb)}.v08-gr button.on .ic{color:var(--ct)}
+.v08-dsp{flex:none;margin:8px 10px 0;border-radius:16px;background:var(--rai);padding:8px 12px 10px}
+.v08-dsp .l1{display:flex;align-items:center;gap:6px;color:var(--sec)}
+.v08-dsp .l1 input{flex:1;font-size:16px;font-weight:600;color:var(--val);min-width:0}
+.v08-dsp .l1 input::placeholder{color:var(--sec);font-weight:400}
+.v08-dsp .am{font-family:'IBM Plex Mono',monospace;font-size:48px;font-weight:600;text-align:right;letter-spacing:-.03em;line-height:1.1;margin:2px 0 6px}
+.v08-dsp .am.out{color:var(--out)}.v08-dsp .am.in{color:var(--in)}.v08-dsp .am.vide{color:var(--trait)}
+.v08-dsp .sm-chip{background:var(--page)}.v08-dsp .sm-chip.on{background:var(--val)}
+.v08-rt{flex:none;display:grid;grid-template-columns:repeat(4,1fr);margin:8px 10px 0;border:1px solid var(--bordm);border-radius:12px;overflow:hidden}
+.v08-rt button{height:44px;font-size:14px;font-weight:600;border-left:1px solid var(--bord);display:flex;align-items:center;justify-content:center;gap:4px;color:var(--txt)}
+.v08-rt button:first-child{border-left:0}
+.v08-rt button.on{background:var(--act);color:var(--acttx)}
+.v08-x{flex:none;margin:8px 10px 0;display:flex;flex-direction:column;gap:6px}
+.v08-pad{flex:1;max-height:250px;margin-top:auto;display:grid;grid-template-columns:repeat(3,1fr) 1.3fr;grid-template-rows:repeat(4,1fr);gap:5px;padding:6px 10px 10px}
+.v08-pad span{border-radius:12px;background:var(--pan);display:grid;place-items:center;font-family:'IBM Plex Mono',monospace;font-size:24px;color:var(--val)}
+.v08-pad .vk{grid-column:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-family:'Source Sans 3',sans-serif;font-weight:700;font-size:16px;border:2px solid transparent;text-align:center;line-height:1.1}
+.v08-pad .vk b{font-family:'IBM Plex Mono',monospace;font-size:26px;line-height:1}
+.v08-pad .vk.out{background:var(--outbg);color:var(--out);border-color:var(--outap)}
+.v08-pad .vk.in{background:var(--inbg);color:var(--in);border-color:var(--inap)}
+.v08-pad .vk.out.def{background:var(--outap);color:#2b1f05}
+.v08-pad .vk.in.def{background:var(--inap);color:#fff}
+.v08-pad .vk.off{background:var(--pan);color:var(--trait);border:2px dashed var(--bordm)}
+.v08-pad .vk small{font-size:11px;font-weight:600;display:flex;gap:3px;align-items:center}
+/* passe 2 bis (22.11) */
+.v02-kb span.v02-sg{font-size:13px;font-weight:700;font-family:inherit;gap:4px;display:flex;align-items:center;justify-content:center}
+.v02-kb span.v02-sg b{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600}
+.v02-kb span.v02-sg.o{background:var(--outbg);color:var(--out)}.v02-kb span.v02-sg.i{background:var(--inbg);color:var(--in)}
+.v03-t.act{margin:0 7px}
+.v03-nb{white-space:nowrap}
+.v04-act .sm-mm{padding:0 8px;gap:6px}.v04-act .sm-go{padding:0 11px}
+.v04-nr.out{grid-template-columns:34px 1fr 1fr 1.3fr 1fr 1fr}
+.v08-gr.out{grid-template-columns:26px 1fr 1.3fr 1fr 1fr 1fr}
+.fr-d.apay{background:var(--page);border:2px solid var(--outap)}
+.v07-m .bar.apay{background:transparent;border:2px dashed var(--outap)}
+.sm-mmv.prevu{background:transparent;border:1.5px dashed var(--outap);color:var(--out)}
+.sm-ach{display:flex;flex-direction:column;gap:7px;padding:10px;border:1px solid var(--bordm);border-radius:14px;background:var(--page)}
+.sm-ach-h{font-size:13px;font-weight:700;color:var(--val);display:flex;gap:5px;align-items:center}
+.sm-ach .sm-chip.on{background:var(--cb);color:var(--ct);border-color:var(--cb)}
+.sm-ach-n{font-size:12px;color:var(--sec)}
+.sm-ach-a{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;padding:8px 0 0;border-top:1px solid var(--bord)}
+.sm-ach-a b{grid-column:1/3;font-size:13px;color:var(--val);display:flex;gap:5px;align-items:center}
+.sm-ach-a span{font-size:15px;color:var(--val);font-weight:600}
+.sm-ach-a .sm-n{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--out)}
+.sm-ach-a em{grid-column:1/3;font-style:normal;font-size:12px;color:var(--in);font-weight:600}
+.sm-ach-l{height:36px;display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--val);border:1px dashed var(--bordm);border-radius:10px;padding:0 10px}
+.v04-vide{margin:4px 10px;padding:16px 14px;border:1.5px dashed var(--bordm);border-radius:14px;display:flex;flex-direction:column;gap:8px;color:var(--val)}
+.v04-vide b{font-size:16px;display:flex;gap:8px;align-items:center}
+.v04-vide p{margin:0;font-size:14px;line-height:1.4;color:var(--txt)}
+.v04-vide .ex{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--sec)}
+.v04-vide .ex i{font-style:normal;font-family:'IBM Plex Mono',monospace;color:var(--out);background:var(--outbg);border-radius:6px;padding:1px 6px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+(function(){
+'use strict';
+const P=new URLSearchParams(location.search);
+const ICO={
+ x:'<path d="M18 6 6 18M6 6l12 12"/>',
+ check:'<path d="M20 6 9 17l-5-5"/>',
+ file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/>',
+ cart:'<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>',
+ tag:'<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r="1.2" fill="currentColor"/>',
+ home:'<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
+ repeat:'<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',
+ user:'<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>',
+ brief:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/>',
+ pct:'<path d="M19 5 5 19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+ wallet:'<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
+ piggy:'<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"/><path d="M2 9v1c0 1.1.9 2 2 2h1"/><path d="M16 11h.01"/>',
+ undo:'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+ cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+ chev:'<path d="m6 9 6 6 6-6"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ swap:'<path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/>',
+ del:'<path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Z"/><path d="m18 9-6 6M12 9l6 6"/>',
+ enter:'<path d="M9 10 4 15l5 5"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/>',
+ up:'<path d="M12 19V5M5 12l7-7 7 7"/>',
+ down:'<path d="M12 5v14M19 12l-7 7-7-7"/>',
+ mug:'<path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M5 8h12v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2Z"/><path d="M5 8a2.5 2.5 0 0 1 2.5-4 3 3 0 0 1 5 0A2.5 2.5 0 0 1 17 6.5V8"/><path d="M9 12v5M13 12v5"/>',
+ search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+ bolt:'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+ pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+ link:'<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
+ dots:'<circle cx="5" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="19" cy="12" r="1.5" fill="currentColor"/>',
+ updown:'<path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/>',
+ bank:'<path d="M3 21h18M5 21V10M19 21V10M9 21v-11M15 21v-11"/><path d="m2 10 10-6 10 6"/>'
+};
+function I(n,s,c){s=s||16;return '<svg class="sm-i '+(c||'')+'" width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICO[n]+'</svg>';}
+function BARS(){return '<svg width="20" height="18" viewBox="0 0 20 18" aria-hidden="true"><rect x="0" y="2" width="4" height="16" rx="1" fill="#6E9B5B"/><rect x="5" y="7" width="4" height="11" rx="1" fill="#9856D2"/><rect x="10" y="10" width="4" height="8" rx="1" fill="#D2B356"/><rect x="15" y="14" width="4" height="4" rx="1" fill="#56C1D2"/></svg>';}
+const CAT={
+ fix:{n:'Charges fixes',bg:'#3F2556',tx:'#D8B9F4',seg:'#9856D2'},
+ app:{n:'Apports privés',bg:'#562544',tx:'#F4B9DE',seg:'#D256A4'},
+ ven:{n:'Ventes',bg:'#255633',tx:'#B9F4CA',seg:'#56D27B'},
+ bra:{n:'Brassage',bg:'#564925',tx:'#F4E5B9',seg:'#D2B356'},
+ imp:{n:'Impôts et TVA',bg:'#4E2A22',tx:'#F4C6B9',seg:'#D27356'},
+ div:{n:'Autres frais',bg:'#2C2521',tx:'#D8CEC5',seg:'#9A8A7E'}
+};
+/* Genres. « Pour moi » = prélèvement privé ; Apport et Pour moi : hors résultat (jamais dans Mon mois).
+   Remboursement : sans sens propre, il part d’une pièce (refundOfId) et en prend le sens inverse. */
+const G={
+ achat:{n:'Achat',i:'cart',s:'out',c:'bra'},
+ loyer:{n:'Loyer',i:'home',s:'out',c:'fix'},
+ abo:{n:'Abonnement',i:'repeat',s:'out',c:'fix'},
+ salaire:{n:'Salaire',sub:'employé',i:'brief',s:'out',c:'fix'},
+ impot:{n:'Impôts, TVA',i:'pct',s:'out',c:'imp'},
+ prel:{n:'Pour moi',sub:'prélèvement privé',i:'wallet',s:'out',c:'app'},
+ autreo:{n:'Autre',i:'dots',s:'out',c:'div'},
+ vente:{n:'Vente',sub:'sans articles',i:'tag',s:'in',c:'ven'},
+ apport:{n:'Apport',sub:'de ma poche',i:'piggy',s:'in',c:'app'},
+ autrei:{n:'Autre',i:'dots',s:'in',c:'div'},
+ rembt:{n:'Remboursement',sub:'de quelle pièce ?',i:'undo',s:'',c:'div'}
+};
+function cv(c){const k=CAT[c];return '--cb:'+k.bg+';--ct:'+k.tx+';--cseg:'+k.seg;}
+function cat(c){return '<span class="sm-cat" style="'+cv(c)+'">'+CAT[c].n+'</span>';}
+/* Les trois cas du brief. Montants d'exemple, aucun réel. */
+const ST={
+ a:{g:'loyer',s:'out',m:'400,00',q:'Loyer de l’atelier',r:'mois',fin:'sans fin',mm:'−400,00',sum:'−4 800,00',next:['22.12','22.01','22.02']},
+ b:{g:'apport',s:'in',m:'2 000,00',q:'De ma poche',r:'une',fin:'',caisse:'+2 000,00',next:[]},
+ d:{g:'achat',s:'out',m:'86,50',q:'Malt Pilsner',r:'une',fin:'',mm:'−86,50',sum:'',next:[]},
+ e:{g:'loyer',s:'out',m:'400,00',q:'Loyer de l’atelier',r:'mois',fin:'sans fin',mm:'−400,00',sum:'−4 800,00',next:[],apayer:true,from:1},
+ c:{g:'abo',s:'out',m:'29,90',q:'Logiciel de compta',r:'mois',fin:'oct. 2027',fois:'12 fois',mm:'−29,90',sum:'−358,80',next:['22.12','22.01','22.02']}
+};
+const RL={une:'Une fois',mois:'Chaque mois',trim:'Chaque trimestre',an:'Chaque année'};
+const RS={une:'1×',mois:'Mois',trim:'Trim.',an:'Année'};
+function base(k){return k==='ok'?'a':k==='okb'?'b':k;}
+function sgn(st){return (st.s==='out'?'−':'+')+st.m;}
+/* Mon mois : l’apport n’y entre jamais (il entre en caisse, hors résultat). */
+function mm(st){return '<span class="sm-mm">'+BARS()+' Mon mois <span class="sm-mmv '+(st?(st.caisse?'vide':st.s):'vide')+'">'+(st?(st.caisse?'inchangé':st.mm):'—')+'</span></span>';}
+function go(st,lbl,dis){if(lbl===undefined&&st)lbl=(st.s==='out'?'Payé ':'Reçu ')+'<b>'+sgn(st)+'</b>';return '<button class="sm-go"'+(dis?' disabled':'')+'>'+I('check',18)+' '+(lbl||'Enregistrer')+'</button>';}
+function hd(t){return '<div class="sm-hd"><button aria-label="Fermer">'+I('x',20)+'</button><b>'+t+'</b><button class="sm-doc" aria-label="Joindre un document">'+I('file',18)+'</button></div>';}
+function amtIn(st,cls){return '<input class="sm-in '+(cls||'')+' '+(st?st.s:'vide')+'" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Montant en CHF" value="'+(st?sgn(st):'')+'" placeholder="0,00">';}
+function regl(st,small){const i=st&&st.s==='in';return '<span class="sm-chip on">'+I('check',14)+(i?'Reçu':'Payé')+(small?'':' aujourd’hui')+'</span><span class="sm-chip">'+(i?'À recevoir':'À payer')+'</span><span class="sm-chip">'+I('bank',14)+'Banque '+I('chev',12)+'</span>';}
+function finRow(st){return '<small>jusqu’à</small>'+['sans fin','6 mois','1 an · 12 fois'].map((f,i)=>'<span class="sm-chip '+((st.fin==='sans fin'&&i===0)||(st.fin!=='sans fin'&&i===2)?'on':'')+'">'+f+'</span>').join('')+'<span class="sm-chip">'+I('cal',14)+'date</span>';}
+function sumTxt(st){return st.r!=='une'?'<span class="sm-sum">Σ 12 mois <b>'+st.sum+'</b></span>':'';}
+function debut(){return '<small>dès le</small><span class="sm-chip dt">'+I('cal',14)+'22.11.26</span>';}
+function apercu(st){if(!st)return '';const c=st.s==='out'?'f':'fi';let x='<div class="sm-ap"><b>'+I('cal',14)+'Calendrier</b><i class="'+c+'">22.11 ✓</i>';if(st.r!=='une'){x+=st.next.map(d=>'<i>'+d+'</i>').join('')+'<small>… '+(st.fin==='sans fin'?'sans fin':'22.10.27 · '+st.fois)+'</small>';}else x+='<small>une fois</small>';return x+'</div>';}
+/* Frise partagée : le geste au doigt du Calendrier (FrisePeriode). Nov. 26 → nov. 27, 13 colonnes. */
+function frise(st){
+ const W=100/13,open=st.fin==='sans fin',f0=st.from||0,L=(0.7+f0)*W,R=open?100:11.75*W;
+ let x='<div class="fr"><div class="fr-top"><span class="fr-pill">'+(open?(f0?'dès 01.12.26 · sans fin':'dès 22.11.26 · sans fin'):'22.11.26 – 22.10.27 · 12 fois')+'</span></div><div class="fr-tr">';
+ x+='<div class="fr-fr'+(open?' open':'')+'" style="left:'+L+'%;width:'+(R-L)+'%"><span class="fr-h l"></span>'+(open?'':'<span class="fr-h r"></span>')+'</div>';
+ for(let i=f0;i<f0+12;i++)x+='<span class="fr-d '+st.s+(st.apayer?' apay':'')+'" style="left:'+((i+0.7)*W)+'%"></span>';
+ x+='</div><div class="fr-g">'+['nov.','janv.','mars','mai','juil.','sept.','nov.'].map((m,i)=>'<span class="'+(i===1?'y':'')+'" style="left:'+((i*2+0.5)*W)+'%">'+(i===1?'janv. 27':m)+'</span>').join('')+'</div></div>';
+ return x;
+}
+/* confirmation commune, après Enregistrer */
+function okSheet(st){
+ const ap=!!st.caisse,rec=st.r!=='une',c=st.s==='out'?'f':'fi';
+ const tl='<i class="'+c+'">22.11 ✓</i>'+(rec?st.next.map(d=>'<i>'+d+'</i>').join('')+'<small>… '+(st.fin==='sans fin'?'sans fin':'→ '+st.fin)+'</small>':'<small>une fois</small>');
+ let x='<div class="sm-ok-veil"></div><div class="sm-ok" role="dialog"><div class="sm-ok-h"><span class="sm-okc">'+I('check',20)+'</span><div><b>'+st.q+' · '+sgn(st)+' '+(st.s==='out'?'payé':'reçu')+'</b><span>'+cat(G[st.g].c)+' '+(rec?RL[st.r].toLowerCase()+', dès le 22.11':'une fois, le 22.11')+'</span></div></div>';
+ if(ap){
+  x+='<div class="sm-ok-r"><b>'+I('wallet',16)+' Caisse</b><span class="sm-mmv in">'+st.caisse+'</span><small>entre en caisse, sur Banque</small></div>';
+  x+='<div class="sm-ok-r"><b>'+BARS()+' Mon mois</b><span class="sm-mmv vide">inchangé</span><small>un apport n’est ni une vente ni une recette</small></div>';
+ } else x+='<div class="sm-ok-r"><b>'+BARS()+' Mon mois</b><span class="sm-mmv '+st.s+'">'+st.mm+'</span><small>novembre</small></div>';
+ x+='<div class="sm-ok-r"><b>'+I('cal',16)+' Calendrier</b><div class="sm-ok-tl">'+tl+'</div></div>';
+ if(rec)x+='<div class="sm-ok-r"><b>Σ 12 mois</b><span class="sm-n" style="color:var(--out);font-weight:600">'+st.sum+'</span><small>sur un an</small></div>';
+ return x+'<div class="sm-ok-a"><button>'+I('undo',15)+' Annuler</button><button>'+I('plus',15)+' Saisir un autre</button><button class="sm-go">Fermer</button></div></div>';
+}
+function achatB(){return '<div class="sm-ach"><div class="sm-ach-h">'+I('tag',14)+' Catégorie</div><div class="sm-row">'+[['Brassage',1],['Matériel',0],['Nettoyage',0],['Rénovation',0]].map(c=>'<span class="sm-chip'+(c[1]?' on':'')+'" style="'+cv('bra')+'">'+c[0]+'</span>').join('')+'</div><small class="sm-ach-n">Matériel : cuve, fût, outil, compté à part des achats du brassin</small><div class="sm-ach-a"><b>'+I('cart',15)+' Articles · 1</b><span>Malt Pilsner · 25 kg</span><span class="sm-n">−86,50</span><em>stock +25 kg</em></div><div class="sm-ach-l">'+I('plus',14)+' Ajouter un article</div></div>';}
+function withOk(f,k){return (k==='ok'||k==='okb')?f(base(k))+okSheet(ST[base(k)]):null;}
+
+/* ---------------- v01 : le genre d'abord ---------------- */
+function v01(k){
+ const w=withOk(v01,k);if(w)return w;
+ const st=ST[k]||null;
+ let h=hd('Saisir à la main')+'<div class="v01-b">';
+ if(!st){
+  const hab=[['loyer','Loyer de l’atelier','prévu le 22.12 · le solde','−400,00','out'],['apport','De ma poche','apport · dernier le 03.10','+1 500,00','in'],['achat','Malt Pilsner','achat · dernier le 27.10','−86,50','out']];
+  h+='<div class="v01-hab"><h3>HABITUELS</h3>'+hab.map(r=>'<div class="v01-hr"><span class="ic" style="'+cv(G[r[0]].c)+'">'+I(G[r[0]].i,16)+'</span><div><b>'+r[1]+'</b><span>'+r[2]+'</span></div><span class="v01-pm '+r[4]+'">'+r[3]+'</span></div>').join('')+'</div>';
+  const t=id=>{const g=G[id];return '<button class="v01-t" style="'+cv(g.c)+'"><span class="ic">'+I(g.i,20)+'</span><span>'+g.n+'</span></button>';};
+  h+='<div class="v01-side out"><div class="v01-lab">'+I('up',16)+' Ça sort</div><div class="v01-g">'+['achat','loyer','abo','salaire','impot','prel','autreo'].map(t).join('')+'</div></div>';
+  h+='<div class="v01-side in"><div class="v01-lab">'+I('down',16)+' Ça rentre</div><div class="v01-g">'+['vente','apport','autrei'].map(t).join('')+'</div></div>';
+  h+='<div class="v01-rb">'+I('undo',18)+' Remboursement <span>d’une pièce · le sens suit</span></div>';
+  h+='<div class="v01-card"><div class="v01-c1"><input aria-label="Pour quoi" placeholder="Pour quoi ?" value=""><span class="sm-chip dt">'+I('cal',14)+'22.11.26</span></div><div class="v01-amt">'+amtIn(null)+'<small>CHF</small></div></div>';
+  return h+'</div><div class="v01-ft">'+mm(null)+go(null,'Enregistrer',true)+'</div>';
+ }
+ const g=G[st.g];
+ h+='<div class="v01-sel '+st.s+'">'+I(st.s==='out'?'up':'down',16)+(st.s==='out'?'Ça sort':'Ça rentre')+'<span class="g" style="'+cv(g.c)+'"><span class="ic">'+I(g.i,18)+'</span>'+g.n+'</span><button>changer</button></div>';
+ h+='<div class="v01-card"><div class="v01-c1"><input aria-label="Pour quoi" value="'+st.q+'">'+cat(g.c)+'</div><div class="v01-amt">'+amtIn(st)+'<small>CHF</small></div><div class="sm-row">'+regl(st)+'</div></div>';
+ if(k==='d')h+=achatB();
+ h+='<div class="v01-rec"><h3>'+I('repeat',15)+' Revient ?</h3><div class="v01-seg">'+['une','mois','trim','an'].map(r=>'<button class="'+(st.r===r?'on':'')+'">'+RS[r]+'</button>').join('')+'</div>';
+ if(st.r!=='une')h+='<div class="sm-row">'+debut()+'</div><div class="sm-row">'+finRow(st)+'</div>'+(k==='c'?frise(st):'')+'<div class="sm-row">'+sumTxt(st)+'</div>';
+ h+=apercu(st)+'</div>';
+ h+='<div class="sm-fold">Fournisseur, articles, TVA, référence <span>facultatif '+I('chev',12)+'</span></div>';
+ return h+'</div><div class="v01-ft">'+mm(st)+go(st)+'</div>';
+}
+
+/* ---------------- v01s : le genre d'abord, simplifié (D426), passe 2 ----------------
+   Repos = v01 tel quel (habituels en tête, tuiles « Ça sort / Ça rentre », Remboursement, carte).
+   Toucher un genre replie les tuiles en bande (v01) ET ouvre le clavier sur le montant ; le bouton qui dit le sens
+   reste épinglé au-dessus du clavier (Entrée = le même). Nom facultatif : gris par défaut, ou une puce des derniers noms. */
+const S1={
+ achat:{g:'achat',s:'out',ty:'40',m:'40,00',ph:'Achat du 22.11',qui:['Chez',['Malterie','Quincaillerie']],r:'une',mm:'−40,00',pli:'TVA, référence'},
+ vente:{g:'vente',s:'in',ty:'250',m:'250,00',ph:'Vente du 22.11',qui:['Client',['Bar du Port','Marché de Noël']],r:'une',mm:'+250,00',pli:'TVA, référence'},
+ loyer:{g:'loyer',s:'out',ty:'400',m:'400,00',ph:'Loyer',qui:['Bailleur',['Régie du Lac']],r:'mois',fin:'sans fin',mm:'−400,00',sum:'−4 800,00',next:['22.12','22.01','22.02'],pli:'Référence, note'},
+ apport:{g:'apport',s:'in',ty:'2 000',m:'2 000,00',ph:'De ma poche',r:'une',banque:'+2 000,00',norec:1,pli:'Note'},
+ prel:{g:'prel',s:'out',ty:'300',m:'300,00',ph:'Pour moi du 22.11',r:'une',banque:'−300,00',norec:1,lbl:'Retiré',pli:'Note'},
+ abo:{g:'abo',s:'out',ty:'29,90',m:'29,90',ph:'Abonnement du 22.11',qui:['Service',['Logiciel de compta','Téléphone']],r:'mois',fin:'oct. 2027',fois:'12 fois',mm:'−29,90',sum:'−358,80',next:['22.12','22.01','22.02'],pli:'Référence, note'},
+ impot:{g:'impot',s:'out',ty:'1 240',m:'1 240,00',ph:'TVA du 22.11',r:'une',tva:1,norec:1,pli:'Période, référence'},
+ apayer:{g:'achat',s:'out',ty:'186,40',m:'186,40',q:'Malterie',qui:['Chez',['Malterie','Quincaillerie']],quiOn:0,r:'une',apayer:1,mm:'−186,40',pli:'TVA, référence'},
+ rembt:{g:'rembt',s:'in',ty:'18,40',m:'18,40',q:'Remboursement Malterie',r:'une',mm:'+18,40'},
+ hab:{g:'loyer',s:'out',ty:'400,00',sel:1,hab:1,m:'400,00',q:'Loyer de l’atelier',r:'mois',fin:'sans fin',mm:'−400,00',date:'22.12'}
+};
+S1.fin=Object.assign({},S1.abo,{q:'Logiciel de compta',quiOn:0,fin:'date'});
+/* libellés courts et sous-titres des tuiles (G reste celui de v01) */
+const T1S={impot:['Impôts',''],salaire:['Salaire','employé'],prel:['Pour moi','ta paie'],autrei:['Autre','pas un prêt']};
+function v1sTile(id){const g=G[id],t=T1S[id]||[g.n,''];return '<button class="v01-t v1s-t2" style="'+cv(g.c)+'"><span class="ic">'+I(g.i,20)+'</span><span>'+t[0]+'</span>'+(t[1]?'<small>'+t[1]+'</small>':'')+'</button>';}
+/* clavier numérique Android (Gboard) : 300 px, hauteur estimée, à mesurer (visualViewport.height) */
+function v1sKb(){
+ const k=['1','2','3','−','4','5','6','⎵','7','8','9','del',',','0','.','ok'];
+ return '<div class="v1s-kb2" aria-label="Clavier du téléphone, hauteur estimée"><div class="g">'+k.map(x=>x==='del'?'<span class="f">'+I('del',22)+'</span>':x==='ok'?'<span class="ok">'+I('check',22)+'</span>':(x==='−'||x==='⎵')?'<span class="f">'+x+'</span>':'<span>'+x+'</span>').join('')+'</div><div class="nav"><small>clavier Gboard ≈ 300 px (estimé)</small></div></div>';
+}
+function v1sAmt(st,caret){
+ const sg=st.s==='out'?'−':'+';
+ if(st.sel)return '<div class="v1s-amt '+st.s+'">'+sg+'<input class="sel" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Montant en CHF" value="'+st.ty+'" style="width:'+(st.ty.length+.2)+'ch"><small>CHF</small></div>';
+ if(!caret)return '<div class="v1s-amt '+st.s+'">'+sg+st.m+'<small>CHF</small></div>';
+ const gh=st.ty.indexOf(',')<0?',00':'';
+ return '<div class="v1s-amt '+st.s+'">'+sg+'<input inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="Montant en CHF" value="'+st.ty+'" style="width:'+st.ty.length+'ch"><span class="car"></span><span class="gh">'+gh+'</span><small>CHF</small></div>';
+}
+function v1sMm(st){const v=(st.banque||st.tva)?['vide','inchangé']:st.apayer?['prevu',st.mm]:[st.s,st.mm];return '<span class="sm-mm">'+BARS()+' Mon mois <span class="sm-mmv '+v[0]+'">'+v[1]+'</span></span>';}
+function v1sGo(st){return '<button class="sm-go">'+I('check',18)+' '+(st.apayer?'À payer':st.lbl||(st.s==='out'?'Payé':'Reçu'))+' <b>'+sgn(st)+'</b></button>';}
+function v1sRegl(st){if(!st.apayer)return regl(st);return '<span class="sm-chip">Payé</span><span class="sm-chip on">'+I('check',14)+'À payer</span><span class="sm-chip dt">'+I('cal',14)+'d’ici le 22.12</span>';}
+function v1sBand(st){
+ if(st.g==='rembt')return '<div class="v01-sel v1s-band in">'+I('down',16)+'Ça rentre<span class="g" style="'+cv('div')+'"><span class="ic">'+I('undo',18)+'</span>Remboursement</span><button>changer</button></div>';
+ const g=G[st.g],t=T1S[st.g]||[g.n];
+ return '<div class="v01-sel v1s-band '+st.s+'">'+I(st.s==='out'?'up':'down',16)+(st.s==='out'?'Ça sort':'Ça rentre')+'<span class="g" style="'+cv(g.c)+'"><span class="ic">'+I(g.i,18)+'</span>'+t[0]+'</span><button>changer</button></div>';
+}
+function v1sCard(st,caret){
+ const rb=st.g==='rembt';
+ const badge=st.tva?'<span class="sm-cat v1s-neuf">TVA · neuf</span>':st.g==='prel'?'<span class="sm-cat" style="'+cv('app')+'">Privé</span>':cat(rb?'bra':G[st.g].c);
+ let x='<div class="v01-card v1s-card2 '+st.s+'"><div class="v01-c1"><button class="v1s-nm2'+(st.q?'':' ph')+'" aria-label="Nom, facultatif">'+(st.q||st.ph)+I('pen',14)+'</button>'+badge+'<span class="sm-chip dt v1s-dt">'+I('cal',13)+(st.date||'22.11')+'</span></div>'+v1sAmt(st,caret)+'<div class="sm-row">'+v1sRegl(st)+'</div>';
+ if(rb)x+='<div class="v1s-lk">'+I('link',15)+'<span class="t">Facture Malterie du 14.11 · 186,40</span><span class="sm-chip">reste : 186,40</span></div>';
+ return x+'</div>';
+}
+function v1sQui(st){if(!st.qui)return '';return '<div class="v1s-qui"><small>'+st.qui[0]+'</small>'+st.qui[1].map((n,i)=>'<span class="sm-chip'+(st.quiOn===i?' on':'')+'">'+n+'</span>').join('')+'<span class="sm-chip v1s-plus">'+I('plus',13)+'autre</span></div>';}
+function v1sAch(){return '<div class="v1s-ach2"><small class="v1s-lb">'+I('tag',13)+' Catégorie</small><div class="sm-row">'+[['Brassage',1],['Matériel',0],['Nettoyage',0],['Rénovation',0]].map(c=>'<span class="sm-chip'+(c[1]?' on':'')+'">'+c[0]+'</span>').join('')+'</div><div class="v1s-art">'+I('cart',15)+'<b>Articles · aucun</b><span>'+I('plus',13)+'Ajouter, pour le stock</span></div></div>';}
+function v1sImp(){return '<div class="v1s-ach2"><small class="v1s-lb">'+I('pct',13)+' Quel impôt ?</small><div class="sm-row"><span class="sm-chip">Impôt sur la bière</span><span class="sm-chip on">TVA à l’AFC</span><span class="sm-chip">Impôts privés → Pour moi</span></div></div>';}
+function v1sRec(st,k){
+ if(st.norec||st.g==='rembt')return '';
+ if(st.hab)return '<div class="v1s-lk v1s-hab2">'+I('repeat',15)+'<span class="t">Chaque mois · solde le loyer de décembre, prévu le 22.12</span></div>';
+ const rc=st.r!=='une';
+ let x='<div class="v01-rec v1s-rec2"><h3>'+I('repeat',15)+' Revient ?</h3><div class="v01-seg">'+['une','mois','trim','an'].map(r=>'<button class="'+(st.r===r?'on':'')+'">'+RS[r]+'</button>').join('')+'</div>';
+ if(rc){
+  x+='<div class="sm-row">'+debut()+'</div><div class="sm-row"><small>jusqu’à</small>'+['sans fin','6 mois','1 an · 12 fois'].map((f,i)=>'<span class="sm-chip'+((st.fin==='sans fin'&&i===0)||(st.fin==='oct. 2027'&&i===2)?' on':'')+'">'+f+'</span>').join('')+'<span class="sm-chip'+(st.fin==='date'?' on':'')+'">'+I('cal',14)+'date</span></div>';
+  const s2=st.fin==='date'?Object.assign({},st,{fin:'oct. 2027'}):st;
+  if(k==='fin')x+=frise(s2);
+  x+='<div class="sm-row">'+sumTxt(st)+'</div>'+apercu(s2);
+ }
+ return x+'</div>';
+}
+function v1sOk(st,r){
+ const rec=st.r!=='une',c=st.s==='out'?'f':'fi';
+ let x='<div class="sm-ok-veil"></div><div class="sm-ok" role="dialog"><div class="sm-ok-h"><span class="sm-okc">'+I('check',20)+'</span><div><b>'+(st.q||st.ph)+' · '+sgn(st)+' '+(st.s==='out'?'payé':'reçu')+'</b><span>'+cat(r?'bra':G[st.g].c)+' '+(r?'avoir sur la facture du 14.11':rec?RL[st.r].toLowerCase()+', dès le 22.11':'une fois, le 22.11')+'</span></div></div>';
+ if(st.banque){
+  x+='<div class="sm-ok-r"><b>'+I('bank',16)+' Banque</b><span class="sm-mmv '+st.s+'">'+st.banque+'</span><small>argent dispo</small></div>';
+  x+='<div class="sm-ok-r"><b>'+BARS()+' Mon mois</b><span class="sm-mmv vide">inchangé</span><small>un apport n’est ni une vente ni une recette</small></div>';
+ } else x+='<div class="sm-ok-r"><b>'+BARS()+' Mon mois</b><span class="sm-mmv '+st.s+'">'+st.mm+'</span><small>'+(r?'Brassage réduit de 18,40':'novembre')+'</small></div>';
+ if(r)x+='<div class="sm-ok-r"><b>'+I('link',16)+' Pièce</b><span class="v1s-pv">Malterie 14.11 · 186,40 → net 168,00</span></div>';
+ if(rec){
+  x+='<div class="sm-ok-r"><b>'+I('cal',16)+' Calendrier</b><div class="sm-ok-tl"><i class="'+c+'">22.11 ✓</i>'+st.next.map(d=>'<i>'+d+'</i>').join('')+'<small>… '+(st.fin==='sans fin'?'sans fin':'→ '+st.fin)+'</small></div></div>';
+  x+='<div class="sm-ok-r"><b>Σ 12 mois</b><span class="sm-n" style="color:var(--out);font-weight:600">'+st.sum+'</span><small>sur un an</small></div>';
+ }
+ return x+'<div class="sm-ok-a"><button>'+I('undo',15)+' Annuler</button><button>'+I('plus',15)+' Saisir un autre</button><button class="sm-go">Fermer</button></div></div>';
+}
+function v01s(k){
+ const okm={ok:'loyer',okb:'apport',okr:'rembt'};
+ if(okm[k])return v01s(okm[k]+'!')+v1sOk(S1[okm[k]],k==='okr');
+ const closed=k.slice(-1)==='!';if(closed)k=k.slice(0,-1);
+ const st=S1[k]||null,court=P.get('h')?' sc':'';
+ let h=hd('Saisir à la main');
+ if(!st&&k!=='rpiece'){
+  const hab=[['loyer','Loyer de l’atelier','prévu le 22.12 · le solde','−400,00','out'],['apport','De ma poche','apport · dernier le 03.10','+1 500,00','in'],['achat','Malt Pilsner','achat · dernier le 27.10','−86,50','out']];
+  h+='<div class="v01-b v1s-rep'+court+'"><div class="v01-hab"><h3>HABITUELS</h3>'+hab.map(r=>'<button class="v01-hr v1s-hr"><span class="ic" style="'+cv(G[r[0]].c)+'">'+I(G[r[0]].i,16)+'</span><div><b>'+r[1]+'</b><span>'+r[2]+'</span></div><span class="v01-pm '+r[4]+'">'+r[3]+'</span></button>').join('')+'</div>';
+  h+='<div class="v01-side out"><div class="v01-lab">'+I('up',16)+' Ça sort</div><div class="v01-g">'+['achat','loyer','abo','salaire','impot','prel','autreo'].map(v1sTile).join('')+'</div></div>';
+  h+='<div class="v01-side in"><div class="v01-lab">'+I('down',16)+' Ça rentre</div><div class="v01-g">'+['vente','apport','autrei'].map(v1sTile).join('')+'</div></div>';
+  h+='<button class="v01-rb">'+I('undo',18)+' Remboursement <span>d’une pièce · le sens suit</span></button>';
+  h+='<div class="v01-card"><div class="v01-c1"><input aria-label="Pour quoi" placeholder="Pour quoi ?" value=""><span class="sm-chip dt">'+I('cal',14)+'22.11.26</span></div><div class="v01-amt">'+amtIn(null)+'<small>CHF</small></div></div>';
+  return h+'</div><div class="v01-ft">'+mm(null)+go(null,'Enregistrer',true)+'</div>';
+ }
+ if(k==='rpiece'){
+  h+='<div class="v1s-b"><div class="v01-sel v1s-band neu">'+I('undo',16)+'Remboursement<button>changer</button></div><div class="v01-card"><div class="v01-c1"><span class="v1s-nm2 ph">Remboursement de…</span></div><div class="v01-amt">'+amtIn(null)+'<small>CHF</small></div></div></div>';
+  const pcs=[['bra','cart','Malterie','14.11 · facture · Brassage','−186,40','in',1],['ven','tag','Marché de Noël','08.11 · Ventes','+320,00','out',0],['bra','cart','Quincaillerie','03.11 · Matériel','−42,00','in',0],['ven','tag','Bar du Port','31.10 · Ventes','+180,00','out',0],['bra','cart','Fûts inox','25.10 · Matériel','−240,00','in',0],['fix','repeat','Logiciel de compta','22.10 · Charges fixes','−29,90','in',0]];
+  return h+'<div class="sm-ok-veil"></div><div class="v1s-pl2" role="dialog" aria-label="De quelle pièce ?"><i class="v1s-grip"></i><h4>De quelle pièce ?<button aria-label="Fermer">'+I('x',18)+'</button></h4><div class="v1s-q">'+I('search',16)+'<input inputmode="search" aria-label="Chercher une pièce" placeholder="Chercher un nom, un montant"></div>'+pcs.map(p=>'<div class="v1s-pc'+(p[6]?' on':'')+'"><span class="ic" style="'+cv(p[0])+'">'+I(p[1],16)+'</span><div><b>'+p[2]+'</b><span>'+p[3]+'</span></div><span class="n">'+p[4]+'</span><span class="v1s-dir '+p[5]+'">'+(p[5]==='in'?'↓ rentre':'↑ sort')+'</span></div>').join('')+'</div>';
+ }
+ const kb=!closed&&k!=='fin';
+ h+='<div class="v1s-b'+court+'">'+v1sBand(st)+v1sCard(st,kb)+v1sQui(st)+(st.g==='achat'?v1sAch():'')+(st.tva?v1sImp():'')+v1sRec(st,k)+(st.pli?'<div class="sm-fold">'+st.pli+' <span>facultatif '+I('chev',12)+'</span></div>':'')+'</div>';
+ return h+'<div class="v1s-ft">'+v1sMm(st)+v1sGo(st)+'</div>'+(kb?v1sKb():'');
+}
+
+/* ---------------- v02 : ± sur le montant ---------------- */
+function v02(k){
+ const w=withOk(v02,k);if(w)return w;
+ const st=ST[k]||null,s=st?st.s:'';
+ let h=hd('Mouvement d’argent')+'<div class="v02-b">';
+ h+='<div class="v02-hero"><div class="v02-pm" role="radiogroup" aria-label="Sens"><button class="out '+(s==='out'?'on':'')+'">'+I('up',16)+'<b>−</b>sort</button><button class="in '+(s==='in'?'on':'')+'">'+I('down',16)+'<b>+</b>rentre</button></div>';
+ h+='<div class="v02-am">'+amtIn(st)+'<div class="v02-am-s">CHF</div></div></div>';
+ if(st)h+='<div class="sm-row">'+regl(st)+'</div>';
+ h+='<div class="v02-q">'+(st?I(G[st.g].i,20):I('pen',18))+'<input placeholder="Pour quoi ?" value="'+(st?st.q:'')+'" aria-label="Pour quoi">'+(st?cat(G[st.g].c):'')+'</div>';
+ const pu=id=>{const g=G[id];return '<button class="'+(st&&st.g===id?'on':'')+'" style="'+cv(g.c)+'"><span class="ic">'+I(g.i,15)+'</span>'+g.n+'</button>';};
+ h+='<div class="v02-gr out"><b>'+I('up',14)+'sort</b><div>'+['loyer','abo','achat','salaire','prel'].map(pu).join('')+'</div></div>';
+ h+='<div class="v02-gr in"><b>'+I('down',14)+'rentre</b><div>'+['apport','vente'].map(pu).join('')+'</div></div>';
+ if(!st)h+='<div class="v02-gr nt"><b>'+I('updown',14)+'selon</b><div>'+pu('rembt')+'</div></div>';
+ const on=st&&st.r!=='une';
+ h+='<div class="v02-rep"><div class="v02-rep-h">'+I('repeat',18)+' Revient'+(on?'<small>posé par '+G[st.g].n+'</small>':'')+'<span class="v02-sw '+(on?'on':'')+'" role="switch" aria-checked="'+(on?'true':'false')+'"></span></div>';
+ if(on){h+='<div class="sm-row">'+['mois','trim','an'].map(r=>'<span class="sm-chip '+(st.r===r?'on':'')+'">'+RS[r]+'</span>').join('')+debut()+'</div><div class="sm-row">'+finRow(st)+'</div>'+(k==='c'?frise(st):'')+'<div class="sm-row">'+sumTxt(st)+'</div>';}
+ h+='</div>';
+ if(st)h+=apercu(st);
+ h+='</div>';
+ if(!st){h+='<div class="v02-kb">'+['1','2','3','−','4','5','6','+','7','8','9','',',','0','⌫'].map((x,i)=>{if(i===11)return '<span class="ent">'+I('enter',18)+'Entrée</span>';if(x==='⌫')return '<span class="k2">'+I('del',18)+'</span>';if(x==='−')return '<span class="v02-sg o"><b>−</b>sort</span>';if(x==='+')return '<span class="v02-sg i"><b>+</b>rentre</span>';return '<span>'+x+'</span>';}).join('')+'</div>';}
+ else h+='<div class="v02-ft">'+mm(st)+go(st)+'</div>';
+ return h;
+}
+
+/* ---------------- v03 : phrase à trous ---------------- */
+function v03(k){
+ const w=withOk(v03,k);if(w)return w;
+ const st=ST[k]||null;
+ let h='<div class="v03-hd"><button aria-label="Fermer">'+I('x',20)+'</button><button class="sm-doc" aria-label="Joindre un document">'+I('file',18)+'</button></div><div class="v03-s">';
+ const q=st?'<span class="v03-t q" style="'+cv(G[st.g].c)+'">'+I(G[st.g].i,20)+G[st.g].n+'</span>':'';
+ const bk='<span class="v03-t p">'+I('bank',18)+'Banque</span>';
+ if(!st){h+='J’ai <span class="v03-t vide act">payé · reçu</span> <span class="v03-t vide">0,00 CHF</span> pour <span class="v03-t vide">quoi ?</span>';}
+ else if(k==='a'){h+='J’ai <span class="v03-t out">'+I('up',20)+'payé</span> <span class="v03-t m">400,00 CHF</span> pour le '+q+' par <span class="v03-nb">'+bk+',</span> puis <span class="v03-t r act">'+I('repeat',18)+'chaque mois</span> dès le <span class="v03-nb"><span class="v03-t d">22.11</span>,</span> <span class="v03-nb"><span class="v03-t r">sans fin</span>.</span>';}
+ else if(k==='b'){h+='<span class="v03-t in act">'+I('down',20)+'J’ai reçu</span> <span class="v03-t m">2 000,00 CHF</span> en '+q+' par <span class="v03-nb">'+bk+',</span> <span class="v03-nb"><span class="v03-t r">une fois</span>,</span> le <span class="v03-nb"><span class="v03-t d">22.11</span>.</span>';}
+ else {h+='J’ai <span class="v03-t out">'+I('up',20)+'payé</span> <span class="v03-t m">29,90 CHF</span> pour un '+q+' par <span class="v03-nb">'+bk+',</span> puis <span class="v03-t r">'+I('repeat',18)+'chaque mois</span> jusqu’en <span class="v03-nb"><span class="v03-t r act">oct. 2027</span>.</span>';}
+ h+='</div>';
+ if(st){
+  h+='<div class="v03-nm"><span>Nom</span>'+st.q+'<span style="margin-left:auto;width:auto">'+I('pen',16)+'</span></div>';
+  h+='<div class="v03-res"><div class="sm-row">'+mm(st)+sumTxt(st)+'</div>'+apercu(st)+'<div class="sm-fold">Fournisseur, TVA, référence <span>facultatif '+I('chev',12)+'</span></div></div>';
+ }
+ h+='<div class="v03-tray">';
+ if(!st){h+='<h4>Genre</h4><div class="v03-op">'+['loyer','abo','achat','salaire','prel','apport','vente','rembt'].map(id=>{const g=G[id];return '<button class="'+(g.s==='out'?'o':g.s==='in'?'i':'n')+'">'+I(g.i,20)+g.n+'</button>';}).join('')+'</div>';}
+ else if(k==='a'){h+='<h4>'+I('repeat',14)+' Revient</h4><div class="v03-op">'+['une','mois','trim','an'].map(r=>'<button class="'+(r==='mois'?'on':'')+'">'+RS[r]+'</button>').join('')+'</div>';}
+ else if(k==='b'){h+='<h4>'+I('swap',14)+' Sens et règlement</h4><div class="v03-op"><button class="o">'+I('up',18)+'J’ai payé</button><button class="o">'+I('up',18)+'Je dois payer</button><button class="i on">'+I('down',18)+'J’ai reçu</button><button class="i">'+I('down',18)+'Je dois recevoir</button></div>';}
+ else {h+='<h4>'+I('cal',14)+' Jusqu’à</h4>'+frise(st)+'<div class="v03-op" style="margin-top:8px"><button>sans fin</button><button>6 mois</button><button class="on">1 an<span class="sm-n" style="font-size:12px">12 fois</span></button><button>'+I('cal',16)+'date</button></div>';}
+ h+='<div class="v03-go">'+go(st,'Enregistrer',!st)+'</div></div>';
+ return h;
+}
+
+/* ---------------- v04 : habituels en un toucher ---------------- */
+function v04(k){
+ const st=ST[base(k)]||null;
+ const rows=[
+  {id:'loyer',n:'Loyer de l’atelier',m:'−400,00',s:'out',sub:'↻ chaque mois · prévu le 22.11',g:'loyer'},
+  {id:'apport',n:'De ma poche',m:'+1 500,00',s:'in',sub:'Apport · dernier le 03.10',g:'apport'},
+  {id:'vente',n:'Vente au marché',m:'+320,00',s:'in',sub:'Vente · dernière le 15.11',g:'vente'},
+  {id:'achat',n:'Malt Pilsner',m:'−86,50',s:'out',sub:'Achat · dernier le 27.10',g:'achat'},
+  {id:'elec',n:'Électricité',m:'−65,00',s:'out',sub:'↻ chaque trimestre',g:'loyer',ic:'bolt'},
+  {id:'prel',n:'Pour moi',m:'−300,00',s:'out',sub:'Prélèvement privé · le 30.09',g:'prel'},
+  {id:'bout',n:'Bouteilles 33 cl',m:'−142,00',s:'out',sub:'Achat · dernier le 12.09',g:'achat'}
+ ];
+ const row=r=>'<div class="v04-row"><span class="v04-ic" style="'+cv(G[r.g].c)+'">'+I(r.ic||G[r.g].i,18)+'</span><div class="v04-nm"><b>'+r.n+'</b><span>'+r.sub+'</span></div><span class="v04-am sm-n '+r.s+'">'+r.m+'</span></div>';
+ const seg=on=>'<div class="v04-seg">'+['une','mois','trim','an'].map(r=>'<button class="'+(on===r?'on':'')+'">'+(r!=='une'?I('repeat',13):'')+RS[r]+'</button>').join('')+'</div>';
+ let h=hd('Payer ou recevoir')+'<div class="v04-b">';
+ h+='<div class="v04-search">'+I('search',18)+'<input placeholder="Chercher un habituel" aria-label="Chercher" value=""></div>';
+ let open='',skip='';
+ if(k==='a'){skip='loyer';open='<div class="v04-open">'+row(rows[0])+'<div class="v04-ed">'+amtIn(st,'sel')+'<small>CHF</small></div><div class="sm-row">'+regl(st)+'</div><div class="sm-row"><span class="sm-chip lk">'+I('link',14)+'solde l’échéance du 22.11</span><small>le plan continue</small></div><div class="sm-row">'+sumTxt(st)+'</div><div class="v04-act">'+mm(st)+go(st)+'</div></div>';}
+ if(k==='b'){skip='apport';open='<div class="v04-open">'+row(rows[1])+'<div class="v04-ed">'+amtIn(st,'sel')+'<small>dernier : +1 500,00</small></div><div class="sm-row">'+regl(st)+'</div>'+seg('une')+'<div class="v04-act">'+mm(st)+go(st)+'</div></div>';}
+ if(k==='c'){open='<div class="v04-open"><div class="v04-row"><span class="v04-ic" style="'+cv('fix')+'">'+I('repeat',18)+'</span><div class="v04-nm"><input class="v04-nmi" value="Logiciel de compta" aria-label="Pour quoi"><span>Nouveau · '+cat('fix')+' · crée l’échéance</span></div></div><div class="v04-ed">'+amtIn(st)+'<small>CHF</small></div>'+seg('mois')+'<div class="sm-row">'+finRow(st)+'</div>'+frise(st)+'<div class="v04-act">'+mm(st)+go(st)+'</div></div>';}
+ if(k==='d'){skip='achat';open='<div class="v04-open">'+row(rows[3])+'<div class="v04-ed">'+amtIn(st,'sel')+'<small>dernier : −86,50</small></div><div class="sm-row">'+regl(st)+'</div>'+achatB()+'<div class="v04-act">'+mm(st)+go(st)+'</div></div>';}
+ if(k==='ok'){skip='loyer';open='<div class="v04-done"><div class="v04-row"><span class="v04-ic" style="background:var(--inap);color:#fff">'+I('check',18)+'</span><div class="v04-nm"><b>Loyer de l’atelier · payé</b><span>échéance du 22.11 soldée · suivante 22.12</span></div><span class="v04-am sm-n out">−400,00</span></div><div class="sm-row">'+mm(ST.a)+'<span class="sm-sum">Σ 12 mois <b>−4 800,00</b></span></div><div class="sm-row"><span class="sm-chip">'+I('undo',14)+' Annuler</span><span class="sm-chip">'+I('cal',14)+' Calendrier</span></div></div>';}
+ if(k==='okb'){skip='apport';open='<div class="v04-done"><div class="v04-row"><span class="v04-ic" style="background:var(--inap);color:#fff">'+I('check',18)+'</span><div class="v04-nm"><b>De ma poche · reçu</b><span>apport privé · une fois, le 22.11</span></div><span class="v04-am sm-n in">+2 000,00</span></div><div class="sm-row"><span class="sm-mm">'+I('wallet',16)+' Caisse <span class="sm-mmv in">+2 000,00</span></span>'+mm(ST.b)+'</div><div class="sm-row"><small>un apport n’est ni une vente ni une recette</small></div><div class="sm-row"><span class="sm-chip">'+I('undo',14)+' Annuler</span></div></div>';}
+ if(open)h+=open;
+ else{
+  const tb=id=>{const g=G[id];return '<button class="'+(g.s?'':'n')+'" style="'+cv(g.c)+'"><span class="ic">'+I(g.i,18)+'</span>'+g.n+'</button>';};
+  h+='<div class="v04-new"><div class="v04-nr out"><b>'+I('up',18)+'</b>'+['achat','loyer','abo','salaire','prel'].map(tb).join('')+'</div><div class="v04-nr in"><b>'+I('down',18)+'</b>'+['vente','apport','autrei'].map(tb).join('')+tb('rembt')+'</div></div>';
+ }
+ h+='<div class="v04-sec">HABITUELS</div>';
+ if(k==='vide'){h+='<div class="v04-vide"><b>'+I('repeat',18)+' Pas encore d’habituel</b><p>Touche un genre ci-dessus. Ce que tu saisis revient ici, prêt en un toucher, montant prérempli.</p><div class="ex">'+I('home',15)+' ton loyer, une fois saisi : <i>−400,00</i> · chaque mois</div></div>';return h+'</div>';}
+ rows.forEach(r=>{if(r.id!==skip)h+=row(r);});
+ return h+'</div>';
+}
+
+/* ---------------- v05 : deux côtés ---------------- */
+function v05(k){
+ const w=withOk(v05,k);if(w)return w;
+ const st=ST[k]||null;
+ const gb=id=>'<button class="v05-gb" style="'+cv(G[id].c)+'"><span class="ic">'+I(G[id].i,18)+'</span>'+G[id].n+'</button>';
+ const head=s=>'<div class="v05-h"><span class="sg">'+(s==='in'?'+':'−')+'</span>'+(s==='in'?'Ça rentre':'Ça sort')+'</div>';
+ let h=hd('Saisir à la main')+'<div class="v05-amt0">'+amtIn(st)+'<small>CHF</small></div>';
+ if(!st){
+  h+='<div class="v05-b"><div class="v05-two"><div class="v05-col in">'+head('in')+['vente','apport','autrei'].map(gb).join('')+'</div><div class="v05-col out">'+head('out')+['achat','loyer','abo','salaire','prel','autreo'].map(gb).join('')+'</div></div>';
+  h+='<div class="v05-rb">'+I('undo',18)+'Remboursement <span>d’une pièce · le sens suit</span></div></div>';
+  return h;
+ }
+ const o=st.s==='in'?'out':'in';
+ h+='<div class="v05-b"><div class="v05-strip '+o+'"><span class="sg">'+(o==='in'?'+':'−')+'</span>'+(o==='in'?'Ça rentre':'Ça sort')+'<button>'+I('swap',14)+'changer de côté</button></div>';
+ h+='<div class="v05-col '+st.s+'">'+head(st.s);
+ h+='<div class="v05-sel" style="'+cv(G[st.g].c)+'"><span class="ic">'+I(G[st.g].i,18)+'</span><b>'+G[st.g].n+'</b><button>changer</button></div>';
+ h+='<div class="v05-q">'+I('pen',16)+'<input value="'+st.q+'" aria-label="Nom"></div>';
+ h+='<div class="sm-row">'+regl(st,true)+'</div>';
+ h+='<div class="v05-rt">'+['une','mois','trim','an'].map(r=>'<div class="'+(st.r===r?'on':'')+'"><span class="rd"></span>'+RL[r]+(st.r===r&&r!=='une'?'<span class="sm-chip">'+(st.fin==='sans fin'?'sans fin':'→ '+st.fin)+' '+I('chev',12)+'</span>':'')+'</div>').join('')+'</div>';
+ if(k==='c')h+=frise(st);
+ h+='<div class="v05-card">'+apercu(st)+(st.r!=='une'?'<div style="margin-top:6px">'+sumTxt(st)+'</div>':'')+'</div>';
+ h+='<div class="v05-ft">'+mm(st)+go(st,'Enregistrer')+'</div></div></div>';
+ return h;
+}
+
+/* ---------------- v06 : qui paie qui ---------------- */
+function v06(k){
+ const w=withOk(v06,k);if(w)return w;
+ const st=ST[k]||null;
+ const node=(cls,x,y,ic,lbl,sub,sz,sty)=>'<div class="v06-node '+cls+'" style="left:'+x+'px;top:'+y+'px;'+(sty||'')+'"><span class="c">'+I(ic,sz)+'</span>'+lbl+(sub?'<small>'+sub+'</small>':'')+'</div>';
+ let h=hd('Qui paie qui ?');
+ if(!st){
+  const N=[['wallet','Toi','apport · pour moi',72,52],['home','Bailleur','loyer',195,40],['repeat','Service','abonnement',318,52],['brief','Employé','salaire',345,168],['tag','Client','vente',300,248],['cart','Fournisseur','achat',90,248],['dots','Autre','',45,168]];
+  h+='<div class="v06-dia" style="height:300px"><svg class="f" width="390" height="300" aria-hidden="true">'+N.map(p=>'<line x1="195" y1="160" x2="'+p[3]+'" y2="'+p[4]+'" stroke="var(--bordm)" stroke-width="2" stroke-dasharray="3 6"/>').join('')+'</svg>';
+  h+=node('me',195,160,'mug','L’Affinée','',34);
+  N.forEach(p=>{h+=node('o',p[3],p[4],p[0],p[1],p[2],20);});
+  h+='</div><div class="v06-b"><div class="v06-r"><span class="ic">CHF</span><input class="amt vide" inputmode="decimal" enterkeyhint="next" placeholder="0,00" aria-label="Montant"></div><div class="v06-r"><span class="ic">'+I('pen',18)+'</span><input placeholder="Pour quoi ?" aria-label="Pour quoi"></div><div class="v06-r"><span class="ic">'+I('cal',18)+'</span><span class="sm-chip dt">22.11.26</span></div></div><div class="v06-ft">'+mm(null)+go(null,'Enregistrer',true)+'</div>';
+  return h;
+ }
+ const other={loyer:['home','Bailleur','loyer'],abo:['repeat','Service','abonnement'],apport:['wallet','Toi','apport']}[st.g];
+ const inn=st.s==='in',col=inn?'var(--inap)':'var(--outap)',rec=st.r!=='une';
+ const L=inn?{ic:other[0],l:other[1],sub:other[2],c:G[st.g].c}:{ic:'mug',l:'L’Affinée'};
+ const R=inn?{ic:'mug',l:'L’Affinée'}:{ic:other[0],l:other[1],sub:other[2],c:G[st.g].c};
+ let arrows='';
+ if(rec){for(let i=0;i<5;i++){const x=150+i*20;arrows+='<path d="M'+x+' 74 l10 10 l-10 10" fill="none" stroke="'+col+'" stroke-width="'+(i===0?5:3)+'" stroke-linecap="round" stroke-linejoin="round" opacity="'+(1-i*0.15)+'"/>';}}
+ else arrows='<path d="M246 72 l14 12 l-14 12" fill="none" stroke="'+col+'" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>';
+ h+='<div class="v06-dia" style="height:168px"><svg class="f" width="390" height="168" aria-hidden="true"><line x1="96" y1="84" x2="'+(rec?150:256)+'" y2="84" stroke="'+col+'" stroke-width="6" stroke-linecap="round"/>'+(rec?'<line x1="250" y1="84" x2="294" y2="84" stroke="'+col+'" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 10"/>':'')+arrows+'</svg>';
+ h+=(L.c?node('k',58,78,L.ic,L.l,L.sub,26,cv(L.c)):node('me',58,78,L.ic,L.l,'',30,'')).replace('width:84px','');
+ h+=(R.c?node('k',332,78,R.ic,R.l,R.sub,26,cv(R.c)):node('me',332,78,R.ic,R.l,'',30,''));
+ h+='<span class="v06-tag '+st.s+'" style="left:195px;top:50px">'+sgn(st)+'</span>';
+ h+='<span class="v06-flip" style="left:195px;top:130px">'+I('swap',15)+' inverser</span></div><div class="v06-b">';
+ h+='<div class="v06-r"><span class="ic">CHF</span><input class="amt '+st.s+'" inputmode="decimal" enterkeyhint="next" value="'+sgn(st)+'" aria-label="Montant">'+cat(G[st.g].c)+'</div>';
+ h+='<div class="v06-r"><span class="ic">'+I('pen',18)+'</span><input value="'+st.q+'" aria-label="Pour quoi"></div>';
+ h+='<div class="v06-r"><span class="ic">'+I('repeat',18)+'</span><div class="sm-row">'+['une','mois','trim','an'].map(r=>'<span class="sm-chip '+(st.r===r?'on':'')+'">'+RS[r]+'</span>').join('')+'</div></div>';
+ h+='<div class="v06-r" style="padding:6px 0"><span class="ic">'+I('check',18)+'</span><div class="sm-row">'+regl(st,true)+'</div></div>';
+ if(rec)h+='<div class="v06-r" style="padding:6px 0"><span class="ic">'+I('cal',18)+'</span><div class="sm-row">'+debut()+(st.fin!=='sans fin'?'':'<span class="sm-chip on">sans fin</span><span class="sm-chip">date</span>')+'</div></div>';
+ if(k==='c')h+='<div style="padding:6px 0">'+frise(st)+'</div>';
+ h+='<div style="padding:8px 0;display:flex;flex-direction:column;gap:6px">'+apercu(st)+sumTxt(st)+'</div>';
+ return h+'</div><div class="v06-ft">'+mm(st)+go(st)+'</div>';
+}
+
+/* ---------------- v07 : quand ça tombe ---------------- */
+function v07(k){
+ const w=withOk(v07,k);if(w)return w;
+ const st=ST[k]||null;
+ const M=['nov.','déc.','janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.'];
+ let h=hd('Quand ça tombe ?');
+ h+='<div class="v07-top">'+amtIn(st,'a')+'<small>CHF</small><div class="v07-pm" aria-label="Sens"><button class="o '+(st&&st.s==='out'?'on':'')+'" aria-label="Sort">−</button><button class="i '+(st&&st.s==='in'?'on':'')+'" aria-label="Rentre">+</button></div></div>';
+ const gb=id=>{const g=G[id];return '<button class="'+(g.s==='out'?'o':g.s==='in'?'i':'n')+(st&&st.g===id?' on':'')+'" style="'+cv(g.c)+'"><span class="ic">'+I(g.i,15)+'</span>'+g.n+'</button>';};
+ h+='<div class="v07-gen">'+['loyer','abo','achat','salaire','prel','apport','vente','rembt'].map(gb).join('')+'</div>';
+ h+='<div class="v07-q">'+I('pen',16)+'<input placeholder="Nom" value="'+(st?st.q:'')+'" aria-label="Nom"></div>';
+ const r=st?st.r:'une',rec=st&&r!=='une';
+ h+='<div class="v07-rt">'+['une','mois','trim','an'].map(x=>'<button class="'+(r===x?'on':'')+'">'+(x!=='une'?I('repeat',13):'')+RS[x]+'</button>').join('')+'</div>';
+ h+='<div class="v07-yr"><span>2026</span><span>2027</span></div><div class="v07-g'+(rec?'':' strip')+'">';
+ const endIdx=rec?11:0;
+ M.forEach((m,i)=>{
+  const on=st&&(rec?(i>=(st.from||0)&&i<=endIdx):i===0);
+  h+='<div class="v07-m'+(i===0?' now':'')+'"><b>'+(rec?m:m.slice(0,1).toUpperCase())+'</b>';
+  if(on)h+='<span class="bar '+st.s+(st.apayer?' apay':'')+'"></span>'+(rec?'<span class="v '+st.s+'">'+sgn(st).replace(',00','')+'</span>':'');
+  else h+='<span></span>'+(rec?'<span class="v"></span>':'');
+  h+='</div>';
+ });
+ h+='</div>';
+ if(rec)h+='<div class="v07-fr">'+frise(st)+'</div>';
+ if(st&&st.apayer){h+='<div class="v07-sum"><span class="sm-chip">Payé</span><span class="sm-chip on">'+I('check',14)+'À payer · le 1.12</span><span class="sm-chip">'+I('bank',14)+'Banque '+I('chev',12)+'</span>'+sumTxt(st)+'</div><div class="v07-sum"><small>rien de payé aujourd’hui · novembre inchangé · décembre : prévu, pas dépensé</small></div>';
+  return h+'<div class="v07-ft"><span class="sm-mm">'+BARS()+' Mon mois <span class="sm-mmv prevu">prévu</span></span>'+go(st,'À payer <b>−400,00</b>')+'</div>';}
+ if(st)h+='<div class="v07-sum">'+regl(st,true)+(rec?sumTxt(st):'')+'</div>';
+ return h+'<div class="v07-ft">'+mm(st)+go(st,st?undefined:'Enregistrer',!st)+'</div>';
+}
+
+/* ---------------- v08 : pavé de caisse ---------------- */
+function v08(k){
+ const w=withOk(v08,k);if(w)return w;
+ const st=ST[k]||null;
+ let h=hd('À la main');
+ const gb=id=>{const g=G[id];return '<button class="'+(g.s?'':'n')+(st&&st.g===id?' on':'')+'" style="'+cv(g.c)+'"><span class="ic">'+I(g.i,16)+'</span>'+g.n+'</button>';};
+ h+='<div class="v08-gen"><div class="v08-gr out"><b>'+I('up',16)+'</b>'+['loyer','abo','achat','salaire','prel'].map(gb).join('')+'</div><div class="v08-gr in"><b>'+I('down',16)+'</b>'+['apport','vente','autrei'].map(gb).join('')+gb('rembt')+'</div></div>';
+ h+='<div class="v08-dsp"><div class="l1">'+I('pen',16)+'<input placeholder="Pour quoi ?" value="'+(st?st.q:'')+'" aria-label="Pour quoi">'+(st?cat(G[st.g].c):'<span class="sm-chip dt">'+I('cal',14)+'22.11.26</span>')+'</div>';
+ h+='<div class="am '+(st?st.s:'vide')+'" role="textbox" aria-label="Montant en CHF" inputmode="none">'+(st?sgn(st):'0,00')+'</div>';
+ h+='<div class="sm-row">'+regl(st||{s:'out'},true)+'</div></div>';
+ const r=st?st.r:'une';
+ h+='<div class="v08-rt">'+['une','mois','trim','an'].map(x=>'<button class="'+(r===x?'on':'')+'">'+(x!=='une'?I('repeat',13):'')+RS[x]+'</button>').join('')+'</div>';
+ if(st){
+  h+='<div class="v08-x">';
+  if(st.r!=='une')h+='<div class="sm-row">'+debut()+(k==='c'?'':'<span class="sm-chip on">sans fin</span><span class="sm-chip">date</span>')+sumTxt(st)+'</div>';
+  if(k==='c')h+=frise(st);
+  h+='<div class="sm-row">'+mm(st)+'</div></div>';
+ }
+ h+='<div class="v08-pad">';
+ ['1','2','3','4','5','6','7','8','9',',','0','⌫'].forEach((x,i)=>{h+='<span style="grid-column:'+(i%3+1)+';grid-row:'+(Math.floor(i/3)+1)+'">'+(x==='⌫'?I('del',22):x)+'</span>';});
+ /* La touche contraire au genre se grise ou se renomme : genre et sens ne peuvent pas se contredire. */
+ const def=st?st.s:'';
+ let ko,ki;
+ if(!st){ko='<span class="vk out" style="grid-row:1/3"><b>−</b>Payé</span>';ki='<span class="vk in" style="grid-row:3/5"><b>+</b>Reçu</span>';}
+ else if(st.g==='apport'){ko='<span class="vk out" style="grid-row:1/3"><b>−</b>Retiré<small>→ Pour moi</small></span>';ki='<span class="vk in def" style="grid-row:3/5"><b>+</b>Reçu<small>'+I('enter',11)+'Entrée</small></span>';}
+ else {ko='<span class="vk out def" style="grid-row:1/3"><b>−</b>Payé<small>'+I('enter',11)+'Entrée</small></span>';ki='<span class="vk off" style="grid-row:3/5" aria-disabled="true"><b>+</b>Reçu<small>pas pour '+(st.g==='loyer'?'un loyer':'un abonnement')+'</small></span>';}
+ h+=ko+ki+'</div>';
+ return h;
+}
+
+const V={
+ v01s:{f:v01s,t:'Le genre d’abord, simplifié',ch:'froide · base v01 (D426)',v1s:1,idee:'Base : v01 telle quelle (D426, règle n° 1) ; seuls les parcours raccourcissent. Montants et noms d’exemple, aucun réel.'},
+ v01:{f:v01,t:'Le genre d’abord',ch:'froide',idee:'Habituels en tête, puis les genres rangés sur fond teinté « Ça sort » / « Ça rentre » : toucher Loyer pose le sens, la catégorie et le rythme, et replie les tuiles en une bande. Puis la carte de p3c-3 (nom, grand montant, Payé aujourd’hui / À payer / Banque) et « Revient ? » en segments.',
+  cor:'apport hors Mon mois (Caisse dans la confirmation) ; Remboursement à part, sens selon la pièce ; « Pour moi » au lieu de Prélèvement ; tuiles repliées après le choix, sens en couleur pleine ; fonds teintés à la place du liseré ; habituels de v04 en tête ; « Autre » des deux côtés ; Impôts, TVA ; « dès le 22.11 » touchable ; fins préréglées et frise partagée ; Σ 12 mois ; bouton « Payé −400,00 » ; Fermer dans la confirmation. Passe 2 bis : état (d) achat, puce de catégorie (Brassage · Matériel · Nettoyage · Rénovation) et « Articles · 1 ».'},
+ v02:{f:v02,t:'± sur le montant',ch:'froide',idee:'Le sens est une bascule collée au montant (− sort / + rentre) : impossible de taper un montant sans dire son sens. Les genres sont rangés par sens et posent la bascule ; « Revient » se pose seul pour Loyer ou Abonnement. Repos : clavier ouvert, Entrée valide.',
+  cor:'genres groupés « sort / rentre / selon » ; bascule en 14 px avec flèches ; Revient posé par le genre ; Payé / À payer / Banque ; ∞ remplacé par « sans fin » et fins préréglées ; frise partagée pour la date ; bleu retiré (choix en noir) ; Σ 12 mois ; bouton qui dit le sens ; apport hors Mon mois ; Pour moi. Passe 2 bis : touches « − sort » et « + rentre » du pavé nommées et colorées (avant : signes gris de 14 px).'},
+ v03:{f:v03,t:'Phrase à trous',ch:'tiède',idee:'L’écran est une phrase : « J’ai [payé] [400,00 CHF] pour le [Loyer] par [Banque], puis [chaque mois] dès le [22.11] ». Chaque trou se touche et ouvre ses choix dans le plateau du bas.',
+  cor:'« par [Banque] » et « Je dois payer » rendent le règlement et l’à-payer ; temps unique « J’ai payé … puis » ; nom séparé du genre ; trous à largeur fixe ; Fournisseur, TVA replié ; légende du repos retirée (« Genre ») ; choix allumés à la couleur du sens (plus de jaune en cave) ; frise partagée dans le plateau ; trous du repos plus contrastés ; Remboursement à part. Passe 2 bis : plus de virgule en tête de ligne (ponctuation collée au trou) ; anneau du trou actif décollé des mots voisins.'},
+ v04:{f:v04,t:'Habituels en un toucher',ch:'tiède',idee:'Tes mouvements habituels en liste : un toucher ouvre la ligne en haut de l’écran, montant prérempli et sélectionné. Le loyer payé solde l’échéance prévue. Un genre neuf part des tuiles, rangées en deux bandes sort / rentre.',
+  cor:'tuiles en deux bandes fixes (Apport entier, Pour moi et Remboursement visibles) ; montants en pastille de sens ; ligne ouverte remontée en haut (le clavier ne la cache plus) ; montant sélectionné et « dernier : 1 500,00 » ; rythme en segments de 40 px, y compris pour l’apport ; légende et recherche ambiguës retirées ; « crée l’échéance » pour un nouveau ; apport hors Mon mois ; Σ 12 mois ; frise partagée. Passe 2 bis : bouton « Reçu +2 000,00 » rentré dans la carte ; tuile Abonnement élargie ; états (d) achat avec catégorie et articles, et première fois (liste vide).'},
+ v05:{f:v05,t:'Deux côtés',ch:'tiède',idee:'L’écran est coupé en deux : vert « Ça rentre », ambre « Ça sort ». Le côté touché s’ouvre en grand, l’autre devient une bande en haut pour changer de côté. Le rythme se choisit dans une liste verticale.',
+  cor:'bande horizontale lisible au lieu du texte couché ; « changer » en bouton ; montant toujours à la même place, en haut ; Payé / À payer / Banque ; fin en bouton de 32 px et frise partagée ; cave sans fonds boueux ; nom avec crayon ; vide comblé ; Remboursement à part, sous les deux côtés ; apport hors Mon mois.'},
+ v06:{f:v06,t:'Qui paie qui ?',ch:'chaude',idee:'Un schéma : L’Affinée au centre, Toi, Bailleur, Service, Employé, Client, Fournisseur autour, chacun avec son genre. On touche avec qui l’argent passe, la flèche dit le sens (inverser), le montant est posé dessus, une flèche en rafale dit « chaque mois ».',
+  cor:'nœud Employé (salaire) ; Toi = apport ou pour moi seulement ; genre écrit sous chaque nœud ; libellés en 13 px ; légende retirée ; montant actif au repos, en 40 px après le choix ; schéma réduit à 168 px ; rythme dit une fois (pastille en double retirée) ; Payé / À payer / Banque ; date de début et frise partagée. Passe 2 bis : Fournisseur et Client décollés du bas du schéma.'},
+ v07:{f:v07,t:'Quand ça tombe ?',ch:'chaude',idee:'La récurrence au premier plan : 12 mois en tuiles, chaque échéance y apparaît en barre ; la période se règle sur la frise partagée du Calendrier. Pour une fois, la grille se réduit en une bande. Les genres posent le sens.',
+  cor:'poignée maison retirée : début et fin sur la frise partagée (cadre et deux poignées du Calendrier) ; grille réduite en bande pour une fois et au repos ; genres choisis, plus devinés ; ± à droite, près du pouce ; barres à hauteur fixe ; légende retirée ; apport hors Mon mois ; Payé / À payer / Banque. Passe 2 bis : état (e) bail à payer dès le 1.12 : rien payé, échéances en pointillés, Mon mois « prévu », bouton « À payer −400,00 ».'},
+ v08:{f:v08,t:'Pavé de caisse',ch:'chaude',idee:'Un pavé intégré, comme une caisse : on tape le montant, puis la touche dit le sens — « − Payé » ou « + Reçu ». Le genre pose la touche : la touche contraire se grise ou se renomme. Rythme en grand au-dessus du pavé.',
+  cor:'genre et sens ne peuvent plus se contredire (touche contraire grisée ; pour un apport « − Retiré → Pour moi ») ; genres en deux bandes fixes (Vente, Salaire, Pour moi visibles) ; légende retirée ; Payé / À payer / Banque ; rythme en segments de 44 px ; date en puce de 34 px ; vide comblé ; touches non choisies bordées (contraste en cave) ; apport hors Mon mois. Passe 2 bis : tuile Abonnement élargie (n’est plus collée aux bords).'}
+};
+const ETATS=[['repos','Repos'],['a','(a) loyer payé chaque mois'],['b','(b) apport reçu une fois'],['c','(c) abonnement → oct. 2027'],['ok','✓ après Enregistrer (a)'],['okb','✓ après Enregistrer (b) : caisse']];
+const EXTRA={v01:[['d','(d) achat : catégorie et articles']],v04:[['d','(d) achat : catégorie et articles'],['vide','première fois : liste vide']],v07:[['e','(e) bail à payer dès le 1.12, rien payé']]};
+const E1S=[["repos","Repos : v01 tel quel, habituels en tête"],["achat","(1) Achat · 40 · Payé = 2 t, 2 f"],["vente","(2) Vente · 250 · Reçu = 2 t, 3 f"],["loyer","(3) Loyer · 400 · Payé = 2 t, 3 f"],["apport","(4) Apport · 2000 · Reçu = 2 t, 4 f"],["abo","(5) Abonnement · 29,90 · 1 an · Payé = 3 t, 5 f"],["rpiece","(6) 1/2 : Remboursement, puis la pièce"],["rembt","(6) 2/2 : 18,40 · Reçu = 3 t, 5 f"],["hab","(3) le mois suivant : habituel · Payé = 2 t, 0 f"],["fin","(5) fin à une date : frise sur place, nom choisi"],["prel","Pour moi : hors Mon mois"],["impot","Impôts : TVA à l’AFC (champ neuf, accord)"],["apayer","Facture à payer d’ici le 22.12"],["ok","✓ (3) loyer"],["okb","✓ (4) apport : Banque, Mon mois inchangé"],["okr","✓ (6) remboursement : net 168,00"]];
+function etats(v){return v==='v01s'?E1S:ETATS.concat(EXTRA[v]||[]);}
+function phone(v,k,th){return '<div class="sm-ph '+(th==='cave'?'cave':'')+'" data-v="'+v+'" data-s="'+k+'">'+V[v].f(k)+'</div>';}
+const TAB1S='<table class="v1s-tab"><thead><tr><th>Cas (montants d’exemple)</th><th>v01 Android (Entrée)</th><th>v01 iPhone</th><th>v01s · 390 × 844</th><th>v01s · 390 × 660</th><th>Gestes v01s</th><th>Ce qui saute</th></tr></thead><tbody>'+[
+ ['1. Achat ponctuel 40 CHF','3 / 2','4 / 2','2 / 2','2 / 2','Achat · 40 · Payé','toucher le champ montant : le genre ouvre le clavier'],
+ ['2. Vente 250 CHF','3 / 3','4 / 3','2 / 3','2 / 3','Vente · 250 · Reçu','idem'],
+ ['3. Loyer payé, chaque mois','3 / 3','4 / 3','2 / 3','2 / 3','Loyer · 400 · Payé','idem ; le genre pose « chaque mois »'],
+ ['4. Apport reçu','3 / 4','4 / 4','2 / 4','2 / 4','Apport · 2000 · Reçu','idem'],
+ ['5. Abonnement mensuel → oct. 2027','5 / 5','5 / 5','3 / 5','4 / 5','Abonnement · 29,90 · 1 an · Payé (à 660 : défiler jusqu’à « jusqu’à »)','champ montant, fermer le clavier'],
+ ['6. Remboursement fournisseur 18,40','4 / 5','5 / 5','3 / 5','3 / 5','Remboursement · la pièce · 18,40 · Reçu','champ montant'],
+].map(r=>'<tr><td>'+r[0]+'</td><td class="n">'+r[1]+'</td><td class="n">'+r[2]+'</td><td class="n g">'+r[3]+'</td><td class="n g">'+r[4]+'</td><td>'+r[5]+'</td><td>'+r[6]+'</td></tr>').join('')
++'<tr class="tot"><td>Total des 6 cas</td><td class="n">21 / 22</td><td class="n">26 / 22</td><td class="n g">14 / 22</td><td class="n g">15 / 22</td><td colspan="2">−7 touchers à 844 (−12 sur iPhone) ; frappes inchangées : ce sont les chiffres</td></tr>'
++'<tr><td>Le loyer, le mois suivant</td><td class="n">non dessiné</td><td class="n">—</td><td class="n g">2 / 0</td><td class="n g">2 / 0</td><td>l’habituel Loyer (en tête) · Payé</td><td>tout : montant présélectionné, le loyer de décembre est soldé</td></tr>'
++'<tr><td>Nommer (facultatif)</td><td class="n">+1 et les lettres</td><td class="n">+1 et les lettres</td><td class="n g">+1 / 0</td><td class="n g">+1 / 0</td><td>une puce « Chez », « Client » ou « Service »</td><td>le clavier texte ; sans puce, le nom par défaut (« Achat du 22.11 »)</td></tr></tbody></table>'
++'<p class="v1s-meth">touchers / frappes, clavier du téléphone ouvert. Toucher : tuile, champ, puce, défiler, fermer le clavier, valider (Entrée ou bouton). Frappe : un chiffre ou la virgule. Clavier dessiné à 300 px (Gboard, <b>estimé</b> ; à mesurer : visualViewport.height sur son téléphone). v01 : le champ montant se touche (+1) ; sur iPhone le pavé décimal n’a pas d’Entrée et cache Enregistrer : fermer le clavier (+1). À 660, seul l’abonnement demande de défiler : « jusqu’à » passe sous le clavier.</p>'
++'<ul class="v1s-ch"><li><b>Repos : v01 tel quel</b> (habituels en tête, tuiles, Remboursement, carte). Seuls changent « Impôts » (au lieu de « Impôts, TVA ») et trois sous-titres : Salaire « employé », Pour moi « ta paie », Autre (rentre) « pas un prêt ».</li>'
++'<li>Écart 1 : toucher un genre ouvre le clavier sur le montant (v01 : toucher le champ).</li>'
++'<li>Écart 2 : Mon mois et le bouton « Payé −400,00 » restent au-dessus du clavier ; Entrée fait la même chose. Jamais fermer le clavier.</li>'
++'<li>Écart 3 : le nom est facultatif. Gris par défaut (« Achat du 22.11 », « De ma poche »), ou une puce des derniers noms (Chez Malterie, Client Bar du Port). La date reste en puce dans la carte.</li>'
++'<li>Écart 4 : une fois, pas de ligne Calendrier (elle reste pour ce qui revient). Apport, Pour moi et Remboursement n’ont pas de « Revient ? ».</li>'
++'<li>Écart 5 : le pli suit le genre (achat « TVA, référence », apport « Note ») ; Achat montre Catégorie et « Articles · aucun · Ajouter, pour le stock ».</li>'
++'<li>Écart 6 : Remboursement ouvre « De quelle pièce ? » (les dernières, de la plus récente) ; la pièce pose le nom, le sens et « reste : 186,40 ».</li>'
++'<li>Écart 7 : Impôts demande « Quel impôt ? » : sur la bière (charge), TVA à l’AFC (hors Mon mois, champ neuf), privés (→ Pour moi).</li></ul>';
+const root=document.getElementById('root');
+if(P.get('v')){
+ document.body.style.background='#fff';
+ const v=P.get('v'),th=P.get('t')||'clair';
+ if(P.get('duo')){document.body.style.background='#888';root.style.cssText='display:grid;grid-template-columns:repeat(3,390px);gap:8px;padding:8px';root.innerHTML=etats(v).map(e=>phone(v,e[0],th)).join('');}
+ else{root.innerHTML=phone(v,P.get('s')||'repos',th);root.firstChild.style.borderRadius='0';if(P.get('h'))root.firstChild.style.height=P.get('h')+'px';}
+}else{
+ let h='<div class="pl-top"><h1>Saisie à la main — v01s (choisie : v01, D426), puis les 8 versions (passe 2)</h1><p>390 px · montants d’exemple, aucun réel · sortie = ambre, entrée = vert · un apport entre en caisse, jamais dans Mon mois</p></div>';
+ Object.keys(V).forEach(v=>{h+='<section class="pl-v" id="'+v+'"><h2>'+v+' — '+V[v].t+' <small>'+V[v].ch+'</small></h2>'+(V[v].v1s?TAB1S:'<div class="pl-cor"><b>Corrigé :</b> '+V[v].cor+'</div>')+'<p>'+V[v].idee+'</p><div class="pl-row">'+etats(v).map(e=>'<div class="pl-cell"><b>'+e[1]+'</b>'+phone(v,e[0],'clair')+'</div>').join('')+'</div><div class="ch-zone"><button class="prendre" data-v="'+v+'" aria-pressed="false">Je prends '+v+'</button><label class="ch-note">Note sur '+v+'<textarea data-note="'+v+'"></textarea></label><div class="ch-etat" data-etat="'+v+'"></div></div></section>';});h+='<section class="pl-v" id="general"><h2>Note générale</h2><label class="ch-note">Un mélange, une idée à garder d’une autre version…<textarea data-note="general"></textarea></label><div class="ch-etat" data-etat="general"></div></section><div class="ch-barre" id="ch-barre">Ton choix : aucun</div>';
+ root.innerHTML=h;
+}
+/* Entrée valide : tout champ dans un téléphone */
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();const ph=e.target.closest('.sm-ph');const b=ph&&ph.querySelector('.sm-go:not([disabled])');if(b){b.textContent='✓ Enregistré';}}});
+})();
+</script>
+<style>.ch-zone{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;margin:10px 0 4px}.prendre{font:600 15px system-ui;padding:10px 16px;border-radius:10px;border:2px solid #1d1d1f;background:#fff;color:#1d1d1f;cursor:pointer}.prendre[aria-pressed=true]{background:#2f6b3a;border-color:#2f6b3a;color:#fff}.ch-note{display:flex;flex-direction:column;font:13px system-ui;color:#555;flex:1 1 260px}.ch-note textarea{min-height:44px;font:15px system-ui;padding:6px;border:1px solid #bbb;border-radius:8px}.ch-etat{font:12px system-ui;color:#2f6b3a;flex-basis:100%}.ch-barre{position:sticky;bottom:0;background:#1d1d1f;color:#fff;font:600 14px system-ui;padding:10px 16px;margin-top:16px;z-index:9}</style><script>setTimeout(function(){var L=["v01s","v01","v02","v03","v04","v05","v06","v07","v08"],etat={},db=null,mn={};function barre(){var b=document.getElementById("ch-barre");if(!b)return;var p=L.filter(function(v){return etat[v]&&etat[v].pris});b.textContent="Ton choix : "+(p.length?p.join(", "):"aucun")+(db?" · enregistré pour Claude":" · gardé sur cet appareil");}function montrer(v){var b=document.querySelector("[data-v='"+v+"']");if(b)b.setAttribute("aria-pressed",etat[v]&&etat[v].pris?"true":"false");var t=document.querySelector("[data-note='"+v+"']");if(t&&document.activeElement!==t)t.value=(etat[v]&&etat[v].note)||"";}function local(){try{localStorage.setItem("choix-saisie",JSON.stringify(etat))}catch(e){}}function ecrire(v){var e=document.querySelector("[data-etat='"+v+"']");local();if(!db){if(e)e.textContent="Gardé sur cet appareil";return;}if(e)e.textContent="Enregistrement…";db.doc("choix/saisie-"+v).set({pris:!!(etat[v]&&etat[v].pris),note:(etat[v]&&etat[v].note)||"",le:new Date().toISOString()}).then(function(){if(e)e.textContent="Enregistré";}).catch(function(){if(e)e.textContent="Pas enregistré ; gardé sur cet appareil";});}try{var g=JSON.parse(localStorage.getItem("choix-saisie")||"{}");if(g&&typeof g==="object")etat=g;}catch(e){}L.forEach(function(v){var b=document.querySelector("[data-v='"+v+"']");if(b)b.addEventListener("click",function(){etat[v]=etat[v]||{};etat[v].pris=!etat[v].pris;montrer(v);barre();ecrire(v);});montrer(v);});L.concat(["general"]).forEach(function(v){var t=document.querySelector("[data-note='"+v+"']");if(!t)return;t.value=(etat[v]&&etat[v].note)||"";t.addEventListener("input",function(){etat[v]=etat[v]||{};etat[v].note=t.value;clearTimeout(mn[v]);mn[v]=setTimeout(function(){ecrire(v)},700);});});barre();if(window.claude&&window.claude.use){window.claude.use("db").then(function(d){if(!d)return;db=d;L.concat(["general"]).forEach(function(v){d.doc("choix/saisie-"+v).onSnapshot(function(s){if(!s.exists)return;var x=s.data()||{};etat[v]={pris:!!x.pris,note:x.note||""};montrer(v);barre();},function(){});});barre();}).catch(function(){});}},0);</script></body>
+</html>

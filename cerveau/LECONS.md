@@ -21,9 +21,9 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 - Contrôle : `controle-appui.mjs` A6 à A8 (D70)
 
 ### L03 — Reprendre tout l'élément désigné, et sa maquette telle quelle
-- Erreur : 19.10, l5b : barres sans pistes. 26.10 : u4 masqué (D155). 02.11 : F rendu (D295) ; p3c-3 avec l'ancien formulaire : « Mais l'app » (D346).
-- Cause : « X de la variante Y » lu au sens étroit.
-- Faire : lister dans Y tout ce qui relève de X. Sa maquette choisie : règle n° 1 ; un port retire ce qu'elle n'a pas ; inventaire et captures côte à côte de chaque état, gestes compris, même en revue (D123). ([[maquettes-16-11]])
+- Erreur : 26.10 : u4 masqué. 02.11 : p3c-3 avec l'ancien formulaire : « Mais l'app ». 22.11 : interrupteur des sels retiré : « On peut plus désactiver les sels ??? ».
+- Cause : « X de Y » lu au sens étroit.
+- Faire : lister dans Y tout ce qui relève de X. Sa maquette choisie : règle n° 1 ; un port retire ce qu'elle n'a pas, garde ce qu'elle a ; inventaire, captures côte à côte de chaque état et geste (D123). ([[maquettes-16-11]])
 - Rôles : pilote, auteur, concepteur
 - Contrôle : D92 PISTE ; `controle-choix.mjs` (D105) ; `controle-teinte.mjs` (D106)
 
@@ -37,9 +37,9 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ## Préparer : briefs, données, architecture
 
 ### L05 — Contrôler une exigence transversale sur tous les écrans, et la répéter dans chaque brief
-- Erreur : 19.10, « au style » contrôlé sur Ma bière seule ; les autres l'ont perdu. « commen ça a pu être oublié ? »
-- Cause : contrôle limité à l'écran d'origine, exigence absente des briefs suivants.
-- Faire : contrôle sur tous les écrans dès l'arrivée de l'exigence, recopiée dans chaque VOIE.md et brief d'agent de test (08.11 : « Pourquoi tu écoutes rien… » ; en ligne, chaque actionneur se joue sur des données « ZZ TEST — … », Enregistrer compris, puis retirées). Un constat n'existe que versé à `work/missions/BUGS.md`. Contenu ajouté en voie : revoir ses plafonds (mots). ([[maquettes-16-11]])
+- Erreur : 19.10, « au style » contrôlé sur Ma bière seule ; les autres l'ont perdu. « commen ça a pu être oublié ? » 22.11 : frise au seul Calendrier, « PARTOUT n'a pas été porté ».
+- Cause : contrôle limité à l'écran d'origine, absent des briefs suivants.
+- Faire : contrôle sur tous les écrans dès l'arrivée de l'exigence (geste : grep des équivalents), recopiée dans chaque VOIE.md et brief de test (en ligne, chaque actionneur joué sur « ZZ TEST — … », Enregistrer compris, puis retiré). Un constat n'existe que versé à `work/missions/BUGS.md`. Contenu ajouté : ses plafonds. ([[maquettes-16-11]])
 - Rôles : pilote
 - Contrôle : `controle-au-style.mjs` (D75)
 
@@ -67,9 +67,9 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 - Contrôle : aucun
 
 ### L12 — Un effet doit se voir, et une capture non regardée ne prouve rien
-- Erreur : 19.10, loupe p02 : 19 à 20 px sous le doigt, 8 à 13 au loin. 02.11, Bauhaus : « MAIS QU'EST-CE QUI A ÉTÉ TESTÉ ».
-- Cause : aucune force minimale exigée, captures non ouvertes.
-- Faire : « sous le doigt / au loin » ×3 au moins. Capture ouverte avant OK. Avant de déployer : une pièce de chaque genre, chaque état touché, deux thèmes, 390 tactile en défilant et 1280, côte à côte avec sa maquette, question ouverte « combien et quels problèmes ? », critique puis pilote (D342). Vrai téléphone : 390×660 et 844×340 (19.11). ([[maquettes-16-11]])
+- Erreur : 19.10, loupe faible. 02.11 : « MAIS QU'EST-CE QUI A ÉTÉ TESTÉ ». 22.11 : test en ligne « jugé par mesures », reçu : « Je l'ai expressément demandé ».
+- Cause : captures non ouvertes, rapport sans vision reçu.
+- Faire : effet ×3. Capture ouverte avant OK ; rapport de test sans capture ouverte : refusé. Avant déploiement : chaque genre, chaque état, téléphone surtout (390 en défilant), 1280 peu, côte à côte avec sa maquette, « combien et quels problèmes ? », critique puis pilote (D342). 390×660, 844×340. ([[maquettes-16-11]])
 - Rôles : pilote, relecteur, auteur, exécutant
 - Contrôle : aucun
 

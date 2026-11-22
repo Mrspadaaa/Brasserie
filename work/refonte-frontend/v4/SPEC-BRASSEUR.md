@@ -2674,3 +2674,86 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 > Choisi mais elle est de loin pas fini polish. Je crois que c'est assez facile de comprendre ce qui va pas, en plus il y a un modèle, donc go implémenter ça. Faire passer les critiques dessus avant pour voir exactement les problèmes avant le vrai portage
 
 (22.11, Autres stocks : version A prise, note : « La version malt houblons et levure est un peu plus clean mais l'idée est là. Aussi il manque quelques trucs genre le seuil ».)
+
+> Du coup les problèmes de la frise ?
+
+(22.11, en ligne tour 9, capture 35 de work/missions/2026-11-21-calendrier-entete/ : frise au doigt, cadre S47 ; « Achats −5 » passe sous la poignée gauche du cadre, « lol −600 » et « 0 » collés au bord, « S47 » écrit deux fois (pastille du cadre et graduation dessous).)
+
+> Petit souci, et vérifier que les actions du + soient bien fonctionelle avec les bonnes vue, actions
+
+(22.11, en ligne tour 9, téléphone, capture 36 de work/missions/2026-11-21-calendrier-entete/ : menu du + ouvert sur le Calendrier ; le haut du menu (« Vente », « Recette ») est coupé sous la barre du navigateur, hors d'atteinte ; 13 actions empilées.)
+
+> Il faudra aussi revoir cette écran pour les saisi à la main, c'est très ostere, peu intuitif, mal fait...
+>
+> Et je peux même pas dire si c'est une vente ou un achat.
+>
+> J'aimerais notamment pouvoir simplement entrer par exemple un versement de loyer et dire que c'est reçurent.
+>
+> Pareil pour un apport ou un abonnement.
+>
+> Là c'est quasiment impossible.
+
+(22.11, en ligne tour 9, téléphone, capture work/missions/2026-11-22-saisie-main/00-plainte.jpg : « Nouvelle dépense » dépliée, 200,00 CHF, Règlement, Pour quoi ?, Date, Fournisseur et catégorie, Lier à une dépense prévue, Référence et TVA, Sans justificatif, Articles · 1, Mon mois −200,00, Enregistrer. Lu : la saisie à la main ne dit pas le sens (entrée ou sortie) ; aucune saisie simple d'un loyer récurrent, d'un apport ou d'un abonnement. Demande de refonte : mini maquettes.)
+
+> Pas le bon geste au doigt.... Plus je teste et plus je trouve des endroits où le geste au doigt choisi et porté PARTOUT n'a pas été porté.... ????
+
+(22.11, en ligne tour 9, téléphone, capture 37 de work/missions/2026-11-21-calendrier-entete/ : feuille d'un brassin (Ttt, LOT-010 Imperial stout), « Était prévue le 08.09 », « Dimanche 29.11 », réglette maison di 22 … di 29 avec ‹ › : pas la frise au doigt choisie. Lu : exigence transversale ; tout choix de date ou de période de l'app passe par la frise partagée.)
+
+> Toujours et encore des problèmes...
+
+(22.11, en ligne tour 9, téléphone 390, capture 38 de work/missions/2026-11-21-calendrier-entete/, échelle An. Lu : (1) mois illisibles, collés « aoûtsept oct. nov.déc.janvfévr.mar: » ; (2) période de l'app changée par le Calendrier (03.08.26–14.11.27) ; (3) pastille « S50 » sous « −683 » contre cadre « S32 – S45 2027 » ; (4) « Vêtements et s… −132 » rogné et collé au cadre, « lol −600 » dans le cadre ; (5) barres de brassins tassées à gauche, deux sans nom dans la barre, « prévu août 26–oct. 27 » sur deux lignes ; (6) fiche Jhhh : pastilles rognées « 7 se… », « 22 s… », « 6 se… », « Com… », « J76 conditionnée » coupé à gauche ; (7) « Jhhh · coût à venir » deux fois de suite.)
+
+> Cette écran là est inutile
+
+(22.11, en ligne tour 9, téléphone, capture work/missions/2026-11-21-stock-maquettes/plainte-tri.jpg : Stocks › Étagère, sous le mur ; il raye la liste ouverte « Trié par couleur (malts), amertume (houblons), date (levures) » et ses 4 choix (couleur, nom A → Z, quantité, manque). Lu, portée étroite : ce sélecteur de tri et sa liste ; le tri par défaut reste.)
+
+> Toujours beaucoup beaucoup de problèmes avec cette écran. La seule règle: maximiser la grandeur du spidergraph (radargraph) et avoir sur un seul écran, sel, radargraph et acides.
+>
+> Je comprends pas, il y a eu plein de mini maquettes et là c'est la catastrophe...
+
+(22.11, en ligne tour 9, téléphone 390, 3 captures work/missions/2026-11-22-eau-sels/ : recette, Eau 6/7, « 2. Sels » : radar petit au milieu d'un grand cadre vide, curseur SO4⇄Cl, 9 sels en cartes (interrupteur + − valeur +), acide lactique empâtage/rinçage plus bas ; en défilant : diagnostics, « Comment les doses sont choisies », bicarbonate, « Tous les sels à l'empâtage », tableau « Total des additifs nécessaires », texte. Lu : sur l'étape Sels, radar le plus grand possible, et sels, radar et acides ensemble dans un seul écran 390 sans défiler ; le reste replié ou ailleurs.)
+
+> Fait passer les critiques, avec les persona dessus. Et résoud les problèmes tout en gardant les contraintes que j'ai mis
+
+(22.11, suite immédiate de la plainte Eau › Sels. Lu : plusieurs critiques à personas sur l'écran Sels (en ligne puis porté), puis correction de tous leurs problèmes sous sa règle : radar le plus grand possible ; sels, radar et acides sur un seul écran.)
+
+> Pourquoi rien n'a été testé sur la vrai app ? Le chrome est réparé ???
+
+(22.11. Lu : le test en ligne du tour 9 (session « Tour 3 : test en ligne complet dans Chrome », commit 1b06c0844) a joué par mesures, sans aucune capture ; il a trouvé 5 défauts et manqué ceux qu'il a vus en 20 minutes (menu du + coupé, étiquettes de la frise, An à 390, frise maison du brassin, Eau › Sels, saisie à la main, tri du Stock). Claude in Chrome est connecté (Browser 1). Le code depuis le tour 9 n'est pas en ligne.)
+
+> Surtout bien tester éprouvé le frise du temps
+
+(22.11, suite. Lu : priorité du test du tour 10 : la frise du temps du Calendrier, au doigt, en ligne, captures ouvertes : chaque geste, chaque échelle, passé et futur, rechargement, deux thèmes, 390 et 844×340.)
+
+> les deux thèmes, pas besoin, et surtout testé en version téléphone, peu en version desktop
+
+(22.11. Lu : règle de test, toute l'app, dès maintenant : un seul thème suffit ; téléphone d'abord (390 tactile, 844×340), 1280 en contrôle léger.)
+
+> Oula c'est pas terribles ça
+
+(22.11, sur la capture du port local Eau › Sels à 390×844 (work/missions/2026-11-22-eau-sels/04-etiquettes.jpg) : il entoure les six étiquettes d'ions (HCO₃⁻ moy., Cl⁻, SO₄²⁻, Na⁺, Mg²⁺, Ca²⁺). Lu : étiquettes repoussées dans les coins du cadre, loin du bout de leur axe ; Cl⁻ posé sur la graduation 100 ; Ca²⁺ rogné à droite ; Mg²⁺ collé à la légende.)
+
+> v01 — Le genre d'abord très bien, rendre le workflow encore mieux et plus simple. Mais très bien
+
+(22.11, page https://claude.ai/artifact/2az8RFpjupTeZc628jh4xg, saisie à la main : v01 choisie. Lu : v01 est la base (règle n° 1), plancher à enrichir : moins de touchers et d'étapes pour chaque cas, sans retirer ce qui fait v01.)
+
+> Tu peux faire passer les critiques et Persona dessus
+> Tableau des taches, test, %, éprouvé sur la vrai app
+
+(22.11, suite de D426 : critiques à personas sur v01s (saisie simplifiée) avant le port.)
+
+> On peut plus désactiver les sels ???
+
+(22.11, sur la capture locale Eau › Sels 390×844 (work/missions/2026-11-22-eau-sels/05-interrupteurs.jpg) : il entoure Gypse, CaCl₂, Epsom. Lu : l'interrupteur de chaque sel, présent dans sa composition choisie (14.11 : nom, ⓘ et interrupteur dans chaque cellule), a été retiré de la cellule et caché dans la feuille du sel ; il doit revenir, visible et à un toucher, dans chaque cellule.)
+
+> https://claude.ai/code/artifact/0cd7e3af-03aa-497c-81fd-32628f4e1809 oui c'est très bien, mais jamais besoin de testé sur iPhone
+
+(22.11, saisie à la main : v01s validée. Règle de test, toute l'app : son téléphone est un Android (Chrome, Gboard) ; jamais de cas, compte ni capture iPhone/Safari.)
+
+> TVA simple, donc on en a vraiment besoin ? Pas utile pour le moment j'ai l'impression ?
+
+(22.11, sur le champ neuf « TVA à l'AFC » de v01s. Lu : pas de champ neuf ; pas d'option TVA dans la saisie pour le moment.)
+
+> C'est corrigé et en ligne,  ça a déjà été joué en entier pas besoin de tout refaire. Juste corrigé ce qui a cassé
+
+(22.11, mise en ligne du tour 10. Lu : ne plus rejouer toutes les portes ; corriger ce qui a cassé (chaines WFA-15), rejouer cela seul, puis mettre en ligne.)
