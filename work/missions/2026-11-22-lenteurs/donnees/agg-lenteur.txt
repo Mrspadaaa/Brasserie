@@ -1,0 +1,10 @@
+action                 tour7 INP médiane (min–max)  tâche max médiane                     tour9
+semaine                 880 (752–1008) tâche  764 (668–887) n=5 KO 5                       752 (720–832) tâche  636 (548–660) n=5 KO 5
+frise                  1136 (1112–1328) tâche  587 (572–741) n=5 KO 5                      688 (448–824) tâche  463 (284–765) n=5 KO 5
+barre                   904 (664–1072) tâche  754 (545–912) n=5 KO 5                       408 (112–424) tâche  338 (293–350) n=5 KO 5
+courbe-lecture           24 (16–32) tâche   90 (53–102) n=5 KO 1                           336 (256–392) tâche  277 (210–331) n=5 KO 5
+courbe-cacher           184 (72–248) tâche   80 (0–107) n=5 KO 1                           104 (32–120) tâche   58 (0–77) n=5 KO 0
+evenement-ouvrir        312 (160–520) tâche  181 (88–286) n=5 KO 4                           0 (0–160) tâche    0 (0–116) n=5 KO 3
+evenement-modifier        0 (0–1128) tâche    0 (0–981) n=5 KO 5                             0 (0–488) tâche    0 (0–422) n=5 KO 5
+evenement-semaine         0 (0–80) tâche    0 (0–55) n=5 KO 3                                0 (0–0) tâche    0 (0–0) n=5 KO 5
+evenement-enregistrer     0 (0–1208) tâche    0 (0–1133) n=5 KO 5                            0 (0–440) tâche    0 (0–390) n=5 KO 4

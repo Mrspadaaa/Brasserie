@@ -1,0 +1,9 @@
+actif 4734 ms
+  518 ms  11 %  convertNamedNodeMapToObject index-CClCQJ4A.js:5
+  291 ms   6 %  dflt browser-B42j927L.js:541
+  255 ms   5 %  (anonyme) index-CClCQJ4A.js:72
+  234 ms   5 %  setAttribute ← attr index-CClCQJ4A.js:70
+  227 ms   5 %  image.onload companyDefaults-D6BaTyzK.js:97
+  222 ms   5 %  setProp index-BRf78WRy.js:10330
+  202 ms   4 %  Zt jspdf.es.min-_vXRjpyn.js:6587
+  178 ms   4 %  ae jspdf.es.min-_vXRjpyn.js:6650

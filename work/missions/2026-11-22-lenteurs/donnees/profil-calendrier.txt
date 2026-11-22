@@ -1,0 +1,9 @@
+actif 5014 ms
+  482 ms  10 %  ancestorsShown FloatingActions-WZnR45Zx.js:1928
+  424 ms   8 %  focus ← focusPage FloatingActions-WZnR45Zx.js:2077
+  390 ms   8 %  focus ← focus useLiveData-CsdBuw_g.js:16305
+  274 ms   5 %  getBoundingClientRect ← (anonyme) CalendrierTab-DhMvpo4e.js:5669
+  195 ms   4 %  measure useLiveData-CsdBuw_g.js:14997
+  112 ms   2 %  renderWithHooks index-BRf78WRy.js:4154
+  103 ms   2 %  focus ← (anonyme) FloatingActions-WZnR45Zx.js:2602
+   86 ms   2 %  (garbage collector) ← ?
