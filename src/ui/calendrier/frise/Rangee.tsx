@@ -45,6 +45,10 @@ export const MESURES_PAYSAGE: Mesures = { ligne: 20, barre: 18, titre: 20 };
    couvraient ceux du dessus, et le doigt posé sur le bord ou le jalon de la Blonde tombait sur le Stout. 8 px d'espace entre deux barres de brassin :
    le pied et les jalons restent dans leur ligne. Les autres rangées (sans pied ni jalons) gardent leurs 20 px. */
 export const MESURES_PAYSAGE_BRASSINS: Mesures = { ligne: 26, barre: 18, titre: 20 };
+/* REPRISE-4 (b) (22.11, 390 × 660, 1 sem.) : en portrait, 4 px entre deux brassins et un picto d'étape 6 px sous sa barre : le picto « prête » du
+   premier « Jhhh » touchait la barre du dessous. Comme PC-147 en paysage : la ligne des brassins prend 32 px et le picto 4 px sous la barre
+   (frise.css), 2 px d'air. Les autres rangées (sans pied ni jalons) gardent leurs 30 px. */
+export const MESURES_PORTRAIT_BRASSINS: Mesures = { ligne: 32, barre: 26, titre: 24 };
 
 export interface Disposition {
   chose: ChoseCalendrier;
@@ -574,7 +578,7 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
  * sinon « à encaisser » / « à payer » (une facture attendue), et « prévu » dès qu'une prévision, un plan ou un coût à venir y entre. `conf` est
  * le texte posé à côté de la pastille (« prévu S44–S49 »).
  */
-export interface Pastille { texte: string; lecture: string; part: number; solde: number | null; estime: number | null; confirme: boolean; mot: string; conf: string; debut: string; fin: string }
+export interface Pastille { texte: string; lecture: string; part: number; solde: number | null; estime: number | null; confirme: boolean; mot: string; conf: string; debut: string; fin: string; periode: string }
 
 /** CHD-5 : ce que vaut l'argent d'une chose. `paiement-…` : encaissé ; une pièce attendue (facture) : à encaisser ou à payer ; le reste est une prévision. */
 function statutArgent(c: ChoseCalendrier): 'confirme' | 'du' | 'prevu' {
@@ -659,11 +663,12 @@ export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], c
     : solde !== null ? `${francsSignes(solde)}${aVenir.length ? ' + coût à venir' : ''}`
       : estime !== null && !aVenir.length ? `${francsSignes(estime)} estimé` : probable !== null ? `${francsSignes(probable)} probable` : enMots;
   /* le mot posé à côté : « prévu S44–S49 » ; sans argent dans la fenêtre, il le dit (« aucun mouvement »), jamais « confirmé » */
-  const periode = `${premier}–${dernier}`;
+  /* REPRISE-4 (a) : une seule colonne (1 sem.) se dit une fois, « prévu S47 », jamais « S47–S47 » */
+  const periode = premier === dernier ? premier : `${premier}–${dernier}`;
   const conf = mot ? `${mot} ${periode}${estime !== null ? ` · ${francsSignes(estime)} estimé` : ''}`
     : estime !== null && !probSeul ? 'hors courbe'
       : probSeul ? 'pas confirmé' : sansMouvement && !sansMontant ? 'aucun mouvement' : sansMontant ? 'sans montant' : 'pas confirmé';
-  return { texte, lecture: morceaux.join(', '), part: Math.abs(solde ?? (aVenir.length ? 0 : estime ?? probable ?? 0)), solde, estime, confirme, mot, conf, debut: premier, fin: dernier };
+  return { texte, lecture: morceaux.join(', '), part: Math.abs(solde ?? (aVenir.length ? 0 : estime ?? probable ?? 0)), solde, estime, confirme, mot, conf, debut: premier, fin: dernier, periode };
 }
 
 export interface DragEtat { id: string; mode: 'glisse' | 'bord'; k: number; jours: number }
@@ -940,7 +945,10 @@ export const Rangee: React.FC<RangeeProps> = props => {
             </span>
             {/* CRITIQUE-12 n° 2 : une estimation hors courbe n'est jamais « confirmé » : seule, elle se dit « hors courbe » ; à côté d'un solde
                 compté, « confirmé S47–S52 · +200 estimé » */}
-            <span className="cal-conf">{p.conf}</span>
+            {/* REPRISE-4 (a) : la période se lit d'un bloc ; à l'étroit (An à 390), elle passe entière sous le mot, jamais « 27 » seul */}
+            <span className="cal-conf">{p.mot && p.conf.startsWith(`${p.mot} ${p.periode}`)
+              ? <>{p.mot} <span className="cal-conf-p">{p.periode}</span>{p.conf.slice(p.mot.length + 1 + p.periode.length)}</>
+              : p.conf}</span>
           </span>
         )}
       </header>

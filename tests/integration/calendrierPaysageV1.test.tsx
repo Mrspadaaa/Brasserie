@@ -4,7 +4,7 @@ import { lirePosee } from '../../src/ui/calendrier/frise/posee';
 import { cleanup, render } from '@testing-library/react';
 import { ajouterJours, lundiDe, type ChoseCalendrier } from '../../src/domain/calendrier';
 import { Frise } from '../../src/ui/calendrier/frise/Frise';
-import { MESURES_PAYSAGE, MESURES_PAYSAGE_BRASSINS, type Colonne } from '../../src/ui/calendrier/frise/Rangee';
+import { MESURES_PAYSAGE, MESURES_PAYSAGE_BRASSINS, MESURES_PORTRAIT_BRASSINS, type Colonne } from '../../src/ui/calendrier/frise/Rangee';
 
 /*
  * Voie 1 de la correction des défauts Calendrier (20.11) : PC-147 et PC-146 (844 × 390, critique des corrections PC n° 2, 3 et 6).
@@ -52,6 +52,8 @@ describe('PC-147 : l’espace entre deux brassins en paysage', () => {
     for (const e of ecarts(h)) expect(e).toBe(MESURES_PAYSAGE.ligne);
     cleanup();
     monter(brassins, false);
-    for (const e of ecarts(hautsDeBarres('brassins'))) expect(e).toBe(30);
+    /* REPRISE-4 (b, 22.11) : en portrait aussi, le picto d'étape (4 px sous la barre) garde 2 px d'air avant la barre du dessous */
+    expect(MESURES_PORTRAIT_BRASSINS.ligne).toBeGreaterThanOrEqual(MESURES_PORTRAIT_BRASSINS.barre + 6);
+    for (const e of ecarts(hautsDeBarres('brassins'))) expect(e).toBe(MESURES_PORTRAIT_BRASSINS.ligne);
   });
 });

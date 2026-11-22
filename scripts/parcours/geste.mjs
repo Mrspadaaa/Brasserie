@@ -997,6 +997,32 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
           const r = await lireTextes(z);
           r.absent ? echec(`${F} ${duree} ${z}`, 'zone introuvable') : r.fautes.length ? echec(`${F} ${duree} ${z}`, r.fautes.slice(0, 4).join(' ; ')) : ok(`${F} ${duree} ${z}`, 'aucun texte rogné ni chevauché');
         }
+        /* REPRISE-4 (a) : la période posée à côté de la pastille (« prévu nov. 26–nov. 27 ») se lit d'un bloc : jamais « 27 » seul sur sa ligne,
+           jamais « S47–S47 ». (b) : un picto d'étape (`.cal-jalon`) ne déborde jamais sur une autre barre (à 1 sem., celui de « Jhhh » passait
+           sous sa barre, sur la ligne suivante). */
+        const ra = await p.evaluate(() => {
+          const fautes = [];
+          for (const e of document.querySelectorAll('[data-frise] .cal-conf')) {
+            const NBSP = String.fromCharCode(160), WJ = String.fromCharCode(0x2060);
+            const t = e.textContent ?? '', lu = t.split(WJ).join('').split(NBSP).join(' ');
+            if (/\b(S\d+)\s*–\s*\1\b/.test(lu)) fautes.push(`« ${lu} » : la même semaine deux fois`);
+            const mot = /^(prévu|confirmé|à encaisser|à payer)\s/.exec(t), fin = t.indexOf(' · ') > 0 ? t.indexOf(' · ') : t.length;
+            const n = e.firstChild, bloc = e.querySelector('.cal-conf-p'); if (!mot || !n || n.nodeType !== 3) continue;
+            const rg = document.createRange();
+            if (bloc) rg.selectNodeContents(bloc); else { rg.setStart(n, mot[0].length); rg.setEnd(n, Math.min(fin, n.length)); }
+            const tops = new Set([...rg.getClientRects()].filter((r) => r.width > 1).map((r) => Math.round(r.top)));
+            if (tops.size > 1) fautes.push(`« ${lu} » : la période coupée sur ${tops.size} lignes`);
+          }
+          const barres = [...document.querySelectorAll('[data-frise] [data-chose]')];
+          for (const j of document.querySelectorAll('[data-frise] .cal-jalon')) {
+            const r = j.getBoundingClientRect(); if (r.width < 1) continue;
+            const mienne = j.closest('[data-chose]');
+            const autre = barres.find((b) => b !== mienne && !b.contains(j) && (() => { const q = b.getBoundingClientRect(); return Math.min(r.right, q.right) - Math.max(r.left, q.left) > 1 && Math.min(r.bottom, q.bottom) - Math.max(r.top, q.top) > -1; })());
+            if (autre) fautes.push(`picto ${j.getAttribute('data-jalon')} de « ${(mienne?.getAttribute('aria-label') ?? '').split(',')[0]} » sur la barre « ${(autre.getAttribute('aria-label') ?? '').split(',')[0]} »`);
+          }
+          return [...new Set(fautes)];
+        });
+        ra.length ? echec(`${F} ${duree} rangées`, ra.slice(0, 4).join(' ; ')) : ok(`${F} ${duree} rangées`, 'période d\'un bloc, aucun picto sur une autre barre');
         const b = await p.evaluate(() => { const e = [...document.querySelectorAll('[data-chose]')].find((x) => { const r = x.getBoundingClientRect(); return r.width > 20 && r.left >= 0 && r.right <= innerWidth && r.top > 0 && r.bottom < innerHeight; }); if (!e) return null; const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
         if (!b) { echec(`${F} ${duree} fiche`, 'aucune barre touchable dans la vue'); continue; }
         await toucherXY(b[0], b[1]); await sleep(700);

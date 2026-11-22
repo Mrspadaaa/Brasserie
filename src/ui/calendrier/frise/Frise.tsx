@@ -1,6 +1,6 @@
 import React from 'react';
 import { RANGEES, barreLiee, ecartJours, estPonctuel, type ChoseCalendrier, type Rangee as IdRangee } from '../../../domain/calendrier';
-import { colonneCourante, MESURES_PAYSAGE, MESURES_PAYSAGE_BRASSINS, MESURES_PORTRAIT, Rangee, pastille, positionDans, texteRenvoi, type Colonne, type DragEtat, type Renvoi, type RangeeProps } from './Rangee';
+import { colonneCourante, MESURES_PAYSAGE, MESURES_PAYSAGE_BRASSINS, MESURES_PORTRAIT, MESURES_PORTRAIT_BRASSINS, Rangee, pastille, positionDans, texteRenvoi, type Colonne, type DragEtat, type Renvoi, type RangeeProps } from './Rangee';
 import { todayISO } from '../../../domain/finance/ledger';
 import { GrilleJours } from './GrilleJours';
 import { posee } from './posee';
@@ -520,7 +520,7 @@ export const Frise: React.FC<FriseProps> = props => {
             colonnes={colonnes}
             largeurColonne={largeurColonne}
             largeur={largeur}
-            mesures={paysage && r === 'brassins' ? MESURES_PAYSAGE_BRASSINS : mesures}
+            mesures={r === 'brassins' ? (paysage ? MESURES_PAYSAGE_BRASSINS : MESURES_PORTRAIT_BRASSINS) : mesures}
             paysage={paysage}
             reserveDroite={paysage ? reserveDroite : idsSousFab.includes(r) ? reserveSousFab : 0}
             vueLarge={vueLarge}

@@ -85,6 +85,8 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
 /* CHD-7 : « prévu oct. 26–oct. 27 » à côté d'une grosse pastille : deux lignes au plus en portrait, jamais coupé (en paysage la ligne est de 20 px : une seule) */
 .cal-conf { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-height: 16px; font-size: 14px; color: rgb(var(--cave-200)); }
 .cal-paysage .cal-conf { display: block; white-space: nowrap; text-overflow: ellipsis; }
+/* REPRISE-4 (a) : la période d'un bloc (« nov. 26–nov. 27 ») ; à l'étroit, elle passe entière à la ligne, jamais « 27 » seul */
+.cal-conf-p { white-space: nowrap; }
 /* CRITIQUE-12 n° 2 (E23) : une estimation hors courbe (une fête du carnet) : la même pastille r2-c, en pointillé comme ce qui n'est pas ferme (E26) */
 .cal-pastille-estime { background: transparent; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 70%, transparent); }
 .cal-pastille-estime::after { content: ''; position: absolute; inset: 0; border: 1px dashed rgb(var(--cave-200)); border-radius: inherit; pointer-events: none; }
@@ -186,7 +188,7 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
    prise gardent leur place d'avant (24 px de large, 44 px pour la fin, dans la ligne de 30 px). */
 /* D384 (« icône plus petit ») : 14 px (13 en paysage) au lieu des 17 de la maquette, picto de 8 px ; le disque est centré sur le pied coloré.
    L'encre du picto (`--ei`) est le jeton de son étape (blanc en clair ; sombre en cave, blanc sur la garde). */
-.cal-jalon { position: absolute; left: 0; translate: clamp(7px, var(--x, 0cqw), calc(100cqw - 7px)) 0; bottom: -6px; z-index: 2; box-sizing: border-box; display: grid; place-items: center; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; border: 1.5px solid rgb(var(--cave-950)); background: var(--e, var(--c)); color: var(--ei, rgb(var(--cave-950))); font-style: normal; }
+.cal-jalon { position: absolute; left: 0; translate: clamp(7px, var(--x, 0cqw), calc(100cqw - 7px)) 0; bottom: -4px; z-index: 2; box-sizing: border-box; display: grid; place-items: center; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; border: 1.5px solid rgb(var(--cave-950)); background: var(--e, var(--c)); color: var(--ei, rgb(var(--cave-950))); font-style: normal; }
 .cal-jalon > svg { width: 8px; height: 8px; pointer-events: none; }
 .cal-jalon::before { content: ''; position: absolute; inset: -2px -5px -4px; }
 .cal-paysage .cal-jalon { translate: clamp(6.5px, var(--x, 0cqw), calc(100cqw - 6.5px)) 0; bottom: -5.5px; width: 13px; height: 13px; margin-left: -6.5px; border-width: 1px; }
