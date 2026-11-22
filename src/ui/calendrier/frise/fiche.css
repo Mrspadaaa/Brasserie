@@ -19,26 +19,26 @@
 .cal-fi-x { flex: none; display: grid; place-items: center; width: 40px; height: 40px; margin: -8px -4px -8px 0; padding: 0; border: 0; background: none; color: rgb(var(--cave-200)); cursor: pointer; }
 .cal-fi-b { grid-area: b; display: flex; gap: 4px; min-width: 0; height: 36px; }
 .cal-fi-p {
-  flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 4px; border-radius: 12px;
+  flex: 1 1 auto; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 3px; padding: 0 3px; border-radius: 12px;
   border: 1.5px solid transparent; background: color-mix(in srgb, var(--c) 16%, rgb(var(--cave-900))); color: rgb(var(--cave-50)); font: inherit; cursor: pointer;
 }
 .cal-fi-p > svg { flex: none; color: var(--ct); }
-.cal-fi-p b { font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.cal-fi-p b { font-size: 13px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
 span.cal-fi-p { cursor: default; }
 .cal-fi-q { background: transparent; border: 2px dashed color-mix(in srgb, rgb(var(--cave-200)) 60%, transparent); color: rgb(var(--cave-200)); }
 .cal-fi-rouge { background: color-mix(in srgb, rgb(var(--alert)) 18%, rgb(var(--cave-900))); border-color: rgb(var(--alert)); }
 .cal-fi-rouge > svg { color: rgb(var(--alert-strong)); }
-.cal-fi-p-ouverte { flex: 2.4 1 0; border-color: var(--c); background: rgb(var(--cave-900)); }
+.cal-fi-p-ouverte { flex: 2.4 1 auto; border-color: var(--c); background: rgb(var(--cave-900)); }
 .cal-fi-p-ouverte small { flex: none; font-size: 12px; font-weight: 700; color: var(--ct); white-space: nowrap; }
 /* CAL-FICHE-FRISE : rien au repos (≤ 120 px) ; la frise B au jour s'ouvre sous les pastilles, la fiche grandit alors de sa piste seule */
 .cal-fi-frise { grid-area: f; min-width: 0; padding: 2px 0; }
 .cal-det.cal-fiche.cal-fi-ouverte { grid-template-areas: "s a" "s b" "f f" "c c" "v v"; }
 .cal-fi-c { grid-area: c; display: flex; gap: 4px; min-width: 0; height: 40px; }
 .cal-fi-pri, .cal-fi-act {
-  display: flex; align-items: center; justify-content: center; gap: 4px; min-width: 0; padding: 0 6px; border-radius: 12px; font: inherit; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 3px; min-width: 0; padding: 0 4px; border-radius: 12px; font: inherit; font-weight: 700; cursor: pointer;
 }
-.cal-fi-pri { flex: 2 1 0; border: 0; background: var(--c); color: rgb(var(--cave-900)); font-size: 15px; }
-.cal-fi-act { flex: 1 1 0; border: 1.5px solid color-mix(in srgb, var(--c) 55%, transparent); background: transparent; color: rgb(var(--cave-50)); font-size: 12px; }
+.cal-fi-pri { flex: 2 1 auto; border: 0; background: var(--c); color: rgb(var(--cave-900)); font-size: 15px; }
+.cal-fi-act { flex: 1 1 auto; border: 1.5px solid color-mix(in srgb, var(--c) 55%, transparent); background: transparent; color: rgb(var(--cave-50)); font-size: 12px; }
 .cal-fi-act > svg { flex: none; color: var(--ct); }
 .cal-fi-act span, .cal-fi-pri span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cal-fi-plus { flex: 0 0 40px; padding: 0; }

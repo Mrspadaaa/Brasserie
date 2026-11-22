@@ -951,19 +951,26 @@ async function jouerCalendrier({ p, base, combo, tactile, glisser, pas }) {
      dans l'en-tête (mois, graduations, noms, étiquette du cadre), les barres de la frise et la fiche ouverte : ni « … » écrit, ni `text-overflow: ellipsis`
      qui rogne, ni texte plus large que sa boîte coupée (`overflow` ≠ visible, scrollWidth > clientWidth), ni deux textes qui se recouvrent. */
   const lireTextes = (zone) => p.evaluate((z) => {
-    const racine = (() => { let e = document.querySelector('.ent-cb'); while (e && !(e.querySelector('[data-periode-pastille]') && e.querySelector('[data-bande-semaines]'))) e = e.parentElement; return e; })();
-    const zones = { entete: racine, frise: document.querySelector('[data-frise]'), fiche: document.querySelector('[data-detail]') };
+    /* REPRISE-3 (22.11) : la zone est l'en-tête du Calendrier lui-même (EnTete, [data-calendrier-entete], présent à toutes les échelles, An comprise),
+       jamais un ancêtre commun qui remonte à la barre d'onglets ; les textes réservés aux lecteurs d'écran (.sr-only, clip 1 px) ne se voient pas. */
+    const zones = { entete: document.querySelector('[data-calendrier-entete]'), frise: document.querySelector('[data-frise]'), fiche: document.querySelector('[data-detail]') };
     const r0 = zones[z]; if (!r0) return { absent: true };
     const fautes = [], boites = [];
-    const feuilles = [...r0.querySelectorAll('*')].filter((e) => !e.children.length && (e.textContent || '').trim() && !e.closest('svg title, .ent-nom-cache, [aria-hidden="true"]') && !(e instanceof SVGTitleElement));
+    const cache = (e) => { for (let a = e; a && a !== r0.parentElement; a = a.parentElement) { if (a.classList?.contains('sr-only')) return true; const s = getComputedStyle(a); if (s.visibility === 'hidden' || s.display === 'none' || s.opacity === '0' || (s.position === 'absolute' && /rect\(0/.test(s.clip))) return true; } return false; };
+    const feuilles = [...r0.querySelectorAll('*')].filter((e) => !e.children.length && (e.textContent || '').trim() && !e.closest('svg title, .ent-nom-cache, [aria-hidden="true"]') && !(e instanceof SVGTitleElement) && !cache(e));
     for (const e of feuilles) {
       const r = e.getBoundingClientRect(); if (r.width < 1 || r.height < 1 || r.right < 0 || r.left > innerWidth) continue;
       const t = (e.textContent || '').replace(/\s+/g, ' ').trim(), c = getComputedStyle(e);
       if (/…|\.\.\./.test(t)) fautes.push(`« ${t.slice(0, 24)} » écrit avec « … »`);
+      /* le texte lui-même (Range : la boîte de ses glyphes), comparé à chaque boîte qui coupe : un vide de 2 px en bout de boîte (marge, pastille vide)
+         n'est pas un texte rogné ; la feuille qui coupe son propre texte (ellipsis) l'est dès que son texte déborde */
+      const rg = document.createRange(); rg.selectNodeContents(e); const rt = rg.getBoundingClientRect();
       for (let a = e; a && a !== r0.parentElement; a = a.parentElement) {
         if (!(a instanceof HTMLElement)) continue;
         const s = getComputedStyle(a), rogne = s.textOverflow === 'ellipsis' || s.overflowX === 'hidden' || s.overflowX === 'clip';
-        if (rogne && a.scrollWidth > a.clientWidth + 1 && a.clientWidth > 0 && a.contains(e) && (a === e || a.children.length < 4)) { fautes.push(`« ${t.slice(0, 24)} » rogné (${a.scrollWidth} > ${a.clientWidth} px, ${a.tagName.toLowerCase()}.${String(a.className).split(' ')[0]})`); break; }
+        if (!rogne || a.clientWidth <= 0) continue;
+        const ra = a.getBoundingClientRect(), dehors = Math.max(rt.right - ra.right, ra.left - rt.left);
+        if ((a === e && a.scrollWidth > a.clientWidth + 1) || dehors > 1) { fautes.push(`« ${t.slice(0, 24)} » rogné (${a === e ? `${a.scrollWidth} > ${a.clientWidth} px` : `${Math.round(dehors)} px hors de`}, ${a.tagName.toLowerCase()}.${String(a.className).split(' ')[0]})`); break; }
       }
       if (e.closest('svg') && !(e instanceof SVGTextElement || e instanceof SVGTSpanElement)) continue;
       boites.push({ t, l: r.left, r: r.right, hi: r.top, b: r.bottom });
