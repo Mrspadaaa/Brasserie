@@ -20,9 +20,12 @@ function DocumentaryPage() {
   </>;
 }
 
+const apresPeinture = () => act(async () => { await new Promise(r => setTimeout(r, 60)); }); // CAL-LENT 2 : isolation et focus de la page suivent la première image
+
 it('keeps style reads bounded when many announcements share ancestors, including on a subtree mutation', async () => {
   const styles = vi.spyOn(window, 'getComputedStyle');
   render(<DocumentaryPage />);
+  await apresPeinture();
   // The former isolation walked every ancestor of every hidden documentary status.
   // A pass may read each distinct visible element once, not its ancestors repeatedly.
   expect(styles.mock.calls.length).toBeLessThan(300);
@@ -84,8 +87,10 @@ it('restores the catalogue trigger when a lazy page replaces a focused loading P
   render(<Harness />);
   const trigger = screen.getByRole('button', { name: 'Ouvrir la recette' });
   trigger.focus(); fireEvent.click(trigger);
+  await apresPeinture();
   expect(screen.getByRole('main', { name: 'Chargement' })).toHaveFocus();
   await act(async () => finish({ default: ({ onClose }) => <PageShell title="Recette chargée" onClose={onClose}><p>Données réelles du document</p></PageShell> }));
+  await apresPeinture();
   expect(screen.getByRole('main', { name: 'Recette chargée' })).toHaveFocus();
   fireEvent.keyDown(document.activeElement!, { key: 'Escape' });
   expect(trigger).toHaveFocus();
@@ -105,7 +110,7 @@ it('keeps page keyboard navigation and Escape active with a desktop inline prese
   expect(close).toHaveBeenCalledOnce();
 });
 
-it('returns to the catalogue when a command overlay directly replaces one keyed recipe page with another', () => {
+it('returns to the catalogue when a command overlay directly replaces one keyed recipe page with another', async () => {
   function Harness() {
     const [page, setPage] = useState(''), [palette, setPalette] = useState(false);
     return <>
@@ -127,6 +132,7 @@ it('returns to the catalogue when a command overlay directly replaces one keyed 
   const input = screen.getByRole('textbox', { name: 'Recherche universelle' });
   input.focus(); expect(input).toHaveFocus();
   fireEvent.click(screen.getByRole('button', { name: 'Autre recette' }));
+  await apresPeinture();
   expect(screen.getByRole('main', { name: 'B' })).toHaveFocus();
   fireEvent.keyDown(document.activeElement!, { key: 'Escape' });
   expect(catalogue).toHaveFocus();

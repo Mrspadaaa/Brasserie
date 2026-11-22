@@ -434,7 +434,18 @@ export const PageShell: React.FC<PageShellProps> = ({
     };
     pageScopes.push(page);
     pageOpenerSources.set(page, opener);
-    refreshPageIsolation();
+    // CAL-LENT 2 : l'isolation (inert) et le premier focus relisent le style de toute la page (getComputedStyle, focus()) ; faits dans le commit,
+    // ils retardent la première image de la page ouverte (INP). On les fait juste après elle ; la page est déjà dans pageScopes, donc devant.
+    let annule = false; let image = 0; let tache = 0;
+    const apresPeinture = () => {
+      image = requestAnimationFrame(() => {
+        tache = window.setTimeout(() => {
+          if (annule || foregroundPage() !== page) return;
+          refreshPageIsolation();
+          if (!page.contains(document.activeElement) && !hasPageDialog()) focusPage();
+        }, 0);
+      });
+    };
     if (!isolationObserver) {
       // p2-rendu (#179) : une mutation interne à la page de devant ne change ni les couches à isoler ni le focus permis
       // (portails et annonces sont HORS de la page ; ses dialogues internes sont déjà permis par sa branche). On ne refait
@@ -449,7 +460,7 @@ export const PageShell: React.FC<PageShellProps> = ({
         attributeFilter: ['open', 'hidden', 'data-state', 'role', 'aria-live']
       });
     }
-    if (!page.contains(document.activeElement) && !hasPageDialog()) focusPage();
+    apresPeinture();
     const onFocus = (event: FocusEvent) => {
       if (foregroundPage() !== page) return;
       const target = event.target as HTMLElement;
@@ -483,6 +494,7 @@ export const PageShell: React.FC<PageShellProps> = ({
     document.addEventListener('focusin', onFocus);
     document.addEventListener('keydown', onKey);
     return () => {
+      annule = true; cancelAnimationFrame(image); window.clearTimeout(tache);
       document.removeEventListener('focusin', onFocus);
       document.removeEventListener('keydown', onKey);
       pageScopes.splice(pageScopes.indexOf(page), 1);

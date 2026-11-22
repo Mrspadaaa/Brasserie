@@ -56,10 +56,13 @@ function openPage() {
   return { opener, clients };
 }
 
+const apresPeinture = () => act(async () => { await new Promise(r => setTimeout(r, 60)); }); // CAL-LENT 2 : isolation et focus de la page suivent la première image
+
 describe('Fullscreen recipe focus', () => {
-  it('isolates the background, wraps Tab within visible controls and restores focus and previous inert state', () => {
+  it('isolates the background, wraps Tab within visible controls and restores focus and previous inert state', async () => {
     const { opener, clients } = openPage();
     const main = screen.getByRole('main', { name: 'Étape 1' });
+    await apresPeinture();
     expect(main).toHaveFocus();
     expect(clients.closest('[inert]')).not.toBeNull();
     expect(main.closest('[inert]')).toBeNull();
@@ -125,12 +128,13 @@ describe('Fullscreen recipe focus', () => {
     expect(last).toHaveFocus();
   });
 
-  it('does not revive a dialog whose ancestor was already inert before opening the page', () => {
+  it('does not revive a dialog whose ancestor was already inert before opening the page', async () => {
     render(<PageHarness inertDialog />);
     const opener = screen.getByRole('button', { name: 'Nouvelle recette' });
     opener.focus();
     fireEvent.click(opener);
     const main = screen.getByRole('main', { name: 'Étape 1' });
+    await apresPeinture();
     expect(main).toHaveFocus();
     const oldAction = screen.getByRole('button', { name: 'Ancienne commande' });
     expect(oldAction.closest('[inert]')).not.toBeNull();

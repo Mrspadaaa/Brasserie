@@ -163,7 +163,7 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     expect(launcherRoot().closest('[inert]')).toBeNull();
   });
 
-  it('suit la case de la barre d’onglets, puis flotte sur la page plein écran, sans jamais entrer dans un contenu défilant', () => {
+  it('suit la case de la barre d’onglets, puis flotte sur la page plein écran, sans jamais entrer dans un contenu défilant', async () => {
     const calls = callbacks();
     const view = render(<Shell page={false} calls={calls} />);
     const button = launcherButton();
@@ -183,7 +183,8 @@ describe('Lanceur global · case réservée hors de la zone défilante', () => {
     expect(pageMain.contains(screen.getByRole('combobox', { name: 'Nature du constat (page)' }))).toBe(true);
     expect(pageMain.contains(screen.getByRole('textbox', { name: 'Conditions déclarées' }))).toBe(true);
     expect(pageMain.contains(root)).toBe(false);
-    // `data-page-overlay` : le lanceur reste actif au-dessus de la page ; le fond devient inerte.
+    // `data-page-overlay` : le lanceur reste actif au-dessus de la page ; le fond devient inerte (après la première image, CAL-LENT 2).
+    await act(async () => { await new Promise(r => setTimeout(r, 60)); });
     expect(root.closest('[inert]')).toBeNull();
     expect(screen.getByRole('button', { name: 'Clients', hidden: true }).closest('[inert]')).not.toBeNull();
     expect(launcherButton(), 'Le même lanceur sert les onglets et la page : pas de remontage.').toBe(button);
