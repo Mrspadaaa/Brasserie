@@ -147,8 +147,11 @@ async function jouer(dir) {
 
     // ── les écrans ──
     const demarrer = async (garder = false) => {
-      if (!garder) await p.evaluate(() => { try { localStorage.removeItem('parcours-chaines:cache'); } catch { /* page vierge */ } }).catch(() => {});
+      // Un départ à froid : cache de fixture ET état d'interface (sous-onglet, écran) d'une étape ou d'une passe précédente effacés AVANT le chargement
+      // (la page neuve est sur about:blank, où localStorage n'existe pas : on le fait donc dans le document qui se charge, puis on retire le script).
+      const nettoyage = garder ? null : await p.evaluateOnNewDocument(() => { try { localStorage.removeItem('parcours-chaines:cache'); localStorage.removeItem('laffinee_ui_state'); } catch { /* origine sans stockage */ } });
       await p.goto(url, { waitUntil: 'load' });
+      if (nettoyage) await p.removeScriptToEvaluateOnNewDocument(nettoyage.identifier).catch(() => {});
       await p.waitForSelector('nav button', { timeout: 90000 }).catch(async (e) => { await cap('erreur-demarrage').catch(() => {}); throw new Error(`l'application ne démarre pas (${e.message.slice(0, 60)}) ; erreurs : ${erreursPage.slice(0, 2).join(' | ')}`); });
       await sleep(1500);
     };
@@ -157,13 +160,28 @@ async function jouer(dir) {
     const sousOnglet = async (nom) => { await toucher(nom, { sel: 'button,[role=tab]' }); await sleep(900); };
     /** Cherche dans la barre de recherche de l'écran (le premier champ texte), après l'avoir vidée. */
     const chercher = async (q) => {
-      const c = await trouver('', { sel: 'input[type=search],input[type=text],input:not([type])' });
+      // à 1280 le premier champ texte n'est pas la recherche de la liste (la barre du haut en a un) : on vise d'abord son texte indicatif
+      const c = (await trouver('Rechercher', { sel: 'input[placeholder^="Rechercher"]' })) ?? (await trouver('', { sel: 'input[type=search],input[type=text],input:not([type])' }));
       if (!c) throw new Error('champ de recherche introuvable');
       await frapper(c.x, c.y); await p.keyboard.down('Control'); await p.keyboard.press('KeyA'); await p.keyboard.up('Control'); await p.keyboard.press('Backspace');
       if (q) await taper(q); await sleep(500);
     };
     /** Ouvre la fiche d'un article par « Ouvrir <nom> » (liste) ; défile jusqu'à lui. */
-    const ouvrirFiche = async (nom) => { await toucher(`Ouvrir ${nom}`); await sleep(900); };
+    const ouvrirFiche = async (nom) => {
+      try { await toucher(`Ouvrir ${nom}`); } catch (e) { // à 1280 le tableau n'a pas de bouton « Ouvrir » : un coup sur le nom écrit
+        const pos = await p.evaluate((n) => {
+          const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let t;
+          while ((t = w.nextNode())) if (t.textContent.includes(n.replace(/^ZZ TEST /, '')) && t.parentElement && !t.parentElement.closest('input,textarea')) {
+            t.parentElement.scrollIntoView({ block: 'center' }); const r = document.createRange(); r.selectNodeContents(t); const b = r.getBoundingClientRect();
+            if (b.width > 0 && b.height > 0) return { x: b.x + b.width / 2, y: b.y + b.height / 2 };
+          }
+          return null;
+        }, nom);
+        if (!pos) throw e;
+        await sleep(200); await frapper(pos.x, pos.y);
+      }
+      await sleep(900);
+    };
     /** Les textes de moins de 12 px (hors masqués), comme les autres bancs. */
     const petits = () => p.evaluate(() => {
       const out = []; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); const vus = new Set();
