@@ -53,6 +53,8 @@ export type ChoisirProps = {
     sortie?: SortieV | null;
     onEnvoyerAVenir?: () => void;
     onVoirAVenir?: () => void;
+    /** D419 : ouvre le Calendrier sur l'achat prévu du choix. */
+    onPlacer?: () => void;
   }
 );
 
@@ -206,6 +208,9 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
         </button>
       ) : p.onEnvoyerAVenir ? (
         <button type="button" className="cn-action" onClick={p.onEnvoyerAVenir}><CalendarCheck size={18} aria-hidden /> Envoyer dans À venir</button>
+      ) : null}
+      {p.sortie && p.onPlacer && p.sortie.etat !== 'realise' ? (
+        <button type="button" className="cn-action cn-placer" onClick={p.onPlacer}><CalendarCheck size={18} aria-hidden /> Placer</button>
       ) : null}
     </article>
   );

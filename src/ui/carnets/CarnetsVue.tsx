@@ -8,6 +8,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import { FinanceService } from '../../services/financeService';
+import { tauxDeLaDerniereFactureEur } from '../../domain/carnets/prixRendu';
 import { StorageService } from '../../services/storage';
 import type { CreativeItem } from '../../types';
 import { useStorageValue } from '../../hooks/useLiveData';
@@ -508,6 +509,10 @@ export function CarnetsVue(p: CarnetsVueProps) {
     poserRetourEtat(r ? { ...r, id: (prochainRetour.current += 1) } : null);
   }, [poserRetourEtat]);
   const [jointe, setJointe] = useState<Jointe | null>(null);
+  /* D421 : le taux EUR→CHF posé une fois (gardé), sinon celui de la dernière facture en EUR de Finances ; sinon aucun (jamais inventé) */
+  const [tauxPose, setTauxPose] = useState<number | undefined>(() => { try { const v = Number(localStorage.getItem('affinee.tauxEurChf')); return v > 0 ? v : undefined; } catch { return undefined; } });
+  const tauxEur = tauxPose ?? tauxDeLaDerniereFactureEur(finances.transactions ?? []);
+  const poserTaux = (t: number) => { setTauxPose(t); try { localStorage.setItem('affinee.tauxEurChf', String(t)); } catch { /* sans stockage : le taux vaut pour la session */ } };
   const jetonJointe = useRef(0);
   const [enTete, setEnTete] = useState<string | undefined>();
   const [vientDEtreCree, setVientDEtreCree] = useState<string | null>(null);
@@ -1311,7 +1316,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
       carnet={ouvert.carnet as never} onOffre={articleId => setVue({ sorte: 'article', id: ouvert.id, articleId })}
       onChoisir={() => setVue({ sorte: 'choisir', id: ouvert.id })} /> : null;
   } else if (vue.sorte === 'comparer') {
-    ecran = <Comparer titre={ouvert.title} statut={ouvert.status} critere={ouvert.carnet.criteres[0]} tableau={tableauV}
+    ecran = <Comparer titre={ouvert.title} statut={ouvert.status} critere={ouvert.carnet.criteres[0]} tableau={tableauV} taux={tauxEur} facons={ouvert.carnet.facons.length}
       onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onOuvrirArticle={articleId => setVue({ sorte: 'article', id: ouvert.id, articleId })}
       nonLus={nonLusDe(ouvert.carnet.articles as never)} pictos={pictosDe(ouvert)} mention={mentionValeurs(ouvert.carnet.articles)}
       onChoisir={() => setVue({ sorte: 'choisir', id: ouvert.id })} />;
@@ -1323,7 +1328,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
       ecran = <Choisir etape="choisi" titre={ouvert.title} choix={choix as never} article={a as unknown as ArticleV} critere={ouvert.carnet.criteres[0]} carnet={ouvert.carnet as never} picto={pictoArticle(ouvert, a)}
         facon={ouvert.carnet.facons.find(f => f.id === (choix.faconId ?? a?.faconId))} ecartes={choix.ecartes.map(e => ({ nom: nom(e.articleId), raison: e.raison }))}
         remplaces={choix.remplaces.map(r => ({ nom: nom(r.articleId), pourquoi: r.pourquoi, le: r.le }))} sortie={sortieV(ouvert)}
-        onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onEnvoyerAVenir={() => void envoyerAVenir(ouvert)} onVoirAVenir={() => voirSortie(ouvert)} />;
+        onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onEnvoyerAVenir={() => void envoyerAVenir(ouvert)} onVoirAVenir={() => voirSortie(ouvert)} onPlacer={() => placer(ouvert)} />;
     } else {
       const rangees = (tableauV?.lignes ?? []).filter(l => !l.ecarte);
       /* critique 6, n° 4 : « Retenir la hotte » : le premier de cette façon (g05-11), sinon le premier du tableau */
@@ -1333,7 +1338,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
       ecran = premier ? <Choisir etape="choisir" titre={ouvert.title} carnet={ouvert.carnet as never} picto={pictoArticle(ouvert, premier)} article={premier as unknown as ArticleV} sur={Math.max(rangees.length, 1)} valeurs={[]}
         autres={rangees.slice(1).map((l, i) => ({ article: ouvert.carnet.articles.find(x => x.id === l.articleId) as unknown as ArticleV, rang: l.rang ?? i + 2 }))}
         onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })}
-        onChoisir={pourquoi => { const r = appliquer(choisir(magasin.lire(), { carnetId: ouvert.id, articleId: premier.id, ...(premier.faconId ? { faconId: premier.faconId } : {}), pourquoi, le: maintenant().toISOString() })); if (r) setRetour({ bandeau: { sorte: 'range' }, inverse: r.inverse, carnetId: ouvert.id }); }}
+        onChoisir={pourquoi => { const r = appliquer(choisir(magasin.lire(), { carnetId: ouvert.id, articleId: premier.id, ...(premier.faconId ? { faconId: premier.faconId } : {}), pourquoi, le: maintenant().toISOString() })); if (r) { const choisi = r.ecritures.find(e => e.op === 'put' && (e as { doc: CarnetDoc }).doc.id === ouvert.id) as { doc: CarnetDoc } | undefined; if (choisi) void envoyerAVenir(choisi.doc); } if (r) setRetour({ bandeau: { sorte: 'range' }, inverse: r.inverse, carnetId: ouvert.id }); }}
         onEcarter={() => setVue({ sorte: 'comparer', id: ouvert.id })} /> : null;
     }
   } else {
@@ -1364,7 +1369,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const manque = iaManquee[c.id];
     const iaIndisponible = mode === 'eteint' ? 'eteinte' : !enLigne ? 'hors-ligne' : manque === 'eteint' ? 'eteinte' : manque ?? null;
         ecran = <>
-      <CarnetOuvert carnet={enV(c)}aides={aides as never} liens={liens} tableau={tableauV} iaIndisponible={iaIndisponible}
+      <CarnetOuvert carnet={enV(c)} taux={tauxEur} onTaux={poserTaux} aides={aides as never} liens={liens} tableau={tableauV} iaIndisponible={iaIndisponible}
         bandeau={cadreRenommer ?? carteSupprimer ?? (repriseNode || bandeauIci || proposees ? <>{repriseNode}{bandeauIci}{proposees}</> : null)} rangee={carteSupprimer || cadreRenommer ? null : rangee} cadre={carteSupprimer || cadreRenommer ? null : cadre()}
         vientDEtreCree={vientDEtreCree === c.id} doublons={aides.doublon ? notesEnDouble(c).flat() : []}
         noteSupprimee={noteSupprimee ? { id: noteSupprimee.id, onAnnuler: () => annulerSuppressionNote(noteSupprimee) } : null}
@@ -1411,6 +1416,14 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const date = c.date && /^\d{4}-\d{2}-\d{2}/.test(c.date) ? c.date.slice(0, 10) : jour;
     if (!c.date) dater(c, lundiIso(jour), 'semaine');
     window.dispatchEvent(new CustomEvent(EVENEMENT_CALENDRIER, { detail: { date, id: c.id } }));
+  }
+
+  /** D419 « Placer » : le Calendrier s'ouvre sur l'achat prévu du choix (clé `PLAN-CARNET-<id>`), qu'on y déplace ; aucune caisse ici (C4). */
+  function placer(c: CarnetDoc) {
+    const plan = planDepuisChoix(c, { le: maintenant().toISOString() });
+    if (!plan) return;
+    const date = finances.plans.find(x => x.id === plan.id)?.date || plan.date;
+    window.dispatchEvent(new CustomEvent(EVENEMENT_CALENDRIER, { detail: { date, id: plan.id } }));
   }
 
   /** « Envoyer dans À venir » (R32) : un seul plan (clé `PLAN-CARNET-<id>`), puis le carnet le retient ; aucun montant ici. */

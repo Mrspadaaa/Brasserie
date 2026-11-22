@@ -34,6 +34,9 @@ const ASSISTANT = (racine, sortie, aujourdhui) => {
     `const base: any = fixtureCarnets().find((d: any) => /Ventilation/.test(d.title));`,
     `const chambre = { ...base, id: ${JSON.stringify(CHAMBRE_FROIDE.id)}, title: ${JSON.stringify(CHAMBRE_FROIDE.titre)}, carnet: { ...base.carnet, creeLe: '2026-11-20T08:00:00.000Z', phrase: 'chambre froide pour les fûts', criteres: [], facons: [], notes: [], photos: [], messages: [], articles: ${JSON.stringify(CHAMBRE_FROIDE.articles)} } };`,
     `r.items.push(chambre);`,
+    // D421 : trois articles pour les prix de B1 et d'A1 : un en euros, un « dès » en francs, un sans prix
+    `const prixEur = { ...base, id: ${JSON.stringify(PRIX_EUR.id)}, title: ${JSON.stringify(PRIX_EUR.titre)}, carnet: { ...base.carnet, creeLe: '2026-11-20T09:00:00.000Z', phrase: 'prix en euros et en francs', criteres: [], facons: [], notes: [], photos: [], messages: [], articles: ${JSON.stringify(PRIX_EUR.articles)} } };`,
+    `r.items.push(prixEur);`,
     `writeFileSync('${sortie.replace(/\\/g, '/')}', JSON.stringify({ planning: planningDocs, generiques: r.items, plans: r.plans, transactions: r.transactions, payments: r.payments, nbGeneriques: fixtureCarnets().length }));`
   ].join('\n');
 };
@@ -59,6 +62,22 @@ export const CHAMBRE_FROIDE = {
       ['Couleur :', 'blanc RAL 9010'], ['Performance', 'A+'], ['Épaisseur du matériel', '80 mm'], ['Largeur de la porte', '800 mm'],
       ['Hauteur de la porte', '1900 mm'], ["Épaisseur de l&apos;isolation", '80 mm PIR'], ['Volume utile', a.volume]
     ].map(([nom, valeur]) => [nom, { valeur, origine: 'exemple', luLe: '2026-11-21T08:00:00.000Z' }]))
+  }))
+};
+
+// D421 : « ZZ TEST — Prix en euros » : 2 513 € (vendeur DE), « dès » 3 350 CHF, sans prix ; un « Volume utile » chacun.
+export const PRIX_EUR = {
+  id: 'ZZ-CARNET-PRIX-EUR',
+  titre: 'ZZ TEST — Prix en euros',
+  articles: [
+    { id: 'ZZ-PE-A1', nom: 'Chambre froide 1500 x 1200 mm', volume: '2,6 m³', pays: 'DE', prixCentimes: 251300, devise: 'EUR' },
+    { id: 'ZZ-PE-A2', nom: 'Chambre froide 1800 x 1500 mm', volume: '4,06 m³', pays: 'CH', prixCentimes: 335000, devise: 'CHF', prixDes: true },
+    { id: 'ZZ-PE-A3', nom: 'Chambre froide 2100 x 1800 mm', volume: '6,2 m³', pays: 'CH' }
+  ].map((a, i) => ({
+    id: a.id, url: `https://exemple.invalid/zz-test-prix-eur-${i + 1}`, domaine: 'exemple.invalid', nom: a.nom,
+    vendeur: 'Froid Exemple', pays: a.pays, dispo: 'en stock', lecture: 'lue', origine: 'exemple',
+    ...(a.prixCentimes ? { prixCentimes: a.prixCentimes, devise: a.devise, ...(a.prixDes ? { prixDes: true } : {}) } : {}),
+    valeurs: { 'Volume utile': { valeur: a.volume, origine: 'exemple', luLe: '2026-11-21T08:00:00.000Z' } }
   }))
 };
 
