@@ -1117,6 +1117,25 @@ export function choseVenteProbable(plan: FinancialPlan): ChoseCalendrier | null 
   };
 }
 
+/**
+ * D419 (« SI sur le calendrier au doigt je peux placer ») : l'achat prévu que « Choisir » crée au Carnet (`PLAN-CARNET-<id>`, matériel, brouillon) est une
+ * chose de la rangée Achats, en pointillé (prévu), qui se glisse au jour. Il n'est pas dans la prévision tant qu'il est brouillon : aucun montant n'entre
+ * dans la caisse, il n'y entre qu'une fois posé dans À venir (règle d'À venir). La date posée est celle du plan (`deplacer`). Sans date : rien (jamais inventée).
+ */
+export const estAchatPrevuCarnet = (plan: FinancialPlan): boolean =>
+  plan.source === 'equipment' && plan.status === 'draft' && plan.direction === 'out' && !!plan.upgrade?.sourceCarnetId;
+export function choseAchatPrevu(plan: FinancialPlan): ChoseCalendrier | null {
+  if (!estAchatPrevuCarnet(plan)) return null;
+  const jour = isoDate(plan.date);
+  if (!jour) return null;
+  return {
+    id: `achat-prevu-${plan.id}`, rangee: 'achats', titre: plan.title, debut: jour, fin: jour, probable: true,
+    ...(plan.amountCents > 0 ? { centimes: -plan.amountCents } : {}),
+    detail: `prévu le ${jourLisible(jour)} · pas encore posé${plan.amountCents > 0 ? '' : ' · montant non renseigné'}`,
+    source: { genre: 'projet-materiel', id: plan.id }, ouvre: { ecran: 'carnets', id: plan.upgrade?.sourceCarnetId }, deplacable: true
+  };
+}
+
 /** Livraisons attendues : jour de la commande + délai appris, tant que `recue` est vide. Sans délai appris, rien n'est posé (jamais un délai supposé). */
 export function livraisonsAttendues(reglages: ReglagesFournisseurs): ChoseCalendrier[] {
   const sortie: ChoseCalendrier[] = [];

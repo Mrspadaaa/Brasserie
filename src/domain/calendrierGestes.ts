@@ -4,7 +4,7 @@ import { isoDate } from './finance/ledger';
 import { actualBrewDate, hasBrewStarted, normalizeBrewDate, plannedBrewDate, rescheduleBatchPatch } from './batchSchedule';
 import { datesSortiesBrassin } from './finance/brewForecast';
 import {
-  EFFET_HORS_COURBE, ajouterJours, brassagePoseAuPasse, dimancheDe, dureeBrassin, dureePasBrassee, ecartJours, etiquetteS, finDeBrassin, francs, idChoseArgent, jalonsBrassin, jourLisible, lundiDe, preteAuPlusTot,
+  EFFET_HORS_COURBE, ajouterJours, brassagePoseAuPasse, dimancheDe, dureeBrassin, dureePasBrassee, ecartJours, etiquetteS, estAchatPrevuCarnet, finDeBrassin, francs, idChoseArgent, jalonsBrassin, jourLisible, lundiDe, preteAuPlusTot,
   type ChoseCalendrier, type CibleOuverture, type JalonId
 } from './calendrier';
 import {
@@ -323,6 +323,13 @@ function deplacerDe(chose: ChoseCalendrier, jours: number, ctx: ContexteGestes, 
   if (source.genre === 'creative') {
     const item = { date: decale(chose.debut, jours) };
     return { ok: true, ecritures: [{ op: 'patch', collection: 'creativeItems', id: source.id, patch: { ...item, ...(chose.fenetre ? { fenetre: fenetreDecalee(chose.fenetre, jours) } : {}) } }], effet, promesse: null, courbeApres: apres, message };
+  }
+  if (source.genre === 'projet-materiel') {
+    /* D419 : l'achat prévu du Carnet (brouillon) se pose au jour ; la date revient au plan, précisée « jour » ; rien n'entre dans la caisse */
+    const projet = ctx.plans.find(p => p.id === source.id);
+    if (!projet || !estAchatPrevuCarnet(projet)) return refus('Un projet de matériel se règle dans Matériel (Atelier).', chose.ouvre);
+    const nouvelle = decale(isoDate(projet.date) ?? chose.debut, jours);
+    return { ok: true, ecritures: [{ op: 'patch', collection: 'financialPlans', id: projet.id, patch: { date: nouvelle, ...(projet.upgrade ? { upgrade: { ...projet.upgrade, datePrecision: 'day' as const } } : {}) } }], effet: null, promesse: null, courbeApres: avant, message: annuler(`${chose.titre} : ${reperes(chose.debut)} → ${reperes(nouvelle)}`) };
   }
   const plan = planDe(chose, ctx);
   if (!plan || plan.source !== 'manual') return refus('Cette prévision se règle dans Finances.', { ecran: 'finances' });

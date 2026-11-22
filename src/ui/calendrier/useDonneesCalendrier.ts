@@ -16,7 +16,7 @@ import { planBrewBatchId, type BudgetRepris } from '../../domain/finance/brewFor
 import { brewBudgetDemands } from '../../domain/finance/brewBudget';
 import { hasBrewStarted } from '../../domain/batchSchedule';
 import {
-  NB_SEMAINES_COURBE, SEMAINES_PASSEES_MAX, ajouterJours, ecartJours, anneeEnMois, budgetBrassin, coutRestantInconnu, choseArgent, choseHorsCourbe, choseBrassin, choseCoutAVenir, choseCreative, choseSansDate, choseVenteProbable, estFactureDeMatieres,
+  NB_SEMAINES_COURBE, SEMAINES_PASSEES_MAX, ajouterJours, ecartJours, anneeEnMois, budgetBrassin, coutRestantInconnu, choseArgent, choseHorsCourbe, choseBrassin, choseCoutAVenir, choseCreative, choseSansDate, choseAchatPrevu, choseVenteProbable, estFactureDeMatieres,
   fournisseurDePiece, francs, francsSignes, fusionnerFacturesLivraisons, iconesIdees, jourLisible,
   livraisonsAttendues, lundiDe, numeroSemaine, positionChose, retardsDe, semainesDe,
   type ChoseCalendrier, type EstimationBudget, type HypotheseCaisse, type IconeSemaine, type ModeleCalendrier
@@ -142,6 +142,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   const argent = prevision.items.flatMap(i => { const c = choseArgent(i, e.plans, echeances, matieres); return c ? [marques.has(c.id) ? { ...c, proposition: 'echeance' as const } : c] : []; });
   const creatives = e.items.flatMap(i => { const c = choseCreative(i); return c ? [c] : []; });
   const probables = e.plans.flatMap(p => { const c = choseVenteProbable(p); return c ? [c] : []; });
+  const achatsPrevus = e.plans.flatMap(p => { const c = choseAchatPrevu(p); return c ? [c] : []; });
   const propositionsBrassin = brassinsHabituels(e.batches, aujourdhui);
   /* CRITIQUE-7 n° 8 : la facture d'un fournisseur se pose sur la livraison qu'elle règle (émise ou due dans le délai appris) : une chose dans Achats */
   const emises = new Map(e.transactions.flatMap(t => (t.date ? [[t.id, t.date] as [string, string]] : [])));
@@ -156,7 +157,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
     return [{ id: `paiement-${pay.id}`, rangee: 'ventes', titre: t.description || t.id, debut: jour, fin: jour, centimes: pay.amountCents, detail: `encaissée le ${jourLisible(jour)}`,
       source: { genre: 'facture', id: t.id }, ouvre: { ecran: 'piece', id: t.id }, deplacable: { raison: 'Vente encaissée : sa date est un fait. Elle se corrige dans la pièce (Finances › Opérations).' } }];
   });
-  const posees = fusionnerFacturesLivraisons([...brassins, ...creatives, ...argent, ...encaissees, ...probables, ...livraisonsAttendues(e.reglages), ...propositionsBrassin], fournisseurs, emises).filter(dansLaFenetre(semaines));
+  const posees = fusionnerFacturesLivraisons([...brassins, ...creatives, ...argent, ...encaissees, ...probables, ...achatsPrevus, ...livraisonsAttendues(e.reglages), ...propositionsBrassin], fournisseurs, emises).filter(dansLaFenetre(semaines));
   /* n° 9 : chaque brassin porte son budget (courses et frais de la prévision ; à défaut, l'estimation enregistrée de BrewBudgetSheet) */
   const estimations = estimationsBudget(e.plans);
   const batchDe = new Map(e.batches.map(b => [b.id, b] as const));
