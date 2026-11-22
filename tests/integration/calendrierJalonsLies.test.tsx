@@ -140,6 +140,8 @@ describe('D386 au banc : la foire, sa tireuse, Dédé', () => {
     toucher(bouton(/^Foire du Valais/));
     await waitFor(() => expect(document.querySelector('.cal-det')).not.toBeNull());
     const frise = document.querySelector('[data-frise]')!;
+    /* CAL-LENT (22.11) : les traits se mesurent après la peinture, plus dans le commit : on attend leur arrivée */
+    await waitFor(() => expect(frise.querySelector('svg[data-traits]')).not.toBeNull());
     const calque = frise.querySelector('svg[data-traits]')!;
     expect(frise.firstElementChild).toBe(calque);
     const fil = calque.querySelector('path[data-fil]')!;

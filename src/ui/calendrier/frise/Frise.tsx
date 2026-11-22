@@ -142,12 +142,72 @@ export function jalonsAllumes(choses: readonly ChoseCalendrier[], selection: Cho
   return ids.length ? new Set(ids) : null;
 }
 
+/**
+ * CAL-LENT (22.11) : le calque des traits (fil, ligne d'aujourd'hui, caddie) porte son propre état. Un nouveau tracé ne rend donc que ce
+ * calque, pas la frise entière (avant : `setTraits` dans `Frise` relançait un rendu complet puis une seconde mesure de mise en page).
+ */
+/**
+ * CAL-LENT (22.11) : une lecture de mise en page se fait APRÈS la peinture (à l'image suivante, puis dans la tâche d'après), jamais dans le commit
+ * de React. Les demandes se regroupent : une seule lecture par image, quelle que soit leur source (rendu, mutation, défilement).
+ */
+function useApresPeinture(lire: () => void): () => void {
+  const attente = React.useRef<{ image: number; tache: ReturnType<typeof setTimeout> | null }>({ image: 0, tache: null });
+  const planifier = React.useCallback(() => {
+    const a = attente.current;
+    if (a.image || a.tache) return;
+    a.image = requestAnimationFrame(() => {
+      a.image = 0;
+      a.tache = setTimeout(() => { a.tache = null; lire(); }, 0);
+    });
+  }, [lire]);
+  React.useEffect(() => () => {
+    const a = attente.current;
+    if (a.image) cancelAnimationFrame(a.image);
+    if (a.tache) clearTimeout(a.tache);
+    a.image = 0; a.tache = null;
+  }, []);
+  return planifier;
+}
+
+interface PoseTraits { poser: (traits: Trait[], trous: BoiteFil[]) => void }
+const CalqueTraits = React.memo(React.forwardRef<PoseTraits, { idMasque: string }>(function CalqueTraits({ idMasque }, ref) {
+  const [etat, setEtat] = React.useState<{ traits: Trait[]; trous: BoiteFil[] }>({ traits: [], trous: [] });
+  React.useImperativeHandle(ref, () => ({ poser: (traits, trous) => setEtat({ traits, trous }) }), []);
+  const { traits, trous } = etat;
+  if (!traits.length) return null;
+  return (
+    <svg className="cal-traits" aria-hidden="true" data-traits>
+      {/* CAL-FIL-SOUS-INFO : blanc, le trait se voit ; noir (une info), il passe dessous et ne se voit pas */}
+      <mask id={idMasque} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%" data-masque-fil>
+        <rect x="0" y="0" width="100%" height="100%" fill="#fff" />
+        {trous.map((b, i) => (
+          <rect key={i} x={b.left.toFixed(1)} y={b.top.toFixed(1)} width={(b.right - b.left).toFixed(1)} height={(b.bottom - b.top).toFixed(1)} fill="#000" data-trou />
+        ))}
+      </mask>
+      <mask id={`${idMasque}-t`} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%" data-masque-auj>
+        <rect x="0" y="0" width="100%" height="100%" fill="#fff" />
+        {trous.filter(b => b.texte).map((b, i) => (
+          <rect key={i} x={b.left.toFixed(1)} y={b.top.toFixed(1)} width={(b.right - b.left).toFixed(1)} height={(b.bottom - b.top).toFixed(1)} fill="#000" data-trou />
+        ))}
+      </mask>
+      {/* la ligne d'aujourd'hui : sous les textes seulement (elle reste visible à travers une barre translucide, comme avant) */}
+      <g mask={`url(#${idMasque}-t)`}>
+        {traits.filter(t => t.auj).map(t => <path key={t.id} d={t.d} className="cal-auj-trait" data-auj-trait />)}
+      </g>
+      <g mask={`url(#${idMasque})`}>
+        {traits.filter(t => !t.auj).map(t => (t.fil
+          ? <path key={t.id} d={t.d} className={`cal-fil cal-fil-${t.fil}`} data-fil={t.id.slice(4)} />
+          : <path key={t.id} d={t.d} data-trait={t.id} />))}
+      </g>
+    </svg>
+  );
+}));
+
 export const Frise: React.FC<FriseProps> = props => {
   const { choses, colonnes, paysage, ordre, masquees, filtre, epingles, etoiles, selectionId, menuId, detail, largeurRepli = 360, reserveDroite = 0, onMesure } = props;
   const zone = React.useRef<HTMLDivElement | null>(null);
   const [mesuree, setMesuree] = React.useState(0);
-  const [traits, setTraits] = React.useState<Trait[]>([]);
-  const [trous, setTrous] = React.useState<BoiteFil[]>([]);
+  const calque = React.useRef<PoseTraits | null>(null);
   const idMasque = `cal-masque-fil-${React.useId().replace(/[^A-Za-z0-9_-]/g, '')}`;
 
   React.useLayoutEffect(() => {
@@ -246,21 +306,24 @@ export const Frise: React.FC<FriseProps> = props => {
       if (d.d) suivants.push({ id: q.id, d: d.d, fil: 'allume' });
     }
     const k = { traits: cle(suivants), trous: trousCle };
-    if (k.traits !== clesTraits.current.traits) setTraits(suivants);
-    if (k.trous !== clesTraits.current.trous) setTrous(trousSuivants);
+    if (k.traits !== clesTraits.current.traits || k.trous !== clesTraits.current.trous) calque.current?.poser(suivants, trousSuivants);
     clesTraits.current = k;
   }, []);
-  React.useLayoutEffect(() => { mesurerTraits(); });
+  /* CAL-LENT (22.11, « Il y a beaucoup de lenteur sur les actions du calendrier ») : les rectangles se lisent après la peinture, plus dans le commit
+     (une lecture à chaque rendu forçait la mise en page en plein geste : 510 ms sur 832 pour toucher une semaine, ×4) */
+  const planifierTraits = useApresPeinture(mesurerTraits);
+  /* sous dépendances : ce qui change les traits (les choses, la fenêtre, la largeur, la sélection, l'ordre, les rangées cachées, le filtre) ;
+     le reste (une mutation du DOM, une police, un défilement) passe par l'observateur ci-dessous */
+  React.useEffect(() => { planifierTraits(); }, [planifierTraits, choses, colonnes, paysage, ordre, masquees, filtre, selectionId, mesuree, detail]);
   /* CAL-FIL-SOUS-INFO : une rangée repose ses noms dans son propre rendu (`disposer`), sans rendre la frise ; le masque suit donc aussi chaque
      changement de place ou de classe dans la frise (hors du calque des traits), au plus une fois par image */
   React.useEffect(() => {
     const el = zone.current;
     if (!el || typeof MutationObserver === 'undefined') return undefined;
-    let image = 0;
     let repos: ReturnType<typeof setTimeout> | null = null;
-    /* à l'image suivante, puis une fois la page reposée (250 ms sans nouvel événement) : un nom reposé après coup est rattrapé */
+    /* après la peinture de l'image suivante, puis une fois la page reposée (250 ms sans nouvel événement) : un nom reposé après coup est rattrapé */
     const plusTard = () => {
-      if (!image) image = requestAnimationFrame(() => { image = 0; mesurerTraits(); });
+      planifierTraits();
       if (repos) clearTimeout(repos);
       repos = setTimeout(() => { repos = null; mesurerTraits(); }, 250);
     };
@@ -283,10 +346,9 @@ export const Frise: React.FC<FriseProps> = props => {
       window.removeEventListener('resize', plusTard);
       window.removeEventListener('focusin', plusTard);
       window.removeEventListener('pointerup', plusTard, { capture: true });
-      if (image) cancelAnimationFrame(image);
       if (repos) clearTimeout(repos);
     };
-  }, [mesurerTraits]);
+  }, [mesurerTraits, planifierTraits]);
 
   /* D-135 (CRITIQUE-2 n° 13) : au repos, les rangées qui passent à la hauteur du + volant gardent leurs noms hors de sa zone ; mesuré après
      le rendu, une rangée ajoutée n'est jamais retirée tant que la mise en page ne change pas (pas d'oscillation) */
@@ -321,7 +383,10 @@ export const Frise: React.FC<FriseProps> = props => {
     const nouvelle = Math.max(reserve, zoneFab > 0 && zoneFab < (z.width || Infinity) ? zoneFab : 0);
     if (ajout.length || nouvelle > reserve) setSousFab({ cle, ids: [...ids, ...ajout], reserve: nouvelle });
   }, [reserveDroite]);
-  React.useLayoutEffect(() => { mesurerSousFab(); });
+  /* CAL-LENT (22.11) : mesuré après la peinture, sous dépendances (avant : à chaque rendu, dans le commit, 313 ms sur 600 pour toucher une semaine, ×4) ;
+     le défilement, le changement de taille et l'observateur ci-dessous rattrapent le reste */
+  const planifierSousFab = useApresPeinture(mesurerSousFab);
+  React.useEffect(() => { planifierSousFab(); }, [planifierSousFab, cleMise, ordre, mesuree, reserveDroite, selectionId]);
   /* CAL-PASSE Q n° 8 (21.11, « −420 » de Brouwland sous le + après l'étirement à 390) : la mise en page d'une rangée change sans nouveau rendu de
      la frise (une rangée du dessus grandit, la hauteur se pose après la mesure) et la page ne défile pas : la mesure se refait donc aussi quand
      la frise ou une de ses rangées change de taille */
@@ -334,7 +399,8 @@ export const Frise: React.FC<FriseProps> = props => {
     veilleur.current.observe(el);
     el.querySelectorAll('section[data-rangee]').forEach(s => veilleur.current?.observe(s));
     return undefined;
-  });
+    /* seulement quand les rangées peuvent changer : observer de nouveau à chaque rendu relançait une mesure par observation */
+  }, [reserveDroite, cleMise, ordre, props.seulement, mesurerSousFab]);
   React.useEffect(() => () => { veilleur.current?.disconnect(); veilleur.current = null; }, []);
   React.useEffect(() => {
     if (!reserveDroite || typeof window === 'undefined') return undefined;
@@ -433,32 +499,7 @@ export const Frise: React.FC<FriseProps> = props => {
       onPointerDownCapture={e => { if (!e.currentTarget.hasAttribute('data-doigt')) e.currentTarget.setAttribute('data-doigt', ''); }}
       onKeyDownCapture={e => { if (e.currentTarget.hasAttribute('data-doigt')) e.currentTarget.removeAttribute('data-doigt'); }}
     >
-      {traits.length > 0 && (
-        <svg className="cal-traits" aria-hidden="true" data-traits>
-          {/* CAL-FIL-SOUS-INFO : blanc, le trait se voit ; noir (une info), il passe dessous et ne se voit pas */}
-          <mask id={idMasque} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%" data-masque-fil>
-            <rect x="0" y="0" width="100%" height="100%" fill="#fff" />
-            {trous.map((b, i) => (
-              <rect key={i} x={b.left.toFixed(1)} y={b.top.toFixed(1)} width={(b.right - b.left).toFixed(1)} height={(b.bottom - b.top).toFixed(1)} fill="#000" data-trou />
-            ))}
-          </mask>
-          <mask id={`${idMasque}-t`} maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%" data-masque-auj>
-            <rect x="0" y="0" width="100%" height="100%" fill="#fff" />
-            {trous.filter(b => b.texte).map((b, i) => (
-              <rect key={i} x={b.left.toFixed(1)} y={b.top.toFixed(1)} width={(b.right - b.left).toFixed(1)} height={(b.bottom - b.top).toFixed(1)} fill="#000" data-trou />
-            ))}
-          </mask>
-          {/* la ligne d'aujourd'hui : sous les textes seulement (elle reste visible à travers une barre translucide, comme avant) */}
-          <g mask={`url(#${idMasque}-t)`}>
-            {traits.filter(t => t.auj).map(t => <path key={t.id} d={t.d} className="cal-auj-trait" data-auj-trait />)}
-          </g>
-          <g mask={`url(#${idMasque})`}>
-            {traits.filter(t => !t.auj).map(t => (t.fil
-              ? <path key={t.id} d={t.d} className={`cal-fil cal-fil-${t.fil}`} data-fil={t.id.slice(4)} />
-              : <path key={t.id} d={t.d} data-trait={t.id} />))}
-          </g>
-        </svg>
-      )}
+      <CalqueTraits ref={calque} idMasque={idMasque} />
       {courante && <i className="cal-col-now" aria-hidden="true" data-col-now style={{ ...posee(courante.debut * largeurColonne), width: courante.n * largeurColonne }} />}
       {props.tete}
       {grouperVides(rangees.map(r => {
