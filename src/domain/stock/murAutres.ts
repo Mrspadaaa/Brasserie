@@ -140,3 +140,14 @@ export function etatEtSeuil(i: StockItem): { mot: 'épuisé' | 'bas' | 'assez' |
   if (s == null) return { mot: null, seuil };
   return { mot: q < s ? 'bas' : 'assez', seuil };
 }
+
+/** La quantité d'une pièce se dit par le seul nombre (« 480 », modèle A, n° 39) ; null pour g, ml et les autres unités, que la ligne dit déjà. */
+export function quantitePiece(i: StockItem): string | null {
+  const q = quantite(i); return q != null && base(i.unit).u === 'pc' ? nf(q) : null;
+}
+
+/** Le tri de la liste d'Autres stocks (n° 41) : épuisé, bas, à compter, puis le reste ; alphabétique à égalité. Sans effet sur la liste d'Ingrédients. */
+export function trierAutres<T extends StockItem>(items: ReadonlyArray<T>): T[] {
+  const rang = (i: StockItem) => { const m = etatEtSeuil(i).mot; return m === 'épuisé' ? 0 : m === 'bas' ? 1 : m === 'à compter' ? 2 : 3; };
+  return [...items].sort((a, b) => rang(a) - rang(b) || a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }));
+}

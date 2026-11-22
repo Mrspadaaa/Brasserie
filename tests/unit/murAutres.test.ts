@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { StockItem } from '../../src/types';
-import { colonneAutre, construireMurAutres, etatEtSeuil, pastilleAutre, potAutre, totalColonne, TIRET } from '../../src/domain/stock/murAutres';
+import { colonneAutre, construireMurAutres, etatEtSeuil, pastilleAutre, potAutre, totalColonne, trierAutres, TIRET } from '../../src/domain/stock/murAutres';
 
 const it_ = (name: string, category: string, currentStock: number, unit: string, minStock?: number): StockItem =>
   ({ ref: name, name, category, unit, currentStock, minStock } as unknown as StockItem);
@@ -39,5 +39,9 @@ describe('Autres stocks A : mur (A-PORT-LISTE)', () => {
     expect(pastilleAutre({ brassins: 3.6, ddmProche: '12.26' })).toBe('≈ 3 brassins');
     expect(pastilleAutre({ ddmProche: '12.26' })).toBe('DDM 12.26');
     expect(pastilleAutre({})).toBeNull();
+  });
+  it('tri de la liste (n° 41) : épuisé, bas, à compter, puis alphabétique', () => {
+    const a = [it_('Zinc', 'x', 500, 'g', 100), it_('Acide', 'x', 500, 'g', 100), it_('Canette', 'x', 50, 'pc', 100), it_('Vanille', 'x', NaN, 'g'), it_('Bidon', 'x', 0, 'ml', 100)];
+    expect(trierAutres(a).map((i) => i.name)).toEqual(['Bidon', 'Canette', 'Vanille', 'Acide', 'Zinc']);
   });
 });
