@@ -2666,3 +2666,7 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 > Ça adapte pas l'échelle, et honnêtement ça fonctionne encore assez mal...
 
 (22.11, en ligne tour 9, captures 31 à 33 de work/missions/2026-11-21-calendrier-entete/ : 33, « 7 sem. » 08.02.27–28.03.27, le cadre dit « S32 – S12 2027 » mais n'est dessiné que sur S10–S12, la courbe et ses étiquettes (« /A/AAchats ≡13 » empilées) ne suivent pas les graduations S6–S12 entourées ; 32, « 1 sem. » 30.08.27, cadre « S23 – S35 2027 » qui remplit toute la courbe ; 31, « 1 sem. » S47.)
+
+> Cette période là reste fixe, le reste peut être mobile
+
+(22.11, en ligne tour 9, capture 34 de work/missions/2026-11-21-calendrier-entete/ : la période de l'app en haut (‹ 30.08.27–05.09.27 ›) entourée ; elle a suivi les gestes du Calendrier.)
