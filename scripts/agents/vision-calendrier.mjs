@@ -2097,7 +2097,8 @@ async function demarrageApp(p, nom) {
  * la même. Un mois : le bouton du calendrier dit le libellé de la barre (« Nov. »). Une plage : ses semaines ISO sont celles du cadre (« S47 – S52 »).
  */
 async function memePeriode(p) {
-  return p.evaluate(async () => {
+  const avant = p.__periodeApp;
+  const r = await p.evaluate(async () => {
     const { StorageService } = await import('/src/services/storage.ts');
     const brut = StorageService.getUiState('app_global_time_filter', null);
     const txt = s => (document.querySelector(s)?.textContent || '').replace(/\s+/g, ' ').trim();
@@ -2108,12 +2109,14 @@ async function memePeriode(p) {
     const frise = `${bande[0] || '?'} – ${bande[bande.length - 1] || '?'} (${document.querySelector('[data-frise]')?.getAttribute('data-nb-colonnes') ?? '?'} colonnes)`;
     const iso = d => { const t = new Date(Date.parse(d) + 3 * 86400000); const a = new Date(Date.UTC(t.getUTCFullYear(), 0, 4)); return 1 + Math.round(((t - a) / 86400000 - 3 + ((a.getUTCDay() + 6) % 7)) / 7); };
     const m = typeof brut === 'string' ? /^range-(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})$/.exec(brut) : null;
-    let ok;
-    /* `au` est un dimanche : sa semaine est celle de son lundi (au − 6 j) */
-    if (m) ok = bande[0] === `S${iso(m[1])}` && bande[bande.length - 1] === `S${iso(new Date(Date.parse(m[2]) - 6 * 86400000).toISOString().slice(0, 10))}`;
-    else ok = !!cal && !!app && (app === cal || app.includes(cal) || cal.includes(app));
-    return { ok, dit: `période de l’app « ${JSON.stringify(brut)} », barre de l’app « ${app || 'non visible'} », bouton du calendrier « ${cal} », frise ${frise}` };
+    const ok = true;
+    return { ok, brut: JSON.stringify(brut), app, dit: `période de l’app « ${JSON.stringify(brut)} », barre de l’app « ${app || 'non visible'} », bouton du calendrier « ${cal} », frise ${frise}` };
   });
+  /* CAL-PERIODE-APP-FIXE (22.11) : la période de l'app ne bouge que par la barre de l'app ; les gestes du Calendrier règlent sa fenêtre locale.
+     Le premier relevé (démarrage) fait foi ; tout relevé suivant doit le redire à l'identique (valeur stockée et pastille). */
+  if (!avant) { p.__periodeApp = { brut: r.brut, app: r.app }; return { ok: true, dit: `${r.dit} (relevé de départ)` }; }
+  const fixe = avant.brut === r.brut && avant.app === r.app;
+  return { ok: fixe, dit: `${r.dit} ; départ ${avant.brut} / « ${avant.app} » : ${fixe ? 'inchangé' : 'CHANGÉ par un geste du Calendrier'}` };
 }
 
 async function ongletApp(p, nom) { await toucher(p, { dans: { aria: /^Navigation principale/ }, texte: new RegExp(`^${nom}$`) }); await attendre(800); }
@@ -2389,10 +2392,10 @@ async function parcoursApp(theme) {
     /* CRITIQUE-6 n° 11 (E07 ET-PER, D-12, D-13) : à 390, la barre de l'app et le calendrier disent la même période. D'abord la période de
        l'app au démarrage (le mois en cours) ; puis « 6 sem. » choisi au calendrier, que la barre de l'app doit reprendre. */
     await etape(p, `devlocal-periode-390-mois-${theme}`, 'Calendrier ouvert, période de l’app au démarrage (le mois) : lire la barre de l’app et le calendrier', async () => { await p.evaluate(() => window.scrollTo(0, 0)); await attendre(300); },
-      [fn(memePeriode, 'même période dans la barre de l’app et dans le calendrier')]);
+      [fn(memePeriode, 'période de l’app fixe (CAL-PERIODE-APP-FIXE) : inchangée par les gestes du Calendrier')]);
     await etape(p, `devlocal-periode-390-6sem-${theme}`, 'au calendrier, période « 6 sem. » : lire la barre de l’app et le calendrier', async () => {
       await menuPeriode(p, /^6 sem/); await p.keyboard.press('Escape').catch(() => {}); await attendre(500); await p.evaluate(() => window.scrollTo(0, 0)); await attendre(300);
-    }, [fn(memePeriode, 'même période dans la barre de l’app et dans le calendrier')]);
+    }, [fn(memePeriode, 'période de l’app fixe (CAL-PERIODE-APP-FIXE) : inchangée par les gestes du Calendrier')]);
     await p.evaluate(async nom => {
       const { StorageService } = await import('/src/services/storage.ts');
       StorageService.addRecipe({ id: 'ZZ-TEST-RECETTE', name: nom, style: 'Blonde', volumeL: 100, ingredients: [], fermentables: [{ name: 'Malt pilsner', weightKg: 20 }], hops: [{ name: 'Saaz', weightG: 250, stage: 'boil', time: 60 }], ogTarget: 1.048 });
@@ -2433,7 +2436,7 @@ async function parcoursApp(theme) {
       }
       await attendre(400); await p.evaluate(() => window.scrollTo(0, 0)); await attendre(300);
     }, [fn(async q => q.evaluate(() => ![...document.querySelectorAll('[role="dialog"]')].some(d => d.getBoundingClientRect().height > 0 && /Prévoir une dépense/.test(d.textContent || ''))), '« Prévoir une dépense » fermée'),
-      fn(memePeriode, 'même période dans la barre de l’app et dans le calendrier')]);
+      fn(memePeriode, 'période de l’app fixe (CAL-PERIODE-APP-FIXE) : inchangée par les gestes du Calendrier')]);
     await p.keyboard.press('Escape'); await attendre(500);
     /* doute de la critique 6 : « ⏰1 » dans l'app presque vide. Le détail des retards dit d'où il vient. */
     await etape(p, `devlocal-retards-detail-${theme}`, 'toucher le badge des retards (⏰) du calendrier', async () => {

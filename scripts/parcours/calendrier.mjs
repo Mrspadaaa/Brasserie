@@ -280,6 +280,11 @@ async function jouer(dir) {
     if (tout) try {
       await versCalendrier(false); await fermer();
       for (const [titre, bouton] of [['Marché de Noël,', 'Ouvrir dans l’agenda'], ['Fruty,', 'Ouvrir le brassin']]) {
+        /* CAL-PERIODE-APP-FIXE (22.11) : la fenêtre du Calendrier repart de la période de l'app à chaque ouverture ; la chose se rejoint par › (4 pas au plus) */
+        for (let n = 0; n < 4 && !(await visibleParTexte(titre, { prefixe: true })); n++) {
+          const c = await p.evaluate(() => { const e = document.querySelector('button[aria-label="Période suivante"]'); if (!e || e.disabled) return null; const r = e.getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; });
+          if (!c) break; await p.touchscreen.tap(c[0], c[1]); await sleep(900);
+        }
         await toucher(titre, { prefixe: true });
         const b = await visibleParTexte(bouton, { prefixe: true });
         if (!b) {
@@ -863,6 +868,8 @@ async function jouer(dir) {
           await p.setViewport({ width: 1280, height: 800, isMobile: false, hasTouch: false, deviceScaleFactor: 1 });
           for (const theme of ['clair', 'cave']) {
             await p.evaluate((t) => localStorage.setItem('laffinee.theme', t), theme);
+            /* CAL-PERIODE-APP-FIXE (22.11) : le Calendrier n'écrit plus la période de l'app ; la plage à flèche se pose donc par la barre de l'app (sa valeur stockée), comme ses choix « Période… » */
+            await p.evaluate(() => { for (const k of Object.keys(localStorage)) { try { const o = JSON.parse(localStorage.getItem(k)); if (o && typeof o === 'object' && 'app_global_time_filter' in o) { o.app_global_time_filter = 'range-2026-10-26_2027-01-24'; localStorage.setItem(k, JSON.stringify(o)); } } catch { /* clé étrangère */ } } });
             await p.goto(url, { waitUntil: 'load' }); await sleep(1200);
             await p.waitForSelector('nav button', { timeout: 90000 });
             await versCarnet(false); await sleep(300);

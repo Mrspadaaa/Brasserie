@@ -912,10 +912,10 @@ function listeEtapes() { return [
       if (!/ZZ TEST Pompe E4/.test(v)) return echec('CH-E4', `le nom tapé après Entrée n'est pas gardé : « ${v} »`);
       ok('CH-E4', 'Entrée dans CHF prend Nom ; le nom tapé est gardé');
     }
-
-// ───────────── le parcours ─────────────
   }
 ]; }
+
+// ───────────── le parcours ─────────────
 async function jouer(dir) {
   const banc = await lancerBanc(dir);
   try {

@@ -28,13 +28,15 @@ const lire = (s) => s.p.evaluate((MOIS_LONGS) => {
   const iso = (x) => { const y = x[3] ? (x[3].length === 2 ? 2000 + Number(x[3]) : Number(x[3])) : an; return `${y}-${x[2].padStart(2, '0')}-${x[1].padStart(2, '0')}`; };
   if (m.length >= 2) { du = iso(m[0]); au = iso(m[1]); }
   else { const mm = new RegExp(`(${MOIS_LONGS.join('|')}) (\\d{4})`, 'i').exec(ce); if (mm) { const k = MOIS_LONGS.indexOf(mm[1].toLowerCase()); const y = Number(mm[2]); du = `${y}-${String(k + 1).padStart(2, '0')}-01`; au = new Date(Date.UTC(y, k + 1, 0)).toISOString().slice(0, 10); } }
+  /* CAL-PERIODE-APP-FIXE (22.11) : la pastille est la période de l'app, fixe ; la fenêtre du Calendrier se lit sur les graduations visibles (data-lundi) */
+  const gl = [...document.querySelectorAll('[data-bande-semaines] [data-lundi]')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.right > 0 && r.left < innerWidth; }).map((e) => e.getAttribute('data-lundi'));
   const cadre = document.querySelector('.ent-cadre');
   const suiv = [...document.querySelectorAll('button[aria-label="Période suivante"]')][0];
   const pastilles = [...document.querySelectorAll('*')].filter((e) => e.children.length === 0 && /^(prévu|confirmé|à encaisser|à payer) \S/.test(e.textContent?.trim() ?? '')).map((e) => {
     const r = e.getBoundingClientRect(); return { t: e.textContent.trim(), rogne: e.scrollWidth > e.clientWidth + 1 || r.right > innerWidth + 1 };
   });
   const msg = document.body.innerText.match(/[^\n]*(borne|bout du calendrier|au-delà|horizon)[^\n]*/i)?.[0] ?? '';
-  return { court, ce, du, au, cadre: cadre?.getAttribute('aria-label')?.replace(/^Fenêtre : /, '') ?? '', annee: cadre?.getAttribute('data-annee') === 'oui', suivEteinte: !!suiv?.disabled, pastilles, msg };
+  return { court, ce, du, au, gdu: gl[0] ?? null, gau: gl.length ? new Date(Date.parse(`${gl[gl.length - 1]}T12:00:00Z`) + 6 * 86400000).toISOString().slice(0, 10) : null, cadre: cadre?.getAttribute('aria-label')?.replace(/^Fenêtre : /, '') ?? '', annee: cadre?.getAttribute('data-annee') === 'oui', suivEteinte: !!suiv?.disabled, pastilles, msg };
 }, MOIS_LONGS);
 
 const ouvrirMenu = async (s, sleep) => { await s.toucher('période, liste, tri et filtre', { dans: '[aria-label$="période, liste, tri et filtre"]', contient: true }); await sleep(650); };
@@ -46,17 +48,15 @@ const fleche = async (s, sleep, nom) => {
 /** Le cadre d'An attendu pour la barre : mois et années des jeudis de la première et de la dernière semaine. */
 const anAttendu = (du, au) => { const a = jeudi(du), b = jeudi(au); return { m1: MOIS[Number(a.slice(5, 7)) - 1], y1: a.slice(0, 4), m2: MOIS[Number(b.slice(5, 7)) - 1], y2: b.slice(0, 4) }; };
 /** La barre et le cadre disent-ils la même fenêtre ? (An : mois et années ; sinon : semaines ISO). Rend le défaut, ou ''. */
+let PASTILLE0 = null; // la pastille de l'app au premier relevé de l'étape : elle ne doit plus bouger (CAL-PERIODE-APP-FIXE)
 function ecart(l) {
-  if (!l.du || !l.au) return `barre illisible (« ${l.court || l.ce} »)`;
-  if (l.annee) {
-    const e = anAttendu(l.du, l.au);
-    const voulu = e.y1 !== e.y2 ? `${e.m1} ${e.y1} – ${e.m2} ${e.y2}` : `${e.m1} – ${e.m2} ${e.y2}`;
-    return l.cadre === voulu ? '' : `barre ${l.du}→${l.au}, cadre « ${l.cadre} » (« ${voulu} » attendu)`;
-  }
-  const s1 = semaineIso(l.du), s2 = semaineIso(l.au);
-  const n = /^S(\d+)(?: – S(\d+))?/.exec(l.cadre);
+  if (PASTILLE0 === null) PASTILLE0 = l.court + '|' + l.ce;
+  else if (PASTILLE0 !== l.court + '|' + l.ce) return `la pastille de l'app a bougé : « ${PASTILLE0} » → « ${l.court}|${l.ce} » (elle est fixe)`;
+  if (!l.gdu || !l.gau) return l.annee ? '' : `graduations de la bande illisibles (cadre « ${l.cadre} »)`; // An : pas de bande de semaines
+  const s1 = semaineIso(l.gdu), s2 = semaineIso(l.gau);
+  const n = /^S(d+)(?: – S(d+))?/.exec(l.cadre);
   if (!n) return `cadre « ${l.cadre} » illisible`;
-  return Number(n[1]) === s1 && Number(n[2] ?? n[1]) === s2 ? '' : `barre ${l.du}→${l.au} (S${s1}–S${s2}), cadre « ${l.cadre} »`;
+  return Number(n[1]) === s1 && Number(n[2] ?? n[1]) === s2 ? '' : `graduations ${l.gdu}→${l.gau} (S${s1}–S${s2}), cadre « ${l.cadre} »`;
 }
 
 async function cdpDe(s) { return s.p.createCDPSession ? s.p.createCDPSession() : s.p.target().createCDPSession(); }
@@ -72,7 +72,7 @@ const poignee = (s, q) => s.p.evaluate((q) => { const b = document.querySelector
 const pas = (a, b, n = 8) => Array.from({ length: n }, (_, k) => a + ((b - a) * (k + 1)) / n);
 
 export function etapesV8({ echec, ok, sleep }) {
-  const versCalendrier = async (s) => { await s.onglet('Calendrier'); await sleep(1800); };
+  const versCalendrier = async (s) => { PASTILLE0 = null; await s.onglet('Calendrier'); await sleep(1800); };
   return [
     {
       id: 'CH-V4', titre: 'An : la barre, le cadre de la courbe et les pastilles de rangée nomment la même fenêtre, avec l’année ; › puis ‹ : le cadre suit (CHV-4, CHD-7)',
@@ -93,7 +93,7 @@ export function etapesV8({ echec, ok, sleep }) {
         };
         const l0 = await lire(s); verifier(l0, 'An');
         let avance = false; // dans l'An, › est éteint dès que la fenêtre suivante sortirait de l'horizon (CHN-1) : alors pas de › ni de ‹ de retour (le passé est borné par les données : à faire)
-        if (await fleche(s, sleep, 'Période suivante')) { avance = true; const l1 = await lire(s); await s.cap('CH-V4-2-suivante'); verifier(l1, '›'); if (l1.cadre === l0.cadre && l1.du !== l0.du) fautes.push(`› : la barre change (${l1.du}), le cadre reste « ${l1.cadre} »`); }
+        if (await fleche(s, sleep, 'Période suivante')) { avance = true; const l1 = await lire(s); await s.cap('CH-V4-2-suivante'); verifier(l1, '›'); if (l1.cadre === l0.cadre && l1.gdu !== l0.gdu) fautes.push(`› : la barre change (${l1.gdu}), le cadre reste « ${l1.cadre} »`); }
         if (avance && await fleche(s, sleep, 'Période précédente')) { const l2 = await lire(s); await s.cap('CH-V4-3-precedente'); verifier(l2, '‹'); }
         if (fautes.length) return echec('CH-V4', fautes.slice(0, 4).join(' ; '));
         ok('CH-V4', `An : barre ${l0.du}→${l0.au}, cadre « ${l0.cadre} », pastilles ${[...new Set(l0.pastilles.map((p) => p.t))].slice(0, 2).join(' / ')} ; › et ‹ suivis`);
@@ -113,10 +113,10 @@ export function etapesV8({ echec, ok, sleep }) {
             if (!(await fleche(s, sleep, 'Période suivante'))) { bout = true; break; }
             const l = await lire(s);
             const e = ecart(l); if (e) { fautes.push(`${echelle}, › ×${k + 1} : ${e}`); break; }
-            if (l.du === avant.du && !l.suivEteinte && !l.msg) { fautes.push(`${echelle}, › ×${k + 1} : la barre ne bouge plus (${l.du}) et la flèche reste allumée, sans un mot`); break; }
+            if (l.gdu === avant.gdu && !l.suivEteinte && !l.msg) { fautes.push(`${echelle}, › ×${k + 1} : la barre ne bouge plus (${l.gdu}) et la flèche reste allumée, sans un mot`); break; }
           }
           await s.cap(`CH-N1-${echelle === 'An' ? 'an' : '6sem'}-bout`);
-          if (!bout && !fautes.length) { const l = await lire(s); if (!l.suivEteinte && !l.msg) fautes.push(`${echelle} : après ${n} ›, ni flèche éteinte ni borne dite (barre ${l.du}→${l.au})`); }
+          if (!bout && !fautes.length) { const l = await lire(s); if (!l.suivEteinte && !l.msg) fautes.push(`${echelle} : après ${n} ›, ni flèche éteinte ni borne dite (barre ${l.gdu}→${l.gau})`); }
         }
         if (fautes.length) return echec('CH-N1', fautes.slice(0, 3).join(' ; '));
         ok('CH-N1', 'An et 6 sem. : à chaque › la barre et le cadre disent la même fenêtre ; au bout, la flèche s’éteint');
@@ -163,7 +163,7 @@ export function etapesV8({ echec, ok, sleep }) {
           if (vu.c && dans(vu.c.l, vu.c.t, vu.b)) fautes.push(`la bulle (${Math.round(vu.b.l)}–${Math.round(vu.b.r)} px) couvre le coin du début (${Math.round(vu.c.l)} px)`);
           if (vu.i && vu.i.l < vu.b.r && vu.i.r > vu.b.l && vu.i.t < vu.b.b && vu.i.b > vu.b.t) fautes.push('la bulle couvre la poignée de début');
           const sb = /^S(\d+)/.exec(vu.t);
-          if (sb && l1.du && Number(sb[1]) !== semaineIso(l1.du) && /^S\d+(?: \d{4})?$/.test(vu.t)) fautes.push(`bulle « ${vu.t} », barre S${semaineIso(l1.du)} : deux semaines à l'écran`);
+          if (sb && l1.gdu && Number(sb[1]) !== semaineIso(l1.gdu) && /^S\d+(?: \d{4})?$/.test(vu.t)) fautes.push(`bulle « ${vu.t} », barre S${semaineIso(l1.gdu)} : deux semaines à l'écran`);
         }
         if (fautes.length) return echec('CH-G7', fautes.join(' ; '));
         ok('CH-G7', `bulle « ${vu.t} » à ${Math.round(vu.b.l)}–${Math.round(vu.b.r)} px, cadre à ${Math.round(vu.c.l)} px : ni coin ni poignée couverts ; barre S${semaineIso(l1.du)}`);
