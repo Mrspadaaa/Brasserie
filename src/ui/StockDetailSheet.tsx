@@ -126,7 +126,8 @@ const FichePage: React.FC<StockDetailSheetProps & { item: StockItem }> = ({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [menu, setMenu] = useState(false);
   const [edition, setEdition] = useState(false);
-  const [besoinOuvert, setBesoinOuvert] = useState(false);
+  // Ouverte depuis une recette, la fiche montre d'emblée « Recette ouverte · … : besoin … · manque … » (point 37) ; sinon la pastille Besoin reste repliée (D5a).
+  const [besoinOuvert, setBesoinOuvert] = useState(() => recipeCheck?.comparison.stockItem?.ref === item.ref);
   const [uniteRefus, setUniteRefus] = useState('');
   const [uniteNote, setUniteNote] = useState('');
   // Corriger le stock : le lot, le compté (null = pas touché), le motif.

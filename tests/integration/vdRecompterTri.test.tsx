@@ -24,7 +24,7 @@ function Catalogue() {
 }
 beforeEach(() => {
   localStorage.clear(); StorageService.clearMemoryCache();
-  StorageService.setUiState('stock_vue', 'recompter');
+  StorageService.setUiState('stocks_subtab', 'recompter');
   seedQa({ stockItems: [art('a', 'Acide malt', 5), art('b', 'Biscuit', 5), art('c', 'Caramel', 5), art('z', 'Zéro épuisé', 0)] });
 });
 afterEach(cleanup);
@@ -32,24 +32,23 @@ afterEach(cleanup);
 const noms = (c: HTMLElement) => [...c.querySelectorAll('.sz-r-ray .sz-r-row .sz-r-nm b')].map((e) => e.textContent);
 
 describe('Recompter : ordre du nom', () => {
-  it('⇅ inverse A → Z en Z → A, les épuisés restent en fin de rayon, et revient', async () => {
+  // D420 (d1a, 22.11) : la maquette n'a plus de bouton ⇅ ni de ligne « Trié par » ; l'ordre est fixe (nom A → Z, les épuisés en fin de rayon sous « épuisés · N »).
+  it('nom A → Z, les épuisés en fin de rayon sous « épuisés · N », aucun bouton d\'inversion', async () => {
     const { container } = render(<Catalogue/>);
     await screen.findByTestId('recompter');
     expect(noms(container)).toEqual(['Acide malt', 'Biscuit', 'Caramel', 'Zéro épuisé']);
-    expect(container.querySelector('.sz-r-so')).toHaveTextContent('nom, A → Z');
-    fireEvent.click(screen.getByRole('button', { name: "Inverser l'ordre : nom Z → A" }));
-    expect(noms(container)).toEqual(['Caramel', 'Biscuit', 'Acide malt', 'Zéro épuisé']);
-    expect(container.querySelector('.sz-r-so')).toHaveTextContent('nom, Z → A');
-    fireEvent.click(screen.getByRole('button', { name: "Inverser l'ordre : nom A → Z" }));
-    expect(noms(container)).toEqual(['Acide malt', 'Biscuit', 'Caramel', 'Zéro épuisé']);
+    expect(container.querySelector('.sz-r-epl')).toHaveTextContent('épuisés · 1');
+    expect(container.querySelector('.sz-r-ray .sz-r-row:last-child .sz-r-nm b')).toHaveTextContent('Zéro épuisé');
+    expect(screen.queryByRole('button', { name: /Inverser l'ordre/ })).toBeNull();
+    expect(container.querySelector('.sz-r-so')).toBeNull();
   });
 
-  it('en saisie, l\'en-tête du rayon n\'a ni repères ni date : « n/N comptés » seul', async () => {
+  it('en saisie, l\'en-tête du rayon n\'a ni jauge ni date : « n/N comptés » seul', async () => {
     const { container } = render(<Catalogue/>);
     const rayon = (await screen.findByTestId('recompter')).querySelector('.sz-r-ray') as HTMLElement;
-    expect(rayon.querySelector('.sz-r-tk')).not.toBeNull();
+    expect(rayon.querySelector('.sz-r-bar')).not.toBeNull();
     fireEvent.click(within(rayon).getByRole('button', { name: /Compter/ }));
-    expect(container.querySelector('.sz-r-ray .sz-r-tk')).toBeNull();
+    expect(container.querySelector('.sz-r-ray .sz-r-bar')).toBeNull();
     expect(container.querySelector('.sz-r-ray .sz-r-mt')?.textContent).toMatch(/^\d+\/\d+ comptés$/);
   });
 });

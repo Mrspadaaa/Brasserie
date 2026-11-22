@@ -48,9 +48,12 @@ describe('stocks compacts', () => {
     expect(pastille('manque')).toHaveAttribute('aria-pressed', 'true');
     expect(await screen.findByRole('button', { name: 'Ouvrir Malt Pilsner' })).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Ouvrir Malt Pale Ale' })).toBeNull();
-    fireEvent.click(pastille('★ épinglés'));
+    // D420 (d1a) : les épinglés sont l'étoile ronde (data-f=epingles, « Épinglés : N »), non une pastille de texte
+    const etoile = document.querySelector<HTMLButtonElement>('.sz-etoile[data-f="epingles"]')!;
+    expect(etoile).toHaveAttribute('aria-label', 'Épinglés : 1');
+    fireEvent.click(etoile);
     expect(pastille('manque')).toHaveAttribute('aria-pressed', 'false');
-    expect(pastille('★ épinglés')).toHaveAttribute('aria-pressed', 'true');
+    expect(etoile).toHaveAttribute('aria-pressed', 'true');
     expect(await screen.findByRole('button', { name: 'Ouvrir Malt Pale Ale' })).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Retirer Malt Pale Ale des favoris' }));
     expect(await screen.findByText('Aucun article ne correspond')).toBeVisible();

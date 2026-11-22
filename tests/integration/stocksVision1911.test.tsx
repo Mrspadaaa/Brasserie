@@ -53,7 +53,7 @@ describe('APP-ENTETE-COLLE : Stocks défile avec la fenêtre', () => {
     const ecran = container.querySelector('.stocks-screen')!;
     expect(ecran.className).not.toMatch(/h-\[calc\(100dvh/);
     expect(ecran.querySelectorAll('.overflow-y-auto')).toHaveLength(0);
-    fireEvent.click(screen.getByRole('tab', { name: /Recompter/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Recompter/ })); // sous-onglet de la barre (d1a), plus la bascule Étagère | Recompter
     expect(ecran.querySelectorAll('.overflow-y-auto')).toHaveLength(0);
     fireEvent.click(screen.getByRole('button', { name: 'Courses' }));
     await screen.findByTestId('commande-repliee');

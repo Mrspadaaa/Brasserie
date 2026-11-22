@@ -3,7 +3,7 @@
 // Contrôle rouge sur la fiche d'avant (tag 2d9bd3e3 : feuille basse, « Corriger l'inventaire »), vert sur la page.
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { StockDetailSheet } from '../../src/ui/StockDetailSheet';
 import type { StockItem } from '../../src/types';
 import type { MouvementBrut } from '../../src/domain/stock/mouvementsArticle';
@@ -29,8 +29,9 @@ describe('p1 — la fiche d’article en page entière', () => {
     expect(screen.getByRole('heading', { name: 'Centennial' })).toBeInTheDocument();
     expect(screen.getByText(/^Lots/)).toBeInTheDocument();
     expect(screen.getByText('Ce qui a bougé')).toBeInTheDocument();
-    expect(screen.getByText(/Corriger le stock · il en reste/)).toBeInTheDocument();
-    expect(screen.getByText('320')).toBeInTheDocument(); // 120 g + 200 g : le stock de la famille
+    // D5a : le stock se règle avec − et + (région « Corriger le stock », champ « Il en reste »)
+    expect(within(screen.getByRole('region', { name: 'Corriger le stock' })).getByLabelText('Il en reste')).toBeInTheDocument();
+    expect(screen.getAllByText(/320\s?g/).length).toBeGreaterThan(0); // 120 g + 200 g : le stock de la famille (« 320 g »)
   });
   it('ouverte, elle lève le drapeau du corps qui masque le bouton « + » et borne la liste (défauts 2 et 3)', async () => {
     await import('../../src/pages/PageShell');

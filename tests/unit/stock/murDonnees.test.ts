@@ -144,7 +144,7 @@ describe('mur du stock : noms ordinaires, sources réelles (c25)', () => {
     const seul = construireMur([it0({ ref: 'a', name: 'Pilsner Malz', colorEbc: 3.5 })], sourcesDeLApp);
     expect(seul.rayons[0].vides).toEqual(['Caramel', 'Torréfiés', 'Spéciaux']);
     const plein = construireMur([...malts, it0({ ref: 'b', name: 'Biscuit', colorEbc: 50 })], sourcesDeLApp);
-    expect(plein.rayons[0].vides).toEqual(['Fumé', 'Sucres']);
+    expect(plein.rayons[0].vides).toEqual(['Sucres', 'Fumé']); // D7a : Sucres est un groupe du rang (au bout des types), puis « Fumé » (absent du rayon)
     const sucre = construireMur([...malts, it0({ ref: 'c', name: 'Sucre de table', category: 'Sucre', unit: 'kg', currentStock: 4 })], sourcesDeLApp);
     expect(sucre.rayons[0].vides).toEqual(['Fumé']);
     const hop = construireMur(houblons, sourcesDeLApp);

@@ -49,7 +49,7 @@ describe('IA-COMPLETER-ABSENT : la fiche du stock offre « Compléter avec l’I
   it.each([
     ['Levure', 'levure', 'Atténuation (%)', '81'],
     ['Malt', 'malt', 'Couleur (EBC)', '6'],
-    ['Houblon', 'houblon', 'Acide alpha (%)', '12,5']
+    ['Houblon', 'houblon', 'α %', '12,5']
   ] as const)('%s : un clic = un appel simulé ; rien écrit avant « Reprendre » ; puis le champ est rempli et « Enregistrer » le porte', async (categorie, kind, label, attendu) => {
     reponse(FICHES[kind]);
     const onSave = ouvrir(incomplete[categorie]());

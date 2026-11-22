@@ -113,7 +113,7 @@ describe('n° 6 : Autres stocks vit', () => {
     expect(screen.getByRole('button', { name: 'Ouvrir Capsules 26 mm' })).toBeVisible();
     expect(screen.getByRole('button', { name: 'Ouvrir Soude CIP' })).toBeVisible();
 
-    const additifs = container.querySelector('[data-autre="Additifs"]') as HTMLElement;
+    const additifs = container.querySelector('[data-filtre="Additifs"]') as HTMLElement;
     expect(additifs.tagName).toBe('BUTTON');
     fireEvent.click(additifs);
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Ouvrir Capsules 26 mm' })).toBeNull());
