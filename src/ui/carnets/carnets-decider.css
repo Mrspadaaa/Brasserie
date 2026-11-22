@@ -195,3 +195,29 @@
 .cn-comparer .cn-terme { display: block; white-space: nowrap; }
 /* CRB-2 : « prix ? » quand le prix n'est pas connu (jamais 0), en police du texte */
 .cn-comparer .cn-prix-inconnu { font-family: inherit; font-style: italic; }
+
+/* D419, A1 : Comparer de la maquette choisie (cmp-build.mjs, A1). Fil « ‹ carnet », titre « Comparer », chaîne « Classé par », colonnes-cartes,
+   rang rond sur le picto, grande valeur, colonne du 1er teintée, ligne épinglée en vert, prix inconnu en case hachurée. Échelle 18 / 14 / 12. */
+.cn-cmp-sous { margin: 0 0 8px; font-size: 14px; }
+.cn-chaine { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; font-size: 14px; }
+.cn-chaine b { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; background: rgb(var(--cave-800)); font-weight: 600; font-size: 14px; }
+.cn-chaine b.cn-on { background: var(--c-ink); color: var(--c-bg); }
+.cn-chaine b.cn-trou { background: transparent; border: 2px dashed var(--c-mut); color: var(--c-mut); }
+.cn-comparer .cn-cmp-rang { width: 26px; height: 26px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 14px; font-weight: 700; margin-top: -14px; border: 2px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); align-self: flex-start; position: relative; }
+.cn-comparer .cn-cmp-rang.cn-cmp-rang-1 { background: rgb(var(--area-stocks)); border-color: rgb(var(--area-stocks)); color: #fff; }
+.cn-comparer .cn-cmp-gros { font-size: 18px; font-weight: 600; line-height: 1.1; }
+.cn-comparer .cn-cmp-vend { font-size: 12px; line-height: 1.2; }
+.cn-comparer .cn-tableau-comparer .cn-c1 { background: rgb(var(--area-stocks) / .10); }
+.cn-comparer .cn-tableau-comparer thead th.cn-c1 { border-radius: 12px 12px 0 0; }
+.cn-comparer .cn-tableau-comparer tr.cn-ligne-epinglee > th, .cn-comparer .cn-tableau-comparer tr.cn-ligne-epinglee > td { background: rgb(var(--area-stocks) / .16); }
+.cn-comparer .cn-tableau-comparer tr.cn-ligne-epinglee > th { font-weight: 700; }
+.cn-comparer .cn-tableau-comparer tr.cn-ligne-epinglee > td.cn-c1 { background: rgb(var(--area-stocks) / .30); }
+.cn-comparer .cn-epingle { vertical-align: -2px; margin-right: 4px; color: rgb(var(--area-stocks)); }
+.cn-hach { display: inline-grid; place-items: center; width: 64px; height: 30px; border-radius: 8px; border: 2px dashed var(--c-mut); background: repeating-linear-gradient(135deg, rgb(var(--cave-800)) 0 5px, transparent 5px 10px); font-weight: 700; color: var(--c-mut); font-size: 18px; }
+.cn-comparer td small { display: block; font-size: 12px; line-height: 1.1; }
+.cn-brun { color: rgb(180 120 60); }
+
+/* D419 A1 : au téléphone la colonne des libellés se serre pour que ses trois articles tiennent sans défiler (cmp-a1) */
+@media (max-width: 899px) {
+  .cn-comparer .cn-tableau-comparer tbody th { min-width: 60px; max-width: 74px; padding-left: 6px; padding-right: 4px; }
+}

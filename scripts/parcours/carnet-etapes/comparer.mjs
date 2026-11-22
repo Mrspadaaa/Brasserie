@@ -56,7 +56,7 @@ async function controlesChambre(c, l) {
   essai(() => {
   if (!/^prix/i.test(m.libelles[0] ?? '')) throw new Error(`CRB-2 : la 1re ligne est « ${m.libelles[0] ?? 'aucune'} », pas le prix (lignes : ${m.libelles.join(' | ')})`);
   const prix = ligne(/^prix/);
-  if (!prix.length || prix.some((x) => !/prix\s*\?/i.test(x.texte))) throw new Error(`CRB-2 : la rangée prix devrait dire « prix ? » : ${JSON.stringify(prix.map((x) => x.texte))}`);
+  if (!prix.length || prix.some((x) => !/prix\s*\?|^\s*\?\s*$/i.test(x.texte))) throw new Error(`CRB-2 : la rangée prix devrait dire « prix ? » : ${JSON.stringify(prix.map((x) => x.texte))}`);
   if (prix.some((x) => /^0(\D|$)/.test(x.texte))) throw new Error('CRB-2 : un prix inconnu est lu 0');
   c.ok(`CRB-2 rangée prix (${l})`, `ligne 1 « ${m.libelles[0]} », cellules ${JSON.stringify(prix.map((x) => x.texte))}`);
   });
@@ -96,10 +96,10 @@ async function controlesChambre(c, l) {
   if (hors.length || m.zone.defile > m.zone.client + 2) throw new Error(`CRB-3 : ${hors.length} valeur(s) hors écran ou trop étroites ; tableau ${m.zone.defile} px dans ${m.zone.client} px : ${hors.slice(0, 3).map((x) => `« ${x.texte.slice(0, 24)} » ${x.gauche}–${x.droite}`).join(' ; ')}`);
   c.ok(`CRB-3 valeurs visibles (${l})`, `tableau ${m.zone.defile} px dans ${m.zone.client} px, ${m.cellules.length} valeurs dans l'écran de ${m.largeurEcran} px`);
   });
-  // CRU-5 : le fil ne redit pas le titre posé dessous
+  // CRU-5 (A1, D419) : le nom du carnet se dit une fois, dans le fil ; le titre dessous dit l'écran (« Comparer »)
   essai(() => {
-  if (m.titreVu !== 1 || m.retour.includes(TITRE_CHAMBRE)) throw new Error(`CRU-5 : le titre « ${TITRE_CHAMBRE} » est dit ${m.titreVu} fois, le fil dit « ${m.retour} »`);
-  c.ok(`CRU-5 le titre n'est dit qu'une fois (${l})`, `fil « ${m.retour} », titre dessous`);
+  if (m.titreVu !== 0 || !m.retour.includes(TITRE_CHAMBRE)) throw new Error(`CRU-5 : le nom « ${TITRE_CHAMBRE} » doit être dit une fois, dans le fil (redit dessous ${m.titreVu} fois, fil « ${m.retour} »)`);
+  c.ok(`CRU-5 le titre n'est dit qu'une fois (${l})`, `fil « ${m.retour} », titre « Comparer »`);
   });
   // CRU-11 : l'échelle de DESIGN, titre 18, corps 14, libellés 12 (rien d'autre)
   essai(() => {

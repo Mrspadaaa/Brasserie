@@ -84,7 +84,7 @@ describe('P5 et constat 5 · un lien sans aperçu s\'écrit honnêtement, jamais
     for (const nonLus of [undefined, { a5: nonLu }]) {
       const { container } = render(<Comparer titre="Ventilation" statut="research" tableau={tableau} nonLus={nonLus} onRetour={rien} />);
       const th = container.querySelector('th[data-apercu]')!;
-      expect(th.textContent).toBe('3eLien sans aperçuexemple.invalid · page non lue');
+      expect(th.textContent).toBe('3Lien sans aperçuexemple.invalid · page non lue');
       expect(container.querySelectorAll('th[data-apercu]').length).toBe(1);
       cleanup();
     }

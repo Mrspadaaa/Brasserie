@@ -46,9 +46,9 @@ describe('(1) Comparer, n° 9, 22, 23 : colonnes de g01-8, critère qui range no
   });
   it('n° 22 : « rangé par » nomme le critère qui range ; le premier critère, sans valeur, est dit sans valeur', () => {
     const { container } = vue();
-    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C, puis le débit · proposé par l'IA"); /* tour 3, PCN-118 : tous les critères qui classent ; critique 6, point 16 : sa source ; f5c n° 6 : une seule fois quand elle est commune */
+    expect(container.querySelector('.cn-chaine')!.textContent).toMatch(/tient 80 °C.*le débit.*proposé par l'IA/); /* tour 3, PCN-118 : tous les critères qui classent ; critique 6, point 16 : sa source ; f5c n° 6 : une seule fois quand elle est commune */
     /* critique 6, n° 4 (g01-8) ; f5c n° 6 : la règle n'est plus redite, seul le prix qui départage s'ajoute */
-    expect(container.querySelector('.cn-cmp-classees')!.textContent).toBe('à égalité, le moins cher');
+    expect(container.querySelector('.cn-chaine')!.textContent).toContain('Prix'); /* D419 A1 */
     expect(container.querySelector('.cn-cmp-sans-valeur')!.textContent).toBe('« Moins de condensation au plafond : capter la buée » : sans valeur à comparer, il ne range pas');
     /* un premier critère qui range n'est pas dit sans valeur */
     expect(premierSansValeur(tableau(V), V.carnet.criteres[1] as never)).toBeNull();
@@ -141,7 +141,7 @@ describe('(4) Supprimer, n° 27 et 38 : G35 seulement de même catégorie, picto
 describe('(5) Titre, n° 40 : le titre reçu, « ZZ TEST — » compris, partout (comme CarnetOuvert)', () => {
   it('Comparer, Choisir et le choisi rendent le titre tel quel', () => {
     const a = render(<Comparer titre={TITRE} statut="research" tableau={tableau(V)} onRetour={rien} />);
-    expect(a.container.querySelector('h2.cn-titre')!.textContent).toBe(TITRE);
+    expect(a.container.querySelector('.cn-retour')!.textContent).toContain(TITRE); /* D419 A1 : le nom du carnet est dans le fil, le titre dit « Comparer » */
     a.unmount();
     const b = render(<Choisir etape="choisir" titre={TITRE} carnet={V.carnet} article={articleV('ZZ-V-A1')} sur={4} valeurs={[]} autres={[]} onRetour={rien} onChoisir={rien} onEcarter={rien} />);
     expect(b.container.querySelector('.cn-retour')!.textContent).toContain(TITRE);

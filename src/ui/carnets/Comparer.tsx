@@ -9,7 +9,8 @@
  * raison (« Écartés · n », p2:h04-7), jamais une case vide ; un lien dont la page n'est pas lue s'écrit « Lien sans aperçu » (R04).
  */
 import React from 'react';
-import { ChevronLeft, ExternalLink, Scale } from 'lucide-react';
+import { ChevronLeft, ExternalLink, Pin, Scale } from 'lucide-react';
+import { prixRendu } from '../../domain/carnets/prixRendu';
 import { sourceDuCritere } from '../../domain/carnets/modele';
 import { compromisDe, groupeDeLigne, libelleCaracteristique, libelleEcarte, nombreDe, rangVisible, type Tableau } from '../../domain/carnets/comparer';
 import { montant, Provenance, rangTexte, STATUT_LIBELLE, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
@@ -143,6 +144,10 @@ export function apercuLigne(l: LigneT, nonLus?: Record<string, Pick<ArticleV, 'l
 
 export interface ComparerProps {
   titre: string;
+  /** D421 : le taux EUR→CHF (Finances, sinon posé une fois) ; sans lui, l'euro se dit en euros (« taux ? »). */
+  taux?: number;
+  /** « 1 façon · 3 articles » (A1) */
+  facons?: number;
   /** Les articles dont la page n'est pas lue (`nonLusDe(carnet.articles)`) : « Lien sans aperçu », jamais le domaine seul. */
   nonLus?: Record<string, Pick<ArticleV, 'lecture' | 'nom' | 'domaine' | 'url'>>;
   statut: StatutCarnet;
@@ -299,6 +304,19 @@ function Vignette({ photo, picto }: { photo?: string; picto?: React.ReactNode })
   return <span className="cn-cmp-vignette cn-cmp-vignette-place" aria-hidden />;
 }
 
+/** A1 : la cellule du prix. Inconnu : case hachurée « ? » ; « dès » au-dessus d'un plancher ; en euros, ≈ rendu en brun et l'euro dessous (sans taux : l'euro et « taux ? »). */
+function CellulePrix({ l, taux }: { l: LigneT; taux?: number }) {
+  if (l.prixCentimes === undefined) return <span className="cn-hach" title="Prix non lu : relire la page de l'article">?</span>;
+  if (l.devise === 'EUR') {
+    const r = prixRendu({ eurCentimes: l.prixCentimes, taux });
+    const eur = `${montant(Math.round(l.prixCentimes / 100) * 100)} €`;
+    return r.totalChf !== undefined
+      ? <><small className="cn-mut">{r.manque.length ? 'dès' : 'estimé'}</small><span className="cn-mono cn-brun">≈{montant(Math.round(r.totalChf / 100) * 100)}</span><small className="cn-mut cn-mono">{eur}</small></>
+      : <><span className="cn-mono">{eur}</span><small className="cn-mut">taux ?</small></>;
+  }
+  return <>{l.prixDes ? <small className="cn-mut">dès</small> : null}<Mesure txt={montant(l.prixCentimes) ?? ''} /></>;
+}
+
 export function Comparer(p: ComparerProps) {
   const t = p.tableau;
   const actifs = t ? t.lignes.filter(l => !l.ecarte) : [];
@@ -311,7 +329,10 @@ export function Comparer(p: ComparerProps) {
   /* tour 3, f5c n° 6 : la source se dit une fois quand tous les critères ont la même (« · proposé par l'IA ») */
   const cqc = criteresQuiClassent(t, p.critere);
   const sourceUnique = cqc.length > 0 && cqc.every(x => x.source === cqc[0].source) ? cqc[0].source : undefined;
-  const classees = t ? texteClassees(t, classe ? cqc.length : 0) : null;
+  /* A1 : le prix classe s'il est connu sur au moins 2 articles en lice de même devise ; sinon son rang reste pointillé (« Prix ? ») */
+  const prixConnus = actifs.filter(l => l.prixCentimes !== undefined);
+  const prixClasse = prixConnus.length >= 2 && new Set(prixConnus.map(l => l.devise ?? 'CHF')).size === 1;
+  const aUnEuro = actifs.some(l => l.devise === 'EUR' && l.prixCentimes !== undefined);
   const compromisLocal = p.compromis ? null : compromisDe(t);
   /* le tableau naît au 2e article LU : un lien non lu n'en tient pas lieu (P6) */
   const naissant = !t || ordre.length < 2;
@@ -321,18 +342,19 @@ export function Comparer(p: ComparerProps) {
   /* n° 17 : une caractéristique dont personne n'a la valeur n'a pas de ligne (une rangée de « – » ne compare rien) ; elle se nomme dessous */
   const lignesVues = t ? cols.filter(c => c.cle.startsWith('__') || t.lignes.some(l => l.cellules[c.cle] !== undefined)) : [];
   const sansValeurLue = t ? cols.filter(c => !lignesVues.includes(c)) : [];
+  /* A1 : la ligne épinglée (verte) est celle qui classe : le prix s'il classe, sinon la caractéristique du critère, sinon la rangée prix (en attente) */
+  const cleEpinglee = prixClasse ? '__prix' : (lignesVues.find(c => c.critere)?.cle ?? '__prix');
+  const colEntete = lignesVues.find(c => c.critere) ?? lignesVues.find(c => /volume/i.test(c.nom));
   return (
     <article className="cn-page cn-comparer">
       <div className="cn-tete">
-        {/* CRU-5 : le fil ne redit pas le titre posé dessous (comme CarnetOuvert et Choisir : « ‹ Carnets ») */}
-        <button type="button" className="cn-retour" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden /> Carnets</button>
+        {/* A1 (D419) : le fil porte le nom du carnet, le titre dit l'écran : « ‹ Chambre froide », « Comparer » */}
+        <button type="button" className="cn-retour" onClick={p.onRetour}><ChevronLeft size={20} aria-hidden /> {p.titre}</button>
         <span className="cn-sp" />
         <span className={`cn-pastille cn-statut-${p.statut}`}>{STATUT_LIBELLE[p.statut]}</span>
       </div>
-      <h2 className="cn-titre">{p.titre}</h2>
-      {classe && (
-        <p className="cn-mut cn-cmp-critere">Ce qui compte {cqc.map((x, i) => <React.Fragment key={i}>{i ? ', puis ' : ''}<b className="cn-encre">{x.texte}</b>{!sourceUnique && x.source === 'ia' ? ' (proposé par l\'IA)' : ''}</React.Fragment>)}{sourceUnique === 'ia' ? ' · proposé par l\'IA' : ''}</p>
-      )}
+      <h2 className="cn-titre">Comparer</h2>
+      <p className="cn-mut cn-cmp-sous">{p.facons ? <>{p.facons} façon{p.facons > 1 ? 's' : ''} · </> : null}{actifs.length} article{actifs.length > 1 ? 's' : ''}</p>
       {classe && sansValeur && <p className="cn-mut cn-cmp-sans-valeur">« {sansValeur} » : sans valeur à comparer, il ne range pas</p>}
       {naissant ? (
         <>
@@ -341,12 +363,13 @@ export function Comparer(p: ComparerProps) {
         </>
       ) : (
         <>
-          <div className="cn-entete-groupe">
-            <span className="cn-groupe">Côte à côte <span className="cn-mono">{actifs.length}</span></span>
-            <span className="cn-sp" />
-            {/* g01-8 : « classées par l'oxygène » ; la règle même du tri (P32) */}
-            {classees && <span className="cn-mut cn-cmp-classees">{classees}</span>}
-          </div>
+          {/* A1 : « Classé par [Prix épinglé] › … » ; le prix s'il classe, sinon « Prix ? » pointillé et la caractéristique qui classe en noir */}
+          <p className="cn-chaine" aria-label="Classé par">
+            <span className="cn-mut">Classé par</span>
+            <b className={prixClasse ? 'cn-on' : 'cn-trou'}><span role="img" aria-label="épinglé" className="cn-pin-ico"><Pin size={14} aria-hidden /></span> {prixClasse ? 'Prix' : 'Prix ?'}</b>
+            {cqc.map((x, i) => <React.Fragment key={i}><span aria-hidden>›</span><b className={!prixClasse && i === 0 ? 'cn-on' : undefined}>{x.texte}</b>{!sourceUnique && x.source === 'ia' ? <span className="cn-mut"> (proposé par l'IA)</span> : null}</React.Fragment>)}
+            {sourceUnique === 'ia' ? <span className="cn-mut cn-cmp-source">proposé par l'IA</span> : null}
+          </p>
           {/* À 1280, tout tient (noms et raisons repliés) ; à 390, la colonne des noms reste fixe et un fondu dit la suite à droite. */}
           <div className="cn-tableau-cadre" data-suite={suite ? true : undefined}>
           <div className="cn-tableau-zone" ref={zone}>
@@ -357,12 +380,14 @@ export function Comparer(p: ComparerProps) {
                   {ordre.map(l => {
                     const sa = apercuLigne(l, p.nonLus);
                     return (
-                      <th key={l.articleId} scope="col" className={l.ecarte ? 'cn-ecarte' : undefined} data-apercu={sa ? 'aucun' : undefined}>
+                      <th key={l.articleId} scope="col" className={`${l.ecarte ? 'cn-ecarte' : ''}${!l.ecarte && l.rang === 1 && rangVisible(t, l) ? ' cn-c1' : ''}`.trim() || undefined} data-apercu={sa ? 'aucun' : undefined}>
                         <button type="button" className="cn-col-tete" onClick={() => p.onOuvrirArticle?.(l.articleId)} disabled={!p.onOuvrirArticle} title={sa ? undefined : l.nom}>
                           <Vignette photo={p.photos?.[l.articleId]} picto={p.pictos?.[l.articleId]} />
-                          {/* CRB-5 : le rang ne se dit que si un critère ou le prix classe ; sinon aucune pastille */}
-                          {l.ecarte ? <b>écarté</b> : rangVisible(t, l) ? <b>{rangTexte(rangVisible(t, l)!)}</b> : null}
+                          {/* CRB-5 : le rang ne se dit que si un critère ou le prix classe ; sinon aucune pastille. A1 : rond de 26 px sur le bas du picto */}
+                          {l.ecarte ? <b>écarté</b> : rangVisible(t, l) ? <b className={`cn-cmp-rang${rangVisible(t, l) === 1 ? ' cn-cmp-rang-1' : ''}`}>{rangVisible(t, l)}</b> : null}
+                          {colEntete && texteCellule(l, colEntete) ? <span className="cn-mono cn-cmp-gros">{texteCellule(l, colEntete)}</span> : null}
                           <span className="cn-cmp-nom">{sa ? sa.titre : l.nom}</span>
+                          {(l.vendeur || l.pays) && <span className="cn-mut cn-cmp-vend">{[l.vendeur, l.pays].filter(Boolean).join(' · ')}</span>}
                           {sa && <span className="cn-mut cn-sans-apercu">{sa.sous}</span>}
                         </button>
                       </th>
@@ -376,8 +401,8 @@ export function Comparer(p: ComparerProps) {
                   /* n° 7 (L14) : la ligne porte le nom de sa caractéristique (« ambiance max °C »), jamais l'unité seule */
                   const libelle = c.cle === '__prix' ? c.nom : libelleCaracteristique(c.nom);
                   return (
-                    <tr key={c.cle} className={c.critere ? 'cn-ligne-critere' : undefined}>
-                      <th scope="row" title={libelle !== c.nom ? c.nom : undefined}>{libelle}{c.unite ? <span className="cn-mut"> {c.unite}</span> : null}</th>
+                    <tr key={c.cle} className={`${c.critere ? 'cn-ligne-critere' : ''}${c.cle === cleEpinglee ? ' cn-ligne-epinglee' : ''}`.trim() || undefined}>
+                      <th scope="row" title={libelle !== c.nom ? c.nom : undefined}>{c.cle === cleEpinglee ? <span role="img" aria-label="épinglé" className="cn-epingle"><Pin size={14} aria-hidden /></span> : null}{libelle}{c.unite ? <span className="cn-mut"> {c.unite}</span> : null}</th>
                       {ordre.map(l => {
                         const txt = texteCellule(l, c);
                         const v = c.cle === '__prix' || c.cle.startsWith('__') ? undefined : l.cellules[c.cle];
@@ -386,10 +411,9 @@ export function Comparer(p: ComparerProps) {
                         const deFacon = v?.origine === 'locale' && typeof v.valeur === 'boolean';
                         const hors = l.horsSeuil?.[c.cle];
                         return (
-                          <td key={l.articleId} className={`${meilleurs.has(l.articleId) ? 'cn-meilleur' : ''}${l.ecarte ? ' cn-ecarte' : ''}${genre === 'texte' ? ' cn-cell-texte' : ''}`} title={deFacon ? 'd’après sa façon' : undefined}>
-                            {txt ? (genre === 'mesure' ? <Mesure txt={txt} /> : <span className="cn-valeur-texte">{txt}</span>)
-                              /* CRB-2 : un prix inconnu se dit « prix ? », jamais 0 ni une case vide */
-                              : c.cle === '__prix' ? <span className="cn-inconnu cn-prix-inconnu" title="Prix non lu : relire la page de l'article">prix ?</span>
+                          <td key={l.articleId} className={`${l.rang === 1 && !l.ecarte && rangVisible(t, l) ? 'cn-c1 ' : ''}${meilleurs.has(l.articleId) ? 'cn-meilleur' : ''}${l.ecarte ? ' cn-ecarte' : ''}${genre === 'texte' ? ' cn-cell-texte' : ''}`} title={deFacon ? 'd’après sa façon' : undefined}>
+                            {c.cle === '__prix' ? <CellulePrix l={l} taux={p.taux} />
+                              : txt ? (genre === 'mesure' ? <Mesure txt={txt} /> : <span className="cn-valeur-texte">{txt}</span>)
                               : <span className="cn-inconnu" aria-label="inconnu">–</span>}
                             {hors && <span className="cn-hors-seuil" title={hors}><span aria-hidden>{horsSeuilCourt(hors)}</span><span className="cn-cache">{hors}</span></span>}
                           </td>
@@ -416,6 +440,7 @@ export function Comparer(p: ComparerProps) {
               <span><b>Compromis :</b> {p.compromis ?? compromisLocal} <Provenance origine={p.compromis ? 'ia' : 'locale'} /></span>
             </p>
           )}
+          {aUnEuro && <p className="cn-mut cn-annonce cn-annonce-eur">{p.taux ? '≈ rendu chez toi : TVA d’import 8,1 %, port et frais « ? » tant qu’inconnus, estimé' : 'Euros : le taux se pose dans la liste des articles'}</p>}
           <p className="cn-mut cn-annonce">{p.mention ?? 'Valeurs annoncées par les vendeurs'}{p.exemple || (t && deLExemple(t)) ? <> · <Provenance origine="exemple" /></> : null}</p>
           {/* La ligne « Écarté » (D-52) : chaque écarté, son nom et sa raison, lisibles sans défiler (p2:h04-7) ; aucun écarté, aucune ligne. */}
           {ecartes.length > 0 && (

@@ -60,14 +60,11 @@ describe('f5c n° 5 : « Façons · 1 façon » ne redit pas la carte unique', (
 describe('f5c n° 6 : Comparer dit la source une fois et ne redit pas les critères', () => {
   it('« proposé par l’IA » une seule fois ; « classées » ne garde que ce qui s’ajoute (le prix)', () => {
     const { container } = comparerV();
-    const cqc = texte(container.querySelector('.cn-cmp-critere')!);
+    const cqc = texte(container.querySelector('.cn-chaine')!);
     expect(cqc).toContain('tient 80 °C');
     expect(cqc).toContain('le débit');
     expect(cqc.split("proposé par l'IA").length - 1).toBe(1);
-    const classees = texte(container.querySelector('.cn-cmp-classees')!);
-    expect(classees).not.toContain('tient 80 °C');
-    expect(classees).not.toContain('le débit');
-    expect(classees).toBe('à égalité, le moins cher');
+    expect(container.querySelector('.cn-cmp-classees')).toBeNull(); /* D419 A1 : la chaîne « Classé par » seule dit la règle */
   });
 });
 

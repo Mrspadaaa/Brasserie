@@ -58,7 +58,7 @@ describe('critique 6, lot B (Décider, Stocks › Matériel)', () => {
     expect(tetes[5].className).toContain('cn-ecarte');
     expect(container.querySelectorAll('td.cn-meilleur').length).toBeGreaterThan(0);
     expect(container.textContent).toContain('Compromis :');
-    expect(container.querySelector('.cn-cmp-classees')!.textContent).toBe('à égalité, le moins cher'); /* f5c n° 6 : la règle n'est plus redite sous « Ce qui compte » */
+    expect(container.querySelector('.cn-chaine')!.textContent).toContain('Prix'); /* D419 A1 */ /* f5c n° 6 : la règle n'est plus redite sous « Ce qui compte » */
     expect(container.querySelector('table.cn-ecartes')!.textContent).toContain('brasse la buée sans la sortir');
     const table = container.querySelector('table.cn-tableau-comparer')!;
     const choisir = screen.getByRole('button', { name: 'Choisir' });
@@ -190,11 +190,11 @@ describe('critique 6, lot B (Décider, Stocks › Matériel)', () => {
 
   it('16 · Comparer et Choisir lisent sourceDuCritere : « proposé par l\'IA » pour un critère de l\'IA, rien pour sa phrase', () => {
     const { container } = comparerV();
-    expect(container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C, puis le débit · proposé par l'IA"); /* tour 3, PCN-118 ; f5c n° 6 : source commune dite une fois */
+    expect(container.querySelector('.cn-chaine')!.textContent).toMatch(/tient 80 °C.*le débit.*proposé par l'IA/); /* tour 3, PCN-118 ; f5c n° 6 : source commune dite une fois */
     cleanup();
     const sienne = avec(V, { criteres: V.carnet.criteres.map(k => (k.id === 'ZZ-V-K2' ? { ...k, origine: 'vous' as const, source: 'phrase' as const } : k)) });
     const c2 = render(<Comparer titre={TITRE} statut="research" critere={sienne.carnet.criteres[0] as never} tableau={tableau(sienne)} onRetour={rien} />);
-    expect(c2.container.querySelector('.cn-cmp-critere')!.textContent).toBe("Ce qui compte tient 80 °C, puis le débit (proposé par l'IA)"); /* tour 3, PCN-118 : sa phrase sans mention, le 2e critère (de l'IA) avec ; f5d : sources mêlées entre parenthèses, distinctes de la source commune */
+    expect(c2.container.querySelector('.cn-chaine')!.textContent).toMatch(/tient 80 °C.*le débit .proposé par l'IA./); /* tour 3, PCN-118 : sa phrase sans mention, le 2e critère (de l'IA) avec ; f5d : sources mêlées entre parenthèses, distinctes de la source commune */
     cleanup();
     choisiFrigo();
     expect(screen.getByRole('region', { name: 'Pourquoi ce choix' }).textContent).toContain('Critères : tenir 2 °C stable en été, puis passe la porte de 80 cm'); /* f5c n° 8 : tous les critères qui classent, dans l'ordre */

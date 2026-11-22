@@ -141,7 +141,7 @@ describe('PCN-151, PCN-109, PCN-154 : carnet ouvert', () => {
 describe('PCN-118 : « Ce qui compte » cite chaque critère qui classe', () => {
   it('tient 80 °C et le débit', () => {
     const { container } = render(<Comparer titre="T" statut="research" critere={V.carnet.criteres[0] as never} tableau={tableau(V)} onRetour={rien} />);
-    const tete = container.querySelector('.cn-cmp-critere')!.textContent!;
+    const tete = container.querySelector('.cn-chaine')!.textContent!;
     expect(tete).toContain('tient 80 °C');
     expect(tete).toContain('débit');
   });

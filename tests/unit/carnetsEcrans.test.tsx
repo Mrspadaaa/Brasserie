@@ -228,7 +228,7 @@ describe('C1 · écrans figés', () => {
     const { container } = render(<Comparer titre={vue.title} statut={vue.status} critere={vue.carnet.criteres[0]} tableau={t} onRetour={rien} onChoisir={rien} exemple />);
     expect(container.querySelectorAll('thead th').length).toBe(t!.lignes.length + 1);
     /* f5c n° 6 : sous « Ce qui compte », seul le prix qui départage s'ajoute */
-    if (t!.rangePar) expect(container.querySelector('.cn-cmp-classees')?.textContent ?? null).toBe(/le prix$/.test(t!.rangePar) ? 'à égalité, le moins cher' : null);
+    if (t!.rangePar) expect(container.querySelector('.cn-chaine')?.textContent ?? '').toContain('Classé par'); /* D419 A1 */
     sansZeroInvente(container);
     sansRefus(container);
     cleanup();

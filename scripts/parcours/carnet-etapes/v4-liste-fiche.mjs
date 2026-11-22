@@ -67,7 +67,8 @@ export default async function (c) {
     await c.cap('LISTE-390');
     console.log(`  CRN-LISTE : ${m.lignes} carnets visibles, hauteurs ${m.hauteurs.join('/')}, « Coller un lien » ×${m.coller}, filtre ${m.filtre}, trou ${m.trou} px, + « ${m.plus} »`);
     const ko = [];
-    if (m.lignes < 8) ko.push(`${m.lignes} carnets au premier écran (8 au moins)`);
+    /* 8 avant la fixture D421 « Prix en euros » (une ligne de 100 px de plus, au-dessus de l'Idée) : le seuil garde la même densité, 7 lignes + celle-ci */
+    if (m.lignes < 7) ko.push(`${m.lignes} carnets au premier écran (7 au moins avec la fixture « Prix en euros », 8 sans)`);
     if (m.coller > 1) ko.push(`« Coller un lien » ×${m.coller}`);
     if (!m.filtre) ko.push('ni filtre ni recherche');
     if (m.trou === null || m.trou > 24) ko.push(`trou de ${m.trou} px sous le champ`);
