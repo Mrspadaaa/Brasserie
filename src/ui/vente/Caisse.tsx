@@ -521,10 +521,11 @@ export function CaisseContenu({ clientIdInitial, batchIdInitial, onClose, onSave
                 <b>{mode === 'qr' ? 'Facture' : 'Quittance'}</b>
                 <small>{mode === 'qr' && <>n° <span className="cs-m">{numero}</span> · </>}
                   <button type="button" className="cs-date cs-m" disabled={fieldsetOff} aria-label="Date de la facture" onClick={() => setDateOuverte(v => !v)}>{dateLongue(dateIso)}</button></small>
-                {dateOuverte && <ChoixDate ouvert label="Choisir la date" valeur={dateIso} onChange={choisirDate} />}
               </div>
               <div className="cs-dh-r"><b>{company.name || 'Brasserie'}</b><small>{creancier?.localite ?? ''}</small></div>
             </div>
+            {/* GESTE-DATE-PARTOUT : la frise prend toute la largeur de l'annexe, pas la colonne étroite du titre (74 px : 1,25 px par jour, impossible au doigt) */}
+            {dateOuverte && <div className="cs-dfrise"><ChoixDate ouvert label="Choisir la date" valeur={dateIso} onChange={choisirDate} /></div>}
             <div className="cs-dto"><b>{nomAnnexe}</b>{client ? ` · ${client.type}` : ''}{client && !debiteurDe(client) && <><br /><span className="cs-att">adresse à compléter</span></>}</div>
             {mode === 'qr'
               ? lignes.map((l, i) => <div className="cs-dl" key={l.cle}><span>{l.designation} · {l.quantite} × <span className="cs-m">{montantChf(l.prixHT ?? NaN)}</span></span><span className="cs-m">{totaux ? fr(totaux.lines[i].netCents) : '—'}</span></div>)

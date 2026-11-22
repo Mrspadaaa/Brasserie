@@ -75,12 +75,12 @@ async function jouer(dir) {
     const aujourdhui = new Date().toISOString().slice(0, 10);
     const fx = fixtureStock(aujourdhui);
     /* + la cuve (brassin en fermentation, fermenteur), la caisse et les ventes de la fixture des chaînes : les écrans de date en ont besoin (ZZ TEST, simulé). */
-    for (const e of fixtureChaines(aujourdhui, { cuve: true, caisseBasse: true, achatPompe: true }).entrees) if (!fx.entrees.some((x) => x.name === e.name && x.id === e.id)) fx.entrees.push(e);
+    for (const e of fixtureChaines(aujourdhui, { cuve: true, garde: true, caisseBasse: true, achatPompe: true }).entrees) if (!fx.entrees.some((x) => x.name === e.name && x.id === e.id)) fx.entrees.push(e);
     const erreursPage = [];
     let p = null; let cdp = null; let etape = '';
     const ouvrirPage = async (theme) => {
       p = await nav.newPage();
-      await p.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+      await p.setViewport({ width: 390, height: 660, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
       await p.evaluateOnNewDocument((j, th) => { try { localStorage.removeItem('parcours-chaines:cache'); localStorage.removeItem('laffinee_ui_state'); } catch { /* origine sans stockage */ } localStorage.setItem('parcours-chaines:fixture', j); localStorage.setItem('laffinee.theme', th); }, JSON.stringify(fx.entrees), theme);
       p.on('pageerror', (e) => erreursPage.push(String(e).slice(0, 200)));
       cdp = await p.createCDPSession();

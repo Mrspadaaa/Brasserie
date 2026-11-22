@@ -121,6 +121,7 @@
 .cs-dh .cs-dh-r b { font-size: 15px; }
 .cs-dh b { font-size: 18px; color: var(--cs-t0); }
 .cs-dh small { display: block; font-size: 12px; color: var(--cs-t2); }
+.cs-dfrise { margin: 6px 0 8px; width: 100%; }
 .cs-date { text-decoration: underline dotted; min-height: 24px; padding: 0; font-size: 12px; color: var(--cs-t1) !important; }
 .cs-dateinput { margin-top: 4px; min-height: 32px; border: 1px solid var(--cs-bord); border-radius: 8px; background: var(--cs-fond); color: var(--cs-t0); padding: 0 6px; }
 .cs-dto { margin: 10px 0; padding: 6px 10px; border-left: 3px solid var(--cs-bleu); background: var(--cs-bleu-fond); font-size: 13px; color: var(--cs-t0); }

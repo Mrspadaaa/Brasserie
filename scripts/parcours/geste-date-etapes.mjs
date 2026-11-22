@@ -46,8 +46,13 @@ export const etapes = [
 const versIso = (s) => (/^\d{4}-\d{2}-\d{2}/.test(s ?? '') ? String(s).slice(0, 10) : swissVersIso(s));
 const valeurZone = (c, label) => c.p.evaluate((l) => (document.querySelector(`[data-choix-date][data-choix-date-label="${l}"]`)?.dataset.valeur ?? null), label);
 const boutonsVisibles = (c) => c.p.evaluate(() => [...document.querySelectorAll('button,[role=menuitem],[role=tab],summary')].filter((e) => e.getBoundingClientRect().width > 0).map((e) => (e.getAttribute('aria-label') || e.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 28)).filter(Boolean).slice(0, 40).join(' | '));
-async function geste(c, { id, label, jours, ouvert = false, valider, lire, coll, rid, nom }) {
+/** Une entrée d'une collection retrouvée par un texte (son titre ZZ TEST) dans le cache que la page tient à jour. */
+const trouver = (c, coll, texte) => c.p.evaluate((n, t) => { try { return (JSON.parse(localStorage.getItem('parcours-chaines:cache') ?? '[]').filter((e) => e.name === n && JSON.stringify(e.data).includes(t)).pop() ?? {}).data ?? null; } catch { return null; } }, coll, texte);
+/** Le premier champ-jour d'une entrée (échéance, date…), hors création et mise à jour. */
+const premierJour = (o) => { const e = Object.entries(o ?? {}).find(([k, v]) => typeof v === 'string' && /^(\d{4}-\d\d-\d\d|\d\d\.\d\d\.\d{4})/.test(v) && !/creat|updat|modif/i.test(k)); return e ? e[1] : undefined; };
+async function geste(c, { id, label, jours, ouvert = false, valider, lire, coll, rid, nom, charge }) {
   if (!ouvert) await c.toucher('[data-choix-date-pastille]', `${label} :`);
+  await c.sleep(700);
   const e = await c.p.evaluate(() => ({ frise: !!document.querySelector('[data-choix-date-frise] [data-date-point]'), natif: document.querySelectorAll('input[type=date],input[type=datetime-local]').length, chevrons: !!document.querySelector('[aria-label^="Un jour plus"]') }));
   c.controle(`${id}-1 frise partagée, sans champ natif ni réglette maison`, e.frise && !e.natif && !e.chevrons, JSON.stringify(e));
   const d0 = await valeurZone(c, label);
@@ -58,7 +63,7 @@ async function geste(c, { id, label, jours, ouvert = false, valider, lire, coll,
   c.controle(`${id}-2 le repère tire la date`, !!d1 && d1 !== d0 && (!attendu || d1 === attendu), `avant ${d0}, après ${d1}, attendu ${attendu} (${g.px} px à ${g.pxJour} px/jour)`);
   await valider();
   await c.sleep(2500);
-  const apres = await c.ecrit(coll, rid);
+  const apres = charge ? await charge() : await c.ecrit(coll, rid);
   const ecrite = versIso(lire(apres));
   c.controle(`${id}-3 la date est écrite telle que tirée`, !!ecrite && ecrite === d1, `écrit ${ecrite || 'rien'} (${JSON.stringify(lire(apres))}), tiré ${d1}`);
   await c.cap(`${nom}-apres`);
@@ -70,9 +75,9 @@ const saisir = async (c, aria, valeur) => { await c.p.focus(`[aria-label="${aria
 etapes.push(
   { id: 'densite', nom: 'Brassin en fermentation : relevé de densité → « Date du relevé » → Ajouter le relevé',
     async jouer(c) { await sur(c, 'densite', async () => {
-      await c.bouton('Brassins'); await c.sleep(900); await c.toucherTexte('ZZ TEST Blonde'); await c.sleep(900);
-      await c.bouton('Mesurer'); await c.sleep(700); await c.cap('densite-ouvert'); await saisir(c, 'Densité du relevé', '1,020');
-      await geste(c, { id: 'GD-densite', nom: 'densite', label: 'Date du relevé', jours: -3, coll: 'batches', rid: 'B-ZZ-FERM',
+      await c.bouton('Brassins'); await c.sleep(900); await c.toucherTexte('ZZ TEST Ambrée'); await c.sleep(900);
+      await c.bouton('Mesures'); await c.sleep(900); await c.toucher('button', '+ Relevé de densité'); await c.sleep(900); try { await c.toucherTexte('Ajouter un relevé de densité'); } catch { /* déjà ouvert par le pied */ }; await c.sleep(700); await c.cap('densite-ouvert'); await saisir(c, 'Densité du relevé', '1,020');
+      await geste(c, { id: 'GD-densite', nom: 'densite', label: 'Date du relevé', jours: -3, coll: 'batches', rid: 'B-ZZ-GARDE',
         valider: () => c.bouton('Ajouter le relevé'), lire: (b) => (b?.gravityLog ?? []).filter((x) => x.sg === 1.02 || x.gravity === 1.02 || x.value === 1.02).map((x) => x.date ?? x.at).pop() ?? (b?.gravityLog ?? []).slice(-1)[0]?.date });
     }); } },
   { id: 'materiel', nom: 'Fiche matériel : ⋯ › Modifier › Achat › « Date d’achat » → Enregistrer',
@@ -82,5 +87,47 @@ etapes.push(
       await c.toucher('summary', 'Achat'); await c.cap('materiel-ouvert');
       await geste(c, { id: 'GD-materiel', nom: 'materiel', label: 'Date d’achat', jours: -4, coll: 'equipment', rid: 'E-ZZ-FERM',
         valider: () => c.bouton('Enregistrer'), lire: (e) => e?.purchaseDate });
+    }); } },
+);
+
+const rapide = async (c, ligne) => { await c.toucher('button', 'Actions rapides'); await c.sleep(500); await itemMenu(c, ligne); await c.sleep(900); };
+const ZZ = 'ZZ TEST geste-date';
+etapes.push(
+  { id: 'todo', nom: 'Atelier › À faire › Poser une tâche › « Date de la tâche » (frise ouverte) → Poser',
+    async jouer(c) { await sur(c, 'todo', async () => {
+      await c.bouton('Brassins'); await c.sleep(900); await c.bouton('Atelier'); await c.sleep(900); await c.bouton('Carnet'); await c.sleep(900);
+      await c.toucherTexte('À faire'); await c.sleep(900); await c.cap('todo-repos');
+      try { await c.toucher('button', 'Poser une tâche'); } catch { await c.toucher('button', 'Poser'); } await c.sleep(600);
+      await c.p.focus('#tl-quoi'); await c.p.keyboard.type(ZZ); await c.sleep(300);
+      await geste(c, { id: 'GD-todo', nom: 'todo', label: 'Date de la tâche', ouvert: true, jours: 6, coll: 'todos',
+        valider: () => c.bouton('Poser au'), charge: () => trouver(c, 'todos', ZZ), lire: premierJour });
+    }); } },
+  { id: 'ecriture', nom: 'Finances › Actions rapides › Écriture › « Date de l’achat » → Enregistrer',
+    async jouer(c) { await sur(c, 'ecriture', async () => {
+      await c.bouton('Finances'); await c.sleep(900); await rapide(c, 'Écriture'); await c.toucherTexte('Saisir sans justificatif'); await c.sleep(900); await c.cap('ecriture-ouvert');
+      throw new Error('sonde : valider à écrire');
+    }); } },
+  { id: 'caisse', nom: 'Caisse : « Date de la facture » (frise) → Encaisser',
+    async jouer(c) { await sur(c, 'caisse', async () => {
+      await c.bouton('Finances'); await c.sleep(900); await rapide(c, 'Vente'); await c.toucherTexte('33 cl'); await c.sleep(500);
+      await c.toucher('button', 'Date de la facture'); await c.sleep(500);
+      await geste(c, { id: 'GD-caisse', nom: 'caisse', label: 'Choisir la date', ouvert: true, jours: -10, coll: 'transactions',
+        valider: async () => { await c.toucher('button', 'Espèces'); await c.sleep(400); await c.bouton('Encaisser'); }, charge: () => c.p.evaluate(() => { try { return (JSON.parse(localStorage.getItem('parcours-chaines:cache') ?? '[]').filter((e) => e.name === 'transactions' && !String(e.id).startsWith('T-ZZ')).pop() ?? {}).data ?? null; } catch { return null; } }), lire: (t) => t?.date });
+    }); } },
+  { id: 'solde', nom: 'Finances › Prévisions › Solde et paramètres › « Date du solde » → Enregistrer',
+    async jouer(c) { await sur(c, 'solde', async () => {
+      await c.bouton('Finances'); await c.sleep(900); await c.bouton('Prévisions'); await c.sleep(900);
+      for (const t of ['Solde et paramètres', 'Renseigner le solde', 'solde de départ']) { try { await c.toucherTexte(t); break; } catch { /* essai suivant */ } }
+      await c.sleep(900); await c.cap('solde-ouvert');
+      await saisir(c, 'Solde de départ (CHF)', '1000');
+      await geste(c, { id: 'GD-solde', nom: 'solde', label: 'Date du solde', jours: -5, coll: 'financialProfiles', rid: 'current',
+        valider: () => c.bouton('Enregistrer'), lire: (p) => p?.openingCash?.date });
+    }); } },
+  { id: 'houblon', nom: 'Brassin en fermentation › dossier › Noter une dégustation du brassin › « Date de dégustation » → Enregistrer',
+    async jouer(c) { await sur(c, 'houblon', async () => {
+      await c.bouton('Brassins'); await c.sleep(900); await c.toucherTexte('ZZ TEST Ambrée'); await c.sleep(900);
+      await c.bouton('Carnet'); await c.sleep(900); await c.toucherTexte('Noter une dégustation du brassin'); await c.sleep(700); await c.cap('houblon-ouvert');
+      await geste(c, { id: 'GD-houblon', nom: 'houblon', label: 'Date de dégustation', jours: -2, coll: 'hopTastings',
+        valider: () => c.bouton('Enregistrer la dégustation'), charge: () => trouver(c, 'hopTastings', ''), lire: (t) => t?.date });
     }); } },
 );
