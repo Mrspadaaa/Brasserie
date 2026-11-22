@@ -1,25 +1,16 @@
-// Barre d'outils du Stock, reprise de la maquette choisie sy/fA : bascule Étagère | Recompter, recherche, pastilles d'état,
+// Barre d'outils du Stock, reprise de la maquette choisie sy/fA : recherche, pastilles d'état,
 // ligne de filtre « Filtre Houblons : 19 articles · Tout voir », ligne « Trié par … ▾ ». Les règles sont dans domain/stock.
 import React, { useEffect, useState } from 'react';
-import { Search, X, Rows3, ClipboardCheck } from 'lucide-react';
+import { Search, X, Star } from 'lucide-react';
 import type { ComptesEtats, TriListe } from '../../domain/stock/liste';
-import { ETATS, TRIS, phraseTri } from '../../domain/stock/liste';
+import { TRIS, phraseTri } from '../../domain/stock/liste';
+import { JOURS_RECENTS, type Puce } from '../../domain/stock/filtresDynamiques';
 import { motArticles, type FiltreListe, type TexteFiltre } from '../../domain/stock/listeFiltres';
 import './jetons-outils.css';
 import './outils.css';
 import './paysageBas.css';
 
 export type VueStock = 'etagere' | 'recompter';
-
-export function BasculeVue({ vue, onVue }: { vue: VueStock; onVue: (v: VueStock) => void }) {
-  return (
-    <div className="sz-seg" role="tablist" aria-label="Vue du stock" data-vue={vue}>
-      <i className="sz-thumb" />
-      <button type="button" role="tab" data-vue-btn="etagere" aria-selected={vue === 'etagere'} onClick={() => onVue('etagere')}><Rows3 size={18} aria-hidden="true" />Étagère</button>
-      <button type="button" role="tab" data-vue-btn="recompter" aria-selected={vue === 'recompter'} onClick={() => onVue('recompter')}><ClipboardCheck size={18} aria-hidden="true" />Recompter</button>
-    </div>
-  );
-}
 
 /** Téléphone couché (même seuil que paysageBas.css) : la barre n'a de place que pour un mot. */
 const PAYSAGE_BAS = '(orientation: landscape) and (max-height: 480px)';
@@ -69,18 +60,26 @@ export const libelleEtat = (id: FiltreListe, mot: string, n: string, c: ComptesE
   return `${mot} : ${n}`;
 };
 
-/** Les pastilles d'état : un seul filtre à la fois, re-toucher la pastille active l'ôte (✕). « Épinglés » reste en sixième, seulement s'il y en a. */
-export function Pastilles({ comptes, filtre, onFiltre, nEpingles }: { comptes: ComptesEtats; filtre: FiltreListe | null; onFiltre: (f: FiltreListe | null) => void; nEpingles: number }) {
+/**
+ * Les pastilles de filtre (D420, d1a et point 2) : seulement celles qui ont des articles aujourd'hui (puces), dans l'ordre de pertinence, sur une ligne ;
+ * un seul filtre à la fois, re-toucher la pastille active l'ôte (✕). L'étoile des épinglés est un rond à droite de la rangée (maquette d1a), jamais une pastille.
+ */
+export function Pastilles({ puces, comptes, filtre, onFiltre, nEpingles }: { puces: ReadonlyArray<Puce>; comptes: ComptesEtats; filtre: FiltreListe | null; onFiltre: (f: FiltreListe | null) => void; nEpingles: number }) {
   const bascule = (f: FiltreListe) => onFiltre(filtre === f ? null : f);
-  const un = (id: FiltreListe, mot: string, n: string) => (
-    <button key={id} type="button" className={`sz-pu${filtre === id ? ' sz-on' : ''}`} data-f={id} aria-pressed={filtre === id} aria-label={libelleEtat(id, mot, n, comptes)} onClick={() => bascule(id)}>
-      {mot} <b>{n}</b><span className="sz-pux" aria-hidden="true">✕</span>
-    </button>
-  );
   return (
     <div className="sz-puces" role="group" aria-label="Filtrer par état">
-      {ETATS.map((e) => un(e.id, e.mot, nombreEtat(comptes, e.id)))}
-      {(nEpingles > 0 || filtre === 'epingles') && un('epingles', '★ épinglés', String(nEpingles))}
+      {puces.map((p) => {
+        const n = p.id === 'manque' ? nombreEtat(comptes, 'manque') : String(p.n);
+        const aria = p.id === 'brassin' ? `Pour le prochain brassin : ${n} article${p.n > 1 ? 's' : ''}` : p.id === 'recents' ? `Récents : ${n} article${p.n > 1 ? 's' : ''} qui ont bougé ces ${JOURS_RECENTS} derniers jours` : libelleEtat(p.id, p.mot, n, comptes);
+        return (
+          <button key={p.id} type="button" className={`sz-pu${filtre === p.id ? ' sz-on' : ''}`} data-f={p.id} aria-pressed={filtre === p.id} aria-label={aria} onClick={() => bascule(p.id)}>
+            {p.mot} <b>{n}</b><span className="sz-pux" aria-hidden="true">✕</span>
+          </button>
+        );
+      })}
+      <button type="button" className={`sz-etoile${filtre === 'epingles' ? ' sz-on' : ''}`} data-f="epingles" aria-pressed={filtre === 'epingles'} aria-label={nEpingles > 0 ? `Épinglés : ${nEpingles}` : 'Épinglés : aucun'} onClick={() => bascule('epingles')}>
+        <Star size={18} aria-hidden="true" />
+      </button>
     </div>
   );
 }

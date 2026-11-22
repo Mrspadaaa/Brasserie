@@ -1,14 +1,15 @@
 // Filtres, groupes et comptes de la liste du Stock (maquette choisie sy/fA : pastilles d'état, rayon touché, bascule Recompter).
 // Règles pures, sans lecture de stockage : l'écran passe les articles, leurs états (liste.ts) et les comptages.
 import type { StockItem } from '../../types';
+import type { FiltreDynamique, EnsemblesFiltres } from './filtresDynamiques';
 import { familleRecompter, FAMILLES_RECOMPTER, type EtatLigne, type FamilleRecompter, type InfoLigne, type MouvementComptage, derniersComptages } from './liste';
 
 /** Un seul filtre à la fois, comme la maquette : un état (pastille), une famille (nom d'un rayon ou tuile de Recompter), ou les épinglés. */
-export type FiltreListe = EtatLigne | FamilleRecompter | 'epingles';
+export type FiltreListe = EtatLigne | FamilleRecompter | 'epingles' | FiltreDynamique;
 
 /** Le mot du filtre dans la ligne « Filtre Houblons : 19 articles ». */
 export const MOT_FILTRE: Record<FiltreListe, string> = {
-  manque: 'manque', bas: 'bas', epuise: 'épuisés', compter: 'à compter', ddm: 'DDM proche', epingles: 'épinglés',
+  manque: 'manque', bas: 'bas', epuise: 'épuisés', compter: 'à compter', ddm: 'DDM proche', epingles: 'épinglés', brassin: 'pour le prochain brassin', recents: 'récents',
   Malts: 'Malts', Houblons: 'Houblons', Levures: 'Levures', Additifs: 'Sels et additifs', Emballage: 'Emballage', Nettoyage: 'Nettoyage et gaz',
 };
 
@@ -26,6 +27,8 @@ export interface CriteresListe {
   filtre: FiltreListe | null;
   /** Références retenues par la recherche (2 lettres au moins) ; null : pas de recherche. */
   recherche: ReadonlySet<string> | null;
+  /** Les articles des filtres « récents » et « brassin » (calculés hors de ce module, voir filtresDynamiques.ts). */
+  ensembles?: EnsemblesFiltres;
 }
 
 /** Un article passe-t-il le filtre et la recherche ? Le même test pour l'étagère et pour Recompter (comptes égaux). */
@@ -34,6 +37,7 @@ export function retenu(item: StockItem, infos: ReadonlyMap<string, InfoLigne>, c
   const f = c.filtre;
   if (!f) return true;
   if (f === 'epingles') return !!item.favorite;
+  if (f === 'recents' || f === 'brassin') return !!c.ensembles?.[f].has(item.ref);
   if (estFamille(f)) return familleRecompter(item) === f;
   return !!infos.get(item.ref)?.etats.includes(f);
 }

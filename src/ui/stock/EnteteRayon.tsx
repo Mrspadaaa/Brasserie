@@ -34,7 +34,7 @@ const Titre: React.FC<{ texte: string; tri: TriListe; actuel?: TriListe; onTri?:
  * L'en-tête d'un groupe de la liste : l'icône de la famille (teinte c3b), son nom et son nombre ; pour les trois rayons, la légende de l'ordre,
  * le bouton ⓘ « Lire l'échelle » et la règle de la barre, dite sur elle-même (« à l'échelle », « ⫽ resserrée au-delà de 5 kg »).
  */
-export const EnteteRayon: React.FC<{ nom: string; compte: number; sur?: number; tri?: TriListe; onTri?: (t: TriListe) => void; plie?: boolean; onPli?: () => void; resume?: string }> = ({ nom, compte, sur, tri, onTri, plie = false, onPli, resume }) => {
+export const EnteteRayon: React.FC<{ nom: string; compte: number; sur?: number; tri?: TriListe; onTri?: (t: TriListe) => void; plie?: boolean; onPli?: () => void; resume?: string; onCatalogue?: () => void }> = ({ nom, compte, sur, tri, onTri, plie = false, onPli, resume, onCatalogue }) => {
   const [dit, setDit] = useState(false);
   const rayon = rayonDuGroupe(nom);
   const fam = familleTeinteGroupe(nom);
@@ -49,7 +49,9 @@ export const EnteteRayon: React.FC<{ nom: string; compte: number; sur?: number; 
             ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="10" r="4" /><circle cx="16" cy="15" r="3" /><circle cx="16.5" cy="7.5" r="1.6" /></svg>
             : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={ICONES[fam]} /></svg>}
         </span>
-        <h2>{affiche} <span className="l1-en">{sur !== undefined && sur !== compte ? `${compte} sur ${sur}` : compte}</span></h2>
+        <h2>{rayon === 'Houblons' && onCatalogue
+          ? <button type="button" className="l1-cat" aria-label="Ouvrir le catalogue des houblons" onClick={(ev) => { ev.stopPropagation(); onCatalogue(); }}>{affiche}</button>
+          : affiche} <span className="l1-en">{sur !== undefined && sur !== compte ? `${compte} sur ${sur}` : compte}</span></h2>
         {rayon && <span className="l1-ec">{legendeRayon(rayon, tri)}</span>}
         {rayon && <button type="button" className="l1-ib" aria-label="Lire l'échelle" aria-expanded={dit} onClick={(e) => { e.stopPropagation(); setDit((v) => !v); }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5" /><path d="M12 11v6" /><circle cx="12" cy="7.6" r=".6" fill="currentColor" /></svg>

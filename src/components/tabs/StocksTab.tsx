@@ -1,5 +1,5 @@
 import React, { lazy, Suspense, useState, useMemo, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
-import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, Hop, Undo2 } from 'lucide-react';
+import { Plus, ShoppingCart, Copy, Check, Boxes, Beer, Wrench, ClipboardCheck, Undo2, ArrowLeft } from 'lucide-react';
 import { StockItem, EquipmentItem, KegItem, Batch, Recipe, Client } from '../../types';
 import { StorageService } from '../../services/storage';
 import { latestBrewPrices } from '../../domain/finance/brewBudget';
@@ -46,20 +46,21 @@ import { quantiteLue } from '../../domain/stock/regles';
 import { createSearch, runSearch } from '../../services/search';
 import { rechercherStock } from '../../domain/stock/recherche';
 import { infoLigne, compterEtats, trierArticles, resumeRayon, familleRecompter, TRIS, type TriListe } from '../../domain/stock/liste';
+import { pucesVisibles, refsBrassin, refsRecents, MAX_PUCES_LARGE, MAX_PUCES_MOBILE } from '../../domain/stock/filtresDynamiques';
 import { GROUPES_LISTE, LIBELLE_FAMILLE, groupeListe, lignesRetenues, texteFiltre, type FiltreListe } from '../../domain/stock/listeFiltres';
-import { BasculeVue, Recherche, Pastilles, LigneFiltre, LigneTri, type VueStock } from '../../ui/stock/OutilsStock';
+import { Recherche, Pastilles, LigneFiltre, LigneTri, type VueStock } from '../../ui/stock/OutilsStock';
 import { RecompterStock } from '../../ui/stock/RecompterStock';
 
 /* Carnet d'idées (R01 à R08) : chargé à l'ouverture du segment Carnets seulement. */
-const CarnetsVue = lazy(() => import('../../ui/carnets/CarnetsVue').then(({ CarnetsVue }) => ({ default: CarnetsVue })));
-const MurStock = lazy(() => import('../../ui/stock/MurStock').then(({ MurStock }) => ({ default: MurStock })));
-import { tracesDesArticles } from '../../domain/consommation/gestes';
-
 const HopIndexPanel = lazy(() =>
   import('../../ui/hopIndex/HopIndexWorkspace').then(({ HopIndexWorkspace }) => ({
     default: HopIndexWorkspace,
   })),
 );
+const CarnetsVue = lazy(() => import('../../ui/carnets/CarnetsVue').then(({ CarnetsVue }) => ({ default: CarnetsVue })));
+const MurStock = lazy(() => import('../../ui/stock/MurStock').then(({ MurStock }) => ({ default: MurStock })));
+import { tracesDesArticles } from '../../domain/consommation/gestes';
+
 
 const readRecipes = () => StorageService.getRecipes();
 // Hors du composant : `useStorageValue` relit à chaque changement de `read` ; une flèche écrite dans le rendu
@@ -110,7 +111,9 @@ interface StocksTabProps {
   onOpenCarnetRequestHandled?: () => void;
 }
 
-type SubTab = 'stock' | 'courses' | 'futs' | 'materiel' | 'hops';
+// D420 (d1a, 22.11) : Recompter est un sous-onglet ; l'onglet Houblons et la bascule Étagère | Recompter sont retirés.
+type SubTab = 'stock' | 'recompter' | 'courses' | 'futs' | 'materiel';
+const SOUS_ONGLETS: readonly SubTab[] = ['stock', 'recompter', 'courses', 'futs', 'materiel'];
 
 /**
  * Écran Stocks.
@@ -157,9 +160,11 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   openCarnetRequest,
   onOpenCarnetRequestHandled
 }) => {
-  const [subTab, setSubTab] = useState<SubTab>(() =>
-    StorageService.getUiState<SubTab>('stocks_subtab', 'stock')
-  );
+  const [subTab, setSubTab] = useState<SubTab>(() => {
+    // Un ancien « hops » (onglet retiré) ou une valeur inconnue rouvre Articles.
+    const lu = StorageService.getUiState<SubTab>('stocks_subtab', 'stock');
+    return SOUS_ONGLETS.includes(lu) ? lu : 'stock';
+  });
   const [segMateriel, setSegMaterielEtat] = useState<SegMateriel>(() => {
     const lu = StorageService.getUiState<SegMateriel>('stocks_materiel', 'parc');
     return SEGMENTS_MATERIEL.includes(lu) ? lu : 'parc';
@@ -200,14 +205,19 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const [copiedSupplier, setCopiedSupplier] = useState<string | null>(null);
   // Un seul filtre à la fois (pastille, nom d'un rayon du mur, tuile de Recompter), une recherche et un tri : l'étagère et Recompter les partagent (maquette sy/fA).
   const [filtre, setFiltre] = useState<FiltreListe | null>(null);
+  // D422 : le catalogue des houblons (index, dégustations, savoir) s'ouvre par le titre du rayon Houblons ou par « Aller à Houblons » ; il remplace Articles le temps de la visite.
+  const [catalogue, setCatalogue] = useState<boolean>(() => {
+    const demande = StorageService.getUiState<string>('stocks_catalogue', '') === '1';
+    if (demande) StorageService.setUiState('stocks_catalogue', '');
+    return demande;
+  });
   const [q, setQ] = useState('');
   const [tri, setTriEtat] = useState<TriListe>(() => {
     const t = StorageService.getUiState<TriListe>('stock_tri', 'defaut');
     return TRIS.some(x => x.id === t) ? t : 'defaut';
   });
   const setTri = (t: TriListe) => { setTriEtat(t); StorageService.setUiState('stock_tri', t); };
-  const [vue, setVueEtat] = useState<VueStock>(() => StorageService.getUiState<VueStock>('stock_vue', 'etagere') === 'recompter' ? 'recompter' : 'etagere');
-  const setVue = (v: VueStock) => { setVueEtat(v); StorageService.setUiState('stock_vue', v); };
+  const vue: VueStock = subTab === 'recompter' ? 'recompter' : 'etagere';
 
   /*
    * Matériel et fûts : ils n'étaient consultables qu'en lecture. Une fiche
@@ -419,7 +429,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const fuse = useMemo(() => createSearch(allItems, ['name', 'ref', 'category', 'supplier']), [allItems]);
   // Des mots, pas des ressemblances (vd, ST-V4) : « cit » ne ramène que Citra ; le flou de Fuse ne sert que s'il n'y a aucun mot exact.
   const recherche = useMemo(() => q.trim().length >= 2 ? new Set(rechercherStock(allItems, q.trim(), (s) => runSearch(fuse, s)).map(i => i.ref)) : null, [allItems, fuse, q]);
-  const retenus = useMemo(() => lignesRetenues(allItems, infos, { filtre, recherche }), [allItems, infos, filtre, recherche]);
+  // Filtres dynamiques (D420 point 2) : « récents » (un mouvement ces 14 jours) et « brassin » (attendu par un brassin planifié).
+  const ensembles = useMemo(() => ({ recents: refsRecents(movements as never, new Date().toISOString().slice(0, 10)), brassin: refsBrassin(aCommander) }), [movements, aCommander]);
+  const retenus = useMemo(() => lignesRetenues(allItems, infos, { filtre, recherche, ensembles }), [allItems, infos, filtre, recherche, ensembles]);
   // Le mur suit la liste : ses marques hors filtre ou recherche pâlissent (maquette fA).
   const refsRetenues = useMemo(() => (filtre || recherche) ? new Set(retenus.map(i => i.ref)) : null, [filtre, recherche, retenus]);
   // Autres stocks (STK-AUTRES-MORT, 19.11) : la liste ne garde que les familles hors du mur (Additifs, Emballage, Nettoyage), sans le tri des ingrédients ;
@@ -495,10 +507,10 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const tabs: Array<{ id: SubTab; label: string; Icon: typeof Boxes; badge?: number }> = [
     // Pas de chiffre sur les sous-onglets (maquette C) : le chiffre clé et la pastille de l'onglet le disent déjà, d'un seul horizon.
     { id: 'stock', label: 'Articles', Icon: Boxes },
+    { id: 'recompter', label: 'Recompter', Icon: ClipboardCheck },
     { id: 'courses', label: 'Courses', Icon: ShoppingCart },
     { id: 'futs', label: 'Fûts', Icon: Beer },
-    { id: 'materiel', label: 'Matériel', Icon: Wrench },
-    { id: 'hops', label: 'Houblons', Icon: Hop }
+    { id: 'materiel', label: 'Matériel', Icon: Wrench }
   ];
 
   const mobile = useMobileLayout();
@@ -537,10 +549,9 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   // Le bloc d'outils (segment, recherche, pastilles, ligne de filtre) : fixe en Recompter, il défile avec le mur et la liste en Étagère (sinon la liste n'avait que 158 px à 390).
   const blocOutils = (
     <div className="stock-outils shrink-0 pt-1">
-      <BasculeVue vue={vue} onVue={setVue} />
       <div ref={refPanneau} className="sz-pan-h mt-1 px-[10px]">
         <Recherche q={q} onQ={setQ} action={!mobile && <Button intent="secondary" aria-label="Ajouter un article" onClick={() => setCreating(true)} icon={<Plus className="w-4 h-4" />}><span className="hidden sm:inline">Ajouter un article</span></Button>} />
-        <Pastilles comptes={comptesEtats} filtre={filtre} onFiltre={setFiltre} nEpingles={nEpingles} />
+        <Pastilles puces={pucesVisibles(comptesEtats, ensembles, filtre, mobile ? MAX_PUCES_MOBILE : MAX_PUCES_LARGE)} comptes={comptesEtats} filtre={filtre} onFiltre={setFiltre} nEpingles={nEpingles} />
         <LigneFiltre texte={phraseFiltre} onToutVoir={toutVoir} />
       </div>
     </div>
@@ -581,13 +592,14 @@ export const StocksTab: React.FC<StocksTabProps> = ({
       </ViewNavigation>
       </div>
 
-      {subTab === 'hops' && <>
-        <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement de l’index houblon…</div>}><HopIndexPanel createRequest={createRequest} onNotice={onSuccessMessage} /></Suspense>
+      {subTab === 'stock' && catalogue && <>
+        <div className="shrink-0 px-[10px] pt-2"><button type="button" className="inline-flex min-h-touch items-center gap-2 text-sm font-semibold text-cave-100" data-catalogue-retour onClick={() => setCatalogue(false)}><ArrowLeft size={18} aria-hidden="true" />Articles</button></div>
+        <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement du catalogue des houblons…</div>}><HopIndexPanel createRequest={createRequest} onNotice={onSuccessMessage} /></Suspense>
       </>}
 
-      {subTab === 'stock' && (
+      {((subTab === 'stock' && !catalogue) || subTab === 'recompter') && (
         <>
-        <details className="shrink-0 border-b border-cave-800">
+        {subTab === 'stock' && <details className="shrink-0 border-b border-cave-800">
           <summary className="flex min-h-touch cursor-pointer items-center justify-between gap-2 py-1.5 text-sm text-cave-50">
             <span className="font-semibold">Comparer une recette</span>
             <span className="min-w-0 text-right text-xs text-cave-400">{selectedRecipe?.name ?? 'Besoin prévu face au stock'}</span>
@@ -640,13 +652,13 @@ export const StocksTab: React.FC<StocksTabProps> = ({
                   </ul>}
             </>}
           </div>
-        </details>
+        </details>}
         {vue === 'recompter'
           ? <>
             {/* En Recompter, les outils restent sous le doigt : collés en haut de la fenêtre pendant que les tuiles défilent. */}
             <div className="sticky top-0 z-10 bg-cave-950">{blocOutils}</div>
             <div className="stock-outils">
-              <RecompterStock items={allItems} retenus={retenus} infos={infos} aCommander={aCommanderParRef} mouvements={movements} filtre={filtre} onFiltre={setFiltre} filtreActif={!!filtre || !!recherche} onOuvrir={setSelected} onCompterRayon={compterRayon} />
+              <RecompterStock items={allItems} retenus={retenus} infos={infos} aCommander={aCommanderParRef} mouvements={movements} filtre={filtre} onFiltre={setFiltre} filtreActif={!!filtre || !!recherche} onOuvrir={setSelected} onCompterRayon={compterRayon} onglet={ongletMur} onOnglet={changerOngletMur} />
             </div>
           </>
           : <div data-testid="stock-defile">
@@ -668,7 +680,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
           groupOf={groupeListe}
           groupOrder={groupesVisibles}
           groupesPlies={plies}
-          renderGroupHeader={(nom, compte) => <EnteteRayon nom={nom} compte={compte} sur={totauxGroupes.get(nom)} tri={tri} onTri={setTri} plie={plies.has(nom)} onPli={() => basculerPli(nom)} resume={resumes.get(nom)} />}
+          renderGroupHeader={(nom, compte) => <EnteteRayon nom={nom} compte={compte} sur={totauxGroupes.get(nom)} tri={tri} onTri={setTri} plie={plies.has(nom)} onPli={() => basculerPli(nom)} resume={resumes.get(nom)} onCatalogue={() => setCatalogue(true)} />}
           isFavorite={(i) => !!i.favorite}
           resetKey={tri}
           header={allItems.length > 0 && !autresStocks && <LigneTri tri={tri} onTri={setTri} />}

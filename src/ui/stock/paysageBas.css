@@ -7,7 +7,6 @@
 @media (orientation:landscape) and (max-height:480px){
   .stock-outils{display:flex;align-items:center;gap:8px}
   .stock-outils.pt-1{padding-top:0}
-  .stock-outils>.sz-seg{flex:0 0 200px;height:32px;margin-left:0}
   .stock-outils>.sz-pan-h{flex:1 1 0;min-width:0;margin-top:0;display:flex;flex-wrap:wrap;align-items:center;gap:0 8px}
   .stock-outils>.sz-pan-h>:first-child{flex:1 1 160px;min-width:140px}
   .stock-outils .sz-ch{height:32px}

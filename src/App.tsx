@@ -775,7 +775,8 @@ export const App: React.FC = () => {
       case 'densite':
         if (brassinEnFermentation) { setProductionSubTab('batches'); setActiveTab('production'); setBatchOpenRequest({ id: brassinEnFermentation.id, at: Date.now() }); }
         break;
-      case 'houblon': vers('stocks', 'stocks_subtab', 'hops', 'newHopVariety'); break;
+      // D420 (d1a) : plus d'onglet Houblons au Stock ; une variété nouvelle est un article (rayon Houblons).
+      case 'houblon': vers('stocks', 'stocks_subtab', 'stock', 'newStockItem'); break;
       case 'article': vers('stocks', 'stocks_subtab', 'stock', 'newStockItem'); break;
       case 'fut': vers('stocks', 'stocks_subtab', 'futs', 'newKeg'); break;
       case 'materiel': vers('stocks', 'stocks_subtab', 'materiel', 'newEquipment'); break;
@@ -966,7 +967,8 @@ export const App: React.FC = () => {
       case 'courses': stocksVers('courses'); break;
       case 'futs': stocksVers('futs'); break;
       case 'materiel': stocksVers('materiel'); break;
-      case 'houblons': stocksVers('hops'); break;
+      // D422 : « Aller à Houblons » ouvre le catalogue des houblons, que le titre du rayon Houblons ouvre aussi.
+      case 'houblons': StorageService.setUiState('stocks_catalogue', '1'); stocksVers('stock'); break;
       case 'clients': clientsVers('crm'); break;
       case 'impot': clientsVers('ofdf'); break;
       case 'tarifs': clientsVers('tarifs'); break;

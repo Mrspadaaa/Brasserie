@@ -2,7 +2,7 @@
 // bouton « Compter » (mode saisie : « il en reste »). F2 (D396) : on ne tape que ce qui a bougé (chiffre, Entrée : ligne suivante),
 // « ✓ le reste du rayon » confirme d'un toucher tout le rayon comme prévu ; « Annuler » sort sans rien écrire ; l'inconnu reste non compté. Les règles sont dans domain/stock/listeFiltres.ts et liste.ts.
 import React, { useMemo, useState } from 'react';
-import { Wheat, Hop, FlaskConical, Droplets, Package, SprayCan, Check, ArrowUpDown, X } from 'lucide-react';
+import { Wheat, Hop, FlaskConical, Droplets, Package, SprayCan, Check, X } from 'lucide-react';
 import type { StockItem } from '../../types';
 import type { ArticleACommander } from '../../domain/stockLevel';
 import { Units } from '../../services/units';
@@ -11,7 +11,9 @@ import { FAMILLES_RECOMPTER, familleRecompter as familleDe, derniersComptages, j
 const COURT: Record<string, string> = { Malts: 'Malts', Houblons: 'Houblons', Levures: 'Levures', Additifs: 'Additifs', Emballage: 'Emballage', Nettoyage: 'Nettoyage' };
 import { LIBELLE_FAMILLE, bilanRayon, comptesRecompter, lireQuantite, trierRecompter, type FiltreListe, type LigneComptee } from '../../domain/stock/listeFiltres';
 import './jetons-outils.css';
+import './mur.css';
 import './recompter.css';
+import { estFamilleAutre } from '../../domain/stock/murDonnees';
 
 const ICONES: Record<FamilleRecompter, React.ReactNode> = {
   Malts: <Wheat size={16} aria-hidden="true" />, Houblons: <Hop size={16} aria-hidden="true" />, Levures: <FlaskConical size={16} aria-hidden="true" />,
@@ -61,26 +63,23 @@ interface Props {
   onOuvrir: (item: StockItem) => void;
   /** Écrit les comptages d'un rayon (un mouvement daté chacun) ; rend le nombre écrit. */
   onCompterRayon: (rayon: string, lignes: ReadonlyArray<LigneComptee<StockItem>>) => number;
+  /** D420 (d1a, D422) : le segment Ingrédients | Autres stocks de la maquette d1a-recompter remplace les tuiles de famille. */
+  onglet: 'ing' | 'autres';
+  onOnglet: (o: 'ing' | 'autres') => void;
 }
 
-export function RecompterStock({ items, retenus, infos, aCommander, mouvements, filtre, onFiltre, filtreActif, onOuvrir, onCompterRayon }: Props) {
+export function RecompterStock({ items, retenus, infos, aCommander, mouvements, filtreActif, onOuvrir, onCompterRayon, onglet, onOnglet }: Props) {
   const comptes = useMemo(() => comptesRecompter(items, mouvements), [items, mouvements]);
-  // STG-9 : les tuiles suivent la recherche et les pastilles d'état (les lignes dessous les suivent déjà). Une tuile de famille choisie garde les comptes de tous
-  // les rayons (on y bascule d'un toucher) ; une famille sans article n'a pas de tuile (STE-9 : « Nettoyage 0 · 0/0 » vide).
-  const filtreFamille = filtre !== null && (FAMILLES_RECOMPTER as ReadonlyArray<string>).includes(filtre);
-  const comptesVus = useMemo(() => (filtreActif && !filtreFamille ? comptesRecompter(retenus, mouvements) : comptes), [filtreActif, filtreFamille, retenus, mouvements, comptes]);
   const jours = useMemo(() => derniersComptages(mouvements), [mouvements]);
-  // Sens du tri par nom (bouton ⇅ de la maquette q-a3s) : A → Z, ou Z → A ; les épuisés restent en fin de rayon dans les deux sens.
-  const [zVersA, setZVersA] = useState(false);
   const parFamille = useMemo(() => {
     const m = new Map<FamilleRecompter, StockItem[]>();
     for (const f of FAMILLES_RECOMPTER) m.set(f, []);
     const ep = (i: StockItem) => infos.get(i.ref)?.etats.includes('epuise') === true;
     const tries = trierRecompter(retenus, infos);
-    const ordre = zVersA ? [...tries.filter((i) => !ep(i)).reverse(), ...tries.filter(ep).reverse()] : tries;
+    const ordre = tries;
     for (const i of ordre) m.get(familleDe(i))!.push(i);
     return m;
-  }, [retenus, infos, zVersA]);
+  }, [retenus, infos]);
   const [saisie, setSaisie] = useState<FamilleRecompter | null>(null);
   const [valeurs, setValeurs] = useState<Record<string, string>>({});
 
@@ -103,25 +102,13 @@ export function RecompterStock({ items, retenus, infos, aCommander, mouvements, 
 
   return (
     <div className="stock-recompter sz-r-sc" data-testid="recompter">
-      <div className="sz-r-som" role="group" aria-label="Familles">
-        {FAMILLES_RECOMPTER.map((f, k) => {
-          const c = comptesVus[f];
-          if (c.total === 0 && filtre !== f) return null;
-          return (
-            <button key={f} type="button" data-fam-btn={k} className={filtre === f ? 'sz-r-on' : ''} aria-pressed={filtre === f} aria-label={`${LIBELLE_FAMILLE[f]} : ${c.total} article${c.total > 1 ? 's' : ''}, ${c.compte} compté${c.compte > 1 ? 's' : ''}`}
-              onClick={() => onFiltre(filtre === f ? null : f)}>
-              <span>{ICONES[f]}<em>{COURT[f]}</em><b className="sz-r-m">{c.total}</b></span>
-              <small><i><i style={{ width: `${c.total ? Math.round((100 * c.compte) / c.total) : 0}%` }} /></i><span className="sz-r-m">{c.compte}/{c.total}</span> comptés</small>
-            </button>
-          );
-        })}
-      </div>
-      <div className="sz-r-so"><p>Trié par <b>nom, {zVersA ? 'Z → A' : 'A → Z'}</b> · épuisés en fin de rayon</p>
-        <button type="button" aria-label={zVersA ? "Inverser l'ordre : nom A → Z" : "Inverser l'ordre : nom Z → A"} aria-pressed={zVersA} onClick={() => setZVersA((v) => !v)}><ArrowUpDown size={16} aria-hidden="true" /></button></div>
+      <div className="sz-r-seg"><div className="sv-tabs" role="tablist" aria-label="Le stock à recompter">
+        {([['ing', 'Ingrédients'], ['autres', 'Autres stocks']] as const).map(([id, nom]) => <button key={id} type="button" role="tab" className="sv-tab" data-tab={id} aria-selected={onglet === id} onClick={() => { sortir(); onOnglet(id); }}>{nom}</button>)}
+      </div></div>
       <div className="sz-r-ls">
         {FAMILLES_RECOMPTER.map((f, k) => {
           const lignes = parFamille.get(f) ?? [];
-          if (lignes.length === 0) return null;
+          if (lignes.length === 0 || estFamilleAutre(f) !== (onglet === 'autres')) return null;
           const c = comptes[f];
           const enSaisie = saisie === f;
           const epuises = lignes.filter((i) => infos.get(i.ref)?.etats.includes('epuise')).length;
@@ -133,7 +120,7 @@ export function RecompterStock({ items, retenus, infos, aCommander, mouvements, 
                 <div>
                   <h2>{COURT[f]} <small>{filtreActif ? `${lignes.length} sur ${c.total}` : c.total}</small></h2>
                   <p className="sz-r-mt">
-                    {!enSaisie && <span className="sz-r-tk" aria-hidden="true">{items.filter((i) => familleDe(i) === f).slice(0, 40).map((i) => <i key={i.ref} className={jours.has(i.ref) ? 'sz-r-f' : ''} />)}</span>}
+                    {!enSaisie && <span className="sz-r-bar" aria-hidden="true"><i style={{ width: `${c.total ? Math.round((100 * c.compte) / c.total) : 0}%` }} /></span>}
                     <span><b className="sz-r-m">{c.compte}</b>/<span className="sz-r-m">{c.total}</span> comptés{c.dernier && !enSaisie ? <> · <span className="sz-r-m">{jourCourt(c.dernier)}</span></> : ''}</span>
                   </p>
                 </div>
@@ -184,6 +171,7 @@ export function RecompterStock({ items, retenus, infos, aCommander, mouvements, 
                       <span className="sz-r-xl">{item.supplier || '—'}</span>
                       <span className="sz-r-xl sz-r-m">{typeof item.minStock === 'number' && item.minStock > 0 ? Units.format(item.minStock, item.unit) : '—'}</span>
                       <span className="sz-r-xl sz-r-m">{compte ? jourCourt(compte) : '—'}</span>
+                      <span className={`sz-r-ck sz-r-big${compte ? ' sz-r-ok' : ''}`} aria-hidden="true">{compte && <Check size={20} />}</span>
                     </button>
                   </React.Fragment>
                 );

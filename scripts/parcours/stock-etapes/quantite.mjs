@@ -29,15 +29,15 @@ export default async function (c) {
     c.controle('STC-2', !/quantité inconnue/.test(t) && /1\s*Pck/.test(t), `Recompter : « ${t.slice(0, 120)} »`);
   });
 
-  await c.etape('STG-9 STE-9 les tuiles de Recompter suivent la recherche', async () => {
+  await c.etape('STG-9 STE-9 les rayons de Recompter suivent la recherche (D420 : plus de tuiles)', async () => {
     await c.demarrer(); await c.versStocks(); await c.sousOnglet('Recompter');
-    const tout = await c.mesure(() => [...document.querySelectorAll('.sz-r-som button')].map((b) => b.innerText.replace(/\s+/g, ' ').trim()));
+    const tout = await c.mesure(() => [...document.querySelectorAll('.sz-r-ray > .sz-r-rh')].map((b) => b.innerText.replace(/\s+/g, ' ').trim()));
     await c.chercher('Cryo');
-    const vues = await c.mesure(() => [...document.querySelectorAll('.sz-r-som button')].map((b) => b.innerText.replace(/\s+/g, ' ').trim()));
+    const vues = await c.mesure(() => [...document.querySelectorAll('.sz-r-ray > .sz-r-rh')].map((b) => b.innerText.replace(/\s+/g, ' ').trim()));
     await c.cap('quantite-tuiles-recherche');
-    c.controle('STG-9', vues.length < tout.length && !vues.some((v) => /Malts|Levures/.test(v)) && vues.some((v) => /Houblons\s*1\b/.test(v)),
-      `tuiles sans recherche : ${tout.join(' | ')} ; avec « Cryo » : ${vues.join(' | ') || 'aucune'}`);
-    c.controle('STE-9', !tout.some((v) => /\b0\/0\b/.test(v)), `tuile vide « 0/0 » : ${tout.filter((v) => /\b0\/0\b/.test(v)).join(' | ') || 'aucune'}`);
+    c.controle('STG-9', vues.length < tout.length && !vues.some((v) => /Malts|Levures/.test(v)) && vues.some((v) => /Houblons\s*1 sur/.test(v)),
+      `rayons sans recherche : ${tout.join(' | ')} ; avec « Cryo » : ${vues.join(' | ') || 'aucune'}`);
+    c.controle('STE-9', !tout.some((v) => /\b0\/0\b/.test(v)), `rayon vide « 0/0 » : ${tout.filter((v) => /\b0\/0\b/.test(v)).join(' | ') || 'aucune'}`);
   });
 
   await c.etape('STE-10 Recompter > Compter : le nom sur une ligne', async () => {
