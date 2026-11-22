@@ -39,6 +39,10 @@ export interface DureeFenetreProps {
   pas?: 'semaine' | 'jour';
   /** Au lâcher d'un geste (pas à son annulation) : la fiche écrit alors la date. */
   onLacher?: () => void;
+  /** D425 (22.11) : le premier et le dernier LUNDI de la plage (défaut R8 : 6 janv. 2025 → 31 déc. 2029). `ChoixDate` les pose autour de la valeur, pour qu'une
+   *  pièce ancienne se corrige au doigt sans retomber sur janv. 2025. Le Calendrier n'en passe pas : rien ne change pour lui. */
+  epoque?: string;
+  dernier?: string;
 }
 
 /** Au repos, au moins treize semaines sur la largeur : une semaine seule reste lisible, la fin se saisit loin du début. */
@@ -55,7 +59,7 @@ const DERNIER_LUNDI = '2029-12-31';
 /** `u` : la longueur de l'unité en jours (7 : la semaine, 1 : le jour) ; l'époque est un lundi, les deux comptes partent d'elle. */
 const unitesEntre = (a: string, b: string, u: number) => Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / (u * MS_JOUR));
 const K_MIN = 0;
-const kMax = (u: number) => unitesEntre(EPOQUE, DERNIER_LUNDI, u) + 7 / u;
+const kMax = (u: number, epoque: string, dernier: string) => unitesEntre(epoque, dernier, u) + 7 / u;
 
 /** La vue : la semaine (fractionnaire, comptée depuis `EPOQUE`) au bord gauche et le nombre de semaines sur la largeur. */
 interface Vue { v0: number; span: number }
@@ -70,11 +74,11 @@ function cadrer(a: number, b: number, w: number, seule: boolean, spanMin: number
   return { span, v0: a - marge * span / w };
 }
 
-export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false, jourFin, jourSeul = null, max = 104, pas = 'semaine', onLacher }: DureeFenetreProps) {
+export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false, jourFin, jourSeul = null, max = 104, pas = 'semaine', onLacher, epoque = EPOQUE, dernier = DERNIER_LUNDI }: DureeFenetreProps) {
   const jour = pas === 'jour';
-  const u = jour ? 1 : 7, spanMin = jour ? SPAN_MIN_JOUR : SPAN_MIN, K_MAX = kMax(u);
-  const kDe = (d: string) => unitesEntre(EPOQUE, d, u);
-  const lundiK = (k: number) => ajouterJours(EPOQUE, k * u);
+  const u = jour ? 1 : 7, spanMin = jour ? SPAN_MIN_JOUR : SPAN_MIN, K_MAX = kMax(u, epoque, dernier);
+  const kDe = (d: string) => unitesEntre(epoque, d, u);
+  const lundiK = (k: number) => ajouterJours(epoque, k * u);
   const piste = useRef<HTMLDivElement | null>(null);
   const [largeur, setLargeur] = useState(0);
   useLayoutEffect(() => {

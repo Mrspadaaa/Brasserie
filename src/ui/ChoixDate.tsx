@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarDays } from 'lucide-react';
+import { plageDate } from './plageDate';
 import { DureeFenetre } from './calendrier/frise/DureeFenetre';
 import { jourLisible, type Rangee } from '../domain/calendrier';
 
@@ -12,7 +13,7 @@ import { jourLisible, type Rangee } from '../domain/calendrier';
  * un champ qui s'enregistre ailleurs (Enregistrer, Valider…) garde sa validation. `min` / `max` (AAAA-MM-JJ) bornent ce qui s'écrit : la frise
  * revient sur la borne au lâcher, comme le natif la refusait. Échap rend le jour d'avant.
  * `ouvert` : la frise est toujours visible (feuille déjà dédiée à la date) ; sinon elle s'ouvre au toucher de la pastille.
- * Limite connue : la frise couvre du 6 janv. 2025 à fin 2029 (R8) ; un jour hors de cette plage se lit mais se tire dans la plage.
+ * Plage (D425) : [min(valeur, aujourd'hui − 5 ans), aujourd'hui + 5 ans], `plageDate` ; une pièce ancienne se corrige au doigt.
  */
 export interface ChoixDateProps {
   /** `AAAA-MM-JJ` ou `''`. */
@@ -53,6 +54,8 @@ export const ChoixDate: React.FC<ChoixDateProps> = ({ valeur, onChange, label, m
   const racine = useRef<HTMLDivElement | null>(null);
   const poser = (d: string) => { brouillonRef.current = d; setBrouillon(d); onBrouillon?.(d); };
   useEffect(() => { ecritRef.current = valide; if (valide) { brouillonRef.current = valide; setBrouillon(valide); } }, [valide]);
+  /* D425 : la plage suit la valeur ÉCRITE (jamais le brouillon : l'échelle ne bouge pas sous le doigt) et le départ quand rien n'est posé */
+  const plage = useMemo(() => plageDate(valide || depart || '', aujourdhuiIso()), [valide, depart]);
   const borne = (d: string) => (min && d < min ? min : max && d > max ? max : d);
   const ecrire = () => {
     const d = borne(brouillonRef.current);
@@ -81,7 +84,7 @@ export const ChoixDate: React.FC<ChoixDateProps> = ({ valeur, onChange, label, m
             if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); fermer(true); }
             else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); fermer(false); }
           }}>
-          <DureeFenetre seule pas="jour" rangee={rangee} debut={brouillon} fin={null} onFin={() => undefined}
+          <DureeFenetre seule pas="jour" rangee={rangee} debut={brouillon} fin={null} onFin={() => undefined} epoque={plage.epoque} dernier={plage.dernier}
             onPlage={d => poser(d)} onLacher={ecrire} />
         </div>
       )}
