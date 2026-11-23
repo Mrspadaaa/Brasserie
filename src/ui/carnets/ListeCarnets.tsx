@@ -17,12 +17,14 @@ import { Bandeau } from './Bandeau';
 import { titreAffiche } from './titre';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { tableau as calculerTableau, prixTexte } from '../../domain/carnets/comparer';
-import { titreDePhrase } from '../../domain/carnets/modele';
+import { prixLus, titreDePhrase } from '../../domain/carnets/modele';
+import { texteIntention } from '../../domain/horizons';
 import { comptesCarnet, texteComptes } from '../../domain/carnets/comptes';
 import { dateCourte, GENRE_LIBELLE, montant, Provenance, STATUT_LIBELLE, texteSortie, type ArticleV, type CarnetV, type GenreNote, type StatutCarnet } from './EtatIA';
 import { VignetteObjet } from './pictos';
 import { AnciennesNotes } from './AnciennesNotes';
 import type { AncienneNote } from '../../domain/carnets/anciens';
+import './carnets-liste.css';
 
 export interface EclaireV { carnetId: string; quoi: string; tireDe: string; onDeplacer: () => void; onAnnuler: () => void }
 
@@ -88,20 +90,46 @@ export function articlesEnLice(c: CarnetV): ArticleV[] {
   });
 }
 
-/** Le prix de la carte : le choisi ; sinon « dès » le plus bas des articles en lice d'une même devise (CHF d'abord). */
-export function prixDe(c: CarnetV): { des: boolean; texte: string; devise: string } | null {
+/** Le document tel que la liste le reçoit : `CarnetV` porte aussi le prix estimé du projet (« Prix estimé », CHF). */
+type CarnetListe = CarnetV & { estimatedCost?: number };
+
+/**
+ * Le prix de la carte : le choisi ; sinon « dès » le plus bas des articles en lice d'une même devise (CHF d'abord). L-33 (PNC-5) : sans
+ * prix d'article, le prix estimé du carnet (« estimé »), sinon le budget qu'il a écrit (« Budget du Planning : 3 500 CHF », « budget ») ;
+ * rien d'inventé sinon. Le prix choisi contre l'estimé (Q-1) n'est pas tranché ici : un article prix reste devant.
+ */
+export function prixDe(c: CarnetV): { des: boolean; texte: string; devise: string; sorte?: 'estime' | 'budget' } | null {
   if (c.status === 'validated' && c.carnet.choix) {
     const a = c.carnet.articles.find(x => x.id === c.carnet.choix!.articleId);
     const m = montant(a?.prixCentimes);
     return m ? { des: false, texte: m, devise: a?.devise ?? 'CHF' } : null;
   }
   const prix = articlesEnLice(c).filter(a => typeof a.prixCentimes === 'number' && Number.isFinite(a.prixCentimes));
-  if (!prix.length) return null;
+  if (!prix.length) return prixSansArticle(c as CarnetListe);
   const devises = [...new Set(prix.map(a => a.devise ?? 'CHF'))];
   const devise = devises.includes('CHF') ? 'CHF' : devises[0];
   const memes = prix.filter(a => (a.devise ?? 'CHF') === devise).map(a => a.prixCentimes!);
   const m = montant(Math.min(...memes));
   return m ? { des: prix.length > 1, texte: m, devise } : null;
+}
+
+function prixSansArticle(c: CarnetListe): { des: false; texte: string; devise: string; sorte: 'estime' | 'budget' } | null {
+  const estime = typeof c.estimatedCost === 'number' && Number.isFinite(c.estimatedCost) && c.estimatedCost > 0 ? montant(Math.round(c.estimatedCost * 100)) : null;
+  if (estime) return { des: false, texte: estime, devise: 'CHF', sorte: 'estime' };
+  for (const k of c.carnet.criteres ?? []) {
+    if (!/^\s*budget\b/i.test(k.texte)) continue;
+    const p = prixLus(k.texte)[0];
+    const m = p ? montant(p.centimes) : null;
+    if (m) return { des: false, texte: m, devise: p!.devise, sorte: 'budget' };
+  }
+  return null;
+}
+
+const jourLocal = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+/** L-33 (PNC-5) : la date du carnet, dite comme sa rubrique Quand (« vers févr. », « S48 ») ; `null` sans date. */
+export function quandDe(c: CarnetV, aujourdhui = jourLocal()): string | null {
+  return texteIntention(c.date, aujourdhui, c.precision);
 }
 
 /** R19 : par carnet, les genres des notes nées du message `messageId` (« note » compris, dit seulement s'il est seul). */
@@ -171,10 +199,13 @@ function Vignette({ c }: { c: CarnetV }) {
   return <VignetteObjet photo={photo} mots={[c.title, k.phrase, choisi?.nom, ...k.facons.map(f => f.nom), ...k.articles.map(a => a.nom)]} />;
 }
 
-function CarteCarnet({ c, ajouts, range, onOuvrir, onVoirAVenir }: { c: CarnetV; ajouts?: GenreNote[]; range?: boolean } & Pick<ListeCarnetsProps, 'onOuvrir' | 'onVoirAVenir'>) {
+function CarteCarnet({ c, ajouts, range, fait, onOuvrir, onVoirAVenir }: { c: CarnetV; ajouts?: GenreNote[]; range?: boolean; fait?: boolean } & Pick<ListeCarnetsProps, 'onOuvrir' | 'onVoirAVenir'>) {
   const k = c.carnet;
   const prix = prixDe(c);
-  const { parts, veilles } = compte(c);
+  /* L-33 : la date du projet sur la ligne du compte ; un Fait n'en dit pas (sa date est celle du Planning d'alors, CRN-8) */
+  const quand = fait ? null : quandDe(c);
+  const { parts: comptes, veilles } = compte(c);
+  const parts = quand ? [...comptes, quand] : comptes;
   const ensuite = k.notes.find(n => n.genre === 'a-faire')?.texte;
   const choisi = c.status === 'validated' && k.choix ? k.articles.find(a => a.id === k.choix!.articleId) : undefined;
   const vide = c.status === 'idea' && k.articles.length === 0;
@@ -194,7 +225,10 @@ function CarteCarnet({ c, ajouts, range, onOuvrir, onVoirAVenir }: { c: CarnetV;
               </>
             ) : vide ? (
               /* L4-5 : le titre est sa phrase → rien dessous (le carnet ouvert le dit, une fois) ; sinon la phrase citée, 2 lignes au plus */
-              range ? <span className="cn-cite" role="status">✻ L'IA range…</span> : phraseEnTitre(c.title, k.phrase) ? null : <span className="cn-cite cn-deux-lignes">« {k.phrase} »</span>
+              /* L-33 : daté, la date tient la ligne (la phrase se lit dans le carnet ouvert) */
+              range ? <span className="cn-cite" role="status">✻ L'IA range…</span>
+                : quand ? <span className="cn-mut cn-compte-ligne">{quand}</span>
+                : phraseEnTitre(c.title, k.phrase) ? null : <span className="cn-cite cn-deux-lignes">« {k.phrase} »</span>
             ) : (
               <>
                 {ensuite && <span><b className="cn-vert">Ensuite :</b> {ensuite}</span>}
@@ -211,6 +245,7 @@ function CarteCarnet({ c, ajouts, range, onOuvrir, onVoirAVenir }: { c: CarnetV;
           {prix && (
             <span className="cn-carnet-prix">
               {prix.des && <span className="cn-mut">dès</span>}
+              {prix.sorte && <span className="cn-mut">{prix.sorte === 'estime' ? 'estimé' : 'budget'}</span>}
               <span className="cn-mono cn-prix">{prix.texte}</span>
               <span className="cn-mut">{prix.devise}</span>
             </span>
@@ -275,7 +310,13 @@ export function ListeCarnets(p: ListeCarnetsProps) {
       {filtre && visibles.length === 0 && <p className="cn-mut">Aucun carnet ne correspond.</p>}
       {groupes.map(({ s, carnets }) => {
         const supp = p.supprime?.statut === s ? p.supprime : null;
-        if (!carnets.length && !supp) return null;
+        /* L-34 (CA12-M4-15) : une puce d'état active qui ne trouve rien le dit (« Choisi 0 »), quand d'autres groupes restent */
+        if (!carnets.length && !supp) return etats.includes(s) && visibles.length > 0 ? (
+          <div key={s} className="cn-entete-groupe" data-vide-filtre={s}>
+            <span className={`cn-groupe cn-statut-${s}`}>{STATUT_LIBELLE[s]} <span className="cn-mono">0</span></span>
+            <span className="cn-sp" /><span className="cn-mut">aucun ne correspond</span>
+          </div>
+        ) : null;
         const droite = s === 'idea' && carnets.every(c => c.carnet.articles.length === 0) ? "pas encore d'article"
           : s === 'validated' && exemple ? <>fournisseurs et prix : <Provenance origine="exemple" /></> : null;
         return (
@@ -322,8 +363,17 @@ export function ListeCarnets(p: ListeCarnetsProps) {
             <span className="cn-sp" /><span className="cn-mut">du Planning</span>
           </div>
           {/* un projet fait ne demande pas de lien : la carte s'ouvre, sans « Coller un lien » */}
-          <div className="cn-cartes">{faits.map(c => <CarteCarnet key={c.id} c={c} onOuvrir={p.onOuvrir} onVoirAVenir={p.onVoirAVenir} />)}</div>
+          <div className="cn-cartes">{faits.map(c => <CarteCarnet key={c.id} c={c} fait onOuvrir={p.onOuvrir} onVoirAVenir={p.onVoirAVenir} />)}</div>
         </section>
+      )}
+      {/* L-35 (CA12-M4-16) : la recherche et les puces laissent les Faits de côté ; elles le disent, et « Tout montrer » les rend. Ce que la
+          recherche devrait couvrir (Faits, articles, notes) attend son choix (Q-2). */}
+      {filtre && faits.length > 0 && (
+        <div className="cn-entete-groupe cnl-faits-caches" data-faits-caches="">
+          <span className="cn-groupe cn-groupe-faits"><CheckCircle2 size={16} aria-hidden /> Faits <span className="cn-mono">{faits.length}</span></span>
+          <span className="cn-sp cn-mut">{mot ? 'hors de la recherche' : 'hors du filtre'}</span>
+          <button type="button" className="cn-lien" onClick={() => { setQ(''); setEtats([]); }}>Tout montrer</button>
+        </div>
       )}
       <AnciennesNotes notes={anciennes} />
     </div>

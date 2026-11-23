@@ -9,7 +9,7 @@
  * de jetons) pour ne pas favoriser les longs textes.
  */
 import Fuse from 'fuse.js';
-import { jetons } from './analyseLocale';
+import { jetons, normaliser, racine } from './analyseLocale';
 import { nomArticle, type CarnetDoc } from './modele';
 
 /** Seuil réglé sur la première moitié des phrases de `carnetsRattacher.test.ts` (A5), jugé sur la seconde. */
@@ -57,10 +57,17 @@ function motsDe(c: CarnetDoc): MotIndexe[] {
  * salle » → « ZZ TEST — Ventilation de la salle de brassage ») : on l'ouvre, il ne devient pas une façon de lui-même.
  */
 export function nommeLeCarnet(texte: string, titre: string): boolean {
-  const mots = jetons(texte.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, ''));
-  const duTitre = new Set(jetons(titreSansBanc(titre)));
+  /* L-30 (CA12-M3-3, CA12-M4-24) : « chambre froide 2,6 m3 », « idée chambre froide » ouvraient Chambre froide et la phrase se perdait :
+     `jetons` ôte nombres, mots courts et mots vides de la recherche (« idée », « plus », « grande »). Ici, chaque mot écrit compte : seuls
+     les mots de liaison (`LIAISON`) peuvent manquer au titre ; un nombre, une mesure, un mot de plus font une phrase à garder. */
+  const mots = normaliser(texte.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, '')).split(' ').filter(m => m && !LIAISON.has(m)).map(racine);
+  const duTitre = new Set(normaliser(titreSansBanc(titre)).split(' ').filter(Boolean).map(racine));
   return mots.length > 0 && mots.every(m => duTitre.has(m));
 }
+
+/** Les mots de liaison qu'une phrase peut ajouter au titre sans rien dire de plus (articles, prépositions, possessifs). */
+const LIAISON = new Set(['le', 'la', 'les', 'l', 'un', 'une', 'des', 'de', 'du', 'd', 'au', 'aux', 'a', 'et', 'en', 'dans', 'pour', 'ce', 'cet', 'cette',
+  'ces', 'mon', 'ma', 'mes', 'notre', 'nos', 'votre', 'vos', 'leur', 'leurs']);
 
 /** Les carnets proches d'un texte, du plus proche au moins proche (score > 0). */
 export function propositions(texte: string, carnets: readonly CarnetDoc[]): Proposition[] {
