@@ -9,7 +9,7 @@
 .pr-pill>button{display:grid;place-items:center;color:var(--t1);background:transparent}
 .pr-pill>button:disabled{opacity:.35}
 .pr-pill>button.pr-fl{width:44px}
-.pr-pill>button.pr-ce{min-width:52px;max-width:108px;padding:0 8px;border-inline:1px solid var(--bm);font-weight:600;font-size:14px;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-pill>button.pr-ce{min-width:88px;max-width:108px;padding:0 8px;border-inline:1px solid var(--bm);font-weight:600;font-size:14px;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pr-ce .pr-court{display:none}
 /* CRN-20 : la flèche de la plage, dessinée (la pointe du « → » de la police s'effaçait en clair) ; le caractère reste dans le texte, non peint. */
 .pr-sep{position:relative;display:inline-block;margin:0 .3em;vertical-align:-2px;line-height:0}
