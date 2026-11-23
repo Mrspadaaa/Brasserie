@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef } from 'react';
 import { avalerClicSuivant, DELAI_CLIC_AVALE } from '../usePointeurCourbe';
 import { aBouge, armerSens, BANDE_PX, vitesseBord } from '../../geste';
 import type React from 'react';
+import { joursDuDoigt, pasDuDoigt, type AxeDoigt } from '../entete/alignement';
+import type { Colonne } from './Rangee';
 
 /**
  * Les gestes d'une barre de la frise (MISSION § État de l'art : Pointer Events natifs, `setPointerCapture`, appui long = minuterie
@@ -21,6 +23,8 @@ const SEUIL_VERTICAL_PX = 10;
 export type ModeGeste = 'repos' | 'appui' | 'glisse' | 'bord' | 'long';
 
 export interface OptionsPointeur {
+  /** CAL-LACHER-OU-DESSINE : les colonnes dessinées ; le pas et les jours se lisent par le jour sous le doigt (`alignement.ts`), la transformation du dessin. */
+  colonnes?: readonly Colonne[];
   /** Largeur d'une colonne (une semaine) en px ; 0 ou inconnue : aucun glisser n'est lu (jamais un pas inventé). */
   largeurColonne: number;
   /** D385 : la largeur d'un jour, pour tirer le bord (une colonne d'un jour : la colonne). Absente : 1/7 de colonne (une semaine). */
@@ -121,6 +125,8 @@ interface Etat {
   R: number;
   w0: number;
   d0: number;
+  /** CAL-LACHER-OU-DESSINE : l'axe de l'appui (colonnes, largeur, gauche de la colonne 0) ; `null` sans colonnes connues. */
+  axe0: AxeDoigt | null;
   /** R1 : le bord ne suit qu'après 6 px. */
   bouge: boolean;
   /** R7 : sens du dernier mouvement (−1, 0, 1), dernière abscisse, colonnes accumulées, image en cours et son heure. */
@@ -230,11 +236,26 @@ export function usePointeur(options: OptionsPointeur) {
       stopDefile(s); etat.current = null;
     };
   }, []);
+  /* CAL-LACHER-OU-DESSINE : l'axe du moment (la fenêtre a pu glisser ou grandir sous le doigt) */
+  const axeDuMoment = (s: Etat): AxeDoigt | null => {
+    const o = opts.current;
+    if (!s.axe0 || !o.colonnes?.length || !(o.largeurColonne > 0)) return null;
+    return { colonnes: o.colonnes, largeurColonne: o.largeurColonne, gauche: s.frise?.isConnected ? s.frise.getBoundingClientRect().left : s.L };
+  };
   /* la cible lue : le pas du doigt, moins les colonnes dont la fenêtre a bougé sous lui (la colonne sous le doigt est celle de la fenêtre d'ORIGINE moins le recul) */
   const pasDe = (s: Etat): number => {
     const w = opts.current.largeurColonne || 1;
     /* CAL-BARRE-BORD : par la position (la fenêtre a pu grandir sous le doigt : la colonne d'origine n'a plus la même largeur) */
     const xv = Number.isFinite(s.R) ? Math.min(s.xPrec, s.R - w / 2) : s.xPrec;
+    /* CAL-LACHER-OU-DESSINE : le jour sous le doigt à l'appui (axe de l'appui) et maintenant (axe du moment) ; le recul n'a plus à se compter */
+    const axe = axeDuMoment(s);
+    if (s.axe0 && axe) {
+      /* au jour, la barre se glisse aussi dans sa colonne (1 sem. : une seule colonne, les bornes en colonnes la figeaient) */
+      const b = plage(opts.current.borne?.(), opts.current.marge);
+      /* T9-1 : un doigt au-delà de la frise vise son dernier jour (le milieu de la dernière colonne figeait le glisser au jour d'une fenêtre d'une colonne) */
+      const xj = Number.isFinite(s.R) ? Math.min(s.xPrec, s.R - 1) : s.xPrec;
+      return bornes(pasDuDoigt(s.axe0, s.x0, axe, xj, s.parJour), b && s.parJour ? [b[0] - 6 / 7, b[1] + 6 / 7] : b);
+    }
     const cols = (xv - s.L) / w - (s.x0 - s.L) / (s.w0 || w);
     /* CAL-JOUR : au jour, le pas est 1/7 de colonne ; `k` reste en semaines (3 jours = 3/7), la barre et sa bulle se posent sans autre calcul */
     const brut = s.parJour ? Math.round(cols * 7) / 7 : Math.round(cols);
@@ -243,6 +264,8 @@ export function usePointeur(options: OptionsPointeur) {
   /* le bord, au jour : les jours entre le doigt et l'appui, chacun lu dans sa fenêtre, moins les semaines dont le début a reculé */
   const largeurJourDe = (o: OptionsPointeur) => (o.largeurJour && o.largeurJour > 0 ? o.largeurJour : o.largeurColonne / 7);
   const joursDe = (s: Etat): number => {
+    const axe = axeDuMoment(s);
+    if (s.axe0 && axe) return joursDuDoigt(s.axe0, s.x0, axe, s.xPrec);
     const d = largeurJourDe(opts.current) || 1;
     return Math.round((s.xPrec - s.L) / d - (s.x0 - s.L) / (s.d0 || d) - 7 * s.recul);
   };
@@ -275,6 +298,7 @@ export function usePointeur(options: OptionsPointeur) {
     const o0 = opts.current, L = e.currentTarget.closest?.('[data-frise]')?.getBoundingClientRect().left ?? 0;
     const s: Etat = { id: e.pointerId, cible: e.target instanceof Element ? e.target : null, x0: e.clientX, y0: e.clientY, t0: Date.now(), mode: bord ? 'bord' : 'appui', cote, k: 0, minuterie: null, dx: 0, recul: 0, parJour: !!o0.parJour,
       L, R: cadreDe(e.currentTarget).right, w0: o0.largeurColonne, d0: largeurJourDe(o0),
+      axe0: o0.colonnes?.length && o0.largeurColonne > 0 ? { colonnes: o0.colonnes, largeurColonne: o0.largeurColonne, gauche: L } : null,
       bouge: false, arme: 0, pivot: e.clientX, xPrec: e.clientX, acc: 0, raf: 0, tPrec: 0, echap: null,
       el: e.currentTarget, frise: e.currentTarget.closest?.('[data-frise]') ?? null, ecoute: null };
     if (etat.current) stopDefile(etat.current);

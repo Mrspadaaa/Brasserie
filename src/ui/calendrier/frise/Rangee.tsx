@@ -6,6 +6,7 @@ import { CLASSE_TEINTE, Marque, couperNom, dureeVue, largeurPastilleLie, largeur
 import { appuiCommenceSur } from './usePointeur';
 import { posee, poseeADroite } from './posee';
 import { aDesJours } from '../echelle';
+import { xDeDate } from '../entete/alignement';
 
 /**
  * Une rangée de la frise (E20 à E23) : son titre à gauche, juste au-dessus de ses barres, le carré de couleur qui porte le + blanc (E21),
@@ -677,7 +678,7 @@ export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], c
   return { texte, lecture: morceaux.join(', '), part: Math.abs(solde ?? (aVenir.length ? 0 : estime ?? probable ?? 0)), solde, estime, confirme, mot, conf, debut: premier, fin: dernier, periode };
 }
 
-export interface DragEtat { id: string; mode: 'glisse' | 'bord'; k: number; jours: number }
+export interface DragEtat { id: string; mode: 'glisse' | 'bord'; k: number; jours: number; cote?: 'debut' | 'fin' }
 
 /** Un renvoi vers une chose hors de la vue (E32 : « Livraison La Cigogne · S1 › »). */
 export interface Renvoi { chose: ChoseCalendrier; texte: string }
@@ -911,6 +912,11 @@ export const Rangee: React.FC<RangeeProps> = props => {
   const fantome = drag ? items.find(i => i.chose.id === drag.id) : undefined;
   const auJour = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
   /* D385 : le bord se tire au jour ; sa colonne de fin dit la largeur d'un jour (une colonne d'un jour, ou 1/7 d'une semaine) */
+  /* CAL-LACHER-OU-DESSINE : le bord tiré se dessine par la transformation de l'axe (`xDeDate`) : le bout dessiné est le jour qui s'écrira */
+  const allongementDuBord = (c: ChoseCalendrier, d: DragEtat): number => {
+    const ref = d.cote === 'debut' ? c.debut : ajouterJours(c.fin || c.debut, 1);
+    return xDeDate(colonnes, largeurColonne, ajouterJours(ref, d.jours)) - xDeDate(colonnes, largeurColonne, ref);
+  };
   const largeurJourA = (pos: { b: number } | null): number => {
     const c = pos ? colonnes[Math.min(colonnes.length - 1, pos.b)] : undefined;
     return c && c.debut === c.fin ? largeurColonne : largeurColonne / 7;
@@ -1016,7 +1022,7 @@ export const Rangee: React.FC<RangeeProps> = props => {
               const pointLie = lieA ? props.rangeeDeBarre?.get(lieA) : undefined;
               return (
                 <Marque
-                  key={c.id} chose={c} centre={d.gauche + 14} haut={top} hauteur={Math.min(28, mesures.barre + 2)} largeurColonne={pas}
+                  key={c.id} chose={c} centre={d.gauche + 14} haut={top} hauteur={Math.min(28, mesures.barre + 2)} largeurColonne={pas} colonnes={colonnes}
                   {...(d.jalon ? { jalon: true, lieA, ton, ...(pointLie ? { pointLie } : {}) } : {})}
                   epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}
                   libelle={d.avecLibelle ? { cote: d.cote === 'gauche' ? 'gauche' : 'droite', place: d.place, deux: d.deuxLignes, ...(c.brassinLie ? { texte: c.titre } : {}), ...(d.sansLie ? { sansLie: true } : {}), ...(d.retrait ? { retrait: d.retrait } : {}) } : undefined}
@@ -1038,12 +1044,12 @@ export const Rangee: React.FC<RangeeProps> = props => {
               <Barre
                 key={c.id} chose={c} gauche={d.gauche} largeur={d.largeur} coupe={coupe} haut={top} hauteur={d.phraseBas?.ou === 'barre' ? mesures.barre + mesures.ligne : mesures.barre} cote={d.cote}
                 phraseBas={d.phraseBas ? (d.phraseBas.ou === 'barre' ? { ou: 'barre' } : { ou: 'dessous', x: d.phraseBas.x0, dy: mesures.ligne }) : null} placeEtiquette={d.place} retrait={d.retrait} reserveDedans={d.reserveDedans} dureeACote={d.duree} deuxLignes={d.deuxLignes} sansLie={d.sansLie} titreSeul={d.titreSeul}
-                largeurColonne={largeurColonne} bornes={[-d.a, colonnes.length - 1 - d.a]}
+                largeurColonne={largeurColonne} colonnes={colonnes} bornes={[-d.a, colonnes.length - 1 - d.a]}
                 {...(props.barre.marge ? { marge: props.barre.marge } : {})} {...(props.barre.defile ? { defile: props.barre.defile } : {})}
                 epinglee={epingles.includes(c.id)} etoilee={etoiles.includes(c.id)} selectionnee={selectionId === c.id} menuOuvert={menuId === c.id} lieCourt={lieCourt}
                 decalage={surDrag && drag.mode === 'glisse' ? drag.k * largeurColonne : 0}
                 largeurJour={largeurJourA(pos)}
-                allongement={surDrag && drag.mode === 'bord' ? drag.jours * largeurJourA(pos) : 0}
+                allongement={surDrag && drag.mode === 'bord' ? allongementDuBord(c, drag) : 0}
                 etiquetteDuree={etiquetteDuree && etiquetteDuree.id === c.id ? etiquetteDuree.texte : undefined}
                 {...props.barre}
               />

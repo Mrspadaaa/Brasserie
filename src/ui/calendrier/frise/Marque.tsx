@@ -4,6 +4,7 @@ import { etiquetteS, francsSignes, jourLisible, texteDuree, type ChoseCalendrier
 import { usePointeur } from './usePointeur';
 import { useToucherNom } from './zoneToucher';
 import { posee, poseeADroite } from './posee';
+import type { Colonne } from './Rangee';
 
 /* ---------- la largeur réelle d'un texte (CRITIQUE-4 n° 24) ----------
    Problème d'école : mesurer un texte avant de le poser. Méthode standard du navigateur : `CanvasRenderingContext2D.measureText` avec la police
@@ -216,6 +217,8 @@ export function ContenuEtiquette({ chose, nom, montant, duree, deux, lieCourt, s
 export interface LibelleMarque { cote: 'droite' | 'gauche'; place: number; texte?: string; deux?: ModeDeuxLignes; sansLie?: boolean; retrait?: number }
 
 export interface MarqueProps {
+  /** CAL-LACHER-OU-DESSINE : les colonnes de la frise (le geste se lit par le jour sous le doigt). */
+  colonnes?: readonly Colonne[];
   chose: ChoseCalendrier;
   /** Centre de la marque dans la rangée, en px. */
   centre: number;
@@ -266,6 +269,7 @@ export const Marque: React.FC<MarqueProps> = props => {
   const avecMenu = glissable && !!props.onAppuiLong;
   const gestes = usePointeur({
     largeurColonne,
+    ...(props.colonnes ? { colonnes: props.colonnes } : {}),
     borne: () => bornes ?? [0, 0],
     ...(glissable && props.marge ? { marge: props.marge } : {}),
     ...(glissable && props.defile ? { defile: props.defile } : {}),
