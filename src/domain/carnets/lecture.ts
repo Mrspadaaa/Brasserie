@@ -10,12 +10,12 @@
  */
 import type { EtapeLien, PageLue } from '../../../functions/src/carnetIA';
 
-export type CleEtape = 'page' | 'donnees' | 'prix' | 'photos' | 'caract' | 'controle' | 'ia';
+export type CleEtape = 'page' | 'donnees' | 'prix' | 'photos' | 'caract' | 'controle' | 'ia' | 'rangement';
 export type StatutVu = 'trouve' | 'douteux' | 'absent' | 'echec' | 'en-cours' | 'a-faire' | 'pas-lancee';
 export interface LigneEtape { cle: CleEtape; libelle: string; statut: StatutVu; detail?: string; viaGoogle?: true }
 
 export const LIBELLE_ETAPE: Record<CleEtape, string> = {
-  page: 'Page', donnees: 'Données de la page', prix: 'Prix, devise et frais', photos: 'Photos', caract: 'Caractéristiques', controle: 'Contrôle', ia: 'Lecture IA'
+  page: 'Page', donnees: 'Données de la page', prix: 'Prix, devise et frais', photos: 'Photos', caract: 'Caractéristiques', controle: 'Contrôle', ia: 'Lecture IA', rangement: 'Rangement'
 };
 const ORDRE: readonly CleEtape[] = ['page', 'donnees', 'prix', 'photos', 'caract', 'controle'];
 
@@ -38,7 +38,7 @@ const PIRE: Record<EtapeLien['statut'], number> = { trouve: 0, absent: 1, douteu
  * Les lignes de l'écran, d'après les étapes reçues. `fini` : la lecture est close (plus d'étape « en cours ») ; `enCours` : la sous-tâche
  * lente que le serveur annonce (l'IA, ou Google pour une page bloquée) ; `escalade` : relue avec l'IA forte (la ligne IA le dit).
  */
-export function lignesEtapes(etapes: readonly EtapeLien[] = [], o: { fini?: boolean; enCours?: 'ia' | 'bloquee'; escalade?: boolean } = {}): LigneEtape[] {
+export function lignesEtapes(etapes: readonly EtapeLien[] = [], o: { fini?: boolean; enCours?: 'ia' | 'bloquee'; escalade?: boolean; rangement?: boolean } = {}): LigneEtape[] {
   const de = new Map<string, EtapeLien>();
   for (const e of etapes) de.set(e.nom, e);
   const page = de.get('page');
@@ -70,7 +70,7 @@ export function lignesEtapes(etapes: readonly EtapeLien[] = [], o: { fini?: bool
   }
   const ia = de.get('ia');
   if (ia || o.enCours === 'ia' || o.escalade) {
-    const fort = o.escalade && !ia?.detail?.includes('modèle fort') ? 'modèle fort' : '';
+    const fort = o.escalade && !ia?.detail?.includes('IA plus forte') ? 'IA plus forte' : '';
     lignes.push(ia
       ? { cle: 'ia', libelle: LIBELLE_ETAPE.ia, statut: ia.statut, ...(ia.detail || fort ? { detail: [fort, ia.detail].filter(Boolean).join(' · ') } : {}) }
       : { cle: 'ia', libelle: LIBELLE_ETAPE.ia, statut: pageMorte ? 'pas-lancee' : 'a-faire', ...(fort ? { detail: fort } : {}) });
@@ -84,6 +84,8 @@ export function lignesEtapes(etapes: readonly EtapeLien[] = [], o: { fini?: bool
     if (i >= 0 && lignes[i].statut === 'a-faire') lignes[i] = { ...lignes[i], statut: 'en-cours' };
   }
   if (o.fini) return lignes.map(l => (l.statut === 'a-faire' || l.statut === 'en-cours' ? { ...l, statut: 'absent' as const } : l));
+  /* T30-10 : la page est lue, l'IA range l'article dans le carnet (5 s et plus) : l'étape en cours se voit jusqu'au rangement, pas « 6 sur 6 » muet */
+  if (o.rangement && !pageMorte) lignes.push({ cle: 'rangement', libelle: LIBELLE_ETAPE.rangement, statut: 'en-cours', detail: 'l’IA range l’article dans le carnet' });
   return lignes;
 }
 

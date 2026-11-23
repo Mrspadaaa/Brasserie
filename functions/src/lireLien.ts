@@ -243,7 +243,7 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
       const out: PageLue = { ...page, etapes };
       if (fusion.ajoutees) {
         out.valeurs = fusion.valeurs;
-        remplace({ nom: 'caract', statut: 'trouve', detail: `${fusion.valeurs.length} mesures : ${fusion.ajoutees} de plus lues sur la fiche de la boutique` });
+        remplace({ nom: 'caract', statut: 'trouve', detail: `${fusion.valeurs.length} caractéristiques : ${fusion.ajoutees} de plus lues sur la fiche de la boutique` });
       }
       if (sansPhoto) {
         out.photos = d.photos; out.photo = d.photos[0];

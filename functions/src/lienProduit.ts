@@ -470,11 +470,15 @@ const LISTE_PRIX = /ListPrice|StrikethroughPrice|SRP|MSRP|InvoicePrice|SalePrice
 /** T28-9 : d'où viennent les prix, dit en mots du brasseur (la fiche produit du site est la source normale, donc muette). */
 const SOURCE_PRIX_DITE: Record<string, string> = { 'Open Graph': ' (annonce du site)', 'bloc d\'achat': ' (bloc d\'achat de la page)', 'page (sous le titre)': ' (lu sous le titre de la page)' };
 
-/** « 20 mesures » ; « 8 mesures : 5 du tableau de la page, 2 ailleurs dans la page, 1 du nom » (T28-9 : ni « HTML » ni « données embarquées »). */
+/**
+ * « 20 caractéristiques » ; « 8 caractéristiques : 5 du tableau de la page, 1 du nom » (T28-9 : ni « HTML » ni « données embarquées » ; T30-9 : en mots
+ * du brasseur, jamais « 8 mesures : 8 ailleurs dans la page »). La provenance ne se détaille que si elle varie : tout au même endroit ne se redit pas.
+ */
 function detailCaract(total: number, tableau: number, duNom: number): string {
   const ailleurs = total - tableau - duNom;
-  const d = total === tableau ? [] : [tableau ? `${tableau} du tableau de la page` : '', ailleurs ? `${ailleurs} ailleurs dans la page` : '', duNom ? `${duNom} du nom` : ''].filter(Boolean);
-  return `${total} mesure${total > 1 ? 's' : ''}${d.length ? ` : ${d.join(', ')}` : ''}`;
+  const sources = [tableau, ailleurs, duNom].filter((n) => n > 0).length;
+  const d = sources < 2 ? [] : [tableau ? `${tableau} du tableau de la page` : '', ailleurs ? `${ailleurs} ailleurs dans la page` : '', duNom ? `${duNom} du nom` : ''].filter(Boolean);
+  return `${total} caractéristique${total > 1 ? 's' : ''}${d.length ? ` : ${d.join(', ')}` : ''}`;
 }
 
 export function extraireProduit(html: string, url: URL): Extraction {

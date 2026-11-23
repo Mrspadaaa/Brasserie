@@ -10,6 +10,7 @@
  * Aucun gabarit par objet (C2) : rien ici ne dépend d'une catégorie d'objet.
  */
 import type { CreativeItem } from '../../types';
+import { traduireValeurs } from '../../../functions/src/lienLibelles';
 import { lundiDe } from '../calendrier';
 import { analyserLigne, prixTousDe, urlsDe } from './analyseLocale';
 
@@ -250,6 +251,28 @@ export function nomSansTitre(nom: string, titre: string): string {
   return m ? m[1].trim() : nom;
 }
 
+/**
+ * T28-12, T28-13, T30-13, T30-14 : les noms et valeurs lus sur une page allemande ou anglaise se disent en français, par la même table que le
+ * serveur (`lienLibelles.ts`, `lienValeurs.ts`) : un article rangé avant ces tables garde, dans le carnet, « Full volume » et « 143.50 cm » ;
+ * ici ils se lisent « Volume total » et « 143,5 cm ». Ce que le brasseur a écrit (origine « vous ») et les oui-non ne sont jamais touchés ;
+ * un nombre reste un nombre. Idempotent : du français repasse tel quel. Rien n'est réécrit dans le carnet.
+ */
+export function valeursEnFrancais(valeurs: Record<string, Valeur>): Record<string, Valeur> {
+  const entrees = Object.entries(valeurs);
+  const lues = entrees.filter(([, v]) => v.origine !== 'vous' && typeof v.valeur !== 'boolean');
+  if (!lues.length) return valeurs;
+  const liste = lues.map(([nom, v]) => ({ nom, valeur: String(v.valeur), ...(v.unite ? { unite: v.unite } : {}), orig: v }));
+  const traduites = traduireValeurs(liste) ?? liste;
+  const sortie: Record<string, Valeur> = {};
+  for (const t of traduites) {
+    const o = t.orig;
+    const { valeur: _v, unite: _u, ...autres } = o;
+    sortie[t.nom] = { ...autres, valeur: typeof o.valeur === 'number' ? o.valeur : t.valeur, ...(t.unite ? { unite: t.unite } : {}) };
+  }
+  for (const [nom, v] of entrees) if (v.origine === 'vous' || typeof v.valeur === 'boolean') sortie[nom] = v;
+  return sortie;
+}
+
 /** CRP-2, CRB-9 (à la lecture, rien n'est réécrit) : entités décodées, « Couleur : » sans ses deux-points, nom sans le titre du carnet. */
 function articleNet(a: Article, titre: string): Article {
   const valeurs: Record<string, Valeur> = {};
@@ -258,7 +281,7 @@ function articleNet(a: Article, titre: string): Article {
     valeurs[net] = { ...v, ...(typeof v.valeur === 'string' ? { valeur: decoderEntites(v.valeur) } : {}) };
   }
   const nom = a.nom !== undefined ? nomSansTitre(decoderEntites(a.nom), titre) : undefined;
-  return sansIndefinis({ ...a, nom, valeurs });
+  return sansIndefinis({ ...a, nom, valeurs: valeursEnFrancais(valeurs) });
 }
 
 const LECTURES: readonly LectureArticle[] = ['a-lire', 'en-cours', 'lue', 'illisible', 'introuvable'];

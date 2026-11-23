@@ -124,7 +124,8 @@ describe('option `escalade` : l\'étape IA va directement au modèle fort', () =
     const ia: AppelIA = async (modele) => { appels.push(modele); return reponse; };
     const page = await lireLien(adresse, { fetchPage: reseau(adresse, pageAvecTexte({ mesures: 1 })), ia, ...SANS_IA });
     expect(appels).toEqual(['lite']);
-    expect(page.etapes?.find((e) => e.nom === 'ia')?.detail).toMatch(/^lite/);
+    /* T30-11 : l'étape dit ce qu'elle a fait, jamais un nom de modèle */
+    expect(page.etapes?.find((e) => e.nom === 'ia')?.detail).not.toMatch(/lite|fort|modèle/i);
   });
 
   it('avec escalade : un seul appel, au modèle fort, et l\'étape le dit', async () => {
@@ -133,7 +134,7 @@ describe('option `escalade` : l\'étape IA va directement au modèle fort', () =
     const page = await lireLien(adresse, { fetchPage: reseau(adresse, pageAvecTexte({ mesures: 1 })), ia, escalade: true, ...SANS_IA });
     expect(appels).toEqual(['fort']);
     const etape = page.etapes?.find((e) => e.nom === 'ia');
-    expect(etape?.detail).toMatch(/modèle fort/);
+    expect(etape?.detail).toMatch(/IA plus forte/);
     expect(etape?.detail).not.toMatch(/lite/);
     expect(page.valeurs?.some((v) => v.nom === 'Hauteur')).toBe(true);
   });

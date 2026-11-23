@@ -131,6 +131,7 @@ const TABLE: ReadonlyArray<readonly [readonly string[], string]> = [
   [['full volume', 'total volume', 'gesamtvolumen', 'volume total'], 'Volume total'],
   [['fermentable volume', 'working volume', 'workable volume', 'volume de fermentation'], 'Volume de fermentation'],
   [['height with extension legs', 'height with legs extended'], 'Hauteur avec pieds d’extension'],
+  [['height without extension legs', 'height without legs extended', 'height without legs'], 'Hauteur sans pieds d’extension'],
   [['top opening', 'opening at the top'], 'Ouverture supérieure'],
   [['dump valve size', 'size of dump valve', 'dump valve'], 'Taille de la vanne de vidange'],
   [['size of valve', 'valve size', 'size of the valve'], 'Taille de la vanne'],

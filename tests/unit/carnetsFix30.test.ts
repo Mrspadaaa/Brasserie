@@ -186,3 +186,86 @@ describe('T30-8 : la ligne d’article ne déroule pas ses caractéristiques', (
     expect(luEnBref(['nom', 'prix'], {})).toEqual(['nom', 'prix']);
   });
 });
+
+/* ---------- T30-9, T30-10, T30-11, T30-13, T30-14 : les étapes et les libellés en mots du brasseur ---------- */
+import { lignesEtapes } from '../../src/domain/carnets/lecture';
+import { libelleFrancais } from '../../functions/src/lienLibelles';
+import { valeurFrancaise } from '../../functions/src/lienValeurs';
+import { lireLien } from '../../functions/src/lireLien';
+import fs from 'node:fs';
+import path from 'node:path';
+import zlib from 'node:zlib';
+
+describe('T30-10 : l’étape en cours se voit jusqu’au rangement', () => {
+  const six = ['page', 'donnees', 'prix', 'photos', 'caract', 'controle'].map(nom => ({ nom, statut: 'trouve' as const }));
+  it('page lue, six étapes trouvées : l’étape « Rangement » tourne, ce n’est pas « 6 sur 6 » muet', () => {
+    const l = lignesEtapes(six, { rangement: true });
+    expect(l.at(-1)).toMatchObject({ cle: 'rangement', statut: 'en-cours' });
+    expect(l.filter(x => x.statut === 'trouve')).toHaveLength(6);
+  });
+  it('fini : plus d’étape « Rangement » ; lien mort : jamais', () => {
+    expect(lignesEtapes(six, { rangement: true, fini: true }).some(x => x.cle === 'rangement')).toBe(false);
+    expect(lignesEtapes([{ nom: 'page', statut: 'absent', detail: 'introuvable' }], { rangement: true }).some(x => x.cle === 'rangement')).toBe(false);
+    expect(lignesEtapes(six).some(x => x.cle === 'rangement')).toBe(false);
+  });
+});
+
+describe('T30-13, T30-14 : libellé et valeur en français', () => {
+  it('« Height without extension legs » : « Hauteur sans pieds d’extension »', () => {
+    expect(libelleFrancais('Height without extension legs')).toBe('Hauteur sans pieds d’extension');
+    expect(libelleFrancais('Height with extension legs')).toBe('Hauteur avec pieds d’extension');
+  });
+  it('« Hopfenpellets Typ 90 » : « Pellets type 90 » ; le français ne bouge pas', () => {
+    expect(valeurFrancaise('Hopfenpellets Typ 90')).toBe('Pellets type 90');
+    expect(valeurFrancaise('Pellets type 90')).toBe('Pellets type 90');
+    expect(valeurFrancaise('Mehrzweckhopfen')).toBe('Houblon mixte');
+  });
+});
+
+describe('T30-9 : « N caractéristiques », sans « mesures » ni « ailleurs dans la page » seul', () => {
+  const BANC = path.join(__dirname, '../../work/missions/2026-11-23-carnet-en-ligne/banc-liens/pages');
+  const page = (n: number) => zlib.gunzipSync(fs.readFileSync(path.join(BANC, String(n).padStart(2, '0') + '.html.gz'))).toString('utf8');
+  const reseau = (html: string): typeof fetch => (async (input: string | URL | Request) => {
+    const u = String(input instanceof Request ? input.url : input);
+    return u.endsWith('/robots.txt') ? new Response('', { status: 404 }) : new Response(html, { status: 200, headers: { 'content-type': 'text/html' } });
+  }) as typeof fetch;
+  it('galaxus : l’étape dit le nombre de caractéristiques, rien d’autre', async () => {
+    const p = await lireLien('https://www.galaxus.ch/de/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562', { fetchPage: reseau(page(59)), maintenant: 1, cours: null });
+    const d = p.etapes?.find(x => x.nom === 'caract')?.detail ?? '';
+    expect(d).toMatch(/^\d+ caractéristiques?/);
+    expect(d).not.toMatch(/mesure/);
+    expect(d).not.toMatch(/ailleurs dans la page$/);
+  });
+  it('IA : « rien de plus à lire », jamais « lite » ni « fort »', () => {
+    /* le texte vit dans lienIA.ts ; il est vérifié sur la source pour ne pas appeler Gemini (jamais dans un test unitaire) */
+    const src = fs.readFileSync(path.join(__dirname, '../../functions/src/lienIA.ts'), 'utf8');
+    expect(src).toContain("'rien de plus à lire'");
+    expect(src).not.toMatch(/\[direct \? 'modèle fort' : 'lite'\]/);
+  });
+});
+
+/* ---------- T28-12, T28-13 (restes) : un article déjà rangé se lit en français ---------- */
+import { valeursEnFrancais } from '../../src/domain/carnets/modele';
+
+describe('T28-12, T28-13 : les noms et valeurs déjà rangés se disent en français à la lecture', () => {
+  const v = (valeur: string | number, unite?: string, origine: 'page' | 'vous' = 'page') => ({ valeur, ...(unite ? { unite } : {}), origine });
+  it('libellés anglais du fermenteur et du houblon', () => {
+    const r = valeursEnFrancais({ 'Full volume': v('30', 'L'), 'Height with extension legs': v('1.435', 'm'), 'Top opening': v('20', 'cm'), 'Dump valve size': v('2', 'in'), 'Total oil': v('1.8ml'), Farnesene: v('7', '%'), Beta: v('4.5', '%') });
+    expect(Object.keys(r)).toEqual(['Volume total', 'Hauteur avec pieds d’extension', 'Ouverture supérieure', 'Taille de la vanne de vidange', 'Huiles totales', 'Farnésène', 'Bêta']);
+  });
+  it('valeurs allemandes et décimales à la suisse : « Kühlschrank ohne Gefrierfach », « 143.50 cm » → « 143,5 cm »', () => {
+    const r = valeursEnFrancais({ Typ: v('Kühlschrank ohne Gefrierfach'), 'Höhe': v('143.50', 'cm'), Hopfentyp: v('Mehrzweckhopfen'), Alpha: v('11.4', '%') });
+    expect(r['Type'] ?? r['Typ']).toMatchObject({ valeur: 'Réfrigérateur sans compartiment congélateur' });
+    expect(r['Hauteur']).toMatchObject({ valeur: '143,5', unite: 'cm' });
+    expect(Object.values(r).find(x => x.valeur === 'Houblon mixte')).toBeTruthy();
+    expect(Object.values(r).find(x => x.unite === '%')?.valeur).toBe('11,4');
+  });
+  it('ce que le brasseur a écrit, un nombre, un oui-non : jamais touchés ; le français repasse tel quel', () => {
+    const entree = { Hauteur: v(143.5, 'cm'), 'Tient 80 °C': { valeur: true, origine: 'page' as const }, 'Full volume': v('à moi', undefined, 'vous') };
+    const r = valeursEnFrancais(entree);
+    expect(r['Hauteur']).toMatchObject({ valeur: 143.5, unite: 'cm' });
+    expect(r['Tient 80 °C']).toMatchObject({ valeur: true });
+    expect(r['Full volume']).toMatchObject({ valeur: 'à moi' });
+    expect(valeursEnFrancais({ Volume: v('30', 'L') })).toEqual({ Volume: v('30', 'L') });
+  });
+});

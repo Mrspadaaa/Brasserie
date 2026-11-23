@@ -150,7 +150,7 @@ export function LectureLien(p: LectureLienProps) {
   useEffect(() => { ref.current?.scrollIntoView?.({ block: 'nearest' }); }, [phase]);
   const enCours = phase === 'en-cours';
   const maintenant = useMaintenant(enCours);
-  const lignes = lignesEtapes(l.etapes, { fini: !enCours, enCours: l.enCours, escalade: !!l.escalade });
+  const lignes = lignesEtapes(l.etapes, { fini: !enCours, enCours: l.enCours, escalade: !!l.escalade, rangement: !!l.rangement });
   const c = compterEtapes(lignes);
   const ecoule = duree((enCours ? maintenant : l.fin ?? maintenant) - (l.debut ?? maintenant));
   const exemple = p.exemple ? <span className="cn-exemple">exemple</span> : null;
@@ -301,7 +301,7 @@ function FinLecture(p: LectureLienProps & { lignes: LigneEtape[]; ecoule: string
 export function BarreLecture(p: { lecture: LectureEnCours; phase: 'en-cours' | 'fin'; titre?: string; nom?: string; carnet?: string; onDeplier: () => void; onFermer?: () => void }) {
   const enCours = p.phase === 'en-cours';
   const maintenant = useMaintenant(enCours);
-  const lignes = lignesEtapes(p.lecture.etapes, { fini: !enCours, enCours: p.lecture.enCours, escalade: !!p.lecture.escalade });
+  const lignes = lignesEtapes(p.lecture.etapes, { fini: !enCours, enCours: p.lecture.enCours, escalade: !!p.lecture.escalade, rangement: !!p.lecture.rangement });
   const c = compterEtapes(lignes);
   const ecoule = duree((enCours ? maintenant : p.lecture.fin ?? maintenant) - (p.lecture.debut ?? maintenant));
   const quoi = enCours ? `Lecture du lien${p.titre ? ` · ${p.titre}` : ''}` : `Lu · ${p.nom ?? p.titre ?? domaineDe(p.lecture.url)}`;

@@ -25,6 +25,8 @@ const EXPRESSIONS: ReadonlyArray<readonly [string, string]> = [
   ['barkuhlschrank', 'réfrigérateur de bar'],
   ['getrankekuhlschrank', 'réfrigérateur à boissons'],
   ['mehrzweckhopfen', 'houblon mixte'],
+  ['hopfenpellets', 'pellets'],
+  ['typ', 'type'],
   ['aromahopfen', 'houblon aromatique'],
   ['bitterhopfen', 'houblon amérisant'],
   ['normalkuhlung', 'réfrigération normale'],
@@ -77,7 +79,12 @@ function motsFrancais(texte: string): string {
       for (let n = Math.min(LONGUEUR_MAX * 2 - 1, mots.length - i); n >= 1 && !pris; n--) {
         const essai = mots.slice(i, i + n).join('').replace(/^[- ]+|[- ]+$/g, '');
         const fr = TABLE_EXPR.get(cle(essai));
-        if (fr && cle(essai) !== cle(fr)) { sortie.push(/^[A-ZÀ-ß]/.test(essai) && fr !== 'oui' && fr !== 'non' ? MAJ(fr) : fr); pris = n; }
+        if (fr && cle(essai) !== cle(fr)) {
+          /* la majuscule de la page se garde en tête de valeur seulement (« Pellets type 90 », pas « PelletsType ») ; la fin du groupe (espace, tiret) n'est pas mangée */
+          const reste = mots.slice(i, i + n).join('').match(/[- ]+$/)?.[0] ?? '';
+          sortie.push((i === 0 && /^[A-ZÀ-ß]/.test(essai) && fr !== 'oui' && fr !== 'non' ? MAJ(fr) : fr) + reste);
+          pris = n;
+        }
       }
       if (pris) i += pris; else { sortie.push(mots[i]); i++; }
     }

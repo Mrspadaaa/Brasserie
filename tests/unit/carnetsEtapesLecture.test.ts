@@ -47,7 +47,7 @@ describe('lignesEtapes : ce que l’écran montre (v05, v06, v03)', () => {
     const l = lignesEtapes([E('page', 'trouve'), E('donnees', 'trouve')], { fini: true, escalade: true });
     expect(l.filter(x => x.statut === 'en-cours')).toHaveLength(0);
     expect(l.find(x => x.cle === 'photos')?.statut).toBe('absent');
-    expect(l.find(x => x.cle === 'ia')).toMatchObject({ detail: 'modèle fort' });
+    expect(l.find(x => x.cle === 'ia')).toMatchObject({ detail: 'IA plus forte' });
   });
 });
 

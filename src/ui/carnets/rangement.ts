@@ -34,6 +34,8 @@ import { jetons, objetDe, parleDuBrassin, TITRE_BRASSIN } from '../../domain/car
 export interface LectureEnCours {
   url: string; statut?: PageLue['statut']; etapes?: readonly EtapeLien[]; enCours?: 'ia' | 'bloquee';
   jeton?: string; debut?: number; fin?: number; reouverture?: true; escalade?: true;
+  /** T30-10 : la page est lue, l'IA range l'article : l'étape « Rangement » tourne jusqu'à la fin. */
+  rangement?: true;
   /** T28-2 : le carnet où le lien a été collé (`null` : depuis la liste) ; la barre repliée y mène. */
   carnetId?: string | null;
 }
@@ -415,6 +417,7 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
           if (lignes) await deps.ecrireIA(messageId, lignes, 'locale', ...depuisIA);
         } catch { /* les effets locaux restent */ }
       }
+      if (lecture) { const { rangement: _r, ...reste } = lecture; lecture = reste; }
       return fin({ etape: 'echec', messageId, texte, avis, ...(lecture ? { lecture } : {}) });
     };
     const sortieCoupee = () => (ctrl.signal.reason as { name?: string } | undefined)?.name === 'TimeoutError'
@@ -452,6 +455,7 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
           return fin({ etape: 'echec', messageId, texte, avis: AVIS.introuvable, lecture });
         }
       }
+      if (lecture) { lecture = { ...lecture, rangement: true }; poser({ etape: 'en-cours', messageId, texte, lecture }); }
       const contexte = contexteModele(texte, deps.maintenant?.() ?? new Date(), depuis, carnets, pages);
       const r = await course(appels.ranger(contexte, ctrl.signal));
       if (coupe()) return sortieCoupee();
@@ -462,7 +466,7 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
       const rangement = deps.mode === 'simule' ? 'simulee' : 'ia';
       await deps.ecrireIA(messageId, lignes, rangement, ...depuisIA);
       /* T28-10 : la fin est celle de la lecture rangée (temps vécu depuis le collage), pas celle de la seule page lue par le serveur */
-      if (lecture) lecture = { ...lecture, fin: Date.now() };
+      if (lecture) { const { rangement: _r, ...reste } = lecture; lecture = { ...reste, fin: Date.now() }; }
       return fin({ etape: 'range', messageId, texte, rangement, lignes, ...(lecture ? { lecture } : {}) });
     } catch {
       if (coupe()) return sortieCoupee();

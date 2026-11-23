@@ -141,13 +141,14 @@ export async function completerParIA(p: PageLue, html: string, appel: AppelIA, o
   const direct = options.escalade === true;
   let r = await demander(direct ? 'fort' : 'lite');
   let { gardee, retire } = r ? garder(r, texte) : { gardee: { caracteristiques: [] } as Gardee, retire: [] as string[] };
-  const modeles: string[] = [direct ? 'modèle fort' : 'lite'];
+  /* T30-11 : ce que l'étape dit est pour le brasseur : jamais « lite », « fort » ni un nom de modèle */
+  const modeles: string[] = [direct ? 'IA plus forte' : ''];
   const contredit = p.prix !== undefined && gardee.prix !== undefined && Math.abs(gardee.prix - p.prix) > 0.011 && gardee.prix !== p.prixTTC;
   /* Escalade (Hydrogen) seulement si un champ qui compte reste absent ou douteux après Flash-Lite : le prix manque encore, ou il est
      retiré par la garde, ou il contredit le prix publié. Une panne (budget, délai) ne s'escalade pas : elle se répéterait et coûterait. */
   if (!direct && !panne && ((p.prix === undefined && gardee.prix === undefined) || contredit || retire.includes('prix'))) {
     const fort = await demander('fort');
-    modeles.push('fort');
+    modeles.push('relu par une IA plus forte');
     if (fort) { const g2 = garder(fort, texte); if (g2.gardee.prix !== undefined || !r) { r = fort; gardee = { ...g2.gardee, caracteristiques: g2.gardee.caracteristiques.length ? g2.gardee.caracteristiques : gardee.caracteristiques }; retire = g2.retire; } }
   }
   // Un nom que l'IA écrit autrement ne gêne pas quand la page a déjà le sien (il ne remplace jamais) : ce n'est pas un doute.
@@ -172,7 +173,7 @@ export async function completerParIA(p: PageLue, html: string, appel: AppelIA, o
   const nouvelles = (gardee.caracteristiques ?? []).filter((c) => !deja.has(norm(c.nom)));
   if (nouvelles.length) { out.valeurs = [...(out.valeurs ?? []), ...nouvelles].slice(0, 24); ajouts.push(`${nouvelles.length} caract.`); }
   const contreditFinal = p.prix !== undefined && gardee.prix !== undefined && Math.abs(gardee.prix - p.prix) > 0.011 && gardee.prix !== p.prixTTC;
-  etapes.push({ nom: 'ia', statut: retire.length || contreditFinal ? 'douteux' : ajouts.length ? 'trouve' : 'absent', detail: [modeles.join(' puis '), ajouts.length ? `ajouté : ${ajouts.join(', ')}` : 'rien de plus', retire.length ? `retiré (absent du texte) : ${retire.join(', ')}` : '', contreditFinal ? `l'IA lit ${gardee.prix} ${gardee.devise ?? ''}, la page publie ${p.prix} ${p.devise ?? ''}` : ''].filter(Boolean).join(' ; ') });
+  etapes.push({ nom: 'ia', statut: retire.length || contreditFinal ? 'douteux' : ajouts.length ? 'trouve' : 'absent', detail: [modeles.filter(Boolean).join(' puis '), ajouts.length ? `ajouté : ${ajouts.join(', ')}` : 'rien de plus à lire', retire.length ? `retiré (absent du texte) : ${retire.join(', ')}` : '', contreditFinal ? `l'IA lit ${gardee.prix} ${gardee.devise ?? ''}, la page publie ${p.prix} ${p.devise ?? ''}` : ''].filter(Boolean).join(' ; ') });
   if (contreditFinal) {
     const i = etapes.findIndex((e) => e.nom === 'controle');
     const d = `prix : l'IA lit ${gardee.prix}, les données ${p.prix}`;
