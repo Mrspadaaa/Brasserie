@@ -540,6 +540,25 @@ export function renommer(etat: Etat, args: { carnetId: string; titre: string; me
   return b.resultat(`✓ Renommé · avant : ${avant}`, { avant });
 }
 
+/**
+ * T28-3 : « Compléter » sur un lien mort : l'article que le lien avait laissé (« lecture… » à jamais) devient « introuvable » (« ne mène plus
+ * à la fiche : rien n'a été lu ») pour que le brasseur le complète à la main (nom, prix) ; il ne reste jamais « en lecture ».
+ */
+export function marquerIntrouvable(etat: Etat, args: { messageId: string }): Resultat {
+  const b = new Brouillon(etat);
+  let n = 0;
+  for (const d of etat) {
+    if (d.type !== 'carnet') continue;
+    const c = b.carnet(d.id);
+    if (!c) continue;
+    let touche = false;
+    for (const a of c.carnet.articles) if (a.messageId === args.messageId && a.lecture !== 'lue') { a.lecture = 'introuvable'; touche = true; n += 1; }
+    if (touche) poser(b, c);
+  }
+  if (!n) return refus('Article introuvable.');
+  return b.resultat('Article gardé : à compléter');
+}
+
 /* ---------- veille (R31) ---------- */
 
 /** Allumer ou éteindre la veille d'un article. Allumée : `{ active: true, depuis }`, sans `releveLe` (relève sous accord). Éteinte : retirée. */

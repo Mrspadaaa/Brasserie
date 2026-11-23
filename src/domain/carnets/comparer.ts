@@ -7,6 +7,7 @@
  */
 import { parseDecimal } from '../../ui/numericInput';
 import { quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
+import { dimensionDuClassement, ecartDePrix, prixDeClassement, type Dimension } from './prixUnitaire';
 import { dispoDe, nomArticle, sourceDuCritere, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
 
 type Donnees = Pick<DonneesCarnet, 'criteres' | 'facons' | 'articles' | 'choix'>;
@@ -273,7 +274,7 @@ function raisonEcarte(c: Donnees, a: Article): string | null {
 }
 
 /** Les clés de classement, dans l'ordre : les caractéristiques des critères (sens connu), puis le prix s'il départage (même devise). */
-type Cle = { sorte: 'colonne'; colonne: Colonne } | { sorte: 'prix' };
+type Cle = { sorte: 'colonne'; colonne: Colonne } | { sorte: 'prix'; /** T28-6 : classé au prix par kg (ou par L) quand les offres disent leur quantité */ parUnite?: Dimension };
 
 /** Le prix classe s'il est connu sur au moins 2 articles en lice, tous dans la même devise ; sinon il ne dit rien de sûr. */
 function prixClasse(enLice: readonly Article[]): boolean {
@@ -283,7 +284,7 @@ function prixClasse(enLice: readonly Article[]): boolean {
 
 function clesDe(colonnes: readonly Colonne[], enLice: readonly Article[]): Cle[] {
   const cles: Cle[] = colonnes.filter(k => k.critereId && k.sens !== 'texte').map(colonne => ({ sorte: 'colonne' as const, colonne }));
-  if (prixClasse(enLice)) cles.push({ sorte: 'prix' });
+  if (prixClasse(enLice)) { const dim = dimensionDuClassement(enLice); cles.push(dim ? { sorte: 'prix', parUnite: dim } : { sorte: 'prix' }); }
   return cles;
 }
 
@@ -292,7 +293,7 @@ function trier(articles: readonly Article[], cles: readonly Cle[]): Article[] {
   return [...articles].sort((a, b) => {
     for (const k of cles) {
       const d = k.sorte === 'prix'
-        ? comparerSur(a.prixCentimes ?? null, b.prixCentimes ?? null, 'moins')
+        ? comparerSur(prixDeClassement(a, k.parUnite ?? null), prixDeClassement(b, k.parUnite ?? null), 'moins')
         : comparerSur(ordonnable(valeurDe(a, k.colonne), k.colonne.sens), ordonnable(valeurDe(b, k.colonne), k.colonne.sens), k.colonne.sens);
       if (d !== 0) return d;
     }
@@ -302,12 +303,12 @@ function trier(articles: readonly Article[], cles: readonly Cle[]): Article[] {
 
 /** La règle en mots, tirée des clés mêmes du tri : ce qu'affiche l'en-tête est ce qui classe (P32). */
 function rangeParCles(cles: readonly Cle[]): string | null {
-  const noms = cles.map(k => (k.sorte === 'prix' ? 'le prix' : avecArticle(k.colonne.nom, k.colonne.sens)));
+  const noms = cles.map(k => (k.sorte === 'prix' ? (k.parUnite === 'volume' ? 'le prix au litre' : k.parUnite ? 'le prix au kilo' : 'le prix') : avecArticle(k.colonne.nom, k.colonne.sens)));
   if (!noms.length) return null;
   return noms.length === 1 ? noms[0] : `${noms[0]} d'abord, ${noms.slice(1).map(n => `puis ${n}`).join(', ')}`;
 }
 
-const prixComparable = (a: Article, b: Article): boolean => a.prixCentimes !== undefined && b.prixCentimes !== undefined && (a.devise ?? 'CHF') === (b.devise ?? 'CHF');
+const prixComparable = (a: Article, b: Article): boolean => a.prixCentimes !== undefined && b.prixCentimes !== undefined && (a.devise ?? 'CHF') === (b.devise ?? 'CHF') && ecartDePrix(a, b) !== null;
 
 /**
  * `a` est-il moins bien partout que `b` (dominé au sens de Pareto) ? Sur les caractéristiques comparables (connues des deux, sens plus,
@@ -327,7 +328,7 @@ export function domine(a: Article, b: Article, colonnes: readonly Colonne[]): bo
     if (va === null || vb === null) continue;
     ecarts.push(comparerSur(vb, va, k.sens)); /* < 0 : b meilleur */
   }
-  if (prixComparable(a, b)) ecarts.push(b.prixCentimes! - a.prixCentimes!);
+  if (prixComparable(a, b)) ecarts.push(ecartDePrix(a, b)!);
   return ecarts.length >= 2 && ecarts.every(e => e <= 0) && ecarts.some(e => e < 0);
 }
 

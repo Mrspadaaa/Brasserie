@@ -34,13 +34,16 @@ import { jetons, objetDe, parleDuBrassin, TITRE_BRASSIN } from '../../domain/car
 export interface LectureEnCours {
   url: string; statut?: PageLue['statut']; etapes?: readonly EtapeLien[]; enCours?: 'ia' | 'bloquee';
   jeton?: string; debut?: number; fin?: number; reouverture?: true; escalade?: true;
+  /** T28-2 : le carnet où le lien a été collé (`null` : depuis la liste) ; la barre repliée y mène. */
+  carnetId?: string | null;
 }
 
 export type EtatRangement<L = unknown> =
   | { etape: 'repos' }
   | { etape: 'apercu'; texte: string; lignes: L[] }
   | { etape: 'en-cours'; messageId: string; texte: string; lecture?: LectureEnCours }
-  | { etape: 'range'; messageId: string; texte: string; rangement: 'ia' | 'simulee' | 'locale'; lignes: LigneCarnet[] | null; lecture?: LectureEnCours }
+  /* `dejaRange` (T28-17) : le lien collé était déjà dans ce carnet ; reconnu au collage, sans lecture ni IA */
+  | { etape: 'range'; messageId: string; texte: string; rangement: 'ia' | 'simulee' | 'locale'; lignes: LigneCarnet[] | null; lecture?: LectureEnCours; dejaRange?: true }
   | { etape: 'echec'; messageId: string; texte: string; avis: string; lecture?: LectureEnCours }
   | { etape: 'hors-ligne'; messageId: string; texte: string; avis: string }
   | { etape: 'annule'; messageId: string; texte: string };
@@ -306,12 +309,14 @@ export interface DependancesRangement<L> {
    * Enregistre le message (`carnetMessage.rangement: 'locale'`) et ses effets locaux ; rend l'id du message. `iaAttendue` : vrai si
    * l'IA va tourner (l'écran peut montrer « ✻ … ») ; faux en mode éteint ou hors ligne (rangement local définitif).
    */
-  ecrireLocal: (texte: string, lignes: L[], options: { iaAttendue: boolean }) => Promise<{ messageId: string }> | { messageId: string };
+  ecrireLocal: (texte: string, lignes: L[], options: { iaAttendue: boolean }) => Promise<{ messageId: string; dejaRange?: boolean }> | { messageId: string; dejaRange?: boolean };
   /**
    * Remplace les effets locaux du message par ceux de l'IA, en une écriture annulable. `locale` (L-1) : l'IA a échoué après la lecture
    * des pages ; les lignes sont l'analyse locale avec les pages lues, le message reste rangé sur l'appareil.
    */
-  ecrireIA: (messageId: string, lignes: LigneCarnet[], rangement: 'ia' | 'simulee' | 'locale') => Promise<void> | void;
+  ecrireIA: (messageId: string, lignes: LigneCarnet[], rangement: 'ia' | 'simulee' | 'locale', depuis?: string | null) => Promise<void> | void;
+  /** T28-1 : le carnet où ce message a été écrit (`null` : la liste), lu sur le message ; `undefined` : message inconnu. */
+  depuisDuMessage?: (messageId: string) => string | null | undefined;
   surEtat?: (etat: EtatRangement<L>) => void;
   /** Par défaut : simulés en `simule`, réels en `production`. */
   appels?: AppelsIA;
@@ -360,10 +365,13 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
     /* Les carnets tels qu'ils étaient AVANT ce message : l'écriture locale peut créer un carnet que le rangement de l'IA remplace ; l'IA ne doit pas le voir (sinon elle y range, et il disparaît : « Ce carnet n'existe plus »). */
     const carnets = deps.carnets();
     const horsLigne = !deps.enLigne();
-    const { messageId } = await deps.ecrireLocal(texte, local, { iaAttendue: deps.mode !== 'eteint' && !horsLigne });
+    const debutCollage = Date.now();
+    const { messageId, dejaRange } = await deps.ecrireLocal(texte, local, { iaAttendue: deps.mode !== 'eteint' && !horsLigne });
+    /* T28-17 : le lien est déjà dans ce carnet (même adresse canonique) : reconnu ici, sans appel serveur ni relecture de la page */
+    if (dejaRange) return poser({ etape: 'range', messageId, texte, rangement: 'locale', lignes: null, dejaRange: true });
     if (deps.mode === 'eteint') return poser({ etape: 'range', messageId, texte, rangement: 'locale', lignes: null });
     if (horsLigne) return poser({ etape: 'hors-ligne', messageId, texte, avis: AVIS.horsLigne });
-    return passerIA(messageId, texte, carnets);
+    return passerIA(messageId, texte, carnets, { debut: debutCollage });
   }
 
   /** Critique 6, n° 24 (D-113, D-142) : « Ranger maintenant », au retour du réseau, d'un toucher : l'IA met en forme un message déjà gardé. */
@@ -375,7 +383,10 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
   }
 
   async function passerIA(messageId: string, texte: string, carnets: readonly CarnetPourIA[],
-    o: { jeton?: string; debut?: number; reouverture?: boolean; escalade?: boolean } = {}): Promise<EtatRangement<L>> {
+    o: { jeton?: string; debut?: number; reouverture?: boolean; escalade?: boolean; carnetId?: string | null } = {}): Promise<EtatRangement<L>> {
+    /* T28-1 : le carnet où le lien a été collé ; à la réouverture, celui que le suivi a gardé (puis celui du message), jamais « celui d'à présent » */
+    const depuis: string | null = o.carnetId !== undefined ? o.carnetId : o.reouverture ? (deps.depuisDuMessage?.(messageId) ?? deps.depuis) : deps.depuis;
+    const depuisIA: [string | null] | [] = o.reouverture ? [depuis] : [];
     const ctrl = new AbortController();
     controleur = ctrl;
     const urls = liensDuTexte(texte).slice(0, 3);
@@ -385,8 +396,8 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
     const debut = o.debut ?? Date.now();
     const jeton = urls.length ? o.jeton ?? nouveauJeton() : undefined;
     const drapeaux = { ...(o.reouverture ? { reouverture: true as const } : {}), ...(o.escalade ? { escalade: true as const } : {}) };
-    let lecture: LectureEnCours | undefined = urls.length ? { url: urls[0], jeton, debut, ...drapeaux } : undefined;
-    if (jeton) deps.suivi?.garder({ jeton, url: urls[0], messageId, texte, debut, ...(o.escalade ? { escalade: true as const } : {}) });
+    let lecture: LectureEnCours | undefined = urls.length ? { url: urls[0], jeton, debut, carnetId: depuis, ...drapeaux } : undefined;
+    if (jeton) deps.suivi?.garder({ jeton, url: urls[0], messageId, texte, debut, carnetId: depuis, ...(o.escalade ? { escalade: true as const } : {}) });
     const fin = (e: EtatRangement<L>) => {
       clearTimeout(delai);
       if (controleur === ctrl) controleur = null;
@@ -400,8 +411,8 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
     const echouer = async (avis: string) => {
       if (urls.length) {
         try {
-          const lignes = repliLocal(deps.analyseLocale(texte), texte, carnets, deps.depuis, pagesDesLiens(urls, pages));
-          if (lignes) await deps.ecrireIA(messageId, lignes, 'locale');
+          const lignes = repliLocal(deps.analyseLocale(texte), texte, carnets, depuis, pagesDesLiens(urls, pages));
+          if (lignes) await deps.ecrireIA(messageId, lignes, 'locale', ...depuisIA);
         } catch { /* les effets locaux restent */ }
       }
       return fin({ etape: 'echec', messageId, texte, avis, ...(lecture ? { lecture } : {}) });
@@ -441,15 +452,17 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
           return fin({ etape: 'echec', messageId, texte, avis: AVIS.introuvable, lecture });
         }
       }
-      const contexte = contexteModele(texte, deps.maintenant?.() ?? new Date(), deps.depuis, carnets, pages);
+      const contexte = contexteModele(texte, deps.maintenant?.() ?? new Date(), depuis, carnets, pages);
       const r = await course(appels.ranger(contexte, ctrl.signal));
       if (coupe()) return sortieCoupee();
       if (!r.ok) return await echouer(ERREUR_DELAI.test(r.error ?? '') ? AVIS.delai : AVIS.panne);
-      const lignes = lireReponse(r.data, { texte, carnets, depuis: deps.depuis, pages, origine: deps.mode === 'simule' ? 'exemple' : 'ia' });
+      const lignes = lireReponse(r.data, { texte, carnets, depuis, pages, origine: deps.mode === 'simule' ? 'exemple' : 'ia' });
       if (!lignes) return await echouer(AVIS.illisible);
       if (coupe()) return sortieCoupee();
       const rangement = deps.mode === 'simule' ? 'simulee' : 'ia';
-      await deps.ecrireIA(messageId, lignes, rangement);
+      await deps.ecrireIA(messageId, lignes, rangement, ...depuisIA);
+      /* T28-10 : la fin est celle de la lecture rangée (temps vécu depuis le collage), pas celle de la seule page lue par le serveur */
+      if (lecture) lecture = { ...lecture, fin: Date.now() };
       return fin({ etape: 'range', messageId, texte, rangement, lignes, ...(lecture ? { lecture } : {}) });
     } catch {
       if (coupe()) return sortieCoupee();
@@ -478,7 +491,7 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
         if (occupe) return;
         if (deps.messageExiste && !deps.messageExiste(l.messageId)) { deps.suivi.retirer(l.jeton); continue; }
         occupe = true;
-        try { await passerIA(l.messageId, l.texte, deps.carnets(), { jeton: l.jeton, debut: l.debut, reouverture: true, ...(l.escalade ? { escalade: true } : {}) }); }
+        try { await passerIA(l.messageId, l.texte, deps.carnets(), { jeton: l.jeton, debut: l.debut, reouverture: true, ...(l.carnetId !== undefined ? { carnetId: l.carnetId } : {}), ...(l.escalade ? { escalade: true } : {}) }); }
         finally { occupe = false; }
       }
     }

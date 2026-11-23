@@ -133,7 +133,8 @@ export function nouveauJeton(): string {
 export const jetonValide = (j: unknown): j is string => typeof j === 'string' && /^[A-Za-z0-9_-]{16,64}$/.test(j);
 
 /** Une lecture lancée et pas encore finie : gardée sur l'appareil, pour la retrouver à la réouverture de l'app. */
-export interface LectureGardee { jeton: string; url: string; messageId: string; texte: string; debut: number; escalade?: true }
+/** `carnetId` (T28-1) : le carnet où le lien a été collé (`null` : collé depuis la liste) ; l'article y revient à la réouverture, jamais ailleurs. */
+export interface LectureGardee { jeton: string; url: string; messageId: string; texte: string; debut: number; escalade?: true; carnetId?: string | null }
 export interface SuiviLectures { lister(): LectureGardee[]; garder(l: LectureGardee): void; retirer(jeton: string): void }
 
 /** Au-delà d'un jour, une lecture gardée ne se reprend plus (le serveur l'a close depuis longtemps). */

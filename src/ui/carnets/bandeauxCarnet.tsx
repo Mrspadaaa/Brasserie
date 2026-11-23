@@ -10,6 +10,7 @@ import type { MagasinCarnets } from '../../services/carnetsStore';
 import type { EtatRangement } from './rangement';
 import type { RangeeV } from './CarnetOuvert';
 import { Bandeau } from './Bandeau';
+import { bandeauNommantLeCarnet } from './lectureRegles';
 import { NoteEnVrac, type LigneVracV } from './NoteEnVrac';
 import type { GenreNote } from './EtatIA';
 import { libelleProposee, pucesDuCarnet, rangDuLien } from './lignesRegles';
@@ -124,7 +125,7 @@ export function bandeauxCarnet(x: BandeauxV) {
   const bandeauNode = retour && !rangee && (!retour.carnetId || retour.carnetId === idOuvert || vue.sorte === 'liste')
     ? retour.bandeau.sorte === 'vrac' && retour.messageId && vue.sorte === 'liste'
       ? <React.Fragment key={retour.id}>{vracApres(retour)}</React.Fragment>
-      : <Bandeau key={retour.id} bandeau={retour.bandeau} onAnnuler={() => annulerRetour(retour)} aideConsequence={aides.consequence}
+      : <Bandeau key={retour.id} bandeau={vue.sorte === 'liste' || (retour.carnetId && retour.carnetId !== idOuvert) ? bandeauNommantLeCarnet(retour.bandeau, retour.carnetId ? tous.find(c => c.id === retour.carnetId)?.title : undefined) : retour.bandeau} onAnnuler={() => annulerRetour(retour)} aideConsequence={aides.consequence}
         suggestion={retour.suggestion && retour.carnetId ? { titre: retour.suggestion.titre, onAjouter: () => (retour.bandeau.sorte === 'cree' ? ajouterAuSuggere : deplacerVersSuggere)(retour, retour.suggestion!.carnetId) } : null}
         onRelire={retour.avis?.sorte === 'echec' && enLigne && retour.messageId && aReprendre.some(x => x.messageId === retour.messageId) ? () => { const id = retour.messageId!; setRetour(null); void rangerMaintenant(id); } : null}
         {...(retour.avis ? { avis: retour.avis, ...(retour.detail ? { detail: retour.detail } : {}) } : {})} />

@@ -102,3 +102,6 @@
 @keyframes cnl-tour { to { transform: rotate(360deg); } }
 @keyframes cnl-respire { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .cnl-tourne, .cnl-attend, .cnl-segments i { animation: none; } }
+
+/* T28-4 : la relecture « IA plus forte » en cours : le bouton est là, éteint */
+.cnl-bouton:disabled { opacity: .6; cursor: progress; }

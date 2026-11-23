@@ -14,6 +14,7 @@ import { ArrowRightToLine, Check, ChevronDown, ChevronUp, CircleAlert, CircleChe
 import { compterEtapes, duree, lignesEtapes, type LigneEtape, type StatutVu } from '../../domain/carnets/lecture';
 import type { LectureEnCours } from './rangement';
 import { montant, type ArticleV } from './EtatIA';
+import { boutonEscalader, type Relecture } from './lectureRegles';
 import './carnets.css';
 import './lecture-lien.css';
 
@@ -98,6 +99,10 @@ export interface LectureLienProps {
   onAutreLien?: () => void;
   onCompleter?: () => void;
   onRetirer?: () => void;
+  /** T28-4 : l'échec relu avec l'IA plus forte : en cours (bouton éteint, étape qui tourne) ou finie (toujours introuvable). */
+  relecture?: Relecture;
+  /** T28-2 : le carnet où le lien a été collé, dit sur la carte de fin quand on la voit d'ailleurs. */
+  carnet?: string;
 }
 
 /** La carte des étapes, à la place du cadre « ↓ arrive ici » (pendant), puis de l'avis (fin, échec). */
@@ -115,12 +120,14 @@ export function LectureLien(p: LectureLienProps) {
 
   if (phase === 'echec') {
     const page = lignes.find(x => x.cle === 'page');
-    const pasLancees = lignes.filter(x => x.statut === 'pas-lancee').length;
+    const rel: Relecture = p.relecture ?? 'aucune';
+    const pasLancees = lignes.filter(x => x.statut === 'pas-lancee' && x.cle !== 'ia').length;
+    const bouton = boutonEscalader(rel);
     return (
-      <section ref={ref} className="cnl cnl-echec" data-lecture="echec" aria-label="Lecture du lien : lien introuvable">
+      <section ref={ref} className="cnl cnl-echec" data-lecture="echec" data-relecture={rel} aria-label={rel === 'en-cours' ? 'Lecture du lien : relue par une IA plus forte' : 'Lecture du lien : lien introuvable'} aria-busy={rel === 'en-cours'} aria-live="polite">
         <header className="cnl-tete">
-          <b className="cnl-titre cn-rouge">Lien introuvable</b>
-          <span className="cn-mut">arrêté à {c.arreteA ?? 1} sur {c.total}</span>
+          <b className={`cnl-titre${rel === 'en-cours' ? '' : ' cn-rouge'}`}>{rel === 'en-cours' ? 'Relecture · IA plus forte' : rel === 'finie' ? 'Toujours introuvable' : 'Lien introuvable'}</b>
+          {rel === 'en-cours' ? <span className="cnl-temps cn-mono">{ecoule}</span> : <span className="cn-mut">arrêté à {c.arreteA ?? 1} sur {c.total}</span>}
           <span className="cn-sp" />
           {p.onFermer && <button type="button" className="cnl-x" aria-label="Fermer" onClick={p.onFermer}><X size={16} aria-hidden /></button>}
         </header>
@@ -128,17 +135,30 @@ export function LectureLien(p: LectureLienProps) {
         <Segments lignes={lignes} />
         <ol className="cnl-etapes">
           {page && <LigneEtapeV l={{ ...page, ...(l.statut === 'introuvable' ? {} : {}) }} />}
-          {pasLancees > 0 && <li className="cnl-etape cnl-pas-lancees" data-lecture-etape data-statut="pas-lancee"><CircleDashed size={16} aria-hidden className="cnl-ico" /><span className="cnl-nom">{pasLancees} étapes pas lancées : rien n’est inventé</span></li>}
+          {rel !== 'aucune' && (
+            <li className="cnl-etape" data-lecture-etape data-escalade data-statut={rel === 'en-cours' ? 'en-cours' : 'echec'}>
+              <Icone s={rel === 'en-cours' ? 'en-cours' : 'echec'} />
+              <span className="cnl-nom">Relu par une IA plus forte</span>
+              <span className="cnl-detail"><span>{rel === 'en-cours' ? `en cours · ${ecoule}` : 'le lien ne mène toujours à rien'}</span></span>
+              <span className="cnl-mot">{rel === 'en-cours' ? 'en cours' : 'non lue'}</span>
+            </li>
+          )}
+          {pasLancees > 0 && rel !== 'en-cours' && <li className="cnl-etape cnl-pas-lancees" data-lecture-etape data-statut="pas-lancee"><CircleDashed size={16} aria-hidden className="cnl-ico" /><span className="cnl-nom">{pasLancees} étapes pas lancées : rien n’est inventé</span></li>}
         </ol>
         <div className="cnl-actions">
-          {p.onEscalader && (
+          {p.onEscalader && bouton === 'actif' && (
             <button type="button" className="cnl-bouton cnl-escalader" data-booster="escalader" onClick={p.onEscalader}>
               <Sparkles size={16} aria-hidden /> Escalader <span className="cnl-sous">IA plus forte</span>
             </button>
           )}
-          {p.onAutreLien && <button type="button" className="cnl-bouton" onClick={p.onAutreLien}><Link2 size={16} aria-hidden /> Autre lien</button>}
-          {p.onCompleter && <button type="button" className="cnl-bouton" onClick={p.onCompleter}><Pencil size={16} aria-hidden /> Compléter</button>}
-          {p.onRetirer && <button type="button" className="cnl-bouton" onClick={p.onRetirer}><Trash2 size={16} aria-hidden /> Retirer</button>}
+          {bouton === 'attente' && (
+            <button type="button" className="cnl-bouton cnl-escalader" data-booster="escalader" disabled aria-disabled="true">
+              <LoaderCircle size={16} aria-hidden className="cnl-tourne" /> Relecture… <span className="cnl-sous">IA plus forte</span>
+            </button>
+          )}
+          {p.onAutreLien && rel !== 'en-cours' && <button type="button" className="cnl-bouton" onClick={p.onAutreLien}><Link2 size={16} aria-hidden /> Autre lien</button>}
+          {p.onCompleter && rel !== 'en-cours' && <button type="button" className="cnl-bouton" onClick={p.onCompleter}><Pencil size={16} aria-hidden /> Compléter</button>}
+          {p.onRetirer && rel !== 'en-cours' && <button type="button" className="cnl-bouton" onClick={p.onRetirer}><Trash2 size={16} aria-hidden /> Retirer</button>}
         </div>
       </section>
     );
@@ -198,6 +218,7 @@ function FinLecture(p: LectureLienProps & { lignes: LigneEtape[]; ecoule: string
         <CircleCheck size={16} aria-hidden className="cnl-ico cnl-ok" />
         <b className="cnl-titre">{l.reouverture ? 'Lu pendant que l’app était fermée' : 'Lu'}</b>
         <span className="cn-mut">· {p.ecoule}</span>
+        {p.carnet && <span className="cn-mut cnl-carnet" style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>· dans « {p.carnet} »</span>}
         <span className="cn-sp" />
         {p.onFermer && <button type="button" className="cnl-x" aria-label="Fermer" onClick={p.onFermer}><X size={16} aria-hidden /></button>}
       </header>

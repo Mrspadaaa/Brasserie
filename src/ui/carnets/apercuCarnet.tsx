@@ -50,6 +50,8 @@ export interface LectureUi {
   exemple: boolean;
   onEscalader: (messageId: string, texte: string) => void;
   onCompleter: (messageId: string) => void;
+  /** T28-2 : déplier la carte depuis la barre repliée ; ouvre le carnet du lien s'il n'est pas celui qu'on a sous les yeux. */
+  deplier: (messageId: string) => void;
   onAutreLien: (messageId: string) => void;
   articleDe: (messageId: string) => { article: ArticleV; carnetId: string } | null;
   titreDe: (messageId: string) => string | undefined;
@@ -88,7 +90,11 @@ export function apercuCarnet(x: ApercuV) {
     if (etatR.etape === 'en-cours') {
       /* D448 : la lecture d'un lien montre ses étapes (début v05+v06, milieu v03) ; repliée, elle vit dans la barre au-dessus du champ (v01) */
       if (etatR.lecture) {
-        return lectureUi.replie ? null : <LectureLien lecture={etatR.lecture} phase="en-cours" exemple={lectureUi.exemple} onReplier={() => lectureUi.setReplie(true)} />;
+        /* T28-4 : la relecture « IA plus forte » garde la carte d'échec (bouton éteint, étape qui tourne) ; une lecture neuve montre ses étapes */
+        if (lectureUi.replie) return null;
+        return etatR.lecture.escalade
+          ? <LectureLien lecture={etatR.lecture} phase="echec" relecture="en-cours" exemple={lectureUi.exemple} onReplier={() => lectureUi.setReplie(true)} />
+          : <LectureLien lecture={etatR.lecture} phase="en-cours" exemple={lectureUi.exemple} onReplier={() => lectureUi.setReplie(true)} />;
       }
       /* n° 7 (g5:v01-15) : la note en vrac envoyée : « ✻ L'IA découpe votre note : 3 lignes, 2 carnets », la découpe annoncée dessous */
       const an = annonces.current.get(etatR.messageId);
@@ -102,16 +108,19 @@ export function apercuCarnet(x: ApercuV) {
       const id = etatR.messageId, l = etatR.lecture;
       const fermer = () => lectureUi.setFermee(id);
       if (etatR.etape === 'echec' && l.statut === 'introuvable') {
-        return <LectureLien lecture={l} phase="echec" exemple={lectureUi.exemple} onFermer={fermer} onEscalader={() => lectureUi.onEscalader(id, etatR.texte)}
+        return <LectureLien lecture={l} phase="echec" relecture={l.escalade ? 'finie' : 'aucune'} exemple={lectureUi.exemple} onFermer={fermer} onEscalader={() => lectureUi.onEscalader(id, etatR.texte)}
           onAutreLien={() => lectureUi.onAutreLien(id)} onCompleter={() => lectureUi.onCompleter(id)} onRetirer={fermer} />;
       }
       if (etatR.etape === 'range' && !lectureUi.replie) {
         const a = lectureUi.articleDe(id);
-        return <LectureLien lecture={l} phase="fin" exemple={lectureUi.exemple} article={l.reouverture ? a?.article ?? null : null} onFermer={fermer}
+        /* T28-2 : vue d'un autre carnet (ou de la liste, ou à la réouverture), la carte de fin nomme l'article et le carnet */
+        const ailleurs = !!a && (!ouvert || ouvert.id !== a.carnetId);
+        return <LectureLien lecture={l} phase="fin" exemple={lectureUi.exemple} article={l.reouverture || ailleurs ? a?.article ?? null : null} {...(ailleurs ? { carnet: lectureUi.titreDe(id) } : {})} onFermer={fermer}
           {...(a ? { onOuvrirArticle: () => lectureUi.ouvrirArticle(a.carnetId, a.article.id) } : {})} />;
       }
     }
-    if ((etatR.etape === 'echec' || etatR.etape === 'hors-ligne') && !retourDuMessage(etatR.messageId) && !texte.trim()) {
+    /* T28-3 : un lien mort a sa carte d'échec ; « L'IA n'a pas répondu : rangé sur place » serait faux (rien n'est rangé) */
+    if ((etatR.etape === 'echec' || etatR.etape === 'hors-ligne') && !(etatR.etape === 'echec' && etatR.lecture?.statut === 'introuvable') && !retourDuMessage(etatR.messageId) && !texte.trim()) {
       return <EtatIA etat={etatR.etape} quoi={AVIS_IA[etatR.etape]} />;
     }
     if (edition) return null;
@@ -196,12 +205,12 @@ export function apercuCarnet(x: ApercuV) {
   const barreLecture = (() => {
     if (!lectureUi.replie) return null;
     if (etatR.etape === 'en-cours' && etatR.lecture) {
-      return <BarreLecture lecture={etatR.lecture} phase="en-cours" titre={lectureUi.titreDe(etatR.messageId)} onDeplier={() => lectureUi.setReplie(false)} />;
+      return <BarreLecture lecture={etatR.lecture} phase="en-cours" titre={lectureUi.titreDe(etatR.messageId)} onDeplier={() => lectureUi.deplier(etatR.messageId)} />;
     }
     if (etatR.etape === 'range' && etatR.lecture?.etapes?.length && lectureUi.fermee !== etatR.messageId) {
       const id = etatR.messageId;
       return <BarreLecture lecture={etatR.lecture} phase="fin" titre={lectureUi.titreDe(id)} nom={lectureUi.articleDe(id)?.article.nom}
-        onDeplier={() => lectureUi.setReplie(false)} onFermer={() => lectureUi.setFermee(id)} />;
+        onDeplier={() => lectureUi.deplier(id)} onFermer={() => lectureUi.setFermee(id)} />;
     }
     return null;
   })();

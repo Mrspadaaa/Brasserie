@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { FinancialPlan } from '../../domain/finance/types';
 import type { CreativeItem } from '../../types';
 import { estLienSeul, lireCarnets, lireMessages, nouvelIdCarnet, titreDePhrase, type CarnetDoc } from '../../domain/carnets/modele';
-import { liensDe, modifierNote, ranger, renommer, type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat } from '../../domain/carnets/operations';
+import { appliquerEcritures, liensDe, marquerIntrouvable, modifierNote, ranger, renommer, type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat } from '../../domain/carnets/operations';
 import { tableau as tableauDe } from '../../domain/carnets/comparer';
 import { analyserTexte, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { nommeLeCarnet, rattacher } from '../../domain/carnets/rattacher';
@@ -25,6 +25,8 @@ import { useNavigationCarnet } from './useNavigationCarnet';
 import { retourDeMessage } from './retourCarnet';
 import { creerRangementCarnets } from './rangementCarnets';
 import { suiviLocal } from '../../domain/carnets/lecture';
+import { sansArticleEnLecture } from '../../domain/carnets/comptes';
+import { carnetAOuvrirDepuisBarre } from './lectureRegles';
 import type { ArticleV } from './EtatIA';
 import type { LectureUi } from './apercuCarnet';
 import { actionsCarnet } from './actionsCarnet';
@@ -40,12 +42,16 @@ export { autreObjet, CARNET_NEUF, destinationDans, genreSousNote, ligneBrute, mo
 export { AVIS_IA, depuisIA, depuisLocale, detailDe, libelleProposee, pucesDuCarnet, rangDuLien, typerVrac, versRubrique } from './lignesRegles';
 
 export function CarnetsVue(p: CarnetsVueProps) {
-  const { magasin, items, finances, achatsPasses, mode, aides, maintenant, enLigne, carnets, tous, messages, faitsPlanning, anciennes, tauxEur, poserTaux } = useDonneesCarnets(p);
+  const { magasin, items, finances, achatsPasses, mode, aides, maintenant, enLigne, carnets: carnetsBruts, tous: tousBruts, messages, faitsPlanning, anciennes, tauxEur, poserTaux } = useDonneesCarnets(p);
+  const [etatR, setEtatR] = useState<EtatRangement<LigneLocale>>({ etape: 'repos' });
+  /* T28-11 : l'article écrit en attendant la lecture d'un lien n'est ni compté ni montré avant qu'elle ait abouti */
+  const enLecture = etatR.etape === 'en-cours' && etatR.lecture ? etatR.messageId : null;
+  const carnets = useMemo(() => sansArticleEnLecture(carnetsBruts, enLecture), [carnetsBruts, enLecture]);
+  const tous = useMemo(() => sansArticleEnLecture(tousBruts, enLecture), [tousBruts, enLecture]);
   const [vue, setVue] = useState<Vue>({ sorte: 'liste' });
   const idOuvert = vue.sorte === 'liste' ? null : vue.id;
   const ouvert = idOuvert ? tous.find(c => c.id === idOuvert) ?? null : null;
   const [texte, setTexte] = useState(p.texteInitial ?? '');
-  const [etatR, setEtatR] = useState<EtatRangement<LigneLocale>>({ etape: 'repos' });
   /** D448 : la carte des étapes repliée en barre (v01) ; la carte de fin ou d'échec fermée (par son message). */
   const [lectureRepliee, setLectureRepliee] = useState(false);
   const [lectureFermee, setLectureFermee] = useState<string | null>(null);
@@ -173,10 +179,27 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const lectureUi: LectureUi = {
     replie: lectureRepliee, setReplie: setLectureRepliee, fermee: lectureFermee, setFermee: setLectureFermee, exemple: mode === 'simule',
     onEscalader: (id, t) => { setLectureFermee(null); void rangement.escalader(id, t); },
+    /* T28-3 : « Compléter » rend l'article du lien mort (marqué « introuvable », jamais « lecture… ») et ouvre sa fiche : nom, prix à saisir */
     onCompleter: id => {
-      const inv = inversesLiens.current.get(id);
-      if (inv) { annuler(inv); inversesLiens.current.delete(id); }
       setLectureFermee(id);
+      const inv = inversesLiens.current.get(id);
+      if (!inv) return;
+      inversesLiens.current.delete(id);
+      const avant = magasin.lire();
+      annuler(inv);
+      const apres = appliquerEcritures(avant, inv);
+      appliquer(marquerIntrouvable(apres, { messageId: id }));
+      for (const c of lireCarnets(apres, { archives: true })) {
+        const a = c.carnet.articles.find(x => x.messageId === id);
+        if (a) { setVue({ sorte: 'article', id: c.id, articleId: a.id }); return; }
+      }
+    },
+    /* T28-2 : la barre repliée touchée depuis un autre carnet ouvre le carnet du lien (celui où il a été collé) */
+    deplier: id => {
+      const lien = etatR.etape !== 'repos' && etatR.etape !== 'apercu' && 'lecture' in etatR ? etatR.lecture?.carnetId : undefined;
+      const cible = carnetAOuvrirDepuisBarre(carnetDuMessage(id) ?? lien, idOuvert);
+      if (cible && tous.some(c => c.id === cible)) setVue({ sorte: 'carnet', id: cible });
+      setLectureRepliee(false);
     },
     onAutreLien: id => { setLectureFermee(id); setTexte(''); champRef.current?.focus(); },
     articleDe: id => {
