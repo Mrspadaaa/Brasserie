@@ -594,6 +594,14 @@ export const App: React.FC = () => {
     showToast(`Recette « ${recipe.name} » supprimée.`);
   };
 
+  // L-54 : un message ne se pose jamais sur le champ du bas du Carnet (« Dans À venir. » le cachait) : il se tient juste au-dessus.
+  const [toastBas, setToastBas] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    if (!toastMessage) return;
+    const zone = document.querySelector('.cn-champ-zone')?.getBoundingClientRect();
+    setToastBas(zone && zone.height > 0 ? Math.max(0, window.innerHeight - zone.top) + 8 : null);
+  }, [toastMessage]);
+
   // Un message informatif ne doit pas recouvrir la commande qui suit une
   // navigation ; les erreurs de sauvegarde restent, elles, persistantes.
   useEffect(() => {
@@ -746,7 +754,15 @@ export const App: React.FC = () => {
     enFermentation: brassinEnFermentation ? { id: brassinEnFermentation.id, jours: joursDepuisBrassage(brassinEnFermentation) } : undefined
   });
   const [navNonce, setNavNonce] = useState(0);
-  const horsConnexion = isDevLocal || (typeof navigator !== 'undefined' && navigator.onLine === false);
+  // L-56 : suivi au fil du réseau (avant, lu au seul rendu : couper le réseau ne changeait rien à l’écran).
+  const [horsReseau, setHorsReseau] = useState(() => typeof navigator !== 'undefined' && navigator.onLine === false);
+  useEffect(() => {
+    const suivre = () => setHorsReseau(navigator.onLine === false);
+    window.addEventListener('online', suivre);
+    window.addEventListener('offline', suivre);
+    return () => { window.removeEventListener('online', suivre); window.removeEventListener('offline', suivre); };
+  }, []);
+  const horsConnexion = isDevLocal || horsReseau;
 
   /** Un geste « Depuis ici » : ouvre l'écran voulu (sous-onglet compris), puis sa création. Chaque geste garde sa fonction d'aujourd'hui. */
   const runPlus = (cle: PlusCle | 'ecran') => {
@@ -1247,7 +1263,7 @@ export const App: React.FC = () => {
 
       {/* Toast notification */}
       {toastMessage && (
-        <div role="status" data-toast className="pointer-events-none fixed z-50 left-2 right-[4.75rem] bottom-[calc(var(--main-navigation-height,2.5rem)+0.75rem)] min-h-[34px] rounded-[10px] bg-cave-850 border border-cave-700 text-cave-50 px-2.5 py-1.5 shadow-lift text-sm flex items-center gap-2 animate-in fade-in min-[1024px]:left-[calc(var(--rail-width,88px)+0.5rem)] min-[1024px]:right-auto min-[1024px]:mx-0 min-[1024px]:bottom-4 min-[1024px]:w-[360px]">
+        <div role="status" data-toast style={toastBas !== null ? { bottom: toastBas } : undefined} className="pointer-events-none fixed z-50 left-2 right-[4.75rem] bottom-[calc(var(--main-navigation-height,2.5rem)+0.75rem)] min-h-[34px] rounded-[10px] bg-cave-850 border border-cave-700 text-cave-50 px-2.5 py-1.5 shadow-lift text-sm flex items-center gap-2 animate-in fade-in min-[1024px]:left-[calc(var(--rail-width,88px)+0.5rem)] min-[1024px]:right-auto min-[1024px]:mx-0 min-[1024px]:bottom-4 min-[1024px]:w-[360px]">
           <span>{toastMessage}</span>
         </div>
       )}
