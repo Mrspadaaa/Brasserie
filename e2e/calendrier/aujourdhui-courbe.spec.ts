@@ -36,3 +36,14 @@ test('CAL-AUJOURDHUI-COURBE : le trait d\'aujourd\'hui à chaque durée, et sa d
   expect(b.cote, 'fenêtre partie dans l\'avenir : la direction d\'aujourd\'hui au bord').toBe('gauche');
   expect(b.visible).toBe(true);
 });
+
+// CAL-POINT-BLEU-MUET (23.11) : « la pastille bleu, on comprend pas à quoi ça sert » (40sem-0937). Aucun point sur le creux de la petite courbe,
+// à chaque durée ; la pastille du creux le dit. Rouge sur le tour 18 (un point à chaque durée).
+test('CAL-POINT-BLEU-MUET : aucun point bleu du creux sur la courbe, à chaque durée', async ({ page }) => {
+  await poserFixture(page);
+  await ouvrirCalendrier(page);
+  for (const nom of ['2 sem.', '6 sem.', '3 mois', '6 mois', 'An']) {
+    await choisirPeriode(page, nom);
+    expect(await page.locator('.ent-cb .ent-creux-pt').count(), `${nom} : aucun point du creux`).toBe(0);
+  }
+});

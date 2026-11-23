@@ -741,7 +741,8 @@ export function Courbe({ aujourdhui, debutDonnees = false, courbe, largeur, haut
             <title>{`${e.etoile ? '★ ' : ''}${e.complet ?? e.nom}${e.montant ? ` ${e.montant}` : ''}, ${e.semaines.length > 1 ? `${e.semaines.length} fois, dès S${e.semaines[0]}` : `S${e.semaines[0]}`}`}</title>
           </g>
         )))}
-        {creux && <circle className="ent-creux-pt" cx={g.x(creux.index) + g.unit / 2} cy={g.y(creux.centimes)} r={5.5} />}
+        {/* CAL-POINT-BLEU-MUET (23.11, « la pastille bleu, on comprend pas à quoi ça sert ») : plus de point sur le creux de la petite courbe ;
+            la pastille « −4 563 · S26 '27 » le dit déjà */}
         {moisEnHaut && mois.filter(m => m.trait).map(m => <line key={`t${m.x}`} className="ent-mois-t" x1={m.x - 3} x2={m.x - 3} y1={rangeeHaute ? yMois - 12 : 1} y2={rangeeHaute ? yMois + 3 : 16} />)}
         {mois.map(m => <text key={m.x} className="ent-mois" x={m.x} y={yMois}>{m.texte}</text>)}
       </svg>
