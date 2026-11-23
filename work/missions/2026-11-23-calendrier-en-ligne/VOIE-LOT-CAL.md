@@ -65,3 +65,7 @@ Ordre et contenu inchangés (points 1 à 5 du brief), avec ces ajouts :
 - « le découpage en section, c'est très bien et très pratique, mais du c'est pas corrélé à l'échelle ça donne aucune
   information ??? » (capture grille-0951.jpg : il a tiré chaque graduation vers le bas). Les lignes de colonnes des rangées
   = les graduations de la bande, même grain (jours / semaines / mois), même x. Même cycle que D441.
+
+## Ajout 23.11 10:05 — D442 (son choix) : repère d'aujourd'hui = B « La colonne bleue monte »
+- Remplace le trait du tour 18 : la colonne bleue d'aujourd'hui des rangées traverse bande et courbe ; hors vue : dégradé bleu
+  au bord + « ‹ auj. ». Maquette : repere-aujourdhui/img/b-*.png (règle n° 1 : telle quelle). Avec D441, même cycle.
