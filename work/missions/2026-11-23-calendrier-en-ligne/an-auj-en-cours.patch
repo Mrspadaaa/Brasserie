@@ -1,0 +1,286 @@
+diff --git a/src/components/tabs/CalendrierTab.tsx b/src/components/tabs/CalendrierTab.tsx
+index a6b2fd567..f95bc6da7 100644
+--- a/src/components/tabs/CalendrierTab.tsx
++++ b/src/components/tabs/CalendrierTab.tsx
+@@ -335,7 +335,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
+   const deplieVu = !annee && echelle === 'semaine' && deplie && peutDeplier(mesure.largeur || 360, fenetre.semaines) && deplie >= fenetre.du && deplie < ajouterJours(fenetre.du, fenetre.semaines * 7) ? deplie : null;
+   /* CAL-PASSE (décision du pilote, 20.11) : l'An, ce sont douze mois à partir du début de la fenêtre (aujourd'hui par défaut, plus tôt si l'on a
+      reculé), jamais tout le passé ajouté plus l'avenir (23 colonnes) */
+-  const moisAn = useMemo(() => anneeEnMois(fenetre.du, Math.min(SEMAINES_ANNEE, Math.max(1, fenetre.semaines))), [fenetre.du, fenetre.semaines]);
++  const moisAn = useMemo(() => anneeEnMois(fenetre.du, Math.max(1, fenetre.semaines)), [fenetre.du, fenetre.semaines]);
+   const colonnes: Colonne[] = useMemo(() => {
+     if (annee) return moisAn.map(m => ({ debut: m.debut, fin: m.fin, etiquette: m.court }));
+     return colonnesDeLAxe({ echelle, semaines: modele.semaines, mois: modele.mois, du: fenetre.du, nombre: fenetre.semaines, deplie: deplieVu });
+diff --git a/src/domain/calendrier.ts b/src/domain/calendrier.ts
+index 234a2b033..8a5a8be8e 100644
+--- a/src/domain/calendrier.ts
++++ b/src/domain/calendrier.ts
+@@ -258,6 +258,9 @@ export const francsSignes = (centimes: number): string => `${centimes < 0 ? '' :
+ 
+ /** La courbe porte 52 semaines à partir du lundi de la semaine courante (E02). */
+ export const NB_SEMAINES_COURBE = 52;
++/** CAL-PLUS-QU-UN-AN (23.11, « on peut maintenant que afficher 1 ans Max ??? ») : l'horizon de la courbe et de la fenêtre va à cinq ans
++ *  (D425 : aujourd'hui + 5 ans), au-delà de l'An de 52 semaines ; l'An reste la durée du menu. */
++export const HORIZON_SEMAINES = 5 * 52 + 1;
+ /** CAL-PASSE (20.11) : jusqu'à 52 semaines de passé sont montrées et modifiables (la caisse les borne au solde de départ, jamais inventée). */
+ export const SEMAINES_PASSEES_MAX = 52;
+ 
+diff --git a/src/ui/calendrier/entete/BandeSemaines.tsx b/src/ui/calendrier/entete/BandeSemaines.tsx
+index cb917f93b..14a7071ab 100644
+--- a/src/ui/calendrier/entete/BandeSemaines.tsx
++++ b/src/ui/calendrier/entete/BandeSemaines.tsx
+@@ -41,10 +41,10 @@ export interface BandeSemainesProps {
+   aujourdhui?: string;
+ }
+ 
+-export type GrainBande = 'jour' | 'semaine' | 'mois';
++export type GrainBande = 'jour' | 'semaine' | 'mois' | 'an';
+ /** Le grain des graduations selon la largeur du cadre, en semaines (CAL-GRAIN-SUIT-DUREE). */
+ export function grainDeFenetre(semaines: number): GrainBande {
+-  return semaines <= 3 ? 'jour' : semaines >= 52 ? 'mois' : 'semaine';
++  return semaines <= 3 ? 'jour' : semaines > 2 * 52 ? 'an' : semaines >= 52 ? 'mois' : 'semaine';
+ }
+ 
+ /** Grain jour : un chiffre tous les `pas` jours (1, 2 ou 7 : le lundi), le plus petit qui tient avec 4 px d'écart. */
+@@ -75,7 +75,7 @@ const DELAI = 500;
+  * (« S47484950… »). Chaque semaine si « S53 » tient dans sa colonne avec 4 px d'écart ; sinon une sur deux, sinon une sur quatre (les semaines
+  * rondes : S48, S52, S4…) ; sinon les mois, comme l'An (N D J F…). Colonne inconnue (0) : chaque semaine, comme avant.
+  */
+-export type PasEtiquettes = 1 | 2 | 4 | 'mois';
++export type PasEtiquettes = 1 | 2 | 4 | 'mois' | 'an';
+ export const ECART_ETIQUETTES = 4;
+ export function pasEtiquettes(largeurColonne: number, largeurEtiquette: number): PasEtiquettes {
+   if (!(largeurColonne > 0)) return 1;
+@@ -126,11 +126,13 @@ export function reperesReguliers(semaines: readonly SemaineBande[], pas: 1 | 2 |
+  */
+ export function etiquettesBande(semaines: readonly SemaineBande[], pas: PasEtiquettes, largeurColonne: number, largeurEtiquette: number): Map<number, string> {
+   const res = new Map<number, string>();
+-  const candidates: Array<[number, string]> = pas === 'mois'
++  const candidates: Array<[number, string]> = pas === 'an'
++    ? semaines.flatMap((s, k) => (k > 0 && s.debut.slice(0, 4) !== semaines[k - 1].debut.slice(0, 4) ? [[k, s.debut.slice(0, 4)] as [number, string]] : []))
++    : pas === 'mois'
+     ? semaines.flatMap((s, k) => (k === 0 || moisDuJeudi(s.debut) !== moisDuJeudi(semaines[k - 1].debut) ? [[k, INITIALES[moisDuJeudi(s.debut)]] as [number, string]] : []))
+     : reperesReguliers(semaines, pas);
+   if (!(largeurColonne > 0)) { candidates.forEach(([k, t]) => res.set(k, t)); return res; }
+-  const largeur = (t: string) => (t.length === 1 ? Math.ceil(largeurEtiquette / 2) : largeurEtiquette);
++  const largeur = (t: string) => (t.length === 1 ? Math.ceil(largeurEtiquette / 2) : t.length === 4 ? Math.ceil(largeurEtiquette * 1.4) : largeurEtiquette);
+   let derniere: [number, string] | null = null;
+   for (const [k, t] of candidates) {
+     if (derniere && (k - derniere[0]) * largeurColonne < (largeur(derniere[1]) + largeur(t)) / 2 + ECART_ETIQUETTES) {
+@@ -150,7 +152,7 @@ export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, r
+   const appui = useRef<{ id: number; x: number; y: number; timer: ReturnType<typeof setTimeout>; long: boolean } | null>(null);
+   const annule = () => { if (appui.current) { clearTimeout(appui.current.timer); appui.current = null; } };
+   const wEtiquette = largeurEtiquetteMax();
+-  const pas: PasEtiquettes = surCourbe && grain === 'mois' ? 'mois' : pasEtiquettes(largeurColonne, wEtiquette);
++  const pas: PasEtiquettes = surCourbe && (grain === 'mois' || grain === 'an') ? grain : pasEtiquettes(largeurColonne, wEtiquette);
+   const etiquettes = pas === 1 ? null : etiquettesBande(semaines, pas, largeurColonne, wEtiquette);
+   const enJours = surCourbe && grain === 'jour' && largeurColonne > 0;
+   const pasJ = enJours ? pasJours(largeurColonne / 7, Math.ceil(wEtiquette * 0.75)) : 1;
+@@ -166,7 +168,7 @@ export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, r
+     return () => { document.removeEventListener('pointerdown', parDoigt, true); document.removeEventListener('keydown', parClavier, true); };
+   }, []);
+   return (
+-    <div className="ent-bd" data-bande-semaines data-pas={pas} data-doigt={doigt ? 'oui' : undefined} role="group" aria-label="Semaines ; ± affiche les mouvements et les icônes" style={{ ['--n' as string]: semaines.length, ...(colonnesCourbe ? { gridTemplateColumns: colonnesCourbe } : {}) }} data-sur-courbe={surCourbe ? 'oui' : undefined} data-grain={surCourbe ? (enJours ? 'jour' : pas === 'mois' ? 'mois' : 'semaine') : undefined}>
++    <div className="ent-bd" data-bande-semaines data-pas={pas} data-doigt={doigt ? 'oui' : undefined} role="group" aria-label="Semaines ; ± affiche les mouvements et les icônes" style={{ ['--n' as string]: semaines.length, ...(colonnesCourbe ? { gridTemplateColumns: colonnesCourbe } : {}) }} data-sur-courbe={surCourbe ? 'oui' : undefined} data-grain={surCourbe ? (enJours ? 'jour' : pas === 'mois' || pas === 'an' ? pas : 'semaine') : undefined}>
+       {semaines.map((s, k) => {
+         const v = courbe ? variation(courbe, decalage + k) : null;
+         const idee = idees.has(s.debut), retard = retards.has(s.debut);
+diff --git a/src/ui/calendrier/entete/Courbe.tsx b/src/ui/calendrier/entete/Courbe.tsx
+index 48ae0a8ce..113b6555a 100644
+--- a/src/ui/calendrier/entete/Courbe.tsx
++++ b/src/ui/calendrier/entete/Courbe.tsx
+@@ -36,6 +36,21 @@ export function variation(courbe: readonly SoldeSemaine[], i: number): number |
+   return s && s.variation !== 0 ? s.variation : null;
+ }
+ 
++const LARGEUR_AUJ = 48;
++/** CAL-AUJOURDHUI-COURBE : où dessiner aujourd'hui : son x dans la vue, ou le bord vers lequel il se trouve. */
++export function repereAujourdhui(courbe: readonly SoldeSemaine[], g: { x: (i: number) => number }, largeur: number, aujourdhui?: string): { cote: 'dans'; x: number } | { cote: 'gauche' | 'droite' } | null {
++  if (!aujourdhui || !courbe.length || !/^\d{4}-\d{2}-\d{2}/.test(aujourdhui)) return null;
++  const t = Date.parse(`${aujourdhui.slice(0, 10)}T00:00:00Z`), j = (new Date(t).getUTCDay() + 6) % 7;
++  const lundi = new Date(t - j * 864e5).toISOString().slice(0, 10);
++  const i = courbe.findIndex(s => s.lundi === lundi);
++  if (i >= 0) {
++    const x = g.x(i) + ((j + 0.5) / 7) * (g.x(i + 1) - g.x(i));
++    if (x >= 0 && x <= largeur) return { cote: 'dans', x };
++    return { cote: x < 0 ? 'gauche' : 'droite' };
++  }
++  return { cote: lundi < courbe[0].lundi ? 'gauche' : 'droite' };
++}
++
+ /** CAL-PASSE : l'index d'aujourd'hui dans la courbe (le passé la précède : `courbe[0]` n'est plus aujourd'hui). */
+ export const aujourdhuiDe = (courbe: readonly SoldeSemaine[]): number => indexAujourdhui(courbe);
+ 
+@@ -473,6 +488,8 @@ export interface CourbeProps {
+   mise?: MisePlacee | null;
+   /** Les mois sous la courbe ; `false` dans l'année, où la bande des 12 mois est la seule échelle (D-168, CRITIQUE-3 n° 11). */
+   mois?: boolean;
++  /** CAL-AUJOURDHUI-COURBE (23.11) : le jour d'aujourd'hui (ISO) : un trait sur la courbe à sa date, ou une flèche au bord vers lui. */
++  aujourdhui?: string;
+   /** L-60 (T11-14) : la fenêtre touche la butée du passé : le trait « début » dit que rien n'existe avant (sinon une courbe vide, sans repère). */
+   debutDonnees?: boolean;
+   /** Les choses étoilées, sur leur marche (« ★ Hotte −900 »). */
+@@ -577,7 +594,7 @@ export function moisHorsReserves(
+   return sortie;
+ }
+ 
+-export function Courbe({ debutDonnees = false, courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false, abscisses, alignee = !!abscisses, creuxIndex, rangeeHaute, plate = false }: CourbeProps) {
++export function Courbe({ aujourdhui, debutDonnees = false, courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false, abscisses, alignee = !!abscisses, creuxIndex, rangeeHaute, plate = false }: CourbeProps) {
+   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
+   // La police réelle arrive après le premier rendu : les noms se replacent avec ses vraies largeurs.
+   const [, setPolice] = useState(0);
+@@ -627,7 +644,11 @@ export function Courbe({ debutDonnees = false, courbe, largeur, hauteur, curseur
+   const boitesMois = mois.map(m => ({ l: m.x - 8, r: m.x + largeurTexte(m.texte) + 8, t: yMois - HAUT_RENDU, b: yMois + BAS_RENDU + 2 }));
+   // Un nom peut se poser dans la rangée des mois, entre deux mois (z2s « Six fûts inox −1 080 », w3s « Festival +2 450 »).
+   const y0 = g.y(0);
+-  const exclusions = [...obstaclesCourbe(g, cadre, creux), ...obstaclesZero(g, largeur), ...boitesMois, ...reservesHaut, ...(debutDonnees ? [{ l: 0, r: 40, t: g.haut, b: g.haut + 14 }] : [])];
++  /* CAL-AUJOURDHUI-COURBE (« on voit plus quel moment on est sur le graph ») : le trait d'aujourd'hui à son jour dans sa semaine ; hors de la vue,
++     « ‹ auj. » ou « auj. › » au pied du bord vers lui */
++  const auj = repereAujourdhui(courbe, g, largeur, aujourdhui);
++  const boiteAuj = auj && auj.cote !== 'dans' ? [{ l: auj.cote === 'gauche' ? 0 : largeur - LARGEUR_AUJ, r: auj.cote === 'gauche' ? LARGEUR_AUJ : largeur, t: g.bas - 16, b: g.bas }] : [];
++  const exclusions = [...obstaclesCourbe(g, cadre, creux), ...obstaclesZero(g, largeur), ...boitesMois, ...reservesHaut, ...boiteAuj, ...(debutDonnees ? [{ l: 0, r: 40, t: g.haut, b: g.haut + 14 }] : [])];
+   const noms = placerNoms(courbe, g, maxNoms(largeur), exclusions, mise, etoiles, [yMois]);
+   // CHV-17 : rien de nommé à montrer : le niveau du solde, au milieu du cadre (la semaine du milieu de la fenêtre)
+   const iNiveau = Math.max(0, Math.min(n - 1, cadre ? cadre.index + Math.floor(cadre.nombre / 2) : n - 1));
+@@ -670,6 +691,9 @@ export function Courbe({ debutDonnees = false, courbe, largeur, hauteur, curseur
+             <text className="ent-debut-l" x={g.x(0) + 5} y={g.haut + 10}>début</text>
+           </g>
+         )}
++        {auj && (auj.cote === 'dans'
++          ? <g className="ent-auj" data-aujourdhui="dans"><title>Aujourd’hui</title><line x1={auj.x} x2={auj.x} y1={g.haut} y2={g.bas} /><path d={`M${(auj.x - 5).toFixed(1)} ${g.haut}h10l-5 6z`} /></g>
++          : <g className="ent-auj" data-aujourdhui={auj.cote}><title>Aujourd’hui</title><text className="ent-auj-l" x={auj.cote === 'gauche' ? 2 : largeur - 2} y={g.bas - 3} textAnchor={auj.cote === 'gauche' ? 'start' : 'end'}>{auj.cote === 'gauche' ? '‹ auj.' : 'auj. ›'}</text></g>)}
+         <path className="ent-caisse" d={escalier(caisses, g)} />
+         <path className="ent-libre" d={escalier(libres, g)} />
+         {marques.map(m => (
+diff --git a/src/ui/calendrier/entete/EnTete.tsx b/src/ui/calendrier/entete/EnTete.tsx
+index acd74ee18..284c520a8 100644
+--- a/src/ui/calendrier/entete/EnTete.tsx
++++ b/src/ui/calendrier/entete/EnTete.tsx
+@@ -189,7 +189,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
+   const annee = vue === 'annee' || anneeListe;
+   const premier = Math.max(0, semainesTot.findIndex(s => s.debut >= fenetre.du));
+   // CAL-PASSE (décision du pilote, 20.11) : l'An = douze mois à partir du début de la fenêtre, jamais tout le passé ajouté et l'avenir.
+-  const nombre = annee ? clamp(Math.min(SEMAINES_ANNEE, Math.max(1, total)), 1, Math.max(1, total - premier)) : clamp(fenetre.semaines, 1, Math.max(1, total - premier));
++  // CAL-PLUS-QU-UN-AN : l'An dure au moins 52 semaines, plus si la fenêtre a été tirée au-delà (jusqu'à l'horizon)
++  const nombre = annee ? clamp(Math.max(SEMAINES_ANNEE, fenetre.semaines), 1, Math.max(1, total - premier)) : clamp(fenetre.semaines, 1, Math.max(1, total - premier));
+   const index = premier;
+   const visibles = semainesTot.slice(index, index + nombre);
+   const debutVisible = visibles[0]?.debut ?? null;
+@@ -787,7 +788,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
+         {graph && courbeC && courbe ? (
+           <GrandeCourbe courbe={courbeC} rangeeDe={rangeeDe} largeur={largeur} hauteur={hauteurGrande} paysage={paysage} lecture={lecture} onFermer={fermerLecture} reference={refGrande} gestes={gestesGrande} />
+         ) : courbe && base && cachee ? null : courbe && base && vueAl && alignement ? (
+-          <Courbe courbe={vueAl.sem} abscisses={alignement.abscisses} creuxIndex={vueAl.creuxIndex} largeur={largeur} hauteur={hauteur}
++          <Courbe aujourdhui={props.aujourdhui} courbe={vueAl.sem} abscisses={alignement.abscisses} creuxIndex={vueAl.creuxIndex} largeur={largeur} hauteur={hauteur}
+             curseur={enGesteLu && lecture !== null && !apercuC ? lecture - vueAl.d : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe}
+             mise={vueAl.mise} mois={!!props.moisCourbeAlignee} moisEnHaut etoiles={vueAl.etoiles} {...(paysageAligne ? { rangeeHaute: { hauteur: RANGEE_CHIFFRE_PAYSAGE, reserves } } : {})}>
+             {vueAl.ap && !zoomTout && (
+@@ -797,7 +798,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
+             )}
+           </Courbe>
+         ) : courbe && base ? (
+-          <Courbe debutDonnees={!!vueR4 && vueR4.d === 0 && index === 0 && (modele.passe ?? 0) > 0} courbe={vueR4 ? vueR4.sem : courbe} abscisses={echelleR4?.abscisses} alignee={false} creuxIndex={vueR4 ? vueR4.creuxIndex : undefined} largeur={largeur} hauteur={hauteur}
++          <Courbe aujourdhui={props.aujourdhui} debutDonnees={!!vueR4 && vueR4.d === 0 && index === 0 && (modele.passe ?? 0) > 0} courbe={vueR4 ? vueR4.sem : courbe} abscisses={echelleR4?.abscisses} alignee={false} creuxIndex={vueR4 ? vueR4.creuxIndex : undefined} largeur={largeur} hauteur={hauteur}
+             curseur={enGesteLu ? (lecture !== null && vueR4 ? lecture - vueR4.d : lecture) : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={vueR4 ? vueR4.mise : miseCourbe}
+             mois={false} moisEnHaut plate={plate && !paysage} etoiles={vueR4 ? vueR4.etoiles : etoilesCourbe} masque={apercuC ? null : tirage}
+             cadre={apercuC ? undefined : { index: index - (vueR4?.d ?? 0), nombre, etiquette: etiquetteRepos(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis, props.aujourdhui) }}>
+@@ -827,7 +828,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
+ 
+       {!graph && (
+         <div className="ent-bz">
+-          {annee && courbe ? <BandeAnnee courbe={courbe} mois={moisDeLAn} creux={creux} /> : vue === 'semaines' && props.colonnes && props.echelle && !bandeSurCourbe.abscisses && (props.echelle === 'jour' || props.deplie || props.echelle === 'mois') ? (
++          {annee && courbe && !(nombre > SEMAINES_ANNEE + 1 && bandeSurCourbe.abscisses) ? <BandeAnnee courbe={courbe} mois={moisDeLAn} creux={creux} /> : vue === 'semaines' && props.colonnes && props.echelle && !bandeSurCourbe.abscisses && (props.echelle === 'jour' || props.deplie || props.echelle === 'mois') ? (
+             <BandeColonnes colonnes={props.colonnes} echelle={props.echelle} aujourdhui={props.aujourdhui} deplie={props.deplie ?? null} onDeplier={props.onDeplier} onIdeeSemaine={onIdeeSemaine}
+               onJour={(jour, colonne, n) => touche(jour, colonne, `${jourEntier(jour)} · ${etiquetteS(jour)}`, n)}
+               onSemaine={(lundi, colonne, n) => touche(lundi, colonne, dateDeSemaine(lundi), n)} />
+diff --git a/src/ui/calendrier/entete/Fenetre.tsx b/src/ui/calendrier/entete/Fenetre.tsx
+index af90413b6..56f9ae064 100644
+--- a/src/ui/calendrier/entete/Fenetre.tsx
++++ b/src/ui/calendrier/entete/Fenetre.tsx
+@@ -49,8 +49,9 @@ export function fenetreDePeriode(periode: Periode | undefined, premierLundi: str
+   // le suivant (le 30 nov. : S49 à S52, jamais une semaine seule). La période reste « mois » : seule sa lecture en semaines s'allonge.
+   const semaines = semainesEntre(debut, fin) + 1;
+   const min = periode.genre === 'mois' ? MOIS_MIN_SEMAINES : 1;
+-  /* L-44 (FC-1) : « Exercice 2026 » tient en 53 semaines ISO ; la fenêtre ne dépasse jamais l'An (52, comme le geste du cadre, T9-2), son début gardé */
+-  return { du: debut, semaines: clamp(Math.max(semaines, min), 1, Math.min(SEMAINES_ANNEE, total - decalage)) };
++  /* CAL-PLUS-QU-UN-AN (23.11) : la fenêtre suit la période de l'app au-delà d'un an (« Tout », une plage de deux ans), bornée à l'horizon seul
++     (L-44 la plafonnait à 52 semaines) */
++  return { du: debut, semaines: clamp(Math.max(semaines, min), 1, total - decalage) };
+ }
+ 
+ /** Un mois lu au calendrier montre au moins ces semaines (décision pilote (c), 18.11). */
+@@ -58,6 +59,8 @@ export const MOIS_MIN_SEMAINES = 4;
+ 
+ /** Le texte du bouton de période : « 6 sem. », « 3 mois », « 6 mois », « An », ou le nombre de semaines tel quel. */
+ export function libelleDuree(semaines: number, annee: boolean): string {
++  // CAL-PLUS-QU-UN-AN : au-delà de l'An, les années entières (« 2 ans ») ou les mois (« 18 mois »)
++  if (semaines > SEMAINES_ANNEE + 1) { const ans = semaines / 52.18; return Math.abs(ans - Math.round(ans)) < 0.04 ? `${Math.round(ans)} ans` : `${Math.round(semaines / 4.348)} mois`; }
+   if (annee || semaines >= SEMAINES_ANNEE) return 'An';
+   if (semaines === 13) return '3 mois';
+   if (semaines === 26) return '6 mois';
+@@ -341,9 +344,7 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
+         // un bout garde son écart au doigt (R2) ; la semaine sous le doigt se lit dans la vue du moment (elle change au bord, R7)
+         const u = Math.round(s.v.v0 + (x + s.off) * parPx);
+         const p = poserPlage(s.role, s.a0, s.b0, s.role === 'a' ? u - s.a0 : u - s.b0, o);
+-        /* T9-2 : la fenêtre ne dépasse jamais l'An (52 semaines, CAL-PASSE) ; au-delà, l'autre bout suit. Sans cela, le début tenu au bord
+-           posait 58 semaines : bouton « An », frise de douze mois, et un cadre plus long qu'elle. */
+-        if (p.b - p.a > SEMAINES_ANNEE) { if (s.role === 'a') p.b = p.a + SEMAINES_ANNEE; else p.a = p.b - SEMAINES_ANNEE; }
++        /* CAL-PLUS-QU-UN-AN (23.11) : plus de plafond à l'An (T9-2 bornait à 52 semaines) ; poserPlage borne à l'horizon */
+         // R4 pendant le geste : aucun bout ne sort de la courbe
+         if (p.a < s.v.v0) s.v = { ...s.v, v0: p.a };
+         if (p.b > s.v.v0 + s.v.span) s.v = { ...s.v, v0: p.b - s.v.span };
+diff --git a/src/ui/calendrier/entete/entete.css b/src/ui/calendrier/entete/entete.css
+index 4f85cb5b4..c143f1486 100644
+--- a/src/ui/calendrier/entete/entete.css
++++ b/src/ui/calendrier/entete/entete.css
+@@ -216,6 +216,10 @@
+ /* D432 : sur l'axe de la courbe, les semaines hors du cadre en gris dans les marges */
+ /* gris par la couleur, pas l'opacité (axe color-contrast : 0,45 donnait 1,9:1) : 92 % du gris vers le fond tient 4,5:1 dans les deux thèmes
+    (clair ≈ 4,8:1, sombre ≈ 5:1) ; le poids 400 contre 600 dit « hors du cadre » */
++/* CAL-AUJOURDHUI-COURBE : le trait d'aujourd'hui (le bleu de la semaine courante du calendrier), ou « ‹ auj. » au bord */
++.ent-auj line { stroke: var(--ent-fin); stroke-width: 2; }
++.ent-auj path { fill: var(--ent-fin); }
++.ent-auj-l { font-size: 14px; font-weight: 700; fill: var(--ent-fin); paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 3px; }
+ /* CAL-GRAIN-SUIT-DUREE : les jours de la semaine, chacun centré sur son jour de l'axe (BandeSemaines, joursDeCellule) */
+ .ent-bd-js { position: relative; display: block; align-self: stretch; height: 20px; }
+ .ent-bd-j { position: absolute; top: 0; transform: translateX(-50%); font-size: 14px; font-weight: 600; line-height: 20px; color: var(--ent-mut); white-space: nowrap; font-variant-numeric: tabular-nums; }
+diff --git a/src/ui/calendrier/useDonneesCalendrier.ts b/src/ui/calendrier/useDonneesCalendrier.ts
+index 48f1b2ddf..b01e8e239 100644
+--- a/src/ui/calendrier/useDonneesCalendrier.ts
++++ b/src/ui/calendrier/useDonneesCalendrier.ts
+@@ -16,7 +16,7 @@ import { planBrewBatchId, type BudgetRepris } from '../../domain/finance/brewFor
+ import { brewBudgetDemands } from '../../domain/finance/brewBudget';
+ import { hasBrewStarted } from '../../domain/batchSchedule';
+ import {
+-  NB_SEMAINES_COURBE, SEMAINES_PASSEES_MAX, ajouterJours, ecartJours, anneeEnMois, budgetBrassin, coutRestantInconnu, choseArgent, choseHorsCourbe, choseBrassin, choseCoutAVenir, choseCreative, choseSansDate, choseAchatPrevu, choseVenteProbable, estFactureDeMatieres,
++  HORIZON_SEMAINES, NB_SEMAINES_COURBE, SEMAINES_PASSEES_MAX, ajouterJours, ecartJours, anneeEnMois, budgetBrassin, coutRestantInconnu, choseArgent, choseHorsCourbe, choseBrassin, choseCoutAVenir, choseCreative, choseSansDate, choseAchatPrevu, choseVenteProbable, estFactureDeMatieres,
+   fournisseurDePiece, francs, francsSignes, fusionnerFacturesLivraisons, iconesIdees, jourLisible,
+   livraisonsAttendues, lundiDe, numeroSemaine, positionChose, retardsDe, semainesDe,
+   type ChoseCalendrier, type EstimationBudget, type HypotheseCaisse, type IconeSemaine, type ModeleCalendrier
+@@ -112,7 +112,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
+      une pièce payée sans paiement le rend inconnu : pas de courbe ni de « CHF à dépenser » chiffré, jamais un solde posé comme sûr */
+   const soldeConnu = prevision.cashComplete && prevision.openingCashCents !== null;
+   const passe = semainesPassees();
+-  const semaines = semainesDe(aujourdhui, NB_SEMAINES_COURBE + passe, passe);
++  const semaines = semainesDe(aujourdhui, HORIZON_SEMAINES + passe, passe);
+   const lundi0 = semaines[0].debut;
+   const marques = new Set(echeancesProposees(prevision.items).filter(i => i.proposition === 'echeance').map(i => `argent-${i.id}`));
+ 
+@@ -193,7 +193,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
+   const ouvertureLe = soldeConnu ? isoDate(e.profile.openingCash?.date) : null; // avant lui, la caisse est plate : aucun paiement ne s'y compte
+   const reels = (passe ? mouvementsPasses(e.payments, e.transactions, ouvertureLe && ouvertureLe > lundi0 ? ouvertureLe : lundi0, aujourdhui) : []).map(m => (chosesBudget.some(c => c.id === m.id) ? { ...m, choseId: m.id } : m));
+   const depart = !soldeConnu || prevision.openingCashCents === null ? null : prevision.openingCashCents - reels.reduce((s, m) => s + m.centimes, 0);
+-  const courbe = courbeCaisse({ depart, lundi0, nbSemaines: NB_SEMAINES_COURBE + passe, passe, mouvements: [...reels, ...mouvements], mises });
++  const courbe = courbeCaisse({ depart, lundi0, nbSemaines: HORIZON_SEMAINES + passe, passe, mouvements: [...reels, ...mouvements], mises });
+   /* CRITIQUE-12 n° 2 (E23, A2) : la règle de l'effet en mots (`effetEnMots`) posée sur la chose : une fête ou une activité chiffrée que la
+      courbe ne compte pas est « hors courbe » ; sa rangée la dit « estimé », jamais « confirmé ». Les mouvements, pas la courbe : le marquage
+      ne dépend pas du solde de départ. Elle n'entre pas dans la courbe (vérité croisée A2 : la courbe = `buildForecast`). */
+@@ -233,7 +233,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
+   ];
+ 
+   return {
+-    aujourdhui, semaines, passe, mois: anneeEnMois(aujourdhui, NB_SEMAINES_COURBE + passe, passe), choses, courbe, soldeDepartInconnu: courbe === null, causeSoldeInconnu: courbe === null ? (prevision.cashCause ?? null) : null, creux: courbe ? creuxDepuis(courbe, passe) : null, hypotheses, retards,
++    aujourdhui, semaines, passe, mois: anneeEnMois(aujourdhui, HORIZON_SEMAINES + passe, passe), choses, courbe, soldeDepartInconnu: courbe === null, causeSoldeInconnu: courbe === null ? (prevision.cashCause ?? null) : null, creux: courbe ? creuxDepuis(courbe, passe) : null, hypotheses, retards,
+     propositions: choses.filter(c => c.proposition), sansDate: e.items.flatMap(i => { const c = choseSansDate(i); return c ? [c] : []; }), icones
+   };
+ }

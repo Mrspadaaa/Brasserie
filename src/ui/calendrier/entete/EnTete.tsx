@@ -787,7 +787,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
         {graph && courbeC && courbe ? (
           <GrandeCourbe courbe={courbeC} rangeeDe={rangeeDe} largeur={largeur} hauteur={hauteurGrande} paysage={paysage} lecture={lecture} onFermer={fermerLecture} reference={refGrande} gestes={gestesGrande} />
         ) : courbe && base && cachee ? null : courbe && base && vueAl && alignement ? (
-          <Courbe courbe={vueAl.sem} abscisses={alignement.abscisses} creuxIndex={vueAl.creuxIndex} largeur={largeur} hauteur={hauteur}
+          <Courbe aujourdhui={props.aujourdhui} courbe={vueAl.sem} abscisses={alignement.abscisses} creuxIndex={vueAl.creuxIndex} largeur={largeur} hauteur={hauteur}
             curseur={enGesteLu && lecture !== null && !apercuC ? lecture - vueAl.d : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe}
             mise={vueAl.mise} mois={!!props.moisCourbeAlignee} moisEnHaut etoiles={vueAl.etoiles} {...(paysageAligne ? { rangeeHaute: { hauteur: RANGEE_CHIFFRE_PAYSAGE, reserves } } : {})}>
             {vueAl.ap && !zoomTout && (
@@ -797,7 +797,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
             )}
           </Courbe>
         ) : courbe && base ? (
-          <Courbe debutDonnees={!!vueR4 && vueR4.d === 0 && index === 0 && (modele.passe ?? 0) > 0} courbe={vueR4 ? vueR4.sem : courbe} abscisses={echelleR4?.abscisses} alignee={false} creuxIndex={vueR4 ? vueR4.creuxIndex : undefined} largeur={largeur} hauteur={hauteur}
+          <Courbe aujourdhui={props.aujourdhui} debutDonnees={!!vueR4 && vueR4.d === 0 && index === 0 && (modele.passe ?? 0) > 0} courbe={vueR4 ? vueR4.sem : courbe} abscisses={echelleR4?.abscisses} alignee={false} creuxIndex={vueR4 ? vueR4.creuxIndex : undefined} largeur={largeur} hauteur={hauteur}
             curseur={enGesteLu ? (lecture !== null && vueR4 ? lecture - vueR4.d : lecture) : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={vueR4 ? vueR4.mise : miseCourbe}
             mois={false} moisEnHaut plate={plate && !paysage} etoiles={vueR4 ? vueR4.etoiles : etoilesCourbe} masque={apercuC ? null : tirage}
             cadre={apercuC ? undefined : { index: index - (vueR4?.d ?? 0), nombre, etiquette: etiquetteRepos(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis, props.aujourdhui) }}>
