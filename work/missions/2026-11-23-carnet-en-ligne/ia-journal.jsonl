@@ -311,3 +311,14 @@
 {"date":"2026-11-23T20:13:20+01:00","tache":"lireLien","url":"landi schwerlastregal","modele":"serveur (aiTask tour 28)","cout_chf":0.01,"voie":"critique tour 28"}
 {"date":"2026-11-23T20:15:43+01:00","tache":"lireLien","url":"gastro-held snackh400tn","modele":"serveur (aiTask tour 28)","cout_chf":0.01,"voie":"critique tour 28"}
 {"date":"2026-11-23T20:17:18+01:00","tache":"lireLien","url":"galaxus KS240L (doublon x2)","modele":"serveur (aiTask tour 28)","cout_chf":0.02,"voie":"critique tour 28"}
+{"date":"2026-11-23T21:00:00+01:00","tache":"lireLien","url":"galaxus KS240L","modele":"serveur (aiTask tour 30)","cout_chf":0.01,"voie":"critique tour 30"}
+{"date":"2026-11-23T21:05:00+01:00","tache":"lireLien","url":"sios Citra 1 kg","modele":"serveur (aiTask tour 30)","cout_chf":0.01,"voie":"critique tour 30"}
+{"date":"2026-11-23T21:07:00+01:00","tache":"lireLien","url":"hopfenmarkt Mosaic","modele":"serveur (aiTask tour 30)","cout_chf":0.01,"voie":"critique tour 30"}
+{"date":"2026-11-23T21:12:00+01:00","tache":"lireLien","url":"brouwland Brew Monk 30 l","modele":"serveur (aiTask tour 30)","cout_chf":0.01,"voie":"critique tour 30"}
+{"date":"2026-11-23T21:20:00+01:00","tache":"lireLien","url":"brewtools 7712213 (lien mort)","modele":"serveur (aiTask tour 30)","cout_chf":0.01,"voie":"critique tour 30"}
+{"date":"2026-11-23T21:22:00+01:00","tache":"lireLien (escalade)","url":"brewtools 7712213 (lien mort)","modele":"serveur, IA plus forte (aiTask tour 30)","cout_chf":0.05,"voie":"critique tour 30"}
+{"date":"2026-11-23T21:28:00+01:00","tache":"lireLien","url":"landi Schwerlastregal (rechargement)","modele":"serveur (aiTask tour 30)","cout_chf":0.01,"voie":"critique tour 30"}
+{"date":"2026-11-23T21:38:00+01:00","tache":"lireLien","url":"gastro-held ECO 400 (quitter)","modele":"serveur (aiTask tour 30)","cout_chf":0.01,"voie":"critique tour 30"}
+{"date":"2026-11-23T21:50:00+01:00","tache":"lireLien","url":"brouwland Brew Monk 30 l (replier)","modele":"serveur (aiTask tour 30)","cout_chf":0.01,"voie":"critique tour 30"}
+{"date":"2026-11-23T21:55:00+01:00","tache":"lireLien","url":"brewtools 7712213 (Autre lien, Retirer)","modele":"serveur (aiTask tour 30)","cout_chf":0.01,"voie":"critique tour 30"}
+{"date":"2026-11-23T21:57:00+01:00","tache":"lireLien","url":"brewtools 7712213 (Retirer)","modele":"serveur (aiTask tour 30)","cout_chf":0.01,"voie":"critique tour 30"}

@@ -1,6 +1,6 @@
 OK — onglet ouvert cherche la version chaque minute ; rechargement seulement au repos (champ, feuille, lecture IA)
 
-PRÊT À METTRE EN LIGNE (hash : voir « Commit » en bas)
+PRÊT À METTRE EN LIGNE 616b3aadd
 
 ## Diagnostic (servi en ligne, mesuré)
 - `sw.js`, `brew-alerts-sw.js` : `Cache-Control: no-cache, max-age=0` ; `index.html` : `no-cache, no-store, must-revalidate`. Le sw.js servi contient `clientsClaim` et `SKIP_WAITING` (prompt). firebase.json et vite.config.ts : corrects, rien à changer.
@@ -35,3 +35,6 @@ PRÊT À METTRE EN LIGNE (hash : voir « Commit » en bas)
 DÉCISION À PRENDRE : aucune
 CONNAISSANCE : un onglet resté ouvert n'a que la minuterie pour trouver la version ; visibilitychange ne suffit pas.
 LEÇON PROPOSÉE : aucune
+
+## Commit
+PRÊT À METTRE EN LIGNE 616b3aadd
