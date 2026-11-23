@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Bugs des workflows du 21.11 (Brasserie work/missions/2026-11-21-workflows-app/SYNTHESE.md § 1), règles de calcul. Les gestes sont joués au
  * doigt par scripts/parcours/calendrier.mjs (étape 9b).
  */
@@ -52,5 +52,25 @@ describe('B11 (WFV-3) : la vente encaissée du jour est une chose de la rangée 
   it('payée avant le début de la vue, ou sans paiement : rien d’inventé', () => {
     expect(ventes(construireModele(entrees([piece('REC-2', 'paid')], [])))).toHaveLength(0);
     expect(ventes(construireModele(entrees([piece('REC-3', 'paid')], [paiement('REC-3', '2025-01-10')])))).toHaveLength(0);
+  });
+
+  /* CAL-ANNULEES-COMPTEES (23.11, argent faux) : les deux ventes « ZZ TEST — parcours », annulées (« Écriture annulée », hors de Finances), étaient
+     comptées au Calendrier (Ventes +5 785 au lieu de +5 695). Pour annuler, le paiement est d'abord rendu (un paiement sortant égal) : la caisse est
+     nette, la rangée Ventes ne doit rien montrer de la pièce, ni sa recette ni son remboursement. */
+  it('CAL-ANNULEES-COMPTEES : une vente annulée (paiement rendu, pièce annulée) n’est dans aucune rangée et ne compte nulle part', () => {
+    const annulee = { ...piece('REC-4', 'paid'), finance: { ...piece('REC-4', 'paid').finance!, voidedAt: `${AUJ}T11:00:00.000Z` } } as FinanceTransaction;
+    const rendu = { ...paiement('REC-4'), id: 'PAY-REC-4-RENDU', direction: 'out' } as FinancialPayment;
+    const avec = construireModele(entrees([annulee], [paiement('REC-4'), rendu]));
+    const sans = construireModele(entrees([], []));
+    expect(avec.choses.filter(c => c.source.id === 'REC-4' || c.id.includes('REC-4'))).toEqual([]);
+    expect(avec.choses.filter(c => c.rangee === 'ventes').reduce((s, c) => s + (c.centimes ?? 0), 0)).toBe(sans.choses.filter(c => c.rangee === 'ventes').reduce((s, c) => s + (c.centimes ?? 0), 0));
+    /* la caisse : la recette et son remboursement s'annulent (comme Finances) ; « à dépenser » et la courbe ne bougent pas */
+    const libres = (m: typeof avec) => (m.courbe as { semaines: Array<{ caisse: number; libre: number }> } | null)?.semaines.map(x => [x.caisse, x.libre]);
+    expect(libres(avec)).toEqual(libres(sans));
+  });
+  it('CAL-ANNULEES-COMPTEES : une facture de vente annulée, jamais payée, n’est pas attendue', () => {
+    const annulee = { ...piece('REC-5', 'unpaid'), finance: { ...piece('REC-5', 'unpaid').finance!, voidedAt: `${AUJ}T11:00:00.000Z` } } as FinanceTransaction;
+    const m = construireModele(entrees([annulee], []));
+    expect(m.choses.filter(c => c.source.id === 'REC-5' || c.id.includes('REC-5'))).toEqual([]);
   });
 });

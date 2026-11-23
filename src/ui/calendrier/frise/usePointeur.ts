@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { avalerClicSuivant, DELAI_CLIC_AVALE } from '../usePointeurCourbe';
 import { aBouge, armerSens, BANDE_PX, vitesseBord } from '../../geste';
 import type React from 'react';
-import { joursDuDoigt, pasDuDoigt, type AxeDoigt } from '../entete/alignement';
+import { joursDuDoigt, joursJusquAuDoigt, pasDuDoigt, type AxeDoigt } from '../entete/alignement';
 import type { Colonne } from './Rangee';
 
 /**
@@ -46,6 +46,8 @@ export interface OptionsPointeur {
   /** CHG-4 : `cote` dit quel bord se tire ; `'debut'` : le bord gauche (la fin reste), `'fin'` : le droit. */
   onBord?: (k: number, dx: number, cote: CoteBord) => void;
   onLacheBord?: (k: number, annule: boolean, cote: CoteBord) => void;
+  /** CAL-JOUR-EXACT : le jour (ISO) du bout tiré (`debut` ou `fin` de la chose) ; présent avec `colonnes`, le bord va au jour sous le doigt. */
+  bout?: (cote: CoteBord) => string | undefined;
   /** CHG-4 : la zone de prise du bord gauche, en px (0 : pas de bord gauche) ; jamais plus du quart de la barre, dont le corps se glisse. */
   zoneBordDebut?: number;
   /** Le glisser est refusé : la raison, une fois. */
@@ -265,7 +267,11 @@ export function usePointeur(options: OptionsPointeur) {
   const largeurJourDe = (o: OptionsPointeur) => (o.largeurJour && o.largeurJour > 0 ? o.largeurJour : o.largeurColonne / 7);
   const joursDe = (s: Etat): number => {
     const axe = axeDuMoment(s);
-    if (s.axe0 && axe) return joursDuDoigt(s.axe0, s.x0, axe, s.xPrec);
+    if (s.axe0 && axe) {
+      /* CAL-JOUR-EXACT : le bout tiré va au jour dont la colonne contient le doigt, d'où qu'il ait été pris (la zone du bord fait 22 px) */
+      const bout = opts.current.bout?.(s.cote);
+      return bout ? joursJusquAuDoigt(axe, s.xPrec, bout) : joursDuDoigt(s.axe0, s.x0, axe, s.xPrec);
+    }
     const d = largeurJourDe(opts.current) || 1;
     return Math.round((s.xPrec - s.L) / d - (s.x0 - s.L) / (s.d0 || d) - 7 * s.recul);
   };

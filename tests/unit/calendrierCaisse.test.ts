@@ -1,3 +1,4 @@
+﻿import { HORIZON_SEMAINES } from '../../src/domain/calendrier';
 import { describe, expect, it } from 'vitest';
 import type { Batch, CreativeItem, StockItem, Transaction } from '../../src/types';
 import type { FinanceTransaction, FinancialPlan, FinancialProfile } from '../../src/domain/finance/types';
@@ -56,7 +57,8 @@ describe('A2 : vérité croisée avec buildForecast', () => {
     }
     /* CAL-PASSE (20.11) : la courbe commence `passe` semaines avant la semaine courante ; la semaine d'aujourd'hui est `semaines[passe]`, 52 semaines d'avenir */
     const passe = modele.courbe!.passe ?? 0;
-    expect(modele.courbe!.semaines).toHaveLength(52 + passe);
+    /* CAL-PLUS-QU-UN-AN (tour 20) : l'avenir va jusqu'à l'horizon (cinq ans), plus seulement 52 semaines */
+    expect(modele.courbe!.semaines).toHaveLength(HORIZON_SEMAINES + passe);
     expect(modele.courbe!.semaines[passe].lundi).toBe('2026-11-16');
   });
   it('sans solde de départ la courbe vaut null, jamais 0 ; ni creux, ni « à dépenser »', () => {

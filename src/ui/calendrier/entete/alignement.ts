@@ -92,19 +92,47 @@ export interface AxeDoigt { colonnes: readonly Colonne[]; largeurColonne: number
 /** Le jour réel sous le doigt (`clientX`). */
 export const jourSousLeDoigt = (a: AxeDoigt, x: number): number => jourReelDeX(a.colonnes, a.largeurColonne, x - a.gauche);
 
-/** Les jours entre le jour sous le doigt à l'appui (`a0`, `x0`) et celui sous le doigt maintenant (`a`, `x`) : le bord tiré. */
+/*
+ * CAL-JOUR-EXACT (23.11, « le choix d'un jour tombe pas exactement sur le jour ») et l'arrondi du lâcher (14 sem., doigt dans la 2e moitié de S3 :
+ * S4 écrit) : un jour, une colonne, se lit au PLANCHER (la colonne qui contient le doigt), jamais à l'arrondi. L'écart arrondi de deux positions
+ * fractionnaires se trompait d'un jour (ou d'une colonne) selon l'endroit du doigt dans sa colonne et l'endroit où il avait pris le bord.
+ */
+/** Le jour (entier, jours depuis 1970) dont la colonne contient l'abscisse ; un doigt posé sur une limite est dans le jour qui commence là. */
+const plancher = (j: number): number => Math.floor(j + 1e-7);
+
+/** Les jours entre le jour sous le doigt à l'appui (`a0`, `x0`) et celui sous le doigt maintenant (`a`, `x`), chacun lu au plancher. */
 export function joursDuDoigt(a0: AxeDoigt, x0: number, a: AxeDoigt, x: number): number {
-  const d = jourSousLeDoigt(a, x) - jourSousLeDoigt(a0, x0);
-  return Number.isFinite(d) ? Math.round(d) : 0;
+  const d = plancher(jourSousLeDoigt(a, x)) - plancher(jourSousLeDoigt(a0, x0));
+  return Number.isFinite(d) ? d : 0;
+}
+
+/** CAL-JOUR-EXACT : le bord tiré, au jour sous le doigt : les jours qui mènent du bout de la barre (`bout`, ISO) au jour dont la colonne contient `x`. */
+export function joursJusquAuDoigt(a: AxeDoigt, x: number, bout: string): number {
+  const j = jourSousLeDoigt(a, x);
+  return Number.isFinite(j) ? plancher(j) - jourReel(bout) : 0;
 }
 
 /**
- * Les colonnes de l'axe du moment entre ces deux jours : le pas d'une barre glissée (son dessin `k × colonne`, sa date un mois, une semaine ou un
- * jour par colonne). `parJour` (axe en semaines, CAL-JOUR) : les jours, en septièmes de semaine.
+ * Les colonnes de l'axe du moment entre la colonne du point pris (le jour sous le doigt à l'appui, reporté sur l'axe du moment) et celle sous le
+ * doigt maintenant : le pas d'une barre glissée (son dessin `k × colonne`, sa date un mois, une semaine ou un jour par colonne). `parJour` (axe en
+ * semaines, CAL-JOUR) : les jours, en septièmes de semaine. Plancher des deux côtés : la colonne sous le doigt reçoit ce qu'il a pris.
  */
 export function pasDuDoigt(a0: AxeDoigt, x0: number, a: AxeDoigt, x: number, parJour = false): number {
   const j0 = jourSousLeDoigt(a0, x0), j = jourSousLeDoigt(a, x);
   if (!Number.isFinite(j0) || !Number.isFinite(j)) return 0;
-  if (parJour) return Math.round(j - j0) / 7;
-  return Math.round((xDeJourReel(a.colonnes, a.largeurColonne, j) - xDeJourReel(a.colonnes, a.largeurColonne, j0)) / a.largeurColonne);
+  if (parJour) return (plancher(j) - plancher(j0)) / 7;
+  return Math.floor((x - a.gauche) / a.largeurColonne + 1e-7) - colonneDuJour(a.colonnes, plancher(j0));
+}
+
+/** La colonne (index, négatif ou au-delà hors des colonnes) qui porte le jour `j` : comptée en jours, semaines ou MOIS de calendrier hors de
+ *  l'axe (le prolongement au pas d'une colonne de mois se trompait d'un mois : février n'a pas les jours de novembre). */
+function colonneDuJour(colonnes: readonly Colonne[], j: number): number {
+  const iso = isoDeJour(j), n = colonnes.length;
+  const i = colonnes.findIndex(c => iso >= c.debut && iso <= c.fin);
+  if (i >= 0) return i;
+  const bord = iso < colonnes[0].debut ? 0 : n - 1, c = colonnes[bord], jc = joursDeColonne(c);
+  if (jc === 1) return bord + (j - jourReel(c.debut));
+  if (jc === 7) return bord + Math.floor((j - jourReel(c.debut)) / 7);
+  const mois = (s: string) => Number(s.slice(0, 4)) * 12 + Number(s.slice(5, 7));
+  return bord + mois(iso) - mois(c.debut);
 }
