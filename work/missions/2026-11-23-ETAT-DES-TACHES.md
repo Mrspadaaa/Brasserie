@@ -17,9 +17,10 @@
 - Test en ligne tour 25 : 5/7 liens justes, défauts T25-1..9 (tour25/RAPPORT.md) ; corrigés 8,5/9 dans fix-t25 (REPRISE-FIX.md :
   T25-8 libellés Galaxus gardés en allemand ; T25-7 « non publié » ×3 devenu une phrase sous la grille = petit écart à la maquette h01-6 ;
   second collage relit encore la page, coûte un appel).
-- EN COURS à la fermeture : contre-épreuve en ligne du tour 26 (agent, rapport attendu dans
-  work/missions/2026-11-23-carnet-en-ligne/tour26/, déjà des captures B6-*). À vérifier : RAPPORT.md présent et versé à BUGS (T26), sinon
-  le refaire ; et chercher un carnet « ZZ TEST — tour 26 » resté dans ses carnets (le retirer, articles puis carnet).
+- Contre-épreuve en ligne du tour 26 FAITE (commit 8c02fae9e, tour26/RAPPORT.md, BUGS OK) : T25 corrigés en ligne 8/9 (T25-8 Galaxus :
+  libellés allemands et volume non repris) ; page bloquée brouwland lue par Google (159,99 € TTC ≈ 147 CHF, nom juste, sans photo) ;
+  défauts neufs T26-1 à T26-4, tous D (libellés Galaxus, « Non publié : Volume » hors sujet, pas de photo brouwland, ligne gardée pour le
+  lien mort) ; ≈ 0,06 CHF ; carnet ZZ retiré (Carnets revenu à 15).
 - Page de choix publiée : étapes visibles pendant la lecture d'un lien, v01 à v06 (règle IA-ETAPES-VISIBLES) :
   https://claude.ai/artifact/M7FU5ad6NVhXD12Pjc9fBH (source work/missions/maquettes-carnet/page, commit 85f9592b6). En attente de son choix ;
   puis porter la version choisie (libellé « page bloquée, lue par Google » compris ; côté app, le type lit déjà etapes, TODO du flux).
@@ -28,7 +29,7 @@
   Budget de comparaison des outils (1,5 CHF) épuisé et dépassé une fois (Gemini 0,99 pour 0,8) ; leçon L18 : coût réservé avant envoi.
 - Accords en vigueur : mise à jour d'aiTask seule (23.11). Refusés : Diffbot (aucun compte), Claude/Anthropic pour lire les liens, Carbon
   (trop lent), Argon ; Neon coupé (10,7 s). Jamais de contournement de défi anti-robot (CAPTCHA, proxys).
-- Ensuite, dans l'ordre : (1) résultat de la contre-épreuve tour 26 ; (2) son choix des étapes → port ; (3) Calendrier, reconstruction
+- Ensuite, dans l'ordre : (1) T25-8 et T26-1..4 (mineurs) ; (2) son choix des étapes → port ; (3) Calendrier, reconstruction
   du cœur de la frise (D444, VOIE-LOT-CAL.md) ; (4) restes listés plus bas.
 
 ## Reprise précédente (23.11, ~14:30)
