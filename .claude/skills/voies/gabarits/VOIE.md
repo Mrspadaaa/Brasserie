@@ -12,7 +12,13 @@
 <Une phrase : le livrable complet, vérifiable.>
 
 ## Entrées
+- `DOSSIER.md` (même dossier, préparé par le pilote, 2 000 mots au plus) : extraits utiles des sources (lignes du registre, passages
+  de SPEC, de CHOIX, du code). Le lire À LA PLACE des sources brutes ; ouvrir une source seulement pour un point qu'il ne couvre pas.
 - `<chemin vérifié par Glob>` — <pourquoi le lire>
+
+## Économie (exigé par le hook, 23.11)
+- Mécanique : <ce qui part en voie executant Haiku (banc, captures, rejeu, lignes du registre), ou « aucune » et pourquoi>
+- Gestes : <un script par lot de gestes ou de contrôles, sortie filtrée ; captures à demi-échelle sauf jugement de détail>
 
 ## Possède (seuls chemins où écrire, avec RESULTAT.md)
 - `<chemin ou dossier>`

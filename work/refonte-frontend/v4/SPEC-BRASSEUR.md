@@ -2838,3 +2838,11 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (citant « Ces pourcentages ne comptent pas 5 pages qui bloquent les robots ni un lien mort : on ne contourne jamais ces blocages. ») « SI, il faut »
 - (citant le refus de contourner les défis anti-robots) « Pas de problème, fait le par le biais de l'ia ou gemini »
 - (classement de la page des étapes) « Carnet, lecture d’un lien, classement par écran (23.11) Début · le lien vient d'être collé : 1 v05, v06 · 2 v03, v04 · 4 v02 Milieu · 3 étapes faites, dont une douteuse : 1 v03 · 2 v01, v05, v06 · 3 v04 Barre repliée · l'app peut se fermer : 1 v01 (v01 : Toujours pas assez compact le carnet ) Fin · retrouvée à la réouverture : 2 v01, v03, v05 fin · 5 v06 (v06 : Toujours en ttc) Échec · lien introuvable : 2 base, v03 (v03 : Bouton escaler, où on pourrait utiliser encore une meilleure ia) Ça sera à faire par l'autre session, Parcontre ça manque un peu de compact, c'est pas assez dense. Comme il aura pas accès à l'artefact fait en sorte que ce soit facile »
+
+### 23.11 (nuit) — Reprise : Chrome de débug
+- « un chrome a été ouver avec pour le test, jamais utiliser le chrome in claude. » (avec la commande chrome.exe --remote-debugging-port=9222 --user-data-dir=C:\Users\mrspa\chrome-test)
+- « et jamais fermé le chrome de débug »
+
+### 23.11 (nuit) — Jetons
+- « Est-ce que on peut mieux optimisé ça sans perdre en qualité ? »
+- « 2,3,4 à mettre en place » (2 : dossier préparé par voie ; 3 : le mécanique à Haiku ; 4 : gestes groupés en un script, captures à demi-échelle)

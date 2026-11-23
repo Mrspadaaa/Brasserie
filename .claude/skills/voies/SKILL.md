@@ -108,6 +108,12 @@ L'approbation des commandes (écrites par le pilote lui-même) se fait au premie
   3. un **dossier de conception** de 3 000 mots au plus, que les concepteurs lisent à la place des sources ; skills et règles sont lus une
      fois par le pilote et résumés dans ce dossier ;
   4. en v0, on capture le repos et un seul état ; les autres états viennent en passe 2.
+  5. (23.11, « 2,3,4 à mettre en place » ; vérifié par `garde-jetons.mjs`) **dossier par voie** : `voies/<id>/DOSSIER.md`, ≤ 2 000 mots,
+     les extraits utiles (lignes du registre par `grep`, passages de SPEC, de CHOIX, signatures du code), lu à la place des sources brutes
+     (le 23.11, quatre voies sur quatre ont passé 200 k à relire BUGS.md, les maquettes et les captures) ; **le mécanique à Haiku** :
+     ligne « Mécanique : » — banc, captures, rejeu, lignes du registre partent dans une voie `executant` planifiée d'emblée, ou « aucune »
+     avec la raison ; **gestes groupés** : ligne « Gestes : » — un script par lot de gestes ou de contrôles, sortie filtrée, captures à
+     demi-échelle (`scale: 0.5`) sauf jugement de détail.
 
 ## 4. Vérifier (pilote)
 À chaque retour, une ligne arrive. Puis :
