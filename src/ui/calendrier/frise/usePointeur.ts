@@ -81,6 +81,16 @@ export interface OptionsPointeur {
  */
 const ZONE_DEFILE_PX = BANDE_PX;
 
+/**
+ * T29-6 (23.11, « tenir la barre 2,5 s au bord droit : la frise passe de 6 sem. à 6 mois et l'événement saute de 11 semaines ») : le défilement
+ * au bord est mesuré. La vitesse du module `geste` croît avec la profondeur du doigt ; comptée en colonnes de l'appui (65 px à 6 sem.), elle
+ * allait jusqu'à 8 colonnes par seconde. Au plus 3 colonnes par seconde : un doigt tenu 2,5 s ajoute 7 semaines, jamais 20.
+ */
+export const COLONNES_MAX_PAR_S = 3;
+export function colonnesParImage(vitesse: number, dt: number, largeur: number, colonne: number): number {
+  return Math.min((vitesse * dt * largeur) / Math.max(1, colonne), COLONNES_MAX_PAR_S * dt);
+}
+
 /** Le sens où le doigt tire la fenêtre : `-1` bord gauche (le passé), `1` bord droit (le futur), `0` ailleurs. `arme` : sens du dernier mouvement. */
 export function sensDefilement(x: number, arme: number, cadre: { left: number; right: number }): -1 | 0 | 1 {
   return vitesseBord(x - cadre.left, cadre.right - cadre.left, arme).sens;
@@ -382,7 +392,7 @@ export function usePointeur(options: OptionsPointeur) {
       /* comptée en semaines (un axe en jours en a sept par semaine : le bord n'y avance pas sept fois plus vite) */
       /* VISION-tour9 n° 2 : comptée en colonnes de l'APPUI (une fenêtre qui grandit rétrécit ses colonnes : comptée en colonnes du moment, elle
          allait de 6 à 23 semaines en 1,5 s et la bulle ne suivait plus) */
-      s.acc += (vitesse * dt * largeur) / Math.max(1, s.mode === 'bord' ? (s.d0 || largeurJourDe(oo)) * 7 : (s.w0 || oo.largeurColonne));
+      s.acc += colonnesParImage(vitesse, dt, largeur, Math.max(1, s.mode === 'bord' ? (s.d0 || largeurJourDe(oo)) * 7 : (s.w0 || oo.largeurColonne)));
       while (s.acc >= 1) {
         s.acc -= 1;
         /* la barre sortirait d'une fenêtre qui GLISSE : elle ne fait alors que grandir (jamais une barre tenue qui disparaît sous le doigt) ;

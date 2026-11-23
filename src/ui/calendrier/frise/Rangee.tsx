@@ -595,6 +595,11 @@ function statutArgent(c: ChoseCalendrier): 'confirme' | 'du' | 'prevu' {
   return c.source.genre === 'facture' ? 'du' : 'prevu';
 }
 
+/** T29-9 : la rangée n'a aucune chose dans le cadre seul (ses marges et ce qui est plus loin ne comptent pas) : « vide ». */
+export function rangeeVide(choses: readonly ChoseCalendrier[], colonnesCadre: readonly Colonne[]): boolean {
+  return !choses.some(c => positionDans(colonnesCadre, c));
+}
+
 /** E23 : « Ventes, confirmé de S47 à S52 : 2 choses, solde +900 ». Ce qui n'est pas chiffré est dit en mots, jamais compté 0. */
 export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], colonnes: readonly Colonne[]): Pastille {
   /* le caddie d'un brassin répète une part de son budget : la pastille ne le recompte pas */
@@ -609,8 +614,13 @@ export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], c
   const comptees = fermes.filter(c => !(c.horsCourbe && c.centimes !== undefined));
   // CHD-7 : des mois sur deux années disent leur année (« oct. 2026–oct. 2027 »), jamais « oct.–oct. »
   const c0 = colonnes[0], cN = colonnes[colonnes.length - 1];
-  const deuxAns = !!c0 && !!cN && !/^S\d/.test(c0.etiquette) && c0.debut.slice(0, 4) !== cN.fin.slice(0, 4);
-  const premier = (c0?.etiquette ?? '') + (deuxAns ? ` ${c0.debut.slice(2, 4)}` : ''), dernier = (cN?.etiquette ?? '') + (deuxAns ? ` ${cN.fin.slice(2, 4)}` : '');
+  const enSemaines = !!c0 && /^S\d/.test(c0.etiquette);
+  /* T29-10 (23.11, « prévu S48–S47 », « prévu S48–S25 » : la plage se lisait à l'envers) : des semaines disent leur année dès que le cadre passe
+     l'an (plus de 52 colonnes), comme les mois dès qu'ils changent d'année ; l'année d'une semaine est celle de son jeudi (ISO 8601) */
+  const anSemaine = (lundiIso: string) => ajouterJours(lundiIso, 3).slice(0, 4);
+  const passeLAn = enSemaines && colonnes.length > 52;
+  const deuxAns = !!c0 && !!cN && !enSemaines && c0.debut.slice(0, 4) !== cN.fin.slice(0, 4);
+  const premier = (c0?.etiquette ?? '') + (passeLAn ? ` ${anSemaine(c0.debut)}` : deuxAns ? ` ${c0.debut.slice(2, 4)}` : ''), dernier = (cN?.etiquette ?? '') + (passeLAn ? ` ${anSemaine(cN.debut)}` : deuxAns ? ` ${cN.fin.slice(2, 4)}` : '');
   const du = colonnes[0]?.debut ?? '', au = colonnes[colonnes.length - 1]?.fin ?? '';
   /* CHD-3 (21.11) : un brassin porte son budget entier sur sa barre ; la pastille compte ce qui sort DANS la fenêtre, par date (ses lignes de
      prévision). Un brassin dont aucune ligne ne tombe dans la fenêtre n'a pas de mouvement : ni « −90 », ni « solde non renseigné » */
@@ -772,21 +782,25 @@ const surface = (a: Boite, b: Boite) => Math.max(0, Math.min(a.right, b.right) -
  * La place de la bulle (fonction pure). `piste` : la boîte de la piste à l'écran ; `x` le centre de la colonne visée, `haut` et `bas` la barre
  * tenue, `largeur` la largeur de la piste : tout dans le repère de la piste. `murs` : les titres de rangée ; `obstacles` : le reste, pondéré.
  */
-export function placerBulle(o: { w: number; h: number; x: number; haut: number; bas: number; largeur: number; piste: { left: number; top: number; height?: number }; murs: readonly Boite[]; obstacles: readonly Obstacle[] }): PlaceBulle {
-  const { w, h, x, haut, bas, largeur, piste, murs, obstacles } = o;
+export function placerBulle(o: { w: number; h: number; x: number; haut: number; bas: number; largeur: number; piste: { left: number; top: number; height?: number }; murs: readonly Boite[]; obstacles: readonly Obstacle[]; cadre?: { top: number; bottom: number } }): PlaceBulle {
+  const { w, h, x, haut, bas, largeur, piste, murs, obstacles, cadre } = o;
   const gaucheMax = Math.max(2, largeur - w - 2);
   const dessus = haut - h - 4, dessous = bas + 4;
   /* Les hauteurs : au-dessus du doigt (prix 0), sous la barre (prix 6), puis toute la hauteur de la piste par pas de 4 px, chaque pixel
      d'écart à ces deux places payé 0,5. Une place hors de la piste mesurée n'est pas retenue ; sans mesure (jsdom), les deux places seules. */
   const hauteur = piste.height ?? 0;
   const tops = new Map<number, number>();
-  const ajouter = (t: number) => {
-    if (hauteur > 0 && (t < 0 || t + h > hauteur)) return;
+  /* T29-5, CALP-5 (23.11, « l'étiquette couvre la barre glissée ») : une piste d'une ligne (28 px) ne laisse aucune place à une bulle de 24 px
+     qui ne touche pas la barre tenue ; les deux places d'au-dessus et d'au-dessous du doigt restent permises hors de la piste, dans le cadre
+     de la frise (une rangée voisine, jamais sous un titre : les murs et les obstacles les notent comme les autres) */
+  const dansLeCadre = (t: number) => !cadre || (piste.top + t >= cadre.top && piste.top + t + h <= cadre.bottom);
+  const ajouter = (t: number, horsPiste = false) => {
+    if (hauteur > 0 && (t < 0 || t + h > hauteur) && !(horsPiste && dansLeCadre(t))) return;
     const prix = Math.min(Math.abs(t - dessus) * 0.5, 6 + Math.abs(t - dessous) * 0.5);
     tops.set(Math.round(t), Math.min(tops.get(Math.round(t)) ?? Infinity, prix));
   };
-  ajouter(dessus);
-  ajouter(dessous);
+  ajouter(dessus, true);
+  ajouter(dessous, true);
   if (hauteur > 0) for (let t = 0; t + h <= hauteur; t += 4) ajouter(t);
   /* sans place dans la piste : sur la barre tenue (le doigt la couvre déjà), jamais sur un titre */
   if (!tops.size) tops.set(Math.round(haut + (bas - haut - h) / 2), 600);
@@ -837,7 +851,8 @@ function BulleIci({ texte, x, haut, bas, largeur, choseId }: { texte: string; x:
     ];
     /* seuls comptent les obstacles à la hauteur de la piste (et de la barre tenue, si la piste est trop basse) */
     const bande = (r: Boite) => !(p.height > 0) || (r.bottom > p.top + Math.min(0, haut - h - 4) && r.top < p.top + Math.max(p.height, bas + h + 4));
-    const place = placerBulle({ w, h, x, haut, bas, largeur, piste: { left: p.left, top: p.top, height: p.height }, murs: [...boites(MURS_BULLE), ...(rectVolant() ? [rectVolant() as DOMRect] : [])], obstacles: obstacles.filter(bande) });
+    const fr = piste.closest('[data-frise]')?.getBoundingClientRect();
+    const place = placerBulle({ w, h, x, haut, bas, largeur, piste: { left: p.left, top: p.top, height: p.height }, ...(fr && fr.height > 0 ? { cadre: { top: fr.top, bottom: fr.bottom } } : {}), murs: [...boites(MURS_BULLE), ...(rectVolant() ? [rectVolant() as DOMRect] : [])], obstacles: obstacles.filter(bande) });
     b.style.left = `${place.left}px`;
     b.style.top = `${place.top}px`;
   }, [texte, x, haut, bas, largeur, choseId]);
@@ -860,7 +875,8 @@ export const Rangee: React.FC<RangeeProps> = props => {
   const cachees = masquee ? dedans.length - montrees.length : 0;
   const cadreCols = props.colonnesCadre ?? colonnes;
   const p = pastille(id, masquee ? [] : dedans.filter(c => positionDans(cadreCols, c)), cadreCols);
-  const vide = dedans.length === 0;
+  /* T29-9 : des choses hors du cadre seul (dans ses marges, ou plus loin) ne font pas une pastille sans somme : « vide » */
+  const vide = masquee ? dedans.length === 0 : rangeeVide(dedans, cadreCols);
   const texteCachees = cachees ? `${cachees} chose${cachees > 1 ? 's' : ''} cachée${cachees > 1 ? 's' : ''}` : '';
   const zoneTitre = paysage ? largeurTitre(nom, masquee ? (texteCachees || 'masquée') : vide ? 'vide' : p.texte) : 0;
   const largeursRenvois = renvois.map(r => largeurRenvoi(r.texte));
@@ -1020,7 +1036,6 @@ export const Rangee: React.FC<RangeeProps> = props => {
             const top = y(d.ligne);
             const surDrag = drag && drag.id === c.id;
             if (d.marque) {
-              const commeBarre = !d.petite;
               /* paquet D n° 2 (D385) : un jalon se glisse comme une barre, à la semaine en vue Semaine (son jour de la semaine se garde : le
                  4 déc. glissé d'une colonne donne le 11), au jour sur un axe en jours. Le pas d'1/7 de colonne donnait +10 j pour 1,4 colonne. */
               const pas = largeurColonne;
@@ -1038,8 +1053,9 @@ export const Rangee: React.FC<RangeeProps> = props => {
                   {...(props.barre.marge ? { marge: props.barre.marge } : {})} {...(props.barre.defile ? { defile: props.barre.defile } : {})}
                   onToucher={props.barre.onToucher} onSixSemaines={props.onSixSemaines}
                   onGlisse={props.barre.onGlisse} onLacheGlisse={props.barre.onLacheGlisse} onRefus={(ch: ChoseCalendrier, raison: string) => props.barre.onRefus(ch, raison)}
-                  /* test en ligne du paquet E : la petite marque (Mois, 3 mois, An) se glisse comme une barre ; son appui long garde les 6 semaines (E27) */
-                  {...(commeBarre ? { onAppuiLong: props.barre.onAppuiLong } : {})}
+                  /* test en ligne du paquet E : la petite marque (Mois, 3 mois, An) se glisse comme une barre ; T29-3 (23.11) : son appui long ouvre
+                     le menu, comme une barre, et ne change plus l'échelle (les 6 semaines de E27 changeaient la fenêtre sous le doigt) */
+                  onAppuiLong={props.barre.onAppuiLong}
                 />
               );
             }

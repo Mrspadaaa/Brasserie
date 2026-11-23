@@ -276,9 +276,10 @@ export const Marque: React.FC<MarqueProps> = props => {
     refuseGlisse: () => (glissable && chose.deplacable !== true ? chose.deplacable.raison : glissable ? null : 'marque'),
     onRefus: raison => { if (glissable) props.onRefus?.(chose, raison); },
     onToucher: () => cible.current && props.onToucher(chose, cible.current),
+    /* T29-3 (23.11, test en ligne : « tenir ou glisser une barre ne change jamais l'échelle ») : tenue, une marque n'ouvre plus les 6 semaines
+       (E27, D-199) : la fenêtre changeait sous le doigt et le glisser se posait une semaine plus tôt. Elle ouvre son menu, comme une barre. */
     onAppuiLong: () => {
       if (avecMenu && cible.current && props.onAppuiLong) props.onAppuiLong(chose, cible.current);
-      else props.onSixSemaines?.(chose);
     },
     onGlisse: k => props.onGlisse?.(chose, k),
     onLacheGlisse: (k, annule) => props.onLacheGlisse?.(chose, k, annule)

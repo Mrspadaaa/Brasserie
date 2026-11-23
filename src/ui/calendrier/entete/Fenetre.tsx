@@ -22,7 +22,15 @@ const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 /** Le texte du bouton de période : « 6 sem. », « 3 mois », « 6 mois », « An », ou le nombre de semaines tel quel. */
 export function libelleDuree(semaines: number, annee: boolean): string {
   // CAL-PLUS-QU-UN-AN : au-delà de l'An, les années entières (« 2 ans ») ou les mois (« 18 mois »)
-  if (semaines > SEMAINES_ANNEE + 1) { const ans = semaines / 52.18; return Math.abs(ans - Math.round(ans)) < 0.04 ? (Math.round(ans) === 1 ? 'An' : `${Math.round(ans)} ans`) : `${Math.round(semaines / 4.348)} mois`; }
+  if (semaines > SEMAINES_ANNEE + 1) {
+    const ans = semaines / 52.18;
+    if (Math.abs(ans - Math.round(ans)) < 0.04 && Math.round(ans) === 1) return 'An';
+    /* T29-12 (23.11, « 31 mois », « 46 mois », « 63 mois » : attendu « 2 ans ½ », « 5 ans ») : dès deux ans, des années au demi-an près (le quart
+       s'arrondit vers le bas) ; en dessous, les mois (« 18 mois ») */
+    if (ans < 1.95) return `${Math.round(semaines / 4.348)} mois`;
+    const demis = Math.ceil(ans * 2 - 0.55);
+    return demis % 2 ? `${(demis - 1) / 2} ans ½` : `${demis / 2} ans`;
+  }
   if (annee || semaines >= SEMAINES_ANNEE) return 'An';
   if (semaines === 13) return '3 mois';
   if (semaines === 26) return '6 mois';

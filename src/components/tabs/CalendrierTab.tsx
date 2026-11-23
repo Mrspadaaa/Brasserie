@@ -117,7 +117,7 @@ type Panneau = 'tri' | 'filtre' | null;
 export function CalendrierTab(props: CalendrierTabProps) {
   const { transactions, batches, stockItems, onOpenBatch, onOpenFinances, onOpenAgenda, onOpenCarnet, onOpenCourses, onPoserBrassin, onPoserFete, onPoserDepense, onOuvrirBudget, onOpenPiece, section, centrerSur } = props;
   const port = useMemo(() => props.port ?? portParDefaut(), [props.port]);
-  const lues = useDonneesCalendrier({ transactions, batches, stockItems, aujourdhui: props.aujourdhui });
+  const lues = useDonneesCalendrier({ transactions, batches, stockItems, aujourdhui: props.aujourdhui, periode: props.periode });
   const don = props.donnees ?? lues;
   const { modele: modeleLu, aujourdhui } = don;
   /* les choses prêtes pour la frise : budget de chaque brassin, courses d'un brassin en un caddie relié, pastilles « lié à » ; la courbe

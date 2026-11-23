@@ -820,7 +820,9 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       {!graph && (
         <div className="ent-bz">
           {repereAuj && repereAuj.cote === 'dans' && <i className="ent-auj-bd" aria-hidden="true" data-auj-bande style={{ left: Math.max(0, repereAuj.x0), width: Math.max(5, Math.min(largeur, repereAuj.x1) - Math.max(0, repereAuj.x0)) }} />}
-          {repereAuj && repereAuj.cote !== 'dans' && <span className={`ent-auj-hors ent-auj-hors--${repereAuj.cote}`} data-auj-bande={repereAuj.cote}>{repereAuj.cote === 'gauche' ? '‹ auj.' : 'auj. ›'}</span>}
+          {/* T29-11 (23.11, « ‹ auj. » touché : le cadre allait sur S51, la semaine cachée dessous) : le mot est un bouton, il ramène le cadre à aujourd'hui */}
+          {repereAuj && repereAuj.cote !== 'dans' && <button type="button" className={`ent-auj-hors ent-auj-hors--${repereAuj.cote}`} data-auj-bande={repereAuj.cote} aria-label="Revenir à aujourd’hui"
+            onPointerDown={e => e.stopPropagation()} onClick={e => { e.stopPropagation(); agir({ type: 'aujourdhui' }); }}>{repereAuj.cote === 'gauche' ? '‹ auj.' : 'auj. ›'}</button>}
           {annee && courbe && !bandeSurCourbe.abscisses ? <BandeAnnee courbe={courbe} mois={moisDeLAn} creux={creux} /> : vue === 'semaines' && props.colonnes && props.echelle && !bandeSurCourbe.abscisses && (props.echelle === 'jour' || props.deplie || props.echelle === 'mois') ? (
             <BandeColonnes colonnes={props.colonnes} echelle={props.echelle} aujourdhui={props.aujourdhui} deplie={props.deplie ?? null} onDeplier={props.onDeplier} onIdeeSemaine={onIdeeSemaine}
               onJour={(jour, colonne, n) => touche(jour, colonne, `${jourEntier(jour)} · ${etiquetteS(jour)}`, n)}

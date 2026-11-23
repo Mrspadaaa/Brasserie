@@ -21,6 +21,8 @@ import {
   livraisonsAttendues, lundiDe, numeroSemaine, positionChose, retardsDe, semainesDe,
   type ChoseCalendrier, type EstimationBudget, type HypotheseCaisse, type IconeSemaine, type ModeleCalendrier
 } from '../../domain/calendrier';
+import { bornes, type Periode } from '../../components/periode/periode';
+import { lundi, plusSemaines, plusJours, semainesEntre } from '../../domain/calendrier/temps';
 import { courbeCaisse, creuxDepuis, type MiseDeCote, type MouvementCaisse } from '../../domain/calendrierCaisse';
 import { brassinsHabituels, echeancesProposees } from '../../domain/calendrierPropositions';
 
@@ -47,6 +49,8 @@ export interface EntreesModele {
   lignesCourses?: readonly LigneHorizon[];
   /** « Commander pour X avant S49 » (E08), déjà calculé par `vueHorizon`. */
   courses?: { nom: string; nombre: number; avant: string } | null;
+  /** La période de l'app : la frise la montre tout entière (T29-1). */
+  periode?: Periode;
 }
 
 /** Les mises de côté : une chose avec fenêtre, `miseDeCote` et un montant. Le montant est la valeur absolue du coût connu. */
@@ -77,6 +81,12 @@ export function estimationsBudget(plans: readonly FinancialPlan[]): Map<string, 
   return new Map([...sortie].map(([id, { centimes, partiel }]) => [id, { centimes, partiel }]));
 }
 
+/** La plage que couvrent `passe` semaines d'avant et `avenir` d'après aujourd'hui (le hook ne passe au modèle que ces nombres, pas la période). */
+function periodeDeSemaines(aujourdhui: string, passe: number, avenir: number): Periode {
+  const l = lundi(aujourdhui);
+  return { genre: 'dates', du: plusSemaines(l, -passe), au: plusJours(plusSemaines(l, avenir - 1), 6) };
+}
+
 /** Un brassin pas encore commencé : planifié, sans brassage réel. */
 const pasCommence = (b: Batch): boolean => b.status === 'planifie' && !hasBrewStarted(b);
 
@@ -85,8 +95,25 @@ const pasCommence = (b: Batch): boolean => b.status === 'planifie' && !hasBrewSt
  * venir. Le solde de départ ne borne plus le passé (tour 9 : le bord tombait à la date du solde, le cadre ne reculait plus). Avant cette date la
  * caisse reste plate au solde de départ : `mouvementsPasses` ne compte aucun paiement d'avant lui (voir `construireModele`).
  */
-export function semainesPassees(): number {
-  return SEMAINES_PASSEES_MAX;
+/** T29-1 (23.11) : le plus que la frise recule ou avance pour une période de l'app (dix ans) ; au-delà, le début des données est la butée. */
+export const SEMAINES_MAX = 10 * 52;
+
+/**
+ * T29-1 : la période de l'app (ex. 01.01.2024 → 31.12.2027) est entièrement atteignable sur la frise. Le passé montre au moins 52 semaines, et
+ * jusqu'au lundi de la période si elle commence plus tôt ; avant, le cadre était posé au bord de l'horizon (« 4 ans » du 24 nov. 2025 au
+ * 25 nov. 2029) et la poignée de début ne bougeait pas. « Tout » n'a pas de bornes : le passé permis.
+ */
+export function semainesPassees(periode?: Periode, aujourdhui?: string): number {
+  const du = periode ? bornes(periode).du : null;
+  if (!du || !aujourdhui) return SEMAINES_PASSEES_MAX;
+  return Math.max(SEMAINES_PASSEES_MAX, Math.min(SEMAINES_MAX, semainesEntre(lundi(du), lundi(aujourdhui))));
+}
+
+/** Les semaines d'avenir (la semaine courante comprise) : cinq ans, ou jusqu'à la fin de la période de l'app si elle va plus loin (borné à dix ans). */
+export function semainesAvenir(periode?: Periode, aujourdhui?: string): number {
+  const au = periode ? bornes(periode).au : null;
+  if (!au || !aujourdhui) return HORIZON_SEMAINES;
+  return Math.max(HORIZON_SEMAINES, Math.min(SEMAINES_MAX, semainesEntre(lundi(aujourdhui), lundi(au)) + 1));
 }
 
 /** Les paiements réels de la caisse du lundi `depuis` à aujourd'hui inclus : les mouvements des semaines passées de la courbe (les mêmes que `summarizeLedger`). */
@@ -111,8 +138,9 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   /* CHD-1 (21.11) : « une seule caisse » (K4) : le solde est connu comme Finances et le Bord le disent, la caisse COMPLÈTE (`cashComplete`, `pointBasAVenir`) ;
      une pièce payée sans paiement le rend inconnu : pas de courbe ni de « CHF à dépenser » chiffré, jamais un solde posé comme sûr */
   const soldeConnu = prevision.cashComplete && prevision.openingCashCents !== null;
-  const passe = semainesPassees();
-  const semaines = semainesDe(aujourdhui, HORIZON_SEMAINES + passe, passe);
+  const passe = semainesPassees(e.periode, aujourdhui);
+  const avenir = semainesAvenir(e.periode, aujourdhui);
+  const semaines = semainesDe(aujourdhui, avenir + passe, passe);
   const lundi0 = semaines[0].debut;
   const marques = new Set(echeancesProposees(prevision.items).filter(i => i.proposition === 'echeance').map(i => `argent-${i.id}`));
 
@@ -195,7 +223,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   const ouvertureLe = soldeConnu ? isoDate(e.profile.openingCash?.date) : null; // avant lui, la caisse est plate : aucun paiement ne s'y compte
   const reels = (passe ? mouvementsPasses(e.payments, e.transactions, ouvertureLe && ouvertureLe > lundi0 ? ouvertureLe : lundi0, aujourdhui) : []).map(m => (chosesBudget.some(c => c.id === m.id) ? { ...m, choseId: m.id } : m));
   const depart = !soldeConnu || prevision.openingCashCents === null ? null : prevision.openingCashCents - reels.reduce((s, m) => s + m.centimes, 0);
-  const courbe = courbeCaisse({ depart, lundi0, nbSemaines: HORIZON_SEMAINES + passe, passe, mouvements: [...reels, ...mouvements], mises });
+  const courbe = courbeCaisse({ depart, lundi0, nbSemaines: avenir + passe, passe, mouvements: [...reels, ...mouvements], mises });
   /* CRITIQUE-12 n° 2 (E23, A2) : la règle de l'effet en mots (`effetEnMots`) posée sur la chose : une fête ou une activité chiffrée que la
      courbe ne compte pas est « hors courbe » ; sa rangée la dit « estimé », jamais « confirmé ». Les mouvements, pas la courbe : le marquage
      ne dépend pas du solde de départ. Elle n'entre pas dans la courbe (vérité croisée A2 : la courbe = `buildForecast`). */
@@ -235,7 +263,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   ];
 
   return {
-    aujourdhui, semaines, passe, mois: anneeEnMois(aujourdhui, HORIZON_SEMAINES + passe, passe), choses, courbe, soldeDepartInconnu: courbe === null, causeSoldeInconnu: courbe === null ? (prevision.cashCause ?? null) : null, creux: courbe ? creuxDepuis(courbe, passe) : null, hypotheses, retards,
+    aujourdhui, semaines, passe, mois: anneeEnMois(aujourdhui, avenir + passe, passe), choses, courbe, soldeDepartInconnu: courbe === null, causeSoldeInconnu: courbe === null ? (prevision.cashCause ?? null) : null, creux: courbe ? creuxDepuis(courbe, passe) : null, hypotheses, retards,
     propositions: choses.filter(c => c.proposition), sansDate: e.items.flatMap(i => { const c = choseSansDate(i); return c ? [c] : []; }), icones
   };
 }
@@ -256,8 +284,10 @@ const lireRecettes = () => StorageService.getRecipes();
 const lireClients = () => StorageService.getClients();
 
 /** Le modèle du calendrier, recalculé quand le stockage ou la finance change. `batches`, `transactions` et `stockItems` viennent de l'application (props de l'onglet). */
-export function useDonneesCalendrier(entree: { transactions: Transaction[]; batches: Batch[]; stockItems: StockItem[]; aujourdhui?: string }): DonneesCalendrier {
+export function useDonneesCalendrier(entree: { transactions: Transaction[]; batches: Batch[]; stockItems: StockItem[]; aujourdhui?: string; periode?: Periode }): DonneesCalendrier {
   const aujourdhui = entree.aujourdhui ?? todayISO();
+  /* seuls ces deux nombres entrent dans le calcul : régler la période ne refait le modèle que si elle sort des 52 semaines et des 5 ans */
+  const passe = semainesPassees(entree.periode, aujourdhui), avenir = semainesAvenir(entree.periode, aujourdhui);
   const finance = useStorageValue(lireFinance);
   const items = useStorageValue(lireItems);
   const recettes = useStorageValue(lireRecettes);
@@ -269,8 +299,8 @@ export function useDonneesCalendrier(entree: { transactions: Transaction[]; batc
     const courses = vue.brassin && vue.comptes.brassin > 0 ? { nom: vue.brassin.nom, nombre: vue.comptes.brassin, avant: etiquetteSemaine(vue.limiteBrassin) } : null;
     return construireModele({
       aujourdhui, transactions, payments: finance.payments, plans: finance.plans, profile: finance.profile, assets: finance.assets, batches, stockItems, items, recettes, reglages,
-      lignesCourses: vue.lignes, courses
+      lignesCourses: vue.lignes, courses, periode: periodeDeSemaines(aujourdhui, passe, avenir)
     });
-  }, [aujourdhui, transactions, finance, batches, stockItems, items, recettes, reglages]);
+  }, [aujourdhui, transactions, finance, batches, stockItems, items, recettes, reglages, passe, avenir]);
   return { modele, plans: finance.plans, batches, recettes, clients, items, aujourdhui };
 }

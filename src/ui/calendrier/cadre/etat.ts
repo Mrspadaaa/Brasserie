@@ -55,6 +55,8 @@ export type ActionCadre =
   | { type: 'vue'; vue: VueCadre }
   /** D385 : l'échelle choisie (menu, pincer) et la fenêtre qu'elle prend. */
   | { type: 'echelle'; echelle: Echelle; fenetre: FenetreSemaines }
+  /** T29-11 : « ‹ auj. » : le cadre revient sur la semaine d'aujourd'hui, même durée. */
+  | { type: 'aujourdhui' }
   | { type: 'debutGeste' }
   | { type: 'finGeste'; annule: boolean }
   /** Annuler d'un message : l'état d'avant, tel quel. */
@@ -143,6 +145,10 @@ function agir(e: EtatCadre, a: ActionCadre, h: Horizon): EtatCadre {
     }
     case 'poser':
       return { ...e, periode: borner(a.fenetre, h), ephemere: false, vue: a.vue ?? e.vue };
+    case 'aujourdhui': {
+      const f = fenetreDuCadre(e, h);
+      return { ...e, periode: borner({ du: h.lundiAuj, semaines: f.semaines }, h), ephemere: false };
+    }
     case 'centrer':
       return { ...e, periode: borner(a.fenetre, h), vue: 'semaines', ephemere: true, avantAnnee: null };
     case 'duree': {

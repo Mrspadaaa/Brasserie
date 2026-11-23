@@ -382,15 +382,17 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           </button>
           {events.length === 0 && <p className="px-2 py-2 text-2xs text-cave-400">Aucune tâche prévue.</p>}
           <div className="divide-y divide-cave-800">
-            {events.slice(0, 3).map(item => <label key={item.id} className="flex min-h-8 cursor-pointer items-center gap-2 px-2 py-1">
-              <input type="checkbox" checked={item.status === 'done'} onChange={() => toggleEvent(item)}
-                className="h-4 w-4 shrink-0 accent-area-agenda" />
-              <span className="min-w-0 flex-1">
+            {/* T29-4 (23.11, test en ligne : toucher le nom d'une fête la cochait « Fait », vraie donnée) : seule la case coche ; le nom ouvre l'agenda,
+                où la ligne s'ouvre sur sa feuille */}
+            {events.slice(0, 3).map(item => <div key={item.id} className="flex min-h-8 items-center gap-2 px-2 py-1">
+              <input type="checkbox" checked={item.status === 'done'} onChange={() => toggleEvent(item)} aria-label={`${item.status === 'done' ? 'Refaire' : 'Fait'} : ${item.title}`}
+                className="h-4 w-4 shrink-0 cursor-pointer accent-area-agenda" />
+              <button type="button" onClick={onNavigateToCreativeLab} className="min-w-0 flex-1 cursor-pointer text-left" data-agenda-nom={item.id}>
                 <span className={`block break-words text-2xs ${item.status === 'done' ? 'text-cave-400 line-through' : 'text-cave-50'}`}>{item.title}</span>
                 {item.date && <span className="block text-xs text-cave-400">{displayDate(item.date)}{estEnRetard(item, jourJ) && <> · <b className="font-semibold text-attention">en retard</b></>}</span>}
-              </span>
+              </button>
               {item.status === 'done' && <span className="text-xs text-cave-400">Fait</span>}
-            </label>)}
+            </div>)}
           </div>
           {events.length > 3 && <button type="button" onClick={onNavigateToCreativeLab} className={`${smallAction} text-area-agenda`}>Voir tout l’agenda<ChevronRight size={14} aria-hidden="true" /></button>}
         </section>
