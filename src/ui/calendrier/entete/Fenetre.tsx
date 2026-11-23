@@ -95,6 +95,9 @@ export interface CadreProps {
   onRevient?: () => void;
   /** Pendant le tirage, la boîte de l'étiquette qui suit le doigt (les noms qu'elle couvrirait s'effacent) ; `null` au lâcher. */
   onTirage?: (boite: Boite | null) => void;
+  /** CAL-ECHELLE-SUIT-CADRE (2e refus, 23.11) : la fenêtre sous le doigt pendant le geste (début, nombre de semaines) ; `null` au lâcher. La bande
+   *  des graduations la suit en direct (gris, grain), pas seulement au lâcher. */
+  onTire?: (f: { index: number; nombre: number } | null) => void;
   /** Le nœud de la courbe : le geste s'y attache (le doigt posé à plus de 22 px du cadre lui reste, pour la lecture c2-b). */
   surface: React.RefObject<HTMLElement | null>;
   /** CAL-FRISE-PRIX : le corps du cadre tenu 450 ms sans bouger lit la semaine sous le doigt (`clientX`) ; `null` : la lecture se ferme. */
@@ -235,7 +238,7 @@ interface SaisieCadre {
   minuterie: ReturnType<typeof setTimeout> | null;
 }
 
-export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTirage, etiquetteAnnee, surface, onLire, debutRamenee, vue, onVue, aujourdhui }: CadreProps) {
+export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTirage, onTire, etiquetteAnnee, surface, onLire, debutRamenee, vue, onVue, aujourdhui }: CadreProps) {
   const total = numeros.length;
   // R4 : une semaine fait `unit` px dans la vue ; la semaine i commence en (i − v0) × unit.
   const unit = largeur / Math.max(1e-6, vue.span);
@@ -261,6 +264,10 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
   const cleTirage = tirage ? `${Math.round(tirage.l)}-${Math.round(tirage.r)}` : '';
   useEffect(() => { onTirageRef.current?.(tirage); }, [cleTirage]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => onTirageRef.current?.(null), []);
+  const onTireRef = useRef(onTire);
+  onTireRef.current = onTire;
+  useEffect(() => { onTireRef.current?.(drag ? { index: drag.index, nombre: drag.nombre } : null); }, [drag?.index, drag?.nombre, !!drag]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => onTireRef.current?.(null), []);
 
   // R10 : le recalage de la vue après le lâcher (200 ms, sans animation si le mouvement est réduit) ; un nouveau tirage l'arrête.
   const recalage = useRef(0);

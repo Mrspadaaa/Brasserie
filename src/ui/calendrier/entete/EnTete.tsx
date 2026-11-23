@@ -10,7 +10,7 @@ import { demanderPleinEcran, estPleinEcran, poserPleinCalendrier, sortirPleinEcr
 import { usePointeurCourbe } from '../usePointeurCourbe';
 import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, courbePlate, jourCourt, moisDeSemaine, semaineCourte, type Boite, type EtoileCourbe } from './Courbe';
 import { Cadre, etiquetteCadre, etiquetteRepos, fenetreDePeriode, libelleDuree, libellePeriode, periodeDeFenetre, semainesDeVue, SEMAINES_ANNEE, vueDeFenetre, type FenetreSemaines, type VueCourbe } from './Fenetre';
-import { BandeSemaines } from './BandeSemaines';
+import { BandeSemaines, grainDeFenetre, type GrainBande } from './BandeSemaines';
 import { BandeColonnes, jourEntier } from './BandeColonnes';
 import type { Echelle } from '../echelle';
 import type { Colonne } from '../frise/Rangee';
@@ -309,6 +309,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
 
   // Les états de l'en-tête.
   const [creuxOuvert, setCreuxOuvert] = useState(false);
+  /** La fenêtre sous le doigt pendant un geste du cadre (Cadre, `onTire`) ; `null` au repos. */
+  const [tiree, setTiree] = useState<{ index: number; nombre: number } | null>(null);
   const [menuOuvert, setMenuOuvert] = useState(false);
   const [retardsOuverts, setRetardsOuverts] = useState(false);
   const [lecture, setLecture] = useState<number | null>(null);
@@ -720,8 +722,13 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   })() : null;
   /* D432 (23.11, « Graduations sur la courbe ») : hors alignement et en portrait, la bande des semaines se pose sur l'axe de la courbe (R4) ; le
      cadre couvre exactement ses semaines, celles des marges en gris. Elle suit le cadre quand on l'agrandit, le rétrécit ou le déplace (vueC). */
+  /* CAL-ECHELLE-SUIT-CADRE (2e refus, 23.11, « Et échelle toujours pas dynamique... ») : la bande suit la fenêtre SOUS LE DOIGT (`tiree`), pas
+     seulement au lâcher ; et elle reste sur l'axe de la courbe à toute durée (à « 2 sem. » du menu, BandeColonnes s'étalait sur toute la largeur).
+     CAL-GRAIN-SUIT-DUREE : le grain suit la largeur du cadre : jours jusqu'à 3 semaines, semaines au-delà, mois pour un an et plus. */
+  const fenetreVue = tiree ?? { index, nombre };
+  const grain: GrainBande = grainDeFenetre(fenetreVue.nombre);
   const bandeSurCourbe: { semaines: typeof visibles; decalage: number; abscisses?: readonly number[]; dansCadre?: readonly [number, number] } = echelleR4 && !paysage
-    ? { semaines: semainesTot.slice(echelleR4.debut, echelleR4.debut + echelleR4.abscisses.length - 1), decalage: echelleR4.debut, abscisses: echelleR4.abscisses, dansCadre: [index - echelleR4.debut, index + nombre - echelleR4.debut] }
+    ? { semaines: semainesTot.slice(echelleR4.debut, echelleR4.debut + echelleR4.abscisses.length - 1), decalage: echelleR4.debut, abscisses: echelleR4.abscisses, dansCadre: [fenetreVue.index - echelleR4.debut, fenetreVue.index + fenetreVue.nombre - echelleR4.debut] }
     : { semaines: visibles, decalage: index };
   // D388, la ligne du jouable : « si tu lâches en S51 : S50 5 120 → 4 480 » (la semaine d'arrivée, la première qui change, avant → après).
   // `d` : l'index de la première semaine montrée (celui de l'alignement de la courbe, ou de l'en-tête entier en paysage).
@@ -801,7 +808,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
             ) : (
               <Cadre numeros={semainesTot.map(s => s.numero)} lundis={lundis} aujourdhui={props.aujourdhui} index={index} nombre={nombre} largeur={largeur} annee={annee}
                 onChange={changerCadre} onAnnee={versAnnee} onRevient={quitterAnnee}
-                onTirage={setTirage} etiquetteAnnee={etiquetteAnnee} surface={cadreCourbe} onLire={cx => setLecture(cx === null ? null : indexSous(cx))} debutRamenee={(modele.passe ?? 0) > 0}
+                onTirage={setTirage} onTire={setTiree} etiquetteAnnee={etiquetteAnnee} surface={cadreCourbe} onLire={cx => setLecture(cx === null ? null : indexSous(cx))} debutRamenee={(modele.passe ?? 0) > 0}
                 vue={vueC} onVue={setVueTirage} />
             )}
           </Courbe>
@@ -820,12 +827,12 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
 
       {!graph && (
         <div className="ent-bz">
-          {annee && courbe ? <BandeAnnee courbe={courbe} mois={moisDeLAn} creux={creux} /> : vue === 'semaines' && props.colonnes && props.echelle && (props.echelle === 'jour' || props.deplie || (props.echelle === 'mois' && !bandeSurCourbe.abscisses)) ? (
+          {annee && courbe ? <BandeAnnee courbe={courbe} mois={moisDeLAn} creux={creux} /> : vue === 'semaines' && props.colonnes && props.echelle && !bandeSurCourbe.abscisses && (props.echelle === 'jour' || props.deplie || props.echelle === 'mois') ? (
             <BandeColonnes colonnes={props.colonnes} echelle={props.echelle} aujourdhui={props.aujourdhui} deplie={props.deplie ?? null} onDeplier={props.onDeplier} onIdeeSemaine={onIdeeSemaine}
               onJour={(jour, colonne, n) => touche(jour, colonne, `${jourEntier(jour)} · ${etiquetteS(jour)}`, n)}
               onSemaine={(lundi, colonne, n) => touche(lundi, colonne, dateDeSemaine(lundi), n)} />
           ) : (
-            <BandeSemaines {...bandeSurCourbe} courbe={courbe} lundiCourant={modele.semaines[modele.passe ?? 0]?.debut} mouvements={mouvements} idees={idees} retards={semainesRetard} onDate={touche} onIdeeSemaine={onIdeeSemaine}
+            <BandeSemaines {...bandeSurCourbe} grain={bandeSurCourbe.abscisses ? grain : undefined} aujourdhui={props.aujourdhui} courbe={courbe} lundiCourant={modele.semaines[modele.passe ?? 0]?.debut} mouvements={mouvements} idees={idees} retards={semainesRetard} onDate={touche} onIdeeSemaine={onIdeeSemaine}
               {...(props.onDeplier && vue === 'semaines' ? { onDeplier: props.onDeplier } : {})}
               largeurColonne={bandeSurCourbe.abscisses ? largeur / Math.max(1e-6, vueC.span) : largeurColonne > 0 ? largeurColonne : largeur / Math.max(1, nombre)} />
           )}
