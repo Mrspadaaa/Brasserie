@@ -967,6 +967,11 @@ export function CalendrierTab(props: CalendrierTabProps) {
           onDecalerDebut: (jours: number) => { void ecrire(chose.source.genre === 'batch' && chose.deplacable !== true ? corrigerBrassage(chose, jours, ctxRef.current) : chose.fin && chose.fin !== chose.debut ? allongerDebut(chose, jours, ctxRef.current) : deplacerJours(chose, jours, ctxRef.current), true, chose.id, true).then(rouvrirApres(chose.id)); },
           onDecalerFin: (jours: number) => { void ecrire(allonger(chose, jours, ctxRef.current), true, chose.id, true).then(rouvrirApres(chose.id)); }
         } : {})}
+        {...(chose.source.genre === 'projet-materiel' && chose.deplacable === true && !sansDate ? {
+          /* D431, CA12-M4-19 (GESTE-DATE-PARTOUT) : l'achat prévu du Carnet se pose au jour comme le fait le glisser de sa barre (`deplacerJours`) ; sa pastille de date
+             n'était qu'un texte, qui avait l'air d'un bouton et ne répondait pas */
+          onDecalerDebut: (jours: number) => { void ecrire(deplacerJours(chose, jours, ctxRef.current), true, chose.id, true).then(rouvrirApres(chose.id)); }
+        } : {})}
         {...(editable && (chose.source.genre === 'creative' || chose.source.genre === 'plan') ? { onRenommer: (nom: string) => {
           /* RENOMMER-EVT (R1) : le titre touché devient un champ ; Entrée renomme la chose, le message porte Annuler */
           const texte = `Renommé : ${nom}`;

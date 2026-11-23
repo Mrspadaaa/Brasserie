@@ -58,7 +58,9 @@ test.describe('Lot 6 : À venir et montants', () => {
     const fiche = page.locator('.kh-sheet');
     await expect(fiche).toBeVisible();
     await page.screenshot({ path: info.outputPath('l42-fiche.png') });
-    await expect(fiche.getByRole('group', { name: /sur un mois/ }).getByRole('button', { pressed: true }), 'novembre est la puce choisie').toHaveText(/nov/);
+    /* D431 : le mois se choisit sur la feuille de date partagée (puces raccourcis + frise) ; novembre est le mois posé, dit en toutes lettres et porté par la frise */
+    await expect(fiche.locator('[data-choix-mois]'), 'novembre est le mois choisi').toHaveAttribute('data-valeur', '2026-11');
+    await expect(fiche.locator('[data-mois-pose]'), 'novembre est dit').toHaveText(/nov/i);
     await expect(fiche).not.toContainText('mais hors de tes prévisions');
     await expect(fiche).toContainText(/Calendrier/);
   });

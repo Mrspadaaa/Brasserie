@@ -695,6 +695,11 @@
 .cn-quand > .cn-horizons { gap: 6px !important; }
 .cn-quand .cn-puce { min-height: 40px; padding: 0 12px; flex: none; }
 .cn-quand .cn-quand-cal { align-self: flex-start; min-height: 40px; padding: 0 12px; }
+/* D431 (GESTE-DATE-PARTOUT, CA12-PW-2) : la frise partagée du Calendrier sous les puces. D430 : aucun texte sous 14 px dans le Carnet, les mois de la frise
+   compris (la frise du Calendrier les écrit en 12 px) ; sans date, le repère attend estompé : il ne dit pas une date qui n'est pas posée. */
+.cn-quand .cn-quand-frise { margin-top: 2px; }
+.cn-quand .cal-f-duree-rep small { font-size: 14px !important; }
+.cn-quand [data-vide] .cal-f-duree-poi::after { opacity: .45; border-style: dashed; }
 
 /* V4 fiche (21.11) : trois tailles (titre 18, corps 14, libellés 12) ; le critère « sans valeur à comparer » garde une cible de 24 px */
 .cn-ouvert :is(span, p, b, button, a, div, li, strong, em, small) { font-size: 14px !important; }
