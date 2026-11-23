@@ -99,7 +99,8 @@ export interface CarnetOuvertProps {
    * C1 (D393, 21.11) : dater le projet d'un toucher, en horizon (« vers févr. ») ; `lundi` ISO, `null` = plus tard (sans date). Absent :
    * pas de rubrique Quand. La date lue est `carnet.date` (l'icône de sa semaine au Calendrier, `iconesIdees`).
    */
-  onDater?: (lundi: string | null) => void;
+  /** `precision` : « semaine » quand la frise a posé une semaine (D431) ; défaut : le mois d'un horizon. */
+  onDater?: (lundi: string | null, precision?: 'semaine' | 'mois') => void;
   /** K2 (côté Carnet) : « Au calendrier › », la chose posée à aujourd'hui si elle n'a pas de date, puis la bascule au Calendrier. */
   onAuCalendrier?: () => void;
   /** D2 : le prix du projet (`estimatedCost`, centimes ici) et le dernier achat semblable proposé ; `semblable: null` = rien, D1. */
@@ -660,7 +661,7 @@ const jourLocal = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() 
  * état en gris, puces du carnet). Un toucher date le projet (« vers févr. »), un autre le reporte. Daté, le prix : le dernier achat
  * semblable à garder d'un toucher (« Pompe 2025 : 420 CHF »), sinon les ordres de grandeur ; posé, « estimé » jusqu'à la facture.
  */
-function RubriqueQuand(p: { date?: string; precision?: 'semaine' | 'mois'; aujourdhui: string; neuf: boolean; picto: number; onDater: (lundi: string | null) => void; onAuCalendrier?: () => void;
+function RubriqueQuand(p: { date?: string; precision?: 'semaine' | 'mois'; aujourdhui: string; neuf: boolean; picto: number; onDater: (lundi: string | null, precision?: 'semaine' | 'mois') => void; onAuCalendrier?: () => void;
   prix?: CarnetOuvertProps['prix']; onPrix?: (centimes: number) => void }) {
   /* D431 (GESTE-DATE-PARTOUT, CA12-PW-2) : sous les puces raccourcis, la frise partagée du Calendrier (`DureeFenetre seule`, rangée achats) ; le repère
      suit le doigt (brouillon), la date s'écrit au lâcher (`onDater(lundi)`), jamais à chaque pas. Sans date, le repère attend sur cette semaine, estompé. */
@@ -684,7 +685,7 @@ function RubriqueQuand(p: { date?: string; precision?: 'semaine' | 'mois'; aujou
         <DureeFenetre seule rangee="achats" debut={tire ?? lundiPose ?? lundiDe(p.aujourdhui)} fin={null} onFin={() => undefined}
           epoque={plage.epoque} dernier={plage.dernier}
           onPlage={d => { tireRef.current = d; setTire(d); }}
-          onLacher={() => { const d = tireRef.current; if (d && d !== lundiPose) p.onDater(d); else { tireRef.current = null; setTire(null); } }} />
+          onLacher={() => { const d = tireRef.current; if (d && d !== lundiPose) p.onDater(d, 'semaine'); else { tireRef.current = null; setTire(null); } }} />
       </div>
       {quand && p.onPrix && (pose === undefined || changerPrix) && (
         <div role="group" aria-label="Prix estimé" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginTop: 8 }}>

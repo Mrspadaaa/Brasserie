@@ -1488,7 +1488,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
         onRetirerCritere={(...ids) => retirerCriteres(c, ids)}
         onEnvoyerAVenir={() => void envoyerAVenir(c)}
         aujourdhui={jourIso(maintenant())}
-        onDater={lundi => dater(c, lundi)}
+        onDater={(lundi, precision) => dater(c, lundi, precision)}
         {...(sortieFinie(c) ? {} : { onAuCalendrier: () => void auCalendrier(c) })}
         prix={{ centimes: prixDuCarnet(c), semblable: prixSemblable({ nom: c.title }, achatsPasses) }}
         onPrix={x => {

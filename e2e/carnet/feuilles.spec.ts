@@ -113,6 +113,7 @@ test.describe('Carnet : au Calendrier, l’argent, les dates', () => {
     expect(apres, 'la date posée est un lundi').toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(new Date(`${apres}T12:00:00Z`).getUTCDay(), 'lundi').toBe(1);
     await expect(quand.locator('.cn-rubrique-tete'), 'l’en-tête dit la date posée').not.toContainText('pas encore daté');
+    await expect(quand.locator('.cn-rubrique-tete'), 'la frise pose une semaine, dite en semaine (jamais « vers <mois> »)').toContainText(/S\d+/);
     await page.waitForTimeout(450);
     await page.screenshot({ path: info.outputPath('quand-2-apres.png') });
   });
