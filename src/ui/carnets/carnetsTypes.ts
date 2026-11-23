@@ -29,7 +29,9 @@ export interface CarnetsVueProps {
   /** Force hors ligne (banc `&hors-ligne=1`) ; sinon `navigator.onLine`. */
   horsLigne?: boolean;
   /** Ouvrir ce carnet (« Ouvrir le carnet » d'À venir, icône du calendrier) ; une idée archivée se rouvre aussi. */
-  ouvrir?: { id: string; at: number } | null;
+  /** `depuis` (CA13-2) : ouvert depuis un autre écran (À venir) ; le retour du téléphone y ramène par `onRetourOrigine`. */
+  ouvrir?: { id: string; at: number; depuis?: 'a-venir' } | null;
+  onRetourOrigine?: () => void;
   /** + « Nouvelle idée » : le champ du bas prend le focus. */
   focusChamp?: number | null;
   /** CRN-ONGLET-RETOUR : l'onglet actif « Carnet » touché ramène à la liste ; le texte du champ reste (une note en modification n'est pas défaite). */
