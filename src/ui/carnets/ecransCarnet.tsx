@@ -82,7 +82,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
     const ici = ordre.indexOf(vue.articleId);
     const voisin = (d: number) => { const id = ordre[ici + d]; return id ? () => setVue({ sorte: 'article', id: ouvert.id, articleId: id }) : undefined; };
     const suivant = voisin(1), precedent = voisin(-1);
-    ecran = a ? <FicheArticle key={a.id} article={a as unknown as ArticleV} titreCarnet={ouvert.title} critere={ouvert.carnet.criteres[0]}
+    ecran = a ? <FicheArticle key={a.id} taux={tauxEur} article={a as unknown as ArticleV} titreCarnet={ouvert.title} critere={ouvert.carnet.criteres[0]}
       {...(suivant ? { onSuivant: suivant } : {})} {...(precedent ? { onPrecedent: precedent } : {})}
       onPrix={centimes => {
         const r = appliquer(poserPrixArticle(magasin.lire(), { carnetId: ouvert.id, articleId: a.id, centimes }));
@@ -105,7 +105,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
     const nom = (id: string) => { const a = ouvert.carnet.articles.find(x => x.id === id); return a?.nom ?? a?.domaine ?? 'lien'; };
     if (choix) {
       const a = ouvert.carnet.articles.find(x => x.id === choix.articleId)!;
-      ecran = <Choisir etape="choisi" titre={ouvert.title} choix={choix as never} article={a as unknown as ArticleV} critere={ouvert.carnet.criteres[0]} carnet={ouvert.carnet as never} picto={pictoArticle(ouvert, a)}
+      ecran = <Choisir etape="choisi" taux={tauxEur} titre={ouvert.title} choix={choix as never} article={a as unknown as ArticleV} critere={ouvert.carnet.criteres[0]} carnet={ouvert.carnet as never} picto={pictoArticle(ouvert, a)}
         facon={ouvert.carnet.facons.find(f => f.id === (choix.faconId ?? a?.faconId))} ecartes={choix.ecartes.map(e => ({ nom: nom(e.articleId), raison: e.raison }))}
         remplaces={choix.remplaces.map(r => ({ nom: nom(r.articleId), pourquoi: r.pourquoi, le: r.le }))} sortie={sortieV(ouvert)}
         onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })} onEnvoyerAVenir={() => void envoyerAVenir(ouvert)} onVoirAVenir={() => voirSortie(ouvert)} {...(sortieFinie(ouvert) ? {} : { onPlacer: () => void placer(ouvert) })} />;
@@ -115,7 +115,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
       const faconVoulue = vue.faconId;
       const dansFacon = faconVoulue ? rangees.find(l => ouvert.carnet.articles.find(x => x.id === l.articleId)?.faconId === faconVoulue) : undefined;
       const premier = ouvert.carnet.articles.find(x => x.id === (dansFacon ?? rangees[0])?.articleId) ?? ouvert.carnet.articles[0];
-      ecran = premier ? <Choisir etape="choisir" titre={ouvert.title} carnet={ouvert.carnet as never} picto={pictoArticle(ouvert, premier)} article={premier as unknown as ArticleV} sur={Math.max(rangees.length, 1)} valeurs={[]}
+      ecran = premier ? <Choisir etape="choisir" taux={tauxEur} titre={ouvert.title} carnet={ouvert.carnet as never} picto={pictoArticle(ouvert, premier)} article={premier as unknown as ArticleV} sur={Math.max(rangees.length, 1)} valeurs={[]}
         autres={rangees.slice(1).map((l, i) => ({ article: ouvert.carnet.articles.find(x => x.id === l.articleId) as unknown as ArticleV, rang: l.rang ?? i + 2 }))}
         onRetour={() => setVue({ sorte: 'carnet', id: ouvert.id })}
         onChoisir={pourquoi => { const r = appliquer(choisir(magasin.lire(), { carnetId: ouvert.id, articleId: premier.id, ...(premier.faconId ? { faconId: premier.faconId } : {}), pourquoi, le: maintenant().toISOString() })); if (r) { const choisi = r.ecritures.find(e => e.op === 'put' && (e as { doc: CarnetDoc }).doc.id === ouvert.id) as { doc: CarnetDoc } | undefined; if (choisi) void envoyerAVenir(choisi.doc); } if (r) setRetour({ bandeau: { sorte: 'range' }, inverse: r.inverse, carnetId: ouvert.id }); }}

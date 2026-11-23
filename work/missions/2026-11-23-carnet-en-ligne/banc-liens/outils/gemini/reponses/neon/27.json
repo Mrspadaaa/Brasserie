@@ -1,0 +1,52 @@
+{
+ "n": 27,
+ "cfg": "neon",
+ "modele": "gemini-4-neon",
+ "http": 200,
+ "ms": 11329,
+ "usage": {
+  "promptTokenCount": 593,
+  "candidatesTokenCount": 86,
+  "totalTokenCount": 1755,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 593
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 86
+   }
+  ],
+  "toolUsePromptTokenCount": 818,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 818
+   }
+  ],
+  "thoughtsTokenCount": 258,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_ERROR"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": null, \"marque\": null, \"prix\": null, \"devise\": null, \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": []}",
+ "json": {
+  "nom": null,
+  "marque": null,
+  "prix": null,
+  "devise": null,
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": []
+ },
+ "entree": 1411,
+ "sortie": 344,
+ "chf": 0.01174125
+}

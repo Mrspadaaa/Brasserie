@@ -1,0 +1,581 @@
+{
+ "le": "2026-11-23T14:18:33.214Z",
+ "ia": "reel",
+ "bilanIA": {
+  "appels": 5,
+  "parModele": {
+   "lite": 5
+  },
+  "depenseChf": 0.00611,
+  "reserveeEngageeChf": 0,
+  "refuses": 0,
+  "rejoues": 0,
+  "textesMax": 7599,
+  "ms": [
+   934,
+   927,
+   1235,
+   1278,
+   1766
+  ]
+ },
+ "taux": {
+  "liens": 5,
+  "prixSansJsonLd": "1/1 (100 %)",
+  "nom": "5/5 (100 %)",
+  "prixAffiche": "5/5 (100 %)",
+  "photoAffichee": "5/5 (100 %)",
+  "caracteristiques": "3/5 (60 %)",
+  "htDit": "0/0 (0 %)",
+  "livraisonCH": "1/1 (100 %)",
+  "inventions": 0,
+  "liensAvecInvention": []
+ },
+ "lignes": [
+  {
+   "n": 12,
+   "genres": [
+    "eur-hors-tva-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 1347,
+   "lu": {
+    "url": "https://shop.speidels-braumeister.de/en/20-litre-braumeister/20-litre-braumeister-plus1",
+    "domaine": "shop.speidels-braumeister.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidel 20-litre #Braumeister PLUS",
+    "prix": 1990,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "vendeur": "Speidel Tank- und Behälterbau GmbH",
+    "photo": "https://shop.speidels-braumeister.de/media/images/info/BM20_Vorteile.jpg",
+    "photos": [
+     "https://shop.speidels-braumeister.de/media/images/info/BM20_Vorteile.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/Braumeister_20_Liter_2023.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/47070-30-speidels-braumeister-plus-2020-20-liter.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/legende-braumeister-plus-20-liter.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-2020-steuereinheit-vorne.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-2020-steuereinheit-hinten.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-2020-edelstahlverschraubung.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/braumeister-signet.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-plus-heizspirale.jpg",
+     "https://shop.speidels-braumeister.de/media/images/info/bm-plus-malzrohr.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "shop.speidels-braumeister.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "1990 EUR (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "EUR · TTC · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "10"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "lite ; ajouté : 8 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Effective weight",
+      "valeur": "19 kg"
+     },
+     {
+      "nom": "Heating coil",
+      "valeur": "2,000 W output"
+     },
+     {
+      "nom": "Pump",
+      "valeur": "27 W - adjustable speed"
+     },
+     {
+      "nom": "Power supply connection",
+      "valeur": "230 V"
+     },
+     {
+      "nom": "Maximum malt quantity",
+      "valeur": "6 kg"
+     },
+     {
+      "nom": "Height",
+      "valeur": "60 cm"
+     },
+     {
+      "nom": "Diameter",
+      "valeur": "40 cm"
+     },
+     {
+      "nom": "Shipping weight",
+      "valeur": "24 kg"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 22,
+   "genres": [
+    "lent",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 1335,
+   "lu": {
+    "url": "https://www.landi.ch/shop/lagergestelle_170307/schwerlastregal-180-160-60-cm_105447",
+    "domaine": "landi.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Schwerlastregal 180 × 160 × 60 cm",
+    "prix": 79.95,
+    "devise": "CHF",
+    "photo": "https://www.landi.ch/ImageOriginal/Img/product/105/447/105447_schwerlastregal-180-160-60-cm_105447_1.jpg",
+    "photos": [
+     "https://www.landi.ch/ImageOriginal/Img/product/105/447/105447_schwerlastregal-180-160-60-cm_105447_1.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "landi.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "79.95 CHF (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "lite ; ajouté : 6 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Länge",
+      "valeur": "162 cm"
+     },
+     {
+      "nom": "Breite",
+      "valeur": "61 cm"
+     },
+     {
+      "nom": "Höhe",
+      "valeur": "6 cm"
+     },
+     {
+      "nom": "Oberflächenbehandlung",
+      "valeur": "Pulverbeschichtet"
+     },
+     {
+      "nom": "Nutzlast",
+      "valeur": "1250 kg"
+     },
+     {
+      "nom": "Farbe",
+      "valeur": "Schwarz"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 30,
+   "genres": [
+    "site-suisse",
+    "caract",
+    "commande"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 1882,
+   "lu": {
+    "url": "https://brewstore.ch/materiel/systeme-de-brassage/microbrasserie-speidel-braumeister-plus-20-l-avec-double-enveloppe/",
+    "domaine": "brewstore.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidel Braumeister PLUS 20 L mit Kühlmantel",
+    "prix": 2345,
+    "devise": "CHF",
+    "dispo": "rupture",
+    "photo": "https://brewstore.ch/images/detailed/3656/sk2hcpzyxr-5550220a-501x501h.jpg",
+    "photos": [
+     "https://brewstore.ch/images/detailed/3656/sk2hcpzyxr-5550220a-501x501h.jpg",
+     "https://brewstore.ch/images/detailed/3656/tribj9ikxw-speidel-800x800w.jpg",
+     "https://brewstore.ch/images/detailed/3656/wpbav29aqc-5550220aa-648x648w.jpg",
+     "https://brewstore.ch/images/detailed/3656/x3x4hubdvm-5550220ac-800x800w.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brewstore.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "2345 CHF (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "4"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "lite ; ajouté : 12 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Hersteller",
+      "valeur": "Speidel"
+     },
+     {
+      "nom": "Modell",
+      "valeur": "Braumeister PLUS 20 L"
+     },
+     {
+      "nom": "Herstellerreferenz",
+      "valeur": "47070-30"
+     },
+     {
+      "nom": "Brauverfahren",
+      "valeur": "All-Grain"
+     },
+     {
+      "nom": "fertige Biermenge",
+      "valeur": "ca. 20 L"
+     },
+     {
+      "nom": "Würzemenge",
+      "valeur": "ca. 23 L"
+     },
+     {
+      "nom": "maximaler Füllstand",
+      "valeur": "25 L"
+     },
+     {
+      "nom": "maximale Malzmenge",
+      "valeur": "6 kg"
+     },
+     {
+      "nom": "Heizleistung",
+      "valeur": "2'000 W"
+     },
+     {
+      "nom": "Umwälzpumpe",
+      "valeur": "27 W"
+     },
+     {
+      "nom": "Gewicht",
+      "valeur": "ca. 19 kg"
+     },
+     {
+      "nom": "Höhe",
+      "valeur": "ca. 60 cm"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 47,
+   "genres": [
+    "eur-hors-tva-ch",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 1063,
+   "lu": {
+    "url": "https://www.bier-brauen.at/gaertank-konisch-60",
+    "domaine": "bier-brauen.at",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "ERPEL Edelstahl Gärbehälter konisch - 60 Liter",
+    "prix": 185.34,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Konischer Gärtank aus Edelstahl mit 60 Liter Volumen",
+    "photo": "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60.jpg",
+    "photos": [
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~2.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~3.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~4.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~5.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~6.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~7.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/lg/gaertank-konisch-60.jpg"
+    ],
+    "valeurs": [
+     {
+      "nom": "Versandgewicht",
+      "valeur": "10,80 kg"
+     },
+     {
+      "nom": "Artikelnummer",
+      "valeur": "PD-31234"
+     },
+     {
+      "nom": "GTIN",
+      "valeur": "9120111123540"
+     },
+     {
+      "nom": "HAN",
+      "valeur": "DM-F600"
+     },
+     {
+      "nom": "Kategorie",
+      "valeur": "Gärkeller"
+     },
+     {
+      "nom": "Hersteller",
+      "valeur": "ERPEL"
+     },
+     {
+      "nom": "Ablasshahn unten",
+      "valeur": "1\" Außengewinde"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "bier-brauen.at"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "microdata"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "185.34 EUR (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "EUR · TTC · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "7"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "absent",
+      "detail": "lite ; rien de plus"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 59,
+   "genres": [
+    "multilingue",
+    "site-suisse",
+    "js-lourd",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 1066,
+   "lu": {
+    "url": "https://www.galaxus.ch/de/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562",
+    "domaine": "galaxus.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Kibernetik KS240L",
+    "prix": 302,
+    "devise": "CHF",
+    "dispo": "en-stock",
+    "photo": "https://static01.galaxus.com/productimages/4/4/8/6/7/0/0/1/4/9/5/1/3/6/0/2/9/1/01a0b4d6-91e0-72ef-82dd-828670ff6866_sea.jpeg",
+    "photos": [
+     "https://static01.galaxus.com/productimages/4/4/8/6/7/0/0/1/4/9/5/1/3/6/0/2/9/1/01a0b4d6-91e0-72ef-82dd-828670ff6866_sea.jpeg",
+     "https://static01.galaxus.com/productimages/7/0/7/5/2/8/7/8/8/5/0/2/0/8/7/5/9/3/4/01a0b4d4-76e3-7e54-953f-dbda6cdb1f11_sea.jpeg",
+     "https://static01.galaxus.com/productimages/4/5/8/4/5/9/1/0/9/8/3/1/4/2/3/6/6/6/8/01a0d41f-7d9d-71b1-b4e7-1108d38f6a31_sea.jpeg",
+     "https://static01.galaxus.com/productimages/6/9/2/3/5/1/9/6/6/1/8/0/1/4/0/2/4/4/2/01a0d41f-7d63-712b-ab80-9da1d422907d_sea.jpeg"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "galaxus.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "302 CHF (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "4"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "douteux",
+      "detail": "lite ; ajouté : 2 caract. ; retiré (absent du texte) : nom"
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Nutzvolumen",
+      "valeur": "242 l"
+     },
+     {
+      "nom": "Geräuschpegel",
+      "valeur": "40 dB"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  }
+ ]
+}

@@ -13,6 +13,7 @@ import { dateFacture, estRealise } from '../finance/upgradeRing';
 import { upgradeBudget, upgradeDetails } from '../finance/upgrades';
 import { avecArticleTypo, statutApres } from './comparer';
 import { memeTexte } from './doublons';
+import { lienCanonique } from './lien';
 import { jetons, normaliser, quantitesDe } from './analyseLocale';
 import {
   lireCarnet, lireMessage, nouvelIdCarnet, sansIndefinis, donneesVides, titreDePhrase, VERSION_CARNET,
@@ -99,7 +100,8 @@ export type LigneARanger = Destination & (
   | { sorte: 'facon'; id?: string; nom: string; etat?: EtatFacon; raison?: string; origine: Origine }
   | {
     sorte: 'article'; id?: string; url?: string; domaine?: string; nom?: string; prixCentimes?: number; prixDes?: true; devise?: string; vendeur?: string; pays?: string;
-    dispo?: string; photo?: string; faconId?: string; valeurs?: Record<string, Valeur>; lecture?: Article['lecture']; origine?: Origine
+    dispo?: string; photo?: string; photos?: string[]; taxe?: Article['taxe']; prixTTCCentimes?: number; livraison?: Article['livraison']; change?: Article['change'];
+    faconId?: string; valeurs?: Record<string, Valeur>; lecture?: Article['lecture']; origine?: Origine
   }
   | { sorte: 'note'; id?: string; texte: string; genre?: GenreNote }
   | { sorte: 'photo'; id?: string; jpeg: string }
@@ -152,11 +154,17 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
       d.facons.push(f); return { carnetId: c.id, cible: 'facon', id: f.id };
     }
     case 'article': {
+      /* T25-5 : le même lien (adresse canonique) déjà dans ce carnet n'ajoute rien ; l'effet renvoie à l'article qui y est, que défaire ce
+         message ne retire pas (`existant`). Un article sans lien, ou dans un autre carnet, reste libre. */
+      const canon = l.url ? lienCanonique(l.url) : null;
+      const deja = canon ? d.articles.find(x => x.url && lienCanonique(x.url) === canon) : undefined;
+      if (deja) return { carnetId: c.id, cible: 'article', id: deja.id, existant: true };
       const a: Article = sansIndefinis({
         id: l.id ?? nouvelIdCarnet('ART'), url: l.url, domaine: l.domaine, nom: l.nom,
         prixCentimes: typeof l.prixCentimes === 'number' && Number.isFinite(l.prixCentimes) && l.prixCentimes >= 0 ? Math.round(l.prixCentimes) : undefined,
         prixDes: l.prixDes === true && typeof l.prixCentimes === 'number' ? true : undefined,
-        devise: l.devise, vendeur: l.vendeur, pays: l.pays, dispo: l.dispo, photo: l.photo,
+        devise: l.devise, vendeur: l.vendeur, pays: l.pays, dispo: l.dispo, photo: l.photo, photos: l.photos?.length ? [...l.photos] : undefined,
+        taxe: l.taxe, prixTTCCentimes: l.prixTTCCentimes, livraison: l.livraison ? { ...l.livraison } : undefined, change: l.change ? { ...l.change } : undefined,
         faconId: l.faconId && d.facons.some(f => f.id === l.faconId) ? l.faconId : undefined,
         valeurs: l.valeurs ? copie(l.valeurs) : {}, lecture: l.lecture ?? (l.url ? 'a-lire' : 'lue'), messageId
       });
@@ -342,7 +350,7 @@ export function remplacerRangement(etat: Etat, args: { messageId: string; lignes
   for (const e of m.carnetMessage.effets) {
     if (e.cible === 'carnet') continue;
     const c = b.carnet(e.carnetId);
-    if (!c) continue;
+    if (!c || e.existant) continue;
     /* P7 : un critère précisé par ce message retrouve son texte d'avant ; il n'est pas retiré (il existait avant le message). */
     if (e.fusion) {
       const k = c.carnet.criteres.find(x => x.id === e.id);
@@ -561,6 +569,8 @@ export function poserPrixArticle(etat: Etat, args: { carnetId: string; articleId
   a.prixCentimes = args.centimes;
   a.devise = 'CHF';
   delete a.prixDes;
+  /* le prix posé est le sien : ni la taxe, ni le TTC, ni le cours du prix lu d'avant ne lui restent attachés (le port lu reste) */
+  delete a.taxe; delete a.prixTTCCentimes; delete a.change;
   poser(b, c);
   return b.resultat('✓ Prix posé');
 }

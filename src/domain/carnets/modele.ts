@@ -44,7 +44,16 @@ export interface Facon { id: string; nom: string; etat: EtatFacon; raison?: stri
 /** Une valeur lue pour une caractéristique (clé = son nom). `luLe` : date de lecture, si elle a été lue. */
 export interface Valeur { valeur: number | string | boolean; unite?: string; origine: Origine; luLe?: string }
 
-export type LectureArticle = 'a-lire' | 'en-cours' | 'lue' | 'illisible';
+/** `introuvable` (D447) : le lien ne mène plus à la fiche (page morte, redirigée vers la recherche ou l'accueil, domaine disparu). */
+export type LectureArticle = 'a-lire' | 'en-cours' | 'lue' | 'illisible' | 'introuvable';
+/** D447 : ce que la page dit du produit (« en stock », « plus disponible ») ; un lien mort se dit « lien introuvable », rien n'est inventé. */
+export function dispoDe(a: { dispo?: string; lecture?: string }): string | undefined {
+  return a.lecture === 'introuvable' ? 'lien introuvable' : a.dispo;
+}
+/** Le port vers la Suisse lu sur la page (D447), en centimes de `devise` ; jamais inventé : absent = la page ne le dit pas. */
+export interface LivraisonArticle { prixCentimes?: number; devise?: string; gratuite?: true; refusee?: true }
+/** Le cours du jour vers le franc (BCE), tel que la lecture l'a posé : 1 unité de la devise d'origine = `taux` CHF. */
+export interface ChangeArticle { taux: number; date: string; source: 'BCE' }
 /**
  * Veille du prix (R31, D-28). Un article naît sans veille ; seul son toucher l'allume. `releveLe` n'est écrit par aucun code de ce port : la
  * relève réelle attend son accord. Tant qu'il manque, la fiche dit « demandée · pas encore relevée ».
@@ -63,8 +72,16 @@ export interface Article {
   devise?: string;
   vendeur?: string;
   pays?: string;
+  /** `ht` : le prix lu est hors taxe ; `ttc` : taxe comprise. Absent : la page ne le dit pas. */
+  taxe?: 'ht' | 'ttc';
+  /** Le prix taxe comprise, quand la page publie aussi le HT (centimes de `devise`). */
+  prixTTCCentimes?: number;
+  livraison?: LivraisonArticle;
+  change?: ChangeArticle;
   dispo?: string;
+  /** La première photo (cartes, vignettes) ; `photos` les garde toutes, la première comprise (D446). */
   photo?: string;
+  photos?: string[];
   faconId?: string;
   valeurs: Record<string, Valeur>;
   lecture: LectureArticle;
@@ -120,7 +137,11 @@ export const CIBLES_EFFET: readonly CibleEffet[] = ['carnet', 'critere', 'facon'
  * `fusion` (P7) : le message a précisé un critère déjà là, de même caractéristique (« le débit » → « … : 1 200 m³/h au moins ») ; l'effet
  * garde le critère d'avant, que `remplacerRangement` remet au lieu de retirer le critère.
  */
-export interface EffetMessage { carnetId: string; cible: CibleEffet; id: string; carnetSupprime?: true; fusion?: { texte: string; origine: Origine; messageId?: string } }
+export interface EffetMessage {
+  carnetId: string; cible: CibleEffet; id: string; carnetSupprime?: true; fusion?: { texte: string; origine: Origine; messageId?: string };
+  /** T25-5 : un lien déjà dans ce carnet (même adresse canonique) : le message renvoie à l'article qui y était, sans en créer un ; le défaire ne le retire pas. */
+  existant?: true;
+}
 
 /**
  * P10, P23 (D-35, D-24) : un critère que l'IA propose sans l'écrire (la caractéristique commune lue sur deux articles). Il reste sur le
@@ -240,15 +261,36 @@ function articleNet(a: Article, titre: string): Article {
   return sansIndefinis({ ...a, nom, valeurs });
 }
 
-const LECTURES: readonly LectureArticle[] = ['a-lire', 'en-cours', 'lue', 'illisible'];
+const LECTURES: readonly LectureArticle[] = ['a-lire', 'en-cours', 'lue', 'illisible', 'introuvable'];
+const PHOTOS_MAX = 12;
+
+function lireLivraison(v: unknown): LivraisonArticle | undefined {
+  if (!estObjet(v)) return undefined;
+  const l = sansIndefinis<LivraisonArticle>({
+    prixCentimes: nombreFini(v.prixCentimes) && v.prixCentimes >= 0 ? Math.round(v.prixCentimes) : undefined, devise: optTexte(v.devise),
+    gratuite: v.gratuite === true ? true : undefined, refusee: v.refusee === true ? true : undefined
+  });
+  return Object.keys(l).length ? l : undefined;
+}
+function lireChange(v: unknown): ChangeArticle | undefined {
+  return estObjet(v) && nombreFini(v.taux) && v.taux > 0 && texteNonVide(v.date) ? { taux: v.taux, date: v.date, source: 'BCE' } : undefined;
+}
+function lirePhotos(v: unknown): string[] | undefined {
+  const l = Array.isArray(v) ? [...new Set(v.filter(texteNonVide))].slice(0, PHOTOS_MAX) : [];
+  return l.length ? l : undefined;
+}
 
 function lireArticle(v: unknown): Article | null {
   if (!estObjet(v) || !texteNonVide(v.id)) return null;
+  const prixOk = nombreFini(v.prixCentimes);
   return sansIndefinis({
     id: v.id, url: optTexte(v.url), domaine: optTexte(v.domaine), nom: optTexte(v.nom),
     prixCentimes: nombreFini(v.prixCentimes) && v.prixCentimes >= 0 ? Math.round(v.prixCentimes) : undefined,
     prixDes: v.prixDes === true && nombreFini(v.prixCentimes) ? true : undefined,
-    devise: optTexte(v.devise), vendeur: optTexte(v.vendeur), pays: optTexte(v.pays), dispo: optTexte(v.dispo), photo: optTexte(v.photo),
+    taxe: prixOk && (v.taxe === 'ht' || v.taxe === 'ttc') ? v.taxe : undefined,
+    prixTTCCentimes: prixOk && nombreFini(v.prixTTCCentimes) && v.prixTTCCentimes > 0 ? Math.round(v.prixTTCCentimes) : undefined,
+    livraison: lireLivraison(v.livraison), change: prixOk ? lireChange(v.change) : undefined,
+    devise: optTexte(v.devise), vendeur: optTexte(v.vendeur), pays: optTexte(v.pays), dispo: optTexte(v.dispo), photo: optTexte(v.photo), photos: lirePhotos(v.photos),
     faconId: optTexte(v.faconId), valeurs: lireValeurs(v.valeurs), lecture: LECTURES.includes(v.lecture as LectureArticle) ? (v.lecture as LectureArticle) : 'a-lire',
     veille: lireVeille(v.veille), messageId: optTexte(v.messageId), origine: ORIGINES.includes(v.origine as Origine) ? (v.origine as Origine) : undefined
   });
@@ -317,7 +359,7 @@ export function lireMessage(item: CreativeItem | null | undefined): MessageDoc |
         const f = (e as { fusion?: unknown }).fusion;
         const fusion = estObjet(f) && typeof f.texte === 'string' && typeof f.origine === 'string'
           ? sansIndefinis({ texte: f.texte, origine: f.origine as Origine, messageId: texteNonVide(f.messageId) ? f.messageId : undefined }) : undefined;
-        return sansIndefinis({ carnetId: e.carnetId, cible: e.cible, id: e.id, carnetSupprime: e.carnetSupprime === true ? (true as const) : undefined, fusion });
+        return sansIndefinis({ carnetId: e.carnetId, cible: e.cible, id: e.id, carnetSupprime: e.carnetSupprime === true ? (true as const) : undefined, fusion, existant: e.existant === true ? (true as const) : undefined });
       })
     : [];
   const t = m.titrePropose;

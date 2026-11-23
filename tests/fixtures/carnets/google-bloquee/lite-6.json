@@ -1,0 +1,47 @@
+{
+ "origine": "banc-liens/bloquees/reponses/lite-6.json (réponse réelle de gemini-3.5-flash-lite, 23.11, thoughtSignature retirée)",
+ "lien": "https://brouwland.com/en/fermentation-vessels/660-brew-monk-stainless-steel-fermenter-30-l.html",
+ "brut": {
+  "candidates": [
+   {
+    "content": {
+     "parts": [
+      {
+       "text": "{\n  \"type\": \"fiche\",\n  \"caracteristiques\": [\n    {\n      \"nom\": \"volume\",\n      \"valeur\": \"30-32 l\"\n    },\n    {\n      \"nom\": \"weight\",\n      \"valeur\": \"7.9 kg\"\n    },\n    {\n      \"nom\": \"diameter at the top\",\n      \"valeur\": \"35 cm\"\n    },\n    {\n      \"nom\": \"height without extension legs\",\n      \"valeur\": \"58.5 cm\"\n    },\n    {\n      \"nom\": \"height with extension legs\",\n      \"valeur\": \"68.5 cm\"\n    },\n    {\n      \"nom\": \"Full volume\",\n      \"valeur\": \"32 l\"\n    },\n    {\n      \"nom\": \"Fermentable volume\",\n      \"valeur\": \"25 l\"\n    },\n    {\n      \"nom\": \"Top opening\",\n      \"valeur\": \"35 cm\"\n    }\n  ],\n  \"devise\": \"EUR\",\n  \"nom\": \"Brew Monk® stainless steel fermenter 30 l\",\n  \"origine\": \"meme-page\",\n  \"photo\": null,\n  \"prix\": 159.99,\n  \"source\": \"https://brouwland.com/en/fermentation-vessels/660-brew-monk-stainless-steel-fermenter-30-l.html\",\n  \"taxe\": \"ttc\"\n}"
+      }
+     ],
+     "role": "model"
+    },
+    "finishReason": "STOP",
+    "index": 0,
+    "urlContextMetadata": {
+     "urlMetadata": [
+      {
+       "retrievedUrl": "https://brouwland.com/en/fermentation-vessels/660-brew-monk-stainless-steel-fermenter-30-l.html",
+       "urlRetrievalStatus": "URL_RETRIEVAL_STATUS_SUCCESS"
+      }
+     ]
+    }
+   }
+  ],
+  "usageMetadata": {
+   "promptTokenCount": 289,
+   "candidatesTokenCount": 407,
+   "totalTokenCount": 8238,
+   "promptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 289
+    }
+   ],
+   "toolUsePromptTokenCount": 7542,
+   "toolUsePromptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 7542
+    }
+   ],
+   "serviceTier": "standard"
+  }
+ }
+}

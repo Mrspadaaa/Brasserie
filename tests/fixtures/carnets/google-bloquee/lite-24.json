@@ -1,0 +1,47 @@
+{
+ "origine": "banc-liens/bloquees/reponses/lite-24.json (réponse réelle de gemini-3.5-flash-lite, 23.11, thoughtSignature retirée)",
+ "lien": "https://www.jumbo.ch/de/bad-sanitaer/brausen-armaturen/kuechenarmaturen-kuechenbrausen/kuechenarmaturen/kwc-spueltischmischer-domo-mit-ausziehbarer-brause/p/5866824",
+ "brut": {
+  "candidates": [
+   {
+    "content": {
+     "parts": [
+      {
+       "text": "{\n  \"type\": \"fiche\",\n  \"caracteristiques\": [\n    {\n      \"nom\": \"Ausladung\",\n      \"valeur\": \"230 mm\"\n    },\n    {\n      \"nom\": \"Höhe\",\n      \"valeur\": \"238 mm\"\n    }\n  ],\n  \"devise\": \"CHF\",\n  \"nom\": \"KWC Spültischmischer Domo mit ausziehbarer Brause\",\n  \"origine\": \"meme-page\",\n  \"photo\": null,\n  \"prix\": 429.0,\n  \"source\": \"https://www.jumbo.ch/de/bad-sanitaer/brausen-armaturen/kuechenarmaturen-kuechenbrausen/kuechenarmaturen/kwc-spueltischmischer-domo-mit-ausziehbarer-brause/p/5866824\",\n  \"taxe\": null\n}"
+      }
+     ],
+     "role": "model"
+    },
+    "finishReason": "STOP",
+    "index": 0,
+    "urlContextMetadata": {
+     "urlMetadata": [
+      {
+       "retrievedUrl": "https://www.jumbo.ch/de/bad-sanitaer/brausen-armaturen/kuechenarmaturen-kuechenbrausen/kuechenarmaturen/kwc-spueltischmischer-domo-mit-ausziehbarer-brause/p/5866824",
+       "urlRetrievalStatus": "URL_RETRIEVAL_STATUS_SUCCESS"
+      }
+     ]
+    }
+   }
+  ],
+  "usageMetadata": {
+   "promptTokenCount": 323,
+   "candidatesTokenCount": 308,
+   "totalTokenCount": 4788,
+   "promptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 323
+    }
+   ],
+   "toolUsePromptTokenCount": 4157,
+   "toolUsePromptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 4157
+    }
+   ],
+   "serviceTier": "standard"
+  }
+ }
+}

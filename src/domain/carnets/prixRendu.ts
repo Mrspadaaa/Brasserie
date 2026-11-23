@@ -60,3 +60,72 @@ export function tauxDeLaDerniereFactureEur(transactions: readonly { date?: unkno
     .sort((a, b) => String(b.date ?? '').localeCompare(String(a.date ?? '')));
   return lues[0]?.finance?.exchangeRate;
 }
+
+/* ---------- Un prix hors franc (D447, 23.11) : converti au cours du jour, avec l'original, la taxe dite et le port lu ---------- */
+
+/**
+ * D447 : « un prix qui n'est pas en CHF à la base s'affiche converti, avec la mention des frais possibles (douane, TVA d'import, port,
+ * export, envoi) ; frais lus sur la page quand elle les donne, jamais inventés ». La page lue donne le prix d'origine, sa devise, le cours du
+ * jour (BCE, par Frankfurter : `change`), « HT » ou « TTC » quand elle le dit, et le port vers la Suisse quand elle le publie.
+ * Le prix d'origine n'est jamais remplacé : la conversion s'affiche à côté.
+ */
+export interface PrixArticleDonnees {
+  prixCentimes?: number;
+  devise?: string;
+  taxe?: 'ht' | 'ttc';
+  prixTTCCentimes?: number;
+  livraison?: { prixCentimes?: number; devise?: string; gratuite?: true; refusee?: true };
+  change?: { taux: number; date: string; source: 'BCE' };
+}
+
+export const MENTION_FRAIS = 'douane, port et envoi non comptés';
+const deviseDe = (a: PrixArticleDonnees) => (a.devise ?? 'CHF').toUpperCase();
+/** Hors franc : un prix qui se convertit. */
+export const estEtranger = (a: PrixArticleDonnees): boolean => a.prixCentimes !== undefined && deviseDe(a) !== 'CHF';
+
+/**
+ * Le cours vers le franc d'un article : l'euro prend d'abord le taux de la dernière facture en EUR (ou posé une fois), les autres devises
+ * le cours du jour de la lecture. Aucun cours : `undefined` (le prix reste dans sa devise, jamais un cours inventé).
+ */
+export function tauxVersChf(a: PrixArticleDonnees, tauxEur?: number): { taux: number; source: 'facture' | 'BCE' } | undefined {
+  if (!estEtranger(a)) return undefined;
+  if (deviseDe(a) === 'EUR' && typeof tauxEur === 'number' && tauxEur > 0) return { taux: tauxEur, source: 'facture' };
+  const c = a.change;
+  return c && c.taux > 0 && Number.isFinite(c.taux) ? { taux: c.taux, source: 'BCE' } : undefined;
+}
+
+/**
+ * Le port vers la Suisse, en centimes de la devise de l'article : « gratuite » vaut 0 (la page le dit) ; un port publié dans une autre
+ * devise que le prix n'est pas converti ici (aucun cours inventé) : inconnu. « Refusée » : pas de port à compter.
+ */
+export function portCentimes(a: PrixArticleDonnees): number | undefined {
+  const l = a.livraison;
+  if (!l || l.refusee) return undefined;
+  if (l.gratuite) return 0;
+  if (typeof l.prixCentimes === 'number' && Number.isFinite(l.prixCentimes) && l.prixCentimes >= 0 && (l.devise ?? deviseDe(a)).toUpperCase() === deviseDe(a)) return l.prixCentimes;
+  return undefined;
+}
+
+/** Le prix converti seul (D447), au cours choisi, sans TVA d'import ni frais : « ≈ 1 360 CHF » pour « 1 450 USD ». */
+export function convertiChf(a: PrixArticleDonnees, tauxEur?: number): number | undefined {
+  const t = tauxVersChf(a, tauxEur);
+  return t && a.prixCentimes !== undefined ? Math.round(a.prixCentimes * t.taux) : undefined;
+}
+
+/** Le rendu estimé d'un article hors franc (D421 généralisé à toute devise) ; `null` en francs, ou sans prix. */
+export function renduArticle(a: PrixArticleDonnees, tauxEur?: number): PrixRendu | null {
+  if (!estEtranger(a)) return null;
+  const t = tauxVersChf(a, tauxEur);
+  const port = portCentimes(a);
+  return prixRendu({ eurCentimes: a.prixCentimes as number, ...(t ? { taux: t.taux } : {}), ...(port !== undefined ? { portEurCentimes: port } : {}) });
+}
+
+/**
+ * La mention des frais (D447) : hors franc, « douane, port et envoi non comptés » ; port lu, « douane et envoi non comptés » ; port
+ * refusé par la page, elle ne livre pas en Suisse. En francs : aucune mention.
+ */
+export function mentionFrais(a: PrixArticleDonnees): string | null {
+  if (!estEtranger(a)) return null;
+  if (a.livraison?.refusee) return 'la page ne livre pas en Suisse';
+  return portCentimes(a) !== undefined ? 'douane et envoi non comptés' : MENTION_FRAIS;
+}

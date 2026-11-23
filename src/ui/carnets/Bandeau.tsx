@@ -67,7 +67,9 @@ export type BandeauV =
   /* Lot 11 (L-20, hors lot du lot 3) : « Retirer » d'un critère, avec Annuler */
   | { sorte: 'critere-retire'; texte: string }
   /* BL-3 (banc réel de liens, 23.11) : « Retirer » un article, par le ⋯ de la ligne Articles, avec Annuler */
-  | { sorte: 'article-retire'; texte: string };
+  | { sorte: 'article-retire'; texte: string }
+  /* T25-5 (tour 25) : le lien collé est déjà dans ce carnet (même adresse) : rien n'est ajouté */
+  | { sorte: 'doublon' };
 
 /** G26 : ce que le changement fait à la comparaison (différence calculée par `comparer.ts`, jamais inventée). */
 export interface ConsequenceV { texte: string; onPasserCritere?: () => void }
@@ -109,6 +111,7 @@ export function texteBandeau(b: BandeauV): string {
     case 'archive': return '✓ Carnet archivé';
     case 'critere-retire': return 'Critère retiré';
     case 'article-retire': return 'Article retiré';
+    case 'doublon': return '✓ Déjà dans ce carnet : rien de plus rangé';
   }
 }
 

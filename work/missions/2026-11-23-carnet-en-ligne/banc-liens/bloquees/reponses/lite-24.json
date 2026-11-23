@@ -1,0 +1,55 @@
+{
+ "n": 24,
+ "url": "https://www.jumbo.ch/de/bad-sanitaer/brausen-armaturen/kuechenarmaturen-kuechenbrausen/kuechenarmaturen/kwc-spueltischmischer-domo-mit-ausziehbarer-brause/p/5866824",
+ "phase": "lite",
+ "modele": "gemini-3.5-flash-lite",
+ "http": 200,
+ "ms": 1697,
+ "sansSchema": false,
+ "reponse": {
+  "candidates": [
+   {
+    "content": {
+     "parts": [
+      {
+       "text": "{\n  \"type\": \"fiche\",\n  \"caracteristiques\": [\n    {\n      \"nom\": \"Ausladung\",\n      \"valeur\": \"230 mm\"\n    },\n    {\n      \"nom\": \"Höhe\",\n      \"valeur\": \"238 mm\"\n    }\n  ],\n  \"devise\": \"CHF\",\n  \"nom\": \"KWC Spültischmischer Domo mit ausziehbarer Brause\",\n  \"origine\": \"meme-page\",\n  \"photo\": null,\n  \"prix\": 429.0,\n  \"source\": \"https://www.jumbo.ch/de/bad-sanitaer/brausen-armaturen/kuechenarmaturen-kuechenbrausen/kuechenarmaturen/kwc-spueltischmischer-domo-mit-ausziehbarer-brause/p/5866824\",\n  \"taxe\": null\n}",
+       "thoughtSignature": "Eo4BCosBAWkUfRPdFMxCgDrYkJTEbuPW6DtEXRrJHPcKYpBevwjuowuiJtxKRTx7CLiHFc7Kw+dJdfJXlsvX6Hh8m7QNaAQg6gut+gtBfNqnc4jUTVgghw/BU7H+EEEd7a3ufCI1ix7G4Ga8sr9mK9YVjqeoKzFYYoPcE32sEhHztiQFmEWQOLb4bJW50Tkf5A=="
+      }
+     ],
+     "role": "model"
+    },
+    "finishReason": "STOP",
+    "index": 0,
+    "urlContextMetadata": {
+     "urlMetadata": [
+      {
+       "retrievedUrl": "https://www.jumbo.ch/de/bad-sanitaer/brausen-armaturen/kuechenarmaturen-kuechenbrausen/kuechenarmaturen/kwc-spueltischmischer-domo-mit-ausziehbarer-brause/p/5866824",
+       "urlRetrievalStatus": "URL_RETRIEVAL_STATUS_SUCCESS"
+      }
+     ]
+    }
+   }
+  ],
+  "usageMetadata": {
+   "promptTokenCount": 323,
+   "candidatesTokenCount": 308,
+   "totalTokenCount": 4788,
+   "promptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 323
+    }
+   ],
+   "toolUsePromptTokenCount": 4157,
+   "toolUsePromptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 4157
+    }
+   ],
+   "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-3.5-flash-lite",
+  "responseId": "J1AEa-7HIry9nsEP26a98AU"
+ }
+}

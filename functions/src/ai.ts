@@ -20,7 +20,9 @@ import { GeminiUnusableOutputError, geminiAnswerText, unusableGeminiOutput } fro
 import { sanitizeRecipeImport } from './recipeImportResult.js';
 import { RANGER_NOTE, assainirRangerNote, contexteRangerNote } from './rangerNote.js';
 import { RANGER_CARNET, assainirRangerCarnet, contexteRangerCarnet } from './carnetIA.js';
-import { lienDe, lireLien } from './lireLien.js';
+import { lireLienTache, magasinFirestore } from './lecturesLiens.js';
+import { LIEN_IA_SCHEMA, type AppelIA, type ReponseIA } from './lienIA.js';
+import { LIEN_BLOQUEE_CONSIGNE, LIEN_BLOQUEE_SCHEMA, LIEN_BLOQUEE_SORTIE_MAX, lectureDeReponse, type AppelPageBloquee } from './lienBloquee.js';
 import {
   AI_ATTEMPT_TIMEOUT_MS as ATTEMPT_TIMEOUT_MS, AI_OUT_OF_TIME_MESSAGE as OUT_OF_TIME, AI_TASK_DEADLINE_MS, AI_TASK_MIN_ATTEMPT_MS,
   SCAN_LITE_TIMEOUT_MS, SCAN_STRONG_TIMEOUT_MS, SCAN_TOTAL_TIMEOUT_MS
@@ -317,11 +319,14 @@ async function callGemini(
   grounded = false,
   maxOutputTokens = 4500,
   signal: AbortSignal = AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
-  inspect: (response: any) => GeminiUnusableOutputError | undefined = unusableGeminiOutput
+  inspect: (response: any) => GeminiUnusableOutputError | undefined = unusableGeminiOutput,
+  /** L'outil `url_context` (lireLien, page bloquée) : exclusif de la recherche ancrée, jamais les deux. */
+  urlContext = false
 ): Promise<unknown> {
   assertGeminiModel(model);
   // Le corps est construit par `geminiBody.ts`, que le banc de l'enrichissement envoie tel quel.
-  const body = geminiBody({ systemPrompt, userText, schema, settings, file, grounded, maxOutputTokens });
+  if (urlContext && grounded) throw new Error('url_context et la recherche Google ne se combinent pas ici.');
+  const body = geminiBody({ systemPrompt, userText, schema, settings, file, grounded, urlContext, maxOutputTokens });
   // A cut or looping answer is billed, settled as unusable and never parsed (#100, geminiResponse.ts); aiTask retries only a Flash-Lite one, on 3.8.
   const json = await runWithMonthlyAiBudget(model, body, async normalized => {
     const res = await fetch(`${GEMINI_ENDPOINT}/${model}:generateContent`, {
@@ -347,6 +352,9 @@ async function callGemini(
 const liteUnusable = (response: any) => unusableGeminiOutput(response)
   ?? (response?.candidates?.[0]?.finishReason === 'STOP' ? undefined : new GeminiUnusableOutputError('truncated'));
 
+/** La lecture d'un lien (D446) : sortie plafonnée à 1 500 jetons (réflexion comprise), 45 s par appel ; mesuré au banc (`scripts/banc-liens.ts`). */
+const LIEN_IA_SORTIE_MAX = 1500, LIEN_IA_DELAI_MS = 45_000;
+
 export const aiTask = onCall(
   {
     region: 'europe-west6',
@@ -371,13 +379,41 @@ export const aiTask = onCall(
       catch (error: any) { return { ok: false, tier: 'fast', error: error?.message || 'Assemblage impossible.' }; }
     }
 
-    // Carnet d'idées (lireLien.ts) : la page d'un lien collé, lue sans modèle ni coût ; robots.txt respecté. Ne lève jamais.
+    // Carnet d'idées (lireLien.ts, lecturesLiens.ts) : la page d'un lien collé ; robots.txt respecté. Cascade D446 : plateforme, schema.org, HTML, puis
+    // l'IA sur le texte (Flash-Lite, Hydrogen en escalade) seulement si un champ manque ; le coût est réservé avant chaque envoi (callGemini).
+    // Les étapes partent au fil de l'eau (flux) et s'écrivent dans `lecturesLiens/{jeton}` pour la réouverture de l'app. Ne lève jamais.
     if ((task as string) === 'lireLien') {
-      const started = Date.now();
-      const page = await lireLien(lienDe(context));
+      const cle = GEMINI_API_KEY.value();
+      const limite = Date.now() + AI_TASK_DEADLINE_MS;
+      // Clé absente : pas d'IA, la lecture sans modèle reste entière. Chaque appel a le temps qui reste à la tâche.
+      const appelIA: AppelIA | undefined = cle ? (modele, consigne, texte) => {
+        const restant = limite - Date.now();
+        if (restant < 5000) return Promise.reject(new Error('plus de temps pour l\'IA'));
+        return callGemini(modele === 'lite' ? GEMINI_LITE_MODEL : INVOICE_STRONG_MODEL, cle, consigne, texte, LIEN_IA_SCHEMA as unknown as Record<string, unknown>,
+          { temperature: 0, thinkingLevel: modele === 'lite' ? 'minimal' : 'low' }, undefined, false, LIEN_IA_SORTIE_MAX,
+          AbortSignal.timeout(Math.min(LIEN_IA_DELAI_MS, restant)), liteUnusable) as Promise<ReponseIA>;
+      } : undefined;
+      /* Page bloquée (401, 403, 429, défi ; jamais robots.txt) : Flash-Lite lit la copie que Google en a (`url_context`, lienBloquee.ts). Un seul appel
+         HTTPS, aucune mémoire de plus. Le budget est réservé avant l'envoi (callGemini) ; la trace de l'outil revient avec la réponse pour la garde. */
+      const appelBloquee: AppelPageBloquee | undefined = cle ? async (adresse, signal) => {
+        const restant = limite - Date.now();
+        if (restant < 5000) throw new Error('plus de temps pour la lecture par Google');
+        let brut: unknown;
+        const reponse = await callGemini(GEMINI_LITE_MODEL, cle, LIEN_BLOQUEE_CONSIGNE, `Adresse de la page : ${adresse}`, LIEN_BLOQUEE_SCHEMA as unknown as Record<string, unknown>,
+          { temperature: 0, thinkingLevel: 'minimal' }, undefined, false, LIEN_BLOQUEE_SORTIE_MAX,
+          AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout(Math.min(LIEN_IA_DELAI_MS, restant))]),
+          (r: any) => { brut = r; return liteUnusable(r); }, true);
+        return lectureDeReponse(brut, reponse);
+      } : undefined;
+      const sortie = await lireLienTache({
+        uid: request.auth!.uid, context, appelIA, appelBloquee, magasin: await magasinFirestore(),
+        envoyer: request.acceptsStreaming && response ? (morceau) => response.sendChunk(morceau).catch(() => false) : undefined,
+        avertir: (message, detail) => logger.warn(message, { task, ...detail })
+      });
       // L-4 (23.11) : le statut de chaque lecture, pour qu'un lien non lu se diagnostique au journal (domaine seul, aucune adresse complète).
-      logger.info('Lien lu', { task, domaine: page.domaine, statut: page.statut, elapsedMs: Date.now() - started });
-      return { ok: true, data: page, model: 'lecture', tier: 'fast', elapsedMs: Date.now() - started };
+      const lue = sortie.data as { domaine?: string; statut?: string; etapes?: Array<{ nom: string; statut: string }> };
+      logger.info('Lien lu', { task, domaine: lue.domaine, statut: lue.statut, ia: lue.etapes?.find(x => x.nom === 'ia')?.statut, bloquee: lue.etapes?.find(x => x.nom === 'bloquee')?.statut, elapsedMs: sortie.elapsedMs });
+      return sortie;
     }
 
     // ks4 : la note du Carnet (rangerNote.ts) ; écrite et testée, pas déployée (accord attendu).

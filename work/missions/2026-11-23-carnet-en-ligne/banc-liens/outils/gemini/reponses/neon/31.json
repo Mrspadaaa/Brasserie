@@ -1,0 +1,85 @@
+{
+ "n": 31,
+ "cfg": "neon",
+ "modele": "gemini-4-neon",
+ "http": 200,
+ "ms": 10827,
+ "usage": {
+  "promptTokenCount": 601,
+  "candidatesTokenCount": 256,
+  "totalTokenCount": 3366,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 601
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 256
+   }
+  ],
+  "toolUsePromptTokenCount": 1934,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 1934
+   }
+  ],
+  "thoughtsTokenCount": 575,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Motorisierter Edelstahl-Maischekessel 50 L\", \"marque\": \"Polsinelli Enologia Srl\", \"prix\": 520, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Fassungsvermögen\", \"valeur\": \"50 L\"}, {\"nom\": \"Motor\", \"valeur\": \"220 V – 0,09 kW\"}, {\"nom\": \"Drehzahl\", \"valeur\": \"28 U/min\"}, {\"nom\": \"Edelstahlhahn\", \"valeur\": \"3/4\\\"\"}, {\"nom\": \"Innendurchmesser\", \"valeur\": \"455 mm\"}, {\"nom\": \"Höhe\", \"valeur\": \"370 mm\"}, {\"nom\": \"Wandstärke\", \"valeur\": \"1 mm\"}, {\"nom\": \"Bodenstärke\", \"valeur\": \"1,5 mm\"}]}",
+ "json": {
+  "nom": "Motorisierter Edelstahl-Maischekessel 50 L",
+  "marque": "Polsinelli Enologia Srl",
+  "prix": 520,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Fassungsvermögen",
+    "valeur": "50 L"
+   },
+   {
+    "nom": "Motor",
+    "valeur": "220 V – 0,09 kW"
+   },
+   {
+    "nom": "Drehzahl",
+    "valeur": "28 U/min"
+   },
+   {
+    "nom": "Edelstahlhahn",
+    "valeur": "3/4\""
+   },
+   {
+    "nom": "Innendurchmesser",
+    "valeur": "455 mm"
+   },
+   {
+    "nom": "Höhe",
+    "valeur": "370 mm"
+   },
+   {
+    "nom": "Wandstärke",
+    "valeur": "1 mm"
+   },
+   {
+    "nom": "Bodenstärke",
+    "valeur": "1,5 mm"
+   }
+  ]
+ },
+ "entree": 2535,
+ "sortie": 831,
+ "chf": 0.025087500000000002
+}

@@ -1,0 +1,85 @@
+{
+ "n": 39,
+ "cfg": "f38",
+ "modele": "gemini-3.8-flash",
+ "http": 200,
+ "ms": 9654,
+ "usage": {
+  "promptTokenCount": 408,
+  "candidatesTokenCount": 381,
+  "totalTokenCount": 31540,
+  "cachedContentTokenCount": 13184,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 408
+   }
+  ],
+  "cacheTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 13184
+   }
+  ],
+  "toolUsePromptTokenCount": 30751,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 30751
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Braukessel / Brauanlage 50L mit Umwälzpumpe für Heimbrauer\", \"marque\": \"HEBUfacturing\", \"prix\": 398.00, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Kesselinhalt total\", \"valeur\": \"50lt.\"}, {\"nom\": \"Max. Kochmenge\", \"valeur\": \"ca. 45llt.\"}, {\"nom\": \"Spannung / Leistung\", \"valeur\": \"220V-240V 3000W\"}, {\"nom\": \"Umwälzpumpe\", \"valeur\": \"11lt/min\"}, {\"nom\": \"Durchmesser Kessel\", \"valeur\": \"36cm aussen, 34.8mm innen\"}, {\"nom\": \"Produktgrösse\", \"valeur\": \"(B)45*(H)77cm -inklusive Griff und Deckel\"}, {\"nom\": \"Gewicht\", \"valeur\": \"13.5kg\"}, {\"nom\": \"Material\", \"valeur\": \"V4A (304SS) Chromstahl\"}]}",
+ "json": {
+  "nom": "Braukessel / Brauanlage 50L mit Umwälzpumpe für Heimbrauer",
+  "marque": "HEBUfacturing",
+  "prix": 398,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Kesselinhalt total",
+    "valeur": "50lt."
+   },
+   {
+    "nom": "Max. Kochmenge",
+    "valeur": "ca. 45llt."
+   },
+   {
+    "nom": "Spannung / Leistung",
+    "valeur": "220V-240V 3000W"
+   },
+   {
+    "nom": "Umwälzpumpe",
+    "valeur": "11lt/min"
+   },
+   {
+    "nom": "Durchmesser Kessel",
+    "valeur": "36cm aussen, 34.8mm innen"
+   },
+   {
+    "nom": "Produktgrösse",
+    "valeur": "(B)45*(H)77cm -inklusive Griff und Deckel"
+   },
+   {
+    "nom": "Gewicht",
+    "valeur": "13.5kg"
+   },
+   {
+    "nom": "Material",
+    "valeur": "V4A (304SS) Chromstahl"
+   }
+  ]
+ },
+ "entree": 31159,
+ "sortie": 381,
+ "chf": 0.061995
+}

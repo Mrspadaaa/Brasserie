@@ -1,0 +1,85 @@
+{
+ "n": 30,
+ "cfg": "hyd",
+ "modele": "gemini-4-hydrogen",
+ "http": 200,
+ "ms": 5302,
+ "usage": {
+  "promptTokenCount": 607,
+  "candidatesTokenCount": 275,
+  "totalTokenCount": 3675,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 607
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 275
+   }
+  ],
+  "toolUsePromptTokenCount": 2459,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 2459
+   }
+  ],
+  "thoughtsTokenCount": 334,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Speidel Braumeister PLUS 20 L mit Kühlmantel\", \"marque\": \"Speidel\", \"prix\": 2345, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"fertige Biermenge\", \"valeur\": \"ca. 20 L\"}, {\"nom\": \"Würzemenge\", \"valeur\": \"ca. 23 L\"}, {\"nom\": \"maximaler Füllstand\", \"valeur\": \"25 L\"}, {\"nom\": \"maximale Malzmenge\", \"valeur\": \"6 kg\"}, {\"nom\": \"Heizleistung\", \"valeur\": \"2'000 W\"}, {\"nom\": \"Gewicht\", \"valeur\": \"ca. 19 kg\"}, {\"nom\": \"Höhe\", \"valeur\": \"ca. 60 cm\"}, {\"nom\": \"Durchmesser\", \"valeur\": \"ca. 40 cm\"}]}",
+ "json": {
+  "nom": "Speidel Braumeister PLUS 20 L mit Kühlmantel",
+  "marque": "Speidel",
+  "prix": 2345,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "fertige Biermenge",
+    "valeur": "ca. 20 L"
+   },
+   {
+    "nom": "Würzemenge",
+    "valeur": "ca. 23 L"
+   },
+   {
+    "nom": "maximaler Füllstand",
+    "valeur": "25 L"
+   },
+   {
+    "nom": "maximale Malzmenge",
+    "valeur": "6 kg"
+   },
+   {
+    "nom": "Heizleistung",
+    "valeur": "2'000 W"
+   },
+   {
+    "nom": "Gewicht",
+    "valeur": "ca. 19 kg"
+   },
+   {
+    "nom": "Höhe",
+    "valeur": "ca. 60 cm"
+   },
+   {
+    "nom": "Durchmesser",
+    "valeur": "ca. 40 cm"
+   }
+  ]
+ },
+ "entree": 3066,
+ "sortie": 609,
+ "chf": 0.011458125
+}

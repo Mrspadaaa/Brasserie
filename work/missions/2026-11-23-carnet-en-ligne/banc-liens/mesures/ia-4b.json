@@ -1,0 +1,1338 @@
+{
+ "le": "2026-11-23T14:25:19.765Z",
+ "ia": "reel",
+ "bilanIA": {
+  "appels": 10,
+  "parModele": {
+   "lite": 9,
+   "fort": 1
+  },
+  "depenseChf": 0.02817,
+  "reserveeEngageeChf": 0,
+  "refuses": 0,
+  "rejoues": 2,
+  "textesMax": 12000,
+  "ms": [
+   802,
+   1034,
+   4400,
+   1373,
+   827,
+   919,
+   905,
+   963,
+   1074,
+   1192
+  ]
+ },
+ "taux": {
+  "liens": 11,
+  "prixSansJsonLd": "6/6 (100 %)",
+  "nom": "11/11 (100 %)",
+  "prixAffiche": "11/11 (100 %)",
+  "photoAffichee": "11/11 (100 %)",
+  "caracteristiques": "8/10 (80 %)",
+  "htDit": "0/0 (0 %)",
+  "livraisonCH": "1/5 (20 %)",
+  "inventions": 0,
+  "liensAvecInvention": []
+ },
+ "lignes": [
+  {
+   "n": 44,
+   "genres": [
+    "lot",
+    "eur-hors-tva-ch",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 877,
+   "lu": {
+    "url": "https://www.braupartner.de/set-edelstahl-konus-gaertank-60-liter",
+    "domaine": "braupartner.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidel Set Edelstahl Konus Gärtank 60 Liter",
+    "prix": 1333,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "braupartner.de",
+    "photo": "https://www.braupartner.de/media/7c/f4/35/1781175239/45600-ZKG_1_set-edelstahl-konus-gaertank-60-liter.jpg?ts=1781175255",
+    "photos": [
+     "https://www.braupartner.de/media/7c/f4/35/1781175239/45600-ZKG_1_set-edelstahl-konus-gaertank-60-liter.jpg?ts=1781175255"
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "60 Liter"
+     },
+     {
+      "nom": "Versandgewicht",
+      "valeur": "39 kg"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "braupartner.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "1333 EUR (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "EUR · TTC · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "1 · dont 0 du HTML, 0 de données embarquées ou de descriptions, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "lite ; ajouté : 1 caract."
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 45,
+   "genres": [
+    "prix-kg",
+    "variantes",
+    "eur-hors-tva-ch",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [],
+   "ms": 5470,
+   "lu": {
+    "url": "https://www.braupartner.de/citra-r-hopfenpellets",
+    "domaine": "braupartner.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra® Hopfenpellets",
+    "prix": 7.29,
+    "devise": "EUR",
+    "prixDes": true,
+    "taxe": "ttc",
+    "vendeur": "braupartner.de",
+    "photo": "https://www.braupartner.de/media/0b/bf/f2/1777064378/30-500A_1_citra-hopfenpellets.jpg?ts=1777065622",
+    "photos": [
+     "https://www.braupartner.de/media/0b/bf/f2/1777064378/30-500A_1_citra-hopfenpellets.jpg?ts=1777065622"
+    ],
+    "valeurs": [
+     {
+      "nom": "Herkunft Hopfen",
+      "valeur": "USA"
+     },
+     {
+      "nom": "Hopfentyp",
+      "valeur": "Aromahopfen"
+     },
+     {
+      "nom": "Alphasäure",
+      "valeur": "ca. 14,0 %"
+     },
+     {
+      "nom": "Erntejahr",
+      "valeur": "2025"
+     },
+     {
+      "nom": "Pelletstyp",
+      "valeur": "90"
+     },
+     {
+      "nom": "Mindestbestellmenge",
+      "valeur": "100 Gramm"
+     },
+     {
+      "nom": "Versandgewicht",
+      "valeur": "0,0011 kg"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "braupartner.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "7.29 EUR (schema.org), dès"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "EUR · TTC · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "6"
+     },
+     {
+      "nom": "controle",
+      "statut": "douteux",
+      "detail": "prix : l'IA lit 8, les données 7.29"
+     },
+     {
+      "nom": "ia",
+      "statut": "douteux",
+      "detail": "lite puis fort ; ajouté : 1 caract. ; l'IA lit 8 EUR, la page publie 7.29 EUR"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 46,
+   "genres": [
+    "prix-kg",
+    "eur-hors-tva-ch",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [],
+   "ms": 1433,
+   "lu": {
+    "url": "https://gastro-brennecke.de/25kg-pilsner-malz-braumalz-ungeschrotet-sackware",
+    "domaine": "gastro-brennecke.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "WEYERMANN 25kg Pilsner Malz Braumalz ungeschrotet Sackware",
+    "prix": 46,
+    "devise": "EUR",
+    "dispo": "en-stock",
+    "vendeur": "Gastro Brennecke GmbH & Co. KG",
+    "photo": "https://gastro-brennecke.de/media/58/4c/bb/1716534670/weyermann-sack_897.jpg?ts=1716534670",
+    "photos": [
+     "https://gastro-brennecke.de/media/58/4c/bb/1716534670/weyermann-sack_897.jpg?ts=1716534670",
+     "https://gastro-brennecke.de/media/ff/a1/c2/1716534672/pilz-malz-braumalz_3537.jpg?ts=1716534672",
+     "https://gastro-brennecke.de/media/d2/17/dd/1716534674/pilsner_5263.jpg?ts=1716534674"
+    ],
+    "valeurs": [
+     {
+      "nom": "Farbe (EBC)",
+      "valeur": "3 - 5 (strohgelb bis goldgelb)"
+     },
+     {
+      "nom": "Empfohlene Schüttung",
+      "valeur": "Bis zu 100%"
+     },
+     {
+      "nom": "Malzcharakter",
+      "valeur": "Mild, leicht süßlich, feine Getreidenote"
+     },
+     {
+      "nom": "Geeignet für",
+      "valeur": "Pilsner, Helles, Lager, Kölsch"
+     },
+     {
+      "nom": "Einsatzbereich",
+      "valeur": "Helles Bier, Lager"
+     },
+     {
+      "nom": "Getreide",
+      "valeur": "Gerste"
+     },
+     {
+      "nom": "Herkunft",
+      "valeur": "Deutschland"
+     },
+     {
+      "nom": "Malz-Zustand",
+      "valeur": "ungeschrotet"
+     },
+     {
+      "nom": "Malztyp",
+      "valeur": "Pilsnermalz"
+     },
+     {
+      "nom": "Verpackungsgröße",
+      "valeur": "25kg"
+     },
+     {
+      "nom": "Verwendung",
+      "valeur": "Basismalz"
+     },
+     {
+      "nom": "Optimale Lagerung",
+      "valeur": "Großgebinde für langfristige Frische"
+     },
+     {
+      "nom": "Effiziente Verarbeitung",
+      "valeur": "Perfekt für große Sude & Brauereibedarf"
+     },
+     {
+      "nom": "Kombinierbar mit Spezialmalzen",
+      "valeur": "Für mehr Geschmacksvielfalt"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "gastro-brennecke.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "46 EUR (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "EUR · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "3"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "14"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "absent",
+      "detail": "lite ; rien de plus"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 47,
+   "genres": [
+    "eur-hors-tva-ch",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 863,
+   "lu": {
+    "url": "https://www.bier-brauen.at/gaertank-konisch-60",
+    "domaine": "bier-brauen.at",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "ERPEL Edelstahl Gärbehälter konisch - 60 Liter",
+    "prix": 185.34,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Konischer Gärtank aus Edelstahl mit 60 Liter Volumen",
+    "photo": "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60.jpg",
+    "photos": [
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~2.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~3.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~4.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~5.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~6.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/md/gaertank-konisch-60~7.jpg",
+     "https://www.bier-brauen.at/media/image/product/5379/lg/gaertank-konisch-60.jpg"
+    ],
+    "valeurs": [
+     {
+      "nom": "Versandgewicht",
+      "valeur": "10,80 kg"
+     },
+     {
+      "nom": "Artikelnummer",
+      "valeur": "PD-31234"
+     },
+     {
+      "nom": "GTIN",
+      "valeur": "9120111123540"
+     },
+     {
+      "nom": "HAN",
+      "valeur": "DM-F600"
+     },
+     {
+      "nom": "Kategorie",
+      "valeur": "Gärkeller"
+     },
+     {
+      "nom": "Hersteller",
+      "valeur": "ERPEL"
+     },
+     {
+      "nom": "Ablasshahn unten",
+      "valeur": "1\" Außengewinde"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "bier-brauen.at"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "microdata"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "185.34 EUR (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "EUR · TTC · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "7"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "absent",
+      "detail": "lite ; rien de plus"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 48,
+   "genres": [
+    "variantes",
+    "eur-hors-tva-ch",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 949,
+   "lu": {
+    "url": "https://shop.speidel-edelstahlbehaelter.de/de/bier-cider-mischgetraenke/edelstahl-konus-gaertank-60-liter",
+    "domaine": "shop.speidel-edelstahlbehaelter.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Speidel Gär- und Lagerbehälter FD-ZKG 60 Liter",
+    "prix": 1104,
+    "devise": "EUR",
+    "taxe": "ttc",
+    "vendeur": "Speidel Tank- und Behälterbau GmbH",
+    "photo": "https://shop.speidel-edelstahlbehaelter.de/media/images/info/konustank-60-liter-drucklos1.jpg",
+    "photos": [
+     "https://shop.speidel-edelstahlbehaelter.de/media/images/info/konustank-60-liter-drucklos1.jpg",
+     "https://shop.speidel-edelstahlbehaelter.de/media/images/info/gaer-und-lagerbehaelter-fd-zkg-60-liter.jpg"
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "60 Liter"
+     },
+     {
+      "nom": "Durchmesser",
+      "valeur": "35 cm"
+     },
+     {
+      "nom": "Höhe",
+      "valeur": "109 cm"
+     },
+     {
+      "nom": "Gewicht",
+      "valeur": "35,00 kg"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "shop.speidel-edelstahlbehaelter.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "1104 EUR (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "EUR · TTC · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "2"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "1 · dont 0 du HTML, 0 de données embarquées ou de descriptions, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "lite ; ajouté : 3 caract."
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 51,
+   "genres": [
+    "marketplace",
+    "variantes",
+    "prix-barre",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [],
+   "ms": 689,
+   "lu": {
+    "url": "https://www.amazon.de/dp/B075QH8DGT",
+    "domaine": "amazon.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Klarstein Bierbrauset, Bierbrauanlage, Maischekessel zum Bier Brauen, Bier-Selbstbrauset, Selber Bier Brauen Set, Braukessel, Umwälzpumpe, Touch-Panel, Gärbehälter 50 Liter, 3000",
+    "prix": 374.97,
+    "devise": "CHF",
+    "photo": "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SL1500_.jpg",
+    "photos": [
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SL1500_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SY355_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SY450_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX425_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX466_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX522_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX569_.jpg",
+     "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SX679_.jpg"
+    ],
+    "valeurs": [
+     {
+      "nom": "Marke",
+      "valeur": "‎Klarstein"
+     },
+     {
+      "nom": "Modellnummer",
+      "valeur": "‎FP3-Mundschenk-XXL"
+     },
+     {
+      "nom": "Farbe",
+      "valeur": "‎Silber"
+     },
+     {
+      "nom": "Produktabmessungen",
+      "valeur": "‎42 x 43 x 80 cm; 12 Kilogramm"
+     },
+     {
+      "nom": "Fassungsvermögen",
+      "valeur": "‎50 Liter"
+     },
+     {
+      "nom": "Leistung",
+      "valeur": "‎3000 Watt"
+     },
+     {
+      "nom": "Spannung",
+      "valeur": "‎220 Volt"
+     },
+     {
+      "nom": "Material",
+      "valeur": "‎Edelstahl"
+     },
+     {
+      "nom": "Automatische Abschaltung",
+      "valeur": "‎Nein"
+     },
+     {
+      "nom": "Weitere Spezifikationen",
+      "valeur": "‎Easy to use"
+     },
+     {
+      "nom": "Artikelgewicht",
+      "valeur": "‎12 Kilograms"
+     },
+     {
+      "nom": "Garantierte Software-Updates bis",
+      "valeur": "‎unbekannt"
+     },
+     {
+      "nom": "ASIN",
+      "valeur": "B075QH8DGT"
+     },
+     {
+      "nom": "Durchschnittliche Kundenbewertung",
+      "valeur": "4,4 4,4 von 5 Sternen (286) var dpAcrHasRegisteredArcLinkClickAction; P.when('A'"
+     },
+     {
+      "nom": "Amazon Bestseller-Rang",
+      "valeur": "Nr. 281.255 in Küche, Haushalt & Wohnen (Siehe Top 100 in Küche, Haushalt & Wohnen) Nr. 3 in"
+     },
+     {
+      "nom": "Im Angebot von Amazon.de seit",
+      "valeur": "24. September 2017"
+     },
+     {
+      "nom": "Gewicht",
+      "valeur": "12 Kilogramm"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "amazon.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "aucun Product schema.org"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "374.97 CHF (bloc d'achat)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "16"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "lite ; ajouté : 1 caract."
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 52,
+   "genres": [
+    "marketplace",
+    "prix-kg",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 1376,
+   "lu": {
+    "url": "https://www.amazon.de/dp/B074PTR695",
+    "domaine": "amazon.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Brewferm 100g Hopfenpellets T90 Sorte Hallertauer Perle zum Bierbrauen und für Kaltauszüge Aktueller Alphasäuregehalt variiert im Bereich von 5-10%",
+    "prix": 11.37,
+    "devise": "CHF",
+    "photo": "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SL1184_.jpg",
+    "photos": [
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SL1184_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX355_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX450_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX425_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX466_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX522_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX569_.jpg",
+     "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX679_.jpg"
+    ],
+    "valeurs": [
+     {
+      "nom": "Verpackungsabmessungen",
+      "valeur": "‎19,7 x 13 x 8,2 cm; 100 Gramm"
+     },
+     {
+      "nom": "Produktgewicht",
+      "valeur": "‎100 Gramm"
+     },
+     {
+      "nom": "Garantierte Software-Updates bis",
+      "valeur": "‎unbekannt"
+     },
+     {
+      "nom": "ASIN",
+      "valeur": "B074PTR695"
+     },
+     {
+      "nom": "Modellnummer",
+      "valeur": "4014"
+     },
+     {
+      "nom": "Im Angebot von Amazon.de seit",
+      "valeur": "17. Juni 2014"
+     },
+     {
+      "nom": "Durchschnittliche Kundenbewertung",
+      "valeur": "4,8 4,8 von 5 Sternen (18) var dpAcrHasRegisteredArcLinkClickAction; P.when('A'"
+     },
+     {
+      "nom": "Amazon Bestseller-Rang",
+      "valeur": "Nr. 425.562 in Küche, Haushalt & Wohnen (Siehe Top 100 in Küche, Haushalt & Wohnen) Nr. 145 in"
+     },
+     {
+      "nom": "Auslaufartikel (Produktion durch Hersteller eingestellt)",
+      "valeur": "Nein"
+     },
+     {
+      "nom": "Abpackung",
+      "valeur": "100g / lichgeschützte Vakuumverpackung für optimales Aroma und Haltbarkeit"
+     },
+     {
+      "nom": "Alphasäurewert",
+      "valeur": "5,3%"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "amazon.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "aucun Product schema.org"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "11.37 CHF (bloc d'achat)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "10"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "lite ; ajouté : 1 caract."
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 53,
+   "genres": [
+    "marketplace",
+    "rupture",
+    "prix-des"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 1267,
+   "lu": {
+    "url": "https://www.amazon.de/dp/B00L4F0QAE",
+    "domaine": "amazon.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "100g Magnum Hopfenpellets zum Bierbrauen, Alphasäuregehalt: 14,3%",
+    "prix": 8.33,
+    "devise": "CHF",
+    "photo": "https://m.media-amazon.com/images/I/4177KRD-D7L._AC_SY355_.jpg",
+    "photos": [
+     "https://m.media-amazon.com/images/I/4177KRD-D7L._AC_SY355_.jpg",
+     "https://m.media-amazon.com/images/I/4177KRD-D7L._AC_SY450_.jpg",
+     "https://m.media-amazon.com/images/I/4177KRD-D7L._AC_SX425_.jpg",
+     "https://m.media-amazon.com/images/I/4177KRD-D7L._AC_SX466_.jpg",
+     "https://m.media-amazon.com/images/I/4177KRD-D7L._AC_.jpg"
+    ],
+    "valeurs": [
+     {
+      "nom": "Marke",
+      "valeur": "‎Brewferm"
+     },
+     {
+      "nom": "Modellnummer",
+      "valeur": "‎0531566"
+     },
+     {
+      "nom": "Artikelgewicht",
+      "valeur": "‎99,79 Gramm"
+     },
+     {
+      "nom": "Garantierte Software-Updates bis",
+      "valeur": "‎unbekannt"
+     },
+     {
+      "nom": "ASIN",
+      "valeur": "B00L4F0QAE"
+     },
+     {
+      "nom": "Durchschnittliche Kundenbewertung",
+      "valeur": "4,8 4,8 von 5 Sternen (5) var dpAcrHasRegisteredArcLinkClickAction; P.when('A'"
+     },
+     {
+      "nom": "Amazon Bestseller-Rang",
+      "valeur": "Nr. 1.124.889 in Küche, Haushalt & Wohnen (Siehe Top 100 in Küche, Haushalt & Wohnen) Nr. 564 in"
+     },
+     {
+      "nom": "Im Angebot von Amazon.de seit",
+      "valeur": "18. Juni 2014"
+     },
+     {
+      "nom": "Alphasäuregehalt",
+      "valeur": "14,3%"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "amazon.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "aucun Product schema.org"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "8.33 CHF (page (sous le titre))"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "5"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "lite ; ajouté : 1 caract."
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 54,
+   "genres": [
+    "lien-court",
+    "marketplace",
+    "variantes",
+    "prix-barre",
+    "eur-hors-tva-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 486,
+   "lu": {
+    "url": "https://www.amazon.fr/dp/B0G4SHPH5K?ref=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5&ref_=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5&social_share=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5",
+    "domaine": "amazon.fr",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Amazon Kindle 16 Go (nouvelle génération) : désormais plus fin, plus léger et plus rapide, avec écran 6\", sans publicités - Violet Ube",
+    "prix": 126.11,
+    "devise": "EUR",
+    "photo": "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SL1500_.jpg",
+    "photos": [
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SL1500_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY355_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY450_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY550_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY606_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY679_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY741_.jpg",
+     "https://m.media-amazon.com/images/I/712wZfdl19L._AC_SY879_.jpg"
+    ],
+    "valeurs": [
+     {
+      "nom": "Un moment d'évasion, sans distraction",
+      "valeur": "pas de notifications, d'e-mails ni de réseaux sociaux. Juste vous et votre lecture."
+     },
+     {
+      "nom": "En parfait accord",
+      "valeur": "gardez votre Kindle bien au chaud avec notre étui en maille (vendu séparément)."
+     },
+     {
+      "nom": "Amazon Kindle 16 Go (nouvelle génération)",
+      "valeur": "désormais plus fin, plus léger et plus rapide, avec écran 6\", sans publicités - Violet Ube : Amazon…"
+     },
+     {
+      "nom": "Capacité de stockage",
+      "valeur": "16 Go"
+     },
+     {
+      "nom": "Écran",
+      "valeur": "6\""
+     },
+     {
+      "nom": "Autonomie",
+      "valeur": "6 semaines"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "amazon.fr"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "aucun Product schema.org"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "126.11 EUR (bloc d'achat)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "EUR · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "3 · dont 2 du HTML, 1 de données embarquées ou de descriptions"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "lite ; ajouté : 3 caract."
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 55,
+   "genres": [
+    "lien-court",
+    "marketplace",
+    "variantes",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "·",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [],
+   "ms": 1347,
+   "lu": {
+    "url": "https://www.amazon.de/dp/B0HHXH8V29?ref=cm_sw_r_ffobk_cso_cp_apan_dp_VJNS2XF176ZA36N17WYE&ref_=cm_sw_r_ffobk_cso_cp_apan_dp_VJNS2XF176ZA36N17WYE&social_share=cm_sw_r_ffobk_cso_cp_apan_dp_VJNS2XF176ZA36N17WYE&bestFormat=true",
+    "domaine": "amazon.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Was schreibe ich bloß?: Über 1.000 professionelle Formulierungen für die psychiatrische Pflegedokumentation",
+    "prix": 22.13,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "photo": "https://m.media-amazon.com/images/I/61+VM7oiRhL._SL1293_.jpg",
+    "photos": [
+     "https://m.media-amazon.com/images/I/61+VM7oiRhL._SL1293_.jpg",
+     "https://m.media-amazon.com/images/I/61+VM7oiRhL._SY342_.jpg",
+     "https://m.media-amazon.com/images/I/61+VM7oiRhL._SY385_.jpg",
+     "https://m.media-amazon.com/images/I/61+VM7oiRhL._SY425_.jpg",
+     "https://m.media-amazon.com/images/I/61+VM7oiRhL._SY466_.jpg",
+     "https://m.media-amazon.com/images/I/61+VM7oiRhL._SY522_.jpg"
+    ],
+    "valeurs": [
+     {
+      "nom": "ASIN ‏",
+      "valeur": "‎ B0HHXH8V29"
+     },
+     {
+      "nom": "Herausgeber ‏",
+      "valeur": "‎ Independently published"
+     },
+     {
+      "nom": "Erscheinungstermin ‏",
+      "valeur": "‎ 5. September 2026"
+     },
+     {
+      "nom": "Sprache ‏",
+      "valeur": "‎ Deutsch"
+     },
+     {
+      "nom": "Seitenzahl der Print-Ausgabe ‏",
+      "valeur": "‎ 222 Seiten"
+     },
+     {
+      "nom": "ISBN-13 ‏",
+      "valeur": "‎ 979-8170614462"
+     },
+     {
+      "nom": "Abmessungen ‏",
+      "valeur": "‎ 21.59 x 1.42 x 27.94 cm"
+     },
+     {
+      "nom": "Was schreibe ich bloß?",
+      "valeur": "Über 1.000 professionelle Formulierungen für die psychiatrische Pflegedokumentation : Glaser, Susan…"
+     },
+     {
+      "nom": "Seitenzahl der Print-Ausgabe",
+      "valeur": "222 Seiten"
+     },
+     {
+      "nom": "Sprache",
+      "valeur": "Deutsch"
+     },
+     {
+      "nom": "Erscheinungstermin",
+      "valeur": "5. September 2026"
+     },
+     {
+      "nom": "Abmessungen",
+      "valeur": "21.59 x 1.42 x 27.94 cm"
+     },
+     {
+      "nom": "ISBN-13",
+      "valeur": "979-8170614462"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "amazon.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "aucun Product schema.org"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "22.13 CHF (bloc d'achat)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · TTC · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "6"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "8 · dont 7 du HTML, 1 de données embarquées ou de descriptions"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "lite ; ajouté : 5 caract."
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 56,
+   "genres": [
+    "marketplace",
+    "js-lourd",
+    "livraison-ch",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "=",
+   "inventions": [],
+   "ms": 1272,
+   "lu": {
+    "url": "https://www.mediamarkt.ch/de/product/_klarstein-mundschenk-maischekessel-88419523.html",
+    "domaine": "mediamarkt.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "KLARSTEIN Mundschenk Maischekessel Silber-Metallic",
+    "prix": 606.95,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "vendeur": "MediaMarkt",
+    "photo": "https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MP_155163632/fee_786_587_png",
+    "photos": [
+     "https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MP_155163632/fee_786_587_png"
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "mediamarkt.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "aucun Product schema.org"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "606.95 CHF (page (sous le titre))"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · TTC · port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "lite ; ajouté : 7 caract."
+     }
+    ],
+    "valeurs": [
+     {
+      "nom": "Maße",
+      "valeur": "ca. 43 x 80 x 43 cm (BxHxT)"
+     },
+     {
+      "nom": "Innenmaße",
+      "valeur": "ca. 34,5 x 53 cm (ØxH)"
+     },
+     {
+      "nom": "Gewicht",
+      "valeur": "ca. 12 kg"
+     },
+     {
+      "nom": "Material Kessel",
+      "valeur": "304er Edelstahl"
+     },
+     {
+      "nom": "Material Deckel",
+      "valeur": "Glas"
+     },
+     {
+      "nom": "Leistung",
+      "valeur": "3000 Watt"
+     },
+     {
+      "nom": "Stromversorgung",
+      "valeur": "220-240V~ / 50-60Hz"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  }
+ ]
+}

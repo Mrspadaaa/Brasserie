@@ -1,0 +1,73 @@
+{
+ "n": 38,
+ "cfg": "hyd",
+ "modele": "gemini-4-hydrogen",
+ "http": 200,
+ "ms": 4179,
+ "usage": {
+  "promptTokenCount": 616,
+  "candidatesTokenCount": 218,
+  "totalTokenCount": 5800,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 616
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 218
+   }
+  ],
+  "toolUsePromptTokenCount": 4579,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 4579
+   }
+  ],
+  "thoughtsTokenCount": 387,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Speidel Edelstahl Konus Gärtank 60 Liter SET (drucklos)\", \"marque\": \"Speidel\", \"prix\": 1384.8, \"devise\": \"EUR\", \"ttc\": true, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Capacité\", \"valeur\": \"60 Liter\"}, {\"nom\": \"Matière\", \"valeur\": \"Edelstahl\"}, {\"nom\": \"Poids\", \"valeur\": \"39,000 kg\"}, {\"nom\": \"Type\", \"valeur\": \"drucklos\"}, {\"nom\": \"Origine\", \"valeur\": \"Deutschland\"}]}",
+ "json": {
+  "nom": "Speidel Edelstahl Konus Gärtank 60 Liter SET (drucklos)",
+  "marque": "Speidel",
+  "prix": 1384.8,
+  "devise": "EUR",
+  "ttc": true,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Capacité",
+    "valeur": "60 Liter"
+   },
+   {
+    "nom": "Matière",
+    "valeur": "Edelstahl"
+   },
+   {
+    "nom": "Poids",
+    "valeur": "39,000 kg"
+   },
+   {
+    "nom": "Type",
+    "valeur": "drucklos"
+   },
+   {
+    "nom": "Origine",
+    "valeur": "Deutschland"
+   }
+  ]
+ },
+ "entree": 5195,
+ "sortie": 605,
+ "chf": 0.0154125
+}

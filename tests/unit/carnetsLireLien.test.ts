@@ -50,7 +50,11 @@ describe('lirePage (B4)', () => {
 
   it('sans métadonnées : illisible, et rien d\'inventé (ni nom, ni prix, ni photo, ni valeur)', () => {
     const p = lirePage(fixture('page-sans-meta.html'), new URL('https://hottes-exemple.ch/'), 1);
-    expect(p).toEqual({ url: 'https://hottes-exemple.ch/', domaine: 'hottes-exemple.ch', statut: 'illisible', luLe: 1 });
+    // D446 : les étapes disent pourquoi (page douteuse, rien de trouvé) ; aucune valeur n'est inventée.
+    const { etapes, ...reste } = p;
+    expect(reste).toEqual({ url: 'https://hottes-exemple.ch/', domaine: 'hottes-exemple.ch', statut: 'illisible', luLe: 1 });
+    expect(etapes?.[0]).toEqual({ nom: 'page', statut: 'douteux', detail: 'ni nom, ni prix, ni photo' });
+    expect((etapes ?? []).filter((e) => e.statut === 'trouve').map((e) => e.nom)).toEqual(['controle']);
   });
 
   // « AggregateOffer ou offres de prix différents » : le plus bas, dit « dès » (Chasse Carnet V1, tests plus bas).
@@ -87,7 +91,7 @@ describe('lireLien (B4) : réseau simulé, jamais réel', () => {
   it('robots refusé : aucun fetch de la page', async () => {
     const { fetchPage, demandes } = reseau({ [robots]: () => texte('User-agent: *\nDisallow: /'), [page]: () => html(fixture('robots-refuse.html')) });
     const p = await lireLien(page, { fetchPage, maintenant: 5 });
-    expect(p).toEqual({ url: page, domaine: 'extracteur-exemple.ch', statut: 'robots', luLe: 5 });
+    expect(p).toEqual({ url: page, domaine: 'extracteur-exemple.ch', statut: 'robots', luLe: 5, etapes: [{ nom: 'page', statut: 'absent', detail: 'robots' }] });
     expect(demandes).toEqual([robots]);
   });
 
@@ -115,7 +119,7 @@ describe('lireLien (B4) : réseau simulé, jamais réel', () => {
 
   it('page trop grosse ou non HTML : indisponible, rien d\'inventé', async () => {
     const gros = reseau({ [robots]: () => texte('', 404), [page]: () => html('<html></html>', 200, { 'content-length': String(LIEN_TAILLE_MAX + 1) }) });
-    expect(await lireLien(page, { fetchPage: gros.fetchPage, maintenant: 1 })).toEqual({ url: page, domaine: 'extracteur-exemple.ch', statut: 'indisponible', luLe: 1 });
+    expect(await lireLien(page, { fetchPage: gros.fetchPage, maintenant: 1 })).toEqual({ url: page, domaine: 'extracteur-exemple.ch', statut: 'indisponible', luLe: 1, etapes: [{ nom: 'page', statut: 'absent', detail: 'indisponible' }] });
     const pdf = reseau({ [robots]: () => texte('', 404), [page]: () => new Response('%PDF', { headers: { 'content-type': 'application/pdf' } }) });
     expect((await lireLien(page, { fetchPage: pdf.fetchPage })).statut).toBe('indisponible');
   });

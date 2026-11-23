@@ -1,0 +1,1242 @@
+{
+ "le": "2026-11-23T14:07:17.929Z",
+ "taux": {
+  "liens": 11,
+  "nom": "10/11 (91 %)",
+  "prixAffiche": "1/11 (9 %)",
+  "photoAffichee": "9/10 (90 %)",
+  "caracteristiques": "4/9 (44 %)",
+  "htDit": "0/5 (0 %)",
+  "livraisonCH": "3/5 (60 %)",
+  "inventions": 10,
+  "liensAvecInvention": [
+   "1:prix 1820.9 CHF",
+   "29:photo",
+   "33:prix 3.6 CHF+livraison",
+   "36:prix 1620 CHF",
+   "39:prix 10 CHF",
+   "40:prix 1339.36 CHF",
+   "45:prix 7.29 EUR",
+   "61:prix 913.9 CHF",
+   "63:prix 788.9 CHF"
+  ]
+ },
+ "lignes": [
+  {
+   "n": 1,
+   "genres": [
+    "redirection",
+    "ht",
+    "rupture",
+    "multilingue"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "✗",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "✗",
+   "livraison": "=",
+   "inventions": [
+    "prix 1820.9 CHF"
+   ],
+   "ms": 323,
+   "lu": {
+    "url": "https://www.gastro-held.ch/products/mastro-kuehlschrank-600-liter-aus-edelstahl-010c-bma0060",
+    "domaine": "gastro-held.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Mastro Kühlschrank 600 Liter aus Edelstahl, 0°/+10°C",
+    "prix": 1820.9,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "rupture",
+    "vendeur": "GastroHeld",
+    "photo": "https://www.gastro-held.ch/cdn/shop/files/218105-BMA0060_e2a007b1-1a8e-4c1b-91f8-1dc4ab7a58c8.webp?v=1784032984&width=550",
+    "photos": [
+     "https://www.gastro-held.ch/cdn/shop/files/218105-BMA0060_e2a007b1-1a8e-4c1b-91f8-1dc4ab7a58c8.webp?v=1784032984&width=550"
+    ],
+    "valeurs": [
+     {
+      "nom": "Spezifikation",
+      "valeur": "Wert"
+     },
+     {
+      "nom": "Marke",
+      "valeur": "Mastro"
+     },
+     {
+      "nom": "Breite in mm",
+      "valeur": "700"
+     },
+     {
+      "nom": "Höhe in mm",
+      "valeur": "2.030"
+     },
+     {
+      "nom": "Tiefe in mm",
+      "valeur": "710"
+     },
+     {
+      "nom": "Netto Gewicht in kg",
+      "valeur": "110"
+     },
+     {
+      "nom": "Kühlvolumen [Liter]",
+      "valeur": "600"
+     },
+     {
+      "nom": "Anschluss in Volt",
+      "valeur": "230 V"
+     },
+     {
+      "nom": "Leistung in kW",
+      "valeur": "0,385"
+     },
+     {
+      "nom": "Energieeffizienzklasse",
+      "valeur": "D"
+     },
+     {
+      "nom": "Kühlbereich",
+      "valeur": "Normalkühlung"
+     },
+     {
+      "nom": "Kühlung",
+      "valeur": "Umluft"
+     },
+     {
+      "nom": "Abschliessbar",
+      "valeur": "Nein"
+     },
+     {
+      "nom": "Höhenverstellbar",
+      "valeur": "Nein"
+     },
+     {
+      "nom": "Anzahl Türen",
+      "valeur": "1"
+     },
+     {
+      "nom": "Türart",
+      "valeur": "Klappbare Volltür"
+     },
+     {
+      "nom": "Top Preise",
+      "valeur": "Über 9.500 Artikel in Profi-Qualität zu günstigen Preisen"
+     },
+     {
+      "nom": "Risikolos",
+      "valeur": "14 Tage Rückgabeservice"
+     }
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "gastro-held.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "1820.9 CHF (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "douteux",
+      "detail": "CHF · TTC · port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "18"
+     },
+     {
+      "nom": "controle",
+      "statut": "douteux",
+      "detail": "port : les données disent un port de 7.9 CHF, la page « livraison gratuite »"
+     }
+    ]
+   }
+  },
+  {
+   "n": 29,
+   "genres": [
+    "prix-kg",
+    "site-suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "✗",
+   "caract": "",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [
+    "photo"
+   ],
+   "ms": 291,
+   "lu": {
+    "url": "https://www.brauundrauchshop.ch/spectrum-citra-1-kg",
+    "domaine": "brauundrauchshop.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Spectrum CITRA 1 kg",
+    "prix": 401,
+    "devise": "CHF",
+    "vendeur": "Brau- und Rauchshop",
+    "photo": "https://www.brauundrauchshop.ch/content/images/thumbs/022/0228141_spectrum-citra-1-kg_600.jpg",
+    "photos": [
+     "https://www.brauundrauchshop.ch/content/images/thumbs/022/0228141_spectrum-citra-1-kg_600.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brauundrauchshop.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "microdata"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "401 CHF (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ]
+   }
+  },
+  {
+   "n": 33,
+   "genres": [
+    "variantes",
+    "prix-kg",
+    "site-suisse",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "✗",
+   "prix": "✗",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "✗",
+   "inventions": [
+    "prix 3.6 CHF",
+    "livraison"
+   ],
+   "ms": 291,
+   "lu": {
+    "url": "https://hopfenmarkt.ch/produkt/hopfen/citra",
+    "domaine": "hopfenmarkt.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra",
+    "prix": 3.6,
+    "devise": "CHF",
+    "prixDes": true,
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Hopfenmarkt",
+    "photo": "https://hopfenmarkt.ch/storage/3/conversions/citra-large.webp",
+    "photos": [
+     "https://hopfenmarkt.ch/storage/3/conversions/citra-large.webp"
+    ],
+    "valeurs": [
+     {
+      "nom": "Land der Ernte",
+      "valeur": "USA"
+     },
+     {
+      "nom": "Erntejahr",
+      "valeur": "2025"
+     },
+     {
+      "nom": "Hopfentyp",
+      "valeur": "Mehrzweckhopfen"
+     },
+     {
+      "nom": "Hopfenform",
+      "valeur": "Pellets"
+     },
+     {
+      "nom": "Alpha",
+      "valeur": "12.8%"
+     },
+     {
+      "nom": "Beta",
+      "valeur": "4%"
+     },
+     {
+      "nom": "Cohumulone",
+      "valeur": "24.2%"
+     },
+     {
+      "nom": "Total oil",
+      "valeur": "2.5ml"
+     },
+     {
+      "nom": "Myrcene",
+      "valeur": "59.8%"
+     },
+     {
+      "nom": "Humulene",
+      "valeur": "13%"
+     },
+     {
+      "nom": "Caryophyllene",
+      "valeur": "7.4%"
+     },
+     {
+      "nom": "Farnesene",
+      "valeur": "0.1%"
+     }
+    ],
+    "livraison": {
+     "prix": 11.9,
+     "devise": "CHF"
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "hopfenmarkt.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "douteux",
+      "detail": "données 3.6, page 6.7 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · TTC · port 11.9 CHF"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "12"
+     },
+     {
+      "nom": "controle",
+      "statut": "douteux",
+      "detail": "prix : données 3.6, page 6.7 CHF"
+     }
+    ]
+   }
+  },
+  {
+   "n": 35,
+   "genres": [
+    "prix-des",
+    "variantes",
+    "site-suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "?",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 290,
+   "lu": {
+    "url": "https://hopfenshop.ch/produkt/citra-hopfen/",
+    "domaine": "hopfenshop.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra",
+    "vendeur": "www.hopfenshop.ch",
+    "photo": "https://hopfenshop.ch/wp-content/uploads/2023/09/citra-hopfen-label.png",
+    "photos": [
+     "https://hopfenshop.ch/wp-content/uploads/2023/09/citra-hopfen-label.png"
+    ],
+    "valeurs": [
+     {
+      "nom": "Gewicht",
+      "valeur": "n. a."
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "hopfenshop.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "aucun Product schema.org"
+     },
+     {
+      "nom": "prix",
+      "statut": "absent"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "absent"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ]
+   }
+  },
+  {
+   "n": 36,
+   "genres": [
+    "site-suisse",
+    "js-lourd",
+    "ht",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "✗",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "✗",
+   "livraison": "·",
+   "inventions": [
+    "prix 1620 CHF"
+   ],
+   "ms": 290,
+   "lu": {
+    "url": "https://www.baldinger.biz/shop/index.php?route=product/product&product_id=11949",
+    "domaine": "baldinger.biz",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Braumeister 20 Liter Speidel",
+    "prix": 1620,
+    "devise": "CHF",
+    "dispo": "en-stock",
+    "vendeur": "Max Baldinger AG",
+    "photo": "https://www.baldinger.biz/shop/image/cache/catalog/55502-374x536.jpg",
+    "photos": [
+     "https://www.baldinger.biz/shop/image/cache/catalog/55502-374x536.jpg",
+     "https://www.baldinger.biz/shop/image/cache/catalog/55502-374x196w.jpg",
+     "https://www.baldinger.biz/shop/image/cache/catalog/55502-200x200w.jpg"
+    ],
+    "valeurs": [
+     {
+      "nom": "Lagerbestand",
+      "valeur": "an Lager"
+     },
+     {
+      "nom": "Marke",
+      "valeur": "Speidel"
+     },
+     {
+      "nom": "Artikelnummer",
+      "valeur": "55.502.00"
+     },
+     {
+      "nom": "Gewicht",
+      "valeur": "20.00"
+     },
+     {
+      "nom": "Wiederverkäufer-Produktgruppe",
+      "valeur": "D"
+     },
+     {
+      "nom": "Heizspirale",
+      "valeur": "2.000 W Heizleistung"
+     },
+     {
+      "nom": "Pumpe",
+      "valeur": "9 W"
+     },
+     {
+      "nom": "Stromanschluss",
+      "valeur": "230 V (Absicherung mindestens 10 A)"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "baldinger.biz"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "1620 CHF (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "3"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ]
+   }
+  },
+  {
+   "n": 39,
+   "genres": [
+    "site-suisse",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "✗",
+   "photo": "?",
+   "caract": "?",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [
+    "prix 10 CHF"
+   ],
+   "ms": 287,
+   "lu": {
+    "url": "https://www.hebu-shop.ch/shop/braukessel-brauanlage-50l-mit-umwaelzpumpe-fuer-heimbrauer/",
+    "domaine": "hebu-shop.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Braukessel / Brauanlage 50L mit Umwälzpumpe für Heimbrauer",
+    "prix": 10,
+    "devise": "CHF",
+    "valeurs": [
+     {
+      "nom": "Gewicht",
+      "valeur": "15 kg"
+     },
+     {
+      "nom": "Maße",
+      "valeur": "46 × 46 × 82 cm"
+     },
+     {
+      "nom": "Hersteller",
+      "valeur": "HEBUfacturing"
+     },
+     {
+      "nom": "GTIN",
+      "valeur": "2810GB-50"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "hebu-shop.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "aucun Product schema.org"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "10 CHF (page (sous le titre))"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "absent"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "4"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ]
+   }
+  },
+  {
+   "n": 40,
+   "genres": [
+    "prix-barre",
+    "ht",
+    "variante-url",
+    "site-suisse",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "✗",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "✗",
+   "livraison": "=",
+   "inventions": [
+    "prix 1339.36 CHF"
+   ],
+   "ms": 284,
+   "lu": {
+    "url": "https://mrgastro.ch/products/edelstahl-kuehl-gefrierschrank-440-l-740x830x2010-mm?variant=54211682238802",
+    "domaine": "mrgastro.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Klima Italia Edelstahl-Kühlschrank – 440 L – +2 bis +8 °C – 740×830×2010 mm",
+    "prix": 1339.36,
+    "devise": "CHF",
+    "dispo": "en-stock",
+    "vendeur": "M&R Gastro Schweiz",
+    "photo": "https://mrgastro.ch/cdn/shop/files/GN-650-TN.jpg?v=1786209385&width=1600",
+    "photos": [
+     "https://mrgastro.ch/cdn/shop/files/GN-650-TN.jpg?v=1786209385&width=1600"
+    ],
+    "valeurs": [
+     {
+      "nom": "Kapazität",
+      "valeur": "440–650 l"
+     },
+     {
+      "nom": "Leistung",
+      "valeur": "0.36kW"
+     },
+     {
+      "nom": "Spannung",
+      "valeur": "220V"
+     }
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "mrgastro.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "1339.36 CHF (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "3"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ]
+   }
+  },
+  {
+   "n": 45,
+   "genres": [
+    "prix-kg",
+    "variantes",
+    "eur-hors-tva-ch",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "✗",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "?",
+   "inventions": [
+    "prix 7.29 EUR"
+   ],
+   "ms": 302,
+   "lu": {
+    "url": "https://www.braupartner.de/citra-r-hopfenpellets",
+    "domaine": "braupartner.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra® Hopfenpellets",
+    "prix": 7.29,
+    "devise": "EUR",
+    "prixDes": true,
+    "taxe": "ttc",
+    "vendeur": "braupartner.de",
+    "photo": "https://www.braupartner.de/media/0b/bf/f2/1777064378/30-500A_1_citra-hopfenpellets.jpg?ts=1777065622",
+    "photos": [
+     "https://www.braupartner.de/media/0b/bf/f2/1777064378/30-500A_1_citra-hopfenpellets.jpg?ts=1777065622"
+    ],
+    "valeurs": [
+     {
+      "nom": "Herkunft Hopfen",
+      "valeur": "USA"
+     },
+     {
+      "nom": "Hopfentyp",
+      "valeur": "Aromahopfen"
+     },
+     {
+      "nom": "Alphasäure",
+      "valeur": "ca. 14,0 %"
+     },
+     {
+      "nom": "Erntejahr",
+      "valeur": "2025"
+     },
+     {
+      "nom": "Pelletstyp",
+      "valeur": "90"
+     },
+     {
+      "nom": "Mindestbestellmenge",
+      "valeur": "100 Gramm"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "braupartner.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "7.29 EUR (schema.org), dès"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "EUR · TTC · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "6"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ],
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   }
+  },
+  {
+   "n": 49,
+   "genres": [
+    "lot",
+    "variantes",
+    "eur-hors-tva-ch",
+    "configurateur"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "?",
+   "photo": "=",
+   "caract": "",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 282,
+   "lu": {
+    "url": "https://shop.speidels-braumeister.de/de/braumeister-20-liter",
+    "domaine": "shop.speidels-braumeister.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Braumeister 20 Liter",
+    "photo": "https://shop.speidels-braumeister.de/media/images/category/listingTop/bm-kachel-bm-20l-20260919.jpg",
+    "photos": [
+     "https://shop.speidels-braumeister.de/media/images/category/listingTop/bm-kachel-bm-20l-20260919.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "shop.speidels-braumeister.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "aucun Product schema.org"
+     },
+     {
+      "nom": "prix",
+      "statut": "absent"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "absent"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ]
+   }
+  },
+  {
+   "n": 61,
+   "genres": [
+    "prix-barre",
+    "ht",
+    "multilingue",
+    "site-suisse",
+    "livraison-ch",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "✗",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "✗",
+   "livraison": "=",
+   "inventions": [
+    "prix 913.9 CHF"
+   ],
+   "ms": 281,
+   "lu": {
+    "url": "https://www.gastro-held.ch/fr/products/armoire-refrigeree-professionnelle-eco-400-gn-11-snackh400tn",
+    "domaine": "gastro-held.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "GastroHero Armoire réfrigérée professionnelle ECO 400 GN 1/1",
+    "prix": 913.9,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "GastroHeld",
+    "photo": "https://www.gastro-held.ch/cdn/shop/files/232085-snackh400tn_right_2.webp?v=1769340548&width=1200",
+    "photos": [
+     "https://www.gastro-held.ch/cdn/shop/files/232085-snackh400tn_right_2.webp?v=1769340548&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232094-snackh400tn_ge_ffnet_2_8ffdd315-6cb8-444a-a61b-5507cd77b424.webp?v=1783240006&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232086-snackh400tn_masse_2.webp?v=1769340548&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232090-snackh400tn-left_2_fd0bbcdb-8db2-4a9f-b521-67b056eff2cc.webp?v=1783240004&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232091-snackh400tn-l_ftung_2_3c439adc-101e-456f-93e8-a58490c17e54.webp?v=1783240005&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/6117836-snackh400tn-roste_2.webp?v=1783240005&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232096-snackh400tn-temperaturanzeige_2_70e0f24b-e2b2-415f-89f3-28ca074d9eb1.webp?v=1783240006&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232093-snackh400tn-led_2_13570867-5c61-42b0-be08-3d5e2a47e946.webp?v=1783240005&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232087-snackh400tn-ablauf_2.webp?v=1769340548&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232095-snackh400tn-schl_ssel_2_9ef08718-24bf-41ca-9462-a2ca787ac4a3.webp?v=1783240006&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/6117834-snackh400tn-fu__2.webp?v=1783240003&width=1200",
+     "https://www.gastro-held.ch/cdn/shop/files/232089-snackh400tn_back_2_1b40f43e-faa3-42ee-941d-2922ade2c3d1.webp?v=1783240004&width=1200"
+    ],
+    "valeurs": [
+     {
+      "nom": "Spécification",
+      "valeur": "Valeur"
+     },
+     {
+      "nom": "Marque",
+      "valeur": "GastroHero"
+     },
+     {
+      "nom": "Niveau de qualité",
+      "valeur": "Eco"
+     },
+     {
+      "nom": "Largeur en mm",
+      "valeur": "680"
+     },
+     {
+      "nom": "Profondeur en mm",
+      "valeur": "710"
+     },
+     {
+      "nom": "Hauteur en mm",
+      "valeur": "2.010"
+     },
+     {
+      "nom": "Poids net en kg",
+      "valeur": "82"
+     },
+     {
+      "nom": "Volume de réfrigération [Litres]",
+      "valeur": "429"
+     },
+     {
+      "nom": "Volume utile [Litres]",
+      "valeur": "429"
+     },
+     {
+      "nom": "Raccordement en volt",
+      "valeur": "230 V"
+     },
+     {
+      "nom": "Classe d'efficacité énergétique",
+      "valeur": "D"
+     },
+     {
+      "nom": "Consommation énergétique annuelle (kWh/an)",
+      "valeur": "819"
+     },
+     {
+      "nom": "Plage de réfrigération",
+      "valeur": "réfrigération classique"
+     },
+     {
+      "nom": "Réfrigération",
+      "valeur": "ventilé / à air pulsé"
+     },
+     {
+      "nom": "Zones de température",
+      "valeur": "1"
+     },
+     {
+      "nom": "Plage de température",
+      "valeur": "+2 °C bis +8 °C"
+     },
+     {
+      "nom": "Verrouillable",
+      "valeur": "oui"
+     },
+     {
+      "nom": "Réglable en hauteur",
+      "valeur": "oui"
+     },
+     {
+      "nom": "Clayettes réglables en hauteur",
+      "valeur": "oui"
+     },
+     {
+      "nom": "Nombre de portes",
+      "valeur": "1"
+     },
+     {
+      "nom": "Type de porte",
+      "valeur": "Porte pleine rabattable"
+     },
+     {
+      "nom": "Matériau",
+      "valeur": "inox"
+     },
+     {
+      "nom": "Prix compétitifs",
+      "valeur": "Plus de 9 500 articles de qualité professionnelle à des prix avantageux"
+     },
+     {
+      "nom": "Sans risque",
+      "valeur": "service de retour de 14 jour"
+     }
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "gastro-held.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "913.9 CHF (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "douteux",
+      "detail": "CHF · TTC · port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "12"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "24"
+     },
+     {
+      "nom": "controle",
+      "statut": "douteux",
+      "detail": "port : les données disent un port de 7.9 CHF, la page « livraison gratuite »"
+     }
+    ]
+   }
+  },
+  {
+   "n": 63,
+   "genres": [
+    "rupture",
+    "prix-barre",
+    "ht",
+    "variante-url",
+    "site-suisse",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "✗",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "✗",
+   "livraison": "",
+   "inventions": [
+    "prix 788.9 CHF"
+   ],
+   "ms": 279,
+   "lu": {
+    "url": "https://www.gastro-held.ch/products/barkuehlschrank-eco-350-mit-klapptueren-schwarz-led-beleuchtung-unterbaubar-bkse350kt?variant=67996628713702",
+    "domaine": "gastro-held.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "GastroHero Barkühlschrank ECO 350 mit Klapptüren schwarz, LED Beleuchtung, unterbaubar",
+    "prix": 788.9,
+    "devise": "CHF",
+    "taxe": "ttc",
+    "dispo": "rupture",
+    "vendeur": "GastroHeld",
+    "photo": "https://www.gastro-held.ch/cdn/shop/files/18730923-bkse350kt_barkuehlschrank-eco_1.webp?v=1794341560&width=900",
+    "photos": [
+     "https://www.gastro-held.ch/cdn/shop/files/18730923-bkse350kt_barkuehlschrank-eco_1.webp?v=1794341560&width=900",
+     "https://www.gastro-held.ch/cdn/shop/files/18730925-bkse350kt_barkuehlschrank-eco_2.webp?v=1794341560&width=900",
+     "https://www.gastro-held.ch/cdn/shop/files/18730924-bkse350kt_barkuehlschrank-eco_3.webp?v=1794341560&width=900",
+     "https://www.gastro-held.ch/cdn/shop/files/18730928-bkse350kt_barkuehlschrank-eco_4.webp?v=1794341561&width=900",
+     "https://www.gastro-held.ch/cdn/shop/files/18730927-bkse350kt_barkuehlschrank-eco_5.webp?v=1794341561&width=900",
+     "https://www.gastro-held.ch/cdn/shop/files/18730926-bkse350kt_barkuehlschrank-eco_6.webp?v=1794341561&width=900"
+    ],
+    "valeurs": [
+     {
+      "nom": "Spezifikation",
+      "valeur": "Wert"
+     },
+     {
+      "nom": "Marke",
+      "valeur": "GastroHero"
+     },
+     {
+      "nom": "Qualitätsstufe",
+      "valeur": "Eco"
+     },
+     {
+      "nom": "Farbe",
+      "valeur": "schwarz"
+     },
+     {
+      "nom": "Breite in mm",
+      "valeur": "1.350"
+     },
+     {
+      "nom": "Tiefe in mm",
+      "valeur": "520"
+     },
+     {
+      "nom": "Höhe in mm",
+      "valeur": "845"
+     },
+     {
+      "nom": "Netto Gewicht in kg",
+      "valeur": "70"
+     },
+     {
+      "nom": "Kühlvolumen [Liter]",
+      "valeur": "338"
+     },
+     {
+      "nom": "Anschluss in Volt",
+      "valeur": "230 V"
+     },
+     {
+      "nom": "Leistung in kW",
+      "valeur": "0,26"
+     },
+     {
+      "nom": "Energieeffizienzklasse",
+      "valeur": "C"
+     },
+     {
+      "nom": "Jährlicher Energieverbrauch (kWh/a)",
+      "valeur": "1.760"
+     },
+     {
+      "nom": "Kühlbereich",
+      "valeur": "Normalkühlung"
+     },
+     {
+      "nom": "Kühlung",
+      "valeur": "Umluft"
+     },
+     {
+      "nom": "Maximale Umgebungstemperatur in °C",
+      "valeur": "25"
+     },
+     {
+      "nom": "Temperaturbereich",
+      "valeur": "+2 °C bis +8 °C"
+     },
+     {
+      "nom": "Abschliessbar",
+      "valeur": "Ja"
+     },
+     {
+      "nom": "Anzahl Türen",
+      "valeur": "3"
+     },
+     {
+      "nom": "Türart",
+      "valeur": "Klappbare Glastür"
+     },
+     {
+      "nom": "Top Preise",
+      "valeur": "Über 9.500 Artikel in Profi-Qualität zu günstigen Preisen"
+     },
+     {
+      "nom": "Risikolos",
+      "valeur": "14 Tage Rückgabeservice"
+     }
+    ],
+    "livraison": {
+     "gratuite": true
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "gastro-held.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "788.9 CHF (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "douteux",
+      "detail": "CHF · TTC · port gratuit"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "6"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "22"
+     },
+     {
+      "nom": "controle",
+      "statut": "douteux",
+      "detail": "port : les données disent un port de 7.9 CHF, la page « livraison gratuite »"
+     }
+    ]
+   }
+  }
+ ]
+}

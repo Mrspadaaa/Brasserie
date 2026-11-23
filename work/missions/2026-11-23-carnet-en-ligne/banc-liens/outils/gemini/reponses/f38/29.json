@@ -1,0 +1,62 @@
+{
+ "n": 29,
+ "cfg": "f38",
+ "modele": "gemini-3.8-flash",
+ "http": 200,
+ "ms": 4811,
+ "usage": {
+  "promptTokenCount": 387,
+  "candidatesTokenCount": 190,
+  "totalTokenCount": 9141,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 387
+   }
+  ],
+  "toolUsePromptTokenCount": 8564,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 8564
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Spectrum CITRA 1 kg\", \"marque\": \"SPECTRUM\", \"prix\": 401.0, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Artikelnummer\", \"valeur\": \"HO2253\"}, {\"nom\": \"Gebinde\", \"valeur\": \"1 kg\"}, {\"nom\": \"Haltbarkeit\", \"valeur\": \"12 Monate (bei sachgemässer Lagerung)\"}, {\"nom\": \"Dosierung\", \"valeur\": \"1:5 - 1:8 (z.B. 1 kg SPECTRUM für jede 5-8 kg Hopfen)\"}]}",
+ "json": {
+  "nom": "Spectrum CITRA 1 kg",
+  "marque": "SPECTRUM",
+  "prix": 401,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Artikelnummer",
+    "valeur": "HO2253"
+   },
+   {
+    "nom": "Gebinde",
+    "valeur": "1 kg"
+   },
+   {
+    "nom": "Haltbarkeit",
+    "valeur": "12 Monate (bei sachgemässer Lagerung)"
+   },
+   {
+    "nom": "Dosierung",
+    "valeur": "1:5 - 1:8 (z.B. 1 kg SPECTRUM für jede 5-8 kg Hopfen)"
+   }
+  ]
+ },
+ "entree": 8951,
+ "sortie": 190,
+ "chf": 0.018564375
+}

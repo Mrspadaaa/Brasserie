@@ -1,0 +1,456 @@
+{
+ "le": "2026-11-23T14:13:23.431Z",
+ "taux": {
+  "liens": 4,
+  "prixSansJsonLd": "1/1 (100 %)",
+  "nom": "2/4 (50 %)",
+  "prixAffiche": "3/4 (75 %)",
+  "photoAffichee": "3/3 (100 %)",
+  "caracteristiques": "2/3 (67 %)",
+  "htDit": "0/1 (0 %)",
+  "livraisonCH": "0/2 (0 %)",
+  "inventions": 4,
+  "liensAvecInvention": [
+   "29:photo",
+   "33:livraison",
+   "34:livraison",
+   "36:prix 1620 CHF"
+  ]
+ },
+ "lignes": [
+  {
+   "n": 29,
+   "genres": [
+    "prix-kg",
+    "site-suisse"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "✗",
+   "caract": "",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [
+    "photo"
+   ],
+   "ms": 148,
+   "lu": {
+    "url": "https://www.brauundrauchshop.ch/spectrum-citra-1-kg",
+    "domaine": "brauundrauchshop.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Spectrum CITRA 1 kg",
+    "prix": 401,
+    "devise": "CHF",
+    "vendeur": "Brau- und Rauchshop",
+    "photo": "https://www.brauundrauchshop.ch/content/images/thumbs/022/0228141_spectrum-citra-1-kg_600.jpg",
+    "photos": [
+     "https://www.brauundrauchshop.ch/content/images/thumbs/022/0228141_spectrum-citra-1-kg_600.jpg"
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "brauundrauchshop.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "microdata"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "401 CHF (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "absent"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ]
+   },
+   "sansJsonLd": true
+  },
+  {
+   "n": 33,
+   "genres": [
+    "variantes",
+    "prix-kg",
+    "site-suisse",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "✗",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "✗",
+   "inventions": [
+    "livraison"
+   ],
+   "ms": 139,
+   "lu": {
+    "url": "https://hopfenmarkt.ch/produkt/hopfen/citra",
+    "domaine": "hopfenmarkt.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Citra",
+    "prix": 3.6,
+    "devise": "CHF",
+    "prixDes": true,
+    "taxe": "ttc",
+    "dispo": "en-stock",
+    "vendeur": "Hopfenmarkt",
+    "photo": "https://hopfenmarkt.ch/storage/3/conversions/citra-large.webp",
+    "photos": [
+     "https://hopfenmarkt.ch/storage/3/conversions/citra-large.webp"
+    ],
+    "valeurs": [
+     {
+      "nom": "Land der Ernte",
+      "valeur": "USA"
+     },
+     {
+      "nom": "Erntejahr",
+      "valeur": "2025"
+     },
+     {
+      "nom": "Hopfentyp",
+      "valeur": "Mehrzweckhopfen"
+     },
+     {
+      "nom": "Hopfenform",
+      "valeur": "Pellets"
+     },
+     {
+      "nom": "Alpha",
+      "valeur": "12.8%"
+     },
+     {
+      "nom": "Beta",
+      "valeur": "4%"
+     },
+     {
+      "nom": "Cohumulone",
+      "valeur": "24.2%"
+     },
+     {
+      "nom": "Total oil",
+      "valeur": "2.5ml"
+     },
+     {
+      "nom": "Myrcene",
+      "valeur": "59.8%"
+     },
+     {
+      "nom": "Humulene",
+      "valeur": "13%"
+     },
+     {
+      "nom": "Caryophyllene",
+      "valeur": "7.4%"
+     },
+     {
+      "nom": "Farnesene",
+      "valeur": "0.1%"
+     }
+    ],
+    "livraison": {
+     "prix": 11.9,
+     "devise": "CHF"
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "hopfenmarkt.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "douteux",
+      "detail": "données 3.6, page 6.7 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · TTC · port 11.9 CHF"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "12"
+     },
+     {
+      "nom": "controle",
+      "statut": "douteux",
+      "detail": "prix : données 3.6, page 6.7 CHF"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 34,
+   "genres": [
+    "variantes",
+    "prix-kg",
+    "rupture",
+    "site-suisse",
+    "livraison-ch"
+   ],
+   "statut": "lue",
+   "nom": "✗",
+   "prix": "=",
+   "photo": "=",
+   "caract": "=",
+   "ttc": "",
+   "livraison": "✗",
+   "inventions": [
+    "livraison"
+   ],
+   "ms": 139,
+   "lu": {
+    "url": "https://hopfenmarkt.ch/produkt/hopfen/mosaic",
+    "domaine": "hopfenmarkt.ch",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Mosaic",
+    "prix": 3.9,
+    "devise": "CHF",
+    "prixDes": true,
+    "taxe": "ttc",
+    "vendeur": "Hopfenmarkt",
+    "photo": "https://hopfenmarkt.ch/storage/4/conversions/mosaic-large.webp",
+    "photos": [
+     "https://hopfenmarkt.ch/storage/4/conversions/mosaic-large.webp"
+    ],
+    "valeurs": [
+     {
+      "nom": "Land der Ernte",
+      "valeur": "USA"
+     },
+     {
+      "nom": "Erntejahr",
+      "valeur": "2025"
+     },
+     {
+      "nom": "Hopfentyp",
+      "valeur": "Mehrzweckhopfen"
+     },
+     {
+      "nom": "Hopfenform",
+      "valeur": "Pellets"
+     },
+     {
+      "nom": "Alpha",
+      "valeur": "11.4%"
+     },
+     {
+      "nom": "Beta",
+      "valeur": "3.4%"
+     },
+     {
+      "nom": "Cohumulone",
+      "valeur": "21.2%"
+     },
+     {
+      "nom": "Total oil",
+      "valeur": "0.8ml"
+     },
+     {
+      "nom": "Myrcene",
+      "valeur": "47.9%"
+     },
+     {
+      "nom": "Humulene",
+      "valeur": "16.2%"
+     },
+     {
+      "nom": "Caryophyllene",
+      "valeur": "7.2%"
+     },
+     {
+      "nom": "Farnesene",
+      "valeur": "0.2%"
+     }
+    ],
+    "livraison": {
+     "prix": 11.9,
+     "devise": "CHF"
+    },
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "hopfenmarkt.ch"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "douteux",
+      "detail": "données 3.9, page 7.25 CHF"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · TTC · port 11.9 CHF"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "12"
+     },
+     {
+      "nom": "controle",
+      "statut": "douteux",
+      "detail": "prix : données 3.9, page 7.25 CHF"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  },
+  {
+   "n": 36,
+   "genres": [
+    "site-suisse",
+    "js-lourd",
+    "ht",
+    "caract"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "✗",
+   "photo": "=",
+   "caract": "?",
+   "ttc": "✗",
+   "livraison": "·",
+   "inventions": [
+    "prix 1620 CHF"
+   ],
+   "ms": 142,
+   "lu": {
+    "url": "https://www.baldinger.biz/shop/index.php?route=product/product&product_id=11949",
+    "domaine": "baldinger.biz",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Braumeister 20 Liter Speidel",
+    "prix": 1620,
+    "devise": "CHF",
+    "dispo": "en-stock",
+    "vendeur": "Max Baldinger AG",
+    "photo": "https://www.baldinger.biz/shop/image/cache/catalog/55502-374x536.jpg",
+    "photos": [
+     "https://www.baldinger.biz/shop/image/cache/catalog/55502-374x536.jpg",
+     "https://www.baldinger.biz/shop/image/cache/catalog/55502-374x196w.jpg",
+     "https://www.baldinger.biz/shop/image/cache/catalog/55502-200x200w.jpg"
+    ],
+    "valeurs": [
+     {
+      "nom": "Lagerbestand",
+      "valeur": "an Lager"
+     },
+     {
+      "nom": "Marke",
+      "valeur": "Speidel"
+     },
+     {
+      "nom": "Artikelnummer",
+      "valeur": "55.502.00"
+     },
+     {
+      "nom": "Gewicht",
+      "valeur": "20.00"
+     },
+     {
+      "nom": "Wiederverkäufer-Produktgruppe",
+      "valeur": "D"
+     },
+     {
+      "nom": "Heizspirale",
+      "valeur": "2.000 W Heizleistung"
+     },
+     {
+      "nom": "Pumpe",
+      "valeur": "9 W"
+     },
+     {
+      "nom": "Stromanschluss",
+      "valeur": "230 V (Absicherung mindestens 10 A)"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "baldinger.biz"
+     },
+     {
+      "nom": "donnees",
+      "statut": "trouve",
+      "detail": "JSON-LD"
+     },
+     {
+      "nom": "prix",
+      "statut": "trouve",
+      "detail": "1620 CHF (schema.org)"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "trouve",
+      "detail": "CHF · port non publié"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "3"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "8"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     }
+    ]
+   },
+   "sansJsonLd": false
+  }
+ ]
+}

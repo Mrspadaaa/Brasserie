@@ -1,0 +1,1789 @@
+[
+ {
+  "n": 26,
+  "lien": "https://www.sios.ch/Speidels-Braumeister-PLUS-20-Liter",
+  "genres": [
+   "site-suisse",
+   "caract"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Speidels Braumeister PLUS 20 Liter",
+   "doitContenir": [
+    "Braumeister",
+    "PLUS",
+    "20"
+   ]
+  },
+  "prix": 2190,
+  "devise": "CHF",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://www.sios.ch/media/image/product/4396/lg/4396.jpg",
+  "caract": [
+   {
+    "nom": "Malzmenge max.",
+    "valeur": "6 kg"
+   },
+   {
+    "nom": "Braumenge",
+    "valeur": "20 l de bière finie (env. 23 l de moût)"
+   },
+   {
+    "nom": "Matière",
+    "valeur": "acier inoxydable"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": null,
+  "note": "« Sofort verfügbar » mais délai 9 à 10 jours ouvrés. Le texte parle de 20 ou 50 l sans sélecteur. Sous la fiche, des accessoires aux prix propres (24.50, 8.50, 69.00 CHF…) : pièges. TTC indiqué en pied de page (« Alle Preise inkl. gesetzlicher MwSt. »)."
+ },
+ {
+  "n": 27,
+  "lien": "https://www.sios.ch/Citra-USA-1-kg-Hopfenpellets-Typ-90",
+  "genres": [
+   "prix-kg",
+   "site-suisse"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Citra (USA) 1 kg Hopfenpellets Typ 90",
+   "doitContenir": [
+    "Citra",
+    "1 kg",
+    "Hopfenpellets"
+   ]
+  },
+  "prix": 72.5,
+  "devise": "CHF",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://www.sios.ch/media/image/product/2949/lg/2949.jpg",
+  "caract": [
+   {
+    "nom": "Conditionnement",
+    "valeur": "sachet de 1 kg"
+   },
+   {
+    "nom": "Quantité minimale",
+    "valeur": "0.2 sachet (200 g)"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": null,
+  "note": "Prix d’un sachet de 1 kg (72.50 CHF/kg). « Mindestabnahme 0.2 Beutel » : on peut en prendre 200 g. Dessous, « Kunden kauften dazu » liste d’autres houblons avec leurs prix (47.00, 62.50, 69.00 CHF…) : pièges."
+ },
+ {
+  "n": 28,
+  "lien": "https://www.sios.ch/Malz-Pilsner",
+  "genres": [
+   "prix-kg",
+   "prix-des",
+   "site-suisse"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Pilsner Malz, 3-5 EBC, 25 kg",
+   "doitContenir": [
+    "Pilsner",
+    "Malz",
+    "25 kg"
+   ]
+  },
+  "prix": 36.5,
+  "devise": "CHF",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": [
+   {
+    "libelle": "1 sac de 25 kg",
+    "prix": 36.5
+   },
+   {
+    "libelle": "dès 33 sacs (prix par sac)",
+    "prix": 29.53
+   }
+  ],
+  "photo": true,
+  "photoExemple": "https://www.sios.ch/media/image/product/1909/lg/1909.jpg",
+  "caract": [
+   {
+    "nom": "Couleur",
+    "valeur": "3-5 EBC"
+   },
+   {
+    "nom": "Conditionnement",
+    "valeur": "sac de 25 kg"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": null,
+  "note": "Prix par sac de 25 kg (1.46 CHF/kg), pas au kg. Tableau dégressif « ab 33 : 29.53 CHF » sous le prix. Une icône flottante masque le début du prix sur mobile."
+ },
+ {
+  "n": 29,
+  "lien": "https://www.brauundrauchshop.ch/spectrum-citra-1-kg",
+  "genres": [
+   "prix-kg",
+   "site-suisse"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Spectrum CITRA 1 kg",
+   "doitContenir": [
+    "Spectrum",
+    "CITRA",
+    "1 kg"
+   ]
+  },
+  "prix": 401,
+  "devise": "CHF",
+  "ttc": null,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoRevisee": "23.11 (voie lecture-liens) : était false (« visuel de marque, pas une photo du produit »). Le site publie pourtant cette image comme LA photo du produit (itemprop=image, alt « Bild von Spectrum CITRA 1 kg », fichier 0228141_spectrum-citra-1-kg) ; aucun lecteur sans vision ne sait la distinguer d'une photo. Rendue, elle montre ce que la page montre ; à valider par le pilote.",
+  "photoExemple": null,
+  "caract": [],
+  "dispo": "en-stock",
+  "livraisonCH": null,
+  "note": "Extrait de houblon liquide (rubrique « Flüssighopfen »), pas des pellets : 401.00 CHF le kg (« Preis/Kilogramm »), « excluding shipping ». L’image est un visuel de marque, pas une photo du produit. Affiche « In stock » mais « wird ausschliesslich auf Kundenwunsch bestellt, Lieferfrist ca. 2 Wochen ». Le menu de la page (Braumeister 10/20/50 L…) pollue le texte."
+ },
+ {
+  "n": 30,
+  "lien": "https://brewstore.ch/materiel/systeme-de-brassage/microbrasserie-speidel-braumeister-plus-20-l-avec-double-enveloppe/",
+  "genres": [
+   "site-suisse",
+   "caract",
+   "commande"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Speidel Braumeister PLUS 20 L mit Kühlmantel",
+   "doitContenir": [
+    "Speidel",
+    "Braumeister",
+    "PLUS",
+    "20"
+   ]
+  },
+  "prix": 2345,
+  "devise": "CHF",
+  "ttc": null,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://brewstore.ch/images/detailed/3656/sk2hcpzyxr-5550220a-501x501h.jpg",
+  "caract": [
+   {
+    "nom": "Puissance de chauffe",
+    "valeur": "2'000 W"
+   },
+   {
+    "nom": "Malzmenge max.",
+    "valeur": "6 kg"
+   },
+   {
+    "nom": "Poids",
+    "valeur": "env. 19 kg"
+   },
+   {
+    "nom": "Emballage",
+    "valeur": "env. 74 × 60 × 61 cm"
+   },
+   {
+    "nom": "Commande",
+    "valeur": "écran tactile 5\""
+   }
+  ],
+  "dispo": null,
+  "livraisonCH": null,
+  "note": "« Auf Bestellung », expédié en 10 jours (texte rouge) : ni en stock, ni rupture. Bandeau cookies à refuser (« Nicht einverstanden »). URL au chemin français (/materiel/) mais page en allemand."
+ },
+ {
+  "n": 31,
+  "lien": "https://brewstore.ch/materiel/casseroles-et-cuves/casserole-de-brassage-motorisee-50l/",
+  "genres": [
+   "site-suisse",
+   "caract",
+   "commande"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Motorisierter Edelstahl-Maischekessel 50 L",
+   "doitContenir": [
+    "Maischekessel",
+    "50 L"
+   ]
+  },
+  "prix": 520,
+  "devise": "CHF",
+  "ttc": null,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://brewstore.ch/images/detailed/1478/g9tyxdmfst-75-l-motorisierter-topf-1225-zoom.jpg",
+  "caract": [
+   {
+    "nom": "Volume",
+    "valeur": "50 L"
+   },
+   {
+    "nom": "Matière",
+    "valeur": "acier inox AISI 304"
+   },
+   {
+    "nom": "Moteur",
+    "valeur": "220 V, 0,09 kW"
+   },
+   {
+    "nom": "Vitesse",
+    "valeur": "28 tr/min"
+   },
+   {
+    "nom": "Diamètre intérieur",
+    "valeur": "455 mm"
+   },
+   {
+    "nom": "Hauteur",
+    "valeur": "370 mm"
+   },
+   {
+    "nom": "Épaisseur paroi",
+    "valeur": "1 mm"
+   }
+  ],
+  "dispo": null,
+  "livraisonCH": null,
+  "note": "« Auf Bestellung », « wird in 28 Tagen versendet » (texte rouge). Le titre de l’onglet dit « Motorisierter Maischekessel 50 L », le h1 « Motorisierter Edelstahl-Maischekessel 50 L »."
+ },
+ {
+  "n": 32,
+  "lien": "https://www.bierbrauzubehoer.ch/speidels-braumeister/braumeister-von-speidel/1680/braumeister-20liter-automatisch",
+  "genres": [
+   "prix-barre",
+   "site-suisse"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Braumeister 20Liter, Automatisch",
+   "doitContenir": [
+    "Braumeister",
+    "20"
+   ]
+  },
+  "prix": 1000,
+  "devise": "CHF",
+  "ttc": null,
+  "prixDes": false,
+  "prixBarre": 1850,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://www.bierbrauzubehoer.ch/media/image/fa/ac/00/speidels_braumeister_20_liter_2015_1.jpg",
+  "caract": [],
+  "dispo": "en-stock",
+  "livraisonCH": null,
+  "note": "Format « 1.000,00 CHF * » (point = milliers, virgule = décimales) ; prix barré « 1.850,00 CHF * (45,95 % gespart) ». « Preise zzgl. Versandkosten », MwSt non précisée. Marque Speidel absente du titre (« Braumeister 20Liter ») ; elle est dans le fil d’Ariane « Braumeister von Speidel »."
+ },
+ {
+  "n": 33,
+  "lien": "https://hopfenmarkt.ch/produkt/hopfen/citra",
+  "genres": [
+   "variantes",
+   "prix-kg",
+   "site-suisse",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Citra Hopfenpellets",
+   "doitContenir": [
+    "Citra",
+    "Hopfenpellets"
+   ]
+  },
+  "prix": 6.7,
+  "devise": "CHF",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": [
+   {
+    "libelle": "50 g",
+    "prix": 3.6
+   },
+   {
+    "libelle": "100 g (choix par défaut)",
+    "prix": 6.7
+   },
+   {
+    "libelle": "250 g",
+    "prix": 15.95
+   },
+   {
+    "libelle": "500 g",
+    "prix": 31.35
+   },
+   {
+    "libelle": "1 kg",
+    "prix": 62.2
+   }
+  ],
+  "photo": true,
+  "photoExemple": null,
+  "caract": [
+   {
+    "nom": "Origine",
+    "valeur": "USA"
+   },
+   {
+    "nom": "Récolte",
+    "valeur": "2025"
+   },
+   {
+    "nom": "Forme",
+    "valeur": "pellets (T-90)"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": {
+   "prix": 4.9,
+   "devise": "CHF"
+  },
+  "note": "Prix affiché = celui du sélecteur « Packungsgrösse » (100 g par défaut : 6.70 CHF, inkl. 2.6 % MwSt.) ; le JSON-LD donne 3.60 (50 g) et les cartes liées « ab CHF 3.80 » : pièges. 1 kg = 62.20 CHF (62.20/kg). Livraison CH : barème au poids sur /versand-retouren (jusqu’à 250 g : CHF 4.90) ; livraison hors Suisse impossible."
+ },
+ {
+  "n": 34,
+  "lien": "https://hopfenmarkt.ch/produkt/hopfen/mosaic",
+  "genres": [
+   "variantes",
+   "prix-kg",
+   "rupture",
+   "site-suisse",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Mosaic Hopfenpellets",
+   "doitContenir": [
+    "Mosaic",
+    "Hopfenpellets"
+   ]
+  },
+  "prix": 7.25,
+  "devise": "CHF",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": [
+   {
+    "libelle": "50 g",
+    "prix": 3.9
+   },
+   {
+    "libelle": "100 g (choix par défaut)",
+    "prix": 7.25
+   },
+   {
+    "libelle": "250 g",
+    "prix": 17.35
+   },
+   {
+    "libelle": "500 g",
+    "prix": 34.15
+   },
+   {
+    "libelle": "1 kg · Nicht auf Lager",
+    "prix": 67.8
+   }
+  ],
+  "photo": true,
+  "photoExemple": null,
+  "caract": [
+   {
+    "nom": "Origine",
+    "valeur": "USA"
+   },
+   {
+    "nom": "Récolte",
+    "valeur": "2025"
+   },
+   {
+    "nom": "Forme",
+    "valeur": "pellets (T-90)"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": {
+   "prix": 4.9,
+   "devise": "CHF"
+  },
+  "note": "Rupture partielle : la variante 1 kg est « Nicht auf Lager », les autres « Auf Lager ». Prix affiché = 100 g (7.25 CHF), JSON-LD = 3.90 (50 g). Même barème de port que n° 33."
+ },
+ {
+  "n": 35,
+  "lien": "https://hopfenshop.ch/produkt/citra-hopfen/",
+  "genres": [
+   "prix-des",
+   "variantes",
+   "site-suisse"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "CITRA",
+   "doitContenir": [
+    "Citra"
+   ]
+  },
+  "prix": 7.5,
+  "devise": "CHF",
+  "ttc": null,
+  "prixDes": true,
+  "prixBarre": null,
+  "variantes": [
+   {
+    "libelle": "50 g",
+    "prix": 4,
+    "revise": "23.11 (voie lecture-liens) : 4.00 = le bas de la fourchette « CHF4.00 – CHF285.00 » affichée en haut de la page ; la 50 g est la plus petite taille"
+   },
+   {
+    "libelle": "100 g (choix par défaut)",
+    "prix": 7.5
+   },
+   {
+    "libelle": "250 g",
+    "prix": null
+   },
+   {
+    "libelle": "500 g",
+    "prix": null
+   },
+   {
+    "libelle": "1 kg",
+    "prix": null
+   },
+   {
+    "libelle": "5 kg",
+    "prix": null
+   }
+  ],
+  "photo": true,
+  "photoExemple": null,
+  "caract": [
+   {
+    "nom": "Alpha",
+    "valeur": "11-13 % AA"
+   },
+   {
+    "nom": "Huile",
+    "valeur": "2.2-2.8 ML"
+   },
+   {
+    "nom": "Origine",
+    "valeur": "USA"
+   }
+  ],
+  "dispo": null,
+  "livraisonCH": null,
+  "note": "Le haut de page affiche une fourchette « CHF4.00 – CHF285.00 / Preisspanne CHF4.00 bis CHF285.00 » (prix « dès » 4.00), puis 7.50 pour la variante 100 g choisie ; les autres prix de variante ne s’affichent qu’au clic. Image principale = étiquette « CITRA U.S.A. », photo de pellets en 2e vignette. Les houblons « verwandt » (Chinook, Willamette…) ont leurs fourchettes : pièges. Titre HTML « Hopfen: Citra - www.hopfenshop.ch »."
+ },
+ {
+  "n": 36,
+  "lien": "https://www.baldinger.biz/shop/index.php?route=product/product&product_id=11949",
+  "genres": [
+   "site-suisse",
+   "js-lourd",
+   "ht",
+   "caract"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Braumeister 20 Liter Speidel",
+   "doitContenir": [
+    "Braumeister",
+    "20",
+    "Speidel"
+   ]
+  },
+  "prix": 1620,
+  "devise": "CHF",
+  "ttc": false,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://www.baldinger.biz/shop/image/cache/catalog/55502-374x196w.jpg",
+  "caract": [
+   {
+    "nom": "Poids",
+    "valeur": "env. 15 kg (expédition 20 kg)"
+   },
+   {
+    "nom": "Dimensions",
+    "valeur": "Ø 400 mm × H 600 mm"
+   },
+   {
+    "nom": "Cuve",
+    "valeur": "25 litres"
+   },
+   {
+    "nom": "Chauffage",
+    "valeur": "2 000 W"
+   },
+   {
+    "nom": "Pompe",
+    "valeur": "9 W"
+   },
+   {
+    "nom": "Raccordement",
+    "valeur": "230 V"
+   },
+   {
+    "nom": "Malzmenge max.",
+    "valeur": "6 kg"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": null,
+  "note": "Prix « Produktpreis (ohne MwSt.) CHF 1'620.00 pro Stk » = HT, loin sous la photo (≈ 3 300 px, bloc « Produktpreis » aussi masqué ailleurs). Chiffres 2'399.00 / 2'954.00 / 2'272.00… plus bas = autres articles. Page 2 Mo, rendu client ; « Versand per Camion » sans prix. Bandeau cookies à OK seul."
+ },
+ {
+  "n": 37,
+  "lien": "https://www.trivendo.ch/shop/170153-50-liter-edelstahl-braukessel-fur-einsteiger-hopfenkochen-hobby-bierbrauen-leicht-gemacht-619",
+  "genres": [
+   "site-suisse",
+   "js-lourd",
+   "caract"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "50-Liter Edelstahl Braukessel für Einsteiger – Hopfenkochen & Hobby-Bierbrauen leicht gemacht",
+   "doitContenir": [
+    "50",
+    "Braukessel",
+    "Edelstahl"
+   ]
+  },
+  "prix": 289.9,
+  "devise": "CHF",
+  "ttc": null,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://www.trivendo.ch/web/image/product.template/619/image_1024?unique=17ad27b",
+  "caract": [
+   {
+    "nom": "Puissance",
+    "valeur": "2 × 2'000 W, 230 V / 50 Hz"
+   },
+   {
+    "nom": "Volume",
+    "valeur": "50 litres"
+   },
+   {
+    "nom": "Dimensions",
+    "valeur": "Ø 40 cm × H 40 cm"
+   },
+   {
+    "nom": "Épaisseur paroi",
+    "valeur": "1 mm"
+   },
+   {
+    "nom": "Matière",
+    "valeur": "acier inoxydable"
+   },
+   {
+    "nom": "Affichage température",
+    "valeur": "20-110 °C"
+   }
+  ],
+  "dispo": null,
+  "livraisonCH": null,
+  "note": "Le premier titre (h1) vu est « OUTDOOR & SURVIVAL » (rubrique), le vrai nom est en petit au-dessus de la description. Prix « CHF 289,90 » tout en bas, dans la zone d’achat ; « Versand: 2-3 Geschäftstage » sans montant. Odoo, rendu client."
+ },
+ {
+  "n": 38,
+  "lien": "https://mashcamp.shop/shop/brauanlagen/gaerbehaelter/gaerbehaelter-edelstahl-drucklos/speidel-edelstahl-konus-gaertank-60-liter-set-drucklos/",
+  "genres": [
+   "lot",
+   "eur-hors-tva-ch",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Speidel Edelstahl Konus Gärtank 60 Liter SET (drucklos)",
+   "doitContenir": [
+    "Speidel",
+    "Konus",
+    "Gärtank",
+    "60 Liter"
+   ]
+  },
+  "prix": 1384.8,
+  "devise": "EUR",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": null,
+  "caract": [
+   {
+    "nom": "Volume",
+    "valeur": "60 litres"
+   },
+   {
+    "nom": "Contenu du set",
+    "valeur": "2 robinets à bille, thermomètre, robinet d’échantillon, bonde et bouchon"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": "refusee",
+  "note": "Prix en EUR « inkl. MwSt. zzgl. Versandkosten » (TVA allemande). Bandeau « Versandkostenfrei ab € 250 (AT & DE) ». Page /versand/ : « Aufgrund der Zollabwicklung versenden wir nicht direkt in die Schweiz » (passage par un transitaire). Délai « Speditionsartikel, 1-2 Wochen »."
+ },
+ {
+  "n": 39,
+  "lien": "https://www.hebu-shop.ch/shop/braukessel-brauanlage-50l-mit-umwaelzpumpe-fuer-heimbrauer/",
+  "genres": [
+   "site-suisse",
+   "caract"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Braukessel / Brauanlage 50L mit Umwälzpumpe für Heimbrauer",
+   "doitContenir": [
+    "Braukessel",
+    "50L"
+   ]
+  },
+  "prix": 398,
+  "devise": "CHF",
+  "ttc": null,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://www.hebu-shop.ch/wp-content/uploads/2023/11/2810GB-40-Braukessel-40L-1.jpg",
+  "caract": [
+   {
+    "nom": "Volume",
+    "valeur": "52 litres (jusqu’à 45 l de bière par brassin)"
+   },
+   {
+    "nom": "Poids",
+    "valeur": "13.5 kg"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": null,
+  "note": "« Nur noch 1 vorrätig / Nur 1 an Lager ». La photo de la fiche vient du modèle 40 L (fichier « 2810GB-40 »). Bandeau cookies avec « OK » seul. Port suisse au poids/volume (page lieferinfos), pas de montant sur la fiche."
+ },
+ {
+  "n": 40,
+  "lien": "https://mrgastro.ch/products/edelstahl-kuehl-gefrierschrank-440-l-740x830x2010-mm?variant=54211682238802",
+  "genres": [
+   "prix-barre",
+   "ht",
+   "variante-url",
+   "site-suisse",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Edelstahl-Kühlschrank – 440 L – +2 bis +8 °C – 740×830×2010 mm",
+   "doitContenir": [
+    "Edelstahl-Kühlschrank",
+    "440 L"
+   ]
+  },
+  "prix": 1239,
+  "devise": "CHF",
+  "ttc": false,
+  "prixDes": false,
+  "prixBarre": 2479,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://mrgastro.ch/cdn/shop/files/GN-650-TN.jpg?v=1786209385&width=829",
+  "caract": [
+   {
+    "nom": "Volume net",
+    "valeur": "440 L"
+   },
+   {
+    "nom": "Plage de température",
+    "valeur": "+2 à +8 °C"
+   },
+   {
+    "nom": "Dimensions",
+    "valeur": "740 × 830 × 2010 mm"
+   },
+   {
+    "nom": "Classe énergie",
+    "valeur": "C"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": "gratuite",
+  "note": "Lien Shopify avec ?variant=54211682238802 (variante unique « Default Title »). Prix 1'239.00 = HT : la page écrit « inkl. 8,1 % MwSt.: CHF 1,339.36 » (format avec virgule des milliers et point décimal). Badge « Um 50 % reduziert », barré 2'479.00. « Auf Lager » mais délai jusqu’à 29 jours ouvrés. Le serveur reçoit l’allemand ; Chrome ouvert en anglais a servi /en/."
+ },
+ {
+  "n": 41,
+  "lien": "https://brauen.de/braukessel-aus-edelstahl-50-l-mit-auslauf-fuer-maischebrauer",
+  "genres": [
+   "rupture",
+   "eur-hors-tva-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Braukessel aus Edelstahl 50 l mit Auslauf für Maischebrauer",
+   "doitContenir": [
+    "Braukessel",
+    "50 l",
+    "Edelstahl"
+   ]
+  },
+  "prix": 244,
+  "devise": "EUR",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": null,
+  "caract": [
+   {
+    "nom": "Contenu",
+    "valeur": "50 l (1 pièce)"
+   },
+   {
+    "nom": "Poids d’expédition",
+    "valeur": "8 kg"
+   }
+  ],
+  "dispo": "rupture",
+  "livraisonCH": null,
+  "note": "Bandeau rouge « Dieser Artikel steht derzeit nicht zur Verfügung! » alors que le prix 244,00 € et « Lieferzeit 7 Werktage » restent affichés. « Versandkostenfreie Lieferung innerhalb DE » : rien sur la Suisse. Bandeau cookies : « Alle ablehnen ». Le logo (og:image) n’est pas une photo du produit."
+ },
+ {
+  "n": 42,
+  "lien": "https://brauen.de/25-kg-pilsner-malz-sackware-ungeschrotet",
+  "genres": [
+   "prix-kg",
+   "eur-hors-tva-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "25 kg Pilsner Malz - Sackware ungeschrotet",
+   "doitContenir": [
+    "25 kg",
+    "Pilsner",
+    "Malz"
+   ]
+  },
+  "prix": 45.9,
+  "devise": "EUR",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://brauen.de/media/image/7c/09/d9/Weyermann-Malz-Aroma-Rad_Weyermann-Pilsner-Malz_W-rze.jpg",
+  "caract": [
+   {
+    "nom": "Contenu",
+    "valeur": "25 kg (1,84 €/kg)"
+   },
+   {
+    "nom": "Poids d’expédition",
+    "valeur": "25,2 kg"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": null,
+  "note": "Prix du sac de 25 kg, 1,84 €/kg affiché en petit. Sélecteur « Auswahl » à une seule option (PILSNER). Délai 2-4 Werktage. L’image du produit est le sac Weyermann (marque malterie)."
+ },
+ {
+  "n": 43,
+  "lien": "https://www.brauhardware.de/de/T50.html",
+  "genres": [
+   "eur-hors-tva-ch",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Braukessel 50 Liter",
+   "doitContenir": [
+    "Braukessel",
+    "50 Liter"
+   ]
+  },
+  "prix": 169.99,
+  "devise": "EUR",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://www.brauhardware.de/images/product_images/info_images/Topf Uebersicht_94_0_104_0.JPG",
+  "caract": [
+   {
+    "nom": "Volume",
+    "valeur": "50 litres"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": "refusee",
+  "note": "Fiche très pauvre (pas de description visible sans déplier). « inkl. 19 % MwSt. zzgl. Versand », « Lieferzeit 2-5 Tage (Ausland abweichend) ». Page Versand-und-Zahlungsbedingungen : « Der Versand in die Schweiz kann über MeinEinkauf abgewickelt werden » (pas d’envoi direct). Le fil d’Ariane et le gros bloc « Gesetzliche Gewährleistung » occupent la page."
+ },
+ {
+  "n": 44,
+  "lien": "https://www.braupartner.de/set-edelstahl-konus-gaertank-60-liter",
+  "genres": [
+   "lot",
+   "eur-hors-tva-ch",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Set Edelstahl Konus Gärtank 60 Liter",
+   "doitContenir": [
+    "Set",
+    "Konus",
+    "Gärtank",
+    "60 Liter"
+   ]
+  },
+  "prix": 1333,
+  "devise": "EUR",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://www.braupartner.de/media/7c/f4/35/1781175239/45600-ZKG_1_set-edelstahl-konus-gaertank-60-liter.jpg",
+  "caract": [
+   {
+    "nom": "Volume",
+    "valeur": "60 litres"
+   },
+   {
+    "nom": "Poids d’expédition",
+    "valeur": "39 kg"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": null,
+  "note": "Lot : cuve + accessoires (image avec cinq pièces). « Versand per Spedition », 5-7 Werktage. Page zahlung-versand-lieferung : la Suisse est desservie (Warenpost 12,90 € jusqu’à 0,5 kg, colis 35,90 € jusqu’à 30 kg, « Spedition je nach Gewicht » au-dessus) : pour 39 kg, montant non donné."
+ },
+ {
+  "n": 45,
+  "lien": "https://www.braupartner.de/citra-r-hopfenpellets",
+  "genres": [
+   "prix-kg",
+   "variantes",
+   "eur-hors-tva-ch",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Citra® Hopfenpellets",
+   "doitContenir": [
+    "Citra",
+    "Hopfenpellets"
+   ]
+  },
+  "prix": 8,
+  "devise": "EUR",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": [
+   {
+    "libelle": "dès 1 g (par pas de 100 g) : prix pour 100 g",
+    "prix": 8
+   },
+   {
+    "libelle": "dès 500 g : prix pour 100 g",
+    "prix": 7.65
+   },
+   {
+    "libelle": "dès 1000 g : prix pour 100 g",
+    "prix": 7.29
+   }
+  ],
+  "photo": true,
+  "photoExemple": "https://www.braupartner.de/media/0b/bf/f2/1777064378/30-500A_1_citra-hopfenpellets.jpg",
+  "caract": [
+   {
+    "nom": "Acide alpha",
+    "valeur": "env. 14,0 %"
+   },
+   {
+    "nom": "Récolte",
+    "valeur": "2025"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": {
+   "prix": 12.9,
+   "devise": "EUR"
+  },
+  "note": "Prix par 100 g (8,00 €), tableau « Preis je 100 g / Grundpreis » : 80,00 €/kg, dégressif 76,50 puis 72,90 €/kg. La quantité s’entre en grammes (pas de 100 g, 100 par défaut). Livraison Suisse (page liée) : Warenpost 12,90 € jusqu’à 0,5 kg."
+ },
+ {
+  "n": 46,
+  "lien": "https://gastro-brennecke.de/25kg-pilsner-malz-braumalz-ungeschrotet-sackware",
+  "genres": [
+   "prix-kg",
+   "eur-hors-tva-ch",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "25kg Pilsner Malz Braumalz ungeschrotet Sackware",
+   "doitContenir": [
+    "25kg",
+    "Pilsner",
+    "Malz"
+   ]
+  },
+  "prix": 46,
+  "devise": "EUR",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://gastro-brennecke.de/media/58/4c/bb/1716534670/weyermann-sack_897.jpg",
+  "caract": [
+   {
+    "nom": "Contenu",
+    "valeur": "25 kg (1,84 €/kg)"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": "refusee",
+  "note": "« Gratis Versand ab 79 €** » (note ** non visible) ; page zahlung-und-versand : pour la Suisse « nous recommandons le service MeinEinkauf.ch » (pas d’envoi direct). Un bouton « Bezahlen mit Amazon » et un badge Trusted Shops encombrent la page."
+ },
+ {
+  "n": 47,
+  "lien": "https://www.bier-brauen.at/gaertank-konisch-60",
+  "genres": [
+   "eur-hors-tva-ch",
+   "caract"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Edelstahl Gärbehälter konisch - 60 Liter",
+   "doitContenir": [
+    "Gärbehälter",
+    "konisch",
+    "60 Liter"
+   ]
+  },
+  "prix": 185.34,
+  "devise": "EUR",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://www.bier-brauen.at/media/image/product/5379/lg/gaertank-konisch-60.jpg",
+  "caract": [
+   {
+    "nom": "Volume",
+    "valeur": "60 litres"
+   },
+   {
+    "nom": "Robinet de vidange",
+    "valeur": "1\" filetage mâle, en bas"
+   },
+   {
+    "nom": "Bonde",
+    "valeur": "Gärspund 2 pièces, bouchons silicone"
+   },
+   {
+    "nom": "Thermomètre",
+    "valeur": "intégré"
+   },
+   {
+    "nom": "Fabricant",
+    "valeur": "ERPEL"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": null,
+  "note": "Boutique autrichienne : « inkl. 20 % USt. » (TVA autrichienne), « versandkostenfreie Lieferung nach DE AT » seulement : rien sur la Suisse. Délai 2-4 Werktage (Ausland abweichend)."
+ },
+ {
+  "n": 48,
+  "lien": "https://shop.speidel-edelstahlbehaelter.de/de/bier-cider-mischgetraenke/edelstahl-konus-gaertank-60-liter",
+  "genres": [
+   "variantes",
+   "eur-hors-tva-ch",
+   "caract"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Gär- und Lagerbehälter FD-ZKG 60 Liter",
+   "doitContenir": [
+    "FD-ZKG",
+    "60 Liter"
+   ]
+  },
+  "prix": 1104,
+  "devise": "EUR",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": [
+   {
+    "libelle": "30 Liter (Konus)",
+    "prix": null
+   },
+   {
+    "libelle": "60 Liter (Konus)",
+    "prix": 1104
+   },
+   {
+    "libelle": "120 Liter (Konus)",
+    "prix": null
+   },
+   {
+    "libelle": "240 Liter (Konus)",
+    "prix": null
+   },
+   {
+    "libelle": "625 Liter (Konus)",
+    "prix": null
+   }
+  ],
+  "photo": true,
+  "photoExemple": "https://shop.speidel-edelstahlbehaelter.de/media/images/info/konustank-60-liter-drucklos1.jpg",
+  "caract": [
+   {
+    "nom": "Volume",
+    "valeur": "60 litres (cône)"
+   },
+   {
+    "nom": "Poids",
+    "valeur": "35 kg"
+   },
+   {
+    "nom": "Vidange",
+    "valeur": "Klarablauf 3/4\" et Totalablauf 3/4\""
+   },
+   {
+    "nom": "Double paroi",
+    "valeur": "2 × 1\" filetage mâle"
+   },
+   {
+    "nom": "Cône",
+    "valeur": "60°"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": null,
+  "note": "« inkl. 19 % USt / zzgl. Versandkosten », « Lieferzeit 1 Woche », jauge de stock. Les prix des autres tailles n’apparaissent qu’après sélection (non lus). Le prix du JSON-LD est 1104 (sans séparateur)."
+ },
+ {
+  "n": 49,
+  "lien": "https://shop.speidels-braumeister.de/de/braumeister-20-liter",
+  "genres": [
+   "lot",
+   "variantes",
+   "eur-hors-tva-ch",
+   "configurateur"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Braumeister 20 Liter",
+   "doitContenir": [
+    "Braumeister",
+    "20 Liter"
+   ]
+  },
+  "prix": 1990,
+  "devise": "EUR",
+  "ttc": null,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": [
+   {
+    "libelle": "#BRAUMEISTER PLUS 20 LITER (seul)",
+    "prix": 1990
+   },
+   {
+    "libelle": "BUNDLE #BRAUMEISTER PLUS 20 LITER",
+    "prix": 2490
+   }
+  ],
+  "photo": true,
+  "photoExemple": "https://shop.speidels-braumeister.de/media/images/category/listingTop/bm-kachel-bm-20l-20260919.jpg",
+  "caract": [],
+  "dispo": null,
+  "livraisonCH": null,
+  "note": "Pas une fiche produit mais une page de configuration en étapes (« 1 Wählen Sie Ihren Braumeister », « 2 Ergänzen Sie Ihre Gärlösung »…) : deux articles à 1.990,00 EURO « Online-Preis » et 2.490,00 EURO (bundle), plus des offres de cuves de fermentation plus bas. Aucun prix unique pour « Braumeister 20 Liter »."
+ },
+ {
+  "n": 50,
+  "lien": "https://www.brewtools.com/all-in-one/7714334/b40pro-brewing-system-3-dot-2kw-9kg-malt",
+  "genres": [
+   "prix-barre",
+   "variantes",
+   "eur-hors-tva-ch",
+   "caract"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "B40pro Brewing System, EU 3.2kW, 9kg malt",
+   "doitContenir": [
+    "B40pro",
+    "Brewing System"
+   ]
+  },
+  "prix": 1279.2,
+  "devise": "EUR",
+  "ttc": null,
+  "prixDes": false,
+  "prixBarre": 1599,
+  "variantes": [
+   {
+    "libelle": "NO/EU 230V",
+    "prix": 1279.2
+   },
+   {
+    "libelle": "UK 230V",
+    "prix": null
+   }
+  ],
+  "photo": true,
+  "photoExemple": null,
+  "caract": [
+   {
+    "nom": "Puissance",
+    "valeur": "3,2 kW"
+   },
+   {
+    "nom": "Capacité malt",
+    "valeur": "9 kg"
+   },
+   {
+    "nom": "Cuve",
+    "valeur": "46 litres"
+   },
+   {
+    "nom": "Volume d’ébullition",
+    "valeur": "40 litres"
+   },
+   {
+    "nom": "Commande",
+    "valeur": "écran tactile 7\", Wi-Fi, Bluetooth 4.2"
+   }
+  ],
+  "dispo": null,
+  "livraisonCH": null,
+  "note": "Prix « 1 279.20 EUR » (espace des milliers + point), barré « 1 599.00 EUR » étiqueté « RETAIL PRICE ». Mention « Not in stock 7 days » : disponible sous 7 jours, ni stock ni rupture. TVA non précisée. « YOU ARE 500.00 EUR AWAY TO GET FREE SHIPPING » : seuil de port gratuit, destination non précisée. Page en anglais uniquement."
+ },
+ {
+  "n": 51,
+  "lien": "https://www.amazon.de/dp/B075QH8DGT",
+  "genres": [
+   "marketplace",
+   "variantes",
+   "prix-barre",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Klarstein Mundschenk Mash Tun Beer Brewing System, 3000 Watt, LCD Display with Touch Panel, Precise Cut-Outs, Velcro Fasteners",
+   "doitContenir": [
+    "Klarstein"
+   ]
+  },
+  "prix": 374.97,
+  "devise": "CHF",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": 441.14,
+  "variantes": [
+   {
+    "libelle": "30 Liter (argent)",
+    "prix": 310.37
+   },
+   {
+    "libelle": "50 Liter (argent, choisi)",
+    "prix": 374.97
+   },
+   {
+    "libelle": "65 Liter (argent)",
+    "prix": 496.28
+   }
+  ],
+  "photo": true,
+  "photoExemple": "https://m.media-amazon.com/images/I/51TPz79duFL._AC_SY300_SX300_QL70_ML2_.jpg",
+  "caract": [
+   {
+    "nom": "Puissance",
+    "valeur": "3000 W"
+   },
+   {
+    "nom": "Volume (variante choisie)",
+    "valeur": "50 L"
+   },
+   {
+    "nom": "Couleur",
+    "valeur": "argent"
+   },
+   {
+    "nom": "Commande",
+    "valeur": "écran LCD tactile"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": {
+   "prix": 13.38,
+   "devise": "CHF"
+  },
+  "note": "Amazon.de affiche des CHF (adresse « Deliver to Switzerland ») : 374.97 CHF avec « Black Friday deal -15 % » et « RRP: CHF441.14 » barré ; prix en gros chiffres + exposant des centimes (« 374 97 »). Livraison « CHF 13.38 delivery 30 November - 1 December ». « Only 11 left in stock ». Variante de couleur cuivre = autre ASIN. Bandeau « Dismiss » et cookies Amazon ; texte en anglais selon la langue du navigateur."
+ },
+ {
+  "n": 52,
+  "lien": "https://www.amazon.de/dp/B074PTR695",
+  "genres": [
+   "marketplace",
+   "prix-kg",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "100g Hop Pellets T90 Halle – 40 Pint Homebrew Beer Kit Rtauer Pearls and 3.9% for Cold Alfasä Ure",
+   "doitContenir": [
+    "Brewferm",
+    "100g"
+   ]
+  },
+  "prix": 11.37,
+  "devise": "CHF",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://m.media-amazon.com/images/I/71FT-E4gAaL._AC_SX300_SY300_QL70_ML2_.jpg",
+  "caract": [
+   {
+    "nom": "Contenu",
+    "valeur": "100 g"
+   },
+   {
+    "nom": "Marque",
+    "valeur": "Brewferm"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": null,
+  "note": "Le serveur reçoit un titre allemand correct (« Brewferm 100g Hopfenpellets T90 Sorte Hallertauer Perle… »), alors que la vue anglaise de Chrome montre un titre traduit et déformé (« Rtauer Pearls », « Alfasä Ure »). Prix unitaire affiché « CHF3,223.80 / kg » : faux (11.37 CHF pour 100 g = 113.70 CHF/kg). « FREE delivery … on eligible orders over CHF 45.41 » (le port d’un article à 11.37 n’est pas indiqué). Vendu par ELBKAISER."
+ },
+ {
+  "n": 53,
+  "lien": "https://www.amazon.de/dp/B00L4F0QAE",
+  "genres": [
+   "marketplace",
+   "rupture",
+   "prix-des"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "MAGNUM 100g Hop Pellets Homebrew",
+   "doitContenir": [
+    "Magnum",
+    "100g"
+   ]
+  },
+  "prix": 8.33,
+  "devise": "CHF",
+  "ttc": null,
+  "prixDes": true,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://m.media-amazon.com/images/I/4177KRD-D7L._AC_SY300_SX300_QL70_ML2_.jpg",
+  "caract": [
+   {
+    "nom": "Contenu",
+    "valeur": "100 g"
+   },
+   {
+    "nom": "Acide alpha",
+    "valeur": "14,3 %"
+   },
+   {
+    "nom": "Marque",
+    "valeur": "Brewferm"
+   }
+  ],
+  "dispo": "rupture",
+  "livraisonCH": null,
+  "note": "Pas de bouton d’achat : « No featured offers available », « 1 option from CHF 8.33 » (offre d’un autre vendeur) : rupture côté Amazon, prix « dès » 8.33. Titre complet « MAGNUM 100g Hop Pellets Homebrew Beer Kit… »."
+ },
+ {
+  "n": 54,
+  "lien": "https://amzn.eu/d/0ihxwpST",
+  "genres": [
+   "lien-court",
+   "marketplace",
+   "variantes",
+   "prix-barre",
+   "eur-hors-tva-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Amazon Kindle 16GB (Newest Gen), Now thinner, lighter, and faster, 6\" display, Without Ads - Ube",
+   "doitContenir": [
+    "Kindle"
+   ]
+  },
+  "prix": 126.11,
+  "devise": "EUR",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": 157.63,
+  "variantes": [
+   {
+    "libelle": "Without Ads (choisi, Ube 16 GB)",
+    "prix": 126.11
+   },
+   {
+    "libelle": "With Ads",
+    "prix": 112.6
+   }
+  ],
+  "photo": true,
+  "photoExemple": "https://m.media-amazon.com/images/I/41fevQ8cuDL._AC_SR40,60_.jpg",
+  "caract": [
+   {
+    "nom": "Écran",
+    "valeur": "6\""
+   },
+   {
+    "nom": "Capacité",
+    "valeur": "16 GB"
+   },
+   {
+    "nom": "Couleur",
+    "valeur": "Ube"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": null,
+  "note": "Lien court amzn.eu/d/0ihxwpST (301 vers amazon.fr/dp/B0G4SHPH5K?ref=cm_sw_r_…) ; produit hors brasserie, retenu pour le genre « lien partagé d’une appli ». Prix en EUR (126,11 €) avec « Black Friday Big Deal -20 % », RRP 157,63 € barré, « Lowest price in last 30 days 174,99 € » ; variantes de couleur et de stockage. Livraison vers la Suisse non lue."
+ },
+ {
+  "n": 55,
+  "lien": "https://amzn.eu/d/0bJLAc6r",
+  "genres": [
+   "lien-court",
+   "marketplace",
+   "variantes",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Was schreibe ich bloß?: Über 1.000 professionelle Formulierungen für die psychiatrische Pflegedokumentation",
+   "doitContenir": [
+    "Was schreibe ich bloß"
+   ]
+  },
+  "prix": 22.13,
+  "devise": "CHF",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": [
+   {
+    "libelle": "Paperback (choisi)",
+    "prix": 22.13
+   },
+   {
+    "libelle": "Hardcover",
+    "prix": 26.57
+   }
+  ],
+  "photo": true,
+  "photoExemple": "https://m.media-amazon.com/images/I/41B+4m3dKxL._SX342_SY445_ML2_.jpg",
+  "caract": [],
+  "dispo": "en-stock",
+  "livraisonCH": "gratuite",
+  "note": "Lien court amzn.eu/d/0bJLAc6r (301 vers amazon.de/dp/B0HHXH8V29?ref=cm_sw_r_…) ; livre, hors brasserie. Prix 22.13 CHF (paperback) selon le format ; autre format Kindle à gauche. « FREE delivery Wednesday, 2 December to Switzerland »."
+ },
+ {
+  "n": 56,
+  "lien": "https://www.mediamarkt.ch/de/product/_klarstein-mundschenk-maischekessel-88419523.html",
+  "genres": [
+   "marketplace",
+   "js-lourd",
+   "livraison-ch",
+   "caract"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "KLARSTEIN Mundschenk Maischekessel Silber-Metallic",
+   "doitContenir": [
+    "KLARSTEIN",
+    "Mundschenk",
+    "Maischekessel"
+   ]
+  },
+  "prix": 606.95,
+  "devise": "CHF",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MP_155163632/fee_786_587_png",
+  "caract": [
+   {
+    "nom": "Capacité",
+    "valeur": "50 l"
+   },
+   {
+    "nom": "Poids (selon fabricant)",
+    "valeur": "12 kg"
+   },
+   {
+    "nom": "Couleur",
+    "valeur": "argent métallisé"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": "gratuite",
+  "note": "MediaMarkt.ch, « Verkauf und Versand durch Venova AG » (vendeur tiers). Le prix est dans une barre collante au-dessus de « In den Warenkorb » ; un bandeau cookies (« Akzeptieren / Einstellungen ») le masque d’abord. « inkl. MwSt. versandkostenfrei », livraison 25.11.-27.11.2026. Même appareil à 374.97 CHF sur Amazon (n° 51) : écart de prix."
+ },
+ {
+  "n": 57,
+  "lien": "https://www.galaxus.ch/de/s1/product/41965972",
+  "genres": [
+   "lien-court",
+   "prix-barre",
+   "js-lourd",
+   "site-suisse",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Royal Catering Braukessel mit Isolierung Bierbrauanlage Heimbrauanlage 60 L Edelstahl 3000 W",
+   "doitContenir": [
+    "Royal Catering",
+    "Braukessel",
+    "60 L"
+   ]
+  },
+  "prix": 244,
+  "devise": "CHF",
+  "ttc": null,
+  "prixDes": false,
+  "prixBarre": 258,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://static01.galaxus.com/productimages/3/7/7/6/9/4/5/5/2/0/8/8/8/0/5/4/7/1/5/2668df6f-e906-4263-a058-7e2dcbd16efd_cropped.jpg_sea.jpeg",
+  "caract": [
+   {
+    "nom": "Volume",
+    "valeur": "60 L"
+   },
+   {
+    "nom": "Puissance",
+    "valeur": "3000 W"
+   },
+   {
+    "nom": "Matière",
+    "valeur": "acier inoxydable"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": "gratuite",
+  "note": "Lien court /de/s1/product/41965972 (sans slug), la page ouvre /de/s2/product/royal-catering-… (changement d’URL côté client). Affichage « 244.– » en gros, « statt 258.– », badge −5 % ; « Mehr als 10 Stück an Lager beim Lieferanten », livraison entre 8.12. et 12.12 ; « Kostenloser Versand ». URL d’image tronquée (hash à compléter)."
+ },
+ {
+  "n": 58,
+  "lien": "https://www.digitec.ch/de/s1/product/43103635",
+  "genres": [
+   "lien-court",
+   "variantes",
+   "js-lourd",
+   "site-suisse",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Kibernetik KSG90",
+   "doitContenir": [
+    "Kibernetik",
+    "KSG90"
+   ]
+  },
+  "prix": 136,
+  "devise": "CHF",
+  "ttc": null,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": [
+   {
+    "libelle": "89 l (choisi)",
+    "prix": 136
+   },
+   {
+    "libelle": "90 l",
+    "prix": 143
+   }
+  ],
+  "photo": true,
+  "photoExemple": "https://static01.galaxus.com/productimages/3/6/5/5/9/7/4/0/7/5/1/7/1/4/5/3/6/9/6/01a0b210-57d4-7d7d-af43-cf8f99db99b9_sea.jpeg",
+  "caract": [
+   {
+    "nom": "Volume utile",
+    "valeur": "89 l"
+   },
+   {
+    "nom": "Classe énergie",
+    "valeur": "E"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": "gratuite",
+  "note": "Lien digitec court /de/s1/product/43103635 ; la page ouvre /de/s1/product/kibernetik-ksg90-89-l-kuehlschrank-freistehend-43103635. Prix « 136.– » ; deux variantes de volume (89 l 136.–, 90 l 143.–). « Morgen geliefert », « Kostenloser Versand ». Frigo de table, pas un frigo de brasserie."
+ },
+ {
+  "n": 59,
+  "lien": "https://www.galaxus.ch/de/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562",
+  "genres": [
+   "multilingue",
+   "site-suisse",
+   "js-lourd",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Kibernetik KS240L",
+   "doitContenir": [
+    "Kibernetik",
+    "KS240L"
+   ]
+  },
+  "prix": 302,
+  "devise": "CHF",
+  "ttc": null,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://static01.galaxus.com/productimages/4/4/8/6/7/0/0/1/4/9/5/1/3/6/0/2/9/1/01a0b4d6-91e0-72ef-82dd-828670ff6866_sea.jpeg",
+  "caract": [
+   {
+    "nom": "Volume utile",
+    "valeur": "242 l"
+   },
+   {
+    "nom": "Classe énergie",
+    "valeur": "E"
+   },
+   {
+    "nom": "Niveau sonore",
+    "valeur": "40 dB"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": "gratuite",
+  "note": "Version allemande (/de/) ; même produit que n° 60 (/fr/). « Kontaktaufnahme durch Spedition, frühestens Mi 25.11. », « Kostenloser Versand ». Page en deux langues : le prix et le nom doivent être identiques."
+ },
+ {
+  "n": 60,
+  "lien": "https://www.galaxus.ch/fr/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562",
+  "genres": [
+   "multilingue",
+   "site-suisse",
+   "js-lourd",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Kibernetik KS240L",
+   "doitContenir": [
+    "Kibernetik",
+    "KS240L"
+   ]
+  },
+  "prix": 302,
+  "devise": "CHF",
+  "ttc": null,
+  "prixDes": false,
+  "prixBarre": null,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://static01.galaxus.com/productimages/4/4/8/6/7/0/0/1/4/9/5/1/3/6/0/2/9/1/01a0b4d6-91e0-72ef-82dd-828670ff6866_sea.jpeg",
+  "caract": [
+   {
+    "nom": "Volume utile",
+    "valeur": "242 l"
+   },
+   {
+    "nom": "Classe énergie",
+    "valeur": "E"
+   },
+   {
+    "nom": "Niveau sonore",
+    "valeur": "40 dB"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": "gratuite",
+  "note": "Version française (/fr/) du n° 59 : même nom « Kibernetik KS240L », même prix 302.–, libellés en français (« Ajouter au panier », « Livraison gratuite », « Contact par la compagnie d’expédition »)."
+ },
+ {
+  "n": 61,
+  "lien": "https://www.gastro-held.ch/fr/products/armoire-refrigeree-professionnelle-eco-400-gn-11-snackh400tn",
+  "genres": [
+   "prix-barre",
+   "ht",
+   "multilingue",
+   "site-suisse",
+   "livraison-ch",
+   "caract"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Armoire réfrigérée professionnelle ECO 400 GN 1/1",
+   "doitContenir": [
+    "ECO 400",
+    "GN 1/1"
+   ]
+  },
+  "prix": 913.9,
+  "devise": "CHF",
+  "ttc": false,
+  "prixDes": false,
+  "prixBarre": 1561,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "http://www.gastro-held.ch/cdn/shop/files/232085-snackh400tn_right_2.webp?v=1769340548",
+  "caract": [
+   {
+    "nom": "Plage de température",
+    "valeur": "-2 °C à +8 °C"
+   },
+   {
+    "nom": "Dimensions (L×P×H)",
+    "valeur": "680 × 710 × 2010 mm"
+   },
+   {
+    "nom": "Classe énergie",
+    "valeur": "D"
+   }
+  ],
+  "dispo": "en-stock",
+  "livraisonCH": "gratuite",
+  "note": "Page gastro-held en français (/fr/products/…). Prix « CHF 913,90 » (HT) ; « CHF 987,93 TVA incluse » en dessous ; barré « CHF 1.561,00 », « -42 % », « Vous économisez CHF 647,10 ». « Livraison gratuite », « Livraison immédiate ! 2 - 3 jours ouv. ». Options garantie +45,70 et +91,39 CHF = pièges. Bandeau cookies (« J’accepte » seulement). Page 1,4 Mo."
+ },
+ {
+  "n": 62,
+  "lien": "https://www.fischer-lahr.de/Edelstahl-Maische-Fermenter-60-L-mit-konischem-Boden",
+  "genres": [
+   "prix-barre",
+   "prix-kg",
+   "js-lourd",
+   "eur-hors-tva-ch",
+   "livraison-ch"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "FISCHER-LAHR Maische-Fermenter FM60 60 Liter, Gärbehälter Edelstahl, konisch mit Boden-Restauslauf",
+   "doitContenir": [
+    "FISCHER-LAHR",
+    "60 Liter"
+   ]
+  },
+  "prix": 179,
+  "devise": "EUR",
+  "ttc": true,
+  "prixDes": false,
+  "prixBarre": 229,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "https://www.fischer-lahr.de/media/image/product/24420/lg/edelstahl-maische-fermenter-60-l-mit-konischem-boden.jpg",
+  "caract": [
+   {
+    "nom": "Volume",
+    "valeur": "60 L"
+   },
+   {
+    "nom": "Poids d’expédition",
+    "valeur": "9,00 kg"
+   },
+   {
+    "nom": "Vidanges",
+    "valeur": "2 vidanges 3/4\""
+   },
+   {
+    "nom": "Équipement",
+    "valeur": "thermomètre, fût sur pieds"
+   }
+  ],
+  "dispo": null,
+  "livraisonCH": "refusee",
+  "note": "Très long (1,7 Mo), plein de logos, avant le prix : « 179,00 € » (« Lagerverkauf Tages-Preis », « 2,98 € pro 1 l »), ancien prix « 229,00 € » barré, « 21,83 % gespart ». L’onglet dit « LAGERVERKAUF: 60 L Edelstahl Bier- und Fermentations-Gärfass », le h1 « (340DMF600) FISCHER-LAHR® Maische-Fermenter FM60… ». « inkl. 19 % USt., zzgl. Versand », « Versand aus Deutschland (DE) », menu « Steuerzone / Lieferland » (UE). Page Versandinformationen : pour la Suisse, passer par meineinkauf.ch."
+ },
+ {
+  "n": 63,
+  "lien": "https://www.gastro-held.ch/products/barkuehlschrank-eco-350-mit-klapptueren-schwarz-led-beleuchtung-unterbaubar-bkse350kt?variant=67996628713702",
+  "genres": [
+   "rupture",
+   "prix-barre",
+   "ht",
+   "variante-url",
+   "site-suisse",
+   "caract"
+  ],
+  "acces": "ouvert",
+  "nom": {
+   "exact": "Barkühlschrank ECO 350 mit Klapptüren schwarz, LED Beleuchtung, unterbaubar",
+   "doitContenir": [
+    "Barkühlschrank",
+    "ECO 350"
+   ]
+  },
+  "prix": 788.9,
+  "devise": "CHF",
+  "ttc": false,
+  "prixDes": false,
+  "prixBarre": 964,
+  "variantes": null,
+  "photo": true,
+  "photoExemple": "http://www.gastro-held.ch/cdn/shop/files/18730923-bkse350kt_barkuehlschrank-eco_1.webp?v=1794341560",
+  "caract": [
+   {
+    "nom": "Volume net",
+    "valeur": "338 litres"
+   },
+   {
+    "nom": "Dimensions (B×T×H)",
+    "valeur": "1350 × 520 × 845 mm"
+   }
+  ],
+  "dispo": "rupture",
+  "livraisonCH": null,
+  "note": "Lien Shopify ?variant=67996628713702. « Produkt nicht verfügbar » : rupture, mais le prix 788,90 (HT) reste affiché, avec « CHF 852,80 inkl. MwSt. », barré 964,00 et « Du sparst CHF 175,10 ». « Verfügbare Alternativen » plus bas (866,00, 454,90…) : pièges. Le texte dit « Nachfolger von BKS-350KT ». Bandeau cookies (« Zustimmen » seul)."
+ }
+]

@@ -1,0 +1,62 @@
+{
+ "n": 9,
+ "url": "https://www.brewtools.com/brewing-system-accessories/7712213/steam-hat-b40pro-with-silicone-plug-and-seal",
+ "phase": "hydrogen",
+ "modele": "gemini-4-hydrogen",
+ "http": 200,
+ "ms": 8734,
+ "sansSchema": false,
+ "reponse": {
+  "candidates": [
+   {
+    "content": {
+     "parts": [
+      {
+       "text": "{\"type\": \"illisible\", \"caracteristiques\": [], \"devise\": null, \"nom\": null, \"origine\": \"meme-page\", \"photo\": null, \"prix\": null, \"source\": \"https://www.brewtools.com/brewing-system-accessories/7712213/steam-hat-b40pro-with-silicone-plug-and-seal\", \"taxe\": null}",
+       "thoughtSignature": "EvMDCvADAWkUfRN8qGq42k7COWbUb9IvyjTtNVLUTEacbXFwqGzVYweo31DoS4loR9gvDAMGt1gXbq90+eBXqvTnDs/WhfsNzdcfRBLk2M+83ZjXskEgBkmp4d2nbVtI5GFw7uT1Kn0zJGFc6pkkJoEAUzG0EJ+7WXFTI5M4GWSOgwCtloiMdQliG6Lq+PDu9A/b+142NxZO/5NRpu2vReMh3UkNlzUliPZFIdh+/I1m4u1kwCInInct05xckuw97O8Nykal577hZL+MwEDmZB02EkrdmAV0Ngd3hs62l6p5TPpPF2IlHlsn959jTj12zTw0UGLEdb/WHyn1T7hXrp85qXUwxwqfhxV5atW6qCR1TBUYkdTrtjXnA5vFW+KuPugEF61D9lDlk+XRrZi/htpK6PAKHihQUIEqOibzPsv6jt/pyFRXLUgLOAOCPyoAWT8MW2cF7UiBkCcVSF5Ecbng+unaTxT/Rozka5Z9BOW1PR4wasS9LcI3eE8GjSXZHa/WG1NAWl6AlxSfKU/fyuTv8jag6FOjrBS/JTZu9LCaxA3tzpftRHIsJfnIsDv/5dJNGTjBnW81No+UzvgbmzG1sVOMHYyPBr8MKaadzU8vX2KHBr/OakPkajpZjptUcFqiKpqSoqubLWYnCuA1aztuiSOEEQ=="
+      }
+     ],
+     "role": "model"
+    },
+    "finishReason": "STOP",
+    "index": 0,
+    "urlContextMetadata": {
+     "urlMetadata": [
+      {
+       "retrievedUrl": "https://www.brewtools.com/search?q=brewing+system+accessories",
+       "urlRetrievalStatus": "URL_RETRIEVAL_STATUS_ERROR"
+      }
+     ]
+    }
+   }
+  ],
+  "usageMetadata": {
+   "promptTokenCount": 927,
+   "candidatesTokenCount": 161,
+   "totalTokenCount": 2467,
+   "promptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 927
+    }
+   ],
+   "candidatesTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 161
+    }
+   ],
+   "toolUsePromptTokenCount": 1190,
+   "toolUsePromptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 1190
+    }
+   ],
+   "thoughtsTokenCount": 189,
+   "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-4-hydrogen",
+  "responseId": "RlAEa6zNNIzp7M8Ps47mqAs"
+ }
+}

@@ -18,13 +18,22 @@ import { AiClient } from '../../services/aiClient';
 import type { ComportementSimule, ModeCarnetIA } from '../../config/carnetIA';
 import { contexteModele, liensDuTexte, lireReponse, type CarnetPourIA, type LigneCarnet, type PageLue } from '../../domain/carnets/ia';
 import { pageSimulee, reponseSimulee } from '../../domain/carnets/iaSimulee';
-import type { ContexteRangerCarnet } from '../../../functions/src/carnetIA';
+import type { ContexteRangerCarnet, EtapeLien } from '../../../functions/src/carnetIA';
 import { jetons, objetDe, parleDuBrassin, TITRE_BRASSIN } from '../../domain/carnets/analyseLocale';
+
+/**
+ * La lecture d'un lien en cours. `etapes` (IA-ETAPES-VISIBLES, D446) : les étapes de la lecture, du serveur (`PageLue.etapes`, de
+ * `functions/src/carnetIA.ts` : page, donnees, prix, devise-frais, photos, caract, controle, ia), chacune trouvée, absente ou douteuse.
+ * Lues ici, jamais dessinées : leur affichage passe par des mini maquettes (règle n° 1).
+ * TODO(IA-ETAPES-VISIBLES) : le flux au fil de l'eau (`response.sendChunk` de la tâche `lireLien`, `AiClient.runFlux`) n'existe pas
+ * encore dans `functions/src/ai.ts` ; tant que c'est le cas, `etapes` arrive avec la page lue, d'un bloc.
+ */
+export interface LectureEnCours { url: string; statut?: PageLue['statut']; etapes?: readonly EtapeLien[] }
 
 export type EtatRangement<L = unknown> =
   | { etape: 'repos' }
   | { etape: 'apercu'; texte: string; lignes: L[] }
-  | { etape: 'en-cours'; messageId: string; texte: string; lecture?: { url: string; statut?: PageLue['statut'] } }
+  | { etape: 'en-cours'; messageId: string; texte: string; lecture?: LectureEnCours }
   | { etape: 'range'; messageId: string; texte: string; rangement: 'ia' | 'simulee' | 'locale'; lignes: LigneCarnet[] | null }
   | { etape: 'echec'; messageId: string; texte: string; avis: string }
   | { etape: 'hors-ligne'; messageId: string; texte: string; avis: string }
@@ -359,7 +368,7 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
       if (urls.length) {
         poser({ etape: 'en-cours', messageId, texte, lecture: { url: urls[0] } });
         pages = pagesDesLiens(urls, await course(Promise.all(urls.map(url => appels.lire(url, ctrl.signal)))));
-        poser({ etape: 'en-cours', messageId, texte, lecture: { url: urls[0], statut: pages[0].statut } });
+        poser({ etape: 'en-cours', messageId, texte, lecture: { url: urls[0], statut: pages[0].statut, ...(pages[0].etapes?.length ? { etapes: pages[0].etapes } : {}) } });
       }
       const contexte = contexteModele(texte, deps.maintenant?.() ?? new Date(), deps.depuis, carnets, pages);
       const r = await course(appels.ranger(contexte, ctrl.signal));

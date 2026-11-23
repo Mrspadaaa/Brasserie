@@ -2,8 +2,11 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { ExternalLink, Eye, Link2 } from 'lucide-react';
 import { domaineEtChemin, libelleCaracteristique, libelleEcarte } from '../../domain/carnets/comparer';
+import { dispoDe } from '../../domain/carnets/modele';
+import { convertiChf, estEtranger } from '../../domain/carnets/prixRendu';
 import { colonnesVue, estMesure, meilleursDe, sansApercu, texteCellule, type ColonneVue, type TableauV } from './Comparer';
-import type { ArticleV, ContenuCarnetV, FaconV } from './EtatIA';
+import { mentionTaxe, montant, type ArticleV, type ContenuCarnetV, type FaconV } from './EtatIA';
+import { prixOrigine } from './PrixPastille';
 import { VignetteObjet } from './pictos';
 import { etendue, pastilleFacon, sansEcarte, texteMoinsBien, type Ligne, type Separation } from './ouvertCalculs';
 
@@ -24,7 +27,8 @@ export function colonnesCarnet(t: TableauV): ColonneVue[] {
   /* L-19 (prix en francs et en euros, « Prix en euros ») : l'en-tête disait « EUR » au-dessus de 3 350 CHF. Monnaies mêlées : l'en-tête
      dit CHF, chaque prix d'une autre monnaie dit la sienne (TableauCarnet). */
   const devises = new Set(t.lignes.filter(l => l.prixCentimes !== undefined).map(l => l.devise ?? 'CHF'));
-  const prixVu = prix && devises.size > 1 ? { ...prix, unite: 'CHF' } : prix;
+  /* D447 : un prix hors franc se lit converti (≈, au cours de la lecture ou de la facture) sous l'en-tête CHF, l'original dit sous le nom */
+  const prixVu = prix && (devises.size > 1 || [...devises].some(d => d.toUpperCase() !== 'CHF')) ? { ...prix, unite: 'CHF' } : prix;
   return [valeur, prixVu].filter((x): x is ColonneVue => !!x);
 }
 
@@ -66,7 +70,7 @@ export function lignesClassees(t: TableauV, aRelire: ArticleV[], sauf?: string):
   return t.lignes.filter(l => !relire.has(l.articleId)).map(l => (l.rang !== null && !l.ecarte ? { ...l, rang: ++n } : l)).filter(l => l.articleId !== sauf);
 }
 
-export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, onOuvrir, conclusion }: { carnet: ContenuCarnetV; titre: string; tableau: TableauV; aRelire: ArticleV[]; sep: Separation | null; sauf?: string; onOuvrir: (id: string) => void; conclusion?: React.ReactNode }) {
+export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, onOuvrir, conclusion, taux }: { taux?: number; carnet: ContenuCarnetV; titre: string; tableau: TableauV; aRelire: ArticleV[]; sep: Separation | null; sauf?: string; onOuvrir: (id: string) => void; conclusion?: React.ReactNode }) {
   const cols = colonnesCarnet(tableau);
   const meilleurs = new Map(cols.map(c => [c.cle, meilleursDe(tableau, c)]));
   const lignes = lignesClassees(tableau, aRelire, sauf);
@@ -121,7 +125,7 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
               const a = art(l.articleId);
               /* tour 3, f7 n° 7 : la façon écartée porte déjà la raison en pastille ; son article, écarté pour la même raison, dit « écarté » seul */
               const memeRaison = !!l.ecarte && b.facon?.etat === 'ecartee' && !!b.facon.raison && sansEcarte(l.ecarte.raison) === sansEcarte(b.facon.raison);
-              const sous = l.ecarte ? (memeRaison ? 'écarté' : libelleEcarte(l.ecarte.raison)) : [a?.pays, a?.dispo?.replace(/\bsemaines?\b/, 'sem.')].filter(Boolean).join(' · ');
+              const sous = l.ecarte ? (memeRaison ? 'écarté' : libelleEcarte(l.ecarte.raison)) : [a?.pays, (a ? dispoDe(a) : undefined)?.replace(/\bsemaines?\b/, 'sem.'), a && convertiChf(l, taux) !== undefined ? prixOrigine(a) : mentionTaxe(l.taxe).trim() || null].filter(Boolean).join(' · ');
               const moinsBien = l.ecarte ? null : texteMoinsBien(tableau, l);
               return (
                 <button key={l.articleId} type="button" className={`cn-tab-ligne${l.ecarte ? ' cn-ecarte' : ''}`} style={gabarit} role="row" onClick={() => onOuvrir(l.articleId)}>
@@ -139,8 +143,9 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
                   </span>
                   {cols.map((c, ci) => {
                     const brut = texteCellule(l, c);
-                    const autre = c.cle === '__prix' && brut && (l.devise ?? 'CHF') !== (c.unite ?? 'CHF') ? (l.devise === 'EUR' ? '€' : l.devise) : null;
-                    const v = autre ? `${brut} ${autre}` : brut;
+                    const conv = c.cle === '__prix' && estEtranger(l) ? convertiChf(l, taux) : undefined;
+                    const autre = c.cle === '__prix' && conv === undefined && brut && (l.devise ?? 'CHF') !== (c.unite ?? 'CHF') ? (l.devise === 'EUR' ? '€' : l.devise) : null;
+                    const v = conv !== undefined ? `≈${montant(Math.round(conv / 100) * 100)}` : autre ? `${brut} ${autre}` : brut;
                     return <span key={c.cle} role="cell" data-col={ci} className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{v ? <span className="cn-mono">{v}</span> : <span className="cn-inconnu" aria-label="inconnu">–</span>}</span>;
                   })}
                 </button>
@@ -172,8 +177,8 @@ export function LigneARelire({ article: a }: { article: ArticleV }) {
       <span className="cn-rang cn-rang-vide" aria-label="sans rang">?</span>
       <span className="cn-vignette cn-vignette-petite cn-vignette-lien" aria-hidden><Link2 size={20} /></span>
       <span className="cn-tab-nom" role="cell">
-        <span>{ap?.enCours ? ap.titre : 'Lien sans aperçu'}</span>
-        <span className="cn-mut">{ou ? `${ou} · ` : ''}{ap?.enCours ? 'lecture…' : 'à relire'}</span>
+        <span>{ap?.enCours ? ap.titre : a.lecture === 'introuvable' ? 'Lien introuvable' : 'Lien sans aperçu'}</span>
+        <span className="cn-mut">{ou ? `${ou} · ` : ''}{ap?.enCours ? 'lecture…' : a.lecture === 'introuvable' ? 'ne mène plus à la fiche' : 'à relire'}</span>
       </span>
       {a.url && <a className="cn-lien cn-tab-ouvrir" href={a.url} target="_blank" rel="noreferrer noopener">Ouvrir <ExternalLink size={16} aria-hidden /></a>}
     </div>

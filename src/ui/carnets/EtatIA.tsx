@@ -25,7 +25,10 @@ export interface VeilleV { active: boolean; depuis: string; releveLe?: string }
 export interface ArticleV {
   id: string; url?: string; domaine?: string; nom?: string; prixCentimes?: number; prixDes?: true; devise?: string; vendeur?: string; pays?: string;
   dispo?: string; photo?: string; faconId?: string; valeurs: Record<string, ValeurV>;
-  lecture: 'a-lire' | 'en-cours' | 'lue' | 'illisible'; veille?: VeilleV; messageId?: string; origine?: Origine; ajouteLe?: string;
+  /** D446, D447 : toutes les photos de la page, le prix HT ou TTC, le port vers la Suisse lu, le cours du jour (BCE) ; absents quand la page ne les donne pas. */
+  photos?: string[]; taxe?: 'ht' | 'ttc'; prixTTCCentimes?: number;
+  livraison?: { prixCentimes?: number; devise?: string; gratuite?: true; refusee?: true }; change?: { taux: number; date: string; source: 'BCE' };
+  lecture: 'a-lire' | 'en-cours' | 'lue' | 'illisible' | 'introuvable'; veille?: VeilleV; messageId?: string; origine?: Origine; ajouteLe?: string;
 }
 export interface NoteV { id: string; texte: string; genre: GenreNote; le?: string; modifieeLe?: string; messageId?: string; groupe?: { id: string; libelle: string }; fusionDe?: string[] }
 export interface PhotoV { id: string; jpeg: string; messageId?: string; le?: string }
@@ -83,6 +86,16 @@ function nombreLu(t: string): string {
   if (/^\d{1,3}(\.\d{3})+$/.test(t)) return t.replace(/\./g, ' ');
   if (/^\d+\.\d+$/.test(t)) return t.replace('.', ',');
   return t;
+}
+/** T25-9 : la taxe que la page dit, avec son espace devant (« 72,50 CHF TTC ») ; la page ne la dit pas : rien. « HT » et « TTC » se disent pareil. */
+export const mentionTaxe = (taxe?: 'ht' | 'ttc'): string => (taxe === 'ht' ? ' HT' : taxe === 'ttc' ? ' TTC' : '');
+/**
+ * T25-6 : un millésime n'est pas une quantité (« Erntejahr 2025 », jamais « 2 025 »). Le nom de la caractéristique le dit (année, Jahr,
+ * Ernte, récolte, millésime, vintage) ; une quantité garde son espace des milliers (« 2 500 l »).
+ */
+const MILLESIME = /ann[ée]e|jahr|ernte|r[ée]colte|mill[ée]sime|vintage|harvest|year/i;
+export function texteSelonNom(nom: string, texte: string | null): string | null {
+  return texte !== null && MILLESIME.test(nom) && /^\d[\s  ]\d{3}$/.test(texte) ? texte.replace(/[\s  ]/g, '') : texte;
 }
 /** Une valeur lue : nombre en chiffres, oui-non en mots ; absente : null. */
 export function valeurTexte(v?: ValeurV): string | null {

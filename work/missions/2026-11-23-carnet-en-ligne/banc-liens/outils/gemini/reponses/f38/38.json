@@ -1,0 +1,74 @@
+{
+ "n": 38,
+ "cfg": "f38",
+ "modele": "gemini-3.8-flash",
+ "http": 200,
+ "ms": 9329,
+ "usage": {
+  "promptTokenCount": 421,
+  "candidatesTokenCount": 283,
+  "totalTokenCount": 13257,
+  "cachedContentTokenCount": 4324,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 421
+   }
+  ],
+  "cacheTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 4324
+   }
+  ],
+  "toolUsePromptTokenCount": 12553,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 12553
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS",
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Speidel Edelstahl Konus Gärtank 60 Liter SET (drucklos)\", \"marque\": \"Speidel\", \"prix\": 1384.80, \"devise\": \"EUR\", \"ttc\": true, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Volumen\", \"valeur\": \"60 Liter\"}, {\"nom\": \"Gewicht\", \"valeur\": \"39,000 kg\"}, {\"nom\": \"Material\", \"valeur\": \"Edelstahl\"}, {\"nom\": \"Druckbereich\", \"valeur\": \"drucklos\"}, {\"nom\": \"Herstellungsland\", \"valeur\": \"Deutschland\"}]}",
+ "json": {
+  "nom": "Speidel Edelstahl Konus Gärtank 60 Liter SET (drucklos)",
+  "marque": "Speidel",
+  "prix": 1384.8,
+  "devise": "EUR",
+  "ttc": true,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Volumen",
+    "valeur": "60 Liter"
+   },
+   {
+    "nom": "Gewicht",
+    "valeur": "39,000 kg"
+   },
+   {
+    "nom": "Material",
+    "valeur": "Edelstahl"
+   },
+   {
+    "nom": "Druckbereich",
+    "valeur": "drucklos"
+   },
+   {
+    "nom": "Herstellungsland",
+    "valeur": "Deutschland"
+   }
+  ]
+ },
+ "entree": 12974,
+ "sortie": 283,
+ "chf": 0.026979375
+}

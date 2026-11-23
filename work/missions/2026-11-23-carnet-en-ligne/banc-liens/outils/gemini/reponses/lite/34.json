@@ -1,0 +1,78 @@
+{
+ "n": 34,
+ "cfg": "lite",
+ "modele": "gemini-3.5-flash-lite",
+ "http": 200,
+ "ms": 1274,
+ "usage": {
+  "promptTokenCount": 381,
+  "candidatesTokenCount": 215,
+  "totalTokenCount": 2538,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 381
+   }
+  ],
+  "toolUsePromptTokenCount": 1942,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 1942
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Mosaic Hopfenpellets\", \"marque\": \"Hopfenmarkt\", \"prix\": 7.25, \"devise\": \"CHF\", \"ttc\": true, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Herkunft\", \"valeur\": \"USA\"}, {\"nom\": \"Ernte\", \"valeur\": \"2025\"}, {\"nom\": \"Form\", \"valeur\": \"Pellets\"}, {\"nom\": \"Land der Ernte\", \"valeur\": \"USA\"}, {\"nom\": \"Erntejahr\", \"valeur\": \"2025\"}, {\"nom\": \"Hopfentyp\", \"valeur\": \"Mehrzweckhopfen\"}, {\"nom\": \"Hopfenform\", \"valeur\": \"Pellets\"}, {\"nom\": \"Marke\", \"valeur\": \"Hopfenmarkt\"}]}",
+ "json": {
+  "nom": "Mosaic Hopfenpellets",
+  "marque": "Hopfenmarkt",
+  "prix": 7.25,
+  "devise": "CHF",
+  "ttc": true,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Herkunft",
+    "valeur": "USA"
+   },
+   {
+    "nom": "Ernte",
+    "valeur": "2025"
+   },
+   {
+    "nom": "Form",
+    "valeur": "Pellets"
+   },
+   {
+    "nom": "Land der Ernte",
+    "valeur": "USA"
+   },
+   {
+    "nom": "Erntejahr",
+    "valeur": "2025"
+   },
+   {
+    "nom": "Hopfentyp",
+    "valeur": "Mehrzweckhopfen"
+   },
+   {
+    "nom": "Hopfenform",
+    "valeur": "Pellets"
+   },
+   {
+    "nom": "Marke",
+    "valeur": "Hopfenmarkt"
+   }
+  ]
+ },
+ "entree": 2323,
+ "sortie": 215,
+ "chf": 0.001543
+}

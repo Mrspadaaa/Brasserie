@@ -1,0 +1,65 @@
+{
+ "n": 26,
+ "cfg": "hyd",
+ "modele": "gemini-4-hydrogen",
+ "http": 200,
+ "ms": 4058,
+ "usage": {
+  "promptTokenCount": 585,
+  "candidatesTokenCount": 171,
+  "totalTokenCount": 6695,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 585
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 171
+   }
+  ],
+  "toolUsePromptTokenCount": 5654,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 5654
+   }
+  ],
+  "thoughtsTokenCount": 285,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Speidels Braumeister PLUS 20 Liter\", \"marque\": \"Speidel\", \"prix\": 2190, \"devise\": \"CHF\", \"ttc\": true, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Matière\", \"valeur\": \"rostfreier Edelstahl\"}, {\"nom\": \"Braumenge\", \"valeur\": \"20 l fertiges Bier (Normalbier) = ca. 23 l Bierwürze\"}, {\"nom\": \"Max. Malzmenge\", \"valeur\": \"6 kg\"}]}",
+ "json": {
+  "nom": "Speidels Braumeister PLUS 20 Liter",
+  "marque": "Speidel",
+  "prix": 2190,
+  "devise": "CHF",
+  "ttc": true,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Matière",
+    "valeur": "rostfreier Edelstahl"
+   },
+   {
+    "nom": "Braumenge",
+    "valeur": "20 l fertiges Bier (Normalbier) = ca. 23 l Bierwürze"
+   },
+   {
+    "nom": "Max. Malzmenge",
+    "valeur": "6 kg"
+   }
+  ]
+ },
+ "entree": 6239,
+ "sortie": 456,
+ "chf": 0.015973125
+}

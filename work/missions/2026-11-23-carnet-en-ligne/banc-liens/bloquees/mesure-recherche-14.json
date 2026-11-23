@@ -1,0 +1,29 @@
+[
+ {
+  "n": 14,
+  "phase": "recherche",
+  "http": 200,
+  "ms": 2149,
+  "chf": 0.00032,
+  "entree": 254,
+  "sortie": 71,
+  "requetes": 0,
+  "sansSchema": false,
+  "outil": [],
+  "lueParOutil": false,
+  "sources": [],
+  "photoOk": false,
+  "lu": {
+   "type": "introuvable",
+   "caracteristiques": [],
+   "devise": null,
+   "nom": null,
+   "origine": null,
+   "photo": null,
+   "prix": null,
+   "source": null,
+   "taxe": null
+  },
+  "texte": ""
+ }
+]

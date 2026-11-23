@@ -1,0 +1,73 @@
+{
+ "n": 32,
+ "cfg": "hyd",
+ "modele": "gemini-4-hydrogen",
+ "http": 200,
+ "ms": 5307,
+ "usage": {
+  "promptTokenCount": 607,
+  "candidatesTokenCount": 233,
+  "totalTokenCount": 17218,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 607
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 233
+   }
+  ],
+  "toolUsePromptTokenCount": 15830,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 15830
+   }
+  ],
+  "thoughtsTokenCount": 548,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Braumeister 20Liter, Automatisch\", \"marque\": \"Speidel\", \"prix\": 1300, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Heizspirale\", \"valeur\": \"2.000 W Heizleistung\"}, {\"nom\": \"Pumpe\", \"valeur\": \"9 W\"}, {\"nom\": \"Stromanschluss\", \"valeur\": \"230 V (Absicherung mind. 10 Amp.)\"}, {\"nom\": \"Steuerung\", \"valeur\": \"vollautomatische Brausteuerung (Temperatur, Zeit, Pumpe)\"}, {\"nom\": \"Max. Malzmenge\", \"valeur\": \"6kg\"}]}",
+ "json": {
+  "nom": "Braumeister 20Liter, Automatisch",
+  "marque": "Speidel",
+  "prix": 1300,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Heizspirale",
+    "valeur": "2.000 W Heizleistung"
+   },
+   {
+    "nom": "Pumpe",
+    "valeur": "9 W"
+   },
+   {
+    "nom": "Stromanschluss",
+    "valeur": "230 V (Absicherung mind. 10 Amp.)"
+   },
+   {
+    "nom": "Steuerung",
+    "valeur": "vollautomatische Brausteuerung (Temperatur, Zeit, Pumpe)"
+   },
+   {
+    "nom": "Max. Malzmenge",
+    "valeur": "6kg"
+   }
+  ]
+ },
+ "entree": 16437,
+ "sortie": 781,
+ "chf": 0.03814125
+}

@@ -1,0 +1,85 @@
+{
+ "n": 30,
+ "cfg": "neon",
+ "modele": "gemini-4-neon",
+ "http": 200,
+ "ms": 10525,
+ "usage": {
+  "promptTokenCount": 610,
+  "candidatesTokenCount": 268,
+  "totalTokenCount": 3902,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 610
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 268
+   }
+  ],
+  "toolUsePromptTokenCount": 2560,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 2560
+   }
+  ],
+  "thoughtsTokenCount": 464,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Speidel Braumeister PLUS 20 L mit Kühlmantel\", \"marque\": \"Speidel\", \"prix\": 2345, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Fertige Biermenge\", \"valeur\": \"ca. 20 L\"}, {\"nom\": \"Heizleistung\", \"valeur\": \"2'000 W\"}, {\"nom\": \"Umwälzpumpe\", \"valeur\": \"27 W\"}, {\"nom\": \"Stromanschluss\", \"valeur\": \"230 V\"}, {\"nom\": \"Maximale Malzmenge\", \"valeur\": \"6 kg\"}, {\"nom\": \"Gewicht\", \"valeur\": \"ca. 19 kg\"}, {\"nom\": \"Höhe\", \"valeur\": \"ca. 60 cm\"}, {\"nom\": \"Durchmesser\", \"valeur\": \"ca. 40 cm\"}]}",
+ "json": {
+  "nom": "Speidel Braumeister PLUS 20 L mit Kühlmantel",
+  "marque": "Speidel",
+  "prix": 2345,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Fertige Biermenge",
+    "valeur": "ca. 20 L"
+   },
+   {
+    "nom": "Heizleistung",
+    "valeur": "2'000 W"
+   },
+   {
+    "nom": "Umwälzpumpe",
+    "valeur": "27 W"
+   },
+   {
+    "nom": "Stromanschluss",
+    "valeur": "230 V"
+   },
+   {
+    "nom": "Maximale Malzmenge",
+    "valeur": "6 kg"
+   },
+   {
+    "nom": "Gewicht",
+    "valeur": "ca. 19 kg"
+   },
+   {
+    "nom": "Höhe",
+    "valeur": "ca. 60 cm"
+   },
+   {
+    "nom": "Durchmesser",
+    "valeur": "ca. 40 cm"
+   }
+  ]
+ },
+ "entree": 3170,
+ "sortie": 732,
+ "chf": 0.025612500000000003
+}

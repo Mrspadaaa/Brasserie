@@ -1,0 +1,73 @@
+{
+ "n": 29,
+ "cfg": "hyd",
+ "modele": "gemini-4-hydrogen",
+ "http": 200,
+ "ms": 5764,
+ "usage": {
+  "promptTokenCount": 582,
+  "candidatesTokenCount": 207,
+  "totalTokenCount": 9746,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 582
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 207
+   }
+  ],
+  "toolUsePromptTokenCount": 8687,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 8687
+   }
+  ],
+  "thoughtsTokenCount": 270,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Spectrum CITRA 1 kg\", \"marque\": null, \"prix\": 401.00, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Artikelnummer\", \"valeur\": \"HO2253\"}, {\"nom\": \"Gebinde\", \"valeur\": \"1 kg\"}, {\"nom\": \"Haltbarkeit\", \"valeur\": \"12 Monate (bei sachgemässer Lagerung)\"}, {\"nom\": \"Zusammensetzung\", \"valeur\": \"100% Hopfen\"}, {\"nom\": \"Dosierung\", \"valeur\": \"Verhältnis 1:5 - 1:8 (1 kg SPECTRUM für 5-8 kg Hopfen)\"}]}",
+ "json": {
+  "nom": "Spectrum CITRA 1 kg",
+  "marque": null,
+  "prix": 401,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Artikelnummer",
+    "valeur": "HO2253"
+   },
+   {
+    "nom": "Gebinde",
+    "valeur": "1 kg"
+   },
+   {
+    "nom": "Haltbarkeit",
+    "valeur": "12 Monate (bei sachgemässer Lagerung)"
+   },
+   {
+    "nom": "Zusammensetzung",
+    "valeur": "100% Hopfen"
+   },
+   {
+    "nom": "Dosierung",
+    "valeur": "Verhältnis 1:5 - 1:8 (1 kg SPECTRUM für 5-8 kg Hopfen)"
+   }
+  ]
+ },
+ "entree": 9269,
+ "sortie": 477,
+ "chf": 0.02185125
+}

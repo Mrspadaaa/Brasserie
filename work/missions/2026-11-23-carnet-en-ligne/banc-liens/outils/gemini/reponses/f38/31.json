@@ -1,0 +1,78 @@
+{
+ "n": 31,
+ "cfg": "f38",
+ "modele": "gemini-3.8-flash",
+ "http": 200,
+ "ms": 5231,
+ "usage": {
+  "promptTokenCount": 402,
+  "candidatesTokenCount": 286,
+  "totalTokenCount": 2344,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 402
+   }
+  ],
+  "toolUsePromptTokenCount": 1656,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 1656
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Motorisierter Edelstahl-Maischekessel 50 L\", \"marque\": \"Polsinelli Enologia Srl\", \"prix\": 520.00, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Fassungsvermögen\", \"valeur\": \"50 L\"}, {\"nom\": \"Material\", \"valeur\": \"Edelstahl AISI 304\"}, {\"nom\": \"Motor\", \"valeur\": \"220 V – 0,09 kW\"}, {\"nom\": \"Drehzahl\", \"valeur\": \"28 U/min\"}, {\"nom\": \"Edelstahlhahn\", \"valeur\": \"3/4\\\"\"}, {\"nom\": \"Innendurchmesser\", \"valeur\": \"455 mm\"}, {\"nom\": \"Höhe\", \"valeur\": \"370 mm\"}, {\"nom\": \"Gesamtabmessungen mit Motor\", \"valeur\": \"ca. 525 × 550 mm (H)\"}]}",
+ "json": {
+  "nom": "Motorisierter Edelstahl-Maischekessel 50 L",
+  "marque": "Polsinelli Enologia Srl",
+  "prix": 520,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Fassungsvermögen",
+    "valeur": "50 L"
+   },
+   {
+    "nom": "Material",
+    "valeur": "Edelstahl AISI 304"
+   },
+   {
+    "nom": "Motor",
+    "valeur": "220 V – 0,09 kW"
+   },
+   {
+    "nom": "Drehzahl",
+    "valeur": "28 U/min"
+   },
+   {
+    "nom": "Edelstahlhahn",
+    "valeur": "3/4\""
+   },
+   {
+    "nom": "Innendurchmesser",
+    "valeur": "455 mm"
+   },
+   {
+    "nom": "Höhe",
+    "valeur": "370 mm"
+   },
+   {
+    "nom": "Gesamtabmessungen mit Motor",
+    "valeur": "ca. 525 × 550 mm (H)"
+   }
+  ]
+ },
+ "entree": 2058,
+ "sortie": 286,
+ "chf": 0.00654
+}

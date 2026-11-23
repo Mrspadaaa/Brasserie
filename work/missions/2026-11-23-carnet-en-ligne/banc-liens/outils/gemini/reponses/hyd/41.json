@@ -1,0 +1,84 @@
+{
+ "n": 41,
+ "cfg": "hyd",
+ "modele": "gemini-4-hydrogen",
+ "http": 200,
+ "ms": 3733,
+ "usage": {
+  "promptTokenCount": 594,
+  "candidatesTokenCount": 252,
+  "totalTokenCount": 9522,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 594
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 252
+   }
+  ],
+  "toolUsePromptTokenCount": 8676,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 8676
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Braukessel aus Edelstahl 50 l mit Auslauf für Maischebrauer\", \"marque\": \"BREWFERM\", \"prix\": 244, \"devise\": \"EUR\", \"ttc\": true, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Inhalt\", \"valeur\": \"50 Liter\"}, {\"nom\": \"Material\", \"valeur\": \"Edelstahl AISI 304\"}, {\"nom\": \"Durchmesser x Höhe\", \"valeur\": \"40 x 40 cm\"}, {\"nom\": \"Wandstärke\", \"valeur\": \"0,8 mm\"}, {\"nom\": \"Sandwichboden\", \"valeur\": \"4 mm\"}, {\"nom\": \"Kugelhahn\", \"valeur\": \"3-teilig ½\\\"\"}, {\"nom\": \"Versandgewicht\", \"valeur\": \"8 kg\"}, {\"nom\": \"Garantie\", \"valeur\": \"3 Jahre\"}]}",
+ "json": {
+  "nom": "Braukessel aus Edelstahl 50 l mit Auslauf für Maischebrauer",
+  "marque": "BREWFERM",
+  "prix": 244,
+  "devise": "EUR",
+  "ttc": true,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Inhalt",
+    "valeur": "50 Liter"
+   },
+   {
+    "nom": "Material",
+    "valeur": "Edelstahl AISI 304"
+   },
+   {
+    "nom": "Durchmesser x Höhe",
+    "valeur": "40 x 40 cm"
+   },
+   {
+    "nom": "Wandstärke",
+    "valeur": "0,8 mm"
+   },
+   {
+    "nom": "Sandwichboden",
+    "valeur": "4 mm"
+   },
+   {
+    "nom": "Kugelhahn",
+    "valeur": "3-teilig ½\""
+   },
+   {
+    "nom": "Versandgewicht",
+    "valeur": "8 kg"
+   },
+   {
+    "nom": "Garantie",
+    "valeur": "3 Jahre"
+   }
+  ]
+ },
+ "entree": 9270,
+ "sortie": 252,
+ "chf": 0.01974375
+}

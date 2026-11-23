@@ -16,15 +16,19 @@
 import React from 'react';
 import { Camera, Check, ChevronLeft, ChevronRight, ExternalLink, Eye, Pencil } from 'lucide-react';
 import { Bascule, estExemple, mesureCritere, nombreValeur } from './CarteArticle';
+import { dispoDe } from '../../domain/carnets/modele';
+import { detailPrix, prixTexteArticle } from './PrixPastille';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { nombreTexte, placesDe, tableau as calculerTableau, type Place } from '../../domain/carnets/comparer';
 import { parsePrix } from '../../domain/finance/upgradeRing';
-import { dateCourte, montant, Provenance, rangTexte, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
+import { dateCourte, montant, Provenance, rangTexte, texteSelonNom, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
 import './fiche-article.css';
 import { marquerCassee, photoCassee, VignetteObjet } from './pictos';
 
 export interface FicheArticleProps {
   article: ArticleV;
+  /** D447 : le taux EUR→CHF (facture ou posé) ; sans lui, le cours du jour lu avec la page. */
+  taux?: number;
   titreCarnet: string;
   critere?: CritereV;
   facon?: FaconV;
@@ -98,7 +102,9 @@ export function FicheArticle(p: FicheArticleProps) {
   const [, redessiner] = React.useState(0);
   const k = p.carnet;
   const devise = a.devise ?? 'CHF';
-  const prix = prixTexte(a.prixCentimes, devise);
+  /* D447 : hors franc, le prix converti ; l'original, « HT » et le port se disent sous l'offre (`detailPrix`) */
+  const t0 = prixTexteArticle(a, p.taux);
+  const prix = t0?.approx ? `≈${t0.montant} ${t0.devise}` : prixTexte(a.prixCentimes, devise);
   const veille = !!a.veille?.active;
   const lu = dateCourte(Object.values(a.valeurs).find(v => v.luLe)?.luLe);
   const ajoute = dateCourte(a.ajouteLe);
@@ -132,16 +138,19 @@ export function FicheArticle(p: FicheArticleProps) {
      l'origine ; 4 cases au moins quand il y a de quoi les remplir, jamais une valeur inventée. */
   const cases: Case[] = Object.entries(a.valeurs).filter(([nom]) => normaliser(nom) !== nomHeros).map(([nom, v]: [string, ValeurV]) => {
     const n = typeof v.valeur === 'string' && !milliersAPoint(v) ? nombreValeur(v) : null;
-    return { nom, texte: n !== null ? nombreTexte(n) : valeurTexte(v), ...(v.unite ? { unite: v.unite } : {}), rang: rangDe(nom), exemple: v.origine === 'exemple' };
+    return { nom, texte: texteSelonNom(nom, n !== null ? nombreTexte(n) : valeurTexte(v)), ...(v.unite ? { unite: v.unite } : {}), rang: rangDe(nom), exemple: v.origine === 'exemple' };
   });
+  /* T25-7 : les colonnes du carnet que l'article ne publie pas se disent ensemble, dans UNE phrase sous la grille (« Non publié par le
+     vendeur : Malzmenge · Max. Malzmenge · Stromanschluss »), jamais trois cases « non publié » qui font croire à une valeur. L'inconnu
+     reste dit (jamais 0), le critère reste nommé. */
   const dits = new Set([nomHeros, ...cases.map(c => normaliser(c.nom))]);
+  const manque: string[] = [];
   for (const col of t?.colonnes ?? []) {
-    if (cases.length >= 4) break;
     if (normaliser(col.nom) === 'prix' || dits.has(normaliser(col.nom))) continue;
-    cases.push({ nom: col.nom, texte: null, ...(col.unite ? { unite: col.unite } : {}) });
+    manque.push(col.nom);
     dits.add(normaliser(col.nom));
   }
-  if (cases.length < 4 && a.dispo) cases.push({ nom: 'Disponibilité', texte: a.dispo });
+  if (cases.length < 4 && dispoDe(a)) cases.push({ nom: 'Disponibilité', texte: dispoDe(a)! });
   if (cases.length < 4 && a.pays) cases.push({ nom: 'Origine', texte: a.pays });
 
   /* Les offres de la même machine : même nom (normalisé), dans le carnet ; la moins chère d'abord. */
@@ -150,6 +159,11 @@ export function FicheArticle(p: FicheArticleProps) {
     : [a];
   const qui = a.vendeur ?? a.domaine;
   const [poserPrix, setPoserPrix] = React.useState(false);
+  /* D446 : toutes les photos de la page, une à la fois (‹ ›), la première d'abord ; une photo cassée est écartée */
+  const photos = (a.photos?.length ? a.photos : a.photo ? [a.photo] : []).filter(u => !photoCassee(u));
+  const [iPhoto, setIPhoto] = React.useState(0);
+  const iP = Math.min(iPhoto, Math.max(photos.length - 1, 0));
+  const photoCourante = photos[iP];
   /* L-16 (CA12-M4-18) : balayer à gauche, l'article suivant ; à droite, le précédent (un geste franc, surtout horizontal) */
   const depart = React.useRef<{ x: number; y: number } | null>(null);
   const balayer = {
@@ -181,8 +195,17 @@ export function FicheArticle(p: FicheArticleProps) {
       </div>
       {/* n° 8 : le cadre photo est toujours là (h01-6) ; sans photo, l'objet dessiné en grand. Critique 6, n° 20 (D-78) : la photo lue
           de la page ; celle du banc est simulée et le dit (« exemple »). */}
-      {a.photo && !photoCassee(a.photo) ? (
-        <figure className="cn-fiche-photo" data-cadre="photo"><img onError={() => { marquerCassee(a.photo!); redessiner(n => n + 1); }} src={a.photo} alt={`photo de la page collée : ${a.nom ?? a.domaine ?? 'article'}`} /><figcaption><Camera size={16} aria-hidden /> photo de la page collée{estExemple(a) ? <> <Provenance origine="exemple" /></> : null}</figcaption></figure>
+      {photoCourante ? (
+        <figure className="cn-fiche-photo" data-cadre="photo">
+          <img key={photoCourante} onError={() => { marquerCassee(photoCourante); redessiner(n => n + 1); }} src={photoCourante} alt={`photo ${photos.length > 1 ? `${iP + 1} sur ${photos.length} ` : ''}de la page collée : ${a.nom ?? a.domaine ?? 'article'}`} />
+          <figcaption><Camera size={16} aria-hidden /> photo{photos.length > 1 ? <> <span className="cn-mono">{iP + 1}/{photos.length}</span></> : null} de la page collée{estExemple(a) ? <> <Provenance origine="exemple" /></> : null}</figcaption>
+          {photos.length > 1 && (
+            <>
+              <button type="button" className="cn-ico cn-fiche-photo-nav cn-fiche-photo-prec" aria-label="Photo précédente" disabled={iP === 0} onClick={() => setIPhoto(iP - 1)}><ChevronLeft size={20} aria-hidden /></button>
+              <button type="button" className="cn-ico cn-fiche-photo-nav cn-fiche-photo-suiv" aria-label="Photo suivante" disabled={iP === photos.length - 1} onClick={() => setIPhoto(iP + 1)}><ChevronRight size={20} aria-hidden /></button>
+            </>
+          )}
+        </figure>
       ) : (
         <figure className="cn-fiche-photo cn-fiche-picto" data-cadre="picto" aria-hidden>
           <VignetteObjet mots={[a.nom, p.facon?.nom, p.titreCarnet]} classe="cn-vignette-fiche" taille={132} />
@@ -211,25 +234,28 @@ export function FicheArticle(p: FicheArticleProps) {
           <div className="cn-offres">
             {offres.map(o => {
               const moi = o.id === a.id;
-              const p2 = prixTexte(o.prixCentimes, o.devise ?? 'CHF');
+              const t2 = prixTexteArticle(o, p.taux);
+              const p2 = t2?.approx ? `≈${t2.montant} ${t2.devise}` : prixTexte(o.prixCentimes, o.devise ?? 'CHF');
+              const d2 = detailPrix(o, p.taux);
               const corps = (
                 <>
                   {offres.length > 1 && <span className={`cn-radio${moi ? ' cn-radio-on' : ''}`} aria-hidden />}
                   <span className="cn-sp">
                     <b>{[o.vendeur, o.pays].filter(Boolean).join(' · ') || o.domaine}</b>
-                    {o.dispo && <span className="cn-mut">{o.dispo}</span>}
+                    {dispoDe(o) && <span className="cn-mut">{dispoDe(o)}</span>}
                   </span>
                   {p2 && <PrixMono texte={p2} />}
                   {!p2 && moi && <span className="cn-mut">prix ?</span>}
                 </>
               );
               return (
-                <div key={o.id} className={`cn-offre${moi ? ' cn-offre-moi' : ''}`}>
+                <div key={o.id} className={`cn-offre${moi ? ' cn-offre-moi' : ''}${d2 ? ' cn-offre-avec-detail' : ''}`}>
                   {!moi && p.onOffre ? <button type="button" className="cn-offre-corps" onClick={() => p.onOffre!(o.id)}>{corps}</button> : <span className="cn-offre-corps">{corps}</span>}
                   {moi && p.onPrix && !poserPrix && (p2
                     ? <button type="button" className="cn-ico" aria-label="Modifier le prix" onClick={() => setPoserPrix(true)}><Pencil size={16} aria-hidden /></button>
                     : <button type="button" className="cn-lien cn-poser-prix-ouvrir" onClick={() => setPoserPrix(true)}>Poser le prix</button>)}
                   {o.url && <a className="cn-lien" href={o.url} target="_blank" rel="noreferrer noopener">Ouvrir <ExternalLink size={16} aria-hidden /></a>}
+                  {d2 && <span className="cn-mut cn-offre-detail">{d2}</span>}
                 </div>
               );
             })}
@@ -237,7 +263,7 @@ export function FicheArticle(p: FicheArticleProps) {
           {poserPrix && p.onPrix && <PoserPrix centimes={a.prixCentimes} onPoser={c => { p.onPrix!(c); setPoserPrix(false); }} onFermer={() => setPoserPrix(false)} />}
         </>
       )}
-      {cases.length > 0 && (
+      {(cases.length > 0 || manque.length > 0) && (
         <>
           <h3 className="cn-sous">Caractéristiques {lu && <span className="cn-mut">lues sur la fiche du vendeur, {lu}</span>}</h3>
           <dl className="cn-carac" aria-label="Caractéristiques">
@@ -251,6 +277,7 @@ export function FicheArticle(p: FicheArticleProps) {
               </div>
             ))}
           </dl>
+          {manque.length > 0 && <p className="cn-mut cn-carac-manque">Non publié par le vendeur : {manque.join(' · ')}</p>}
         </>
       )}
       <div className="cn-veille-bloc">
@@ -268,7 +295,7 @@ export function FicheArticle(p: FicheArticleProps) {
       {!p.choisi && p.onChoisir && (
         <>
           <button type="button" className="cn-action cn-action-vert cn-large" onClick={p.onChoisir}><Check size={18} aria-hidden /> Choisir{a.vendeur ? ` · ${a.vendeur}` : ''}</button>
-          <p className="cn-mut">Part dans À venir : {[a.nom, a.vendeur].filter(Boolean).join(', ')}{prix ? <>, <PrixMono texte={prix} /></> : null}{a.dispo ? `, ${a.dispo}` : ''}, avec le pourquoi.</p>
+          <p className="cn-mut">Part dans À venir : {[a.nom, a.vendeur].filter(Boolean).join(', ')}{prix ? <>, <PrixMono texte={prix} /></> : null}{dispoDe(a) ? `, ${dispoDe(a)}` : ''}, avec le pourquoi.</p>
         </>
       )}
     </article>

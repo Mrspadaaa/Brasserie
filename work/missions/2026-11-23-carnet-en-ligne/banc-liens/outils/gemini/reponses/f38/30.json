@@ -1,0 +1,78 @@
+{
+ "n": 30,
+ "cfg": "f38",
+ "modele": "gemini-3.8-flash",
+ "http": 200,
+ "ms": 6882,
+ "usage": {
+  "promptTokenCount": 411,
+  "candidatesTokenCount": 282,
+  "totalTokenCount": 2998,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 411
+   }
+  ],
+  "toolUsePromptTokenCount": 2305,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 2305
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Speidel Braumeister PLUS 20 L mit Kühlmantel\", \"marque\": \"Speidel\", \"prix\": 2345.0, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Modell\", \"valeur\": \"Braumeister PLUS 20 L\"}, {\"nom\": \"fertige Biermenge\", \"valeur\": \"ca. 20 L\"}, {\"nom\": \"Heizleistung\", \"valeur\": \"2'000 W\"}, {\"nom\": \"Umwälzpumpe\", \"valeur\": \"27 W\"}, {\"nom\": \"Stromanschluss\", \"valeur\": \"230 V\"}, {\"nom\": \"Gewicht\", \"valeur\": \"ca. 19 kg\"}, {\"nom\": \"Höhe\", \"valeur\": \"ca. 60 cm\"}, {\"nom\": \"Durchmesser\", \"valeur\": \"ca. 40 cm\"}]}",
+ "json": {
+  "nom": "Speidel Braumeister PLUS 20 L mit Kühlmantel",
+  "marque": "Speidel",
+  "prix": 2345,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Modell",
+    "valeur": "Braumeister PLUS 20 L"
+   },
+   {
+    "nom": "fertige Biermenge",
+    "valeur": "ca. 20 L"
+   },
+   {
+    "nom": "Heizleistung",
+    "valeur": "2'000 W"
+   },
+   {
+    "nom": "Umwälzpumpe",
+    "valeur": "27 W"
+   },
+   {
+    "nom": "Stromanschluss",
+    "valeur": "230 V"
+   },
+   {
+    "nom": "Gewicht",
+    "valeur": "ca. 19 kg"
+   },
+   {
+    "nom": "Höhe",
+    "valeur": "ca. 60 cm"
+   },
+   {
+    "nom": "Durchmesser",
+    "valeur": "ca. 40 cm"
+   }
+  ]
+ },
+ "entree": 2716,
+ "sortie": 282,
+ "chf": 0.00773625
+}
