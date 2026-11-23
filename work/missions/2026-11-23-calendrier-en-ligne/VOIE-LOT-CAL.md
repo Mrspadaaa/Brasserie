@@ -14,3 +14,12 @@ Ordre et contenu inchangés (points 1 à 5 du brief), avec ces ajouts :
 
 ## Méthode (D438, D439, D440)
 - Un test par plainte + propriétés fast-check ; pas d'autres tests d'écran. Ne lance que tes tests ; pas la suite entière.
+
+## Ajout 23.11 9:05 (pilote) — CAL-ECHELLE-SUIT-CADRE refusé une 2e fois
+- Ses mots : « Et échelle toujours pas dynamique... » sur sa capture brasseur-23-11/2sem-0902.jpg (tour 15 : la pastille suit
+  — nouveau paquet — mais la bande « S48 S49 » reste pleine largeur sous un cadre plus étroit, étiquette « S48 – S46 2027 »).
+- Donc le point 2 n'est PAS en place sur la vraie app, malgré l'e2e vert sur fixture : reproduis-le d'abord EN LIGNE à 2 sem.,
+  3 sem., 14 sem. en tirant les poignées ; trouve pourquoi l'e2e passait (il ne joue pas le même geste ou pas la même entrée).
+- L13 : 2e refus du même élément → si la cause n'est pas un simple oubli de branchement, change de genre de solution
+  (ex. la bande ne s'étale plus sur toute la largeur : elle est DESSINÉE dans le SVG de la courbe, même transformation x).
+- Puis CAL-PLUS-QU-UN-AN et CAL-AUJOURDHUI-COURBE (message précédent), puis points 3 à 5.
