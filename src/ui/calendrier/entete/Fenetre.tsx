@@ -59,7 +59,7 @@ export const MOIS_MIN_SEMAINES = 4;
 /** Le texte du bouton de période : « 6 sem. », « 3 mois », « 6 mois », « An », ou le nombre de semaines tel quel. */
 export function libelleDuree(semaines: number, annee: boolean): string {
   // CAL-PLUS-QU-UN-AN : au-delà de l'An, les années entières (« 2 ans ») ou les mois (« 18 mois »)
-  if (semaines > SEMAINES_ANNEE + 1) { const ans = semaines / 52.18; return Math.abs(ans - Math.round(ans)) < 0.04 ? `${Math.round(ans)} ans` : `${Math.round(semaines / 4.348)} mois`; }
+  if (semaines > SEMAINES_ANNEE + 1) { const ans = semaines / 52.18; return Math.abs(ans - Math.round(ans)) < 0.04 ? (Math.round(ans) === 1 ? 'An' : `${Math.round(ans)} ans`) : `${Math.round(semaines / 4.348)} mois`; }
   if (annee || semaines >= SEMAINES_ANNEE) return 'An';
   if (semaines === 13) return '3 mois';
   if (semaines === 26) return '6 mois';
