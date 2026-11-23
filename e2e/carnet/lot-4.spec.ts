@@ -97,6 +97,8 @@ test.describe('Carnet, lot 4', () => {
     const feuille = page.getByRole('dialog');
     await expect(feuille.locator('img.cn-photo-grande'), 'la photo en grand').toBeVisible({ timeout: 10_000 });
     await expect(feuille).toContainText(/Pas lue/);
+    await expect(feuille.getByText(/Pas lue/), 'l’état de la photo se lit sans défiler').toBeInViewport({ timeout: 5_000 });
+    await page.waitForTimeout(600); /* fin de la montée de la feuille, pour la capture */
     await page.screenshot({ path: info.outputPath('photo-ouverte.png') });
   });
 });
