@@ -2812,3 +2812,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - « Est-ce que on peut rendre le frise du temps fonctionnelle et sans bug, robuste... Ça fait depuis le début que c'est un sujet, il y a toujours les même problèmes.. Qu'est-ce qui bloque ??? »
 - (capture 12:15, tour 22, « Tout » · « 20 mois », cadre « 24 nov. 2025 – 11 juil. 2027 » : la bande des graduations est vide ; « début » collé en haut à gauche ; barres serrées au milieu) « La y a même plus de données sur l'échelle du temps ??? »
 - (proposition de reconstruire le cœur de la frise) « Répare déjà ça, on utilisera un vrai truc robuste cette nuit. Mais je veux pas perdre de fonctionnalités »
+- (lien collé, 23.11 ~12:40 : https://www.gastro-held.ch/products/gastronomie-kuehlschrank-eco-1300-gn-21-monoblock-1350-liter-kuehlraumvolumen-6-verstellbare-einlegeboeden-robuste-bauweise-edelstahl-gnh1410tnm?… (paramètres de pub gclid)) « Ça m'a fait n'importe quoi »
