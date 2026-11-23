@@ -4,7 +4,7 @@ Liste : LISTE.md de ce dossier, § 3 (table des lots, fichiers possédés) et §
 Ses mots : « c'est pas normal de perdre autant de temps pour des bugs simple » : va vite, sans sauter le test rouge.
 
 ## Où
-- Worktree propre : `git -C C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie fetch -q origin` puis
+- Copie de travail : `node scripts/agents/copie-travail.mjs carnet-lot-<N>` (D439 ; exporte E2E_PORT et E2E_BUILD qu il affiche).
   `git -C C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie worktree add C:/Users/mrspa/.codex/worktrees/openai-clean-start/lot-<N> -b claude/carnet-lot-<N> origin/main`.
   node_modules : jonction (`powershell New-Item -ItemType Junction -Path <wt>/node_modules -Target C:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet/node_modules`) ;
   functions/node_modules de même vers port-carnet/functions/node_modules s'il existe.

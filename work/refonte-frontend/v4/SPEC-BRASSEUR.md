@@ -2788,3 +2788,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (citant « En local : environ 200 tests automatiques au doigt sur le Calendrier, mais sur des données d'essai, pas les tiennes. ») « C'est vraiment utile de passer autant de temps sur ce genre de test si au final il y a plein de vrai problème sur la vrai app ? »
 - (sur la proposition : 1 vraie app + vraies données, 2 son téléphone en USB, 3 règles vérifiées partout, 4 copie anonymisée de ses données ; un test par plainte, plus de tests d'écran à la chaîne) « Oui mais pas de point 2 »
 - (tableau des tâches, ligne « Lecture IA côté serveur (aiTask) … attend ton accord ») « Lecture IA côté serveur (aiTask)ok »
+- (sur « Ce que je change » : 4 agents au plus et un build partagé ; un script de copie de travail ; un test par plainte, suite entière une fois ; couper les trois gros fichiers ; remplacer le parcours figé de la porte par les règles générales) « Ok »
