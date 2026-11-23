@@ -20,3 +20,8 @@
 {"heure":"2026-11-23T03:20:00.000Z","methode":"M4","geste":"M4 1er envoi « ZZ TEST — M4 — idée chambre froide » par le champ (aucun aiTask vu, phrase introuvable ensuite)","modele":"gemini-3.8-flash (rangerCarnet), si appelé","estimationCHF":0.005}
 {"heure":"2026-11-23T03:22:00.000Z","methode":"M4","geste":"M4 création « ZZ TEST — M4 — banc de rinçage des bouteilles » par le champ (aiTask ×1)","modele":"gemini-3.8-flash (rangerCarnet)","estimationCHF":0.005}
 {"heure":"2026-11-23T03:40:00.000Z","methode":"M4","geste":"M4 note « ZZ TEST — M4 — note : prévoir 2 buses de rinçage » dans le carnet ZZ (aiTask ×1)","modele":"gemini-3.8-flash (rangerCarnet)","estimationCHF":0.005}
+{"heure":"2026-11-23T03:04:17.129Z","methode":"M2","geste":"M2 note hors ligne rangée au retour (si rangée)","modele":"gemini-3.8-flash (aiTask, tier fast)","estimationCHF":0.004}
+{"heure":"2026-11-23T03:07:10.412Z","methode":"M1","geste":"Charte 4 : Ranger maintenant après retour en ligne (rangerCarnet)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T03:07:10.413Z","methode":"M1","geste":"Charte 4 : double toucher sur Ajouter, 1 seul appel (rangerCarnet)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T03:07:54.126Z","methode":"M1","geste":"Charte 4 : note envoyée puis page rechargée à 0,7 s (rangerCarnet probable, non lu)","modele":"gemini-3.8-flash (probable)","estimation_chf":0.005}
+{"heure":"2026-11-23T03:08:30.000Z","methode":"M3","geste":"S6 note brute de 3 lignes dans le carnet ZZ ouvert (3 appels aiTask, rangement)","modele":"gemini (aiTask ; modèle non exposé)","estimation_chf":0.015}
