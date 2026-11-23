@@ -1,0 +1,45 @@
+
+Running 1 test using 1 worker
+F
+
+  1) [android-390] › e2e\calendrier\zz-relecture-modele.spec.ts:161:1 › CAL-ETAT-COHERENT : après chaque geste, durée, étiquette, aujourd'hui et rangées disent la même fenêtre 
+
+    Error: Property failed after 1 tests
+    { seed: -1796245168, path: "0", endOnFailure: true }
+    Counterexample: [poignée fin -70,durée 6 mois,Période précédente,recharger,durée 6 sem.,app plage 43 mois, 30 mois /*replayPath=":"*/]
+    Shrunk 0 time(s)
+
+    Encountered failures were:
+    - [poignée fin -70,durée 6 mois,Période précédente,recharger,durée 6 sem.,app plage 43 mois, 30 mois /*replayPath=":"*/]
+        at buildError (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2497:16)
+        at asyncThrowIfFailed (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2509:8)
+    [cause]: Error: I1 durée « 2 ans ½ » ≠ cadre 132.0 sem. : poignée fin -70 → durée 6 mois → Période précédente → recharger → durée 6 sem. → app plage 43 mois, 30 mois | app « 1er juin 2030 → 1er déc. 203201.06.30–01.12.32 », bouton « 2 ans ½ », étiquette « 27 mai 2030 – 5 déc. 2032 »
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+        at verifier (C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\zz-relecture-modele.spec.ts:88:185)
+        at Object.run (C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\zz-relecture-modele.spec.ts:107:63)
+        at runAsync (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:9691:27)
+        at internalAsyncModelRun (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:9693:9)
+        at Module.asyncModelRun (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:9721:2)
+        at C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\zz-relecture-modele.spec.ts:175:5
+        at AsyncProperty.run (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:1241:19)
+        at asyncPropertyExecution (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2604:14)
+        at asyncRunIt (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2597:15)
+        at C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\zz-relecture-modele.spec.ts:168:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    e2e\resultats\arbre\calendrier-zz-relecture-mo-57116-gées-disent-la-même-fenêtre-android-390\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    e2e\resultats\arbre\calendrier-zz-relecture-mo-57116-gées-disent-la-même-fenêtre-android-390\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: e2e\resultats\arbre\calendrier-zz-relecture-mo-57116-gées-disent-la-même-fenêtre-android-390\error-context.md
+
+  1 failed
+    [android-390] › e2e\calendrier\zz-relecture-modele.spec.ts:161:1 › CAL-ETAT-COHERENT : après chaque geste, durée, étiquette, aujourd'hui et rangées disent la même fenêtre 
+fin 1

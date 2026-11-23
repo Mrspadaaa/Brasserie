@@ -2847,3 +2847,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - « Est-ce que on peut mieux optimisé ça sans perdre en qualité ? »
 - « 2,3,4 à mettre en place » (2 : dossier préparé par voie ; 3 : le mécanique à Haiku ; 4 : gestes groupés en un script, captures à demi-échelle)
 - « Non, ce que j'ai dis c'est que les seul vrai tests sont ceux sur la vrai app. Les unit test montre peu de vrai bug. Pareil pour les test local. Donc déployé plus souvent.Tu as pas trouvé ces informations ?? »
+- (capture 23.11 21:27, Calendrier 20 mois, zones entourées : toute la frise, et Travaux/Activités/Papiers) « Il y a toujours de l'espace vide et une donné que je cache brise les lignes » (work/missions/2026-11-23-reprise-soir/plaintes/2327-vide-lignes.jpg)
