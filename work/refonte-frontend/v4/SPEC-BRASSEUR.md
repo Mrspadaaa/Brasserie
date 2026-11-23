@@ -2846,3 +2846,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 ### 23.11 (nuit) — Jetons
 - « Est-ce que on peut mieux optimisé ça sans perdre en qualité ? »
 - « 2,3,4 à mettre en place » (2 : dossier préparé par voie ; 3 : le mécanique à Haiku ; 4 : gestes groupés en un script, captures à demi-échelle)
+- « Non, ce que j'ai dis c'est que les seul vrai tests sont ceux sur la vrai app. Les unit test montre peu de vrai bug. Pareil pour les test local. Donc déployé plus souvent.Tu as pas trouvé ces informations ?? »

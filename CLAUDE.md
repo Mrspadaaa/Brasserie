@@ -116,8 +116,8 @@ Système complet : `docs/agents/systeme.md`.
 - Tester d'abord par la vision (D343) : vraies pièces, chaque état et geste
   dans Chrome, un thème, téléphone surtout, 1280 peu (22.11) ; le critique, puis le
   pilote, fait seulement « combien et quels problèmes ? », liste numérotée
-  (D344). Vitest pour les règles de calcul ; peu de fixtures. Local, puis
-  émulateurs, puis en ligne, lecture seule.
+  (D344). Vitest pour les règles de calcul ; peu de fixtures. Seuls vrais
+  tests : l'app déployée (ZZ TEST) ; déployer souvent, petits lots (23.11).
 - Gemini jamais dans un test unitaire ni dans `npm test` : toujours simulé.
   Appels réels seulement dans des tests spéciaux dédiés, lancés explicitement,
   très limités et journalisés.
