@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react';
+import { useLayoutEffect, useState, useSyncExternalStore } from 'react';
 import { bandeauVisible, rechargerMaintenant, surBandeau } from '../services/miseAJour';
 
 /**
@@ -8,11 +8,19 @@ import { bandeauVisible, rechargerMaintenant, surBandeau } from '../services/mis
  */
 export function BandeauMiseAJour() {
   const visible = useSyncExternalStore(surBandeau, bandeauVisible, () => false);
+  // L-55 : jamais sur l'en-tête (il cachait ‹ Nov. ›) : juste sous lui ; sans en-tête visible, en haut comme avant.
+  const [haut, setHaut] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    if (!visible) return;
+    const bas = document.querySelector('header')?.getBoundingClientRect().bottom ?? 0;
+    setHaut(bas > 0 ? bas + 4 : null);
+  }, [visible]);
   if (!visible) return null;
   return (
     <div
       role="status"
       data-mise-a-jour
+      style={haut !== null ? { top: haut } : undefined}
       className="fixed left-1/2 top-[calc(env(safe-area-inset-top,0px)+0.5rem)] z-[90] flex w-max max-w-[calc(100vw-1rem)] -translate-x-1/2 items-center gap-2 rounded-panel border border-cave-700 bg-cave-900 py-0.5 pl-3 pr-0.5 text-xs text-cave-100 shadow-2xl"
     >
       <span>Nouvelle version</span>

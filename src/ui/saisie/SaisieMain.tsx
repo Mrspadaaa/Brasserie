@@ -225,7 +225,9 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
     <div className="sai-c1">
       {sansPiece ? <span className="sai-nm ph fixe"><span>Remboursement de…</span></span> : !choisi || nomEdit
         ? <input ref={nomRef} aria-label="Nom, facultatif" placeholder={choisi ? (b.genre === 'rembt' && piece ? `Remboursement ${piece.finance?.vendor || piece.description}` : G.nomDefaut(jjmm(b.date))) : 'Pour quoi ?'} value={b.nom} enterKeyHint="done" autoComplete="off"
-          onChange={(e) => patch({ nom: e.target.value })} onBlur={() => setNomEdit(false)} />
+          onChange={(e) => patch({ nom: e.target.value })} onBlur={() => setNomEdit(false)}
+          // L-53 (M3-9) : Entrée valide le nom seul ; sans cela le formulaire partait (« −500,00 payé » sans toucher Payé).
+          onKeyDown={(e) => { if (e.key !== 'Enter' || e.nativeEvent.isComposing || e.keyCode === 229) return; e.preventDefault(); e.currentTarget.blur(); }} />
         : <button type="button" className={`sai-nm${b.nom ? '' : ' ph'}`} aria-label="Nom, facultatif" data-saisie-nom onPointerDown={garde} onClick={() => setNomEdit(true)}>
           <span>{b.nom || (b.genre === 'rembt' ? (piece ? `Remboursement ${piece.finance?.vendor || piece.description}` : 'Remboursement de…') : G.nomDefaut(jjmm(b.date)))}</span><Pencil size={14} /></button>}
       {sansPiece ? null : badge}

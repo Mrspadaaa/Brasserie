@@ -323,7 +323,12 @@ export const FirestoreRepo = {
     } finally { if (timer) clearTimeout(timer); }
   },
   syncStatus() {
+    // L-49 : ce qui retient « Enregistrement sur le serveur… » (lu par PersistenceStatus en data-attente, pour le diagnostic).
+    const pendingSources = [queuedWrites.length > 0 && 'file', inFlight.size > 0 && 'envoi', pendingDocuments.size > 0 && 'documents',
+      [...collectionState.entries()].filter(([, s]) => s.pending).map(([n]) => 'collection:' + n).join(' ') || false,
+      [...documentWrites.values()].some(s => s.status === 'queued' || s.status === 'pending') && 'ecritures'].filter((x): x is string => Boolean(x));
     return {
+      pendingSources,
       pending: queuedWrites.length > 0 || inFlight.size > 0 || pendingDocuments.size > 0 || [...collectionState.values()].some(s => s.pending) || [...documentWrites.values()].some(s => s.status === 'queued' || s.status === 'pending'),
       fromCache: collectionState.size === 0 || [...collectionState.values()].some(s => s.fromCache),
       refreshing: refreshing.size > 0 || financialState.loading,

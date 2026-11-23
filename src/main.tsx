@@ -4,6 +4,7 @@ import './index.css';
 import { initialiserTheme } from './theme/theme';
 import { precacherHorsLigne } from './services/precacheHorsLigne';
 import { BandeauMiseAJour } from './ui/BandeauMiseAJour';
+import { prendreVersionEnAttente } from './services/miseAJour';
 
 // Le thème est posé par index.html avant le premier rendu ; ceci le relit et suit un changement venu d'un autre onglet.
 initialiserTheme();
@@ -103,6 +104,11 @@ async function bootstrap() {
     root.render(<React.StrictMode><BrewPreview /></React.StrictMode>);
     return;
   }
+
+  // E-2 : une version arrivée pendant la dernière visite prend la main avant le premier rendu (sinon le rechargement resservait l'ancienne).
+  // Jamais bloquant : au plus 1 s pour la lire ; si la nouvelle version ne prend pas la main en 3 s, l'app démarre quand même.
+  const prise = await Promise.race([prendreVersionEnAttente().catch(() => false), new Promise<boolean>(r => setTimeout(() => r(false), 1000))]);
+  if (prise && await new Promise<boolean>(r => setTimeout(() => r(true), 3000))) console.warn('[L’Affinée] nouvelle version sans prise de main, démarrage');
 
   const [{ App }, { connectEmulators, initAppCheck }] = await Promise.all([
     import('./App'),
