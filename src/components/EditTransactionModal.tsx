@@ -2,7 +2,7 @@ import React, { useId, useRef, useState } from 'react';
 import { useStorageValue, useSyncedDraft } from '../hooks/useLiveData';
 import { NumberInput } from '../ui/NumberInput';
 import { Input } from '../ui/Input';
-import { Camera, ChevronDown, Copy, Check, Download, FileText, Folder, Lock, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, CalendarDays, Camera, ChevronDown, Copy, Check, Download, FileText, Folder, Lock, Undo2, X } from 'lucide-react';
 import { Transaction, FinanceCategory } from '../types';
 import { StorageService } from '../services/storage';
 import { FinanceService } from '../services/financeService';
@@ -11,14 +11,16 @@ import { DriveService } from '../services/driveService';
 import { ReceiptService } from '../services/receiptService';
 import { ModalShell } from '../ui/ModalShell';
 import { archiveIndex, isTransactionArchived } from '../domain/finance/archive';
-import { dateAffichee, isoDate, montantChf, sensDeCategorie, todayISO, toCents, transactionAmount, transactionDirection, validateFinanceTransaction } from '../domain/finance/ledger';
+import { isoDate, montantChf, todayISO, toCents, transactionAmount, transactionDirection, validateFinanceTransaction } from '../domain/finance/ledger';
 import { anneesCloses, baisseSousLePaye, choixPertinent, choixParDefaut, effetCorrection, erreurNouveauMontant, estMouvementPrive, payeNet, planCorrection, verrouMontant, type ChoixPaiement, type EtapeCorrection } from '../domain/finance/correctionMontant';
 import { amountOnly } from '../ui/finance/financeFormat';
 import { CATEGORY_LABELS } from '../ui/finance/FinanceForms';
 import { GROUPES, type GroupeId } from '../ui/finance/operations/groupes';
 import { RangeeApercu } from '../ui/finance/modifier/ApercuRangee';
 import { ChoixDate } from '../ui/ChoixDate';
-import { GENRES, METHODES, genreDe, jjmm, resumeReglement } from '../ui/saisie/modele';
+import { CATEGORIES_ACHAT, GENRES, METHODES, genreDe, jjmm, resumeReglement } from '../ui/saisie/modele';
+import { Ic, teinteGenre } from '../ui/saisie/SaisieMain';
+import { CategoryTag } from '../ui/finance/CategoryTag';
 import type { FinanceTransaction } from '../domain/finance/types';
 import { executerPlan, simulerPlan, verifierAvoir } from '../ui/finance/modifier/executerCorrection';
 import '../ui/finance/modifier/modifier.css';
@@ -74,6 +76,9 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const [noteSaisie, setNoteSaisie] = useState<string | null>(null);
   const [sansJustif, setSansJustif] = useState<boolean | null>(null);
   const [echeanceSaisie, setEcheanceSaisie] = useState<string | null>(null);
+  /** E40-4 : la frise de la date, ouverte au toucher de la pastille ; `dateTiree` : le jour que le doigt tient, montré en direct. */
+  const [dateOuverte, setDateOuverte] = useState(false);
+  const [dateTiree, setDateTiree] = useState<string | null>(null);
   const paiements = useStorageValue(lirePaiements);
   const clotures = useStorageValue(lireClotures);
   const archives = useStorageValue(lireArchives);
@@ -145,6 +150,9 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const revient = planLie?.recurrence ? RYTHME_MOTS[planLie.recurrence.frequency] : undefined;
   const rythmeActuel = planLie?.recurrence?.frequency ?? 'une';
   const jourMax = [todayISO(), isoDate(date) ?? ''].sort().at(-1) as string;
+  const iso = isoDate(date) ?? '';
+  const jourVu = dateTiree && /^\d{4}-\d{2}-\d{2}$/.test(dateTiree) ? dateTiree : iso;
+  const refund = genreSaisie.id === 'rembt';
 
   const currentDrivePath = DriveService.generateDrivePath({ ...draft, category, date, amountHT, amountTTC, proofNotes });
 
@@ -277,54 +285,42 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
             </div>
           )}
 
-          <label className="mod-f"><span className="mod-lib">Nom</span>
-            <Input type="text" name="tx_edit_label" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
-              required value={description} onChange={(e) => field('description', e.target.value)} className="mod-in" />
-          </label>
-
-          <details className="mod-fold" data-modifier-categorie>
-            <summary>{CATEGORY_LABELS[category] ?? category}{subcategory ? ` · ${subcategory}` : ''}<span>catégorie, précision <ChevronDown size={12} aria-hidden="true" /></span></summary>
-          <div className="mod-g2">
-            <label className="mod-f"><span className="mod-lib">Catégorie</span>
-              <span className="mod-sel">
-                <span className="mod-sq" style={{ background: gauche.fond }} aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={gauche.trait} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><path d={gauche.chemin} /></svg></span>
-                <select name="tx_edit_category" autoComplete="off" data-form-type="other" value={category} onChange={(e) => field('category', e.target.value as FinanceCategory)}>
-                  {/* AM-62 : seules les catégories du même sens que l'écriture d'origine ; une charge ne devient pas une recette. */}
-                  {sensDeCategorie(transaction.category) === 'charge' && <>
-                    <option value="brassage">Brassage</option>
-                    <option value="materiel">Matériel</option>
-                    <option value="nettoyage">Nettoyage</option>
-                    <option value="chargesFixes">Charges fixes</option>
-                    <option value="renovation">Local et travaux</option>
-                    <option value="divers">Autres frais</option>
-                  </>}
-                  {sensDeCategorie(transaction.category) === 'apport' && <option value="apports">Apports privés</option>}
-                  {sensDeCategorie(transaction.category) === 'recette' && <option value="recettes">Ventes</option>}
-                </select>
-                <ChevronDown className="mod-chev" size={14} aria-hidden="true" />
-              </span>
-            </label>
-            <label className="mod-f"><span className="mod-lib">Précision</span>
-              <Input type="text" name="tx_edit_subcategory" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
-                value={subcategory} onChange={(e) => field('subcategory', e.target.value)} placeholder="CIP, malt, outillage…" className="mod-in" />
-            </label>
-          </div>
-          </details>
-
-          <div className="mod-g2">
-            {/* E38-4 : la date de la saisie : une pastille, et la frise au toucher (le curseur), jamais un champ « JJ.MM.AAAA » */}
-            <div className="mod-f" data-modifier-date><span className="mod-lib">Date</span>
-              <ChoixDate saisie label="Date de l’opération" valeur={isoDate(date) ?? ''} vide={dateAffichee(date) || 'Date à poser'} max={jourMax} rangee="achats" onChange={(d) => { field('date', d); setSaveError(''); }} />
+          {/* E40-4 : la même feuille que la saisie : la bande « Ça sort / Ça rentre · sorte », la carte (nom, étiquette, date au curseur) et le grand montant.
+              `sai` apporte ses jetons (clair / cave) ; la sorte ne se change pas ici (sa nature fixe la TVA, le sens et le grand livre : on annule et on resaisit). */}
+          <div className="sai mod-sai" data-modifier-saisie>
+            <div className={`sai-sel ${refund ? 'neu' : sortant ? 'out' : 'in'}`} data-modifier-bande>
+              {refund ? <Undo2 size={16} aria-hidden="true" /> : sortant ? <ArrowUp size={16} aria-hidden="true" /> : <ArrowDown size={16} aria-hidden="true" />}
+              {refund ? 'Remboursement' : <>{sortant ? 'Ça sort' : 'Ça rentre'}<span className="g"><span style={{ color: teinteGenre(genreSaisie.id).seg, display: 'inline-flex' }}><Ic g={genreSaisie.id} size={18} /></span>{genreSaisie.nom}</span></>}
             </div>
-            <div className="mod-f">
-              <span className="mod-lib">{assujetti ? 'Montant HT' : 'Montant'}{change && !montantInvalide && <s className="mod-m">{amountOnly(ancienCents)}</s>}</span>
-              <span className="mod-mt" data-edite={change || undefined} data-verrou={verrou ? '' : undefined}>
-                {verrou ? <Lock size={14} aria-hidden="true" /> : null}
-                <span className="mod-pre">{assujetti ? 'HT' : 'sans TVA'}</span>
+            <div className={`sai-card${refund ? '' : sortant ? ' out' : ' in'}`} data-modifier-carte>
+              <div className="sai-c1">
+                <input aria-label="Nom" name="tx_edit_label" required value={description} enterKeyHint="done" autoComplete="off" autoCorrect="off" spellCheck={false}
+                  data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" onChange={(e) => field('description', e.target.value)} />
+                {prive ? <span className="finance-tag finance-tag-apports">Privé</span>
+                  : <CategoryTag category={category} libelle={genreSaisie.id === 'autrei' ? 'Autre entrée' : genreSaisie.id === 'impot' ? 'Impôts' : undefined} />}
+                {/* E38-4 : la date de la saisie : une pastille, et la frise au toucher (le curseur), jamais un champ « JJ.MM.AAAA » */}
+                <button type="button" className="sai-chip dt" data-modifier-date aria-expanded={dateOuverte} aria-label={`Date de l’opération : ${iso ? jjmm(iso, true) : 'à poser'}`}
+                  onClick={() => setDateOuverte(o => !o)}><CalendarDays size={14} aria-hidden="true" />{jourVu ? jjmm(jourVu) : 'Date à poser'}</button>
+              </div>
+              {dateOuverte && <div className="sai-date"><ChoixDate ouvert saisie label="Date de l’opération" valeur={iso} max={jourMax} rangee="achats"
+                onBrouillon={setDateTiree} onChange={(d) => { field('date', d); setDateTiree(null); setSaveError(''); setDateOuverte(false); }} /></div>}
+              <label className={`sai-amt ${refund ? '' : sortant ? 'out' : 'in'}`} data-modifier-montant data-edite={change || undefined} data-verrou={verrou ? '' : undefined}>
+                {verrou ? <Lock size={16} aria-hidden="true" /> : <span aria-hidden="true">{sortant ? '−' : '+'}</span>}
                 <NumberInput value={amountHT} disabled={!!verrou} onValue={(v) => { field('amountHT', v); setSaveError(''); }} pad={false} fractionDigits={2}
-                  aria-label="Montant (CHF)" aria-describedby={verrou ? `${titreId}-v` : undefined} className="mod-mt-in" />
-              </span>
+                  aria-label="Montant en CHF" aria-describedby={verrou ? `${titreId}-v` : undefined} />
+                <small>{assujetti ? 'CHF HT' : 'CHF'}</small>
+              </label>
+              {change && !montantInvalide && <p className="mod-avant">avant <s className="mod-m">{amountOnly(ancienCents)}</s></p>}
             </div>
+            {genreSaisie.id === 'achat' && <div className="sai-row" data-modifier-categorie>
+              {CATEGORIES_ACHAT.map(c => <button key={c.id} type="button" className="sai-chip" aria-pressed={category === c.id} data-saisie-categorie={c.id} onClick={() => field('category', c.id)}>{c.nom}</button>)}
+            </div>}
+            {/* la précision n'existe que pour un achat (« CIP, malt, outillage ») ; ailleurs elle est le nom de la sorte, que `genreDe` relit : on n'y touche pas */}
+            {genreSaisie.id === 'achat' && <details className="mod-fold" data-modifier-precision>
+              <summary>{subcategory ? `Précision · ${subcategory}` : 'Précision'}<span><ChevronDown size={12} aria-hidden="true" /></span></summary>
+              <Input type="text" name="tx_edit_subcategory" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
+                aria-label="Précision" value={subcategory} onChange={(e) => field('subcategory', e.target.value)} placeholder="CIP, malt, outillage…" className="mod-in" />
+            </details>}
           </div>
           {verrou && <p className="mod-pourquoi" id={`${titreId}-v`}>{verrou}</p>}
           {assujetti && (

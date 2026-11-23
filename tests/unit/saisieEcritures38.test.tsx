@@ -58,11 +58,18 @@ describe('E38-4 : Modifier reprend les blocs de la saisie', () => {
     };
     render(<EditTransactionModal isOpen transaction={piece as never} onClose={() => undefined} onSave={() => undefined} />);
     expect(document.querySelector('input[name="tx_edit_entry_date"]')).toBeNull();
+    /* E40-4 : la date est la pastille de la carte (comme la saisie) ; la frise s'ouvre au toucher */
     const date = document.querySelector('[data-modifier-date]');
-    expect(date?.querySelector('button')).toBeTruthy();
+    expect(date?.tagName).toBe('BUTTON');
+    expect(document.querySelector('[data-modifier-saisie] [data-modifier-bande]')?.textContent).toContain('Ça sort');
+    expect(document.querySelector('[data-modifier-montant]')?.textContent).toContain('CHF');
+    expect(document.body.textContent).not.toContain('sans TVA');
     expect(document.querySelectorAll('[data-modifier-revient] .mod-seg button')).toHaveLength(4);
     expect(document.querySelector('[data-modifier-revient] [aria-pressed="true"]')?.textContent).toBe('1×');
-    expect(document.querySelector('[data-modifier-categorie]')?.tagName).toBe('DETAILS');
-    expect(document.querySelector('[data-modifier-categorie]')?.hasAttribute('open')).toBe(false);
+    /* l'achat choisit sa catégorie en pastilles (comme la saisie), la précision reste repliée ; plus de « catégorie, précision » en champs */
+    expect(document.querySelectorAll('[data-modifier-categorie] [data-saisie-categorie]').length).toBeGreaterThanOrEqual(4);
+    expect(document.querySelector('[data-modifier-categorie] [aria-pressed="true"]')?.getAttribute('data-saisie-categorie')).toBe('brassage');
+    expect(document.querySelector('[data-modifier-precision]')?.hasAttribute('open')).toBe(false);
+    expect(document.querySelector('select[name="tx_edit_category"]')).toBeNull();
   });
 });

@@ -1,5 +1,5 @@
 import type { Batch, StockItem } from '../../types';
-import type { FinanceTransaction, FinancialAsset, FinancialPayment, FinancialPlan, FinancialProfile } from './types';
+import type { FinanceKind, FinanceTransaction, FinancialAsset, FinancialPayment, FinancialPlan, FinancialProfile } from './types';
 import { estimerBrassinsPlanifies, planBrewBatchId, type ReglagesBrewForecast, budgetsDeRecette, type BudgetRepris } from './brewForecast';
 import type { CashCause } from './ledger';
 import { formatCHF, isoDate, isActiveTransaction, paymentState, planInvoiceAllocation, summarizeLedger, todayISO, transactionAmount, transactionDirection, transactionKind } from './ledger';
@@ -194,7 +194,10 @@ function prevoirSansReprise(input: { transactions: FinanceTransaction[]; payment
     if (isUpgradePlan(plan) && input.includeEquipmentProjects === false) continue;
     if (isUpgradePlan(plan) && upgradeReadiness(plan).length) { noter(`Projet à compléter : ${plan.title}.`, { kind: 'plan', planId: plan.id }, plan.title, 'projet de matériel à compléter (date ou budget) : écarté de la prévision'); continue; }
     if (!Number.isSafeInteger(plan.amountCents) || plan.amountCents < 0 || !isoDate(plan.date)) { noter(`Prévision invalide : ${plan.title}.`, { kind: 'plan', planId: plan.id }, plan.title, 'date ou montant illisible : la prévision n’est pas comptée'); continue; }
-    const linked = active.filter(t => t.finance?.planId === plan.id && transactionKind(t) === (plan.direction === 'out' ? 'expense' : 'income'));
+    /* E40-1 : une écriture liée est du sens de la prévision. Un apport (`contribution`, entrée) et un prélèvement (`withdrawal`, sortie) reviennent comme une vente ou une charge :
+       sans eux, l'occurrence déjà saisie restait « à payer » aujourd'hui. */
+    const sortes: FinanceKind[] = plan.direction === 'out' ? ['expense', 'withdrawal'] : ['income', 'contribution'];
+    const linked = active.filter(t => t.finance?.planId === plan.id && sortes.includes(transactionKind(t)));
     if (plan.recurrence && linked.some(t => !t.finance?.occurrenceId)) {
       noter(`Récurrence « ${plan.title} » : confirmer l’échéance des factures liées. Leur mois sert au rapprochement provisoire ; les échéances suivantes restent prévues.`, { kind: 'plan', planId: plan.id }, plan.title, 'récurrence : confirme l’échéance des factures liées');
     }

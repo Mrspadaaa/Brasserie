@@ -47,13 +47,23 @@ export function horsVentesDe(tx: FinanceTransaction | undefined): ChoseCalendrie
   return transactionKind(tx) === 'contribution' ? 'apport' : estAutreEntree(tx) ? 'autre-entree' : undefined;
 }
 
-/** Une pièce à encaisser que la prévision attend (apport ou autre entrée promis, pas encore reçu) reste « hors ventes » : sa chose le dit aussi. */
+/** E40-3 : un prélèvement privé (« Pour moi ») : hors des totaux des rangées de l'activité. */
+export const estPrive = (tx: FinanceTransaction | undefined): boolean => !!tx && transactionKind(tx) === 'withdrawal';
+
+/**
+ * Une pièce à encaisser que la prévision attend (apport ou autre entrée promis, pas encore reçu) reste « hors ventes » : sa chose le dit aussi.
+ * E40-2, E40-3 : DEUX chemins mènent à une chose d'argent. La pièce attendue (`facture`, id de la pièce) et l'échéance d'une écriture qui revient (`plan`, id de la
+ * prévision) ; seul le premier était marqué, d'où l'apport récurrent compté dans « +15 prévu ». Pour un plan, la pièce est celle qu'il a créée (`finance.planId`).
+ */
 export function marquerHorsVentes(choses: readonly ChoseCalendrier[], transactions: readonly FinanceTransaction[]): ChoseCalendrier[] {
   const pieces = new Map(transactions.map(t => [t.id, t] as const));
+  const dePlan = new Map<string, FinanceTransaction>();
+  for (const t of transactions) if (t.finance?.planId && isActiveTransaction(t) && !dePlan.has(t.finance.planId)) dePlan.set(t.finance.planId, t);
   return choses.map(c => {
-    if (c.rangee !== 'ventes' || c.source.genre !== 'facture' || c.horsVentes) return c;
-    const h = horsVentesDe(pieces.get(c.source.id));
-    return h ? { ...c, horsVentes: h } : c;
+    if (c.horsVentes || c.prive || (c.source.genre !== 'facture' && c.source.genre !== 'plan')) return c;
+    const tx = c.source.genre === 'facture' ? pieces.get(c.source.id) : dePlan.get(c.source.id);
+    if (c.rangee === 'ventes') { const h = horsVentesDe(tx); return h ? { ...c, horsVentes: h } : c; }
+    return c.rangee === 'papiers' && estPrive(tx) ? { ...c, prive: true as const } : c;
   });
 }
 
@@ -88,7 +98,7 @@ export function chosesPayees(e: EntreesPaiements): ChoseCalendrier[] {
     const quoi = apport ? 'Apport reçu' : autre ? 'Entrée reçue' : prive ? 'Prélèvement fait' : entre ? 'Vente encaissée' : 'Paiement fait';
     return [{
       id: `paiement-${premier.id}`, rangee, titre: tx.description || tx.id, debut: jour, fin: jour, centimes: entre ? cents : -cents, detail,
-      ...(horsVentesDe(tx) ? { horsVentes: horsVentesDe(tx) } : {}),
+      ...(horsVentesDe(tx) ? { horsVentes: horsVentesDe(tx) } : {}), ...(prive ? { prive: true as const } : {}),
       source: { genre: 'facture', id: tx.id }, ouvre: { ecran: 'piece', id: tx.id },
       deplacable: { raison: `${quoi} : sa date est un fait. Elle se corrige dans la pièce (Finances › Opérations).` }
     }];

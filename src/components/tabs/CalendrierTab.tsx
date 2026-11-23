@@ -476,7 +476,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const surToucher = useCallback((chose: ChoseCalendrier, _cible: HTMLElement) => {
     setMenu(null);
     /* E47, CRITIQUE-2 n° 38 : toucher une proposition l'accepte */
-    if (chose.proposition === 'echeance') { onOpenFinances(); return; }
+    /* E40-5 : toucher la bande d'une écriture qui revient (Apport, Pour moi, Loyer) ouvre SA fiche (Ouvrir, Lier…), comme la Vente ; « Ouvrir » mène aux Prévisions */
     if (chose.proposition === 'brassin-habituel') {
       const b = brouillonDepuisProposition(chose);
       if (b) { setMessage(null); setFeuille({ mode: 'ajouter', initial: b, sansPlusDeDetails: true, cle: ++compteur.current }); }

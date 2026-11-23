@@ -159,7 +159,8 @@ export const CLASSE_TEINTE: Record<Rangee, string> = {
  */
 export function nomAccessible(chose: ChoseCalendrier): string {
   const jour = chose.debut ? `${jourLisible(chose.debut)}, ${etiquetteS(chose.debut)}` : 'sans date';
-  const etat = chose.proposition === 'echeance' ? ', à payer' : chose.prevue === 'recevoir' ? ', à recevoir' : chose.prevue ? ', à payer' : chose.proposition || chose.probable ? ', proposé' : '';
+  /* E40-1 : une échéance qui revient est dite selon son sens, jamais « à payer » pour un apport ou une rentrée (un prélèvement privé : « prévu ») */
+  const etat = chose.proposition === 'echeance' ? (chose.prive ? ', prévu' : chose.horsVentes || (chose.centimes ?? 0) > 0 ? ', à recevoir' : ', à payer') : chose.prevue === 'recevoir' ? ', à recevoir' : chose.prevue ? ', à payer' : chose.proposition || chose.probable ? ', proposé' : '';
   return `${chose.titre}${etat}, ${jour}`;
 }
 

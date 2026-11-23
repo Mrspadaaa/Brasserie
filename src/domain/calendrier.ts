@@ -399,6 +399,8 @@ export interface ChoseCalendrier {
    * mais la pastille ne la compte pas dans le total des ventes et ne la dit jamais « à encaisser » (reçue, elle l'est déjà).
    */
   horsVentes?: 'apport' | 'autre-entree';
+  /** E40-3 : un prélèvement privé (« Pour moi ») : visible à son jour dans Papiers, mais jamais compté dans le total de la rangée (« un prélèvement n'est pas une charge », comme Mon mois). */
+  prive?: true;
   /** E35-9 : une pièce encore à payer (`payer`) ou à recevoir (`recevoir`) à son échéance : prévue, jamais dessinée comme un paiement fait. */
   prevue?: 'payer' | 'recevoir';
   /**

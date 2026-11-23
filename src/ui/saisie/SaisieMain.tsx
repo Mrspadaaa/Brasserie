@@ -43,7 +43,7 @@ const TEINTE: Record<string, { fond: string; trait: string; seg: string }> = {
   renovation: { fond: '#564925', trait: '#F4E5B9', seg: '#D2B356' }, impot: { fond: '#4E2A22', trait: '#F4C6B9', seg: '#D27356' },
   divers: { fond: '#2C2521', trait: '#D8CEC5', seg: '#9A8A7E' }
 };
-const teinteGenre = (g: GenreId) => TEINTE[g === 'impot' ? 'impot' : GENRES[g].category];
+export const teinteGenre = (g: GenreId) => TEINTE[g === 'impot' ? 'impot' : GENRES[g].category];
 const RYTHMES: Array<{ id: Rythme; nom: string }> = [{ id: 'une', nom: '1×' }, { id: 'monthly', nom: 'Mois' }, { id: 'quarterly', nom: 'Trim.' }, { id: 'yearly', nom: 'Année' }];
 const RYTHME_LONG: Record<Rythme, string> = { une: 'une fois', monthly: 'chaque mois', quarterly: 'chaque trimestre', yearly: 'chaque année' };
 const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
@@ -55,7 +55,8 @@ const TVA = [0, 0.026, 0.038, 0.081];
 function Barres() {
   return <svg width="20" height="18" viewBox="0 0 20 18" aria-hidden="true"><rect x="0" y="2" width="4" height="16" rx="1" fill="#6E9B5B" /><rect x="5" y="7" width="4" height="11" rx="1" fill="#9856D2" /><rect x="10" y="10" width="4" height="8" rx="1" fill="#D2B356" /><rect x="15" y="14" width="4" height="4" rx="1" fill="#56C1D2" /></svg>;
 }
-function Ic({ g, size = 16 }: { g: GenreId; size?: number }) { const I = ICONE[g]; return <I size={size} strokeWidth={2} />; }
+/** E40-4 : le picto du genre, réemployé par Modifier (la même bande que la saisie). */
+export function Ic({ g, size = 16 }: { g: GenreId; size?: number }) { const I = ICONE[g]; return <I size={size} strokeWidth={2} />; }
 
 /** Une pastille de date (« 22.11 ») ; touchée, la frise partagée du Calendrier s'ouvre dessous (GESTE-DATE-PARTOUT). */
 function useDate() {
@@ -114,7 +115,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const cents = lireMontant(brut);
   const sens = choisi ? sensDe(b, donnees.txs) : null;
   const piece = b.pieceId ? donnees.txs.find((t) => t.id === b.pieceId) : undefined;
-  const pieceInfo = useMemo(() => (b.pieceId ? piecesRemboursables(donnees.txs, '', 500).find((p) => p.id === b.pieceId) : undefined), [b.pieceId, donnees.txs]);
+  const pieceInfo = useMemo(() => (b.pieceId ? piecesRemboursables(donnees.txs, '', 500, false).find((p) => p.id === b.pieceId) : undefined), [b.pieceId, donnees.txs]);
   const habs = useMemo(() => habituels(donnees.txs, donnees.plans, aujourdhui), [donnees, aujourdhui]);
   const noms = useMemo(() => (choisi && G.qui ? derniersNoms(donnees.txs, b.genre) : []), [choisi, G.qui, donnees.txs, b.genre]);
   const clients = useMemo(() => (choisi && G.qui === 'Client' ? StorageService.getClients() : []), [choisi, G.qui, version]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -356,8 +357,9 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
           <label className="sai-q"><Search size={16} /><input inputMode="search" aria-label="Chercher une pièce" placeholder="Chercher un nom, un montant" value={recherche} onChange={(e) => setRecherche(e.target.value)} /></label>
           <div className="sai-pcs">{pieces.length ? pieces.map((p) => {
             const t = TEINTE[p.category] ?? TEINTE.divers;
-            return <button key={p.id} type="button" className="sai-pc" data-saisie-piece={p.id} onClick={() => choisirPiece(p.id)}>
-              <span className="sai-ic" style={{ background: t.fond, color: t.trait }}>{p.sens === 'out' ? <ShoppingCart size={16} /> : <Tag size={16} />}</span>
+            /* E40-7 : le picto de la sorte de la pièce (maison, mallette, %, flèches…), jamais le chariot d'Achat pour tout ce qui sort */
+            return <button key={p.id} type="button" className="sai-pc" data-saisie-piece={p.id} data-saisie-piece-genre={p.genre} onClick={() => choisirPiece(p.id)}>
+              <span className="sai-ic" style={{ background: t.fond, color: t.trait }}><Ic g={p.genre} /></span>
               <span><b>{p.nom}</b><small>{p.sous}</small></span><span className="n">{signe(p.sens, p.cents)}</span>
               <span className={`sai-dir ${p.sens === 'out' ? 'in' : 'out'}`}>{p.sens === 'out' ? '↓ rentre' : '↑ sort'}</span></button>;
           }) : <p className="sai-vide">{recherche ? 'Aucune pièce ne correspond.' : 'Aucune pièce à rembourser.'}</p>}</div>

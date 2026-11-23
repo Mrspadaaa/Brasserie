@@ -316,9 +316,14 @@ export function resumeReglement(tx: FinanceTransaction, paiements: FinancialPaym
   return { etat: 'inconnu' };
 }
 
-export interface PieceRemboursable { id: string; nom: string; sous: string; date: string; cents: number; reste: number; sens: 'in' | 'out'; category: FinanceCategory }
-/** Les pièces qu'un remboursement peut viser (achats et ventes actifs), de la plus récente à la plus ancienne ; « reste » = montant moins ses avoirs. */
-export function piecesRemboursables(transactions: FinanceTransaction[], recherche = '', max = 30): PieceRemboursable[] {
+export interface PieceRemboursable { id: string; nom: string; sous: string; date: string; cents: number; reste: number; sens: 'in' | 'out'; category: FinanceCategory; genre: GenreId }
+/**
+ * Les pièces qu'un remboursement peut viser (achats et ventes actifs), de la plus récente à la plus ancienne ; « reste » = montant moins ses avoirs.
+ * E40-6 : on ne rembourse que ce qui est payé ou encaissé : une pièce encore à payer, à recevoir ou payée en partie n'est pas proposée (`payeesSeulement`, vrai par défaut ;
+ * faux pour relire une pièce déjà choisie). Une ancienne pièce sans statut de règlement reste proposée : son statut n'est pas « à payer ».
+ * E40-7 : chaque pièce dit sa sorte (`genre`, le picto) et une sous-ligne utile : la sorte, le jour, et le libellé seulement s'il diffère du nom.
+ */
+export function piecesRemboursables(transactions: FinanceTransaction[], recherche = '', max = 30, payeesSeulement = true): PieceRemboursable[] {
   const q = recherche.trim().toLowerCase();
   const avoirs = new Map<string, number>();
   for (const t of actives(transactions)) if (transactionKind(t) === 'refund' && t.finance?.refundOfId) avoirs.set(t.finance.refundOfId, (avoirs.get(t.finance.refundOfId) ?? 0) + transactionAmount(t));
@@ -328,9 +333,14 @@ export function piecesRemboursables(transactions: FinanceTransaction[], recherch
     if (k !== 'expense' && k !== 'income') continue;
     const cents = transactionAmount(t), reste = cents - (avoirs.get(t.id) ?? 0);
     if (reste <= 0) continue;
+    const statut = t.finance?.paymentStatus;
+    if (payeesSeulement && statut && statut !== 'paid') continue;
     const nom = t.finance?.vendor || t.description;
     if (q && !`${nom} ${t.description} ${chf(cents)}`.toLowerCase().includes(q)) continue;
-    out.push({ id: t.id, nom, sous: `${jjmm(t.date)} · ${t.description}`, date: t.date, cents, reste, sens: transactionDirection(t, transactions), category: t.category });
+    const genre = genreDe(t);
+    const sorte = genre === 'autrei' ? 'Autre entrée' : genre === 'autreo' ? 'Autre sortie' : GENRES[genre].nom;
+    const sous = [sorte,jjmm(t.date), t.description.trim() && t.description.trim() !== nom.trim() ? t.description.trim() : ''].filter(Boolean).join(' · ');
+    out.push({ id: t.id, nom, sous, date: t.date, cents, reste, sens: transactionDirection(t, transactions), category: t.category, genre });
     if (out.length >= max) break;
   }
   return out;

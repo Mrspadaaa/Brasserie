@@ -126,3 +126,12 @@
 .mod-seg button:first-child { border-left:0; }
 .mod-seg button[aria-pressed="true"] { background:var(--mod-t1); color:rgb(var(--cave-950)); }
 .mod-seg button:disabled { cursor:default; }
+
+/* E40-4 : la feuille de la saisie dans Modifier (bande « Ça sort / Ça rentre », carte, grand montant) ; `.sai` apporte ses jetons, ici seulement l'ancrage dans la feuille. */
+.mod .mod-sai { flex:none; width:auto; min-height:0; background:transparent; gap:10px; margin-top:6px; }
+.mod .mod-sai .sai-card { border-radius:14px; }
+.mod .mod-sai .sai-amt[data-verrou] { opacity:.7; }
+.mod .mod-sai .sai-amt input { width:auto; }
+.mod .mod-avant { margin:0 0 2px; font-size:12px; color:var(--sec); }
+.mod .mod-sai .mod-fold { margin:0; }
+.mod .mod-sai .mod-fold summary { color:var(--sec); }

@@ -614,7 +614,9 @@ export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], c
   /* E35-2/3 (23.11 soir) : un apport, une autre entrée ne sont pas des ventes : ni dans le total ni dits « à encaisser » (reçus, ils le sont déjà) ; la pastille les dit « reçu » */
   const recues = fermes.filter(c => c.horsVentes && c.centimes !== undefined && c.id.startsWith('paiement-'));
   const attendues = fermes.filter(c => c.horsVentes && c.centimes !== undefined && !c.id.startsWith('paiement-'));
-  const comptees = fermes.filter(c => !(c.horsCourbe && c.centimes !== undefined) && !c.horsVentes);
+  /* E40-3 : un prélèvement privé (« Pour moi ») reste visible, mais n'est pas une charge de l'activité : hors du total de Papiers, dit à part */
+  const privees = fermes.filter(c => c.prive && c.centimes !== undefined);
+  const comptees = fermes.filter(c => !(c.horsCourbe && c.centimes !== undefined) && !c.horsVentes && !c.prive);
   // CHD-7 : des mois sur deux années disent leur année (« oct. 2026–oct. 2027 »), jamais « oct.–oct. »
   const c0 = colonnes[0], cN = colonnes[colonnes.length - 1];
   const enSemaines = !!c0 && /^S\d/.test(c0.etiquette);
@@ -679,6 +681,7 @@ export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], c
   if (probables) morceaux.push(`${probables} probable${probables > 1 ? 's' : ''}${probable !== null ? ` ${francsSignes(probable)}` : ''}`);
   const recu = recues.length ? recues.reduce((s, c) => s + (c.centimes as number), 0) : null;
   if (attendues.length) morceaux.push(`${francsSignes(attendues.reduce((s, c) => s + (c.centimes as number), 0))} attendu, hors ventes`);
+  if (privees.length) morceaux.push(`${francsSignes(privees.reduce((s, c) => s + (c.centimes as number), 0))} privé, hors total`);
   if (recu !== null) morceaux.push(`${francsSignes(recu)} reçu, hors ventes (${recues.some(c => c.horsVentes === 'apport') ? 'apport' : 'autre entrée'})`);
   /* le nombre dit ce qu'on voit : toutes les choses de la fenêtre, probables comprises (une étiquette « 4 » devant 5 barres se contredit) ;
      jamais un chiffre seul (« 1 ») : « 1 chose », ou « coût à venir » quand c'est le coût qui manque */
