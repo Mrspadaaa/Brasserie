@@ -631,8 +631,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
       return;
     }
     if (chose.proposition === 'vente' && chose.source.genre === 'plan') { setSelectionId(null); void ecrire(accepterVente(chose, ctxRef.current), false, chose.id); return; }
-    /* E37, CRITIQUE-2 n° 39 : toucher ouvre la source. Une facture : sa pièce, où « Payé » se joue ; la TVA et la clôture : leur écran */
-    if (chose.source.genre === 'facture' && onOpenPiece) { setSelectionId(null); onOpenPiece(chose.source.id); return; }
+    /* E37, CRITIQUE-2 n° 39 : toucher ouvre la source. Une facture : sa pièce, où « Payé » se joue ; la TVA et la clôture : leur écran.
+       CAL-VENTE-FICHE (23.11) : une vente ouvre la fiche du Calendrier, comme un brassin ; sa pièce s'ouvre par « Ouvrir la pièce ». */
+    if (chose.source.genre === 'facture' && chose.rangee !== 'ventes' && onOpenPiece) { setSelectionId(null); onOpenPiece(chose.source.id); return; }
     if (chose.source.genre === 'plan' && chose.source.origine === 'tax') { setSelectionId(null); onOpenFinances(); return; }
     setMessage(null);
     setSelectionId(id => (id === chose.id ? null : chose.id));
