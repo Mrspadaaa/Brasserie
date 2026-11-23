@@ -36,6 +36,21 @@ export function variation(courbe: readonly SoldeSemaine[], i: number): number | 
   return s && s.variation !== 0 ? s.variation : null;
 }
 
+const LARGEUR_AUJ = 48;
+/** CAL-AUJOURDHUI-COURBE : où dessiner aujourd'hui : son x dans la vue, ou le bord vers lequel il se trouve. */
+export function repereAujourdhui(courbe: readonly SoldeSemaine[], g: { x: (i: number) => number }, largeur: number, aujourdhui?: string): { cote: 'dans'; x: number } | { cote: 'gauche' | 'droite' } | null {
+  if (!aujourdhui || !courbe.length || !/^\d{4}-\d{2}-\d{2}/.test(aujourdhui)) return null;
+  const t = Date.parse(`${aujourdhui.slice(0, 10)}T00:00:00Z`), j = (new Date(t).getUTCDay() + 6) % 7;
+  const lundi = new Date(t - j * 864e5).toISOString().slice(0, 10);
+  const i = courbe.findIndex(s => s.lundi === lundi);
+  if (i >= 0) {
+    const x = g.x(i) + ((j + 0.5) / 7) * (g.x(i + 1) - g.x(i));
+    if (x >= 0 && x <= largeur) return { cote: 'dans', x };
+    return { cote: x < 0 ? 'gauche' : 'droite' };
+  }
+  return { cote: lundi < courbe[0].lundi ? 'gauche' : 'droite' };
+}
+
 /** CAL-PASSE : l'index d'aujourd'hui dans la courbe (le passé la précède : `courbe[0]` n'est plus aujourd'hui). */
 export const aujourdhuiDe = (courbe: readonly SoldeSemaine[]): number => indexAujourdhui(courbe);
 
@@ -473,6 +488,8 @@ export interface CourbeProps {
   mise?: MisePlacee | null;
   /** Les mois sous la courbe ; `false` dans l'année, où la bande des 12 mois est la seule échelle (D-168, CRITIQUE-3 n° 11). */
   mois?: boolean;
+  /** CAL-AUJOURDHUI-COURBE (23.11) : le jour d'aujourd'hui (ISO) : un trait sur la courbe à sa date, ou une flèche au bord vers lui. */
+  aujourdhui?: string;
   /** L-60 (T11-14) : la fenêtre touche la butée du passé : le trait « début » dit que rien n'existe avant (sinon une courbe vide, sans repère). */
   debutDonnees?: boolean;
   /** Les choses étoilées, sur leur marche (« ★ Hotte −900 »). */
@@ -577,7 +594,7 @@ export function moisHorsReserves(
   return sortie;
 }
 
-export function Courbe({ debutDonnees = false, courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false, abscisses, alignee = !!abscisses, creuxIndex, rangeeHaute, plate = false }: CourbeProps) {
+export function Courbe({ aujourdhui, debutDonnees = false, courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false, abscisses, alignee = !!abscisses, creuxIndex, rangeeHaute, plate = false }: CourbeProps) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   // La police réelle arrive après le premier rendu : les noms se replacent avec ses vraies largeurs.
   const [, setPolice] = useState(0);
@@ -627,7 +644,11 @@ export function Courbe({ debutDonnees = false, courbe, largeur, hauteur, curseur
   const boitesMois = mois.map(m => ({ l: m.x - 8, r: m.x + largeurTexte(m.texte) + 8, t: yMois - HAUT_RENDU, b: yMois + BAS_RENDU + 2 }));
   // Un nom peut se poser dans la rangée des mois, entre deux mois (z2s « Six fûts inox −1 080 », w3s « Festival +2 450 »).
   const y0 = g.y(0);
-  const exclusions = [...obstaclesCourbe(g, cadre, creux), ...obstaclesZero(g, largeur), ...boitesMois, ...reservesHaut, ...(debutDonnees ? [{ l: 0, r: 40, t: g.haut, b: g.haut + 14 }] : [])];
+  /* CAL-AUJOURDHUI-COURBE (« on voit plus quel moment on est sur le graph ») : le trait d'aujourd'hui à son jour dans sa semaine ; hors de la vue,
+     « ‹ auj. » ou « auj. › » au pied du bord vers lui */
+  const auj = repereAujourdhui(courbe, g, largeur, aujourdhui);
+  const boiteAuj = auj && auj.cote !== 'dans' ? [{ l: auj.cote === 'gauche' ? 0 : largeur - LARGEUR_AUJ, r: auj.cote === 'gauche' ? LARGEUR_AUJ : largeur, t: g.bas - 16, b: g.bas }] : [];
+  const exclusions = [...obstaclesCourbe(g, cadre, creux), ...obstaclesZero(g, largeur), ...boitesMois, ...reservesHaut, ...boiteAuj, ...(debutDonnees ? [{ l: 0, r: 40, t: g.haut, b: g.haut + 14 }] : [])];
   const noms = placerNoms(courbe, g, maxNoms(largeur), exclusions, mise, etoiles, [yMois]);
   // CHV-17 : rien de nommé à montrer : le niveau du solde, au milieu du cadre (la semaine du milieu de la fenêtre)
   const iNiveau = Math.max(0, Math.min(n - 1, cadre ? cadre.index + Math.floor(cadre.nombre / 2) : n - 1));
@@ -670,6 +691,9 @@ export function Courbe({ debutDonnees = false, courbe, largeur, hauteur, curseur
             <text className="ent-debut-l" x={g.x(0) + 5} y={g.haut + 10}>début</text>
           </g>
         )}
+        {auj && (auj.cote === 'dans'
+          ? <g className="ent-auj" data-aujourdhui="dans"><title>Aujourd’hui</title><line x1={auj.x} x2={auj.x} y1={g.haut} y2={g.bas} /><path d={`M${(auj.x - 5).toFixed(1)} ${g.haut}h10l-5 6z`} /></g>
+          : <g className="ent-auj" data-aujourdhui={auj.cote}><title>Aujourd’hui</title><text className="ent-auj-l" x={auj.cote === 'gauche' ? 2 : largeur - 2} y={g.bas - 3} textAnchor={auj.cote === 'gauche' ? 'start' : 'end'}>{auj.cote === 'gauche' ? '‹ auj.' : 'auj. ›'}</text></g>)}
         <path className="ent-caisse" d={escalier(caisses, g)} />
         <path className="ent-libre" d={escalier(libres, g)} />
         {marques.map(m => (

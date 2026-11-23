@@ -216,6 +216,10 @@
 /* D432 : sur l'axe de la courbe, les semaines hors du cadre en gris dans les marges */
 /* gris par la couleur, pas l'opacité (axe color-contrast : 0,45 donnait 1,9:1) : 92 % du gris vers le fond tient 4,5:1 dans les deux thèmes
    (clair ≈ 4,8:1, sombre ≈ 5:1) ; le poids 400 contre 600 dit « hors du cadre » */
+/* CAL-AUJOURDHUI-COURBE : le trait d'aujourd'hui (le bleu de la semaine courante du calendrier), ou « ‹ auj. » au bord */
+.ent-auj line { stroke: var(--ent-fin); stroke-width: 2; }
+.ent-auj path { fill: var(--ent-fin); }
+.ent-auj-l { font-size: 14px; font-weight: 700; fill: var(--ent-fin); paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 3px; }
 /* CAL-GRAIN-SUIT-DUREE : les jours de la semaine, chacun centré sur son jour de l'axe (BandeSemaines, joursDeCellule) */
 .ent-bd-js { position: relative; display: block; align-self: stretch; height: 20px; }
 .ent-bd-j { position: absolute; top: 0; transform: translateX(-50%); font-size: 14px; font-weight: 600; line-height: 20px; color: var(--ent-mut); white-space: nowrap; font-variant-numeric: tabular-nums; }
