@@ -101,6 +101,12 @@ describe("modele2 : un nom d'année ne se pose pas sous « ‹ auj. »", () => {
     const noms = periodesBande(sem, a, 'mois', col, W_ETIQ, 'gauche').noms;
     expect(noms.some((n) => /^(2027|’27)$/.test(n.texte)), noms.map((n) => n.texte).join(' ')).toBe(true);
   });
+  it('cadre du 18 juin 2029 (130 sem., 2,5 ans, un mois sur trois) : « 2029 » reste, l\'initiale qui la touche se tait', () => {
+    const { sem, a, col } = axe('2029-06-18', 130);
+    const noms = periodesBande(sem, a, 'mois', col, W_ETIQ, 'gauche').noms;
+    expect(noms.some((n) => /^(2029|’29)$/.test(n.texte)), noms.map((n) => n.texte).join(' ')).toBe(true);
+    for (const n of noms) expect(n.x, n.texte).toBeGreaterThanOrEqual(MARGE_AUJ);
+  });
   it("propriété : sous « ‹ auj. » (gauche) ou « auj. › » (droite), aucun nom n'est posé", () => {
     fc.assert(fc.property(fc.integer({ min: 14, max: 120 }), fc.integer({ min: 0, max: 200 }), fc.constantFrom<'gauche' | 'droite'>('gauche', 'droite'), (n, decalSem, cote) => {
       const { sem, a, col } = axe(plusSemaines('2026-11-23', decalSem), n);

@@ -265,7 +265,8 @@ export function periodesBande(semaines: readonly SemaineBande[], abscisses: read
       if (texte.length > 1) {
         while (noms.length && touche(noms[noms.length - 1]) && noms[noms.length - 1].texte.length === 1) noms.pop();
         if (noms.length && touche(noms[noms.length - 1])) { if (saut > 1 && noms.length === 1 && l0 < gv) noms.pop(); else continue; }
-      } else if (saut > 1 && noms.length === 1 && l0 < gv) noms.pop(); else continue;
+      /* une initiale ne chasse jamais une année : « 2029 » posée au bord visible reste, l'initiale qui la touche se tait (I6, graine 4444, 2,5 ans) */
+      } else if (saut > 1 && noms.length === 1 && l0 < gv && noms[0].texte.length === 1) noms.pop(); else continue;
     }
     noms.push({ k, texte, x, decal: x - (a[k] + a[k + 1]) / 2, periode: pas === 'mois' ? d.slice(0, 7) : d.slice(0, 4) });
     if (noms.length === 1) l0 = x0;
