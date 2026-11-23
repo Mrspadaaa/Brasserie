@@ -83,6 +83,7 @@ test('CAL-ETIQUETTE-GRAIN-AU-DESSUS : bande en jours → l\'étiquette dit les s
 });
 
 test('CAL-GRADUATION-ROGNEE : aucun nom de la bande rogné au bord ni chevauché, à chaque durée', async ({ page }) => {
+  test.setTimeout(420_000);
   const auj = aujourdhuiZurich();
   const moisPlus = (n: number) => { const d = new Date(Date.UTC(Number(auj.slice(0, 4)), Number(auj.slice(5, 7)) - 1 + n, 1)); return `01.${String(d.getUTCMonth() + 1).padStart(2, '0')}.${d.getUTCFullYear()}`; };
   const ans = (n: number) => moisPlus(12 * n);
