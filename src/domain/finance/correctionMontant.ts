@@ -22,7 +22,7 @@ export type ChoixPaiement = 'suit' | 'reste' | 'avoir';
 export type EtapeCorrection =
   | { type: 'contre'; paiementId: string }
   | { type: 'montant'; cents: number }
-  /** `date` : celle du dernier paiement inversé pour une baisse (une correction n'est pas un nouveau virement) ; absente pour une hausse (le complément se paie aujourd'hui). */
+  /** `date` : celle du dernier paiement inversé pour une baisse, celle du dernier paiement vivant pour une hausse (une correction n'est pas un nouveau virement, E38-3) ; absente sans paiement connu. */
   | { type: 'paiement'; cents: number; direction: 'in' | 'out'; method: FinancialPayment['method']; date?: string }
   /** L'excédent versé, à recevoir (`direction: 'in'` pour une dépense) : un avoir `refund` lié à la pièce, par le mécanisme d'avoir existant, non encore encaissé. */
   | { type: 'avoir'; cents: number; direction: 'in' | 'out' };
@@ -96,7 +96,9 @@ export function planCorrection(piece: Transaction, paiements: FinancialPayment[]
 
   if (nouveauMontantCents > ancien) {
     const etapes: EtapeCorrection[] = [{ type: 'montant', cents: nouveauMontantCents }];
-    if (solde && choix === 'suit') etapes.push({ type: 'paiement', cents: nouveauMontantCents - ancien, direction, method: mode });
+    // E38-3 : corriger une faute de frappe n'est pas un nouveau virement : le complément garde le jour du paiement d'origine (un seul paiement, celui du 18.11).
+    const jourDuPaiement = dernier ? isoDate(dernier.date) ?? undefined : undefined;
+    if (solde && choix === 'suit') etapes.push({ type: 'paiement', cents: nouveauMontantCents - ancien, direction, method: mode, ...(jourDuPaiement ? { date: jourDuPaiement } : {}) });
     return etapes;
   }
 

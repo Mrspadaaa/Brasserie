@@ -52,6 +52,7 @@ const avecTiers = (finance: NonNullable<Transaction['finance']>, texte: string):
   return sortie;
 };
 const LIBELLE_TIERS: Record<string, string> = { achat: 'Fournisseur', autreo: 'Fournisseur', loyer: 'Bailleur', abo: 'Service', salaire: 'Employé', vente: 'Client', autrei: 'Client' };
+const RYTHMES: Array<[string, string]> = [['une', '1×'], ['monthly', 'Mois'], ['quarterly', 'Trim.'], ['yearly', 'Année']];
 const RYTHME_MOTS: Record<string, string> = { monthly: 'chaque mois', quarterly: 'chaque trimestre', yearly: 'chaque année' };
 const groupeDe = (c: FinanceCategory) => GROUPES[(c === 'materiel' || c === 'renovation' ? 'part' : GROUPES[c as GroupeId] ? c : 'divers') as GroupeId];
 
@@ -142,6 +143,8 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const reglement = resumeReglement(transaction as FinanceTransaction, paiements);
   const planLie = transaction.finance?.planId ? FinanceService.getPlans().find((p) => p.id === transaction.finance!.planId) : undefined;
   const revient = planLie?.recurrence ? RYTHME_MOTS[planLie.recurrence.frequency] : undefined;
+  const rythmeActuel = planLie?.recurrence?.frequency ?? 'une';
+  const jourMax = [todayISO(), isoDate(date) ?? ''].sort().at(-1) as string;
 
   const currentDrivePath = DriveService.generateDrivePath({ ...draft, category, date, amountHT, amountTTC, proofNotes });
 
@@ -279,6 +282,8 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
               required value={description} onChange={(e) => field('description', e.target.value)} className="mod-in" />
           </label>
 
+          <details className="mod-fold" data-modifier-categorie>
+            <summary>{CATEGORY_LABELS[category] ?? category}{subcategory ? ` · ${subcategory}` : ''}<span>catégorie, précision <ChevronDown size={12} aria-hidden="true" /></span></summary>
           <div className="mod-g2">
             <label className="mod-f"><span className="mod-lib">Catégorie</span>
               <span className="mod-sel">
@@ -304,12 +309,13 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
                 value={subcategory} onChange={(e) => field('subcategory', e.target.value)} placeholder="CIP, malt, outillage…" className="mod-in" />
             </label>
           </div>
+          </details>
 
           <div className="mod-g2">
-            <label className="mod-f"><span className="mod-lib">Date</span>
-              <Input type="text" name="tx_edit_entry_date" inputMode="numeric" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
-                required value={dateAffichee(date)} onChange={(e) => field('date', e.target.value)} placeholder="JJ.MM.AAAA" className="mod-in" />
-            </label>
+            {/* E38-4 : la date de la saisie : une pastille, et la frise au toucher (le curseur), jamais un champ « JJ.MM.AAAA » */}
+            <div className="mod-f" data-modifier-date><span className="mod-lib">Date</span>
+              <ChoixDate saisie label="Date de l’opération" valeur={isoDate(date) ?? ''} vide={dateAffichee(date) || 'Date à poser'} max={jourMax} rangee="achats" onChange={(d) => { field('date', d); setSaveError(''); }} />
+            </div>
             <div className="mod-f">
               <span className="mod-lib">{assujetti ? 'Montant HT' : 'Montant'}{change && !montantInvalide && <s className="mod-m">{amountOnly(ancienCents)}</s>}</span>
               <span className="mod-mt" data-edite={change || undefined} data-verrou={verrou ? '' : undefined}>
@@ -392,8 +398,16 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
                 <div className="mod-ech"><small>d’ici le</small>
                   <ChoixDate saisie label="Échéance" valeur={echeanceSaisie ?? transaction.finance?.dueDate ?? ''} vide="Échéance à poser" rangee="achats" onChange={setEcheanceSaisie} /></div>
               )}
-              {revient && <p className="mod-pourquoi" data-modifier-revient>Revient {revient} (prévision liée).</p>}
             </div>
+            {genreSaisie.rythme !== null && (
+              <div className="mod-rec" data-modifier-revient>
+                <span className="mod-lib">Revient ?</span>
+                <div className="mod-seg" role="group" aria-label="Revient ?">
+                  {RYTHMES.map(([id, nom]) => <button key={id} type="button" disabled aria-pressed={rythmeActuel === id}>{nom}</button>)}
+                </div>
+                <p className="mod-pourquoi">{revient ? `Revient ${revient} : la prévision liée se règle au Calendrier.` : 'Une seule fois : aucune prévision liée.'}</p>
+              </div>
+            )}
             {transaction.finance?.kind !== 'refund' && (
               <label className="mod-ck" data-modifier-sans-justificatif><input type="checkbox" checked={sansJustif ?? !!transaction.finance?.proofNotNeeded} onChange={(e) => setSansJustif(e.target.checked)} />Sans justificatif, c’est normal</label>
             )}

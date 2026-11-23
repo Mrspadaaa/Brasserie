@@ -2,6 +2,7 @@ import type { FinanceTransaction, FinancialPayment } from './finance/types';
 import { isActiveTransaction, isoDate, transactionKind, validPayment } from './finance/ledger';
 import { CATEGORIES_TRAVAUX, type ChoseCalendrier, type Rangee } from './calendrier';
 import { jourLisible } from './calendrier/dates';
+import { estAutreEntree } from './finance/libelleEcriture';
 
 /**
  * Ce que le Calendrier montre de l'argent DÉJÀ BOUGÉ (E35-2, E35-3, E35-10, 23.11 soir) : une chose par paiement réel, à son jour, dans la fenêtre
@@ -38,8 +39,7 @@ export function rangeeDePiece(tx: FinanceTransaction, matieres?: ReadonlySet<str
   return 'achats';
 }
 
-/** « Autre recette » : la rentrée qui n'est ni une vente ni un apport (`GENRES.autrei`). */
-export const estAutreEntree = (tx: FinanceTransaction): boolean => transactionKind(tx) === 'income' && tx.subcategory === 'Autre recette';
+export { estAutreEntree };
 
 /** Ce qui rentre sans être une vente : un apport, une autre entrée (absent pour une vente ou une sortie). */
 export function horsVentesDe(tx: FinanceTransaction | undefined): ChoseCalendrier['horsVentes'] {
@@ -57,23 +57,37 @@ export function marquerHorsVentes(choses: readonly ChoseCalendrier[], transactio
   });
 }
 
+/**
+ * E38-3 : une chose par pièce ET par jour, pas par paiement. Une correction de montant écrit un complément le jour du paiement d'origine (3,50 puis 1,00 le
+ * 18.11) : le Calendrier dit « 4,50 le 18.11 », jamais deux lignes. Un paiement inversé (contre-paiement) ne compte plus, ni son contre.
+ */
 export function chosesPayees(e: EntreesPaiements): ChoseCalendrier[] {
   const pieces = new Map(e.transactions.map(t => [t.id, t] as const));
-  return e.payments.flatMap((pay): ChoseCalendrier[] => {
+  const inverses = new Set(e.payments.filter(p => p.reversalOfId).map(p => p.reversalOfId as string));
+  const parPieceEtJour = new Map<string, { tx: FinanceTransaction; jour: string; premier: FinancialPayment; cents: number }>();
+  for (const pay of e.payments) {
     const tx = pay.transactionId ? pieces.get(pay.transactionId) : undefined;
     const jour = isoDate(pay.date);
-    if (!tx || !jour || jour < e.depuis || jour > e.aujourdhui || !validPayment(pay) || !isActiveTransaction(tx) || e.attendues.has(tx.id)) return [];
+    if (!tx || !jour || jour < e.depuis || jour > e.aujourdhui || !validPayment(pay) || !isActiveTransaction(tx) || e.attendues.has(tx.id)) continue;
+    if (pay.reversalOfId || inverses.has(pay.id)) continue;
     const kind = transactionKind(tx);
     const entre = kind === 'income' || kind === 'contribution';
-    if (pay.direction !== (entre ? 'in' : 'out')) return [];
-    const rangee = rangeeDePiece(tx, e.matieres);
-    if (!rangee) return [];
+    if (pay.direction !== (entre ? 'in' : 'out')) continue;
+    if (!rangeeDePiece(tx, e.matieres)) continue;
+    const cle = `${tx.id}|${jour}`;
+    const deja = parPieceEtJour.get(cle);
+    if (deja) deja.cents += pay.amountCents; else parPieceEtJour.set(cle, { tx, jour, premier: pay, cents: pay.amountCents });
+  }
+  return [...parPieceEtJour.values()].flatMap(({ tx, jour, premier, cents }): ChoseCalendrier[] => {
+    const kind = transactionKind(tx);
+    const entre = kind === 'income' || kind === 'contribution';
+    const rangee = rangeeDePiece(tx, e.matieres)!;
     const apport = kind === 'contribution', autre = estAutreEntree(tx), prive = kind === 'withdrawal';
     const detail = apport ? `apport, reçu le ${jourLisible(jour)}` : autre ? `autre entrée, reçue le ${jourLisible(jour)}` : prive ? `prélèvement privé, le ${jourLisible(jour)}`
       : entre ? `encaissée le ${jourLisible(jour)}` : `payée le ${jourLisible(jour)}`;
     const quoi = apport ? 'Apport reçu' : autre ? 'Entrée reçue' : prive ? 'Prélèvement fait' : entre ? 'Vente encaissée' : 'Paiement fait';
     return [{
-      id: `paiement-${pay.id}`, rangee, titre: tx.description || tx.id, debut: jour, fin: jour, centimes: entre ? pay.amountCents : -pay.amountCents, detail,
+      id: `paiement-${premier.id}`, rangee, titre: tx.description || tx.id, debut: jour, fin: jour, centimes: entre ? cents : -cents, detail,
       ...(horsVentesDe(tx) ? { horsVentes: horsVentesDe(tx) } : {}),
       source: { genre: 'facture', id: tx.id }, ouvre: { ecran: 'piece', id: tx.id },
       deplacable: { raison: `${quoi} : sa date est un fait. Elle se corrige dans la pièce (Finances › Opérations).` }

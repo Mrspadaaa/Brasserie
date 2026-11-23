@@ -1,5 +1,6 @@
 import type { FinanceCategory } from '../../types';
 import type { FinanceLine, FinanceTransaction, FinancialAsset, FinancialPayment } from './types';
+import { estAutreEntree } from './libelleEcriture';
 import { estCreanceTropPaye, isActiveTransaction, isoDate, paymentState, refundLinkIssue, transactionAmount, transactionDirection, transactionKind } from './ledger';
 
 /**
@@ -44,6 +45,8 @@ export interface PeriodeSynthese {
   /** dépensé − à payer : ce qui est sorti de la caisse (matériel à part exclu). */
   payeCents: number; aPayerCents: number;
   ventes: { nombre: number; libelle: string | null };
+  /** E38-2 : les rentrées qui ne sont pas des ventes (« Autre » du genre « Ça rentre »). Comptées dans `entreCents` (c'est de l'argent entré), jamais dans `ventes`. */
+  autresEntrees: { nombre: number; cents: number; aEncaisserCents: number; libelle: string | null };
   /** Ventes pas encore encaissées, par pièce ; `entreAEncaisserCents` en est la somme. */
   aEncaisser: Reste[]; entreAEncaisserCents: number;
   /** Dans l'ordre de la pile (de haut en bas, charges fixes en dernier). Un poste ≤ 0 n'y figure pas. */
@@ -146,6 +149,7 @@ export function periodeSynthese(entree: PeriodeEntree): PeriodeSynthese {
   const totaux = new Map<string, number>(), aPayerParCat = new Map<string, number>();
   const aPayer: Reste[] = [], aEncaisser: Reste[] = [];
   let entreBrut = 0, materielBrut = 0, lignes = 0, ventes = 0, derniereVente = '';
+  let autres = 0, autresCents = 0, autresAEncaisser = 0, derniereAutre = '';
 
   for (const tx of transactions.filter(isActiveTransaction)) {
     const date = isoDate(tx.date);
@@ -183,7 +187,9 @@ export function periodeSynthese(entree: PeriodeEntree): PeriodeSynthese {
     const reste = etat.state === 'unpaid' || etat.state === 'partial' ? etat.remainingCents : 0;
 
     if (kind === 'income') {
-      lignes++; ventes++; derniereVente = tx.description || tx.id;
+      lignes++;
+      if (estAutreEntree(tx)) { autres++; autresCents += montant; autresAEncaisser += Math.min(reste, montant); derniereAutre = tx.description || tx.id; }
+      else { ventes++; derniereVente = tx.description || tx.id; }
       entreBrut += montant;
       if (reste > 0) aEncaisser.push({ id: tx.id, libelle: tx.description, cents: Math.min(reste, montant), echeance, categorie: 'recettes', enRetard: !!echeance && echeance < aujourdhui });
       continue;
@@ -226,6 +232,7 @@ export function periodeSynthese(entree: PeriodeEntree): PeriodeSynthese {
     entreCents, depenseCents, gainCents: entreCents - depenseCents, materielCents,
     payeCents: depenseCents - aPayerCents, aPayerCents,
     ventes: { nombre: ventes, libelle: ventes === 1 ? derniereVente : ventes > 1 ? `${ventes} ventes` : null },
+    autresEntrees: { nombre: autres, cents: autresCents, aEncaisserCents: autresAEncaisser, libelle: autres === 1 ? derniereAutre : autres > 1 ? `${autres} autres entrées` : null },
     aEncaisser: aEncaisser.sort(parEcheance), entreAEncaisserCents: Math.min(entreCents, aEncaisser.reduce((n, r) => n + r.cents, 0)),
     postes, aPayer: aPayer.sort(parEcheance), lignes, aVerifier: verifier,
   };

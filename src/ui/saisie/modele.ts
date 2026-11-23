@@ -17,7 +17,7 @@ export type Methode = FinancialPayment['method'];
 
 export interface Genre {
   id: GenreId; nom: string; sous?: string; sens: 'out' | 'in'; kind: FinanceKind; category: FinanceCategory; subcategory: string;
-  /** Le rythme posé au toucher du genre ; `null` : pas de « Revient ? » (apport, prélèvement, impôt, remboursement). */
+  /** Le rythme posé au toucher du genre ; `null` : pas de « Revient ? » (impôt, remboursement). E35-13 : un apport (« Versement mensuel ») et un prélèvement (« ta paie ») reviennent aussi, comme une vente ou un achat. */
   rythme: Rythme | null;
   /** L'étiquette de la rangée des derniers noms (« Chez », « Client »…) ; absente : pas de rangée. */
   qui?: string;
@@ -33,10 +33,10 @@ export const GENRES: Record<GenreId, Genre> = {
   abo: { id: 'abo', nom: 'Abonnement', sens: 'out', kind: 'expense', category: 'chargesFixes', subcategory: 'Abonnement', rythme: 'monthly', qui: 'Service', nomDefaut: (d) => `Abonnement du ${d}`, pli: 'Référence, note' },
   salaire: { id: 'salaire', nom: 'Salaire', sous: 'employé', sens: 'out', kind: 'expense', category: 'chargesFixes', subcategory: 'Salaire', rythme: 'monthly', qui: 'Employé', nomDefaut: (d) => `Salaire du ${d}`, pli: 'Référence, note' },
   impot: { id: 'impot', nom: 'Impôts', sens: 'out', kind: 'expense', category: 'divers', subcategory: 'Impôt sur la bière', rythme: null, nomDefaut: (d) => `Impôt sur la bière du ${d}`, pli: 'Période, référence' },
-  prel: { id: 'prel', nom: 'Pour moi', sous: 'ta paie', sens: 'out', kind: 'withdrawal', category: 'apports', subcategory: 'Prélèvement privé', rythme: null, nomDefaut: (d) => `Pour moi du ${d}`, pli: 'Note' },
+  prel: { id: 'prel', nom: 'Pour moi', sous: 'ta paie', sens: 'out', kind: 'withdrawal', category: 'apports', subcategory: 'Prélèvement privé', rythme: 'une', nomDefaut: (d) => `Pour moi du ${d}`, pli: 'Référence, note' },
   autreo: { id: 'autreo', nom: 'Autre', sens: 'out', kind: 'expense', category: 'divers', subcategory: 'Autre', rythme: 'une', nomDefaut: (d) => `Autre du ${d}`, pli: 'TVA, référence' },
   vente: { id: 'vente', nom: 'Vente', sens: 'in', kind: 'income', category: 'recettes', subcategory: 'Vente', rythme: 'une', qui: 'Client', nomDefaut: (d) => `Vente du ${d}`, pli: 'TVA, référence' },
-  apport: { id: 'apport', nom: 'Apport', sous: 'de ma poche', sens: 'in', kind: 'contribution', category: 'apports', subcategory: 'Apport privé', rythme: null, nomDefaut: () => 'De ma poche', pli: 'Note' },
+  apport: { id: 'apport', nom: 'Apport', sous: 'de ma poche', sens: 'in', kind: 'contribution', category: 'apports', subcategory: 'Apport privé', rythme: 'une', nomDefaut: () => 'De ma poche', pli: 'Référence, note' },
   autrei: { id: 'autrei', nom: 'Autre', sous: 'pas un prêt', sens: 'in', kind: 'income', category: 'recettes', subcategory: 'Autre recette', rythme: 'une', nomDefaut: (d) => `Autre entrée du ${d}`, pli: 'TVA, référence' },
   rembt: { id: 'rembt', nom: 'Remboursement', sens: 'in', kind: 'refund', category: 'divers', subcategory: 'Avoir', rythme: null, nomDefaut: () => 'Remboursement', pli: 'Note' }
 };

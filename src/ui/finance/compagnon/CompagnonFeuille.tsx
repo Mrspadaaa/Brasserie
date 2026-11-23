@@ -32,8 +32,8 @@ interface Props {
 }
 
 function Bande({ periode, nomPeriode, vise }: { periode: PeriodeSynthese; nomPeriode: string; vise: string | null }) {
-  const { ventes, charges, materiel } = colonnesDe(periode);
-  const toutes = [ventes, ...charges, materiel].filter((c): c is NonNullable<typeof ventes> => !!c);
+  const { ventes, autres, charges, materiel } = colonnesDe(periode);
+  const toutes = [ventes, autres, ...charges, materiel].filter((c): c is NonNullable<typeof ventes> => !!c);
   if (!toutes.length) return <div className="cpg-band"><div className="cpg-t"><span>Ta question vise</span><span>{nomPeriode}</span></div><p className="cpg-vide">Ni vente ni dépense sur cette période.</p></div>;
   const max = Math.max(...toutes.map(c => c.cents));
   const allumee = (cle: string) => (vise ? cle === vise : cle !== 'recettes' && cle !== 'materiel');

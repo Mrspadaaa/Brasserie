@@ -4,7 +4,7 @@ import type { FinancialPayment } from '../../domain/finance/types';
 import { formatCHF, isActiveTransaction, paymentState, todayISO, transactionAmount, transactionDirection, transactionVendor } from '../../domain/finance/ledger';
 import { FinanceService } from '../../services/financeService';
 import { CATEGORY_LABELS, idFor } from './FinanceForms';
-import { libelleEcriture } from '../../domain/finance/libelleEcriture';
+import { estAutreEntree, estImpot, libelleEcriture } from '../../domain/finance/libelleEcriture';
 import { amountOnly } from './financeFormat';
 import { contrePaiement, dernierPaiementAnnulable, etatDeLigne, nomAffiche, paiementRapide, pieceDe, tiersAAfficher } from './operations/calculs';
 import { GROUPES, type GroupeId } from './operations/groupes';
@@ -134,7 +134,7 @@ export function TransactionRow({ transaction, transactions, payments, state: giv
           ? { texte: '+ pièce', aria: 'Joindre une pièce', fort: false, action: onAddProof ?? onOpen }
           : null;
 
-  const groupe: GroupeId = transaction.category === 'materiel' || transaction.category === 'renovation' ? 'part' : (GROUPES[transaction.category as GroupeId] ? transaction.category as GroupeId : 'divers');
+  const groupe: GroupeId = estImpot(transaction) ? 'impots' : estAutreEntree(transaction) ? 'autresEntrees' : transaction.category === 'materiel' || transaction.category === 'renovation' ? 'part' : (GROUPES[transaction.category as GroupeId] ? transaction.category as GroupeId : 'divers');
   const liseré = ouvert ? 'hachure' : undefined;
   const lisereCouleur = etat.retard ? 'rgb(var(--alert-strong-texte))' : GROUPES[groupe].liseré;
   const money = `${entrant ? '+ ' : ''}${formatCHF(montant)}`;

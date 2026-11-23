@@ -47,14 +47,21 @@ const montantCourt = (c: { cents: number; signe?: string }): string => `${c.sign
 const montantPlein = (c: { cents: number; signe?: string }): string => `${c.signe ?? ''}${amountOnly(c.cents)}`;
 
 
-export function colonnesDe(p: PeriodeSynthese): { ventes: Colonne | null; charges: Colonne[]; materiel: Colonne | null } {
-  const ventes = p.entreCents > 0 ? { cle: 'recettes', libelle: 'Ventes', cents: p.entreCents, hachureCents: p.entreAEncaisserCents, couleur: couleurDe('recettes'), signe: '+' as const } : null;
+/**
+ * E38-2 : « Ventes » ne porte que les ventes ; une autre entrée (ni vente ni apport) a sa propre pile « Entrées », de la teinte des ventes. Le total entré reste leur somme.
+ * Cette pile ne filtre pas la liste (le filtre est par catégorie, et l'autre entrée est rangée en Ventes) : elle se lit, sans bouton.
+ */
+export function colonnesDe(p: PeriodeSynthese): { ventes: Colonne | null; autres: Colonne | null; charges: Colonne[]; materiel: Colonne | null } {
+  const centsAutres = Math.min(p.autresEntrees.cents, p.entreCents), centsVentes = p.entreCents - centsAutres;
+  const aEncaisserAutres = Math.min(p.autresEntrees.aEncaisserCents, centsAutres), aEncaisserVentes = Math.max(0, Math.min(p.entreAEncaisserCents - aEncaisserAutres, centsVentes));
+  const ventes = centsVentes > 0 ? { cle: 'recettes', libelle: 'Ventes', cents: centsVentes, hachureCents: aEncaisserVentes, couleur: couleurDe('recettes'), signe: '+' as const } : null;
+  const autres = centsAutres > 0 ? { cle: 'autresEntrees', libelle: 'Entrées', cents: centsAutres, hachureCents: aEncaisserAutres, couleur: couleurDe('autresEntrees'), signe: '+' as const } : null;
   const rang = (c: string) => { const i = ORDRE_CHARGES.indexOf(c); return i < 0 ? ORDRE_CHARGES.length : i; };
   const charges = [...p.postes].sort((a, b) => rang(a.categorie) - rang(b.categorie) || b.cents - a.cents).map(poste => ({
     cle: poste.categorie, libelle: COURT[poste.categorie] ?? poste.categorie, cents: poste.cents, hachureCents: poste.aPayerCents, couleur: couleurDe(poste.categorie),
   }));
   const materiel = p.materielCents > 0 ? { cle: 'materiel', libelle: 'Matériel', cents: p.materielCents, hachureCents: 0, couleur: couleurDe('part') } : null;
-  return { ventes, charges, materiel };
+  return { ventes, autres, charges, materiel };
 }
 
 /**
@@ -85,9 +92,9 @@ export function Piles({ periode, nom = 'le mois', apports = null, frise = null, 
   /** Toucher une pile : le parent pose ou retire le filtre de sa catégorie. */
   onChoisir?: (cle: string) => void }) {
   const refPiles = useRef<HTMLDivElement>(null);
-  const { ventes, charges, materiel } = colonnesDe(periode);
+  const { ventes, autres, charges, materiel } = colonnesDe(periode);
   const apport: Colonne | null = apports ? { cle: 'apports', libelle: 'Apports', cents: Math.abs(apports), hachureCents: 0, couleur: couleurDe('apports'), signe: apports > 0 ? '+' : '−' } : null;
-  const presentes = [ventes, ...charges, materiel, apport].filter((c): c is Colonne => !!c);
+  const presentes = [ventes, autres, ...charges, materiel, apport].filter((c): c is Colonne => !!c);
   const court = useCourt(refPiles, presentes.map(montantPlein));
   // « Pas de graph ? » (10.11) : une période sans vente ni dépense garde sa bande et le dit.
   if (!presentes.length) return <><p className="ops-vide" data-piles="">{videTexte ?? `Ni vente ni dépense sur ${nom}.`}</p>{frise}</>;
@@ -106,11 +113,12 @@ export function Piles({ periode, nom = 'le mois', apports = null, frise = null, 
   return <>
     <div className="ops-piles" ref={refPiles} data-choix={elue ? '' : undefined} role="group" aria-label={`${nom[0].toLocaleUpperCase('fr')}${nom.slice(1)} par catégorie`}>
       {ventes && <Pile c={ventes} max={max} court={court} choisie={choisie === ventes.cle} onChoisir={onChoisir}/>}
-      {ventes && (charges.length > 0 || materiel) && sep('s1')}
+      {autres && <Pile c={autres} max={max} court={court}/>}
+      {(ventes || autres) && (charges.length > 0 || materiel) && sep('s1')}
       {charges.map(c => <Pile key={c.cle} c={c} max={max} court={court} choisie={choisie === c.cle} onChoisir={onChoisir}/>)}
       {materiel && charges.length > 0 && sep('s2')}
       {materiel && <Pile c={materiel} max={max} court={court} choisie={choisie === materiel.cle} onChoisir={onChoisir}/>}
-      {apport && (ventes || charges.length > 0 || materiel) && sep('s3')}
+      {apport && (ventes || autres || charges.length > 0 || materiel) && sep('s3')}
       {apport && <Pile c={apport} max={max} court={court} choisie={choisie === apport.cle} onChoisir={onChoisir}/>}
     </div>
     {frise}

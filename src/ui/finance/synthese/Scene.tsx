@@ -79,6 +79,8 @@ export function Scene({ periode: p, nomPeriode, onCategorie, onPiece, onVentes, 
   const aConfirmer = p.aVerifier.paiementsAConfirmer.length;
   // Le fil relie la pastille au haut de l'écart : il part du haut de la pastille et monte au bord de l'écart, mesuré sur l'échelle, jamais en coordonnées fixes.
   const hautPastille = EN_TETE + 28, hautEcart = EN_TETE + (HAUTEUR - ech.hEntree) + 0;
+  /* E38-2 : « 2 ventes · 1 autre entrée » : une autre entrée n'est pas une vente, la pile le dit (le total entré reste la somme). */
+  const legendeEntre = [p.ventes.libelle, p.autresEntrees.libelle].filter(Boolean).join(' · ') || 'Ventes';
   const aEncaisserPx = p.entreCents > 0 ? Math.max(14, p.entreAEncaisserCents * ech.hPileEntree / p.entreCents) : 0;
 
   return <div>
@@ -88,8 +90,8 @@ export function Scene({ periode: p, nomPeriode, onCategorie, onPiece, onVentes, 
         {perte && <div className="syn-ecart syn-ecart-perte" style={{ height: ech.hEcart }} aria-hidden="true"/>}
         {p.entreCents > 0
           ? <div className="syn-pile syn-pile-entree" style={{ height: ech.hPileEntree }}>
-            <button type="button" className="syn-s syn-s-vente" style={{ flex: Math.max(1, p.entreCents - p.entreAEncaisserCents) }} aria-label={`${p.ventes.libelle ?? 'Ventes'} ${formatCHF(p.entreCents)}, voir ces ventes`} onClick={onVentes}>
-              <span className="syn-lib">{libelleVente(p.ventes.libelle)}</span>
+            <button type="button" className="syn-s syn-s-vente" style={{ flex: Math.max(1, p.entreCents - p.entreAEncaisserCents) }} aria-label={`${legendeEntre} ${formatCHF(p.entreCents)}, voir ces ${p.ventes.nombre ? 'ventes' : 'entrées'}`} onClick={onVentes}>
+              <span className="syn-lib">{libelleVente(legendeEntre)}</span>
             </button>
             {p.entreAEncaisserCents > 0 && <div className="syn-s syn-ap syn-ap-vente" style={{ height: aEncaisserPx, flex: 'none' }}>
               <span className="syn-tag">À encaisser <span className="syn-m">{amountOnly(p.entreAEncaisserCents)}</span></span>
