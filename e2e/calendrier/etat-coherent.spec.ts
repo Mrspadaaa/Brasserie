@@ -15,6 +15,13 @@ const jour = (a: number, m: number, j: number) => Date.UTC(a, m, j) / 864e5;
 
 /** « 26 oct. – 6 déc. », « 26 oct. 2026 – 24 janv. 2027 », « oct. 2026 – oct. 2027 » → [début, fin] en jours depuis 1970 (fin incluse). */
 export function lireEtiquette(t: string, an0: number): [number, number] | null {
+  /* CAL-ETIQUETTE-GRAIN-AU-DESSUS : en grain jour, « S40 – S42 2026 », « S52 2026 – S1 2027 », « S48 2026 » (semaines ISO) */
+  const sem = /^S(\d{1,2})(?: (\d{4}))?(?: – S(\d{1,2}) (\d{4}))?$/.exec(t.replace(/\s+/g, ' ').trim());
+  if (sem) {
+    const lundiIso = (n: number, an: number) => { const j4 = jour(an, 0, 4), dow = (new Date(j4 * 864e5).getUTCDay() + 6) % 7; return j4 - dow + (n - 1) * 7; };
+    const anFin = Number(sem[4] ?? sem[2] ?? an0), anDebut = Number(sem[2] ?? anFin);
+    return sem[3] ? [lundiIso(Number(sem[1]), anDebut), lundiIso(Number(sem[3]), anFin) + 6] : [lundiIso(Number(sem[1]), anDebut), lundiIso(Number(sem[1]), anDebut) + 6];
+  }
   const bouts = t.replace(/\s+/g, ' ').split(/\s*[–—-]\s*/).filter(Boolean);
   if (bouts.length !== 2) return null;
   const lire = (s: string) => {
