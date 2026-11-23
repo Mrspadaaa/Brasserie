@@ -17,10 +17,10 @@ OK — I6 corrigé (année sous « ‹ auj. » et initiale sur année) ; « An �
 - Tests calendrier + propriétés : 30 fichiers, 392 passés (tests.log).
 
 ## Deuxième défaut I6 (même cause, trouvé à la série 2 sur le build df5a8a167)
-- Graine 4444, 31e suite  : « 2029 » (61 px) nommée nulle part, cadre de 2 ans ½. Avec le bord visible déplacé, « 2029 » posée au bord était chassée par l'initiale suivante (règle « la période entamée cède la place » : pop de la seule année). Correctif : une initiale ne chasse jamais une année (BandeSemaines.tsx, une condition). Test ajouté (cadre du 18 juin 2029, 130 sem.) : rouge sans la condition (« J O 2030 … »), vert avec.
+- Graine 4444, 31e suite `[app plage 0 mois, 29 mois, cadre tenu au bord 1 500 ms]` : « 2029 » (61 px) nommée nulle part, cadre de 2 ans ½. Avec le bord visible déplacé, « 2029 » posée au bord était chassée par l'initiale suivante (règle « la période entamée cède la place » : pop de la seule année). Correctif : une initiale ne chasse jamais une année (BandeSemaines.tsx, une condition). Test ajouté (cadre du 18 juin 2029, 130 sem.) : rouge sans la condition (« J O 2030 … »), vert avec.
 
 ## Séries (build neuf lotcal-modele4 à aadbb914f, serveur vérifié : index-Bp68TbGF.js, ETAT_RUNS=200, ETAT_SHRINK=1, android-390)
-- graine 4444 :  (modele-200-graine4444.log) ; graine 7 :  (modele-200-graine7.log).
+- graine 4444 : `1 passed (32.8m)` (modele-200-graine4444.log) ; graine 7 : `1 passed (32.6m)` (modele-200-graine7.log).
 - Essais : séries rouges avant (serie1/ : build de HEAD, 2 rouges I6 ; serie2/ : 1 rouge I6 à la 31e suite, graine 7 interrompue pour reconstruire) ; 3 builds, 3 correctifs-tests, une seule voie de code (periodesBande).
 - Tests : 30 fichiers, 393 passés (tests.log) ; tests-modele2.log : 6 passés ; tsc : 2 erreurs déjà là, aucune neuve.
 - Captures : aucune (consigne « pas de captures locales ») ; sonde-an.png (An fraîche, build étranger sur 4392) non probante, ignorée.
@@ -29,8 +29,8 @@ OK — I6 corrigé (année sous « ‹ auj. » et initiale sur année) ; « An �
 - Le banc (e2e/calendrier/etat-coherent.spec.ts) n'est pas modifié. Il ne prouve pas l'aspect : la place du nom d'année à côté de l'initiale (« 2029 » tenu au bord à 72 px, sous le bord du cadre) n'a pas été regardée sur capture ; à voir au prochain tour en ligne.
 - Le correctif ne touche que les noms (pas les traits) ; sans masque (« auj. » dans le cadre), comportement identique (tests de bande existants verts).
 
-DÉCISION À PRENDRE : fixer  sans défaut dans playwright.lotcal.config.ts (échec si absent) pour qu'un banc ne tourne plus sur un build périmé ; recommandation : oui (config non commitée, hors de ma voie).
-CONNAISSANCE : le défaut du banc Playwright de lot-cal (dossier  de 12:14) et  font tester le build de quelqu'un d'autre ; contrôle : curl du port et comparer le nom de index-*.js au dossier construit.
+DÉCISION À PRENDRE : fixer `LOTCAL_BUILD` sans défaut dans playwright.lotcal.config.ts (échec si absent) pour qu'un banc ne tourne plus sur un build périmé ; recommandation : oui (config non commitée, hors de ma voie).
+CONNAISSANCE : le défaut du banc Playwright de lot-cal (dossier `lotcal` de 12:14) et `reuseExistingServer: true` font tester le build de quelqu'un d'autre ; contrôle : curl du port et comparer le nom de index-*.js au dossier construit.
 LEÇON PROPOSÉE : un rouge de banc se rejoue d'abord sur un build neuf de HEAD, serveur vérifié, avant toute recherche dans le code (3 essais perdus ici, et le « contre-exemple » n'existait que sur un build du matin).
 
 PRÊT À METTRE EN LIGNE aadbb914f
