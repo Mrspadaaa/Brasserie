@@ -54,13 +54,24 @@ C-10-apres-archiver, C-11-carnet-apres-archive.
   carnetsLot2 (17) verts ; `tsc` 0 ; `vite build` vert. `npm run build` : contrôle DRAPEAUX en échec sur `VITE_CARNET_IA` (absent du
   `.env` de la copie, comme de port-carnet et Brasserie) : environnement du déploiement, pas ce correctif.
 
-## Après mise en ligne
+## Après mise en ligne (tour 17, 606f3ccf8, paquet index-GRGXbrTm.js, arrivé au 8e chargement, ≈ 60 s)
 
-(à remplir : même geste, même carnet ZZ, captures regardées)
+| Cas | Geste (le même qu'avant) | Observé | Verdict | Captures |
+|---|---|---|---|---|
+| C | rouvrir le carnet ZZ dont le plan est archivé (12 345,67, 22 févr.) | « Quand · S8 · 12 345,67 CHF estimé », « Au calendrier › » présent | **OK** | E-C-01-carnet-archive-apres |
+| C | « Au calendrier » sur ce carnet | Calendrier S8 22 févr. 2027, −12 346, bandeau « remis au calendrier · −12 345,67 CHF · Annuler » ; le carnet redit « Dans À venir » | **OK** | E-C-02-au-calendrier-repris, E-B-cal-retour-2 |
+| B | carnet → Au calendrier → fiche « Ouvrir » → carnet, puis Retour ×4 | 1 : Calendrier ; 2 : le carnet ; 3 : la liste des Carnets ; 4 : hors de l'app. Aucun retour inerte | **OK** | E-B-00-carnet-depuis-cal, E-B-cal-retour-1 à 4 |
+| B | À venir → « Ouvrir le carnet » ZZ → Retour ×2 | 1 : À venir (segment À venir) ; 2 : hors de l'app | **OK** | E-B-av-00-carnet, E-B-av-retour-1, E-B-av-retour-2 |
+
+Reste vu (non corrigé, à verser au registre) : sur la **liste des Carnets**, la carte ZZ dit « estimé 500 CHF » quand le carnet dit
+12 345,67 (la liste lit le prix estimé du carnet, pas son plan ; la date S8, elle, suit) : capture E-B-cal-retour-3. Partie du « trois
+chiffres » de CA13-3, côté liste seulement.
 
 ## Données
 
-- Créés : fête « ZZ TEST — fix13 — fête » ; carnet « ZZ TEST — fix13 — cuve de garde 500 litres pour la cave » et son plan (archivé).
-  Retrait à la fin, après la preuve en ligne.
+- Créés : fête « ZZ TEST — fix13 — fête » ; carnet « ZZ TEST — fix13 — cuve de garde 500 litres pour la cave » et son plan.
+- Retirés : carnet par « Supprimer avec son plan » (Z-01, Z-02) ; fête par sa fiche › ⋯ › Supprimer (Z-07). Après rechargement :
+  « fix13 » absent du Calendrier, des Carnets (16 → 15) et d'À venir (12 → 11) (Z-08). Mes deux onglets fermés ; Chrome et ses autres
+  onglets intacts.
 - Vraies données : lecture seule (carnet « Achat brasserie : moulin à malt » ouvert puis Retour).
 - IA : 1 appel `rangerCarnet` (création du carnet ZZ).
