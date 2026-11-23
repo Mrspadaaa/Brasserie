@@ -108,8 +108,12 @@ test('CAL-GRADUATION-ROGNEE : aucun nom de la bande rogné au bord ni chevauché
 });
 
 test('3 ans : la bande en mois dit les années (jamais « J A J O » seul)', async ({ page }) => {
+  /* 3 ans dès aujourd'hui (156 semaines : grain mois, un mois sur trois ; au-delà, la bande passe aux années et le défaut ne se voit pas) */
   const auj = aujourdhuiZurich();
-  await plageApp(page, `01.01.${auj.slice(0, 4)}`, `31.12.${Number(auj.slice(0, 4)) + 2}`);
+  const j = (iso: string) => `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}`;
+  const fin = new Date(Date.parse(`${auj}T00:00:00Z`) + (156 * 7 - 8) * 864e5).toISOString().slice(0, 10);
+  await plageApp(page, j(auj), j(fin));
+  expect(await page.locator('[data-bande-semaines][data-sur-courbe]').getAttribute('data-grain'), 'bande en mois à 3 ans').toBe('mois');
   const b = await nomsBande(page);
   expect(b, 'bande sur la courbe').not.toBeNull();
   const textes = b!.noms.map((n) => n.t);
