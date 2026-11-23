@@ -6,7 +6,7 @@
 //     sans option : construit l'arbre de travail dans un dossier temporaire (`vite build` avec scripts/parcours/vite.parcours.config.mjs) ;
 //     --build     : réutilise un build déjà fait par cette config ;
 //     --ref <tag> : construit ce tag dans une copie temporaire (git worktree dans os.tmpdir(), node_modules en jonction, retirée à la fin).
-//     --etape <a,b> : seules ces étapes V-CAL (G3, RENOMMER-EVT, C1-GLISSER, D2-CAL, K2, K3-SUITES, TRAVAUX-SANS-MONTANT, CRN-11, CRN-20, CAL-ENTETE), après la fixture.
+//     --etape <a,b> : seules ces étapes V-CAL (G3, RENOMMER-EVT, C1-GLISSER, D2-CAL, K2, K3-SUITES, TRAVAUX-SANS-MONTANT, CRN-11, CRN-20, CAL-ENTETE) et DATE (étape 6), après la fixture.
 //     G3_SEMAINE=<n> (variable d'environnement) : G3 ne cherche sa case vide que dans la semaine n (rejouer un cas vu, ex. S2 en 3 mois).
 //   Sortie : « PARCOURS CALENDRIER OK » (code 0) ou « PARCOURS CALENDRIER ECHEC » + la liste des échecs (code 1) ; captures dans le dossier.
 //
@@ -245,9 +245,9 @@ async function jouer(dir) {
       if (futur?.bon) { await recharger(); const l = await labelDe('Blonde d’automne,'); semaineDe(l) === futur.sb ? ok('relu après rechargement (barre)', `S${semaineDe(l)}`) : echec('relu après rechargement (barre)', `S${futur.sb} écrit, relu « ${l?.slice(0, 50) ?? 'absent'} » ; fenêtre ${(await fenetreLue()).txt}`); }
     }
 
-    // 6. la date de chaque type, changée par la feuille (Modifier › semaine précédente › Enregistrer), relue après rechargement
-    if (tout) await recharger();
-    if (tout) for (const [type, titre] of [['brassin', 'Fruty'], ['fête', 'Marché de Noël'], ['vente', 'Café du Pont'], ['achat', 'Commande de malt'], ['papier', 'lol'], ['travaux', 'Hotte'], ['idée', 'IPA brume']]) {
+    // 6. la date de chaque type, changée par la feuille (Modifier › frise au jour tirée de 3 jours › Enregistrer), écrite puis relue après rechargement (D431)
+    if (joue('DATE')) await recharger();
+    if (joue('DATE')) for (const [type, titre] of [['brassin', 'Fruty'], ['fête', 'Marché de Noël'], ['vente', 'Café du Pont'], ['achat', 'Commande de malt'], ['papier', 'lol'], ['travaux', 'Hotte'], ['idée', 'IPA brume']]) {
       const nom = `date ${type}`;
       try {
         await fermer();
@@ -256,26 +256,37 @@ async function jouer(dir) {
         await toucher(`${titre},`, { prefixe: true });
         if (!(await visibleParTexte('Modifier'))) { type === 'brassin' || type === 'idée' ? notes.push(`${type} : pas de bouton Modifier (date réglée par le glisser ${type === 'brassin' ? '(joué plus haut)' : ': aucun geste'})`) : echec(nom, 'pas de bouton Modifier'); continue; }
         await toucher('Modifier');
-        /* feuille d'ajout à la frise (1bdd349db, 40fff908a, a9d6e79f6) : plus de puces de semaines ; la date se change par la rangée des jours
-           (« Jour » pour une date seule, « Jour du début » pour une fenêtre) : le geste du brasseur reste de toucher un autre jour, et Enregistrer */
-        const posJour = (voulu) => p.evaluate((v) => {
-          const g = document.querySelector('[role=dialog] [data-feuille-jours="debut"]') ?? document.querySelector('[role=dialog] [data-feuille-jours]'); if (!g) return null;
-          g.scrollIntoView({ block: 'center' });
-          const l = [...g.querySelectorAll('[data-jour]')], i = l.findIndex((x) => x.getAttribute('aria-pressed') === 'true'); if (i < 0) return null;
-          const n = v ? l.find((x) => x.getAttribute('data-jour') === v) : [l[i + 1], l[i - 1]].find((x) => x && !x.disabled); if (!n) return null;
-          const r = n.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2, jour: n.getAttribute('data-jour'), de: l[i].getAttribute('data-jour') };
-        }, voulu);
-        const cible = await posJour(null);
-        if (!cible) { echec(nom, 'rangée des jours de la feuille introuvable (ou aucun autre jour à toucher)'); continue; }
-        await sleep(150);
-        const c2 = await posJour(cible.jour);
-        await p.touchscreen.tap(c2.x, c2.y); await sleep(400);
+        /* D431 (GESTE-DATE-PARTOUT, e3a3b7531) : plus de rangée « L … D » ; le jour se choisit sur la frise partagée au jour (`ChoixDate`, [data-choix-date]),
+           pastille à toucher (fête, achat…) ou frise ouverte d'emblée (papier, vente). Le geste du brasseur : tirer le repère ([data-date-point]) de JOURS jours
+           au doigt, puis Enregistrer. On contrôle le jour tiré (data-valeur), le jour écrit (cache de la page) et le jour relu après rechargement. */
+        const JOURS = 3;
+        const choix = () => p.evaluate((n) => {
+          const d = document.querySelector('[role=dialog]'); if (!d) return null;
+          const c = d.querySelector('[data-choix-date][data-choix-date-label="Jour du début"]') ?? d.querySelector('[data-choix-date][data-choix-date-label="Jour"]') ?? d.querySelector('[data-choix-date]'); if (!c) return null;
+          c.scrollIntoView({ block: 'center' });
+          const pa = c.querySelector('[data-choix-date-pastille]'), po = c.querySelector('[data-date-point]'), pi = c.querySelector('.cal-f-duree-piste');
+          const r = (e) => { if (!e) return null; const b = e.getBoundingClientRect(); return [b.x + b.width / 2, b.y + b.height / 2]; };
+          const v = c.getAttribute('data-valeur'), max = c.getAttribute('data-max');
+          const plus = (iso, k) => new Date(Date.parse(`${iso}T12:00:00Z`) + k * 86400000).toISOString().slice(0, 10);
+          const sens = v && max && plus(v, n) > max ? -1 : 1;
+          return { label: c.getAttribute('data-choix-date-label'), valeur: v, pastille: r(pa), point: r(po), pxJour: pi ? Number(pi.dataset.pxJour) : null, sens, attendu: v ? plus(v, sens * n) : null };
+        }, JOURS);
+        let c = await choix();
+        if (!c) { echec(nom, 'aucun choix de date au jour (frise partagée, [data-choix-date]) dans la feuille Modifier'); continue; }
+        if (!c.valeur) { echec(nom, `le choix « ${c.label} » n'a pas de jour posé (data-valeur vide)`); continue; }
+        if (!c.point && c.pastille) { await p.touchscreen.tap(c.pastille[0], c.pastille[1]); await sleep(500); c = await choix(); }
+        if (!c.point || !(c.pxJour > 0)) { echec(nom, `frise au jour du choix « ${c.label} » introuvable (repère ${!!c.point}, ${c.pxJour} px/jour)`); continue; }
+        await glisser([c.point[0], c.point[1]], [c.point[0] + c.sens * JOURS * c.pxJour, c.point[1]]);
+        const tire = (await choix())?.valeur;
         if (type === 'fête') await cap('06-feuille-modifier');
+        if (tire !== c.attendu) { await cap(`06-echec-${type}`); echec(nom, `frise tirée de ${c.sens * JOURS} j depuis le ${c.valeur} : attendu le ${c.attendu}, lu le ${tire ?? 'absent'}`); continue; }
         await toucher('Enregistrer'); await sleep(900);
+        const dateEcrite = () => p.evaluate((t) => { const e = JSON.parse(localStorage.getItem('parcours-calendrier:cache') ?? '[]').find((x) => String(x.data?.title ?? x.data?.name ?? '').startsWith(t)); return e ? String(e.data.fenetre?.du ?? e.data.date ?? e.data.startDate ?? '').slice(0, 10) : null; }, titre);
+        let ecrit = null; for (let k = 0; k < 10 && (ecrit = await dateEcrite()) !== c.attendu; k++) await sleep(300);
         const apres = await labelDe(`${titre},`);
-        if (!apres || apres === avant) { await cap(`06-echec-${type}`); echec(nom, `jour ${cible.de} → ${cible.jour} demandé, l'élément n'a pas changé : « ${apres?.slice(0, 90) ?? 'absent'} »`); continue; }
-        await recharger(); const relu = await labelDe(`${titre},`);
-        relu === apres ? ok(nom, `${cible.de} → ${cible.jour}, relu : « ${relu.split(',').slice(0, 3).join(',')} »`) : echec(nom, `écrit « ${apres.split(',').slice(0, 3).join(',')} », relu après rechargement « ${relu?.split(',').slice(0, 3).join(',') ?? 'absent'} »`);
+        if (ecrit !== c.attendu || !apres || apres === avant) { await cap(`06-echec-${type}`); echec(nom, `jour ${c.valeur} → ${c.attendu} tiré, écrit « ${ecrit ?? 'rien'} » ; l'élément « ${apres?.slice(0, 90) ?? 'absent'} » ${apres === avant ? "n'a pas changé" : ''}`); continue; }
+        await recharger(); const relu = await labelDe(`${titre},`), reluDate = await dateEcrite();
+        relu === apres && reluDate === c.attendu ? ok(nom, `${c.valeur} → ${c.attendu} (${c.label}), écrit et relu : « ${relu.split(',').slice(0, 3).join(',')} »`) : echec(nom, `écrit le ${c.attendu} « ${apres.split(',').slice(0, 3).join(',')} », relu après rechargement le ${reluDate ?? '?'} « ${relu?.split(',').slice(0, 3).join(',') ?? 'absent'} »`);
       } catch (e) { echec(nom, String(e.message).slice(0, 200)); }
     }
 
