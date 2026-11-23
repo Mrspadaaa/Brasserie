@@ -2,7 +2,9 @@
 import type { FinanceTransaction, FinancialPayment, FinancialPlan } from '../../domain/finance/types';
 import type { CreativeItem } from '../../types';
 import type { MagasinCarnets } from '../../services/carnetsStore';
-import type { Destination, EcritureCarnet } from '../../domain/carnets/operations';
+import type React from 'react';
+import type { CarnetDoc } from '../../domain/carnets/modele';
+import type { Destination, EcritureCarnet, Resultat } from '../../domain/carnets/operations';
 import type { LigneLocale, RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import type { AidesCarnet, ModeCarnetIA } from '../../config/carnetIA';
 import type { AppelsIA } from './rangement';
@@ -95,3 +97,15 @@ export type Annonce =
      rubrique annoncée tient */
   /* Test en ligne 2 : `choisi` : le carnet corrigé d'un toucher (« Ici », ou un autre) ; un choix du brasseur, l'IA ne le change pas */
   | { sorte: 'ici'; carnetId: string; rubrique?: RubriqueVaDans; choisi?: true; /** CRN-2 : « Va dans : Note » était coché */ noteChoisie?: true };
+
+/** Un état de React et sa boîte (useRef), tels que les modules du Carnet les reçoivent du conteneur. */
+export type Etat<T> = React.Dispatch<React.SetStateAction<T>>;
+export type Boite<T> = React.RefObject<T>;
+/** `appliquer` : l'écriture faite, ou `null` (un refus, dit ; rien n'est écrit). */
+export type Appliquer = (r: Resultat) => (Resultat & { ok: true }) | null;
+/** P1, P2 : le retour de l'écriture locale, tenu en réserve tant que l'IA peut la remplacer. */
+export type Attente = { messageId: string; retour: RetourNeuf; montre?: boolean; neuf?: string };
+/** Critique 6, n° 24 : un message rangé tel quel (hors ligne, échec), repris d’un toucher. */
+export type AReprendre = { messageId: string; texte: string; echec?: true };
+/** Le carnet supprimé, gardé pour Annuler (avec son plan, L-14). */
+export type Supprime = { titre: string; statut: CarnetDoc['status']; inverse: EcritureCarnet[]; plan?: FinancialPlan };
