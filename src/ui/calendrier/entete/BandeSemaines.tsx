@@ -29,6 +29,12 @@ export interface BandeSemainesProps {
   largeurColonne?: number;
   /** D385 (variante C) : présent, toucher une semaine la déplie en sept jours (sa date est alors dans son en-tête dépliée), au lieu de la bulle. */
   onDeplier?: (lundi: string) => void;
+  /**
+   * D432 (23.11, « Graduations sur la courbe ») : les bords de chaque semaine en px de la courbe (n + 1 valeurs). Présents, la bande se pose sur
+   * l'axe de la courbe : le cadre couvre exactement ses semaines, celles d'avant et d'après en gris dans les marges (`dansCadre`, index).
+   */
+  abscisses?: readonly number[];
+  dansCadre?: readonly [number, number];
 }
 
 const DELAI = 500;
@@ -107,7 +113,9 @@ export function etiquettesBande(semaines: readonly SemaineBande[], pas: PasEtiqu
   return res;
 }
 
-export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, retards, onDate, onIdeeSemaine, largeurColonne = 0, onDeplier, lundiCourant }: BandeSemainesProps) {
+export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, retards, onDate, onIdeeSemaine, largeurColonne = 0, onDeplier, lundiCourant, abscisses, dansCadre }: BandeSemainesProps) {
+  const surCourbe = !!abscisses && abscisses.length === semaines.length + 1;
+  const colonnesCourbe = surCourbe ? abscisses!.slice(1).map((x, k) => `${Math.max(0, x - abscisses![k])}px`).join(' ') : undefined;
   const appui = useRef<{ id: number; x: number; y: number; timer: ReturnType<typeof setTimeout>; long: boolean } | null>(null);
   const annule = () => { if (appui.current) { clearTimeout(appui.current.timer); appui.current = null; } };
   const wEtiquette = largeurEtiquetteMax();
@@ -125,12 +133,15 @@ export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, r
     return () => { document.removeEventListener('pointerdown', parDoigt, true); document.removeEventListener('keydown', parClavier, true); };
   }, []);
   return (
-    <div className="ent-bd" data-bande-semaines data-pas={pas} data-doigt={doigt ? 'oui' : undefined} role="group" aria-label="Semaines ; ± affiche les mouvements et les icônes" style={{ ['--n' as string]: semaines.length }}>
+    <div className="ent-bd" data-bande-semaines data-pas={pas} data-doigt={doigt ? 'oui' : undefined} role="group" aria-label="Semaines ; ± affiche les mouvements et les icônes" style={{ ['--n' as string]: semaines.length, ...(colonnesCourbe ? { gridTemplateColumns: colonnesCourbe } : {}) }} data-sur-courbe={surCourbe ? 'oui' : undefined}>
       {semaines.map((s, k) => {
         const v = courbe ? variation(courbe, decalage + k) : null;
         const idee = idees.has(s.debut), retard = retards.has(s.debut);
+        const hors = surCourbe && dansCadre ? k < dansCadre[0] || k >= dansCadre[1] : false;
+        /* une semaine coupée au bord de la courbe (moins des 3/5 d'une semaine) garde sa place, sans son nom (il serait coupé) */
+        const coupee = surCourbe && largeurColonne > 0 && abscisses![k + 1] - abscisses![k] < 0.6 * largeurColonne;
         return (
-          <button key={s.debut} type="button" className="ent-bd-c" data-semaine={s.numero} data-lundi={s.debut} data-courant={(lundiCourant ? s.debut === lundiCourant : decalage + k === 0) ? 'oui' : undefined}
+          <button key={s.debut} type="button" className="ent-bd-c" data-semaine={s.numero} data-lundi={s.debut} data-hors={hors ? 'oui' : undefined} data-courant={(lundiCourant ? s.debut === lundiCourant : decalage + k === 0) ? 'oui' : undefined}
             aria-label={`${dateDeSemaine(s.debut)}${mouvements && v !== null ? ` ; mouvement ${sg(v)}` : ''}${mouvements && idee ? ' ; idée du carnet' : ''}${mouvements && retard ? ' ; en retard' : ''}`}
             onPointerDown={e => {
               if (e.button > 0 || !onIdeeSemaine) return;
@@ -149,7 +160,7 @@ export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, r
               else onDate(s.debut, k);
             }}>
             {/* Pas de 2, 4 ou mois : seules les étiquettes posées se lisent ; chaque colonne reste touchable et garde son nom (« S50, 7 – 13 déc. »). */}
-            {etiquettes === null ? <span className="ent-sem">{`S${s.numero}`}</span>
+            {coupee ? null : etiquettes === null ? <span className="ent-sem">{`S${s.numero}`}</span>
               : etiquettes.has(k) ? <span className="ent-sem ent-sem--pas" aria-hidden="true">{etiquettes.get(k)}</span> : null}
             {mouvements && (
               <span className="ent-bd-m">

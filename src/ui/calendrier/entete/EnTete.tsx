@@ -4,7 +4,7 @@ import { ChartLine, ChevronDown, Clock, EyeOff, Maximize2, Minimize2, Ruler } fr
 import { alignerSemaines, colonnesDeSemaines, semaineSous } from './alignement';
 import type { Periode } from '../../../components/periode/periode';
 import { anneeEnMois, dateDeSemaine, etiquetteS, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
-import { creuxDepuis, miseDeCoteVisible, type CourbeCaisse, type MouvementNomme } from '../../../domain/calendrierCaisse';
+import { creuxDepuis, creuxEntre, miseDeCoteVisible, type CourbeCaisse, type MouvementNomme } from '../../../domain/calendrierCaisse';
 import type { Orientation } from '../useOrientation';
 import { demanderPleinEcran, estPleinEcran, poserPleinCalendrier, sortirPleinEcran } from '../pleinEcran';
 import { usePointeurCourbe } from '../usePointeurCourbe';
@@ -544,7 +544,10 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   };
 
   // ---- Ce qui se lit ----
-  const creux = apercuC ? creuxDepuis(apercuC) : (modele.creux ?? (base ? creuxDepuis(base) : null));
+  /* D433 (23.11, « Creux du cadre ») : la pastille dit le creux de ce que montre le cadre et le suit ; rien à venir dedans : 0, « dans le cadre ». */
+  const courbeCreux = apercuC ?? base;
+  const creux = courbeCreux ? creuxEntre(courbeCreux, index, index + nombre) : (modele.creux ?? null);
+  const creuxVide = !!courbeCreux && !creux;
   const icones = modele.icones ?? [];
   const idees = useMemo(() => new Set(icones.filter(i => i.genre === 'idee').map(i => i.lundi)), [icones]);
   const semainesRetard = useMemo(() => new Set(icones.filter(i => i.genre === 'retard').map(i => i.lundi)), [icones]);
@@ -680,12 +683,16 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     return () => { if (image) cancelAnimationFrame(image); ro.disconnect(); };
     // Le bouton est remonté quand la lecture au doigt se ferme : il se rejuge alors (lecture dans les dépendances). La courbe ne compte que
     // présente ou absente (le bouton n'existe qu'avec elle) ; ses valeurs passent par le creux.
-  }, [semaineCreux, creux?.centimes, orientation, vue, !!courbe, lecture === null]);
+  }, [semaineCreux, creux?.centimes, creuxVide, orientation, vue, !!courbe, lecture === null]);
   const cle = courbe && creux ? (
     <button ref={refCle} type="button" className="ent-k" data-ent-cle data-empile={empile ? '' : undefined} data-serre={empile && serre ? '' : undefined} data-tres-serre={empile && serre && tresSerre ? '' : undefined} aria-expanded={creuxOuvert}
-      aria-label={`${chf(creux.centimes)} CHF à dépenser sans passer sous 0 (${semaineCreux}, sur tout l’horizon de la courbe) : voir ses causes`} onClick={() => setCreuxOuvert(o => !o)}>
+      aria-label={`${chf(creux.centimes)} CHF à dépenser sans passer sous 0 (${semaineCreux}, dans le cadre) : voir ses causes`} onClick={() => setCreuxOuvert(o => !o)}>
       <b className={creux.centimes < 0 ? 'ent-neg' : undefined}>{chf(creux.centimes)}</b><span className="ent-k-u">CHF à dépenser</span><em><span className="ent-k-sep">· </span>{semaineCreux}</em>
     </button>
+  ) : courbe && creuxVide ? (
+    /* D433, la butée : rien à venir dans le cadre ; mesuré comme la pastille (empilée au besoin, jamais rognée) */
+    <span ref={refCle as unknown as React.RefObject<HTMLSpanElement>} className="ent-k" data-ent-cle data-creux-vide data-empile={empile ? '' : undefined} data-serre={empile && serre ? '' : undefined} data-tres-serre={empile && serre && tresSerre ? '' : undefined}
+      aria-label="0 CHF à dépenser : rien à venir dans le cadre"><b>0</b><span className="ent-k-u">CHF à dépenser</span><em><span className="ent-k-sep">· </span>dans le cadre</em></span>
   ) : <span className="ent-k ent-k-vide" />;
 
   // D387, D388 : la part de la courbe posée sur la frise (index `d` à `d + m` de l'année) ; le creux, la mise de côté et les étoiles s'y décalent.
@@ -711,6 +718,11 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
       etoiles: etoilesCourbe.filter(e => dedans(e.i)).map(e => ({ ...e, i: e.i - d }))
     };
   })() : null;
+  /* D432 (23.11, « Graduations sur la courbe ») : hors alignement et en portrait, la bande des semaines se pose sur l'axe de la courbe (R4) ; le
+     cadre couvre exactement ses semaines, celles des marges en gris. Elle suit le cadre quand on l'agrandit, le rétrécit ou le déplace (vueC). */
+  const bandeSurCourbe: { semaines: typeof visibles; decalage: number; abscisses?: readonly number[]; dansCadre?: readonly [number, number] } = echelleR4 && !paysage
+    ? { semaines: semainesTot.slice(echelleR4.debut, echelleR4.debut + echelleR4.abscisses.length - 1), decalage: echelleR4.debut, abscisses: echelleR4.abscisses, dansCadre: [index - echelleR4.debut, index + nombre - echelleR4.debut] }
+    : { semaines: visibles, decalage: index };
   // D388, la ligne du jouable : « si tu lâches en S51 : S50 5 120 → 4 480 » (la semaine d'arrivée, la première qui change, avant → après).
   // `d` : l'index de la première semaine montrée (celui de l'alignement de la courbe, ou de l'en-tête entier en paysage).
   const lacherDe = (d: number) => {
@@ -808,14 +820,14 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
 
       {!graph && (
         <div className="ent-bz">
-          {annee && courbe ? <BandeAnnee courbe={courbe} mois={moisDeLAn} creux={creux} /> : vue === 'semaines' && props.colonnes && props.echelle && (props.echelle !== 'semaine' || props.deplie) ? (
+          {annee && courbe ? <BandeAnnee courbe={courbe} mois={moisDeLAn} creux={creux} /> : vue === 'semaines' && props.colonnes && props.echelle && (props.echelle === 'jour' || props.deplie || (props.echelle === 'mois' && !bandeSurCourbe.abscisses)) ? (
             <BandeColonnes colonnes={props.colonnes} echelle={props.echelle} aujourdhui={props.aujourdhui} deplie={props.deplie ?? null} onDeplier={props.onDeplier} onIdeeSemaine={onIdeeSemaine}
               onJour={(jour, colonne, n) => touche(jour, colonne, `${jourEntier(jour)} · ${etiquetteS(jour)}`, n)}
               onSemaine={(lundi, colonne, n) => touche(lundi, colonne, dateDeSemaine(lundi), n)} />
           ) : (
-            <BandeSemaines semaines={visibles} courbe={courbe} decalage={index} lundiCourant={modele.semaines[modele.passe ?? 0]?.debut} mouvements={mouvements} idees={idees} retards={semainesRetard} onDate={touche} onIdeeSemaine={onIdeeSemaine}
+            <BandeSemaines {...bandeSurCourbe} courbe={courbe} lundiCourant={modele.semaines[modele.passe ?? 0]?.debut} mouvements={mouvements} idees={idees} retards={semainesRetard} onDate={touche} onIdeeSemaine={onIdeeSemaine}
               {...(props.onDeplier && vue === 'semaines' ? { onDeplier: props.onDeplier } : {})}
-              largeurColonne={largeurColonne > 0 ? largeurColonne : largeur / Math.max(1, nombre)} />
+              largeurColonne={bandeSurCourbe.abscisses ? largeur / Math.max(1e-6, vueC.span) : largeurColonne > 0 ? largeurColonne : largeur / Math.max(1, nombre)} />
           )}
           {/* La date d'une semaine (i3) : au-dessus de la bande, dans l'en-tête ; jamais sur un nom de la frise (CRITIQUE-3 n° 7). */}
           <div className="ent-live ent-live-date" aria-live="polite">

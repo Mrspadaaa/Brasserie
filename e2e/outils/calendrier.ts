@@ -92,7 +92,8 @@ export function lireCoherence(page: Page): Promise<Coherence> {
     const dans = (e: Element) => { const r = e.getBoundingClientRect(), x = r.left + r.width / 2; return x >= c.left - 0.5 && x <= c.right + 0.5; };
     const num = (e: Element) => Number(e.getAttribute('data-point-semaine') ?? e.getAttribute('data-semaine'));
     const points = [...cb.querySelectorAll('[data-point-semaine]')].filter(dans).map(num);
-    const grad = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.left + r.width / 2 >= 0 && r.left + r.width / 2 <= innerWidth; }).map(num);
+    /* D432 : les semaines des marges (grises, hors du cadre) ne sont pas les graduations de la fenêtre */
+    const grad = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]:not([data-hors])')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.left + r.width / 2 >= 0 && r.left + r.width / 2 <= innerWidth; }).map(num);
     const label = (document.querySelector('[data-cadre-etiquette]')?.textContent ?? '').replace(/\s+/g, ' ').trim();
     // « S47 – S52 », « S47 – S45 2027 », « S47 2025 – S52 2026 » (le début dit son année hors de l'année en cours)
     const me = /^S(\d+)(?: (\d{4}))?(?: – S(\d+)(?: (\d{4}))?)?/.exec(label);
@@ -228,3 +229,25 @@ export function semaineAbsolue(e: { a: number; anA: number | null; anB: number |
 }
 
 export { ajouter };
+
+/** La fenêtre locale de `n` semaines, tirée depuis l'An par la poignée de fin (en plusieurs fois au besoin), puis déplacée par le corps du cadre ; rend le libellé de la durée. */
+export async function fenetreDe(page: Page, doigt: { glisser: (a: { x: number; y: number }, b: { x: number; y: number }, o?: { dureeMs?: number }) => Promise<void> }, n: number, deplacer = true): Promise<string> {
+  const duree = () => boutonPeriode(page).innerText().then((t) => t.trim());
+  await choisirPeriode(page, 'An');
+  const c = await page.locator('.ent-cadre').boundingBox(), pas = c!.width / 52;
+  for (let essai = 0, ecart = 52 - n; essai < 5 && ecart !== 0; essai++) {
+    const h = await page.locator('[data-poignee="fin"]').first().boundingBox(), x = h!.x + h!.width / 2, y = h!.y + h!.height / 2;
+    const d = ecart * pas, plus = Math.abs(d) < 7 ? Math.sign(d) * 1.5 : 0; // sous 6 px, la poignée ne part pas
+    await doigt.glisser({ x, y }, { x: x - d - plus, y }, { dureeMs: 500 });
+    await page.waitForTimeout(400);
+    const lu = await duree(); ecart = semainesDuLibelle(lu) - n;
+    if (!Number.isFinite(ecart)) throw new Error(`durée illisible : « ${lu} »`);
+  }
+  if (deplacer) {
+    const c2 = await page.locator('.ent-cadre').boundingBox(), y = c2!.y + c2!.height / 2;
+    await doigt.glisser({ x: c2!.x + c2!.width / 2, y }, { x: c2!.x + c2!.width / 2 + Math.max(10, 2 * (c2!.width / Math.max(1, n))), y }, { dureeMs: 500 });
+    await page.waitForTimeout(400);
+  }
+  return duree();
+}
+export const semainesDuLibelle = (t: string) => (t === 'An' ? 52 : t === '6 mois' ? 26 : t === '3 mois' ? 13 : Number(/^(\d+)\s*sem/.exec(t)?.[1] ?? NaN));

@@ -213,6 +213,8 @@
 /* CRITIQUE-7 n° 1 : une étiquette sur 2 ou 4 semaines (ou le mois) déborde de sa colonne étroite, centrée, sans se couper ni toucher sa voisine. */
 .ent-sem--pas { white-space: nowrap; }
 .ent-bd-c[data-courant] .ent-sem { color: var(--ent-ink); font-weight: 700; }
+/* D432 : sur l'axe de la courbe, les semaines hors du cadre en gris dans les marges */
+.ent-bd-c[data-hors] .ent-sem, .ent-bd-c[data-hors] .ent-bd-m { opacity: 0.45; }
 /* CRITIQUE-9 (doute m390-11) : l'anneau de focus d'une colonne est pour le clavier seul ; après un toucher, aucun cadre (BandeSemaines, data-doigt). */
 .ent-bd[data-doigt] .ent-bd-c:focus-visible { outline: none; }
 .ent-bd-m { display: flex; flex-direction: column; align-items: center; font-size: 14px; font-weight: 700; line-height: 18px; padding-bottom: 2px; }

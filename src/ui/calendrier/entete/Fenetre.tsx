@@ -136,6 +136,19 @@ export function etiquetteCadre(numeros: readonly number[], index: number, nombre
   return `S${numeros[index] ?? ''}${anA} – S${numeros[fin] ?? ''}${anB}`;
 }
 
+/**
+ * D434 (23.11, « Dates sur le cadre ») : le cadre dit ses dates, du lundi de sa première semaine au dimanche de sa dernière (« 26 oct. – 6 déc. ») ;
+ * les graduations disent les semaines, chaque chose une fois. L'année s'écrit au bout quand elle n'est pas celle d'aujourd'hui, et aux deux
+ * bouts quand ils n'ont pas la même. Une semaine : ses jours (« 16–22 nov. »). `null` : semaines inconnues.
+ */
+export function etiquetteDates(lundis: readonly string[] | undefined, index: number, nombre: number, aujourdhui?: string): string | null {
+  const a = lundis?.[index], l = lundis?.[Math.min(lundis.length - 1, index + Math.max(1, nombre) - 1)];
+  if (!a || !l) return null;
+  if (nombre <= 1 || l === a) return joursSemaine(a);
+  const b = ajouterJours(l, 6), ya = a.slice(0, 4), yb = b.slice(0, 4), ref = aujourdhui?.slice(0, 4);
+  return `${jourCourt(a)}${ya !== yb ? ` ${ya}` : ''} – ${jourCourt(b)}${yb !== ref || ya !== yb ? ` ${yb}` : ''}`;
+}
+
 /** Les jours d'une semaine, court : « 16–22 févr. », « 26 oct.–1 nov. » (l'étiquette d'une fenêtre d'une semaine, CAL-FRISE-ETIQUETTES). */
 export function joursSemaine(lundi: string): string {
   const a = jourCourt(lundi), b = jourCourt(ajouterJours(lundi, 6));
@@ -145,8 +158,8 @@ export function joursSemaine(lundi: string): string {
 
 /** L'étiquette du cadre au repos : les jours d'une fenêtre d'une semaine, sinon `etiquetteCadre`. La courbe s'en sert comme obstacle (même texte). */
 export function etiquetteRepos(numeros: readonly number[], index: number, nombre: number, annee: boolean, etiquetteAnnee?: string, lundis?: readonly string[], aujourdhui?: string): string {
-  const l = !annee && nombre === 1 ? lundis?.[index] : undefined;
-  return l ? joursSemaine(l) : etiquetteCadre(numeros, index, nombre, annee, etiquetteAnnee, lundis, aujourdhui);
+  if (annee && etiquetteAnnee) return etiquetteAnnee;
+  return etiquetteDates(lundis, index, nombre, aujourdhui) ?? etiquetteCadre(numeros, index, nombre, annee, etiquetteAnnee, lundis, aujourdhui);
 }
 
 /** Zone de prise d'une poignée : 44 px (cible tactile minimale de l'app). */
@@ -231,8 +244,8 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
   const cur = drag ?? { index, nombre };
   /* CAL-FRISE-ETIQUETTES (« S47 » écrit deux fois) : au repos, une fenêtre d'une semaine a sa graduation « S44 » juste dessous ; le cadre dit ses jours
      (« 26 oct. – 1 nov. »), jamais le même numéro. Pendant le tirage, la bulle garde le numéro (il change sous le doigt). */
-  const lundiSeul = !drag && !annee && cur.nombre === 1 ? lundis?.[cur.index] : undefined;
-  const etiquette = lundiSeul ? joursSemaine(lundiSeul) :etiquetteCadre(numeros, cur.index, cur.nombre, annee && !drag, etiquetteAnnee, lundis, aujourdhui);
+  /* D434 : les dates, au repos comme pendant le tirage (l'An au repos garde ses mois) */
+  const etiquette = annee && !drag && etiquetteAnnee ? etiquetteAnnee : etiquetteDates(lundis, cur.index, cur.nombre, aujourdhui) ?? etiquetteCadre(numeros, cur.index, cur.nombre, annee && !drag, etiquetteAnnee, lundis, aujourdhui);
   /* L-13 (T10-13) : pendant le glisser du corps, le cadre accompagne le doigt (R2) ; à une semaine (248 px), il ne bougeait qu'après 124 px */
   const glis = drag?.glis ?? 0;
   const gauche = xDe(cur.index + glis), droite = xDe(cur.index + cur.nombre + glis);
@@ -344,8 +357,9 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
       coupe(s);
       // le Cadre a pris le doigt : le clic fabriqué au doigt levé n'atteint ni ± ni la courbe (les poignées ne répondent qu'au clic clavier)
       avalerClicSuivant();
-      if (s.lit) return;
+      /* CAL-ECHELLE-SUIT-CADRE : l'état du tirage part toujours au lâcher (resté, la bulle du tirage gardait une autre fenêtre : « S49 – S46 2027 » à 3 sem.) */
       setDrag(null);
+      if (s.lit) return;
       if (!bouge) { onVueRef.current?.(null); return; }
       const n = s.b - s.a;
       if (s.a !== s.a0 || s.b !== s.b0) onChange({ index: s.a, nombre: n });
