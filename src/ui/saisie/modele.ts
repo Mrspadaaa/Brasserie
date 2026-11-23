@@ -8,6 +8,7 @@ import type { FinanceKind, FinanceTransaction, FinancialPayment, FinancialPlan }
 import { isActiveTransaction, transactionAmount, transactionDirection, transactionKind, ventilationAvoir } from '../../domain/finance/ledger';
 import { planOccurrences } from '../../domain/finance/forecast';
 import { planSoldeParDepense } from '../../domain/venteSuites';
+import { lireDecimal } from '../numericInput';
 
 export type GenreId = 'achat' | 'loyer' | 'abo' | 'salaire' | 'impot' | 'prel' | 'autreo' | 'vente' | 'apport' | 'autrei' | 'rembt';
 export type Rythme = 'une' | 'monthly' | 'quarterly' | 'yearly';
@@ -50,10 +51,12 @@ export const horsResultat = (g: GenreId) => GENRES[g].kind === 'contribution' ||
 
 /* ---------- montants et dates ---------- */
 /** « 2 000,5 », « 29.90 », « 400 » → centimes ; `undefined` si illisible ou nul (l'inconnu n'est jamais 0). */
+/* Lot 11 (hors lot du lot 6) : la lecture commune de toute saisie de nombre (lireDecimal : « 12,50 », « 1'234.50 », « 1.234,50 ») ;
+   un montant est positif, à deux décimales au plus. */
 export function lireMontant(brut: string): number | undefined {
-  const t = brut.replace(/[\s’'  ]/g, '').replace(',', '.');
-  if (!/^\d+(\.\d{0,2})?$/.test(t)) return undefined;
-  const c = Math.round(Number(t) * 100);
+  const l = lireDecimal(brut);
+  if (!l || l.decimales > 2 || !(l.valeur > 0)) return undefined;
+  const c = Math.round(l.valeur * 100);
   return Number.isSafeInteger(c) && c > 0 ? c : undefined;
 }
 /** 40100 → « 401,00 » ; 200000 → « 2 000,00 » (espace fine insécable des milliers). */
