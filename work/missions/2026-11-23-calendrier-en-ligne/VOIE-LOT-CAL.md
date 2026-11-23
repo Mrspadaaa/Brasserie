@@ -28,3 +28,8 @@ Ordre et contenu inchangés (points 1 à 5 du brief), avec ces ajouts :
 - Ses mots : « si je mets 1 ou 2 ou peut être 3 je devrais voir les jours plutôt que les semaines.. comme les mois pour une année ».
 - Le grain suit la largeur du CADRE (pendant le tirage, à chaque durée) : jours jusqu'à 3 sem., semaines au-delà, mois pour un an
   et plus. À faire AVEC la priorité 1 (même bande, même transformation x), un seul cycle PRÊT / EN LIGNE / preuve en ligne.
+
+## Ajout 23.11 (vérif. en ligne de fix13) — arrondi du lâcher
+- À 14 sem., doigt dans la 2e moitié de S3 → écrit S4 : le lâcher arrondit à la colonne la plus proche au lieu de prendre la
+  colonne SOUS le doigt. Corriger (plancher, pas arrondi) dans la transformation unique ; la propriété fast-check passe à
+  « date écrite ∈ colonne sous le doigt » (plus de ± 1).
