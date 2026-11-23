@@ -36,7 +36,9 @@ export default defineConfig({
   },
   projects: [
     { name: 'android-390', use: { ...devices['Pixel 7'], viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, channel: 'chrome' } },
-    { name: 'paysage-844', use: { ...devices['Pixel 7 landscape'], viewport: { width: 844, height: 340 }, deviceScaleFactor: 1, channel: 'chrome' } }
+    { name: 'paysage-844', use: { ...devices['Pixel 7 landscape'], viewport: { width: 844, height: 340 }, deviceScaleFactor: 1, channel: 'chrome' } },
+    // la 3e taille du Carnet (CLAUDE.md : « 1280 peu ») : grand écran tactile, seulement les épreuves du Carnet
+    { name: 'bureau-1280', testMatch: /carnet[\\/].*\.spec\.ts$/, use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 }, hasTouch: true, deviceScaleFactor: 1, channel: 'chrome' } }
   ],
   webServer: {
     command: `node e2e/outils/preparer.mjs "${BUILD}" && npx vite preview --config ${CONFIG_VITE} --outDir "${BUILD}" --host 127.0.0.1 --port ${PORT} --strictPort`,
