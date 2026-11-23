@@ -2836,3 +2836,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - « Est-ce que on aurait besoin d'autres outils, ou autre méthode pour améliorer ça ? »
 - « On peut mettre iatask à jour et je pense qu'il faudra » (accord : déployer aiTask)
 - (citant « Ces pourcentages ne comptent pas 5 pages qui bloquent les robots ni un lien mort : on ne contourne jamais ces blocages. ») « SI, il faut »
+- (citant le refus de contourner les défis anti-robots) « Pas de problème, fait le par le biais de l'ia ou gemini »
