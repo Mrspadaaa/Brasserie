@@ -1,0 +1,73 @@
+{
+ "n": 28,
+ "cfg": "neon",
+ "modele": "gemini-4-neon",
+ "http": 200,
+ "ms": 8553,
+ "usage": {
+  "promptTokenCount": 580,
+  "candidatesTokenCount": 180,
+  "totalTokenCount": 6421,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 580
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 180
+   }
+  ],
+  "toolUsePromptTokenCount": 5223,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 5223
+   }
+  ],
+  "thoughtsTokenCount": 438,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Pilsner Malz, 3-5 EBC, 25 kg\", \"marque\": null, \"prix\": 36.5, \"devise\": \"CHF\", \"ttc\": true, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Artikelnummer\", \"valeur\": \"MZ1010025\"}, {\"nom\": \"Kategorie\", \"valeur\": \"Braumalz (Brühmalz)\"}, {\"nom\": \"Farbe\", \"valeur\": \"3-5 EBC\"}, {\"nom\": \"Gewicht\", \"valeur\": \"25 kg\"}, {\"nom\": \"Einheit\", \"valeur\": \"Sack\"}]}",
+ "json": {
+  "nom": "Pilsner Malz, 3-5 EBC, 25 kg",
+  "marque": null,
+  "prix": 36.5,
+  "devise": "CHF",
+  "ttc": true,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Artikelnummer",
+    "valeur": "MZ1010025"
+   },
+   {
+    "nom": "Kategorie",
+    "valeur": "Braumalz (Brühmalz)"
+   },
+   {
+    "nom": "Farbe",
+    "valeur": "3-5 EBC"
+   },
+   {
+    "nom": "Gewicht",
+    "valeur": "25 kg"
+   },
+   {
+    "nom": "Einheit",
+    "valeur": "Sack"
+   }
+  ]
+ },
+ "entree": 5803,
+ "sortie": 618,
+ "chf": 0.03334875
+}

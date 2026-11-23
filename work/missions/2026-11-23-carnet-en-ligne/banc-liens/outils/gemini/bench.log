@@ -1,0 +1,34 @@
+Départ : 63 liens × 4 configurations, déjà dépensé 0.072 CHF, parallèle 8
+27 lite  http 200 1.2s  949→84 jetons  0.0006 CHF  prix=-   total 0.073 CHF
+28 lite  http 200 1.2s  5340→94 jetons  0.0023 CHF  prix=36.5 CHF  total 0.075 CHF
+29 lite  http 200 1.2s  8951→121 jetons  0.0037 CHF  prix=401 CHF  total 0.079 CHF
+27 hyd   http 200 3.8s  1336→255 jetons  0.0049 CHF  prix=-   total 0.084 CHF
+27 f38   http 200 4.2s  949→84 jetons  0.0026 CHF  prix=-   total 0.086 CHF
+28 f38   http 200 5.4s  5340→168 jetons  0.0116 CHF  prix=36.5 CHF  total 0.098 CHF
+28 hyd   http 200 5.6s  5737→568 jetons  0.0161 CHF  prix=36.5 CHF  total 0.114 CHF
+30 lite  http 200 1.4s  2716→282 jetons  0.0019 CHF  prix=2345 CHF  total 0.116 CHF
+29 f38   http 200 4.8s  8951→190 jetons  0.0186 CHF  prix=401 CHF  total 0.134 CHF
+31 lite  http 200 1.3s  2058→268 jetons  0.0016 CHF  prix=520 CHF  total 0.136 CHF
+29 hyd   http 200 5.8s  9269→477 jetons  0.0219 CHF  prix=401 CHF  total 0.158 CHF
+28 neon  http 200 8.6s  5803→618 jetons  0.0333 CHF  prix=36.5 CHF  total 0.191 CHF
+30 hyd   http 200 5.3s  3066→609 jetons  0.0115 CHF  prix=2345 CHF  total 0.203 CHF
+27 neon  http 200 11.3s  1411→344 jetons  0.0117 CHF  prix=-   total 0.214 CHF
+30 f38   http 200 6.9s  2716→282 jetons  0.0077 CHF  prix=2345 CHF  total 0.222 CHF
+32 lite  http 200 1.6s  16030→239 jetons  0.0068 CHF  prix=1300 CHF  total 0.229 CHF
+NEON COUPE : médiane 11329 ms > 3.8 Flash 5395 ms
+31 f38   http 200 5.2s  2058→286 jetons  0.0065 CHF  prix=520 CHF  total 0.235 CHF
+31 hyd   http 200 5.6s  2456→732 jetons  0.0115 CHF  prix=520 CHF  total 0.247 CHF
+33 lite  http 200 1.3s  2311→223 jetons  0.0016 CHF  prix=6.7 CHF  total 0.248 CHF
+29 neon  http 200 10.6s  9338→750 jetons  0.0491 CHF  prix=401 CHF  total 0.297 CHF
+34 lite  http 200 1.3s  2323→215 jetons  0.0015 CHF  prix=7.25 CHF  total 0.299 CHF
+30 neon  http 200 10.5s  3170→732 jetons  0.0256 CHF  prix=2345 CHF  total 0.325 CHF
+32 f38   http 200 5.5s  16030→239 jetons  0.0323 CHF  prix=1300 CHF  total 0.357 CHF
+BUDGET : 0.357 CHF dépensés, arrêt net avant d'atteindre 0.8 CHF
+35 lite  http 200 1.0s  1616→97 jetons  0.0009 CHF  prix=7.5 CHF  total 0.358 CHF
+32 hyd   http 200 5.3s  16437→781 jetons  0.0381 CHF  prix=1300 CHF  total 0.396 CHF
+33 f38   http 200 5.7s  2311→246 jetons  0.0066 CHF  prix=6.7 CHF  total 0.403 CHF
+33 hyd   http 200 5.5s  2759→702 jetons  0.0118 CHF  prix=6.7 CHF  total 0.414 CHF
+31 neon  http 200 10.8s  2535→831 jetons  0.0251 CHF  prix=520 CHF  total 0.439 CHF
+34 hyd   http 200 4.9s  2761→666 jetons  0.0114 CHF  prix=7.25 CHF  total 0.451 CHF
+34 f38   http 200 5.8s  2323→245 jetons  0.0067 CHF  prix=7.25 CHF  total 0.458 CHF
+FIN : 30 appels, 0.458 CHF au total (budget atteint)

@@ -1,0 +1,45 @@
+{
+ "n": 36,
+ "cfg": "f38",
+ "modele": "gemini-3.8-flash",
+ "http": 200,
+ "ms": 4422,
+ "usage": {
+  "promptTokenCount": 397,
+  "candidatesTokenCount": 87,
+  "totalTokenCount": 1048,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 397
+   }
+  ],
+  "toolUsePromptTokenCount": 564,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 564
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_ERROR"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": null, \"marque\": null, \"prix\": null, \"devise\": null, \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": []}",
+ "json": {
+  "nom": null,
+  "marque": null,
+  "prix": null,
+  "devise": null,
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": []
+ },
+ "entree": 961,
+ "sortie": 87,
+ "chf": 0.0026175
+}

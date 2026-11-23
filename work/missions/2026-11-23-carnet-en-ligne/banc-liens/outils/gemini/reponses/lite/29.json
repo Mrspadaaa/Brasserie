@@ -1,0 +1,54 @@
+{
+ "n": 29,
+ "cfg": "lite",
+ "modele": "gemini-3.5-flash-lite",
+ "http": 200,
+ "ms": 1166,
+ "usage": {
+  "promptTokenCount": 387,
+  "candidatesTokenCount": 121,
+  "totalTokenCount": 9072,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 387
+   }
+  ],
+  "toolUsePromptTokenCount": 8564,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 8564
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Spectrum CITRA 1 kg\", \"marque\": null, \"prix\": 401.00, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Gebinde\", \"valeur\": \"1 kg\"}, {\"nom\": \"Haltbarkeit\", \"valeur\": \"12 Monate\"}]}",
+ "json": {
+  "nom": "Spectrum CITRA 1 kg",
+  "marque": null,
+  "prix": 401,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Gebinde",
+    "valeur": "1 kg"
+   },
+   {
+    "nom": "Haltbarkeit",
+    "valeur": "12 Monate"
+   }
+  ]
+ },
+ "entree": 8951,
+ "sortie": 121,
+ "chf": 0.0037347499999999994
+}

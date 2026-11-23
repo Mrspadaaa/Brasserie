@@ -1,0 +1,50 @@
+{
+ "n": 35,
+ "cfg": "lite",
+ "modele": "gemini-3.5-flash-lite",
+ "http": 200,
+ "ms": 955,
+ "usage": {
+  "promptTokenCount": 384,
+  "candidatesTokenCount": 97,
+  "totalTokenCount": 1713,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 384
+   }
+  ],
+  "toolUsePromptTokenCount": 1232,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 1232
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Citra\", \"marque\": null, \"prix\": 7.50, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Gewicht\", \"valeur\": \"0.1 kg\"}]}",
+ "json": {
+  "nom": "Citra",
+  "marque": null,
+  "prix": 7.5,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Gewicht",
+    "valeur": "0.1 kg"
+   }
+  ]
+ },
+ "entree": 1616,
+ "sortie": 97,
+ "chf": 0.000909125
+}

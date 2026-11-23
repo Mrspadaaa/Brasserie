@@ -1,0 +1,78 @@
+{
+ "n": 33,
+ "cfg": "lite",
+ "modele": "gemini-3.5-flash-lite",
+ "http": 200,
+ "ms": 1269,
+ "usage": {
+  "promptTokenCount": 382,
+  "candidatesTokenCount": 223,
+  "totalTokenCount": 2534,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 382
+   }
+  ],
+  "toolUsePromptTokenCount": 1929,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 1929
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Citra Hopfenpellets\", \"marque\": \"Hopfenmarkt\", \"prix\": 6.70, \"devise\": \"CHF\", \"ttc\": true, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Land der Ernte\", \"valeur\": \"USA\"}, {\"nom\": \"Erntejahr\", \"valeur\": \"2025\"}, {\"nom\": \"Hopfentyp\", \"valeur\": \"Mehrzweckhopfen\"}, {\"nom\": \"Hopfenform\", \"valeur\": \"Pellets\"}, {\"nom\": \"Packungsgrösse\", \"valeur\": \"100 g\"}, {\"nom\": \"Alpha\", \"valeur\": \"12.8%\"}, {\"nom\": \"Beta\", \"valeur\": \"4%\"}, {\"nom\": \"Cohumulone\", \"valeur\": \"24.2%\"}]}",
+ "json": {
+  "nom": "Citra Hopfenpellets",
+  "marque": "Hopfenmarkt",
+  "prix": 6.7,
+  "devise": "CHF",
+  "ttc": true,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Land der Ernte",
+    "valeur": "USA"
+   },
+   {
+    "nom": "Erntejahr",
+    "valeur": "2025"
+   },
+   {
+    "nom": "Hopfentyp",
+    "valeur": "Mehrzweckhopfen"
+   },
+   {
+    "nom": "Hopfenform",
+    "valeur": "Pellets"
+   },
+   {
+    "nom": "Packungsgrösse",
+    "valeur": "100 g"
+   },
+   {
+    "nom": "Alpha",
+    "valeur": "12.8%"
+   },
+   {
+    "nom": "Beta",
+    "valeur": "4%"
+   },
+   {
+    "nom": "Cohumulone",
+    "valeur": "24.2%"
+   }
+  ]
+ },
+ "entree": 2311,
+ "sortie": 223,
+ "chf": 0.0015635
+}

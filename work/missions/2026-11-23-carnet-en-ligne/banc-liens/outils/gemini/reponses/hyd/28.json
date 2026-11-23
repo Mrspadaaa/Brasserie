@@ -1,0 +1,65 @@
+{
+ "n": 28,
+ "cfg": "hyd",
+ "modele": "gemini-4-hydrogen",
+ "http": 200,
+ "ms": 5631,
+ "usage": {
+  "promptTokenCount": 577,
+  "candidatesTokenCount": 152,
+  "totalTokenCount": 6305,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 577
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 152
+   }
+  ],
+  "toolUsePromptTokenCount": 5160,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 5160
+   }
+  ],
+  "thoughtsTokenCount": 416,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Pilsner Malz, 3-5 EBC, 25 kg\", \"marque\": null, \"prix\": 36.5, \"devise\": \"CHF\", \"ttc\": true, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Farbe\", \"valeur\": \"3-5 EBC\"}, {\"nom\": \"Gewicht\", \"valeur\": \"25 kg\"}, {\"nom\": \"Artikelnummer\", \"valeur\": \"MZ1010025\"}]}",
+ "json": {
+  "nom": "Pilsner Malz, 3-5 EBC, 25 kg",
+  "marque": null,
+  "prix": 36.5,
+  "devise": "CHF",
+  "ttc": true,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Farbe",
+    "valeur": "3-5 EBC"
+   },
+   {
+    "nom": "Gewicht",
+    "valeur": "25 kg"
+   },
+   {
+    "nom": "Artikelnummer",
+    "valeur": "MZ1010025"
+   }
+  ]
+ },
+ "entree": 5737,
+ "sortie": 568,
+ "chf": 0.016081875
+}

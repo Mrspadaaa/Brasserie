@@ -1,0 +1,78 @@
+{
+ "n": 37,
+ "cfg": "f38",
+ "modele": "gemini-3.8-flash",
+ "http": 200,
+ "ms": 6713,
+ "usage": {
+  "promptTokenCount": 422,
+  "candidatesTokenCount": 337,
+  "totalTokenCount": 3339,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 422
+   }
+  ],
+  "toolUsePromptTokenCount": 2580,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 2580
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"50-Liter Edelstahl Braukessel für Einsteiger – Hopfenkochen & Hobby-Bierbrauen leicht gemacht\", \"marque\": null, \"prix\": 289.90, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Inhalt\", \"valeur\": \"50 Liter\"}, {\"nom\": \"Leistung / Anschluss\", \"valeur\": \"230 V / 50 Hz / 2 x 2'000 Watt\"}, {\"nom\": \"Abmessungen\", \"valeur\": \"40 cm Durchmesser / 40 cm Höhe\"}, {\"nom\": \"Wandstärke\", \"valeur\": \"1mm\"}, {\"nom\": \"Material\", \"valeur\": \"Rostfreier Edelstahl\"}, {\"nom\": \"Konstruktion Wand\", \"valeur\": \"Edelstahl / Aluminium / Edelstahl (optimale Wärmespeicherung)\"}, {\"nom\": \"Temperaturanzeige\", \"valeur\": \"20 - 110 Grad C (Toleranz +/- 1 Grad)\"}, {\"nom\": \"Länge der Kühlspirale\", \"valeur\": \"Insgesamt 6 Meter\"}]}",
+ "json": {
+  "nom": "50-Liter Edelstahl Braukessel für Einsteiger – Hopfenkochen & Hobby-Bierbrauen leicht gemacht",
+  "marque": null,
+  "prix": 289.9,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Inhalt",
+    "valeur": "50 Liter"
+   },
+   {
+    "nom": "Leistung / Anschluss",
+    "valeur": "230 V / 50 Hz / 2 x 2'000 Watt"
+   },
+   {
+    "nom": "Abmessungen",
+    "valeur": "40 cm Durchmesser / 40 cm Höhe"
+   },
+   {
+    "nom": "Wandstärke",
+    "valeur": "1mm"
+   },
+   {
+    "nom": "Material",
+    "valeur": "Rostfreier Edelstahl"
+   },
+   {
+    "nom": "Konstruktion Wand",
+    "valeur": "Edelstahl / Aluminium / Edelstahl (optimale Wärmespeicherung)"
+   },
+   {
+    "nom": "Temperaturanzeige",
+    "valeur": "20 - 110 Grad C (Toleranz +/- 1 Grad)"
+   },
+   {
+    "nom": "Länge der Kühlspirale",
+    "valeur": "Insgesamt 6 Meter"
+   }
+  ]
+ },
+ "entree": 3002,
+ "sortie": 337,
+ "chf": 0.008788125
+}

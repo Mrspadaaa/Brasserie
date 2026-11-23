@@ -1,0 +1,87 @@
+{
+ "n": 40,
+ "cfg": "f38",
+ "modele": "gemini-3.8-flash",
+ "http": 200,
+ "ms": 19839,
+ "usage": {
+  "promptTokenCount": 426,
+  "candidatesTokenCount": 511,
+  "totalTokenCount": 111979,
+  "cachedContentTokenCount": 37629,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 426
+   }
+  ],
+  "cacheTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 37629
+   }
+  ],
+  "toolUsePromptTokenCount": 111042,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 111042
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS",
+  "URL_RETRIEVAL_STATUS_SUCCESS",
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Edelstahl-Kühlschrank – 440 L – +2 bis +8 °C – 740×830×2010 mm\", \"marque\": \"Klima Italia\", \"prix\": 1239, \"devise\": \"CHF\", \"ttc\": false, \"fraisSuisse\": \"Gratis Lieferung inkl. Standardmontage\", \"photos\": [], \"caracteristiques\": [{\"nom\": \"Maße (B×T×H)\", \"valeur\": \"740×830×2010 mm\"}, {\"nom\": \"Nettovolumen\", \"valeur\": \"440L\"}, {\"nom\": \"Bruttovolumen\", \"valeur\": \"650L\"}, {\"nom\": \"Temperaturbereich\", \"valeur\": \"+2 bis +8 °C\"}, {\"nom\": \"Energieeffizienzklasse\", \"valeur\": \"C\"}, {\"nom\": \"Leistung\", \"valeur\": \"0.36kW\"}, {\"nom\": \"Spannung\", \"valeur\": \"220V\"}, {\"nom\": \"Gehäusematerial\", \"valeur\": \"Edelstahl AISI 201\"}]}",
+ "json": {
+  "nom": "Edelstahl-Kühlschrank – 440 L – +2 bis +8 °C – 740×830×2010 mm",
+  "marque": "Klima Italia",
+  "prix": 1239,
+  "devise": "CHF",
+  "ttc": false,
+  "fraisSuisse": "Gratis Lieferung inkl. Standardmontage",
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Maße (B×T×H)",
+    "valeur": "740×830×2010 mm"
+   },
+   {
+    "nom": "Nettovolumen",
+    "valeur": "440L"
+   },
+   {
+    "nom": "Bruttovolumen",
+    "valeur": "650L"
+   },
+   {
+    "nom": "Temperaturbereich",
+    "valeur": "+2 bis +8 °C"
+   },
+   {
+    "nom": "Energieeffizienzklasse",
+    "valeur": "C"
+   },
+   {
+    "nom": "Leistung",
+    "valeur": "0.36kW"
+   },
+   {
+    "nom": "Spannung",
+    "valeur": "220V"
+   },
+   {
+    "nom": "Gehäusematerial",
+    "valeur": "Edelstahl AISI 201"
+   }
+  ]
+ },
+ "entree": 111468,
+ "sortie": 511,
+ "chf": 0.213793125
+}

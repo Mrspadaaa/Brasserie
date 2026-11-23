@@ -1,0 +1,78 @@
+{
+ "n": 41,
+ "cfg": "f38",
+ "modele": "gemini-3.8-flash",
+ "http": 200,
+ "ms": 6181,
+ "usage": {
+  "promptTokenCount": 400,
+  "candidatesTokenCount": 316,
+  "totalTokenCount": 9245,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 400
+   }
+  ],
+  "toolUsePromptTokenCount": 8529,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 8529
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "```json\n{\n  \"nom\": \"Braukessel aus Edelstahl 50 l mit Auslauf für Maischebrauer\",\n  \"marque\": \"BREWFERM\",\n  \"prix\": 244.0,\n  \"devise\": \"EUR\",\n  \"ttc\": true,\n  \"fraisSuisse\": null,\n  \"photos\": [],\n  \"caracteristiques\": [\n    {\"nom\": \"Inhalt\", \"valeur\": \"50 Liter\"},\n    {\"nom\": \"Material\", \"valeur\": \"gebürstetem Edelstahl AISI 304\"},\n    {\"nom\": \"Durchmesser x Höhe\", \"valeur\": \"40 x 40 cm\"},\n    {\"nom\": \"Wandstärke\", \"valeur\": \"0,8 mm\"},\n    {\"nom\": \"Sandwichboden\", \"valeur\": \"4 mm\"},\n    {\"nom\": \"Kugelhahn\", \"valeur\": \"3-teiligem Kugelhahn ½”\"},\n    {\"nom\": \"Herdarten\", \"valeur\": \"alle Herdarten, inklusive Induktion\"},\n    {\"nom\": \"Garantie\", \"valeur\": \"3 Jahre Garantie\"}\n  ]\n}\n```",
+ "json": {
+  "nom": "Braukessel aus Edelstahl 50 l mit Auslauf für Maischebrauer",
+  "marque": "BREWFERM",
+  "prix": 244,
+  "devise": "EUR",
+  "ttc": true,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Inhalt",
+    "valeur": "50 Liter"
+   },
+   {
+    "nom": "Material",
+    "valeur": "gebürstetem Edelstahl AISI 304"
+   },
+   {
+    "nom": "Durchmesser x Höhe",
+    "valeur": "40 x 40 cm"
+   },
+   {
+    "nom": "Wandstärke",
+    "valeur": "0,8 mm"
+   },
+   {
+    "nom": "Sandwichboden",
+    "valeur": "4 mm"
+   },
+   {
+    "nom": "Kugelhahn",
+    "valeur": "3-teiligem Kugelhahn ½”"
+   },
+   {
+    "nom": "Herdarten",
+    "valeur": "alle Herdarten, inklusive Induktion"
+   },
+   {
+    "nom": "Garantie",
+    "valeur": "3 Jahre Garantie"
+   }
+  ]
+ },
+ "entree": 8929,
+ "sortie": 316,
+ "chf": 0.019704375
+}

@@ -1,0 +1,78 @@
+{
+ "n": 34,
+ "cfg": "f38",
+ "modele": "gemini-3.8-flash",
+ "http": 200,
+ "ms": 5847,
+ "usage": {
+  "promptTokenCount": 381,
+  "candidatesTokenCount": 245,
+  "totalTokenCount": 2568,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 381
+   }
+  ],
+  "toolUsePromptTokenCount": 1942,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 1942
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Mosaic Hopfenpellets\", \"marque\": \"Hopfenmarkt\", \"prix\": 7.25, \"devise\": \"CHF\", \"ttc\": true, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Land der Ernte\", \"valeur\": \"USA\"}, {\"nom\": \"Erntejahr\", \"valeur\": \"2025\"}, {\"nom\": \"Hopfentyp\", \"valeur\": \"Mehrzweckhopfen\"}, {\"nom\": \"Hopfenform\", \"valeur\": \"Pellets\"}, {\"nom\": \"Packungsgrösse\", \"valeur\": \"100 g\"}, {\"nom\": \"Artikelnummer (MPN)\", \"valeur\": \"HOP-MOSAIC-0100\"}, {\"nom\": \"Geeignete Stile\", \"valeur\": \"IPA · NEIPA · Pale Ale\"}, {\"nom\": \"Einsatz\", \"valeur\": \"Späte Gabe · Whirlpool · Dry Hopping\"}]}",
+ "json": {
+  "nom": "Mosaic Hopfenpellets",
+  "marque": "Hopfenmarkt",
+  "prix": 7.25,
+  "devise": "CHF",
+  "ttc": true,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Land der Ernte",
+    "valeur": "USA"
+   },
+   {
+    "nom": "Erntejahr",
+    "valeur": "2025"
+   },
+   {
+    "nom": "Hopfentyp",
+    "valeur": "Mehrzweckhopfen"
+   },
+   {
+    "nom": "Hopfenform",
+    "valeur": "Pellets"
+   },
+   {
+    "nom": "Packungsgrösse",
+    "valeur": "100 g"
+   },
+   {
+    "nom": "Artikelnummer (MPN)",
+    "valeur": "HOP-MOSAIC-0100"
+   },
+   {
+    "nom": "Geeignete Stile",
+    "valeur": "IPA · NEIPA · Pale Ale"
+   },
+   {
+    "nom": "Einsatz",
+    "valeur": "Späte Gabe · Whirlpool · Dry Hopping"
+   }
+  ]
+ },
+ "entree": 2323,
+ "sortie": 245,
+ "chf": 0.0066525
+}
