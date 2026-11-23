@@ -86,3 +86,7 @@ qui vide la barre ; (7) « −1 663 » sous ±, bouton de durée pendant le tira
   tableau ») : le toucher d'une vente ouvre la fiche du Calendrier comme les autres choses ; à placer juste après (2).
 - Ajout 10:58 : CAL-SEMAINE-ENTRE-TRAITS (1049-intervalles.jpg) : semaines et mois sont des durées : les traits = leurs limites
   (lundi, 1er du mois), l'étiquette centrée ENTRE deux traits ; jours : inchangés. À grouper avec CAL-JOUR-EXACT (même bande).
+- Ajout 11:05 (pilote, cause probable de CAL-JOUR-EXACT, lue dans lot-cal) : `frise/usePointeur.ts:276` `joursDe` =
+  Math.round(delta en jours entre x0 et xPrec) : le jour posé dépend de l'endroit où le doigt a saisi le bout (et l'arrondi
+  décale d'un jour dès la 2e moitié) ; idem `pasDe` l. 263 (Math.round). Correctif : jour cible = plancher de la position
+  ABSOLUE du doigt via `entete/alignement.ts` (déjà en Math.floor, l. 76/125), puis k = jourCible − jour actuel du bout.
