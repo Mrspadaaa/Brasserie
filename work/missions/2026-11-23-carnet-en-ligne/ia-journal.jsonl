@@ -28,3 +28,89 @@
 {"heure":"2026-11-23T07:29:29.716Z","methode":"tour13","geste":"Phrase ZZ depuis la liste (rangerCarnet, 7,5 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
 {"heure":"2026-11-23T07:30:16.017Z","methode":"tour13","geste":"Lien ggmgastro collé (lireLien, sans modèle)","modele":"aucun","estimation_chf":0}
 {"heure":"2026-11-23T07:30:16.866Z","methode":"tour13","geste":"Lien ggmgastro collé (rangerCarnet, 29,9 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"le":"2026-11-23T11:53:27.703Z","test":"gastro-held rangerCarnet","variante":"brut","model":"gemini-3.8-flash","http":200,"finish":"MAX_TOKENS","entree":4749,"sortie":3985,"ms":31545}
+{"le":"2026-11-23T11:54:37.971Z","test":"gastro-held rangerCarnet","variante":"sansvendeur-chambre","model":"gemini-3.8-flash","http":200,"finish":"MAX_TOKENS","entree":4740,"sortie":3985,"ms":27645}
+{"le":"2026-11-23T11:55:14.374Z","test":"gastro-held rangerCarnet","variante":"propre-chambre","model":"gemini-3.8-flash","http":200,"finish":"MAX_TOKENS","entree":4552,"sortie":3985,"ms":29826}
+{"le":"2026-11-23T11:55:56.144Z","test":"gastro-held rangerCarnet","variante":"maxlen-chambre","model":"gemini-3.8-flash","http":200,"finish":"MAX_TOKENS","entree":4748,"sortie":3985,"ms":27667}
+{"le":"2026-11-23T11:56:11.159Z","test":"gastro-held rangerCarnet","variante":"horsschema-chambre","model":"gemini-3.8-flash","http":200,"finish":"STOP","entree":4748,"sortie":346,"ms":5141}
+{"le":"2026-11-23T11:56:50.997Z","test":"gastro-held rangerCarnet","variante":"t1-chambre","model":"gemini-3.8-flash","http":200,"finish":"MAX_TOKENS","entree":4748,"sortie":3985,"ms":26208}
+{"le":"2026-11-23T11:57:18.805Z","test":"gastro-held rangerCarnet","variante":"t1-chambre","model":"gemini-3.8-flash","http":200,"finish":"MAX_TOKENS","entree":4748,"sortie":3985,"ms":27678}
+{"heure":"2026-11-23T11:57:33.395Z","methode":"banc-liens","geste":"Lien n° 1 collé dans « ZZ TEST — banc liens — 1 » (lireLien, 1.2 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T11:57:33.395Z","methode":"banc-liens","geste":"Lien n° 1 collé dans « ZZ TEST — banc liens — 1 » (rangerCarnet, 33.8 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"le":"2026-11-23T11:57:43.490Z","test":"gastro-held rangerCarnet","variante":"ordre-chambre","model":"gemini-3.8-flash","http":200,"finish":"STOP","entree":4748,"sortie":508,"ms":5435}
+{"heure":"2026-11-23T11:58:31.360Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 2 » depuis la liste (rangerCarnet, 3.4 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T11:59:05.926Z","methode":"banc-liens","geste":"Lien n° 2 collé dans « ZZ TEST — banc liens — 2 » (lireLien, 1.0 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T11:59:05.926Z","methode":"banc-liens","geste":"Lien n° 2 collé dans « ZZ TEST — banc liens — 2 » (rangerCarnet, 27.6 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:00:25.270Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 3 » depuis la liste (rangerCarnet, 2.7 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:00:32.642Z","methode":"banc-liens","geste":"Lien n° 3 collé dans « ZZ TEST — banc liens — 3 » (lireLien, 0.2 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:00:32.642Z","methode":"banc-liens","geste":"Lien n° 3 collé dans « ZZ TEST — banc liens — 3 » (rangerCarnet, 4.1 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:00:46.570Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 4 » depuis la liste (rangerCarnet, 2.6 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"le":"2026-11-23T12:00:50.967Z","test":"gastro-held rangerCarnet","variante":"correctif-brut-chambre","model":"gemini-3.8-flash","http":200,"finish":"STOP","entree":4748,"sortie":482,"ms":4995}
+{"heure":"2026-11-23T12:00:56.926Z","methode":"banc-liens","geste":"Lien n° 4 collé dans « ZZ TEST — banc liens — 4 » (lireLien, 0.2 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:00:56.927Z","methode":"banc-liens","geste":"Lien n° 4 collé dans « ZZ TEST — banc liens — 4 » (rangerCarnet, 6.9 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:01:11.820Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 5 » depuis la liste (rangerCarnet, 3.7 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:01:19.188Z","methode":"banc-liens","geste":"Lien n° 5 collé dans « ZZ TEST — banc liens — 5 » (lireLien, 0.2 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:01:19.188Z","methode":"banc-liens","geste":"Lien n° 5 collé dans « ZZ TEST — banc liens — 5 » (rangerCarnet, 3.7 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:01:37.087Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 6 » depuis la liste (rangerCarnet, 6.5 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:01:44.460Z","methode":"banc-liens","geste":"Lien n° 6 collé dans « ZZ TEST — banc liens — 6 » (lireLien, 0.2 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:01:44.461Z","methode":"banc-liens","geste":"Lien n° 6 collé dans « ZZ TEST — banc liens — 6 » (rangerCarnet, 2.9 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:01:58.376Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 7 » depuis la liste (rangerCarnet, 2.5 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:02:05.778Z","methode":"banc-liens","geste":"Lien n° 7 collé dans « ZZ TEST — banc liens — 7 » (lireLien, 0.1 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:02:05.778Z","methode":"banc-liens","geste":"Lien n° 7 collé dans « ZZ TEST — banc liens — 7 » (rangerCarnet, 3.1 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:02:21.679Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 8 » depuis la liste (rangerCarnet, 4.4 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:02:30.041Z","methode":"banc-liens","geste":"Lien n° 8 collé dans « ZZ TEST — banc liens — 8 » (lireLien, 0.3 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:02:30.041Z","methode":"banc-liens","geste":"Lien n° 8 collé dans « ZZ TEST — banc liens — 8 » (rangerCarnet, 5.5 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:02:43.941Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 9 » depuis la liste (rangerCarnet, 2.4 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:02:51.316Z","methode":"banc-liens","geste":"Lien n° 9 collé dans « ZZ TEST — banc liens — 9 » (lireLien, 0.7 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:02:51.316Z","methode":"banc-liens","geste":"Lien n° 9 collé dans « ZZ TEST — banc liens — 9 » (rangerCarnet, 3.3 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:03:06.218Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 10 » depuis la liste (rangerCarnet, 3.4 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:03:14.579Z","methode":"banc-liens","geste":"Lien n° 10 collé dans « ZZ TEST — banc liens — 10 » (lireLien, 0.8 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:03:14.580Z","methode":"banc-liens","geste":"Lien n° 10 collé dans « ZZ TEST — banc liens — 10 » (rangerCarnet, 4.7 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:03:30.017Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 11 » depuis la liste (rangerCarnet, 4.1 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:03:40.616Z","methode":"banc-liens","geste":"Lien n° 11 collé dans « ZZ TEST — banc liens — 11 » (lireLien, 0.6 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:03:40.616Z","methode":"banc-liens","geste":"Lien n° 11 collé dans « ZZ TEST — banc liens — 11 » (rangerCarnet, 4.4 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:04:09.581Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 12 » depuis la liste (rangerCarnet, 4.2 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:04:26.440Z","methode":"banc-liens","geste":"Lien n° 12 collé dans « ZZ TEST — banc liens — 12 » (lireLien, 2.0 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:04:26.440Z","methode":"banc-liens","geste":"Lien n° 12 collé dans « ZZ TEST — banc liens — 12 » (rangerCarnet, 4.7 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:05:41.007Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 13 » depuis la liste (rangerCarnet, 2.8 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:05:49.378Z","methode":"banc-liens","geste":"Lien n° 13 collé dans « ZZ TEST — banc liens — 13 » (lireLien, 1.7 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:05:49.378Z","methode":"banc-liens","geste":"Lien n° 13 collé dans « ZZ TEST — banc liens — 13 » (rangerCarnet, 4.2 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:06:05.794Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 14 » depuis la liste (rangerCarnet, 5.3 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:06:13.154Z","methode":"banc-liens","geste":"Lien n° 14 collé dans « ZZ TEST — banc liens — 14 » (lireLien, 0.2 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:06:13.154Z","methode":"banc-liens","geste":"Lien n° 14 collé dans « ZZ TEST — banc liens — 14 » (rangerCarnet, 3.9 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:06:28.555Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 15 » depuis la liste (rangerCarnet, 4.2 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:06:35.946Z","methode":"banc-liens","geste":"Lien n° 15 collé dans « ZZ TEST — banc liens — 15 » (lireLien, 0.6 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:06:35.946Z","methode":"banc-liens","geste":"Lien n° 15 collé dans « ZZ TEST — banc liens — 15 » (rangerCarnet, 4.4 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:06:51.343Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 16 » depuis la liste (rangerCarnet, 4.0 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"le":"2026-11-23T12:06:52.589Z","test":"mesure boucle rangerNote","variante":"brut","model":"gemini-3.8-flash","http":200,"finish":"STOP","entree":551,"sortie":652,"ms":5784}
+{"le":"2026-11-23T12:06:58.889Z","test":"mesure boucle rangerNote","variante":"ordre","model":"gemini-3.8-flash","http":200,"finish":"STOP","entree":551,"sortie":297,"ms":6192}
+{"heure":"2026-11-23T12:06:59.700Z","methode":"banc-liens","geste":"Lien n° 16 collé dans « ZZ TEST — banc liens — 16 » (lireLien, 0.4 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:06:59.701Z","methode":"banc-liens","geste":"Lien n° 16 collé dans « ZZ TEST — banc liens — 16 » (rangerCarnet, 4.8 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:07:15.118Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 17 » depuis la liste (rangerCarnet, 4.0 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:07:22.484Z","methode":"banc-liens","geste":"Lien n° 17 collé dans « ZZ TEST — banc liens — 17 » (lireLien, 0.3 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:07:22.485Z","methode":"banc-liens","geste":"Lien n° 17 collé dans « ZZ TEST — banc liens — 17 » (rangerCarnet, 3.9 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:07:34.756Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 18 » depuis la liste (rangerCarnet, 3.1 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:07:42.142Z","methode":"banc-liens","geste":"Lien n° 18 collé dans « ZZ TEST — banc liens — 18 » (lireLien, 0.3 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:07:42.142Z","methode":"banc-liens","geste":"Lien n° 18 collé dans « ZZ TEST — banc liens — 18 » (rangerCarnet, 3.8 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:08:11.583Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 19 » depuis la liste (rangerCarnet, 7.4 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:08:23.254Z","methode":"banc-liens","geste":"Lien n° 19 collé dans « ZZ TEST — banc liens — 19 » (lireLien, 0.5 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:08:23.254Z","methode":"banc-liens","geste":"Lien n° 19 collé dans « ZZ TEST — banc liens — 19 » (rangerCarnet, 3.4 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:08:54.341Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 20 » depuis la liste (rangerCarnet, 5.3 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:09:06.972Z","methode":"banc-liens","geste":"Lien n° 20 collé dans « ZZ TEST — banc liens — 20 » (lireLien, 0.4 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:09:06.973Z","methode":"banc-liens","geste":"Lien n° 20 collé dans « ZZ TEST — banc liens — 20 » (rangerCarnet, 3.9 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:09:35.855Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 21 » depuis la liste (rangerCarnet, 3.6 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:09:47.728Z","methode":"banc-liens","geste":"Lien n° 21 collé dans « ZZ TEST — banc liens — 21 » (lireLien, 0.3 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:09:47.728Z","methode":"banc-liens","geste":"Lien n° 21 collé dans « ZZ TEST — banc liens — 21 » (rangerCarnet, 4.4 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:10:34.384Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 22 » depuis la liste (rangerCarnet, 4.2 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:10:53.306Z","methode":"banc-liens","geste":"Lien n° 22 collé dans « ZZ TEST — banc liens — 22 » (lireLien, 8.2 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:10:53.306Z","methode":"banc-liens","geste":"Lien n° 22 collé dans « ZZ TEST — banc liens — 22 » (rangerCarnet, 5.0 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:11:23.252Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 23 » depuis la liste (rangerCarnet, 6.0 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:11:34.476Z","methode":"banc-liens","geste":"Lien n° 23 collé dans « ZZ TEST — banc liens — 23 » (lireLien, 1.1 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:11:34.477Z","methode":"banc-liens","geste":"Lien n° 23 collé dans « ZZ TEST — banc liens — 23 » (rangerCarnet, 4.4 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:12:20.692Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 24 » depuis la liste (rangerCarnet, 4.2 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:12:32.571Z","methode":"banc-liens","geste":"Lien n° 24 collé dans « ZZ TEST — banc liens — 24 » (lireLien, 0.2 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:12:32.571Z","methode":"banc-liens","geste":"Lien n° 24 collé dans « ZZ TEST — banc liens — 24 » (rangerCarnet, 5.3 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:13:19.916Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 25 » depuis la liste (rangerCarnet, 4.5 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T12:13:35.374Z","methode":"banc-liens","geste":"Lien n° 25 collé dans « ZZ TEST — banc liens — 25 » (lireLien, 0.1 s)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T12:13:35.375Z","methode":"banc-liens","geste":"Lien n° 25 collé dans « ZZ TEST — banc liens — 25 » (rangerCarnet, 3.5 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T11:52:00.000Z","methode":"banc-liens","geste":"Phrase « ZZ TEST — banc liens — 1 » depuis la liste (rangerCarnet, ~25 s ; ajout a posteriori, appel non noté au moment)","modele":"gemini-3.8-flash","estimation_chf":0.005}
