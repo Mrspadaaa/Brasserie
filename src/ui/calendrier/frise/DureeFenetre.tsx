@@ -33,6 +33,8 @@ export interface DureeFenetreProps {
   /** T9-3 (22.11, la fiche d'une Fête dit « 1 j », Modifier disait « 1 semaine · jusqu'à S52, 27 déc. ») : sans fin, la chose s'écrit sur ce SEUL
    *  jour ; la durée le dit comme la fiche (« 1 j · le S52, mar. 22 déc. »), jamais une semaine jusqu'au dimanche. */
   jourSeul?: string | null;
+  /** L-70 (T11-17) : un achat se pose sur un jour, pas sur une durée : sa ligne dit « Date » et sa date, sans « 1 j » à l'œil (le texte reste pour les lecteurs d'écran). */
+  etiquette?: 'Durée' | 'Date';
   /** Le plus long, en semaines. */
   max?: number;
   /** CAL-FICHE-FRISE (22.11) : l'unité de la frise. `semaine` (défaut, la feuille) ; `jour` (la fiche d'une chose, `seule`) : un repère par jour, 8 px au moins. */
@@ -74,7 +76,7 @@ function cadrer(a: number, b: number, w: number, seule: boolean, spanMin: number
   return { span, v0: a - marge * span / w };
 }
 
-export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false, jourFin, jourSeul = null, max = 104, pas = 'semaine', onLacher, epoque = EPOQUE, dernier = DERNIER_LUNDI }: DureeFenetreProps) {
+export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false, jourFin, jourSeul = null, etiquette = 'Durée', max = 104, pas = 'semaine', onLacher, epoque = EPOQUE, dernier = DERNIER_LUNDI }: DureeFenetreProps) {
   const jour = pas === 'jour';
   const u = jour ? 1 : 7, spanMin = jour ? SPAN_MIN_JOUR : SPAN_MIN, K_MAX = kMax(u, epoque, dernier);
   const kDe = (d: string) => unitesEntre(epoque, d, u);
@@ -205,10 +207,10 @@ export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false
     <div className={`cal-f-duree${jour ? ' cal-f-duree-jour' : ''}`} data-duree={seule ? undefined : ''} data-date-seule={seule ? '' : undefined} data-pas={pas} data-vaul-no-drag>
       {!seule && (
         <div className="mb-1 flex items-baseline gap-2">
-          <span className="text-sm text-cave-200">Durée</span>
+          <span className="text-sm text-cave-200">{etiquette}</span>
           {n === 1 && !fin && jourSeul ? (
             <>
-              <b className="text-sm font-semibold text-cave-50" data-duree-texte>1 j</b>
+              <b className={etiquette === 'Date' ? 'sr-only' : 'text-sm font-semibold text-cave-50'} data-duree-texte>1 j</b>
               <span className="text-sm text-cave-50">le {semaineAvecAn(lundiDe(jourSeul))}, {jourAvecAnnee(jourSeul)}</span>
             </>
           ) : (

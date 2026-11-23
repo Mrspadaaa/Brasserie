@@ -1,4 +1,4 @@
-import React, { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Sheet } from '../../Sheet';
 import { Input } from '../../Input';
 import { ChampMontant } from '../../finance/ChampMontant';
@@ -8,7 +8,7 @@ import {
 } from '../../../domain/calendrierAjout';
 import { prixSemblable, texteIntention } from '../../../domain/horizons';
 import { Horizons } from '../../saisie/Horizons';
-import { RANGEES, ajouterJours, etiquetteS, francs, jourLisible, lundiDe, nomRangee, type Rangee, type SemaineCalendrier } from '../../../domain/calendrier';
+import { RANGEES, ajouterJours, etiquetteS, francs, jourAvecAnnee, jourLisible, lundiDe, nomRangee, semaineAvecAn, type Rangee, type SemaineCalendrier } from '../../../domain/calendrier';
 import { CLASSE_TEINTE } from './Marque';
 import { DureeFenetre } from './DureeFenetre';
 import './feuille.css';
@@ -56,6 +56,21 @@ function avecEvenement(b: BrouillonAjout, evenementId: string | undefined): Brou
 /** L'écart entre deux cases de semaine, en px. */
 const ECART_SEMAINES = 4;
 
+/* L-69 (T11-15) : ce que le brasseur a saisi dans une feuille d'ajout (nom, montant, lien) survit à un rechargement ou à une fermeture ; un brouillon par rangée,
+   retiré à l'ajout réussi. Localement seulement (aucune donnée envoyée). */
+const CLE_BROUILLON = 'laffinee.calendrier.brouillon';
+const aSaisie = (x: BrouillonAjout): boolean => (!x.nomPose && x.titre.trim() !== '') || x.centimes !== undefined;
+function brouillons(): Record<string, BrouillonAjout> {
+  try { const o = JSON.parse(localStorage.getItem(CLE_BROUILLON) ?? '{}'); return o && typeof o === 'object' ? o : {}; } catch { return {}; }
+}
+function garderBrouillon(rangee: Rangee, x: BrouillonAjout | null) {
+  try {
+    const o = brouillons();
+    if (x) o[rangee] = x; else delete o[rangee];
+    if (Object.keys(o).length) localStorage.setItem(CLE_BROUILLON, JSON.stringify(o)); else localStorage.removeItem(CLE_BROUILLON);
+  } catch { /* stockage refusé : la feuille marche sans */ }
+}
+
 const PUCE = 'inline-flex min-h-9 items-center gap-1.5 rounded-full border border-cave-700 px-3 text-sm text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850';
 
 /** Le montant qu'une puce pose avec elle (nom récent, client, vente probable) ; `null` : aucun montant connu, rien n'est inventé. */
@@ -91,7 +106,17 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
     const y = x.rangee === 'brassins' && !x.tempsEnCuve ? { ...x, tempsEnCuve: 28 } : x;
     return avecNomPose(y, contexte.choses);
   };
-  const [b, setB] = useState<BrouillonAjout>(() => avecDefauts(initial));
+  const [b, setB] = useState<BrouillonAjout>(() => {
+    const base = avecDefauts(initial);
+    const d = mode === 'ajouter' ? brouillons()[base.rangee] : undefined;
+    if (!d || typeof d.titre !== 'string' || !aSaisie(d)) return base;
+    return { ...base, titre: d.titre, nomPose: false, ...(d.centimes !== undefined ? { centimes: d.centimes } : {}), ...(d.signe ? { signe: d.signe } : {}), ...(d.liens ? { liens: d.liens } : {}) };
+  });
+  /* L-68 (T11-12) : en Modifier, le × ne jette pas les changements sans un mot ; un premier toucher demande, le second abandonne */
+  const departRef = useRef(JSON.stringify(b));
+  const [abandon, setAbandon] = useState(false);
+  const modifie = mode === 'modifier' && JSON.stringify(b) !== departRef.current;
+  useEffect(() => { if (mode === 'ajouter') garderBrouillon(b.rangee, aSaisie(b) ? b : null); }, [b, mode]);
   /** D2 : le prix gardé d'un achat semblable (« ZZ TEST Pompe 2026 »), dit « estimé » tant que le montant est le sien. */
   const [prixGarde, setPrixGarde] = useState<{ centimes: number; source: string } | null>(null);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
@@ -157,6 +182,9 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
      seule, passé compris) ; plus de carrousel des semaines. Un brassin rouvert prend la date seule (sa semaine se règle au doigt). */
   const horizons = true;
   const intention = horizons && b.debut ? texteIntention(b.debut, contexte.aujourdhui) : null;
+  /* L-67 (T11-6) : « vers févr. » devient « vers févr. 2027 » quand l'année n'est pas la courante ; la frise dessous le dit déjà */
+  const anneeDite = b.debut ? ajouterJours(lundiDe(b.debut), 3).slice(0, 4) : '';
+  const intentionDite = intention && anneeDite && anneeDite !== contexte.aujourdhui.slice(0, 4) && !intention.includes(anneeDite) && !intention.startsWith('passé') ? `${intention} ${anneeDite}` : intention;
   /* D2 (D393) : le dernier achat semblable au nom tapé, montant non encore donné ; rien de semblable : aucune puce (jamais 0) */
   const prixPropose = argent && (b.rangee === 'travaux' || b.rangee === 'achats') && b.centimes === undefined && !b.nomPose && b.titre.trim().length >= 3 && contexte.achats?.length
     ? prixSemblable({ nom: b.titre }, contexte.achats) : null;
@@ -179,6 +207,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
     try {
       const r = await onAjouter(suite);
       if (r.ok === false) { setConfirmation(r.confirmer ?? null); setRefus(r.confirmer ? null : r.raison); }
+      else if (mode === 'ajouter') garderBrouillon(suite.rangee, null);
     } finally { setEnCours(false); }
   };
 
@@ -191,7 +220,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
   return (
     <Sheet
       open
-      onClose={onFermer}
+      onClose={() => { if (modifie && !abandon) setAbandon(true); else onFermer(); }}
       title={nomRangee(b.rangee)}
       subtitle={mode === 'modifier' ? 'Modifier' : 'Ajouter'}
       className="cal-feuille lg:left-[var(--rail-width,88px)] lg:mx-auto lg:max-w-[620px] lg:rounded-t-sheet"
@@ -199,6 +228,13 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
         <>
         {/* CRITIQUE-4 n° 10 (E45, D-8) : la fenêtre « S20 → S40 · 21 sem. » est dite dans le pied, toujours visible sans défiler la feuille, à 390
             comme en paysage, juste au-dessus d'« Ajouter » */}
+        {abandon && (
+          <div role="alert" data-abandon className="mb-1 flex flex-wrap items-center gap-2 rounded-control border border-alert px-2 py-1.5 text-sm text-cave-50">
+            <span className="mr-auto">Tes changements ne sont pas enregistrés.</span>
+            <button type="button" onClick={() => setAbandon(false)} className="min-h-11 rounded-control px-3 font-semibold underline underline-offset-2">Garder</button>
+            <button type="button" data-abandonner onClick={onFermer} className="min-h-11 rounded-control px-3 font-semibold text-alert-strong underline underline-offset-2">Abandonner</button>
+          </div>
+        )}
         {resume && <p className="cal-f-resume mb-1 text-sm text-cave-50" data-fenetre-pied><b data-fenetre>{resume}</b>{b.joursActifs ? <span> · {b.joursActifs} j actifs</span> : null}</p>}
         <div className="flex items-center gap-2" data-feuille-pied>
           {!sansPlusDeDetails && onPlusDeDetails && RANGEES_AVEC_DETAILS.includes(b.rangee) && (
@@ -283,8 +319,9 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
         <div>
           <div className="mb-1 flex items-baseline gap-2">
             <span className="text-sm text-cave-200">{horizons ? 'Quand' : fenetre ? 'Semaines' : 'Semaine'}</span>
-            {intention && <b className="text-sm font-semibold text-cave-50" data-intention>{intention}</b>}
-            {b.debut &&<span className="text-sm text-cave-50" data-feuille-semaine={b.debut}>{etiquetteS(b.debut)}, {jourLisible(jourDit ?? b.debut)}</span>}
+            {intention && <b className="text-sm font-semibold text-cave-50" data-intention>{intentionDite}</b>}
+            {/* L-67, L-70 (T11-6, T11-17) : la semaine et le jour se disent UNE fois, sur la ligne de la frise (Durée ou Date) ; ici, pour les lecteurs d'écran et les tests */}
+            {b.debut && <span className="sr-only" data-feuille-semaine={b.debut}>{semaineAvecAn(b.debut, contexte.aujourdhui)}, {jourAvecAnnee(jourDit ?? b.debut, contexte.aujourdhui)}</span>}
           </div>
           {horizons ? (
             <Horizons date={b.debut ?? undefined} aujourdhui={contexte.aujourdhui} classePuce={PUCE} sansPlusTard etiquette="Quand" className="cal-f-horizons"
@@ -357,7 +394,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
           {/* D404 : l'horizon pose le début ; la durée s'étire au geste de la frise B (fêtes, achats, travaux, activités) */}
           {horizons && fenetre && b.debut && (
             <div className="mt-2">
-              <DureeFenetre rangee={b.rangee} debut={b.debut} fin={b.fin} jourFin={peutChoisirJoursPlage(b) ? jourFinPlage(b) : null} jourSeul={!b.fin && !b.joursActifs ? jourDit : null} onFin={f => regler(etirerFin(b, f))} onPlage={(d, f) => regler(etirerPlage(b, d, f))} />
+              <DureeFenetre rangee={b.rangee} etiquette={b.rangee === 'achats' && !b.fin ? 'Date' : 'Durée'} debut={b.debut} fin={b.fin} jourFin={peutChoisirJoursPlage(b) ? jourFinPlage(b) : null} jourSeul={!b.fin && !b.joursActifs ? jourDit : null} onFin={f => regler(etirerFin(b, f))} onPlage={(d, f) => regler(etirerPlage(b, d, f))} />
             </div>
           )}
           {/* capture-12 (21.11) : une chose à une seule date (vente, papier…) prend la même frise, un seul repère, tirable dans le passé */}

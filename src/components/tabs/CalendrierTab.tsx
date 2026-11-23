@@ -720,8 +720,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   /* ---------- la feuille d'ajout : le + de chaque rangée, le + volant, une proposition, Modifier, Poser ---------- */
   const ouvrirFeuille = useCallback((r: IdRangee) => {
     setMessage(null); setSelectionId(null); setMenu(null);
-    setFeuille({ mode: 'ajouter', initial: brouillonVide(r, fenetre.du < lundiAuj ? lundiAuj : fenetre.du), cle: ++compteur.current });
-  }, [fenetre.du, lundiAuj]);
+    setFeuille({ mode: 'ajouter', initial: brouillonVide(r, (deplieVu ?? fenetre.du) < lundiAuj ? lundiAuj : (deplieVu ?? fenetre.du)), cle: ++compteur.current });
+  }, [fenetre.du, deplieVu, lundiAuj]);
   const ouvrirIdee = useCallback((lundi?: string) => { setMessage(null); setMenu(null); setIdee(lundi ?? lundiAuj); }, [lundiAuj]);
 
   /**
@@ -793,7 +793,9 @@ export function CalendrierTab(props: CalendrierTabProps) {
   /* passe 10 (p-clair-ouvert) : « S47 · prête le … », la semaine où la feuille s'ouvre et 28 j en cuve (demande de L3, CRITIQUE-2 n° 12).
      CRITIQUE-7 n° 4 : « prête le » se compte depuis le jour où le brassin sera posé (`jourPose` : aujourd'hui dans la semaine en cours, jamais un
      lundi passé), comme la feuille et l'écriture : le 18 nov., « S47 · prête le 16 déc. », plus « 14 déc. ». */
-  const lundiPose = fenetre.du < lundiAuj ? lundiAuj : fenetre.du;
+  /* L-72 (T11-24) : une semaine dépliée est la semaine touchée ; le + la propose, pas le début de la fenêtre */
+  const debutPose = deplieVu ?? fenetre.du;
+  const lundiPose = debutPose < lundiAuj ? lundiAuj : debutPose;
   usePlusPage({
     titre: 'le calendrier',
     surOnglets: true,
@@ -918,6 +920,20 @@ export function CalendrierTab(props: CalendrierTabProps) {
   /** Les fêtes et activités qui durent, pour le groupe « Fêtes et activités » de Modifier (D386). */
   const evenementsLiables = useMemo(() => modele.choses.filter(x => x.source.genre === 'creative' && !x.sansDate && !estPonctuel(x)).map(x => ({ id: (x.source as { id: string }).id, nom: x.titre })), [modele.choses]);
 
+  /** L-71 : l'action du menu agit au lâcher ; le « click » qui suit tombe sur la piste que la chose quitte et y ouvrirait une feuille : il est avalé (400 ms au plus). */
+  const avalerLeClic = () => {
+    const avaler = (e: Event) => { e.stopPropagation(); e.preventDefault(); };
+    document.addEventListener('click', avaler, true);
+    setTimeout(() => document.removeEventListener('click', avaler, true), 400);
+  };
+  /** L-71 (T11-20) : ce que la fiche supprime (poche, brassin prévu, chose créée datée), l'appui long le supprime aussi. */
+  const supprimable = (c: ChoseCalendrier): boolean => {
+    const creative = c.source.genre === 'creative';
+    const manuel = c.source.genre === 'plan' && c.source.origine === 'manual';
+    if (c.sansDate === true) return creative;
+    if (!c.proposition && c.source.genre === 'batch' && c.source.statut === 'planifie') return true;
+    return (creative || manuel) && !c.proposition;
+  };
   const detail = (chose: ChoseCalendrier) => {
     const semaineIdx = chose.debut ? modele.courbe?.semaines.findIndex(s => s.lundi === lundiDe(chose.debut)) ?? -1 : -1;
     const libre = semaineIdx >= 0 ? modele.courbe?.semaines[semaineIdx]?.libre : undefined;
@@ -1265,6 +1281,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
               void ecrire(lier(c, liens, ctxGestes, nom), true, c.id, true).then(ok => { if (ok) { ouvertureParGeste.current = Date.now() + 1200; setSelectionId(c.id); } });
             }}
             onRetirer={() => { setMenu(null); void ecrire(ret, true, c.id); }}
+            {...(supprimable(c) ? { onSupprimer: () => { setMenu(null); setSelectionId(null); avalerLeClic(); absorberDefilement(); void ecrire(c.sansDate ? supprimerSansDate(c) : supprimer(c), true, c.id).then(absorberDefilement); } } : {})}
             onFermer={() => setMenu(null)}
           />
         );
