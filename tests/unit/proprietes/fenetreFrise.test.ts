@@ -46,16 +46,22 @@ describe('fenetreDePeriode : une période de l’app lue comme une fenêtre de s
     }), { numRuns: RUNS });
   });
 
-  /**
-   * FC-1 (défaut connu, rapport d'abord : pas corrigé) : « Exercice 2026 » (1 janv. → 31 déc.) tient en 53 semaines ISO, et tout plage de 12 mois
-   * qui ne commence pas un lundi en prend 53 ; `fenetreDePeriode` ne plafonne qu'à l'horizon (104), alors que le geste du cadre plafonne à 52 (T9-2).
-   * Corrigé (L-44, liste du 23.11) : la fenêtre d'une période est plafonnée à l'An (52 semaines), son début gardé.
-   */
-  it('FC-1 : la fenêtre ne dépasse jamais 52 semaines (l’An, T9-2 : « la fenêtre ne dépasse jamais l’An »)', () => {
+  /* CAL-PLUS-QU-UN-AN (23.11, « je peux toujours avoir que 1 ans ??? ») renverse FC-1 / L-44 : la fenêtre n'est bornée que par l'horizon
+     (D425 : + 5 ans, passé compris) ; « Exercice 2026 » tient entière (53 semaines ISO), une plage de deux ans aussi. */
+  it('CAL-PLUS-QU-UN-AN : la fenêtre ne dépasse jamais l’horizon (5 ans + passé), et une période dans l’horizon n’est jamais coupée à 52 semaines', () => {
+    const TOTAL5 = C.HORIZON_SEMAINES + PASSE;
     fc.assert(fc.property(arbEntree, ({ auj, periode }) => {
-      const f = F.fenetreDePeriode(periode, enIso(horizon(auj).premier), TOTAL);
-      if (f) expect(f.semaines).toBeLessThanOrEqual(F.SEMAINES_ANNEE);
+      const premier = lundiDeJ(auj) - PASSE * 7;
+      const f = F.fenetreDePeriode(periode, enIso(premier), TOTAL5);
+      if (!f) return;
+      expect((deIso(f.du) - premier) / 7 + f.semaines).toBeLessThanOrEqual(TOTAL5);
+      const b = bornes(periode);
+      const du = deIso(b.du as string), au = deIso(b.au as string);
+      // période entière dans l'horizon : la fenêtre va jusqu'à la semaine de sa fin (rien coupé à l'An)
+      if (du >= premier && au <= premier + TOTAL5 * 7 - 1) expect(deIso(f.du) + f.semaines * 7 - 1).toBeGreaterThanOrEqual(au);
     }), { numRuns: RUNS, examples: [[{ auj: deIso('2026-11-22'), periode: { genre: 'annee', annee: 2026 } as Periode }]] });
+    const an2026 = F.fenetreDePeriode({ genre: 'annee', annee: 2026 }, enIso(lundiDeJ(deIso('2026-11-22')) - PASSE * 7), TOTAL5);
+    expect(an2026?.semaines).toBe(53);
   });
 
   it('« tout » n’a pas de bornes : null ; une période entièrement passée (avant l’horizon) : null ; une période qui touche l’horizon : jamais null', () => {
