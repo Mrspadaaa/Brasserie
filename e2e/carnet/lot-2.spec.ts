@@ -8,6 +8,8 @@ const docs = (page: Page, collection: string) => page.evaluate(([k, c]) => JSON.
 const plan = async (page: Page, re: RegExp) => (await docs(page, 'financialPlans')).find((p: any) => re.test(p?.title ?? '')) ?? null;
 const carnet = (page: Page) => page.locator('[data-carnets]').first();
 /** La fixture du jour, retouchée : `retouche(entree)` rend l'entrée changée, ou null pour la retirer. */
+/** Captures de preuve (LOT2_CAPTURES=<dossier>) : une par correction visible, nommée par le projet. */
+const capture = async (page: Page, nom: string) => { const d = process.env.LOT2_CAPTURES; if (d) await page.screenshot({ path: `${d}/${test.info().project.name}-${nom}.png` }); };
 function fixtureRetouchee(retouche: (e: any) => any | null) {
   return lireFixtureCarnet().entrees.map((e) => retouche(JSON.parse(JSON.stringify(e)))).filter(Boolean);
 }
@@ -32,10 +34,12 @@ test.describe('Lot 2 : carnet ↔ plan, prix d’article', () => {
     await ouvrirUnCarnet(page, /Chambre froide/);
     await carnet(page).locator('button.cn-tab-ligne[role=row]').first().tap();
     await expect.poll(() => surListe(page)).toBe('article');
+    await capture(page, 'L09-sans-prix');
     await page.getByRole('button', { name: /Poser le prix/ }).tap();
     await page.getByRole('textbox', { name: /Prix de l’article/ }).fill('3200');
     await page.getByRole('button', { name: /^OK$/ }).tap();
     await expect(carnet(page), 'le prix posé se lit sur l’offre').toContainText(/3\s?200 CHF/);
+    await capture(page, 'L09-prix-pose');
   });
 
   test('L-11 : le prix et la date posés au carnet suivent sur le plan d’À venir, et le carnet lit son plan', async ({ page }) => {
@@ -50,6 +54,7 @@ test.describe('Lot 2 : carnet ↔ plan, prix d’article', () => {
     const quand = page.getByRole('region', { name: 'Quand' });
     await expect(quand, 'le carnet lit le plan : 450, mars').toContainText(/450 CHF/);
     await expect(quand).toContainText(/mars/);
+    await capture(page, 'L11-carnet-lit-son-plan');
     await quand.getByRole('button', { name: /^Prix$/ }).tap();
     await page.getByRole('group', { name: 'Prix estimé' }).getByRole('button', { name: /1\s?000 CHF/ }).tap();
     await expect.poll(async () => (await plan(page, /Frigo de garde/))?.amountCents, { message: 'le prix posé au carnet est celui du plan' }).toBe(100000);
@@ -67,6 +72,7 @@ test.describe('Lot 2 : carnet ↔ plan, prix d’article', () => {
     await expect(carnet(page)).toContainText(/Réalisé/);
     await expect(carnet(page)).not.toContainText(/Dans À venir/);
     await expect(page.getByRole('button', { name: /^Au calendrier/ })).toHaveCount(0);
+    await capture(page, 'L12-realise-sans-achat');
   });
 
   test('L-12 : plan supprimé dans À venir → la liste ne dit plus « Dans À venir »', async ({ page }) => {
@@ -74,6 +80,8 @@ test.describe('Lot 2 : carnet ↔ plan, prix d’article', () => {
     await ouvrirCarnet(page);
     const ligne = carnet(page).locator('button, li, article').filter({ hasText: /Frigo de garde/ }).first();
     await expect(ligne).not.toContainText(/Dans À venir/);
+    await ligne.scrollIntoViewIfNeeded();
+    await capture(page, 'L12-liste-plan-supprime');
   });
 
   test('L-14 : Supprimer un carnet lié dit pourquoi, et offre de le supprimer avec son plan', async ({ page }) => {
@@ -84,6 +92,7 @@ test.describe('Lot 2 : carnet ↔ plan, prix d’article', () => {
     await page.getByRole('menuitem', { name: /Supprimer/ }).tap();
     const carte = page.locator('.cn-supprimer');
     await expect(carte, 'la raison est dite, pas seulement en info-bulle').toContainText(/Pour supprimer/);
+    await capture(page, 'L14-supprimer');
     await carte.getByRole('button', { name: /avec son plan/ }).tap();
     await expect.poll(() => surListe(page)).toBe('liste');
     await expect.poll(() => plan(page, /Frigo de garde/), { message: 'le plan part avec le carnet' }).toBeNull();
@@ -97,9 +106,11 @@ test.describe('Lot 2 : carnet ↔ plan, prix d’article', () => {
     await expect.poll(() => surListe(page)).toBe('article');
     const titre = () => page.locator('.cn-fiche .cn-titre').innerText();
     const avant = await titre();
+    await capture(page, 'L16-fiche-haut');
     await page.getByRole('button', { name: 'Article suivant' }).tap();
     await expect.poll(titre, { message: 'l’article suivant s’ouvre' }).not.toBe(avant);
     await page.locator('.cn-defile').evaluate((el) => el.scrollTo(0, el.scrollHeight));
     await expect(page.locator('.cn-fiche .cn-fil-ariane')).toBeInViewport();
+    await capture(page, 'L16-fiche-bas');
   });
 });
