@@ -4,6 +4,7 @@ Copie : C:/Users/mrspa/.codex/worktrees/openai-clean-start/lot-cal (claude/lot-c
 Cycle : test rouge → correction → ton test vert → commit → « PRÊT À METTRE EN LIGNE <hash> » (SendMessage to: main) →
 attendre « EN LIGNE » → preuve en ligne (Chrome 9222, ta page, 390, ZZ TEST, captures entières regardées). Jamais fermer Chrome.
 
+0. CAL-ANNULEES-COMPTEES (ARGENT FAUX, d abord) — les 2 ventes « ZZ TEST — parcours » sont annulées (« Écriture annulée », hors de Finances) mais comptées au Calendrier (+90). Les choses argent viennent de `domain/calendrier.ts` ~l. 1060 (`item.source`…), nourries par la prévision de trésorerie : filtrer les écritures annulées À LA SOURCE de cette prévision (comme Finances), pas seulement à l affichage.
 1. CAL-JOUR-EXACT — `frise/usePointeur.ts:276` (`joursDe`) et `:263` (`pasDe`) arrondissent un écart relatif (Math.round) :
    jour cible = plancher de la position ABSOLUE du doigt via `entete/alignement.ts` (l. 76, 125), k = cible − jour du bout.
 2. CAL-SEMAINE-ENTRE-TRAITS — semaines et mois : traits = limites (lundi, 1er), étiquette centrée entre deux traits ; jours inchangés.
