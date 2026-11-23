@@ -183,9 +183,13 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
     const jour = isoDate(pay.date);
     /* CAL-ANNULEES-COMPTEES (23.11, argent faux) : une pièce annulée (« Écriture annulée », hors de Finances) n'est plus une vente, même si son
        paiement rendu reste dans la caisse (il y est compensé, comme dans Finances) */
-    if (!t || !jour || pay.direction !== 'in' || t.finance?.kind !== 'income' || !isActiveTransaction(t as never) || attendues.has(t.id) || !validPayment(pay) || jour < lundi0 || jour > aujourdhui) return [];
-    return [{ id: `paiement-${pay.id}`, rangee: 'ventes', titre: t.description || t.id, debut: jour, fin: jour, centimes: pay.amountCents, detail: `encaissée le ${jourLisible(jour)}`,
-      source: { genre: 'facture', id: t.id }, ouvre: { ecran: 'piece', id: t.id }, deplacable: { raison: 'Vente encaissée : sa date est un fait. Elle se corrige dans la pièce (Finances › Opérations).' } }];
+    /* 23.11 soir (saisie) : un apport (de ma poche) est lui aussi de l'argent qui rentre, encaissé à son jour : même rangée, même marque ;
+       il se dit « apport » (ce n'est pas une vente : Mon mois l'ignore). Un prélèvement privé sort : il n'a pas sa place ici. */
+    const kind = t?.finance?.kind;
+    if (!t || !jour || pay.direction !== 'in' || (kind !== 'income' && kind !== 'contribution') || !isActiveTransaction(t as never) || attendues.has(t.id) || !validPayment(pay) || jour < lundi0 || jour > aujourdhui) return [];
+    const apport = kind === 'contribution';
+    return [{ id: `paiement-${pay.id}`, rangee: 'ventes', titre: t.description || t.id, debut: jour, fin: jour, centimes: pay.amountCents, detail: apport ? `apport, reçu le ${jourLisible(jour)}` : `encaissée le ${jourLisible(jour)}`,
+      source: { genre: 'facture', id: t.id }, ouvre: { ecran: 'piece', id: t.id }, deplacable: { raison: `${apport ? 'Apport reçu' : 'Vente encaissée'} : sa date est un fait. Elle se corrige dans la pièce (Finances › Opérations).` } }];
   });
   const posees = fusionnerFacturesLivraisons([...brassins, ...creatives, ...argent, ...encaissees, ...probables, ...achatsPrevus, ...livraisonsAttendues(e.reglages), ...propositionsBrassin], fournisseurs, emises).filter(dansLaFenetre(semaines));
   /* n° 9 : chaque brassin porte son budget (courses et frais de la prévision ; à défaut, l'estimation enregistrée de BrewBudgetSheet) */

@@ -163,6 +163,21 @@ export function suivreAppelsServeur(reseau: typeof fetch): typeof fetch {
  */
 export const estAuRepos = (doc: Document = document, enCours: number = travaux): boolean => !interfaceOccupee(doc) && enCours === 0;
 
+// --- Place de l'avis (23.11 soir) : au-dessus de la barre du bas, jamais sur l'en-tête ni sur le contenu ---------------------
+export interface Boite { top: number; bottom: number; left: number; right: number; width: number; height: number }
+export const MARGE_AVIS_PX = 8;
+/**
+ * Les barres posées au bas de la fenêtre (navigation, pied d'une feuille de saisie, bouton d'action) : une boîte visible, dans la moitié basse,
+ * qui touche le bas. Rend le `top` de chacune. L'en-tête et le contenu n'en sont pas.
+ */
+export function hautDesBarresBasses(boites: readonly Pick<Boite, 'top' | 'bottom' | 'height'>[], hauteurFenetre: number): number[] {
+  return boites.filter(b => b.height > 0 && b.top < hauteurFenetre && b.bottom >= hauteurFenetre - 2 && b.top >= hauteurFenetre / 2).map(b => b.top);
+}
+/** Le `bottom` de l'avis (px depuis le bas de la fenêtre) : juste au-dessus de la barre la plus haute, sinon au bas avec sa marge. */
+export function basDeLAvis(hauteurFenetre: number, hautsDesBarres: readonly number[]): number {
+  return (hautsDesBarres.length ? hauteurFenetre - Math.min(...hautsDesBarres) : 0) + MARGE_AVIS_PX;
+}
+
 // --- Bandeau : état partagé avec `ui/BandeauMiseAJour.tsx` ---------------------------------------------------------------
 let bandeau = false;
 const abonnes = new Set<() => void>();

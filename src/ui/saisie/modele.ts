@@ -117,6 +117,8 @@ export interface Brouillon {
   categorie: FinanceCategory;
   reference: string;
   note: string;
+  /** « Sans justificatif, c'est normal » (18.11) : la même coche que la fiche et la dépense avec document ; absente = on ne sait pas, la pièce reste signalée. */
+  sansJustificatif?: boolean;
   tvaRate: number;
   /** Remboursement : la pièce d'origine. */
   pieceId?: string;
@@ -132,6 +134,12 @@ export function brouillonNeuf(aujourdhui: string): Brouillon {
 export function avecGenre(b: Brouillon, g: GenreId): Brouillon {
   const G = GENRES[g];
   return { ...b, genre: g, rythme: G.rythme ?? 'une', fin: 'sans', finDate: undefined, categorie: G.category, nom: '', vendor: undefined, pieceId: undefined, solde: undefined };
+}
+/** Le jour tiré au doigt dans une frise ouverte (`cle` : la pastille qui l'a ouverte). */
+export interface DateTiree { cle: string; iso: string }
+/** Ce que dit la pastille `cle` : le jour que le doigt tient en ce moment, sinon la valeur écrite. Un jour tiré illisible n'écrase rien. */
+export function dateMontree(cle: string, valeur: string, tiree: DateTiree | null): string {
+  return tiree && tiree.cle === cle && /^\d{4}-\d{2}-\d{2}$/.test(tiree.iso) ? tiree.iso : valeur;
 }
 export const nomFinal = (b: Brouillon) => b.nom.trim() || GENRES[b.genre].nomDefaut(jjmm(b.date));
 
@@ -167,7 +175,7 @@ export function preparer(b: Brouillon, ctx: { id: string; maintenant: string; tr
       amountHT: Math.round((ttc - tva) * 100) / 100, amountTTC: ttc, tvaRate: taux, tvaAmount: tva,
       finance: { version: 1, kind: G.kind, amountCents: cents, lines: [], paymentStatus: paye ? 'paid' : 'unpaid', recordedAt: ctx.maintenant,
         ...(b.vendor?.trim() ? { vendor: b.vendor.trim() } : {}), ...(b.reference.trim() ? { invoiceNumber: b.reference.trim() } : {}),
-        ...(!paye ? { dueDate: b.echeance } : {}), ...(notes ? { notes } : {}) } };
+        ...(!paye ? { dueDate: b.echeance } : {}), ...(notes ? { notes } : {}), ...(b.sansJustificatif ? { proofNotNeeded: true } : {}) } };
   }
   const paiement: FinancialPayment | undefined = paye ? { id: `PAI-${ctx.id}`, transactionId: ctx.id, date: b.date, amountCents: cents, direction: sens, method: b.methode, recordedAt: ctx.maintenant } : undefined;
   let plan: FinancialPlan | undefined;

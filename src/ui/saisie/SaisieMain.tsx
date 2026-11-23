@@ -21,8 +21,8 @@ import { soldeLeVuPlan } from '../finance/soldePrevu';
 import type { FinancialPlan } from '../../domain/finance/types';
 import {
   CATEGORIES_ACHAT, GENRES, RENTRE, SORT, achatPrevu, avecGenre, brouillonNeuf, chf, dateDeFin, derniersNoms, echeances, finsProposees, habituels, horsResultat,
-  grouper, jjmm, lireMontant, nomFinal, piecesRemboursables, preparer, sensDe, signe, sommeDouzeMois,
-  type Brouillon, type Ecriture, type GenreId, type Habituel, type Methode, type Rythme
+  dateMontree, grouper, jjmm, lireMontant, nomFinal, piecesRemboursables, preparer, sensDe, signe, sommeDouzeMois,
+  type Brouillon, type DateTiree, type Ecriture, type GenreId, type Habituel, type Methode, type Rythme
 } from './modele';
 import '../finance/finance.css';
 import './saisie.css';
@@ -58,7 +58,13 @@ function Barres() {
 function Ic({ g, size = 16 }: { g: GenreId; size?: number }) { const I = ICONE[g]; return <I size={size} strokeWidth={2} />; }
 
 /** Une pastille de date (« 22.11 ») ; touchée, la frise partagée du Calendrier s'ouvre dessous (GESTE-DATE-PARTOUT). */
-function useDate() { const [ouverte, setOuverte] = useState<string | null>(null); return { ouverte, basculer: (k: string) => setOuverte((o) => (o === k ? null : k)), fermer: () => setOuverte(null) }; }
+function useDate() {
+  const [ouverte, setOuverte] = useState<string | null>(null);
+  /* le jour que le doigt tient dans la frise ouverte : la pastille le dit en direct (23.11), l'écriture reste au lâcher */
+  const [tiree, setTiree] = useState<DateTiree | null>(null);
+  useEffect(() => { setTiree(null); }, [ouverte]);
+  return { ouverte, tiree, tirer: (cle: string, iso: string) => setTiree({ cle, iso }), basculer: (k: string) => setOuverte((o) => (o === k ? null : k)), fermer: () => setOuverte(null) };
+}
 
 export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   onClose: () => void; onDocument: () => void; onArticles: (p: PrefillAchat) => void; onSaved?: (message: string) => void;
@@ -97,6 +103,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   useEffect(mesurerOmbre);
 
   const G = GENRES[b.genre];
+  const jourVu = dateMontree('date', b.date, dates.tiree);
   const cents = lireMontant(brut);
   const sens = choisi ? sensDe(b, donnees.txs) : null;
   const piece = b.pieceId ? donnees.txs.find((t) => t.id === b.pieceId) : undefined;
@@ -186,9 +193,9 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const chip = (on: boolean, contenu: React.ReactNode, onClick: () => void, extra: Record<string, string> = {}, cls = '') =>
     <button type="button" className={`sai-chip${cls ? ` ${cls}` : ''}`} aria-pressed={on} onPointerDown={garde} onClick={onClick} {...extra}>{contenu}</button>;
   const dateChip = (cle: string, valeur: string, label: string, an = false, avant = '') =>
-    <button type="button" className="sai-chip dt" aria-expanded={dates.ouverte === cle} aria-label={`${label} : ${jjmm(valeur, true)}`} onPointerDown={garde} onClick={() => dates.basculer(cle)}><CalendarDays size={14} />{avant}{jjmm(valeur, an)}</button>;
+    <button type="button" className="sai-chip dt" aria-expanded={dates.ouverte === cle} aria-label={`${label} : ${jjmm(valeur, true)}`} onPointerDown={garde} onClick={() => dates.basculer(cle)}><CalendarDays size={14} />{avant}{jjmm(dateMontree(cle, valeur, dates.tiree), an)}</button>;
   const frise = (cle: string, valeur: string, label: string, onChange: (d: string) => void, o: { min?: string; max?: string; mois?: boolean } = {}) =>
-    dates.ouverte === cle ? <div className="sai-date"><ChoixDate ouvert valeur={valeur} label={label} min={o.min} max={o.max} mois={o.mois} rangee="achats" onChange={(d) => { onChange(d); dates.fermer(); }} /></div> : null;
+    dates.ouverte === cle ? <div className="sai-date"><ChoixDate ouvert valeur={valeur} label={label} min={o.min} max={o.max} mois={o.mois} rangee="achats" onBrouillon={(d) => dates.tirer(cle, d)} onChange={(d) => { onChange(d); dates.fermer(); }} /></div> : null;
 
   const tuile = (g: GenreId) => {
     const t = teinteGenre(g);
@@ -224,12 +231,12 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   enfants.push(<div key="carte" className={`sai-card${choisi && !(b.genre === 'rembt' && !b.pieceId) ? ` ${sens}` : ''}`} data-saisie-carte>
     <div className="sai-c1">
       {sansPiece ? <span className="sai-nm ph fixe"><span>Remboursement de…</span></span> : !choisi || nomEdit
-        ? <input ref={nomRef} aria-label="Nom, facultatif" placeholder={choisi ? (b.genre === 'rembt' && piece ? `Remboursement ${piece.finance?.vendor || piece.description}` : G.nomDefaut(jjmm(b.date))) : 'Pour quoi ?'} value={b.nom} enterKeyHint="done" autoComplete="off"
+        ? <input ref={nomRef} aria-label="Nom, facultatif" placeholder={choisi ? (b.genre === 'rembt' && piece ? `Remboursement ${piece.finance?.vendor || piece.description}` : G.nomDefaut(jjmm(jourVu))) : 'Pour quoi ?'} value={b.nom} enterKeyHint="done" autoComplete="off"
           onChange={(e) => patch({ nom: e.target.value })} onBlur={() => setNomEdit(false)}
           // L-53 (M3-9) : Entrée valide le nom seul ; sans cela le formulaire partait (« −500,00 payé » sans toucher Payé).
           onKeyDown={(e) => { if (e.key !== 'Enter' || e.nativeEvent.isComposing || e.keyCode === 229) return; e.preventDefault(); e.currentTarget.blur(); }} />
         : <button type="button" className={`sai-nm${b.nom ? '' : ' ph'}`} aria-label="Nom, facultatif" data-saisie-nom onPointerDown={garde} onClick={() => setNomEdit(true)}>
-          <span>{b.nom || (b.genre === 'rembt' ? (piece ? `Remboursement ${piece.finance?.vendor || piece.description}` : 'Remboursement de…') : G.nomDefaut(jjmm(b.date)))}</span><Pencil size={14} /></button>}
+          <span>{b.nom || (b.genre === 'rembt' ? (piece ? `Remboursement ${piece.finance?.vendor || piece.description}` : 'Remboursement de…') : G.nomDefaut(jjmm(jourVu)))}</span><Pencil size={14} /></button>}
       {sansPiece ? null : badge}
       {sansPiece ? null : dateChip('date', b.date, b.solde ? 'Date du paiement' : 'Date', !choisi)}
     </div>
@@ -293,6 +300,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
       {!horsResultat(b.genre) ? <input className="sai-in" aria-label={b.genre === 'impot' ? 'Période, référence' : 'Référence'} placeholder={b.genre === 'impot' ? 'Période, référence' : 'Référence (n° de facture)'} value={b.reference} onChange={(e) => patch({ reference: e.target.value })} /> : null}
       <input className="sai-in" aria-label="Note" placeholder="Note" value={b.note} onChange={(e) => patch({ note: e.target.value })} />
     </div></details>);
+    if (b.genre !== 'rembt') enfants.push(<label key="sj" className="sai-ck" data-saisie-sans-justificatif><input type="checkbox" checked={!!b.sansJustificatif} onPointerDown={garde} onChange={(e) => patch({ sansJustificatif: e.target.checked })} />Sans justificatif, c’est normal</label>);
   }
   if (erreur) enfants.push(<p key="err" className="sai-err" role="alert">{erreur}</p>);
 
