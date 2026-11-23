@@ -206,11 +206,13 @@ export interface NomPeriode { k: number; texte: string; x: number; decal: number
  * leurs noms, chacun au milieu de sa part visible (entre ses deux traits, ou un trait et le bord de la courbe). Un mois dont la part visible ne
  * tient pas son nom reste sans nom. Le x d'un jour : linéaire sur la bande (une semaine = `largeurColonne`, la même transformation que la courbe).
  */
-export function periodesBande(semaines: readonly SemaineBande[], abscisses: readonly number[], pas: 2 | 4 | 'mois' | 'an', largeurColonne: number, wEtiquette: number): { limites: number[]; noms: NomPeriode[] } {
+export function periodesBande(semaines: readonly SemaineBande[], abscisses: readonly number[], pas: 2 | 4 | 'mois' | 'an', largeurColonne: number, wEtiquette: number, masqueAuj?: 'gauche' | 'droite'): { limites: number[]; noms: NomPeriode[] } {
   const a = abscisses, n = semaines.length;
   if (!n || a.length !== n + 1 || !(largeurColonne > 0)) return { limites: [], noms: [] };
   if (pas === 2 || pas === 4) return groupesDeSemaines(semaines, a, pas, wEtiquette);
   const g = a[0], larg = a[n], ref = n > 1 ? a[1] - largeurColonne : a[0];
+  /* MODELE2 (graine 4444 et 7, I6 : « 2027 » sur 277 px du cadre, nommée nulle part) : sous « ‹ auj. » / « auj. › » (MARGE_AUJ) la bande ne montre aucun nom (`tue`) ; les noms se posent donc dans ce qui se voit : le janvier de l'axe d'avant le cadre ne perd plus son année dans la marge muette */
+  const gv = masqueAuj === 'gauche' ? Math.max(g, MARGE_AUJ) : g, lv = masqueAuj === 'droite' ? Math.min(larg, larg - MARGE_AUJ) : larg;
   const t0 = Date.parse(`${semaines[0].debut}T00:00:00Z`);
   const X = (iso: string) => ref + ((Date.parse(`${iso}T00:00:00Z`) - t0) / JOUR_MS) * (largeurColonne / 7);
   const suivant = (iso: string) => (pas === 'mois' ? (Number(iso.slice(5, 7)) === 12 ? `${Number(iso.slice(0, 4)) + 1}-01-01` : `${iso.slice(0, 5)}${String(Number(iso.slice(5, 7)) + 1).padStart(2, '0')}-01`) : `${Number(iso.slice(0, 4)) + 1}-01-01`);
@@ -232,7 +234,7 @@ export function periodesBande(semaines: readonly SemaineBande[], abscisses: read
     const x0 = X(d), x1 = X(suivant(d));
     if (x0 > g + 0.5 && x0 < larg - 0.5) limites.push(x0);
     /* « J A J O » sans année (3 ans, 23.11) : un mois sur plusieurs, janvier se nomme par son année (« 2027 ») */
-    const l = Math.max(g, x0), r = Math.min(larg, x1);
+    const l = Math.max(gv, x0), r = Math.min(lv, x1);
     /* T29-8 (23.11, « O N D J F M A… » sans année au passage de janvier) : même à un nom par mois, janvier dit son année quand elle tient dans
        sa part visible ; sinon son initiale */
     const anneeTient = r - l >= Math.ceil(wEtiquette * 1.4) + ECART_ETIQUETTES;
@@ -249,11 +251,11 @@ export function periodesBande(semaines: readonly SemaineBande[], abscisses: read
     let x = (l + r) / 2;
     if (janvier) {
       /* collée au bord, l'année se décale vers l'intérieur, tant que son centre reste sur son année (jamais le nom d'une autre année) */
-      x = Math.min(Math.max(x, g + wt / 2, x0 + wt / 2), larg - wt / 2);
+      x = Math.min(Math.max(x, gv + wt / 2, x0 + wt / 2), lv - wt / 2);
       if (x < x0 + 0.5 || x > X(`${Number(d.slice(0, 4)) + 1}-01-01`) - 0.5) continue;
     } else if (saut > 1) {
       /* la part visible du mois doit tenir la moitié d'une initiale */
-      if (rang(d) % saut !== 0 || r - l < Math.ceil(wEtiquette / 2) / 2 || x - wt / 2 < g || x + wt / 2 > larg) continue;
+      if (rang(d) % saut !== 0 || r - l < Math.ceil(wEtiquette / 2) / 2 || x - wt / 2 < gv || x + wt / 2 > lv) continue;
     } else if (r - l < wt + ECART_ETIQUETTES) continue;
     let k = 0;
     while (k < n - 1 && x >= a[k + 1]) k++;
@@ -262,8 +264,8 @@ export function periodesBande(semaines: readonly SemaineBande[], abscisses: read
     if (noms.length && touche(noms[noms.length - 1])) {
       if (texte.length > 1) {
         while (noms.length && touche(noms[noms.length - 1]) && noms[noms.length - 1].texte.length === 1) noms.pop();
-        if (noms.length && touche(noms[noms.length - 1])) { if (saut > 1 && noms.length === 1 && l0 < g) noms.pop(); else continue; }
-      } else if (saut > 1 && noms.length === 1 && l0 < g) noms.pop(); else continue;
+        if (noms.length && touche(noms[noms.length - 1])) { if (saut > 1 && noms.length === 1 && l0 < gv) noms.pop(); else continue; }
+      } else if (saut > 1 && noms.length === 1 && l0 < gv) noms.pop(); else continue;
     }
     noms.push({ k, texte, x, decal: x - (a[k] + a[k + 1]) / 2, periode: pas === 'mois' ? d.slice(0, 7) : d.slice(0, 4) });
     if (noms.length === 1) l0 = x0;
@@ -276,8 +278,8 @@ export function periodesBande(semaines: readonly SemaineBande[], abscisses: read
     const an0 = semaines[0].debut.slice(0, 4), finAn0 = X(`${Number(an0) + 1}-01-01`);
     const nomme = noms.some(n => n.texte === an0 || n.texte === `’${an0.slice(2)}`);
     for (const texte of nomme ? [] : [an0, `’${an0.slice(2)}`]) {
-      const wt = largeurNom(texte), x = g + wt / 2 + (texte.length === 4 ? 1 : 0);
-      if (larg - g < wt + ECART_ETIQUETTES || x > finAn0 - 2) continue;
+      const wt = largeurNom(texte), x = gv + wt / 2 + (texte.length === 4 ? 1 : 0);
+      if (lv - gv < wt + ECART_ETIQUETTES || x > finAn0 - 2) continue;
       const libres = noms.filter(n => n.x - x >= (wt + largeurNom(n.texte)) / 2 + ECART_ETIQUETTES);
       /* jamais au prix d'une année déjà nommée : un premier segment trop court pour son nom s'efface devant le janvier qui le suit */
       if (noms.every(n => n.texte.length === 1 || libres.includes(n))) return { limites, noms: [{ k: 0, texte, x, decal: x - (a[0] + a[1]) / 2, periode: an0 }, ...libres] };
@@ -300,7 +302,7 @@ export function nomRogne(a: readonly number[], k: number, largeurColonne: number
   return r - l < Math.max(0.6 * largeurColonne, wEtiquette + 2) || x - wEtiquette / 2 < a[0] - 0.5 || x + wEtiquette / 2 > a[a.length - 1] + 0.5;
 }
 
-export function etiquettesPosees(semaines: readonly SemaineBande[], abscisses: readonly number[], grain: GrainBande, largeurColonne: number, wEtiquette = largeurEtiquetteMax()): Array<{ texte: string; x: number; w: number }> {
+export function etiquettesPosees(semaines: readonly SemaineBande[], abscisses: readonly number[], grain: GrainBande, largeurColonne: number, wEtiquette = largeurEtiquetteMax(), masqueAuj?: 'gauche' | 'droite'): Array<{ texte: string; x: number; w: number }> {
   const a = abscisses, n = semaines.length;
   if (!n || a.length !== n + 1 || !(largeurColonne > 0)) return [];
   const larg = (t: string) => (t.length === 1 ? Math.ceil(wEtiquette / 2) : t.length === 4 ? Math.ceil(wEtiquette * 1.4) : t.length === 3 && t[0] === '’' ? Math.ceil(wEtiquette * 0.85) : wEtiquette);
@@ -310,7 +312,7 @@ export function etiquettesPosees(semaines: readonly SemaineBande[], abscisses: r
       .map(j => ({ texte: String(j.n), x: a[k] + j.x, w: Math.ceil(wEtiquette * 0.75) })));
   }
   const pas: PasEtiquettes = grain === 'mois' || grain === 'an' ? grain : pasEtiquettes(largeurColonne, wEtiquette);
-  if (pas !== 1) return periodesBande(semaines, a, pas, largeurColonne, wEtiquette).noms.map(p => ({ texte: p.texte, x: p.x, w: larg(p.texte) }));
+  if (pas !== 1) return periodesBande(semaines, a, pas, largeurColonne, wEtiquette, masqueAuj).noms.map(p => ({ texte: p.texte, x: p.x, w: larg(p.texte) }));
   return semaines.flatMap((s, k) => (nomRogne(a, k, largeurColonne, wEtiquette) ? [] : [{ texte: `S${s.numero}`, x: (a[k] + a[k + 1]) / 2, w: wEtiquette }]));
 }
 
@@ -328,7 +330,7 @@ export function BandeSemaines({ masqueAuj, semaines, courbe, decalage, mouvement
   const pas: PasEtiquettes = surCourbe && (grain === 'mois' || grain === 'an') ? grain : pasEtiquettes(largeurColonne, wEtiquette);
   const etiquettes = pas === 1 ? null : etiquettesBande(semaines, pas, largeurColonne, wEtiquette);
   /* CAL-SEMAINE-ENTRE-TRAITS : sur la courbe, un groupe de semaines, un mois, une année se nomme au milieu de sa part visible, entre ses deux traits */
-  const periodes = surCourbe && pas !== 1 ? new Map(periodesBande(semaines, abscisses!, pas, largeurColonne, wEtiquette).noms.map(p => [p.k, p] as const)) : null;
+  const periodes = surCourbe && pas !== 1 ? new Map(periodesBande(semaines, abscisses!, pas, largeurColonne, wEtiquette, masqueAuj).noms.map(p => [p.k, p] as const)) : null;
   const enJours = surCourbe && grain === 'jour' && largeurColonne > 0;
   const larg = surCourbe ? abscisses![abscisses!.length - 1] : 0;
   const tue = (x: number) => surCourbe && sousAuj(masqueAuj, x, larg);

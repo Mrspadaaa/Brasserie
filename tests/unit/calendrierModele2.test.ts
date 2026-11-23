@@ -4,6 +4,8 @@ import { lundi, plusSemaines, semainesEntre } from '../../src/domain/calendrier/
 import { semainesAvenir, semainesPassees } from '../../src/ui/calendrier/useDonneesCalendrier';
 import { etatInitial, lire, reduire, SEMAINES_ANNEE, type ActionCadre, type EtatCadre, type Horizon } from '../../src/ui/calendrier/cadre/etat';
 import { libelleDuree } from '../../src/ui/calendrier/entete/Fenetre';
+import { semainesDe } from '../../src/domain/calendrier';
+import { MARGE_AUJ, periodesBande } from '../../src/ui/calendrier/entete/BandeSemaines';
 import type { Periode } from '../../src/components/periode/periode';
 
 /* Voie modele2 (23.11 soir) : le test par modèle (e2e/calendrier/etat-coherent.spec.ts, graine 4444, 4e suite) disait « An » pour un cadre de 21,9 sem.
@@ -72,5 +74,41 @@ describe('modele2 : « An » ne se dit que d\'un cadre de 52 semaines et plus', 
         expect(semainesEntre(m.h.premier, l.du) + l.fenetre.semaines).toBeLessThanOrEqual(m.h.total);
       }
     }), { numRuns: 400 });
+  });
+});
+
+/* I6 du test par modèle, graines 4444 et 7 (build neuf de HEAD) : « 2027 » tient 277 px du cadre et n'est nommée nulle part. Le cadre est loin d'aujourd'hui :
+   « ‹ auj. » couvre les 56 px de gauche (`tue`), et le janvier de l'axe d'avant le cadre y posait son année : posée, puis effacée. */
+describe("modele2 : un nom d'année ne se pose pas sous « ‹ auj. »", () => {
+  const W = 366, W_ETIQ = 23;
+  /** L'axe du Calendrier à 390 px : 56 px de marge de chaque côté du cadre (`semaines` entières), les bords des semaines en px. */
+  function axe(cadreDu: string, cadreSemaines: number) {
+    const col = (W - 2 * 54) / cadreSemaines, marge = Math.ceil(54 / col);
+    const sem = semainesDe(cadreDu, cadreSemaines + 2 * marge, marge).map((x) => ({ debut: x.debut, numero: x.numero }));
+    const a = Array.from({ length: sem.length + 1 }, (_, k) => k * col);
+    return { sem, a, col };
+  }
+  it('cadre du 1er févr. 2027 (44 sem.) : « 2027 » est nommée, hors de la marge muette', () => {
+    const { sem, a, col } = axe('2027-02-01', 44);
+    const noms = periodesBande(sem, a, 'mois', col, W_ETIQ, 'gauche').noms;
+    const an = noms.find((n) => /^(2027|’27)$/.test(n.texte));
+    expect(an, noms.map((n) => n.texte).join(' ')).toBeDefined();
+    expect(an!.x - 10).toBeGreaterThanOrEqual(MARGE_AUJ);
+    for (const n of noms) expect(n.x, n.texte).toBeGreaterThanOrEqual(MARGE_AUJ);
+  });
+  it('cadre du 28 juin 2027 (43 sem.) : « 2027 » est nommée', () => {
+    const { sem, a, col } = axe('2027-06-28', 43);
+    const noms = periodesBande(sem, a, 'mois', col, W_ETIQ, 'gauche').noms;
+    expect(noms.some((n) => /^(2027|’27)$/.test(n.texte)), noms.map((n) => n.texte).join(' ')).toBe(true);
+  });
+  it("propriété : sous « ‹ auj. » (gauche) ou « auj. › » (droite), aucun nom n'est posé", () => {
+    fc.assert(fc.property(fc.integer({ min: 14, max: 120 }), fc.integer({ min: 0, max: 200 }), fc.constantFrom<'gauche' | 'droite'>('gauche', 'droite'), (n, decalSem, cote) => {
+      const { sem, a, col } = axe(plusSemaines('2026-11-23', decalSem), n);
+      const larg = a[a.length - 1];
+      for (const p of periodesBande(sem, a, 'mois', col, W_ETIQ, cote).noms) {
+        if (cote === 'gauche') expect(p.x, `${p.texte} à ${Math.round(p.x)}`).toBeGreaterThanOrEqual(MARGE_AUJ);
+        else expect(p.x, `${p.texte} à ${Math.round(p.x)}`).toBeLessThanOrEqual(larg - MARGE_AUJ);
+      }
+    }), { numRuns: 300 });
   });
 });
