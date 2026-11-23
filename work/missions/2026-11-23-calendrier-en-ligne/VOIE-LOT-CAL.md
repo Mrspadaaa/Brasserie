@@ -60,3 +60,8 @@ Ordre et contenu inchangés (points 1 à 5 du brief), avec ces ajouts :
   bord, lâcher, CAL-LACHER-OU-DESSINE, fiches) : les règles fast-check doivent passer sur la nouvelle géométrie.
 - Test : CAL-UN-SEUL-AXE (DEFAUTS-RECURRENTS) rouge sur le tour 18 ; preuve en ligne par SES deux gestes (10 sem., 3 sem.).
 - Leçon : un correctif d'un élément (la bande) se juge avec ce qui l'entoure (les rangées) : capture d'écran ENTIÈRE regardée.
+
+## Ajout 23.11 9:53 — avec la PRIORITÉ 0 : CAL-GRILLE-SUR-GRADUATIONS
+- « le découpage en section, c'est très bien et très pratique, mais du c'est pas corrélé à l'échelle ça donne aucune
+  information ??? » (capture grille-0951.jpg : il a tiré chaque graduation vers le bas). Les lignes de colonnes des rangées
+  = les graduations de la bande, même grain (jours / semaines / mois), même x. Même cycle que D441.
