@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Sources des mini maquettes, repère d'aujourd'hui (23.11)</title>
+<style>
+  body { margin: 0; padding: 10px; background: #ccc; font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif; }
+  .rq { width: 390px; height: 430px; overflow: hidden; background: #fff; margin: 0 0 16px; position: relative; }
+  .rq svg { display: block; }
+  .rq-cap { background-repeat: no-repeat; background-size: 390px auto; background-position: 0 -102px; }
+</style>
+</head>
+<body>
+<!-- Son écran, 9:47 (avant le trait du tour 18), recadré à la même hauteur que les maquettes. -->
+<div class="rq rq-cap" data-m="ton-ecran-3s" style="background-image:url(../brasseur-23-11/3sem-0947.jpg)"></div>
+<div id="rq-sortie"></div>
+<script>
+(() => {
+  const BLEU = '#2d5f9e', ROUGE = '#a3262a', GRIS = '#6b6b6b', COL = '#e6eef8';
+  const H = 430, JOUR = 864e5;
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const T = (x, y, s, o = {}) => `<text x="${x}" y="${y}" font-size="${o.fs || 13}" font-weight="${o.fw || 400}" fill="${o.c || '#333'}" text-anchor="${o.a || 'start'}"${o.halo ? ' stroke="#fff" stroke-width="4" paint-order="stroke"' : ''}>${esc(s)}</text>`;
+  const D = (s) => Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10));
+  const AUJ = D('2026-11-23'); // lundi, S48
+  const LUNDI = AUJ;
+  const MOIS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+  const INIT = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+  const chf = (v) => (v < 0 ? '−' : '') + String(Math.abs(Math.round(v))).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  function sem(t) { const d = new Date(t), j = (d.getUTCDay() + 6) % 7, jeudi = t + (3 - j) * JOUR, y = new Date(jeudi).getUTCFullYear(); return { s: Math.floor((jeudi - Date.UTC(y, 0, 1)) / JOUR / 7) + 1, y }; }
+  const nomSem = (t) => { const w = sem(t); return 'S' + w.s + (w.y === 2026 ? '' : ' ’' + String(w.y).slice(2)); };
+
+  // UN seul axe (D441) : la fenêtre de la courbe, pour la courbe, la bande et les rangées.
+  function axe(d0, d1) { const t0 = D(d0), t1 = D(d1); const X = (t) => 12 + (t - t0) / (t1 - t0) * 366; return { t0, t1, X, pxj: 366 / ((t1 - t0) / JOUR) }; }
+
+  // Courbe : montants d'exemple (les noms viennent de ses captures).
+  const EV = [['2026-11-26', -600, 'lol'], ['2026-12-03', -400, 'Frigo + congel'], ['2026-12-09', -80, 'Extincteur'], ['2026-12-10', -13, 'Achats · Ssr'], ['2026-12-11', -2, 'Achats · Fruty'],
+    ['2027-01-14', -380, 'Fruty · malt'], ['2027-02-10', -650, 'Fûts'], ['2027-03-18', -90, 'Hefe · levure'], ['2027-04-22', -1100, 'Bouteilles'], ['2027-06-24', -860, 'Houblons']].map(([d, m, n]) => ({ t: D(d), m, n }));
+  const DEPART = -388;
+  const solde = (t) => DEPART + EV.filter((e) => e.t <= t).reduce((s, e) => s + e.m, 0);
+  function creux(c0, c1) { let best = { t: c0, v: solde(c0) }; for (const e of EV) if (e.t > c0 && e.t < c1 && solde(e.t) < best.v) best = { t: e.t, v: solde(e.t) }; return best; }
+
+  function entete(o) {
+    const pill = o.pill, pw = 92;
+    return [
+      `<rect width="390" height="44" fill="#fff"/>`,
+      `<rect x="8" y="6" width="28" height="28" rx="8" fill="#1d1d1d"/><rect x="16" y="12" width="12" height="15" rx="2" fill="#e0a040"/>`,
+      T(42, 25, "L'Affinée", { fs: 14, fw: 600, c: '#222' }),
+      `<rect x="117" y="4" width="176" height="34" rx="12" fill="#fff" stroke="#bbb"/><line x1="151" y1="4" x2="151" y2="38" stroke="#ccc"/><line x1="259" y1="4" x2="259" y2="38" stroke="#ccc"/>`,
+      T(134, 26, '‹', { fs: 18, a: 'middle' }), T(205, 26, '30.11.26–21.11.27', { fs: 12.5, a: 'middle', c: '#222' }), T(276, 26, '›', { fs: 18, a: 'middle', c: '#999' }),
+      `<circle cx="312" cy="21" r="14" fill="#eee" stroke="#bbb"/><circle cx="310" cy="19" r="5" fill="none" stroke="#333" stroke-width="1.6"/><line x1="314" y1="23" x2="318" y2="27" stroke="#333" stroke-width="1.6"/>`,
+      `<circle cx="345" cy="21" r="12" fill="#1d1d1d"/>${T(345, 25.5, 'G', { fs: 11, fw: 700, c: '#fff', a: 'middle' })}<circle cx="366" cy="21" r="12" fill="#e8e8e8"/>${T(366, 25.5, 'A', { fs: 11, fw: 700, c: '#333', a: 'middle' })}<circle cx="377" cy="9" r="3.5" fill="#1d1d1d"/>`,
+      `<line x1="0" y1="44" x2="390" y2="44" stroke="#eee"/>`,
+      T(14, 74, o.montant, { fs: 19, fw: 700, c: ROUGE }),
+      T(80, 64, 'CHF à dépenser', { fs: 12, c: GRIS }),
+      T(80, 79, o.semaine, { fs: 12.5, fw: 700, c: BLEU }),
+      `<rect x="170" y="54" width="22" height="26" rx="6" fill="#f4f4f4" stroke="#bbb"/>${T(181, 72, '±', { fs: 14, a: 'middle' })}`,
+      `<rect x="196" y="52" width="${pw}" height="30" rx="15" fill="#151515"/>${T(196 + pw / 2, 72, pill, { fs: 14, fw: 700, c: '#fff', a: 'middle' })}`,
+      `<circle cx="302" cy="67" r="11" fill="#fff" stroke="${ROUGE}" stroke-width="1.6"/>${T(305, 71, '7', { fs: 10.5, fw: 700, c: ROUGE, a: 'middle' })}`,
+      `<rect x="320" y="63" width="14" height="8" rx="1.5" fill="none" stroke="#333" stroke-width="1.6" transform="rotate(-35 327 67)"/>`,
+      `<path d="M342 67 q8 -7 16 0 q-8 7 -16 0z M343 59 l15 16" fill="none" stroke="#333" stroke-width="1.6"/>`,
+      `<path d="M377 58 h6 v6 M383 58 l-6 6 M371 76 h-6 v-6 M365 76 l6 -6" fill="none" stroke="#333" stroke-width="1.6"/>`,
+    ].join('');
+  }
+
+  const Y0 = 96, Y1 = 166, YZ = 101;
+  function courbe(a, o) {
+    const evs = EV.filter((e) => e.t > a.t0 && e.t < a.t1);
+    const vals = [solde(a.t0), ...evs.map((e) => solde(e.t))];
+    const s = 58 / Math.max(200, Math.abs(Math.min(...vals)));
+    const y = (v) => YZ - v * s;
+    let d = `M0 ${y(solde(a.t0))}`, rouges = '';
+    for (const e of evs) { const x = a.X(e.t); d += ` H${x}`; rouges += `<line x1="${x}" y1="${y(solde(e.t) - e.m)}" x2="${x}" y2="${y(solde(e.t))}" stroke="#b3261e" stroke-width="2"/>`; d += ` V${y(solde(e.t))}`; }
+    d += ' H390';
+    let out = `<rect x="0" y="${Y0}" width="390" height="${Y1 - Y0}" fill="#fbf1f1"/>`;
+    out += `<path d="${d} V${YZ} H0 Z" fill="rgba(200,60,60,.13)"/>`;
+    out += `<line x1="0" y1="${YZ}" x2="390" y2="${YZ}" stroke="#c0392b" stroke-width="1.3" stroke-dasharray="5 4"/>`;
+    out += `<path d="${d}" fill="none" stroke="${BLEU}" stroke-width="2"/>${rouges}`;
+    out += T(381, 95, '0', { fs: 12, fw: 700, c: '#c0392b', a: 'middle' });
+    const noms = [...evs].sort((p, q) => p.m - q.m).slice(0, 2).sort((p, q) => p.t - q.t);
+    noms.forEach((e, i) => { const x = a.X(e.t), fin = x > 250; out += `<text x="${fin ? x - 5 : x + 5}" y="${i ? 134 : 116}" font-size="13" text-anchor="${fin ? 'end' : 'start'}" fill="#333" stroke="#fff" stroke-width="3.5" paint-order="stroke">${esc(e.n)} <tspan fill="${ROUGE}" font-weight="700">${chf(e.m)}</tspan></text>`; });
+    return { svg: out, y };
+  }
+
+  const voile = (a, c0, c1, y0, y1) => `<rect x="0" y="${y0}" width="${Math.max(0, a.X(c0))}" height="${y1 - y0}" fill="rgba(70,70,70,.09)"/><rect x="${a.X(c1)}" y="${y0}" width="${Math.max(0, 390 - a.X(c1))}" height="${y1 - y0}" fill="rgba(70,70,70,.09)"/>`;
+  function cadre(a, c0, c1, etiquette, xPoint) {
+    const x0 = a.X(c0), x1 = a.X(c1);
+    let s = `<rect x="${x0}" y="${Y0 + 2}" width="${x1 - x0}" height="${Y1 - Y0 - 3}" rx="9" fill="none" stroke="${BLEU}" stroke-width="2.5"/>`;
+    s += `<rect x="${x0 - 3.5}" y="118" width="7" height="26" rx="3" fill="${BLEU}"/><rect x="${x1 - 3.5}" y="118" width="7" height="26" rx="3" fill="${BLEU}"/>`;
+    // D441 : le cadre traverse les rangées (un bord fin).
+    s += `<line x1="${x0}" y1="206" x2="${x0}" y2="${H}" stroke="${BLEU}" stroke-opacity=".35" stroke-width="1.2"/><line x1="${x1}" y1="206" x2="${x1}" y2="${H}" stroke="${BLEU}" stroke-opacity=".35" stroke-width="1.2"/>`;
+    const w = etiquette.length * 6.6 + 14; let cx = (x0 + x1) / 2;
+    if (xPoint != null && Math.abs(xPoint - cx) < w / 2 + 8) cx = xPoint - x0 > x1 - xPoint ? Math.max(x0 + w / 2 + 6, xPoint - w / 2 - 10) : Math.min(x1 - w / 2 - 6, xPoint + w / 2 + 10);
+    s += `<rect x="${cx - w / 2}" y="${Y1 - 22}" width="${w}" height="18" rx="5" fill="#fff" fill-opacity=".92"/>` + T(cx, Y1 - 8, etiquette, { fs: 12.5, fw: 700, c: BLEU, a: 'middle' });
+    return s;
+  }
+
+  // Bande des graduations, sur le même axe.
+  function bande(a, echelle, o) {
+    let s = '';
+    if (echelle === 'jours') {
+      for (let t = a.t0; t < a.t1; t += JOUR) {
+        const x = a.X(t), d = new Date(t), lundi = d.getUTCDay() === 1;
+        s += `<line x1="${x}" y1="170" x2="${x}" y2="${lundi ? 178 : 174}" stroke="${lundi ? '#a9a9a9' : '#d6d6d6'}"/>`;
+        const n = Math.round((t - AUJ) / JOUR);
+        if (n % 2 !== 0 || o.cache?.(t)) continue;
+        const estAuj = t === AUJ, cx = x + a.pxj / 2;
+        if (cx < 10 || cx > 380) continue;
+        const st = estAuj ? (o.gradAuj || { fw: 800, c: '#1d1d1d' }) : { fw: 400, c: '#555' };
+        s += T(cx, 193, String(d.getUTCDate()), { fs: 13.5, fw: st.fw, c: st.c, a: 'middle' });
+        if (estAuj && o.souligne) s += `<rect x="${cx - 9}" y="197" width="18" height="2.5" rx="1.2" fill="${BLEU}"/>`;
+      }
+    } else {
+      const d0 = new Date(a.t0);
+      for (let k = 0; k < 16; k++) {
+        const y = d0.getUTCFullYear(), m = d0.getUTCMonth() + k;
+        const t = Date.UTC(y, m, 1), tf = Date.UTC(y, m + 1, 1);
+        if (t >= a.t1) break;
+        const x = a.X(t); if (x > 0) s += `<line x1="${x}" y1="170" x2="${x}" y2="177" stroke="#b9b9b9"/>`;
+        const cx = (Math.max(a.X(t), 12) + Math.min(a.X(tf), 378)) / 2, mm = new Date(t).getUTCMonth();
+        if (a.X(tf) - Math.max(a.X(t), 12) < 14 || o.cache?.(t, tf)) continue;
+        const lab = mm === 0 ? 'J’' + String(new Date(t).getUTCFullYear()).slice(2) : INIT[mm];
+        const estAuj = AUJ >= t && AUJ < tf;
+        const st = estAuj ? (o.gradAuj || { fw: 800, c: '#1d1d1d' }) : { fw: 400, c: '#555' };
+        s += T(cx, 193, lab, { fs: 13.5, fw: st.fw, c: st.c, a: 'middle' });
+        if (estAuj && o.souligne) s += `<rect x="${cx - 7}" y="197" width="14" height="2.5" rx="1.2" fill="${BLEU}"/>`;
+      }
+    }
+    return s + `<line x1="12" y1="204" x2="378" y2="204" stroke="#e3e3e3"/>`;
+  }
+
+  // Rangées : barres posées sur l'axe unique (dates d'exemple, noms de ses captures).
+  const BARRES = [
+    ['Milk Stout · coût à venir', '2026-05-01', '2027-01-11', 'prête 11 janv.', 'b'],
+    ['NEIPA Test · coût à venir', '2026-09-03', '2026-12-16', 'prête 16 déc.', 'b'],
+    ['neipa v3', '2026-11-10', '2026-12-02', 'prête 2 déc.', 'b'],
+    ['Ttt −4 + à venir', '2026-11-30', '2027-01-10', 'prête 10 janv.', 'p'],
+    ['Hefe −5 + à venir', '2026-12-07', '2027-04-18', 'prête 18 avr.', 'p'],
+    ['Fruty −2 + à venir', '2027-01-04', '2027-03-29', 'prête 29 mars', 'p'],
+  ];
+  const plus = (y, c) => `<rect x="12" y="${y}" width="22" height="22" rx="5" fill="${c}"/><path d="M23 ${y + 5} v12 M17 ${y + 11} h12" stroke="#fff" stroke-width="2.2"/>`;
+  const oeil = (x, y) => `<path d="M${x} ${y} q7 -6 14 0 q-7 6 -14 0z" fill="none" stroke="#444" stroke-width="1.5"/><circle cx="${x + 7}" cy="${y}" r="2" fill="#444"/>`;
+  function rangees(a) {
+    let s = plus(210, '#9a4a22') + T(42, 226, 'Brassins', { fs: 14, fw: 700, c: '#9a4a22' }) + oeil(112, 221)
+      + `<rect x="134" y="210" width="130" height="24" rx="12" fill="#e4e4e4"/><rect x="134" y="210" width="14" height="24" rx="7" fill="#b8907a"/>` + T(203, 227, '−12 + coût à venir', { fs: 13, fw: 700, c: '#222', a: 'middle' })
+      + T(272, 227, 'prévu S48–S50', { fs: 13, c: GRIS });
+    let y = 242;
+    for (const [nom, d0, d1, droite, g] of BARRES) {
+      const x0 = Math.max(12, a.X(D(d0))), x1 = Math.min(378, a.X(D(d1)));
+      if (x1 - x0 < 4 || y > 386) continue;
+      const pas = g === 'p';
+      s += `<rect x="${x0}" y="${y}" width="${x1 - x0}" height="22" rx="5" fill="#f3e6dc" stroke="#8b4a2b" stroke-width="1.4"/><rect x="${x0 + 1}" y="${y + 19}" width="${Math.max(0, x1 - x0 - 2)}" height="3" fill="${pas ? '#6f7f99' : '#3b78c4'}"/>`;
+      const wn = nom.length * 6.5, wd = (pas ? 'pas brassée · ' + droite : droite).length * 6.4;
+      if (x1 - x0 > wn + 16) {
+        s += T(x0 + 7, y + 16, nom, { fs: 13, c: '#222' });
+        if (x1 - x0 > wn + wd + 28) s += pas ? `<text x="${x1 - 6}" y="${y + 16}" font-size="12.5" text-anchor="end" fill="#444"><tspan fill="${ROUGE}" font-weight="700">pas brassée</tspan> · ${esc(droite)}</text>` : T(x1 - 6, y + 16, droite, { fs: 12.5, c: '#444', a: 'end' });
+      } else if (x1 + wn + 10 < 384) s += T(x1 + 6, y + 16, nom, { fs: 13, c: '#222' });
+      else s += T(x0 - 6, y + 16, nom, { fs: 13, c: '#222', a: 'end', halo: true });
+      y += 30;
+    }
+    y += 6;
+    s += plus(y, '#7b4fc4') + T(42, y + 16, 'Fêtes', { fs: 14, fw: 700, c: '#7b4fc4' }) + oeil(86, y + 11) + `<rect x="108" y="${y}" width="72" height="24" rx="12" fill="#e4e4e4"/>` + T(144, y + 17, '1 chose', { fs: 13, fw: 700, c: '#222', a: 'middle' });
+    return s;
+  }
+
+  // Les trois vues jouées par chaque variante.
+  const VUES = {
+    '3s': { a: axe('2026-11-19', '2026-12-19'), c0: D('2026-11-23'), c1: D('2026-12-14'), et: '23 nov. – 13 déc.', pill: '3 sem.', ech: 'jours' },
+    '40s': { a: axe('2026-09-01', '2027-11-01'), c0: D('2026-11-02'), c1: D('2027-08-09'), et: '2 nov. 2026 – 8 août 2027', pill: '40 sem.', ech: 'mois' },
+    'hors': { a: axe('2027-01-25', '2027-02-24'), c0: D('2027-02-01'), c1: D('2027-02-22'), et: '1 – 21 févr. 2027', pill: '3 sem.', ech: 'jours' },
+  };
+
+  // Chaque variante : ce qu'elle pose sous la courbe (fond), sur la courbe (dessus), sur la bande, et hors de la vue.
+  const VAR = {
+    actuel: {
+      colonne: 'semaine',
+      dessus: (v, x, yv) => `<line x1="${x}" y1="${Y0}" x2="${x}" y2="${Y1}" stroke="${BLEU}" stroke-width="2"/><path d="M${x - 5} ${Y0}h10l-5 6z" fill="${BLEU}"/>`,
+      hors: () => T(14, Y1 - 4, '‹ auj.', { fs: 14, fw: 700, c: BLEU, halo: true }),
+    },
+    a: {
+      colonne: 'semaine',
+      fond: (v, x) => `<line x1="${x}" y1="206" x2="${x}" y2="${H}" stroke="${BLEU}" stroke-opacity=".55" stroke-width="1.2"/>`,
+      dessus: (v, x) => `<line x1="${x}" y1="${Y0}" x2="${x}" y2="${Y1}" stroke="${BLEU}" stroke-opacity=".6" stroke-width="1.2"/><line x1="${x}" y1="${Y1}" x2="${x}" y2="178" stroke="${BLEU}" stroke-opacity=".6" stroke-width="1.2"/>`,
+      bande: (v, x) => { const w = 36; return `<rect x="${x - w / 2}" y="179" width="${w}" height="20" rx="10" fill="${BLEU}"/>` + T(x, 193.5, 'auj.', { fs: 12.5, fw: 700, c: '#fff', a: 'middle' }); },
+      cache: (v, x) => (t, tf) => { const a = v.a; const cx = tf ? (a.X(t) + a.X(tf)) / 2 : a.X(t) + a.pxj / 2; return Math.abs(cx - x) < 22; },
+      hors: () => `<rect x="10" y="179" width="50" height="20" rx="10" fill="${BLEU}"/>` + T(35, 193.5, '‹ auj.', { fs: 12.5, fw: 700, c: '#fff', a: 'middle' }),
+      horsCache: (t, tf) => false,
+    },
+    b: {
+      colonne: 'unite',
+      gradAuj: { fw: 800, c: BLEU },
+      hors: () => `<defs><linearGradient id="gb" x1="0" x2="1"><stop offset="0" stop-color="${BLEU}" stop-opacity=".28"/><stop offset="1" stop-color="${BLEU}" stop-opacity="0"/></linearGradient></defs><rect x="0" y="${Y0}" width="22" height="${H - Y0}" fill="url(#gb)"/>`
+        + `<rect x="0" y="179" width="52" height="20" fill="#fff" fill-opacity=".85"/>` + T(14, 194, '‹ auj.', { fs: 13.5, fw: 800, c: BLEU }),
+    },
+    c: {
+      colonne: 'semaine', creuxRouge: true,
+      gradAuj: { fw: 800, c: BLEU }, souligne: true,
+      dessus: (v, x, yv) => `<circle cx="${x}" cy="${yv}" r="5" fill="${BLEU}" stroke="#fff" stroke-width="2.2"/>`,
+      hors: () => `<rect x="0" y="179" width="52" height="24" fill="#fff"/>` + T(14, 194, '‹ auj.', { fs: 13.5, fw: 800, c: BLEU }) + `<rect x="26" y="197" width="18" height="2.5" rx="1.2" fill="${BLEU}"/>`,
+    },
+    d: {
+      colonne: 'semaine',
+      gradAuj: { fw: 800, c: BLEU },
+      dessus: (v, x) => `<path d="M${x - 8} ${Y0 - 10}h16l-8 11z" fill="${BLEU}" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><line x1="${x}" y1="170" x2="${x}" y2="178" stroke="${BLEU}" stroke-width="2"/>`,
+      hors: () => `<path d="M12 ${Y0 - 4} l11 -7 v14z" fill="${BLEU}" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/>` + T(27, Y0 + 1, 'auj.', { fs: 13, fw: 800, c: BLEU, halo: true }),
+    },
+  };
+
+  function rendu(cle, vue) {
+    const v = VUES[vue], a = v.a, va = VAR[cle];
+    const dans = AUJ >= a.t0 && AUJ < a.t1;
+    const x = a.X(AUJ) + (v.ech === 'jours' ? a.pxj / 2 : 0);
+    const cr = creux(v.c0, v.c1);
+    const crb = courbe(a, va);
+    let s = `<rect width="390" height="${H}" fill="#fff"/>`;
+    // Colonne bleue de la semaine (rangées), ou, en B, l'unité d'aujourd'hui sur toute la hauteur.
+    if (dans) {
+      if (va.colonne === 'semaine') s += `<rect x="${a.X(LUNDI)}" y="206" width="${a.X(LUNDI + 7 * JOUR) - a.X(LUNDI)}" height="${H - 206}" fill="${COL}"/>`;
+    }
+    s += voile(a, v.c0, v.c1, 206, H);
+    s += crb.svg;
+    if (dans && va.colonne === 'unite') {
+      const u0 = v.ech === 'jours' ? AUJ : LUNDI, u1 = v.ech === 'jours' ? AUJ + JOUR : LUNDI + 7 * JOUR;
+      const w = Math.max(5, a.X(u1) - a.X(u0));
+      s += `<rect x="${a.X(u0)}" y="${Y0}" width="${w}" height="${Y1 - Y0}" fill="${BLEU}" fill-opacity=".2"/><rect x="${a.X(u0)}" y="168" width="${w}" height="36" fill="${BLEU}" fill-opacity=".12"/><rect x="${a.X(u0)}" y="206" width="${w}" height="${H - 206}" fill="${BLEU}" fill-opacity=".16"/>`;
+    }
+    s += voile(a, v.c0, v.c1, Y0, Y1);
+    if (dans && va.fond) s += va.fond(v, x);
+    s += bande(a, v.ech, { gradAuj: va.gradAuj, souligne: va.souligne, cache: dans && va.cache ? va.cache(v, x) : (!dans && cle === 'a') ? (t, tf) => (tf ? a.X(tf) : a.X(t) + a.pxj / 2) < 76 : (!dans && (cle === 'b' || cle === 'c')) ? (t, tf) => (tf ? a.X(tf) : a.X(t) + a.pxj / 2) < 68 : null });
+    const xc = a.X(cr.t) + (v.ech === 'jours' ? a.pxj / 2 : 3);
+    s += `<circle cx="${Math.min(372, xc)}" cy="${Math.min(161, crb.y(cr.v))}" r="5" fill="${va.creuxRouge ? ROUGE : BLEU}" stroke="#fff" stroke-width="2"/>`;
+    s += cadre(a, v.c0, v.c1, v.et, Math.min(372, xc));
+    if (dans && va.dessus) s += va.dessus(v, x, crb.y(solde(AUJ)));
+    s += rangees(a);
+    if (dans && va.bande) s += va.bande(v, x);
+    if (!dans) s += va.hors(v);
+    s += entete({ montant: chf(cr.v), semaine: nomSem(cr.t), pill: v.pill });
+    return `<svg width="390" height="${H}" viewBox="0 0 390 ${H}" xmlns="http://www.w3.org/2000/svg" font-family="Source Sans 3, Segoe UI, Arial, sans-serif">${s}</svg>`;
+  }
+
+  const sortie = document.getElementById('rq-sortie');
+  for (const cle of Object.keys(VAR)) for (const vue of Object.keys(VUES)) {
+    const d = document.createElement('div');
+    d.className = 'rq'; d.dataset.m = `${cle}-${vue}`; d.innerHTML = rendu(cle, vue);
+    sortie.appendChild(d);
+  }
+})();
+</script>
+</body>
+</html>

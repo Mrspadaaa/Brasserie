@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calendrier : le repère d'aujourd'hui · 23.11</title>
+<style>
+  :root { --fond: #f6f4ef; --carte: #fff; --encre: #1d1d1d; --doux: #5c5c5c; --bleu: #2d5f9e; --vert: #2f7a3a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fond); color: var(--encre); font: 16px/1.45 "Source Sans 3", "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 1480px; margin: 0 auto; padding: 14px 12px 40px; }
+  h1 { font-size: 24px; margin: 4px 0 6px; }
+  h2 { font-size: 20px; margin: 0 0 4px; }
+  p { margin: 6px 0; }
+  .doux { color: var(--doux); font-size: 15px; }
+  #a-choisir { background: var(--carte); border: 2px solid var(--encre); border-radius: 14px; padding: 12px 14px; margin: 10px 0 22px; }
+  #a-choisir ol { margin: 6px 0; padding-left: 0; list-style: none; }
+  #a-choisir li { padding: 7px 0; border-top: 1px solid #eee; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  #a-choisir li:first-child { border-top: 0; }
+  #a-choisir a { color: var(--encre); font-weight: 700; }
+  .reco { display: inline-block; background: var(--vert); color: #fff; font-weight: 700; font-size: 14px; border-radius: 999px; padding: 1px 10px; }
+  section { margin: 0 0 30px; }
+  .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; margin-top: 10px; }
+  figure { margin: 0; background: var(--carte); border: 1px solid #ddd8cc; border-radius: 12px; overflow: hidden; }
+  figure.recommande { border: 3px solid var(--vert); }
+  figure img { display: block; width: 100%; height: auto; }
+  .vue { font-size: 14px; font-weight: 700; color: var(--doux); padding: 8px 12px 4px; border-top: 6px solid var(--fond); }
+  .tete { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-weight: 700; font-size: 17px; flex-wrap: wrap; }
+  .tete .lettre { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: var(--encre); color: #fff; }
+  .tete.actuel .lettre { background: #999; }
+  figcaption { padding: 8px 12px 12px; font-size: 15px; }
+</style>
+</head>
+<body>
+<main>
+<h1>Calendrier : le repère d'aujourd'hui · 23.11</h1>
+<p class="doux">Tes mots : « on voit toujours pas sur le graph où est le moment présent » ; puis, au tour 18 : « pas très élégant le repère ». Quatre repères, sur ton écran, à 390 px.</p>
+
+<section id="a-choisir">
+  <h2>À choisir</h2>
+  <ol>
+    <li><a href="#va">A · Fil bleu de haut en bas, « auj. » sur la bande</a></li>
+    <li><a href="#vb">B · La colonne bleue monte jusqu'à la courbe</a> <span class="reco">recommandé</span></li>
+    <li><a href="#vc">C · Point sur la courbe, graduation en bleu</a></li>
+    <li><a href="#vd">D · Encoche ▾ au-dessus de la courbe</a></li>
+  </ol>
+  <p class="doux">Réponds par une lettre, par exemple « B ». Chaque variante : 3 sem. en jours, 40 sem. en mois, puis aujourd'hui hors de la vue.</p>
+</section>
+
+<section id="base">
+  <h2>Ton écran</h2>
+  <p class="doux">Aujourd'hui : lundi 23 nov., S48. Toutes les maquettes sont dessinées sur l'axe unique décidé ce matin : courbe, bande et rangées alignées, le cadre les traverse, gris léger hors du cadre.</p>
+  <div class="grille">
+    <figure>
+      <div class="tete actuel"><span class="lettre">·</span>Ta capture, 9:47</div>
+      <img src="img/ton-ecran-3s.png" alt="Ta capture à 3 semaines, 9:47" width="780" height="860">
+      <figcaption>Avant le trait : rien sur la courbe, seulement « 23 » en gras et la semaine en bleu dans les rangées.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete actuel"><span class="lettre">·</span>Tour 18, en ligne</div>
+      <div class="vue">3 sem., en jours</div>
+      <img src="img/actuel-3s.png" alt="Tour 18 à 3 semaines" width="780" height="860">
+      <div class="vue">40 sem., en mois</div>
+      <img src="img/actuel-40s.png" alt="Tour 18 à 40 semaines" width="780" height="860">
+      <div class="vue">Aujourd'hui hors de la vue</div>
+      <img src="img/actuel-hors.png" alt="Tour 18, aujourd'hui hors de la vue" width="780" height="860">
+      <figcaption>Le trait de 2 px et son triangle, sur la courbe seulement ; il s'arrête à la bande. Redessiné d'après le code du tour 18.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="variantes">
+  <h2>Les quatre repères</h2>
+  <div class="grille">
+    <figure id="va">
+      <div class="tete"><span class="lettre">A</span>Fil bleu, « auj. » sur la bande</div>
+      <div class="vue">3 sem., en jours</div>
+      <img src="img/a-3s.png" alt="A à 3 semaines" width="780" height="860">
+      <div class="vue">40 sem., en mois</div>
+      <img src="img/a-40s.png" alt="A à 40 semaines" width="780" height="860">
+      <div class="vue">Aujourd'hui hors de la vue</div>
+      <img src="img/a-hors.png" alt="A, aujourd'hui hors de la vue" width="780" height="860">
+      <figcaption><b>Ce qui change :</b> le trait devient un fil de 1 px, pâle, de la courbe jusqu'aux rangées ; une pastille « auj. » sur la bande. Hors de la vue : la pastille « ‹ auj. » au bord.</figcaption>
+    </figure>
+    <figure id="vb" class="recommande">
+      <div class="tete"><span class="lettre">B</span>La colonne bleue monte <span class="reco">recommandé</span></div>
+      <div class="vue">3 sem., en jours</div>
+      <img src="img/b-3s.png" alt="B à 3 semaines" width="780" height="860">
+      <div class="vue">40 sem., en mois</div>
+      <img src="img/b-40s.png" alt="B à 40 semaines" width="780" height="860">
+      <div class="vue">Aujourd'hui hors de la vue</div>
+      <img src="img/b-hors.png" alt="B, aujourd'hui hors de la vue" width="780" height="860">
+      <figcaption><b>Ce qui change :</b> plus de trait. Ton bleu des rangées traverse aussi la bande et la courbe : le jour en jours, la semaine en semaines et en mois. Hors de la vue : un dégradé bleu au bord, « ‹ auj. ».</figcaption>
+    </figure>
+    <figure id="vc">
+      <div class="tete"><span class="lettre">C</span>Point sur la courbe</div>
+      <div class="vue">3 sem., en jours</div>
+      <img src="img/c-3s.png" alt="C à 3 semaines" width="780" height="860">
+      <div class="vue">40 sem., en mois</div>
+      <img src="img/c-40s.png" alt="C à 40 semaines" width="780" height="860">
+      <div class="vue">Aujourd'hui hors de la vue</div>
+      <img src="img/c-hors.png" alt="C, aujourd'hui hors de la vue" width="780" height="860">
+      <figcaption><b>Ce qui change :</b> un point bleu sur la courbe, à aujourd'hui ; « 23 » ou « N » en bleu, souligné. Le point du creux passe en rouge, pour ne pas confondre les deux points.</figcaption>
+    </figure>
+    <figure id="vd">
+      <div class="tete"><span class="lettre">D</span>Encoche ▾</div>
+      <div class="vue">3 sem., en jours</div>
+      <img src="img/d-3s.png" alt="D à 3 semaines" width="780" height="860">
+      <div class="vue">40 sem., en mois</div>
+      <img src="img/d-40s.png" alt="D à 40 semaines" width="780" height="860">
+      <div class="vue">Aujourd'hui hors de la vue</div>
+      <img src="img/d-hors.png" alt="D, aujourd'hui hors de la vue" width="780" height="860">
+      <figcaption><b>Ce qui change :</b> une encoche ▾ posée sur le haut de la courbe, un cran bleu et la graduation en bleu sur la bande. Rien ne traverse la courbe. Hors de la vue : ◂ « auj. » en haut à gauche.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<p class="doux">Noms repris de tes captures ; montants et dates d'exemple. Le chiffre « à dépenser » suit le cadre (ton choix « Creux du cadre »). Sources : SPEC 23.11, D441.</p>
+</main>
+</body>
+</html>
