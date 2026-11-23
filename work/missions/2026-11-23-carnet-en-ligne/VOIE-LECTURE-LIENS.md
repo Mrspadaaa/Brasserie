@@ -17,3 +17,13 @@ comparer sur les mêmes 50 liens (a) la cascade avec Flash-Lite, (b) Gemini 3.8 
 (retrouve prix/caractéristiques ailleurs quand la page bloque), (c) une API d'extraction produit dédiée (Zyte, Diffbot) —
 (c) demande un compte externe : préparer seulement la comparaison sur leur offre d'essai SANS créer de compte, le pilote
 demandera l'accord. Tableau : justesse par champ, temps, coût par lien. Choix écrit dans « ## État de l'art ».
+
+Ajout 23.11 (« Regarde les autres IA, outils Google... ») : élargir la comparaison, d'abord sur dossier (doc officielle, prix,
+compte nécessaire, ce qu'on peut tester sans compte), puis mesurer ce qui est testable sans nouveau compte :
+- Google : Custom Search JSON API / Programmable Search (pagemap schema.org Product de l'index Google, contourne les blocages),
+  Gemini grounding Google Search, url_context, Vertex AI Search, Merchant/Shopping (probablement hors cas : marchand requis).
+- Autres IA : Claude (Haiku/Sonnet, API Anthropic), Mistral, modèles ouverts ; GPT seulement pour la comparaison écrite.
+- Outils d'extraction : Zyte, Diffbot, Firecrawl, Jina Reader (r.jina.ai : lecture de page en texte, gratuit sans clé),
+  navigateur sans tête (Puppeteer en fonction serveur).
+Tableau final : justesse par champ sur les 50 liens (mesurée, ou « non testé : compte requis »), temps, coût par lien, compte
+requis oui/non, risque. Recommandation ; tout nouveau compte ou service payant attend l'accord du brasseur (pilote).
