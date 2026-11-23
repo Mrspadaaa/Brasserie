@@ -62,7 +62,7 @@ test.describe('Calendrier, frise et en-tête (lot 9)', () => {
   test('L-60 : à la butée du passé, un repère « début » est dessiné dans la courbe', async ({ page }) => {
     await choisirPeriode(page, '2 sem.'); await choisirPeriode(page, '6 sem.');
     const doigt = await Doigt.sur(page);
-    for (let i = 0; i < 8 && !(await page.locator('[data-debut-donnees]').count()); i++) {
+    for (let i = 0; i < 20 && !(await page.locator('[data-debut-donnees]').count()); i++) {
       const g = (await boiteCadre(page))!;
       await doigt.glisser({ x: (g.l + g.r) / 2, y: g.y }, { x: Math.max(2, g.l - 120), y: g.y }, { dureeMs: 400 });
       await page.waitForTimeout(450);

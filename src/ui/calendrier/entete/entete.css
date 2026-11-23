@@ -415,5 +415,6 @@
 .ent-k[data-tres-serre][data-empile] { column-gap: 2px; }
 
 /* L-60 (T11-14) : la butée du passé, le début des données */
-.ent-debut { stroke: var(--ent-mut); stroke-width: 2; stroke-dasharray: 3 3; }
-.ent-debut-l { fill: var(--ent-mut); font-size: 11px; font-weight: 700; }
+.ent-debut-halo { stroke: rgb(var(--cave-950)); stroke-width: 5px; }
+.ent-debut { stroke: rgb(var(--cave-50)); stroke-width: 2px; stroke-dasharray: 4 3; }
+.ent-debut-l { font-size: 13px; font-weight: 700; fill: rgb(var(--cave-50)); paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 4px; stroke-linejoin: round; }

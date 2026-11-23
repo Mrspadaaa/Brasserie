@@ -665,7 +665,8 @@ export function Courbe({ debutDonnees = false, courbe, largeur, hauteur, curseur
         {sousZero && <text className="ent-zero-l" data-sous-zero="repere" x={largeur - 3} y={y0 - 3} textAnchor="end" aria-hidden="true">0</text>}
         {debutDonnees && (
           <g data-debut-donnees aria-hidden="true">
-            <line className="ent-debut" x1={g.x(0) + 1} x2={g.x(0) + 1} y1={g.haut} y2={g.bas} />
+            <line className="ent-debut-halo" x1={g.x(0) + 1.5} x2={g.x(0) + 1.5} y1={g.haut} y2={g.bas} />
+            <line className="ent-debut" x1={g.x(0) + 1.5} x2={g.x(0) + 1.5} y1={g.haut} y2={g.bas} />
             <text className="ent-debut-l" x={g.x(0) + 5} y={g.haut + 10}>début</text>
           </g>
         )}
