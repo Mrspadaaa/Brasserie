@@ -81,7 +81,7 @@ export const GENRES_NOTE: readonly GenreNote[] = ['a-acheter', 'a-faire', 'quest
 export interface Note { id: string; texte: string; genre: GenreNote; modifieeLe?: string; messageId?: string; groupe?: { id: string; libelle: string }; fusionDe?: string[] }
 
 /** Une photo réduite (≤ 150 ko), rangée dans le carnet ; non lue par l'IA (accord). */
-export interface Photo { id: string; jpeg: string; messageId?: string }
+export interface Photo { id: string; jpeg: string; messageId?: string; /** L-24 : la lecture l'a lue ; gardé à la lecture du document. */ lue?: true }
 
 /** Le choix (ADR du CADRE) : un choix revu passe dans `remplaces` et reste lisible (D-20, R34). */
 export interface Choix {
@@ -204,10 +204,17 @@ function lireVeille(v: unknown): Veille | undefined {
 /**
  * Décode les entités HTML (`&apos;`, `&#39;`, `&amp;`, `&nbsp;`…) : méthode standard du navigateur (DOMParser), aucune regex maison. Le `<` est
  * protégé pour qu'un texte n'ouvre jamais une balise. Sans DOMParser (hors navigateur et jsdom) ou sans `&` : le texte tel quel.
+ * L-25 : une page qui encode deux fois (« d&amp;#039;acier ») se lisait « d&#039;acier » sur les articles lus avant CRP-2, que le serveur
+ * n'a jamais décodés : le décodage se répète jusqu'au point fixe, trois passes au plus.
  */
 export function decoderEntites(s: string): string {
-  if (!s.includes('&') || typeof DOMParser === 'undefined') return s;
-  return new DOMParser().parseFromString(`<!doctype html><body>${s.replace(/</g, '&lt;')}`, 'text/html').body.textContent ?? s;
+  let t = s;
+  for (let passe = 0; passe < 3 && t.includes('&') && typeof DOMParser !== 'undefined'; passe += 1) {
+    const d = new DOMParser().parseFromString(`<!doctype html><body>${t.replace(/</g, '&lt;')}`, 'text/html').body.textContent ?? t;
+    if (d === t) break;
+    t = d;
+  }
+  return t;
 }
 
 const sansAccentsBas = (s: string): string => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
@@ -259,7 +266,7 @@ function lireNote(v: unknown): Note | null {
 
 function lirePhoto(v: unknown): Photo | null {
   if (!estObjet(v) || !texteNonVide(v.id) || !texteNonVide(v.jpeg)) return null;
-  return sansIndefinis({ id: v.id, jpeg: v.jpeg, messageId: optTexte(v.messageId) });
+  return sansIndefinis({ id: v.id, jpeg: v.jpeg, messageId: optTexte(v.messageId), lue: v.lue === true ? (true as const) : undefined });
 }
 
 function lireChoix(v: unknown, profondeur = 0): Choix | undefined {
@@ -397,7 +404,8 @@ export function domaineDuLienSeul(texte: string): string | null {
 export const estLienSeul = (phrase: string): boolean => domaineDuLienSeul(phrase) !== null;
 
 /* Mots qui annoncent un prix (« à 45.50 CHF », « prix 4 900 CHF ») et qui le suivent (« 85 CHF pièce ») : retirés avec lui du titre. */
-const AVANT_PRIX = /(?:^|\s)(?:au prix de|à partir de|prix|à|a|pour|de|dès|env\.?|environ|vers|pr\.?)\s*$/i;
+/* L-29 : « budget 400 CHF », « budget max de 400 CHF », « max 250 CHF » partent aussi, sans laisser « budget » en bout de titre */
+const AVANT_PRIX = /(?:^|\s)(?:au prix de|à partir de|(?:budget|plafond)(?:\s+max(?:imum|\.)?)?(?:\s+(?:de|à))?|max(?:imum|\.)?(?:\s+(?:de|à))?|jusqu['’]à|prix|à|a|pour|de|dès|env\.?|environ|vers|pr\.?)\s*$/i;
 const APRES_PRIX = /^\s*(?:la pièce|pièces?|pce|pc|\/\s*pièce|l['’]unité|chacune?|HT|TTC)(?=$|[\s.,;:!?)])/i;
 const PREFIXE_TEST = /^ZZ TEST\s*[—–-]\s*/i;
 const MARQUE_TEST_SEULE = /^ZZ TEST(?:\s*[—–-]\s*)?/i;
