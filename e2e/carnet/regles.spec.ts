@@ -14,13 +14,13 @@ test.describe('Carnet : les règles du brasseur', () => {
     await poserFixtureCarnet(page);
   });
 
-  /* CARNET-LIS (16.11 : « ça reste de l'UX UI assez mauvaise, et difficile à lire ») : aucun texte sous 12 px (DESIGN.md : libellé compact 12 px ; la ligne CARNET-LIS dit 14 px, voir DEFAUTS.md), contraste d'au moins 4,5:1,
+  /* CARNET-LIS (16.11 : « ça reste de l'UX UI assez mauvaise, et difficile à lire ») : aucun texte sous 14 px (D430, 23.11 : sa règle du 16.11 prime sur le 12 px compact de DESIGN.md pour le Carnet), contraste d'au moins 4,5:1,
      un seul titre dominant, et au plus 40 mots dans un carnet ouvert au repos (l'en-tête et la barre du bas de l'app ne comptent pas) */
   for (const [nom, ouvrir] of [
     ['la liste', async (page: Page) => { await ouvrirCarnet(page); }],
     ['un carnet ouvert', async (page: Page) => { await ouvrirCarnet(page); await ouvrirUnCarnet(page, 'Frigo + congel'); }]
   ] as const) {
-    test(`CARNET-LIS : ${nom} au repos, aucun texte sous 12 px, contraste 4,5:1, un seul titre dominant`, async ({ page }) => {
+    test(`CARNET-LIS : ${nom} au repos, aucun texte sous 14 px, contraste 4,5:1, un seul titre dominant`, async ({ page }) => {
       await ouvrir(page);
       const petits = await page.evaluate(() => {
         const out: string[] = [];
@@ -31,11 +31,11 @@ test.describe('Carnet : les règles du brasseur', () => {
           if (!s || !e || vus.has(e)) continue; vus.add(e);
           const r = e.getBoundingClientRect(); if (!(r.width > 0 && r.height > 0)) continue;
           const cs = getComputedStyle(e); if (cs.visibility === 'hidden' || cs.display === 'none') continue;
-          if (parseFloat(cs.fontSize) < 12) out.push(`« ${s.slice(0, 28)} » ${cs.fontSize}`);
+          if (parseFloat(cs.fontSize) < 14) out.push(`« ${s.slice(0, 28)} » ${cs.fontSize}`);
         }
         return out;
       });
-      expect(petits, 'textes sous 12 px (le plancher de DESIGN.md pour un libellé compact)').toEqual([]);
+      expect(petits, 'textes sous 14 px (D430 : le plancher du Carnet)').toEqual([]);
       const axe = await new AxeBuilder({ page }).include('[data-carnets]').withRules(['color-contrast']).analyze();
       expect(axe.violations.flatMap((v) => v.nodes.map((n) => n.html.slice(0, 80))), 'contraste sous 4,5:1').toEqual([]);
       const titres = await page.evaluate(() => {

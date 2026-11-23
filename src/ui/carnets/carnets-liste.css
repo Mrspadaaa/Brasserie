@@ -5,7 +5,7 @@
 .cn-page.cn-liste .cn-carnet-titre { display: block; -webkit-line-clamp: unset; overflow: visible; }
 
 /* L-32 (CA12-M4-13) : « Dans À venir depuis le … · Voir » sur une ligne basse (28 px, `touch`), alignée sur le titre (vignette 32 + 10 + 10) */
-.cn-page.cn-liste .cn-avenir { min-height: 28px; gap: 6px; padding: 2px 10px 2px 52px; font-size: 13px; line-height: 18px; }
+.cn-page.cn-liste .cn-avenir { min-height: 28px; gap: 6px; padding: 2px 10px 2px 52px; font-size: 14px; line-height: 18px; }
 .cn-page.cn-liste .cn-avenir svg { width: 16px; height: 16px; flex: none; }
 .cn-page.cn-liste .cn-avenir .cn-sp { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
