@@ -2824,3 +2824,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (citant la liste « Autres IA : Claude, Mistral… ; outils d'extraction : Jina, Firecrawl, Zyte, Diffbot ; navigateur sans écran ») « Non autre IA , type Google carbone, oxygène ou autre outil d'ia adapté au grounding »
 - (citant « avec Hydrogen et Carbon, dans le budget de 1,5 CHF. Aucun compte nouveau n'est nécessaire. ») « carbon sera trop lent »
 - « Et pas d'autres modèles utilie à tester m »
+- (citant « Claude (Anthropic) : … une autre clé. ») « Du coup non »
