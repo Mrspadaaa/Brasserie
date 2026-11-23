@@ -25,7 +25,9 @@
 /* CAL-PLACE-GACHEE c (paquet G n° 3) : les rangées vides consécutives, groupées dans leur ordre, sans piste ; chacune garde son +, son nom,
    son œil et « vide ». CAL-VIDES-EN-LIGNE (21.11, « les mettre en vertical pas les entassés à l'horizontal ») : l'une sous l'autre, chacune sur
    sa ligne. En paysage, le titre y reprend sa place dans le flux. */
-.cal-vides { display: flex; flex-direction: column; align-items: flex-start; row-gap: 2px; }
+/* CAL-SECTIONS-VIDES-COMPACTES (23.11) : les rangées vides ou toutes cachées, en lignes basses ; le groupe cache la grille et la colonne
+   d'aujourd'hui (rien à y situer), il ne laisse qu'une ligne d'en-tête par rangée */
+.cal-vides { display: flex; flex-direction: column; align-items: flex-start; row-gap: 2px; position: relative; z-index: 1; background: rgb(var(--cave-950)); }
 .cal-vides > .cal-rangee { flex: none; min-width: 0; }
 .cal-vides .cal-rh { gap: 4px; }
 .cal-vides .cal-rangee-l .cal-rh { position: static; padding-right: 0; background: none; }
