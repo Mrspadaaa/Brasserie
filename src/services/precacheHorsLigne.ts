@@ -18,6 +18,8 @@ export const estServiceWorkerApp = (scriptURL: string): boolean => /\/(?:sw|brew
 interface EntreePrecache {
   /** Le navigateur sait faire un service worker et la page tourne dans un build de production. */
   disponible: () => boolean;
+  /** Un worker contrôle déjà la page : le précache existe, chercher une version ne coûte qu'une requête de `/sw.js`. */
+  dejaInstalle: () => boolean;
   /** Économie de données demandée ou connexion trop lente : ~24 Mo à la première visite, on ne les impose pas. */
   reseauAMenager: () => boolean;
   enLigne: () => boolean;
@@ -26,9 +28,15 @@ interface EntreePrecache {
   enregistrer: () => Promise<unknown>;
 }
 
-/** Enregistre le worker au repos ; rend `true` si l'enregistrement a été programmé. Un échec n'est jamais bloquant. */
+/**
+ * Enregistre le worker ; rend `true` si l'enregistrement a été programmé. Un échec n'est jamais bloquant.
+ * Première visite : au repos (~24 Mo à précacher, pas avant le premier affichage). Visite suivante (E-2) : tout de suite, même hors
+ * ligne, pour que la nouvelle version soit cherchée dès l'ouverture et que les déclencheurs (retour sur l'app, réseau) soient branchés.
+ */
 export function programmerPrecache(e: EntreePrecache): boolean {
-  if (!e.disponible() || e.reseauAMenager()) return false;
+  if (!e.disponible()) return false;
+  if (e.dejaInstalle()) { void e.enregistrer().catch(() => {}); return true; }
+  if (e.reseauAMenager()) return false;
   e.auRepos(() => { if (e.enLigne()) void e.enregistrer().catch(() => {}); });
   return true;
 }
@@ -41,6 +49,7 @@ export function precacherHorsLigne(): boolean {
   const nav = navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } };
   return programmerPrecache({
     disponible: () => 'serviceWorker' in navigator && import.meta.env.MODE === 'production',
+    dejaInstalle: () => !!navigator.serviceWorker?.controller,
     reseauAMenager: () => nav.connection?.saveData === true || nav.connection?.effectiveType === 'slow-2g' || nav.connection?.effectiveType === '2g',
     enLigne: () => navigator.onLine !== false,
     auRepos: (f) => {
