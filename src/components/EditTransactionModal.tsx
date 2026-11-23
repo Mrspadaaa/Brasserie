@@ -12,7 +12,7 @@ import { ReceiptService } from '../services/receiptService';
 import { ModalShell } from '../ui/ModalShell';
 import { archiveIndex, isTransactionArchived } from '../domain/finance/archive';
 import { dateAffichee, isoDate, montantChf, sensDeCategorie, todayISO, toCents, transactionAmount, transactionDirection, validateFinanceTransaction } from '../domain/finance/ledger';
-import { anneesCloses, baisseSousLePaye, choixPertinent, effetCorrection, erreurNouveauMontant, estMouvementPrive, payeNet, planCorrection, verrouMontant, type ChoixPaiement, type EtapeCorrection } from '../domain/finance/correctionMontant';
+import { anneesCloses, baisseSousLePaye, choixPertinent, choixParDefaut, effetCorrection, erreurNouveauMontant, estMouvementPrive, payeNet, planCorrection, verrouMontant, type ChoixPaiement, type EtapeCorrection } from '../domain/finance/correctionMontant';
 import { amountOnly } from '../ui/finance/financeFormat';
 import { CATEGORY_LABELS } from '../ui/finance/FinanceForms';
 import { GROUPES, type GroupeId } from '../ui/finance/operations/groupes';
@@ -111,7 +111,7 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const sousLePaye = change && !montantInvalide && !prive && baisseSousLePaye(transaction, paiements, nouveauCents, ecritures);
   const tropPayeCents = sousLePaye ? payeNet(transaction, paiements, ecritures) - nouveauCents : 0;
   const choixSous: ChoixPaiement | null = choixManuel === 'suit' || choixManuel === 'avoir' ? choixManuel : null;
-  const choix: ChoixPaiement = prive ? 'suit' : sousLePaye ? choixSous ?? 'suit' : choixManuel === 'reste' || choixManuel === 'suit' ? choixManuel : (nouveauCents > ancienCents ? 'reste' : 'suit');
+  const choix: ChoixPaiement = prive ? 'suit' : sousLePaye ? choixSous ?? 'suit' : choixManuel === 'reste' || choixManuel === 'suit' ? choixManuel : choixParDefaut();
   const choixAFaire = sousLePaye && !choixSous;
   const erreurDonnees = change && !montantInvalide ? erreurNouveauMontant(transaction, nouveauCents, ecritures) : null;
   /** Le plan, ou la raison pour laquelle il n'existe pas (M1) : un plan impossible ne se remplace jamais par une écriture directe. */

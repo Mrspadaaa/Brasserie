@@ -25,6 +25,7 @@ import { bornes, type Periode } from '../../components/periode/periode';
 import { lundi, plusSemaines, plusJours, semainesEntre } from '../../domain/calendrier/temps';
 import { courbeCaisse, creuxDepuis, type MiseDeCote, type MouvementCaisse } from '../../domain/calendrierCaisse';
 import { brassinsHabituels, echeancesProposees } from '../../domain/calendrierPropositions';
+import { chosesPayees, marquerHorsVentes } from '../../domain/calendrierPaiements';
 
 /**
  * Lit le stockage et la finance de l'app et rend le `ModeleCalendrier` (MISSION § Données). Rien n'est inventé : chaque chose vient d'une source,
@@ -167,7 +168,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   /* CRITIQUE-6 n° 7 : les factures de matières (lignes, entrée en stock, fournisseur des matières du stock, catégorie) vont dans Achats */
   const matieres = new Set(e.transactions.filter(t => estFactureDeMatieres(t, e.stockItems)).map(t => t.id));
   const fournisseurs = new Map(e.transactions.map(t => [t.id, fournisseurDePiece(t)] as [string, string]));
-  const argent = prevision.items.flatMap(i => { const c = choseArgent(i, e.plans, echeances, matieres); return c ? [marques.has(c.id) ? { ...c, proposition: 'echeance' as const } : c] : []; });
+  const argent = marquerHorsVentes(prevision.items.flatMap(i => { const c = choseArgent(i, e.plans, echeances, matieres); return c ? [marques.has(c.id) ? { ...c, proposition: 'echeance' as const } : c] : []; }), e.transactions);
   const creatives = e.items.flatMap(i => { const c = choseCreative(i); return c ? [c] : []; });
   const probables = e.plans.flatMap(p => { const c = choseVenteProbable(p); return c ? [c] : []; });
   const achatsPrevus = e.plans.flatMap(p => { const c = choseAchatPrevu(p); return c ? [c] : []; });
@@ -177,20 +178,9 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   /* B11 (WFV-3, 21.11) : la vente encaissée (caisse : pièce de recette payée et son paiement) est une chose de la rangée Ventes, à son jour ;
      la prévision n'a que l'à venir. Une pièce encore attendue dans la prévision (reste à encaisser) y est déjà : pas deux fois. */
   const attendues = new Set(prevision.items.filter(i => i.source === 'invoice').map(i => i.id.replace(/^invoice:/, '')));
-  const pieces = new Map(e.transactions.map(t => [t.id, t] as const));
-  const encaissees = e.payments.flatMap((pay): ChoseCalendrier[] => {
-    const t = pay.transactionId ? pieces.get(pay.transactionId) : undefined;
-    const jour = isoDate(pay.date);
-    /* CAL-ANNULEES-COMPTEES (23.11, argent faux) : une pièce annulée (« Écriture annulée », hors de Finances) n'est plus une vente, même si son
-       paiement rendu reste dans la caisse (il y est compensé, comme dans Finances) */
-    /* 23.11 soir (saisie) : un apport (de ma poche) est lui aussi de l'argent qui rentre, encaissé à son jour : même rangée, même marque ;
-       il se dit « apport » (ce n'est pas une vente : Mon mois l'ignore). Un prélèvement privé sort : il n'a pas sa place ici. */
-    const kind = t?.finance?.kind;
-    if (!t || !jour || pay.direction !== 'in' || (kind !== 'income' && kind !== 'contribution') || !isActiveTransaction(t as never) || attendues.has(t.id) || !validPayment(pay) || jour < lundi0 || jour > aujourdhui) return [];
-    const apport = kind === 'contribution';
-    return [{ id: `paiement-${pay.id}`, rangee: 'ventes', titre: t.description || t.id, debut: jour, fin: jour, centimes: pay.amountCents, detail: apport ? `apport, reçu le ${jourLisible(jour)}` : `encaissée le ${jourLisible(jour)}`,
-      source: { genre: 'facture', id: t.id }, ouvre: { ecran: 'piece', id: t.id }, deplacable: { raison: `${apport ? 'Apport reçu' : 'Vente encaissée'} : sa date est un fait. Elle se corrige dans la pièce (Finances › Opérations).` } }];
-  });
+  /* CAL-ANNULEES-COMPTEES (23.11) : une pièce annulée n'est plus une chose ; E35-2/3/10 (23.11 soir) : le paiement réel d'une vente, d'un apport, d'une
+     autre entrée, d'un achat, d'une charge ou d'un prélèvement privé est une chose de sa rangée, à son jour (`chosesPayees`) */
+  const encaissees = chosesPayees({ payments: e.payments, transactions: e.transactions, attendues, matieres, depuis: lundi0, aujourdhui });
   const posees = fusionnerFacturesLivraisons([...brassins, ...creatives, ...argent, ...encaissees, ...probables, ...achatsPrevus, ...livraisonsAttendues(e.reglages), ...propositionsBrassin], fournisseurs, emises).filter(dansLaFenetre(semaines));
   /* n° 9 : chaque brassin porte son budget (courses et frais de la prévision ; à défaut, l'estimation enregistrée de BrewBudgetSheet) */
   const estimations = estimationsBudget(e.plans);

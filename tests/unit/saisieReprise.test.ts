@@ -60,7 +60,10 @@ describe('2. un apport encaissé est une chose de la rangée Ventes du Calendrie
     expect(c[0].detail).toMatch(/apport/i);
   });
   it('un prélèvement privé (sortie) n’entre pas dans Ventes', () => {
-    expect(deMaPoche(construireModele(entrees([apport('PREL-1', 'withdrawal')], [paiement('PREL-1', 'out')])))).toHaveLength(0);
+    /* E35-10 (23.11 soir) : une sortie payée se voit aussi, mais dans Papiers, en négatif : jamais dans Ventes */
+    const sorties = deMaPoche(construireModele(entrees([apport('PREL-1', 'withdrawal')], [paiement('PREL-1', 'out')])));
+    expect(sorties.filter(c => c.rangee === 'ventes')).toHaveLength(0);
+    expect(sorties.map(c => [c.rangee, (c.centimes ?? 0) < 0])).toEqual([['papiers', true]]);
   });
   it('un apport annulé, ou sans paiement : rien d’inventé', () => {
     const annule = apport('APP-2', 'contribution', { voidedAt: `${J}T11:00:00.000Z` });

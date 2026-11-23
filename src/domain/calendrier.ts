@@ -395,6 +395,13 @@ export interface ChoseCalendrier {
    */
   horsCourbe?: true;
   /**
+   * E35-2, E35-3 (23.11 soir) : une rentrée qui n'est pas une vente (un apport de ma poche, une autre entrée). Elle se voit dans la rangée Ventes, à son jour,
+   * mais la pastille ne la compte pas dans le total des ventes et ne la dit jamais « à encaisser » (reçue, elle l'est déjà).
+   */
+  horsVentes?: 'apport' | 'autre-entree';
+  /** E35-9 : une pièce encore à payer (`payer`) ou à recevoir (`recevoir`) à son échéance : prévue, jamais dessinée comme un paiement fait. */
+  prevue?: 'payer' | 'recevoir';
+  /**
    * CHD-3 (21.11) : brassin, ses lignes datées de prévision (courses, frais ; l'impôt est dans Papiers) dont `centimes` est la somme. La pastille de
    * la rangée compte ce qui tombe dans sa fenêtre, par date, pas le budget entier du brassin. Absent : le budget n'a aucune ligne datée.
    */
@@ -904,7 +911,7 @@ export function iconesIdees(items: readonly CreativeItem[], plans: readonly { id
   return sortie.sort((a, b) => a.lundi.localeCompare(b.lundi) || a.id.localeCompare(b.id));
 }
 
-const CATEGORIES_TRAVAUX = ['materiel', 'renovation'];
+export const CATEGORIES_TRAVAUX = ['materiel', 'renovation'];
 
 /**
  * La catégorie de Finances des matières de brassage : `brassage` (`FinanceCategory`, catégories de charge de `src/domain/finance/ledger.ts` l. 32 ; `periodeSynthese.ts` l. 62 y range les
@@ -967,7 +974,7 @@ export function fusionnerFacturesLivraisons(
 ): ChoseCalendrier[] {
   const prises = new Set<string>();
   const fusion = new Map<string, ChoseCalendrier>();
-  const factures = choses.filter(f => f.source.genre === 'facture' && f.rangee === 'achats' && f.debut)
+  const factures = choses.filter(f => f.source.genre === 'facture' && f.rangee === 'achats' && f.debut && !f.id.startsWith('paiement-'))
     .sort((a, b) => (a.echeance ?? a.debut).localeCompare(b.echeance ?? b.debut) || a.id.localeCompare(b.id));
   for (const f of factures) {
     const cle = fournisseurs.get(f.source.id);
@@ -1014,6 +1021,7 @@ export function choseArgent(
   const { titre, notes } = titreCourtArgent(item);
   let rangee: Rangee, source: SourceChose, ouvre: CibleOuverture, deplacable: ChoseCalendrier['deplacable'];
   let retard: { echeance: string; enRetard: true } | null = null;
+  let prevue: ChoseCalendrier['prevue'];
   if (item.source === 'invoice') {
     const tx = item.id.replace(/^invoice:/, '');
     /* CRITIQUE-5 n° 4 : la prévision compte une facture échue à aujourd'hui ; la chose garde sa vraie échéance (`echeances` : id de la pièce → ISO) */
@@ -1023,6 +1031,7 @@ export function choseArgent(
     const deMatieres = matieres ? matieres.has(tx) : item.category === CATEGORIE_MATIERES;
     rangee = entree ? 'ventes' : deMatieres ? 'achats' : 'papiers'; source = { genre: 'facture', id: tx }; ouvre = { ecran: 'piece', id: tx };
     deplacable = { raison: raisonFinances('Une facture', 'la facture (Finances › Opérations)') };
+    prevue = entree ? 'recevoir' : 'payer';
   } else if (item.source === 'brew') {
     /* CRITIQUE-3 n° 2 : l'impôt sur la bière n'est ni une course ni un frais du brassin, il va dans Papiers (§ Données) */
     rangee = entree ? 'ventes' : posteBrassin(item) === 'impot' ? 'papiers' : CATEGORIES_TRAVAUX.includes(item.category) ? 'travaux' : 'achats'; source = { genre: 'prevision-brassin', id: item.batchId ?? item.planId ?? item.id };
@@ -1054,7 +1063,7 @@ export function choseArgent(
     ...(poste ? { posteBrassin: poste } : {}), ...(articles.length ? { articles } : {}),
     ...(f?.joursActifs ? { joursActifs: f.joursActifs } : {}), ...(f?.miseDeCote ? { miseDeCote: true } : {}), ...(f ? { fenetre: plan?.fenetre } : {}),
     ...(liensDuPlan(plan) ? { liens: liensDuPlan(plan) } : {}),
-    ...(retard ?? {}),
+    ...(retard ?? {}), ...(prevue ? { prevue } : {}),
     detail: `${retard ? `échéance le ${jourLisible(retard.echeance)} · en retard` : `le ${jourLisible(jour)}`}${!item.amountCents ? ' · montant non renseigné' : ''}${notesDit || (item.partial?.length ? ' · montant partiel' : '')}`,
     source, ouvre, deplacable, mouvements: [item.id]
   };

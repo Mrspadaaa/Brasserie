@@ -156,7 +156,7 @@ export const CLASSE_TEINTE: Record<Rangee, string> = {
  */
 export function nomAccessible(chose: ChoseCalendrier): string {
   const jour = chose.debut ? `${jourLisible(chose.debut)}, ${etiquetteS(chose.debut)}` : 'sans date';
-  const etat = chose.proposition === 'echeance' ? ', à payer' : chose.proposition || chose.probable ? ', proposé' : '';
+  const etat = chose.proposition === 'echeance' ? ', à payer' : chose.prevue === 'recevoir' ? ', à recevoir' : chose.prevue ? ', à payer' : chose.proposition || chose.probable ? ', proposé' : '';
   return `${chose.titre}${etat}, ${jour}`;
 }
 
@@ -286,7 +286,7 @@ export const Marque: React.FC<MarqueProps> = props => {
   });
   /* T2-2 : le nom posé à côté de la vignette s'ouvre au toucher comme elle */
   const toucheNom = useToucherNom(() => { if (cible.current) props.onToucher(chose, cible.current); });
-  const proposee = !!(chose.proposition || chose.probable);
+  const proposee = !!(chose.proposition || chose.probable || chose.prevue);
   /* PC-151 : une facture dont l'échéance est passée (Hopfen) porte sa marque de retard sur la frise, comme « En retard » de la Liste */
   const enRetard = champ(chose, 'enRetard') === true;
   const montant = montantDe(chose);

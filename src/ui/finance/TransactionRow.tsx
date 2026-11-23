@@ -4,6 +4,7 @@ import type { FinancialPayment } from '../../domain/finance/types';
 import { formatCHF, isActiveTransaction, paymentState, todayISO, transactionAmount, transactionDirection, transactionVendor } from '../../domain/finance/ledger';
 import { FinanceService } from '../../services/financeService';
 import { CATEGORY_LABELS, idFor } from './FinanceForms';
+import { libelleEcriture } from '../../domain/finance/libelleEcriture';
 import { amountOnly } from './financeFormat';
 import { contrePaiement, dernierPaiementAnnulable, etatDeLigne, nomAffiche, paiementRapide, pieceDe, tiersAAfficher } from './operations/calculs';
 import { GROUPES, type GroupeId } from './operations/groupes';
@@ -64,7 +65,7 @@ export function TransactionRow({ transaction, transactions, payments, state: giv
   const sens = transactionDirection(transaction, transactions);
   const entrant = sens === 'in';
   const montant = transactionAmount(transaction);
-  const categorie = CATEGORY_LABELS[transaction.category] ?? transaction.category;
+  const categorie = libelleEcriture(transaction, CATEGORY_LABELS[transaction.category] ?? transaction.category);
   // Le client déjà écrit dans le titre (« Vente 10 × Bière — Restaurant du Lac ») ne se répète pas après lui (revue du 10.11).
   const nom = nomAffiche(transaction); // FN-42 : la créance « À récupérer » se lit par le nom de la pièce d'abord
   const tiers = tiersAAfficher(transaction.description, transactionVendor(transaction));

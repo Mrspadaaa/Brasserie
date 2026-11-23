@@ -16,6 +16,7 @@ import { dateAffichee, formatCHF, isActiveTransaction, isoDate, todayISO, transa
 import { planOccurrences } from '../../domain/finance/forecast';
 import { estMouvementPrive, paiementsVivants } from '../../domain/finance/correctionMontant';
 import { retirerEcriture } from './modifier/retirerEcriture';
+import { libelleEcriture } from '../../domain/finance/libelleEcriture';
 import { origineDeCreance } from './modifier/origineCreance';
 import { StorageService } from '../../services/storage';
 import { FinanceService } from '../../services/financeService';
@@ -85,7 +86,7 @@ export function TransactionDetails({transaction:tx,transactions,payments,plans,o
   const lignesPaiements=paiements.filter(p=>!(p.reversalOfId&&paiements.some(o=>o.id===p.reversalOfId)));
   /* u1 (20) : une pièce payée se retire en un geste (contre-paiements, puis annulation) ; les règles interdisent de supprimer, la confirmation le dit. */
   const retirer=async()=>{setOccupe(true);try{await retirerEcriture(tx.id,payments,{aujourdhui:todayISO(),maintenant:new Date().toISOString()});setError('');setCorrection(null);}catch(e){setError((e as Error).message);setCorrection(null);}finally{setOccupe(false);}};
-  const tiers=[CATEGORY_LABELS[tx.category]??tx.category,transactionVendor(tx),dateFiche(tx.date)].filter(Boolean).join(' · ');
+  const tiers=[libelleEcriture(tx,CATEGORY_LABELS[tx.category]??tx.category),transactionVendor(tx),dateFiche(tx.date)].filter(Boolean).join(' · ');
   const nomPiece=tx.proofFileName||tx.finance?.invoiceNumber;
   return <Sheet open title={tx.description} subtitle={tiers} onClose={onClose} className="finance-sheet fiche-sheet">
     <div className="fiche">

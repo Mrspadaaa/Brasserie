@@ -2,6 +2,7 @@ import type { FinancialPayment } from '../../../domain/finance/types';
 import { planRetrait } from '../../../domain/finance/correctionMontant';
 import { isActiveTransaction } from '../../../domain/finance/ledger';
 import { planApresRetrait } from '../../../domain/finance/upgradeRing';
+import { planApresRetraitRecurrent } from '../../../domain/finance/retraitEcriture';
 import { FinanceService } from '../../../services/financeService';
 import { StorageService } from '../../../services/storage';
 import { executerPlan, type ContexteExecution } from './executerCorrection';
@@ -36,7 +37,8 @@ export async function retirerEcriture(pieceId: string, paiements: FinancialPayme
   const plan = planId ? FinanceService.getPlans().find(p => p.id === planId) : undefined;
   // Le retrait est déjà écrit : un refus du prévu (plan ancien invalide) ne le fait pas passer pour raté ; le prévu se rouvre alors à la main.
   if (plan) try {
-    const apres = planApresRetrait(plan, StorageService.getTransactions(), ctx.maintenant);
+    // E35-1 : la prévision que la saisie a écrite avec la pièce (Salaire, Abonnement, Loyer qui reviennent) s'annule avec elle.
+    const apres = planApresRetraitRecurrent(planApresRetrait(plan, StorageService.getTransactions(), ctx.maintenant), piece, StorageService.getTransactions(), ctx.maintenant);
     if (apres !== plan) FinanceService.savePlan(apres);
   } catch { /* prévu laissé tel quel */ }
 }

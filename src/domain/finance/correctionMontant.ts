@@ -62,6 +62,16 @@ export function choixPertinent(piece: Transaction, paiements: FinancialPayment[]
   return paye > 0 && paye >= transactionAmount(piece);
 }
 
+/**
+ * E35-6 (23.11 soir) : le choix posé d'avance pour une pièce réglée dont on corrige le montant. Avant, une hausse (3,50 → 4,50) partait en « Reste à payer » :
+ * une faute de frappe sur un achat PAYÉ créait une dette de 1,00 « sans échéance » et un bouton « Marquer payé ». Corriger le montant d'une pièce payée
+ * corrige aussi son paiement (« Le paiement suit ») ; « Reste à payer » (le fournisseur a vraiment facturé plus) reste un choix du brasseur, visible,
+ * jamais celui qui s'écrit tout seul. Ce choix ne sert que si la pièce est entièrement réglée (`choixPertinent`) ; sinon il est sans effet.
+ */
+export function choixParDefaut(): ChoixPaiement {
+  return 'suit';
+}
+
 /** Une baisse qui passe SOUS ce qui est déjà payé (q6, point 1) : seul « Le paiement suit » a un sens ; l'excédent versé est un avoir à enregistrer, pas un reste à payer. */
 export function baisseSousLePaye(piece: Transaction, paiements: FinancialPayment[], nouveauMontantCents: number, transactions: Transaction[] = []): boolean {
   return Number.isSafeInteger(nouveauMontantCents) && nouveauMontantCents > 0 && nouveauMontantCents < transactionAmount(piece) && payeNet(piece, paiements, transactions) > nouveauMontantCents;
