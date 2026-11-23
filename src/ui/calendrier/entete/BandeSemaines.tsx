@@ -35,6 +35,37 @@ export interface BandeSemainesProps {
    */
   abscisses?: readonly number[];
   dansCadre?: readonly [number, number];
+  /** CAL-GRAIN-SUIT-DUREE (sur la courbe seulement) : jours jusqu'à 3 semaines dans le cadre, semaines au-delà, mois pour un an et plus. */
+  grain?: GrainBande;
+  /** Le jour ISO d'aujourd'hui (grain jour : son chiffre en encre). */
+  aujourdhui?: string;
+}
+
+export type GrainBande = 'jour' | 'semaine' | 'mois';
+/** Le grain des graduations selon la largeur du cadre, en semaines (CAL-GRAIN-SUIT-DUREE). */
+export function grainDeFenetre(semaines: number): GrainBande {
+  return semaines <= 3 ? 'jour' : semaines >= 52 ? 'mois' : 'semaine';
+}
+
+/** Grain jour : un chiffre tous les `pas` jours (1, 2 ou 7 : le lundi), le plus petit qui tient avec 4 px d'écart. */
+export function pasJours(largeurJour: number, largeurChiffre: number): 1 | 2 | 7 {
+  for (const pas of [1, 2] as const) if (pas * largeurJour >= largeurChiffre + ECART_ETIQUETTES) return pas;
+  return 7;
+}
+const JOUR_MS = 86400000;
+/** Les jours d'une semaine posés sur l'axe : centre en px de la cellule (la cellule peut être rognée au bord de la courbe). */
+function joursDeCellule(lundi: string, largeurSemaine: number, largeurCellule: number, rogneeAGauche: boolean, pas: 1 | 2 | 7, aujourdhui?: string, premiere = false, derniere = false) {
+  const t0 = Date.parse(`${lundi}T00:00:00Z`), dj = largeurSemaine / 7, decal = rogneeAGauche ? largeurSemaine - largeurCellule : 0;
+  const sortie: Array<{ iso: string; x: number; n: number; auj: boolean }> = [];
+  for (let d = 0; d < 7; d++) {
+    const t = t0 + d * JOUR_MS, iso = new Date(t).toISOString().slice(0, 10);
+    if (Math.round(t / JOUR_MS) % pas !== (pas === 7 ? Math.round(t0 / JOUR_MS) % 7 : 0)) continue;
+    const x = (d + 0.5) * dj - decal;
+    // un chiffre se pose sur son jour, même s'il déborde un peu de sa semaine ; seul celui qui sortirait de la courbe (premiere, derniere) se tait
+    if (x < 0 || x > largeurCellule || (premiere && x < 8) || (derniere && x > largeurCellule - 8)) continue;
+    sortie.push({ iso, x, n: Number(iso.slice(8, 10)), auj: iso === aujourdhui });
+  }
+  return sortie;
 }
 
 const DELAI = 500;
@@ -113,14 +144,16 @@ export function etiquettesBande(semaines: readonly SemaineBande[], pas: PasEtiqu
   return res;
 }
 
-export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, retards, onDate, onIdeeSemaine, largeurColonne = 0, onDeplier, lundiCourant, abscisses, dansCadre }: BandeSemainesProps) {
+export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, retards, onDate, onIdeeSemaine, largeurColonne = 0, onDeplier, lundiCourant, abscisses, dansCadre, grain, aujourdhui }: BandeSemainesProps) {
   const surCourbe = !!abscisses && abscisses.length === semaines.length + 1;
   const colonnesCourbe = surCourbe ? abscisses!.slice(1).map((x, k) => `${Math.max(0, x - abscisses![k])}px`).join(' ') : undefined;
   const appui = useRef<{ id: number; x: number; y: number; timer: ReturnType<typeof setTimeout>; long: boolean } | null>(null);
   const annule = () => { if (appui.current) { clearTimeout(appui.current.timer); appui.current = null; } };
   const wEtiquette = largeurEtiquetteMax();
-  const pas = pasEtiquettes(largeurColonne, wEtiquette);
+  const pas: PasEtiquettes = surCourbe && grain === 'mois' ? 'mois' : pasEtiquettes(largeurColonne, wEtiquette);
   const etiquettes = pas === 1 ? null : etiquettesBande(semaines, pas, largeurColonne, wEtiquette);
+  const enJours = surCourbe && grain === 'jour' && largeurColonne > 0;
+  const pasJ = enJours ? pasJours(largeurColonne / 7, Math.ceil(wEtiquette * 0.75)) : 1;
   // CRITIQUE-9 (doute « cadre noir sur S48 », m390-11) : l'anneau de focus d'une colonne n'est que pour le clavier. Après un toucher ou un clic
   // (où qu'il soit sur la page), une colonne qui reçoit le focus (rendu par une feuille qui se ferme, focus programmé) ne le montre pas, même si
   // le navigateur la dit `:focus-visible` ; une touche du clavier le rend (entete.css, `.ent-bd[data-doigt]`).
@@ -133,7 +166,7 @@ export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, r
     return () => { document.removeEventListener('pointerdown', parDoigt, true); document.removeEventListener('keydown', parClavier, true); };
   }, []);
   return (
-    <div className="ent-bd" data-bande-semaines data-pas={pas} data-doigt={doigt ? 'oui' : undefined} role="group" aria-label="Semaines ; ± affiche les mouvements et les icônes" style={{ ['--n' as string]: semaines.length, ...(colonnesCourbe ? { gridTemplateColumns: colonnesCourbe } : {}) }} data-sur-courbe={surCourbe ? 'oui' : undefined}>
+    <div className="ent-bd" data-bande-semaines data-pas={pas} data-doigt={doigt ? 'oui' : undefined} role="group" aria-label="Semaines ; ± affiche les mouvements et les icônes" style={{ ['--n' as string]: semaines.length, ...(colonnesCourbe ? { gridTemplateColumns: colonnesCourbe } : {}) }} data-sur-courbe={surCourbe ? 'oui' : undefined} data-grain={surCourbe ? (enJours ? 'jour' : pas === 'mois' ? 'mois' : 'semaine') : undefined}>
       {semaines.map((s, k) => {
         const v = courbe ? variation(courbe, decalage + k) : null;
         const idee = idees.has(s.debut), retard = retards.has(s.debut);
@@ -160,7 +193,12 @@ export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, r
               else onDate(s.debut, k);
             }}>
             {/* Pas de 2, 4 ou mois : seules les étiquettes posées se lisent ; chaque colonne reste touchable et garde son nom (« S50, 7 – 13 déc. »). */}
-            {coupee ? null : etiquettes === null ? <span className="ent-sem">{`S${s.numero}`}</span>
+            {enJours ? (
+              <span className="ent-bd-js" aria-hidden="true">
+                {joursDeCellule(s.debut, largeurColonne, abscisses![k + 1] - abscisses![k], k === 0 && abscisses![1] - abscisses![0] < largeurColonne - 0.5, pasJ, aujourdhui, k === 0, k === semaines.length - 1)
+                  .map(j => <span key={j.iso} className="ent-bd-j" data-jour={j.iso} data-auj={j.auj ? 'oui' : undefined} style={{ left: j.x }}>{j.n}</span>)}
+              </span>
+            ) : coupee ? null : etiquettes === null ? <span className="ent-sem">{`S${s.numero}`}</span>
               : etiquettes.has(k) ? <span className="ent-sem ent-sem--pas" aria-hidden="true">{etiquettes.get(k)}</span> : null}
             {mouvements && (
               <span className="ent-bd-m">

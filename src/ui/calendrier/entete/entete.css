@@ -216,6 +216,11 @@
 /* D432 : sur l'axe de la courbe, les semaines hors du cadre en gris dans les marges */
 /* gris par la couleur, pas l'opacité (axe color-contrast : 0,45 donnait 1,9:1) : 92 % du gris vers le fond tient 4,5:1 dans les deux thèmes
    (clair ≈ 4,8:1, sombre ≈ 5:1) ; le poids 400 contre 600 dit « hors du cadre » */
+/* CAL-GRAIN-SUIT-DUREE : les jours de la semaine, chacun centré sur son jour de l'axe (BandeSemaines, joursDeCellule) */
+.ent-bd-js { position: relative; display: block; align-self: stretch; height: 20px; }
+.ent-bd-j { position: absolute; top: 0; transform: translateX(-50%); font-size: 14px; font-weight: 600; line-height: 20px; color: var(--ent-mut); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ent-bd-j[data-auj] { color: var(--ent-ink); font-weight: 800; }
+.ent-bd-c[data-hors] .ent-bd-j { color: color-mix(in srgb, var(--ent-mut) 92%, rgb(var(--cave-950))); font-weight: 400; }
 .ent-bd-c[data-hors] .ent-sem, .ent-bd-c[data-hors] .ent-bd-m { color: color-mix(in srgb, var(--ent-mut) 92%, rgb(var(--cave-950))); font-weight: 400; }
 /* CRITIQUE-9 (doute m390-11) : l'anneau de focus d'une colonne est pour le clavier seul ; après un toucher, aucun cadre (BandeSemaines, data-doigt). */
 .ent-bd[data-doigt] .ent-bd-c:focus-visible { outline: none; }
