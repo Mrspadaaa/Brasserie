@@ -1,6 +1,6 @@
 // Lot 10 du Carnet en ligne (23.11) : Calendrier, fiches, feuilles, bandeau. L-65 à L-72.
 import { expect, test, type Page } from '@playwright/test';
-import { ouvrirCalendrier, poserFixture } from '../outils/calendrier';
+import { choisirPeriode, ouvrirCalendrier, poserFixture } from '../outils/calendrier';
 import { Doigt } from '../outils/doigt';
 
 async function plus(page: Page, ligne: RegExp) {
@@ -102,6 +102,10 @@ test.describe('Lot 10 : Calendrier, fiches, feuilles, bandeau', () => {
   });
 
   test('L-71 : l’appui long d’une chose créée propose Supprimer, et ne range pas en rouge', async ({ page }) => {
+    /* En paysage, le Calendrier s'ouvre en 3 mois (13 semaines, D-199) : là, l'appui long d'une marque ouvre les 6 semaines centrées sur elle, jamais
+       le menu (E27, CRITIQUE-4 n° 4 ; capture 844 regardée : la vue passe en 6 sem. et la fiche s'ouvre). Le menu est celui des 6 semaines : on s'y met. */
+    const vp = page.viewportSize();
+    if (vp && vp.width > vp.height) await choisirPeriode(page, '6 sem.');
     const ligne = await poserAchat(page, 'ZZ TEST Achat L71');
     const marque = page.locator('[data-frise] [data-chose^="argent-PLAN-"]').last();
     await marque.scrollIntoViewIfNeeded();
