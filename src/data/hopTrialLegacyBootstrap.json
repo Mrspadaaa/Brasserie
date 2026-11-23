@@ -1,0 +1,290 @@
+[
+  {
+    "id": "trial-cascade-verdant-ebc2024",
+    "kind": "trial",
+    "name": "Agrumes et fruité avec Cascade",
+    "yeastId": "lalbrew-verdant-ipa",
+    "yeastName": "LalBrew Verdant IPA",
+    "yeastForm": "sèche",
+    "source": {
+      "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+      "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+      "year": 2024,
+      "kind": "research",
+      "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+      "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+    },
+    "hops": [
+      {
+        "name": "Cascade",
+        "varietyId": "hopsteiner-cas",
+        "timing": "boil",
+        "form": "unknown",
+        "doseGL": {
+          "range": {
+            "min": 1.2,
+            "max": 1.2
+          },
+          "source": {
+            "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+            "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+            "year": 2024,
+            "kind": "research",
+            "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+            "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+          }
+        },
+        "temperatureC": null,
+        "contactHours": null
+      },
+      {
+        "name": "Cascade",
+        "varietyId": "hopsteiner-cas",
+        "timing": "whirlpool",
+        "form": "unknown",
+        "doseGL": {
+          "range": {
+            "min": 3,
+            "max": 3
+          },
+          "source": {
+            "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+            "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+            "year": 2024,
+            "kind": "research",
+            "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+            "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+          }
+        },
+        "temperatureC": null,
+        "contactHours": null
+      }
+    ],
+    "fermentationC": {
+      "range": {
+        "min": 22,
+        "max": 22
+      },
+      "source": {
+        "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+        "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+        "year": 2024,
+        "kind": "research",
+        "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+        "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+      }
+    },
+    "families": [
+      "citrus",
+      "tropical"
+    ],
+    "result": "Caractère agrumes/tropical associé à cette ale ; réponse des thiols à la température moins marquée que Nottingham.",
+    "matrix": "Pale ale tout malt pils ; sans houblonnage à cru.",
+    "limitations": [
+      "Compte rendu : pas de plage sensorielle chiffrée par souche.",
+      "Un nouvel assemblage, lot ou protocole reste à tester.",
+      "La série compare 15, 22 et 30 °C. Le programme reprend la condition étudiée à 22 °C, sans la déclarer optimale ; le résumé sensoriel porte sur la série."
+    ],
+    "confidence": "medium",
+    "sensory": [],
+    "assessmentSource": {
+      "title": "Évaluation documentaire des programmes de brassage",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/hop-workshop.md",
+      "locator": "8 septembre 2026. Confiance de transposition et regroupement en familles locales : jugement éditorial, pas probabilité statistique. Faible pour un mélange fabricant sans dispersion ou un protocole étroit en cônes ; moyenne pour un essai comparatif en brasserie pilote, sans validation générale. Aucun score gustatif."
+    }
+  },
+  {
+    "id": "trial-cascade-nottingham-ebc2024",
+    "kind": "trial",
+    "name": "Cascade : travailler le fruité de fermentation",
+    "yeastId": "lalbrew-nottingham",
+    "yeastName": "LalBrew Nottingham",
+    "yeastForm": "sèche",
+    "source": {
+      "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+      "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+      "year": 2024,
+      "kind": "research",
+      "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+      "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+    },
+    "hops": [
+      {
+        "name": "Cascade",
+        "varietyId": "hopsteiner-cas",
+        "timing": "boil",
+        "form": "unknown",
+        "doseGL": {
+          "range": {
+            "min": 1.2,
+            "max": 1.2
+          },
+          "source": {
+            "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+            "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+            "year": 2024,
+            "kind": "research",
+            "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+            "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+          }
+        },
+        "temperatureC": null,
+        "contactHours": null
+      },
+      {
+        "name": "Cascade",
+        "varietyId": "hopsteiner-cas",
+        "timing": "whirlpool",
+        "form": "unknown",
+        "doseGL": {
+          "range": {
+            "min": 3,
+            "max": 3
+          },
+          "source": {
+            "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+            "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+            "year": 2024,
+            "kind": "research",
+            "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+            "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+          }
+        },
+        "temperatureC": null,
+        "contactHours": null
+      }
+    ],
+    "fermentationC": {
+      "range": {
+        "min": 22,
+        "max": 22
+      },
+      "source": {
+        "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+        "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+        "year": 2024,
+        "kind": "research",
+        "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+        "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+      }
+    },
+    "families": [
+      "citrus",
+      "tropical"
+    ],
+    "result": "Cette ale fait partie des souches dont le caractère fruité et les thiols évoluent avec la température.",
+    "matrix": "Pale ale tout malt pils ; sans houblonnage à cru.",
+    "limitations": [
+      "Compte rendu : pas de plage sensorielle chiffrée par souche.",
+      "Un nouvel assemblage, lot ou protocole reste à tester.",
+      "La série compare 15, 22 et 30 °C. Le programme reprend la condition étudiée à 22 °C, sans la déclarer optimale ; le résumé sensoriel porte sur la série."
+    ],
+    "confidence": "medium",
+    "sensory": [],
+    "assessmentSource": {
+      "title": "Évaluation documentaire des programmes de brassage",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/hop-workshop.md",
+      "locator": "8 septembre 2026. Confiance de transposition et regroupement en familles locales : jugement éditorial, pas probabilité statistique. Faible pour un mélange fabricant sans dispersion ou un protocole étroit en cônes ; moyenne pour un essai comparatif en brasserie pilote, sans validation générale. Aucun score gustatif."
+    }
+  },
+  {
+    "id": "trial-cascade-diamond-ebc2024",
+    "kind": "trial",
+    "name": "Cascade : comprendre pourquoi plus de thiols ne suffit pas",
+    "yeastId": "lalbrew-diamond",
+    "yeastName": "LalBrew Diamond",
+    "yeastForm": "sèche",
+    "source": {
+      "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+      "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+      "year": 2024,
+      "kind": "research",
+      "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+      "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+    },
+    "hops": [
+      {
+        "name": "Cascade",
+        "varietyId": "hopsteiner-cas",
+        "timing": "boil",
+        "form": "unknown",
+        "doseGL": {
+          "range": {
+            "min": 1.2,
+            "max": 1.2
+          },
+          "source": {
+            "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+            "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+            "year": 2024,
+            "kind": "research",
+            "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+            "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+          }
+        },
+        "temperatureC": null,
+        "contactHours": null
+      },
+      {
+        "name": "Cascade",
+        "varietyId": "hopsteiner-cas",
+        "timing": "whirlpool",
+        "form": "unknown",
+        "doseGL": {
+          "range": {
+            "min": 3,
+            "max": 3
+          },
+          "source": {
+            "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+            "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+            "year": 2024,
+            "kind": "research",
+            "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+            "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+          }
+        },
+        "temperatureC": null,
+        "contactHours": null
+      }
+    ],
+    "fermentationC": {
+      "range": {
+        "min": 22,
+        "max": 22
+      },
+      "source": {
+        "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+        "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+        "year": 2024,
+        "kind": "research",
+        "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+        "locator": "Compte rendu EBC, p. 1–2 : cinq souches, 15/22/30 °C, Cascade 1,2 g/L au début d’ébullition et 3 g/L au whirlpool, sans dry-hop. 22 °C est une condition réellement étudiée."
+      }
+    },
+    "families": [],
+    "result": "Thiol élevé mais fruité-tropical perçu plus faible ; caractère soufré rapporté, surtout à chaud.",
+    "matrix": "Pale ale tout malt pils ; sans houblonnage à cru.",
+    "limitations": [
+      "Compte rendu : pas de plage sensorielle chiffrée par souche.",
+      "Un nouvel assemblage, lot ou protocole reste à tester.",
+      "La série compare 15, 22 et 30 °C. Le programme reprend la condition étudiée à 22 °C, sans la déclarer optimale ; le résumé sensoriel porte sur la série."
+    ],
+    "confidence": "medium",
+    "sensory": [],
+    "assessmentSource": {
+      "title": "Évaluation documentaire des programmes de brassage",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/hop-workshop.md",
+      "locator": "8 septembre 2026. Confiance de transposition et regroupement en familles locales : jugement éditorial, pas probabilité statistique. Faible pour un mélange fabricant sans dispersion ou un protocole étroit en cônes ; moyenne pour un essai comparatif en brasserie pilote, sans validation générale. Aucun score gustatif."
+    }
+  }
+]

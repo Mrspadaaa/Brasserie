@@ -1,0 +1,98 @@
+{
+ "citrus": {
+  "base": "#d9b414",
+  "texte": "#856e0c",
+  "fond": "#fcf8e3",
+  "contrasteBlanc": 4.96,
+  "contrasteFond": 4.65,
+  "baseSurBlanc": 2
+ },
+ "tropical": {
+  "base": "#ee9b2f",
+  "texte": "#9b5d0d",
+  "fond": "#fdf1e3",
+  "contrasteBlanc": 5.3,
+  "contrasteFond": 4.76,
+  "baseSurBlanc": 2.24
+ },
+ "melon": {
+  "base": "#6fc09b",
+  "texte": "#357a5b",
+  "fond": "#eaf6f0",
+  "contrasteBlanc": 5.14,
+  "contrasteFond": 4.63,
+  "baseSurBlanc": 2.17
+ },
+ "stoneFruit": {
+  "base": "#e88d68",
+  "texte": "#b5481c",
+  "fond": "#fbebe4",
+  "contrasteBlanc": 5.37,
+  "contrasteFond": 4.63,
+  "baseSurBlanc": 2.49
+ },
+ "pomeFruit": {
+  "base": "#a3bd38",
+  "texte": "#667623",
+  "fond": "#f5f8e7",
+  "contrasteBlanc": 5.02,
+  "contrasteFond": 4.66,
+  "baseSurBlanc": 2.12
+ },
+ "berries": {
+  "base": "#9b3f74",
+  "texte": "#9b3f74",
+  "fond": "#f6e9f1",
+  "contrasteBlanc": 6.26,
+  "contrasteFond": 5.32,
+  "baseSurBlanc": 6.26
+ },
+ "floral": {
+  "base": "#bf86d6",
+  "texte": "#9840bc",
+  "fond": "#f3e8f7",
+  "contrasteBlanc": 5.53,
+  "contrasteFond": 4.66,
+  "baseSurBlanc": 2.76
+ },
+ "green": {
+  "base": "#6aa33a",
+  "texte": "#4f7a2b",
+  "fond": "#eff7e8",
+  "contrasteBlanc": 5.06,
+  "contrasteFond": 4.61,
+  "baseSurBlanc": 3.04
+ },
+ "herbal": {
+  "base": "#3f8a5f",
+  "texte": "#377853",
+  "fond": "#eaf5ef",
+  "contrasteBlanc": 5.28,
+  "contrasteFond": 4.73,
+  "baseSurBlanc": 4.19
+ },
+ "spice": {
+  "base": "#7a4e3a",
+  "texte": "#7a4e3a",
+  "fond": "#f5eeea",
+  "contrasteBlanc": 7.05,
+  "contrasteFond": 6.14,
+  "baseSurBlanc": 7.05
+ },
+ "earthy": {
+  "base": "#9a8a66",
+  "texte": "#75694d",
+  "fond": "#f3f1ed",
+  "contrasteBlanc": 5.41,
+  "contrasteFond": 4.79,
+  "baseSurBlanc": 3.39
+ },
+ "resin": {
+  "base": "#2f6b5f",
+  "texte": "#2f6b5f",
+  "fond": "#eaf6f3",
+  "contrasteBlanc": 6.2,
+  "contrasteFond": 5.6,
+  "baseSurBlanc": 6.2
+ }
+}

@@ -1,0 +1,102 @@
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import { fileURLToPath } from 'node:url';
+
+/**
+ * Tests unitaires et d'intégration.
+ *
+ * Deux environnements distincts, et c'est délibéré :
+ *
+ *   `tests/unit/**`        — logique métier pure. Pas de DOM, pas de React,
+ *                            pas de Firebase. Ce sont des fonctions qui
+ *                            prennent des nombres et en rendent d'autres :
+ *                            elles doivent tourner en quelques millisecondes.
+ *
+ *   `tests/integration/**` — plusieurs pièces ensemble. La façade de stockage
+ *                            avec un dépôt en mémoire, un écran monté avec ses
+ *                            vraies dépendances. Environnement `jsdom`.
+ *
+ * Les tests qui appellent réellement Gemini vivent hors de cette sélection et
+ * exigent une confirmation explicite. La suite normale doit rester sans coût.
+ *
+ * La couverture ne vise QUE `src/domain` et `src/services` : c'est là que vit
+ * ce qui rend de la bière ratée ou une déclaration fausse. Mettre les
+ * composants dans le même seuil diluerait le signal.
+ */
+export default defineConfig({
+  plugins: [react()],
+  // Server deployment bundles this exact domain entry; tests use its TypeScript source.
+  resolve: { alias: [
+    { find: './hopAdviceContentReference.js', replacement: fileURLToPath(new URL('./src/domain/hopDecision/adviceContentReference.ts', import.meta.url)) },
+    { find: './adviceContentReference.js', replacement: fileURLToPath(new URL('./src/domain/hopDecision/adviceContentReference.ts', import.meta.url)) },
+    { find: './brewerHopAdviceSemanticSource4.js', replacement: fileURLToPath(new URL('./src/services/hopV55/brewerHopAdviceSemanticSource4.ts', import.meta.url)) },
+    { find: /^\.\.\/\.\.\/domain\/(.+)\.js$/, replacement: `${fileURLToPath(new URL('./src/domain/', import.meta.url))}$1.ts` },
+    { find: /^\.\.\/\.\.\/\.\.\/functions\/src\/(.+)\.js$/, replacement: `${fileURLToPath(new URL('./functions/src/', import.meta.url))}$1.ts` },
+    // seedData.ts (données réelles) est hors dépôt : tout import du fichier, relatif ou absolu, lit le gabarit versionné.
+    { find: /^.*\/data\/seedData(?:\.ts)?$/, replacement: fileURLToPath(new URL('./src/data/seedData.example.ts', import.meta.url)) },
+    { find: './yeastCompanion.js', replacement: fileURLToPath(new URL('./src/domain/yeastCompanion.ts', import.meta.url)) },
+    { find: './brewerTools.js', replacement: fileURLToPath(new URL('./src/domain/brewerTools.ts', import.meta.url)) },
+    { find: './financeContext.js', replacement: fileURLToPath(new URL('./src/domain/finance/assistantContext.ts', import.meta.url)) }
+  ] },
+  test: {
+    // Collection must not depend on a developer's real Firebase project or data.
+    env: {
+      VITE_FIREBASE_API_KEY: 'demo-laffinee-tests',
+      VITE_FIREBASE_PROJECT_ID: 'demo-laffinee-tests',
+      VITE_FIREBASE_APP_ID: '1:123:web:test',
+      VITE_FIREBASE_AUTH_DOMAIN: 'localhost',
+      VITE_USE_FIREBASE_EMULATORS: 'true',
+      VITE_RECAPTCHA_SITE_KEY: '',
+      VITE_APPCHECK_DEBUG_TOKEN: '',
+      // A key inherited from the shell never reaches a worker; see tests/setup.gemini-guard.ts.
+      GEMINI_API_KEY: ''
+    },
+    globals: true,
+    environment: 'node',
+    testTimeout: 15000,
+    // The full 300-file suite can block Vitest's worker RPC on this Windows host
+    // at default parallelism. Four workers ran every test without skipping any.
+    maxWorkers: 4,
+    setupFiles: ['tests/setup.ts', 'tests/setup.gemini-guard.ts', 'tests/setup.yeast-library.ts'],
+    environmentMatchGlobs: [['tests/integration/**', 'jsdom']],
+    include: [
+      'tests/unit/**/*.test.{ts,tsx}',
+      'tests/integration/**/*.test.{ts,tsx}',
+      'tests/fuzz/**/*.test.{ts,tsx}',
+      // Moteur et parcours du prototype houblons v4 (#160) : testés avec la suite de l'app, jamais d'appel Gemini.
+      'prototypes/houblons-v4/tests/**/*.test.{ts,tsx}'
+    ],
+    exclude: [
+      'tests/ai/**',
+      'tests/live/**',
+      'tests/**/*.ai.test.{ts,tsx}',
+      'tests/**/*.live.test.{ts,tsx}'
+    ],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text-summary', 'html'],
+      include: ['src/domain/**', 'src/services/**'],
+      // Les services qui ne font que parler au réseau ou au navigateur ne se
+      // testent pas utilement en unitaire : on les couvre en intégration.
+      exclude: [
+        'src/services/firebase.ts',
+        'src/services/firebaseAuth.ts',
+        'src/services/firestoreRepo.ts',
+        'src/services/aiClient.ts',
+        'src/services/geminiScanner.ts',
+        'src/services/googleDriveService.ts',
+        'src/services/driveService.ts',
+        'src/services/excelService.ts',
+        'src/services/receiptService.ts',
+        'src/services/swissQrBill.ts',
+        'src/services/migration.ts'
+      ],
+      thresholds: {
+        statements: 80,
+        branches: 75,
+        functions: 80,
+        lines: 80
+      }
+    }
+  }
+});

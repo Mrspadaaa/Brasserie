@@ -1,0 +1,4331 @@
+[
+  {
+    "id": "fermentation-science",
+    "kind": "fermentationScience",
+    "name": "Fermentation : arômes, conduite et preuves",
+    "version": "2026.09.08.1",
+    "enabled": true,
+    "source": {
+      "title": "Conduites et limites de fermentation — L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/research/fermentation/README.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+    },
+    "goals": [
+      {
+        "id": "banana",
+        "aliases": [
+          "banane",
+          "weissbier banane",
+          "banana",
+          "acétate d’isoamyle"
+        ],
+        "description": "Choisir une souche productrice d’ester banane ; distinguer la banane avec ou sans girofle."
+      },
+      {
+        "id": "balanced",
+        "aliases": [
+          "weissbier",
+          "weizen",
+          "équilibre",
+          "banane girofle"
+        ],
+        "description": "Travailler l’équilibre perçu entre esters et phénols dans une bière de blé."
+      },
+      {
+        "id": "fruit",
+        "aliases": [
+          "fruité",
+          "pêche",
+          "abricot",
+          "poire",
+          "esters",
+          "belge",
+          "orange"
+        ],
+        "description": "Partir du fruit décrit pour la souche ; plus chaud ne fait pas monter tous les esters ensemble."
+      },
+      {
+        "id": "clean",
+        "aliases": [
+          "propre",
+          "net",
+          "neutre",
+          "lager",
+          "pils",
+          "discret"
+        ],
+        "description": "Rechercher une fermentation discrète et suivre la maturation."
+      },
+      {
+        "id": "phenolic",
+        "aliases": [
+          "girofle",
+          "phénol",
+          "4vg",
+          "4-vinylgaïacol",
+          "épicé",
+          "poivre",
+          "saison"
+        ],
+        "description": "Relier potentiel POF, précurseurs du moût et perception du mélange."
+      },
+      {
+        "id": "thiols",
+        "aliases": [
+          "thiol",
+          "thiols",
+          "tropical",
+          "3sh",
+          "3sha",
+          "biotransformation",
+          "passion",
+          "tyol"
+        ],
+        "description": "Conserver houblon × levure × moment ; libération chimique et fruité perçu restent distincts."
+      }
+    ],
+    "compounds": [
+      {
+        "id": "isoamyl-acetate",
+        "name": "Acétate d’isoamyle",
+        "family": "Ester acétate",
+        "aromas": [
+          "banane",
+          "poire"
+        ],
+        "formation": "Les acétyltransférases, dont Atf1, participent à la formation de cet ester.",
+        "caution": "Alcool isoamylique, ester, expression du gène et intensité banane sont différents.",
+        "source": {
+          "title": "Effects of aeration and unsaturated fatty acids on expression of ATF1",
+          "author": "Fujii et al.",
+          "reference": "https://journals.asm.org/doi/10.1128/aem.63.3.910-915.1997",
+          "year": 1997,
+          "kind": "research",
+          "locator": "Répression d’ATF1 et de l’activité AATase : mécanisme, pas dose universelle."
+        }
+      },
+      {
+        "id": "ethyl-esters",
+        "name": "Esters éthyliques",
+        "family": "Esters",
+        "aromas": [
+          "fruité",
+          "pomme",
+          "fruits tropicaux"
+        ],
+        "formation": "Plusieurs produits du métabolisme fermentaire répondent différemment à la température et aux acides gras.",
+        "caution": "Aucune correction commune par degré Celsius.",
+        "source": {
+          "title": "Parameters Affecting Ethyl Ester Production by Saccharomyces cerevisiae during Fermentation",
+          "author": "Saerens et al.",
+          "reference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2223249/",
+          "year": 2008,
+          "kind": "research",
+          "locator": "SS01 ; série 14–26 °C, réponses différentes selon l’ester."
+        }
+      },
+      {
+        "id": "4vg",
+        "name": "4-vinylgaïacol (4VG)",
+        "family": "Phénol volatil",
+        "aromas": [
+          "girofle",
+          "épices"
+        ],
+        "formation": "La voie PAD1/FDC1 permet la conversion de l’acide férulique chez les souches capables.",
+        "caution": "POF− ne constitue pas une analyse de tous les phénols de la bière.",
+        "source": {
+          "title": "Reducing phenolic off-flavors through hybridization",
+          "author": "Mertens et al.",
+          "reference": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0209124",
+          "year": 2019,
+          "kind": "research",
+          "locator": "Voie PAD1/FDC1 et sélection POF."
+        }
+      },
+      {
+        "id": "4vp",
+        "name": "4-vinylphénol (4VP)",
+        "family": "Phénol volatil",
+        "aromas": [
+          "phénolique",
+          "médicinal"
+        ],
+        "formation": "Formation liée aux précurseurs hydroxycinnamiques du moût et à la fermentation.",
+        "caution": "Ne pas fusionner 4VP et 4VG en une concentration de girofle.",
+        "source": {
+          "title": "Enhancing the levels of 4-vinylguaiacol and 4-vinylphenol in pilot-scale top-fermented wheat beers by response surface methodology",
+          "author": "Cui et al.",
+          "reference": "https://onlinelibrary.wiley.com/doi/10.1002/jib.189",
+          "year": 2015,
+          "kind": "research",
+          "locator": "J. Inst. Brew. 121, 129–136 ; 29 essais, 4 facteurs, DM303. Tables, méthodes et validation consultées."
+        }
+      },
+      {
+        "id": "diacetyl",
+        "name": "Diacétyle et α-acétolactate",
+        "family": "Dicétone vicinale (VDK)",
+        "aromas": [
+          "beurre",
+          "caramel au beurre"
+        ],
+        "formation": "Le précurseur peut former du diacétyle dans la bière ; la levure active le réduit ensuite.",
+        "caution": "Densité finale atteinte ne signifie pas maturation achevée.",
+        "source": {
+          "title": "Compound Spotlight: Diacetyl",
+          "author": "White Labs",
+          "reference": "https://blog.whitelabs.com/compound-spotlight-diacetyl",
+          "year": 2021,
+          "kind": "manufacturer",
+          "locator": "5 avril 2021 ; précurseur, diacétyle et réduction par la levure."
+        }
+      },
+      {
+        "id": "acetaldehyde",
+        "name": "Acétaldéhyde",
+        "family": "Aldéhyde",
+        "aromas": [
+          "pomme verte"
+        ],
+        "formation": "Intermédiaire du métabolisme fermentaire, dépendant du procédé et de la maturation.",
+        "caution": "Les modèles industriels consultés ne s’appliquent pas à toute souche.",
+        "source": {
+          "title": "The Effect of Selected Fermentation Parameters on Beer Quality",
+          "author": "Kucharczyk et al.",
+          "reference": "https://mdpi-res.com/d_attachment/foods/foods-09-01043/article_deploy/foods-09-01043.pdf",
+          "year": 2020,
+          "kind": "research",
+          "locator": "54 fermentations industrielles à 15,5 °P ; modèles locaux, ajustements VDK insuffisants."
+        }
+      },
+      {
+        "id": "h2s",
+        "name": "Sulfure d’hydrogène (H₂S)",
+        "family": "Soufré volatil",
+        "aromas": [
+          "œuf",
+          "soufre"
+        ],
+        "formation": "Production et rétention dépendent de la souche et de la conduite.",
+        "caution": "Chauffer ne garantit pas le même effet entre levures.",
+        "source": {
+          "title": "Effects of yeast strains and fermentation temperatures in production of hydrogen sulfide during beer fermentation",
+          "author": "Kim, Moon et Park",
+          "reference": "https://khu.elsevierpure.com/en/publications/effects-of-yeast-strains-and-fermentation-temperatures-in-product-2/",
+          "year": 2008,
+          "kind": "research",
+          "locator": "Résumé institutionnel ; quatre souches, réponses différentes. Texte intégral non vérifié."
+        }
+      },
+      {
+        "id": "dms",
+        "name": "Sulfure de diméthyle (DMS)",
+        "family": "Soufré volatil",
+        "aromas": [
+          "maïs cuit",
+          "légume"
+        ],
+        "formation": "Le malt et les étapes chaudes contribuent aux précurseurs ; la fermentation intervient aussi.",
+        "caution": "Ne pas attribuer tout le DMS à la levure.",
+        "source": {
+          "title": "Lager Brewing Made Easy",
+          "author": "Lallemand",
+          "reference": "https://connect.lallemandbrewing.com/wp-content/uploads/2023/08/Lallemand-Brewing_TechPaper-Lagering-Made-Easy-8-23.pdf",
+          "year": 2023,
+          "kind": "manufacturer",
+          "locator": "Copyright 2023. Page 14 : 65–75 % de l’atténuation finale attendue, hausse de 2–4 °C."
+        }
+      },
+      {
+        "id": "fusel",
+        "name": "Alcools supérieurs",
+        "family": "Alcools",
+        "aromas": [
+          "chaleur alcoolique",
+          "solvant"
+        ],
+        "formation": "Produits du métabolisme carboné et azoté, avec des réponses différentes selon l’alcool et la souche.",
+        "caution": "Davantage de stress ne garantit pas davantage d’esters fruités.",
+        "source": {
+          "title": "The effect of pitching rate on fermentation and flavour compounds in high gravity brewing",
+          "author": "Erten et al.",
+          "reference": "https://onlinelibrary.wiley.com/doi/10.1002/j.2050-0416.2007.tb00259.x",
+          "year": 2007,
+          "kind": "research",
+          "locator": "NCYC 1056 lager, pas Wyeast 1056. Essais à 10 °C ; effet du pitch contextuel."
+        }
+      },
+      {
+        "id": "3sh",
+        "name": "3SH (ancien 3MH)",
+        "family": "Thiol",
+        "aromas": [
+          "pamplemousse",
+          "passion"
+        ],
+        "formation": "Transfert libre et libération depuis plusieurs précurseurs conjugués, selon les étapes du brassage.",
+        "caution": "Cys, CysGly, γGluCys et GSH restent séparés ; aucun rendement générique déduit.",
+        "source": {
+          "title": "Bound and Free 3-Sulfanylhexan-1-ol in Beer: Transfer and Release Rates from Kettle, Late, and Dry Hopping",
+          "author": "Chenot, Samia et Shellhammer",
+          "reference": "https://pubmed.ncbi.nlm.nih.gov/41790498/",
+          "year": 2026,
+          "kind": "research",
+          "locator": "6 mars 2026 ; DOI 10.1021/acs.jafc.5c14936. Supplément https://ndownloader.figshare.com/files/62482880 consulté : souche/température non retrouvées, aucun rendement transféré."
+        }
+      },
+      {
+        "id": "3sha",
+        "name": "3SHA (ancien 3MHA)",
+        "family": "Thiol estérifié",
+        "aromas": [
+          "passion",
+          "goyave"
+        ],
+        "formation": "Le 3SH peut être acétylé par la levure ; les profils alcool/acetate diffèrent entre souches.",
+        "caution": "Ni ATF1 ni le 3SH disponible ne donnent une fraction convertie universelle.",
+        "source": {
+          "title": "Yeast-driven 3-sulfanylhexan-1-ol and acetate formation in model fermentation media",
+          "author": "Chenot et al.",
+          "reference": "https://pubmed.ncbi.nlm.nih.gov/34018730/",
+          "year": 2021,
+          "kind": "research",
+          "locator": "DOI 10.1021/acs.jafc.1c01610 ; plusieurs souches, températures et densités en milieu modèle."
+        }
+      },
+      {
+        "id": "lactones",
+        "name": "γ- et δ-lactones",
+        "family": "Esters cycliques",
+        "aromas": [
+          "pêche",
+          "abricot",
+          "coco"
+        ],
+        "formation": "Présentes dans la bière ; leur combinaison avec d’autres composés peut modifier le fruité.",
+        "caution": "Le descripteur pêche ne mesure pas une lactone ; un seuil dans l’eau ne vaut pas pour la bière.",
+        "source": {
+          "title": "Influence of Ethyl Esters, Oxygenated Terpenes, and Aliphatic γ- and δ-Lactones (C9–12) on Beer Fruit Aroma",
+          "author": "Hotchko et Shellhammer",
+          "reference": "https://www.tandfonline.com/doi/abs/10.1094/ASBCJ-2017-1805-01",
+          "year": 2017,
+          "kind": "research",
+          "locator": "Volume 75 (2017), 27–34 ; mise en ligne 2018. Résumé éditeur : effets de mélange, niveaux souvent sous seuil."
+        }
+      }
+    ],
+    "levers": [
+      {
+        "id": "banana-3068",
+        "goals": [
+          "banana",
+          "balanced"
+        ],
+        "yeastIds": [
+          "wyeast-3068"
+        ],
+        "control": "temperature",
+        "phase": "growth",
+        "effect": "promote",
+        "title": "3068 : agir pendant la fermentation active",
+        "explanation": "Wyeast décrit davantage d’esters à température plus élevée ; le girofle peut ressortir lorsque les esters diminuent.",
+        "action": "Choisir le compromis dès l’ensemencement dans la fenêtre de la souche.",
+        "limitation": "Le repos chaud final ne garantit pas davantage de banane ; aucun gain par degré établi.",
+        "source": {
+          "title": "3068 Weihenstephan Weizen",
+          "author": "Wyeast",
+          "reference": "https://wyeastlab.com/product/weihenstephan-weizen/",
+          "year": null,
+          "kind": "manufacturer",
+          "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "banana-munich",
+        "goals": [
+          "banana",
+          "balanced"
+        ],
+        "yeastIds": [
+          "lallemand-munich-classic"
+        ],
+        "control": "pitch",
+        "phase": "growth",
+        "effect": "mixed",
+        "title": "Munich Classic : dose et température ensemble",
+        "explanation": "Lallemand propose une dose plutôt basse et une température modérée pour privilégier la banane sans pousser aussi le girofle.",
+        "action": "Rester dans la dose fabricant ; vérifier densité, fraîcheur et viabilité avant de réduire le pitch.",
+        "limitation": "Ne pas généraliser cette conduite à toutes les levures de blé.",
+        "source": {
+          "title": "Precision Flavor Through Fermentation Control",
+          "author": "Lallemand",
+          "reference": "https://www.lallemandbrewing.com/en/global/resources/whats-new/precision-flavor-through-fermentation-control/",
+          "year": 2025,
+          "kind": "manufacturer",
+          "locator": "12 juillet 2025, mise à jour 17 septembre ; exemple Munich Classic."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "banana-no-clove",
+        "goals": [
+          "banana"
+        ],
+        "yeastIds": [
+          "yeast-omega-9188919542014"
+        ],
+        "control": "strain",
+        "phase": "preparation",
+        "effect": "promote",
+        "title": "Bananza : banane documentée avec POF−",
+        "explanation": "Omega a retiré l’expression phénolique de sa souche de type Hefeweizen.",
+        "action": "Comparer cette option si le girofle est indésirable.",
+        "limitation": "Fiche fabricant et souche modifiée ; aucun classement sensoriel indépendant entre marques ici.",
+        "source": {
+          "title": "Bananza OYL-400",
+          "author": "Omega Yeast",
+          "reference": "https://omegayeast.com/products/bananza-next",
+          "year": null,
+          "kind": "manufacturer",
+          "locator": "18–22 °C ; banane/poire, POF−. Souche modifiée pour retirer l’expression phénolique, sans classement indépendant entre marques."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "esters-heat",
+        "goals": [
+          "fruit",
+          "banana",
+          "clean"
+        ],
+        "yeastIds": [],
+        "control": "temperature",
+        "phase": "growth",
+        "effect": "mixed",
+        "title": "Les esters ne montent pas tous ensemble",
+        "explanation": "L’essai SS01 donne des réponses thermiques différentes selon l’ester éthylique.",
+        "action": "Partir des observations propres à la souche et au fruit recherché.",
+        "limitation": "SS01 n’est pas ta souche par défaut ; aucune pente universelle température → fruité.",
+        "source": {
+          "title": "Parameters Affecting Ethyl Ester Production by Saccharomyces cerevisiae during Fermentation",
+          "author": "Saerens et al.",
+          "reference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2223249/",
+          "year": 2008,
+          "kind": "research",
+          "locator": "SS01 ; série 14–26 °C, réponses différentes selon l’ester."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "pressure-banana",
+        "goals": [
+          "banana"
+        ],
+        "yeastIds": [],
+        "control": "pressure",
+        "phase": "growth",
+        "effect": "reduce",
+        "title": "La contre-pression peut freiner la banane",
+        "explanation": "Le CO₂ agit sur le rapport ester/alcool de manière dépendante de la souche.",
+        "action": "Pour explorer la banane, privilégier une fermentation sans contre-pression volontaire si le procédé le permet.",
+        "limitation": "Aucun coefficient par levure disponible ; pression relative et absolue distinctes.",
+        "source": {
+          "title": "CO₂ inhibition of isoamyl acetate production: MDS3",
+          "author": "Souffriau et al.",
+          "reference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9499027/",
+          "year": 2022,
+          "kind": "research",
+          "locator": "Rapport ester/alcool sous surpression, dépendant de la souche. Pas de coefficient universel."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "oxygen-esters",
+        "goals": [
+          "banana",
+          "fruit",
+          "clean"
+        ],
+        "yeastIds": [],
+        "control": "oxygen",
+        "phase": "preparation",
+        "effect": "mixed",
+        "title": "Oxygène : santé de la levure et esters",
+        "explanation": "L’aération et les acides gras insaturés interviennent dans la régulation d’ATF1.",
+        "action": "Adapter l’oxygénation initiale au produit et au réensemencement selon la fiche fabricant.",
+        "limitation": "Le mécanisme ne justifie ni carence volontaire ni oxygénation tardive généralisée.",
+        "source": {
+          "title": "Effects of aeration and unsaturated fatty acids on expression of ATF1",
+          "author": "Fujii et al.",
+          "reference": "https://journals.asm.org/doi/10.1128/aem.63.3.910-915.1997",
+          "year": 1997,
+          "kind": "research",
+          "locator": "Répression d’ATF1 et de l’activité AATase : mécanisme, pas dose universelle."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "pitch-context",
+        "goals": [
+          "banana",
+          "balanced",
+          "fruit",
+          "clean",
+          "phenolic",
+          "thiols"
+        ],
+        "yeastIds": [],
+        "control": "pitch",
+        "phase": "preparation",
+        "effect": "mixed",
+        "title": "Le pitch n’a pas un effet aromatique universel",
+        "explanation": "Les études de lager ne donnent pas toutes le même sens d’effet sur l’acétate d’isoamyle.",
+        "action": "Utiliser la dose documentée puis comparer des essais sur le même moût.",
+        "limitation": "NCYC 1056 de l’étude est une lager, sans équivalence supposée avec Wyeast 1056.",
+        "source": {
+          "title": "The effect of pitching rate on fermentation and flavour compounds in high gravity brewing",
+          "author": "Erten et al.",
+          "reference": "https://onlinelibrary.wiley.com/doi/10.1002/j.2050-0416.2007.tb00259.x",
+          "year": 2007,
+          "kind": "research",
+          "locator": "NCYC 1056 lager, pas Wyeast 1056. Essais à 10 °C ; effet du pitch contextuel."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "ferulic",
+        "goals": [
+          "phenolic",
+          "balanced",
+          "banana"
+        ],
+        "yeastIds": [],
+        "control": "mash",
+        "phase": "preparation",
+        "effect": "mixed",
+        "title": "Le girofle commence aussi à l’empâtage",
+        "explanation": "La disponibilité d’acide férulique et la capacité de la levure sont deux conditions distinctes.",
+        "action": "Pour le girofle, vérifier POF+ et l’empâtage ; pour la banane, ne pas renforcer ce précurseur par défaut.",
+        "limitation": "Le pourcentage de blé seul ne prédit pas le 4VG final.",
+        "source": {
+          "title": "Ferulic acid release and 4-vinylguaiacol formation during brewing and fermentation",
+          "author": "Coghe et al.",
+          "reference": "https://pubmed.ncbi.nlm.nih.gov/14759156/",
+          "year": 2004,
+          "kind": "research",
+          "locator": "DOI 10.1021/jf0346556 ; précurseur, moût et souche."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "pof-capacity",
+        "goals": [
+          "phenolic",
+          "balanced"
+        ],
+        "yeastIds": [],
+        "control": "strain",
+        "phase": "preparation",
+        "effect": "monitor",
+        "title": "Vérifier POF avant de viser le girofle",
+        "explanation": "POF− n’est pas une bonne piste pour développer la voie levurienne du 4VG.",
+        "action": "Choisir une souche documentée POF+ pour cette voie.",
+        "limitation": "POF, caractère diastatique et libération des thiols sont trois propriétés distinctes.",
+        "source": {
+          "title": "Reducing phenolic off-flavors through hybridization",
+          "author": "Mertens et al.",
+          "reference": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0209124",
+          "year": 2019,
+          "kind": "research",
+          "locator": "Voie PAD1/FDC1 et sélection POF."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "voss-speed",
+        "goals": [
+          "fruit",
+          "clean"
+        ],
+        "yeastIds": [
+          "lalbrew-voss"
+        ],
+        "control": "temperature",
+        "phase": "active",
+        "effect": "mixed",
+        "title": "Voss : surtout un changement de vitesse",
+        "explanation": "Le fabricant décrit un profil relativement constant orange/agrumes sur sa fenêtre thermique.",
+        "action": "Choisir selon le matériel et le délai, puis suivre la densité.",
+        "limitation": "Les trois repères de durée ne forment pas une loi cinétique validée.",
+        "source": {
+          "title": "LalBrew Voss — fiche technique",
+          "author": "Lallemand",
+          "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Voss-TDS-FRA-A4-Print-LalBrew-1.pdf",
+          "year": null,
+          "kind": "manufacturer",
+          "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "abbaye-fruit",
+        "goals": [
+          "fruit",
+          "phenolic"
+        ],
+        "yeastIds": [
+          "lalbrew-abbaye"
+        ],
+        "control": "temperature",
+        "phase": "growth",
+        "effect": "mixed",
+        "title": "Abbaye : fruits secs ou registre tropical",
+        "explanation": "La fiche relie bas de fenêtre aux fruits secs et haut aux notes tropicales et épicées.",
+        "action": "Comparer des températures dans la fenêtre sur un moût constant.",
+        "limitation": "Aucune frontière thermique ni amplitude sensorielle publiée ; sous-plages proposées par le guide.",
+        "source": {
+          "title": "LalBrew Abbaye — fiche technique",
+          "author": "Lallemand",
+          "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_ABBAYE_ENG_A4-2.pdf",
+          "year": null,
+          "kind": "manufacturer",
+          "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "saison-finish",
+        "goals": [
+          "phenolic",
+          "fruit"
+        ],
+        "yeastIds": [
+          "lalbrew-belle-saison"
+        ],
+        "control": "maturation",
+        "phase": "finish",
+        "effect": "monitor",
+        "title": "Belle Saison : laisser finir les dextrines",
+        "explanation": "L’activité diastatique peut prolonger la fermentation après la phase principale rapide.",
+        "action": "Attendre une densité cohérente et stable avant le conditionnement.",
+        "limitation": "La durée principale fabricant ne fixe pas le jour d’emballage.",
+        "source": {
+          "title": "LalBrew Belle Saison — fiche technique",
+          "author": "Lallemand",
+          "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_BELLESAISON_ENG_A4-4.pdf",
+          "year": null,
+          "kind": "manufacturer",
+          "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "sta1-not-pof",
+        "goals": [
+          "banana",
+          "balanced",
+          "fruit",
+          "clean",
+          "phenolic",
+          "thiols"
+        ],
+        "yeastIds": [],
+        "control": "strain",
+        "phase": "preparation",
+        "effect": "monitor",
+        "title": "STA1 : le gène ne suffit pas",
+        "explanation": "Le promoteur peut modifier fortement l’activité diastatique.",
+        "action": "Séparer résultat génétique, phénotype déclaré et atténuation mesurée.",
+        "limitation": "Ne déduire ni atténuation maximale ni durée de sécurité du seul gène.",
+        "source": {
+          "title": "A deletion in the STA1 promoter determines maltotriose and starch utilization in diastatic strains",
+          "author": "Krogerus et al.",
+          "reference": "https://pubmed.ncbi.nlm.nih.gov/31346683/",
+          "year": 2019,
+          "kind": "research",
+          "locator": "Délétion du promoteur de 1162 pb : gène, activité et phénotype distincts."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "lager-rest",
+        "goals": [
+          "clean"
+        ],
+        "yeastIds": [
+          "yeast-fermentis-saflager-w-34-70"
+        ],
+        "control": "maturation",
+        "phase": "finish",
+        "effect": "monitor",
+        "title": "Préparer le repos à partir de la densité",
+        "explanation": "Le repère est une fraction du chemin vers la DF attendue, pas un pourcentage absolu d’atténuation.",
+        "action": "Préparer la hausse pendant que la levure est active puis vérifier les VDK.",
+        "limitation": "La DF du catalogue est incertaine ; les jours seuls ne déclenchent rien.",
+        "source": {
+          "title": "Lager Brewing Made Easy",
+          "author": "Lallemand",
+          "reference": "https://connect.lallemandbrewing.com/wp-content/uploads/2023/08/Lallemand-Brewing_TechPaper-Lagering-Made-Easy-8-23.pdf",
+          "year": 2023,
+          "kind": "manufacturer",
+          "locator": "Copyright 2023. Page 14 : 65–75 % de l’atténuation finale attendue, hausse de 2–4 °C."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "vdk-test",
+        "goals": [
+          "banana",
+          "balanced",
+          "fruit",
+          "clean",
+          "phenolic",
+          "thiols"
+        ],
+        "yeastIds": [],
+        "control": "maturation",
+        "phase": "finish",
+        "effect": "monitor",
+        "title": "Densité et diacétyle : deux contrôles",
+        "explanation": "Le précurseur peut former du diacétyle après l’atteinte de la DF.",
+        "action": "Contrôler les VDK avec un test forcé ou analytique et prolonger si positif ou incertain.",
+        "limitation": "Une dégustation négative avant conversion du précurseur ne suffit pas.",
+        "source": {
+          "title": "Forced Diacetyl Testing",
+          "author": "Devin Tani / White Labs",
+          "reference": "https://blog.whitelabs.com/forced-diacetyl-testing",
+          "year": 2024,
+          "kind": "manufacturer",
+          "locator": "5 juin 2024 ; négatif sensoriel ≠ zéro analytique."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "dry-hop-reset",
+        "goals": [
+          "thiols",
+          "fruit",
+          "clean"
+        ],
+        "yeastIds": [],
+        "control": "hops",
+        "phase": "finish",
+        "effect": "monitor",
+        "title": "Recontrôler après un houblonnage à cru",
+        "explanation": "Le hop creep peut relancer atténuation et production de précurseurs du diacétyle.",
+        "action": "Reprendre les contrôles densité et VDK après le dernier ajout.",
+        "limitation": "La stabilité précédente ne certifie pas la suite ; ALDC ne bloque pas la refermentation.",
+        "source": {
+          "title": "How to Fix Hop Creep with Jessica Young",
+          "author": "Lallemand",
+          "reference": "https://www.lallemandbrewing.com/en/south-america/resources/how-to-fix-hop-creep-with-jessica-young/",
+          "year": 2026,
+          "kind": "manufacturer",
+          "locator": "12 mai 2026, actualisé 15 juillet. Recontrôler après dry hop ; ALDC ne bloque pas les enzymes du houblon."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "thiol-temp",
+        "goals": [
+          "thiols"
+        ],
+        "yeastIds": [],
+        "control": "temperature",
+        "phase": "active",
+        "effect": "mixed",
+        "title": "Plus de thiols n’est pas toujours plus tropical",
+        "explanation": "L’essai Cascade montre une interaction souche × température et une discordance chimie/perception.",
+        "action": "Comparer les combinaisons publiées et rester dans la fenêtre fabricant.",
+        "limitation": "Ne pas conseiller une lager hors fenêtre pour copier un maximum chimique.",
+        "source": {
+          "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+          "author": "Samia et al.",
+          "reference": "https://brewingscience.de/index.php/brewingscience/article/view/241",
+          "year": 2024,
+          "kind": "research",
+          "locator": "Cinq souches, 15/22/30 °C, Cascade en ébullition et whirlpool. Diamond : plus de thiols mais moins de tropical et davantage de soufre."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "thiol-nutrition",
+        "goals": [
+          "thiols",
+          "fruit"
+        ],
+        "yeastIds": [],
+        "control": "nutrition",
+        "phase": "preparation",
+        "effect": "mixed",
+        "title": "La carence azotée n’est pas un raccourci aromatique",
+        "explanation": "Moins de FAN peut favoriser certains thiols sans plus de tropical et avec une fermentation dégradée.",
+        "action": "Établir une nutrition adaptée au moût et à la souche.",
+        "limitation": "Aucune cible FAN unique pour maximiser thiols ou esters.",
+        "source": {
+          "title": "Wort Nitrogen and Yeast Strain Drive Thiol Release, Flavor Expression, and Fermentation Performance in Beer",
+          "author": "Samia et al.",
+          "reference": "https://doi.org/10.1080/03610470.2025.2530859",
+          "year": 2025,
+          "kind": "research",
+          "locator": "14 août 2025 ; FAN 110/240/360 mg/L, cinq levures. Carence ≠ fruité accru."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "thiol-timing",
+        "goals": [
+          "thiols"
+        ],
+        "yeastIds": [],
+        "control": "hops",
+        "phase": "active",
+        "effect": "mixed",
+        "title": "Le moment modifie la libération",
+        "explanation": "Les profils temporels changent avec la souche et le dry hop ; une libération ultérieure reste possible.",
+        "action": "Conserver jour, densité et température de chaque ajout.",
+        "limitation": "Ne pas imposer zéro conversion après fermentation ; données brutes non acquises.",
+        "source": {
+          "title": "A time-course assessment of polyfunctional thiol release and yeast gene expression in dry-hopped beers",
+          "author": "Samia et al.",
+          "reference": "https://www.sciencedirect.com/science/article/pii/S2666566226000936",
+          "year": 2026,
+          "kind": "research",
+          "locator": "30 juillet 2026 ; DOI 10.1016/j.fochms.2026.100445. Résumé éditeur seulement, données brutes non acquises."
+        },
+        "confidence": "low"
+      },
+      {
+        "id": "lactones-mixture",
+        "goals": [
+          "fruit"
+        ],
+        "yeastIds": [],
+        "control": "strain",
+        "phase": "preparation",
+        "effect": "mixed",
+        "title": "Pêche et coco : examiner le mélange",
+        "explanation": "Les lactones peuvent modifier le fruité avec des esters et terpènes à faibles teneurs.",
+        "action": "Choisir une souche au profil documenté puis comparer la bière dégustée.",
+        "limitation": "Ne convertir ni pêche en lactone ni lipides du grist en gain aromatique supposé.",
+        "source": {
+          "title": "Influence of Ethyl Esters, Oxygenated Terpenes, and Aliphatic γ- and δ-Lactones (C9–12) on Beer Fruit Aroma",
+          "author": "Hotchko et Shellhammer",
+          "reference": "https://www.tandfonline.com/doi/abs/10.1094/ASBCJ-2017-1805-01",
+          "year": 2017,
+          "kind": "research",
+          "locator": "Volume 75 (2017), 27–34 ; mise en ligne 2018. Résumé éditeur : effets de mélange, niveaux souvent sous seuil."
+        },
+        "confidence": "medium"
+      },
+      {
+        "id": "sulfur-context",
+        "goals": [
+          "banana",
+          "balanced",
+          "fruit",
+          "clean",
+          "phenolic",
+          "thiols"
+        ],
+        "yeastIds": [],
+        "control": "maturation",
+        "phase": "conditioning",
+        "effect": "monitor",
+        "title": "Soufre : suivre le défaut réel",
+        "explanation": "La réponse du H₂S à la température peut changer entre souches.",
+        "action": "Documenter le soufre résiduel et les conditions de maturation.",
+        "limitation": "Pas de délai ni de pente universels à partir du résumé consulté.",
+        "source": {
+          "title": "Effects of yeast strains and fermentation temperatures in production of hydrogen sulfide during beer fermentation",
+          "author": "Kim, Moon et Park",
+          "reference": "https://khu.elsevierpure.com/en/publications/effects-of-yeast-strains-and-fermentation-temperatures-in-product-2/",
+          "year": 2008,
+          "kind": "research",
+          "locator": "Résumé institutionnel ; quatre souches, réponses différentes. Texte intégral non vérifié."
+        },
+        "confidence": "low"
+      }
+    ],
+    "benchmarks": [
+      {
+        "yeastId": "lalbrew-voss",
+        "temperatureC": 40,
+        "days": {
+          "min": 2,
+          "max": 2
+        },
+        "conditions": "Moût standard fabricant ; valeur ponctuelle, dispersion non publiée.",
+        "source": {
+          "title": "LalBrew Voss — fiche technique",
+          "author": "Lallemand",
+          "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Voss-TDS-FRA-A4-Print-LalBrew-1.pdf",
+          "year": null,
+          "kind": "manufacturer",
+          "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+        }
+      },
+      {
+        "yeastId": "lalbrew-voss",
+        "temperatureC": 30,
+        "days": {
+          "min": 3,
+          "max": 4
+        },
+        "conditions": "Moût standard fabricant ; plage déclarée, pas intervalle statistique.",
+        "source": {
+          "title": "LalBrew Voss — fiche technique",
+          "author": "Lallemand",
+          "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Voss-TDS-FRA-A4-Print-LalBrew-1.pdf",
+          "year": null,
+          "kind": "manufacturer",
+          "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+        }
+      },
+      {
+        "yeastId": "lalbrew-voss",
+        "temperatureC": 25,
+        "days": {
+          "min": 5,
+          "max": 7
+        },
+        "conditions": "Moût standard fabricant ; ne pas interpoler une loi universelle.",
+        "source": {
+          "title": "LalBrew Voss — fiche technique",
+          "author": "Lallemand",
+          "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Voss-TDS-FRA-A4-Print-LalBrew-1.pdf",
+          "year": null,
+          "kind": "manufacturer",
+          "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+        }
+      },
+      {
+        "yeastId": "lalbrew-abbaye",
+        "temperatureC": 20,
+        "days": {
+          "min": 4,
+          "max": 4
+        },
+        "conditions": "Moût standard fabricant ; dispersion et maturation non publiées.",
+        "source": {
+          "title": "LalBrew Abbaye — fiche technique",
+          "author": "Lallemand",
+          "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_ABBAYE_ENG_A4-2.pdf",
+          "year": null,
+          "kind": "manufacturer",
+          "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+        }
+      },
+      {
+        "yeastId": "lalbrew-belle-saison",
+        "temperatureC": 20,
+        "days": {
+          "min": 4,
+          "max": 10
+        },
+        "conditions": "Principale environ 4 j puis consommation lente jusqu’à 10 j dans le protocole fabricant ; phases différentes, pas une distribution.",
+        "source": {
+          "title": "LalBrew Belle Saison — fiche technique",
+          "author": "Lallemand",
+          "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_BELLESAISON_ENG_A4-4.pdf",
+          "year": null,
+          "kind": "manufacturer",
+          "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+        }
+      },
+      {
+        "yeastId": "lalbrew-verdant-ipa",
+        "temperatureC": 20,
+        "days": {
+          "min": 5,
+          "max": 5
+        },
+        "conditions": "Moût standard fabricant ; pas une garantie de fin de maturation.",
+        "source": {
+          "title": "LalBrew Verdant IPA — fiche technique",
+          "author": "Lallemand",
+          "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Verdant-IPA-TDS-FRA-A4-Print-Lalbrew-1.pdf",
+          "year": null,
+          "kind": "manufacturer",
+          "locator": "Fenêtre 18–25 °C ; ancienne fiche Scott Labs 18–23 °C. Désaccord conservé."
+        }
+      },
+      {
+        "yeastId": "lalbrew-pomona",
+        "temperatureC": 20,
+        "days": {
+          "min": 4,
+          "max": 5
+        },
+        "conditions": "Moût standard fabricant à 12 °P ; durée non transférable à une bière forte.",
+        "source": {
+          "title": "LalBrew Pomona — fiche technique",
+          "author": "Lallemand / Scott Laboratories",
+          "reference": "https://files.scottlab.com/uploads/POMONA%20TDS.pdf",
+          "year": null,
+          "kind": "manufacturer",
+          "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+        }
+      }
+    ],
+    "lagerRest": {
+      "yeastIds": [
+        "yeast-fermentis-saflager-w-34-70"
+      ],
+      "progressPct": {
+        "min": 65,
+        "max": 75
+      },
+      "riseC": {
+        "min": 2,
+        "max": 4
+      },
+      "source": {
+        "title": "Lager Brewing Made Easy",
+        "author": "Lallemand",
+        "reference": "https://connect.lallemandbrewing.com/wp-content/uploads/2023/08/Lallemand-Brewing_TechPaper-Lagering-Made-Easy-8-23.pdf",
+        "year": 2023,
+        "kind": "manufacturer",
+        "locator": "Copyright 2023. Page 14 : 65–75 % de l’atténuation finale attendue, hausse de 2–4 °C."
+      }
+    },
+    "studies": [
+      {
+        "id": "esters",
+        "title": "Parameters Affecting Ethyl Ester Production by Saccharomyces cerevisiae during Fermentation",
+        "source": {
+          "title": "Parameters Affecting Ethyl Ester Production by Saccharomyces cerevisiae during Fermentation",
+          "author": "Saerens et al.",
+          "reference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2223249/",
+          "year": 2008,
+          "kind": "research",
+          "locator": "SS01 ; série 14–26 °C, réponses différentes selon l’ester."
+        },
+        "finding": "Les esters répondent différemment à la température.",
+        "limitation": "Aucun multiplicateur universel."
+      },
+      {
+        "id": "pitch-conflict",
+        "title": "The Effect of Selected Fermentation Parameters on the Formation of Esters and Higher Alcohols in Beer",
+        "source": {
+          "title": "The Effect of Selected Fermentation Parameters on the Formation of Esters and Higher Alcohols in Beer",
+          "author": "Kucharczyk et al.",
+          "reference": "https://mdpi-res.com/d_attachment/processes/processes-08-00769/article_deploy/processes-08-00769.pdf",
+          "year": 2020,
+          "kind": "research",
+          "locator": "Unités O₂ contradictoires ; équation et valeurs de validation non concordantes. Calcul non activé."
+        },
+        "finding": "Des modèles industriels existent dans leur domaine.",
+        "limitation": "Incohérences d’unités et de validation : équation d’acétate d’isoamyle non activée."
+      },
+      {
+        "id": "pof",
+        "title": "Reducing phenolic off-flavors through hybridization",
+        "source": {
+          "title": "Reducing phenolic off-flavors through hybridization",
+          "author": "Mertens et al.",
+          "reference": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0209124",
+          "year": 2019,
+          "kind": "research",
+          "locator": "Voie PAD1/FDC1 et sélection POF."
+        },
+        "finding": "POF relie précurseur et voie génétique.",
+        "limitation": "Pas de concentration ni de profil total."
+      },
+      {
+        "id": "sta1",
+        "title": "A deletion in the STA1 promoter determines maltotriose and starch utilization in diastatic strains",
+        "source": {
+          "title": "A deletion in the STA1 promoter determines maltotriose and starch utilization in diastatic strains",
+          "author": "Krogerus et al.",
+          "reference": "https://pubmed.ncbi.nlm.nih.gov/31346683/",
+          "year": 2019,
+          "kind": "research",
+          "locator": "Délétion du promoteur de 1162 pb : gène, activité et phénotype distincts."
+        },
+        "finding": "Gène et phénotype diastatique séparés.",
+        "limitation": "Aucune atténuation déduite du seul STA1."
+      },
+      {
+        "id": "thiols-temperature",
+        "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+        "source": {
+          "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+          "author": "Samia et al.",
+          "reference": "https://brewingscience.de/index.php/brewingscience/article/view/241",
+          "year": 2024,
+          "kind": "research",
+          "locator": "Cinq souches, 15/22/30 °C, Cascade en ébullition et whirlpool. Diamond : plus de thiols mais moins de tropical et davantage de soufre."
+        },
+        "finding": "Souche × température modifie thiols et perception.",
+        "limitation": "Maximum chimique ≠ meilleur tropical."
+      },
+      {
+        "id": "thiols-nitrogen",
+        "title": "Wort Nitrogen and Yeast Strain Drive Thiol Release, Flavor Expression, and Fermentation Performance in Beer",
+        "source": {
+          "title": "Wort Nitrogen and Yeast Strain Drive Thiol Release, Flavor Expression, and Fermentation Performance in Beer",
+          "author": "Samia et al.",
+          "reference": "https://doi.org/10.1080/03610470.2025.2530859",
+          "year": 2025,
+          "kind": "research",
+          "locator": "14 août 2025 ; FAN 110/240/360 mg/L, cinq levures. Carence ≠ fruité accru."
+        },
+        "finding": "Nutrition et souche influencent libération et performance.",
+        "limitation": "Carence non recommandée comme optimisation."
+      },
+      {
+        "id": "thiols-transfer-2026",
+        "title": "Bound and Free 3-Sulfanylhexan-1-ol in Beer: Transfer and Release Rates from Kettle, Late, and Dry Hopping",
+        "source": {
+          "title": "Bound and Free 3-Sulfanylhexan-1-ol in Beer: Transfer and Release Rates from Kettle, Late, and Dry Hopping",
+          "author": "Chenot, Samia et Shellhammer",
+          "reference": "https://pubmed.ncbi.nlm.nih.gov/41790498/",
+          "year": 2026,
+          "kind": "research",
+          "locator": "6 mars 2026 ; DOI 10.1021/acs.jafc.5c14936. Supplément https://ndownloader.figshare.com/files/62482880 consulté : souche/température non retrouvées, aucun rendement transféré."
+        },
+        "finding": "Précurseurs et étapes de houblonnage distincts.",
+        "limitation": "Contexte incomplet pour transférer les rendements."
+      },
+      {
+        "id": "thiols-timecourse-2026",
+        "title": "A time-course assessment of polyfunctional thiol release and yeast gene expression in dry-hopped beers",
+        "source": {
+          "title": "A time-course assessment of polyfunctional thiol release and yeast gene expression in dry-hopped beers",
+          "author": "Samia et al.",
+          "reference": "https://www.sciencedirect.com/science/article/pii/S2666566226000936",
+          "year": 2026,
+          "kind": "research",
+          "locator": "30 juillet 2026 ; DOI 10.1016/j.fochms.2026.100445. Résumé éditeur seulement, données brutes non acquises."
+        },
+        "finding": "Libération variable dans le temps et avec le dry hop.",
+        "limitation": "Résumé uniquement ; aucune courbe importée depuis une figure."
+      },
+      {
+        "id": "lactones",
+        "title": "Influence of Ethyl Esters, Oxygenated Terpenes, and Aliphatic γ- and δ-Lactones (C9–12) on Beer Fruit Aroma",
+        "source": {
+          "title": "Influence of Ethyl Esters, Oxygenated Terpenes, and Aliphatic γ- and δ-Lactones (C9–12) on Beer Fruit Aroma",
+          "author": "Hotchko et Shellhammer",
+          "reference": "https://www.tandfonline.com/doi/abs/10.1094/ASBCJ-2017-1805-01",
+          "year": 2017,
+          "kind": "research",
+          "locator": "Volume 75 (2017), 27–34 ; mise en ligne 2018. Résumé éditeur : effets de mélange, niveaux souvent sous seuil."
+        },
+        "finding": "De faibles teneurs peuvent participer à l’arôme de mélange.",
+        "limitation": "Un descripteur fabricant n’est pas une concentration."
+      },
+      {
+        "id": "kinetic",
+        "title": "Parameter Estimation of Dynamic Beer Fermentation Models",
+        "source": {
+          "title": "Parameter Estimation of Dynamic Beer Fermentation Models",
+          "author": "Zamudio Lara et al.",
+          "reference": "https://orbi.umons.ac.be/bitstream/20.500.12907/43726/1/ZamudioLara2022.pdf",
+          "year": 2022,
+          "kind": "research",
+          "locator": "Foods 11, 3602 ; quatre fermentations, trois pour ajuster, une retenue. Identifiabilité et résidus à contrôler."
+        },
+        "finding": "Modèles dynamiques ajustés sur fermentations mesurées.",
+        "limitation": "Quatre fermentations ne couvrent pas toutes les souches."
+      },
+      {
+        "id": "mpc-2026",
+        "title": "Cascade predictive control design for a beer fermenter — simulation and experimental assessment",
+        "source": {
+          "title": "Cascade predictive control design for a beer fermenter — simulation and experimental assessment",
+          "author": "Denis et al.",
+          "reference": "https://www.sciencedirect.com/science/article/abs/pii/S0960308526000775",
+          "year": 2026,
+          "kind": "research",
+          "locator": "DOI 10.1016/j.fbp.2026.03.020 ; volume 157, 252–264. Résumé éditeur seulement : densité/CO₂ et estimation d’état."
+        },
+        "finding": "Pilotage prédictif à partir de densité et CO₂ en ligne.",
+        "limitation": "Résumé seulement ; capteurs et identification propres au procédé requis."
+      },
+      {
+        "id": "phenol-local",
+        "title": "Enhancing the levels of 4-vinylguaiacol and 4-vinylphenol in pilot-scale top-fermented wheat beers by response surface methodology",
+        "source": {
+          "title": "Enhancing the levels of 4-vinylguaiacol and 4-vinylphenol in pilot-scale top-fermented wheat beers by response surface methodology",
+          "author": "Cui et al.",
+          "reference": "https://onlinelibrary.wiley.com/doi/10.1002/jib.189",
+          "year": 2015,
+          "kind": "research",
+          "locator": "J. Inst. Brew. 121, 129–136 ; 29 essais, 4 facteurs, DM303. Tables, méthodes et validation consultées."
+        },
+        "finding": "29 essais permettent un ajustement local avec interactions.",
+        "limitation": "DM303 et protocole d’empâtage couplé ; aucun transfert à 3068 ou WLP300."
+      }
+    ],
+    "phenolStudy": {
+      "id": "cui-2015-dm303",
+      "name": "4VG et 4VP — expérience DM303",
+      "yeastId": "doemens-dm303",
+      "source": {
+        "title": "Enhancing the levels of 4-vinylguaiacol and 4-vinylphenol in pilot-scale top-fermented wheat beers by response surface methodology",
+        "author": "Cui et al.",
+        "reference": "https://onlinelibrary.wiley.com/doi/10.1002/jib.189",
+        "year": 2015,
+        "kind": "research",
+        "locator": "J. Inst. Brew. 121, 129–136 ; 29 essais, 4 facteurs, DM303. Tables, méthodes et validation consultées."
+      },
+      "scope": "DM303, 11 °P, 8 millions de cellules/mL, 10 hL dans une cuve de 20 hL. Mash-in : 37 °C/20 min, 44 °C/30 min ou 52 °C/40 min ; puis 65 °C/70 min, 72 °C/15 min et mash-out 78 °C, rampes 1 °C/min. Même moût, houblonnage, oxygénation et fin de fermentation que le protocole publié.",
+      "limitations": [
+        "Reproduction locale de l’étude, jamais prédiction automatique de la recette ni d’une autre souche.",
+        "4VG et 4VP chimiques en mg/L : aucune conversion en intensité sensorielle.",
+        "Intervalle nominal pour UNE nouvelle observation du même procédé ; résidus supposés indépendants, gaussiens et de variance constante. Pas de couverture garantie pour une autre bière.",
+        "Le mash-in modifie température ET durée : trois protocoles discrets, pas de causalité thermique isolée.",
+        "Interpolation limitée à l’enveloppe convexe Box–Behnken ; les coins de la boîte ne sont pas documentés.",
+        "Validation publiée : moyennes de trois répétitions ; données individuelles et variance indisponibles."
+      ],
+      "levels": {
+        "wheatPct": [
+          40,
+          45,
+          50
+        ],
+        "mashInC": [
+          37,
+          44,
+          52
+        ],
+        "boilMin": [
+          70,
+          90,
+          110
+        ],
+        "fermentC": [
+          16,
+          18,
+          20
+        ]
+      },
+      "mashHoldMin": [
+        20,
+        30,
+        40
+      ],
+      "wortPlato": 11,
+      "pitchMillionCellsMl": 8,
+      "observations": [
+        {
+          "coded": [
+            0,
+            1,
+            0,
+            1
+          ],
+          "vgMgL": 2.106,
+          "vpMgL": 1.295
+        },
+        {
+          "coded": [
+            0,
+            1,
+            -1,
+            0
+          ],
+          "vgMgL": 1.959,
+          "vpMgL": 0.952
+        },
+        {
+          "coded": [
+            0,
+            -1,
+            1,
+            0
+          ],
+          "vgMgL": 2.065,
+          "vpMgL": 1.059
+        },
+        {
+          "coded": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "vgMgL": 2.006,
+          "vpMgL": 1.003
+        },
+        {
+          "coded": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "vgMgL": 2.296,
+          "vpMgL": 1.324
+        },
+        {
+          "coded": [
+            0,
+            -1,
+            -1,
+            0
+          ],
+          "vgMgL": 2.191,
+          "vpMgL": 1.187
+        },
+        {
+          "coded": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "vgMgL": 2.367,
+          "vpMgL": 1.197
+        },
+        {
+          "coded": [
+            1,
+            -1,
+            0,
+            0
+          ],
+          "vgMgL": 2.089,
+          "vpMgL": 1.069
+        },
+        {
+          "coded": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "vgMgL": 2.476,
+          "vpMgL": 1.468
+        },
+        {
+          "coded": [
+            -1,
+            -1,
+            0,
+            0
+          ],
+          "vgMgL": 2.261,
+          "vpMgL": 1.256
+        },
+        {
+          "coded": [
+            -1,
+            0,
+            1,
+            0
+          ],
+          "vgMgL": 2.321,
+          "vpMgL": 1.309
+        },
+        {
+          "coded": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "vgMgL": 2.319,
+          "vpMgL": 1.321
+        },
+        {
+          "coded": [
+            -1,
+            0,
+            0,
+            -1
+          ],
+          "vgMgL": 2.256,
+          "vpMgL": 1.249
+        },
+        {
+          "coded": [
+            -1,
+            0,
+            -1,
+            0
+          ],
+          "vgMgL": 2.292,
+          "vpMgL": 1.287
+        },
+        {
+          "coded": [
+            0,
+            -1,
+            0,
+            -1
+          ],
+          "vgMgL": 2.084,
+          "vpMgL": 1.076
+        },
+        {
+          "coded": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "vgMgL": 2.319,
+          "vpMgL": 1.372
+        },
+        {
+          "coded": [
+            -1,
+            0,
+            0,
+            1
+          ],
+          "vgMgL": 2.401,
+          "vpMgL": 1.396
+        },
+        {
+          "coded": [
+            0,
+            0,
+            -1,
+            1
+          ],
+          "vgMgL": 2.368,
+          "vpMgL": 1.373
+        },
+        {
+          "coded": [
+            1,
+            0,
+            1,
+            0
+          ],
+          "vgMgL": 1.953,
+          "vpMgL": 0.947
+        },
+        {
+          "coded": [
+            0,
+            0,
+            1,
+            -1
+          ],
+          "vgMgL": 2.078,
+          "vpMgL": 1.091
+        },
+        {
+          "coded": [
+            1,
+            0,
+            0,
+            -1
+          ],
+          "vgMgL": 1.878,
+          "vpMgL": 0.859
+        },
+        {
+          "coded": [
+            0,
+            -1,
+            0,
+            1
+          ],
+          "vgMgL": 2.221,
+          "vpMgL": 1.209
+        },
+        {
+          "coded": [
+            -1,
+            1,
+            0,
+            0
+          ],
+          "vgMgL": 2.203,
+          "vpMgL": 1.198
+        },
+        {
+          "coded": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "vgMgL": 2.205,
+          "vpMgL": 1.294
+        },
+        {
+          "coded": [
+            1,
+            1,
+            0,
+            0
+          ],
+          "vgMgL": 1.764,
+          "vpMgL": 0.765
+        },
+        {
+          "coded": [
+            0,
+            0,
+            -1,
+            -1
+          ],
+          "vgMgL": 2.097,
+          "vpMgL": 1.082
+        },
+        {
+          "coded": [
+            0,
+            1,
+            0,
+            -1
+          ],
+          "vgMgL": 1.901,
+          "vpMgL": 0.908
+        },
+        {
+          "coded": [
+            1,
+            0,
+            -1,
+            0
+          ],
+          "vgMgL": 1.827,
+          "vpMgL": 0.821
+        },
+        {
+          "coded": [
+            0,
+            1,
+            1,
+            0
+          ],
+          "vgMgL": 2.117,
+          "vpMgL": 1.109
+        }
+      ],
+      "prediction": {
+        "coverage": 0.95,
+        "criticalT": 2.145,
+        "df": 14,
+        "source": {
+          "title": "Upper critical values of Student’s t distribution",
+          "author": "NIST/SEMATECH",
+          "reference": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda3672.htm",
+          "year": null,
+          "kind": "research",
+          "locator": "14 degrés de liberté, colonne 0,975 : 2,145. Date de la table non indiquée."
+        }
+      },
+      "validation": {
+        "wheatPct": 40,
+        "mashInC": 44,
+        "boilMin": 88,
+        "fermentC": 19.5,
+        "n": 3,
+        "vgMgL": 2.418,
+        "vpMgL": 1.402
+      }
+    }
+  },
+  {
+    "id": "fermentis-us05",
+    "kind": "yeast",
+    "name": "SafAle US-05 (Fermentis)",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "SafAle US-05 — fiche produit",
+      "author": "Fermentis",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://fermentis.com/fr/produit/safale-us-05/",
+      "locator": "Identité SafAle US-05, Saccharomyces cerevisiae, et description du profil neutre. Aucune date de publication ou de mise à jour de la fiche n’est affichée. Cette source ne fournit pas de mesure de β-lyase ni de rendement de biotransformation."
+    },
+    "form": "sèche"
+  },
+  {
+    "id": "fermentation-science-fermentis-us05",
+    "kind": "fermentation",
+    "name": "Fermentis SafAle US-05 · conduite documentée",
+    "version": "2026.09.08.1",
+    "enabled": true,
+    "source": {
+      "title": "Conduites et limites de fermentation — L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/research/fermentation/README.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+    },
+    "yeastId": "fermentis-us05",
+    "aliases": [
+      "Fermentis SafAle US-05",
+      "SafAle US‑05™"
+    ],
+    "styles": [
+      "Pale Ale",
+      "IPA"
+    ],
+    "aroma": {
+      "summary": "Profil de fermentation discret et équilibré, pour laisser s’exprimer malt et houblon.",
+      "banana": "La banane n’est pas un objectif quantifié pour cette conduite.",
+      "phenols": "POF− selon le fabricant ; absence de girofle dans la bière non certifiée par une analyse.",
+      "pof": "negative",
+      "source": {
+        "title": "SafBrew DA-16 — comparaison avec US-05",
+        "author": "Philippe Janssens / Fermentis",
+        "reference": "https://fermentis.com/fr/knowledge-center/expert-insights/beer/safbrew-da16-qa/",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; question sur US-05 et S-04 : US-05 neutre et POF−. Date de publication non indiquée."
+      }
+    },
+    "temperatureC": {
+      "range": {
+        "min": 18,
+        "max": 26
+      },
+      "source": {
+        "title": "SafAle US-05",
+        "author": "Fermentis",
+        "reference": "https://fermentis.com/en/product/safale-us-05/",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "dryPitchGHL": {
+      "range": {
+        "min": 50,
+        "max": 80
+      },
+      "source": {
+        "title": "SafAle US-05",
+        "author": "Fermentis",
+        "reference": "https://fermentis.com/en/product/safale-us-05/",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "plans": [
+      {
+        "goal": "clean",
+        "name": "Profil net et discret",
+        "rationale": "Profil de fermentation discret et équilibré, pour laisser s’exprimer malt et houblon. Les sous-plages sont des propositions à comparer sur ton moût.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 18,
+            "max": 20
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 19
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 18,
+                "max": 20
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 19
+            },
+            "days": {
+              "range": {
+                "min": 5,
+                "max": 8
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 6
+            },
+            "completeWhen": "Suivre la baisse de densité ; passer au repos lorsque la fermentation approche sa fin attendue."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 22
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 21
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 5
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 3
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Profil de fermentation discret et équilibré, pour laisser s’exprimer malt et houblon.",
+            "source": {
+              "title": "SafAle US-05",
+              "author": "Fermentis",
+              "reference": "https://fermentis.com/en/product/safale-us-05/",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "yeast-fermentis-saflager-w-34-70",
+    "kind": "yeast",
+    "name": "Fermentis · SafLager™ W‑34/70",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "SafLager™ W‑34/70",
+      "author": "Fermentis",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://fermentis.com/en/product/saflager-w-34-70/"
+    },
+    "form": "sèche"
+  },
+  {
+    "id": "fermentation-science-yeast-fermentis-saflager-w-34-70",
+    "kind": "fermentation",
+    "name": "Fermentis SafLager W-34/70 · conduite documentée",
+    "version": "2026.09.08.1",
+    "enabled": true,
+    "source": {
+      "title": "Conduites et limites de fermentation — L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/research/fermentation/README.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+    },
+    "yeastId": "yeast-fermentis-saflager-w-34-70",
+    "aliases": [
+      "Fermentis SafLager W-34/70",
+      "SafLager™ W‑34/70"
+    ],
+    "styles": [
+      "Lager",
+      "Pils"
+    ],
+    "aroma": {
+      "summary": "Lager au profil net ; la maturation se contrôle séparément de l’atténuation.",
+      "banana": "La banane n’est pas un objectif quantifié pour cette conduite.",
+      "phenols": "POF− selon le fabricant ; absence de girofle dans la bière non certifiée par une analyse.",
+      "pof": "negative",
+      "source": {
+        "title": "Beer Yeast Chart — W-34/70",
+        "author": "Fermentis",
+        "reference": "https://fermentis.com/wp-content/uploads/2021/06/Beer-Yeast-Chart.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; ligne W-34/70, colonne Phenolic Off-Flavor : signe moins. Profil net, floral et fruité selon les conditions. Date de publication non confirmée."
+      }
+    },
+    "temperatureC": {
+      "range": {
+        "min": 12,
+        "max": 18
+      },
+      "source": {
+        "title": "SafLager W-34/70",
+        "author": "Fermentis",
+        "reference": "https://fermentis.com/en/product/saflager-w-34-70/",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "attenuationPct": {
+      "range": {
+        "min": 80,
+        "max": 84
+      },
+      "source": {
+        "title": "SafLager W-34/70",
+        "author": "Fermentis",
+        "reference": "https://fermentis.com/en/product/saflager-w-34-70/",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "dryPitchGHL": {
+      "range": {
+        "min": 80,
+        "max": 120
+      },
+      "source": {
+        "title": "SafLager W-34/70",
+        "author": "Fermentis",
+        "reference": "https://fermentis.com/en/product/saflager-w-34-70/",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "plans": [
+      {
+        "goal": "clean",
+        "name": "Profil net et discret",
+        "rationale": "Lager au profil net ; la maturation se contrôle séparément de l’atténuation. Les sous-plages sont des propositions à comparer sur ton moût.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 12,
+            "max": 14
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 14
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 12,
+                "max": 14
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 14
+            },
+            "days": {
+              "range": {
+                "min": 7,
+                "max": 14
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 10
+            },
+            "completeWhen": "Préparer le repos vers 65–75 % du chemin vers la DF attendue, pendant que la levure est active. Les jours ne déclenchent pas la montée."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 16,
+                "max": 18
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 17
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 5
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 3
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Lager au profil net ; la maturation se contrôle séparément de l’atténuation.",
+            "source": {
+              "title": "SafLager W-34/70",
+              "author": "Fermentis",
+              "reference": "https://fermentis.com/en/product/saflager-w-34-70/",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+            }
+          },
+          {
+            "text": "Le repère 65–75 % s’applique à la progression vers l’atténuation finale prévue ; hausse de 2–4 °C documentée, à garder compatible avec la souche.",
+            "source": {
+              "title": "Lager Brewing Made Easy",
+              "author": "Lallemand",
+              "reference": "https://connect.lallemandbrewing.com/wp-content/uploads/2023/08/Lallemand-Brewing_TechPaper-Lagering-Made-Easy-8-23.pdf",
+              "year": 2023,
+              "kind": "manufacturer",
+              "locator": "Copyright 2023. Page 14 : 65–75 % de l’atténuation finale attendue, hausse de 2–4 °C."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "lalbrew-voss",
+    "kind": "yeast",
+    "name": "Lallemand Brewing · LalBrew Voss™ Kviek Yeast",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "LalBrew Voss™ Kviek Yeast 11g Sachet (Box of 50)",
+      "author": "Lallemand Brewing",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://shop-us.lallemandbrewing.com/lalbrew-voss-kviek-yeast-11g-sachet-box-of-50-18457--77--11"
+    },
+    "form": "sèche"
+  },
+  {
+    "id": "fermentation-science-lalbrew-voss",
+    "kind": "fermentation",
+    "name": "LalBrew Voss · conduite documentée",
+    "version": "2026.09.08.1",
+    "enabled": true,
+    "source": {
+      "title": "Conduites et limites de fermentation — L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/research/fermentation/README.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+    },
+    "yeastId": "lalbrew-voss",
+    "aliases": [
+      "LalBrew Voss",
+      "LalBrew Voss™",
+      "LAL-VOSS-500",
+      "LalBrew Voss™ Kveik Ale Yeast",
+      "LalBrew Voss™ Kveik Ale Yeast (500g)",
+      "LalBrew Voss™ Kviek Yeast",
+      "LalBrew Voss™ Kviek Yeast 11g Sachet (Box of 50)"
+    ],
+    "styles": [
+      "Kveik",
+      "Pale Ale"
+    ],
+    "aroma": {
+      "summary": "Orange et agrumes sur un profil relativement neutre ; chaleur surtout documentée comme levier de vitesse.",
+      "banana": "La banane n’est pas un objectif quantifié pour cette conduite.",
+      "phenols": "POF− selon le fabricant ; absence de girofle dans la bière non certifiée par une analyse.",
+      "pof": "negative",
+      "source": {
+        "title": "LalBrew Voss — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Voss-TDS-FRA-A4-Print-LalBrew-1.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "temperatureC": {
+      "range": {
+        "min": 25,
+        "max": 40
+      },
+      "source": {
+        "title": "LalBrew Voss — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Voss-TDS-FRA-A4-Print-LalBrew-1.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "attenuationPct": {
+      "range": {
+        "min": 76,
+        "max": 82
+      },
+      "source": {
+        "title": "LalBrew Voss — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Voss-TDS-FRA-A4-Print-LalBrew-1.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "dryPitchGHL": {
+      "range": {
+        "min": 50,
+        "max": 100
+      },
+      "source": {
+        "title": "LalBrew Voss — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Voss-TDS-FRA-A4-Print-LalBrew-1.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "plans": [
+      {
+        "goal": "fruit",
+        "name": "Fruits et esters",
+        "rationale": "Orange et agrumes sur un profil relativement neutre ; chaleur surtout documentée comme levier de vitesse. Les sous-plages sont des propositions à comparer sur ton moût.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 30,
+            "max": 35
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 30
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 30,
+                "max": 35
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 30
+            },
+            "days": {
+              "range": {
+                "min": 3,
+                "max": 6
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 4
+            },
+            "completeWhen": "Suivre la baisse de densité ; passer au repos lorsque la fermentation approche sa fin attendue."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 30,
+                "max": 35
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 30
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 5
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 3
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Orange et agrumes sur un profil relativement neutre ; chaleur surtout documentée comme levier de vitesse.",
+            "source": {
+              "title": "LalBrew Voss — fiche technique",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Voss-TDS-FRA-A4-Print-LalBrew-1.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+            }
+          }
+        ]
+      },
+      {
+        "goal": "clean",
+        "name": "Profil net et discret",
+        "rationale": "Orange et agrumes sur un profil relativement neutre ; chaleur surtout documentée comme levier de vitesse. Les sous-plages sont des propositions à comparer sur ton moût.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 30,
+            "max": 35
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 30
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 30,
+                "max": 35
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 30
+            },
+            "days": {
+              "range": {
+                "min": 3,
+                "max": 6
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 4
+            },
+            "completeWhen": "Suivre la baisse de densité ; passer au repos lorsque la fermentation approche sa fin attendue."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 30,
+                "max": 35
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 30
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 5
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 3
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Orange et agrumes sur un profil relativement neutre ; chaleur surtout documentée comme levier de vitesse.",
+            "source": {
+              "title": "LalBrew Voss — fiche technique",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Voss-TDS-FRA-A4-Print-LalBrew-1.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "lalbrew-abbaye",
+    "kind": "yeast",
+    "name": "Lallemand Brewing · LalBrew Abbaye™ Belgian Style Ale Yeast",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "LalBrew Abbaye™ Belgian Style Ale Yeast (500g)",
+      "author": "Lallemand Brewing",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://shop-us.lallemandbrewing.com/lalbrew-abbaye-belgian-style-ale-yeast-500g-10385--06--11"
+    },
+    "form": "sèche"
+  },
+  {
+    "id": "fermentation-science-lalbrew-abbaye",
+    "kind": "fermentation",
+    "name": "LalBrew Abbaye · conduite documentée",
+    "version": "2026.09.08.1",
+    "enabled": true,
+    "source": {
+      "title": "Conduites et limites de fermentation — L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/research/fermentation/README.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+    },
+    "yeastId": "lalbrew-abbaye",
+    "aliases": [
+      "LalBrew Abbaye",
+      "LalBrew Abbaye™",
+      "LAL-ABBAYE-500",
+      "LalBrew Abbaye™ Belgian Style Ale Yeast",
+      "LalBrew Abbaye™ Belgian Style Ale Yeast (500g)"
+    ],
+    "styles": [
+      "Ale belge",
+      "Dubbel",
+      "Tripel"
+    ],
+    "aroma": {
+      "summary": "Fruits secs à plus basse température, registre plus tropical et épicé à plus haute température.",
+      "banana": "La banane n’est pas un objectif quantifié pour cette conduite.",
+      "phenols": "POF+ : phénols levuriens possibles, intensité non calculée.",
+      "pof": "positive",
+      "source": {
+        "title": "LalBrew Abbaye — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_ABBAYE_ENG_A4-2.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "temperatureC": {
+      "range": {
+        "min": 17,
+        "max": 25
+      },
+      "source": {
+        "title": "LalBrew Abbaye — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_ABBAYE_ENG_A4-2.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "dryPitchGHL": {
+      "range": {
+        "min": 50,
+        "max": 100
+      },
+      "source": {
+        "title": "LalBrew Abbaye — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_ABBAYE_ENG_A4-2.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "plans": [
+      {
+        "goal": "fruit",
+        "name": "Fruits et esters",
+        "rationale": "Fruits secs à plus basse température, registre plus tropical et épicé à plus haute température. Les sous-plages sont des propositions à comparer sur ton moût.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 20,
+            "max": 23
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 21
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 23
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 21
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 8
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 6
+            },
+            "completeWhen": "Suivre la baisse de densité ; passer au repos lorsque la fermentation approche sa fin attendue."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 22,
+                "max": 24
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 23
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 5
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 3
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Fruits secs à plus basse température, registre plus tropical et épicé à plus haute température.",
+            "source": {
+              "title": "LalBrew Abbaye — fiche technique",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_ABBAYE_ENG_A4-2.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+            }
+          }
+        ]
+      },
+      {
+        "goal": "phenolic",
+        "name": "Girofle et épices",
+        "rationale": "Fruits secs à plus basse température, registre plus tropical et épicé à plus haute température. Les sous-plages sont des propositions à comparer sur ton moût.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 20,
+            "max": 23
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 21
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 23
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 21
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 8
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 6
+            },
+            "completeWhen": "Suivre la baisse de densité ; passer au repos lorsque la fermentation approche sa fin attendue."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 22,
+                "max": 24
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 23
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 5
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 3
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Fruits secs à plus basse température, registre plus tropical et épicé à plus haute température.",
+            "source": {
+              "title": "LalBrew Abbaye — fiche technique",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_ABBAYE_ENG_A4-2.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "lalbrew-belle-saison",
+    "kind": "yeast",
+    "name": "Lallemand Brewing · LalBrew Belle Saison™ Belgian Style Ale Yeast",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "LalBrew Belle Saison™ Belgian Style Ale Yeast (500g)",
+      "author": "Lallemand Brewing",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://shop-us.lallemandbrewing.com/lalbrew-belle-saison-belgian-style-ale-yeast-500g-10355--06--11"
+    },
+    "form": "sèche"
+  },
+  {
+    "id": "fermentation-science-lalbrew-belle-saison",
+    "kind": "fermentation",
+    "name": "LalBrew Belle Saison · conduite documentée",
+    "version": "2026.09.08.1",
+    "enabled": true,
+    "source": {
+      "title": "Conduites et limites de fermentation — L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/research/fermentation/README.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+    },
+    "yeastId": "lalbrew-belle-saison",
+    "aliases": [
+      "LalBrew Belle Saison",
+      "LalBrew Belle Saison™",
+      "LAL-BELLE-SAISON-500",
+      "LalBrew Belle Saison™ Belgian Style Ale Yeast",
+      "LalBrew Belle Saison™ Belgian Style Ale Yeast (500g)"
+    ],
+    "styles": [
+      "Saison"
+    ],
+    "aroma": {
+      "summary": "Fruit et épices, activité diastatique : surveiller la poursuite lente de l’atténuation.",
+      "banana": "La banane n’est pas un objectif quantifié pour cette conduite.",
+      "phenols": "POF+ : phénols levuriens possibles, intensité non calculée.",
+      "pof": "positive",
+      "source": {
+        "title": "LalBrew Belle Saison — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_BELLESAISON_ENG_A4-4.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "temperatureC": {
+      "range": {
+        "min": 20,
+        "max": 35
+      },
+      "source": {
+        "title": "LalBrew Belle Saison — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_BELLESAISON_ENG_A4-4.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "attenuationPct": {
+      "range": {
+        "min": 86,
+        "max": 94
+      },
+      "source": {
+        "title": "LalBrew Belle Saison — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_BELLESAISON_ENG_A4-4.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "dryPitchGHL": {
+      "range": {
+        "min": 50,
+        "max": 100
+      },
+      "source": {
+        "title": "LalBrew Belle Saison — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_BELLESAISON_ENG_A4-4.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "plans": [
+      {
+        "goal": "phenolic",
+        "name": "Girofle et épices",
+        "rationale": "Fruit et épices, activité diastatique : surveiller la poursuite lente de l’atténuation. Les sous-plages sont des propositions à comparer sur ton moût.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 20,
+            "max": 24
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 22
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 24
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 22
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 7
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 5
+            },
+            "completeWhen": "Suivre la baisse de densité ; passer au repos lorsque la fermentation approche sa fin attendue."
+          },
+          {
+            "id": "finish",
+            "name": "Fin lente et maturation",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 24,
+                "max": 28
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 25
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 10
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 6
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Fruit et épices, activité diastatique : surveiller la poursuite lente de l’atténuation.",
+            "source": {
+              "title": "LalBrew Belle Saison — fiche technique",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_BELLESAISON_ENG_A4-4.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+            }
+          },
+          {
+            "text": "La consommation des dextrines peut continuer après la principale ; recontrôler après un dry hop.",
+            "source": {
+              "title": "LalBrew Belle Saison — fiche technique",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_BELLESAISON_ENG_A4-4.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+            }
+          }
+        ]
+      },
+      {
+        "goal": "fruit",
+        "name": "Fruits et esters",
+        "rationale": "Fruit et épices, activité diastatique : surveiller la poursuite lente de l’atténuation. Les sous-plages sont des propositions à comparer sur ton moût.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 20,
+            "max": 24
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 22
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 24
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 22
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 7
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 5
+            },
+            "completeWhen": "Suivre la baisse de densité ; passer au repos lorsque la fermentation approche sa fin attendue."
+          },
+          {
+            "id": "finish",
+            "name": "Fin lente et maturation",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 24,
+                "max": 28
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 25
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 10
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 6
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Fruit et épices, activité diastatique : surveiller la poursuite lente de l’atténuation.",
+            "source": {
+              "title": "LalBrew Belle Saison — fiche technique",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_BELLESAISON_ENG_A4-4.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+            }
+          },
+          {
+            "text": "La consommation des dextrines peut continuer après la principale ; recontrôler après un dry hop.",
+            "source": {
+              "title": "LalBrew Belle Saison — fiche technique",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_BELLESAISON_ENG_A4-4.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "lalbrew-verdant-ipa",
+    "kind": "yeast",
+    "name": "LalBrew Verdant IPA",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+      "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+      "year": 2024,
+      "kind": "research",
+      "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+      "locator": "Souche étudiée en fermentation avec Cascade ; l’activité β-lyase isolée n’est pas mesurée. Aucun rendement générique déduit des thiols libres."
+    },
+    "form": "sèche"
+  },
+  {
+    "id": "fermentation-science-lalbrew-verdant-ipa",
+    "kind": "fermentation",
+    "name": "LalBrew Verdant IPA · conduite documentée",
+    "version": "2026.09.08.1",
+    "enabled": true,
+    "source": {
+      "title": "Conduites et limites de fermentation — L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/research/fermentation/README.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+    },
+    "yeastId": "lalbrew-verdant-ipa",
+    "aliases": [
+      "LalBrew Verdant IPA",
+      "LalBrew Verdant IPA™",
+      "LAL-VERDANT-IPA-500",
+      "Lalbrew Verdant™ IPA Brewing Yeast - 500 G",
+      "LalBrew Verdant™ IPA Yeast",
+      "LalBrew Verdant™ IPA Yeast 11g Sachet (Box of 50)"
+    ],
+    "styles": [
+      "IPA",
+      "Pale Ale"
+    ],
+    "aroma": {
+      "summary": "Abricot, fruits tropicaux et agrumes documentés ; étudiée aussi dans un protocole Cascade.",
+      "banana": "La banane n’est pas un objectif quantifié pour cette conduite.",
+      "phenols": "POF− selon le fabricant ; absence de girofle dans la bière non certifiée par une analyse.",
+      "pof": "negative",
+      "source": {
+        "title": "LalBrew Verdant IPA — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Verdant-IPA-TDS-FRA-A4-Print-Lalbrew-1.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fenêtre 18–25 °C ; ancienne fiche Scott Labs 18–23 °C. Désaccord conservé."
+      }
+    },
+    "temperatureC": {
+      "range": {
+        "min": 18,
+        "max": 25
+      },
+      "source": {
+        "title": "LalBrew Verdant IPA — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Verdant-IPA-TDS-FRA-A4-Print-Lalbrew-1.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fenêtre 18–25 °C ; ancienne fiche Scott Labs 18–23 °C. Désaccord conservé."
+      }
+    },
+    "attenuationPct": {
+      "range": {
+        "min": 75,
+        "max": 82
+      },
+      "source": {
+        "title": "LalBrew Verdant IPA — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Verdant-IPA-TDS-FRA-A4-Print-Lalbrew-1.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fenêtre 18–25 °C ; ancienne fiche Scott Labs 18–23 °C. Désaccord conservé."
+      }
+    },
+    "dryPitchGHL": {
+      "range": {
+        "min": 50,
+        "max": 100
+      },
+      "source": {
+        "title": "LalBrew Verdant IPA — fiche technique",
+        "author": "Lallemand",
+        "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Verdant-IPA-TDS-FRA-A4-Print-Lalbrew-1.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Fenêtre 18–25 °C ; ancienne fiche Scott Labs 18–23 °C. Désaccord conservé."
+      }
+    },
+    "plans": [
+      {
+        "goal": "fruit",
+        "name": "Fruits et esters",
+        "rationale": "Abricot, fruits tropicaux et agrumes documentés ; étudiée aussi dans un protocole Cascade. Les sous-plages sont des propositions à comparer sur ton moût.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 18,
+            "max": 21
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 20
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 18,
+                "max": 21
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 20
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 7
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 5
+            },
+            "completeWhen": "Suivre la baisse de densité ; passer au repos lorsque la fermentation approche sa fin attendue."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 22
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 21
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 5
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 3
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Abricot, fruits tropicaux et agrumes documentés ; étudiée aussi dans un protocole Cascade.",
+            "source": {
+              "title": "LalBrew Verdant IPA — fiche technique",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Verdant-IPA-TDS-FRA-A4-Print-Lalbrew-1.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Fenêtre 18–25 °C ; ancienne fiche Scott Labs 18–23 °C. Désaccord conservé."
+            }
+          }
+        ]
+      },
+      {
+        "goal": "thiols",
+        "name": "Thiols et fruits du houblon",
+        "rationale": "Souche étudiée avec Cascade. Point de départ dans la fenêtre fabricant ; le triplet et ses données décident de ce qui est quantifiable.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 18,
+            "max": 21
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 20
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 18,
+                "max": 21
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 20
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 7
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 5
+            },
+            "completeWhen": "Suivre la baisse de densité ; passer au repos lorsque la fermentation approche sa fin attendue."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 22
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 21
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 5
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 3
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Abricot, fruits tropicaux et agrumes documentés ; étudiée aussi dans un protocole Cascade.",
+            "source": {
+              "title": "LalBrew Verdant IPA — fiche technique",
+              "author": "Lallemand",
+              "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/Verdant-IPA-TDS-FRA-A4-Print-Lalbrew-1.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Fenêtre 18–25 °C ; ancienne fiche Scott Labs 18–23 °C. Désaccord conservé."
+            }
+          },
+          {
+            "text": "Le maximum de thiols d’un essai ne garantit pas le maximum de fruits tropicaux. Rester dans la fenêtre fabricant.",
+            "source": {
+              "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+              "author": "Samia et al.",
+              "reference": "https://brewingscience.de/index.php/brewingscience/article/view/241",
+              "year": 2024,
+              "kind": "research",
+              "locator": "Cinq souches, 15/22/30 °C, Cascade en ébullition et whirlpool. Diamond : plus de thiols mais moins de tropical et davantage de soufre."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "lalbrew-pomona",
+    "kind": "yeast",
+    "name": "LalBrew Pomona",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "Practical tips for Thiol Boosting Recipes",
+      "author": "Molly Browning et Eric Abbott · Lallemand Brewing",
+      "year": 2026,
+      "kind": "manufacturer",
+      "reference": "https://www.lallemandbrewing.com/en/africa/resources/whats-new/practical-tips-for-thiol-boosting-recipes/",
+      "locator": "27 mars 2026, mis à jour le 16 avril. Split Batch Series, newsletter WBWY 22 : doses et protocole dans la version indexée du PDF https://admin.lallemandbrewing.com/wp-content/uploads/2026/04/newsletter-WBWY-22-web-vfinal.pdf ; accès direct au PDF indisponible."
+    },
+    "form": "sèche"
+  },
+  {
+    "id": "fermentation-science-lalbrew-pomona",
+    "kind": "fermentation",
+    "name": "LalBrew Pomona · conduite documentée",
+    "version": "2026.09.08.1",
+    "enabled": true,
+    "source": {
+      "title": "Conduites et limites de fermentation — L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/research/fermentation/README.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+    },
+    "yeastId": "lalbrew-pomona",
+    "aliases": [
+      "LalBrew Pomona",
+      "LalBrew Pomona™ [HB]",
+      "LAL-POMONA-11",
+      "LalBrew Pomona™",
+      "LAL-POMONA-500",
+      "LalBrew Pomona™ IPA Yeast",
+      "LalBrew Pomona™ IPA Yeast (500g)",
+      "LalBrew Pomona™ IPA Yeast 11g Sachet (Box of 50)"
+    ],
+    "styles": [
+      "IPA",
+      "Pale Ale"
+    ],
+    "aroma": {
+      "summary": "Pêche, agrumes et fruits tropicaux documentés ; aucune teneur en lactones déduite.",
+      "banana": "La banane n’est pas un objectif quantifié pour cette conduite.",
+      "phenols": "POF− selon le fabricant ; absence de girofle dans la bière non certifiée par une analyse.",
+      "pof": "negative",
+      "source": {
+        "title": "LalBrew Pomona — fiche technique",
+        "author": "Lallemand / Scott Laboratories",
+        "reference": "https://files.scottlab.com/uploads/POMONA%20TDS.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "temperatureC": {
+      "range": {
+        "min": 18,
+        "max": 22
+      },
+      "source": {
+        "title": "LalBrew Pomona — fiche technique",
+        "author": "Lallemand / Scott Laboratories",
+        "reference": "https://files.scottlab.com/uploads/POMONA%20TDS.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "attenuationPct": {
+      "range": {
+        "min": 75,
+        "max": 84
+      },
+      "source": {
+        "title": "LalBrew Pomona — fiche technique",
+        "author": "Lallemand / Scott Laboratories",
+        "reference": "https://files.scottlab.com/uploads/POMONA%20TDS.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "dryPitchGHL": {
+      "range": {
+        "min": 50,
+        "max": 100
+      },
+      "source": {
+        "title": "LalBrew Pomona — fiche technique",
+        "author": "Lallemand / Scott Laboratories",
+        "reference": "https://files.scottlab.com/uploads/POMONA%20TDS.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+      }
+    },
+    "plans": [
+      {
+        "goal": "fruit",
+        "name": "Fruits et esters",
+        "rationale": "Pêche, agrumes et fruits tropicaux documentés ; aucune teneur en lactones déduite. Les sous-plages sont des propositions à comparer sur ton moût.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 18,
+            "max": 21
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 20
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 18,
+                "max": 21
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 20
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 7
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 5
+            },
+            "completeWhen": "Suivre la baisse de densité ; passer au repos lorsque la fermentation approche sa fin attendue."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 22
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 21
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 5
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 3
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Pêche, agrumes et fruits tropicaux documentés ; aucune teneur en lactones déduite.",
+            "source": {
+              "title": "LalBrew Pomona — fiche technique",
+              "author": "Lallemand / Scott Laboratories",
+              "reference": "https://files.scottlab.com/uploads/POMONA%20TDS.pdf",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Consulté le 8 septembre 2026 ; date de publication non confirmée."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "lalbrew-nottingham",
+    "kind": "yeast",
+    "name": "LalBrew Nottingham",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+      "author": "Samia, Shayevitz, Fischborn et Shellhammer",
+      "year": 2024,
+      "kind": "research",
+      "reference": "https://brewingscience.de/index.php/brewingscience/article/download/241/150/416",
+      "locator": "Souche étudiée en fermentation avec Cascade ; l’activité β-lyase isolée n’est pas mesurée. Aucun rendement générique déduit des thiols libres."
+    },
+    "form": "sèche"
+  },
+  {
+    "id": "fermentation-science-lalbrew-nottingham",
+    "kind": "fermentation",
+    "name": "LalBrew Nottingham · conduite documentée",
+    "version": "2026.09.08.1",
+    "enabled": true,
+    "source": {
+      "title": "Conduites et limites de fermentation — L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/research/fermentation/README.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+    },
+    "yeastId": "lalbrew-nottingham",
+    "aliases": [
+      "LalBrew Nottingham",
+      "LalBrew Nottingham™",
+      "LAL-NOTTINGHAM-500",
+      "LalBrew Nottingham™ Ale Yeast",
+      "LalBrew Nottingham™ Ale Yeast (500g)",
+      "LalBrew Nottingham™ Yeast",
+      "LalBrew Nottingham™ Yeast 11g Sachet (Box of 50)"
+    ],
+    "styles": [
+      "Ale",
+      "IPA"
+    ],
+    "aroma": {
+      "summary": "Fermentation relativement discrète ; thiols étudiés avec Cascade, sans promesse pour tout houblon.",
+      "banana": "La banane n’est pas un objectif quantifié pour cette conduite.",
+      "phenols": "POF− selon le fabricant ; absence de girofle dans la bière non certifiée par une analyse.",
+      "pof": "negative",
+      "source": {
+        "title": "LalBrew Nottingham — fiche technique, profil et POF",
+        "author": "Lallemand",
+        "reference": "https://connect.lallemandbrewing.com/wp-content/uploads/2017/03/TDS_LPS_BREWINGYEAST_NOTTINGHAM_ENG_8.5x11.pdf",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Consulté le 8 septembre 2026 ; page 1, Brewing Properties : neutre à légèrement fruitée/estérifiée et POF−. Date de publication non confirmée ; le millésime du nom de fichier ne suffit pas."
+      }
+    },
+    "temperatureC": {
+      "range": {
+        "min": 10,
+        "max": 25
+      },
+      "source": {
+        "title": "LalBrew Nottingham Ale Yeast",
+        "author": "Lallemand",
+        "reference": "https://shop-us.lallemandbrewing.com/lalbrew-nottingham-ale-yeast-500g-10108--06--11",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Atténuation 78–83 % sur cette boutique du producteur ; 78–84 % sur sa fiche technique et chez White Labs distributeur. Désaccord conservé, aucune moyenne."
+      }
+    },
+    "attenuationPct": {
+      "range": {
+        "min": 78,
+        "max": 83
+      },
+      "source": {
+        "title": "LalBrew Nottingham Ale Yeast",
+        "author": "Lallemand",
+        "reference": "https://shop-us.lallemandbrewing.com/lalbrew-nottingham-ale-yeast-500g-10108--06--11",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Atténuation 78–83 % sur cette boutique du producteur ; 78–84 % sur sa fiche technique et chez White Labs distributeur. Désaccord conservé, aucune moyenne."
+      }
+    },
+    "dryPitchGHL": {
+      "range": {
+        "min": 50,
+        "max": 100
+      },
+      "source": {
+        "title": "LalBrew Nottingham Ale Yeast",
+        "author": "Lallemand",
+        "reference": "https://shop-us.lallemandbrewing.com/lalbrew-nottingham-ale-yeast-500g-10108--06--11",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "Atténuation 78–83 % sur cette boutique du producteur ; 78–84 % sur sa fiche technique et chez White Labs distributeur. Désaccord conservé, aucune moyenne."
+      }
+    },
+    "plans": [
+      {
+        "goal": "clean",
+        "name": "Profil net et discret",
+        "rationale": "Fermentation relativement discrète ; thiols étudiés avec Cascade, sans promesse pour tout houblon. Les sous-plages sont des propositions à comparer sur ton moût.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 18,
+            "max": 22
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 20
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 18,
+                "max": 22
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 20
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 8
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 5
+            },
+            "completeWhen": "Suivre la baisse de densité ; passer au repos lorsque la fermentation approche sa fin attendue."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 23
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 22
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 5
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 3
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Fermentation relativement discrète ; thiols étudiés avec Cascade, sans promesse pour tout houblon.",
+            "source": {
+              "title": "LalBrew Nottingham Ale Yeast",
+              "author": "Lallemand",
+              "reference": "https://shop-us.lallemandbrewing.com/lalbrew-nottingham-ale-yeast-500g-10108--06--11",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Atténuation 78–83 % sur cette boutique du producteur ; 78–84 % sur sa fiche technique et chez White Labs distributeur. Désaccord conservé, aucune moyenne."
+            }
+          }
+        ]
+      },
+      {
+        "goal": "thiols",
+        "name": "Thiols et fruits du houblon",
+        "rationale": "Souche étudiée avec Cascade. Point de départ dans la fenêtre fabricant ; le triplet et ses données décident de ce qui est quantifiable.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 18,
+            "max": 22
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 20
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 18,
+                "max": 22
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 20
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 8
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 5
+            },
+            "completeWhen": "Suivre la baisse de densité ; passer au repos lorsque la fermentation approche sa fin attendue."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 23
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 22
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 5
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 3
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Fermentation relativement discrète ; thiols étudiés avec Cascade, sans promesse pour tout houblon.",
+            "source": {
+              "title": "LalBrew Nottingham Ale Yeast",
+              "author": "Lallemand",
+              "reference": "https://shop-us.lallemandbrewing.com/lalbrew-nottingham-ale-yeast-500g-10108--06--11",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "Atténuation 78–83 % sur cette boutique du producteur ; 78–84 % sur sa fiche technique et chez White Labs distributeur. Désaccord conservé, aucune moyenne."
+            }
+          },
+          {
+            "text": "Le maximum de thiols d’un essai ne garantit pas le maximum de fruits tropicaux. Rester dans la fenêtre fabricant.",
+            "source": {
+              "title": "Fermentation temperature impacts polyfunctional thiol biotransformation in beer",
+              "author": "Samia et al.",
+              "reference": "https://brewingscience.de/index.php/brewingscience/article/view/241",
+              "year": 2024,
+              "kind": "research",
+              "locator": "Cinq souches, 15/22/30 °C, Cascade en ébullition et whirlpool. Diamond : plus de thiols mais moins de tropical et davantage de soufre."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "yeast-omega-9188919542014",
+    "kind": "yeast",
+    "name": "Omega Yeast · Bananza",
+    "betaLyase": "unknown",
+    "source": {
+      "title": "Bananza",
+      "author": "Omega Yeast",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://omegayeast.com/products/bananza-next"
+    },
+    "form": "liquide"
+  },
+  {
+    "id": "fermentation-science-yeast-omega-9188919542014",
+    "kind": "fermentation",
+    "name": "Omega Yeast Bananza OYL-400 · conduite documentée",
+    "version": "2026.09.08.1",
+    "enabled": true,
+    "source": {
+      "title": "Conduites et limites de fermentation — L’Affinée",
+      "author": "L’Affinée",
+      "reference": "docs/research/fermentation/README.md",
+      "year": 2026,
+      "kind": "judgment",
+      "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+    },
+    "yeastId": "yeast-omega-9188919542014",
+    "aliases": [
+      "Omega Yeast Bananza OYL-400",
+      "Bananza",
+      "OYL-400"
+    ],
+    "styles": [
+      "Weissbier moderne",
+      "Ale fruitée"
+    ],
+    "aroma": {
+      "summary": "Banane et poire avec expression phénolique retirée ; option documentée pour éviter le girofle levurien.",
+      "banana": "Banane et poire avec expression phénolique retirée ; option documentée pour éviter le girofle levurien.",
+      "phenols": "POF− selon le fabricant ; absence de girofle dans la bière non certifiée par une analyse.",
+      "pof": "negative",
+      "source": {
+        "title": "Bananza OYL-400",
+        "author": "Omega Yeast",
+        "reference": "https://omegayeast.com/products/bananza-next",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "18–22 °C ; banane/poire, POF−. Souche modifiée pour retirer l’expression phénolique, sans classement indépendant entre marques."
+      }
+    },
+    "temperatureC": {
+      "range": {
+        "min": 18,
+        "max": 22
+      },
+      "source": {
+        "title": "Bananza OYL-400",
+        "author": "Omega Yeast",
+        "reference": "https://omegayeast.com/products/bananza-next",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "18–22 °C ; banane/poire, POF−. Souche modifiée pour retirer l’expression phénolique, sans classement indépendant entre marques."
+      }
+    },
+    "attenuationPct": {
+      "range": {
+        "min": 76,
+        "max": 82
+      },
+      "source": {
+        "title": "Bananza OYL-400",
+        "author": "Omega Yeast",
+        "reference": "https://omegayeast.com/products/bananza-next",
+        "year": null,
+        "kind": "manufacturer",
+        "locator": "18–22 °C ; banane/poire, POF−. Souche modifiée pour retirer l’expression phénolique, sans classement indépendant entre marques."
+      }
+    },
+    "plans": [
+      {
+        "goal": "banana",
+        "name": "Banane en avant",
+        "rationale": "Banane et poire avec expression phénolique retirée ; option documentée pour éviter le girofle levurien. Les sous-plages sont des propositions à comparer sur ton moût.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 19,
+            "max": 21
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 20
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 19,
+                "max": 21
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 20
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 8
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 6
+            },
+            "completeWhen": "Suivre la baisse de densité ; passer au repos lorsque la fermentation approche sa fin attendue."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 22
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 21
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 5
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 3
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Banane et poire avec expression phénolique retirée ; option documentée pour éviter le girofle levurien.",
+            "source": {
+              "title": "Bananza OYL-400",
+              "author": "Omega Yeast",
+              "reference": "https://omegayeast.com/products/bananza-next",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "18–22 °C ; banane/poire, POF−. Souche modifiée pour retirer l’expression phénolique, sans classement indépendant entre marques."
+            }
+          }
+        ]
+      },
+      {
+        "goal": "fruit",
+        "name": "Fruits et esters",
+        "rationale": "Banane et poire avec expression phénolique retirée ; option documentée pour éviter le girofle levurien. Les sous-plages sont des propositions à comparer sur ton moût.",
+        "source": {
+          "title": "Conduites et limites de fermentation — L’Affinée",
+          "author": "L’Affinée",
+          "reference": "docs/research/fermentation/README.md",
+          "year": 2026,
+          "kind": "judgment",
+          "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+        },
+        "pitchTemperatureC": {
+          "range": {
+            "min": 19,
+            "max": 21
+          },
+          "source": {
+            "title": "Conduites et limites de fermentation — L’Affinée",
+            "author": "L’Affinée",
+            "reference": "docs/research/fermentation/README.md",
+            "year": 2026,
+            "kind": "judgment",
+            "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+          },
+          "central": 20
+        },
+        "phases": [
+          {
+            "id": "active",
+            "name": "Fermentation principale",
+            "kind": "primaire",
+            "temperatureC": {
+              "range": {
+                "min": 19,
+                "max": 21
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 20
+            },
+            "days": {
+              "range": {
+                "min": 4,
+                "max": 8
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 6
+            },
+            "completeWhen": "Suivre la baisse de densité ; passer au repos lorsque la fermentation approche sa fin attendue."
+          },
+          {
+            "id": "finish",
+            "name": "Fin de fermentation et repos",
+            "kind": "reposDiacetyle",
+            "temperatureC": {
+              "range": {
+                "min": 20,
+                "max": 22
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 21
+            },
+            "days": {
+              "range": {
+                "min": 2,
+                "max": 5
+              },
+              "source": {
+                "title": "Conduites et limites de fermentation — L’Affinée",
+                "author": "L’Affinée",
+                "reference": "docs/research/fermentation/README.md",
+                "year": 2026,
+                "kind": "judgment",
+                "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+              },
+              "central": 3
+            },
+            "completeWhen": "Densité cohérente et stable après le dernier ajout fermentescible ou houblonnage ; contrôler VDK et défauts résiduels. Prolonger au besoin avant refroidissement ou conditionnement."
+          }
+        ],
+        "notes": [
+          {
+            "text": "Température de la bière, pas de l’air. Les jours sont un budget de planification, confiance faible ; aucun refroidissement ou conditionnement automatique.",
+            "source": {
+              "title": "Conduites et limites de fermentation — L’Affinée",
+              "author": "L’Affinée",
+              "reference": "docs/research/fermentation/README.md",
+              "year": 2026,
+              "kind": "judgment",
+              "locator": "Propositions du 8 septembre 2026 : plages de planification à vérifier, ni optimum sensoriel ni intervalle statistique."
+            }
+          },
+          {
+            "text": "Banane et poire avec expression phénolique retirée ; option documentée pour éviter le girofle levurien.",
+            "source": {
+              "title": "Bananza OYL-400",
+              "author": "Omega Yeast",
+              "reference": "https://omegayeast.com/products/bananza-next",
+              "year": null,
+              "kind": "manufacturer",
+              "locator": "18–22 °C ; banane/poire, POF−. Souche modifiée pour retirer l’expression phénolique, sans classement indépendant entre marques."
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

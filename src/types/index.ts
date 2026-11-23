@@ -1,0 +1,1001 @@
+import type { TransactionFinance } from '../domain/finance/types';
+import type { DonneesCarnet, DonneesMessage } from '../domain/carnets/modele';
+
+export type FinanceCategory = 
+  | 'apports'
+  | 'recettes'
+  | 'brassage'
+  | 'materiel'
+  | 'nettoyage'
+  | 'chargesFixes'
+  | 'renovation'
+  | 'divers';
+
+export interface Transaction {
+  finance?: TransactionFinance;
+  /** Atomically maintained with dated payment events, never edited by a form. */
+  settlementBalanceCents?: number;
+  lastPaymentId?: string;
+  id: string;
+  date: string; // DD.MM.YYYY
+  description: string;
+  amountHT: number;
+  tvaRate: number; // e.g. 0.026, 0.081, 0.0
+  tvaAmount: number;
+  amountTTC: number;
+  category: FinanceCategory;
+  subcategory: string;
+  proofNotes?: string;
+  proofUrl?: string; // Base64 data URL or Firebase Storage URL
+  proofType?: string; // 'application/pdf', 'image/jpeg', etc.
+  proofFileName?: string;
+  syncedToDrive?: boolean;
+  stockImpact?: Array<{
+    itemRef: string;
+    itemType: 'rawMaterials' | 'cleaning';
+    itemName: string;
+    addedQty: number;
+    unit: string;
+    previousStock: number;
+    newStock: number;
+  }>;
+}
+
+export interface StockItem {
+  /** Explicitly documented yeast product and biological lot; never inferred by name. */
+  yeastLot?: import('../../functions/src/yeastSupplySchema').YeastLotDetails;
+  id: string;
+  ref: string;
+  name: string;
+  category: string; // 'Malt', 'Houblon', 'Levure', 'Sucre', 'Emballage', 'CIP alcalin', 'CIP acide', 'Désinfectant', 'Détergent', 'Sols', 'EPI', 'Consommable'
+  unit: string; // 'kg', 'g', 'sachet', 'L', 'boîte', 'rouleau'
+  currentStock: number;
+  /** Seuil minimum ; absent = inconnu (jamais 0 : 0 est un seuil renseigné). */
+  minStock?: number;
+  maxStock?: number; // Maximum storage capacity (e.g. 50kg bag/silo)
+  reorder: boolean;
+  supplier?: string;
+  /** Épinglé par Gaëtan : remonte en tête des listes, des autocomplétions et de la recherche. */
+  favorite?: boolean;
+  alphaPct?: number; // for hops e.g. 11.3%
+  pricePerUnit?: number;
+  /** Houblon ou malt : code pays lu sur la facture à la création de l'article (« CH »), en capitales. Facultatif ; absent = inconnu (voie s6-fiche, D215). */
+  origin?: string;
+  /**
+   * Les noms IMPRIMÉS (base lue, sans options) sous lesquels l'article est arrivé sur des factures, dans toutes les langues (voie n1-nom-fr, choix B du 02.11) :
+   * « Wiener Malz » pour l'article « Malt de Vienne ». Une facture suivante dont le nom lu égale l'un d'eux se relie (lien sûr, toutes les autres portes tenues).
+   * Jamais le nom de l'article lui-même ; 8 noms au plus, une fois chacun. Facultatif : absent = article d'avant B ou saisi à la main.
+   */
+  nomsFacture?: string[];
+  /**
+   * La fiche des catalogues du dépôt la plus proche, posée à la création de l'article depuis une dépense (voie s6-fiche, D215). `id` : identifiant du catalogue
+   * (`beermaverick-cascade`, `munich-malt`) ; `approchee` : ce n'est pas exactement la bonne fiche (l'origine ou l'α lus sortent de la sienne), jugé à la création
+   * (toutes les valeurs lues ne sont pas gardées sur l'article). Facultatif ; absent = aucune fiche cherchée ou trouvée.
+   */
+  fiche?: {
+    id: string; approchee: boolean;          // s6 ; jamais réécrits par f4
+    cle?: string;                            // famille|fabricant|mots (f4, D290)
+    par?: 'catalogue' | 'retenue' | 'en-ligne'; // provenance du lien posé par f4 ; absent = lien de s6
+    aControler?: boolean; propose?: string | null;
+    remplis?: Partial<Record<'colorEbc' | 'potentialPpg' | 'yeastLab' | 'yeastStrain' | 'yeastForm' | 'yeastAttenuationPct' | 'yeastTempMinC'
+      | 'yeastTempMaxC' | 'yeastFlocculation' | 'yeastAlcoholTolerancePct' | 'yeastTechnicalFacts' | 'yeastFermentationFacts' | 'technicalSource',
+      { par: 'catalogue' | 'retenue' | 'en-ligne'; source: string; url?: string; le: string; niveau: 'sur' | 'repris'; valeur: unknown; deduit?: string }>>;
+    vu?: string;
+  };
+
+  /*
+   * Caractéristiques techniques de l'article, recopiées UNE FOIS depuis la
+   * fiche du fournisseur. Renseignées ici, elles suivent dans toutes les
+   * recettes ; absentes, les calculs qui en dépendent s'affichent comme
+   * incalculables plutôt que de sortir une valeur inventée.
+   */
+
+  /** Malt : couleur en EBC. Nécessaire au calcul de la couleur de la bière. */
+  colorEbc?: number;
+  /** Malt : potentiel d'extrait en PPG. Nécessaire à la prédiction de l'OG. */
+  potentialPpg?: number;
+
+  technicalSource?: string;
+  yeastFermentationFacts?: import('../../functions/src/ingredientFermentationFacts').IngredientFermentationFacts;
+  yeastTechnicalFacts?: import('../../functions/src/yeastTechnicalFacts').YeastTechnicalFact[];
+  yeastFlocculation?: string;
+  yeastAlcoholTolerancePct?: number;
+  yeastNotes?: string;
+
+  /** Levure : laboratoire, souche, forme, atténuation, fourchette de fermentation. */
+  yeastLab?: string;
+  yeastStrain?: string;
+  yeastForm?: 'sèche' | 'liquide' | 'levain';
+  yeastAttenuationPct?: number;
+  yeastTempMinC?: number;
+  yeastTempMaxC?: number;
+}
+
+export interface EquipmentItem {
+  id: string;
+  ref: string;
+  name: string;
+  category: string; // 'Brassage', 'Mesure', 'Embouteillage', 'Stockage', 'Atelier'
+  state: string; // 'Neuf', 'Bon', 'À entretenir', 'À réparer'
+  purchaseDate?: string;
+  purchasePrice?: number;
+  /** Ancien texte libre d'entretien : lu comme sous-ligne quand `task` manque ; sans rythme → « sans échéance ». */
+  maintenance?: string;
+  notes?: string;
+  /** Verbe du geste périodique : « Étalonner », « Détartrer »… */
+  task?: string;
+  /** Rythme ; `brassin` compte les brassins depuis `lastDone`, sans date. « an » = 12 mois. */
+  rhythm?: EquipmentRhythm;
+  /** Dernier entretien fait (ISO AAAA-MM-JJ). */
+  lastDone?: string;
+  /** Panne en cours : date ISO du début ; absent = en état de marche. */
+  brokenSince?: string;
+  brokenNote?: string;
+  history?: EquipmentEvent[];
+  /** Étalonnage de l'instrument ; à défaut, préréglage par nom (domain/equipment). */
+  calibration?: EquipmentCalibration;
+  /** Sorti du parc (vendu ou réformé) : hors du fil et du compte. */
+  retired?: { date: string; reason: 'vendu' | 'réformé' };
+}
+
+export interface EquipmentRhythm { every: number; unit: 'jour' | 'semaine' | 'mois' | 'brassin' }
+export type EquipmentEventKind = 'entretien' | 'etalonnage' | 'panne' | 'reparation' | 'sortie';
+export interface EquipmentReading { label: string; expected: number; read: number }
+export interface EquipmentEvent { date: string; kind: EquipmentEventKind; readings?: EquipmentReading[]; note?: string }
+export interface EquipmentCalibration {
+  points: { label: string; expected: number }[];
+  tolerance: number;
+  /** Unité d'affichage des valeurs (« pH », « °Bx »), vide pour une densité. */
+  unit?: string;
+}
+
+export type KegState = 'lavage' | 'propre' | 'plein' | 'livre';
+
+export interface KegItem {
+  id: string; // F-001, etc.
+  capacityL: number;
+  state: KegState;
+  batchRef?: string;
+  beerName?: string;
+  style?: string;
+  fillDate?: string;
+  clientName?: string;
+  /** Lien vers l'onglet Clients (`Client.id`). `clientName` reste le libellé lu par la liste et les anciens lecteurs. */
+  clientId?: string;
+  /** Rangé dans « Archivés » (suppression refusée ou évitée, 16.11) : sort de la liste et des gestes, ses liens et son historique restent. Absent ou null = en service. */
+  archivedAt?: string | null;
+  /** Jour de la livraison en cours, `JJ.MM.AAAA`. Absent chez un fût livré avant l'historique : on ne devine pas. */
+  deliveryDate?: string;
+  /** Étapes du fût, de la plus ancienne à la plus récente, plafonnées à 30 (domain/stock/futs). Absent sur un ancien fût. */
+  historique?: KegHistoryEntry[];
+  notes?: string;
+}
+
+export type KegHistoryKind = 'ajoute' | 'lave' | 'rempli' | 'livre' | 'retour-vide' | 'retour-plein' | 'a-laver';
+export interface KegHistoryEntry {
+  /** `JJ.MM.AAAA` */
+  date: string;
+  quoi: KegHistoryKind;
+  /** Bière, lot ou client, déjà mis en forme pour l'affichage. */
+  detail?: string;
+}
+
+/**
+ * Ce qu'un fermentescible devient dans la cuve.
+ *
+ * ⚠️ Ce que ça règle : tout ce qui apportait du sucre était rangé dans `malts`
+ * et traité comme du grain entièrement fermentescible. Conséquence directe, la
+ * densité finale d'une milk stout était FAUSSE : 500 g de lactose étaient
+ * comptés comme du sucre que la levure allait manger, alors qu'elle n'en touche
+ * pas un gramme. Même problème pour le sucre candi belge, qui ne peut pas non
+ * plus s'ajouter en cours de fermentation quand il est rangé avec le grain.
+ */
+export type FermentableKind = 'grain' | 'sucre' | 'extrait' | 'fruit' | 'lactose';
+
+/** Où le fermentescible entre. */
+export type FermentableUse = 'empatage' | 'ebullition' | 'fermentation';
+
+export interface Fermentable {
+  stockItemRef?: string;
+  name: string;
+  /** Masse en kilogrammes. Nom conservé depuis `MaltIngredient` : les anciennes
+   *  recettes en base restent lisibles sans réécriture. */
+  weightKg: number;
+  /** Part de la facture de grain, calculée — ne compte que les `grain`. */
+  pct?: number;
+  kind: FermentableKind;
+  use: FermentableUse;
+  /**
+   * Couleur en EBC, telle qu'imprimée sur la fiche technique du malteur. Sans
+   * elle, la couleur de la bière est INCALCULABLE — on l'affiche alors comme
+   * inconnue plutôt que d'inventer une teinte plausible.
+   */
+  colorEbc?: number;
+  /** Potentiel d'extrait en points/livre/gallon (PPG). Même règle : sans lui, pas d'OG prédite. */
+  potentialPpg?: number;
+  /**
+   * Part du sucre apporté que la levure peut réellement manger.
+   * 100 % pour le saccharose et le candi, ~75 % pour un moût de malt,
+   * **0 % pour le lactose**. C'est ce champ qui répare la densité finale.
+   */
+  fermentabilityPct?: number;
+  /** Jour relatif au début prévu du programme (J0), si `use === 'fermentation'`. */
+  dayOffset?: number;
+}
+
+/**
+ * @deprecated Forme d'avant la distinction grain / sucre. Conservée pour lire
+ * les recettes enregistrées ; `normalizeRecipe` les convertit à la lecture.
+ */
+export type MaltIngredient = Omit<Fermentable, 'kind' | 'use'> &
+  Partial<Pick<Fermentable, 'kind' | 'use'>>;
+
+/**
+ * Le moment où le houblon entre dans le brassin. C'était une chaîne libre, et
+ * l'éditeur de création ne la saisissait jamais : le moment se perdait, et le
+ * calcul d'amertume traitait un houblonnage à cru comme une ébullition de
+ * 60 minutes. D'où des IBU fantômes sur toutes les NEIPA.
+ */
+export type HopStage = 'firstWort' | 'boil' | 'whirlpool' | 'dryHop';
+
+export interface HopIngredient {
+  stockItemRef?: string;
+  name: string;
+  alpha: number;
+  weightG: number;
+  stage: HopStage;
+  /** Ébullition et whirlpool : durée de contact en minutes. */
+  timeMin?: number;
+  /** Whirlpool / hop stand : température de contact, qui pilote l'isomérisation. */
+  tempC?: number;
+  /** Houblonnage à cru : repère J0 du programme prévu ; la date réelle d'ajout est suivie ailleurs. */
+  dayOffset?: number;
+  /** Ancien champ libre. Conservé en lecture pour les brassins déjà enregistrés. */
+  step?: string;
+  /** Explicit index association; never guessed from a partial ingredient name. */
+  hopVarietyId?: string;
+  hopLotId?: string;
+  aromaTiming?: import('../../functions/src/hopPredictionSchema').HopTiming;
+  aromaContactHours?: number;
+  aromaTemperatureC?: number;
+}
+
+/**
+ * La levure était un simple `yeastName: string` : ni forme, ni température, ni
+ * durée, ni atténuation — donc rien à afficher sur une fiche et rien à prédire
+ * pour la FG.
+ */
+export interface YeastSpec {
+  pitching?: import('../../functions/src/yeastSupplySchema').YeastPitchingPlan;
+  stockItemRef?: string;
+  fermentationFacts?: import('../../functions/src/ingredientFermentationFacts').IngredientFermentationFacts;
+  /** Durable documentary sheet explicitly adopted for this catalogue identity. */
+  adoptedDocumentary?: import('../../functions/src/yeastDocumentarySheet').YeastDocumentarySheet;
+  /** Documentary values scoped to this recipe/lot ingredient, without catalogue identity. */
+  localDocumentary?: import('../../functions/src/yeastDocumentarySheet').YeastLocalDocumentary;
+  technicalFacts?: import('../../functions/src/yeastTechnicalFacts').YeastTechnicalFact[];
+  /** Product narrative with response provenance; separate from this recipe/lot's legacy notes. */
+  documentaryNotes?: import('../../functions/src/yeastTechnicalFacts').YeastDocumentaryNotes;
+  /** Explicitly retained observation for recipe calculations; null means the reviewed range is still unknown. Other observations remain in technicalFacts. */
+  technicalSelections?: import('../../functions/src/yeastTechnicalFacts').YeastTechnicalSelections;
+  name: string;
+  hopIndexId?: string;
+  /** Lallemand, White Labs, Fermentis, GigaYeast, Omega… */
+  lab?: string;
+  /** Référence de souche : US-05, WLP095, GY054. */
+  strain?: string;
+  form?: 'sèche' | 'liquide' | 'levain';
+  qty?: number;
+  unit?: string; // 'sachet', 'mL', 'g' — absent means the packaging is unknown.
+  pitchTempC?: number;
+  fermTempMinC?: number;
+  fermTempMaxC?: number;
+  /** Atténuation apparente annoncée, en %. Sert à prédire la FG. */
+  attenuationPct?: number;
+  /** Absent on old recipes: treat their value as an explicit recipe hypothesis. */
+  attenuationBasis?: 'declared' | 'recipe' | 'measured';
+  flocculation?: string;
+  alcoholTolerancePct?: number;
+  technicalSource?: string;
+  fermentDays?: number;
+  notes?: string;
+}
+
+/** Palier d'empâtage ou de fermentation. */
+export interface TempStep {
+  name: string;
+  tempC: number;
+  durationMin: number;
+}
+
+export interface MashProfile {
+  steps: TempStep[];
+  /** Rapport eau/grain en L/kg. */
+  ratioLPerKg?: number;
+  mashoutTempC?: number;
+  mashoutDurationMin?: number;
+  /** False deliberately skips mash-out; missing keeps the historical recipe behavior. */
+  mashoutEnabled?: boolean;
+  /** Vitesse indicative du système, distincte des durées de maintien. */
+  heatingRateCPerMin?: number;
+  spargeTempC?: number;
+  spargeType?: 'fly' | 'batch' | 'none';
+}
+
+/** Panneau ionique d'une eau, en ppm (mg/L). */
+export interface IonBand { min: number; max: number }
+
+export interface WaterIons {
+  ca: number;
+  mg: number;
+  na: number;
+  so4: number;
+  cl: number;
+  hco3: number;
+}
+
+/**
+ * Une eau disponible à la brasserie : le réseau, l'osmosée, une source.
+ *
+ * ⚠️ Saisie à la MAIN, depuis l'analyse du distributeur. Il n'existe aucune API
+ * suisse d'analyse d'eau potable : Hub'Eau ne couvre que la France, et Fribourg
+ * ne publie que la dureté. `note` garde la provenance de l'analyse pour qu'on
+ * sache de quand elle date.
+ */
+export interface WaterSource extends WaterIons {
+  id: string;
+  name: string;
+  ph?: number;
+  note?: string;
+  updatedAt?: string;
+}
+
+/** Sels de brassage disponibles. Chacun peut être refusé par le brasseur. */
+export type SaltId =
+  | 'gypse'
+  | 'cacl2'
+  | 'epsom'
+  | 'mgcl2'
+  | 'nacl'
+  | 'nahco3'
+  | 'caco3'
+  /** Ca(OH)₂ — la seule source d'alcalinité soluble qui n'apporte pas de sodium. */
+  | 'chaux'
+  | 'kcl';
+
+/** Acidifiants. Le malt acidulé se dose en grammes, les autres en millilitres. */
+export type AcidId = 'lactique' | 'phosphorique' | 'maltAcidule';
+
+/**
+ * Le traitement d'eau d'une recette.
+ *
+ * ⚠️ Empâtage et rinçage sont SÉPARÉS, et l'acide ne se dose que sur
+ * l'empâtage : l'erreur classique est de calculer l'acidification sur le volume
+ * total, ce qui surdose d'un facteur deux.
+ */
+export interface WaterPlan {
+  /** Saved constraint, across mash and sparge together. Absent = unrestricted. */
+  roLimitL?: number;
+  ratioOverride?: number;
+  /** Refit unpinned salt and acid doses when the recipe inputs change. */
+  autoTreatment?: boolean;
+  saltOverrides?: { mash?: Partial<Record<SaltId, number>>; sparge?: Partial<Record<SaltId, number>> };
+  /**
+   * Exact identity of the analysis used by this recipe. A blank value (empty or whitespace-only) is kept as given:
+   * it names no analysis and stays unresolved until the brewer explicitly retains one; it is never an omission.
+   * Absent only on legacy plans whose own snapshot has no usable identity: that anonymous snapshot stays the
+   * recipe's analysis and is never given a declared blank reference.
+   */
+  sourceId: string;
+  /** Analysis used for this recipe; later source edits must not change it. Its `id` is the `sourceId` it freezes. */
+  sourceSnapshot?: WaterSource;
+  /** v2 stores weighted treatment water AFTER the retained acid doses. */
+  treatmentVersion?: 2;
+  acidOverride?: { mash?: number; sparge?: number };
+  /** Part d'eau osmosée mélangée à la source, en %. Vaut pour l'EMPÂTAGE. */
+  diRatioPct: number;
+  /**
+   * Part d'osmosée propre à l'eau de RINÇAGE, quand elle est déliée.
+   *
+   * Absent = le rinçage suit l'empâtage. Le délier a une raison de métier :
+   * une eau de rinçage très diluée n'a presque plus d'alcalinité à neutraliser,
+   * donc plus d'acide à doser et plus de risque d'astringence — et cela ne
+   * change rien à la maische, où l'alcalinité, elle, est utile.
+   */
+  spargeDiRatioPct?: number;
+  /** Profil visé — un classique nommé, ou une cible personnelle. */
+  targetProfileId?: string;
+  /**
+   * Provenance de `targetProfileId` : `style` tant que l'assistant suit la suggestion du style de
+   * bière, `choice` après un choix connu du brasseur. Absente sur les plans antérieurs et sur les
+   * codes importés sans provenance : le profil y est lu comme gardé, jamais comme suivi.
+   */
+  targetProfileOrigin?: 'style' | 'choice';
+  /**
+   * Cible CHIFFRÉE, quand la recette donne son eau en ppm plutôt qu'un style.
+   * Présente, elle prime sur `targetProfileId`.
+   */
+  targetIons?: Partial<WaterIons>;
+  targetName?: string;
+  /**
+   * Cache du profil moyen des eaux de traitement, avant/après sels et acide.
+   * Si sourceSnapshot existe, l'affichage se recalcule depuis cette analyse
+   * figée et les doses retenues, jamais depuis une analyse réseau ultérieure.
+   */
+  startIons?: WaterIons;
+  wortIons?: WaterIons;
+  mashWaterL: number;
+  spargeWaterL: number;
+  /**
+   * Doses en grammes, par sel. Les sels alcalins sont ENTIÈREMENT dans `mash` :
+   * l'alcalinité n'a de sens que face aux phosphates du malt.
+   */
+  mash: Partial<Record<SaltId, number>>;
+  sparge: Partial<Record<SaltId, number>>;
+  /** Tous les sels sont versés à l'empâtage (aucun sel au rinçage, rinçage ajusté à l'acide seul). */
+  allSaltsInMash?: boolean;
+  /**
+   * Acidification, séparée par eau.
+   *
+   * ⚠️ Elle était CALCULÉE, AFFICHÉE, puis perdue : rien ne l'enregistrait, et
+   * la minuterie du jour de brassage ne la rappelait donc jamais. Le brasseur
+   * arrivait à la cuve avec ses sels pesés et sans sa dose d'acide.
+   */
+  acid?: { id: AcidId; mash: number; sparge: number };
+  /** Additifs écartés : le solveur ne s'en sert pas et le dit. */
+  disabled?: SaltId[];
+  /** pH de maische visé, et celui réellement mesuré à la cuve. */
+  targetPh: number;
+  measuredPh?: number;
+  /** pH mesuré dans l'eau de rinçage. Sans lui, rien ne recale la fenêtre d'AR. */
+  measuredSpargePh?: number;
+}
+
+/** @deprecated Forme d'avant l'atelier de l'eau. Lue par `normalizeRecipe`. */
+export interface WaterProfile {
+  sourceName: string;
+  diRatioPct: number;
+  salts: { gypseG: number; cacl2G: number; mgso4G: number; acidLacticMl: number };
+  targetPh: number;
+}
+
+/**
+ * Les phases d'une fermentation, typées.
+ *
+ * ⚠️ Une lager n'est pas une ale qui dure plus longtemps : elle demande un
+ * **repos diacétyle** avant le froid, puis des semaines de **garde**. Une belge
+ * forte demande une montée libre en température et un **ajout** de sucre en
+ * cours de route. Sans ces types, le programme se réduisait à « 18 °C, 10 j »
+ * pour toutes les bières.
+ */
+export type FermentPhaseKind =
+  | 'primaire'
+  | 'reposDiacetyle'
+  | 'garde'
+  | 'refermentation'
+  | 'ajout';
+
+export interface FermentationStep {
+  kind: FermentPhaseKind;
+  name: string;
+  tempC: number;
+  days: number;
+  /** Pour `ajout` : ce qu'on met, et quand. Sucre candi, fruits, houblon à cru. */
+  note?: string;
+}
+
+export interface AdjunctIngredient {
+  stockItemRef?: string;
+  name: string;
+  amount: number;
+  unit: string; // 'g', 'kg', 'mL', 'L', 'pastille', 'sachet', 'gousse'
+  step: string; // 'Empattage', 'Ébullition', 'Whirlpool', 'Fermenteur'
+  notes?: string;
+}
+
+export interface RecipeStep {
+  step: string;
+  tempC: number;
+  durationMin: number;
+  notes: string;
+}
+
+export interface Recipe {
+  fermentationIntent?: import('../../functions/src/fermentationIntent').FermentationIntent;
+  styleRef?: import('../../functions/src/brewingStyleSchema').BrewingStyleRef;
+  nolo?: import('../../functions/src/noloSchema').NoloConfig;
+  id: string;
+  /** Organisation du carnet uniquement ; l'historique de production reste conservé. */
+  archivedAt?: string | null;
+  /** « Ajouter aux courses » (v07, rebrasser) : jour ISO où ses manques ont été posés sur Courses ; un brassin qui la cite depuis les reprend. */
+  coursesLe?: string;
+  version?: number;
+  parentRecipeId?: string;
+  batchRef?: string;
+  name: string;
+  style: string;
+  volumeL: number;
+  /** Date d’origine conservée à l’import ; ne planifie aucun brassin. */
+  brewDate?: string;
+  ogTarget: number | null;
+  fgTarget: number | null;
+  abvTarget: number | null;
+  ibuTarget?: number;
+  carboTarget?: string;
+  /** Values supplied by the recipe author, distinct from calculated estimates. */
+  colorEbc?: number;
+  efficiencyPct?: number;
+  preBoilL?: number;
+  /** Same planned wort at boiling temperature, when the equipment model is known. */
+  preBoilHotL?: number;
+  /** Frozen physical assumptions used to build this recipe. */
+  brewhouse?: BrewhouseProfile;
+  installation?: import('./brewSystem').RecipeInstallationChoice;
+  /**
+   * Tout ce qui apporte du sucre : grains, sucres, lactose, fruits, extraits.
+   * Le nom a changé de `malts` parce qu'un malt n'est pas un sucre — et que
+   * les traiter pareil rendait la densité finale fausse.
+   */
+  fermentables: Fermentable[];
+  /** @deprecated Ancien champ, lu par `normalizeRecipe`. Ne plus écrire. */
+  malts?: MaltIngredient[];
+  /** Masse de GRAIN seul — le sucre n'entre pas dans une facture de grain. */
+  totalGristKg: number;
+  hops: HopIngredient[];
+  hopMatrixId?: string;
+  /** Documentary brewing trial used as an anchor; never certifies model scope. */
+  hopTrialId?: string;
+  hopAromaTarget?: Record<string, import('../../functions/src/hopIndexSchema').HopRange>;
+  hopSolverIntent?: import('../../functions/src/hopSolverSchema').HopSolverIntent;
+  hopPredictionIds?: string[];
+  /**
+   * Append-only, sealed V5.5 hop applications (`hop-v55-recipe-draft-application-v1`):
+   * references to the local workspace, scenario and previews, never the workspace
+   * itself. Future or unreadable rows stay raw and read-only.
+   */
+  hopV55Applications?: unknown[];
+  /** Append-only cold-contact evidence associations; source-bound history, never a hop application. */
+  hopV55ColdEvidenceAssociations?: unknown[];
+  adjuncts?: AdjunctIngredient[];
+  yeast: YeastSpec;
+  /** Frozen guide and adopted fermentation settings, independent of later catalogue edits. */
+  yeastGuide?: import('../domain/fermentationGuide').FermentationGuideSnapshot;
+  /** Intent and applied settings from the style-first yeast workbench. */
+  yeastDesign?: import('../domain/yeastRecipeDesign').YeastRecipeDesignSnapshot;
+  /** Durée d'ébullition. Les recettes américaines montent souvent à 75 ou 90 min. */
+  boilMin?: number;
+  mash?: MashProfile;
+  /** Traitement d'eau complet. Se règle APRÈS le grain : la cible d'alcalinité
+   *  dépend de la couleur de la bière. */
+  waterPlan?: WaterPlan;
+  /** @deprecated Ancien bloc eau, lu par `normalizeRecipe`. */
+  water?: WaterProfile;
+  fermentation?: FermentationStep[];
+  /**
+   * Le déroulé en texte libre, tel qu'il figure sur la recette d'origine
+   * (« Step by Step » chez BYO). Recopié mot pour mot à l'import, jamais résumé.
+   */
+  instructions?: string;
+  steps: RecipeStep[];
+  notes: string[];
+  notesCreation?: string;
+  /** Épinglé par Gaëtan : remonte en tête des listes, des autocomplétions et de la recherche. */
+  favorite?: boolean;
+}
+
+/**
+ * Copie figée d'une recette, portée par le brassin.
+ *
+ * Volontairement sans `id` ni `favorite` : ce n'est plus une recette qu'on
+ * range, c'est le contenu réel d'une cuve à une date donnée.
+ */
+export type RecipeSnapshot = Omit<Recipe, 'id' | 'favorite' | 'batchRef' | 'archivedAt' | 'coursesLe'> & {
+  /** Recette d'origine, et sa date de copie. */
+  sourceRecipeId?: string;
+  capturedAt: string; // ISO
+};
+
+/** Une étape du déroulé du jour de brassage. */
+export interface BrewDayStep {
+  id: string;
+  label: string;
+  /** Ce qu'il faut faire, en une phrase. */
+  detail?: string;
+  durationMin: number;
+  tempC?: number;
+  /** Ajouts de houblon rattachés à cette étape, pour l'alarme. */
+  hopNames?: string[];
+  /**
+   * Horloge murale du démarrage (`Date.now()`), pas un compteur de ticks :
+   * verrouiller l'écran ou recharger la page ne doit pas fausser le compte.
+   */
+  startedAt?: number;
+  doneAt?: number;
+  pausedAt?: number;
+  rampStartedAt?: number;
+  /** Actual start of the hold, never shifted by pause/resume. */
+  holdStartedAt?: number;
+  /** Minutes écoulées depuis le début réel de l'ébullition. */
+  boilElapsedMin?: number;
+}
+
+export interface BrewDayReading {
+  id?: string;
+  at: number;
+  stepId?: string;
+  kind: 'volume' | 'densite' | 'ph' | 'temperature';
+  value: number;
+  unit: string;
+  note?: string;
+  /** pH mesuré sur un échantillon refroidi, pas dans le moût chaud. */
+  roomTemp?: boolean;
+  /** Explicitly paired measurements of the same wort, not just nearby timestamps. */
+  pairId?: string;
+  temperatureC?: number;
+  volumeBasis?: 'cold' | 'hot';
+  thermalSegmentId?: string;
+  medium?: 'wort' | 'water' | 'coolant' | 'chamber';
+  measurementStage?: 'preboil' | 'postboil' | 'fermenter' | 'kettle-cold';
+}
+
+export interface BrewDayState {
+  steps: BrewDayStep[];
+  /** Index de l'étape en cours. */
+  currentIndex: number;
+  startedAt?: number;
+  finishedAt?: number;
+  transferredAt?: number;
+  pitchedAt?: number;
+  pitchTemperatureC?: number;
+  pitchQuantityConfirmation?: 'measured' | 'planned' | 'unmeasured' | 'starter-transferred';
+  phase?: 'brewing' | 'awaiting-pitch';
+  thermalSegments?: import('./brewSystem').BrewThermalSegment[];
+  thermalChoices?: import('./brewSystem').BrewThermalChoices;
+  revision?: number;
+  savedAt?: number;
+  /** Dernière version confirmée par le serveur, sans déduire les gestes manquants. */
+  waterMix?: Partial<Record<'mash' | 'sparge', { roL: number }>>;
+  hopElapsedMin?: Record<string, number>;
+  coolingWaterC?: number;
+  boilOffLPerHour?: number;
+  /** Relevés horodatés saisis pendant le brassage. */
+  readings?: BrewDayReading[];
+  boilStartedAt?: number;
+  /** Ajustement du jour, sans réécrire la recette. */
+  boilDurationMin?: number;
+  boilFinishedAt?: number;
+  /**
+   * p2c E3 : le choix du brasseur devant un moût d'avant ébullition hors cible. Écrit dans l'état (donc au journal, hors ligne, au
+   * rechargement), jamais déduit. `readingAt` : l'heure de la paire volume + densité qu'il corrige ; une paire plus récente l'annule.
+   * `options` : les trois choix tels qu'ils étaient proposés, car « bouillir plus » change la durée et donc le calcul qui suit.
+   */
+  boilCorrection?: {
+    choix: 'bouillir' | 'extrait' | 'accepter';
+    at: number;
+    readingAt: number;
+    options: Array<{ id: 'bouillir' | 'extrait' | 'accepter'; titre: string; detail: string; minutesEbullition?: number }>;
+    note?: string;
+  };
+  additions?: Record<string, { amount: number; unit?: string; doneAt?: number; volumeBasis?: 'cold' | 'hot'; temperatureC?: number; replacement?: { name: string; potentialPpg?: number; colorEbc?: number } }>;
+  /** Measured free wort left after lautering; zero must also be explicitly confirmed. */
+  lauterRetainedL?: number;
+  preparations?: Record<string, boolean>;
+  notes?: Array<{ id: string; at: number; stepId: string; text: string }>;
+  acidCorrections?: Array<{ id: string; at: number; stepId: string; readingAt: number; acid: AcidId; amount: number }>;
+  mashContext?: { waterL: number; gristKg: number; acid: AcidId };
+}
+
+// Le brassage dure une journée : c'est un ÉVÉNEMENT (qui déstocke et enregistre
+// l'OG mesurée), pas un état dans lequel un brassin séjourne. Il fait passer
+// directement `planifie` ➔ `fermentation`.
+export type BatchStatus =
+  | 'planifie'
+  | 'fermentation'
+  | 'garde'
+  | 'conditionne'
+  | 'termine'
+  | 'annule';
+
+export interface BatchPackaging {
+  bottles33: number;
+  bottles75: number;
+  kegIds: string[]; // fûts remplis avec ce brassin (F-001, …)
+}
+
+export interface Batch {
+  yeastPreparation?: import('../../functions/src/yeastSupplySchema').YeastPreparationExecution;
+  nolo?: import('../../functions/src/noloSchema').NoloConfig;
+  stockAccountingVersion?: 1;
+  stockReviewIssues?: string[];
+  stockConsumption?: import('../domain/finance/brewStockConsumption').BrewStockConsumption;
+  id: string; // LOT-001
+  favorite?: boolean;
+  /** Masqué du carnet courant, disponible dans Archives et les analyses. */
+  archivedAt?: string | null;
+  /** Jour réellement brassé. Vide tant que le brassage n’a pas commencé. */
+  brewDate: string;
+  /** Jour prévu ; chaîne vide = à définir. Absent sur les anciens brassins. */
+  plannedBrewDate?: string;
+  name: string;
+  style: string;
+  volumeL: number; // Volume VISÉ à la planification
+  og?: string;
+  fg?: string;
+  abv?: string;
+  bottlingDate?: string;
+  /** Calendrier (17.11) : fin prévue du cycle (ISO), écrite en tirant le bord de la barre ; absente = la recette fait foi. `''` = effacée. */
+  finPrevue?: string;
+  status: BatchStatus;
+  recipeRef?: string;
+  /** Volume réellement récolté en cuve le jour du brassage (mesuré). */
+  volumeBrewedL?: number;
+  /** Conditionnement net obtenu. Source de vérité du volume produit. */
+  packaging?: BatchPackaging;
+  /**
+   * Volume réellement conditionné, en litres — dérivé de `packaging`.
+   * C'est CETTE valeur qui constitue l'assiette de l'impôt sur la bière,
+   * jamais `volumeL` qui n'est qu'un objectif.
+   */
+  volumePackagedL?: number;
+  malts?: MaltIngredient[];
+  hops?: HopIngredient[];
+  adjuncts?: AdjunctIngredient[];
+  /** Ancien champ. Conservé en lecture ; `yeast` le remplace à l'écriture. */
+  yeastName?: string;
+  yeast?: YeastSpec;
+  /**
+   * La recette telle qu'elle était AU LANCEMENT du brassin.
+   *
+   * Sans cette copie, corriger une faute de frappe dans la recette réécrirait
+   * rétroactivement ce qu'on croit avoir brassé six mois plus tôt, et deux
+   * brassins du même nom deviendraient incomparables. `recipeRef` reste comme
+   * provenance ; c'est le snapshot qui fait foi.
+   */
+  recipeSnapshot?: RecipeSnapshot;
+  /** Déroulé du jour de brassage : minuteurs et étapes cochées. */
+  brewDay?: BrewDayState;
+  gravityLog?: Array<{ date: string; sg: number; tempC?: number; notes?: string }>;
+  waterDilutionPct?: number; // e.g. 50 for 50-50 tap/DI
+  waterSalts?: {
+    gypseG: number;
+    cacl2G: number;
+    mgso4G: number;
+    acidLacticMl: number;
+    isApplied: boolean;
+  };
+  mashPhTarget?: number;
+  mashPhActual?: number;
+  carbonation?: {
+    method: 'priming' | 'forced';
+    targetCo2Vol: number;
+    sugarG?: number;
+    kegPressureBar?: number;
+  };
+  brewNotes?: string;
+  notesCreation?: string; // Avant : inspiration & profil visé
+  notesBrewDay?: string;  // Pendant : jour J, empattage, odeur whirlpool
+  notesTasting?: string;  // Après : fermentation, garde, dégustation
+}
+
+export type ClientStatus = 'Fidèle' | 'Actif' | 'Prospect';
+
+/** Adresse structurée saisie (norme QR-facture) ; le nom vient de la fiche ou de la brasserie. */
+export interface AdresseSaisie { rue: string; numero: string; npa: string; localite: string; pays: string }
+
+export interface Client {
+  id: string; // CL-001
+  name: string;
+  type: 'Pro' | 'Privé';
+  contact: string;
+  phone: string;
+  email: string;
+  /** Adresse en une chaîne (anciennes fiches, autres lecteurs). Dérivée de `adresse` à chaque écriture complète ; jamais effacée sinon. */
+  address?: string;
+  /** Adresse structurée (QR-facture) : prime pour la caisse. */
+  adresse?: AdresseSaisie;
+  notes?: string;
+  /** Épinglé par Gaëtan : remonte en tête des listes, des autocomplétions et de la recherche. */
+  favorite?: boolean;
+  /** Rangé dans « Archivés » (une vente le retient, 16.11) : sort du carnet et de la caisse, ses ventes et son nom restent. Absent ou null = en service. */
+  archivedAt?: string | null;
+}
+
+/**
+ * Chiffres client CALCULÉS depuis les ventes réelles, jamais saisis ni stockés —
+ * sinon ils se périment dès la vente suivante.
+ */
+export interface ClientStats {
+  totalSales: number;
+  orderCount: number;
+  lastOrder: string | null; // DD.MM.YYYY
+  status: ClientStatus;
+}
+
+/** Format d'un tarif (ids de la caisse : formatsVente.ts). Le tarif porte son format : plus de regex sur le libellé quand il est renseigné (ue, 09.11). */
+export interface FormatTarif { id: '33cl' | '75cl' | 'fut'; volumeL: number }
+export interface PricingItem {
+  product: string;
+  /** Bière du tarif : le nom de la recette, pas celui d'un lot. Absent sur un ancien tarif (à compléter). */
+  biere?: string;
+  format?: FormatTarif;
+  /** Emballage d'UNE unité (CHF, base HT si assujetti), saisi dans la fiche du tarif. Absent = à compléter, jamais 0. */
+  emballageUnite?: number;
+  /** Hérités de l'ancien formulaire (coût saisi à la main) : plus écrits, jamais effacés d'une ligne existante. */
+  costIngredients?: number;
+  costLabor?: number;
+  costFixed?: number;
+  costTotal?: number;
+  priceHT: number;
+  marginCHF?: number;
+  marginPercent?: number;
+}
+
+export interface BudgetLine {
+  line: string;
+  category?: FinanceCategory;
+  row: number;
+  months: number[]; // 12 values Jan-Dec
+  totalPrevu: number;
+  realiseYTD: number;
+}
+
+export interface BrewingEquipment {
+  kettleCapacityL: number;
+  /** Working volume including hot water and grain, below the rim. */
+  kettleWorkingL: number;
+  workingVolumeConfirmed?: boolean;
+  spargeCapacityL: number;
+  fermenterCapacityL: number;
+  /** Percentage of the TOTAL vessel reserved for krausen. */
+  fermenterHeadspacePct: number;
+  roPackL: number;
+  boilOffLPerHour: number;
+  grainAbsorptionLPerKg: number;
+  grainDisplacementLPerKg: number;
+  coolingShrinkagePct: number;
+  heatingRateCPerMin: number;
+}
+
+export interface BrewhouseProfile {
+  id: string;
+  name: string;
+  volumeL: number;
+  efficiencyPct: number;
+  boilOffRatePct: number; // e.g. 10%/hr
+  deadSpaceL: number;
+  mashRatioLPerKg: number; // e.g. 3.0 L/kg
+  equipment?: BrewingEquipment;
+  preferences?: import('./brewSystem').BrewingPreferences;
+  /** Links to existing inventory; never duplicate equipment records. */
+  equipmentRefs?: { kettle?: string; sparger?: string; fermenter?: string; auxiliary?: string };
+  calibrationHistory?: import('./brewSystem').SystemCalibrationEvent[];
+  /** Provenance links only in frozen recipes; the audit events remain in installation settings. */
+  calibrationEventIds?: string[];
+}
+
+export interface AppConfig {
+  company: {
+    name: string;
+    owner: string;
+    uid: string;
+    address: string;
+    npa: string;
+    canton: string;
+    founded: string;
+    activity: string;
+    communeContact: string;
+    iban?: string;
+    bankName?: string;
+    /** Adresse structurée de la brasserie (QR-facture, P7). Absente sur les anciennes configurations. */
+    adresse?: AdresseSaisie;
+  };
+  fiscal: {
+    /**
+     * Assujettissement TVA. Sous le seuil de chiffre d'affaires
+     * (`tvaThresholdTurnover`), la brasserie n'est PAS assujettie : elle ne
+     * facture pas la TVA et ne la récupère pas. Les quittances ne doivent alors
+     * afficher aucune ventilation TVA.
+     */
+    isTvaRegistered: boolean;
+    tvaReducedRate: number; // 0.026
+    tvaNormalRate: number; // 0.081
+    tvaThresholdTurnover: number; // 100000 CHF
+    /** Taux plein de l'impôt sur la bière, CHF/hl. À vérifier auprès de l'OFDF. */
+    beerTaxFullRatePerHl: number;
+    beerTaxAnnualReductionPct?: number;
+    beerTaxReductionYear?: number;
+    beerTaxPeriod?: 'annual' | 'quarterly';
+    /** Plafond du régime petit brasseur, en HECTOLITRES de production annuelle. */
+    beerTaxSmallBrewerMaxHl: number;
+    /** Paliers de réduction dégressifs (production annuelle en hl). */
+    beerTaxReliefTiersHl: Array<{ upToHl: number; reductionPct: number }>;
+  };
+  brewhouses: BrewhouseProfile[];
+  activeBrewhouseId: string;
+  /** Les eaux dont dispose la brasserie, saisies depuis l'analyse du distributeur. */
+  waterSources?: WaterSource[];
+  activeWaterSourceId?: string;
+  geminiApiKey?: string;
+  googleDriveFolderId?: string;
+  security: {
+    // Le verrou réel est l'authentification Google Firebase. Pas de second
+    // code PIN décoratif stocké en clair.
+    currentUser: 'Gaëtan' | 'Aricia';
+  };
+}
+
+export interface AuditLog {
+  id: string;
+  timestamp: string; // ISO & formatted
+  user: 'Gaëtan' | 'Aricia';
+  action: string; // 'Création' | 'Modification' | 'Suppression' | 'Statut'
+  category: 'Finances' | 'Production' | 'Stocks' | 'Clients' | 'Fûts' | 'Configuration';
+  entityId: string;
+  summary: string;
+  details?: string;
+}
+
+export type TimeFilterPeriod = 
+  | `year-${number}`
+  | `month-${string}`
+  | 'this-month' 
+  | 'last-month' 
+  | 'm-04'
+  | 'm-01'
+  | 'q1' 
+  | 'q2' 
+  | 'q3' 
+  | 'q4' 
+  | 'year' 
+  | 'all';
+
+export interface ExpenseTemplate {
+  id: string;
+  title: string;
+  vendor: string;
+  category: FinanceCategory;
+  subcategory: string;
+  tvaRate: number;
+  defaultAmountHT?: number;
+  description: string;
+  /** Épinglé par Gaëtan : remonte en tête des listes, des autocomplétions et de la recherche. */
+  favorite?: boolean;
+}
+
+export interface CreativeItem {
+  id: string;
+  /** `carnet` : une idée du carnet d'idées (Stocks › Matériel › Carnets) ; `carnet-message` : un message de son fil (17.11, rien ne migre). */
+  type: 'equipment' | 'recipe-idea' | 'event' | 'pricing-test' | 'prospect' | 'carnet' | 'carnet-message';
+  title: string;
+  description?: string;
+  status: 'idea' | 'research' | 'quote' | 'validated' | 'todo' | 'done';
+  estimatedCost?: number;
+  /** Une fête : la rentrée estimée (le calendrier la lit en « + ») ; optionnelle, sans migration (« nouveau, à valider »). */
+  estimatedRevenue?: number;
+  targetPrice?: number;
+  date?: string;
+  /** Précision d'une date d'intention (PORT, état de l'art : lundi ISO + précision) : `mois` posée par un horizon (« vers févr. »), `semaine`
+   *  posée sur une semaine précise (« S48 »). Absente : lue comme `mois` (les dates d'avant n'ont pas ce champ). */
+  precision?: 'semaine' | 'mois';
+  notes?: string;
+  contactName?: string;
+  contactPhone?: string;
+  /** Calendrier (17.11) : une chose qui s'étale du lundi `du` au dimanche `au`, avec ses jours actifs et, si elle a un montant, sa mise de côté. Optionnel, sans migration. */
+  fenetre?: FenetreCalendrier;
+  /** Calendrier : ce à quoi la chose est liée (un brassin, un client), par identifiant. */
+  liens?: { batchId?: string; clientId?: string; evenementId?: string };
+  /** Calendrier : une activité (comptée en jours, sans CHF obligatoire), rangée Activités plutôt que Fêtes. */
+  activite?: boolean;
+  /**
+   * Calendrier (D401, 21.11) : des Travaux posés SANS montant, rangée Travaux. Une activité marquée `travaux` (un `event`, comme `activite`),
+   * jamais un plan financier à 0 CHF (l'inconnu n'est pas 0). Avec un montant, des Travaux restent un `FinancialPlan`. Optionnel, sans migration.
+   */
+  travaux?: boolean;
+  /** Carnet d'idées : le contenu d'une idée (`type: 'carnet'`), lu par `lireCarnet` (src/domain/carnets/modele.ts). Optionnel. */
+  carnet?: DonneesCarnet;
+  /** Carnet d'idées : un message du fil (`type: 'carnet-message'`), lu par `lireMessage`. Optionnel. */
+  carnetMessage?: DonneesMessage;
+}
+
+/** Une fenêtre du calendrier : `du` (lundi) et `au` (dimanche) en ISO ; `joursActifs` absent = inconnu (jamais 0) ; `miseDeCote` : le montant se met de côté au fil des semaines. */
+export interface FenetreCalendrier { du: string; au: string; joursActifs?: number; miseDeCote?: boolean }

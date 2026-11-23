@@ -1,0 +1,8 @@
+# WFA-16, WFA-11 : première ouverture (Stocks à froid) puis ouvertures d onglet
+c=Stocks
+t=Calendrier
+t=Finances
+c=Stocks
+t=Brassins
+t=Clients
+inp

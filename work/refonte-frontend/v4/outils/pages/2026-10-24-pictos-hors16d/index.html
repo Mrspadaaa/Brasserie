@@ -1,0 +1,379 @@
+<title>Pictos hors 16D · 24.10, soir</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+/* La disposition qu'il aime (24.10, soir) : une rangée par endroit, le nom à gauche (au téléphone : au-dessus) ; sa
+   référence puis les huit jeux en vignettes serrées, six par rangée à l'ordinateur, trois au téléphone. Rien ne défile
+   en largeur (D126). Chaque vignette s'ouvre en grand, à côté de sa référence. Page claire (D106). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 4px 14px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 var(--texte); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 64px;
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.12; }
+h1 { font-size: clamp(1.7rem, 6vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.25rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--houblon); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 6px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.encart { border-left: 4px solid var(--ambre); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 84ch; }
+.encart .canal { font-weight: 700; }
+.sommaire { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.pastille { justify-self: start; display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.5; padding: 0 9px; border-radius: 999px; color: #fff; white-space: nowrap; }
+.p-ref { background: #2f6b1f; }
+.p-froide { background: #2a6fb0; }
+.p-tiede { background: #85600a; }
+.p-chaude { background: #a8431a; }
+.pastilles { display: flex; flex-wrap: wrap; gap: 3px 4px; }
+.verdict { display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.4; padding: 0 7px; border-radius: 999px; border: 1.5px solid currentColor; white-space: nowrap; }
+.v-accepte { color: #2f6b1f; } .v-tete { color: #fff; background: #2f6b1f; border-color: #2f6b1f; }
+.legende-pastilles { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 0.875rem; color: var(--discret); align-items: center; }
+.rangee { display: grid; gap: 12px; padding-top: 18px; border-top: 1px solid var(--trait); }
+.nom { display: grid; gap: 4px; align-content: start; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.05rem; color: var(--houblon); }
+.note { font-size: 0.875rem; color: var(--discret); }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 8px; align-items: start; }
+@media (min-width: 900px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 20px; }
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px 14px; }
+}
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; aspect-ratio: 780 / 1688; }
+.ecran img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.vue[data-reference] .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--ambre), var(--ombre); }
+.vue figcaption { display: grid; gap: 3px; }
+.vue figcaption b { font-family: var(--titre); font-size: 0.95rem; line-height: 1.2; }
+.id { font-size: 0.875rem; color: var(--discret); font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; overflow-wrap: anywhere; }
+.ligne { font-size: 0.875rem; font-style: italic; color: var(--encre); line-height: 1.35; }
+.reserves { display: grid; gap: 6px; font-size: 0.95rem; }
+footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: #0e100c; overflow-y: auto; padding: calc(64px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); color: #eef2ea; }
+.vis-tete { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px)); background: #0e100c; }
+.vis-titre { font: 800 1.05rem/1.2 var(--titre); min-width: 0; }
+.vis-boutons { display: flex; gap: 6px; flex: none; }
+.vis-boutons button { font: 700 0.95rem var(--texte); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; background: #2d3328; color: #eef2ea; }
+.vis-boutons .fermer { background: #eef2ea; color: #1c2019; }
+.vis-corps { display: grid; gap: 28px; max-width: 1240px; margin: 0 auto; }
+.vis-rangee { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.vis-panneau { flex: 0 0 86%; scroll-snap-align: start; margin: 0; display: grid; gap: 8px; align-content: start; }
+.vis-panneau img { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff; }
+.vis-panneau.ref img { box-shadow: 0 0 0 3px var(--ambre); }
+.vis-panneau figcaption { font-size: 0.95rem; }
+.vis-panneau.ref figcaption { color: #f6d38f; font-weight: 700; }
+.vis-glisse { font-size: 0.875rem; color: #c9d0c3; }
+@media (min-width: 900px) {
+  .vis-rangee { overflow: visible; justify-content: center; flex-wrap: wrap; }
+  .vis-panneau { flex: 0 1 400px; min-width: 290px; }
+  .vis-glisse { display: none; }
+}
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · houblons · les types hors 16D · 24.10, soir</p>
+    <h1>Pictos hors 16D</h1>
+  </header>
+
+  <section id="a-choisir" aria-label="À choisir">
+    <div class="encart">
+      <p><b>À choisir :</b> un jeu de pictos (ou des greffes entre jeux), et la lecture : courte (icônes seules) ou textuelle (icône et mot).</p>
+      <p>Tes règles : « Il faut pas que ça gêne ! » et « Mais il faut aussi que on voit comme il faut les différence ! ».</p>
+      <p class="canal">Commente la mini maquette que tu choisis (commentaire de l'artefact) : je lis les commentaires.</p>
+      <p>Touche une vignette : elle s'ouvre en grand, à côté de la maquette telle quelle.</p>
+      <p class="legende-pastilles"><span class="pastille p-ref">maquette telle quelle</span><span class="pastille p-froide">froide</span> au plus près des 12 <span class="pastille p-tiede">tiède</span> forme de la série <span class="pastille p-chaude">chaude</span> forme libre <span class="verdict v-tete">en tête</span> le critique les met devant</p>
+      <p class="sommaire"><a href="#r-comparer">Comparer, « lui seul »</a><a href="#r-galaxy">Galaxy face à Saaz</a><a href="#r-fiche">La fiche</a><a href="#r-planche">Les seize pictos</a></p>
+    </div>
+  </section>
+
+  <!-- COMPARER -->
+  <section class="rangee" id="r-comparer" data-choix="comparer" aria-labelledby="t-cp" data-ref-nom="la maquette" data-ref-imgs="img/ref-comparer.png" data-ref-etats="Comparer, ce soir">
+    <div class="nom">
+      <h2 id="t-cp">Comparer, « lui seul »</h2>
+      <p class="question">« surtout dans la comparaison !!!! »</p>
+      <p class="note">Nelson Sauvin, Citra, Target. En grand : la courte, la textuelle, et le côte à côte.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="La maquette telle quelle · Comparer" data-imgs="img/ref-comparer.png" data-etats="Comparer, ce soir"><img src="img/ref-comparer.png" width="780" height="1688" alt="Comparer dans la maquette de ce soir"></button>
+        <figcaption><span class="pastille p-ref">maquette telle quelle</span><b>Les mots, sans picto</b><span class="id">ce soir</span><span class="ligne">« cannabis +4 », « orange +4 » en toutes lettres.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha1 · Une silhouette · Comparer" data-imgs="img/pha1-carte.png|img/pha1-carte-texte.png|img/pha1-cote-carte.png" data-etats="version courte|version textuelle|côte à côte"><img src="img/pha1-carte.png" width="780" height="1688" alt="pha1 dans Comparer"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-froide">froide</span><span class="verdict v-accepte">accepté</span></span><b>Une silhouette</b><span class="id">pha1</span><span class="ligne">Un contour et un repère par mot ; « en plus » : le ◇ de l'app.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha2 · L'objet et son goût · Comparer" data-imgs="img/pha2-carte.png|img/pha2-carte-texte.png|img/pha2-cote-carte.png" data-etats="version courte|version textuelle|côte à côte"><img src="img/pha2-carte.png" width="780" height="1688" alt="pha2 dans Comparer"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-tete">en tête</span></span><b>L'objet et son goût</b><span class="id">pha2</span><span class="ligne">Le détail qui dit la saveur ; le mot précis souligné à sa couleur.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha3 · La grammaire des familles · Comparer" data-imgs="img/pha3-carte.png|img/pha3-carte-texte.png|img/pha3-cote-carte.png" data-etats="version courte|version textuelle|côte à côte"><img src="img/pha3-carte.png" width="780" height="1688" alt="pha3 dans Comparer"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>La grammaire des familles</b><span class="id">pha3</span><span class="ligne">Une silhouette fermée et un trait, le poids des 12.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha4 · L'objet dessiné · Comparer" data-imgs="img/pha4-carte.png|img/pha4-carte-texte.png|img/pha4-cote-carte.png" data-etats="version courte|version textuelle|côte à côte"><img src="img/pha4-carte.png" width="780" height="1688" alt="pha4 dans Comparer"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>L'objet dessiné</b><span class="id">pha4</span><span class="ligne">Deux ou trois détails par objet ; « en plus » : l'étiquette.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz1 · Code à deux lettres · Comparer" data-imgs="img/phz1-carte.png|img/phz1-cote-carte.png" data-etats="courte et textuelle|côte à côte"><img src="img/phz1-carte.png" width="780" height="1688" alt="phz1 dans Comparer"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>Code à deux lettres</b><span class="id">phz1</span><span class="ligne">Le code reste sur la planche ; la carte prend des objets.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz2 · L'objet qu'on tient · Comparer" data-imgs="img/phz2-carte.png|img/phz2-cote-carte.png" data-etats="courte et textuelle|côte à côte"><img src="img/phz2-carte.png" width="780" height="1688" alt="phz2 dans Comparer"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-tete">en tête</span></span><b>L'objet qu'on tient</b><span class="id">phz2</span><span class="ligne">Verre, tasse, bocal, grappe ; « en plus » : « & ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz3 · Deux ou trois traits · Comparer" data-imgs="img/phz3-carte.png|img/phz3-cote-carte.png" data-etats="courte et textuelle|côte à côte"><img src="img/phz3-carte.png" width="780" height="1688" alt="phz3 dans Comparer"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Deux ou trois traits</b><span class="id">phz3</span><span class="ligne">La seule forme qui nomme ; « en plus » : la bulle.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz4 · Un seul trait · Comparer" data-imgs="img/phz4-carte.png|img/phz4-cote-carte.png" data-etats="courte et textuelle|côte à côte"><img src="img/phz4-carte.png" width="780" height="1688" alt="phz4 dans Comparer"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Un seul trait</b><span class="id">phz4</span><span class="ligne">Chaque objet d'un fil continu, sans lever le crayon.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- GALAXY FACE A SAAZ -->
+  <section class="rangee" id="r-galaxy" data-choix="galaxy" aria-labelledby="t-gs" data-ref-nom="la maquette" data-ref-imgs="img/ref-comparer.png" data-ref-etats="Comparer, ce soir">
+    <div class="nom">
+      <h2 id="t-gs">Galaxy face à Saaz</h2>
+      <p class="question">« un houblon hyper aromatique type Galaxy d'un houblons plus "fade" type saaz »</p>
+      <p class="note">Les mots précis de ses familles et l'huile de ses fiches : 1,8–5 contre 0,3–1 mL/100 g.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="La maquette telle quelle · Comparer" data-imgs="img/ref-comparer.png" data-etats="Comparer, ce soir"><img src="img/ref-comparer.png" width="780" height="1688" alt="Comparer dans la maquette de ce soir"></button>
+        <figcaption><span class="pastille p-ref">maquette telle quelle</span><b>Sans mot précis</b><span class="id">ce soir</span><span class="ligne">Galaxy n'y montre que ses familles et « cannabis ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha1 · Galaxy face à Saaz" data-imgs="img/pha1-galaxy-saaz.png|img/pha1-cote-galaxy-saaz.png" data-etats="Galaxy face à Saaz|côte à côte"><img src="img/pha1-galaxy-saaz.png" width="780" height="1688" alt="pha1, Galaxy face à Saaz"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-froide">froide</span><span class="verdict v-accepte">accepté</span></span><b>Une silhouette</b><span class="id">pha1</span><span class="ligne">Le premier mot précis devant, la barre d'huile dessous.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha2 · Galaxy face à Saaz" data-imgs="img/pha2-galaxy-saaz.png|img/pha2-cote-galaxy-saaz.png" data-etats="Galaxy face à Saaz|côte à côte"><img src="img/pha2-galaxy-saaz.png" width="780" height="1688" alt="pha2, Galaxy face à Saaz"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-tete">en tête</span></span><b>L'objet et son goût</b><span class="id">pha2</span><span class="ligne">« passion ananas » soulignés ; Saaz : « citron doux noble ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha3 · Galaxy face à Saaz" data-imgs="img/pha3-galaxy-saaz.png|img/pha3-cote-galaxy-saaz.png" data-etats="Galaxy face à Saaz|côte à côte"><img src="img/pha3-galaxy-saaz.png" width="780" height="1688" alt="pha3, Galaxy face à Saaz"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>La grammaire des familles</b><span class="id">pha3</span><span class="ligne">Le mot précis sorti du « +n », la barre d'huile.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha4 · Galaxy face à Saaz" data-imgs="img/pha4-galaxy-saaz.png|img/pha4-cote-galaxy-saaz.png" data-etats="Galaxy face à Saaz|côte à côte"><img src="img/pha4-galaxy-saaz.png" width="780" height="1688" alt="pha4, Galaxy face à Saaz"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>L'objet dessiné</b><span class="id">pha4</span><span class="ligne">Le premier mot précis en toutes lettres, puis les objets.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz1 · Galaxy face à Saaz" data-imgs="img/phz1-galaxy-saaz.png|img/phz1-cote-galaxy-saaz.png" data-etats="Galaxy face à Saaz|côte à côte"><img src="img/phz1-galaxy-saaz.png" width="780" height="1688" alt="phz1, Galaxy face à Saaz"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>Code à deux lettres</b><span class="id">phz1</span><span class="ligne">Courte et textuelle l'une sous l'autre.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz2 · Galaxy face à Saaz" data-imgs="img/phz2-galaxy-saaz.png|img/phz2-cote-galaxy-saaz.png" data-etats="Galaxy face à Saaz|côte à côte"><img src="img/phz2-galaxy-saaz.png" width="780" height="1688" alt="phz2, Galaxy face à Saaz"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-tete">en tête</span></span><b>L'objet qu'on tient</b><span class="id">phz2</span><span class="ligne">« pêche +2 » contre « doux noble citron », la barre d'huile.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz3 · Galaxy face à Saaz" data-imgs="img/phz3-galaxy-saaz.png|img/phz3-cote-galaxy-saaz.png" data-etats="Galaxy face à Saaz|côte à côte"><img src="img/phz3-galaxy-saaz.png" width="780" height="1688" alt="phz3, Galaxy face à Saaz"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Deux ou trois traits</b><span class="id">phz3</span><span class="ligne">Le cannabis à sept folioles, plus une feuille.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz4 · Galaxy face à Saaz" data-imgs="img/phz4-galaxy-saaz.png|img/phz4-cote-galaxy-saaz.png" data-etats="Galaxy face à Saaz|côte à côte"><img src="img/phz4-galaxy-saaz.png" width="780" height="1688" alt="phz4, Galaxy face à Saaz"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Un seul trait</b><span class="id">phz4</span><span class="ligne">Le fil continu ; « en plus » : la bulle.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- LA FICHE -->
+  <section class="rangee" id="r-fiche" data-choix="fiche" aria-labelledby="t-fi" data-ref-nom="la maquette" data-ref-imgs="img/ref-fiche-nelson.png" data-ref-etats="la fiche de Nelson Sauvin, ce soir">
+    <div class="nom">
+      <h2 id="t-fi">La fiche, le bandeau de flb5b</h2>
+      <p class="question">« Lui seul : vin blanc, raisin, groseille à maquereau »</p>
+      <p class="note">Nelson Sauvin, sous le radar ; la légende juste dessous.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="La maquette telle quelle · la fiche" data-imgs="img/ref-fiche-nelson.png" data-etats="la fiche de Nelson Sauvin, ce soir"><img src="img/ref-fiche-nelson.png" width="780" height="1688" alt="La fiche de Nelson Sauvin, ce soir"></button>
+        <figcaption><span class="pastille p-ref">maquette telle quelle</span><b>Le bandeau en mots</b><span class="id">ce soir</span><span class="ligne">Deux lignes de mots, le radar en pics.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha1 · la fiche" data-imgs="img/pha1-fiche.png|img/pha1-fiche-texte.png|img/pha1-cote-fiche.png" data-etats="version courte|version textuelle|côte à côte"><img src="img/pha1-fiche.png" width="780" height="1688" alt="pha1 dans la fiche"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-froide">froide</span><span class="verdict v-accepte">accepté</span></span><b>Une silhouette</b><span class="id">pha1</span><span class="ligne">Le bandeau passe de deux lignes à une.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha2 · la fiche" data-imgs="img/pha2-fiche.png|img/pha2-fiche-texte.png|img/pha2-cote-fiche.png" data-etats="version courte|version textuelle|côte à côte"><img src="img/pha2-fiche.png" width="780" height="1688" alt="pha2 dans la fiche"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-tete">en tête</span></span><b>L'objet et son goût</b><span class="id">pha2</span><span class="ligne">Verre à vague, grappe à vrille, groseille.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha3 · la fiche" data-imgs="img/pha3-fiche.png|img/pha3-fiche-texte.png|img/pha3-cote-fiche.png" data-etats="version courte|version textuelle|côte à côte"><img src="img/pha3-fiche.png" width="780" height="1688" alt="pha3 dans la fiche"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>La grammaire des familles</b><span class="id">pha3</span><span class="ligne">Trois silhouettes au poids des 12.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha4 · la fiche" data-imgs="img/pha4-fiche.png|img/pha4-fiche-texte.png|img/pha4-cote-fiche.png" data-etats="version courte|version textuelle|côte à côte"><img src="img/pha4-fiche.png" width="780" height="1688" alt="pha4 dans la fiche"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>L'objet dessiné</b><span class="id">pha4</span><span class="ligne">Les objets les plus détaillés.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz1 · la fiche" data-imgs="img/phz1-fiche.png|img/phz1-cote-fiche.png" data-etats="la fiche|côte à côte"><img src="img/phz1-fiche.png" width="780" height="1688" alt="phz1 dans la fiche"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>Code à deux lettres</b><span class="id">phz1</span><span class="ligne">Des objets dans la carte, le code à part.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz2 · la fiche" data-imgs="img/phz2-fiche.png|img/phz2-cote-fiche.png" data-etats="la fiche|côte à côte"><img src="img/phz2-fiche.png" width="780" height="1688" alt="phz2 dans la fiche"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-tete">en tête</span></span><b>L'objet qu'on tient</b><span class="id">phz2</span><span class="ligne">Verre, grappe, groseille ; la légende dessous.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz3 · la fiche" data-imgs="img/phz3-fiche.png|img/phz3-cote-fiche.png" data-etats="la fiche|côte à côte"><img src="img/phz3-fiche.png" width="780" height="1688" alt="phz3 dans la fiche"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Deux ou trois traits</b><span class="id">phz3</span><span class="ligne">Le verre « Y », la grappe pleine.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz4 · la fiche" data-imgs="img/phz4-fiche.png|img/phz4-cote-fiche.png" data-etats="la fiche|côte à côte"><img src="img/phz4-fiche.png" width="780" height="1688" alt="phz4 dans la fiche"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Un seul trait</b><span class="id">phz4</span><span class="ligne">Raisin et groseille repris de phz2.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- LA PLANCHE -->
+  <section class="rangee" id="r-planche" data-choix="planche" aria-labelledby="t-pl" data-ref-nom="la baseline" data-ref-imgs="img/ref-familles.png" data-ref-etats="les 12 familles de la baseline">
+    <div class="nom">
+      <h2 id="t-pl">Les seize pictos</h2>
+      <p class="question">« une version courte juste icône, et une version plus textuel »</p>
+      <p class="note">Les quinze mots et le picto « en plus », à 16 et 32 px, face aux 12 familles qu'ils suivent.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="La baseline · les 12 familles" data-imgs="img/ref-familles.png" data-etats="les 12 familles de la baseline"><img src="img/ref-familles.png" width="780" height="1688" alt="Les 12 familles de la baseline"></button>
+        <figcaption><span class="pastille p-ref">la baseline</span><b>Les 12 familles</b><span class="id">fils17 v3</span><span class="ligne">Le trait que les seize pictos suivent.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha1 · la planche" data-imgs="img/pha1-planche.png" data-etats="les seize pictos"><img src="img/pha1-planche.png" width="780" height="1688" alt="Planche pha1"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-froide">froide</span><span class="verdict v-accepte">accepté</span></span><b>Une silhouette</b><span class="id">pha1</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha2 · la planche" data-imgs="img/pha2-planche.png" data-etats="les seize pictos"><img src="img/pha2-planche.png" width="780" height="1688" alt="Planche pha2"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-tete">en tête</span></span><b>L'objet et son goût</b><span class="id">pha2</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha3 · la planche" data-imgs="img/pha3-planche.png" data-etats="les seize pictos"><img src="img/pha3-planche.png" width="780" height="1688" alt="Planche pha3"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>La grammaire des familles</b><span class="id">pha3</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="pha4 · la planche" data-imgs="img/pha4-planche.png" data-etats="les seize pictos"><img src="img/pha4-planche.png" width="780" height="1688" alt="Planche pha4"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>L'objet dessiné</b><span class="id">pha4</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz1 · la planche" data-imgs="img/phz1-planche.png" data-etats="les seize pictos"><img src="img/phz1-planche.png" width="780" height="1688" alt="Planche phz1"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>Code à deux lettres</b><span class="id">phz1</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz2 · la planche" data-imgs="img/phz2-planche.png" data-etats="les seize pictos"><img src="img/phz2-planche.png" width="780" height="1688" alt="Planche phz2"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-tete">en tête</span></span><b>L'objet qu'on tient</b><span class="id">phz2</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz3 · la planche" data-imgs="img/phz3-planche.png" data-etats="les seize pictos"><img src="img/phz3-planche.png" width="780" height="1688" alt="Planche phz3"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Deux ou trois traits</b><span class="id">phz3</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="phz4 · la planche" data-imgs="img/phz4-planche.png" data-etats="les seize pictos"><img src="img/phz4-planche.png" width="780" height="1688" alt="Planche phz4"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Un seul trait</b><span class="id">phz4</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" aria-labelledby="t-re">
+    <div class="nom"><h2 id="t-re">À savoir</h2></div>
+    <div class="reserves">
+      <p>Citronnelle et gingembre restent en mots dans les huit jeux : aucun dessin ne se reconnaissait.</p>
+      <p>Nelson Sauvin a trois pictos partout ; vin blanc couvre aussi sauvignon blanc. « +n » ne compte que les mots sans picto.</p>
+      <p>La groseille en ovale strié peut se lire comme le picto de Noyau à 16 px : à toi de juger.</p>
+      <p>Rien de ceci n'est encore dans la maquette : ton choix d'abord (règle n° 1).</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Huit jeux, deux séries (Opus, Fable), deux passes, jugés par le critique sur tes deux règles. Source : <span class="id">ecran-1/fils24-pictos-hors16d/</span>.</p>
+  </footer>
+</div>
+
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-labelledby="vis-titre">
+  <div class="vis-tete">
+    <p class="vis-titre" id="vis-titre"></p>
+    <div class="vis-boutons">
+      <button type="button" id="vis-prec" aria-label="Vue précédente">◀</button>
+      <button type="button" id="vis-suiv" aria-label="Vue suivante">▶</button>
+      <button type="button" class="fermer" id="vis-fermer">Fermer</button>
+    </div>
+  </div>
+  <div class="vis-corps" id="vis-corps"></div>
+</div>
+
+<script>
+// En grand : chaque état du jeu à côté de la maquette telle quelle. Le contenu ne dépend pas de ce script.
+(function () {
+  var vis = document.getElementById('visionneuse');
+  var corps = document.getElementById('vis-corps');
+  var titre = document.getElementById('vis-titre');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.planche .ecran'));
+  var rang = -1, retour = null;
+  function liste(el, cle) { return (el.getAttribute(cle) || '').split('|').filter(Boolean); }
+  function panneaux(b) {
+    var sec = b.closest('[data-choix]');
+    var etats = liste(b, 'data-etats');
+    var v = liste(b, 'data-imgs').map(function (s, i) { return { src: s, leg: etats[i] || '' }; });
+    if (b.closest('[data-reference]') || !sec.getAttribute('data-ref-imgs')) return v;
+    var refEtats = liste(sec, 'data-ref-etats');
+    return v.concat(liste(sec, 'data-ref-imgs').map(function (s, i) { return { src: s, leg: 'maquette telle quelle · ' + (refEtats[i] || ''), ref: true }; }));
+  }
+  function panneau(p) {
+    var f = document.createElement('figure');
+    f.className = 'vis-panneau' + (p.ref ? ' ref' : '');
+    var c = document.createElement('figcaption'); c.textContent = p.leg;
+    var i = document.createElement('img'); i.src = p.src; i.alt = p.leg;
+    f.appendChild(c); f.appendChild(i);
+    return f;
+  }
+  function ouvrir(n, depuis) {
+    if (depuis) retour = depuis;
+    rang = n;
+    var b = boutons[rang];
+    titre.textContent = b.getAttribute('data-nom');
+    corps.textContent = '';
+    var ps = panneaux(b);
+    if (ps.length > 1) { var g = document.createElement('p'); g.className = 'vis-glisse'; g.textContent = 'Glisse : ' + ps.slice(1).map(function (p) { return p.leg; }).join(', ') + ' →'; corps.appendChild(g); }
+    var d = document.createElement('div'); d.className = 'vis-rangee';
+    ps.forEach(function (p) { d.appendChild(panneau(p)); });
+    corps.appendChild(d);
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('vis-fermer').focus();
+  }
+  function fermer() { vis.hidden = true; corps.textContent = ''; if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang >= 0) ouvrir((rang + pas + boutons.length) % boutons.length); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.planche .ecran');
+    if (b) ouvrir(boutons.indexOf(b), b);
+  });
+  document.getElementById('vis-fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', function () { aller(-1); });
+  document.getElementById('vis-suiv').addEventListener('click', function () { aller(1); });
+  document.addEventListener('keydown', function (e) {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

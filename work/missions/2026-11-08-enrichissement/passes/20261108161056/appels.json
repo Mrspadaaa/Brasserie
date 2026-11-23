@@ -1,0 +1,1378 @@
+[
+  {
+    "id": "p01",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Weyermann Pilsner Malt",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "malt identifiable (fabricant ou marque ecrits)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 7982,
+        "entree": 695,
+        "sortie": 304,
+        "recherches": 20,
+        "coutMicro": 354154,
+        "reserveMicro": 408290,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 354154,
+    "ms": 7982,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "Weyermann Pilsner Malt",
+      "source": "Weyermann — Fiche technique Weyermann® Pilsner Malt",
+      "sourceUrl": "https://www.weyermann.de/wp-content/uploads/2019/04/Weyermann_PilsnerMalz.jpg",
+      "colorEbc": null,
+      "colorEbcMin": 2.5,
+      "colorEbcMax": 4.5,
+      "extractPct": 80.5,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08T16:11:00Z",
+      "note": "Données issues des spécifications officielles du malteur Weyermann. L'extrait sec est garanti à un minimum de 80.5 % sur base sèche.",
+      "grainType": "Base Malt",
+      "usage": "Malt de base polyvalent pour tous types de bières blondes ou ambrées, particulièrement adapté aux lagers, pilsners et ales blondes.",
+      "substitutes": [
+        "Bestmalz BEST Pilsen",
+        "Castle Malting Château Pilsen",
+        "Dingemans Pilsen",
+        "Crisp Extra Pale Malt"
+      ]
+    },
+    "facts": {
+      "found": true,
+      "name": "Weyermann Pilsner Malt",
+      "source": "Weyermann — Fiche technique Weyermann® Pilsner Malt",
+      "sourceUrl": "https://www.weyermann.de/wp-content/uploads/2019/04/Weyermann_PilsnerMalz.jpg",
+      "colorEbcMin": 2.5,
+      "colorEbcMax": 4.5,
+      "extractPct": 80.5,
+      "retrievedAt": "2026-11-08T16:11:00Z",
+      "note": "Données issues des spécifications officielles du malteur Weyermann. L'extrait sec est garanti à un minimum de 80.5 % sur base sèche. EBC déduit : milieu de la plage publiée 2,5 à 4,5 EBC ; PPG déduit : extrait publié 80,5 % × 0,46 × (1 − 4,5 % d’humidité).",
+      "grainType": "Base Malt",
+      "usage": "Malt de base polyvalent pour tous types de bières blondes ou ambrées, particulièrement adapté aux lagers, pilsners et ales blondes.",
+      "substitutes": [
+        "Bestmalz BEST Pilsen",
+        "Castle Malting Château Pilsen",
+        "Dingemans Pilsen",
+        "Crisp Extra Pale Malt"
+      ],
+      "colorEbc": 3.5,
+      "potentialPpg": 35.4
+    },
+    "ecritF4": {
+      "valeurs": {
+        "colorEbc": 3.5,
+        "potentialPpg": 35.4,
+        "technicalSource": "Trouvée en ligne — Weyermann — Fiche technique Weyermann® Pilsner Malt"
+      },
+      "source": "Weyermann — Fiche technique Weyermann® Pilsner Malt",
+      "url": "https://www.weyermann.de/wp-content/uploads/2019/04/Weyermann_PilsnerMalz.jpg",
+      "deduit": {
+        "colorEbc": "EBC déduit : milieu de la plage publiée 2,5 à 4,5 EBC",
+        "potentialPpg": "PPG déduit : extrait publié 80,5 % × 0,46 × (1 − 4,5 % d’humidité)"
+      }
+    }
+  },
+  {
+    "id": "p02",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Maris Otter Crisp",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "malt identifiable (fabricant ou marque ecrits)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 5616,
+        "entree": 692,
+        "sortie": 324,
+        "recherches": 20,
+        "coutMicro": 354335,
+        "reserveMicro": 408272,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 354335,
+    "ms": 5616,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "Crisp Finest Maris Otter Ale Malt",
+      "source": "Crisp Malt — Fiche technique Finest Maris Otter Ale Malt",
+      "sourceUrl": "https://crispmalt.com/malts/finest-maris-otter-ale-malt/",
+      "colorEbc": null,
+      "colorEbcMin": 5.5,
+      "colorEbcMax": 7.2,
+      "extractPct": 80.6,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08T16:12:00Z",
+      "note": "Données d'analyse EBC publiées par Crisp Malt. La méthode IoB donne quant à elle 5.0 à 6.5 EBC et un extrait de 305 L°/kg. Aucun potentiel PPG n'est publié directement par le malteur.",
+      "grainType": "orge",
+      "usage": "Malt de base traditionnel britannique pour ales anglaises, bitters, pale ales, porters, stouts et barley wines, utilisable jusqu'à la totalité de l'empâtage.",
+      "substitutes": [
+        "Simpson's Maris Otter",
+        "Fawcett Maris Otter",
+        "Muntons Maris Otter",
+        "Crisp Best Ale Malt"
+      ]
+    },
+    "facts": {
+      "found": true,
+      "name": "Crisp Finest Maris Otter Ale Malt",
+      "source": "Crisp Malt — Fiche technique Finest Maris Otter Ale Malt",
+      "sourceUrl": "https://crispmalt.com/malts/finest-maris-otter-ale-malt/",
+      "colorEbcMin": 5.5,
+      "colorEbcMax": 7.2,
+      "extractPct": 80.6,
+      "retrievedAt": "2026-11-08T16:12:00Z",
+      "note": "Données d'analyse EBC publiées par Crisp Malt. La méthode IoB donne quant à elle 5.0 à 6.5 EBC et un extrait de 305 L°/kg. Aucun potentiel PPG n'est publié directement par le malteur. EBC déduit : milieu de la plage publiée 5,5 à 7,2 EBC ; PPG déduit : extrait publié 80,6 % × 0,46 × (1 − 4,5 % d’humidité).",
+      "grainType": "orge",
+      "usage": "Malt de base traditionnel britannique pour ales anglaises, bitters, pale ales, porters, stouts et barley wines, utilisable jusqu'à la totalité de l'empâtage.",
+      "substitutes": [
+        "Simpson's Maris Otter",
+        "Fawcett Maris Otter",
+        "Muntons Maris Otter",
+        "Crisp Best Ale Malt"
+      ],
+      "colorEbc": 6.4,
+      "potentialPpg": 35.4
+    },
+    "ecritF4": {
+      "valeurs": {
+        "colorEbc": 6.4,
+        "potentialPpg": 35.4,
+        "technicalSource": "Trouvée en ligne — Crisp Malt — Fiche technique Finest Maris Otter Ale Malt"
+      },
+      "source": "Crisp Malt — Fiche technique Finest Maris Otter Ale Malt",
+      "url": "https://crispmalt.com/malts/finest-maris-otter-ale-malt/",
+      "deduit": {
+        "colorEbc": "EBC déduit : milieu de la plage publiée 5,5 à 7,2 EBC",
+        "potentialPpg": "PPG déduit : extrait publié 80,6 % × 0,46 × (1 − 4,5 % d’humidité)"
+      }
+    }
+  },
+  {
+    "id": "p03",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Weyermann Caramünch Typ 1",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "malt identifiable (fabricant ou marque ecrits)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 5719,
+        "entree": 703,
+        "sortie": 333,
+        "recherches": 20,
+        "coutMicro": 354440,
+        "reserveMicro": 408305,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 354440,
+    "ms": 5719,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "Weyermann® CARAMÜNCH® Typ 1",
+      "source": "Weyermann — Fiche technique CARAMUNICH® Type 1",
+      "sourceUrl": "https://www.weyermann.de/wp-content/uploads/2019/04/Weyermann_Caramuench_Typ1.jpg",
+      "colorEbc": null,
+      "colorEbcMin": 80,
+      "colorEbcMax": 100,
+      "extractPct": 73,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08T16:11:00Z",
+      "note": "La fiche technique officielle Weyermann spécifie une plage de couleur et un extrait sec minimal, sans publier de potentiel en PPG.",
+      "grainType": "grain",
+      "diastaticPower": 0,
+      "usage": "Malt caramel pour bières ambrées à cuivrées foncées, apportant corps, arômes de biscuit et notes prononcées de caramel, typique pour Amber Lagers, Altbier, Pale Ales ou bières de blé foncées.",
+      "substitutes": [
+        "Castle Malting Château Cara Ruby",
+        "Bestmalz BEST Caramel Hell",
+        "Dingemans Caramel 100"
+      ]
+    },
+    "facts": {
+      "found": true,
+      "name": "Weyermann® CARAMÜNCH® Typ 1",
+      "source": "Weyermann — Fiche technique CARAMUNICH® Type 1",
+      "sourceUrl": "https://www.weyermann.de/wp-content/uploads/2019/04/Weyermann_Caramuench_Typ1.jpg",
+      "colorEbcMin": 80,
+      "colorEbcMax": 100,
+      "extractPct": 73,
+      "retrievedAt": "2026-11-08T16:11:00Z",
+      "note": "La fiche technique officielle Weyermann spécifie une plage de couleur et un extrait sec minimal, sans publier de potentiel en PPG. EBC déduit : milieu de la plage publiée 80 à 100 EBC ; PPG déduit : extrait publié 73 % × 0,46 × (1 − 4,5 % d’humidité).",
+      "grainType": "grain",
+      "diastaticPower": 0,
+      "usage": "Malt caramel pour bières ambrées à cuivrées foncées, apportant corps, arômes de biscuit et notes prononcées de caramel, typique pour Amber Lagers, Altbier, Pale Ales ou bières de blé foncées.",
+      "substitutes": [
+        "Castle Malting Château Cara Ruby",
+        "Bestmalz BEST Caramel Hell",
+        "Dingemans Caramel 100"
+      ],
+      "colorEbc": 90,
+      "potentialPpg": 32.1
+    },
+    "ecritF4": {
+      "valeurs": {
+        "colorEbc": 90,
+        "potentialPpg": 32.1,
+        "technicalSource": "Trouvée en ligne — Weyermann — Fiche technique CARAMUNICH® Type 1"
+      },
+      "source": "Weyermann — Fiche technique CARAMUNICH® Type 1",
+      "url": "https://www.weyermann.de/wp-content/uploads/2019/04/Weyermann_Caramuench_Typ1.jpg",
+      "deduit": {
+        "colorEbc": "EBC déduit : milieu de la plage publiée 80 à 100 EBC",
+        "potentialPpg": "PPG déduit : extrait publié 73 % × 0,46 × (1 − 4,5 % d’humidité)"
+      }
+    }
+  },
+  {
+    "id": "p04",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Citra",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "p05",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Nelson Sauvin",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "p06",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Idaho 7",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "p07",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Magnum",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "p08",
+    "famille": "levure",
+    "kind": "levure",
+    "nom": "SafAle US-05",
+    "chemin": "f4",
+    "garde": {
+      "decision": "catalogue",
+      "raison": "le catalogue des levures la rend (sur)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "p09",
+    "famille": "levure",
+    "kind": "levure",
+    "nom": "Nottingham",
+    "chemin": "f4",
+    "garde": {
+      "decision": "catalogue",
+      "raison": "le catalogue des levures la rend (aControler)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "p10",
+    "famille": "levure",
+    "kind": "levure",
+    "nom": "WLP001",
+    "chemin": "f4",
+    "garde": {
+      "decision": "catalogue",
+      "raison": "le catalogue des levures la rend (sur)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "f01",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Idaho 7",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "f02",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Cryo Hops Citra 25g",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "f03",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Caramünch Typ 2",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "malt identifiable (fabricant ou marque ecrits)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 5741,
+        "entree": 699,
+        "sortie": 314,
+        "recherches": 20,
+        "coutMicro": 354255,
+        "reserveMicro": 408268,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 354255,
+    "ms": 5741,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "Weyermann CARAMÜNCH® Typ 2",
+      "source": "Weyermann — Fiche technique CARAMÜNCH® Typ 2",
+      "sourceUrl": "https://www.weyermann.de",
+      "colorEbc": null,
+      "colorEbcMin": 110,
+      "colorEbcMax": 130,
+      "extractPct": 73,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08T16:11:42Z",
+      "note": "Données issues de la fiche de spécification officielle Weyermann pour le malt d'orge caramélisé CARAMÜNCH® (Caramunich) Typ 2.",
+      "grainType": "Barley",
+      "diastaticPower": 0,
+      "usage": "Malt caramel employé pour intensifier le corps malté et apporter des arômes prononcés de caramel et de biscuit dans les bières ambrées à cuivrées foncées telles que les Märzen, bocks, Schwarzbier, ales ambrées et porters.",
+      "substitutes": [
+        "Castle Malting Château Cara Ruby",
+        "Bestmalz BEST Caramel Munich II",
+        "Dingemans Caramel Munich"
+      ]
+    },
+    "facts": {
+      "found": true,
+      "name": "Weyermann CARAMÜNCH® Typ 2",
+      "source": "Weyermann — Fiche technique CARAMÜNCH® Typ 2",
+      "sourceUrl": "https://www.weyermann.de",
+      "colorEbcMin": 110,
+      "colorEbcMax": 130,
+      "extractPct": 73,
+      "retrievedAt": "2026-11-08T16:11:42Z",
+      "note": "Données issues de la fiche de spécification officielle Weyermann pour le malt d'orge caramélisé CARAMÜNCH® (Caramunich) Typ 2. EBC déduit : milieu de la plage publiée 110 à 130 EBC ; PPG déduit : extrait publié 73 % × 0,46 × (1 − 4,5 % d’humidité).",
+      "grainType": "Barley",
+      "diastaticPower": 0,
+      "usage": "Malt caramel employé pour intensifier le corps malté et apporter des arômes prononcés de caramel et de biscuit dans les bières ambrées à cuivrées foncées telles que les Märzen, bocks, Schwarzbier, ales ambrées et porters.",
+      "substitutes": [
+        "Castle Malting Château Cara Ruby",
+        "Bestmalz BEST Caramel Munich II",
+        "Dingemans Caramel Munich"
+      ],
+      "colorEbc": 120,
+      "potentialPpg": 32.1
+    },
+    "ecritF4": {
+      "valeurs": {
+        "colorEbc": 120,
+        "potentialPpg": 32.1,
+        "technicalSource": "Trouvée en ligne — Weyermann — Fiche technique CARAMÜNCH® Typ 2"
+      },
+      "source": "Weyermann — Fiche technique CARAMÜNCH® Typ 2",
+      "url": "https://www.weyermann.de",
+      "deduit": {
+        "colorEbc": "EBC déduit : milieu de la plage publiée 110 à 130 EBC",
+        "potentialPpg": "PPG déduit : extrait publié 73 % × 0,46 × (1 − 4,5 % d’humidité)"
+      }
+    }
+  },
+  {
+    "id": "f04",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Pilsner Malz",
+    "chemin": "f4",
+    "garde": {
+      "decision": "nonIdentifiable",
+      "raison": "malt sans fabricant ni marque : a saisir, aucun appel"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "f05",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Pale Ale Malz Weyermann 25kg",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "malt identifiable (fabricant ou marque ecrits)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 6926,
+        "entree": 705,
+        "sortie": 304,
+        "recherches": 20,
+        "coutMicro": 354172,
+        "reserveMicro": 408313,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 354172,
+    "ms": 6926,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "Weyermann® Pale Ale Malz",
+      "source": "Weyermann — Produktspezifikation Pale Ale Malz",
+      "sourceUrl": "https://www.weyermann.de/produkt/weyermann-pale-ale-malz/",
+      "colorEbc": null,
+      "colorEbcMin": 5.5,
+      "colorEbcMax": 7.5,
+      "extractPct": 79,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08",
+      "note": "Fiche technique officielle Weyermann. La valeur d'extrait indiquée correspond à l'extrait minimal sur matière sèche (dry substance / dry basis). Le malteur ne publie pas de valeur PPG directe.",
+      "grainType": "Base Malt",
+      "diastaticPower": 250,
+      "usage": "Malt de base polyvalent pour bières de fermentation haute et basse, apportant une couleur dorée et des arômes maltés de pain, miel et fruits secs.",
+      "substitutes": [
+        "Castle Malting Château Pale Ale",
+        "Bestmalz BEST Pale Ale",
+        "Crisp Best Ale Malt",
+        "Dingemans Pale Ale"
+      ]
+    },
+    "facts": {
+      "found": true,
+      "name": "Weyermann® Pale Ale Malz",
+      "source": "Weyermann — Produktspezifikation Pale Ale Malz",
+      "sourceUrl": "https://www.weyermann.de/produkt/weyermann-pale-ale-malz/",
+      "colorEbcMin": 5.5,
+      "colorEbcMax": 7.5,
+      "extractPct": 79,
+      "retrievedAt": "2026-11-08",
+      "note": "Fiche technique officielle Weyermann. La valeur d'extrait indiquée correspond à l'extrait minimal sur matière sèche (dry substance / dry basis). Le malteur ne publie pas de valeur PPG directe. EBC déduit : milieu de la plage publiée 5,5 à 7,5 EBC ; PPG déduit : extrait publié 79 % × 0,46 × (1 − 4,5 % d’humidité).",
+      "grainType": "Base Malt",
+      "diastaticPower": 250,
+      "usage": "Malt de base polyvalent pour bières de fermentation haute et basse, apportant une couleur dorée et des arômes maltés de pain, miel et fruits secs.",
+      "substitutes": [
+        "Castle Malting Château Pale Ale",
+        "Bestmalz BEST Pale Ale",
+        "Crisp Best Ale Malt",
+        "Dingemans Pale Ale"
+      ],
+      "colorEbc": 6.5,
+      "potentialPpg": 34.7
+    },
+    "ecritF4": {
+      "valeurs": {
+        "colorEbc": 6.5,
+        "potentialPpg": 34.7,
+        "technicalSource": "Trouvée en ligne — Weyermann — Produktspezifikation Pale Ale Malz"
+      },
+      "source": "Weyermann — Produktspezifikation Pale Ale Malz",
+      "url": "https://www.weyermann.de/produkt/weyermann-pale-ale-malz/",
+      "deduit": {
+        "colorEbc": "EBC déduit : milieu de la plage publiée 5,5 à 7,5 EBC",
+        "potentialPpg": "PPG déduit : extrait publié 79 % × 0,46 × (1 − 4,5 % d’humidité)"
+      }
+    }
+  },
+  {
+    "id": "f06",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Münchner Malz Typ 1 Weyermann",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "malt identifiable (fabricant ou marque ecrits)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 19978,
+        "entree": 704,
+        "sortie": 289,
+        "recherches": 20,
+        "coutMicro": 354030,
+        "reserveMicro": 408320,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 354030,
+    "ms": 19978,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "Weyermann® Münchner Malz Typ 1",
+      "source": "Weyermann — Fiche technique Munich Malt Type 1",
+      "sourceUrl": "https://www.weyermann.de/en-gb/product/weyermann-munich-malt-type-1/",
+      "colorEbc": null,
+      "colorEbcMin": 12,
+      "colorEbcMax": 18,
+      "extractPct": 78,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08",
+      "note": "Données issues de la fiche technique officielle Weyermann. Le potentiel en PPG n'est pas publié par le malteur.",
+      "grainType": "orge",
+      "usage": "Malt de base ou spécial pour intensifier le corps, la rondeur maltée et la coloration dorée à ambrée dans les lagers foncées, bocks, märzen, ales et bières de blé.",
+      "substitutes": [
+        "Munich Malt I Bestmalz",
+        "Château Munich Castle Malting",
+        "Munich Malt Crisp"
+      ]
+    },
+    "facts": {
+      "found": true,
+      "name": "Weyermann® Münchner Malz Typ 1",
+      "source": "Weyermann — Fiche technique Munich Malt Type 1",
+      "sourceUrl": "https://www.weyermann.de/en-gb/product/weyermann-munich-malt-type-1/",
+      "colorEbcMin": 12,
+      "colorEbcMax": 18,
+      "extractPct": 78,
+      "retrievedAt": "2026-11-08",
+      "note": "Données issues de la fiche technique officielle Weyermann. Le potentiel en PPG n'est pas publié par le malteur. EBC déduit : milieu de la plage publiée 12 à 18 EBC ; PPG déduit : extrait publié 78 % × 0,46 × (1 − 4,5 % d’humidité).",
+      "grainType": "orge",
+      "usage": "Malt de base ou spécial pour intensifier le corps, la rondeur maltée et la coloration dorée à ambrée dans les lagers foncées, bocks, märzen, ales et bières de blé.",
+      "substitutes": [
+        "Munich Malt I Bestmalz",
+        "Château Munich Castle Malting",
+        "Munich Malt Crisp"
+      ],
+      "colorEbc": 15,
+      "potentialPpg": 34.3
+    },
+    "ecritF4": {
+      "valeurs": {
+        "colorEbc": 15,
+        "potentialPpg": 34.3,
+        "technicalSource": "Trouvée en ligne — Weyermann — Fiche technique Munich Malt Type 1"
+      },
+      "source": "Weyermann — Fiche technique Munich Malt Type 1",
+      "url": "https://www.weyermann.de/en-gb/product/weyermann-munich-malt-type-1/",
+      "deduit": {
+        "colorEbc": "EBC déduit : milieu de la plage publiée 12 à 18 EBC",
+        "potentialPpg": "PPG déduit : extrait publié 78 % × 0,46 × (1 − 4,5 % d’humidité)"
+      }
+    }
+  },
+  {
+    "id": "f07",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Wiener Malz Weyermann",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "malt identifiable (fabricant ou marque ecrits)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 6992,
+        "entree": 696,
+        "sortie": 322,
+        "recherches": 20,
+        "coutMicro": 354324,
+        "reserveMicro": 408287,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 354324,
+    "ms": 6992,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "Weyermann® Vienna Malt (Wiener Malz)",
+      "source": "Weyermann — Fiche technique Weyermann® Vienna Malt",
+      "sourceUrl": "https://www.weyermann.de/wp-content/uploads/2019/04/Weyermann_WienerMalz.jpg",
+      "colorEbc": null,
+      "colorEbcMin": 6,
+      "colorEbcMax": 9,
+      "extractPct": 79,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08T16:11:00Z",
+      "note": "Données issues de la fiche de spécification officielle Weyermann pour le malt de Vienne (Wiener Malz). Le potentiel PPG n'est pas publié par le malteur.",
+      "grainType": "Base Malt",
+      "usage": "Malt de base apportant une couleur dorée, du corps ainsi que des arômes maltés avec de subtiles notes de miel et de noisette, typiquement employé pour les Vienna Lager, Märzen, Festbier, bocks et bières ambrées.",
+      "substitutes": [
+        "Bestmalz BEST Vienna",
+        "Castle Malting Château Vienna",
+        "Crisp Vienna Malt",
+        "Dingemans Vienna"
+      ]
+    },
+    "facts": {
+      "found": true,
+      "name": "Weyermann® Vienna Malt (Wiener Malz)",
+      "source": "Weyermann — Fiche technique Weyermann® Vienna Malt",
+      "sourceUrl": "https://www.weyermann.de/wp-content/uploads/2019/04/Weyermann_WienerMalz.jpg",
+      "colorEbcMin": 6,
+      "colorEbcMax": 9,
+      "extractPct": 79,
+      "retrievedAt": "2026-11-08T16:11:00Z",
+      "note": "Données issues de la fiche de spécification officielle Weyermann pour le malt de Vienne (Wiener Malz). Le potentiel PPG n'est pas publié par le malteur. EBC déduit : milieu de la plage publiée 6 à 9 EBC ; PPG déduit : extrait publié 79 % × 0,46 × (1 − 4,5 % d’humidité).",
+      "grainType": "Base Malt",
+      "usage": "Malt de base apportant une couleur dorée, du corps ainsi que des arômes maltés avec de subtiles notes de miel et de noisette, typiquement employé pour les Vienna Lager, Märzen, Festbier, bocks et bières ambrées.",
+      "substitutes": [
+        "Bestmalz BEST Vienna",
+        "Castle Malting Château Vienna",
+        "Crisp Vienna Malt",
+        "Dingemans Vienna"
+      ],
+      "colorEbc": 7.5,
+      "potentialPpg": 34.7
+    },
+    "ecritF4": {
+      "valeurs": {
+        "colorEbc": 7.5,
+        "potentialPpg": 34.7,
+        "technicalSource": "Trouvée en ligne — Weyermann — Fiche technique Weyermann® Vienna Malt"
+      },
+      "source": "Weyermann — Fiche technique Weyermann® Vienna Malt",
+      "url": "https://www.weyermann.de/wp-content/uploads/2019/04/Weyermann_WienerMalz.jpg",
+      "deduit": {
+        "colorEbc": "EBC déduit : milieu de la plage publiée 6 à 9 EBC",
+        "potentialPpg": "PPG déduit : extrait publié 79 % × 0,46 × (1 − 4,5 % d’humidité)"
+      }
+    }
+  },
+  {
+    "id": "f08",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Roggenmalz Weyermann",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "malt identifiable (fabricant ou marque ecrits)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 6367,
+        "entree": 697,
+        "sortie": 303,
+        "recherches": 20,
+        "coutMicro": 354148,
+        "reserveMicro": 408283,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 354148,
+    "ms": 6367,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "Weyermann Roggenmalz hell (Rye Malt pale)",
+      "source": "Weyermann — Fiche technique Rye Malt Pale",
+      "sourceUrl": "https://www.weyermann.de",
+      "colorEbc": null,
+      "colorEbcMin": 4,
+      "colorEbcMax": 10,
+      "extractPct": 81,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08T16:11:00Z",
+      "note": "Fiche technique officielle Weyermann pour le malt de seigle clair (Roggenmalz hell / Rye Malt Pale). Le potentiel PPG n'est pas publié directement par la malterie.",
+      "grainType": "Rye",
+      "usage": "Malt de seigle pour bières de fermentation haute, apportant du corps, une rondeur soyeuse et des arômes typiques de pain et de miel dans les bières de type Roggenbier, Rye IPA, Saison ou bières multicéréales.",
+      "substitutes": [
+        "Castle Malting Château Rye",
+        "Simpson Rye Malt",
+        "Bestmalz BEST Roggenmalz"
+      ]
+    },
+    "facts": {
+      "found": true,
+      "name": "Weyermann Roggenmalz hell (Rye Malt pale)",
+      "source": "Weyermann — Fiche technique Rye Malt Pale",
+      "sourceUrl": "https://www.weyermann.de",
+      "colorEbcMin": 4,
+      "colorEbcMax": 10,
+      "extractPct": 81,
+      "retrievedAt": "2026-11-08T16:11:00Z",
+      "note": "Fiche technique officielle Weyermann pour le malt de seigle clair (Roggenmalz hell / Rye Malt Pale). Le potentiel PPG n'est pas publié directement par la malterie. EBC déduit : milieu de la plage publiée 4 à 10 EBC ; PPG déduit : extrait publié 81 % × 0,46 × (1 − 4,5 % d’humidité).",
+      "grainType": "Rye",
+      "usage": "Malt de seigle pour bières de fermentation haute, apportant du corps, une rondeur soyeuse et des arômes typiques de pain et de miel dans les bières de type Roggenbier, Rye IPA, Saison ou bières multicéréales.",
+      "substitutes": [
+        "Castle Malting Château Rye",
+        "Simpson Rye Malt",
+        "Bestmalz BEST Roggenmalz"
+      ],
+      "colorEbc": 7,
+      "potentialPpg": 35.6
+    },
+    "ecritF4": {
+      "valeurs": {
+        "colorEbc": 7,
+        "potentialPpg": 35.6,
+        "technicalSource": "Trouvée en ligne — Weyermann — Fiche technique Rye Malt Pale"
+      },
+      "source": "Weyermann — Fiche technique Rye Malt Pale",
+      "url": "https://www.weyermann.de",
+      "deduit": {
+        "colorEbc": "EBC déduit : milieu de la plage publiée 4 à 10 EBC",
+        "potentialPpg": "PPG déduit : extrait publié 81 % × 0,46 × (1 − 4,5 % d’humidité)"
+      }
+    }
+  },
+  {
+    "id": "f09",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Weizenmalz dunkel Weyermann",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "malt identifiable (fabricant ou marque ecrits)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 5955,
+        "entree": 699,
+        "sortie": 290,
+        "recherches": 20,
+        "coutMicro": 354030,
+        "reserveMicro": 408309,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 354030,
+    "ms": 5955,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "Weyermann® Weizenbraumalz dunkel",
+      "source": "Weyermann — Product Specification Dark Wheat Malt",
+      "sourceUrl": "https://www.weyermann.de/wp-content/uploads/2019/04/Weyermann_Weizenmalz_dunkel.jpg",
+      "colorEbc": null,
+      "colorEbcMin": 15,
+      "colorEbcMax": 20,
+      "extractPct": 81,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08T16:13:00Z",
+      "note": "Extrait sec minimal publié à MEBAK.",
+      "grainType": "Wheat",
+      "diastaticPower": 0,
+      "usage": "Malt de froment malté foncé pour bières de blé ambrées et foncées, Weizenbock, Witbier ou ales fortes.",
+      "substitutes": [
+        "Best Dark Wheat (Bestmalz)",
+        "Château Wheat Chocolat (Castle Malting)",
+        "Dark Wheat Malt (Crisp)"
+      ]
+    },
+    "facts": {
+      "found": true,
+      "name": "Weyermann® Weizenbraumalz dunkel",
+      "source": "Weyermann — Product Specification Dark Wheat Malt",
+      "sourceUrl": "https://www.weyermann.de/wp-content/uploads/2019/04/Weyermann_Weizenmalz_dunkel.jpg",
+      "colorEbcMin": 15,
+      "colorEbcMax": 20,
+      "extractPct": 81,
+      "retrievedAt": "2026-11-08T16:13:00Z",
+      "note": "Extrait sec minimal publié à MEBAK. EBC déduit : milieu de la plage publiée 15 à 20 EBC ; PPG déduit : extrait publié 81 % × 0,46 × (1 − 4,5 % d’humidité).",
+      "grainType": "Wheat",
+      "diastaticPower": 0,
+      "usage": "Malt de froment malté foncé pour bières de blé ambrées et foncées, Weizenbock, Witbier ou ales fortes.",
+      "substitutes": [
+        "Best Dark Wheat (Bestmalz)",
+        "Château Wheat Chocolat (Castle Malting)",
+        "Dark Wheat Malt (Crisp)"
+      ],
+      "colorEbc": 17.5,
+      "potentialPpg": 35.6
+    },
+    "ecritF4": {
+      "valeurs": {
+        "colorEbc": 17.5,
+        "potentialPpg": 35.6,
+        "technicalSource": "Trouvée en ligne — Weyermann — Product Specification Dark Wheat Malt"
+      },
+      "source": "Weyermann — Product Specification Dark Wheat Malt",
+      "url": "https://www.weyermann.de/wp-content/uploads/2019/04/Weyermann_Weizenmalz_dunkel.jpg",
+      "deduit": {
+        "colorEbc": "EBC déduit : milieu de la plage publiée 15 à 20 EBC",
+        "potentialPpg": "PPG déduit : extrait publié 81 % × 0,46 × (1 − 4,5 % d’humidité)"
+      }
+    }
+  },
+  {
+    "id": "f10",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Melanoidin Malz Weyermann",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "malt identifiable (fabricant ou marque ecrits)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 6848,
+        "entree": 700,
+        "sortie": 341,
+        "recherches": 20,
+        "coutMicro": 354510,
+        "reserveMicro": 408302,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 354510,
+    "ms": 6848,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "Weyermann® Melanoidin Malt",
+      "source": "Weyermann — Fiche technique Melanoidin Malt",
+      "sourceUrl": "https://www.weyermann.de/en-us/product/weyermann-melanoidin-malt/",
+      "colorEbc": null,
+      "colorEbcMin": 60,
+      "colorEbcMax": 80,
+      "extractPct": 75,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08T16:12:00Z",
+      "note": "Données issues de la fiche de spécification officielle Weyermann. La couleur est publiée sous forme de plage et l'extrait sec minimum est de 75.0 %. Le potentiel PPG n'est pas publié par le malteur.",
+      "grainType": "Barley",
+      "usage": "Malt spécial utilisé pour intensifier et stabiliser le profil malté et aromatique avec des notes de biscuit et de miel, apportant une robe rouge foncé ambrée et du corps, recommandé jusqu'à un cinquième de la mouture pour lagers ambrées, bocks, ales rousses et bières foncées.",
+      "substitutes": [
+        "Castle Malting Château Arome",
+        "Dingemans Aromatic Malt",
+        "Bestmalz BEST Melanoidin"
+      ]
+    },
+    "facts": {
+      "found": true,
+      "name": "Weyermann® Melanoidin Malt",
+      "source": "Weyermann — Fiche technique Melanoidin Malt",
+      "sourceUrl": "https://www.weyermann.de/en-us/product/weyermann-melanoidin-malt/",
+      "colorEbcMin": 60,
+      "colorEbcMax": 80,
+      "extractPct": 75,
+      "retrievedAt": "2026-11-08T16:12:00Z",
+      "note": "Données issues de la fiche de spécification officielle Weyermann. La couleur est publiée sous forme de plage et l'extrait sec minimum est de 75.0 %. Le potentiel PPG n'est pas publié par le malteur. EBC déduit : milieu de la plage publiée 60 à 80 EBC ; PPG déduit : extrait publié 75 % × 0,46 × (1 − 4,5 % d’humidité).",
+      "grainType": "Barley",
+      "usage": "Malt spécial utilisé pour intensifier et stabiliser le profil malté et aromatique avec des notes de biscuit et de miel, apportant une robe rouge foncé ambrée et du corps, recommandé jusqu'à un cinquième de la mouture pour lagers ambrées, bocks, ales rousses et bières foncées.",
+      "substitutes": [
+        "Castle Malting Château Arome",
+        "Dingemans Aromatic Malt",
+        "Bestmalz BEST Melanoidin"
+      ],
+      "colorEbc": 70,
+      "potentialPpg": 32.9
+    },
+    "ecritF4": {
+      "valeurs": {
+        "colorEbc": 70,
+        "potentialPpg": 32.9,
+        "technicalSource": "Trouvée en ligne — Weyermann — Fiche technique Melanoidin Malt"
+      },
+      "source": "Weyermann — Fiche technique Melanoidin Malt",
+      "url": "https://www.weyermann.de/en-us/product/weyermann-melanoidin-malt/",
+      "deduit": {
+        "colorEbc": "EBC déduit : milieu de la plage publiée 60 à 80 EBC",
+        "potentialPpg": "PPG déduit : extrait publié 75 % × 0,46 × (1 − 4,5 % d’humidité)"
+      }
+    }
+  },
+  {
+    "id": "f11",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Carafa Special II Weyermann",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "malt identifiable (fabricant ou marque ecrits)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 6626,
+        "entree": 697,
+        "sortie": 364,
+        "recherches": 20,
+        "coutMicro": 354720,
+        "reserveMicro": 408309,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 354720,
+    "ms": 6626,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "Weyermann Carafa Special II",
+      "source": "Weyermann — Fiche technique Carafa® Special Type 2",
+      "sourceUrl": "https://www.weyermann.de",
+      "colorEbc": null,
+      "colorEbcMin": 1050,
+      "colorEbcMax": 1250,
+      "extractPct": 65,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08T16:13:00Z",
+      "note": "Malt torréfié issu d'orge préalablement décortiquée (de-husked). Les spécifications officielles récentes de Weyermann indiquent une plage de couleur de 1050 à 1250 EBC et un extrait sec minimal de 65 %. Le potentiel en PPG n'est pas spécifié par le malteur.",
+      "grainType": "orge",
+      "diastaticPower": 0,
+      "usage": "Apport de couleur sombre profonde et d'arômes de café torréfié, cacao et chocolat noir sans amertume âpre ni astringence liée aux enveloppes. Utilisé notamment dans les Schwarzbier, Dunkel, Stouts, Porters et Black IPA, ou en faible proportion pour ajuster la teinte.",
+      "substitutes": [
+        "Castle Malting Château Chocolat B de-husked",
+        "Dingemans De-Bittered Black",
+        "Briess Blackprinz"
+      ]
+    },
+    "facts": {
+      "found": true,
+      "name": "Weyermann Carafa Special II",
+      "source": "Weyermann — Fiche technique Carafa® Special Type 2",
+      "sourceUrl": "https://www.weyermann.de",
+      "colorEbcMin": 1050,
+      "colorEbcMax": 1250,
+      "extractPct": 65,
+      "retrievedAt": "2026-11-08T16:13:00Z",
+      "note": "Malt torréfié issu d'orge préalablement décortiquée (de-husked). Les spécifications officielles récentes de Weyermann indiquent une plage de couleur de 1050 à 1250 EBC et un extrait sec minimal de 65 %. Le potentiel en PPG n'est pas spécifié par le malteur. EBC déduit : milieu de la plage publiée 1050 à 1250 EBC ; PPG déduit : extrait publié 65 % × 0,46 × (1 − 4,5 % d’humidité).",
+      "grainType": "orge",
+      "diastaticPower": 0,
+      "usage": "Apport de couleur sombre profonde et d'arômes de café torréfié, cacao et chocolat noir sans amertume âpre ni astringence liée aux enveloppes. Utilisé notamment dans les Schwarzbier, Dunkel, Stouts, Porters et Black IPA, ou en faible proportion pour ajuster la teinte.",
+      "substitutes": [
+        "Castle Malting Château Chocolat B de-husked",
+        "Dingemans De-Bittered Black",
+        "Briess Blackprinz"
+      ],
+      "colorEbc": 1150,
+      "potentialPpg": 28.6
+    },
+    "ecritF4": {
+      "valeurs": {
+        "colorEbc": 1150,
+        "potentialPpg": 28.6,
+        "technicalSource": "Trouvée en ligne — Weyermann — Fiche technique Carafa® Special Type 2"
+      },
+      "source": "Weyermann — Fiche technique Carafa® Special Type 2",
+      "url": "https://www.weyermann.de",
+      "deduit": {
+        "colorEbc": "EBC déduit : milieu de la plage publiée 1050 à 1250 EBC",
+        "potentialPpg": "PPG déduit : extrait publié 65 % × 0,46 × (1 − 4,5 % d’humidité)"
+      }
+    }
+  },
+  {
+    "id": "f12",
+    "famille": "levure",
+    "kind": "levure",
+    "nom": "Safale S-04 11,5 g",
+    "chemin": "f4",
+    "garde": {
+      "decision": "catalogue",
+      "raison": "le catalogue des levures la rend (sur)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "f13",
+    "famille": "levure",
+    "kind": "levure",
+    "nom": "Saflager W-34/70 500g",
+    "chemin": "f4",
+    "garde": {
+      "decision": "catalogue",
+      "raison": "le catalogue des levures la rend (sur)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "f14",
+    "famille": "levure",
+    "kind": "levure",
+    "nom": "LalBrew Verdant IPA 11g",
+    "chemin": "f4",
+    "garde": {
+      "decision": "catalogue",
+      "raison": "le catalogue des levures la rend (sur)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "f15",
+    "famille": "levure",
+    "kind": "levure",
+    "nom": "Voss Kveik",
+    "chemin": "f4",
+    "garde": {
+      "decision": "ambigu",
+      "raison": "plusieurs levures du catalogue : a controler, aucun appel"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "f16",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Mosaic T90 100g",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "f17",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Motueka NZ pellets",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "f18",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Saaz CZ Pellets 100g",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "x01",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Malterie Zorbax Super Pale 77",
+    "chemin": "f4",
+    "garde": {
+      "decision": "nonIdentifiable",
+      "raison": "malt sans fabricant ni marque : a saisir, aucun appel"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "x02",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Citra Zeta",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "x03",
+    "famille": "levure",
+    "kind": "levure",
+    "nom": "SafAle XQ-99",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "absente du catalogue : recherche en ligne"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 6909,
+        "entree": 1410,
+        "sortie": 138,
+        "recherches": 20,
+        "coutMicro": 353938,
+        "reserveMicro": 417161,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 353938,
+    "ms": 6909,
+    "etat": "repondu",
+    "reponse": {
+      "found": false,
+      "name": "SafAle XQ-99",
+      "source": "Catalogue Fermentis / Recherche fabricant",
+      "sourceUrl": "https://fermentis.com/",
+      "technicalFacts": [],
+      "note": "Aucune levure sous la désignation « SafAle XQ-99 » n'existe au catalogue de Fermentis ni dans la littérature brassicole répertoriée. Veuillez vérifier la référence (ex. SafAle US-05, S-04, K-97, BW-20 ou W-68)."
+    },
+    "facts": {
+      "found": false,
+      "name": "SafAle XQ-99",
+      "source": "Catalogue Fermentis / Recherche fabricant",
+      "sourceUrl": "https://fermentis.com/",
+      "technicalFacts": [],
+      "note": "Aucune levure sous la désignation « SafAle XQ-99 » n'existe au catalogue de Fermentis ni dans la littérature brassicole répertoriée. Veuillez vérifier la référence (ex. SafAle US-05, S-04, K-97, BW-20 ou W-68)."
+    },
+    "ecritF4": null
+  },
+  {
+    "id": "x04",
+    "famille": "levure",
+    "kind": "levure",
+    "nom": "Levure Maison 42",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "absente du catalogue : recherche en ligne"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 6523,
+        "entree": 1408,
+        "sortie": 106,
+        "recherches": 20,
+        "coutMicro": 353634,
+        "reserveMicro": 417176,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 353634,
+    "ms": 6523,
+    "etat": "repondu",
+    "reponse": {
+      "found": false,
+      "name": "Levure Maison 42",
+      "source": "Non répertorié",
+      "sourceUrl": "",
+      "technicalFacts": [],
+      "note": "Aucun produit brassicole ni fiche technique ne correspond à la dénomination « Levure Maison 42 ». Il s'agit probablement d'une souche ou d'une culture propre à la brasserie ou d'une désignation interne."
+    },
+    "facts": {
+      "found": false,
+      "name": "Levure Maison 42",
+      "source": "Non répertorié",
+      "sourceUrl": "",
+      "technicalFacts": [],
+      "note": "Aucun produit brassicole ni fiche technique ne correspond à la dénomination « Levure Maison 42 ». Il s'agit probablement d'une souche ou d'une culture propre à la brasserie ou d'une désignation interne."
+    },
+    "ecritF4": null
+  },
+  {
+    "id": "x05",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Flocons d'avoine",
+    "chemin": "f4",
+    "garde": {
+      "decision": "nonIdentifiable",
+      "raison": "malt sans fabricant ni marque : a saisir, aucun appel"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "x06",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Malt Munich",
+    "chemin": "f4",
+    "garde": {
+      "decision": "nonIdentifiable",
+      "raison": "malt sans fabricant ni marque : a saisir, aucun appel"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "x07",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Sucre cristal 1 kg",
+    "chemin": "f4",
+    "garde": {
+      "decision": "nonIdentifiable",
+      "raison": "malt sans fabricant ni marque : a saisir, aucun appel"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "x08",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Dextrose",
+    "chemin": "f4",
+    "garde": {
+      "decision": "nonIdentifiable",
+      "raison": "malt sans fabricant ni marque : a saisir, aucun appel"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  },
+  {
+    "id": "x09",
+    "famille": "levure",
+    "kind": "levure",
+    "nom": "Levure de boulanger fraiche 42g",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "absente du catalogue : recherche en ligne"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 4940,
+        "entree": 1418,
+        "sortie": 130,
+        "recherches": 20,
+        "coutMicro": 353878,
+        "reserveMicro": 417232,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 353878,
+    "ms": 4940,
+    "etat": "repondu",
+    "reponse": {
+      "found": false,
+      "name": "Levure de boulanger fraiche 42g",
+      "source": "Non identifiée",
+      "sourceUrl": "",
+      "technicalFacts": [],
+      "note": "La désignation « Levure de boulanger fraiche 42g » est générique et ne précise ni la marque ni le fabricant (ex. L'hirondelle / Lesaffre, Fala). Sans produit précis ni fiche technique brassicole du fabricant, les caractéristiques d'atténuation et de température ne peuvent être renseignées."
+    },
+    "facts": {
+      "found": false,
+      "name": "Levure de boulanger fraiche 42g",
+      "source": "Non identifiée",
+      "sourceUrl": "",
+      "technicalFacts": [],
+      "note": "La désignation « Levure de boulanger fraiche 42g » est générique et ne précise ni la marque ni le fabricant (ex. L'hirondelle / Lesaffre, Fala). Sans produit précis ni fiche technique brassicole du fabricant, les caractéristiques d'atténuation et de température ne peuvent être renseignées."
+    },
+    "ecritF4": null
+  },
+  {
+    "id": "x10",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Houblon amer sac 1 kg",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "etat": "non-appele",
+    "tentatives": [],
+    "coutMicro": 0,
+    "ms": 0
+  }
+]

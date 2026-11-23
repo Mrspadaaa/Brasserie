@@ -1,0 +1,3485 @@
+import { RecipeDisclosure } from '../ui/RecipeDisclosure';
+import { WizardStepName, WizardStepRail } from '../ui/WizardStepBar';
+import './recipe-wizard.css';
+import { Horizons } from '../ui/saisie/Horizons';
+import { texteIntention } from '../domain/horizons';
+import '../ui/wizard/cadre.css';
+import React, { lazy, startTransition, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
+import { NumberInput } from '../ui/NumberInput';
+import { BrewBudgetButton } from '../ui/finance/BrewBudgetDialog';
+import {
+  Recipe,
+  StockItem,
+  AppConfig,
+  MaltIngredient,
+  Fermentable,
+  FermentableKind,
+  HopIngredient,
+  HopStage,
+  YeastSpec,
+  TempStep,
+  FermentationStep,
+  SaltId,
+  WaterPlan,
+  WaterSource
+} from '../types';
+import { Units } from '../services/units';
+import { formatDecimal } from '../ui/numericInput';
+import { recipeFieldIssues, recipeReadiness, recipeSaveIssues, type RecipeFieldIssue } from '../domain/recipeValidation';
+import { recipeAdvice } from '../domain/bornesProcede';
+import { adoptedDocumentaryFromCandidateSheet, clearRecipeDraft, extractYeastCandidateSheet, mergeYeastCandidateSheet, readRecipeDraft, readYeastDocumentaryView, serializeRecipeDraft,
+  tryAcceptYeastCandidateSheet, tryAdoptYeastDocumentary, writeRecipeDraft, readRecipeDraftState, yeastWithAdoptedDocumentary,
+  recipeDraftResumeCheck, recipeServerBase, RecipeDraftWriteBlockedError, type RecipeDraftReadState, type RecipeWizardDraft, type YeastCandidateSheets, type YeastDocumentaryIntent } from '../services/recipeDraft';
+import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
+import { defaultBrewVolume, defaultNewRecipeVolume, equipmentCheck } from '../domain/brewEquipment';
+import { RecipeInstallationChoice } from '../ui/RecipeInstallationChoice';
+import { EtapePaliers } from '../ui/paliers/EtapePaliers';
+import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from '../domain/recipeInstallation';
+import { currentInstallation, snapshotBrewhouse, snapshotMashRatio } from '../domain/brewPreferences';
+import { adaptRecipeEquipment } from '../domain/adaptRecipeEquipment';
+import { normalizeRecipeImport } from '../domain/recipeImport';
+import { BrewEquipmentSummary } from '../ui/BrewEquipmentSummary';
+// Étape Identité : r4-a, la maquette choisie le 31.10 (D205, D206). Chaque nombre est un curseur, et se tape.
+import '../ui/identite/identite.css';
+import { CarteVolume } from '../ui/identite/CarteVolume';
+import { CarteEbullition } from '../ui/identite/CarteEbullition';
+import { PlagesStyle } from '../ui/identite/PlagesStyle';
+import { TuilesMateriel } from '../ui/identite/TuilesMateriel';
+import { InterrupteurNolo } from '../ui/identite/InterrupteurNolo';
+import { VolumesReplies } from '../ui/identite/VolumesReplies';
+import { evaporation, avantEbullitionDuPlan, barreCuve, etatVolume, remedesCuve } from '../ui/identite/regles';
+import { aAdopter, alertesDeMateriel, lignePremierPlan, resumeVolumes } from '../ui/identite/alertes';
+import { teinteDuStyle } from '../ui/identite/teinteStyle';
+import { fermenterRecommendation } from '../domain/fermenterPlanning';
+import { recipeBeerColor } from '../domain/beerColor';
+import { recipeToText } from '../domain/recipeText';
+import { readRecipeFields } from '../domain/recipeTransfer';
+import { HOP_STAGE, HOP_STAGES, describeMoment } from '../domain/hopStage';
+import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
+import { champsMomentNeuf, changerMoment } from '../domain/hopIndex/momentDefauts';
+import { HopRecipeGuide as SyncHopRecipeGuide } from '../ui/hopIndex/HopRecipeGuide';
+import { HopRecipeSnapshot } from '../ui/hopIndex/HopRecipeSnapshot';
+import { FermentationWorkshop as SyncFermentationWorkshop } from '../ui/FermentationWorkshop';
+import { YeastRecipeContext as SyncYeastRecipeContext, YeastRecipeHeading as SyncYeastRecipeHeading } from '../ui/YeastRecipeWorkbench';
+import { YeastRecipeChoice as SyncYeastRecipeChoice, startYeastChoiceChange, type YeastChoiceChange, type YeastChoiceIntent } from '../ui/YeastRecipeChoice';
+import { YeastRecipeDossier, YeastRecipeQuantity } from '../ui/YeastRecipeDossier';
+import { keepIndependentPitchingWort, yeastPlannedInFormat } from '../domain/yeastPitching';
+import type { RecipeYeastAcceptance } from '../ui/RecipeAutoComplete';
+import { projectYeastRecipe, yeastRecipeBoilOg, yeastRecipeComputedOg } from '../domain/yeastProjection';
+import { fgRecette, formatDensite, formatOgEnTete } from '../domain/recipeMetrics';
+import { BORNES, ogHorsBornes, saisieHoublonRetenue } from '../domain/bornesMetier';
+import { oublierRepere } from '../ui/hopIndex/maBiere/repere';
+import { yeastReferences } from '../domain/yeastReferences';
+import { resolveFermentationYeast } from '../domain/fermentationScenario';
+import { NoloPanel as SyncNoloPanel } from '../ui/NoloPanel';
+import { NoloRecipeOverview as SyncNoloRecipeOverview } from '../ui/NoloRecipeOverview';
+import { FermentationRecipeAdvice as SyncFermentationRecipeAdvice } from '../ui/FermentationSciencePanel';
+import { brewingStyles, matchBrewingStyles, resolveBrewingStyle } from '../domain/brewingStyles';
+import { styleNomme } from '../ui/recap/styleRecette';
+import { StorageService } from '../services/storage';
+import { nomParDefaut } from '../domain/nomParDefaut';
+import { completerMasseAjoutee } from '../domain/recette/propositions';
+import { noterArticleCree, oublierArticlesCrees, retirerArticlesDuBrouillon } from '../services/articlesDuBrouillon';
+import type { HopV55RecipeColdContactChange, HopV55RecipeDraftChange } from '../ui/hopV55/RecipeStep';
+import { assertHopV55RecipeDraftApplicationTarget } from '../services/hopV55/recipeDraftApplication';
+import { preparerEcritureHoublons, type ChangementHoublonsV4 } from '../domain/hopIndex/v4/recipeConversion';
+import { appendHopV55RecipeColdContactAssociation, compareHopV55RecipeColdContactAssociationSourceV1, hopV55RecipeColdSourceReference } from '../services/hopV55/recipeColdContactAssociation';
+import { YeastIngredientPicker as SyncYeastIngredientPicker } from '../ui/YeastIngredientPicker';
+import { HopIngredientPicker } from '../ui/hopIndex/HopIngredientPicker';
+import { hopV4Enabled } from '../ui/hopIndex/flags';
+import { poserPorteEtape } from '../ui/hopIndex/comparer/porte';
+import { HopBitternessPanel } from '../ui/HopBitternessPanel';
+import { hotBitterness, ibuDeLAjout, ibuEnTete } from '../domain/hopBitterness';
+import { alphaAConfirmer, alphaProbable } from '../domain/hopAlpha';
+import { grainEmpate } from '../domain/fermentables/moments';
+import { joursProgramme } from '../domain/bornesMetier';
+import { messageSansSaccharification, nomPalierAjoute } from '../domain/fermentables/empatage';
+import {
+  MASH_PROGRAMS,
+  FERMENT_PROGRAMS,
+  PHASE_LABEL,
+  mashProgramForStyle,
+  fermentProgramForStyle
+} from '../domain/brewPrograms';
+import {
+  DEFAULT_WATER_SOURCE,
+  calculateWaterTreatment,
+  splitDoses,
+  targetRaForGrist,
+  raSaltCeilingForGrist,
+  raForGrist,
+  alkalineSaltGoal,
+  estimateMashPh,
+} from '../domain/water';
+import { styleWaterForReference, styleByCode, styleFromTargetIons } from '../domain/waterStyles';
+import { waterTreatmentTarget } from '../domain/water/profileTarget';
+import { PageShell, Section } from './PageShell';
+import { useDensity, useCoarsePointer } from '../ui/useViewport';
+import { FormNav, Field, InlineNum, TextInput, inputClass } from '../ui/FormNav';
+import { SegmentedControl } from '../ui/SegmentedControl';
+import { QuantityStepper } from '../ui/QuantityStepper';
+import { CycleTag } from '../ui/CycleTag';
+import { PresetChips } from '../ui/PresetChips';
+import { EtapeFermentescibles } from '../ui/fermentescibles/EtapeFermentescibles';
+import { EtapeAdditifs } from '../ui/wizard/EtapeAdditifs';
+import { plageEbc } from '../ui/identite/plages';
+import { teinte as teinteEbc } from '../ui/fermentescibles/modele';
+import { applyCatalogueYeast } from '../domain/yeastCatalogue';
+import type { YeastReference } from '../domain/yeastReferences';
+import { doseApresChoix } from '../ui/etapeLevure/dose';
+import { EtapeLevure as SyncEtapeLevure } from '../ui/etapeLevure/EtapeLevure';
+import type { VueLevure } from '../ui/etapeLevure/props';
+import { useYeastSupply } from '../hooks/useYeastSupply';
+import { completeFromStockReferences } from '../domain/localStockFacts';
+import { completeFromLocalReferences as SyncCompleteFromLocalReferences } from '../domain/localIngredientFacts';
+import { completeYeastRecipeDesignApplication, readYeastRecipeDesign } from '../domain/yeastRecipeDesign';
+import { useStorageValue } from '../hooks/useLiveData';
+import { Combobox } from '../ui/Combobox';
+import { SaltSolver, WaterState, type WaterChangeIntent } from '../ui/SaltSolver';
+import { useWaterPreload } from '../ui/water/useWaterPreload';
+import { BrewerChat } from '../ui/BrewerChat';
+import { RECIPE_FIELDS } from '../../functions/src/brewerContext';
+import { constrainRo, replanRecipeWater } from '../domain/recipeWater';
+import type { ImportedRecipe } from '../ui/RecipeImportSheet';
+import { RecipeAutoComplete as SyncRecipeAutoComplete } from '../ui/RecipeAutoComplete';
+import { RecipeImportSheet as SyncRecipeImportSheet } from '../ui/RecipeImportSheet';
+import { EtapeRecap as SyncBrewSheet } from '../ui/recap/EtapeRecap';
+import { usePlusPage } from '../ui/plusPage';
+import { declarationPlusAssistant } from './wizardPlus';
+import { ConfirmerSuppressionRecette } from '../ui/recette/ConfirmerSuppressionRecette';
+import { noloWaterModelIssue } from '../domain/noloWaterModelIssue';
+import { evaluateNoloRecipe, newNoloConfig } from '../domain/nolo';
+import { admitImportedWaterSnapshot, declaredWaterSourceId, frozenWaterSource, hasUsableWaterIdentity, isBlankWaterSourceId, mergeImportedWaterPlan,
+  retainedWaterCache, sameYeastForTargets, waterCacheBelongsToReference, waterProfileModeOf, waterProfileOrigin, withoutImportedAnalysis,
+  type WaterProfileMode } from '../domain/wizardSourceValues';
+import { Trash2, Plus, AlertTriangle, ClipboardPaste, ClipboardList, ChevronLeft } from 'lucide-react';
+import { AvisRetrait, useRetraitAnnulable } from '../ui/useRetraitAnnulable';
+import { ThemeToggle } from '../theme/ThemeToggle';
+
+// Vitest exercises the wizard with immediate, cross-step assertions. Keep
+// those assertions deterministic while the production build retains the
+// route-level boundaries below and defers these panels until their step or
+// disclosure is reached.
+const syncWizardPanels = import.meta.env.MODE === 'test';
+// The V5.5 hop workbench owns its local dossiers and scenario engine; it stays
+// a separate chunk in every mode and is awaited by its step, tests included.
+// Étape Houblons v4 (T12, #170), drapeau hopV4 allumé seulement : l'écran choisi par le brasseur (base v4.10, légende v2a),
+// le même code que la maquette. Chunk à part, demandé dès l'ouverture du wizard (drapeau allumé) pour être prêt avant
+// l'étape 3 : aucun état d'attente à l'écran (repli vide, ni roue ni « chargement »). Drapeau éteint : jamais demandé.
+const hopV4Actif = hopV4Enabled();
+
+/** L'IBU de l'étape Houblons (drapeau hopV4) dans le bandeau commun : un α de lot absent se lit à la plage de la variété, donc
+ * « ~12 » et la plage au toucher ; « — » seulement quand une donnée manque vraiment (densité, moment, variété hors du moteur). */
+function IbuEnPlage({ mesures }: { mesures: MesuresEtape }) {
+  const cls = 'reading text-sm sm:text-base';
+  const l = libelleIbu(mesures);
+  if (l.texte == null) return <span data-role="ibu-bandeau" className={cls} title={l.titre}>—</span>;
+  // Sa présentation d'avant (25.10) : le nombre, puis sa petite piste avec la bande du style et le repère de ma bière. Même
+  // hauteur que la ligne du bandeau compact : la piste (48 × 8 px) se centre sur le texte, elle n'ajoute pas de hauteur.
+  const b = mesures.bande, ibu = l.valeur!;
+  const max = b ? Math.max(b[1] * 1.4, ibu * 1.1) : 0;
+  const pc = (x: number) => `${Math.max(0, Math.min(100, (x / max) * 100)).toFixed(1)}%`;
+  return (
+    <>
+      <span data-role="ibu-bandeau" data-valeur={ibu.toFixed(2)} className={cls} title={l.titre}>{l.texte}</span>
+      {b && (
+        <span data-role="ibu-piste" role="img" aria-label={`style ${b[0]}–${nombreFr(b[1], 1)} IBU`} className="relative self-center w-12 h-2 rounded-full bg-cave-800">
+          <i className="absolute inset-y-0 rounded-full bg-cave-600" style={{ left: pc(b[0]), width: `calc(${pc(b[1])} - ${pc(b[0])})` }} />
+          <i className="absolute -top-1 -bottom-1 w-0.5 rounded-sm bg-cave-50" style={{ left: pc(ibu) }} />
+        </span>
+      )}
+    </>
+  );
+}
+const chargerEtapeHoublonsV4 = () => import('../ui/hopIndex/maBiere/EtapeHoublons');
+const EtapeHoublonsV4 = lazy(chargerEtapeHoublonsV4);
+import type { MesuresEtape } from '../ui/hopIndex/maBiere/EtapeHoublons';
+import { libelleIbu } from '../domain/hopIndex/v4/recipeConversion';
+import { kettleHopGrammesBornes, ogAffichable } from '../domain/hopIndex/v4/bornesV4';
+import { nombreFr } from '../domain/nombreAffiche';
+const MesuresWizardV4 = lazy(() => import('../ui/hopIndex/maBiere/MesuresWizard'));
+const HopRecipeGuide = syncWizardPanels ? SyncHopRecipeGuide : lazy(() => import('../ui/hopIndex/HopRecipeGuide').then(({ HopRecipeGuide: Panel }) => ({ default: Panel })));
+const FermentationWorkshop = syncWizardPanels ? SyncFermentationWorkshop : lazy(() => import('../ui/FermentationWorkshop').then(({ FermentationWorkshop: Panel }) => ({ default: Panel })));
+const YeastRecipeChoice = syncWizardPanels ? SyncYeastRecipeChoice : lazy(() => import('../ui/YeastRecipeChoice').then(({ YeastRecipeChoice: Panel }) => ({ default: Panel })));
+// L'étape Levure (mission levure-port, voie u1) : la coque des quatre vues ; l'ancienne étape reste dans son repli « Atelier complet ».
+const EtapeLevure = syncWizardPanels ? SyncEtapeLevure : lazy(() => import('../ui/etapeLevure/EtapeLevure').then(({ EtapeLevure: Panel }) => ({ default: Panel })));
+const YeastRecipeContext = syncWizardPanels ? SyncYeastRecipeContext : lazy(() => import('../ui/YeastRecipeWorkbench').then(({ YeastRecipeContext: Panel }) => ({ default: Panel })));
+const YeastRecipeHeading = syncWizardPanels ? SyncYeastRecipeHeading : lazy(() => import('../ui/YeastRecipeWorkbench').then(({ YeastRecipeHeading: Panel }) => ({ default: Panel })));
+const YeastIngredientPicker = syncWizardPanels ? SyncYeastIngredientPicker : lazy(() => import('../ui/YeastIngredientPicker').then(({ YeastIngredientPicker: Panel }) => ({ default: Panel })));
+const NoloPanel = syncWizardPanels ? SyncNoloPanel : lazy(() => import('../ui/NoloPanel').then(({ NoloPanel: Panel }) => ({ default: Panel })));
+const NoloRecipeOverview = syncWizardPanels ? SyncNoloRecipeOverview : lazy(() => import('../ui/NoloRecipeOverview').then(({ NoloRecipeOverview: Panel }) => ({ default: Panel })));
+const FermentationRecipeAdvice = syncWizardPanels ? SyncFermentationRecipeAdvice : lazy(() => import('../ui/FermentationSciencePanel').then(({ FermentationRecipeAdvice: Panel }) => ({ default: Panel })));
+// These three surfaces are the immediate content/actions of the recap: hiding
+// them behind a first-use Suspense fallback makes a step change look empty and
+// drops the import action during the same gesture. Keep the optional workshops
+// lazy, but make the recap's primary content available synchronously.
+const RecipeAutoComplete = SyncRecipeAutoComplete;
+const RecipeImportSheet = SyncRecipeImportSheet;
+const BrewSheet = SyncBrewSheet;
+
+/** Un ancien malt, ramené à la forme typée : du grain, à l'empâtage. */
+function asGrain(m: MaltIngredient): Fermentable {
+  return { ...m, kind: m.kind ?? 'grain', use: m.use ?? 'empatage' };
+}
+
+/** Recompose une dose totale depuis la répartition empâtage / rinçage. */
+function mergeDoses(
+  mash: Partial<Record<SaltId, number>>,
+  sparge: Partial<Record<SaltId, number>> = {}
+): Partial<Record<SaltId, number>> {
+  const out: Partial<Record<SaltId, number>> = {};
+  new Set([...Object.keys(mash), ...Object.keys(sparge)]).forEach((k) => {
+    const id = k as SaltId;
+    const total = (mash[id] ?? 0) + (sparge[id] ?? 0);
+    const decimal = Math.round(total * 1e9) / 1e9;
+    // Suppress binary addition noise (1.12 + .58), retaining finer manual doses.
+    out[id] = Math.abs(total - decimal) <= Number.EPSILON * Math.abs(total) * 2 ? decimal : total;
+  });
+  return out;
+}
+
+/** Standard allocations keep following the volumes; only a custom split is frozen. */
+function customSaltSplit(plan: Partial<WaterPlan>): WaterState['saltSplit'] {
+  const split = { mash: plan.mash ?? {}, sparge: plan.sparge ?? {} };
+  const normal = splitDoses(mergeDoses(split.mash, split.sparge), plan.mashWaterL ?? 0,
+    plan.spargeWaterL ?? 0, plan.allSaltsInMash !== false);
+  const same = (['mash', 'sparge'] as const).every(side =>
+    Object.keys(normal[side]).length === Object.keys(split[side]).length &&
+    Object.entries(split[side]).every(([k, g]) => Math.abs((normal[side][k] ?? 0) - g) < 1e-9));
+  return same ? undefined : split;
+}
+
+/** Branches already projected, keyed by their source; editor state is replaced on change, never mutated in place. */
+const declaredBranches = new WeakMap<object, unknown>();
+
+/**
+ * An optional field left unset is absent, never an own property holding `undefined`: the JSON snapshot guards of
+ * the hop step refuse those. Only plain objects (prototype Object or null) lose such properties, at every depth
+ * reached through plain objects and arrays. Everything else is kept as is: 0, false, '', null and NaN sentinels;
+ * array length, order, holes and `undefined` items; Dates, functions and class instances by reference. A value that
+ * is not JSON thus stays visible to the strict guards instead of being made valid. Pure and copy-on-write: nothing
+ * is mutated, and an unchanged branch keeps its identity, so live editor state stays referentially stable.
+ */
+function withoutUnsetFields<T>(value: T, ancestors: object[] = []): T {
+  if (!value || typeof value !== 'object') return value;
+  const source = value as object;
+  if (ancestors.includes(source)) return value; // A cycle stays a cycle; the strict guard names it.
+  if (declaredBranches.has(source)) return declaredBranches.get(source) as T;
+  ancestors.push(source);
+  let declared: unknown = source;
+  if (Array.isArray(source)) {
+    let copy: unknown[] | undefined;
+    source.forEach((item, index) => { // Holes are not visited, and slice() keeps them as holes.
+      const next = withoutUnsetFields(item, ancestors);
+      if (next !== item) (copy = copy ?? source.slice())[index] = next;
+    });
+    declared = copy ?? source;
+  } else {
+    const prototype = Object.getPrototypeOf(source);
+    if (prototype === Object.prototype || prototype === null) {
+      const kept: Array<[string, unknown]> = [];
+      let changed = false;
+      for (const [key, item] of Object.entries(source)) {
+        if (item === undefined) { changed = true; continue; }
+        const next = withoutUnsetFields(item, ancestors);
+        if (next !== item) changed = true;
+        kept.push([key, next]);
+      }
+      if (changed) {
+        const copy = Object.create(prototype) as Record<string, unknown>;
+        for (const [key, item] of kept) Object.defineProperty(copy, key, { value: item, enumerable: true, writable: true, configurable: true });
+        declared = copy;
+      }
+    }
+  }
+  ancestors.pop();
+  declaredBranches.set(source, declared);
+  return declared as T;
+}
+
+/** The Recipe the wizard declares (build()): what is set is kept exactly, what is unset is absent. */
+function declaredRecipe(recipe: Recipe): Recipe {
+  return withoutUnsetFields(recipe);
+}
+
+/**
+ * Ce qu'apporte chaque famille de fermentescible, et comment elle se comporte.
+ *
+ * ⚠️ C'est ici que se joue la correction la plus importante : le lactose ne
+ * fermente PAS. Rangé avec le grain, il faisait annoncer une densité finale de
+ * milk stout de plusieurs points trop basse — et donc un alcool trop haut.
+ */
+/**
+ * L'ordre dans lequel les pastilles rotatives traversent ces énumérations.
+ *
+ * ⚠️ Il suit la FRÉQUENCE, pas l'alphabet : après « Grain », c'est « Sucre »
+ * qu'on veut en un appui, pas « Extrait ». Et « empâtage » précède
+ * « ébullition », qui précède « fermentation » — l'ordre du brassin.
+ */
+const FERMENTABLE_KINDS = ['grain', 'sucre', 'lactose', 'fruit', 'extrait'] as const;
+const FERMENTABLE_USES = ['empatage', 'ebullition', 'fermentation'] as const;
+const USE_LABEL: Record<Fermentable['use'], string> = {
+  empatage: 'Empâtage',
+  ebullition: 'Ébullition',
+  fermentation: 'Fermentation'
+};
+
+/**
+ * La couleur du MOMENT — et seule l'EXCEPTION est colorée.
+ *
+ * Deux règles, apprises en regardant le résultat plutôt qu'en le supposant.
+ *
+ * 1. **Le même moment porte la même couleur d'un ingrédient à l'autre.**
+ *    L'ébullition est déjà rouge sur les houblons (`HOP_STAGE.boil`), la
+ *    fermentation déjà verte (`HOP_STAGE.dryHop`). Donner d'autres teintes aux
+ *    fermentescibles obligerait à apprendre deux codes pour une seule notion.
+ *
+ * 2. ⚠️ **L'empâtage reste NEUTRE, alors qu'il a droit à une couleur.** Premier
+ *    essai : je lui avais donné la paille du grain. À l'écran, chaque carte
+ *    portait alors deux pastilles paille — sa classe de couleur ET son moment —
+ *    et sur une facture de quatre malts, huit pastilles de la même teinte. La
+ *    couleur ne distinguait plus rien.
+ *
+ *    Or l'empâtage est le cas de NEUF lignes sur dix. Colorier le cas courant,
+ *    c'est colorier le fond ; ce qu'on cherche du regard, c'est l'exception —
+ *    le lactose qui part à l'ébullition, le sucre qu'on ajoute en fermentation.
+ *    Ceux-là seuls s'allument, et l'œil tombe dessus.
+ */
+const USE_TONE: Record<Fermentable['use'], string> = {
+  empatage: 'border-cave-700 text-cave-400',
+  ebullition: 'text-alert border-alert/40 bg-alert/10',
+  fermentation: 'text-hop border-hop/40 bg-hop/10'
+};
+
+/**
+ * La couleur de la FAMILLE — une seule se distingue, et c'est voulu.
+ *
+ * Le lactose ne fermente pas : c'est la seule famille qui change la densité
+ * finale au lieu de l'abaisser, et la seule erreur de classement qui se paie
+ * en bouche. Il porte donc l'ambre d'avertissement. Les autres restent neutres,
+ * parce que les colorier toutes reviendrait à n'en signaler aucune.
+ */
+const KIND_TONE: Record<FermentableKind, string> = {
+  grain: 'border-cave-700 text-cave-200',
+  sucre: 'border-cave-700 text-cave-200',
+  lactose: 'text-ebc-amber border-ebc-amber/40 bg-ebc-amber/10',
+  fruit: 'border-cave-700 text-cave-200',
+  extrait: 'border-cave-700 text-cave-200'
+};
+
+/**
+ * Les familles de fermentescibles, et le rayon du stock où les chercher.
+ *
+ * ⚠️ `stock` et `newCat` sont là pour réparer un vrai dégât. Le filtre était
+ * écrit en ternaire — grain ? ['Malt','Céréale'] : ['Sucre','Additif','Malt'] —
+ * donc `Malt` restait proposé dans TOUTES les familles. Choisir « Sucre » puis
+ * ajouter un Maris Otter donnait un malt classé sucre, et choisir « Lactose »
+ * donnait un malt à 0 % de fermentescibilité : la densité finale prévue montait
+ * de plusieurs points sur un ingrédient qui, en réalité, fermente entièrement.
+ * Le rayon de chaque famille est maintenant déclaré, et ne se recoupe pas.
+ *
+ * Les catégories nommées ici sont celles du stock : Malt,
+ * Houblon, Levure, Sucre. Les autres sont tolérées pour un stock personnalisé.
+ */
+const KIND_DEF: Record<
+  FermentableKind,
+  {
+    label: string;
+    use: Fermentable['use'];
+    fermentability: number;
+    ppg?: number;
+    /**
+     * Ce qu'il faut savoir sur cette famille, quand il y a quelque chose à dire.
+     *
+     * Optionnel : « Grain — passe par la maische » n'apprend rien à un brasseur
+     * et coûtait une ligne sur chaque écran. Une famille dont le comportement va
+     * de soi n'a pas de note.
+     */
+    hint?: string;
+    /** Rayons du stock proposés pour cette famille. */
+    stock: string[];
+    /** Catégorie donnée à un ingrédient créé depuis cette famille. */
+    newCat: string;
+  }
+> = {
+  grain: {
+    label: 'Grain',
+    use: 'empatage',
+    fermentability: 100,
+    stock: ['Malt', 'Céréale'],
+    newCat: 'Malt'
+  },
+  sucre: {
+    label: 'Sucre',
+    use: 'ebullition',
+    fermentability: 100,
+    ppg: 46,
+    hint: 'Entièrement fermentescible. Sèche la bière et monte l’alcool.',
+    stock: ['Sucre'],
+    newCat: 'Sucre'
+  },
+  lactose: {
+    // « Sucre de lait » : la famille ne porte pas le nom d'un produit (B1 n° 11 : « Lactose · Lactose » ; l'article Lactose du stock s'y range).
+    label: 'Sucre de lait',
+    use: 'ebullition',
+    fermentability: 0,
+    ppg: 35,
+    hint: 'La levure n’y touche pas : il reste en bouche et remonte la densité finale.',
+    stock: ['Sucre'],
+    newCat: 'Sucre'
+  },
+  fruit: {
+    label: 'Fruit',
+    use: 'fermentation',
+    fermentability: 90,
+    // Pas de potentiel inventé (AM-6, PRODUCT.md) : il varie d'un fruit à l'autre ; il se renseigne dans la fiche de la ligne (« PPG — · fiche »).
+    hint: 'Apporte peu de sucre et beaucoup d’eau. À ajouter en fermentation.',
+    stock: ['Fruit', 'Additif'],
+    newCat: 'Sucre'
+  },
+  extrait: {
+    label: 'Extrait',
+    use: 'ebullition',
+    fermentability: 75,
+    // Idem : un extrait liquide, sec ou un sirop n'ont pas le même potentiel (de ~36 à ~44 ppg) ; à renseigner dans la fiche.
+    hint: 'Moût concentré, déjà empâté.',
+    stock: ['Extrait', 'Sucre'],
+    newCat: 'Sucre'
+  }
+};
+
+/**
+ * Création d'une recette, pas à pas.
+ *
+ * ⚠️ Ce qu'il remplace : `CreateBatchModal` (497 l.) et `RecipeBrewModal`
+ * (1244 l.), deux formulaires qui s'ouvraient PRÉ-REMPLIS de valeurs
+ * inventées — « Target 30 g 60 min », « Malt Pale Ale 5 kg », « SafAle US-05 ».
+ * Un brasseur pressé validait sans tout relire, et brassait une recette qui
+ * n'était pas la sienne.
+ *
+ * Ici **rien n'est prérempli** : les listes démarrent vides et se remplissent
+ * depuis le stock réel. Ce qui est calculé (EBC, OG, IBU) l'est en direct, et
+ * s'annonce incalculable quand la donnée manque.
+ *
+ * ⚠️ L'ORDRE des étapes a changé : l'eau venait en deuxième, avant le grain.
+ * C'était faux. La cible d'alcalinité dépend de la COULEUR de la bière, donc de
+ * la facture de grain — on ne peut pas régler son eau avant de savoir ce qu'on
+ * brasse. L'eau se traite désormais en avant-dernier, comme le fait un brasseur.
+ */
+
+export type StepId =
+  | 'identite'
+  | 'fermentescibles'
+  | 'houblons'
+  | 'levure'
+  | 'paliers'
+  | 'eau'
+  | 'recap';
+
+const STEPS: Array<{ id: StepId; label: string; shortLabel?: string }> = [
+  { id: 'identite', label: 'Identité' },
+  // B1-10 : un seul nom, celui du rail (rejeu ff0f822e : le titre disait « Fermentescibles — étape 2 sur 7 »). `fermentescibles` reste l'identifiant.
+  { id: 'fermentescibles', label: 'Malts/sucres' },
+  { id: 'houblons', label: 'Houblons' },
+  { id: 'levure', label: 'Levure' },
+  { id: 'paliers', label: 'Paliers' },
+  { id: 'eau', label: 'Eau', shortLabel: 'Eau' },
+  { id: 'recap', label: 'Récapitulatif', shortLabel: 'Récap.' }
+];
+
+export interface WizardSeed {
+  title?: string;
+  description?: string;
+  /** Recette existante à modifier ou dupliquer. */
+  recipe?: Recipe;
+  /** Étape d'ouverture quand aucun brouillon n'est repris (banc local `?dev-local&etape=houblons`, T12b). */
+  step?: StepId;
+}
+
+interface BrewWizardProps {
+  seed?: WizardSeed;
+  /** Disable remote companion activity while keeping the local wizard usable. */
+  localOnly?: boolean;
+  /** Stable, account-scoped key supplied by the app; isolated component previews need no persistence. */
+  draftKey?: string;
+  /**
+   * Explicit local account partition for the V5.5 hop workbench, supplied by
+   * the app. It is never parsed from `draftKey`; without it the workbench stays closed.
+   */
+  ownerKey?: string;
+  stockItems: StockItem[];
+  config: AppConfig;
+  knownStyles: string[];
+  onClose: () => void;
+  /** Crée un article de stock à zéro et renvoie l'article créé. */
+  onCreateStockItem: (name: string, category: string, unit: string) => StockItem;
+  /**
+   * Retient durablement une fiche technique retrouvée par l'IA.
+   *
+   * ⚠️ Ce que ça règle, mot pour mot : « je veux aussi que quand l'IA va
+   * chercher une info elle soit sauvegardée et réutilisable. L'EBC d'un malt ne
+   * changera jamais ».
+   *
+   * Il avait raison sur les deux points. Ces valeurs sont des CONSTANTES
+   * PHYSIQUES du produit — un Château Munich fait 25 EBC cette année comme
+   * l'an prochain — et elles n'étaient écrites que dans la recette en cours.
+   * Le brassin suivant repartait donc d'une fiche vide, redemandait la même
+   * chose au même modèle, et repayait le même appel pour le même chiffre.
+   *
+   * Elles vont désormais à l'ARTICLE DE STOCK, qui est le bon porteur : c'est
+   * lui qui représente le produit, indépendamment de la recette qui l'emploie.
+   */
+  onLearnIngredient: (name: string, facts: Partial<StockItem>) => void;
+  /** `semaine` : C1, le lundi ISO de l'horizon choisi au récap (« 3 mois ») ; la feuille Brasser s'ouvre à cette semaine. */
+  onSave: (recipe: Recipe, thenBrew: boolean, semaine?: string) => void | Promise<void>;
+  /** Supprime la recette enregistrée qu'on modifie (36, 16.11), après la feuille de confirmation commune. */
+  onDelete?: (recipe: Recipe) => void;
+  /** Other writes made from this screen remain visible without covering its navigation. */
+  writeError?: string | null;
+  onDismissWriteError?: () => void;
+  /** Enregistre l'analyse d'eau modifiée — elle sert à tous les brassins. */
+  onSaveWaterSource: (source: WaterSource) => void;
+}
+
+/**
+ * A local draft is reopened silently only when it started from the saved recipe shown now.
+ * Otherwise the brewer chooses first: nothing is resumed, rewritten or saved before that choice.
+ */
+export const BrewWizard: React.FC<BrewWizardProps> = props => {
+  const [initialDraftState] = useState(() => readRecipeDraftState(props.draftKey));
+  const [serverBase] = useState(() => recipeServerBase(props.seed?.recipe));
+  const [resumeCheck] = useState(() => recipeDraftResumeCheck(initialDraftState, props.seed?.recipe));
+  const [choice, setChoice] = useState<'draft' | 'saved'>();
+  if ((resumeCheck === 'changed' || resumeCheck === 'unverified') && !choice && initialDraftState.status === 'available')
+    return <DraftFreshnessChoice reason={resumeCheck} draft={initialDraftState.draft} savedName={props.seed?.recipe?.name ?? ''}
+      onClose={props.onClose} onChoose={setChoice} />;
+  return <BrewWizardEditor {...props} initialDraftState={choice === 'saved' ? { status: 'absent' } : initialDraftState}
+    serverBase={serverBase} draftSetAside={choice === 'saved'} />;
+};
+
+const DraftFreshnessChoice: React.FC<{ reason: 'changed' | 'unverified'; draft: RecipeWizardDraft; savedName: string;
+  onClose: () => void; onChoose: (choice: 'draft' | 'saved') => void }> = ({ reason, draft, savedName, onClose, onChoose }) => {
+  const draftStep = STEPS.find(item => item.id === draft.step)?.label ?? draft.step;
+  return (
+    <PageShell title={`Modifier « ${savedName} »`} subtitle="Brouillon de cet appareil" onClose={onClose} compactDock className="recipe-wizard">
+      <section aria-labelledby="wz-draft-choice-title" className="space-y-2">
+        <h2 id="wz-draft-choice-title" className="text-sm font-semibold text-cave-50">
+          {reason === 'changed' ? 'La recette enregistrée a changé' : 'Brouillon à vérifier'}
+        </h2>
+        <p className="text-sm text-cave-200">{reason === 'changed'
+          ? 'Elle a été modifiée ailleurs depuis le début de ce brouillon (autre appareil ou restauration). Choisis la version à ouvrir.'
+          : 'Ce brouillon ne dit pas de quelle version enregistrée il part : impossible de savoir si elle a changé depuis. Choisis la version à ouvrir.'}</p>
+        <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-2 gap-y-0.5 text-sm">
+          <dt className="text-cave-400">Enregistrée</dt><dd className="min-w-0 text-cave-50">« {savedName} »</dd>
+          <dt className="text-cave-400">Brouillon</dt><dd className="min-w-0 text-cave-50">« {draft.recipe.name} » · arrêté à l’étape {draftStep}</dd>
+        </dl>
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2 gap-y-1.5 pt-1">
+          <button type="button" autoFocus aria-describedby="wz-draft-saved-hint" onClick={() => onChoose('saved')}
+            className="recipe-primary-action min-h-touch-lg px-2 rounded-control bg-ebc-straw text-cave-950 text-sm font-semibold transition-colors hover:brightness-105">
+            Ouvrir la version enregistrée
+          </button>
+          <p id="wz-draft-saved-hint" className="text-xs text-cave-400">Le brouillon reste sur cet appareil jusqu’à ta première modification.</p>
+          <button type="button" aria-describedby="wz-draft-resume-hint" onClick={() => onChoose('draft')}
+            className="min-h-touch px-2 rounded-control border border-cave-700 text-cave-50 text-sm font-semibold transition-colors hover:bg-cave-850">
+            Reprendre le brouillon
+          </button>
+          <p id="wz-draft-resume-hint" className="text-xs text-cave-400">À l’enregistrement, il remplacera la version enregistrée.</p>
+        </div>
+      </section>
+    </PageShell>
+  );
+};
+
+const BrewWizardEditor: React.FC<BrewWizardProps & {
+  initialDraftState: RecipeDraftReadState;
+  /** Fingerprint of the saved recipe shown now; written with every draft. */
+  serverBase?: string;
+  /** The brewer opened the saved version: the older draft stays until the first change replaces it. */
+  draftSetAside: boolean;
+}> = ({
+  seed,
+  draftKey,
+  ownerKey,
+  localOnly = false,
+  stockItems,
+  config,
+  knownStyles,
+  onClose,
+  onCreateStockItem,
+  onLearnIngredient,
+  onSave,
+  onDelete,
+  writeError,
+  onDismissWriteError,
+  onSaveWaterSource,
+  initialDraftState,
+  serverBase,
+  draftSetAside
+}) => {
+  const restoredDraft = initialDraftState.status === 'available' ? initialDraftState.draft : undefined;
+  // 36 (16.11) : seule une recette déjà enregistrée se supprime d'ici ; une nouvelle ou une copie (id neuf) n'a rien à supprimer.
+  const [recetteSupprimable] = useState<Recipe | null>(() => {
+    const id = seed?.recipe?.id;
+    if (!id) return null;
+    try { return StorageService.getRecipes().find((r) => r.id === id) ?? null; } catch { return null; }
+  });
+  const [confirmerSuppression, setConfirmerSuppression] = useState(false);
+  const draftReadOnly = initialDraftState.status === 'readOnly';
+  // Accepted documentary sheets belong to the Wizard, not the mounted step.
+  const [candidateSheets, setCandidateSheetsRaw] = useState<YeastCandidateSheets>(() => restoredDraft?.candidateSheets ?? {});
+  const candidateSheetsRef = useRef(candidateSheets);
+  candidateSheetsRef.current = candidateSheets;
+  const [candidateSheetsWarning, setCandidateSheetsWarning] = useState(restoredDraft?.candidateSheetsReadWarning);
+  const [yeastChange, setYeastChange] = useState<YeastChoiceChange>();
+  const base = restoredDraft?.recipe ?? seed?.recipe;
+  const [draftRecipeId] = useState(() => base?.id ?? `REC-${Date.now().toString(36).toUpperCase()}`);
+  // Fermer l'assistant efface le « repère » de Ma bière (ce qui a changé depuis qu'elle a été quittée) : il ne doit pas passer dans la recette suivante (test en ligne n° 4).
+  useEffect(() => () => oublierRepere(), []);
+  const [details, setDetailsRaw] = useState<Partial<Recipe>>(restoredDraft?.details ?? base ?? {});
+  const configuredBrewhouse = useMemo(() => {
+    const profile=config.brewhouses.find((b) => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
+    return profile ? currentInstallation(profile) : undefined;
+  }, [config.brewhouses,config.activeBrewhouseId]);
+  // A saved/imported plan keeps its calibration until an explicit adaptation.
+  const brewhouse = details.brewhouse ?? configuredBrewhouse;
+  // WFR-1 : un brouillon repris garde `details` (ce que le brasseur a saisi), sans le matériel que `build()` figeait : le matériel figé
+  // se lit aussi dans la recette du brouillon (`base`), sinon une recette neuve reprise passait pour une recette ancienne « à adopter ».
+  const installationNeedsAdoption = !!base && !!recipeInstallationAdoptionIssue({ brewhouse: details.brewhouse ?? base.brewhouse }, configuredBrewhouse);
+  const equipmentDiffers = details.brewhouse && configuredBrewhouse &&
+    (['id', 'volumeL', 'efficiencyPct', 'boilOffRatePct', 'deadSpaceL', 'equipment', 'preferences'] as const)
+      .some(key => JSON.stringify(details.brewhouse![key]) !== JSON.stringify(configuredBrewhouse[key]));
+
+  const [step, setStepNow] = useState<StepId>(restoredDraft?.step ?? seed?.step ?? 'identite');
+  // Changer d'étape est une transition (VUE-SAUTE, 21.11) : une étape dont un panneau se charge encore (lazy) ne fait plus cacher tout l'assistant par le
+  // Suspense du dessus (la rangée Retour / Suivant disparaissait ~75 ms, puis revenait) ; l'étape quittée reste à l'écran jusqu'à ce que la suivante soit prête.
+  const setStep = useCallback((s: SetStateAction<StepId>) => startTransition(() => setStepNow(s)), []);
+
+  // Banc local de l'étape Malts/sucres (p8-port) : `?malts=maquette` (développement seulement, éliminé du bundle de production) pose la recette et le
+  // stock de la maquette s1, SIMULÉS (src/ui/fermentescibles/apercuDev.ts), et passe à l'étape ; `?malts=sucre` (ou fruit, huit, vide, couleurs)
+  // choisit l'état (le hash ferait partir le wizard : popstate de l'app). Le stock simulé ne touche aucune donnée : un article créé là reste ici.
+  const [stockApercu, setStockApercu] = useState<StockItem[] | null>(null);
+  const stockPourEtape = stockApercu ?? stockItems;
+  const [creerApercu, setCreerApercu] = useState<((s: StockItem[], n: string, c: string, u: string) => StockItem) | null>(null);
+  // RL-12 : un article créé par cet assistant est noté pour ce brouillon ; « Abandonner » le retire (src/services/articlesDuBrouillon.ts).
+  const creerArticleDuBrouillon = (name: string, category: string, unit: string): StockItem => {
+    const cree = onCreateStockItem(name, category, unit);
+    noterArticleCree(draftKey, cree.ref);
+    return cree;
+  };
+  const creerArticleEtape = (name: string, category: string, unit: string): StockItem => {
+    if (!stockApercu || !creerApercu) return creerArticleDuBrouillon(name, category, unit);
+    const cree = creerApercu(stockApercu, name, category, unit);
+    setStockApercu([...stockApercu, cree]);
+    return cree;
+  };
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      const q = new URLSearchParams(location.search).get('malts');
+      if (q === null) return;
+      const etat = q && q !== 'maquette' ? q : '';
+      import('../ui/fermentescibles/apercuDev').then(({ apercuMalts, articleApercu }) => {
+        const a = apercuMalts(etat);
+        setCreerApercu(() => articleApercu);
+        setStockApercu(a.stock); setFermentables(a.fermentables); setStyle(a.style); setVolumeL(a.volumeL); setStep('fermentescibles');
+        // Les contrôles de la maquette attendent que l'état soit posé : il se dit sur <body>.
+        setTimeout(() => { document.body.dataset.apercu = etat || 'repos'; }, 80);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const [validationRequested, setValidationRequested] = useState(false);
+  const [focusIssue, setFocusIssue] = useState<RecipeFieldIssue>();
+  const [saveError, setSaveError] = useState('');
+  const writeMessage = [...new Set([saveError, writeError].filter(Boolean))].join('\n');
+  const writeAlert = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!writeMessage) return;
+    const frame = requestAnimationFrame(() => {
+      writeAlert.current?.focus({ preventScroll: true });
+      writeAlert.current?.scrollIntoView({ block: 'nearest' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [writeMessage]);
+  const [saving, setSaving] = useState(false);
+  const [draftNotice, setDraftNotice] = useState(restoredDraft ? 'Brouillon repris sur cet appareil.'
+    : draftSetAside ? 'Version enregistrée ouverte. Le brouillon reste sur cet appareil jusqu’à ta première modification.' : '');
+  // TL-19 : « Nouvelle recette » peut rouvrir un brouillon. La reprise se dit à l'écran, lisible et cadrée, tant que l'étape n'a pas changé
+  // (k3 : 8 s en petit gris ne se voyaient pas) ; elle offre « Repartir d'une recette vierge » (jette le brouillon après confirmation), puis
+  // reste annoncée aux lecteurs d'écran seulement (25.10 : elle ne garde pas sa ligne).
+  const [repriseDite, setRepriseDite] = useState(!!restoredDraft);
+  const etapeDeReprise = useRef(step);
+  useEffect(() => {
+    if (repriseDite && step !== etapeDeReprise.current) setRepriseDite(false);
+  }, [repriseDite, step]);
+  const [draftAside, setDraftAside] = useState(draftSetAside);
+  const [draftError, setDraftError] = useState('');
+  const [discarding, setDiscarding] = useState(false);
+  // Étape Houblons (drapeau hopV4) : IBU en plage lu par l'étape sur la recette à l'écran, pour le bandeau commun (t12c).
+  const [mesuresV4, setMesuresV4] = useState<MesuresEtape | null>(null);
+  // Ordinateur (≥ 640 px, comme `sm:`) : « Abandonner » passe par l'en-tête de la coquille ; téléphone : par la rangée mobile.
+  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.('(min-width: 640px)').matches);
+  useEffect(() => {
+    const m = typeof window !== 'undefined' ? window.matchMedia?.('(min-width: 640px)') : undefined;
+    if (!m) return;
+    const suivre = () => setIsDesktop(m.matches);
+    m.addEventListener?.('change', suivre);
+    return () => m.removeEventListener?.('change', suivre);
+  }, []);
+  const draftFinished = useRef(false);
+  const [hopGuideBusy, setHopGuideBusy] = useState(false);
+  // Manual hop lines are the correction path under the V5.5 workbench; a field
+  // correction request opens this disclosure through its native toggle.
+  const [hopLinesOpen, setHopLinesOpen] = useState(false);
+  // The lot, COA and contact-conditions editor renders only once its disclosure is opened.
+  const [hopContextOpen, setHopContextOpen] = useState(false);
+  const [yeastFocus, setYeastFocus] = useState<{ goal: import('../domain/yeastRecipeDesign').YeastRecipeGoal; yeastId?: string }>();
+  const yeastSelectionEpoch = useRef(0);
+  useEffect(() => { if (step !== 'levure') setYeastFocus(undefined); }, [step]);
+  // T12 : l'étape Houblons v4 est demandée dès l'ouverture du wizard (drapeau allumé), pour être prête à l'étape 3.
+  useEffect(() => { if (hopV4Actif) chargerEtapeHoublonsV4().catch(() => {}); }, []);
+  const [yeastSelection, setYeastSelection] = useState(0);
+  // Étape Levure : la vue choisie et les levures posées dans Comparer vivent ici, pour que le pied « Comparer (n) » les lise.
+  const [vueLevure, setVueLevure] = useState<VueLevure>('ma-levure');
+  const [levuresComparees, setLevuresComparees] = useState<string[]>([]);
+  const yeastSupply = useYeastSupply();
+  const knowledge = useStorageValue(StorageService.getHopKnowledge);
+  const styles = useMemo(() => brewingStyles(knowledge), [knowledge]);
+  /* Clavier ouvert : le bandeau de mesures passe sur une seule ligne. */
+  const density = useDensity();
+  const tight = density === 'tight';
+  const [importing, setImporting] = useState(false);
+
+  // --- Étape 1 : identité ---------------------------------------------------
+  // G1 (D396) : une recette neuve reçoit un nom posé (« IPA n° 3 », numéro libre suivant) ; tant qu'il n'est pas touché, il suit le style.
+  const [nomsRecettes] = useState<string[]>(() => { try { return StorageService.getRecipes().map((r) => r.name ?? ''); } catch { return []; } });
+  const recetteNeuve = !base && !seed?.title;
+  const nomPose = (st: string) => (recetteNeuve ? nomParDefaut({ genre: 'recette', style: st }, nomsRecettes) ?? '' : '');
+  const [name, setNameRaw] = useState(() => base?.name ?? seed?.title ?? nomPose(styleNomme(base?.style ?? '', styles)));
+  // RC-2 : un style écrit en code seul (« 21A ») devient son nom, sinon ni l'eau ni la levure ne le reconnaissent (`styleRecette.ts`).
+  const styleDeBase = useMemo(() => styleNomme(base?.style ?? '', styles), [base?.style, styles]);
+  const [style, setStyleRaw] = useState(styleDeBase);
+  const matchingStyles = useMemo(() => matchBrewingStyles(style, styles), [style, styles]);
+  const [volumeL, setVolumeLRaw] = useState(base?.volumeL ?? defaultNewRecipeVolume(brewhouse));
+  const [equipmentNotice,setEquipmentNotice]=useState('');
+  /**
+   * Carbonatation visée, en volumes de CO2.
+   *
+   * Lue à l’import (« force carbonate to 2.5 volumes ») : c’est une consigne
+   * chiffrée du procédé, qui se perdait dans le texte libre.
+   */
+  const [carboTarget, setCarboTargetRaw] = useState<string>(base?.carboTarget ?? '');
+  const [brewDate, setBrewDateRaw] = useState(base?.brewDate ?? '');
+  const [boilMin, setBoilMinRaw] = useState(base?.boilMin ?? 60);
+
+  // --- Étape 2 : fermentescibles -------------------------------------------
+  const [fermentables, setFermentablesRaw] = useState<Fermentable[]>(
+    () => base?.fermentables ?? (base?.malts ?? []).map(asGrain)
+  );
+  const [addKind, setAddKind] = useState<FermentableKind>('grain');
+
+  /**
+   * Le rang dont la quantité doit prendre le focus, au clavier seulement.
+   *
+   * Remis à `null` dès que le focus est donné : sans ça, le champ se
+   * re-focaliserait à chaque rendu et l'on ne pourrait plus en sortir.
+   */
+  const coarse = useCoarsePointer();
+  const [focusHop, setFocusHop] = useState<number | null>(null);
+  // Les houblons retirés, du plus ancien au dernier : « Annuler » les rend pendant 6 s (TE-24, BR-2 : Malts/sucres l'offrait déjà ; un double toucher en retire deux).
+  const [hopsRetires, setHopsRetires] = useState<Array<{ h: HopIngredient; i: number }>>([]);
+  const minutHopRetrait = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(minutHopRetrait.current), []);
+
+  /*
+   * `autoFocus` de React ne s'applique qu'au MONTAGE du champ : le focus est
+   * donc déjà donné quand cet effet passe. On efface l'index pour qu'un
+   * remontage ultérieur de ce même rang — un changement de clé, un tri — ne
+   * vienne pas reprendre le focus sous les doigts du brasseur.
+   */
+  useEffect(() => {
+    if (focusHop !== null) setFocusHop(null);
+  }, [focusHop]);
+
+  // --- Étape 3 : houblons ---------------------------------------------------
+  const [hops, setHopsRaw] = useState<HopIngredient[]>(base?.hops ?? []);
+  const [hopStage, setHopStage] = useState<HopStage>('boil');
+
+  // --- Étape 4 : levure -----------------------------------------------------
+  const [yeast, setYeastRaw] = useState<YeastSpec>(
+    base?.yeast ?? { name: '' }
+  );
+
+  // --- Étape 5 : paliers et fermentation ------------------------------------
+  const [mashSteps, setMashStepsRaw] = useState<TempStep[]>(
+    () => base?.mash?.steps ?? mashProgramForStyle(styleDeBase,base?.styleRef,styles).steps
+  );
+  const [spargeType, setSpargeTypeRaw] = useState<'fly' | 'batch' | 'none'>(
+    base?.mash?.spargeType ?? 'batch'
+  );
+  const [ferment, setFermentRaw] = useState<FermentationStep[]>(
+    () => base?.fermentation ?? fermentProgramForStyle(styleDeBase,base?.styleRef,styles).steps
+  );
+
+  // --- Étape 6 : eau et sels ------------------------------------------------
+  // Only a snapshot naming the plan's own reference is its analysis (a legacy plan without reference keeps its snapshot).
+  const [recipeWaterSource, setRecipeWaterSourceRaw] = useState<WaterSource | undefined>(() => frozenWaterSource(base?.waterPlan));
+  // The plan names its analysis exactly: a declared value, blank included, is never read as an omission. The
+  // built-in default is found by its identity, like any configured source; a blank identifier resolves nothing.
+  const waterReferencePlan = declaredWaterSourceId(details.waterPlan) !== undefined ? details.waterPlan : base?.waterPlan;
+  const waterSourceReference = declaredWaterSourceId(waterReferencePlan);
+  const waterReferenceBlank = waterSourceReference !== undefined && isBlankWaterSourceId(waterSourceReference);
+  const referencedWaterSource = waterSourceReference === undefined || waterReferenceBlank ? undefined :
+    config.waterSources?.find((w) => w.id === waterSourceReference) ??
+    (waterSourceReference === DEFAULT_WATER_SOURCE.id ? DEFAULT_WATER_SOURCE : undefined);
+  // An analysis neither frozen nor found stays unresolved: the active source only serves provisional
+  // calculations, and becomes this recipe's analysis through an explicit choice only.
+  const waterSourceUnresolved = !recipeWaterSource && waterSourceReference !== undefined && !referencedWaterSource;
+  // The configured water a brewer may explicitly retain, and the provisional water of an unresolved reference.
+  const configuredWaterSource =
+    config.waterSources?.find((w) => w.id === config.activeWaterSourceId) ??
+    config.waterSources?.[0] ??
+    DEFAULT_WATER_SOURCE;
+  const waterSource = recipeWaterSource ?? referencedWaterSource ?? configuredWaterSource;
+  // An analysis without usable identity only reaches this state through a plan that omits its reference (legacy
+  // recipe or import): it stays the recipe's own analysis, its identity stays absent instead of becoming a declared
+  // blank reference, and only an explicit gesture replaces it. A declared blank reference never resolves to it.
+  const anonymousWaterAnalysis = !!recipeWaterSource && !hasUsableWaterIdentity(recipeWaterSource);
+
+  const [waterDraft, setWaterRaw] = useState<WaterState>(() => restoredDraft?.water ?? ({
+    roLimitL: base?.waterPlan?.roLimitL,
+    autoTreatment: base?.waterPlan?.autoTreatment,
+    saltOverrides: base?.waterPlan?.saltOverrides,
+    ratioOverride: base?.waterPlan?.ratioOverride,
+    diRatioPct: base?.waterPlan?.diRatioPct ?? base?.water?.diRatioPct ?? 50,
+    // Absent = le rinçage suit l'empâtage. On ne le recopie surtout pas : la
+    // valeur `undefined` porte l'information « lié ».
+    spargeDiRatioPct: base?.waterPlan?.spargeDiRatioPct,
+    // Le style d'eau se devine du style de bière saisi — c'est le point de
+    // départ le plus juste, et il reste modifiable.
+    styleCode: base?.waterPlan?.targetProfileId ?? styleWaterForReference(styleDeBase).code,
+    // Une cible chiffrée enregistrée reprend la main sur le style deviné du nom.
+    customTarget: base?.waterPlan?.targetIons
+      ? {
+          name: base.waterPlan.targetName ?? 'Cible de la recette',
+          ions: base.waterPlan.targetIons
+        }
+      : undefined,
+    doses: base?.waterPlan?.mash
+      ? mergeDoses(base.waterPlan.mash, base.waterPlan.sparge)
+      : {},
+    saltSplit: base?.waterPlan ? customSaltSplit(base.waterPlan) : undefined,
+    disabled: base?.waterPlan?.disabled ?? [],
+    acidId: base?.waterPlan?.acid?.id ?? 'lactique',
+    acidOverride: base?.waterPlan?.acidOverride ?? (base?.waterPlan?.treatmentVersion === 2
+      ? undefined : base?.waterPlan?.acid && { mash: base.waterPlan.acid.mash, sparge: base.waterPlan.acid.sparge }),
+    mashWaterL: base?.waterPlan?.mashWaterL ?? 0,
+    spargeWaterL: base?.waterPlan?.spargeWaterL ?? 0,
+    allSaltsInMash: base?.waterPlan?.allSaltsInMash ?? true,
+    // Les pH relevés à la cuve reviennent avec la recette : ce sont des mesures,
+    // et elles se perdaient à chaque réouverture.
+    mashPh: base?.waterPlan?.measuredPh,
+    spargePh: base?.waterPlan?.measuredSpargePh
+  }));
+  const automaticWater = useMemo(() => {
+    const state = constrainRo(waterDraft);
+    // Automatic doses are refitted against the recipe's own analysis only.
+    if (!state.autoTreatment || state.mashWaterL <= 0 || waterSourceUnresolved) return { water: state, error: '' };
+    try {
+      const { plan } = replanRecipeWater({
+        style, volumeL, fermentables, hops, boilMin, nolo:details.nolo,
+        efficiencyPct: details.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75,
+        waterPlan: { ...state, sourceId: waterSource.id, sourceSnapshot: waterSource,
+          targetProfileId: state.styleCode, targetIons: state.customTarget?.ions,
+          targetName: state.customTarget?.name, targetPh: details.waterPlan?.targetPh ?? 5.4,
+          ...splitDoses(state.doses, state.mashWaterL, state.spargeWaterL, state.allSaltsInMash !== false),
+          acid: { id: state.acidId, mash: 0, sparge: 0 } }
+      });
+      return { water: { ...state, doses: mergeDoses(plan.mash, plan.sparge),
+        saltSplit: { mash: plan.mash, sparge: plan.sparge } }, error: '' };
+    } catch (e) {
+      return { water: state, error: (e as Error).message };
+    }
+  }, [waterDraft, waterSource, waterSourceUnresolved, style, volumeL, fermentables, hops, boilMin, details.nolo, details.efficiencyPct, details.waterPlan?.targetPh, brewhouse]);
+  const water = automaticWater.water;
+
+  // Follow the beer style until an explicit water profile is chosen. The mode is the recorded origin of the saved
+  // profile; a profile without one (older plans, imported codes) is kept, whatever its value. A local draft keeps
+  // its own flag, and the origin its build() recorded tells a known choice from an unknown one.
+  const [initialWaterProfileMode] = useState<WaterProfileMode>(() => restoredDraft?.waterProfileAuto === true ? 'style'
+    : restoredDraft?.waterProfileAuto === false ? waterProfileModeOf(base?.waterPlan) === 'choice' ? 'choice' : 'legacy'
+    : waterProfileModeOf(base?.waterPlan));
+  const waterProfileMode = useRef<WaterProfileMode>(initialWaterProfileMode);
+  const changeStyle = (next: string) => {
+    if (recetteNeuve && (!name.trim() || name === nomPose(style))) setNameRaw(nomPose(next));
+    setStyle(next);
+    const resolved=resolveBrewingStyle(next,undefined,styles);
+    setDetails(d=>({...d,styleRef:resolved?.ref}));
+    if (waterProfileMode.current === 'style' && resolved) {
+      setWater(w => ({ ...w, styleCode: styleWaterForReference(next,resolved.ref,styles).code, ratioOverride: undefined }));
+    }
+  };
+
+  /**
+   * Les volumes ont-ils été posés à la main ?
+   *
+   * ⚠️ Tant que non, ils SUIVENT la facture de grain. L'ancien effet ne se
+   * déclenchait qu'une fois, à la première saisie de grain : ajouter ensuite un
+   * malt, changer le volume ou passer en BIAB laissait des volumes périmés — et
+   * comme les sels se dosent au litre, des doses fausses.
+   */
+  const [volumesEdited, setVolumesEditedRaw] = useState(
+    () => restoredDraft?.volumesEdited ?? base?.installation?.manualWaterSplit ?? (base?.waterPlan?.mashWaterL ?? 0) > 0
+  );
+
+  /**
+   * L'épaisseur de maische, en L/kg, quand elle est reprise à la main.
+   *
+   * ⚠️ Elle ne vivait QUE dans le profil d'installation, qu'aucun écran ne sait
+   * modifier. Or c'est elle qui décide du partage empâtage/rinçage : sur un
+   * monocuve on empâte épais ou mince selon le panier, et le rinçage suit. La
+   * laisser hors d'atteinte, c'était figer le volume de rinçage sur une valeur
+   * que le brasseur ne reconnaissait pas.
+   */
+  const [mashRatioOverride, setMashRatioOverrideRaw] = useState<number | null>(
+    restoredDraft ? restoredDraft.mashRatioOverride : base?.nolo?.planning?.simulation ? null :
+      base?.installation?.manualWaterSplit === false ? null : base?.mash?.ratioLPerKg ?? null
+  );
+
+  const [notes, setNotesRaw] = useState(base?.instructions ?? seed?.description ?? '');
+
+  // --- Calculs en direct ----------------------------------------------------
+
+  /** Le grain seul. Un brasseur ne met pas le sucre dans sa facture de grain. */
+  // Le grain EMPÂTÉ : un grain bouilli ou au fermenteur (donnée ancienne) ne donne ni couleur ni absorption d'eau (AM 1, 2 et A7, 08.11).
+  const grains = useMemo(() => fermentables.filter(grainEmpate), [fermentables]);
+  const totalGrist = useMemo(() => grains.reduce((s, f) => s + f.weightKg, 0), [grains]);
+
+  // La couleur vient de tout ce qui colore le moût, sirop candi compris (CF-1) : la même fonction que sur la fiche et la liste.
+  const color = useMemo(() => Number.isFinite(volumeL) ? recipeBeerColor(fermentables, volumeL) : null, [fermentables, volumeL]);
+
+  const efficiency = details.efficiencyPct ?? brewhouse?.efficiencyPct ?? 75;
+  // Preserve the author's stated targets until the recipe they describe changes.
+  const fermentationProcess = details.yeastDesign?.process ?? 'unspecified';
+  const metricKey = JSON.stringify([volumeL, boilMin, fermentables, hops, yeast, efficiency, fermentationProcess]);
+  const [targetBasis, setTargetBasisRaw] = useState(restoredDraft?.targetBasis ?? metricKey);
+  /*
+   * #97 (ARB-97): a change of the brewer is any write to the recipe state above outside `applyAutomatic`. Each one
+   * counts in `brewerEdits`, set in the same call as its value and so rendered in the same commit: no clock, no
+   * gesture window. The raw setters are referenced only by their wrappers below.
+   */
+  const automatic = useRef(0);
+  const [brewerEdits, setBrewerEdits] = useState(0);
+  // The same count at once, rendered or not: whether the brewer wrote anything since a save started.
+  const brewerWrites = useRef(0);
+  /** Runs writes that do not come from the brewer (derived settings, local completions): they move the comparison
+   * baseline instead of creating the draft. Synchronous only: `() => undefined` refuses an async function, whose
+   * writes after an await would count as the brewer's. */
+  const applyAutomatic = useCallback((apply: () => undefined) => {
+    automatic.current += 1;
+    try { apply(); } finally { automatic.current -= 1; }
+  }, []);
+  const brewerSetter = useCallback(<T,>(set: Dispatch<SetStateAction<T>>) => (value: SetStateAction<T>) => {
+    if (automatic.current === 0) { brewerWrites.current += 1; setBrewerEdits(edits => edits + 1); }
+    set(value);
+  }, []);
+  const setCandidateSheets = useMemo(() => brewerSetter(setCandidateSheetsRaw), [brewerSetter]);
+  const setDetails = useMemo(() => brewerSetter(setDetailsRaw), [brewerSetter]);
+  const setName = useMemo(() => brewerSetter(setNameRaw), [brewerSetter]);
+  const setStyle = useMemo(() => brewerSetter(setStyleRaw), [brewerSetter]);
+  const setVolumeL = useMemo(() => brewerSetter(setVolumeLRaw), [brewerSetter]);
+  const setCarboTarget = useMemo(() => brewerSetter(setCarboTargetRaw), [brewerSetter]);
+  const setBrewDate = useMemo(() => brewerSetter(setBrewDateRaw), [brewerSetter]);
+  const setBoilMin = useMemo(() => brewerSetter(setBoilMinRaw), [brewerSetter]);
+  const setFermentables = useMemo(() => brewerSetter(setFermentablesRaw), [brewerSetter]);
+  const setHops = useMemo(() => brewerSetter(setHopsRaw), [brewerSetter]);
+  const setYeast = useMemo(() => brewerSetter(setYeastRaw), [brewerSetter]);
+  const setMashSteps = useMemo(() => brewerSetter(setMashStepsRaw), [brewerSetter]);
+  const setSpargeType = useMemo(() => brewerSetter(setSpargeTypeRaw), [brewerSetter]);
+  const setFerment = useMemo(() => brewerSetter(setFermentRaw), [brewerSetter]);
+  // BR-30 : un toucher = un retrait, avec « Annuler » (src/ui/useRetraitAnnulable.tsx).
+  const retraitPalier = useRetraitAnnulable(mashSteps, setMashSteps, (s) => s.name || 'Palier');
+  const retraitPhase = useRetraitAnnulable(ferment, setFerment, (s) => s.name || 'Phase');
+  const setRecipeWaterSource = useMemo(() => brewerSetter(setRecipeWaterSourceRaw), [brewerSetter]);
+  const setWater = useMemo(() => brewerSetter(setWaterRaw), [brewerSetter]);
+  const setVolumesEdited = useMemo(() => brewerSetter(setVolumesEditedRaw), [brewerSetter]);
+  const setMashRatioOverride = useMemo(() => brewerSetter(setMashRatioOverrideRaw), [brewerSetter]);
+  const setNotes = useMemo(() => brewerSetter(setNotesRaw), [brewerSetter]);
+  const setTargetBasis = useMemo(() => brewerSetter(setTargetBasisRaw), [brewerSetter]);
+  // Yeast/process changes can invalidate fermentation estimates, never a supplied OG or IBU.
+  let originalMetricInputs: unknown[] = [];
+  try { const parsed = JSON.parse(targetBasis); if (Array.isArray(parsed)) originalMetricInputs = parsed; } catch { /* Old malformed drafts have no retained targets. */ }
+  const currentMetricInputs = [volumeL, boilMin, fermentables, hops, yeast, efficiency, fermentationProcess];
+  const sameInputs = (indices: number[]) => indices.every(index => JSON.stringify(originalMetricInputs[index]) === JSON.stringify(currentMetricInputs[index]));
+  const keepOgTarget = sameInputs([0, 2, 5]);
+  const keepIbuTarget = sameInputs([0, 1, 2, 3, 5]);
+  // Sourced facts about the same yeast refine its FG/ABV estimate. Only what is pitched, its identity or the
+  // recipe's own attenuation hypothesis makes the stated FG/ABV targets stale.
+  const keepTargets = metricKey === targetBasis ||
+    sameInputs([0, 1, 2, 3, 5, 6]) && sameYeastForTargets(originalMetricInputs[4], yeast);
+  const ogPredicted = useMemo(
+    () => {
+      if (!details.nolo?.enabled) return yeastRecipeComputedOg({ fermentables, volumeL, efficiencyPct: efficiency });
+      if (details.nolo.process === 'secondRunnings') return details.nolo.secondRunnings?.sg ?? null;
+      if (details.nolo.process === 'coldExtraction') return null;
+      // Fruit and priming enter later and have their own NOLO operation.
+      const wort = fermentables.filter(f => f.use !== 'fermentation');
+      const usesGrain = wort.some(f => f.kind === 'grain' && f.weightKg > 0);
+      const declaredYield = details.efficiencyPct ?? brewhouse?.efficiencyPct;
+      if (usesGrain && !(declaredYield != null && declaredYield > 0 && declaredYield <= 100)) return null;
+      const extract = BrewingMath.extractPoints(wort, volumeL, usesGrain ? declaredYield! : 100, details.nolo.planning?.exactExtract ? 'full' : 'rounded');
+      return extract ? 1 + extract.total / 1000 : null;
+    },
+    [fermentables, volumeL, efficiency,details.efficiencyPct,brewhouse?.efficiencyPct,details.nolo?.enabled,details.nolo?.process,details.nolo?.secondRunnings?.sg,details.nolo?.planning?.exactExtract]
+  );
+  const og = (keepOgTarget ? details.ogTarget : undefined) ?? ogPredicted ?? 0;
+  // Option A (décision du pilote, test en ligne n° 5/6) : la cible retenue gagne PARTOUT (bandeau, alertes, fiche) ; si elle diffère du calcul en direct, l'écran
+  // le dit en une ligne courte, au lieu de montrer 1,068 à une étape et 1,066 à l'autre. Règle unique : `recipeMetrics.ts`.
+  const ogRetenue = keepOgTarget && typeof details.ogTarget === 'number' && details.ogTarget > 1 ? details.ogTarget : null;
+  // BR-22 : sans aucun fermentescible, la cible retenue s'affichait comme une OG calculée (« Grain 0 kg · OG 1,066 ») : l'écran dit qu'elle est retenue, pas calculée.
+  const ecartOg = ogRetenue != null && ogPredicted != null && formatDensite(ogRetenue) !== formatDensite(ogPredicted)
+    ? `OG visée ${formatDensite(ogRetenue)} · calculée ${formatDensite(ogPredicted)} avec tes malts`
+    : ogRetenue != null && ogPredicted == null && !(totalGrist > 0)
+      ? `OG visée ${formatDensite(ogRetenue)} · aucun fermentescible pour la calculer` : null;
+  // TE-13 : « visée » (le mot du brasseur) ; le toucher explique l'écart, la ligne s'efface d'elle-même dès qu'on touche un malt (la cible tombe, le calcul la remplace).
+  const ecartOgTitre = 'La cible saisie ; le calcul diffère car les malts ou le rendement ont changé';
+
+  const boilOg = useMemo(() => details.nolo?.enabled ? og || null : yeastRecipeBoilOg({ fermentables, volumeL, efficiencyPct: efficiency } as Recipe, { og: og || null }).og,
+    [details.nolo?.enabled, og, fermentables, volumeL, efficiency]);
+  const bitterness = useMemo(() => hotBitterness(hops, volumeL, boilOg, boilMin), [hops, volumeL, boilOg, boilMin]);
+  const ibu = bitterness.total == null ? null : Math.round(bitterness.total);
+
+  // The yeast step, recap and persisted estimates share the same explicit hypotheses.
+  // A documentary interval is never silently collapsed into an invented midpoint.
+  const yeastProjection = useMemo(() => {
+    if (details.nolo?.enabled) return null;
+    const inputs = { yeast, volumeL, fermentables, hops, style, styleRef: details.styleRef, efficiencyPct: efficiency, ogTarget: og,
+      yeastDesign: details.yeastDesign } as Recipe;
+    return projectYeastRecipe(inputs, { reference: resolveFermentationYeast(inputs, yeastReferences(knowledge)) });
+  }, [yeast, volumeL, fermentables, hops, style, details.styleRef, efficiency, og, details.nolo?.enabled, details.yeastDesign, knowledge]);
+  const attenuation = yeastProjection?.attenuation?.range.min === yeastProjection?.attenuation?.range.max ? yeastProjection?.attenuation?.range.min : null;
+  const fgPredicted = yeastProjection?.fg.range?.min === yeastProjection?.fg.range?.max ? yeastProjection?.fg.range?.min ?? null : null;
+  const abvPredicted = yeastProjection?.abv.range?.min === yeastProjection?.abv.range?.max ? yeastProjection?.abv.range?.min ?? null : null;
+
+
+  /**
+   * Volumes d'eau, déduits du grain tant que Gaëtan ne les a pas posés.
+   *
+   * ⚠️ Deux corrections. Le calcul est celui de `BrewingMath.waterVolumes` — le
+   * seul modèle, celui qui compte l'absorption du grain (~0.96 L/kg) ; la
+   * version d'ici posait `rinçage = volume × 1.25 − empâtage` et l'oubliait,
+   * soit 4.5 L d'écart sur 6 kg de grain. Et il se REJOUE quand la facture, le
+   * volume ou le type de rinçage changent, au lieu de se figer au premier
+   * remplissage.
+   */
+  /**
+   * L'installation, épaisseur de maische reprise à la main si elle l'a été.
+   *
+   * ⚠️ Un seul objet, partagé par les TROIS appels à `waterVolumes` : le calcul
+   * automatique, le recalcul du rinçage et l'écart affiché. Trois listes
+   * d'arguments recopiées divergeaient à la première correction.
+   */
+  const rig = useMemo(
+    () =>
+      mashRatioOverride && mashRatioOverride > 0
+        ? { ...brewhouse, mashRatioLPerKg: mashRatioOverride, ...(brewhouse?.preferences ? {preferences:{...brewhouse.preferences,preferredMashRatioLPerKg:mashRatioOverride,increaseMashToLimitSparge:false}} : {}) }
+        : brewhouse,
+    [brewhouse, mashRatioOverride]
+  );
+
+  /** Ce que le houblon boira dans la cuve — le houblonnage à cru en est exclu. */
+  const kettleHopG = useMemo(() => kettleHopGrammesBornes(hops, volumeL), [hops, volumeL]);
+
+  /** ID-TROP-AMBIGU (19.11) : l'eau ajoutée pendant ou après l'ébullition (L froids), quand il l'a choisie ; le plan d'eau la calcule. */
+  const [eauAjouteeL, setEauAjouteeL] = useState<number>(() => details.installation?.topUpL ?? 0);
+  const eauAjouteeChoisie = !!details.installation?.kettleTopUp;
+
+  useEffect(() => {
+    if (volumesEdited || !Number.isFinite(totalGrist) || totalGrist <= 0 || !Number.isFinite(volumeL) || !Number.isFinite(boilMin) || (details.nolo?.enabled&&details.nolo.process==='secondRunnings')) return;
+    const v = BrewingMath.waterVolumes(
+      totalGrist,
+      volumeL,
+      rig,
+      spargeType,
+      boilMin,
+      kettleHopG,
+      eauAjouteeChoisie ? { topUpToKettle: true } : undefined
+    );
+    // Automatic setting of the water volumes: never a change of the brewer.
+    applyAutomatic(() => {
+      setWater((w) =>
+        w.mashWaterL === v.mashWaterL && w.spargeWaterL === v.spargeWaterL
+          ? w
+          : { ...w, mashWaterL: v.mashWaterL, spargeWaterL: v.spargeWaterL }
+      );
+      setEauAjouteeL(v.topUpL ?? 0);
+    });
+  }, [totalGrist, volumeL, rig, spargeType, boilMin, kettleHopG, volumesEdited,details.nolo?.process, eauAjouteeChoisie]);
+
+  /** Son choix (19.11) : « de l'eau à la fin après l'ebul ou durant ». Les volumes d'eau suivent de nouveau le calcul, comme pour le rinçage. */
+  const choisirEauAjoutee = (oui: boolean) => {
+    setDetails(d => ({ ...d, installation: { ...d.installation, kettleTopUp: oui || undefined } }));
+    if (!oui) setEauAjouteeL(0);
+    setVolumesEdited(false);
+  };
+  /** « Juste alors ajouter un renvoi » : l'étape Eau, au curseur Eau / grain (ou à l'interrupteur Rinçage s'il n'y a pas de rinçage). */
+  const versEauGrain = () => {
+    setStep('eau');
+    let essais = 0;
+    const viser = () => {
+      const cible = document.getElementById('w-mash-ratio') ?? document.querySelector<HTMLElement>('.ew-cuve [role="switch"]');
+      if (cible) { cible.scrollIntoView({ block: 'center' }); cible.focus({ preventScroll: true }); }
+      else if (++essais < 20) window.setTimeout(viser, 50);
+    };
+    window.setTimeout(viser, 0);
+  };
+
+  /**
+   * Les deux doses d'acide, calculées ici pour être ENREGISTRÉES.
+   *
+   * Même chaîne que l'atelier de l'eau, et par les mêmes fonctions du domaine :
+   * les sels alcalins ne comptent que dans l'eau d'empâtage, l'acide de rinçage
+   * ne voit que l'eau de rinçage.
+   */
+  /**
+   * Le plan d'eau COMPLET, calculé une fois pour tout le monde.
+   *
+   * ⚠️ Il ne servait qu'à enregistrer les deux doses d'acide. Le récapitulatif,
+   * lui, n'affichait que trois volumes : le brasseur arrivait à la dernière
+   * page sans savoir combien d'osmosée préparer, quel profil il visait, ni
+   * quels sels peser — il fallait remonter à l'étape 6 pour les relire.
+   */
+  const waterRecap = useMemo(() => {
+    const spargeDi = water.spargeDiRatioPct ?? water.diRatioPct;
+    const allSaltsInMash = water.allSaltsInMash !== false;
+    const mashRatio = totalGrist > 0 ? water.mashWaterL / totalGrist : 0;
+    const waterModelIssue = noloWaterModelIssue(details.nolo, mashRatio);
+    const band = targetRaForGrist(color?.ebc ?? null, grains, mashRatio);
+    const mashAlkalinity = { ceiling: raSaltCeilingForGrist(grains, mashRatio), target: raForGrist(grains, mashRatio) };
+    const alkaliGoal = alkalineSaltGoal(band, mashAlkalinity.ceiling);
+
+    /* La cible saisie l'emporte sur le style de la liste — comme dans l'atelier. */
+    const style = water.customTarget
+      ? styleFromTargetIons(water.customTarget.ions, water.customTarget.name)
+      : styleByCode(water.styleCode);
+    // NOLO sans modèle d'empâtage pris en charge : ne pas fabriquer de dose.
+    // Les seuls apports affichés viennent des doses explicitement retenues.
+    const acidOverride = waterModelIssue
+      ? { mash: water.acidOverride?.mash ?? 0, sparge: water.acidOverride?.sparge ?? 0 }
+      : water.acidOverride;
+    const treatment = calculateWaterTreatment(waterSource,
+      { ...water, acidOverride, ...waterTreatmentTarget(style, water.customTarget?.ions, mashAlkalinity) }, band);
+
+    return {
+      targetStatus: {
+        style, treatment, raBand: band, beerEbc: color?.ebc ?? null,
+        phEstimate: waterModelIssue ? null : estimateMashPh(grains, treatment.mashPhRa,
+          totalGrist > 0 ? water.mashWaterL / totalGrist : 0),
+        targetPh: details.waterPlan?.targetPh,
+        customTarget: !!water.customTarget,
+        mashWaterL: water.mashWaterL, spargeWaterL: water.spargeWaterL
+      },
+      sourceName: waterSource.name,
+      styleName: style.name,
+      style,
+      sourceIons: waterSource,
+      startIons: treatment.startTotal,
+      wortIons: treatment.treatedTotal,
+      mashWaterL: water.mashWaterL,
+      spargeWaterL: water.spargeWaterL,
+      diRatioPct: water.diRatioPct,
+      spargeDiRatioPct: spargeDi,
+      spargeLinked: water.spargeDiRatioPct == null,
+      allSaltsInMash,
+      /* Les litres d'osmosée à préparer, eau par eau. C'est la donnée qu'on
+         emporte au bidon — le pourcentage ne se verse pas. */
+      mashOsmoseeL: (water.mashWaterL * water.diRatioPct) / 100,
+      spargeOsmoseeL: (water.spargeWaterL * spargeDi) / 100,
+      mashIons: treatment.treated.mash,
+      spargeIons: treatment.treated.sparge,
+      ra: Math.round(treatment.raAfter),
+      raBefore: Math.round(treatment.raBefore),
+      raBand: band,
+      raSaltTarget: alkaliGoal.limitedByGrist ? alkaliGoal.target : undefined,
+      ratio: treatment.ratio,
+      doses: water.doses,
+      split: treatment.split,
+      acidId: water.acidId,
+      mashAcid: treatment.mashAcid,
+      spargeAcid: treatment.spargeAcid,
+      disabled: water.disabled,
+      mashPh: water.mashPh,
+      spargePh: water.spargePh
+    };
+  }, [waterSource, water, color, grains, totalGrist, details.waterPlan?.targetPh, details.nolo]);
+
+  const waterAcid = useMemo(
+    () => ({
+      id: waterRecap.acidId,
+      mash: waterRecap.mashAcid.amount,
+      sparge: waterRecap.spargeAcid.amount
+    }),
+    [waterRecap]
+  );
+  const noloWaterIssue = noloWaterModelIssue(details.nolo, totalGrist > 0 ? water.mashWaterL / totalGrist : 0);
+  const noloWaterUnverified = !!noloWaterIssue;
+  // The workshop keeps source ions; the unsupported wort projection stays out
+  // of the recap and exports until the NOLO context has a supported model.
+  const waterRecapForReview = noloWaterUnverified && !water.acidOverride
+    ? { ...waterRecap, wortIons: undefined }
+    : waterRecap;
+  // Provisional water computed from another source stays on screen; review and exports carry no such treatment.
+  const waterRecapForRecord = waterSourceUnresolved ? undefined : waterRecapForReview;
+
+  /** Une saisie manuelle de volume fige les volumes : le grain ne les pilote plus. */
+  const onWaterChange = (next: WaterState, intent?: WaterChangeIntent) => {
+    if (water.autoTreatment && next.autoTreatment === false && !noloWaterUnverified) {
+      next = { ...next, acidOverride: { mash: waterAcid.mash, sparge: waterAcid.sparge } };
+    }
+    // Committing a target is the brewer's choice even when it keeps the displayed profile; any other edit
+    // counts only when it changes the profile or the numeric target.
+    if (intent === 'profile-choice' || next.styleCode !== water.styleCode || next.customTarget !== water.customTarget) {
+      waterProfileMode.current = 'choice';
+    }
+    if (next.mashWaterL !== water.mashWaterL || next.spargeWaterL !== water.spargeWaterL) {
+      setVolumesEdited(true);
+    }
+    if (next.allSaltsInMash !== water.allSaltsInMash || JSON.stringify(next.doses) !== JSON.stringify(water.doses)) {
+      next = { ...next, saltSplit: undefined };
+    }
+    setWater(next);
+  };
+
+  /**
+   * Couper ou remettre l'eau de rinçage, depuis l'atelier de l'eau.
+   *
+   * ⚠️ Le recalcul est FORCÉ, `volumesEdited` ou non. Le verrou a sa raison
+   * d'être — le brasseur a le dernier mot sur un volume qu'il a posé — mais il
+   * rendait ce réglage-ci inopérant : couper le rinçage après avoir touché un
+   * volume ne faisait alors strictement rien, alors que c'est précisément le
+   * changement qui doit reverser tout le volume dans la maische.
+   */
+  const setNoSparge = (next: boolean) => {
+    setSpargeType(next ? 'none' : 'batch');
+    const v = BrewingMath.waterVolumes(
+      totalGrist,
+      volumeL,
+      rig,
+      next ? 'none' : 'batch',
+      boilMin,
+      kettleHopG,
+      eauAjouteeChoisie ? { topUpToKettle: true } : undefined
+    );
+    if (v.mashWaterL > 0) {
+      setWater((w) => ({ ...w, mashWaterL: v.mashWaterL, spargeWaterL: v.spargeWaterL }));
+      setVolumesEdited(false);
+    } else {
+      // Sans grain, aucun volume à déduire : on se contente de vider le rinçage.
+      setWater((w) => ({ ...w, spargeWaterL: next ? 0 : w.spargeWaterL }));
+    }
+  };
+
+  /**
+   * Ce que les volumes VAUDRAIENT d'après la facture de grain.
+   *
+   * ⚠️ Un volume saisi à la main fige le calcul — c'est normal, le brasseur a le
+   * dernier mot. Mais s'il ajoute ensuite deux kilos de malt, les volumes ne
+   * suivent plus, et comme les sels se dosent au litre, toutes les doses
+   * deviennent silencieusement fausses. On ne réécrit rien : on montre l'écart
+   * et on laisse un geste pour le corriger.
+   */
+  const suggestedVolumes = useMemo(
+    () => BrewingMath.waterVolumes(totalGrist, volumeL, rig, spargeType, boilMin, kettleHopG, eauAjouteeChoisie ? { topUpToKettle: true } : undefined),
+    [totalGrist, volumeL, rig, spargeType, boilMin, kettleHopG, eauAjouteeChoisie]
+  );
+
+  /*
+   * ⚠️ Le seuil était à 0.5 L, ce qui déclenchait une alerte pleine largeur
+   * pour 18.5 contre 18.6 L — un dixième de litre, soit moins que ce qui reste
+   * dans le tuyau. Une alerte qui se lève pour rien apprend à ne plus la lire.
+   *
+   * Un litre et demi, c'est le point où la minéralité bouge assez pour se
+   * goûter : sur 30 L d'eau, 1.5 L d'écart, ce sont 5 % de concentration en
+   * plus ou en moins sur TOUS les ions à la fois.
+   */
+  /*
+   * ⚠️ ET LE TOTAL, pas seulement chaque champ. Comparés séparément, deux
+   * écarts de 1.4 L passaient tous deux sous le seuil pendant que la somme
+   * dérivait de 2.8 L. Or c'est le TOTAL qui décide du moût collecté avant
+   * ébullition — le chiffre que la feuille d'eau affiche comme objectif. Deux
+   * demi-fautes tolérées font une faute entière que personne ne signale.
+   */
+  const volumesStale =
+    volumesEdited &&
+    totalGrist > 0 &&
+    (Math.abs(suggestedVolumes.mashWaterL - water.mashWaterL) > 1.5 ||
+      Math.abs(suggestedVolumes.spargeWaterL - water.spargeWaterL) > 1.5 ||
+      Math.abs(
+        suggestedVolumes.mashWaterL +
+          suggestedVolumes.spargeWaterL -
+          (water.mashWaterL + water.spargeWaterL)
+      ) > 1.5);
+
+  /**
+   * Ce qui manque en stock pour brasser cette recette.
+   *
+   * ⚠️ On CUMULE d'abord, on compare ensuite. Un même ingrédient revient
+   * plusieurs fois dans une recette — le Citra d'une NEIPA est au whirlpool ET
+   * à cru — mais il n'y a qu'un seul sachet dans le frigo. Comparer chaque
+   * ligne au stock séparément laisse passer 40 g puis 60 g face à 70 g en
+   * réserve : les deux tests réussissent, l'écran annonce « tout est
+   * disponible », et il manque 30 g qu'on découvre le jour du houblonnage à
+   * cru. C'est le besoin TOTAL qui doit tenir dans le stock.
+   *
+   * La clé de cumul porte la référence de stock ET l'unité. Un ancien
+   * ingrédient sans référence ne reprend un stock par nom que s'il est unique.
+   * Pour la levure, un homonyme reste une suggestion : le lot doit être associé.
+   */
+  const shortages = useMemo(() => {
+    const besoins = new Map<string, { name: string; stockItemRef?: string; categories: string[]; needed: number; unit: string }>();
+    const add = (ingName: string, qty: number | undefined, unit: string | undefined, categories: string[], stockItemRef?: string) => {
+      if (!ingName || !unit || qty == null || !Number.isFinite(qty) || qty <= 0) return;
+      const cle = `${stockItemRef ? `ref:${stockItemRef}` : `name:${categories.join(',')}:${ingName.trim().toLocaleLowerCase('fr')}`}|${unit}`;
+      const deja = besoins.get(cle);
+      if (deja) deja.needed += qty;
+      else besoins.set(cle, { name: ingName.trim(), stockItemRef, categories, needed: qty, unit });
+    };
+
+    fermentables.forEach((f) => add(f.name, f.weightKg, 'kg', KIND_DEF[f.kind]?.stock ?? KIND_DEF.grain.stock, f.stockItemRef));
+    hops.forEach((h) => add(h.name, h.weightG, 'g', ['Houblon'], h.stockItemRef));
+    // Stock follows the actual planned dose, without assuming cells per packet.
+    if (yeast.name) {
+      const product = yeast.pitching?.product;
+      const amount = product?.referenceId === yeast.hopIndexId ? yeastPlannedInFormat(yeast, product) : undefined;
+      add(yeast.name, amount ?? yeast.qty, amount !== undefined ? product!.format!.unit : yeast.unit, ['Levure'], yeast.stockItemRef);
+    }
+
+    const need: Array<{ name: string; needed: number; unit: string; have?: number; haveUnit?: string; status: 'shortage' | 'unverified'; reason?: string }> = [];
+    besoins.forEach((b) => {
+      if (!b.stockItemRef && b.categories.includes('Levure')) {
+        need.push({ name: b.name, needed: b.needed, unit: b.unit, status: 'unverified',
+          reason: 'Lot de levure à associer : couverture du stock non vérifiée' });
+        return;
+      }
+      const matches = stockItems.filter(s => b.stockItemRef ? s.ref === b.stockItemRef :
+        b.categories.some(category => s.category.toLocaleLowerCase('fr') === category.toLocaleLowerCase('fr')) &&
+        s.name.trim().toLocaleLowerCase('fr') === b.name.toLocaleLowerCase('fr'));
+      const name = b.stockItemRef && stockItems.some(s => s.ref !== b.stockItemRef && s.name === b.name) ? `${b.name} · ${b.stockItemRef}` : b.name;
+      if (matches.length > 1) { need.push({ name, needed: b.needed, unit: b.unit, status: 'unverified', reason: 'Plusieurs articles : associer la référence du stock' }); return; }
+      const item = matches.length === 1 ? matches[0] : undefined;
+      if (!item) { need.push({ name, needed: b.needed, unit: b.unit, have: 0, status: 'shortage' }); return; }
+      let converted = Units.convert(item.currentStock, item.unit, b.unit);
+      const product = yeast.pitching?.product;
+      if (converted === null && b.categories.includes('Levure') && b.stockItemRef && product?.format &&
+          product.referenceId === yeast.hopIndexId && (item.yeastLot?.productId ?? yeast.pitching?.lot?.productId) === product.id) {
+        const physical = item.currentStock === 0 ? 0 : yeastPlannedInFormat({ qty: item.currentStock, unit: item.unit }, product);
+        if (physical !== undefined) converted = Units.convert(physical, product.format.unit, b.unit);
+      }
+      if (converted === null || !Number.isFinite(converted)) {
+        need.push({ name, needed: b.needed, unit: b.unit, have: Number.isFinite(item.currentStock) ? item.currentStock : undefined,
+          haveUnit: item.unit, status: 'unverified', reason: converted === null ? 'Conditionnement à vérifier avant comparaison' : 'Quantité de stock à vérifier' });
+        return;
+      }
+      if (converted < b.needed) need.push({ name, needed: b.needed, unit: b.unit, have: converted, status: 'shortage' });
+    });
+    return need;
+  }, [fermentables, hops, yeast, stockItems]);
+
+  /*
+   * Quel programme est en place ?
+   *
+   * ⚠️ On le RECONNAÎT au lieu de le retenir. Garder l'identifiant du dernier
+   * programme chargé mentirait dès la première retouche : on charge « Paliers
+   * lager », on remonte un palier de deux degrés, et la pastille continuerait
+   * d'annoncer une lager alors que les paliers n'en sont plus. En comparant ce
+   * qui est réellement saisi, la marque disparaît dès que le brasseur s'écarte
+   * du programme — et revient s'il retombe dessus.
+   *
+   * La comparaison porte sur ce qui BRASSE : températures, durées, type de
+   * rinçage. Le nom d'un palier est libre et ne change rien à la bière.
+   */
+  const activeMashProgram = useMemo(() => {
+    const sig = (steps: TempStep[], sparge: string) =>
+      `${steps.map((s) => `${s.tempC}/${s.durationMin}`).join('|')}#${sparge}`;
+    const ici = sig(mashSteps, spargeType);
+    return MASH_PROGRAMS.find((p) => sig(p.steps, p.spargeType) === ici)?.id ?? null;
+  }, [mashSteps, spargeType]);
+
+  const activeFermentProgram = useMemo(() => {
+    const sig = (steps: FermentationStep[]) =>
+      steps.map((s) => `${s.kind}/${s.tempC}/${s.days}`).join('|');
+    const ici = sig(ferment);
+    return FERMENT_PROGRAMS.find((p) => sig(p.steps) === ici)?.id ?? null;
+  }, [ferment]);
+
+  // --- Actions --------------------------------------------------------------
+  /**
+   * Admission of the water analysis a partial import brings without a reference: decided against what the recipe
+   * holds, before any change, and shown in the preview with the same rule.
+   */
+  const waterImportAdmission = (r: ImportedRecipe) =>
+    r.complete ? 'none' as const : admitImportedWaterSnapshot(waterSourceReference, recipeWaterSource, r.waterPlan);
+  const reviewImport = (r: ImportedRecipe): string[] => {
+    const admission = waterImportAdmission(r);
+    const imported = r.waterPlan?.sourceSnapshot;
+    const importedLabel = imported?.name ? ` (${imported.name})` : '';
+    const held = recipeWaterSource?.name ?? referencedWaterSource?.name ?? waterSourceReference;
+    if (admission === 'kept') return [`L’analyse d’eau importée${importedLabel} n’a pas l’identifiant vérifiable de celle de cette recette : elle n’est pas reprise. La recette garde son analyse${held ? ` « ${held} »` : ''}${waterSourceReference !== undefined ? ', sa référence' : ''} et ses calculs.`];
+    if (admission === 'update') return [`L’analyse d’eau importée${importedLabel} porte le même identifiant que celle de la recette : elle la met à jour et ses calculs seront refaits.`];
+    if (admission === 'new') return [hasUsableWaterIdentity(imported)
+      ? `L’analyse d’eau importée${importedLabel} deviendra l’analyse de cette recette.`
+      : `L’analyse d’eau importée${importedLabel} n’a pas d’identifiant : elle deviendra l’analyse de cette recette, sans lien avec une source de ton carnet.`];
+    return [];
+  };
+
+  /**
+   * Reprend une recette collée.
+   *
+   * Ce qui a été lu écrase ; ce qui manque laisse en place ce qui existait
+   * déjà. Un import ne doit jamais VIDER un champ que Gaëtan avait rempli.
+   */
+  const applyImport = (incoming: ImportedRecipe, internal?: Pick<Recipe, 'hopMatrixId' | 'hopAromaTarget' | 'hopPredictionIds' | 'hopTrialId' | 'hopSolverIntent' | 'yeastGuide' | 'yeastDesign' | 'hopV55Applications' | 'hopV55ColdEvidenceAssociations'>) => {
+    // Before any setter: omitting `sourceId` neither removes nor replaces the source the recipe holds. An analysis that
+    // does not carry its exact identity is left out with what was calculated from it; everything else still applies.
+    const r: ImportedRecipe = waterImportAdmission(incoming) === 'kept'
+      ? { ...incoming, waterPlan: withoutImportedAnalysis(incoming.waterPlan!) } : incoming;
+    const has = (key: string) => r.complete || (r.present.includes(key) &&
+      (!Array.isArray(r[key]) || r[key].length > 0));
+    const content = readRecipeFields(r);
+    setDetails(previous => ({ ...(r.complete ? content : {
+      ...previous, ...content,
+      mash: content.mash ? { ...previous.mash, ...content.mash } : previous.mash,
+      waterPlan: content.waterPlan ? mergeImportedWaterPlan(previous.waterPlan, content.waterPlan) as Recipe['waterPlan'] : previous.waterPlan
+    }), ...(internal ? { hopMatrixId: internal.hopMatrixId, hopAromaTarget: internal.hopAromaTarget, hopPredictionIds: internal.hopPredictionIds, hopTrialId: internal.hopTrialId, hopSolverIntent: internal.hopSolverIntent, yeastGuide: internal.yeastGuide, yeastDesign: internal.yeastDesign } : {}),
+    // V5.5 application traces are the append-only history of this recipe ID; an import or adaptation never erases them.
+    hopV55Applications: internal?.hopV55Applications ?? previous.hopV55Applications,
+    hopV55ColdEvidenceAssociations: internal?.hopV55ColdEvidenceAssociations ?? previous.hopV55ColdEvidenceAssociations }));
+    if (r.name != null) setName(r.name);
+    if (r.style != null) setStyle(r.style);
+    if (r.volumeL != null) setVolumeL(r.volumeL);
+    if (r.boilMin != null) setBoilMin(r.boilMin);
+    if (r.brewDate != null || r.complete) setBrewDate(r.brewDate ?? '');
+    if (has('fermentables')) setFermentables(r.fermentables);
+    if (has('hops')) setHops(r.hops);
+    if (r.yeast) setYeast(r.yeast);
+    if (r.mashSteps.length || r.complete) setMashSteps(r.mashSteps);
+    if (has('fermentation')) setFerment(r.fermentation);
+    if (r.mash?.spargeType != null || r.complete) setSpargeType(r.mash?.spargeType ?? 'batch');
+    if (r.mash?.ratioLPerKg != null || r.complete) setMashRatioOverride(r.nolo?.planning?.simulation || content.installation?.manualWaterSplit === false ? null : r.mash?.ratioLPerKg ?? null);
+    if (r.carboTarget != null || r.complete) setCarboTarget(r.carboTarget ?? '');
+    else if (r.carboVolumes != null) setCarboTarget(r.carboVolumes + ' vol');
+    if (r.instructions != null || r.waterNote || r.dryHopNote || r.complete) {
+      setNotes([r.instructions, r.waterNote ? 'EAU — ' + r.waterNote : null,
+        r.dryHopNote ? 'HOUBLONNAGE À CRU — ' + r.dryHopNote : null].filter(v => v != null).join('\n\n'));
+    }
+    const plan = r.waterPlan;
+    // A complete recipe, local round trips included, brings its recorded mode. A partial import never proves a
+    // provenance: a profile or target it declares is kept, without being recorded as the brewer's choice.
+    if (r.complete) {
+      waterProfileMode.current = r.waterTarget ? 'legacy' : waterProfileModeOf(plan);
+    } else if (plan?.targetProfileId != null || plan?.targetIons || r.waterTarget) {
+      waterProfileMode.current = 'legacy';
+    }
+    // A declared reference, blank included, replaces the previous analysis: only its own snapshot or the configured
+    // source of that exact identity resolves it. An omitted one keeps the legacy reading of the plan.
+    const importedSourceId = declaredWaterSourceId(plan);
+    if (importedSourceId !== undefined) {
+      setRecipeWaterSource(frozenWaterSource(plan) ?? (isBlankWaterSourceId(importedSourceId) ? undefined
+        : config.waterSources?.find(source => source.id === importedSourceId)));
+    } else if (plan?.sourceSnapshot) setRecipeWaterSource(plan.sourceSnapshot);
+    else if (r.complete) setRecipeWaterSource(undefined);
+    const mashL = plan?.mashWaterL ?? r.mashWaterL;
+    const spargeL = plan?.spargeWaterL ?? r.spargeWaterL;
+    if (mashL != null || spargeL != null || r.complete) setVolumesEdited(content.installation?.manualWaterSplit ?? (mashL != null || spargeL != null));
+    const importedGrist = (has('fermentables') ? r.fermentables : fermentables)
+      .filter(f => f.kind === 'grain').reduce((sum, f) => sum + f.weightKg, 0);
+    setWater(w => {
+      const next = r.complete ? {
+        diRatioPct: 0, styleCode: styleWaterForReference(r.style ?? '').code,
+        doses: {}, disabled: [], acidId: 'lactique', mashWaterL: 0, spargeWaterL: 0,
+        allSaltsInMash: true
+      } as WaterState : { ...w };
+      if (r.style != null && waterProfileMode.current === 'style' && !next.customTarget) next.styleCode = styleWaterForReference(r.style).code;
+      if (mashL != null) next.mashWaterL = mashL;
+      if (spargeL != null) next.spargeWaterL = spargeL;
+      else if (r.preBoilL != null && mashL != null) next.spargeWaterL = Math.max(0, Math.round((r.preBoilL - mashL + importedGrist * 0.96) * 10) / 10);
+      if (plan) {
+        if (r.complete || plan.roLimitL != null) next.roLimitL = plan.roLimitL;
+        if (r.complete || plan.autoTreatment != null) next.autoTreatment = plan.autoTreatment;
+        if (r.complete || plan.saltOverrides != null) next.saltOverrides = plan.saltOverrides;
+        if (r.complete || plan.ratioOverride != null) next.ratioOverride = plan.ratioOverride;
+        if (plan.diRatioPct != null) next.diRatioPct = plan.diRatioPct;
+        if (plan.spargeDiRatioPct != null || r.complete) next.spargeDiRatioPct = plan.spargeDiRatioPct ?? undefined;
+        if (plan.targetProfileId != null) next.styleCode = plan.targetProfileId;
+        if (plan.allSaltsInMash != null) next.allSaltsInMash = plan.allSaltsInMash;
+        else if (plan.sparge && Object.values(plan.sparge).some(g => g > 0)) next.allSaltsInMash = false;
+        if (plan.mash || plan.sparge) {
+          const split = { mash: plan.mash ?? {}, sparge: plan.sparge ?? {} };
+          next.doses = mergeDoses(split.mash, split.sparge);
+          next.saltSplit = customSaltSplit({ ...plan, mashWaterL: next.mashWaterL,
+            spargeWaterL: next.spargeWaterL, allSaltsInMash: next.allSaltsInMash });
+        }
+        if (plan.disabled) next.disabled = plan.disabled;
+        if (plan.acid) {
+          next.acidId = plan.acid.id;
+          next.acidOverride = plan.acidOverride ?? (plan.treatmentVersion === 2 ? undefined : { mash: plan.acid.mash, sparge: plan.acid.sparge });
+        } else if (plan.acidOverride) next.acidOverride = plan.acidOverride;
+        if (plan.measuredPh != null) next.mashPh = plan.measuredPh;
+        if (plan.measuredSpargePh != null) next.spargePh = plan.measuredSpargePh;
+        if (plan.targetIons) next.customTarget = { name: plan.targetName ?? 'Cible de la recette', ions: plan.targetIons };
+      }
+      if (r.waterTarget && Object.keys(r.waterTarget).length) {
+        next.customTarget = { name: r.waterTargetName ?? 'Cible de la recette', ions: r.waterTarget };
+        next.ratioOverride = undefined;
+      }
+      return next;
+    });
+    setTargetBasis(JSON.stringify([
+      r.volumeL ?? volumeL, r.boilMin ?? boilMin,
+      has('fermentables') ? r.fermentables : fermentables, has('hops') ? r.hops : hops,
+      r.yeast ?? yeast, r.efficiencyPct ?? (r.complete ? brewhouse?.efficiencyPct ?? 75 : efficiency),
+      (internal?.yeastDesign ?? r.yeastDesign)?.process ?? 'unspecified'
+    ]));
+    setStep('fermentescibles');
+  };
+
+  const addHop = (ingName: string, item?: StockItem, variety?: import('../../functions/src/hopIndexSchema').HopVariety) => {
+    if (!ingName) return;
+    // Même règle que les fermentescibles : au clavier, le poids prend le focus.
+    if (!coarse) setFocusHop(hops.length);
+    setHops(current => [
+      ...current,
+      {
+        name: ingName,
+        stockItemRef: item?.ref,
+        // L'alpha vient de l'article de stock — c'est celui du lot acheté.
+        // Sans alpha de stock, 0 = inconnu (recipeValidation.ts) : le champ
+        // reste vide avec le repère ambre, aucun IBU n'en est tiré.
+        alpha: item?.alphaPct ?? 0,
+        ...(variety ? { hopVarietyId: variety.id } : {}),
+        weightG: 0,
+        stage: hopStage,
+        ...Object.fromEntries(Object.entries(champsMomentNeuf(hopStage, boilMin)).filter(([, v]) => v !== undefined))
+      }
+    ]);
+  };
+
+  const retirerHop = (index: number) => {
+    const h = hops[index];
+    if (!h) return;
+    clearTimeout(minutHopRetrait.current);
+    setHopsRetires(a => [...a, { h, i: index }]);
+    setHops(current => current.filter((_, j) => j !== index));
+    minutHopRetrait.current = setTimeout(() => setHopsRetires([]), 6000);
+  };
+  const rendreHops = () => {
+    const pile = hopsRetires;
+    if (!pile.length) return;
+    clearTimeout(minutHopRetrait.current);
+    setHopsRetires([]);
+    setHops(current => {
+      const r = [...current];
+      for (let k = pile.length - 1; k >= 0; k--) r.splice(Math.min(pile[k].i, r.length), 0, pile[k].h);
+      return r;
+    });
+  };
+
+  const patchHop = (index: number, patch: Partial<HopIngredient>) => {
+    // Un nombre négatif ne se retient pas (α −2 %, −5 min, −1 g : MV-18, TE-21, BR-42) ; la valeur d'avant reste, le champ la reprend à la sortie.
+    const retenu = saisieHoublonRetenue(patch as Record<string, unknown>) as Partial<HopIngredient>;
+    if (!Object.keys(retenu).length) return;
+    // Un autre moment pose les champs de ce moment (durée seule, durée et °C, jour) et retire ceux de l'ancien : 60 min d'ébullition ne deviennent pas un whirlpool d'une heure (BR-3, TE-26).
+    setHops(hops.map((h, i) => (i !== index ? h : retenu.stage && retenu.stage !== h.stage
+      ? patchIndexedHop(changerMoment(patchIndexedHop(h, { stage: retenu.stage }), retenu.stage, boilMin), { ...retenu, stage: retenu.stage })
+      : patchIndexedHop(h, retenu))));
+  };
+
+  /**
+   * Writes a V5.5 application already proven against this exact draft (owner,
+   * ID and content) by the hop step. Only the hop lines change, as in the J4
+   * adapter that drops prediction and trial links; nothing is saved here.
+   */
+  const applyHopV55Change = (change: HopV55RecipeDraftChange) => {
+    if (draftReadOnly) throw new Error('Ce brouillon est conservé en lecture seule; aucune application ne le remplace.');
+    if (!ownerKey) throw new Error('Le profil propriétaire du brouillon est absent.');
+    if (change.draftId !== draftRecipeId) throw new Error('Cette application vise un autre brouillon; le brouillon courant n’est pas modifié.');
+    const current = latestWizardDraft.current;
+    assertHopV55RecipeDraftApplicationTarget(change.application, current.recipe, { ownerKey, draftId: draftRecipeId });
+    const nextDetails = { ...current.details, hopPredictionIds: undefined, hopTrialId: undefined, hopV55Applications: change.hopV55Applications };
+    const nextDraft = { ...current, details: nextDetails,
+      recipe: { ...current.recipe, hops: change.hops, hopPredictionIds: undefined, hopTrialId: undefined, hopV55Applications: change.hopV55Applications } };
+    const committed = serializeRecipeDraft(nextDraft);
+    if (draftKey) {
+      try { writeRecipeDraft(draftKey, committed); }
+      catch (cause) {
+        // Storage is the commit point: nothing changes on screen. Name the problem and the way out before the browser detail.
+        if (cause instanceof RecipeDraftWriteBlockedError) throw cause;
+        throw new Error(`Programme non appliqué : le brouillon ne peut pas être conservé sur cet appareil (stockage local plein ou bloqué). Libère de l’espace, puis appuie de nouveau sur « Appliquer au brouillon de recette ». Détail : ${cause instanceof Error ? cause.message : String(cause)}`);
+      }
+    }
+    latestWizardDraft.current = nextDraft;
+    latestDraft.current = committed;
+    // An explicit brewer write: the draft now exists and any set-aside draft has been replaced.
+    contentChanged.current = true;
+    setDraftAside(false);
+    setHops(change.hops);
+    setDetails(nextDetails);
+    setDraftError('');
+    setDraftNotice(draftKey ? 'Programme appliqué et brouillon conservé sur cet appareil.' : 'Programme appliqué dans cet éditeur.');
+  };
+
+  /**
+   * The single write door of the v4 hop tools (#165): a patch of `hops` (and `yeast` if the Yeast tool asks), nothing
+   * else. Same checks and same commit point as applyHopV55Change: read-only draft, owner and draft ID are refused
+   * before anything is written, then writeRecipeDraft is the commit and the screen follows. The V5.5 history
+   * (hopV55Applications, hopV55ColdEvidenceAssociations) is kept; prediction and trial links of replaced hops are
+   * dropped, as in the J4 adapter. Not reached by any screen yet (the `hopV4` flag is off; the tools come with T12/T13).
+   */
+  /** Les renvois de l'étape Houblons (t12d) : « Ébullition 60′ › » ouvre le champ Durée d'ébullition de l'étape Identité (la durée
+   * est celle de ce champ, boilMin, et le rail la suit) ; la ligne de la levure ouvre l'étape Levure. */
+  const allerDepuisHoublons = (cible: 'duree-ebullition' | 'levure') => {
+    if (cible === 'levure') { setStep('levure'); return; }
+    setStep('identite');
+    setFocusIssue({ field: 'wz-boil', step: 'identite', message: '' } as RecipeFieldIssue);
+  };
+  const applyHopV4Change = (change: ChangementHoublonsV4) => {
+    const { nextDraft } = preparerEcritureHoublons({ draftReadOnly, ownerKey, draftRecipeId, current: latestWizardDraft.current, change });
+    const committed = serializeRecipeDraft(nextDraft);
+    if (draftKey) {
+      try { writeRecipeDraft(draftKey, committed); }
+      catch (cause) {
+        // Storage is the commit point: nothing changes on screen. Name the problem and the way out before the browser detail.
+        if (cause instanceof RecipeDraftWriteBlockedError) throw cause;
+        throw new Error(`Changement non appliqué : le brouillon ne peut pas être conservé sur cet appareil (stockage local plein ou bloqué). Libère de l’espace, puis refais le geste. Détail : ${cause instanceof Error ? cause.message : String(cause)}`);
+      }
+    }
+    latestWizardDraft.current = nextDraft;
+    latestDraft.current = committed;
+    // An explicit brewer write: the draft now exists and any set-aside draft has been replaced.
+    contentChanged.current = true;
+    setDraftAside(false);
+    setHops(nextDraft.recipe.hops);
+    if (change.patch.yeast) setYeast(nextDraft.recipe.yeast);
+    setDetails(nextDraft.details);
+    setDraftError('');
+    setDraftNotice(draftKey ? 'Changement appliqué et brouillon conservé sur cet appareil.' : 'Changement appliqué dans cet éditeur.');
+  };
+
+  // Comparer (T15b, #174) est une couche posée AU-DESSUS du wizard : il lit le brouillon et écrit par cette même porte
+  // (applyHopV4Change), posés ici à chaque rendu. Drapeau hopV4 éteint : rien n'est posé.
+  useEffect(() => {
+    if (!hopV4Actif) return;
+    poserPorteEtape({ recipe: build(), boilOg, draftId: draftRecipeId, onChange: applyHopV4Change });
+  });
+  useEffect(() => () => poserPorteEtape(null), []);
+
+  /** Persist cold-contact provenance alone; it never changes hops, IBU or any other recipe field. */
+  const conserveHopV55ColdEvidence = async (change: HopV55RecipeColdContactChange): Promise<void> => {
+    if (draftReadOnly) throw new Error('Ce brouillon est conservé en lecture seule; aucune association ne le remplace.');
+    if (!ownerKey) throw new Error('Le profil propriétaire du brouillon est absent.');
+    if (change.draftId !== draftRecipeId) throw new Error('Cette association vise un autre brouillon; le brouillon courant n’est pas modifié.');
+
+    const current = latestWizardDraft.current;
+    const sourceRecipeReference = hopV55RecipeColdSourceReference(current.recipe);
+    const freshness = compareHopV55RecipeColdContactAssociationSourceV1({
+      association: change.association,
+      applicationRecord: change.applicationRecord,
+      current: { ownerKey, recipeId: draftRecipeId, sourceRecipeReference, sourceBinding: change.currentSourceBinding },
+    });
+    if (freshness.status !== 'current') {
+      throw new Error('La source de cette preuve froide a changé; rien n’a été conservé. Relis le contact depuis le contexte courant.');
+    }
+
+    // The association helper validates its known seal, J4 witness (if any),
+    // identity and duplicate-ID collision before the durable write.
+    const coldAssociations = appendHopV55RecipeColdContactAssociation(
+      current.recipe.hopV55ColdEvidenceAssociations, change.association, change.applicationRecord);
+    const nextDetails = { ...current.details, hopV55ColdEvidenceAssociations: coldAssociations };
+    const nextDraft: RecipeWizardDraft = {
+      ...current,
+      details: nextDetails,
+      recipe: { ...current.recipe, hopV55ColdEvidenceAssociations: coldAssociations },
+    };
+    const committed = serializeRecipeDraft(nextDraft);
+    if (draftKey) writeRecipeDraft(draftKey, committed);
+
+    // Storage is the commit point: React refs/state change only after its write succeeds.
+    latestWizardDraft.current = nextDraft;
+    latestDraft.current = committed;
+    contentChanged.current = true;
+    setDraftAside(false);
+    setDetails(nextDetails);
+    setDraftError('');
+    setDraftNotice(draftKey ? 'Preuve de contact à froid conservée dans le brouillon.' : 'Preuve de contact à froid conservée dans cette édition.');
+  };
+  const selectYeast = (selectedName: string, item?: StockItem, dose?: { qty: number; unit: string }) => {
+    const current = latestWizardDraft.current.recipe.yeast;
+    const sameStock = !!item && current.stockItemRef === item.ref;
+    if (sameStock) {
+      if (current.name === selectedName) return;
+      const renamed: YeastSpec = { ...current, name: selectedName };
+      const result = tryAdoptYeastDocumentary(current, renamed, { intent: 'documentary' });
+      if (result.accepted === false) { setCandidateSheetsWarning(result.message); return; }
+      setYeast(result.yeast);
+      return;
+    }
+
+    const next: YeastSpec = keepIndependentPitchingWort({
+      name: selectedName, lab: item?.yeastLab, strain: item?.yeastStrain,
+      form: item?.yeastForm, unit: dose?.unit ?? item?.unit, qty: dose?.qty, stockItemRef: item?.ref,
+      attenuationPct: item?.yeastAttenuationPct, attenuationBasis: item?.yeastAttenuationPct != null ? 'declared' : undefined,
+      fermTempMinC: item?.yeastTempMinC, fermTempMaxC: item?.yeastTempMaxC,
+      fermentationFacts: item?.yeastFermentationFacts, technicalFacts: item?.yeastTechnicalFacts,
+      flocculation: item?.yeastFlocculation, alcoholTolerancePct: item?.yeastAlcoholTolerancePct,
+      technicalSource: item?.technicalSource, notes: item?.yeastNotes, hopIndexId: undefined
+    }, current);
+    rememberCandidateBeforeYeastChoice(next);
+    yeastSelectionEpoch.current += 1;
+    setDetails(previous => ({ ...previous, yeastGuide: undefined, yeastDesign: undefined, hopMatrixId: undefined, hopTrialId: undefined, hopPredictionIds: undefined }));
+    setYeastSelection(n => n + 1);
+    const result = tryAdoptYeastDocumentary(current, next, { intent: 'replace-selection' });
+    if (result.accepted === false) { setCandidateSheetsWarning(result.message); return; }
+    setYeast(result.yeast);
+  };
+
+  // Retained acid: a manual override, else the calculation on the recipe's own analysis. Without a known analysis
+  // the plan keeps its retained doses rather than a calculation made against another water.
+  const plannedWaterAcid = (details.nolo?.enabled && details.nolo.process === 'coldExtraction' || waterSourceUnresolved) && !water.acidOverride
+    ? details.waterPlan?.acid : noloWaterUnverified && !water.acidOverride ? undefined : waterAcid;
+  // Calculated water survives only under the reference it was computed for; a blank reference or a foreign snapshot
+  // leaves it unknown.
+  const unresolvedWaterCache = waterSourceUnresolved ? retainedWaterCache(waterCacheBelongsToReference(details.waterPlan) ? details.waterPlan : undefined, {
+    diRatioPct: water.diRatioPct, spargeDiRatioPct: water.spargeDiRatioPct, mashWaterL: water.mashWaterL,
+    spargeWaterL: water.spargeWaterL, ...waterRecap.split, acid: plannedWaterAcid }) : undefined;
+
+  // Every reader of the draft (hop step snapshot, save, local draft) receives the same declared Recipe: an optional
+  // field the source or the brewer left unset stays absent instead of becoming an own `undefined`.
+  const build = (): Recipe => declaredRecipe({
+    id: draftRecipeId,
+    version: base?.version,
+    parentRecipeId: base?.parentRecipeId,
+    name: name.trim(),
+    style: style.trim(),
+    styleRef: details.styleRef,
+    nolo: details.nolo,
+    fermentationIntent: details.fermentationIntent,
+    volumeL,
+    brewDate,
+    boilMin,
+    // A stated target the recipe still describes is written as stated, null and 0 included; only an absent or
+    // stale target falls back to the estimate rule. NOLO keeps its own rules.
+    ogTarget: !details.nolo?.enabled && keepOgTarget && details.ogTarget === null ? null
+      : (keepOgTarget ? details.ogTarget : undefined) ?? ogPredicted ?? null,
+    // La densité finale tient compte de ce que la levure ne peut PAS manger.
+    fgTarget: details.nolo?.enabled ? null : keepTargets && details.fgTarget !== undefined ? details.fgTarget : fgPredicted ?? null,
+    abvTarget: details.nolo?.enabled ? details.nolo.targetAbvPct : keepTargets && details.abvTarget !== undefined ? details.abvTarget :
+      abvPredicted,
+    ibuTarget: (keepIbuTarget ? details.ibuTarget : undefined) ?? ibu ?? undefined,
+    colorEbc: details.colorEbc,
+    efficiencyPct: details.efficiencyPct,
+    preBoilL: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:
+      volumesEdited && details.preBoilL != null && water.mashWaterL===details.waterPlan?.mashWaterL && water.spargeWaterL===details.waterPlan?.spargeWaterL ? details.preBoilL :
+      rig?.equipment ? Math.round((water.mashWaterL+water.spargeWaterL-totalGrist*rig.equipment.grainAbsorptionLPerKg)*10)/10 : details.preBoilL,
+    preBoilHotL: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:
+      volumesEdited && details.preBoilHotL != null && water.mashWaterL===details.waterPlan?.mashWaterL && water.spargeWaterL===details.waterPlan?.spargeWaterL ? details.preBoilHotL :
+      rig?.equipment ? Math.round((water.mashWaterL+water.spargeWaterL-totalGrist*rig.equipment.grainAbsorptionLPerKg)/(1-rig.equipment.coolingShrinkagePct/100)*10)/10 : details.preBoilHotL,
+    brewhouse: installationNeedsAdoption ? details.brewhouse : rig?.equipment ? snapshotBrewhouse(snapshotMashRatio(rig, mashRatioOverride, volumesEdited, water.mashWaterL, totalGrist)) : details.brewhouse,
+    installation: {
+      ...details.installation,
+      // Retaining old volumes does not turn them into an explicit manual choice.
+      manualWaterSplit: installationNeedsAdoption && details.installation?.manualWaterSplit == null &&
+        water.mashWaterL === details.waterPlan?.mashWaterL && water.spargeWaterL === details.waterPlan?.spargeWaterL
+        ? undefined : volumesEdited,
+      // ID-TROP-AMBIGU (19.11) : l'eau ajoutée pendant ou après l'ébullition, calculée par le plan d'eau, lue par le jour de brassage.
+      topUpL: details.installation?.kettleTopUp && eauAjouteeL > 0 ? eauAjouteeL : undefined
+    },
+    carboTarget: carboTarget.trim() || undefined,
+    fermentables,
+    totalGristKg: totalGrist,
+    hops,
+    yeast,
+    yeastGuide: details.yeastGuide,
+    yeastDesign: details.yeastDesign,
+    hopMatrixId: details.hopMatrixId,
+    hopTrialId: details.hopTrialId,
+    hopSolverIntent: details.hopSolverIntent,
+    hopAromaTarget: details.hopAromaTarget,
+    hopPredictionIds: details.hopPredictionIds,
+    hopV55Applications: details.hopV55Applications,
+    hopV55ColdEvidenceAssociations: details.hopV55ColdEvidenceAssociations,
+    adjuncts: details.adjuncts,
+    mash: {
+      steps: mashSteps,
+      ratioLPerKg:
+        totalGrist > 0 ? water.mashWaterL / totalGrist : mashRatioOverride ?? undefined,
+      mashoutTempC: details.nolo?.enabled && details.nolo.process === 'coldExtraction' ? undefined : details.mash?.mashoutTempC ?? 76,
+      mashoutDurationMin: details.mash?.mashoutDurationMin,
+      mashoutEnabled: details.mash?.mashoutEnabled,
+      heatingRateCPerMin: details.mash?.heatingRateCPerMin ?? rig?.equipment?.heatingRateCPerMin,
+      spargeTempC: details.mash?.spargeTempC ?? (details.nolo?.enabled && details.nolo.process === 'coldExtraction' ? undefined : 76),
+      spargeType
+    },
+    waterPlan: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?details.waterPlan:{
+      roLimitL: water.roLimitL,
+      autoTreatment: water.autoTreatment,
+      saltOverrides: water.saltOverrides,
+      ratioOverride: water.ratioOverride,
+      // An unresolved analysis keeps its reference and no borrowed snapshot; an anonymous legacy analysis keeps its
+      // reference omitted rather than declaring its blank id.
+      sourceId: waterSourceUnresolved ? waterSourceReference : anonymousWaterAnalysis ? undefined : waterSource.id,
+      sourceSnapshot: waterSourceUnresolved ? undefined : { ...waterSource },
+      treatmentVersion: unresolvedWaterCache ? unresolvedWaterCache.treatmentVersion : 2,
+      acidOverride: water.acidOverride,
+      diRatioPct: water.diRatioPct,
+      spargeDiRatioPct: water.spargeDiRatioPct,
+      targetProfileId: water.styleCode,
+      targetProfileOrigin: waterProfileOrigin(waterProfileMode.current),
+      /*
+       * ⚠️ La cible chiffrée et les DEUX eaux, figées avec le plan. Sans elles,
+       * la fiche recette ne peut rien redessiner : il lui faudrait retrouver la
+       * source dans la configuration et refaire tout le calcul — sur une analyse
+       * qui a pu être corrigée depuis. Même principe que `recipeSnapshot`.
+       */
+      targetIons: water.customTarget?.ions,
+      targetName: water.customTarget?.name,
+      startIons: unresolvedWaterCache ? unresolvedWaterCache.startIons : noloWaterUnverified && !water.acidOverride ? undefined : waterRecap.startIons,
+      wortIons: unresolvedWaterCache ? unresolvedWaterCache.wortIons : noloWaterUnverified && !water.acidOverride ? undefined : waterRecap.wortIons,
+      mashWaterL: water.mashWaterL,
+      spargeWaterL: water.spargeWaterL,
+      allSaltsInMash: water.allSaltsInMash !== false,
+      ...waterRecap.split,
+      /*
+       * ⚠️ L'ACIDE, qui ne s'enregistrait pas. Le type le prévoyait, l'atelier
+       * le calculait, l'écran l'affichait — et `build()` ne le recopiait pas.
+       * Le brasseur arrivait à la cuve avec ses sels pesés et sans sa dose
+       * d'acide, que la minuterie du jour ne pouvait pas lui rappeler.
+       */
+      acid: plannedWaterAcid,
+      disabled: water.disabled,
+      targetPh: details.waterPlan?.targetPh ?? 5.4,
+      // Les pH relevés à la cuve : la seule boucle de retour du modèle.
+      measuredPh: water.mashPh,
+      measuredSpargePh: water.spargePh
+    },
+    fermentation: ferment,
+    instructions: notes || undefined,
+    steps: details.steps ?? [],
+    notes: details.notes ?? [],
+    notesCreation: details.notesCreation,
+    favorite: base?.favorite,
+    archivedAt: base?.archivedAt
+  });
+
+  const applyFermentationRecipe = (next: import('../domain/hopIndex/trials').TrialRecipe, destination = step, restoreSelection = false, preserveYeastDocumentary = false) => {
+    setBrewDate(next.brewDate ?? '');
+    if (restoreSelection) {
+      // Undo restores the captured YeastSpec verbatim: no stock lookup, adoption or enrichment.
+      setDetails(previous => ({ ...previous, nolo: next.nolo, fermentationIntent: next.fermentationIntent,
+        yeastGuide: next.yeastGuide, yeastDesign: next.yeastDesign, hopMatrixId: next.hopMatrixId,
+        hopTrialId: next.hopTrialId, hopPredictionIds: next.hopPredictionIds }));
+      setYeast(structuredClone(next.yeast));
+      setFerment(next.fermentation ?? []);
+      setStep(destination);
+      return next;
+    }
+    if (!preserveYeastDocumentary) {
+      const enrichedYeast = (syncWizardPanels
+        ? SyncCompleteFromLocalReferences(next.fermentables ?? [], next.hops, next.yeast, stockItems, knowledge)
+        : completeFromStockReferences(next.fermentables ?? [], next.hops, next.yeast, stockItems)
+      ).yeast;
+      next = completeYeastRecipeDesignApplication(next, enrichedYeast);
+    }
+    if (next.nolo?.planning?.simulation && next.nolo.process !== 'coldExtraction' && next.nolo.process !== 'secondRunnings' &&
+        next.brewhouse?.equipment && next.waterPlan && evaluateNoloRecipe(next)?.simulationActive) {
+      const fit = BrewingMath.waterVolumes(next.totalGristKg, next.volumeL, next.brewhouse,
+        next.mash?.spargeType, next.boilMin, kettleHopGrams(next.hops), {
+          manualWaterSplit: { mashWaterL: next.waterPlan.mashWaterL, spargeWaterL: next.waterPlan.spargeWaterL },
+          topUpToKettle: !!next.installation?.kettleTopUp
+        });
+      if (fit.planningStatus === 'invalid' || fit.planningStatus === 'impossible') {
+        throw Error(`La proposition d’eau ne tient pas dans le matériel : ${fit.issues.join(' ')} Ajuste la répartition avant de l’appliquer.`);
+      }
+    }
+    const current = build();
+    const preparationChanged = (['fermentables', 'hops', 'volumeL', 'boilMin', 'mash', 'waterPlan', 'carboTarget', 'efficiencyPct'] as const)
+      .some(key => JSON.stringify(next[key]) !== JSON.stringify(current[key]));
+    if (preparationChanged) {
+      // Local proposals are already typed. Import normalization drops incomplete draft phases.
+      applyImport({ ...next, mashSteps: next.mash?.steps ?? [], present: Object.keys(next), complete: true, warnings: [], via: 'local' } as ImportedRecipe, next);
+    } else {
+      setDetails(previous => ({ ...previous, nolo: next.nolo, fermentationIntent: next.fermentationIntent,
+        yeastGuide: next.yeastGuide, yeastDesign: next.yeastDesign, hopMatrixId: next.hopMatrixId, hopTrialId: next.hopTrialId,
+        hopPredictionIds: next.hopPredictionIds }));
+      setFerment(next.fermentation ?? []);
+    }
+    setYeast(next.yeast);
+    setStep(destination);
+    return preparationChanged ? next : { ...next,
+      ogTarget: (keepOgTarget ? details.ogTarget : undefined) ?? ogPredicted ?? null };
+  };
+
+  const hasMetrics = fermentables.length > 0 || hops.length > 0;
+
+  /**
+   * Ce que la durée d'ébullition COÛTE en eau, chiffré.
+   *
+   * ⚠️ L'indication disait « 60 min couvre la plupart des styles ; 75 à 90 pour
+   * les recettes américaines ». Vrai, et inutile : ça ne se décide pas ici, ça
+   * se lit sur la recette. Ce qu'un brasseur ne sait PAS de tête, c'est ce que
+   * son quart d'heure de plus va lui coûter à la cuve — et c'est justement le
+   * chiffre qui, depuis la correction du 04.09, dépend enfin de la durée.
+   */
+  // r4-a : la bulle « ~3 L évaporés » (le débit du profil, `boilOffLPerHour`) et la barre de la cuve. Le volume avant
+  // ébullition vient du moteur (pertes de fond, houblons, contraction), pas d'une addition faite ici.
+  const evaporationIdentite = useMemo(
+    () => evaporation({ boilOffLPerHour: brewhouse?.equipment?.boilOffLPerHour, boilOffRatePct: brewhouse?.boilOffRatePct, volumeL, minutes: boilMin }),
+    [volumeL, boilMin, brewhouse]
+  );
+  /** La capacité du fermenteur pour CE brassin se range dans l'installation figée de la recette (`details.brewhouse`). */
+  const setCapaciteFermenteur = (capaciteL: number) => {
+    const source = brewhouse;
+    if (!source?.equipment || !(capaciteL > 0)) return;
+    setDetails(d => ({ ...d, brewhouse: { ...snapshotBrewhouse(source), equipment: { ...source.equipment!, fermenterCapacityL: capaciteL } } }));
+  };
+  const [materielOuvert, setMaterielOuvert] = useState(false);
+  // C1 (K1, PORT) : quand la brasser, en horizons (aujourd'hui, 1 mois, 3, 6 mois, 1 an) ; rien de choisi = au plus tôt (comme avant).
+  const [quandBrasser, setQuandBrasser] = useState<string | null>(null);
+  const jourIso = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })();
+  const ouvrirFermenteur = () => {
+    setMaterielOuvert(true);
+    requestAnimationFrame(() => document.getElementById('wz-fermenteur')?.focus());
+  };
+  // r4-a : les deux tuiles du bas sont fermées et côte à côte au repos. Une installation à adopter se dit au premier plan (ligne d'alerte),
+  // avec un bouton qui ouvre « Matériel » ; la notice d'une adaptation se lit sous les tuiles. Rien ne s'ouvre seul.
+  const stepIndex = STEPS.findIndex((s) => s.id === step);
+  /** Le message de reprise ou de conservation du brouillon : ni erreur ni événement, il ne prend plus de ligne. */
+  const messageDeBase = /^(Brouillon (repris|conservé) sur cet appareil|Changement appliqué et brouillon conservé sur cet appareil).$/.test(draftNotice);
+  const repriseVisible = repriseDite && draftNotice === 'Brouillon repris sur cet appareil.';
+  const resizeForEquipment=(profile=brewhouse, targetL=defaultBrewVolume(profile), destination: StepId = 'identite')=>{
+    try {
+      if(!profile)return;
+      const resized=adaptRecipeEquipment(build(),profile,targetL);
+      applyImport(normalizeRecipeImport(resized,'local',true), resized);
+      setStep(destination);
+      setEquipmentNotice(`Recette adaptée à ${formatDecimal(resized.volumeL)} L : ingrédients, eaux, sels et acide recalculés.`);
+    }catch(e){setEquipmentNotice(e instanceof Error?e.message:'Adaptation impossible.');}
+  };
+  const noloNeedsEquipmentAdoption = !!details.nolo?.enabled && installationNeedsAdoption && !!configuredBrewhouse?.equipment;
+  const noloEquipmentPrompt = () => <aside aria-label="Matériel requis pour le scénario NOLO" className="rounded-control border border-ebc-amber/40 bg-ebc-amber/10 p-2 space-y-2 text-sm text-cave-200">
+    <p>Cette recette n’a pas de matériel figé. Adapte-la à {configuredBrewhouse!.name} avant de préparer le scénario NOLO : la proposition montrera alors les volumes d’eau calculés avec ses limites de rinçage.</p>
+    <button type="button" className="equipment-button" onClick={() => resizeForEquipment(configuredBrewhouse, volumeL, step)}>
+      Adapter à mon matériel actuel · {configuredBrewhouse!.name}
+    </button>
+    {equipmentNotice && <p role="alert" className="text-ebc-amber">{equipmentNotice}</p>}
+  </aside>;
+  const waterSourceNotice = !(details.nolo?.enabled && details.nolo.process === 'secondRunnings') && (waterSourceUnresolved ?
+    <aside aria-label="Analyse d’eau à retrouver" className="rounded-control border border-ebc-amber/40 bg-ebc-amber/10 p-2 space-y-2 text-sm text-cave-200">
+      {waterReferenceBlank
+        ? <p role="status">La référence d’analyse d’eau de cette recette est vide : elle ne désigne aucune analyse et reste telle quelle. Les calculs affichés utilisent provisoirement « {waterSource.name} », qui n’est pas enregistrée comme analyse de cette recette sans ton choix.</p>
+        : <p role="status">L’analyse d’eau « {waterSourceReference} » de cette recette est introuvable. Les calculs affichés utilisent provisoirement « {waterSource.name} », qui n’est pas enregistrée comme analyse de cette recette sans ton choix.</p>}
+      <button type="button" className="equipment-button" onClick={() => setRecipeWaterSource({ ...waterSource })}>
+        Retenir « {waterSource.name} » pour cette recette
+      </button>
+    </aside>
+    : anonymousWaterAnalysis &&
+    <aside aria-label="Analyse d’eau sans identifiant" className="rounded-control border border-ebc-amber/40 bg-ebc-amber/10 p-2 space-y-2 text-sm text-cave-200">
+      <p role="status">L’analyse d’eau enregistrée avec cette recette{waterSource.name ? ` (« ${waterSource.name} »)` : ''} n’a pas d’identifiant : elle reste l’analyse de la recette et sert à ses calculs, sans être liée à une source de ton carnet. La remplacer remplace aussi ses calculs.</p>
+      <button type="button" className="equipment-button" onClick={() => setRecipeWaterSource({ ...configuredWaterSource })}>
+        Retenir « {configuredWaterSource.name} » pour cette recette
+      </button>
+    </aside>);
+  const readiness = recipeReadiness(build());
+  const fieldIssues = [...readiness.invalid, ...readiness.missing];
+  // Une valeur hors bornes (`live`) se dit dès la frappe ; le reste attend « Suivant » ou « Enregistrer ».
+  const visibleIssues = validationRequested ? fieldIssues : fieldIssues.filter(issue => issue.live);
+  const fieldError = (field: string) => visibleIssues.find(issue => issue.field === field)?.message;
+  // AM-25, AM-28 : ordre des paliers, mash-out, ordre des phases. Des conseils : ils ne bloquent rien.
+  // BR-31 : le dernier palier retiré (ou aucun dans la plage des amylases) laissait un empâtage de grain sans saccharification, sans un mot.
+  const sansSaccharification = step === 'paliers' && !details.nolo?.enabled
+    ? messageSansSaccharification(mashSteps, fermentables.filter(grainEmpate).reduce((s, f) => s + f.weightKg, 0)) : null;
+  const advice = step === 'paliers' ? [...recipeAdvice({ mash: { steps: mashSteps }, fermentation: ferment }),
+    ...(sansSaccharification ? [{ field: 'wz-mash-saccharification', step: 'paliers' as const, message: sansSaccharification }] : [])] : [];
+  const adviceList = (prefix: string) => {
+    const items = advice.filter(item => item.field.startsWith(prefix));
+    return items.length ? <ul data-role={'conseils-' + prefix} className="space-y-0.5 text-xs text-ebc-amber leading-snug">{items.map(item => <li key={item.field + item.message} role="status">{item.message}</li>)}</ul> : null;
+  };
+
+  const requestCorrection = (issues: RecipeFieldIssue[]) => {
+    setValidationRequested(true);
+    const first = issues[0];
+    if (first) { setStep(first.step); setFocusIssue({ ...first }); }
+  };
+
+  useEffect(() => {
+    if (!focusIssue) return;
+    const frame = requestAnimationFrame(() => {
+      const field = document.getElementById(focusIssue.field);
+      if (field) {
+        for (let parent = field.parentElement; parent; parent = parent.parentElement) {
+          if (parent instanceof HTMLDetailsElement) parent.open = true;
+        }
+        field.focus({ preventScroll: true });
+        field.scrollIntoView({ block: 'nearest' });
+      } else {
+        document.getElementById('wz-validation')?.focus();
+      }
+      setFocusIssue(undefined);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [focusIssue, step]);
+
+  // Each recipe state read here is written through a `brewerSetter` wrapper: a state added with a bare setter would
+  // escape `brewerEdits`, and the brewer's change to it would only move the baseline (#97, D8). Props, stored knowledge
+  // and `serverBase` have no setter here and follow the baseline by design.
+  const wizardDraftSnapshot: RecipeWizardDraft = { recipe: { ...build(), name, style }, details, step, water: waterDraft,
+    volumesEdited, waterProfileAuto: waterProfileMode.current === 'style', targetBasis, mashRatioOverride, candidateSheets,
+    ...(serverBase ? { serverBase } : {}) };
+  const serializedDraft = serializeRecipeDraft(wizardDraftSnapshot);
+  /*
+   * Opening or moving between steps creates no draft (#97, D8): only a change of the brewer does, that is a write to
+   * the recipe state outside `applyAutomatic` (`brewerEdits` changes in the same commit). Writes under
+   * `applyAutomatic` — derived values settling after opening, completions from local references — and stored
+   * knowledge refreshed without a setter move the comparison baseline instead, even after a touch. Once a real change
+   * exists, the draft holds the whole state. The step is left out of the comparison and is kept up to date once a
+   * draft exists.
+   */
+  const firstStep = useRef(step);
+  const contentBaseline = useRef<string | undefined>(undefined);
+  const contentChanged = useRef(false);
+  const latestDraft = useRef(serializedDraft);
+  latestDraft.current = serializedDraft;
+  const latestWizardDraft = useRef(wizardDraftSnapshot);
+  latestWizardDraft.current = wizardDraftSnapshot;
+  const retainCandidateSheets = (next: YeastCandidateSheets) => {
+    candidateSheetsRef.current = next;
+    setCandidateSheets(next);
+    setCandidateSheetsWarning(undefined);
+  };
+  const selectedCandidateId = yeast.hopIndexId;
+  const selectedCandidateRevision = selectedCandidateId && !yeast.stockItemRef && yeast.localDocumentary === undefined
+    ? candidateSheets[selectedCandidateId]?.revision ?? 0 : 0;
+  const yeastReviewTokenFor = (value: YeastSpec, revision = 0) => JSON.stringify([
+    yeastSelectionEpoch.current, value.hopIndexId ?? null, value.stockItemRef ?? null, revision
+  ]);
+  const callbackEpoch = yeastSelectionEpoch.current;
+  const callbackBookRevision = selectedCandidateId && !yeast.stockItemRef && yeast.localDocumentary === undefined
+    ? candidateSheetsRef.current[selectedCandidateId]?.revision ?? 0 : undefined;
+  /** Recipe-scope dossier and AI edits also update the parent candidate book when a catalogue strain is selected.
+   * The extractor rejects stock/local scope and excludes recipe/measured attenuation and legacy lot notes. */
+  const updateSelectedYeastDocumentation = (next: YeastSpec, intent: YeastDocumentaryIntent = 'documentary'): RecipeYeastAcceptance => {
+    const current = latestWizardDraft.current.recipe.yeast;
+    if (callbackEpoch !== yeastSelectionEpoch.current)
+      return { accepted: false, message: 'La sélection de levure a changé pendant la correction. Rouvre sa fiche avant de réessayer.' };
+    if (current.hopIndexId !== selectedCandidateId) {
+      setCandidateSheetsWarning('La levure a changé pendant la correction. Rouvre sa fiche actuelle avant de réessayer.');
+      return { accepted: false, message: 'La levure a changé pendant la correction. Rouvre sa fiche actuelle avant de réessayer.' };
+    }
+    if (selectedCandidateId && callbackBookRevision !== undefined &&
+        callbackBookRevision !== (candidateSheetsRef.current[selectedCandidateId]?.revision ?? 0))
+      return { accepted: false, message: 'La fiche catalogue a changé pendant la correction. Rouvre sa version actuelle avant de réessayer.' };
+    if (next.hopIndexId !== selectedCandidateId)
+      return { accepted: false, message: 'La portée catalogue a changé pendant la correction. Rouvre la fiche de la souche actuelle.' };
+
+    const isLocalScope = !!current.stockItemRef || !!next.stockItemRef || current.localDocumentary !== undefined ||
+      next.localDocumentary !== undefined || !selectedCandidateId;
+    const currentSheet = !isLocalScope && selectedCandidateId ? candidateSheetsRef.current[selectedCandidateId] : undefined;
+    const hydratedCurrent = currentSheet ? mergeYeastCandidateSheet(current, currentSheet) ?? current : current;
+    const acceptedSheet = currentSheet ? adoptedDocumentaryFromCandidateSheet(currentSheet) : undefined;
+    const base = acceptedSheet ? { ...hydratedCurrent, adoptedDocumentary: acceptedSheet } : hydratedCurrent;
+    const baseView = readYeastDocumentaryView(base), nextView = readYeastDocumentaryView(next);
+    const before = baseView.effectiveYeast;
+    const documentaryFields = ['lab', 'strain', 'form', 'fermTempMinC', 'fermTempMaxC', 'flocculation',
+      'alcoholTolerancePct', 'fermentDays', 'technicalSource'] as const;
+    const fieldsChanged = documentaryFields.some(key => JSON.stringify(before[key]) !== JSON.stringify(next[key])) ||
+      JSON.stringify(before.technicalFacts) !== JSON.stringify(next.technicalFacts) ||
+      JSON.stringify(before.technicalSelections) !== JSON.stringify(next.technicalSelections) ||
+      JSON.stringify(before.documentaryNotes) !== JSON.stringify(next.documentaryNotes) ||
+      JSON.stringify(before.fermentationFacts) !== JSON.stringify(next.fermentationFacts) ||
+      ((before.attenuationBasis === 'declared' || next.attenuationBasis === 'declared') &&
+        (before.attenuationBasis !== next.attenuationBasis || before.attenuationPct !== next.attenuationPct));
+    if (intent === 'documentary' && baseView.status === 'none' && nextView.status === 'none' && !fieldsChanged) {
+      // Dose/unit/pitch/legacy notes edits are recipe operations; they must not create a documentary envelope.
+      setYeast(next);
+      return { accepted: true, yeast: next, reviewRevisionToken: yeastReviewTokenFor(next, callbackBookRevision) };
+    }
+    const adoption = tryAdoptYeastDocumentary(base, next, { intent });
+    if (adoption.accepted === false) {
+      setCandidateSheetsWarning(adoption.message);
+      return adoption;
+    }
+    const canonical = adoption.yeast;
+    const view = readYeastDocumentaryView(canonical);
+    if (view.status === 'invalid' || view.status === 'conflict') {
+      setCandidateSheetsWarning(view.message);
+      return { accepted: false, message: view.message };
+    }
+    if (isLocalScope || view.status === 'valid' && view.scope === 'local' || canonical.stockItemRef || !selectedCandidateId) {
+      setYeast(canonical);
+      setCandidateSheetsWarning(undefined);
+      return { accepted: true, yeast: canonical, reviewRevisionToken: yeastReviewTokenFor(canonical) };
+    }
+    if (!selectedCandidateId || canonical.hopIndexId !== selectedCandidateId)
+      return { accepted: false, message: 'Identité catalogue absente ou différente : aucune fiche n’a été retenue.' };
+    const expectedRevision = callbackBookRevision ?? 0;
+    const beforeSheet = extractYeastCandidateSheet(base);
+    const update = extractYeastCandidateSheet(canonical);
+    if (!update) {
+      setCandidateSheetsWarning('La fiche documentaire de cette levure est invalide et n’a pas été retenue. Vérifie les valeurs, unités et sources.');
+      return { accepted: false, message: 'La fiche documentaire de cette levure est invalide et n’a pas été retenue. Vérifie les valeurs, unités et sources.' };
+    }
+    if (beforeSheet && JSON.stringify(beforeSheet) === JSON.stringify(update)) {
+      setYeast(canonical);
+      setCandidateSheetsWarning(undefined);
+      return { accepted: true, yeast: canonical, reviewRevisionToken: yeastReviewTokenFor(canonical, expectedRevision) };
+    }
+    if (!Object.keys(update).some(key => key !== 'hopIndexId')) {
+      setYeast(canonical);
+      return { accepted: true, yeast: canonical, reviewRevisionToken: yeastReviewTokenFor(canonical, expectedRevision) };
+    }
+    const draftAtCommit = { ...latestWizardDraft.current, candidateSheets: candidateSheetsRef.current };
+    const acceptedSheetUpdate = tryAcceptYeastCandidateSheet(draftAtCommit, update, expectedRevision);
+    if (acceptedSheetUpdate.accepted === false) { setCandidateSheetsWarning(acceptedSheetUpdate.message); return { accepted: false, message: acceptedSheetUpdate.message }; }
+    retainCandidateSheets(acceptedSheetUpdate.draft.candidateSheets ?? {});
+    setCandidateSheetsWarning(undefined);
+    setYeast(canonical);
+    return { accepted: true, yeast: canonical, reviewRevisionToken: yeastReviewTokenFor(canonical, acceptedSheetUpdate.revision) };
+  };
+  /** Seed the leaving catalogue strain's saved documentary state only on an explicit identity change,
+   * never when merely reopening an older recipe. An accepted local sheet remains authoritative. */
+  const rememberCandidateBeforeYeastChoice = (next: YeastSpec) => {
+    const current = latestWizardDraft.current.recipe.yeast, id = current.hopIndexId;
+    if (!id || id === next.hopIndexId || current.stockItemRef || current.localDocumentary !== undefined || candidateSheetsRef.current[id]) return;
+    const currentForBook = yeastWithAdoptedDocumentary(current);
+    const update = extractYeastCandidateSheet(currentForBook);
+    if (!update) {
+      setCandidateSheetsWarning('La fiche documentaire de cette levure n’a pas pu être conservée. Vérifie les valeurs, unités et sources avant de changer de souche.');
+      return;
+    }
+    const hasDocumentaryData = !!update.technicalFacts?.length || update.documentaryNotes !== undefined ||
+      update.technicalSelections !== undefined || update.fermentationFacts !== undefined || !!Object.keys(update.documentary ?? {}).length;
+    if (!hasDocumentaryData) return;
+    const draftAtCommit = { ...latestWizardDraft.current, candidateSheets: candidateSheetsRef.current };
+    const accepted = tryAcceptYeastCandidateSheet(draftAtCommit, update, 0);
+    if (accepted.accepted === false) { setCandidateSheetsWarning(accepted.message); return; }
+    retainCandidateSheets(accepted.draft.candidateSheets ?? {});
+  };
+  const applyYeastChoice = (next: import('../domain/hopIndex/trials').TrialRecipe, intent: YeastChoiceIntent = 'replace-selection') => {
+    const current = latestWizardDraft.current.recipe.yeast;
+    if (intent === 'restore-selection') {
+      yeastSelectionEpoch.current += 1;
+      setYeastSelection(value => value + 1);
+      return applyFermentationRecipe(next, 'levure', true);
+    }
+    const selectionChanged = current.hopIndexId !== next.yeast.hopIndexId || current.stockItemRef !== next.yeast.stockItemRef ||
+      current.form !== next.yeast.form || intent === 'replace-selection';
+    if (selectionChanged) yeastSelectionEpoch.current += 1;
+    const sameOwner = current.stockItemRef || next.yeast.stockItemRef
+      ? current.stockItemRef === next.yeast.stockItemRef
+      : current.hopIndexId || next.yeast.hopIndexId
+        ? current.hopIndexId === next.yeast.hopIndexId : intent === 'conduct' || intent === 'pitching';
+    if (intent === 'replace-selection' || (intent === 'conduct' || intent === 'pitching') && !sameOwner) rememberCandidateBeforeYeastChoice(next.yeast);
+    const adoptionIntent: YeastDocumentaryIntent = (intent === 'conduct' || intent === 'pitching') && sameOwner ? 'documentary' : 'replace-selection';
+    const adoption = tryAdoptYeastDocumentary(current, next.yeast, { intent: adoptionIntent });
+    if (adoption.accepted === false) throw new Error(adoption.message);
+    if (adoption.yeast !== next.yeast) next = { ...next, yeast: adoption.yeast };
+    return applyFermentationRecipe(next, 'levure', false, intent === 'pitching');
+  };
+
+  /** Attributes the content committed now: the brewer's change if `brewerEdits` moved in this commit, otherwise a new
+   * automatic baseline. */
+  const seenEdits = useRef(brewerEdits);
+  const attributeContent = () => {
+    const brewer = brewerEdits !== seenEdits.current;
+    seenEdits.current = brewerEdits;
+    if (restoredDraft || contentChanged.current) return;
+    const draft = latestWizardDraft.current;
+    const content = draft.step === firstStep.current ? latestDraft.current : serializeRecipeDraft({ ...draft, step: firstStep.current });
+    if (contentBaseline.current === undefined || !brewer) contentBaseline.current = content;
+    else if (content !== contentBaseline.current) contentChanged.current = true;
+  };
+  // Layout effect: runs in the commit of the change, before the write effect below reads the result.
+  useLayoutEffect(attributeContent, [serializedDraft, restoredDraft, brewerEdits]);
+  /** The draft this editor last wrote: a save may clear it even if settings applied automatically changed it since. */
+  const lastWrittenDraft = useRef<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (draftReadOnly || !draftKey || draftFinished.current || (!restoredDraft && !contentChanged.current)) return;
+    try {
+      writeRecipeDraft(draftKey, serializedDraft);
+      lastWrittenDraft.current = serializedDraft;
+      setDraftNotice(restoredDraft ? 'Brouillon repris sur cet appareil.' : 'Brouillon conservé sur cet appareil.');
+      setDraftAside(false);
+      setDraftError('');
+    } catch { setDraftError('Le brouillon ne peut pas être conservé sur cet appareil. Garde cette page ouverte pour terminer la recette.'); }
+  }, [draftKey, serializedDraft, restoredDraft, draftReadOnly]);
+
+  useEffect(() => {
+    if (draftReadOnly || !draftKey) return;
+    const flush = () => {
+      if (draftFinished.current || (!restoredDraft && !contentChanged.current)) return;
+      try { writeRecipeDraft(draftKey, latestDraft.current); lastWrittenDraft.current = latestDraft.current; } catch { /* The active editor displays the storage error. */ }
+    };
+    window.addEventListener('pagehide', flush);
+    return () => { window.removeEventListener('pagehide', flush); flush(); };
+  }, [draftKey, restoredDraft, draftReadOnly]);
+
+  const discardDraft = () => {
+    if (draftReadOnly) return;
+    try {
+      clearRecipeDraft(draftKey);
+      draftFinished.current = true;
+      // RL-12 : un brouillon abandonné ne laisse rien — les articles qu'il a créés, liés à rien, partent avec lui.
+      retirerArticlesDuBrouillon(draftKey);
+      onClose();
+    } catch { setDraftError('Le brouillon n’a pas pu être supprimé. Réessaie.'); }
+  };
+
+  const submitRecipe = (thenBrew: boolean) => {
+    if (saving || draftReadOnly) return;
+    const recipe = build();
+    const issues = thenBrew ? recipeFieldIssues(recipe) : recipeSaveIssues(recipe);
+    if (issues.length) { requestCorrection(issues); return; }
+    if (saveError && saveError === writeError) onDismissWriteError?.();
+    setSaveError('');
+    const submittedDraft = latestDraft.current;
+    // The brewer's writes already rendered: one called before the click but rendered after it is not in the saved
+    // recipe, and keeps its draft.
+    const writesAtSubmit = seenEdits.current;
+    const finish = () => {
+      // RL-12 : la recette est enregistrée, ses articles créés lui appartiennent.
+      oublierArticlesCrees(draftKey);
+      // Settings applied automatically while saving (completions, props renewed by the App) do not keep the draft; a
+      // change of the brewer since the click, or not rendered yet, does (#97, D8).
+      const automaticOnly = brewerWrites.current === writesAtSubmit;
+      const rendered = brewerWrites.current === seenEdits.current;
+      draftFinished.current = automaticOnly || rendered && latestDraft.current === submittedDraft;
+      try {
+        const stored = readRecipeDraft(draftKey);
+        const storedDraft = stored && serializeRecipeDraft(stored);
+        // An older editor must never erase changes made after reopening this draft: only what this editor submitted,
+        // or then wrote on its own, is cleared.
+        if (storedDraft && (storedDraft === submittedDraft || automaticOnly && storedDraft === lastWrittenDraft.current)) clearRecipeDraft(draftKey);
+      } catch { /* The recipe itself was saved successfully. */ }
+      setSaving(false);
+    };
+    const fail = (error: unknown) => {
+      setSaving(false);
+      setSaveError(error instanceof Error ? error.message : 'La recette n’a pas pu être enregistrée. Réessaie.');
+    };
+    try {
+      const result = thenBrew && quandBrasser ? onSave(recipe, thenBrew, quandBrasser) : onSave(recipe, thenBrew);
+      if (result) { setSaving(true); result.then(finish, fail); }
+      else finish();
+    } catch (error) { fail(error); }
+  };
+
+  const go = (delta: 1 | -1) => {
+    if (hopGuideBusy || saving) return;
+    if (delta === 1) {
+      const issues = readiness.invalid.filter(issue => issue.step === step);
+      if (issues.length) { requestCorrection(issues); return; }
+    }
+    const next = STEPS[stepIndex + delta];
+    if (next) setStep(next.id);
+  };
+
+  // « Abandonner » le brouillon : dans l'en-tête, compact, à côté de l'import et du thème (25.10). La confirmation, elle, reste
+  // sous l'en-tête (« Supprimer ce brouillon ? »). Sur ordinateur, le bouton passe par `actions` de la coquille.
+  // B1-NOTE-3 : présent dès l'ouverture, avant le premier geste (plus conditionné au message du brouillon).
+  const abandonner = draftKey && !draftAside && !discarding && !draftReadOnly ? (
+    // Dans un <span> : la règle `.recipe-titlebar > button` du wizard fixe 28 × 28 px aux boutons-icônes de la rangée.
+    <span className="shrink-0">
+      <button type="button" aria-label="Abandonner le brouillon" data-role="abandonner-brouillon" onClick={() => setDiscarding(true)}
+        className="h-7 px-1.5 rounded-control text-xs text-cave-200 underline underline-offset-2 active:bg-cave-850 transition-colors">Abandonner</button>
+    </span>
+  ) : null;
+  const mobileHeader = (
+    <div className="recipe-mobile-header px-2 bg-cave-950">
+      <div className="recipe-titlebar flex items-center gap-1.5">
+      {/* Les actions du titre gardent leur propre zone tactile. */}
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Fermer"
+        className="w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
+      >
+        <ChevronLeft className="w-4 h-4" />
+      </button>
+
+      {/* Le même haut d'écran aux sept étapes (25.10 : « seul houblons a une variation… Changé ça »), l'étape Houblons
+          comprise : « ‹ Houblons 3/7 », puis Abandonner, l'import et le thème. */}
+      <WizardStepName steps={STEPS} currentIndex={stepIndex} />
+
+      {!isDesktop && abandonner}
+
+      <button
+        type="button"
+        onClick={() => setImporting(true)}
+        disabled={saving || draftReadOnly}
+        aria-label="Coller une recette"
+        className="w-7 h-7 rounded-control flex items-center justify-center text-cave-400 hover:text-ebc-straw active:bg-cave-850 shrink-0 transition-colors"
+      >
+        <ClipboardPaste className="w-3.5 h-3.5" />
+      </button>
+      {/* Le choix du thème, à côté de l'import (#144, 25.10). */}
+      <ThemeToggle />
+      </div>
+
+      {/* Le fil seul sur son rang : chaque segment passe de 30 px de large à ~50. */}
+      <WizardStepRail
+        steps={STEPS}
+        currentIndex={stepIndex}
+        onSelect={(id) => setStep(id as StepId)}
+        disabled={hopGuideBusy || saving}
+        showLabels
+        compactLabels
+      />
+    </div>
+  );
+
+  /*
+    ⚠️ RETOUR / SUIVANT NE SUIVENT PLUS.
+
+    Ils vivaient dans la barre collée en bas de `PageShell` : cinquante-six
+    pixels confisqués en permanence sur un écran de téléphone, pour deux
+    boutons dont on ne se sert qu'une fois par étape — à la fin. Ils sont
+    maintenant à LEUR place, au bas du contenu, et petits : on les atteint en
+    finissant de dérouler la page, ce qu'on fait de toute façon.
+
+    Le récapitulatif garde sa barre collée, lui : « Enregistrer » et
+    « Lancer le brassin » sont la décision de la page, pas une navigation.
+
+    Ils sont la rangée de fin de `PageShell` (`endActions`), la même pour les six
+    étapes : elle laisse son coin au « + » flottant de l'app, qui se posait sur
+    « Suivant » à chaque fois qu'on le croisait en défilant (T12b, #170). Hors du
+    fieldset du contenu : `saving` les désactive lui-même.
+  */
+  const stepActions = !draftReadOnly && step !== 'recap' ? (
+    <div role="group" aria-label="Étapes de la recette" className="recipe-step-actions flex justify-between gap-2 pt-1 pb-2">
+      <button
+        type="button"
+        onClick={() => go(-1)}
+        disabled={stepIndex === 0 || hopGuideBusy || saving}
+        className="min-h-touch-sm px-3 rounded-control border border-cave-800
+                   text-cave-400 text-sm disabled:opacity-30 transition-colors hover:bg-cave-850"
+      >
+        Retour
+      </button>
+      {step === 'levure' && !details.nolo?.enabled && levuresComparees.length > 0 && (
+        <button type="button" onClick={() => setVueLevure('comparer')} data-lv="pied-comparer"
+          className="min-h-touch-sm px-3 rounded-control border border-cave-50 text-cave-50 text-sm font-semibold transition-colors hover:bg-cave-850">
+          {`Comparer (${levuresComparees.length})`}
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={() => go(1)}
+        disabled={hopGuideBusy || saving}
+        className="recipe-primary-action min-h-touch px-2 rounded-control bg-ebc-straw text-cave-950
+                   text-sm font-semibold disabled:opacity-40 transition-colors hover:brightness-105"
+      >
+        {`Suivant — ${STEPS[stepIndex + 1]?.label ?? ''}`}
+      </button>
+    </div>
+  ) : undefined;
+
+  // Ce que la recette sait déjà et que l'eau ignorait ; le même objet nourrit l'onglet Eau et son préchargement.
+  const waterBrew = {
+    style,
+    targetPh: details.waterPlan?.targetPh,
+    nolo: details.nolo, styleRef: details.styleRef,
+    grist: grains,
+    totalGristKg: totalGrist,
+    hops,
+    ibu,
+    og: ogPredicted,
+    volumes: suggestedVolumes,
+    equipment: brewhouse?.equipment,
+    preferences: brewhouse?.preferences,
+    boilMin
+  };
+  // Préchargement : l'analyse de l'eau part dès que la recette est connue, avant l'ouverture de l'onglet Eau (15.11, « moins de 2 secondes… assez lent »).
+  /* b1r : le menu du « + » met en tête les actions de la recette (ajouter à l'étape, enregistrer, exporter) ; « Partout » reste dessous.
+     « Aller à » n'y est plus (16.11) : le fil d'étapes, visible en haut, le fait déjà. */
+  /* ⚠️ L'export part d'ICI et non de la fiche, parce que les grandeurs CALCULÉES — OG, FG, IBU, EBC, rendement — vivent dans l'assistant.
+     Les recalculer dans la fiche les ferait diverger de ce que l'écran affiche : une recette exportée annonçant un IBU que l'application
+     ne montre nulle part serait pire que pas d'export du tout. Le Récapitulatif et le menu du « + » copient ce même texte. */
+  const texteRecette = () => recipeToText({
+    recipe: build(),
+    name,
+    style,
+    volumeL,
+    boilMin,
+    og: ogPredicted,
+    fg: fgPredicted,
+    abv: abvPredicted,
+    ibu,
+    ebc: color?.ebc ?? null,
+    efficiencyPct: efficiency,
+    carboTarget,
+    mashRatioLPerKg: totalGrist > 0 ? water.mashWaterL / totalGrist : undefined,
+    spargeType,
+    adjuncts: details.adjuncts,
+    fermentables,
+    totalGristKg: totalGrist,
+    hops,
+    hopIbu: (h) => ibuDeLAjout(hops, h, volumeL, boilOg, boilMin),
+    yeast,
+    mashSteps,
+    fermentation: ferment,
+    water: (!details.nolo?.enabled||details.nolo.process!=='secondRunnings')&&waterRecapForRecord ? {
+      ...waterRecapForRecord,
+      sourceName: waterRecapForRecord.sourceName,
+      styleName: waterRecapForRecord.styleName,
+      mashWaterL: waterRecapForRecord.mashWaterL,
+      spargeWaterL: waterRecapForRecord.spargeWaterL,
+      mashOsmoseeL: waterRecapForRecord.mashOsmoseeL,
+      spargeOsmoseeL: waterRecapForRecord.spargeOsmoseeL,
+      wortIons: waterRecapForRecord.wortIons,
+      doses: waterRecapForRecord.doses,
+      acidId: waterRecapForRecord.acidId,
+      mashAcid: waterRecapForRecord.mashAcid,
+      spargeAcid: waterRecapForRecord.spargeAcid,
+      ra: waterRecapForRecord.ra,
+      mashPh: waterRecapForRecord.mashPh
+    }:undefined,
+    notes
+  });
+  // « Exporter la recette » du « + » : copie ce texte sans quitter l'étape, et le dit (« Recette copiée ») ; un refus se dit aussi, jamais en silence.
+  const [messageExport, setMessageExport] = useState<{ texte: string; echec?: boolean } | null>(null);
+  const messageExportMinuterie = useRef<number | undefined>(undefined);
+  const direExport = (m: { texte: string; echec?: boolean }) => {
+    setMessageExport(m);
+    window.clearTimeout(messageExportMinuterie.current);
+    messageExportMinuterie.current = window.setTimeout(() => setMessageExport(null), 4000);
+  };
+  useEffect(() => () => window.clearTimeout(messageExportMinuterie.current), []);
+  const exporterDepuisPlus = async () => {
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('Presse-papier indisponible : ouvre le Récapitulatif pour copier le texte.');
+      await navigator.clipboard.writeText(texteRecette());
+      direExport({ texte: 'Recette copiée.' });
+    } catch (e) {
+      direExport({ texte: e instanceof Error && e.name !== 'NotAllowedError' ? e.message : 'Copie refusée : ouvre le Récapitulatif pour copier le texte.', echec: true });
+    }
+  };
+  usePlusPage(declarationPlusAssistant({
+    steps: STEPS,
+    step,
+    levurePosee: !!yeast.name?.trim(),
+    enregistrable: !saving && !draftReadOnly,
+    enregistrer: submitRecipe,
+    exporter: () => { void exporterDepuisPlus(); },
+    supprimer: recetteSupprimable && onDelete && !draftReadOnly ? () => setConfirmerSuppression(true) : undefined
+  }));
+  useWaterPreload({ source: waterSource, beerEbc: color?.ebc ?? null, beerVolumeL: volumeL, brew: waterBrew, state: water },
+    step !== 'eau' && !(details.nolo?.enabled && details.nolo.process === 'secondRunnings'));
+
+  return (
+    <PageShell
+      // Un seul nom d'écran, celui de sa maquette, à toutes les largeurs (B1 n° 10) : « Fermentescibles 2/7 » (le même haut d'écran qu'au téléphone, `WizardStepName`),
+      // et le fil dit « Malts/sucres » (libellés courts, comme au téléphone). Avant : « Nouvelle recette » ou « Modifier « … » » au-dessus de 640 px.
+      title={draftReadOnly ? 'Brouillon en lecture seule' : `${STEPS[stepIndex].label} ${stepIndex + 1}/${STEPS.length}`}
+      subtitle={STEPS[stepIndex].label}
+      onClose={onClose}
+      mobileHeader={mobileHeader}
+      endActions={stepActions}
+      // « Suivant » à une place fixe (VUE-SAUTE, 21.11 : il sautait de 490 puis 655 px d'une étape à l'autre) : la rangée Retour / Suivant reste hors de la zone qui défile à toutes les étapes ; le récap n'en a pas.
+      endActionsCollant
+      compactDock
+      className="recipe-wizard"
+      actions={abandonner && isDesktop ? abandonner : undefined}
+      scrollKey={step}
+      wide={step === 'levure' && !details.nolo?.enabled || step === 'houblons'}
+      /*
+       * Le fil d'étapes vit dans l'en-tête. Sur ordinateur, `PageShell` affiche
+       * déjà le nom de l'étape en sous-titre : la piste seule suffit ici, et
+       * elle reste un indicateur — on saute d'une étape à l'autre par le nom,
+       * pas en visant une barre de 6 px.
+       */
+      progress={
+        <WizardStepRail steps={STEPS} currentIndex={stepIndex} onSelect={id => setStep(id as StepId)} disabled={hopGuideBusy || saving} showLabels compactLabels />
+      }
+      footer={
+        step === 'recap' ? (
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => submitRecipe(false)}
+              disabled={saving || draftReadOnly}
+              className="recipe-primary-action min-h-touch px-2 rounded-control bg-ebc-straw text-cave-950
+                         text-sm font-semibold transition-colors hover:brightness-105"
+            >
+              {saving ? 'Enregistrement…' : 'Enregistrer la recette'}
+            </button>
+            <button
+              type="button"
+              onClick={() => submitRecipe(true)}
+              disabled={saving || draftReadOnly}
+              className="min-h-touch px-3 rounded-control border border-cave-700 text-cave-50 text-sm font-semibold transition-colors hover:bg-cave-850"
+            >
+              Enregistrer et préparer un brassin
+            </button>
+          </div>
+        ) : undefined
+      }
+    >
+      {draftReadOnly ? <section role="alert" aria-label="Brouillon conservé en lecture seule" className="rounded-control border border-cave-700 p-3">
+        <h2 className="text-sm font-semibold">Brouillon conservé en lecture seule</h2>
+        <p className="text-sm text-cave-200">Ce brouillon utilise un format plus récent ou illisible. Son contenu reste conservé ; aucune modification, application ou sauvegarde ne le remplace.</p>
+        {initialDraftState.status === 'readOnly' && 'raw' in initialDraftState && initialDraftState.raw ? <details className="mt-2"><summary className="text-xs">Lire le contenu conservé</summary><pre className="mt-2 whitespace-pre-wrap break-all text-xs">{initialDraftState.raw}</pre></details> : null}
+        <button type="button" onClick={onClose} className="mt-2 text-xs underline">Revenir aux recettes</button>
+      </section> : <fieldset disabled={saving} aria-busy={saving} className="contents space-y-3">
+      {/* « Brouillon repris sur cet appareil. » ne s'écrit plus à l'écran (25.10) : il reste annoncé aux lecteurs d'écran. Les autres
+          messages (erreur, programme appliqué, version enregistrée ouverte) et la confirmation d'abandon restent visibles. */}
+      {draftKey && (draftNotice || draftError || discarding) && (draftError || discarding || !messageDeBase || repriseVisible) && <div className={`recipe-draft-status flex flex-wrap items-center justify-between gap-x-2 gap-y-1 ${repriseVisible && !draftError ? 'rounded-control border border-cave-700 bg-cave-900 px-2 py-1.5 text-sm text-cave-200' : 'text-xs text-cave-400'}`} data-reprise={repriseVisible && !draftError ? 'true' : undefined}>
+        {(draftError || (draftNotice && (!messageDeBase || repriseVisible))) && <span role={draftError ? 'alert' : 'status'}>{draftError || draftNotice}</span>}
+        {repriseVisible && !draftError && !discarding && !draftReadOnly && <button type="button" data-role="repartir-vierge" className="min-h-touch px-1 text-sm underline underline-offset-2 text-cave-50" onClick={() => setDiscarding(true)}>Repartir d’une recette vierge</button>}
+        {discarding && <span className="flex items-center gap-2"><span className="text-attention">Supprimer ce brouillon ?</span><button type="button" autoFocus onClick={() => setDiscarding(false)}>Garder</button><button type="button" onClick={discardDraft} className="text-alert-strong">Abandonner</button></span>}
+      </div>}
+      {draftKey && messageDeBase && !repriseVisible && !draftError && !discarding && <span role="status" className="sr-only">{draftNotice}</span>}
+      {/* « Exporter la recette » du « + » : le même toast que celui de l'App (bas de l'écran, à gauche du « + »), sans quitter l'étape. */}
+      {messageExport && <div role={messageExport.echec ? 'alert' : 'status'} data-toast="export" className="pointer-events-none fixed z-50 left-2 right-[4.75rem] bottom-[calc(var(--main-navigation-height,2.5rem)+0.75rem)] min-h-[34px] rounded-[10px] bg-cave-850 border border-cave-700 text-cave-50 px-2.5 py-1.5 shadow-lift text-sm flex items-center gap-2 animate-in fade-in min-[1024px]:left-[calc(var(--rail-width,88px)+0.5rem)] min-[1024px]:right-auto min-[1024px]:mx-0 min-[1024px]:bottom-4 min-[1024px]:w-[360px]">
+        <span>{messageExport.texte}</span>
+      </div>}
+      {visibleIssues.length > 0 && <div id="wz-validation" role="alert" tabIndex={-1} className="border border-alert-strong/50 rounded-control p-2 text-sm text-alert-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw">
+        <p className="font-semibold">{visibleIssues.length === 1 ? 'Une valeur à corriger' : `${visibleIssues.length} valeurs à corriger`}</p>
+        <ul>{visibleIssues.map(issue => <li key={`${issue.field}|${issue.message}`}><button type="button" className="text-left underline underline-offset-2" onClick={() => requestCorrection([issue])}>{issue.message}</button></li>)}</ul>
+      </div>}
+      {writeMessage && <div ref={writeAlert} role="alert" tabIndex={-1} className="flex items-start gap-2 border border-alert-strong/50 rounded-control p-2 text-sm text-alert-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-ebc-straw">
+        <p className="flex-1 whitespace-pre-line">{writeMessage}</p>
+        <button type="button" aria-label="Fermer l’erreur" className="min-h-6 shrink-0 px-1 underline underline-offset-2" onClick={() => { setSaveError(''); onDismissWriteError?.(); }}>Fermer</button>
+      </div>}
+      {/*
+        ⚠️ LE BANDEAU DE MESURES, ENFIN SUR TÉLÉPHONE.
+
+        Il portait `hidden sm:grid` : au doigt — c'est-à-dire toujours, en
+        cuverie — on saisissait quatre malts et huit houblons SANS jamais voir
+        bouger l'OG, l'IBU ou la couleur. Il fallait aller jusqu'au
+        récapitulatif pour découvrir qu'on visait 1.075 au lieu de 1.061, et
+        remonter quatre étapes.
+
+        Sur mobile il tient sur UNE ligne, collée sous la barre d'étapes : ce
+        sont les quatre chiffres qu'un brasseur regarde en composant sa facture,
+        et rien d'autre.
+      */}
+      {/* Drapeau hopV4 : le même IBU (plage de la variété, « ~ ») à toutes les étapes ; à l'étape Houblons, l'étape elle-même le rend. */}
+      {hopV4Actif && hasMetrics && step !== 'houblons' && <Suspense fallback={null}><MesuresWizardV4 recipe={build()} boilOg={boilOg} onMesures={setMesuresV4} /></Suspense>}
+      {hasMetrics && (
+        <div
+          className={`recipe-metrics panel px-2.5 py-1.5 sm:px-4 sm:py-2.5 items-baseline justify-between gap-2
+                     sm:grid sm:grid-cols-4 sm:gap-3 sm:items-baseline ${step === 'eau' ? 'hidden' : 'flex'}`}
+        >
+          <div className="flex items-baseline gap-1 sm:items-center">
+            <span className="text-sm text-cave-400">Grain</span>
+            <span className="reading text-sm sm:text-base">{Units.format(totalGrist, 'kg')}</span>
+          </div>
+          <div className="flex items-baseline gap-1 sm:items-center">
+            <span className="text-sm text-cave-400">OG</span>
+            <span className="reading text-sm sm:text-base text-ebc-straw">
+              {formatOgEnTete(og)}
+            </span>
+          </div>
+          <div className="flex items-baseline gap-1 sm:items-center">
+            <span className="text-sm text-cave-400">{!(hopV4Actif && mesuresV4) && hops.some(h=>h.stage==='dryHop') ? 'IBU chaud' : 'IBU'}</span>
+            {hopV4Actif && mesuresV4 ? <IbuEnPlage mesures={mesuresV4} /> : <span className="reading text-sm sm:text-base">{ibuEnTete(ibu, hops)}</span>}
+          </div>
+          <div className="flex items-baseline gap-1 sm:items-center">
+            <span className="text-sm text-cave-400">EBC</span>
+            <span className="flex items-center gap-1">
+              {color && !ogHorsBornes(og) && (
+                <span
+                  className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full border border-cave-700"
+                  style={{ background: teinteEbc(color.ebc) }}
+                  aria-hidden
+                />
+              )}
+              {/* RJ-4 : « EBC 1170,8 » pour 10 000 kg de grain : comme l'OG, une couleur hors bornes n'est pas une valeur. */}
+              <span className="reading text-sm sm:text-base">{color && !ogHorsBornes(og) ? formatDecimal(color.ebc) : '—'}</span>
+            </span>
+          </div>
+        </div>
+      )}
+      {hasMetrics && ecartOg && step !== 'eau' && <p data-role="ecart-og" title={ecartOgTitre} className="px-2.5 -mt-1 text-xs text-cave-400">{ecartOg}</p>}
+
+      {!localOnly && <BrewerChat hideLauncher scope={{kind:'draft',id:draftRecipeId}} label={name || 'Nouvelle recette'} phase={STEPS[stepIndex].label} draft={build()}
+        onDraftApply={value => {
+          // The companion receives only its authorized context fields. Preserve
+          // local metadata (including the brew date), without restoring fields
+          // explicitly removed from the server-owned part of the recipe.
+          const localFields = Object.fromEntries(Object.entries(build()).filter(([key]) => !RECIPE_FIELDS.includes(key)));
+          const next = { ...localFields, ...value };
+          applyImport({...next, mashSteps:next.mash?.steps ?? [], present:Object.keys(next), complete:true} as ImportedRecipe, next);
+          setStep(step);
+        }} />}
+      {/* ---------------------------------------------------- ÉTAPE 1 */}
+        {/* À l'étape Malts/sucres, les données de fiche à compléter passent sous l'écran choisi (il n'y est pas) ; au récapitulatif, elles restent en tête. */}
+        {step === 'recap'&&<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des contrôles de complétude…</p>}><RecipeAutoComplete active nolo={details.nolo?.enabled}
+          onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
+          hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast} onAutomatic={applyAutomatic}/></Suspense>}
+      {step === 'identite' && (() => {
+        // r4-a (choisie le 31.10) : chaque nombre est un curseur, et se tape. Les fonctions de l'ancien bloc restent :
+        // nom, style (et son référentiel), repères du style (plages, source, propositions d'empâtage et de conduite),
+        // volume, ébullition, NOLO, choix pour ce brassin, matériel du plan, adaptations, résumé et alertes d'installation.
+        const recette = build();
+        const equipement = brewhouse?.equipment;
+        const reco = fermenterRecommendation(recette, equipement);
+        const cible = installationNeedsAdoption ? configuredBrewhouse : brewhouse;
+        const styleRepere = resolveBrewingStyle(style, details.styleRef, styles);
+        // La famille se lit sur le nom saisi, puis sur le nom du style résolu (un code « 16D » ne dit rien, « Foreign Extra Stout » oui).
+        const teinte = teinteDuStyle(style) ?? (styleRepere ? teinteDuStyle(styleRepere.name) : null);
+        const recetteVide = fermentables.length === 0 && hops.length === 0;
+        const noloActif = !!details.nolo?.enabled;
+        const problemesInstallation = recipeInstallationIssues(recette, configuredBrewhouse);
+        const volumeAdapte = defaultBrewVolume(cible);
+        // Le moût d'avant ébullition : UNE source, le preBoilHotL de la recette (plan d'eau du moteur), le même nombre que
+        // « Avant ébullition · à chaud » du bloc « Volumes et matériel ». Sans plan d'eau (pas de malts) : inconnu, la barre dit « — ».
+        const avantMoteur = avantEbullitionDuPlan(recette.preBoilHotL, evaporationIdentite?.litres);
+        // Les alertes d'installation (verdict n° 1) : le dessin dit déjà le fermenteur plein (« +N L de trop » sous le volume) et la
+        // cuve qui déborde (« +N L de trop » sur la barre). Au premier plan, une seule ligne, la seule que rien ne dessine
+        // (le rinçage) ; le reste est dit par le dessin ou dans la tuile Matériel. « À adopter » est le sous-titre de Matériel (n° 7).
+        const phrasesInstallation = (equipement || installationNeedsAdoption && configuredBrewhouse?.equipment) ? problemesInstallation : [];
+        const etatFermenteur = etatVolume(volumeL, equipement?.fermenterCapacityL).genre;
+        const grainEmpatage = (recette.fermentables ?? []).filter(f => f.kind === 'grain' && (f.use ?? 'empatage') === 'empatage').reduce((s, f) => s + f.weightKg, 0);
+        const controleEquipement = equipement && recette.waterPlan ? equipmentCheck(equipement, {
+          volumeL: recette.volumeL, grainKg: grainEmpatage, mashL: recette.waterPlan.mashWaterL, spargeL: recette.waterPlan.spargeWaterL,
+          preBoilHotL: recette.preBoilHotL, preferences: (recette.brewhouse ?? brewhouse)?.preferences, fermenterHeadspacePct: reco?.headspacePct
+        }) : undefined;
+        const lignePremier = lignePremierPlan(phrasesInstallation,
+          { fermenteur: etatFermenteur === 'plein' || etatFermenteur === 'trop', cuve: !!barreCuve(avantMoteur?.litres, avantMoteur?.evapL, equipement?.kettleWorkingL)?.deborde },
+          { chaudL: controleEquipement?.spargeHotL, maxL: controleEquipement?.spargeMaximumHotL ?? undefined });
+        const alertesInstallation = lignePremier.texte
+          ? <p role="status" className="text-xs text-ebc-amber" data-role="alerte-installation">{lignePremier.texte}{lignePremier.autres > 0 && <> · +{lignePremier.autres} dans Matériel</>}</p>
+          : null;
+        const installationAAdopter = installationNeedsAdoption || aAdopter(phrasesInstallation);
+        const resumeVol = resumeVolumes({ avantL: avantMoteur?.litres, cuveL: equipement?.kettleWorkingL, volumeL, capaciteL: equipement?.fermenterCapacityL });
+        const alertesMat = alertesDeMateriel(phrasesInstallation);
+        return (
+        <>
+          {/* Le chemin le plus rapide vers une recette complète est de la coller ; dans le corps, seulement quand la recette est vide
+              (l'icône de l'en-tête sert ensuite). */}
+          {recetteVide && (
+            <button type="button" onClick={() => setImporting(true)} className="idn-coller self-start" data-element="r4a-etats">
+              <ClipboardPaste className="w-3.5 h-3.5" aria-hidden />
+              Coller une recette trouvée
+            </button>
+          )}
+
+          <FormNav className="idn-c" onSubmit={() => go(1)}>
+            <div className="idn-id">
+              <TextInput
+                id="wz-title"
+                name="recipe_title_label"
+                aria-label="Nom de la bière"
+                className="idn-nom"
+                data-element="r4a-nom"
+                placeholder={style.trim() ? `${style.trim()} #2, version d’été…` : 'Milk Stout #2, NEIPA Tropicale…'}
+                value={name}
+                onChange={setName}
+                required
+                aria-invalid={!!fieldError('wz-title')}
+                aria-describedby={fieldError('wz-title') ? 'wz-validation' : undefined}
+              />
+              <div className={`idn-pas${styleRepere ? ' idn-avec-code' : ''}`} data-element="r4a-style" style={teinte ? ({ '--idn-teinte': teinte } as React.CSSProperties) : undefined}>
+                <i aria-hidden />
+                <div className="idn-combo">
+                  <Combobox
+                    value={style}
+                    onChange={changeStyle}
+                    options={knownStyles.map((s) => ({ value: s, label: s }))}
+                    placeholder="NEIPA, Stout, Saison…"
+                    ariaLabel="Style de la bière"
+                    allowCreate
+                    onCreate={changeStyle}
+                    createLabel={(v) => `Nouveau style « ${v} »`}
+                  />
+                </div>
+                {styleRepere && <small>{styleRepere.code}</small>}
+              </div>
+            </div>
+            {fieldError('wz-title') && <p role="alert" className="text-xs text-alert leading-snug">{fieldError('wz-title')}</p>}
+
+            {matchingStyles.length>1&&!details.styleRef&&<details><summary className="min-h-touch cursor-pointer text-sm text-water">Préciser le référentiel du style</summary><div className="flex flex-col gap-2">{matchingStyles.map(s=><button type="button" key={s.ref.guideId+':'+s.id} className="min-h-touch text-left text-sm text-cave-200" onClick={()=>setDetails(d=>({...d,styleRef:s.ref}))}>{s.name} · {s.edition}</button>)}</div></details>}
+            <PlagesStyle
+              recipe={recette}
+              style={styleRepere}
+              styles={styles}
+              valeurs={{ og: og > 1 ? og : null, ibu, fg: fgPredicted, abv: abvPredicted, ebc: color?.ebc }}
+              onChange={next=>{setMashSteps(next.mash?.steps??mashSteps);setFerment(next.fermentation??ferment);setDetails(d=>({...d,yeastGuide:next.yeastGuide}));}}
+            />
+
+            <CarteVolume
+              volumeL={volumeL}
+              onVolume={setVolumeL}
+              capaciteL={equipement?.fermenterCapacityL}
+              profilL={configuredBrewhouse?.equipment?.fermenterCapacityL}
+              conseilL={reco?.recommendedFillL}
+              cuveL={equipement?.kettleWorkingL}
+              avantEbullition={avantMoteur}
+              remedes={remedesCuve({ avantL: avantMoteur?.litres, cuveL: equipement?.kettleWorkingL, evapL: avantMoteur?.evapL,
+                minutes: boilMin, retraitPct: equipement?.coolingShrinkagePct, volumeL })}
+              minutes={boilMin}
+              eauAjouteeL={eauAjouteeChoisie ? eauAjouteeL : undefined}
+              onEauAjoutee={choisirEauAjoutee}
+              onMinutes={setBoilMin}
+              onVersEau={versEauGrain}
+              onOuvrirFermenteur={ouvrirFermenteur}
+              invalide={!!fieldError('wz-volume')}
+              decrit={fieldError('wz-volume') ? 'wz-validation' : undefined}
+            />
+            {alertesInstallation}
+            <CarteEbullition
+              minutes={boilMin}
+              onMinutes={setBoilMin}
+              evaporation={evaporationIdentite}
+              invalide={!!fieldError('wz-boil')}
+              decrit={fieldError('wz-boil') ? 'wz-validation' : undefined}
+            />
+
+            <InterrupteurNolo actif={noloActif} onBascule={on => applyFermentationRecipe({ ...recette, nolo: { ...(details.nolo ?? newNoloConfig()), enabled: on } })} />
+            {noloNeedsEquipmentAdoption ? noloEquipmentPrompt() :
+              <Suspense fallback={noloActif ? <p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p> : null}><NoloPanel recipe={recette} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></Suspense>}
+
+            {(equipement || installationNeedsAdoption && configuredBrewhouse?.equipment) && (
+              <TuilesMateriel
+                espaceLibrePct={reco?.headspacePct ?? equipement?.fermenterHeadspacePct}
+                baseEspaceLibre={reco?.basis}
+                contenuEspace={<RecipeInstallationChoice recipe={recette} profile={brewhouse} onChange={next=>setDetails(d=>({...d,installation:next.installation}))}/>}
+                materielNom={cible?.name}
+                aAdopter={installationAAdopter}
+                capaciteL={equipement?.fermenterCapacityL}
+                profilL={configuredBrewhouse?.equipment?.fermenterCapacityL}
+                onCapacite={setCapaciteFermenteur}
+                onRaz={() => { const c = configuredBrewhouse?.equipment?.fermenterCapacityL; if (c) setCapaciteFermenteur(c); }}
+                ouvertMateriel={materielOuvert}
+                onOuvertMateriel={setMaterielOuvert}
+                contenuMateriel={<>
+                  {/* r4-a à son dépli : « Fermenteur [N] L » et « ↺ profil ». Le nom du matériel est déjà le sous-titre de la tuile.
+                      Les deux adaptations tiennent sur une ligne de liens ; le résumé des volumes, avec ses alertes, est replié sur une ligne. */}
+                  {((volumeL!==volumeAdapte) || ((equipmentDiffers || installationNeedsAdoption && configuredBrewhouse?.equipment) && !noloNeedsEquipmentAdoption)) && (
+                    <div className="idn-liens" data-role="adapter">
+                      {volumeL!==volumeAdapte&&<button type="button" className="idn-lien-ligne" onClick={()=>resizeForEquipment(cible)}>Adapter la recette à {nombreFr(volumeAdapte, 1)} L</button>}
+                      {(equipmentDiffers || installationNeedsAdoption && configuredBrewhouse?.equipment) && !noloNeedsEquipmentAdoption && <button type="button" className="idn-lien-ligne" onClick={()=>resizeForEquipment(configuredBrewhouse, volumeL)}>Adapter à mon matériel actuel · {configuredBrewhouse!.name}</button>}
+                    </div>
+                  )}
+                  <VolumesReplies resume={resumeVol}>
+                    <BrewEquipmentSummary recipe={recette} profile={brewhouse}/>
+                    {alertesMat.length > 0 && <ul className="idn-alertes-mat" data-role="alertes-materiel">{alertesMat.map(a => <li key={a}>{a}</li>)}</ul>}
+                  </VolumesReplies>
+                </>}
+              />
+            )}
+            {equipmentNotice&&<p role="status" className="text-sm text-ebc-straw">{equipmentNotice}</p>}
+          </FormNav>
+        </>
+        );
+      })()}
+
+      {/* ---------------------------------------------------- ÉTAPE 2 */}
+      {/* s1 (D222, sur p6-b2) : l'étape est son écran choisi, `src/ui/fermentescibles/`. Le fil d'étapes dit déjà « Fermentescibles » :
+          pas de titre de section. Les nombres (OG, couleur, rendement, plages du style) sont ceux de l'app, passés tels quels. */}
+      {step === 'fermentescibles' && (() => {
+        const styleRepere = resolveBrewingStyle(style, details.styleRef, styles);
+        const ebcPlage = plageEbc(styleRepere?.stats.srm);
+        return (<>
+          <EtapeFermentescibles
+            fermentables={fermentables}
+            onFermentables={(value) => setFermentables((avant) => {
+              // N1 (v04) : un malt ajouté d'un toucher entre avec une masse qui fait sens, jamais 0 kg (WFR-3).
+              const apres = typeof value === 'function' ? value(avant) : value;
+              const og = styleRepere?.stats.og;
+              return completerMasseAjoutee(avant, apres, { volumeL, rendementPct: efficiency, ogVisee: og ? (og.min + og.max) / 2 : null });
+            })}
+            stockItems={stockPourEtape}
+            famille={addKind}
+            onFamille={setAddKind}
+            defs={KIND_DEF}
+            familles={FERMENTABLE_KINDS}
+            onCreateStockItem={creerArticleEtape}
+            onLearnIngredient={onLearnIngredient}
+            nolo={!!details.nolo?.enabled}
+            og={ogAffichable(og)}
+            teinteBiere={color && !ogHorsBornes(og) ? { ebc: color.ebc, label: color.label } : null}
+            rendementPct={efficiency}
+            rendementDeclare={details.efficiencyPct != null || brewhouse?.efficiencyPct != null}
+            ogPlage={styleRepere?.stats.og}
+            ebcPlage={ebcPlage}
+            styleCode={styleRepere?.code ?? null}
+            ebcVise={ebcPlage ? (ebcPlage.min + ebcPlage.max) / 2 : null}
+            ebcMax={ebcPlage?.max ?? null}
+            programmeJours={joursProgramme(ferment)}
+            alerteDensite={og > 1 ? BrewingMath.efficiencyAtGravity(efficiency, og, styleRepere?.stats.og?.max).note : null}
+            erreur={fieldError}
+          />
+          {/* BK2-5 : les additifs (épices, clarifiants) se saisissent ici, en grammes, sous l'écran choisi ; une épice rangée parmi les
+              fermentescibles s'y note en un geste. Un dépliant fermé : l'écran de l'étape n'est pas touché. */}
+          <div className="mt-2">
+            <EtapeAdditifs adjuncts={details.adjuncts ?? []} fermentables={fermentables} onFermentables={setFermentables} stockItems={stockItems}
+              onAdjuncts={next => setDetails(d => ({ ...d, adjuncts: next.length > 0 ? next : undefined }))} erreur={fieldError} />
+          </div>
+        </>);
+      })()}
+
+      {/* ---------------------------------------------------- ÉTAPE 3 */}
+      {/* Drapeau hopV4 allumé : l'étape est son écran choisi (T12, #170). Le fil d'étapes du wizard dit déjà « Houblons » :
+          pas de titre de section (« Text header inutile », 24.10). Éteint (défaut) : l'atelier V5.5 ci-dessous, inchangé. */}
+      {step === 'houblons' && hopV4Actif && (
+        <Suspense fallback={null}>
+          <EtapeHoublonsV4 recipe={build()} boilOg={boilOg} draftId={draftRecipeId} onChange={applyHopV4Change} onMesures={setMesuresV4} onAller={allerDepuisHoublons} />
+        </Suspense>
+      )}
+      {step === 'houblons' && !hopV4Actif && (
+        <Section
+          title="Houblons"
+        >
+          <div className="space-y-2 sm:space-y-3">
+            {/*
+              Le bilan de houblonnage et l'accès aux lignes restent en tête de
+              l'étape : à l'ouverture, le brasseur lit ses IBU et corrige une
+              ligne sans défiler sous tout l'atelier V5.5.
+            */}
+            <HopRecipeSnapshot recipe={{ ...build(), ogTarget: boilOg ?? undefined }} />
+            <h3 id="recipe-hop-additions" className="scroll-mt-20 text-sm font-semibold text-cave-50">Mes ajouts de houblons · {hops.length}</h3>
+            {hopsRetires.length > 0 && (
+              <p role="status" data-role="hop-retire" className="flex flex-wrap items-center gap-2 text-sm text-cave-200">
+                <span><s>{hopsRetires[hopsRetires.length - 1].h.name}</s> retiré{hopsRetires.length > 1 ? ` · ${hopsRetires.length - 1} de plus` : ''}</span>
+                <button type="button" data-role="hop-annuler" className="rounded-full border border-current px-3 min-h-touch" onClick={rendreHops}>Annuler</button>
+              </p>
+            )}
+            {hops.length === 0 ? (
+              <p className="text-sm text-cave-400 py-1">Aucun houblon.</p>
+            ) : (
+              <ul className="space-y-1.5 sm:space-y-2">
+                {hops.map((h, i) => {
+                  const style = HOP_STAGE[h.stage];
+                  return (
+                    <li key={`${h.name}-${h.stage}-${i}`} className="panel p-2 sm:p-2.5 flex flex-col gap-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <span className="block text-sm font-semibold text-cave-50 break-words">{h.name}</span>
+                          {/*
+                            ⚠️ Le moment ne s'écrit plus DEUX FOIS. Quand la
+                            carte porte ses champs — durée, température, jour —
+                            ce sont eux la description : répéter « 20 min à
+                            82 °C » juste au-dessus des deux champs qui portent
+                            20 et 82 ne servait qu'à faire une ligne de plus.
+                            La phrase ne reste que pour les moments qui n'ont
+                            rien à régler.
+                          */}
+                          <span className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                            {/*
+                              ⚠️ Le moment se CHANGE ici, d'un appui. Avant, se
+                              tromper de moment obligeait à supprimer la ligne
+                              et à la ressaisir depuis le sélecteur du haut —
+                              nom, poids, alpha, tout. Or c'est l'erreur la plus
+                              fréquente après un import.
+                            */}
+                            <CycleTag
+                              name={`Moment de ${h.name}`}
+                              value={h.stage}
+                              options={HOP_STAGES}
+                              onChange={(st) => patchHop(i, { stage: st })}
+                              label={(st) => HOP_STAGE[st].label}
+                              tone={(st) => HOP_STAGE[st].tone}
+                            />
+                            {!style.ask && (
+                              <span className="text-sm text-cave-400 truncate">
+                                {describeMoment(h)}
+                              </span>
+                            )}
+                            {/* RJ-3 : quand l'en-tête refuse (houblon au-delà de la borne par litre), la ligne le dit aussi : « — IBU ». */}
+                            {style.bitters && (bitterness.additions[i].ibu != null || (bitterness.total == null && bitterness.missing.length > 0)) && (
+                              <span className="text-sm text-cave-200 font-mono">
+                                {bitterness.additions[i].ibu != null ? bitterness.additions[i].ibu!.toLocaleString('fr-FR', { maximumFractionDigits: 1 }) : '—'} IBU
+                              </span>
+                            )}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <div className="w-32 sm:w-36">
+                            <QuantityStepper
+                              id={`wz-hop-${i}`}
+                              emptyValue={0}
+                              aria-invalid={!!fieldError(`wz-hop-${i}`)}
+                              aria-describedby={fieldError(`wz-hop-${i}`) ? 'wz-validation' : undefined}
+                              label=""
+                              value={h.weightG}
+                              onChange={(v) => patchHop(i, { weightG: v })}
+                              unit="g"
+                              category="Houblon"
+                              compact
+                              autoFocus={!coarse && focusHop === i}
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => retirerHop(i)}
+                            aria-label={`Retirer ${h.name}`}
+                            className="w-8 h-8 rounded-control text-cave-400 hover:text-alert flex items-center justify-center shrink-0 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/*
+                        ⚠️ Trois `Field` empilés — étiquette, champ, indication —
+                        faisaient neuf lignes sur une carte de houblon. Couchés,
+                        ils tiennent sur une, et se lisent comme une phrase de
+                        brasseur : « α 8.6 % · 20 min · 82 °C ».
+
+                        Les indications supprimées disaient ce que l'étiquette
+                        disait déjà (« Sur le sachet du lot », « Pilote
+                        l'amertume »). Celle du jour en cuve, elle, apprend
+                        quelque chose : elle passe en suffixe.
+                      */}
+                      {(style.bitters || style.ask) && (
+                        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-cave-850">
+                          {/*
+                            ⚠️ LE CHAMP DISPARAISSAIT SOUS LE DOIGT.
+                            Il était rendu sous condition `!h.alpha` : à la
+                            première frappe, alpha cesse d'être nul, la
+                            condition devient fausse et le champ se démonte —
+                            AVANT que la sortie de champ ait pu borner la
+                            valeur. Conséquences : on ne pouvait jamais écrire
+                            « 12 » (le « 1 » faisait disparaître le champ), et
+                            un « -5 » collé restait tel quel dans la recette,
+                            où il RETRANCHAIT de l'amertume. Trouvé au fuzz de
+                            saisie.
+
+                            Il est maintenant toujours là sur les moments qui
+                            amérisent — corriger un alpha faux est aussi
+                            fréquent que d'en saisir un manquant — et l'ambre
+                            ne signale que l'absence.
+                          */}
+                          {(
+                            <div>
+                              <InlineNum
+                                id={`wz-hop-alpha-${i}`}
+                                aria-invalid={!!fieldError(`wz-hop-alpha-${i}`)}
+                                aria-describedby={fieldError(`wz-hop-alpha-${i}`) ? 'wz-validation' : undefined}
+                                label={style.bitters ? 'α' : 'α facult.'}
+                                name={`${style.bitters ? 'Alpha' : 'Alpha facultatif, hors du calcul IBU à cru'} de ${h.name} en pourcent`}
+                                unit="%"
+                                emptyValue={0}
+                                min={0}
+                                max={100}
+                                value={h.alpha === 0 ? undefined : h.alpha}
+                                onValue={(v) => patchHop(i, { alpha: v })}
+                                refus={(saisi, retenu) => saisi < 0
+                                  ? `α ${String(saisi).replace('.', ',')} % : un alpha négatif n’existe pas. Champ ramené à ${String(retenu).replace('.', ',')} % : à renseigner depuis le sachet.`
+                                  : `α ${String(saisi).replace('.', ',')} % : au-delà de 100 %, impossible ; au-delà de ${nombreFr(BORNES.alphaPct.max, 1)} %, aucun houblon du commerce (seuls les extraits). ${String(retenu).replace('.', ',')} % retenu : corrige-le d’après le sachet.`}
+                                missing={style.bitters && !h.alpha}
+                              />
+                              {/* AM 9 (08.11) : « 80 » pour 8,0. Au-delà de 30 %, l'IBU attend : corriger d'un toucher, ou confirmer (un extrait). */}
+                              {alphaAConfirmer(h) && (
+                                <p role="status" data-role="alpha-a-confirmer" className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-attention">
+                                  <span>α {String(h.alpha).replace('.', ',')} % ?</span>
+                                  <button type="button" className="rounded-full border border-current px-2 py-0.5"
+                                    onClick={() => patchHop(i, { alpha: Math.round(h.alpha * 10) / 100 })}>{alphaProbable(h.alpha)} %</button>
+                                  <button type="button" className="rounded-full px-2 py-0.5 underline"
+                                    onClick={() => patchHop(i, { alphaConfirme: h.alpha } as Partial<HopIngredient>)}>Confirmer {String(h.alpha).replace('.', ',')} %</button>
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {style.ask === 'time' && (
+                            <div>
+                              <InlineNum
+                                id={`wz-hop-time-${i}`}
+                                emptyValue={undefined}
+                                required
+                                aria-invalid={!!fieldError(`wz-hop-time-${i}`)}
+                                aria-describedby={fieldError(`wz-hop-time-${i}`) ? 'wz-validation' : undefined}
+                                label="fin −"
+                                name={`Minutes avant la fin pour ${h.name}`}
+                                unit="min"
+                                min={0}
+                                max={BORNES.ebullitionMin.max}
+                                integer
+                                value={h.timeMin}
+                                onValue={(v) => patchHop(i, { timeMin: v })}
+                              />
+                            </div>
+                          )}
+
+                          {style.ask === 'timeAndTemp' && (
+                            <>
+                              <div>
+                                <InlineNum
+                                  id={`wz-hop-time-${i}`}
+                                  emptyValue={undefined}
+                                  required
+                                  aria-invalid={!!fieldError(`wz-hop-time-${i}`)}
+                                  aria-describedby={fieldError(`wz-hop-time-${i}`) ? 'wz-validation' : undefined}
+                                  label="durée"
+                                  name={`Durée de contact de ${h.name}`}
+                                  unit="min"
+                                  min={0}
+                                  max={BORNES.whirlpoolMin.max}
+                                  integer
+                                  value={h.timeMin}
+                                  onValue={(v) => patchHop(i, { timeMin: v })}
+                                />
+                              </div>
+                              <div>
+                                <InlineNum
+                                  id={`wz-hop-temp-${i}`}
+                                  emptyValue={undefined}
+                                  required
+                                  aria-invalid={!!fieldError(`wz-hop-temp-${i}`)}
+                                  aria-describedby={fieldError(`wz-hop-temp-${i}`) ? 'wz-validation' : undefined}
+                                  label="à"
+                                  name={`Température de whirlpool pour ${h.name}`}
+                                  unit="°C"
+                                  min={BORNES.whirlpoolTempC.min}
+                                  max={BORNES.whirlpoolTempC.max}
+                                  integer
+                                  value={h.tempC}
+                                  onValue={(v) => patchHop(i, { tempC: v })}
+                                />
+                              </div>
+                            </>
+                          )}
+
+                          {style.ask === 'day' && (
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <div>
+                                <InlineNum
+                                  id={`wz-hop-day-${i}`}
+                                  emptyValue={undefined}
+                                  aria-invalid={!!fieldError(`wz-hop-day-${i}`)}
+                                  aria-describedby={fieldError(`wz-hop-day-${i}`) ? 'wz-validation' : undefined}
+                                  label="jour"
+                                  name={`Jour en cuve pour ${h.name}`}
+                                  min={0}
+                                  max={BORNES.dryHopJour.max}
+                                  integer
+                                  value={h.dayOffset}
+                                  onValue={(v) => patchHop(i, { dayOffset: v })}
+                                />
+                              </div>
+                              <span className="text-sm text-cave-400 shrink-0">
+                                0 = à l’ensemencement
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {h.stage === 'dryHop' && <div className="space-y-2 border-t border-cave-800 pt-2">
+                        <label className="block text-sm text-cave-200">Phase de {h.name}<select className="block w-full rounded-control bg-cave-950 border border-cave-700 p-2 mt-1 min-h-touch" value={h.aromaTiming ?? ''} onChange={e => patchHop(i, { aromaTiming: e.target.value as HopIngredient['aromaTiming'] || undefined })}>
+                          <option value="">À préciser · J+ ne suffit pas</option><option value="fermentation">Fermentation active</option><option value="postFermentation">Après fermentation</option>
+                        </select></label>
+                        <div className="flex flex-wrap gap-3"><InlineNum id={`wz-hop-contact-${i}`} emptyValue={undefined} aria-invalid={!!fieldError(`wz-hop-contact-${i}`)} aria-describedby={fieldError(`wz-hop-contact-${i}`) ? 'wz-validation' : undefined} label="contact" name={`Contact à cru de ${h.name}, en heures`} unit="h" min={0} max={BORNES.dryHopContactH.max} value={h.aromaContactHours} onValue={v => patchHop(i, { aromaContactHours: v })} /><InlineNum emptyValue={undefined} label="à" name={`Température à cru de ${h.name}`} unit="°C" min={BORNES.dryHopTempC.min} max={BORNES.dryHopTempC.max} value={h.aromaTemperatureC} onValue={v => patchHop(i, { aromaTemperatureC: v })} /></div>
+                      </div>}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            {/*
+              RX-4 (08.11) : les lignes de la recette sont au premier plan, jamais
+              dans un repli — un brasseur ne devine pas qu'un houblon l'attend sous
+              un volet. Seul l'outillage d'ajout (moment, recherche, lots, COA) se
+              replie ; une demande de correction ouvre ce volet par sa bascule native.
+            */}
+            <details id="recipe-hop-lines" className="recipe-hop-lines border-t border-cave-700 pt-2 scroll-mt-20" open={hopLinesOpen} onToggle={e => setHopLinesOpen(e.currentTarget.open)}>
+              <summary className="flex items-center justify-between gap-2 cursor-pointer min-h-touch text-cave-200" onClick={e => { if (hopGuideBusy) e.preventDefault(); }}>
+                <span>Ajouter un houblon · lots et conditions de contact</span>
+              </summary>
+              <div className="space-y-2 sm:space-y-3 pt-2">
+            <SegmentedControl
+              label="Moment d’ajout"
+              layout="row"
+              className="hop-stage-tabs"
+              value={hopStage}
+              onChange={setHopStage}
+              options={HOP_STAGES.map((s) => ({ value: s, label: s === 'dryHop' ? 'À cru' : HOP_STAGE[s].label }))}
+            />
+            {!tight && <p className="text-sm text-cave-400 leading-snug">{HOP_STAGE[hopStage].hint}</p>}
+
+            <HopIngredientPicker
+              items={stockItems}
+              recipe={build()}
+              onChange={addHop}
+              onBusyChange={setHopGuideBusy}
+              onReference={variety => addHop(variety.name, undefined, variety)}
+              onCreate={(n) => {
+                const created = creerArticleDuBrouillon(n, 'Houblon', 'g');
+                addHop(created.name, created);
+              }}
+              // « en houblonnage à cru… » passait sous le chevron à 320 px.
+              placeholder={hopStage === 'dryHop' ? 'Ajouter un houblon à cru…' : `Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}…`}
+              ariaLabel={`Ajouter un houblon en ${HOP_STAGE[hopStage].label.toLowerCase()}`}
+            />
+
+            <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des fiches de houblon…</p>}>
+              <RecipeAutoComplete active nolo={details.nolo?.enabled} scope="houblon"
+                onLearnIngredient={onLearnIngredient} stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
+                hops={hops} onHops={setHops} yeast={yeast} onYeast={setYeast} onAutomatic={applyAutomatic} />
+            </Suspense>
+            <details className="recipe-hop-context border-t border-cave-700 pt-2" open={hopContextOpen} onToggle={e => setHopContextOpen(e.currentTarget.open)}>
+              <summary className="cursor-pointer min-h-touch text-water" onClick={e => { if (hopGuideBusy) e.preventDefault(); }}>Lots, COA et conditions de contact</summary>
+              {hopContextOpen && <Suspense fallback={<p role="status" className="px-2 py-3 text-sm text-cave-400">Chargement des lots et conditions de contact…</p>}>
+                <HopRecipeGuide
+                  contextOnly
+                  recipe={build()}
+                  onBusyChange={setHopGuideBusy}
+                  onChooseYeast={() => setStep('levure')}
+                  onChange={next => {
+                    setHops(next.hops);
+                    setYeast(next.yeast);
+                    setDetails(previous => ({ ...previous, hopAromaTarget: next.hopAromaTarget, hopMatrixId: next.hopMatrixId }));
+                  }}
+                />
+              </Suspense>}
+            </details>
+              </div>
+            </details>
+            {/* TE-27 (décision du brasseur, 20.11) : l'atelier Houblons V5.5 n'est plus monté dans cette étape. Le module `ui/hopV55/` et ses
+                données restent intacts ; applyHopV55Change et conserveHopV55ColdEvidence (plus haut) attendent un éventuel retour. */}
+            <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères levure…</p>}>
+
+            </Suspense>
+          </div>
+        </Section>
+      )}
+
+      {/* ---------------------------------------------------- ÉTAPE 4 */}
+      {step === 'levure' && (() => {
+        /* Choisir une levure du catalogue : la dose se recalcule pour la nouvelle levure et le volume de la recette (#132, `etapeLevure/dose.ts`). */
+        const choisirLevure = (reference: YeastReference) => {
+          const avant = build();
+          if (!details.nolo?.enabled) setYeastChange(startYeastChoiceChange(avant, 'catalogue'));
+          applyYeastChoice(doseApresChoix(applyCatalogueYeast(avant, reference, reference.form), avant.yeast, yeastSupply), 'replace-selection');
+          setYeastSelection(n => n + 1);
+        };
+        // L'ancienne étape entière : le mode NOLO la garde (NoloPanel), l'étape Levure la garde dans son repli « Atelier complet ».
+        const ancienne = (cible?: string) => (
+          <YeastRecipeChoice key={`${yeastSelection}-${yeastFocus?.goal ?? ''}-${cible ?? yeastFocus?.yeastId ?? ''}`} recipe={build()} savedRecipe={seed?.recipe} initialGoal={yeastFocus?.goal} initialYeastId={cible ?? yeastFocus?.yeastId} onChange={applyYeastChoice} onNavigate={setStep}
+              candidateSheets={candidateSheets} onCandidateSheetsChange={retainCandidateSheets} candidateSheetsWarning={candidateSheetsWarning}
+              yeastChange={yeastChange} onYeastChange={setYeastChange}
+              quantityEditor={<YeastRecipeQuantity yeast={yeast} onChange={next => updateSelectedYeastDocumentation(next, 'documentary')} invalid={!!fieldError('wz-yeast-qty')} />}
+              identityEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des articles de levure…</p>}><YeastIngredientPicker items={stockItems} yeast={yeast} onStock={(name, item) => {
+                  if (!details.nolo?.enabled) setYeastChange(startYeastChoiceChange(build(), 'stock'));
+                  selectYeast(name, item);
+                }} personalChoice
+                onCreate={n => {
+                  if (!details.nolo?.enabled) setYeastChange(startYeastChoiceChange(build(), 'free'));
+                  selectYeast(n);
+                }}
+                onReference={reference => choisirLevure(reference)} /></Suspense>}
+              factsEditor={<YeastRecipeDossier yeast={yeast} onChange={updateSelectedYeastDocumentation} />}
+              aiEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la recherche…</p>}><RecipeAutoComplete active embedded yeastEnrichment nolo={details.nolo?.enabled} scope="levure" reviewScope="recipe"
+                reviewRevisionToken={yeastReviewTokenFor(yeast, selectedCandidateRevision)}
+                stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
+                hops={hops} onHops={setHops} yeast={yeast} onYeast={updateSelectedYeastDocumentation} /></Suspense>}
+              trialFactsEditor={(candidateYeast, onCandidateYeast) => <>
+                <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la recherche…</p>}><RecipeAutoComplete key={candidateYeast.hopIndexId} active embedded yeastEnrichment scope="levure" reviewScope="trial"
+                  fermentables={[]} onFermentables={() => {}} hops={[]} onHops={() => {}}
+                  yeast={candidateYeast} onYeast={onCandidateYeast} /></Suspense>
+                <details className="yc-data-editor"><summary>Saisie manuelle de cette souche</summary><div><YeastRecipeDossier yeast={candidateYeast} onChange={onCandidateYeast} /></div></details>
+              </>}
+              programEditor={!details.nolo?.enabled && <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement du programme…</p>}><FermentationWorkshop key={yeastSelection} currentRecipeOnly recipe={build()} onBusyChange={setHopGuideBusy} onChange={next => applyYeastChoice(next, 'conduct')} /></Suspense>}
+            />
+        );
+        // Le mode NOLO garde l'ancienne étape dans sa section ; sinon la coque des quatre vues se pose sans cadre (maquettes l5b, s7a).
+        if (details.nolo?.enabled && !noloNeedsEquipmentAdoption) return (
+          <Section title="Levure">
+            <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement du comparatif de levures…</p>}>{ancienne()}</Suspense>
+          </Section>
+        );
+        // k3 n° 1 : NOLO actif sans matériel figé, l'étape garde le choix de la souche (la coque ordinaire) ; le simulateur NOLO attend l'adoption du matériel,
+        // dite ici en une ligne (l'invite longue est à l'Identité).
+        const renvoiMateriel = noloNeedsEquipmentAdoption && <p data-role="nolo-materiel-renvoi" className="text-xs text-cave-400">
+          Matériel non figé : le réglage NOLO l’attend. <button type="button" className="underline underline-offset-2 text-cave-200" onClick={() => resizeForEquipment(configuredBrewhouse, volumeL, step)}>Adapter à mon matériel actuel · {configuredBrewhouse!.name}</button>
+          {equipmentNotice && <span role="alert" className="block text-ebc-amber">{equipmentNotice}</span>}
+        </p>;
+        return (
+          <>
+          {renvoiMateriel}
+          <Suspense fallback={<p role="status" className="py-3 text-sm text-cave-400">Chargement de l’étape Levure…</p>}>
+            <EtapeLevure recipe={build()} vue={vueLevure} onVue={setVueLevure}
+              comparees={levuresComparees} onComparees={setLevuresComparees}
+              onChoisir={choisirLevure} onChange={applyYeastChoice} onNavigate={setStep}
+              stockItems={stockItems}
+              onStock={(item, dose, fiche) => {
+                setYeastChange(startYeastChoiceChange(build(), 'stock'));
+                // La levure du stock reliée à sa fiche du catalogue (21.11, N1) : posée comme la fiche (nom, atténuation, floculation, plage), liée au lot.
+                if (!fiche) { selectYeast(item.name, item, dose); return; }
+                const avant = build();
+                const r = doseApresChoix(applyCatalogueYeast(avant, fiche, item.yeastForm ?? fiche.form), avant.yeast, yeastSupply);
+                applyYeastChoice({ ...r, yeast: { ...r.yeast, stockItemRef: item.ref, ...(dose ? { qty: dose.qty, unit: dose.unit } : {}) } }, 'replace-selection');
+                setYeastSelection(n => n + 1);
+              }}
+              onRetirer={() => { setYeastChange(startYeastChoiceChange(build(), 'free')); selectYeast(''); }}
+              yeastChange={yeastChange} onYeastChange={setYeastChange}
+              identityEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des articles de levure…</p>}><YeastIngredientPicker items={stockItems} yeast={yeast} onStock={(name, item) => {
+                  setYeastChange(startYeastChoiceChange(build(), 'stock'));
+                  selectYeast(name, item);
+                }} personalChoice
+                onCreate={n => {
+                  setYeastChange(startYeastChoiceChange(build(), 'free'));
+                  selectYeast(n);
+                }}
+                onReference={reference => choisirLevure(reference)} /></Suspense>}
+              factsEditor={<YeastRecipeDossier yeast={yeast} onChange={updateSelectedYeastDocumentation} />}
+              aiEditor={<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la recherche…</p>}><RecipeAutoComplete active embedded yeastEnrichment scope="levure" reviewScope="recipe"
+                reviewRevisionToken={yeastReviewTokenFor(yeast, selectedCandidateRevision)}
+                stockItems={stockItems} fermentables={fermentables} onFermentables={setFermentables}
+                hops={hops} onHops={setHops} yeast={yeast} onYeast={updateSelectedYeastDocumentation} /></Suspense>}
+              quantityEditor={<YeastRecipeQuantity yeast={yeast} onChange={next => updateSelectedYeastDocumentation(next, 'documentary')} invalid={!!fieldError('wz-yeast-qty')} />}
+              doseInvalide={!!fieldError('wz-yeast-qty')} atelier={ancienne}
+              onRetenir={fait => { try { return (updateSelectedYeastDocumentation({ ...yeast, technicalFacts: [...(yeast.technicalFacts ?? []), fait] }, 'documentary') as { accepted: boolean }).accepted !== false; } catch { return false; } }} />
+          </Suspense>
+          </>
+        );
+      })()}
+
+      {/* ---------------------------------------------------- ÉTAPE 5 */}
+      {step === 'paliers' && (
+        <EtapePaliers
+          recipe={build()}
+          etat={{ steps: mashSteps, mash: details.mash }}
+          onEmpatage={(next) => {
+            if (next.steps !== mashSteps) setMashSteps(next.steps);
+            if (next.mash !== details.mash) setDetails((d) => ({ ...d, mash: { ...(d.mash ?? {}), ...next.mash } as Recipe['mash'] }));
+          }}
+          programmes={MASH_PROGRAMS}
+          programmeActif={activeMashProgram}
+          onProgramme={(prog) => {
+            setMashSteps(prog.steps.map((s) => ({ ...s })));
+            setSpargeType(prog.spargeType);
+          }}
+          onRetirer={(rang) => retraitPalier.retirer(rang)}
+          verrou={retraitPalier.verrou}
+          avisRetrait={<AvisRetrait dernier={retraitPalier.dernier} onAnnuler={retraitPalier.annuler} />}
+          erreur={fieldError}
+          spargeType={spargeType}
+          onSparge={setSpargeType}
+          ferment={ferment}
+          onOuvrirLevure={() => setStep('levure')}
+          conseilsEmpatage={adviceList('wz-mash-')}
+          conseilsFermentation={adviceList('wz-ferment-')}
+          contexteLevure={<YeastRecipeContext recipe={build()} onChooseYeast={() => setStep('levure')} />}
+          erreurFermentation={visibleIssues.find((issue) => issue.field.startsWith('wz-ferment-'))?.message}
+          fermentationDetail={(
+            <div className="space-y-2">
+              <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement des repères de fermentation…</p>}><FermentationRecipeAdvice recipe={build()} /></Suspense>
+              <PresetChips
+                name="Programme de fermentation"
+                presets={FERMENT_PROGRAMS}
+                id={(p) => p.id}
+                label={(p) => p.name}
+                purpose={(p) => p.purpose}
+                activeId={activeFermentProgram}
+                onApply={(prog) => setFerment(prog.steps.map((s) => ({ ...s })))}
+              />
+            </div>
+          )}
+        />
+      )}
+
+      {/* ---------------------------------------------------- ÉTAPE 6 */}
+      {step === 'eau' && (
+        <div className="!mt-0 space-y-2 sm:!mt-4 sm:panel sm:p-4 sm:space-y-3">
+          {automaticWater.error && <p role="alert" className="text-sm text-amber-300">Recalcul de l’eau interrompu : {automaticWater.error}</p>}
+          {waterSourceNotice}
+          {(details.nolo?.enabled&&details.nolo.process==='secondRunnings')?(noloNeedsEquipmentAdoption ? noloEquipmentPrompt() : <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’objectif NOLO…</p>}><NoloPanel recipe={build()} onChooseYeast={()=>setStep('levure')} onChange={next=>applyFermentationRecipe(next)}/></Suspense>):<SaltSolver
+            source={waterSource}
+            onSourceChange={(source) => {
+              setRecipeWaterSource(source);
+              onSaveWaterSource(source);
+            }}
+            beerEbc={color?.ebc ?? null}
+            beerVolumeL={volumeL}
+            /*
+             * ⚠️ Tout ce que la recette sait déjà et que l'eau ignorait :
+             * l'acidité de la facture, la direction du houblonnage, et d'où
+             * sortent les volumes. Chaque champ est vivant — changer un malt,
+             * un houblon ou la durée d'ébullition redescend jusqu'aux sels.
+             */
+            brew={waterBrew}
+            onMashRatioChange={(lPerKg) => {
+              setMashRatioOverride(lPerKg);
+              // Le ratio REPREND la main sur les volumes : c'est une consigne,
+              // pas une suggestion de plus à côté d'un volume figé.
+              setVolumesEdited(false);
+            }}
+            state={water}
+            onChange={onWaterChange}
+            profileMode={waterProfileMode.current}
+            noSparge={spargeType === 'none'}
+            onNoSpargeChange={setNoSparge}
+            sousVolumes={volumesStale && (
+              /* w1b : UNE ligne sous les deux cuves (le brasseur recale là où il lit les volumes). */
+              <button
+                type="button"
+                data-action="recaler-volumes"
+                onClick={() =>
+                  setWater((w) => ({
+                    ...w,
+                    mashWaterL: suggestedVolumes.mashWaterL,
+                    spargeWaterL: suggestedVolumes.spargeWaterL
+                  }))
+                }
+                className="ew-recal"
+              >
+                <AlertTriangle size={16} aria-hidden="true" />
+                <span>Le calcul donne <b>{formatDecimal(suggestedVolumes.mashWaterL)} / {formatDecimal(suggestedVolumes.spargeWaterL)} L</b></span>
+                <em>recaler</em>
+              </button>
+            )}
+          />}
+
+          {/* L'aller-retour eau ⇄ fiche coûtait de remonter tout le fil d'étapes. w1b : un lien souligné, au pied. */}
+          <div className="ew">
+            <button
+              type="button"
+              data-action="retour-fiche"
+              onClick={() => setStep('recap')}
+              className="ew-fl"
+            >
+              <ClipboardList size={16} aria-hidden="true" />
+              Retour à la fiche de brassage
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ---------------------------------------------------- RÉCAP */}
+      {/*
+        La fiche de brassage. Elle REMPLACE le récapitulatif en lecture seule :
+        Gaëtan corrigeait un chiffre en remontant le fil d'étapes, en retrouvant
+        la ligne, en la changeant, puis en redescendant — six gestes pour cent
+        grammes de houblon. Ici chaque valeur se change là où elle se lit.
+
+        Les chiffres calculés — OG, IBU, EBC — restent dans le bandeau du haut,
+        visible à toutes les étapes : ils se mettent à jour pendant qu'on tape.
+      */}
+      {step === 'recap' && (
+        <>
+        <Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de la fiche de brassage…</p>}><BrewSheet
+          onLearnIngredient={onLearnIngredient}
+          yeastSummary={!details.nolo?.enabled && readYeastRecipeDesign(build()) ? <Suspense fallback={null}><YeastRecipeHeading recipe={build()} seulementObjectif /></Suspense> : undefined}
+          reviewData={{
+            recipe: { ...build(), id: undefined },
+            estimates: { og: ogPredicted, fg: fgPredicted, ibu, ebc: color?.ebc ?? null,
+              efficiencyPct: efficiency, volumes: suggestedVolumes },
+            waterTreatment: (details.nolo?.enabled&&details.nolo.process==='secondRunnings')?undefined:waterRecapForRecord,
+            conventions: { ions: 'mg/L dans les eaux de traitement, avant extraction et ébullition',
+              salts: 'grammes réellement retenus, répartis entre empâtage et rinçage',
+              acid: 'doses retenues, concentration indiquée dans le nom du produit',
+              ra: 'alcalinité résiduelle après acide, ppm CaCO3 ; approximation, pas un pH mesuré',
+              hco3: 'repère indicatif du style ; ne commande pas seul un ajout alcalin' }
+          }}
+          recipeForCompanion={build()}
+          knowledge={knowledge}
+          styleRepere={resolveBrewingStyle(style, details.styleRef, styles)}
+          readiness={readiness}
+          installation={recipeInstallationIssues(build(), configuredBrewhouse)}
+          etapeLabel={issue => STEPS.find(s => s.id === issue.step)?.label ?? issue.step}
+          onCorriger={issue => requestCorrection([issue])}
+          onAllerEtape={setStep}
+          ibu={ibu}
+          ebc={color && !ogHorsBornes(og) ? color.ebc : null}
+          fgRange={yeastProjection?.fg.range ?? null}
+          abvRange={yeastProjection?.abv.range ?? null}
+          onBrasser={() => submitRecipe(true)}
+          budget={<BrewBudgetButton recipe={build()} />}
+          sousVerdict={<>
+            {waterSourceNotice}
+            {details.nolo?.enabled&&<>
+              <section className="panel p-2"><Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’aperçu NOLO…</p>}><NoloRecipeOverview recipe={build()} saved={knowledge}/></Suspense></section>
+              {noloWaterUnverified && details.nolo?.process !== 'secondRunnings' && <p role="status" className="text-sm text-ebc-amber">{noloWaterIssue} {water.acidOverride ? 'Seules les doses d’acide saisies manuellement sont retenues.' : 'Aucune dose d’acide calculée pour ce plan.'}</p>}
+            </>}
+          </>}
+          atelierNolo={details.nolo?.enabled ? <button type="button" data-role="regler-nolo" onClick={() => setStep('identite')}>Régler le NOLO</button> : undefined}
+          name={name}
+          onName={setName}
+          style={style}
+          onStyle={changeStyle}
+          volumeL={volumeL}
+          onVolumeL={setVolumeL}
+          boilMin={boilMin}
+          onBoilMin={setBoilMin}
+          carboTarget={carboTarget}
+          onCarboTarget={setCarboTarget}
+          fermentables={fermentables}
+          onFermentables={setFermentables}
+          totalGristKg={totalGrist}
+          hops={hops}
+          onHops={setHops}
+          hopIbu={(h) => ibuDeLAjout(hops, h, volumeL, boilOg, boilMin)}
+          yeast={yeast}
+          onYeast={setYeast}
+          mashSteps={mashSteps}
+          onMashSteps={setMashSteps}
+          fermentation={ferment}
+          onFermentation={setFerment}
+          mashWaterL={water.mashWaterL}
+          onMashWaterL={(v) => {
+            setVolumesEdited(true);
+            setWater((w) => ({ ...w, mashWaterL: v }));
+          }}
+          spargeWaterL={water.spargeWaterL}
+          onSpargeWaterL={(v) => {
+            setVolumesEdited(true);
+            setWater((w) => ({ ...w, spargeWaterL: v }));
+          }}
+          water={details.nolo?.enabled && ['coldExtraction','secondRunnings'].includes(details.nolo.process) ? undefined : waterRecapForReview}
+          onEditWater={() => setStep('eau')}
+          notes={notes}
+          onNotes={setNotes}
+          shortages={shortages}
+          /*
+            ⚠️ L'export part d'ICI et non de la fiche, parce que les grandeurs
+            CALCULÉES — OG, FG, IBU, EBC, rendement — vivent dans l'assistant.
+            Les recalculer dans la fiche les ferait diverger de ce que l'écran
+            affiche : une recette exportée annonçant un IBU que l'application
+            ne montre nulle part serait pire que pas d'export du tout.
+          */
+          onExportText={texteRecette}
+        /></Suspense>
+        {/* C1 : la semaine du brassin se pose ici d'un toucher ; « Enregistrer et préparer un brassin » ouvre Brasser à cette semaine, le jour s'y choisit. */}
+        {!draftReadOnly && <section className="wz-quand" aria-label="Quand la brasser">
+          <p className="wz-quand-tete"><span>Quand la brasser</span><b>{quandBrasser ? texteIntention(quandBrasser, jourIso) : 'au plus tôt'}</b></p>
+          <Horizons date={quandBrasser ?? undefined} aujourdhui={jourIso} classePuce="wz-quand-puce" sansPlusTard etiquette="Horizon du brassin"
+            onChoisir={(_, lundi) => setQuandBrasser(q => (q === lundi ? null : lundi))} />
+        </section>}
+        </>
+      )}
+
+      {/*
+        L'import remplit TOUT : fermentescibles typés, houblons avec leur moment,
+        levure, paliers, fermentation, déroulé. Ce qui manque dans la recette est
+        cherché par l'IA sur les fiches des fabricants, et ce qui reste
+        introuvable est annoncé — jamais comblé.
+      */}
+      {importing&&<Suspense fallback={<p role="status" className="text-sm text-cave-400">Chargement de l’import de recette…</p>}><RecipeImportSheet
+        open
+        onClose={() => setImporting(false)}
+        onApply={applyImport}
+        reviewImport={reviewImport}
+      /></Suspense>}
+      </fieldset>}
+      <ConfirmerSuppressionRecette
+        recipe={recetteSupprimable}
+        open={confirmerSuppression}
+        onClose={() => setConfirmerSuppression(false)}
+        onConfirm={() => {
+          setConfirmerSuppression(false);
+          if (!recetteSupprimable || !onDelete) return;
+          // Le brouillon de la recette part avec elle : rien ne la rouvrirait plus tard.
+          try { if (!draftReadOnly) clearRecipeDraft(draftKey); } catch { /* le brouillon orphelin est sans effet */ }
+          draftFinished.current = true;
+          onDelete(recetteSupprimable);
+        }}
+      />
+    </PageShell>
+  );
+};
+
+import { BrewingStyleDetails } from '../ui/BrewingStyleDetails';

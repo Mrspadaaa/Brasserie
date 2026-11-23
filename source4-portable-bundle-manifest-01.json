@@ -1,0 +1,204 @@
+{
+  "format": "brewer-hop-advice-semantic-source4-portable-bundle-manifest-v1",
+  "entryPoint": "src/services/hopV55/brewerHopAdviceSemanticSource4.ts",
+  "outputFile": "functions/lib/brewerHopAdviceSemanticSource4.js",
+  "outputBytes": 652797,
+  "inputCount": 39,
+  "inputs": [
+    {
+      "path": "functions/src/brewerCatalogueSchema.ts",
+      "bytes": 35543,
+      "sha256": "11170a98f04362dce8c096fc1120fcdf43e7d4016b8e98328c0492db499c967a"
+    },
+    {
+      "path": "functions/src/hopIndexSchema.ts",
+      "bytes": 11323,
+      "sha256": "d39f6246b2bf00baf5f9b8ae63c02dbb451181d6e5a003a37bea004137de5d91"
+    },
+    {
+      "path": "node_modules/@noble/hashes/_md.js",
+      "bytes": 9175,
+      "sha256": "60cf3010fda89e3e4d3f0e7ff1ce249e9c467f34b4fd41b6fd6101d9f69be763"
+    },
+    {
+      "path": "node_modules/@noble/hashes/_u64.js",
+      "bytes": 4794,
+      "sha256": "b09da8c07fe8187c07649494cdb7cd0bcf13df90b506a9473d19e4d5f8c2e102"
+    },
+    {
+      "path": "node_modules/@noble/hashes/sha2.js",
+      "bytes": 18997,
+      "sha256": "471746bba6ec4c6238ca41358d1d3b40b6ff31cf3363f0b4d550c649c1a8e83b"
+    },
+    {
+      "path": "node_modules/@noble/hashes/utils.js",
+      "bytes": 26035,
+      "sha256": "037ad49adb78168b6b699598fd33f85f7877456b1d28b4d032e2a1a16807947c"
+    },
+    {
+      "path": "src/data/hopRecipeGuideBootstrap.json",
+      "bytes": 11001,
+      "sha256": "13bfae9b4ea4e26460d5b9a3779f49e0628a92b6c879465b0e22db41b933699c"
+    },
+    {
+      "path": "src/domain/hopDecision/advice.ts",
+      "bytes": 62958,
+      "sha256": "785e5ebe41f66e1d7eb78bdfb50c0995432b2cfa2bd1ba0d87dc204a187f9d27"
+    },
+    {
+      "path": "src/domain/hopDecision/adviceContentReference.ts",
+      "bytes": 970,
+      "sha256": "2514f51fd01e6f1a7835327ced1ada7943a33087a2cb27412e960177851ce4fc"
+    },
+    {
+      "path": "src/domain/hopDecision/adviceEvidence.ts",
+      "bytes": 10755,
+      "sha256": "af648d0e39dc132210123eb7047f9b323b0d2f14be28955f8e92fbd8c7c60b47"
+    },
+    {
+      "path": "src/domain/hopDecision/adviceSchema.ts",
+      "bytes": 26820,
+      "sha256": "254d1313b53653b5cbad9d19faaad83a3c29d6dc6b09a5501eb70f503d049774"
+    },
+    {
+      "path": "src/domain/hopDecision/biotransformation.ts",
+      "bytes": 34661,
+      "sha256": "736fb60e4687e11d62df42d4d67c6f60d150ac223a4b02c7fbc5ccba759a8480"
+    },
+    {
+      "path": "src/domain/hopDecision/calculations.ts",
+      "bytes": 12068,
+      "sha256": "f4a4fa4ea3e4821ef26bb98ce6572f1d5d89465c4798cb4996768b1d76c55765"
+    },
+    {
+      "path": "src/domain/hopDecision/documentaryAnswerSchema.ts",
+      "bytes": 57275,
+      "sha256": "41afedd0329704209243759340b4d1abfa5bfc5055669bfa722ac36436a9c4e4"
+    },
+    {
+      "path": "src/domain/hopDecision/intentEvidence.ts",
+      "bytes": 26871,
+      "sha256": "969ff7e6e7ace6acfa758d648c0e137ce8ce9459d6a618699a7ba8e68a80fdf0"
+    },
+    {
+      "path": "src/domain/hopDecision/measurements.ts",
+      "bytes": 10289,
+      "sha256": "8734c87631b73f4aa9af3dd32f9b804c91aa0a0216c153de05cad0adea141acf"
+    },
+    {
+      "path": "src/domain/hopDecision/modelInputs.ts",
+      "bytes": 12134,
+      "sha256": "7f65d880783729e6ffb8a9a01b9049454c3b4fd47d035fe91fbd5edba342bf83"
+    },
+    {
+      "path": "src/domain/hopDecision/planner.ts",
+      "bytes": 47793,
+      "sha256": "d9c8ac7da50f1081d8c715d49ebb096253e86125575de61c37327f7a9ce3a39d"
+    },
+    {
+      "path": "src/domain/hopDecision/products.ts",
+      "bytes": 11012,
+      "sha256": "ccf8368b3db1fde617b0bf9c8ba16c1ca7db4253c6647385cd5f7d3a092b9c25"
+    },
+    {
+      "path": "src/domain/hopDecision/programAnalysis.ts",
+      "bytes": 4925,
+      "sha256": "0407672a07eeb45e1a4918f89c14b762a895ae0ea8d53f4a05e5bf2f833438bd"
+    },
+    {
+      "path": "src/domain/hopDecision/programs.ts",
+      "bytes": 33538,
+      "sha256": "b0b819f74d89ce4a41feeef7cb74060c67e38944350bcae371cc007ce2810c24"
+    },
+    {
+      "path": "src/domain/hopDecision/propertyAdviceSchema.ts",
+      "bytes": 85192,
+      "sha256": "1e5df1f0b5ae36c8ec8b559a87a13ae5819a885f924cf853c24619aeaf54632f"
+    },
+    {
+      "path": "src/domain/hopDecision/service.ts",
+      "bytes": 19121,
+      "sha256": "33c3177fc99377dfd4290fcecc1ec5c2f2b0b8db7e4c98f6c1fae72c7fa7c8b1"
+    },
+    {
+      "path": "src/domain/hopDecision/strategies.ts",
+      "bytes": 8289,
+      "sha256": "b95808b7c07c492c596027bf9cc7c366c5e4c6ca8d434c3a6b3f27dd834b69ee"
+    },
+    {
+      "path": "src/domain/hopDecision/substitution.ts",
+      "bytes": 12216,
+      "sha256": "f3e8e99eec8168ef3125dcb7205367a7b839499f3f75441ba31c3e791c0671a3"
+    },
+    {
+      "path": "src/domain/hopDecision/types.ts",
+      "bytes": 6301,
+      "sha256": "9ea53c83838872e4d3578f29c7e0028970a536cf1a2a96e0d8338a112720a84c"
+    },
+    {
+      "path": "src/services/hopV55/brewerHopAdviceSemanticSource4.ts",
+      "bytes": 2508,
+      "sha256": "8f541c0fba17d25110dd1a6d45c67b8e0b0a63cb49e05ac418c71b0156034a9a"
+    },
+    {
+      "path": "src/services/hopV55/decision.ts",
+      "bytes": 119346,
+      "sha256": "5cbe88d1f2f724f167386b9acf4a450589e5b215369b203a551e588ecbbabd76"
+    },
+    {
+      "path": "src/services/hopV55/decisionArchive.ts",
+      "bytes": 59334,
+      "sha256": "ca0bc6cbd5b4eef2a68ea31a71300178a0789fc6024ab1254f4efda58b54e4f7"
+    },
+    {
+      "path": "src/services/hopV55/decisionCorrection.ts",
+      "bytes": 28933,
+      "sha256": "ae9178db4ee148c3f124012ccc4cdc22897a087f90af2b679d154e7544d0b050"
+    },
+    {
+      "path": "src/services/hopV55/decisionOperations.ts",
+      "bytes": 44092,
+      "sha256": "c042724dba531195d8802a2a139c59954e7fcc42c54a1db456c3926e231ed002"
+    },
+    {
+      "path": "src/services/hopV55/decisionReadingAccessors.ts",
+      "bytes": 13848,
+      "sha256": "c3ecd87bc74ad98ddb8be9b7436bbb4a000c26a394ca046cb6e66b24c8feff35"
+    },
+    {
+      "path": "src/services/hopV55/decisionSemanticProjection.ts",
+      "bytes": 24000,
+      "sha256": "e3ab091a2e77a7181da341a1f9030f9bfc41afe819245201512dea3d2f35ae11"
+    },
+    {
+      "path": "src/services/hopV55/propertyAdvicePreparation.ts",
+      "bytes": 55765,
+      "sha256": "a74fe032d2781375ca8e1ae52c5dd955c4bc558b2acf802cbf65c44f2eeb1fa3"
+    },
+    {
+      "path": "src/services/hopV55/propertyAdvicePreparationV3.ts",
+      "bytes": 30847,
+      "sha256": "a7e38c125e1a4639ab7a7f6eb560c390d91deaa3acf6145bd1037e30682854b9"
+    },
+    {
+      "path": "src/services/hopV55/propertyAdviceSemanticPreparationV3.ts",
+      "bytes": 12731,
+      "sha256": "de2f018b8137bef59bb8dd0e9265ab9865e38b2b3eed1ff9dec9427ad0f28561"
+    },
+    {
+      "path": "src/services/hopV55/questionActs.ts",
+      "bytes": 35186,
+      "sha256": "bca7a36e05304a5795ac1b7e2c4747eacb8bc075e4b0825d2cca58d28d7b94db"
+    },
+    {
+      "path": "src/services/hopV55/questionScopeReading.ts",
+      "bytes": 31248,
+      "sha256": "b6e28ce1f47f5a66b2b7b31513fcc6db3ded4db52d54433be7ee08f7ed898c4c"
+    },
+    {
+      "path": "src/services/hopV55/questionSemanticReading.ts",
+      "bytes": 16989,
+      "sha256": "ce7124a146f1f3b15d4c721dac31900c746d5c4d2d9f0b745f26d7578aa17fe6"
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+ "maj": "2026-10-31",
+ "usage": "Lu par scripts/agents/baseline-visuelle.mjs. Un écran = les écrans « choisi » de work/refonte-frontend/v4/choix/ecrans.json (le contrôle d'inventaire dit si l'un manque) ; un état = des gestes déclaratifs rejoués dans un Chrome neuf (390 × 844). Gestes : cliquer (clic DOM, 1er visible), toucher (clic souris), attendre, absent, pause, ouvrir (route de la pile : window.__hopPile.open), fermer, aller (url), preparer (fixture nommée du script), appui-long (+ ms), defiler (sélecteur + bloc, ou « fin »). `pret` : ce qui doit exister avant les gestes. `masques` : sélecteurs recouverts d'un aplat gris (heure, compteur) à la prise et à la comparaison. Les gestes viennent des contrôles existants : controle-ma-biere-app, controle-trou-du-0, controle-froid-dryhopper, controle-fiche.",
+ "copieParDefaut": "C:/Users/mrspa/AppData/Local/Temp/atelier-ecrans",
+ "viewport": { "largeur": 390, "hauteur": 844, "echelle": 2 },
+ "tolerance": { "pixel": 12, "image": 0.0005, "bloc": 0.25, "blocCss": 16 },
+ "masquesGlobaux": [],
+ "ecrans": [
+  {
+   "ecran": "etape-houblons",
+   "route": "ma-biere",
+   "url": "/?dev-local&etape=houblons",
+   "pret": "[data-ecran='ma-biere']",
+   "etats": [
+    { "etat": "repos", "quoi": "étape Houblons de la fixture (Stout export 16D, Nugget 46 g à 60′), Au style" },
+    { "etat": "liste-vide", "quoi": "aucun houblon dans la recette", "url": "/?dev-local&etape=houblons&recette=vide" },
+    { "etat": "legende-ouverte", "quoi": "la carte de Nugget ouverte : légende en lignes (leg3-v2a, D140)", "gestes": [{ "cliquer": "[data-role='legende-bouton']" }] },
+    { "etat": "absolu", "quoi": "bascule Absolu des barres de familles", "gestes": [{ "cliquer": "[data-ecran='ma-biere'] [data-e='absolu']" }] }
+   ]
+  },
+  {
+   "ecran": "ma-biere",
+   "route": "biere",
+   "url": "/?dev-local&etape=houblons",
+   "pret": "[data-ecran='ma-biere']",
+   "entree": [{ "cliquer": "[data-role='pont-biere']" }, { "attendre": "[data-ecran='biere']" }, { "pause": 800 }],
+   "etats": [
+    { "etat": "repos", "quoi": "Ma bière, barres Au style (onglet Ma bière)" },
+    { "etat": "bas", "quoi": "pied de Ma bière : « + viser une famille », « Prévu avec SafAle US-05, caractérisée »", "gestes": [{ "defiler": "fin" }] },
+    { "etat": "famille-ouverte", "quoi": "tropicaux touchée : bannir · − · sans visée · +", "gestes": [{ "cliquer": "[data-famille-ligne='tropical'] > button" }] },
+    { "etat": "visee-posee", "quoi": "« + » posé sur tropicaux : losange, trait sur la piste, × pour retirer", "gestes": [{ "cliquer": "[data-famille-ligne='tropical'] > button" }, { "cliquer": "[data-famille-ligne='tropical'] [data-visee='plus']" }, { "pause": 400 }] },
+    { "etat": "bannie", "quoi": "tropicaux bannie : famille barrée", "gestes": [{ "cliquer": "[data-famille-ligne='tropical'] > button" }, { "cliquer": "[data-famille-ligne='tropical'] [data-visee='bannir']" }, { "pause": 400 }] },
+    { "etat": "radar-notes", "quoi": "vue Radar, notes de dégustation posées (agrumes 2, tropicaux 3, noyau 1, résineux 2, floral 0), comme controle-trou-du-0", "gestes": [{ "cliquer": "[data-ecran='biere'] [data-vue='radar']" }, { "attendre": "[data-role='degustation']" }, { "pause": 500 }, { "cliquer": "[data-role='degustation'] [data-famille='citrus'] [role='radio']", "rang": 2, "apres": 150 }, { "cliquer": "[data-role='degustation'] [data-famille='tropical'] [role='radio']", "rang": 3, "apres": 150 }, { "cliquer": "[data-role='degustation'] [data-famille='stoneFruit'] [role='radio']", "rang": 1, "apres": 150 }, { "cliquer": "[data-role='degustation'] [data-famille='resin'] [role='radio']", "rang": 2, "apres": 150 }, { "cliquer": "[data-role='degustation'] [data-famille='floral'] [role='radio']", "rang": 0, "apres": 150 }, { "pause": 500 }] },
+    { "etat": "absolu", "quoi": "Absolu : faible · moyen · marqué en tête", "gestes": [{ "cliquer": "[data-ecran='biere'] [data-e='absolu']" }, { "attendre": "[data-role='tete-absolu']" }] },
+    { "etat": "radar", "quoi": "vue Radar : grand radar et grille de dégustation", "gestes": [{ "cliquer": "[data-ecran='biere'] [data-vue='radar']" }, { "attendre": "[data-role='degustation']" }, { "pause": 500 }] }
+   ]
+  },
+  {
+   "ecran": "suggerer",
+   "route": "suggerer",
+   "url": "/?dev-local&etape=houblons",
+   "pret": "[data-ecran='ma-biere']",
+   "entree": [{ "cliquer": "[data-role='pont-biere']" }, { "attendre": "[data-ecran='biere']" }, { "pause": 800 }],
+   "etats": [
+    { "etat": "sans-visee", "quoi": "Suggérer sans visée : « Aucune visée. Rien n'est visé dans Ma bière… »", "gestes": [{ "cliquer": "[data-onglet='suggerer']" }, { "attendre": "[data-ecran='suggerer']" }, { "pause": 1500 }] },
+    { "etat": "visee-tropicaux", "quoi": "Suggérer avec la visée « + » sur tropicaux posée dans Ma bière (q2b : groupes de voies)", "gestes": [{ "cliquer": "[data-famille-ligne='tropical'] > button" }, { "cliquer": "[data-famille-ligne='tropical'] [data-visee='plus']" }, { "pause": 400 }, { "cliquer": "[data-onglet='suggerer']" }, { "attendre": "[data-ecran='suggerer'] section[data-groupe] li", "delai": 90000 }, { "pause": 3000 }] },
+    { "etat": "bannie-tropicaux", "quoi": "Suggérer avec tropicaux bannie (D194) : « Sans … » et remplacements", "gestes": [{ "cliquer": "[data-famille-ligne='tropical'] > button" }, { "cliquer": "[data-famille-ligne='tropical'] [data-visee='bannir']" }, { "pause": 400 }, { "cliquer": "[data-onglet='suggerer']" }, { "attendre": "[data-ecran='suggerer']" }, { "pause": 3500 }] }
+   ]
+  },
+  {
+   "ecran": "comparer",
+   "route": "comparer",
+   "url": "/?dev-local&etape=houblons",
+   "pret": "[data-ecran='ma-biere']",
+   "entree": [{ "ouvrir": { "view": "hopCompare", "hops": ["beermaverick-cascade", "beermaverick-idaho-7", "beermaverick-galaxy"] } }, { "attendre": "[data-ecran='comparer'] [data-e='absolu']" }, { "pause": 1500 }],
+   "etats": [
+    { "etat": "repos", "quoi": "Comparer cmc2k : Cascade, Idaho 7, Galaxy contre la recette" },
+    { "etat": "absolu", "quoi": "bascule Absolu (radar à l'échelle brute)", "gestes": [{ "cliquer": "[data-ecran='comparer'] [data-e='absolu']" }, { "pause": 800 }] },
+    { "etat": "bas", "quoi": "Comparer défilé jusqu'en bas (colonne retenue, mots)", "gestes": [{ "defiler": "fin" }] }
+   ]
+  },
+  {
+   "ecran": "fiche",
+   "route": "fiche",
+   "url": "/?dev-local&etape=houblons",
+   "pret": "[data-ecran='ma-biere']",
+   "entree": [{ "appui-long": "[data-role='ligne-houblon']", "ms": 800 }, { "attendre": "[data-ecran='fiche'] svg[data-radar='base']" }, { "pause": 900 }],
+   "etats": [
+    { "etat": "repos", "quoi": "fiche g1 de Nugget (appui long sur la carte), premier écran : radar et phrase noire" },
+    { "etat": "bas", "quoi": "la liste sous le radar (flb5b), défilée", "gestes": [{ "defiler": "fin" }] }
+   ]
+  },
+  {
+   "ecran": "dryhopper",
+   "route": "dryhopper",
+   "url": "/?dev-local&etape=houblons",
+   "pret": "[data-ecran='ma-biere']",
+   "entree": [{ "preparer": "dryhop-nugget-cascade" }, { "ouvrir": { "view": "hopTiming", "additionId": "a2" } }, { "attendre": "[data-ecran='dryhopper'] [data-bandeau]" }, { "pause": 1800 }],
+   "etats": [
+    { "etat": "repos", "quoi": "Dryhopper p4b2f : Cascade 80 g au dry hop, après · 3 j (recette de m5)" },
+    { "etat": "absolu", "quoi": "bascule Absolu de l'échelle et des barres", "gestes": [{ "cliquer": "[data-ecran='dryhopper'] [data-e='absolu']" }, { "pause": 600 }] },
+    { "etat": "jour-1", "quoi": "contact du dry hop à 1 j (puce « 1 j »)", "gestes": [{ "cliquer": "[data-ecran='dryhopper'] [data-jour='1']" }, { "pause": 600 }] },
+    { "etat": "ebullition", "quoi": "moment d'ébullition choisi (premier onglet de la frise)", "gestes": [{ "cliquer": "[data-ecran='dryhopper'] [data-etape]", "rang": 0 }, { "pause": 600 }] },
+    { "etat": "froid-limite", "quoi": "la cellule « limite » ouverte (p5, D : trois mini graphes)", "gestes": [{ "cliquer": "[data-froid='limite']" }, { "pause": 600 }] }
+   ]
+  },
+  {
+   "ecran": "substituer",
+   "route": "substituer",
+   "url": "/?dev-local&etape=houblons",
+   "pret": "[data-ecran='ma-biere']",
+   "entree": [{ "saisir": "[aria-label='Ajouter un houblon : stock ou catalogue']", "texte": "Galaxy" }, { "toucher": "[data-role='ajout-rapide'][data-houblon-ajout='beermaverick-galaxy'] [data-role='ajout-rapide-plus']" }, { "pause": 1000 }, { "ouvrir": { "view": "hopSubstitute", "hopKey": "beermaverick-galaxy" } }, { "attendre": "[data-ecran='substituer'] [data-remplacant]", "delai": 90000 }, { "pause": 800 }],
+   "etats": [
+    { "etat": "repos", "quoi": "Substituer Galaxy (ajouté à la fixture, comme controle-contour-original) au moment de la recette", "gestes": [] },
+    { "etat": "dry-hop", "quoi": "le moment « dry hop » choisi (le cas du brasseur, 26.10)", "gestes": [{ "toucher": "[data-ecran='substituer'] .pq-substituer-moments [data-moment='dryhop']" }, { "pause": 1500 }] },
+    { "etat": "deux-compares", "quoi": "dry hop, deux remplaçants choisis : le radar de comparaison, contour de l'original (D156)", "gestes": [{ "toucher": "[data-ecran='substituer'] .pq-substituer-moments [data-moment='dryhop']" }, { "pause": 1500 }, { "cliquer": "[data-ecran='substituer'] [data-remplacant]", "rang": 0 }, { "pause": 500 }, { "cliquer": "[data-ecran='substituer'] [data-remplacant]", "rang": 1 }, { "pause": 500 }, { "attendre": "svg[data-radar='base'][data-objet='houblons']" }, { "defiler": "svg[data-radar='base'][data-objet='houblons']", "bloc": "center" }, { "pause": 500 }] }
+   ]
+  }
+ ]
+}

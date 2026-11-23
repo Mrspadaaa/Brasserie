@@ -1,0 +1,733 @@
+{
+  "version": "composes-houblon-v1",
+  "date": "2026-10-19",
+  "statut": "Relevé fait par fait depuis H (19.10.2026) et le dépôt, en lecture seule ; aucune fiche propriétaire importée en masse (D25). Une valeur absente vaut null avec sa raison, jamais 0.",
+  "rapport": "work/refonte-frontend/v4/recherche/H-choisir-deux-houblons.md",
+  "specification": "work/refonte-frontend/v4/ecran-1/fils19-choix/MOTEUR-POUVOIR.md",
+  "conventions": {
+    "plage": "[min, max] tels que publiés ; null = borne non publiée (« < X » : [null, X] ; « > X » : [X, null]). « ≈ X » : [X, X].",
+    "enveloppe": "Plage d'une variété : de la plus petite à la plus grande valeur publiée par ses sources « variété » et « littérature ». Une source qui ne publie qu'une borne haute rend la borne basse inconnue seulement si cette borne est sous la plus petite borne basse publiée (et inversement pour la borne haute). Convention du prototype [H].",
+    "portee": {
+      "variété": "fiche, catalogue ou enquête sur plusieurs lots de la variété",
+      "littérature": "plage de la littérature citée par une source, sans origine ni méthode par valeur",
+      "lot": "un échantillon ou un certificat : jamais une plage variétale (règle du dépôt, src/data/hopPublicLotBootstrap.json) ; utilisé seulement si l'ajout le désigne"
+    },
+    "baseCommune": "hopsteiner-2024 : thiols libres mesurés par une seule méthode (LC-MS/MS), un seul laboratoire, 97 variétés, récoltes 2019–2023 (Schmidt et al. 2024). Seule base où Citra, Cascade, Galaxy et Idaho 7 sont comparables entre eux.",
+    "niveaux": {
+      "P": "publié avec comité de lecture",
+      "F": "fiche ou document de fabricant",
+      "S": "secondaire : congrès, diapositives, blog, thèse, agrégateur",
+      "H": "hypothèse ou calcul du pilote"
+    },
+    "unites": {
+      "huile": "mL/100 g de houblon",
+      "terpenes": "% de l'huile (aire GC, pas un volume exact)",
+      "thiols": "µg/kg de houblon, thiol libre",
+      "seuilsTerpenes": "µg/L",
+      "seuilsThiols": "ng/L",
+      "transferts": "% de la charge introduite retrouvé en bière"
+    }
+  },
+  "sources": {
+    "H": { "titre": "H — Choisir deux houblons : ce qui est mesuré, ce que montrent les outils, ce qu'un outil honnête peut calculer (Opus 5.5, pilote)", "url": "work/refonte-frontend/v4/recherche/H-choisir-deux-houblons.md", "annee": 2026, "niveau": "H", "lecture": "rapport du dépôt" },
+    "spec": { "titre": "Moteur « pouvoir aromatique » : spécification, §6 lecture par famille", "url": "work/refonte-frontend/v4/ecran-1/fils19-choix/MOTEUR-POUVOIR.md", "annee": 2026, "niveau": "H", "lecture": "dépôt" },
+    "pilote-19-10": { "titre": "Consigne du pilote du 19.10.2026 : marqueurs par famille (humulène et caryophyllène → boisé, épicé ; farnésène → boisé, vert, herbacé ; 3MH → agrumes, tropical)", "url": "work/refonte-frontend/v4/ecran-1/fils19-choix/MOTEUR-POUVOIR.md", "annee": 2026, "niveau": "H", "lecture": "consigne transmise en séance, non écrite dans la spécification" },
+    "H1": { "titre": "Yakima Chief Hops, Citra® Brand, onglets Whole Leaf, T-90, Cryo", "url": "https://www.yakimachief.com/variety/citra-brand", "annee": null, "anneeNote": "fiche sans date ; consultée le 19.10.2026", "niveau": "F", "lecture": "lu" },
+    "H2": { "titre": "Yakima Chief Hops, Cascade", "url": "https://www.yakimachief.com/variety/cascade", "annee": null, "anneeNote": "fiche sans date ; consultée le 19.10.2026", "niveau": "F", "lecture": "lu" },
+    "H3": { "titre": "Yakima Chief Hops, Idaho 7® Brand", "url": "https://www.yakimachief.com/variety/idaho-7-brand", "annee": null, "anneeNote": "fiche sans date ; consultée le 19.10.2026", "niveau": "F", "lecture": "lu" },
+    "H3-71": { "titre": "H §7.1, Idaho 7 : ligne sans fabricant indiqué (fiche YCH [3] ou Haas 2020 [27])", "url": "https://www.yakimachief.com/variety/idaho-7-brand", "autreUrl": "https://www.johnihaas.com/wp-content/uploads/2020/09/Haas_HopSpecSheets-Idaho7_110520.pdf", "annee": null, "anneeNote": "attribution par ligne non précisée dans H", "niveau": "F", "lecture": "lu" },
+    "H5": { "titre": "Yakima Chief Hops, Survivable Compounds Poster CY2025 et Handbook 2022", "url": "https://assets.contentstack.io/v3/assets/blt01aa4a23b23249e1/blt329a9dec6530abd3/6a5fad9788fadd4b8f60038b/Survivable_Compounds_CY2025_Final_Poster.pdf", "annee": 2025, "niveau": "F", "lecture": "lu, graphiques non lisibles" },
+    "H7c": { "titre": "John I. Haas, MiniSpecSheets Citra, 2022", "url": "https://www.johnihaas.com/wp-content/uploads/2020/09/MiniSpecSheets-Citra.pdf", "annee": 2022, "niveau": "F", "lecture": "lu" },
+    "H7k": { "titre": "John I. Haas, MiniSpecSheets Cascade, 2022", "url": "https://www.johnihaas.com/wp-content/uploads/2020/09/MiniSpecSheets-Cascade.pdf", "annee": 2022, "niveau": "F", "lecture": "lu" },
+    "H8": { "titre": "BarthHaas, Citra® (médiane des 4 dernières années)", "url": "https://www.barthhaas.com/hops-and-products/hops/citrar", "annee": null, "anneeNote": "date de la page non relevée ; consultée le 19.10.2026", "niveau": "F", "lecture": "lu" },
+    "H9": { "titre": "Castle Malting, Cascade FR", "url": "https://castlemalting.com/Publications/HopProducts/Cascade_FR_CMSpecA.pdf", "annee": null, "anneeNote": "fiche sans date relevée", "niveau": "F", "lecture": "lu" },
+    "H10": { "titre": "Hopsteiner, fiche Cascade (PDF)", "url": "https://pim.hopsteiner.de/api/v1/en/varieties/cas.pdf", "annee": null, "anneeNote": "date non relevée dans H ; la fiche du dépôt affiche une mise à jour de 2025", "niveau": "F", "lecture": "lu" },
+    "H11": { "titre": "Schmidt, Hoferer, Biendl, Determination of variety dependent « thiol impact » based on LC-MS/MS analysis of different hop samples collected worldwide, BrewingScience 77 (11/12), 2024, p. 135–141", "url": "https://cdn.hopsteiner.de/assets/cdn/service/technical_information_and_support/technical-publications/2024-12_Determination_of_Variety_Dependent_Thiol_Impact_Based_on_LC-MS_MS_Analysis_of_Different_Hop_Samples_Collected_Worldwide_BS_Schmidt_et_al.pdf", "annee": 2024, "niveau": "P", "lecture": "lu" },
+    "H12": { "titre": "Kishimoto, Kobayashi, Yako, Iida, Wanikawa, Comparison of 4MMP contents in hop cultivars from different growing regions, J. Agric. Food Chem. 56, 2008, p. 1051–1057", "url": "https://researchmap.jp/read0145703/published_papers/19420725/attachment_file.pdf", "annee": 2008, "niveau": "P", "lecture": "lu" },
+    "H13": { "titre": "Kishimoto, Morimoto, Kobayashi, Yako, Wanikawa, Behaviors of 3MH and 3MHA during brewing processes, J. Am. Soc. Brew. Chem. 66(3), 2008, p. 192–196", "url": "https://researchmap.jp/read0145703/published_papers/19420728/attachment_file.pdf", "annee": 2008, "niveau": "P", "lecture": "lu" },
+    "H14": { "titre": "Reglitz, Steinhaus, Quantitation of 4MSP in hops, J. Agric. Food Chem. 65(11), 2017, p. 2364–2372", "url": "https://portal.fis.leibniz-lsb.tum.de/en/publications/quantitation-of-4-methyl-4-sulfanylpentan-2-one-4msp-in-hops-by-a-4/", "annee": 2017, "niveau": "P", "lecture": "résumé lu ; maximum attribué à Citra relayé par une revue" },
+    "H15": { "titre": "Kankolongo Cibaka, Gros, Nizet, Collin, J. Agric. Food Chem. 63(11), 2015, p. 3022–3030", "url": "https://research.dial.uclouvain.be/handle/2078.5/62348", "annee": 2015, "niveau": "P", "lecture": "résumé lu" },
+    "H16": { "titre": "Decourrière, Chenot, Silva Ferreira, Collin, HPLC-ESI(+)MS/MS quantitation of glutathione S-conjugates in Citra and Sorachi Ace, Flavour Science 2018", "url": "https://research.dial.uclouvain.be/bitstreams/4dce0cd7-d46d-4f82-b0a9-91ab20920c29/download", "annee": 2018, "niveau": "S", "lecture": "lu ; valeurs lues dans la figure 2 ; actes de congrès" },
+    "H17": { "titre": "Gros et al., J. Inst. Brew. 119, 2013, p. 221–227 (résumé dans la Hop Science Newsletter de février 2015)", "url": "https://www.johnihaas.com/news-views/hop-science-newsletter-february-2015/", "annee": 2013, "niveau": "P", "lecture": "relayé" },
+    "H18": { "titre": "Roland et al., Flavour Fragr. J., 2016", "url": "https://agris.fao.org/search/fr/records/65de7be163b8185d9ca8cdd3", "annee": 2016, "niveau": "P", "lecture": "relayé" },
+    "H19": { "titre": "Schönberger, Dagan, Development of thiols and thiol precursors in different hop varieties, séminaire CBC 2020", "url": "https://cdn.brewersassociation.org/wp-content/uploads/2020/05/CBC-Online-Seminar-Presentation-Development-of-Thiols-and-Thiol-Precursors-in-Different-Hop-Varieties.pdf", "annee": 2020, "niveau": "S", "lecture": "lu" },
+    "H20": { "titre": "Lafontaine, Varnum, Roland, Delpech, Dagan, Vollmer, Kishimoto, Shellhammer, Impact of harvest maturity on the aroma characteristics and chemistry of Cascade hops used for dry-hopping, Food Chemistry 278, 2019, p. 228–239", "url": "https://ir.library.oregonstate.edu/concern/parent/hq37vt81q/file_sets/7d279002b", "annee": 2019, "niveau": "P", "lecture": "lu, version acceptée OSU" },
+    "H21": { "titre": "Sharp, Lafontaine (Shellhammer Laboratory), Dry-hopping beer and achieving consistent flavor, Craft Brewers Conference 2018", "url": "https://www.craftbrewersconference.com/wp-content/uploads/2018_presentations/Dry-hopping-Beer-Achieving-Consistent-Flavor1.pdf", "annee": 2018, "niveau": "S", "lecture": "lu" },
+    "H22": { "titre": "Lafontaine, Shellhammer, Impact of static dry-hopping rate on the sensory and analytical profiles of beer, J. Inst. Brew. 124(4), 2018, p. 434–442", "url": "https://onlinelibrary.wiley.com/doi/10.1002/jib.517", "annee": 2018, "niveau": "P", "lecture": "version OSU lue par un agent ; tableau 3 concordant avec docs/hop-solver.md" },
+    "H25": { "titre": "Schönberger, Zunkel, McMillan, Muñoz-Insa (BarthHaas), How can the HSI be correctly assessed for brewing purposes?, 04.07.2024", "url": "https://www.barthhaas.com/ressources/blog/blog-article/how-can-the-hsi-be-correctly-assessed-for-brewing-purposes", "annee": 2024, "niveau": "F", "lecture": "lu" },
+    "H26": { "titre": "Hop Products Australia, Galaxy®", "url": "https://hops.com.au/galaxy/", "annee": null, "anneeNote": "fiche sans date relevée ; consultée le 19.10.2026", "niveau": "F", "lecture": "lu" },
+    "H27": { "titre": "John I. Haas, Idaho 7 spec sheet, 2020", "url": "https://www.johnihaas.com/wp-content/uploads/2020/09/Haas_HopSpecSheets-Idaho7_110520.pdf", "annee": 2020, "niveau": "F", "lecture": "lu par un agent" },
+    "H30": { "titre": "Gahr, Forster, De Clippeleer, Van Opstaele, Reproducibility trials… Part 3: transfer rates of aroma compounds from hops to beer and their ageing behaviour, BrewingScience 72, 2019, p. 217–227", "url": "https://brewingscience.de/index.php/brewingscience/article/view/260", "annee": 2019, "niveau": "P", "lecture": "lu par un agent ; résumé contrôlé par le pilote" },
+    "H31": { "titre": "Tusha, Nešpor, Jelínek, Vodičková, Kinčl, Dostálek, Effect of Czech hop varieties on aroma of dry-hopped lager beer, Foods 11(16):2520, 2022", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9407075", "annee": 2022, "niveau": "P", "lecture": "lu" },
+    "H32": { "titre": "Brauwelt International, résumés de BrewingScience 66 (2013) et 67 (2014) sur le dry hop et le transfert du géraniol", "url": "https://brauwelt.com/en/topics/raw-materials/622358-on-the-fate-of-certain-hop-substances-during-dry-hopping", "autreUrl": "https://brauwelt.com/en/topics/raw-materials/622341-on-the-transfer-rate-of-geraniol-with-dry-hopping", "annee": 2014, "niveau": "S", "lecture": "lus par un agent" },
+    "H33": { "titre": "Haslbeck et al., BrewingScience 70, 2017, p. 159–169", "url": "https://doi.org/10.23763/BrSc17-16haslbeck", "annee": 2017, "niveau": "P", "lecture": "résumé" },
+    "H34": { "titre": "Peltz, Shellhammer, Sensory thresholds of hop volatile compounds in beer, World Brewing Congress 2016, poster 176 ; ASBC 2014, A-74", "url": "https://www.asbcnet.org/events/archives/2016/proceedings/Documents/176_Peltz.pdf", "autreUrl": "https://www.asbcnet.org:443/events/archives/2014Meeting/proceedings/2014Proceedings/A-74_Peltz.pdf", "annee": 2016, "niveau": "S", "lecture": "lu ; 2014 lu par un agent" },
+    "H35": { "titre": "Klimczak, Cioch-Skoneczny, Duda-Chodak, Molecules 28(18):6648, 2023, tableau 2", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10534726/", "annee": 2023, "niveau": "P", "lecture": "lu" },
+    "H36": { "titre": "Biendl et al., MBAA Technical Quarterly 58(1), 2021 (auteurs de Hopsteiner)", "url": "https://cdn.hopsteiner.de/assets/cdn/service/technical_information_and_support/technical-publications/2021-05_tq_biendl-et-al_mbba.pdf", "annee": 2021, "niveau": "P", "lecture": "lu par un agent" },
+    "H37": { "titre": "Silva Ferreira, Collin, manuscrit soumis", "url": "https://research.dial.uclouvain.be/bitstreams/09eb0fbe-3361-485e-8d5c-2a4fa5c3018a/download", "annee": null, "anneeNote": "manuscrit sans date relevée", "niveau": "S", "lecture": "lu par un agent" },
+    "H38": { "titre": "Huismann et al., ASBC 2017, poster 36", "url": "https://www.asbcnet.org/events/archives/2017ASBCMeeting/proceedings/2017Proceedings/36_Huismann.pdf", "annee": 2017, "niveau": "S", "lecture": "lu par un agent" },
+    "H39": { "titre": "BJCP 2021, 16D Foreign Extra Stout", "url": "https://www.bjcp.org/style/2021/16/16D/foreign-extra-stout/", "annee": 2021, "niveau": "S", "lecture": "lu ; guide de style de concours, ni article ni fabricant" },
+    "H40": { "titre": "Hofmann et al., J. Agric. Food Chem., 2001, mélanoïdines de café", "url": "https://pages.uoregon.edu/chendon/coffee_literature/old_literature/2001%20J.%20Agric.%20Food%20Chem.,%20Coffee%20melanoidin%20impact%20on%20flavor%20and%20odor.pdf", "annee": 2001, "niveau": "P", "lecture": "relayé" },
+    "H41": { "titre": "Svedlund, Evering, Gibson, Krogerus, Appl. Microbiol. Biotechnol. 106, 2022", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9329171/", "annee": 2022, "niveau": "P", "lecture": "lu en partie" },
+    "H42": { "titre": "Christiaens et al., Molecules 30:325, 2025", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11767611/", "annee": 2025, "niveau": "P", "lecture": "lu" },
+    "H43": { "titre": "Chenot et al., J. Agric. Food Chem. 69, 2021, et 2022", "url": "https://pubmed.ncbi.nlm.nih.gov/35234466/", "annee": 2022, "niveau": "P", "lecture": "relayé" },
+    "H44": { "titre": "Kumar et al., Foods 12:1064, 2023", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10000826/", "annee": 2023, "niveau": "P", "lecture": "lu" },
+    "H45": { "titre": "Roncoroni et al., Food Microbiol. 28, 2011, via Saccharomyces Genome Database", "url": "https://wiki.yeastgenome.org/index.php/IRC7", "annee": 2011, "niveau": "P", "lecture": "relayé" },
+    "H46": { "titre": "Molitor et al., Fermentation 8:370, 2022", "url": "https://mdpi-res.com/d_attachment/fermentation/fermentation-08-00370/article_deploy/fermentation-08-00370.pdf", "annee": 2022, "niveau": "P", "lecture": "résumé lu" },
+    "H47": { "titre": "Omega Yeast, All about thiolized yeast, 30.06.2026", "url": "https://omegayeast.com/all-about-thiolized-yeast", "annee": 2026, "niveau": "F", "lecture": "lu" },
+    "H48": { "titre": "Molitor, Shellhammer, Hop biotransformation & yeast, Lallemand Brewing, 2023", "url": "https://www.lallemandbrewing.com/en/asia/resources/whats-new/hop-biotransformation-by-brewing-yeast/", "annee": 2023, "niveau": "F", "lecture": "lu" },
+    "H49": { "titre": "Lallemand, IPA best practices", "url": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/07/LAL-bestpractices-IPA_solutions-ENG-8.5x11.pdf", "annee": 2023, "niveau": "F", "lecture": "lu par un agent" },
+    "H50-us05": { "titre": "Fermentis, fiche SafAle US-05", "url": "https://fermentis.com/en/product/safale-us-05", "annee": null, "anneeNote": "fiche sans date relevée", "niveau": "F", "lecture": "lu par un agent" },
+    "H50-pomona": { "titre": "Lallemand, fiche technique LalBrew Pomona (copie de distributeur)", "url": "https://murphyandson.co.uk/wp-content/uploads/2024/07/Pomona-TDS-ENG-8.5x11-Print-LalBrew.pdf", "annee": 2024, "niveau": "F", "lecture": "lu par un agent" },
+    "H50-diamond": { "titre": "Lallemand, fiche technique LalBrew Diamond (copie de distributeur)", "url": "https://files.scottlab.com/uploads/DIAMOND%20TDS.pdf", "annee": null, "anneeNote": "fiche sans date relevée", "niveau": "F", "lecture": "lu par un agent" },
+    "H50-verdant": { "titre": "Lallemand, fiche technique LalBrew Verdant IPA (copie de distributeur)", "url": "https://www.murphyandson.co.uk/wp-content/uploads/2020/08/TDS_LPS_BREWINGYEAST_VERDANT_ENG_8.5x11.pdf", "annee": 2020, "niveau": "F", "lecture": "relayé" },
+    "H51": { "titre": "Escarpment Labs, LalBrew Pomona", "url": "https://escarpmentlabs.com/products/lalbrew-pomona", "annee": null, "anneeNote": "page sans date relevée", "niveau": "F", "lecture": "lu par un agent" },
+    "H52": { "titre": "Sharp et al., J. Inst. Brew., 2017, DOI 10.1002/jib.418 (via un wiki)", "url": "https://milkthefunk.com/wiki/Special:MobileDiff/13452", "annee": 2017, "niveau": "P", "lecture": "relayé" },
+    "H53": { "titre": "Kankolongo Cibaka et al., J. Am. Soc. Brew. Chem., 2017", "url": "https://www.asbcnet.org/publications/journal/vol/2017/Pages/ASBCJ-2017-2257-01.aspx", "annee": 2017, "niveau": "P", "lecture": "relayé ; page refusée" },
+    "H67": { "titre": "Takoi et al., BrewingScience 69, 2016", "url": "https://brewingscience.de/index.php/brewingscience/article/view/299", "annee": 2016, "niveau": "P", "lecture": "cité par le dépôt" },
+    "H68": { "titre": "Young, Fox, Hop creep variability unveiled: a comparative analysis of hop variety, quantity, origin, and product type, J. Inst. Brew. 131(4), 2025, p. 228–237", "url": "https://jib.cibd.org.uk/index.php/jib/article/view/84", "annee": 2025, "niveau": "P", "lecture": "lu par un agent ; résumé vérifié par le pilote" },
+    "H72": { "titre": "Lafontaine, Takoi, questions et réponses du webinaire ASBC The benefits of hop blending during dry-hopping, 07.03.2019", "url": "https://www.asbcnet.org:443/events/webinars/Documents/20190307_QandA_HopBlending.pdf", "annee": 2019, "niveau": "S", "lecture": "lu par un agent" },
+    "H73": { "titre": "Wolfe, A study of factors affecting the extraction of flavor when dry hopping beer, thèse MSc, Oregon State University, 2012", "url": "https://ir.library.oregonstate.edu/xmlui/bitstream/handle/1957/34093/Wolfe_thesis.pdf", "annee": 2012, "niveau": "S", "lecture": "lu ; résumé vérifié par le pilote" },
+    "H74": { "titre": "Yakima Chief Hops, Cryo Hops product overview sheet, révision de février 2022 (copie d'un distributeur)", "url": "https://rahrbsg.ca/wp-content/uploads/2024/11/Cryo_Hops_Product_Overview_Sheet_1.pdf", "annee": 2022, "niveau": "F", "lecture": "lu par un agent" },
+    "H76": { "titre": "Hauser, Van Simaeys, Lafontaine, Shellhammer, A comparison of single-stage and two-stage dry-hopping regimes, J. Am. Soc. Brew. Chem. 77(4), 2019, p. 251–260", "url": "https://doi.org/10.1080/03610470.2019.1668230", "annee": 2019, "niveau": "P", "lecture": "relayé" },
+    "H77": { "titre": "Brülosophy, Investigating the dry hop saturation point, 24.06.2019", "url": "https://www.brulosophy.com/2019/06/24/investigating-the-dry-hop-saturation-point-exbeeriment-results/", "annee": 2019, "niveau": "S", "lecture": "résumé lu" },
+    "H78": { "titre": "Titus et al., Impact of dry hopping on beer flavor stability, Foods 10(6):1264, 2021", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8229854", "annee": 2021, "niveau": "P", "lecture": "résumé lu" },
+    "H80": { "titre": "Willemart, Tanriverdi, Collin, Impact of contact time, temperature, and ethanol content on hop creep-related enzymatic activities in beer, J. Am. Soc. Brew. Chem., 2025", "url": "https://research.dial.uclouvain.be/handle/2078.5/263102", "annee": 2025, "niveau": "P", "lecture": "relayé" },
+    "H81": { "titre": "Takoi et al., Screening of geraniol-rich flavor hop and interesting behavior of β-citronellol…, J. Am. Soc. Brew. Chem. 72, 2014", "url": "https://www.asbcnet.org/publications/journal/vol/abstracts/ASBCJ-2014-0116-01.htm", "annee": 2014, "niveau": "P", "lecture": "relayé" },
+    "H82": { "titre": "Lallemand Brewing, Best practices: biotransformation, 2020", "url": "https://admin.lallemandbrewing.com/wp-content/uploads/2020/08/LAL-bestpractices-Biotransformation2020.pdf", "annee": 2020, "niveau": "F", "lecture": "relayé" },
+    "H84": { "titre": "Kirkpatrick, Shellhammer, Evidence of dextrin hydrolyzing enzymes in Cascade hops, J. Agric. Food Chem. 66, 2018, p. 9121–9126", "url": "https://doi.org/10.1021/acs.jafc.8b03563", "annee": 2018, "niveau": "P", "lecture": "relayé par [35]" },
+    "H85": { "titre": "Hrabia, Poręba, Ciosek, Poreda, Effect of dry hopping conditions on the hop creep potential of beer, J. Am. Soc. Brew. Chem. 82(4), 2024, p. 412–421", "url": "https://doi.org/10.1080/03610470.2024.2388430", "annee": 2024, "niveau": "P", "lecture": "relayé" },
+    "H87": { "titre": "Brülosophy, The surprising science of dry hopping: lessons from Tom Shellhammer, 21.02.2019", "url": "https://brulosophy.com/2019/02/21/the-surprising-science-of-dry-hopping-lessons-from-tom-shellhammer/", "annee": 2019, "niveau": "S", "lecture": "résumé lu" },
+    "H92": { "titre": "Schmidt et al., Eureka!, BrewingScience 72, 2019", "url": "https://doi.org/10.23763/BrSc19-21schmidt", "annee": 2019, "niveau": "P", "lecture": "lu en partie par un agent" },
+    "H93": { "titre": "Takoi et al., comportement du géraniol et du β-citronellol pendant la fermentation, actes ASBC 2011, O-40, et J. Inst. Brew. 2010", "url": "https://asbcnet.org/events/archives/2011Proceedings/Pages/O-40.aspx", "annee": 2011, "niveau": "P", "lecture": "relayé par un wiki" },
+    "bm-citra": { "titre": "Beer Maverick, Citra (catalogue du prototype)", "url": "https://beermaverick.com/hop/citra/", "annee": 2023, "niveau": "S", "lecture": "dépôt : prototypes/houblons-v4/data/proto-data.json ; plages agrégées de fournisseurs" },
+    "bm-cascade": { "titre": "Beer Maverick, Cascade (catalogue du prototype)", "url": "https://beermaverick.com/hop/cascade/", "annee": 2023, "niveau": "S", "lecture": "dépôt : prototypes/houblons-v4/data/proto-data.json ; plages agrégées de fournisseurs" },
+    "bm-galaxy": { "titre": "Beer Maverick, Galaxy (catalogue du prototype)", "url": "https://beermaverick.com/hop/galaxy/", "annee": 2023, "niveau": "S", "lecture": "dépôt : prototypes/houblons-v4/data/proto-data.json ; plages agrégées de fournisseurs" },
+    "bm-idaho-7": { "titre": "Beer Maverick, Idaho 7 (catalogue du prototype)", "url": "https://beermaverick.com/hop/idaho-7/", "annee": 2023, "niveau": "S", "lecture": "dépôt : prototypes/houblons-v4/data/proto-data.json ; plages agrégées de fournisseurs" },
+    "bm-motueka": { "titre": "Beer Maverick, Motueka (catalogue du prototype)", "url": "https://beermaverick.com/hop/motueka/", "annee": 2023, "niveau": "S", "lecture": "dépôt : prototypes/houblons-v4/data/proto-data.json ; plages agrégées de fournisseurs" },
+    "bm-nelson-sauvin": { "titre": "Beer Maverick, Nelson Sauvin (catalogue du prototype)", "url": "https://beermaverick.com/hop/nelson-sauvin/", "annee": 2023, "niveau": "S", "lecture": "dépôt : prototypes/houblons-v4/data/proto-data.json ; plages agrégées de fournisseurs" },
+    "bm-nugget": { "titre": "Beer Maverick, Nugget (catalogue du prototype)", "url": "https://beermaverick.com/hop/nugget/", "annee": 2023, "niveau": "S", "lecture": "dépôt : prototypes/houblons-v4/data/proto-data.json ; plages agrégées de fournisseurs" },
+    "hs-cas": { "titre": "Hopsteiner, fiche variétale Cascade", "url": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/cas", "annee": 2025, "niveau": "F", "lecture": "dépôt : src/data/hopManufacturerBootstrap.json (valeur variétale, pas analyse du lot acheté)" },
+    "hs-mka": { "titre": "Hopsteiner, fiche variétale Motueka", "url": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/mka", "annee": 2025, "niveau": "F", "lecture": "dépôt : src/data/hopManufacturerBootstrap.json" },
+    "hs-nsn": { "titre": "Hopsteiner, fiche variétale Nelson Sauvin", "url": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/nsn", "annee": 2025, "niveau": "F", "lecture": "dépôt : src/data/hopManufacturerBootstrap.json" },
+    "hs-nug": { "titre": "Hopsteiner, fiche variétale Nugget", "url": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/nug", "annee": 2025, "niveau": "F", "lecture": "dépôt : src/data/hopManufacturerBootstrap.json" },
+    "coa-cas-2400": { "titre": "Yakima Quality Hops · HopTechnic, Certificate of Analysis CAS-2400 (Cascade T-90, 19.11.2024)", "url": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2400-COA.pdf", "annee": 2024, "niveau": "F", "lecture": "dépôt : src/data/hopPublicLotBootstrap.json, vérifié visuellement le 08.09.2026" },
+    "coa-cas-2401": { "titre": "Yakima Quality Hops · HopTechnic, Certificate of Analysis CAS-2401 (Cascade T-90, 2024)", "url": "https://yakhops.com/wp-content/uploads/2024/12/2024-Cascade-2401-COA.pdf", "annee": 2024, "niveau": "F", "lecture": "dépôt : src/data/hopPublicLotBootstrap.json" },
+    "coa-cas-2519": { "titre": "Yakima Quality Hops, Certificate of Analysis CAS-2519 (Cascade T-90, 2025)", "url": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2519-COA.pdf", "annee": 2025, "niveau": "F", "lecture": "dépôt : src/data/hopPublicLotBootstrap.json" },
+    "coa-cas-2520": { "titre": "Yakima Quality Hops, Certificate of Analysis CAS-2520 (Cascade T-90, 2025)", "url": "https://yakhops.com/wp-content/uploads/2025/12/2025-Cascade-CAS-2520-COA.pdf", "annee": 2025, "niveau": "F", "lecture": "dépôt : src/data/hopPublicLotBootstrap.json" },
+    "coa-id7-2573": { "titre": "Yakima Quality Hops · laboratoire YCH, Certificate of Analysis ID7-2573 (Idaho 7 T-90, 21.11.2025)", "url": "https://yakhops.com/wp-content/uploads/2025/12/2025-Idaho-7-ID7-2573-COA.pdf", "annee": 2025, "niveau": "F", "lecture": "dépôt : src/data/hopPublicLotBootstrap.json" },
+    "coa-mka-bh01": { "titre": "Clayton Hops · Plant & Food Research, Certificate of Analysis CH25-BH01-MKA (Motueka, 02.04.2025)", "url": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-BH01-MKA-COA.pdf", "annee": 2025, "niveau": "F", "lecture": "dépôt : src/data/hopPublicLotBootstrap.json ; dénominateur des fractions non explicité" },
+    "coa-mka-ma02": { "titre": "Clayton Hops · Plant & Food Research, Certificate of Analysis CH25-MA02-MKA (Motueka, 2025)", "url": "https://yakhops.com/wp-content/uploads/2025/12/2025-Motueka-CH25-MA02-MKA-COA.pdf", "annee": 2025, "niveau": "F", "lecture": "dépôt : src/data/hopPublicLotBootstrap.json ; dénominateur des fractions non explicité" },
+    "coa-nsn-br05": { "titre": "Clayton Hops · Plant & Food Research, Certificate of Analysis CH25-BR05-NSN (Nelson Sauvin, 2025)", "url": "https://yakhops.com/wp-content/uploads/2025/12/2025-Nelson-Sauvin-CH25-BR05-NSN-COA.pdf", "annee": 2025, "niveau": "F", "lecture": "dépôt : src/data/hopPublicLotBootstrap.json ; dénominateur des fractions non explicité" },
+    "samia2026": { "titre": "Samia, Chenot, Divilov, Shayevitz, Shellhammer, A time-course assessment of polyfunctional thiol release and yeast gene expression in dry-hopped beers, 2026 (tableau 2, première ligne)", "url": "https://doi.org/10.1016/j.fochms.2026.100445", "annee": 2026, "niveau": "P", "lecture": "dépôt : src/data/hopPublicLotBootstrap.json ; un seul lot YCH, ni numéro ni récolte" },
+    "barnette2019": { "titre": "Barnette, Shellhammer 2019, oxygène et stockage (cité par le dépôt)", "url": "docs/research/hop-style-practical-research.md", "annee": 2019, "niveau": "P", "lecture": "dépôt, §4" }
+  },
+  "composes": {
+    "myrcene": { "nom": "myrcène", "classe": "hydrocarbure monoterpénique", "type": "terpene" },
+    "linalol": { "nom": "linalol", "classe": "alcool monoterpénique", "type": "terpene" },
+    "geraniol": { "nom": "géraniol", "classe": "alcool monoterpénique", "type": "terpene" },
+    "humulene": { "nom": "humulène", "classe": "hydrocarbure sesquiterpénique", "type": "terpene" },
+    "caryophyllene": { "nom": "caryophyllène", "classe": "hydrocarbure sesquiterpénique", "type": "terpene" },
+    "farnesene": { "nom": "farnésène", "classe": "hydrocarbure sesquiterpénique", "type": "terpene" },
+    "4MMP": { "nom": "4MMP (4MSP)", "classe": "thiol libre", "type": "thiol" },
+    "3MH": { "nom": "3MH (3SH)", "classe": "thiol libre", "type": "thiol" },
+    "3M4MP": { "nom": "3M4MP (3S4MP)", "classe": "thiol libre", "type": "thiol" }
+  },
+  "varietes": {
+    "beermaverick-citra": {
+      "nom": "Citra",
+      "forme": "T-90",
+      "origine": "États-Unis",
+      "huile": { "valeurs": [
+        { "plage": [1.0, 3.0], "texte": "1,0–3,0 (onglet T-90)", "sources": ["H1"], "portee": "variété" },
+        { "plage": [2.2, 2.8], "texte": "2,2–2,8", "sources": ["H7c"], "portee": "variété" },
+        { "plage": [null, 2.8], "texte": "≤ 2,8 (4 dernières années)", "sources": ["H8"], "portee": "variété" },
+        { "plage": [1.5, 3.0], "texte": "1,5–3,0", "sources": ["bm-citra"], "portee": "variété" }
+      ] },
+      "composes": {
+        "myrcene": { "valeurs": [
+          { "plage": [50, 70], "sources": ["H1"], "portee": "variété" },
+          { "plage": [60, 65], "sources": ["H7c"], "portee": "variété" },
+          { "plage": [28.6, 66], "sources": ["H8"], "portee": "variété" },
+          { "plage": [60, 70], "sources": ["bm-citra"], "portee": "variété" }
+        ] },
+        "linalol": { "valeurs": [
+          { "plage": [0.5, 1], "sources": ["H1"], "portee": "variété" },
+          { "plage": [1, 2], "sources": ["H7c"], "portee": "variété" },
+          { "plage": [0.5, 1.1], "sources": ["H8"], "portee": "variété" }
+        ] },
+        "geraniol": { "valeurs": [
+          { "plage": [0.2, 0.8], "sources": ["H1"], "portee": "variété" },
+          { "plage": [0.2, 0.6], "sources": ["H8"], "portee": "variété" }
+        ] },
+        "humulene": { "valeurs": [
+          { "plage": [7, 12.5], "sources": ["H1"], "portee": "variété" },
+          { "plage": [11, 13], "sources": ["H7c"], "portee": "variété" },
+          { "plage": [7.9, 13.2], "sources": ["H8"], "portee": "variété" },
+          { "plage": [7, 13], "sources": ["bm-citra"], "portee": "variété" }
+        ] },
+        "caryophyllene": { "valeurs": [
+          { "plage": [4, 8], "sources": ["H1"], "portee": "variété" },
+          { "plage": [6, 8], "sources": ["H7c"], "portee": "variété" },
+          { "plage": [3.7, 9], "sources": ["H8"], "portee": "variété" },
+          { "plage": [5, 8], "sources": ["bm-citra"], "portee": "variété" }
+        ] },
+        "farnesene": { "valeurs": [
+          { "plage": [0.1, 1], "sources": ["H1"], "portee": "variété" },
+          { "plage": [null, 1], "texte": "< 1", "sources": ["H7c"], "portee": "variété" },
+          { "plage": [null, 0.6], "texte": "≤ 0,6", "sources": ["H8"], "portee": "variété" }
+        ] },
+        "4MMP": {
+          "valeurs": [
+            { "plage": [10, 38], "texte": "> 10, maximum 38 : le plus haut des 97 variétés (LC-MS/MS, récoltes 2019–2023) ; borne basse = seuil de classe", "sources": ["H11"], "portee": "variété", "base": "hopsteiner-2024" }
+          ],
+          "indices": [
+            { "texte": "Parmi les plus hauts sur 53 échantillons ; maximum de l'étude 114 µg/kg, attribué à Citra par une revue de l'UCLouvain (relayé) : non retenu dans la plage, l'attribution n'est que relayée.", "sources": ["H14"] },
+            { "texte": "BarthHaas : « thiols » jusqu'à 28,7 µg/kg pour Citra, sans dire lequel : non retenu.", "sources": ["H8"] }
+          ]
+        },
+        "3MH": { "valeurs": [
+          { "plage": [null, 10], "texte": "< 10", "sources": ["H11"], "portee": "variété", "base": "hopsteiner-2024" },
+          { "plage": [12, 12], "texte": "libre 12 µg/kg (équivalent thiol libre)", "sources": ["H16"], "portee": "variété" }
+        ] },
+        "3M4MP": { "valeurs": [
+          { "plage": [10, null], "texte": "> 10", "sources": ["H11"], "portee": "variété", "base": "hopsteiner-2024" }
+        ] }
+      },
+      "classeHopsteiner": [ { "classe": "high", "texte": "classe « thiol impact » high", "sources": ["H11"] } ],
+      "precurseurs": [
+        { "texte": "3SH glutathionylés ≈ 23 mg/kg ; cystéinylés 0,6 mg/kg ; libre 12 µg/kg (équivalents thiol libre)", "sources": ["H16"] }
+      ],
+      "autres": [
+        { "texte": "3MHA dans le houblon : 27 µg/kg", "sources": ["H15"] },
+        { "texte": "Isobutyrates ≤ 0,5 % de l'huile", "sources": ["H8"] },
+        { "texte": "Cohumulone 20–24 % des α", "sources": ["H1"] }
+      ],
+      "hsi": [
+        { "hsi": 0.43, "texte": "α −15 %", "sources": ["H25"] },
+        { "hsi": 0.61, "texte": "α −38 % ; huile 2,0 → 1,2 mL/100 g (≈ −40 %) ; qualité aromatique 6,54 → 5,75 → 4,79 (échelle non précisée)", "sources": ["H25"] }
+      ],
+      "panel": [ { "texte": "Dry hop 4 g/L, 72 h, 18 °C, sur levure, 12 variétés (panel entraîné OSU) : Citra à l'extrême de l'axe « intensité globale, agrumes, tropical » ; positions lues sur un biplot, pas de moyennes.", "sources": ["H21"] } ]
+    },
+    "beermaverick-cascade": {
+      "nom": "Cascade",
+      "forme": "T-90",
+      "origine": "États-Unis (thiols) ; huiles : toutes origines citées par H",
+      "huile": {
+        "valeurs": [
+          { "plage": [0.5, 2.0], "sources": ["H2"], "portee": "variété" },
+          { "plage": [0.7, 1.4], "sources": ["H7k"], "portee": "variété" },
+          { "plage": [0.8, 1.5], "sources": ["hs-cas", "H10"], "portee": "variété" },
+          { "plage": [0.5, 2.6], "texte": "29 lots de 2015, 19 fermes", "sources": ["H21"], "portee": "variété" },
+          { "plage": [0.8, 1.5], "texte": "Cascade cultivé en France", "sources": ["H9"], "portee": "variété", "origine": "France" },
+          { "plage": [0.7, 2.5], "sources": ["bm-cascade"], "portee": "variété" }
+        ]
+      },
+      "composes": {
+        "myrcene": { "valeurs": [
+          { "plage": [40, 60], "sources": ["H2"], "portee": "variété" },
+          { "plage": [45, 60], "sources": ["H7k"], "portee": "variété" },
+          { "plage": [45, 60], "sources": ["H9"], "portee": "variété", "origine": "France" },
+          { "plage": [45, 60], "sources": ["bm-cascade"], "portee": "variété" }
+        ] },
+        "linalol": { "valeurs": [
+          { "plage": [0.1, 0.6], "sources": ["H2"], "portee": "variété" },
+          { "plage": [0.4, 0.6], "sources": ["hs-cas"], "portee": "variété" },
+          { "plage": [0.5, 0.5], "sources": ["H9"], "portee": "variété", "origine": "France" }
+        ] },
+        "geraniol": {
+          "valeurs": [ { "plage": [0.1, 0.5], "sources": ["H2"], "portee": "variété" } ],
+          "indices": [ { "texte": "0,32–4,07 mg/100 g de houblon sur 29 lots de 2015 (autre unité, non convertie) : le géraniol varie d'un facteur 13 selon le lot.", "sources": ["H21"] } ]
+        },
+        "humulene": { "valeurs": [
+          { "plage": [10, 20], "sources": ["H2"], "portee": "variété" },
+          { "plage": [8, 13], "sources": ["H7k"], "portee": "variété" },
+          { "plage": [10, 16], "sources": ["H9"], "portee": "variété", "origine": "France" },
+          { "plage": [8, 20], "sources": ["bm-cascade"], "portee": "variété" }
+        ] },
+        "caryophyllene": { "valeurs": [
+          { "plage": [4, 10], "sources": ["H2"], "portee": "variété" },
+          { "plage": [3, 6], "sources": ["H7k"], "portee": "variété" },
+          { "plage": [3, 6], "sources": ["H9"], "portee": "variété", "origine": "France" },
+          { "plage": [3, 9], "sources": ["bm-cascade"], "portee": "variété" }
+        ] },
+        "farnesene": { "valeurs": [
+          { "plage": [4.5, 8.5], "sources": ["H2"], "portee": "variété" },
+          { "plage": [3, 7], "sources": ["H7k"], "portee": "variété" },
+          { "plage": [4, 8], "sources": ["H10"], "portee": "variété" },
+          { "plage": [4, 8], "sources": ["H9"], "portee": "variété", "origine": "France" }
+        ] },
+        "4MMP": {
+          "valeurs": [
+            { "plage": [2.4, 3.8], "texte": "US, récoltes 2019–2023 (LC-MS/MS)", "sources": ["H11"], "portee": "variété", "base": "hopsteiner-2024", "origine": "États-Unis" },
+            { "plage": [0.8, 16.8], "texte": "littérature citée par Hopsteiner", "sources": ["H11"], "portee": "littérature" }
+          ],
+          "nonDetecte": [ { "texte": "Allemagne, Argentine : non détecté (LC-MS/MS) ; hors de l'origine retenue (États-Unis)", "sources": ["H11"], "origine": "Allemagne, Argentine" } ]
+        },
+        "3MH": {
+          "valeurs": [
+            { "plage": [2.9, 6.6], "texte": "US (LC-MS/MS)", "sources": ["H11"], "portee": "variété", "base": "hopsteiner-2024", "origine": "États-Unis" }
+          ],
+          "nonRetenus": [
+            { "plage": [10.0, 117.1], "texte": "anciennes méthodes GC", "sources": ["H11", "H17"], "raison": "méthodes que Hopsteiner suspecte de confondre 3MH et 3M4MP ; H §1.1 : contredit" }
+          ]
+        },
+        "3M4MP": { "valeurs": [
+          { "plage": [3.4, 10.0], "texte": "US (LC-MS/MS)", "sources": ["H11"], "portee": "variété", "base": "hopsteiner-2024", "origine": "États-Unis" }
+        ] }
+      },
+      "lots": [
+        { "id": "CAS-2400", "sources": ["coa-cas-2400"], "recolte": 2024, "huile": 1.1, "hsi": 0.253, "uniteFractions": "% de l'huile", "composes": { "myrcene": 69.8, "linalol": 0.03, "geraniol": 0.19, "humulene": 8.35, "caryophyllene": 4.2 } },
+        { "id": "CAS-2401", "sources": ["coa-cas-2401"], "recolte": 2024, "huile": 1.4, "hsi": 0.233, "uniteFractions": "% de l'huile", "composes": { "myrcene": 73.06, "linalol": 0.02, "geraniol": 0.19, "humulene": 7.97, "caryophyllene": 2.49 } },
+        { "id": "CAS-2519", "sources": ["coa-cas-2519"], "recolte": 2025, "huile": 1.7, "hsi": 0.228, "uniteFractions": "% de l'huile", "composes": { "myrcene": 42.4, "linalol": 0.3, "geraniol": 0.5, "humulene": 17.3, "caryophyllene": 7.8 } },
+        { "id": "CAS-2520", "sources": ["coa-cas-2520"], "recolte": 2025, "huile": 1.1, "hsi": 0.251, "uniteFractions": "% de l'huile", "composes": { "myrcene": 46.2, "linalol": 0.3, "geraniol": 0.3, "humulene": 18.2, "caryophyllene": 8.1 } },
+        { "id": "samia-2026", "sources": ["samia2026"], "recolte": null, "texte": "un seul lot YCH T-90 étudié ; ni numéro commercial ni récolte publiés", "composes": { "4MMP": 2, "3MH": 2, "3M4MP": 8 } },
+        { "id": "kishimoto-2006", "sources": ["H12"], "recolte": 2006, "texte": "récolte 2006 ; le 4MMP d'un même cultivar varie d'une récolte à l'autre (Simcoe 2006 = 1/5 de 2005)", "composes": { "4MMP": 11.1 } }
+      ],
+      "classeHopsteiner": [
+        { "classe": "forte", "texte": "fiche Hopsteiner 2025", "sources": ["hs-cas"] },
+        { "classe": "high (États-Unis) ; medium (Allemagne, Argentine)", "texte": "les thiols de Cascade sont « nettement influencés par le pays »", "sources": ["H11"] }
+      ],
+      "precurseurs": [
+        { "texte": "3SH cystéinylés libérables 1,64 mg/kg", "sources": ["H17"] },
+        { "texte": "conjugués jusqu'à 20 mg/kg (relayé)", "sources": ["H18"] },
+        { "texte": "lot Samia 2026 : 3MH-GSH 7 920 µg/kg, 3MH-Cys 192 µg/kg, 4MMP-Cys 5 µg/kg, 4MMP-GSH 2 µg/kg (équivalents thiol)", "sources": ["samia2026"] }
+      ],
+      "mesuresEnBiere": [
+        { "id": "kishimoto-linalol", "compose": "linalol", "plage": [56.9, 56.9], "unite": "µg/L", "doseGL": 2, "moment": "dryActive", "texte": "Cascade à 2 g/L, ajouté après refroidissement du moût : 56,9 µg/L de linalol", "momentNote": "ajout au moût refroidi ; moment le plus proche du moteur : dry hop en fermentation active", "sources": ["H12"] },
+        { "id": "kishimoto-geraniol", "compose": "geraniol", "plage": [82.8, 82.8], "unite": "µg/L", "doseGL": 2, "moment": "dryActive", "texte": "Cascade à 2 g/L : 82,8 µg/L de géraniol, le plus haut des 11 cultivars de Kishimoto", "momentNote": "ajout au moût refroidi ; moment le plus proche du moteur : dry hop en fermentation active", "sources": ["H12"] },
+        { "id": "lafontaine-4mmp", "compose": "4MMP", "plage": [5.8, 10.4], "unite": "ng/L", "doseGL": 3.86, "moment": "dryPost", "dureeJours": 1, "texte": "3,86 g/L, 24 h, 13–15 °C : 4MMP 5,8–10,4 ng/L (récolte 2014) ; non détecté (récolte 2016)", "sources": ["H20"] },
+        { "id": "lafontaine-3mh", "compose": "3MH", "plage": [67, 141], "unite": "ng/L", "doseGL": 3.86, "moment": "dryPost", "dureeJours": 1, "texte": "3,86 g/L, 24 h, 13–15 °C : 3MH 67–141 ng/L", "sources": ["H20"] }
+      ],
+      "autres": [
+        { "texte": "Bière à 2 g/L : 2-méthylbutanoate d'éthyle 0,80 µg/L ; 4-méthylpentanoate d'éthyle 0,41 µg/L", "sources": ["H12"] },
+        { "texte": "Bière à 3,86 g/L : 3MHA 2,1–15,3 ng/L (seuil 5 ng/L)", "sources": ["H20", "H13"] },
+        { "texte": "3MHA non détecté dans le houblon broyé", "sources": ["H20"] },
+        { "texte": "Cohumulone 29–35 % des α", "sources": ["H2"] },
+        { "texte": "Récolte tardive : plus d'huile et de thiols libres, moins de précurseurs, plus d'intensité et d'agrumes en dry hop", "sources": ["H20"] },
+        { "texte": "Yakima Chief range Cascade parmi les houblons pauvres en composés « survivables », à réserver au dry hop après fermentation", "sources": ["H5"] }
+      ],
+      "panel": [
+        { "texte": "Dry hop 4 g/L, 72 h, 18 °C, sur levure (OSU, 12 variétés) : Cascade au centre, avec Nugget et Chinook, vers floral et herbacé.", "sources": ["H21"] },
+        { "texte": "Même dose (3,8 g/L), 29 lots de 2015 : intensité globale 6 à 9,5 sur 15 selon le lot.", "sources": ["H21"] }
+      ]
+    },
+    "beermaverick-galaxy": {
+      "nom": "Galaxy",
+      "forme": "T-90",
+      "origine": "Australie",
+      "huile": { "valeurs": [
+        { "plage": [2.6, 3.3], "sources": ["H26"], "portee": "variété" },
+        { "plage": [1.8, 5], "sources": ["bm-galaxy"], "portee": "variété" }
+      ] },
+      "composes": {
+        "myrcene": { "valeurs": [
+          { "plage": [32, 56], "sources": ["H26"], "portee": "variété" },
+          { "plage": [33, 69], "sources": ["bm-galaxy"], "portee": "variété" }
+        ] },
+        "linalol": { "valeurs": [ { "plage": [0.5, 1.0], "sources": ["H26"], "portee": "variété" } ] },
+        "geraniol": { "valeurs": null, "raison": "non publié (HPA, H §7.1) ; absent du dépôt" },
+        "humulene": { "valeurs": [
+          { "plage": [0.8, 2.2], "sources": ["H26"], "portee": "variété" },
+          { "plage": [1, 2], "sources": ["bm-galaxy"], "portee": "variété" }
+        ] },
+        "caryophyllene": { "valeurs": [
+          { "plage": [7.0, 14.7], "sources": ["H26"], "portee": "variété" },
+          { "plage": [7, 13], "sources": ["bm-galaxy"], "portee": "variété" }
+        ] },
+        "farnesene": { "valeurs": [ { "plage": [2.8, 5.1], "sources": ["H26"], "portee": "variété" } ] },
+        "4MMP": { "valeurs": [ { "plage": [10, null], "texte": "> 10", "sources": ["H11"], "portee": "variété", "base": "hopsteiner-2024" } ] },
+        "3MH": { "valeurs": null, "raison": "non détecté (LC-MS/MS) ; limite de détection non relevée dans H : ni chiffre, ni zéro", "nonDetecte": [ { "texte": "3MH non détecté", "sources": ["H11"], "base": "hopsteiner-2024" } ] },
+        "3M4MP": { "valeurs": [ { "plage": [10, null], "texte": "> 10", "sources": ["H11"], "portee": "variété", "base": "hopsteiner-2024" } ] }
+      },
+      "classeHopsteiner": [ { "classe": "high", "texte": "classe « thiol impact » high", "sources": ["H11"] } ],
+      "autres": [ { "texte": "Sélinène 5,9–12,7 % de l'huile", "sources": ["H26"] } ],
+      "hsi": [
+        { "hsi": 0.42, "texte": "α −16 %", "sources": ["H25"] },
+        { "hsi": 0.63, "texte": "α −47 % ; huile 2,3 → 1,15 mL/100 g (≈ −50 %) ; qualité aromatique 6,42 → 5,54 → 4,21 (échelle non précisée)", "sources": ["H25"] }
+      ],
+      "panel": [
+        { "texte": "OSU, 4 g/L en dry hop : près de « catty/sweaty », séparé de Citra.", "sources": ["H21"] }
+      ]
+    },
+    "beermaverick-idaho-7": {
+      "nom": "Idaho 7",
+      "forme": "T-90",
+      "origine": "États-Unis",
+      "huile": { "valeurs": [
+        { "plage": [1.0, 3.0], "texte": "1,0–3,0 (T-90)", "sources": ["H3"], "portee": "variété" },
+        { "plage": [1.0, 1.6], "sources": ["H27"], "portee": "variété" },
+        { "plage": [1, 2], "sources": ["bm-idaho-7"], "portee": "variété" }
+      ] },
+      "composes": {
+        "myrcene": { "valeurs": [
+          { "plage": [40, 55], "sources": ["H3"], "portee": "variété" },
+          { "plage": [45, 55], "sources": ["H27"], "portee": "variété" },
+          { "plage": [45, 55], "sources": ["bm-idaho-7"], "portee": "variété" }
+        ] },
+        "linalol": { "valeurs": [
+          { "plage": [0.2, 0.6], "sources": ["H3"], "portee": "variété" },
+          { "plage": [0.5, 1.0], "sources": ["H27"], "portee": "variété" }
+        ] },
+        "geraniol": { "valeurs": [ { "plage": [0.5, 1], "texte": "0,5–1 : le plus haut des trois (Citra, Galaxy, Idaho 7)", "sources": ["H3"], "portee": "variété" } ] },
+        "humulene": { "valeurs": [
+          { "plage": [10, 16], "sources": ["H3"], "portee": "variété" },
+          { "plage": [10, 20], "sources": ["H27"], "portee": "variété" },
+          { "plage": [10, 20], "sources": ["bm-idaho-7"], "portee": "variété" }
+        ] },
+        "caryophyllene": { "valeurs": [
+          { "plage": [5, 10], "sources": ["H3-71"], "portee": "variété" },
+          { "plage": [6, 10], "sources": ["bm-idaho-7"], "portee": "variété" }
+        ] },
+        "farnesene": { "valeurs": [ { "plage": [0.1, 1], "sources": ["H3-71"], "portee": "variété" } ] },
+        "4MMP": { "valeurs": [ { "plage": [null, 10], "texte": "présent, < 10 d'après la mise en page du tableau 6 (à confirmer)", "sources": ["H11"], "portee": "variété", "base": "hopsteiner-2024", "aConfirmer": true } ] },
+        "3MH": { "valeurs": null, "raison": "seule la somme 3MH + 3M4MP est donnée (> 10 µg/kg) ; part du 3MH non publiée" },
+        "3M4MP": { "valeurs": null, "raison": "seule la somme 3MH + 3M4MP est donnée (> 10 µg/kg) ; part du 3M4MP non publiée" }
+      },
+      "sommes": [ { "composes": ["3MH", "3M4MP"], "plage": [10, null], "texte": "3MH + 3M4MP > 10 µg/kg", "sources": ["H11"] } ],
+      "lots": [
+        { "id": "ID7-2573", "sources": ["coa-id7-2573"], "recolte": 2025, "huile": 2.5, "hsi": 0.257, "uniteFractions": "% de l'huile", "composes": { "myrcene": 45.4, "linalol": 0.4, "geraniol": 0.6, "humulene": 11.6, "caryophyllene": 5.7 } }
+      ],
+      "classeHopsteiner": [ { "classe": "high", "texte": "classe « thiol impact » high", "sources": ["H11"] } ],
+      "hsi": [ { "hsi": 0.263, "texte": "valeur de la fiche Haas 2020", "sources": ["H27"] } ],
+      "autres": [ { "texte": "« Souverain des survivables » (YCH) : un whirlpool d'Idaho 7 puis un dry hop actif « charge le moût » en substrats de biotransformation, sans données", "sources": ["H3", "H5"] } ],
+      "panel": [ { "texte": "Aucun panel entraîné trouvé ; 20 dégustateurs, sans statistique (Brülosophy).", "sources": ["H"] } ]
+    },
+    "beermaverick-motueka": {
+      "nom": "Motueka",
+      "forme": "inconnue",
+      "origine": "Nouvelle-Zélande",
+      "huile": { "valeurs": [
+        { "plage": [1, 1.8], "sources": ["hs-mka"], "portee": "variété" },
+        { "plage": [0.8, 1], "sources": ["bm-motueka"], "portee": "variété" }
+      ] },
+      "composes": {
+        "myrcene": { "valeurs": [ { "plage": [47, 48], "sources": ["bm-motueka"], "portee": "variété" } ] },
+        "linalol": { "valeurs": [ { "plage": [0.5, 1], "sources": ["hs-mka"], "portee": "variété" } ] },
+        "geraniol": { "valeurs": null, "raison": "aucune plage variétale dans H ni le dépôt ; les deux COA de 2025 donnent 0,83 et 0,97 sans dénominateur explicité" },
+        "humulene": { "valeurs": [ { "plage": [3, 4], "sources": ["bm-motueka"], "portee": "variété" } ] },
+        "caryophyllene": { "valeurs": [ { "plage": [1, 3], "sources": ["bm-motueka"], "portee": "variété" } ] },
+        "farnesene": { "valeurs": null, "raison": "non relevé dans H ni le dépôt" },
+        "4MMP": { "valeurs": null, "raison": "aucune valeur dans H ni le dépôt ; classe Hopsteiner « moyenne » seulement" },
+        "3MH": { "valeurs": null, "raison": "aucune valeur dans H ni le dépôt ; classe Hopsteiner « moyenne » seulement" },
+        "3M4MP": { "valeurs": null, "raison": "aucune valeur dans H ni le dépôt ; classe Hopsteiner « moyenne » seulement" }
+      },
+      "lots": [
+        { "id": "CH25-BH01-MKA", "sources": ["coa-mka-bh01"], "recolte": 2025, "huile": 0.66, "hsi": 0.22, "uniteFractions": null, "fractionsTexte": "myrcène 52,79 ; linalol 1,03 ; géraniol 0,83 ; humulène 0,76 ; caryophyllène 0,91 (dénominateur non explicité : non utilisés)" },
+        { "id": "CH25-MA02-MKA", "sources": ["coa-mka-ma02"], "recolte": 2025, "huile": 0.85, "hsi": 0.22, "uniteFractions": null, "fractionsTexte": "myrcène 58,61 ; linalol 1,04 ; géraniol 0,97 ; humulène 4,29 ; caryophyllène 1,89 (dénominateur non explicité : non utilisés)" }
+      ],
+      "classeHopsteiner": [ { "classe": "moyenne", "texte": "fiche Hopsteiner 2025", "sources": ["hs-mka"] } ]
+    },
+    "beermaverick-nelson-sauvin": {
+      "nom": "Nelson Sauvin",
+      "forme": "inconnue",
+      "origine": "Nouvelle-Zélande",
+      "huile": { "valeurs": [
+        { "plage": [1.1, 1.5], "sources": ["hs-nsn"], "portee": "variété" },
+        { "plage": [0.8, 1.5], "sources": ["bm-nelson-sauvin"], "portee": "variété" }
+      ] },
+      "composes": {
+        "myrcene": { "valeurs": [ { "plage": [20, 45], "sources": ["bm-nelson-sauvin"], "portee": "variété" } ] },
+        "linalol": { "valeurs": [ { "plage": [0.4, 0.7], "sources": ["hs-nsn"], "portee": "variété" } ] },
+        "geraniol": { "valeurs": null, "raison": "aucune plage variétale dans H ni le dépôt ; le COA de 2025 donne 1,7 sans dénominateur explicité" },
+        "humulene": { "valeurs": [ { "plage": [25, 37], "sources": ["bm-nelson-sauvin"], "portee": "variété" } ] },
+        "caryophyllene": { "valeurs": [ { "plage": [6, 11], "sources": ["bm-nelson-sauvin"], "portee": "variété" } ] },
+        "farnesene": { "valeurs": null, "raison": "non relevé dans H ni le dépôt" },
+        "4MMP": { "valeurs": null, "raison": "aucune valeur dans H ni le dépôt ; classe Hopsteiner « forte » seulement" },
+        "3MH": { "valeurs": null, "raison": "aucune valeur dans H ni le dépôt ; classe Hopsteiner « forte » seulement" },
+        "3M4MP": { "valeurs": null, "raison": "aucune valeur dans H ni le dépôt ; classe Hopsteiner « forte » seulement" }
+      },
+      "lots": [
+        { "id": "CH25-BR05-NSN", "sources": ["coa-nsn-br05"], "recolte": 2025, "huile": 1.39, "hsi": 0.21, "uniteFractions": null, "fractionsTexte": "myrcène 44,71 ; linalol 0,37 ; géraniol 1,7 ; humulène 25,95 ; caryophyllène 7,23 (dénominateur non explicité : non utilisés)" }
+      ],
+      "classeHopsteiner": [ { "classe": "forte", "texte": "fiche Hopsteiner 2025", "sources": ["hs-nsn"] } ]
+    },
+    "beermaverick-nugget": {
+      "nom": "Nugget",
+      "forme": "inconnue",
+      "origine": "États-Unis",
+      "huile": { "valeurs": [
+        { "plage": [1.5, 3], "sources": ["hs-nug"], "portee": "variété" },
+        { "plage": [0.9, 3.3], "sources": ["bm-nugget"], "portee": "variété" }
+      ] },
+      "composes": {
+        "myrcene": { "valeurs": [ { "plage": [48, 59], "sources": ["bm-nugget"], "portee": "variété" } ] },
+        "linalol": { "valeurs": [ { "plage": [0.8, 1], "sources": ["hs-nug"], "portee": "variété" } ] },
+        "geraniol": { "valeurs": null, "raison": "non relevé dans H ni le dépôt" },
+        "humulene": { "valeurs": [ { "plage": [12, 22], "sources": ["bm-nugget"], "portee": "variété" } ] },
+        "caryophyllene": { "valeurs": [ { "plage": [7, 10], "sources": ["bm-nugget"], "portee": "variété" } ] },
+        "farnesene": { "valeurs": null, "raison": "non relevé dans H ni le dépôt" },
+        "4MMP": { "valeurs": null, "raison": "aucune valeur dans H ni le dépôt ; classe Hopsteiner « faible » seulement" },
+        "3MH": { "valeurs": null, "raison": "aucune valeur dans H ni le dépôt ; classe Hopsteiner « faible » seulement" },
+        "3M4MP": { "valeurs": null, "raison": "aucune valeur dans H ni le dépôt ; classe Hopsteiner « faible » seulement" }
+      },
+      "classeHopsteiner": [ { "classe": "faible", "texte": "fiche Hopsteiner 2025", "sources": ["hs-nug"] } ],
+      "panel": [ { "texte": "OSU, 4 g/L en dry hop : au centre avec Cascade et Chinook.", "sources": ["H21"] } ]
+    },
+    "beermaverick-citra:cryo": {
+      "nom": "Citra cryo",
+      "forme": "cryo",
+      "origine": "États-Unis",
+      "huile": { "valeurs": [ { "plage": [2, 6], "texte": "onglet Cryo : ≈ 2 fois l'α et l'huile du T-90", "sources": ["H1"], "portee": "variété" } ] },
+      "composes": {
+        "myrcene": { "valeurs": null, "raison": "composition de l'huile du cryo non relevée dans H ; celle du T-90 n'est pas reprise (ce serait une hypothèse)" },
+        "linalol": { "valeurs": null, "raison": "composition de l'huile du cryo non relevée dans H ; celle du T-90 n'est pas reprise (ce serait une hypothèse)" },
+        "geraniol": { "valeurs": null, "raison": "composition de l'huile du cryo non relevée dans H ; celle du T-90 n'est pas reprise (ce serait une hypothèse)" },
+        "humulene": { "valeurs": null, "raison": "composition de l'huile du cryo non relevée dans H ; celle du T-90 n'est pas reprise (ce serait une hypothèse)" },
+        "caryophyllene": { "valeurs": null, "raison": "composition de l'huile du cryo non relevée dans H ; celle du T-90 n'est pas reprise (ce serait une hypothèse)" },
+        "farnesene": { "valeurs": null, "raison": "composition de l'huile du cryo non relevée dans H ; celle du T-90 n'est pas reprise (ce serait une hypothèse)" },
+        "4MMP": { "valeurs": null, "raison": "thiols du produit cryo non mesurés dans H ni le dépôt" },
+        "3MH": { "valeurs": null, "raison": "thiols du produit cryo non mesurés dans H ni le dépôt" },
+        "3M4MP": { "valeurs": null, "raison": "thiols du produit cryo non mesurés dans H ni le dépôt" }
+      },
+      "classeHopsteiner": [ { "classe": "high (variété Citra)", "texte": "classe de la variété, pas du produit cryo", "sources": ["H11"] } ],
+      "autres": [
+        { "texte": "α 21–28 % (onglet Cryo)", "sources": ["H1"] },
+        { "texte": "Cryo ≈ 40–50 % de la masse de T-90 pour la même huile ; substitution donnée par YCH : 40 g de cryo + 25 g de T-90 pour 100 g de T-90", "sources": ["H74"] },
+        { "texte": "Hop creep, 10 g/L, 7 j : +1,05 % vol. en cryo contre +0,92 en T-90", "sources": ["H68"] },
+        { "texte": "Profil YCH plus fruité et moins boisé/herbacé en cryo (Cascade : cryo boisé 26, herbe 15, tropical 79)", "sources": ["H2"] }
+      ]
+    }
+  },
+  "densites": {
+    "linalol": { "plage": [0.86, 0.86], "texte": "≈ 0,86 g/mL", "sources": ["H"], "note": "H §5 et §7.4 : conversion [H], constante sans source citée ; le % d'huile est une aire GC, pas un volume exact (erreur non chiffrée)" },
+    "geraniol": { "plage": [0.89, 0.89], "texte": "≈ 0,89 g/mL", "sources": ["H"], "note": "H §7.4 : conversion [H], constante sans source citée" },
+    "huile": { "plage": [0.86, 0.89], "texte": "0,86–0,89 g/mL", "sources": ["H"], "note": "Densité propre du myrcène, de l'humulène, du caryophyllène et du farnésène non relevée dans H ni le dépôt : la plage des deux valeurs de H (linalol, géraniol) est appliquée, hypothèse [H]." }
+  },
+  "seuils": {
+    "linalol": { "unite": "µg/L", "valeurs": [
+      { "plage": [1.0, 1.0], "type": "seuil de différence", "matrice": "bière", "sources": ["H12"], "texte": "1,0 µg/L (renvoi non lu)" },
+      { "plage": [1.7, 1.7], "type": "seuil de différence", "matrice": "bière", "sources": ["H12"], "texte": "1,7 µg/L (renvoi non lu)" },
+      { "plage": [8, 8], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] },
+      { "plage": [83, 83], "type": "détection de groupe (ASTM E679, 38 juges)", "matrice": "pale ale non houblonnée", "abv": 4.9, "sources": ["H34"] },
+      { "plage": [205, 205], "type": "détection de groupe (ASTM E679, 38 juges)", "matrice": "pale ale non houblonnée", "abv": 9.3, "sources": ["H34"], "sertAuFacteurAlcool": true }
+    ] },
+    "geraniol": { "unite": "µg/L", "valeurs": [
+      { "plage": [4.0, 4.0], "type": "seuil de différence", "matrice": "bière", "sources": ["H12"] },
+      { "plage": [4, 5], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] },
+      { "plage": [40, 40], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] },
+      { "plage": [141, 141], "type": "détection de groupe", "matrice": "pale ale non houblonnée", "abv": 4.9, "sources": ["H34"] },
+      { "plage": [305, 305], "type": "détection de groupe", "matrice": "pale ale non houblonnée", "abv": 9.3, "sources": ["H34"], "sertAuFacteurAlcool": true }
+    ] },
+    "citronellol": { "unite": "µg/L", "nonCalcule": "le moteur ne chiffre pas le citronellol (biotransformation non chiffrée)", "valeurs": [
+      { "plage": [8, 8], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] },
+      { "plage": [40, 40], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] },
+      { "plage": [53, 53], "type": "détection de groupe", "matrice": "pale ale non houblonnée", "abv": 4.9, "sources": ["H34"] },
+      { "plage": [31, 31], "type": "détection de groupe (non significatif)", "matrice": "pale ale non houblonnée", "abv": 9.3, "sources": ["H34"] }
+    ] },
+    "myrcene": { "unite": "µg/L", "valeurs": [
+      { "plage": [9.5, 9.5], "type": "seuil de différence", "matrice": "bière", "sources": ["H12"] },
+      { "plage": [9.5, 9.5], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] },
+      { "plage": [30, 200], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] },
+      { "plage": [350, 350], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] },
+      { "plage": [195, 195], "type": "détection de groupe", "matrice": "pale ale non houblonnée", "abv": 4.9, "sources": ["H34"] },
+      { "plage": [74, 74], "type": "détection de groupe", "matrice": "pale ale non houblonnée", "abv": 9.3, "sources": ["H34"] }
+    ] },
+    "humulene": { "unite": "µg/L", "valeurs": [
+      { "plage": [120, 120], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] },
+      { "plage": [450, 450], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] },
+      { "plage": [310, 310], "type": "détection de groupe", "matrice": "pale ale non houblonnée", "sources": ["H34"] },
+      { "plage": [323, 323], "type": "détection de groupe", "matrice": "pale ale non houblonnée", "sources": ["H34"] }
+    ] },
+    "caryophyllene": { "unite": "µg/L", "valeurs": [
+      { "plage": [230, 230], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] },
+      { "plage": [770, 770], "type": "détection de groupe", "matrice": "pale ale non houblonnée", "sources": ["H34"] },
+      { "plage": [660, 660], "type": "détection de groupe", "matrice": "pale ale non houblonnée", "sources": ["H34"] }
+    ] },
+    "farnesene": { "unite": "µg/L", "valeurs": null, "raison": "aucun seuil du farnésène dans H §8.1" },
+    "4MMP": { "unite": "ng/L", "valeurs": [
+      { "plage": [1.5, 1.5], "type": "seuil de différence", "matrice": "bière", "sources": ["H12"] },
+      { "plage": [2, 2], "type": "non précisé (≈ 2 ng/L)", "matrice": "bière", "sources": ["H11"] },
+      { "plage": [5, 5], "type": "détection de groupe", "matrice": "pale ale non houblonnée", "abv": 4.9, "sources": ["H34"] },
+      { "plage": [7, 7], "type": "détection de groupe", "matrice": "pale ale non houblonnée", "abv": 9.3, "sources": ["H34"] }
+    ] },
+    "3MH": { "unite": "ng/L", "valeurs": [
+      { "plage": [55, 55], "type": "seuil de différence", "matrice": "bière", "sources": ["H13", "H11"] }
+    ] },
+    "3MHA": { "unite": "ng/L", "nonCalcule": "formé pendant la fermentation depuis le 3MH ; taux par souche non publié en bière", "valeurs": [
+      { "plage": [5.0, 5.0], "type": "seuil de différence", "matrice": "bière", "sources": ["H13"] },
+      { "plage": [4, 4], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] }
+    ] },
+    "3M4MP": { "unite": "ng/L", "valeurs": [
+      { "plage": [70, 70], "type": "non précisé", "matrice": "bière", "sources": ["H11"] }
+    ] },
+    "esters": { "unite": "µg/L", "nonCalcule": "esters non chiffrés par variété dans ce fichier", "valeurs": [
+      { "compose": "2-méthylbutyl isobutyrate", "plage": [57, 57], "type": "non précisé", "matrice": "solution modèle", "sources": ["H35"] },
+      { "compose": "2-méthylbutyl isobutyrate", "plage": [78, 78], "type": "non précisé", "matrice": "bière", "sources": ["H35"] },
+      { "compose": "isobutyrate d'éthyle", "plage": [6.3, 6.3], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] },
+      { "compose": "isovalérate d'éthyle", "plage": [2.0, 2.0], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] },
+      { "compose": "2-méthylbutanoate d'éthyle", "plage": [1.1, 1.1], "type": "non précisé", "matrice": "non précisée", "sources": ["H35"] }
+    ] },
+    "nonTrouves": "Époxydes d'humulène, humulénols, oxyde de caryophyllène : aucun seuil trouvé (H §8.1).",
+    "stout": "Aucun seuil mesuré dans une stout n'a été trouvé (H §8.1, §8.3)."
+  },
+  "alcool": {
+    "linalol": { "facteur": 2.5, "deAbv": 5, "aAbv": 10, "texte": "De 5 à 10 % vol., seuil du linalol ×2,5 (83 µg/L à 4,9 % ; 205 µg/L à 9,3 %)", "sources": ["H34"] },
+    "geraniol": { "facteur": 2.2, "deAbv": 5, "aAbv": 10, "texte": "De 5 à 10 % vol., seuil du géraniol ×2,2 (141 µg/L à 4,9 % ; 305 µg/L à 9,3 %)", "sources": ["H34"] },
+    "autres": { "texte": "7 composés sur 10 ne bougent pas avec l'alcool", "sources": ["H34"] },
+    "caryophyllene": { "texte": "Entre lager à 4,6 % et bière brune à 6,4 %, seul le caryophyllène change (2,3 contre 5,3 mg/L), dans un essai dont les valeurs en mg/L ne concordent pas avec le poster de 2016 : non appliqué", "sources": ["H34"] },
+    "forme": "La forme du facteur entre 5 et 10 % n'est pas mesurée : pour un degré entre les deux, le facteur est la plage de 1 au facteur publié, sans courbe."
+  },
+  "transferts": {
+    "note": "H §8.2 : part retrouvée en bière, en % de la charge, avec sa base. La part extraite baisse quand la dose monte (Lafontaine 2018) : entre deux doses mesurées, la plage des deux, sans courbe.",
+    "linalol": {
+      "tardif": [ { "plage": [60, 63], "base": "teneur du houblon, ajout tardif (fin d'ébullition, whirlpool)", "sources": ["H30"] } ],
+      "dryHop": [
+        { "plage": [80, 82], "base": "teneur analysée du houblon", "texte": "80–82 % (Huell Melon)", "sources": ["H30"] },
+        { "plage": [44, 80], "base": "teneur analysée du houblon", "texte": "44–80 % (5 variétés tchèques, 30 j à froid)", "sources": ["H31"] },
+        { "plage": [100, 100], "base": "huile", "texte": "≈ 100 % (base huile)", "sources": ["H32"] },
+        { "selonDose": [[2, 23], [16, 7]], "base": "huile hydrodistillée, selon la dose (Cascade, 24 h)", "texte": "≈ 23 % à 2 g/L, ≈ 7 % à 16 g/L", "sources": ["H22"] }
+      ]
+    },
+    "geraniol": {
+      "tardif": [ { "plage": [null, 10], "base": "moût → bière : −90 % ; passage du houblon au moût non chiffré", "texte": "−90 % entre moût et bière", "sources": ["H30"], "hypothese": "passage du houblon au moût au plus complet et aucune libération (glycosides) comptée : borne haute [H]" } ],
+      "dryHop": [
+        { "plage": [22, 120], "base": "teneur analysée du houblon", "texte": "22–120 %", "sources": ["H30", "H31"] },
+        { "plage": [36, 62], "base": "teneur analysée du houblon, corrigée de l'acétate de géranyle", "texte": "36–62 % après correction de l'acétate de géranyle", "sources": ["H32"] },
+        { "selonDose": [[2, 13], [16, 3]], "base": "huile hydrodistillée, selon la dose (Cascade, 24 h)", "texte": "≈ 13 % à 2 g/L, ≈ 3 % à 16 g/L", "sources": ["H22"] }
+      ]
+    },
+    "myrcene": {
+      "ligne": "Myrcène, hydrocarbures",
+      "tardif": [ { "plage": [null, 1], "base": "teneur du houblon, ajout tardif", "texte": "< 1 %", "sources": ["H30"] } ],
+      "dryHop": [
+        { "plage": [null, 2], "base": "teneur analysée du houblon", "texte": "≤ 2 %", "sources": ["H30"] },
+        { "plage": [0.6, 3.4], "base": "teneur analysée du houblon", "texte": "0,6–3,4 %", "sources": ["H31"] },
+        { "plage": [3, 3], "base": "huile", "texte": "≈ 3 %", "sources": ["H32"] },
+        { "plage": [null, 1], "base": "huile hydrodistillée (Cascade, 24 h)", "texte": "< 1 % (Cascade, 24 h)", "sources": ["H22"] }
+      ]
+    },
+    "4MMP": {
+      "chaud": [
+        { "condition": "60 min à 100 °C", "minutes": 60, "temperatureC": 100, "perte": 91, "texte": "−91 % en 60 min à 100 °C", "sources": ["H13"] },
+        { "condition": "90 °C", "minutes": 60, "temperatureC": 90, "perte": 23, "texte": "−23 % à 90 °C (durée de 60 min lue dans la phrase de H §2.3, à confirmer)", "sources": ["H13"] }
+      ],
+      "dryHop": [ { "plage": [70, 70], "base": "thiol libre du houblon, dry hop statique", "texte": "≈ 70 % (statique)", "sources": ["H11"] } ]
+    },
+    "3MH": {
+      "chaud": { "texte": "augmente à l'ébullition (libération depuis les précurseurs) ; non chiffré", "sources": ["H13"] },
+      "dryHop": [ { "plage": [70, 70], "base": "thiol libre du houblon, transfert supposé", "texte": "transfert de 70 % supposé par Hopsteiner", "sources": ["H11"], "suppose": true } ]
+    },
+    "3M4MP": { "raison": "aucun taux de transfert du 3M4MP dans H §8.2" },
+    "autres": [
+      { "compose": "esters", "tardif": "19–40 % (5 % pour le 2-méthylbutyl propanoate)", "dryHop": "45–83 % ; 16–57 % (2-méthylbutyl 2-méthylpropanoate) ; 0–60 % (géranate de méthyle)", "sources": ["H30", "H31"] },
+      { "compose": "alcools sesquiterpéniques", "tardif": "7–18 %", "dryHop": "10–52 %", "sources": ["H30"] },
+      { "compose": "époxyde d'humulène I", "dryHop": "25–60 %", "sources": ["H31"] },
+      { "compose": "polyphénols ; α-acides", "dryHop": "50–60 % ; 4–5 %", "sources": ["H32"] }
+    ],
+    "fermentationActive": { "texte": "Le CO₂ emporte le myrcène, plus vite à température plus haute ; une levure à 100 millions de cellules/mL retire 98–99 % du myrcène d'une bière en bouteille, sans toucher au linalol ; aucun pourcentage de perte par le CO₂ trouvé. Ajout tôt dans la fermentation : moins de géraniol.", "sources": ["H33", "H81", "H82"] }
+  },
+  "duree": {
+    "essentiel24h": { "texte": "L'essentiel est extrait en 24 h, souvent plus tôt ; les protocoles OSU s'arrêtent à 24 h pour cette raison.", "sources": ["H73", "H20"] },
+    "agite": { "texte": "Agité, à 20 °C : les hydrocarbures culminent entre 3 et 6 h puis baissent ; les alcools terpéniques montent pendant 24 h. Pilote de 4 hL, Cascade 386 g/hL : linalol extrait à 89 % en 6 h avec une pompe, 43 % sans ; sans agitation, jour 1 = jours 4 et 7.", "sources": ["H73"] },
+    "thiols": { "texte": "Le 4MMP passe surtout dans les deux premiers jours (−1 °C, 1 à 8 j).", "sources": ["H92"] },
+    "auDela": { "jours": 3, "texte": "Au-delà de 3 j : aucun gain d'arôme mesuré (5 à 7 j n'ajoutent rien de mesuré en statique).", "sources": ["H73"] },
+    "vegetal": { "texte": "Herbacé, végétal : aucune donnée en fonction du temps ; l'herbacé est lié à la dose.", "sources": ["H22"] },
+    "polyphenols": { "texte": "Polyphénols 11,16 mg/L à 3 h, 10,29 mg/L à 96 h : liés à l'agitation et à la forme, pas à la durée.", "sources": ["H78"] },
+    "oxydation": { "texte": "Chaque ouverture et chaque ajout exposent la bière ; aucun chiffre par ajout trouvé.", "sources": ["H"] }
+  },
+  "saturation": {
+    "zone": [4, 8],
+    "doses": [0, 2, 3.86, 8, 16],
+    "echelle": "0–15 (panel OSU)",
+    "agrumes": [1.9, 4.4, 5.8, 7.1, 7.0],
+    "herbaceThe": [2.5, 4.3, 5.7, 7.4, 10.4],
+    "intensite": [3.0, 6.3, 8.1, 10.4, 12.3],
+    "texte": "Cascade, cônes broyés, 24 h, 13–15 °C : agrumes plafonnent à 8 g/L (7,1 puis 7,0 à 16 g/L) ; herbacé/thé monte jusqu'au bout (7,4 puis 10,4) ; les auteurs retiennent 4–8 g/L. Part extraite qui baisse avec la dose : linalol ≈ 23 → 7 %, géraniol ≈ 13 → 3 %.",
+    "portee": "Cascade seulement ; ailleurs, forme générique non mesurée",
+    "sources": ["H22"],
+    "complement": { "texte": "10 contre 15 g/L : triangle non significatif (13/28, p = 0,10).", "sources": ["H77"] }
+  },
+  "ajoutsSuccessifs": {
+    "deuxAjouts": { "texte": "Deux ajouts contre un (Centennial) : plus d'intensité sur six attributs, plus d'amertume, d'humulinones et de polyphénols en pilote ; écart presque nul à l'échelle industrielle.", "sources": ["H76"] },
+    "ordre": { "texte": "Ordre des ajouts (Citra puis Galaxy, ou l'inverse) : aucune étude trouvée.", "sources": ["H"] },
+    "synergie": { "texte": "Linalol + géraniol + citronellol : effets additifs ou synergiques en mélange modèle ; synergie thiols × alcools terpéniques supposée, sans données ; aucune pondération transposable.", "sources": ["H67", "H72"] },
+    "masquage": { "texte": "Masquage (par un autre houblon ou par la bière) : aucune étude trouvée.", "sources": ["H"] },
+    "saturationSecondAjout": { "texte": "Inconnu : si le second ajout s'extrait dans une bière déjà « saturée ».", "sources": ["H"] }
+  },
+  "hopCreep": {
+    "texte": "Hop creep : exige une levure vivante ; pas de hop creep sans levure vivante. Jamais un chiffre de points de densité pour ce brassin.",
+    "chiffres": [
+      { "texte": "+0,39 % vol. en 2 j (relayé)", "sources": ["H35"] },
+      { "texte": "10 g/L, 7 j, levure ale : +0,92 % vol. (T-90), +1,05 (cryo), +0,57 (cônes) ; 20 g/L : +0,90, effet de dose non significatif (p = 0,59) ; Cascade et Citra parmi les plus forts, variétés d'Europe centrale plus faibles", "sources": ["H68"] },
+      { "texte": "Cascade 10 g/L à 20 °C : +1,3 % vol. (durée non lue, relayé)", "sources": ["H84"] },
+      { "texte": "Fin en 8–10 j au chaud contre 14–15 j au froid ; 0,1 MPa de pression : +6 j (relayé)", "sources": ["H85"] },
+      { "texte": "Diacétyle 25 → 200 ppb (relayé)", "sources": ["H87"] },
+      { "texte": "Durée et température augmentent l'activité enzymatique, 10 % d'éthanol l'inhibe (relayé)", "sources": ["H80"] }
+    ],
+    "nonTrouve": "Galaxy, Idaho 7 : non trouvé."
+  },
+  "biotransformation": {
+    "geraniolCitronellol": { "texte": "Géraniol → β-citronellol (réductase OYE2) ; géraniol divisé surtout dans les 3 premiers jours ; citronellol presque absent du moût puis croissant ; aucun taux de conversion en bière publié.", "sources": ["H41", "H93"] },
+    "linalol": { "texte": "Linalol stable entre souches (12 souches, p = 0,82).", "sources": ["H44"] },
+    "thiolsPrecurseurs": { "plage": [0.01, 0.35], "unite": "% des précurseurs", "base": "précurseur synthétique seulement", "texte": "Thiols libérés des précurseurs : 0,01–0,35 % sur précurseur synthétique (γ-GluCys-3SHol 0,15–0,35 % ; Cys-3SHol 0,02–0,03 % ; G-3SHol 0,08–0,21 %) ; rendement sur houblon réel non mesuré.", "sources": ["H42"] },
+    "irc7": { "texte": "IRC7 complet : 4MMP ≈ 1 000 ng/L contre non détecté avec l'allèle tronqué ; délétion chez ≈ 88 % des souches (relayé).", "sources": ["H45", "H41"] },
+    "glycosides": { "texte": "Aglycones libérables 0,6–28,6 mg/kg contre terpénols libres 7,8–109,2 mg/kg (5 cultivars, relayé) ; libération par la levure de brassage « moins claire ».", "sources": ["H53", "H41"] },
+    "acetylation": { "texte": "3MH → 3MHA pendant la fermentation ; seuil 5 ng/L contre 55 pour le 3MH ; taux par souche non publié en bière.", "sources": ["H13"] },
+    "levuresThiolees": { "texte": "Levures « thiolées » (Omega) : chiffres de fabricant sans source.", "sources": ["H47"] }
+  },
+  "levures": {
+    "fermentis-us05": { "nom": "SafAle US-05", "betaLyase": "non publié", "betaGlucosidase": "non publié", "pof": "absent de la fiche ; « POF− » chez des tiers", "esters": "« low »", "diastaticus": "absent de la fiche ; négatif chez des tiers", "attenuation": "78–82 % ; 18–26 °C", "biotransformation": "non publiée", "geraniolCitronellol": null, "notes": [ "Sur un même moût (12 souches), géraniol et nérol plus hauts avec US-05 et WLP001 ; 4-vinylguaïacol à l'état de traces avec US-05." ], "sources": ["H50-us05", "H44"] },
+    "lalbrew-verdant-ipa": { "nom": "LalBrew Verdant IPA", "betaLyase": "qualitative, « high » ou « medium » selon la lecture de la figure Lallemand", "betaGlucosidase": "« medium » (lecture inférée)", "pof": "non trouvé", "esters": "abricot, tropical, agrumes (fiche)", "diastaticus": "non détecté (copies de fiche)", "attenuation": "72–82 % (communiqué, relayé) ou 75–82 % (catalogue du dépôt) ; 18–23 °C ou 18–25 °C", "biotransformation": "qualitative seulement", "geraniolCitronellol": null, "notes": [], "sources": ["H49", "H50-verdant"] },
+    "lalbrew-pomona": { "nom": "LalBrew Pomona", "betaLyase": "non publié", "betaGlucosidase": "non publié", "pof": "négatif (fiche)", "esters": "pêche, agrumes, tropical", "diastaticus": "négatif (fiche)", "attenuation": "75–84 % ; 18–22 °C", "biotransformation": "terpènes « medium », mesurée comme citronellol produit depuis le géraniol", "geraniolCitronellol": "medium", "notes": [], "sources": ["H50-pomona", "H51"] },
+    "lalbrew-diamond": { "nom": "LalBrew Diamond", "betaLyase": "non publié ; Samia : plus de thiols mesurés", "betaGlucosidase": "non publié", "pof": "négatif (fiche)", "esters": "neutre", "diastaticus": "négatif (fiche)", "attenuation": "77–83 % ; 10–15 °C", "biotransformation": "non publiée", "geraniolCitronellol": null, "notes": [ "Samia : Diamond produit le plus de thiols mesurés, mais le fruité perçu le plus faible." ], "sources": ["H50-diamond", "samia2026"] },
+    "aucune": "Aucune des quatre souches n'a de rendement de thiols publié sur houblon réel ; aucune multiplication de l'arôme du houblon par un coefficient de souche (H §6.5)."
+  },
+  "vieillissement": [
+    { "id": "monoterpenes-470j", "famille": "monoterpènes", "conditions": "bière gardée 470 jours à 0, 4, 20, 30 °C", "texte": "stables à 0–4 °C ; ≈ −25 % à 20 °C ; ≈ −50 % à 30 °C", "pertes": [ { "temperatureC": [0, 4], "texte": "stables" }, { "temperatureC": [20, 20], "plage": [25, 25] }, { "temperatureC": [30, 30], "plage": [50, 50] } ], "sources": ["H30"] },
+    { "id": "esters-470j", "famille": "esters des acides du houblon", "conditions": "470 jours", "texte": "≈ −10 % à 0 °C ; −60 à −70 % à 20 °C", "sources": ["H30"] },
+    { "id": "linalol-470j", "famille": "linalol", "conditions": "470 jours", "texte": "perdu seulement à 30 °C, avec racémisation", "sources": ["H30"] },
+    { "id": "thiols-6mois", "famille": "thiols et terpènes", "conditions": "NEIPA à 5 °C, 3 et 6 mois", "texte": "≥ −50 % à 6 mois ; alcools monoterpéniques presque stables ; 4MMP à 59–67 % après 3 mois (relayé)", "sources": ["H36"] },
+    { "id": "belges-2ans", "famille": "linalol, géraniol ; thiols", "conditions": "21 bières belges, 2 ans à 20 °C", "texte": "linalol et géraniol restent à 45–70 % ; thiols < 40 %", "sources": ["H37"] },
+    { "id": "ipa-12sem", "famille": "caryophyllène, géraniol, citronellol", "conditions": "IPA à 4 et 20 °C, 12 semaines", "texte": "décroissance d'ordre 1 (r² 0,86–0,93)", "sources": ["H38"] },
+    { "id": "oxygene", "famille": "agrumes, tropical", "conditions": "oxygène, garde chaude", "texte": "baisse des agrumes et du tropical", "sources": ["barnette2019"] }
+  ],
+  "hsi": {
+    "classes": [
+      { "de": null, "a": 0.25, "hsi": "≤ 0,25", "transformation": "0 %" },
+      { "de": 0.25, "a": 0.31, "hsi": "≤ 0,31", "transformation": "≤ 10 %" },
+      { "de": 0.31, "a": 0.40, "hsi": "0,31–0,40", "transformation": "10–21 %" },
+      { "de": 0.40, "a": 0.50, "hsi": "0,40–0,50", "transformation": "21–31 %" },
+      { "de": 0.50, "a": 0.60, "hsi": "0,50–0,60", "transformation": "31–39 %" },
+      { "de": 0.60, "a": null, "hsi": "> 0,60", "transformation": "> 39 %" }
+    ],
+    "texte": "Le HSI donne une classe de fraîcheur et une perte d'α ; la perte d'arôme reste un sens (Citra et Galaxy : huile −40 à −50 % entre frais et vieilli).",
+    "sources": ["H25"]
+  },
+  "styles": {
+    "16D": {
+      "nom": "Foreign Extra Stout",
+      "abv": [6.3, 8],
+      "og": [1.056, 1.075],
+      "fg": [1.010, 1.018],
+      "srm": [30, 40],
+      "ibu": [50, 70],
+      "arome": "Low earthy, herbal, or floral hop aroma optional.",
+      "attendu": "arôme de houblon faible et facultatif (terreux, herbacé ou floral)",
+      "familles": ["earthy", "herbal", "floral"],
+      "masquage": "Masquage par les malts torréfiés, le sucre résiduel, le corps : aucune étude trouvée en bière.",
+      "melanoidines": "Dans le café, les mélanoïdines retiennent des thiols, pas les aldéhydes (relayé) ; transposition à la stout non démontrée.",
+      "sources": ["H39", "H40"]
+    }
+  },
+  "biereNoire": {
+    "styles": ["9C", "13C", "15B", "15C", "16A", "16B", "16C", "16D", "20A", "20B", "20C"],
+    "texte": "Seuil en bière noire non mesuré ; perception non documentée ; pars de ta dégustation.",
+    "sources": ["H"]
+  },
+  "familles": {
+    "note": "Lien d'un composé marqueur vers une famille d'arôme : sens seulement. Le signal d'une famille est le rapport au seuil de son marqueur dominant, en plage ; ce n'est pas une intensité.",
+    "liens": [
+      { "compose": "linalol", "familles": ["floral", "citrus"], "sens": "floral, agrumes", "sources": ["spec"] },
+      { "compose": "geraniol", "familles": ["floral"], "sens": "floral", "sources": ["spec"] },
+      { "compose": "geraniol", "familles": ["citrus"], "sens": "agrumes", "via": "par le citronellol, avec certaines levures (non chiffré)", "sources": ["spec", "H93"] },
+      { "compose": "4MMP", "familles": ["tropical", "berries"], "sens": "cassis, fruit de la passion", "sources": ["H11", "spec"] },
+      { "compose": "3MH", "familles": ["citrus", "tropical"], "sens": "pamplemousse, fruit de la passion", "sources": ["spec", "pilote-19-10"] },
+      { "compose": "3M4MP", "familles": ["citrus"], "sens": "pamplemousse, rhubarbe", "sources": ["H11"] },
+      { "compose": "myrcene", "familles": ["green", "resin"], "sens": "vert, résineux", "sources": ["spec"] },
+      { "compose": "humulene", "familles": ["resin", "spice"], "sens": "boisé, épicé", "sources": ["pilote-19-10"] },
+      { "compose": "caryophyllene", "familles": ["resin", "spice"], "sens": "boisé, épicé", "sources": ["pilote-19-10"] },
+      { "compose": "farnesene", "familles": ["resin", "green", "herbal"], "sens": "boisé, vert, herbacé", "sources": ["pilote-19-10", "H22"] }
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+<!doctype html>
+<!-- Page produit anonymisée (domaine et marque fictifs, prix d'exemple) : schema.org Product + Offer en ld+json. -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Pompe de transfert inox | Boutique Exemple</title>
+  <meta property="og:title" content="Pompe de transfert inox">
+  <meta property="og:site_name" content="Boutique Exemple">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "BreadcrumbList", "itemListElement": [] },
+      {
+        "@type": "Product",
+        "name": "Pompe de transfert inox",
+        "image": ["/img/pompe-inox.jpg"],
+        "sku": "EX-690",
+        "additionalProperty": [
+          { "@type": "PropertyValue", "name": "débit", "value": 40, "unitText": "L/min" },
+          { "@type": "PropertyValue", "name": "température max", "value": "90", "unitText": "°C" }
+        ],
+        "offers": {
+          "@type": "Offer",
+          "price": "690.00",
+          "priceCurrency": "CHF",
+          "availability": "https://schema.org/InStock",
+          "seller": { "@type": "Organization", "name": "Boutique Exemple" }
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <main>
+    <h1>Pompe de transfert inox</h1>
+    <p class="price">CHF 690.00</p>
+    <section class="related-products-grid">
+      <div class="product"><h2>Pompe magnétique</h2><span class="price">CHF 245.00</span></div>
+    </section>
+  </main>
+</body>
+</html>

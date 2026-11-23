@@ -1,0 +1,16 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "power-controle",
+ "cas": "power",
+ "type": "controle",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 3611,
+ "coutMicro": 13349,
+ "etat": "STOP"
+}

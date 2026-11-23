@@ -1,0 +1,18 @@
+{
+ "cas": "imp-de-plato",
+ "usage": "import",
+ "half": "choix",
+ "cellule": "ar@low",
+ "ok": false,
+ "ms": 90006,
+ "microChf": 197640,
+ "microDecembre": 197640,
+ "entree": null,
+ "sortie": null,
+ "etat": "délai",
+ "ancrage": "sans objet",
+ "note": 0,
+ "utilisable": false,
+ "inventes": 0,
+ "detail": "délai"
+}

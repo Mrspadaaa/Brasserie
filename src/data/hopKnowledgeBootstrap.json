@@ -1,0 +1,490 @@
+[
+  {
+    "id": "citrus",
+    "kind": "axis",
+    "name": "Agrumes",
+    "version": "local-1",
+    "description": "Famille locale « Agrumes ». 0 : absent ; 100 : intensité maximale sur l’échelle personnelle. Les descripteurs de houblon brut ne fournissent pas une intensité en bière.",
+    "scale": {
+      "min": 0,
+      "max": 100
+    },
+    "lowMax": 33,
+    "mediumMax": 66,
+    "weight": {
+      "range": {
+        "min": 1,
+        "max": 1
+      },
+      "source": {
+        "title": "Conventions de l’Index houblon, version initiale",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+        "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+      }
+    },
+    "source": {
+      "title": "Conventions de l’Index houblon, version initiale",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+      "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+    }
+  },
+  {
+    "id": "tropical",
+    "kind": "axis",
+    "name": "Fruits tropicaux",
+    "version": "local-1",
+    "description": "Famille locale « Fruits tropicaux ». 0 : absent ; 100 : intensité maximale sur l’échelle personnelle. Les descripteurs de houblon brut ne fournissent pas une intensité en bière.",
+    "scale": {
+      "min": 0,
+      "max": 100
+    },
+    "lowMax": 33,
+    "mediumMax": 66,
+    "weight": {
+      "range": {
+        "min": 1,
+        "max": 1
+      },
+      "source": {
+        "title": "Conventions de l’Index houblon, version initiale",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+        "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+      }
+    },
+    "source": {
+      "title": "Conventions de l’Index houblon, version initiale",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+      "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+    }
+  },
+  {
+    "id": "stoneFruit",
+    "kind": "axis",
+    "name": "Fruits à noyau",
+    "version": "local-1",
+    "description": "Famille locale « Fruits à noyau ». 0 : absent ; 100 : intensité maximale sur l’échelle personnelle. Les descripteurs de houblon brut ne fournissent pas une intensité en bière.",
+    "scale": {
+      "min": 0,
+      "max": 100
+    },
+    "lowMax": 33,
+    "mediumMax": 66,
+    "weight": {
+      "range": {
+        "min": 1,
+        "max": 1
+      },
+      "source": {
+        "title": "Conventions de l’Index houblon, version initiale",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+        "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+      }
+    },
+    "source": {
+      "title": "Conventions de l’Index houblon, version initiale",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+      "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+    }
+  },
+  {
+    "id": "pomeFruit",
+    "kind": "axis",
+    "name": "Pomme et poire",
+    "version": "local-1",
+    "description": "Famille locale « Pomme et poire ». 0 : absent ; 100 : intensité maximale sur l’échelle personnelle. Les descripteurs de houblon brut ne fournissent pas une intensité en bière.",
+    "scale": {
+      "min": 0,
+      "max": 100
+    },
+    "lowMax": 33,
+    "mediumMax": 66,
+    "weight": {
+      "range": {
+        "min": 1,
+        "max": 1
+      },
+      "source": {
+        "title": "Conventions de l’Index houblon, version initiale",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+        "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+      }
+    },
+    "source": {
+      "title": "Conventions de l’Index houblon, version initiale",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+      "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+    }
+  },
+  {
+    "id": "berries",
+    "kind": "axis",
+    "name": "Petits fruits",
+    "version": "local-1",
+    "description": "Famille locale « Petits fruits ». 0 : absent ; 100 : intensité maximale sur l’échelle personnelle. Les descripteurs de houblon brut ne fournissent pas une intensité en bière.",
+    "scale": {
+      "min": 0,
+      "max": 100
+    },
+    "lowMax": 33,
+    "mediumMax": 66,
+    "weight": {
+      "range": {
+        "min": 1,
+        "max": 1
+      },
+      "source": {
+        "title": "Conventions de l’Index houblon, version initiale",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+        "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+      }
+    },
+    "source": {
+      "title": "Conventions de l’Index houblon, version initiale",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+      "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+    }
+  },
+  {
+    "id": "melon",
+    "kind": "axis",
+    "name": "Melon",
+    "version": "local-1",
+    "description": "Famille locale « Melon ». 0 : absent ; 100 : intensité maximale sur l’échelle personnelle. Les descripteurs de houblon brut ne fournissent pas une intensité en bière.",
+    "scale": {
+      "min": 0,
+      "max": 100
+    },
+    "lowMax": 33,
+    "mediumMax": 66,
+    "weight": {
+      "range": {
+        "min": 1,
+        "max": 1
+      },
+      "source": {
+        "title": "Conventions de l’Index houblon, version initiale",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+        "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+      }
+    },
+    "source": {
+      "title": "Conventions de l’Index houblon, version initiale",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+      "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+    }
+  },
+  {
+    "id": "floral",
+    "kind": "axis",
+    "name": "Floral",
+    "version": "local-1",
+    "description": "Famille locale « Floral ». 0 : absent ; 100 : intensité maximale sur l’échelle personnelle. Les descripteurs de houblon brut ne fournissent pas une intensité en bière.",
+    "scale": {
+      "min": 0,
+      "max": 100
+    },
+    "lowMax": 33,
+    "mediumMax": 66,
+    "weight": {
+      "range": {
+        "min": 1,
+        "max": 1
+      },
+      "source": {
+        "title": "Conventions de l’Index houblon, version initiale",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+        "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+      }
+    },
+    "source": {
+      "title": "Conventions de l’Index houblon, version initiale",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+      "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+    }
+  },
+  {
+    "id": "herbal",
+    "kind": "axis",
+    "name": "Herbacé aromatique",
+    "version": "local-1",
+    "description": "Famille locale « Herbacé aromatique ». 0 : absent ; 100 : intensité maximale sur l’échelle personnelle. Les descripteurs de houblon brut ne fournissent pas une intensité en bière.",
+    "scale": {
+      "min": 0,
+      "max": 100
+    },
+    "lowMax": 33,
+    "mediumMax": 66,
+    "weight": {
+      "range": {
+        "min": 1,
+        "max": 1
+      },
+      "source": {
+        "title": "Conventions de l’Index houblon, version initiale",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+        "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+      }
+    },
+    "source": {
+      "title": "Conventions de l’Index houblon, version initiale",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+      "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+    }
+  },
+  {
+    "id": "resin",
+    "kind": "axis",
+    "name": "Boisé et résineux",
+    "version": "local-1",
+    "description": "Famille locale « Boisé et résineux ». 0 : absent ; 100 : intensité maximale sur l’échelle personnelle. Les descripteurs de houblon brut ne fournissent pas une intensité en bière.",
+    "scale": {
+      "min": 0,
+      "max": 100
+    },
+    "lowMax": 33,
+    "mediumMax": 66,
+    "weight": {
+      "range": {
+        "min": 1,
+        "max": 1
+      },
+      "source": {
+        "title": "Conventions de l’Index houblon, version initiale",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+        "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+      }
+    },
+    "source": {
+      "title": "Conventions de l’Index houblon, version initiale",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+      "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+    }
+  },
+  {
+    "id": "spice",
+    "kind": "axis",
+    "name": "Épicé",
+    "version": "local-1",
+    "description": "Famille locale « Épicé ». 0 : absent ; 100 : intensité maximale sur l’échelle personnelle. Les descripteurs de houblon brut ne fournissent pas une intensité en bière.",
+    "scale": {
+      "min": 0,
+      "max": 100
+    },
+    "lowMax": 33,
+    "mediumMax": 66,
+    "weight": {
+      "range": {
+        "min": 1,
+        "max": 1
+      },
+      "source": {
+        "title": "Conventions de l’Index houblon, version initiale",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+        "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+      }
+    },
+    "source": {
+      "title": "Conventions de l’Index houblon, version initiale",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+      "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+    }
+  },
+  {
+    "id": "green",
+    "kind": "axis",
+    "name": "Végétal vert",
+    "version": "local-1",
+    "description": "Famille locale « Végétal vert ». 0 : absent ; 100 : intensité maximale sur l’échelle personnelle. Les descripteurs de houblon brut ne fournissent pas une intensité en bière.",
+    "scale": {
+      "min": 0,
+      "max": 100
+    },
+    "lowMax": 33,
+    "mediumMax": 66,
+    "weight": {
+      "range": {
+        "min": 1,
+        "max": 1
+      },
+      "source": {
+        "title": "Conventions de l’Index houblon, version initiale",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+        "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+      }
+    },
+    "source": {
+      "title": "Conventions de l’Index houblon, version initiale",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+      "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+    }
+  },
+  {
+    "id": "earthy",
+    "kind": "axis",
+    "name": "Terreux",
+    "version": "local-1",
+    "description": "Famille locale « Terreux ». 0 : absent ; 100 : intensité maximale sur l’échelle personnelle. Les descripteurs de houblon brut ne fournissent pas une intensité en bière.",
+    "scale": {
+      "min": 0,
+      "max": 100
+    },
+    "lowMax": 33,
+    "mediumMax": 66,
+    "weight": {
+      "range": {
+        "min": 1,
+        "max": 1
+      },
+      "source": {
+        "title": "Conventions de l’Index houblon, version initiale",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+        "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+      }
+    },
+    "source": {
+      "title": "Conventions de l’Index houblon, version initiale",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+      "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+    }
+  },
+  {
+    "id": "source-confidence",
+    "kind": "confidence",
+    "name": "Fiabilité des sources",
+    "source": {
+      "title": "Conventions de l’Index houblon, version initiale",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+      "locator": "Échelle locale 0–100 ; classes 0–33, 33–66 et 66–100 ; importance égale par défaut."
+    },
+    "caps": {
+      "coa": "high",
+      "manufacturer": "medium",
+      "research": "high",
+      "review": "medium",
+      "observation": "medium",
+      "community": "low",
+      "judgment": "low"
+    }
+  },
+  {
+    "id": "risk-hop-creep",
+    "kind": "risk",
+    "risk": "hopCreep",
+    "name": "Hop creep",
+    "enabled": true,
+    "source": {
+      "title": "Evidence of Dextrin Hydrolyzing Enzymes in Cascade Hops",
+      "author": "Kirkpatrick et Shellhammer",
+      "year": 2018,
+      "kind": "research",
+      "reference": "https://doi.org/10.1021/acs.jafc.8b03563"
+    },
+    "advice": "Surveiller la reprise de fermentation et le diacétyle ; confirmer la stabilité avant conditionnement. Aucune dose universelle sûre n’est définie ici."
+  },
+  {
+    "id": "risk-4mmp",
+    "kind": "risk",
+    "risk": "fourMmp",
+    "name": "Excès de 4MMP",
+    "enabled": true,
+    "source": {
+      "title": "Conventions de l’Index houblon, version initiale",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/index-houblon-conception.md — lexique, échelle et classement",
+      "locator": "Absence de seuil universel de défaut établi ; ne jamais réutiliser le seuil de détection comme seuil de rejet."
+    },
+    "advice": "Renseigner un seuil de rejet documenté pour cette matrice et une concentration en bière avant de qualifier un excès."
+  },
+  {
+    "id": "risk-precursors",
+    "kind": "risk",
+    "risk": "precursors",
+    "name": "Précurseurs et capacité de la levure",
+    "enabled": true,
+    "source": {
+      "title": "Yeast genes required for conversion of grape precursors to varietal thiols in wine",
+      "author": "Santiago et Gardner",
+      "year": 2015,
+      "kind": "research",
+      "reference": "https://doi.org/10.1093/femsyr/fov034"
+    },
+    "advice": "Vérifier la souche et la forme du conjugué ; une capacité inconnue ne signifie pas un rendement nul. L’étude citée concerne le vin, sans rendement transféré à la bière."
+  }
+]

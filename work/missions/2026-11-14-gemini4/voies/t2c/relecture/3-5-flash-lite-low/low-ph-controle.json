@@ -1,0 +1,16 @@
+{
+ "reglage": "3.5-flash-lite@low",
+ "element": "low-ph-controle",
+ "cas": "low-ph",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 713,
+ "coutMicro": 1621,
+ "etat": "STOP"
+}

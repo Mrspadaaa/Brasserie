@@ -1,0 +1,36 @@
+{
+ "reglage": "3.8-flash@low",
+ "kind": "fournisseurs",
+ "id": "citra",
+ "utilisable": true,
+ "produits": [
+  {
+   "name": "Citra 13.6% 5kg",
+   "url": "https://www.brauundrauchshop.ch/citra-136-2#stock-availability-value-12393",
+   "supplier": "Brau- und Rauchshop",
+   "packageLabel": "5kg"
+  },
+  {
+   "name": "Citra 13.6% 20kg",
+   "url": "https://www.brauundrauchshop.ch/citra-136-2#stock-availability-value-12394",
+   "supplier": "Brau- und Rauchshop",
+   "packageLabel": "20kg"
+  },
+  {
+   "name": "Citra 13.6%",
+   "url": "https://www.brauundrauchshop.ch/citra-136-2#stock-availability-value-2582",
+   "supplier": "Brau- und Rauchshop",
+   "packageLabel": "Preis/Gramm"
+  }
+ ],
+ "pertinentes": 3,
+ "exactes": 0,
+ "sourcesPrimaires": 0,
+ "faitCle": false,
+ "ms": 7298,
+ "coutMicro": 19357,
+ "web": 1,
+ "appels": 1,
+ "etat": "STOP",
+ "extrait": "Voici la fiche produit correspondant à la variété Citra en pellets chez **Brau- und Rauchshop** (vendu au gramme/conditionnement au choix selon options) :\n\n* **Citra 13.6% (Hopfen Pellets)** – Brau- und Rauchshop  \n  * Variété : Citra (USA)  \n  * Conditionnement : Pellets (sélection au grammage à pa"
+}

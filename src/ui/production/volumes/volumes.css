@@ -1,0 +1,109 @@
+/*
+ * Coque de l'onglet Brassins (e11a) et Adapter les volumes (e10c) : choix du brasseur du 15.11, portés tels quels.
+ * Les valeurs de la maquette sont reprises ; ses couleurs lisent les jetons de l'app (themes.css) pour suivre le thème.
+ * Échelle 12 / 14 / 16 / 28, graisse 600 au plus, rayons 10 / 16 / 24 (DESIGN.md). Classes préfixées pv- (L26).
+ */
+.pv-mono { font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.pv-reading { font-family: theme('fontFamily.mono'); font-variant-numeric: tabular-nums; font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.pv-reading-grand { font-size: 28px; line-height: 1.1; }
+.pv-unite { font-size: 12px; color: rgb(var(--cave-texte-400)); }
+.pv-label { font-size: 12px; color: rgb(var(--cave-texte-400)); }
+.pv-section { font-size: 16px; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.pv-display { font-size: 28px; line-height: 1.15; font-weight: 600; color: rgb(var(--cave-texte-50)); }
+.pv-display em { font-style: normal; color: rgb(var(--ebc-straw-texte)); }
+.pv-display em.pv-al { color: rgb(var(--alert-texte)); }
+.pv-display i { font-style: normal; color: rgb(var(--hop-texte)); }
+.pv-display u { text-decoration: none; color: rgb(var(--alert-texte)); }
+.pv-pastille { display: inline-flex; align-items: center; min-height: 20px; padding: 0 8px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap;
+  font-family: theme('fontFamily.mono'); border: 1px solid rgb(var(--attention) / .5); background: rgb(var(--attention) / .2); color: rgb(var(--attention-texte)); }
+
+/* ---- Coque : barre segmentée, compteurs en pastilles (e11a) ---- */
+.pv-segments { display: flex; gap: 2px; min-width: 0; overflow-x: auto; scrollbar-width: none; padding: 4px; border-radius: 16px;
+  border: 1px solid rgb(var(--cave-800)); background: rgb(var(--cave-900)); }
+.pv-segments > button { position: relative; flex: 1 1 0; min-width: max-content; display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  min-height: 36px; padding: 0 10px; white-space: nowrap; border-radius: 12px; font-size: 14px; font-weight: 600; color: rgb(var(--cave-texte-200)); }
+.pv-segments > button::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); }
+.pv-segments > button:hover { background: rgb(var(--cave-850)); }
+.pv-segments > button[aria-pressed='true'] { background: rgb(var(--ebc-straw)); color: rgb(var(--sur-paille)); }
+.pv-segments > button:focus-visible { outline: 2px solid rgb(var(--water)); outline-offset: -2px; }
+.pv-n { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 18px; padding: 0 6px; border-radius: 999px;
+  font-family: theme('fontFamily.mono'); font-size: 12px; font-weight: 600; background: rgb(var(--cave-850)); color: rgb(var(--cave-texte-50)); }
+.pv-segments > button[aria-pressed='true'] .pv-n { background: rgb(var(--sur-paille)); color: rgb(var(--ebc-straw-texte)); }
+.pv-phrase { margin: 4px 2px 8px; }
+
+/* ---- Adapter les volumes (e10c) ---- */
+.pv-top { display: block; }
+.pv-hd { padding: 8px 12px 12px; border-radius: 24px; border: 1px solid rgb(var(--cave-800)); background: rgb(var(--cave-900)); }
+.pv-l1 { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 36px; }
+.pv-hd .pv-display { margin-top: 6px; }
+.pv-why { margin-top: 4px; font-size: 14px; font-weight: 600; color: rgb(var(--alert-texte)); }
+.pv-src { position: relative; display: inline-flex; align-items: center; max-width: 62%; min-height: 36px; border-radius: 10px; border: 1px solid rgb(var(--cave-700));
+  background: rgb(var(--cave-850)); color: rgb(var(--cave-texte-50)); }
+.pv-src select { appearance: none; background: transparent; border: 0; min-height: 36px; padding: 0 30px 0 12px; font-size: 14px; font-weight: 600; color: inherit;
+  min-width: 0; text-overflow: ellipsis; cursor: pointer; }
+.pv-src svg { position: absolute; right: 8px; width: 16px; height: 16px; pointer-events: none; }
+.pv-src::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 44px; transform: translateY(-50%); pointer-events: none; }
+.pv-tot { display: flex; gap: 6px; margin-top: 10px; }
+.pv-tot div { flex: 1; min-width: 0; padding: 4px 8px; border-radius: 10px; background: rgb(var(--cave-850)); }
+.pv-tot span { display: block; }
+.pv-list { padding: 4px 0 196px; position: relative; }
+.pv-st { display: grid; grid-template-columns: 28px 1fr; gap: 0 6px; margin-top: 8px; position: relative; }
+.pv-dot { width: 14px; height: 14px; border-radius: 50%; margin: 5px 7px 0; position: relative; z-index: 1; box-shadow: 0 0 0 3px rgb(var(--cave-950)); }
+.pv-st h3 { display: flex; justify-content: space-between; align-items: baseline; padding-top: 2px; }
+.pv-rail { position: absolute; left: 13px; top: 16px; bottom: 196px; width: 2px; background: rgb(var(--cave-800)); }
+.pv-row { grid-column: 2; display: flex; align-items: center; gap: 10px; min-height: 44px; border-bottom: 1px solid rgb(var(--cave-800)); }
+.pv-ck { position: relative; width: 22px; height: 22px; border-radius: 4px; border: 2px solid rgb(var(--cave-600)); flex: none; display: grid; place-items: center; }
+.pv-ck::after { content: ''; position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; transform: translate(-50%, -50%); }
+.pv-ck[aria-checked='true'] { background: rgb(var(--hop)); border-color: rgb(var(--hop)); }
+.pv-ck[aria-checked='true']::before { content: ''; width: 6px; height: 11px; margin-top: -2px; border: solid rgb(var(--cave-950)); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.pv-ck:focus-visible { outline: 2px solid rgb(var(--water)); outline-offset: 2px; }
+.pv-n2 { flex: 1; display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 14px; color: rgb(var(--cave-texte-50)); }
+.pv-n2 > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+.pv-row[data-fait] .pv-n2 > span:last-child { text-decoration: line-through; color: rgb(var(--cave-texte-400)); }
+.pv-fam { width: 22px; height: 14px; flex: none; }
+.pv-q { text-align: right; white-space: nowrap; }
+.pv-q .pv-pastille { margin-left: 4px; }
+.pv-bot { position: fixed; left: 0; right: 0; bottom: var(--main-navigation-height, 2.5rem); z-index: 39; background: rgb(var(--cave-900)); border-top: 1px solid rgb(var(--cave-700));
+  border-radius: 24px 24px 0 0; box-shadow: var(--shadow-lift, 0 -4px 16px rgb(0 0 0 / .12)); padding: 8px 16px 4px; }
+.pv-b1 { display: flex; align-items: center; gap: 8px; }
+.pv-val { margin-left: auto; min-height: 40px; min-width: 120px; padding: 0 10px; border-radius: 10px; border: 1px solid rgb(var(--cave-700)); background: rgb(var(--cave-950));
+  display: flex; align-items: center; justify-content: center; gap: 6px; color: rgb(var(--cave-texte-50)); }
+.pv-val svg { width: 14px; height: 14px; color: rgb(var(--cave-texte-400)); }
+.pv-val input { width: 5.5em; min-height: 36px; border: 0; background: transparent; text-align: right; font-family: theme('fontFamily.mono'); font-size: 28px; font-weight: 600;
+  color: inherit; outline: none; padding: 0; }
+.pv-val[data-edit] { border-color: rgb(var(--cave-50)); }
+.pv-val[data-invalide] .pv-reading { color: rgb(var(--alert-texte)); }
+.pv-curseur { position: relative; margin-top: 2px; }
+.pv-grads { position: relative; height: 16px; font-family: theme('fontFamily.sans'); }
+.pv-grads span { position: absolute; top: 0; font-size: 12px; color: rgb(var(--cave-texte-400)); transform: translateX(-50%); white-space: nowrap; }
+.pv-grads span[data-bout='g'] { transform: none; }
+.pv-grads span[data-bout='d'] { transform: translateX(-100%); }
+.pv-grads span[data-cible] { color: rgb(var(--hop-texte)); font-weight: 600; }
+.pv-zone { position: relative; height: 44px; }
+.pv-rail-c { position: absolute; left: 0; right: 0; top: 10px; height: 4px; border-radius: 2px; background: rgb(var(--cave-800)); }
+.pv-tic { position: absolute; top: 16px; width: 1px; height: 5px; background: rgb(var(--cave-700)); transform: translateX(-50%); }
+.pv-cible { position: absolute; top: 6px; height: 12px; border-radius: 2px; border: 1px solid rgb(var(--hop)); background: color-mix(in srgb, rgb(var(--hop)) 35%, rgb(var(--cave-950))); }
+.pv-over { position: absolute; top: 10px; height: 4px; right: 0; border-radius: 2px; background: rgb(var(--alert)); }
+.pv-pouce { position: absolute; top: 0; width: 0; transition: left .15s ease-out; pointer-events: none; }
+.pv-pouce i { position: absolute; left: -2px; top: 2px; width: 4px; height: 22px; border-radius: 2px; background: rgb(var(--hop)); }
+.pv-pouce b { position: absolute; left: -11px; top: 20px; width: 22px; height: 22px; border-radius: 50%; background: rgb(var(--hop)); border: 3px solid rgb(var(--cave-950)); box-shadow: 0 0 0 1px rgb(var(--hop)); }
+.pv-pouce[data-hors] i, .pv-pouce[data-hors] b { background: rgb(var(--alert)); }
+.pv-pouce[data-hors] b { box-shadow: 0 0 0 1px rgb(var(--alert)); }
+.pv-pouce[data-vide] i { background: none; border: 1.5px dashed rgb(var(--cave-texte-400)); }
+.pv-pouce[data-vide] b { background: rgb(var(--cave-950)); border: 2px dashed rgb(var(--cave-texte-400)); box-shadow: none; }
+.pv-range { position: absolute; left: -11px; top: 0; width: calc(100% + 22px); height: 44px; margin: 0; padding: 0; opacity: 0; cursor: pointer; touch-action: none; }
+.pv-range:focus-visible + .pv-pouce b, .pv-zone:has(.pv-range:focus-visible) .pv-pouce b { box-shadow: 0 0 0 3px rgb(var(--cave-950)), 0 0 0 5px rgb(var(--water)); }
+.pv-vide { padding: 20px 0; }
+.pv-vide .pv-bouton { margin-top: 14px; }
+.pv-bouton { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; padding: 0 16px; border-radius: 10px; font-size: 14px; font-weight: 600;
+  background: rgb(var(--ebc-straw)); color: rgb(var(--sur-paille)); }
+.pv-bouton svg { width: 18px; height: 18px; }
+.pv-bouton:focus-visible { outline: 2px solid rgb(var(--water)); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .pv-pouce { transition: none; } }
+@media (min-width: 900px) {
+  .pv-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; padding-bottom: 24px; align-items: start; }
+  .pv-rail { display: none; }
+  /* g3, k3 n° 1 : le volume cible quitte le bas d'écran et se pose dans la tête, à côté d'« À peser pour … » ; rien ne couvre le dry hop. */
+  .pv-top { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
+  .pv-bot { position: static; border: 1px solid rgb(var(--cave-700)); border-radius: 24px; box-shadow: none; padding: 12px 16px 8px; display: flex; flex-direction: column; justify-content: center; }
+}

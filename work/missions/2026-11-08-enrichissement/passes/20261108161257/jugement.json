@@ -1,0 +1,460 @@
+{
+  "juges": [
+    {
+      "id": "p05",
+      "nom": "Nelson Sauvin",
+      "famille": "houblon",
+      "groupe": "phare",
+      "chemin": "assistant",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.394042,
+      "ms": 42159,
+      "essais": 1,
+      "verdict": "echec-technique",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "p09",
+      "nom": "Nottingham",
+      "famille": "levure",
+      "groupe": "phare",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.365374,
+      "ms": 12107,
+      "essais": 1,
+      "verdict": "a-corriger",
+      "champs": [
+        {
+          "champ": "attenuationPct",
+          "attendu": {
+            "plage": [
+              78,
+              84
+            ]
+          },
+          "rendu": {
+            "plage": [
+              78,
+              84
+            ]
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "tempC",
+          "attendu": {
+            "plage": [
+              10,
+              25
+            ]
+          },
+          "rendu": {
+            "plage": [
+              10,
+              25
+            ]
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "alcoholTolerancePct",
+          "attendu": {
+            "valeur": 14
+          },
+          "rendu": {
+            "valeur": 14
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "flocculation",
+          "attendu": {
+            "texte": "high"
+          },
+          "rendu": {
+            "texte": "haute"
+          },
+          "verdict": "faux"
+        },
+        {
+          "champ": "lab",
+          "attendu": {
+            "texte": "lallemand"
+          },
+          "rendu": {
+            "texte": "Lallemand"
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "form",
+          "attendu": {
+            "texte": "sèche"
+          },
+          "rendu": {
+            "texte": "sèche"
+          },
+          "verdict": "juste"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "producteur",
+        "hote": "lallemandbrewing.com",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f01",
+      "nom": "Idaho7",
+      "famille": "houblon",
+      "groupe": "nom-tape",
+      "chemin": "assistant",
+      "statutVerite": "a-reverifier",
+      "coutChf": 0.040249,
+      "ms": 7982,
+      "essais": 1,
+      "verdict": "introuvable-a-tort",
+      "champs": [],
+      "trouvee": true,
+      "source": {
+        "classe": "producteur",
+        "hote": "yakimachief.com",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f04",
+      "nom": "Pilsner Malz",
+      "famille": "malt",
+      "groupe": "facture",
+      "chemin": "f4",
+      "statutVerite": "piege",
+      "coutChf": 0.354292,
+      "ms": 6354,
+      "essais": 1,
+      "verdict": "introuvable-a-raison",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-url"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f14",
+      "nom": "LalBrew Verdant IPA 11g",
+      "famille": "levure",
+      "groupe": "facture",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.366613,
+      "ms": 11894,
+      "essais": 1,
+      "verdict": "a-corriger",
+      "champs": [
+        {
+          "champ": "attenuationPct",
+          "attendu": {
+            "plage": [
+              75,
+              82
+            ]
+          },
+          "rendu": {
+            "plage": [
+              75,
+              82
+            ]
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "tempC",
+          "attendu": {
+            "plage": [
+              18,
+              25
+            ]
+          },
+          "rendu": {
+            "plage": [
+              18,
+              25
+            ]
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "alcoholTolerancePct",
+          "attendu": {
+            "valeur": 12
+          },
+          "rendu": {
+            "valeur": 12
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "flocculation",
+          "attendu": {
+            "texte": "medium"
+          },
+          "rendu": {
+            "texte": "moyenne"
+          },
+          "verdict": "faux"
+        },
+        {
+          "champ": "lab",
+          "attendu": {
+            "texte": "lallemand"
+          },
+          "rendu": {
+            "texte": "Lallemand"
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "form",
+          "attendu": {
+            "texte": "sèche"
+          },
+          "rendu": {
+            "texte": "sèche"
+          },
+          "verdict": "juste"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "producteur",
+        "hote": "lallemandbrewing.com",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f15",
+      "nom": "Voss Kveik",
+      "famille": "levure",
+      "groupe": "nom-tape",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.366894,
+      "ms": 12026,
+      "essais": 1,
+      "verdict": "ok",
+      "champs": [
+        {
+          "champ": "attenuationPct",
+          "attendu": {
+            "plage": [
+              76,
+              82
+            ]
+          },
+          "rendu": {
+            "plage": [
+              76,
+              82
+            ]
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "tempC",
+          "attendu": {
+            "plage": [
+              25,
+              40
+            ]
+          },
+          "rendu": {
+            "plage": [
+              25,
+              40
+            ]
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "alcoholTolerancePct",
+          "attendu": {
+            "valeur": 12
+          },
+          "rendu": {
+            "valeur": 12
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "flocculation",
+          "attendu": {
+            "texte": "very high"
+          },
+          "rendu": {
+            "texte": "Very High"
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "lab",
+          "attendu": {
+            "texte": "lallemand"
+          },
+          "rendu": {
+            "texte": "Lallemand"
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "form",
+          "attendu": {
+            "texte": "sèche"
+          },
+          "rendu": {
+            "texte": "sèche"
+          },
+          "verdict": "juste"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "producteur",
+        "hote": "lallemandbrewing.com",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x02",
+      "nom": "Citra Zeta",
+      "famille": "houblon",
+      "groupe": "piege",
+      "chemin": "assistant",
+      "statutVerite": "piege",
+      "coutChf": 0.353533,
+      "ms": 9665,
+      "essais": 1,
+      "verdict": "introuvable-a-raison",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-url"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x06",
+      "nom": "Malt Munich",
+      "famille": "malt",
+      "groupe": "piege",
+      "chemin": "f4",
+      "statutVerite": "piege",
+      "coutChf": 0.35405,
+      "ms": 6177,
+      "essais": 1,
+      "verdict": "introuvable-a-raison",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-url"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x07",
+      "nom": "Sucre cristal 1 kg",
+      "famille": "malt",
+      "groupe": "piege",
+      "chemin": "f4",
+      "statutVerite": "piege",
+      "coutChf": 0.353915,
+      "ms": 5676,
+      "essais": 1,
+      "verdict": "introuvable-a-raison",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-url"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x10",
+      "nom": "Houblon amer 12% sac 1 kg",
+      "famille": "houblon",
+      "groupe": "piege",
+      "chemin": "assistant",
+      "statutVerite": "piege",
+      "coutChf": 0.35312,
+      "ms": 4275,
+      "essais": 1,
+      "verdict": "introuvable-a-raison",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-url"
+      },
+      "violeM2": false,
+      "inventes": 0
+    }
+  ],
+  "synthese": {
+    "produits": 10,
+    "appeles": 10,
+    "parVerdict": {
+      "echec-technique": 1,
+      "a-corriger": 2,
+      "introuvable-a-tort": 1,
+      "introuvable-a-raison": 5,
+      "ok": 1
+    },
+    "parChamp": {
+      "juste": 16,
+      "dans-la-plage": 0,
+      "faux": 2,
+      "invente": 0,
+      "absent-a-raison": 0,
+      "absent-a-tort": 0,
+      "non-verifie": 0
+    },
+    "parSource": {
+      "producteur": 4
+    },
+    "inventes": 0,
+    "violationsM2": 0,
+    "introuvablesATort": 1,
+    "introuvablesARaison": 5,
+    "coutTotalChf": 3.302082,
+    "coutParAppel": {
+      "moyen": 0.3302082,
+      "mediane": 0.35405,
+      "max": 0.394042
+    },
+    "duree": {
+      "moyenneMs": 11832,
+      "p95Ms": 42159,
+      "maxMs": 42159
+    },
+    "aReverifier": 1
+  }
+}

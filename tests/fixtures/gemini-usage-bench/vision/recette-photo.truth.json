@@ -1,0 +1,50 @@
+{
+  "id": "recette-photo",
+  "level": "simple : recette métrique photographiée (import)",
+  "import": {
+    "name": "Blonde du Moulin",
+    "volumeL": 20,
+    "ogTarget": 1.048,
+    "fgTarget": 1.01,
+    "fermentables": [
+      {
+        "name": "Pilsner",
+        "weightKg": 4
+      },
+      {
+        "name": "Munich",
+        "weightKg": 0.5
+      }
+    ],
+    "hops": [
+      {
+        "name": "Saaz",
+        "alpha": 3.5,
+        "weightG": 30,
+        "stage": "boil",
+        "timeMin": 60
+      },
+      {
+        "name": "Saaz",
+        "alpha": 3.5,
+        "weightG": 20,
+        "stage": "boil",
+        "timeMin": 10
+      }
+    ],
+    "yeast": "US-05",
+    "mashSteps": [
+      {
+        "tempC": 66,
+        "durationMin": 60
+      },
+      {
+        "tempC": 76,
+        "durationMin": 10
+      }
+    ]
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision/recette-photo.png",
+  "mimeType": "image/png",
+  "note": "FIXTURE DE TEST – document fictif"
+}

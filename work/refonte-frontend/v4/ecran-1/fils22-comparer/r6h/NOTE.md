@@ -1,0 +1,76 @@
+r6h · Je n'ai pas Nelson Sauvin (lot 22, Comparer : « Lequel pour ma stout : Cascade, Idaho 7 ou Galaxy ? »).
+
+## Choix portés
+- Radar : r2
+- Base : dose égale
+- Porte : oui (Nelson Sauvin)
+- Descripteurs : B
+
+## L'angle, et ce que j'en ai fait
+Point de départ : Nelson Sauvin épinglé en colonne 1, les trois candidats à dose égale, celui qui s'en approche le plus, et la part « autres » qui dit ce qu'aucun ne remplace.
+J'en ai fait une page où la porte est la colonne de référence de tout l'écran :
+- **la colonne 1 est la cible**, cadrée en graphite, « pas en stock » (panier) ; elle porte aussi les étiquettes des rangées (« écart ») ;
+- chaque rangée se lit de gauche à droite contre elle : α et rôle, puis l'écart, puis les mots des fiches ;
+- dans la chimie plus bas, la plage de Nelson est le fond gris de chaque case des candidats.
+- **Ce qui tient** :
+  - **Un seul facteur libre, la variété** : les trois en-têtes de candidats sont les boutons (`data-libre="houblon"`). Un toucher met le candidat en avant ; le radar, les barres et le pont vers Dryhopper suivent. Nelson n'est pas un bouton : il est fixe.
+  - **Ligne de contexte** : dose égale · 4 g/L · après fermentation, 3 j · US-05 (`egalites.doseEgale`).
+  - **L'écart au Nelson, chiffré et montré** (~, simulé) : un point sur une piste, à gauche = plus proche.
+    - Calcul : moyenne, sur les 8 familles connues des deux, de |apport du candidat − apport de Nelson| / cran du style. L'apport est le `delta` de la grille, dryPost 4 g/L 3 j US-05.
+    - Résultat : Cascade ~0,66, Idaho 7 ~0,81, Galaxy ~1,19 cran.
+    - Pour les trois, c'est le tropical qui éloigne le plus (Galaxy +3,9 crans).
+    - Cascade sort premier, mais de peu devant Idaho 7. La page ne dit pas « le meilleur » : elle montre deux points voisins et un troisième loin.
+  - **Ce qu'aucun ne remplace** (option B) : une barre des mots des fiches par colonne, en couleurs de familles, avec la part « autres » en gris neutre.
+    - Nelson : 78 % réels, dessinés 33 % (plafond). Galaxy : 29 % (cannabis, dank). Cascade et Idaho 7 : rien, « fruité » est générique.
+    - La phrase sous les colonnes, tirée des concepts B : « Aucun ne remplace : vin blanc, groseille à maquereau ».
+    - Les réglages de B (seuil 25 %, plafond 33 %, génériques écartés) sont dans la légende, marqués « à corriger par le brasseur ».
+  - **Radar r2 avec intervalles**, au style par défaut, absolu d'un toucher :
+    - Nelson en contour graphite de 3 px, le candidat touché plein, les deux autres en contour fin ;
+    - la plage bas–haut du candidat touché en trait pâle sur chaque axe, avec une flèche quand le haut dépasse le bord (rien n'est rogné en silence) ;
+    - la zone de la 16D en mauve ; Résineux (et Tropicaux pour Galaxy) en orangé, hors du style ;
+    - Pépins et Melon sont inconnus pour les quatre : secteurs hachurés, « ? » ;
+    - Noyau et Baies sont inconnus pour Nelson seul, Noyau pour Cascade seul : le polygone saute l'axe et une icône « ? » à la couleur du houblon marque l'axe, jamais un sommet à 0.
+  - **Barres de l5b sous le radar**, « barres et radar » comme Comparer variante 3 :
+    - 12 familles dans l'ordre du style (floral, herbacé, terreux d'abord : ce que la 16D attend) ;
+    - Nelson en contour, le candidat plein, la zone de la 16D derrière, l'orangé au-delà, l'inconnu hachuré ;
+    - aucun mot, seulement les pictos au trait : les noms sont sur le radar juste au-dessus.
+  - **La chimie rattachée aux familles** (« Le cône ») : huile totale, humulène, myrcène, linalol, thiol 4MMP.
+    - Chaque ligne porte les pictos de ses familles et son sens (composes-houblon.json, `familles.liens`).
+    - Chaque case a sa bande de plage publiée, sur le fond gris de la plage de Nelson.
+    - Ce qu'on y lit : Nelson a 25–37 % d'humulène (boisé, épicé). Cascade (8–20) et Idaho 7 (10–20) s'en approchent, Galaxy (0,8–2,2) pas du tout. Ses thiols sont « classe forte » sans chiffre, en hachuré : inconnu, pas 0.
+  - **Panel OSU sans molette** : la courbe mesurée de Cascade (H22, Lafontaine 2018), avec un trait à 4 g/L, la dose égale. Le texte dit « Cascade seul ».
+  - **Vraies valeurs, d'un toucher** (« Vraies valeurs en bière ») :
+    - Nelson Sauvin en bière contre le témoin sans houblon (E06, Feng 2015) : myrcène 110 contre 27,4 µg/L, linalol 70,2 contre 46,8, géraniol 49,3 contre 40 ;
+    - le linalol d'Idaho 7 (38 µg/L, au pitch, E03, « à vérifier ») ;
+    - le trou, écrit : à 4 g/L et 3 j, une seule étude compare les quatre (E09, Sharp 2018), en figure et sans chiffre ; Cascade et Galaxy en bière restent inconnus.
+  - **Fiche g1 à l'appui long** (socle de v1, sans modification) : Nelson Sauvin y est ajouté. Sa ligne « sans famille » devient la part « autres » dessinée (B), avec ses quatre concepts. Pour Cascade et Idaho 7, la ligne « fruité » disparaît (mot générique).
+  - **Le pont** : `nav` « Doser <houblon en avant> dans Dryhopper ».
+- **Ce qui casse** :
+  - **Le profil simulé de Nelson est pauvre**, et c'est le cœur de l'angle : le moteur ne voit que 17 % de ses mots (agrumes, épicé).
+    - Son radar est petit, et « le plus proche » se mesure sur ce peu.
+    - La légende le dit (« son radar en dit peu »), comme la part grise et la phrase.
+    - Une proximité sur ses mots « autres » est impossible : aucun candidat n'a de concept commun avec lui.
+  - **α de Nelson** : la page montre les fiches (10–14 %, Beer Maverick 2023 et Hopsteiner 2025), puisqu'il n'est pas en stock. Le « 9,6 % lu sur l'article » de la grille (douteux 2 d'ENTREES) n'est pas montré.
+  - **Couleur de Nelson** : graphite #3f3f4a, au lieu du rouge #a0081f des lots précédents.
+    - Raison : il est la cible, pas un candidat, et trois rouges voisins (Cascade #781838, Idaho 7 #e80030, Nelson) ne se distinguaient pas sur un radar.
+    - À trancher si d'autres variantes gardent #a0081f.
+  - **Plages hautes du simulé** : le « haut » dépasse le bord presque partout (55–60 sur l'échelle 0–100). D'où une flèche à chaque axe : c'est vrai, mais ça charge le radar.
+  - **79 mots au premier écran sur 80** : la marge est d'un mot. La chimie commence au bord de l'écran (son titre et la ligne des noms sont comptés).
+  - **Option A** : sans objet ici (B porté). Avec A, seul Nelson changerait (groseille à maquereau dans Petits fruits, part 0,67). Ailleurs, A ne se voit pas.
+  - Les sources de la chimie sont listées en pied de bloc, pas case par case. Elles restent dans `data-source` et l'aria-label de chaque valeur.
+- **Contrôles** (joués le 22.10 sur `etat.html`) :
+  - COMMUN OK (sans MOTS) ; MOTS OK (79 ≤ 80) ;
+  - UNE-QUESTION OK (1 groupe libre : houblon) ;
+  - ACQUIS OK (4/4 : radar, chimie et osu au repos, valeurs à un toucher) ;
+  - ALPHA OK ;
+  - SANS-FAMILLE OK, au seuil de 25 % (Galaxy 29 % et Nelson Sauvin 83 %, part « autres » visible).
+- **Pire contraste** : 4,69:1, « Idaho 7 » (#e80030 sur blanc), sur 91 textes mesurés.
+- **Fichiers** :
+  - `generer.mjs`, qui écrit `etat.html` ;
+  - `captures.mjs` (gestes joués : appui long, toucher) ;
+  - `sonde-mots.mjs` (liste des mots du premier écran).
+- **Captures** (`../captures/`) :
+  - `r6h-390.png` (page entière) et `r6h-premier-ecran.png` ;
+  - `r6h-fiche-390.png` (appui long sur Nelson Sauvin) ;
+  - `r6h-toucher-390.png` (Galaxy touché, vraies valeurs ouvertes) ;
+  - `r6h-absolu-390.png` et `r6h-legende-390.png`.

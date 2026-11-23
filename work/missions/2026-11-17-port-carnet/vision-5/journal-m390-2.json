@@ -1,0 +1,170 @@
+[
+ {
+  "k": "m390-clair-01 defilement",
+  "v": "1"
+ },
+ {
+  "k": "m390-clair-02 textes",
+  "v": "[\"À venir 1\",\"Carnets 6\",\"Réalisés 0\",\"ZZ TEST — Ventilation de la salle de brassage Ensuite : atte\",\"ZZ TEST — Évier inox « 2 bacs pour laver les fûts »\",\"Coller un lien\",\"ZZ TEST — Extracteur pour la salle de fermentation « sortir \",\"Coller un lien\"]"
+ },
+ {
+  "k": "09 ouvre",
+  "v": "true"
+ },
+ {
+  "k": "09 defile",
+  "v": "1"
+ },
+ {
+  "k": "26 article",
+  "v": "true"
+ },
+ {
+  "k": "retour article",
+  "v": "true"
+ },
+ {
+  "k": "10 focus",
+  "v": "true"
+ },
+ {
+  "k": "13 envoi",
+  "v": "true"
+ },
+ {
+  "k": "18 envoi",
+  "v": "true"
+ },
+ {
+  "k": "23 envoi",
+  "v": "true"
+ },
+ {
+  "k": "32 plus carnet",
+  "v": "true"
+ },
+ {
+  "k": "34 renommer",
+  "v": "true"
+ },
+ {
+  "k": "36 supprimer",
+  "v": "true"
+ },
+ {
+  "k": "27 comparer",
+  "v": "true"
+ },
+ {
+  "k": "28 choisir",
+  "v": "true"
+ },
+ {
+  "k": "m390-clair-41-ia-echec textes",
+  "v": "[\"À venir 1\",\"Carnets 6\",\"Réalisés 0\",\"Carnets\",\"Plus\",\"Renommer\"]"
+ },
+ {
+  "k": "m390-clair-42-ia-eteinte textes",
+  "v": "[\"À venir 1\",\"Carnets 6\",\"Réalisés 0\",\"Carnets\",\"Plus\",\"Renommer\"]"
+ },
+ {
+  "k": "m390-clair-43-hors-ligne textes",
+  "v": "[\"À venir 1\",\"Carnets 6\",\"Réalisés 0\",\"Carnets\",\"Plus\",\"Renommer\"]"
+ },
+ {
+  "k": "m390-clair-51-aides-eteintes textes",
+  "v": "[\"À venir 1\",\"Carnets 6\",\"Réalisés 0\",\"Carnets\",\"Plus\",\"Renommer\"]"
+ },
+ {
+  "k": "m390-clair-54-taches textes",
+  "v": "[\"À venir 1\",\"Carnets 6\",\"Réalisés 0\",\"Carnets\",\"Plus\",\"Renommer\"]"
+ },
+ {
+  "k": "ERREUR passe clair",
+  "v": "Protocol error (Target.closeTarget): No target with given id found"
+ },
+ {
+  "k": "m390-sombre-01 defilement",
+  "v": "1"
+ },
+ {
+  "k": "m390-sombre-02 textes",
+  "v": "[\"À venir 1\",\"Carnets 6\",\"Réalisés 0\",\"ZZ TEST — Ventilation de la salle de brassage Ensuite : atte\",\"ZZ TEST — Évier inox « 2 bacs pour laver les fûts »\",\"Coller un lien\",\"ZZ TEST — Extracteur pour la salle de fermentation « sortir \",\"Coller un lien\"]"
+ },
+ {
+  "k": "09 ouvre",
+  "v": "true"
+ },
+ {
+  "k": "09 defile",
+  "v": "1"
+ },
+ {
+  "k": "26 article",
+  "v": "true"
+ },
+ {
+  "k": "retour article",
+  "v": "true"
+ },
+ {
+  "k": "10 focus",
+  "v": "true"
+ },
+ {
+  "k": "13 envoi",
+  "v": "true"
+ },
+ {
+  "k": "18 envoi",
+  "v": "true"
+ },
+ {
+  "k": "23 envoi",
+  "v": "true"
+ },
+ {
+  "k": "32 plus carnet",
+  "v": "true"
+ },
+ {
+  "k": "34 renommer",
+  "v": "true"
+ },
+ {
+  "k": "36 supprimer",
+  "v": "true"
+ },
+ {
+  "k": "27 comparer",
+  "v": "true"
+ },
+ {
+  "k": "28 choisir",
+  "v": "true"
+ },
+ {
+  "k": "m390-sombre-41-ia-echec textes",
+  "v": "[\"À venir 1\",\"Carnets 6\",\"Réalisés 0\",\"Carnets\",\"Plus\",\"Renommer\"]"
+ },
+ {
+  "k": "m390-sombre-42-ia-eteinte textes",
+  "v": "[\"À venir 1\",\"Carnets 6\",\"Réalisés 0\",\"Carnets\",\"Plus\",\"Renommer\"]"
+ },
+ {
+  "k": "m390-sombre-43-hors-ligne textes",
+  "v": "[\"À venir 1\",\"Carnets 6\",\"Réalisés 0\",\"Carnets\",\"Plus\",\"Renommer\"]"
+ },
+ {
+  "k": "m390-sombre-51-aides-eteintes textes",
+  "v": "[\"À venir 1\",\"Carnets 6\",\"Réalisés 0\",\"Carnets\",\"Plus\",\"Renommer\"]"
+ },
+ {
+  "k": "m390-sombre-54-taches textes",
+  "v": "[\"À venir 1\",\"Carnets 6\",\"Réalisés 0\",\"Carnets\",\"Plus\",\"Renommer\"]"
+ },
+ {
+  "k": "ERREUR passe sombre",
+  "v": "Protocol error (Target.closeTarget): No target with given id found"
+ }
+]

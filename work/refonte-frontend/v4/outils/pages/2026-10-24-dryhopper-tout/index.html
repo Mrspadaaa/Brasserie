@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dryhopper, tout · 24.10, soir</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+/* La disposition qu'il aime (24.10, soir) : une rangée par lot, le nom à gauche (au téléphone : au-dessus), les mini
+   maquettes en vignettes serrées, six par rangée à l'ordinateur, trois au téléphone. Rien ne défile en largeur (D126).
+   Chaque vignette est une découpe de la planche JPEG de son lot ; elle s'ouvre en grand, à côté de ton choix. */
+:root {
+  --fond: #f4f6f1; --carte: #ffffff; --encre: #1c2019; --discret: #5a6155; --trait: #dde2d6;
+  --houblon: #4a7426; --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 4px 14px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--fond); color: var(--encre); font: 16px/1.45 var(--texte); margin: 0;
+  padding-left: max(14px, env(safe-area-inset-left, 0px)); padding-right: max(14px, env(safe-area-inset-right, 0px)); padding-block: 16px 64px; }
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.12; }
+h1 { font-size: clamp(1.7rem, 6vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.15rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--houblon); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 6px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.encart { border-left: 4px solid var(--ambre); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 84ch; }
+.sommaire { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 4px 18px; font-size: 0.9375rem; }
+.sommaire a { text-decoration: none; padding: 3px 0; border-bottom: 1px solid var(--trait); display: flex; justify-content: space-between; gap: 10px; }
+.sommaire .l { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.sommaire .n { color: var(--discret); font-variant-numeric: tabular-nums; }
+.pastille { justify-self: start; display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.5; padding: 0 9px; border-radius: 999px; color: #fff; white-space: nowrap; }
+.p-choix { background: #1f6f3a; } .p-bien { background: #1d4ed8; } .p-reserve { background: #7c3aed; }
+.legende-pastilles { display: flex; flex-wrap: wrap; gap: 6px 10px; font-size: 0.875rem; color: var(--discret); align-items: center; }
+.rangee { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--trait); scroll-margin-top: 10px; }
+.nom { display: grid; gap: 3px; align-content: start; }
+.date { font-size: 0.875rem; color: var(--houblon); font-weight: 700; }
+.dossier { font-size: 0.875rem; color: var(--discret); font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; overflow-wrap: anywhere; }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 8px; align-items: start; }
+@media (min-width: 900px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 20px; }
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 18px 12px; }
+}
+.vue { margin: 0; display: grid; gap: 4px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 9px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; }
+.cadre { display: block; position: relative; width: 100%; aspect-ratio: 390 / 844; overflow: hidden; }
+.cadre img { position: absolute; max-width: none; height: auto; display: block; }
+.vue.choisie .ecran { border-color: transparent; box-shadow: 0 0 0 3px #1f6f3a, var(--ombre); }
+.vue figcaption { display: grid; gap: 2px; justify-items: start; }
+.id { font-size: 0.875rem; color: var(--encre); font-weight: 700; font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; overflow-wrap: anywhere; }
+.t { font-size: 0.875rem; color: var(--discret); line-height: 1.3; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ligne { font-size: 0.875rem; font-style: italic; line-height: 1.3; }
+.res { font-size: 0.875rem; color: #92400e; line-height: 1.3; }
+footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: #0e100c; overflow-y: auto; padding: 0 max(12px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); color: #eef2ea; }
+.vis-tete { position: sticky; top: 0; z-index: 2; display: flex; gap: 8px; align-items: center; justify-content: space-between; margin: 0 -12px 12px; padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 10px; background: #0e100c; }
+.vis-titre { font: 800 1rem/1.2 var(--titre); min-width: 0; }
+.vis-boutons { display: flex; gap: 6px; flex: none; }
+.vis-boutons button { font: 700 0.95rem var(--texte); border: 0; border-radius: 999px; padding: 9px 14px; cursor: pointer; background: #2d3328; color: #eef2ea; min-height: 40px; }
+.vis-boutons .fermer { background: #eef2ea; color: #1c2019; }
+.vis-rangee { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; max-width: 1240px; margin: 0 auto; }
+.vis-panneau { flex: 0 0 min(390px, 88%); scroll-snap-align: start; margin: 0; display: grid; gap: 8px; align-content: start; }
+.vis-panneau .cadre { border-radius: 14px; background: #fff; }
+.vis-panneau.ref .cadre { box-shadow: 0 0 0 3px #3fae64; }
+.vis-panneau figcaption { font-size: 0.95rem; }
+.vis-panneau.ref figcaption { color: #9be3b0; font-weight: 700; }
+.vis-glisse { font-size: 0.875rem; color: #c9d0c3; margin: 0 auto 10px; max-width: 1240px; }
+@media (min-width: 900px) {
+  .vis-rangee { overflow: visible; justify-content: center; flex-wrap: wrap; }
+  .vis-panneau { flex: 0 0 390px; }
+  .vis-glisse { display: none; }
+}
+</style>
+<body>
+<div class="page">
+<header>
+<p class="sur-titre">L'Affinée · houblons · Dryhopper depuis le 19.10</p>
+<h1>Dryhopper, toutes ses mini maquettes (96)</h1>
+</header>
+
+<section id="a-choisir" aria-label="À choisir">
+<div class="encart">
+<p><b>Ton choix :</b> p4b2f, « L'aire du floral », en tête ; tes mots : « Partir sur cette version ».</p>
+<p>À côté : p4b2, dont elle est la retouche, et ses deux sœurs. Dessous, toutes les autres, une rangée par série ou passe, de la plus ancienne à la plus récente. Touche une vignette : elle s'ouvre en grand, à côté de p4b2f.</p>
+<p class="legende-pastilles"><span class="pastille p-choix">ton choix</span><span class="pastille p-bien">« bien »</span><span class="pastille p-reserve">avec réserve</span> tes mots en italique dessous</p>
+</div>
+</section>
+
+<nav class="sommaire" aria-label="Les lots">
+<a href="#r-choix"><span class="l">Ton choix</span><span class="n">4</span></a>
+<a href="#r-v3"><span class="l">La v3</span><span class="n">7</span></a>
+<a href="#r-lot20"><span class="l">Lot 20 · Le dry hop, la levure, la biotransformation</span><span class="n">6</span></a>
+<a href="#r-ancetres"><span class="l">Lot 21 · Le « Quand ? » et la levure, avant Dryhopper</span><span class="n">3</span></a>
+<a href="#r-carte"><span class="l">La carte des outils · Dryhopper</span><span class="n">1</span></a>
+<a href="#r-serie-a"><span class="l">Série A · le geste d'abord</span><span class="n">8</span></a>
+<a href="#r-serie-b"><span class="l">Série B · la réponse d'abord</span><span class="n">8</span></a>
+<a href="#r-serie-c"><span class="l">Série C · les vraies valeurs d'abord</span><span class="n">8</span></a>
+<a href="#r-serie-d"><span class="l">Série D · le simulateur</span><span class="n">8</span></a>
+<a href="#r-serie-e"><span class="l">Série E · la frise</span><span class="n">8</span></a>
+<a href="#r-serie-f"><span class="l">Série F · créatif à fond</span><span class="n">8</span></a>
+<a href="#r-serie-g"><span class="l">Série G · libre, brief minimal</span><span class="n">8</span></a>
+<a href="#r-passes23"><span class="l">Passes 2 et 3</span><span class="n">9</span></a>
+<a href="#r-passe4"><span class="l">Passes 4 et 5</span><span class="n">14</span></a>
+</nav>
+
+<section class="rangee" id="r-choix" aria-labelledby="t-choix">
+<div class="nom"><h2 id="t-choix">Ton choix : p4b2f, « L'aire du floral », et sa lignée</h2><p class="date">24.10, soir · 4 mini maquettes</p></div>
+<div class="planche">
+<figure class="vue choisie" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html">
+<button class="ecran" type="button" data-nom="p4b2f · L'aire de floral — Dryhopper" data-case="dry-choix-1.jpg|4|1|0|0"><span class="cadre"><img src="planches/dry-choix-1.jpg" width="1560" height="844" alt="p4b2f · Dryhopper" style="width:400%;left:-0%;top:-0%"></span></button>
+<figcaption><span class="pastille p-choix">ton choix</span><span class="id">p4b2f</span><span class="t">L'aire de floral</span><span class="ligne">« Partir sur cette version »</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2/etat.html">
+<button class="ecran" type="button" data-nom="p4b2 · Le brassin en courbes — Dryhopper" data-case="dry-choix-1.jpg|4|1|1|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-choix-1.jpg" width="1560" height="844" alt="p4b2 · Dryhopper" style="width:400%;left:-100%;top:-0%"></span></button>
+<figcaption><span class="pastille p-reserve">avec réserve</span><span class="id">p4b2</span><span class="t">Le brassin en courbes</span><span class="ligne">« Ça j'aime beaucoup »</span><span class="res">réserve : encore assez peu lisible</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2d/etat.html">
+<button class="ecran" type="button" data-nom="p4b2d · Le brassin en courbes, nettoyé — Dryhopper" data-case="dry-choix-1.jpg|4|1|2|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-choix-1.jpg" width="1560" height="844" alt="p4b2d · Dryhopper" style="width:400%;left:-200%;top:-0%"></span></button>
+<figcaption><span class="id">p4b2d</span><span class="t">Le brassin en courbes, nettoyé</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2e/etat.html">
+<button class="ecran" type="button" data-nom="p4b2e · Une courbe devant — Dryhopper" data-case="dry-choix-1.jpg|4|1|3|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-choix-1.jpg" width="1560" height="844" alt="p4b2e · Dryhopper" style="width:400%;left:-300%;top:-0%"></span></button>
+<figcaption><span class="id">p4b2e</span><span class="t">Une courbe devant</span></figcaption>
+</figure>
+</div>
+</section>
+
+<section class="rangee" id="r-v3" aria-labelledby="t-v3">
+<div class="nom"><h2 id="t-v3">La v3 : le dry hop dans la simulation</h2><p class="date">18.10, matin · 7 mini maquettes</p></div>
+<div class="planche">
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v3/revues/simulation/09-t7-dryhop-390.png">
+<button class="ecran" type="button" data-nom="09-t7-dryhop-390 — Dryhopper" data-case="dry-v3-1.jpg|6|2|0|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-v3-1.jpg" width="2340" height="1688" alt="09-t7-dryhop-390 · Dryhopper" style="width:600%;left:-0%;top:-0%"></span></button>
+<figcaption><span class="id">09-t7-dryhop-390</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v3/revues/simulation/16-zoom-jauge-sans-dryhop-390.png">
+<button class="ecran" type="button" data-nom="16-zoom-jauge-sans-dryhop-390 — Dryhopper" data-case="dry-v3-1.jpg|6|2|1|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-v3-1.jpg" width="2340" height="1688" alt="16-zoom-jauge-sans-dryhop-390 · Dryhopper" style="width:600%;left:-100%;top:-0%"></span></button>
+<figcaption><span class="id">16-zoom-jauge-sans-dryhop-390</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v3/revues/simulation/20-zoom-jauge-avec-dryhop-390.png">
+<button class="ecran" type="button" data-nom="20-zoom-jauge-avec-dryhop-390 — Dryhopper" data-case="dry-v3-1.jpg|6|2|2|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-v3-1.jpg" width="2340" height="1688" alt="20-zoom-jauge-avec-dryhop-390 · Dryhopper" style="width:600%;left:-200%;top:-0%"></span></button>
+<figcaption><span class="id">20-zoom-jauge-avec-dryhop-390</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v3/revues/simulation/v2/03-zoom-jauge-dryhop-390.png">
+<button class="ecran" type="button" data-nom="v2 · 03-zoom-jauge-dryhop-390 — Dryhopper" data-case="dry-v3-1.jpg|6|2|3|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-v3-1.jpg" width="2340" height="1688" alt="v2 · 03-zoom-jauge-dryhop-390 · Dryhopper" style="width:600%;left:-300%;top:-0%"></span></button>
+<figcaption><span class="id">v2 · 03-zoom-jauge-dryhop-390</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v3/revues/simulation/v2/07-t7-dryhop-390.png">
+<button class="ecran" type="button" data-nom="v2 · 07-t7-dryhop-390 — Dryhopper" data-case="dry-v3-1.jpg|6|2|4|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-v3-1.jpg" width="2340" height="1688" alt="v2 · 07-t7-dryhop-390 · Dryhopper" style="width:600%;left:-400%;top:-0%"></span></button>
+<figcaption><span class="id">v2 · 07-t7-dryhop-390</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v3/revues/simulation/v2/13-t8b-dryhop-390.png">
+<button class="ecran" type="button" data-nom="v2 · 13-t8b-dryhop-390 — Dryhopper" data-case="dry-v3-1.jpg|6|2|5|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-v3-1.jpg" width="2340" height="1688" alt="v2 · 13-t8b-dryhop-390 · Dryhopper" style="width:600%;left:-500%;top:-0%"></span></button>
+<figcaption><span class="id">v2 · 13-t8b-dryhop-390</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v3/revues/simulation/v3/07-390-zoom-segment-dryhop.png">
+<button class="ecran" type="button" data-nom="v3 · 07-390-zoom-segment-dryhop — Dryhopper" data-case="dry-v3-1.jpg|6|2|0|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-v3-1.jpg" width="2340" height="1688" alt="v3 · 07-390-zoom-segment-dryhop · Dryhopper" style="width:600%;left:-0%;top:-100%"></span></button>
+<figcaption><span class="id">v3 · 07-390-zoom-segment-dryhop</span></figcaption>
+</figure>
+</div>
+</section>
+
+<section class="rangee" id="r-lot20" aria-labelledby="t-lot20">
+<div class="nom"><h2 id="t-lot20">Lot 20 · Le dry hop, la levure, la biotransformation</h2><p class="date">19.10 · 6 mini maquettes</p></div>
+<div class="planche">
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils20-dryhop/d1/etat.html">
+<button class="ecran" type="button" data-nom="d1 — Dryhopper" data-case="dry-lot20-1.jpg|6|1|0|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-lot20-1.jpg" width="2340" height="844" alt="d1 · Dryhopper" style="width:600%;left:-0%;top:-0%"></span></button>
+<figcaption><span class="pastille p-reserve">avec réserve</span><span class="id">d1</span><span class="ligne">« d1, tout ouvert était aussi intéressant »</span><span class="res">réserve : trop bordélique</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils20-dryhop/d2/etat.html">
+<button class="ecran" type="button" data-nom="d2 — Dryhopper" data-case="dry-lot20-1.jpg|6|1|1|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-lot20-1.jpg" width="2340" height="844" alt="d2 · Dryhopper" style="width:600%;left:-100%;top:-0%"></span></button>
+<figcaption><span class="id">d2</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils20-dryhop/d3/etat.html">
+<button class="ecran" type="button" data-nom="d3 — Dryhopper" data-case="dry-lot20-1.jpg|6|1|2|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-lot20-1.jpg" width="2340" height="844" alt="d3 · Dryhopper" style="width:600%;left:-200%;top:-0%"></span></button>
+<figcaption><span class="id">d3</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils20-dryhop/d4/etat.html">
+<button class="ecran" type="button" data-nom="d4 · Levure et biotransformation — Dryhopper" data-case="dry-lot20-1.jpg|6|1|3|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-lot20-1.jpg" width="2340" height="844" alt="d4 · Dryhopper" style="width:600%;left:-300%;top:-0%"></span></button>
+<figcaption><span class="id">d4</span><span class="t">Levure et biotransformation</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils20-dryhop/d5/etat.html">
+<button class="ecran" type="button" data-nom="d5 · Le lot avant la variété — Dryhopper" data-case="dry-lot20-1.jpg|6|1|4|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-lot20-1.jpg" width="2340" height="844" alt="d5 · Dryhopper" style="width:600%;left:-400%;top:-0%"></span></button>
+<figcaption><span class="id">d5</span><span class="t">Le lot avant la variété</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils20-dryhop/d6/etat.html">
+<button class="ecran" type="button" data-nom="d6 · Ce que l'outil sait vraiment — Dryhopper" data-case="dry-lot20-1.jpg|6|1|5|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-lot20-1.jpg" width="2340" height="844" alt="d6 · Dryhopper" style="width:600%;left:-500%;top:-0%"></span></button>
+<figcaption><span class="id">d6</span><span class="t">Ce que l'outil sait vraiment</span></figcaption>
+</figure>
+</div>
+</section>
+
+<section class="rangee" id="r-ancetres" aria-labelledby="t-ancetres">
+<div class="nom"><h2 id="t-ancetres">Lot 21 · Le « Quand ? » et la levure, avant Dryhopper</h2><p class="date">20.10 · 3 mini maquettes</p></div>
+<div class="planche">
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils21-choisir/y1/etat.html">
+<button class="ecran" type="button" data-nom="y1 · Le brassin au doigt — Dryhopper" data-case="dry-ancetres-1.jpg|3|1|0|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-ancetres-1.jpg" width="1170" height="844" alt="y1 · Dryhopper" style="width:300%;left:-0%;top:-0%"></span></button>
+<figcaption><span class="id">y1</span><span class="t">Le brassin au doigt</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils21-choisir/y1b/etat.html">
+<button class="ecran" type="button" data-nom="y1b · Le brassin au doigt — Dryhopper" data-case="dry-ancetres-1.jpg|3|1|1|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-ancetres-1.jpg" width="1170" height="844" alt="y1b · Dryhopper" style="width:300%;left:-100%;top:-0%"></span></button>
+<figcaption><span class="pastille p-bien">« bien »</span><span class="id">y1b</span><span class="t">Le brassin au doigt</span><span class="ligne">« y1b est de mon point de vue semble meilleur »</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils21-choisir/a2b/etat.html">
+<button class="ecran" type="button" data-nom="a2b · Ce que la levure en fait, en trois colonnes — Dryhopper" data-case="dry-ancetres-1.jpg|3|1|2|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-ancetres-1.jpg" width="1170" height="844" alt="a2b · Dryhopper" style="width:300%;left:-200%;top:-0%"></span></button>
+<figcaption><span class="pastille p-reserve">avec réserve</span><span class="id">a2b</span><span class="t">Ce que la levure en fait, en trois colonnes</span><span class="ligne">« voir ce que la levure change »</span><span class="res">réserve : peut-être pas en main</span></figcaption>
+</figure>
+</div>
+</section>
+
+<section class="rangee" id="r-carte" aria-labelledby="t-carte">
+<div class="nom"><h2 id="t-carte">La carte des outils · Dryhopper</h2><p class="date">22.10 · 1 mini maquette</p></div>
+<div class="planche">
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils22-carte/dryhopper/etat.html">
+<button class="ecran" type="button" data-nom="dryhopper — Dryhopper" data-case="dry-carte-1.jpg|1|1|0|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-carte-1.jpg" width="390" height="844" alt="dryhopper · Dryhopper" style="width:100%;left:-0%;top:-0%"></span></button>
+<figcaption><span class="id">dryhopper</span></figcaption>
+</figure>
+</div>
+</section>
+
+<section class="rangee" id="r-serie-a" aria-labelledby="t-serie-a">
+<div class="nom"><h2 id="t-serie-a">Série A · le geste d'abord</h2><p class="date">23.10 · 8 mini maquettes</p></div>
+<div class="planche">
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-a/a1/etat.html">
+<button class="ecran" type="button" data-nom="a1 — Dryhopper" data-case="dry-serie-a-1.jpg|6|2|0|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-a-1.jpg" width="2340" height="1688" alt="a1 · Dryhopper" style="width:600%;left:-0%;top:-0%"></span></button>
+<figcaption><span class="id">a1</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-a/a2/etat.html">
+<button class="ecran" type="button" data-nom="a2 — Dryhopper" data-case="dry-serie-a-1.jpg|6|2|1|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-a-1.jpg" width="2340" height="1688" alt="a2 · Dryhopper" style="width:600%;left:-100%;top:-0%"></span></button>
+<figcaption><span class="id">a2</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-a/a3/etat.html">
+<button class="ecran" type="button" data-nom="a3 — Dryhopper" data-case="dry-serie-a-1.jpg|6|2|2|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-a-1.jpg" width="2340" height="1688" alt="a3 · Dryhopper" style="width:600%;left:-200%;top:-0%"></span></button>
+<figcaption><span class="id">a3</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-a/a4/etat.html">
+<button class="ecran" type="button" data-nom="a4 — Dryhopper" data-case="dry-serie-a-1.jpg|6|2|3|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-a-1.jpg" width="2340" height="1688" alt="a4 · Dryhopper" style="width:600%;left:-300%;top:-0%"></span></button>
+<figcaption><span class="id">a4</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-a/a5/etat.html">
+<button class="ecran" type="button" data-nom="a5 — Dryhopper" data-case="dry-serie-a-1.jpg|6|2|4|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-a-1.jpg" width="2340" height="1688" alt="a5 · Dryhopper" style="width:600%;left:-400%;top:-0%"></span></button>
+<figcaption><span class="id">a5</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-a/a6/etat.html">
+<button class="ecran" type="button" data-nom="a6 — Dryhopper" data-case="dry-serie-a-1.jpg|6|2|5|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-a-1.jpg" width="2340" height="1688" alt="a6 · Dryhopper" style="width:600%;left:-500%;top:-0%"></span></button>
+<figcaption><span class="id">a6</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-a/a7/etat.html">
+<button class="ecran" type="button" data-nom="a7 — Dryhopper" data-case="dry-serie-a-1.jpg|6|2|0|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-a-1.jpg" width="2340" height="1688" alt="a7 · Dryhopper" style="width:600%;left:-0%;top:-100%"></span></button>
+<figcaption><span class="id">a7</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-a/a8/etat.html">
+<button class="ecran" type="button" data-nom="a8 — Dryhopper" data-case="dry-serie-a-1.jpg|6|2|1|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-a-1.jpg" width="2340" height="1688" alt="a8 · Dryhopper" style="width:600%;left:-100%;top:-100%"></span></button>
+<figcaption><span class="id">a8</span></figcaption>
+</figure>
+</div>
+</section>
+
+<section class="rangee" id="r-serie-b" aria-labelledby="t-serie-b">
+<div class="nom"><h2 id="t-serie-b">Série B · la réponse d'abord</h2><p class="date">23.10 · 8 mini maquettes</p></div>
+<div class="planche">
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-b/b1/etat.html">
+<button class="ecran" type="button" data-nom="b1 — Dryhopper" data-case="dry-serie-b-1.jpg|6|2|0|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-b-1.jpg" width="2340" height="1688" alt="b1 · Dryhopper" style="width:600%;left:-0%;top:-0%"></span></button>
+<figcaption><span class="id">b1</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-b/b2/etat.html">
+<button class="ecran" type="button" data-nom="b2 — Dryhopper" data-case="dry-serie-b-1.jpg|6|2|1|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-b-1.jpg" width="2340" height="1688" alt="b2 · Dryhopper" style="width:600%;left:-100%;top:-0%"></span></button>
+<figcaption><span class="id">b2</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-b/b3/etat.html">
+<button class="ecran" type="button" data-nom="b3 — Dryhopper" data-case="dry-serie-b-1.jpg|6|2|2|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-b-1.jpg" width="2340" height="1688" alt="b3 · Dryhopper" style="width:600%;left:-200%;top:-0%"></span></button>
+<figcaption><span class="id">b3</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-b/b4/etat.html">
+<button class="ecran" type="button" data-nom="b4 — Dryhopper" data-case="dry-serie-b-1.jpg|6|2|3|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-b-1.jpg" width="2340" height="1688" alt="b4 · Dryhopper" style="width:600%;left:-300%;top:-0%"></span></button>
+<figcaption><span class="id">b4</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-b/b5/etat.html">
+<button class="ecran" type="button" data-nom="b5 — Dryhopper" data-case="dry-serie-b-1.jpg|6|2|4|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-b-1.jpg" width="2340" height="1688" alt="b5 · Dryhopper" style="width:600%;left:-400%;top:-0%"></span></button>
+<figcaption><span class="id">b5</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-b/b6/etat.html">
+<button class="ecran" type="button" data-nom="b6 — Dryhopper" data-case="dry-serie-b-1.jpg|6|2|5|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-b-1.jpg" width="2340" height="1688" alt="b6 · Dryhopper" style="width:600%;left:-500%;top:-0%"></span></button>
+<figcaption><span class="id">b6</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-b/b7/etat.html">
+<button class="ecran" type="button" data-nom="b7 — Dryhopper" data-case="dry-serie-b-1.jpg|6|2|0|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-b-1.jpg" width="2340" height="1688" alt="b7 · Dryhopper" style="width:600%;left:-0%;top:-100%"></span></button>
+<figcaption><span class="id">b7</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-b/b8/etat.html">
+<button class="ecran" type="button" data-nom="b8 — Dryhopper" data-case="dry-serie-b-1.jpg|6|2|1|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-b-1.jpg" width="2340" height="1688" alt="b8 · Dryhopper" style="width:600%;left:-100%;top:-100%"></span></button>
+<figcaption><span class="id">b8</span></figcaption>
+</figure>
+</div>
+</section>
+
+<section class="rangee" id="r-serie-c" aria-labelledby="t-serie-c">
+<div class="nom"><h2 id="t-serie-c">Série C · les vraies valeurs d'abord</h2><p class="date">23.10 · 8 mini maquettes</p></div>
+<div class="planche">
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-c/c1/etat.html">
+<button class="ecran" type="button" data-nom="c1 — Dryhopper" data-case="dry-serie-c-1.jpg|6|2|0|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-c-1.jpg" width="2340" height="1688" alt="c1 · Dryhopper" style="width:600%;left:-0%;top:-0%"></span></button>
+<figcaption><span class="id">c1</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-c/c2/etat.html">
+<button class="ecran" type="button" data-nom="c2 — Dryhopper" data-case="dry-serie-c-1.jpg|6|2|1|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-c-1.jpg" width="2340" height="1688" alt="c2 · Dryhopper" style="width:600%;left:-100%;top:-0%"></span></button>
+<figcaption><span class="id">c2</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-c/c3/etat.html">
+<button class="ecran" type="button" data-nom="c3 — Dryhopper" data-case="dry-serie-c-1.jpg|6|2|2|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-c-1.jpg" width="2340" height="1688" alt="c3 · Dryhopper" style="width:600%;left:-200%;top:-0%"></span></button>
+<figcaption><span class="id">c3</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-c/c4/etat.html">
+<button class="ecran" type="button" data-nom="c4 — Dryhopper" data-case="dry-serie-c-1.jpg|6|2|3|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-c-1.jpg" width="2340" height="1688" alt="c4 · Dryhopper" style="width:600%;left:-300%;top:-0%"></span></button>
+<figcaption><span class="id">c4</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-c/c5/etat.html">
+<button class="ecran" type="button" data-nom="c5 — Dryhopper" data-case="dry-serie-c-1.jpg|6|2|4|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-c-1.jpg" width="2340" height="1688" alt="c5 · Dryhopper" style="width:600%;left:-400%;top:-0%"></span></button>
+<figcaption><span class="id">c5</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-c/c6/etat.html">
+<button class="ecran" type="button" data-nom="c6 — Dryhopper" data-case="dry-serie-c-1.jpg|6|2|5|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-c-1.jpg" width="2340" height="1688" alt="c6 · Dryhopper" style="width:600%;left:-500%;top:-0%"></span></button>
+<figcaption><span class="id">c6</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-c/c7/etat.html">
+<button class="ecran" type="button" data-nom="c7 — Dryhopper" data-case="dry-serie-c-1.jpg|6|2|0|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-c-1.jpg" width="2340" height="1688" alt="c7 · Dryhopper" style="width:600%;left:-0%;top:-100%"></span></button>
+<figcaption><span class="id">c7</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-c/c8/etat.html">
+<button class="ecran" type="button" data-nom="c8 — Dryhopper" data-case="dry-serie-c-1.jpg|6|2|1|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-c-1.jpg" width="2340" height="1688" alt="c8 · Dryhopper" style="width:600%;left:-100%;top:-100%"></span></button>
+<figcaption><span class="id">c8</span></figcaption>
+</figure>
+</div>
+</section>
+
+<section class="rangee" id="r-serie-d" aria-labelledby="t-serie-d">
+<div class="nom"><h2 id="t-serie-d">Série D · le simulateur</h2><p class="date">23.10 · 8 mini maquettes</p></div>
+<div class="planche">
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-d/d1/etat.html">
+<button class="ecran" type="button" data-nom="d1 — Dryhopper" data-case="dry-serie-d-1.jpg|6|2|0|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-d-1.jpg" width="2340" height="1688" alt="d1 · Dryhopper" style="width:600%;left:-0%;top:-0%"></span></button>
+<figcaption><span class="id">d1</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-d/d2/etat.html">
+<button class="ecran" type="button" data-nom="d2 — Dryhopper" data-case="dry-serie-d-1.jpg|6|2|1|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-d-1.jpg" width="2340" height="1688" alt="d2 · Dryhopper" style="width:600%;left:-100%;top:-0%"></span></button>
+<figcaption><span class="id">d2</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-d/d3/etat.html">
+<button class="ecran" type="button" data-nom="d3 — Dryhopper" data-case="dry-serie-d-1.jpg|6|2|2|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-d-1.jpg" width="2340" height="1688" alt="d3 · Dryhopper" style="width:600%;left:-200%;top:-0%"></span></button>
+<figcaption><span class="id">d3</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-d/d4/etat.html">
+<button class="ecran" type="button" data-nom="d4 — Dryhopper" data-case="dry-serie-d-1.jpg|6|2|3|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-d-1.jpg" width="2340" height="1688" alt="d4 · Dryhopper" style="width:600%;left:-300%;top:-0%"></span></button>
+<figcaption><span class="id">d4</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-d/d5/etat.html">
+<button class="ecran" type="button" data-nom="d5 — Dryhopper" data-case="dry-serie-d-1.jpg|6|2|4|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-d-1.jpg" width="2340" height="1688" alt="d5 · Dryhopper" style="width:600%;left:-400%;top:-0%"></span></button>
+<figcaption><span class="id">d5</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-d/d6/etat.html">
+<button class="ecran" type="button" data-nom="d6 — Dryhopper" data-case="dry-serie-d-1.jpg|6|2|5|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-d-1.jpg" width="2340" height="1688" alt="d6 · Dryhopper" style="width:600%;left:-500%;top:-0%"></span></button>
+<figcaption><span class="id">d6</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-d/d7/etat.html">
+<button class="ecran" type="button" data-nom="d7 — Dryhopper" data-case="dry-serie-d-1.jpg|6|2|0|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-d-1.jpg" width="2340" height="1688" alt="d7 · Dryhopper" style="width:600%;left:-0%;top:-100%"></span></button>
+<figcaption><span class="id">d7</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-d/d8/etat.html">
+<button class="ecran" type="button" data-nom="d8 — Dryhopper" data-case="dry-serie-d-1.jpg|6|2|1|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-d-1.jpg" width="2340" height="1688" alt="d8 · Dryhopper" style="width:600%;left:-100%;top:-100%"></span></button>
+<figcaption><span class="id">d8</span></figcaption>
+</figure>
+</div>
+</section>
+
+<section class="rangee" id="r-serie-e" aria-labelledby="t-serie-e">
+<div class="nom"><h2 id="t-serie-e">Série E · la frise</h2><p class="date">23.10 · 8 mini maquettes</p></div>
+<div class="planche">
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-e/e1/etat.html">
+<button class="ecran" type="button" data-nom="e1 — Dryhopper" data-case="dry-serie-e-1.jpg|6|2|0|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-e-1.jpg" width="2340" height="1688" alt="e1 · Dryhopper" style="width:600%;left:-0%;top:-0%"></span></button>
+<figcaption><span class="id">e1</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-e/e2/etat.html">
+<button class="ecran" type="button" data-nom="e2 — Dryhopper" data-case="dry-serie-e-1.jpg|6|2|1|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-e-1.jpg" width="2340" height="1688" alt="e2 · Dryhopper" style="width:600%;left:-100%;top:-0%"></span></button>
+<figcaption><span class="id">e2</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-e/e3/etat.html">
+<button class="ecran" type="button" data-nom="e3 — Dryhopper" data-case="dry-serie-e-1.jpg|6|2|2|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-e-1.jpg" width="2340" height="1688" alt="e3 · Dryhopper" style="width:600%;left:-200%;top:-0%"></span></button>
+<figcaption><span class="id">e3</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-e/e4/etat.html">
+<button class="ecran" type="button" data-nom="e4 — Dryhopper" data-case="dry-serie-e-1.jpg|6|2|3|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-e-1.jpg" width="2340" height="1688" alt="e4 · Dryhopper" style="width:600%;left:-300%;top:-0%"></span></button>
+<figcaption><span class="id">e4</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-e/e5/etat.html">
+<button class="ecran" type="button" data-nom="e5 — Dryhopper" data-case="dry-serie-e-1.jpg|6|2|4|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-e-1.jpg" width="2340" height="1688" alt="e5 · Dryhopper" style="width:600%;left:-400%;top:-0%"></span></button>
+<figcaption><span class="id">e5</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-e/e6/etat.html">
+<button class="ecran" type="button" data-nom="e6 — Dryhopper" data-case="dry-serie-e-1.jpg|6|2|5|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-e-1.jpg" width="2340" height="1688" alt="e6 · Dryhopper" style="width:600%;left:-500%;top:-0%"></span></button>
+<figcaption><span class="id">e6</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-e/e7/etat.html">
+<button class="ecran" type="button" data-nom="e7 — Dryhopper" data-case="dry-serie-e-1.jpg|6|2|0|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-e-1.jpg" width="2340" height="1688" alt="e7 · Dryhopper" style="width:600%;left:-0%;top:-100%"></span></button>
+<figcaption><span class="id">e7</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-e/e8/etat.html">
+<button class="ecran" type="button" data-nom="e8 — Dryhopper" data-case="dry-serie-e-1.jpg|6|2|1|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-e-1.jpg" width="2340" height="1688" alt="e8 · Dryhopper" style="width:600%;left:-100%;top:-100%"></span></button>
+<figcaption><span class="id">e8</span></figcaption>
+</figure>
+</div>
+</section>
+
+<section class="rangee" id="r-serie-f" aria-labelledby="t-serie-f">
+<div class="nom"><h2 id="t-serie-f">Série F · créatif à fond</h2><p class="date">23.10 · 8 mini maquettes</p></div>
+<div class="planche">
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-f/f1/etat.html">
+<button class="ecran" type="button" data-nom="f1 — Dryhopper" data-case="dry-serie-f-1.jpg|6|2|0|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-f-1.jpg" width="2340" height="1688" alt="f1 · Dryhopper" style="width:600%;left:-0%;top:-0%"></span></button>
+<figcaption><span class="id">f1</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-f/f2/etat.html">
+<button class="ecran" type="button" data-nom="f2 — Dryhopper" data-case="dry-serie-f-1.jpg|6|2|1|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-f-1.jpg" width="2340" height="1688" alt="f2 · Dryhopper" style="width:600%;left:-100%;top:-0%"></span></button>
+<figcaption><span class="id">f2</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-f/f3/etat.html">
+<button class="ecran" type="button" data-nom="f3 — Dryhopper" data-case="dry-serie-f-1.jpg|6|2|2|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-f-1.jpg" width="2340" height="1688" alt="f3 · Dryhopper" style="width:600%;left:-200%;top:-0%"></span></button>
+<figcaption><span class="id">f3</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-f/f4/etat.html">
+<button class="ecran" type="button" data-nom="f4 — Dryhopper" data-case="dry-serie-f-1.jpg|6|2|3|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-f-1.jpg" width="2340" height="1688" alt="f4 · Dryhopper" style="width:600%;left:-300%;top:-0%"></span></button>
+<figcaption><span class="id">f4</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-f/f5/etat.html">
+<button class="ecran" type="button" data-nom="f5 — Dryhopper" data-case="dry-serie-f-1.jpg|6|2|4|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-f-1.jpg" width="2340" height="1688" alt="f5 · Dryhopper" style="width:600%;left:-400%;top:-0%"></span></button>
+<figcaption><span class="id">f5</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-f/f6/etat.html">
+<button class="ecran" type="button" data-nom="f6 — Dryhopper" data-case="dry-serie-f-1.jpg|6|2|5|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-f-1.jpg" width="2340" height="1688" alt="f6 · Dryhopper" style="width:600%;left:-500%;top:-0%"></span></button>
+<figcaption><span class="id">f6</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-f/f7/etat.html">
+<button class="ecran" type="button" data-nom="f7 — Dryhopper" data-case="dry-serie-f-1.jpg|6|2|0|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-f-1.jpg" width="2340" height="1688" alt="f7 · Dryhopper" style="width:600%;left:-0%;top:-100%"></span></button>
+<figcaption><span class="id">f7</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-f/f8/etat.html">
+<button class="ecran" type="button" data-nom="f8 — Dryhopper" data-case="dry-serie-f-1.jpg|6|2|1|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-f-1.jpg" width="2340" height="1688" alt="f8 · Dryhopper" style="width:600%;left:-100%;top:-100%"></span></button>
+<figcaption><span class="id">f8</span></figcaption>
+</figure>
+</div>
+</section>
+
+<section class="rangee" id="r-serie-g" aria-labelledby="t-serie-g">
+<div class="nom"><h2 id="t-serie-g">Série G · libre, brief minimal</h2><p class="date">23.10 · 8 mini maquettes</p></div>
+<div class="planche">
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-g/g1/etat.html">
+<button class="ecran" type="button" data-nom="g1 — Dryhopper" data-case="dry-serie-g-1.jpg|6|2|0|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-g-1.jpg" width="2340" height="1688" alt="g1 · Dryhopper" style="width:600%;left:-0%;top:-0%"></span></button>
+<figcaption><span class="id">g1</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-g/g2/etat.html">
+<button class="ecran" type="button" data-nom="g2 — Dryhopper" data-case="dry-serie-g-1.jpg|6|2|1|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-g-1.jpg" width="2340" height="1688" alt="g2 · Dryhopper" style="width:600%;left:-100%;top:-0%"></span></button>
+<figcaption><span class="id">g2</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-g/g3/etat.html">
+<button class="ecran" type="button" data-nom="g3 — Dryhopper" data-case="dry-serie-g-1.jpg|6|2|2|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-g-1.jpg" width="2340" height="1688" alt="g3 · Dryhopper" style="width:600%;left:-200%;top:-0%"></span></button>
+<figcaption><span class="id">g3</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-g/g4/etat.html">
+<button class="ecran" type="button" data-nom="g4 — Dryhopper" data-case="dry-serie-g-1.jpg|6|2|3|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-g-1.jpg" width="2340" height="1688" alt="g4 · Dryhopper" style="width:600%;left:-300%;top:-0%"></span></button>
+<figcaption><span class="id">g4</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-g/g5/etat.html">
+<button class="ecran" type="button" data-nom="g5 — Dryhopper" data-case="dry-serie-g-1.jpg|6|2|4|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-g-1.jpg" width="2340" height="1688" alt="g5 · Dryhopper" style="width:600%;left:-400%;top:-0%"></span></button>
+<figcaption><span class="id">g5</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-g/g6/etat.html">
+<button class="ecran" type="button" data-nom="g6 — Dryhopper" data-case="dry-serie-g-1.jpg|6|2|5|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-g-1.jpg" width="2340" height="1688" alt="g6 · Dryhopper" style="width:600%;left:-500%;top:-0%"></span></button>
+<figcaption><span class="id">g6</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-g/g7/etat.html">
+<button class="ecran" type="button" data-nom="g7 — Dryhopper" data-case="dry-serie-g-1.jpg|6|2|0|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-g-1.jpg" width="2340" height="1688" alt="g7 · Dryhopper" style="width:600%;left:-0%;top:-100%"></span></button>
+<figcaption><span class="id">g7</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-g/g8/etat.html">
+<button class="ecran" type="button" data-nom="g8 — Dryhopper" data-case="dry-serie-g-1.jpg|6|2|1|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-serie-g-1.jpg" width="2340" height="1688" alt="g8 · Dryhopper" style="width:600%;left:-100%;top:-100%"></span></button>
+<figcaption><span class="id">g8</span></figcaption>
+</figure>
+</div>
+</section>
+
+<section class="rangee" id="r-passes23" aria-labelledby="t-passes23">
+<div class="nom"><h2 id="t-passes23">Passes 2 et 3 : a1, b4, d8, e5, g1 retouchées</h2><p class="date">23.10 · 9 mini maquettes</p></div>
+<div class="planche">
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-a/passe2/a1/etat.html">
+<button class="ecran" type="button" data-nom="a1 · passe 2 — Dryhopper" data-case="dry-passes23-1.jpg|6|2|0|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passes23-1.jpg" width="2340" height="1688" alt="a1 · passe 2 · Dryhopper" style="width:600%;left:-0%;top:-0%"></span></button>
+<figcaption><span class="pastille p-bien">« bien »</span><span class="id">a1 · passe 2</span><span class="ligne">l'ancien plancher, remplacé par p4b2f</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-a/passe3/a1/etat.html">
+<button class="ecran" type="button" data-nom="a1 · passe 3 — Dryhopper" data-case="dry-passes23-1.jpg|6|2|1|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passes23-1.jpg" width="2340" height="1688" alt="a1 · passe 3 · Dryhopper" style="width:600%;left:-100%;top:-0%"></span></button>
+<figcaption><span class="id">a1 · passe 3</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-b/passe2/b4/etat.html">
+<button class="ecran" type="button" data-nom="b4 · passe 2 — Dryhopper" data-case="dry-passes23-1.jpg|6|2|2|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passes23-1.jpg" width="2340" height="1688" alt="b4 · passe 2 · Dryhopper" style="width:600%;left:-200%;top:-0%"></span></button>
+<figcaption><span class="id">b4 · passe 2</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-b/passe3/b4/etat.html">
+<button class="ecran" type="button" data-nom="b4 · passe 3 — Dryhopper" data-case="dry-passes23-1.jpg|6|2|3|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passes23-1.jpg" width="2340" height="1688" alt="b4 · passe 3 · Dryhopper" style="width:600%;left:-300%;top:-0%"></span></button>
+<figcaption><span class="id">b4 · passe 3</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-d/passe2/d8/etat.html">
+<button class="ecran" type="button" data-nom="d8 · passe 2 — Dryhopper" data-case="dry-passes23-1.jpg|6|2|4|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passes23-1.jpg" width="2340" height="1688" alt="d8 · passe 2 · Dryhopper" style="width:600%;left:-400%;top:-0%"></span></button>
+<figcaption><span class="id">d8 · passe 2</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-d/passe3/d8/etat.html">
+<button class="ecran" type="button" data-nom="d8 · passe 3 — Dryhopper" data-case="dry-passes23-1.jpg|6|2|5|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passes23-1.jpg" width="2340" height="1688" alt="d8 · passe 3 · Dryhopper" style="width:600%;left:-500%;top:-0%"></span></button>
+<figcaption><span class="id">d8 · passe 3</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-e/passe2/e5/etat.html">
+<button class="ecran" type="button" data-nom="e5 · passe 2 — Dryhopper" data-case="dry-passes23-1.jpg|6|2|0|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passes23-1.jpg" width="2340" height="1688" alt="e5 · passe 2 · Dryhopper" style="width:600%;left:-0%;top:-100%"></span></button>
+<figcaption><span class="id">e5 · passe 2</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-e/passe3/e5/etat.html">
+<button class="ecran" type="button" data-nom="e5 · passe 3 — Dryhopper" data-case="dry-passes23-1.jpg|6|2|1|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passes23-1.jpg" width="2340" height="1688" alt="e5 · passe 3 · Dryhopper" style="width:600%;left:-100%;top:-100%"></span></button>
+<figcaption><span class="id">e5 · passe 3</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/serie-g/passe2/g1/etat.html">
+<button class="ecran" type="button" data-nom="g1 · passe 2 — Dryhopper" data-case="dry-passes23-1.jpg|6|2|2|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passes23-1.jpg" width="2340" height="1688" alt="g1 · passe 2 · Dryhopper" style="width:600%;left:-200%;top:-100%"></span></button>
+<figcaption><span class="id">g1 · passe 2</span></figcaption>
+</figure>
+</div>
+</section>
+
+<section class="rangee" id="r-passe4" aria-labelledby="t-passe4">
+<div class="nom"><h2 id="t-passe4">Passes 4 et 5 : p4a, p4b, et les trois retouches de p4b2</h2><p class="date">24.10 · 14 mini maquettes</p></div>
+<div class="planche">
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4a1/etat.html">
+<button class="ecran" type="button" data-nom="p4a1 · a1, froide — Dryhopper" data-case="dry-passe4-1.jpg|6|3|0|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passe4-1.jpg" width="2340" height="2532" alt="p4a1 · Dryhopper" style="width:600%;left:-0%;top:-0%"></span></button>
+<figcaption><span class="id">p4a1</span><span class="t">a1, froide</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4a2/etat.html">
+<button class="ecran" type="button" data-nom="p4a2 · a1, froide — Dryhopper" data-case="dry-passe4-1.jpg|6|3|1|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passe4-1.jpg" width="2340" height="2532" alt="p4a2 · Dryhopper" style="width:600%;left:-100%;top:-0%"></span></button>
+<figcaption><span class="id">p4a2</span><span class="t">a1, froide</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4a3/etat.html">
+<button class="ecran" type="button" data-nom="p4a3 · a1 debout — Dryhopper" data-case="dry-passe4-1.jpg|6|3|2|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passe4-1.jpg" width="2340" height="2532" alt="p4a3 · Dryhopper" style="width:600%;left:-200%;top:-0%"></span></button>
+<figcaption><span class="id">p4a3</span><span class="t">a1 debout</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4a4/etat.html">
+<button class="ecran" type="button" data-nom="p4a4 · a1 retourné — Dryhopper" data-case="dry-passe4-1.jpg|6|3|3|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passe4-1.jpg" width="2340" height="2532" alt="p4a4 · Dryhopper" style="width:600%;left:-300%;top:-0%"></span></button>
+<figcaption><span class="id">p4a4</span><span class="t">a1 retourné</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4a5/etat.html">
+<button class="ecran" type="button" data-nom="p4a5 · a1 sous ses preuves — Dryhopper" data-case="dry-passe4-1.jpg|6|3|4|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passe4-1.jpg" width="2340" height="2532" alt="p4a5 · Dryhopper" style="width:600%;left:-400%;top:-0%"></span></button>
+<figcaption><span class="id">p4a5</span><span class="t">a1 sous ses preuves</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4a6/etat.html">
+<button class="ecran" type="button" data-nom="p4a6 · a1 en chaîne — Dryhopper" data-case="dry-passe4-1.jpg|6|3|5|0" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passe4-1.jpg" width="2340" height="2532" alt="p4a6 · Dryhopper" style="width:600%;left:-500%;top:-0%"></span></button>
+<figcaption><span class="id">p4a6</span><span class="t">a1 en chaîne</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b1/etat.html">
+<button class="ecran" type="button" data-nom="p4b1 · Gardé · emporté — Dryhopper" data-case="dry-passe4-1.jpg|6|3|0|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passe4-1.jpg" width="2340" height="2532" alt="p4b1 · Dryhopper" style="width:600%;left:-0%;top:-100%"></span></button>
+<figcaption><span class="id">p4b1</span><span class="t">Gardé · emporté</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2/etat.html">
+<button class="ecran" type="button" data-nom="p4b2 · Le brassin en courbes — Dryhopper" data-case="dry-passe4-1.jpg|6|3|1|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passe4-1.jpg" width="2340" height="2532" alt="p4b2 · Dryhopper" style="width:600%;left:-100%;top:-100%"></span></button>
+<figcaption><span class="pastille p-reserve">avec réserve</span><span class="id">p4b2</span><span class="t">Le brassin en courbes</span><span class="ligne">« Ça j'aime beaucoup »</span><span class="res">réserve : encore assez peu lisible</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2d/etat.html">
+<button class="ecran" type="button" data-nom="p4b2d · Le brassin en courbes, nettoyé — Dryhopper" data-case="dry-passe4-1.jpg|6|3|2|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passe4-1.jpg" width="2340" height="2532" alt="p4b2d · Dryhopper" style="width:600%;left:-200%;top:-100%"></span></button>
+<figcaption><span class="id">p4b2d</span><span class="t">Le brassin en courbes, nettoyé</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2e/etat.html">
+<button class="ecran" type="button" data-nom="p4b2e · Une courbe devant — Dryhopper" data-case="dry-passe4-1.jpg|6|3|3|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passe4-1.jpg" width="2340" height="2532" alt="p4b2e · Dryhopper" style="width:600%;left:-300%;top:-100%"></span></button>
+<figcaption><span class="id">p4b2e</span><span class="t">Une courbe devant</span></figcaption>
+</figure>
+<figure class="vue choisie" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b2f/etat.html">
+<button class="ecran" type="button" data-nom="p4b2f · L'aire de floral — Dryhopper" data-case="dry-passe4-1.jpg|6|3|4|1"><span class="cadre"><img src="planches/dry-passe4-1.jpg" width="2340" height="2532" alt="p4b2f · Dryhopper" style="width:600%;left:-400%;top:-100%"></span></button>
+<figcaption><span class="pastille p-choix">ton choix</span><span class="id">p4b2f</span><span class="t">L'aire de floral</span><span class="ligne">« Partir sur cette version »</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b3/etat.html">
+<button class="ecran" type="button" data-nom="p4b3 · L'agenda du brassin — Dryhopper" data-case="dry-passe4-1.jpg|6|3|5|1" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passe4-1.jpg" width="2340" height="2532" alt="p4b3 · Dryhopper" style="width:600%;left:-500%;top:-100%"></span></button>
+<figcaption><span class="id">p4b3</span><span class="t">L'agenda du brassin</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b4/etat.html">
+<button class="ecran" type="button" data-nom="p4b4 · Le duel contre ★ — Dryhopper" data-case="dry-passe4-1.jpg|6|3|0|2" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passe4-1.jpg" width="2340" height="2532" alt="p4b4 · Dryhopper" style="width:600%;left:-0%;top:-200%"></span></button>
+<figcaption><span class="id">p4b4</span><span class="t">Le duel contre ★</span></figcaption>
+</figure>
+<figure class="vue" data-vignette data-source="work/refonte-frontend/v4/ecran-1/fils23-dryhopper/passe4/p4b5/etat.html">
+<button class="ecran" type="button" data-nom="p4b5 · Trois moments sous le pouce — Dryhopper" data-case="dry-passe4-1.jpg|6|3|1|2" data-ref="dry-choix-1.jpg|4|1|0|0" data-ref-nom="ton choix · Dryhopper · p4b2f"><span class="cadre"><img src="planches/dry-passe4-1.jpg" width="2340" height="2532" alt="p4b5 · Dryhopper" style="width:600%;left:-100%;top:-200%"></span></button>
+<figcaption><span class="id">p4b5</span><span class="t">Trois moments sous le pouce</span></figcaption>
+</figure>
+</div>
+</section>
+
+<footer>
+<p>Le champ : chaque mini maquette dont la source contient « dryhop » (lots 20, 22 et 23), et y1, y1b, a2b du lot 21. Toutes les créations : la page « Toutes tes mini maquettes ».</p>
+</footer>
+</div>
+
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-labelledby="vis-titre">
+<div class="vis-tete">
+<p class="vis-titre" id="vis-titre"></p>
+<div class="vis-boutons">
+<button type="button" id="vis-prec" aria-label="Mini maquette précédente">◀</button>
+<button type="button" id="vis-suiv" aria-label="Mini maquette suivante">▶</button>
+<button type="button" class="fermer" id="vis-fermer">Fermer</button>
+</div>
+</div>
+<p class="vis-glisse" id="vis-glisse">Glisse : ton choix pour le même écran →</p>
+<div class="vis-rangee" id="vis-rangee"></div>
+</div>
+
+<script>
+// La visionneuse seule : la case en grand (390 px), à côté de ton choix pour le même écran. Le contenu ne dépend pas de ce script.
+(function () {
+  var vis = document.getElementById('visionneuse');
+  var rangee = document.getElementById('vis-rangee');
+  var titre = document.getElementById('vis-titre');
+  var glisse = document.getElementById('vis-glisse');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.planche .ecran'));
+  var rang = -1, retour = null;
+  function panneau(c, leg, dossier, ref) {
+    var p = c.split('|'), cols = +p[1], rows = +p[2], x = +p[3], y = +p[4];
+    var f = document.createElement('figure'); f.className = 'vis-panneau' + (ref ? ' ref' : '');
+    var cap = document.createElement('figcaption'); cap.textContent = leg;
+    var cadre = document.createElement('span'); cadre.className = 'cadre';
+    var i = document.createElement('img'); i.src = 'planches/' + p[0]; i.alt = leg;
+    i.style.width = (cols * 100) + '%'; i.style.left = (-x * 100) + '%'; i.style.top = (-y * 100) + '%';
+    cadre.appendChild(i); f.appendChild(cap); f.appendChild(cadre);
+    return f;
+  }
+  function ouvrir(n, depuis) {
+    if (depuis) retour = depuis;
+    rang = n;
+    var b = boutons[rang];
+    titre.textContent = b.getAttribute('data-nom');
+    rangee.textContent = '';
+    rangee.appendChild(panneau(b.getAttribute('data-case'), b.closest('figure').querySelector('.id').textContent));
+    var r = b.getAttribute('data-ref');
+    if (r) rangee.appendChild(panneau(r, b.getAttribute('data-ref-nom'), null, true));
+    glisse.hidden = !r;
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('vis-fermer').focus();
+  }
+  function fermer() { vis.hidden = true; rangee.textContent = ''; if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang >= 0) ouvrir((rang + pas + boutons.length) % boutons.length); }
+  document.addEventListener('click', function (e) { var b = e.target.closest('.planche .ecran'); if (b) ouvrir(boutons.indexOf(b), b); });
+  document.getElementById('vis-fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', function () { aller(-1); });
+  document.getElementById('vis-suiv').addEventListener('click', function () { aller(1); });
+  document.addEventListener('keydown', function (e) {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>
+</body>
+</html>

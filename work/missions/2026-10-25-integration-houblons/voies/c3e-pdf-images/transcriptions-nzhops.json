@@ -1,0 +1,211 @@
+{
+  "_lecture": "Transcription par lecture visuelle (rendu des PDF dans le visionneur de Chrome, lu en image) ; chaque valeur a été relue une seconde fois. Les valeurs sont recopiées telles qu'imprimées, y compris leurs incohérences. Le graphique « Hop Aroma Profile » (radar 0-5) n'est pas chiffré : non transcrit.",
+  "_formats": {
+    "tech": "Ancienne fiche (« Tech Specs ») : une plage par ligne. Alpha, bêta : % ; huile totale : mL/100g ; composés : % de l'huile (base non imprimée).",
+    "moyennePlage": "Fiche récente (« Hop Data », colonnes Mean / Range) : [moyenne, plage]. Colonne « Trait % »."
+  },
+  "fiches": [
+    {
+      "nom": "Dr. Rudi",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Dr_Rudi_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676917667",
+      "page": 1, "format": "tech",
+      "profilCourt": "A dual purpose / bittering hop with classic resinous pine and lifted citrus characters",
+      "tech": { "Alpha Acids": "10-14%", "Beta Acids": "5-7%", "Total Oil": "1.25-2 mL/100g", "B-Pinene": "0.2-0.5%", "Myrcene": "44-55%", "Linalool": "5.5-8.0%", "Caryophyllene": "8-12%", "Farnesene": "0.1-1%", "Humulene": "20-28%", "Geraniol": "0.8-1.2%" },
+      "listes": { "lignee": ["Smoothcone"], "ploidie": ["triploïde"], "calendrier": ["sortie 1976 sous le nom Super Alpha", "renommé Dr. Rudi 2012"], "usage": ["double usage", "amérisant"] },
+      "doutes": ["Linalol 5.5-8.0 % imprimé (valeur très haute pour un houblon ; relu deux fois, recopié tel quel)"]
+    },
+    {
+      "nom": "Green Bullet",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Green_Bullet_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676917833",
+      "page": 1, "format": "tech",
+      "profilCourt": "A dual purpose / bittering hop with a spicy dried fruit character and solid finish.",
+      "tech": { "Alpha Acids": "12-14%", "Beta Acids": "5-7%", "Total Oil": "1.25-2 mL/100g", "B-Pinene": "0.4-0.6%", "Myrcene": "50-60%", "Linalool": "0.7-1.1%", "Caryophyllene": "4-7%", "Farnesene": "0.2-1%", "Humulene": "15-20%", "Geraniol": "0.5-1%" },
+      "listes": { "lignee": ["Smoothcone (pollinisation libre)"], "ploidie": ["triploïde"], "calendrier": ["sortie 1972 (DSIR)"], "usage": ["double usage", "amérisant"] }
+    },
+    {
+      "nom": "Kohatu",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Kohatu_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676919246",
+      "page": 1, "format": "tech",
+      "profilCourt": "A dual purpose hop with fresh citrus and herbal characters holding an excellent finish and bitterness.",
+      "tech": { "Alpha Acids": "6-7%", "Beta Acids": "4-5%", "Total Oil": "0.75-1.2 mL/100g", "B-Pinene": "0.1-0.5%", "Myrcene": "30-40%", "Linalool": "0.5-1%", "Caryophyllene": "11-13%", "Farnesene": "0.5-1%", "Humulene": "35-45%", "Geraniol": "0.2-0.8%" },
+      "listes": { "lignee": ["Hallertau Mittelfrüh", "mâle néo-zélandais (ascendance européenne et nord-américaine)"], "ploidie": ["triploïde"], "codeObtention": ["HORT3829"], "calendrier": ["sortie 2011"], "usage": ["double usage"] }
+    },
+    {
+      "nom": "Moutere",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Moutere_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676919109",
+      "page": 1, "format": "tech",
+      "profilCourt": "A high alpha hop with distinctive grapefruit, stone fruit and passion fruit characters.",
+      "tech": { "Alpha Acids": "17-20%", "Beta Acids": "8-10%", "Total Oil": "1.5-2 mL/100g", "B-Pinene": "0.1-0.5%", "Myrcene": "20-30%", "Linalool": "0.8-1.5%", "Caryophyllene": "5-6%", "Farnesene": "0.1-0.5%", "Humulene": "14-16%", "Geraniol": "0.8-1.2%", "Other": "9-11%" },
+      "listes": { "lignee": ["Southern Cross", "mâle néo-zélandais"], "ploidie": ["triploïde"], "codeObtention": ["HORT0605"], "calendrier": ["sortie 2015"], "usage": ["haut alpha", "double usage"] }
+    },
+    {
+      "nom": "NZ Fuggle",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/NZ_Fuggle_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1682019589",
+      "page": 1, "format": "tech",
+      "profilCourt": "An aroma hop with a distinctive fresh crushed citrus \"Mojito\" lime character",
+      "tech": { "Alpha Acids": "5-6%", "Beta Acids": "2.5-4%", "Total Oil": "0.6-0.8 mL/100g", "B-Pinene": "0.2-0.3%", "Myrcene": "25-30%", "Linalool": "0.5-0.7%", "Caryophyllene": "10-14%", "Farnesene": "5-7%", "Humulene": "40-44%", "Geraniol": "1-1.2%" },
+      "listes": { "lignee": ["Fuggle (sélection de Richard Fuggle)"], "calendrier": ["semis sélectionné 1861", "commercialisé dans le Kent 1875"], "usage": ["arôme"], "styles": ["bitter", "mild", "British pale ale", "stout", "porter", "English IPA"] },
+      "doutes": ["L'accroche imprimée (« Mojito » lime) est celle de Motueka : recopiée telle quelle"]
+    },
+    {
+      "nom": "NZ Pacific Jade",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/NZ_Pacific_Jade_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676918235",
+      "page": 1, "format": "tech",
+      "profilCourt": "A soft bittering / dual purpose hop with fresh citrus and complex spice characters.",
+      "tech": { "Alpha Acids": "12-15%", "Beta Acids": "6-8%", "Total Oil": "1.5-2.25 mL/100g", "B-Pinene": "0.4-0.6%", "Myrcene": "50-60%", "Linalool": "0.4-0.6%", "Caryophyllene": "5-8%", "Farnesene": "0.1-1%", "Humulene": "15-25%", "Geraniol": "1.0-1.5%" },
+      "listes": { "lignee": ["First Choice (parent de la Late Cluster)", "mâle Old Line Saazer"], "ploidie": ["triploïde"], "codeObtention": ["HORT1524"], "calendrier": ["sortie 2004"], "usage": ["amérisant doux", "double usage"] }
+    },
+    {
+      "nom": "NZ Southern Cross",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Southern_Cross_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676918991",
+      "page": 1, "format": "tech",
+      "profilCourt": "A dual-purpose, soft bittering hop with a citrus lemon zest character with hints of pine",
+      "tech": { "Alpha Acids": "11-14%", "Beta Acids": "5-6%", "Total Oil": "1.5-2.25 mL/100g", "B-Pinene": "0.5-1%", "Myrcene": "35-50%", "Linalool": "0.5-1%", "Caryophyllene": "5-7%", "Farnesene": "6-8%", "Humulene": "17-20%", "Geraniol": "0.5-1%" },
+      "listes": { "lignee": ["Smoothcone", "croisement Cali (Californien) x Fuggle"], "ploidie": ["triploïde"], "calendrier": ["sortie 1994 (HortResearch, Riwaka)"], "usage": ["double usage", "amérisant doux"] }
+    },
+    {
+      "nom": "Pacific Gem",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Pacific_Gem_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676918041",
+      "page": 1, "format": "tech",
+      "profilCourt": "A solid bittering hop with spicy black pepper and berry fruit aroma characters.",
+      "tech": { "Alpha Acids": "13-16%", "Beta Acids": "7-9%", "Total Oil": "1.25-2.25 mL/100g", "B-Pinene": "0.4-0.6%", "Myrcene": "50-55%", "Linalool": "0.4-0.8%", "Caryophyllene": "5-8%", "Farnesene": "0.1-1%", "Humulene": "15-20%", "Geraniol": "0.6-0.9%" },
+      "listes": { "lignee": ["Smoothcone"], "ploidie": ["triploïde"], "calendrier": ["sortie 1987"], "usage": ["amérisant", "tout usage"] }
+    },
+    {
+      "nom": "Pacifica",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Pacifica_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676918115",
+      "page": 1, "format": "tech",
+      "profilCourt": "A dual purpose, bittering hop with spicy \"dried fruit\" characters and a solid aroma finish.",
+      "tech": { "Alpha Acids": "3-6%", "Beta Acids": "5-7%", "Total Oil": "0.8-1.5 mL/100g", "B-Pinene": "0.2-0.6%", "Myrcene": "30-40%", "Linalool": "0.6-1%", "Caryophyllene": "8-12%", "Farnesene": "0.1-1%", "Humulene": "30-40%", "Geraniol": "0.1-1.0%" },
+      "listes": { "lignee": ["Hallertauer Mittelfrüh", "mâle néo-zélandais"], "ploidie": ["triploïde"], "calendrier": ["sortie 1994"], "usage": ["double usage", "amérisant"] }
+    },
+    {
+      "nom": "Rakau",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Rakau_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676918556",
+      "page": 1, "format": "tech",
+      "profilCourt": "A true dual-purpose hop with stone fruit and fig characters that has excellent bittering qualities.",
+      "tech": { "Alpha Acids": "9-12%", "Beta Acids": "3-6%", "Total Oil": "0.8-2 mL/100g", "B-Pinene": "0.3-0.7%", "Myrcene": "45-55%", "Linalool": "0.4-0.8%", "Caryophyllene": "5-8%", "Farnesene": "4-8%", "Humulene": "18-22%", "Geraniol": "0.7-1.0%" },
+      "listes": { "ploidie": ["triploïde"], "calendrier": ["nouvelle sortie 2007 (essais en bio)"], "usage": ["double usage"] }
+    },
+    {
+      "nom": "Riwaka",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Riwaka_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676918491",
+      "page": 1, "format": "tech",
+      "profilCourt": "A unique aroma hop with a powerfully fuelled citrus, grapefruit character with pine and passion fruit.",
+      "tech": { "Alpha Acids": "4.5-6.5%", "Beta Acids": "4-5%", "Total Oil": "0.9-1.5 mL/100g", "B-Pinene": "0.5-1%", "Myrcene": "55-65%", "Linalool": "0.6-1.2%", "Caryophyllene": "4-7%", "Farnesene": "0.5-1%", "Humulene": "5-15%", "Geraniol": "1.5-2.5%" },
+      "listes": { "lignee": ["origine Saazer", "mâles néo-zélandais"], "ploidie": ["triploïde"], "calendrier": ["sortie 1997"], "usage": ["arôme"], "styles": ["IPA", "Imperial Pilsner", "pale ale", "pilsner néo-zélandaise"] }
+    },
+    {
+      "nom": "Taiheke",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Taiheke_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676918400",
+      "page": 1, "format": "tech",
+      "profilCourt": "New Zealand grown dual purpose US Cultivar with citrus, grapefruit, and lime characters.",
+      "tech": { "Alpha Acids": "6-8%", "Beta Acids": "5-6%", "Total Oil": "0.8-1.3 mL/100g", "B-Pinene": "0.5-0.7%", "Myrcene": "50-55%", "Linalool": "0.4-0.6%", "Caryophyllene": "5-7.5%", "Farnesene": "5.8%", "Humulene": "12-18%", "Geraniol": "1-1.4%" },
+      "listes": { "lignee": ["Fuggle anglais", "mâle supposé Fuggle x Serebrianka"], "codeObtention": ["USDA 56013"], "calendrier": ["programme USDA vers 1956", "sortie 1972 sous le nom Cascade"], "usage": ["double usage", "dry hop"] },
+      "doutes": ["Farnésène imprimé « 5.8% » (valeur seule, pas de plage ; peut-être « 5-8% » : non déduit, recopié tel quel)"]
+    },
+    {
+      "nom": "Wai-iti",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Wai-iti_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676919246",
+      "page": 1, "format": "tech",
+      "profilCourt": "A fine aroma hop with herbal, woody and citrus characters within a weight of essential oils.",
+      "tech": { "Alpha Acids": "2.5-3.5%", "Beta Acids": "4.5-6.5%", "Total Oil": "1-1.5 mL/100g", "B-Pinene": "0.3-0.5%", "Myrcene": "20-25%", "Linalool": "0.3-0.5%", "Caryophyllene": "9-10%", "Farnesene": "12-14%", "Humulene": "25-35%", "Geraniol": "0.5-1%", "Other": "7-9%" },
+      "listes": { "lignee": ["petite-fille de Liberty (USDA)", "1/3 Hallertau Mittelfrüh"], "ploidie": ["triploïde"], "codeObtention": ["HORT7709"], "calendrier": ["sortie 2011"], "usage": ["arôme", "lager", "ale"] }
+    },
+    {
+      "nom": "Waimea",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Waimea_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676919248",
+      "page": 1, "format": "tech",
+      "profilCourt": "A big alpha hop that carries an even bigger weight of oils with lots of pine and citrus characters.",
+      "tech": { "Alpha Acids": "15-18%", "Beta Acids": "6-8%", "Total Oil": "1.6-2.3 mL/100g", "B-Pinene": "0.4-0.8%", "Myrcene": "60-65%", "Linalool": "0.6-0.8%", "Caryophyllene": "2.5-3%", "Farnesene": "4.5-5.5%", "Humulene": "9-10%", "Geraniol": "0.8-1.2%" },
+      "listes": { "lignee": ["Californian Late Cluster", "Saazer", "Fuggle"], "ploidie": ["triploïde"], "codeObtention": ["HORT3953"], "calendrier": ["sortie 2012"], "usage": ["double usage", "dry hop"] }
+    },
+    {
+      "nom": "Wakatu",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Wakatu_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676919247",
+      "page": 1, "format": "tech",
+      "profilCourt": "A really fine dual purpose hop with a heady mix of flora, tropical and citrus characters.",
+      "tech": { "Alpha Acids": "6.5-8.5%", "Beta Acids": "8-9%", "Total Oil": "0.5-1 mL/100g", "B-Pinene": "0.6-0.9%", "Myrcene": "40-50%", "Linalool": "0.5-1%", "Caryophyllene": "6-8%", "Farnesene": "5-7%", "Humulene": "12-15%", "Geraniol": "1-1.5%" },
+      "listes": { "lignee": ["Mittelfrüh (deux tiers)", "pollinisation libre par un mâle néo-zélandais"], "ploidie": ["triploïde"], "calendrier": ["sortie 1988 sous le nom NZ Hallertau Aroma", "renommé Wakatu 2011"], "usage": ["double usage"] }
+    },
+    {
+      "nom": "Motueka",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Motueka_Variety_Sheet_English.pdf?v=1698953236",
+      "page": 2, "format": "moyennePlage",
+      "profilCourt": "An aroma hop with a distinctive fresh crushed citrus \"Mojito\" lime character.",
+      "enTete": { "Alpha Acids": "5.5-10%", "Total Oils": "0.8-1.4%" },
+      "moyennePlage": {
+        "Alpha Acids": ["7.0", "5.5-10.0"], "Beta Acids": ["5.4", "4.5-6.5"], "Cohumulone": ["29.0", "28-31"], "Total oils": ["1.0", "0.8-1.4"],
+        "Myrcene": ["65.0", "60-69"], "Caryophyllene": ["1.2", "0.8-1.8"], "Farnesene": ["8.0", "6-10.0"], "Humulene": ["3.5", "1.0-5.0"],
+        "B-pinene": ["0.8", "0.7-1.0"], "Linalool": ["0.8", "0.7-1.0"], "Geraniol": ["1.2", "0.8-1.3"],
+        "Floral-estery products": ["2.8", "2.0-4.0"], "Citrus-piney products": ["8.3", "6-10.0"]
+      },
+      "notes": { "Floral-estery products": "Linalool, geraniol, geranyl isobutyrate, geranyl acetate", "Citrus-piney products": "Cadinene, limonene, muurolene, selinene" },
+      "listes": { "descripteursCouverture": ["Fresh Lime", "Citrus", "Tropical Fruit", "Lemon Zest"], "lignee": ["ascendance européenne (Saaz) et nord-américaine"], "ploidie": ["triploïde", "sans pépins"], "calendrier": ["croisement 1987", "semis sélectionné 1989 (code 87-14-20)", "essais de sélection 1991-95", "essais chez des producteurs 1996", "sortie 1996 sous le nom B-Saaz", "renommé Motueka 2007"], "usage": ["arôme", "de la première charge à l'ajout tardif"], "accords": ["Riwaka", "Nelson Sauvin"] },
+      "doutes": ["Farnésène 8.0 et humulène 3.5 : imprimés ainsi (relus deux fois), recopiés tels quels"]
+    },
+    {
+      "nom": "Nectaron",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Nectaron_Variety_Sheet_English.pdf?v=1698953231",
+      "pdfIdentiques": ["https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Nectaron_Variety_Sheet_English.pdf?v=1697144767"],
+      "page": 2, "format": "moyennePlage",
+      "profilCourt": "Science meets art",
+      "enTete": { "Alpha Acids": "10-14%", "Total Oils": "1-2%" },
+      "moyennePlage": {
+        "Alpha Acids": ["11.9", "10-14"], "Beta Acids": ["4.6", "3.9-5.3"], "Cohumulone": ["27", "25-28"], "Total oils": ["1.3", "1-2"],
+        "Myrcene": ["46", "40-50"], "Caryophyllene": ["6.5", "5-8"], "Farnesene": ["0.4", "0.3-0.6"], "Humulene": ["23", "20-30"],
+        "B-pinene": ["0.5", "0.4-0.6"], "Linalool": ["0.8", "0.4-0.7"], "Geraniol": ["1.3", "1-1.5"],
+        "Floral-estery products": ["2.4", "2-3"], "Citrus-piney products": ["4.5", "3-6"]
+      },
+      "notes": { "Floral-estery products": "Linalool, geraniol, geranyl isobutyrate, geranyl acetate", "Citrus-piney products": "Cadinene, limonene, muurolene, selinene" },
+      "listes": { "descripteursCouverture": ["Pineapple", "Citrus", "Stonefruit", "Passionfruit"], "lignee": ["sœur complète de Waimea", "ascendance nord-américaine et européenne (Saaz)"], "ploidie": ["triploïde"], "codeObtention": ["HORT4337"], "calendrier": ["croisement 2004", "semis sélectionné 2006", "essais de sélection 2008", "essais chez des producteurs 2015-16", "sortie 2020"], "usage": ["tout usage", "ajout tardif", "dry hop"], "styles": ["DIPA", "IPA", "Hazy IPA", "pale ale", "lager", "sans alcool"], "accords": ["Citra", "Mosaic", "Nelson Sauvin", "Motueka", "Riwaka", "El Dorado", "Amarillo", "Equanot"] },
+      "doutes": ["Linalol : moyenne 0.8 hors de la plage imprimée 0.4-0.7 ; recopié tel quel"]
+    },
+    {
+      "nom": "Nelson Sauvin",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Nelson_Sauvin_Variety_Sheet_English.pdf?v=1698953225",
+      "page": 2, "format": "moyennePlage",
+      "profilCourt": "An aroma and dual-purpose flavour hop with distinctive white wine character",
+      "enTete": { "Alpha Acids": "10-13%", "Total Oils": "1.2-2%" },
+      "moyennePlage": {
+        "Alpha Acids": ["11.4", "10-13"], "Beta Acids": ["5.8", "5-6.5"], "Cohumulone": ["24", "22-27"], "Alpha Ratio": [".66", ".6-.68"],
+        "Total oils (mls/100g)": ["1.3", "1.2-2"], "Humulene": ["24.4", "20-30"], "Caryophyllene": ["6.9", "5-7.5"], "Farnesene": ["0.4", ".1-.5"],
+        "Myrcene": ["48.4", "40-60"], "Geraniol": ["1.2", "1-1.8"], "Limonene": ["1.2", "1-1.8"], "Linalool": ["0.4", ".35-.6"],
+        "Floral-estery compounds": ["2.0", "1.75-2.25"], "Citrus-piney compounds": ["4.4", "4-6"], "Other known compounds": ["3.8", "3-4.5"],
+        "Oxidation products": ["3.8", "2.5-3.2"], "Unknown compounds": ["6.9", "5-8"], "Humulene:caryophyllene ratio": ["3.54", "3.2-3.7"]
+      },
+      "notes": { "Floral-estery compounds": "Linalool, geranyl acetate, geranyl isobutyrate, geraniol", "Citrus-piney compounds": "Limonene, d-cadinene, g-cadinene, muurolene, selinene", "Oxidation products": "Of humulene & caryophyllene" },
+      "listes": { "descripteursCouverture": ["White grape", "Gooseberry", "Citrus", "Passionfruit"], "lignee": ["Smoothcone", "mâle néo-zélandais sélectionné"], "ploidie": ["triploïde"], "codeObtention": ["Brand 85-03-06"], "calendrier": ["croisement 1985", "semis sélectionné 1987", "essais de sélection 1988-95", "essais chez des producteurs 2000", "sortie 2000"], "usage": ["arôme", "double usage", "de bout en bout avec whirlpool et dry hop"] },
+      "doutes": ["Produits d'oxydation : moyenne 3.8 hors de la plage imprimée 2.5-3.2 ; recopié tel quel", "Pas de β-pinène sur cette fiche : absent (null), pas 0"]
+    },
+    {
+      "nom": "Superdelic",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Superdelic_Variety_Sheet_English.pdf?v=1698953220",
+      "page": 2, "format": "moyennePlage",
+      "profilCourt": "In a world where you be anything, be Superdelic.",
+      "enTete": { "Alpha Acids": "9-10.5%", "Total Oils": "1.3-2.2%" },
+      "moyennePlage": {
+        "Alpha Acids": ["9.8", "9-10.5"], "Beta Acids": ["3.3", "2.9-3.6"], "Cohumulone": ["29", "26-30"], "Total oils": ["1.6", "1.3-2.2"],
+        "Myrcene": ["24", "20-35"], "Caryophyllene": ["10", "7.5-12"], "Farnesene": ["0.2", "0.1-0.5"], "Humulene": ["25", "20-30"],
+        "B-pinene": ["0.2", "0.1-0.3"], "Linalool": ["0.5", "0.4-0.7"], "Geraniol": ["1.8", "1.2-2"],
+        "Floral-estery products": ["2.7", "2-3.5"], "Citrus-piney products": ["10", "8-12"]
+      },
+      "notes": { "Floral-estery products": "Linalool, geraniol, geranyl isobutyrate, geranyl acetate", "Citrus-piney products": "Cadinene, limonene, muurolene, selinene" },
+      "listes": { "descripteursCouverture": ["Berry fruit", "Citrus", "Candy/Lolly", "Tropical fruit"], "lignee": ["ascendance européenne et nord-américaine"], "ploidie": ["triploïde"], "calendrier": ["croisement 2012 (Dr Ron Beatson)", "semis sélectionné 2013-14", "essais de sélection 2015-18", "essais chez des producteurs 2018-22", "sortie 2023"], "usage": ["un seul houblon ou en synergie"], "accords": ["Citra", "Simcoe", "Nelson Sauvin", "Motueka", "Riwaka", "Mosaic", "Strata"] }
+    },
+    {
+      "nom": "NZ Chinook",
+      "pdf": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/NZ_Hops_Variety_Sheet_NZ-Chinook.pdf?v=1699294540",
+      "page": 2, "format": "moyennePlage",
+      "profilCourt": "New Zealand grown US cultivar with big grapefruit character and pine notes.",
+      "moyennePlage": {
+        "Alpha Acids": ["12.5", "10.5-14"], "Beta Acids": ["5.1", "4.9-5.2"], "Cohumulone": ["33", "32-35"], "Total oils": ["1.7", "1.1-2.5"],
+        "Myrcene": ["42.6", "36.9-52.1"], "Caryophyllene": ["7.2", "5.7-9.8"], "Farnesene": ["0.2", "0.1-0.3"], "Humulene": ["15.8", "12.1-21.7"],
+        "B-pinene": ["0.6", "0.3-0.7"], "Linalool": ["0.7", "0.4-1.1"], "Geraniol": ["2.5", "0.7-3.5"],
+        "Floral-estery products": ["3.9", "1.9-4.9"], "Citrus-piney products": ["8.7", "6.8-11.2"]
+      },
+      "notes": { "Floral-estery products": "Linalool, geraniol, geranyl isobutyrate, geranyl acetate", "Citrus-piney products": "Cadinene, limonene, muurolene, selinene" },
+      "listes": { "descripteursCouverture": ["Grapefruit", "Pine", "Citrus", "Herbal"], "lignee": ["Petham Golding (graphie imprimée)", "mâle USDA"], "calendrier": ["programme USDA, État de Washington, sortie 1985"], "usage": ["double usage", "whirlpool", "dry hop"], "styles": ["West Coast IPA", "NZIPA"] }
+    }
+  ]
+}

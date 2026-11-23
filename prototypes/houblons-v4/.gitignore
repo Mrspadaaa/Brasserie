@@ -1,0 +1,8 @@
+node_modules/
+dist/
+storybook-static/
+test-results/
+playwright-report/
+*.log
+# Sorties reconstruites : npm run ecran:build (maquettes/<version>/) et capture.mjs (maquettes/captures/).
+maquettes/

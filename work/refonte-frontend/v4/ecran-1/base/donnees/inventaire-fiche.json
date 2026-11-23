@@ -1,0 +1,139 @@
+{
+ "maj": "2026-10-23",
+ "source": "Fiche g1 de la base v4.10 (consolide/fiche.html), capture consolide-fiche-390.png ; « la v1 est la meilleure » (19.10) ; les pictos au trait de la page (D93) remplacent les carrés de couleur.",
+ "contrat": "Règle n° 1 : la fiche reprend g1 telle qu'il l'a vue ; chaque élément repris (data-element), ou écarté avec sa raison (un quart au plus). D105.",
+ "elements": [
+  {
+   "id": "g1-feuille",
+   "variante": "g1",
+   "lot": "base v4.10",
+   "date": "2026-10-19",
+   "mots": "la v1 est la meilleure",
+   "quoi": "La feuille couvre presque tout l'écran (le haut de la page reste visible, assombri) ; « × » rond en haut à droite.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
+   "facteur": "outil : fiche"
+  },
+  {
+   "id": "g1-titre",
+   "variante": "g1",
+   "lot": "base v4.10",
+   "date": "2026-10-19",
+   "mots": "la v1 est la meilleure",
+   "quoi": "Le nom du houblon en titre, avec son repère ⊙.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
+   "facteur": "outil : fiche"
+  },
+  {
+   "id": "g1-alpha",
+   "variante": "g1",
+   "lot": "base v4.10",
+   "date": "2026-10-19",
+   "mots": "la v1 est la meilleure",
+   "quoi": "L'α en plage des fiches en gros (« α 11–14 % »), le lot à côté (« lot 13 % ») et sa jauge.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
+   "facteur": "outil : fiche"
+  },
+  {
+   "id": "g1-usage",
+   "variante": "g1",
+   "lot": "base v4.10",
+   "date": "2026-10-19",
+   "mots": "la v1 est la meilleure",
+   "quoi": "L'usage en mots dans une pastille (« double usage »).",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
+   "facteur": "outil : fiche"
+  },
+  {
+   "id": "g1-bande",
+   "variante": "g1",
+   "lot": "base v4.10",
+   "date": "2026-10-19",
+   "mots": "la v1 est la meilleure",
+   "quoi": "La bande des 12 familles en couleur, en tête du bloc des familles.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
+   "facteur": "outil : fiche"
+  },
+  {
+   "id": "g1-familles",
+   "variante": "g1",
+   "lot": "base v4.10",
+   "date": "2026-10-19",
+   "mots": "Pourquoi la fiche est pareil ??? C'est pas du tout la bonne, ça suit pas la Baseline, ça suit rien du tout ???",
+   "quoi": "Le bloc gris des familles citées : picto de la famille (au trait, D93), nom, « 2/4 », et ses mots dessous (« géranium, floral »).",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
+   "facteur": "outil : fiche"
+  },
+  {
+   "id": "g1-premier",
+   "variante": "g1",
+   "lot": "base v4.10",
+   "date": "2026-10-19",
+   "mots": "la v1 est la meilleure",
+   "quoi": "« nommé en premier » sur la famille que les fiches citent en premier.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
+   "facteur": "outil : fiche"
+  },
+  {
+   "id": "g1-sans-famille",
+   "variante": "g1",
+   "lot": "base v4.10",
+   "date": "2026-10-19",
+   "mots": "la v1 est la meilleure",
+   "quoi": "« sans famille : … » : les mots hors des 12 familles.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
+   "facteur": "outil : fiche"
+  },
+  {
+   "id": "g1-non-decrites",
+   "variante": "g1",
+   "lot": "base v4.10",
+   "date": "2026-10-19",
+   "mots": "la v1 est la meilleure",
+   "quoi": "« 5 non décrites : Noyau, Pépins, Baies, Melon, Végétal ».",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
+   "facteur": "outil : fiche"
+  },
+  {
+   "id": "g1-radar",
+   "variante": "g1",
+   "lot": "base v4.10",
+   "date": "2026-10-19",
+   "mots": "la v1 est la meilleure",
+   "quoi": "Le grand radar légendé : chaque axe nommé avec « 2/4 », les inconnus « ? » hachurés, une flèche sur les familles de sa demande.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
+   "facteur": "outil : fiche"
+  },
+  {
+   "id": "g1-demande",
+   "variante": "g1",
+   "lot": "base v4.10",
+   "date": "2026-10-19",
+   "mots": "la v1 est la meilleure",
+   "quoi": "« + Floral 2/4   − Résineux 2/4 » sous le radar : ce que le houblon fait pour sa demande.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
+   "facteur": "outil : fiche"
+  },
+  {
+   "id": "g1-actions",
+   "variante": "g1",
+   "lot": "base v4.10",
+   "date": "2026-10-19",
+   "mots": "la v1 est la meilleure",
+   "quoi": "En pied : ♡ et ⊘ (son goût), et « Comparer ».",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-fiche-390.png",
+   "facteur": "outil : fiche"
+  }
+ ]
+}

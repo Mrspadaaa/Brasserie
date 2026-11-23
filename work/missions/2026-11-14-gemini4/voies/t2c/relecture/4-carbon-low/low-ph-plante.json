@@ -1,0 +1,20 @@
+{
+ "reglage": "4-carbon@low",
+ "element": "low-ph-plante",
+ "cas": "low-ph",
+ "type": "plante",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Contradiction critique et dangereuse dans 'action' : il est demandé d'ajouter 12 mL d'acide lactique 80 % dans la maische, alors que le pH est déjà trop bas (4,8) et que le résumé ainsi que l'outil 'check_ph' interdisent explicitement d'ajouter de l'acide.",
+   "Remplacer l'action par le geste utile réel : ne verser aucun acide, brasser/homogénéiser soigneusement la maische et reprélever un échantillon représentatif refroidi à 20 °C pour confirmer la mesure de pH (car 6 kg de malt Pale seul avec une eau à 180 mg/L de HCO3 donnent très rarement 4,8 sans ajout acide ou poche locale non mélangée).",
+   "Conserver l'absence de dosage à l'aveugle de bicarbonate ou de chaux sans essai contrôlé préalable sur un petit échantillon."
+  ]
+ },
+ "ms": 6050,
+ "coutMicro": 13838,
+ "etat": "STOP"
+}

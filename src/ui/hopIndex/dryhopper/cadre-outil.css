@@ -1,0 +1,11 @@
+/* Le cadre des outils à brouillon dans l'app (T15c, #174) : ce que la maquette pose dans retour.css et theme-maquettes.css pour
+   Substituer, Dryhopper et Levure (D109, D129). La tête des onglets (.pq-croix, .pq-tete) vient de ../comparer/cadre-app.css. */
+.pq-tete-titre { font-size: 1.125rem; font-weight: 600; line-height: 1.375rem; }
+
+/* La page blanche de ses maquettes : le conteneur de PageShell prend la page, pas le panneau gris. */
+[data-theme='clair'] :is(.pq-outil-substituer, .pq-outil-dryhopper, .pq-outil-levure) main { background-color: rgb(var(--cave-950)); }
+
+/* PageShell donne le focus à son conteneur de défilement (tabindex="-1") : cible de programme, jamais de tabulation. Sans ce
+   réglage l'anneau de focus encadre tout l'outil. Les commandes gardent leur anneau. */
+:is(.pq-outil-substituer, .pq-outil-dryhopper, .pq-outil-levure) main[tabindex="-1"]:focus-visible,
+:is(.pq-outil-substituer, .pq-outil-dryhopper, .pq-outil-levure) div[tabindex="-1"]:focus-visible { outline: none; }

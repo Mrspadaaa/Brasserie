@@ -1,0 +1,21 @@
+[
+ {"id":"T-6","category":"Structure","cost":3500,"description":"Sol, murs & évacuation (béton, revêtement, peinture food-safe)","startDate":"08.12.2025","endDate":"21.12.2025","isMilestone":false},
+ {"id":"T-7","category":"Structure","cost":200,"description":"Rangement / étagères inox & déménagement","startDate":"29.12.2025","endDate":"11.01.2026","isMilestone":false},
+ {"id":"T-8","category":"Plomberie","cost":350,"description":"Robinetterie & tuyaux raccords (fait par soi-même)","startDate":"29.12.2025","endDate":"11.01.2026","isMilestone":false},
+ {"id":"T-9","category":"Plomberie","cost":1000,"description":"Achat & installation évier principal + douchette","startDate":"02.02.2026","endDate":"15.02.2026","isMilestone":false},
+ {"id":"T-10","category":"Structure","cost":200,"description":"Refaire évier — bloqué (attendre vis pieds)","startDate":"18.05.2026","endDate":"01.06.2026","isMilestone":false},
+ {"id":"T-11","category":"Structure","cost":500,"description":"Sol — matières premières + outils (peut faire en 2x)","startDate":"20.05.2026","endDate":"22.09.2026","isMilestone":false},
+ {"id":"T-12","category":"Équipements","cost":300,"description":"Achat brasserie : moulin à malt + bac etc.","startDate":"22.06.2026","endDate":"13.07.2026","isMilestone":false},
+ {"id":"T-13","category":"Équipements","cost":400,"description":"Frigo + congel","startDate":"01,08,2026","endDate":"1,05,2027","isMilestone":false},
+ {"id":"T-14","category":"Équipements","cost":200,"description":"Armoire de rangement malte","startDate":"22.06.2026","endDate":"13.07.2026","isMilestone":false},
+ {"id":"T-15","category":"Administratif","cost":850,"description":"Conformité — dossiers SAAV + SEn + assurances","startDate":"01.12.2027","endDate":"31.12.2027","isMilestone":false},
+ {"id":"T-16","category":"Équipements","cost":200,"description":"Hotte recyclage","startDate":"27.06.2026","endDate":"24.08.2026","isMilestone":false},
+ {"id":"T-17","category":"Équipements","cost":100,"description":"Armoire de rangement extérieur","startDate":"24.08.2026","endDate":"21.09.2026","isMilestone":false},
+ {"id":"T-18","category":"Équipements","cost":100,"description":"Armoire de rangement toxique","startDate":"24.08.2026","endDate":"21.09.2026","isMilestone":false},
+ {"id":"T-19","category":"Sécurité","cost":80,"description":"Extincteur","startDate":"21.09.2026","endDate":"31.12.2026","isMilestone":false},
+ {"id":"T-20","category":"Électricité","cost":1500,"description":"Installation électrique 27A (2027)","startDate":"01.05.2027","endDate":"01.07.2027","isMilestone":false},
+ {"id":"T-21","category":"Équipements","cost":2500,"description":"Embouteillage — station complète (2027)","startDate":"01.05.2027","endDate":"01.07.2027","isMilestone":false},
+ {"id":"T-22","category":"Plomberie","cost":400,"description":"2ème évier (2027)","startDate":"01.09.2027","endDate":"01.11.2027","isMilestone":false},
+ {"id":"T-23","category":"Jalon","cost":0,"description":"🏁  JALON — Peut brasser au local (sans autorisation vente)","startDate":"","endDate":"","isMilestone":true},
+ {"id":"T-24","category":"Jalon","cost":0,"description":"🏁  JALON — Conformité complète — Peut vendre officiellement","startDate":"","endDate":"","isMilestone":true}
+]

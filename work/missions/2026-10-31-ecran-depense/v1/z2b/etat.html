@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="fr" data-theme="clair"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>z2b — Nouvelle dépense · la facture annotée au stylo, les 23 lignes sur le papier (passe 2, 31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--encre:#1F64A3;--encref:#DCE8F3;--att:#9C7020;--attt:#7F5B10;--attf:#F6EBD3;--hop:#567F45;--hopt:#3F6B2E;--hopf:#E3EDDC;--malt:#E0A02E;--lev:#6A4FB0;--rouge:#A8291F;--rougef:#F9E1DF;
+--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#E9E9E9;color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+::selection{background:#F2DDA6}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+svg{display:block}
+.z2b-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.z2b-app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;overflow-x:clip}
+.z2b-colp{grid-area:papier;min-width:0}
+.z2b-ecran{min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"hd" "papier" "aside" "pied";align-content:start}
+.z2b-ecran>*{min-width:0}
+.z2b-r>*{min-width:0}
+.z2b-stock button svg{width:18px;height:18px;flex-shrink:0}
+@media (min-width:900px){.z2b-app{max-width:1100px}.z2b-ecran{grid-template-columns:620px minmax(0,1fr);column-gap:12px;grid-template-areas:"hd hd" "papier aside" "pied pied";align-items:start}}
+
+/* L'en-tête et le stylo : six pastilles, le point courant, « y aller ». */
+.z2b-hd{grid-area:hd;position:sticky;top:0;z-index:5;background:var(--page);border-bottom:1px solid var(--bord)}
+.z2b-tb{display:flex;align-items:center;gap:6px;height:40px;padding:0 6px 0 10px}
+.z2b-tb h1{flex:1;font-size:16px;font-weight:600;color:var(--t0)}
+.z2b-x{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.z2b-x:hover{background:var(--haut)}
+.z2b-stylo{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:2px 10px 8px}
+.z2b-pts{display:flex;align-items:center;gap:3px}
+.z2b-pt{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--att);background:var(--attf);color:var(--attt);font-family:var(--mono);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.z2b-pt[aria-current="true"]{background:var(--attt);color:#fff;border-color:var(--attt)}
+.z2b-pt.z2b-fait{background:var(--hopf);border-color:var(--hopt);color:var(--hopt)}
+.z2b-cur{min-width:0;font-size:14px;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.z2b-cur b{font-family:var(--mono);font-weight:600;color:var(--t0)}
+.z2b-cur i{font-style:normal;color:var(--attt);font-weight:600}
+.z2b-aller{height:28px;padding:0 8px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600;white-space:nowrap}
+.z2b-aller.z2b-pret{background:var(--hopt)}
+
+/* Le papier. */
+.z2b-papier{margin:10px 10px 0;background:#fff;border-radius:10px;box-shadow:0 4px 18px -10px rgba(0,0,0,.45);padding:10px 10px 12px;position:relative}
+@media (min-width:900px){.z2b-papier{margin:10px 0 0 10px}}
+.z2b-ent{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding-bottom:6px;border-bottom:1px solid var(--bord)}
+.z2b-four{height:26px;border:0;border-bottom:1.5px dotted var(--trait);background:none;font-size:16px;font-weight:600;color:var(--t0);padding:0;width:100%;border-radius:0}
+.z2b-four:focus,.z2b-date:focus,.z2b-num:focus{outline:none;border-bottom:2px solid var(--t0)}
+.z2b-sous{font-size:12px;color:var(--t2)}
+.z2b-num{width:7ch;height:22px;border:0;border-bottom:1.5px dotted var(--trait);background:none;text-align:right;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--t0);padding:0;border-radius:0}
+.z2b-date{width:11ch;height:20px;border:0;border-bottom:1.5px dotted var(--trait);background:none;text-align:right;font-family:var(--mono);font-size:12px;color:var(--t1);padding:0;border-radius:0}
+.z2b-ref{display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-family:var(--mono);font-size:12px;color:var(--t2)}
+/* Le tampon, la barre des 23 montants, les chips de la dépense. */
+.z2b-tamp{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;margin:6px 0 4px}
+.z2b-tampon{transform:rotate(-4deg);border:2px solid var(--hopt);border-radius:10px;padding:2px 8px;color:var(--hopt);font-weight:700;font-size:14px;line-height:1.1;text-align:center;background:rgba(255,255,255,.85)}
+.z2b-tampon b{font-family:var(--mono);font-size:18px;display:block}
+.z2b-tampon:active{transform:rotate(-4deg) scale(.97)}
+.z2b-barre{display:flex;height:14px;border-radius:9px;overflow:hidden;border:1px solid var(--bordm);background:#fff}
+.z2b-barre button{height:100%;min-width:2px;border-right:1px solid #fff;padding:0}
+.z2b-barre button:last-child{border-right:0}
+.z2b-barre .z2b-ma{background:var(--malt)}.z2b-barre .z2b-ho{background:var(--hop)}.z2b-barre .z2b-le{background:var(--lev)}.z2b-barre .z2b-se{background:var(--trait)}
+.z2b-barre .z2b-doute{background:repeating-linear-gradient(135deg,var(--att) 0 2px,var(--attf) 2px 5px)}
+.z2b-barre .z2b-ok{background:repeating-linear-gradient(135deg,var(--hopt) 0 2px,var(--hopf) 2px 5px)}
+.z2b-bl{font-size:12px;color:var(--t2);margin-top:2px;display:flex;gap:8px}
+.z2b-bl b{font-family:var(--mono);color:var(--t0);font-weight:500}
+.z2b-preuve{display:none;margin:4px 0;padding:6px 8px;border:1px solid var(--hopt);border-radius:10px;background:var(--hopf);font-size:14px;color:var(--t1)}
+.z2b-preuve.z2b-ouv{display:block}
+.z2b-preuve div{display:flex;gap:6px;align-items:flex-start;min-height:20px}
+.z2b-preuve b{font-family:var(--mono);font-weight:500;color:var(--t0)}
+.z2b-chips{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:4px 0 2px}
+.z2b-ch{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:12px;color:var(--t1);white-space:nowrap}
+.z2b-ch b{font-family:var(--mono);font-weight:500;color:var(--t0)}
+.z2b-drv{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--hopt);margin-left:auto;white-space:nowrap}
+.z2b-drv i{width:8px;height:8px;border-radius:50%;background:var(--hop)}
+.z2b-drv.z2b-off{color:var(--attt)}.z2b-drv.z2b-off i{background:var(--att)}
+/* Les 23 lignes. */
+.z2b-cols{display:grid;grid-template-columns:22px 44px 1fr 54px;column-gap:6px;font-size:12px;color:var(--t2);padding:6px 0 2px;font-family:var(--mono);border-top:1px solid var(--bord);margin-top:4px}
+.z2b-cols span:nth-child(4){text-align:right}
+.z2b-l{display:grid;grid-template-columns:22px 44px 1fr 54px;column-gap:6px;align-items:center;min-height:26px;font-size:14px;border-radius:10px;position:relative}
+.z2b-l>*{min-width:0}
+.z2b-l:hover{background:var(--panel)}
+.z2b-lk{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:10px}
+.z2b-lk svg{width:18px;height:18px}
+.z2b-q{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--t0);white-space:nowrap}
+.z2b-q small{font-size:12px;color:var(--t2)}
+.z2b-q b{font-family:var(--mono);color:var(--attt);font-weight:600}
+.z2b-d{color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;min-height:24px;display:flex;align-items:center;gap:4px;cursor:pointer}
+.z2b-d .z2b-btn{height:20px;padding:0 5px}
+.z2b-d em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--t2);white-space:nowrap}
+.z2b-d .z2b-sac{font-size:12px;color:var(--t1);background:var(--haut);border-radius:10px;padding:0 6px;line-height:16px;white-space:nowrap}
+.z2b-a{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;color:var(--t0);white-space:nowrap}
+.z2b-a input{width:54px;border:0;background:none;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;color:var(--t0);border-bottom:1px dotted transparent;padding:0;border-radius:0}
+.z2b-a input:focus{outline:none;border-bottom-color:var(--t0);background:#fff}
+.z2b-l.z2b-mout{color:var(--t2);min-height:24px}
+.z2b-l.z2b-mout .z2b-d{padding-left:12px;position:relative;color:var(--t2)}
+.z2b-l.z2b-mout .z2b-d::before{content:"";position:absolute;left:1px;top:-9px;bottom:7px;width:8px;border:1.5px solid var(--encre);border-right:0;border-top:0}
+.z2b-l.z2b-mout.z2b-doute .z2b-d::before{border-color:var(--att);border-style:dashed}
+.z2b-l.z2b-fait .z2b-d::before{border-color:var(--hopt);border-style:solid}
+.z2b-l.z2b-doute{background:var(--attf)}
+.z2b-l.z2b-fait{background:var(--hopf)}
+.z2b-l.z2b-doute>.z2b-lk{box-shadow:0 0 0 1.5px var(--att);background:#fff}
+.z2b-l.z2b-fait>.z2b-lk{box-shadow:0 0 0 1.5px var(--hopt);background:#fff}
+.z2b-btn{display:inline-flex;align-items:center;height:22px;padding:0 6px;border-radius:10px;border:1.5px dashed var(--att);background:#fff;color:var(--attt);font-size:12px;white-space:nowrap;flex-shrink:0}
+.z2b-btn:active{transform:scale(.96)}
+.z2b-btn.z2b-prop{border-color:var(--hopt);color:var(--hopt);background:var(--hopf)}
+.z2b-note{font-family:var(--mono);font-size:12px;color:var(--encre);white-space:nowrap}
+/* La sous-ligne : la rangée de doute avec ses boutons (r1), le Target existant (u4). */
+.z2b-sl{grid-column:2/5;display:flex;align-items:center;gap:6px;min-height:24px;padding:0 0 2px;font-size:12px;color:var(--t2);flex-wrap:wrap}
+.z2b-sl .z2b-m{color:var(--t1)}
+.z2b-exist{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 8px;border-radius:10px;background:var(--haut);color:var(--t2);font-size:12px;white-space:nowrap}
+.z2b-exist b{font-family:var(--mono);font-weight:500}
+.z2b-seg{display:inline-flex;border:1.5px dashed var(--att);border-radius:10px;overflow:hidden;height:22px;background:#fff}
+.z2b-seg button{padding:0 7px;font-size:12px;color:var(--attt);font-family:var(--mono)}
+.z2b-seg button+button{border-left:1px solid var(--bord)}
+.z2b-seg button[aria-pressed="true"]{background:var(--t0);color:#fff}
+/* Le plateau de ligne (r2) : imprimé cité, calcul, type, stock, retirer. */
+.z2b-plat{grid-column:1/5;display:none;margin:2px 0 4px;padding:8px 10px;border:1.5px solid var(--t0);border-radius:10px;background:#fff;flex-direction:column;gap:6px;font-size:14px}
+.z2b-l[aria-expanded="true"] .z2b-plat{display:flex}
+.z2b-plat .z2b-imp{font-size:12px;color:var(--t2)}
+.z2b-plat .z2b-imp b{font-family:var(--mono);font-weight:500;color:var(--t1)}
+.z2b-calc{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;color:var(--t0);display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.z2b-calc input{width:3.5ch;border:0;border-bottom:1.5px dotted var(--trait);background:none;text-align:right;font-family:var(--mono);font-size:16px;font-weight:600;color:var(--t0);padding:0;border-radius:0}
+.z2b-calc input:focus{outline:none;border-bottom:2px solid var(--t0)}
+.z2b-calc .z2b-ok{color:var(--hopt)}
+.z2b-calc .z2b-ko{color:var(--rouge)}
+.z2b-type{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:26px;align-self:flex-start}
+.z2b-type button{padding:0 9px;font-size:14px}
+.z2b-type button[aria-pressed="true"]{background:var(--t0);color:#fff;font-weight:600}
+.z2b-stock{display:flex;align-items:center;gap:6px}
+.z2b-stock span:first-child{color:var(--t2);font-size:12px;width:44px}
+.z2b-stock button{height:26px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px;color:var(--t0);display:inline-flex;align-items:center;gap:6px}
+.z2b-plat .z2b-ret{align-self:flex-end;font-size:12px;color:var(--t2);text-decoration:underline;text-underline-offset:2px;height:22px}
+/* Le tableau des moutures (u2). */
+.z2b-mtab{grid-column:1/5;display:none;margin:2px 0 4px;padding:8px 10px;border:1.5px solid var(--att);border-radius:10px;background:#fff;flex-direction:column;gap:6px}
+.z2b-mtab.z2b-ouv{display:flex}
+.z2b-mtab table{border-collapse:collapse;font-size:12px;width:100%}
+.z2b-mtab td{padding:1px 0;color:var(--t1)}
+.z2b-mtab td.z2b-m{text-align:right;color:var(--t0)}
+.z2b-mtab th{text-align:left;font-weight:400;color:var(--t2);font-size:12px;padding-bottom:2px}
+.z2b-mtab th.z2b-m{text-align:right}
+.z2b-deuxb{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.z2b-deuxb button{min-height:30px;border-radius:10px;border:1.5px solid var(--bordm);background:#fff;font-size:14px;color:var(--t0)}
+.z2b-deuxb button.z2b-prop{border-style:dashed;border-color:var(--hopt);background:var(--hopf);color:var(--hopt);font-weight:600}
+/* Le bloc TVA imprimé, cerclé, et ses bases à l'échelle (u3). */
+.z2b-tvabloc{margin-top:8px;padding-top:6px;border-top:1px solid var(--bord);display:grid;grid-template-columns:1fr auto;gap:2px 8px;font-family:var(--mono);font-size:12px;color:var(--t2)}
+.z2b-tvabloc b{color:var(--t0);font-weight:500;text-align:right}
+.z2b-cercle{grid-column:1/3;display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:10px;box-shadow:0 0 0 1.5px var(--att);background:var(--attf)}
+.z2b-cercle.z2b-fait{box-shadow:0 0 0 1.5px var(--hopt);background:var(--hopf)}
+.z2b-deux{display:inline-flex;gap:4px;margin-left:auto}
+.z2b-deux button{height:26px;min-width:44px;padding:0 6px;border-radius:10px;border:1.5px solid var(--att);background:#fff;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;color:var(--t0)}
+.z2b-deux button.z2b-vide{font-family:var(--sans);font-weight:400;border-style:dashed;border-color:var(--bordm);color:var(--t1)}
+.z2b-deux button[aria-pressed="true"]{background:var(--t0);color:#fff;border-color:var(--t0)}
+.z2b-bases{grid-column:1/3;display:flex;flex-direction:column;gap:2px;margin-top:2px}
+.z2b-bb{position:relative;height:12px;border-radius:9px;overflow:hidden;background:#fff;border:1px solid var(--bordm);display:flex}
+.z2b-bb i{height:100%;background:#CFDAE4}
+.z2b-bb em{height:100%;background:repeating-linear-gradient(135deg,var(--rouge) 0 3px,#F7D6D3 3px 7px)}
+.z2b-bases .z2b-bl{justify-content:space-between}
+.z2b-bases .z2b-bl .z2b-ko{color:var(--rouge);font-weight:600}
+.z2b-tcalc{grid-column:1/3;font-family:var(--mono);font-size:12px;color:var(--attt)}
+.z2b-tcalc.z2b-done{color:var(--hopt)}
+.z2b-total{display:flex;align-items:baseline;justify-content:space-between;margin-top:6px;padding-top:6px;border-top:2px solid var(--t0)}
+.z2b-total span{font-size:14px;color:var(--t2)}
+.z2b-total b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:22px;font-weight:600;color:var(--t0)}
+.z2b-total b small{font-size:12px;color:var(--t2);font-weight:400;margin-left:3px}
+.z2b-total input{width:70px;border:0;border-bottom:1.5px dotted var(--trait);background:none;text-align:right;font-family:var(--mono);font-size:22px;font-weight:600;color:var(--t0);padding:0;border-radius:0}
+.z2b-total input:focus{outline:none;border-bottom:2px solid var(--t0)}
+/* La carte « Payé le » (r3), sous la mention imprimée du paiement. */
+.z2b-paye{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;padding:4px 6px;border-radius:10px;box-shadow:0 0 0 1.5px var(--att);background:var(--attf);font-size:12px;color:var(--t1)}
+.z2b-paye.z2b-fait{box-shadow:0 0 0 1.5px var(--hopt);background:var(--hopf)}
+.z2b-paye i{font-style:italic;color:var(--encre)}
+.z2b-paye b{font-family:var(--mono);font-weight:600;color:var(--t0)}
+.z2b-paye input{width:11ch;border:0;border-bottom:1.5px dotted var(--trait);background:none;font-family:var(--mono);font-size:12px;color:var(--t0);padding:0;border-radius:0}
+.z2b-paye .z2b-sup{border:1px dashed var(--att);border-radius:10px;padding:0 6px;line-height:16px;color:var(--attt)}
+
+/* L'à-côté : à 390, sous le papier ; à 1280, la colonne libre (points, preuve, dépense). */
+.z2b-aside{grid-area:aside;margin:8px 10px 0;display:flex;flex-direction:column;gap:8px}
+@media (min-width:900px){.z2b-aside{position:sticky;top:84px;margin:10px 10px 0 0}}
+.z2b-carte{background:#fff;border-radius:16px;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.z2b-carte h2{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em}
+.z2b-liste{display:flex;flex-direction:column;gap:2px}
+.z2b-li{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:6px;min-height:28px;font-size:14px;color:var(--t1);border-radius:10px;padding:0 2px}
+.z2b-li .z2b-y{font-size:12px;color:var(--encre);text-decoration:underline;text-underline-offset:2px;height:24px;padding:0 4px}
+.z2b-li.z2b-fait span{text-decoration:line-through;color:var(--t2)}
+.z2b-li b{font-family:var(--mono);font-weight:600;color:var(--t0)}
+.z2b-rows{display:flex;flex-direction:column}
+.z2b-r{display:flex;align-items:center;gap:6px;min-height:30px;font-size:14px;border-bottom:1px solid var(--bord)}
+.z2b-r:last-child{border-bottom:0}
+.z2b-r>span:first-child{flex:1;color:var(--t2)}
+.z2b-sel{height:26px;border:1px solid var(--bordm);border-radius:10px;padding:0 8px;background:#fff;font-size:14px;color:var(--t0)}
+.z2b-in{height:26px;border:0;border-bottom:1.5px dotted var(--trait);background:none;padding:0 2px;font-size:14px;color:var(--t0);border-radius:0}
+.z2b-in:focus{outline:none;border-bottom:2px solid var(--t0)}
+.z2b-tag{font-size:12px;color:var(--t1);background:var(--haut);border-radius:10px;padding:0 6px;line-height:18px;white-space:nowrap}
+.z2b-segr{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden;height:26px}
+.z2b-segr button{padding:0 9px;font-size:14px}
+.z2b-segr button[aria-pressed="true"]{background:var(--t0);color:#fff;font-weight:600}
+.z2b-lnk{color:var(--encre);text-decoration:underline;text-underline-offset:2px;height:24px;padding:0 4px}
+
+/* Le pied : actif toujours ; pendant l'envoi, il dit où il en est. */
+.z2b-pied{grid-area:pied;position:sticky;bottom:0;z-index:6;display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(233,233,233,.96);margin-top:8px}
+.z2b-go{margin-left:auto;height:32px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.z2b-go:active{transform:scale(.97)}
+.z2b-envoi{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.z2b-envoi .z2b-jauge{height:6px;border-radius:9px;background:var(--bord);overflow:hidden}
+.z2b-envoi .z2b-jauge i{display:block;height:100%;width:57%;background:var(--t0)}
+.z2b-envoi span{font-size:12px;color:var(--t1)}
+.z2b-recu{display:flex;align-items:center;gap:8px;background:var(--hopf);border-radius:10px;padding:4px 8px;flex:1;min-width:0}
+.z2b-recu b{font-family:var(--mono);font-weight:500;font-size:12px;color:var(--t0);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.z2b-recu a{color:var(--encre);font-size:12px}
+.z2b-flash{animation:z2b-fl .8s ease-out}
+@keyframes z2b-fl{from{box-shadow:0 0 0 3px var(--att)}}
+
+/* Les états joués sur l'écran (#etat=n). */
+.z2b-bande{display:none;margin:10px 10px 0;padding:8px 10px;border-radius:10px;font-size:14px;align-items:center;gap:8px}
+.z2b-bande.z2b-ouv{display:flex}
+#z2b-lecture.z2b-ouv{flex-direction:column;align-items:stretch;gap:4px}
+.z2b-pied .z2b-drv{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.z2b-bande.z2b-err{background:var(--rougef);color:var(--rouge)}
+.z2b-bande.z2b-att{background:var(--attf);color:var(--attt)}
+.z2b-steps{display:flex;gap:6px;flex:1}
+.z2b-steps span{flex:1;height:8px;border-radius:9px;background:var(--bord);position:relative;overflow:hidden}
+.z2b-steps span.z2b-f{background:var(--t0)}
+.z2b-steps span.z2b-en::after{content:"";position:absolute;inset:0;width:50%;background:var(--t0);animation:z2b-run 1.2s linear infinite}
+@keyframes z2b-run{from{transform:translateX(-100%)}to{transform:translateX(200%)}}
+.z2b-sl2{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);flex:1}
+.z2b-gris .z2b-lignes,.z2b-gris .z2b-tvabloc,.z2b-gris .z2b-total,.z2b-gris .z2b-tamp,.z2b-gris .z2b-chips{opacity:.35;filter:grayscale(1);pointer-events:none}
+.z2b-dbl{display:grid;grid-template-columns:auto 1fr 1fr;gap:2px 8px;font-size:14px}
+.z2b-dbl span{color:var(--t2);font-size:12px}
+.z2b-dbl b{font-family:var(--mono);font-weight:500}
+.z2b-doublon{display:none;margin:10px 10px 0;padding:8px 10px;border:1.5px solid var(--att);border-radius:16px;background:#fff;flex-direction:column;gap:6px}
+.z2b-doublon.z2b-ouv{display:flex}
+.z2b-doublon h2{font-size:14px;font-weight:600;color:var(--t0)}
+.z2b-annexe{margin:28px 10px 40px;padding-top:10px;border-top:1px dashed var(--bordm);font-size:14px;color:var(--t1)}
+.z2b-annexe h2{font-size:12px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.z2b-annexe ol{padding-left:18px;display:flex;flex-direction:column;gap:2px}
+.z2b-annexe a{color:var(--encre)}
+.z2b-annexe p{font-size:12px;color:var(--t2);margin-top:6px}
+</style></head>
+<body>
+<div class="z2b-app">
+<div class="z2b-ecran" id="z2b-ecran">
+<header class="z2b-hd">
+  <div class="z2b-tb"><h1>Nouvelle dépense</h1><button class="z2b-x" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div>
+  <div class="z2b-stylo" data-booster="stylo-point-courant">
+    <div class="z2b-pts" id="z2b-pts"></div>
+    <div class="z2b-cur" id="z2b-cur"></div>
+    <button class="z2b-aller" id="z2b-aller">y aller</button>
+  </div>
+</header>
+
+<div class="z2b-colp">
+<div class="z2b-bande z2b-att" id="z2b-lecture"><div class="z2b-steps"><span class="z2b-f"></span><span class="z2b-en"></span><span></span></div><div class="z2b-sl2"><span>envoyé 0,7 Mo</span><span>lecture ×2</span><span>vérification</span></div></div>
+<div class="z2b-bande z2b-err" id="z2b-erreur">Lecture impossible · le fichier est gardé, saisie à la main</div>
+<div class="z2b-bande z2b-att" id="z2b-horsligne"><i></i>Hors ligne · le brouillon est gardé, l'enregistrement attend le réseau</div>
+<div class="z2b-doublon" id="z2b-doublon"><h2>Achat peut-être déjà enregistré</h2><div class="z2b-dbl"><span></span><span>ce papier</span><span>déjà enregistré</span><span>n°</span><b>372765</b><b>380001</b><span>date</span><b>27.04.2026</b><b>30.04.2026</b><span>commande</span><b>686863</b><b>686863</b><span>total</span><b>86,50</b><b>86,50</b></div><div class="z2b-segr" style="align-self:flex-start"><button aria-pressed="true">Même achat</button><button aria-pressed="false">Autre achat</button></div></div>
+
+<article class="z2b-papier" id="z2b-papier" aria-label="La facture, annotée">
+  <div class="z2b-ent">
+    <div><input class="z2b-four" value="Brau- und Rauchshop GmbH" aria-label="Fournisseur" data-booster="edition-sur-place"><div class="z2b-sous">Pro-Forma Rechnung</div></div>
+    <div class="z2b-ref"><input class="z2b-num" value="372765" aria-label="Numéro de facture"><input class="z2b-date" value="27.04.2026" aria-label="Date de l'achat"><span>cde 686863</span></div>
+  </div>
+  <div class="z2b-tamp">
+    <div><div class="z2b-barre" id="z2b-barre" data-booster="barre-montants" aria-label="Les 23 montants à l'échelle, la somme fait 86,50"></div><div class="z2b-bl" style="justify-content:flex-end"><span><b>86,50</b></span></div></div>
+    <button class="z2b-tampon" id="z2b-tampon" data-booster="tampon-preuve" aria-expanded="false"><b>86,50</b>23 lignes ✓</button>
+  </div>
+  <div class="z2b-preuve" id="z2b-preuve">
+    <div>✓ <span><b>23</b> × (quantité × prix) = montant, au centime</span></div>
+    <div>✓ <span>somme des lignes <b>86,50</b> = total imprimé <b>86,50</b></span></div>
+    <div>✓ <span>deux lectures d'accord sur le reste</span></div>
+    <div>▢ <span>1 page vue ; page 2 coupée : ses lignes sont inconnues, l'argent vu est complet</span></div>
+  </div>
+  <div class="z2b-chips" data-booster="chips-depense">
+    <button class="z2b-ch">Brassage</button><button class="z2b-ch">prévue · aucune</button><span class="z2b-drv" id="z2b-drv"><i></i>Drive prêt</span>
+  </div>
+
+  <div class="z2b-cols"><span></span><span>Menge</span><span>Bezeichnung</span><span>Betrag</span></div>
+  <div class="z2b-lignes" id="z2b-lignes"></div>
+
+  <div class="z2b-tvabloc" id="z2b-tva">
+    <span>N 8,1 % · Belegbetrag</span><b>26,20</b><span>MWST</span><b>1,95</b>
+    <span>R 2,6 % · Belegbetrag</span><b>84,20</b><span>MWST</span><b>2,20</b>
+    <div class="z2b-cercle" id="z2b-cercle" data-booster="deux-valeurs"><span>Mehrwertsteuer</span><span class="z2b-deux"><button data-tva="2,80">2,80</button><button data-tva="4,15">4,15</button><button class="z2b-vide" data-tva="">vide</button></span></div>
+    <div class="z2b-bases" data-booster="bases-echelle"><div class="z2b-bb"><i style="width:78.4%"></i><em style="width:21.6%"></em></div><div class="z2b-bl"><span>bases <b>110,40</b></span><span class="z2b-ko">+23,90 au-delà de 86,50</span></div></div>
+    <span class="z2b-tcalc" id="z2b-tcalc">1,95 + 2,20 = 4,15 ≠ 2,80 · HT vide</span>
+  </div>
+  <div class="z2b-total"><span>Total</span><b><input inputmode="decimal" value="86,50" aria-label="Total TTC"><small>CHF</small></b></div>
+  <div class="z2b-paye" id="z2b-paye" data-booster="carte-paye-le"><i>« Betrag per E-Finance dankend erhalten »</i><span>payé le</span><input inputmode="numeric" value="27.04.2026" aria-label="Payé le" id="z2b-payele"><span class="z2b-sup">supposée = facture</span><button class="z2b-btn z2b-prop" data-paye="ok">c'est la date</button><button class="z2b-btn" data-paye="autre">autre date</button></div>
+</article>
+</div>
+
+<aside class="z2b-aside" aria-label="Points, dépense">
+  <section class="z2b-carte"><h2>À régler</h2><div class="z2b-liste" id="z2b-liste"></div></section>
+  <section class="z2b-carte"><h2>Dépense</h2>
+    <div class="z2b-rows">
+      <div class="z2b-r"><span>Pour quoi ?</span><input class="z2b-in" value="Brau- und Rauchshop · 372765 · malts, houblons, levures" aria-label="Pour quoi" style="width:58%"><span class="z2b-tag">proposé</span></div>
+      <div class="z2b-r"><span>Règlement</span><span class="z2b-segr" data-booster="bascule-reglement"><button aria-pressed="true" data-seg="paye">Déjà payé</button><button aria-pressed="false" data-seg="apayer">À payer</button></span></div>
+      <div class="z2b-r"><span>Moyen</span><button class="z2b-sel">E-Finance ⌄</button></div>
+      <div class="z2b-r" id="z2b-ech" hidden><span>Échéance</span><input class="z2b-in z2b-m" inputmode="numeric" value="07.05.2026" aria-label="Échéance"></div>
+      <div class="z2b-r"><span>Catégorie</span><button class="z2b-sel">Brassage ⌄</button></div>
+      <div class="z2b-r"><span>Lier à une dépense prévue</span><button class="z2b-sel">aucune ⌄</button></div>
+      <div class="z2b-r"><span>HT</span><span class="z2b-tag">non imprimé</span><input class="z2b-in z2b-m" inputmode="decimal" value="" placeholder="—" aria-label="HT" style="width:56px;text-align:right"></div>
+      <div class="z2b-r"><span>Lignes</span><button class="z2b-sel">+ ligne</button><button class="z2b-sel">regrouper</button><b class="z2b-m" style="color:var(--t0)">86,50 / 86,50</b></div>
+      <div class="z2b-r"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--t2)" stroke-width="1.8"><path d="M4 2h5l3 3v9H4z"/><path d="M9 2v3h3"/></svg><span class="z2b-m" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">2026-04-27 Brau- und Rauchshop 372765.jpg · 0,7 Mo</span><button class="z2b-lnk">Voir</button><button class="z2b-lnk">Changer</button></div>
+    </div>
+  </section>
+</aside>
+
+<footer class="z2b-pied" id="z2b-pied"><span class="z2b-drv" id="z2b-drv2" style="margin-left:0"><i></i>L'Affinée / Justificatifs / 2026</span><button class="z2b-go" id="z2b-go" data-booster="action-unique"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 7l3.5 3.5L12 3"/></svg>Confirmer et enregistrer</button></footer>
+</div>
+
+<section class="z2b-annexe" aria-label="États">
+  <h2>Les 9 états, joués sur l'écran</h2>
+  <ol>
+    <li><a href="#etat=1">lecture en cours</a> (trois étapes, le papier gris, le × actif)</li>
+    <li><a href="#etat=2">lue, sans point</a></li>
+    <li><a href="#etat=3">lue avec ses six points</a> (l'écran au repos)</li>
+    <li><a href="#etat=4a">un point réglé</a>, puis <a href="#etat=4b">tous réglés</a></li>
+    <li><a href="#etat=5">erreur de lecture</a> (le fichier est gardé, saisie à la main)</li>
+    <li><a href="#etat=6">Drive pas connecté</a> (Confirmer reste actif)</li>
+    <li><a href="#etat=7a">enregistrement en cours</a>, puis <a href="#etat=7b">le reçu Drive</a></li>
+    <li><a href="#etat=8">achat peut-être déjà enregistré</a> (autre numéro, même commande, même total)</li>
+    <li><a href="#etat=9">hors ligne</a></li>
+  </ol>
+  <p>Simulé pour la maquette, dit ici : Sabro imprime « g » sur sa facture (l'unité est rendue illisible pour montrer D214) ; le stock
+  (Target α 11,8 %, Hallertauer Blanc DE, les reliés) et le doublon n° 380001 sont fictifs. Tout le reste vient de la facture 372765.</p>
+</section>
+</div>
+
+<script>
+(function(){
+  // Les 23 lignes, dans l'ordre du papier (verite-facture-372765.json). lien : rel, new, bis, q, mout.
+  var L=[
+    {n:1,code:'MA0221',imp:'Maris Otter, Kg',nom:'Maris Otter',q:'6',u:'Kg',p:'2,30',a:'13,80',lien:'rel',fam:'ma'},
+    {n:2,code:'ISHOP-SCHROT',imp:'Zuschlag Schrotung',nom:'Zuschlag Schrotung',q:'6',u:'Kg',p:'0,10',a:'0,60',lien:'mout',fam:'se',parent:1},
+    {n:3,code:'MA0027',imp:'Gerstenflocken, 1 Kg',nom:'Gerstenflocken',q:'1',u:'Kg',p:'2,40',a:'2,40',lien:'rel',fam:'ma'},
+    {n:4,code:'MA0055',imp:'Röstgerste, Kg',nom:'Röstgerste',q:'1',u:'Kg',p:'1,80',a:'1,80',lien:'rel',fam:'ma'},
+    {n:5,code:'ISHOP-SCHROT',imp:'Zuschlag Schrotung',nom:'Zuschlag Schrotung',q:'1',u:'Kg',p:'0,10',a:'0,10',lien:'mout',fam:'se',parent:4},
+    {n:6,code:'MA0333',imp:'CARAMÜNCH® Typ 2 Kg',nom:'Caramünch Typ 2',q:'1',u:'Kg',p:'1,75',a:'1,75',lien:'rel',fam:'ma'},
+    {n:7,code:'ISHOP-SCHROT',imp:'Zuschlag Schrotung',nom:'Zuschlag Schrotung',q:'1',u:'Kg',p:'0,10',a:'0,10',lien:'mout',fam:'se',parent:6},
+    {n:8,code:'HO0102',imp:'Target 11.3%',nom:'Target',al:'11,3',q:'40',u:'g',p:'0,040',a:'1,60',lien:'bis',fam:'ho',pt:4},
+    {n:9,code:'HO0017',imp:'Goldings East Kent 5.5%',nom:'Goldings East Kent',al:'5,5',q:'20',u:'g',p:'0,040',a:'0,80',lien:'rel',fam:'ho'},
+    {n:10,code:'HE0211',imp:'LALLEMAND Windsor 11g',nom:'Lallemand Windsor',q:'2',u:'Stk',p:'4,50',a:'9,00',lien:'rel',fam:'le',sac:'= 2 sachets'},
+    {n:11,code:'HE0203',imp:'Safale BE-256 (Abbaye) 11.5 g',nom:'Safale BE-256',q:'1',u:'Stk',p:'4,40',a:'4,40',lien:'new',fam:'le',sac:'= 1 sachet'},
+    {n:12,code:'HE0102',imp:'Safale US-05 11,5g',nom:'Safale US-05',q:'2',u:'Stk',p:'3,40',a:'6,80',lien:'rel',fam:'le',sac:'= 2 sachets'},
+    {n:13,code:'MA0007',imp:'Pilsner Malz, Kg',nom:'Pilsner Malz',q:'5',u:'Kg',p:'1,50',a:'7,50',lien:'rel',fam:'ma'},
+    {n:14,code:'ISHOP-SCHROT',imp:'Zuschlag Schrotung',nom:'Zuschlag Schrotung',q:'5',u:'Kg',p:'0,10',a:'0,50',lien:'mout',fam:'se',parent:13},
+    {n:15,code:'MA0010',imp:'Weizenmalz hell, Kg',nom:'Weizenmalz hell',q:'2',u:'Kg',p:'1,55',a:'3,10',lien:'rel',fam:'ma'},
+    {n:16,code:'ISHOP-SCHROT',imp:'Zuschlag Schrotung',nom:'Zuschlag Schrotung',q:'2',u:'Kg',p:'0,10',a:'0,20',lien:'mout',fam:'se',parent:15},
+    {n:17,code:'MA0034',imp:'Haferflocken, 1 Kg',nom:'Haferflocken',q:'2',u:'Kg',p:'2,50',a:'5,00',lien:'rel',fam:'ma'},
+    {n:18,code:'HO0046',imp:'Galaxy 17.2%',nom:'Galaxy',al:'17,2',q:'60',u:'g',p:'0,0800',a:'4,80',lien:'rel',fam:'ho'},
+    {n:19,code:'HO1907',imp:'Nelson Sauvin ™ 9.6%',nom:'Nelson Sauvin',al:'9,6',q:'100',u:'g',p:'0,080',a:'8,00',lien:'rel',fam:'ho'},
+    {n:20,code:'HO2026',imp:'Sabro® 13.4%',nom:'Sabro',al:'13,4',q:'30',u:'?',p:'0,070',a:'2,10',lien:'q',fam:'ho',pt:5},
+    {n:21,code:'HE2036',imp:'LALLEMAND Verdant IPA 11g',nom:'Lallemand Verdant IPA',q:'2',u:'Stk',p:'4,70',a:'9,40',lien:'new',fam:'le',sac:'= 2 sachets'},
+    {n:22,code:'HO17041',imp:'Hallertauer Blanc 9.5% CH',nom:'Hallertauer Blanc',al:'9,5',q:'30',u:'g',p:'0,045',a:'1,35',lien:'bis',fam:'ho',pt:6},
+    {n:23,code:'HO2022',imp:'Motueka ™ 8.1%',nom:'Motueka',al:'8,1',q:'20',u:'g',p:'0,070',a:'1,40',lien:'rel',fam:'ho'}
+  ];
+  var ICO={
+    rel:'<svg viewBox="0 0 18 18" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M7 11a3 3 0 0 0 4 0l3-3a3 3 0 0 0-4-4l-1 1"/><path d="M11 7a3 3 0 0 0-4 0l-3 3a3 3 0 0 0 4 4l1-1"/></svg>',
+    'new':'<svg viewBox="0 0 18 18" fill="none" stroke="var(--encre)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5" stroke-dasharray="2 2"/><path d="M9 6v6M6 9h6"/></svg>',
+    bis:'<svg viewBox="0 0 18 18" fill="none" stroke="var(--attt)" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="7" y="7" width="8" height="8" rx="2" fill="#fff"/></svg>',
+    q:'<svg viewBox="0 0 18 18" fill="none" stroke="var(--attt)" stroke-width="1.8"><circle cx="9" cy="9" r="6.5"/><path d="M7 7a2 2 0 1 1 3 1.7c-.7.4-1 .8-1 1.5M9 13v.3"/></svg>',
+    mout:''
+  };
+  var PTS=[
+    {n:1,k:'tva',lib:'<i>TVA imprimée</i> · <b>2,80 · 4,15</b>',cible:'z2b-cercle',court:'TVA imprimée <b>2,80 · 4,15</b>'},
+    {n:2,k:'paye',lib:'<i>Payé le</i> · <b>27.04</b> supposée = facture',cible:'z2b-paye',court:'Payé le <b>27.04</b> supposée'},
+    {n:3,k:'mout',lib:'<i>mouture</i> · <b>×5</b> ↑ rattacher au malt',cible:'z2b-l2',court:'mouture <b>×5</b> ↑ malt'},
+    {n:4,k:'target',lib:'<i>Target</i> · α <b>11,3</b> ≠ stock <b>11,8</b>',cible:'z2b-l8',court:'Target α <b>11,3 ≠ 11,8</b>'},
+    {n:5,k:'sabro',lib:'<i>Sabro</i> · unité <b>?</b> · simulé',cible:'z2b-l20',court:'Sabro unité <b>?</b>'},
+    {n:6,k:'hall',lib:'<i>Hallertauer Blanc</i> · <b>CH</b> ≠ stock DE',cible:'z2b-l22',court:'Hallertauer <b>CH</b>'}
+  ];
+  var fait={tva:false,paye:false,mout:false,target:false,sabro:false,hall:false}, cur=1;
+  var lignes=document.getElementById('z2b-lignes'), barre=document.getElementById('z2b-barre');
+  var total=8650;
+  function cents(s){return Math.round(parseFloat(s.replace(',','.'))*100)}
+  function el(h){var d=document.createElement('div');d.innerHTML=h;return d.firstElementChild}
+  function plateau(l){
+    var calc=l.q+' × '+l.p+' = '+l.a;
+    return '<div class="z2b-plat"><div class="z2b-imp">imprimé « <b>'+l.imp+'</b> » · '+l.code+(l.n===20?' · unité « g » rendue illisible (simulé)':'')+'</div>'+
+      '<div class="z2b-calc"><input inputmode="decimal" value="'+l.q+'" aria-label="Quantité ligne '+l.n+'"><span>'+(l.u==='?'?'<b class="z2b-ko">?</b>':l.u)+' × '+l.p+' =</span><input inputmode="decimal" value="'+l.a+'" aria-label="Montant ligne '+l.n+'" style="width:5ch"><span class="z2b-ok">✓</span></div>'+
+      '<div class="z2b-type" data-booster="type-achat"><button aria-pressed="'+(l.lien!=='mout')+'">Ingrédient</button><button aria-pressed="'+(l.lien==='mout')+'">Service</button><button aria-pressed="false">Matériel</button></div>'+
+      '<div class="z2b-stock"><span>Stock</span><button>'+(l.lien==='rel'?ICO.rel+l.nom:l.lien==='new'?ICO['new']+'nouveau · '+(l.fam==='le'?'Levure':l.fam==='ho'?'Houblon':'Malt'):l.lien==='bis'?ICO.bis+l.nom+' bis':l.lien==='q'?ICO.q+'rien tant que l\'unité manque':'rattaché au malt')+' ⇄</button></div>'+
+      '<button class="z2b-ret">Retirer la ligne</button></div>';
+  }
+  L.forEach(function(l){
+    var doute=!!l.pt||l.lien==='mout';
+    var d='<div class="z2b-l'+(l.lien==='mout'?' z2b-mout':'')+(doute?' z2b-doute':'')+'" id="z2b-l'+l.n+'" data-n="'+l.n+'" aria-expanded="false">'+
+      '<span class="z2b-lk">'+(ICO[l.lien]||'')+'</span>'+
+      '<span class="z2b-q">'+(l.lien==='mout'?'':l.q+'<small> '+(l.u==='?'?'<b>?</b>':l.u)+'</small>')+'</span>'+
+      '<span class="z2b-d" data-ouvre role="button" tabindex="0">'+(l.lien==='mout'?'mouture':l.nom)+(l.al?'<em>α '+l.al+'</em>':'')+(l.sac?'<span class="z2b-sac">'+l.sac+'</span>':'')+(l.lien==='mout'?'<button class="z2b-btn" data-ratt="'+l.n+'" aria-label="rattacher au malt du dessus">↑</button>':'')+'</span>'+
+      '<span class="z2b-a"><input inputmode="decimal" value="'+l.a+'" aria-label="Montant ligne '+l.n+'"></span>';
+    if(l.n===8) d+='<div class="z2b-sl"><span class="z2b-exist">stock α <b>11,8</b></span><span>→</span><button class="z2b-btn z2b-prop" data-target="bis">Target bis</button><button class="z2b-btn" data-target="meme">même lot</button></div>';
+    if(l.n===20) d+='<div class="z2b-sl"><span>unité à préciser →</span><span class="z2b-seg" data-booster="unite-segment"><button data-unite="g">g</button><button data-unite="kg">kg</button><button data-unite="Stk">Stk</button></span></div>';
+    if(l.n===22) d+='<div class="z2b-sl"><span class="z2b-exist">stock · Hallertauer Blanc <b>DE</b></span><span>→</span><button class="z2b-btn z2b-prop" data-hall="ch">Créer « Hallertauer Blanc CH »</button><button class="z2b-btn" data-hall="meme">même article</button></div>';
+    if(l.n===2) d+='<div class="z2b-mtab" id="z2b-mtab"><table><tr><th>malt</th><th class="z2b-m">lu</th><th class="z2b-m">avec mouture</th></tr>'+
+      [[1,'2,30','2,40'],[4,'1,80','1,90'],[6,'1,75','1,85'],[13,'1,50','1,60'],[15,'1,55','1,65']].map(function(r){var m=L[r[0]-1];return '<tr><td>'+m.q+' kg '+m.nom+'</td><td class="z2b-m">'+r[1]+'</td><td class="z2b-m">'+r[2]+' /kg</td></tr>'}).join('')+
+      '</table><div class="z2b-deuxb"><button class="z2b-prop" data-mout="ratt">Rattacher les 5</button><button data-mout="serv">Laisser en service</button></div></div>';
+    d+=plateau(l)+'</div>';
+    lignes.appendChild(el(d));
+    var seg=document.createElement('button');seg.className='z2b-'+l.fam+(l.pt?' z2b-doute':'');seg.style.flexGrow=String(cents(l.a));seg.setAttribute('aria-label','ligne '+l.n+' · '+l.a);
+    seg.addEventListener('click',function(){aller('z2b-l'+l.n)});l._seg=seg;barre.appendChild(seg);
+  });
+  // Le plateau s'ouvre au toucher du nom (r2) ; un bouton dedans ne l'ouvre pas.
+  lignes.addEventListener('click',function(e){
+    if(e.target.closest('[data-ratt],[data-target],[data-unite],[data-hall],[data-mout],.z2b-plat,.z2b-sl,.z2b-a,.z2b-mtab')) return;
+    var li=e.target.closest('.z2b-l');if(!li)return;li.setAttribute('aria-expanded',li.getAttribute('aria-expanded')==='true'?'false':'true');
+  });
+  // Le stylo.
+  var pts=document.getElementById('z2b-pts'), liste=document.getElementById('z2b-liste');
+  PTS.forEach(function(p){var b=document.createElement('button');b.className='z2b-pt';b.dataset.k=p.k;b.textContent=p.n;b.setAttribute('aria-label','point '+p.n);b.addEventListener('click',function(){cur=p.n;maj();aller(p.cible)});pts.appendChild(b);
+    var li=el('<div class="z2b-li" data-k="'+p.k+'"><b>'+p.n+'</b><span>'+p.court+'</span><button class="z2b-y">y aller</button></div>');li.querySelector('.z2b-y').addEventListener('click',function(){cur=p.n;maj();aller(p.cible)});liste.appendChild(li)});
+  function maj(){
+    var rest=PTS.filter(function(p){return !fait[p.k]});
+    if(rest.length&&fait[PTS[cur-1].k]) cur=rest[0].n;
+    PTS.forEach(function(p){var b=pts.children[p.n-1];b.classList.toggle('z2b-fait',fait[p.k]);b.textContent=fait[p.k]?'✓':p.n;b.setAttribute('aria-current',String(p.n===cur&&!fait[p.k]));liste.children[p.n-1].classList.toggle('z2b-fait',fait[p.k])});
+    var c=document.getElementById('z2b-cur'),a=document.getElementById('z2b-aller');
+    if(!rest.length){c.textContent='tout est réglé · prête';a.textContent='prête';a.classList.add('z2b-pret')}else{c.innerHTML=PTS[cur-1].lib;a.textContent='y aller';a.classList.remove('z2b-pret')}
+  }
+  function aller(id){var t=document.getElementById(id);if(!t)return;t.scrollIntoView({behavior:'smooth',block:'center'});t.classList.remove('z2b-flash');void t.offsetWidth;t.classList.add('z2b-flash');if(id==='z2b-l2')document.getElementById('z2b-mtab').classList.add('z2b-ouv')}
+  document.getElementById('z2b-aller').addEventListener('click',function(){aller(PTS[cur-1].cible)});
+  function regleLigne(n,note){var li=document.getElementById('z2b-l'+n);li.classList.remove('z2b-doute');li.classList.add('z2b-fait');if(L[n-1]._seg){L[n-1]._seg.classList.remove('z2b-doute');L[n-1]._seg.classList.add('z2b-ok')}if(note){var s=el('<span class="z2b-note">'+note+'</span>');li.querySelector('.z2b-d').appendChild(s)}}
+  // 1 TVA.
+  document.querySelectorAll('[data-tva]').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('[data-tva]').forEach(function(x){x.setAttribute('aria-pressed','false')});b.setAttribute('aria-pressed','true');
+    var c=document.getElementById('z2b-tcalc');c.textContent=b.dataset.tva?'retenu '+b.dataset.tva+' · lu, non recoupé · HT vide':'TVA laissée vide · HT vide';c.classList.add('z2b-done');document.getElementById('z2b-cercle').classList.add('z2b-fait');fait.tva=true;maj()})});
+  // 2 Payé le.
+  document.querySelectorAll('[data-paye]').forEach(function(b){b.addEventListener('click',function(){var p=document.getElementById('z2b-paye');p.classList.add('z2b-fait');p.querySelector('.z2b-sup').textContent=b.dataset.paye==='ok'?'confirmée':'saisie';p.querySelectorAll('[data-paye]').forEach(function(x){x.remove()});if(b.dataset.paye==='autre'){document.getElementById('z2b-payele').focus()}fait.paye=true;maj()})});
+  // 3 mouture : ligne par ligne, ou les cinq (u2).
+  function moutFaite(n,serv){var l=L[n-1];regleLigne(n,serv?'service':'→ '+L[l.parent-1].nom);var b=document.querySelector('[data-ratt="'+n+'"]');if(b)b.remove();if(!serv){var pl=document.getElementById('z2b-l'+l.parent).querySelector('.z2b-d');if(!pl.querySelector('.z2b-note'))pl.appendChild(el('<span class="z2b-note">✓ 2,40/kg</span>'.replace('2,40',{1:'2,40',4:'1,90',6:'1,85',13:'1,60',15:'1,65'}[l.parent])))}
+    if(L.filter(function(x){return x.lien==='mout'}).every(function(x){return document.getElementById('z2b-l'+x.n).classList.contains('z2b-fait')})){fait.mout=true;document.getElementById('z2b-mtab').classList.remove('z2b-ouv');maj()}}
+  document.querySelectorAll('[data-ratt]').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();moutFaite(Number(b.dataset.ratt),false)})});
+  document.querySelectorAll('[data-mout]').forEach(function(b){b.addEventListener('click',function(){L.filter(function(x){return x.lien==='mout'}).forEach(function(x){moutFaite(x.n,b.dataset.mout==='serv')})})});
+  // 4 Target, 5 Sabro, 6 Hallertauer.
+  document.querySelectorAll('[data-target]').forEach(function(b){b.addEventListener('click',function(){regleLigne(8,b.dataset.target==='bis'?'→ Target bis':'→ lot α 11,3');document.getElementById('z2b-l8').querySelector('.z2b-sl').remove();fait.target=true;maj()})});
+  document.querySelectorAll('[data-unite]').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('[data-unite]').forEach(function(x){x.setAttribute('aria-pressed','false')});b.setAttribute('aria-pressed','true');var li=document.getElementById('z2b-l20');li.querySelector('.z2b-q').innerHTML='30<small> '+b.dataset.unite+'</small>';regleLigne(20,'→ Sabro');setTimeout(function(){li.querySelector('.z2b-sl').remove()},200);fait.sabro=true;maj()})});
+  document.querySelectorAll('[data-hall]').forEach(function(b){b.addEventListener('click',function(){regleLigne(22,b.dataset.hall==='ch'?'→ Hallertauer Blanc CH':'→ même article');document.getElementById('z2b-l22').querySelector('.z2b-sl').remove();fait.hall=true;maj()})});
+  // Tampon → preuve (u1).
+  document.getElementById('z2b-tampon').addEventListener('click',function(){var p=document.getElementById('z2b-preuve');var o=p.classList.toggle('z2b-ouv');this.setAttribute('aria-expanded',String(o))});
+  // Règlement.
+  document.querySelectorAll('[data-seg]').forEach(function(b){b.addEventListener('click',function(){document.querySelectorAll('[data-seg]').forEach(function(x){x.setAttribute('aria-pressed','false')});b.setAttribute('aria-pressed','true');var ap=b.dataset.seg==='apayer';document.getElementById('z2b-ech').hidden=!ap;document.getElementById('z2b-paye').style.display=ap?'none':''})});
+  // Le pied : jamais bloqué ; pendant l'envoi, la jauge ; puis le reçu.
+  var pied=document.getElementById('z2b-pied');
+  function envoi(){pied.innerHTML='<div class="z2b-envoi"><div class="z2b-jauge"><i></i></div><span>Envoi au Drive 0,4 / 0,7 Mo · tu peux fermer, ça continue</span></div><button class="z2b-go" disabled style="opacity:.6">Enregistrement…</button>'}
+  function recu(){pied.innerHTML='<div class="z2b-recu"><svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="var(--hopt)" stroke-width="1.8"><path d="M2 7l3.5 3.5L12 3"/></svg><div style="min-width:0"><b>2026-04-27 Brau- und Rauchshop 372765.jpg</b><a href="#">Ouvrir dans Drive · L\'Affinée / Justificatifs / 2026 · vérifié</a></div></div><button class="z2b-go">Fermer</button>'}
+  document.getElementById('z2b-go').addEventListener('click',function(){envoi();setTimeout(recu,1500)});
+  // Les états, par #etat=n.
+  function etat(code){
+    var papier=document.getElementById('z2b-papier');
+    if(code==='1'){document.getElementById('z2b-lecture').classList.add('z2b-ouv');papier.classList.add('z2b-gris');document.getElementById('z2b-cur').textContent='lecture en cours…';document.getElementById('z2b-aller').textContent='…';pts.style.visibility='hidden'}
+    if(code==='2'||code==='4b'){document.querySelectorAll('[data-tva=""]')[0].click();document.querySelector('[data-paye="ok"]').click();document.querySelector('[data-mout="ratt"]').click();document.querySelector('[data-target="bis"]').click();document.querySelector('[data-unite="g"]').click();document.querySelector('[data-hall="ch"]').click();
+      if(code==='2'){document.querySelectorAll('.z2b-fait,.z2b-done').forEach(function(x){x.classList.remove('z2b-fait','z2b-done')});document.querySelectorAll('.z2b-note').forEach(function(x){x.remove()});document.querySelectorAll('.z2b-barre .z2b-ok').forEach(function(x){x.classList.remove('z2b-ok')});document.getElementById('z2b-tcalc').textContent='2,80 lu et recoupé';document.querySelector('.z2b-paye').style.display='none';PTS.forEach(function(p,i){pts.children[i].style.display='none';liste.children[i].style.display='none'});document.getElementById('z2b-cur').textContent='rien à régler · 23 lignes recoupées';liste.appendChild(el('<div class="z2b-li"><span></span><span style="color:var(--hopt)">rien à régler</span></div>'));document.querySelectorAll('.z2b-deux button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.tva==='2,80')})}}
+    if(code==='4a'){document.querySelectorAll('[data-tva=""]')[0].click()}
+    if(code==='5'){document.getElementById('z2b-erreur').classList.add('z2b-ouv');lignes.innerHTML='<div class="z2b-l"><span class="z2b-lk"></span><span class="z2b-q"></span><button class="z2b-d" style="color:var(--t2)">+ ligne, à la main</button><span class="z2b-a"></span></div>';barre.innerHTML='';document.getElementById('z2b-tva').style.display='none';document.querySelector('.z2b-paye').style.display='none';document.querySelector('.z2b-tampon').innerHTML='<b>—</b>à saisir';document.querySelector('.z2b-tampon').style.borderColor='var(--bordm)';document.querySelector('.z2b-tampon').style.color='var(--t2)';document.querySelector('.z2b-four').value='';document.querySelector('.z2b-num').value='';document.querySelector('.z2b-total input').value='';pts.style.visibility='hidden';document.getElementById('z2b-cur').textContent='rien lu · tout se tape';document.getElementById('z2b-aller').style.visibility='hidden';document.querySelector('.z2b-cols').style.display='none';document.querySelector('.z2b-bl').innerHTML='<span>somme des lignes : —</span>'}
+    if(code==='6'){var d=document.getElementById('z2b-drv');d.className='z2b-drv z2b-off';d.innerHTML='<i></i>Drive à connecter';var d2=document.getElementById('z2b-drv2');d2.className='z2b-drv z2b-off';d2.innerHTML='<i></i>Drive à connecter · <u>Connecter Drive</u>'}
+    if(code==='7a'){envoi()}
+    if(code==='7b'){recu()}
+    if(code==='8'){document.getElementById('z2b-doublon').classList.add('z2b-ouv');document.getElementById('z2b-go').textContent='Rattacher le justificatif'}
+    if(code==='9'){document.getElementById('z2b-horsligne').classList.add('z2b-ouv');var d3=document.getElementById('z2b-drv2');d3.className='z2b-drv z2b-off';d3.innerHTML='<i></i>hors ligne · envoi au retour du réseau'}
+  }
+  maj();
+  var m=/etat=([0-9ab]+)/.exec(location.search+location.hash);if(m)etat(m[1]);
+  window.addEventListener('hashchange',function(){location.reload()});
+})();
+</script>
+</body></html>

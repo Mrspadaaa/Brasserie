@@ -1,0 +1,274 @@
+{
+  "version": 1,
+  "etabliLe": "2026-11-08",
+  "avertissement": "Produits publics seulement : aucun stock, aucun prix, aucun fournisseur du brasseur. 'statut' = 'lu-sur-la-fiche' : la valeur a ete lue le 08.11.2026 sur la page citee (adresse recuperee par le script) ; 'a-reverifier' : la page du producteur bloque les robots ou se charge par script, la valeur vient de la memoire du redacteur et doit etre relue par le pilote avant la passe payante (le juge compte ces produits a part).",
+  "regles": {
+    "plage": "la fiche publie une plage [min, max] : un point rendu au milieu est une moyenne inventee pour une levure, un milieu deduit declare pour un malt (D302)",
+    "valeur": "la fiche publie un point",
+    "nePublie": "la fiche ne publie pas ce champ : toute valeur rendue est inventee",
+    "existe": "false : le produit n'existe pas ; ambigu : le nom ne designe pas un produit precis ; horsPerimetre : ni malt, ni houblon, ni levure de brassage"
+  },
+  "domainesProducteurs": [
+    "fermentis.com", "lallemandbrewing.com", "whitelabs.com", "wyeastlab.com", "omegayeast.com", "imperialyeast.com",
+    "weyermann.de", "crispmalt.com", "bestmalz.de", "castlemalting.com", "simpsonsmalt.co.uk", "muntons.com", "dingemansmaltings.com", "thomasfawcett.co.uk", "briess.com",
+    "yakimachief.com", "barthhaas.com", "hopsteiner.com", "nzhops.co.nz", "hopsteiner.de", "hopfen.de", "hvg-germany.de", "hopunion.com", "charlesfaram.co.uk", "czechhops.cz", "sazhops.cz"
+  ],
+  "domainesBlogs": [
+    "homebrewtalk.com", "brewersfriend.com", "beermaverick.com", "reddit.com", "wikipedia.org", "fr.wikipedia.org", "amazon.com", "amazon.de", "ebay.com", "brouwland.com", "hobbybrauerversand.de",
+    "morebeer.com", "northernbrewer.com", "brewuk.co.uk", "hopslist.com", "brewgr.com", "mrmalty.com", "byo.com", "beersmith.com", "labelpeelers.com", "malt.io", "facebook.com", "youtube.com"
+  ],
+  "produits": [
+    {
+      "id": "p01", "groupe": "phare", "famille": "malt",
+      "saisie": { "description": "Weyermann Pilsner Malt", "unite": "kg", "quantite": 25 },
+      "producteur": "Weyermann", "fiche": { "url": "https://www.weyermann.de/product/weyermann-pilsner-malt/", "titre": "Weyermann Pilsner Malt", "domaines": ["weyermann.de"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": { "colorEbc": { "plage": [2.5, 4.5] } } }
+    },
+    {
+      "id": "p02", "groupe": "phare", "famille": "malt",
+      "saisie": { "description": "Maris Otter Crisp", "unite": "kg", "quantite": 25 },
+      "producteur": "Crisp Malting", "fiche": { "url": "https://www.crispmalt.com/products/maris-otter/", "titre": "Crisp Maris Otter", "domaines": ["crispmalt.com"], "statut": "a-reverifier" },
+      "attendu": { "existe": true, "champs": { "colorEbc": { "plage": [4.5, 7.5] } } },
+      "note": "Plage large : un malteur britannique publie 4,5 a 7,5 EBC selon la campagne ; la page se charge par script."
+    },
+    {
+      "id": "p03", "groupe": "phare", "famille": "malt",
+      "saisie": { "description": "Weyermann Caramünch Typ 1", "unite": "kg", "quantite": 5 },
+      "producteur": "Weyermann", "fiche": { "url": "https://www.weyermann.de/product/weyermann-caramuench-typ-1/", "titre": "Weyermann CARAMÜNCH Typ 1", "domaines": ["weyermann.de"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": { "colorEbc": { "plage": [80, 100] } } }
+    },
+    {
+      "id": "p04", "groupe": "phare", "famille": "houblon",
+      "saisie": { "description": "Citra", "unite": "g", "quantite": 100 },
+      "producteur": "Yakima Chief Hops", "fiche": { "url": "https://www.yakimachief.com/hops/citra", "titre": "Citra", "domaines": ["yakimachief.com", "barthhaas.com", "hopunion.com"], "statut": "a-reverifier" },
+      "attendu": { "existe": true, "champs": { "alphaPct": { "plage": [11, 13] } } },
+      "note": "La page de Yakima Chief repond 429 (controle anti-robot) : valeur a relire."
+    },
+    {
+      "id": "p05", "groupe": "phare", "famille": "houblon",
+      "saisie": { "description": "Nelson Sauvin", "unite": "g", "quantite": 100 },
+      "producteur": "New Zealand Hops", "fiche": { "url": "https://www.nzhops.co.nz/collections/new-zealand-hops/products/nelson-sauvin", "titre": "Nelson Sauvin", "domaines": ["nzhops.co.nz"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": { "alphaPct": { "plage": [10, 13] } } }
+    },
+    {
+      "id": "p06", "groupe": "phare", "famille": "houblon",
+      "saisie": { "description": "Idaho 7", "unite": "g", "quantite": 100 },
+      "producteur": "Yakima Chief Hops", "fiche": { "url": "https://www.yakimachief.com/hops/idaho-7", "titre": "Idaho 7", "domaines": ["yakimachief.com", "barthhaas.com", "hopunion.com"], "statut": "a-reverifier" },
+      "attendu": { "existe": true, "champs": { "alphaPct": { "plage": [8.5, 12] } } },
+      "note": "Page bloquee (429) ; plage large 8,5 a 12 selon les campagnes."
+    },
+    {
+      "id": "p07", "groupe": "phare", "famille": "houblon",
+      "saisie": { "description": "Magnum", "unite": "g", "quantite": 500 },
+      "producteur": "Hopsteiner / BarthHaas", "fiche": { "url": "https://www.hopsteiner.com/", "titre": "Magnum (Hopsteiner)", "domaines": ["hopsteiner.com", "hopsteiner.de", "barthhaas.com", "hvg-germany.de"], "statut": "a-reverifier" },
+      "attendu": { "existe": true, "champs": { "alphaPct": { "plage": [12, 14] } } },
+      "note": "Adresse de la fiche variete a retrouver : seul le domaine est verifie."
+    },
+    {
+      "id": "p08", "groupe": "phare", "famille": "levure",
+      "saisie": { "description": "SafAle US-05", "unite": "sachet", "quantite": 10 },
+      "producteur": "Fermentis", "fiche": { "url": "https://fermentis.com/en/product/safale-us-05/", "titre": "SafAle US-05", "domaines": ["fermentis.com"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": {
+        "attenuationPct": { "plage": [78, 82] }, "tempC": { "plage": [18, 26] }, "alcoholTolerancePct": { "plage": [9, 11] },
+        "flocculation": { "texte": "medium" }, "lab": { "texte": "fermentis" }, "form": { "texte": "sèche" } } },
+      "note": "Temperature : '50 a 80 g/hl a idealement 18-26 C' (dosage et temperature)."
+    },
+    {
+      "id": "p09", "groupe": "phare", "famille": "levure",
+      "saisie": { "description": "Nottingham", "unite": "sachet", "quantite": 10 },
+      "producteur": "Lallemand", "fiche": { "url": "https://www.lallemandbrewing.com/en/united-states/products/nottingham-high-performance-ale-yeast/", "titre": "LalBrew Nottingham", "domaines": ["lallemandbrewing.com"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": {
+        "attenuationPct": { "plage": [78, 84] }, "tempC": { "plage": [10, 25] }, "alcoholTolerancePct": { "valeur": 14 },
+        "flocculation": { "texte": "high" }, "lab": { "texte": "lallemand" }, "form": { "texte": "sèche" } } }
+    },
+    {
+      "id": "p10", "groupe": "phare", "famille": "levure",
+      "saisie": { "description": "WLP001", "unite": "pack", "quantite": 2 },
+      "producteur": "White Labs", "fiche": { "url": "https://www.whitelabs.com/yeast-bank/wlp001-california-ale-yeast", "titre": "WLP001 California Ale Yeast", "domaines": ["whitelabs.com"], "statut": "a-reverifier" },
+      "attendu": { "existe": true, "champs": {
+        "attenuationPct": { "plage": [73, 85] }, "tempC": { "plage": [20, 23] }, "flocculation": { "texte": "medium" }, "lab": { "texte": "white labs" }, "form": { "texte": "liquide" } } },
+      "note": "La page White Labs se charge par script : valeurs de memoire (73-85 %, 68-73 F = 20-23 C)."
+    },
+
+    {
+      "id": "f01", "groupe": "nom-tape", "famille": "houblon",
+      "saisie": { "description": "Idaho7", "unite": "g", "quantite": 100 },
+      "producteur": "Yakima Chief Hops", "fiche": { "url": "https://www.yakimachief.com/hops/idaho-7", "titre": "Idaho 7", "domaines": ["yakimachief.com", "barthhaas.com", "hopunion.com"], "statut": "a-reverifier" },
+      "attendu": { "existe": true, "champs": { "alphaPct": { "plage": [8.5, 12] } } },
+      "note": "Meme houblon que p06, ecrit sans espace comme il le tape."
+    },
+    {
+      "id": "f02", "groupe": "facture", "famille": "houblon",
+      "saisie": { "description": "Cryo Hops Citra 25g", "unite": "sachet", "quantite": 4 },
+      "producteur": "Yakima Chief Hops", "fiche": { "url": "https://www.yakimachief.com/commercial/cryo-hops.html", "titre": "Cryo Hops Citra", "domaines": ["yakimachief.com", "barthhaas.com", "hopunion.com"], "statut": "a-reverifier" },
+      "attendu": { "existe": true, "champs": { "alphaPct": { "plage": [20, 26] } } },
+      "note": "Le Cryo est une poudre concentree : un alpha de 'Citra' pellet (11-13) serait faux ici."
+    },
+    {
+      "id": "f03", "groupe": "nom-tape", "famille": "malt",
+      "saisie": { "description": "Caramünch Typ 2", "unite": "kg", "quantite": 5 },
+      "producteur": "Weyermann", "fiche": { "url": "https://www.weyermann.de/product/weyermann-caramuench-typ-2/", "titre": "Weyermann CARAMÜNCH Typ 2", "domaines": ["weyermann.de"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": { "colorEbc": { "plage": [110, 130] } } }
+    },
+    {
+      "id": "f04", "groupe": "facture", "famille": "malt",
+      "saisie": { "description": "Pilsner Malz", "unite": "kg", "quantite": 25 },
+      "attendu": { "existe": true, "ambigu": true, "champs": {} },
+      "note": "Nom generique sans malteur : la consigne demande le fabricant et laisse les chiffres absents. En production, f4 ne cherche pas non plus (non identifiable)."
+    },
+    {
+      "id": "f05", "groupe": "facture", "famille": "malt",
+      "saisie": { "description": "Pale Ale Malz Weyermann 25kg", "unite": "kg", "quantite": 25 },
+      "producteur": "Weyermann", "fiche": { "url": "https://www.weyermann.de/product/weyermann-pale-ale-malt/", "titre": "Weyermann Pale Ale Malt", "domaines": ["weyermann.de"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": { "colorEbc": { "plage": [5.5, 7.5] } } }
+    },
+    {
+      "id": "f06", "groupe": "facture", "famille": "malt",
+      "saisie": { "description": "Münchner Malz Typ 1 Weyermann", "unite": "kg", "quantite": 10 },
+      "producteur": "Weyermann", "fiche": { "url": "https://www.weyermann.de/product/weyermann-munich-malt-type-1/", "titre": "Weyermann Munich Malt Type 1", "domaines": ["weyermann.de"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": { "colorEbc": { "plage": [12, 18] } } }
+    },
+    {
+      "id": "f07", "groupe": "facture", "famille": "malt",
+      "saisie": { "description": "Wiener Malz Weyermann", "unite": "kg", "quantite": 10 },
+      "producteur": "Weyermann", "fiche": { "url": "https://www.weyermann.de/product/weyermann-vienna-malt/", "titre": "Weyermann Vienna Malt", "domaines": ["weyermann.de"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": { "colorEbc": { "plage": [6, 9] } } }
+    },
+    {
+      "id": "f08", "groupe": "facture", "famille": "malt",
+      "saisie": { "description": "Roggenmalz Weyermann", "unite": "kg", "quantite": 5 },
+      "producteur": "Weyermann", "fiche": { "url": "https://www.weyermann.de/product/weyermann-rye-malt/", "titre": "Weyermann Rye Malt", "domaines": ["weyermann.de"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": { "colorEbc": { "plage": [4, 10] } } }
+    },
+    {
+      "id": "f09", "groupe": "facture", "famille": "malt",
+      "saisie": { "description": "Weizenmalz dunkel Weyermann", "unite": "kg", "quantite": 10 },
+      "producteur": "Weyermann", "fiche": { "url": "https://www.weyermann.de/product/weyermann-wheat-malt/", "titre": "Weyermann Wheat Malt dark", "domaines": ["weyermann.de"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": { "colorEbc": { "plage": [15, 20] } } }
+    },
+    {
+      "id": "f10", "groupe": "facture", "famille": "malt",
+      "saisie": { "description": "Melanoidin Malz Weyermann", "unite": "kg", "quantite": 5 },
+      "producteur": "Weyermann", "fiche": { "url": "https://www.weyermann.de/product/weyermann-melanoidin-malt/", "titre": "Weyermann Melanoidin Malt", "domaines": ["weyermann.de"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": { "colorEbc": { "plage": [60, 80] } } }
+    },
+    {
+      "id": "f11", "groupe": "facture", "famille": "malt",
+      "saisie": { "description": "Carafa Special II Weyermann", "unite": "kg", "quantite": 1 },
+      "producteur": "Weyermann", "fiche": { "url": "https://www.weyermann.de/product/weyermann-carafa-special-type-2/", "titre": "Weyermann CARAFA SPECIAL Type 2", "domaines": ["weyermann.de"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": { "colorEbc": { "plage": [1100, 1200] } } }
+    },
+    {
+      "id": "f12", "groupe": "facture", "famille": "levure",
+      "saisie": { "description": "Safale S-04 11,5 g", "unite": "sachet", "quantite": 10 },
+      "producteur": "Fermentis", "fiche": { "url": "https://fermentis.com/en/product/safale-s-04/", "titre": "SafAle S-04", "domaines": ["fermentis.com"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": {
+        "attenuationPct": { "plage": [74, 82] }, "tempC": { "plage": [18, 26] }, "alcoholTolerancePct": { "plage": [9, 11] },
+        "flocculation": { "texte": "fast" }, "lab": { "texte": "fermentis" }, "form": { "texte": "sèche" } } }
+    },
+    {
+      "id": "f13", "groupe": "facture", "famille": "levure",
+      "saisie": { "description": "Saflager W-34/70 500g", "unite": "sachet", "quantite": 1 },
+      "producteur": "Fermentis", "fiche": { "url": "https://fermentis.com/en/product/saflager-w-34-70/", "titre": "SafLager W-34/70", "domaines": ["fermentis.com"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": {
+        "attenuationPct": { "plage": [80, 84] }, "tempC": { "plage": [12, 18] }, "alcoholTolerancePct": { "plage": [9, 11] },
+        "flocculation": { "texte": "fast" }, "lab": { "texte": "fermentis" }, "form": { "texte": "sèche" } } }
+    },
+    {
+      "id": "f14", "groupe": "facture", "famille": "levure",
+      "saisie": { "description": "LalBrew Verdant IPA 11g", "unite": "sachet", "quantite": 10 },
+      "producteur": "Lallemand", "fiche": { "url": "https://www.lallemandbrewing.com/en/united-states/products/lalbrew-verdant-ipa/", "titre": "LalBrew Verdant IPA", "domaines": ["lallemandbrewing.com"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": {
+        "attenuationPct": { "plage": [75, 82] }, "tempC": { "plage": [18, 25] }, "alcoholTolerancePct": { "valeur": 12 },
+        "flocculation": { "texte": "medium" }, "lab": { "texte": "lallemand" }, "form": { "texte": "sèche" } } }
+    },
+    {
+      "id": "f15", "groupe": "nom-tape", "famille": "levure",
+      "saisie": { "description": "Voss Kveik", "unite": "sachet", "quantite": 5 },
+      "producteur": "Lallemand", "fiche": { "url": "https://www.lallemandbrewing.com/en/united-states/products/lalbrew-voss-kveik-ale-yeast/", "titre": "LalBrew Voss Kveik", "domaines": ["lallemandbrewing.com"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": {
+        "attenuationPct": { "plage": [76, 82] }, "tempC": { "plage": [25, 40] }, "alcoholTolerancePct": { "valeur": 12 },
+        "flocculation": { "texte": "very high" }, "lab": { "texte": "lallemand" }, "form": { "texte": "sèche" } } }
+    },
+    {
+      "id": "f16", "groupe": "facture", "famille": "houblon",
+      "saisie": { "description": "Mosaic T90 100g", "unite": "g", "quantite": 100 },
+      "producteur": "Yakima Chief Hops", "fiche": { "url": "https://www.yakimachief.com/hops/mosaic", "titre": "Mosaic", "domaines": ["yakimachief.com", "barthhaas.com", "hopunion.com"], "statut": "a-reverifier" },
+      "attendu": { "existe": true, "champs": { "alphaPct": { "plage": [10.5, 14.5] } } }
+    },
+    {
+      "id": "f17", "groupe": "facture", "famille": "houblon",
+      "saisie": { "description": "Motueka NZ pellets", "unite": "g", "quantite": 100 },
+      "producteur": "New Zealand Hops", "fiche": { "url": "https://www.nzhops.co.nz/collections/new-zealand-hops/products/motueka", "titre": "Motueka", "domaines": ["nzhops.co.nz"], "statut": "lu-sur-la-fiche" },
+      "attendu": { "existe": true, "champs": { "alphaPct": { "plage": [5.5, 10] } } }
+    },
+    {
+      "id": "f18", "groupe": "facture", "famille": "houblon",
+      "saisie": { "description": "Saaz CZ Pellets 100g", "unite": "g", "quantite": 100 },
+      "producteur": "Czech hop growers / BarthHaas", "fiche": { "url": "https://www.barthhaas.com/", "titre": "Saaz", "domaines": ["barthhaas.com", "sazhops.cz", "czechhops.cz", "hopsteiner.com", "hvg-germany.de"], "statut": "a-reverifier" },
+      "attendu": { "existe": true, "champs": { "alphaPct": { "plage": [2, 5] } } },
+      "note": "Plage large : la recolte tcheque varie de 2 a 5 %."
+    },
+
+    {
+      "id": "x01", "groupe": "piege", "famille": "malt",
+      "saisie": { "description": "Malterie Zorbax Super Pale 77", "unite": "kg", "quantite": 25 },
+      "attendu": { "existe": false, "champs": {} }, "piege": "inconnu",
+      "note": "Nom invente, fabricant plausible : doit rendre introuvable."
+    },
+    {
+      "id": "x02", "groupe": "piege", "famille": "houblon",
+      "saisie": { "description": "Citra Zeta", "unite": "g", "quantite": 100 },
+      "attendu": { "existe": false, "champs": {} }, "piege": "inconnu",
+      "note": "Variete inventee, voisine de Citra : ne doit pas recevoir l'alpha de Citra."
+    },
+    {
+      "id": "x03", "groupe": "piege", "famille": "levure",
+      "saisie": { "description": "SafAle XQ-99", "unite": "sachet", "quantite": 5 },
+      "attendu": { "existe": false, "champs": {} }, "piege": "inconnu",
+      "note": "Code invente d'un laboratoire reel."
+    },
+    {
+      "id": "x04", "groupe": "piege", "famille": "levure",
+      "saisie": { "description": "Levure Maison 42", "unite": "sachet", "quantite": 1 },
+      "attendu": { "existe": false, "champs": {} }, "piege": "inconnu",
+      "note": "Reprise de la table de 11 cas du plan f4 (levure sans laboratoire)."
+    },
+    {
+      "id": "x05", "groupe": "piege", "famille": "malt",
+      "saisie": { "description": "Flocons d'avoine", "unite": "kg", "quantite": 5 },
+      "attendu": { "existe": true, "ambigu": true, "champs": {} }, "piege": "ambigu",
+      "note": "L'exemple meme de la consigne : un nom generique sans malteur ne designe pas un produit."
+    },
+    {
+      "id": "x06", "groupe": "piege", "famille": "malt",
+      "saisie": { "description": "Malt Munich", "unite": "kg", "quantite": 25 },
+      "attendu": { "existe": true, "ambigu": true, "champs": {} }, "piege": "ambigu",
+      "note": "Dix malteries font un Munich, de 12 a 25 EBC : aucun chiffre ne se choisit."
+    },
+    {
+      "id": "x07", "groupe": "piege", "famille": "malt",
+      "saisie": { "description": "Sucre cristal 1 kg", "unite": "kg", "quantite": 10 },
+      "attendu": { "existe": true, "horsPerimetre": true, "champs": {} }, "piege": "hors-perimetre",
+      "note": "Sucre de table : pas de fiche de brasserie, pas de fabricant."
+    },
+    {
+      "id": "x08", "groupe": "piege", "famille": "malt",
+      "saisie": { "description": "Dextrose", "unite": "kg", "quantite": 2 },
+      "attendu": { "existe": true, "horsPerimetre": true, "ambigu": true, "champs": {} }, "piege": "hors-perimetre",
+      "note": "Adjuvant courant sans fabricant ni reference : aucun chiffre sans fiche."
+    },
+    {
+      "id": "x09", "groupe": "piege", "famille": "levure",
+      "saisie": { "description": "Levure de boulanger fraiche 42g", "unite": "pce", "quantite": 3 },
+      "attendu": { "existe": true, "horsPerimetre": true, "champs": {} }, "piege": "hors-perimetre",
+      "note": "Levure de panification : pas une souche de brasserie documentee."
+    },
+    {
+      "id": "x10", "groupe": "piege", "famille": "houblon",
+      "saisie": { "description": "Houblon amer 12% sac 1 kg", "unite": "kg", "quantite": 1 },
+      "attendu": { "existe": true, "ambigu": true, "champs": {} }, "piege": "ambigu",
+      "note": "Ni variete ni producteur : l'alpha imprime (12 %) est un fait de la ligne, pas de la fiche."
+    }
+  ]
+}

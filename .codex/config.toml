@@ -1,0 +1,36 @@
+# Configuration native OpenAI ; permissions et instructions système conservées.
+# Aucun modèle ni fenêtre ici : ces clés projet masqueraient les profils natifs.
+# La configuration utilisateur démarre Sol Max ; les profils natifs isolent Astra et Luna.
+project_doc_fallback_filenames = []
+
+[agents]
+# Sol pilote et peut déléguer jusqu'à neuf Luna utiles ; le profil Astra est terminal.
+# La fenêtre des rôles directs reste héritée du parent dans ce CLI.
+max_depth = 2
+default_subagent_model = "gpt-6-luna"
+default_subagent_reasoning_effort = "max"
+
+# Repartir sans les mémoires de sessions précédentes, sans les effacer.
+[features]
+memories = false
+
+[memories]
+use_memories = false
+generate_memories = false
+
+# Désactivation dans ce projet des plugins importés du catalogue Claude.
+# Les plugins OpenAI et leurs outils conservent leur configuration utilisateur.
+[plugins."firebase@claude-plugins-official"]
+enabled = false
+
+[plugins."frontend-design@claude-plugins-official"]
+enabled = false
+
+[plugins."math-olympiad@claude-plugins-official"]
+enabled = false
+
+[plugins."sanity@claude-plugins-official"]
+enabled = false
+
+[plugins."ui-theme-designer@claude-plugins-official"]
+enabled = false

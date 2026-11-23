@@ -1,0 +1,19 @@
+{
+ "cas": "imp-photo-metrique",
+ "usage": "import",
+ "half": "choix",
+ "cellule": "hy@low",
+ "ok": true,
+ "ms": 4323,
+ "microChf": 22592,
+ "microDecembre": 22592,
+ "entree": 7599,
+ "sortie": 890,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 0.7962962962962964,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "id 0.67 · vol 20 · fer 2/2 · hops 2/2 · levure ok · paliers 0/2",
+ "reponse": "{\n  \"name\": \"Blonde du Moulin\",\n  \"style\": \"\",\n  \"volumeL\": 20,\n  \"fermentables\": [\n    {\n      \"name\": \"Malt Pilsner\",\n      \"weightKg\": 4,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    },\n    {\n      \"name\": \"Malt Munich\",\n      \"weightKg\": 0.5,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    }\n  ],\n  \"hops\": [\n    {\n      \"name\": \"Saaz\",\n      \"weightG\": 30,\n      \"stage\": \"boil\",\n      \"alpha\": 3.5,\n      \"timeMin\": 60\n    },\n    {\n      \"name\": \"Saaz\",\n      \"weightG\": 20,\n      \"stage\": \"boil\",\n      \"alpha\": 3.5,\n      \"timeMin\": 10\n    }\n  ],\n  \"ogTarget\": 1.048,\n  \"yeast\": {\n    \"name\": \"SafAle US-05\"\n  }\n}"
+}

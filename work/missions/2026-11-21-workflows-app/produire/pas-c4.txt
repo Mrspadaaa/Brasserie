@@ -1,0 +1,15 @@
+# C3-C5 : feuille Brasser, démarrage du jour de brassage, puis Calendrier (fixture ZZ TEST)
+t=Brassins
+w=Brassins
+c=Brasser · B-ZZ-PLAN
+w=Prévu le
+d
+c=Commencer aujourd
+w=Maintenant|Ensuite|Conduite
+d
+cap=03-apres-commencer
+t=Calendrier
+w=Calendrier
+d
+cap=04-calendrier
+inp

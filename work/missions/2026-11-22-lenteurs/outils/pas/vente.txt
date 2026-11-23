@@ -1,0 +1,10 @@
+# WFV-16 : facture de deux fûts à un pro, puis le Calendrier
+t=Actions rapides
+t=Vente
+c=Cigogne
+c=fût
+c=fût
+p=Facturer
+c=OK
+t=Calendrier
+inp

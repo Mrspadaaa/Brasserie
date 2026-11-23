@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "fixture": "flash-vision-hotte-reparation-image-v1",
+  "syntheticOnly": true,
+  "fixtureFormat": "PNG image",
+  "expectedModel": "gemini-3.8-flash",
+  "maximumProviderRequests": 3,
+  "maxOutputTokensPerGeneration": 2048,
+  "scenarios": 1,
+  "expectedPipeline": "Two complete independent readings in parallel; one further reading only if required.",
+  "retries": 0,
+  "modelFallbacks": false,
+  "webSearch": false,
+  "pathway": "local scanInvoiceSafely -> runBudgetedInvoiceScan -> real Firestore monthly reservations -> real Gemini",
+  "scope": "Compiled application pipeline with one synthetic raster image, independent vision, bounded calls, shared controls, reservations and cache. Published HTTPS transport, Firebase token verification, browser upload and real photographs are not tested.",
+  "credentials": [
+    "GEMINI_API_KEY",
+    "EVAL_GOOGLE_ACCESS_TOKEN",
+    "EVAL_FIREBASE_PROJECT_ID",
+    "AUTHORIZED_ACCOUNTS (or VITE_AUTHORIZED_ACCOUNTS)"
+  ],
+  "writes": [
+    "invoiceScans/<fixed synthetic document hash>",
+    "brewerAiUsage/<Zurich day>",
+    "brewerAiCosts/<Zurich month>",
+    "brewerAiCosts/<Zurich month>/calls/<generated id>"
+  ],
+  "sharedControlsAreReadOnly": true,
+  "businessAndDriveWritesBlocked": true,
+  "output": "docs/expense-vision-image-evaluation.json",
+  "timestamp": "2026-09-09T18:46:00.322Z",
+  "runId": "501d2ea4-4523-4a00-9a98-d93c6710a023",
+  "status": "passed",
+  "attemptedGenerations": 2,
+  "generations": 2,
+  "requests": [
+    {
+      "number": 1,
+      "model": "gemini-3.8-flash",
+      "stage": "parallel-independent-reading",
+      "maxOutputTokens": 2048,
+      "mediaResolution": "MEDIA_RESOLUTION_HIGH",
+      "noTools": true,
+      "reservationVerifiedBeforeProvider": true,
+      "monthlyReservationVerifiedBeforeProvider": true,
+      "reservedMicroChf": 1985280,
+      "monthlyCallId": "50eb528d-468c-439b-b2e9-8144ef96eb17",
+      "sameOriginalDocument": true,
+      "independentPromptContainsNoOtherReadingValues": true,
+      "requestSha256": "1d1304a1ce360edef1e1ce8516062eb4c3ba48d514170e751f8f73dfb98a1023",
+      "status": "returned",
+      "startedAt": "2026-09-09T18:46:01.233Z",
+      "httpStatus": 200,
+      "elapsedMs": 3092,
+      "finishReason": "STOP",
+      "responseModel": "gemini-3.8-flash",
+      "usage": {
+        "promptTokenCount": 1686,
+        "candidatesTokenCount": 651,
+        "thoughtsTokenCount": null,
+        "cachedContentTokenCount": null,
+        "totalTokenCount": 2337
+      },
+      "estimatedCostMicroChf": 9265
+    },
+    {
+      "number": 2,
+      "model": "gemini-3.8-flash",
+      "stage": "parallel-independent-reading",
+      "maxOutputTokens": 2048,
+      "mediaResolution": "MEDIA_RESOLUTION_HIGH",
+      "noTools": true,
+      "reservationVerifiedBeforeProvider": true,
+      "monthlyReservationVerifiedBeforeProvider": true,
+      "reservedMicroChf": 1985280,
+      "monthlyCallId": "5003a58f-c13a-40d7-9f59-f21559a81d27",
+      "sameOriginalDocument": true,
+      "independentPromptContainsNoOtherReadingValues": true,
+      "requestSha256": "c853fb149fbfb7b90a3f5178d947c5e6542b3dfa8bc3ea0171582367af48bc64",
+      "status": "returned",
+      "startedAt": "2026-09-09T18:46:02.422Z",
+      "httpStatus": 200,
+      "elapsedMs": 2762,
+      "finishReason": "STOP",
+      "responseModel": "gemini-3.8-flash",
+      "usage": {
+        "promptTokenCount": 1665,
+        "candidatesTokenCount": 629,
+        "thoughtsTokenCount": null,
+        "cachedContentTokenCount": null,
+        "totalTokenCount": 2294
+      },
+      "estimatedCostMicroChf": 9019
+    }
+  ],
+  "cases": [
+    {
+      "id": "flash-vision-hotte-reparation-image-v1",
+      "cachedBeforeRun": false,
+      "checks": {
+        "fixedFlashModel": true,
+        "totalSourcePreserved": true,
+        "netAndVatSourcePreserved": true,
+        "currencyAndDatePreserved": true,
+        "invoiceIdentityPreserved": true,
+        "allFourLinesPreserved": true,
+        "durableEquipmentSeparated": true,
+        "repairSeparatedFromEquipment": true,
+        "missingRepairValuesNotInvented": true,
+        "shippingAndDiscountPreserved": true,
+        "independentReviewCompleted": true,
+        "noUnresolvedDisputes": true,
+        "allReadingsUseIndependentPrompts": true,
+        "firstTwoReadingsOverlap": true,
+        "budgetReservedBeforeEveryProviderCall": true,
+        "boundedCallsOutputAndNoWeb": true,
+        "thirdReadingOnlyForVerifiedDisagreement": true,
+        "onlyAllowedWriteScopes": true,
+        "cacheReturnsSameResultWithoutProvider": true,
+        "serverLedgerCallsBounded": true,
+        "expectedReaderCount": true
+      },
+      "elapsedMs": 4535,
+      "extracted": {
+        "vendor": "Fournisseur fictif de materiel de brasserie",
+        "currency": "CHF",
+        "date": "09.09.2026",
+        "invoiceNumber": "TEST-VISION-MATERIEL-001",
+        "amountHT": 508.79,
+        "tvaRate": 0.081,
+        "tvaAmount": 41.21,
+        "amountTTC": 550,
+        "lines": [
+          {
+            "name": "Hotte aspirante inox pour cuves de brassage - bien durable neuf",
+            "kind": "equipment",
+            "quantity": 1,
+            "unit": "piece",
+            "price": 500,
+            "amountTTC": 500
+          },
+          {
+            "name": "Reparation de la pompe existante - prestation, aucun materiel livre",
+            "kind": "maintenance",
+            "quantity": null,
+            "unit": "",
+            "price": null,
+            "amountTTC": 50
+          },
+          {
+            "name": "Frais de livraison",
+            "kind": "shipping",
+            "quantity": null,
+            "unit": "",
+            "price": null,
+            "amountTTC": 12
+          },
+          {
+            "name": "Remise commerciale",
+            "kind": "discount",
+            "quantity": null,
+            "unit": "",
+            "price": null,
+            "amountTTC": -12
+          }
+        ]
+      },
+      "review": {
+        "status": "checked",
+        "findings": [],
+        "readers": 2,
+        "correctedFields": []
+      },
+      "issues": [],
+      "ok": true
+    }
+  ],
+  "transport": {
+    "authLibraryVersion": "9.15.1",
+    "explicitTokenHeaderVerified": true,
+    "authenticatedRequests": 55
+  },
+  "scanVersion": "invoice-v3",
+  "document": {
+    "sha256": "cf4a07f22830b721c35478a76b9ba3fe4900df6cc6ef2db2d019eba7bcaacad2",
+    "bytes": 55350,
+    "mimeType": "image/png",
+    "width": 1400,
+    "height": 1300,
+    "fixedImageHashVerified": true
+  },
+  "sharedBudget": {
+    "dailyBefore": {
+      "day": "2026-09-09",
+      "calls": 19,
+      "tokens": 69820,
+      "proCalls": 0
+    },
+    "monthlyBefore": {
+      "month": "2026-09",
+      "usedMicroChf": 328653,
+      "reservedMicroChf": 0
+    },
+    "monthlyLimitMicroChf": 20000000,
+    "paused": false,
+    "limits": {
+      "dailyCalls": 1000,
+      "dailyProCalls": 20,
+      "dailyTokens": 5000000,
+      "questionCalls": 24,
+      "questionTokens": 1000000
+    },
+    "controlsModified": false,
+    "beforeAfterDeltasMayIncludeConcurrentUse": true,
+    "dailyAfter": {
+      "day": "2026-09-09",
+      "calls": 21,
+      "tokens": 74451,
+      "proCalls": 0
+    },
+    "monthlyAfter": {
+      "month": "2026-09",
+      "usedMicroChf": 346937,
+      "reservedMicroChf": 0
+    }
+  },
+  "scanLedgerBefore": null,
+  "scanLedgerAfter": {
+    "status": "completed",
+    "calls": 2,
+    "reservedTokens": 143236,
+    "reservations": [
+      {
+        "status": "completed",
+        "reserved": 71682,
+        "charged": 2337
+      },
+      {
+        "status": "completed",
+        "reserved": 71554,
+        "charged": 2294
+      }
+    ]
+  },
+  "monthlyCallLedgers": [
+    {
+      "id": "50eb528d-468c-439b-b2e9-8144ef96eb17",
+      "status": "completed",
+      "reservedMicroChf": 1985280,
+      "chargedMicroChf": 9265,
+      "model": "gemini-3.8-flash"
+    },
+    {
+      "id": "5003a58f-c13a-40d7-9f59-f21559a81d27",
+      "status": "completed",
+      "reservedMicroChf": 1985280,
+      "chargedMicroChf": 9019,
+      "model": "gemini-3.8-flash"
+    }
+  ],
+  "finishedAt": "2026-09-09T18:46:05.800Z",
+  "maximumConcurrentProviderCalls": 2,
+  "writePaths": [
+    "brewerAiCosts/2026-09",
+    "brewerAiCosts/2026-09/calls/5003a58f-c13a-40d7-9f59-f21559a81d27",
+    "brewerAiCosts/2026-09/calls/50eb528d-468c-439b-b2e9-8144ef96eb17",
+    "brewerAiUsage/2026-09-09",
+    "invoiceScans/faaeddefd6930462cb027875b1a88c83cef08734d713dcbbd265d287c690ac98"
+  ],
+  "reportedTotalTokens": 4631,
+  "tokenUsageComplete": true,
+  "estimatedCostMicroChf": 18284,
+  "costIsConservativeApplicationEstimateNotGoogleInvoice": true
+}

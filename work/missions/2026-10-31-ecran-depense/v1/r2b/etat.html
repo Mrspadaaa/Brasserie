@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>r2b — Nouvelle dépense · le ticket, passe 2 (31.10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--page:#FFFFFF;--panel:#F5F5F5;--haut:#EBEBEB;--bord:#DDDDDD;--bordm:#BFBFBF;--trait:#9E9E9E;--t2:#666666;--t1:#333333;--t0:#111111;
+--attt:#7F5B10;--attf:#FBF4E4;--ok:#2F6B45;--okf:#E7F3EA;--err:#A3322A;--sans:"Source Sans 3",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+--hach:repeating-linear-gradient(135deg,#C9B48A 0 2px,#fff 2px 5px)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--page);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.3;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+svg path,svg circle,svg rect{vector-effect:non-scaling-stroke;stroke-width:1.5}
+[hidden]{display:none!important}
+.r2b-m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.r2b-sheet{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:60px}
+.r2b-hd{position:sticky;top:0;z-index:5;background:var(--page);display:flex;align-items:center;gap:6px;height:40px;padding:0 6px 0 12px;border-bottom:1px solid var(--bord)}
+.r2b-hd h1{flex:1;font-size:16px;font-weight:600;color:var(--t0)}
+.r2b-ib{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.r2b-ib:active{background:var(--haut)}
+.r2b-c1,.r2b-c3{padding:8px 10px 0;display:flex;flex-direction:column;gap:8px}
+.r2b-c2{padding:8px 10px 0}
+.r2b-mo button.r2b-mt2{border:1px solid var(--bordm);color:var(--t1);font-weight:400;min-width:28px}
+/* Le bandeau du verdict (langue de Malts : « Grain 8,0 kg · OG · IBU · EBC »). */
+.r2b-bd{background:var(--panel);border:1px solid var(--bord);border-radius:16px;padding:6px 10px 8px;display:flex;flex-direction:column;gap:4px}
+.r2b-bd1{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.r2b-four{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.r2b-bd2{display:flex;align-items:center;gap:8px}
+.r2b-tot{font-family:var(--mono);font-size:32px;line-height:1.1;font-weight:600;color:var(--t0)}
+.r2b-tot small{font-size:12px;font-weight:500;color:var(--t2)}
+.r2b-chip{min-height:28px;display:inline-flex;align-items:center;gap:4px;padding:0 8px;border-radius:10px;font-size:14px;white-space:nowrap}
+.r2b-pr{border:1px solid var(--bord);background:#fff;color:var(--t1);margin-left:auto}
+.r2b-pr svg.r2b-v{color:var(--ok)}
+.r2b-comp{display:flex;height:10px;border-radius:9px;overflow:hidden;background:#fff;border:1px solid var(--bord)}
+.r2b-comp i{height:100%;border-right:1.5px solid #fff;cursor:pointer}
+.r2b-comp i:last-child{border-right:0}
+.r2b-comp .f-malt{background:#C9A15A}.r2b-comp .f-mout{background:#E3CFA3}.r2b-comp .f-houb{background:#5E9A52}.r2b-comp .f-lev{background:#5C7FB8}
+.r2b-comp i.r2b-dt{background:var(--hach)}
+.r2b-steps{display:flex;gap:6px}
+.r2b-steps span{flex:1;display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--t2)}
+.r2b-steps span i{height:6px;border-radius:9px;background:var(--haut)}
+.r2b-steps .r2b-fait{color:var(--t1)}.r2b-steps .r2b-fait i{background:var(--t1)}
+.r2b-steps .r2b-cours{color:var(--t0);font-weight:600}
+.r2b-steps .r2b-cours i{background:repeating-linear-gradient(90deg,var(--t1) 0 6px,var(--haut) 6px 12px);background-size:24px 6px;animation:r2b-run 1s linear infinite}
+@keyframes r2b-run{to{background-position:24px 0}}
+/* La preuve (greffes u1 et r3) : trois rangées chiffrées, la page 2, le compte des liens. */
+.r2b-preuve{background:#fff;border:1px solid var(--bord);border-radius:16px;padding:4px 10px 6px;display:flex;flex-direction:column}
+.r2b-rr{display:grid;grid-template-columns:18px 1fr auto;align-items:center;gap:6px;min-height:28px;border-bottom:1px solid var(--bord);font-size:14px}
+.r2b-rr:last-child{border-bottom:0}
+.r2b-rr svg{color:var(--ok)}
+.r2b-rr b{font-family:var(--mono);font-weight:500;color:var(--t0)}
+.r2b-rr .r2b-pg{color:var(--t1)}
+.r2b-cnt{display:flex;flex-wrap:wrap;gap:4px 10px;padding:6px 0 2px;font-size:12px;color:var(--t1)}
+.r2b-cnt span{display:inline-flex;align-items:center;gap:3px}
+.r2b-cnt b{font-family:var(--mono);font-weight:600}
+/* Les tuiles d'argent (Identité r4-a) et les chips des points de stock (greffes z1 et u2). */
+.r2b-tu{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.r2b-tile{position:relative;border:1px solid var(--bord);border-radius:16px;padding:6px 8px 6px 30px;text-align:left;display:flex;flex-direction:column;gap:2px;min-height:52px;background:#fff}
+.r2b-tile .r2b-k{font-size:12px;color:var(--t2)}
+.r2b-tile .r2b-v{font-size:14px;color:var(--t0);display:flex;align-items:baseline;gap:4px;flex-wrap:wrap}
+.r2b-tile.r2b-dt{border:1.5px dashed var(--attt);background:var(--attf)}
+.r2b-no{position:absolute;left:7px;top:8px;width:18px;height:18px;border-radius:50%;border:1.5px dashed var(--attt);color:var(--attt);font-family:var(--mono);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;background:#fff}
+.r2b-fait .r2b-no,.r2b-pc.r2b-fait .r2b-no{border:1.5px solid var(--ok);background:var(--ok);color:#fff}
+.r2b-sup{font-size:12px;color:var(--attt);border:1px dashed var(--attt);border-radius:10px;padding:0 5px;line-height:18px;background:#fff;white-space:nowrap}
+.r2b-sup.r2b-plein{border-style:solid;color:var(--t1);border-color:var(--bord)}
+.r2b-val2{display:inline-flex;gap:4px}
+.r2b-val2 b{font-family:var(--mono);font-weight:600;font-size:14px;color:var(--attt);border:1px dashed var(--attt);border-radius:10px;padding:0 5px;background:#fff}
+.r2b-pts{display:flex;flex-wrap:wrap;gap:6px}
+.r2b-pc{position:relative;min-height:28px;display:inline-flex;align-items:center;gap:4px;padding:0 8px 0 28px;border-radius:10px;border:1.5px dashed var(--attt);background:var(--attf);color:var(--t0);font-size:14px}
+.r2b-pc .r2b-no{left:5px;top:4px}
+.r2b-pc.r2b-fait{border:1px solid var(--bord);background:#fff;color:var(--t2);text-decoration:line-through}
+.r2b-pan{border:2px solid var(--t0);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:6px;background:#fff}
+.r2b-calc{font-size:12px;color:var(--t1)}
+.r2b-calc b{font-family:var(--mono);font-weight:600}
+.r2b-ch{display:flex;gap:6px;flex-wrap:wrap}
+.r2b-ch button{min-height:28px;padding:0 10px;border-radius:10px;border:1px solid var(--bordm);font-size:14px;background:#fff}
+.r2b-ch button.r2b-pri{background:var(--t0);border-color:var(--t0);color:#fff;font-weight:600}
+.r2b-ch button[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--t0);font-weight:600}
+.r2b-seg{display:inline-flex;border:1px solid var(--bordm);border-radius:10px;overflow:hidden}
+.r2b-seg button{min-height:28px;padding:0 10px;font-size:14px}
+.r2b-seg button[aria-pressed="true"]{background:var(--t0);color:#fff}
+.r2b-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.r2b-lab{font-size:12px;color:var(--t2);min-width:64px}
+.r2b-in{height:32px;border:1px solid var(--bordm);border-radius:10px;padding:0 8px;font-size:16px;font-family:var(--mono);width:120px;background:#fff}
+.r2b-in.r2b-txt{font-family:var(--sans);width:100%}
+/* Les trois grandes tuiles de TVA (greffe z3) et les bases à l'échelle (greffe u3). */
+.r2b-tv3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.r2b-tv3 button{border:1px solid var(--bord);border-radius:10px;padding:6px;display:flex;flex-direction:column;gap:2px;text-align:left;background:#fff}
+.r2b-tv3 b{font-family:var(--mono);font-size:24px;font-weight:600;color:var(--t0);line-height:1.1}
+.r2b-tv3 small{font-size:12px;color:var(--t2)}
+.r2b-tv3 .r2b-prop{border:1.5px solid var(--ok);background:var(--okf)}
+.r2b-tv3 .r2b-prop small{color:var(--ok)}
+.r2b-tv3 button[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--t0)}
+.r2b-ech{position:relative;height:40px;margin:4px 0 2px}
+.r2b-ech .r2b-cadre{position:absolute;left:0;top:0;height:16px;border:1.5px solid var(--t0);border-radius:4px;width:78.35%}
+.r2b-ech .r2b-base{position:absolute;left:0;top:3px;height:10px;display:flex;width:100%}
+.r2b-ech .r2b-base i{height:100%}
+.r2b-ech .r2b-n{background:#8E8E8E}.r2b-ech .r2b-r{background:#BDBDBD}
+.r2b-ech .r2b-trop{background:repeating-linear-gradient(135deg,var(--err) 0 2px,#fff 2px 5px)}
+.r2b-ech span{position:absolute;top:20px;font-size:12px;font-family:var(--mono);color:var(--t1)}
+/* Le ticket : la ligne de Malts s1 appliquée à la facture. */
+.r2b-ti{list-style:none;display:flex;flex-direction:column;gap:2px}
+.r2b-li{display:grid;grid-template-columns:24px 1fr auto;align-items:center;column-gap:8px;min-height:50px;padding:4px 6px;border-radius:10px;cursor:pointer}
+.r2b-li:active{background:var(--panel)}
+.r2b-li[aria-selected="true"]{box-shadow:inset 0 0 0 2px var(--t0);background:var(--panel)}
+.r2b-li.r2b-dt{background:var(--attf)}
+.r2b-ico{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--t1)}
+.r2b-ico.r2b-q{color:var(--attt)}
+.r2b-nm{min-width:0;display:flex;flex-direction:column;gap:1px}
+.r2b-nm b{font-size:16px;font-weight:600;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r2b-sub{font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r2b-sub .r2b-m{color:var(--t1)}
+.r2b-dot{font-style:normal}.r2b-dot::before{content:"·";margin:0 4px}
+.r2b-cv{color:var(--t1);background:var(--haut);border-radius:10px;padding:0 5px}.r2b-cv::before{content:"= "}
+.r2b-amt{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--t0);text-align:right}
+.r2b-amt small{display:block;font-size:12px;color:var(--ok);font-weight:500}
+.r2b-fix{grid-column:2/4;display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:2px 0 3px}
+.r2b-fix .r2b-q2{font-size:12px;color:var(--t2);display:inline-flex;align-items:center;gap:3px}
+.r2b-fix .r2b-q2 s{text-decoration:none;opacity:.75}
+.r2b-fix button{min-height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px}
+.r2b-fix button.r2b-pri{border:1.5px dashed var(--attt);color:var(--attt);font-weight:600}
+.r2b-mo{display:grid;grid-template-columns:24px 1fr auto;align-items:center;column-gap:8px;min-height:30px;padding:0 6px;margin-left:16px;border-left:1.5px dashed var(--attt);border-radius:0 10px 10px 0}
+.r2b-mo.r2b-ok{border-left:1.5px solid var(--t1)}
+.r2b-mo.r2b-svc{border-left:1.5px solid var(--bordm)}
+.r2b-arr::before{content:"↳";color:var(--t2);font-size:14px;margin-left:4px}
+.r2b-mo .r2b-sub{color:var(--t1);display:flex;gap:6px;align-items:center}
+.r2b-mo button{min-height:24px;padding:0 8px;border-radius:10px;border:1.5px dashed var(--attt);color:var(--attt);font-size:12px;font-weight:600;background:#fff}
+.r2b-mo.r2b-ok button,.r2b-mo.r2b-svc button{border:1px solid var(--bord);color:var(--t2);font-weight:400}
+.r2b-mo button.r2b-tous{background:var(--t0);border:1px solid var(--t0);color:#fff}
+.r2b-plat{margin:2px 0 4px 32px}
+.r2b-ev{font-size:12px;color:var(--t2)}
+.r2b-big{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.r2b-big .r2b-n{font-family:var(--mono);font-size:24px;font-weight:600;color:var(--t0);border-bottom:1px dotted var(--trait);min-width:24px;cursor:text}
+.r2b-big .r2b-u{font-size:14px;color:var(--t2)}
+.r2b-bad{color:var(--err);font-weight:600}
+.r2b-stk{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bordm);background:#fff;font-size:14px}
+.r2b-mt{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:2px 8px;align-items:center;font-size:14px}
+.r2b-mt .r2b-m{text-align:right}
+.r2b-mt em{font-style:normal;font-size:12px;color:var(--t2)}
+.r2b-lk{font-size:12px;color:var(--t1);text-decoration:underline;text-underline-offset:2px;min-height:24px;padding:0 2px}
+.r2b-add{min-height:32px;border:1.5px dashed var(--bordm);border-radius:10px;color:var(--t1);font-size:14px;margin:8px 0 4px}
+.r2b-det{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);padding:2px 4px}
+.r2b-det b{font-family:var(--mono);color:var(--t0);font-weight:600}
+.r2b-det.r2b-ec b{color:var(--err)}
+.r2b-more{display:flex;flex-direction:column;border-top:1px solid var(--bord)}
+.r2b-more details{border-bottom:1px solid var(--bord)}
+.r2b-more summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:36px;padding:0 4px;cursor:pointer}
+.r2b-more summary::-webkit-details-marker{display:none}
+.r2b-more summary span{font-size:14px;color:var(--t0);display:inline-flex;gap:6px;align-items:center}
+.r2b-more summary em{font-style:normal;font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.r2b-more .r2b-in2{padding:4px 4px 8px;display:flex;flex-direction:column;gap:6px}
+.r2b-dup{border:1.5px dashed var(--attt);background:var(--attf);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.r2b-dup h2{font-size:14px;color:var(--t0)}
+.r2b-cmp{display:grid;grid-template-columns:auto 1fr 1fr;gap:2px 8px;font-size:12px}
+.r2b-cmp b{font-family:var(--mono);font-weight:600;color:var(--t0)}
+.r2b-cmp .r2b-same{color:var(--attt);font-weight:600}
+.r2b-err{border:1.5px dashed var(--attt);background:var(--attf);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.r2b-sk{height:12px;border-radius:9px;background:var(--haut)}
+.r2b-pied{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--page);border-top:1px solid var(--bord)}
+.r2b-pi{max-width:560px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:48px;padding:4px 10px}
+.r2b-drv{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 8px;border-radius:10px;border:1px solid var(--bord);font-size:14px;color:var(--t1);white-space:nowrap}
+.r2b-drv svg.r2b-v{color:var(--ok)}
+.r2b-drv.r2b-att{border:1.5px dashed var(--attt);color:var(--attt)}
+.r2b-go{min-height:32px;padding:0 12px;border-radius:10px;background:var(--t0);color:#fff;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.r2b-prog{height:3px;background:var(--haut)}.r2b-prog i{display:block;height:100%;width:0;background:var(--t0);transition:width .25s ease-out}
+.r2b-recu{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.r2b-recu .r2b-r1{display:flex;align-items:center;gap:6px;min-width:0}
+.r2b-recu .r2b-r1 span{font-size:12px;color:var(--t1)}
+.r2b-recu a{color:var(--t0);font-weight:600;white-space:nowrap;font-size:14px}
+.r2b-recu svg{flex-shrink:0}
+.r2b-recu .r2b-r2{font-size:12px;color:var(--attt)}
+.r2b-flash{animation:r2b-fl .7s ease-out}
+@keyframes r2b-fl{from{background:#F2DDA6}}
+@media (prefers-reduced-motion:reduce){.r2b-flash{animation:none}.r2b-prog i{transition:none}.r2b-steps .r2b-cours i{animation:none}}
+.r2b-ann{max-width:1240px;margin:0 auto;padding:24px 10px 90px;border-top:6px solid var(--haut)}
+.r2b-ann h2{font-size:16px;color:var(--t0);margin-bottom:6px}
+.r2b-ann p{font-size:14px;color:var(--t1);margin-bottom:8px;max-width:760px}
+.r2b-ann ol{display:flex;flex-wrap:wrap;gap:6px;list-style:none}
+.r2b-ann a{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border-radius:10px;border:1px solid var(--bordm);color:var(--t0);text-decoration:none;font-size:14px}
+@media (min-width:900px){
+  .r2b-sheet{max-width:1240px;display:grid;grid-template-columns:440px minmax(0,1fr);grid-template-rows:auto auto 1fr;column-gap:20px;padding:0 24px 60px}
+  .r2b-sheet>*{min-width:0}
+  .r2b-hd{grid-column:1/3}
+  .r2b-c1{grid-column:1;grid-row:2;padding-top:12px}
+  .r2b-c3{grid-column:1;grid-row:3;align-self:start}
+  .r2b-c2{grid-column:2;grid-row:2/4;padding-top:12px;max-width:720px}
+  .r2b-pi{max-width:1240px;padding:4px 24px}
+}
+</style></head>
+<body>
+<div class="r2b-sheet" id="r2b-sheet">
+  <header class="r2b-hd">
+    <h1>Nouvelle dépense</h1>
+    <button class="r2b-ib" aria-label="Voir le justificatif" id="r2b-jbtn" data-booster="justificatif"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.667"><path d="M5 2.5h7l3 3v12H5z"/><path d="M12 2.5v3h3M7.5 10h5M7.5 13h5"/></svg></button>
+    <button class="r2b-ib" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.667"><path d="M5 5l10 10M15 5 5 15"/></svg></button>
+  </header>
+  <div class="r2b-c1" id="r2b-c1">
+    <section class="r2b-dup" id="r2b-dup" hidden aria-label="Achat peut-être déjà enregistré">
+      <h2>Peut-être déjà enregistré</h2>
+      <div class="r2b-cmp"><span></span><span>Ce document</span><span>Déjà au registre</span>
+        <span>N°</span><b>372765</b><b>380001</b><span>Date</span><b>27.04.2026</b><b>30.04.2026</b>
+        <span class="r2b-same">Commande</span><b class="r2b-same">686863</b><b class="r2b-same">686863</b>
+        <span class="r2b-same">Total</span><b class="r2b-same">86,50</b><b class="r2b-same">86,50</b></div>
+      <div class="r2b-ch"><button class="r2b-pri" data-dup="meme">Même achat : rattacher le justificatif</button><button data-dup="autre">Autre achat</button></div>
+    </section>
+    <div class="r2b-pan" id="r2b-just" hidden>
+      <div class="r2b-row"><span class="r2b-lab">Justificatif</span><span class="r2b-m" style="font-size:12px">capture-facture.jpg · 0,7 Mo · 1 page vue</span></div>
+      <div class="r2b-ch"><button>Voir l'original</button><button>Changer</button></div>
+    </div>
+    <section class="r2b-bd" id="r2b-bd" aria-label="Verdict de la lecture"></section>
+    <div class="r2b-preuve" id="r2b-preuve" data-booster="preuve-ouverte" hidden></div>
+    <div class="r2b-tu" id="r2b-tu"></div>
+    <div class="r2b-pan" id="r2b-ppay" hidden>
+      <div class="r2b-tv3" style="grid-template-columns:1fr 1fr"><button aria-pressed="false" disabled><small>payé le · supposée</small><b style="color:var(--attt)">27.04</b></button><button aria-pressed="false" disabled><small>facture</small><b>27.04</b></button></div>
+      <span class="r2b-calc">Date de paiement non imprimée · « Betrag per E-Finance dankend erhalten »</span>
+      <div class="r2b-row"><span class="r2b-seg" data-booster="reglement"><button aria-pressed="true" data-reg="paye">Déjà payé</button><button aria-pressed="false" data-reg="apayer">À payer</button></span></div>
+      <div class="r2b-row" id="r2b-rpaye"><span class="r2b-lab">Payé le</span><input class="r2b-in" inputmode="numeric" value="27.04.2026" id="r2b-dpay"><span class="r2b-lab">Moyen</span><span>E-Finance <span class="r2b-calc">(lu)</span></span></div>
+      <div class="r2b-row" id="r2b-rech" hidden><span class="r2b-lab">Échéance</span><input class="r2b-in" inputmode="numeric" value="07.05.2026"><span class="r2b-sup">déduite · 10 Tage netto</span></div>
+      <div class="r2b-ch"><button class="r2b-pri" data-ok="p2">C'est la date</button><button data-autre-date="1">Autre date</button></div>
+    </div>
+    <div class="r2b-pan" id="r2b-ptva" hidden>
+      <div class="r2b-tv3" data-booster="tva-choix">
+        <button data-tva="2,80" aria-pressed="false"><small>colonne MWST · lu</small><b>2,80</b></button>
+        <button data-tva="4,15" aria-pressed="false"><small>N + R · 1,95 + 2,20</small><b>4,15</b></button>
+        <button data-tva="vide" class="r2b-prop" aria-pressed="false"><small>proposé · HT vide</small><b>—</b></button>
+      </div>
+      <div class="r2b-ech" aria-label="Bases imprimées à l'échelle du total"><div class="r2b-base"><i class="r2b-n" style="width:23.73%"></i><i class="r2b-r" style="width:54.62%"></i><i class="r2b-trop" style="width:21.65%"></i></div><div class="r2b-cadre"></div>
+        <span style="left:0">bases 26,20 + 84,20 = 110,40</span><span style="right:0;color:var(--err)">+23,90</span></div>
+      <span class="r2b-calc">Le cadre est le total <b>86,50</b>. Lignes : N <b>11,20</b> · R <b>75,30</b>. Tu n'es pas assujetti : la TVA reste en source.</span>
+    </div>
+    <div class="r2b-pts" id="r2b-pts" data-booster="chips-points" aria-label="Points de stock"></div>
+  </div>
+  <div class="r2b-c2">
+    <div class="r2b-err" id="r2b-errl" hidden><b style="color:var(--t0)">Lecture impossible · service IA</b><span class="r2b-calc">capture-facture.jpg gardé, rien n'est perdu.</span><div class="r2b-ch"><button class="r2b-pri">Relire</button><button>Saisir à la main</button></div></div>
+    <ul class="r2b-ti" id="r2b-ti" role="listbox" aria-label="Lignes de la facture"></ul>
+    <div class="r2b-row"><button class="r2b-add" style="flex:1" id="r2b-addl">+ Ajouter une ligne</button><button class="r2b-add" style="padding:0 10px" id="r2b-regr">Regrouper en une dépense</button></div>
+    <div class="r2b-det" id="r2b-det"><span>Détail</span><span><b id="r2b-detv">86,50</b> / <b id="r2b-dett">86,50</b></span></div>
+  </div>
+  <div class="r2b-c3">
+    <div class="r2b-more">
+      <details><summary><span>Pour quoi ? <span class="r2b-sup r2b-plein">proposé</span></span><em>Brau- und Rauchshop · 372765 · malts…</em></summary>
+        <div class="r2b-in2"><input class="r2b-in r2b-txt" value="Brau- und Rauchshop · 372765 · malts, houblons, levures"></div></details>
+      <details><summary><span>Achat du</span><em class="r2b-m">27.04.2026</em></summary><div class="r2b-in2"><div class="r2b-row"><input class="r2b-in" inputmode="numeric" value="27.04.2026" style="width:140px"><span class="r2b-ch"><button>Hier</button><button>Aujourd'hui</button></span></div></div></details>
+      <details><summary><span>Fournisseur et catégorie</span><em>Brau- und Rauchshop GmbH · Brassage</em></summary>
+        <div class="r2b-in2"><div class="r2b-row"><span class="r2b-lab">Fournisseur</span><input class="r2b-in r2b-txt" style="width:auto;flex:1" value="Brau- und Rauchshop GmbH"></div>
+        <div class="r2b-row"><span class="r2b-lab">Catégorie</span><span class="r2b-ch"><button aria-pressed="true">Brassage</button><button>Emballage</button><button>Matériel</button><button>Autre</button></span></div></div></details>
+      <details><summary><span>Lier à une dépense prévue</span><em>facultatif</em></summary>
+        <div class="r2b-in2"><div class="r2b-ch"><button>Brassin NEIPA · malts · 90,00</button><button>Aucune</button></div></div></details>
+      <details id="r2b-ref"><summary><span>Référence et TVA</span><em id="r2b-refem">372765 · pro-forma payée</em></summary>
+        <div class="r2b-in2">
+          <div class="r2b-row"><span class="r2b-lab">N° facture</span><span class="r2b-m">372765</span><span class="r2b-sup r2b-plein">pro-forma</span></div>
+          <div class="r2b-row"><span class="r2b-lab">Commande</span><span class="r2b-m" style="font-size:12px">Onlinebestellung-686863</span></div>
+          <div class="r2b-row"><span class="r2b-lab">TVA</span><span class="r2b-m" id="r2b-tvaref">2,80 · 4,15 à régler</span></div>
+          <div class="r2b-row"><span class="r2b-lab">Taux</span><span class="r2b-m">N 8,1 % · R 2,6 %</span></div><div class="r2b-row"><span class="r2b-lab">HT</span><span class="r2b-m">—</span><span class="r2b-calc">non imprimé</span></div>
+        </div></details>
+    </div>
+  </div>
+</div>
+<div class="r2b-pied" id="r2b-pied">
+  <div class="r2b-prog"><i id="r2b-progi"></i></div>
+  <div class="r2b-pi" id="r2b-pi"></div>
+</div>
+
+<section class="r2b-ann" id="r2b-annexe" aria-label="Annexe : les états">
+  <h2>Annexe · les neuf états de r2b</h2>
+  <p>Simulé pour l'essai : le stock (Target α 11,8, Hallertauer Blanc DE) et l'unité illisible de Sabro (sa facture imprime « g ») ; l'état 2 est sa facture sans ses points ; l'état 8 reprend la sonde du diagnostic (n° 380001 du 30.04, même commande). Tout le reste est sa facture 372765.</p>
+  <ol>
+    <li><a href="?etat=1">1 · lecture en cours</a></li><li><a href="?etat=2">2 · lue, sans point</a></li><li><a href="?etat=3">3 · lue avec ses points</a></li>
+    <li><a href="?etat=4">4 · un point réglé</a></li><li><a href="?etat=4b">4 · tous réglés</a></li><li><a href="?etat=5">5 · erreur de lecture</a></li>
+    <li><a href="?etat=6">6 · Drive pas connecté</a></li><li><a href="?etat=7">7 · enregistrement</a></li><li><a href="?etat=7b">7 · le reçu</a></li>
+    <li><a href="?etat=8">8 · peut-être déjà enregistré</a></li><li><a href="?etat=9">9 · hors ligne</a></li>
+  </ol>
+</section>
+
+<script>
+(function(){
+  var $=function(s){return document.querySelector(s)},$$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+  // Sa facture 372765 (vérité transcrite, sans son nom ni son adresse). Montants en centimes.
+  // [n, code, libellé imprimé, nom, quantité, unité imprimée, prix imprimé, montant, famille, stock]
+  var L=[
+   [1,'MA0221','Maris Otter, Kg','Maris Otter',6,'Kg','2,30',1380,'malt',{s:'relie',a:'Maris Otter'}],
+   [2,'ISHOP-SCHROT','Zuschlag Schrotung','Mouture',6,'Kg','0,10',60,'mout',{p:1}],
+   [3,'MA0027','Gerstenflocken, 1 Kg','Gerstenflocken',1,'Kg','2,40',240,'malt',{s:'relie',a:'Gerstenflocken'}],
+   [4,'MA0055','Röstgerste, Kg','Röstgerste',1,'Kg','1,80',180,'malt',{s:'relie',a:'Röstgerste'}],
+   [5,'ISHOP-SCHROT','Zuschlag Schrotung','Mouture',1,'Kg','0,10',10,'mout',{p:4}],
+   [6,'MA0333','CARAMÜNCH® Typ 2 Kg','Caramünch Typ 2',1,'Kg','1,75',175,'malt',{s:'relie',a:'Caramünch Typ 2'}],
+   [7,'ISHOP-SCHROT','Zuschlag Schrotung','Mouture',1,'Kg','0,10',10,'mout',{p:6}],
+   [8,'HO0102','Target 11.3%','Target',40,'g','0,040',160,'houb',{s:'bis',a:'Target bis',alpha:'11,3',pt:'p4',stock:'Target',stockVal:'α 11,8'}],
+   [9,'HO0017','Goldings East Kent 5.5%','Goldings East Kent',20,'g','0,040',80,'houb',{s:'neuf',a:'Goldings East Kent',alpha:'5,5'}],
+   [10,'HE0211','LALLEMAND Windsor 11g','LALLEMAND Windsor',2,'Stk','4,50',900,'lev',{s:'relie',a:'LALLEMAND Windsor',conv:'2 sachets'}],
+   [11,'HE0203','Safale BE-256 (Abbaye) 11.5 g','Safale BE-256',1,'Stk','4,40',440,'lev',{s:'relie',a:'Safale BE-256 (Abbaye)',conv:'1 sachet'}],
+   [12,'HE0102','Safale US-05 11,5g','Safale US-05',2,'Stk','3,40',680,'lev',{s:'relie',a:'Safale US-05',conv:'2 sachets'}],
+   [13,'MA0007','Pilsner Malz, Kg','Pilsner Malz',5,'Kg','1,50',750,'malt',{s:'relie',a:'Pilsner Malz'}],
+   [14,'ISHOP-SCHROT','Zuschlag Schrotung','Mouture',5,'Kg','0,10',50,'mout',{p:13}],
+   [15,'MA0010','Weizenmalz hell, Kg','Weizenmalz hell',2,'Kg','1,55',310,'malt',{s:'relie',a:'Weizenmalz hell'}],
+   [16,'ISHOP-SCHROT','Zuschlag Schrotung','Mouture',2,'Kg','0,10',20,'mout',{p:15}],
+   [17,'MA0034','Haferflocken, 1 Kg','Haferflocken',2,'Kg','2,50',500,'malt',{s:'relie',a:'Haferflocken'}],
+   [18,'HO0046','Galaxy 17.2%','Galaxy',60,'g','0,080',480,'houb',{s:'relie',a:'Galaxy',alpha:'17,2'}],
+   [19,'HO1907','Nelson Sauvin ™ 9.6%','Nelson Sauvin',100,'g','0,080',800,'houb',{s:'relie',a:'Nelson Sauvin',alpha:'9,6'}],
+   [20,'HO2026','Sabro® 13.4%','Sabro',30,null,'0,070',210,'houb',{s:'precis',a:'Sabro',alpha:'13,4',pt:'p5'}],
+   [21,'HE2036','LALLEMAND Verdant IPA 11g','Verdant IPA',2,'Stk','4,70',940,'lev',{s:'neuf',a:'LALLEMAND Verdant IPA',conv:'2 sachets'}],
+   [22,'HO17041','Hallertauer Blanc 9.5% CH','Hallertauer Blanc',30,'g','0,045',135,'houb',{s:'bis',a:'Hallertauer Blanc CH',alpha:'9,5',pt:'p6',stock:'Hallertauer Blanc',stockVal:'DE'}],
+   [23,'HO2022','Motueka ™ 8.1%','Motueka',20,'g','0,070',140,'houb',{s:'relie',a:'Motueka',alpha:'8,1'}]
+  ];
+  // Les six points, par risque : argent (1, 2), puis stock (3 à 6) — greffes z1 (chips numérotées) et u2 (ordre).
+  var NOMS={p1:'TVA',p2:'Payé le',p3:'mouture ×5',p4:'Target α',p5:'Sabro unité',p6:'Hallertauer CH'};
+  var PTS={p1:0,p2:0,p3:0,p4:0,p5:0,p6:0};
+  var mout={}; // n → 'att' (rattachée) | 'svc' (laissée en service)
+  var choisi={}, unite={}, tvaVal=null, sel=null, mTable=false, etat='3', drive='ok', reseau=true;
+  var chf=function(c){var s=(Math.abs(c)/100).toFixed(2).replace('.',',');return (c<0?'−':'')+s};
+  var cube='<path d="M10 2.5 17 6v8l-7 3.5L3 14V6z"/><path d="M3 6l7 3.5L17 6M10 9.5v8"/>';
+  function ico(st,sz){sz=sz||20;var b='';
+    if(st==='relie') b='<circle cx="15" cy="15" r="4.6" fill="#333" stroke="none"/><path d="M12.8 15.1l1.6 1.6 2.9-3" stroke="#fff"/>';
+    if(st==='neuf') b='<circle cx="15" cy="15" r="4.6" fill="#2F6FB3" stroke="none"/><path d="M15 12.6v4.8M12.6 15h4.8" stroke="#fff"/>';
+    if(st==='bis') b='<circle cx="15" cy="15" r="4.6" fill="#7F5B10" stroke="none"/><path d="M13.4 13.9a1.7 1.7 0 1 1 2.9 1.2L13.4 17.3h3.3" stroke="#fff"/>';
+    if(st==='precis') b='<circle cx="15" cy="15" r="4.6" fill="#fff" stroke="#7F5B10" stroke-dasharray="2 1.4"/><path d="M13.6 13.9a1.5 1.5 0 1 1 2.2 1.3c-.6.3-.8.6-.8 1.1M15 17.5v.2" stroke="#7F5B10"/>';
+    if(st==='gris') return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="'+(30/sz).toFixed(3)+'">'+cube+'</svg>';
+    if(st==='mout') return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="'+(30/sz).toFixed(3)+'"><path d="M5 3v8a3 3 0 0 0 3 3h8"/><path d="M13 11l3 3-3 3"/></svg>';
+    var dash=(st==='precis')?' stroke-dasharray="2.4 1.6"':'';
+    return '<svg width="'+sz+'" height="'+sz+'" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="'+(30/sz).toFixed(3)+'"><g'+dash+'>'+cube+'</g>'+b+'</svg>';}
+  var MOTS={relie:'relié',neuf:'nouvel article',bis:'article bis',precis:'unité à préciser'};
+  var chk='<svg class="r2b-v" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.14"><path d="M4 10.5 8 14.5 16 6"/></svg>';
+  function ouverts(){return Object.keys(PTS).filter(function(k){return !PTS[k]})}
+  function moutOuvertes(){return L.filter(function(l){return l[8]==='mout'&&!mout[l[0]]})}
+  function ligne(n){return L.find(function(l){return l[0]===n})}
+  function bandeau(){
+    var h;
+    if(etat==='1'){h='<div class="r2b-bd1"><span class="r2b-four">capture-facture.jpg</span><span class="r2b-m" style="font-size:12px">0,7 Mo · 1 page</span></div>'
+      +'<div class="r2b-steps"><span class="r2b-fait"><i></i>Envoi ✓</span><span class="r2b-cours"><i></i><em style="font-style:normal">Lecture <b class="r2b-m">7 s</b></em></span><span><i></i>Vérification</span></div>';}
+    else if(etat==='5'){h='<div class="r2b-bd1"><span class="r2b-four">capture-facture.jpg</span><span class="r2b-m" style="font-size:12px">—</span></div><div class="r2b-bd2"><span class="r2b-tot">— <small>CHF</small></span></div>';}
+    else{var nb=ouverts().length;
+      h='<div class="r2b-bd1"><span class="r2b-four">Brau- und Rauchshop</span><span class="r2b-m" style="font-size:14px;color:var(--t1)">27.04.2026</span></div>'
+      +'<div class="r2b-bd2"><span class="r2b-tot"><span data-edit="total">86,50</span> <small>CHF</small></span>'
+      +'<button class="r2b-chip r2b-pr" id="r2b-pbtn" data-booster="preuve" aria-expanded="false">'+chk+'<span class="r2b-m">23</span>&nbsp;lignes</button></div>'
+      +'<div class="r2b-comp" id="r2b-comp" data-booster="barre" aria-label="Les 23 lignes, à la largeur de leur montant"></div>';}
+    $('#r2b-bd').innerHTML=h;
+  }
+  function preuve(){
+    var c={relie:0,neuf:0,bis:0,precis:0,mout:0};L.forEach(function(l){var s=l[8]==='mout'?'mout':(l[9].s==='precis'&&PTS.p5)?'relie':l[9].s;c[s]++});
+    $('#r2b-preuve').innerHTML='<div class="r2b-rr">'+chk+'<span>Somme des lignes = imprimé</span><b>86,50</b></div>'
+      +'<div class="r2b-rr">'+chk+'<span>Quantité × prix, au centime</span><b>23/23</b></div>'
+      +'<div class="r2b-rr">'+chk+'<span>Lectures d\'accord</span><b>2/2</b></div>'
+      +'<div class="r2b-rr"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#333" stroke-width="1.875"><path d="M5 2.5h7l3 3v12H5z"/></svg><span class="r2b-pg">1 page vue, page 2 coupée : l\'argent vu est complet</span><b></b></div>'
+      +'<div class="r2b-cnt" data-booster="compte-liens"><span>'+ico('relie',14)+'<b>'+c.relie+'</b> reliés</span><span>'+ico('neuf',14)+'<b>'+c.neuf+'</b> nouveaux</span><span>'+ico('bis',14)+'<b>'+c.bis+'</b> bis</span>'+(c.precis?'<span>'+ico('precis',14)+'<b>'+c.precis+'</b> unité ?</span>':'')+'<span>'+ico('mout',14)+'<b>'+c.mout+'</b> moutures</span></div>';
+  }
+  function tuiles(){
+    if(etat==='1'){$('#r2b-tu').innerHTML='<div class="r2b-tile" style="padding-left:8px"><span class="r2b-k">Règlement</span><span class="r2b-v"><span class="r2b-seg"><button aria-pressed="true">Payé</button><button aria-pressed="false">À payer</button></span></span></div><div class="r2b-tile" style="padding-left:8px"><span class="r2b-k">Pour quoi ?</span><span class="r2b-v">à taper</span></div>';return}
+    if(etat==='5'){$('#r2b-tu').innerHTML='<div class="r2b-tile" style="padding-left:8px"><span class="r2b-k">Total TTC</span><span class="r2b-v r2b-m">—</span></div><div class="r2b-tile" style="padding-left:8px"><span class="r2b-k">Achat du</span><span class="r2b-v r2b-m">—</span></div>';return}
+    var tv=tvaVal===null?'<span class="r2b-val2"><b>2,80</b><b>4,15</b></span>':tvaVal==='vide'?'<span class="r2b-m">—</span><span class="r2b-sup r2b-plein">vide</span>':'<span class="r2b-m">'+tvaVal+'</span><span class="r2b-sup r2b-plein">gardée</span>';
+    $('#r2b-tu').innerHTML='<button class="r2b-tile'+(PTS.p1?' r2b-fait':' r2b-dt')+'" id="r2b-ttva" data-booster="tva" aria-expanded="false"><span class="r2b-no">1</span><span class="r2b-k">TVA</span><span class="r2b-v">'+tv+'</span></button>'
+      +'<button class="r2b-tile'+(PTS.p2?' r2b-fait':' r2b-dt')+'" id="r2b-tpay" data-booster="paye" aria-expanded="false"><span class="r2b-no">2</span><span class="r2b-k">Payé</span><span class="r2b-v"><span class="r2b-m">27.04</span><span class="r2b-sup'+(PTS.p2?' r2b-plein':'')+'">'+(PTS.p2?'confirmée':'supposée')+'</span></span></button>';
+  }
+  function chips(){
+    if(etat==='1'||etat==='5'){$('#r2b-pts').innerHTML='';return}
+    var h='';['p3','p4','p5','p6'].forEach(function(k,i){h+='<button class="r2b-pc'+(PTS[k]?' r2b-fait':'')+'" data-va="'+k+'"><span class="r2b-no">'+(i+3)+'</span>'+NOMS[k]+(k==='p3'&&!PTS.p3?' <span class="r2b-m" style="font-size:12px;color:var(--attt)">+'+chf(moutOuvertes().reduce(function(a,l){return a+l[7]},0))+'</span>':'')+'</button>'});
+    $('#r2b-pts').innerHTML=h;
+  }
+  function render(){
+    PTS.p3=moutOuvertes().length===0;
+    bandeau();tuiles();chips();preuve();
+    if(etat==='1'){$('#r2b-ti').innerHTML='<li class="r2b-li"><span></span><span class="r2b-nm"><span class="r2b-sk" style="width:60%"></span><span class="r2b-sk" style="width:30%;margin-top:4px"></span></span><span class="r2b-sk" style="width:40px"></span></li>'.repeat(5);$('.r2b-c3').hidden=true;$('.r2b-c2>.r2b-row').hidden=true;$('#r2b-det').hidden=true;return pied()}
+    if(etat==='5'){$('#r2b-ti').innerHTML='';$('#r2b-errl').hidden=false;$('#r2b-detv').textContent='0,00';$('#r2b-dett').textContent='—';$$('.r2b-more summary em').forEach(function(x){x.textContent='à saisir'});$('.r2b-more .r2b-sup').hidden=true;return pied()}
+    var h='';
+    L.forEach(function(l,idx){
+      var n=l[0],st=l[9];
+      if(l[8]==='mout'){
+        var m=mout[n],par=ligne(st.p),prem=moutOuvertes().length>0&&moutOuvertes()[0][0]===n;
+        h+='<li class="r2b-mo'+(m==='att'?' r2b-ok':m==='svc'?' r2b-svc':'')+'" data-n="'+n+'"><span class="r2b-arr"></span><span class="r2b-sub">'
+          +'<button data-att="'+n+'" data-booster="mouture" aria-label="'+(m==='att'?'Détacher la mouture de ':'Rattacher la mouture à ')+par[3]+'">'+(m==='att'?'✓ mouture':m==='svc'?'service':'mouture')+'</button>'
+          +(prem?'<button class="r2b-tous" data-tous="1" data-booster="mouture-tous">Rattacher les 5</button><button class="r2b-mt2" data-mtab="1" aria-label="Tableau des moutures"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.14"><path d="M5 8l5 5 5-5"/></svg></button>':'')
+          +'</span><span class="r2b-amt">'+chf(l[7])+'</span></li>';
+        if(prem&&mTable) h+=tableMout();
+        return;
+      }
+      var pt=st.pt, dt=pt&&!PTS[pt];
+      var stS=st.s; if(pt==='p5'&&PTS.p5) stS='relie';
+      var nom=(pt==='p4'||pt==='p6')&&choisi[n]?choisi[n]:l[3];
+      var u=l[5]||unite[n];
+      var sub='<span class="r2b-m">'+l[4]+'</span> '+(u?'<span class="r2b-m">'+u+'</span>':'<span class="r2b-sup">unité ?</span>');
+      if(st.alpha) sub+='<i class="r2b-dot"></i>α <span class="r2b-m">'+st.alpha+'</span>';
+      if(st.conv) sub+='<i class="r2b-dot"></i><span class="r2b-cv">'+st.conv+'</span>';
+      var nx=L[idx+1],kg=(nx&&nx[8]==='mout'&&mout[nx[0]]==='att')?'<small>✓ '+chf((l[7]+nx[7])/l[4])+'/kg</small>':'';
+      h+='<li class="r2b-li'+(dt?' r2b-dt':'')+'" role="option" aria-selected="'+(sel===n)+'" data-n="'+n+'" data-booster="ligne"><span class="r2b-ico'+(dt?' r2b-q':'')+'" aria-label="'+MOTS[stS]+'">'+ico(stS)+'</span><span class="r2b-nm"><b>'+nom+'</b><span class="r2b-sub">'+sub+'</span></span><span class="r2b-amt">'+chf(l[7])+kg+'</span>';
+      if(dt&&(pt==='p4'||pt==='p6')) h+='<span class="r2b-fix"><span class="r2b-q2"><s>'+ico('gris',14)+'</s>'+st.stock+' '+st.stockVal+'</span><button class="r2b-pri" data-bis="'+n+'" data-booster="bis">'+(pt==='p4'?'Target bis':'Créer CH')+'</button><button data-autre="'+n+'" aria-label="Choisir un autre article">⇄</button></span>';
+      if(dt&&pt==='p5') h+='<span class="r2b-fix" data-booster="unite"><button data-u="g">g</button><button data-u="kg">kg</button><button data-u="Stk">Stk</button></span>';
+      h+='</li>';
+      if(sel===n) h+=plateau(l);
+    });
+    $('#r2b-ti').innerHTML=h;
+    var tot=L.reduce(function(a,l){return a+l[7]},0),b='';
+    L.forEach(function(l){var st=l[9];var d=(l[8]==='mout'&&!mout[l[0]])||(st.pt&&!PTS[st.pt]);b+='<i class="f-'+l[8]+(d?' r2b-dt':'')+'" style="flex-grow:'+l[7]+'" data-n="'+l[0]+'"></i>'});
+    if($('#r2b-comp'))$('#r2b-comp').innerHTML=b;
+    $('#r2b-detv').textContent=chf(tot);
+    var d=$('#r2b-det');d.classList.toggle('r2b-ec',tot!==8650);d.firstChild.textContent=tot!==8650?'Détail · écart '+chf(tot-8650):'Détail';
+    $('#r2b-tvaref').textContent=tvaVal===null?'2,80 · 4,15 à régler':tvaVal==='vide'?'— (laissée vide)':tvaVal+' (gardée)';
+    pied();
+  }
+  function tableMout(){
+    var r='';L.forEach(function(l){if(l[8]!=='mout')return;var p=ligne(l[9].p);r+='<span>'+p[3]+'</span><span class="r2b-m">'+p[6]+'</span><em>→</em><span class="r2b-m">'+chf((p[7]+l[7])/p[4])+' /kg</span>'});
+    return '<li class="r2b-plat"><div class="r2b-pan"><div class="r2b-mt"><em>malt</em><em>lu /kg</em><em></em><em>avec mouture</em>'+r+'</div><div class="r2b-ch"><button class="r2b-pri" data-tous="1">Rattacher les 5</button><button data-svc="1">Laisser en service</button></div></div></li>';
+  }
+  function plateau(l){
+    var n=l[0],st=l[9],u=l[5]||unite[n]||'?',q=l[4],calc=Math.round(q*parseFloat(l[6].replace(',','.'))*100),ok=calc===l[7];
+    var stS=(st.s==='precis'&&PTS.p5)?'relie':st.s;
+    return '<li class="r2b-plat"><div class="r2b-pan">'
+     +'<span class="r2b-ev">imprimé « '+l[2]+' » · '+l[1]+(st.alpha?' · α tirée du nom':'')+'</span>'
+     +'<div class="r2b-big"><span class="r2b-n" data-edit="q'+n+'" tabindex="0">'+q+'</span><span class="r2b-u">'+u+' ×</span><span class="r2b-n" data-edit="p'+n+'" tabindex="0" style="font-size:16px">'+l[6]+'</span><span class="r2b-u">=</span><span class="r2b-n" data-edit="m'+n+'" tabindex="0">'+chf(l[7])+'</span></div>'
+     +'<span class="r2b-calc">'+(ok?'<b>'+q+' × '+l[6]+' = '+chf(calc)+'</b> ✓':'<span class="r2b-bad">'+q+' × '+l[6]+' = '+chf(calc)+' · écart '+chf(l[7]-calc)+'</span>')+'</span>'
+     +'<div class="r2b-row"><span class="r2b-seg"><button aria-pressed="true">Ingrédient</button><button aria-pressed="false">Service</button><button aria-pressed="false">Matériel</button></span></div>'
+     +'<div class="r2b-row"><span class="r2b-lab">Stock</span><button class="r2b-stk" data-booster="stock">'+ico(stS)+(choisi[n]||st.a)+' ⇄</button><span class="r2b-calc">'+MOTS[stS]+'</span>'+(st.conv?'<span class="r2b-cv" style="font-size:12px">'+l[4]+' Stk = '+st.conv+'</span>':'')+'</div>'
+     +'<div class="r2b-row" style="justify-content:space-between"><button class="r2b-lk">Aucun mouvement de stock</button><button class="r2b-lk" data-ret="'+n+'">Retirer la ligne</button></div>'
+     +'</div></li>';
+  }
+  var DRV='<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.875"><path d="M6 15.5h8.5a3.5 3.5 0 0 0 .4-7A5 5 0 0 0 5.3 8 3.8 3.8 0 0 0 6 15.5z"/></svg>';
+  var GO='<button class="r2b-go" id="r2b-go" data-booster="confirmer"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.14"><path d="M4 10.5 8 14.5 16 6"/></svg>Confirmer</button>';
+  function pied(){
+    if(etat==='7'||etat==='7b')return;
+    var g;
+    if(!reseau) g='<span class="r2b-drv r2b-att">Hors ligne · brouillon gardé</span>';
+    else if(drive!=='ok') g='<span class="r2b-drv r2b-att">'+DRV+'Drive à connecter</span>';
+    else g='<span class="r2b-drv" data-booster="drive">'+DRV+'Drive'+chk+'</span>';
+    $('#r2b-pi').innerHTML=g+GO;
+  }
+  function flash(el){if(!el)return;el.classList.remove('r2b-flash');void el.offsetWidth;el.classList.add('r2b-flash');el.scrollIntoView({block:'center',behavior:'smooth'})}
+  function aller(k){
+    if(k==='p1'){ouvrir('r2b-ptva');return}
+    if(k==='p2'){ouvrir('r2b-ppay');return}
+    if(k==='p3'){var m=moutOuvertes()[0];mTable=true;render();return flash($('.r2b-mo[data-n="'+m[0]+'"]'))}
+    var o=L.find(function(l){return l[9].pt===k});if(o)flash($('.r2b-li[data-n="'+o[0]+'"]'));
+  }
+  function ouvrir(id){['r2b-ptva','r2b-ppay','r2b-just'].forEach(function(p){var e=document.getElementById(p);e.hidden=p!==id||!e.hidden});var e=document.getElementById(id);if(!e.hidden)e.scrollIntoView({block:'nearest',behavior:'smooth'})}
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('button,i[data-n],li.r2b-li,[data-edit]');if(!t)return;
+    if(t.id==='r2b-pbtn'){var p=$('#r2b-preuve');p.hidden=!p.hidden;t.setAttribute('aria-expanded',!p.hidden);return}
+    if(t.id==='r2b-jbtn'){ouvrir('r2b-just');return}
+    if(t.id==='r2b-ttva'){ouvrir('r2b-ptva');return}
+    if(t.id==='r2b-tpay'){ouvrir('r2b-ppay');return}
+    if(t.dataset.va){aller(t.dataset.va);return}
+    if(t.dataset.ok){PTS[t.dataset.ok]=1;$('#r2b-ppay').hidden=true;render();return}
+    if(t.dataset.autreDate){$('#r2b-dpay').focus();$('#r2b-dpay').select();return}
+    if(t.dataset.reg){$$('[data-reg]').forEach(function(b){b.setAttribute('aria-pressed',b===t)});var ap=t.dataset.reg==='apayer';$('#r2b-rpaye').hidden=ap;$('#r2b-rech').hidden=!ap;return}
+    if(t.dataset.tva){tvaVal=t.dataset.tva;PTS.p1=1;$$('[data-tva]').forEach(function(b){b.setAttribute('aria-pressed',b===t)});$('#r2b-ptva').hidden=true;render();return}
+    if(t.dataset.att){var n=+t.dataset.att;mout[n]=mout[n]==='att'?undefined:'att';render();return}
+    if(t.dataset.tous){L.forEach(function(l){if(l[8]==='mout')mout[l[0]]='att'});mTable=false;render();return}
+    if(t.dataset.svc){L.forEach(function(l){if(l[8]==='mout'&&!mout[l[0]])mout[l[0]]='svc'});mTable=false;render();return}
+    if(t.dataset.mtab){mTable=!mTable;render();return}
+    if(t.dataset.bis){var n2=+t.dataset.bis,l2=ligne(n2);choisi[n2]=l2[9].a;PTS[l2[9].pt]=1;render();return}
+    if(t.dataset.autre){sel=+t.dataset.autre;render();return}
+    if(t.dataset.u){var li=t.closest('li');unite[+li.dataset.n]=t.dataset.u;PTS.p5=1;render();return}
+    if(t.dataset.ret){var i=L.findIndex(function(l){return l[0]===+t.dataset.ret});if(i>=0){L.splice(i,1);sel=null;render()}return}
+    if(t.id==='r2b-addl'){var nn=Math.max.apply(null,L.map(function(l){return l[0]}))+1;L.push([nn,'','Nouvelle ligne','Nouvelle ligne',1,'Kg','0,00',0,'malt',{s:'neuf',a:'—'}]);sel=nn;render();return}
+    if(t.dataset.dup){$('#r2b-dup').hidden=true;return}
+    if(t.tagName==='I'&&t.dataset.n){flash($('[data-n="'+t.dataset.n+'"]'));return}
+    if(t.dataset.edit&&t.closest('.r2b-plat,.r2b-bd')){editer(t);return}
+    if(t.tagName==='LI'){var n5=+t.dataset.n;sel=sel===n5?null:n5;render();return}
+    if(t.id==='r2b-go'){enregistrer();return}
+  });
+  function editer(el){
+    var k=el.dataset.edit,v=el.textContent.replace(/[^0-9,]/g,'');
+    var inp=document.createElement('input');inp.className='r2b-in';inp.setAttribute('inputmode','decimal');inp.value=v;inp.style.width='96px';
+    el.replaceWith(inp);inp.focus();inp.select();
+    inp.addEventListener('blur',function(){var x=parseFloat(inp.value.replace(',','.'));
+      if(!isNaN(x)&&k!=='total'){var l=ligne(+k.slice(1));if(k[0]==='q')l[4]=x;if(k[0]==='p')l[6]=inp.value;if(k[0]==='m')l[7]=Math.round(x*100)}
+      render()});
+  }
+  // Le pied ne bloque jamais (« Pas de bloquage ») : ce qui reste ouvert est enregistré sans risque et dit dans le reçu.
+  function laisses(){
+    var r=[];if(!PTS.p1)r.push('TVA vide');if(!PTS.p2)r.push('date supposée gardée');
+    if(!PTS.p3)r.push(moutOuvertes().length+' moutures en service');
+    var hs=[];if(!PTS.p4)hs.push('Target');if(!PTS.p5)hs.push('Sabro');if(!PTS.p6)hs.push('Hallertauer');
+    if(hs.length)r.push(hs.join(', ')+' hors stock');
+    return r;
+  }
+  function recu(){var r=laisses();
+    $('#r2b-pi').innerHTML='<span class="r2b-recu"><span class="r2b-r1"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#2F6B45" stroke-width="1.875"><path d="M4 10.5 8 14.5 16 6"/></svg><span class="r2b-m" style="color:var(--t0)">2026-04-27 Brau- und Rauchshop 372765.jpg</span></span><span class="r2b-r1" style="justify-content:space-between"><span>L\'Affinée / Justificatifs / 2026</span><a href="#r2b-annexe">Ouvrir dans Drive</a></span>'
+      +(r.length?'<span class="r2b-r2">À revoir : '+r.join(' · ')+'</span>':'')+'</span>';}
+  function envoi(x){$('#r2b-pi').innerHTML='<span class="r2b-drv">Envoi au Drive · <span class="r2b-m" id="r2b-mo">'+x.toFixed(1).replace('.',',')+' / 0,7 Mo</span></span><span class="r2b-calc">tu peux fermer</span>';$('#r2b-progi').style.width=(x/0.7*100)+'%'}
+  function enregistrer(){
+    if(!reseau){$('#r2b-pi').innerHTML='<span class="r2b-drv r2b-att">Hors ligne</span><span class="r2b-calc">Enregistré dès le retour du réseau</span>';return}
+    if(drive!=='ok'){$('#r2b-pi').innerHTML='<span class="r2b-drv">'+DRV+'Connexion Google…</span><span class="r2b-calc">le brouillon reste</span>';return}
+    var x=0;envoi(x);var tm=setInterval(function(){x+=0.1;if(x>=0.7){clearInterval(tm);$('#r2b-progi').style.width='100%';recu();return}envoi(x)},180);
+  }
+  function regler(){PTS.p1=PTS.p2=PTS.p4=PTS.p5=PTS.p6=1;tvaVal='vide';L.forEach(function(l){if(l[8]==='mout')mout[l[0]]='att'});choisi[8]='Target bis';choisi[22]='Hallertauer Blanc CH';unite[20]='g'}
+  window.r2bRegler=function(){regler();render()};
+  window.r2bOuvrir=function(n){sel=n;render()};
+  window.r2bAller=aller;
+  // Les états : ?etat=1 à 9 (4b : tous réglés ; 7b : le reçu).
+  var q=(location.search.match(/etat=(\w+)/)||[])[1];if(q)etat=q;
+  if(etat==='2'||etat==='4b')regler();
+  if(etat==='4'){PTS.p1=1;tvaVal='vide'}
+  if(etat==='6')drive='non';
+  if(etat==='8')$('#r2b-dup').hidden=false;
+  if(etat==='9')reseau=false;
+  if(matchMedia('(min-width:900px)').matches&&etat!=='1'&&etat!=='5'){$('#r2b-preuve').hidden=false;$('#r2b-ref').open=true}
+  render();
+  if(etat==='2'){tvaVal='2,80';render();var bd2=$('#r2b-pts');bd2.innerHTML='<span class="r2b-pc r2b-fait" style="text-decoration:none;padding-left:8px">✓ rien à régler</span>';$$('.r2b-tile .r2b-sup').forEach(function(s){s.textContent='lue'})}
+  if(etat==='4b'){$('#r2b-pts').insertAdjacentHTML('beforeend','<span class="r2b-pc r2b-fait" style="text-decoration:none;padding-left:8px;color:var(--ok);border-color:var(--ok)">✓ tout réglé</span>')}
+  if(etat==='7'){regler();render();envoi(0.4)}
+  if(etat==='7b'){regler();render();$('#r2b-progi').style.width='100%';recu()}
+})();
+</script>
+</body></html>

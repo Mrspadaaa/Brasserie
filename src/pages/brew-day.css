@@ -1,0 +1,3443 @@
+.brew-page {
+  --brew-line: rgb(var(--cave-700));
+  --brew-muted: rgb(var(--ct-b5a69a));
+  --brew-gold: rgb(var(--ebc-straw));
+  --brew-green: rgb(var(--c-a1c58f));
+  --brew-surface: rgb(var(--cave-900));
+  color: rgb(var(--cave-texte-200));
+  font-size: 14px;
+}
+.brew-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+  color: rgb(var(--ct-b5a69a));
+  background: rgb(var(--c-29221d));
+  flex-shrink: 0;
+}
+/* BR-57, BE-38 (08.11) : l'étiquette neutre (« À faire », « Rattraper ») posait #666 sur #ddd en clair : 4,22:1 à 12 px. Le texte courant (#333) fait plus de 9:1. */
+:root:not([data-theme='cave']) .brew-tag.is-neutral {
+  color: rgb(var(--cave-texte-200));
+}
+/* BR-59, BE-40 (08.11) : les liens de sources faisaient 17 px de haut. Cible tactile d'au moins 24 px (WCAG 2.2, 2.5.8) sans changer la mise en ligne du texte. */
+.brew-page a:not(.brew-primary) {
+  display: inline-block;
+  box-sizing: border-box;
+  min-height: 24px;
+  padding-block: 4px;
+}
+.brew-tag.is-info {
+  color: rgb(var(--ct-a7cee4));
+  background: rgb(var(--c-a7cee4) / 0.08);
+  border-color: rgb(var(--c-a7cee4) / 0.27);
+}
+.brew-tag.is-active,
+.brew-tag.is-done {
+  color: rgb(var(--ct-b4d8a1));
+  background: rgb(var(--c-b4d8a1) / 0.08);
+  border-color: rgb(var(--c-b4d8a1) / 0.30);
+}
+.brew-tag.is-pause {
+  color: rgb(var(--ebc-straw-texte));
+  background: rgb(var(--ebc-straw) / 0.08);
+  border-color: rgb(var(--ebc-straw) / 0.30);
+}
+.brew-tag.is-due {
+  color: rgb(var(--ct-ffb49b));
+  background: rgb(var(--c-ffb49b) / 0.08);
+  border-color: rgb(var(--c-ffb49b) / 0.40);
+}
+.brew-tag.is-active > svg {
+  animation: brew-turn 2s linear infinite;
+}
+@keyframes brew-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brew-tag.is-active > svg {
+    animation: none;
+  }
+}
+.brew-step-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.brew-station-heading .brew-step-meta .brew-muted {
+  margin: 0;
+}
+.brew-choice-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 32px;
+  width: 100%;
+  padding: 10px 8px;
+  border: 1px solid rgb(var(--c-685a4e));
+  border-radius: 9px;
+  text-align: left;
+  background: rgb(var(--c-241e19));
+  color: rgb(var(--cave-texte-50));
+  font-size: 16px;
+}
+.brew-choice-trigger > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.brew-choice-trigger > svg {
+  flex-shrink: 0;
+  color: rgb(var(--ct-c9b8a9));
+}
+.brew-choice-trigger.is-heading {
+  font-size: inherit;
+  font-weight: inherit;
+  padding: 8px 10px;
+  margin: 0;
+}
+.brew-choice-trigger[aria-expanded='true'] {
+  border-color: rgb(var(--ebc-straw));
+}
+.brew-choice-dialog:not([open]) {
+  display: none;
+}
+.brew-choice-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: auto;
+  bottom: 0;
+  inset-inline: 0;
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+  max-width: 640px;
+  max-height: min(84dvh, 680px);
+  background: rgb(var(--cave-900));
+  color: rgb(var(--cave-texte-200));
+  border: 1px solid rgb(var(--cave-600));
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  overflow: hidden;
+  text-align: left;
+}
+.brew-choice-dialog::backdrop {
+  background: #000b;
+}
+@media (min-width: 901px) {
+  .brew-choice-dialog[open] {
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    max-height: 80dvh;
+    border-bottom: 1px solid rgb(var(--cave-600));
+    border-radius: 16px;
+  }
+}
+.brew-choice-dialog > header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px;
+  border-bottom: 1px solid rgb(var(--cave-700));
+  flex-shrink: 0;
+}
+.brew-page .brew-choice-dialog > header h2 {
+  flex: 1;
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+.brew-choice-dialog > header button {
+  width: 28px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+.brew-choice-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 16px;
+  padding: 0 8px;
+  border: 1px solid rgb(var(--c-685a4e));
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.brew-choice-search :is(input, textarea:where([data-single-line])) {
+  min-height: 32px;
+  width: 100%;
+  min-width: 0;
+  font-size: 16px;
+  color: rgb(var(--cave-texte-50));
+  background: transparent;
+  outline: none;
+}
+.brew-choice-search:focus-within {
+  outline: 2px solid rgb(var(--ebc-straw));
+  outline-offset: 2px;
+}
+.brew-choice-options {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-height: 0;
+  padding: 8px 8px 8px;
+}
+.brew-page .brew-choice-options > h3 {
+  font-size: 14px;
+  color: rgb(var(--ct-a7cee4));
+  padding: 8px 4px 8px;
+}
+.brew-choice-options > button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 32px;
+  padding: 8px;
+  margin-top: 6px;
+  border: 1px solid rgb(var(--c-4b4037));
+  border-radius: 10px;
+  text-align: left;
+}
+.brew-choice-options > button[aria-pressed='true'] {
+  background: rgb(var(--ebc-straw) / 0.07);
+  border-color: rgb(var(--ebc-straw) / 0.60);
+}
+.brew-choice-label {
+  min-width: 0;
+  flex: 1;
+}
+.brew-choice-label strong {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: rgb(var(--cave-texte-50));
+  overflow-wrap: anywhere;
+}
+.brew-choice-label small {
+  display: block;
+  margin-top: 5px;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgb(var(--ct-b5a69a));
+}
+.brew-choice-check {
+  width: 18px;
+  min-width: 18px;
+  color: rgb(var(--ebc-straw-texte));
+}
+.brew-choice-empty {
+  padding: 12px 8px;
+  font-size: 16px;
+  color: rgb(var(--ct-b5a69a));
+}
+.brew-choice-dialog > footer {
+  padding: 10px 8px max(10px, env(safe-area-inset-bottom));
+  border-top: 1px solid rgb(var(--cave-700));
+  flex-shrink: 0;
+}
+.brew-choice-dialog > footer button {
+  min-height: 32px;
+  width: 100%;
+  border: 1px solid rgb(var(--c-685a4e));
+  border-radius: 8px;
+  font-size: 16px;
+}
+.brew-acid-choice legend {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: rgb(var(--cave-texte-200));
+}
+.brew-acid-choice > label {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 32px;
+  margin-top: 6px;
+  padding: 10px 8px;
+  border: 1px solid rgb(var(--cave-600));
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+.brew-acid-choice > label:has(:is(input, textarea:where([data-single-line])):checked) {
+  border-color: rgb(var(--ebc-straw));
+  background: rgb(var(--ebc-straw) / 0.07);
+}
+.brew-acid-choice :is(input, textarea:where([data-single-line])) {
+  accent-color: rgb(var(--ebc-straw));
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.brew-ringing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 8px;
+  margin-top: 6px;
+  border: 1px solid rgb(var(--c-ffb49b) / 0.40);
+  border-radius: 8px;
+  background: rgb(var(--c-4b251b));
+}
+.brew-ringing .brew-ringing-stop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 8px 8px;
+  background: rgb(var(--c-ffb49b));
+  /* BR-47 : texte posé sur l'aplat d'action (DESIGN.md) : blanc sur #C8382F au clair (5,2:1), #12100E sur #FFB49B en cave (11:1). */
+  color: rgb(var(--sur-paille));
+  border-radius: 7px;
+  font-weight: 600;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.brew-ringing-reason {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  min-height: 32px;
+  text-align: left;
+  color: rgb(var(--ct-ffcfbf));
+  font-size: 13px;
+}
+.brew-ringing-reason svg {
+  flex-shrink: 0;
+}
+.brew-ringing-reason > span {
+  flex: 1;
+  min-width: 0;
+}
+.brew-ringing-reason strong {
+  display: block;
+  color: rgb(var(--ct-fff1eb));
+  font-size: 15px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.brew-sound-settings {
+  padding-top: 16px;
+  border-top: 1px solid rgb(var(--cave-700));
+}
+.brew-sound-settings > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.brew-page .brew-sound-settings > p {
+  margin-block: 10px;
+  font-size: 14px;
+  color: rgb(var(--ct-b5a69a));
+  line-height: 1.4;
+}
+@media (max-width: 900px) {
+  .brew-sound-settings {
+    order: 10;
+  }
+}
+@media (max-width: 360px) {
+  .brew-choice-options > button {
+    gap: 7px;
+    padding-inline: 10px;
+  }
+  .brew-choice-options .brew-tag {
+    padding: 3px 6px;
+    font-size: 12px;
+  }
+  .brew-choice-label strong {
+    font-size: 16px;
+  }
+}
+@media (max-height: 500px) and (min-width: 600px) and (max-width: 900px) {
+  .brew-ringing {
+    grid-column: 1/-1;
+    margin: 0 8px 4px;
+    padding: 4px 8px;
+  }
+  .brew-step-meta {
+    margin-bottom: 4px;
+  }
+  .brew-choice-dialog[open] {
+    max-height: calc(100dvh - 12px);
+  }
+}
+.brew-page :is(button,:is(input, textarea:where([data-single-line])), select, textarea) {
+  touch-action: manipulation;
+}
+.brew-page :where(button) {
+  min-height: 32px;
+  transition:
+    background-color 140ms,
+    border-color 140ms;
+}
+.brew-page button.min-h-10,
+.brew-page summary {
+  min-height: 32px;
+}
+.brew-page button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+.brew-page :is(h2, h3, p) {
+  margin: 0;
+}
+.brew-page h2 {
+  color: rgb(var(--cave-texte-50));
+  font-size: 23px;
+  line-height: 1.25;
+  font-weight: 650;
+}
+.brew-page h3 {
+  color: rgb(var(--cave-texte-50));
+  font-size: 17px;
+  line-height: 1.35;
+  font-weight: 600;
+}
+.brew-muted {
+  color: var(--brew-muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.brew-digits {
+  font-family: 'Source Sans 3', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+.brew-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  flex-shrink: 0;
+  color: var(--brew-muted);
+}
+.brew-icon-button[aria-pressed='true'] {
+  background: rgb(var(--ebc-straw) / 0.07);
+  border-color: rgb(var(--ebc-straw) / 0.26);
+  color: var(--brew-gold);
+}
+.brew-layout {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(300px, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+.brew-main-column,
+.brew-side-column {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.brew-side-column {
+  gap: 8px;
+}
+.brew-complete-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 32px;
+  font-size: 14px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.brew-complete-toggle :is(input, textarea:where([data-single-line])),
+.brew-preparations :is(input, textarea:where([data-single-line])) {
+  accent-color: var(--brew-gold);
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.brew-text-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 32px;
+  color: rgb(var(--cave-texte-200));
+  font-size: 14px;
+  border-radius: 8px;
+  padding: 0 6px;
+}
+.brew-due-alert {
+  display: flex;
+  gap: 8px;
+  background: rgb(var(--ebc-straw) / 0.07);
+  border-left: 1px solid var(--brew-gold);
+  border-radius: 10px;
+  padding: 8px;
+  color: var(--brew-gold);
+}
+.brew-due-alert svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.brew-due-alert p + p {
+  margin-top: 12px;
+}
+.brew-due-alert span {
+  display: block;
+  color: rgb(var(--cave-texte-200));
+  margin-top: 4px;
+}
+.brew-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.brew-section-heading h2 {
+  font-size: 20px;
+}
+.brew-section-heading h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.brew-section-heading h3 svg {
+  color: var(--brew-muted);
+}
+.brew-count {
+  border: 1px solid var(--brew-line);
+  border-radius: 6px;
+  padding: 3px 7px;
+  color: var(--brew-muted);
+  font-size: 13px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.brew-ingredients > aside {
+  margin: 12px 0;
+}
+.brew-measure-panel {
+  padding: 12px;
+  border: 1px solid var(--brew-line);
+  border-radius: 14px;
+  background: var(--brew-surface);
+}
+.brew-measure-panel [aria-label='Type de mesure'] {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+  padding: 8px 0;
+}
+.brew-measure-panel [aria-label='Type de mesure'] button {
+  min-height: 32px;
+  font-size: 14px;
+  border: 0;
+  border-radius: 7px;
+  background: rgb(var(--cave-800));
+}
+.brew-measure-panel [aria-label='Type de mesure'] button[aria-pressed='true'] {
+  color: var(--brew-gold);
+  background: rgb(var(--ebc-straw) / 0.09);
+}
+.brew-page [aria-label='Mesures de cette étape'] form > label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+.brew-page [aria-label='Mesures de cette étape'] form > label:has(input[type='checkbox']) {
+  display: flex;
+  min-height: 32px;
+  margin-bottom: 0;
+}
+.brew-page [aria-label='Mesures de cette étape'] :is(input, textarea:where([data-single-line])):not([type='checkbox']) {
+  min-height: 32px;
+}
+.brew-page [aria-label='Mesures de cette étape'] button[type='submit'] {
+  min-height: 32px;
+}
+.brew-page [aria-label='Mesures de cette étape'] .text-2xs {
+  font-size: 14px;
+  line-height: 1.4;
+}
+.brew-preparations {
+  padding: 0 2px;
+}
+.brew-preparations > .brew-section-heading {
+  margin-bottom: 10px;
+}
+.brew-preparations > label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  min-height: 32px;
+  font-size: 15px;
+  line-height: 1.4;
+  cursor: pointer;
+  border-bottom: 1px solid rgb(var(--cave-700) / 0.44);
+}
+.brew-preparations :is(input, textarea:where([data-single-line])) {
+  margin-top: 2px;
+}
+.brew-preparations > label.is-complete {
+  color: var(--brew-green);
+}
+.brew-notes {
+  padding-top: 18px;
+  border-top: 1px solid var(--brew-line);
+}
+.brew-notes label {
+  display: block;
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+.brew-notes textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 88px;
+  font-size: 16px;
+  color: rgb(var(--cave-texte-50));
+  background: rgb(var(--cave-900));
+  border: 1px solid var(--brew-line);
+  border-radius: 9px;
+  padding: 8px;
+}
+.brew-notes textarea::placeholder {
+  color: rgb(var(--cave-texte-400));
+}
+.brew-note-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 8px 0;
+}
+.brew-note-actions > button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+}
+.brew-note-actions > button:first-child {
+  min-width: 110px;
+}
+.brew-advice {
+  border-left: 2px solid rgb(var(--c-92b9cf));
+  padding-left: 12px;
+  font-size: 15px;
+}
+.brew-advice p + p {
+  margin-top: 8px;
+}
+.brew-disclosure {
+  border-block: 1px solid var(--brew-line);
+  padding: 0 2px;
+  font-size: 15px;
+}
+.brew-disclosure summary {
+  min-height: 32px;
+  padding: 8px 0;
+  color: rgb(var(--cave-texte-200));
+  cursor: pointer;
+}
+.brew-disclosure[open] {
+  padding-bottom: 16px;
+}
+.brew-program li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgb(var(--cave-700) / 0.50);
+}
+.brew-program strong {
+  white-space: nowrap;
+  font-weight: 500;
+  color: rgb(var(--cave-texte-50));
+}
+.brew-recipe-notes {
+  white-space: pre-wrap;
+  margin-top: 16px !important;
+  color: var(--brew-muted);
+}
+.brew-recipe-summary > .brew-section-heading {
+  margin-bottom: 22px;
+}
+.brew-recipe-summary > .brew-section-heading h2 {
+  margin-top: 5px;
+  font-size: 26px;
+}
+.brew-recipe-targets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px 0;
+}
+.brew-recipe-targets > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.brew-recipe-targets span {
+  color: var(--brew-muted);
+  font-size: 14px;
+}
+.brew-recipe-targets strong {
+  color: rgb(var(--cave-texte-50));
+  font:
+    500 26px 'Source Sans 3',
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.brew-recipe-targets small {
+  font:
+    400 15px 'Source Sans 3',
+    sans-serif;
+  color: var(--brew-muted);
+}
+.brew-finish-summary {
+  padding: 12px;
+  border: 1px solid var(--brew-line);
+  border-radius: 12px;
+}
+.brew-efficiency {
+  padding: 8px 8px;
+  border-left: 2px solid rgb(var(--c-92b9cf));
+  background: rgb(var(--water) / 0.04);
+  font-size: 14px;
+}
+.brew-efficiency h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.brew-efficiency p + p {
+  margin-top: 6px;
+}
+.brew-efficiency-value {
+  color: rgb(var(--cave-texte-50));
+  font:
+    500 32px 'Source Sans 3',
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.brew-feedback {
+  color: var(--brew-gold);
+  font-size: 14px;
+  margin-top: 10px !important;
+}
+.brew-journal > .brew-section-heading h2 {
+  font-size: 16px;
+  margin-top: 0;
+}
+.brew-export {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--brew-line);
+  border-radius: 9px;
+  font-size: 14px;
+}
+.brew-journal-intro {
+  color: var(--brew-muted);
+  font-size: 13px;
+  line-height: 1.35;
+  margin-top: 8px !important;
+}
+.brew-journal-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 8px 0;
+}
+.brew-journal-filters button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1px solid var(--brew-line);
+  font-size: 13px;
+  color: var(--brew-muted);
+}
+.brew-journal-filters button > span {
+  font-size: 12px;
+  opacity: 0.8;
+}
+.brew-journal-filters button[aria-pressed='true'] {
+  color: var(--brew-gold);
+  border-color: rgb(var(--ebc-straw) / 0.44);
+  background: rgb(var(--ebc-straw) / 0.07);
+}
+.brew-journal-undo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 10px 8px;
+  background: rgb(var(--ebc-straw) / 0.07);
+  border-radius: 8px;
+  font-size: 14px;
+}
+.brew-journal-undo button {
+  min-height: 32px;
+  color: var(--brew-gold);
+  text-decoration: underline;
+}
+.brew-journal-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 8px;
+  border: 1px dashed var(--brew-line);
+  border-radius: 12px;
+}
+.brew-journal-empty > svg {
+  color: var(--brew-gold);
+}
+.brew-journal-empty p {
+  color: var(--brew-muted);
+  font-size: 13px;
+  line-height: 1.35;
+  max-width: 52ch;
+}
+.brew-journal-date {
+  color: var(--brew-muted);
+  font-size: 12px;
+  margin: 8px 0 4px !important;
+}
+.brew-journal-event {
+  display: flex;
+  gap: 8px;
+  padding-block: 4px;
+}
+.brew-journal-time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  flex: 0 0 34px;
+  padding-top: 4px;
+}
+.brew-journal-time::after {
+  content: '';
+  position: absolute;
+  top: 54px;
+  bottom: -8px;
+  width: 1px;
+  background: var(--brew-line);
+}
+.brew-journal-event:last-child .brew-journal-time::after {
+  display: none;
+}
+.brew-journal-time time {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--brew-muted);
+}
+.brew-journal-time > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--brew-line);
+  color: rgb(var(--cave-texte-200));
+}
+.is-additions .brew-journal-time > span,
+.is-steps .brew-journal-time > span {
+  color: var(--brew-green);
+  border-color: rgb(var(--hop) / 0.38);
+}
+.is-measurements .brew-journal-time > span {
+  color: rgb(var(--ct-a7c5d7));
+  border-color: rgb(var(--water) / 0.38);
+}
+.brew-journal-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 8px;
+  min-width: 0;
+  flex: 1;
+  padding: 6px 8px;
+  background: var(--brew-surface);
+  border: 1px solid rgb(var(--cave-700) / 0.56);
+  border-radius: 10px;
+}
+.brew-journal-event-heading {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 24px;
+}
+.brew-journal-event-heading > span {
+  font-size: 14px;
+  color: var(--brew-muted);
+}
+.brew-journal-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.brew-journal-actions button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  color: var(--brew-muted);
+  border-radius: 8px;
+}
+.brew-journal-event-label {
+  font-size: 14px;
+  color: rgb(var(--cave-texte-50));
+  line-height: 1.4;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.brew-journal-value {
+  margin-top: 0 !important;
+  text-align: right;
+  font:
+    500 16px 'Source Sans 3',
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--cave-texte-50));
+  overflow-wrap: anywhere;
+}
+.brew-journal-value > span {
+  font:
+    400 12px 'Source Sans 3',
+    sans-serif;
+  color: var(--brew-muted);
+}
+.brew-journal-text {
+  grid-column: 1 / -1;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.4;
+  margin-top: 0 !important;
+}
+.brew-journal-detail {
+  grid-column: 1 / -1;
+  color: var(--brew-muted);
+  font-size: 12px;
+  margin-top: 0 !important;
+}
+.brew-journal-edit {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.brew-journal-edit > :is(input, textarea:where([data-single-line])),
+.brew-journal-edit > textarea {
+  width: 100%;
+}
+.brew-journal-edit button {
+  min-height: 32px;
+}
+.brew-journal-footnote {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px !important;
+  color: var(--brew-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.brew-journal-footnote svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+@media (max-width: 900px) {
+  .brew-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .brew-main-column,
+  .brew-side-column {
+    display: contents;
+  }
+  /* Les colonnes viennent de passer en `display: contents` : chaque bloc devient
+     un élément de la grille et `order` décide seul de ce que le brasseur voit en
+     premier. Un bloc sans valeur vaut 0 et passe devant les alertes — c'est ce qui
+     avait envoyé les doses en bas d'écran. Chaque bloc porte donc son rang. */
+  .brew-station,
+  .brew-recipe-summary {
+    order: 0;
+  }
+  .brew-due-alert {
+    order: 1;
+  }
+  .brew-reading-prompt {
+    order: 2;
+  }
+  .brew-ingredients {
+    order: 3;
+  }
+  .brew-readings-summary {
+    order: 4;
+  }
+  .brew-finish-summary {
+    order: 5;
+  }
+  .brew-preparations {
+    order: 6;
+  }
+  .brew-aides {
+    order: 7;
+  }
+  .brew-measure-capture {
+    order: 8;
+  }
+  .brew-note-capture {
+    order: 9;
+  }
+  .brew-side-column > details {
+    order: 10;
+  }
+  .brew-side-column {
+    gap: 8px;
+  }
+}
+@media (max-width: 540px) {
+  .brew-measure-panel {
+    padding: 8px;
+  }
+  .brew-main-column {
+    gap: 8px;
+  }
+  .brew-journal-event {
+    gap: 10px;
+  }
+  .brew-journal-body {
+    padding-inline: 8px;
+  }
+  .brew-export {
+    padding-inline: 10px;
+  }
+  .brew-journal-filters {
+    gap: 4px;
+  }
+  .brew-journal-filters button {
+    padding-inline: 9px;
+  }
+  .brew-journal-filters button:not([aria-pressed='true']) > span {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brew-page button {
+    transition: none;
+  }
+}
+
+/* Mobile layout: products and measurements before secondary controls. */
+.brew-page > header h1 {
+  font-size: 16px;
+}
+.brew-page > header button {
+  min-width: 28px;
+}
+.brew-page > header > div:first-child {
+  padding: 5px 8px;
+}
+.brew-page > header > div:last-child {
+  padding: 0 8px 6px;
+}
+.brew-page > main > div {
+  padding: 8px 8px 12px;
+}
+.brew-page > footer > div {
+  padding: 8px 8px;
+}
+.brew-view-tabs {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.brew-view-tabs button {
+  display: flex;
+  flex: 1;
+  gap: 7px;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 15px;
+  color: var(--brew-muted);
+}
+.brew-view-tabs button[aria-pressed='true'] {
+  color: rgb(var(--cave-texte-50));
+  background: rgb(var(--cave-800));
+}
+.brew-progress-label {
+  display: none;
+}
+.brew-navigation {
+  margin-bottom: 14px;
+}
+.brew-phases {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--brew-line);
+}
+.brew-phase {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 32px;
+  font-size: 14px;
+  color: var(--brew-muted);
+}
+.brew-phase::after {
+  content: '';
+  position: absolute;
+  height: 2px;
+  bottom: -1px;
+  inset-inline: 4px;
+  border-radius: 2px;
+}
+.brew-phase[aria-pressed='true'] {
+  font-weight: 600;
+  color: var(--brew-gold);
+}
+.brew-phase[aria-pressed='true']::after {
+  background: var(--brew-gold);
+}
+.brew-phase.is-complete:not([aria-pressed='true']) {
+  color: var(--brew-green);
+}
+.brew-phase-number {
+  display: none;
+}
+.brew-station {
+  border: 1px solid var(--brew-line);
+  border-radius: 12px;
+  padding: 8px;
+  background: var(--brew-surface);
+}
+.brew-station.has-timer {
+  border-top: 2px solid var(--brew-gold);
+}
+.brew-station.is-complete {
+  border-top-color: var(--brew-green);
+}
+.brew-station:not(.has-timer) {
+  border: 0;
+  border-bottom: 1px solid var(--brew-line);
+  border-radius: 0;
+  padding: 0 0 8px;
+  background: none;
+}
+.brew-station-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.brew-station-heading > div {
+  min-width: 0;
+  flex: 1;
+}
+.brew-station-heading h2 {
+  color: rgb(var(--cave-texte-50));
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+.brew-station-heading .brew-muted {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+.brew-step-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  min-height: 32px;
+}
+.brew-step-select > h2 {
+  width: 100%;
+}
+.brew-complete-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  min-height: 32px;
+  cursor: pointer;
+}
+.brew-complete-toggle :is(input, textarea:where([data-single-line])) {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--brew-gold);
+}
+.brew-instruction {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--brew-muted);
+  margin-top: 6px !important;
+}
+.brew-instruments {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  margin-top: 18px;
+}
+.brew-instruments > div > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--brew-muted);
+  font-size: 14px;
+}
+.brew-temperature {
+  border-right: 1px solid var(--brew-line);
+  padding-right: 18px;
+}
+.brew-temperature strong {
+  display: block;
+  font-size: 38px;
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--brew-gold);
+}
+.brew-temperature small {
+  margin-left: 3px;
+  font:
+    400 16px 'Source Sans 3',
+    sans-serif;
+  color: var(--brew-muted);
+}
+.brew-clock {
+  flex: 1;
+  min-width: 0;
+}
+.brew-clock > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.brew-clock output {
+  font-size: 38px;
+  line-height: 1.4;
+  font-weight: 500;
+  color: rgb(var(--cave-texte-50));
+}
+.brew-clock .brew-icon-button {
+  color: rgb(var(--cave-texte-50));
+  background: rgb(var(--cave-800));
+}
+.brew-clock .is-due {
+  color: var(--brew-gold);
+}
+.brew-clock-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px 6px;
+  margin-top: 12px;
+  padding-top: 4px;
+  border-top: 1px solid var(--brew-line);
+  font-size: 13px;
+  color: var(--brew-muted);
+}
+.brew-duration {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+}
+.brew-duration > button {
+  min-height: 32px;
+  width: 28px;
+  padding: 0 4px;
+}
+.brew-duration label {
+  min-width: 60px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.brew-duration-input {
+  width: 100%;
+  min-width: 0;
+  height: 32px;
+  border: 1px solid var(--brew-line);
+  border-radius: 8px;
+  background: rgb(var(--cave-950));
+  text-align: center;
+  font-size: 16px;
+}
+.brew-duration p {
+  width: 100%;
+  font-size: 14px;
+  color: var(--brew-muted);
+}
+/* Le seul endroit de l'écran qui répond à la fois à « dans combien de temps »
+   et « avec quoi » — le corps de l'alarme porte les doses. Il vit dans la barre
+   fixe, donc il reste lisible sans défiler : le compte à rebours prend la taille
+   d'une lecture, les doses celle d'une donnée, l'heure celle d'une métadonnée. */
+.brew-next-alarm {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  padding: 6px 10px;
+  background: rgb(var(--cave-800));
+  border-radius: 8px;
+  margin-top: 6px;
+  font-size: 12px;
+}
+.brew-next-alarm > span:first-of-type {
+  flex: 1;
+  min-width: 0;
+  color: var(--brew-muted);
+}
+.brew-next-alarm strong {
+  display: block;
+  color: rgb(var(--cave-texte-50));
+  font-size: 15px;
+  line-height: 1.25;
+  font-weight: 600;
+}
+.brew-next-alarm > .brew-digits {
+  color: var(--brew-gold);
+  flex-shrink: 0;
+  font-size: 20px;
+  line-height: 1.1;
+}
+.brew-next-alarm svg {
+  flex-shrink: 0;
+}
+.brew-next-alarm.is-due {
+  background: rgb(var(--ebc-straw) / 0.09);
+}
+.brew-timer-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.brew-timer-chip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-height: 32px;
+  border: 1px solid var(--brew-line);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+.brew-timer-chip strong {
+  color: var(--brew-gold);
+}
+.brew-bitterness {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--brew-gold);
+}
+.brew-bitterness summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  list-style: none;
+}
+.brew-bitterness summary::-webkit-details-marker {
+  display: none;
+}
+.brew-bitterness small,
+.brew-bitterness p {
+  color: var(--brew-muted);
+  font-size: 14px;
+}
+.brew-bitterness p {
+  line-height: 1.5;
+  padding-bottom: 4px;
+}
+.brew-temperature:only-child {
+  border-right: 0;
+  padding-right: 0;
+}
+.brew-ingredient-help {
+  font-size: 14px;
+  color: var(--brew-muted);
+  margin-top: 4px !important;
+}
+.brew-ingredients > aside {
+  margin: 12px 0;
+}
+.brew-ingredient-group {
+  border: 1px solid var(--brew-line);
+  border-radius: 12px;
+  background: var(--brew-surface);
+  overflow: hidden;
+  margin-top: 12px;
+}
+.brew-ingredient-group.is-due {
+  border-color: rgb(var(--ebc-straw) / 0.53);
+}
+.brew-ingredient-group > aside {
+  margin: 12px;
+}
+.brew-ingredient-group-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--brew-line);
+  background: rgb(var(--cave-850));
+}
+.brew-ingredient-group-heading > svg {
+  flex-shrink: 0;
+  color: var(--brew-gold);
+}
+.brew-ingredient-group-heading:has(.lucide-droplets) > svg {
+  color: rgb(var(--ct-a7c5d7));
+}
+.brew-ingredient-group-heading > div {
+  flex: 1;
+  min-width: 0;
+}
+.brew-ingredient-group-heading h3 {
+  font-size: 16px;
+}
+.brew-ingredient-group-heading > div > span {
+  font-size: 14px;
+  color: var(--brew-muted);
+}
+.brew-group-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  font-size: 13px;
+}
+.brew-group-status.is-added {
+  color: var(--brew-green);
+}
+.brew-group-status.is-due {
+  color: var(--brew-gold);
+}
+.brew-ingredient {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0 10px;
+  border-bottom: 1px solid rgb(var(--cave-700) / 0.56);
+  padding: 8px;
+}
+.brew-ingredient:last-child {
+  border-bottom: 0;
+}
+.brew-ingredient-heading {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 8px;
+}
+.brew-ingredient-name {
+  min-width: 0;
+}
+.brew-ingredient-name > strong {
+  display: block;
+  font-size: 16px;
+  line-height: 1.35;
+  color: rgb(var(--cave-texte-50));
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.brew-ingredient-name > span {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  font-size: 13px;
+  color: var(--brew-muted);
+  margin-top: 3px;
+}
+.brew-ingredient-name em {
+  font-style: normal;
+  color: var(--brew-gold);
+}
+.brew-ingredient-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  grid-column: 2;
+  grid-row: 1;
+}
+.brew-amount {
+  display: flex;
+  align-items: baseline;
+  align-content: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  column-gap: 4px;
+  min-width: 74px;
+  max-width: 106px;
+  min-height: 32px;
+  border: 1px solid rgb(var(--cave-600));
+  border-radius: 8px;
+  padding: 8px 9px;
+  background: rgb(var(--cave-950));
+}
+.brew-amount strong {
+  color: rgb(var(--cave-texte-50));
+  font:
+    500 20px 'Source Sans 3',
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums;
+}
+/* RJ-14 : « À préciser » n'est pas un nombre : texte courant, à la ligne dans son cadre, jamais 20 px de chiffre à 106 px de large. */
+.brew-amount strong[data-sans-valeur] {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.brew-amount > span {
+  font-size: 14px;
+  color: var(--brew-muted);
+}
+.brew-amount[aria-expanded='true'] {
+  border-color: var(--brew-gold);
+}
+/* Exception assumée à l'échelle compacte (DESIGN.md, « Cibles et accessibilité
+   web ») : ce carré se coche mains mouillées, souvent gantées, pendant que
+   l'ébullition tourne, et une erreur coûte un houblonnage. 36 px, et lui seul. */
+.brew-add-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 36px;
+  min-height: 36px;
+  border: 1px solid var(--brew-line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.brew-add-check :is(input, textarea:where([data-single-line])) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.brew-add-check:focus-within {
+  outline: 2px solid var(--brew-gold);
+  outline-offset: 3px;
+}
+.brew-check-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 21px;
+  height: 21px;
+  border: 1px solid rgb(var(--cave-400));
+  border-radius: 4px;
+}
+.is-added .brew-add-check {
+  background: rgb(var(--hop) / 0.09);
+  border-color: rgb(var(--hop) / 0.50);
+}
+.is-added .brew-check-box {
+  background: var(--brew-green);
+  color: rgb(var(--cave-texte-950));
+  border-color: var(--brew-green);
+}
+.brew-water-split {
+  grid-column: 1/-1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-top: 8px;
+  font-size: 14px;
+  color: rgb(var(--ct-a7c5d7));
+}
+.brew-water-split > svg {
+  flex-shrink: 0;
+}
+.brew-added-time {
+  grid-column: 1/-1;
+  color: var(--brew-green);
+  font-size: 13px;
+  margin-top: 6px !important;
+}
+.brew-stock-hint {
+  grid-column: 1/-1;
+  color: var(--brew-gold);
+  font-size: 14px;
+  margin-top: 6px !important;
+}
+.brew-replace-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  color: rgb(var(--ct-a7c5d7));
+  font-size: 13px;
+}
+.brew-replace-button > span {
+  display: inline;
+}
+.brew-alternatives {
+  grid-column: 1/-1;
+}
+.brew-alternatives:not(:empty) {
+  margin-top: 10px;
+}
+.brew-dose-edit {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  grid-column: 1/-1;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--brew-line);
+}
+.brew-dose {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgb(var(--cave-600));
+  border-radius: 8px;
+  min-height: 32px;
+  background: rgb(var(--cave-950));
+}
+.brew-dose:focus-within {
+  border-color: var(--brew-gold);
+}
+.brew-dose > button {
+  min-width: 28px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 21px;
+}
+.brew-dose-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-inline: 8px;
+}
+.brew-dose-value :is(input, textarea:where([data-single-line])) {
+  width: 80px;
+  height: 32px;
+  border: 0;
+  outline: none;
+  padding: 0;
+  background: none;
+  text-align: right;
+  font:
+    500 20px 'Source Sans 3',
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--cave-texte-50));
+}
+/* VI-8 : sur un écran tactile le champ est un <textarea> d'une ligne, dont le texte se pose en haut de sa boîte ; la hauteur de ligne
+   égale à celle du champ le centre sur l'axe du « g » et des boutons « − / + ». */
+.brew-dose-value :is(input, textarea:where([data-single-line])) { line-height: 32px; }
+.brew-dose-value > span {
+  color: var(--brew-muted);
+  font-size: 16px;
+}
+/* VI-8 : « Consigner à cette heure » : une action (bord franc, texte plein), pas un gris sur gris ; éteint, il reste lisible. */
+button.brew-consign { border-color: rgb(var(--cave-400)); color: rgb(var(--cave-texte-50)); font-weight: 600; }
+button.brew-consign:disabled { opacity: 0.6; }
+.brew-consign-hint { flex: 1 1 12rem; margin: 0; color: rgb(var(--cave-texte-400)); font-size: 0.75rem; line-height: 1rem; }
+.brew-extra-addition {
+  display: block;
+  color: var(--brew-muted);
+  font-size: 14px;
+  margin-top: 18px;
+}
+.brew-footer {
+  display: block;
+}
+.brew-footer-context {
+  display: none;
+}
+.brew-footer-actions {
+  display: grid;
+  grid-template-columns: 56px 50px minmax(0, 1fr);
+  gap: 6px;
+  align-items: stretch;
+}
+.brew-quick-entry {
+  min-height: 54px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: rgb(var(--cave-texte-200));
+  border-radius: 8px;
+}
+.brew-quick-entry > span {
+  font-size: 13px;
+}
+.brew-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 9px;
+  min-width: 0;
+  padding: 8px 10px;
+  min-height: 54px;
+  background: var(--brew-gold);
+  color: rgb(var(--cave-texte-950));
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.25;
+}
+/* RJ-1 : en clair, l'aplat d'action (`--ebc-straw`) est noir et `--cave-texte-950` est la même encre noire : le bouton se lisait vide au repos. Un aplat d'action
+   noir porte un texte blanc (règle de themes.css pour `.bg-ebc-straw`, que ce bouton à classe propre ne reçoit pas). Au survol, l'aplat devient doré : texte foncé. */
+:root:not([data-theme='cave']) .brew-primary {
+  color: rgb(255 255 255);
+}
+@media (hover: hover) {
+  :root:not([data-theme='cave']) .brew-primary:hover {
+    color: rgb(var(--cave-texte-950));
+  }
+}
+.brew-primary > svg {
+  display: none;
+}
+.brew-capture.is-inline {
+  display: block;
+  position: static;
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  color: inherit;
+}
+.is-consulting .brew-measure-capture.is-inline {
+  display: none;
+}
+.brew-capture.is-mobile:not([open]) {
+  display: none;
+}
+.brew-capture.is-mobile[open] {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: auto;
+  bottom: 0;
+  inset-inline: 0;
+  width: 100%;
+  max-width: 680px;
+  max-height: calc(100dvh - 18px);
+  margin: 0 auto;
+  padding: 0;
+  border: 1px solid var(--brew-line);
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  background: rgb(var(--cave-900));
+  color: rgb(var(--cave-texte-200));
+  overflow: hidden;
+}
+.brew-capture::backdrop {
+  background: #0009;
+}
+.brew-confirm {
+  max-width: 680px;
+  margin-inline: auto;
+  border: 1px solid rgb(var(--cave-700));
+  border-bottom: 0;
+}
+.brew-confirm > header {
+  padding: 8px 8px;
+}
+.brew-confirm > header h2 {
+  font-size: 20px;
+  white-space: normal;
+  line-height: 1.3;
+}
+.brew-confirm > header button {
+  min-width: 28px;
+  min-height: 32px;
+}
+.brew-confirm > .overflow-y-auto {
+  padding: 8px;
+}
+.brew-confirm > div:last-child {
+  padding: 8px 8px max(8px, env(safe-area-inset-bottom));
+}
+.brew-confirm button {
+  min-height: 32px;
+  touch-action: manipulation;
+}
+/* Lot F (15) : « Annuler » ne colle plus à ses bords : une marge intérieure, et il ne se laisse pas écraser par le bouton de confirmation. */
+.brew-confirm > div:last-child .gap-3 > button:not(.bg-alert) {
+  padding-inline: 16px;
+  flex: 1 0 auto;
+}
+.brew-confirm .bg-alert {
+  background: rgb(var(--ebc-straw));
+  color: rgb(var(--sur-paille));
+  flex: 2 1 auto;
+  white-space: nowrap;
+}
+/* 3C (p3) : les relevés de la fenêtre de clôture. Les gestes sont ceux de la feuille Mesurer (classes bz-*) ; ici seulement la mise en page de la fenêtre. */
+.brew-confirm .bz-cl { color: var(--bz-t1); }
+.brew-confirm .bz-cl-bloc + .bz-cl-bloc { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--bz-border2); }
+.brew-confirm .bz-cl-titre { display: flex; flex-direction: column; min-width: 0; margin-right: auto; }
+.brew-confirm .bz-cl-titre strong { color: var(--bz-t0); font-size: 18px; font-weight: 600; line-height: 1.15; }
+.brew-confirm .bz-cl-titre span { color: var(--bz-t2); font-size: 14px; }
+.brew-confirm .bz-cl .bz-lecture { margin-top: 0; }
+.brew-confirm .bz-cl .bz-lecture .bz-saisie { flex: 0 1 120px; }
+.brew-confirm .bz-cl .bz-pas { margin-left: 0; }
+.brew-confirm .bz-cl .bz-pas button { min-height: 44px; }
+.brew-confirm .bz-cl-ligne { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 24px; margin-top: 8px; }
+.brew-confirm .bz-cl-ligne p { margin: 0; }
+.brew-confirm .bz-cl-ligne .bz-verdict { margin-top: 0; }
+.brew-confirm .bz-cl-cible { margin-left: auto; margin-top: 0; }
+.brew-confirm .bz-cl .bz-muet { margin: 6px 0 0; color: var(--bz-t2); font-size: 14px; }
+.brew-confirm .bz-cl .bz-pourquoi { margin-top: 12px; min-height: 36px; }
+.brew-confirm .bz-cl .bz-curseur { margin-top: 6px; }
+.brew-capture-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px;
+  border-bottom: 1px solid var(--brew-line);
+}
+.brew-capture-header > div {
+  flex: 1;
+  min-width: 0;
+}
+.brew-capture-header h2 {
+  font-size: 20px;
+}
+.brew-capture-header p {
+  font-size: 14px;
+  color: var(--brew-muted);
+  margin-top: 3px;
+}
+.brew-capture-header button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 32px;
+  border-radius: 8px;
+}
+.brew-capture.is-mobile .brew-capture-content {
+  overflow: auto;
+  min-height: 0;
+  padding: 8px;
+}
+.brew-capture.is-mobile .brew-measure-panel {
+  border: 0;
+  padding: 0;
+  background: none;
+}
+.brew-capture.is-mobile .brew-notes {
+  border: 0;
+  padding: 0;
+}
+.brew-capture.is-mobile .brew-measure-panel > section > div:first-child > h3,
+.brew-capture.is-mobile .brew-notes > .brew-section-heading {
+  display: none;
+}
+.brew-capture.is-mobile > footer {
+  flex-shrink: 0;
+  border-top: 1px solid var(--brew-line);
+  padding: 8px 8px max(8px, env(safe-area-inset-bottom));
+}
+.brew-capture-return {
+  display: block;
+  width: 100%;
+  min-height: 32px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid rgb(var(--cave-600));
+}
+.brew-readings-summary {
+  border: 1px solid var(--brew-line);
+  border-radius: 10px;
+  padding: 10px 8px;
+}
+.brew-readings-summary > div:last-child {
+  display: grid;
+  gap: 10px;
+}
+.brew-summary-reading > div {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.brew-summary-reading > div > span {
+  font-size: 14px;
+  color: var(--brew-muted);
+}
+.brew-summary-reading strong {
+  font:
+    500 21px 'Source Sans 3',
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--cave-texte-50));
+}
+.brew-summary-reading small {
+  font:
+    400 14px 'Source Sans 3',
+    sans-serif;
+  color: var(--brew-muted);
+}
+.brew-summary-reading time {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--brew-muted);
+}
+.brew-summary-reading > p {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 14px;
+  margin-top: 5px;
+  color: var(--brew-muted);
+}
+.brew-summary-reading > p > svg {
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+.brew-summary-reading.is-ok > p {
+  color: var(--brew-green);
+}
+.brew-summary-reading.is-watch > p {
+  color: var(--brew-gold);
+}
+.brew-toast {
+  padding: 8px 8px;
+  margin: 8px 0;
+  border-left: 2px solid var(--brew-green);
+  color: var(--brew-green);
+  font-size: 14px;
+}
+@media (max-width: 900px) {
+  .brew-timer-tray:has(.brew-timer-chip + .brew-timer-chip) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .brew-timer-tray:has(.brew-timer-chip + .brew-timer-chip) .brew-timer-chip {
+    gap: 2px 6px;
+    text-align: left;
+  }
+  .brew-timer-tray:has(.brew-timer-chip + .brew-timer-chip) .brew-timer-chip strong {
+    flex-basis: 100%;
+  }
+  .brew-layout {
+    gap: 8px;
+  }
+  .brew-capture.is-inline {
+    display: none;
+  }
+}
+@media (min-width: 901px) {
+  .brew-page > header h1 {
+    font-size: 18px;
+  }
+  .brew-page > header > div:first-child {
+    padding: 10px 12px;
+  }
+  .brew-page > header > div:last-child {
+    padding: 0 12px 10px;
+  }
+  .brew-page > main > div {
+    padding: 8px 12px 32px;
+  }
+  .brew-page > footer > div {
+    padding: 10px 12px;
+  }
+  .brew-view-tabs button {
+    flex: none;
+    padding-inline: 8px;
+  }
+  .brew-progress-label {
+    display: block;
+    margin-left: auto;
+    font-size: 14px;
+    color: var(--brew-muted);
+  }
+  .brew-phase {
+    min-height: 32px;
+    font-size: 16px;
+  }
+  .brew-navigation {
+    margin-bottom: 24px;
+  }
+  .brew-station {
+    padding: 12px;
+  }
+  .brew-station-heading h2 {
+    font-size: 28px;
+  }
+  .brew-instruction {
+    font-size: 16px;
+  }
+  .brew-clock output,
+  .brew-temperature strong {
+    font-size: 48px;
+  }
+  .brew-clock-meta {
+    font-size: 14px;
+  }
+  .brew-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .brew-footer-context {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .brew-footer-context > span {
+    font-size: 13px;
+    color: var(--brew-muted);
+  }
+  .brew-footer-context > strong {
+    font-size: 15px;
+    font-weight: 500;
+    color: rgb(var(--cave-texte-50));
+  }
+  .brew-footer-actions {
+    min-width: 440px;
+  }
+  .brew-primary {
+    font-size: 16px;
+    padding-inline: 12px;
+  }
+  .brew-primary > svg {
+    display: inline;
+  }
+  .brew-readings-summary {
+    display: none;
+  }
+  .brew-ingredient {
+    padding: 8px 8px;
+  }
+  .brew-ingredient-name > strong {
+    font-size: 17px;
+  }
+  .brew-ingredient-group-heading {
+    padding: 8px 8px;
+  }
+}
+@media (max-width: 360px) {
+  .brew-page > main > div {
+    padding-inline: 8px;
+  }
+  .brew-station {
+    padding: 8px;
+  }
+  .brew-clock output,
+  .brew-temperature strong {
+    font-size: 31px;
+  }
+  .brew-temperature {
+    padding-right: 10px;
+  }
+  .brew-instruments {
+    gap: 10px;
+  }
+  .brew-ingredient {
+    padding: 10px;
+    gap: 0 8px;
+  }
+  .brew-amount {
+    min-width: 66px;
+    max-width: 94px;
+    padding-inline: 6px;
+  }
+  .brew-amount strong {
+    font-size: 19px;
+  }
+  .brew-ingredient-name > strong {
+    font-size: 15px;
+  }
+}
+@media (max-height: 500px) and (max-width: 900px) {
+  .brew-page > header > div:first-child {
+    padding-block: 2px;
+  }
+  .brew-page > header > div:last-child {
+    padding-bottom: 2px;
+  }
+  .brew-next-alarm > span:first-of-type {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .brew-station-heading .brew-muted,
+  .brew-instruction {
+    display: none;
+  }
+  .brew-station {
+    padding: 10px 8px;
+  }
+  .brew-instruments {
+    margin-top: 4px;
+  }
+  .brew-clock output,
+  .brew-temperature strong {
+    font-size: 34px;
+  }
+  .brew-footer-actions {
+    grid-template-columns: 56px 50px minmax(0, 1fr);
+  }
+  .brew-quick-entry,
+  .brew-primary {
+    min-height: 32px;
+  }
+  .brew-quick-entry {
+    flex-direction: row;
+    gap: 4px;
+  }
+  .brew-quick-entry > span {
+    display: none;
+  }
+  .brew-capture-header {
+    padding-block: 4px;
+  }
+  .brew-capture-header p {
+    display: none;
+  }
+}
+@media (max-height: 500px) and (min-width: 600px) and (max-width: 900px) {
+  .brew-page > header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    align-items: center;
+  }
+  .brew-page > header > div:first-child {
+    width: 100%;
+    margin: 0;
+    padding: 2px 8px;
+  }
+  .brew-page > header > div:first-child p {
+    display: none;
+  }
+  .brew-page > header > div:last-child {
+    display: contents;
+  }
+  .brew-view-tabs {
+    padding: 2px 8px;
+  }
+  .brew-next-alarm {
+    grid-column: 1/-1;
+    width: calc(100% - 16px);
+    margin: 0 8px 4px;
+    padding-block: 4px;
+  }
+  .brew-page > main > div {
+    padding-top: 6px;
+  }
+  .brew-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 12px;
+  }
+  .brew-navigation {
+    grid-column: 1/-1;
+    margin: 0;
+    min-width: 0;
+  }
+  .brew-workspace:has(> .brew-timer-tray) > .brew-navigation {
+    grid-column: 1;
+  }
+  .brew-timer-tray {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    max-width: 320px;
+  }
+  .brew-layout,
+  .brew-toast {
+    grid-column: 1/-1;
+  }
+  .brew-station {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 1fr);
+    gap: 2px 20px;
+  }
+  .brew-station-heading {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .brew-instruments {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+  }
+  .brew-clock-meta,
+  .brew-duration,
+  .brew-bitterness {
+    grid-column: 1/-1;
+    margin-top: 0;
+  }
+}
+@media (hover: hover) {
+  .brew-amount:hover,
+  .brew-add-check:hover {
+    border-color: var(--brew-gold);
+  }
+  .brew-phase:hover,
+  .brew-quick-entry:hover,
+  .brew-view-tabs button:hover {
+    color: rgb(var(--cave-texte-50));
+    background: rgb(var(--cave-800));
+  }
+  .brew-primary:hover {
+    background: rgb(var(--c-f7ce6a));
+  }
+}
+
+/* Small workbench, opened only when the brewer needs a correction. */
+.brew-assist,
+.brew-options {
+  border: 1px solid var(--brew-border, rgb(var(--c-3a3028)));
+  border-radius: 14px;
+  margin-block: 12px;
+  background: rgb(var(--cave-900));
+  overflow: clip;
+}
+.brew-assist > summary,
+.brew-options > summary,
+.brew-sound-settings > summary {
+  min-height: 32px;
+  padding: 8px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  list-style: none;
+}
+.brew-assist summary::-webkit-details-marker,
+.brew-options summary::-webkit-details-marker {
+  display: none;
+}
+.brew-assist > summary > span,
+.brew-options > summary > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.brew-assist > summary > span:first-child {
+  color: rgb(var(--cave-texte-50));
+  font-weight: 600;
+}
+.brew-assist-summary {
+  flex-shrink: 0;
+}
+.brew-assist[open] > summary {
+  border-bottom: 1px solid rgb(var(--c-3a3028));
+}
+.brew-assist[open] > summary .brew-assist-summary > svg {
+  transform: rotate(180deg);
+}
+.brew-assist-body {
+  padding: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.brew-assist-body section + section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgb(var(--c-3a3028));
+}
+.brew-assist-body h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: rgb(var(--cave-texte-50));
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.brew-assist-body p {
+  margin-block: 9px;
+}
+.brew-assist-body button {
+  min-height: 32px;
+  white-space: normal;
+  margin-block: 4px;
+}
+.brew-assist-body button + button {
+  margin-left: 6px;
+}
+.brew-assist-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.brew-assist-field {
+  display: grid;
+  gap: 6px;
+  margin-block: 10px;
+  color: rgb(var(--ct-d7ccc1));
+  min-width: 0;
+}
+.brew-assist-result {
+  background: rgb(var(--c-232b28));
+  border-left: 1px solid rgb(var(--c-b4d8a1));
+  padding: 8px 8px;
+  border-radius: 10px;
+  margin-block: 12px;
+}
+.brew-assist-result > strong {
+  display: block;
+  color: rgb(var(--ct-d5edc9));
+  font-size: 17px;
+}
+.brew-assist-result small {
+  color: rgb(var(--ct-b6c6bc));
+}
+.brew-assist-result.is-attention {
+  border-color: rgb(var(--c-e8a986));
+  background: rgb(var(--c-e8a986) / 0.07);
+}
+.brew-assist-result.is-attention > strong {
+  color: rgb(var(--ct-f1b99b));
+}
+.brew-assist-result.is-info {
+  border-color: rgb(var(--c-a7cee4));
+  background: rgb(var(--c-a7cee4) / 0.05);
+}
+.brew-assist-result.is-info > strong {
+  color: rgb(var(--ct-b8dcef));
+}
+.brew-assist-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.brew-assist-pills button {
+  padding: 7px 8px;
+  border: 1px solid rgb(var(--c-4c4135));
+  border-radius: 999px;
+}
+.brew-assist-pills button[aria-pressed='true'] {
+  color: rgb(var(--ct-b8dcef));
+  background: rgb(var(--c-24333a));
+  border-color: rgb(var(--c-6c96a9));
+}
+.brew-assist-body textarea {
+  width: 100%;
+  border: 1px solid rgb(var(--c-514335));
+  background: rgb(var(--cave-950));
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 16px;
+  color: rgb(var(--cave-texte-50));
+}
+.brew-reading-prompt {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  gap: 10px;
+  border-radius: 12px;
+  padding: 8px;
+  margin-block: 10px;
+  background: rgb(var(--c-1c292e));
+  color: rgb(var(--ct-b8dcef));
+}
+.brew-reading-prompt > svg {
+  flex-shrink: 0;
+}
+.brew-reading-prompt > span {
+  flex: 1;
+  min-width: 0;
+}
+.brew-reading-prompt strong,
+.brew-reading-prompt small {
+  display: block;
+}
+.brew-reading-prompt small {
+  color: rgb(var(--ct-a9b6ba));
+  font-size: 13px;
+  line-height: 1.4;
+  margin-top: 3px;
+}
+.brew-options > details {
+  margin-inline: 12px;
+}
+.brew-options .brew-sound-settings {
+  border-top: 1px solid rgb(var(--c-3a3028));
+  padding-top: 0;
+}
+.brew-options .brew-sound-settings > summary {
+  padding-inline: 0;
+}
+.brew-recovery {
+  grid-column: 1/-1;
+  background: rgb(var(--c-35271d));
+  border-radius: 12px;
+  padding: 8px;
+  font-size: 14px;
+  margin-block: 12px;
+}
+.brew-recovery p {
+  margin-block: 8px;
+}
+.brew-recovery button,
+.brew-sync button {
+  white-space: normal;
+  min-height: 32px;
+  margin: 4px 6px 4px 0;
+}
+.brew-sync {
+  font-size: 13px;
+  margin-block: 10px;
+}
+.brew-sync p {
+  margin-top: 8px;
+}
+.brew-sync small {
+  display: block;
+}
+.brew-water-temperature {
+  color: rgb(var(--ct-b8dcef)) !important;
+  font-size: 13px;
+}
+.brew-clock output:has(+ button) {
+  min-width: 0;
+}
+@media (max-width: 359px) {
+  .brew-assist > summary {
+    padding: 10px;
+    gap: 6px;
+    font-size: 14px;
+  }
+  .brew-assist-summary .brew-tag {
+    font-size: 13px;
+    padding-inline: 5px;
+  }
+  .brew-assist-body {
+    padding: 8px;
+  }
+  .brew-assist-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Aides de la conduite
+
+   Les guides de procédé — levure, NOLO, houblons — viennent après les doses, dans
+   un groupe fermé. Fermé ne veut pas dire muet : le résumé dit de quoi la section
+   parle, et BrewAide l'ouvre d'elle-même dès qu'elle contient un avertissement.
+   --------------------------------------------------------------------------- */
+.brew-aides {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px solid var(--brew-line);
+  padding-top: 8px;
+}
+.brew-page .brew-aides-label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brew-muted);
+}
+.brew-aide {
+  min-width: 0;
+  border: 1px solid var(--brew-line);
+  border-radius: 10px;
+  background: var(--brew-surface);
+}
+.brew-aide > summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  color: rgb(var(--cave-texte-200));
+  cursor: pointer;
+  list-style: none;
+}
+.brew-aide > summary::-webkit-details-marker {
+  display: none;
+}
+.brew-aide > summary:focus-visible {
+  outline: 2px solid var(--brew-gold);
+  outline-offset: 2px;
+}
+.brew-aide-title {
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgb(var(--cave-texte-50));
+  overflow-wrap: anywhere;
+}
+.brew-aide-summary {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--brew-muted);
+  overflow-wrap: anywhere;
+}
+.brew-aide > summary .brew-tag {
+  flex-shrink: 0;
+}
+.brew-aide > summary > svg {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--brew-muted);
+  transition: transform 120ms ease-out;
+}
+.brew-aide[open] > summary {
+  border-bottom: 1px solid var(--brew-line);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+.brew-aide[open] > summary > svg {
+  transform: rotate(180deg);
+}
+.brew-aide-body {
+  min-width: 0;
+  padding: 8px;
+  font-size: 13px;
+}
+.brew-aide-body > * + * {
+  margin-top: 8px;
+}
+/* n° 9 : un repli dans un repli (« Fiche de la souche », « Programme… ») porte son chevron à droite, sur la ligne de son titre. */
+.brew-page .brew-aide-body details > summary,
+.brew-page .yeast-brew-guide details > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  list-style: none;
+}
+.brew-page .brew-aide-body details > summary::-webkit-details-marker,
+.brew-page .yeast-brew-guide details > summary::-webkit-details-marker { display: none; }
+.brew-page .brew-aide-body details > summary > svg { flex-shrink: 0; }
+.brew-page .brew-aide-body details[open] > summary > svg { transform: rotate(180deg); }
+.brew-aide-note {
+  color: var(--brew-muted);
+}
+.brew-aides > .brew-assist {
+  margin: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .brew-aide > summary > svg {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Échelle de la conduite
+
+   Ce bloc ferme la feuille : il gagne donc sur tout ce qui précède, media queries
+   comprises. Les paliers responsives qu'il doit conserver sont redonnés à la fin
+   de cette même section, jamais avant.
+
+   La compacité appartient au chrome : en-tête, onglets, pied, pastilles,
+   rembourrages. Elle ne s'applique pas aux quatre choses qu'on lit à la cuve —
+   l'étape, la consigne à exécuter, l'horloge et la température, les doses.
+   Les ramener au rang de leurs métadonnées supprime la hiérarchie sans libérer
+   d'espace utile (DESIGN.md, « Typography » et « Layout »).
+   --------------------------------------------------------------------------- */
+
+/* Chrome : compact. */
+.brew-page > header h1 { font-size: .875rem; }
+.brew-page > header [data-page-titlebar] { min-height: 2.25rem; padding: .125rem .5rem; }
+.brew-page > header [data-page-progress] { padding: 0 .5rem .125rem; }
+.brew-page > main > div { padding: .5rem .5rem .75rem; }
+.brew-page > main > div > :not([hidden]) ~ :not([hidden]) { margin-top: .5rem; }
+.brew-page > footer > div { padding: .125rem .5rem; }
+.brew-view-tabs button, .brew-phase { min-height: 1.75rem; padding: .125rem .5rem; font-size: .8125rem; }
+.brew-navigation { margin-bottom: .5rem; }
+.brew-station { padding: .5rem; }
+.brew-step-meta { margin-bottom: .375rem; }
+.brew-clock-meta { font-size: .75rem; }
+.brew-assist > summary, .brew-options > summary, .brew-sound-settings > summary { min-height: 1.75rem; padding: .25rem .5rem; font-size: .8125rem; }
+.brew-primary, .brew-footer-actions button { min-height: 2rem; padding-block: .25rem; font-size: .8125rem; }
+.brew-footer-actions { gap: .25rem; }
+.brew-footer-context { display: none; }
+.brew-footer { justify-content: flex-end; }
+.brew-tag { padding: .125rem .375rem; font-size: .75rem; line-height: 1rem; }
+.brew-measure-panel, .brew-capture-body { padding: .5rem; }
+.brew-measure-panel [aria-label='Type de mesure'] { padding: .25rem 0; }
+.brew-measure-panel [aria-label='Type de mesure'] button { min-height: 1.75rem; }
+.brew-capture > header { padding: .25rem .5rem; }
+.brew-capture > header h2 { font-size: .875rem; }
+.brew-capture > footer { padding: .125rem .5rem max(.125rem, env(safe-area-inset-bottom)); }
+.brew-page .brewer-chat-launch { min-height: 2rem; padding: .25rem .5rem; margin: .25rem 0; gap: .5rem; }
+.brew-page .brewer-chat-launch small { display: none; }
+.brew-page .brewer-chat-mark { width: 1.5rem; height: 1.5rem; border-radius: .25rem; }
+.brew-journal-empty { padding: .75rem .5rem; }
+.brew-page .brew-choice-trigger, .brew-page .brew-choice-trigger.is-heading { min-height: 2rem; padding: .25rem .5rem; font-size: .875rem; }
+.brew-page .brew-footer-actions { display: flex; flex-wrap: wrap; gap: .25rem; }
+.brew-page .brew-quick-entry { flex: 0 0 auto; min-height: 2rem; flex-direction: row; gap: .25rem; padding: .25rem .375rem; }
+.brew-page .brew-primary { flex: 1 1 14ch; min-width: min-content; }
+.brew-page .brew-quick-entry > span { font-size: .75rem; }
+.brew-page .brew-quick-entry > svg { width: 1rem; height: 1rem; }
+.brew-page :is(:is(input, textarea:where([data-single-line])), select, textarea):not([type='checkbox']):not([type='radio']):not([type='range']) { min-height: 2rem; font-size: 1rem; }
+
+/* Contenu prioritaire : lisible avant d'être petit. */
+.brew-station-heading h2 { font-size: 1rem; }
+.brew-instruction { margin-block: .375rem; font-size: .875rem; line-height: 1.4; font-weight: 500; color: rgb(var(--cave-texte-50)); }
+.brew-instruction.is-running { font-size: .8125rem; font-weight: 400; color: var(--brew-muted); }
+.brew-step-next { color: var(--brew-muted); }
+.brew-clock output { font-size: 2rem; }
+.brew-temperature strong { font-size: 1.75rem; }
+.brew-section-heading h2, .brew-section-heading h3, .brew-measure-panel h3 { font-size: .9375rem; font-weight: 600; }
+
+/* Des groupes séparables : 8 px à l'intérieur d'un bloc, 12 px entre deux blocs. */
+.brew-layout { gap: .75rem; }
+.brew-main-column, .brew-side-column { gap: .75rem; }
+
+/* Paliers conservés. */
+@media (min-width: 901px) {
+  .brew-layout { column-gap: 2rem; row-gap: .75rem; }
+  .brew-station-heading h2 { font-size: 1.25rem; }
+  .brew-instruction { font-size: .9375rem; }
+  .brew-clock output { font-size: 2.5rem; }
+  .brew-temperature strong { font-size: 2rem; }
+  .brew-footer-context { display: flex; }
+  /* Le pied reprend la suite du parcours : inutile de la redire dans la station. */
+  .brew-step-next { display: none; }
+  .brew-footer { justify-content: space-between; }
+}
+@media (max-width: 359px) {
+  .brew-clock output { font-size: 1.75rem; }
+  .brew-temperature strong { font-size: 1.5rem; }
+}
+@media (max-height: 500px) {
+  .brew-clock output, .brew-temperature strong { font-size: 1.75rem; }
+  /* Le paysage retirait la consigne de l’écran. Un téléphone posé près de la
+     cuve doit encore dire quoi faire : elle rétrécit, elle ne disparaît pas. */
+  .brew-instruction { display: block; margin-block: .25rem; font-size: .75rem; line-height: 1.3; }
+}
+
+/* === Port z1 === */
+/* La conduite affûtée (z1, choisie le 10.11) : valeurs de work/missions/2026-11-10-vue-brassin/v0/z1/etat.html, jetons de l'app (mêmes valeurs que z1).
+   Tout est sous `.brew-page.bz` : cette section ferme le fichier et gagne sur l'ancienne grammaire (cadres, titres, aides). */
+.brew-page.bz {
+  --bz-page: rgb(var(--cave-950));
+  --bz-panel: rgb(var(--cave-900));
+  --bz-raised: rgb(var(--cave-850));
+  --bz-border: rgb(var(--cave-800));
+  --bz-border2: rgb(var(--cave-700));
+  --bz-faint: rgb(var(--cave-600));
+  --bz-t2: rgb(var(--cave-texte-400));
+  --bz-t1: rgb(var(--cave-texte-200));
+  --bz-t0: rgb(var(--cave-texte-50));
+  --bz-action: rgb(var(--ebc-straw));
+  --bz-action-text: #fff;
+  --bz-hop: rgb(var(--hop));
+  --bz-water: rgb(var(--water));
+  --bz-water2: #2f5f7d;
+  --bz-eau-texte: #2f5f7d;
+  --bz-alert: #c8382f;
+  --bz-warn: #7f5b10;
+  --bz-ph1: #2f5f7d;
+  --bz-ph2: #b8832a;
+  --bz-ph3: #9a4f1e;
+  --bz-ph4: #3f6b2e;
+  --bz-ph2t: #8a5212;
+  font-size: 14px;
+  line-height: 1.3;
+}
+:root[data-theme='cave'] .brew-page.bz {
+  --bz-action-text: #12100e;
+  --bz-eau-texte: #5e8ca8;
+  --bz-alert: #dc5f58;
+  --bz-warn: #c99a3a;
+  --bz-ph1: #5e8ca8;
+  --bz-ph2: #d9a441;
+  --bz-ph3: #c8763a;
+  --bz-ph4: #6e9b5b;
+  --bz-ph2t: #d9a441;
+}
+.bz .bz-m {
+  font-family: 'Source Sans 3', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.bz svg { flex-shrink: 0; }
+
+/* Le + flottant de l'app recouvrait les cases : il s'efface sur cette vue (la page pose l'attribut). */
+body[data-brew-fab-off] .floating-actions { display: none !important; }
+
+/* ---- Cadre : 1280 à l'ordinateur ---- */
+.brew-page.bz .max-w-6xl { max-width: 1280px; }
+
+/* ---- En-tête : une rangée de 36 px ---- */
+.brew-page.bz > header { background: var(--bz-page); border-bottom: 1px solid var(--bz-border); }
+.brew-page.bz > header [data-page-titlebar] { display: flex; align-items: center; min-height: 36px; height: 36px; padding: 0 8px; gap: 6px; }
+.brew-page.bz > header [data-page-titlebar] > button[aria-label='Fermer'] { width: 28px; height: 28px; border-radius: 4px; color: var(--bz-t0); }
+.brew-page.bz > header [data-page-titlebar] > .min-w-0 {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  overflow: hidden;
+  white-space: nowrap;
+  min-width: 0;
+}
+.brew-page.bz > header h1 { font-size: 14px; font-weight: 700; color: var(--bz-t0); line-height: 1.3; margin: 0; overflow: hidden; text-overflow: ellipsis; }
+.brew-page.bz > header [data-page-titlebar] > .min-w-0 > p { margin: 0; font-size: 14px; line-height: 1.3; font-weight: 400; color: var(--bz-t2); overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+.brew-page.bz > header [data-page-titlebar] > .min-w-0 > p::before { content: '· '; }
+.brew-page.bz .page-title-actions { display: contents; }
+.brew-page.bz .bz-pictos,
+.brew-page.bz [data-page-titlebar] [data-theme-toggle] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  width: 34px;
+  height: 32px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: var(--bz-t2);
+  font-size: 12px;
+  line-height: 1;
+  order: 1;
+  flex-shrink: 0;
+}
+.brew-page.bz [data-page-titlebar] [data-theme-toggle] { order: 2; }
+.brew-page.bz [data-page-titlebar] [data-theme-toggle]::after { content: 'cave'; font-size: 12px; line-height: 1; }
+.brew-page.bz .bz-pictos svg,
+.brew-page.bz [data-page-titlebar] [data-theme-toggle] svg { width: 14px; height: 14px; }
+.brew-page.bz .bz-pictos > span { display: block; font-size: 12px; line-height: 1; }
+.brew-page.bz .bz-pictos[aria-pressed='true'],
+.brew-page.bz [data-page-titlebar] [data-theme-toggle='cave'] { color: var(--bz-t0); background: var(--bz-raised); }
+
+/* ---- Onglets : Conduite · Recette · Journal, la synchronisation au bout ---- */
+.brew-page.bz > header [data-page-progress] { padding: 6px 8px 0; }
+.brew-page.bz > header [data-page-progress] { padding-bottom: 0; }
+.brew-page.bz .bz-onglets { display: flex; align-items: center; gap: 4px; margin: 0; }
+.brew-page.bz .bz-onglets button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: var(--bz-t2);
+  font-size: 14px;
+  font-weight: 400;
+}
+.brew-page.bz .bz-onglets button svg { width: 14px; height: 14px; }
+.brew-page.bz .bz-onglets button[aria-pressed='true'] { background: var(--bz-raised); color: var(--bz-t0); font-weight: 600; }
+.brew-page.bz .bz-onglets .brew-progress-label { display: none; }
+.brew-page.bz .bz-sync { margin-left: auto; display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--bz-t2); white-space: nowrap; }
+.brew-page.bz .bz-sync.is-attention { color: var(--bz-warn); font-weight: 600; }
+
+/* ---- Corps : cadre et ordre de lecture ---- */
+.brew-page.bz > main > div { padding: 8px 8px 56px; }
+.brew-page.bz .brew-workspace { display: flex; flex-direction: column; gap: 0; }
+.brew-page.bz .brew-workspace > * { margin-top: 0; }
+.brew-page.bz .brew-layout { gap: 0; row-gap: 0; }
+.brew-page.bz .brew-main-column,
+.brew-page.bz .brew-side-column { gap: 0; }
+@media (max-width: 900px) {
+  .brew-page.bz .brew-layout { display: flex; flex-direction: column; gap: 0; }
+  .brew-page.bz .brew-main-column,
+  .brew-page.bz .brew-side-column { display: contents; }
+  .brew-page.bz .brew-station,
+  .brew-page.bz .brew-recipe-summary { order: 0; }
+  .brew-page.bz .brew-due-alert { order: 1; }
+  .brew-page.bz .brew-reading-prompt { order: 2; }
+  /* m2 : « Relevés du jour » (mesures attendues) juste sous l'horloge, avant Grains ; sans mesure attendue, l'ancienne carte reste après « Ensuite ». */
+  .brew-page.bz .brew-readings-summary[data-attendues] { order: 3; }
+  .brew-page.bz .brew-ingredients { order: 4; }
+  .brew-page.bz .bz-ensuite { order: 5; }
+  /* p2c : Ensuite (5), À anticiper (6), puis le bilan visé (7). */
+  .brew-page.bz .brew-readings-summary { order: 7; }
+  .brew-page.bz .bz-bilan { order: 7; }
+  /* p2c E4, 390 : sous l'heure de fin, le bilan contre la cible, puis la levure, puis « Au journal ». */
+  .brew-page.bz .bz-bilan.is-reel { order: 1; }
+  .brew-page.bz .bz-levure-cloture { order: 2; }
+  .brew-page.bz .bz-bilan-journal { order: 3; }
+  .brew-page.bz .brew-finish-summary { order: 7; }
+  .brew-page.bz .brew-preparations { order: 6; }
+  /* m2 : Suivi thermique replié, après « À anticiper », juste avant « Aides et repères » (même rang que À anticiper : il suit dans le DOM). */
+  .brew-page.bz .brew-side-column > details.bz-suivi { order: 8; }
+  .brew-page.bz .brew-aides, .brew-page.bz .bz-aides { order: 9; }
+  .brew-page.bz .brew-side-column > details { order: 10; }
+}
+@media (min-width: 901px) {
+  .brew-page.bz > main > div { padding: 12px 24px 72px; }
+  .brew-page.bz .brew-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(360px, 0.9fr); column-gap: 24px; align-items: start; }
+  /* p2c 1280 : colonne de droite = bilan visé, Ensuite, À anticiper. */
+  .brew-page.bz .brew-side-column { display: flex; flex-direction: column; }
+  .brew-page.bz .brew-side-column > details { order: 6; }
+  .brew-page.bz .brew-side-column > .bz-bilan { order: 1; margin-top: 0; }
+  .brew-page.bz .brew-side-column > .bz-ensuite { order: 2; }
+  .brew-page.bz .brew-side-column > .bz-anticiper { order: 3; }
+  .brew-page.bz .brew-side-column > details.bz-suivi { order: 4; }
+  .brew-page.bz .brew-side-column > .bz-aides { order: 5; }
+}
+/* p2c : le texte en police du texte, seules les heures sont tabulaires et ne se coupent pas (test c6 n° 17) */
+.brew-page.bz .bz-ensuite-etape small.bz-m { display: block; font-family: inherit; font-size: 12px; }
+.brew-page.bz .bz-ensuite-etape small .bz-m { white-space: nowrap; }
+
+/* ---- Barre des phases : 4 barres de 4 px, couleur de matière ---- */
+.brew-page.bz .bz-phases { margin: 0; }
+.brew-page.bz .bz-phases .brew-phases { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
+.brew-page.bz .bz-phase {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--bz-t2);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.3;
+  text-align: left;
+  opacity: 1;
+}
+.brew-page.bz .bz-phase[data-phase='preparation'] { --bz-ph: var(--bz-ph1); }
+.brew-page.bz .bz-phase[data-phase='mash'] { --bz-ph: var(--bz-ph2); }
+.brew-page.bz .bz-phase[data-phase='boil'] { --bz-ph: var(--bz-ph3); }
+.brew-page.bz .bz-phase[data-phase='finish'] { --bz-ph: var(--bz-ph4); }
+.brew-page.bz .bz-phase > i { display: block; height: 4px; border-radius: 2px; background: var(--bz-border); }
+.brew-page.bz .bz-phase[data-fait='true'] > i { background: var(--bz-ph); }
+.brew-page.bz .bz-phase[aria-current='step'] { color: var(--bz-ph); font-weight: 600; }
+.brew-page.bz .bz-phase[aria-current='step'] > i { background: var(--bz-ph); }
+.brew-page.bz .bz-phase[data-encours='true'] > i { background: linear-gradient(90deg, var(--bz-ph) var(--bz-fill, 0%), var(--bz-border) var(--bz-fill, 0%)); }
+.brew-page.bz .bz-phase:disabled { cursor: default; }
+
+/* ---- Planning : Date à définir · Planifier ---- */
+.brew-page.bz .bz-planning section { margin: 0; padding: 0; border: 0; }
+.brew-page.bz .bz-planning section > div { min-height: 28px; gap: 8px; flex-wrap: nowrap; }
+.brew-page.bz .bz-planning svg { width: 14px; height: 14px; color: var(--bz-t2); }
+.brew-page.bz .bz-planning span { font-size: 14px; color: var(--bz-t1); }
+.brew-page.bz .bz-planning .text-xs { font-size: 12px; color: var(--bz-warn); }
+.brew-page.bz .bz-planning button { min-height: 28px; padding: 0; font-size: 14px; color: var(--bz-t0); text-decoration: underline; margin-left: auto; }
+.brew-page.bz .bz-planning section > div > span.text-xs + button { margin-left: 0; }
+
+/* ---- Ligne d'étape : « n Nom ⌄ · ensuite X » ---- */
+.brew-page.bz .brew-station { border: 0; border-radius: 0; padding: 0; background: none; display: block; }
+.brew-page.bz .bz-etape { display: flex; align-items: center; gap: 6px; min-height: 32px; margin-top: 4px; }
+.brew-page.bz .bz-etape > b { font: 700 14px/1.3 'Source Sans 3', system-ui, sans-serif; color: var(--bz-t0); }
+.brew-page.bz .bz-etape .brew-step-select { display: flex; align-items: center; min-width: 0; }
+.brew-page.bz .bz-etape .brew-step-select h2 { margin: 0; font-size: 14px; font-weight: 400; }
+.brew-page.bz .brew-choice-trigger.is-heading {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--bz-t0);
+  font-size: 14px;
+  font-weight: 400;
+}
+.brew-page.bz .brew-choice-trigger.is-heading svg { width: 14px; height: 14px; }
+.brew-page.bz .bz-suite { margin-left: auto; color: var(--bz-t2); font-size: 12px; text-align: right; }
+
+/* ---- Horloge : temps, fin, −5 −1 ‖ +1 +5, piste ---- */
+.brew-page.bz .bz-horloge { margin-top: 8px; border: 1px solid var(--bz-border); border-radius: 8px; padding: 8px 10px; background: none; }
+.brew-page.bz .bz-haut { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.brew-page.bz .bz-temps { font-size: 32px; line-height: 1; font-weight: 600; color: var(--bz-t0); }
+.brew-page.bz .bz-temps.is-due { color: var(--bz-alert); }
+.brew-page.bz .bz-fin { color: var(--bz-t2); font-size: 14px; }
+/* p2c : les cinq boutons sur leur propre ligne, pleine largeur, 44 px (test c6 n° 15) */
+.brew-page.bz .bz-ctl { flex: 1 1 100%; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; margin-top: 4px; }
+.brew-page.bz .bz-ctl button {
+  display: grid;
+  place-items: center;
+  height: 44px;
+  min-height: 44px;
+  min-width: 0;
+  padding: 0 6px;
+  border: 1px solid var(--bz-border2);
+  border-radius: 4px;
+  background: none;
+  color: var(--bz-t0);
+  font-size: 14px;
+  font-weight: 500;
+}
+.brew-page.bz .bz-ctl button[data-pause], .brew-page.bz .bz-ctl button[data-booster="play"] { min-width: 0; }
+/* K5 n° 15 : le ⏸ garde sa place avant le lancement (p2c), éteint ; le lancement est le bouton du pied */
+.brew-page.bz .bz-ctl button:disabled { opacity: 0.4; }
+.brew-page.bz .bz-piste { position: relative; height: 22px; margin-top: 8px; width: 100%; }
+.brew-page.bz .bz-piste-rail { position: absolute; left: 0; right: 0; top: 9px; height: 4px; border-radius: 2px; background: var(--bz-border); }
+.brew-page.bz .bz-piste-fait { position: absolute; left: 0; top: 9px; height: 4px; border-radius: 2px; background: var(--bz-hop); }
+.brew-page.bz .bz-pt { position: absolute; top: 5px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--bz-t0); background: var(--bz-page); transform: translateX(-50%); }
+.brew-page.bz .bz-pt[data-fait] { background: var(--bz-hop); border-color: var(--bz-hop); }
+.brew-page.bz .bz-pt[data-prochain] { border-color: var(--bz-warn); background: var(--bz-warn); }
+.brew-page.bz .bz-now { position: absolute; top: 0; width: 2px; height: 22px; background: var(--bz-t0); transform: translateX(-50%); }
+
+/* ---- Groupes d'ingrédients ---- */
+.brew-page.bz .bz-ingredients { margin: 0; }
+.brew-page.bz .bz-groupe {
+  margin-top: 8px;
+  border: 1px solid var(--bz-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: none;
+}
+.brew-page.bz .bz-ingredients > .bz-groupe:first-child { margin-top: 8px; }
+.brew-page.bz .bz-groupe.is-due { border-color: var(--bz-warn); }
+.brew-page.bz .bz-groupe-tete {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  min-height: 30px;
+  padding: 0 10px;
+  margin: 0;
+  background: var(--bz-panel);
+  color: var(--bz-t0);
+  font-size: 14px;
+  font-weight: 600;
+}
+.brew-page.bz .bz-groupe-tete h3 { margin: 0; font-size: 14px; font-weight: 600; color: inherit; white-space: nowrap; }
+.brew-page.bz .bz-groupe-tete > svg { width: 14px; height: 14px; color: var(--bz-t2); }
+.brew-page.bz .bz-groupe[data-matiere='eau'] > .bz-groupe-tete { color: var(--bz-ph1); }
+.brew-page.bz .bz-groupe[data-matiere='eau'] > .bz-groupe-tete > svg { color: var(--bz-ph1); }
+.brew-page.bz .bz-groupe[data-matiere='grain'] > .bz-groupe-tete { color: var(--bz-ph2t); }
+.brew-page.bz .bz-groupe[data-matiere='houblon'] > .bz-groupe-tete { color: var(--bz-ph4); }
+.brew-page.bz .bz-compte { margin-left: auto; font-size: 12px; font-weight: 400; color: var(--bz-t2); }
+.brew-page.bz .bz-ensuite .bz-compte { font-size: 14px; }
+.brew-page.bz .bz-groupe-tete .brew-water-temperature { margin-left: auto; font-size: 12px; font-weight: 400; color: var(--bz-t2); }
+.brew-page.bz .bz-groupe-tete .brew-water-temperature + .bz-compte { margin-left: 0; }
+.brew-page.bz .brew-choice-trigger.is-plus {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  min-height: 0;
+  padding: 0;
+  border: 1px solid var(--bz-border2);
+  border-radius: 4px;
+  background: none;
+  color: var(--bz-t0);
+}
+.brew-page.bz .brew-choice-trigger.is-plus svg { width: 12px; height: 12px; color: var(--bz-t0); }
+
+/* ---- Lignes : nom · dose en bouton · case de 36 px ---- */
+.brew-page.bz .bz-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 36px;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 4px 6px 4px 10px;
+  border: 0;
+  border-top: 1px solid var(--bz-border);
+  border-radius: 0;
+  background: none;
+}
+.brew-page.bz .bz-row.is-ajout { grid-template-columns: 40px minmax(0, 1fr) auto 36px; }
+.brew-page.bz .bz-nom { min-width: 0; color: var(--bz-t0); }
+.brew-page.bz .bz-nom > strong { display: block; font-size: 14px; font-weight: 600; color: var(--bz-t0); }
+.brew-page.bz .bz-nom small, .brew-page.bz .bz-nom em { display: block; font-size: 12px; font-weight: 400; font-style: normal; color: var(--bz-t2); }
+.brew-page.bz .bz-nom em { display: inline; margin-left: 4px; }
+.brew-page.bz .bz-row.is-added .bz-nom > strong { color: var(--bz-t2); font-weight: 400; }
+.brew-page.bz .bz-row .bz-dose {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  gap: 3px;
+  min-width: 70px;
+  max-width: none;
+  min-height: 0;
+  padding: 4px 6px;
+  border: 1px solid var(--bz-border2);
+  border-radius: 4px;
+  background: var(--bz-page);
+  color: var(--bz-t0);
+}
+.brew-page.bz .bz-row .bz-dose strong { font: 500 14px/1.3 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; color: var(--bz-t0); }
+.brew-page.bz .bz-row .bz-dose small, .brew-page.bz .bz-row .bz-dose > span { font: 400 12px/1.3 'Source Sans 3', system-ui, sans-serif; color: var(--bz-t2); }
+.brew-page.bz .bz-row .bz-dose strong[data-sans-valeur] { font-family: 'Source Sans 3', system-ui, sans-serif; font-size: 14px; font-weight: 600; }
+/* c1c : « à choisir » est une pastille en pointillé, grise, comme les « ? » de Relevés du jour */
+.brew-page.bz .bz-row .bz-dose:has(> strong[data-sans-valeur]) { border-style: dashed; }
+.brew-page.bz .bz-row .bz-dose strong[data-sans-valeur] { color: var(--bz-t2); font-weight: 400; }
+.brew-page.bz .bz-row .bz-dose[aria-expanded='true'] { border-color: var(--bz-t0); }
+/* c1c : la pastille de la levure reste grise quand l'éditeur est ouvert (c1c-repos, c1c-apres) */
+.brew-page.bz .bz-row .bz-dose[aria-expanded='true']:has(#brew-dose-value-yeast) { border-color: var(--bz-border2); }
+.brew-page.bz .bz-row .bz-dose.is-lecture { border-color: transparent; background: none; }
+.brew-page.bz .bz-dose-texte { display: block; padding: 0; border: 0; background: none; font: 400 12px/1.3 'Source Sans 3', system-ui, sans-serif; color: var(--bz-t2); text-align: left; min-height: 0; }
+.brew-page.bz .bz-dose-texte strong, .brew-page.bz .bz-dose-texte small, .brew-page.bz .bz-dose-texte span { display: inline; font-weight: 400; color: inherit; font-size: 12px; font-family: inherit; white-space: nowrap; }.brew-page.bz .bz-min { color: var(--bz-t2); font: 500 14px/1.3 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+.brew-page.bz .bz-quand { color: var(--bz-t2); font-size: 12px; text-align: right; }
+.brew-page.bz .bz-row[data-prochain] { background: color-mix(in srgb, var(--bz-warn) 10%, var(--bz-page)); }
+.brew-page.bz .bz-row[data-prochain] .bz-min { color: var(--bz-warn); font-weight: 600; }
+.brew-page.bz .bz-row[data-prochain] .bz-quand { color: var(--bz-warn); font-weight: 600; font-size: 14px; }
+.brew-page.bz .bz-row[data-du] .bz-quand { color: var(--bz-alert); font-weight: 600; font-size: 14px; }
+
+/* Case carrée de 36 px : versé */
+.brew-page.bz .bz-case { position: relative; display: block; width: 36px; height: 36px; cursor: pointer; }
+.brew-page.bz .bz-case > input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.brew-page.bz .bz-case-boite {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--bz-border2);
+  border-radius: 8px;
+  background: var(--bz-page);
+  color: var(--bz-action-text);
+  pointer-events: none;
+}
+.brew-page.bz .bz-case-boite svg { width: 18px; height: 18px; }
+.brew-page.bz .bz-case > input:checked ~ .bz-case-boite,
+.brew-page.bz .is-added .bz-case-boite { background: var(--bz-hop); border-color: var(--bz-hop); }
+.brew-page.bz .bz-case > input:focus-visible ~ .bz-case-boite { outline: 2px solid var(--bz-t0); outline-offset: 2px; }
+.brew-page.bz .bz-case > input:disabled { cursor: default; }
+.brew-page.bz .bz-case.is-apercu, .brew-page.bz .bz-case-boite.is-apercu { border: 2px dashed var(--bz-border2); border-radius: 8px; display: block; width: 36px; height: 36px; }
+
+/* Répartition réseau / osmosée, dessinée sous l'eau */
+.brew-page.bz .bz-eaux { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px; padding: 0 0 4px; }
+.brew-page.bz .bz-eaux > span { font: 600 12px/1.3 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; color: var(--bz-eau-texte); }
+.brew-page.bz .bz-eaux > span b { font-weight: inherit; }
+.brew-page.bz .bz-eaux > .brew-feedback { grid-column: 1 / -1; font: 400 12px/1.3 'Source Sans 3', system-ui, sans-serif; color: var(--bz-alert); }
+.brew-page.bz .bz-eaux-barre { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--bz-border); }
+.brew-page.bz .bz-eaux-barre > i { display: block; height: 100%; }
+.brew-page.bz .bz-eaux-barre > i:first-child { background: var(--bz-water2); }
+.brew-page.bz .bz-eaux-barre > i:last-child { background: var(--bz-water); }
+
+/* Édition d'une dose, Remplacer, heure réelle : un toucher plus loin, sous la ligne */
+.brew-page.bz .bz-edition { grid-column: 1 / -1; padding: 4px 0 6px; }
+.brew-page.bz .bz-vide { padding: 8px 10px; color: var(--bz-t2); font-size: 12px; }
+.brew-page.bz .bz-pleine { grid-column: 1 / -1; font-size: 12px; color: var(--bz-t2); }
+
+/* ---- Relevés et aperçus ---- */
+.brew-page.bz .bz-releve { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 6px 10px; border-top: 1px solid var(--bz-border); color: var(--bz-t2); font-size: 12px; }
+.brew-page.bz .bz-releve b { font-size: 14px; font-weight: 600; color: var(--bz-t0); }
+.brew-page.bz .bz-releve-avis { padding: 6px 10px; border-top: 1px solid var(--bz-border); font-size: 12px; color: var(--bz-t2); }
+.brew-page.bz .bz-releve-avis.is-ok { color: var(--bz-ph4); }
+.brew-page.bz .bz-releve-avis.is-watch { color: var(--bz-warn); font-weight: 600; }
+.brew-page.bz .brew-readings-summary { display: block; margin: 0; padding: 0; border: 0; background: none; }
+.brew-page.bz .brew-readings-summary.bz-groupe { display: block; }
+
+/* ---- À anticiper : cases rondes pointillées ---- */
+.brew-page.bz .bz-anticiper { border-style: dashed; }
+.brew-page.bz .bz-anticiper-ligne {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 36px;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 4px 6px 4px 10px;
+  border-top: 1px dashed var(--bz-border2);
+  color: var(--bz-t1);
+  cursor: pointer;
+}
+/* p3 / 2C : la ligne « À cru » des Aides de l'ensemencement (maquette c2c-ens : total, puces, phase, chevron). */
+.brew-page.bz .bz-acru { border-top: 1px solid var(--bz-border); }
+.brew-page.bz .bz-acru > summary { display: grid; grid-template-columns: auto minmax(0, 1fr) auto 16px; align-items: center; gap: 8px; min-height: 44px; padding: 4px 10px; list-style: none; cursor: pointer; color: var(--bz-t1); }
+.brew-page.bz .bz-acru > summary::-webkit-details-marker { display: none; }
+.brew-page.bz .bz-acru-lib { color: var(--bz-t0); font-weight: 600; }
+.brew-page.bz .bz-acru-lib small { display: block; font-size: 12px; font-weight: 400; color: var(--bz-t2); font-variant-numeric: tabular-nums; }
+.brew-page.bz .bz-acru-puces { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
+.brew-page.bz .bz-acru-puces > span { padding: 2px 8px; border-radius: 6px; background: var(--bz-raised); color: var(--bz-t1); font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.brew-page.bz .bz-acru-phase { font-size: 12px; font-weight: 600; color: var(--bz-t2); white-space: nowrap; }
+.brew-page.bz .bz-acru-phase[data-inconnue] { color: var(--bz-ph2t); }
+.brew-page.bz .bz-acru[open] > summary > svg { transform: rotate(180deg); }
+.brew-page.bz .bz-acru-detail { margin: 0; padding: 2px 10px 8px; list-style: none; font-size: 14px; color: var(--bz-t1); font-variant-numeric: tabular-nums; }
+.brew-page.bz .bz-acru-detail li { padding: 2px 0; }
+.brew-page.bz .bz-anticiper-sous { display: block; margin-top: 1px; font-size: 12px; line-height: 1.3; color: var(--bz-t2); }
+.brew-page.bz .bz-anticiper-ligne > input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.brew-page.bz .bz-case-boite.is-ronde { border-style: dashed; border-radius: 50%; }
+.brew-page.bz .bz-anticiper-ligne > input:checked ~ .bz-case-boite { border-style: solid; background: var(--bz-hop); border-color: var(--bz-hop); }
+.brew-page.bz .bz-anticiper-ligne > input:focus-visible ~ .bz-case-boite { outline: 2px solid var(--bz-t0); outline-offset: 2px; }
+.brew-page.bz .bz-anticiper-ligne.is-complete > span:first-child { color: var(--bz-t2); }
+
+/* ---- Lignes repliées pointillées : Aides et repères, Suivi thermique, inviter à mesurer ---- */
+.brew-page.bz .bz-repli { margin: 0; border: 1px dashed var(--bz-border2); border-radius: 8px; background: none; color: var(--bz-t1); padding: 0; }
+.brew-page.bz .bz-repli > summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 10px;
+  list-style: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--bz-t1);
+}
+.brew-page.bz .bz-repli > summary::-webkit-details-marker { display: none; }
+.brew-page.bz .bz-repli > summary svg { width: 14px; height: 14px; color: var(--bz-t2); }
+.brew-page.bz .bz-repli > summary > svg:last-child { margin-left: auto; }
+.brew-page.bz .bz-repli > summary .brew-aide-title { font-size: 14px; font-weight: 400; color: var(--bz-t1); }
+.brew-page.bz .bz-repli > :not(summary) { margin: 0; }
+.brew-page.bz .bz-repli > .brew-aide-body { padding: 8px 10px; border-top: 1px dashed var(--bz-border2); }
+.brew-page.bz .bz-compagnon { display: flex; align-items: center; gap: 6px; min-height: 32px; padding: 0; color: var(--bz-t0); background: none; border: 0; font-size: 14px; }
+.brew-page.bz .bz-compagnon svg { width: 14px; height: 14px; }
+.brew-page.bz .brew-reading-prompt.bz-repli { padding: 6px 10px; font-size: 14px; }
+.brew-page.bz .bz-champ { display: block; margin-top: 8px; font-size: 12px; color: var(--bz-t2); }
+/* p3 (n° 1 et 2) : le bandeau du prochain ajout ET celui de la sonnerie restent collés en haut du conteneur qui défile
+   (« Je veux pas louper un timing !! », 10.11). Un seul `top`, dans le conteneur défilant ; l'en-tête n'y est pas. NE PAS RETIRER :
+   p2 l'avait perdu parce que cette section remplace celle de brew-day.css (toute retouche passe par ce fichier). */
+.brew-page.bz .bz-alerte { margin: 0; position: sticky; top: 0; z-index: 6; box-shadow: 0 2px 6px rgb(0 0 0 / 0.12); }
+.brew-page.bz .bz-duree { margin-top: 6px; }
+
+/* ---- Pied : Mesurer · Note · action contextuelle ---- */
+.brew-page.bz > footer { background: var(--bz-page); border-top: 1px solid var(--bz-border); }
+.brew-page.bz > footer > div { padding: 0 8px; }
+.brew-page.bz .bz-pied { display: flex; align-items: center; justify-content: flex-start; gap: 6px; min-height: 48px; height: 48px; }
+.brew-page.bz .bz-pied .brew-quick-entry {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  min-height: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: var(--bz-t1);
+}
+.brew-page.bz .bz-pied .brew-quick-entry > span { font-size: 14px; font-weight: 400; }
+.brew-page.bz .bz-pied .brew-quick-entry > svg { width: 14px; height: 14px; }
+.brew-page.bz .bz-pied .brew-primary {
+  flex: 0 0 auto;
+  min-width: 0;
+  margin-left: auto;
+  min-height: 32px;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid var(--bz-action);
+  border-radius: 8px;
+  background: var(--bz-action);
+  color: var(--bz-action-text);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.brew-page.bz .bz-pied .brew-primary[data-attente] { background: none; border-color: var(--bz-border2); color: var(--bz-t2); font-weight: 600; }
+.brew-page.bz .bz-pied .brew-primary:disabled { opacity: 1; }
+@media (min-width: 901px) {
+  .brew-page.bz > footer > div { max-width: 1280px; margin: 0 auto; }
+}
+
+/* ---- Feuille Mesurer / Note ---- */
+.brew-page.bz .brew-capture::backdrop { background: rgba(0, 0, 0, .35); }
+.brew-page.bz .brew-capture.is-mobile[open] {
+  max-width: 520px;
+  max-height: calc(100dvh - 18px);
+  border: 0;
+  border-top: 1px solid var(--bz-border);
+  border-radius: 8px 8px 0 0;
+  background: var(--bz-page);
+  color: var(--bz-t1);
+  padding: 10px 10px 12px;
+}
+.brew-page.bz .brew-capture-header { display: flex; align-items: center; gap: 6px; padding: 0; border: 0; }
+.brew-page.bz .brew-capture-header h2 { display: flex; align-items: center; gap: 6px; flex: 1; margin: 0; font-size: 14px; font-weight: 700; color: var(--bz-t0); }
+.brew-page.bz .brew-capture-header h2 svg { width: 14px; height: 14px; }
+.brew-page.bz .brew-capture-header h2 span { font-weight: 400; color: var(--bz-t2); }
+.brew-page.bz .brew-capture-header button { width: 28px; height: 28px; display: grid; place-items: center; color: var(--bz-t0); border-radius: 4px; }
+.brew-page.bz .brew-capture.is-mobile .brew-capture-content { padding: 0; overflow: auto; }
+.brew-page.bz .brew-capture.is-mobile .brew-measure-panel,
+.brew-page.bz .brew-capture.is-inline .brew-measure-panel { border: 0; padding: 0; background: none; }
+@media (min-width: 901px) {
+  .brew-page.bz .brew-capture.is-inline:not([data-open]) { display: none; }
+  .brew-page.bz .brew-capture.is-inline[data-open] {
+    position: fixed;
+    right: 24px;
+    bottom: 72px;
+    left: auto;
+    width: 520px;
+    max-width: 520px;
+    padding: 10px 10px 12px;
+    border: 1px solid var(--bz-border);
+    border-radius: 8px;
+    background: var(--bz-page);
+    color: var(--bz-t1);
+    z-index: 30;
+  }
+}
+.brew-page.bz .bz-seg { display: grid; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; margin-top: 8px; padding: 3px; border-radius: 8px; background: var(--bz-raised); }
+.brew-page.bz .bz-seg button { height: 26px; min-height: 26px; padding: 0; border: 0; border-radius: 4px; background: none; color: var(--bz-t2); font-size: 14px; }
+.brew-page.bz .bz-seg button[aria-pressed='true'] { background: var(--bz-page); color: var(--bz-t0); font-weight: 600; box-shadow: 0 0 0 1px var(--bz-border2); }
+.brew-page.bz .bz-saisie { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+/* VB-3 : au doigt, `Input` rend un textarea (une ligne) ; la règle ne visait que `input`, le champ restait sans bord ni fond (« plus aucun champ »). */
+.brew-page.bz .bz-saisie :is(input, textarea) { flex: 1; min-width: 0; box-sizing: border-box; height: 36px; min-height: 36px; padding: 0 10px; line-height: 34px; border: 1px solid var(--bz-border2); border-radius: 8px; background: var(--bz-page); color: var(--bz-t0); font: 16px/34px 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+.brew-page.bz .bz-unite { color: var(--bz-t2); font-size: 14px; }
+.brew-page.bz .bz-echelle { position: relative; height: 30px; margin-top: 10px; }
+.brew-page.bz .bz-echelle-rail { position: absolute; left: 0; right: 0; top: 13px; height: 4px; border-radius: 2px; background: var(--bz-border); }
+.brew-page.bz .bz-echelle-cible { position: absolute; top: 9px; height: 12px; border-radius: 2px; border: 1px solid var(--bz-hop); background: color-mix(in srgb, var(--bz-hop) 35%, var(--bz-page)); }
+.brew-page.bz .bz-echelle-releve { position: absolute; top: 6px; width: 4px; height: 18px; border-radius: 2px; background: var(--bz-alert); transform: translateX(-50%); }
+.brew-page.bz .bz-echelle-grad { position: absolute; top: 0; font: 12px 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; color: var(--bz-t2); transform: translateX(-50%); }
+.brew-page.bz .bz-verdict-zone { margin-top: 20px; }
+.brew-page.bz .bz-verdict { display: flex; align-items: center; gap: 8px; margin-top: 20px; color: var(--bz-alert); font-weight: 600; }
+.brew-page.bz .bz-verdict svg { width: 14px; height: 14px; }
+/* z1 ne montre que le cas hors cible (rouge) ; dans la cible, le même trait en vert houblon, jamais en rouge. */
+.brew-page.bz .bz-verdict.is-ok { color: var(--bz-hop); }
+.brew-page.bz .bz-verdict.is-neutral { color: var(--bz-t1); font-weight: 400; }
+.brew-page.bz .bz-verdict-zone .bz-verdict { margin-top: 0; }
+.brew-page.bz .bz-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.brew-page.bz .bz-actions button { height: 32px; min-height: 32px; padding: 0 12px; border: 1px solid var(--bz-border2); border-radius: 8px; background: none; color: var(--bz-t0); font-size: 14px; font-weight: 600; }
+.brew-page.bz .bz-actions button:last-child { margin-left: auto; background: var(--bz-action); border-color: var(--bz-action); color: var(--bz-action-text); }
+/* n° 20 : « Enregistrer » sans valeur est grisé (fond du bandeau, texte pâle), jamais l'ocre plein du bouton actif délavé par l'opacité (cave). */
+.brew-page.bz .bz-actions button:last-child:disabled { background: var(--bz-raised); border-color: var(--bz-border2); color: var(--bz-t2); opacity: 1; cursor: not-allowed; }
+.brew-page.bz .bz-precedent { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; margin-top: 8px; color: var(--bz-t2); font-size: 12px; }
+.brew-page.bz .bz-mesure-form { margin: 0; }
+.brew-page.bz .bz-planning { margin-top: 8px; }
+@media (max-width: 900px) {
+  .brew-page.bz .brew-layout { align-items: stretch; }
+}
+.brew-page.bz .brew-preparations { padding: 0; }
+.brew-page.bz .bz-repli.bz-aides, .brew-page.bz .bz-repli { margin-top: 8px; }
+.brew-page.bz > header > div { padding: 0; }
+.brew-page.bz .bz-phases .brew-phases { border: 0; padding: 0; }
+.brew-page.bz .bz-phase::after { content: none; }
+.brew-page.bz .bz-planning[data-phase='mash'],
+.brew-page.bz .bz-planning[data-phase='boil'],
+.brew-page.bz .bz-planning[data-phase='finish'] { display: none; }
+.brew-page.bz .bz-nom .bz-dose-texte { display: block; text-align: left; }
+.brew-page.bz .bz-nom .bz-dose-texte > * { display: inline; margin: 0; font: inherit; color: inherit; }
+.brew-page.bz .bz-nom .bz-dose-texte small { margin-left: 3px; }
+.brew-page.bz .bz-repli > summary { justify-content: flex-start; }
+.brew-page.bz .bz-saisie > :first-child { flex: 1 1 auto; min-width: 0; }
+.brew-page.bz .bz-saisie :is(input, textarea) { width: 100%; box-shadow: none; }
+/* Le contour de saisie reste DANS le champ : la feuille rogne ce qui dépasse à gauche (champ « coupé au bord », VB-3). */
+.brew-page.bz .bz-saisie :is(input, textarea):focus-visible, .brew-page.bz .bz-saisie :is(input, textarea):focus { outline: 2px solid var(--bz-t0); outline-offset: -2px; }
+.brew-page.bz .bz-refroidi { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 12px; color: var(--bz-t2); }
+.brew-page.bz .bz-refroidi input { width: 14px; height: 14px; }
+.brew-page.bz .bz-repli > summary .brew-aide-title { flex: 1 1 auto; text-align: left; }
+
+/* ---- Passe p2 (test d'écran du 10.11) ---- */
+.brew-page.bz .brew-readings-summary.bz-groupe { margin-top: 8px; border: 1px solid var(--bz-border); border-radius: 8px; overflow: hidden; }
+.brew-page.bz .bz-releve b { margin-left: 3px; }
+.brew-page.bz .bz-cloture { display: contents; }
+/* n° 5 : le stock en icône, sans ligne de texte */
+.brew-page.bz .bz-stock-ico { display: inline-flex; vertical-align: -2px; margin-left: 6px; color: var(--bz-warn); }
+/* n° 2 : « relevé » de l'horloge, un lien en ligne, la valeur en mono */
+.brew-page.bz .bz-releve-lien { display: inline; min-height: 0; height: auto; padding: 0 2px; border: 0; border-bottom: 1px dashed var(--bz-border2); border-radius: 0; background: none; color: var(--bz-t0); font-size: inherit; }
+/* n° 14 : l'heure réelle, avec « Maintenant » */
+.brew-page.bz .bz-heure-reelle { display: flex; gap: 6px; align-items: center; }
+.brew-page.bz .bz-heure-reelle input { flex: 1 1 auto; min-width: 0; margin-top: 4px; }
+.brew-page.bz .bz-maintenant { flex: none; height: 36px; min-height: 36px; margin-top: 4px; padding: 0 10px; border: 1px solid var(--bz-border2); border-radius: 8px; background: none; color: var(--bz-t0); font-size: 14px; }
+/* n° 15 : les valeurs de clôture ont leur cible en petit */
+.brew-page.bz .bz-releve small { font-size: 11px; color: var(--bz-t2); }
+/* n° 8 : l'unité du champ de mesure ne se casse pas en deux lignes */
+.brew-page.bz .bz-unite { flex: none; white-space: nowrap; }
+/* n° 16 : « cave » garde la lune dans les deux thèmes (z1) ; allumée en cave, comme les autres pictos */
+.brew-page.bz [data-page-titlebar] [data-theme-toggle] svg { display: none; }
+.brew-page.bz [data-page-titlebar] [data-theme-toggle]::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* ---- p3 : corrections du test d'écran du 10.11 (VERDICT-p2) ---- */
+/* n° 9 : l'horloge du palier tient sur une ligne à 390 : le texte de relevé se replie dans sa colonne, les boutons ne passent plus dessous */
+/* K7 n° 15 et 30 : −5 −1 ⏸ +1 +5 sur leur propre ligne (p2c), 44 px ; le temps et son texte reprennent toute la largeur de la ligne du haut. */
+.brew-page.bz .bz-haut { flex-wrap: wrap; }
+.brew-page.bz .bz-haut .bz-fin { min-width: 0; flex: 1 1 0; font-size: 12px; line-height: 1.25; }
+.brew-page.bz .bz-haut .bz-ctl { flex: 1 1 100%; }
+/* K7 n° 26 et 30 : un nombre et son unité ne se séparent jamais dans l'horloge */
+.brew-page.bz .bz-fin .bz-m { white-space: nowrap; }
+/* n° 3 : « Moût à l'ajout » = une ligne de plus sous la ligne Levure (valeur à droite, unité en petit) */
+.brew-page.bz .bz-moutajout { order: 3; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; margin-top: 6px; padding: 2px 10px; border: 1px solid var(--bz-border); border-radius: 8px; color: var(--bz-t1); font-size: 14px; }
+.brew-page.bz .bz-moutajout-val { display: flex; align-items: center; gap: 4px; }
+.brew-page.bz .bz-moutajout-val input { width: 64px; text-align: right; }
+/* n° 13 : « Moût à l'ajout » est un champ à saisir : même cadre que celui de la feuille Mesurer (au doigt, `Input` rend un textarea). */
+.brew-page.bz .bz-moutajout-val :is(input, textarea) { box-sizing: border-box; width: 64px; height: 32px; min-height: 32px; padding: 0 8px; border: 1px solid var(--bz-border2); border-radius: 8px; background: var(--bz-page); color: var(--bz-t0); text-align: right; font: 16px/30px 'Source Sans 3', system-ui, sans-serif; font-variant-numeric: tabular-nums; resize: none; }
+/* n° 4 : choix de la quantité de levure réellement ajoutée, dans l'éditeur de la ligne Levure */
+.brew-page.bz .bz-levure-choix { display: flex; flex-wrap: wrap; flex: 1 1 100%; gap: 6px; margin-bottom: 2px; }
+.brew-page.bz .bz-levure-choix button { flex: 0 0 auto; min-height: 36px; padding: 0 12px; border: 1px solid var(--bz-border2); border-radius: 8px; background: none; color: var(--bz-t1); font-size: 14px; }
+.brew-page.bz .bz-levure-choix button[aria-checked='true'] { border: 2px solid var(--bz-action); background: var(--bz-raised); color: var(--bz-t0); font-weight: 600; }
+/* p3 / 1C : la dose dite en g et en g/hL sur la plage du fabricant (maquette c1c : bande vert pâle, trait vert / ambre / pointillé). */
+.brew-page.bz .bz-jauge { flex: 1 1 100%; min-width: 0; padding: 6px 0 8px; margin-bottom: 6px; border-bottom: 1px solid var(--bz-border); }
+.brew-page.bz .bz-jauge-tete { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; font-size: 12px; color: var(--bz-t2); }
+.brew-page.bz .bz-jauge-dose { white-space: nowrap; }
+.brew-page.bz .bz-jauge-dose b { font-size: 16px; font-weight: 600; color: var(--bz-t0); font-variant-numeric: tabular-nums; }
+.brew-page.bz .bz-jauge-verdict { display: inline-flex; align-items: center; gap: 3px; margin-left: auto; font-weight: 600; white-space: nowrap; color: var(--bz-t2); }
+.brew-page.bz .bz-jauge[data-statut='dans'] .bz-jauge-verdict { color: var(--bz-ph4); }
+.brew-page.bz .bz-jauge[data-statut='au-dessus'] .bz-jauge-verdict, .brew-page.bz .bz-jauge[data-statut='sous'] .bz-jauge-verdict { color: var(--bz-ph2t); }
+.brew-page.bz .bz-jauge-barre { position: relative; height: 26px; margin-top: 4px; }
+.brew-page.bz .bz-jauge-rail { position: absolute; left: 0; right: 0; top: 11px; height: 4px; border-radius: 2px; background: var(--bz-border); }
+.brew-page.bz .bz-jauge-bande { position: absolute; top: 7px; height: 12px; box-sizing: border-box; border-radius: 2px; background: color-mix(in srgb, var(--bz-ph4) 30%, var(--bz-page)); border: 1px solid var(--bz-ph4); }
+.brew-page.bz .bz-jauge-trait { position: absolute; top: 3px; width: 4px; height: 20px; border-radius: 2px; background: var(--bz-ph4); transform: translateX(-50%); transition: left 0.18s ease-out; }
+.brew-page.bz .bz-jauge[data-statut='au-dessus'] .bz-jauge-trait, .brew-page.bz .bz-jauge[data-statut='sous'] .bz-jauge-trait { background: var(--bz-ph2); }
+.brew-page.bz .bz-jauge[data-statut='vide'] .bz-jauge-trait { background: none; border: 1.5px dashed var(--bz-t2); box-sizing: border-box; }
+.brew-page.bz .bz-jauge-grad { position: relative; height: 16px; font-size: 12px; color: var(--bz-t2); }
+.brew-page.bz .bz-jauge-grad > span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+.brew-page.bz .bz-jauge-grad > span:first-child { left: 0; transform: none; }
+.brew-page.bz .bz-jauge-grad > span:last-child { transform: translateX(-100%); }
+.brew-page.bz .bz-jauge-grad .bz-jauge-bord { color: var(--bz-ph4); font-weight: 600; }
+.brew-page.bz .bz-jauge-source { margin: 2px 0 0; font-size: 12px; color: var(--bz-t2); }
+@media (prefers-reduced-motion: reduce) { .brew-page.bz .bz-jauge-trait { transition: none; } }
+/* Son : une horloge tourne alors que le son est coupé (ou pas armé) → le picto « son » est en couleur d'alerte */
+.brew-page.bz .bz-pictos[data-alerte] { color: #fff; background: var(--bz-alert); }
+/* n° 7 : unité du relevé de clôture en petit, jamais en valeur */
+.brew-page.bz .bz-releve b + small { margin-left: 1px; }
+
+/* ---- p1 (10.11, VB-1) : m2 « Relevés du jour » à vide + le geste au curseur, portés de la maquette m2 (passe 2b) ---- */
+.brew-page.bz .brew-readings-summary[data-attendues] { margin-top: 8px; }
+.brew-page.bz .bz-row.is-mesure { grid-template-columns: minmax(0, 1fr) auto; }
+.brew-page.bz .bz-row.is-mesure .bz-nom small .bz-m { font-size: 12px; }
+.brew-page.bz .bz-mesure-du { color: var(--bz-warn); font-weight: 600; }
+.brew-page.bz .bz-mesure-tard { color: var(--bz-t2); }
+/* n° 22 : seuls les nombres sont en chasse fixe (m2) ; un mot (« maintenant », « au transfert », « À préciser ») reprend la police du texte. */
+.brew-page.bz .bz-mesure-du, .brew-page.bz .bz-mesure-tard, .brew-page.bz [data-sans-valeur] { font-family: inherit; font-variant-numeric: normal; }
+/* « 1 h 00 » en chasse fixe puis « 59:58 » dans une autre police : le minuteur, l'heure de fin, les cibles et les durées reprennent la police du texte
+   (m2 : « 59 : 36 »), chiffres alignés ; la chasse fixe reste aux doses et à la valeur de la feuille Mesurer. */
+.brew-page.bz .bz-temps, .brew-page.bz .bz-temps.bz-m { font-family: inherit; font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.brew-page.bz .bz-fin .bz-m, .brew-page.bz .bz-nom small .bz-m, .brew-page.bz .bz-precedent .bz-m, .brew-page.bz .bz-compte, .brew-page.bz .bz-ecart .bz-m { font-family: inherit; font-variant-numeric: tabular-nums; }
+.brew-page.bz .bz-mesure-ok, .brew-page.bz .bz-mesure-hors { display: inline-flex; align-items: center; gap: 3px; font-weight: 600; vertical-align: bottom; }
+.brew-page.bz .bz-mesure-ok { color: var(--bz-hop); }
+.brew-page.bz .bz-mesure-hors { color: var(--bz-warn); }
+.brew-page.bz .bz-row .bz-dose.bz-attendu { min-height: 36px; border: 1.5px dashed var(--bz-warn); color: var(--bz-warn); background: color-mix(in srgb, var(--bz-warn) 6%, var(--bz-page)); }
+.brew-page.bz .bz-row .bz-dose.bz-attendu strong { color: var(--bz-warn); }
+.brew-page.bz .bz-row .bz-dose.bz-attendu[data-tard] { border-color: var(--bz-border2); color: var(--bz-t2); background: var(--bz-page); }
+.brew-page.bz .bz-row .bz-dose.bz-attendu[data-tard] strong { color: var(--bz-t2); }
+.brew-page.bz .bz-row .bz-dose.is-lecture { min-height: 36px; }
+
+.brew-page.bz .bz-lecture { display: flex; align-items: center; gap: 8px; margin-top: 10px; min-height: 40px; }
+.brew-page.bz .bz-lecture .bz-saisie { margin-top: 0; flex: 1 1 auto; min-width: 0; }
+.brew-page.bz .bz-val { display: flex; align-items: baseline; gap: 4px; min-height: 40px; padding: 0 2px; border: 0; border-bottom: 1.5px dashed var(--bz-border2); border-radius: 0; background: none; color: var(--bz-t0); }
+.brew-page.bz .bz-quoi { flex: 0 0 auto; white-space: nowrap; color: var(--bz-t2); font-size: 14px; }
+.brew-page.bz .bz-val b { font-size: 28px; line-height: 1.05; font-weight: 600; }
+.brew-page.bz .bz-val[data-vide] b { color: var(--bz-warn); }
+.brew-page.bz .bz-val .bz-u { color: var(--bz-t2); font-size: 14px; }
+.brew-page.bz .bz-val svg { align-self: center; margin-left: 2px; color: var(--bz-t2); }
+.brew-page.bz .bz-pas { margin-left: auto; display: flex; gap: 3px; flex: none; }
+.brew-page.bz .bz-pas button { height: 44px; min-height: 44px; min-width: 52px; padding: 0 6px; border: 1px solid var(--bz-border2); border-radius: 4px; background: none; color: var(--bz-t0); font-size: 14px; font-weight: 500; }
+/* Téléphone : la valeur à 28 px est le champ ; le crayon ouvre le vrai champ décimal. À l'ordinateur, le champ reste à côté du curseur. */
+@media (max-width: 900px) {
+  .brew-page.bz .bz-lecture:not([data-sans-echelle]):not([data-champ]) .bz-saisie { display: none; }
+  .brew-page.bz .bz-lecture[data-champ] .bz-val { display: none; }
+}
+@media (min-width: 901px) {
+  .brew-page.bz .bz-lecture .bz-val { display: none; }
+}
+.brew-page.bz .bz-lecture[data-sans-echelle] .bz-val { display: none; }
+.brew-page.bz .bz-curseur { position: relative; margin-top: 6px; touch-action: none; }
+.brew-page.bz .bz-echelle-grads { position: relative; height: 16px; }
+.brew-page.bz .bz-echelle-grads span { position: absolute; top: 0; font-size: 12px; color: var(--bz-t2); transform: translateX(-50%); white-space: nowrap; }
+.brew-page.bz .bz-echelle-grads span[data-bout='g'] { transform: none; }
+.brew-page.bz .bz-echelle-grads span[data-bout='d'] { transform: translateX(-100%); }
+.brew-page.bz .bz-echelle-grads span[data-cible] { color: var(--bz-hop); font-weight: 600; }
+.brew-page.bz .bz-zone { position: relative; height: 44px; }
+.brew-page.bz .bz-zone .bz-echelle-rail { top: 10px; }
+.brew-page.bz .bz-zone .bz-echelle-cible { top: 6px; }
+.brew-page.bz .bz-zone .bz-tic { position: absolute; top: 16px; width: 1px; height: 5px; background: var(--bz-border2); transform: translateX(-50%); }
+.brew-page.bz .bz-pouce { position: absolute; top: 0; width: 0; transition: left .15s ease-out; pointer-events: none; }
+.brew-page.bz .bz-pouce i { position: absolute; left: -2px; top: 2px; width: 4px; height: 22px; border-radius: 2px; background: var(--bz-hop); }
+.brew-page.bz .bz-pouce b { position: absolute; left: -11px; top: 20px; width: 22px; height: 22px; border-radius: 50%; background: var(--bz-hop); border: 3px solid var(--bz-page); box-shadow: 0 0 0 1px var(--bz-hop); }
+.brew-page.bz .bz-pouce[data-hors] i, .brew-page.bz .bz-pouce[data-hors] b { background: var(--bz-alert); }
+.brew-page.bz .bz-pouce[data-hors] b { box-shadow: 0 0 0 1px var(--bz-alert); }
+.brew-page.bz .bz-pouce[data-vide] i { background: none; border: 1.5px dashed var(--bz-t2); }
+.brew-page.bz .bz-pouce[data-vide] b { background: var(--bz-page); border: 2px dashed var(--bz-t2); box-shadow: none; }
+.brew-page.bz .bz-range { position: absolute; left: -11px; top: 0; width: calc(100% + 22px); height: 44px; margin: 0; padding: 0; opacity: 0; cursor: pointer; touch-action: none; }
+.brew-page.bz .bz-range::-webkit-slider-thumb { width: 22px; height: 44px; }
+.brew-page.bz .bz-range::-moz-range-thumb { width: 22px; height: 44px; }
+.brew-page.bz .bz-ecart[data-k='vide'] { margin-top: 6px; color: var(--bz-t2); }
+.brew-page.bz .bz-ecart[data-k='vide'] b { color: var(--bz-t0); }
+.brew-page.bz .bz-pourquoi { display: flex; align-items: center; gap: 6px; min-height: 32px; margin-top: 8px; padding: 0; border: 0; background: none; color: var(--bz-t1); font-size: 14px; }
+.brew-page.bz .bz-raison { margin: 4px 0 0; padding: 8px 10px; border-left: 3px solid var(--bz-border2); background: var(--bz-raised); color: var(--bz-t1); font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { .brew-page.bz .bz-pouce { transition: none; } }
+
+/* Frise (p2c) : la règle tactile des boutons étirait les losanges ; la zone de toucher reste celle de ::after (24 px). */
+.brew-page.bz .brew-frise .fr-rel .fr-dm { min-width: 0; min-height: 0; padding: 0; width: 12px; height: 12px; }
+.brew-page.bz .brew-frise .fr-nom, .brew-page.bz .brew-frise .fr-ch { min-width: 0; min-height: 0; }
+
+/* p2c E4 (port-I2) : la clôture. Horloge de fin, levure en double phrase, avis d'un relevé qui demande une action. */
+.brew-page.bz .bz-fin-jour { display: flex; align-items: center; gap: 16px; padding: 12px 16px; border: 1px solid var(--bz-border); border-radius: 14px; background: var(--bz-surface, transparent); }
+.brew-page.bz .bz-fin-duree { font-size: 38px; line-height: 1; font-weight: 700; white-space: nowrap; }
+.brew-page.bz .bz-fin-texte { font-size: 14px; line-height: 1.35; color: var(--bz-t2); }
+.brew-page.bz .bz-levure-cloture-ligne { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px 10px; }
+.brew-page.bz .bz-levure-cloture-txt { flex: 1 1 auto; min-width: 0; font-size: 15px; }
+.brew-page.bz .bz-levure-cloture-sub { color: var(--bz-t2); font-size: 14px; }
+.brew-page.bz .bz-levure-cloture-phrase { margin: 4px 0 0; font-size: 14px; color: var(--bz-t2); }
+.brew-page.bz .bz-levure-cloture .bz-jauge { border-bottom: 0; margin-bottom: 0; }
+.brew-page.bz .bz-levure-cloture .bz-case-boite.is-fait { flex: 0 0 auto; background: var(--bz-ok, #3f7a3a); border-color: transparent; color: #fff; }
+.brew-page.bz .bz-avis-releve { display: grid; gap: 6px; }
+.brew-page.bz .bz-avis-releve .bz-releve-avis { margin: 0; display: flex; gap: 6px; align-items: center; font-size: 14px; }
+
+/* K4 n° 23 : le voile de la saisie flottante à 1280 (même teinte que celui du téléphone) ; la saisie passe devant. */
+.brew-page.bz .brew-capture-voile { position: fixed; inset: 0; z-index: 29; background: rgba(0, 0, 0, .35); }
+
+/* K6 n° 26 : une heure ou une mesure avec son unité ne se coupe pas en fin de ligne (voir `insecables` de src/ui/brewNombres.tsx). */
+.bz-nw { white-space: nowrap; }

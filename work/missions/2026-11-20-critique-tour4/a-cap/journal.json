@@ -1,0 +1,1296 @@
+{
+ "clair-390": {
+  "etats": {
+   "b1-bord-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir 1 article à commander Pilsner Stock 3 / seuil 2 kg À compléter +3 kg Copier la liste Finances Novembre 2026 Charges 725,40 CHF Agenda 0 à faire Gérer Cette semaine au calendrier rien de posé · voir les six semaines Aucune tâche prévue. Échéances et démarches 6 points à suivre · Fribourg / OFDF"
+   },
+   "b2-bord-echeances": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir 1 article à commander Pilsner Stock 3 / seuil 2 kg À compléter +3 kg Copier la liste Finances Novembre 2026 Charges 725,40 CHF Agenda 0 à faire Gérer Cette semaine au calendrier rien de posé · voir les six semaines Aucune tâche prévue. Échéances et démarches 6 points à suivre · Fribourg / OFDF Impôt fédéral sur la bière — Taxas Régime OFDF à confirmer Décompte TVA Trimestriel AFC Non assujettie Autocontrôle & Hygiène SAAV "
+   },
+   "b3-bord-vers-finances": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Payer Loyer de l’atelier 400,00 , éch"
+   },
+   "b4-bord-vers-calendrier": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 Loyer de l’atelier −400 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "b5-bord-pilsner": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "Caramel",
+     "Torréfiés",
+     "Spéciaux",
+     "Hazy",
+     "W. Coast",
+     "Pale",
+     "IPA",
+     "Anglaise"
+    ],
+    "texte": "Articles Courses Fûts Matériel Houblons Comparer une recette Besoin prévu face au stock Étagère Recompter manque 1 bas 0 épuisés 0 à compter 0 DDM 0 Ingrédients Autres stocks Malts 1 5 kg Base 3 kg Caramel Torréfiés Spéciaux Houblons 0 Hazy W. Coast Pale Levures 0 ? IPA Anglaise Blé Trié par couleur (malts), amertume (houblons), date (levures) ▾ Malts 1 par couleur, du plus clair au plus foncé à l'échelle ⫽ resserrée au-delà de 5 kg 0 1 2,5 5 kg 20 60 200 Pilsner manque 3 kg EBC 2,5–4,5 3 kg 3 k"
+   },
+   "b6-bord-agenda": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Brassins 1 Recettes 1 Atelier Volumes Matériel Carnet Tarifs Tout Bières Contacts À faire Faites 0 aujourd’hui · ven. 20 nov. 27 nov. 4 déc. 11 déc. Le fil est libre. Pose une tâche ou la date d’un marché ; le Bord la montre aussi. Poser Agenda du Bord 0 Bord Réfléchir à mes projets Avec Gemini"
+   },
+   "f1-synthese-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Payer Loyer de l’atelier 400,00 , éch"
+   },
+   "f2-synthese-barre-nettoyage": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 Archives comprises Nettoyage +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 1 opération 1er 30 auj. 20 payé 42,00 à payer 0,00 dépensé 42,00 Nettoyage 42,00 Nettoyant alcalin · Comptoir du brasseur ✓ payé aujourd’hui · banque sans pièce + pièce 42,00 Pourquoi les charges fixes pèsent autant ? Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f3-synthese-pourquoi": {
+    "dlg": [
+     "Pourquoi si peu ? Pourquoi si peu ? Ce qui est entré (720,00 CHF) est parti surtout dans « Loyer de l’atelier » : 400,00 CHF, soit 56 % de l’entré. « Brassage » en prend 26 %. Il en reste 23,20 CHF. Brassage 26 % Loyer de l’atelier 56 % Source : Opérations de "
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Pourquoi si peu ? Pourquoi si peu ? Ce qui est entré (720,00 CHF) est parti surtout dans « Loyer de l’atelier » : 400,00 CHF, soit 56 % de l’entré. « Brassage » en prend 26 %. Il en reste 23,20 CHF. Brassage 26 % Loyer de l’atelier 56 % Source : Opérations de novembre (6 lignes). Calcul fait ici, sans IA."
+   },
+   "f4-synthese-autre-periode": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … du novembre 2026 au novembre 2026 Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Pay"
+   },
+   "f5-synthese-payer": {
+    "dlg": [
+     "Payer l’Atelier 2 pièces à payer au même fournisseur Ton virement retard 60,00 loyer 400,00 Le plus ancien d’abord ✓ Solde atelier · ancienne année depuis le 20 déc. 2025 60,00 ✓ soldé ✓ Loyer de l’atelier à payer · 25 nov. 400,00 ✓ soldé Justificatif du virem"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Payer l’Atelier 2 pièces à payer au même fournisseur Ton virement retard 60,00 loyer 400,00 Le plus ancien d’abord ✓ Solde atelier · ancienne année depuis le 20 déc. 2025 60,00 ✓ soldé ✓ Loyer de l’atelier à payer · 25 nov. 400,00 ✓ soldé Justificatif du virement sera joint aux 2 pièces Photo Fichier Le aujourd’hui autre avec banque Annuler ✓ Payer 460,00"
+   },
+   "f6-operations-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 6 opérations · 1 à payer 1er 30 auj. 20 payé 296,80 à payer 400,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier à payer · 25 nov. · dans 5 j sans pièce ✓ Payé 400,00 Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé aujourd’hui · banque sans pièce + pièc"
+   },
+   "f7-operations-fiche-electricite": {
+    "dlg": [
+     "Électricité Charges fixes · Énergie · 20 nov. 2026 68,00 CHF ✓ payé aujourd’hui · banque Sans justificatif c’est normal Modifier Avoir ou remboursement Échéance et prévision Paiements 1 20 nov. 2026 · banque −68,00 Corriger ce paiement saisi par erreur Corrige"
+    ],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Électricité Charges fixes · Énergie · 20 nov. 2026 68,00 CHF ✓ payé aujourd’hui · banque Sans justificatif c’est normal Modifier Avoir ou remboursement Échéance et prévision Paiements 1 20 nov. 2026 · banque −68,00 Corriger ce paiement saisi par erreur Corriger une erreur de saisie"
+   },
+   "f8-operations-filtre-brassage": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 Brassage +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 1 opération 1er 30 auj. 20 payé 186,80 à payer 0,00 dépensé 186,80 Brassage 186,80 Malt et houblons · Pale Ale · Comptoir du brasseur ✓ payé aujourd’hui · banque sans pièce + pièce 186,80 Pourquoi les charges fixes pèsent autant ? Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f9-operations-payer-loyer": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 6 opérations · 1 à payer 1er 30 auj. 20 payé 696,80 à payer 0,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier ✓ payé aujourd’hui · banque sans pièce 400,00 Payé 400,00 Annuler Autre montant Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé aujourd’hui · "
+   },
+   "f10-operations-en-retard": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Tous les exercices retard 60,00 Suivi sur tous les exercices, archives comprises. En retard Charges fixes 60,00 Solde atelier · ancienne année à payer depuis le 20 déc. 2025 sans pièce ✓ Payé 60,00 Vérifier mes opérations Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f11-previsions-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 17 févr. 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire au-dessus de zéro 2 107,34 Sans Fermenteur supplémentaire au-dessus de zéro 2 857,34 0 1 000 2 000 3 000 4 000 nov. déc. janv. févr. aujourd’hui 4 181,60 3 657,34 2 507,34 sans Fermenteur supplé… 2 857,34 2 sorties −124,26, 20.11 loyer −400, 25.11 loyer −400, 25.12 Ferment"
+   },
+   "c1-cal-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 Loyer de l’atelier −400 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c2-cal-menu-periode": {
+    "dlg": [
+     "Nov. · S47 – S50 · 16 nov. → 13 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Nov. · S47 – S50 · 16 nov. → 13 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+   },
+   "c3-cal-loyer": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 Loyer de l’atelier −400 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c4-cal-plus-ventes": {
+    "dlg": [
+     "Ventes Ajouter Brassins Fêtes Ventes Achats Travaux Activités Papiers Café du Bourg Martin Rey CHF + Semaine S47, 20 nov. S47 16 S48 23 S49 30 S50 7 S51 14 S52 21 S53 28 S1 4 S2 11 S3 18 S4 25 S5 1 S6 8 S7 15 S8 22 S9 1 S10 8 S11 15 S12 22 S13 29 S14 5 S15 12 "
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Ventes Ajouter Brassins Fêtes Ventes Achats Travaux Activités Papiers Café du Bourg Martin Rey CHF + Semaine S47, 20 nov. S47 16 S48 23 S49 30 S50 7 S51 14 S52 21 S53 28 S1 4 S2 11 S3 18 S4 25 S5 1 S6 8 S7 15 S8 22 S9 1 S10 8 S11 15 S12 22 S13 29 S14 5 S15 12 S16 19 S17 26 S18 3 S19 10 S20 17 S21 24 S22 31 S23 7 S24 14 S25 21 S26 28 S27 5 S28 12 S29 19 S30 26 S31 2 S32 9 S33 16 S34 23 S35 30 S36 6 S37 13 S38 20 S39 27 S40 4 S41 11 S42 18 S43 25 S44 1 S45 8 Autre nom Ajouter en S47"
+   },
+   "c5-cal-sans-courbe": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± Nov. 1 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c6-cal-maintenant": {
+    "dlg": [
+     "Maintenant : 1 en retard Maintenant : 1 en retard Solde atelier · ancienne année échéance le 20 déc. · 60 CHF"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Maintenant : 1 en retard Maintenant : 1 en retard Solde atelier · ancienne année échéance le 20 déc. · 60 CHF"
+   },
+   "k1-banc-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes +1 850 confirmé S47–S52 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +"
+   },
+   "k2-banc-saison": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes +1 850 confirmé S47–S52 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +"
+   },
+   "k3-banc-glisser-pendant": {
+    "dlg": [],
+    "deborde": true,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz S50 · 7 déc. · lâcher ici Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes +1 850 confirmé S47–S52 Dédé, 1 fût +130 Épic"
+   },
+   "k4-banc-glisser-apres": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 J0 / 28 · prête 23 déc. Stout maison −142 Blonde d’automne −158 Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes +1 850 confirmé S47–S52 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du Pont"
+   },
+   "k5-banc-menu": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes +1 850 confirmé S47–S52 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +"
+   },
+   "k6-banc-liste": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes +1 850 confirmé S47–S52 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +"
+   },
+   "k7-banc-plein-ecran": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes +1 850 confirmé S47–S52 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +"
+   }
+  },
+  "erreurs": [],
+  "rates": [
+   "finances: e.click is not a function",
+   "k5: « Nov. · période » introuvable",
+   "k5: « Nov » introuvable",
+   "k6: « Liste » introuvable"
+  ]
+ },
+ "cave-390": {
+  "etats": {
+   "b1-bord-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir 1 article à commander Pilsner Stock 3 / seuil 2 kg À compléter +3 kg Copier la liste Finances Novembre 2026 Charges 725,40 CHF Agenda 0 à faire Gérer Cette semaine au calendrier rien de posé · voir les six semaines Aucune tâche prévue. Échéances et démarches 6 points à suivre · Fribourg / OFDF"
+   },
+   "b2-bord-echeances": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir 1 article à commander Pilsner Stock 3 / seuil 2 kg À compléter +3 kg Copier la liste Finances Novembre 2026 Charges 725,40 CHF Agenda 0 à faire Gérer Cette semaine au calendrier rien de posé · voir les six semaines Aucune tâche prévue. Échéances et démarches 6 points à suivre · Fribourg / OFDF Impôt fédéral sur la bière — Taxas Régime OFDF à confirmer Décompte TVA Trimestriel AFC Non assujettie Autocontrôle & Hygiène SAAV "
+   },
+   "b3-bord-vers-finances": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Payer Loyer de l’atelier 400,00 , éch"
+   },
+   "b4-bord-vers-calendrier": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 Loyer de l’atelier −400 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "b5-bord-pilsner": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "Caramel",
+     "Torréfiés",
+     "Spéciaux",
+     "Hazy",
+     "W. Coast",
+     "Pale",
+     "IPA",
+     "Anglaise"
+    ],
+    "texte": "Articles Courses Fûts Matériel Houblons Comparer une recette Besoin prévu face au stock Étagère Recompter manque 1 bas 0 épuisés 0 à compter 0 DDM 0 Ingrédients Autres stocks Malts 1 5 kg Base 3 kg Caramel Torréfiés Spéciaux Houblons 0 Hazy W. Coast Pale Levures 0 ? IPA Anglaise Blé Trié par couleur (malts), amertume (houblons), date (levures) ▾ Malts 1 par couleur, du plus clair au plus foncé à l'échelle ⫽ resserrée au-delà de 5 kg 0 1 2,5 5 kg 20 60 200 Pilsner manque 3 kg EBC 2,5–4,5 3 kg 3 k"
+   },
+   "b6-bord-agenda": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Brassins 1 Recettes 1 Atelier Volumes Matériel Carnet Tarifs Tout Bières Contacts À faire Faites 0 aujourd’hui · ven. 20 nov. 27 nov. 4 déc. 11 déc. Le fil est libre. Pose une tâche ou la date d’un marché ; le Bord la montre aussi. Poser Agenda du Bord 0 Bord Réfléchir à mes projets Avec Gemini"
+   },
+   "f1-synthese-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Payer Loyer de l’atelier 400,00 , éch"
+   },
+   "f2-synthese-barre-nettoyage": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 Archives comprises Nettoyage +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 1 opération 1er 30 auj. 20 payé 42,00 à payer 0,00 dépensé 42,00 Nettoyage 42,00 Nettoyant alcalin · Comptoir du brasseur ✓ payé aujourd’hui · banque sans pièce + pièce 42,00 Pourquoi les charges fixes pèsent autant ? Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f3-synthese-pourquoi": {
+    "dlg": [
+     "Pourquoi si peu ? Pourquoi si peu ? Ce qui est entré (720,00 CHF) est parti surtout dans « Loyer de l’atelier » : 400,00 CHF, soit 56 % de l’entré. « Brassage » en prend 26 %. Il en reste 23,20 CHF. Brassage 26 % Loyer de l’atelier 56 % Source : Opérations de "
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Pourquoi si peu ? Pourquoi si peu ? Ce qui est entré (720,00 CHF) est parti surtout dans « Loyer de l’atelier » : 400,00 CHF, soit 56 % de l’entré. « Brassage » en prend 26 %. Il en reste 23,20 CHF. Brassage 26 % Loyer de l’atelier 56 % Source : Opérations de novembre (6 lignes). Calcul fait ici, sans IA."
+   },
+   "f4-synthese-autre-periode": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … du novembre 2026 au novembre 2026 Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Pay"
+   },
+   "f5-synthese-payer": {
+    "dlg": [
+     "Payer l’Atelier 2 pièces à payer au même fournisseur Ton virement retard 60,00 loyer 400,00 Le plus ancien d’abord ✓ Solde atelier · ancienne année depuis le 20 déc. 2025 60,00 ✓ soldé ✓ Loyer de l’atelier à payer · 25 nov. 400,00 ✓ soldé Justificatif du virem"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Payer l’Atelier 2 pièces à payer au même fournisseur Ton virement retard 60,00 loyer 400,00 Le plus ancien d’abord ✓ Solde atelier · ancienne année depuis le 20 déc. 2025 60,00 ✓ soldé ✓ Loyer de l’atelier à payer · 25 nov. 400,00 ✓ soldé Justificatif du virement sera joint aux 2 pièces Photo Fichier Le aujourd’hui autre avec banque Annuler ✓ Payer 460,00"
+   },
+   "f6-operations-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 6 opérations · 1 à payer 1er 30 auj. 20 payé 296,80 à payer 400,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier à payer · 25 nov. · dans 5 j sans pièce ✓ Payé 400,00 Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé aujourd’hui · banque sans pièce + pièc"
+   },
+   "f7-operations-fiche-electricite": {
+    "dlg": [
+     "Électricité Charges fixes · Énergie · 20 nov. 2026 68,00 CHF ✓ payé aujourd’hui · banque Sans justificatif c’est normal Modifier Avoir ou remboursement Échéance et prévision Paiements 1 20 nov. 2026 · banque −68,00 Corriger ce paiement saisi par erreur Corrige"
+    ],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Électricité Charges fixes · Énergie · 20 nov. 2026 68,00 CHF ✓ payé aujourd’hui · banque Sans justificatif c’est normal Modifier Avoir ou remboursement Échéance et prévision Paiements 1 20 nov. 2026 · banque −68,00 Corriger ce paiement saisi par erreur Corriger une erreur de saisie"
+   },
+   "f8-operations-filtre-brassage": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 Brassage +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 1 opération 1er 30 auj. 20 payé 186,80 à payer 0,00 dépensé 186,80 Brassage 186,80 Malt et houblons · Pale Ale · Comptoir du brasseur ✓ payé aujourd’hui · banque sans pièce + pièce 186,80 Pourquoi les charges fixes pèsent autant ? Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f9-operations-payer-loyer": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 6 opérations · 1 à payer 1er 30 auj. 20 payé 696,80 à payer 0,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier ✓ payé aujourd’hui · banque sans pièce 400,00 Payé 400,00 Annuler Autre montant Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé aujourd’hui · "
+   },
+   "f10-operations-en-retard": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Tous les exercices retard 60,00 Suivi sur tous les exercices, archives comprises. En retard Charges fixes 60,00 Solde atelier · ancienne année à payer depuis le 20 déc. 2025 sans pièce ✓ Payé 60,00 Vérifier mes opérations Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f11-previsions-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 17 févr. 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire au-dessus de zéro 2 107,34 Sans Fermenteur supplémentaire au-dessus de zéro 2 857,34 0 1 000 2 000 3 000 4 000 nov. déc. janv. févr. aujourd’hui 4 181,60 3 657,34 2 507,34 sans Fermenteur supplé… 2 857,34 2 sorties −124,26, 20.11 loyer −400, 25.11 loyer −400, 25.12 Ferment"
+   },
+   "c1-cal-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 Loyer de l’atelier −400 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c2-cal-menu-periode": {
+    "dlg": [
+     "Nov. · S47 – S50 · 16 nov. → 13 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Nov. · S47 – S50 · 16 nov. → 13 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+   },
+   "c3-cal-loyer": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 Loyer de l’atelier −400 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c4-cal-plus-ventes": {
+    "dlg": [
+     "Ventes Ajouter Brassins Fêtes Ventes Achats Travaux Activités Papiers Café du Bourg Martin Rey CHF + Semaine S47, 20 nov. S47 16 S48 23 S49 30 S50 7 S51 14 S52 21 S53 28 S1 4 S2 11 S3 18 S4 25 S5 1 S6 8 S7 15 S8 22 S9 1 S10 8 S11 15 S12 22 S13 29 S14 5 S15 12 "
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Ventes Ajouter Brassins Fêtes Ventes Achats Travaux Activités Papiers Café du Bourg Martin Rey CHF + Semaine S47, 20 nov. S47 16 S48 23 S49 30 S50 7 S51 14 S52 21 S53 28 S1 4 S2 11 S3 18 S4 25 S5 1 S6 8 S7 15 S8 22 S9 1 S10 8 S11 15 S12 22 S13 29 S14 5 S15 12 S16 19 S17 26 S18 3 S19 10 S20 17 S21 24 S22 31 S23 7 S24 14 S25 21 S26 28 S27 5 S28 12 S29 19 S30 26 S31 2 S32 9 S33 16 S34 23 S35 30 S36 6 S37 13 S38 20 S39 27 S40 4 S41 11 S42 18 S43 25 S44 1 S45 8 Autre nom Ajouter en S47"
+   },
+   "c5-cal-sans-courbe": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± Nov. 1 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c6-cal-maintenant": {
+    "dlg": [
+     "Maintenant : 1 en retard Maintenant : 1 en retard Solde atelier · ancienne année échéance le 20 déc. · 60 CHF"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Maintenant : 1 en retard Maintenant : 1 en retard Solde atelier · ancienne année échéance le 20 déc. · 60 CHF"
+   },
+   "k1-banc-repos": {
+    "dlg": [],
+    "deborde": true,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes +1 850 confirmé S47–S52 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +"
+   },
+   "k2-banc-saison": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes +1 850 confirmé S47–S52 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +"
+   },
+   "k3-banc-glisser-pendant": {
+    "dlg": [],
+    "deborde": true,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz S50 · 7 déc. · lâcher ici Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes +1 850 confirmé S47–S52 Dédé, 1 fût +130 Épic"
+   },
+   "k4-banc-glisser-apres": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 J0 / 28 · prête 23 déc. Stout maison −142 Blonde d’automne −158 Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes +1 850 confirmé S47–S52 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du Pont"
+   },
+   "k5-banc-menu": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes +1 850 confirmé S47–S52 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +"
+   },
+   "k6-banc-liste": {
+    "dlg": [],
+    "deborde": true,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes +1 850 confirmé S47–S52 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +"
+   },
+   "k7-banc-plein-ecran": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes +1 850 confirmé S47–S52 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +"
+   }
+  },
+  "erreurs": [],
+  "rates": [
+   "finances: e.click is not a function",
+   "k5: « Nov. · période » introuvable",
+   "k5: « Nov » introuvable",
+   "k6: « Liste » introuvable"
+  ]
+ },
+ "clair-844": {
+  "etats": {
+   "b1-bord-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir 1 article à commander Pilsner Stock 3 / seuil 2 kg À compléter +3 kg Copier la liste Finances Novembre 2026 Charges 725,40 CHF Agenda 0 à faire Gérer Cette semaine au calendrier rien de posé · voir les six semaines Aucune tâche prévue. Échéances et démarches 6 points à suivre · Fribourg / OFDF"
+   },
+   "b2-bord-echeances": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir 1 article à commander Pilsner Stock 3 / seuil 2 kg À compléter +3 kg Copier la liste Finances Novembre 2026 Charges 725,40 CHF Agenda 0 à faire Gérer Cette semaine au calendrier rien de posé · voir les six semaines Aucune tâche prévue. Échéances et démarches 6 points à suivre · Fribourg / OFDF Impôt fédéral sur la bière — Taxas Régime OFDF à confirmer Décompte TVA Trimestriel AFC Non assujettie Autocontrôle & Hygiène SAAV "
+   },
+   "b3-bord-vers-finances": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Payer Loyer de l’atelier 400,00 , éch"
+   },
+   "b4-bord-vers-calendrier": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "b5-bord-pilsner": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Articles Courses Fûts Matériel Houblons Comparer une recette Besoin prévu face au stock Étagère Recompter Ajouter un article manque 1 bas 0 épuisés 0 à compter 0 DDM 0 Ingrédients Autres stocks Malts 1 5 kg Base 3 kg Caramel Torréfiés Spéciaux Houblons 0 Hazy W. Coast Pale Levures 0 ? IPA Anglaise Blé Trié par couleur (malts), amertume (houblons), date (levures) ▾ Malts 1 par couleur, du plus clair au plus foncé à l'échelle ⫽ resserrée au-delà de 5 kg 0 1 2,5 5 kg 20 60 200 Pilsner manque 3 kg E"
+   },
+   "b6-bord-agenda": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Brassins 1 Recettes 1 Atelier Volumes Atelier R&D Matériel Carnet Tarifs Tout Bières Contacts À faire Faites 0 aujourd’hui · ven. 20 nov. 27 nov. 4 déc. 11 déc. Le fil est libre. Pose une tâche ou la date d’un marché ; le Bord la montre aussi. Poser Agenda du Bord 0 Bord Réfléchir à mes projets Avec Gemini"
+   },
+   "f1-synthese-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Payer Loyer de l’atelier 400,00 , éch"
+   },
+   "f2-synthese-barre-nettoyage": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 Archives comprises Nettoyage +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 1 opération 1er 30 auj. 20 payé 42,00 à payer 0,00 dépensé 42,00 Nettoyage 42,00 Nettoyant alcalin · Comptoir du brasseur ✓ payé aujourd’hui · banque sans pièce + pièce 42,00 Pourquoi les charges fixes pèsent autant ? Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f3-synthese-pourquoi": {
+    "dlg": [
+     "Pourquoi si peu ? Pourquoi si peu ? Ce qui est entré (720,00 CHF) est parti surtout dans « Loyer de l’atelier » : 400,00 CHF, soit 56 % de l’entré. « Brassage » en prend 26 %. Il en reste 23,20 CHF. Brassage 26 % Loyer de l’atelier 56 % Source : Opérations de "
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Pourquoi si peu ? Pourquoi si peu ? Ce qui est entré (720,00 CHF) est parti surtout dans « Loyer de l’atelier » : 400,00 CHF, soit 56 % de l’entré. « Brassage » en prend 26 %. Il en reste 23,20 CHF. Brassage 26 % Loyer de l’atelier 56 % Source : Opérations de novembre (6 lignes). Calcul fait ici, sans IA."
+   },
+   "f4-synthese-autre-periode": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … du novembre 2026 au novembre 2026 Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Pay"
+   },
+   "f5-synthese-payer": {
+    "dlg": [
+     "Payer l’Atelier 2 pièces à payer au même fournisseur Ton virement retard 60,00 loyer 400,00 Le plus ancien d’abord ✓ Solde atelier · ancienne année depuis le 20 déc. 2025 60,00 ✓ soldé ✓ Loyer de l’atelier à payer · 25 nov. 400,00 ✓ soldé Justificatif du virem"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Payer l’Atelier 2 pièces à payer au même fournisseur Ton virement retard 60,00 loyer 400,00 Le plus ancien d’abord ✓ Solde atelier · ancienne année depuis le 20 déc. 2025 60,00 ✓ soldé ✓ Loyer de l’atelier à payer · 25 nov. 400,00 ✓ soldé Justificatif du virement sera joint aux 2 pièces Photo Fichier Le aujourd’hui autre avec banque Annuler ✓ Payer 460,00"
+   },
+   "f6-operations-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 6 opérations · 1 à payer 1er 30 auj. 20 payé 296,80 à payer 400,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier à payer · 25 nov. · dans 5 j sans pièce ✓ Payé 400,00 Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé aujourd’hui · banque sans pièce + pièc"
+   },
+   "f7-operations-fiche-electricite": {
+    "dlg": [
+     "Électricité Charges fixes · Énergie · 20 nov. 2026 68,00 CHF ✓ payé aujourd’hui · banque Sans justificatif c’est normal Modifier Avoir ou remboursement Échéance et prévision Paiements 1 20 nov. 2026 · banque −68,00 Corriger ce paiement saisi par erreur Corrige"
+    ],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Électricité Charges fixes · Énergie · 20 nov. 2026 68,00 CHF ✓ payé aujourd’hui · banque Sans justificatif c’est normal Modifier Avoir ou remboursement Échéance et prévision Paiements 1 20 nov. 2026 · banque −68,00 Corriger ce paiement saisi par erreur Corriger une erreur de saisie"
+   },
+   "f8-operations-filtre-brassage": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 Brassage +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 1 opération 1er 30 auj. 20 payé 186,80 à payer 0,00 dépensé 186,80 Brassage 186,80 Malt et houblons · Pale Ale · Comptoir du brasseur ✓ payé aujourd’hui · banque sans pièce + pièce 186,80 Pourquoi les charges fixes pèsent autant ? Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f9-operations-payer-loyer": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 6 opérations · 1 à payer 1er 30 auj. 20 payé 696,80 à payer 0,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier ✓ payé aujourd’hui · banque sans pièce 400,00 Payé 400,00 Annuler Autre montant Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé aujourd’hui · "
+   },
+   "f10-operations-en-retard": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Tous les exercices en retard 60,00 Suivi sur tous les exercices, archives comprises. En retard Charges fixes 60,00 Solde atelier · ancienne année à payer depuis le 20 déc. 2025 sans pièce ✓ Payé 60,00 Vérifier mes opérations Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f11-previsions-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 17 févr. 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire au-dessus de zéro 2 107,34 Sans Fermenteur supplémentaire au-dessus de zéro 2 857,34 0 1 000 2 000 3 000 4 000 nov. déc. janv. févr. aujourd’hui 4 181,60 3 657,34 2 507,34 sans Fermenteur supplé… 2 857,34 2 sorties −124,26, 20.11 loyer −400, 25.11 loyer −400, 25.12 Ferment"
+   },
+   "c1-cal-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± 3 mois 1 Fermenteur supplémentaire −750 S47 – S6 2027 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 vides Brassins vide Fêtes vide Ventes vide Achats −64 Pale Ale de septembre −64 Travaux −750 Fermenteur supplémentaire −750 Activités vide Papiers −460 Loyer de l’atelier −400 Loyer de l’atelier −400 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c2-cal-menu-periode": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± 3 mois 1 Fermenteur supplémentaire −750 S47 – S6 2027 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 vides Brassins vide Fêtes vide Ventes vide Achats −64 Pale Ale de septembre −64 Travaux −750 Fermenteur supplémentaire −750 Activités vide Papiers −460 Loyer de l’atelier −400 Loyer de l’atelier −400 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c3-cal-loyer": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c4-cal-plus-ventes": {
+    "dlg": [
+     "Ventes Ajouter Brassins Fêtes Ventes Achats Travaux Activités Papiers Café du Bourg Martin Rey CHF + Semaine S47, 20 nov. S47 16 S48 23 S49 30 S50 7 S51 14 S52 21 S53 28 S1 4 S2 11 S3 18 S4 25 S5 1 S6 8 S7 15 S8 22 S9 1 S10 8 S11 15 S12 22 S13 29 S14 5 S15 12 "
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Ventes Ajouter Brassins Fêtes Ventes Achats Travaux Activités Papiers Café du Bourg Martin Rey CHF + Semaine S47, 20 nov. S47 16 S48 23 S49 30 S50 7 S51 14 S52 21 S53 28 S1 4 S2 11 S3 18 S4 25 S5 1 S6 8 S7 15 S8 22 S9 1 S10 8 S11 15 S12 22 S13 29 S14 5 S15 12 S16 19 S17 26 S18 3 S19 10 S20 17 S21 24 S22 31 S23 7 S24 14 S25 21 S26 28 S27 5 S28 12 S29 19 S30 26 S31 2 S32 9 S33 16 S34 23 S35 30 S36 6 S37 13 S38 20 S39 27 S40 4 S41 11 S42 18 S43 25 S44 1 S45 8 Autre nom Ajouter en S47"
+   },
+   "c5-cal-sans-courbe": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± Nov. 1 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c6-cal-maintenant": {
+    "dlg": [
+     "Maintenant : 1 en retard Maintenant : 1 en retard Solde atelier · ancienne année échéance le 20 déc. · 60 CHF"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Maintenant : 1 en retard Maintenant : 1 en retard Solde atelier · ancienne année échéance le 20 déc. · 60 CHF"
+   },
+   "k1-banc-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 Brassins −623 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 J0 / 28 · prête 18 janv. Ambrée maison Fêtes +3 580 estimé Foire du Valais +2 400 Marché de Noël +1 180 Ventes +3 050 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du Pont, 1 fût +130 3 fûts L"
+   },
+   "k2-banc-saison": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 Brassins −623 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 J0 / 28 · prête 18 janv. Ambrée maison Fêtes +3 580 estimé Foire du Valais +2 400 Marché de Noël +1 180 Ventes +3 050 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du Pont, 1 fût +130 3 fûts L"
+   },
+   "k3-banc-glisser-pendant": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 Brassins −623 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 J0 / 28 · prête 18 janv. Ambrée maison S50 · 7 déc. · lâcher ici Fêtes +3 580 estimé Foire du Valais +2 400 Marché de Noël +1 180 Ventes +3 050 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du"
+   },
+   "k4-banc-glisser-apres": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 Brassins −623 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 prête 4 janv. Blonde d’automne −158 J0 / 28 · prête 18 janv. Ambrée maison Fêtes +3 580 estimé Foire du Valais +2 400 Marché de Noël +1 180 Ventes +3 050 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du Pont, 1 fût +130 3 fûts L"
+   },
+   "k5-banc-menu": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 Brassins −623 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 J0 / 28 · prête 18 janv. Ambrée maison Fêtes +3 580 estimé Foire du Valais +2 400 Marché de Noël +1 180 Ventes +3 050 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du Pont, 1 fût +130 3 fûts L"
+   },
+   "k6-banc-liste": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 Brassins −623 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 J0 / 28 · prête 18 janv. Ambrée maison Fêtes +3 580 estimé Foire du Valais +2 400 Marché de Noël +1 180 Ventes +3 050 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du Pont, 1 fût +130 3 fûts L"
+   },
+   "k7-banc-plein-ecran": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 Brassins −623 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 J0 / 28 · prête 18 janv. Ambrée maison Fêtes +3 580 estimé Foire du Valais +2 400 Marché de Noël +1 180 Ventes +3 050 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du Pont, 1 fût +130 3 fûts L"
+   }
+  },
+  "erreurs": [],
+  "rates": [
+   "finances: e.click is not a function",
+   "c2: « Nov. · période » introuvable",
+   "k5: « Nov. · période » introuvable",
+   "k5: « Nov » introuvable",
+   "k6: « Liste » introuvable"
+  ]
+ },
+ "cave-844": {
+  "etats": {
+   "b1-bord-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir 1 article à commander Pilsner Stock 3 / seuil 2 kg À compléter +3 kg Copier la liste Finances Novembre 2026 Charges 725,40 CHF Agenda 0 à faire Gérer Cette semaine au calendrier rien de posé · voir les six semaines Aucune tâche prévue. Échéances et démarches 6 points à suivre · Fribourg / OFDF"
+   },
+   "b2-bord-echeances": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir 1 article à commander Pilsner Stock 3 / seuil 2 kg À compléter +3 kg Copier la liste Finances Novembre 2026 Charges 725,40 CHF Agenda 0 à faire Gérer Cette semaine au calendrier rien de posé · voir les six semaines Aucune tâche prévue. Échéances et démarches 6 points à suivre · Fribourg / OFDF Impôt fédéral sur la bière — Taxas Régime OFDF à confirmer Décompte TVA Trimestriel AFC Non assujettie Autocontrôle & Hygiène SAAV "
+   },
+   "b3-bord-vers-finances": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Payer Loyer de l’atelier 400,00 , éch"
+   },
+   "b4-bord-vers-calendrier": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "b5-bord-pilsner": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Articles Courses Fûts Matériel Houblons Comparer une recette Besoin prévu face au stock Étagère Recompter Ajouter un article manque 1 bas 0 épuisés 0 à compter 0 DDM 0 Ingrédients Autres stocks Malts 1 5 kg Base 3 kg Caramel Torréfiés Spéciaux Houblons 0 Hazy W. Coast Pale Levures 0 ? IPA Anglaise Blé Trié par couleur (malts), amertume (houblons), date (levures) ▾ Malts 1 par couleur, du plus clair au plus foncé à l'échelle ⫽ resserrée au-delà de 5 kg 0 1 2,5 5 kg 20 60 200 Pilsner manque 3 kg E"
+   },
+   "b6-bord-agenda": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Brassins 1 Recettes 1 Atelier Volumes Atelier R&D Matériel Carnet Tarifs Tout Bières Contacts À faire Faites 0 aujourd’hui · ven. 20 nov. 27 nov. 4 déc. 11 déc. Le fil est libre. Pose une tâche ou la date d’un marché ; le Bord la montre aussi. Poser Agenda du Bord 0 Bord Réfléchir à mes projets Avec Gemini"
+   },
+   "f1-synthese-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Payer Loyer de l’atelier 400,00 , éch"
+   },
+   "f2-synthese-barre-nettoyage": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 Archives comprises Nettoyage +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 1 opération 1er 30 auj. 20 payé 42,00 à payer 0,00 dépensé 42,00 Nettoyage 42,00 Nettoyant alcalin · Comptoir du brasseur ✓ payé aujourd’hui · banque sans pièce + pièce 42,00 Pourquoi les charges fixes pèsent autant ? Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f3-synthese-pourquoi": {
+    "dlg": [
+     "Pourquoi si peu ? Pourquoi si peu ? Ce qui est entré (720,00 CHF) est parti surtout dans « Loyer de l’atelier » : 400,00 CHF, soit 56 % de l’entré. « Brassage » en prend 26 %. Il en reste 23,20 CHF. Brassage 26 % Loyer de l’atelier 56 % Source : Opérations de "
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Pourquoi si peu ? Pourquoi si peu ? Ce qui est entré (720,00 CHF) est parti surtout dans « Loyer de l’atelier » : 400,00 CHF, soit 56 % de l’entré. « Brassage » en prend 26 %. Il en reste 23,20 CHF. Brassage 26 % Loyer de l’atelier 56 % Source : Opérations de novembre (6 lignes). Calcul fait ici, sans IA."
+   },
+   "f4-synthese-autre-periode": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … du novembre 2026 au novembre 2026 Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Pay"
+   },
+   "f5-synthese-payer": {
+    "dlg": [
+     "Payer l’Atelier 2 pièces à payer au même fournisseur Ton virement retard 60,00 loyer 400,00 Le plus ancien d’abord ✓ Solde atelier · ancienne année depuis le 20 déc. 2025 60,00 ✓ soldé ✓ Loyer de l’atelier à payer · 25 nov. 400,00 ✓ soldé Justificatif du virem"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Payer l’Atelier 2 pièces à payer au même fournisseur Ton virement retard 60,00 loyer 400,00 Le plus ancien d’abord ✓ Solde atelier · ancienne année depuis le 20 déc. 2025 60,00 ✓ soldé ✓ Loyer de l’atelier à payer · 25 nov. 400,00 ✓ soldé Justificatif du virement sera joint aux 2 pièces Photo Fichier Le aujourd’hui autre avec banque Annuler ✓ Payer 460,00"
+   },
+   "f6-operations-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 6 opérations · 1 à payer 1er 30 auj. 20 payé 296,80 à payer 400,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier à payer · 25 nov. · dans 5 j sans pièce ✓ Payé 400,00 Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé aujourd’hui · banque sans pièce + pièc"
+   },
+   "f7-operations-fiche-electricite": {
+    "dlg": [
+     "Électricité Charges fixes · Énergie · 20 nov. 2026 68,00 CHF ✓ payé aujourd’hui · banque Sans justificatif c’est normal Modifier Avoir ou remboursement Échéance et prévision Paiements 1 20 nov. 2026 · banque −68,00 Corriger ce paiement saisi par erreur Corrige"
+    ],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Électricité Charges fixes · Énergie · 20 nov. 2026 68,00 CHF ✓ payé aujourd’hui · banque Sans justificatif c’est normal Modifier Avoir ou remboursement Échéance et prévision Paiements 1 20 nov. 2026 · banque −68,00 Corriger ce paiement saisi par erreur Corriger une erreur de saisie"
+   },
+   "f8-operations-filtre-brassage": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 Brassage +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 1 opération 1er 30 auj. 20 payé 186,80 à payer 0,00 dépensé 186,80 Brassage 186,80 Malt et houblons · Pale Ale · Comptoir du brasseur ✓ payé aujourd’hui · banque sans pièce + pièce 186,80 Pourquoi les charges fixes pèsent autant ? Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f9-operations-payer-loyer": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 6 opérations · 1 à payer 1er 30 auj. 20 payé 696,80 à payer 0,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier ✓ payé aujourd’hui · banque sans pièce 400,00 Payé 400,00 Annuler Autre montant Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé aujourd’hui · "
+   },
+   "f10-operations-en-retard": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Tous les exercices en retard 60,00 Suivi sur tous les exercices, archives comprises. En retard Charges fixes 60,00 Solde atelier · ancienne année à payer depuis le 20 déc. 2025 sans pièce ✓ Payé 60,00 Vérifier mes opérations Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f11-previsions-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 17 févr. 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire au-dessus de zéro 2 107,34 Sans Fermenteur supplémentaire au-dessus de zéro 2 857,34 0 1 000 2 000 3 000 4 000 nov. déc. janv. févr. aujourd’hui 4 181,60 3 657,34 2 507,34 sans Fermenteur supplé… 2 857,34 2 sorties −124,26, 20.11 loyer −400, 25.11 loyer −400, 25.12 Ferment"
+   },
+   "c1-cal-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± 3 mois 1 Fermenteur supplémentaire −750 S47 – S6 2027 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 vides Brassins vide Fêtes vide Ventes vide Achats −64 Pale Ale de septembre −64 Travaux −750 Fermenteur supplémentaire −750 Activités vide Papiers −460 Loyer de l’atelier −400 Loyer de l’atelier −400 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c2-cal-menu-periode": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± 3 mois 1 Fermenteur supplémentaire −750 S47 – S6 2027 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 vides Brassins vide Fêtes vide Ventes vide Achats −64 Pale Ale de septembre −64 Travaux −750 Fermenteur supplémentaire −750 Activités vide Papiers −460 Loyer de l’atelier −400 Loyer de l’atelier −400 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c3-cal-loyer": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c4-cal-plus-ventes": {
+    "dlg": [
+     "Ventes Ajouter Brassins Fêtes Ventes Achats Travaux Activités Papiers Café du Bourg Martin Rey CHF + Semaine S47, 20 nov. S47 16 S48 23 S49 30 S50 7 S51 14 S52 21 S53 28 S1 4 S2 11 S3 18 S4 25 S5 1 S6 8 S7 15 S8 22 S9 1 S10 8 S11 15 S12 22 S13 29 S14 5 S15 12 "
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Ventes Ajouter Brassins Fêtes Ventes Achats Travaux Activités Papiers Café du Bourg Martin Rey CHF + Semaine S47, 20 nov. S47 16 S48 23 S49 30 S50 7 S51 14 S52 21 S53 28 S1 4 S2 11 S3 18 S4 25 S5 1 S6 8 S7 15 S8 22 S9 1 S10 8 S11 15 S12 22 S13 29 S14 5 S15 12 S16 19 S17 26 S18 3 S19 10 S20 17 S21 24 S22 31 S23 7 S24 14 S25 21 S26 28 S27 5 S28 12 S29 19 S30 26 S31 2 S32 9 S33 16 S34 23 S35 30 S36 6 S37 13 S38 20 S39 27 S40 4 S41 11 S42 18 S43 25 S44 1 S45 8 Autre nom Ajouter en S47"
+   },
+   "c5-cal-sans-courbe": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser S43 ’27 ± Nov. 1 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c6-cal-maintenant": {
+    "dlg": [
+     "Maintenant : 1 en retard Maintenant : 1 en retard Solde atelier · ancienne année échéance le 20 déc. · 60 CHF"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Maintenant : 1 en retard Maintenant : 1 en retard Solde atelier · ancienne année échéance le 20 déc. · 60 CHF"
+   },
+   "k1-banc-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 Brassins −623 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 J0 / 28 · prête 18 janv. Ambrée maison Fêtes +3 580 estimé Foire du Valais +2 400 Marché de Noël +1 180 Ventes +3 050 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du Pont, 1 fût +130 3 fûts L"
+   },
+   "k2-banc-saison": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 Brassins −623 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 J0 / 28 · prête 18 janv. Ambrée maison Fêtes +3 580 estimé Foire du Valais +2 400 Marché de Noël +1 180 Ventes +3 050 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du Pont, 1 fût +130 3 fûts L"
+   },
+   "k3-banc-glisser-pendant": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 Brassins −623 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 J0 / 28 · prête 18 janv. Ambrée maison S50 · 7 déc. · lâcher ici Fêtes +3 580 estimé Foire du Valais +2 400 Marché de Noël +1 180 Ventes +3 050 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du"
+   },
+   "k4-banc-glisser-apres": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 Brassins −623 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 prête 4 janv. Blonde d’automne −158 J0 / 28 · prête 18 janv. Ambrée maison Fêtes +3 580 estimé Foire du Valais +2 400 Marché de Noël +1 180 Ventes +3 050 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du Pont, 1 fût +130 3 fûts L"
+   },
+   "k5-banc-menu": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 Brassins −623 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 J0 / 28 · prête 18 janv. Ambrée maison Fêtes +3 580 estimé Foire du Valais +2 400 Marché de Noël +1 180 Ventes +3 050 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du Pont, 1 fût +130 3 fûts L"
+   },
+   "k6-banc-liste": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 Brassins −623 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 J0 / 28 · prête 18 janv. Ambrée maison Fêtes +3 580 estimé Foire du Valais +2 400 Marché de Noël +1 180 Ventes +3 050 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du Pont, 1 fût +130 3 fûts L"
+   },
+   "k7-banc-plein-ecran": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 Brassins −623 pas brassée Saison de ferme −137 J11 / 28 IPA de printemps −45 prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 J0 / 28 · prête 18 janv. Ambrée maison Fêtes +3 580 estimé Foire du Valais +2 400 Marché de Noël +1 180 Ventes +3 050 Dédé, 1 fût +130 Épicerie du Bourg, 2 cartons +180 Café du Pont, 1 fût +130 3 fûts L"
+   }
+  },
+  "erreurs": [],
+  "rates": [
+   "finances: e.click is not a function",
+   "c2: « Nov. · période » introuvable",
+   "k5: « Nov. · période » introuvable",
+   "k5: « Nov » introuvable",
+   "k6: « Liste » introuvable"
+  ]
+ },
+ "clair-1280": {
+  "etats": {
+   "b1-bord-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir 1 article à commander Pilsner Stock 3 / seuil 2 kg À compléter +3 kg Copier la liste Finances Novembre 2026 Charges 725,40 CHF Agenda 0 à faire Gérer Cette semaine au calendrier rien de posé · voir les six semaines Aucune tâche prévue. Échéances et démarches 6 points à suivre · Fribourg / OFDF"
+   },
+   "b2-bord-echeances": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir 1 article à commander Pilsner Stock 3 / seuil 2 kg À compléter +3 kg Copier la liste Finances Novembre 2026 Charges 725,40 CHF Agenda 0 à faire Gérer Cette semaine au calendrier rien de posé · voir les six semaines Aucune tâche prévue. Échéances et démarches 6 points à suivre · Fribourg / OFDF Impôt fédéral sur la bière — Taxas Régime OFDF à confirmer Décompte TVA Trimestriel AFC Non assujettie Autocontrôle & Hygiène SAAV "
+   },
+   "b3-bord-vers-finances": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Payer Loyer de l’atelier 400,00 , éch"
+   },
+   "b4-bord-vers-calendrier": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser · S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 Loyer de l’atelier −400 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "b5-bord-pilsner": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Articles Courses Fûts Matériel Houblons Comparer une recette Besoin prévu face au stock Étagère Recompter Ajouter un article manque 1 bas 0 épuisés 0 à compter 0 DDM 0 Ingrédients Autres stocks Malts 1 5 kg Base 3 kg Caramel Torréfiés Spéciaux Houblons 0 Hazy W. Coast Pale Levures 0 ? IPA Anglaise Blé Trié par couleur (malts), amertume (houblons), date (levures) ▾ Malts 1 par couleur, du plus clair au plus foncé Article ↕ EBC ↑ En stock ↕ à l'échelle ⫽ resserrée au-delà de 5 kg 0 1 2,5 5 kg 20 6"
+   },
+   "b6-bord-agenda": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Brassins 1 Recettes 1 Atelier Volumes Atelier R&D Matériel Carnet Tarifs Tout Bières Contacts À faire Faites 0 aujourd’hui · ven. 20 nov. 27 nov. 4 déc. 11 déc. Le fil est libre. Pose une tâche ou la date d’un marché ; le Bord la montre aussi. Poser Agenda du Bord 0 Bord Réfléchir à mes projets Avec Gemini"
+   },
+   "f1-synthese-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Payer Loyer de l’atelier 400,00 , éch"
+   },
+   "f2-synthese-barre-nettoyage": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 du au Archives comprises Nettoyage +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 1 opération 1er 30 auj. 20 payé 42,00 à payer 0,00 dépensé 42,00 Nettoyage 42,00 Nettoyant alcalin · Comptoir du brasseur ✓ payé aujourd’hui · banque sans pièce + pièce 42,00 Pourquoi les charges fixes pèsent autant ? Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f3-synthese-pourquoi": {
+    "dlg": [
+     "Pourquoi si peu ? Pourquoi si peu ? Ce qui est entré (720,00 CHF) est parti surtout dans « Loyer de l’atelier » : 400,00 CHF, soit 56 % de l’entré. « Brassage » en prend 26 %. Il en reste 23,20 CHF. Brassage 26 % Loyer de l’atelier 56 % Source : Opérations de "
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Pourquoi si peu ? Pourquoi si peu ? Ce qui est entré (720,00 CHF) est parti surtout dans « Loyer de l’atelier » : 400,00 CHF, soit 56 % de l’entré. « Brassage » en prend 26 %. Il en reste 23,20 CHF. Brassage 26 % Loyer de l’atelier 56 % Source : Opérations de novembre (6 lignes). Calcul fait ici, sans IA."
+   },
+   "f4-synthese-autre-periode": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … du novembre 2026 au novembre 2026 Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Pay"
+   },
+   "f5-synthese-payer": {
+    "dlg": [
+     "Payer l’Atelier 2 pièces à payer au même fournisseur Ton virement retard 60,00 loyer 400,00 Le plus ancien d’abord ✓ Solde atelier · ancienne année depuis le 20 déc. 2025 60,00 ✓ soldé ✓ Loyer de l’atelier à payer · 25 nov. 400,00 ✓ soldé Justificatif du virem"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Payer l’Atelier 2 pièces à payer au même fournisseur Ton virement retard 60,00 loyer 400,00 Le plus ancien d’abord ✓ Solde atelier · ancienne année depuis le 20 déc. 2025 60,00 ✓ soldé ✓ Loyer de l’atelier à payer · 25 nov. 400,00 ✓ soldé Justificatif du virement sera joint aux 2 pièces Photo Fichier Le aujourd’hui autre avec banque Annuler ✓ Payer 460,00"
+   },
+   "f6-operations-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 du au +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 6 opérations · 1 à payer 1er 30 auj. 20 payé 296,80 à payer 400,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier à payer · 25 nov. · dans 5 j sans pièce ✓ Payé 400,00 Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé aujourd’hui · banque sans pièce "
+   },
+   "f7-operations-fiche-electricite": {
+    "dlg": [
+     "Électricité Charges fixes · Énergie · 20 nov. 2026 68,00 CHF ✓ payé aujourd’hui · banque Sans justificatif c’est normal Modifier Avoir ou remboursement Échéance et prévision Paiements 1 20 nov. 2026 · banque −68,00 Corriger ce paiement saisi par erreur Corrige"
+    ],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Électricité Charges fixes · Énergie · 20 nov. 2026 68,00 CHF ✓ payé aujourd’hui · banque Sans justificatif c’est normal Modifier Avoir ou remboursement Échéance et prévision Paiements 1 20 nov. 2026 · banque −68,00 Corriger ce paiement saisi par erreur Corriger une erreur de saisie"
+   },
+   "f8-operations-filtre-brassage": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 du au Brassage +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 1 opération 1er 30 auj. 20 payé 186,80 à payer 0,00 dépensé 186,80 Brassage 186,80 Malt et houblons · Pale Ale · Comptoir du brasseur ✓ payé aujourd’hui · banque sans pièce + pièce 186,80 Pourquoi les charges fixes pèsent autant ? Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f9-operations-payer-loyer": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 du au +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 6 opérations · 1 à payer 1er 30 auj. 20 payé 696,80 à payer 0,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier ✓ payé aujourd’hui · banque sans pièce 400,00 Payé 400,00 Annuler Autre montant Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé aujourd’"
+   },
+   "f10-operations-en-retard": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Tous les exercices en retard 60,00 du au Suivi sur tous les exercices, archives comprises. En retard Charges fixes 60,00 Solde atelier · ancienne année à payer depuis le 20 déc. 2025 sans pièce ✓ Payé 60,00 Vérifier mes opérations Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f11-previsions-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 17 févr. 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire au-dessus de zéro 2 107,34 Sans Fermenteur supplémentaire au-dessus de zéro 2 857,34 0 1 000 2 000 3 000 4 000 nov. déc. janv. févr. aujourd’hui 4 181,60 3 657,34 2 507,34 sans Fermenteur supplé… 2 857,34 2 sorties −124,26, 20.11 loyer −400, 25.11 loyer −400, 25.12 Ferment"
+   },
+   "c1-cal-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser · S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 Loyer de l’atelier −400 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c2-cal-menu-periode": {
+    "dlg": [
+     "Nov. · S47 – S50 · 16 nov. → 13 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Nov. · S47 – S50 · 16 nov. → 13 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+   },
+   "c3-cal-loyer": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser · S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 Loyer de l’atelier −400 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c4-cal-plus-ventes": {
+    "dlg": [
+     "Ventes Ajouter Brassins Fêtes Ventes Achats Travaux Activités Papiers Café du Bourg Martin Rey CHF + Semaine S47, 20 nov. S47 16 S48 23 S49 30 S50 7 S51 14 S52 21 S53 28 S1 4 S2 11 S3 18 S4 25 S5 1 S6 8 S7 15 S8 22 S9 1 S10 8 S11 15 S12 22 S13 29 S14 5 S15 12 "
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Ventes Ajouter Brassins Fêtes Ventes Achats Travaux Activités Papiers Café du Bourg Martin Rey CHF + Semaine S47, 20 nov. S47 16 S48 23 S49 30 S50 7 S51 14 S52 21 S53 28 S1 4 S2 11 S3 18 S4 25 S5 1 S6 8 S7 15 S8 22 S9 1 S10 8 S11 15 S12 22 S13 29 S14 5 S15 12 S16 19 S17 26 S18 3 S19 10 S20 17 S21 24 S22 31 S23 7 S24 14 S25 21 S26 28 S27 5 S28 12 S29 19 S30 26 S31 2 S32 9 S33 16 S34 23 S35 30 S36 6 S37 13 S38 20 S39 27 S40 4 S41 11 S42 18 S43 25 S44 1 S45 8 Autre nom Ajouter en S47"
+   },
+   "c5-cal-sans-courbe": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser · S43 ’27 ± Nov. 1 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c6-cal-maintenant": {
+    "dlg": [
+     "Maintenant : 1 en retard Maintenant : 1 en retard Solde atelier · ancienne année échéance le 20 déc. · 60 CHF"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Maintenant : 1 en retard Maintenant : 1 en retard Solde atelier · ancienne année échéance le 20 déc. · 60 CHF"
+   },
+   "k1-banc-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée · prête le 18 déc. Saison de ferme −137 J11 / 28 · prête 7 déc. IPA de printemps −45 J0 / 28 · prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes "
+   },
+   "k2-banc-saison": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée · prête le 18 déc. Saison de ferme −137 J11 / 28 · prête 7 déc. IPA de printemps −45 J0 / 28 · prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes "
+   },
+   "k3-banc-glisser-pendant": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée · prête le 18 déc. Saison de ferme −137 J11 / 28 · prête 7 déc. IPA de printemps −45 J0 / 28 · prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz S49 · 30 nov. · lâcher ici Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Ma"
+   },
+   "k4-banc-glisser-apres": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée · prête le 18 déc. Saison de ferme −137 J11 / 28 · prête 7 déc. IPA de printemps −45 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 28 · prête 28 déc. Blonde d’automne −158 J0 / 35 · prête 11 janv. Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes "
+   },
+   "k5-banc-menu": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée · prête le 18 déc. Saison de ferme −137 J11 / 28 · prête 7 déc. IPA de printemps −45 J0 / 28 · prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes "
+   },
+   "k6-banc-liste": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée · prête le 18 déc. Saison de ferme −137 J11 / 28 · prête 7 déc. IPA de printemps −45 J0 / 28 · prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes "
+   },
+   "k7-banc-plein-ecran": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée · prête le 18 déc. Saison de ferme −137 J11 / 28 · prête 7 déc. IPA de printemps −45 J0 / 28 · prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes "
+   }
+  },
+  "erreurs": [],
+  "rates": [
+   "finances: e.click is not a function",
+   "k5: « Nov. · période » introuvable",
+   "k5: « Nov » introuvable",
+   "k6: « Liste » introuvable"
+  ]
+ },
+ "cave-1280": {
+  "etats": {
+   "b1-bord-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir 1 article à commander Pilsner Stock 3 / seuil 2 kg À compléter +3 kg Copier la liste Finances Novembre 2026 Charges 725,40 CHF Agenda 0 à faire Gérer Cette semaine au calendrier rien de posé · voir les six semaines Aucune tâche prévue. Échéances et démarches 6 points à suivre · Fribourg / OFDF"
+   },
+   "b2-bord-echeances": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "À la brasserie Brassins 0 en cuve Tous Aucun brassin en cuve. Stocks Voir 1 article à commander Pilsner Stock 3 / seuil 2 kg À compléter +3 kg Copier la liste Finances Novembre 2026 Charges 725,40 CHF Agenda 0 à faire Gérer Cette semaine au calendrier rien de posé · voir les six semaines Aucune tâche prévue. Échéances et démarches 6 points à suivre · Fribourg / OFDF Impôt fédéral sur la bière — Taxas Régime OFDF à confirmer Décompte TVA Trimestriel AFC Non assujettie Autocontrôle & Hygiène SAAV "
+   },
+   "b3-bord-vers-finances": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Payer Loyer de l’atelier 400,00 , éch"
+   },
+   "b4-bord-vers-calendrier": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser · S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 Loyer de l’atelier −400 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "b5-bord-pilsner": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Articles Courses Fûts Matériel Houblons Comparer une recette Besoin prévu face au stock Étagère Recompter Ajouter un article manque 1 bas 0 épuisés 0 à compter 0 DDM 0 Ingrédients Autres stocks Malts 1 5 kg Base 3 kg Caramel Torréfiés Spéciaux Houblons 0 Hazy W. Coast Pale Levures 0 ? IPA Anglaise Blé Trié par couleur (malts), amertume (houblons), date (levures) ▾ Malts 1 par couleur, du plus clair au plus foncé Article ↕ EBC ↑ En stock ↕ à l'échelle ⫽ resserrée au-delà de 5 kg 0 1 2,5 5 kg 20 6"
+   },
+   "b6-bord-agenda": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Brassins 1 Recettes 1 Atelier Volumes Atelier R&D Matériel Carnet Tarifs Tout Bières Contacts À faire Faites 0 aujourd’hui · ven. 20 nov. 27 nov. 4 déc. 11 déc. Le fil est libre. Pose une tâche ou la date d’un marché ; le Bord la montre aussi. Poser Agenda du Bord 0 Bord Réfléchir à mes projets Avec Gemini"
+   },
+   "f1-synthese-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Payer Loyer de l’atelier 400,00 , éch"
+   },
+   "f2-synthese-barre-nettoyage": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 du au Archives comprises Nettoyage +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 1 opération 1er 30 auj. 20 payé 42,00 à payer 0,00 dépensé 42,00 Nettoyage 42,00 Nettoyant alcalin · Comptoir du brasseur ✓ payé aujourd’hui · banque sans pièce + pièce 42,00 Pourquoi les charges fixes pèsent autant ? Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f3-synthese-pourquoi": {
+    "dlg": [
+     "Pourquoi si peu ? Pourquoi si peu ? Ce qui est entré (720,00 CHF) est parti surtout dans « Loyer de l’atelier » : 400,00 CHF, soit 56 % de l’entré. « Brassage » en prend 26 %. Il en reste 23,20 CHF. Brassage 26 % Loyer de l’atelier 56 % Source : Opérations de "
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Pourquoi si peu ? Pourquoi si peu ? Ce qui est entré (720,00 CHF) est parti surtout dans « Loyer de l’atelier » : 400,00 CHF, soit 56 % de l’entré. « Brassage » en prend 26 %. Il en reste 23,20 CHF. Brassage 26 % Loyer de l’atelier 56 % Source : Opérations de novembre (6 lignes). Calcul fait ici, sans IA."
+   },
+   "f4-synthese-autre-periode": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Novembre sept. oct. nov. tout … du novembre 2026 au novembre 2026 Entré 720,00 Vente au marché Dépensé 696,80 Nettoyage 42,00 Brassage 186,80 Charges fixes 68,00 Loyer de l’atelier 400,00 à payer 25 nov. Matériel 28,60 à part +23,20 CHF gagnés ✦ Pourquoi ? payé à payer Revoir le mois Caisse jour par jour, sources, budgets, 12 mois En caisse 4 181,60 CHF libre 3 721,60 à payer 460,00 En retard : Solde atelier · ancienne année 60,00 , échéance 20 déc. 2025 Pay"
+   },
+   "f5-synthese-payer": {
+    "dlg": [
+     "Payer l’Atelier 2 pièces à payer au même fournisseur Ton virement retard 60,00 loyer 400,00 Le plus ancien d’abord ✓ Solde atelier · ancienne année depuis le 20 déc. 2025 60,00 ✓ soldé ✓ Loyer de l’atelier à payer · 25 nov. 400,00 ✓ soldé Justificatif du virem"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Payer l’Atelier 2 pièces à payer au même fournisseur Ton virement retard 60,00 loyer 400,00 Le plus ancien d’abord ✓ Solde atelier · ancienne année depuis le 20 déc. 2025 60,00 ✓ soldé ✓ Loyer de l’atelier à payer · 25 nov. 400,00 ✓ soldé Justificatif du virement sera joint aux 2 pièces Photo Fichier Le aujourd’hui autre avec banque Annuler ✓ Payer 460,00"
+   },
+   "f6-operations-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 du au +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 6 opérations · 1 à payer 1er 30 auj. 20 payé 296,80 à payer 400,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier à payer · 25 nov. · dans 5 j sans pièce ✓ Payé 400,00 Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé aujourd’hui · banque sans pièce "
+   },
+   "f7-operations-fiche-electricite": {
+    "dlg": [
+     "Électricité Charges fixes · Énergie · 20 nov. 2026 68,00 CHF ✓ payé aujourd’hui · banque Sans justificatif c’est normal Modifier Avoir ou remboursement Échéance et prévision Paiements 1 20 nov. 2026 · banque −68,00 Corriger ce paiement saisi par erreur Corrige"
+    ],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Électricité Charges fixes · Énergie · 20 nov. 2026 68,00 CHF ✓ payé aujourd’hui · banque Sans justificatif c’est normal Modifier Avoir ou remboursement Échéance et prévision Paiements 1 20 nov. 2026 · banque −68,00 Corriger ce paiement saisi par erreur Corriger une erreur de saisie"
+   },
+   "f8-operations-filtre-brassage": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 du au Brassage +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 1 opération 1er 30 auj. 20 payé 186,80 à payer 0,00 dépensé 186,80 Brassage 186,80 Malt et houblons · Pale Ale · Comptoir du brasseur ✓ payé aujourd’hui · banque sans pièce + pièce 186,80 Pourquoi les charges fixes pèsent autant ? Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f9-operations-payer-loyer": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [
+     "er"
+    ],
+    "texte": "Synthèse Opérations Prévisions Annuel novembre en retard 60,00 du au +720,00 Ventes 468,00 Fixes 186,80 Brassage 42,00 Nettoyage 28,60 Matériel 30 jours · 6 opérations · 1 à payer 1er 30 auj. 20 payé 696,80 à payer 0,00 dépensé 696,80 Charges fixes 468,00 Loyer de l’atelier ✓ payé aujourd’hui · banque sans pièce 400,00 Payé 400,00 Annuler Autre montant Électricité · Énergie ✓ payé aujourd’hui · banque sans pièce + pièce 68,00 Ventes +720,00 Vente au marché · Marché du village ✓ encaissé aujourd’"
+   },
+   "f10-operations-en-retard": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Tous les exercices en retard 60,00 du au Suivi sur tous les exercices, archives comprises. En retard Charges fixes 60,00 Solde atelier · ancienne année à payer depuis le 20 déc. 2025 sans pièce ✓ Payé 60,00 Vérifier mes opérations Par date Filtres 1 Doublons Apport ou prélèvement privé Archives"
+   },
+   "f11-previsions-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 17 févr. 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire au-dessus de zéro 2 107,34 Sans Fermenteur supplémentaire au-dessus de zéro 2 857,34 0 1 000 2 000 3 000 4 000 nov. déc. janv. févr. aujourd’hui 4 181,60 3 657,34 2 507,34 sans Fermenteur supplé… 2 857,34 2 sorties −124,26, 20.11 loyer −400, 25.11 loyer −400, 25.12 Ferment"
+   },
+   "c1-cal-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser · S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 Loyer de l’atelier −400 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c2-cal-menu-periode": {
+    "dlg": [
+     "Nov. · S47 – S50 · 16 nov. → 13 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Nov. · S47 – S50 · 16 nov. → 13 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+   },
+   "c3-cal-loyer": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser · S43 ’27 ± Nov. 1 Fermenteur supplémentaire −750 Loyer de l’atelier −400 S47 – S50 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c4-cal-plus-ventes": {
+    "dlg": [
+     "Ventes Ajouter Brassins Fêtes Ventes Achats Travaux Activités Papiers Café du Bourg Martin Rey CHF + Semaine S47, 20 nov. S47 16 S48 23 S49 30 S50 7 S51 14 S52 21 S53 28 S1 4 S2 11 S3 18 S4 25 S5 1 S6 8 S7 15 S8 22 S9 1 S10 8 S11 15 S12 22 S13 29 S14 5 S15 12 "
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Ventes Ajouter Brassins Fêtes Ventes Achats Travaux Activités Papiers Café du Bourg Martin Rey CHF + Semaine S47, 20 nov. S47 16 S48 23 S49 30 S50 7 S51 14 S52 21 S53 28 S1 4 S2 11 S3 18 S4 25 S5 1 S6 8 S7 15 S8 22 S9 1 S10 8 S11 15 S12 22 S13 29 S14 5 S15 12 S16 19 S17 26 S18 3 S19 10 S20 17 S21 24 S22 31 S23 7 S24 14 S25 21 S26 28 S27 5 S28 12 S29 19 S30 26 S31 2 S32 9 S33 16 S34 23 S35 30 S36 6 S37 13 S38 20 S39 27 S40 4 S41 11 S42 18 S43 25 S44 1 S45 8 Autre nom Ajouter en S47"
+   },
+   "c5-cal-sans-courbe": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −1 493 CHF à dépenser · S43 ’27 ± Nov. 1 S47 S48 S49 S50 vides Brassins vide Fêtes vide Ventes vide Achats −64 confirmé S47–S50 Pale Ale de septembre −64 vides Travaux vide Activités vide Papiers −460 confirmé S47–S50 Solde atelier · ancienne année −60 Loyer de l’atelier −400"
+   },
+   "c6-cal-maintenant": {
+    "dlg": [
+     "Maintenant : 1 en retard Maintenant : 1 en retard Solde atelier · ancienne année échéance le 20 déc. · 60 CHF"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Maintenant : 1 en retard Maintenant : 1 en retard Solde atelier · ancienne année échéance le 20 déc. · 60 CHF"
+   },
+   "k1-banc-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée · prête le 18 déc. Saison de ferme −137 J11 / 28 · prête 7 déc. IPA de printemps −45 J0 / 28 · prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes "
+   },
+   "k2-banc-saison": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée · prête le 18 déc. Saison de ferme −137 J11 / 28 · prête 7 déc. IPA de printemps −45 J0 / 28 · prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes "
+   },
+   "k3-banc-glisser-pendant": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée · prête le 18 déc. Saison de ferme −137 J11 / 28 · prête 7 déc. IPA de printemps −45 J0 / 28 · prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz S49 · 30 nov. · lâcher ici Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Ma"
+   },
+   "k4-banc-glisser-apres": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée · prête le 18 déc. Saison de ferme −137 J11 / 28 · prête 7 déc. IPA de printemps −45 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 28 · prête 28 déc. Blonde d’automne −158 J0 / 35 · prête 11 janv. Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes "
+   },
+   "k5-banc-menu": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée · prête le 18 déc. Saison de ferme −137 J11 / 28 · prête 7 déc. IPA de printemps −45 J0 / 28 · prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes "
+   },
+   "k6-banc-liste": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée · prête le 18 déc. Saison de ferme −137 J11 / 28 · prête 7 déc. IPA de printemps −45 J0 / 28 · prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes "
+   },
+   "k7-banc-plein-ecran": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 S47 S48 S49 S50 S51 S52 Brassins −623 confirmé S47–S52 pas brassée · prête le 18 déc. Saison de ferme −137 J11 / 28 · prête 7 déc. IPA de printemps −45 J0 / 28 · prête 21 déc. Blonde d’automne −158 J0 / 28 · prête 23 déc. Stout maison −142 J0 / 35 · prête 11 janv. Porter d’hiver −141 Ambrée maison J0 / 28 · prête 18 janv. Blonde d’automne · malt pilsner, saaz Fêtes +3 580 estimé hors courbe Foire du Valais +2 400 Marché de Noël +1 180 Ventes "
+   }
+  },
+  "erreurs": [],
+  "rates": [
+   "finances: e.click is not a function",
+   "k5: « Nov. · période » introuvable",
+   "k5: « Nov » introuvable",
+   "k6: « Liste » introuvable"
+  ]
+ }
+}

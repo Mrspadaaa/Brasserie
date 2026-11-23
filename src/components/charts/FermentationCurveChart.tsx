@@ -1,0 +1,123 @@
+import React from 'react';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine
+} from 'recharts';
+import type { Batch } from '../../types';
+import { formatDecimal } from '../../ui/numericInput';
+import { fermentationReadings } from '../../domain/fermentationReadings';
+import { densityAxisDomain } from '../../domain/gravityBounds';
+import { nombreFr } from '../../domain/nombreAffiche';
+import { releves } from '../../ui/production/fiche/ficheModel';
+
+export function FermentationCurveChart({ batch }: { batch: Batch }) {
+  const { points, target, latest, attenuation } = fermentationReadings(batch);
+  const nReleves = releves(batch).length;
+  return (
+    <section className="panel p-4 space-y-3" aria-label="Courbe des densités mesurées">
+      <div className="flex justify-between items-start gap-3">
+        <div>
+          <h3 className="text-base font-semibold text-cave-50">Densité au fil du brassin</h3>
+          <p className="text-sm text-cave-400">
+            {/* k1 n° 2 : le même compte de relevés que le résumé « Densité » de la fiche (le journal), jamais un second compte qui y ajoute l'OG et la FG. */}
+            {points.length
+              ? [points.some((p) => p.name === 'OG mesurée') ? 'OG' : null, points.some((p) => p.name === 'FG mesurée') ? 'FG' : null,
+                  `${nReleves} relevé${nReleves > 1 ? 's' : ''}`].filter(Boolean).join(' · ')
+              : 'Aucune mesure enregistrée'}
+          </p>
+        </div>
+        {latest !== undefined && (
+          <span className="reading text-lg text-hop">{formatDecimal(latest, 3)}</span>
+        )}
+      </div>
+      {points.length ? (
+        <>
+          <div
+            className="h-48 w-full"
+            role="img"
+            aria-label="Courbe des relevés réels, détail disponible sous le graphique"
+          >
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={points} margin={{ left: -15, right: 8, top: 10 }}>
+                <XAxis dataKey="name" tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }} />
+                <YAxis
+                  domain={densityAxisDomain([...points.map((p) => p.sg), target])}
+                  tickFormatter={(value: number) => formatDecimal(value, 3)}
+                  tick={{ fill: 'rgb(var(--cave-texte-400))', fontSize: 12 }}
+                />
+                <Tooltip
+                  content={({ active, payload }) => {
+                    const p = payload?.[0]?.payload;
+                    return active && p ? (
+                      <div className="p-3 bg-cave-850 border border-cave-700 rounded-control text-sm text-cave-50">
+                        <p>
+                          {p.name} · {p.date}
+                        </p>
+                        <p>
+                          {formatDecimal(p.sg, 3)}
+                          {p.tempC != null ? ` · ${nombreFr(p.tempC, 1)} °C` : ''}
+                        </p>
+                      </div>
+                    ) : null;
+                  }}
+                />
+                {target !== undefined && (
+                  <ReferenceLine
+                    y={target}
+                    ifOverflow="extendDomain"
+                    stroke="rgb(var(--hop))"
+                    strokeDasharray="4 4"
+                    label={{
+                      value: 'FG cible',
+                      fill: '#8DAE79',
+                      fontSize: 12,
+                      position: 'insideTopRight'
+                    }}
+                  />
+                )}
+                <Line
+                  type="linear"
+                  dataKey="sg"
+                  stroke="rgb(var(--ebc-straw))"
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                  isAnimationActive={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <details className="text-sm text-cave-400">
+            <summary className="min-h-touch flex items-center cursor-pointer">
+              Voir les relevés
+            </summary>
+            <ul className="space-y-2">
+              {points.map((p, i) => (
+                <li key={i} className="flex justify-between gap-3">
+                  <span>
+                    {p.name} · {p.date}
+                  </span>
+                  <span className="reading">{formatDecimal(p.sg, 3)}</span>
+                </li>
+              ))}
+            </ul>
+          </details>
+        </>
+      ) : (
+        <p className="text-sm text-cave-400 py-3">
+          Renseigne l’OG ou un relevé de densité pour tracer la courbe.
+        </p>
+      )}
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-cave-400">
+        {target !== undefined && <span>FG cible de la recette : {formatDecimal(target, 3)}</span>}
+        {attenuation !== undefined && (
+          <span>Atténuation apparente : {Math.round(attenuation)} %</span>
+        )}
+      </div>
+    </section>
+  );
+}

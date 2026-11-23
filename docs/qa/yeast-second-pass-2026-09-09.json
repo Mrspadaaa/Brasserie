@@ -1,0 +1,1098 @@
+{
+  "date": "2026-09-09",
+  "unitTests": {
+    "files": 136,
+    "passed": 2423
+  },
+  "experiment": {
+    "version": 1,
+    "scope": "Yeast-only second pass",
+    "offline": true,
+    "paidAiCalls": 0,
+    "source": {
+      "title": "Enhancing the levels of 4-vinylguaiacol and 4-vinylphenol in pilot-scale top-fermented wheat beers by response surface methodology",
+      "author": "Cui et al.",
+      "year": 2015,
+      "kind": "research",
+      "reference": "https://onlinelibrary.wiley.com/doi/full/10.1002/jib.189",
+      "locator": "Tableau 2, 29 essais dans l'ordre publié ; tableaux 3–4 ANOVA ; section validation du modèle."
+    },
+    "candidates": [
+      {
+        "model": "constant",
+        "parameters": 1,
+        "results": [
+          {
+            "compound": "4VG",
+            "unit": "mg/L",
+            "internalLeaveOneRunOut": {
+              "mae": 0.1578423645320197,
+              "rmse": 0.18640208487272333,
+              "scored": 29
+            },
+            "reservedMeanPrediction": 2.152413793103449,
+            "reservedMeanAbsoluteError": 0.2655862068965513
+          },
+          {
+            "compound": "4VP",
+            "unit": "mg/L",
+            "internalLeaveOneRunOut": {
+              "mae": 0.16182019704433492,
+              "rmse": 0.18919285458095347,
+              "scored": 29
+            },
+            "reservedMeanPrediction": 1.1543448275862072,
+            "reservedMeanAbsoluteError": 0.24765517241379276
+          }
+        ]
+      },
+      {
+        "model": "linear",
+        "parameters": 5,
+        "results": [
+          {
+            "compound": "4VG",
+            "unit": "mg/L",
+            "internalLeaveOneRunOut": {
+              "mae": 0.1008801520360067,
+              "rmse": 0.12673654204543122,
+              "scored": 29
+            },
+            "reservedMeanPrediction": 2.4066096264367824,
+            "reservedMeanAbsoluteError": 0.011390373563217704
+          },
+          {
+            "compound": "4VP",
+            "unit": "mg/L",
+            "internalLeaveOneRunOut": {
+              "mae": 0.10430493142431875,
+              "rmse": 0.12917161987471906,
+              "scored": 29
+            },
+            "reservedMeanPrediction": 1.4223948275862073,
+            "reservedMeanAbsoluteError": 0.020394827586207365
+          }
+        ]
+      },
+      {
+        "model": "quadratic",
+        "parameters": 9,
+        "results": [
+          {
+            "compound": "4VG",
+            "unit": "mg/L",
+            "internalLeaveOneRunOut": {
+              "mae": 0.06968103448275897,
+              "rmse": 0.0920845165576453,
+              "scored": 29
+            },
+            "reservedMeanPrediction": 2.423592833333335,
+            "reservedMeanAbsoluteError": 0.0055928333333348235
+          },
+          {
+            "compound": "4VP",
+            "unit": "mg/L",
+            "internalLeaveOneRunOut": {
+              "mae": 0.07581465517241394,
+              "rmse": 0.09690490361600691,
+              "scored": 29
+            },
+            "reservedMeanPrediction": 1.431686354166667,
+            "reservedMeanAbsoluteError": 0.029686354166666984
+          }
+        ]
+      },
+      {
+        "model": "full",
+        "parameters": 15,
+        "results": [
+          {
+            "compound": "4VG",
+            "unit": "mg/L",
+            "internalLeaveOneRunOut": {
+              "mae": 0.08474827586206933,
+              "rmse": 0.10041139429092868,
+              "scored": 29
+            },
+            "reservedMeanPrediction": 2.4297678333333352,
+            "reservedMeanAbsoluteError": 0.011767833333335087
+          },
+          {
+            "compound": "4VP",
+            "unit": "mg/L",
+            "internalLeaveOneRunOut": {
+              "mae": 0.08051034482758636,
+              "rmse": 0.09863339995258663,
+              "scored": 29
+            },
+            "reservedMeanPrediction": 1.4359926041666669,
+            "reservedMeanAbsoluteError": 0.03399260416666694
+          }
+        ]
+      }
+    ],
+    "nestedSelection": {
+      "criterion": "Mean squared concentration error over both compounds (same mg/L unit), exploratory statistical comparison; not a sensory weighting.",
+      "selections": {
+        "constant": 0,
+        "linear": 0,
+        "quadratic": 28,
+        "full": 1
+      },
+      "results": [
+        {
+          "compound": "4VG",
+          "unit": "mg/L",
+          "mae": 0.07219482758620725,
+          "rmse": 0.09707982806557422,
+          "scored": 29
+        },
+        {
+          "compound": "4VP",
+          "unit": "mg/L",
+          "mae": 0.07713620689655189,
+          "rmse": 0.09884971602265039,
+          "scored": 29
+        }
+      ],
+      "intervalsEvaluated": false,
+      "note": "Selection uncertainty has not been calibrated; these central-error diagnostics do not justify narrower production intervals."
+    },
+    "interpretation": "Exploratory candidate comparison on one study. Held-out observations never enter each training fit. Choosing a candidate using these diagnostics would require nested selection and an independent validation study. No universal gain or interval coverage is inferred from a held-out mean.",
+    "failures": []
+  },
+  "productionModel": {
+    "reproduction": {
+      "validation": "reproduction",
+      "parameters": 15,
+      "runs": 29,
+      "residualDf": 14,
+      "results": [
+        {
+          "compound": "4VG",
+          "unit": "mg/L",
+          "metrics": {
+            "total": 29,
+            "quantified": 29,
+            "unknown": 0,
+            "uninformative": 0,
+            "scored": 29,
+            "mae": 0.04118735632183919,
+            "rmse": 0.0523865056766673,
+            "meanWidth": 0.3979208712264661,
+            "covered": 29,
+            "empiricalCoverageAmongQuantified": 1,
+            "informativeCovered": 29,
+            "informativeCoverageOverAllCases": 1,
+            "unknownIds": []
+          },
+          "r2": 0.9152738907163451,
+          "mse": 0.005684716666666668
+        },
+        {
+          "compound": "4VP",
+          "unit": "mg/L",
+          "metrics": {
+            "total": 29,
+            "quantified": 29,
+            "unknown": 0,
+            "uninformative": 0,
+            "scored": 29,
+            "mae": 0.03942816091954033,
+            "rmse": 0.0518624119195679,
+            "meanWidth": 0.39393992533714633,
+            "covered": 29,
+            "empiricalCoverageAmongQuantified": 1,
+            "informativeCovered": 29,
+            "informativeCoverageOverAllCases": 1,
+            "unknownIds": []
+          },
+          "r2": 0.919392418014215,
+          "mse": 0.005571541666666659
+        }
+      ]
+    },
+    "internalValidation": {
+      "validation": "internal-leave-one-run-out",
+      "runs": 29,
+      "uniqueConditions": 25,
+      "sameConditionCenterReplicates": 5,
+      "note": "Internal diagnostics in the designed study, not independent studies or a transfer assessment. A missing edge point may be outside the retained design hull.",
+      "results": [
+        {
+          "compound": "4VG",
+          "unit": "mg/L",
+          "metrics": {
+            "total": 29,
+            "quantified": 29,
+            "unknown": 0,
+            "uninformative": 0,
+            "scored": 29,
+            "mae": 0.08474827586206934,
+            "rmse": 0.10041139429092849,
+            "meanWidth": 0.4827891702319586,
+            "covered": 28,
+            "empiricalCoverageAmongQuantified": 0.9655172413793104,
+            "informativeCovered": 28,
+            "informativeCoverageOverAllCases": 0.9655172413793104,
+            "unknownIds": []
+          },
+          "baseline": {
+            "count": 29,
+            "mae": 0.1578423645320197,
+            "rmse": 0.18640208487272333
+          },
+          "rows": [
+            {
+              "id": "1",
+              "observed": 2.106,
+              "central": 2.1969999999999965,
+              "range": {
+                "min": 1.940916480047258,
+                "max": 2.453083519952735
+              }
+            },
+            {
+              "id": "2",
+              "observed": 1.959,
+              "central": 1.9040000000000008,
+              "range": {
+                "min": 1.6442595388457644,
+                "max": 2.1637404611542372
+              }
+            },
+            {
+              "id": "3",
+              "observed": 2.065,
+              "central": 2.1475999999999993,
+              "range": {
+                "min": 1.890496673864078,
+                "max": 2.4047033261359205
+              }
+            },
+            {
+              "id": "4",
+              "observed": 2.006,
+              "central": 2.1018,
+              "range": {
+                "min": 1.8463455578921841,
+                "max": 2.3572544421078154
+              }
+            },
+            {
+              "id": "5",
+              "observed": 2.296,
+              "central": 2.3417500000000033,
+              "range": {
+                "min": 2.1547945643393174,
+                "max": 2.5287054356606893
+              }
+            },
+            {
+              "id": "6",
+              "observed": 2.191,
+              "central": 2.264400000000001,
+              "range": {
+                "min": 2.0062969148767236,
+                "max": 2.5225030851232786
+              }
+            },
+            {
+              "id": "7",
+              "observed": 2.367,
+              "central": 2.324000000000004,
+              "range": {
+                "min": 2.1368104514751916,
+                "max": 2.511189548524816
+              }
+            },
+            {
+              "id": "8",
+              "observed": 2.089,
+              "central": 1.876599999999998,
+              "range": {
+                "min": 1.6477774159827998,
+                "max": 2.1054225840171963
+              }
+            },
+            {
+              "id": "9",
+              "observed": 2.476,
+              "central": 2.2967500000000016,
+              "range": {
+                "min": 2.141276184742354,
+                "max": 2.4522238152576494
+              }
+            },
+            {
+              "id": "10",
+              "observed": 2.261,
+              "central": 2.202199999999996,
+              "range": {
+                "min": 1.9427584694558733,
+                "max": 2.4616415305441186
+              }
+            },
+            {
+              "id": "11",
+              "observed": 2.321,
+              "central": 2.259600000000001,
+              "range": {
+                "min": 2.000374718156048,
+                "max": 2.5188252818439545
+              }
+            },
+            {
+              "id": "12",
+              "observed": 2.319,
+              "central": 2.223800000000002,
+              "range": {
+                "min": 1.9682650688240924,
+                "max": 2.4793349311759116
+              }
+            },
+            {
+              "id": "13",
+              "observed": 2.256,
+              "central": 2.187799999999998,
+              "range": {
+                "min": 1.9291854951203335,
+                "max": 2.4464145048796624
+              }
+            },
+            {
+              "id": "14",
+              "observed": 2.292,
+              "central": 2.369000000000001,
+              "range": {
+                "min": 2.1112736259148543,
+                "max": 2.626726374085148
+              }
+            },
+            {
+              "id": "15",
+              "observed": 2.084,
+              "central": 2.1213999999999986,
+              "range": {
+                "min": 1.8605384424889753,
+                "max": 2.382261557511022
+              }
+            },
+            {
+              "id": "16",
+              "observed": 2.319,
+              "central": 2.3360000000000043,
+              "range": {
+                "min": 2.1473209098047126,
+                "max": 2.524679090195296
+              }
+            },
+            {
+              "id": "17",
+              "observed": 2.401,
+              "central": 2.4560000000000013,
+              "range": {
+                "min": 2.196259538845765,
+                "max": 2.7157404611542377
+              }
+            },
+            {
+              "id": "18",
+              "observed": 2.368,
+              "central": 2.143600000000003,
+              "range": {
+                "min": 1.918925557669978,
+                "max": 2.3682744423300277
+              }
+            },
+            {
+              "id": "19",
+              "observed": 1.953,
+              "central": 2.0044000000000004,
+              "range": {
+                "min": 1.744395043758482,
+                "max": 2.2644049562415187
+              }
+            },
+            {
+              "id": "20",
+              "observed": 2.078,
+              "central": 2.1464000000000008,
+              "range": {
+                "min": 1.8878044524816653,
+                "max": 2.4049955475183364
+              }
+            },
+            {
+              "id": "21",
+              "observed": 1.878,
+              "central": 1.8505999999999994,
+              "range": {
+                "min": 1.589293064763941,
+                "max": 2.1119069352360578
+              }
+            },
+            {
+              "id": "22",
+              "observed": 2.221,
+              "central": 2.2988000000000017,
+              "range": {
+                "min": 2.041159865945363,
+                "max": 2.5564401340546405
+              }
+            },
+            {
+              "id": "23",
+              "observed": 2.203,
+              "central": 2.2594000000000007,
+              "range": {
+                "min": 1.9997673088451544,
+                "max": 2.519032691154847
+              }
+            },
+            {
+              "id": "24",
+              "observed": 2.205,
+              "central": 2.3645000000000054,
+              "range": {
+                "min": 2.201487089704296,
+                "max": 2.5275129102957146
+              }
+            },
+            {
+              "id": "25",
+              "observed": 1.764,
+              "central": 1.6668000000000012,
+              "range": {
+                "min": 1.4115354327544138,
+                "max": 1.9220645672455885
+              }
+            },
+            {
+              "id": "26",
+              "observed": 2.097,
+              "central": 2.0361999999999996,
+              "range": {
+                "min": 1.7769239680744144,
+                "max": 2.2954760319255847
+              }
+            },
+            {
+              "id": "27",
+              "observed": 1.901,
+              "central": 1.9515999999999987,
+              "range": {
+                "min": 1.6915387324447135,
+                "max": 2.211661267555284
+              }
+            },
+            {
+              "id": "28",
+              "observed": 1.827,
+              "central": 2.0168,
+              "range": {
+                "min": 1.7809568200193513,
+                "max": 2.2526431799806486
+              }
+            },
+            {
+              "id": "29",
+              "observed": 2.117,
+              "central": 2.071199999999999,
+              "range": {
+                "min": 1.810819644498519,
+                "max": 2.3315803555014787
+              }
+            }
+          ]
+        },
+        {
+          "compound": "4VP",
+          "unit": "mg/L",
+          "metrics": {
+            "total": 29,
+            "quantified": 29,
+            "unknown": 0,
+            "uninformative": 0,
+            "scored": 29,
+            "mae": 0.0805103448275864,
+            "rmse": 0.09863339995258671,
+            "meanWidth": 0.47819331576029006,
+            "covered": 26,
+            "empiricalCoverageAmongQuantified": 0.896551724137931,
+            "informativeCovered": 26,
+            "informativeCoverageOverAllCases": 0.896551724137931,
+            "unknownIds": []
+          },
+          "baseline": {
+            "count": 29,
+            "mae": 0.16182019704433492,
+            "rmse": 0.18919285458095347
+          },
+          "rows": [
+            {
+              "id": "1",
+              "observed": 1.295,
+              "central": 1.1993000000000003,
+              "range": {
+                "min": 0.946517302451904,
+                "max": 1.4520826975480965
+              }
+            },
+            {
+              "id": "2",
+              "observed": 0.952,
+              "central": 0.9656999999999999,
+              "range": {
+                "min": 0.7066273397412639,
+                "max": 1.2247726602587359
+              }
+            },
+            {
+              "id": "3",
+              "observed": 1.059,
+              "central": 1.1210999999999993,
+              "range": {
+                "min": 0.8645810574120073,
+                "max": 1.3776189425879912
+              }
+            },
+            {
+              "id": "4",
+              "observed": 1.003,
+              "central": 1.1562999999999994,
+              "range": {
+                "min": 0.9139124690792729,
+                "max": 1.398687530920726
+              }
+            },
+            {
+              "id": "5",
+              "observed": 1.324,
+              "central": 1.3327500000000028,
+              "range": {
+                "min": 1.1457600734922238,
+                "max": 1.5197399265077818
+              }
+            },
+            {
+              "id": "6",
+              "observed": 1.187,
+              "central": 1.2302999999999997,
+              "range": {
+                "min": 0.9723986231289174,
+                "max": 1.488201376871082
+              }
+            },
+            {
+              "id": "7",
+              "observed": 1.197,
+              "central": 1.3645000000000016,
+              "range": {
+                "min": 1.206628096229888,
+                "max": 1.522371903770115
+              }
+            },
+            {
+              "id": "8",
+              "observed": 1.069,
+              "central": 0.8389999999999995,
+              "range": {
+                "min": 0.6194536479149645,
+                "max": 1.0585463520850347
+              }
+            },
+            {
+              "id": "9",
+              "observed": 1.468,
+              "central": 1.2967500000000014,
+              "range": {
+                "min": 1.1403286695639492,
+                "max": 1.4531713304360536
+              }
+            },
+            {
+              "id": "10",
+              "observed": 1.256,
+              "central": 1.1744,
+              "range": {
+                "min": 0.9198488306323038,
+                "max": 1.4289511693676964
+              }
+            },
+            {
+              "id": "11",
+              "observed": 1.309,
+              "central": 1.2228999999999992,
+              "range": {
+                "min": 0.968881379134399,
+                "max": 1.4769186208655993
+              }
+            },
+            {
+              "id": "12",
+              "observed": 1.321,
+              "central": 1.2629999999999988,
+              "range": {
+                "min": 1.0061368261745314,
+                "max": 1.5198631738254662
+              }
+            },
+            {
+              "id": "13",
+              "observed": 1.249,
+              "central": 1.1715000000000002,
+              "range": {
+                "min": 0.9164893985190181,
+                "max": 1.4265106014809823
+              }
+            },
+            {
+              "id": "14",
+              "observed": 1.287,
+              "central": 1.3249000000000002,
+              "range": {
+                "min": 1.0666937117514819,
+                "max": 1.5831062882485185
+              }
+            },
+            {
+              "id": "15",
+              "observed": 1.076,
+              "central": 1.2246999999999995,
+              "range": {
+                "min": 0.981286178823608,
+                "max": 1.4681138211763909
+              }
+            },
+            {
+              "id": "16",
+              "observed": 1.372,
+              "central": 1.3207500000000023,
+              "range": {
+                "min": 1.1362234240528797,
+                "max": 1.505276575947125
+              }
+            },
+            {
+              "id": "17",
+              "observed": 1.396,
+              "central": 1.5021000000000009,
+              "range": {
+                "min": 1.2508115646996625,
+                "max": 1.7533884353003393
+              }
+            },
+            {
+              "id": "18",
+              "observed": 1.373,
+              "central": 1.2097999999999982,
+              "range": {
+                "min": 0.9697433818168322,
+                "max": 1.4498566181831642
+              }
+            },
+            {
+              "id": "19",
+              "observed": 0.947,
+              "central": 0.9620999999999988,
+              "range": {
+                "min": 0.7030552688131007,
+                "max": 1.221144731186897
+              }
+            },
+            {
+              "id": "20",
+              "observed": 1.091,
+              "central": 1.1253999999999993,
+              "range": {
+                "min": 0.8670179089225827,
+                "max": 1.383782091077416
+              }
+            },
+            {
+              "id": "21",
+              "observed": 0.859,
+              "central": 0.8287000000000002,
+              "range": {
+                "min": 0.5701337447538835,
+                "max": 1.087266255246117
+              }
+            },
+            {
+              "id": "22",
+              "observed": 1.209,
+              "central": 1.2665000000000002,
+              "range": {
+                "min": 1.009596484846039,
+                "max": 1.5234035151539613
+              }
+            },
+            {
+              "id": "23",
+              "observed": 1.198,
+              "central": 1.2992000000000006,
+              "range": {
+                "min": 1.0471872428723565,
+                "max": 1.5512127571276446
+              }
+            },
+            {
+              "id": "24",
+              "observed": 1.294,
+              "central": 1.340250000000003,
+              "range": {
+                "min": 1.1552499534303624,
+                "max": 1.5252500465696437
+              }
+            },
+            {
+              "id": "25",
+              "observed": 0.765,
+              "central": 0.7178000000000004,
+              "range": {
+                "min": 0.46014432055163274,
+                "max": 0.9754556794483682
+              }
+            },
+            {
+              "id": "26",
+              "observed": 1.082,
+              "central": 1.0111999999999985,
+              "range": {
+                "min": 0.7554911697779303,
+                "max": 1.2669088302220668
+              }
+            },
+            {
+              "id": "27",
+              "observed": 0.908,
+              "central": 0.9035000000000004,
+              "range": {
+                "min": 0.6443113887117371,
+                "max": 1.1626886112882637
+              }
+            },
+            {
+              "id": "28",
+              "observed": 0.821,
+              "central": 0.9600999999999997,
+              "range": {
+                "min": 0.7146578179717893,
+                "max": 1.2055421820282102
+              }
+            },
+            {
+              "id": "29",
+              "observed": 1.109,
+              "central": 1.1414999999999995,
+              "range": {
+                "min": 0.8830296462052766,
+                "max": 1.3999703537947226
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "groupedIdentifiability": [
+      {
+        "condition": "0,1,0,1",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "0,1,-1,0",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "0,-1,1,0",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "1,0,0,1",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "0,0,0,0",
+        "withheldRuns": 5,
+        "identifiable": false,
+        "reason": "Error: Plan expérimental non identifiable."
+      },
+      {
+        "condition": "0,-1,-1,0",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "1,-1,0,0",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "-1,-1,0,0",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "-1,0,1,0",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "0,0,1,1",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "-1,0,0,-1",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "-1,0,-1,0",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "0,-1,0,-1",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "-1,0,0,1",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "0,0,-1,1",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "1,0,1,0",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "0,0,1,-1",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "1,0,0,-1",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "0,-1,0,1",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "-1,1,0,0",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "1,1,0,0",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "0,0,-1,-1",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "0,1,0,-1",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "1,0,-1,0",
+        "withheldRuns": 1,
+        "identifiable": true
+      },
+      {
+        "condition": "0,1,1,0",
+        "withheldRuns": 1,
+        "identifiable": true
+      }
+    ],
+    "reservedValidation": {
+      "validation": "published-reserved-condition-same-study",
+      "independentStudy": false,
+      "input": {
+        "yeastId": "doemens-dm303",
+        "protocolMatched": true,
+        "wortPlato": 11,
+        "pitchMillionCellsMl": 8,
+        "wheatPct": 40,
+        "mashInC": 44,
+        "boilMin": 88,
+        "fermentC": 19.5
+      },
+      "results": [
+        {
+          "compound": "4VG",
+          "unit": "mg/L",
+          "observedMean": 2.418,
+          "predictedMean": 2.429767833333334,
+          "absoluteError": 0.011767833333333755,
+          "modelRangeForOneFutureObservation": {
+            "min": 2.238563495272798,
+            "max": 2.62097217139387
+          },
+          "empiricalCoverage": null,
+          "observationCount": 1,
+          "replicatesReported": 3,
+          "note": "One held-out published mean, not three individual validation observations. Its location inside a future-observation interval does not validate nominal coverage."
+        },
+        {
+          "compound": "4VP",
+          "unit": "mg/L",
+          "observedMean": 1.402,
+          "predictedMean": 1.435992604166668,
+          "absoluteError": 0.03399260416666805,
+          "modelRangeForOneFutureObservation": {
+            "min": 1.2467011442149782,
+            "max": 1.6252840641183577
+          },
+          "empiricalCoverage": null,
+          "observationCount": 1,
+          "replicatesReported": 3,
+          "note": "One held-out published mean, not three individual validation observations. Its location inside a future-observation interval does not validate nominal coverage."
+        }
+      ]
+    }
+  },
+  "browser": {
+    "passed": true,
+    "reports": [
+      {
+        "width": 320,
+        "objectives": 6,
+        "lab": [
+          {
+            "id": "4VG",
+            "range": {
+              "min": 2.238563495272798,
+              "max": 2.62097217139387
+            },
+            "label": "4VG : 2,23–2,63 mg/L · confiance faible",
+            "left": 77.6451,
+            "width": 13.2639,
+            "expectedLeft": 77.64514805561627,
+            "expectedWidth": 13.263942853474637
+          },
+          {
+            "id": "4VP",
+            "range": {
+              "min": 1.2467011442149782,
+              "max": 1.6252840641183577
+            },
+            "label": "4VP : 1,24–1,63 mg/L · confiance faible",
+            "left": 43.2421,
+            "width": 13.1312,
+            "expectedLeft": 43.242148426029715,
+            "expectedWidth": 13.131245519414332
+          }
+        ],
+        "performance": {
+          "maxMs": 2.800000000745058,
+          "medianMs": 2.099999999627471,
+          "renderedUpdateMs": 36.15090000000055
+        },
+        "errors": [],
+        "remoteRequests": 0,
+        "simulationWrites": 0,
+        "simulationRequests": 0,
+        "readonlyVariantWrites": 0
+      },
+      {
+        "width": 390,
+        "objectives": 6,
+        "lab": [
+          {
+            "id": "4VG",
+            "range": {
+              "min": 2.238563495272798,
+              "max": 2.62097217139387
+            },
+            "label": "4VG : 2,23–2,63 mg/L · confiance faible",
+            "left": 77.6451,
+            "width": 13.2639,
+            "expectedLeft": 77.64514805561627,
+            "expectedWidth": 13.263942853474637
+          },
+          {
+            "id": "4VP",
+            "range": {
+              "min": 1.2467011442149782,
+              "max": 1.6252840641183577
+            },
+            "label": "4VP : 1,24–1,63 mg/L · confiance faible",
+            "left": 43.2421,
+            "width": 13.1312,
+            "expectedLeft": 43.242148426029715,
+            "expectedWidth": 13.131245519414332
+          }
+        ],
+        "performance": {
+          "maxMs": 2.699999999254942,
+          "medianMs": 2.099999999627471,
+          "renderedUpdateMs": 34.70690000000104
+        },
+        "errors": [],
+        "remoteRequests": 0,
+        "simulationWrites": 0,
+        "simulationRequests": 0,
+        "readonlyVariantWrites": 0
+      },
+      {
+        "width": 1280,
+        "objectives": 6,
+        "lab": [
+          {
+            "id": "4VG",
+            "range": {
+              "min": 2.238563495272798,
+              "max": 2.62097217139387
+            },
+            "label": "4VG : 2,23–2,63 mg/L · confiance faible",
+            "left": 77.6451,
+            "width": 13.2639,
+            "expectedLeft": 77.64514805561627,
+            "expectedWidth": 13.263942853474637
+          },
+          {
+            "id": "4VP",
+            "range": {
+              "min": 1.2467011442149782,
+              "max": 1.6252840641183577
+            },
+            "label": "4VP : 1,24–1,63 mg/L · confiance faible",
+            "left": 43.2421,
+            "width": 13.1312,
+            "expectedLeft": 43.242148426029715,
+            "expectedWidth": 13.131245519414332
+          }
+        ],
+        "performance": {
+          "maxMs": 2.900000000372529,
+          "medianMs": 2.199999999254942,
+          "renderedUpdateMs": 25.824799999998504
+        },
+        "errors": [],
+        "remoteRequests": 0,
+        "simulationWrites": 0,
+        "simulationRequests": 0,
+        "readonlyVariantWrites": 0
+      }
+    ]
+  }
+}

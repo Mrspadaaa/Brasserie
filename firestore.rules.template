@@ -1,0 +1,269 @@
+rules_version = '2';
+
+// Règles de sécurité Firestore — Brasserie L'Affinée
+//
+// C'EST ICI que se décide qui peut lire et écrire, et nulle part ailleurs.
+// La liste d'e-mails autorisés qui existait dans firebaseAuth.ts vivait dans le
+// navigateur : n'importe qui pouvait la contourner depuis les outils de
+// développement. Ces règles-ci s'exécutent sur les serveurs de Google et ne
+// peuvent pas être contournées depuis le client.
+//
+// ⚠️ CE FICHIER EST GÉNÉRÉ. Ne pas l'éditer à la main : il est réécrit par
+// `node scripts/build-rules.mjs` depuis `firestore.rules.template` et la
+// variable `VITE_AUTHORIZED_ACCOUNTS` de `.env`. Il reste hors du dépôt
+// (public), parce qu'il porte les adresses réelles.
+//
+// Déploiement : npm run deploy — build, règles et hébergement, dans cet ordre.
+//
+// ⚠️ STRUCTURE : une seule liste de collections, pas un bloc `match` par
+// collection. La version précédente en avait seize écrits à la main, et il en
+// manquait un (`equipment`) : toute lecture de cette collection tombait dans le
+// refus par défaut, ce qui faisait échouer la migration entière. Une liste
+// unique rend cette dérive impossible — elle doit rester alignée sur
+// ALL_COLLECTIONS dans src/services/firestoreRepo.ts.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Comptes autorisés à ouvrir la comptabilité de la brasserie ---
+    //
+    // Les adresses réelles sont injectées à la génération, depuis `.env`.
+    function autorises() {
+      return [
+__AUTHORIZED_ACCOUNTS__
+      ];
+    }
+
+    function estAutorise() {
+      // `get(clé, défaut)` plutôt qu'un accès direct : un champ absent du jeton
+      // lèverait une erreur et refuserait tout, au lieu de simplement échouer
+      // sur la condition.
+      return request.auth != null
+        && request.auth.token.get('email', '') != ''
+        && request.auth.token.get('email_verified', false) == true
+        && request.auth.token.email.lower() in autorises();
+    }
+
+    function paymentBalance(data) { return data.get('settlementBalanceCents', 0); }
+    function paymentDirection(data) {
+      let finance = data.get('finance', {});
+      let kind = finance.get('kind', data.get('category', '') == 'recettes' ? 'income' : data.get('category', '') == 'apports' ? 'contribution' : 'expense');
+      return kind == 'refund' ? finance.get('refundDirection', 'in') : kind in ['income', 'contribution'] ? 'in' : 'out';
+    }
+    function paymentAmount(data) {
+      return data.get('finance', {}).get('amountCents', int(data.get('amountTTC', data.get('amountHT', 0)) * 100 + 0.5));
+    }
+    function activeCashTransaction(data) {
+      return data.get('finance', {}).get('voidedAt', null) == null
+        && data.get('finance', {}).get('refundApplication', 'cash') != 'offset';
+    }
+    function validPaymentRecord(payment, id, transaction) {
+      return payment.id == id && payment.transactionId is string
+        && payment.amountCents is int && payment.amountCents > 0
+        && payment.direction in ['in', 'out']
+        && payment.method in ['bank', 'cash', 'twint', 'other']
+        && activeCashTransaction(transaction)
+        && (payment.get('reversalOfId', null) == null
+          ? payment.direction == paymentDirection(transaction)
+          : validPaymentReversal(payment, id));
+    }
+    function validPaymentReversal(payment, id) {
+      let original = get(/databases/$(database)/documents/financialPayments/$(payment.reversalOfId)).data;
+      return id == 'CONTRE-' + payment.reversalOfId
+        && original.get('reversalOfId', null) == null
+        && original.transactionId == payment.transactionId
+        && original.amountCents == payment.amountCents
+        && original.direction != payment.direction
+        && payment.date >= original.date;
+    }
+    function matchingPaymentGuard(before, after, transactionId) {
+      let id = after.get('lastPaymentId', '');
+      let path = /databases/$(database)/documents/financialPayments/$(id);
+      let payment = getAfter(path).data;
+      let delta = payment.get('reversalOfId', null) == null ? payment.amountCents : -payment.amountCents;
+      return id is string && id != '' && id != before.get('lastPaymentId', '')
+        && !exists(path) && payment.transactionId == transactionId
+        && validPaymentRecord(payment, id, after)
+        && paymentBalance(after) is int && paymentBalance(after) >= 0
+        && paymentBalance(after) <= paymentAmount(after)
+        && paymentBalance(after) == paymentBalance(before) + delta;
+    }
+    function unchangedPaymentGuard(before, after) {
+      return paymentBalance(before) == paymentBalance(after)
+        && before.get('lastPaymentId', '') == after.get('lastPaymentId', '');
+    }
+    function newTransactionGuard(data, id) {
+      return (paymentBalance(data) == 0 && data.get('lastPaymentId', '') == '')
+        || matchingPaymentGuard({}, data, id);
+    }
+    function updatedTransactionGuard(before, after, id) {
+      return before.get('finance', {}).get('voidedAt', null) == null
+        && paymentBalance(after) is int && paymentBalance(after) >= 0
+        && paymentBalance(after) <= paymentAmount(after)
+        && (before.get('lastPaymentId', '') == '' || paymentDirection(before) == paymentDirection(after))
+        && (unchangedPaymentGuard(before, after)
+          || (after.diff(before).affectedKeys().hasOnly(['settlementBalanceCents', 'lastPaymentId']) && matchingPaymentGuard(before, after, id)))
+        && (after.get('finance', {}).get('voidedAt', null) == null
+          || (paymentBalance(before) == 0 && paymentBalance(after) == 0 && unchangedPaymentGuard(before, after)));
+    }
+
+    // A legacy/offline client may still write full catalogue documents. Once a
+    // versioned source ledger exists, only the server catalogue transaction may
+    // change it; stale client payloads must carry the exact stored value.
+    function preservesHopCatalogueMeta(before, after) {
+      let previous = before.get('catalogueMeta', null);
+      return previous == null || after.get('catalogueMeta', null) == previous;
+    }
+
+    /**
+     * Collections métier ordinaires : lecture et écriture complètes pour un
+     * compte autorisé.
+     *
+     * `movements` et `auditLogs` en sont volontairement ABSENTES : ce sont des
+     * registres, traités plus bas.
+     */
+    function collectionsMetier() {
+      return [
+        'transactions',
+        'stockItems',
+        'equipment',
+        'kegs',
+        'batches',
+        'finishedGoods',
+        'reservations',
+        'recipes',
+        'clients',
+        'planning',
+        'budgetLines',
+        'tarifs',
+        'creativeItems',
+        'expenseTemplates',
+        'config',
+        'hopVarieties',
+        'hopLots',
+        'hopKnowledge',
+        'yeastProducts',
+        'hopTastings',
+        'financialPlans',
+        'financialAssets',
+        'financialProfiles'
+      ];
+    }
+
+    // Once ingredients have left stock, an old offline form cannot rewrite that history.
+    // The only advancing transition appends the reserved fermentation additions exactly once.
+    function preservesBrewStock() {
+      let previous = resource.data.get('stockConsumption', null);
+      let next = request.resource.data.get('stockConsumption', null);
+      return (resource.data.get('stockAccountingVersion', null) != 1
+          || request.resource.data.get('stockAccountingVersion', null) == 1)
+        && (previous == null
+          ? (next == null || request.resource.data.get('stockAccountingVersion', null) == 1)
+          : (next == previous || (next is map
+            && previous.get('completedStages', []) == ['brewday']
+            && next.get('completedStages', []) == ['brewday', 'remaining']
+            && next.get('appliedAt', null) == previous.get('appliedAt', null)
+            && next.get('historicalConfirmation', null) == previous.get('historicalConfirmation', null)
+            && next.get('items', []) == previous.get('items', []).concat(previous.get('pendingItems', []))
+            && next.get('pendingItems', []) == [])));
+    }
+
+    match /{collection}/{docId} {
+      allow read: if estAutorise() && collection in collectionsMetier();
+      allow delete: if estAutorise() && collection in collectionsMetier() && collection != 'transactions'
+        && ((collection != 'hopVarieties' && collection != 'hopKnowledge')
+          || resource.data.get('catalogueMeta', null) == null);
+      allow create: if estAutorise() && collection in collectionsMetier()
+        && (collection != 'transactions' || newTransactionGuard(request.resource.data, docId))
+        && (collection != 'stockItems' || (request.resource.data.currentStock is number && request.resource.data.currentStock >= 0));
+      allow update: if estAutorise() && collection in collectionsMetier()
+        && ((collection != 'hopVarieties' && collection != 'hopKnowledge')
+          || preservesHopCatalogueMeta(resource.data, request.resource.data))
+        && (collection != 'stockItems' || (request.resource.data.currentStock is number && request.resource.data.currentStock >= 0))
+        && (collection != 'transactions' || updatedTransactionGuard(resource.data, request.resource.data, docId))
+        && (collection != 'batches' || (preservesBrewStock()
+          && (resource.data.get('brewDay', {}).get('revision', null) == null
+          || request.resource.data.get('brewDay', {}) == resource.data.brewDay)));
+    }
+
+    /**
+     * Le journal des mouvements de stock est un registre comptable :
+     * on y ajoute, on ne réécrit jamais. Annuler un mouvement, c'est en poster
+     * un opposé — pas effacer l'original.
+     *
+     * Les règles Firestore s'additionnent : ce bloc accorde la lecture et la
+     * création sur `movements`, que le bloc générique ci-dessus refuse (la
+     * collection n'est pas dans `collectionsMetier`). La modification et la
+     * suppression ne sont accordées nulle part, donc elles restent refusées.
+     */
+    match /movements/{id} {
+      allow read, create: if estAutorise();
+    }
+
+    // Idem pour le journal d'audit : sa valeur tient à son immuabilité.
+    match /auditLogs/{id} {
+      allow read, create: if estAutorise();
+    }
+
+    // A prediction records what was known before tasting; subsequent models cannot rewrite it.
+    match /hopPredictions/{id} {
+      allow read, create: if estAutorise();
+    }
+
+    // Settlements and annual snapshots are corrected by a new record, never overwritten.
+    match /financialPayments/{id} {
+      allow read: if estAutorise();
+      allow create: if estAutorise()
+        && matchingPaymentGuard(
+          exists(/databases/$(database)/documents/transactions/$(request.resource.data.transactionId))
+            ? get(/databases/$(database)/documents/transactions/$(request.resource.data.transactionId)).data : {},
+          getAfter(/databases/$(database)/documents/transactions/$(request.resource.data.transactionId)).data,
+          request.resource.data.transactionId)
+        && getAfter(/databases/$(database)/documents/transactions/$(request.resource.data.transactionId)).data.lastPaymentId == id;
+    }
+    match /financialClosings/{id} {
+      allow read: if estAutorise();
+      allow create: if estAutorise() && request.resource.data.id == id
+        && request.resource.data.year is int;
+      allow update: if estAutorise() && resource.data.get('report', null) == null
+        && request.resource.data.id == id && request.resource.data.year is int;
+      allow delete: if estAutorise() && resource.data.get('report', null) == null;
+    }
+    // Compact revision only. Change events, sessions, monthly AI costs and
+    // migration receipts stay server-only under the default denial.
+    match /financialSync/{id} {
+      allow read: if estAutorise() && id == 'state';
+      allow write: if false;
+    }
+    match /financeDocuments/{id} {
+      allow read: if estAutorise();
+      allow create: if estAutorise() && request.resource.data.id == id;
+    }
+
+    // Archive policies only change presentation. Restoring uses status=open, never deletion.
+    function archiveTimestamp(value) {
+      return value is string && value.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}([.][0-9]{3})?Z');
+    }
+    function validArchive(data, id) {
+      return data.keys().hasOnly(['id', 'year', 'status', 'archivedAt', 'updatedAt', 'operationId'])
+        && data.id == id && data.year is int && data.year >= 1900 && data.year <= 2200
+        && id == 'ARCHIVE-' + string(data.year)
+        && data.status in ['archived', 'open'] && archiveTimestamp(data.updatedAt)
+        && data.operationId is string && data.operationId.matches('[A-Za-z0-9-]{8,100}')
+        && (data.get('archivedAt', null) == null ? data.status == 'open' : archiveTimestamp(data.archivedAt));
+    }
+    function hasArchiveAudit(data, id) {
+      let auditId = 'LOG-' + data.operationId;
+      let path = /databases/$(database)/documents/auditLogs/$(auditId);
+      return !exists(path) && getAfter(path).data.id == auditId
+        && getAfter(path).data.entityId == id && getAfter(path).data.operationId == data.operationId;
+    }
+    match /financialArchives/{id} {
+      allow read: if estAutorise();
+      allow create, update: if estAutorise() && validArchive(request.resource.data, id) && hasArchiveAudit(request.resource.data, id);
+    }
+
+    // Tout le reste est refusé : une collection inconnue n'est accordée par
+    // aucun des blocs ci-dessus, donc elle est inaccessible par défaut.
+  }
+}

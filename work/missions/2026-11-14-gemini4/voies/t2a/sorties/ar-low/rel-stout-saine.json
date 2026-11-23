@@ -1,0 +1,19 @@
+{
+ "cas": "rel-stout-saine",
+ "usage": "relecture",
+ "half": "choix",
+ "cellule": "ar@low",
+ "ok": true,
+ "ms": 8054,
+ "microChf": 7543,
+ "microDecembre": 15085,
+ "entree": 1517,
+ "sortie": 300,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "0/0 défauts · 0 bloquant(s) dont 0 injustifié(s) · 0 de goût ou pire",
+ "reponse": "{\"verdict\":\"Tout est cohérent et conforme au style annoncé : la recette est prête à brasser.\",\"findings\":[{\"severity\":\"detail\",\"topic\":\"Paliers\",\"observation\":\"Le palier de saccharification à 67 °C pendant 60 min (combiné à la levure SafAle S-04) est dans le haut de la fourchette pour un Irish Dry Stout où l'on recherche une finale très sèche (FG cible 1.010).\",\"suggestion\":\"Abaisser le palier de saccharification à 65 °C si l'on souhaite favoriser l'atténuation et accentuer le caractère sec (dry) du style.\"}],\"missing\":[],\"styleFit\":\"Parfaitement dans les clous d'un Irish Dry Stout : densité (OG 1.042, FG 1.010), amertume franche (35 IBU via 40 g d'East Kent Goldings à 5.5 % AA), robe noire opaque (70 EBC grâce aux 0.3 kg d'orge torréfiée à 1000 EBC et 0.5 kg de flocons d'orge) et profil d'eau équilibré (60 ppm SO4 / 60 ppm Cl, 150 ppm HCO3 adapté aux grains torréfiés).\"}"
+}

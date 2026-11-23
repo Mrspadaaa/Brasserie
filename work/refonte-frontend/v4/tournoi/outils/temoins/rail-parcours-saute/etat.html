@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Témoin du rail vertical : D64, un houblon déjà posé saute de côté</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font: 14px/1.3 system-ui, sans-serif; background: #f6efe6; color: #2a2118; min-height: 100vh; }
+  main { padding: 10px 12px; }
+  h1 { font-size: 16px; margin: 0; }
+  #f { position: relative; height: 520px; margin-top: 130px; touch-action: none; }
+  .pill { position: absolute; width: 52px; height: 32px; padding: 0; border: 2px solid #2a2118; border-radius: 16px; background: #fff; color: #2a2118; font: 600 12px ui-monospace, Menlo, monospace; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .carte { position: absolute; left: 186px; width: 104px; height: 18px; border: 1px solid #d8c9b4; border-radius: 6px; background: #fffaf2; font-size: 11px; line-height: 12px; padding: 0 4px; display: flex; flex-wrap: nowrap; align-items: center; }
+  .carte.large { width: 150px; }
+  .carte output { margin-left: auto; font: 600 11px ui-monospace, Menlo, monospace; }
+  .noeud { position: absolute; left: 300px; font-size: 11px; line-height: 13px; white-space: nowrap; }
+  .loupe { position: absolute; left: 66px; transform: translateY(-50%); display: flex; flex-direction: column; align-items: flex-start; padding: 2px 6px; border-radius: 6px; background: #fff; border: 1px solid #c9b79d; pointer-events: none; }
+  .loupe span { font: 11px/12px ui-monospace, Menlo, monospace; white-space: nowrap; }
+  .loupe span.ici { font: 600 14px/16px ui-monospace, Menlo, monospace; }
+</style>
+</head>
+<body data-route="temoin-rail-vertical">
+<main data-ecran="temoin">
+  <h1>Ma bière · étape Houblons</h1>
+  <div id="f" data-role="frise" aria-orientation="vertical"></div>
+</main>
+<script>
+(function () {
+  var CFG = {"saute":true};
+  var crans = [], m, j;
+  for (m = 60; m >= 0; m -= 5) crans.push({ seg: 0, m: m, aria: 'ébullition ' + m + '′', court: m + '′', lib: m + '′' });
+  crans.push({ seg: 1, aria: 'whirlpool', court: 'WP', lib: 'WP' });
+  for (j = 1; j <= 7; j++) crans.push({ seg: 2, j: j, aria: 'dry hop en fermentation, ' + j + ' j', court: j + ' j', lib: 'actif ' + j + ' j' });
+  for (j = 1; j <= 7; j++) crans.push({ seg: 3, j: j, aria: 'dry hop après fermentation, ' + j + ' j', court: j + ' j', lib: 'après ' + j + ' j' });
+  var n = crans.length;
+  var Y0 = function (k) { return k <= 12 ? k * 6 : k === 13 ? 94 : k <= 20 ? 120 + (k - 14) * 6 : 182 + (k - 21) * 6; };
+  var Y = function (k) { return Y0(k) + (CFG.vide && k >= 2 ? 90 : 0); };
+  var ibuDe = function (c, f) { return f * (c.seg === 0 ? 60 * (1 - Math.exp(-0.04 * c.m)) / (1 - Math.exp(-0.04 * 60)) : c.seg === 1 ? 10 : 0); };
+  var lignes = [
+    { cle: 'nugget', nom: 'Nugget', k: 0, f: 1 },
+    { cle: 'motueka', nom: 'Motueka', k: CFG.deuxChevauchent ? 12 : 8, f: 0.8 },
+    { cle: 'citra', nom: 'Citra', k: 20, f: 0.6 }
+  ];
+  var f = document.getElementById('f');
+  var held = null;
+  var html = '', i;
+  html += '<span class="noeud" style="top:-24px">Ébullition 60′</span>';
+  html += '<span class="noeud" style="top:' + (Y(12) - 6) + 'px">0′</span>';
+  html += '<span class="noeud" style="top:' + (Y(13) - 6) + 'px">whirlpool</span>';
+  html += '<span class="noeud" style="top:' + (Y(14) - 2) + 'px">fermentation</span>';
+  html += '<span class="noeud" style="top:' + (Y(21) - 8) + 'px">post-fermentation</span>';
+  for (i = 0; i < lignes.length; i++) {
+    var l = lignes[i];
+    html += '<button type="button" class="pill" data-role="glisser-moment" data-houblon="' + l.cle + '" role="slider" aria-orientation="vertical" aria-label="Moment de ' + l.nom + '" aria-valuemin="0" aria-valuemax="' + (n - 1) + '" id="p-' + l.cle + '"><span data-role="moment-pouce"></span></button>';
+    html += '<div class="carte' + (CFG.deuxChevauchent && l.cle === 'motueka' ? ' large' : '') + '" data-role="ligne-houblon" id="c-' + l.cle + '"><b data-houblon="' + l.cle + '">' + l.nom + '</b><output data-role="ibu-ajout" id="o-' + l.cle + '"></output></div>';
+  }
+  html += '<div class="loupe" data-role="loupe" id="loupe" aria-hidden="true" style="display:none"></div>';
+  f.innerHTML = html;
+  var loupe = document.getElementById('loupe');
+
+  function nearest(y) { var best = 0, bd = 1e9, k; for (k = 0; k < n; k++) { var d = Math.abs(Y(k) - y); if (d < bd) { bd = d; best = k; } } return best; }
+
+  function dessiner() {
+    var i2, l2, k, h;
+    for (i2 = 0; i2 < lignes.length; i2++) {
+      l2 = lignes[i2];
+      var tenu = held && held.cle === l2.cle;
+      var yc = tenu ? held.y : Y(l2.k);
+      var pill = document.getElementById('p-' + l2.cle), carte = document.getElementById('c-' + l2.cle), o = document.getElementById('o-' + l2.cle);
+      pill.style.top = (yc - 16) + 'px';
+      pill.style.left = (CFG.saute && held && l2.cle === 'motueka' && held.k >= 6 ? 26 : 6) + 'px';
+      carte.style.top = (yc - 9) + 'px';
+      pill.setAttribute('aria-valuenow', l2.k);
+      pill.setAttribute('aria-valuetext', crans[l2.k].aria);
+      pill.firstChild.textContent = crans[l2.k].court;
+      var v = ibuDe(crans[l2.k], l2.f);
+      o.setAttribute('data-valeur', v.toFixed(2));
+      o.textContent = Math.round(v) + ' IBU';
+    }
+    if (!held) { loupe.style.display = 'none'; return; }
+    var kk = held.k;
+    var marges = CFG.irregulier ? [0, 0, 26, 26, 70] : [0, 26, 26, 26, 26];
+    h = '';
+    for (k = kk - 2; k <= kk + 2; k++) if (k >= 0 && k < n) h += '<span data-cran="' + k + '"' + (k === kk ? ' class="ici"' : '') + ' style="margin-top:' + (k === kk - 2 ? 0 : marges[k - kk + 2]) + 'px">' + crans[k].lib + '</span>';
+    loupe.innerHTML = h;
+    loupe.style.top = held.y + 'px';
+    loupe.style.display = 'flex';
+  }
+
+  var tenir = function (l2, e) {
+    var pill = document.getElementById('p-' + l2.cle);
+    pill.setPointerCapture(e.pointerId);
+    held = { cle: l2.cle, k: l2.k, k0: l2.k, y0: Y(l2.k), y: Y(l2.k), cy: e.clientY };
+    dessiner();
+  };
+  var suivre = function (l2, e) {
+    if (!held || held.cle !== l2.cle) return;
+    var y = Math.max(Y(0), Math.min(Y(n - 1), held.y0 + (e.clientY - held.cy)));
+    var k = nearest(y);
+    if (CFG.remonte && (k === 9 || k === 10)) k = k - 3;
+    held.y = y; held.k = k; l2.k = k;
+    dessiner();
+  };
+  var lacher = function () { if (!held) return; held = null; dessiner(); };
+  lignes.forEach(function (l2) {
+    var pill = document.getElementById('p-' + l2.cle);
+    pill.addEventListener('pointerdown', function (e) { if (e.button > 0) return; tenir(l2, e); });
+    pill.addEventListener('pointermove', function (e) { suivre(l2, e); });
+    pill.addEventListener('pointerup', lacher);
+    pill.addEventListener('pointercancel', lacher);
+    pill.addEventListener('lostpointercapture', lacher);
+    pill.addEventListener('keydown', function (e) {
+      var d = e.key === 'ArrowDown' ? 1 : e.key === 'ArrowUp' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      l2.k = Math.max(0, Math.min(n - 1, l2.k + d));
+      dessiner();
+    });
+  });
+  dessiner();
+})();
+</script>
+</body>
+</html>

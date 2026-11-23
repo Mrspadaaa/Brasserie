@@ -1,0 +1,425 @@
+{
+ "maj": "2026-10-23",
+ "items": [
+  {
+   "eid": "e01",
+   "item": "p-l9-biere-m4-m3",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "A"
+  },
+  {
+   "eid": "e02",
+   "item": "c-l16-radar",
+   "type": "classe",
+   "attendu": "rejette",
+   "moitie": "B"
+  },
+  {
+   "eid": "e03",
+   "item": "p-l9-fiche-h4-h1",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "A"
+  },
+  {
+   "eid": "e04",
+   "item": "p-l21-y1b-y3",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "B"
+  },
+  {
+   "eid": "e05",
+   "item": "c-l4-comparer",
+   "type": "classe",
+   "attendu": "rejette",
+   "moitie": "A"
+  },
+  {
+   "eid": "e06",
+   "item": "p-l22-r6a-r6d",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "B"
+  },
+  {
+   "eid": "e07",
+   "item": "p-l8-rail-p02-p03",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "A"
+  },
+  {
+   "eid": "e08",
+   "item": "p-l21-y1b-x3b",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "B"
+  },
+  {
+   "eid": "e09",
+   "item": "p-l23-picto-f1-b1",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "A"
+  },
+  {
+   "eid": "e10",
+   "item": "p-l7-radar-p06-p02",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "B"
+  },
+  {
+   "eid": "e11",
+   "item": "p-l13-fiche-g1-g4",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "A"
+  },
+  {
+   "eid": "e12",
+   "item": "p-l18-disposition-l8b-l8",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "B"
+  },
+  {
+   "eid": "e13",
+   "item": "p-l22-r6a-r6c",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "A"
+  },
+  {
+   "eid": "e14",
+   "item": "p-l14-barres-s5-s4",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "B"
+  },
+  {
+   "eid": "e15",
+   "item": "p-l23-r6n2-r6n1",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "A"
+  },
+  {
+   "eid": "e16",
+   "item": "c-l21-a2b",
+   "type": "classe",
+   "attendu": "mitige",
+   "moitie": "B"
+  },
+  {
+   "eid": "e17",
+   "item": "p-l6-suggestions-p10-p01",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "A"
+  },
+  {
+   "eid": "e18",
+   "item": "p-l22-r6a-r6g",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "B"
+  },
+  {
+   "eid": "e19",
+   "item": "c-l5b",
+   "type": "classe",
+   "attendu": "aime",
+   "moitie": "A"
+  },
+  {
+   "eid": "e20",
+   "item": "p-l7-radar-p04-p05",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "B"
+  },
+  {
+   "eid": "e21",
+   "item": "p-l5a-radar-p03-p01",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "A"
+  },
+  {
+   "eid": "e22",
+   "item": "c-l21-x3b",
+   "type": "classe",
+   "attendu": "mitige",
+   "moitie": "B"
+  },
+  {
+   "eid": "e23",
+   "item": "c-l5f",
+   "type": "classe",
+   "attendu": "mitige",
+   "moitie": "A"
+  },
+  {
+   "eid": "e24",
+   "item": "c-l8e-fiche",
+   "type": "classe",
+   "attendu": "rejette",
+   "moitie": "B"
+  },
+  {
+   "eid": "e25",
+   "item": "p-l14-barres-s5-s1",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "A"
+  },
+  {
+   "eid": "e26",
+   "item": "p-l8-rail-p02-p01",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "B"
+  },
+  {
+   "eid": "e27",
+   "item": "p-l21-y1b-w2",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "A"
+  },
+  {
+   "eid": "e28",
+   "item": "p-l9-biere-m4-m1",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "B"
+  },
+  {
+   "eid": "e29",
+   "item": "p-l18-barres-l5b-l8",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "A"
+  },
+  {
+   "eid": "e30",
+   "item": "c-l22-r6a",
+   "type": "classe",
+   "attendu": "aime",
+   "moitie": "B"
+  },
+  {
+   "eid": "e31",
+   "item": "p-l13-fiche-g1-g2",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "A"
+  },
+  {
+   "eid": "e32",
+   "item": "c-l23-f1",
+   "type": "classe",
+   "attendu": "aime",
+   "moitie": "B"
+  },
+  {
+   "eid": "e33",
+   "item": "p-l22-r6a-r6b",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "A"
+  },
+  {
+   "eid": "e34",
+   "item": "p-l23-picto-f1-a1",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "B"
+  },
+  {
+   "eid": "e35",
+   "item": "c-l9-m4",
+   "type": "classe",
+   "attendu": "aime",
+   "moitie": "A"
+  },
+  {
+   "eid": "e36",
+   "item": "c-l12b",
+   "type": "classe",
+   "attendu": "rejette",
+   "moitie": "B"
+  },
+  {
+   "eid": "e37",
+   "item": "p-l21-y1b-v1",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "A"
+  },
+  {
+   "eid": "e38",
+   "item": "c-l21-y1b",
+   "type": "classe",
+   "attendu": "aime",
+   "moitie": "B"
+  },
+  {
+   "eid": "e39",
+   "item": "c-l22-r4",
+   "type": "classe",
+   "attendu": "rejette",
+   "moitie": "A"
+  },
+  {
+   "eid": "e40",
+   "item": "p-l5b-suggestions-p06-p01",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "B"
+  },
+  {
+   "eid": "e41",
+   "item": "c-l23-r6n2",
+   "type": "classe",
+   "attendu": "aime",
+   "moitie": "A"
+  },
+  {
+   "eid": "e42",
+   "item": "p-l6-suggestions-p05-p08",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "B"
+  },
+  {
+   "eid": "e43",
+   "item": "c-l4-biere",
+   "type": "classe",
+   "attendu": "mitige",
+   "moitie": "A"
+  },
+  {
+   "eid": "e44",
+   "item": "c-l22-r4c",
+   "type": "classe",
+   "attendu": "rejette",
+   "moitie": "B"
+  },
+  {
+   "eid": "e45",
+   "item": "p-l11-substitution-u4-u3",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "A"
+  },
+  {
+   "eid": "e46",
+   "item": "p-l23-picto-f1-e1",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "B"
+  },
+  {
+   "eid": "e47",
+   "item": "c-l4-fiche",
+   "type": "classe",
+   "attendu": "aime",
+   "moitie": "A"
+  },
+  {
+   "eid": "e48",
+   "item": "p-l5a-comparer-p03-p01",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "B"
+  },
+  {
+   "eid": "e49",
+   "item": "p-l8-rail-p02-p04",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "A"
+  },
+  {
+   "eid": "e50",
+   "item": "c-l12",
+   "type": "classe",
+   "attendu": "rejette",
+   "moitie": "B"
+  },
+  {
+   "eid": "e51",
+   "item": "p-l5a-comparer-p03-p05",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "A"
+  },
+  {
+   "eid": "e52",
+   "item": "p-l6-comparer-p06-p09",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "B"
+  },
+  {
+   "eid": "e53",
+   "item": "c-l4-suggestions",
+   "type": "classe",
+   "attendu": "rejette",
+   "moitie": "A"
+  },
+  {
+   "eid": "e54",
+   "item": "p-l23-picto-f1-c1",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "B"
+  },
+  {
+   "eid": "e55",
+   "item": "c-l8",
+   "type": "classe",
+   "attendu": "mitige",
+   "moitie": "A"
+  },
+  {
+   "eid": "e56",
+   "item": "c-l7-p08",
+   "type": "classe",
+   "attendu": "mitige",
+   "moitie": "B"
+  },
+  {
+   "eid": "e57",
+   "item": "p-l23-picto-f1-d1",
+   "type": "paire",
+   "attendu": "A",
+   "moitie": "A"
+  },
+  {
+   "eid": "e58",
+   "item": "p-l6-comparer-p06-p05",
+   "type": "paire",
+   "attendu": "B",
+   "moitie": "B"
+  },
+  {
+   "eid": "e59",
+   "item": "c-l20-d1",
+   "type": "classe",
+   "attendu": "mitige",
+   "moitie": "A"
+  },
+  {
+   "eid": "e60",
+   "item": "c-l8-rail-p02",
+   "type": "classe",
+   "attendu": "aime",
+   "moitie": "B"
+  }
+ ]
+}

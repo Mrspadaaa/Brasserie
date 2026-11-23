@@ -1,0 +1,14 @@
+{
+  "_comment": "Hooks PRÉPARÉS (refonte houblons #119, phase 4). À fusionner dans .claude/settings.json seulement sur accord du brasseur. Détail : docs/qualite/garde-fous.md, section Hooks.",
+  "hooks": {
+    "PreToolUse": [
+      { "matcher": "Bash", "hooks": [
+        { "type": "command", "command": "node .claude/hooks/guards.mjs issue-close" },
+        { "type": "command", "command": "node .claude/hooks/guards.mjs big-commit" }
+      ] },
+      { "matcher": "Edit|Write|MultiEdit", "hooks": [
+        { "type": "command", "command": "node .claude/hooks/guards.mjs lost-feature" }
+      ] }
+    ]
+  }
+}

@@ -1,0 +1,4766 @@
+{
+ "version": "bandes-style-v1",
+ "date": "2026-10-18",
+ "status": "à valider par le brasseur",
+ "hypothesis": "[H] Bandes tirées des mots d’intensité du guide BJCP 2021, converties par une table publique. Ni mesure sensorielle, ni panel : une lecture de juge, à valider par le brasseur.",
+ "source": {
+  "title": "2021 Beer Style Guidelines",
+  "author": "BJCP",
+  "year": 2021,
+  "retrieved": "2026-10-18",
+  "note": "Citations courtes des sections Aroma et Flavor, mot pour mot."
+ },
+ "scale": {
+  "min": 0,
+  "max": 100,
+  "classes": {
+   "faible": [
+    0,
+    33
+   ],
+   "moyenne": [
+    33,
+    66
+   ],
+   "forte": [
+    66,
+    100
+   ]
+  },
+  "from": "Axes V5.5, src/data/hopKnowledgeBootstrap.json"
+ },
+ "families": [
+  "citrus",
+  "tropical",
+  "stoneFruit",
+  "pomeFruit",
+  "berries",
+  "melon",
+  "floral",
+  "herbal",
+  "resin",
+  "spice",
+  "green",
+  "earthy"
+ ],
+ "words": {
+  "version": "mots-bjcp-v1",
+  "levels": [
+   {
+    "id": "none",
+    "band": [
+     0,
+     5
+    ],
+    "words": [
+     "none",
+     "no",
+     "absent",
+     "typically absent",
+     "undetectable"
+    ]
+   },
+   {
+    "id": "very-low",
+    "band": [
+     3,
+     15
+    ],
+    "words": [
+     "very low",
+     "slight",
+     "subtle",
+     "hint",
+     "faint"
+    ]
+   },
+   {
+    "id": "low",
+    "band": [
+     8,
+     30
+    ],
+    "words": [
+     "low",
+     "light",
+     "restrained",
+     "delicate"
+    ]
+   },
+   {
+    "id": "medium-low",
+    "band": [
+     22,
+     42
+    ],
+    "words": [
+     "medium-low",
+     "moderately-low"
+    ]
+   },
+   {
+    "id": "medium",
+    "band": [
+     33,
+     55
+    ],
+    "words": [
+     "medium",
+     "moderate",
+     "moderately"
+    ]
+   },
+   {
+    "id": "medium-high",
+    "band": [
+     45,
+     68
+    ],
+    "words": [
+     "medium-high",
+     "moderately-high"
+    ]
+   },
+   {
+    "id": "high",
+    "band": [
+     58,
+     85
+    ],
+    "words": [
+     "high",
+     "prominent",
+     "pronounced",
+     "strong",
+     "assertive",
+     "considerable"
+    ]
+   },
+   {
+    "id": "very-high",
+    "band": [
+     72,
+     100
+    ],
+    "words": [
+     "very high",
+     "intense",
+     "aggressive",
+     "fairly aggressive",
+     "massively"
+    ]
+   }
+  ],
+  "why": [
+   "Les huit niveaux suivent l’ordre des mots d’intensité du BJCP, posés sur les trois classes des axes V5.5 : « low » reste dans la classe faible, « medium » dans la moyenne, « high » chevauche moyenne et forte, « very high » occupe la forte.",
+   "Deux niveaux voisins se chevauchent de 8 à 13 points : ce sont des mots de juge, pas des seuils mesurés ; le chevauchement évite une frontière nette que la donnée ne porte pas.",
+   "« none » garde 0 à 5 : une trace n’est pas un défaut que le modèle saurait distinguer."
+  ]
+ },
+ "familyWords": {
+  "citrus": [
+   "citrus",
+   "citrusy",
+   "citrus-orange"
+  ],
+  "tropical": [
+   "tropical fruit"
+  ],
+  "stoneFruit": [
+   "stone fruit",
+   "fruity [H]"
+  ],
+  "pomeFruit": [
+   "fruity [H]",
+   "other fruity qualities [H]"
+  ],
+  "berries": [
+   "berry",
+   "fruity [H]"
+  ],
+  "melon": [
+   "melon",
+   "other fruity qualities [H]"
+  ],
+  "floral": [
+   "floral",
+   "flowery",
+   "perfumy"
+  ],
+  "herbal": [
+   "herbal",
+   "spicy-herbal"
+  ],
+  "resin": [
+   "resin",
+   "resiny",
+   "pine"
+  ],
+  "spice": [
+   "spicy",
+   "peppery",
+   "spicy-peppery",
+   "spicy-earthy",
+   "spicy-herbal"
+  ],
+  "green": [
+   "grassy"
+  ],
+  "earthy": [
+   "earthy",
+   "spicy-earthy"
+  ]
+ },
+ "rules": [
+  "Phrase « X to Y » : [bas de X, haut de Y]. « up to Y » ou présence facultative (« optional », « may ») : bas = 0.",
+  "Une famille prend le haut le plus élevé des phrases qui la nomment (arôme et saveur réunis : les axes V5.5 ne les séparent pas).",
+  "Bas d’une famille : celui d’une phrase qui l’exige (« floral and spicy », famille seule) ; dans une liste d’alternatives (« or », « such as », « often »), aucune famille n’est exigée seule : bas = 0.",
+  "Famille nommée : attendue. Famille exclue par le texte (« not grassy or herbal ») : indésirable, bande « none ».",
+  "Famille non nommée : neutre, bande [0, min(haut de « low », haut du niveau général)] si le style nomme au moins une famille ; [0, haut du niveau général] s’il n’en nomme aucune.",
+  "Style sans houblon (« No hop aroma », « No hop flavor » seulement) : toutes les familles indésirables, bande « none ».",
+  "Niveau général du houblon du style : [plus petit bas, plus grand haut] des phrases ; sert au verdict d’ensemble (au moins une famille attendue dans cette bande)."
+ ],
+ "track": {
+  "minWidth": 15,
+  "marginFraction": 0.5,
+  "cranFraction": 0.3333333333333333,
+  "thresholdFraction": 0.25,
+  "overlapIndiscernable": 0.5,
+  "why": [
+   "Plancher de 15 points : la moitié d’une classe V5.5 (33 points). Plus étroit, la piste zoomerait sur une finesse que ni les mots du BJCP ni le modèle (descripteurs cités ou non) ne portent.",
+   "Marge : la moitié de la largeur de chaque côté, pour que les zones hors style hachurées restent visibles sans écraser la bande.",
+   "Cran = 1/3 de la largeur : une bande couvre en général deux à quatre mots BJCP ; « monter d’un cran » fait passer du bas au cœur, ou du cœur au haut de la bande.",
+   "Seuil d’écart sensible = 1/4 de la largeur, plus fin qu’un cran pour qu’une voie d’un cran soit toujours lisible, plus large que la moitié de l’écart type entre un descripteur cité et non cité dans les repères centraux V5.5 (environ 7 à 12 points sur une piste de 100).",
+   "Recouvrement ≥ 50 % de la plus étroite des deux plages : « ≈ » quelle que soit la piste ; la donnée ne départage pas."
+  ]
+ },
+ "styles": {
+  "15B": {
+   "id": "irish-stout",
+   "name": "Irish Stout",
+   "url": "https://www.bjcp.org/style/2021/15/15B/irish-stout/",
+   "ibu": [
+    25,
+    45
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Low earthy or floral hop aroma optional.",
+     "from": "low",
+     "families": [
+      "earthy",
+      "floral"
+     ],
+     "optional": true
+    },
+    {
+     "field": "flavor",
+     "quote": "Balancing factors may include … medium earthy hop flavor.",
+     "from": "medium",
+     "families": [
+      "earthy"
+     ],
+     "optional": true
+    }
+   ],
+   "code": "15B",
+   "overall": [
+    0,
+    55
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      30
+     ],
+     "from": [
+      "aroma"
+     ]
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    }
+   }
+  },
+  "15C": {
+   "id": "irish-extra-stout",
+   "name": "Irish Extra Stout",
+   "url": "https://www.bjcp.org/style/2021/15/15C/irish-extra-stout/",
+   "ibu": [
+    35,
+    50
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Hop aroma low to none, may be lightly earthy or spicy",
+     "from": "none",
+     "families": [
+      "earthy",
+      "spice"
+     ],
+     "to": "low",
+     "optional": true
+    },
+    {
+     "field": "flavor",
+     "quote": "Medium earthy or spicy hop flavor optional.",
+     "from": "medium",
+     "families": [
+      "earthy",
+      "spice"
+     ],
+     "optional": true
+    }
+   ],
+   "code": "15C",
+   "overall": [
+    0,
+    55
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    }
+   }
+  },
+  "16A": {
+   "id": "sweet-stout",
+   "name": "Sweet Stout",
+   "url": "https://www.bjcp.org/style/2021/16/16A/sweet-stout/",
+   "ibu": [
+    20,
+    40
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Low floral or earthy hop aroma optional.",
+     "from": "low",
+     "families": [
+      "floral",
+      "earthy"
+     ],
+     "optional": true
+    },
+    {
+     "field": "flavor",
+     "quote": "Low floral or earthy hop flavor optional.",
+     "from": "low",
+     "families": [
+      "floral",
+      "earthy"
+     ],
+     "optional": true
+    }
+   ],
+   "code": "16A",
+   "overall": [
+    0,
+    30
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      30
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "attendue",
+     "band": [
+      0,
+      30
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    }
+   }
+  },
+  "16B": {
+   "id": "oatmeal-stout",
+   "name": "Oatmeal Stout",
+   "url": "https://www.bjcp.org/style/2021/16/16B/oatmeal-stout/",
+   "ibu": [
+    25,
+    40
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Medium-low earthy or floral hop aroma optional.",
+     "from": "medium-low",
+     "families": [
+      "earthy",
+      "floral"
+     ],
+     "optional": true
+    },
+    {
+     "field": "flavor",
+     "quote": "Medium-low earthy or floral hop flavor optional.",
+     "from": "medium-low",
+     "families": [
+      "earthy",
+      "floral"
+     ],
+     "optional": true
+    }
+   ],
+   "code": "16B",
+   "overall": [
+    0,
+    42
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      42
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "attendue",
+     "band": [
+      0,
+      42
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    }
+   }
+  },
+  "16C": {
+   "id": "tropical-stout",
+   "name": "Tropical Stout",
+   "url": "https://www.bjcp.org/style/2021/16/16C/tropical-stout/",
+   "ibu": [
+    30,
+    50
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Low hop aroma optional.",
+     "from": "low",
+     "families": [],
+     "optional": true
+    },
+    {
+     "field": "flavor",
+     "quote": "Low hop flavor optional.",
+     "from": "low",
+     "families": [],
+     "optional": true
+    }
+   ],
+   "code": "16C",
+   "overall": [
+    0,
+    30
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "16D": {
+   "id": "foreign-extra-stout",
+   "name": "Foreign Extra Stout",
+   "url": "https://www.bjcp.org/style/2021/16/16D/foreign-extra-stout/",
+   "ibu": [
+    50,
+    70
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Low earthy, herbal, or floral hop aroma optional.",
+     "from": "low",
+     "families": [
+      "earthy",
+      "herbal",
+      "floral"
+     ],
+     "optional": true
+    },
+    {
+     "field": "flavor",
+     "quote": "Moderate earthy, herbal, or floral hop flavor optional.",
+     "from": "medium",
+     "families": [
+      "earthy",
+      "herbal",
+      "floral"
+     ],
+     "optional": true
+    }
+   ],
+   "code": "16D",
+   "overall": [
+    0,
+    55
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    }
+   }
+  },
+  "20B": {
+   "id": "american-stout",
+   "name": "American Stout",
+   "url": "https://www.bjcp.org/style/2021/20/20B/american-stout/",
+   "ibu": [
+    35,
+    75
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Medium to very low hop aroma, often with a citrusy or resiny character.",
+     "from": "very-low",
+     "families": [
+      "citrus",
+      "resin"
+     ],
+     "to": "medium"
+    },
+    {
+     "field": "flavor",
+     "quote": "Low to high hop flavor, generally citrusy or resiny.",
+     "from": "low",
+     "families": [
+      "citrus",
+      "resin"
+     ],
+     "to": "high"
+    }
+   ],
+   "code": "20B",
+   "overall": [
+    3,
+    85
+   ],
+   "families": {
+    "citrus": {
+     "status": "attendue",
+     "band": [
+      0,
+      85
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "attendue",
+     "band": [
+      0,
+      85
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "spice": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "20C": {
+   "id": "imperial-stout",
+   "name": "Imperial Stout",
+   "url": "https://www.bjcp.org/style/2021/20/20C/imperial-stout/",
+   "ibu": [
+    50,
+    90
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Very low to fairly aggressive hops, often English or American in character.",
+     "from": "very-low",
+     "families": [],
+     "to": "very-high"
+    }
+   ],
+   "code": "20C",
+   "overall": [
+    3,
+    100
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      100
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      100
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      100
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      100
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      100
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      100
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "neutre",
+     "band": [
+      0,
+      100
+     ],
+     "from": []
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      100
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      100
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "neutre",
+     "band": [
+      0,
+      100
+     ],
+     "from": []
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      100
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      100
+     ],
+     "from": []
+    }
+   }
+  },
+  "20A": {
+   "id": "american-porter",
+   "name": "American Porter",
+   "url": "https://www.bjcp.org/style/2021/20/20A/american-porter/",
+   "ibu": [
+    25,
+    50
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "The resiny, earthy, or floral hop character can vary from low to high.",
+     "from": "low",
+     "families": [
+      "resin",
+      "earthy",
+      "floral"
+     ],
+     "to": "high"
+    },
+    {
+     "field": "flavor",
+     "quote": "Low to high resiny, earthy, or floral hop flavor",
+     "from": "low",
+     "families": [
+      "resin",
+      "earthy",
+      "floral"
+     ],
+     "to": "high"
+    }
+   ],
+   "code": "20A",
+   "overall": [
+    8,
+    85
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      85
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "attendue",
+     "band": [
+      0,
+      85
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "spice": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "attendue",
+     "band": [
+      0,
+      85
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    }
+   }
+  },
+  "13C": {
+   "id": "english-porter",
+   "name": "English Porter",
+   "url": "https://www.bjcp.org/style/2021/13/13C/english-porter/",
+   "ibu": [
+    18,
+    35
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "May have up to a moderate level of floral or earthy hops.",
+     "from": "medium",
+     "families": [
+      "floral",
+      "earthy"
+     ],
+     "upTo": true,
+     "optional": true
+    },
+    {
+     "field": "flavor",
+     "quote": "Up to moderate earthy or floral hop flavor optional.",
+     "from": "medium",
+     "families": [
+      "earthy",
+      "floral"
+     ],
+     "upTo": true,
+     "optional": true
+    }
+   ],
+   "code": "13C",
+   "overall": [
+    0,
+    55
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    }
+   }
+  },
+  "9C": {
+   "id": "baltic-porter",
+   "name": "Baltic Porter",
+   "url": "https://www.bjcp.org/style/2021/9/9C/baltic-porter/",
+   "ibu": [
+    20,
+    40
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "No hops.",
+     "from": "none",
+     "families": []
+    },
+    {
+     "field": "flavor",
+     "quote": "Hop flavor from slightly spicy hops ranges from none to medium-low.",
+     "from": "none",
+     "families": [
+      "spice"
+     ],
+     "to": "medium-low"
+    }
+   ],
+   "code": "9C",
+   "overall": [
+    0,
+    42
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      42
+     ],
+     "from": [
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "1A": {
+   "id": "american-light-lager",
+   "name": "American Light Lager",
+   "url": "https://www.bjcp.org/style/2021/1/1A/american-light-lager/",
+   "ibu": [
+    8,
+    12
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Light spicy, floral, or herbal hop aroma optional.",
+     "from": "low",
+     "families": [
+      "spice",
+      "floral",
+      "herbal"
+     ],
+     "optional": true
+    },
+    {
+     "field": "flavor",
+     "quote": "Low floral, spicy, or herbal hop flavor optional",
+     "from": "low",
+     "families": [
+      "floral",
+      "spice",
+      "herbal"
+     ],
+     "optional": true
+    }
+   ],
+   "code": "1A",
+   "overall": [
+    0,
+    30
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      30
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "attendue",
+     "band": [
+      0,
+      30
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      30
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "3A": {
+   "id": "czech-pale-lager",
+   "name": "Czech Pale Lager",
+   "url": "https://www.bjcp.org/style/2021/3/3A/czech-pale-lager/",
+   "ibu": [
+    20,
+    35
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "light to moderate spicy or herbal hop bouquet",
+     "from": "low",
+     "families": [
+      "spice",
+      "herbal"
+     ],
+     "to": "medium"
+    },
+    {
+     "field": "flavor",
+     "quote": "Low to medium-high spicy or herbal hop flavor.",
+     "from": "low",
+     "families": [
+      "spice",
+      "herbal"
+     ],
+     "to": "medium-high"
+    }
+   ],
+   "code": "3A",
+   "overall": [
+    8,
+    68
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "herbal": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "3B": {
+   "id": "czech-premium-pale-lager",
+   "name": "Czech Premium Pale Lager",
+   "url": "https://www.bjcp.org/style/2021/3/3B/czech-premium-pale-lager/",
+   "ibu": [
+    30,
+    45
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "medium-low to medium-high spicy, floral, or herbal hop bouquet",
+     "from": "medium-low",
+     "families": [
+      "spice",
+      "floral",
+      "herbal"
+     ],
+     "to": "medium-high"
+    },
+    {
+     "field": "flavor",
+     "quote": "floral and spicy hop flavor … Malt and hop flavors are medium to medium-high",
+     "from": "medium",
+     "families": [
+      "floral",
+      "spice"
+     ],
+     "to": "medium-high",
+     "required": true
+    }
+   ],
+   "code": "3B",
+   "overall": [
+    22,
+    68
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      33,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma"
+     ]
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      33,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "4A": {
+   "id": "munich-helles",
+   "name": "Munich Helles",
+   "url": "https://www.bjcp.org/style/2021/4/4A/munich-helles/",
+   "ibu": [
+    16,
+    22
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Low to moderately-low spicy, floral, or herbal hop aroma.",
+     "from": "low",
+     "families": [
+      "spice",
+      "floral",
+      "herbal"
+     ],
+     "to": "medium-low"
+    },
+    {
+     "field": "flavor",
+     "quote": "Low to moderately-low spicy, floral, or herbal hop flavor.",
+     "from": "low",
+     "families": [
+      "spice",
+      "floral",
+      "herbal"
+     ],
+     "to": "medium-low"
+    }
+   ],
+   "code": "4A",
+   "overall": [
+    8,
+    42
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      42
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "attendue",
+     "band": [
+      0,
+      42
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      42
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "5B": {
+   "id": "kolsch",
+   "name": "Kölsch",
+   "url": "https://www.bjcp.org/style/2021/5/5B/kolsch/",
+   "ibu": [
+    18,
+    30
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Low floral, spicy, or herbal hop aroma optional.",
+     "from": "low",
+     "families": [
+      "floral",
+      "spice",
+      "herbal"
+     ],
+     "optional": true
+    },
+    {
+     "field": "flavor",
+     "quote": "Low to moderately-high floral, spicy, or herbal hop flavor",
+     "from": "low",
+     "families": [
+      "floral",
+      "spice",
+      "herbal"
+     ],
+     "to": "medium-high"
+    }
+   ],
+   "code": "5B",
+   "overall": [
+    0,
+    68
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "5D": {
+   "id": "german-pils",
+   "name": "German Pils",
+   "url": "https://www.bjcp.org/style/2021/5/5D/german-pils/",
+   "ibu": [
+    22,
+    40
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Moderately to moderately-high flowery, spicy, or herbal hops.",
+     "from": "medium",
+     "families": [
+      "floral",
+      "spice",
+      "herbal"
+     ],
+     "to": "medium-high"
+    },
+    {
+     "field": "flavor",
+     "quote": "Malt and hop flavors similar to aroma (same descriptors and intensities).",
+     "from": "medium",
+     "families": [
+      "floral",
+      "spice",
+      "herbal"
+     ],
+     "to": "medium-high"
+    }
+   ],
+   "code": "5D",
+   "overall": [
+    33,
+    68
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "7B": {
+   "id": "altbier",
+   "name": "Altbier",
+   "url": "https://www.bjcp.org/style/2021/7/7B/altbier/",
+   "ibu": [
+    25,
+    50
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Moderate to low hops … often have a spicy, peppery, or floral character.",
+     "from": "low",
+     "families": [
+      "spice",
+      "floral"
+     ],
+     "to": "medium"
+    },
+    {
+     "field": "flavor",
+     "quote": "Medium to low spicy, peppery, or floral hop flavor.",
+     "from": "low",
+     "families": [
+      "spice",
+      "floral"
+     ],
+     "to": "medium"
+    }
+   ],
+   "code": "7B",
+   "overall": [
+    8,
+    55
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "10A": {
+   "id": "weissbier",
+   "name": "Weissbier",
+   "url": "https://www.bjcp.org/style/2021/10/10A/weissbier/",
+   "ibu": [
+    8,
+    15
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Light floral, spicy, or herbal hops optional.",
+     "from": "low",
+     "families": [
+      "floral",
+      "spice",
+      "herbal"
+     ],
+     "optional": true
+    },
+    {
+     "field": "flavor",
+     "quote": "Very low floral, spicy, or herbal hop flavor optional.",
+     "from": "very-low",
+     "families": [
+      "floral",
+      "spice",
+      "herbal"
+     ],
+     "optional": true
+    }
+   ],
+   "code": "10A",
+   "overall": [
+    0,
+    30
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      30
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "attendue",
+     "band": [
+      0,
+      30
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      30
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "24A": {
+   "id": "witbier",
+   "name": "Witbier",
+   "url": "https://www.bjcp.org/style/2021/24/24A/witbier/",
+   "ibu": [
+    8,
+    20
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "A low spicy-herbal hop aroma is optional, but typically absent.",
+     "from": "low",
+     "families": [
+      "spice",
+      "herbal"
+     ],
+     "optional": true
+    },
+    {
+     "field": "flavor",
+     "quote": "A spicy-earthy hop flavor can be low to none",
+     "from": "none",
+     "families": [
+      "spice",
+      "earthy"
+     ],
+     "to": "low"
+    }
+   ],
+   "code": "24A",
+   "overall": [
+    0,
+    30
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "herbal": {
+     "status": "attendue",
+     "band": [
+      0,
+      30
+     ],
+     "from": [
+      "aroma"
+     ]
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      30
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "attendue",
+     "band": [
+      0,
+      30
+     ],
+     "from": [
+      "flavor"
+     ]
+    }
+   }
+  },
+  "23A": {
+   "id": "berliner-weisse",
+   "name": "Berliner Weisse",
+   "url": "https://www.bjcp.org/style/2021/23/23A/berliner-weisse/",
+   "ibu": [
+    3,
+    8
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "No hop aroma.",
+     "from": "none",
+     "families": []
+    },
+    {
+     "field": "flavor",
+     "quote": "No hop flavor.",
+     "from": "none",
+     "families": []
+    }
+   ],
+   "code": "23A",
+   "overall": [
+    0,
+    5
+   ],
+   "families": {
+    "citrus": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "tropical": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "stoneFruit": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "pomeFruit": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "berries": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "melon": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "floral": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "resin": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "spice": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "earthy": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    }
+   }
+  },
+  "23G": {
+   "id": "gose",
+   "name": "Gose",
+   "url": "https://www.bjcp.org/style/2021/23/23G/gose/",
+   "ibu": [
+    5,
+    12
+   ],
+   "statements": [
+    {
+     "field": "flavor",
+     "quote": "No hop flavor.",
+     "from": "none",
+     "families": []
+    }
+   ],
+   "code": "23G",
+   "overall": [
+    0,
+    5
+   ],
+   "families": {
+    "citrus": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "flavor"
+     ]
+    },
+    "tropical": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "flavor"
+     ]
+    },
+    "stoneFruit": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "flavor"
+     ]
+    },
+    "pomeFruit": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "flavor"
+     ]
+    },
+    "berries": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "flavor"
+     ]
+    },
+    "melon": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "flavor"
+     ]
+    },
+    "floral": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "flavor"
+     ]
+    },
+    "resin": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "flavor"
+     ]
+    },
+    "spice": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "flavor"
+     ]
+    },
+    "earthy": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "flavor"
+     ]
+    }
+   }
+  },
+  "21A": {
+   "id": "american-ipa",
+   "name": "American IPA",
+   "url": "https://www.bjcp.org/style/2021/21/21A/american-ipa/",
+   "ibu": [
+    40,
+    70
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "A prominent to intense hop aroma … such as citrus, floral, pine, resin, spice, tropical fruit, stone fruit, berry, or melon.",
+     "from": "high",
+     "families": [
+      "citrus",
+      "floral",
+      "resin",
+      "spice",
+      "tropical",
+      "stoneFruit",
+      "berries",
+      "melon"
+     ],
+     "to": "very-high"
+    },
+    {
+     "field": "flavor",
+     "quote": "Medium to very high hop flavor (same descriptors as aroma).",
+     "from": "medium",
+     "families": [
+      "citrus",
+      "floral",
+      "resin",
+      "spice",
+      "tropical",
+      "stoneFruit",
+      "berries",
+      "melon"
+     ],
+     "to": "very-high"
+    }
+   ],
+   "code": "21A",
+   "overall": [
+    33,
+    100
+   ],
+   "families": {
+    "citrus": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "tropical": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "stoneFruit": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "melon": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "21C": {
+   "id": "hazy-ipa",
+   "name": "Hazy IPA",
+   "url": "https://www.bjcp.org/style/2021/21/21C/hazy-ipa/",
+   "ibu": [
+    25,
+    60
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Intense hop aroma, with stone fruit, tropical fruit, citrus, or other fruity qualities; not grassy or herbal.",
+     "from": "very-high",
+     "families": [
+      "stoneFruit",
+      "tropical",
+      "citrus",
+      "pomeFruit",
+      "berries",
+      "melon"
+     ],
+     "exclude": [
+      "green",
+      "herbal"
+     ]
+    },
+    {
+     "field": "flavor",
+     "quote": "High to very high fruity hop flavor, same descriptors as aroma.",
+     "from": "high",
+     "families": [
+      "stoneFruit",
+      "tropical",
+      "citrus",
+      "pomeFruit",
+      "berries",
+      "melon"
+     ],
+     "to": "very-high"
+    }
+   ],
+   "code": "21C",
+   "overall": [
+    58,
+    100
+   ],
+   "families": {
+    "citrus": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "tropical": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "stoneFruit": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "pomeFruit": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "berries": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "melon": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "floral": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "herbal": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "aroma"
+     ]
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "green": {
+     "status": "indésirable",
+     "band": [
+      0,
+      5
+     ],
+     "from": [
+      "aroma"
+     ]
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "22A": {
+   "id": "double-ipa",
+   "name": "Double IPA",
+   "url": "https://www.bjcp.org/style/2021/22/22A/double-ipa/",
+   "ibu": [
+    60,
+    100
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "A prominent to intense hop aroma … citrus, floral, pine, resin, spice, tropical fruit, stone fruit, berry, or melon.",
+     "from": "high",
+     "families": [
+      "citrus",
+      "floral",
+      "resin",
+      "spice",
+      "tropical",
+      "stoneFruit",
+      "berries",
+      "melon"
+     ],
+     "to": "very-high"
+    },
+    {
+     "field": "flavor",
+     "quote": "Strong and complex hop flavor (same descriptors as aroma).",
+     "from": "high",
+     "families": [
+      "citrus",
+      "floral",
+      "resin",
+      "spice",
+      "tropical",
+      "stoneFruit",
+      "berries",
+      "melon"
+     ]
+    }
+   ],
+   "code": "22A",
+   "overall": [
+    58,
+    100
+   ],
+   "families": {
+    "citrus": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "tropical": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "stoneFruit": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "melon": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      100
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "12C": {
+   "id": "english-ipa",
+   "name": "English IPA",
+   "url": "https://www.bjcp.org/style/2021/12/12C/english-ipa/",
+   "ibu": [
+    40,
+    60
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "A moderate to moderately-high hop aroma, typically floral, spicy-peppery, or citrus-orange in nature.",
+     "from": "medium",
+     "families": [
+      "floral",
+      "spice",
+      "citrus"
+     ],
+     "to": "medium-high"
+    },
+    {
+     "field": "flavor",
+     "quote": "Hop flavor is medium to high … (floral, spicy-peppery, or citrus-orange).",
+     "from": "medium",
+     "families": [
+      "floral",
+      "spice",
+      "citrus"
+     ],
+     "to": "high"
+    }
+   ],
+   "code": "12C",
+   "overall": [
+    33,
+    85
+   ],
+   "families": {
+    "citrus": {
+     "status": "attendue",
+     "band": [
+      0,
+      85
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      85
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      85
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "18B": {
+   "id": "american-pale-ale",
+   "name": "American Pale Ale",
+   "url": "https://www.bjcp.org/style/2021/18/18B/american-pale-ale/",
+   "ibu": [
+    30,
+    50
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Moderate to moderately-high hop aroma … citrus, floral, pine, resin, spice, tropical fruit, stone fruit, berry, or melon.",
+     "from": "medium",
+     "families": [
+      "citrus",
+      "floral",
+      "resin",
+      "spice",
+      "tropical",
+      "stoneFruit",
+      "berries",
+      "melon"
+     ],
+     "to": "medium-high"
+    },
+    {
+     "field": "flavor",
+     "quote": "Hop and malt character similar to aroma (same intensities and descriptors apply).",
+     "from": "medium",
+     "families": [
+      "citrus",
+      "floral",
+      "resin",
+      "spice",
+      "tropical",
+      "stoneFruit",
+      "berries",
+      "melon"
+     ],
+     "to": "medium-high"
+    }
+   ],
+   "code": "18B",
+   "overall": [
+    33,
+    68
+   ],
+   "families": {
+    "citrus": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "tropical": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "stoneFruit": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "melon": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      68
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "11B": {
+   "id": "best-bitter",
+   "name": "Best Bitter",
+   "url": "https://www.bjcp.org/style/2021/11/11B/best-bitter/",
+   "ibu": [
+    25,
+    40
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Hop aroma can range from moderate to none, typically with a floral, earthy, resiny, or fruity character.",
+     "from": "none",
+     "families": [
+      "floral",
+      "earthy",
+      "resin",
+      "stoneFruit",
+      "pomeFruit",
+      "berries"
+     ],
+     "to": "medium"
+    },
+    {
+     "field": "flavor",
+     "quote": "Moderate to low hop flavor, typically with an earthy, resiny, fruity, or floral character.",
+     "from": "low",
+     "families": [
+      "earthy",
+      "resin",
+      "stoneFruit",
+      "pomeFruit",
+      "berries",
+      "floral"
+     ],
+     "to": "medium"
+    }
+   ],
+   "code": "11B",
+   "overall": [
+    0,
+    55
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "pomeFruit": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "berries": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "spice": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    }
+   }
+  },
+  "25B": {
+   "id": "saison",
+   "name": "Saison",
+   "url": "https://www.bjcp.org/style/2021/25/25B/saison/",
+   "ibu": [
+    20,
+    35
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Hops are low to moderate and have a continental character (spicy, floral, earthy, or fruity).",
+     "from": "low",
+     "families": [
+      "spice",
+      "floral",
+      "earthy",
+      "stoneFruit",
+      "pomeFruit",
+      "berries"
+     ],
+     "to": "medium"
+    },
+    {
+     "field": "flavor",
+     "quote": "hop flavor is low to medium … (same descriptors apply).",
+     "from": "low",
+     "families": [
+      "spice",
+      "floral",
+      "earthy",
+      "stoneFruit",
+      "pomeFruit",
+      "berries"
+     ],
+     "to": "medium"
+    }
+   ],
+   "code": "25B",
+   "overall": [
+    8,
+    55
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "pomeFruit": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "berries": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    }
+   }
+  },
+  "26C": {
+   "id": "belgian-tripel",
+   "name": "Belgian Tripel",
+   "url": "https://www.bjcp.org/style/2021/26/26C/belgian-tripel/",
+   "ibu": [
+    20,
+    40
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "A low yet distinctive spicy, floral, sometimes perfumy hop character is optional.",
+     "from": "low",
+     "families": [
+      "spice",
+      "floral"
+     ],
+     "optional": true
+    },
+    {
+     "field": "flavor",
+     "quote": "hops low to moderate … (same descriptors apply)",
+     "from": "low",
+     "families": [
+      "spice",
+      "floral"
+     ],
+     "to": "medium"
+    }
+   ],
+   "code": "26C",
+   "overall": [
+    0,
+    55
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      55
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    }
+   }
+  },
+  "25A": {
+   "id": "belgian-blond-ale",
+   "name": "Belgian Blond Ale",
+   "url": "https://www.bjcp.org/style/2021/25/25A/belgian-blond-ale/",
+   "ibu": [
+    15,
+    30
+   ],
+   "statements": [
+    {
+     "field": "aroma",
+     "quote": "Light earthy or spicy hop notes optional.",
+     "from": "low",
+     "families": [
+      "earthy",
+      "spice"
+     ],
+     "optional": true
+    },
+    {
+     "field": "flavor",
+     "quote": "Light hop flavor, can be spicy or earthy, complementing yeast.",
+     "from": "low",
+     "families": [
+      "spice",
+      "earthy"
+     ]
+    }
+   ],
+   "code": "25A",
+   "overall": [
+    0,
+    30
+   ],
+   "families": {
+    "citrus": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "tropical": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "stoneFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "pomeFruit": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "berries": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "melon": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "floral": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "herbal": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "resin": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "spice": {
+     "status": "attendue",
+     "band": [
+      0,
+      30
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    },
+    "green": {
+     "status": "neutre",
+     "band": [
+      0,
+      30
+     ],
+     "from": []
+    },
+    "earthy": {
+     "status": "attendue",
+     "band": [
+      0,
+      30
+     ],
+     "from": [
+      "aroma",
+      "flavor"
+     ]
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,16 @@
+{
+ "reglage": "3.5-flash-lite@low",
+ "element": "ph-meter-controle",
+ "cas": "ph-meter",
+ "type": "controle",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 664,
+ "coutMicro": 1604,
+ "etat": "STOP"
+}

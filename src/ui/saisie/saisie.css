@@ -1,0 +1,152 @@
+/* Saisir à la main, v01s (D426) : reprise de la maquette `choix-saisie.html` (section v01s), classes préfixées `sai-` (L26).
+   Jetons : ceux de la maquette (clair), et sa variante cave ; les catégories gardent les teintes de Finances (`finance-tag-*`). */
+.sai{--page:#fff;--pan:#F5F5F5;--rai:#EBEBEB;--bord:#DDD;--bordm:#BFBFBF;--trait:#9E9E9E;--sec:#666;--txt:#333;--val:#111;
+ --act:#111;--acttx:#fff;--in:#3F6B2E;--inbg:#E4F0DD;--inap:#567F45;--out:#7F5B10;--outbg:#F8ECCF;--outap:#E3B55D;--fin:#1F64A3;--finbg:rgba(31,100,163,.12);
+ --mono:'IBM Plex Mono',ui-monospace,monospace;
+ position:relative;display:flex;flex-direction:column;flex:1;min-height:0;width:100%;background:var(--page);color:var(--txt);font-size:14px;line-height:1.25}
+[data-theme="cave"] .sai{--page:#12100E;--pan:#1A1613;--rai:#221D19;--bord:#2C2521;--bordm:#3D342E;--trait:#6B5D53;--sec:#9A8A7E;--txt:#D8CEC5;--val:#F5F0EA;
+ --act:#F2C14E;--acttx:#12100E;--in:#8FC27A;--inbg:#18221A;--inap:#6E9B5B;--out:#E8A55A;--outbg:#261C12;--outap:#D9954A;--fin:#86B9E6;--finbg:rgba(134,185,230,.14)}
+.sai button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sai input{font:inherit;color:inherit;background:transparent;border:0;outline:0;padding:0;min-width:0}
+.sai-hd{height:48px;flex:none;display:flex;align-items:center;gap:10px;padding:0 10px;border-bottom:1px solid var(--bord)}
+.sai-hd h2{font-size:18px;font-weight:700;color:var(--val);flex:1;margin:0}
+.sai-hd button{width:36px;height:36px;display:grid;place-items:center;border-radius:8px;color:var(--val)}
+.sai-hd .sai-doc{border:1px solid var(--bordm)}
+.sai-hd .sai-hl{font-size:12px;color:var(--sec);border:1px solid var(--bordm);border-radius:6px;padding:0 6px}
+.sai-b{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:10px 10px 12px;display:flex;flex-direction:column;gap:10px}
+.sai-b>*{flex:none}
+.sai-err{border:1px solid #B3261E;color:#B3261E;background:rgba(179,38,30,.06);border-radius:10px;padding:8px 10px;font-size:13.5px}
+[data-theme="cave"] .sai-err{border-color:#F2B8B5;color:#F2B8B5}
+/* habituels */
+.sai-hab h3{font-size:12px;color:var(--sec);font-weight:700;letter-spacing:.03em;margin:0 0 2px 2px}
+.sai-hr{display:flex;align-items:center;gap:10px;min-height:44px;width:100%;text-align:left;border-bottom:1px solid var(--bord);padding:0 2px}
+.sai-ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none}
+.sai-hr>span:nth-child(2){flex:1;min-width:0;display:flex;flex-direction:column}
+.sai-hr b{font-size:14px;color:var(--val);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sai-hr small{font-size:12px;color:var(--sec)}
+.sai-pm{font-family:var(--mono);font-size:14px;font-weight:600;padding:2px 7px;border-radius:7px;white-space:nowrap}
+.sai-pm.out{background:var(--outbg);color:var(--out)}.sai-pm.in{background:var(--inbg);color:var(--in)}
+/* tuiles */
+.sai-side{border-radius:14px;padding:6px}
+.sai-side.out{background:var(--outbg)}.sai-side.in{background:var(--inbg)}
+.sai-lab{font-size:15px;font-weight:700;display:flex;align-items:center;gap:4px;margin:0 0 5px 4px}
+.sai-side.out .sai-lab{color:var(--out)}.sai-side.in .sai-lab{color:var(--in)}
+.sai-g{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.sai-t{height:56px;border-radius:11px;background:var(--page) !important;border:1px solid var(--bord) !important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12.5px !important;padding:0 2px;font-weight:600 !important;color:var(--val) !important;line-height:1.1}
+.sai-t small{font-size:10.5px;font-weight:400;color:var(--sec);line-height:1}
+.sai-rb{display:flex;align-items:center;gap:10px;height:44px;border:1px dashed var(--bordm) !important;border-radius:12px;padding:0 12px !important;font-weight:600 !important;color:var(--val) !important;font-size:14px;text-align:left}
+.sai-rb span{font-weight:400;color:var(--sec);font-size:13px}
+/* bande du genre choisi */
+.sai-sel{display:flex;align-items:center;gap:8px;height:48px;border-radius:14px;padding:0 6px 0 12px;font-weight:700;font-size:15px}
+.sai-sel.out{background:var(--outbg);color:var(--out)}.sai-sel.in{background:var(--inbg);color:var(--in)}
+.sai-sel.neu{border:1px dashed var(--bordm);color:var(--val)}
+.sai-sel .g{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:10px;background:var(--page);color:var(--val);border:2px solid currentColor;white-space:nowrap}
+.sai-sel.out .g{border-color:var(--out)}.sai-sel.in .g{border-color:var(--in)}
+.sai-sel>button{margin-left:auto;height:40px;padding:0 12px !important;border-radius:10px;border:1px solid var(--bordm) !important;background:var(--page) !important;color:var(--val) !important;font-weight:600 !important;font-size:14px !important}
+/* la carte (p3c-3) */
+.sai-card{border:1px solid var(--bordm);border-radius:14px;padding:8px 12px 10px;background:var(--page)}
+.sai-card.out{border-color:var(--outap)}.sai-card.in{border-color:var(--inap)}
+.sai-c1{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:32px}
+.sai-c1>input{font-size:16px;font-weight:700;color:var(--val);flex:1}
+.sai-c1>input::placeholder{color:var(--trait)}
+.sai-nm{flex:1;min-width:0;display:inline-flex;align-items:center;gap:6px;min-height:32px;font-size:16px !important;font-weight:700 !important;color:var(--val) !important;text-align:left;white-space:nowrap;overflow:hidden}
+.sai-nm>span{overflow:hidden;text-overflow:ellipsis}
+.sai-nm svg{color:var(--trait);flex:none}
+.sai-nm.fixe{cursor:default}
+.sai-nm.ph{color:var(--trait) !important;font-weight:600 !important}
+.sai-c1 .finance-tag{flex:none}
+.sai-amt{display:flex;align-items:center;min-height:56px;font-family:var(--mono);font-size:44px;font-weight:600;letter-spacing:-.02em;color:var(--trait);cursor:text}
+.sai-amt.out{color:var(--out)}.sai-amt.in{color:var(--in)}
+.sai-amt input{field-sizing:content;min-width:1ch;padding:0 !important;margin:0;border:0 !important;font-family:var(--mono);font-size:44px;font-weight:600;letter-spacing:-.02em;color:inherit;caret-color:var(--fin)}
+.sai-amt input::placeholder{color:var(--trait)}
+.sai-amt .gh{color:var(--trait);font-weight:500}
+.sai-amt small{font-family:inherit;font-size:14px;color:var(--sec);margin-left:auto;font-weight:400;letter-spacing:0}
+.sai-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sai-row>small{font-size:13px;color:var(--sec)}
+.sai-chip{height:34px;padding:0 10px !important;border-radius:99px;border:1px solid var(--bordm) !important;font-size:13px !important;display:inline-flex;align-items:center;gap:4px;color:var(--val) !important;white-space:nowrap;font-weight:600 !important;flex:none}
+.sai-chip[aria-pressed="true"]{background:var(--val) !important;color:var(--page) !important;border-color:var(--val) !important}
+.sai-chip.dt{font-family:var(--mono);font-weight:500 !important}
+.sai-chip.pl{border-style:dashed !important;color:var(--sec) !important}
+.sai-lk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--val);margin-top:7px;flex-wrap:wrap}
+.sai-lk>svg{color:var(--fin)}
+.sai-lk>span.t{flex:1;min-width:0}
+.sai-date .choix-date-pastille,.sai-date button{font-family:var(--mono)}
+/* derniers noms, catégorie, articles */
+.sai-qui{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:0 2px;scrollbar-width:none}
+.sai-qui>small{font-size:12px;color:var(--sec);font-weight:600;flex:none;margin-right:2px}
+.sai-blk{display:flex;flex-direction:column;gap:6px}
+.sai-lb{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--sec);font-weight:600;margin-left:2px}
+.sai-art{display:flex;align-items:center;gap:8px;height:36px;border:1px solid var(--bord) !important;border-radius:10px;padding:0 10px !important;font-size:13.5px !important;color:var(--val) !important;width:100%;text-align:left}
+.sai-art span{margin-left:auto;color:var(--sec);display:inline-flex;align-items:center;gap:3px;font-size:13px}
+/* Revient ? */
+.sai-rec{background:var(--pan);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.sai-rec h3{font-size:13px;color:var(--val);font-weight:700;display:flex;gap:5px;align-items:center;margin:0}
+.sai-seg{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--bordm);border-radius:10px;overflow:hidden;background:var(--page)}
+.sai-seg button{height:40px;font-size:14px !important;font-weight:600 !important;border-left:1px solid var(--bord) !important;color:var(--txt) !important}
+.sai-seg button:first-child{border-left:0 !important}
+.sai-seg button[aria-pressed="true"]{background:var(--act) !important;color:var(--acttx) !important}
+.sai-rec .sai-row>small{width:48px}
+.sai-rec .sai-row{gap:5px}
+.sai-rec .sai-chip{padding:0 9px !important}
+.sai-sum{font-size:13px;color:var(--val);display:inline-flex;gap:6px;align-items:center;font-weight:600}
+.sai-sum b{font-family:var(--mono)}
+.sai-sum b.out{color:var(--out)}.sai-sum b.in{color:var(--in)}
+.sai-ap{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.sai-ap>b{font-size:13px;color:var(--val);font-weight:600;display:inline-flex;gap:4px;align-items:center;margin-right:2px}
+.sai-ap i{font-style:normal;font-family:var(--mono);font-size:13px;padding:2px 6px;border-radius:6px;background:var(--rai);color:var(--val)}
+.sai-ap i.f{background:var(--outbg);color:var(--out);font-weight:600}.sai-ap i.fi{background:var(--inbg);color:var(--in);font-weight:600}
+.sai-ap small{font-size:13px;color:var(--val)}
+.sai-hab2{background:var(--pan);border-radius:12px;padding:9px 10px;margin-top:0}
+.sai .sai-prevu{width:100%;min-height:44px;text-align:left;background:var(--pan);color:var(--val)}
+.sai-prevu .n{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--out)}
+.sai-prevu.non .t,.sai-prevu.non .n{color:var(--sec);text-decoration:line-through}
+/* pli facultatif */
+.sai-fold>summary{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--val);padding:11px 4px;border-top:1px solid var(--bord);border-bottom:1px solid var(--bord);list-style:none;cursor:pointer}
+.sai-fold>summary::-webkit-details-marker{display:none}
+.sai-fold>summary span{font-size:12px;color:var(--sec);display:inline-flex;gap:3px;align-items:center}
+.sai-fold[open]>summary span svg{transform:rotate(180deg)}
+.sai-fold .sai-blk{padding:8px 2px 0}
+.sai-in{height:40px;border:1px solid var(--bordm) !important;border-radius:10px;padding:0 10px !important;font-size:15px;color:var(--val);width:100%}
+/* pied */
+.sai-ft{flex:none;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-top:1px solid var(--bord);background:var(--page)}
+.sai-ft.ombre{box-shadow:0 -6px 12px -6px rgba(0,0,0,.18)}
+.sai-mm{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 10px;border:1px solid var(--bordm);border-radius:12px;font-weight:600;color:var(--val);white-space:nowrap}
+.sai-mmv{font-family:var(--mono);font-size:14px;padding:1px 7px;border-radius:7px;font-weight:600}
+.sai-mmv.out{background:var(--outap);color:#2b1f05}
+.sai-mmv.in{background:var(--inap);color:#fff}
+.sai-mmv.prevu{background:transparent;border:1.5px dashed var(--outap);color:var(--out)}
+.sai-mmv.vide{background:var(--rai);color:var(--sec);font-family:inherit}
+.sai-go{height:44px;padding:0 14px !important;border-radius:12px;background:var(--act) !important;color:var(--acttx) !important;font-weight:700 !important;font-size:15px !important;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.sai-go b{font-family:var(--mono);font-weight:600}
+.sai-go:disabled{opacity:.35;cursor:default}
+/* voile, plateau des pièces, confirmation */
+.sai-voile{position:absolute;inset:0;background:rgba(0,0,0,.38);z-index:2}
+.sai-pl{position:absolute;left:0;right:0;bottom:0;z-index:3;max-height:78%;background:var(--page);border-radius:16px 16px 0 0;box-shadow:0 -6px 18px rgba(0,0,0,.14);padding:8px 12px 14px;display:flex;flex-direction:column;gap:6px}
+.sai-grip{align-self:center;width:40px;height:4px;border-radius:2px;background:var(--bordm)}
+.sai-pl h3{font-size:15px;color:var(--val);display:flex;justify-content:space-between;align-items:center;margin:0}
+.sai-q{height:40px;flex:none;border:1px solid var(--bordm);border-radius:10px;display:flex;align-items:center;gap:8px;padding:0 10px;color:var(--sec)}
+.sai-q input{flex:1;font-size:15px;color:var(--val)}
+.sai-pcs{overflow-y:auto;min-height:0}
+.sai-pc{display:flex;align-items:center;gap:10px;min-height:52px;width:100%;text-align:left;border-bottom:1px solid var(--bord) !important;padding:0 6px !important}
+.sai-pc>span:nth-child(2){flex:1;min-width:0;display:flex;flex-direction:column}
+.sai-pc b{font-size:14px;color:var(--val)}.sai-pc small{font-size:12px;color:var(--sec);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sai-pc .n{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--val);white-space:nowrap}
+.sai-dir{font-size:12px;font-weight:700;padding:2px 6px;border-radius:7px;white-space:nowrap}
+.sai-dir.in{background:var(--inbg);color:var(--in)}.sai-dir.out{background:var(--outbg);color:var(--out)}
+.sai-vide{font-size:13px;color:var(--sec);padding:10px 4px}
+.sai-ok{position:absolute;left:0;right:0;bottom:0;z-index:3;background:var(--page);border-radius:16px 16px 0 0;padding:14px 14px 16px;box-shadow:0 -6px 24px rgba(0,0,0,.25)}
+.sai-ok-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sai-okc{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--inap);color:#fff;flex:none}
+.sai-ok-h b{font-size:16px;color:var(--val);display:block}
+.sai-ok-h div>span{font-size:13px;color:var(--sec)}
+.sai-ok-r .sai-ap{flex:1 1 0;min-width:0}
+.sai-pv{font-size:13px;color:var(--val);font-weight:600}
+.sai-ok-r{display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid var(--bord);flex-wrap:wrap}
+.sai-ok-r>b{width:96px;font-size:13px;color:var(--val);display:flex;gap:6px;align-items:center}
+.sai-ok-r>small{font-size:13px;color:var(--sec)}
+.sai-ok-r .n{font-family:var(--mono);font-weight:600}
+.sai-ok-r .n.out{color:var(--out)}.sai-ok-r .n.in{color:var(--in)}
+.sai-ok-a{display:flex;gap:8px;margin-top:10px}
+.sai-ok-a button{height:44px;padding:0 12px !important;border-radius:12px;border:1px solid var(--bordm) !important;font-weight:600 !important;color:var(--val) !important;display:inline-flex;align-items:center;gap:5px}
+.sai-ok-a .sai-go{border:0 !important;color:var(--acttx) !important;margin-left:auto;padding:0 22px !important}
+@media (min-width:1024px){.sai-col{max-width:520px;margin:0 auto;width:100%;border-left:1px solid var(--bord);border-right:1px solid var(--bord)}}

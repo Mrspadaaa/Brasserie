@@ -1,0 +1,4197 @@
+{
+  "source": {
+    "id": "nzhops",
+    "nom": "NZ Hops Ltd",
+    "hote": "nzhops.co.nz",
+    "type": "producteur (Nouvelle-Zélande)",
+    "conditions": "robots.txt Shopify : /products/ permis ; /cart, /checkout, /account, /admin, filtres de collection interdits ; aucune licence lue ; fiches PDF (images) lues sur cdn.shopify.com (robots.txt : tout permis sauf deux scripts)",
+    "lecturePdf": "fiches PDF en image : transcription par lecture visuelle (voie c3e), valeurs recopiées telles qu’imprimées, graphique radar non chiffré",
+    "releve": "2026-10-26"
+  },
+  "fiches": [
+    {
+      "nom": "Dr. Rudi",
+      "alias": [],
+      "varietyId": "beermaverick-dr-rudi",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Dr_Rudi_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676917667",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "12ae5d62b89e15228d10b67dc3d732dc7724a7e7865ad145354b5ab46530016c",
+      "doutes": [
+        "Linalol 5.5-8.0 % imprimé (valeur très haute pour un houblon ; relu deux fois, recopié tel quel)"
+      ],
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "10-14%",
+          "valeur": null,
+          "min": 10,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "5-7%",
+          "valeur": null,
+          "min": 5,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.25-2 mL/100g",
+          "valeur": null,
+          "min": 1.25,
+          "max": 2,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.2-0.5%",
+          "valeur": null,
+          "min": 0.2,
+          "max": 0.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "44-55%",
+          "valeur": null,
+          "min": 44,
+          "max": 55,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "5.5-8.0%",
+          "valeur": null,
+          "min": 5.5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "8-12%",
+          "valeur": null,
+          "min": 8,
+          "max": 12,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "0.1-1%",
+          "valeur": null,
+          "min": 0.1,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "20-28%",
+          "valeur": null,
+          "min": 20,
+          "max": 28,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "0.8-1.2%",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.2,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual purpose / bittering hop with classic resinous pine and lifted citrus characters"
+        ],
+        "lignee": [
+          "Smoothcone"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "calendrier": [
+          "sortie 1976 sous le nom Super Alpha",
+          "renommé Dr. Rudi 2012"
+        ],
+        "usage": [
+          "double usage",
+          "amérisant"
+        ]
+      }
+    },
+    {
+      "nom": "Dr. Rudi",
+      "alias": [],
+      "varietyId": "beermaverick-dr-rudi",
+      "url": "https://nzhops.co.nz/products/dr-rudi",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "10-12%",
+          "valeur": null,
+          "min": 10,
+          "max": 12,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual purpose / bittering hop with classic resinous pine and lifted citrus characters"
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "Green Bullet",
+      "alias": [],
+      "varietyId": "beermaverick-green-bullet",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Green_Bullet_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676917833",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "bd2942d4e5b3bfc93547e71ed64ed68e86df11c916270dab7d2e308c3c10ff6c",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "12-14%",
+          "valeur": null,
+          "min": 12,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "5-7%",
+          "valeur": null,
+          "min": 5,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.25-2 mL/100g",
+          "valeur": null,
+          "min": 1.25,
+          "max": 2,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.4-0.6%",
+          "valeur": null,
+          "min": 0.4,
+          "max": 0.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "50-60%",
+          "valeur": null,
+          "min": 50,
+          "max": 60,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "0.7-1.1%",
+          "valeur": null,
+          "min": 0.7,
+          "max": 1.1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "4-7%",
+          "valeur": null,
+          "min": 4,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "0.2-1%",
+          "valeur": null,
+          "min": 0.2,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "15-20%",
+          "valeur": null,
+          "min": 15,
+          "max": 20,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "0.5-1%",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual purpose / bittering hop with a spicy dried fruit character and solid finish."
+        ],
+        "lignee": [
+          "Smoothcone (pollinisation libre)"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "calendrier": [
+          "sortie 1972 (DSIR)"
+        ],
+        "usage": [
+          "double usage",
+          "amérisant"
+        ]
+      }
+    },
+    {
+      "nom": "Green Bullet",
+      "alias": [],
+      "varietyId": "beermaverick-green-bullet",
+      "url": "https://nzhops.co.nz/products/green-bullet",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "11-14 %",
+          "valeur": null,
+          "min": 11,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual purpose / bittering hop with a spicy dried fruit character and solid finish"
+        ],
+        "recoltes": [
+          "2020",
+          "2010",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "Kohatu",
+      "alias": [],
+      "varietyId": "beermaverick-kohatu",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Kohatu_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676919246",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "ce3ec14e2af013c293e3ba3e12663536e055c04b6af17af53b3096f541d05d04",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "6-7%",
+          "valeur": null,
+          "min": 6,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "4-5%",
+          "valeur": null,
+          "min": 4,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "0.75-1.2 mL/100g",
+          "valeur": null,
+          "min": 0.75,
+          "max": 1.2,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.1-0.5%",
+          "valeur": null,
+          "min": 0.1,
+          "max": 0.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "30-40%",
+          "valeur": null,
+          "min": 30,
+          "max": 40,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "0.5-1%",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "11-13%",
+          "valeur": null,
+          "min": 11,
+          "max": 13,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "0.5-1%",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "35-45%",
+          "valeur": null,
+          "min": 35,
+          "max": 45,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "0.2-0.8%",
+          "valeur": null,
+          "min": 0.2,
+          "max": 0.8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual purpose hop with fresh citrus and herbal characters holding an excellent finish and bitterness."
+        ],
+        "lignee": [
+          "Hallertau Mittelfrüh",
+          "mâle néo-zélandais (ascendance européenne et nord-américaine)"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "codeObtention": [
+          "HORT3829"
+        ],
+        "calendrier": [
+          "sortie 2011"
+        ],
+        "usage": [
+          "double usage"
+        ]
+      }
+    },
+    {
+      "nom": "Kohatu",
+      "alias": [],
+      "varietyId": "beermaverick-kohatu",
+      "url": "https://nzhops.co.nz/products/kohatu",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "5-7.5%",
+          "valeur": null,
+          "min": 5,
+          "max": 7.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual purpose hop with fresh tropical fruit characters and excellent finish and bitterness"
+        ],
+        "recoltes": [
+          "2019",
+          "2020",
+          "2018"
+        ]
+      }
+    },
+    {
+      "nom": "Motueka",
+      "alias": [],
+      "varietyId": "beermaverick-motueka",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Motueka_Variety_Sheet_English.pdf?v=1698953236",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 2,
+      "sha256Pdf": "8fbe9669bb033ccf9beafdef7a4f551f5d139374cdf5b24daaa1400b26e4117a",
+      "doutes": [
+        "Farnésène 8.0 et humulène 3.5 : imprimés ainsi (relus deux fois), recopiés tels quels"
+      ],
+      "notesPdf": {
+        "Floral-estery products": "Linalool, geraniol, geranyl isobutyrate, geranyl acetate",
+        "Citrus-piney products": "Cadinene, limonene, muurolene, selinene"
+      },
+      "enTetePdf": {
+        "Alpha Acids": "5.5-10%",
+        "Total Oils": "0.8-1.4%"
+      },
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "Mean 7.0 ; Range 5.5-10.0",
+          "valeur": null,
+          "min": 5.5,
+          "max": 10,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "moyenne": 7,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "Mean 5.4 ; Range 4.5-6.5",
+          "valeur": null,
+          "min": 4.5,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "moyenne": 5.4,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "Mean 29.0 ; Range 28-31",
+          "valeur": null,
+          "min": 28,
+          "max": 31,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α",
+          "moyenne": 29,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "huileTotale": {
+          "champ": "Total oils",
+          "brut": "Mean 1.0 ; Range 0.8-1.4",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.4,
+          "unite": "%",
+          "base": null,
+          "uniteNote": "imprimée en % sous « Trait % » ; mL/100 g probable (la fiche Nelson Sauvin dit mls/100g)",
+          "moyenne": 1,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Mean 65.0 ; Range 60-69",
+          "valeur": null,
+          "min": 60,
+          "max": 69,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 65,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Mean 1.2 ; Range 0.8-1.8",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 1.2,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Mean 8.0 ; Range 6-10.0",
+          "valeur": null,
+          "min": 6,
+          "max": 10,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 8,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Mean 3.5 ; Range 1.0-5.0",
+          "valeur": null,
+          "min": 1,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 3.5,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "betaPinene": {
+          "champ": "B-pinene",
+          "brut": "Mean 0.8 ; Range 0.7-1.0",
+          "valeur": null,
+          "min": 0.7,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 0.8,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Mean 0.8 ; Range 0.7-1.0",
+          "valeur": null,
+          "min": 0.7,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 0.8,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "Mean 1.2 ; Range 0.8-1.3",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.3,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 1.2,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "produitsFloralEsters": {
+          "champ": "Floral-estery products",
+          "brut": "Mean 2.8 ; Range 2.0-4.0",
+          "valeur": null,
+          "min": 2,
+          "max": 4,
+          "unite": "%",
+          "base": null,
+          "moyenne": 2.8,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "produitsAgrumesResineux": {
+          "champ": "Citrus-piney products",
+          "brut": "Mean 8.3 ; Range 6-10.0",
+          "valeur": null,
+          "min": 6,
+          "max": 10,
+          "unite": "%",
+          "base": null,
+          "moyenne": 8.3,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "An aroma hop with a distinctive fresh crushed citrus \"Mojito\" lime character."
+        ],
+        "descripteursCouverture": [
+          "Fresh Lime",
+          "Citrus",
+          "Tropical Fruit",
+          "Lemon Zest"
+        ],
+        "lignee": [
+          "ascendance européenne (Saaz) et nord-américaine"
+        ],
+        "ploidie": [
+          "triploïde",
+          "sans pépins"
+        ],
+        "calendrier": [
+          "croisement 1987",
+          "semis sélectionné 1989 (code 87-14-20)",
+          "essais de sélection 1991-95",
+          "essais chez des producteurs 1996",
+          "sortie 1996 sous le nom B-Saaz",
+          "renommé Motueka 2007"
+        ],
+        "usage": [
+          "arôme",
+          "de la première charge à l'ajout tardif"
+        ],
+        "accords": [
+          "Riwaka",
+          "Nelson Sauvin"
+        ]
+      }
+    },
+    {
+      "nom": "Motueka",
+      "alias": [],
+      "varietyId": "beermaverick-motueka",
+      "url": "https://nzhops.co.nz/products/motueka",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "5.5-10%",
+          "valeur": null,
+          "min": 5.5,
+          "max": 10,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "An aroma hop with a distinctive fresh crushed citrus “Mojito” lime character."
+        ],
+        "recoltes": [
+          "2019",
+          "2020",
+          "2018"
+        ],
+        "fichePdf": [
+          "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Motueka_Variety_Sheet_English.pdf?v=1698953236"
+        ]
+      }
+    },
+    {
+      "nom": "Moutere",
+      "alias": [],
+      "varietyId": "beermaverick-moutere",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Moutere_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676919109",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "ed256ff7052a6229eaff23c7bfd63ef8ed0dc4f833454da1ee16ae078413a2f1",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "17-20%",
+          "valeur": null,
+          "min": 17,
+          "max": 20,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "8-10%",
+          "valeur": null,
+          "min": 8,
+          "max": 10,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.5-2 mL/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 2,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.1-0.5%",
+          "valeur": null,
+          "min": 0.1,
+          "max": 0.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "20-30%",
+          "valeur": null,
+          "min": 20,
+          "max": 30,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "0.8-1.5%",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "5-6%",
+          "valeur": null,
+          "min": 5,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "0.1-0.5%",
+          "valeur": null,
+          "min": 0.1,
+          "max": 0.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "14-16%",
+          "valeur": null,
+          "min": 14,
+          "max": 16,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "0.8-1.2%",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.2,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "autresComposes": {
+          "champ": "Other",
+          "brut": "9-11%",
+          "valeur": null,
+          "min": 9,
+          "max": 11,
+          "unite": "%",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A high alpha hop with distinctive grapefruit, stone fruit and passion fruit characters."
+        ],
+        "lignee": [
+          "Southern Cross",
+          "mâle néo-zélandais"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "codeObtention": [
+          "HORT0605"
+        ],
+        "calendrier": [
+          "sortie 2015"
+        ],
+        "usage": [
+          "haut alpha",
+          "double usage"
+        ]
+      }
+    },
+    {
+      "nom": "Moutere",
+      "alias": [],
+      "varietyId": "beermaverick-moutere",
+      "url": "https://nzhops.co.nz/products/moutere%E2%84%A2",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "15.5-18.0%",
+          "valeur": null,
+          "min": 15.5,
+          "max": 18,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A high alpha hop with distinctive tropical, grapefruit and passionfruit characters."
+        ],
+        "recoltes": [
+          "2019",
+          "2020"
+        ]
+      }
+    },
+    {
+      "nom": "Nectaron",
+      "alias": [],
+      "varietyId": "beermaverick-nectaron",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Nectaron_Variety_Sheet_English.pdf?v=1698953231",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 2,
+      "sha256Pdf": "1de56691defe379607d83735a9ac85ec9ff05f764953ffc05f98216309c79913",
+      "pdfIdentiques": [
+        "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Nectaron_Variety_Sheet_English.pdf?v=1697144767"
+      ],
+      "doutes": [
+        "Linalol : moyenne 0.8 hors de la plage imprimée 0.4-0.7 ; recopié tel quel"
+      ],
+      "notesPdf": {
+        "Floral-estery products": "Linalool, geraniol, geranyl isobutyrate, geranyl acetate",
+        "Citrus-piney products": "Cadinene, limonene, muurolene, selinene"
+      },
+      "enTetePdf": {
+        "Alpha Acids": "10-14%",
+        "Total Oils": "1-2%"
+      },
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "Mean 11.9 ; Range 10-14",
+          "valeur": null,
+          "min": 10,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "moyenne": 11.9,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "Mean 4.6 ; Range 3.9-5.3",
+          "valeur": null,
+          "min": 3.9,
+          "max": 5.3,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "moyenne": 4.6,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "Mean 27 ; Range 25-28",
+          "valeur": null,
+          "min": 25,
+          "max": 28,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α",
+          "moyenne": 27,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "huileTotale": {
+          "champ": "Total oils",
+          "brut": "Mean 1.3 ; Range 1-2",
+          "valeur": null,
+          "min": 1,
+          "max": 2,
+          "unite": "%",
+          "base": null,
+          "uniteNote": "imprimée en % sous « Trait % » ; mL/100 g probable (la fiche Nelson Sauvin dit mls/100g)",
+          "moyenne": 1.3,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Mean 46 ; Range 40-50",
+          "valeur": null,
+          "min": 40,
+          "max": 50,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 46,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Mean 6.5 ; Range 5-8",
+          "valeur": null,
+          "min": 5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 6.5,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Mean 0.4 ; Range 0.3-0.6",
+          "valeur": null,
+          "min": 0.3,
+          "max": 0.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 0.4,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Mean 23 ; Range 20-30",
+          "valeur": null,
+          "min": 20,
+          "max": 30,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 23,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "betaPinene": {
+          "champ": "B-pinene",
+          "brut": "Mean 0.5 ; Range 0.4-0.6",
+          "valeur": null,
+          "min": 0.4,
+          "max": 0.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 0.5,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Mean 0.8 ; Range 0.4-0.7",
+          "valeur": null,
+          "min": 0.4,
+          "max": 0.7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 0.8,
+          "incoherence": "moyenne hors de la plage imprimée",
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "Mean 1.3 ; Range 1-1.5",
+          "valeur": null,
+          "min": 1,
+          "max": 1.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 1.3,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "produitsFloralEsters": {
+          "champ": "Floral-estery products",
+          "brut": "Mean 2.4 ; Range 2-3",
+          "valeur": null,
+          "min": 2,
+          "max": 3,
+          "unite": "%",
+          "base": null,
+          "moyenne": 2.4,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "produitsAgrumesResineux": {
+          "champ": "Citrus-piney products",
+          "brut": "Mean 4.5 ; Range 3-6",
+          "valeur": null,
+          "min": 3,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "moyenne": 4.5,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "Science meets art"
+        ],
+        "descripteursCouverture": [
+          "Pineapple",
+          "Citrus",
+          "Stonefruit",
+          "Passionfruit"
+        ],
+        "lignee": [
+          "sœur complète de Waimea",
+          "ascendance nord-américaine et européenne (Saaz)"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "codeObtention": [
+          "HORT4337"
+        ],
+        "calendrier": [
+          "croisement 2004",
+          "semis sélectionné 2006",
+          "essais de sélection 2008",
+          "essais chez des producteurs 2015-16",
+          "sortie 2020"
+        ],
+        "usage": [
+          "tout usage",
+          "ajout tardif",
+          "dry hop"
+        ],
+        "styles": [
+          "DIPA",
+          "IPA",
+          "Hazy IPA",
+          "pale ale",
+          "lager",
+          "sans alcool"
+        ],
+        "accords": [
+          "Citra",
+          "Mosaic",
+          "Nelson Sauvin",
+          "Motueka",
+          "Riwaka",
+          "El Dorado",
+          "Amarillo",
+          "Equanot"
+        ]
+      }
+    },
+    {
+      "nom": "Nectaron",
+      "alias": [],
+      "varietyId": "beermaverick-nectaron",
+      "url": "https://nzhops.co.nz/products/nectaron",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "10-14%",
+          "valeur": null,
+          "min": 10,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "Intense tropical pineapple, passion fruit and stone fruit characters."
+        ],
+        "recoltes": [
+          "2020",
+          "2019",
+          "2021"
+        ],
+        "fichePdf": [
+          "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Nectaron_Variety_Sheet_English.pdf?v=1698953231",
+          "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Nectaron_Variety_Sheet_English.pdf?v=1697144767"
+        ]
+      }
+    },
+    {
+      "nom": "Nelson Sauvin",
+      "alias": [],
+      "varietyId": "beermaverick-nelson-sauvin",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Nelson_Sauvin_Variety_Sheet_English.pdf?v=1698953225",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 2,
+      "sha256Pdf": "8edacaf62f030d178d06d18459a33539378f18e9a863e442c1d697c45fb5eec0",
+      "doutes": [
+        "Produits d'oxydation : moyenne 3.8 hors de la plage imprimée 2.5-3.2 ; recopié tel quel",
+        "Pas de β-pinène sur cette fiche : absent (null), pas 0"
+      ],
+      "notesPdf": {
+        "Floral-estery compounds": "Linalool, geranyl acetate, geranyl isobutyrate, geraniol",
+        "Citrus-piney compounds": "Limonene, d-cadinene, g-cadinene, muurolene, selinene",
+        "Oxidation products": "Of humulene & caryophyllene"
+      },
+      "enTetePdf": {
+        "Alpha Acids": "10-13%",
+        "Total Oils": "1.2-2%"
+      },
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "Mean 11.4 ; Range 10-13",
+          "valeur": null,
+          "min": 10,
+          "max": 13,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "moyenne": 11.4,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "Mean 5.8 ; Range 5-6.5",
+          "valeur": null,
+          "min": 5,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "moyenne": 5.8,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "Mean 24 ; Range 22-27",
+          "valeur": null,
+          "min": 22,
+          "max": 27,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α",
+          "moyenne": 24,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "rapportAlpha": {
+          "champ": "Alpha Ratio",
+          "brut": "Mean .66 ; Range .6-.68",
+          "valeur": null,
+          "min": 0.6,
+          "max": 0.68,
+          "unite": null,
+          "base": null,
+          "moyenne": 0.66,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "huileTotale": {
+          "champ": "Total oils (mls/100g)",
+          "brut": "Mean 1.3 ; Range 1.2-2",
+          "valeur": null,
+          "min": 1.2,
+          "max": 2,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "moyenne": 1.3,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Mean 24.4 ; Range 20-30",
+          "valeur": null,
+          "min": 20,
+          "max": 30,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 24.4,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Mean 6.9 ; Range 5-7.5",
+          "valeur": null,
+          "min": 5,
+          "max": 7.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 6.9,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Mean 0.4 ; Range .1-.5",
+          "valeur": null,
+          "min": 0.1,
+          "max": 0.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 0.4,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Mean 48.4 ; Range 40-60",
+          "valeur": null,
+          "min": 40,
+          "max": 60,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 48.4,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "Mean 1.2 ; Range 1-1.8",
+          "valeur": null,
+          "min": 1,
+          "max": 1.8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 1.2,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "limonene": {
+          "champ": "Limonene",
+          "brut": "Mean 1.2 ; Range 1-1.8",
+          "valeur": null,
+          "min": 1,
+          "max": 1.8,
+          "unite": "%",
+          "base": null,
+          "moyenne": 1.2,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Mean 0.4 ; Range .35-.6",
+          "valeur": null,
+          "min": 0.35,
+          "max": 0.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 0.4,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "produitsFloralEsters": {
+          "champ": "Floral-estery compounds",
+          "brut": "Mean 2.0 ; Range 1.75-2.25",
+          "valeur": null,
+          "min": 1.75,
+          "max": 2.25,
+          "unite": "%",
+          "base": null,
+          "moyenne": 2,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "produitsAgrumesResineux": {
+          "champ": "Citrus-piney compounds",
+          "brut": "Mean 4.4 ; Range 4-6",
+          "valeur": null,
+          "min": 4,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "moyenne": 4.4,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "autresComposesConnus": {
+          "champ": "Other known compounds",
+          "brut": "Mean 3.8 ; Range 3-4.5",
+          "valeur": null,
+          "min": 3,
+          "max": 4.5,
+          "unite": "%",
+          "base": null,
+          "moyenne": 3.8,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "produitsOxydation": {
+          "champ": "Oxidation products",
+          "brut": "Mean 3.8 ; Range 2.5-3.2",
+          "valeur": null,
+          "min": 2.5,
+          "max": 3.2,
+          "unite": "%",
+          "base": null,
+          "moyenne": 3.8,
+          "incoherence": "moyenne hors de la plage imprimée",
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "composesInconnus": {
+          "champ": "Unknown compounds",
+          "brut": "Mean 6.9 ; Range 5-8",
+          "valeur": null,
+          "min": 5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "moyenne": 6.9,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "rapportHumuleneCaryophyllene": {
+          "champ": "Humulene:caryophyllene ratio",
+          "brut": "Mean 3.54 ; Range 3.2-3.7",
+          "valeur": null,
+          "min": 3.2,
+          "max": 3.7,
+          "unite": null,
+          "base": null,
+          "moyenne": 3.54,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "An aroma and dual-purpose flavour hop with distinctive white wine character"
+        ],
+        "descripteursCouverture": [
+          "White grape",
+          "Gooseberry",
+          "Citrus",
+          "Passionfruit"
+        ],
+        "lignee": [
+          "Smoothcone",
+          "mâle néo-zélandais sélectionné"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "codeObtention": [
+          "Brand 85-03-06"
+        ],
+        "calendrier": [
+          "croisement 1985",
+          "semis sélectionné 1987",
+          "essais de sélection 1988-95",
+          "essais chez des producteurs 2000",
+          "sortie 2000"
+        ],
+        "usage": [
+          "arôme",
+          "double usage",
+          "de bout en bout avec whirlpool et dry hop"
+        ]
+      }
+    },
+    {
+      "nom": "Nelson Sauvin",
+      "alias": [],
+      "varietyId": "beermaverick-nelson-sauvin",
+      "url": "https://nzhops.co.nz/products/nelson-sauvin",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "10-13 %",
+          "valeur": null,
+          "min": 10,
+          "max": 13,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "An aroma /dual purpose flavour hop with distinctive New World white wine characters"
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ],
+        "fichePdf": [
+          "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Nelson_Sauvin_Variety_Sheet_English.pdf?v=1698953225"
+        ]
+      }
+    },
+    {
+      "nom": "NZ Chinook",
+      "alias": [],
+      "varietyId": "beermaverick-chinook",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/NZ_Hops_Variety_Sheet_NZ-Chinook.pdf?v=1699294540",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 2,
+      "sha256Pdf": "927f1b0b342e88d08c46caa713ba1445f7274f1f60469f66d77ba2ef1a19c9f2",
+      "notesPdf": {
+        "Floral-estery products": "Linalool, geraniol, geranyl isobutyrate, geranyl acetate",
+        "Citrus-piney products": "Cadinene, limonene, muurolene, selinene"
+      },
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "Mean 12.5 ; Range 10.5-14",
+          "valeur": null,
+          "min": 10.5,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "moyenne": 12.5,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "Mean 5.1 ; Range 4.9-5.2",
+          "valeur": null,
+          "min": 4.9,
+          "max": 5.2,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "moyenne": 5.1,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "Mean 33 ; Range 32-35",
+          "valeur": null,
+          "min": 32,
+          "max": 35,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α",
+          "moyenne": 33,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "huileTotale": {
+          "champ": "Total oils",
+          "brut": "Mean 1.7 ; Range 1.1-2.5",
+          "valeur": null,
+          "min": 1.1,
+          "max": 2.5,
+          "unite": "%",
+          "base": null,
+          "uniteNote": "imprimée en % sous « Trait % » ; mL/100 g probable (la fiche Nelson Sauvin dit mls/100g)",
+          "moyenne": 1.7,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Mean 42.6 ; Range 36.9-52.1",
+          "valeur": null,
+          "min": 36.9,
+          "max": 52.1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 42.6,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Mean 7.2 ; Range 5.7-9.8",
+          "valeur": null,
+          "min": 5.7,
+          "max": 9.8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 7.2,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Mean 0.2 ; Range 0.1-0.3",
+          "valeur": null,
+          "min": 0.1,
+          "max": 0.3,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 0.2,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Mean 15.8 ; Range 12.1-21.7",
+          "valeur": null,
+          "min": 12.1,
+          "max": 21.7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 15.8,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "betaPinene": {
+          "champ": "B-pinene",
+          "brut": "Mean 0.6 ; Range 0.3-0.7",
+          "valeur": null,
+          "min": 0.3,
+          "max": 0.7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 0.6,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Mean 0.7 ; Range 0.4-1.1",
+          "valeur": null,
+          "min": 0.4,
+          "max": 1.1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 0.7,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "Mean 2.5 ; Range 0.7-3.5",
+          "valeur": null,
+          "min": 0.7,
+          "max": 3.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 2.5,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "produitsFloralEsters": {
+          "champ": "Floral-estery products",
+          "brut": "Mean 3.9 ; Range 1.9-4.9",
+          "valeur": null,
+          "min": 1.9,
+          "max": 4.9,
+          "unite": "%",
+          "base": null,
+          "moyenne": 3.9,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "produitsAgrumesResineux": {
+          "champ": "Citrus-piney products",
+          "brut": "Mean 8.7 ; Range 6.8-11.2",
+          "valeur": null,
+          "min": 6.8,
+          "max": 11.2,
+          "unite": "%",
+          "base": null,
+          "moyenne": 8.7,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "New Zealand grown US cultivar with big grapefruit character and pine notes."
+        ],
+        "descripteursCouverture": [
+          "Grapefruit",
+          "Pine",
+          "Citrus",
+          "Herbal"
+        ],
+        "lignee": [
+          "Petham Golding (graphie imprimée)",
+          "mâle USDA"
+        ],
+        "calendrier": [
+          "programme USDA, État de Washington, sortie 1985"
+        ],
+        "usage": [
+          "double usage",
+          "whirlpool",
+          "dry hop"
+        ],
+        "styles": [
+          "West Coast IPA",
+          "NZIPA"
+        ]
+      }
+    },
+    {
+      "nom": "NZ Chinook",
+      "alias": [],
+      "varietyId": "beermaverick-chinook",
+      "url": "https://nzhops.co.nz/products/nz-chinoook",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "10.5-14%",
+          "valeur": null,
+          "min": 10.5,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "New Zealand grown USA bittering cultivar."
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "NZ Fuggle",
+      "alias": [],
+      "varietyId": "beermaverick-fuggle",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/NZ_Fuggle_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1682019589",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "503db72f75951cb10077cecb8aeefc6ca3d1fc063118a8c2ddb61273a7051549",
+      "doutes": [
+        "L'accroche imprimée (« Mojito » lime) est celle de Motueka : recopiée telle quelle"
+      ],
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "5-6%",
+          "valeur": null,
+          "min": 5,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "2.5-4%",
+          "valeur": null,
+          "min": 2.5,
+          "max": 4,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "0.6-0.8 mL/100g",
+          "valeur": null,
+          "min": 0.6,
+          "max": 0.8,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.2-0.3%",
+          "valeur": null,
+          "min": 0.2,
+          "max": 0.3,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "25-30%",
+          "valeur": null,
+          "min": 25,
+          "max": 30,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "0.5-0.7%",
+          "valeur": null,
+          "min": 0.5,
+          "max": 0.7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "10-14%",
+          "valeur": null,
+          "min": 10,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "5-7%",
+          "valeur": null,
+          "min": 5,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "40-44%",
+          "valeur": null,
+          "min": 40,
+          "max": 44,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "1-1.2%",
+          "valeur": null,
+          "min": 1,
+          "max": 1.2,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "An aroma hop with a distinctive fresh crushed citrus \"Mojito\" lime character"
+        ],
+        "lignee": [
+          "Fuggle (sélection de Richard Fuggle)"
+        ],
+        "calendrier": [
+          "semis sélectionné 1861",
+          "commercialisé dans le Kent 1875"
+        ],
+        "usage": [
+          "arôme"
+        ],
+        "styles": [
+          "bitter",
+          "mild",
+          "British pale ale",
+          "stout",
+          "porter",
+          "English IPA"
+        ]
+      }
+    },
+    {
+      "nom": "NZ Fuggle",
+      "alias": [],
+      "varietyId": "beermaverick-fuggle",
+      "url": "https://nzhops.co.nz/products/fuggle-nz",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "6.0-6.4 %",
+          "valeur": null,
+          "min": 6,
+          "max": 6.4,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "New Zealand grown UK aroma cultivar with mild fruit herbal/woody characters"
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "NZ Pacific Jade",
+      "alias": [],
+      "varietyId": "beermaverick-pacific-jade",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/NZ_Pacific_Jade_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676918235",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "ee772b79fbfc080ab9860e12932bb950542f67fc687cdab10a1a880064166603",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "12-15%",
+          "valeur": null,
+          "min": 12,
+          "max": 15,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "6-8%",
+          "valeur": null,
+          "min": 6,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.5-2.25 mL/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 2.25,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.4-0.6%",
+          "valeur": null,
+          "min": 0.4,
+          "max": 0.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "50-60%",
+          "valeur": null,
+          "min": 50,
+          "max": 60,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "0.4-0.6%",
+          "valeur": null,
+          "min": 0.4,
+          "max": 0.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "5-8%",
+          "valeur": null,
+          "min": 5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "0.1-1%",
+          "valeur": null,
+          "min": 0.1,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "15-25%",
+          "valeur": null,
+          "min": 15,
+          "max": 25,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "1.0-1.5%",
+          "valeur": null,
+          "min": 1,
+          "max": 1.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A soft bittering / dual purpose hop with fresh citrus and complex spice characters."
+        ],
+        "lignee": [
+          "First Choice (parent de la Late Cluster)",
+          "mâle Old Line Saazer"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "codeObtention": [
+          "HORT1524"
+        ],
+        "calendrier": [
+          "sortie 2004"
+        ],
+        "usage": [
+          "amérisant doux",
+          "double usage"
+        ]
+      }
+    },
+    {
+      "nom": "NZ Pacific Jade",
+      "alias": [],
+      "varietyId": "beermaverick-pacific-jade",
+      "url": "https://nzhops.co.nz/products/pacific-jade",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "12-14%",
+          "valeur": null,
+          "min": 12,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A soft bittering / dual purpose hop with fresh citrus and complex spice characters"
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "NZ Southern Cross",
+      "alias": [],
+      "varietyId": "beermaverick-southern-cross",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Southern_Cross_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676918991",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "3d658aba78cb68e0d4693bd6285408d29af0da3edcf7d8ddc2413d323fa184c2",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "11-14%",
+          "valeur": null,
+          "min": 11,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "5-6%",
+          "valeur": null,
+          "min": 5,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.5-2.25 mL/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 2.25,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.5-1%",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "35-50%",
+          "valeur": null,
+          "min": 35,
+          "max": 50,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "0.5-1%",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "5-7%",
+          "valeur": null,
+          "min": 5,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "6-8%",
+          "valeur": null,
+          "min": 6,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "17-20%",
+          "valeur": null,
+          "min": 17,
+          "max": 20,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "0.5-1%",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual-purpose, soft bittering hop with a citrus lemon zest character with hints of pine"
+        ],
+        "lignee": [
+          "Smoothcone",
+          "croisement Cali (Californien) x Fuggle"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "calendrier": [
+          "sortie 1994 (HortResearch, Riwaka)"
+        ],
+        "usage": [
+          "double usage",
+          "amérisant doux"
+        ]
+      }
+    },
+    {
+      "nom": "NZ Southern Cross",
+      "alias": [],
+      "varietyId": "beermaverick-southern-cross",
+      "url": "https://nzhops.co.nz/products/southern-cross",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "11-14%",
+          "valeur": null,
+          "min": 11,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual purpose / soft bittering hop with a citrus lemon zest character with hints of pine"
+        ],
+        "recoltes": [
+          "2020",
+          "2015",
+          "2019",
+          "2018"
+        ]
+      }
+    },
+    {
+      "nom": "Pacific Gem",
+      "alias": [],
+      "varietyId": "beermaverick-pacific-gem",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Pacific_Gem_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676918041",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "3b7170687cb530a724ef4fac396d818d538a0bfaa2ce9beeac14b5f17104cda5",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "13-16%",
+          "valeur": null,
+          "min": 13,
+          "max": 16,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "7-9%",
+          "valeur": null,
+          "min": 7,
+          "max": 9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.25-2.25 mL/100g",
+          "valeur": null,
+          "min": 1.25,
+          "max": 2.25,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.4-0.6%",
+          "valeur": null,
+          "min": 0.4,
+          "max": 0.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "50-55%",
+          "valeur": null,
+          "min": 50,
+          "max": 55,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "0.4-0.8%",
+          "valeur": null,
+          "min": 0.4,
+          "max": 0.8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "5-8%",
+          "valeur": null,
+          "min": 5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "0.1-1%",
+          "valeur": null,
+          "min": 0.1,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "15-20%",
+          "valeur": null,
+          "min": 15,
+          "max": 20,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "0.6-0.9%",
+          "valeur": null,
+          "min": 0.6,
+          "max": 0.9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A solid bittering hop with spicy black pepper and berry fruit aroma characters."
+        ],
+        "lignee": [
+          "Smoothcone"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "calendrier": [
+          "sortie 1987"
+        ],
+        "usage": [
+          "amérisant",
+          "tout usage"
+        ]
+      }
+    },
+    {
+      "nom": "Pacific Gem",
+      "alias": [],
+      "varietyId": "beermaverick-pacific-gem",
+      "url": "https://nzhops.co.nz/products/pacific-gem",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "13-15 %",
+          "valeur": null,
+          "min": 13,
+          "max": 15,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A solid bittering hop with spicy black pepper and berry fruit aroma characters."
+        ],
+        "recoltes": [
+          "2020",
+          "2019",
+          "2018"
+        ]
+      }
+    },
+    {
+      "nom": "Pacifica",
+      "alias": [],
+      "varietyId": "beermaverick-pacifica",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Pacifica_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676918115",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "d0e7d23114e29f25fc17c6647c7f3aff6318bf342b4ebf57c782f0c3727c2829",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "3-6%",
+          "valeur": null,
+          "min": 3,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "5-7%",
+          "valeur": null,
+          "min": 5,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "0.8-1.5 mL/100g",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.2-0.6%",
+          "valeur": null,
+          "min": 0.2,
+          "max": 0.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "30-40%",
+          "valeur": null,
+          "min": 30,
+          "max": 40,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "0.6-1%",
+          "valeur": null,
+          "min": 0.6,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "8-12%",
+          "valeur": null,
+          "min": 8,
+          "max": 12,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "0.1-1%",
+          "valeur": null,
+          "min": 0.1,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "30-40%",
+          "valeur": null,
+          "min": 30,
+          "max": 40,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "0.1-1.0%",
+          "valeur": null,
+          "min": 0.1,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual purpose, bittering hop with spicy \"dried fruit\" characters and a solid aroma finish."
+        ],
+        "lignee": [
+          "Hallertauer Mittelfrüh",
+          "mâle néo-zélandais"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "calendrier": [
+          "sortie 1994"
+        ],
+        "usage": [
+          "double usage",
+          "amérisant"
+        ]
+      }
+    },
+    {
+      "nom": "Pacifica",
+      "alias": [],
+      "varietyId": "beermaverick-pacifica",
+      "url": "https://nzhops.co.nz/products/pacifica",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "5-6%",
+          "valeur": null,
+          "min": 5,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A dual purpose / bittering hop with a spicy “dried fruit” character and solid finish."
+        ],
+        "recoltes": [
+          "2019",
+          "2020",
+          "2018",
+          "2009"
+        ]
+      }
+    },
+    {
+      "nom": "Rakau",
+      "alias": [],
+      "varietyId": "beermaverick-rakau",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Rakau_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676918556",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "a2691e35c41460d4212b87dc6839de45f48e72aa8f335233d913272a1e29a7d9",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "9-12%",
+          "valeur": null,
+          "min": 9,
+          "max": 12,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "3-6%",
+          "valeur": null,
+          "min": 3,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "0.8-2 mL/100g",
+          "valeur": null,
+          "min": 0.8,
+          "max": 2,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.3-0.7%",
+          "valeur": null,
+          "min": 0.3,
+          "max": 0.7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "45-55%",
+          "valeur": null,
+          "min": 45,
+          "max": 55,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "0.4-0.8%",
+          "valeur": null,
+          "min": 0.4,
+          "max": 0.8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "5-8%",
+          "valeur": null,
+          "min": 5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "4-8%",
+          "valeur": null,
+          "min": 4,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "18-22%",
+          "valeur": null,
+          "min": 18,
+          "max": 22,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "0.7-1.0%",
+          "valeur": null,
+          "min": 0.7,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A true dual-purpose hop with stone fruit and fig characters that has excellent bittering qualities."
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "calendrier": [
+          "nouvelle sortie 2007 (essais en bio)"
+        ],
+        "usage": [
+          "double usage"
+        ]
+      }
+    },
+    {
+      "nom": "Rakau",
+      "alias": [],
+      "varietyId": "beermaverick-rakau",
+      "url": "https://nzhops.co.nz/products/rakau",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "10-11 %",
+          "valeur": null,
+          "min": 10,
+          "max": 11,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A true dual purpose hops with stone fruit and fig characters and excellent bittering qualities."
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "Riwaka",
+      "alias": [],
+      "varietyId": "beermaverick-riwaka",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Riwaka_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676918491",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "33b4bd27a76a877476bf3b17f32c281d4bd51ecb88e02a21ffb8fd344d4d4fdb",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "4.5-6.5%",
+          "valeur": null,
+          "min": 4.5,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "4-5%",
+          "valeur": null,
+          "min": 4,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "0.9-1.5 mL/100g",
+          "valeur": null,
+          "min": 0.9,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.5-1%",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "55-65%",
+          "valeur": null,
+          "min": 55,
+          "max": 65,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "0.6-1.2%",
+          "valeur": null,
+          "min": 0.6,
+          "max": 1.2,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "4-7%",
+          "valeur": null,
+          "min": 4,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "0.5-1%",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "5-15%",
+          "valeur": null,
+          "min": 5,
+          "max": 15,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "1.5-2.5%",
+          "valeur": null,
+          "min": 1.5,
+          "max": 2.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A unique aroma hop with a powerfully fuelled citrus, grapefruit character with pine and passion fruit."
+        ],
+        "lignee": [
+          "origine Saazer",
+          "mâles néo-zélandais"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "calendrier": [
+          "sortie 1997"
+        ],
+        "usage": [
+          "arôme"
+        ],
+        "styles": [
+          "IPA",
+          "Imperial Pilsner",
+          "pale ale",
+          "pilsner néo-zélandaise"
+        ]
+      }
+    },
+    {
+      "nom": "Riwaka",
+      "alias": [],
+      "varietyId": "beermaverick-riwaka",
+      "url": "https://nzhops.co.nz/products/riwaka%E2%84%A2",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "4.5-6.5%",
+          "valeur": null,
+          "min": 4.5,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A unique aroma hop with a powerfully fuelled tropical passion fruit character."
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "Superdelic",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Superdelic_Variety_Sheet_English.pdf?v=1698953220",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 2,
+      "sha256Pdf": "f4df16771dd8745788a0efb62b0b465f40f7a8df5a0d2d44b59bf78e921872c0",
+      "notesPdf": {
+        "Floral-estery products": "Linalool, geraniol, geranyl isobutyrate, geranyl acetate",
+        "Citrus-piney products": "Cadinene, limonene, muurolene, selinene"
+      },
+      "enTetePdf": {
+        "Alpha Acids": "9-10.5%",
+        "Total Oils": "1.3-2.2%"
+      },
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "Mean 9.8 ; Range 9-10.5",
+          "valeur": null,
+          "min": 9,
+          "max": 10.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "moyenne": 9.8,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "Mean 3.3 ; Range 2.9-3.6",
+          "valeur": null,
+          "min": 2.9,
+          "max": 3.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "moyenne": 3.3,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "Mean 29 ; Range 26-30",
+          "valeur": null,
+          "min": 26,
+          "max": 30,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α",
+          "moyenne": 29,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "huileTotale": {
+          "champ": "Total oils",
+          "brut": "Mean 1.6 ; Range 1.3-2.2",
+          "valeur": null,
+          "min": 1.3,
+          "max": 2.2,
+          "unite": "%",
+          "base": null,
+          "uniteNote": "imprimée en % sous « Trait % » ; mL/100 g probable (la fiche Nelson Sauvin dit mls/100g)",
+          "moyenne": 1.6,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "Mean 24 ; Range 20-35",
+          "valeur": null,
+          "min": 20,
+          "max": 35,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 24,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "Mean 10 ; Range 7.5-12",
+          "valeur": null,
+          "min": 7.5,
+          "max": 12,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 10,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "Mean 0.2 ; Range 0.1-0.5",
+          "valeur": null,
+          "min": 0.1,
+          "max": 0.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 0.2,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "Mean 25 ; Range 20-30",
+          "valeur": null,
+          "min": 20,
+          "max": 30,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 25,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "betaPinene": {
+          "champ": "B-pinene",
+          "brut": "Mean 0.2 ; Range 0.1-0.3",
+          "valeur": null,
+          "min": 0.1,
+          "max": 0.3,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 0.2,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "Mean 0.5 ; Range 0.4-0.7",
+          "valeur": null,
+          "min": 0.4,
+          "max": 0.7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 0.5,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "Mean 1.8 ; Range 1.2-2",
+          "valeur": null,
+          "min": 1.2,
+          "max": 2,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "moyenne": 1.8,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "produitsFloralEsters": {
+          "champ": "Floral-estery products",
+          "brut": "Mean 2.7 ; Range 2-3.5",
+          "valeur": null,
+          "min": 2,
+          "max": 3.5,
+          "unite": "%",
+          "base": null,
+          "moyenne": 2.7,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        },
+        "produitsAgrumesResineux": {
+          "champ": "Citrus-piney products",
+          "brut": "Mean 10 ; Range 8-12",
+          "valeur": null,
+          "min": 8,
+          "max": 12,
+          "unite": "%",
+          "base": null,
+          "moyenne": 10,
+          "transcrit": "lecture visuelle",
+          "page": 2
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "In a world where you be anything, be Superdelic."
+        ],
+        "descripteursCouverture": [
+          "Berry fruit",
+          "Citrus",
+          "Candy/Lolly",
+          "Tropical fruit"
+        ],
+        "lignee": [
+          "ascendance européenne et nord-américaine"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "calendrier": [
+          "croisement 2012 (Dr Ron Beatson)",
+          "semis sélectionné 2013-14",
+          "essais de sélection 2015-18",
+          "essais chez des producteurs 2018-22",
+          "sortie 2023"
+        ],
+        "usage": [
+          "un seul houblon ou en synergie"
+        ],
+        "accords": [
+          "Citra",
+          "Simcoe",
+          "Nelson Sauvin",
+          "Motueka",
+          "Riwaka",
+          "Mosaic",
+          "Strata"
+        ]
+      }
+    },
+    {
+      "nom": "Superdelic",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://nzhops.co.nz/products/superdelic",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "9-10.5%",
+          "valeur": null,
+          "min": 9,
+          "max": 10.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "recoltes": [
+          "2020",
+          "2019",
+          "2021"
+        ],
+        "fichePdf": [
+          "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Superdelic_Variety_Sheet_English.pdf?v=1698953220"
+        ]
+      }
+    },
+    {
+      "nom": "Taiheke",
+      "alias": [],
+      "varietyId": "beermaverick-taiheke",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Taiheke_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676918400",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "dda16f585378512ffae9501e99551c9587c38422138cccae4942534716c157cc",
+      "doutes": [
+        "Farnésène imprimé « 5.8% » (valeur seule, pas de plage ; peut-être « 5-8% » : non déduit, recopié tel quel)"
+      ],
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "6-8%",
+          "valeur": null,
+          "min": 6,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "5-6%",
+          "valeur": null,
+          "min": 5,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "0.8-1.3 mL/100g",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.3,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.5-0.7%",
+          "valeur": null,
+          "min": 0.5,
+          "max": 0.7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "50-55%",
+          "valeur": null,
+          "min": 50,
+          "max": 55,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "0.4-0.6%",
+          "valeur": null,
+          "min": 0.4,
+          "max": 0.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "5-7.5%",
+          "valeur": null,
+          "min": 5,
+          "max": 7.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "5.8%",
+          "valeur": 5.8,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "12-18%",
+          "valeur": null,
+          "min": 12,
+          "max": 18,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "1-1.4%",
+          "valeur": null,
+          "min": 1,
+          "max": 1.4,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "New Zealand grown dual purpose US Cultivar with citrus, grapefruit, and lime characters."
+        ],
+        "lignee": [
+          "Fuggle anglais",
+          "mâle supposé Fuggle x Serebrianka"
+        ],
+        "codeObtention": [
+          "USDA 56013"
+        ],
+        "calendrier": [
+          "programme USDA vers 1956",
+          "sortie 1972 sous le nom Cascade"
+        ],
+        "usage": [
+          "double usage",
+          "dry hop"
+        ]
+      }
+    },
+    {
+      "nom": "Taiheke",
+      "alias": [],
+      "varietyId": "beermaverick-taiheke",
+      "url": "https://nzhops.co.nz/products/taiheke",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "6-8 %",
+          "valeur": null,
+          "min": 6,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "New Zealand grown dual purpose US Cultivar with citrus “grapefruit/lime” characters."
+        ],
+        "recoltes": [
+          "2019",
+          "2020",
+          "2018"
+        ]
+      }
+    },
+    {
+      "nom": "Wai-iti",
+      "alias": [],
+      "varietyId": "beermaverick-wai-iti",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Wai-iti_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676919246",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "f61144ebed31e8de38f7b5c39d643575fc55bf8031370da47dad733524a40f50",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "2.5-3.5%",
+          "valeur": null,
+          "min": 2.5,
+          "max": 3.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "4.5-6.5%",
+          "valeur": null,
+          "min": 4.5,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1-1.5 mL/100g",
+          "valeur": null,
+          "min": 1,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.3-0.5%",
+          "valeur": null,
+          "min": 0.3,
+          "max": 0.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "20-25%",
+          "valeur": null,
+          "min": 20,
+          "max": 25,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "0.3-0.5%",
+          "valeur": null,
+          "min": 0.3,
+          "max": 0.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "9-10%",
+          "valeur": null,
+          "min": 9,
+          "max": 10,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "12-14%",
+          "valeur": null,
+          "min": 12,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "25-35%",
+          "valeur": null,
+          "min": 25,
+          "max": 35,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "0.5-1%",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "autresComposes": {
+          "champ": "Other",
+          "brut": "7-9%",
+          "valeur": null,
+          "min": 7,
+          "max": 9,
+          "unite": "%",
+          "base": null,
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A fine aroma hop with herbal, woody and citrus characters within a weight of essential oils."
+        ],
+        "lignee": [
+          "petite-fille de Liberty (USDA)",
+          "1/3 Hallertau Mittelfrüh"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "codeObtention": [
+          "HORT7709"
+        ],
+        "calendrier": [
+          "sortie 2011"
+        ],
+        "usage": [
+          "arôme",
+          "lager",
+          "ale"
+        ]
+      }
+    },
+    {
+      "nom": "Wai-iti",
+      "alias": [],
+      "varietyId": "beermaverick-wai-iti",
+      "url": "https://nzhops.co.nz/products/wai-iti",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "2-3.5%",
+          "valeur": null,
+          "min": 2,
+          "max": 3.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A fine aroma hop with fresh peaches and apricot characters within a weight of essential oils"
+        ],
+        "recoltes": [
+          "2020",
+          "2018",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "Waimea",
+      "alias": [],
+      "varietyId": "beermaverick-waimea",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Waimea_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676919248",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "fd23eb6f58bd5af6c5078df94a35c98348d12373cdea7188ef5852ee00c23916",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "15-18%",
+          "valeur": null,
+          "min": 15,
+          "max": 18,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "6-8%",
+          "valeur": null,
+          "min": 6,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.6-2.3 mL/100g",
+          "valeur": null,
+          "min": 1.6,
+          "max": 2.3,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.4-0.8%",
+          "valeur": null,
+          "min": 0.4,
+          "max": 0.8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "60-65%",
+          "valeur": null,
+          "min": 60,
+          "max": 65,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "0.6-0.8%",
+          "valeur": null,
+          "min": 0.6,
+          "max": 0.8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "2.5-3%",
+          "valeur": null,
+          "min": 2.5,
+          "max": 3,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "4.5-5.5%",
+          "valeur": null,
+          "min": 4.5,
+          "max": 5.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "9-10%",
+          "valeur": null,
+          "min": 9,
+          "max": 10,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "0.8-1.2%",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.2,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A big alpha hop that carries an even bigger weight of oils with lots of pine and citrus characters."
+        ],
+        "lignee": [
+          "Californian Late Cluster",
+          "Saazer",
+          "Fuggle"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "codeObtention": [
+          "HORT3953"
+        ],
+        "calendrier": [
+          "sortie 2012"
+        ],
+        "usage": [
+          "double usage",
+          "dry hop"
+        ]
+      }
+    },
+    {
+      "nom": "Waimea",
+      "alias": [],
+      "varietyId": "beermaverick-waimea",
+      "url": "https://nzhops.co.nz/products/waimea",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "16-19 %",
+          "valeur": null,
+          "min": 16,
+          "max": 19,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A big alpha hop that carries an even bigger weight of oils with lots of pine and citrus characters"
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    },
+    {
+      "nom": "Wakatu",
+      "alias": [],
+      "varietyId": "beermaverick-wakatu",
+      "url": "https://cdn.shopify.com/s/files/1/0378/6630/7719/files/Wakatu_NZ_Hops_Ltd_Variety_Sheet.pdf?v=1676919247",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "fiche-pdf",
+      "transcrit": "lecture visuelle",
+      "pagePdf": 1,
+      "sha256Pdf": "c8ecf9feb77c60a1326144cacaaa8428a4434695c32b219327baa079a6683820",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acids",
+          "brut": "6.5-8.5%",
+          "valeur": null,
+          "min": 6.5,
+          "max": 8.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "beta": {
+          "champ": "Beta Acids",
+          "brut": "8-9%",
+          "valeur": null,
+          "min": 8,
+          "max": 9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "0.5-1 mL/100g",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "betaPinene": {
+          "champ": "B-Pinene",
+          "brut": "0.6-0.9%",
+          "valeur": null,
+          "min": 0.6,
+          "max": 0.9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "40-50%",
+          "valeur": null,
+          "min": 40,
+          "max": 50,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "linalol": {
+          "champ": "Linalool",
+          "brut": "0.5-1%",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "6-8%",
+          "valeur": null,
+          "min": 6,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "5-7%",
+          "valeur": null,
+          "min": 5,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "12-15%",
+          "valeur": null,
+          "min": 12,
+          "max": 15,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        },
+        "geraniol": {
+          "champ": "Geraniol",
+          "brut": "1-1.5%",
+          "valeur": null,
+          "min": 1,
+          "max": 1.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "transcrit": "lecture visuelle",
+          "page": 1
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A really fine dual purpose hop with a heady mix of flora, tropical and citrus characters."
+        ],
+        "lignee": [
+          "Mittelfrüh (deux tiers)",
+          "pollinisation libre par un mâle néo-zélandais"
+        ],
+        "ploidie": [
+          "triploïde"
+        ],
+        "calendrier": [
+          "sortie 1988 sous le nom NZ Hallertau Aroma",
+          "renommé Wakatu 2011"
+        ],
+        "usage": [
+          "double usage"
+        ]
+      }
+    },
+    {
+      "nom": "Wakatu",
+      "alias": [],
+      "varietyId": "beermaverick-wakatu",
+      "url": "https://nzhops.co.nz/products/wakatu-1",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "fichePdfLisible": false,
+      "champs": {
+        "alpha": {
+          "champ": "Alpha acids (AA)",
+          "brut": "6-9%",
+          "valeur": null,
+          "min": 6,
+          "max": 9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "profilCourt": [
+          "A really fine dual purpose hop with a heady mix of floral and citrus characteristics"
+        ],
+        "recoltes": [
+          "2020",
+          "2019"
+        ]
+      }
+    }
+  ]
+}

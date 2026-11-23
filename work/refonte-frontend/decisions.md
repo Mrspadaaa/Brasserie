@@ -1,0 +1,1945 @@
+# Décisions — refonte frontend houblons
+
+Décisions numérotées, datées, avec leur raison. Une décision réversible se
+corrige par une nouvelle entrée, jamais par réécriture.
+
+## D1 — Branche et arbre (17.10.2026, 22:15)
+
+Branche locale `claude/refonte-frontend-specs` créée depuis `origin/main`
+(`c8f4c3ae`) dans l'arbre W. `.codex/hooks.json`,
+`source4-portable-bundle-manifest-01.json` et `functions/.env` restent hors de
+tout commit. Pas de push, PR ni fusion sans accord humain.
+
+## D2 — Langue des livrables (17.10.2026)
+
+Choix humain au lancement : anglais ASD-STE100 pour l'architecture et les specs.
+Les livrables `docs/besoins/` restent en français : ils citent le brasseur mot
+pour mot et servent sa relecture à la porte A. Les specs (phase 6) citent la
+question de la banque par son identifiant et donnent sa traduction.
+Raison : traduire les citations ferait perdre le besoin en mots du brasseur.
+
+## D3 — Écritures GitHub au fil de l'eau (17.10.2026)
+
+Demande humaine dans cette session : « Met à jour au fur et à mesure, de même
+que les issues git, créé, supprimer, update ». Création, mise à jour et
+fermeture d'issues sont autorisées sans nouvelle question. « Supprimer » devient
+« fermer avec la raison et un lien » : le prompt interdit la suppression d'issue.
+Chaque écriture GitHub va au journal du registre.
+
+## D4 — Modèle des extracteurs (17.10.2026)
+
+Demande humaine : « Utilise hiku 5.5 Max pour t'aider ». Les extractions
+volumineuses passent par Haiku 5.5 en effort `max`, 3 agents au plus.
+Opus relit et vérifie leurs sorties par script (citations mot pour mot).
+
+## D5 — Périmètre « message humain » (17.10.2026)
+
+Retenu : sessions Codex Desktop interactives (`source = vscode`, y compris les
+fils créés par un agent où l'humain a écrit ensuite), actives et archivées ;
+sessions Claude `claude-desktop` et `cli`, hors sous-agents, méta, résultats
+d'outils et messages inter-sessions. Exclu : `sdk-cli` (briefs d'agents),
+`exec`, sous-agents, gardiens, réveils automatiques, délégations.
+La session courante est exclue : son prompt (`prompt-session.md`) est une
+source humaine directe. Résultat : 759 messages, 380 k caractères, du 03.09
+au 17.10.2026. Script : `scratchpad/extract/extract-human.mjs`.
+
+## D6 — Florilège de questions houblons sans original (17.10.2026)
+
+Le message d'origine (Saaz/Styrian gold, Nugget, cryo, pastry stout, etc.)
+n'existe dans aucun journal Codex ni Claude sur disque : ni dans les fichiers
+`jsonl`, ni comme `userMessage` dans `~/.codex/thread_history_1.sqlite`. Sa
+première trace est la lecture de `demandes-utilisateur.md` par un agent, le
+28.09 à 17:03. Source retenue : cette transcription d'agent (« orthographe
+conservée autant que possible »), marquée « transcrit par agent ». Elle est
+corroborée par le prompt humain du 17.10. Raison : c'est la meilleure source
+disponible ; la marquer évite de la présenter comme une citation vérifiée.
+
+## D8 — Tout reprendre côté frontend houblons (17.10.2026, 22:50)
+
+Mots de l'humain, après la mesure de l'étape Houblons actuelle : « Non mais il
+va falloir tout reprendre de tout manière... ». V5.5 n'est pas réparée sur
+place (piste B de #115 écartée par l'humain). Le contrôle « un clic, sans
+défilement » devient le critère d'acceptation de la refonte ; l'app actuelle
+sert de témoin négatif (elle doit faire échouer le contrôle). Les calculs, données
+et Functions utiles sont triés en phase 5, avec preuve. Aucun code de l'app
+avant la porte B.
+
+## D9 — Critère « comparer en 3 touchers » à préciser (17.10.2026)
+
+Le critère « Comparer 2 à 4 houblons demande 3 touchers au plus » vient du
+prompt de session, rédigé par un agent à la demande de l'humain. L'humain a dit :
+« pouvoir en comparé 2,3,4 facilement ». Règle de comptage retenue par défaut :
+depuis la liste classée, sélection comprise, 3 touchers pour 2 houblons, et
+1 toucher de plus par houblon ajouté. Question posée à la porte A.
+
+## D10 — D9 annulée : le critère du brief reste tel quel (17.10.2026, 22:55)
+
+Rappel de l'humain : « Tu as déjà oublié le brief ? ». D9 traitait le § 6 du
+prompt comme un texte d'agent et assouplissait son critère. Erreur : le prompt
+est le brief de l'humain et il prime. Critère maintenu mot pour mot : « Comparer
+2 à 4 houblons demande 3 touchers au plus, avec une lecture côte à côte nette à
+390 ». C'est une contrainte de conception à tenir, pas une règle de comptage à
+négocier. Ordre des phases maintenu : les garde-fous viennent en phase 4, après
+la porte A ; la phase 1 livre seulement corpus, banque et parcours.
+
+## D11 — Fin de la phase 1 dans cette session, phase 2 en session neuve (17.10.2026, 22:58)
+
+Le contexte atteint 540 k, au-delà du seuil de 450 k du brief. La banque et les
+parcours dépendent de l'inventaire déjà chargé (corpus, données, code, mesure) :
+les rédiger ici évite une relecture complète. Le registre est mis à jour pour la
+reprise ; une session neuve est proposée pour la phase 2.
+
+## D12 — Fils de fer ultra basiques avant la porte A (17.10.2026, 23:25)
+
+Question de l'humain : « Est-ce que il faudrait faire des maquettes ultra basic
+pour valider les concept? Des visuel, diagram ? MOC ou autre ? ». Réponse : oui.
+Des fils de fer basse fidélité (boîtes grises, vrais mots, vrai stock) des
+4 gestes à 390 × 844, plus un schéma du parcours (touchers, visible par défaut /
+à la demande), passent avant la porte A, après la matrice de la phase 2.
+Chaque élément renvoie à une question de la banque et à une règle U1-U7.
+Une ou deux directions au plus. Page privée cliquable sur téléphone, avec une
+tâche : « trouve ton meilleur houblon pour la stout ». Raison : valider l'usage
+avant l'apparence ; c'est réversible et cela n'exige aucun code de l'app. La
+phase 7 garde la haute fidélité et la critique indépendante.
+
+## D13 — Autonomie jusqu'à la porte B (17.10.2026, 23:10)
+
+Mots de l'humain après la compaction : « Je ne vais plus intervenir soit
+autonome ». La porte A ne bloque plus : le résumé de 10 lignes va dans #119 et
+dans le message de fin de tour ; ses corrections s'intègrent quand elles
+arrivent. Les phases 4 à 8 avancent sans attendre. La porte B reste une porte :
+rien n'entre dans l'app, et push, PR, fusion, déploiement et données réelles
+attendent toujours l'accord humain. Les choix ouverts se tranchent par l'option
+prudente et réversible, ou par une session arbitre (Opus ; Fable pour la
+critique UX), puis vont dans ce journal.
+
+## D14 — Poursuite dans cette session au-delà de 450 k (18.10.2026, 01:10)
+
+Le contexte atteint 478 k après la phase 3. Le brief demande de proposer une
+session neuve au-delà de 450 k. En phase 1 (D11), l'humain a répondu à cette
+proposition par « Donne moi la cmd je le fais ici » et a compacté la session
+plutôt que d'en ouvrir une autre ; il a ensuite demandé l'autonomie (D13).
+Choix : continuer ici ; tenir le registre à jour à chaque phase pour qu'une
+compaction automatique ne perde rien. Réversible : une session neuve peut
+reprendre depuis la section « Reprise » du registre.
+
+## D15 — Comparer 4 houblons choisis un à un (18.10.2026)
+
+Le critère du brief (3 touchers au plus pour 2 à 4 houblons) est tenu tel quel
+(D10) pour 2 ou 3 houblons choisis, et pour les 4 premiers du classement
+(1 toucher). Pour 4 houblons choisis un à un, il faut au moins 4 touchers : un
+par houblon à désigner. C'est une limite physique, signalée à la porte A, pas un
+assouplissement. La conception cherchera un raccourci (proposition de
+comparaison d'emblée) sans tricher sur le comptage.
+
+## D16 — Groupes au lieu d'un rang chiffré sans usage documenté (18.10.2026, 05:00)
+
+Critique UX à l'aveugle (session Fable 5.1) : pour la stout, un rang chiffré tiré des
+seuls descripteurs n'est pas crédible (Idaho 7 devant Target, East Kent Goldings 42e).
+Choix : le rang chiffré n'apparaît que si le style a des usages documentés. Sinon
+l'écran regroupe : en amertume, « assez en stock » puis « pas assez », triés par alpha ;
+en arôme, « typique » (usage documenté, ou origine citée par le guide BJCP et
+descripteurs dans le sens du style), « compatible », « hors style ». Une ligne dit
+« classement estimé ». Spec F1 mise à jour. Réversible dès qu'une source d'usages par
+style existe (#127).
+
+## D17 — Porte B refusée : prototype v2 rejeté (18.10.2026)
+
+Mots du brasseur après essai : « Ça correspond pas du tout à une UX UI propre... C'est
+pire que les alternatives » (lien vers l'outil de comparaison de Beer Maverick).
+Constat Opus : le prototype tenait tous ses contrôles (un toucher, U1/U4/U5/U6,
+budgets) et la critique Fable ; il échoue sur ce que le brasseur juge : la propreté
+visuelle et la comparaison face à la référence qu'il avait nommée (C068). Le
+prototype n'a aucun graphique, alors que les maquettes V5/V5.5 qu'il trouvait
+meilleures en avaient (radar, barres). C'est la cause racine de la phase 3 répétée :
+les contrôles ont validé un substitut (gestes, densité) ; la comparaison visuelle à
+la concurrence (H6) n'a pas été faite, parce que Beer Maverick bloque les robots et
+que je n'ai pas demandé l'aide du brasseur. Suite : étudier la référence avec lui
+(son Chrome ou ses captures), proposer une direction visuelle à valider avant tout
+nouveau prototype. Rien n'entre dans l'app.
+
+## D18 — Refaire le prototype dans une session neuve (18.10.2026)
+
+Mots du brasseur : « Oui... Comment c'est possible de faire qqch d'aussi mauvais ? Ça
+répond à peine à une des 30 question. Ça suit aucun logique UX UI .. C'est
+catastrophique. Lance une fresh session pour refaire qqch de correct. Je vais plus
+intervenir jusqu'à la nouvelle version. Utilise des sous session notamment fable pour
+des reviews frontend de composants ». Le « Oui » répond à « Puis-je étudier Beer
+Maverick dans ton Chrome, en lecture seule ? ». Session neuve lancée, branche partie
+de `claude/refonte-frontend-specs`, avec un brief qui impose : réponses réelles aux
+30 questions à l'écran, logique UX/UI explicite, comparaison visuelle à Beer Maverick
+comme test de réussite, revues Fable par composant, à l'aveugle.
+
+## D19 — Arrêt de la v3 ; exigences perdues retrouvées (18.10.2026, 10:00)
+
+Mots du brasseur : « on doit pas non plus perde le modèle de calcul de la 5.5 ces
+comparatif doivent nous aider: par exemple: ma stout est trop résineuses, je la veux plus
+floral. La moteur nous propose plusieurs houblons et on peut ensuite comparé. » ; « Avoir
+une vue d'ensemble des houblons pour le style ATTENTION ! … Les échelles doivent être
+revu en fonction du style … J'avais déjà fait cette demande... » ; « J'ai aussi
+l'impression que on a pas vraiment encore les bons outils, leviers, skills, info sur le UX
+UI, si on doit comparé avec qqch de déjà fait pour s'assurer que on fait bien c'est que il
+y a un vrai problème ».
+
+Constat vérifié : la demande existe dans le brief du 01.10
+(`houblons-v5-realisation-2026-09-29/input-carte-21/01-brief-utilisateur.md`, l. 7 et 41),
+avec la carte Territoire qu'il avait jugée « une sacrée dinguerie » et la bascule Barres /
+Radar (« exigence acquise »). La phase 1 l'a perdue : D5 excluait les briefs d'agents
+(`sdk-cli`), et ses paroles relayées par ces briefs ne sont pas entrées au corpus. La v2
+et la v3 ont donc été conçues sans ses propres références, puis jugées contre Beer
+Maverick faute de critère à nous.
+
+Choix (réversible) : arrêter les retouches de la v3 (l'agent commite et mesure l'état) ;
+inventorier les exigences perdues dans l'archive ; écrire un brief v4 qui part du moteur
+(objectif → voies proposées → comparaison) et de la carte, avec des échelles relatives au
+style marquées comme hypothèse à valider ; utiliser le skill impeccable (`shape` avant le
+code, `critique` après), jamais utilisé en v2 ni en v3. Les critères deviennent les
+scénarios du brasseur ; Beer Maverick ne sert que de grammaire de graphique. Correction :
+la recommandation « texte à 16 px » tirée de Beer Maverick est retirée (décision du
+brasseur sur la densité, DESIGN.md).
+
+## D20 — Phase maquette allégée, tournois, trois versions finales (18.10.2026)
+
+Mots du brasseur, dans l'ordre :
+
+1. « Construis direct une fois un plan sain avec les bon outil, skill et que l'ux UI soit
+   au top niveau qualité. »
+2. « Et en place une vraie méthodologie de travail de conception frontend, avec des vrai
+   outils. »
+3. « à chaque mini étape ajoute la création de mini Proto 5,10,15,20 le nombre qu'il en
+   faut. Ensuite jette les pire et consolide les meilleurs […] récompense à fond la
+   créativité, disruption, l'ux. »
+4. « Playwright ne me semble pas utile pour la conception […] c'est pour le moment juste
+   des maquettes […] utilise les outils adaptés à ça sans pour autant rendre le
+   processus plus compliquées. »
+5. « me faire 3 version à la fin plutôt qu'une. »
+
+Choix :
+
+- La méthode `docs/qualite/methode-conception-frontend.md` sépare deux phases : la phase
+  maquette (maintenant) et la phase intégration (après son accord).
+- Storybook, Playwright, axe-core et la page React sont retirés de la phase maquette. Je
+  les avais ajoutés à tort : j'avais traité une maquette comme une construction de
+  production.
+- À chaque petite étape, M1 à M5 : un tournoi de mini-maquettes, un jury Fable à
+  l'aveugle, puis une consolidation qui nomme ses greffes.
+- À la fin, trois maquettes aux partis pris différents ; le brasseur choisit.
+- Registre `v4/GATES.md` révisé en conséquence (G0 à G10).
+
+## D21 — Pack v4 : classement qui reste au style, S2 en lager tchèque premium (18.10.2026)
+
+Constat à la relecture du pack de la tranche A (commit `1057939b`) :
+
+- En S1 (« ma stout est trop résineuse, je la veux plus florale »), le classement plaçait
+  Motueka et Citra cryo en tête. Ils ajoutent agrumes et tropical, familles neutres de la
+  stout, bande 0–30. Golding, East Kent Goldings et Celeia venaient en dernier.
+- S2 visait la 3A (Czech Pale Lager), où le floral est neutre ; la question « lequel est
+  le plus floral » y perd son sens.
+
+Choix (pilote, réversible) :
+
+- Le classement v4 ajoute un critère « reste au style » : un effet de bord qui sort d'une
+  bande compte en crans du style. Ordre : pas de conflit, débordement de style, distance
+  dirigée, stock. Les égalités restent visibles.
+- S2 passe à la 3B (Czech Premium Pale Lager), qui attend du floral (33–68).
+- Le modèle de calcul V5.5 (plages, fiches, IBU) reste intact ; seul le classement v4
+  change. C'est la thèse « lu au style » appliquée au choix des voies.
+
+Limites du modèle V5.5, à montrer dans les maquettes plutôt qu'à cacher : il situe mal
+la bière (plages de 0 à 45–55), distingue surtout « cité » ou « non cité » pour un
+houblon, et aucune fiche ne cite Nugget comme résineux, donc aucune voie ne peut établir
+une baisse de la résine en S1.
+
+## D22 — Relance obligatoire et température de création (18.10.2026)
+
+Le brasseur : « il faut relancer un batch de mini maquette si c'est pas concluant » et
+« modifier la "température" des paramètres de création ».
+
+- Relance obligatoire si aucun finaliste n'atteint 7,0 (Territoire à la calibration) ou
+  si un défaut commun reste sans solution chez les finalistes. Une relance par étape.
+- La température d'échantillonnage des sous-agents n'est pas réglable depuis le pilote :
+  elle est réglée par la consigne (froid : affiner les finalistes ; tiède : forme
+  imposée ; chaud : aucune forme, liste de lignes interdite).
+- Répartition par lot fixée par le brasseur : « 4 tiède, 5 chaude, 2 froide » (11).
+- M1 : premier lot concluant en note (p07 et p09 à 8,1), pas sur le défaut (mur des
+  9 familles neutres). Relance p11 à p23 : 6 tièdes déjà lancés avant sa consigne
+  (gardés), complétés à 5 chauds (p17, p18, p21, p22, p23) et 2 froids (p19, p20).
+
+## D23 — Pause des tournois, recherche des causes (18.10.2026)
+
+Le brasseur, sur les 23 mini-maquettes de M1 : « il y a toujours énormément d'information
+pour rien, beaucoup de text inutile qui ne devrait pas être là en premier plan. Une UI ux
+toujours pas très moderne », puis : « On dirait des écrans de central nucléaire ou cockpit
+d'avion. […] Ça n'utilise pas les bon outil UX, ni les bonnes représentation UI. On met en
+pause et il faut trouver d'où vient de problème, faire une recherche approfondie sur
+comment mettre en place un workflow qui intègre ça et comment utiliser les bon pratique
+frontend actuel ».
+
+Mesure (`tournoi/outils/mots-premier-ecran.mjs`) : 166 à 383 mots visibles au premier
+écran à 390 px, pour les 23.
+
+Choix :
+
+- Tournois en pause. Lots 1 et 2 de M1 archivés dans `M1/_lots-1-2/` ; le jury du lot 2
+  arrêté avant son verdict. Le brief du lot 3 (budget de 60 mots, premier et second plan,
+  normes actuelles) est écrit mais non lancé : il attend la recherche.
+- Recherche en quatre volets, rapports dans `v4/recherche/` : A causes internes (Fable),
+  B pratiques UI actuelles (Opus), C workflow de conception avec IA (Opus), D profils de
+  goût grand public (Sonnet). Synthèse et nouvelle méthode par le pilote ensuite.
+- Sa définition de la densité, qui fait référence : « Il faut que ce soit dense sur
+  téléphone car je veux voir un Max d'info au même endroit mais ça doit pas être
+  surchargé, et surtout on doit voir que en premier plan les informations réellement
+  utilise. Ensuite on peut trouver plus d'infos avec des raccords, renvoie, replis ou
+  autre. » Transmise aux recherches A, B et C.
+- Hypothèses du pilote sur sa propre part : consignes qui mettaient tout au premier plan,
+  vérité qui punissait l'omission et pas le bavardage, jury qui récompensait « l'honnêteté
+  écrite », formes imposées en objets anciens, premier écran surchargé dans le contrat.
+
+## D24 — Méthode v2, deux régimes d'écran, documents alignés (18.10.2026)
+
+Le brasseur : « Met tout ça en place » ; « L'app a une identité visuelle actuel mais je
+suis ok de changer ça au ça fait sens.. et aide le processus » ; coup d'œil accepté :
+« ok ping moi quand cela est bon ».
+
+Fondé sur les rapports A (causes) et C (workflow), B (pratiques UI) :
+
+- `docs/qualite/methode-conception-frontend.md` v2 : prioriser en trois plans avant de
+  dessiner, références réelles, atelier de primitives, fils de fer gris, coup d'œil du
+  brasseur, tranche verticale, trois versions ; jury par paires dans les deux ordres,
+  après des contrôles automatiques éliminatoires (60 mots au premier écran).
+- Maquettes haute fidélité dans `prototypes/` avec les composants, jetons et moteur de
+  l'app, sans changer son `package.json` (remplace le principe « une maquette reste une
+  maquette » de la v1 : la version choisie se déplace au lieu d'être réécrite).
+- Températures gardées (D22) : tiède = parti de structure imposé, plus de métaphore
+  d'objet ; chaud = libre ; froid = idées retenues.
+- DESIGN.md : description reformulée et section « Deux régimes : chrome compact, lecture
+  claire » (trois plans, n'étiqueter que l'exception, trois tailles au plus, une couleur
+  d'alerte, pas de légende au premier plan, cibles et contraste).
+- PRODUCT.md : « compacter les données autant que possible » remplacé par sa définition
+  du 18.10, mot pour mot.
+- `.claude/rules/affinee-frontend.md` : règle principale réécrite (« Montrer d'abord
+  l'utile, replier le reste, compacter le chrome »).
+- `SPEC-BRASSEUR.md` : document unique de ses demandes, 46 citations vérifiées
+  (`v4/outils/check-spec.mjs`, témoin négatif en échec).
+- Outils : `capture.mjs` produit le coup d'œil `pNN-oeil.png` (40 %) ;
+  `mots-premier-ecran.mjs`.
+- Non retenu : Vaul (non maintenu, déjà refusé par PRODUCT.md) ; Storybook et
+  Playwright restent hors de la phase maquette.
+
+## D25 — Données d'arôme : constats de la recherche E, décisions en attente (18.10.2026)
+
+Rapport `v4/recherche/E-donnees-houblon.md` (31 sources) :
+
+- Le flou des plages 0–55 vient du moteur V5.5 (famille non citée = domaine 0–100), pas
+  d'un manque de données : le dépôt a l'huile totale pour 318 variétés, myrcène, humulène
+  et caryophyllène pour 260, linalol pour 77, jamais convertis.
+- Trou d'import : la boutique Hopsteiner US décrit Nugget « woody and resiny », Yakima Chief
+  « woody ». La résine de S1 devient explicable et une voie « diminuer ou remplacer Nugget »
+  devient possible.
+- Après 60′ d'ébullition le myrcène a disparu : le boisé vient plutôt de l'oxydation de
+  l'humulène et du caryophyllène ; l'amertume (60 IBU, haut de bande), le torréfié et
+  l'oxydation sont d'autres pistes.
+- Aucun modèle publié ne prédit l'intensité des familles depuis une recette avec une
+  précision mesurée (meilleur R² moyen 0,21).
+
+Pistes retenues pour la tranche verticale (réversibles, dans `prototypes/` seulement) :
+partir de la dégustation du brasseur pour situer la bière (`HopTasting.axes[].perceived`
+existe), trois niveaux de citation (non décrit, cité, marqué) avec le compte des fiches,
+pistes hors houblon sans chiffres, jamais de plage 0–100 affichée.
+
+**En attente du brasseur** : importer en masse des fiches sans licence ouverte (Yakima
+Chief, Hopsteiner, BarthHaas). D'ici là, seuls quelques faits cités sont relevés, comme le
+dépôt le fait déjà.
+
+## D26 — Clair ou sombre, défauts récurrents en contrôles (18.10.2026)
+
+Recherche G (`v4/recherche/G-clair-sombre.md`) : en lumière forte, avec du petit texte et
+en coup d'œil, le clair se lit mieux (Piepenbrock 2013–2014, Dobres 2016). Le « cockpit »
+vient de l'empilement (teintes saturées, micro-texte, filets fins), pas de la polarité.
+Grainfather, Brewfather et BeerSmith offrent les deux modes. Quatre références du
+brasseur sur cinq sont claires.
+
+Choix (réversible) : les versions haute fidélité de l'écran 1 se font en **clair par
+défaut**, avec le « cave » comme thème sombre ; au moins une des trois versions reste
+sombre. La migration de l'app entière (781 couleurs hex isolées, 12 couleurs de texte sur
+13 sous 4,5:1 sur fond clair) se décide à la porte B, pas avant.
+
+Le brasseur : « je te demande à chaque fois […] mais que au final on se retour toujours
+pas les même problèmes ». Réponse : `v4/DEFAUTS-RECURRENTS.md` (12 défauts, ses mots, un
+contrôle chacun, témoin négatif sur les versions rejetées : 13 échecs sur M1 p07 et p15,
+8 sur les fils de fer p10 et p04) ; `tournoi/outils/controle-lot.mjs` ; rien ne lui est
+montré sans `LOT OK`.
+
+## D27 — Lot 3 : p2, p3 et le rail de p8 ; le stock discret (18.10.2026, soir)
+
+Le brasseur, sur la planche des étapes du lot 3 : « P2,3,8 sont vraiment bien, la 8
+seulement pour la manière dont ont voit les étapes d'houblon. » ; « La stock sont beaucoup
+trop mis en avant surtout que dans l'app on voit dans le récap à la fin. Juste un petit
+badge ou info très subtil suffit. » ; « Maintenant il faut aussi les radar graph et autres
+écrans ».
+
+Choix : les auteurs de p01, p04–p07, p10 et p11 sont arrêtés (pages conservées dans
+`fils3/`) ; p02, p03 et p08 sont finies avec le nouveau contrôle D23 (stock : l'exception
+seule, sans pastille pleine, ni achats ni filtre au premier écran ; D21 révisé, la liste
+d'achats vit dans le récap de l'app) et toutes leurs pages mesurées (D4, D5, D14 bis, D19
+bis). Ensuite : lui montrer toutes les vues de p2, p3 et p8, radars compris, puis
+consolider (p3 + le meilleur de p2 + le rail de p8).
+
+## D28 — Radars refaits sur bibliothèques, fiche à l'appui long, baseline gelée (18.10.2026, soir)
+
+Le brasseur : « C'est toujours n'importe quoi les spidergraph Radar graph il faut faire
+qqch.... » ; « Est-ce qu'il faudrait pas utiliser d'autres outils, framework, libraries pour
+ces radar ? » ; « quand je fasse un appuie long, hover long super ordinateur, sur houblons, je
+puisse voir sa fiche en détails » ; « on avait établi une Baseline, ça différent complètement ? »
+
+Diagnostic : l'ordre des axes suivait le style (pas de lobe), 3 ou 4 séries en pointillés se
+superposaient, les familles non situées cassaient les polygones, et la bière en crans faisait
+de la zone un disque uniforme. Chaque auteur dessinait son SVG à la main. Les données d'arôme
+continues du moteur sont inutilisables (492 valeurs sur 492 à « confiance faible, non situé ») ;
+les citations des fiches (0–2) restent la donnée des houblons, comme les entiers 0–5 de Beer
+Maverick, dont le radar reste lisible grâce au dessin.
+
+Choix :
+- contrat radar v2 contrôlé (D24 : roue des arômes, ≤ 2 séries par radar, petits multiples,
+  silhouettes pleines, grand radar, libellés ≥ 11 px) ;
+- bière, zone et voies en intensité absolue continue 0–3 (le moteur l'ajoute) ;
+- lot 4 radars en concurrence de bibliothèques : Recharts (déjà dans l'app), Nivo, ECharts
+  en SVG, plus des variantes libres ; installées hors de l'app (`scratchpad/libs-radar`) ;
+- lot 4 fiche (D25) en parallèle ;
+- baseline p03 gelée hors du composant (D26, `controle-baseline.mjs`) ;
+- les 8 variantes écartées du lot 3 rangées dans `fils3/_ecartes/`, pour qu'aucune planche
+  ne les remontre.
+
+## D29 — Base consolidée : p2, la levure de p8, le moment qu'on glisse (18.10.2026, soir)
+
+Le brasseur, sur la page partagée (capture de p2, flèche de 60′ à 10′) : « J'aime beaucoup
+l'intégration de la levure directement dans la p8 mais la p2 a un meilleur visuel, j'aimerais
+aussi pouvoir une fois mon houblons sélectionner pouvoir glisser comme un slider le moment de
+l'ajout. »
+
+Choix : la base de l'étape devient p2 (visuel), avec la levure comme étape du rail entre le
+whirlpool et le dry hop en fermentation (p8), et le moment de chaque ajout glissable le long du
+rail, au doigt comme à la souris, IBU en direct depuis le pack. Contrôles D27 et D28
+(`controle-rail.mjs`, `--rail`) prouvés dans les deux sens : page témoin à poignée inerte et
+levure mal placée → échec ; page qui fonctionne → RAIL OK. Sortie : `ecran-1/base/consolide/`.
+Le lot 4 (radars, fiche) garde la baseline p03 : ses composants se greffent ensuite sur la base.
+
+## D30 — Ma bière : au style par défaut, absolu en bascule ; Suggestions et Comparer à refaire (18.10.2026, soir)
+
+Le brasseur garde l'aperçu compact à 12 familles de p2 (« super car très compact et facile »),
+juge le détail de p2 confus (« je sais pas comment bannir une contraintes ou réduire une
+autre, il y a des truc jaune ?? »), préfère celui de p8, et rappelle l'échelle : « Tropicale
+4/5 sur une ipa et 4/5 sur une Lager ça doit pas correspondre » ; « Reste sur une échelle par
+style mais avoir en tout cas une vue qui affiche l'échelle en absolue ». Le moteur le confirme :
+la bande tropicale vaut 0–30 pour la lager tchèque et 0–100 pour l'IPA ; en crans, les deux se
+dessinent pareil.
+
+Choix : « Ma bière et la cible » au style par défaut (crans, écart chiffré hors zone, jamais
+écrasé au bord), avec une bascule vers une vue absolue commune 0–3 (`biere-absolu.html`) ;
+gestes bannir, réduire, augmenter par famille ; plus de focus posé par script (le cadre jaune
+de la vue web). Contrôles D31, D32, D33, prouvés dans les deux sens. Suggestions et Comparer :
+« très mauvaise et […] pas terminé » ; d'accord : un lot dédié, pensé en brasseur, après la
+base consolidée.
+
+## D7 — Issue de suivi de la mission (17.10.2026)
+
+Une issue GitHub suit la mission, liée à #115 et #116, et reçoit l'état de
+chaque phase. L'épopée « Houblons pour le brasseur » vient en phase 5.
+
+## D31 — l5e : la grille de l5b gardée, quatre coupes pour tenir 70 mots (19.10.2026, soir)
+
+Contexte : le brasseur a coché l5b tel quel (« Il est très très bien celui-ci aussi »). l5d prend
+tous ses retours (α, usage en mot, légende, fiche) mais passe à une tuile par voie pour tenir les
+70 mots : la page s'allonge et sa grille change. l5e garde les deux tuiles par rangée ; il est à
+79 mots au premier écran.
+Choix du pilote, sans question bloquante : les quatre coupes de l'auteur.
+- Le second widget ne répète pas « 10 g 10′ ».
+- « +1 » et « +2 » perdent le mot « cran », que la légende explique.
+- Barres et Radar s'affichent en icônes seules, avec leur libellé accessible.
+- « Comparer » perd le « (3) », puisque les trois pastilles du dock montrent le nombre.
+La coupe des icônes est la plus risquée après « Les icône sont pas parlant du tout » : elle est
+signalée sur la page, et réversible si les deux icônes ne lui parlent pas. l5d reste publié à
+côté : c'est lui qui choisit.
+
+## D32 — l5f : les coupes de D31 défaites sur l'avis du critique (19.10.2026, nuit)
+
+Le critique, calibré sur les verdicts du brasseur (`fils21-choisir/critique/l5e.md`), a jugé l5e :
+- Barres et Radar en icônes muettes : la plainte « Les icône sont pas parlant du tout » reviendrait ;
+- les ronds de Comparer sont sans mot ;
+- « +1 » est sans unité ;
+- la grille se troue ;
+- la piste du résineux n'a pas de trait noir.
+Le brasseur a dit, entre-temps, « Soit pas trop contraignante pour les contrôles sur les v0 » : les
+70 mots deviennent indicatifs. Choix du pilote : l5f rend les mots, répare la grille et met le trait
+noir sur les trois pistes. l5e reste intact pour comparer. D31 est donc révisée : une icône que la
+légende doit expliquer est un défaut, pas une économie.
+
+## D33 — Le critique fait office de jury pour le lot 21 (20.10.2026, nuit)
+
+Le brasseur a voulu un critique « qui pourrait être moi ». Calibré sur ses verdicts réels (test à
+l'aveugle : 3,5 sur 4), il a joué un geste sur chacune des 41 variantes jugées, et sa synthèse
+(`fils21-choisir/critique/SYNTHESE.md`) choisit déjà les cinq pour la diversité utile : y1, x3, v1,
+s3, w3. Un jury de plus referait le même travail. Choix du pilote : la synthèse du critique tient lieu
+de verdict de jury. JURY.md reste la grille de lecture. Les cinq passent en seconde passe chez leurs
+auteurs (y1b, x3b, v1b, s3b, w3b), et trois relances ciblées partent : r3b, a2b et e4. MOTS se compte
+hors données (`--sans-donnees`, 70 au plus), avec 110 au total comme cible indicative. Le brasseur voit
+les 44 variantes et les cinq améliorées, et c'est lui qui choisit.
+
+## D34 — Le lot D125 et Substituer, après le conseil complet (24.10.2026, matin)
+
+Conseil complet (`cerveau/decisions/2026-10-24-lot-d125-vues.md`). Substituer : « Substitution, ça serait plus du u4 »
+(19.10) est son choix ; le registre le marquait « ouvert » avec la porte du conseil du 22.10 en provisoire. Il passe à
+« choisi u4 », avec ses mots, et u4 est rendu par une reprise (r6), comme les écrans de D124. Dryhopper : passe 4 sur
+a1 (8 à 12 greffes en trois chaleurs), pas de nouveau panel v0. La liste de la fiche : le seul entonnoir complet, après
+la reprise de la fiche (r3). La pastille « ~ simulé » : 3 mini maquettes, avec la reprise de Comparer (r5). Les graphes :
+une planche où il désigne celui qui le bloque. Rien n'est publié avant la lecture de ses commentaires d'après 07 h 53
+(autre compte : accès demandé à l'utilisateur) ; le critique est réétalonné sur les 56 fils avant le tri.
+## D35 — Les décisions des voies d'audit D124, après avis croisé (24.10.2026, matin)
+
+Avis croisé (Brasserie en Fable, Contradicteur en Opus ; `work/missions/2026-10-23-maquette-parcours/conseil-decisions-voies/`).
+Fiche : les quatre boutons du pied de g1 reviennent, avec le titre « α 11–14 % » et les notes de Citra cryo ; la liste des
+substituts sort du même calcul que u4. Dose : pas de 2 g, comme sa base ; le filtre du champ « Ajouter » porte sur tout le
+catalogue (« souvent pas présent », D21). Végétal : placé seulement si une source le décrit, sinon « non situé » ; les mots
+de sa maquette font foi (« double usage »). Suggérer et Comparer : tout ce que ses maquettes montraient revient, sauf ses
+refus postérieurs (la règle « ‹ visée | visée › », D91) et le groupe « Changer de levure » (L10 ; Levure ouvert), qui passera
+en variantes. Quantité : la base v4.10 et le stock en petit badge ; la mise à jour des tickets #122 et #123 attend l'accord
+de l'utilisateur.
+## D36 — Le conseil dans la création (24.10.2026, matin)
+
+Sa demande, mot pour mot : « Faire intervenir le conseil aussi pour la partie création ». Après le tri de chaque panel D125
+(liste de la fiche, Substituer) et sur la passe 4 de Dryhopper, un conseil rapide (six regards, le Brasseur en Fable, un
+président en Opus) reçoit la synthèse du critique et les planches de captures ; il conteste le classement et fixe les cinq
+candidates et leurs greffes, dont partent les passes 2. Le critique garde le tri et le jugement de chaque variante ; un
+désaccord entre eux après une passe passe en avis croisé. Le brasseur voit tout le panel et choisit.
+## D37 — Le critique après l'épreuve du 24.10 (24.10.2026)
+
+Épreuve à l'aveugle sur 70 items (5 verdicts du 23 et du 24.10 ajoutés) : paires 89 %, classes 73 % ; la moitié A tombe à 67 % sur
+les classes (seuil 70 %), et le critique est trop clément (il prédit « mitige » ou « aime » là où le brasseur rejette). Une
+contamination légère : il a vu les réponses d'une passe précédente (pas la clé). Choix du pilote : le critique trie les panels
+D125, mais son classement reste une proposition ; il penche vers « rejette » quand il hésite ; le conseil rapide (D36) conteste
+son tri ; le brasseur voit tout le panel. Le portrait sera revu avec ses verdicts sur les panels.
+## D38 — La passe 4 de Dryhopper avant de la montrer (24.10.2026)
+
+Conseil rapide (`work/missions/2026-10-23-maquette-parcours/conseil-dh4/verdict.md`). En tête : p4a4, p4b2, p4a3, p4b3, p4a2
+(trois chaleurs, cinq genres) ; derrière, sans rien cacher : p4b1, p4a6, p4a1, p4a5, p4b4, p4b5 et a1. Retouches avant de les
+montrer, par les agents de leurs séries : la loupe hors de la figure, les rubans et boutons de jours d'a1 gardés, la bosse de
+levure et la densité hachurées, les chevauchements supprimés ; pas de greffe croisée avant son choix. Noyau et Baies (pilote) :
+l'avant est inconnu (les fiches de Nugget ne les décrivent pas), le gain d'Idaho 7 est connu : « ? → ~+21 » partout (D65).
+## D39 — La construction commune après r7 (24.10.2026, après-midi)
+Décideur : pilote, réversible. r7 rend BATTERIE OK 33/33 et ETATS 113/117 ; les quatre restes :
+- `etat-acquis-radars-m4-h4` (« Radar: m4 h4 très bien ») : la grille m4 est rendue, mais relevée sur `biere-radar.html`, la
+  même page déjà en Radar. L'acquis se joue désormais comme sa base l'ouvre, depuis les barres, par le toucher de « Radar » ;
+  le bouton porte les deux jetons (`etat-biere-radar etat-acquis-radars-m4-h4`).
+- `etat-acquis-y1b-brassin-au-doigt` : mots de y1b sur Dryhopper, écran au choix ouvert. Rien d'un écran au choix ouvert
+  (D123) : `attend_choix: dryhopper`, compté à part par `controle-etats.mjs`, rejoué quand il aura choisi.
+- `etat-etape-dose-plus` et `-moins` : délai de 180 s à quatre pages en parallèle seulement ; seuls, ils passent. Rejeu à
+  machine calme avant de conclure.
+- Les traits de la jauge de q2b (« en contour si la famille baisse, orangée hors du style », NOTE q2b) étaient annulés par
+  une règle CSS placée plus bas (relevé de jc-levure) : choix perdu, rendu (deux classes par modificateur).
+Signature : les « LEÇON PROPOSÉE » et « CONNAISSANCE » des voies triées par s1-lecons, appliquées par le pilote (M16 ; M11,
+M12, M14 passés dans [[controles-mecanises]] pour tenir la charge ; trois notes neuves, sept complétées).
+
+## D40 — Les écarts des critiques des reprises (24.10.2026, soir)
+Décideur : pilote, réversible. Critiques r8a, r8b, r8c (Fable), 128 états en images : étape REJET, le reste ACCEPTÉ. Passe 3 de
+r7 (`work/missions/2026-10-23-maquette-parcours/voies/r7-batterie/PASSE3.md`) :
+- ajouts rapides : une recette qui a des houblons garde les propositions aromatiques de sa base (stock d'abord, 10 g à 10′),
+  jamais des doses de compensation à 60′ ; recette vide à l'ouverture : sa page cas-k2 ; après « retirer » du dernier houblon,
+  la lecture la plus proche de sa capture (REPRISE § 6) ;
+- Végétal non situé pour Nugget (D35 appliqué) ; « Substituts » de la fiche du calcul de u4 (D35) ; « Pour égaler » par
+  famille comme r6n2 ; survol à 1280 en fiche flottante ; ses mots (« Boisé et résineux trop marqué ») ;
+- laissés, avec leur raison : fil d'étapes sans autre écran, Citra cryo « 1 seule fiche », nombres de Nelson Sauvin (L14),
+  groupe « Changer de levure » (D35), « Sans Nugget › » (#145).
+- D40 bis (pilote, après la passe 3 de r7) : le plafond de 80 mots au premier écran reste (SPEC § 3, « Dense mais pas
+  surchargé ») ; les mots de r6a restent, les ajouts postérieurs passent à un toucher. La règle Végétal (D35) ne vise qu'une
+  famille sans source : une famille apportée par la levure reste placée (cas-k2 : « 1 au style · 11 non situées »).
+
+## D41 — Les mots au premier écran : modéré (24.10.2026, soir)
+Décideur : le brasseur (« dépasse les 70 mots au premier écran c'est pas ultra grave. Il faut être modéré avec les mots »),
+appliqué par le pilote : `mots-premier-ecran.mjs --modere` (alerte au-dessus du seuil, échec au-delà de 40 % de plus), dans
+controle-commun. Les autres appels gardent leur seuil strict (aucun ne passe --modere) ; aucun critère n'attend un échec de mots
+de controle-commun, donc l'assouplissement ne fait échouer aucune voie (pas de rejeu des 85 appels). Substituer à 118 mots :
+au-delà même du modéré (98) ; r9 vise 70 à 80.
+- D42 (pilote, réversible ; D129) : le titre d'en-tête des outils à 18 px (DESIGN.md, « Titre d'écran »), le pied de Dryhopper en
+  bas comme les autres ; reprise r12-continuite après r9.
+- D43 (le brasseur, 24.10 soir, sur p4b2f : « Partir sur cette version ») : Dryhopper choisi = p4b2f ; registre mis à jour,
+  reprise r13-dryhopper (relevé de ses états, rendu dans la maquette, continuité D129, acquis y1b réévalué) ; r12 laisse Dryhopper.
+- D44 (le brasseur, 24.10 soir, sur sa q2b : « Celle ci aussi est toujours meilleures. Mais aussi ajouter les spec en plus type
+  comme matrice nettoyée flb5b ») : le groupe « Changer de levure » de q2b revient tel quel dans Suggérer (remplace la partie
+  levure de D35) ; houblons et levures de Suggérer disent ce qui leur est propre (D130) ; r11.
+- D45 (le brasseur, 24.10 soir, sur B : « La meilleure ») : D121 tranché, B (« Ouvrir l'analyse de ma bière › ») par défaut dans
+  l'étape ; A et C derrière ?d121=a|c ; ETATS OK 15/15 étape, PROFIL OK.
+- D46 (pilote, réversible ; règle n° 1, D41) : r13 G5, les mots de Dryhopper se comptent contre sa p4b2f (106 mots), non contre
+  le seuil commun de 98 ; `controle-commun --sans=mots` (forme REPRISE-D124) puis `mots-premier-ecran --max=106`.
+- D47 (le brasseur, 24.10 soir, sur flb5b : « le footer doit être aussi avec tout ces informations comme 4 · Les cartes de
+  famille · flu2b » ; « Le footer est top » sur le pied de flu2b ; « C'est pas exhaustif sur les infos du houblons ») : D132,
+  la fiche reprend le pied de flu2b et porte toute l'information du pack ; `controle-fiche-exhaustive.mjs` (témoin : flb5b
+  EXHAUSTIVE ECHEC, P1 et 8 catégories) ; r14.
+- D48 (le brasseur, 24.10 soir : D131 bis, ter, quater et Galaxy/Saaz) : le lot de pictos D131 ajoute le picto « en plus »,
+  la légende aux endroits clés, le mot précis dans sa famille (Galaxy face à Saaz) et la règle « Il faut pas que ça gêne ! » ;
+  deux séries de quatre jeux (d131-pha Opus, d131-phz Fable), d131-critique juge d'abord l'intégration.
+- D49 (pilote, réversible) : sur la route fiche (Ma bière, feuille ouverte au chargement), COMMUN se joue `--sans=mots,fiche,legende`
+  (échecs par construction dès HEAD ; raison dans fiche/NOTE.md) ; le geste reste couvert par ETATS 16/16 et FICHE OK. Ouvert :
+  rendre ces trois contrôles conscients d'une feuille ouverte.
+- D50 (pilote, D35) : `controle-fiche-exhaustive` lit les remplaçants de la fiche (`[data-role="fiche-remplacants"]`, calcul de
+  Substituer au style), non la liste figée du pack ; Nugget et Nelson Sauvin EXHAUSTIVE OK, flb5b toujours ECHEC (témoin).
+- D51 (pilote, règle n° 1) : la hauteur de Ma bière se compte contre sa B (D45, « La meilleure ») : 1,09 écran avec la barre
+  pleine « Ouvrir l'analyse de ma bière › » (1,05 avant) ; batterie `controle-hauteur --max=1.10`.
+- D52 (le brasseur, 24.10 soir, sur le radar de la fiche de Nelson Sauvin : « le spidergraph doit être en pic pas juste des
+  traits... Enfin comme sur les mini maquettes ») : D133, le radar de la fiche reprend l'échelle de g1 (de -0,5 au maximum ;
+  l'inconnue dans le disque du centre, jamais au centre exact) ; chaque famille décrite fait un pic ; `controle-radar-pics.mjs`
+  (témoin : la maquette PICS ECHEC, g1 PICS OK) ; dans la batterie avec les contrôles D127 à D132.
+- D53 (pilote, honnêteté des données) : etat-etape-ajout-rapide (r8a le matin, r15a le soir) : le point « avant » gris est
+  bien dessiné et relié, mais le moteur en direct ne déplace Floral que de 2,5 % de la barre (Agrumes 5,7 %, Tropicaux 1,7 %)
+  pour 10 g de Motueka à 10′ ; sa base, aux chiffres figés, montrait 12 → 40 %. Pas d'écart grossi : les valeurs du moteur
+  restent ; « floral +1 » sur la carte dit l'effet. Signalé au brasseur. Ouvert : capturer en pleine page les états sous le pli.
+- D54 (le brasseur, 24.10 soir, commentaire sur le rail : « il y a un peu de délai pour "sortir" du mode rail ») : D134, les
+  propositions d'ajout rapide se recalculent après la première image (useDeferredValue dans Ajouter.tsx) ; 142 → 8 ms du lever
+  du doigt à la première image ; `controle-sortie-rail.mjs` dans la batterie. Le retour des rangées (240 ms) reste celui de sa base.
+- D55 (le brasseur, 24.10 soir, commentaires sur la fiche publiée ; pilote pour la forme) : D135, « Substituts › » ouvre
+  Substituer pour un houblon de ma recette (hors recette, la liste se déplie dans la fiche : Substituer remplace un ajout) ;
+  D136, « classé » devient un point creux et « 1/2 », le compte du radar, la légende dit « Hopsteiner le range dans cette
+  famille, sans mot qui le décrive ». `controle-fiche-pied.mjs` dans la batterie.
+- D56 (le brasseur, 24.10 soir, Comparer : « pas de possibilité d'enlever, remplacer un houblon choisi, ni en recherche un ») :
+  D137, chaque houblon choisi (sauf l'épinglé de Substituer) porte ⇄ et × sous sa tête ; ⇄ ouvre la feuille « Remplacer X » ;
+  la feuille cherche tout le catalogue (nom et alias). `controle-comparer-choix.mjs` dans la batterie.
+- D57 (le brasseur, 24.10 soir : « Sauver cette maquette on est quasiment à du 100% ») : la maquette du soir, D134 à D137
+  compris, est figée comme référence (étiquette git locale, copie de la construction, cerveau) ; la réactivité (D138) et le
+  report des choix d'un écran à l'autre (D139) sont les points suivants.
+- D58 (le brasseur, 24.10 soir, commentaires sur la maquette publiée ; pilote pour la forme, réversible) : le nom de l'étape
+  retiré de l'en-tête (le fil d'étapes le dit) ; la ligne de tête d'une carte du rail passe à la ligne (plus de défilement en
+  largeur, le × reste) ; « Plus utilisé les icône hors 16d » lu « utilise plus les icônes » (ses trois autres commentaires
+  demandent des icônes) : le ◇ et le premier mot hors des 12 sur chaque ajout proposé, le ◇ devant « lui seul » / « hors 16D » de
+  Suggérer et en dernière case des effets (discret, les mots au toucher) ; la phrase « X seul dit … » de « Ses mots » de Comparer
+  retirée (la vue reste à reprendre) ; les légendes sous les pastilles, en mini maquettes (lot leg) ; le moment proposé par le
+  moteur (10′) : noté pour la vraie app.
+- D59 (le brasseur, 24.10 soir : « Faire des mini maquettes du dryhopping avec mes feedback ») : lot de douze variantes sur sa
+  p4b2f (règle n° 1 : la base reste), trois séries : la frise de y1b retravaillée (dga), les trois plans de w2 (dgb), libre
+  (dgz, Fable) ; critique dg ; planche dans un artefact neuf.
+- D60 (le brasseur, 24.10 soir : « Faire en Todo la recherche avancée, mettre dans le git. Pas si utile pour le moment. Ajoute
+  les mini maquettes ») : #151 passe en P3 et `status:deferred` ; les douze mini maquettes, leurs captures et les verdicts sont
+  commités (7f9cac8c), la branche poussée, les images posées dans l'issue.
+- D61 (le brasseur, 24.10 soir : « Tu peux intégrer légende type leg3-v2a · Les barres n/N mais barre leg3-v2e · Les spéciaux
+  repliés ») : la légende des pastilles devient leg3-v2f, intégrée sous les pastilles des cartes du rail et des ajouts
+  proposés ; registre `choix/ecrans.json` (complément de l'étape) à mettre à jour après la reprise.
+- D62 (le brasseur, 24.10 nuit : « Je veux qqch comme ça moi ???? », sur sa capture de la carte ouverte de Nugget dans
+  leg3-v2a) : D61 relue. « Les spéciaux repliés » est le nom de la vignette v2e, pas une consigne. La légende des pastilles
+  est v2a telle quelle (mots précis avec leurs pictos, ◇ et ses sources, ce que disent les fiches, huiles, ligne-clé, ouverts
+  sous la bande, puis marquée, citée, non décrite, « ? » et « Sans X › »), avec seulement la petite barre de v2e et le point
+  « en tête » ; plus de pastille repliée. Contrôle D140 : `controle-legende-v2a.mjs`.
+- D63 (le brasseur, 24.10 nuit : « Les commentaires pour le dryhopping était pour la partie compare ») : ses mots sur la frise
+  de y1b et les trois plans de w2 visent Comparer. Ils vont au lot r6a++ (Comparer sur r6a, critique rp) ; la planche
+  « Dryhopper, tes retours » (D59) les greffait sur Dryhopper : elle reste en ligne, marquée, et ne sert pas de choix pour
+  Comparer. La base de Dryhopper reste l'écran jouable (« la meilleure version est celle de l'app jouable »).
+- D64 (le brasseur, 24.10 nuit : « Tu peux commencer la mise en place pour l'intégration dans la vrai application. Faire une
+  liste des tâche, mettre à jour git et suivre tout ça. Jusqu'à l'intégration. La fluidité, l'optimisation de code est très
+  importante vu qu'il y aura beaucoup de données !! ») : la porte B s'ouvre. Épopée #159, mission
+  `work/missions/2026-10-25-integration-houblons/` ; état des lieux mesuré (voie i0), puis conseil complet sur l'architecture
+  de fluidité avant le premier code dans `src/`. Push, PR, fusion et déploiement restent sur son accord.
+- D65 (conseil complet, 24.10 nuit, `cerveau/decisions/2026-10-25-integration-architecture.md`) : pile de routes dans App, le
+  wizard reste monté sous les outils ; une seule porte d'écriture (`applyHopV4Change` sur `writeRecipeDraft`, ou `saveRecipeConfirmed`
+  pour RecipePage, patch de `hops` seul) ; calcul : causes mesurées d'abord (T5), interface asynchrone dès T6, worker persistant
+  seulement si le banc ×4 échoue ; catalogue en JSON à la demande ; V5.5 sous drapeau. Ordre : T1, T14, T3, T4, T5, T6, T17, T9,
+  T11, T8, T12, T7 (si besoin), T10, T13, T15, T16, T18 (issues #160 à #176, épopée #159).
+- D66 (le brasseur, 25.10 : « Je veux partir de la version de base, celle sur la maquette jouable ») : un nouveau lot de Comparer,
+  `ecran-1/fils25-comparer/`, part de l'écran Comparer de la maquette jouable (figé dans `maquettes/parcours-cmp-base`, capture
+  `captures/base-jouable.png`), et non de r6a. Obligatoire : choisir quand comparer (60′, 10′, dry hop…), les hors 16D bien montrés, les
+  huiles, moins de texte (≤ 100 mots au premier écran, la base en a 114), et tous ses commentaires sur Comparer. La planche r6a++ reste
+  montrée, marquée « bâtie sur r6a ». Dérogation M13 : « Refait une série » (trois séries de quatre, critique, planche).
+- D67 (pilote, 25.10, lecture du critère de D142) : « Pas normalisé au timing. Pareil pour les barre » se lit par famille :
+  au moment choisi, la plus grande barre de chaque famille non nulle remplit 40 % de sa piste au moins (option A de
+  `voies/cm-normalise/RESULTAT.md`). Un apport quasi nul (sous 0,05 cran) ne se grossit pas : il s'affiche « ~0 », sans barre,
+  et n'est pas jugé. Réversible : `--barres=globale` rend la lecture à la lettre.
+- D68 (le brasseur, 25.10 : « Attention à la normalisation, elle est en terme de style et de timing toujours de style mais
+  dynamique en terme de timing. SI choisi absolu, plus de normalisation, pour le radar et pour les barre et le reste !! ») :
+  règle transversale de toutes les vues. « Au style » : lecture par rapport au style, échelle qui suit le moment choisi
+  (radar et barres ; D67 pour les barres). « Absolu » : aucune normalisation, nulle part — valeurs brutes en crans, échelle
+  fixe commune à tous les moments et à tous les axes, barres et nombres bruts. Précise D67 (qui ne vaut qu'« Au style »).
+- D69 (le brasseur, 25.10 : « Parfait pour Une bande teintée cmc2k », sur cmc2g « C'est quasiment parfait » ; et pour ses mots
+  « il doit tout y avoir avec en ordre décroissant du plus fort au plus faible ») : son choix pour Comparer est cmc2k, il remplace
+  D107 (« r6a pour la forme » et les étapes de x3b). Registres (voie rc-registres-comparer) : choix, inventaire de 57 éléments ;
+  états comp-etat-moment et comp-reference voulus, car leur texte a été retiré à sa demande (« Aussi encore pas mal de légende et
+  texte inutile, qui n'apporte rien ») et leur sens est dans la feuille « ? » ; « Face à ta stout, par » et « IBU » retirés.
+  Contrôles adaptés sans affaiblir D107 : controle-comparer-etapes (référence aux mêmes étapes, défilement vertical permis :
+  actif et après sous le dock parce que le radar est mis en avant) et controle-comparer-familles (deux écrans, `--strict` garde
+  l'ancienne règle). controle-teinte inchangé (16 contre 16).
+- D70 (pilote, 25.10, Comparer dans l'app, voie t15b) : (1) fluidité — l'ouverture mesure 500 ms (886 ms au processeur ×4) sur
+  le serveur de développement, dont 20 ms de moteur et le reste en rendu React ; avant tout compromis, mesurer sur un build de
+  production (banc à faire, Haiku), puis alléger le rendu dans #179 (SesMots, colonnes) ; sa règle reste : si ça bloque, un
+  compromis chiffré lui est proposé. (2) « Placer » et « Souche » écrivent l'ajout dans le brouillon avant la confirmation de
+  Dryhopper ou de Levure : gardé (simple, annulable dans Dryhopper, une seule porte d'écriture), à revoir si le brasseur le veut
+  autrement.
+- D71 (l'utilisateur, 25.10 : « Tu peux deployé la vrai app pour que je puisse un peu jouer avec cette implemtation ») :
+  hébergement seul déployé en production (https://brasserie-l-affinee.web.app), depuis d53cbcfe, construit avec
+  `VITE_HOP_V4=on` ; ni règles Firestore ni fonctions. Contrôles avant : build vert, `check-no-dev-auth` propre, drapeau
+  corrigé pour ne plus embarquer tout l'environnement (d53cbcfe). Vérifié en ligne en lecture seule : page de connexion en
+  thème clair, aucune erreur de console. Retour arrière possible : version du 17.10 dans la console Hosting.
+- D72 (25.10, soir) : redéploiement de l'hébergement seul, depuis une copie propre de 63130965 (worktree temporaire, `.env` et
+  `seedData.ts` locaux copiés), pour ne pas embarquer la voie t12d en cours. Contenu : IBU de ses vraies recettes (D152), haut
+  d'écran commun aux 7 étapes, la fiche et Suggérer. Rejeu Haiku vert (313 tests, 52 d'intégration, CHOIX, ETATS 139/139,
+  RADAR-BASE, MOTS-TOUS, FINITIONS). La fiche reste une feuille locale (le retour du téléphone ne la ferme pas), comme la maquette.
+- D73 (25.10, soir) : redéploiement de l'hébergement seul depuis la copie propre, au commit 238e6756 : rail en ébullition 120′,
+  bandeau et IBU compact présentés comme avant, phrase « Changement appliqué » masquée, renvois (Ébullition → Identité, levure),
+  demande de test S1 retirée de l'app, picto framboise des Baies. Rejeu Haiku dans la copie : types, 317 tests, 52 d'intégration,
+  audit des champs, FONCTIONS-RAIL 37/37, RADAR-BASE, ETATS 139/139 et build verts ; CHOIX et copies-de-work en échec dans la
+  copie seulement, faute des captures et fichiers de travail ignorés par git (verts sur l'arbre complet au commit précédent).
+- D74 (26.10, nuit) : redéploiement de l'hébergement seul depuis la copie propre, au commit 36ba5643 : Substituer, Dryhopper et
+  Levure dans l'app (fin de #174) ; la fiche, avec ses Sources (Beer Maverick en premier, puis tout le houblon) et « autres n % »
+  expliqué sur les mots distincts (Lotus : 4 sur 9, 44 %) ; Suggérer reçoit la visée posée ; le bandeau se masque pendant tout
+  glisser du rail, sans perdre l'IBU au relâcher. Rejeu Haiku dans la copie : types, 190 tests hopIndexV4 et designTokens,
+  52 d'intégration, audit des champs, FONCTIONS-RAIL 37/37, RADAR-BASE (9 vues), ETATS 139/139, build et `check-no-dev-auth`
+  verts. Le bundle ne porte que les valeurs d'environnement lues par leur code (l'IBAN dans `companyDefaults`, comme sur main).
+- D75 (pilote, 26.10, #180, voie d2-import-bm, commit 79ca35f5) : le catalogue est complété depuis le cache local des 318 pages
+  Beer Maverick (relevé le 08.09), en mode hors ligne strict : aucune nouvelle collecte, aucun accès Firestore. Cohumulone 90 %,
+  farnésène 78 %, autres huiles 81 %, usage 100 %, styles 82 %, substituts 68 % (101 pages n'en donnent aucun), profil d'arôme
+  57 % ; le moteur rend les mêmes résultats (empreintes identiques). Décisions :
+  (1) le profil d'arôme Beer Maverick (9 axes, 0 à 5) est affiché dans Sources mais pas branché au moteur : ses axes ne
+  recoupent pas les 12 familles, il faudrait une convention (conseil) ;
+  (2) la ligne « Autres » de Comparer lit la valeur publiée « All Others » (β-pinène, linalol, géraniol, sélinène), le calcul
+  100 − 3 en repli ; une ligne Farnésène serait un ajout visuel, à lui montrer en mini maquette ;
+  (3) B5 tient à 148,3 ko sur 150 : à la prochaine extension, le bloc `bm` sortira vers un fichier chargé à l'ouverture de Sources.
+  Linalol (79 % manquant) et géraniol (99 %) restent à combler par des fiches fournisseurs, collecte à son accord.
+- D76 (26.10, nuit) : redéploiement de l'hébergement seul depuis la copie propre, au commit 1ea6ddd1 : le catalogue complété
+  (D75) et sa feuille Sources ; la feuille Valeurs de Comparer sans débordement à la ligne IBU, sans mot coupé, avec les valeurs
+  du catalogue au lieu d'« inconnu » (Mosaic), « Autres » publié. Rejeu Haiku dans la copie : types, 227 tests, audit des champs,
+  COMPARER VALEURS OK (390 et 1280), FONCTIONS-RAIL 37/37, RADAR-BASE, ETATS 139/139, build et `check-no-dev-auth` verts ;
+  B5 148,3 ko tenu (B1 et B2 au-dessus depuis avant). `.env.local` de la copie (émulateurs) est sans effet en production : la
+  garde est `import.meta.env.DEV`. Vu ensuite par le pilote et rendu à la voie c2 : l'huile de Mosaic encore « inconnu »,
+  l'encadré ⇄ à vérifier, et l'en-tête « Nelson Sauvin Citra » collé, une régression de la colonne des noms.
+- D77 (pilote, 26.10, #181, avis croisé : Brasseur en Fable, Contradicteur en Opus ; dossier `work/missions/2026-10-25-integration-houblons/conseil-substituts/question.md`) :
+  rien n'est branché dans Substituer, ni l'option 1 de e1, ni l'IA. Raisons du contradicteur, vérifiées dans le rapport de e1 :
+  - l'option 1 met 75 % du poids de l'arôme sur tous les mots (λ = 0,25), et non un simple ajout des mots hors famille ;
+  - λ a été choisi sans moitié de contrôle, et Hallertau Blanc dépend de ce seul réglage ;
+  - Motueka recule de 89e à 130e.
+  Suite : λ rejoué sur une moitié de contrôle, garde contre le mot rare unique, puis listes côte à côte (moteur, réglages retenus,
+  réglage + IA) sur ses houblons phares, sans mention de Beer Maverick, en mini maquettes dans u4 : **il choisit**. Le regard
+  Brasseur : montrer les mots partagés en couleur, « pourquoi en un mot ». L'IA en production (Gemini facturé) attend en plus
+  l'accord de l'utilisateur.
+- D78 (l'utilisateur, 26.10) : sur les conditions de Hopsteiner et de John I. Haas (accord écrit pour la reproduction ou
+  l'affichage public), mot pour mot : « C'est pas plublic donc pas de problème ». Leurs valeurs entrent dans l'app comme les
+  autres ; le champ `diffusion` de chaque source garde la trace des conditions lues. Rappel fait une fois : les fichiers JS de
+  l'hébergement restent téléchargeables par qui connaît leur adresse, même si l'app demande une connexion.
+- D79 (pilote, 26.10) : régression en ligne depuis D76, trouvée par la voie r177. La voie d2 a ajouté la clé
+  `hopBeerMaverickFiches` dans `hopBeerMaverickBootstrap.json`, qui est aussi un pack installable (`HopKnowledgePanel`,
+  `installPack`) : la validation de `backupCore` refuse la collection, et l'installation de Beer Maverick du panneau « Sources et
+  modèles » échoue. Le reste de l'app n'est pas touché. Cause de méthode : d2 et le rejeu avant déploiement n'ont joué que les tests
+  de leur dossier, sans chercher les autres lecteurs du fichier changé. Correction : voie r180-pack (les fiches sortent dans
+  `hopBeerMaverickFiches.json`, le pack redevient celui d'avant d2), puis redéploiement. L17 complétée.
+- D80 (l'utilisateur, 26.10, sur la page m3 et la question « Je branche D … avec Gemini facturé en production ? ») : « non D, C + IA
+  mais je pense que le moteur doit être revue ». Choix : D (C par défaut hors ligne, puis IA Flash-Lite), accord donné pour Gemini
+  facturé en production sur cet usage (~0,003 CHF par recherche). Rien n'est branché avant la revue du moteur de substitution,
+  qu'il demande, à la lumière de l'article de Beer Maverick « Your hop substitutions are wrong » (lecture en cours, vérification
+  anti-robot passée par lui-même dans son Chrome).
+- D81 (l'utilisateur, 26.10) : « Tu peux y aller, j'ai eu leur autorisation explicite. Pour un usage non commerciales, c'est bon,
+  tu dois juste pas être trop intrusif » (Yakima Chief et Freestyle Hops).
+  - Freestyle Hops : son `robots.txt` refuse nos robots. Collecte lancée (voie c3f), au plus une requête toutes les 2 s et
+    80 requêtes en tout, avec l'autorisation inscrite dans la source.
+  - Yakima Chief : son site oppose une vérification anti-robot (Vercel Security Checkpoint, 429). Le pilote ne la contourne pas,
+    même autorisé : c'est hors de ce qu'il peut faire. Il propose que l'utilisateur enregistre lui-même les pages ou le guide PDF
+    de Yakima Chief, qui seront lus en local ; ou qu'il passe la vérification dans son Chrome pour une lecture page par page.
+- D82 (26.10) : redéploiement de l'hébergement seul depuis la copie propre, au commit 49907352. Contenu :
+  - toutes les données collectées et fusionnées (`complements.json`, 18 sources), lues par Comparer et la fiche Sources, chargées
+    au repos ;
+  - les huiles séparées dans la composition (D154) ;
+  - l'accélération de Comparer et de Ma bière (#179) ;
+  - le pack Beer Maverick de nouveau installable (D79) ;
+  - les 197 tests V5.5 (#177).
+
+  Rejeu dans la copie : `npm test` complet (3 fichiers rouges, tous dus à la copie : `.mjs` en CRLF, corrigé par
+  `.gitattributes` ; témoins lus dans des dossiers ignorés, copiés dans les fixtures ; un module de collecte oublié, ajouté ;
+  `AppRoutePile` passe seul) ; puis `tests/unit/hopIndexV4` 394/394 et prototype 157/157 dans la copie. COMPARER VALEURS OK
+  (390 et 1280), FONCTIONS-RAIL 37/37, RADAR-BASE, ETATS 139/139, build, `check-no-dev-auth`, aucun ordre imposé dans le bundle,
+  B5 148,3 ko tenu.
+
+  Reste connu : l'erreur de worker des tours froids V5.5 (exit 1 sans échec). Yakima Chief : ticket #186.
+- D83 (pilote, 26.10, voie d4) : les descripteurs d'arôme de 12 sources entrent dans les fiches du catalogue (D157 : Galaxy passe
+  de 1 à 5 fiches lues, Nelson Sauvin de 2 à 9). Ils pèsent 21 ko gzip dans le morceau des outils (B5 149,5 → 170,8 ko pour un
+  budget de 150). Choix : la forme compacte (sources en table, mots en dictionnaire, adresses laissées dans `complements.json`
+  chargé à la demande, ~7 ko), avec un chargeur qui rend les mêmes `descriptions`, et le budget B5 relevé à 160 ko. Le morceau des
+  outils est préchargé au repos : l'ouverture n'attend pas. Les 22 tests du prototype qui fixent l'ancien catalogue sont repris un
+  par un, avec leur preuve, par la voie e2, avec le rejeu de son moteur v2 sur ces données.
+- D84 (pilote, 26.10, D158, audit de la voie a1) : la demande de test S1 de la maquette du 18.10 (« plus floral, moins résineux »)
+  s'affichait comme sa demande dans Comparer, Dryhopper, Levure et la puce « + floral » de Ma bière (sa capture de Dryhopper :
+  « floral ?, baies ?, résineux ? »). Règle : jamais une demande inventée.
+  - Sa visée, si elle existe ; sinon sa dégustation ;
+  - sinon les familles attendues du style de la recette, dites « attendu en <style> » ;
+  - la puce de Ma bière seulement avec une visée ou une dégustation.
+
+  L'entrée « Ouvrir l'analyse de ma bière » (écran provisoire, données du prototype) est cachée en production tant que l'écran
+  n'existe pas. Le trait « ta bière » de Comparer et de Suggérer passe au-dessus des séries, comme le contour de Substituer (D156).
+  Voie a2-demande-reelle.
+- D85 (pilote, 26.10) : le pack du prototype passe de 510 à 551 ko avec les descripteurs de d4. Son plafond est relevé de 500 à
+  560 ko : il ne sert qu'à la maquette jouable, l'app n'est pas concernée. Le moteur v2 de Substituer est rejoué sur ces données :
+  Galaxy au dry hop donne Harlequin, Mosaic, Citra, Nectaron, Rakau, Zamba Blend… ; il jugera sur les listes. Nouvelle source
+  envoyée par lui : Beer Analytics (statistiques de recettes : styles, doses, moments, accords), voie c3h.
+- D86 (pilote, 26.10, commit ca7e1afd) : le moteur v2 de Substituer est branché dans l'app (non déployé). Il a 14 variables et
+  trois jeux de poids (amertume, arôme chaud, à froid), appris sur une moitié des houblons et jugés sur l'autre, avec les
+  descripteurs de 12 sources.
+  - Sur la moitié de contrôle, il bat l'actuel partout, et C aux moments d'arôme.
+  - Trois reculs du bon sens, signalés par e2, lui seront montrés :
+    - Saaz Late et Spalt ne se reconnaissent plus ;
+    - Cascade au dry hop sort du style 16D ;
+    - Citra gagne un cran tropical à 60′.
+  - Page m4 : listes à 60′, Galaxy et ces trois cas, A contre v2, dans son écran u4.
+- D87 (pilote, 26.10, voie g1) : Suggérer est diagnostiqué ; le diagnostic tient en deux points.
+  - Il ne propose aucun ajout à 60′. Les moments sont fixés en dur : 10′, whirlpool, dry hop.
+  - Au dry hop, il range les ex æquo par ordre alphabétique : 23 en tête sur la 21C, pour « plus d'agrumes ».
+
+  Lecture de « la suggestion doit être pour du 60' comme pour du dryhopping » (L01, lecture étroite) : Suggérer doit pouvoir
+  proposer à 60′ (amertume, IBU visée) comme au dry hop (arôme), et le brasseur choisit le moment. L'autre lecture reste
+  signalée : « les visées d'arôme valent aussi à 60′ ».
+
+  Plan :
+  - g2a, le départage ;
+  - m6, les mini maquettes du moment dans q2b, que le brasseur choisira ;
+  - g2b, le jeu à 60′ ;
+  - l'IA de Suggérer, après i2 et g2a.
+- D88 (pilote, 26.10, avis croisé Brasseur et Contradicteur, `work/missions/2026-10-25-integration-houblons/conseil-suggerer-rang/question.md`)
+  - **A, le départage au dry hop et à chaud.** Les deux regards refusent un départage fondé sur le seul vocabulaire. Il
+    rejouerait « nelson sauvin est un houbon ordinaire » (L14). Trois clés seront mesurées sous une option du moteur, dont le
+    défaut reste `'aucun'` :
+    - K1 : la cascade de g1 ;
+    - K2 : la part des fiches, puis l'huile propre à la famille, les ex æquo restant affichés ;
+    - K3 : le radar Beer Maverick de la famille.
+
+    Pour choisir, on confronte d'abord les houblons phares, puis on découpe le banc en deux moitiés (L20). Le brasseur juge
+    ensuite les listes. Le critère se valide par sa justesse sur les houblons phares, pas par son nombre de valeurs distinctes
+    (Contradicteur).
+  - **B, l'ordre à 60′.** Les clés : d'abord l'usage (amérisant ou double avant arôme), puis l'α (moins de grammes). La
+    cohumulone et le β sortent du rang : ce sont des conventions de goût, données en information à un toucher. La bande d'IBU
+    du style devient un drapeau sur la carte. Le conflit de famille reste une exclusion, comme dans `voies.ts`. « Remplacer à
+    IBU égal » suit la même règle d'usage.
+- D89 (brasseur, 26.10, page m5 WW2mmg7gWgUVSnT4PTWTFf) : « La meilleure D · trois mini graphes ». C'est D seul, sans la greffe D + F
+  (lecture étroite, L01). Registre : `choix/ecrans.json`, dryhopper, `complements`. Le port est la voie p5-dryhopper-froid (Sonnet),
+  puis le critique juge.
+- D90 (pilote, 26.10, voie g2c, relevé par g2a) : une famille indésirable du style, ou une famille « moins » de la visée, n'exclut plus
+  un houblon que si elle est **marquée**, c'est-à-dire citée par la moitié au moins de ses fiches. Jusqu'ici, une seule fiche
+  suffisait.
+  - Sur la 21C (Hazy IPA), cinq houblons sortaient du pool : Nelson Sauvin, Motueka, Mosaic, Hallertau Blanc et Cascade.
+  - d4 a fait entrer les fiches de 12 sources, et ces exclusions se sont multipliées. d4 n'est pas encore en production : la
+    production est 49907352.
+  - Le déploiement attend g2c. La règle est réversible, et c'est la même convention que les gros points de la fiche.
+- D91 (pilote, 26.10, voie g2a) : on montrera au brasseur les listes de la clé k1 et de la clé k3, dans son écran q2b. La clé k2 est
+  écartée : elle laisse 110 ex æquo.
+  - k1 départage le plus, mais c'est la clé qui coule Galaxy.
+  - k3 (radar Beer Maverick) place Citra 4e et Galaxy 16e en agrumes, mais ne couvre que 181 variétés sur 318.
+
+  Le défaut reste `'aucun'` jusqu'à son choix. Ces listes se feront après g2c ; sans g2c, Nelson Sauvin et Motueka en seraient absents.
+- D92 (pilote, 26.10, sous l'accord D80) : le callable `hopReclasserIA` est déployé seul, en europe-west6 (Node 22, 2e génération).
+  - Commande : `firebase deploy --only functions:hopReclasserIA`, lancée sur b350620a ; journal dans `%TEMP%/rejeu-deeb/70-deploy-fonction.log`.
+  - Le CLI a accordé `secretAccessor` sur `GEMINI_API_KEY` au compte de service de calcul par défaut. C'est le geste standard de
+    `defineSecret`.
+  - Rien ne l'appelle encore : le client part avec l'hébergement, qui attend les corrections de la puce et la voie g2c.
+- D93 (pilote, 26.10, voie g2c, commit b020da5e) : D90 est appliqué. Une famille n'exclut un houblon que si au moins la moitié de
+  ses fiches la citent ; on garde la règle de la moitié plutôt que le niveau d'affichage `marqué`.
+  - Sur la 21C, le pool exclu passe de 175 à 113 houblons.
+  - Pour Galaxy, dans Substituer, Mosaic passe de la 143e à la 2e place.
+  - Idaho 7 (herbacé, 3 fiches sur 6) et Strata (3 sur 4) restent exclus d'une Hazy : à montrer au brasseur, pour l'éprouver contre
+    la réputation de ces houblons (L14).
+  - Une clé `mineure` fait passer un houblon cité par une minorité de fiches après ceux qu'aucune fiche ne cite. Sans elle, East
+    Kent Goldings sortait de la liste de la stout S1.
+  - Leçon proposée par g2c : un assouplissement se mesure sur la liste que le brasseur voit, pas sur le pool seul. Elle est
+    couverte par L14 et L20 (confronter ce qu'il voit), donc pas d'entrée nouvelle (plafond de LECONS).
+- D94 (brasseur, 26.10, page m6 Npss86xUpf259xJaemSKjH) : « M1 + M2 · avec l'IA semble le mieux mais pallier 60' toujours pas très
+  clair et pas de vrai dry hopping ».
+  - Base retenue avec réserves : M1 + M2 + IA (registre `choix/ecrans.json`, suggerer, `complements`). Rien n'est porté avant les
+    corrections.
+  - D166 : moteur d'abord (voie g2b). Un vrai groupe dry hop, actif et après, avec une dose par règle (D161) ; le palier 60′ par une
+    dose exacte pour +n IBU.
+  - D165 est ambigu (L13). Ses trois lectures deviennent les axes du lot m7 :
+    - la barre « +10 IBU » ;
+    - le lien entre l'en-tête et la carte 28 → 38 ;
+    - ce que chaque rangée apporte.
+
+    Ce lot m7 se fait sur les valeurs de g2b.
+- D95 (26.10, vers 14 h) : l'hébergement seul est redéployé depuis la copie propre, au commit 9dba6971.
+  - **Contenu** :
+    - les descripteurs de 12 sources (d4) ;
+    - Substituer v2, avec l'IA : la puce dans la tête et le titre qui suit la liste ;
+    - les audits de données (c3g, d3a) et les traductions (t1) ;
+    - un trait par source qui diffère (s1) ;
+    - les contours au-dessus des séries (a1, a2) ;
+    - le ★ ;
+    - son choix D dans Dryhopper (p5 : 18 px réservés, bulle du jour corrigée) ;
+    - D90 (exclusion seulement si la moitié des fiches cite la famille).
+  - **Preuves** :
+    - rejeu complet de b020da5e : tsc, vitest (deux tests lents rejoués seuls, verts), build, états 138/138, contrôles Chrome ;
+    - rejeu ciblé de 9dba6971 : 753 tests, build, B5 157,7 ko, états, ★, FROID OK.
+  - La production sert `index-CqHKOn9T.js`, le même que le build. L'app appelle désormais `hopReclasserIA` (D92).
+- D96 (pilote, 26.10, voie g2b, commit e511311b) : le moteur sait proposer un palier 60′ et un vrai dry hop, sous option. Le défaut
+  est inchangé à l'octet : rien n'est encore à l'écran. Deux suites :
+  - **La dose de dry hop.** La règle visée +1 cran donne 1,5 g/L en actif et 1 g/L après fermentation. Ce n'est pas le « vrai dry
+    hopping » qu'il attend d'une Hazy, et aucune source de dose par style n'est dans le dépôt. Les mini maquettes m7 lui
+    montreront la dose de la règle, 4 g/L et 8 g/L, marquées « générique ». La dose usuelle est un savoir de brasseur : il
+    choisira en regardant.
+  - **D167.** Une citation minoritaire donne tout son effet, et Citra, Nelson Sauvin, Motueka et Mosaic tombent loin. La voie g2d
+    mesure trois options (rang seul, effet si marquée, effet pondéré) avant toute décision. Les listes de m7 ne lui seront pas
+    montrées avant.
+- D97 (pilote, 26.10, voie u1) : la cause de D171 est b68d7935 (a2, D84). L'entrée « Ouvrir l'analyse de ma bière » ne menait qu'à un
+  écran provisoire ; en production, l'entrée a été cachée et le panneau ne répond plus.
+  - Remettre l'écran provisoire est refusé : il l'a déjà jugé inutile.
+  - Son onglet « Ma bière » (base v4.10, « Ça aussi ») est porté dans l'app par la voie p6, puis l'entrée sera rebranchée.
+  - Les 12 familles hachurées ne sont pas une régression. Aucun ajout de sa recette n'est simulé quand le moment est hors de 60′,
+    10′, whirlpool et dry hop (par exemple 20′), quand le whirlpool n'a pas de température, ou quand le houblon n'est pas dans les
+    fiches. C'est une hypothèse très probable, car sa recette réelle n'a pas été lue.
+  - D177 : interpoler entre 60′ et 10′, en le dessinant comme tel (D65), est à faire.
+- D98 (pilote, 26.10, en réponse à « Il faut tout mettre ?? Pas exclure certains ?? ») : au catalogue, on met toutes les variétés
+  attestées par au moins une source, et toutes les formes produit rattachées à leur variété. Rien n'est exclu à l'entrée. Ce qui a peu
+  de données est marqué « peu de données », et ce qui n'est plus vendu est marqué « non commercialisé » si une source le dit. Le tri
+  et les exclusions se font dans les écrans, par des règles écrites (D90), et le plus tard possible (D175).
+- D100 (l'utilisateur, 26.10, vers 15 h 45), réponses mot pour mot :
+  - « Je fais le test à l'aveugle moteur contre IA (10 houblons, environ 0,1 CHF) ? Tu as un budget de 0.5chf » ;
+  - « Je fais l'essai de l'IA dans Suggérer (30 appels, environ 0,1 CHF) ? Tu as un budget de 0.5 » ;
+  - « Je fusionne la PR #183 dans main ? oui » ;
+  - « J'écris les nouvelles données dans le catalogue Firestore ? oui » ;
+  - « Je teste l'app dans ton Chrome, en lecture seule ? oui ».
+
+  Exécution :
+  - PR #183 fusionnée dans main le 26.10, commit de fusion 59702c18, état CLEAN.
+  - Remis à la reprise, à cause du quota hebdomadaire à 99 % :
+    - le test à l'aveugle, à 0,5 CHF au plus ;
+    - l'essai et la production de l'IA dans Suggérer, à 0,5 CHF au plus pour l'essai ;
+    - l'écriture du catalogue Firestore : d'abord un script, un essai sur émulateur, une sauvegarde, puis l'écriture ;
+    - le test dans son Chrome, en lecture seule, sans jamais cliquer sur +, −, ×, Ajouter, Appliquer, Placer, Remplacer, Abandonner,
+      Enregistrer, Supprimer ni Modifier.
+- D99 (pilote, 26.10, mesure g2d) : l'option c devient le défaut au dry hop, actif et après. Le débordement de style ne compte dans le
+  rang que pour une famille marquée (moitié des fiches).
+  - Sur la 21C, « plus d'agrumes » : Citra passe de la 54e à la 2e place, Mosaic de la 134e à la 20e, Nelson Sauvin de la 107e à la 31e.
+  - 0 barre changée, 0 ms.
+  - L'option est réversible. Les options m et w restent mesurées : elles changeraient les barres et retireraient Galaxy.
+  - Voie d99. Le lot m7 attend ce défaut.
+- D101 (pilote, 26.10, sur « architectures db différentes, ou … index … À regarder si ça vaut le coût ») : pas de changement de base
+  de données (SQLite dans le navigateur, etc.). Avec environ 570 houblons, la recherche prend moins d'une milliseconde ; le temps est
+  dans le moteur : simulation 1,4 à 6 ms, liste de Suggérer 27 ms à chaud et 110 ms à froid, liste complète environ 1 s.
+  - Après les mesures de c6, une voie de profil attribuera le temps (L20) entre lecture, moteur et rendu.
+  - Les options seront ensuite chiffrées :
+    1. des index calculés au build : famille vers houblons, vecteurs de caractéristiques, top 50 des candidats de Substituer par houblon
+       et par moment ;
+    2. le catalogue analysé mis en cache dans Dexie ;
+    3. plus de calcul dans le worker (D65, conseil du 25.10).
+  - On choisit sur la mesure, rien avant.
+- D102 (pilote, 26.10, diagnostic f1) : on fait maintenant, sans lui, ce qui ne change pas son écran (voie f2).
+  - **A** : Citra Cryo et Citra simple ont chacun leur place. Recul des produits d'arôme à 60′. Rang calculé sur l'α de la variété.
+  - **B1** : on classe tout, et on ne coupe qu'à l'affichage.
+  - **C**, jeu J1 : l'α passe de 0,4 à 0,15 à 60′ dans Substituer. Même justesse mesurée, et c'est son principe.
+  - **D** : un banc à références indépendantes (Hopsteiner par moment, Hopslist, Hops Direct, ses jugements). Jamais Beer Maverick seul.
+
+  Lui seront montrés en mini maquettes :
+  - B2 : l'affichage de Substituer (8 + 3, ou « autres de même score ») ;
+  - F : les formes, modèle (b), avec un sélecteur « Citra · pellets / cryo » ;
+  - S : Suggérer à 60′ par ressemblance, après le test à l'aveugle E (accordé, D100).
+
+  B3 (D90 en drapeau au lieu d'une exclusion) n'est pas décidé.
+- D103 (26.10, vers 17 h) : l'hébergement seul est redéployé depuis la copie propre, au commit 6e368cbd.
+  - **Contenu** : les sources à un seul endroit (D168), la carte de Ma bière qui se referme (D169), les mots en français (D170) et
+    l'appui long sur les grammes (D173).
+  - **Rejeu complet** :
+    - tsc vert ;
+    - vitest 8173 sur 8174, le seul échec étant un délai sous charge, vert quand on le relance seul ;
+    - build vert, B5 à 158,5 ko ;
+    - six contrôles Chrome OK ;
+    - états de la maquette 138/138 après e4.
+  - **Pas encore en ligne** :
+    - Ma bière et sa croix (p6, p6b) ;
+    - D99 ;
+    - le catalogue complet (c6, c7) ;
+    - l'affinage f2.
+
+    Ils partiront ensemble après la mesure de B5 et de la fluidité.
+- D104 (l'utilisateur, 26.10, sur « 160,6 ko, pour une limite de 160 ») : « C'est ok ». Le budget B5 passe à 162 ko
+  (`scripts/check-hop-budget.mjs`), pour le catalogue complet branché (c7). On le revérifie après f2.
+- D105 (pilote, 26.10, voie f2) :
+  1. **Le style avant les effets de bord.** `ordrePool` passe avant `sideTotal` : classer tout le pool ne doit plus favoriser un
+     houblon à une seule fiche, comme Teamaker devant East Kent Goldings.
+  2. **L'usage plutôt qu'un seuil d'α.** Le témoin « α ≥ 10 % » laisse place à « aucun houblon d'arôme dans les 10 premiers à 60′ » :
+     l'α se règle par la dose. Centennial à 9,5 % y entre.
+  3. **La fluidité est bloquante.** B1 coûtait 205 → 750 ms à froid, et 316 → 731 ms pour le premier écran. On mémorise l'évaluation
+     par houblon et par moment, et on n'évalue que les doses utiles. Si ça ne suffit pas, le pool est borné aux 60 meilleurs
+     « à acheter » par `ordrePool`. Aucun budget relevé.
+- D106 (pilote, 26.10, voie f4) :
+  - **Le coût de B1 reste bloquant.** Avec la borne de 80, Suggérer passe à 113 ms à chaud et à 449 ms à froid. Les remplacements à IBU
+    égal se calculeront au repos ou après le premier affichage.
+  - **Les tests de départage sont adaptés.** La clé `ordrePool` est désormais dans le rang.
+  - **À 60′, Substituer recule les remplaçants d'usage « arôme »**, avec la même lecture que Suggérer.
+- D107 (pilote, 26.10, diagnostic f3 de la liste « Ajouter », voie f5) : on fait maintenant ce qui ne change que l'ordre ou le coût.
+  - **P1, le tri K3** : seules les familles indésirables pénalisent, et les familles neutres viennent en frein après les attendues.
+    Mosaic passe de la 23e à la 2e place des achats en IPA.
+  - **P2, la comparaison par clé** : Citra simple redevient candidat.
+  - **P3, `ibuParMoment` paresseux** : 2,4 à 3,5 ms de moins.
+  - **P5 A, la règle écrite honnêtement** : « dose de départ, pas une dose de style ».
+  - **P6, les témoins.**
+
+  P4 (places et formes) et P5 B et C (dose et moment par houblon) seront montrés en mini maquettes.
+- D108 (pilote, 26.10, f4 puis f6) :
+  - **Préchauffe.** `proposerRapide` se préchauffe au repos, dès l'étape Houblons. Avant, le premier calcul à froid prenait 409 ms,
+    contre 206 sur HEAD ; le toucher est déjà passé à 201 ms, contre 220.
+  - **Place réservée.** Le groupe « Remplacer », calculé en différé, a sa place réservée : 0 px de saut.
+  - **Banc.** Le banc de fluidité mesure `proposerRapide`, c'est-à-dire le premier affichage.
+  - **B5.** Il mesure 163,0 ko pour 162. On cherche d'abord ce qui a grossi ; le brasseur décide.
+- D109 (l'utilisateur, 26.10, sur « B5 à 163,0 ko pour 162 : 164 ko ? ») : « Je l'accepte ». Le budget B5 passe à 164 ko.
+- D110 (l'utilisateur, 26.10 : « Tu peux déjà déployé en l'état. Fait une pr et tu merge une fois que c'est propre ») :
+  - L'hébergement est déployé au commit **fb0d14e3** : Ma bière et sa croix (p6, p6b), D99, catalogue et alias (c6), états (e4).
+  - **Incident.** Le premier envoi, vers 18 h 32, est parti pendant que le rejeu reconstruisait `dist` dans la même copie : 1 seul
+    fichier, et la production a servi une page 404 pendant environ 3 minutes. Je l'ai vu en lisant la page servie. Le renvoi a envoyé
+    242 fichiers et la production est rétablie (`index-Tex7XoAl.js`). Leçon ajoutée à L17.
+  - Une PR vers main est ouverte et sera fusionnée une fois le rejeu de fb0d14e3 vert.
+- D111 (pilote, 26.10, voie f6) : dès que la préchauffe a eu lieu, Suggérer fait l'appel complet d'emblée. Cela donne 0 px de saut,
+  aucun vide, et 232 ms au premier affichage, contre 194 ms différé et 206 ms sur HEAD. Sans préchauffe, l'arrivée reste différée, avec
+  une place réservée à sa hauteur. f6 a aussi ajouté une règle, gardée : une visée « moins de… » fait l'appel complet d'emblée. Sans
+  cela, « Aucune voie houblon » s'affichait, puis tout descendait de 463 px. Voie f7.
+- D112 (26.10) : la PR #188 est fusionnée dans main, en verrouillant sa tête sur 2cccbdc0 (fb0d14e3 et des documents, en ligne et
+  rejoués). Le commit de fusion est 71dc41bb.
+  - Les 10 états de Dryhopper en échec venaient de c6 : les rattachements par alias changent le profil de la stout S1 d'environ
+    1 point, et « trop amer » apparaît au contre ★. C'est un effet des données, établi par bissection. Ils sont mis à jour (e5,
+    83aee2c1).
+  - Le contrôle « sources une fois » ne passait pas à cause de l'état laissé par le contrôle précédent. Seul, il passe.
+  - Le lot moteur (689160fb) n'est pas encore poussé : rejeu, puis deuxième déploiement, puis nouvelle PR.
+- D113 (pilote, 26.10, voie u2) : un ajout d'ébullition entre 10′ et 60′ est interpolé (D177). Les finitions sont confiées à la voie
+  u3 :
+  1. Une valeur interpolée se marque d'un rond en pointillé, et la légende « interpolé » n'apparaît que si le cas existe.
+  2. La raison au survol est propre à l'ajout : « ajout à 40′ hors des moments simulés ».
+  3. Un whirlpool sans température est simulé à 80 °C, avec « 80 °C supposé ».
+- D114 (brasseur, 26.10, page m8) : « G le trou du o, met ça sur tout les radar de comparaison btw ». Le disque du 0 (« non décrit ») est
+  teinté de gris, et un point qui y tombe est creux.
+  - Lecture étroite (L01) : les radars qui comparent des houblons, Substituer et Comparer (style et absolu). Ma bière et la fiche n'ont
+    pas ce cas.
+  - Registre : `choix/ecrans.json`, comparer et substituer, `complements`.
+  - Port confié à la voie p7.
+- D115 (pilote, 26.10, voie e6) : la préchauffe de Suggérer bloque le fil principal 1207 ms d'un coup, à processeur ×4 (f6). Le
+  déploiement est bloqué jusqu'au passage dans le worker (voie w1).
+  - Face à face de Substituer : le choix par défaut du stock saute les candidats reculés à 60′ (produits ou usage « arôme »). Cela
+    corrige « Nugget → Citra cryo » (D102 A).
+  - e6 : le test V5.5 avait un délai trop court. Aucun commit n'était fautif. 13 états sont actualisés, aucun acquis n'est perdu.
+    Le repère `etat-acquis-plus-comparer` est posé sur la ligne « + ».
+- D116 (26.10, vers 23 h) : l'hébergement est redéployé au commit **be15e480**, depuis la copie propre où personne d'autre n'écrivait.
+  Firebase a envoyé 246 fichiers, et la page servie porte le titre de l'app et `index-BCQv3ZH1.js`.
+  - **Contenu** :
+    - les 505 variétés branchées (c7) ;
+    - l'affinage (f2, f4, f5) ;
+    - Suggérer sans saut, avec la préchauffe dans le worker (f6, f7, w1) ;
+    - le face à face sans produit d'arôme à 60′ ;
+    - le radar : tiretés le long du bord, points visibles, trou du 0 (son choix G), points écartés (r2, p7) ;
+    - l'interpolation de 10′ à 60′ (u2, u3) ;
+    - l'export concis (x2), sans NaN (e7).
+  - **Preuves** :
+    - rejeu complet de b1d73ea1 : tsc, vitest, build, B5 à 163,5 ko pour 164, worker de production, 10 contrôles Chrome ;
+    - rejeu ciblé de be15e480 : 996 tests verts sur 996 (dont le monkey testing), états 138/138, RADAR-BASE OK, WORKER PROD OK.
+  - **Reste ouvert** : les 6 budgets de fluidité déjà dépassés, et des tâches de 100 à 250 ms après la préchauffe (D101).
+- D117 (26.10) : la PR #189 est fusionnée dans main. Sa tête était verrouillée sur 0d943dfd, qui contient be15e480, déjà en ligne et
+  rejoué.
+- D118 (pilote, 27.10, voie f8) : la clé k3 (radar Beer Maverick de la famille, avec k1 en repli) devient le départage par défaut de
+  Suggérer. Il prend lui-même ce radar comme référence (Idaho 7). Une forme produit reprend les mots, les familles et les fiches de sa
+  variété (D190). Contrôle D191 : ses 6 houblons de Double IPA.
+- D119 (pilote, 27.10, voie f8) : D190 est fait, Citra cryo reprend Citra. k3 avec k1 en repli devient le défaut. **D191 n'est pas
+  tenu** : 1 sur 6 de ses houblons de Double IPA dans les 10 premiers. Deux causes :
+  - le radar Beer Maverick est trop grossier : notes entières de 0 à 5, beaucoup d'ex æquo, 137 variétés sans radar ;
+  - il ne départage que des voies d'effet égal, et l'écran de Suggérer lit la liste principale, où la clé vient après la distance.
+
+  La vraie piste est une intensité par variété dans l'effet lui-même (A3, écartée en g1 parce qu'elle change les barres). C'est une
+  convention du moteur : à soumettre au conseil, ou à lui en mini maquettes, avant d'agir.
+- D120 (pilote, 27.10, voie f9) : D191 n'est pas tenu, avec 2 de ses 6 houblons au mieux, pour 4 demandés. Les données ne le permettent
+  pas : en Double IPA, Beer Analytics trouve Calypso dans 1 % des recettes, Idaho 7 dans 0,8 %, Mandarina et Pacific Jade dans moins de
+  2 %. Deux biais du moteur se voient aussi :
+  - El Dorado est puni par le débordement de style (poire en 22A) ;
+  - Calypso sort de la borne de 80 du pool (« exclure trop tôt », D98).
+  Décisions :
+  1. Les quatre combinaisons (actuel, A3, typicité, A3 + typicité) lui sont montrées en mini maquettes dans son écran Suggérer, sur
+     neipa v3. Il choisit (L24 ; « Les deux »).
+  2. La typicité seule devient le défaut, de façon réversible. Elle ramène East Kent Goldings en tête du stout : c'est l'acquis D105, que
+     f8 masquait par `departage: 'aucun'` dans ses tests. Elle fait mieux en tropicaux (2 sur 6 au lieu de 1) et ne pousse pas Citra cryo.
+     A3 reste une option : avec la typicité, il remonte Citra cryo (3 listes sur 10).
+  3. Les attendus « Hallertau Tradition » et « Huell Melon » de q2b-suite-s5 venaient de l'ordre alphabétique de l'ancien départage. Ils
+     s'actualisent selon la convention e3.
+  4. B5, à 164,9 ko depuis f8, n'est pas relevé. La voie c8 sort `composes-houblon.json` (811 ko bruts, lus en synchrone) du chunk.
+- D121 (pilote, 27.10, voies c8 et t2) :
+  1. c8 est accepté : `composes-houblon.json` est un morceau à part, chargé avec les outils. B5 passe de 164,9 à 147,3 ko. Le plafond n'a
+     pas été relevé.
+  2. Les deux écarts de t2 hors de son « Possède » sont validés : `parcours/donnees.ts` (le rejeu à l'arrivée de la table) et
+     `prototypes/houblons-v4/parcours/src/main.tsx` (la maquette charge la table).
+  3. Avec la typicité par défaut, Citra cryo passe premier dans 2 listes sur 16 (avant : 1). C'est en 21C : « plus floral » à 10′, et au
+     dry hop. C'est accepté et dit au brasseur, parce que le gain vient de la même cause : Nelson Sauvin 99 → 18 et Mosaic 41 → 12 en 21C,
+     East Kent Goldings premier du stout. La forme cryo hérite de la typicité de Citra : Beer Analytics n'a pas de fiche cryo à part.
+- D122 (pilote, 27.10) : l'hébergement est redéployé au commit dcec3133. Le lot comprend r3, f8, r4, f9, c8 et t2 ; la page servie est
+  `index-DnGTzMbZ.js`, et le morceau des composés répond en 200. La PR #190 est fusionnée dans main (20b58045, `--match-head-commit`), après
+  le rejeu complet de 4aa7cd33 :
+  - 11 contrôles Chrome, avec les composés chargés à part ;
+  - ETATS 138/138 ;
+  - B5 à 147,3 ko ;
+  - ouverture d'un outil, médiane à chaud 467 → 453 ms.
+- D123 (pilote, 27.10) : le correctif d'affichage de Suggérer est déployé (005b11f8) et la PR #191 est fusionnée (a0fd0245).
+- D124 (pilote, 27.10, sur « Regarde surtout pour l'algo et implemtation avec l'ai. Il faudra évidemment enlever le panel des six houblons
+  dans la vrai app ») : il ne choisit pas de lettre. La typicité (C) reste le défaut. « Tes six » ne vient pas dans l'app : c'était un repère
+  de la page. Deux voies partent :
+  - **a4**, l'algorithme. Trois biais mesurés par f9 et m9 :
+    - El Dorado est freiné par le débordement de sa poire en 22A ;
+    - Calypso sort de la borne de 80 du pool (« exclure trop tôt ») ;
+    - une typicité inconnue passe après une typicité rare, alors que l'inconnu n'est pas une rareté : c'est le cas de Mandarina, 5e puis 18e.
+  - **ia3**, l'IA dans Suggérer, sur sa base choisie : m6, « M1 + M2 · avec l'IA », la puce « ✦ ordre IA prêt » et sa phrase
+    (`ecrans.json`). Elle reprend le callable `hopReclasserIA` (D92), avec un mode Suggérer. L'essai réel est accordé en D100 (0,5 CHF au
+    plus), simulé d'abord, journalisé, jamais dans `npm test`. « implemtation avec l'ai » dans « la vrai app » vaut accord pour la
+    production de ce mode, sous les plafonds mensuel et quotidien existants.
+- D125 (pilote, 27.10, voie ia3) : les quatre décisions d'ia3.
+  1. L'IA n'agit qu'à partir de 3 rangées au même effet : a4 départage le reste.
+  2. Une phrase pour les 10 premiers seulement : 2,6 à 3,3 s, contre 3,5 à 4,7 s pour 29 phrases.
+  3. `suggerer-v1` exclut tout mot d'appréciation ; elle n'est pas encore déployée.
+  4. L'essai réel est rejoué après a4, car ses listes ont été prises pendant qu'a4 modifiait le moteur ; un banc Chrome perd sa page quand
+     une voie voisine édite les sources.
+  Dépense réelle d'ia3 : 13 appels, 0,0664 CHF, sur les 0,5 CHF accordés en D100.
+- D126 (pilote, 27.10, sur « Ça semble overfit mes paramètres et de loins... », D192) : l'IA de Suggérer (ia3) n'est **pas déployée**. On
+  a trouvé trois causes :
+  1. Mon contrat a taillé le pool de l'IA (30) pour couvrir ses six : c'est un réglage fait sur la moitié jugée (L20).
+  2. L'IA tire des houblons pris plus bas, hors du groupe au même effet, alors que sa maquette m6 posait la puce sur les ex æquo.
+  3. La phrase s'appuie sur la réputation du nom (« mandarine »), pas sur la fiche montrée (chewing gum, groseille, agrumes ●000).
+
+  La suite, voie ia4 :
+  - l'IA ne reclasse que les ex æquo du moteur ;
+  - la taille du pool vient d'une règle de coût, jamais de ses exemples ;
+  - une phrase qui sort de la fiche le dit, ou bien elle est retirée ;
+  - un banc à l'aveugle (accordé en D100) sur des cas qu'il n'a jamais nommés, avec des références indépendantes. L'IA ne se déploie que si
+    elle y bat le moteur.
+
+  a4 a été prévenue de ne rien régler sur ses six.
+- D127 (pilote, 27.10, voie a4) : a4 est acceptée, et ses trois règles deviennent le défaut ; elles restent réversibles.
+  1. Le débordement d'une famille neutre ne compte plus dans le rang.
+  2. La présélection passe par la typicité.
+  3. Un inconnu borné se place entre courant et rare.
+
+  Ses règles ont été écrites avant les mesures et jugées sur 124 cas qu'il n'a jamais nommés. Le meilleur phare est dans les 5 premiers
+  100 fois sur 124 (avant : 83), et la médiane des phares passe de 17,5 à 5. Sur ses six, lus une seule fois à la fin :
+  - El Dorado passe de 74 à 15 en agrumes, et de 71 à 7 en tropicaux ;
+  - Calypso entre dans le classement (41e, 28e) ;
+  - Mandarina recule (23e) : elle est « courante », pas inconnue.
+
+  Il y a aussi 11 reculs de plus de 20 places au dry hop, dans 8 styles. Pour « plus d'agrumes » en 25A ou en 9C, les nobles passent derrière
+  Citra, Centennial et Amarillo. C'est la même cause que pour El Dorado : c'est accepté, à lui montrer s'il le demande.
+
+  La carte de Suggérer lit désormais le même statut que le rang (`horsDuStyle`, pilote) : il n'y a plus de « Aucune voie houblon »
+  au-dessus de rangées (CARTE-LISTE OK). L'IA de Suggérer est éteinte dans l'app (`VITE_IA_SUGGERER`) jusqu'au banc à l'aveugle (ia4).
+- D128 (pilote, 27.10) : l'hébergement seul est redéployé au commit 3195332e, avec a4, la carte cohérente et l'IA de Suggérer éteinte.
+  252 fichiers ; la page servie est `index-Bo4IBqOf.js`. La fonction IA n'est pas redéployée. La PR #192 est fusionnée (39236699).
+  Le contrôle `controle-radar-echelles` est adapté : il prend une voie à chaud et pose « plus floral », car depuis a4 la stout du contrôle ne
+  rend que des dry hop. Son témoin, 6906a3f4, échoue en 3 points.
+- D129 (pilote, 27.10, voie ia4) : l'IA de Suggérer **reste éteinte**. Sa règle de décision, écrite avant le banc, n'est pas tenue.
+  - **Le banc.** 30 cas qu'il n'a jamais nommés ; la référence indépendante (Hopsteiner et YCH) est figée avant tout appel. L'IA ne gagne
+    que +5 points en moyenne, pour +10 demandés, et son pire cas est à −25.
+  - **La cause.** Depuis a4, les 4 premières rangées du moteur sont déjà confirmées par la référence dans 18 cas sur 30 : l'IA n'y a presque
+    rien à corriger. Sur sa neipa v3, elle rend exactement l'ordre du moteur.
+  - **Le code gardé.** L'IA ne reclasse que les ex æquo (pool de 3 à 12, fixé par une règle de latence). Sa phrase s'appuie sur la fiche
+    (`suggerer-v2`, « Réputation : »). Ni `suggerer-v2` ni la fonction ne sont déployés.
+  - **Le coût réel.** ia3 et ia4 : 44 appels pour 0,137 CHF, sur les 0,5 CHF accordés en D100.
+  - **Pour la rallumer**, il faudra un banc sur une référence qui discrimine (floral, 10′, BarthHaas, Crosby), et seulement s'il le veut.
+- D130 (l'utilisateur, 27.10, mot pour mot) : « Même la meilleure des IA ? » ; « J'autorise un budget de 10ch pour testé les deux » (Gemini
+  3.8 Flash, réflexion basse et réflexion haute) ; « Et va jusqu'à 99% de quota pour ce cas ».
+  - Le même banc qu'ia4 : les mêmes 30 cas et la même référence figée (`reference.json`), la même règle (+10 points en moyenne, aucun cas
+    sous −25). Seuls le modèle et la réflexion changent (`ia4-banc.ts --modele= --reflexion=`).
+  - Chaque essai a son compteur et sa section du journal, avec une enveloppe de 4,5 CHF ; les deux ensemble restent sous les 10 CHF.
+  - Pour ce cas seulement, le seuil des agents passe de 98 % à 99 %.
+- D131 (pilote, 27.10, banc D130) : même avec Gemini 3.8 Flash, l'IA de Suggérer **reste éteinte**. Le banc garde les mêmes 30 cas, la même
+  référence figée et la même règle :
+
+  | modèle | moyenne | pire cas | latence médiane | coût des 30 cas |
+  |---|---|---|---|---|
+  | 3.5 Flash-Lite, réflexion basse (ia4) | +5 | −25 | 1,6 s | 0,071 CHF |
+  | 3.8 Flash, réflexion basse | +6,7 | −25 | 4,7 s | 0,265 CHF |
+  | 3.8 Flash, réflexion haute | +5,8 | −25 | 90 s | 3,468 CHF |
+
+  Les trois modèles gagnent et perdent sur presque les mêmes cas : en hausse 1A, 7B, 13C, 4A, 5B, 21A, 18B ; en baisse 16A, 20A, 15B, tous
+  en « plus floral ». La limite tient donc à la référence (« cité », pas « intense » ; le moteur est déjà confirmé dans 18 cas sur 30), pas
+  à la force du modèle. La réflexion haute ne fait pas mieux : elle met 90 s et coûte 13 fois plus. Dépense de D130 : 3,73 CHF sur 10.
+  Pour aller plus loin, il faut un autre arbitre, pas un autre modèle : une référence d'intensité, ou ses propres jugements à l'aveugle.
+- D132 (l'utilisateur, 27.10, mot pour mot) : « Mettre 3.8 Flash et je peux l'activer à la demande ».
+  - Lecture du pilote : le mode Suggérer passe à Gemini 3.8 Flash en réflexion basse, le meilleur au banc (D131).
+  - Plus d'appel à l'ouverture : la puce de m6 lance l'appel au toucher.
+  - C'est son accord pour la production de ce mode, sous les plafonds mensuel et quotidien existants.
+  - Voie ia5 ; puis, par le pilote, le déploiement de `functions:hopReclasserIA` et de l'hébergement.
+- D133 (pilote, 27.10) : l'IA de Suggérer est **en ligne, à la demande**, sur Gemini 3.8 Flash en réflexion basse (D132). Ordre suivi :
+  1. le rejeu de d661f266 (11 contrôles Chrome, CARTE-LISTE OK, 8 451 tests, B5 à 147,5 ko) et la critique (MONTRER) ;
+  2. la fonction `hopReclasserIA` en premier (« Successful update operation ») ;
+  3. puis l'hébergement : 252 fichiers ; la page servie est `index-5hGOimnf.js`, après le cache du CDN.
+  La construction des fonctions régénère `source4-portable-bundle-manifest-01.json` dans la copie propre : il est remis au commit avant le
+  build de l'app.
+- D194 (l'utilisateur, 27.10) : « bannir soit être un objectif » (lu « doit »), « on doit avoir aucune suggestions sur ce chemin et si il y en a
+  de base ça suggère des houblons qui l'enlève » ; puis « Corrige jusqu'à finir même si 100% ». Ce qui a été fait (pilote) :
+  - `bannisDe` rend les familles bannies, alors qu'elle rendait une liste vide depuis la fin de l'exclusion V5.5.
+  - Une voie dont un houblon **ajouté** cite la famille est exclue. Le houblon remplacé ne compte pas.
+  - Un « remplacer à masse égale » qui la fait baisser est proposé. Avant, seul le remplacement à IBU égal était montré.
+  - Il y a un groupe « Remplacer X » par houblon remplacé.
+  - La carte : tenue quand ma bière n'en a presque pas (moins d'un demi-cran) et qu'une voie houblon est montrée ; sinon, elle lit aussi les
+    remplacements, même hors du style ailleurs.
+  - L'objectif « faire baisser » de D193 reste.
+  Le reste de D193 (le banni seulement rangé derrière) est remplacé.
+- D195 (pilote, 27.10, voie s3, sous « Corrige jusqu'à finir même si 100% ») : la saturation.
+  - **R1** : une famille de la direction (à monter, à baisser ou bannie) qui sort de sa bande, c'est sa demande. Elle ne compte ni au rang,
+    ni en « hors du style ». Les barres de la famille demandée ne sont donc plus orangées ; c'est l'option (a), réversible
+    (`saturation: false`).
+  - **R2** : un excès de moins d'un quart de cran n'est pas hors du style.
+  - **R3** : 4 remplacements sont réservés pour une famille à baisser, ce qui garde le « Remplacer » de D194.
+  - **Résultats** : carte et liste se contredisaient dans 4 listes sur 62, plus aucune après. Sur la neipa saturée, les nobles quittent la
+    tête. 1083 tests, ETATS 138/138.
+  - **Reste à faire, voie s3 suite (R4)** : Warrior et Nugget, deux amérisants, arrivent en tête de « plus d'agrumes » saturé. Au whirlpool
+    et au dry hop, un amérisant passera après les houblons d'arôme et les mixtes. C'est la règle symétrique de g2b et de D106.
+- D196 (pilote, 31.10, diagnostic d60, sur « surtout sur la partie 60', il y a souvent pas de propostion du tout ») : les causes sont
+  prouvées au commit de production ae7c7a8d.
+  - **C1** : Suggérer ne demande jamais 60′ au moteur. M1 et M2 (« Amérisant · 60′ », « Plus d'amertume ») ne sont pas branchés.
+  - **C2** : les « Remplacer X · 60′ » passent derrière des centaines d'ajouts, puis la coupe globale (`buyLimit`) les retire.
+  - **C3** : la règle d'usage à 60′ (g2b) n'est pas appliquée : Cashmere, un houblon d'arôme, amérise à la place de Nugget.
+  - **C4** : dans Substituer, à 60′, un candidat dont l'amertume est inconnue sort à 100, « très proche », sur 10 % du poids. Il arrive
+    en tête pour 17 houblons sur 20.
+
+  Décisions :
+  - **K1** (pilote, Substituer) : un inconnu d'amertume passe après le connu, et n'est jamais « très proche ».
+  - **K5** (pilote) : la règle d'usage s'applique aussi à « remplacer à IBU égal ».
+  - **K4** (pilote) : chaque houblon remplacé garde sa place, et l'exclusion D194 passe avant la coupe.
+  - **K2** (son écran choisi M1 + M2, repris tel quel ; règle n° 1) : le groupe « Amérisant · 60′ » et la carte « Plus d'amertume ». Les
+    rangées disent ce que chacune apporte (D165), puis le critique juge.
+  - **K3**, la phrase « rien d'aromatique à 60′ », est un texte qu'il choisira : elle lui sera montrée en mini maquettes, plus tard.
+- D198 (l'utilisateur, 31.10) : pas de question bloquante. Les questions des méthodes externes passent à un jury (skill `jury`, voie e4). Le
+  reste du top 5 est accordé, ainsi que l'installation de `@google/design.md` 0.4.0, épinglé, dans `tools/design-lint` seulement.
+  Mission 2026-10-31-systeme-ecrans : e1 (baselines), e2 (inventaire, hors d'`ecrans.json`, règle n° 1), e3 (glossaire), e4 (jury) et e5
+  (lint). Les serveurs de la mission tournent dans une copie à part, au commit de production (`%TEMP%/atelier-ecrans`).
+- D201 (l'utilisateur, 31.10) : « B ». Un panel croisé précalculé pour toutes les variétés, avec les ids conservés, en trois étapes :
+  1. **B1** : des étiquettes honnêtes et « 1 source » à un seul endroit, la ligne de sources de la fiche (D168), sans changer un chiffre ;
+  2. **B2** : le panel des valeurs (α, β, cohumulone, huiles, linalol), avec un banc de non-régression, après c9 ;
+  3. **B3** : l'usage continu (60′, D106), la typicité par le rattachement, et un radar de repli, après h1 et k2.
+  Les poids par type de source sont des hypothèses : ils se règlent sur une moitié des variétés et se jugent sur l'autre (L20).
+- D202 (pilote, 31.10) : avant les passes 2 d'Identité, les outils de contrôle de maquette sont corrigés (voie o1) : capture reconnue au chemin, texte visible seul, fond réellement peint, profil « sans houblons » qui lit DESIGN.md (rayons 10, 16, 24 px).
+- D203 (l'utilisateur et le pilote, 31.10) : « ça va coûter "trop chère" de faire ça à chaque étape » ; « C'est un bon test pour voir si la critique est bien qualibré ».
+  1. Le panel v0 d'Identité (48 concepts) sert d'**épreuve à l'aveugle** du critique (L27). Il classe les 48 et donne à chacun un verdict (très bien, moyen, très mauvais), sans rien savoir de son avis. Le brasseur compare.
+  2. La passe 2 ne porte que sur les 5 candidates du critique, chez les mêmes agents.
+  3. **Écrans suivants** : l'entonnoir à 48 v0 n'est plus la règle. Une dérogation M13 s'appuie sur ses mots. La taille se fixe après l'épreuve :
+     - si le critique retrouve ses « très bien » et ses « très mauvaise », 16 v0 en 4 séries, une passe 2 sur 3 candidates, et il voit d'abord les candidates ;
+     - sinon, on recalibre le critique avant de réduire.
+- D204 (l'utilisateur, 31.10) : « Pour les prochaines écran il faudra pas autant de mini maquettes et série, c'est trop demandant en quotas ». L'entonnoir des écrans suivants : 12 à 16 v0 en 3 ou 4 séries (une en Fable, une libre au brief minimal, trois chaleurs), un tri par le critique, une passe 2 sur 3 candidates. `systeme.mjs mission` refuse moins et plus ; ses mots (« Dérogation M13 ») lèvent les bornes. Remplace le « 48 au moins en 6 séries » (REMPLACES.md).
+- D205 (le brasseur, 31.10) : Identité, **r4 choisie**, avec des adaptations (« Quelques adaptations mais si non c'est bien ! »). Pas de passe 2 sur les cinq candidates : r4 seule est reprise telle quelle, avec ses adaptations (bornes ouvertes : plus d'ébullition, un autre fermenteur) et les greffes du critique pour r4. Étalonnage : le critique l'avait classée 7e, « très bien » et candidate.
+- D206 (pilote, 31.10) : les choix du brasseur sur les écrans de l'app hors maquette houblons vont dans un registre jumeau, `work/refonte-frontend/v4/choix/ecrans-app.json` (même format, même contrôle : `controle-choix.mjs <dossier> --registre=…`). Inscrire Identité dans `ecrans.json` aurait cassé son contrôle sur la maquette houblons, qui exige une page par écran du dossier construit. La règle n° 1 vaut pour les deux registres.
+- D207 (l'utilisateur et le pilote, 31.10) : « On est un peu trop gourmand en quota, comment garder la qualité tout en restreignant la quantité de token chère type Fable ou opus ».
+  **Mesure.** Le premier poste est le contexte du pilote : 528 k jetons Opus, relus à chaque tour, et chaque notification d'agent réveille un tour. Ensuite viennent les reprises d'agents au long contexte et les concepteurs en v0 :
+  - concepteurs Opus : 250 à 300 k ;
+  - reprises par `SendMessage` : 330 à 400 k ;
+  - critique Fable : 100 à 120 k ;
+  - Brasseur du jury : 43 k.
+  Fable est à 8 % de la semaine ; ce n'est pas le poste principal.
+  **Règles** (skill `voies`, § Lancer) :
+  1. une session par écran ;
+  2. une passe ou une relance part chez un agent neuf, sur un brief serré ;
+  3. un dossier de conception digéré (3 000 mots au plus) ;
+  4. en v0, le repos et un état seulement.
+  Le critique Fable et les concepteurs Opus restent (L25) ; leur nombre et leur contexte baissent.
+- D208 (le brasseur, 31.10) : Malts/sucres, **r4c (La balance) choisie**, avec une adaptation : « il faut plusieurs click pour faire des changements […] à la volée pouvoir facilement supprimer, ajouter, modifier sans ouvrir une "sous vue" mais si je click sur un, je peux avoir plus d'informations ». Une passe 4 (r4d) reprend r4c telle quelle et ne change que les gestes de la ligne (D209). Lecture étroite du pilote (L01) : les axes de la page qu'il n'a pas tranchés gardent la forme de r4c (plateau clair, sucre en ligne du ticket, teinte en dégradé, OG en piste) ; la page de la passe 4 le dit. Le choix entre dans `choix/ecrans-app.json` après son accord sur r4d, comme Identité (D205, D206).
+- D210 (l'utilisateur, 31.10) : accords A et B pour tester la dépense sur l'app en ligne : « A : des lectures Gemini réelles, facturées » et « Et b ». Bornes du pilote, prudentes et réversibles : 40 lectures et 2 CHF au plus pour toute la mission, chacune journalisée (date, fichier, coût) dans `work/missions/2026-10-31-ecran-depense/journal-gemini.md` ; une seule dépense de test à la fois, nommée « TEST pilote », avec son fichier dans son Drive, supprimées toutes deux dans la même séance, et la suppression vérifiée. Ni article de stock créé, ni mouvement sur un article réel : un lien au stock se teste sur fixtures ou émulateurs. Ces tests se font sur le code corrigé et déployé, pas sur l'écran actuel.
+- D211 (le brasseur, 31.10, nuit) : sur r4d, « Mais ça inclus pas les besoins que j'ai à la volée ??? ». Cause : « modifier » lu « la masse » (L01) ; le moment, la part du grain et la couleur à renseigner se changent encore en touchant la ligne puis le plateau (deux gestes ou plus). Lecture du pilote, signalée : tout ce que la ligne montre se change sur la ligne, en un toucher puis la saisie ou le choix (masse, part en %, moment et jour, couleur « ? ») ; le nom ouvre toujours le détail. Les formes de ces gestes (cycle ou menu ancré pour le moment, % tapé ou barre tirée pour la part) sont des axes de variantes (D144), montrées en passe 5. Contrôle `controle-volee.mjs`, témoin négatif r4d.
+- D212 (le brasseur, 31.10, nuit) : le plateau de r4d « Toujours visible ». L'état replié (#replie) sort de la passe 5.
+- D213 (le brasseur, 31.10, nuit) : sur le bloquant de la revue s1 (« Crystal » kg relié à « Houblon Crystal » g, 25 000 g), « oui attention au unités ». Portée lue (L01, étroite) : la dépense, partout où une quantité ou un prix a une unité (lecture, rapprochement au stock, enregistrement). Règles du pilote, réversibles : (1) une quantité garde l'unité imprimée, jamais réécrite en silence ; (2) une conversion d'unité (kg ↔ g, l ↔ ml, Stk ↔ sachet) est un fait que le brasseur voit : une proposition au stock dont l'unité diffère de celle de l'article montre la quantité convertie sur la ligne repliée (« 25 kg → 25 000 g ») ; (3) un prix se lit pour son unité (par kg, par 100 g, par pièce), jamais comparé à une autre ; (4) une ligne sans unité lisible n'est proposée à aucun article. Contrôle : tests d'unités de s1 (`tests/unit/depense/stock/unites.test.ts`), qui échouent sur le code d'aujourd'hui.
+- D214 (le brasseur, 31.10, nuit) : sur la règle n° 4 de D213, « Unité illisible : la ligne n'est reliée à aucun article.???? » Règle refusée : elle venait du pilote, pas de ses mots (L01). Lecture du pilote, étroite et réversible : une ligne dont l'unité est illisible reste proposée à son article aux mêmes conditions que toute autre ligne (nom, nature, catégorie, poids de levure, α, récolte) ; aucune unité n'est devinée ni recopiée de l'article ; le champ d'unité reste vide et la ligne repliée porte « unité à préciser » ; rien n'entre en stock tant que l'unité manque (garde à l'enregistrement : voie r1). Une unité lisible mais incompatible avec l'article donne toujours « rien ». Remplace D213 n° 4. Contrôle : `tests/unit/depense/stock/unites.test.ts` (voie s1), qui échoue sur la règle refusée.
+- D268 (le brasseur, 01.11, nuit ; D264b ; SUSPENDUE : « Pas important pour le moment ») : « Ok » à l’annulation de TX-6770960b (la commande du 27.04 ressaisie le 01.11, déjà au registre
+- D269 (pilote, 01.11, nuit ; D262d ; sa question « Qui trie par famille ») : la famille d'une ligne vient, dans l'ordre, de l'article de stock lié, de la famille donnée par Gemini dans une liste fermée (Malt, Houblon, Levure, Sucre, Additif, Matériel de brassage, Emballage, Nettoyage, Consommable, Service, Autre), puis des mots du nom en dernier recours ; une correction du brasseur se retient. Constat : `contexteDe` (src/services/stockLineMatching.ts) trie par listes de mots ; la consigne de lecture (functions/src/prompts.ts:211) interdit à Gemini de poser une catégorie de stock. Sonde : Omega OYL-200, CARABELGE, Château Abbey, Weyermann Pale Ale, flocons d'avoine et tout le matériel (Fermzilla, Unitank, Spundventil, Plattenkühler) → « autres » ; Hop Spider Bag en kind stock → Houblon. Mesure au banc avant tout redéploiement d'aiTask (son choix) ; la voie p3c-bandes lit déjà la famille de la lecture en premier.
+- D270 (pilote, 01.11, nuit ; bout en bout e-bout, doc14) : (a) un total imprimé arrondi à 5 ct (règle de `sumCheck`, D261b) s'enregistre : l'enregistrement ajoute une ligne « Arrondi à 5 centimes » au montant signé, la somme des lignes reste égale au total ; tout autre écart reste refusé. (b) Une catégorie lue hors de `STOCK_CATEGORIES` (« Yeast », « Grain ») n'est jamais écrite sur un article neuf : synonymes, puis nature déduite, puis le repli par `kind`. (c) La ligne « grain » à référence MAG… rejoint Malt. Voie k7-enregistrer (auteur Sonnet). Restent ouverts : la pastille TVA de sa pièce (la lecture prend le sous-total TTC pour le HT, point `ht-tva-ttc`) ne se lève qu'à la lecture, donc par un redéploiement d'aiTask (son choix) ; `zxing-wasm` et `pdfjs-dist` absents du `node_modules` partagé (le banc passe par `vite.banc.config.mjs`, aucune installation sans son accord).
+- D271 (le brasseur, 01.11, nuit ; D270b) : les factures arrivent en allemand, anglais, français et italien. Synonymes de catégorie et mots de famille dans les quatre langues (Hefe, yeast, lievito → Levure ; Malz, grain, malto → Malt ; Hopfen, hops, luppolo → Houblon ; Zucker, sugar, zucchero → Sucre ; Verpackung, packaging, imballaggio → Emballage ; Reinigung, cleaning, pulizia → Nettoyage…), écrits en français dans l'app ; le lien à l'article existant ne dépend pas de la langue de la ligne. La désignation imprimée reste telle quelle (D261a). Voies k7-enregistrer (catégories, lien) et p3c-bandes (familles des bandes).
+- D272 (le brasseur, 01.11, nuit : « Go » ; D262a, D270) : un « HT » lu qui est le sous-total TTC des articles avant port (HT + TVA ≠ TTC, montant = somme des lignes hors port, lignes au TTC) n'est pas tenu pour lu : `htEstUnSousTotalTTC` (`functions/src/invoiceControls.ts`), appliqué par `normalizeInvoiceScan` avant `totalsCheck` ; un HT n'est jamais calculé. Un HT égal au TTC garde la règle d'avant : le nullifier dans une seule lecture créerait un désaccord qui paie une 3.8 (`invoiceVisionReview.test.ts`). Preuves : test `tests/unit/depense/banc-k6/ht-d272.test.ts` rouge sur ced4a6a8 (3 sur 5), vert après ; 35 fichiers de la lecture verts (659 tests) ; banc hors ligne des 14 pièces (`H13-reels/banc-d272-hl`, aucun appel) : seule sa pièce change (HT null, plus de `ht-tva-ttc`, dans A, A+N, C★v8, C★v8+N) ; l'écart de doc12 vient du prêt hors ligne de la 3.8 de A à C★v8 (`thirdFrom` « A » au lieu de « neuf »), la règle rend faux sur ses trois lectures. Déploiement d'aiTask seul. Fait depuis `%TEMP%/deploy-63130965` détachée sur a87a03f7 (`functions/` ne diffère de ced4a6a8 que par les deux fichiers de la règle ; types verts) : « Successful update operation », révision `aitask-00045-keb` (20 h 27), hash `f181e3a2` ; aucune entrée WARNING ou plus depuis, ni « AUTHORIZED_ACCOUNTS est vide » (la liste est gardée d'un déploiement à l'autre : lectures réussies sur 00042, déployée de la même copie, D254). Manifeste régénéré de la copie remis. Retour arrière : redéployer depuis ced4a6a8.
+- D272b (pilote, 01.11, nuit ; régression de D272, vue au bout en bout `voies/e-emulateur/final6/D`) : sur sa pièce, les deux Flash-Lite oublient la ligne de port, la 3.8 la lit et sa somme est juste ; C★v8 garde les valeurs de la 3.8 mais reprenait toutes les phrases du vote à trois, dont « La somme des lignes ne correspond pas au total TTC. Écart … », calculée sur le mélange des lectures et montrée en remarque à côté d'une somme juste. Le HT faux d'avant D272 masquait la phrase. Correctif : `phrasesDuVote` (`functions/src/invoiceScanVote.ts`, porté au banc) ôte les phrases des contrôles de calcul du vote (points de source « contrôle ») et ajoute celles de la 3.8, dont on garde les valeurs ; les désaccords et ce qu'une lecture a signalé (source « modèle ») restent, le statut aussi. Preuves : `tests/unit/depense/banc-k6/vote-d272b.test.ts` rouge sur e9380ba1 (3 sur 5), vert après ; 31 fichiers de la lecture verts (582 tests), types des fonctions verts ; banc hors ligne des 14 pièces (`H13-reels/banc-d272b-hl` contre `banc-d272-hl`, aucun appel) : valeurs et statuts identiques partout ; phrases de calcul ôtées sur doc2 (sans N), doc6, doc10, doc12, doc14 ; phrases de la 3.8 ajoutées sur doc3, doc10, doc11, doc12, toutes doublées d'un point de la 3.8, donc masquées en remarque par l'écran (`ExpenseSheet`, remarques sans le message d'un point). Correctif de ma propre régression en production : redéploiement d'aiTask seul, dans l'accord de D272.
+  Déployé depuis `%TEMP%/deploy-63130965` détachée sur 8050e494 (`functions/` ne diffère de a87a03f7 que par `invoiceScanVote.ts`, types verts) : « Successful update operation », nouvelle instance à 20 h 46, aucune entrée WARNING ensuite ; vu en ligne sur sa pièce (D273) : plus de phrase « Écart ».
+- D273 (le brasseur, 01.11, nuit : « refaire ça avec appel payant sur la vrai alo », « App ») : les 14 pièces lues dans l'app en ligne (client 6bb83d4a, aiTask D272b), Chrome, sa session, « Entrer une facture », un fichier par pièce, feuille fermée sans enregistrer. 14 appels à aiTask, aucun servi du cache, 0,62 CHF (registre mensuel 0,248 → 0,869 CHF), aucune dépense, aucun envoi à Drive (il n'a lieu qu'à l'enregistrement). Préparation hors Git (`H13-reels/D273/`) : chaque JPEG reçoit un segment de commentaire (même image, autre empreinte : sans cela aiTask rend la lecture gardée par empreinte, faite par un moteur plus ancien), chaque PDF un commentaire final ; doc10 à doc12 (trois captures) deviennent un PDF de trois pages, JPEG non réencodées, le seul envoi multipage que l'app accepte (pages comptées par `countPdfPages` : 3). Jugement (`banc-lecture-facture-juger`, `D273/jugement.txt`) : en ligne 150/165 champs, 210/224 lignes ; banc hors ligne C★v8+N 153/165, 217/224. Écarts : doc10 (3.8 coupée, limite de sortie, sur le PDF de trois captures : type, numéro, HT), doc11 (HT, unités), doc1 (une date posée alors qu'aucune n'est imprimée, trois noms raccourcis) ; les autres pièces comme au banc. Défauts D273a à D273d. Ouverts : le correctif des familles et le déploiement de l'hébergement (voie p3c-bandes) ; la version du cache de lecture et les captures multiples sont des choix du brasseur (D273b, D273c).
+- D280 (le pilote, 01.11, nuit ; suite de D279) : la traduction à part, texte seul sur le nom de base, mesurée au banc (voie f5b-traduire ; réglage sur les pièces impaires, jugement sur les paires, L20 ; deux passes 0,08 CHF en tout, cumul 8,61 CHF sur 49). La lecture ne bouge pas (aucune perte possible). Pièces paires : `gemini-3.8-flash` 126/138 lignes sans défaut au juge, 4,1 s médian, ≈ 0,005 CHF la pièce ; `gemini-3.5-flash-lite` 123/138, 1,6 s, ≈ 0,002 CHF, avec des contresens (« Gärglocke » rendu « Bonbonne ») et des mots laissés (« 30 Liter », « 100 Kapseln »). Choix : la 3.8 (une faute de langue de moins, termes du métier justes : « Barboteur », « Égouttoir à bouteilles », « Capsules couronnes »). Branchement : une tâche `traduireNoms` d'aiTask à part, appelée par le client après la lecture, sans attendre ; une table locale garde chaque traduction, une base déjà traduite ou reliée au stock n'appelle rien ; hors ligne ou en échec, le nom imprimé reste. Consigne non retouchée après la passe de réglage (aucun défaut qui la justifie ; pas d'« overfit »). Le redéploiement d'aiTask pour cette tâche relève de D278 (« il faudra modifier aiTask, à mesurer au banc j'autorise ce changement ») : mesurée, sans perte sur la lecture. Voie f5c-noms-prod.
+- D281 (le pilote, 01.11, nuit ; suite de D280) : la traduction branchée dans l'écran Dépense (`ExpenseSheet.tsx`). Elle part à la fin de la lecture, sans l'attendre et jamais en aperçu de banc ; elle est appariée par id de ligne, et un résultat tardif d'une lecture précédente est ignoré. `nameFr` ne sert qu'à l'affichage de la rangée non reliée : le rapprochement, le nom de l'article neuf et la ligne enregistrée lisent toujours le nom imprimé de base (réversible ; suite : rapprocher par `cleBase` et alias avant de nommer les articles en français). La correction du nom par le brasseur efface `nameFr` et se retient pour cette base (`retenirNomBrasseur`). Test `tests/unit/depense/noms-fr/ecran-noms.test.tsx` rouge sans le branchement (témoin joué dans la copie), vert avec. Garde des tests élargie : une Function déployée (`*.cloudfunctions.net`, `*.run.app`) est refusée pendant Vitest comme un hôte Gemini, car un écran non simulé appelait sinon aiTask en production (`tests/setup.gemini-guard.ts`, test dans `geminiNetworkGuard.test.ts`).
+- D282 (le pilote, 01.11, nuit ; les deux questions de f3, réversibles) : (1) la ligne enregistrée d'un ingrédient garde la base. L'imprimé entier reste dans le justificatif et la lecture en cache ; aucun champ n'est ajouté à FinanceLine, car le schéma ne change pas sans son accord. (2) Un ingrédient en « Stk » face à un article du même nom tenu en kg devient nouvel article d'office (règle `incertain`). Verdict du critique sur f3 : À REPRENDRE (`voies/f3-rangees/VERDICT-f3.md`). Bloquant : le plateau ouvert garde l'ancien formulaire, 14 blocs contre les 5 de p3c-3 (« Pas besoin d'afficher autant », « Ni la vue de base »). Il est renvoyé à f3 avec ses détails ; rien n'est montré au brasseur avant le nouveau verdict.
+- D283 (le pilote, 01.11, nuit) : relecture indépendante du code de f4 (`voies/f4-enrichir/REVUE-code.md`) : À REPRENDRE, 0 bloquant, 3 majeurs. M1 : un travail qui lève bloque la file et refait une recherche payante. M2 : le branchement 2 (`learnIngredient` et la fiche retenue) écrirait l'α typique d'un houblon sur un lot, sans trace. M3 : sur `proche`, les faits acceptés disparaîtraient en silence. Ces trois défauts et cinq détails sont renvoyés à f4 ; aucun branchement avant la correction et l'accord de schéma. Cause des arrêts au plafond (f3, f4, relecteurs) : des plafonds de voie au-dessus du maxTurns de l'agent (150 à 160 pour 120 ; 40 pour 30). `systeme.mjs mission` le refuse désormais, avec témoin, pour les missions datées du 31.10 et après ; les lignes de ces missions portent le plafond réel de l'agent.
+- D284 (le pilote, 01.11, nuit) : second verdict du critique sur f3 (`critique/VERDICT-f3-p2.md`) : ACCEPTÉ. Le plateau de p3c-3 est porté ; les rangées reliées, bis et rouges sont capturées. Reste un majeur, le lien proposé sans jaune (D277 « globalement pour tout »), et trois détails, renvoyés à f3 (passe 3). Le « Stk » jaune ou non selon le nombre de lignes qui l'impriment se dira sur la page. Contre-relecture de f4 (`voies/f4-enrichir/REVUE-code-2.md`) : REVUE OK, les trois majeurs sont fermés ; deux détails (D-a, D-b) sont renvoyés à f4. Sur une copie branchée, 381 tests passent et le démarrage gagne 18,28 kB minifiés (7,25 kB gzip). Le bout en bout doc14 rejoue aussi le français des noms (`--noms`, sortie réelle du banc f5c, hors Git, aucun appel) et vérifie qu'il s'affiche sur les rangées.
+- D285 (le pilote, 01.11, nuit) : bout en bout doc14 avec le français rejoué (`voies/f3-rangees/bout/E`). À 1280, 28 OK et 0 KO : les noms s'affichent en français (« Cuve de fermentation 30 litres ronde avec couvercle », « Capsules couronnes 100 capsules Hophead »). Défaut vu sur la capture : « CARABELGE® » et « SPECIAL W® » regagnaient leur ®. Le nom français ne passait pas par le nettoyage du nom imprimé (`nomAffiche` : ®, α et contenance retirés, montrés ailleurs) ; il y passe maintenant, avec un test rouge sans la correction et vert avec. Mesure sur les 133 noms rejoués : 38 sont changés par ce nettoyage, de la même façon que les noms imprimés. À 390, le premier passage est resté sur une page blanche (6 ressources en ERR_FAILED au démarrage à froid de Vite). Le second a donné 27 OK et 0 KO, mais il est invalide : Vite a rechargé deux fois pendant la passe, après l'édition du pilote (L17). Rejoué en entier (`bout/F`), avec les six autres pièces (`bout/F-pieces`).
+- D286 (le pilote, 02.11 ; suite de D283 et du code f4) : les cinq témoins de l'enrichissement (`tests/unit/depense/enrichir/temoin.test.ts` (a), (b), (c2), (d) et `temoin-e4.test.ts`) décrivent le comportement voulu après les branchements 1 à 5 de f4, qui attendent l'accord du schéma `StockItem.fiche` (branchement 6). Rouges, ils casseraient `npm test` ; ils passent en `it.fails` : verts tant que le défaut est là, rouges dès qu'un branchement le corrige sans les remettre en `it`. Au branchement, chaque `it.fails` redevient `it`. Commit c032e1a2 incomplet : le picto du lien proposé (`src/ui/depense/Pictos.tsx`, prop `propose`, f3 passe 3) n'y était pas ; le build du dossier de déploiement a échoué (TS2322, `Ligne.tsx:41`), rien n'a été déployé ; ajouté au commit suivant.
+- D287 (le pilote, 02.11 ; D260, D264, D278) : déployé en ligne. aiTask (révision aitask-00048-lag, `traduireNoms`) depuis `deploy-63130965` à c032e1a2 ; hébergement depuis `deploy-hosting-qr` à 92a9a28d : tests Dépense 111 fichiers verts, build vert, `check-no-dev-auth` propre, « found 259 files », « release complete » ; le bundle servi (`index-jrnchtPW.js`) est celui construit, le morceau Dépense porte le picto du lien proposé. Essai en ligne en lecture seule, dans son Chrome : doc14 (copie D273), « Entrer une facture », feuille fermée sans enregistrer ; aucune dépense, aucun article, aucun envoi Drive. Lecture neuve (empreinte du moteur changée) : deux lectures 3.5 Flash-Lite en parallèle (6,1 s et 6,6 s), une troisième en 3.8 (14,8 s), puis `traduireNoms` (3.8, 3,8 s) ; environ 15 000 jetons, quelques centimes. Lectures en ligne : 16 sur 40. Sur l'écran : 17 rangées, noms en français (« Malt Pilsner Premium », « Sirop Candi Golden 460ml », « Égouttoir à bouteilles fixe, non rotatif ») ; aucun ® ; trois malts en mouture ; 8 nouveaux articles proposés ; drapeaux jaunes sur cinq rangées, aucun rouge ; console sans erreur. Défaut vu : « Frais de port : » gardait le deux-points de la traduction. `nomAffiche` le retire maintenant (test rouge puis vert, `noms-fr/nom-affiche.test.ts`) ; déployé à c8e75f61 (tests Dépense 112 fichiers verts, build vert, « found 259 files », « release complete », bundle servi `index-DPMEuSca.js` = construit). Non joué en ligne : « Confirmer » (stock, journal, Drive), interdit sur les données réelles sans son accord (D217) ; joué au bout en bout sur l'émulateur (D285, `bout/F`).
+- D288 (le pilote, 02.11 ; D271, D281, L24) : le nom d'un nouvel article venu d'une facture étrangère devient un choix du brasseur, montré en page (https://claude.ai/artifact/5zPHv4HDbgPzhnwNchQmBg, voie c-nom, concepteur Opus ; critique e-t8 Fable : ACCEPTÉ, deux majeurs corrigés avant publication). Fait observé en lecture seule dans son stock en ligne : ses saisies en français (« Flocons d'Avoine », « Malt Chocolat ») côtoient des articles nés de factures sous le nom imprimé (« Haferflocken », « Pilsner Malz », « Weizenmalz hell », « Röstgerste ») ; « Haferflocken » et « Flocons d'Avoine » sont le même produit en deux articles. Mesuré (`matchStockLine`, arbre actuel) : le lien entre langues ne tient que sur des mots communs (« Premium Pilsner Malz » relie « Premium Pilsner Malt » et « Malt Pilsner Premium ») ; un nom qui se traduit ne relie pas (« Wiener Malz » ni « Vienna Malt » ni « Malt de Vienne » ; « Haferflocken » ni « Flocons d'avoine » ; « Röstgerste » ni « Orge torréfiée » ; un article « Malt de Vienne » ne relie pas « Wiener Malz »). Mon premier brief affirmait le contraire sans mesure ; la page a été refaite sur « Wiener Malz » (L14 complétée). Options : A aujourd'hui (nom imprimé) ; B français, imprimé gardé à la fiche (proposée) ; C deux noms dans la liste ; D B et doublons proposés à fusionner, à son geste ; E nom français proposé en jaune ; F lien d'une autre langue proposé en jaune. B à F demandent un lien par le nom français et les noms imprimés gardés : à construire après son choix. D touche ses données réelles : la fusion attend son accord. D281 reste en place jusqu'à son choix.
+- D289 (le brasseur, 02.11, sur la page c-nom) : « Oui b c'est très bien ». B seule : le nouvel article entre au stock sous son nom français, le nom imprimé est gardé et se lit à la fiche (« Sur la facture : … »), toute facture suivante du même produit se relie, quelle que soit sa langue. Lecture du pilote : choisir B, c'est accepter le champ facultatif qui garde le nom imprimé sur l'article (montré par B) ; rien d'autre du schéma. Les règles Firestore ne limitent pas les champs d'un article : rien à y toucher. Voie n1-nom-fr (auteur, deux temps, plan relu par deux relecteurs neufs, puis code) ; D281 remplacée à son branchement.
+- D290 (l'utilisateur, 02.11, accords groupés) : « Ok » au schéma `StockItem.fiche` élargi (f4, branchement 6), « Ok » aux +18 Ko au démarrage, « Ok » au push. Branchements 1 à 6 de f4 posés par le pilote, au texte de `voies/f4-enrichir/RESULTAT.md` § P5 ; les cinq témoins (D286) redeviennent `it`. L'IA de l'enrichissement reste éteinte en ligne : il a posé une question (« Combien en plus, c'est comme l'autocomplete, non ? »), pas donné d'accord. Réponse du pilote : oui, c'est la même tâche `lookupIngredient` que « Compléter avec l'IA », avec la recherche Google ; elle ne part que pour un nouveau produit qu'aucun catalogue ne connaît, au plus 5 fois par jour ; estimation non mesurée de 5 à 10 centimes par recherche (3.8 Flash, 1,5 CHF par million de jetons en entrée et 7,5 en sortie, plus 1,75 centime par requête Google, `functions/src/geminiCosts.ts`) ; trois appels réels journalisés mesureront le coût avant de l'allumer. Branche `claude/refonte-houblons-v4` poussée (26 commits, 3eea72c7..bcd7dcc7), aucune pièce, image réelle ni secret dedans (vérifié sur le diff).
+- D291 (le brasseur, 02.11, sur la capture de la page `choix-captures` avant sa publication) : « Variante b, mais dans la première vue, pouvoir choisir entre envoyé 1 ou plusieurs documents, dans 99% des cas c'est que 1 document », puis « Le bouton noir est splitter en 2 ». D273b tranché : B retenue (« + page » sous la rangée de pages, lecture au toucher de « Lire N pages », sans délai), avec à l'entrée le bouton noir coupé en deux, « un document » (le geste d'aujourd'hui, lecture immédiate : aucun toucher de plus pour 99 % des pièces) et « plusieurs » (ouvre la rangée de B). La trace dans l'en-tête est celle de B (pile « N », pages au toucher). Faits du code (02.11) : l'entrée ne prend qu'un fichier (`files?.[0]`, dépôt compris) et `aiTask` ne lit qu'un fichier par appel (`functions/src/ai.ts`, un seul `inlineData`) ; le banc lit déjà plusieurs fichiers par cas (`files`). Suite : maquette de B retenue par le concepteur de c-captures, critique, puis voie de code n2-pages (plan d'abord) après n1-nom-fr, qui possède aussi `ExpenseSheet.tsx`. Le côté serveur (plusieurs images par lecture) demande un redéploiement d'`aiTask` : à ses accords groupés. La reprise e-t10 de la page (deux majeurs, un nom de sa pièce ôté) est faite ; page publiée avec son choix inscrit (https://claude.ai/artifact/7e5AuRChUtCuaAnCqu42ce). Maquette retenue : `choix-captures/retenue/` (9 états, trois formes de la coupe) ; le pilote retenait la forme 3 (« Un document » | « Plusieurs », la première plus large), et le brasseur l'a désignée sur sa capture : « Celle là que je veux ». Elle est la base du code, telle quelle (règle n° 1). Critique e-t12 ACCEPTÉ (`critique/VERDICT-retenue-pages.md`), un majeur : la photo d'une page suivante ; le pilote tranche, réversible : « + page » ouvre un sélecteur d'image sans `capture`, que le téléphone propose aussi en photo, sans bouton ajouté.
+- D292 (pilote, 02.11 ; D261c) : la lenteur de la lecture mesurée hors ligne sur ses 14 pièces (voie m-lenteur, rejouée à l'identique par le pilote, `voies/m-lenteur/RESULTAT.md`) : A aujourd'hui 18,5 s médian (37,7 au pire), 154/165 ; B (3.8 seulement sur un désaccord d'argent, B2) 11,0 s (34,3), 156/165 ; C (jamais de 3.8) 6,3 s, 149/165 et 22 fausses sans drapeau ; D (écran sur les deux Flash-Lite, 3.8 en arrière-plan, Confirmer l'attend) 6,3 s puis 18,5 s, justesse finale de A ; E (B + D). La 3.8 corrige des valeurs que les deux Flash-Lite lisent pareil, sans drapeau : la limiter en fait revenir. Passe payante de dispersion (≈ 1,25 CHF) non lancée : utile seulement pour confirmer B. Page de choix publiée (concepteur c-lenteur, critique e-t11 ACCEPTÉ, trois majeurs corrigés dont « 2 lents puis 1 lent », déjà mesuré en D266) : https://claude.ai/artifact/TNNSAZdhSkoit5NkHyksPa. Le choix est le sien ; s'il prend D ou E, la direction technique (un appel qui rend deux fois, ou deux appels) passe au conseil, et une valeur qu'il a touchée n'est jamais réécrite par la 3.8.
+- D293 (pilote, 02.11 ; D290) : f4 branché et vérifié dans la copie isolée : suite complète 10 746 tests verts, échecs seulement d'environnement (fichiers `prototypes/` et `work/` absents de la copie ; `AppRoutePile` instable sous charge, vert seul, 2/2), tsc 0, build vert, manifeste 21dd75b3 inchangé. Bout en bout doc14 : 54 OK, 0 KO. Le cas `enrichir` (écrit par f4, jamais joué jusque-là) s'arrêtait : « Target 11.3% » est déjà semé par doc5, et S6 refuse à juste titre un second article du même nom ; le pilote change la donnée du cas (une variété absente des semis). Il tourne alors jusqu'au bout : ENRICHIR KO 5/8 (390) et 4/8 (1280), 2 appels comme prévu, rien d'écrit hors ligne ; défauts : la fiche d'un houblon posée à la création n'est pas complétée (ni `cle` ni `par`), l'ambre n'est pas rempli au contrôle, Windsor à 1280, erreurs réseau hors ligne, et le contrôle du « bis » passait à vide. Voie f4-bout (auteur) avant le code de n1 et n2, qui attendent : aucune autre voie n'écrit dans `src/` pendant ses passes. L'IA de l'enrichissement reste éteinte en ligne.
+- D294 (pilote, 02.11 ; D293) : f4-bout rendu et rejoué par le pilote. Les KO d'ENRICHIR venaient du banc, pas de l'app : il lisait le serveur émulé dès la file de f4 vide, avant que Firestore ait envoyé l'écriture (sonde : état `pending`, fiche complète dans l'app, au serveur 6 s plus tard). L'hypothèse du pilote (la fiche de création empêchait la sienne) était fausse ; aucun code de l'app changé. `f4Repos` attend `FirestoreRepo.waitForWrites` ; le « bis » exige une clé définie et le même `id` (témoin : 7/8 avec l'ancienne attente) ; le hors ligne exige l'article présent sans fiche ; la console n'écarte que les erreurs du banc, nommées (réseau coupé, adresses hors localhost). Rejeu du pilote : `ENRICHIR OK 390 · 8/8 · appels 2` et `ENRICHIR OK 1280 · 8/8 · appels 2`, 0 « hmr update », capture du stock regardée ; tests Dépense 112 fichiers, 1841 verts ; doc14 55/55 (voie). Le « bis » est un second article parce que le banc force `stockAction: 'new'` ; dans l'app, la facture suivante se relie à l'article existant.
+- D295 (pilote, 02.11 ; D289, critique e-t9 `critique/VERDICT-n1.md`) : n1 codé (N1 OK annoncé). Le critique accepte N5 (« Sur la facture » à la fiche, fidèle à `b-stock.png`) et rejette la facture suivante : le lien par le nom français rend « proposé » jaune avec « Garder », c'est-à-dire F (« B, mais une autre langue est proposée »), la colonne qu'il n'a pas prise, au lieu de sa B (cube coché, `b-suivantes.png`). Cause : le tri du pilote (revue du plan, Conception 2 : « jamais `relieAuto` ») a contredit son choix. Sort renversé : un français qui désigne un seul article (`meme`) relie comme à la lecture (`relieAuto`, sans `proposedStock`) ; le jaune reste où les règles du nom imprimé le donnent ; « choisis » pour `ambigu`. Leçon L03 complétée. Doc14 est bien confirmée au banc (« Malt Pilsner Premium » au stock, en français) ; un contrôle explicite du nom français et du nom gardé sur ses articles neufs s'ajoute.
+- D296 (pilote, 02.11 ; D289, D295) : n1 (son choix B du nom) fini et commité, non déployé. Correction D295 posée (facture suivante reliée seule) ; les 8 constats de la relecture du code (`voies/n1-nom-fr/REVUE-CODE.md`, 0 bloquant, 3 majeurs) corrigés, mutations jouées (`mutations.log`) ; la garde `manuallyClassified` se révèle redondante (gardée, dite). Le contrôle « doc14 (n) » a trouvé « CARABELGE® » gardé sous « CARABELGE » : ®, ™, © ignorés à la comparaison des noms. Critique e-t9 : ACCEPTÉ au second passage (`critique/VERDICT-n1.md`). Rejeu du pilote : bout en bout doc14, nom-b, doc1 à doc6 aux deux largeurs, 112 OK, 0 KO, 0 « hmr update » (un premier essai coupé par la garde mémoire, tests lancés en parallèle par le pilote : non imputable à l'app) ; tests Dépense et intégration 4225/4226, l'échec `AppRoutePile` (instable sous charge) vert seul 2/2 ; tsc 0 ; build vert ; manifeste 21dd75b3. Captures regardées : facture suivante « 1 relié », fiche « Sur la facture : Wiener Malz Alpha · Vienna Malt Alpha ». Vu en passant : la pastille du bandeau dit « 1 lignes » (`Recap.tsx`), confié à n2.
+- D297 (utilisateur, 02.11 ; SPEC « Pourquoi ? Il faut deployé pour pouvoir testé... ») : accord pour redéployer la fonction aiTask avec la lecture de plusieurs pages (n2), puis l'hébergement, dès que n2 est vérifié en local (tests ciblés, tsc, build, bout en bout sur les émulateurs, critique). Ordre : fonctions d'abord (aiTask seule, jamais `dispatchBrewerHopAdviceV1` ni `notifyBrewerHopAdviceAnswerV1`), puis l'app ; depuis un dossier que nul autre n'écrit ; manifeste vérifié avant et après. Conséquence connue et acceptée avec le déploiement : une pièce déjà lue, rouverte, est relue une fois (empreinte du moteur changée), quelques centimes. Essai en ligne ensuite, selon D210 et D217 (une dépense « TEST pilote » à la fois, supprimée avec son fichier Drive dans la session, ni article de stock créé ni mouvement sur un article réel, lectures comptées sur les 40). Non couverts : l'IA d'enrichissement en ligne, la fusion des doublons, une PR ou un merge.
+- D298 (utilisateur, 02.11 ; SPEC « Non pas besoin de mon accord dans ce cadre de tâche là », « Allume la ») : pour la tâche de l'écran Dépense, les gestes externes qu'elle exige (redéployer ce qu'elle change, essayer en ligne, allumer ce qu'elle construit) se font sans lui demander, après vérification locale, et se journalisent ; restent à lui les données réelles écrites ou supprimées, push, PR et merge, règles, autres fonctions, dépassement du budget (note `autonomie-decisions`). L'IA de remplissage des fiches (f4) s'allume en ligne : `VITE_ENRICHISSEMENT_IA=production` dans le `.env` du dossier de déploiement (comme les clés Firebase : hors du dépôt), documenté dans `.env.example`. Garde-fous inchangés : un nouveau produit introuvable au catalogue seulement, 5 recherches par jour et par appareil, budget mensuel du serveur (`monthlyAiBudget`). Coût mesuré sur les premiers appels réels (relevé du budget), pas d'appel d'essai fabriqué. Hébergement redéployé d'abord avec n1 et f4 (HEAD 284b345c), puis une seconde fois avec n2 et aiTask. Fait (02.11) : `%TEMP%/deploy-hosting-qr` placé sur 284b345c, `npm run build` vert, `check-no-dev-auth` propre, bascule lue dans le bundle (`return"production"`), manifeste 21dd75b3 avant et après ; `firebase deploy --only hosting` : 264 fichiers, release complete ; page servie vérifiée (`index-KpSY9icu.js`, bascule présente). Journal : scratchpad `deploy-hosting-d298.txt`. Retour arrière : redéployer depuis 6bb83d4a sans la bascule.
+- D299 (utilisateur, 02.11 ; SPEC « Fait en 1 ou 2 et augmente à 30 appel Max par jour ») : plafonds de l'enrichissement par jour et par appareil montés à 30 (`PLAFOND_JOUR` et `PLAFOND_TENTATIVES`, échecs compris ; test du plafond réécrit sur la constante, rouge à 5) ; tests de l'enrichissement 108/108. Serveur lu (lecture seule) : `dailyCalls` 1000 par jour, plafond du mois 20 CHF partagé par toute l'IA (lecture des factures comprise), 0,97 CHF utilisés au 02.11. 1 ou 2 appels réels de `lookupIngredient` pour mesurer le coût, sans rien enregistrer ; mesure par l'écart de `brewerAiCosts/2026-11.usedMicroChf`.
+- D300 (utilisateur, 02.11 ; SPEC « SI 20 recherche= 0.35chf c'est tout bon alors on peut augmenter le cap à 200 ») : mesure de D299 faite sur 1 appel réel (« Compléter avec l'IA » de la fiche Gerstenflocken, recette d'essai, rien appliqué) : 353 379 µCHF au registre du mois (0,35 CHF), soit les 20 recherches provisionnées d'office (`searchQueriesProvisioned: true`, 20 × 17 500) et 3 379 µCHF de jetons ; la 3.8 ne rend pas le nombre de recherches quand un schéma est imposé (#100), donc chaque appel de fiche compte 0,35 CHF au registre, le coût Google réel n'étant pas lisible d'ici. Second appel non fait : le coût lui convient. Plafonds de l'enrichissement par jour et par appareil montés à 200 (`PLAFOND_JOUR`, `PLAFOND_TENTATIVES`). Borne réelle qui reste : le plafond du mois du serveur, 20 CHF partagés par toute l'IA (lecture des factures comprise), 1,32 CHF utilisés au 02.11 ; environ 53 appels de fiche le remplissent, après quoi tout appel IA est refusé jusqu'au mois suivant, lecture des factures comprise. Le monter reste à lui (budget, réglage « Limites IA »).
+- D301 (utilisateur, 02.11 ; SPEC « oui 50chf ») : plafond du mois du serveur monté de 20 à 50 CHF (`brewerAiControls/current.monthlyLimitMicroChf` 50 000 000), par l'écran « Limites IA » de l'app en ligne (fonction `setBrewerAiBudget`), jamais par une écriture directe. Partagé par toute l'IA, lecture des factures comprise ; à 0,35 CHF l'appel de fiche, environ 140 appels par mois.
+- D302 (utilisateur, 02.11 ; SPEC « Fait plusieurs vrai appel test de enrichit ») : 5 vrais appels de `lookupIngredient` par aiTask en ligne, avec la requête de la procédure (`requeteDe` : `kind`, `type`, `name`, `manquant`, `supplier`, `known`), lancés depuis l'app ouverte dans son Chrome (son module `AiClient`, sa session), sur des produits réels absents des catalogues du dépôt : 3 malts (allemand, belge, anglais), 1 sucre, 1 levure. Rien n'est appliqué ni écrit dans son stock : la procédure complète (achat confirmé, article créé) écrirait des données réelles, qui restent à lui. Passe plafonnée à 3 CHF au registre, journalisée. Fait (02.11) : 5 sur 5 trouvés, 7 à 14 s ; 0,818 CHF au registre (0,023 à 0,362 CHF : 3 appels ont rendu leurs recherches, 1 ou 2 ; 2 n'en ont rien dit et comptent 20 d'office) ; cumul 9,82 CHF sur 49 (`journal-gemini.md`). **Défaut** : malts et sucre trouvés mais ni `colorEbc` ni `potentialPpg` en champs, les plages publiées sont écrites en texte dans `usage` (la règle « valeurs ponctuelles » des levures appliquée aux malts) ; la procédure n'écrit donc rien pour un malt en vrai, alors que le banc passait sur une réponse inventée (L28). Levure : laboratoire, forme et 16–21 °C remplis, atténuation gardée en plage (conforme). Réponses brutes : `tests/unit/depense/enrichir/reponses-reelles-d302.json`. Correction : voie f4-malts (schéma à plages et extrait, déduction du client signalée, banc sur une réponse de forme réelle), puis aiTask redéployé avec n2 et les 5 appels rejoués.
+- D303 (pilote, 02.11 ; D291, D302) : (1) f4-malts fait : `lookupIngredient` rend pour un malt ou un sucre la plage de couleur (`colorEbcMin`, `colorEbcMax`) et l’extrait (`extractPct`) publiés, le client en déduit EBC (milieu de la plage) et PPG (extrait × 0,46), marqués « déduit » avec la règle ; la consigne et le schéma des levures ne changent pas (empreinte testée) ; banc sur une réponse de forme réelle (L28), ENRICHIR OK 8/8 aux deux largeurs, doc14 56 OK, 0 KO ; à prouver par les 5 appels réels de D302 rejoués après déploiement. (2) Revue du code de n2 (R-N2CODE DÉFAVORABLE, un majeur) : une seule borne de 12 Mo, le client descend à 12 000 000 octets et le serveur garde 16 000 000 caractères base64, la borne basse étant la prudente tant que la taille du corps d’aiTask n’est pas prouvée en ligne ; les détails 2, 3, 5 et 7 corrigés dans la reprise n2-reprise. (3) Critique e-n2 (À REPRENDRE, 4 écrans sur 5 acceptés) : sa maquette telle quelle pour la preuve, « ✓ 3 pages lues » ; la frise du parcours « Plusieurs » garde son dessin au repos (premier segment plein, ✓) avec un mot vrai, « 3 pages ✓ », car rien n’est envoyé avant « Lire » et il a lu « envoi » comme le Drive (SPEC 02.11) ; écart de mot à lui montrer en captures, réversible. (4) La preuve coupée « Quantité × prix non contrôlé » (antérieure à n2, 390 et 1280) prend son mot « Qté × prix » et ne sort plus de sa case.
+- D304 (pilote, 02.11 ; lecture 17, journal-gemini « 02.11 — lecture 17 ») : défaut trouvé en ligne. Une pièce dont les lignes sont HORS TAXE (somme des lignes = total HT, TVA ajoutée au pied, cas courant d'une facture de fournisseur) est lue juste et le serveur l'accepte (`sumCheck`, `functions/src/invoiceControls.ts:175` : statut ok, base HT), mais « Confirmer » est refusé par le client : « Le détail des lignes doit correspondre exactement au total TTC. » (`src/services/purchaseEntry.ts:466`) ; le client lit `sum.base` (`geminiScanner.ts:81`) sans jamais s'en servir. Seule issue aujourd'hui : « Regrouper en une dépense » (une ligne, le détail perdu). Suite : une voie (n3-ht) qui ramène les lignes au TTC quand la base est HT et la TVA lue ; la forme visible (lignes passées au TTC au prorata, ou une ligne « TVA ») est un choix à lui montrer en mini maquettes (L24) avant le port ; fréquence sur ses pièces réelles à mesurer au banc avant.
+- D305 (pilote, 02.11 ; D297, D298, D302, D303) : f4b-malts (consigne et schéma propres au malt et au sucre, cinq nombres exigés et nullables, plus aucun champ de levure ni de houblon) rejoué par le pilote (tests 2134 verts, deux tsc, build, banc `enrichir` 18 OK 0 KO aux deux largeurs), commité (670a2c1d) et aiTask seule redéployée. Sonde réelle sur BEST Red X, puis les 4 autres : les trois malts rendent plage et extrait (BEST Red X 30 EBC et 36,3 PPG, Château Cara Ruby 50 et 34,5, Crisp Chevallier 8,3 et 35,3, déduits et marqués), le sucre ses points publiés (354,6 EBC, 32 PPG), la levure Bulldog B4 est trouvée. Les fiches des malts sont remplies en vrai. Coût 1,780 CHF, cumul 13,393 sur 49 (journal-gemini). Réponses brutes en fixture (`reponses-reelles-f4b.json`), rejouées par `malts.test.ts` ; `d100AiTaskOutput` lit le schéma partagé sur un houblon. Hébergement non redéployé : le client de f4b ne change que des types et des commentaires.
+- D306 (pilote, 02.11 ; SPEC « Les familles de la rénovation », D262d, D271, D273e) : lecture étroite (L01), portée : la Dépense, bandes de famille de
+  toute pièce. Une ligne de travaux du local doit trouver sa famille et sa sous-famille ; elle ne doit plus tomber dans « Autres », ni dans « Matériel
+  de brassage ». Mesure sur sa pièce du jour (17 lignes, hors Git, `voies/r0-mesure-pilote/`, jamais commité) : lue `other`, 12 lignes sur 17 en
+  « Autres » ; lue `equipment`, 17 sur 17 en « Matériel de brassage ». Décisions du pilote, réversibles : (1) une famille « Rénovation » (son mot),
+  après Consommables ; (2) sept sous-familles : Peinture et sols, Outillage, Quincaillerie, Électricité, Plomberie, Protection, Divers travaux (sans
+  mot reconnu) ; (3) mots en quatre langues (D271), termes génériques, aucune désignation de sa pièce (L20) ; (4) un mot sans équivoque des travaux
+  (peinture, vitrificateur, cheville…) va en Rénovation sous toute catégorie ; un mot ambigu (robinet, tuyau, joint, brosse, seau, gant, masque) va en
+  Rénovation quand « Pour quoi ? » vaut Local (`renovation`), et garde sa famille du brassage ailleurs ; sous Local, toute ligne sans mot d'ingrédient,
+  d'emballage, de nettoyage ni de service va en Rénovation (Divers travaux au besoin), l'EPI en Rénovation › Protection ; (5) détartrant et déboucheur
+  vont en Nettoyage ; (6) une ligne Rénovation ne crée jamais d'article de stock ; (7) teinte kaki `--dp-fam-renovation` (clair 120 112 28, cave
+  196 186 90), distincte des onze autres et du rouge d'alerte. La bande suit sa forme validée (D262d : le classement vaut pour toute famille).
+  L'affichage d'une sous-famille est un élément neuf : montré en mini maquettes (L24), non affiché dans l'app avant son choix ; la fonction pure
+  existe et se teste. Voies r1-renovation (auteur) et r2-sousfamilles (concepteur), critique Fable après chacune. Le déploiement d'hébergement est
+  un cadre neuf : demandé, groupé. La lecture (aiTask) n'est pas touchée.
+- D307 (le brasseur, 02.11, vers 13 h 15 ; D306, page « Les sous-familles dans une bande · 02.11 ») : « J'aime beaucoup D mais il faudrait pouvoir
+  facilement tout plier, déplier ». Lecture du pilote (L01), portée : la vue « Catégorie » de la Dépense, toute bande qui a deux sous-familles ou
+  plus. (1) D est sa maquette (`choix-sousfamilles/maquettes/d-*.html`, retouche e-t12 comprise) : au repos, une ligne par sous-famille (chevron,
+  nom, nombre, quantité, montant) ; un toucher l'ouvre ; une ligne à vérifier ouvre son groupe d'office ; un sous-groupe d'une seule ligne montre
+  sa ligne sans chevron ; une bande à une seule sous-famille, ou sans, reste celle d'aujourd'hui. Port : voie r4-port-d (auteur), critique Fable
+  sur les captures côte à côte avec sa maquette. (2) « tout plier, déplier » est un élément neuf : sa forme (où est le geste, ce qu'il dit) se
+  montre en mini maquettes sur D (voie r3-plier, concepteur, page neuve), le port l'attend ; l'état « tout plié / tout déplié » est prêt dans
+  le code sans contrôle visible. (3) Ses mots « Comprends pas ces 2 points » : les points ouverts se disent en mots simples, avec le lien et ce
+  qu'on attend de lui. La correction des lignes hors taxe (D304) n'est pas à lui de trancher : le pilote la lance (voie n3-ht) après r4, seule
+  la forme visible lui sera montrée.
+- D308 (le brasseur, 02.11, vers 13 h 35 ; D261c, D292, page « La lenteur de la lecture · 02.11 ») : « La lenteur go pour la d ». Son choix : D,
+  l'écran dès les deux lectures rapides (6,3 s médian sur ses 14 pièces, 9,9 s au pire), valeurs provisoires ; la 3.8 finit en arrière-plan
+  (18,5 s médian) ; « Confirmer » attend la lecture finale. Sa maquette : `choix-lenteur/maquettes/d-06.html`, `d-15.html`, `d-lue.html` (fil de
+  22 px sous l'en-tête, « Lectures ●●◌ », « Confirmer » gris avec une roue, puis puce « ↻ N corrigées », valeur corrigée sur fond bleu et
+  l'ancienne barrée). Décisions du pilote, réversibles : (1) sa saisie l'emporte : la 3.8 ne réécrit jamais une cellule qu'il a touchée
+  pendant qu'elle tourne ; (2) la direction technique (un appel qui rend deux fois, un second appel, autre) se fixe par un plan écrit sur le
+  code et mesuré (voie l1-plan, auteur Opus), relu par un relecteur, avant tout code ; (3) le port attend la fin de r4-port-d (mêmes fichiers) ;
+  (4) le redéploiement d'aiTask et de l'hébergement qu'il demandera est un cadre neuf : accord groupé. Une 3.8 en échec ou hors ligne : le plan dit
+  ce que voit le brasseur, dans la forme de sa maquette.
+- D309 (le brasseur, 02.11, vers 13 h 45 ; D303, page « La frise de « Plusieurs » · 02.11 ») : « B ». Avec « Plusieurs », le premier trait de
+  la frise dit « N pages ✓ » au repos et pendant la lecture ; « Un document » garde « envoi ✓ ». C'est déjà l'app en ligne (4725e187,
+  `src/ui/depense/Pages.tsx`, test `tests/unit/depense/pages/rangee.test.tsx`) : aucun code à changer ; l'écart de mot à sa maquette retenue est
+  levé par son choix.
+- D310 (pilote, 02.11 ; D308, `voies/l1-plan/PLAN.md`) : direction technique de la lenteur D : un seul appel aiTask en flux (`sendChunk` côté
+  serveur, `.stream()` côté client, présents dans `firebase-functions` 6.6 et `firebase` 11.10 installés) ; aucune règle, aucun index, registre
+  d'argent inchangé ; « Confirmer » attend le final ; justesse finale = A. Six affirmations du plan vérifiées par le pilote dans le code. Relecteur
+  sur le plan avant tout code. Voies S (serveur) et C (client) en parallèle, puis E (écran, après r4-port-d), puis B (banc Chrome). Cas « à
+  montrer » : la ligne que la 3.8 ajoute et la ligne qu'elle ne lit plus se montrent en mini maquettes (voie l2-lignes, page neuve, L24) ;
+  défauts du pilote, réversibles : erreur après le provisoire = valeurs provisoires gardées, le point « lecture coupée » et le message d'erreur
+  à la place de la rangée d'erreur d'aujourd'hui ; hors ligne = le fil reste, avec « réseau » dans son mot, une seule reprise au retour ; en-tête
+  corrigé = fond bleu et ancienne valeur barrée sur le champ, compté dans la puce. (c3), la 3.8 lancée en même temps : non pour ce port (hors
+  de sa mesure). Déploiement d'aiTask et de l'hébergement : son accord, groupé ; une pièce lue et jamais enregistrée serait relue (≈ 0,045 CHF).
+- D311 (le brasseur, 02.11, vers 14 h 30 ; D307, page « Tout plier, déplier sur D · 02.11 ») : « E c'est très bien ». Sa maquette :
+  `choix-plier/maquettes/e-plie.html`, `e-deplie.html`, `e-mele.html`, `e-plie-sombre.html` : un segment « Plié | Déplié » de 28 px dans l'en-tête de
+  la feuille, entre le titre et le justificatif, pour toute la dépense ; « Plié » allumé plie tous les sous-groupes (une ligne à vérifier garde
+  son groupe ouvert), « Déplié » les ouvre tous ; à l'état mêlé, aucun des deux n'est allumé. Visible en vue Catégorie seulement, et seulement
+  quand une bande a deux sous-familles ou plus (lecture étroite du pilote, réversible). Port par l'auteur de r4 (`toutPlier` / `toutDeplier`
+  déjà prêts), après la critique de r4 ; mesure de l'en-tête avec le titre le plus long de la feuille (critique r3) ; critique Fable.
+  Puis, mot pour mot : « Avec e, on doit toujours pouvoir plier déplier individuelle les catégories, ce bouton lock rien, juste un shortcut ».
+  Le segment est un raccourci : il pose l'état de tous les sous-groupes et ne verrouille rien ; chaque groupe se plie et se déplie toujours
+  d'un toucher, y compris celui d'une ligne à vérifier, qu'il peut replier à la main. Le `plierTout` actuel replie aussi un groupe à vérifier :
+  contraire à sa maquette (« Une ligne à vérifier garde son groupe ouvert, même tout plié »), il est corrigé au port.
+- D312 (le pilote, 02.11, après le plan v2 de la lenteur D, `voies/l1-plan/PLAN.md`) : sur les quatre cas que sa maquette D ne dessine pas.
+  (1) Le champ d'en-tête corrigé par la 3.8, et la 3.8 qui n'arrive jamais (borne client 150 s, ou seconde reprise ratée) : montrés en mini
+  maquettes (voie l3-cas, page neuve), avec pour référence A le défaut du plan (sa langue bleue sur le champ ; la forme d'aujourd'hui d'une 3.8
+  coupée). La voie E code A et suit son choix s'il en prend un autre : rien ne l'attend. (2) L'erreur après le provisoire prend la forme de la
+  3.8 qui n'arrive jamais ; hors ligne pendant la 3.8, le fil et la roue restent, une reprise au retour en ligne, rien de neuf dessiné
+  (défauts du plan, réversibles). (3) La 3.8 lancée en même temps que les Flash-Lite : non pour ce port. (4) Une borne côté serveur d'une
+  lecture « en cours » : non pour ce port, la borne client suffit (`invoiceScanBudget.ts:26` refuse exprès de relancer une lecture payée).
+- D313 (le brasseur, 02.11, vers 16 h ; page « Lecture lente : les lignes ajoutées et perdues · 02.11 », D310) : « 2 d, en un clic je peux Tout
+  validé les changements. Mais aussi un à 1 ». Une ligne du provisoire que la 3.8 ne retrouve plus : sa maquette `choix-lignes-38/maquettes/q2-d-arrivee.html`
+  (barrée dans la liste, hors des sommes, la question « … · pas retrouvée · Garder · Retirer » dans un bandeau au pouce au-dessus de Confirmer ;
+  Confirmer sans trancher : elle part). Ajout de ses mots, lecture étroite du pilote (réversible, dite) : le bandeau porte « Tout valider », qui
+  applique la lecture lente à toutes les lignes pas retrouvées d'un toucher (elles partent), et chacune garde Garder / Retirer, un à un. La
+  forme à plusieurs lignes n'est pas dessinée : voie l2b-valider (concepteur), puis critique, puis montrée. La question 1 (la ligne ajoutée) reste
+  ouverte ; la voie E code son option A d'ici là. Lecture large non retenue (valider d'un coup aussi les valeurs corrigées en bleu) : dite au brasseur.
+- D314 (le brasseur, 02.11, vers 16 h 30 ; même page, question 1, la seule qui lui était posée) : « B ». Une ligne que la 3.8 ajoute : sa maquette
+  `choix-lignes-38/maquettes/q1-b.html` (après la retouche du critique) : la rangée sur le fond bleu des corrections, nom, quantité, prix et
+  montant en bleu, « ↻ » devant le nom, sans ancienne valeur, à sa place dans sa bande ; comptée dans « ↻ N corrigées ». La voie E la code.
+- D315 (le pilote, 02.11, sur « ?? J'ai déjà donné mon avis ») : la page des cas rares (`choix-cas-38`, D312) reste ouverte, sans lettre réclamée.
+  Leurs défauts s'appliquent : un total corrigé prend la forme A (fond bleu, ancien total barré, la langue de sa maquette D) ; une 3.8 qui
+  n'arrive jamais prend la forme A (celle de l'app d'aujourd'hui, puce « Lecture coupée »). Son « B » reste lu pour la question 1 de la page
+  des lignes (D314), la seule posée à ce moment ; s'il visait l'autre page, il le dira et le pilote corrige. La voie E code ces défauts.
+- D316 (le brasseur, 02.11, vers 17 h ; page « Tout valider », D313) : « Oui b ». Plusieurs lignes pas retrouvées : sa maquette
+  `choix-valider/maquettes/b-arrivee.html`, `b-garder.html`, `tout.html` : le bandeau au pouce montre la ligne en cours (« pas retrouvée · 1/2 »),
+  Garder et Retirer sous son nom, « ↻ Tout valider » à côté (toutes partent d'un toucher). La voie e-ecran la code (forme déjà retenue d'office).
+- D317 (le brasseur, 02.11, vers 17 h ; SPEC « Passer à l'intégration ») : « On peut pas passer directement à l'intégration dans l'app ».
+  Lecture étroite (L01), portée : ce qui reste de la mission Dépense. Plus de page de choix ni de mini maquette avant le code : n3-ht (D304, lignes
+  HT) se code dans l'app avec le défaut du pilote, réversible : lignes et prix passés au TTC au prorata, par groupe de TVA quand `vatCode` trouve
+  sa rangée, sinon au rapport TTC / HT ; reste en centimes sur la plus grande ligne ; jamais de ligne « TVA » (ses mots sur le mapping) ; une
+  phrase d'indice « Lignes imprimées hors taxe, passées au TTC. ». Ses maquettes déjà choisies restent reprises telles quelles (règle n° 1). Les
+  contrôles internes restent (tests, build, banc Chrome local, critique) : ils ne lui demandent rien. Une remarque de sa part dans l'app devient
+  une correction. Le déploiement attend toujours son oui.
+- D318 (le brasseur, 02.11, vers 17 h ; SPEC « Mise en ligne : oui ») : « Oui ». Accord groupé : déployer la fonction aiTask seule et l'hébergement,
+  une fois vérifiés (tests, deux tsc, build, md5 du manifeste avant et après, banc Chrome local, critique), d'un dossier que nul autre n'écrit.
+  Couvre : Rénovation (D306), sous-groupes D et E (D307, D311), lenteur D (D308, D313 à D316), lignes HT (n3-ht, D317). Hors accord : les règles,
+  les index, `dispatchBrewerHopAdviceV1`, `notifyBrewerHopAdviceAnswerV1`, toute écriture de données réelles, tout « Confirmer ».
+- D319 (pilote, 02.11 ; SPEC « La TVA d'un ticket », D250, D259) : réponse en mots simples, sans conseil fiscal : en Suisse les prix d'un ticket
+  sont TTC ; la TVA comprise se calcule une fois sur le total d'un même taux (202,20 × 8,1 / 108,1 = 15,15 ; net 187,05), pas en retirant 8,1 % du
+  payé (16,38) ; par article ou sur le total, même résultat au centime près. Sous 100 000 CHF (D250), non assujetti : pas de remboursement, la TVA
+  est un coût ; assujetti (volontaire), il la déduirait dans ses décomptes à l'AFC et facturerait 8,1 % sur sa bière. À confirmer avec une fiduciaire
+  ou l'AFC. Pour la vue TVA (D259, « pour après ») : dire « comprise dans le total » et le calcul, et « ce que tu récupérerais » seulement s'il est
+  assujetti ; sa question entre dans le cadrage de cette vue. Rien à changer à la lecture (taux, base et montant lus justes).
+- D320 (le brasseur, 02.11, vers 18 h ; SPEC « Son statut TVA, pour le moment », D250, D319) : pour le moment, non assujetti : un achat est
+  payé TVA comprise et n'est pas remboursé (la TVA est un coût) ; il vend sans TVA. Vérifié en lecture seule sur ses données : `config/app`
+  `fiscal.isTvaRegistered = false` (taux 8,1 % et 2,6 % en réserve), l'app vend donc déjà sans TVA. Rien à changer. La récupération (assujettissement
+  volontaire) est « pour le futur » : la vue TVA (D259) la montrera alors.
+- D321 (le brasseur, 02.11, vers 19 h ; SPEC « Tester sur l'app déployée », D264, D298, L28) : après le déploiement, essais dans son app en ligne,
+  par l'entrée de l'app, sur ses vraies pièces, champ par champ et chronométrés : une pièce à plusieurs lignes (fil, « Lectures ●●◌ », Confirmer gris
+  puis noir, « ↻ N corrigées »), une quantité tapée pendant l'attente, « Fermer » pendant l'attente, la pièce HT (lignes au TTC, l'indice). Lectures
+  réelles journalisées (journal-gemini), 0,0445 CHF environ chacune, dans les 40 du cadre. Sans son accord : aucun « Confirmer », aucune écriture
+  ni suppression de données réelles (D298) ; « Confirmer » sur la pièce HT ne se prouve en ligne qu'avec son oui (une dépense « TEST pilote », lignes
+  hors stock, supprimée avec son fichier Drive dans la même séance).
+- D322 (le brasseur, 02.11, vers 19 h 30 ; SPEC « Le test de bout en bout », D232, D298, D321) : accord pour « quelques exemples » enregistrés
+  dans son app en ligne. Lecture étroite (L01) : 4 dépenses d'essai au plus, chacune marquée « TEST pilote » dans sa description, sur ses vraies pièces,
+  par l'entrée de l'app ; cas couverts : produit absent du stock (recherche IA de la fiche, article créé, entrée en stock), produit déjà en stock
+  (quantité et prix mis à jour), pièce HT (« Confirmer » accepté), ticket de rénovation hors stock (familles, TVA, TWINT payé), lecture lente
+  (provisoire, saisie pendant l'attente, « Fermer »), doublon refusé. Après chaque essai : Stocks, Finances et Drive relus. Retour en arrière comme D232 :
+  correction par l'app (`revertTransaction`, contre-écriture et annulation, historique gardé), fichier Drive à la corbeille non vidée ; un article créé
+  par l'essai reste (stock ramené à 0 par l'annulation) et lui est signalé : l'effacer d'un document reste à lui. Coût : lectures à 0,0445 CHF environ,
+  une recherche de fiche à 0,35 CHF au registre, journalisés (journal-gemini) ; plafond 3 CHF pour la séance.
+- D323 (le brasseur, 02.11, vers 19 h 30 ; SPEC « Le test fragile ») : « enlève le ». Le cas « wizard → quatre couches → retour niveau par niveau »
+  de `tests/integration/AppRoutePile.test.tsx` (T3, #162) passe en `it.skip` : il échouait sous la charge de la suite complète (attentes d'1 s), vert
+  seul. Le second cas du fichier reste. Lecture étroite et réversible : désactivé, pas effacé ; la pile de routes perd ce garde-fou tant qu'il est éteint.
+- D324 (pilote, 02.11, soir ; D322, L13) : en ligne, la photo de son ticket prise au téléphone (3072 × 4096, 8,1 Mo) est refusée
+  « 4 Mo maximum » par « Un document », sans appel IA ; une page de « Plusieurs » l'aurait été aussi (« 4 Mo au plus »). Une photo de téléphone
+  dépasse souvent 4 Mo : « Photographier le ticket » ne lisait pas ses tickets. Correctif réversible : `allegerPhoto` (`pagesJustificatif.ts`)
+  réencode en JPEG, dans le téléphone, toute image de plus de 4 Mo, au premier niveau qui tient (côté long 4096 à 0,85, puis 3200, puis les
+  niveaux du PDF), avant l'empreinte et la lecture ; la roue tourne pendant. Une image illisible ou trop lourde à tous les niveaux garde le refus
+  d'aujourd'hui, avec son poids. Le justificatif gardé au Drive est la photo allégée. Témoins `tests/unit/depense/pages/alleger.test.tsx` : 6 rouges
+  sur HEAD, verts après. Retour arrière : retirer les deux appels d'`ExpenseSheet`.
+- D325 (pilote, 02.11, soir ; D247, D318) : en ligne, la 3.8 coupée (MAX_TOKENS à 5 085 jetons sous le plafond de 5 100) sur une commande de
+  31 lignes en 3 pages : « Lecture coupée », le final perdu. Le pire cas estimé (4 050 jetons, l1) oubliait la réflexion, qui compte dans
+  `maxOutputTokens`, comme pour la Flash-Lite. `SCAN_MAX_OUTPUT` passe à 8 192, le plafond de la Flash-Lite : la réserve du budget monte, une
+  lecture ordinaire coûte pareil (seuls les jetons rendus se paient). Le banc garde 5 100 pour ses groupes mesurés avant (`BANC_MAX_OUT`) ; sa
+  3.8 suit la production. Témoins : `plafond-38.test.ts` et `invoiceReview` (8 192), rouges sur 5 100 ; l'instantané f5c change d'un champ (l'ancien
+  hachage reste vérifié à 5 100). Redéployé seul (`functions:aiTask`, cadre D318). Retour arrière : 5 100 et redéployer.
+- D326 (pilote, 02.11, soir ; D322) : bilan des essais en ligne. Vérifiés dans son app : doublon refusé (« Même facture n° », rien d'écrit) ; lecture
+  lente (provisoire vers 10 s, saisie gardée, « Fermer » sans écriture, reprise servie du cache sans appel) ; essai 1, une commande HT de 3 pages et
+  31 lignes, « TEST pilote » : indice HT, « Confirmer » accepté, deux articles existants mis à jour, un article créé avec sa fiche cherchée par l'IA
+  (EBC, PPG, source), PDF de 3 pages au Drive, Finances « À payer » ; annulé par l'app (« Écriture annulée. Justificatif et historique conservés. »),
+  stock ramené, PDF à la corbeille non vidée. Défauts vus, en voie suivante (défauts du pilote, réversibles) : (1) l'unité tirée de la contenance du
+  nom (un sachet « 11.5 g » lu 2 g au lieu de 2 sachets, deux autres lignes pareilles), d'où un second article proposé au lieu de l'existant ;
+  (2) un article existant non proposé (lactose) : une fiche en double — « on veut pas de retrouver avec plein de fiche du même produit » ; (3) deux
+  houblons proposés sur leur article d'un autre α, et la rangée montre l'α de l'article au lieu de l'imprimé ; (4) changer l'unité efface le prix
+  unitaire ; (5) le détail Finances garde les noms de la pièce en allemand ; (6) la provenance dit « 3.8 » quand la 3.8 a été coupée ; (7) l'article
+  doublon du 01.11 (Cryo Citra 25 g) reste à côté de l'existant ; (8) limite connue (b-lenteur, repli R1) : après une relance hors ligne, un final
+  sans jeton qui change le nombre de lignes ne s'applique pas. Restes de l'essai 1, à lui : l'article créé (stock 0, avec sa fiche), l'écriture annulée
+  au journal, un nom imprimé appris par l'article de levure (juste). Captures impossibles dans son Chrome (la fenêtre ne rend pas) : preuves par texte,
+  DOM et Firestore en lecture.
+- D327 (pilote, 02.11, soir ; SPEC « ÉNORMÉMENT de problème », L01, L24) : la version en ligne est l'hébergement et `aiTask` du commit
+  b3ab392e (branche claude/refonte-houblons-v4, bundle `index-DTmoQW-7.js`, servi depuis le 02.11 16:11:40 UTC) ; l'hébergement vient de cette branche
+  depuis le 01.11 (D255, D265, D287), et 31 fichiers de `src/` ont changé depuis D287. Lecture étroite et réversible : rien de plus n'est déployé tant
+  que ses problèmes ne sont pas recueillis ; les correctifs D324 et D325 sont prêts (tests, typage, build verts), pas en ligne. Chacun de ses problèmes
+  ira, avec ses mots, à DEFAUTS-RECURRENTS et à un contrôle qui échoue sur cette version (L13).
+- D328 à D337 (pilote, 02.11, soir ; SPEC « un enfer » à « TELLEMENT de problème », L01, L03, L12, L13) : son ticket Bauhaus (17 lignes, hors
+  brassage) joué par lui sur b3ab392e montre ce qu'aucun banc n'a joué : une pièce hors brassage, chaque état touché, le thème clair, l'app à côté de
+  ses maquettes choisies. Lecture vérifiée en lecture seule : les trois lectures étaient justes (17 sur 17, somme et TVA justes) ; les défauts sont
+  dans l'écran et la logique de confiance. Rien de sa pièce n'est enregistré. Défauts D328a à D337 à DEFAUTS-RECURRENTS, chacun avec un contrôle.
+  Lot g (voies g1-audit, g2a-ecran, g2b-logique, g3-ecarts) : son ticket rejoué en local sans appel payant, deux thèmes, 390 et 1280 ; défauts du
+  pilote, réversibles, il juge dans l'app (D317) : (a) hors ingrédients, q × prix juste = sûr ; (b) aucun « ? » hors stock ; (c) la nature suit la
+  famille sauf article lié ; (d) son bandeau B étendu à tous les changements de la 3e lecture, « ↻ Tout valider » et un à un (D313) ; (e) « Plié »
+  plie tout (D311) ; (f) « ↶ Rétablir » après « Regrouper » jusqu'à « Confirmer » ; (g) le rouge sur la cellule et le champ fautifs ; (h) la puce
+  active pleine ; (i) le segment Nature allumé pour chaque type d'achat (Matériel : matériel, emballage, nettoyage, entretien, autre ; Service :
+  service, livraison ; remise : sans segment). Rien n'est redéployé avant le rejeu de son ticket et le verdict du critique sur les captures.
+- D338, D339 (pilote, 02.11, soir ; ses questions « milliers de test », « les bon outil », « analyse d'image », L12) : chaque outil à sa place.
+  Vitest pour la logique et l'état, un test par règle, sans doublon ; un défaut visuel (thème, contraste, rognure, couleur, ce qui est plié) se
+  prouve dans Chrome par le style calculé, aux deux thèmes, jamais par jsdom ; chaque capture est regardée comme une image (agent de la voie,
+  critique, puis pilote sur les états clés) ; avant tout déploiement de la Dépense, une passe libre du critique sur une pièce neuve (DEFAUTS D338).
+  Constat : 1 924 tests sur la Dépense et les finances (34 fichiers rendent un composant, sans CSS) ; banc Chrome de 29 cas, sans thème clair.
+  Retirer des tests redondants attend son accord.
+- D340, D341 (le brasseur, 02.11, soir) : « Non enlève les test inutiles on a bien vu que ça servait à rien et trouvais pas les vrais problèmes... ».
+  Son accord : les tests inutiles de la Dépense et des finances (doublons, verts par construction, caducs) sont retirés par la voie g5-tests après g2a
+  et g2b ; un test qui échoue n'est jamais retiré ; retour par git. Le critique g3 rend 6 bloquants, 19 écarts, 8 détails contre ses maquettes
+  (voies/g3-ecarts/ECARTS.md) ; les écarts sans preneur vont à g2a (B1, C1, C2, C3, C5, C7, A2, A3, A4, D2, E1, G1).
+- D342 (pilote, 02.11, soir ; « POURQUOI CA N'A JAMAIS ÉTÉ FAIT, TESTÉ ?????? AINSI », L12, L13) : sa méthode devient une garde. Avant tout
+  déploiement de la Dépense, chaque état de la version à déployer est capturé (deux thèmes, 390 et 1280, 8 états au moins), regardé comme une image
+  et passé à sa question ouverte « combien et quels problèmes il y a ? », par le critique puis par le pilote ; `node scripts/agents/controle-avant-deploiement.mjs <sha>` refuse sans verdict, sans nombre de problèmes par capture, avec un bloquant ou sans « Pilote : vu » (témoin : b3ab392e → ECHEC).
+- D343 (le brasseur, 02.11, soir) : « Il faut passer moins de temps avec fixture et unit test mais beaucoup plus cas réel et test d'écran par vision
+  sur une critique qui analyse et pense comme un brasseur, et regarde si tout est vraiment pratique, au bon endroit, réagit correctement ». Règle de
+  méthode pour toute l'app : CLAUDE.md (« Tester d'abord par la vision »), le skill voies (§ 2 : le critère décisif de ce qu'il verra est le test
+  d'écran du critique), l'agent critique (troisième mode « Test d'écran » : sa question ouverte, puis pratique, à sa place, réagit juste, avant et
+  après chaque geste, deux thèmes, deux largeurs, vraies pièces dont une neuve). Vitest garde les règles de calcul, un test par règle ; peu de fixtures.
+- D344 (le brasseur, 02.11, soir) : « Le critique ne doit pas faire 1000 trucs juste exactement ce que tu as fait avec les 16 point ». Le mode
+  « Test d'écran » du critique se réduit à sa question, « combien et quels problèmes il y a ? », par capture : liste numérotée, doutes à part, sans
+  grille, note ni redessin (agent critique, CLAUDE.md).
+- D345 à D347 (le brasseur, 02.11, soir) : « Cette vue là de détails doit être refait, fait moi des mini maquettes […] Mapping peut utiliser
+  l'ai su besoin » (lot plateau, `work/missions/2026-10-31-ecran-depense/plateau/BRIEF-PLATEAU.md`, 16 v0 en 4 séries) ; « L'app ne décide pas,
+  c'est que toi qui fait du code ??? » (L03 : un port retire ce que sa maquette n'a pas) ; « À 90% d'usage hebdo, terminé tes tâches ».
+- D348 (pilote, 02.11, soir ; pg et pu : PANEL ECHEC, 0,91 et 0,92) : le brief impose la liste groupée de p3c-3 autour du plateau, et
+  `controle-panel` en plein écran mesure surtout cette liste commune. La liste reste (sa baseline) ; la diversité du v0 se juge sur le plateau
+  seul, par le critique au tri. Réversible : en passe 2, `controle-panel` sur le plateau rogné si l'outil le permet.
+- D349 (pilote, 02.11, soir ; règle n° 1, L03) : la passe 2 du plateau demandait « sûr = rien : aucun ✓ sur une valeur sûre » (synthèse du
+  critique). Cette consigne contredit sa maquette p3c-3, qui porte « ✓ au centime », « ✓ 8 lignes » et la boîte cochée des rangées reliées.
+  Ces trois-là restent, tels que dans p3c-3 ; « sûr = rien » ne vaut que pour les ✓ ajoutés hors de sa maquette. pa1b les a gardés ; pu4b
+  et pz2b les remettent.
+- D350 à D352 (le brasseur, 02.11, soir, sur sa capture de pa1b) : « éviter les dropdown sur mobile, ça nécessite 2 actions » ; « Au centime, ça
+  veut dire quoi ?? Ça ajoute rien, non ? » ; « Unité pas aligné btw ». Au téléphone, un choix en un toucher (cases, segments), aucun menu
+  déroulant ; « ✓ au centime » retiré quand le calcul tombe juste, montré seulement quand il ne tombe pas (remplace D349 sur ce point) ;
+  la quantité de la bande alignée sur celles des rangées. Contrôle `controle-sans-menu.mjs` ; passe 3 des trois candidates. Les menus
+  déroulants du reste de l'app sont à relever, pas changés ici (lecture étroite, L01).
+- D353 à D355 (le brasseur, 02.11, soir, sur sa capture de pu4c-a ; verdict passe 3 du critique : trois ACCEPTÉ) : (D353) le choix d'unité
+  d'une ligne offre toujours la pièce, en un toucher, en plus des unités de sa famille ; une ligne imprimée « Stk » se lit en pièce, et l'imprimé
+  garde « Stk » (D213 : une conversion vers l'unité du stock est un fait qu'il voit). (D354) Un changement de la relecture accepté ne se marque
+  plus ; la marque de d-lue (bleu, ancien barré, son choix) ne reste que tant que son geste l'attend. (D355) Le détail d'une ligne ne nomme
+  aucune autre ligne ; le compte « à régler » et le passage à la suivante restent au récap. Lecture étroite : la position sans nom reste
+  permise, à lui montrer. Contrôle `controle-plateau-ligne.mjs`, LIGNE ECHEC sur pu4c, pa1c, pz2c (témoins). Passe 4 chez les mêmes auteurs,
+  avec la correction du critique sur les deux comptes de pa1c et la position de pz2c. Dans l'app (`src/ui/depense`), à relever à
+  l'intégration : la pièce au choix d'unité et la marque après « Tout valider ».
+- D356 (le brasseur, 02.11, soir) : « je ne lance plus rien de neuf., non mais terminé avec tout ça ». D347 se relit : à 90 % d'usage
+  hebdomadaire, les tâches doivent être finies ; le budget d'ici là sert à les mener au bout (plateau jusqu'à sa page, rejeu de son ticket,
+  test d'écran, garde et déploiement, puis les restes), sans chantier neuf. À 90 %, l'état est écrit et commité. L01.
+- D357, D358 (le brasseur, 02.11, soir, sur la capture du banc de 60a8c25f, sombre sous filtre) :
+  - (D357) « Regrouper en une dépense » reste réversible : « ↶ Rétablir » jusqu'à « Confirmer », depuis D332. Il quitte la rangée de « + Ajouter une ligne » et devient un lien discret au bout de la ligne « Détail ». Lecture étroite, réversible.
+  - (D358) Deuxième plainte après D261b (rouge devenu jaune) : changement de genre (L13). L'arrondi suisse à 5 centimes devient sa propre ligne neutre dans la liste, celle que D270 enregistre déjà ; le détail égale alors le total et rien n'est signalé. Tout autre écart reste signalé.
+  - « Il manque les deux boutons ? » : le segment « Plié | Déplié » (D311) ne se montre que s'il y a des sous-familles à plier. Inchangé, la question lui est rendue.
+  Voie g7-reste (auteur), avec M1, M5, M11 et D354 dans l'app.
+  Le test d'écran du critique et le déploiement porteront sur la version de g7, pas sur 60a8c25f : un seul déploiement, et il regarde déjà lui-même les captures de 60a8c25f.
+- D359 (pilote, 02.11, soir ; retour de g7-reste, commits cd14101b et 7945555e) :
+  - M1 : la cause n'était pas l'unité. Les lectures divergeaient sur la seule nature d'une ligne sans stock. Ce désaccord ne marque plus rien.
+  - M5 : l'éclair, plus un 3,9:1 durable. Le fond filtré passe à 5 % en sombre ; c'est calculé, à voir au banc.
+  - M11 : un vrai défaut. Le lien d'article vide est compté.
+  - D354 : la marque restait. Elle part après « Garder » ou « Tout valider ». Cinq assertions de D329 sont inversées, puisque ses mots du 02.11 priment.
+  - D357, D358 : faits.
+  - Lecture large acceptée, réversible en une ligne : la puce « N corrigées » s'éteint aussi après validation, car rien n'attend plus.
+  - Le script de banc porte des noms de cas tirés de sa pièce. Il reste hors Git, copié en `g-banc.mjs`, jusqu'à ce que ces noms passent au manifeste.
+- D279 (le pilote, 01.11, nuit ; mesure de D278) : la variante Csv8F (`nameFr` dans la lecture) mesurée au banc des 14 pièces, passe payante 0,55 CHF (cumul 8,53 CHF sur 49). **PERTE** contre la production : champs justes 148 contre 153 sur 165, lignes justes 203 contre 217 sur 224, faux verts 1 et 1. La lecture change avec le champ : un total HT rempli d'un sous-total non imprimé sur trois pièces, les prix unitaires omis sur une pièce, les unités tirées du nom sur une autre ; et la traduction est inégale (non faite sur deux pièces en allemand, une marque coupée : « CARAFA® Spezial 3 » devenu « CARAFA® »). D278 ne s'applique pas à cette forme : aiTask inchangé, rien redéployé. Suite (pilote, réversible) : traduire à part de la lecture, par un appel texte seul sur le nom de base de f1 (sans image, sans montant), qui ne peut rien changer à la lecture ; mesuré au banc (voie f5b-traduire) ; D278 couvre son ajout à aiTask si la lecture reste identique et la traduction juste.
+- D278 (le brasseur, 01.11, nuit) : « Pour ce dernier, il faudra modifier aiTask, à mesurer au banc j'autorise ce changement, hausse aussi le total à 49chd pour l'ia ». Accord : la désignation en français (`nameFr`, voie f5-noms-fr) entre dans la lecture d'aiTask et aiTask est redéployé, à condition que le banc des 14 pièces ne montre aucune perte (champs, lignes, faux verts, temps, coût) ; sinon rien ne change et le chiffre lui est rendu. Le plafond cumulé des appels IA payants (banc et essais en ligne) passe de 25 à 49 CHF (`journal-gemini.md`) ; une passe reste plafonnée à 3 CHF et lancée par le pilote seul.
+- D277 (le brasseur, 01.11, nuit) : « Pour les unités, c'est quand même facile à devenir ?? SI il y a un doute, ça me flag mais de base ça essaie d'auto remplir. Il y a 3 cas de figure: sûr ou quasiment sûr, rien. / Pas sûr mais repis, flag jaune. Je contrôle / Ne sait pas, aucune idée, flag rouge, je dois remplir ou corrigé », puis « pas que pour les unités mais globalement pour tout ». Règle de toute la Dépense : chaque valeur (unité, quantité, prix, montant, famille, article, date, fournisseur, total, TVA, numéro) a un niveau, sûr (rien d'affiché), repris (jaune, jeton `attention`, il contrôle) ou inconnu (rouge, jeton `alert`, il remplit). Une unité absente se déduit (prix × quantité, famille, contenance, article relié, sachet de levure) au lieu de rester « ? ». **Remplace** la phrase de D214 « sans unité devinée » ; reste de D214 : rien n'entre en stock tant qu'une unité est inconnue (rouge). Un seul langage de doute : les points de lecture, « unité ? » et la rangée douteuse s'y ramènent. Voie f2-confiance (module), puis f3 (écran).
+- D276 (le brasseur, 01.11, nuit ; SPEC 31.10) : « Une fois produits ajouter, vue fermé et tout, ça créé une procédure pour enrichir le nouveau produit du stock btw, comme demandé il y a un moment ». La règle (4) de la décision du 31.10 n'est pas faite. Voie f4-enrichir (auteur opus, deux temps) : après Confirmer, en arrière-plan, rapprochement aux catalogues du dépôt (levures comprises) puis recherche par la tâche IA existante, une seule fiche par produit. Gemini en production éteint par défaut (accord de l'utilisateur, coût par article montré) ; un champ ou une collection neuve : accord de l'utilisateur (schéma).
+- D275 (le brasseur, 01.11, nuit, sur ma capture 390 de sa commande) : « Il y a plein de problème sur cette vue, déjà pas de traduction. Ensuite le concassage n'est pas un produit mais un état du malt. C'est pas du tout compacte, comme demandé, et ça créé de base automatiquement un nouveau produit du ça arrive pas à lié à un stock. Pas besoin d'afficher autant. Ça respecte pas trop les demandes.... Ni la vue de base. » ; puis, à « ta maquette choisie (p3c-3) » : « non c'était un exemple, il y a une quelques améliorations entre temps ». Lecture (L01, étroite et dite) : (a) les options imprimées (« Mischung: Einzelprodukt, Schrotung: geschrotet [+CHF 0.10] ») sortent du nom, se lisent en français, et le concassage devient l'état du malt, une pastille sur sa rangée ; le nom de base sert à l'affichage, au rapprochement et au nom de l'article neuf (voie f1-options) ; (b) une ligne d'ingrédient qu'aucun article ne relie devient d'office un nouvel article, montré par le picto « nouveau » et compté au récap, sans bouton « Créer » au repos : **remplace** le bouton « Créer « … » » de D231 ; ⇄ et « aucun stock » restent au plateau ; (c) une rangée = une ligne du papier, comme p3c-3 ; (d) la vue de base est p3c-3 avec D246, D248, D249, D261a, D262b, D262d, D271. Les noms de produits imprimés restent tels quels (D261a, D271 « la désignation imprimée reste telle quelle ») tant qu'il ne dit pas de les traduire ; leur traduction demanderait une lecture changée (aiTask), mesurée au banc puis à son choix. Contrôles (h) à (l) du bout en bout de doc14, rouges sur l'écran d'aujourd'hui avant la correction (voie f3).
+- D274 (le brasseur, 01.11, nuit, sur ma recommandation : « Cache de lecture : le lier au moteur, pour qu'une pièce déjà lue soit relue après un changement. Une relecture coûte quelques centimes. Je le recommande yes ») : l'identifiant de lecture d'aiTask (`invoiceScanId`) porte désormais l'empreinte du moteur (`invoiceEngineDigest`). Elle est calculée sur les modules qu'`ai` importe, de proche en proche, lus à côté du module (`lib/*.js` une fois déployés), une fois par instance. Ils sont 40 : tout ce qu'aiTask importe. Le changement d'une autre tâche fait donc aussi relire une pièce renvoyée, ce qui coûte quelques centimes ; une lecture d'un ancien moteur n'est jamais resservie. Si un module est illisible, l'empreinte est tirée au hasard et une erreur est journalisée : rien n'est servi du cache. `INVOICE_SCAN_VERSION` reste `invoice-v5` : elle dit le format, que lisent les scripts d'évaluation. Au déploiement, toutes les lectures gardées deviennent inaccessibles, sans être effacées. Test `tests/unit/invoiceScanCache-d273c.test.ts`, rouge 4/5 avant, vert après. 245 tests voisins verts (lecture, budget, banc k6) ; types des fonctions verts. Déploiement d'aiTask seul. Fait depuis `%TEMP%/deploy-63130965` détachée sur abd80cde (`functions/` ne diffère de 8050e494 que par `invoiceScanCore.ts`). Types et build verts ; l'empreinte lue sur les `lib/*.js` compilés vaut `7909df236aecab9d` (pas une empreinte au hasard). Le déploiement dit « Successful update operation », révision `aitask-00047-jil` (20 h 24 UTC). Preuve en ligne : sa commande doc14, déjà lue au D273 sous l'ancien identifiant, est renvoyée dans « Entrer une facture ». Elle est relue en direct : deux Flash-Lite puis la 3.8 dans les journaux (20 h 26 UTC), « 3 lectures », 16/16 lignes, « Somme = imprimé ». Aucune entrée WARNING ou plus depuis le déploiement. La feuille est fermée sans enregistrer, compteurs inchangés ; 15 lectures en ligne sur 40. Retour arrière : redéployer depuis 8050e494.
+  en B-001 à B-026). Par le geste d'annulation de l'app, qui retire ses mouvements de stock ; rien d'autre n'est touché.
+- D267 (le brasseur, 01.11, nuit ; D266) : « Ok » au redéploiement de `aiTask`. Déployé seul (`--only functions:aiTask`) depuis la copie
+  propre `%TEMP%/deploy-63130965`, détachée de 1257fd76 sur ced4a6a8 : `functions/` ne diffère que par `invoiceControls.ts` (arrondi à
+  5 ct, D261b) et `invoiceVisionReview.ts` (TVA somme du bloc contre null, D262a). Types des fonctions verts ; « Successful update
+  operation » ; aucun avertissement ni erreur de `aiTask` dans ses journaux depuis. L'avertissement « AUTHORIZED_ACCOUNTS est vide » ne
+  vient que de l'analyse locale (copie sans `functions/.env`, D254). Manifeste régénéré de la copie remis. Retour arrière : redéployer
+  depuis 1257fd76.
+- D266 (pilote, 01.11, nuit ; D262, D263) : le banc k6 répond à « 2 lents puis 1 lent » sur ses 14 pièces : A ne lit pas mieux (140/153
+  champs, une pièce sans résultat) que C★v8 (153/165), est plus lent (23,7 s contre 17,6 s médian ; sa pièce 33 s contre 21 à 23 s) et plus
+  cher (0,070 contre 0,044 CHF). La production reste C★v8 ; rien ne bascule. Ce qu'il a vu vient des règles de l'app : correctifs D261b
+  (arrondi), D262a (TVA par taux), D262c (contexte des lignes) et D264a (doublon d'un achat historique) posés par la voie k6-correctifs ;
+  le côté serveur (`functions/`) attend son accord pour redéployer `aiTask`. Réduire les appels à la 3.8 (`kind`, `amountHT`, D261c) : son choix.
+- D265 (pilote, 01.11, nuit ; accord D260) : hébergement seul déployé depuis `%TEMP%/deploy-hosting-qr`, détaché sur 6bb83d4a (port p3c,
+  D261a, D262b). Tests visés verts (copie isolée : types, 91 fichiers, 1 539 tests ; copie de déploiement : 14 fichiers, 147 tests),
+  build et `check-no-dev-auth` verts ; « found 259 files in dist », « release complete ». Bundle servi : « Mois passé » présent,
+  0 trace de `dev-local`, `devLocalUser`, `preview=` ; `?dev-local` en ligne montre la vraie page de connexion. Ni fonctions, ni règles, ni push.
+- D264 (le brasseur, 01.11, nuit ; D210, D217, D263) : « Fait bien à la fin les test d'intégration bout en bout. Et les tests sur la VRAI
+  app avec les VRAIS donnés. Est-ce que le stock de met bien à jour ? Les factures aussi, tout suit ... » et « Il faut testé aussi avec
+  les autres pièces de test btw pas juste celle-ci... ». Lu : (1) le banc compare A (« 2 × 3.8 puis 3.8 ») et C★v8 sur les 14 pièces ;
+  (2) avant de clore, le parcours facture → dépense → stock → justificatif est joué de bout en bout sur les émulateurs, ses vraies pièces
+  lues ; (3) sur l'app en ligne, ses vraies données sont relues (dépenses récentes, leurs mouvements de stock, leurs justificatifs : tout
+  suit-il ?) en lecture seule. Un mouvement sur un article réel reste interdit (D217) : le jouer en ligne, puis le défaire, attend son accord.
+- D263 (le brasseur, 01.11, nuit ; D260, D262) : « non non c'est prio 1 ça, même si on dépasse les 65% ». Le banc de la pièce
+  Brau- und Rauchshop passe ce soir, avant tout le reste et au-delà de la borne de D260 : vérité écrite, production C★v8 rejouée,
+  « 2 × 3.8 puis 3.8 » mesuré, justesse champ par champ (noms, familles, TVA, port, arrondi) et temps. Lectures Gemini réelles du banc,
+  journalisées, dans son budget (25 CHF, 6,36 dépensés). Rien ne bascule en production sans son choix sur les chiffres.
+- D262 (le brasseur, 01.11, nuit ; D261) : « SI on perd à ce point en qualité avec 2 Rapid puis 1 lent autant utiliser 2 lents puis 1
+  lent comme au début », la TVA « semble pas super fonctionné », et pour la date « Aujourd'hui / Mois passé / Mois suivant. La date
+  exacte est rarement important. Le mois l'est plus ». Décisions du pilote, réversibles : (1) les défauts de la pièce viennent des
+  règles de l'app (noms joints, arrondi, port), pas des modèles ; « 2 × 3.8 puis 3.8 » entre au banc demain contre C★v8 sur sa pièce et
+  le jeu, justesse et temps, et il choisit sur les chiffres ; rien ne change en production ce soir ; (2) la pastille TVA se diagnostique
+  au même banc (D262a) ; (3) la date : raccourcis « Aujourd'hui · Mois passé · Mois suivant » (le jour d'aujourd'hui, borné, dans le
+  mois choisi) à la place de « Hier · Aujourd'hui · Demain » ; la rangée « Changer le mois, garder le jour » reste (L02). Le (3) entre
+  dans le déploiement de ce soir s'il est vert avant 60 % (D260).
+- D261 (le brasseur, 01.11, nuit ; D260) : sur une commande Brau- und Rauchshop lue en ligne, « Ça semble pas être super juste ??? Et
+  ça a pris vraiment beaucoup de temps pour une "facture" relativement simple ??? ». Constats sur ses captures et les journaux de
+  `aiTask` : (a) noms doublés, la variante jointe à un nom qui la contient déjà (`ExpenseSheet.tsx:284`) ; (b) l'arrondi suisse à
+  5 centimes du total (170,21 → 170,20) traité en écart bloquant (`invoiceControls.ts`, `somme-ecart` exact au centime) ; (c) le port
+  rangé comme un article (corrigé par p3c-port, D258, pas encore en ligne) ; (d) 27 s côté serveur, dont 19,6 s pour la troisième
+  lecture 3.8 lancée par le désaccord des deux premières. Décisions du pilote, réversibles, dans la borne de D260 : (a) et (c) entrent
+  dans l'état déployé ce soir (client seul) ; (b) et (d) touchent la fonction de lecture : au banc demain (skill `banc-lecture`, la
+  pièce entre au banc), puis un déploiement de `aiTask` sur son accord. Défauts D261a à D261c.
+- D260 (l'utilisateur, 01.11, nuit) : « À 60 jusqu'à 65 hebdo, stop les nouvelles tâches et met dans un état stable et deploye. Les
+  choix seront fait demain ». Accord de déploiement, pour cet état seul. Lecture étroite du pilote (L01) :
+  (1) à 60 % de l'hebdo (57 % à la consigne), aucune tâche neuve : ni tri ni page de la passe 2 rénovation, ni p3c-finances, ni
+  reprise TVA ;
+  (2) ce qui est en vol se finit et se vérifie : p3c-port-b (rejeu des GATES, diff, captures), la passe 2 rénovation (rendus gardés
+  pour demain, sans tri) ;
+  (3) l'état stable est l'écran Nouvelle dépense p3c-3 avec le port (D248, D249, D258) et ses corrections, commité, puis déployé en
+  **hébergement seul** depuis `%TEMP%/deploy-hosting-qr` (D255), tests visés (D236), avant 65 % ; ni fonctions, ni règles, ni push ;
+  (4) s'il n'est pas stable à temps (GATES rouges, régression), rien n'est déployé et la version en ligne reste celle de D255.
+- D259 (le brasseur, 01.11, nuit ; D250) : sur u3 (la bouteille de TVA), « un peu enfantin j'aime assez bien, après pas convaincu
+  vraiment du design. Mais avoir une vrai vu comme ça c'est top », puis « et la partie maron ? Ni vraiment combien je gagne ? » ; les
+  outils de prix et de prédiction de vente sont « pour après ». Son besoin d'abord : « outil de prédictions, vu d'ensemble,
+  panification » pour la rénovation (hotte, 2ᵉ évier, armoire extérieure, seconde passe sur les sols, site vitrine), avec peu de temps
+  et peu de budget. Décisions du pilote, réversibles : (1) la passe 2 TVA déjà lancée finit (r3b, r4b, r2b, u4b), sans passe 3 ni page
+  neuve tant que la rénovation n'est pas montrée ; (2) u3 devient une greffe de la reprise TVA (la « vraie vue » en bouteille), avec
+  le partage du prix (coûts, TVA, ce qu'il gagne) en piste « pour après » ; (3) défaut D259 : chaque zone d'une figure dit ce qu'elle
+  représente (le fond marron de u3 ne représentait rien) ; (4) mission neuve `2026-11-01-renovation` : ce que l'app a déjà (Projets de
+  matériel dans Prévisions) lu d'abord, jury de cadrage, puis entonnoir de mini maquettes (L24). Réversible.
+- D258 (pilote, 01.11, nuit ; D248, D249) : le port a **une seule forme**. Les deux plans divergeaient (port-total : `draft.port` à
+  part ; p3c-port : le port gardé dans `draft.lines` et écarté à l'affichage). Tranché : le port reste une ligne `kind === 'shipping'`
+  de `draft.lines` (la somme et `validatePurchase` le comptent déjà) ; l'écran l'écarte des bandes, sous-totaux, comptes et de l'ordre
+  Papier (« Non non aussi quand imprimé article ») et le dit en « dont port » ; `savePurchase` l'écrit en entrée `shipping` de
+  `finance.lines` sans stock, équipement, reçu ni mouvement (la comptabilité exige Σ lignes = total, `ledger.ts:170`). Pas de
+  `draft.port`, pas de « port probable » (couche morte). p3c-port : pas de `sr-only` en doublon pour garder des tests verts, ses quatre
+  tests hors Possède adaptés par sélecteurs, aucune assertion retirée ; bande collante retirée ; bande « Autres » gardée ; états de
+  Finances à une voie p3c-finances. Réversible.
+- D257 (l'utilisateur, 01.11, soir ; D256) : « Oui et oui » au déploiement du correctif et au push avec PR. **`aiTask` déployé**
+  seul (`--only functions:aiTask`) depuis la copie propre `%TEMP%/deploy-63130965` placée sur 1257fd76 (depuis 3b3e74ac, `functions/` ne
+  diffère que par `invoiceScanCore.ts`). « Successful update operation », révision `aitask-00043-raz` (16 h 32), hash `3722e88f`, tout le
+  trafic dessus, démarrage sans erreur. Lecture de contrôle 4 (fictive, empreinte neuve, 0,0096 CHF) : 7 montants de ligne, somme
+  vérifiée à 110,40, rien enregistré ; les Flash-Lite ont rangé les montants en `amountTTC`, la règle n'a donc pas joué ici (preuve :
+  tests et banc, D256). Le cache par empreinte sert toujours l'ancien résultat d'une pièce déjà lue avant le correctif. Manifeste de la
+  copie remis. Retour arrière : redéployer `aiTask` depuis 3b3e74ac.
+- D256 (pilote, 01.11, soir ; D247, D255) : le test en ligne de la version déployée montre, sur une facture fictive à un seul montant
+  par ligne sans en-tête, les sept montants rangés en `price` par la 3.8 (`quantity` et `amountTTC` vides) : « — » à l'écran, somme non
+  vérifiée. Règle `montantDeLigne` dans `normalizeInvoiceScan` (`functions/src/invoiceScanCore.ts`, chaque lecture avant le vote) :
+  `amountTTC` vide, `price` fini, quantité vide ou 1 → `amountTTC = price` ; rien d'autre ne change, rien n'est multiplié ni inventé.
+  Banc hors ligne (C★v8 + N, 26 parcours, aucun appel) : 8 lignes réelles touchées, 8 justes ; aucune pièce ne perd ; doc4 gagne 3
+  lignes et une 3.8 en moins. Tests : 15 nouveaux (11 échouaient avant), 3 adaptés au cas désormais rempli ; 176 tests visés verts,
+  build vert, manifeste inchangé. Le banc importe la même fonction : parité automatique. **Pas déployé** : `aiTask` attend son accord.
+  Voie fn-montant-seul.
+- D255 (pilote, 01.11, soir ; D247, D253) : **hébergement déployé** avec le QR-facture et le sceau z2 (critique : RETENUE, après trois
+  passes et la voie qr-ecart), depuis le worktree neuf `%TEMP%/deploy-hosting-qr` placé sur dba49adb. `npm ci` réel ; `.env` racine
+  et `seedData.ts` copiés, jonction `functions/node_modules` (méthode D72). Tests visés (D236) : 74 fichiers verts. Build code 0,
+  bundle propre. « found 258 files in dist ». Vérifié en ligne :
+  - la page sert `index-CxkdwJ81.js` ;
+  - l'en-tête CSP porte `'wasm-unsafe-eval'` dans `script-src` ;
+  - le wasm de zxing est servi en `application/wasm` (966 895 octets), le worker de pdf.js en 200.
+  Aucune lecture de contrôle dans son compte : la première pièce qu'il lira dira le sceau en ligne. Retour arrière : la version
+  précédente dans la console Hosting, ou redéployer depuis 1dfeecb1 (sans QR ni mot de CSP).
+- D254 (pilote, 01.11, soir ; D247) : **`aiTask` déployé en C★v8 + N**, seul (`--only functions:aiTask`), depuis la copie propre
+  `%TEMP%/deploy-63130965` placée sur 3b3e74ac. Depuis le précédent état de cette copie (5970478d), `functions/` ne diffère que par
+  la voie fn-csv8. Résultat : « Successful update operation », révision `aitask-00042-tet` (14 h 06), hash `913a904c`. L'instance
+  démarrée par le déploiement n'a écrit aucune erreur ni « AUTHORIZED_ACCOUNTS est vide » : la liste des comptes est gardée
+  (l'avertissement ne vient que de l'analyse locale, sans `functions/.env`). Aucune lecture de contrôle faite : elle aurait demandé
+  un dépôt dans son Drive. La première facture qu'il lira sera la contrôle ; ses journaux (`model`, `etape`, `coupee`) se relisent
+  alors. Retour arrière : redéployer `aiTask` depuis 5970478d. Le manifeste régénéré dans la copie a été remis (fichier de la copie
+  seulement).
+- D253 (l'utilisateur, 01.11, soir ; D252) : « Oui » à l'ajout de `'wasm-unsafe-eval'` dans `firebase.json`. Portée (L01, étroite) : ce seul mot, ajouté à `script-src` de l'en-tête CSP de l'hébergement, rien d'autre dans `firebase.json`. La modification se fait après l'épreuve locale de qr-rejeu, qui lit la CSP du dépôt telle quelle (passe « sans ») puis avec le mot ; si le worker de pdf.js ou autre chose réclame un autre changement de CSP, c'est un nouvel accord. Déployé avec l'hébergement (`--only hosting`), depuis une copie à `npm ci` réel. Retour arrière : retirer le mot et redéployer l'hébergement.
+- D252 (pilote, 01.11, soir ; D247, voie qr-app) : (1) `InvoiceScanReview.tsx` est rebranché (trois props : `sceau`, `sousTotal`, `ecartTotal`) au lieu d'être laissé sans appel ; rien n'est supprimé. (2) « lu gardé » ne reçoit aucun message de plus : la base dit déjà « À corriger » quand les lignes ne font pas le total. (3) La CSP de l'hébergement (`firebase.json`, `script-src` sans `'wasm-unsafe-eval'`) empêche Chrome de compiler le wasm de zxing en production. Sans changement, le QR rend « non vérifié » partout (rien de faux, la dépense marche, mais le QR ne sert jamais). Ajouter `'wasm-unsafe-eval'` à `script-src` (ce mot n'autorise que WebAssembly, pas `eval`) touche `firebase.json` : cela va à l'accord de l'utilisateur, avec la preuve servie localement avec et sans le mot.
+- D251 (pilote, 01.11, soir ; D247) : sous C★v8, le champ `model` qu'`aiTask` renvoie pour un justificatif reste `SCAN_MODEL` (3.8), même quand deux Flash-Lite d'accord ont tout lu. La forme de la réponse est inchangée, aucun écran n'affiche ce champ (`scanModel` est seulement stocké dans le brouillon), et le modèle de chaque lecture est écrit dans le journal (`model`). Réversible : renvoyer le modèle qui a lu, si le brasseur veut voir la provenance. Le commentaire de `functions/src/models.ts` sur les justificatifs est corrigé de même.
+- D250 (le brasseur, 01.11, soir) : « Je fais moins de 100k » (chiffre d'affaires annuel). En Suisse, sous 100 000 CHF, l'entreprise est
+  libérée de l'assujettissement à la TVA, sauf si elle y renonce (assujettissement volontaire) ; non assujettie, elle ne récupère pas la
+  TVA payée sur ses achats. Lecture du pilote : la vue TVA (à dessiner en mini maquettes, L24) part du cas « non assujetti » : la TVA
+  payée est un coût, montrée par taux et par période ; l'assujettissement volontaire n'y est qu'un chiffre « ce que tu récupérerais »,
+  sans conseil, à confirmer avec sa fiduciaire ou l'AFC. Réversible.
+- D249 (le brasseur, 01.11, soir) : frais de port « Total seulement » partout, « Non non aussi quand imprimé article ». Le port n'est
+  jamais une ligne de la dépense ; il compte dans le total et se dit à part (« dont port »), le contrôle « somme = imprimé » en tient
+  compte. Remplace la lecture étroite d'avant (commandes en captures seulement, GESTES ligne 37). Suites : la vérité du banc de ses deux
+  pièces où le port est un article se corrige ; la règle entre dans la production (normalisation de la lecture ou construction de la
+  dépense, à trancher sur le code) dans une voie après fn-csv8 et qr-app ; l'écran p3c-3 la montre. Réversible.
+- D248 (le brasseur, 01.11, soir ; règle n° 1, L01) : **p3c-3 choisie**, « p3c-3 le mieux mais mettre plus en avant la quantité, juste
+  mettre en gras, et bien alignées les champs », sur sa capture (« 18 Kg » de la bande et « 6 Kg × 2,30 » entourés). Portée (étroite) :
+  la quantité en gras (lignes et sous-totaux de bande), rien d'autre de plus en avant (ni taille ni couleur) ; quantité, prix et montant
+  alignés en colonnes, d'une ligne à l'autre et avec le sous-total de la bande, sans en-tête de tableau. Tout le reste de p3c-3 tel quel.
+  Contrôle `v3/p3c-outils/controle-alignement.mjs` (témoin : p3c-3 d'avant → ECHEC). Puis le port de p3c-3 dans l'app, avec z2 (D246),
+  après la voie qr-app (même fichier). Réversible.
+- D247 (l'utilisateur, 01.11, soir) : « Yes ok » à « basculer la production sur C★v8 avec la correction automatique et le QR […] il faut
+  redéployer la lecture en production ». Portée (L01) : `aiTask` (lecture de facture seule) passe de A à C★v8+N, déployé seul
+  (`--only functions:aiTask`) ; le QR lu dans le téléphone et montré comme z2 sur l'écran en ligne, hébergement redéployé (D236). Bornes
+  du pilote : tests visés avec Gemini simulé, parité avec le banc, relecture indépendante, Chrome sur fixtures ; zxing-wasm et pdf.js
+  inscrits au `package-lock.json` sans installation dans la jonction `node_modules` (build et déploiement depuis une copie à `npm ci`
+  réel) ; rien d'écrit dans Firestore par le QR. Retour arrière : redéployer le commit précédent. Mission `2026-11-01-bascule-lecture`.
+- D246 (le brasseur, 01.11, soir) : contrôle QR, **z2 (le sceau QR) choisi tel quel** : « Le sceau QR z2 parfait comme telle ». Pas
+  de mélange avec z4 ; r4 et z4 écartés. Il se pose sur l'écran choisi en D245 (p3a-3 compacté), à la place qu'il occupe dans z2 (à côté
+  du total), au port ; pdf.js et zxing-wasm s'installent à ce moment (D240, D243). Réversible jusqu'au port.
+- D245 (le brasseur, 01.11, soir ; règle n° 1, L01, L13, L24) : Nouvelle dépense, **p3a-3 (bandes teintées) choisie**, « le top 1 de
+  loin », « C'est du 99% bon ». Seule demande : « un peu plus compact, pas comme Le tableau à prix p3a-2 mais presque enfin pas copier mais
+  adapté ». Portée lue (L01, étroite) : la liste des lignes seulement (bandes de groupe, lignes, détail qté × prix, moutures) ; en-tête,
+  bandeau du total, récap, points, filtre, Drive et pied repris tels quels (contrôle INCHANGE). Le degré reste ambigu (« un peu »,
+  « presque ») : trois degrés montrés côte à côte avec p3a-3 et p3a-2 (L13, L24) : p3c-1 resserré (deux rangées, moins d'air), p3c-2 une
+  rangée (qté × prix sur la rangée du nom, sans colonnes ni en-tête de tableau), p3c-3 une rangée et la mouture sur la rangée de son malt.
+  Contrôle `v3/p3c-outils/controle-compact.mjs` (témoin : p3a-3 → ECHEC) ; DEFAUTS D245. Le port dans l'app suit son choix de degré.
+  Réversible.
+- D244 (pilote, 01.11 ; règle n° 1, L10, L13) : entonnoir QR de Dépense. (1) D238 vaut pour ce lot : `--sans-lignes` dans mots et
+  commun (oubli du brief, corrigé ; série u rejouée par le pilote : MOTS, COMMUN, CONTRASTE OK sur u1 à u4). (2) `controle-panel` compare
+  des premiers écrans entiers ; ici l'écran en ligne est repris tel quel et seule la zone du QR (≈ 120 px) varie : il échoue par
+  construction (série r : ressemblance 0,96, en comparant aussi six états d'une même variante). Au tri, il reste lancé à titre indicatif,
+  une capture par variante ; la diversité se juge sur les vignettes recadrées de la zone QR et sur une table de couverture des axes du
+  brief (où, désaccord, signe, enrichir : chaque option tenue par une variante au moins, sinon dit). Leçon proposée par qr-r versée ici
+  (déjà couverte par L13 : un contrôle ne garde que sur le format actuel). Leçons proposées par le critique, couvertes sans
+  leçon neuve (charge au plafond) : la liste des éléments de la base qu'il a nommés, recopiée dans chaque brief de série (L03, L05) ;
+  une règle d'honnêteté posée sur une candidate va dans les retouches communes, contrôlée sur chaque état (L05 ; r4 l'avait
+  enfreinte, retouchée). Page : https://claude.ai/artifact/QSUXrTmuR2jXDEtAY2QjpM. Réversible.
+- D243 (l'utilisateur, 01.11) : « Okok » à « pdf.js dans l'app, ok ? » et au QR branché dans l'app après des mini maquettes. pdf.js
+  (Mozilla, Apache-2.0) est accordé pour rendre une page de PDF avant zxing (et lire sa couche de texte). Bornes du pilote : versions
+  exactes d'au moins deux semaines, chargées à la demande (jamais au démarrage), worker et wasm servis par l'app (hors ligne, sans CDN) ;
+  l'écran du contrôle QR se choisit sur mini maquettes avant d'être construit.
+- D242 (l'utilisateur, 01.11) : « J'accorde 20chf de crédit en plus ». Portée lue (L01, étroite) : les lectures Gemini réelles du banc
+  (D234), cumulatives : 25 CHF au plus en tout, comptés dans `work/missions/2026-11-01-banc-lecture/journal-gemini.md` (4,41 CHF au
+  01.11 midi). La production n'est pas concernée (son accord, coût montré). Chaque passe : `--estimer` d'abord, 3 CHF au plus par passe.
+- D241 (pilote, 01.11, après-midi ; D236 ; « doublon ok parfait ») : l'hébergement seul est redéployé au commit **5970478d**
+  (dp-doublon : pièce déjà saisie, même commande à un autre total), depuis la copie propre `%TEMP%/deploy-63130965`. Tests visés :
+  TYPES OK, eau vérifiée, 71 fichiers et 1 160 tests verts (dépense, purchaseEntry, feuille, retours de l'action rapide, Finances) ;
+  build vert, `check-no-dev-auth` propre, manifeste inchangé (0bd61657). « found 254 files » ; la page servie est `index-RZxFu9u8.js`,
+  comme le build, sans `dev-local`, `devLocalUser` ni `preview=` ; le morceau `ExpenseSheet-iBes0C5o.js` (« Déjà enregistré ») est
+  servi. Ni règles Firestore ni fonctions. Retour arrière : redéployer 209f43e1.
+- D240 (l'utilisateur, 01.11) : « zxing-wasm ok » : la dépendance zxing-wasm (MIT, lecteur ≈ 0,97 Mo de wasm) est accordée pour lire
+  le QR-facture suisse sans IA. Bornes du pilote : version exacte d'au moins deux semaines (3.1.5), le wasm servi par l'app (hors ligne,
+  jamais un CDN), mesurée au banc avant la production. pdf.js, pour rendre un PDF avant zxing, n'est pas couvert : son accord.
+- D239 (pilote, 01.11, vers 11 h ; D236, D237) : l'hébergement seul est redéployé au commit **209f43e1** (d3c : le justificatif part
+  sur Drive en arrière-plan après « Confirmer », file locale, notification d'échec, renvoi depuis la fiche), depuis la copie propre
+  `%TEMP%/deploy-63130965` où personne d'autre n'écrit. Tests visés (D236) : TYPES OK, 93 fichiers et 1 350 tests verts, eau vérifiée ;
+  build vert, `check-no-dev-auth` propre, manifeste inchangé (0bd61657). « found 254 files » ; la page servie est `index-CghuzK00.js`,
+  comme le build, sans `dev-local`, `devLocalUser` ni `preview=`. Ni règles Firestore ni fonctions. Retour arrière : redéployer 254f20f5.
+- D238 (pilote, 01.11 ; D235) : Dépense, passe 3. Sa demande la plus récente (« Je veux que en un écran je vois le maximum d'items »)
+  passe avant le plafond de 100 mots au premier écran du BRIEF-ECRAN (31.10), qui visait les phrases d'aide et le cockpit. Les lignes de
+  facture (marquées `data-mots="lignes"` : nom, quantité, montant, pastilles, sous-totaux) ne comptent plus ; le récap, les points et tout
+  le reste restent à 100 mots au plus. Option `--sans-lignes` de `mots-premier-ecran.mjs` (sans l'attribut, comptes inchangés : p3a 97,
+  127, 110 dans les deux cas). Réversible.
+- D237 (pilote, 01.11 ; D235) : plan d3-drive-fond (`work/missions/2026-10-31-ecran-depense/voies/d3-drive-fond/PLAN.md`) : envoi au Drive
+  en file persistante après « Confirmer », feuille fermée tout de suite, échec durable sur la dépense et notification globale persistante
+  (« Renvoyer le justificatif », « Reconnecter Drive »). Décisions du § 7, réversibles : reçu dans la fiche de la dépense ; dépense annulée
+  avant l'envoi : fichier gardé 30 jours en local, sans notification (rien supprimé) ; seuils du plan en constantes (choix, pas mesures) ;
+  ventes et clôture synchrones ; forme de la notification provisoire jusqu'à son choix sur p3. Relu par deux regards neufs avant le code.
+- D236 (l'utilisateur, 01.11, matin) : « J'autorise de déployer sans faire tout les test npm run test. Mais seulement ceux visié pour
+  les changements ». Lecture étroite du pilote (L01) : avant un déploiement du site déjà autorisé, les tests visés par le changement
+  (fichiers de l'écran touché et leurs raccords), le build, le contrôle Chrome de la voie et la page servie relue suffisent ; `npm test`
+  complet n'est plus exigé. Rien d'autre ne change : les fonctions, les règles, les données réelles et Gemini facturé gardent leurs
+  accords. Appliquée dès 254f20f5 (b1 : 63 fichiers de tests de l'écran, BANDE OK, build, site seul).
+- D235 (le brasseur, 01.11, matin) : Nouvelle dépense, passe 3 (mots dans SPEC-BRASSEUR). Lectures étroites du pilote, signalées :
+  les « pastilles sur les items » de r1 (feuille) = le picto de lien au stock de chaque ligne, les pastilles d'équivalence (« = 2 sachets »)
+  et de doute (« unité ? ») ; le « récap en haut » = le bandeau et la preuve de r2b à 1280 (compte des liens, points), chaque compte
+  cliquable vers ses lignes ; « toute la place de l'app » = plein écran, sans marges de feuille ni navigation de l'app ; « trié par
+  catégorie avec sous total de quantité » = lignes groupées par catégorie, chaque groupe avec sa quantité par unité et son montant ;
+  Drive : envoi après « Confirmer », en arrière-plan, rien à l'écran tant que ça marche ; un échec = grosse notification qui ramène à la
+  facture (renvoyer le justificatif, reconnecter Drive). Base : r2b telle qu'elle est dans l'app ; variantes sur les axes ouverts
+  (en-tête de groupe, densité de ligne, renvoi du récap, forme de la notification) : voie p3-concepteurs, critique, page neuve.
+- D234 (le brasseur, 01.11, matin) : à la question « Je lance le banc des trois lectures sur vos vraies factures (≈ 50 appels, ≈ 1 CHF) ? »,
+  mot pour mot : « 5chf de budget accordé ». Lecture du pilote : 5 CHF au plus pour ce banc, hors des 10 CHF de D217 ; garde à 4,5 CHF,
+  réserve avant chaque appel, un journal par appel (`work/missions/2026-11-01-banc-lecture/journal-gemini.md`) ; ses factures d'octobre
+  (doc1 à doc6, déjà confiées pour ces tests) et sa photo de ce matin (doc7), rangées hors de Git. Trois variantes : la production, une
+  lecture d'abord (H13 du 16.10, jamais appliqué), et sa proposition (deux lectures 3.5 Flash-Lite, 3.8 en cas de désaccord). Aucun
+  changement de production avant son choix sur les chiffres.
+- D233 (le brasseur, 01.11, 8 h 25, sur son téléphone, version en ligne 153b2296 ; pilote) : « Y aller je fait rien, et il y a un vrai
+  problème, quand on ouvre certains champs, le fenêtre fait haut bas très rapidement, comme un cintillement, c'est horrible » ; puis « Aussi,
+  c'est assez fiable mais toujours plutôt lent ». Lectures étroites (L01), signalées :
+  - « y aller » : le point « Date » (`date-absente`) n'avait aucune cible. Tout point sans ligne reçoit la sienne (date de l'achat, total,
+    lignes), un panneau déjà ouvert défile quand même, et ce qui reste ouvre la preuve : jamais un « y aller » sans effet ; une date saisie
+    barre le point. Voie b1-bande.
+  - « plusieurs champs date […] pas utile den avoir plusieurs » : une seule date visible par défaut, celle de l'achat ; en « Déjà payé »,
+    la date du paiement la suit et son champ n'apparaît que sur « Autre date » (ou si une autre date a déjà été tapée) ; l'échéance
+    d'« À payer » reste. Réversible ; voie b1-bande, point 7.
+  - « cintillement » : la bande collante entrait dans le flux du défilant et poussait le contenu de sa hauteur ; le bandeau revenait à l'écran,
+    la bande sortait : boucle. La bande se superpose désormais au haut du défilant, sans place dans le flux (D233 de DEFAUTS-RECURRENTS).
+  - « plutôt lent » : mesuré dans les journaux d'`aiTask` (lecture seule) : sa 1re lecture, 2 lectures parallèles de 25 s (≈ 4 450 jetons
+    de sortie chacune) ; sa 2e, 2 lectures de 9 s puis une 3e de 8,6 s, lancée après elles (≈ 18 s). Lancer la 3e d'emblée diviserait
+    par deux la seconde attente, au prix d'un appel de plus par facture (≈ 0,01 à 0,04 CHF) : Gemini facturé en production, à son accord ;
+    rien n'est changé sans lui.
+- D232 (pilote, 01.11, matin ; D210, D217, D223) : tests en ligne de la version 5f224fc3, par son Chrome (lecture du DOM : écran du poste
+  éteint, captures impossibles). Deux lectures étroites et réversibles :
+  - « supprimées toutes deux » (D210) se lit « supprimée dans l'app » : une dépense payée ne s'efface pas, elle se corrige en gardant son
+    historique (`revertTransaction`). La « TEST pilote » a reçu la contre-écriture de son paiement, puis l'annulation de son écriture ; son
+    fichier Drive est à la corbeille (non vidée). Effacer le document Firestore serait une suppression de données réelles : au brasseur.
+  - le premier clic sous les tuiles ouvertes de Malts se perdait (repli au `mousedown`) : corrigé sans toucher au dessin de s1 (voie p9-clic,
+    témoin en échec sur HEAD). Journal : `work/missions/2026-10-31-ecran-depense/journal-gemini.md` (0,0155 CHF).
+- D231 (pilote, 01.11, nuit ; D215, D216, D223) : écran Dépense, voie S6 (l'article d'un produit déjà connu), tri en deux tours de la relecture du
+  code et de la critique (`voies/s6-fiche/TRI-S6.md`, `RELECTURE.md`, `RELECTURE-2.md`, `critique/VERDICT-s6.md`). Lecture étroite et réversible :
+  - le bouton suit r2b : « Target bis », « Münchner Malz bis », « bis 2 » au second écart ; « Créer CH » quand l'écart est l'origine ;
+  - le ⇄ suit r2b à la lettre : « Choisir un autre article » ouvre le plateau, rien n'est relié d'un toucher (option prudente) ; tant qu'aucun
+    article n'est choisi, la ligne dit « article ? », la pastille du point reste ouverte et le compteur ne la compte pas reliée ;
+  - les vraies valeurs se voient comme dans r2b (« 40 g · α 11,3 », grisé « Target α 11,8 ») ; une valeur inconnue ne s'affiche pas ;
+  - une ligne d'ingrédient inconnue garde le défaut du port (`stockAction: 'none'`) et reçoit un bouton « Créer « Sabro » » ;
+  - le rejeu d'une saisie refusée ignore les articles de la même saisie (`MP-<saisie>-*`) ; le cas « ligne retirée entre refus et rejeu » reste
+    un risque ouvert (RESULTAT) ;
+  - les classes `text-cave-100` et `text-cave-300` de c028dfd6, sans règle Tailwind (test des jetons rouge), deviennent `text-cave-200`, la
+    couleur qu'elles héritaient : rendu inchangé.
+- D230 (pilote, 01.11, nuit) : Malts/sucres, port de s1 : ce que devient l'ajout d'une ligne, au toucher. Sa maquette choisie s1 le règle (règle n° 1, `versMasse`) :
+  - si une masse a été tapée avec le nom (« Cara 0,3 »), le focus revient au champ d'ajout ;
+  - sinon, le focus va dans la masse de la ligne ajoutée, aux deux modes. Le clavier, déjà ouvert pour taper le nom, reste ouvert. Le + et le − du plateau restent l'autre voie, sans clavier (D219).
+
+  Le bloc AJOUT de `controle-gestes-ligne.mjs` (D209) garde son exigence (le curseur dans la masse). Le point 1 de D228 est **remplacé** : le test `dataEntry` « sur TÉLÉPHONE, rien ne prend le focus » gardait une forme d'avant s1, non une parole du brasseur. Il est réécrit sur la maquette, avec sa raison.
+
+  Erreur du pilote (L01) : « la masse sans clavier » (D219) a d'abord été lu comme « jamais de focus au toucher ». Sa portée était « pouvoir régler la masse sans clavier ».
+- D229 (pilote, 01.11, nuit) : écran Dépense, port de r2b, tri de la relecture du code et de la critique du port (`work/missions/2026-10-31-ecran-depense/voies/e-port/TRI-PORT.md`). Un geste du brasseur ne fait jamais **monter** le statut de lecture : le titre affiché est le pire entre le statut de départ et le recalcul, et c'est la chip finale qui dit « points revus » (complète T1). Un « — » posé sur la TVA ne doit pas faire passer la lecture à « vérifiée ». Le prix « avec mouture » ne s'affiche que si le catalogue l'écrira. À l'état 8, « Même achat » rattache le justificatif par le même chemin que le doublon exact, et le bouton dit où va le fichier. Le nom de l'article neuf reste le libellé écrit par le service ; son nettoyage (« bis », « CH ») relève de S6 (D215, D216). `NumberInput` reçoit une prop facultative `fractionDigits`, utilisée par le seul Total.
+- D228 (pilote, 01.11, nuit) : port de s1, les tests d'intégration qui gardent l'ancienne étape Malts/sucres. Deux acquis **restent** : au toucher, rien ne prend le focus après un ajout, donc le clavier ne monte pas (`dataEntry`) ; une masse vidée vaut 0, la recette passe « À compléter » et la validation ramène au champ (`recipeWizardSafety`). Aucune parole du brasseur ne les défait. Trois tests ne gardaient que l'ancienne forme : la fiche `MaltDetails` (`recipeEditing`) et l'appui long de `QuantityStepper` (`brewWizardDraftFreshness` ×2). Ils sont réécrits sur le chemin de s1, la ligne « PPG — · fiche › » (D226) et le « + » du plateau, avec les mêmes valeurs vérifiées. Les repères se replient sur le critère de la maquette, quand le pied sort de l'écran (règle n° 1).
+- D227 (pilote, 01.11, nuit ; D223 : « tu choisira une pour implémenter dans la vraie app ») : Nouvelle dépense, **r2b (le ticket) choisie par le pilote** et portée cette nuit (voie e-port). Raisons : seule variante acceptée par le critique neuf (`critique/VERDICTS-v1.md`) ; sa facture entière et les six points visibles au repos ; sa langue (la ligne de Malts s1, le bandeau d'Identité r4-a) ; le port le moins coûteux. z2b et u4b restent montrées (page de la passe 2) ; s'il en préfère une, elle est portée. Au registre `ecrans-app.json`, l'écran `depense` est **ouvert**, avec r2b comme provisoire : son choix n'est pas encore fait, le pilote n'invente pas ses mots.
+- D226 (pilote, 31.10, nuit ; remplace D224) : sur le verdict du port (critique t8, `critique/VERDICT-port.md` : « Et le Suivant il est où ? »), la fiche technique du malt n'est plus un bloc sous le plateau. Elle devient une ligne discrète **dans** le plateau de la ligne choisie, « PPG — · fiche › », qui l'ouvre d'un toucher (option c, lecture étroite). Le panneau « Données de fiche à compléter » sort de l'étape Malts/sucres et reste au récapitulatif. Rien ne s'insère plus entre le plateau et le pied, et le pied « Suivant — Houblons » revient au premier écran comme dans sa maquette (règle n° 1). Toujours à l'ouverture : un épuisé ne passe jamais devant un disponible (« disponibles d'abord, épuisés à part », lecture de D222). Réversible ; montré à son retour.
+- D225 (pilote, 31.10, nuit ; D222, D223) : règle de `proposerFermentables` (voie a1). La teinte n'est plus une clé de classement : comparer la couleur d'un malt à celle de la bière était faux (relecture a1). Sans elle, du Schokoladenmalz et de la Röstgerste ressortaient en German Pils parmi les non cités, ce qu'il refuserait (« algo de reconnaissance pour le style »). Une seule règle de plausibilité : un fermentescible **non cité** pour le style, de couleur connue au-delà de 10 fois la borne haute d'EBC du style, ne vient pas dans les tuiles. Il reste trouvable par la recherche. Un fermentescible cité n'est jamais écarté par sa teinte. Le facteur 10, les seuils 50/15/3 % et la lecture des stouts voisines à demi-poids sont des hypothèses en constantes, à lui montrer.
+- D224 (pilote, 31.10, nuit ; D223, sans attendre son retour) : port de s1 (voie p8-port), la fiche technique du malt (PPG, assistant de fiche), absente de la maquette, reste **repliée sous le plateau** (option a de `voies/p8-port/RESULTAT.md`) : sans elle un malt n'a ni OG ni moyen de la renseigner depuis la recette. Réversible ; si elle le gêne, l'option c (une ligne « fiche » dessinée avec le plateau) lui est montrée en variantes (L24). Même nuit : `proposerFermentables` exclut une ligne par `stockItemRef` = `article.ref` (et non `id`), correction confiée à a1.
+- D223 (le brasseur, 31.10, nuit) : « En parallèle est-ce que les écrans pour la saisie de facture continue ? Avec tout les problèmes soulevés résolu ? » ; « Tu peux commencer l'implémentation de la vue Malte sucres choisi, et tu pourras faire les tests sur l'app réel » ; « Je vais allé me coucher, continue pour la vue des saisie de facture. Tu me feras plusieurs propal, mais tu choisira une pour implémenter dans la vraie app, car le prochain feedback sera dans 9h de ma part. Donc continue là dessus, sans avoir besoin de mon retour ! ». Lecture du pilote (L01), portée : (1) Malts/sucres : porter s1 (sur p6-b2) dans l'app avec la proposition selon le style (D222), puis la tester sur l'app en ligne (déploiement hosting depuis un dossier propre ; une recette ou un brouillon de test au plus, jamais un article de stock) ; (2) Dépense : l'écran de saisie de facture passe par l'entonnoir allégé (D204), plusieurs propositions publiées ; **le pilote choisit seul cette nuit** (choix délégué par le brasseur, à lui montrer à son retour, réversible), sur l'avis du critique, puis l'implémente dans l'app avec les problèmes ouverts de la mission (r1 détails, l2, S6) ; tests sur l'app réelle selon D210. Le choix du pilote ne vaut pas le sien : au registre, statut « choisi (pilote, D223) », et la page de choix reste publiée pour qu'il tranche.
+- D222 (le brasseur, 31.10, nuit) : son choix **s1** (la recherche sous le champ, en tuiles), « C'est très bien avec algo de reconnaissance pour le style et autres comme pour les houblons », puis « Dans le proposition » et « Non je parle de ces propositions » sur sa capture qui entoure les tuiles de l'ouverture. Lecture du pilote (L01), portée : les tuiles que le champ d'ajout de Malts/sucres propose à l'ouverture se choisissent et se classent par un algorithme, comme l'ajout des houblons (`QUICK_ADD_RULE` de `quickAdd.ts`, typicité f9 de Beer Analytics) : d'abord la place du malt dans les recettes du style de la bière (une donnée inconnue n'est jamais 0), puis « et autres » : ce que la recette contient déjà et sa teinte visée, le stock (disponibles d'abord, épuisés à part), les épinglés. Lecture étroite et réversible : la forme de la tuile reste celle de s1 (règle n° 1) ; seuls le choix et l'ordre des tuiles changent ; une marque « au style » sur la tuile serait un ajout à lui montrer. s1 entre au registre (`ecrans-app.json`, route s1 de `v7/`). Voie **a1-proposition**.
+- D221 (le brasseur, 31.10, nuit) : « Concentre toi sur la recherche et l'ouverture de la recherche avec les stocks. Celles de la vrai app était pas trop mal ». Lecture du pilote (L01), portée : la recherche du champ d'ajout de l'étape Malts/sucres. La recherche de l'app (`IngredientPicker`, `Combobox`) est le plancher : le champ touché ouvre, sans rien taper, le stock de la famille, épinglés en tête ; chaque rangée dit le nom, « … en stock » ou « stock épuisé », l'EBC et le fournisseur ; la recherche ignore les accents ; la liste remonte au-dessus du clavier ; « Créer « … » (stock à zéro) » en dernier. Ici la quantité en stock s'écrit : son mot prime sur L04, qui valait pour la carte d'un houblon dans la recette. Les trois formes de la passe 7 (sous le champ, dans la liste, menu ancré) restent un axe (L24) ; s3 reprend la liste de l'app. Contrôle : `controle-recherche.mjs` R0 (témoin p6-b2).
+- D220 (le brasseur, 31.10, nuit) : sur la capture de p6-b2, « Oui ça c'est bien, et maintenant la recherche, comment elle s'affiche ? Dans la liste ? » Lecture du pilote (L01), portée : l'étape Malts/sucres. Son choix est **p6-b2** telle qu'il l'a vue : la famille b (moment au toucher, « Annuler »), la barre de chaque ligne qui porte la masse (grain : la part du grain, la masse suit au cran ; sucre, fruit, lactose : la masse sur la plage de la piste), le moment sans pilule en forme m1, le plateau toujours visible. p6-b1 et la voie p6a (côté a) sont écartées ; p6a, encore en vol, est arrêtée. Sa question sur la recherche est une question, et peut-être une proposition (« Dans la liste ? ») : réponse par captures (aujourd'hui : des puces sous le champ, jamais dans la liste ; « Munich » ne trouve pas Münchner Malz et propose de le créer) ; l'affichage de la recherche devient un axe de variantes (L24), sur la base p6-b2. Registre : `choix/ecrans-app.json`, écran fermentescibles.
+- D219 (le brasseur, 31.10, nuit) : « c'est déjà possible, dans a comme dans b : un toucher je pensais plutôt à un mini slider ou bouton+ /- facil ». Lecture du pilote (L01), portée : l'étape Malts/sucres, chaque ligne du ticket (malts, flocons, sucres, fruits). La masse se change aussi sans clavier, en un geste depuis le repos : « − » et « + » d'un cran de la piste (50 g sous 1 kg, 100 g au-dessus), ou un mini curseur ; la saisie au clavier sur la ligne reste (acquis r4d, D211). Les deux formes, et la barre de b qui porterait la masse, sont un axe de variantes de la passe 6 (L24). Contrôle : `controle-masse-ligne.mjs` (témoin r4e-a, r4e-b, v5/m1).
+- D218 (le brasseur, 31.10, nuit) : sur sa capture de r4e-a, la pilule « ébullition ⌄ » de la ligne entourée : « Pas super ui ». Lecture du pilote, le plus petit sens : le moment sur la ligne perd son air de bouton (fond et bordure) ; il reste une cible qui se change depuis la ligne (D211) et garde le menu ancré (a) ou les deux touchers (b). La forme est ambiguë, donc un axe de variantes (L13) : m1, mot gris et point de couleur ; m2, mot en couleur seul ; m3, mot gris seul. Contrôle : `controle-moment-ligne.mjs` (témoin r4e-a et r4e-b).
+- D217 (l'utilisateur, 31.10, nuit) : « Je l'accord pour les test 10ch de budget », en réponse à « Gemini en production attendra votre accord, avec le coût par produit montré avant. » Lecture du pilote, à signaler : les appels Gemini réels des tests de la mission Dépense (recherche d'une fiche dédiée, voie S6 ; lectures de factures de D210) ont 10 CHF au plus en tout, au lieu des 2 CHF que le pilote s'était fixés dans D210 ; chaque appel est journalisé (date, objet, coût) dans `work/missions/2026-10-31-ecran-depense/journal-gemini.md`, et le cumul est relu avant chaque nouvel appel. Les autres bornes de D210 restent (40 lectures, une seule dépense « TEST pilote » supprimée avec son fichier, rien en stock). Gemini en production (une fiche cherchée à la validation d'une vraie dépense) attend toujours son accord, coût par produit montré avant. Jamais dans `npm test`.
+- D216 (le brasseur, 31.10, nuit) : à la question « Cascade bis » ou l'origine dans le nom, « voulez-vous l'origine oui ». L'article d'un même produit à l'origine différente porte son origine dans le nom (« Cascade CH »), à la place de « bis ». Lecture étroite du pilote, réversible : sans origine connue, ou quand l'écart n'est pas l'origine (α, récolte, EBC seuls), « bis » reste. Précise la règle (2) de D215. Contrôle : celui de la voie S6.
+- D215 (le brasseur, 31.10, nuit) : « Pour les AA du houblons, et source,  faire un matching avec sa carte et stock, si dans le stock, un houblon est le même mais différé sur ces données, créé un "bis". Et au par exemple on ajoute un houblon CH aa8% et que on a que ce houblons US AA 6, LIÉE sa fiche mais donné ses vrai valeur là où on les a. Aussi faire un check de procédure si on peut trouvé un e fiche dédier. SI non laisse sa fiche US, et montré que c'est pas exactement la bonne » ; « Pareil pour les ebc ou autre info malt ou autre info stock » Lecture du pilote (L01), portée : Nouvelle dépense → stock et fiches, pour toute ligne d'un produit déjà connu (houblon, malt, levure, autre article) dont une donnée lue diffère de l'article ou de sa fiche (α, origine, récolte ; EBC, potentiel, malterie ; poids, forme, souche ; toute autre donnée de fiche). Règles : (1) même produit et mêmes données → le même article (rapprochement de s1) ; (2) même produit, une donnée connue des deux côtés qui diffère → un nouvel article « <nom> bis » avec les valeurs lues sur la facture ; l'article existant n'est ni fusionné ni modifié ; (3) l'article bis, ou tout article nouveau, est lié à la fiche existante la plus proche (Cascade US pour un Cascade CH) ; ses propres valeurs priment là où elles sont connues, la fiche donne le reste ; (4) à la validation, une procédure cherche une fiche dédiée (d'abord le catalogue et les sources du dépôt ; Gemini en production seulement sur accord, coût par produit montré avant) ; trouvée, l'article y est lié ; sinon la fiche approchée reste, et cela se voit (« fiche Cascade US, pas exactement la bonne ») ; (5) une seule fiche par produit (« attention au mapping ») : le bis est un article de stock, jamais une fiche en double ; (6) une valeur tapée n'est jamais écrasée. Hypothèses du pilote, réversibles : le nom d'un second écart (« bis 2 ») et la forme de la marque se montrent en variantes à l'écran. Le lien article → fiche n'existe pas aujourd'hui (`StockItem` n'a ni identifiant de fiche ni marque d'approche) : champ facultatif à ajouter, plan relu à deux regards (données, schéma). Voie : S6 (fiche d'un produit), après s1. Contrôle : écrit par S6, rouge sur le code d'aujourd'hui.
+- D361 (le brasseur, 02.11, soir ; page v1 https://claude.ai/artifact/XeGBAqvwsAHgwuAtLSXGJH) : « Ah oui la 1 est toujours mieux sauf une fois
+  elle oublie d'ajouter ce champs ». **pu4d est son choix pour la vue détail d'une ligne** (`work/missions/2026-10-31-ecran-depense/plateau/v3/pu4d/`).
+  Elle est la base du port, telle quelle (règle n° 1). Greffe de pa1d : sur une ligne hors stock, « article — · hors stock + Suivre au stock » (sa
+  capture de pa1d-c). Contrôle `controle-plateau-ligne.mjs`, LIGNE ECHEC sur pu4d au cas c, OK sur pa1d. Voie p-port-pu4d (auteur) ; puis rejeu
+  du banc, critique côte à côte avec pu4d, garde, déploiement. Remplace p3c-3 pour le plateau seul (le reste de la feuille ne bouge pas).
+- D362 (le brasseur, 02.11, soir) : « Va jusqu'à 95 de quota, mais ne lance pas de nouvelles tâche, on termine juste celle-ci proprement ».
+  Le seuil passe à 95 %, ce qui remplace D356 sur ce point. On ne lance que les étapes des deux tâches en cours :
+  - son ticket, avec le rejeu du banc, le test d'écran, la garde et le déploiement de 7945555e ;
+  - le port de pu4d, avec le banc, le critique côte à côte, la garde et le déploiement.
+  Les restes (doc6, doc14, menus déroulants de l'app, D326, Malt Vienne, écran vide de 18 h 04) ne sont pas lancés : ils restent listés
+  pour la semaine suivante. À 95 % : l'état est écrit, le commit fait, le rapport rendu.
+- D363 (le brasseur, 02.11, soir) : « Allège les test, passe à l'implémentation, puis teste Legé puis testé bout en bout sur la vrai app ».
+  Le rejeu du banc sur 7945555e s'arrête (G1 à G3 faits, G4 coupé, A à D non joués). Le port pu4d passe d'abord, avec 3 à 5 tests ciblés.
+  Puis un seul déploiement (7945555e et le port) après un test léger : tests de la Dépense, build, check-no-dev-auth, une dizaine de captures
+  (deux thèmes, 390 et 1280, 8 états) jugées par le critique puis le pilote (D342 tenu au plus court). Puis le parcours de bout en bout
+  sur l'app en ligne, dans le cadre de D322. Lecture étroite (L01) : « allège » porte sur ce lot, pas sur la règle D342.
+- D364 (pilote, 02.11, soir ; L13, L03, D350) : sa question « comment je change la catégorie d'un item, ici grand sac n'est pas dans l'emballage
+  mais rénovation ». Aujourd'hui (en ligne et 7945555e) : ligne ouverte, segment « Matériel », ou « plus › Type d'achat › Autre » ; sous une
+  dépense « Local », la ligne passe en Rénovation (vérifié sur `familleDe` : packaging → emballage ; other, maintenance, equipment → renovation).
+  Rien ne dit « Rénovation » : la famille suit une règle cachée. Dans le port pu4d, les pastilles du type fin (un toucher, D350) deviennent les
+  pastilles de famille : les bandes de la dépense où la ligne peut aller, nommées comme les bandes, celle de la ligne allumée. Lecture étroite
+  (L01) : le choix de pu4d vaut pour son principe (L03), la liste des bandes est celle de sa pièce, pas celle de la fixture. Réversible.
+  Suite de D364, ses mots « C'est normalement une action assez rare » : au repos, seul un lien discret au nom de la bande ; un toucher montre les
+  pastilles (5 au plus), un toucher range la ligne et referme. Les quatre pastilles du type fin de pu4d (« Discutable » de sa NOTE, 28 px
+  toujours visibles) y entrent : ses mots les plus récents priment. Le choix du brasseur tient contre la règle.
+  D364, fin, ses mots « Ça peut être, un peu caché ou autre mais ça doit être possible. Ça peut être sous un dropdown ou autre » : le plus simple,
+  un champ « Famille » sous « plus » (menu déroulant permis pour ce geste rare, seule exception à D350), aux noms des bandes ; le choix tient.
+- D365 (le brasseur, 02.11, soir) : « Pas besoin de tout retester ou rien, intégre le tout et deploye ». Pour ce lot, il lève la garde D342
+  (VERDICT du critique, « Pilote : vu ») et le test léger de D363 ; t-ecran-leger écartée. Gardés, car ce sont les gestes du déploiement et non des
+  tests : tests ciblés du port, build (tsc compris), `check-no-dev-auth`, manifeste inchangé, déploiement d'un dossier que nul autre n'écrit,
+  `--only hosting`, la page servie relue en ligne (lecture seule). Lecture étroite (L01) : ce lot seulement ; D342 reste la règle des suivants.
+  D365, fait (02.11, vers 21 h) : **f6b29066 déployé** (`--only hosting`, 266 fichiers, depuis `deploy-hosting-qr`). Il porte le ticket Bauhaus
+  (lot g, g7-reste), le port pu4d (28c98cba) et la famille sous « Famille » seulement (D364 suite : les quatre pastilles du type fin retirées,
+  vues en double au seul rendu fait, 12 plateaux à 390, 37 OK). Avant : 5 tests du plateau verts, build vert, `check-no-dev-auth` propre,
+  `functions/` inchangé depuis le dernier `aiTask` (D325). Après : la page servie en ligne charge `index-CiOKVLBh.js`, le même que `dist`.
+  Ouvert : 46 anciens tests visent l'ancien formulaire (RESULTAT de p-port-pu4d) ; fiche matériel et libellé d'une ligne lue retirés avec lui.
+  Retour arrière : redéployer 7945555e ou la version d'avant depuis la copie.
+- D366 (pilote, 02.11, soir ; D291, D303, L13, L11) : sa plainte « Pourquoi ça a pas été porté ??? » et « Ajoute ça encore ». Cause : n2-pages
+  (D303) a codé B (`Pages.tsx`), testé en montant l'écran sur sa première vue ; mais l'app n'y arrive jamais. « Lire un justificatif » cliquait
+  d'office le sélecteur d'un seul fichier (`startWithScan`), et « Saisir une dépense » montrait « Joindre un justificatif » seul. Correctif :
+  plus d'ouverture d'office, la première vue montre « Un document » | « Plusieurs » (ses mots de D291) ; la saisie sans justificatif garde son
+  bouton à contour, coupé de même (« Joindre un justificatif » | « Plusieurs »). Témoin `entree-reelle.test.tsx`, 2 rouges sur f6b29066, verts
+  après. Coût pour le cas à 99 % : un toucher de plus (« Un document ») ; retour arrière : remettre l'effet `pickedOnOpen`.
+- D367 (pilote, 02.11, soir ; ses mots « Tes tests servent à rien… Et comment ça a pu être loupé ??? », L11, L13) : comment B a été loupé.
+  (1) Les tests montent la feuille sur sa première vue ; en jsdom, le sélecteur ouvert d'office n'ouvre rien, donc « Plusieurs » s'y voit.
+  (2) Le banc Chrome passe bien par le menu, mais il était écrit autour du défaut : `openInvoiceEntry` attend le sélecteur « que l'App ouvre
+  d'elle-même » et le cas pages le ferme (`(await premier)?.cancel?.()`) avant sa capture « pages-entree ». (3) Le critique (e-n2) a jugé ces
+  captures, pas le geste du téléphone. Personne n'a joué l'entrée depuis le menu sur l'app en ligne, à l'œil. Règle : un choix est fini quand
+  le menu de l'app en ligne le montre, regardé ; un banc qui ferme ou remplit d'office un sélecteur échoue au lieu de passer.
+- D368 (pilote, 02.11, soir ; a-entrees, D71 à D74) : **ses sept écrans Houblons étaient éteints en ligne.** Ils sont codés (`src/ui/hopIndex/`)
+  et derrière `VITE_HOP_V4=on` au build ; D71 à D74 (25 et 26.10) les ont déployés allumés. Les déploiements suivants depuis `deploy-hosting-qr`
+  ont été construits sans la variable (`VITE_HOP_V4:void 0` dans le paquet en ligne) : l'ancienne étape Houblons et l'atelier V5.5 sont revenus
+  sans que personne le voie. Remis : d14ff6cf construit avec `VITE_HOP_V4=on`, déployé (`--only hosting`), le paquet en ligne porte `"on"`.
+  À mécaniser : la garde de déploiement refuse un `dist` sans `VITE_HOP_V4:"on"`.
+- D369 (le brasseur, 02.11, soir ; L13) : ses trois points du plateau et du récap (SPEC « Filtres, quantité en un toucher »). Une voie auteur
+  `q-filtres-qte` : (1) diagnostic et réparation des filtres, régression ; (2) des boutons de quantité sous le champ, comme le segment
+  d'unité : pièce et sachet 1, 2, 3, 5, 10 ; g 1, 5, 10, 100 ; Kg 1, 5, 10, 25 ; L 1, 5, 10, 20. Les touchers s'additionnent (1 puis 10 donnent 11),
+  et « effacer » remet à vide ; (3) le troisième champ se calcule des deux autres (prix = montant ÷ quantité, quantité = montant ÷ prix si le
+  résultat tombe juste), marqué comme calculé, jamais par-dessus une valeur lue. Les nombres par unité sont une hypothèse du pilote,
+  réversible. Preuve : le banc par le menu (puces et plateaux), captures regardées par le pilote ; puis le déploiement, puis la lecture en ligne.
+- D370 (le brasseur, 02.11, soir ; L13) : « je peux entrer que une lettre dans ce champs avant que ça valide ». Cause : au plateau, le champ
+  « Article ou prestation » n'existait que tant que le libellé était vide ; la première lettre le retirait, le focus partait. Correctif : une ligne
+  venue sans libellé garde son champ (sans le rouge une fois nommée) ; le texte d'attente aligné à gauche. Témoins rouges sur 5f83812f : banc
+  `d370-temoin` (deux thèmes) et test unitaire `plateau.test.tsx` D370. Sa demande : le correctif seul, un test unitaire, le déploiement.
+- D371 (le brasseur, 02.11, soir ; L13) : ligne ajoutée « Idaho… » en pièce, l'article Idaho 7 compté en g. Causes : (1) l'unité ne se convertit
+  pas, donc ni effet au stock ni alerte, et « Confirmer » aurait refusé (« pièce ne se convertit pas en g ») ; (2) « + Suivre au stock » passe
+  l'unité à l'appariement, qui refuse pièce face au g : la ligne partait en nouvel article (doublon). La recherche « Idaho7 » et l'appariement
+  sans unité trouvent l'article (tests). Sur le banc, l'unité d'une ligne sans unité devient « pièce » après les boutons de quantité (D369) :
+  c'est par là que sa ligne y est arrivée, probablement. Correctif : alerte au plateau (« compté en g au stock : pièce ne s'y ajoute pas »,
+  « Compter en g » d'un toucher) ; « Suivre au stock » retombe sur le nom seul quand l'unité bloque, l'alerte suit. Témoin rouge sur c625a2c6
+  (test d'écran D371), vert après (96/96 Dépense). Déployé 27d12523.
+
+## D372 — 02.11, soir : le conflit d'unité dans sa vue pu4d, pour tout produit (déployé ddbabbfc)
+- Ses mots (SPEC, 02.11) : « Mais cette vue a été oublié ?? », « C'est à ça que je m'attendais ??? », « Et ça doit être générique […] pas juste sur ce cas précis ??? ».
+- Faute : D371 avait inventé une alerte rouge (« Compter en g »), alors que sa maquette pu4d (état d) a déjà le geste d'une unité en doute (règle n° 1, L03).
+- Règle : `confianceLigne` (`src/ui/depense/confiance.ts`) met l'unité « à remplir » quand une ligne reliée a une unité lisible qui ne s'ajoute pas à son article
+  (`uniteHorsArticle`), quels que soient le produit et la paire (pièce/g, L/Kg, g/L, Kg/pièce). La rangée, « à remplir » et le plateau suivent : ▒ à la place de l'unité,
+  cinq cases avec l'unité du stock proposée, face à face FACTURE « pièce ne s'ajoute pas » | STOCK « compté en g », lien rouge « ? ». L'alerte `AlerteUnite` est retirée.
+- Preuves : `tests/unit/depense/d372` (10, dont 4 paires refusées et 5 acceptées) et le test d'écran pu4d, rouges sur 27d12523, verts sur ddbabbfc ; dossier Dépense :
+  62 échecs anciens avant comme après, aucun nouveau. Banc `g-unite` 390, clair et sombre : 5 OK, captures regardées. En ligne : `index-DHCDSPpx.js`, marqueur présent, alerte absente.
+- Reste : le libellé « article « X » · relié à « X », nom déjà au stock » répète le nom ; hors de ce correctif.
+
+## D373 — 03.11 : q × prix = montant dynamique (déployé 27d63a46)
+- Ses mots : « Les calculs sont pas dynamique ??? SI j'entre ou modife un champs, genre le total doit être calculé ?? » (pièce `bestellung`, ligne imprimée 0.036 × 30 = 1.10).
+- Règle (`recalculer`, calculPlateau.ts) : le champ qui manque se calcule ; les trois présents (lus compris), celui qu'il n'a pas touché suit : quantité ou prix → montant ;
+  montant → prix, ou quantité si le prix vient d'être posé. Le dernier champ touché tient (`derniers` dans ExpenseSheet). Remplace « une valeur lue n'est jamais écrasée » (D369).
+- Preuves : `tests/unit/depense/d373` (7), D369 ajustés (2, raison écrite), lecture-d (a') ajusté (le récap lit toujours la frappe) ; banc g-quantite D373 OK, deux thèmes.
+
+## D374 — 03.11 : la ligne à l'article proposé montre son face à face (déployé 27d63a46)
+- Ses mots : « Là on voit pas la vue des stocks ? ». pu4d : « Ligne en doute : le duel Facture | Stock ». Proposé = doute : ≈ jaune, FACTURE l'imprimé et la quantité lue
+  (unité marquée si elle diffère), STOCK l'article, « compté en … », « avant → après ». La décision reste sur la ligne article (Garder ⇄ Retirer) ; « Garder » referme.
+- Preuves : test d'écran pu4d D374 (malt et levure « 2 Stk »), rouge sur ddbabbfc ; banc g-propose 5 OK (stock fictif semé depuis l'écran), captures regardées.
+
+## D375, D377 — 03.11 : la TVA lue reste offerte ; le total de bande porte le rouge (déployé e23fe7c8)
+- D375, ses mots : « La TVA est pas compté dans le total? SI je click en ht, je peux plus revenir ? ». Sa pièce : lignes TTC, 16,10 de TVA comprise dans 261,65 ;
+  l'écart du détail (218,65) vient des lignes non lues (« Plus de 35 lignes »), pas de la TVA. Panneau TVA : la TVA lue et la valeur posée toujours offertes, la case posée
+  marquée (aria-pressed) ; « — » se nomme « sans TVA », jamais « proposé ». Test pu4d D375 ; tri R10 ajusté (nom de la case).
+- D377, ses mots : « Item en rouge mais pas total ?? ». `LigneBande.montantDoute` → `Bande`/`SousGroupe.montantDoute` → total tireté rouge (Liste.tsx). Test pu4d D377.
+- Dossier Dépense : 62 échecs anciens, aucun nouveau. Non vu au banc (vision) faute de contexte : à regarder au prochain tour.
+- **Vu au banc le 07.11** (`work/missions/2026-10-31-ecran-depense/banc-b2/vision-d375-d377.mjs`, build figé, 390 tactile, clair et cave) : D375 OK (après « sans TVA »,
+  la TVA lue 2,80 et « N + R » restent offertes, « sans TVA » marqué posé) ; D377 vu sur l'état `port-sans-montant` (ligne sans montant tiretée rouge,
+  total de bande « 0,00 + ? » rouge). Le chemin « montant contredit » (q × prix ≠ montant, rien ne corrobore) n'a pas d'état au banc : test pu4d seulement.
+- D376 (sous-familles des malts, houblons, levures) : sa page D disait « aucune (Houblons) » ; c'est un choix neuf, à montrer en mini maquettes. Il a dit « Non ne commence pas ça ».
+
+## D378 — 03.11 : les familles se plient, « Plié | Déplié » sur toute pièce (9474f3b8, à déployer)
+- Ses mots : « Mais on peut toujours pas fermé les famille et les 2 boutons, plier déplier sont absent. » Une bande sans deux sous-familles devient un seul groupe
+  (`SousGroupe.bande`), plié par un chevron sur son en-tête, ouvert par défaut (lecture étroite : rien ne se cache à l'arrivée). « Plié | Déplié » (E) agit dessus ;
+  une ligne à vérifier garde sa bande ouverte (D307). Les sous-familles des ingrédients restent un choix à lui montrer (D376, « Non ne commence pas ça »).
+
+## D379 — 03.11 : aucune ligne lue n'est jetée, aucun enregistrement ne refuse sa taille (50782143, 9474f3b8, à déployer)
+- Ses mots : « Le serveur ne garde que les 35 premières lignes et jette le reste ????? QUOOOI ?? », « Pas de plafond du j'ai une facture à 1000 ligne je dois tout
+  avoir ??? », « Ça doit jamais au grand jamais arrivé ?? ».
+- Fait : serveur sans coupe (`SCAN_MAX_ITEMS` 10 000, garde-fou), consigne sans « Maximum 35 lignes », sortie de lecture 32 768 jetons ; app : enregistrement et
+  « + Ajouter une ligne » sans plafond (`LIGNES_MAX` 10 000), scanner client sans coupe, noms français par tranches de 35 ; `firestoreRepo` : plus de garde à 450
+  écritures (Firestore a levé le plafond de 500 par lot le 29.03.2023 ; reste 10 Mio par requête).
+- Reste : la lecture par tranches (« take ») quand une seule réponse de Gemini ne suffit pas (au-delà d'environ 200 lignes) : chantier lecture, banc Gemini facturé.
+- Leçon L11 : une donnée jetée n'est jamais un vert. Audit des limites : `work/missions/2026-10-31-ecran-depense/audit-limites/RAPPORT.md` (13, dont 3 graves).
+
+## D380 — 03.11 : une longue pièce se lit en morceaux (pages, bandes), jamais par « takes » comptées (pilote, ses mots)
+- Essai réel (pièces fictives, appels autorisés « pour ce cas particulier ») : 300 lignes sur une page → lecture 1 coupée à 8 176 jetons, lecture 2 de 424 jetons,
+  3.8 expirée à 45 s ; 1 ligne gardée sur 300, total et TVA justes, « Confirmer » actif. 600 lignes sur 8 pages → refus « 4 pages maximum », sans appel.
+- Ses mots : « 2 lecture paralelle qui font des "take". Puis du non concensus, lecture lente qui fait des take aussi » ; puis « ça me semble un peu bancale ? Comment
+  l'ia sait où elle en est ??? », « surtout sur les documents comme les ticket de caisse » ; « Pas besoin de toujours découper […] Quand est-ce que ça trigger ? ».
+- Décidé : pas de takes comptées (« lignes 26 à 50 » : l'IA compte, une jonction saute ou double). La pièce se découpe pour que chaque lecture ne voie que son morceau :
+  une page à la fois (Pv) ; une image ou une page trop haute en bandes coupées sur des rangées blanches avec recouvrement (Bv). Mesuré au banc k5 (01.11, ses pièces) :
+  Bv aussi juste que C★v (doc11 12/12 · 24/24), 0,005 CHF et 3,6 s la bande ; Pv égal à la production.
+- Chaque morceau garde son schéma : deux Flash-Lite en parallèle, la 3.8 sur désaccord. Recollage par le code : en-tête du premier, totaux du dernier, ligne du
+  recouvrement gardée une fois (même recopie, même montant). Garde-fous : lignes = lignes imprimées, somme = total imprimé, jonction non raccordée en rouge.
+- Déclencheurs (jamais par défaut) : avant la lecture, PDF à texte de plus de ~35 lignes d'articles par page ou de plusieurs pages, image plus de 3 fois plus haute
+  que large ; après une lecture normale coupée (MAX_TOKENS) ou qui annonce plus de lignes qu'elle n'en rend.
+- Fait tout de suite : message vrai (« N ligne(s) imprimée(s) non lue(s) », plus « (10000 lignes au plus) »). À construire : découpe côté app (pdf.js, canvas),
+  lecture par morceaux côté serveur, plafond de 4 pages levé pour un PDF lu par pages, délais (3.8 à 45 s, lecture à 100 s, client à 150 s) adaptés aux morceaux.
+
+## D381 — 03.11 : chaque article a un seul morceau, chaque jonction est recoupée (pilote, ses mots)
+
+- **Ses mots** : « Ça reste un processus de facturation, c'est ultra critique. On peut pas se permettre de perdre ou "gagner" de l'information » ;
+  « Comment on peut s'assurer que rien ne se perds ? Et être super robuste pour ce workflow critique ? » (SPEC, 03.11).
+- **Défaut** (D380, jamais déployé) : le recollage des bandes retirait le recouvrement en comparant le texte ; 4 lignes identiques autour d'une
+  jonction → une perdue (témoin dans `tests/unit/depense/d381/jonctions.test.ts`) ; une ligne lue « 25kg » puis « 25 kg » → gardée deux fois.
+- **Décision** : aucun texte comparé pour retirer quoi que ce soit. Zones propres bord à bord, coupées dans le blanc (`planMorceaux`) ; l'image
+  montre 3 lignes des voisins, teintées, au-delà d'un trait rouge ; chaque article dit où est sa première ligne (`zone`, schéma du morceau) et
+  n'appartient qu'au morceau « dedans ». Les articles vus au-delà des traits recoupent la jonction des deux côtés (`jonctionConcorde`) ; un désaccord,
+  une coupe sans blanc (`coupeForcee`), un morceau manquant : point qui pèse ou refus, jamais silencieux. Sur le tout : somme = total imprimé, lignes
+  annoncées. L'encre se repère par contraste local (papier gris, tache, ombre, rangées grisées).
+- **Preuve attendue** : 11 pièces piégées fictives (vérité + masque) : aucune coupe dans une ligne hors ligne ; lecture réelle ligne par ligne ;
+  puis toutes ses pièces, temps avant/après.
+- **Suite du 03.11 soir (arrêt demandé, rien déployé)** : la découpe d'une photo passe à la chaîne d'école sur OpenCV.js (build officielle 5.0.0,
+  Apache-2.0), préférée à scanic (80 étoiles, 15 mois, un auteur ; OpenCV : 91 000 étoiles, 14 ans) selon sa règle « SI non opencv est mieux reconnu
+  comme ref ». OpenCV tourne dans un worker à part dont la CSP seule autorise `'unsafe-eval'` (« Je peux l'autoriser pour ce cas particulier » ;
+  firebase.json, règle par fichier : Firebase applique la dernière règle clé par clé, vérifié en ligne). Mesuré : chargement ≈ 0,5 s, coins ≈ 40 ms ;
+  sur les 19 pièces les plus dures, coupes silencieuses 43 → 30 ; sur les 200 (réglées pour l'ancienne voie), 97 contre 82 : pas encore meilleur.
+  La voie OpenCV reste donc hors service dans l'app (`opencv: true` au banc seulement). Reprise : `work/missions/2026-11-03-lecture-longue/PLAN.md`.
+- **Fin de l'étape 1 (07.11)** : sur 200 pièces neuves, OpenCV perd des lignes (143 ; avec division par le fond, 219), la voie F aucune (0 perdue,
+  0 rognée ; HEAD : 6 rognées). OpenCV est retiré de l'app (archive : `work/missions/2026-11-03-lecture-longue/opencv-essai/`) ; firebase.json revient
+  à sa CSP d'avant. Une lecture en morceaux qui échoue propose une photo plus nette ou la saisie à la main (ses mots du 03.11).
+- D382 (le brasseur, 09.11 ; remplace l'entrée fendue de D291 et D366) : « je veux en fait que 1 bouton, le plusieurs, miss ça soit marqué documents ». L'entrée de la Dépense n'a plus qu'un bouton noir « Documents » (sélecteur multiple, PDF et images, sans capture : le téléphone propose appareil photo, galerie et fichiers). L'app choisit : un fichier = un document lu tout de suite ; plusieurs photos = les pages d'une dépense (LO-7, ordre des noms) ; un PDF parmi plusieurs fichiers est refusé et dit (LO-6). « Photographier le ticket » et « Saisir sans justificatif » restent (pilote, lecture étroite, L01). Voie p1, mission 2026-11-09-depense-totaux.
+- D383 (pilote, 18.11 ; remplace la règle des critiques 6 n° 2 et 7 n° 3) : au carnet, le rangement de l'IA fait foi ; la découpe locale n'est qu'un aperçu en attendant ou le repli hors ligne ; un carnet ou une rubrique corrigés d'un toucher restent le choix du brasseur. Cause : test en ligne 2 (vraie IA) — l'IA rangeait juste, l'app l'écrasait (8 bloquants). Voir cerveau/REMPLACES.md.
+- D384 (le brasseur, 18.11) : couleurs des étapes du calendrier = jeu C « Par cuve, phases visibles » (page couleurs du 18.11), icônes plus petites, date en bulle au toucher seulement. Voir SPEC-BRASSEUR (18.11).
+- D385 (le brasseur, 18.11) : axe du calendrier en jours, semaines ou mois par trois gestes ensemble — Échelle au menu (D), Déplier une semaine (C), Pincer pour zoomer (B) ; semaine par défaut (ticket #202).
+- D386 (le brasseur, 18.11) : au calendrier, ce qui dure est une barre, ce qui arrive un jour est un jalon dans sa propre rangée (ligne à part s'il n'est lié à rien) ; un jalon lié à une barre d'une autre rangée y est relié par un fil discret ; au toucher de la barre, ses jalons liés s'allument et les autres pâlissent. Voir SPEC-BRASSEUR et CAL-JALON-UN-JOUR.
+- D387 (le brasseur, 18.11) : un interrupteur aligne la courbe sur la frise (même axe de temps) ou la laisse sur l'année avec le cadre de la période ; sans maquette.
+- D388 (le brasseur, 18.11) : glisser une chose qui change la courbe la zoome sur les semaines touchées (avant en pointillé, « si tu lâches en Sxx : … → … », écart), comme le jouable paysage ; sans maquette.
+- D389 (le brasseur, 18.11) : un bouton cache la courbe ; la frise prend toute la place, seule la bande de l'axe reste ; sans maquette.
+- D390 (pilote, 18.11, réversible ; à confirmer par le brasseur) : le fil D386 ne se dessine qu'au toucher de la barre ou du jalon lié (les autres pâlissent, donc un fil qui traverse ne trompe pas) ; au repos, le jalon lié porte un petit point de la couleur de sa barre. Cause : test en ligne du lot A — au repos, le fil vertical traversait une vente non liée (Dédé) et semblait la relier. Lecture de « La ligne doit pas être dessus l'info ».
+- D391 (pilote, 20.11, réversible) : ML-DOSE : repère = besoin de la recette, fabricant en second ; forme r3 v05 gardée ; réversible. Au repos, le repère de la barre et le mot sous la quantité disent le besoin du moteur (« besoin 2,4 sachets », « couvre le besoin » / « manque … ») ; « fabricant 15–24 g · taux · volume » sous la barre (comme r4 v02) ; sans besoin calculable, le repère retombe sur le fabricant, dit comme tel. Port-carnet 47f7cf1db.
+- D392 (pilote, 21.11, réversible) : CAL-ENTETE : le panneau de semaine (50 px) se pose par-dessus le haut du calendrier pendant la lecture, au lieu de prendre place dans le flux (revient sur CRITIQUE-5 n° 15). Raison : ses mots « tailles fix » et « beaucoup de place inutile » ; réserver la place en permanence rajouterait du vide.
+- D393 (brasseur, 21.11) : workflows de toute l'app, choix A2 (quantité par appui long 6 · 12 · 24), B1 (reste à vendre sur la carte du brassin), C1 (date en horizons au glisser), D2 (prix estimé = dernier achat semblable). Page https://claude.ai/artifact/5hDwK9FYvFXbVh8AWqfUii, synthèse work/missions/2026-11-21-workflows-app/SYNTHESE.md.
+- D394 (pilote, 21.11, réversible) : volume par défaut d'une recette neuve = le repère conseillé de l'installation (≈ 24 L, capacité du fermenteur moins la marge), et non la capacité (30 L) que le lancement refuse. Raison : un défaut qui bloque le parcours est un bug (B4/WFR-1). Source : REPRISE-bugs.md.
+- D395 (pilote, 21.11, réversible) : Calendrier B8, un brassin non brassé prévu la semaine d'avant se dessine à sa date (seul un retard de la semaine courante part d'aujourd'hui), remplace T3-2 sur ce point ; B9, le doigt sur la petite courbe lit seulement les semaines de la fenêtre, réparties sur toute la largeur. Raison : ses mots « la barre va où le doigt la lâche » (WFP-3) et la lecture hors fenêtre (WFP-2).
+- D396 (brasseur, 21.11) : workflows page 2, E2 (densité : « Comme prévu » d'un toucher), F2 (recompte rayon par rayon), G3 (créé d'abord, nommé après ; sa note : « J'aime bien g1 et g3 », donc nom posé par défaut comme G1 et renommer sur place). Avec D393 (A2 B1 C1 D2) et les 11 candidates tranchées : le lot à porter est complet.
+- D397 (pilote, 21.11, réversible) : complète D395. Un brassin pas encore brassé garde sa barre à sa date prévue, mais « prête le » vaut au plus tôt aujourd'hui + cycle (CRITIQUE-6 n° 2) : max(date prévue, aujourd'hui) + cycle.
+- D398 (pilote, 21.11, réversible) : complète D397. Pour un brassin non brassé posé au passé, les jalons prévus (fermentation, conditionnement, prête) suivent la même règle que « prête le » : à partir de max(date prévue, aujourd'hui). Le début de la barre reste à sa date prévue. Raison : une seule date par jalon, jamais deux dates contradictoires dans le détail.
+- D399 (pilote, 21.11, réversible) : un achat (dépense réelle) exige un total vrai ; on ne pose jamais un montant inventé. NOM-OBLIGE « materiel-pose » se juge sur le nom (posé, sans clavier) ; le total se garde d'un toucher (« Garder ») quand un achat semblable existe, sinon il se tape. Le contrôle est ajusté : l'étape joue Garder puis Enregistrer avec la fixture « ZZ TEST Pompe de brassage ».
+- D400 (pilote, 21.11, réversible) : V-RECETTE reçoit src/domain/hopIndex/v4/quickAdd.ts (classement seulement : le stock nommé avant un code catalogue sans nom, moteur inchangé), src/ui/etapeLevure/** (7 points Ma levure, levure du stock) et tests/unit/recettePropositions.test.ts. Date de la recette (C1) : d'abord dans le récap (overview), qui garde sa forme ; au 1er écran (r4-a), aucune place : greffe « à dessiner », montrée en mini maquette avant tout port (règle n° 1).
+- D401 (pilote, 21.11, réversible) : des Travaux créés sans montant sont une activité marquée travaux: true (comme Activités) ; avec un montant, ils restent un plan financier. Jamais un plan à 0 CHF (l'inconnu n'est jamais 0).
+- D402 (pilote, 21.11, réversible) : V-RECETTE reçoit aussi src/domain/hopIndex/v4/cases.ts (tri de buildFromEmpty seulement : stock nommé d'abord, moteur inchangé). Les 4 tests rouges hors voie (fix114, designTokens, invoiceScanCache-d273c, virgule-transversale) vont à une voie « transverse » ; leurs parties dans src/ui/calendrier/** restent à la voie Calendrier.
+- D403 (pilote, 21.11, réversible) : N1 houblon, un houblon du stock à α ≥ 10 % peut être proposé à l'amérisant même s'il est classé aromatique (Citra) ; il reste proposé à l'arôme. Couvert par un test sur 31 styles (6f013ba00). Refusé : edeb5fdaa (retrait du préfixe « ZZ TEST » dans donneesApp.ts, code de production plié au test) ; la fixture relie le houblon à sa variété par son identifiant.
+- D404 (pilote, 21.11, réversible) : C1 ne retire aucune fonction. Dans la feuille d'ajout du Calendrier, l'horizon pose le début ; la durée (période S20 → S40) s'étire par le geste de la frise B (module src/ui/geste) ; les jours actifs restent, repliés sous le choix de période. Les 32 tests du carrousel sont réécrits sur ces gestes, aucun n'est supprimé sans son équivalent.
+- D405 (pilote, 21.11, réversible) : une seule caisse. V-COUT déplace budgetsDeRecette dans src/domain/finance/brewForecast.ts (montants marqués estimés), et reçoit assistantContext.ts:141 pour lire le même calcul ; le Calendrier lit cette source (la voie Calendrier ne garde que l'affichage). Le point bas au Bord et la ligne « marge par 33 cl » restent des ajouts d'une ligne, dans le style de l'écran.
+- D406 (pilote, 21.11, réversible) : VUE-SAUTE du Calendrier. Positions de la frise en transform et pistes à hauteur fixe : ce n'est pas un changement de visuel (même rendu au repos), c'est sa demande « il faudrait des tailles fix car SI non ça fait bouger le calendrier ». Une semaine dépliée ou un changement de période ne déplace plus rien autour. Captures avant/après côte à côte au repos : aucune différence visible.
+- D407 (pilote, 21.11, réversible) : VUE-SAUTE ne compte pas le contenu que le geste ajoute lui-même sous le doigt (un 2e malt ajouté pousse la liste : attendu). « Changer de fermenteur » : appliquer la piste de REPRISE-V-RECETTE qui garde le visuel de r4-a au repos ; si elle change le rendu, garder r4-a (règle n° 1) et marquer l'exception dans principes.mjs.
+- D408 (pilote, 21.11, réversible) : D406 précisé. Ses mots les plus récents (« il faudrait des tailles fix ») priment : les pistes du Calendrier gardent une hauteur fixe au changement de période, même si le rendu au repos change un peu. Exceptions VUE-SAUTE (D407) : « Cacher la courbe » (geste qui change l'en-tête exprès) et la fiche qui s'ouvre sous sa barre (contenu ajouté par le geste), « ZZ TEST Commande de malt » marqué ajoute. Ordre : d'abord l'échelle au doigt R4/R7 et les barres glissées (sa demande), puis D406.
+- D409 (brasseur et pilote, 21.11, réversible) : la mise en ligne ne bloque plus sur la suite vitest entière (plus de 25 min). Elle bloque sur les vrais tests : types (tsc), build et drapeaux, parcours au doigt calendrier, chaînes, carnet, geste. Vitest se lance à part (TESTS_UNITAIRES=1). Les tests lents qui n'apportent rien sont listés pour suppression, avec l'accord du brasseur (« On peut enlever des test si ça apporte rien »).
+- D410 (pilote, 21.11, réversible) : dans le cadre de la courbe des prix, glisser le corps déplace la fenêtre (R5 de la frise B validée) ; la lecture d'une semaine sur la courbe (c2-b) passe par un appui long (useAppuiLong, 450 ms) puis le glisser, ou par un toucher simple hors du cadre. Raison : « l'action du temps sur le graph des prix fonctionne extrêmement mal ».
+- D411 (pilote, 21.11, réversible) : VUE-SAUTE ignore le changement de période (« Période suivante », « Période précédente », choix d'échelle). Le contenu change par le geste même ; la mesure CLS ne s'applique qu'aux gestes qui gardent la période. Même logique que D407 et D408. Raison : CAL-VIDE (écarts ≤ 4 px) déplace forcément les rangées quand la période change.
+- D412 (brasseur, 21.11) : fiche d'une chose du Calendrier = v02 « Pastilles chiffrées » (work/missions/2026-11-21-calendrier-fiche/v02.html), action à la volée gardée. Ses modifications : plus de couleur et d'icônes ; beaucoup plus compacte en hauteur, pleine largeur ; plus de place aux actions. Greffes : souche colorée du ticket v07 sans espace gâché ; sous-menus en volets de v04 ; dates exactes de v09 à un toucher, pas au repos. Port : CHE-2 (Supprimer) et CHE-5 (Modifier un brassin) entrent dans la fiche.
+- D413 (brasseur, 21.11) : vite-plugin-pwa accordé pour le hors ligne (V6, CHN-7), « SI ça augmente la fluidité » : mesurer l'ouverture d'un écran chargé à la demande, avant et après ; sans gain mesuré ni perte, ne pas garder.
+- D414 (pilote, 21.11, réversible) : D413 remplie, vite-plugin-pwa gardé. Mesures (V6/RESULTAT.md) : premier affichage −113 ms en 4G (365 → 252), +17 ms en boucle locale (sans effet au téléphone) ; Houblons au 2e passage 451 → 62 ms ; hors ligne 0/5 → 5/5 onglets.
+- D415 (brasseur, 21.11) : la plupart des défauts et des petites améliorations se corrigent sans mini maquettes ; ce qui tient dans une zone en attente de choix (Comparer du Carnet, prix rendu ; « à dessiner » du Stock) attend son choix, pour ne pas corriger de « faux » problèmes. Ordre : correctifs hors zones en attente, pages de choix, puis port du choix avec les correctifs restants.
+- D416 (brasseur, 21.11 soir) : mode nuit. Calendrier : autonomie complète jusqu'au bout, mise en ligne comprise, éprouvé au doigt sur l'app en ligne (session de test, ZZ TEST seulement). Reste (Carnet, Stock) : avancer jusqu'à son retour ; mini maquettes en 3 itérations au plus avec critiques adaptés, refaites seulement si nécessaire ; économie de jetons, qualité d'abord, le temps n'est pas une contrainte.
+- D417 (pilote, 21.11, réversible) : CRU-3a contre D383 tranché par une 4e voie : pas de fiche provisoire à la création depuis la liste ; la liste montre « L'IA range… » sur la ligne envoyée, puis ouvre d'elle-même le carnet de destination (existant ou neuf), une seule fois, dans sa mise en page stable. D383 reste vrai (l'IA range), CRN-CREATION-VUE aussi (la vue s'ouvre seule et ne change plus). Le titre de l'IA sur un carnet neuf qu'il a nommé est proposé, jamais imposé.
+- D418 (pilote, 21.11, réversible) : point d'ajout unique du Carnet = le champ du bas (photo, micro, lien, rangement par l'IA), aligné sur la rangée du + ; plus de « Coller un lien » par carte. Raison : D417 et CRB-12 (deux portes pour le même geste, le + cachait la fin des listes) contre l'acquis du 15.11 « le bouton doit toujours être flottant » : le + reste flottant et garde les actions communes, le champ ne porte que l'ajout au carnet. L'action « Nouvelle idée · le champ en bas » (ACTION_CARNETS, plusEcran.ts) est gardée : le sous-contrôle « le + ne double pas le champ » passe au banc ; la retirer est une ligne si le brasseur veut une seule porte. Le « trou » du bas (capture du brasseur, environ 60 px) n'est reproduit ni sur l'arbre ni sur le build tour8 (12 px des deux côtés) : cause non établie, à mesurer sur son téléphone.
+- D419 (brasseur, 22.11) : Carnet : Comparer = A1, prix = B1 (work/missions/2026-11-21-carnet-maquettes/) ; choisir → achat prévu : aucune version prise ; son vœu : placer l'achat au doigt sur le Calendrier (la frise, comme une chose) ; g05-9 reste la base choisie.
+- D420 (brasseur, 22.11) : Stock : entrée Articles d1a, étagère d2a, légende d3b (390) et d3a (1280), fiche d'un article d5a, sucres d7a, Matériel d8a (work/missions/2026-11-21-stock-maquettes/). Autres stocks (D4) à refaire compact, tenable à 30 additifs. D6 et Fûts (d8b) non choisis : l'existant reste. Filtres d'ingrédients dynamiques, les plus pertinents d'abord, une seule ligne.
+- D421 (pilote, 22.11, réversible) : prix rendu B1 : aucun chiffre inventé. Taux EUR→CHF repris de sa dernière facture en EUR (Finances), sinon un taux qu'il pose une fois et qui est gardé ; TVA d'import 8,1 % ; port et frais « ? » tant qu'inconnus (jamais 60 par défaut) ; la pastille dit « ≈ » et « estimé ». Choisir crée aussitôt l'achat prévu (D419) puis propose « Placer » (ouvre le Calendrier sur PLAN-CARNET-<id>).
+- D422 (pilote, 22.11, réversible) : port d1a. (1) Le catalogue des houblons (index, dégustations, savoir) garde une entrée : toucher le titre du rayon « Houblons » de l'étagère l'ouvre, et « Aller à Houblons » (App.tsx) y mène ; rien n'est perdu par le retrait de l'onglet. (2) Recompter suit la maquette d1a-recompter telle quelle (segment Ingrédients | Autres stocks), règle n° 1. (3) Les lignes de la chasse Stock se tiennent dans BUGS.md du dépôt Brasserie.
+- D423 (brasseur, 22.11) : Autres stocks = version A (étagère jumelle), polie sur le modèle de l'étagère des ingrédients (d2a, d3b), avec le seuil ; critiques d'abord (liste exacte des écarts au modèle), puis port.
+- D424 (pilote, 22.11, réversible) : Autres stocks A, points de contenu restés ouverts par la critique Brasseur (3 et 4) : la pastille de catégorie de chaque ligne devient l'information utile, dans cet ordre : « manque X pour les brassins prévus » si une recette en demande, sinon « ≈ N brassins » si la dose est connue, sinon la DDM proche, sinon rien. Le seuil est écrit sur chaque ligne (« seuil 250 ml » ou « sans seuil ») et se règle dans la ligne ouverte, sans type="number".
+- D425 (pilote, 22.11, réversible ; GESTE-DATE-PARTOUT) : (1) plage de la frise de date = [min(valeur du champ, aujourd'hui − 5 ans), aujourd'hui + 5 ans], jamais bornée en dur (une pièce de 2024 se corrige au doigt) ; (2) TodoTimeline, ChiffreACommander, FriseArchives : écrans qu'il a choisis ; s'ils servent à CHOISIR une date, seul le geste de choix passe à la frise partagée (ses mots les plus récents, « PARTOUT », priment pour le geste), le reste de l'écran reste tel quel ; s'ils ne font qu'afficher le temps, rien ne change.
+- D426 (brasseur, 22.11) : saisie à la main = v01 « Le genre d'abord » (work/missions/2026-11-22-saisie-main/choix-saisie.html, passe 2), « rendre le workflow encore mieux et plus simple ». Suite (pilote) : une passe de simplification du parcours sur v01 (touchers comptés avant/après pour achat, vente, loyer récurrent, apport, abonnement, remboursement), jugée par les critiques UX et compta, puis port dans l'app sans attendre (L24) ; champs neufs éventuels (catégories Salaires/Abonnements, moyen Carte) : accord de l'utilisateur, groupé.
+- D427 (brasseur, 22.11) : v01s (saisie simplifiée) validée, « oui c'est très bien » ; port en cours. Tests : jamais iPhone/Safari ; son téléphone est Android (Chrome, Gboard).
+- D428 (brasseur, 22.11) : pas de champ « TVA à l'AFC » ni d'option TVA dans la tuile Impôts (« Pas utile pour le moment »). La tuile garde l'impôt sur la bière (divers) et les impôts privés (Pour moi). Aucun champ neuf de schéma pour la saisie à la main.

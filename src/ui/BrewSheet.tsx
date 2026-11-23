@@ -1,0 +1,937 @@
+import { Input, Textarea } from './Input';
+import { RecipeDisclosure, RecipeWaterVolumes } from './RecipeDisclosure';
+import { MaltDetails } from './MaltDetails';
+import { LearnIngredient } from '../domain/ingredientFacts';
+import React from 'react';
+import { Trash2, AlertTriangle, Check, Droplets } from 'lucide-react';
+import { RecipeTextExport } from './RecipeTextExport';
+import {
+  Fermentable,
+  HopIngredient,
+  YeastSpec,
+  TempStep,
+  FermentationStep,
+  WaterIons,
+  SaltId,
+  AcidId
+} from '../types';
+import { Units } from '../services/units';
+import { HOP_STAGE } from '../domain/hopStage';
+import { patchIndexedHop } from '../domain/hopIndex/recipeBindings';
+import { ION_LABEL, SALTS } from '../domain/water';
+import { NumberInput } from './NumberInput';
+import { WaterAdditivesTable } from './WaterAdditivesTable';
+import { WaterRadar } from './WaterRadar';
+import { WaterTargetStatus } from './water/WaterTargetStatus';
+import { StyleWater } from '../domain/waterStyles';
+import { useDensity } from './useViewport';
+import { inputClass } from './FormNav';
+import { RecipeReview } from './RecipeReview';
+import { formatDecimal, messageRefus } from './numericInput';
+import { uniteAccordee } from '../domain/fermentables/parts';
+import { masseLigneRetenue } from '../domain/bornesMetier';
+import { EBULLITION_SAISIE_MAX, VOLUME_SAISIE_MAX } from './identite/regles';
+
+/** Preserve Units' conversion and rounding; only localize the displayed number. */
+const formatQuantity = (quantity: number, unit: string) =>
+  Number.isFinite(quantity) ? Units.format(quantity, unit).replace(/^(-?\d+)\.(\d+)/, '$1,$2') : `— ${unit}`;
+const formatFixed = (value: number, digits: number) =>
+  Number.isFinite(value) ? value.toFixed(digits).replace('.', ',') : '—';
+const formatReading = (value: number) => formatDecimal(value) || '—';
+
+/**
+ * La fiche de brassage : tout ce qui compose la recette, sur un seul écran, et
+ * TOUT modifiable là où c'est affiché.
+ *
+ * ⚠️ Ce qu'elle règle. Le récapitulatif était une liste de définitions en
+ * lecture seule. Gaëtan : « je veux pas aller dans chaque sous-menu pour
+ * adapter ». Corriger 100 g sur un houblon obligeait à remonter le fil
+ * d'étapes, retrouver la ligne, la changer, redescendre — six gestes pour un
+ * chiffre. Ici la valeur SE CHANGE À L'ENDROIT OÙ ON LA LIT.
+ *
+ * Deux règles de composition :
+ *
+ *   - Une ligne par ingrédient, hauteur adaptée au contenu : le nom se lit, les nombres se
+ *     tapent. Les sections restent indépendantes : on doit pouvoir parcourir
+ *     les volumes et pesées essentiels, puis ouvrir les détails utiles.
+ *
+ *   - Les champs n'ouvrent PAS le clavier du système (`pad`) : sur une fiche de
+ *     vingt valeurs, le clavier passerait son temps à masquer celle d'après.
+ *
+ * Ce qui est CALCULÉ (part du grain, IBU d'un ajout) reste en lecture : c'est
+ * une conséquence des saisies, pas une saisie.
+ */
+
+/** Une ligne de fiche : une étiquette à gauche, ce qu'on modifie à droite. */
+const Row: React.FC<{
+  label: React.ReactNode;
+  hint?: React.ReactNode;
+  onDelete?: () => void;
+  children: React.ReactNode;
+}> = ({ label, hint, onDelete, children }) => (
+  <div className="py-1 sm:py-1.5 flex items-center gap-1.5 sm:gap-2">
+    <div className="min-w-0 flex-1">
+      {/* BR-25 : le nom passe à la ligne (« Fermentation primaire » était coupé en « Fermentation prim… » à 390). */}
+      <div className="text-sm sm:text-base text-cave-50 break-words leading-tight">{label}</div>
+      {hint && <div className="text-sm text-cave-400 truncate leading-tight mt-0.5">{hint}</div>}
+    </div>
+    <div className="shrink-0 flex items-center gap-1 sm:gap-1.5">{children}</div>
+    {onDelete && (
+      <button
+        type="button"
+        onClick={onDelete}
+        aria-label="Retirer"
+        className="shrink-0 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-control -mr-1 text-cave-400 hover:text-alert transition-colors"
+      >
+        <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+      </button>
+    )}
+  </div>
+);
+
+/** Champ numérique de fiche : étroit, avec son unité collée. */
+const Cell: React.FC<{
+  value: number | undefined;
+  onValue: (n: any) => void;
+  unit: string;
+  width?: string;
+  integer?: boolean;
+  emptyValue?: number | undefined;
+  min?: number;
+  max?: number;
+  label: string;
+  /** Hors bornes, la saisie est refusée (valeur d'avant gardée, message) au lieu d'être ramenée à la borne : les lignes de houblon (TE-21, BR-42). */
+  refuser?: boolean;
+}> = (props) => {
+  const { value, onValue, unit, width = 'w-[4.5rem] sm:w-20', integer, min, max, label } = props;
+  // An erased required measure remains unavailable until the wizard validates it.
+  const emptyValue = 'emptyValue' in props ? props.emptyValue : Number.NaN;
+  // TE-21, BR-42 : une saisie hors bornes (α 150 %, −5 min, −1 g) était ramenée à la borne sans un mot. Elle est refusée : la valeur d'avant reste ET le dit (role="alert"), comme VI-9.
+  const [refus, setRefus] = React.useState<string | null>(null);
+  const idRefus = React.useId();
+  return (
+    <>
+    <span className="flex items-baseline gap-1">
+      <NumberInput
+        value={value}
+        onValue={onValue}
+        integer={integer}
+        emptyValue={emptyValue}
+        min={min}
+        max={max}
+        rejeter={props.refuser}
+        onRefus={(r) => setRefus(r ? messageRefus(r.saisi, r.retenu, { min, max, unite: unit.replace('%α', '%') }) : null)}
+        aria-invalid={refus ? true : undefined}
+        aria-describedby={refus ? idRefus : undefined}
+        pad
+        aria-label={label}
+        className={`${width} min-h-touch px-1.5 sm:px-2 rounded-control bg-cave-950 border border-cave-700
+                    font-mono font-semibold text-right text-sm sm:text-base text-cave-50
+                    focus:outline-none focus:border-ebc-straw focus:ring-1 focus:ring-ebc-straw/40`}
+      />
+      <span className="reading-unit w-6 sm:w-8 text-sm shrink-0">{unit}</span>
+    </span>
+    {refus && <p id={idRefus} role="alert" className="basis-full w-full text-xs text-alert leading-snug">{refus}</p>}
+    </>
+  );
+};
+
+/** Bloc titré de la fiche. Plus serré qu'une `Section` : il y en a huit. */
+const Block: React.FC<{
+  title: string;
+  aside?: React.ReactNode;
+  children: React.ReactNode;
+}> = ({ title, aside, children }) => {
+  return <RecipeDisclosure title={title} summary={aside}><div className="divide-y divide-cave-850">{children}</div></RecipeDisclosure>;
+};
+
+/** Tout ce que la fiche montre de l'eau, calculé par l'assistant. */
+export interface WaterRecap {
+  targetStatus?: React.ComponentProps<typeof WaterTargetStatus>;
+  sourceName: string;
+  styleName: string;
+  mashWaterL: number;
+  spargeWaterL: number;
+  diRatioPct: number;
+  spargeDiRatioPct: number;
+  spargeLinked: boolean;
+  mashOsmoseeL: number;
+  spargeOsmoseeL: number;
+  mashIons: WaterIons;
+  spargeIons: WaterIons;
+  /**
+   * Le MOÛT, l'eau de départ et la cible — pour la toile.
+   *
+   * ⚠️ Le moût, pas la maische : c'est la bière que le style décrit. Tous trois
+   * optionnels — un plan enregistré avant cette version n'en porte pas, et le
+   * récapitulatif retombe alors sur la grille de chiffres plutôt que de
+   * dessiner une toile fausse.
+   */
+  startIons?: WaterIons;
+  wortIons?: WaterIons;
+  style?: StyleWater;
+  ra: number;
+  raBand: { min: number; max: number; label: string };
+  raSaltTarget?: number;
+  ratio: { ratio: number | null; label: string };
+  doses: Partial<Record<SaltId, number>>;
+  split: { mash: Partial<Record<SaltId, number>>; sparge: Partial<Record<SaltId, number>> };
+  acidId: AcidId;
+  mashAcid: { amount: number; unit: string };
+  spargeAcid: { amount: number; unit: string; targetPh: number };
+  disabled: SaltId[];
+  allSaltsInMash?: boolean;
+  mashPh?: number;
+  spargePh?: number;
+}
+
+export interface BrewSheetProps {
+  onLearnIngredient?: LearnIngredient;
+  reviewData?: unknown;
+  yeastSummary?: React.ReactNode;
+  name: string;
+  onName: (v: string) => void;
+  style: string;
+  onStyle: (v: string) => void;
+  volumeL: number;
+  onVolumeL: (v: number) => void;
+  boilMin: number;
+  onBoilMin: (v: number) => void;
+  carboTarget: string;
+  onCarboTarget: (v: string) => void;
+
+  fermentables: Fermentable[];
+  onFermentables: (v: Fermentable[]) => void;
+  totalGristKg: number;
+
+  hops: HopIngredient[];
+  onHops: (v: HopIngredient[]) => void;
+  /** IBU d'un ajout, calculé par l'appelant — la fiche ne calcule rien. */
+  hopIbu: (h: HopIngredient) => number | null;
+
+  yeast: YeastSpec;
+  onYeast: (v: YeastSpec) => void;
+
+  mashSteps: TempStep[];
+  onMashSteps: (v: TempStep[]) => void;
+
+  fermentation: FermentationStep[];
+  onFermentation: (v: FermentationStep[]) => void;
+
+  mashWaterL: number;
+  onMashWaterL: (v: number) => void;
+  spargeWaterL: number;
+  onSpargeWaterL: (v: number) => void;
+
+  /**
+   * Le plan d'eau au complet, en lecture.
+   *
+   * ⚠️ La fiche n'affichait que trois volumes. Tout le reste — litres d'osmosée
+   * à préparer, profil visé, ions atteints, sels et acides à peser — n'existait
+   * qu'à l'étape 6. Le brasseur validait donc sa recette sans jamais revoir la
+   * moitié de ce qu'il allait verser dans la cuve.
+   */
+  water?: WaterRecap;
+  /** Ramène à l'atelier de l'eau, d'un geste. */
+  onEditWater?: () => void;
+
+  notes: string;
+  onNotes: (v: string) => void;
+
+  /** Besoins insuffisants ou non comparables, calculés par l'appelant. */
+  shortages: Array<{ name: string; needed: number; unit: string; have?: number; haveUnit?: string; status?: 'shortage' | 'unverified'; reason?: string }>;
+
+  /**
+   * Rend la recette entière en texte brut, prête à coller.
+   *
+   * ⚠️ Fournie par l'appelant et non construite ici : la fiche n'a pas les
+   * grandeurs CALCULÉES — OG, IBU, EBC, rendement — qui vivent dans
+   * l'assistant. Les recalculer ici les ferait diverger de ce que l'écran
+   * affiche, ce qui est la pire façon de se tromper.
+   */
+  onExportText?: () => string;
+}
+
+export const BrewSheet: React.FC<BrewSheetProps> = ({
+  onLearnIngredient,
+  reviewData,
+  yeastSummary,
+  name,
+  onName,
+  style,
+  onStyle,
+  volumeL,
+  onVolumeL,
+  boilMin,
+  onBoilMin,
+  carboTarget,
+  onCarboTarget,
+  fermentables,
+  onFermentables,
+  totalGristKg,
+  hops,
+  onHops,
+  hopIbu,
+  yeast,
+  onYeast,
+  mashSteps,
+  onMashSteps,
+  fermentation,
+  onFermentation,
+  mashWaterL,
+  onMashWaterL,
+  spargeWaterL,
+  onSpargeWaterL,
+  water,
+  onEditWater,
+  notes,
+  onNotes,
+  onExportText,
+  shortages
+}) => {
+  const tight = useDensity() === 'tight';
+
+  const patchFerm = (i: number, patch: Partial<Fermentable>) => {
+    // BR-21 : une masse négative ne se retient pas, 10 t au plus. Un champ VIDÉ du récapitulatif reste une absence (NaN, « à renseigner »), comme tous ses
+    // champs : jamais un 0 inventé ; `undefined` devient cette même absence.
+    if ('weightKg' in patch) {
+      const vide = patch.weightKg === undefined || Number.isNaN(patch.weightKg);
+      const kg = vide ? Number.NaN : masseLigneRetenue(patch.weightKg);
+      if (kg === null) return;
+      patch = { ...patch, weightKg: kg };
+    }
+    onFermentables(fermentables.map((f, j) => (j === i ? { ...f, ...patch } : f)));
+  };
+  const patchHop = (i: number, patch: Partial<HopIngredient>) =>
+    onHops(hops.map((h, j) => (j === i ? patchIndexedHop(h, patch) : h)));
+
+  const totalHopG = hops.reduce((s, h) => s + h.weightG, 0);
+  const hasStockNeeds = fermentables.some(f => f.name.trim() && f.weightKg > 0)
+    || hops.some(h => h.name.trim() && h.weightG > 0)
+    || Boolean(yeast.name.trim() && yeast.qty > 0 && yeast.unit);
+  const incompleteStockNeeds = fermentables.some(f => !f.name.trim() || !Number.isFinite(f.weightKg) || f.weightKg <= 0)
+    || hops.some(h => !h.name.trim() || !Number.isFinite(h.weightG) || h.weightG <= 0)
+    || Boolean(yeast.name.trim() && (!Number.isFinite(yeast.qty) || yeast.qty <= 0 || !yeast.unit));
+  const stockShortages = shortages.filter(item => item.status !== 'unverified').length;
+  const stockToVerify = shortages.length - stockShortages;
+  const stockSummary = shortages.length > 0
+    ? <span role="status" className="inline-flex max-w-full items-center gap-1 rounded-full border border-attention/40 bg-attention/10 px-1.5 py-px text-xs leading-tight text-attention">
+        <AlertTriangle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+        <span>{[stockShortages ? `${stockShortages} ingrédient${stockShortages > 1 ? 's' : ''} à commander` : '', stockToVerify ? `${stockToVerify} à vérifier` : ''].filter(Boolean).join(' · ')}</span>
+      </span>
+    : <span role="status" className="inline-flex max-w-full items-center gap-1 text-xs leading-tight text-cave-200">
+        {hasStockNeeds && !incompleteStockNeeds && <Check className="w-3.5 h-3.5 shrink-0 text-hop" aria-hidden="true" />}
+        {incompleteStockNeeds ? 'Besoins à compléter' : hasStockNeeds ? 'Stock suffisant' : 'Besoins à renseigner'}
+      </span>;
+
+  /*
+   * Les houblons se lisent dans l'ordre de la JOURNÉE, pas dans celui où on les
+   * a saisis : premier moût, ébullition, whirlpool, cru. C'est l'ordre dans
+   * lequel on les pèsera.
+   */
+  const hopsInOrder = hops
+    .map((h, index) => ({ h, index }))
+    .sort((a, b) => HOP_STAGE[a.h.stage].order - HOP_STAGE[b.h.stage].order);
+
+  return (
+    <div className={tight ? 'space-y-2' : 'space-y-3'}>
+      {/* --- Identité ------------------------------------------------------ */}
+      {water&&<RecipeWaterVolumes totalL={mashWaterL+spargeWaterL} roL={water.mashOsmoseeL+water.spargeOsmoseeL}/>}
+      <Block title="Identité" aside={[name || 'Nom à renseigner', style, formatQuantity(volumeL, 'L')].filter(Boolean).join(' · ')}>
+        <Row label="Nom">
+          <Input
+            type="text"
+            name="brewsheet_beer_label"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
+            data-form-type="other"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            value={name}
+            onChange={(e) => onName(e.target.value)}
+            aria-label="Nom de la recette"
+            className={`${inputClass} w-44 text-right`}
+          />
+        </Row>
+        <Row label="Style">
+          <Input
+            type="text"
+            name="brewsheet_beer_style"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
+            data-form-type="other"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            value={style}
+            onChange={(e) => onStyle(e.target.value)}
+            aria-label="Style"
+            className={`${inputClass} w-44 text-right`}
+          />
+        </Row>
+        <Row label="Volume">
+          {/* Les mêmes garde-fous que les champs de l'étape Identité (regles.ts) : un zéro de trop est une faute de frappe,
+              pas une règle à étendre jusqu'à l'absurde. Appliqués à la sortie du champ, comme les autres bornes de la fiche. */}
+          <Cell label="Volume" value={volumeL} onValue={onVolumeL} unit="L" min={1} max={VOLUME_SAISIE_MAX} />
+        </Row>
+        <Row label="Ébullition">
+          <Cell label="Ébullition" value={boilMin} onValue={onBoilMin} unit="min" integer min={0} max={EBULLITION_SAISIE_MAX} />
+        </Row>
+        <Row label="Carbonatation" hint="Ce que la recette annonce — « 2,5 vol ».">
+          <Input
+            type="text"
+            name="brewsheet_carbo_target"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
+            data-form-type="other"
+            data-lpignore="true"
+            data-1p-ignore="true"
+            data-bwignore="true"
+            value={carboTarget}
+            onChange={(e) => onCarboTarget(e.target.value)}
+            placeholder="2,5 vol"
+            aria-label="Carbonatation visée"
+            className={`${inputClass} w-28 text-right`}
+          />
+        </Row>
+      </Block>
+
+      {/* --- Fermentescibles ----------------------------------------------- */}
+      <Block title="Fermentescibles" aside={formatQuantity(totalGristKg, 'kg')}>
+        {fermentables.length === 0 ? (
+          <p className="py-2 text-sm text-cave-400">Aucun fermentescible.</p>
+        ) : (
+          fermentables.map((f, i) => (
+            <div key={`${f.name}-${i}`} className="pb-1">
+            <Row
+              label={f.name}
+              hint={
+                <>
+                  {f.kind === 'grain' && totalGristKg > 0
+                    ? `${((f.weightKg / totalGristKg) * 100).toFixed(0)} % du grain`
+                    : f.kind}
+
+                </>
+              }
+              onDelete={() => onFermentables(fermentables.filter((_, j) => j !== i))}
+            >
+              <Cell
+                label={`Masse de ${f.name}`}
+                value={f.weightKg}
+                onValue={(v) => patchFerm(i, { weightKg: v })}
+                unit="kg"
+                min={0}
+              />
+            </Row>
+              {f.kind === 'grain' && <MaltDetails malt={f} onChange={patch => patchFerm(i, patch)}
+                onLearnIngredient={onLearnIngredient} />}
+            </div>
+          ))
+        )}
+      </Block>
+
+      {/* --- Houblons ------------------------------------------------------ */}
+      <Block title="Houblons" aside={formatQuantity(totalHopG, 'g')}>
+        {hops.length === 0 ? (
+          <p className="py-2 text-sm text-cave-400">Aucun houblon.</p>
+        ) : (
+          hopsInOrder.map(({ h, index }) => {
+            const def = HOP_STAGE[h.stage];
+            const ibu = hopIbu(h);
+            return (
+              <div key={`${h.name}-${index}`} className="py-1.5 space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-base text-cave-50 truncate leading-tight">
+                      {h.name}
+                    </span>
+                    <span className="flex items-center gap-1.5 text-sm leading-tight">
+                      <span className={`px-1.5 rounded-full border text-sm ${def.tone}`}>
+                        {def.label}
+                      </span>
+                      {/* L'amertume d'un ajout est une CONSÉQUENCE : jamais saisie. */}
+                      <span className="text-cave-400">
+                        {def.bitters
+                          ? ibu !== null
+                            ? `${formatFixed(ibu, 1)} IBU`
+                            : 'IBU incalculable'
+                          : 'effet à cru séparé'}
+                      </span>
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => onHops(hops.filter((_, j) => j !== index))}
+                    aria-label={`Retirer ${h.name}`}
+                    className="shrink-0 touch-target -mr-2 text-cave-400 hover:text-alert transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <Cell
+                    label={`Masse de ${h.name}`}
+                    value={h.weightG}
+                    onValue={(v) => patchHop(index, { weightG: v })}
+                    unit="g"
+                    integer
+                    min={0}
+                    refuser
+                  />
+                  <Cell
+                    label={`Alpha de ${h.name}`}
+                    value={h.alpha || undefined}
+                    onValue={(v) => patchHop(index, { alpha: v ?? 0 })}
+                    emptyValue={0}
+                    unit="%α"
+                    width="w-16"
+                    min={0}
+                    max={30}
+                    refuser
+                  />
+                  {(def.ask === 'time' || def.ask === 'timeAndTemp') && (
+                    <Cell
+                      label={`Durée de ${h.name}`}
+                      value={h.timeMin}
+                      onValue={(v) => patchHop(index, { timeMin: v })}
+                      emptyValue={undefined}
+                      unit="min"
+                      width="w-16"
+                      integer
+                      min={0}
+                      refuser
+                    />
+                  )}
+                  {def.ask === 'timeAndTemp' && (
+                    <Cell
+                      label={`Température de ${h.name}`}
+                      value={h.tempC}
+                      onValue={(v) => patchHop(index, { tempC: v })}
+                      emptyValue={undefined}
+                      unit="°C"
+                      width="w-16"
+                      min={0}
+                      max={100}
+                    />
+                  )}
+                  {def.ask === 'day' && (
+                    <Cell
+                      label={`Jour d’ajout de ${h.name}`}
+                      value={h.dayOffset}
+                      onValue={(v) => patchHop(index, { dayOffset: v })}
+                      emptyValue={undefined}
+                      unit="j"
+                      width="w-16"
+                      integer
+                      min={0}
+                    />
+                  )}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </Block>
+
+      {/* --- Levure -------------------------------------------------------- */}
+      <Block title="Levure" aside={yeastSummary ?? (yeast.name ? `${yeast.name} · ${Number.isFinite(yeast.qty) && yeast.qty > 0 && yeast.unit ? `${yeast.qty.toLocaleString('fr-FR')} ${uniteAccordee(yeast.unit, yeast.qty)}` : 'quantité à préciser'}` : 'Souche à choisir')}>
+        {/* BR-26 : la ligne de la quantité se lit « Quantité », la souche passe en dessous (le nom seul ne disait pas ce que le champ attend). */}
+        <Row label="Quantité" hint={[yeast.name, yeast.strain].filter(Boolean).join(' · ') || undefined}>
+          <Cell
+            label="Quantité de levure"
+            value={yeast.qty}
+            onValue={(v) => onYeast({ ...yeast, qty: v })}
+            unit={yeast.unit}
+            width="w-16"
+            min={0}
+          />
+        </Row>
+        <Row label="Atténuation" hint="Sert à prédire la densité finale.">
+          <Cell
+            label="Atténuation"
+            value={yeast.attenuationPct}
+            onValue={(v) => onYeast({ ...yeast, attenuationPct: v, attenuationBasis: v == null ? undefined : 'recipe' })}
+            emptyValue={undefined}
+            unit="%"
+            width="w-16"
+            min={0}
+            max={100}
+          />
+        </Row>
+        <Row label="Durée de fermentation">
+          <Cell
+            label="Durée de fermentation"
+            value={yeast.fermentDays}
+            onValue={(v) => onYeast({ ...yeast, fermentDays: v })}
+            emptyValue={undefined}
+            unit="j"
+            width="w-16"
+            integer
+            min={0}
+          />
+        </Row>
+      </Block>
+
+      {/* --- Paliers ------------------------------------------------------- */}
+      <Block title="Paliers d’empâtage" aside={mashSteps.length ? `${mashSteps.length} palier${mashSteps.length > 1 ? 's' : ''}` : 'Aucun palier'}>
+        {mashSteps.length === 0 ? (
+          <p className="py-2 text-sm text-cave-400">Aucun palier.</p>
+        ) : (
+          mashSteps.map((s, i) => (
+            <Row
+              key={`${s.name}-${i}`}
+              label={s.name}
+              onDelete={() => onMashSteps(mashSteps.filter((_, j) => j !== i))}
+            >
+              <Cell
+                label={`Température du palier ${s.name}`}
+                value={s.tempC}
+                onValue={(v) =>
+                  onMashSteps(mashSteps.map((x, j) => (j === i ? { ...x, tempC: v } : x)))
+                }
+                unit="°C"
+                width="w-16"
+                min={0}
+                max={100}
+              />
+              <Cell
+                label={`Durée du palier ${s.name}`}
+                value={s.durationMin}
+                onValue={(v) =>
+                  onMashSteps(mashSteps.map((x, j) => (j === i ? { ...x, durationMin: v } : x)))
+                }
+                unit="min"
+                width="w-16"
+                integer
+                min={0}
+              />
+            </Row>
+          ))
+        )}
+      </Block>
+
+      {/* --- Fermentation -------------------------------------------------- */}
+      <Block title="Fermentation" aside={fermentation.length ? `${fermentation.length} phase${fermentation.length > 1 ? 's' : ''}` : 'Conduite à définir'}>
+        {fermentation.length === 0 ? (
+          <p className="py-2 text-sm text-cave-400">Aucune phase.</p>
+        ) : (
+          fermentation.map((s, i) => (
+            <Row
+              key={`${s.name}-${i}`}
+              label={s.name}
+              hint={s.note}
+              onDelete={() => onFermentation(fermentation.filter((_, j) => j !== i))}
+            >
+              <Cell
+                label={`Température de ${s.name}`}
+                value={s.tempC}
+                onValue={(v) =>
+                  onFermentation(fermentation.map((x, j) => (j === i ? { ...x, tempC: v } : x)))
+                }
+                unit="°C"
+                width="w-16"
+                min={-5}
+                max={40}
+              />
+              <Cell
+                label={`Durée de ${s.name}`}
+                value={s.days}
+                onValue={(v) =>
+                  onFermentation(fermentation.map((x, j) => (j === i ? { ...x, days: v } : x)))
+                }
+                unit="j"
+                width="w-16"
+                integer
+                min={0}
+              />
+            </Row>
+          ))
+        )}
+      </Block>
+
+      {/* --- Eau ----------------------------------------------------------- */}
+      <Block
+        title="Eau"
+        aside={
+          totalGristKg > 0
+            ? `${formatFixed(mashWaterL / totalGristKg, 1)} L/kg`
+            : undefined
+        }
+      >
+        <Row label="Empâtage" hint={water ? `${formatReading(Number(water.diRatioPct.toFixed(2)))} % d’osmosée` : undefined}>
+          <Cell
+            label="Eau d’empâtage"
+            value={mashWaterL}
+            onValue={onMashWaterL}
+            unit="L"
+            min={0}
+          />
+        </Row>
+        <Row
+          label="Rinçage"
+          hint={
+            water
+              ? water.spargeWaterL <= 0
+                ? 'aucun — tout passe par la maische'
+                : `${formatReading(Number(water.spargeDiRatioPct.toFixed(2)))} % d’osmosée${water.spargeLinked ? '' : ' · délié'}`
+              : undefined
+          }
+        >
+          <Cell
+            label="Eau de rinçage"
+            value={spargeWaterL}
+            onValue={onSpargeWaterL}
+            unit="L"
+            min={0}
+          />
+        </Row>
+        <Row label="Eau totale de brassage" hint="Empâtage + rinçage : volume total d’eau à engager.">
+          <span className="reading text-base text-cave-200 pr-9">
+            {formatQuantity(Math.round((mashWaterL + spargeWaterL) * 10) / 10, 'L')}
+          </span>
+        </Row>
+        {totalGristKg > 0 && (
+          <Row label="Moût avant ébullition estimé" hint="Après rétention des drêches (~0,96 L/kg).">
+            <span className="reading text-base text-cave-200 pr-9">
+              {formatQuantity(
+                Math.max(0, Math.round((mashWaterL + spargeWaterL - totalGristKg * 0.96) * 10) / 10),
+                'L'
+              )}
+            </span>
+          </Row>
+        )}
+
+        {water && (
+          <>
+            {/*
+              LE LITRAGE D'OSMOSÉE. C'est ce qu'on va chercher au bidon la veille
+              du brassage : trois nombres, pas un pourcentage à convertir de tête
+              devant la cuve.
+            */}
+            <Row
+              label="Eau osmosée à préparer"
+              hint={`${formatReading(water.mashOsmoseeL)} L empâtage + ${formatReading(water.spargeOsmoseeL)} L rinçage`}
+            >
+              <span className="reading text-base text-water pr-9">
+                {formatQuantity(
+                  Math.round((water.mashOsmoseeL + water.spargeOsmoseeL) * 10) / 10,
+                  'L'
+                )}
+              </span>
+            </Row>
+            <Row
+              label="Eau de réseau"
+              hint={water.sourceName}
+            >
+              <span className="reading text-base text-cave-200 pr-9">
+                {formatQuantity(
+                  Math.round(
+                    (mashWaterL + spargeWaterL - water.mashOsmoseeL - water.spargeOsmoseeL) * 10
+                  ) / 10,
+                  'L'
+                )}
+              </span>
+            </Row>
+
+            {/* --- Profil atteint ----------------------------------------- */}
+            <div className="pt-2 space-y-2">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="text-sm text-cave-400">
+                  Profil visé — {water.styleName}
+                </span>
+                <span className="text-sm text-cave-400 shrink-0">
+                  {water.wortIons ? 'eau traitée, ppm' : 'eau d’empâtage, ppm'}
+                </span>
+              </div>
+
+              {/*
+                ⚠️ LA TOILE, et non plus six chiffres alignés.
+                Le récapitulatif est la dernière page avant de lancer le
+                brassin : c'est là qu'on vérifie d'un regard qu'on ne s'est pas
+                trompé de style ou de sel. Six nombres nus demandent de
+                connaître les six fourchettes par cœur ; la toile montre en une
+                image ce qui tombe dedans et ce qui sort — et de quel côté.
+              */}
+              {water.style && water.wortIons && water.startIons ? (
+                <WaterRadar
+                  start={water.startIons}
+                  achieved={water.wortIons}
+                  style={water.style}
+                />
+              ) : (
+                <dl className="grid grid-cols-3 gap-x-2 gap-y-1.5">
+                  {(Object.keys(ION_LABEL) as Array<keyof WaterIons>).map((ion) => (
+                    <div key={ion}>
+                      <dt className="text-sm text-cave-400 truncate">
+                        {ION_LABEL[ion]}
+                      </dt>
+                      <dd className="reading text-sm sm:text-base text-cave-50">
+                        {formatReading(Math.round(water.mashIons[ion]))}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+
+              <details><summary className="cursor-pointer min-h-touch text-sm text-water">pH et chimie détaillée</summary>
+              {water.targetStatus && <WaterTargetStatus {...water.targetStatus} />}
+
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">
+                <span className="text-cave-400">
+                  Alcalinité résiduelle après acide{' '}
+                  <span
+                    className={`reading text-sm ${
+                      water.raSaltTarget != null ? 'text-cave-50' : water.ra >= water.raBand.min && water.ra <= water.raBand.max
+                        ? 'text-hop'
+                        : 'text-ebc-amber'
+                    }`}
+                  >
+                    {formatReading(water.ra)}
+                  </span>{' '}
+                  {water.raSaltTarget != null
+                    ? `— repère pour les malts ≈ ${formatReading(water.raSaltTarget)} ppm (estimation de l’empâtage)`
+                    : `— repère des malts ${formatReading(water.raBand.min)} à ${formatReading(water.raBand.max)} (${water.raBand.label})`}
+                </span>
+                <span className="text-cave-400">
+                  SO₄:Cl{' '}
+                  <span className="reading text-sm text-cave-200">
+                    {water.ratio.ratio !== null ? formatFixed(water.ratio.ratio, 1) : '—'}
+                  </span>{' '}
+                  · {water.ratio.label}
+                </span>
+              </div>
+
+              {(water.mashPh || water.spargePh) && (
+                <p className="text-sm text-cave-400">
+                  pH mesuré à la cuve :{' '}
+                  {water.mashPh ? `maische ${formatDecimal(water.mashPh)}` : ''}
+                  {water.mashPh && water.spargePh ? ' · ' : ''}
+                  {water.spargePh ? `rinçage ${formatDecimal(water.spargePh)}` : ''}.
+                </p>
+              )}
+              </details>
+            </div>
+
+            {/* --- Sels et acides à peser ---------------------------------- */}
+            <div className="pt-2 space-y-1.5">
+              <WaterAdditivesTable
+                doses={water.doses}
+                split={water.split}
+                acidId={water.acidId}
+                mashAcid={water.mashAcid}
+                spargeAcid={water.spargeAcid}
+                totalWaterL={Math.round((mashWaterL + spargeWaterL) * 10) / 10}
+                hasSparge={water.spargeWaterL > 0}
+                allSaltsInMash={water.allSaltsInMash}
+                spargeTargetPh={water.spargeAcid.targetPh}
+                compact
+              />
+              {water.disabled.length > 0 && (
+                <p className="text-sm text-cave-400">
+                  Écartés : {water.disabled.map((d) => SALTS[d].name).join(', ')}.
+                </p>
+              )}
+            </div>
+
+            {onEditWater && (
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={onEditWater}
+                  className="w-full min-h-touch rounded-control border border-water/40
+                             text-water text-sm flex items-center justify-center gap-2
+                             transition-colors hover:bg-cave-850"
+                >
+                  <Droplets className="w-4 h-4" />
+                  Retourner à l’atelier de l’eau
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </Block>
+
+      {/* --- Ce qui manque -------------------------------------------------- */}
+      <Block title="Stock" aside={stockSummary}>
+        {shortages.length === 0 ? (
+          <p className="py-1 text-sm text-cave-200">
+            {incompleteStockNeeds
+              ? 'Complète les ingrédients et leurs quantités pour vérifier tout le stock.'
+              : hasStockNeeds ? 'Tout est disponible pour brasser.' : 'Renseigne les ingrédients et leurs quantités pour vérifier le stock.'}
+          </p>
+        ) : (
+          <table className="w-full table-fixed text-[13px] leading-snug">
+            <caption className="sr-only">Disponibilités et vérifications pour les ingrédients de la recette</caption>
+            <thead>
+              <tr className="text-cave-400">
+                <th scope="col" className="w-2/5 pb-1 pr-1 text-left font-normal break-words">Ingrédient</th>
+                <th scope="col" className="pb-1 px-1 text-right font-normal break-words">Disponible</th>
+                <th scope="col" className="pb-1 pl-1 text-right font-normal break-words">Nécessaire</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-cave-850">
+              {shortages.map(s => (
+                // Nom + unité identifient le besoin cumulé par l’assistant.
+                <tr key={`${s.name}-${s.unit}`} className="align-top">
+                  <th scope="row" className="py-1.5 pr-1 text-left font-normal text-cave-50 [overflow-wrap:anywhere]">{s.name}{s.status === 'unverified' && <span className="block font-sans text-xs text-attention">{s.reason || 'Conditionnement à vérifier'}</span>}</th>
+                  <td className="py-1.5 px-1 text-right font-mono tabular-nums text-cave-200 [overflow-wrap:anywhere]">{s.have == null ? 'À vérifier' : formatQuantity(s.have, s.haveUnit ?? s.unit)}</td>
+                  <td className="py-1.5 pl-1 text-right font-mono tabular-nums text-cave-50 [overflow-wrap:anywhere]">{formatQuantity(s.needed, s.unit)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </Block>
+
+      {/* --- Déroulé -------------------------------------------------------- */}
+      <Block title="Déroulé">
+        {/*
+          Le texte d'origine, recopié mot pour mot à l'import — traitement d'eau
+          et calendrier de houblonnage à cru compris. C'est ce qu'on suit en
+          cuverie quand un chiffre n'a pas trouvé sa case.
+        */}
+        <Textarea
+          name="brewsheet_notes_timeline"
+          autoComplete="off"
+          autoCorrect="off"
+          spellCheck={false}
+          data-form-type="other"
+          data-lpignore="true"
+          data-1p-ignore="true"
+          data-bwignore="true"
+          rows={tight ? 4 : 8}
+          value={notes}
+          onChange={(e) => onNotes(e.target.value)}
+          aria-label="Déroulé"
+          placeholder="Concassage, empâtage, rinçage, ébullition, whirlpool, refroidissement…"
+          className={`${inputClass} mt-2 py-2 leading-relaxed resize-y`}
+        />
+      </Block>
+
+      {/*
+        --- Extraction -------------------------------------------------------
+
+        ⚠️ Demandé ainsi : « à la fin de la recette une fois terminé je veux
+        pouvoir les extraire au format texte ». En BAS de la fiche, donc, et
+        nulle part ailleurs : c'est un geste de fin, quand tout est posé.
+
+        La copie est l'action directe. Le texte complet et le fichier .txt
+        restent accessibles dans le détail, notamment si le navigateur
+        refuse l'accès au presse-papier.
+      */}
+      {onExportText && <RecipeTextExport buildText={onExportText}/>}
+
+      {/*
+        La relecture reçoit LE MÊME TEXTE que l'export, volontairement : le
+        modèle lit ce que Gaëtan lit, donc chaque remarque se vérifie ligne à
+        ligne dans le presse-papier.
+      */}
+      {onExportText && <RecipeReview buildText={onExportText} data={reviewData} />}
+    </div>
+  );
+};

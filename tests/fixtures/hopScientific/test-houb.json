@@ -1,0 +1,93 @@
+{
+  "id": "test-houb-2026-09-08",
+  "name": "Test houb",
+  "style": "Lager",
+  "volumeL": 24,
+  "brewDate": "2026-09-08",
+  "ogTarget": 1.046,
+  "fgTarget": 0,
+  "abvTarget": 0,
+  "ibuTarget": 13,
+  "preBoilL": 29.6,
+  "boilMin": 60,
+  "totalGristKg": 4.8,
+  "fermentables": [
+    {
+      "name": "Pilsner Malz",
+      "weightKg": 4.8,
+      "kind": "grain",
+      "use": "empatage",
+      "colorEbc": 3.5,
+      "potentialPpg": 37,
+      "fermentabilityPct": 100
+    }
+  ],
+  "hops": [
+    {
+      "name": "Cascade",
+      "weightG": 28.799999999999997,
+      "alpha": 6.2,
+      "stage": "boil",
+      "timeMin": 10
+    },
+    {
+      "name": "Cascade",
+      "weightG": 72,
+      "alpha": 6.2,
+      "stage": "whirlpool",
+      "timeMin": 20,
+      "tempC": 80
+    }
+  ],
+  "yeast": {
+    "name": "LalBrew Diamond",
+    "form": "sèche",
+    "qty": 0,
+    "unit": "sachet"
+  },
+  "mash": {
+    "ratioLPerKg": 3.8958333333333335,
+    "mashoutTempC": 76,
+    "heatingRateCPerMin": 0.43333333333333335,
+    "spargeTempC": 76,
+    "spargeType": "batch",
+    "steps": [
+      {
+        "name": "Saccharification",
+        "tempC": 67,
+        "durationMin": 60
+      }
+    ]
+  },
+  "fermentation": [
+    {
+      "kind": "primaire",
+      "name": "Fermentation primaire",
+      "tempC": 19,
+      "days": 4
+    },
+    {
+      "kind": "ajout",
+      "name": "Premier houblonnage à cru",
+      "tempC": 19,
+      "days": 3,
+      "note": "Fermentation encore active — biotransformation."
+    },
+    {
+      "kind": "ajout",
+      "name": "Second houblonnage à cru",
+      "tempC": 19,
+      "days": 3,
+      "note": "En fin de fermentation."
+    },
+    {
+      "kind": "garde",
+      "name": "Froid court",
+      "tempC": 4,
+      "days": 2,
+      "note": "Court : l’oxygène et le temps tuent les arômes."
+    }
+  ],
+  "steps": [],
+  "notes": []
+}

@@ -1,0 +1,925 @@
+{
+  "method": "Local Chrome; real UI compiled with synthetic QA adapters; trusted input/click through two requestAnimationFrame callbacks; no concurrent build/test; no external requests.",
+  "limitMs": 200,
+  "navigationSamples": "3 setup + 12 warmed; nearest-rank p95 equals the maximum at n=15.",
+  "viewports": [
+    {
+      "width": 320,
+      "height": 812,
+      "generatedAt": "2026-09-24T16:00:19.194Z",
+      "gate": "PASS",
+      "latency": {
+        "unit": "ms",
+        "inputEventToFrameAfterPaint": {
+          "count": 189,
+          "p50": 10.7,
+          "p95": 13.8,
+          "max": 15.6
+        },
+        "stepNavigationToFrameAfterPaint": {
+          "count": 15,
+          "p50": 35.9,
+          "p95": 98.3,
+          "max": 98.3
+        },
+        "stepNavigationPhases": {
+          "setup": {
+            "count": 3,
+            "p50": 24.8,
+            "p95": 96.5,
+            "max": 96.5
+          },
+          "warmed": {
+            "count": 12,
+            "p50": 35.9,
+            "p95": 98.3,
+            "max": 98.3
+          }
+        },
+        "navigationEvents": {
+          "setup": [
+            {
+              "phase": "setup",
+              "step": "Identité",
+              "durationMs": 12.2
+            },
+            {
+              "phase": "setup",
+              "step": "Houblons",
+              "durationMs": 24.8
+            },
+            {
+              "phase": "setup",
+              "step": "Levure",
+              "durationMs": 96.5
+            }
+          ],
+          "warmed": [
+            {
+              "phase": "warmed",
+              "iteration": 1,
+              "step": "Houblons",
+              "durationMs": 91.4
+            },
+            {
+              "phase": "warmed",
+              "iteration": 2,
+              "step": "Levure",
+              "durationMs": 34.4
+            },
+            {
+              "phase": "warmed",
+              "iteration": 3,
+              "step": "Houblons",
+              "durationMs": 93.3
+            },
+            {
+              "phase": "warmed",
+              "iteration": 4,
+              "step": "Levure",
+              "durationMs": 33.3
+            },
+            {
+              "phase": "warmed",
+              "iteration": 5,
+              "step": "Houblons",
+              "durationMs": 90.4
+            },
+            {
+              "phase": "warmed",
+              "iteration": 6,
+              "step": "Levure",
+              "durationMs": 33.4
+            },
+            {
+              "phase": "warmed",
+              "iteration": 7,
+              "step": "Houblons",
+              "durationMs": 92.1
+            },
+            {
+              "phase": "warmed",
+              "iteration": 8,
+              "step": "Levure",
+              "durationMs": 34.3
+            },
+            {
+              "phase": "warmed",
+              "iteration": 9,
+              "step": "Houblons",
+              "durationMs": 94.6
+            },
+            {
+              "phase": "warmed",
+              "iteration": 10,
+              "step": "Levure",
+              "durationMs": 34.5
+            },
+            {
+              "phase": "warmed",
+              "iteration": 11,
+              "step": "Houblons",
+              "durationMs": 98.3
+            },
+            {
+              "phase": "warmed",
+              "iteration": 12,
+              "step": "Levure",
+              "durationMs": 35.9
+            }
+          ]
+        },
+        "slowestNavigationEvent": {
+          "phase": "warmed",
+          "iteration": 11,
+          "step": "Houblons",
+          "durationMs": 98.3
+        }
+      }
+    },
+    {
+      "width": 375,
+      "height": 812,
+      "generatedAt": "2026-09-24T16:00:31.423Z",
+      "gate": "PASS",
+      "latency": {
+        "unit": "ms",
+        "inputEventToFrameAfterPaint": {
+          "count": 189,
+          "p50": 10.9,
+          "p95": 14.1,
+          "max": 14.7
+        },
+        "stepNavigationToFrameAfterPaint": {
+          "count": 15,
+          "p50": 37.2,
+          "p95": 99.2,
+          "max": 99.2
+        },
+        "stepNavigationPhases": {
+          "setup": {
+            "count": 3,
+            "p50": 25.2,
+            "p95": 98,
+            "max": 98
+          },
+          "warmed": {
+            "count": 12,
+            "p50": 37.2,
+            "p95": 99.2,
+            "max": 99.2
+          }
+        },
+        "navigationEvents": {
+          "setup": [
+            {
+              "phase": "setup",
+              "step": "Identité",
+              "durationMs": 12.2
+            },
+            {
+              "phase": "setup",
+              "step": "Houblons",
+              "durationMs": 25.2
+            },
+            {
+              "phase": "setup",
+              "step": "Levure",
+              "durationMs": 98
+            }
+          ],
+          "warmed": [
+            {
+              "phase": "warmed",
+              "iteration": 1,
+              "step": "Houblons",
+              "durationMs": 90.8
+            },
+            {
+              "phase": "warmed",
+              "iteration": 2,
+              "step": "Levure",
+              "durationMs": 35.8
+            },
+            {
+              "phase": "warmed",
+              "iteration": 3,
+              "step": "Houblons",
+              "durationMs": 93.5
+            },
+            {
+              "phase": "warmed",
+              "iteration": 4,
+              "step": "Levure",
+              "durationMs": 33.9
+            },
+            {
+              "phase": "warmed",
+              "iteration": 5,
+              "step": "Houblons",
+              "durationMs": 88.8
+            },
+            {
+              "phase": "warmed",
+              "iteration": 6,
+              "step": "Levure",
+              "durationMs": 34.4
+            },
+            {
+              "phase": "warmed",
+              "iteration": 7,
+              "step": "Houblons",
+              "durationMs": 91.4
+            },
+            {
+              "phase": "warmed",
+              "iteration": 8,
+              "step": "Levure",
+              "durationMs": 34.5
+            },
+            {
+              "phase": "warmed",
+              "iteration": 9,
+              "step": "Houblons",
+              "durationMs": 95.6
+            },
+            {
+              "phase": "warmed",
+              "iteration": 10,
+              "step": "Levure",
+              "durationMs": 34.7
+            },
+            {
+              "phase": "warmed",
+              "iteration": 11,
+              "step": "Houblons",
+              "durationMs": 99.2
+            },
+            {
+              "phase": "warmed",
+              "iteration": 12,
+              "step": "Levure",
+              "durationMs": 37.2
+            }
+          ]
+        },
+        "slowestNavigationEvent": {
+          "phase": "warmed",
+          "iteration": 11,
+          "step": "Houblons",
+          "durationMs": 99.2
+        }
+      }
+    },
+    {
+      "width": 430,
+      "height": 812,
+      "generatedAt": "2026-09-24T16:00:42.758Z",
+      "gate": "PASS",
+      "latency": {
+        "unit": "ms",
+        "inputEventToFrameAfterPaint": {
+          "count": 190,
+          "p50": 10.9,
+          "p95": 13.9,
+          "max": 14.4
+        },
+        "stepNavigationToFrameAfterPaint": {
+          "count": 15,
+          "p50": 35.8,
+          "p95": 100,
+          "max": 100
+        },
+        "stepNavigationPhases": {
+          "setup": {
+            "count": 3,
+            "p50": 25.3,
+            "p95": 100,
+            "max": 100
+          },
+          "warmed": {
+            "count": 12,
+            "p50": 35.8,
+            "p95": 96.4,
+            "max": 96.4
+          }
+        },
+        "navigationEvents": {
+          "setup": [
+            {
+              "phase": "setup",
+              "step": "Identité",
+              "durationMs": 14
+            },
+            {
+              "phase": "setup",
+              "step": "Houblons",
+              "durationMs": 25.3
+            },
+            {
+              "phase": "setup",
+              "step": "Levure",
+              "durationMs": 100
+            }
+          ],
+          "warmed": [
+            {
+              "phase": "warmed",
+              "iteration": 1,
+              "step": "Houblons",
+              "durationMs": 93.8
+            },
+            {
+              "phase": "warmed",
+              "iteration": 2,
+              "step": "Levure",
+              "durationMs": 34.1
+            },
+            {
+              "phase": "warmed",
+              "iteration": 3,
+              "step": "Houblons",
+              "durationMs": 93.7
+            },
+            {
+              "phase": "warmed",
+              "iteration": 4,
+              "step": "Levure",
+              "durationMs": 35.8
+            },
+            {
+              "phase": "warmed",
+              "iteration": 5,
+              "step": "Houblons",
+              "durationMs": 91
+            },
+            {
+              "phase": "warmed",
+              "iteration": 6,
+              "step": "Levure",
+              "durationMs": 34.2
+            },
+            {
+              "phase": "warmed",
+              "iteration": 7,
+              "step": "Houblons",
+              "durationMs": 90
+            },
+            {
+              "phase": "warmed",
+              "iteration": 8,
+              "step": "Levure",
+              "durationMs": 33.6
+            },
+            {
+              "phase": "warmed",
+              "iteration": 9,
+              "step": "Houblons",
+              "durationMs": 93.2
+            },
+            {
+              "phase": "warmed",
+              "iteration": 10,
+              "step": "Levure",
+              "durationMs": 34.7
+            },
+            {
+              "phase": "warmed",
+              "iteration": 11,
+              "step": "Houblons",
+              "durationMs": 96.4
+            },
+            {
+              "phase": "warmed",
+              "iteration": 12,
+              "step": "Levure",
+              "durationMs": 35.5
+            }
+          ]
+        },
+        "slowestNavigationEvent": {
+          "phase": "setup",
+          "step": "Levure",
+          "durationMs": 100
+        }
+      }
+    },
+    {
+      "width": 1280,
+      "height": 900,
+      "generatedAt": "2026-09-24T16:00:54.476Z",
+      "gate": "PASS",
+      "latency": {
+        "unit": "ms",
+        "inputEventToFrameAfterPaint": {
+          "count": 185,
+          "p50": 10.4,
+          "p95": 13.2,
+          "max": 15.4
+        },
+        "stepNavigationToFrameAfterPaint": {
+          "count": 15,
+          "p50": 63.5,
+          "p95": 96.9,
+          "max": 96.9
+        },
+        "stepNavigationPhases": {
+          "setup": {
+            "count": 3,
+            "p50": 24.4,
+            "p95": 96.9,
+            "max": 96.9
+          },
+          "warmed": {
+            "count": 12,
+            "p50": 63.5,
+            "p95": 95.3,
+            "max": 95.3
+          }
+        },
+        "navigationEvents": {
+          "setup": [
+            {
+              "phase": "setup",
+              "step": "Identité",
+              "durationMs": 12.3
+            },
+            {
+              "phase": "setup",
+              "step": "Houblons",
+              "durationMs": 24.4
+            },
+            {
+              "phase": "setup",
+              "step": "Levure",
+              "durationMs": 96.9
+            }
+          ],
+          "warmed": [
+            {
+              "phase": "warmed",
+              "iteration": 1,
+              "step": "Houblons",
+              "durationMs": 95.3
+            },
+            {
+              "phase": "warmed",
+              "iteration": 2,
+              "step": "Levure",
+              "durationMs": 35.4
+            },
+            {
+              "phase": "warmed",
+              "iteration": 3,
+              "step": "Houblons",
+              "durationMs": 91.6
+            },
+            {
+              "phase": "warmed",
+              "iteration": 4,
+              "step": "Levure",
+              "durationMs": 63.5
+            },
+            {
+              "phase": "warmed",
+              "iteration": 5,
+              "step": "Houblons",
+              "durationMs": 91
+            },
+            {
+              "phase": "warmed",
+              "iteration": 6,
+              "step": "Levure",
+              "durationMs": 33.7
+            },
+            {
+              "phase": "warmed",
+              "iteration": 7,
+              "step": "Houblons",
+              "durationMs": 93.3
+            },
+            {
+              "phase": "warmed",
+              "iteration": 8,
+              "step": "Levure",
+              "durationMs": 41.6
+            },
+            {
+              "phase": "warmed",
+              "iteration": 9,
+              "step": "Houblons",
+              "durationMs": 92.8
+            },
+            {
+              "phase": "warmed",
+              "iteration": 10,
+              "step": "Levure",
+              "durationMs": 33.3
+            },
+            {
+              "phase": "warmed",
+              "iteration": 11,
+              "step": "Houblons",
+              "durationMs": 95
+            },
+            {
+              "phase": "warmed",
+              "iteration": 12,
+              "step": "Levure",
+              "durationMs": 34.3
+            }
+          ]
+        },
+        "slowestNavigationEvent": {
+          "phase": "setup",
+          "step": "Levure",
+          "durationMs": 96.9
+        }
+      }
+    }
+  ],
+  "pairedBlank375": {
+    "before": {
+      "unit": "ms",
+      "inputEventToFrameAfterPaint": {
+        "count": 199,
+        "p50": 11.3,
+        "p95": 15.2,
+        "max": 17.5
+      },
+      "stepNavigationToFrameAfterPaint": {
+        "count": 15,
+        "p50": 23.9,
+        "p95": 103,
+        "max": 103
+      },
+      "stepNavigationPhases": {
+        "setup": {
+          "count": 3,
+          "p50": 22.9,
+          "p95": 103,
+          "max": 103
+        },
+        "warmed": {
+          "count": 12,
+          "p50": 23.9,
+          "p95": 100.4,
+          "max": 100.4
+        }
+      },
+      "navigationEvents": {
+        "setup": [
+          {
+            "phase": "setup",
+            "step": "Identité",
+            "durationMs": 13.1
+          },
+          {
+            "phase": "setup",
+            "step": "Houblons",
+            "durationMs": 22.9
+          },
+          {
+            "phase": "setup",
+            "step": "Levure",
+            "durationMs": 103
+          }
+        ],
+        "warmed": [
+          {
+            "phase": "warmed",
+            "iteration": 1,
+            "step": "Houblons",
+            "durationMs": 22.9
+          },
+          {
+            "phase": "warmed",
+            "iteration": 2,
+            "step": "Levure",
+            "durationMs": 96.3
+          },
+          {
+            "phase": "warmed",
+            "iteration": 3,
+            "step": "Houblons",
+            "durationMs": 23.9
+          },
+          {
+            "phase": "warmed",
+            "iteration": 4,
+            "step": "Levure",
+            "durationMs": 100.4
+          },
+          {
+            "phase": "warmed",
+            "iteration": 5,
+            "step": "Houblons",
+            "durationMs": 22.8
+          },
+          {
+            "phase": "warmed",
+            "iteration": 6,
+            "step": "Levure",
+            "durationMs": 98.5
+          },
+          {
+            "phase": "warmed",
+            "iteration": 7,
+            "step": "Houblons",
+            "durationMs": 22.9
+          },
+          {
+            "phase": "warmed",
+            "iteration": 8,
+            "step": "Levure",
+            "durationMs": 98.5
+          },
+          {
+            "phase": "warmed",
+            "iteration": 9,
+            "step": "Houblons",
+            "durationMs": 23.7
+          },
+          {
+            "phase": "warmed",
+            "iteration": 10,
+            "step": "Levure",
+            "durationMs": 98.7
+          },
+          {
+            "phase": "warmed",
+            "iteration": 11,
+            "step": "Houblons",
+            "durationMs": 22.9
+          },
+          {
+            "phase": "warmed",
+            "iteration": 12,
+            "step": "Levure",
+            "durationMs": 99.8
+          }
+        ]
+      },
+      "slowestNavigationEvent": {
+        "phase": "setup",
+        "step": "Levure",
+        "durationMs": 103
+      }
+    },
+    "after": {
+      "unit": "ms",
+      "inputEventToFrameAfterPaint": {
+        "count": 199,
+        "p50": 11.3,
+        "p95": 14.7,
+        "max": 17.3
+      },
+      "stepNavigationToFrameAfterPaint": {
+        "count": 15,
+        "p50": 23.6,
+        "p95": 95.4,
+        "max": 95.4
+      },
+      "stepNavigationPhases": {
+        "setup": {
+          "count": 3,
+          "p50": 23.3,
+          "p95": 95.4,
+          "max": 95.4
+        },
+        "warmed": {
+          "count": 12,
+          "p50": 23.6,
+          "p95": 93.6,
+          "max": 93.6
+        }
+      },
+      "navigationEvents": {
+        "setup": [
+          {
+            "phase": "setup",
+            "step": "Identité",
+            "durationMs": 12.3
+          },
+          {
+            "phase": "setup",
+            "step": "Houblons",
+            "durationMs": 23.3
+          },
+          {
+            "phase": "setup",
+            "step": "Levure",
+            "durationMs": 95.4
+          }
+        ],
+        "warmed": [
+          {
+            "phase": "warmed",
+            "iteration": 1,
+            "step": "Houblons",
+            "durationMs": 23.5
+          },
+          {
+            "phase": "warmed",
+            "iteration": 2,
+            "step": "Levure",
+            "durationMs": 93.3
+          },
+          {
+            "phase": "warmed",
+            "iteration": 3,
+            "step": "Houblons",
+            "durationMs": 23.6
+          },
+          {
+            "phase": "warmed",
+            "iteration": 4,
+            "step": "Levure",
+            "durationMs": 91.3
+          },
+          {
+            "phase": "warmed",
+            "iteration": 5,
+            "step": "Houblons",
+            "durationMs": 23.6
+          },
+          {
+            "phase": "warmed",
+            "iteration": 6,
+            "step": "Levure",
+            "durationMs": 91.3
+          },
+          {
+            "phase": "warmed",
+            "iteration": 7,
+            "step": "Houblons",
+            "durationMs": 23.1
+          },
+          {
+            "phase": "warmed",
+            "iteration": 8,
+            "step": "Levure",
+            "durationMs": 90.8
+          },
+          {
+            "phase": "warmed",
+            "iteration": 9,
+            "step": "Houblons",
+            "durationMs": 23.4
+          },
+          {
+            "phase": "warmed",
+            "iteration": 10,
+            "step": "Levure",
+            "durationMs": 90.2
+          },
+          {
+            "phase": "warmed",
+            "iteration": 11,
+            "step": "Houblons",
+            "durationMs": 23.5
+          },
+          {
+            "phase": "warmed",
+            "iteration": 12,
+            "step": "Levure",
+            "durationMs": 93.6
+          }
+        ]
+      },
+      "slowestNavigationEvent": {
+        "phase": "setup",
+        "step": "Levure",
+        "durationMs": 95.4
+      }
+    }
+  },
+  "loaded375BeforePerformanceFix": {
+    "unit": "ms",
+    "inputEventToFrameAfterPaint": {
+      "count": 189,
+      "p50": 10.8,
+      "p95": 13.9,
+      "max": 14.6
+    },
+    "stepNavigationToFrameAfterPaint": {
+      "count": 15,
+      "p50": 46.6,
+      "p95": 260.9,
+      "max": 260.9
+    },
+    "stepNavigationPhases": {
+      "setup": {
+        "count": 3,
+        "p50": 24.2,
+        "p95": 201.3,
+        "max": 201.3
+      },
+      "warmed": {
+        "count": 12,
+        "p50": 46.6,
+        "p95": 260.9,
+        "max": 260.9
+      }
+    },
+    "navigationEvents": {
+      "setup": [
+        {
+          "phase": "setup",
+          "step": "Identité",
+          "durationMs": 12.4
+        },
+        {
+          "phase": "setup",
+          "step": "Houblons",
+          "durationMs": 24.2
+        },
+        {
+          "phase": "setup",
+          "step": "Levure",
+          "durationMs": 201.3
+        }
+      ],
+      "warmed": [
+        {
+          "phase": "warmed",
+          "iteration": 1,
+          "step": "Houblons",
+          "durationMs": 258.6
+        },
+        {
+          "phase": "warmed",
+          "iteration": 2,
+          "step": "Levure",
+          "durationMs": 46.3
+        },
+        {
+          "phase": "warmed",
+          "iteration": 3,
+          "step": "Houblons",
+          "durationMs": 256.9
+        },
+        {
+          "phase": "warmed",
+          "iteration": 4,
+          "step": "Levure",
+          "durationMs": 45.3
+        },
+        {
+          "phase": "warmed",
+          "iteration": 5,
+          "step": "Houblons",
+          "durationMs": 255.1
+        },
+        {
+          "phase": "warmed",
+          "iteration": 6,
+          "step": "Levure",
+          "durationMs": 43.7
+        },
+        {
+          "phase": "warmed",
+          "iteration": 7,
+          "step": "Houblons",
+          "durationMs": 253.8
+        },
+        {
+          "phase": "warmed",
+          "iteration": 8,
+          "step": "Levure",
+          "durationMs": 45
+        },
+        {
+          "phase": "warmed",
+          "iteration": 9,
+          "step": "Houblons",
+          "durationMs": 257.4
+        },
+        {
+          "phase": "warmed",
+          "iteration": 10,
+          "step": "Levure",
+          "durationMs": 46.6
+        },
+        {
+          "phase": "warmed",
+          "iteration": 11,
+          "step": "Houblons",
+          "durationMs": 260.9
+        },
+        {
+          "phase": "warmed",
+          "iteration": 12,
+          "step": "Levure",
+          "durationMs": 46.3
+        }
+      ]
+    },
+    "slowestNavigationEvent": {
+      "phase": "warmed",
+      "iteration": 11,
+      "step": "Houblons",
+      "durationMs": 260.9
+    }
+  }
+}

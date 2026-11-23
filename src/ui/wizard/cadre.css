@@ -1,0 +1,24 @@
+/* Éditeur de recette (CT4-B-13 et CT4-B-15, critique du tour 4).
+   Une seule largeur de cadre à toutes les étapes : avant, `PageShell` donnait 768 px aux étapes ordinaires et 1152 px aux
+   étapes Houblons et Levure, et l'en-tête, le bandeau Grain/OG et le contenu sautaient d'une étape à l'autre à 1280.
+   56 rem = 896 px : la colonne de l'étape Levure (880 px) s'y loge telle quelle ; Houblons s'y resserre ; le reste s'y élargit un peu. */
+.recipe-wizard > :is(header, footer, [data-page-end-dock]) :is(.max-w-3xl, .max-w-6xl),
+.recipe-wizard > main > :is(.max-w-3xl, .max-w-6xl) {
+  max-width: 56rem;
+}
+
+/* Paysage de téléphone (844 × 340) : en-tête (66 px) et rangée Retour / Suivant collée (44 px) prenaient près de la moitié
+   de la hauteur. Comme au téléphone en portrait, la rangée suit alors le contenu au lieu de rester collée au bas de l'écran. */
+@media (max-height: 480px) {
+  .recipe-wizard [data-page-end-actions] {
+    position: static;
+  }
+}
+
+/* Tour 2, point 6 et 7 : l'étape Eau pose son + à droite de la page de 48 rem (eau.css : 50vw − 23,75 rem), et le cadre fait maintenant 56 rem : le + tombait sur
+   « Suivant — Récapitulatif » à 1280 (mesuré : + 956–1020, Suivant 852–998). Il suit le bord droit du cadre de 56 rem. */
+@media (min-width: 640px) {
+  body:has(.recipe-wizard [data-water-step="eau"]) .floating-actions[data-floating-actions-docked="false"] {
+    right: max(0.75rem, calc(50vw - 27.75rem));
+  }
+}

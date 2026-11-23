@@ -1,0 +1,39 @@
+{
+ "reglage": "3.8-flash@high",
+ "cas": "D3-chaud",
+ "tache": "diagnoseBatch",
+ "moitie": "choix",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [
+   "atténuation apparente 51 % (±2)",
+   "gravité surveiller ou agir",
+   "cause : température trop élevée",
+   "esters, alcools supérieurs, solvant",
+   "action : refroidir"
+  ],
+  "manques": []
+ },
+ "ms": 18417,
+ "coutMicro": 19920,
+ "etat": "STOP",
+ "valeur": {
+  "verdict": "Emballement thermique critique de la fermentation provoquant la synthèse excessive d'esters (banane) et d'alcools de fusel (solvant).",
+  "severity": "agir",
+  "causes": [
+   {
+    "cause": "Température de fermentation hors contrôle (ensemencement à 24 °C puis montée exothermique à 28 °C, bien au-delà de la plage idéale de 18-20 °C pour l'US-05).",
+    "probability": 0.95,
+    "action": "Refroidir d'urgence le fermenteur pour abaisser et stabiliser la température entre 18 °C et 20 °C (chemise de refroidissement, chambre froide ou serpentin)."
+   },
+   {
+    "cause": "Sous-ensemencement relatif (un seul sachet de 11,5 g pour 24 L à 1.065 représente ~0,48 g/L, sous le seuil recommandé de 0,75-1 g/L pour cette densité).",
+    "probability": 0.45,
+    "action": "Calculer systématiquement le taux de cellules selon la gravité initiale et utiliser au moins 2 sachets pour un moût supérieur à 1.060."
+   }
+  ],
+  "apparentAttenuationPct": 50.77,
+  "immediateAction": "Refroidir immédiatement le fermenteur pour ramener le moût à 19 °C, puis prévoir une garde prolongée post-fermentation pour tenter de réabsorber une fraction des composés volatils."
+ }
+}

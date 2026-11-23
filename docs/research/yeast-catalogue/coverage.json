@@ -1,0 +1,2817 @@
+{
+  "generatedAt": "2026-09-08T11:17:28.850Z",
+  "parserVersion": "yeast-catalogue-2026-09-08.1",
+  "records": 1733,
+  "manufacturers": [
+    {
+      "id": "aeb",
+      "manufacturer": "AEB",
+      "discovered": 84,
+      "references": 84,
+      "detailed": 26,
+      "excluded": [],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://www.aeb-group.com/en/beer/biotechnology/yeasts",
+          "retrievedAt": "2026-09-08T10:41:43.528Z",
+          "sha256": "c8de774e457a8bac6e9a11f1b43d0434723f3b0fe17fad25b45841e42efa7ba7",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://www.aeb-group.com/en/oenology/biotechnology/yeasts",
+          "retrievedAt": "2026-09-08T10:41:45.709Z",
+          "sha256": "006b5eec0af0cad1cd783cb10500f1069d6a28921d5ff6c3dbe30cb2841451b6",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://www.aeb-group.com/en/spirits/biotechnology/active-dry-yeasts",
+          "retrievedAt": "2026-09-08T10:41:47.894Z",
+          "sha256": "fc043bd477a4043b611869e0fb4ab1fced89e6573a32d27f1885982ad964fc49",
+          "etag": null,
+          "lastModified": null
+        }
+      ]
+    },
+    {
+      "id": "bootleg",
+      "manufacturer": "Bootleg Biology",
+      "discovered": 133,
+      "references": 98,
+      "detailed": 97,
+      "excluded": [
+        {
+          "name": "Winter BETA Homebrew Bundle + ‘Tis the Saison Sweatshirt",
+          "url": "https://bootlegbiology.com/product/winter-beta-homebrew-bundle-tis-the-saison-sweatshirt/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Winter BETA Homebrew Bundle + ‘Tis the Saison T-Shirt",
+          "url": "https://bootlegbiology.com/product/winter-beta-homebrew-bundle-tis-the-saison-t-shirt/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Tennessee Smith T-Shirt",
+          "url": "https://bootlegbiology.com/product/tennessee-smith-t-shirt/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Bootleg Lagers T-Shirt",
+          "url": "https://bootlegbiology.com/product/bootleg-lagers-t-shirt/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Barrel Culture T-Shirt (New Colors!)",
+          "url": "https://bootlegbiology.com/product/barrel-culture-t-shirt-new-colors/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Winter BETA Homebrew Bundle (3 Homebrew Packs)",
+          "url": "https://bootlegbiology.com/product/tis-the-saison-homebrew-bundle/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "‘Tis the Saison Long-Sleeve T-Shirt + Saison Homebrew Culture Bundle",
+          "url": "https://bootlegbiology.com/product/tis-the-saison-long-sleeve-t-shirt-saison-homebrew-culture-bundle/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "‘Tis the Saison Crewneck Sweatshirt + Saison Homebrew Culture Bundle",
+          "url": "https://bootlegbiology.com/product/tis-the-saison-crewneck-sweatshirt-saison-homebrew-culture-bundle/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "‘Tis the Saison Long Sleeve Tee (8 Colors!)",
+          "url": "https://bootlegbiology.com/product/tis-the-saison-long-sleeve-tee-8-colors/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "‘Tis the Saison Crewneck Sweatshirt",
+          "url": "https://bootlegbiology.com/product/tis-the-saison-crewneck-sweatshirt/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Funk Weapon T-Shirt (New Colors!)",
+          "url": "https://bootlegbiology.com/product/funk-weapon-t-shirt-new-colors/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "FerMENTORS Solid Color Tee",
+          "url": "https://bootlegbiology.com/product/fermentors-solid-color-tee/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "FerMENTORS Tie Dye Tee",
+          "url": "https://bootlegbiology.com/product/fermentors-tie-dye-tee/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Clean Can Challenge™ 2022: PCR Contamination Testing",
+          "url": "https://bootlegbiology.com/product/clean-can-challenge/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Winter 2021 BETA Bundle",
+          "url": "https://bootlegbiology.com/product/winter-2021-beta-bundle/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Bootleg Biology Logo Beanie",
+          "url": "https://bootlegbiology.com/product/bootleg-biology-logo-beanie/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "6oz Frozen Gel Pack",
+          "url": "https://bootlegbiology.com/product/6oz-frozen-gel-pack/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Classic Backyard Yeast Wrangling Tool Kit",
+          "url": "https://bootlegbiology.com/product/classic-backyard-yeast-wrangling-tool-kit/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Gluten Testing – ELISA Assay",
+          "url": "https://bootlegbiology.com/product/gluten-testing-elisa-assay/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Contamination Testing – PCR or Agar Plating (Beer)",
+          "url": "https://bootlegbiology.com/product/contamination-testing-pcr-or-agar-plating/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Homebrew World Book By Joshua M. Bernstein (Signed Copy)",
+          "url": "https://bootlegbiology.com/product/homebrew-world-book-by-joshua-m-bernstein-signed-copy/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Bootleg Biology Gray & Black Mesh Hat",
+          "url": "https://bootlegbiology.com/product/bootleg-biology-gray-black-mesh-hat-new/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Funk Weapon – All The Funk You Can Handle Combo Pack (FW 1/2/3)",
+          "url": "https://bootlegbiology.com/product/funk-weapon-all-the-funk-you-can-handle-pack-fw123/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Sour Weapon – Quick Sour Combo Pack (Lacto & Pedio)",
+          "url": "https://bootlegbiology.com/product/sour-weapon-quick-sour-combo-pack-lacto-pedio/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yeast Wrangling Tool Kit & Refill Bundle",
+          "url": "https://bootlegbiology.com/product/yeast-wrangling-tool-kit-refill-bundle/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Barrel Culture Pint Glass Gift Box",
+          "url": "https://bootlegbiology.com/product/barrel-culture-pint-glass-gift-box/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Barrel Culture Coaster Set – Recycled Rubber",
+          "url": "https://bootlegbiology.com/product/bootleg-biology-barrel-culture-coaster-set-recycled-rubber/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Everything Barrel Culture Combo Pack",
+          "url": "https://bootlegbiology.com/product/bootleg-biology-everything-barrel-culture-combo-pack/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Barrel Culture Glassware & Coaster Set",
+          "url": "https://bootlegbiology.com/product/bootleg-biology-barrel-culture-glassware-coaster-set/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Barrel Culture Pint Glass Set",
+          "url": "https://bootlegbiology.com/product/bootleg-biology-barrel-culture-pint-glass-set/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Barrel Culture T-Shirt",
+          "url": "https://bootlegbiology.com/product/barrel-culture-t-shirt/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yeast Wrangling Tool Kit & Logo T-Shirt Bundle",
+          "url": "https://bootlegbiology.com/product/yeast-wrangling-tool-kit-logo-t-shirt-bundle/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Wild Yeast Agar Blend & 30 Pack Sterile Petri Dishes",
+          "url": "https://bootlegbiology.com/product/wild-yeast-agar-blend-3-pack-sterile-petri-dishes/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Wild Yeast Agar Blend",
+          "url": "https://bootlegbiology.com/product/wild-yeast-agar-blend/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Bootleg Biology Throwback Logo T-Shirt",
+          "url": "https://bootlegbiology.com/product/bootleg-biology-t-shirt/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        }
+      ],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://bootlegbiology.com/wp-json/wc/store/v1/products?per_page=100&page=1",
+          "retrievedAt": "2026-09-08T10:31:41.146Z",
+          "sha256": "cf696b9de41084d9c911dbe11418d6b4d04b3eb1f89e3210b17444e4155f4eb8",
+          "etag": null,
+          "lastModified": "Fri, 21 Aug 2026 15:14:55 GMT"
+        },
+        {
+          "url": "https://bootlegbiology.com/wp-json/wc/store/v1/products?per_page=100&page=2",
+          "retrievedAt": "2026-09-08T10:31:42.566Z",
+          "sha256": "04505234d93a2fb9b4feebc744c356136469add173deaa7d5900d772f00d5cfd",
+          "etag": null,
+          "lastModified": "Fri, 21 Aug 2026 15:14:55 GMT"
+        }
+      ]
+    },
+    {
+      "id": "brewferm",
+      "manufacturer": "Brewferm / Brouwland",
+      "discovered": 3,
+      "references": 3,
+      "detailed": 3,
+      "excluded": [],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://brouwland.com/en/brand/196-brewferm?q=Category-Yeast+and+bacteria",
+          "retrievedAt": "2026-09-08T11:00:38.041Z",
+          "sha256": "abaae73465c0f62607626d2bcaee41f046ca6e3cbb342cf06520d167da2d439a",
+          "etag": null,
+          "lastModified": null
+        }
+      ]
+    },
+    {
+      "id": "bsi",
+      "manufacturer": "Brewing Science Institute",
+      "discovered": 146,
+      "references": 138,
+      "detailed": 138,
+      "excluded": [
+        {
+          "name": "AMV – Alkaline Methylene Violet (100 mL Bottle)",
+          "url": "https://brewingscience.com/product/amv-alkaline-methylene-violet-cell-counting-stain/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Haze Out Enzyme (1kg bottle)",
+          "url": "https://brewingscience.com/product/haze-out-enzyme/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "ALDC Enzyme (1kg bottle)",
+          "url": "https://brewingscience.com/product/aldc-enzyme-diacetyl-reduction/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yeast Nutrient (5 lbs)",
+          "url": "https://brewingscience.com/product/yeast-nutrient/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Clean & Feed Kit (2pk)",
+          "url": "https://brewingscience.com/product/clean-feed-yeast-care-kit-40-shipping/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Wort Concentrate (4pk)",
+          "url": "https://brewingscience.com/product/wort-charge-pack-40-shipping-4-charges-500ml-each/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Wort Agar Plates (30pk)",
+          "url": "https://brewingscience.com/product/wort-brewing-yeast-40-shipping-30-sterile-pre-poured-plates/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "LMDA Plates (30pk)",
+          "url": "https://brewingscience.com/product/lmda-brewing-bacteria-40-shipping-30-sterile-pre-poured-plates/",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        }
+      ],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://brewingscience.com/wp-json/wc/store/v1/products?per_page=100&page=1",
+          "retrievedAt": "2026-09-08T10:31:55.786Z",
+          "sha256": "a6d15f91b8f927137e50ecca93f4419790af5ba6b1e1cfac23548b5ebace100a",
+          "etag": null,
+          "lastModified": "Fri, 04 Sep 2026 21:26:59 GMT"
+        },
+        {
+          "url": "https://brewingscience.com/wp-json/wc/store/v1/products?per_page=100&page=2",
+          "retrievedAt": "2026-09-08T10:31:56.838Z",
+          "sha256": "a48d7afd619a3a50a887b3797aecc3c142764601798a0f32e0bb368a8cd691fe",
+          "etag": null,
+          "lastModified": "Fri, 04 Sep 2026 21:26:59 GMT"
+        }
+      ]
+    },
+    {
+      "id": "cellarscience",
+      "manufacturer": "CellarScience",
+      "discovered": 68,
+      "references": 35,
+      "detailed": 29,
+      "excluded": [
+        {
+          "name": "BURTON-on-TRENT Instant Water™ Salts",
+          "url": "https://cellarscience.com/products/burton-on-trent-instant-water™-salts",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "PALE Instant Water™ Salts",
+          "url": "https://cellarscience.com/products/pale-instant-water™-salts",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "RED Instant Water™ Salts",
+          "url": "https://cellarscience.com/products/red-instant-water™-salts",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "MALTY Instant Water™ Salts",
+          "url": "https://cellarscience.com/products/malty-instant-water™-salts",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "STOUT & PORTER Instant Water™ Salts",
+          "url": "https://cellarscience.com/products/stout-porter-instant-water™-salts-copy",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "LAGER Instant Water™ Salts",
+          "url": "https://cellarscience.com/products/lager-instant-water™-salts",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "HAZY Instant Water™ Salts",
+          "url": "https://cellarscience.com/products/hazy-instant-water™-salts-copy",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WEST COAST Instant Water™ Salts",
+          "url": "https://cellarscience.com/products/west-coast-instant-water™-salts-copy",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "PILSNER Instant Water™ Salts",
+          "url": "https://cellarscience.com/products/west-coast-instant-water™-salts",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "SILAFINE HOT Clarifier for Kettle & Whirlpool",
+          "url": "https://cellarscience.com/products/silafine-hot-clarifier-for-kettle-whirlpool",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "FERM-ZN PLUS Advanced Zinc Nutrient",
+          "url": "https://cellarscience.com/products/ferm-zn-plus",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "KILLAZYME Inhibits Lactic Acid Bacteria",
+          "url": "https://cellarscience.com/products/killazyme-inhibits-lactic-acid-bacteria",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "GSH NATURALE Preserves Terpenes & Thiols",
+          "url": "https://cellarscience.com/products/gsh-naturale-preserves-terpenes-thiols",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "EASY SUR LIE Boost Body & Richness",
+          "url": "https://cellarscience.com/products/easy-sur-lie-boost-body-richness",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "RED WONDER Boost Aroma & Lock In Color",
+          "url": "https://cellarscience.com/products/red-wonder-boost-aroma-lock-in-color",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "TROPIC THUNDER Tropical Flavor Enhancer",
+          "url": "https://cellarscience.com/products/tropic-thunder-tropical-flavor-enhancer",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "OXBLOX 3D Dissolved Oxygen Reducer",
+          "url": "https://cellarscience.com/products/oxblox-3d-dissolved-oxygen-reducer",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "ENZO RED Enzyme Blend for Red Wine",
+          "url": "https://cellarscience.com/products/enzo-red-enzyme-blend-for-red-wine",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "LIQUIBODY Gum Arabic Solution",
+          "url": "https://cellarscience.com/products/liquibody-gum-arabic-solution",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "CELLARTAN F Fermentation Tannin",
+          "url": "https://cellarscience.com/products/cellartan-f-fermentation-tannin",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Universal Breathable Bung Set of Three",
+          "url": "https://cellarscience.com/products/universal-breathable-bung-set-of-three",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Universal Breathable Bung for Barrels",
+          "url": "https://cellarscience.com/products/universal-breathable-bung-for-barrels",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Universal Breathable Bung for Plastic Carboys",
+          "url": "https://cellarscience.com/products/universal-breathable-bung-for-plastic-carboys",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Universal Breathable Bung for Glass Carboys",
+          "url": "https://cellarscience.com/products/universal-breathable-bung-for-glass-carboys",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "FERMFED DAP Free Yeast Nutrient",
+          "url": "https://cellarscience.com/products/fermfed-dap-free-yeast-nutrient",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "FERMFED Yeast Nutrient",
+          "url": "https://cellarscience.com/products/fermfed-yeast-nutrient",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "FERMSTART Yeast Rehydration Nutrient",
+          "url": "https://cellarscience.com/products/fermstart-yeast-rehydration-nutrient",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "FOAM AXE Anti-Foaming Agent",
+          "url": "https://cellarscience.com/products/foam-axe-anti-foaming-agent",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "SILAFINE Beer Fining Agent",
+          "url": "https://cellarscience.com/products/silafine-beer-fining-agent",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "CLEARZYME Beer Clarifier",
+          "url": "https://cellarscience.com/products/clearzyme-beer-clarifier",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "BRUTZYME Glucoamylase Enzyme",
+          "url": "https://cellarscience.com/products/brutzyme-glucoamylase-enzyme",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "GLUCABUSTER Mashing Enzyme",
+          "url": "https://cellarscience.com/products/glucabuster-mashing-enzyme",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "ALDC Enzyme",
+          "url": "https://cellarscience.com/products/aldc-enzyme",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        }
+      ],
+      "errors": [
+        {
+          "url": "https://cellarscience.com/products/lager-instant-water™-salts",
+          "error": "HTTP 429: https://cellarscience.com/products/lager-instant-water™-salts",
+          "retryAfter": null
+        }
+      ],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://cellarscience.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-08T10:31:09.409Z",
+          "sha256": "426c83a42e802a7bce4e7c97e1b0bd9c4d37aeac02648016b223f4ce5076d7c2",
+          "etag": "\"page_cache:65176338672:ProductListController:a4cc2726647fb38d0bd4f9fb3e4e9092\"",
+          "lastModified": null
+        }
+      ]
+    },
+    {
+      "id": "escarpment",
+      "manufacturer": "Escarpment Labs",
+      "discovered": 232,
+      "references": 205,
+      "detailed": 105,
+      "excluded": [
+        {
+          "name": "E.L. Fuego Classic Fermented Hot Sauce 5oz",
+          "url": "https://escarpmentlabs.com/products/el-fuego-fermented-hot-sauce",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Phantasm",
+          "url": "https://escarpmentlabs.com/products/phantasm",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yops™ Sample Kit 6 x 3.8ml Bottles",
+          "url": "https://escarpmentlabs.com/products/yops-samplekit-6",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yops™ Floral – F3 Aroma Blend",
+          "url": "https://escarpmentlabs.com/products/yops-f3",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yops™ Citrus – C1 Aroma Blend",
+          "url": "https://escarpmentlabs.com/products/yops-c1",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yops™ Hoppy – H2 Aroma Blend",
+          "url": "https://escarpmentlabs.com/products/yops-h2",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yops™ Fruity – FR1 Aroma Blend",
+          "url": "https://escarpmentlabs.com/products/yops-fr1",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yops™ Floral – F4 Aroma Blend",
+          "url": "https://escarpmentlabs.com/products/yops-f4",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yops™ Floral – F2 Aroma Blend",
+          "url": "https://escarpmentlabs.com/products/yops-f2",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "AB Vickers ISY Enhance™",
+          "url": "https://escarpmentlabs.com/products/abv-isy-enhance",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yeast Lightning Nutrient",
+          "url": "https://escarpmentlabs.com/products/yeast-lightning-nutrient",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Seltzer Lightning Nutrient",
+          "url": "https://escarpmentlabs.com/products/seltzer-lightning-nutrient",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "ALDC (1kg)",
+          "url": "https://escarpmentlabs.com/products/abv-aldc-1kg",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Milwaukee MA841 Spare Membrane for Dissolved Oxygen Probes",
+          "url": "https://escarpmentlabs.com/products/milwaukee-ma841",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Milwaukee MA9071 Oxygen Electrolyte Solution",
+          "url": "https://escarpmentlabs.com/products/milwaukee-ma9071",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Milwaukee MW600 PRO Dissolved Oxygen Meter",
+          "url": "https://escarpmentlabs.com/products/milwaukee-mw600",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Escarpment Labs Gift Card",
+          "url": "https://escarpmentlabs.com/products/escarpment-labs-gift-card",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "LCSM Agar Plates",
+          "url": "https://escarpmentlabs.com/products/media-lcsm",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "LMDA Dry Agar",
+          "url": "https://escarpmentlabs.com/products/lmda-dry-agar",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WLN Dry Agar",
+          "url": "https://escarpmentlabs.com/products/wln-dry-agar",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Lactobacilli MRS Dry Agar",
+          "url": "https://escarpmentlabs.com/products/lactobacilli-mrs-dry-agar",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Erythrosin B",
+          "url": "https://escarpmentlabs.com/products/erythrosin-b",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Methylene Blue",
+          "url": "https://escarpmentlabs.com/products/methylene-blue",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "LMDA Agar Plates",
+          "url": "https://escarpmentlabs.com/products/media-lmda",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "MRS Agar Plates",
+          "url": "https://escarpmentlabs.com/products/media-mrs",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WLD Agar Plates",
+          "url": "https://escarpmentlabs.com/products/media-wld",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WLN Agar Plates",
+          "url": "https://escarpmentlabs.com/products/media-wln",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        }
+      ],
+      "errors": [
+        {
+          "url": "https://escarpmentlabs.com/products/h-uvarum",
+          "error": "HTTP 429: https://escarpmentlabs.com/products/h-uvarum",
+          "retryAfter": null
+        }
+      ],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://escarpmentlabs.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-08T10:31:09.921Z",
+          "sha256": "71c5f6c44502e7d8aa8016d8403b0ed7a36778bf2a9457d85cdef5c630dd6162",
+          "etag": "\"page_cache:32388251780:ProductListController:39b8be64fb737397dcff28301c1eb325\"",
+          "lastModified": null
+        }
+      ]
+    },
+    {
+      "id": "fermentis",
+      "manufacturer": "Fermentis",
+      "discovered": 98,
+      "references": 73,
+      "detailed": 71,
+      "excluded": [
+        {
+          "name": "Spring’Finer™",
+          "url": "https://fermentis.com/en/product/springfiner/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "SpringCell™ Color G2",
+          "url": "https://fermentis.com/en/product/springcell-color-g2/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "Spring’Blanche™",
+          "url": "https://fermentis.com/en/product/spring-blanche/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "SpringFerm™",
+          "url": "https://fermentis.com/en/product/springferm/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "SpringCell™ BIO",
+          "url": "https://fermentis.com/en/product/springcell-bio/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "SpringArom™",
+          "url": "https://fermentis.com/en/product/springaroml/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "SpringFerm™ Xtrem",
+          "url": "https://fermentis.com/en/product/springferm-xtrem/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "SpringCell™",
+          "url": "https://fermentis.com/en/product/springcell/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "SpringFerm™ Equilibre",
+          "url": "https://fermentis.com/en/product/springferm-equilibre/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "SpringFerm™ BR‑2",
+          "url": "https://fermentis.com/en/product/springferm-br-2/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "SpringCell™ Manno",
+          "url": "https://fermentis.com/en/product/springcell-manno/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "SpringCell™ Color",
+          "url": "https://fermentis.com/en/product/springcell-color/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "SpringFix™ Mousy",
+          "url": "https://fermentis.com/en/product/springfix-mousy/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "ViniLiquid™",
+          "url": "https://fermentis.com/en/product/viniliquid/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "Witbier",
+          "url": "https://fermentis.com/en/product/witbier-2/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "Weissbier",
+          "url": "https://fermentis.com/en/product/weissbier/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "Safizym® Clar Plus",
+          "url": "https://fermentis.com/en/product/safizym-clar-plus/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "Safizym® Clean",
+          "url": "https://fermentis.com/en/product/safizym-clean/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "Brut IPA",
+          "url": "https://fermentis.com/en/product/brut-ipa/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "American IPA",
+          "url": "https://fermentis.com/en/product/american-ipa/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "Safizym® Col Plus",
+          "url": "https://fermentis.com/en/product/safizym-col-plus/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "Safizym® Pres",
+          "url": "https://fermentis.com/en/product/safizym-pres/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "Saison – Farmhouse Ale style",
+          "url": "https://fermentis.com/en/product/saison-beers/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "NEIPA – New England IPA",
+          "url": "https://fermentis.com/en/product/neipa-new-england-ipa/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        },
+        {
+          "name": "SpringFerm™ NAB",
+          "url": "https://fermentis.com/en/product/springferm-nab/",
+          "reason": "Catégorie fabricant : style, nutriment ou enzyme, sans levure vivante."
+        }
+      ],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://fermentis.com/product-sitemap.xml",
+          "retrievedAt": "2026-09-08T10:38:05.875Z",
+          "sha256": "1f39314421af3fce4b77126595947f3286d5e487ffc4030d66d0393213dca843",
+          "etag": null,
+          "lastModified": null
+        }
+      ]
+    },
+    {
+      "id": "fermentum-mobile",
+      "manufacturer": "Fermentum Mobile",
+      "discovered": 29,
+      "references": 29,
+      "detailed": 29,
+      "excluded": [],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://fermentum-mobile.pl/oferta/lista-szczepow/",
+          "retrievedAt": "2026-09-08T10:45:06.748Z",
+          "sha256": "5b7056f2168a62ab67571e2f938896d01f115eaf63d842047adef33140e39ce4",
+          "etag": null,
+          "lastModified": "Tue, 08 Sep 2026 10:29:41 GMT"
+        },
+        {
+          "url": "https://fermentum-mobile.pl/oferta/edycja-specjalna/",
+          "retrievedAt": "2026-09-08T10:45:09.122Z",
+          "sha256": "1294410d81e61d48bd559767812ef518e58edb00d62c6ac384344c2cc914f4fd",
+          "etag": null,
+          "lastModified": "Tue, 08 Sep 2026 10:29:43 GMT"
+        }
+      ]
+    },
+    {
+      "id": "imperial",
+      "manufacturer": "Imperial Yeast",
+      "discovered": 59,
+      "references": 59,
+      "detailed": 59,
+      "excluded": [],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://www.imperialyeast.com/yeast-strains",
+          "retrievedAt": "2026-09-08T10:32:03.873Z",
+          "sha256": "f118bf4b736b54b30601ba18cfc8b972f84a89e29e5de7d25cbf600ef2b5cc40",
+          "etag": "W/\"2e97cb751b0e7d69bc627d06d0758949\"",
+          "lastModified": null
+        }
+      ]
+    },
+    {
+      "id": "kveik-yeastery",
+      "manufacturer": "Kveik Yeastery",
+      "discovered": 4,
+      "references": 4,
+      "detailed": 4,
+      "excluded": [],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://www.kveikyeastery.com/yeasts",
+          "retrievedAt": "2026-09-08T10:47:01.919Z",
+          "sha256": "c8eaddbe34033883333b958a46d94d8cf056c2e739343942875030ef1b7091ac",
+          "etag": null,
+          "lastModified": "Tue, 08 Sep 2026 05:56:38 GMT"
+        }
+      ]
+    },
+    {
+      "id": "lallemand-brewing",
+      "manufacturer": "Lallemand Brewing",
+      "discovered": 40,
+      "references": 40,
+      "detailed": 40,
+      "excluded": [],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://shop-us.lallemandbrewing.com/brewing-yeast/",
+          "retrievedAt": "2026-09-08T10:35:03.371Z",
+          "sha256": "08c533fb75616e736d6c0e47bb8bd2b4542a6177bcd5562da749561f706bb296",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://shop-us.lallemandbrewing.com/brewing-yeast/?page=2",
+          "retrievedAt": "2026-09-08T10:36:19.512Z",
+          "sha256": "0e9c1a096c81a4e43dade7bd68c9b95be7e37ad1581b2f849c6010e3d857f7d6",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://shop-us.lallemandbrewing.com/brewing-yeast/?page=3",
+          "retrievedAt": "2026-09-08T10:36:21.401Z",
+          "sha256": "f9b99b4c7a729cef981377209c853bef0db41ee0dc74c39596248d6ba620c93a",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://shop-us.lallemandbrewing.com/brewing-yeast/?page=4",
+          "retrievedAt": "2026-09-08T10:36:23.693Z",
+          "sha256": "b0c742274a21748777914fcbd1d8c97a25ad4dfb84c8cf3a70d1b5686263095e",
+          "etag": null,
+          "lastModified": null
+        }
+      ]
+    },
+    {
+      "id": "lallemand-distilling",
+      "manufacturer": "Lallemand Distilling",
+      "discovered": 14,
+      "references": 14,
+      "detailed": 10,
+      "excluded": [],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://lallemanddistilling.com/api/content?locale=en&market=eu&page=yeasts",
+          "retrievedAt": "2026-09-08T10:36:18.207Z",
+          "sha256": "d382884cd0f5fcc868bfba3d74cd2d0562c7347af0a58f11022e3eb57cb633cf",
+          "etag": "W/\"MzFAxdCAS1-br\"",
+          "lastModified": "Tue, 08 Sep 2026 10:19:51 GMT"
+        },
+        {
+          "url": "https://lallemanddistilling.com/api/content?locale=en&market=eu&page=cutting-edge-yeasts",
+          "retrievedAt": "2026-09-08T10:36:20.336Z",
+          "sha256": "5f980e2c9b5d4ce1521c53fb385ca139f41f6332cc3b9c44b016333985b465ea",
+          "etag": "W/\"o7cwQgW4Mt-br\"",
+          "lastModified": "Mon, 07 Sep 2026 07:31:53 GMT"
+        }
+      ]
+    },
+    {
+      "id": "lallemand-wine",
+      "manufacturer": "Lallemand Wine",
+      "discovered": 159,
+      "references": 159,
+      "detailed": 107,
+      "excluded": [],
+      "errors": [
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Weissweinhefen&id=258",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Weissweinhefen&id=268",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Weissweinhefen&id=270",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Spezialhefen&id=279",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Weissweinhefen&id=267",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Weissweinhefen&id=260",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Weissweinhefen&id=263",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Spezialhefen&id=278",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Weissweinhefen&id=368",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Weissweinhefen&id=239",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Weissweinhefen&id=264",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Weissweinhefen&id=266",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Weissweinhefen&id=250",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Weissweinhefen&id=373",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Weissweinhefen&id=265",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Weissweinhefen&id=253",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        },
+        {
+          "url": "https://www.weintechnologie.at/html/wein.php?gruppe=Rotweinhefen&id=275",
+          "error": "HTTP 404: https://www.lallemandwine.com/api/content?locale=html&market=wein.php&page=wein.php&productbaseurl="
+        }
+      ],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=united-states&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:35:00.933Z",
+          "sha256": "479c3085fa49bbbb423850a68cd510e235f7129cb57ff04096329f6cbd817ff8",
+          "etag": "W/\"K462pH1OEg-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:27:11 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=australia&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:18.223Z",
+          "sha256": "10ebaf969c2fe4da46307163ef9f14f8c2916af89f87145eab7d7fe432eccb2d",
+          "etag": "W/\"auPsbCqlLy-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:32:58 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=bulgaria&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:20.391Z",
+          "sha256": "54f64d9598a66ef3c22532834960e24d97efe608e527ab4821bf153a4fd44b58",
+          "etag": "W/\"p3QKg97rFD-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:32:58 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=canada&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:22.591Z",
+          "sha256": "e8d37d2e2709f7a81ddb0571c800dbbbdeef719bcd7885287e5294a72d323810",
+          "etag": "W/\"vfF7gp2uhD-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:32:58 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=central-europe&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:24.805Z",
+          "sha256": "785b78ee60c28e73b738e076df111dc8625090ae147661c5ff9199a6ec4dcd2e",
+          "etag": "W/\"8HxdQo0tDb-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:32:58 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=china&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:26.992Z",
+          "sha256": "f03ef981c57612aab12316ce62bdbb0ae78583bd0cd16e8d1ae234dae04adf9e",
+          "etag": "W/\"bLCMqPKtum-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:32:59 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=croatia&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:29.193Z",
+          "sha256": "1c4ce253f63de7b8306c01352e6ee47174f486d7d0ca4ebba2901920e8f65aaa",
+          "etag": "W/\"zdDG1FglJD-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:32:59 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=eastern-countries&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:31.397Z",
+          "sha256": "aff274bd28462d98b655d5bd9be0e36e9a82c3cfa3f2a82b1308fb6590f5fb71",
+          "etag": "W/\"2SnD3zK8VA-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:25:30 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=greece&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:33.595Z",
+          "sha256": "63ac3eace12076693539548eb4508bc88d20d93357c0e325509a9780c960cba1",
+          "etag": "W/\"2nq8gWak6P-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:00 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=hungary&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:35.795Z",
+          "sha256": "4df00219c347716240754e317253a431a170eb26a671af821614911116e77f8c",
+          "etag": "W/\"QCrckPJNHg-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:00 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=india&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:37.999Z",
+          "sha256": "88cc832bb99b1e857b28ad2ceea1148a6fdf4222b5c735595037909632c76951",
+          "etag": "W/\"niEZ8OflOg-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:00 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=israel&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:40.194Z",
+          "sha256": "12baa278c272cc46254e68135ca8ee21d3ce5749914e9b0ca2ce0ad2f441e9b5",
+          "etag": "W/\"MwslKglzuc-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:01 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=japan&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:42.395Z",
+          "sha256": "32b17f5212288924b934923cdb74bb7698fd79efb5697cda2efeea46718d3517",
+          "etag": "W/\"k7aH2J6Tyy-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:01 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=macedonia&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:44.605Z",
+          "sha256": "2cff88d7c371e0e863be4b41a88522ce354e89b24196fdcd8b0ccf07e74c842d",
+          "etag": "W/\"oK7QIPqwSR-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:01 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=mexico&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:46.801Z",
+          "sha256": "457609d959a19982628cad5858e868c1720d820cc7fbbeb98d50567ef63d9523",
+          "etag": "W/\"YgRUwK7kjo-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:02 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=montenegro&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:49.005Z",
+          "sha256": "b56782bee1875a1e5e0f2814bdf58188951b936a5b65001c2a2af6269d1e86c3",
+          "etag": "W/\"9tCTB1Cf3o-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:02 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=new-zealand&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:51.204Z",
+          "sha256": "0387cb94db697b247d0b4661d0e2c2c52157470d4aa7faa8b526de6f5cb81977",
+          "etag": "W/\"pYJNWdQGVI-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:14:20 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=romania&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:53.401Z",
+          "sha256": "1d81827c75a353c568f858caad1cf8286921aa009118da5071183853269357b9",
+          "etag": "W/\"AZFRQZrwtq-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:04 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=scandinavia&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:55.605Z",
+          "sha256": "564d772a64592affabd862eaae4d5bd85c368f3901900eb9862a1f6e49a96493",
+          "etag": "W/\"5xHfqWFjOC-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:03 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=serbia&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:36:57.800Z",
+          "sha256": "972289c905ff8ea43c29bc4e4da3315f766349c02fdf973983e29b2813a9b704",
+          "etag": "W/\"zqs1pZfQRM-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:04 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=slovenia&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:37:00.009Z",
+          "sha256": "f6a69c239c3e485d45fa6e6de83175cf51a47d607e553155461523f3f9507391",
+          "etag": "W/\"bCCjEgNCS5-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:04 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=south-africa&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:37:02.206Z",
+          "sha256": "b7dc3bbae307fce4833d2fe0b2d7935081e786763d01325e12e73a6155732ae3",
+          "etag": "W/\"d3cdRmO82C-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:05 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=south-korea&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:37:04.416Z",
+          "sha256": "30c74160b97ab053dfed5e8e69d6668e889bee0dcfe101247163abfdeb382d39",
+          "etag": "W/\"89v5M9vk4l-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:05 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=thailand&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:37:06.605Z",
+          "sha256": "f1e148cd407c4010fc313f7bc1f6d6935e1b0612ba72806e2c42a33c18693534",
+          "etag": "W/\"XW4buzlFaV-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:06 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=turkiye&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:37:08.809Z",
+          "sha256": "4f6fa77b110fe279bfcaaf65bd537d481430b1ed65e33c3002f3aa51efab292f",
+          "etag": "W/\"PJNQLk1LVS-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:06 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=ukraine&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:37:11.009Z",
+          "sha256": "629148df3b454f11f7a86a1eb42780a33ca8c85ab5474465fd4fe7682db60108",
+          "etag": "W/\"4z25bxstPW-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:06 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=en&market=united-kingdom-ireland&page=wine-yeasts",
+          "retrievedAt": "2026-09-08T10:37:13.214Z",
+          "sha256": "28e7b6589cee580059f633d3a51ccc60ea8a79dfe60671ab795621c9044746f5",
+          "etag": "W/\"OLcanwm49w-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:06 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=fr&market=france&page=levures-oenologiques",
+          "retrievedAt": "2026-09-08T10:37:15.411Z",
+          "sha256": "38c47b0b8bef1ab781d2e474dab40cb7673451f561da327abfc20ae02705fbff",
+          "etag": "W/\"Vl1mJ86iKE-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:07 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=fr&market=switzerland&page=levures-oenologiques",
+          "retrievedAt": "2026-09-08T10:37:17.609Z",
+          "sha256": "4e7e9a2b0f12ca75d8d1f1698b7d9fc168eeaf3e9313c28db501c5e33112b9ed",
+          "etag": "W/\"i7KzLEmAFT-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:19:43 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=de&market=austria&page=weinhefen",
+          "retrievedAt": "2026-09-08T10:37:19.811Z",
+          "sha256": "e6f70d9cbdc18badd38471156815df836f136939df9de4e1675436ac2a539a49",
+          "etag": "W/\"KCcMX2cdvx-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:15:50 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=de&market=germany&page=weinhefen",
+          "retrievedAt": "2026-09-08T10:37:22.008Z",
+          "sha256": "290f1448c24690aa98af9f7234acae00564d539449e9ecf5e213dd0adafb492a",
+          "etag": "W/\"OhCfU330E3-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:08 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=it&market=italy&page=lievito-di-vino",
+          "retrievedAt": "2026-09-08T10:37:24.214Z",
+          "sha256": "af117a74a51abc677b21091692360f169f8501345e9cd6ab45851bb9f40c7b6d",
+          "etag": "W/\"QnaLJdC7TL-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:08 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=pt-pt&market=portugal&page=leveduras-enologicas",
+          "retrievedAt": "2026-09-08T10:37:26.410Z",
+          "sha256": "807444d2a31a74e20b823549a8baf49f635e8b3cc95114348b1019cb300ba1d8",
+          "etag": "W/\"gvEwWwcPi3-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:09 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=pt-pt&market=south-america&page=leveduras-enologicas",
+          "retrievedAt": "2026-09-08T10:37:28.642Z",
+          "sha256": "7d3fcd0400815dcb2002b8f0170c001f4b9c76d8c829f1165f44f3c5882bb1b5",
+          "etag": "W/\"yTknzkttMU-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:09 GMT"
+        },
+        {
+          "url": "https://www.lallemandwine.com/api/content?locale=es&market=spain&page=levaduras-enologicas",
+          "retrievedAt": "2026-09-08T10:37:30.854Z",
+          "sha256": "d22d743a74fb2bc7e2df63a561793d02e5b8eaa7c92b5486b140005aa166d123",
+          "etag": "W/\"53Y6D67KkV-gzip\"",
+          "lastModified": "Tue, 08 Sep 2026 10:33:10 GMT"
+        }
+      ]
+    },
+    {
+      "id": "mangrove-jacks",
+      "manufacturer": "Mangrove Jack’s",
+      "discovered": 193,
+      "references": 29,
+      "detailed": 29,
+      "excluded": [
+        {
+          "name": "Craft Series Pear Cider",
+          "url": "https://mangrovejacks.com/products/craft-series-pear-cider",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Passion Fruit & Peach Cider",
+          "url": "https://mangrovejacks.com/products/craft-series-passion-fruit-peach-cider",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Elderflower & Lime Cider",
+          "url": "https://mangrovejacks.com/products/craft-series-elderflower-lime-cider",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Raspberry & Lime Cider",
+          "url": "https://mangrovejacks.com/products/craft-series-raspberry-lime-cider",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Mixed Berry Cider",
+          "url": "https://mangrovejacks.com/products/craft-series-mixed-berry-cider",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Hazy IPA",
+          "url": "https://mangrovejacks.com/products/craft-series-hazy-ipa",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Irish Red Ale",
+          "url": "https://mangrovejacks.com/products/craft-series-irish-red-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Raspberry & Mango Cider",
+          "url": "https://mangrovejacks.com/products/craft-series-raspberry-mango-cider",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Golden Lager",
+          "url": "https://mangrovejacks.com/products/craft-series-golden-lager",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Juicy Session IPA",
+          "url": "https://mangrovejacks.com/products/craft-series-juicy-session-ipa",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Apple Cider",
+          "url": "https://mangrovejacks.com/products/craft-series-apple-cider",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Irish Stout",
+          "url": "https://mangrovejacks.com/products/craft-series-irish-stout",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series American IPA",
+          "url": "https://mangrovejacks.com/products/craft-series-american-ipa",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series American Pale Ale",
+          "url": "https://mangrovejacks.com/products/craft-series-american-pale-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Czech Style Pilsner",
+          "url": "https://mangrovejacks.com/products/craft-series-czech-style-pilsner",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "H10 Earthy Hop Pellet Blend",
+          "url": "https://mangrovejacks.com/products/h10-earthy-hop-pellet-blend",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "H9 Herbal Hop Pellet Blend",
+          "url": "https://mangrovejacks.com/products/h9-herbal-hop-pellet-blend",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "H8 Floral Hop Pellet Blend",
+          "url": "https://mangrovejacks.com/products/h8-floral-hop-pellet-blend",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "H7 Zesty Hop Pellet Blend",
+          "url": "https://mangrovejacks.com/products/h7-zesty-hop-pellet-blend",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "H6 Fruity Hop Pellet Blend",
+          "url": "https://mangrovejacks.com/products/h6-fruity-hop-pellet-blend",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "H5 Pacific Hop Pellet Blend",
+          "url": "https://mangrovejacks.com/products/h5-pacific-hop-pellet-blend",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "H4 Stone Fruit Hop Pellet Blend",
+          "url": "https://mangrovejacks.com/products/h4-stone-fruit-hop-pellet-blend",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "H3 West Coast Hop Pellet Blend",
+          "url": "https://mangrovejacks.com/products/h3-west-coast-hop-pellet-blend",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "H2 Tropical Hop Pellet Blend",
+          "url": "https://mangrovejacks.com/products/h2-tropical-hop-pellet-blend",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "H1 Citrus Hop Pellet Blend",
+          "url": "https://mangrovejacks.com/products/h1-citrus-hop-pellet-blend",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "E4 Light-Hopped Brew Enhancer",
+          "url": "https://mangrovejacks.com/products/e4-light-hopped-brew-enhancer",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "E3 Dark Brew Enhancer",
+          "url": "https://mangrovejacks.com/products/e3-dark-brew-enhancer",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "E2 Medium Brew Enhancer",
+          "url": "https://mangrovejacks.com/products/e2-medium-brew-enhancer",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "E1 Light Brew Enhancer",
+          "url": "https://mangrovejacks.com/products/e1-light-brew-enhancer",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "6 Stout",
+          "url": "https://mangrovejacks.com/products/6-stout",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "5 Brown Ale",
+          "url": "https://mangrovejacks.com/products/5-brown-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "4 Wheat",
+          "url": "https://mangrovejacks.com/products/4-wheat",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "3 India Pale Ale",
+          "url": "https://mangrovejacks.com/products/3-india-pale-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "2 Pale Ale",
+          "url": "https://mangrovejacks.com/products/2-pale-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "1 Lager",
+          "url": "https://mangrovejacks.com/products/1-lager",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Ginger Beer",
+          "url": "https://mangrovejacks.com/products/craft-series-ginger-beer",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Italian Style Lager",
+          "url": "https://mangrovejacks.com/products/craft-series-italian-style-lager",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Thirst Aid - Lemon Flavour",
+          "url": "https://mangrovejacks.com/products/thirst-aid-lemon-flavour",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Amber Crown Top Bottles 12 x 750 ml",
+          "url": "https://mangrovejacks.com/products/amber-crown-top-bottles-12x750ml",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "PEACH PILSNER - LIMITED EDITION",
+          "url": "https://mangrovejacks.com/products/peach-pilsner-limited-edition",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Starter Kit: Craft Series Juicy Session IPA (UK/EU)",
+          "url": "https://mangrovejacks.com/products/starter-kit-craft-series-juicy-session-ipa",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Starter Kit: Craft Series Apple Cider (UK/EU)",
+          "url": "https://mangrovejacks.com/products/starter-kit-craft-series-apple-cider-uk-eu",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Hazy IPA",
+          "url": "https://mangrovejacks.com/products/hazy-ipa-1",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Bourbon Barrel Stout - Limited Edition",
+          "url": "https://mangrovejacks.com/products/bourbon-barrel-stout-limited-edition",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mead Starter Kit (NZ)",
+          "url": "https://mangrovejacks.com/products/mead-starter-kit",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mulled Apple Cider - Limited Edition",
+          "url": "https://mangrovejacks.com/products/mulled-apple-cider-limited-edition",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Lager",
+          "url": "https://mangrovejacks.com/products/lager",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Hazy IPA",
+          "url": "https://mangrovejacks.com/products/hazy-ipa",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Pale Ale",
+          "url": "https://mangrovejacks.com/products/pale-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Cold IPA - Limited Edition",
+          "url": "https://mangrovejacks.com/products/cold-ipa-limited-edition",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mead Yeast Nutrient",
+          "url": "https://mangrovejacks.com/products/mead-yeast-nutrient",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Starter Brewery Kit (AU)",
+          "url": "https://mangrovejacks.com/products/starter-brewery-kit-au",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Cider Yeast Nutrient",
+          "url": "https://mangrovejacks.com/products/cider-yeast-nutrient",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Beer Yeast Nutrient",
+          "url": "https://mangrovejacks.com/products/beer-yeast-nutrient",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Wine Yeast Nutrient",
+          "url": "https://mangrovejacks.com/products/wine-yeast-nutrient",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Heat Belt",
+          "url": "https://mangrovejacks.com/products/heat-belt",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mango Pale Ale - Limited Edition",
+          "url": "https://mangrovejacks.com/products/mango-pale-ale-limited-edition",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Carbonation Drops",
+          "url": "https://mangrovejacks.com/products/carbonation-drops",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Irish Stout",
+          "url": "https://mangrovejacks.com/products/irish-stout",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Cider Enhancer",
+          "url": "https://mangrovejacks.com/products/cider-enhancer",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Beer Enhancer 2",
+          "url": "https://mangrovejacks.com/products/beer-enhancer-2",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Beer Enhancer 1",
+          "url": "https://mangrovejacks.com/products/beer-enhancer-1",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Pure Liquid Malt Extract - Wheat 1.5KG",
+          "url": "https://mangrovejacks.com/products/pure-liquid-malt-extract-wheat",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Powder Beer Finings - 5g",
+          "url": "https://mangrovejacks.com/products/powder-beer-finings-5g",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Complete Mini Keg Dispensing Kit - 3 L",
+          "url": "https://mangrovejacks.com/products/complete-mini-keg-dispensing-kit-3-l",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Complete Mini Keg Dispensing Kit - 5 L",
+          "url": "https://mangrovejacks.com/products/complete-mini-keg-dispensing-kit-5-l",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Portable Keg Dispensing Kit",
+          "url": "https://mangrovejacks.com/products/portable-keg-dispensing-kit",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Complete Mini Keg Dispensing Kit - 10 L",
+          "url": "https://mangrovejacks.com/products/complete-mini-keg-dispensing-kit-10-l",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Portable CO2 Kit",
+          "url": "https://mangrovejacks.com/products/portable-co2-kit",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mangrove Jack's Brew Enhancer - New Zealand Draught",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-brew-enhancer-new-zealand-draught",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mangrove Jack's No.70 English Bitter Brew Enhancer 1kg",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-brew-enhancer-70-english-bitters",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mangrove Jack's No.72 Brown Brew Enhancer 1kg",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-brew-enhancer-72-brown-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mangrove Jack's No.62 Czech Pilsner Brew Enhancer 1kg",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-brew-enhancer-62-czech-pilsner",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mangrove Jack's No.60 German Lager Brew Enhancer 1kg",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-brew-enhancer-60-german-lager",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mangrove Jack's No.50 New Zealand Lager Brew Enhancer 1kg",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-brew-enhancer-50-new-zealand-lager",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mangrove Jack's No.44 Aus Spec Bitter Brew Enhancer 1kg",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-brew-enhancer-44-australian-spec-bitter",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mangrove Jack's No.40 Australian Lager Brew Enhancer 1kg",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-brew-enhancer-40-australian-lager",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mangrove Jack's Brew Enhancer #15 - Lager",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-brew-enhancer-15-lager",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mangrove Jack's Brew Enhancer - All Beer Styles",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-brew-enhancer",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "NZ Brewer's Series - Apple Cider",
+          "url": "https://mangrovejacks.com/products/nz-brewers-series-apple-cider",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "CO2 Regulator",
+          "url": "https://mangrovejacks.com/products/co2-regulator",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Juicy Session IPA - Limited Edition",
+          "url": "https://mangrovejacks.com/products/juicy-session-ipa-limited-edition",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "NZ Brewer's Series - Pilsner",
+          "url": "https://mangrovejacks.com/products/nz-brewers-series-pilsner",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "NZ Brewer's Series - Pale Ale",
+          "url": "https://mangrovejacks.com/products/nz-brewers-series-pale-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "NZ Brewer's Series - Golden Ale",
+          "url": "https://mangrovejacks.com/products/nz-brewers-series-golden-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "NZ Brewer's Series - American Pale Ale",
+          "url": "https://mangrovejacks.com/products/nz-brewers-series-american-pale-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mini Keg Ball Lock Cap",
+          "url": "https://mangrovejacks.com/products/mini-keg-ball-lock-cap",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mini Keg - 3 L",
+          "url": "https://mangrovejacks.com/products/mini-keg-3-l",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mini Keg - 5 L",
+          "url": "https://mangrovejacks.com/products/mini-keg-5-l",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mini Keg - 10 L",
+          "url": "https://mangrovejacks.com/products/mini-keg-10-l",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Liquid Beer Finings - 20 ml",
+          "url": "https://mangrovejacks.com/products/liquid-beer-finings",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Natural Beer Flavour Boost - Coffee",
+          "url": "https://mangrovejacks.com/products/natural-beer-flavour-boost-coffee",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Natural Beer Flavour Boost - Passion Fruit",
+          "url": "https://mangrovejacks.com/products/natural-beer-flavour-boost-passionfruit",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Natural Beer Flavour Boost - Apricot",
+          "url": "https://mangrovejacks.com/products/natural-beer-flavour-boost-apricot",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Natural Beer Flavour Boost - Manuka",
+          "url": "https://mangrovejacks.com/products/natural-beer-flavour-boost-manuka",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Natural Beer Flavour Boost - American Oak",
+          "url": "https://mangrovejacks.com/products/natural-beer-flavour-boost-american-oak",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Rosé Cider",
+          "url": "https://mangrovejacks.com/products/rose-cider",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Hopped Apple Cider",
+          "url": "https://mangrovejacks.com/products/hopped-apple-cider",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Apple Cider",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-craft-series-apple-cider-pouch",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Pils Pouch with Dry Hops",
+          "url": "https://mangrovejacks.com/products/pils-pouch-with-dry-hops",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Simcoe Single Hopped IPA - Limited Edition",
+          "url": "https://mangrovejacks.com/products/simcoe-single-hopped-ipa-pouch-limited-edition-eu-only",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Temp Controller",
+          "url": "https://mangrovejacks.com/products/copy-of-dual-temp-controller",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Carbonation, Line Cleaning and Counter Pressure Filler Cap",
+          "url": "https://mangrovejacks.com/products/carbonation-line-cleaning-and-counter-pressure-filler-cap",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Pure Liquid Malt Extract - Amber 1.5KG",
+          "url": "https://mangrovejacks.com/products/pure-liquid-malt-extract-amber-1-5kg",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Pure Liquid Malt Extract - Dark 1.5KG",
+          "url": "https://mangrovejacks.com/products/pure-liquid-malt-extract-dark-1-5kg",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Pure Liquid Malt Extract - Light 1.5KG",
+          "url": "https://mangrovejacks.com/products/pure-liquid-malt-extract-light-1-5kg",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Traditional Series Saison",
+          "url": "https://mangrovejacks.com/products/traditional-series-saison-eu-only",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Traditional Series Dubbel",
+          "url": "https://mangrovejacks.com/products/traditional-series-dubbel-eu-only",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Traditional Series Abbey",
+          "url": "https://mangrovejacks.com/products/traditional-series-abbey-eu-only",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Traditional Series Belgian Pale Ale",
+          "url": "https://mangrovejacks.com/products/traditional-series-belgian-pale-ale-eu-only",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Hop Spider",
+          "url": "https://mangrovejacks.com/products/hop-spider",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Raspberry and Lime Cider",
+          "url": "https://mangrovejacks.com/products/raspberry-and-lime-cider",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "CO2 Cylinder - 2 kg (3.4L)",
+          "url": "https://mangrovejacks.com/products/6-l-co2-cylinder",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Peach and Passion Cider",
+          "url": "https://mangrovejacks.com/products/peach-and-passionfruit-cider-pouch",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Raspberry and Mango Cider",
+          "url": "https://mangrovejacks.com/products/raspberry-and-mango-cider-pouch",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Gluten Free Pale Ale",
+          "url": "https://mangrovejacks.com/products/gluten-free-pale-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Australian Pale Ale with Dry Hops (not available in NZ)",
+          "url": "https://mangrovejacks.com/products/australian-pale-ale-with-dry-hops",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "1 Tap Kegerator with D Coupler",
+          "url": "https://mangrovejacks.com/products/1-tap-kegerator-with-d-coupler",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "3 Tap Kegerator",
+          "url": "https://mangrovejacks.com/products/3-tap-kegerator",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "3 Tap Kegerator with 3 New Kegs",
+          "url": "https://mangrovejacks.com/products/3-tap-kegerator-with-3-new-kegs",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Traditional Series Gluten Free Pale Ale - EU/USA Only",
+          "url": "https://mangrovejacks.com/products/traditional-series-gluten-free-pale-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Pure Liquid Malt Extract - Light 600g",
+          "url": "https://mangrovejacks.com/products/pure-liquid-malt-extract-600g",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Pure Liquid Malt Extract - Light 1.2KG",
+          "url": "https://mangrovejacks.com/products/light-reinheitsgebot-enhancer-1-2kg",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "NZ Pilsner with Dry Hops",
+          "url": "https://mangrovejacks.com/products/nz-pilsner-with-dry-hops",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "NZ Pale Ale with Dry Hops",
+          "url": "https://mangrovejacks.com/products/nz-pale-ale-with-dry-hops",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Elderflower & Lime Cider",
+          "url": "https://mangrovejacks.com/products/elderflower-lime-cider",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Irish Red Ale with Dry Hops",
+          "url": "https://mangrovejacks.com/products/irish-red-ale-with-dry-hops",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Pink Grapefruit IPA with Dry Hops",
+          "url": "https://mangrovejacks.com/products/pink-grapefruit-ipa-limited-edition",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Red IPA - Limited Edition",
+          "url": "https://mangrovejacks.com/products/red-ipa",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "American IPA with Dry Hops",
+          "url": "https://mangrovejacks.com/products/american-ipa-with-dry-hops",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "American Pale Ale with Dry Hops",
+          "url": "https://mangrovejacks.com/products/american-pale-ale-with-dry-hops",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "19 Litre Keg",
+          "url": "https://mangrovejacks.com/products/19-litre-italian-keg",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Flip Top Bottles 12 x 500ml",
+          "url": "https://mangrovejacks.com/products/flip-top-bottles-12-x-500ml",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Apple Cider Starter Brewery",
+          "url": "https://mangrovejacks.com/products/craft-series-apple-cider-starter-brewery",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Starter Brewery Kit (NZ)",
+          "url": "https://mangrovejacks.com/products/traditional-series-blonde-lager-starter-brewery",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "2 Tap Kegerator with 2 New Kegs",
+          "url": "https://mangrovejacks.com/products/kegerator-with-2-new-italian-kegs",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Craft Series Stainless Steel Fermenter",
+          "url": "https://mangrovejacks.com/products/craft-series-stainless-steel-fermenter",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Flip Top Bottles 12 x 750ml",
+          "url": "https://mangrovejacks.com/products/flip-top-bottles-12-x-750ml",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Australian Blonde Dry",
+          "url": "https://mangrovejacks.com/products/australian-classic-blonde-dry",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Australian Classic Bitter",
+          "url": "https://mangrovejacks.com/products/australian-classic-bitter",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Australian Gold Lager",
+          "url": "https://mangrovejacks.com/products/australian-classic-gold-lager",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "International Series Belgian Ale",
+          "url": "https://mangrovejacks.com/products/international-series-belgian-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "International Series Tyneside Brown Ale",
+          "url": "https://mangrovejacks.com/products/international-series-tyneside-brown-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "International Series Dutch Lager",
+          "url": "https://mangrovejacks.com/products/international-series-dutch-lager",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "International Series Mexican Cerveza",
+          "url": "https://mangrovejacks.com/products/international-series-mexican-cerveza",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "International Series Bavarian Wheat",
+          "url": "https://mangrovejacks.com/products/international-series-bavarian-wheat",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "International Series Czech Pilsener",
+          "url": "https://mangrovejacks.com/products/international-series-czech-pilsener",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "International Series Irish Stout",
+          "url": "https://mangrovejacks.com/products/international-series-irish-stout",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "International Series Munich Lager",
+          "url": "https://mangrovejacks.com/products/international-series-munich-lager",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Traditional Series Ginger Beer",
+          "url": "https://mangrovejacks.com/products/traditional-series-ginger-beer",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Traditional Series Lucky Goat Pale Ale",
+          "url": "https://mangrovejacks.com/products/traditional-series-pale-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Traditional Series Crossman's Gold Lager",
+          "url": "https://mangrovejacks.com/products/traditional-series-lager",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Traditional Series Rustic Brown Ale",
+          "url": "https://mangrovejacks.com/products/traditional-series-brown-ale",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Traditional Series Workingmans Stout",
+          "url": "https://mangrovejacks.com/products/traditional-series-export-stout",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Traditional Series Lucid Pilsner",
+          "url": "https://mangrovejacks.com/products/traditional-series-pilsner",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Traditional Series Blonde Lager",
+          "url": "https://mangrovejacks.com/products/traditional-series-blonde-lager",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Traditional Series Northern Star Bitter",
+          "url": "https://mangrovejacks.com/products/traditional-series-northern-bitter",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Plastic PET Bottles (15 pack)",
+          "url": "https://mangrovejacks.com/products/plastic-pet-bottles-15-pack",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Golden Lager with Dry Hops",
+          "url": "https://mangrovejacks.com/products/golden-lager-with-dry-hops",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mixed Berry Cider",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-craft-series-mixed-berry-cider",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Strawberry & Pear Cider",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-craft-series-strawberry-and-pear",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Pear Cider",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-craft-series-pear-cider-pouch",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Bavarian Wheat",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-craft-series-wheat-beer-pouch",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Complete Microbrewery Kit",
+          "url": "https://mangrovejacks.com/products/mangrove-jacks-craft-series-microbrewery",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        }
+      ],
+      "errors": [
+        {
+          "url": "https://mangrovejacks.com/products/craft-series-raspberry-mango-cider",
+          "error": "HTTP 429: https://mangrovejacks.com/products/craft-series-raspberry-mango-cider",
+          "retryAfter": null
+        }
+      ],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://mangrovejacks.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-08T10:31:09.430Z",
+          "sha256": "b44eeeeccd5f61f7e7c0d95f63d701ed16b8222a566ad8541c61e44da026d1b9",
+          "etag": "\"page_cache:1958620:ProductListController:0d4103ad070ced3d9f00feceebb47097\"",
+          "lastModified": null
+        }
+      ]
+    },
+    {
+      "id": "omega",
+      "manufacturer": "Omega Yeast",
+      "discovered": 136,
+      "references": 104,
+      "detailed": 68,
+      "excluded": [
+        {
+          "name": "pH and Titratable Acidity",
+          "url": "https://omegayeast.com/products/ph-and-titratable-acidity",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Propper Chiber",
+          "url": "https://omegayeast.com/products/propper-chiber",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Complete Flavor Profiling",
+          "url": "https://omegayeast.com/products/complete-flavor-profiling",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Beer Volatiles",
+          "url": "https://omegayeast.com/products/beer-volatiles",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "NA Testing Suite",
+          "url": "https://omegayeast.com/products/na-testing-suite",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Forced Fermentation",
+          "url": "https://omegayeast.com/products/forced-fermentation",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Coliform E-Coli Count",
+          "url": "https://omegayeast.com/products/coliform-e-coli-count",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Enterobacteriaceae Count",
+          "url": "https://omegayeast.com/products/enterobacteriaceae-count",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Maltose",
+          "url": "https://omegayeast.com/products/maltose",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Propper Chiber Interaction Test",
+          "url": "https://omegayeast.com/products/chiber-interaction-test",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "NA Micro Testing Bundle",
+          "url": "https://omegayeast.com/products/na-micro-testing-bundle",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Propper Seltzer",
+          "url": "https://omegayeast.com/products/propper-seltzer",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Propper Starter",
+          "url": "https://omegayeast.com/products/propper-starter",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Propper Phantasm",
+          "url": "https://omegayeast.com/products/propper-phantasm",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "ABV Testing",
+          "url": "https://omegayeast.com/products/abv",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Extracts: FG-AE-RE-OE-ADF-RDF",
+          "url": "https://omegayeast.com/products/extracts-fg-ae-re-oe-adf-rdf",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "IBU",
+          "url": "https://omegayeast.com/products/ibu",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "PH and Titratable Acidity",
+          "url": "https://omegayeast.com/products/ph-and-titratable-activity",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Calories",
+          "url": "https://omegayeast.com/products/calories",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "FAN",
+          "url": "https://omegayeast.com/products/fan",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Polyphenol",
+          "url": "https://omegayeast.com/products/polyphenol",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Total Protein",
+          "url": "https://omegayeast.com/products/total-protein",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Haze",
+          "url": "https://omegayeast.com/products/haze",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "VDK",
+          "url": "https://omegayeast.com/products/vdk",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "LMDA",
+          "url": "https://omegayeast.com/products/lmda",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "MRS Aerobic Anaerobic",
+          "url": "https://omegayeast.com/products/mrs-aerobic-anaerobic",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "LCSM",
+          "url": "https://omegayeast.com/products/lcsm",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WLN",
+          "url": "https://omegayeast.com/products/wln",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Descriptive Analytics- Bacteria",
+          "url": "https://omegayeast.com/products/descriptive-analytics-bacteria",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "QPCR STA-1",
+          "url": "https://omegayeast.com/products/qpcr-sta-1",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "16s ITS Sequencing",
+          "url": "https://omegayeast.com/products/16s-its-sequencing",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Private Strain Banking",
+          "url": "https://omegayeast.com/products/private-strain-banking",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        }
+      ],
+      "errors": [
+        {
+          "url": "https://omegayeast.com/products/enterobacteriaceae-count",
+          "error": "HTTP 429: https://omegayeast.com/products/enterobacteriaceae-count",
+          "retryAfter": null
+        }
+      ],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://omegayeast.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-08T10:31:09.528Z",
+          "sha256": "7155c8440cdea299847cf7ff8ba385f42a6dc5c734bc59c36ae8c1d64ae9b974",
+          "etag": "\"page_cache:80085057790:ProductListController:d7fa9c37f44579b9d9d3137e2d1408c2\"",
+          "lastModified": null
+        }
+      ]
+    },
+    {
+      "id": "pinnacle",
+      "manufacturer": "AB Biotek / Pinnacle",
+      "discovered": 10,
+      "references": 9,
+      "detailed": 9,
+      "excluded": [
+        {
+          "name": "zinc enriched",
+          "url": "https://www.pinnaclebrewingingredients.com/en/portfolio#product-10",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        }
+      ],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://www.pinnaclebrewingingredients.com/en/portfolio",
+          "retrievedAt": "2026-09-08T11:00:36.863Z",
+          "sha256": "2112600d216997fdca7813159421eabb413717c656a586c5f8d68ec8cd0e8f3f",
+          "etag": null,
+          "lastModified": null
+        }
+      ]
+    },
+    {
+      "id": "weihenstephan",
+      "manufacturer": "Hefebank Weihenstephan",
+      "discovered": 129,
+      "references": 129,
+      "detailed": 16,
+      "excluded": [],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://www.hefebank-weihenstephan.de/en/products/",
+          "retrievedAt": "2026-09-08T10:46:41.499Z",
+          "sha256": "380e1a70688a343839c6b4f45eb685bbaf19d1b9eff20483dfed7a7f7dc8dc15",
+          "etag": null,
+          "lastModified": null
+        }
+      ]
+    },
+    {
+      "id": "whc",
+      "manufacturer": "WHC Lab",
+      "discovered": 110,
+      "references": 50,
+      "detailed": 18,
+      "excluded": [
+        {
+          "name": "Inositol",
+          "url": "https://www.whclab.com/products/inositol",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Zeaxanthin",
+          "url": "https://www.whclab.com/products/zeaxanthin",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yeast Protein",
+          "url": "https://www.whclab.com/products/yeast-protein",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yeast Protein & Fiber Blend",
+          "url": "https://www.whclab.com/products/yeast-protein-fiber-blend",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yeast Fiber",
+          "url": "https://www.whclab.com/products/resveratrol-copy",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Resveratrol",
+          "url": "https://www.whclab.com/products/curcumin-copy",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Curcumin",
+          "url": "https://www.whclab.com/products/curcumin",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Chlorophyll Powder",
+          "url": "https://www.whclab.com/products/ashwaghanda-extract-copy",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Ginseng Extract",
+          "url": "https://www.whclab.com/products/ginseng-extract",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Codriceps Extract",
+          "url": "https://www.whclab.com/products/codriceps-extract",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Black Maca Extract",
+          "url": "https://www.whclab.com/products/black-maca-extract",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Tangerine Skin Extract",
+          "url": "https://www.whclab.com/products/tangerine-skin-extract",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Fermented Soybean Extract",
+          "url": "https://www.whclab.com/products/fermented-soybean-extract",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "L-Carnitine",
+          "url": "https://www.whclab.com/products/l-carnitine",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "L-Citrulline",
+          "url": "https://www.whclab.com/products/l-citrulline",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Coenzyme Q10",
+          "url": "https://www.whclab.com/products/coenzyme-q10",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Green Tea Extract",
+          "url": "https://www.whclab.com/products/green-tea-extract",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Matcha powder",
+          "url": "https://www.whclab.com/products/matcha-powder",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Vitamin B1 (Thiamine)",
+          "url": "https://www.whclab.com/products/vitamin-b1-thiamine",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Vitamin B12 (Methylcobalamin)",
+          "url": "https://www.whclab.com/products/vitamin-b12-methylcobalamin",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Vitamin B2 (Riboflavin)",
+          "url": "https://www.whclab.com/products/vitamin-b2-riboflavin",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Vitamin B3 (Niacinamide)",
+          "url": "https://www.whclab.com/products/vitamin-b3-niacinamide",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Inulin",
+          "url": "https://www.whclab.com/products/inulin",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Bacillus Licheniformis",
+          "url": "https://www.whclab.com/products/bacillus-licheniformis",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Bacillus Coagulans",
+          "url": "https://www.whclab.com/products/bacillus-coagulans",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Bifidobacterium Lactis",
+          "url": "https://www.whclab.com/products/bifidobacterium-lactis",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Mannoproteins",
+          "url": "https://www.whclab.com/products/mannoproteins",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Beta Glucan",
+          "url": "https://www.whclab.com/products/biotin-copy",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Biotin",
+          "url": "https://www.whclab.com/products/biotin",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Beta Glucanase",
+          "url": "https://www.whclab.com/products/whc-beta-glucanase",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Xylanase",
+          "url": "https://www.whclab.com/products/whc-xylanase",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Precisionzyme",
+          "url": "https://www.whclab.com/products/whc-precisionzyme",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Forever Foam",
+          "url": "https://www.whclab.com/products/whc-forever-foam",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Doprotect",
+          "url": "https://www.whclab.com/products/whc-copper-aid-copy",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Copper Aid",
+          "url": "https://www.whclab.com/products/whc-copper-aid",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Nitro Yeast",
+          "url": "https://www.whclab.com/products/whc-nitro-yeast",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Surge Seltzer Nutrient Blend",
+          "url": "https://www.whclab.com/products/whc-surge-seltzer-nutrient-blend",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Zinc Chloride",
+          "url": "https://www.whclab.com/products/whc-zinc-chloride",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "ClearPro-G",
+          "url": "https://www.whclab.com/products/whc-clearpro-g",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Thiol Blend",
+          "url": "https://www.whclab.com/products/whc-thiol-blend",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Acid Protease",
+          "url": "https://www.whclab.com/products/whc-protease",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Solid Pectinase",
+          "url": "https://www.whclab.com/products/whc-solid-pectinase",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Fungal Lactase",
+          "url": "https://www.whclab.com/products/whc-fungal-lactase",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC β-glucosidase",
+          "url": "https://www.whclab.com/products/whc-β-glucosidase",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Solid Glucoamylase",
+          "url": "https://www.whclab.com/products/whc-solid-glucoamylase",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Cellulase",
+          "url": "https://www.whclab.com/products/whc-cellulase",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Dried Amylase",
+          "url": "https://www.whclab.com/products/whc-dried-amylase",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Yeast Extract",
+          "url": "https://www.whclab.com/products/whc-lab-yeast-extract",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Lab High Temperature Amylase Enzyme",
+          "url": "https://www.whclab.com/products/high-temperature-amylase-enzyme",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Lab Cold Temp Pectinase Enzyme",
+          "url": "https://www.whclab.com/products/pectanase-enzyme",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Yeast Nutrient Blend 1",
+          "url": "https://www.whclab.com/products/yeast-nutrient-blend-1",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Body Builder: Brew Enhancer",
+          "url": "https://www.whclab.com/products/body-builder-brew-enhancer",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Lab Glucoamylase Enzyme",
+          "url": "https://www.whclab.com/products/glucoamylase-enzyme",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Lab Acetolactate Decarboxylase [ALDC] Enzyme",
+          "url": "https://www.whclab.com/products/acetolactate-decarboxylase-enzyme",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Lab Mashease Enzyme",
+          "url": "https://www.whclab.com/products/mashease-enzyme",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Lab Amylase Enzyme",
+          "url": "https://www.whclab.com/products/amylase-enzyme",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "WHC Lab Yeast Nutrient Plus",
+          "url": "https://www.whclab.com/products/whc-yeast-nutrient-plus",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Isopropanol 70%",
+          "url": "https://www.whclab.com/products/isopropanol-70-20l",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Enzybrew",
+          "url": "https://www.whclab.com/products/enzybrew10",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        },
+        {
+          "name": "Distilling Antifoam: Vegetable Oil Based",
+          "url": "https://www.whclab.com/products/anti-foam-vegetable-oil-based",
+          "reason": "Produit sans culture isolée : accessoire, nutriment seul, service ou coffret commercial."
+        }
+      ],
+      "errors": [
+        {
+          "url": "https://www.whclab.com/products/resveratrol-copy",
+          "error": "HTTP 429: https://www.whclab.com/products/resveratrol-copy",
+          "retryAfter": null
+        }
+      ],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://www.whclab.com/products.json?limit=250&page=1",
+          "retrievedAt": "2026-09-08T10:31:10.177Z",
+          "sha256": "4622187d4a5394fdbc1723dc0a62bf46abe5bc067651f229743ce148b82d3cea",
+          "etag": "\"page_cache:89151242579:ProductListController:df7472e2d9a8ff6b0ca24496e133f340\"",
+          "lastModified": null
+        }
+      ]
+    },
+    {
+      "id": "white-labs",
+      "manufacturer": "White Labs",
+      "discovered": 222,
+      "references": 222,
+      "detailed": 217,
+      "excluded": [],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://www.whitelabs.com/sitemap-1.xml",
+          "retrievedAt": "2026-09-08T10:36:54.985Z",
+          "sha256": "375c1e9beb1b248b98ffbb107f7f3f0db84e4bf8bbf4414785a5d3a4208bc63f",
+          "etag": null,
+          "lastModified": null
+        }
+      ]
+    },
+    {
+      "id": "wyeast",
+      "manufacturer": "Wyeast",
+      "discovered": 93,
+      "references": 93,
+      "detailed": 93,
+      "excluded": [],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://wyeastlab.com/yeast-cultures/",
+          "retrievedAt": "2026-09-08T10:34:14.575Z",
+          "sha256": "e975f15ec1c360fe0eebbef379fd3332e7ec5886999c3ca4d7dab3728d18c0c7",
+          "etag": null,
+          "lastModified": "Tue, 08 Sep 2026 10:34:14 GMT"
+        }
+      ]
+    },
+    {
+      "id": "yeast-bay",
+      "manufacturer": "The Yeast Bay",
+      "discovered": 0,
+      "references": 0,
+      "detailed": 0,
+      "excluded": [],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://www.theyeastbay.com/our-cultures",
+          "retrievedAt": "2026-09-08T10:47:08.907Z",
+          "sha256": "2754f2a3490209e7b7575b54495ff2c21c898b66286971a3af6a2c55dadbdb1c",
+          "etag": "W/\"c6bc522fa72661e5b150177c3d02e480--gzip\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://www.theyeastbay.com/mixed-culture",
+          "retrievedAt": "2026-09-08T10:47:10.985Z",
+          "sha256": "8838e167b4b43dbdd4d93ac0af63d77b768cb1081a47995cd2164a7d14934773",
+          "etag": "W/\"be5d436b142a64145f1c7d07140c5e90--gzip\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://www.theyeastbay.com/wild-capture-yeast",
+          "retrievedAt": "2026-09-08T10:47:13.240Z",
+          "sha256": "19a42e2b1c1423aa72a96461a4c456d736232c1eeaf879bf4a4ca69da6e7d017",
+          "etag": "W/\"379cc50d30311bb28d42be9c520af264--gzip\"",
+          "lastModified": null
+        }
+      ]
+    },
+    {
+      "id": "yeastflow",
+      "manufacturer": "Yeastflow",
+      "discovered": 40,
+      "references": 40,
+      "detailed": 40,
+      "excluded": [],
+      "errors": [],
+      "complete": true,
+      "inventorySources": [
+        {
+          "url": "https://yeastflow.com/our-strains/",
+          "retrievedAt": "2026-09-08T10:45:05.653Z",
+          "sha256": "07c736cf7d8b2667730820e85b2204d662585bfd3e11a59ca613aa0a4ef250cd",
+          "etag": null,
+          "lastModified": "Tue, 08 Sep 2026 00:27:58 GMT"
+        }
+      ]
+    }
+  ],
+  "pdfSupplements": [
+    {
+      "id": "omega-pdf",
+      "manufacturer": "Omega Yeast",
+      "records": 95,
+      "source": "https://cdn.shopify.com/s/files/1/0800/8505/7790/files/Probrew_Strain_Directory-WEB.pdf?v=1786394512",
+      "limitation": "Plages fabricant, sans étalonnage sensoriel. Année de publication non indiquée."
+    },
+    {
+      "id": "doemens-pdf",
+      "manufacturer": "Doemens",
+      "records": 113,
+      "source": "https://doemens.org/uploads/2026/02/brochure-yeast-bank-and-mircorganism-collection-2026.pdf",
+      "limitation": "Inventaire des pages 4–6 ; les descriptions détaillées suivantes restent à transcrire."
+    },
+    {
+      "id": "maurivin-pdf",
+      "manufacturer": "AB Biotek / Maurivin",
+      "records": 21,
+      "source": "https://www.maurivin.com/perch/resources/maurivin-catalogue-november-2025-en-repro-web.pdf",
+      "limitation": "Barres graphiques qualitatives non converties en coefficients. Fiches détaillées à consolider."
+    },
+    {
+      "id": "vlb-pdf",
+      "manufacturer": "VLB Berlin",
+      "records": 23,
+      "source": "https://www.vlb-berlin.org/sites/default/files/2022-12/List%20of%20brewers%20yeast%20strains%20and%20prices_2023.pdf",
+      "limitation": "Liste publique partielle, explicitement non exhaustive de la banque VLB."
+    },
+    {
+      "id": "whc-pdf",
+      "manufacturer": "WHC Lab",
+      "records": 25,
+      "source": "https://cdn.shopify.com/s/files/1/0891/5124/2579/files/brewing-distilling-product-catalogue-2026-v1.0.pdf?v=1772640074",
+      "limitation": "Données des produits secs uniquement ; aucun transfert automatique aux présentations liquides."
+    },
+    {
+      "id": "yeast-bay-pdf",
+      "manufacturer": "The Yeast Bay",
+      "records": 45,
+      "source": "https://www.theyeastbay.com/s/TYB_StrainGuide_2025.pdf",
+      "limitation": "Identifiants WLP reliés aux fiches White Labs quand présents ; géométrie de certaines tables ambiguë, valeurs non inférées."
+    }
+  ]
+}

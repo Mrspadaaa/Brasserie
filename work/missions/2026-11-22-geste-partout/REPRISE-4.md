@@ -1,0 +1,21 @@
+# REPRISE-4 — GESTE-DATE-PARTOUT (22.11), arrêt vers 140 k
+
+Branche claude/port-carnet-1711. Commits : 395213671 (GESTE-MATERIEL-UNDEFINED) + celui de cette REPRISE (banc, Caisse, BUGS).
+
+## Fait
+1. **GESTE-MATERIEL-UNDEFINED (corrigé)** : cause = un matériel sans `ref` (document gardé sous son id : la fixture ZZ) ; `updateEquipment` écrivait sous la clé « undefined ». La date glissée était donc écrite, ailleurs. Correction : `getStocks` (src/services/storage.ts) reprend l'id du document comme `ref`. Test commun `tests/unit/gesteDateEcrit.test.tsx` (4 verts) : ChoixDate, DateField et fiche matériel (glisser → onChange → écrit), plus le matériel sans ref (rouge avant : « expected undefined to be 'E-ZZ' »). Les trois composants écrivent bien ; seul le stockage perdait. Banc `materiel` vert (14.10 écrit), capture `390-materiel-apres.png` ouverte : « 14.10 Achat », sous-titre sans « undefined ».
+2. **Banc au doigt, 390×660 clair (viewport 660 posé)** : OK brassin-fiche (5 contrôles), materiel, densite (brassin en garde B-ZZ-GARDE : Mesures › « + Relevé de densité » ; relevé ajouté, capture ouverte), houblon (dégustation du brassin en garde : Carnet › « Noter une dégustation du brassin » ; écrit 2026-11-20), caisse (Vendre › 33 cl › date de la quittance › Espèces › Encaisser ; écrit 12.11).
+   - **Défaut trouvé et corrigé à la caisse** : la frise s'ouvrait dans la colonne étroite du titre (74 px, 1,25 à 2 px par jour, impossible au doigt) ; maintenant pleine largeur de l'annexe (7,4 px par jour). `src/ui/vente/Caisse.tsx` + `caisse.css` (`.cs-dfrise`). Capture `390-caisse-glisse.png` ouverte. 39 tests de caisse verts.
+   - Fixture du banc : `garde: true` ajouté (brassin B-ZZ-GARDE). `geste` attend 700 ms avant de lire le pas de la frise.
+3. **mobileDailyViews « Brassin du samedi »** : test touché en dernier par 2aa618133 (tour 2 du 19.11, Stock) ; aucune date en cause ; pas de ma voie. Ligne BUGS MOBILE-DAILY-SAMEDI.
+
+## Reste (banc : étapes `todo`, `solde`, `ecriture` existent mais KO ; levure à écrire)
+- **todo** : TodoTimeline n'est pas dans Atelier › Carnet vide. Le carnet affiche « Évier inox » exemple ; la vue « À faire » apparaît avec des notes. Lire `CreativeLabTab`/`NoteCarnet` : fenêtre « À faire » (`NoteAiguillage` ligne 188) ou filtre ; ajouter à la fixture un `creativeItems` de type tâche si la vue en demande. Bouton de départ : `aria-label="Poser une tâche"` (fil avec tâches futures) ou « Poser » (fil vide).
+- **solde** : Finances › Prévisions ne montre ni « Solde et paramètres » ni « Renseigner le solde » (texte introuvable). Autres entrées : Finances › Annuel › feuilles (`annuel/Feuilles.tsx:44`), ou la ligne « Confirmer les paiements ». Étape : ouvrir ProfilEffets, `saisir('Solde de départ (CHF)', '1000')`, geste « Date du solde » (pastille), Enregistrer, lire `financialProfiles/current.openingCash.date`.
+- **ecriture** : « Saisir sans justificatif » ouvre la feuille ; la date est une section repliée « Date de l’achat » (ExpenseSheet.tsx:1652). Il faut remplir libellé et montant puis Enregistrer ; lire `transactions` (dernier id hors `T-ZZ`). La sonde actuelle lève « valider à écrire » après capture `390-ecriture-ouvert.png` (à ouvrir).
+- **levure** : YeastPitchingPanel (« Corriger ou remplacer » / « Planifier la préparation », `ChoixInstant` « Ensemencement prévu », jour + heure) vit dans EtapeLevure de l'assistant de brassage (Recettes › Brasser). Étape à écrire ; `poserInstant` du test unitaire donne le modèle.
+- Exécutant (Haiku) pour le rejeu : `PARCOURS_GARDER=1 node scripts/parcours/geste-date.mjs <dossier> | grep -E "ok|KO|GESTE-DATE"` ; sans `--build`, le build prend 1 à 2 min. Rejeu final `GESTE-DATE OK`, une capture ouverte par écran. Thème clair 390×660 ; 1280 simple contrôle (non joué).
+- INVENTAIRE.md : TodoTimeline = geste porté ; ChiffreACommander et FriseArchives = hors portée.
+
+CONNAISSANCE : une fixture de banc doit respecter les champs requis du type (`ref`, `state` d'un matériel) ; l'app écrit par clé : sans elle l'écriture part « undefined ». Une frise posée dans une colonne étroite (74 px) n'est pas tirable : le banc le voit par le pas (data-px-jour) ; viser la pleine largeur.
+LEÇON PROPOSÉE : aucune.

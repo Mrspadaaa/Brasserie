@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Témoin de performance : chaque mouvement du doigt bloque le fil 40 ms</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; font: 15px/1.3 system-ui, sans-serif; background: #fff; color: #111; }
+  [data-ecran] { padding: 16px; min-height: 100vh; }
+  [hidden] { display: none; }
+  button { font: inherit; height: 48px; padding: 0 18px; border: 1px solid #111; border-radius: 8px; background: #111; color: #fff; }
+  .frise { position: relative; height: 66px; margin-top: 24px; touch-action: none; user-select: none; -webkit-user-select: none; background: #eee; border-radius: 8px; }
+  .pouce { position: absolute; top: 18px; left: 50%; width: 30px; height: 30px; margin-left: -15px; border-radius: 50%; background: #111; }
+</style>
+</head>
+<body>
+<div data-ecran="depart" id="a">
+  <h1>Départ</h1>
+  <button data-role="pont-suite" type="button">Suite</button>
+  <div class="frise" data-role="frise"><div class="pouce" id="pouce"></div></div>
+</div>
+<div data-ecran="suite" id="b" hidden inert>
+  <h1>Suite</h1>
+  <button data-role="pont-retour" type="button">Retour</button>
+</div>
+<script>
+(function () {
+  function bloquer(ms) { var f = performance.now() + ms; while (performance.now() < f) {} }
+  var a = document.getElementById("a"), b = document.getElementById("b"), pouce = document.getElementById("pouce");
+  function montrer(ecran) {
+    a.hidden = ecran !== "a"; a.inert = ecran !== "a";
+    b.hidden = ecran !== "b"; b.inert = ecran !== "b";
+  }
+  document.querySelector("[data-role=pont-suite]").addEventListener("click", function () { history.pushState({}, "", "#suite"); montrer("b"); });
+  window.addEventListener("popstate", function () { montrer(location.hash === "#suite" ? "b" : "a"); });
+  var frise = document.querySelector("[data-role=frise]"), tient = false;
+  frise.addEventListener("pointerdown", function (e) { tient = true; frise.setPointerCapture(e.pointerId); });
+  frise.addEventListener("pointermove", function (e) {
+    if (!tient) return;
+    bloquer(40);
+    var r = frise.getBoundingClientRect();
+    pouce.style.left = Math.max(0, Math.min(r.width, e.clientX - r.left)) + "px";
+  });
+  frise.addEventListener("pointerup", function () { tient = false; });
+})();
+</script>
+</body>
+</html>

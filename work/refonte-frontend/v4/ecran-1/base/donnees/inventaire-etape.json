@@ -1,0 +1,84 @@
+{
+ "maj": "2026-10-23",
+ "source": "Étape Houblons de la base v4.10 (consolide/index.html), capture consolide-390.png.",
+ "contrat": "Une reprise de la maquette choisie reprend chacun de ces éléments à l'écran (marqueur data-element), ou l'écarte avec sa raison écrite dans la NOTE (un quart au plus) : D105, controle-reprise.mjs --inventaire=<ce fichier>.",
+ "elements": [
+  {
+   "id": "etape-titre",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Comme pour les Malts j'ai besoin d'avoir des le premier coup d'œil, quel matière première j'ai",
+   "quoi": "« Houblons 3/7 » (l'étape du brassin) et le style « 16D · hypothèse ».",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "etape-bandeau",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Comme pour les Malts j'ai besoin d'avoir des le premier coup d'œil, quel matière première j'ai",
+   "quoi": "Le bandeau IBU (jauge au style), OG, EBC.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "etape-frise",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "j'aimerais aussi pouvoir une fois mon houblons sélectionner pouvoir glisser comme un slider le moment de l'ajout",
+   "quoi": "La frise verticale du brassin : ébullition 60′, 0′, whirlpool, levure, fermentation, post-fermentation ; chaque ajout posé à son moment, son repère (« 60′ ») glissé par 5′.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "etape-carte-ajout",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Comme pour les Malts j'ai besoin d'avoir des le premier coup d'œil, quel matière première j'ai",
+   "quoi": "La carte de l'ajout sur la frise : nom, type (« ébullition ⟳ »), dose « − 46 g + », ×, α, rôle, signal (« résine 2/4 »), IBU de l'ajout, bande des 12 familles en couleur.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "etape-levure",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "J'aime beaucoup l'intégration de la levure directement dans la p8",
+   "quoi": "La levure posée dans la frise (« SafAle US-05 caractérisée »).",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-390.png",
+   "facteur": "outil : Levure"
+  },
+  {
+   "id": "etape-ajouter",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "je peux ajouter en un click ultra facilement",
+   "quoi": "« Ajouter — houblon… », puis les ajouts rapides : nom, α, rôle, dose (10 g), +IBU, moment (10′), ♡.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-390.png",
+   "facteur": "contexte"
+  },
+  {
+   "id": "etape-profil",
+   "variante": "base v4.10",
+   "lot": "consolidée",
+   "date": "2026-10-19",
+   "mots": "Comme pour les Malts j'ai besoin d'avoir des le premier coup d'œil, quel matière première j'ai",
+   "quoi": "« Boisé et résineux trop marqué › », puis les 12 familles en deux colonnes ; « › » ouvre l'onglet Ma bière.",
+   "reserve": "",
+   "capture": "work/refonte-frontend/v4/ecran-1/base/captures/consolide-390.png",
+   "facteur": "contexte"
+  }
+ ]
+}

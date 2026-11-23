@@ -1,0 +1,60 @@
+<title>Outil d’analyse · 10.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Une rangée par écran : ta base, puis les variantes ; la clôture en neuf écrans. */
+:root{--bg:#f4f6f8;--fg:#1b1f24;--mut:#5d6670;--line:#d9dee4;--card:#ffffff;--acc:#2f6fa8;--ok:#3d7a3a;--warn:#9a6a12;--ref:#6b6f75}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121518;--fg:#e8ecf0;--mut:#a0a9b2;--line:#2c333a;--card:#1a1f24;--acc:#86b9e6;--ok:#8fc48a;--warn:#e3b55d;--ref:#9aa0a6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121518;--fg:#e8ecf0;--mut:#a0a9b2;--line:#2c333a;--card:#1a1f24;--acc:#86b9e6;--ok:#8fc48a;--warn:#e3b55d;--ref:#9aa0a6;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+main{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+h1{font-size:24px;margin:0;text-wrap:balance}h2{font-size:19px;margin:0;text-wrap:balance}
+p{margin:0;max-width:72ch}.mut{color:var(--mut);font-size:14px}
+a{color:var(--acc)}
+section{display:flex;flex-direction:column;gap:12px}
+.row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+@media (max-width:760px){.row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+figure.cand{border:2px solid var(--acc)}
+figure[data-reference]{border-style:dashed}
+figure button{all:unset;cursor:zoom-in;display:block;border-radius:6px;overflow:hidden;background:#fff;border:1px solid var(--line)}
+figure button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+figure img{display:block;width:100%;height:auto}
+figcaption{display:flex;flex-direction:column;gap:2px;font-size:14px}
+.pill{align-self:flex-start;font-size:14px;font-weight:600;padding:0 8px;border-radius:999px;border:1px solid currentColor}
+.p-ref{color:var(--ref)}.p-cand{color:var(--acc)}.p-ok{color:var(--ok)}.p-res{color:var(--warn)}
+.id{color:var(--mut);font-variant-numeric:tabular-nums}
+dialog{border:0;padding:0;background:transparent;max-width:min(96vw,520px);max-height:94vh}
+dialog::backdrop{background:rgba(0,0,0,.7)}
+dialog img{display:block;width:100%;height:auto;border-radius:8px}
+dialog .close{position:sticky;top:0;display:block;margin-left:auto;font:600 15px system-ui;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:999px;padding:4px 14px;cursor:pointer}
+</style>
+<main>
+<header style="display:flex;flex-direction:column;gap:6px">
+<h1>Outil d’analyse · 10.11</h1>
+<p class="mut">10.11 · tes mots : « voir si je respecte mes budget, voir l’évolution réelle … sur des vrais chiffres. Et aussi pouvoir comparer d’année en année ». En pointillé : ta vue p5b et tes tuiles g2c.</p>
+</header>
+
+<section id="a-choisir"><h2>À choisir</h2>
+<p>L’outil d’analyse : ta maquette, un mélange, ou aucune. Chacune répond aux trois questions (évolution réelle, budget, année contre année) et dit où elle s’ouvre.</p>
+<p class="mut">Huit mini maquettes, a1a à a1h, sur une année d’exemple. Agrandie, chaque vignette montre aussi l’outil sur tes données d’aujourd’hui (rien d’inventé, l’inconnu hachuré).</p></section>
+
+<section data-choix="outil-analyse"><h2>L’outil d’analyse</h2><div class="row">
+<figure data-vignette data-reference><button data-agrandir="img/p5b-page.png"><img src="img/p5b-haut.png" alt="p5b"></button><figcaption><span class="pill p-ref">Référence</span><b>Ta vue Prévisions</b> <span class="id">p5b</span></figcaption></figure>
+<figure data-vignette data-reference><button data-agrandir="img/g2c-page.png"><img src="img/g2c-haut.png" alt="g2c"></button><figcaption><span class="pill p-ref">Référence</span><b>Tes tuiles par mois</b> <span class="id">g2c</span></figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/a1a-page.png"><img src="img/a1a-haut.png" alt="a1a"></button><figcaption><b>Le passé accroché</b> <span class="id">a1a</span>Ton escalier p5b tourné vers le passé : chaque opération sur sa marche, le prévu en pointillé, hors budget en orange. Depuis Synthèse.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/a1b-page.png"><img src="img/a1b-haut.png" alt="a1b"></button><figcaption><b>Les tuiles en outil</b> <span class="id">a1b</span>Tes tuiles g2c : 12 mois gagné ou perdu, la règle du budget au pied, 2025 au coin. Annuel › Mois par mois.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/a1c-page.png"><img src="img/a1c-haut.png" alt="a1c"></button><figcaption><b>Deux années superposées</b> <span class="id">a1c</span>Le cumul 2026 sur 2025, l’écart teinté, puis d’où vient l’écart par catégorie. Un onglet « Comparer ».</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/a1d-page.png"><img src="img/a1d-haut.png" alt="a1d"></button><figcaption><b>La règle du budget</b> <span class="id">a1d</span>Une règle par catégorie, mois dedans, dépassement hachuré, encoche 2025 ; brassins prévu → réel. Prévisions › Budget tenu ?</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/a1e-page.png"><img src="img/a1e-haut.png" alt="a1e"></button><figcaption><b>La cascade du mois</b> <span class="id">a1e</span>Caisse du 1er → ventes → chaque dépense → caisse du 31 ; prévu en pointillé, 2025 en gris ; la frise des mois pour choisir.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/a1f-page.png"><img src="img/a1f-haut.png" alt="a1f"></button><figcaption><b>L’anneau des deux années</b> <span class="id">a1f</span>L’année en horloge : gagné dehors, perdu dedans, 2025 à l’intérieur, mois hors budget en pastille.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/a1g-page.png"><img src="img/a1g-haut.png" alt="a1g"></button><figcaption><b>Les verres</b> <span class="id">a1g</span>Un verre par mois rempli des ventes, trait du coût, mousse = gagné, vide hachuré = perdu, 2025 en tirets.</figcaption></figure>
+<figure data-vignette data-variante><button data-agrandir="img/a1h-page.png"><img src="img/a1h-haut.png" alt="a1h"></button><figcaption><b>Le relevé qui se dessine</b> <span class="id">a1h</span>Les opérations en liste, la caisse en barre qui s’allonge ou se ronge après chacune ; chaque mois : gagné, prévu, 2025. Dans Opérations.</figcaption></figure>
+</div></section>
+</main>
+<dialog id="vue"><button class="close" type="button">Fermer</button><img alt=""></dialog>
+<script>
+(function(){var d=document.getElementById('vue'),i=d.querySelector('img');
+document.querySelectorAll('[data-agrandir]').forEach(function(b){b.addEventListener('click',function(){i.src=b.getAttribute('data-agrandir');i.alt=(b.querySelector('img')||{}).alt||'';d.showModal();});});
+d.querySelector('.close').addEventListener('click',function(){d.close();});
+d.addEventListener('click',function(e){if(e.target===d)d.close();});})();
+</script>

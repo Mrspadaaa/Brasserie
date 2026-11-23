@@ -1,0 +1,60 @@
+/* Ajouter une prévision (m3pr-c). Classes `pvc-` (L26). Clair comme cave : les jetons du thème, jamais une couleur fixe.
+   Le pied Annuler / Enregistrer des quatre feuilles portées (s2) : Enregistrer plein (encre sur fond), Annuler cerclé, 44 px. */
+.finance-sheet.pvc-sheet .finance-actions, .finance-sheet.fx4-sheet .finance-actions { flex-wrap: nowrap; gap: 8px; }
+.finance-sheet:is(.pvc-sheet, .fx4-sheet) .finance-action { min-height: 44px; border-radius: 10px; font-size: 15px; padding: 0 16px; }
+.finance-sheet:is(.pvc-sheet, .fx4-sheet) .finance-action:not(.secondary) { flex: 1; background: rgb(var(--cave-texte-50)); color: rgb(var(--cave-950)); border: 1px solid rgb(var(--cave-texte-50)); }
+.finance-sheet:is(.pvc-sheet, .fx4-sheet) .finance-action.secondary { background: transparent; color: rgb(var(--cave-texte-50)); }
+.pvc { --pv-t1: rgb(var(--cave-texte-50)); --pv-t2: rgb(var(--cave-texte-200)); --pv-bord: rgb(var(--cave-700)); --pv-bordm: rgb(var(--cave-600)); --pv-fond: rgb(var(--cave-950)); --pv-pan: rgb(var(--cave-850));
+  display: flex; flex-direction: column; gap: 8px; font-size: 14px; line-height: 18px; color: var(--pv-t1); }
+.pvc * { box-sizing: border-box; }
+.pvc .pvc-m { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; font-weight: 600; }
+.pvc-r { display: grid; grid-template-columns: 1fr 112px; gap: 8px; }
+.pvc-lab { display: block; font-size: 12px; color: var(--pv-t2); margin-bottom: 3px; }
+.pvc .pvc-in, .pvc :is(input, textarea).pvc-in { width: 100%; min-height: 44px; padding: 0 10px; border: 1px solid var(--pv-bordm); border-radius: 10px; font-size: 16px; background: var(--pv-fond); color: var(--pv-t1); }
+.pvc textarea.pvc-in { padding: 8px 10px; min-height: 64px; }
+/* r3 : en tactile `ChampNombre` rend un textarea auto-dimensionné : le montant garde la hauteur d'un champ (44 px), comme le libellé. */
+.pvc textarea.pvc-in.pvc-m { display: block; resize: none; overflow: hidden; line-height: 24px; padding: 9px 10px; min-height: 44px; height: 44px; text-align: right; }
+.pvc select.pvc-in { padding: 0 6px; }
+.pvc-pills { display: flex; flex-wrap: wrap; gap: 4px; }
+.pvc-pill { position: relative; display: inline-flex; align-items: center; gap: 2px; height: 28px; padding: 0 5px 0 9px; border: 1px solid var(--pv-bordm); border-radius: 10px; background: var(--pv-fond); font-size: 13px; color: var(--pv-t1); }
+.pvc-pill svg { color: var(--pv-t2); }
+.pvc-pill.pvc-pay { border-color: var(--pv-t1); font-weight: 600; }
+.pvc-pill :is(select, input) { position: absolute; inset: -8px 0; width: 100%; height: calc(100% + 16px); opacity: 0; font-size: 16px; cursor: pointer; }
+.pvc-pill:focus-within { outline: 2px solid rgb(var(--area-finances)); outline-offset: 1px; }
+.pvc-pan { background: var(--pv-pan); border-radius: 16px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+.pvc-seg { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--pv-bordm); border-radius: 10px; overflow: hidden; height: 30px; background: var(--pv-fond); }
+.pvc-seg button { position: relative; border: 0; border-right: 1px solid var(--pv-bordm); background: none; font-size: 13px; color: var(--pv-t2); }
+.pvc-seg button::before { content: ''; position: absolute; inset: -7px 0; }
+.pvc-seg button:last-child { border-right: 0; }
+.pvc-seg button[aria-pressed='true'] { background: var(--pv-t1); color: var(--pv-fond); font-weight: 600; }
+.pvc-g { display: block; width: 100%; max-width: 420px; margin: 0 auto; overflow: visible; }
+.pvc-ax { stroke: var(--pv-bordm); stroke-width: 1; }
+.pvc-mo, .pvc-hz { font-size: 12px; fill: var(--pv-t2); } .pvc-mo { font-weight: 600; }
+.pvc-zone { fill: rgb(var(--cave-800)); }
+.pvc-oc { fill: var(--pv-t1); stroke: var(--pv-pan); stroke-width: 2; } .pvc-oc.pvc-oh { fill: var(--pv-fond); stroke: var(--pv-t2); stroke-width: 1.5; }
+.pvc-ol, .pvc-ech, .pvc-pt { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 600; fill: var(--pv-t1); } .pvc-ech { fill: var(--pv-t2); font-weight: 400; }
+.pvc-pt { paint-order: stroke; stroke: var(--pv-pan); stroke-width: 3px; }
+.pvc-auj { stroke: var(--pv-t1); stroke-width: 2; } .pvc-gr { stroke: var(--pv-bord); stroke-width: 1; } .pvc-zero { stroke: var(--pv-t2); stroke-width: 1; }
+.pvc-avant { fill: none; stroke: var(--pv-t2); opacity: .7; stroke-width: 1.6; } .pvc-apres { fill: none; stroke: var(--pv-t1); stroke-width: 2.4; stroke-linejoin: round; }
+.pvc-aire { fill: rgb(var(--area-finances)); opacity: .14; } .pvc-sous { fill: var(--pv-t2); opacity: .14; }
+.pvc-fin { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--pv-t2); min-height: 22px; }
+.pvc-fl { display: inline-block; width: 30px; height: 2px; background: var(--pv-t1); } .pvc-fl.pvc-fa { height: 1.6px; background: var(--pv-t2); opacity: .7; }
+.pvc-eff { display: flex; align-items: baseline; gap: 8px; padding: 6px 4px 0; border-top: 1px solid var(--pv-bord); }
+.pvc-eff > span { font-size: 13px; font-weight: 600; flex: 1; } .pvc-eff small { display: block; font-size: 12px; color: var(--pv-t2); font-weight: 400; }
+.pvc-eff s { font-family: 'IBM Plex Mono', ui-monospace, monospace; color: var(--pv-t2); font-size: 14px; } .pvc-eff b { font-size: 20px; }
+.pvc-note { font-size: 12px; line-height: 16px; color: var(--pv-t2); margin: 0; }
+.pvc-row > summary { display: flex; align-items: center; gap: 6px; min-height: 44px; border-bottom: 1px solid var(--pv-bord); font-size: 14px; list-style: none; cursor: pointer; padding: 0; color: var(--pv-t1); }
+.pvc-row > summary::-webkit-details-marker { display: none; }
+.pvc-row > summary > span { flex: 1; } .pvc-row > summary em { font-style: normal; font-size: 13px; color: var(--pv-t2); }
+.pvc-row[open] > summary .pvc-chev { transform: rotate(90deg); }
+.pvc-ouvert { padding: 8px 0 4px; display: grid; gap: 8px; } .pvc-ouvert select { width: 100%; min-height: 44px; border: 1px solid var(--pv-bordm); border-radius: 10px; background: var(--pv-fond); color: var(--pv-t1); padding: 0 8px; }
+
+/* u2 (21, 27) : la question avant de supprimer ou d'archiver, dans le pied de la feuille ; « Supprimer » se range à droite, discret (contour d'alerte, jamais le bouton principal) */
+.fin-conf { display: grid; gap: 6px; padding: 2px 0; }
+.fin-conf-q { margin: 0; font-size: 14px; font-weight: 600; line-height: 18px; overflow-wrap: anywhere; }
+.fin-conf-d { margin: 0; font-size: 12px; line-height: 16px; color: var(--pv-t2, rgb(var(--cave-texte-300))); }
+.fin-conf .finance-actions { justify-content: flex-end; }
+.fin-conf .finance-action { min-height: 44px; padding: 0 16px; font-size: 14px; }
+/* « Garder » est `.finance-action.secondary` (finance.css : min-height 28 px, spécificité 3 classes) : sans cette règle, il battait les 44 px ci-dessus (mesuré 77×28 au banc, 16.11). */
+.fin-conf .finance-action.secondary, .fin-conf .finance-action.danger { min-height: 44px; }
+.finance-actions .fin-suppr { margin-left: auto; gap: 4px; }

@@ -1,0 +1,54 @@
+.nolo-tools { @apply min-w-0 text-cave-200; }
+.nolo-tabs { @apply flex gap-1 border-b border-cave-700; }
+.nolo-tabs button { @apply min-w-0 min-h-touch flex-1 px-1 py-1 text-xs text-cave-400 border-b-2 border-transparent; }
+.nolo-tabs button[aria-selected="true"] { @apply text-cave-50 border-area-production font-semibold; }
+.nolo-tabs button:focus-visible, .nolo-action:focus-visible, .nolo-tools summary:focus-visible { @apply outline outline-2 outline-offset-2 outline-ebc-straw; }
+.nolo-tool-body { @apply min-w-0 space-y-2 pt-2; }
+.nolo-grid { @apply grid grid-cols-2 gap-2 min-w-0; }
+.nolo-field { @apply block min-w-0 text-xs text-cave-200; }
+.nolo-field > label { @apply block mb-0.5; }
+.nolo-input { @apply block w-full min-w-0 min-h-touch-lg rounded-control border border-cave-700 bg-cave-850 px-2 py-0.5 text-base text-cave-50; }
+.nolo-input:focus { @apply outline-none border-ebc-straw ring-1 ring-ebc-straw; }
+.nolo-input::placeholder { @apply text-cave-400; }
+.nolo-note { @apply text-xs text-cave-400 leading-snug; }
+.nolo-error { @apply text-xs text-alert-strong leading-snug; }
+.nolo-action { @apply inline-flex min-h-touch items-center justify-center rounded-control border border-cave-600 bg-cave-850 px-2 py-1 text-xs text-cave-50; }
+.nolo-action:disabled { @apply opacity-40 cursor-not-allowed; }
+.nolo-action-row { @apply flex flex-wrap items-center gap-1.5; }
+.nolo-tools summary { @apply flex items-center min-h-touch cursor-pointer text-xs text-cave-200; }
+.nolo-tools details > :not(summary) { @apply mt-1; }
+.nolo-range > legend { @apply text-xs text-cave-200 mb-1; }
+.nolo-range .nolo-field > label { @apply text-cave-400; }
+.nolo-table { @apply w-full text-xs border-collapse; }
+.nolo-table th { @apply text-left font-normal text-cave-400; }
+.nolo-table th, .nolo-table td { @apply py-1 pr-2 align-top border-b border-cave-800; }
+.nolo-table td { @apply text-cave-200; }
+.nolo-table td:last-child { @apply pr-0; }
+.nolo-comparison dt { @apply text-xs text-cave-400; }
+.nolo-comparison dd { @apply text-base font-mono tabular-nums text-cave-50; }
+.nolo-comparison figcaption { @apply text-xs text-cave-400; }
+.nolo-comparison svg, .nolo-sensitivity svg { @apply block w-full; }
+@media (min-width: 640px) {
+  .nolo-comparison svg { height: 64px; }
+  .nolo-sensitivity svg { height: 132px; }
+}
+.nolo-comparison svg text, .nolo-sensitivity svg text { @apply fill-cave-400; font-size: 14px; }
+.nolo-track { @apply stroke-cave-600; }
+.nolo-before { @apply stroke-cave-200 fill-cave-200; }
+.nolo-after { @apply stroke-area-production fill-area-production; }
+.nolo-target { @apply stroke-attention; stroke-width: 1.5; }
+.nolo-area { @apply fill-area-production/20; }
+.nolo-curve { @apply stroke-area-production fill-none; stroke-width: 1.5; }
+.nolo-tools input[type="range"] { @apply w-full min-h-touch accent-area-production; }
+.nolo-facts { @apply text-xs space-y-1; }
+.nolo-facts dt { @apply text-cave-400; }
+.nolo-facts dd { @apply text-cave-200; }
+.nolo-summary { @apply flex items-center justify-between flex-wrap gap-1 border-b border-cave-800 pb-1 text-xs; }
+.nolo-summary strong { @apply font-mono text-base text-cave-50; }
+.nolo-panel { @apply p-2 space-y-2; }
+.nolo-panel.nolo-panel-embedded { @apply p-0; }
+.nolo-overview summary:focus-visible { @apply outline outline-2 outline-offset-2 outline-ebc-straw rounded-control; }
+.nolo-panel > details > summary { @apply min-h-touch py-1 text-xs text-cave-200; }
+.nolo-panel .nolo-legacy { @apply space-y-2; }
+.nolo-panel .nolo-legacy summary, .nolo-panel .nolo-legacy button { @apply text-xs; }
+.nolo-panel .nolo-legacy .text-water { @apply text-cave-200; }

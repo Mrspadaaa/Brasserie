@@ -1,0 +1,225 @@
+<title>Période et + · 15.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+/* La disposition qu'il aime (24.10, soir) : une rangée par sujet, le nom à gauche (au téléphone : au-dessus) ; l'app
+   d'aujourd'hui d'abord, puis les quatre idées et la candidate finie, en vignettes serrées. Rien ne défile en largeur
+   (D126). Chaque vignette s'ouvre en grand, à côté de l'app d'aujourd'hui. Page claire (D106). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 4px 14px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 var(--texte); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 64px;
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.12; }
+h1 { font-size: clamp(1.7rem, 6vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.25rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--houblon); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 6px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.encart { border-left: 4px solid var(--ambre); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 84ch; }
+.encart .canal { font-weight: 700; }
+.pastille { justify-self: start; display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.5; padding: 0 9px; border-radius: 999px; color: #fff; white-space: nowrap; }
+.p-ref { background: #2f6b1f; }
+.p-froide { background: #2a6fb0; }
+.p-tiede { background: #85600a; }
+.p-chaude { background: #a8431a; }
+.p-finie { background: #1c2019; }
+.p-ecartee { background: #8a8f86; }
+.legende-pastilles { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 0.875rem; color: var(--discret); align-items: center; }
+.rangee { display: grid; gap: 12px; padding-top: 18px; border-top: 1px solid var(--trait); }
+.nom { display: grid; gap: 4px; align-content: start; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.05rem; color: var(--houblon); }
+.note { font-size: 0.875rem; color: var(--discret); }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 8px; align-items: start; }
+@media (min-width: 900px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 20px; }
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px 14px; }
+}
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; max-width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; aspect-ratio: 780 / 1688; }
+.ecran img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.vue[data-reference] .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--ambre), var(--ombre); }
+.vue.finie .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--encre), var(--ombre); }
+.vue.ecartee .ecran { opacity: 0.6; }
+.vue figcaption { display: grid; gap: 3px; }
+.vue figcaption b { font-family: var(--titre); font-size: 0.95rem; line-height: 1.2; }
+.id { font-size: 0.875rem; color: var(--discret); font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; overflow-wrap: anywhere; }
+.ligne { font-size: 0.875rem; font-style: italic; color: var(--encre); line-height: 1.35; }
+footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: #0e100c; overflow-y: auto; padding: calc(64px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); color: #eef2ea; }
+.vis-tete { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px)); background: #0e100c; }
+.vis-titre { font: 800 1.05rem/1.2 var(--titre); min-width: 0; }
+.vis-boutons { display: flex; gap: 6px; flex: none; }
+.vis-boutons button { font: 700 0.95rem var(--texte); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; background: #2d3328; color: #eef2ea; }
+.vis-boutons .fermer { background: #eef2ea; color: #1c2019; }
+.vis-corps { display: grid; gap: 28px; max-width: 1240px; margin: 0 auto; }
+.vis-rangee { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.vis-panneau { flex: 0 0 86%; scroll-snap-align: start; margin: 0; display: grid; gap: 8px; align-content: start; }
+.vis-panneau img { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff; }
+.vis-panneau.ref img { box-shadow: 0 0 0 3px var(--ambre); }
+.vis-panneau figcaption { font-size: 0.95rem; }
+.vis-panneau.ref figcaption { color: #f6d38f; font-weight: 700; }
+.vis-glisse { font-size: 0.875rem; color: #c9d0c3; }
+@media (min-width: 900px) {
+  .vis-rangee { overflow: visible; justify-content: center; flex-wrap: wrap; }
+  .vis-panneau { flex: 0 1 400px; min-width: 290px; }
+  .vis-glisse { display: none; }
+}
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · suite de tes choix m3 et b1 · 15.11</p>
+    <h1>La période et le +</h1>
+  </header>
+  <section id="a-choisir" aria-label="À choisir">
+    <div class="encart">
+      <p><b>À choisir :</b> comment la période se règle à plusieurs endroits (trois lectures de ta phrase). Le + selon l'écran est fait, à voir.</p>
+      <p>Tes mots : « attention pour l'interval de temps ça doit être mieux fait. Et on peut le réglés à plusieurs endroits » ; « le + doit être dynamique en fonction de l'écran ou on est ».</p>
+      <p>Sans réponse, je porte m3r-a (une seule période) : ce choix se change ensuite sans perte. d3p2 est déjà en cours de port.</p>
+      <p class="canal">Commente ici : je lis les commentaires.</p>
+      <p class="legende-pastilles"><span class="pastille p-ref">ton choix</span><span class="pastille p-finie">conseillée</span><span class="pastille p-froide">sobre</span><span class="pastille p-tiede">tiède</span><span class="pastille p-chaude">osée</span></p>
+    </div>
+  </section>
+
+  <section class="rangee" id="r-periode" data-choix="periode" aria-labelledby="t-periode" data-ref-nom="m3, ton choix" data-ref-imgs="img/m3-a-390.png|img/m3-1280.png" data-ref-etats="page Plus|ordinateur">
+    <div class="nom">
+      <h2 id="t-periode">La période</h2>
+      <p class="question">Mieux faite, et la même où qu'on la règle</p>
+      <p class="note">Chaque version : page Plus, Finances, Brassins, Bord.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="m3 · Page « Plus » · ton choix" data-imgs="img/m3-a-390.png|img/m3-b-390.png|img/m3-cave-390.png|img/m3-1280.png" data-etats="page Plus|une destination|cave|ordinateur"><img src="img/m3-a-390.png" width="780" height="1688" alt="m3"></button>
+        <figcaption><span class="pastille p-ref">ton choix</span><b>Page « Plus »</b><span class="id">m3</span><span class="ligne">La période y coûtait un écran.</span></figcaption>
+      </figure>
+      <figure class="vue finie" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="m3r-a · Une seule période, la même pastille partout" data-imgs="img/m3r-a-a-390.png|img/m3r-a-b-390.png|img/m3r-a-vues-390.png|img/m3r-a-cave-390.png|img/m3r-a-1280.png" data-etats="période ouverte|Finances|les écrans|cave|ordinateur"><img src="img/m3r-a-a-390.png" width="780" height="1688" alt="m3r-a"></button>
+        <figcaption><span class="pastille p-finie">conseillée</span><b>Une seule période</b><span class="id">m3r-a</span><span class="ligne">« ‹ Nov. › » dans chaque en-tête ; la changer la change partout.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="m3r-b · Période de l'app et période d'un écran" data-imgs="img/m3r-b-a-390.png|img/m3r-b-b-390.png|img/m3r-b-vues-390.png|img/m3r-b-cave-390.png|img/m3r-b-1280.png" data-etats="période ouverte|Finances|les écrans|cave|ordinateur"><img src="img/m3r-b-a-390.png" width="780" height="1688" alt="m3r-b"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>Celle de l'app, et celle d'un écran</b><span class="id">m3r-b</span><span class="ligne">Un écran peut regarder un autre mois, marqué. Critique : deux mois à l'écran.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="m3r-c · Le fil de l'année" data-imgs="img/m3r-c-a-390.png|img/m3r-c-b-390.png|img/m3r-c-vues-390.png|img/m3r-c-cave-390.png|img/m3r-c-1280.png" data-etats="période ouverte|Finances|les écrans|cave|ordinateur"><img src="img/m3r-c-a-390.png" width="780" height="1688" alt="m3r-c"></button>
+        <figcaption><span class="pastille p-chaude">osée</span><b>Le fil de l'année</b><span class="id">m3r-c</span><span class="ligne">Douze mois avec la mesure de l'écran. Critique : poignées trop petites.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" id="r-plus" data-choix="plus" aria-labelledby="t-plus" data-ref-nom="b1, ton choix" data-ref-imgs="img/b1-b-390.png|img/b1-1280.png" data-ref-etats="+ ouvert|ordinateur">
+    <div class="nom">
+      <h2 id="t-plus">Le + selon l'écran</h2>
+      <p class="question">Chaque écran a son menu</p>
+      <p class="note">La planche montre le + ouvert sur les 12 écrans.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="b1 · Le + à ordre figé · ton choix" data-imgs="img/b1-b-390.png|img/b1-a-390.png|img/b1-cave-390.png|img/b1-1280.png" data-etats="+ ouvert|au repos|cave|ordinateur"><img src="img/b1-b-390.png" width="780" height="1688" alt="b1"></button>
+        <figcaption><span class="pastille p-ref">ton choix</span><b>Le + à ordre figé</b><span class="id">b1</span><span class="ligne">Le même menu partout.</span></figcaption>
+      </figure>
+      <figure class="vue finie" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="b1r · Le + selon l'écran" data-imgs="img/b1r-b-390.png|img/b1r-a-390.png|img/b1r-cave-390.png|img/b1r-bcave-390.png|img/b1r-1280.png" data-etats="+ ouvert sur Brassins|au repos|cave|+ ouvert, cave|ordinateur"><img src="img/b1r-b-390.png" width="780" height="1688" alt="b1r"></button>
+        <figcaption><span class="pastille p-finie">conseillée</span><b>Le + selon l'écran</b><span class="id">b1r</span><span class="ligne">« Sur cet écran » d'abord, puis ce qui sert depuis là.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="b1r · le + sur les 12 écrans" data-imgs="img/b1r-ecrans-390.png" data-etats="les 12 écrans"><img src="img/b1r-ecrans-390.png" alt="b1r, planche des 12 écrans"></button>
+        <figcaption><span class="pastille p-froide">planche</span><b>Les 12 écrans</b><span class="id">b1r</span><span class="ligne">Bord, Finances, Brassins, Recettes, Atelier, Volumes, Stock, Courses, Fûts, Matériel, Houblons, Clients.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    <p>Page d'avant : <a href="https://claude.ai/artifact/64BnDUYmehXQUv2kTJRUAu">Recherche, menu, barre et + · 14.11</a> (la recherche y reste à choisir). Sources : <span class="id">voie-r-m3, voie-r-b1</span>.</p>
+  </footer>
+</div>
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-labelledby="vis-titre">
+  <div class="vis-tete">
+    <p class="vis-titre" id="vis-titre"></p>
+    <div class="vis-boutons">
+      <button type="button" id="vis-prec" aria-label="Vue précédente">◀</button>
+      <button type="button" id="vis-suiv" aria-label="Vue suivante">▶</button>
+      <button type="button" class="fermer" id="vis-fermer">Fermer</button>
+    </div>
+  </div>
+  <div class="vis-corps" id="vis-corps"></div>
+</div>
+
+<script>
+// En grand : chaque état de la version, puis l'app d'aujourd'hui. Le contenu ne dépend pas de ce script.
+(function () {
+  var vis = document.getElementById('visionneuse');
+  var corps = document.getElementById('vis-corps');
+  var titre = document.getElementById('vis-titre');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.planche .ecran'));
+  var rang = -1, retour = null;
+  function liste(el, cle) { return (el.getAttribute(cle) || '').split('|').filter(Boolean); }
+  function panneaux(b) {
+    var sec = b.closest('[data-choix]');
+    var etats = liste(b, 'data-etats');
+    var v = liste(b, 'data-imgs').map(function (s, i) { return { src: s, leg: etats[i] || '' }; });
+    if (b.closest('[data-reference]') || !sec.getAttribute('data-ref-imgs')) return v;
+    var refEtats = liste(sec, 'data-ref-etats');
+    return v.concat(liste(sec, 'data-ref-imgs').map(function (s, i) { return { src: s, leg: "l'app aujourd'hui · " + (refEtats[i] || ''), ref: true }; }));
+  }
+  function panneau(p) {
+    var f = document.createElement('figure');
+    f.className = 'vis-panneau' + (p.ref ? ' ref' : '');
+    var c = document.createElement('figcaption'); c.textContent = p.leg;
+    var i = document.createElement('img'); i.src = p.src; i.alt = p.leg;
+    f.appendChild(c); f.appendChild(i);
+    return f;
+  }
+  function ouvrir(n, depuis) {
+    if (depuis) retour = depuis;
+    rang = n;
+    var b = boutons[rang];
+    titre.textContent = b.getAttribute('data-nom');
+    corps.textContent = '';
+    var ps = panneaux(b);
+    if (ps.length > 1) { var g = document.createElement('p'); g.className = 'vis-glisse'; g.textContent = 'Glisse : ' + ps.slice(1).map(function (p) { return p.leg; }).join(', ') + ' →'; corps.appendChild(g); }
+    var d = document.createElement('div'); d.className = 'vis-rangee';
+    ps.forEach(function (p) { d.appendChild(panneau(p)); });
+    corps.appendChild(d);
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('vis-fermer').focus();
+  }
+  function fermer() { vis.hidden = true; corps.textContent = ''; if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang >= 0) ouvrir((rang + pas + boutons.length) % boutons.length); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.planche .ecran');
+    if (b) ouvrir(boutons.indexOf(b), b);
+  });
+  document.getElementById('vis-fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', function () { aller(-1); });
+  document.getElementById('vis-suiv').addEventListener('click', function () { aller(1); });
+  document.addEventListener('keydown', function (e) {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

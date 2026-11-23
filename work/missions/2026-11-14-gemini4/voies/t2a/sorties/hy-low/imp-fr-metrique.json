@@ -1,0 +1,19 @@
+{
+ "cas": "imp-fr-metrique",
+ "usage": "import",
+ "half": "choix",
+ "cellule": "hy@low",
+ "ok": true,
+ "ms": 4848,
+ "microChf": 23395,
+ "microDecembre": 23395,
+ "entree": 6702,
+ "sortie": 1155,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 0.6851851851851851,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "id 0.67 · vol 20 · fer 3/3 · hops 2/3 · levure ok · paliers 0/3",
+ "reponse": "{\n  \"name\": \"Blonde des Alpes\",\n  \"style\": \"\",\n  \"volumeL\": 20,\n  \"fermentables\": [\n    {\n      \"name\": \"Pilsner\",\n      \"weightKg\": 4.2,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    },\n    {\n      \"name\": \"Munich clair\",\n      \"weightKg\": 0.5,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    },\n    {\n      \"name\": \"Flocons d'avoine\",\n      \"weightKg\": 0.2,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    }\n  ],\n  \"hops\": [\n    {\n      \"name\": \"Saaz\",\n      \"weightG\": 30,\n      \"stage\": \"boil\",\n      \"alpha\": 3.5,\n      \"timeMin\": 60\n    },\n    {\n      \"name\": \"Saaz\",\n      \"weightG\": 20,\n      \"stage\": \"boil\",\n      \"timeMin\": 10\n    },\n    {\n      \"name\": \"Hallertau Mittelfrüh\",\n      \"weightG\": 20,\n      \"stage\": \"whirlpool\",\n      \"timeMin\": 0\n    }\n  ],\n  \"ogTarget\": 1.05,\n  \"waterPlan\": {},\n  \"waterTarget\": {},\n  \"yeast\": {\n    \"name\": \"SafLager W-34/70\",\n    \"qty\": 11.5,\n    \"unit\": \"g\"\n  }\n}"
+}

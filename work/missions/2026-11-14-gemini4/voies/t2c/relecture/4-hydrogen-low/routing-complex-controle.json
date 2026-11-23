@@ -1,0 +1,16 @@
+{
+ "reglage": "4-hydrogen@low",
+ "element": "routing-complex-controle",
+ "cas": "routing-complex",
+ "type": "controle",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 5521,
+ "coutMicro": 22298,
+ "etat": "STOP"
+}

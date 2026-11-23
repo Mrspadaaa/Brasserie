@@ -1,0 +1,11 @@
+.aroma-range-track { position: relative; height: 26px; margin: 4px 3px; background: linear-gradient(rgb(var(--cave-700)),rgb(var(--cave-700))) center / 100% 1px no-repeat; }
+.aroma-interval { position: absolute; top: 12px; color: rgb(var(--water-texte)); border-top: 2px solid currentColor; }
+.aroma-interval::before, .aroma-interval::after { content: ''; position: absolute; top: -5px; height: 8px; border-left: 2px solid currentColor; }
+.aroma-interval::before { left: 0; }
+.aroma-interval::after { right: 0; }
+.aroma-interval-unresolved { border-top-style: dashed; color: rgb(var(--cave-texte-400)); }
+.aroma-interval-baseline { top: 21px; color: rgb(var(--cave-texte-200)); }
+.aroma-point { position: absolute; top: 9px; width: 8px; height: 8px; border-radius: 50%; background: rgb(var(--hop)); transform: translateX(-50%); }
+.aroma-goal-range { position: absolute; top: 3px; height: 19px; border-left: 1px solid rgb(var(--ebc-straw)); border-right: 1px solid rgb(var(--ebc-straw)); background: rgb(var(--ebc-straw) / 0.07); }
+.aroma-radar { display: block; width: 100%; max-width: 440px; margin: 0 auto; }
+@media (max-width: 639px) { .aroma-radar { width: calc(100% + 24px); margin-left: -12px; max-width: none; } }

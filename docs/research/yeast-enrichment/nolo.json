@@ -1,0 +1,988 @@
+{
+  "version": 1,
+  "collectedAt": "2026-09-12T12:13:04.647Z",
+  "items": [
+    {
+      "id": "lalbrew-lona",
+      "facts": [
+        {
+          "key": "species",
+          "label": "Espèce",
+          "reported": "Saccharomyces cerevisiae.",
+          "source": {
+            "title": "LalBrew LoNa — page fabricant",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.lallemandbrewing.com/fr/continental-europe/produits/lalbrew-lona/?filter=resources-category%3Dall&page=1",
+            "locator": "Description et tableau « En bref »"
+          }
+        },
+        {
+          "key": "pof",
+          "label": "Caractère phénolique",
+          "reported": "POF -",
+          "source": {
+            "title": "LalBrew LoNa — page fabricant",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.lallemandbrewing.com/fr/continental-europe/produits/lalbrew-lona/?filter=resources-category%3Dall&page=1",
+            "locator": "Description, premier paragraphe"
+          }
+        },
+        {
+          "key": "h2s",
+          "label": "Sulfure d’hydrogène",
+          "reported": "H₂S négatif, selon le fabricant.",
+          "source": {
+            "title": "LalBrew LoNa — page fabricant",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.lallemandbrewing.com/fr/continental-europe/produits/lalbrew-lona/?filter=resources-category%3Dall&page=1",
+            "locator": "Description, premier paragraphe"
+          }
+        },
+        {
+          "key": "residualSugar",
+          "label": "Sucres non fermentés",
+          "reported": "Ne consomme ni maltose ni maltotriose.",
+          "source": {
+            "title": "LalBrew LoNa — page fabricant",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.lallemandbrewing.com/fr/continental-europe/produits/lalbrew-lona/?filter=resources-category%3Dall&page=1",
+            "locator": "Description, premier paragraphe"
+          }
+        },
+        {
+          "key": "aroma",
+          "label": "Profil aromatique",
+          "reported": "Profil neutre ; réduction des notes de moût, sans phénols ni notes soufrées annoncées.",
+          "source": {
+            "title": "LalBrew LoNa — page fabricant",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.lallemandbrewing.com/fr/continental-europe/produits/lalbrew-lona/?filter=resources-category%3Dall&page=1",
+            "locator": "Description et tableau « En bref »"
+          }
+        },
+        {
+          "key": "application",
+          "label": "Stabilisation",
+          "reported": "Lallemand exige une pasteurisation contre la refermentation après conditionnement.",
+          "source": {
+            "title": "LalBrew LoNa — page fabricant",
+            "author": "Lallemand Brewing",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.lallemandbrewing.com/fr/continental-europe/produits/lalbrew-lona/?filter=resources-category%3Dall&page=1",
+            "locator": "Description, paragraphe sur la pasteurisation"
+          },
+          "context": "Exigence du fabricant ; aucun cycle thermique validé pour le lot n’est fourni par cette observation."
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente en essai",
+          "reported": "16–20 % ; peut être inférieure après un empâtage à haute température.",
+          "source": {
+            "title": "LalBrew LoNa — fiche technique TDS-8.5x11-11262025-ENG",
+            "author": "Lallemand Brewing",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/04/LoNa-TDS-ENG-A4-Print-LalBrew.pdf",
+            "locator": "p. 1, Brewing properties"
+          },
+          "context": "Moût standard Lallemand à 8 °P, fermentation à 20 °C ; résultat dépendant du moût et de la conduite.",
+          "range": {
+            "min": 16,
+            "max": 20
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "fermentationTime",
+          "label": "Durée en essai",
+          "reported": "2–3 jours dans l’essai fabricant.",
+          "source": {
+            "title": "LalBrew LoNa — fiche technique TDS-8.5x11-11262025-ENG",
+            "author": "Lallemand Brewing",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/04/LoNa-TDS-ENG-A4-Print-LalBrew.pdf",
+            "locator": "p. 1, Brewing properties"
+          },
+          "context": "Moût standard Lallemand à 8 °P et 20 °C ; durée indicative, pas un ordre automatique de refroidissement.",
+          "range": {
+            "min": 2,
+            "max": 3
+          },
+          "unit": "d",
+          "qualifier": "range"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage de la fiche 2025",
+          "reported": "50 g/hL suffisent pour la plupart des fermentations, selon la fiche.",
+          "source": {
+            "title": "LalBrew LoNa — fiche technique TDS-8.5x11-11262025-ENG",
+            "author": "Lallemand Brewing",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/04/LoNa-TDS-ENG-A4-Print-LalBrew.pdf",
+            "locator": "p. 2, Usage, premier paragraphe"
+          },
+          "context": "Recommandation ponctuelle TDS du 26 novembre 2025 ; la page produit conserve 50–100 g/hL.",
+          "range": {
+            "min": 50,
+            "max": 50
+          },
+          "unit": "g/hL",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "diastatic",
+          "label": "Caractère diastatique",
+          "reported": "Négatif.",
+          "source": {
+            "title": "LalBrew LoNa — fiche technique TDS-8.5x11-11262025-ENG",
+            "author": "Lallemand Brewing",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/04/LoNa-TDS-ENG-A4-Print-LalBrew.pdf",
+            "locator": "p. 1, Microbiological properties, tableau"
+          },
+          "context": "Résultat fabricant « Diastaticus Negative » ; ne remplace pas un résultat de gène STA1."
+        },
+        {
+          "key": "application",
+          "label": "Préparation",
+          "reported": "Ensemencement à sec préféré, réparti en surface pendant le remplissage ; réhydratation réservée au matériel qui le nécessite.",
+          "source": {
+            "title": "LalBrew LoNa — fiche technique TDS-8.5x11-11262025-ENG",
+            "author": "Lallemand Brewing",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/04/LoNa-TDS-ENG-A4-Print-LalBrew.pdf",
+            "locator": "p. 2, Dry pitching et Rehydration"
+          }
+        },
+        {
+          "key": "ph",
+          "label": "pH à surveiller",
+          "reported": "Cibles fabricant : moût <4,6 et bière finale <4,2.",
+          "source": {
+            "title": "LalBrew LoNa — fiche technique TDS-8.5x11-11262025-ENG",
+            "author": "Lallemand Brewing",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/04/LoNa-TDS-ENG-A4-Print-LalBrew.pdf",
+            "locator": "p. 2, Usage, point 1"
+          },
+          "context": "Repères de conduite LoNa ; un pH isolé ne démontre pas la stabilité du produit."
+        },
+        {
+          "key": "application",
+          "label": "Fin de fermentation",
+          "reported": "Refroidir rapidement après atteinte de la densité finale.",
+          "source": {
+            "title": "LalBrew LoNa — fiche technique TDS-8.5x11-11262025-ENG",
+            "author": "Lallemand Brewing",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/04/LoNa-TDS-ENG-A4-Print-LalBrew.pdf",
+            "locator": "p. 2, Usage, point 2"
+          }
+        },
+        {
+          "key": "application",
+          "label": "Ajouts au fermenteur",
+          "reported": "Éviter glucose, fructose et saccharose dans les ajouts ; vérifier leur compatibilité NOLO et leur stérilité.",
+          "source": {
+            "title": "LalBrew LoNa — fiche technique TDS-8.5x11-11262025-ENG",
+            "author": "Lallemand Brewing",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/04/LoNa-TDS-ENG-A4-Print-LalBrew.pdf",
+            "locator": "p. 2, Usage, point 3"
+          }
+        },
+        {
+          "key": "application",
+          "label": "Réutilisation",
+          "reported": "Réensemencement déconseillé en raison du risque de contamination.",
+          "source": {
+            "title": "LalBrew LoNa — fiche technique TDS-8.5x11-11262025-ENG",
+            "author": "Lallemand Brewing",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/04/LoNa-TDS-ENG-A4-Print-LalBrew.pdf",
+            "locator": "p. 2, Usage, point 4"
+          }
+        },
+        {
+          "key": "application",
+          "label": "Après ouverture",
+          "reported": "Refermer, conserver au sec sous 4 °C et utiliser sous 3 jours ; sous vide immédiat, jusqu’à l’échéance imprimée.",
+          "source": {
+            "title": "LalBrew LoNa — fiche technique TDS-8.5x11-11262025-ENG",
+            "author": "Lallemand Brewing",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/04/LoNa-TDS-ENG-A4-Print-LalBrew.pdf",
+            "locator": "p. 2, Storage"
+          }
+        },
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Levure sèche.",
+          "source": {
+            "title": "LalBrew LoNa — fiche technique TDS-8.5x11-11262025-ENG",
+            "author": "Lallemand Brewing",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/04/LoNa-TDS-ENG-A4-Print-LalBrew.pdf",
+            "locator": "p. 1, Microbiological properties ; p. 2, Dry pitching"
+          }
+        }
+      ],
+      "documents": [
+        {
+          "title": "LalBrew LoNa — page fabricant",
+          "url": "https://www.lallemandbrewing.com/fr/continental-europe/produits/lalbrew-lona/?filter=resources-category%3Dall&page=1"
+        },
+        {
+          "title": "LalBrew LoNa — fiche technique TDS-8.5x11-11262025-ENG",
+          "url": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/04/LoNa-TDS-ENG-A4-Print-LalBrew.pdf"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://www.lallemandbrewing.com/fr/continental-europe/produits/lalbrew-lona/?filter=resources-category%3Dall&page=1",
+          "retrievedAt": "2026-09-12T12:13:04.647Z",
+          "sha256": "9c1798258db0cc19fc20e7a2b57a1b01a6165d3c485e1ecd6664c68cdab03643",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:13:04 GMT"
+        },
+        {
+          "url": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/04/LoNa-TDS-ENG-A4-Print-LalBrew.pdf",
+          "retrievedAt": "2026-09-12T12:10:44.712Z",
+          "sha256": "c0c41d55dd3938aa67cc2c19b8af702539bbbcb422855594829509742cae445a",
+          "etag": "\"14ac71-64bb6685309e0-br\"",
+          "lastModified": "Thu, 26 Feb 2026 09:04:26 GMT"
+        }
+      ],
+      "notes": "La fiche technique révisée le 26 novembre 2025 rapporte 50 g/hL, tandis que la page française reste à 50–100 g/hL. Les deux observations doivent rester visibles. Le texte extractible du PDF contient un reliquat invisible « Saccharomyces pastorianus » absent du rendu ; l’espèce retenue provient du texte visible et de la page produit, qui indiquent S. cerevisiae.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-fermentis-safbrew-la-01",
+      "facts": [
+        {
+          "key": "species",
+          "label": "Espèce",
+          "reported": "Saccharomyces cerevisiae var. chevalieri.",
+          "source": {
+            "title": "SafBrew LA-01 — page fabricant",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/fr/produit/safbrew-la-01/",
+            "locator": "Description et Ingrédients"
+          }
+        },
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Levure sèche active.",
+          "source": {
+            "title": "SafBrew LA-01 — fiche technique V6, novembre 2025",
+            "author": "Fermentis",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://cdn.bfldr.com/G7S7MSWL/at/h4vsgthp4n8m4tqv3vm5hbh/SafBrew_LA-01_EN_V6.pdf",
+            "locator": "p. 1, bandeau Active Dry Yeast"
+          }
+        },
+        {
+          "key": "residualSugar",
+          "label": "Sucres fermentés",
+          "reported": "Assimile glucose, fructose et saccharose ; ni maltose ni maltotriose.",
+          "source": {
+            "title": "SafBrew LA-01 — page fabricant",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/fr/produit/safbrew-la-01/",
+            "locator": "Description"
+          }
+        },
+        {
+          "key": "pof",
+          "label": "Caractère phénolique",
+          "reported": "POF +",
+          "source": {
+            "title": "SafBrew LA-01 — guide technique V3, novembre 2025",
+            "author": "Fermentis",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://cdn.bfldr.com/G7S7MSWL/at/6mrhk74gsv96xjjxxpp98xqw/SafBrew_LA-01_TechnicalGuidelines_EN_V3cleaned.pdf",
+            "locator": "p. 1, Beer style"
+          },
+          "context": "Le guide associe les phénols aux précurseurs des matières premières ; il ne donne pas un score sensoriel universel."
+        },
+        {
+          "key": "aroma",
+          "label": "Expression phénolique",
+          "reported": "Le blé et les précurseurs férulique/coumarique favorisent les notes phénoliques ; le profil dépend de l’empâtage.",
+          "source": {
+            "title": "SafBrew LA-01 — guide technique V3, novembre 2025",
+            "author": "Fermentis",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://cdn.bfldr.com/G7S7MSWL/at/6mrhk74gsv96xjjxxpp98xqw/SafBrew_LA-01_TechnicalGuidelines_EN_V3cleaned.pdf",
+            "locator": "p. 1, Beer style et Malt bill"
+          }
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation apparente en essai",
+          "reported": "13–17 % dans l’essai standard.",
+          "source": {
+            "title": "SafBrew LA-01 — fiche technique V6, novembre 2025",
+            "author": "Fermentis",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://cdn.bfldr.com/G7S7MSWL/at/h4vsgthp4n8m4tqv3vm5hbh/SafBrew_LA-01_EN_V6.pdf",
+            "locator": "p. 1, tableau et Experimental conditions"
+          },
+          "context": "Moût à 15 °P en tube EBC, à 20 °C ; la page produit affiche séparément 15 %.",
+          "range": {
+            "min": 13,
+            "max": 17
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "application",
+          "label": "Sédimentation",
+          "reported": "Sédimentation moyenne ; forme un voile poudreux à la remise en suspension, sans amas.",
+          "source": {
+            "title": "SafBrew LA-01 — page fabricant",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/fr/produit/safbrew-la-01/",
+            "locator": "Description"
+          },
+          "context": "La sédimentation n’est pas assimilée à un chiffre de floculation."
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "15–25 °C, idéalement autour de 20 °C.",
+          "source": {
+            "title": "SafBrew LA-01 — fiche technique V6, novembre 2025",
+            "author": "Fermentis",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://cdn.bfldr.com/G7S7MSWL/at/h4vsgthp4n8m4tqv3vm5hbh/SafBrew_LA-01_EN_V6.pdf",
+            "locator": "p. 1, Fermentation temperature"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 15,
+            "max": 25
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage en fermentation primaire",
+          "reported": "50–80 g/hL de levure sèche pour la fermentation primaire.",
+          "source": {
+            "title": "SafBrew LA-01 — fiche technique V6, novembre 2025",
+            "author": "Fermentis",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://cdn.bfldr.com/G7S7MSWL/at/h4vsgthp4n8m4tqv3vm5hbh/SafBrew_LA-01_EN_V6.pdf",
+            "locator": "p. 2, Dosage"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 50,
+            "max": 80
+          },
+          "unit": "g/hL",
+          "qualifier": "range"
+        },
+        {
+          "key": "fermentationTime",
+          "label": "Durée indicative",
+          "reported": "Environ 48 h à 20 °C avec un ensemencement adapté.",
+          "source": {
+            "title": "SafBrew LA-01 — fiche technique V6, novembre 2025",
+            "author": "Fermentis",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://cdn.bfldr.com/G7S7MSWL/at/h4vsgthp4n8m4tqv3vm5hbh/SafBrew_LA-01_EN_V6.pdf",
+            "locator": "p. 1, Points of attention, premier point"
+          },
+          "context": "Moût tout malt évoqué par le fabricant ; contrôler la densité terminale, sans déduire l’ABV du temps écoulé.",
+          "range": {
+            "min": 48,
+            "max": 48
+          },
+          "unit": "h",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "application",
+          "label": "Ensemencement direct",
+          "reported": "Répartir progressivement en surface, idéalement au début du remplissage, pour éviter les amas ; ramener le moût à la température de fermentation.",
+          "source": {
+            "title": "SafBrew LA-01 — page fabricant",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/fr/produit/safbrew-la-01/",
+            "locator": "Caractéristiques techniques, Utilisation, Ensemencement direct"
+          }
+        },
+        {
+          "key": "application",
+          "label": "Réhydratation possible",
+          "reported": "Au moins 10 fois le poids de levure en eau stérile ou bouillie, ou moût houblonné, à 25–29 °C ; attendre 15–30 min, remuer doucement et ensemencer.",
+          "source": {
+            "title": "SafBrew LA-01 — fiche technique V6, novembre 2025",
+            "author": "Fermentis",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://cdn.bfldr.com/G7S7MSWL/at/h4vsgthp4n8m4tqv3vm5hbh/SafBrew_LA-01_EN_V6.pdf",
+            "locator": "p. 2, With prior rehydration"
+          },
+          "context": "Alternative à l’ensemencement direct ; ces températures concernent la réhydratation, pas la fermentation."
+        },
+        {
+          "key": "application",
+          "label": "Aération",
+          "reported": "Aérer le moût avant l’ensemencement n’est pas nécessaire.",
+          "source": {
+            "title": "SafBrew LA-01 — guide technique V3, novembre 2025",
+            "author": "Fermentis",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://cdn.bfldr.com/G7S7MSWL/at/6mrhk74gsv96xjjxxpp98xqw/SafBrew_LA-01_TechnicalGuidelines_EN_V3cleaned.pdf",
+            "locator": "p. 2, Pitch rate, Aeration"
+          }
+        },
+        {
+          "key": "application",
+          "label": "Fin de fermentation",
+          "reported": "Refroidir dès l’atténuation atteinte et garder au froid jusqu’à pasteurisation ; repos diacétyle déconseillé pour cette souche.",
+          "source": {
+            "title": "SafBrew LA-01 — guide technique V3, novembre 2025",
+            "author": "Fermentis",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://cdn.bfldr.com/G7S7MSWL/at/6mrhk74gsv96xjjxxpp98xqw/SafBrew_LA-01_TechnicalGuidelines_EN_V3cleaned.pdf",
+            "locator": "p. 2, Temperature"
+          }
+        },
+        {
+          "key": "application",
+          "label": "Houblonnage à froid",
+          "reported": "Fermentis recommande le dry hop après fermentation et refroidissement sous 4 °C.",
+          "source": {
+            "title": "SafBrew LA-01 — fiche technique V6, novembre 2025",
+            "author": "Fermentis",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://cdn.bfldr.com/G7S7MSWL/at/h4vsgthp4n8m4tqv3vm5hbh/SafBrew_LA-01_EN_V6.pdf",
+            "locator": "p. 1, Points of attention, deuxième point"
+          },
+          "context": "Réduction du risque, pas preuve d’absence de hop creep ou de contamination."
+        },
+        {
+          "key": "application",
+          "label": "Stabilisation après emballage",
+          "reported": "Pasteurisation de la bière conditionnée demandée : 80–120 PU ; le guide juge la pasteurisation flash insuffisante à elle seule.",
+          "source": {
+            "title": "SafBrew LA-01 — guide technique V3, novembre 2025",
+            "author": "Fermentis",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://cdn.bfldr.com/G7S7MSWL/at/6mrhk74gsv96xjjxxpp98xqw/SafBrew_LA-01_TechnicalGuidelines_EN_V3cleaned.pdf",
+            "locator": "p. 2, Points of attention, Beer packaging"
+          },
+          "context": "Prescription documentaire Fermentis à valider dans le procédé ; aucune durée/température universelle ni attestation de stabilité du lot."
+        },
+        {
+          "key": "application",
+          "label": "Réutilisation et propagation",
+          "reported": "Ni récolte, ni réensemencement, ni propagation : les contaminants fermentant le maltose peuvent prendre le dessus.",
+          "source": {
+            "title": "SafBrew LA-01 — guide technique V3, novembre 2025",
+            "author": "Fermentis",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://cdn.bfldr.com/G7S7MSWL/at/6mrhk74gsv96xjjxxpp98xqw/SafBrew_LA-01_TechnicalGuidelines_EN_V3cleaned.pdf",
+            "locator": "p. 2, Points of attention, deux derniers points"
+          }
+        },
+        {
+          "key": "application",
+          "label": "Après ouverture",
+          "reported": "Refermer à 4 °C et utiliser sous 7 jours ; respecter l’échéance du sachet et écarter les emballages abîmés.",
+          "source": {
+            "title": "SafBrew LA-01 — fiche technique V6, novembre 2025",
+            "author": "Fermentis",
+            "year": 2025,
+            "kind": "manufacturer",
+            "reference": "https://cdn.bfldr.com/G7S7MSWL/at/h4vsgthp4n8m4tqv3vm5hbh/SafBrew_LA-01_EN_V6.pdf",
+            "locator": "p. 2, Shelf life"
+          }
+        }
+      ],
+      "documents": [
+        {
+          "title": "SafBrew LA-01 — page fabricant",
+          "url": "https://fermentis.com/fr/produit/safbrew-la-01/"
+        },
+        {
+          "title": "SafBrew LA-01 — fiche technique V6, novembre 2025",
+          "url": "https://cdn.bfldr.com/G7S7MSWL/at/h4vsgthp4n8m4tqv3vm5hbh/SafBrew_LA-01_EN_V6.pdf"
+        },
+        {
+          "title": "SafBrew LA-01 — guide technique V3, novembre 2025",
+          "url": "https://cdn.bfldr.com/G7S7MSWL/at/6mrhk74gsv96xjjxxpp98xqw/SafBrew_LA-01_TechnicalGuidelines_EN_V3cleaned.pdf"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://fermentis.com/fr/produit/safbrew-la-01/",
+          "retrievedAt": "2026-09-12T12:10:45.704Z",
+          "sha256": "76dcdbc9a8c2e974785989c9efd2ad2e608d3aba850cab1186420ef290556c89",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://cdn.bfldr.com/G7S7MSWL/at/h4vsgthp4n8m4tqv3vm5hbh/SafBrew_LA-01_EN_V6.pdf",
+          "retrievedAt": "2026-09-12T12:11:09.377Z",
+          "sha256": "f8e0070391aef17bb67b4a6b7c9638cd22923d5f89a677e71bab9542bfd042ef",
+          "etag": "\"259e3ec9ed3a81a0efd6a3fdd9f1e4d3\"",
+          "lastModified": "Fri, 28 Nov 2025 13:38:57 GMT"
+        },
+        {
+          "url": "https://cdn.bfldr.com/G7S7MSWL/at/6mrhk74gsv96xjjxxpp98xqw/SafBrew_LA-01_TechnicalGuidelines_EN_V3cleaned.pdf",
+          "retrievedAt": "2026-09-12T12:11:49.581Z",
+          "sha256": "c19d68f9cdb838c533268a42f4dc356f5e399eb8be1efe92306e28c267777804",
+          "etag": "\"17c4a1c2077272c8099d4660393db0a8\"",
+          "lastModified": "Thu, 08 Jan 2026 13:34:20 GMT"
+        }
+      ],
+      "notes": "Les valeurs d’atténuation 13–17 % (TDS V6) et 15 % (page web) ne sont pas écrasées. Le guide V3 présente une régression ABV liée à son moût et son empâtage : elle n’est pas transposée en prédiction universelle. La réhydratation reste dans Usage, distincte de la température de fermentation. Aucun statut STA1 n’est déduit du nom d’espèce.",
+      "form": "sèche"
+    },
+    {
+      "id": "yeast-whc-10418626003283",
+      "facts": [
+        {
+          "key": "species",
+          "label": "Espèce",
+          "reported": "Torulaspora delbrueckii.",
+          "source": {
+            "title": "Zero Hero Dry Yeast — SPEC-P-67, révision 0 du 21 janvier 2026",
+            "author": "WHC Lab",
+            "year": 2026,
+            "kind": "manufacturer",
+            "reference": "https://www.whclab.com/cdn/shop/files/zero-hero-dry-brewing-yeast-tds.pdf?v=14666179570859637489",
+            "locator": "p. 1, Technical Specifications, Yeast Strain"
+          }
+        },
+        {
+          "key": "form",
+          "label": "Forme",
+          "reported": "Levure sèche, conditionnée sous vide.",
+          "source": {
+            "title": "Zero Hero Dry Yeast — SPEC-P-67, révision 0 du 21 janvier 2026",
+            "author": "WHC Lab",
+            "year": 2026,
+            "kind": "manufacturer",
+            "reference": "https://www.whclab.com/cdn/shop/files/zero-hero-dry-brewing-yeast-tds.pdf?v=14666179570859637489",
+            "locator": "p. 1, titre ; p. 2, Packaging"
+          }
+        },
+        {
+          "key": "pitchRate",
+          "label": "Dosage de levure sèche",
+          "reported": "0,5–1 g/L, soit 50–100 g/hL.",
+          "source": {
+            "title": "Zero Hero Dry Yeast — SPEC-P-67, révision 0 du 21 janvier 2026",
+            "author": "WHC Lab",
+            "year": 2026,
+            "kind": "manufacturer",
+            "reference": "https://www.whclab.com/cdn/shop/files/zero-hero-dry-brewing-yeast-tds.pdf?v=14666179570859637489",
+            "locator": "p. 1, Technical Specifications, Dosage"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 50,
+            "max": 100
+          },
+          "unit": "g/hL",
+          "qualifier": "range"
+        },
+        {
+          "key": "temperature",
+          "label": "Température de fermentation",
+          "reported": "18–22 °C recommandés pour la fermentation.",
+          "source": {
+            "title": "Zero Hero Dry Yeast — SPEC-P-67, révision 0 du 21 janvier 2026",
+            "author": "WHC Lab",
+            "year": 2026,
+            "kind": "manufacturer",
+            "reference": "https://www.whclab.com/cdn/shop/files/zero-hero-dry-brewing-yeast-tds.pdf?v=14666179570859637489",
+            "locator": "p. 1, Technical Specifications, Fermentation Temperature"
+          },
+          "context": "Beer",
+          "range": {
+            "min": 18,
+            "max": 22
+          },
+          "unit": "°C",
+          "qualifier": "range"
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation annoncée",
+          "reported": "16–20 % sur la page fabricant.",
+          "source": {
+            "title": "Zero Hero — page fabricant",
+            "author": "WHC Lab",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whclab.com/products/zero-hero-low-non-alcoholic-dry-yeast",
+            "locator": "Technical Specifications, Attenuation"
+          },
+          "context": "Moût et conditions d’essai non précisés ; cette plage ne permet pas de certifier l’ABV d’une recette.",
+          "range": {
+            "min": 16,
+            "max": 20
+          },
+          "unit": "%",
+          "qualifier": "range"
+        },
+        {
+          "key": "alcoholTolerance",
+          "label": "Tolérance à l’alcool",
+          "reported": "8 % annoncés par WHC.",
+          "source": {
+            "title": "Zero Hero Dry Yeast — SPEC-P-67, révision 0 du 21 janvier 2026",
+            "author": "WHC Lab",
+            "year": 2026,
+            "kind": "manufacturer",
+            "reference": "https://www.whclab.com/cdn/shop/files/zero-hero-dry-brewing-yeast-tds.pdf?v=14666179570859637489",
+            "locator": "p. 1, Technical Specifications, ABV Tolerance"
+          },
+          "context": "Tolérance de la levure ; ce n’est ni une cible NOLO ni l’alcool attendu dans le produit fini.",
+          "range": {
+            "min": 8,
+            "max": 8
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint"
+        },
+        {
+          "key": "nutrientNeed",
+          "label": "Besoin en azote",
+          "reported": "Moyen ; dose de nutriment non fournie.",
+          "source": {
+            "title": "Zero Hero Dry Yeast — SPEC-P-67, révision 0 du 21 janvier 2026",
+            "author": "WHC Lab",
+            "year": 2026,
+            "kind": "manufacturer",
+            "reference": "https://www.whclab.com/cdn/shop/files/zero-hero-dry-brewing-yeast-tds.pdf?v=14666179570859637489",
+            "locator": "p. 1, Technical Specifications, Nitrogen Demand"
+          }
+        },
+        {
+          "key": "residualSugar",
+          "label": "Sucres non fermentés",
+          "reported": "Maltose et maltotriose négatifs.",
+          "source": {
+            "title": "Zero Hero — page fabricant",
+            "author": "WHC Lab",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whclab.com/products/zero-hero-low-non-alcoholic-dry-yeast",
+            "locator": "Product Description"
+          }
+        },
+        {
+          "key": "aroma",
+          "label": "Température et arômes",
+          "reported": "Plus neutre vers le bas de la plage ; davantage d’esters fruités vers le haut.",
+          "source": {
+            "title": "Zero Hero Dry Yeast — SPEC-P-67, révision 0 du 21 janvier 2026",
+            "author": "WHC Lab",
+            "year": 2026,
+            "kind": "manufacturer",
+            "reference": "https://www.whclab.com/cdn/shop/files/zero-hero-dry-brewing-yeast-tds.pdf?v=14666179570859637489",
+            "locator": "p. 1, Description"
+          },
+          "context": "Tendance qualitative de la fiche ; aucune intensité ou courbe calibrée."
+        },
+        {
+          "key": "application",
+          "label": "Préparation",
+          "reported": "Oxygénation et réhydratation jugées inutiles et à éviter, sauf bières de très haute densité.",
+          "source": {
+            "title": "Zero Hero Dry Yeast — SPEC-P-67, révision 0 du 21 janvier 2026",
+            "author": "WHC Lab",
+            "year": 2026,
+            "kind": "manufacturer",
+            "reference": "https://www.whclab.com/cdn/shop/files/zero-hero-dry-brewing-yeast-tds.pdf?v=14666179570859637489",
+            "locator": "p. 1, Guidelines"
+          }
+        },
+        {
+          "key": "application",
+          "label": "Stabilisation",
+          "reported": "WHC exige une pasteurisation à cause des sucres fermentescibles résiduels et du risque de refermentation.",
+          "source": {
+            "title": "Zero Hero — page fabricant",
+            "author": "WHC Lab",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whclab.com/products/zero-hero-low-non-alcoholic-dry-yeast",
+            "locator": "Product Description, dernier paragraphe"
+          },
+          "context": "Exigence fabricant ; ni valeur de PU ni cycle validé publiés dans les sources consultées."
+        },
+        {
+          "key": "application",
+          "label": "Conservation",
+          "reported": "Au sec, idéalement 5–15 °C ; après ouverture, refermer, réfrigérer à 0–10 °C et utiliser rapidement.",
+          "source": {
+            "title": "Zero Hero Dry Yeast — SPEC-P-67, révision 0 du 21 janvier 2026",
+            "author": "WHC Lab",
+            "year": 2026,
+            "kind": "manufacturer",
+            "reference": "https://www.whclab.com/cdn/shop/files/zero-hero-dry-brewing-yeast-tds.pdf?v=14666179570859637489",
+            "locator": "p. 2, Storage and Handling"
+          },
+          "context": "Respecter la date d’expiration ; ces températures concernent le stockage."
+        }
+      ],
+      "documents": [
+        {
+          "title": "Zero Hero — page fabricant",
+          "url": "https://www.whclab.com/products/zero-hero-low-non-alcoholic-dry-yeast"
+        },
+        {
+          "title": "Zero Hero Dry Yeast — SPEC-P-67, révision 0 du 21 janvier 2026",
+          "url": "https://www.whclab.com/cdn/shop/files/zero-hero-dry-brewing-yeast-tds.pdf?v=14666179570859637489"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://www.whclab.com/products/zero-hero-low-non-alcoholic-dry-yeast",
+          "retrievedAt": "2026-09-12T12:10:32.894Z",
+          "sha256": "5f9581a60d2d87c073b1d44ddbfbfc75330953d9062ed3579be3d35fc71302b0",
+          "etag": "\"page_cache:89151242579:ProductDetailsController:4b80dd2bd8970574f69dc13150603855:f7529341dc844af4106c76c63491deab\"",
+          "lastModified": null
+        },
+        {
+          "url": "https://www.whclab.com/cdn/shop/files/zero-hero-dry-brewing-yeast-tds.pdf?v=14666179570859637489",
+          "retrievedAt": "2026-09-12T12:10:44.713Z",
+          "sha256": "9391f644a3bc624cb429000c8b1f17cf6175bb6ea89a18e98717d7a4341a546a",
+          "etag": null,
+          "lastModified": "Sat, 12 Sep 2026 12:10:44 GMT"
+        }
+      ],
+      "notes": "Identité confirmée par le titre, le handle et l’identifiant produit Shopify 10418626003283 dans la page reçue. Le PDF SPEC-P-67 du 21 janvier 2026 ne chiffre pas l’atténuation ; la valeur 16–20 % provient uniquement de la page produit. Aucun POF, STA1, statut diastatique, floculation ou délai garanti n’a été ajouté sans déclaration explicite.",
+      "form": "sèche"
+    },
+    {
+      "id": "white-labs-wlp618",
+      "facts": [
+        {
+          "key": "species",
+          "label": "Espèce",
+          "reported": "Saccharomycodes ludwigii.",
+          "source": {
+            "title": "WLP618 NA All Day — page fabricant",
+            "author": "White Labs",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST",
+            "locator": "Description, premier paragraphe"
+          }
+        },
+        {
+          "key": "residualSugar",
+          "label": "Sucres fermentés",
+          "reported": "Fermente glucose, saccharose et fructose ; ne fermente pas le maltose ni les sucres plus grands.",
+          "source": {
+            "title": "WLP618 NA All Day — page fabricant",
+            "author": "White Labs",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST",
+            "locator": "Description, deuxième puce"
+          }
+        },
+        {
+          "key": "aroma",
+          "label": "Critère de sélection",
+          "reported": "Sélectionnée pour une production d’acétate d’éthyle plus basse que des souches comparables.",
+          "source": {
+            "title": "WLP618 NA All Day — page fabricant",
+            "author": "White Labs",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST",
+            "locator": "Description, première puce"
+          },
+          "context": "Comparaison qualitative du fabricant, sans concentration ni intensité sensorielle universelle."
+        },
+        {
+          "key": "application",
+          "label": "Conception de recette",
+          "reported": "L’atténuation dépend de la recette et de l’empâtage ; une recette adaptée est nécessaire.",
+          "source": {
+            "title": "WLP618 NA All Day — page fabricant",
+            "author": "White Labs",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST",
+            "locator": "Description, troisième puce et dernier paragraphe"
+          }
+        },
+        {
+          "key": "pitchRate",
+          "label": "Ensemencement en cellules",
+          "reported": "2 millions de cellules/mL suggérés.",
+          "source": {
+            "title": "Non-Alcoholic or Low Alcohol Beer Production — révision 3.22",
+            "author": "White Labs",
+            "year": 2022,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/public/uploads/ckeditor/6238c51a7077d1647887642.pdf",
+            "locator": "p. 1, Suggested pitching rate"
+          },
+          "context": "Guide NOLO White Labs révision 3.22 ; aucune conversion en g/hL ou en volume de levure sans concentration et viabilité mesurées."
+        },
+        {
+          "key": "application",
+          "label": "Essais pilotes",
+          "reported": "Essais à petite échelle recommandés pour ajuster nutriments, levure et empâtage.",
+          "source": {
+            "title": "Non-Alcoholic or Low Alcohol Beer Production — révision 3.22",
+            "author": "White Labs",
+            "year": 2022,
+            "kind": "manufacturer",
+            "reference": "https://www.whitelabs.com/public/uploads/ckeditor/6238c51a7077d1647887642.pdf",
+            "locator": "p. 1, Tips and tricks"
+          }
+        },
+        {
+          "key": "attenuation",
+          "label": "Atténuation de l’essai WLP618",
+          "reported": "Inférieure à 20 % dans un moût de faible densité.",
+          "source": {
+            "title": "Best Practices for Brewing Low Alcohol/Non-Alcoholic Beers, Part 2",
+            "author": "White Labs",
+            "year": 2022,
+            "kind": "manufacturer",
+            "reference": "https://blog.whitelabs.com/best-practices-for-brewing-low-alcohol/non-alcoholic-beers-part-2",
+            "locator": "Fermentation, Figure 3 et paragraphe S. ludwigii"
+          },
+          "context": "Essai fabricant : moût <6 °P à 20 °C, 5 millions de cellules/mL. Borne stricte conservée en texte ; ne certifie pas l’ABV final."
+        },
+        {
+          "key": "ph",
+          "label": "Acidification limitée",
+          "reported": "pH final un peu supérieur à celui obtenu avec WLP603 dans le même essai.",
+          "source": {
+            "title": "Best Practices for Brewing Low Alcohol/Non-Alcoholic Beers, Part 2",
+            "author": "White Labs",
+            "year": 2022,
+            "kind": "manufacturer",
+            "reference": "https://blog.whitelabs.com/best-practices-for-brewing-low-alcohol/non-alcoholic-beers-part-2",
+            "locator": "Fermentation, paragraphe S. ludwigii"
+          },
+          "context": "Essai sur moût <6 °P à 20 °C ; aucune valeur de pH final universelle n’est annoncée."
+        },
+        {
+          "key": "application",
+          "label": "Stabilisation",
+          "reported": "La pasteurisation est présentée comme la meilleure option disponible pour la stabilité à température ambiante.",
+          "source": {
+            "title": "Best Practices for Brewing Low Alcohol/Non-Alcoholic Beers, Part 2",
+            "author": "White Labs",
+            "year": 2022,
+            "kind": "manufacturer",
+            "reference": "https://blog.whitelabs.com/best-practices-for-brewing-low-alcohol/non-alcoholic-beers-part-2",
+            "locator": "Stabilization, paragraphes initiaux"
+          },
+          "context": "Recommandation générale NOLO du fabricant ; la fiche ne valide pas un cycle pour cette recette."
+        }
+      ],
+      "documents": [
+        {
+          "title": "WLP618 NA All Day — page fabricant",
+          "url": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST"
+        },
+        {
+          "title": "Non-Alcoholic or Low Alcohol Beer Production — révision 3.22",
+          "url": "https://www.whitelabs.com/public/uploads/ckeditor/6238c51a7077d1647887642.pdf"
+        },
+        {
+          "title": "Best Practices for Brewing Low Alcohol/Non-Alcoholic Beers, Part 2",
+          "url": "https://blog.whitelabs.com/best-practices-for-brewing-low-alcohol/non-alcoholic-beers-part-2"
+        }
+      ],
+      "retrievals": [
+        {
+          "url": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST",
+          "retrievedAt": "2026-09-12T12:11:10.288Z",
+          "sha256": "db2d2d7d2e9664aae350e5271e81939355af1ecb839320ec153c971a20f6cf0d",
+          "etag": null,
+          "lastModified": null
+        },
+        {
+          "url": "https://www.whitelabs.com/public/uploads/ckeditor/6238c51a7077d1647887642.pdf",
+          "retrievedAt": "2026-09-12T12:10:44.568Z",
+          "sha256": "68f044c0ab564c33748358572342bf8d80d80c734b377bd42e6b1a1464f8f665",
+          "etag": "\"3902a9a-59247-5dabebd87fa80\"",
+          "lastModified": "Mon, 21 Mar 2022 18:34:02 GMT"
+        },
+        {
+          "url": "https://blog.whitelabs.com/best-practices-for-brewing-low-alcohol/non-alcoholic-beers-part-2",
+          "retrievedAt": "2026-09-12T12:12:28.422Z",
+          "sha256": "e6d3ce923475d9cf5a79eda910321d78a3962773b4a82243bfcc69bf6619e9b2",
+          "etag": null,
+          "lastModified": "Tue, 08 Sep 2026 20:06:42 GMT"
+        }
+      ],
+      "notes": "La page WLP618 comporte encore « -- - 20% » : aucune borne inférieure n’est inventée. La recommandation 2 millions de cellules/mL (fiche révision 3.22) est distincte du dosage expérimental 5 millions/mL (article). L’ancienne fiche de février 2021 proposait 200 000 cellules/mL : elle n’est pas réimportée comme consigne courante. La forme commerciale n’est pas ajoutée faute de déclaration explicite dans les sources actuelles consultées ; le site Yeastman renvoie une coquille JavaScript sans fiche exploitable."
+    }
+  ],
+  "gaps": [
+    "Les chiffres de fabricants restent des observations documentaires avec leurs conditions ; aucun ABV final, aucune stabilité microbiologique et aucune durée ferme ne sont garantis.",
+    "WLP618 : forme commerciale non vérifiée dans les sources actuelles reçues ; dosage en cellules/mL conservé en texte car le schéma ne supporte pas cette unité.",
+    "LoNa : recommandation TDS 2025 de 50 g/hL et page produit à 50–100 g/hL coexistent ; ne pas supprimer les observations précédentes.",
+    "LA-01 : aucune déclaration STA1 identifiée ; aucun statut n’est déduit de l’espèce ou du caractère POF.",
+    "Zero Hero : POF, STA1, caractère diastatique, floculation et durée non documentés ; atténuation web sans composition du moût ni conditions d’essai.",
+    "Ni scores aromatiques, ni coefficients de biotransformation/thiols, ni propagation ou réutilisation validées ne sont inventés."
+  ]
+}

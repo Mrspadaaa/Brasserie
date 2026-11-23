@@ -1,0 +1,306 @@
+{
+  "version": "1.0",
+  "date": "2026-10-19",
+  "etudes": [
+    {
+      "id": "E01",
+      "ref": "Kankolongo Cibaka M-L, Silva Guimaraes Ferreira CA, Decourriere L, Lorenzo-Alonso CJ, Bodart E, Collin S. Dry Hopping with the Dual-Purpose Varieties Amarillo, Citra, Hallertau Blanc, Mosaic, and Sorachi Ace. J. Am. Soc. Brew. Chem. 75(2), 2017, p. 122-129.",
+      "url": "https://doi.org/10.1094/ASBCJ-2017-2257-01",
+      "niveau": "P",
+      "base": "Bières pilotes monovariétales ; base non décrite dans le résumé",
+      "varietes": ["Amarillo", "Citra", "Hallertau Blanc", "Mosaic", "Sorachi Ace"],
+      "conditions": {
+        "dose_gL": null,
+        "jours": null,
+        "moment": "Dry hop ; dose et durée non indiquées dans le résumé",
+        "levure": null
+      },
+      "mesures": [
+        { "variete": "5 bières (plage)", "compose": "linalol libre", "valeur": "72-178", "unite": "µg/L", "famille": "floral", "lecture": "résumé", "note": "seuil cité : 8 µg/L" },
+        { "variete": "5 bières (plage)", "compose": "géraniol libre", "valeur": "7-57", "unite": "µg/L", "famille": "floral", "lecture": "résumé", "note": "seuil cité : 4 µg/L" },
+        { "variete": "Amarillo, Citra, Sorachi Ace", "compose": "β-citronellol", "valeur": "au-dessus du seuil", "unite": "qualitatif", "famille": "floral", "lecture": "résumé" }
+      ],
+      "note": "Texte intégral réservé (DOI lu, résumé seulement). Déjà cité dans H [53], sans valeurs. Les glucosides apportent peu (0,6-28,6 mg/kg d'aglycones contre 7,8-109,2 mg/kg de formes libres)."
+    },
+    {
+      "id": "E02",
+      "ref": "Tusha K, Nešpor J, Jelínek L, Vodickova H, Kincl T, Dostalek P. Effect of Czech Hop Varieties on Aroma of Dry-Hopped Lager Beer. Foods 11(16):2520, 2022. DOI 10.3390/foods11162520.",
+      "url": "https://doi.org/10.3390/foods11162520",
+      "niveau": "P",
+      "base": "Lager dry-hopée ; base non détaillée dans le résumé",
+      "varietes": ["Rubín", "Saaz", "Vital", "Harmonie", "Kazbek"],
+      "conditions": {
+        "dose_gL": "3,3 (Rubín) ; 5,0 (Saaz) ; 3,8 (Vital) ; 3,8 (Harmonie) ; 2,7 (Kazbek) ; doses calculées à partir de 33/50/38/38/27 g pour 10 L",
+        "jours": 30,
+        "moment": "Dry hop statique en sacs de nylon dans le fût, 30 j ; température du dry hop non donnée (maturation à 1 °C)",
+        "levure": null
+      },
+      "mesures": [
+        { "variete": "Rubín", "compose": "linalol", "valeur": 146, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "Saaz", "compose": "linalol", "valeur": 83, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "Vital", "compose": "linalol", "valeur": 321, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "Harmonie", "compose": "linalol", "valeur": 323, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "Kazbek", "compose": "linalol", "valeur": 186, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "témoin (sans houblon)", "compose": "linalol", "valeur": 25, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "Rubín", "compose": "myrcène", "valeur": 101, "unite": "µg/L", "famille": "resin", "lecture": "tableau 2" },
+        { "variete": "Saaz", "compose": "myrcène", "valeur": 23, "unite": "µg/L", "famille": "resin", "lecture": "tableau 2" },
+        { "variete": "Vital", "compose": "myrcène", "valeur": 61, "unite": "µg/L", "famille": "resin", "lecture": "tableau 2" },
+        { "variete": "Harmonie", "compose": "myrcène", "valeur": 78, "unite": "µg/L", "famille": "resin", "lecture": "tableau 2" },
+        { "variete": "Kazbek", "compose": "myrcène", "valeur": 75, "unite": "µg/L", "famille": "resin", "lecture": "tableau 2" },
+        { "variete": "Vital", "compose": "géraniol", "valeur": 22, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "Kazbek", "compose": "géraniol", "valeur": 179, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2", "note": "Rubín, Saaz et Harmonie : présent, non quantifiable" },
+        { "variete": "Rubín", "compose": "β-citronellol", "valeur": 37, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "Saaz", "compose": "β-citronellol", "valeur": 28, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "Vital", "compose": "β-citronellol", "valeur": 40, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "Harmonie", "compose": "β-citronellol", "valeur": 37, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "Kazbek", "compose": "β-citronellol", "valeur": 64, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "Rubín", "compose": "géranoate de méthyle", "valeur": 153, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "Vital", "compose": "géranoate de méthyle", "valeur": 118, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "Harmonie", "compose": "géranoate de méthyle", "valeur": 247, "unite": "µg/L", "famille": "floral", "lecture": "tableau 2" },
+        { "variete": "Rubín", "compose": "2-méthylbutyl 2-méthylpropanoate", "valeur": 59, "unite": "µg/L", "famille": null, "lecture": "tableau 2" },
+        { "variete": "Saaz", "compose": "2-méthylbutyl 2-méthylpropanoate", "valeur": 8, "unite": "µg/L", "famille": null, "lecture": "tableau 2" },
+        { "variete": "Vital", "compose": "2-méthylbutyl 2-méthylpropanoate", "valeur": 47, "unite": "µg/L", "famille": null, "lecture": "tableau 2" },
+        { "variete": "Harmonie", "compose": "2-méthylbutyl 2-méthylpropanoate", "valeur": 29, "unite": "µg/L", "famille": null, "lecture": "tableau 2" },
+        { "variete": "Kazbek", "compose": "2-méthylbutyl 2-méthylpropanoate", "valeur": 35, "unite": "µg/L", "famille": null, "lecture": "tableau 2" }
+      ],
+      "note": "Doses réglées pour viser environ 3 g d'huile essentielle pour 100 L (texte) : les doses en g/L diffèrent par variété. Un linalol à 323 µg/L (Harmonie) contre 83 µg/L (Saaz) : écart d'environ ×4 à huile visée égale. Pas de panel sensoriel publié. Déjà cité dans H [31] sans valeurs."
+    },
+    {
+      "id": "E03",
+      "ref": "McCabe AK, Keyes JK, Hemetsberger H, Kurr CV, Albright B, Ward MG, McKinley ML, Breezley SJ, Cole CA. Aroma Profile Development in Beer Fermented with Azacca, Idaho-7, and Sultana Hops. Molecules 28(15):5802, 2023. DOI 10.3390/molecules28155802.",
+      "url": "https://doi.org/10.3390/molecules28155802",
+      "niveau": "P",
+      "base": "Hazy IPA, moût non houblonné (Ska Brewing), fermentation à 21,2 °C",
+      "varietes": ["Azacca", "Idaho-7", "Sultana"],
+      "conditions": {
+        "dose_gL": null,
+        "jours": 14,
+        "moment": "Au pitch : houblon ajouté à la mise en levure, présent pendant toute la fermentation (co-fermentation, pas un dry hop strict)",
+        "levure": "Fermentis SafAle S-04 (250 g par fermenteur)"
+      },
+      "mesures": [
+        { "variete": "Azacca", "compose": "myrcène", "valeur": 0.601, "ecart": 0.149, "unite": "mg/L", "famille": "resin", "lecture": "tableau 2-3, texte aplati : colonnes attribuées par ordre, à vérifier dans le PDF" },
+        { "variete": "Idaho-7", "compose": "myrcène", "valeur": 0.085, "ecart": 0.029, "unite": "mg/L", "famille": "resin", "lecture": "tableau 2-3, texte aplati : colonnes attribuées par ordre, à vérifier dans le PDF" },
+        { "variete": "Sultana", "compose": "myrcène", "valeur": 0.661, "ecart": 0.097, "unite": "mg/L", "famille": "resin", "lecture": "tableau 2-3, texte aplati : colonnes attribuées par ordre, à vérifier dans le PDF" },
+        { "variete": "Azacca", "compose": "α-humulène", "valeur": 0.413, "ecart": 0.102, "unite": "mg/L", "famille": "herbal", "lecture": "tableau 2-3, texte aplati" },
+        { "variete": "Idaho-7", "compose": "α-humulène", "valeur": 0.130, "ecart": 0.044, "unite": "mg/L", "famille": "herbal", "lecture": "tableau 2-3, texte aplati" },
+        { "variete": "Sultana", "compose": "α-humulène", "valeur": 0.875, "ecart": 0.433, "unite": "mg/L", "famille": "herbal", "lecture": "tableau 2-3, texte aplati" },
+        { "variete": "Azacca", "compose": "β-caryophyllène", "valeur": 0.152, "ecart": 0.038, "unite": "mg/L", "famille": "spice", "lecture": "tableau 2-3, texte aplati" },
+        { "variete": "Idaho-7", "compose": "β-caryophyllène", "valeur": 0.054, "ecart": 0.018, "unite": "mg/L", "famille": "spice", "lecture": "tableau 2-3, texte aplati" },
+        { "variete": "Sultana", "compose": "β-caryophyllène", "valeur": 0.319, "ecart": 0.110, "unite": "mg/L", "famille": "spice", "lecture": "tableau 2-3, texte aplati" },
+        { "variete": "Azacca", "compose": "linalol", "valeur": 0.012, "ecart": 0.003, "unite": "mg/L", "famille": "floral", "lecture": "tableau 2-3, texte aplati" },
+        { "variete": "Idaho-7", "compose": "linalol", "valeur": 0.038, "ecart": 0.013, "unite": "mg/L", "famille": "floral", "lecture": "tableau 2-3, texte aplati" },
+        { "variete": "Sultana", "compose": "linalol", "valeur": 0.101, "ecart": 0.007, "unite": "mg/L", "famille": "floral", "lecture": "tableau 2-3, texte aplati" },
+        { "variete": "Azacca", "compose": "géranoate de méthyle", "valeur": 0.011, "ecart": 0.003, "unite": "mg/L", "famille": null, "lecture": "tableau 2-3, texte aplati" },
+        { "variete": "Idaho-7", "compose": "géranoate de méthyle", "valeur": 0.013, "ecart": 0.004, "unite": "mg/L", "famille": null, "lecture": "tableau 2-3, texte aplati" },
+        { "variete": "Sultana", "compose": "géranoate de méthyle", "valeur": 0.116, "ecart": 0.021, "unite": "mg/L", "famille": null, "lecture": "tableau 2-3, texte aplati" },
+        { "variete": "Azacca", "compose": "nombre de descripteurs CATA", "valeur": 6, "unite": "descripteurs cochés", "famille": null, "lecture": "texte", "note": "Panel non entraîné, 14 à 22 personnes, sans échelle" },
+        { "variete": "Idaho-7", "compose": "nombre de descripteurs CATA", "valeur": 6, "unite": "descripteurs cochés", "famille": null, "lecture": "texte" },
+        { "variete": "Sultana", "compose": "nombre de descripteurs CATA", "valeur": 9, "unite": "descripteurs cochés", "famille": null, "lecture": "texte" },
+        { "variete": "Idaho-7 et Sultana", "descripteur": "lemongrass (CATA)", "valeur": "présent", "unite": "présence", "famille": "herbal", "lecture": "texte" },
+        { "variete": "Azacca et Sultana", "descripteur": "citrus (CATA)", "valeur": "présent", "unite": "présence", "famille": "citrus", "lecture": "texte" },
+        { "variete": "Sultana", "descripteur": "pamplemousse, orange (CATA)", "valeur": "présent", "unite": "présence", "famille": "citrus", "lecture": "texte" },
+        { "variete": "Azacca, Idaho-7, Sultana", "descripteur": "tropical, ananas, papaye, mangue (CATA)", "valeur": "présent chez les trois", "unite": "présence", "famille": "tropical", "lecture": "texte" }
+      ],
+      "note": "Valeurs semi-quantifiées (rapport d'aire à un étalon interne), en mg/L comme publié. Idaho-7 est la seule variété de la liste du brasseur. Le linalol de Sultana (101 µg/L) dépasse celui d'Idaho-7 (38 µg/L) et d'Azacca (12 µg/L) ; les colonnes du tableau aplati sont à vérifier. Les houblons sont là dès le pitch : l'écart mesuré est la fermentation, pas le dry hop."
+    },
+    {
+      "id": "E04",
+      "ref": "Lafontaine SR, Shellhammer TH. Impact of static dry-hopping rate on the sensory and analytical profiles of beer. J. Inst. Brew. 124(4), 2018, p. 434-442.",
+      "url": "https://doi.org/10.1002/jib.517",
+      "niveau": "P",
+      "base": "Bière pâle non houblonnée à 4,75 % vol., pilote 80 L en répliques ; fermentation levure écossaise Wyeast 1728 à 19,4-20 °C",
+      "varietes": ["Cascade (récolte 2015, cône entier)"],
+      "conditions": {
+        "dose_gL": "0 ; 2 ; 3,86 ; 8 ; 16 (0 / 200 / 386 / 800 / 1600 g/hL)",
+        "jours": 1,
+        "moment": "Dry hop statique, 24 h, puis filtration",
+        "levure": "Wyeast 1728 (fermentation de la base)"
+      },
+      "mesures": [
+        { "variete": "Cascade", "dose_gL": 0, "descripteur": "intensité aromatique houblonnée globale (OHAI), échelle 0-15", "valeur": 3.0, "unite": "points", "famille": null, "lecture": "tableau 3 (moyennes des moindres carrés)" },
+        { "variete": "Cascade", "dose_gL": 2, "descripteur": "OHAI, échelle 0-15", "valeur": 6.3, "unite": "points", "famille": null, "lecture": "tableau 3" },
+        { "variete": "Cascade", "dose_gL": 3.86, "descripteur": "OHAI, échelle 0-15", "valeur": 8.1, "unite": "points", "famille": null, "lecture": "tableau 3" },
+        { "variete": "Cascade", "dose_gL": 8, "descripteur": "OHAI, échelle 0-15", "valeur": 10.4, "unite": "points", "famille": null, "lecture": "tableau 3" },
+        { "variete": "Cascade", "dose_gL": 16, "descripteur": "OHAI, échelle 0-15", "valeur": 12.3, "unite": "points", "famille": null, "lecture": "tableau 3" },
+        { "variete": "Cascade", "dose_gL": 0, "descripteur": "citrus, échelle 0-15", "valeur": 1.9, "unite": "points", "famille": "citrus", "lecture": "tableau 3" },
+        { "variete": "Cascade", "dose_gL": 2, "descripteur": "citrus, échelle 0-15", "valeur": 4.4, "unite": "points", "famille": "citrus", "lecture": "tableau 3" },
+        { "variete": "Cascade", "dose_gL": 3.86, "descripteur": "citrus, échelle 0-15", "valeur": 5.8, "unite": "points", "famille": "citrus", "lecture": "tableau 3" },
+        { "variete": "Cascade", "dose_gL": 8, "descripteur": "citrus, échelle 0-15", "valeur": 7.1, "unite": "points", "famille": "citrus", "lecture": "tableau 3" },
+        { "variete": "Cascade", "dose_gL": 16, "descripteur": "citrus, échelle 0-15", "valeur": 7.0, "unite": "points", "famille": "citrus", "lecture": "tableau 3" },
+        { "variete": "Cascade", "dose_gL": 0, "descripteur": "herbal/tea, échelle 0-15", "valeur": 2.5, "unite": "points", "famille": "herbal", "lecture": "tableau 3" },
+        { "variete": "Cascade", "dose_gL": 2, "descripteur": "herbal/tea, échelle 0-15", "valeur": 4.3, "unite": "points", "famille": "herbal", "lecture": "tableau 3" },
+        { "variete": "Cascade", "dose_gL": 3.86, "descripteur": "herbal/tea, échelle 0-15", "valeur": 5.7, "unite": "points", "famille": "herbal", "lecture": "tableau 3" },
+        { "variete": "Cascade", "dose_gL": 8, "descripteur": "herbal/tea, échelle 0-15", "valeur": 7.4, "unite": "points", "famille": "herbal", "lecture": "tableau 3" },
+        { "variete": "Cascade", "dose_gL": 16, "descripteur": "herbal/tea, échelle 0-15", "valeur": 10.4, "unite": "points", "famille": "herbal", "lecture": "tableau 3" },
+        { "variete": "Cascade", "dose_gL": 2, "compose": "linalol, part extraite de l'huile", "valeur": 23, "unite": "%", "famille": "floral", "lecture": "texte" },
+        { "variete": "Cascade", "dose_gL": 16, "compose": "linalol, part extraite de l'huile", "valeur": 7, "unite": "%", "famille": "floral", "lecture": "texte" },
+        { "variete": "Cascade", "dose_gL": 2, "compose": "géraniol, part extraite de l'huile", "valeur": 13, "unite": "%", "famille": "floral", "lecture": "texte" },
+        { "variete": "Cascade", "dose_gL": 16, "compose": "géraniol, part extraite de l'huile", "valeur": 3, "unite": "%", "famille": "floral", "lecture": "texte" },
+        { "variete": "Cascade", "dose_gL": 2, "compose": "nérol, part extraite de l'huile", "valeur": 6, "unite": "%", "famille": "floral", "lecture": "texte" },
+        { "variete": "Cascade", "dose_gL": 16, "compose": "nérol, part extraite de l'huile", "valeur": 1, "unite": "%", "famille": "floral", "lecture": "texte" }
+      ],
+      "note": "10 panélistes retenus sur 13, 40 observations par attribut. Hausse de dose : l'intensité monte, la part extraite des terpénols baisse. Agrumes : plafond dès 800 g/hL (7,1 puis 7,0). Herbacé/thé : continue de monter jusqu'à 10,4 à 16 g/L. Déjà cité dans H [22].",
+      "corrige": "lignes agrumes/herbacé inversées dans la v1, voir K-lafontaine-2018-verif.md"
+    },
+    {
+      "id": "E05",
+      "ref": "Wolfe PH. A Study of Factors Affecting the Extraction of Flavor When Dry Hopping Beer. Thèse MSc, Oregon State University, 2012.",
+      "url": "https://ir.library.oregonstate.edu/xmlui/bitstream/handle/1957/34093/Wolfe_thesis.pdf",
+      "niveau": "S",
+      "base": "Étude 1 : modèle eau-éthanol 6 %, pH 4,2 ; étude 2 : bière pilote 3,5 hL (340 L par traitement), filtrée",
+      "varietes": ["Cascade (récolte 2011, pastilles et cônes entiers)"],
+      "conditions": {
+        "dose_gL": 3.86,
+        "jours": "0,25 à 12 (mesures à 6 h, 24 h, 4 j, 12 j)",
+        "moment": "Dry hop en cuve 3,5 hL, passif ou agité (stirred) ; cônes et pastilles comparés",
+        "levure": null
+      },
+      "mesures": [
+        { "variete": "Cascade pastilles, passif", "compose": "linalol, extraction", "valeur": "43,1 / 43,1 / 39,5", "unite": "% de l'huile (6 h / pic / final)", "famille": "floral", "lecture": "tableau 14 (six valeurs par ligne)" },
+        { "variete": "Cascade pastilles, agité", "compose": "linalol, extraction", "valeur": "89,2 / 100,7 / 90,6", "unite": "% de l'huile (6 h / pic / final)", "famille": "floral", "lecture": "tableau 14" },
+        { "variete": "Cascade pastilles, passif", "compose": "géraniol, extraction", "valeur": "1,3 / 1,3 / 1,2", "unite": "% de l'huile (6 h / pic / final)", "famille": "floral", "lecture": "tableau 14" },
+        { "variete": "Cascade pastilles, agité", "compose": "géraniol, extraction", "valeur": "105,2 / 117,9 / 102,9", "unite": "% de l'huile (6 h / pic / final)", "famille": "floral", "lecture": "tableau 14", "note": "Au-delà de 100 % : rapport de méthode, à lire avec prudence" },
+        { "variete": "Cascade pastilles, passif", "compose": "limonène, extraction", "valeur": "8,4 / 9,7 / 5,9", "unite": "% de l'huile (6 h / pic / final)", "famille": "citrus", "lecture": "tableau 14" },
+        { "variete": "Cascade pastilles, agité", "compose": "limonène, extraction", "valeur": "69,1 / 82,4 / 75,2", "unite": "% de l'huile (6 h / pic / final)", "famille": "citrus", "lecture": "tableau 14" },
+        { "variete": "Cascade pastilles, passif", "compose": "humulène, extraction", "valeur": "55,6 / 57,2 / 56,1", "unite": "% de l'huile (6 h / pic / final)", "famille": "herbal", "lecture": "tableau 14", "note": "Sens inversé par rapport aux autres composés : à vérifier" },
+        { "variete": "Cascade pastilles, agité", "compose": "humulène, extraction", "valeur": "8,3 / 17,1 / 14,2", "unite": "% de l'huile (6 h / pic / final)", "famille": "herbal", "lecture": "tableau 14", "note": "Sens inversé : à vérifier" },
+        { "variete": "Cascade cônes, passif", "compose": "linalol, extraction", "valeur": "40,7 / 42,7 / 17", "unite": "% de l'huile (6 h / pic / final)", "famille": "floral", "lecture": "tableau 13", "note": "Valeurs à vérifier : écart non cohérent avec la version agitée" },
+        { "variete": "Cascade cônes, agité", "compose": "linalol, extraction", "valeur": "9,0 / 48,5 / 48,5", "unite": "% de l'huile (6 h / pic / final)", "famille": "floral", "lecture": "tableau 13", "note": "Valeurs à vérifier" },
+        { "variete": "Cascade cônes, passif", "compose": "géraniol, extraction", "valeur": "0,5 / 0,94 / 0,15", "unite": "% de l'huile (6 h / pic / final)", "famille": "floral", "lecture": "tableau 13" },
+        { "variete": "Cascade cônes, agité", "compose": "géraniol, extraction", "valeur": "57,3 / 119 / 91,0", "unite": "% de l'huile (6 h / pic / final)", "famille": "floral", "lecture": "tableau 13" },
+        { "variete": "Cascade pastilles, agité", "descripteur": "intensité aromatique globale (jury)", "valeur": "le plus fort", "unite": "qualitatif", "famille": null, "lecture": "résumé", "note": "Les pastilles agitées ont le plus d'arôme, d'amertume et d'astringence dans le jury" }
+      ],
+      "note": "Thèse, non relue par les pairs. Résultat de l'étude 1 : les hydrocarbures terpéniques atteignent leur pic vers 3 à 6 h puis baissent, alors que les terpénols continuent de monter sur 24 h. Les extractions publiées ne donnent pas de valeurs par variété. Déjà cité dans H [73] ; ici lu dans le texte et les tableaux 6, 13 et 14."
+    },
+    {
+      "id": "E06",
+      "ref": "Feng S, Qian Y, Qian MC. Key aroma compounds in Centennial, Citra and Nelson Sauvin hop identified by aroma extract dilution analysis. Diapositives, ASBC Annual Meeting 2015, présentation 33.",
+      "url": "https://www.asbcnet.org:443/events/archives/2015Meeting/proceedings/2015Presentations/33_Qian.pdf",
+      "niveau": "S",
+      "base": "Bières pilotes (groupe de brasserie de Jeff Clawson), style non indiqué dans les diapositives",
+      "varietes": ["Centennial", "Citra", "Nelson Sauvin"],
+      "conditions": {
+        "dose_gL": null,
+        "jours": null,
+        "moment": "Dry hop ; dose et durée non indiquées dans les diapositives",
+        "levure": null
+      },
+      "mesures": [
+        { "variete": "témoin (sans houblon)", "compose": "myrcène", "valeur": 27.4, "ecart": 1.9, "unite": "µg/L", "famille": "resin", "lecture": "diapositive 17 (texte aplati)" },
+        { "variete": "Centennial", "compose": "myrcène", "valeur": 48.2, "ecart": 4.7, "unite": "µg/L", "famille": "resin", "lecture": "diapositive 17" },
+        { "variete": "Citra", "compose": "myrcène", "valeur": 131, "ecart": 3.5, "unite": "µg/L", "famille": "resin", "lecture": "diapositive 17" },
+        { "variete": "Nelson Sauvin", "compose": "myrcène", "valeur": 110, "ecart": 3.9, "unite": "µg/L", "famille": "resin", "lecture": "diapositive 17" },
+        { "variete": "témoin (sans houblon)", "compose": "limonène", "valeur": 109, "ecart": 7, "unite": "µg/L", "famille": "citrus", "lecture": "diapositive 17" },
+        { "variete": "Centennial", "compose": "limonène", "valeur": 56.9, "ecart": 3.1, "unite": "µg/L", "famille": "citrus", "lecture": "diapositive 17" },
+        { "variete": "Citra", "compose": "limonène", "valeur": 118, "ecart": 13.8, "unite": "µg/L", "famille": "citrus", "lecture": "diapositive 17" },
+        { "variete": "Nelson Sauvin", "compose": "limonène", "valeur": 105, "ecart": 6.0, "unite": "µg/L", "famille": "citrus", "lecture": "diapositive 17" },
+        { "variete": "témoin (sans houblon)", "compose": "linalol", "valeur": 46.8, "ecart": 0.7, "unite": "µg/L", "famille": "floral", "lecture": "diapositive 17" },
+        { "variete": "Centennial", "compose": "linalol", "valeur": 78.4, "ecart": 4.9, "unite": "µg/L", "famille": "floral", "lecture": "diapositive 17" },
+        { "variete": "Citra", "compose": "linalol", "valeur": 144, "ecart": 2.7, "unite": "µg/L", "famille": "floral", "lecture": "diapositive 17" },
+        { "variete": "Nelson Sauvin", "compose": "linalol", "valeur": 70.2, "ecart": 0.0, "unite": "µg/L", "famille": "floral", "lecture": "diapositive 17" },
+        { "variete": "témoin (sans houblon)", "compose": "géraniol", "valeur": 40.0, "ecart": 1.4, "unite": "µg/L", "famille": "floral", "lecture": "diapositive 17", "note": "Attribution de la ligne par ordre : à vérifier" },
+        { "variete": "Centennial", "compose": "géraniol", "valeur": 97.0, "ecart": 0.9, "unite": "µg/L", "famille": "floral", "lecture": "diapositive 17", "note": "Attribution de la ligne par ordre : à vérifier" },
+        { "variete": "Citra", "compose": "géraniol", "valeur": 86.4, "ecart": 0.2, "unite": "µg/L", "famille": "floral", "lecture": "diapositive 17", "note": "Attribution de la ligne par ordre : à vérifier" },
+        { "variete": "Nelson Sauvin", "compose": "géraniol", "valeur": 49.3, "ecart": 1.9, "unite": "µg/L", "famille": "floral", "lecture": "diapositive 17", "note": "Attribution de la ligne par ordre : à vérifier" },
+        { "variete": "témoin (sans houblon)", "compose": "nérol", "valeur": 9.3, "ecart": 0.5, "unite": "µg/L", "famille": "floral", "lecture": "diapositive 17" },
+        { "variete": "Centennial", "compose": "nérol", "valeur": 12.5, "ecart": 1.3, "unite": "µg/L", "famille": "floral", "lecture": "diapositive 17" },
+        { "variete": "Citra", "compose": "nérol", "valeur": 14.7, "ecart": 0.5, "unite": "µg/L", "famille": "floral", "lecture": "diapositive 17" },
+        { "variete": "Nelson Sauvin", "compose": "nérol", "valeur": 8.0, "ecart": 0.1, "unite": "µg/L", "famille": "floral", "lecture": "diapositive 17" },
+        { "variete": "Centennial", "compose": "humulène", "valeur": 1.07, "ecart": 0.2, "unite": "µg/L", "famille": "herbal", "lecture": "diapositive 17" },
+        { "variete": "Citra", "compose": "humulène", "valeur": 9.38, "ecart": 0.6, "unite": "µg/L", "famille": "herbal", "lecture": "diapositive 17" },
+        { "variete": "Nelson Sauvin", "compose": "humulène", "valeur": 8.61, "ecart": 0.3, "unite": "µg/L", "famille": "herbal", "lecture": "diapositive 17" },
+        { "variete": "Citra", "compose": "β-caryophyllène", "valeur": 5.63, "ecart": 0.5, "unite": "µg/L", "famille": "spice", "lecture": "diapositive 17", "note": "Centennial et Nelson Sauvin : moins de 1 µg/L" },
+        { "variete": "Centennial", "compose": "acétate de géranyle", "valeur": 11.71, "ecart": 0.4, "unite": "µg/L", "famille": "floral", "lecture": "diapositive 17", "note": "Citra : 7,71 ± 0,2 µg/L" }
+      ],
+      "note": "Seuils de la diapositive : myrcène 13, limonène 4-229, linalol 4-10, géraniol 9-460, nérol 680-2200, humulène 120, caryophyllène 64-90 µg/L. Mesure SBSE-GC-MS sur la bière, moyenne ± écart-type. Diapositives, non relues. Pas de Cascade dans le tableau lu."
+    },
+    {
+      "id": "E07",
+      "ref": "Sharp DC, Shellhammer G, Shellhammer TH. Influence of hop regime, cultivar and yeast on hop aroma in beer using descriptive sensory analysis. ASBC Annual Meeting 2014, poster A-70.",
+      "url": "https://www.asbcnet.org/events/archives/2014Meeting/proceedings/2014Proceedings/A-70_Sharp.pdf",
+      "niveau": "S",
+      "base": "Pale ale 12 °P, 98 % malt pâle, pilote 40 L ; fermentation ale (19 °C, 6-7 j) ou lager (12 j)",
+      "varietes": ["Simcoe", "Hallertau Mittelfrüh"],
+      "conditions": {
+        "dose_gL": 1.5,
+        "jours": 2,
+        "moment": "Trois régimes à 1,5 g/L : ébullition 60 min (KH), whirlpool 10 min (WP), dry hop 48 h à 19 °C (DH)",
+        "levure": "Ale ou lager (facteur)"
+      },
+      "mesures": [
+        { "variete": "Simcoe", "descripteur": "intensité aromatique globale (panel entraîné, 12 personnes)", "valeur": "plus élevée que Hallertau", "unite": "qualitatif", "famille": null, "lecture": "texte du poster" },
+        { "variete": "Simcoe", "descripteur": "tropical fruit", "valeur": "plus élevé que Hallertau", "unite": "qualitatif", "famille": "tropical", "lecture": "texte du poster" },
+        { "variete": "Simcoe", "descripteur": "citrus", "valeur": "plus élevé que Hallertau", "unite": "qualitatif", "famille": "citrus", "lecture": "texte du poster" },
+        { "variete": "Simcoe", "descripteur": "stone fruit", "valeur": "plus élevé que Hallertau", "unite": "qualitatif", "famille": "stoneFruit", "lecture": "texte du poster" },
+        { "variete": "Simcoe", "descripteur": "pine/resinous", "valeur": "plus élevé que Hallertau", "unite": "qualitatif", "famille": "resin", "lecture": "texte du poster" },
+        { "variete": "Simcoe et Hallertau", "descripteur": "cooked/veg, grassy, herbal", "valeur": "associés aux traitements à l'ébullition", "unite": "qualitatif", "famille": "herbal", "lecture": "texte du poster" }
+      ],
+      "note": "Les chiffres du poster sont des statistiques F d'ANOVA, pas des intensités : non repris. Le poster ne donne pas de comparaison chiffrée whirlpool contre dry hop. Yeast : effet le plus faible sur l'arôme (texte). Pas de Citra."
+    },
+    {
+      "id": "E08",
+      "ref": "Schmidt C, Biendl M, Hanke S, Reglitz K, Steinhaus M. Dry hopping potential of Eureka!, a new hop variety. BrewingScience 72(11/12), 2019, p. 173-.",
+      "url": "https://doi.org/10.23763/BrSc19-21schmidt",
+      "niveau": "P",
+      "base": "Pilsner 11,6 °P, 5,0 % vol, 35 UI, non filtrée ; dry hop en cuves de 10 hL à −1 °C",
+      "varietes": ["Eureka!"],
+      "conditions": {
+        "dose_gL": 2.5,
+        "jours": "1, 2, 4, 8 (contacts de 24 h à 8 j)",
+        "moment": "Dry hop statique à −1 °C, quatre contacts en parallèle",
+        "levure": null
+      },
+      "mesures": [
+        { "variete": "Eureka!", "compose": "4-MMP", "valeur": "transfert majeur pendant les 2 premiers jours, léger ensuite", "unite": "qualitatif", "famille": "tropical", "lecture": "texte (figure 2 non lue)", "note": "Seuil cité : 0,5-1,5 ng/L" },
+        { "variete": "Eureka!", "compose": "myrcène", "valeur": "transfert majeur pendant les 2 premiers jours, léger ensuite", "unite": "qualitatif", "famille": "resin", "lecture": "texte" },
+        { "variete": "Eureka!", "compose": "linalol", "valeur": "transfert majeur pendant les 2 premiers jours, léger ensuite", "unite": "qualitatif", "famille": "floral", "lecture": "texte" },
+        { "variete": "Eureka!", "compose": "géraniol", "valeur": "transfert majeur pendant les 2 premiers jours, léger ensuite", "unite": "qualitatif", "famille": "floral", "lecture": "texte" },
+        { "variete": "Eureka!", "compose": "2-méthylbutyl isobutanoate", "valeur": "transfert majeur pendant les 2 premiers jours, léger ensuite", "unite": "qualitatif", "famille": null, "lecture": "texte" },
+        { "variete": "Eureka!", "descripteur": "α-acides et humulinones", "valeur": "même comportement que les arômes", "unite": "qualitatif", "famille": null, "lecture": "texte" },
+        { "variete": "Eureka!", "descripteur": "xanthohumol", "valeur": "hausse jusqu'au jour 4", "unite": "qualitatif", "famille": null, "lecture": "texte" },
+        { "variete": "Eureka!", "descripteur": "fruité cassis (sensoriel)", "valeur": "2 jours conseillés", "unite": "qualitatif", "famille": "berries", "lecture": "texte" }
+      ],
+      "note": "Texte partiel : le PDF a été tronqué, la partie résultats et ses tableaux n'ont pas pu être lus. Aucune valeur numérique par jour n'a été reprise. Eureka! n'est pas dans la liste demandée, mais c'est la seule étude trouvée qui suit le contact au jour près. Déjà cité dans H [92]."
+    },
+    {
+      "id": "E09",
+      "ref": "Sharp D, Shellhammer TH, Ninkasi Brewing. Dry-hopping Beer and Achieving Consistent Flavor. Craft Brewers Conference 2018, diapositives.",
+      "url": "https://www.craftbrewersconference.com/wp-content/uploads/2018_presentations/Dry-hopping-Beer-Achieving-Consistent-Flavor1.pdf",
+      "niveau": "S",
+      "base": "Pale ale 100 % malt pâle, levure California ale à 18 °C, 25 ppm IAA",
+      "varietes": ["Amarillo", "Cascade", "Chinook", "Citra", "Galaxy", "Hallertau Mittelfrüh", "Huell Melon", "Mosaic", "Nelson Sauvin", "Nugget", "F2 (ligne de sélection)", "Simcoe"],
+      "conditions": {
+        "dose_gL": 4,
+        "jours": 3,
+        "moment": "Dry hop 72 h à 18 °C sur levure en cône ; whirlpool comparé au dry hop",
+        "levure": "California ale"
+      },
+      "mesures": [
+        { "variete": "12 variétés (dry hop et whirlpool)", "descripteur": "analyse en composantes principales (biplot) des descripteurs sensoriels", "valeur": "non chiffré dans le texte", "unite": "figure", "famille": null, "lecture": "figure" }
+      ],
+      "note": "Seule étude trouvée qui compare 12 variétés à dose égale (4 g/L), mais seulement en figure : les positions ne sont pas reprises ici pour ne pas les inventer. À lire sur la figure avant usage. Déjà cité dans H [21]."
+    },
+    {
+      "id": "E10",
+      "ref": "Titus BM, Lerno LA, Beaver JW, Byrnes NK, Heymann H, Oberholster A. Impact of Dry Hopping on Beer Flavor Stability. Foods 10(6):1264, 2021. DOI 10.3390/foods10061264.",
+      "url": "https://doi.org/10.3390/foods10061264",
+      "niveau": "P",
+      "base": "Pale ale standardisée, pilote UC Davis, 2 lots de 1,7 hL ; 12,0 °P (fin 2,6 °P) ; levure Wyeast 1056",
+      "varietes": ["Cascade"],
+      "conditions": {
+        "dose_gL": 1.43,
+        "jours": "0,04 à 4 (1 h à 96 h)",
+        "moment": "Dry hop statique, T-90, contacts de 1 h à 96 h, puis bière jeune et vieillie 30 j à température ambiante",
+        "levure": "Wyeast 1056"
+      },
+      "mesures": [
+        { "variete": "Cascade", "descripteur": "différence d'arôme entre les temps de contact (bière jeune)", "valeur": "non distinguable par le panel", "unite": "qualitatif", "famille": null, "lecture": "texte" },
+        { "variete": "Cascade", "descripteur": "bière vieillie 30 j : témoin contre dry hop", "valeur": "le témoin diffère de tous les traitements, dès 1 h", "unite": "qualitatif", "famille": null, "lecture": "texte" },
+        { "variete": "Cascade", "descripteur": "fruit de la passion, fruits à noyau, ananas, pamplemousse, citrus, végétal (vieillie contre jeune)", "valeur": "différences", "unite": "qualitatif", "famille": "tropical", "lecture": "texte", "note": "Attributs listés ensemble ; scores en figures 4-6" },
+        { "variete": "Cascade", "compose": "catéchine (témoin / 1 h / 96 h, bière jeune)", "valeur": "3,126 / 3,131 / 3,416", "unite": "mg/L", "famille": null, "lecture": "tableau A3", "note": "Polyphénol, non aromatique" }
+      ],
+      "note": "Une seule variété. Pas de valeur aromatique chiffrée dans le texte lu. Référence utile pour la durée : une heure de contact se voit après vieillissement. Déjà cité dans H [78], sans valeurs."
+    }
+  ]
+}

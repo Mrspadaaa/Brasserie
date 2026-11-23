@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Témoin retour-fiche-ok</title>
+<style>
+body{margin:0;background:#fff;color:#1a1a1a;font:16px/1.4 system-ui,sans-serif}
+.feuille{position:fixed;left:0;right:0;bottom:0;max-height:80vh;background:#fff;border-top:1px solid #ddd;border-radius:16px 16px 0 0;box-shadow:0 -4px 16px rgba(0,0,0,.12);max-width:48rem;margin:0 auto}
+.feuille header{display:flex;align-items:center;gap:8px;padding:4px 8px 4px 16px;border-bottom:1px solid #e5e5e5}
+.feuille h2{font-size:15px;margin:0;flex:1}
+.feuille button{width:48px;height:48px;border-radius:50%;border:0;background:#f0f0f0;color:#1a1a1a;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.feuille main{padding:12px 16px 24px}
+</style></head>
+<body>
+<div class="feuille" role="dialog" aria-labelledby="t">
+<header><h2 id="t">Nugget</h2>
+<button type="button" data-role="retour" aria-label="Fermer" onclick="document.querySelector('[role=dialog]').remove();location.hash='#/ma-biere'"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+</header>
+<main><p>α 9,5 à 16 %. Floral, herbacé, tropicaux, résineux : une fiche de houblon, lue d'un coup d'œil.</p><p>Nommé en premier : résineux. Sans famille : gingembre, resiny.</p></main>
+</div>
+<script>location.hash='#/fiche/nugget'</script>
+</body></html>

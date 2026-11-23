@@ -1,0 +1,485 @@
+import { Units } from '../services/units';
+import React, { useEffect, useState } from 'react';
+import { Calculator, ChevronDown } from 'lucide-react';
+import { BrewDayState, BrewDayStep, RecipeSnapshot, StockItem, BrewhouseProfile } from '../types';
+import { BrewEquipmentSummary } from './BrewEquipmentSummary';
+import { ReadingKind } from '../domain/brewDay';
+import {
+  actualWater,
+  boilScenario,
+  round,
+  roundFr,
+  thermalEstimate,
+  waterScenario,
+  wortRescue
+} from '../domain/brewAssist';
+import {
+  boilMinutes,
+  changeBoilMinutes,
+  effectiveFermentables,
+  isBoilStep
+} from '../domain/brewCompanion';
+import { brewNow } from '../services/brewClock';
+import { BrewUpdate, brewControl, brewInput } from './BrewDayMeasurements';
+import { BrewThermalControl } from './BrewThermalControl';
+import { effectiveThermalTarget } from '../domain/brewThermal';
+import { BrewChoice } from './BrewChoice';
+import { BrewTag } from './BrewTag';
+import { NumberInput } from './NumberInput';
+import { nombreFr } from '../domain/nombreAffiche';
+
+function NumberField({
+  label,
+  value,
+  set,
+  min = 0,
+  max = 1000
+}: {
+  label: string;
+  value: number | undefined;
+  set: (v: number | undefined) => void;
+  min?: number;
+  max?: number;
+}) {
+  return (
+    <label className="brew-assist-field">
+      <span>{label}</span>
+      <NumberInput
+        aria-label={label}
+        value={value}
+        onValue={set}
+        emptyValue={undefined}
+        min={min}
+        max={max}
+        className={brewInput}
+      />
+    </label>
+  );
+}
+
+/** Follow the live journal until a what-if draft is edited, then preserve that draft. */
+function useScenarioValue<T>(source: T, scope = ''): [T, (value: T) => void] {
+  const [draft, setDraft] = useState({ source, value: source, scope });
+  useEffect(() => {
+    setDraft((d) =>
+      d.scope !== scope || Object.is(d.value, source) || Object.is(d.source, d.value)
+        ? { source, value: source, scope }
+        : d
+    );
+  }, [source, scope]);
+  const dirty = draft.scope === scope && !Object.is(draft.source, draft.value);
+  return [dirty ? draft.value : source, (value: T) => setDraft({ source, value, scope })];
+}
+
+/** One collapsed, contextual workbench. A simulation never records a physical action. */
+export function BrewAssist({
+  recipe,
+  state,
+  step,
+  now,
+  update,
+  onMeasure,
+  stock = [],
+  brewhouse,
+  thermalHandled = false
+}: {
+  recipe: RecipeSnapshot;
+  state: BrewDayState;
+  step: BrewDayStep;
+  now: number;
+  update: BrewUpdate;
+  onMeasure: (kind: ReadingKind) => void;
+  stock?: StockItem[];
+  brewhouse?: BrewhouseProfile;
+  thermalHandled?: boolean;
+}) {
+  const boil = isBoilStep(step) || step.id === 'preboil' || step.id === 'fwh';
+  const cooling = ['refroidissement', 'whirlpool', 'ensemencement'].includes(step.id);
+  const heating = /^mash/.test(step.id);
+  const water = step.id === 'eau' || step.id === 'sparge';
+  const [side, setSide] = useState<'mash' | 'sparge'>(step.id === 'sparge' ? 'sparge' : 'mash');
+  const [ro, setRo] = useScenarioValue<number | undefined>(
+    actualWater(recipe, state, side).roL,
+    side
+  );
+  const [minutes, setMinutes] = useScenarioValue<number | undefined>(boilMinutes(state, recipe));
+  const hops = (recipe.hops ?? [])
+    .map((h, i) => ({ ...h, id: `hop-${i}` }))
+    .filter((h) => h.stage === 'boil');
+  const [hopId, setHopId] = useState(hops[0]?.id ?? '');
+  const hop = hops.find((h) => h.id === hopId);
+  const elapsedOf = (id: string) => {
+    const h = hops.find((x) => x.id === id),
+      done = state.additions?.[id]?.doneAt;
+    return done != null && state.boilStartedAt != null
+      ? round((done - state.boilStartedAt) / 60000)
+      : (state.hopElapsedMin?.[id] ?? Math.max(0, boilMinutes(state, recipe) - (h?.timeMin ?? 0)));
+  };
+  const [elapsed, setElapsed] = useScenarioValue<number | undefined>(
+    hop ? elapsedOf(hop.id) : undefined,
+    hopId
+  );
+  const [evap, setEvap] = useScenarioValue<number | undefined>(
+    state.boilOffLPerHour ?? recipe.brewhouse?.equipment?.boilOffLPerHour
+  );
+  const [notice, setNotice] = useState('');
+  const w = waterScenario(recipe, state, side, ro!);
+  const simulation = boilScenario(recipe, state, minutes!, hopId || undefined, elapsed, evap);
+  const target = effectiveThermalTarget(recipe, state, step);
+  const thermal =
+    (heating || cooling || step.id === 'sparge') && target != null
+      ? thermalEstimate(state, step, target, now, state.coolingWaterC, recipe.mash?.heatingRateCPerMin)
+      : null;
+  const thermalAttention =
+    thermal && ['overshoot', 'below', 'stalled', 'unreachable'].includes(thermal.status);
+  const rescue = wortRescue(state, step.id, recipe.ogTarget, recipe);
+  const grist = effectiveFermentables(recipe, state)
+    .filter((f) => f.kind === 'grain' && f.use === 'empatage')
+    .reduce((sum, f) => sum + f.weightKg, 0);
+  const ratio = grist > 0 ? actualWater(recipe, state, 'mash').litres / grist : null;
+  const save = (fn: Parameters<BrewUpdate>[0], message: string) => {
+    update(fn);
+    setNotice(message);
+  };
+  return (
+    <details className="brew-assist">
+      <summary>
+        <span>
+          <Calculator size={18} /> Aide à cette étape
+        </span>
+        <span className="brew-assist-summary">
+          <BrewTag
+            tone={
+              thermalAttention
+                ? 'due'
+                : thermal?.status === 'reached'
+                  ? 'done'
+                  : thermal?.status === 'estimate'
+                    ? 'active'
+                    : cooling
+                      ? 'info'
+                      : water
+                        ? 'info'
+                        : 'pause'
+            }
+          >
+            {thermalAttention
+              ? 'À ajuster'
+              : thermal?.status === 'reached'
+                ? 'À consigne'
+                : cooling
+                  ? 'Refroidir'
+                  : heating
+                    ? 'Chauffer'
+                    : water
+                      ? 'Ajuster l’eau'
+                      : boil
+                        ? 'Simuler'
+                        : 'Rattraper'}
+          </BrewTag>
+          <ChevronDown size={16} />
+        </span>
+      </summary>
+      <div className="brew-assist-body">
+        <BrewEquipmentSummary recipe={recipe} profile={brewhouse} state={state} stepId={step.id} />
+        {water && (
+          <section aria-label="Ajuster la coupe d’eau">
+            <h3>La bonne eau, avec ce que tu as</h3>
+            <div className="brew-assist-pills" role="group" aria-label="Eau à ajuster">
+              {(['mash', 'sparge'] as const).map((s) => (
+                <button
+                  type="button"
+                  key={s}
+                  aria-pressed={side === s}
+                  onClick={() => {
+                    setSide(s);
+                    setRo(actualWater(recipe, state, s).roL);
+                    setNotice('');
+                  }}
+                >
+                  {s === 'mash' ? 'Empâtage' : `Rinçage · ${nombreFr(recipe.mash?.spargeTempC ?? 76, 1)} °C`}
+                </button>
+              ))}
+            </div>
+            <p className="brew-muted">
+              {roundFr(actualWater(recipe, state, side).litres)} L au total · coupe prévue{' '}
+              {nombreFr(actualWater(recipe, state, side).plannedPct, 1)} % osmosée. Modifie le volume total dans
+              les ingrédients si nécessaire.
+            </p>
+            <NumberField
+              label="Osmosée réellement disponible (L)"
+              value={ro}
+              set={setRo}
+              max={actualWater(recipe, state, side).litres}
+            />
+            {w ? (
+              <>
+                <div className="brew-assist-result">
+                  <strong>
+                    {roundFr(w.roL)} L osmosée + {roundFr(w.tapL)} L réseau
+                  </strong>
+                  <p>{w.message}</p>
+                </div>
+                {w.ions && (
+                  <p className="brew-muted">
+                    Avec les doses renseignées : Ca {roundFr(w.ions.ca)} · SO₄ {roundFr(w.ions.so4)} ·
+                    Cl {roundFr(w.ions.cl)} · HCO₃ {roundFr(w.ions.hco3)} mg/L.{' '}
+                    {w.sourceInferred
+                      ? 'Source reconstituée depuis l’analyse diluée de la recette.'
+                      : 'Selon l’analyse de la source.'}
+                  </p>
+                )}
+                {w.replaceL > 0.01 && (
+                  <p>
+                    {!w.treated && !(side === 'mash' && w.grainIn)
+                      ? `Avant tout sel, acide ou grain : pour retrouver la coupe sans changer le volume, remplace ${roundFr(w.replaceL)} L du mélange homogène par de l’eau ${w.replacement}.`
+                      : 'Eau déjà versée ou traitée : ne retire pas le mélange pour appliquer cette correction. Mesure le pH et recalcule le traitement sur la coupe réelle.'}{' '}
+                    {w.addL != null && w.addL > 0.01 && !w.treated && !w.grainIn
+                      ? `Un simple ajout demanderait ${roundFr(w.addL)} L d’eau ${w.replacement} en plus : cela change aussi le volume et les dosages.`
+                      : ''}
+                  </p>
+                )}
+                <button
+                  type="button"
+                  className={brewControl}
+                  onClick={() =>
+                    save(
+                      (s) => ({
+                        ...s,
+                        waterMix: { ...s.waterMix, [side]: { roL: w.roL } }
+                      }),
+                      'Coupe réelle consignée. Les quantités réseau / osmosée sont actualisées.'
+                    )
+                  }
+                >
+                  Consigner cette coupe
+                </button>
+              </>
+            ) : (
+              <p className="brew-muted">
+                Renseigne une quantité comprise dans le volume total prévu.
+              </p>
+            )}
+          </section>
+        )}
+        {!thermalHandled && (heating || cooling || step.id === 'sparge') && <BrewThermalControl recipe={recipe} state={state} step={step} now={now} update={update} onMeasure={onMeasure} />}
+        {boil && (
+          <section aria-label="Simulateur d’ébullition">
+            <h3>Et si je change le programme ?</h3>
+            <BrewTag tone="pause">Simulation</BrewTag>
+            <div className="brew-assist-grid">
+              <NumberField
+                label="Ébullition totale (min)"
+                value={minutes}
+                set={setMinutes}
+                min={1}
+                max={480}
+              />
+              <NumberField
+                label={
+                  recipe.brewhouse?.equipment
+                    ? 'Évaporation à chaud (L/h)'
+                    : 'Évaporation mesurée (L/h)'
+                }
+                value={evap}
+                set={setEvap}
+                min={0}
+                max={100}
+              />
+            </div>
+            {hops.length > 0 && (
+              <>
+                <BrewChoice
+                  label="Houblon à simuler"
+                  value={hopId}
+                  options={hops.map((h) => ({
+                    value: h.id,
+                    label: h.name,
+                    detail: `${Units.format(h.weightG, 'g')} · recette : ${h.timeMin ?? 0} min avant la fin`
+                  }))}
+                  onChange={(id) => {
+                    setHopId(id);
+                    setElapsed(elapsedOf(id));
+                  }}
+                />
+                <NumberField
+                  label="Minutes écoulées depuis le début de l’ébullition"
+                  value={elapsed}
+                  set={setElapsed}
+                  max={minutes ?? 480}
+                />
+                {minutes != null && elapsed != null && elapsed <= minutes && (
+                  <p className="brew-muted">
+                    Contact avant la fin : {roundFr(minutes - elapsed)} min.
+                  </p>
+                )}
+              </>
+            )}
+            {simulation ? (
+              <>
+                <div className="brew-assist-result">
+                  <strong>
+                    {simulation.bitterness
+                      ? `≈ ${nombreFr(simulation.bitterness.projected, 1)} IBU · recette ${simulation.bitterness.planned}`
+                      : 'Volume et OG cibles requis pour estimer les IBU'}
+                  </strong>
+                  <p>{simulation.message}</p>
+                  {simulation.finalL != null &&
+                  simulation.finalL > 0 &&
+                  simulation.finalOg != null ? (
+                    <p>
+                      Après évaporation : ≈ {roundFr(simulation.finalL)} L · OG{' '}
+                      {simulation.finalOg.toFixed(3)}, avant pertes de transfert. Calcul à partir du
+                      volume et de la densité avant ébullition, ramenés à 20 °C.
+                      {simulation.extract.names.length > 0 &&
+                        ` Apport dissous inclus après ce relevé : ${simulation.extract.names.join(', ')}. Confirme le volume final après dissolution.`}
+                    </p>
+                  ) : (
+                    <p>
+                      Pour projeter volume et OG : relève le volume et la densité avant ébullition à
+                      20 °C, puis renseigne l’évaporation de ton matériel.
+                      {simulation.extract.names.length > 0 &&
+                        simulation.extract.pointsLitres == null &&
+                        ` Potentiel ou usage à préciser : ${simulation.extract.names.join(', ')}. Leur extrait ne peut pas être ignoré.`}
+                    </p>
+                  )}
+                  {simulation.extraEvapL != null && (
+                    <small>
+                      Écart d’évaporation : {simulation.extraEvapL >= 0 ? '+' : ''}
+                      {roundFr(simulation.extraEvapL)} L par rapport à la durée de la recette.
+                    </small>
+                  )}
+                </div>
+                <p className="brew-muted">
+                  Les IBU restent une estimation Tinseth.{' '}
+                  {simulation.finalL != null && simulation.finalL > 0 && simulation.finalOg != null
+                    ? 'Le volume et l’OG projetés sont pris en compte.'
+                    : 'Le calcul utilise le volume et l’OG de la recette.'}{' '}
+                  Un houblon déjà ajouté conserve son heure réelle, sauf correction explicite du
+                  journal.
+                </p>
+                <button
+                  type="button"
+                  className={brewControl}
+                  disabled={!!state.finishedAt || state.boilFinishedAt != null}
+                  onClick={() =>
+                    save(
+                      (s) => ({
+                        ...changeBoilMinutes(
+                          s,
+                          recipe,
+                          simulation.minutes - boilMinutes(s, recipe)
+                        ),
+                        ...(hopId && elapsed != null && s.additions?.[hopId]?.doneAt == null
+                          ? {
+                              hopElapsedMin: {
+                                ...s.hopElapsedMin,
+                                [hopId]: elapsed
+                              }
+                            }
+                          : {}),
+                        ...(evap != null && evap >= 0 ? { boilOffLPerHour: evap } : {})
+                      }),
+                      'Programme et prochaines alertes ajustés. Un houblon déjà versé conserve son heure réelle.'
+                    )
+                  }
+                >
+                  {state.additions?.[hopId]?.doneAt != null
+                    ? 'Appliquer la durée, garder l’ajout réel'
+                    : 'Appliquer au programme'}
+                </button>
+                {hop &&
+                  state.boilStartedAt != null &&
+                  elapsed != null &&
+                  elapsed >= 0 &&
+                  state.boilStartedAt + elapsed * 60000 <= now && (
+                    <button
+                      type="button"
+                      className={brewControl}
+                      onClick={() =>
+                        save(
+                          (s) => ({
+                            ...s,
+                            additions: {
+                              ...s.additions,
+                              [hop.id]: {
+                                amount: hop.weightG,
+                                ...s.additions?.[hop.id],
+                                doneAt: s.boilStartedAt! + elapsed * 60000
+                              }
+                            }
+                          }),
+                          'Heure réelle du houblon consignée. L’estimation d’amertume est mise à jour.'
+                        )
+                      }
+                    >
+                      Consigner l’ajout réel à +{elapsed} min
+                    </button>
+                  )}
+              </>
+            ) : (
+              <p className="brew-feedback">
+                La durée doit être positive et l’ajout compris entre le début et la fin.
+              </p>
+            )}
+          </section>
+        )}
+        {['preboil', 'ensemencement'].includes(step.id) && (
+          <section aria-label="Rattraper volume et densité">
+            <h3>Volume ou densité hors cible</h3>
+            {rescue ? (
+              <div className="brew-assist-result">
+                <strong>
+                  Volume final théorique : {roundFr(rescue.targetL)} L pour OG{' '}
+                  {recipe.ogTarget?.toFixed(3)}
+                </strong>
+                <p>
+                  {rescue.actionDeltaL == null
+                    ? ''
+                    : rescue.actionDeltaL < -0.05
+                      ? `Évaporer environ ${roundFr(-rescue.actionDeltaL)} L${rescue.evaporationL != null ? ' en plus de l’ébullition prévue' : ''}.`
+                      : rescue.actionDeltaL > 0.05
+                        ? `Appoint théorique de ${roundFr(rescue.actionDeltaL)} L${rescue.evaporationL != null ? ' avant l’ébullition' : ''}.`
+                        : 'Le volume suit la cible avec les hypothèses renseignées.'}{' '}
+                  {rescue.evaporationL != null &&
+                    `Évaporation prévue prise en compte : ${roundFr(rescue.evaporationL)} L. `}
+                  {rescue.message}
+                </p>
+              </div>
+            ) : (
+              <p>
+                Relève volume et densité du même moût, ramenés à 20 °C : le calcul conserve la
+                quantité de sucre pour estimer l’appoint ou l’évaporation. Si le sucre total manque,
+                réduire le volume cible est une option ; le conseil IA peut examiner les
+                fermentescibles disponibles.
+              </p>
+            )}
+            <button type="button" className={brewControl} onClick={() => onMeasure('volume')}>
+              Relever volume et densité
+            </button>
+          </section>
+        )}
+        {step.id === 'concassage' && (
+          <section>
+            <h3>Une pesée ou un malt à remplacer</h3>
+            <p>
+              {grist > 0 ? `${roundFr(grist, 2)} kg de grain · ` : ''}
+              {ratio != null ? `${roundFr(ratio, 2)} L/kg avec l’eau renseignée. ` : ''}
+              Ajuste les doses dans les ingrédients pour recalculer le ratio. « Remplacer » compare
+              les malts disponibles ; couleur proche ne signifie pas goût identique.
+            </p>
+            <p className="brew-muted">
+              Un concassage plus fin peut aider l’extraction mais freiner le rinçage. Vérifie le
+              débit avant d’accélérer ou de compacter le lit.
+            </p>
+          </section>
+        )}
+        {notice && (
+          <p className="brew-feedback" role="status">
+            {notice}
+          </p>
+        )}
+      </div>
+    </details>
+  );
+}

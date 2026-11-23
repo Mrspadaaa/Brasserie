@@ -1,0 +1,6 @@
+# WF2-3 : ouvrir la fiche d un brassin, Commencer le brassage
+t=Brassins
+c=B-ZZ-JOUR
+t=Commencer le brassage
+z=800
+inp

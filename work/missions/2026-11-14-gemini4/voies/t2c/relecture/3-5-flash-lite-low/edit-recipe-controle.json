@@ -1,0 +1,16 @@
+{
+ "reglage": "3.5-flash-lite@low",
+ "element": "edit-recipe-controle",
+ "cas": "edit-recipe",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 611,
+ "coutMicro": 2723,
+ "etat": "STOP"
+}

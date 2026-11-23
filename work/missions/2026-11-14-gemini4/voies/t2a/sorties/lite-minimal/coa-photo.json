@@ -1,0 +1,19 @@
+{
+ "cas": "coa-photo",
+ "usage": "coa",
+ "half": "choix",
+ "cellule": "lite@minimal",
+ "ok": true,
+ "ms": 1977,
+ "microChf": 2780,
+ "microDecembre": 2780,
+ "entree": 1963,
+ "sortie": 654,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "found true · lot « BENCH-LOT-2025-031 » · récolte 2025 · 4/4 mesures · 0 interdite(s)",
+ "reponse": "{\n  \"found\": true,\n  \"analysis\": [\n    {\n      \"analyte\": \"alpha\",\n      \"unit\": \"percentMass\",\n      \"basis\": \"asIs\",\n      \"kind\": \"point\",\n      \"source\": {\n        \"title\": \"Certificate of Analysis - Hop pellets T90\",\n        \"author\": \"FIXTURE DE TEST\",\n        \"reference\": \"BENCH-COA-0031\",\n        \"year\": 2026,\n        \"kind\": \"coa\",\n        \"locator\": \"Results (as is) - Alpha acids\"\n      },\n      \"confidence\": \"low\",\n      \"value\": 6.8\n    },\n    {\n      \"analyte\": \"beta\",\n      \"unit\": \"percentMass\",\n      \"basis\": \"asIs\",\n      \"kind\": \"point\",\n      \"source\": {\n        \"title\": \"Certificate of Analysis - Hop pellets T90\",\n        \"author\": \"FIXTURE DE TEST\",\n        \"reference\": \"BENCH-COA-0031\",\n        \"year\": 2026,\n        \"kind\": \"coa\",\n        \"locator\": \"Results (as is) - Beta acids\"\n      },\n      \"confidence\": \"low\",\n      \"value\": 5.9\n    },\n    {\n      \"analyte\": \"totalOil\",\n      \"unit\": \"ml100g\",\n      \"basis\": \"asIs\",\n      \"kind\": \"point\",\n      \"source\": {\n        \"title\": \"Certificate of Analysis - Hop pellets T90\",\n        \"author\": \"FIXTURE DE TEST\",\n        \"reference\": \"BENCH-COA-0031\",\n        \"year\": 2026,\n        \"kind\": \"coa\",\n        \"locator\": \"Results (as is) - Total oil\"\n      },\n      \"confidence\": \"low\",\n      \"value\": 1.1\n    },\n    {\n      \"analyte\": \"hsi\",\n      \"unit\": \"index\",\n      \"basis\": \"asIs\",\n      \"kind\": \"point\",\n      \"source\": {\n        \"title\": \"Certificate of Analysis - Hop pellets T90\",\n        \"author\": \"FIXTURE DE TEST\",\n        \"reference\": \"BENCH-COA-0031\",\n        \"year\": 2026,\n        \"kind\": \"coa\",\n        \"locator\": \"Results (as is) - Hop Storage Index\"\n      },\n      \"confidence\": \"low\",\n      \"value\": 0.28\n    }\n  ],\n  \"form\": \"pelletT90\",\n  \"harvestYear\": 2025,\n  \"lotNumber\": \"BENCH-LOT-2025-031\"\n}"
+}

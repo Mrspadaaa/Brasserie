@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Témoin D123 · graduations qui débordent sur un ajout</title>
+<!-- Témoin statique de controle-geste-etape.mjs --froid (D123, voie p19). OK attendu : un rail à la manière de sa base v4.10.
+     Le segment sous le doigt s'ouvre (20 px par pas), les autres se resserrent, le contenu sous le rail est repoussé ;
+     la carte tenue se replie en puce « Nugget » ; graduations « n °C » (whirlpool, 100 à 60 par 5) et « J+n »
+     (fermentation et post-fermentation, J+0 à J+14), un seul saut sous le doigt ; après le lâcher, la carte posée à son
+     moment avec ses mots (« à froid », « aucun IBU », J+n et son − / +, « whirlpool », n °C, n IBU, n min et son − / +).
+     geste-froid-deborde est la même page, sauf une ligne : le contenu ne bouge pas et les graduations passent dessus.
+     Classes préfixées tg-. Page sans dépendance. -->
+<style>
+  .tg-corps { margin: 0; font: 14px/18px system-ui, sans-serif; background: #fff; color: #111; -webkit-user-select: none; user-select: none; }
+  .tg-titre { padding: 10px 12px; font-weight: 700; }
+  .tg-frise { position: absolute; left: 0; top: 0; width: 390px; height: 1100px; touch-action: none; }
+  .tg-axe { position: absolute; left: 33px; top: 110px; width: 2px; background: #ccc; }
+  .tg-etape { position: absolute; left: 0; width: 100%; height: 18px; }
+  .tg-puce { position: absolute; left: 28px; top: 3px; width: 12px; height: 12px; border: 2px solid #111; border-radius: 50%; background: #fff; box-sizing: border-box; }
+  .tg-nom { position: absolute; left: 72px; top: 0; font-size: 14px; line-height: 18px; color: #444; white-space: nowrap; }
+  .tg-levure { position: absolute; left: 72px; width: 300px; height: 28px; border: 1px solid #bbb; border-radius: 14px; box-sizing: border-box; padding: 4px 12px; font-size: 13px; line-height: 18px; color: #333; }
+  .tg-poignee { position: absolute; left: 8px; width: 50px; height: 28px; border-radius: 14px; background: #111; color: #fff; font: 700 13px/28px system-ui, sans-serif; text-align: center; white-space: nowrap; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: none; }
+  .tg-carte { position: absolute; left: 72px; width: 300px; border-radius: 10px; background: #f0f0f0; padding: 6px 10px; box-sizing: border-box; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  .tg-carte .tg-l1 { height: 30px; line-height: 30px; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+  .tg-carte .tg-l2 { height: 20px; line-height: 20px; font-size: 12px; color: #444; white-space: nowrap; }
+  .tg-carte .tg-l3 { height: 32px; display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+  .tg-chip { display: inline-block; padding: 0 8px; height: 22px; line-height: 22px; border: 1px solid #aaa; border-radius: 11px; font-size: 12px; }
+  .tg-b { width: 26px; height: 26px; border: 1px solid #888; border-radius: 13px; background: #fff; padding: 0; font: 16px/24px system-ui, sans-serif; text-align: center; font-style: normal; }
+  .tg-carte.tg-tenue { height: 31px; width: 74px; left: 104px; padding: 5px 10px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.25); white-space: nowrap; }
+  .tg-carte.tg-tenue .tg-corps2 { display: none; }
+  .tg-carte.tg-tenue .tg-nomseul { display: block; }
+  .tg-nomseul { display: none; font-weight: 700; }
+  .tg-grad { position: absolute; left: 66px; font: 11px/13px ui-monospace, monospace; color: #555; }
+  .tg-champ { position: absolute; left: 16px; width: 358px; height: 36px; box-sizing: border-box; border: 1px solid #999; border-radius: 18px; padding: 0 14px; font: 14px system-ui, sans-serif; }
+  .tg-rapide { position: absolute; left: 16px; width: 358px; height: 46px; box-sizing: border-box; border: 0; border-radius: 10px; background: #f4f4f4; text-align: left; padding: 0 12px; font: 13px system-ui, sans-serif; color: #111; }
+  .tg-rapide span { position: absolute; left: 296px; top: 12px; }
+</style>
+</head>
+<body class="tg-corps">
+<div class="tg-titre">Houblons 3/7</div>
+<div class="tg-frise" id="tg-frise">
+  <div class="tg-axe" id="tg-axe"></div>
+  <div class="tg-etape" id="tg-e-eb"><i class="tg-puce"></i><span class="tg-nom">Ébullition 60′</span></div>
+  <div class="tg-etape" id="tg-e-zero"><i class="tg-puce"></i><span class="tg-nom">0′</span></div>
+  <div class="tg-etape" id="tg-e-w"><i class="tg-puce"></i><span class="tg-nom">whirlpool</span></div>
+  <div class="tg-levure" id="tg-levure">SafAle US-05 · caractérisée</div>
+  <div class="tg-etape" id="tg-e-f"><i class="tg-puce"></i><span class="tg-nom">fermentation</span></div>
+  <div class="tg-etape" id="tg-e-p"><i class="tg-puce"></i><span class="tg-nom">post-fermentation</span></div>
+  <div id="tg-grads"></div>
+  <div class="tg-carte" id="tg-carte" data-role="ligne-houblon" data-houblon-ligne="beermaverick-nugget"></div>
+  <span class="tg-poignee" id="tg-poignee" data-role="glisser-moment" role="slider" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="60" aria-valuenow="60" aria-valuetext="60′" tabindex="0">60′</span>
+  <input class="tg-champ" id="tg-champ" type="text" placeholder="Ajouter — houblon…" readonly>
+  <button class="tg-rapide" id="tg-r1" data-role="ajout-rapide">Motueka α 8,1 · 10 g +3 IBU<span>10′</span></button>
+  <button class="tg-rapide" id="tg-r2" data-role="ajout-rapide">Citra cryo α 24,8 · 10 g +9 IBU<span>10′</span></button>
+  <button class="tg-rapide" id="tg-r3" data-role="ajout-rapide">Saaz Late α 3,5–6 · 10 g +2 IBU<span>10′</span></button>
+</div>
+<script>
+(function () {
+  var DEBORDE = true;
+  var EB = 100, PAS = 20, DEC = 24;
+  function $(id) { return document.getElementById(id); }
+  var frise = $('tg-frise'), poignee = $('tg-poignee'), carte = $('tg-carte'), grads = $('tg-grads');
+  var posee = 'b', seg = 'b', actif = false, valeur = 60, dernier = { b: 60, w: 100, f: 0, p: 0 };
+  function dispo() {
+    var L = {};
+    L.zero = EB + (actif ? 170 : posee === 'b' ? 130 : 30);
+    L.W = L.zero + 30;
+    L.lev = L.W + (actif && seg === 'w' ? 190 : !actif && posee === 'w' ? 124 : 30);
+    L.F = L.lev + 32;
+    L.P = L.F + (actif && seg === 'f' ? 330 : !actif && posee === 'f' ? 124 : 30);
+    L.fin = L.P + (actif && seg === 'p' ? 330 : !actif && posee === 'p' ? 124 : 30);
+    L.contenu = DEBORDE ? 396 : L.fin + 16;
+    return L;
+  }
+  function haut(L, s) { return s === 'b' ? EB : s === 'w' ? L.W : s === 'f' ? L.F : L.P; }
+  function texte(s, v) { return s === 'b' ? v + '′' : s === 'w' ? v + ' °C' : 'J+' + v; }
+  function corps(s, v) {
+    var froid = s === 'f' || s === 'p';
+    var l1 = '<span class="tg-nomseul">Nugget</span><div class="tg-corps2 tg-l1"><b>Nugget</b><span class="tg-chip">' + (froid ? 'à froid' : s === 'w' ? 'whirlpool' : 'ébullition') + '</span>' +
+      '<span>' + (s === 'w' ? v + ' °C' : '') + '</span><button class="tg-b">−</button><span>46 g</span><button class="tg-b">+</button><button class="tg-b">×</button></div>';
+    var l2 = '<div class="tg-corps2 tg-l2">α 13 · double · résine 2/4 · ' + (froid ? 'aucun IBU' : s === 'w' ? '9 IBU' : '60 IBU') + '</div>';
+    var l3 = froid ? '<div class="tg-corps2 tg-l3"><button class="tg-b">−</button><span>J+' + v + '</span><button class="tg-b">+</button></div>'
+      : s === 'w' ? '<div class="tg-corps2 tg-l3"><button class="tg-b">−</button><span>20 min</span><button class="tg-b">+</button></div>' : '';
+    return l1 + l2 + l3;
+  }
+  function poser(yDoigt) {
+    var L = dispo();
+    $('tg-e-eb').style.top = EB + 'px';
+    $('tg-e-zero').style.top = L.zero + 'px';
+    $('tg-e-w').style.top = L.W + 'px';
+    $('tg-levure').style.top = L.lev + 'px';
+    $('tg-e-f').style.top = L.F + 'px';
+    $('tg-e-p').style.top = L.P + 'px';
+    $('tg-axe').style.height = (L.fin - 110) + 'px';
+    var ct = L.contenu;
+    $('tg-champ').style.top = ct + 'px';
+    $('tg-r1').style.top = (ct + 44) + 'px'; $('tg-r2').style.top = (ct + 96) + 'px'; $('tg-r3').style.top = (ct + 148) + 'px';
+    var s = actif ? seg : posee, y0 = haut(L, s), cy, h = '';
+    if (actif) {
+      var i;
+      if (s === 'b') { i = Math.max(0, Math.min(12, Math.round((yDoigt - (EB + 38)) / 10))); valeur = 60 - 5 * i; cy = EB + 38 + i * 10; }
+      else { var max = s === 'w' ? 8 : 14; i = Math.max(0, Math.min(max, Math.round((yDoigt - (y0 + DEC)) / PAS))); valeur = s === 'w' ? 100 - 5 * i : i; cy = y0 + DEC + i * PAS;
+        for (var j = Math.max(0, i - 4); j <= Math.min(max, i + 4); j++) if (j !== i) h += '<span class="tg-grad" style="top:' + (y0 + DEC + j * PAS - 6) + 'px">' + (s === 'w' ? (100 - 5 * j) + ' °C' : 'J+' + j) + '</span>'; }
+      dernier[s] = valeur;
+      carte.style.top = (cy - 15) + 'px';
+    } else {
+      cy = y0 + 36;
+      valeur = dernier[s];
+      carte.style.top = (y0 + 20) + 'px';
+    }
+    grads.innerHTML = h;
+    poignee.style.top = (cy - 14) + 'px';
+    var t = texte(s, valeur);
+    poignee.textContent = t;
+    poignee.setAttribute('aria-valuetext', t);
+    poignee.setAttribute('aria-valuenow', valeur);
+  }
+  function trouver(y) { var L = dispo(); return y >= L.P ? 'p' : y >= L.F ? 'f' : y >= L.W ? 'w' : 'b'; }
+  function suivre(e) { seg = trouver(e.clientY); poser(e.clientY); }
+  poignee.addEventListener('pointerdown', function (e) {
+    actif = true; seg = 'b'; poignee.setPointerCapture(e.pointerId); carte.classList.add('tg-tenue'); carte.innerHTML = corps('b', 60); suivre(e); e.preventDefault();
+  });
+  poignee.addEventListener('pointermove', function (e) { if (actif) suivre(e); });
+  function lever() {
+    if (!actif) return;
+    actif = false; posee = seg; dernier[seg] = valeur;
+    carte.classList.remove('tg-tenue'); carte.innerHTML = corps(posee, valeur); poser(0);
+  }
+  poignee.addEventListener('pointerup', lever); poignee.addEventListener('pointercancel', lever);
+  poignee.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  carte.innerHTML = corps('b', 60);
+  poser(0);
+})();
+</script>
+</body>
+</html>

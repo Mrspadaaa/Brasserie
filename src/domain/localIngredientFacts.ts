@@ -1,0 +1,61 @@
+import type { Fermentable, HopIngredient, StockItem, YeastSpec } from '../types';
+import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
+import { agreedFermentationFact } from '../../functions/src/fermentationContext';
+import { applyMaltFacts, applyHopFacts, applyYeastFacts, factsForRecipeStockItem, type IngredientFacts } from './ingredientFacts';
+import { yeastReferences } from './yeastReferences';
+import { resolveFermentationYeast } from './fermentationScenario';
+import type { TrialRecipe } from './hopIndex/trials';
+import { noloScience } from './nolo';
+import type { YeastTechnicalFact } from '../../functions/src/yeastTechnicalFacts';
+
+/** A unique, compatible documented identity may supply reference facts. Its ID
+ * stays separate from a selected stock article, whose lot-specific facts win. */
+export function localYeastFacts(yeast: YeastSpec, knowledge: HopKnowledge[]): IngredientFacts | undefined {
+  // A local sheet records this YeastSpec's current recipe/lot scope. A matching
+  // display name alone must not promote it into the catalogue candidate book.
+  const hasLocalDocumentary = (yeast as YeastSpec & { localDocumentary?: unknown }).localDocumentary !== undefined;
+  if (hasLocalDocumentary && !yeast.hopIndexId?.trim()) return undefined;
+  const ref = resolveFermentationYeast({yeast} as TrialRecipe, yeastReferences(knowledge));
+  if (!ref) return;
+  const temp = agreedFermentationFact(ref, 'temperature', '°C');
+  const attenuation = agreedFermentationFact(ref, 'attenuation', '%');
+  const pitch = agreedFermentationFact(ref, 'pitchRate', 'g/hL');
+  const pofs = ref.catalogue?.facts.filter(f=>f.key==='pof').map(f=>f.reported.toLowerCase()) ?? [];
+  const pof = pofs.length && pofs.every(p=>/^(negative|no|pof\s*−|pof\s*-|non[ -]?phenolic)$/.test(p)) ? 'negative' as const
+    : pofs.length && pofs.every(p=>/^(positive|yes|pof\s*\+|phenolic)$/.test(p)) ? 'positive' as const : 'unknown' as const;
+  const strain = noloScience(knowledge)?.strains.find(s => s.yeastId === ref.id);
+  const technicalFacts: YeastTechnicalFact[] | undefined = ref.catalogue?.facts.map(f => {
+    const retrieval = ref.catalogue!.retrievals.find(r => r.url === f.source.reference);
+    return { key:f.key, reported:f.reported, origin:'manufacturer', source:`${f.source.title} · ${f.source.reference}`,
+      ...(/^https?:\/\//i.test(f.source.reference) ? { sourceUrl:f.source.reference } : {}), ...(retrieval ? {retrievedAt:retrieval.retrievedAt} : {}),
+      ...(f.range ? {range:{...f.range},unit:f.unit,qualifier:f.qualifier} : {}),
+      ...(f.context ? {context:f.context} : {}) };
+  });
+  return { found:true, name:ref.name, source:ref.source.reference, origin:'manufacturer', technicalFacts, lab:ref.catalogue?.manufacturer, form:ref.form,
+    hopIndexId:ref.id, tempMinC:temp?.range.min ?? strain?.temperatureC?.min, tempMaxC:temp?.range.max ?? strain?.temperatureC?.max,
+    // A range is not collapsed into a pseudo-exact attenuation.
+    ...(attenuation?.range.min === attenuation?.range.max ? {attenuationPct:attenuation?.range.min} : {}),
+    ...(strain ? { fermentation:{version:1, strainName:strain.name, source:strain.source, retrievedAt:'2026-09-09', conditions:strain.limitation,
+      sugars:strain.sugars, pof:strain.pof, hydrolysis:strain.hydrolysis, ...(strain.pitchGL?{pitchGL:strain.pitchGL}:{}),
+      ...(strain.temperatureC?{temperatureC:strain.temperatureC}:{}), ...(strain.durationDays?{durationDays:strain.durationDays}:{})} }
+    : ref.catalogue ? {fermentation:{version:1, strainName:ref.name, source:temp?.source ?? ref.source,
+      retrievedAt:ref.catalogue.retrievals.map(r=>r.retrievedAt).sort().at(-1)!.slice(0,10),
+      conditions:'Fiche de souche : aucune relation quantitative NOLO ni assimilation non publiée déduite. '+[temp?.source.reference,pitch?.source.reference].filter(Boolean).join(' ; '),
+      sugars:{},pof,hydrolysis:'unknown',...(temp?{temperatureC:temp.range}:{}),...(pitch?{pitchGL:{min:pitch.range.min/100,max:pitch.range.max/100}}:{})}} : {}) };
+}
+/** Exact product + unique local record only. A generic oat name never becomes
+ * another manufacturer's analysed malt. Reading references performs no writes. */
+export function completeFromLocalReferences(fermentables: Fermentable[], hops: HopIngredient[], yeast: YeastSpec, stock: StockItem[], knowledge: HopKnowledge[]) {
+  const malt = fermentables.map(f => { const facts = factsForRecipeStockItem('malt',f,stock); return facts ? applyMaltFacts(f,facts) : f; });
+  const hop = hops.map(h => { const facts = factsForRecipeStockItem('houblon',h,stock); return facts ? applyHopFacts(h,facts) : h; });
+  // Catalogue identity and a local stock lot are separate choices. Only an
+  // explicit article ref permits lot-specific facts to enter this recipe.
+  // An adopted sheet is a decision of its owner. Automatic local reads may fill
+  // legacy records, but cannot append documentary facts to this saved decision.
+  const ownedSheet = yeast.localDocumentary !== undefined || yeast.adoptedDocumentary !== undefined;
+  const stockYeast = !ownedSheet && yeast.stockItemRef ? factsForRecipeStockItem('levure',yeast,stock) : undefined;
+  const reference = ownedSheet ? undefined : localYeastFacts(yeast,knowledge);
+  let y = stockYeast ? applyYeastFacts(yeast,stockYeast) : yeast;
+  if (reference) y = applyYeastFacts(y,reference);
+  return { fermentables:malt, hops:hop, yeast:y };
+}

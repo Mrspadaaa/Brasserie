@@ -1,0 +1,529 @@
+<title>Houblons de la recette</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Prototype de l'étape Houblons (mission #119, phase 8). Une seule colonne au téléphone :
+   en-tête 36 px, rail 28 px, bandeau IBU 32 px, ajouts repliés, puis la liste classée.
+   Deux colonnes à partir de 900 px. Jetons de DESIGN.md ; l'app est sombre (U5). */
+:root {
+  --cave-950: #12100E; --cave-900: #1A1613; --cave-850: #221D19; --cave-800: #2C2521; --cave-700: #3D342E; --cave-600: #574A42;
+  --cave-400: #9A8A7E; --cave-200: #D8CEC5; --cave-50: #F5F0EA;
+  --straw: #F2C14E; --attention: #E3B55D; --alert-strong: #F29289; --alert: #D6453D; --hop: #6E9B5B; --hop-text: #9CC488; --water: #5B8AA6;
+  --sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --shadow-sheet: 0 -12px 40px -16px rgba(0,0,0,.7);
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--cave-950); color: var(--cave-200); font: 14px/1.3 var(--sans); }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--straw); outline-offset: 1px; }
+input { font: 16px var(--mono); color: var(--cave-50); }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+#app { position: relative; height: 100%; max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; overflow: hidden;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top { height: 36px; flex: none; display: flex; align-items: center; gap: 6px; padding: 0; border-bottom: 1px solid var(--cave-800); }
+.top .back { flex: none; width: 28px; height: 28px; color: var(--cave-400); font-size: 20px; }
+.top .title { min-width: 0; display: flex; align-items: baseline; gap: 6px; height: 28px; padding: 0 4px; border-radius: 10px; }
+.top .title b { color: var(--cave-50); font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top .title span { color: var(--cave-400); font-size: 12px; white-space: nowrap; }
+.top .title::after { content: "▾"; color: var(--cave-400); font-size: 11px; }
+.top .help { margin-left: auto; min-width: 28px; height: 28px; padding: 0 8px; border-radius: 10px; background: var(--cave-850); color: var(--cave-200); font-size: 12px; }
+.rail { height: 28px; flex: none; display: flex; align-items: center; gap: 10px; padding: 0; color: var(--cave-400); font-size: 12px; white-space: nowrap; overflow: hidden; border-bottom: 1px solid var(--cave-800); }
+.rail b { color: var(--cave-50); font-weight: 600; box-shadow: inset 0 -2px var(--hop); padding-bottom: 2px; }
+.body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.cols { display: block; }
+@media (min-width: 900px) { .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 16px; padding: 0; } .cols > section { min-width: 0; } .cols > section[aria-label="Classement"] { grid-column: 1; grid-row: 1; } .cols > section[aria-label="Ajouts"] { grid-column: 2; grid-row: 1; } }
+.strip { height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 6px; background: var(--cave-900); border-bottom: 1px solid var(--cave-800); }
+.strip .ibu { font: 600 16px var(--mono); color: var(--cave-50); }
+.strip .unit { color: var(--cave-400); font-size: 12px; }
+.gauge { position: relative; width: 64px; height: 6px; border-radius: 3px; background: var(--cave-800); flex: none; }
+.gauge .band { position: absolute; top: 0; bottom: 0; background: var(--cave-600); border-radius: 3px; }
+.gauge .val { position: absolute; top: -3px; width: 3px; height: 12px; background: var(--cave-50); border-radius: 1px; }
+.strip .aro { min-width: 0; color: var(--cave-400); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hint { padding: 6px 0; color: var(--cave-400); font-size: 12px; }
+.sec { height: 28px; display: flex; align-items: center; gap: 8px; padding: 0; }
+.sec h2 { margin: 0; font-size: 13px; font-weight: 600; color: var(--cave-50); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.seg { margin-left: auto; display: inline-flex; background: var(--cave-850); border-radius: 10px; padding: 2px; flex: none; }
+.seg button { height: 24px; padding: 0 9px; border-radius: 8px; font-size: 12px; color: var(--cave-400); }
+.seg button[aria-pressed="true"] { background: var(--cave-700); color: var(--cave-50); font-weight: 600; }
+.chips { height: 32px; display: flex; align-items: center; gap: 6px; padding: 0; overflow-x: auto; scrollbar-width: none; }
+.chip { flex: none; height: 28px; padding: 0 10px; border-radius: 14px; background: var(--cave-850); color: var(--cave-200); font-size: 12px; white-space: nowrap; }
+.chip[aria-pressed="true"] { background: var(--cave-700); color: var(--cave-50); box-shadow: inset 0 0 0 1px var(--cave-600); }
+.nd { display: block; width: 100%; height: 28px; margin: 0 0 2px; padding: 0 8px; border-radius: 8px; background: var(--cave-900); color: var(--attention); font-size: 12px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row { position: relative; display: grid; grid-template-columns: 32px minmax(0, 1fr) 32px; height: 32px; border-bottom: 1px solid var(--cave-850); }
+.row.on { background: var(--cave-850); }
+.row .chk { display: grid; place-items: center; }
+.row .chk i { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--cave-400); display: grid; place-items: center; font: 700 12px var(--sans); font-style: normal; color: var(--cave-950); }
+.row.on .chk i { background: var(--straw); border-color: var(--straw); }
+.row .main { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto auto; align-items: center; gap: 6px; text-align: left; padding-right: 2px; }
+.row .rk { font: 12px var(--mono); color: var(--cave-400); }
+.row .nm { color: var(--cave-50); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .nm small { color: var(--cave-400); font-weight: 400; font-size: 12px; }
+.row .qty { font: 14px var(--mono); color: var(--cave-50); font-variant-numeric: tabular-nums; }
+.row .qty.buy { font: 12px var(--sans); color: var(--cave-400); }
+.row .qty .in { font: 600 11px var(--sans); color: var(--hop-text); margin-right: 4px; }
+.row .why { color: var(--cave-400); font-size: 16px; }
+.mk { font-size: 11px; white-space: nowrap; color: var(--cave-400); }
+.mk.low { color: var(--attention); } .mk.k-typique { color: var(--hop-text); } .mk.k-hors { color: var(--cave-400); }
+.group { display: flex; justify-content: space-between; align-items: baseline; }
+.hintr { font-size: 11px; color: var(--cave-400); letter-spacing: 0; }
+.seglab { margin-left: auto; font-size: 11px; color: var(--cave-400); white-space: nowrap; }
+.seglab + .seg { margin-left: 0; }
+.add .line { grid-template-rows: auto auto; height: auto; min-height: 40px; padding-top: 4px; padding-bottom: 4px; row-gap: 1px; }
+.add .line .aro2 { grid-column: 1 / -1; font-size: 11px; color: var(--cave-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.body.withsnack { padding-bottom: 56px; }
+.group { padding: 8px 0 2px; font-size: 12px; color: var(--cave-400); letter-spacing: .03em; }
+.whyline { padding: 6px 6px 8px 36px; background: var(--cave-900); border-bottom: 1px solid var(--cave-850); font-size: 12px; color: var(--cave-200); display: grid; gap: 3px; }
+.whyline .src { color: var(--cave-400); }
+.whyline a { color: var(--cave-50); }
+.adds { border-bottom: 1px solid var(--cave-800); }
+.add { border-bottom: 1px solid var(--cave-850); }
+.add .line { width: 100%; height: 32px; display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; gap: 8px; align-items: center; padding: 0; text-align: left; }
+.add .line .nm { color: var(--cave-50); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.add .line .v { font: 13px var(--mono); color: var(--cave-200); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.add .line .warn { color: var(--attention); font-size: 12px; }
+.add .line .ibu { font: 600 13px var(--mono); color: var(--cave-50); min-width: 54px; text-align: right; }
+.add.open { background: var(--cave-900); }
+.edit { padding: 2px 0 8px; display: grid; gap: 6px; }
+.edit .r1 { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.stepper { display: inline-flex; align-items: center; height: 32px; border-radius: 10px; background: var(--cave-850); }
+.stepper button { width: 32px; height: 32px; font-size: 18px; color: var(--cave-50); }
+.stepper input { width: 56px; height: 28px; border: 0; background: var(--cave-950); border-radius: 6px; text-align: right; padding: 0 4px; }
+.stepper .u { color: var(--cave-400); padding: 0 6px 0 4px; font-size: 12px; }
+.moms { display: flex; gap: 4px; flex-wrap: wrap; }
+.mom { height: 28px; padding: 0 8px; border-radius: 10px; background: var(--cave-850); font-size: 12px; color: var(--cave-200); }
+.mom[aria-pressed="true"] { background: var(--cave-700); color: var(--cave-50); box-shadow: inset 0 0 0 1px var(--hop); }
+.edit .r3 { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--cave-400); }
+.edit .r3 .grow { flex: 1; min-width: 0; }
+.btn2 { height: 28px; padding: 0 10px; border-radius: 10px; background: var(--cave-850); color: var(--cave-200); font-size: 12px; }
+.btnx { height: 28px; padding: 0 8px; border-radius: 10px; color: var(--alert-strong); font-size: 12px; }
+.lack { color: var(--attention); font-size: 12px; }
+.sheet { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); position: absolute; left: 0; right: 0; bottom: 0; top: 64px; z-index: 20; display: flex; flex-direction: column; background: var(--cave-900); border-radius: 24px 24px 0 0; box-shadow: var(--shadow-sheet); }
+@media (min-width: 900px) { .sheet { left: 50%; width: 520px; transform: translateX(-50%); top: 80px; } }
+.sheet .sh { height: 36px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0; border-bottom: 1px solid var(--cave-800); }
+.sheet .sh b { color: var(--cave-50); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.sheet .sh .x { margin-left: auto; height: 28px; padding: 0 10px; border-radius: 10px; background: var(--cave-850); font-size: 12px; }
+.sheet .sb { flex: 1; overflow-y: auto; padding-bottom: env(safe-area-inset-bottom, 0px); }
+.sheet .sub { padding: 6px 0; color: var(--cave-400); font-size: 12px; }
+.cand { width: 100%; display: grid; gap: 2px; padding: 7px 0; text-align: left; border-bottom: 1px solid var(--cave-850); }
+.cand .c1 { display: flex; align-items: baseline; gap: 8px; }
+.cand .c1 b { color: var(--cave-50); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cand .d { font: 600 14px var(--mono); color: var(--cave-50); }
+.cand .st { font-size: 12px; }
+.ok { color: var(--hop-text); } .low { color: var(--attention); } .buy { color: var(--cave-400); }
+.cand .c2 { font-size: 12px; color: var(--cave-400); }
+.cmp { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); position: absolute; left: 0; right: 0; bottom: 0; max-height: 54%; z-index: 15; display: flex; flex-direction: column; background: var(--cave-900); border-top: 1px solid var(--cave-700); box-shadow: var(--shadow-sheet); padding-bottom: env(safe-area-inset-bottom, 0px); }
+@media (min-width: 900px) { .cmp { left: 50%; width: 640px; transform: translateX(-50%); border-radius: 16px 16px 0 0; } }
+.cmp .sh { height: 34px; flex: none; display: flex; align-items: center; gap: 8px; padding: 0; }
+.cmp .sh b { color: var(--cave-50); font-size: 14px; }
+.cmp .sh .sp { flex: 1; }
+.cmp .tb { overflow: auto; }
+.cmp table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 12px; }
+.cmp th, .cmp td { padding: 4px 3px; border-top: 1px solid var(--cave-850); text-align: left; vertical-align: top; overflow-wrap: break-word; hyphens: auto; }
+.cmp th:first-child, .cmp td:first-child { width: 66px; padding-left: 0; color: var(--cave-400); font-weight: 400; }
+.cmp thead th { color: var(--cave-50); font-weight: 600; font-size: 13px; }
+.cmp td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--cave-50); }
+.cmp td .best { color: var(--hop-text); }
+.cmp table.c4 { font-size: 12px; }
+.cmp .more { color: var(--cave-400); }
+.qs { display: grid; }
+.q { padding: 8px 0; border-bottom: 1px solid var(--cave-850); display: grid; gap: 3px; }
+.q .qt { color: var(--cave-50); font-size: 13px; }
+.q .qa { font-size: 12px; color: var(--cave-400); }
+.q .qa.nd2 { color: var(--attention); }
+.q button { justify-self: start; }
+.field { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+.field label { flex: 1; color: var(--cave-200); }
+.field input { width: 84px; height: 32px; border: 0; border-radius: 10px; background: var(--cave-850); text-align: right; padding: 0 8px; }
+.styl { width: 100%; display: grid; gap: 1px; padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--cave-850); }
+.styl b { color: var(--cave-50); font-weight: 600; }
+.styl span { color: var(--cave-400); font-size: 12px; }
+.styl[aria-pressed="true"] { background: var(--cave-850); box-shadow: inset 3px 0 var(--hop); }
+.snack { position: absolute; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 30; height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 12px; border-radius: 10px; background: var(--cave-50); color: var(--cave-950); }
+.snack span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.snack button { height: 28px; padding: 0 8px; font-weight: 700; color: var(--cave-950); text-decoration: underline; }
+.spacer { height: 52vh; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div id="app" lang="fr" aria-label="Étape Houblons d'une recette"></div>
+
+<script id="data" type="application/json">/*DATA*/</script>
+<script>
+(() => {
+  const DATA = JSON.parse(document.getElementById('data').textContent);
+  const V = Object.fromEntries(DATA.varieties.map((v) => [v.id, v]));
+  const STYLES = Object.fromEntries(DATA.styles.map((s) => [s.id, s]));
+  const FAM = DATA.families;
+  // Stock : un houblon peut avoir plusieurs articles (fiche à 0 g et article réel, #120).
+  const STOCK = {};
+  for (const s of DATA.stock) {
+    const e = (STOCK[s.variety] ??= { grams: 0, alpha: null, alphaFrom: null, form: 'pellet', items: [] });
+    e.grams += s.grams; e.items.push(s.item);
+    if (s.grams > 0) { e.form = s.form; if (s.alphaLot != null) { e.alpha = s.alphaLot; e.alphaFrom = s.alphaFrom; } }
+  }
+  const MOMENTS = [
+    { id: 'fw', label: '1er moût', stage: 'firstWort' }, { id: 60, label: '60′' }, { id: 30, label: '30′' }, { id: 15, label: '15′' }, { id: 5, label: '5′' },
+    { id: 'wp', label: 'Whirlpool', stage: 'whirlpool' }, { id: 'cru', label: 'À cru', stage: 'dryHop' },
+  ];
+  const momLabel = (m) => (MOMENTS.find((x) => x.id === m) || {}).label || m;
+
+  const S = { style: 'stout-export', volume: 20, og: 1.06, boil: 60, role: 'amer', cat: false, sel: [], adds: [], open: -1, why: null, sheet: null, rep: -1, all: false, undo: null, more: false };
+  const fmt = (n, d = 0) => (n == null || !Number.isFinite(n) ? '—' : Number(n).toLocaleString('fr-FR', { maximumFractionDigits: d }));
+  const fmtOg = (n) => Number(n).toLocaleString('fr-FR', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const range = (r, d = 1) => (!r ? 'inconnu' : r[0] === r[1] ? fmt(r[0], d) : `${fmt(r[0], d)}–${fmt(r[1], d)}`);
+  const mid = (r) => (r ? (r[0] + r[1]) / 2 : null);
+
+  // Alpha utilisé pour le calcul : celui du lot en stock, sinon le milieu de la plage de la variété.
+  const alphaOf = (id) => { const s = STOCK[id]; if (s && s.grams > 0 && s.alpha != null) return { value: s.alpha, from: s.alphaFrom === 'fiche' ? 'lot' : 'lu sur l’article' }; const r = V[id].alpha; return r ? { value: mid(r), from: 'plage ' + range(r) + ' %' } : null; };
+  // IBU d'un ajout : BrewingMath.hopIbu (src/services/brewingMath.ts), même formule.
+  function ibu(id, g, m) {
+    const a = alphaOf(id); if (!a || !(g > 0)) return a ? 0 : null;
+    const G = 1.65 * Math.pow(0.000125, Math.max(0, S.og - 1));
+    const t = (min) => (1 - Math.exp(-0.04 * Math.max(0, min))) / 4.15;
+    let u = 0;
+    if (m === 'fw') u = G * t(S.boil) * 1.1;
+    else if (m === 'wp') u = G * t(20) * Math.pow(2, (80 - 100) / 10);
+    else if (typeof m === 'number') u = G * t(m);
+    return (g * 1000 / S.volume) * (a.value / 100) * u;
+  }
+  const doseFor = (id, target, m) => { const one = ibu(id, 1, m); return one ? target / one : null; };
+  const totalIbu = () => S.adds.reduce((s, a) => s + (ibu(a.id, a.g, a.m) || 0), 0);
+  const used = (id, except = -1) => S.adds.reduce((s, a, i) => (a.id === id && i !== except ? s + a.g : s), 0);
+
+  // Adéquation au style : part des descripteurs du houblon dans les familles voulues, moins
+  // celles à éviter ; atténuée pour les houblons à peu de descripteurs (n + 2).
+  const fit = (v, st) => { const w = st.wanted.reduce((s, f) => s + (v.famTags[f] || 0), 0); const u = st.unwanted.reduce((s, f) => s + (v.famTags[f] || 0), 0); return (w - u) / ((v.nTags || 0) + 2); };
+  const documentedFor = (v, st) => !!st.usage && v.usage.some((u) => st.usage.includes(u));
+  const wantedTags = (v, st) => (v.tf || []).filter(([, f]) => st.wanted.includes(f)).map(([x]) => x);
+  const againstTags = (v, st) => (v.tf || []).filter(([, f]) => st.unwanted.includes(f)).map(([x]) => x);
+  const originOk = (v, st) => !!st.origins && st.origins.includes(v.origin);
+  // Classe : typique (usage documenté, ou origine citée par le guide et descripteurs dans le
+  // sens du style), compatible (descripteurs dans le sens du style), hors style ; « aucune »
+  // si le style n'a pas de direction documentée.
+  function klass(v, st) {
+    if (documentedFor(v, st)) return 'typique';
+    if (!st.wanted.length) return 'aucune';
+    const w = wantedTags(v, st).length, u = againstTags(v, st).length;
+    if (w > u && originOk(v, st)) return 'typique';
+    return w > u ? 'compatible' : 'hors';
+  }
+  const KLASS = { typique: 'Typique de ce style', compatible: 'Compatible', hors: 'Hors style', aucune: 'Sans direction de style' };
+  const KWORD = { typique: 'typique', compatible: 'compatible', hors: 'hors style', aucune: '' };
+  const ORDER = { typique: 0, compatible: 1, hors: 2, aucune: 3 };
+  // Dose du prochain ajout : amertume à 60′ pour atteindre le milieu de la cible ; arôme 1 g/L (Cryo × 0,45).
+  function needFor(id) {
+    const st = STYLES[S.style];
+    if (S.role === 'amer') { const g = doseFor(id, Math.max(1, (st.ibu[0] + st.ibu[1]) / 2 - totalIbu()), 60); return g == null ? null : Math.ceil(g); }
+    return Math.max(1, Math.round(STOCK[id]?.form === 'cryo' ? S.volume * 0.45 : S.volume));
+  }
+  const freeOf = (id) => (STOCK[id]?.grams || 0) - used(id);
+  // Groupes de la liste. Rang chiffré seulement si le style a des usages documentés ;
+  // sinon des groupes, pas un rang (critique UX du 18.10.2026).
+  function groups() {
+    const st = STYLES[S.style];
+    const name = (x, y) => V[x.id].name.localeCompare(V[y.id].name);
+    const item = (id) => { const v = V[id], need = needFor(id); return { id, k: klass(v, st), f: fit(v, st), a: alphaOf(id)?.value ?? 0, o: originOk(v, st) ? 1 : 0, d: documentedFor(v, st) ? 1 : 0, need, enough: need != null && freeOf(id) >= need, g: STOCK[id]?.grams || 0 }; };
+    const stockIds = Object.keys(STOCK).filter((id) => STOCK[id].grams > 0);
+    const items = stockIds.map(item);
+    const out = [];
+    if (S.role === 'amer') {
+      // Amertume : assez en stock pour la dose visée d'abord ; puis usage documenté, alpha, origine du style.
+      const cmp = (x, y) => y.d - x.d || y.a - x.a || y.o - x.o || y.f - x.f || name(x, y);
+      out.push({ title: 'Assez pour l’amertume visée', ids: items.filter((x) => x.enough).sort(cmp) });
+      out.push({ title: 'Pas assez en stock', ids: items.filter((x) => !x.enough).sort(cmp) });
+    } else {
+      // Arôme : classe de style, puis adéquation, puis quantité.
+      const cmp = (x, y) => y.f - x.f || y.g - x.g || name(x, y);
+      for (const k of ['typique', 'compatible', 'hors', 'aucune']) out.push({ title: KLASS[k], ids: items.filter((x) => x.k === k).sort(cmp) });
+    }
+    if (S.cat) {
+      const cat = DATA.varieties.map((v) => v.id).filter((id) => !stockIds.includes(id)).map(item)
+        .sort((x, y) => ORDER[x.k] - ORDER[y.k] || (S.role === 'amer' ? y.a - x.a : y.f - x.f) || name(x, y)).slice(0, 40);
+      out.push({ title: 'À acheter', cat: true, ids: cat });
+    }
+    return { documented: !!st.usage, groups: out.filter((g) => g.ids.length) };
+  }
+  const flatIds = () => groups().groups.flatMap((g) => g.ids.map((x) => x.id));
+  function reason(id) {
+    const v = V[id], st = STYLES[S.style];
+    const w = wantedTags(v, st), u = againstTags(v, st);
+    const parts = [];
+    parts.push(documentedFor(v, st) ? 'Usage documenté pour ce style (' + esc(v.usageSource || 'source du dépôt') + ').' : 'Usage pour ce style : non documenté.');
+    if (st.wanted.length) parts.push(w.length ? 'Dans le sens du style : ' + w.map(esc).join(', ') + '.' : 'Aucun descripteur dans le sens du style.');
+    if (u.length) parts.push('Contre le style : ' + u.map(esc).join(', ') + '.');
+    if (st.origins) parts.push(originOk(v, st) ? 'Origine ' + esc(v.origin) + ' : citée par le guide pour ce style.' : 'Origine ' + esc(v.origin || 'inconnue') + ' : le guide cite ' + st.origins.map(esc).join(' ou ') + '.');
+    return parts.join(' ');
+  }
+
+  // Arôme : seuls les ajouts tardifs comptent (à cru 1, whirlpool 0,8, 10′ ou moins 0,5,
+  // 15′ ou moins 0,3) ; au-delà, l'ajout donne de l'amertume, pas d'arôme.
+  const weightOf = (m) => (m === 'cru' ? 1 : m === 'wp' ? 0.8 : typeof m === 'number' ? (m <= 10 ? 0.5 : m <= 15 ? 0.3 : 0) : 0);
+  function aroma(list = S.adds) {
+    const w = {};
+    for (const a of list) { const v = V[a.id]; const k = weightOf(a.m) * a.g / S.volume; if (!k) continue; for (const [f, n] of Object.entries(v.famTags)) w[f] = (w[f] || 0) + k * n / (v.nTags || 1); }
+    return Object.entries(w).sort((x, y) => y[1] - x[1]).filter((x) => x[1] > 0.01).slice(0, 2).map((x) => FAM[x[0]]);
+  }
+
+  function addHop(id) {
+    const st = STYLES[S.style];
+    const amer = S.role === 'amer';
+    const m = amer ? 60 : 'wp';
+    const target = (st.ibu[0] + st.ibu[1]) / 2;
+    let g = amer ? doseFor(id, Math.max(1, target - totalIbu()), 60) : S.volume * 1;
+    if (g == null) g = S.volume; // alpha inconnu : dose d'arôme par défaut, IBU affiché « inconnu »
+    if (!amer && STOCK[id]?.form === 'cryo') g = g * 0.45; // Cryo : départ à 40–50 % du poids T-90 (YCH)
+    S.adds.push({ id, g: Math.max(1, Math.round(g)), m });
+    S.open = S.adds.length - 1;
+  }
+
+  // ---------- rendu ----------
+  const app = document.getElementById('app');
+  let refocus = false;
+  function top() {
+    const st = STYLES[S.style];
+    return `<header class="top"><button class="back" aria-label="Retour aux recettes">‹</button>
+      <button class="title" data-act="style" aria-label="Style et paramètres de la recette"><b>${esc(st.label)}</b><span class="mono">${fmt(S.volume)} L · ${fmtOg(S.og)}</span></button>
+      <button class="help" data-act="questions" aria-label="Mes questions">?</button></header>
+      <nav class="rail" aria-label="Étapes"><span>Identité</span><span>Malts</span><b aria-current="step">Houblons</b><span>Levure</span><span>Fermentation</span><span>Eau</span></nav>`;
+  }
+  function strip() {
+    const st = STYLES[S.style], t = totalIbu(), max = Math.max(90, st.ibu[1] * 1.2);
+    const aro = aroma();
+    const aroText = aro.length ? 'arôme : ' + aro.join(', ') : S.adds.length ? 'peu d’arôme (ajouts d’amertume)' : '';
+    return `<div class="strip"><span class="unit">IBU</span><span class="ibu">${fmt(t)}</span><span class="unit mono">${st.ibu[0]}–${st.ibu[1]}</span>
+      <span class="gauge" aria-hidden="true"><span class="band" style="left:${st.ibu[0] / max * 100}%;width:${(st.ibu[1] - st.ibu[0]) / max * 100}%"></span><span class="val" style="left:${Math.min(100, t / max * 100)}%"></span></span>
+      <span class="aro">${aroText}</span></div>`;
+  }
+  const hopName = (id) => esc(V[id].name) + (STOCK[id]?.grams > 0 && STOCK[id].form === 'cryo' ? ' cryo' : '');
+  function addLine(a, i) {
+    const v = V[a.id], val = ibu(a.id, a.g, a.m), s = STOCK[a.id];
+    const lack = s ? Math.max(0, used(a.id) - s.grams) : used(a.id);
+    const open = S.open === i;
+    const aro = weightOf(a.m) ? v.tags.slice(0, 2).map(esc).join(', ') : 'amertume seulement';
+    const head = `<button class="line" data-act="toggle" data-i="${i}" aria-expanded="${open}"><span class="nm">${hopName(a.id)}</span>
+      <span class="v">${fmt(a.g)} g · ${esc(momLabel(a.m))}</span>${lack ? '<span class="warn">⚠ stock</span>' : '<span></span>'}<span class="ibu">${val == null ? 'α ?' : a.m === 'cru' ? 'arôme' : fmt(val, 1) + ' IBU'}</span>
+      <span class="aro2">${aro}</span></button>`;
+    if (!open) return `<div class="add">${head}</div>`;
+    const al = alphaOf(a.id);
+    return `<div class="add open">${head}<div class="edit">
+      <div class="r1"><span class="stepper"><button data-act="minus" data-i="${i}" aria-label="Moins 1 g">−</button><input id="dose-${i}" data-i="${i}" type="text" inputmode="decimal" autocomplete="off" value="${fmt(a.g)}" aria-label="Dose de ${esc(v.name)} en grammes"><span class="u">g</span><button data-act="plus" data-i="${i}" aria-label="Plus 1 g">+</button></span>
+        <span class="mono" style="color:var(--cave-400);font-size:12px">${fmt(a.g / S.volume, 1)} g/L</span></div>
+      <div class="moms" role="group" aria-label="Moment">${MOMENTS.map((m) => `<button class="mom" data-act="mom" data-i="${i}" data-m="${m.id}" aria-pressed="${a.m === m.id}">${m.label}</button>`).join('')}</div>
+      <div class="r3"><span class="grow">α ${al ? fmt(al.value, 1) + ' % (' + esc(al.from) + ')' : 'inconnu'}</span>
+        <button class="btn2" data-act="rep" data-i="${i}">Remplacer</button><button class="btnx" data-act="del" data-i="${i}" aria-label="Retirer ${esc(v.name)}">Retirer</button></div>
+      ${lack ? `<div class="lack">En stock : ${fmt(s ? s.grams : 0)} g · il manque ${fmt(lack)} g</div>` : ''}
+      ${val == null ? '<div class="lack">Alpha inconnu : IBU non calculé. Renseigne l’alpha du lot.</div>' : ''}
+      ${s?.form === 'cryo' ? '<div class="hint" style="padding:0">Cryo : en arôme, départ à 40–50 % du poids en pellets T-90 (Yakima Chief Hops).</div>' : ''}
+    </div></div>`;
+  }
+  function adds() {
+    if (!S.adds.length) return `<div class="hint">Touche un houblon pour l’ajouter à la recette.</div>`;
+    return `<div class="adds" aria-label="Mes ajouts">${S.adds.map(addLine).join('')}</div>`;
+  }
+  function row(x, n, cat) {
+    const id = x.id, v = V[id], s = STOCK[id], on = S.sel.includes(id), u = used(id);
+    const inStock = s && s.grams > 0;
+    const qty = inStock ? `${u ? '<span class="in">ajouté</span>' : ''}${fmt(s.grams)} g` : 'à acheter';
+    // Repère avant le toucher : manque pour la dose visée, sinon classe de style.
+    const mark = inStock && !x.enough && x.need != null ? `<span class="mk low">manque ${fmt(x.need - Math.max(0, freeOf(id)))} g</span>`
+      : (S.role === 'amer' || cat) && KWORD[x.k] ? `<span class="mk k-${x.k}">${KWORD[x.k]}</span>` : '<span></span>';
+    const st = STYLES[S.style];
+    const why = S.why === id ? `<div class="whyline"><span>${reason(id)}</span><span class="src">α ${range(v.alpha)} %${inStock && s.alpha != null ? ` (lot : ${fmt(s.alpha, 1)} %)` : ''} · ${v.tags.slice(0, 6).map(esc).join(', ')}</span>
+      <span class="src">Direction : ${esc(st.source)}${st.note ? ', ' + esc(st.note) : ''}. Descripteurs : Beer Maverick${v.url ? ` · <a href="${esc(v.url)}" target="_blank" rel="noopener">fiche</a>` : ''}.</span></div>` : '';
+    return `<div class="row${on ? ' on' : ''}"><button class="chk" data-act="sel" data-id="${id}" aria-pressed="${on}" aria-label="Comparer ${esc(v.name)}"><i>${on ? '✓' : ''}</i></button>
+      <button class="main" data-act="add" data-id="${id}" aria-label="Ajouter ${esc(v.name)}"><span class="rk">${n || ''}</span><span class="nm">${esc(v.name)}${inStock && s.form === 'cryo' ? ' <small>cryo</small>' : ''}</span>${mark}<span class="qty${inStock ? '' : ' buy'}">${qty}</span></button>
+      <button class="why" data-act="why" data-id="${id}" aria-expanded="${S.why === id}" aria-label="Pourquoi ici">ⓘ</button></div>${why}`;
+  }
+  function list() {
+    const st = STYLES[S.style];
+    const G = groups();
+    let n = 0;
+    const detail = st.wanted.length
+      ? `Direction ${esc(st.source)} : ${st.wanted.map((f) => FAM[f]).join(', ')}${st.unwanted.length ? ' ; sans ' + st.unwanted.map((f) => FAM[f]).join(', ') : ''}${st.origins ? ' ; houblons ' + st.origins.map(esc).join(' ou ') : ''}. En amertume : assez en stock, puis alpha. En arôme : typique, compatible, hors style.`
+      : 'Aucune donnée ne relie les houblons à ce style : mes houblons en stock, par ordre alphabétique.';
+    const banner = !G.documented ? `<button class="nd" data-act="nd" aria-expanded="${!!S.ndOpen}">${st.wanted.length ? 'Classement estimé : aucun usage documenté pour ce style' : 'Style sans direction documentée : aucun classement'} ⓘ</button>${S.ndOpen ? `<div class="whyline" style="padding-left:0">${detail}</div>` : ''}` : '';
+    const rows = G.groups.map((g, gi) => `<div class="group"><span>${esc(g.title)}${g.cat ? ' (40 premiers)' : ''}</span>${gi === 0 ? '<span class="hintr">cocher pour comparer</span>' : ''}</div>` +
+      g.ids.map((x) => row(x, G.documented ? ++n : 0, g.cat)).join('')).join('');
+    return `<div class="sec"><h2>Mes houblons</h2><span class="seglab">Prochain ajout</span><span class="seg" role="group" aria-label="Prochain ajout">
+        <button data-act="role" data-r="amer" aria-pressed="${S.role === 'amer'}">Amertume</button><button data-act="role" data-r="arome" aria-pressed="${S.role === 'arome'}">Arôme</button></span></div>
+      <div class="chips"><button class="chip" data-act="stock" aria-pressed="${!S.cat}">Mon stock · ${Object.values(STOCK).filter((s) => s.grams > 0).length}</button><button class="chip" data-act="cat" aria-pressed="${S.cat}">+ Catalogue</button>
+        <button class="chip" data-act="top4">Comparer les 4 premiers</button></div>
+      ${banner}<div role="list" aria-label="Houblons classés">${rows}</div>
+      ${S.sel.length >= 2 ? '<div class="spacer"></div>' : '<div style="height:24px"></div>'}`;
+  }
+  function compare() {
+    const st = STYLES[S.style];
+    const ref = S.adds[0] && typeof S.adds[0].m === 'number' ? S.adds[0] : { g: 20, m: 60 };
+    const ids = S.sel, ib = ids.map((id) => ibu(id, ref.g, ref.m)), best = Math.max(...ib.filter((x) => x != null));
+    const rows = [
+      ['En stock', ids.map((id) => (STOCK[id]?.grams > 0 ? fmt(STOCK[id].grams) + ' g' : 'à acheter')), true],
+      ['α (%)', ids.map((id) => { const a = alphaOf(id); return a ? fmt(a.value, 1) : 'inconnu'; }), true],
+      [fmt(ref.g) + ' g à ' + momLabel(ref.m), ids.map((id, i) => (ib[i] == null ? 'inconnu' : `<span class="${ib[i] === best ? 'best' : ''}">${fmt(ib[i])} IBU</span>`)), true],
+      ['Style', ids.map((id) => KWORD[klass(V[id], st)] || '—'), false],
+      ['Sens du style', ids.map((id) => wantedTags(V[id], st).slice(0, 3).map(esc).join(', ') || 'aucun'), false],
+      ['Arôme', ids.map((id) => V[id].tags.slice(0, ids.length > 3 ? 1 : 2).map(esc).join(', ') || 'non documenté'), false],
+    ];
+    const extra = [
+      ['Plage α (%)', ids.map((id) => range(V[id].alpha)), true],
+      ['Huiles (mL/100 g)', ids.map((id) => (V[id].oil ? range(V[id].oil) : 'inconnu')), true],
+      ['Myrcène (%)', ids.map((id) => (V[id].myrcene ? range(V[id].myrcene, 0) : 'inconnu')), true],
+      ['Humulène (%)', ids.map((id) => (V[id].humulene ? range(V[id].humulene, 0) : 'inconnu')), true],
+      ['Origine', ids.map((id) => esc(V[id].origin || 'inconnue')), false],
+      ['Usage', ids.map((id) => (documentedFor(V[id], st) ? 'documenté' : 'non documenté')), false],
+    ];
+    const shown = (S.all ? rows.concat(extra) : rows).filter((r) => S.all || new Set(r[1]).size > 1);
+    const hidden = rows.length - rows.filter((r) => shown.includes(r)).length;
+    return `<div class="cmp" role="region" aria-label="Comparaison"><div class="sh"><b>Comparer · ${ids.length}</b><span class="sp"></span>
+      <button class="btn2" data-act="all">${S.all ? 'Écarts seulement' : 'Tout afficher'}</button><button class="btn2" data-act="clearsel">Fermer</button></div>
+      <div class="tb"><table class="${ids.length > 3 ? 'c4' : ''}"><thead><tr><th></th>${ids.map((id) => `<th>${hopName(id)}</th>`).join('')}</tr></thead><tbody>
+      ${shown.map((r) => `<tr><td>${r[0]}</td>${r[1].map((x) => `<td class="${r[2] ? 'n' : ''}">${x}</td>`).join('')}</tr>`).join('')}
+      ${hidden && !S.all ? `<tr><td colspan="${ids.length + 1}" class="more">${hidden} ligne${hidden > 1 ? 's' : ''} identique${hidden > 1 ? 's' : ''} masquée${hidden > 1 ? 's' : ''}</td></tr>` : ''}
+      <tr><td></td>${ids.map((id) => `<td><button class="btn2" data-act="add" data-id="${id}">Ajouter</button></td>`).join('')}</tr></tbody></table></div></div>`;
+  }
+  function sheetReplace() {
+    const a = S.adds[S.rep]; if (!a) return '';
+    const v = V[a.id], keep = ibu(a.id, a.g, a.m);
+    const fa = new Set(v.fam);
+    const sim = (x) => { const fb = new Set(V[x].fam); const inter = [...fa].filter((f) => fb.has(f)).length; const uni = new Set([...fa, ...fb]).size; return uni ? inter / uni : 0; };
+    const cands = DATA.varieties.map((x) => x.id).filter((id) => id !== a.id).map((id) => {
+      let g = a.m === 'cru' || keep == null ? a.g : doseFor(id, keep, a.m);
+      if (g == null) return null;
+      g = Math.max(1, Math.round(g));
+      const s = STOCK[id], free = s ? s.grams - used(id, S.rep) : 0;
+      const state = !s || s.grams <= 0 ? 'buy' : free >= g ? 'ok' : 'low';
+      const gain = V[id].fam.filter((f) => !fa.has(f)).slice(0, 2).map((f) => FAM[f]);
+      const lost = v.fam.filter((f) => !V[id].fam.includes(f)).slice(0, 2).map((f) => FAM[f]);
+      return { id, g, state, free, s: sim(id), gain, lost };
+    }).filter(Boolean).sort((p, q) => ({ ok: 0, low: 1, buy: 2 }[p.state] - { ok: 0, low: 1, buy: 2 }[q.state]) || q.s - p.s);
+    const shown = S.more ? cands.slice(0, 40) : cands.slice(0, 5);
+    return `<div class="sheet" role="dialog" aria-modal="true" aria-label="Remplacer ${esc(v.name)}"><div class="sh"><b>Remplacer ${esc(v.name)} · ${fmt(a.g)} g · ${esc(momLabel(a.m))}</b><button class="x" data-act="close">Fermer</button></div><div class="sb">
+      <div class="sub">${keep != null && a.m !== 'cru' ? `Dose pour garder ${fmt(keep, 1)} IBU au même moment.` : 'Même masse (ajout d’arôme).'} En stock d’abord, puis les plus proches en arôme.</div>
+      ${shown.map((c) => `<button class="cand" data-act="apply" data-id="${c.id}" data-g="${c.g}"><span class="c1"><b>${esc(V[c.id].name)}</b><span class="d">${fmt(c.g)} g</span>
+        <span class="st ${c.state}">${c.state === 'ok' ? '✓ en stock' : c.state === 'low' ? `manque ${fmt(c.g - Math.max(0, c.free))} g` : 'à acheter'}</span></span>
+        <span class="c2">${c.gain.length ? 'gagné : ' + c.gain.join(', ') : 'rien de gagné'} · ${c.lost.length ? 'perdu : ' + c.lost.join(', ') : 'rien de perdu'}</span></button>`).join('')}
+      ${S.more ? '' : `<div class="sub"><button class="btn2" data-act="more">Voir plus de remplaçants</button></div>`}
+      <div class="sub">Ressemblance : familles de descripteurs Beer Maverick en commun. Aucune note de substitution n’est importée.</div>
+    </div></div>`;
+  }
+  function sheetStyle() {
+    return `<div class="sheet" role="dialog" aria-modal="true" aria-label="Recette"><div class="sh"><b>Recette</b><button class="x" data-act="close">Fermer</button></div><div class="sb">
+      <div class="field"><label for="f-vol">Volume (L)</label><input id="f-vol" data-f="volume" type="text" inputmode="decimal" autocomplete="off" value="${fmt(S.volume, 1)}"></div>
+      <div class="field"><label for="f-og">Densité initiale</label><input id="f-og" data-f="og" type="text" inputmode="decimal" autocomplete="off" value="${fmtOg(S.og)}"></div>
+      <div class="field"><label for="f-boil">Ébullition (min)</label><input id="f-boil" data-f="boil" type="text" inputmode="decimal" autocomplete="off" value="${fmt(S.boil)}"></div>
+      <div class="sub">Style : la direction houblon vient du guide BJCP 2021.</div>
+      ${DATA.styles.map((st) => `<button class="styl" data-act="setstyle" data-s="${st.id}" aria-pressed="${S.style === st.id}"><b>${esc(st.label)}</b><span>${st.wanted.map((f) => FAM[f]).join(', ')}${st.unwanted.length ? ' · sans ' + st.unwanted.map((f) => FAM[f]).join(', ') : ''} · ${st.ibu[0]}–${st.ibu[1]} IBU · ${esc(st.source)}${st.usage ? ' · usages documentés' : ''}</span></button>`).join('')}
+    </div></div>`;
+  }
+  // Chaque question de la banque renvoie à l'endroit qui répond, ou dit ce qui manque.
+  const QUESTIONS = [
+    ['Q01', 'Stout : mes houblons classés, stock d’abord', 'list'], ['Q02', 'Comparer 2 à 4 houblons', 'top4'], ['Q03', 'Un toucher, sans défiler', 'list'],
+    ['Q04', 'Stout amérisée au Nugget : trop résineuse ?', 'nugget'], ['Q05', 'Saaz remplacé par Styrian Golding', 'saaz'],
+    ['Q06', 'Houblon indisponible : avec quoi le remplacer ?', 'rep'], ['Q07', 'Forte amertume sans sapin ni résine', 'nd:un filtre pour exclure des arômes (pin, résine)'],
+    ['Q08', 'Blanche tropicale qui va avec la banane', 'nd:données d’esters de la levure'], ['Q09', 'Lager juicy, aromatique, non amère', 'style:neipa'],
+    ['Q10', 'Pastry stout trop sucrée', 'style:stout-douce'], ['Q11', 'Bière de Champagne florale, biotransformation', 'nd:β-lyase des levures (inconnue pour 6 levures sur 6)'],
+    ['Q12', 'Blanche : dry hop avec 20 g de moins dans le moût', 'style:blanche'], ['Q13', 'Quel houblon avec ma levure pour une NEIPA', 'nd:essais houblon × levure'],
+    ['Q14', 'Cryo et HyperBoost : quand et combien', 'products'], ['Q15', 'IBU total, dry hop compris', 'ibu'], ['Q16', 'Profil d’un houblon', 'why'],
+    ['Q17', 'IBU et arôme de chaque ajout', 'adds'], ['Q18', 'Remplacer X par Y au même IBU', 'rep'], ['Q19', 'Houblon × moment × levure : résultat', 'nd:essais houblon × levure'],
+    ['Q20', 'Simuler tous mes ajouts', 'ibu'], ['Q21', 'Houblons pour n’importe quel style', 'style'], ['Q22', 'Stout très amère et chocolatée', 'style:stout-imperiale'],
+    ['Q23', 'Houblons pour une IPA', 'style:ipa-americaine'], ['Q24', 'Ai-je assez de ce houblon ?', 'adds'], ['Q25', 'Ajout à +30 au lieu de +60', 'adds'],
+    ['Q26', 'Goût herbeux ou raté : que faire', 'nd:causes de défauts documentées'], ['Q27', 'NOLO : houblons et stratégie', 'nd:données de houblonnage NOLO'],
+    ['Q28', 'Sour : houblons avec ma culture acidifiante', 'nd:tolérance des cultures au houblon'], ['Q29', 'Houblon maison sans analyse', 'adds'],
+    ['Q30', 'Où acheter en Suisse, avec un lien', 'nd:offres de fournisseurs datées'],
+  ];
+  function answer(kind) {
+    if (kind.startsWith('nd:')) return [`Non documenté : il manque ${esc(kind.slice(3))}.`, null, true];
+    if (kind === 'list') return ['Réponse : la liste « Mes houblons pour cette bière ».', 'golist'];
+    if (kind === 'top4') return ['Réponse : cases à cocher ou « Comparer les 4 premiers ».', 'top4'];
+    if (kind === 'rep') return ['Réponse : « Remplacer » sur une ligne d’ajout.', S.adds.length ? 'firstrep' : 'golist'];
+    if (kind === 'ibu') return [`Réponse : le bandeau. IBU total maintenant : ${fmt(totalIbu())} ; le dry hop compte 0 au calcul de Tinseth (amertume à froid non simulée ici).`, null];
+    if (kind === 'adds') return ['Réponse : chaque ligne d’ajout (dose, moment, IBU, stock, alpha).', S.adds.length ? 'openfirst' : 'golist'];
+    if (kind === 'why') return ['Réponse : ⓘ sur un houblon, ou « Tout afficher » dans la comparaison.', 'golist'];
+    if (kind === 'products') return ['Cryo : 40–50 % du poids en pellets T-90, tous moments. HyperBoost : 0,8–1 % du poids T-90, dry hop en fermentation active, 25–50 % de la charge (Yakima Chief Hops).', null];
+    if (kind === 'nugget') { const v = V.nugget; const st = STYLES[S.style]; const r = (v.famTags.resine || 0); return [`Nugget : ${r ? 'descripteur résineux présent' : 'aucun descripteur résineux'} dans Beer Maverick (${v.tags.slice(0, 4).join(', ')}). Pour « ${esc(st.label)} », le guide cite ${st.wanted.map((f) => FAM[f]).join(', ')}. Intensité dans une bière torréfiée : non documentée.`, 'compnugget']; }
+    if (kind === 'saaz') return ['Réponse : choisis « Lager blonde tchèque », ajoute Saaz, puis « Remplacer » : gagné, perdu et dose au même IBU.', 'stylesaaz'];
+    if (kind === 'style') return ['Réponse : touche le titre de la recette et choisis le style.', 'style'];
+    if (kind.startsWith('style:')) return [`Réponse : style « ${esc(STYLES[kind.slice(6)].label)} », puis la liste classée et le bandeau.`, 'setstyle:' + kind.slice(6)];
+    return ['', null];
+  }
+  function sheetQuestions() {
+    return `<div class="sheet" role="dialog" aria-modal="true" aria-label="Mes questions"><div class="sh"><b>Mes questions</b><button class="x" data-act="close">Fermer</button></div><div class="sb qs">
+      ${QUESTIONS.map(([q, t, k]) => { const [text, go, nd] = answer(k); return `<div class="q"><span class="qt" data-q="${q}">${esc(t)}</span><span class="qa${nd ? ' nd2' : ''}">${text}</span>${go ? `<button class="btn2" data-act="go" data-go="${go}">Y aller</button>` : ''}</div>`; }).join('')}
+    </div></div>`;
+  }
+
+  function render(focusId) {
+    const b = app.querySelector('.body'), sb = app.querySelector('.sb');
+    const scroll = [b ? b.scrollTop : 0, sb ? sb.scrollTop : 0];
+    const modal = !!S.sheet;
+    app.innerHTML = top() + `<main class="body${S.undo ? ' withsnack' : ''}"${modal ? ' inert' : ''}>${strip()}<div class="cols"><section aria-label="Ajouts">${adds()}</section><section aria-label="Classement">${list()}</section></div></main>` +
+      (S.sel.length >= 2 && !modal ? compare() : '') +
+      (S.sheet === 'replace' ? sheetReplace() : S.sheet === 'style' ? sheetStyle() : S.sheet === 'questions' ? sheetQuestions() : '') +
+      (S.undo ? `<div class="snack" role="status"><span>${esc(S.undo.msg)}</span><button data-act="undo">Annuler</button></div>` : '');
+    const nb = app.querySelector('.body'), ns = app.querySelector('.sb');
+    if (nb) nb.scrollTop = scroll[0];
+    if (ns && S.keepSheetScroll) ns.scrollTop = scroll[1];
+    S.keepSheetScroll = false;
+    if (focusId) { const f = document.getElementById(focusId); if (f) { refocus = true; f.focus(); refocus = false; const n = f.value.length; f.setSelectionRange(n, n); } }
+  }
+
+  let snackTimer = null;
+  function armSnack() { clearTimeout(snackTimer); if (S.undo) { const u = S.undo; snackTimer = setTimeout(() => { if (S.undo === u) { S.undo = null; render(); } }, 5000); } }
+  function act(a, d) {
+    if (a !== 'undo') S.undo = null;
+    switch (a) {
+      case 'add': addHop(d.id); S.sel = S.sel.filter((x) => x !== d.id && S.sel.length > 2 ? true : x !== d.id); break;
+      case 'sel': { const i = S.sel.indexOf(d.id); if (i >= 0) S.sel.splice(i, 1); else { if (S.sel.length >= 4) S.sel.shift(); S.sel.push(d.id); } break; }
+      case 'top4': S.sel = flatIds().slice(0, 4); break;
+      case 'why': S.why = S.why === d.id ? null : d.id; break;
+      case 'stock': S.cat = false; break;
+      case 'cat': S.cat = true; break;
+      case 'role': S.role = d.r; break;
+      case 'nd': S.ndOpen = !S.ndOpen; break;
+      case 'clearsel': S.sel = []; S.all = false; break;
+      case 'all': S.all = !S.all; break;
+      case 'toggle': S.open = S.open === +d.i ? -1 : +d.i; break;
+      case 'minus': S.adds[+d.i].g = Math.max(1, S.adds[+d.i].g - 1); break;
+      case 'plus': S.adds[+d.i].g += 1; break;
+      case 'mom': S.adds[+d.i].m = /^\d+$/.test(d.m) ? Number(d.m) : d.m; break;
+      case 'del': S.undo = { adds: structuredClone(S.adds), msg: `${V[S.adds[+d.i].id].name} retiré` }; S.adds.splice(+d.i, 1); S.open = -1; break;
+      case 'rep': S.sheet = 'replace'; S.rep = +d.i; S.more = false; break;
+      case 'more': S.more = true; S.keepSheetScroll = true; break;
+      case 'apply': { const old = S.adds[S.rep]; S.undo = { adds: structuredClone(S.adds), msg: `${V[old.id].name} remplacé par ${V[d.id].name}` }; S.adds[S.rep] = { id: d.id, g: Number(d.g), m: old.m }; S.sheet = null; S.open = S.rep; break; }
+      case 'undo': if (S.undo) S.adds = S.undo.adds; S.undo = null; break;
+      case 'style': S.sheet = 'style'; break;
+      case 'setstyle': S.style = d.s; S.keepSheetScroll = true; break;
+      case 'questions': S.sheet = 'questions'; break;
+      case 'close': S.sheet = null; break;
+      case 'go': go(d.go); break;
+    }
+  }
+  function go(target) {
+    S.sheet = null;
+    if (target === 'golist') { requestAnimationFrame(() => app.querySelector('[role="list"]')?.scrollIntoView({ block: 'start' })); }
+    else if (target === 'top4') act('top4', {});
+    else if (target === 'firstrep') { S.sheet = 'replace'; S.rep = 0; }
+    else if (target === 'openfirst') S.open = 0;
+    else if (target === 'style') S.sheet = 'style';
+    else if (target === 'compnugget') { S.sel = ['nugget', ...flatIds().filter((x) => x !== 'nugget').slice(0, 1)]; }
+    else if (target === 'stylesaaz') { S.style = 'lager-tcheque'; S.adds = [{ id: 'saaz', g: 40, m: 60 }]; S.open = 0; S.sheet = 'replace'; S.rep = 0; }
+    else if (target.startsWith('setstyle:')) S.style = target.slice(9);
+  }
+
+  app.addEventListener('click', (e) => { const t = e.target.closest('[data-act]'); if (!t || !app.contains(t)) return; act(t.dataset.act, t.dataset); render(); armSnack(); });
+  app.addEventListener('input', (e) => {
+    const f = e.target; const v = parseFloat(String(f.value).replace(',', '.'));
+    if (f.matches('input[data-i]')) { if (Number.isFinite(v) && v > 0) { S.adds[+f.dataset.i].g = Math.round(v * 10) / 10; render(f.id); } }
+    else if (f.matches('input[data-f]')) {
+      const k = f.dataset.f; const ok = { volume: v > 0 && v < 5000, og: v > 1 && v < 1.2, boil: v >= 0 && v <= 240 }[k];
+      if (Number.isFinite(v) && ok) { S[k] = v; S.keepSheetScroll = true; render(f.id); }
+    }
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.sheet) { S.sheet = null; render(); } });
+  window.__proto = { state: S, groups, flatIds, ibu, aroma, V, STOCK };
+  render();
+})();
+</script>

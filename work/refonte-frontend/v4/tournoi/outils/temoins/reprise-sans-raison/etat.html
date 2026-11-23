@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Témoin D104 : reprise synthétique</title>
+<style>
+  body { margin: 0; font: 12px/1.3 system-ui, sans-serif; color: #1f1a17; background: #fff; }
+  header { padding: 6px 8px; border-bottom: 1px solid #ddd; }
+  h1 { font-size: 14px; margin: 0 0 4px; }
+  .t-ctx { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px 0; }
+  main { padding: 6px 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+  .t-puce { display: inline-block; border: 1px solid #bbb; border-radius: 10px; padding: 2px 6px; font-size: 12px; }
+  .t-pont a { color: #1d4ed8; }
+  .t-bouton { font-size: 12px; padding: 4px 8px; border-radius: 8px; border: 1px solid #888; background: #f4f4f4; }
+  #t-panneau { padding: 6px 8px; }
+  #t-panneau[hidden] { display: none; }
+</style></head>
+<body>
+<header>
+  <h1>Témoin synthétique D104 (pas une maquette)</h1>
+  <div class="t-ctx" data-role="contexte"><span class="t-puce" data-element="y1b-ligne-contexte">y1b-ligne-contexte</span><span class="t-puce" data-element="m4-radar-degustation">m4-radar-degustation</span></div>
+</header>
+<main>
+<span class="t-puce" data-element="y1b-face-a-ta-stout">y1b-face-a-ta-stout</span>
+<span class="t-puce" data-element="y1b-pastille-critere">y1b-pastille-critere</span>
+<span class="t-puce" data-element="y1b-jauge-amertume">y1b-jauge-amertume</span>
+<span class="t-puce" data-element="y1b-plan-d-avant">y1b-plan-d-avant</span>
+<span class="t-puce" data-element="y1b-bandes-style">y1b-bandes-style</span>
+<span class="t-puce" data-element="y1b-defi">y1b-defi</span>
+<span class="t-puce" data-element="y3-panel-osu">y3-panel-osu</span>
+<span class="t-puce" data-element="y3-pour-egaler">y3-pour-egaler</span>
+<span class="t-puce" data-element="v1-vraies-valeurs">v1-vraies-valeurs</span>
+<span class="t-puce" data-element="v1-en-a-plus">v1-en-a-plus</span>
+<span class="t-puce" data-element="v1-linalol-en-biere">v1-linalol-en-biere</span>
+<span class="t-puce" data-element="w2-piste-commune">w2-piste-commune</span>
+<span class="t-puce" data-element="w2-cartes-verdict">w2-cartes-verdict</span>
+<span class="t-puce" data-element="l5b-barres-voie">l5b-barres-voie</span>
+<span class="t-puce" data-element="l5b-pistes-objectif">l5b-pistes-objectif</span>
+<span class="t-puce" data-element="l8-disposition">l8-disposition</span>
+<span class="t-puce" data-element="l8b-verdicts-pictos-trait">l8b-verdicts-pictos-trait</span>
+<span class="t-puce" data-element="l8b-legende-cachee">l8b-legende-cachee</span>
+<span class="t-puce" data-element="l5f-carte-role-alpha">l5f-carte-role-alpha</span>
+<span class="t-puce" data-element="h4-radar-demande">h4-radar-demande</span>
+<span class="t-puce" data-element="p03-plages-sources">p03-plages-sources</span>
+<span class="t-puce" data-element="p03-radar-superpose">p03-radar-superpose</span>
+<span class="t-puce" data-element="p06-grille-familles">p06-grille-familles</span>
+<span class="t-puce" data-element="p02-radar-intervalle">p02-radar-intervalle</span>
+<span class="t-puce" data-element="p4-plus-comparaison">p4-plus-comparaison</span>
+<span class="t-puce t-pont" data-element="y1b-dock-pouce">y1b-dock-pouce <a href="#outil-dryhopper" data-outil="Dryhopper">Dryhopper ›</a></span>
+<span class="t-puce t-pont" data-element="y1b-levure-pastilles">y1b-levure-pastilles <a href="#outil-levure" data-outil="Levure">Levure ›</a></span>
+<span class="t-puce t-pont" data-element="y1b-second-houblon-puis">y1b-second-houblon-puis <a href="#outil-dryhopper" data-outil="Dryhopper">Dryhopper ›</a></span>
+<span class="t-puce t-pont" data-element="x3b-cuve-jour-apres-jour">x3b-cuve-jour-apres-jour <a href="#outil-dryhopper" data-outil="Dryhopper">Dryhopper ›</a></span>
+<span class="t-puce t-pont" data-element="a2b-ce-que-la-levure-change">a2b-ce-que-la-levure-change <a href="#outil-levure" data-outil="Levure">Levure ›</a></span>
+<span class="t-puce t-pont" data-element="s5-deux-objectifs">s5-deux-objectifs <a href="#outil-suggérer" data-outil="Suggérer">Suggérer ›</a></span>
+<span class="t-puce t-pont" data-element="g1-fiche">g1-fiche <a href="#outil-fiche" data-outil="fiche">fiche ›</a></span>
+<span class="t-puce t-pont" data-element="fiche-citra-cryo">fiche-citra-cryo <a href="#outil-fiche" data-outil="fiche">fiche ›</a></span>
+<button class="t-bouton" type="button" aria-controls="t-panneau" aria-expanded="false">Plus</button>
+</main>
+<section id="t-panneau" hidden><span class="t-puce" data-element="y1b-tirage-preuve">y1b-tirage-preuve</span></section>
+<script>
+  const b = document.querySelector('[aria-controls="t-panneau"]');
+  b.addEventListener('click', () => { const p = document.getElementById('t-panneau'); p.hidden = !p.hidden; b.setAttribute('aria-expanded', String(!p.hidden)); });
+</script>
+</body></html>

@@ -1,0 +1,154 @@
+---
+name: voies
+description: Découper une mission de L'Affinée en voies parallèles. Opus planifie une fois et conçoit ce que le brasseur verra (en entonnoir), Haiku exécute le mécanique, Sonnet analyse et code ; chaque voie se contrôle, réessaie dans sa voie et rend une ligne ; le pilote rejoue les critères puis signe. À utiliser pour tout travail de plusieurs parties indépendantes (lot de maquettes, étude, chantier de code), ou quand l'utilisateur dit « en voies », « lance les agents », « répartis ».
+---
+
+# Voies — séparer les tâches, décider, corriger
+
+Référence complète : `docs/agents/systeme.md`. Ce skill est la marche à suivre du pilote.
+
+## 1. Planifier une fois (pilote, Opus)
+1. Relire la demande, les leçons (déjà en contexte) et chercher dans le cerveau :
+   `node scripts/agents/systeme.mjs chercher <mots>`.
+2. Créer `work/missions/<AAAA-MM-JJ>-<sujet>/MISSION.md` depuis `gabarits/MISSION.md`. Une voie par
+   livrable qui se vérifie seul. Les périmètres d'écriture (« Possède ») sont disjoints.
+2 bis. **État de l'art avant le code** (L29) : nommer le problème d'école, chercher (WebSearch, npm, GitHub) la
+   méthode standard et les bibliothèques maintenues (licence, poids, vitesse), écrire « ## État de l'art » (problème
+   type, examiné, décision). Jamais d'algorithme connu réécrit à la main sans raison mesurée. À la deuxième
+   rustine sur un même module, revenir ici.
+3. Choisir le niveau de chaque voie :
+   - **mécanique → `executant` (Haiku)** : lire, extraire, convertir au gabarit, lancer contrôles,
+     tests, captures, régénérer ;
+   - **interface → `concepteur` (Opus)** : tout ce que le brasseur verra (maquette, variante,
+     fil de fer, picto, carte), montré dans une vraie carte de la base (L25) ;
+   - **jugement → `auteur` (Sonnet)** : diagnostiquer, écrire une analyse, des contrôles, du code
+     avec un choix ;
+   - **conception d'architecture → `auteur` avec le modèle `opus`** : quand la voie fixe une
+     direction que les autres suivront ;
+   - **critique d'interface → `critique` (Fable, calibré sur PORTRAIT.md)** : obligatoire après
+     toute voie d'interface, avant de montrer quoi que ce soit au brasseur ;
+   - **relecture hors interface → `relecteur` (Sonnet)**.
+   `systeme.mjs mission` refuse une voie d'interface hors Opus ou Fable, et une relecture d'interface
+   sans critique.
+   **Une voie de code** (`auteur`) **s'arrête à la preuve qui demande du jugement** :
+   - son code ;
+   - ses tests ;
+   - le build ;
+   - son contrôle, rouge puis vert.
+
+   La suite mécanique part dans une voie `executant` qui la suit : reconstruire la maquette, rejouer `controle-etats`,
+   l'émulateur, les captures avant et après, la copie propre. Le 26.10, trois voies Sonnet ont touché le plafond de 80 tours
+   dans cette queue mécanique : i2, avec l'émulateur et ses captures ; p5, avec la fidélité et la maquette ; g2c, avec la
+   mesure et les empreintes. Le plafond de l'auteur est passé à 120 tours. Il reste un garde-fou de dépense (L18), pas une
+   cible.
+   **Le relais vers Haiku.** Un sous-agent ne peut pas lancer un sous-agent. Quand un `concepteur`, un `critique` ou un `auteur` rend
+   une section `DEMANDE EXECUTANT :` dans son RESULTAT.md, le pilote la confie aussitôt à un `executant` neuf, sans réécrire la
+   demande. Puis il renvoie le résultat à l'agent d'origine par `SendMessage`, pour qu'il juge (demande de l'utilisateur, 26.10).
+4. Router chaque décision connue d'avance avec la grille de `docs/agents/systeme.md` § Décider
+   (voie, pilote, conseil, brasseur, utilisateur). Si le lot fixe une direction que les suivants
+   suivront (carte, nouvel outil, convention du moteur), réunir le conseil complet **avant**
+   d'écrire les voies. Sinon, pas de conseil (§ « Quand le conseil intervient »).
+5. Vérifier les entrées partagées avant l'éventail (L08) : une voie Haiku « entrées » passe en
+   premier quand moteur, JSON ou constantes sont en jeu.
+   **Cadrer par le jury** (skill `jury`, D198) avant le premier VOIE.md d'un lot montré au brasseur ou d'un écran refait. Le jury
+   rend une fiche de cadrage : les réponses sourcées, les goûts devenus axes de variantes, et l'irréversible aux accords. Il ne
+   bloque jamais. Juste avant de le lancer, relance un grep de SPEC-BRASSEUR : ses derniers mots comptent. Un élément commun déjà
+   refusé à part ne sert jamais de référence. Chaque concepteur et le critique chargent `boosters-ux` avec impeccable et
+   ui-design-system.
+5 bis. **Ce que le brasseur verra (lot de maquettes, planche de pictos) suit l'entonnoir** :
+   `references/entonnoir.md`. Il comprend :
+   - des séries v0 de concepts minimalistes, de 4 à 12 par série, un concepteur par série, 12 à 16 en
+     3 ou 4 séries (D204 : « trop demandant en quotas »), avec trois chaleurs (froide, tiède, chaude) et la baseline suivie partout ;
+   - un tri par le critique, qui garde 3 candidates pour leur diversité, avec leurs greffes ;
+   - une passe 2 par les mêmes agents, avec tous les contrôles ;
+   - puis tout est montré.
+   Le plafond (L18) porte sur les agents et les tours ; les variantes, 12 à 16 (D204). Colonne « Étape »
+   de MISSION.md ; M13.
+6. Vérifier : `node scripts/agents/systeme.mjs mission work/missions/<id>/MISSION.md` → MISSION OK.
+
+## 2. Écrire les contrats
+Par voie, `voies/<id>/VOIE.md` (gabarit `gabarits/VOIE.md`) et `voies/<id>/GATES.md` (format unlazy,
+gabarit `gabarits/GATES.md`). Chaque critère a une commande qui peut échouer ; une sortie décisive
+(`… OK`) ; un témoin négatif quand le contrôle est nouveau (L13). Passer chaque chemin cité par Glob
+(L09). Recopier dans VOIE.md les exigences transversales et les acquis concernés (L05, L06).
+Ce qu'il verra se prouve par la vision (D343) : le critère décisif est le test d'écran du critique sur de vraies pièces
+(`.claude/agents/critique.md`, mode « Test d'écran »), pas un test unitaire ; Vitest garde les règles de calcul, un test par
+règle, sans doublon ; peu de fixtures. Avant tout déploiement : `node scripts/agents/controle-avant-deploiement.mjs <sha>` (D342).
+Contrôler le format : `node .claude/skills/unlazy/scripts/gate-lint.mjs voies/<id>/GATES.md` → LINT OK.
+L'approbation des commandes (écrites par le pilote lui-même) se fait au premier
+`systeme.mjs voies … --approuver`.
+
+**Relire sans mémoire** (`references/sans-memoire.md`, 31.10) : un agent neuf ne lit que le document.
+- Le **test de compréhension** passe avant de lancer une voie dont le brasseur verra le livrable, une relance après une consigne mal
+  lue, ou une voie qui touche l'argent, le stock, les données réelles ou le moteur (`systeme.mjs comprendre`).
+- La **revue du plan** passe avant le code des finances, du stock, de Firestore, du Drive ou du moteur (`systeme.mjs revue`).
+- Le **rapport d'écart** entre la doc et le code se fait au début d'une mission sur un domaine, et avant de la signer
+  (`systeme.mjs ecarts`, puis un relecteur neuf).
+
+## 3. Lancer l'essaim
+- Toutes les voies prêtes partent dans **un seul message**, en arrière-plan :
+  `Agent(subagent_type: "executant" | "auteur" | "relecteur", run_in_background: true,
+  prompt: "Voie <id> de la mission <id> : lis work/missions/<id>/voies/<id>/VOIE.md et exécute-la.")`.
+  Le prompt ne recopie pas le contrat : il pointe le fichier.
+- Si le type d'agent n'est pas encore chargé (session ouverte avant sa création), utiliser
+  `general-purpose` avec `model` = le modèle de la voie et ajouter au prompt :
+  « Suis .claude/agents/<agent>.md comme tes instructions. »
+- Plafonds : chaque agent a un `maxTurns`. Une voie bloquée s'arrête seule et revient en ECHEC ; elle
+  ne mange pas le budget des autres. Budget de mission : noter dans MISSION.md l'usage avant et après
+  (`get_usage`) ; s'arrêter vers 95 % de la fenêtre de 5 h.
+- Pendant l'essaim, le pilote ne lit pas les sorties brutes : il attend les notifications.
+- **Économie (D207, 31.10 : « On est un peu trop gourmand en quota »)**. Mesuré ce soir-là :
+  - le contexte du pilote (Opus, 530 k) est relu à chaque tour, et chaque notification d'agent en réveille un ;
+  - un concepteur coûte 250 à 300 k en v0 ;
+  - un agent repris par `SendMessage` recharge tout son contexte (300 k, puis 340 k).
+  D'où les règles :
+  1. **une session par écran**, avec seulement son état de reprise ;
+  2. une passe ou une relance part chez un **agent neuf**, sur un brief serré (son etat.html, la section de SYNTHESE ou les défauts) : on ne
+     reprend pas l'agent au long contexte (L18) ;
+  3. un **dossier de conception** de 3 000 mots au plus, que les concepteurs lisent à la place des sources ; skills et règles sont lus une
+     fois par le pilote et résumés dans ce dossier ;
+  4. en v0, on capture le repos et un seul état ; les autres états viennent en passe 2.
+
+## 4. Vérifier (pilote)
+À chaque retour, une ligne arrive. Puis :
+`node scripts/agents/systeme.mjs voies work/missions/<id> --approuver` (première fois), ensuite sans
+`--approuver`. Le script rejoue les critères de chaque voie et ne croit pas son rapport (L16). Puis :
+`git status --short` contre les « Possède » (L17). Après les séries v0, le critique classe tout le panel, sans
+rejet (SYNTHESE : classement, candidates, greffes « même les plus extravagantes »). Les passes 2, 3… repartent
+chez les mêmes agents jusqu'au satisfaisant (`references/entonnoir.md` § 3), par
+`SendMessage`. Après une passe 2 ou une reprise, le critique a rendu un verdict par variante. **Chaque variante rejetée est relancée** (même agent, avec la correction du
+critique, 2 fois au plus) **ou écartée** (une ligne « <id> écartée : raison » dans MISSION.md). Le
+rejeu échoue tant qu'un rejet reste en plan (M12). Tant que le critique n'est pas étalonné (L27),
+son avis est indicatif : on ne cache rien au brasseur sur sa seule foi.
+
+## 5. Corriger : trois boucles
+1. **Courte, dans la voie** : critère en échec → l'agent corrige et relance, 3 essais au plus.
+2. **Moyenne, pilote** : rejeu en échec ou relecteur qui rejette → `SendMessage` au même agent
+   avec le défaut précis (2 relances au plus). Au-delà, le contrat est en cause : le pilote le
+   réécrit, au besoin après un avis croisé (skill `conseil`, 2 appels). Un choix de goût devient
+   une variante montrée au brasseur (L24).
+3. **Longue, brasseur** : sa plainte → SPEC-BRASSEUR (mot pour mot) → DEFAUTS-RECURRENTS (contrôle
+   qui échoue sur la version rejetée) → ce contrôle entre dans les GATES des voies suivantes. Une
+   erreur de méthode → leçon (`cerveau/LECONS.md`). Un savoir durable → note du cerveau.
+Les lignes `LEÇON PROPOSÉE` et `CONNAISSANCE` des RESULTAT.md sont traitées par le pilote à la
+signature, jamais laissées en plan.
+
+## 6. Publier, puis signer
+Des écrans ne sont finis qu'une fois montrés (M12). Avant de publier, `node scripts/agents/verifier-page.mjs
+<page.html> --page-lot --captures <préfixe>` doit rendre PAGE OK, et ses captures sont ouvertes (L12). Sans
+`--page-lot`, le script ne fait que rendre une maquette (`etat.html`), sans les règles de lisibilité d'une page. Le contenu
+de la page (variantes, images) est écrit en HTML, et non construit par un script. Le pilote publie lui-même
+chaque version dans un artefact privé neuf (une page par sujet et par version, datée ; 23.10) et l'inscrit dans la
+table « ## Pages » de MISSION.md (Sujet, Version, Adresse, Source). Sans cette table, ou avec deux versions sur
+une même adresse, le rejeu échoue. Mode d'emploi : `work/refonte-frontend/v4/outils/pages/PUBLIER.md`. Les liens
+sont donnés à l'utilisateur dans le rapport final.
+
+Avant de signer, élaguer (`docs/agents/systeme.md` § Élaguer) :
+- une règle changée pendant la mission va dans `cerveau/REMPLACES.md`, et chaque copie de l'ancienne est
+  corrigée ;
+- `systeme.mjs charge` et `systeme.mjs remplaces` passent ;
+- une leçon ou une note ajoutée au plafond impose une fusion ou une sortie.
+Dans MISSION.md, section « Signature » : la sortie de `systeme.mjs voies` (une ligne par voie),
+les décisions prises et leur décideur, les leçons et notes ajoutées, ce qui reste ouvert. Commit
+local. Push, PR, déploiement, données réelles, Gemini facturé, suppressions : groupés pour
+l'utilisateur, sans bloquer le reste.

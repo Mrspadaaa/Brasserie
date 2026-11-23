@@ -1,0 +1,36 @@
+{
+ "reglage": "4-hydrogen@low",
+ "kind": "fournisseurs",
+ "id": "us05",
+ "utilisable": true,
+ "produits": [
+  {
+   "name": "Fermentis SafAle™ US-05 – Levure American Ale 11,5 g",
+   "url": "https://brewstore.ch/ingredients-de-brassage-fr/levures-fr/safale-us-05-11-5-g-fr/",
+   "supplier": "Brewstore Suisse",
+   "packageLabel": "11,5 g"
+  },
+  {
+   "name": "Safale US-05, Trockenhefe 11.5 g , obergärig",
+   "url": "https://www.sios.ch/Safale-US-05-Trockenhefe-115-g-obergaerig_1",
+   "supplier": "SIOS",
+   "packageLabel": "11.5 g"
+  },
+  {
+   "name": "Safale WB-06, dried yeast 11.5 g , obergärig",
+   "url": "https://www.sios.ch/Safale-WB-06-dried-yeast-115-g-obergaerig",
+   "supplier": "SIOS",
+   "packageLabel": "11.5 g"
+  }
+ ],
+ "pertinentes": 2,
+ "exactes": 2,
+ "sourcesPrimaires": 0,
+ "faitCle": false,
+ "ms": 9808,
+ "coutMicro": 59475,
+ "web": 2,
+ "appels": 1,
+ "etat": "STOP",
+ "extrait": "Voici 3 fiches produit correspondant exactement à la levure sèche **Safale US-05 en sachet de 11,5 g** :\n\n1. **Brewstore Switzerland (brewstore.ch)**\n   * **Produit :** Fermentis SafAle™ US-05 – Levure American Ale (fermentation haute)\n   * **Conditionnement :** 11,5 g\n   * **Prix :** CHF 3.40\n   * "
+}

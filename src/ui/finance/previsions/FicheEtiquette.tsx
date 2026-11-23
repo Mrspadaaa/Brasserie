@@ -1,0 +1,95 @@
+import React, { useRef, useState } from 'react';
+import { Archive, ChevronRight, Trash2, Wrench, Wheat } from 'lucide-react';
+import type { ForecastItem } from '../../../domain/finance/forecast';
+import type { FinancialPlan } from '../../../domain/finance/types';
+import { upgradeDetails } from '../../../domain/finance/upgrades';
+import { FinanceService } from '../../../services/financeService';
+import { Feuille } from './Feuille';
+import { Confirmation } from '../prevision/base';
+import { supprimerPlan } from '../prevision/supprimerPlan';
+import type { MesureProjet } from './mesureProjet';
+import { centimesDeSaisie, jourCourt, litreFr, moisCourt, montant } from './format';
+import { ChoixMois } from '../../ChoixDate';
+
+const DUREES = [3, 5, 8] as const;
+type Etat = { kind: 'ok' | 'attente' | 'erreur'; texte: string } | null;
+
+/** Écriture d'un projet : écrite en local tout de suite, confirmée par le serveur ensuite (`saveUpgrade` attend jusqu'à 15 s). Hors ligne, c'est « en attente », pas une erreur. */
+function useEcriture() {
+  const verrou = useRef(false);
+  const [occupe, setOccupe] = useState(false), [etat, setEtat] = useState<Etat>(null);
+  const ecrire = async (plan: FinancialPlan, apres?: () => void) => {
+    if (verrou.current) return;
+    verrou.current = true; setOccupe(true); setEtat(null);
+    try { await FinanceService.saveUpgrade(plan); setEtat({ kind: 'ok', texte: 'Enregistré.' }); apres?.(); }
+    catch (e) {
+      const enAttente = e instanceof Error && e.name === 'DocumentWriteError' && /pending/i.test(`${(e as { status?: string }).status ?? ''}`);
+      setEtat(enAttente ? { kind: 'attente', texte: 'Enregistré sur cet appareil, en attente de synchro.' } : { kind: 'erreur', texte: e instanceof Error ? e.message : 'Le projet n’a pas pu être enregistré.' });
+    } finally { verrou.current = false; setOccupe(false); }
+  };
+  return { ecrire, occupe, etat };
+}
+
+interface ProjetProps { plan: FinancialPlan; mesure: MesureProjet; titreFin: string; prix: string; onPrix: (saisie: string) => void; onClose: () => void; onOuvrir: () => void }
+export function FicheProjet({ plan, mesure, titreFin, prix, onPrix, onClose, onOuvrir }: ProjetProps) {
+  const detail = upgradeDetails(plan), { ecrire, occupe, etat } = useEcriture();
+  const [deplace, setDeplace] = useState(false), [mois, setMois] = useState(plan.date.slice(0, 7));
+  /* v1 (21) : « Supprimer » demande d'abord (même brique que la feuille de la prévision et celle du projet) ; un refus du service s'écrit dans la question. */
+  const [demande, setDemande] = useState(false), [refus, setRefus] = useState('');
+  const [limites, setLimites] = useState(false);
+  const supprimer = () => { try { supprimerPlan(plan.id); onClose(); } catch (e) { setRefus(e instanceof Error ? e.message : 'Suppression impossible.'); } };
+  const prixC = centimesDeSaisie(prix);
+  const duree = detail.usefulLifeYears;
+  const bas = mesure.pointBas, fin = mesure.soldeFinCents;
+  const litreVide = mesure.litreManque === 'brassin-partiel' ? 'brassin planifié partiel' : 'aucun brassin planifié';
+  return <Feuille titre={<><Wrench size={16} aria-hidden="true" /> {plan.title}, <span className="prv-nb">{montant(plan.amountCents)}{' '}CHF</span></>} onClose={onClose}
+    aside={`${detail.estimateSource === 'quote' ? 'devis' : 'estimé'} · ${plan.date ? jourCourt(plan.date) : 'date à choisir'}`}>
+    <div className="prv-row"><span>Usure sur</span>
+      <span className="prv-sel" role="group" aria-label="Durée d’usure">{DUREES.map(a => <button key={a} type="button" disabled={occupe} aria-pressed={duree === a} onClick={() => void ecrire({ ...plan, upgrade: { ...detail, usefulLifeYears: a } })}>{a} ans</button>)}</span></div>
+    <div className="prv-gr">
+      <div className="prv-k"><span>Usure par an</span><b>{mesure.usureParAnCents == null ? 'à renseigner' : montant(mesure.usureParAnCents)}</b></div>
+      <div className="prv-k"><span>Mon litre</span>{mesure.litreAvant == null || mesure.litreApres == null
+        ? <><b>à compléter</b><small>{litreVide}</small></>
+        : <b>{litreFr(mesure.litreAvant)}{' → '}{litreFr(mesure.litreApres)}</b>}</div>
+      <div className="prv-k"><span>{titreFin}</span><b className={fin != null && fin < 0 ? 'prv-rt' : ''}>{fin == null ? 'à compléter' : montant(fin)}</b></div>
+      <div className="prv-k"><span>Plus bas</span><b className={bas && bas.soldeCents < 0 ? 'prv-rt' : ''}>{bas ? montant(bas.soldeCents) : 'à compléter'}{bas && <small> le {jourCourt(bas.date)}</small>}</b></div>
+      <div className="prv-k prv-l"><span>Pour rester à zéro</span>
+        {/* CT4-A-1 : le verdict lit tout l'horizon (mesure.sousZero), pas la vue : « au-dessus de zéro » sur 90 j alors que le 25.07 est à −1 492,66 était faux. */}
+        {bas && bas.soldeCents >= 0 && !mesure.sousZero ? <><b>Tu restes au-dessus de zéro</b>{mesure.finHorizon && <small>jusqu’à fin {moisCourt(mesure.finHorizon)} {mesure.finHorizon.slice(0, 4)}</small>}</> : <>
+          <b>{mesure.bouteillesPourZero == null ? 'à compléter' : `${mesure.bouteillesPourZero} bouteilles 33 cl${prixC ? ` à ${montant(prixC)}` : ''}`}</b>
+          {mesure.sousZero && (!bas || bas.soldeCents >= 0) && <small className="prv-rt">sous zéro le {jourCourt(mesure.sousZero.date)}.{mesure.sousZero.date.slice(2, 4)}, plus bas {montant(mesure.sousZero.soldeCents)} le {jourCourt(mesure.sousZero.dateBas)}.{mesure.sousZero.dateBas.slice(2, 4)}</small>}
+          {mesure.sousZero && bas && bas.soldeCents < 0 && mesure.sousZero.soldeCents < bas.soldeCents && <small className="prv-rt">{titreFin.toLowerCase()} ; au-delà, plus bas {montant(mesure.sousZero.soldeCents)} le {jourCourt(mesure.sousZero.dateBas)}.{mesure.sousZero.dateBas.slice(2, 4)}</small>}
+          <small>en trésorerie, avant coût de production</small></>}
+        <label className="prv-prix">Prix d’une bouteille 33 cl (CHF)<input inputMode="decimal" value={prix} onChange={e => onPrix(e.target.value)} placeholder="5,00" autoComplete="off" /></label>
+        {mesure.bouteillesPourPayer != null && <small>Pour payer le matériel (sur la marge) : {mesure.bouteillesPourPayer} bouteilles</small>}
+      </div>
+    </div>
+    {mesure.avertissements.length > 0 && <div className="prv-lim">
+      {/* CT4-A-11 : une quinzaine de lignes de limites au premier plan « pour rien » ; repliées, à un toucher. Les phrases restent entières. */}
+      <button type="button" className="prv-lim-t" aria-expanded={limites} onClick={() => setLimites(o => !o)}><b>Limites ({mesure.avertissements.length})</b><ChevronRight size={14} aria-hidden="true" style={limites ? { transform: 'rotate(90deg)' } : undefined} /></button>
+      {limites && <ul>{mesure.avertissements.map(a => <li key={a}>{a}</li>)}</ul>}</div>}
+    {deplace && <div className="prv-row"><label>Payer en <ChoixMois label="Payer en" valeur={mois} onChange={setMois} /></label>
+      <button type="button" className="prv-prim" disabled={occupe || !/^\d{4}-\d{2}$/.test(mois)} onClick={() => void ecrire({ ...plan, date: `${mois}-01`, upgrade: { ...detail, datePrecision: 'month' } }, () => setDeplace(false))}>Valider</button></div>}
+    {etat && <p className={`prv-etat prv-${etat.kind}`} role="status">{etat.texte}</p>}
+    {demande ? <Confirmation question={`Supprimer « ${plan.title} » ?`} detail="Ses achats liés restent dans les comptes. Pour le garder sans le compter : Retirer." oui="Oui, supprimer" onOui={supprimer} onGarder={() => { setDemande(false); setRefus(''); }} erreur={refus} />
+    : <div className="prv-acts">
+      <button type="button" className="prv-sec" disabled={occupe} onClick={() => void ecrire({ ...plan, status: 'draft' }, onClose)}><Archive size={14} aria-hidden="true" /> Retirer</button>
+      <button type="button" className="prv-sec" disabled={occupe} aria-expanded={deplace} onClick={() => setDeplace(!deplace)}>Déplacer</button>
+      <button type="button" className="prv-sec" disabled={occupe} aria-label="Supprimer ce projet" onClick={() => setDemande(true)}><Trash2 size={14} aria-hidden="true" /> Supprimer</button>
+      <button type="button" className="prv-prim" onClick={onOuvrir}>Ouvrir le projet</button></div>}
+  </Feuille>;
+}
+
+interface BrassinProps { titre: string; items: ForecastItem[]; litre: string | null; onClose: () => void; onOuvrir: () => void }
+/** La fiche du brassin : ses sorties à leurs dates (domaine d2), d'où vient chaque montant ; la somme est le total de c3a. */
+export function FicheBrassin({ titre, items, litre, onClose, onOuvrir }: BrassinProps) {
+  const total = items.reduce((n, i) => n + i.amountCents, 0);
+  return <Feuille titre={<><Wheat size={16} aria-hidden="true" /> {titre}, brassin prévu</>} onClose={onClose}>
+    <p className="prv-note">estimé · se met à jour seul (recette, stock, factures)</p>
+    <ul className="prv-lignes">{items.map(i => <li key={i.id}><div className="prv-lg"><span>{i.label.split(' · ').slice(1).filter(p => p !== 'date estimée' && !p.startsWith('partiel')).join(' · ')}{i.label.includes('date estimée') ? ' · date estimée' : ''}</span>{i.amountCents > 0 ? <b>{montant(-i.amountCents)}</b> : <b className="prv-inconnu">à compléter</b>}<small>{jourCourt(i.date)}</small></div>
+      {i.lines?.map(l => <div className="prv-lg prv-o" key={l.label}><span>{l.label} · {l.origin}</span><b>{montant(l.amountCents)}</b></div>)}
+      {i.partial?.length ? <button type="button" className="prv-plan prv-etat prv-attente" onClick={onOuvrir}><span>partiel, à compléter : {i.partial.join(', ')}<small>ouvre le budget du brassin pour le saisir</small></span><ChevronRight size={14} aria-hidden="true" /></button> : null}</li>)}</ul>
+    <div className="prv-gr"><div className="prv-k prv-l"><span>Total en caisse</span><b>{montant(-total)}</b>{litre && <small>Mon litre : {litre} le litre</small>}</div></div>
+    <div className="prv-acts"><button type="button" className="prv-prim" onClick={onOuvrir}>Ouvrir le budget</button></div>
+  </Feuille>;
+}

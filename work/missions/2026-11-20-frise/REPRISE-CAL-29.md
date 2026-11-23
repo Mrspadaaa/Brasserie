@@ -1,0 +1,23 @@
+# Reprise cal-29 (21.11) : CHG-4, 5, 6 ; étapes geste.mjs écrites, 2 sur 3 à finir, RIEN commité
+
+S = scratchpad `C:/Users/mrspa/AppData/Local/Temp/claude/2574149e6fd34767/16fc09ec-4e69-48a9-9744-5912b6ef6552/scratchpad`.
+
+## Fait
+- Tests : `calendrierEntete`, `toucherFantome`, `tests/integration/calendrier*` : 515 verts, 3 rouges dans calendrierFrise.test.tsx.
+  - « doute f2-a » (paysage, bord à 8 px) : MIEN, `onBord` reçoit maintenant `(chose, 7, 'fin')` ; corrigé dans le test (`toHaveBeenCalledWith(expect.anything(), 7, 'fin')`, tests/integration/calendrierFrise.test.tsx l. 1108), à rejouer.
+  - CRITIQUE-12 n° 2 et « Papiers en An » : pas les miens (calendrier.ts / Rangee.tsx d'autres voies, déjà notés dans REPRISE-PRIX-3.md).
+- `npx tsc --noEmit -p .` propre.
+- `scripts/parcours/geste.mjs` (arbre) : blocs `sectionChg4/5/6` insérés avant `  // ── CAL-VIDE (21.11` + 3 appels après `await sectionBarreBord();`. ATTENTION : l'arbre contient aussi un bloc d'une autre voie (hunks l. ~762-788 et ~796) qui fausse le banc : jouer avec la copie isolée.
+- Copie isolée = HEAD + mon bloc : `node $S/cal-24/geste-mien.mjs scripts/parcours/geste-moi.mjs "  // ── CHG-4 (21.11" "  // ── CAL-VIDE (21.11" "  await sectionBarreBord();" $'  await sectionBarreBord();\n  await sectionChg4();\n  await sectionChg5();\n  await sectionChg6();'` (à régénérer après chaque édition du bloc dans geste.mjs). SUPPRIMER `scripts/parcours/geste-moi.mjs` avant de commiter (fichier temporaire non suivi).
+- Lancer : `node scripts/parcours/geste-moi.mjs $S/jour/X-arbre --build $S/cal-24/build --largeurs 390 --themes clair --endroits calendrier` (arbre, build du 19:59, à refaire par `npx vite build --config scripts/parcours/vite.parcours.config.mjs --outDir $S/cal-24/build --emptyOutDir` si une source du port change) ; tour8 : `--build C:/Users/mrspa/AppData/Local/Temp/parcours-geste-build-O82816`. Filtrer : `grep -E "KO |PARCOURS GESTE|ok  (bord de début|annuler en|fin d’un)"`.
+
+## Résultat sur la copie isolée (arbre)
+- CHG-5 « annuler en bord de cadre » : 3 ok (date, période, place). Marque utilisée : « Café du Pont, 1 fût » (P-VENTE-1) ; « Commande de malt » n'est pas dans le DOM. Pas encore vu rouge sur tour8 : le run `m-t8` est resté noyé dans les KO anciens (grep trop large : filtrer sur « annuler en »).
+- CHG-4 « bord de début » : KO sur l'arbre : début −28 j au lieu de −14 (doigt à 62 px du cadre ; en fin de tirage il tombe dans la bande de 40 px du cadre qui fait défiler). Corriger l'étape : ramener la barre par le corps jusqu'à un début ≥ 2 colonnes + 40 px + marge (≈ 110 px du cadre, boucle actuelle `< 100` insuffisante, la barre fait 90 jours et déborde) ; sinon tirer d'un jour de moins (−1 colonne = −7 j, attendu −7).
+- CHG-6 « fin d'un brassin en cuve » : « NEIPA Test » (−78 j) et « Milk Stout » (−203 j) hors des 3 mois. L'étape injecte donc `B-ZZ-CUVE` (clone de B-NEIPA-TEST, brassé −7 j) dans fixture + cache, recharge, puis le retire. La barre apparaît (l 182, w 24) mais le tirage de +2 colonnes depuis `r − min(8, w/4)` ne pose pas `finPrevue` (aucune). À diagnostiquer : bord non pris (zone) ? `peutBord` brassin `finInconnue` (Barre.tsx), ou écriture hors du champ lu (`data.finPrevue`). Le test « Milk Stout » (message sans « jalon de fin ») : injecter aussi un clone, ou lire le message sur ZZ TEST Cuve glissée par le corps (même raison).
+
+## Reste
+1. Finir CHG-4 et CHG-6 (ci-dessus), vérifier rouge tour8 / vert arbre pour les 3 (ne garder que les lignes de ces étapes).
+2. Rejouer vitest `calendrierEntete toucherFantome tests/integration/calendrier` (| tail -30) : seuls les 2 rouges CRITIQUE-12 d'autres voies admis.
+3. Commit : `sh $S/jour/commit-geste.sh <msg.txt> "  // ── CHG-4 (21.11" "  // ── CAL-VIDE (21.11" "  await sectionBarreBord();" $'  await sectionBarreBord();\n  await sectionChg4();\n  await sectionChg5();\n  await sectionChg6();' src/ui/calendrier/frise/usePointeur.ts src/ui/calendrier/frise/Barre.tsx src/components/tabs/CalendrierTab.tsx src/domain/calendrierGestes.ts tests/unit/calendrierGestes.test.ts tests/integration/calendrierFrise.test.tsx` ; calendrier.ts : seul hunk l. 873 (raison sans fin) : à passer en `calendrier.ts=<fichier = HEAD + ce hunk>` (l'arbre contient d'autres hunks : `git diff HEAD -- src/domain/calendrier.ts` montre 2 lignes, c'est le mien seul à ce jour, relire avant). Vérifier `git diff HEAD` de CalendrierTab.tsx et Barre.tsx : seulement mes hunks.
+4. BUGS.md (`Brasserie/work/missions/BUGS.md` l. ~2130-2132) : CHG-4, 5, 6 « corrigé » + sha dans la colonne suivante, `node scripts/agents/controle-bugs.mjs` doit sortir OK, commit.

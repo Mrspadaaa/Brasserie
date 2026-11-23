@@ -1,0 +1,8533 @@
+{
+ "source": {
+  "nom": "hops-json (stuartraetaylor)",
+  "hote": "github.com/stuartraetaylor/hops-json",
+  "type": "base communautaire (export de BrewDB, Samir Boulema)",
+  "licence": "MIT License Copyright (c) 2019 Stuart Taylor",
+  "conditions": "licence du dépôt, notice à conserver",
+  "revision": "655499ffda7166abff83f52f8012390ffc1107f7",
+  "reference": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+  "unites": "Aucune unité écrite dans le fichier : unite et base restent null ; usage courant : α, β, cohumulone en %, huile en mL/100 g",
+  "releve": "2026-09-08T00:36:43.471Z",
+  "sha256Donnees": "09db8562c4aeeb224e033fe16cf4ece69e0bbfc7abf91af0a7e1252f45bcdf71",
+  "sha256Licence": "153dbc2771ea57e8254828ed43bb076434c51aff57cb8a96bde455d58ecb00d6",
+  "sha256Lisezmoi": "d2333ce99887ef7b2b6af2435441eddec5ad1d8ca0ffa473792e8039a2634fcf",
+  "entrees": 119
+ },
+ "fiches": [
+  {
+   "nom": "Admiral (UK)",
+   "alias": [],
+   "varietyId": "beermaverick-admiral",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 67,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "13.5–16.2",
+     "valeur": null,
+     "min": 13.5,
+     "max": 16.2,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4.8–6",
+     "valeur": null,
+     "min": 4.8,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "37–45",
+     "valeur": null,
+     "min": 37,
+     "max": 45,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1–1.7",
+     "valeur": null,
+     "min": 1,
+     "max": 1.7,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Pleasant",
+     "hoppy"
+    ],
+    "styles": [
+     "Ales"
+    ],
+    "origine": [
+     "UK"
+    ],
+    "lignee": [
+     "Bred at Wye College"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 16,
+    "trade": 5,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "African Queen (RSA)",
+   "alias": [],
+   "varietyId": "beermaverick-african-queen",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 114,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "10–17",
+     "valeur": null,
+     "min": 10,
+     "max": 17,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–6",
+     "valeur": null,
+     "min": 4,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "22–27",
+     "valeur": null,
+     "min": 22,
+     "max": 27,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.7–1.5",
+     "valeur": null,
+     "min": 0.7,
+     "max": 1.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Dank",
+     "blueberries",
+     "stone fruit",
+     "black currant",
+     "gooseberries",
+     "bubble gum",
+     "lemongrass",
+     "watermelon",
+     "chilies"
+    ],
+    "styles": [
+     "American",
+     "Belgian styles",
+     "modern IPAs",
+     "porters",
+     "stouts"
+    ],
+    "origine": [
+     "RSA"
+    ],
+    "lignee": [
+     "A diploid seedling selected from a cross between 91J7/25 and an SA male 94US2/118"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 27,
+    "trade": 16,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Ahtanum",
+   "alias": [],
+   "varietyId": "beermaverick-ahtanum",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 1,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5.7–6.3",
+     "valeur": null,
+     "min": 5.7,
+     "max": 6.3,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5–6.5",
+     "valeur": null,
+     "min": 5,
+     "max": 6.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "30–35",
+     "valeur": null,
+     "min": 30,
+     "max": 35,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.8–1.2",
+     "valeur": null,
+     "min": 0.8,
+     "max": 1.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Floral",
+     "citrus"
+    ],
+    "styles": [
+     "American Ales",
+     "Pale Ale",
+     "IPA",
+     "Lager"
+    ],
+    "origine": null,
+    "lignee": [
+     "Open pollination. Developed by Select Botanicals"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 22,
+    "trade": 8,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Akoya",
+   "alias": [],
+   "varietyId": "beermaverick-akoya",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 115,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "9–10",
+     "valeur": null,
+     "min": 9,
+     "max": 10,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–5",
+     "valeur": null,
+     "min": 4,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "27–30",
+     "valeur": null,
+     "min": 27,
+     "max": 30,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.5–2",
+     "valeur": null,
+     "min": 1.5,
+     "max": 2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Tea",
+     "spicy",
+     "green fruit",
+     "pepper"
+    ],
+    "styles": [
+     "Alt",
+     "Pilsner",
+     "Maisbier",
+     "Lager",
+     "Helles",
+     "Kolsch",
+     "Golden Ale",
+     "Bitter",
+     "English IPA"
+    ],
+    "origine": null,
+    "lignee": [
+     "Zenith x Hopsteiner male"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 70,
+    "trade": 0,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Amarillo",
+   "alias": [],
+   "varietyId": "beermaverick-amarillo",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 2,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "8–11",
+     "valeur": null,
+     "min": 8,
+     "max": 11,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "6–7",
+     "valeur": null,
+     "min": 6,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "21–24",
+     "valeur": null,
+     "min": 21,
+     "max": 24,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.5–1.9",
+     "valeur": null,
+     "min": 1.5,
+     "max": 1.9,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Floral",
+     "tropical",
+     "citrus tones"
+    ],
+    "styles": [
+     "American Ales",
+     "IPA",
+     "Belgian-style IPA",
+     "Double IPA"
+    ],
+    "origine": null,
+    "lignee": [
+     "Privately grown and registered"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 2,
+    "trade": 5,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Apollo",
+   "alias": [],
+   "varietyId": "beermaverick-apollo",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 84,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "15–19",
+     "valeur": null,
+     "min": 15,
+     "max": 19,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5.5–8",
+     "valeur": null,
+     "min": 5.5,
+     "max": 8,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "24–28",
+     "valeur": null,
+     "min": 24,
+     "max": 28,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.5–2.5",
+     "valeur": null,
+     "min": 1.5,
+     "max": 2.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Citrus notes",
+     "orange",
+     "spicy"
+    ],
+    "styles": [
+     "American Ales"
+    ],
+    "origine": null,
+    "lignee": [
+     "Originally cultivated in 2000. Take hops variety 98001, cross that with USDA 19058m variety, then take the result and cross that with Zeus"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 14,
+    "trade": 21,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Aramis",
+   "alias": [],
+   "varietyId": "beermaverick-aramis",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 116,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "6.5–8.5",
+     "valeur": null,
+     "min": 6.5,
+     "max": 8.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.5–5.5",
+     "valeur": null,
+     "min": 3.5,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "21–28",
+     "valeur": null,
+     "min": 21,
+     "max": 28,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.2–1.6",
+     "valeur": null,
+     "min": 1.2,
+     "max": 1.6,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Sweet",
+     "spicy notes",
+     "with hints of citrus",
+     "herbs"
+    ],
+    "styles": [
+     "Pilsner",
+     "Lager",
+     "Wheat",
+     "Saison",
+     "India Pale Ale",
+     "Belgian Ales",
+     "Pale Ale",
+     "Porter"
+    ],
+    "origine": null,
+    "lignee": [
+     "The product of a 2002 cross between the French variety Strisselspalt and the English variety WGV (Whitbread Golding Variety)"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 31,
+    "trade": 35,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Aurora (SI)",
+   "alias": [],
+   "varietyId": "beermaverick-aurora",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 63,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "7–9.5",
+     "valeur": null,
+     "min": 7,
+     "max": 9.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "2.7–4.4",
+     "valeur": null,
+     "min": 2.7,
+     "max": 4.4,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "22–26",
+     "valeur": null,
+     "min": 22,
+     "max": 26,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.9–1.6",
+     "valeur": null,
+     "min": 0.9,
+     "max": 1.6,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Intense",
+     "pleasant",
+     "hoppy"
+    ],
+    "styles": [
+     "All ales",
+     "some lagers"
+    ],
+    "origine": [
+     "SI"
+    ],
+    "lignee": [
+     "Diploid cross between Northern Brewer and a TG seedling of unknown origin"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 0,
+    "trade": 14,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Azacca",
+   "alias": [],
+   "varietyId": "beermaverick-azacca",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 93,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "14–16",
+     "valeur": null,
+     "min": 14,
+     "max": 16,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–5.5",
+     "valeur": null,
+     "min": 4,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "38–45",
+     "valeur": null,
+     "min": 38,
+     "max": 45,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.6–2.5",
+     "valeur": null,
+     "min": 1.6,
+     "max": 2.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Intense",
+     "tropical. Sustained impressions of citrus",
+     "very ripe mango",
+     "with notes of orchard fruit (pears",
+     "apples)",
+     "pine needles throughout."
+    ],
+    "styles": [
+     "IPA"
+    ],
+    "origine": null,
+    "lignee": [
+     "Washington, USA. The hop formerly known as #483 from the American Dwarf Hop Association"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 14,
+    "trade": 19,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Bitter Gold",
+   "alias": [],
+   "varietyId": "beermaverick-bitter-gold",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 117,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "12–15",
+     "valeur": null,
+     "min": 12,
+     "max": 15,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–6",
+     "valeur": null,
+     "min": 4,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "30–45",
+     "valeur": null,
+     "min": 30,
+     "max": 45,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1–2.5",
+     "valeur": null,
+     "min": 1,
+     "max": 2.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Pine",
+     "Grapefruit",
+     "floral"
+    ],
+    "styles": [
+     "Ale",
+     "Lager",
+     "Pilsner",
+     "Bitter",
+     "India Pale Ale"
+    ],
+    "origine": null,
+    "lignee": [
+     "Super-alpha variety Bitter Gold’s heritage comes from varieties Bullion, Brewer’s Gold, Comet and Fuggle."
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 34,
+    "trade": 19,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Boadicea",
+   "alias": [],
+   "varietyId": "beermaverick-boadicea",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 118,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "8–9",
+     "valeur": null,
+     "min": 8,
+     "max": 9,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.5–3.7",
+     "valeur": null,
+     "min": 3.5,
+     "max": 3.7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "25–27",
+     "valeur": null,
+     "min": 25,
+     "max": 27,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.4–1.6",
+     "valeur": null,
+     "min": 1.4,
+     "max": 1.6,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "spicy",
+     "floral",
+     "dried fruit",
+     "ripe fruit"
+    ],
+    "styles": [
+     "Pilsner",
+     "English Style Pale"
+    ],
+    "origine": null,
+    "lignee": [
+     "Dwarf variety developed at Wye Hops Ltd. by Peter Darby."
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 58,
+    "trade": 0,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Bobek (SI)",
+   "alias": [],
+   "varietyId": "beermaverick-bobek",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 64,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "3.5–7",
+     "valeur": null,
+     "min": 3.5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–6.1",
+     "valeur": null,
+     "min": 4,
+     "max": 6.1,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "27–31",
+     "valeur": null,
+     "min": 27,
+     "max": 31,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.7–4",
+     "valeur": null,
+     "min": 0.7,
+     "max": 4,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Intense",
+     "pleasant hop aroma"
+    ],
+    "styles": [
+     "English Style Ales",
+     "ESB",
+     "Lager",
+     "Pilsner",
+     "Belgian-style Ales"
+    ],
+    "origine": [
+     "SI"
+    ],
+    "lignee": [
+     "Derived from a Northern Brewer and Yugoslavian male TG"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 12,
+    "trade": 4,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "BOR (CZ)",
+   "alias": [],
+   "varietyId": "beermaverick-bor",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 119,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "7–11",
+     "valeur": null,
+     "min": 7,
+     "max": 11,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–7",
+     "valeur": null,
+     "min": 4,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "22–26",
+     "valeur": null,
+     "min": 22,
+     "max": 26,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.7–1.5",
+     "valeur": null,
+     "min": 0.7,
+     "max": 1.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "hoppy",
+     "spicy"
+    ],
+    "styles": null,
+    "origine": [
+     "CZ"
+    ],
+    "lignee": [
+     "Hybrid posterity of Northern Brewer which was open pollinated by Saaz provenience components - released in the Czech Republic in 1994."
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 15,
+    "trade": 0,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Bramling Cross (UK)",
+   "alias": [],
+   "varietyId": "beermaverick-bramling-cross",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 68,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5–7",
+     "valeur": null,
+     "min": 5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "2.3–3.2",
+     "valeur": null,
+     "min": 2.3,
+     "max": 3.2,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "33–35",
+     "valeur": null,
+     "min": 33,
+     "max": 35,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.7–1",
+     "valeur": null,
+     "min": 0.7,
+     "max": 1,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Strong spice",
+     "blackcurrant tones"
+    ],
+    "styles": [
+     "All styles"
+    ],
+    "origine": [
+     "UK"
+    ],
+    "lignee": [
+     "Bred from a cross between Bramling (a traditional Golding variety) and a Manitoban wild hop seedling"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 7,
+    "trade": 7,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Bravo",
+   "alias": [],
+   "varietyId": "beermaverick-bravo",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 85,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "15–18",
+     "valeur": null,
+     "min": 15,
+     "max": 18,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.5–5.5",
+     "valeur": null,
+     "min": 3.5,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "28–35",
+     "valeur": null,
+     "min": 28,
+     "max": 35,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2.3–3.5",
+     "valeur": null,
+     "min": 2.3,
+     "max": 3.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Floral",
+     "fruity"
+    ],
+    "styles": [
+     "American Style Pale Ales",
+     "or India Pale Ales"
+    ],
+    "origine": null,
+    "lignee": [
+     "Developed by Hopsteiner Breeding Company and released in 2006"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 16,
+    "trade": 24,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Brewer's Gold (DE)",
+   "alias": [],
+   "varietyId": "beermaverick-brewers-gold",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 40,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5–9",
+     "valeur": null,
+     "min": 5,
+     "max": 9,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "2.5–3.5",
+     "valeur": null,
+     "min": 2.5,
+     "max": 3.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "40–48",
+     "valeur": null,
+     "min": 40,
+     "max": 48,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.8–2.2",
+     "valeur": null,
+     "min": 1.8,
+     "max": 2.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Black currant",
+     "fruity",
+     "spicy"
+    ],
+    "styles": [
+     "Ales",
+     "German Lagers",
+     "Lambic",
+     "Saison",
+     "Bier de Garde"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Open pollination of a wild Manitoba hop"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 12,
+    "trade": 6,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Brewer's Gold (US)",
+   "alias": [],
+   "varietyId": "beermaverick-brewers-gold-us",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 3,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "8–10",
+     "valeur": null,
+     "min": 8,
+     "max": 10,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.5–4.5",
+     "valeur": null,
+     "min": 3.5,
+     "max": 4.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "40–48",
+     "valeur": null,
+     "min": 40,
+     "max": 48,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2–2.4",
+     "valeur": null,
+     "min": 2,
+     "max": 2.4,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Blackcurrant",
+     "fruity",
+     "spicy"
+    ],
+    "styles": [
+     "Ale",
+     "Pilsner",
+     "Lambic",
+     "Biere de Garde",
+     "Saison"
+    ],
+    "origine": [
+     "US"
+    ],
+    "lignee": [
+     "A sibling of Bullion"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 11,
+    "trade": 6,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Bullion",
+   "alias": [],
+   "varietyId": "beermaverick-bullion",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 81,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "8–12.9",
+     "valeur": null,
+     "min": 8,
+     "max": 12.9,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5–6",
+     "valeur": null,
+     "min": 5,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "35–40",
+     "valeur": null,
+     "min": 35,
+     "max": 40,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.1–2.7",
+     "valeur": null,
+     "min": 1.1,
+     "max": 2.7,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Spicy",
+     "fruity",
+     "strong zesty aroma"
+    ],
+    "styles": [
+     "Stouts",
+     "Porter",
+     "and Scotch ales",
+     "but is also used in Bitters",
+     "and IPA's"
+    ],
+    "origine": null,
+    "lignee": [
+     "A sibling to Brewer's Gold and was a seed collected off a female plant taken from a wild variety from Morden, Manitoba."
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 10,
+    "trade": 11,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Calypso",
+   "alias": [],
+   "varietyId": "beermaverick-calypso",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 108,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "12–14",
+     "valeur": null,
+     "min": 12,
+     "max": 14,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5–6",
+     "valeur": null,
+     "min": 5,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "40–42",
+     "valeur": null,
+     "min": 40,
+     "max": 42,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.6–2.5",
+     "valeur": null,
+     "min": 1.6,
+     "max": 2.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Crisp",
+     "fruity aroma. Flavour of Apples",
+     "pears",
+     "stone fruit",
+     "lime citrus."
+    ],
+    "styles": [
+     "Ale",
+     "Stout",
+     "Barley Wine",
+     "American Pale Ale",
+     "Cream Ale",
+     "British Pale Ale",
+     "Bitter",
+     "British",
+     "American Strong Ale",
+     "IPA",
+     "Irish",
+     "Scottish Ales",
+     "Porter"
+    ],
+    "origine": null,
+    "lignee": [
+     "Yakima Valley bred, dual-purpose diploid hop with Hopsteiner lineage on both sides"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 22,
+    "trade": 11,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Cascade",
+   "alias": [],
+   "varietyId": "beermaverick-cascade",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 4,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "4.5–7",
+     "valeur": null,
+     "min": 4.5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4.5–7",
+     "valeur": null,
+     "min": 4.5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "33–40",
+     "valeur": null,
+     "min": 33,
+     "max": 40,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.8–1.5",
+     "valeur": null,
+     "min": 0.8,
+     "max": 1.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Medium intensity",
+     "floral",
+     "citrus",
+     "grapefruit"
+    ],
+    "styles": [
+     "US-style Ales",
+     "IPA",
+     "Porter",
+     "Barley wines",
+     "Witbier"
+    ],
+    "origine": null,
+    "lignee": [
+     "Open pollination of a Fuggle seedling, derived from Fuggle and Serebrianka"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 17,
+    "trade": 11,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Cascade (NZ)",
+   "alias": [],
+   "varietyId": "beermaverick-cascade",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 56,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "6–8",
+     "valeur": null,
+     "min": 6,
+     "max": 8,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5–5.5",
+     "valeur": null,
+     "min": 5,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "37–37",
+     "valeur": 37,
+     "min": 37,
+     "max": 37,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.1–1.1",
+     "valeur": 1.1,
+     "min": 1.1,
+     "max": 1.1,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Citrus",
+     "grapefruit"
+    ],
+    "styles": [
+     "\"New World\" style Pale Ales",
+     "Summer Ales",
+     "IPA"
+    ],
+    "origine": [
+     "NZ"
+    ],
+    "lignee": [
+     "Cross between English Fuggle and a male believed to have been a cross of Fuggle and Serebrianka"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 3,
+    "trade": 12,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Cashmere",
+   "alias": [],
+   "varietyId": "beermaverick-cashmere",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 96,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "7.7–9.1",
+     "valeur": null,
+     "min": 7.7,
+     "max": 9.1,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "6.4–7.1",
+     "valeur": null,
+     "min": 6.4,
+     "max": 7.1,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "22–24",
+     "valeur": null,
+     "min": 22,
+     "max": 24,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.2–1.4",
+     "valeur": null,
+     "min": 1.2,
+     "max": 1.4,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Strong melon",
+     "fruity (lemon",
+     "lime peel",
+     "pineapple)",
+     "coconut",
+     "and spicy notes"
+    ],
+    "styles": [
+     "IPA"
+    ],
+    "origine": null,
+    "lignee": [
+     "Released by Washington State University in 2013, this hop is a direct daughter of Cascade."
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 12,
+    "trade": 0,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Celeia (SI)",
+   "alias": [],
+   "varietyId": "beermaverick-celeia",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 65,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "3–6",
+     "valeur": null,
+     "min": 3,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "2–3.3",
+     "valeur": null,
+     "min": 2,
+     "max": 3.3,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "26–29",
+     "valeur": null,
+     "min": 26,
+     "max": 29,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.6–3.6",
+     "valeur": null,
+     "min": 0.6,
+     "max": 3.6,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Pleasant",
+     "hoppy"
+    ],
+    "styles": [
+     "English",
+     "Belgian-style Ales",
+     "Lager",
+     "Pilsner"
+    ],
+    "origine": [
+     "SI"
+    ],
+    "lignee": [
+     "Triploid hybrid between Stryian Golding, Aurora and a Slovenian wild hop"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 0,
+    "trade": 11,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Centennial",
+   "alias": [],
+   "varietyId": "beermaverick-centennial",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 5,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "9.5–11.5",
+     "valeur": null,
+     "min": 9.5,
+     "max": 11.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.5–4.5",
+     "valeur": null,
+     "min": 3.5,
+     "max": 4.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "28–30",
+     "valeur": null,
+     "min": 28,
+     "max": 30,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.5–2.5",
+     "valeur": null,
+     "min": 1.5,
+     "max": 2.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Medium intensity",
+     "floral",
+     "citrus tones"
+    ],
+    "styles": [
+     "All US-style Ales",
+     "IPA. Has been used with wheat beers"
+    ],
+    "origine": null,
+    "lignee": [
+     "Cross between Brewer's Gold and a USDA male"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 11,
+    "trade": 6,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Challenger (UK)",
+   "alias": [],
+   "varietyId": "beermaverick-challenger",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 69,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5–9",
+     "valeur": null,
+     "min": 5,
+     "max": 9,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.2–4.2",
+     "valeur": null,
+     "min": 3.2,
+     "max": 4.2,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "20–25",
+     "valeur": null,
+     "min": 20,
+     "max": 25,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1–1.5",
+     "valeur": null,
+     "min": 1,
+     "max": 1.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild to moderate",
+     "spicy"
+    ],
+    "styles": [
+     "English-Syle Ale",
+     "Porter",
+     "Stout",
+     "ESB",
+     "Bitter Barley Wine",
+     "Brown ales"
+    ],
+    "origine": [
+     "UK"
+    ],
+    "lignee": [
+     "A granddaughter of Northern Brewer; lineage also includes Northdown"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 11,
+    "trade": 15,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Chelan",
+   "alias": [],
+   "varietyId": "beermaverick-chelan",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 89,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "12–14.5",
+     "valeur": null,
+     "min": 12,
+     "max": 14.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "8.5–9.8",
+     "valeur": null,
+     "min": 8.5,
+     "max": 9.8,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "33–35",
+     "valeur": null,
+     "min": 33,
+     "max": 35,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.5–1.9",
+     "valeur": null,
+     "min": 1.5,
+     "max": 1.9,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Very strong",
+     "coarse bittering"
+    ],
+    "styles": [
+     "American Ale"
+    ],
+    "origine": null,
+    "lignee": [
+     "Developed by the John I Haas, Inc. breeding company and released in 1994"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 8,
+    "trade": 0,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Chinook",
+   "alias": [],
+   "varietyId": "beermaverick-chinook",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 6,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "12–14",
+     "valeur": null,
+     "min": 12,
+     "max": 14,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3–4",
+     "valeur": null,
+     "min": 3,
+     "max": 4,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "29–34",
+     "valeur": null,
+     "min": 29,
+     "max": 34,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.5–2.5",
+     "valeur": null,
+     "min": 1.5,
+     "max": 2.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Medium intensity",
+     "spicy",
+     "piney",
+     "distinct with subtle tones of grapefruit"
+    ],
+    "styles": [
+     "US-style Pale Ale",
+     "IPA",
+     "Stout",
+     "Porter",
+     "Lager"
+    ],
+    "origine": null,
+    "lignee": [
+     "Cross between Petham Golding and a high alpha USDA male"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 8,
+    "trade": 9,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Citra",
+   "alias": [],
+   "varietyId": "beermaverick-citra",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 7,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "11–13",
+     "valeur": null,
+     "min": 11,
+     "max": 13,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.5–4.5",
+     "valeur": null,
+     "min": 3.5,
+     "max": 4.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "22–24",
+     "valeur": null,
+     "min": 22,
+     "max": 24,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2.2–2.8",
+     "valeur": null,
+     "min": 2.2,
+     "max": 2.8,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Strong citrus",
+     "tropical tones - grapefruit",
+     "melon",
+     "lime",
+     "gooseberry",
+     "passion fruit",
+     "lychee"
+    ],
+    "styles": [
+     "American-style Pale Ale",
+     "IPA",
+     "Double IPA"
+    ],
+    "origine": null,
+    "lignee": [
+     "Comprised of Hallertauer Mittlefrüh, US Tettnang, Brewer's Gold and East Kent Golding"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 12,
+    "trade": 13,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Cluster",
+   "alias": [],
+   "varietyId": "beermaverick-cluster",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 8,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5.5–8.5",
+     "valeur": null,
+     "min": 5.5,
+     "max": 8.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4.5–5.5",
+     "valeur": null,
+     "min": 4.5,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "36–42",
+     "valeur": null,
+     "min": 36,
+     "max": 42,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.4–0.8",
+     "valeur": null,
+     "min": 0.4,
+     "max": 0.8,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Strong",
+     "floral",
+     "spicy"
+    ],
+    "styles": [
+     "Ales (Aroma)",
+     "Lagers (Bittering)",
+     "Stout",
+     "often used in reproductions of historical US beer styles"
+    ],
+    "origine": null,
+    "lignee": [
+     "Unknown - suggested that it arose from the hybridization of imported varieties and indigenous male hops"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 8,
+    "trade": 10,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Columbus",
+   "alias": [],
+   "varietyId": "beermaverick-columbus",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 9,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "14–16",
+     "valeur": null,
+     "min": 14,
+     "max": 16,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–5",
+     "valeur": null,
+     "min": 4,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "30–35",
+     "valeur": null,
+     "min": 30,
+     "max": 35,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.5–2",
+     "valeur": null,
+     "min": 1.5,
+     "max": 2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Pungent"
+    ],
+    "styles": [
+     "US IPA",
+     "US Pale Ale",
+     "Stout",
+     "Barley Wine",
+     "Lager"
+    ],
+    "origine": null,
+    "lignee": [
+     "Bred and selected from Hopunion breeding"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 7,
+    "trade": 7,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Crystal",
+   "alias": [],
+   "varietyId": "beermaverick-crystal",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 10,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "3.5–5.5",
+     "valeur": null,
+     "min": 3.5,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4.5–6.7",
+     "valeur": null,
+     "min": 4.5,
+     "max": 6.7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "20–26",
+     "valeur": null,
+     "min": 20,
+     "max": 26,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.8–2.1",
+     "valeur": null,
+     "min": 0.8,
+     "max": 2.1,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "floral",
+     "spicy"
+    ],
+    "styles": [
+     "Lager",
+     "Kölsch",
+     "ESB",
+     "Pilsner",
+     "IPA",
+     "Pale Ale",
+     "Belgian Ales"
+    ],
+    "origine": null,
+    "lignee": [
+     "Triploid variety from German Hallertau with contributions from Cascade, Brewer's Gold and Early Green; a half-sister of Mt. Hood and Liberty"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 7,
+    "trade": 9,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Delta",
+   "alias": [],
+   "varietyId": "beermaverick-delta",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 90,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5.5–7",
+     "valeur": null,
+     "min": 5.5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5.5–7",
+     "valeur": null,
+     "min": 5.5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "22–24",
+     "valeur": null,
+     "min": 22,
+     "max": 24,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.5–1.1",
+     "valeur": null,
+     "min": 0.5,
+     "max": 1.1,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "pleasant aroma that is slightly spicy with a hint of citrus"
+    ],
+    "styles": [
+     "American Pale Ale",
+     "American India Pale Ale"
+    ],
+    "origine": null,
+    "lignee": [
+     "A cross between Fuggle and a male variety derived from Cascade."
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 0,
+    "trade": 0,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Dr. Rudi (NZ)",
+   "alias": [],
+   "varietyId": "beermaverick-dr-rudi",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 113,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "10–12",
+     "valeur": null,
+     "min": 10,
+     "max": 12,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "7–8.5",
+     "valeur": null,
+     "min": 7,
+     "max": 8.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "33–36",
+     "valeur": null,
+     "min": 33,
+     "max": 36,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.3–1.3",
+     "valeur": 1.3,
+     "min": 1.3,
+     "max": 1.3,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Resin",
+     "pine",
+     "and lemongrass."
+    ],
+    "styles": [
+     "Lager",
+     "India Pale Ale"
+    ],
+    "origine": [
+     "NZ"
+    ],
+    "lignee": [
+     "Dr. Rudi is a triploid variety bred from New Zealand Smoothcone. Its name was changed to Dr. Rudi in 2012."
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 24,
+    "trade": 14,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "East Kent Golding (UK)",
+   "alias": [],
+   "varietyId": null,
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 70,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "4–7",
+     "valeur": null,
+     "min": 4,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "2–2.8",
+     "valeur": null,
+     "min": 2,
+     "max": 2.8,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "28–32",
+     "valeur": null,
+     "min": 28,
+     "max": 32,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.8–1",
+     "valeur": null,
+     "min": 0.8,
+     "max": 1,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Smooth",
+     "delicate",
+     "slightly spicy"
+    ],
+    "styles": [
+     "All English style Ales",
+     "Belgian style Ales"
+    ],
+    "origine": [
+     "UK"
+    ],
+    "lignee": [
+     "Developed by clonal selection from 1970 on, starting from Canterbury Whitebine"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 7,
+    "trade": 13,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Ekuanot",
+   "alias": [],
+   "varietyId": "beermaverick-ekuanot",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 82,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "13–15.5",
+     "valeur": null,
+     "min": 13,
+     "max": 15.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–5",
+     "valeur": null,
+     "min": 4,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "31–36",
+     "valeur": null,
+     "min": 31,
+     "max": 36,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2.5–4",
+     "valeur": null,
+     "min": 2.5,
+     "max": 4,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Citrus",
+     "Tropical fruit",
+     "Fruity",
+     "Herbal",
+     "Green pepper",
+     "melon"
+    ],
+    "styles": [
+     "American Pale Ale",
+     "Cream Ale",
+     "British Pale Ale",
+     "Bitter",
+     "IPA",
+     "Irish",
+     "Scottish Ales",
+     "Pale Lager",
+     "Trappist",
+     "Belgian Ale",
+     "Wheat Beers"
+    ],
+    "origine": null,
+    "lignee": [
+     "Developed by Hop Breeding Company and released in 2014, HBC 366"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 31,
+    "trade": 21,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "El Dorado",
+   "alias": [],
+   "varietyId": "beermaverick-el-dorado",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 91,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "14–16",
+     "valeur": null,
+     "min": 14,
+     "max": 16,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "7–8",
+     "valeur": null,
+     "min": 7,
+     "max": 8,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "28–33",
+     "valeur": null,
+     "min": 28,
+     "max": 33,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2.5–2.8",
+     "valeur": null,
+     "min": 2.5,
+     "max": 2.8,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": null,
+    "styles": [
+     "Pale Ales"
+    ],
+    "origine": null,
+    "lignee": [
+     "Developed by CLS Farms, LLC in 2008 and released in 2010"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 11,
+    "trade": 0,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Ella (AU)",
+   "alias": [],
+   "varietyId": "beermaverick-ella",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 94,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "13.3–16.3",
+     "valeur": null,
+     "min": 13.3,
+     "max": 16.3,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4.8–7.8",
+     "valeur": null,
+     "min": 4.8,
+     "max": 7.8,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "34–38",
+     "valeur": null,
+     "min": 34,
+     "max": 38,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2.4–3.4",
+     "valeur": null,
+     "min": 2.4,
+     "max": 3.4,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Floral",
+     "subtle spice notes",
+     "such as star anise"
+    ],
+    "styles": [
+     "Pilsners",
+     "Lagers"
+    ],
+    "origine": [
+     "AU"
+    ],
+    "lignee": [
+     "Ella’s™ story is similar to half-sister Galaxy™; however this time the male parent hop was derived from Spalt."
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 17,
+    "trade": 27,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Enigma (AU)",
+   "alias": [],
+   "varietyId": "beermaverick-enigma",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 101,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "13.5–16.5",
+     "valeur": null,
+     "min": 13.5,
+     "max": 16.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4.8–6.4",
+     "valeur": null,
+     "min": 4.8,
+     "max": 6.4,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "38–40",
+     "valeur": null,
+     "min": 38,
+     "max": 40,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2.4–3",
+     "valeur": null,
+     "min": 2.4,
+     "max": 3,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "‘Pinot Gris’",
+     "‘raspberries’",
+     "and ‘redcurrant’",
+     "through to rock melon",
+     "light tropical fruit."
+    ],
+    "styles": null,
+    "origine": [
+     "AU"
+    ],
+    "lignee": [
+     "A descendant of the German tettnang hop"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 30,
+    "trade": 16,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Eureka",
+   "alias": [],
+   "varietyId": "beermaverick-eureka",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 107,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "18–19",
+     "valeur": null,
+     "min": 18,
+     "max": 19,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5–6",
+     "valeur": null,
+     "min": 5,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "27–27",
+     "valeur": 27,
+     "min": 27,
+     "max": 27,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "3.1–3.1",
+     "valeur": 3.1,
+     "min": 3.1,
+     "max": 3.1,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Flavors of citrus",
+     "peach",
+     "pine",
+     "aromas of stone fruit",
+     "mandarin"
+    ],
+    "styles": [
+     "Imperial India Pale Ale",
+     "India Pale Ale",
+     "American Ales",
+     "American Red",
+     "Saison"
+    ],
+    "origine": null,
+    "lignee": [
+     "It is the progeny of varietals Apollo and Merkur."
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 20,
+    "trade": 22,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "First Gold (UK)",
+   "alias": [],
+   "varietyId": "beermaverick-first-gold",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 71,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "6.5–8.5",
+     "valeur": null,
+     "min": 6.5,
+     "max": 8.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3–4",
+     "valeur": null,
+     "min": 3,
+     "max": 4,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "31–36",
+     "valeur": null,
+     "min": 31,
+     "max": 36,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.7–1.5",
+     "valeur": null,
+     "min": 0.7,
+     "max": 1.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Similar to Golding",
+     "slightly spicy but smooth"
+    ],
+    "styles": [
+     "Ale",
+     "ESB"
+    ],
+    "origine": [
+     "UK"
+    ],
+    "lignee": [
+     "Cross-pollination of the Whitbread Golding variety and a dwarf male"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 10,
+    "trade": 18,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Fuggle (UK)",
+   "alias": [],
+   "varietyId": "beermaverick-fuggle",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 72,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "3–6",
+     "valeur": null,
+     "min": 3,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "2.2–3.1",
+     "valeur": null,
+     "min": 2.2,
+     "max": 3.1,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "30–33",
+     "valeur": null,
+     "min": 30,
+     "max": 33,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.7–1.4",
+     "valeur": null,
+     "min": 0.7,
+     "max": 1.4,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "pleasant",
+     "hoppy"
+    ],
+    "styles": [
+     "English",
+     "Belgian-style Ales",
+     "ESB",
+     "Bitter",
+     "Lager",
+     "Lambic"
+    ],
+    "origine": [
+     "UK"
+    ],
+    "lignee": [
+     "A chance seedling raised in England"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 17,
+    "trade": 6,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Fuggle (US)",
+   "alias": [],
+   "varietyId": "beermaverick-fuggle",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 11,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "4–5.5",
+     "valeur": null,
+     "min": 4,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "1.5–2",
+     "valeur": null,
+     "min": 1.5,
+     "max": 2,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "25–32",
+     "valeur": null,
+     "min": 25,
+     "max": 32,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.7–1.2",
+     "valeur": null,
+     "min": 0.7,
+     "max": 1.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "woody",
+     "fruity"
+    ],
+    "styles": [
+     "Any English-style beer",
+     "US Ale",
+     "Lambic"
+    ],
+    "origine": [
+     "US"
+    ],
+    "lignee": [
+     "A chance seedling"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 17,
+    "trade": 4,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Galaxy (AU)",
+   "alias": [],
+   "varietyId": "beermaverick-galaxy",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 83,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "11.6–16",
+     "valeur": null,
+     "min": 11.6,
+     "max": 16,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5–6.9",
+     "valeur": null,
+     "min": 5,
+     "max": 6.9,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "32–42",
+     "valeur": null,
+     "min": 32,
+     "max": 42,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "3–5",
+     "valeur": null,
+     "min": 3,
+     "max": 5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Strong passionfruit",
+     "peach",
+     "citrus"
+    ],
+    "styles": [
+     "All styles"
+    ],
+    "origine": [
+     "AU"
+    ],
+    "lignee": null
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 12,
+    "trade": 19,
+    "pedigree": 31
+   }
+  },
+  {
+   "nom": "Galena",
+   "alias": [],
+   "varietyId": "beermaverick-galena",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 12,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "12–14",
+     "valeur": null,
+     "min": 12,
+     "max": 14,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "7–9",
+     "valeur": null,
+     "min": 7,
+     "max": 9,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "37–42",
+     "valeur": null,
+     "min": 37,
+     "max": 42,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.9–1.2",
+     "valeur": null,
+     "min": 0.9,
+     "max": 1.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": null,
+    "styles": [
+     "Most English-style",
+     "American-style Ales"
+    ],
+    "origine": null,
+    "lignee": [
+     "Open pollination of Brewer's Gold"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 12,
+    "trade": 10,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Gimmli (DE)",
+   "alias": [],
+   "varietyId": null,
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 110,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "3–4",
+     "valeur": null,
+     "min": 3,
+     "max": 4,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3–4.5",
+     "valeur": null,
+     "min": 3,
+     "max": 4.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "24–30",
+     "valeur": null,
+     "min": 24,
+     "max": 30,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0–0",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null,
+     "zeroParDefaut": true
+    }
+   },
+   "listes": {
+    "descripteurs": null,
+    "styles": null,
+    "origine": [
+     "DE"
+    ],
+    "lignee": null
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 14,
+    "trade": 11,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Glacier",
+   "alias": [],
+   "varietyId": "beermaverick-glacier",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 13,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5.63–5.63",
+     "valeur": 5.63,
+     "min": 5.63,
+     "max": 5.63,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "7.6–7.6",
+     "valeur": 7.6,
+     "min": 7.6,
+     "max": 7.6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "11–13",
+     "valeur": null,
+     "min": 11,
+     "max": 13,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.7–1.6",
+     "valeur": null,
+     "min": 0.7,
+     "max": 1.6,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Pleasant hop"
+    ],
+    "styles": [
+     "Pale Ale",
+     "ESB",
+     "English-style Pale Ale",
+     "Porter",
+     "Stout"
+    ],
+    "origine": null,
+    "lignee": [
+     "Offspring of Elsasser"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 24,
+    "trade": 11,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Golding (SI)",
+   "alias": [],
+   "varietyId": "beermaverick-golding",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 66,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "3–6.3",
+     "valeur": null,
+     "min": 3,
+     "max": 6.3,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "1.8–4.1",
+     "valeur": null,
+     "min": 1.8,
+     "max": 4.1,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "27–33",
+     "valeur": null,
+     "min": 27,
+     "max": 33,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.3–1.7",
+     "valeur": null,
+     "min": 0.3,
+     "max": 1.7,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Delicate",
+     "slightly spicy"
+    ],
+    "styles": [
+     "English",
+     "Belgian-style Ales",
+     "Lagers",
+     "Pilsners"
+    ],
+    "origine": [
+     "SI"
+    ],
+    "lignee": [
+     "A traditional Slovenian hop variety belonging to the Fuggle ecotype"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 16,
+    "trade": 13,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Golding (US)",
+   "alias": [],
+   "varietyId": "beermaverick-golding",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 14,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "4–6",
+     "valeur": null,
+     "min": 4,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "2–3",
+     "valeur": null,
+     "min": 2,
+     "max": 3,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "20–25",
+     "valeur": null,
+     "min": 20,
+     "max": 25,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.4–1",
+     "valeur": null,
+     "min": 0.4,
+     "max": 1,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "delicate classic English-type"
+    ],
+    "styles": [
+     "All English-style beers",
+     "especially Bitters",
+     "Pale Ales",
+     "Belgian-style Ales",
+     "Barley Wine"
+    ],
+    "origine": [
+     "US"
+    ],
+    "lignee": [
+     "East Kent Golding"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 21,
+    "trade": 7,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Green Bullet (NZ)",
+   "alias": [],
+   "varietyId": "beermaverick-green-bullet",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 111,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "11–14",
+     "valeur": null,
+     "min": 11,
+     "max": 14,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "6.5–7",
+     "valeur": null,
+     "min": 6.5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "38–39",
+     "valeur": null,
+     "min": 38,
+     "max": 39,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1–1.2",
+     "valeur": null,
+     "min": 1,
+     "max": 1.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "spicy",
+     "dried fruit characters",
+     "high levels of floral oil that complements",
+     "balances the piney resinous hop character"
+    ],
+    "styles": [
+     "Pale Ale Bitter Stout Lagers Irish Red Ale Porter Pilsner India Pale Ale"
+    ],
+    "origine": [
+     "NZ"
+    ],
+    "lignee": [
+     "Green Bullet is a triploid alpha variety bred by open cross pollination of the New Zealand \"Smoothcone\" variety"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 15,
+    "trade": 27,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Hallertau (US)",
+   "alias": [],
+   "varietyId": "beermaverick-hallertau",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 15,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "3.5–5.5",
+     "valeur": null,
+     "min": 3.5,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.5–5.5",
+     "valeur": null,
+     "min": 3.5,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "18–25",
+     "valeur": null,
+     "min": 18,
+     "max": 25,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.6–1.5",
+     "valeur": null,
+     "min": 0.6,
+     "max": 1.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Very mild",
+     "slightly flowery",
+     "spicy"
+    ],
+    "styles": [
+     "Lager",
+     "Pilsner",
+     "Bock",
+     "Wheat",
+     "Munich Helles"
+    ],
+    "origine": [
+     "US"
+    ],
+    "lignee": [
+     "Traditional German variety, originally selected in the area of the same name"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 6,
+    "trade": 4,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Hallertau Mittelfrüh (DE)",
+   "alias": [],
+   "varietyId": "beermaverick-hallertau-mittelfruh",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 41,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "3–5.5",
+     "valeur": null,
+     "min": 3,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3–5",
+     "valeur": null,
+     "min": 3,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "18–28",
+     "valeur": null,
+     "min": 18,
+     "max": 28,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.7–1.3",
+     "valeur": null,
+     "min": 0.7,
+     "max": 1.3,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild with distinct floral",
+     "hop",
+     "citrus tones"
+    ],
+    "styles": [
+     "Lager",
+     "Pilsner",
+     "Weizen",
+     "Belgian-style Ales",
+     "Alt",
+     "Lambic",
+     "Kölsch",
+     "Munich Helles"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Traditional local variety in the Hallertau region"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 14,
+    "trade": 17,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "HBC 291",
+   "alias": [],
+   "varietyId": "beermaverick-loral",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 92,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "10–12",
+     "valeur": null,
+     "min": 10,
+     "max": 12,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4.5–5.5",
+     "valeur": null,
+     "min": 4.5,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "21–23",
+     "valeur": null,
+     "min": 21,
+     "max": 23,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0–0",
+     "valeur": null,
+     "min": null,
+     "max": null,
+     "unite": null,
+     "base": null,
+     "zeroParDefaut": true
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Peppery",
+     "floral",
+     "fruity"
+    ],
+    "styles": null,
+    "origine": null,
+    "lignee": [
+     "Experimental variety developed by Hop Breeding Company."
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 7,
+    "trade": 0,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Herkules (DE)",
+   "alias": [],
+   "varietyId": "beermaverick-herkules",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 42,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "12–17",
+     "valeur": null,
+     "min": 12,
+     "max": 17,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–5.5",
+     "valeur": null,
+     "min": 4,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "32–38",
+     "valeur": null,
+     "min": 32,
+     "max": 38,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.6–2.4",
+     "valeur": null,
+     "min": 1.6,
+     "max": 2.4,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Medium intensity",
+     "evenly distributed impressions"
+    ],
+    "styles": [
+     "Pilsners",
+     "German-style Lagers",
+     "Alt"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Cross between Hallertauer Taurus and a powdery mildew resistant Hüll male breeding line"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 12,
+    "trade": 4,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Hersbrucker (DE)",
+   "alias": [],
+   "varietyId": "beermaverick-hersbrucker",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 43,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "2–5",
+     "valeur": null,
+     "min": 2,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "2.5–6",
+     "valeur": null,
+     "min": 2.5,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "18–25",
+     "valeur": null,
+     "min": 18,
+     "max": 25,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.7–1.3",
+     "valeur": null,
+     "min": 0.7,
+     "max": 1.3,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild to medium",
+     "pleasant",
+     "floral",
+     "slightly fruity"
+    ],
+    "styles": [
+     "Lager",
+     "Pilsner",
+     "Bock",
+     "Weizen Bock",
+     "Wheat",
+     "Belgian Ales",
+     "Kölsch",
+     "Munich Helles"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Traditional German landrace variety selected in the Hersbruck area"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 18,
+    "trade": 4,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Horizon",
+   "alias": [],
+   "varietyId": "beermaverick-horizon",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 16,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "11–13",
+     "valeur": null,
+     "min": 11,
+     "max": 13,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "6.5–8.5",
+     "valeur": null,
+     "min": 6.5,
+     "max": 8.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "16–19",
+     "valeur": null,
+     "min": 16,
+     "max": 19,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.5–2",
+     "valeur": null,
+     "min": 1.5,
+     "max": 2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Floral",
+     "spicy"
+    ],
+    "styles": [
+     "All ales",
+     "lagers"
+    ],
+    "origine": null,
+    "lignee": [
+     "Half-sister of Nugget"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 16,
+    "trade": 14,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Jarrylo",
+   "alias": [],
+   "varietyId": "beermaverick-jarrylo",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 112,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "15–17",
+     "valeur": null,
+     "min": 15,
+     "max": 17,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "6–7.5",
+     "valeur": null,
+     "min": 6,
+     "max": 7.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "34–37",
+     "valeur": null,
+     "min": 34,
+     "max": 37,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "3.6–4.3",
+     "valeur": null,
+     "min": 3.6,
+     "max": 4.3,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Banana",
+     "pear",
+     "spice aroma"
+    ],
+    "styles": [
+     "Pale Ales",
+     "Saisons",
+     "Belgians."
+    ],
+    "origine": null,
+    "lignee": [
+     "Jarrylo hops are a dwarf hop variety and were cultivated from the same hop association that brought us Summit hops and Azacca hops."
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 14,
+    "trade": 39,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Lemondrop",
+   "alias": [],
+   "varietyId": "beermaverick-lemondrop",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 105,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5–7",
+     "valeur": null,
+     "min": 5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–6",
+     "valeur": null,
+     "min": 4,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "28–34",
+     "valeur": null,
+     "min": 28,
+     "max": 34,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.5–2",
+     "valeur": null,
+     "min": 1.5,
+     "max": 2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Lemon",
+     "mint",
+     "green tea",
+     "slightly melon"
+    ],
+    "styles": [
+     "IPAs",
+     "Pale Ales",
+     "Saisons",
+     "American Pale Ale",
+     "Cream Ale",
+     "Hybrid Beers",
+     "IPA",
+     "Pale Lager",
+     "Trappist",
+     "Belgian Ale",
+     "Wheat Beers"
+    ],
+    "origine": null,
+    "lignee": [
+     "Originated from a cross between Cascade and USDA 19058 male"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 13,
+    "trade": 18,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Liberty",
+   "alias": [],
+   "varietyId": "beermaverick-liberty",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 17,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "3–5",
+     "valeur": null,
+     "min": 3,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3–4",
+     "valeur": null,
+     "min": 3,
+     "max": 4,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "24–30",
+     "valeur": null,
+     "min": 24,
+     "max": 30,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.6–1.8",
+     "valeur": null,
+     "min": 0.6,
+     "max": 1.8,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "slightly spicy"
+    ],
+    "styles": [
+     "Lager",
+     "Pilsner",
+     "Bock",
+     "Kölsch",
+     "Wheat"
+    ],
+    "origine": null,
+    "lignee": [
+     "Cross between tetraploid female hop cultivar Hallertau Mittlefruh and downy mildew resistant male. A half-sister tot Ultra, Mt. Hood and Crystal"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 13,
+    "trade": 9,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Lublin (PL)",
+   "alias": [],
+   "varietyId": null,
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 80,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "3–5",
+     "valeur": null,
+     "min": 3,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "2.5–4",
+     "valeur": null,
+     "min": 2.5,
+     "max": 4,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "25–28",
+     "valeur": null,
+     "min": 25,
+     "max": 28,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.5–1.2",
+     "valeur": null,
+     "min": 0.5,
+     "max": 1.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mildly spicy",
+     "herbal",
+     "reminiscent of its noble Saaz hop origins"
+    ],
+    "styles": [
+     "Golden Ale",
+     "Lager",
+     "Pilsener",
+     "Strong Lager"
+    ],
+    "origine": [
+     "PL"
+    ],
+    "lignee": [
+     "Lublin was bred from Saaz and carries with it many of the same characteristics"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 23,
+    "trade": 15,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Magnum (DE)",
+   "alias": [],
+   "varietyId": "beermaverick-magnum-gr",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 44,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "11–16",
+     "valeur": null,
+     "min": 11,
+     "max": 16,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5–7",
+     "valeur": null,
+     "min": 5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "21–29",
+     "valeur": null,
+     "min": 21,
+     "max": 29,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.6–2.6",
+     "valeur": null,
+     "min": 1.6,
+     "max": 2.6,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Delicate floral",
+     "fruity impressions"
+    ],
+    "styles": [
+     "Ale",
+     "Lager",
+     "Stout",
+     "Pilsner types"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Bred at the Hop Research Institute in Hüll"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 8,
+    "trade": 8,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Magnum (US)",
+   "alias": [],
+   "varietyId": "beermaverick-magnum-us",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 18,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "10–14",
+     "valeur": null,
+     "min": 10,
+     "max": 14,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4.5–7",
+     "valeur": null,
+     "min": 4.5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "24–30",
+     "valeur": null,
+     "min": 24,
+     "max": 30,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.9–3",
+     "valeur": null,
+     "min": 1.9,
+     "max": 3,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "No distinct aroma characteristics"
+    ],
+    "styles": [
+     "All Ales",
+     "Lagers"
+    ],
+    "origine": [
+     "US"
+    ],
+    "lignee": [
+     "Bred at the Hop Research Institute in Hüll, a cross between Galena and a German male"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 8,
+    "trade": 7,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Mandarina Bavaria (DE)",
+   "alias": [],
+   "varietyId": "beermaverick-mandarina-bavaria",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 106,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "7–10",
+     "valeur": null,
+     "min": 7,
+     "max": 10,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5–6.5",
+     "valeur": null,
+     "min": 5,
+     "max": 6.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "31–35",
+     "valeur": null,
+     "min": 31,
+     "max": 35,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2.1–2.3",
+     "valeur": null,
+     "min": 2.1,
+     "max": 2.3,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Specific aroma descriptors include fruity",
+     "citrus",
+     "specifically distinct tangerine",
+     "citrus flavors"
+    ],
+    "styles": [
+     "American IPA",
+     "variants",
+     "black ales",
+     "saisons",
+     "Brett fermentations",
+     "and other beers where a definite fruity",
+     "strongly hoppy character is beneficial"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Bred at the Hop Research Institute in Hüll"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 8,
+    "trade": 12,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Mapuche (AR)",
+   "alias": [],
+   "varietyId": null,
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 99,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "6–7",
+     "valeur": null,
+     "min": 6,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5.6–5.6",
+     "valeur": 5.6,
+     "min": 5.6,
+     "max": 5.6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "45–45",
+     "valeur": 45,
+     "min": 45,
+     "max": 45,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.9–0.9",
+     "valeur": 0.9,
+     "min": 0.9,
+     "max": 0.9,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Grapefruit",
+     "blueberry",
+     "red fruits",
+     "peach",
+     "apricot"
+    ],
+    "styles": [
+     "Pale Ale",
+     "IPA"
+    ],
+    "origine": [
+     "AR"
+    ],
+    "lignee": [
+     "Grown in the Upper Black River Valley (39th parallel)"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 4,
+    "trade": 0,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Melba (AU)",
+   "alias": [],
+   "varietyId": "beermaverick-melba",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 104,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "7–10",
+     "valeur": null,
+     "min": 7,
+     "max": 10,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "2.5–5",
+     "valeur": null,
+     "min": 2.5,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "25–35",
+     "valeur": null,
+     "min": 25,
+     "max": 35,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2–4",
+     "valeur": null,
+     "min": 2,
+     "max": 4,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Clean spicy bitterness",
+     "aromas of passionfruit",
+     "grapefruit",
+     "citrus."
+    ],
+    "styles": [
+     "New World APA",
+     "IPA",
+     "Australian Ale",
+     "American Pale Ale",
+     "American IPA",
+     "DIPA",
+     "Amber Ale... could even make for an interesting Saison."
+    ],
+    "origine": [
+     "AU"
+    ],
+    "lignee": [
+     "Bred by Ellerslie Hop Australia"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 7,
+    "trade": 36,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Merkur (DE)",
+   "alias": [],
+   "varietyId": "beermaverick-merkur",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 45,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "12–15",
+     "valeur": null,
+     "min": 12,
+     "max": 15,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.5–7",
+     "valeur": null,
+     "min": 3.5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "16–20",
+     "valeur": null,
+     "min": 16,
+     "max": 20,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2.2–2.8",
+     "valeur": null,
+     "min": 2.2,
+     "max": 2.8,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Strong with earthy",
+     "floral",
+     "spicy tones"
+    ],
+    "styles": [
+     "German",
+     "American Lagers"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Cross between Hallertauer Magnum and 81/8/13"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 5,
+    "trade": 15,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Millennium",
+   "alias": [],
+   "varietyId": "beermaverick-millennium",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 19,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "14.5–16.5",
+     "valeur": null,
+     "min": 14.5,
+     "max": 16.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4.3–5.3",
+     "valeur": null,
+     "min": 4.3,
+     "max": 5.3,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "28–32",
+     "valeur": null,
+     "min": 28,
+     "max": 32,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.8–2.2",
+     "valeur": null,
+     "min": 1.8,
+     "max": 2.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "herbal"
+    ],
+    "styles": [
+     "Ales",
+     "Stout",
+     "Barley Wine"
+    ],
+    "origine": null,
+    "lignee": [
+     "Descendent of Nugget"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 7,
+    "trade": 8,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Mosaic",
+   "alias": [],
+   "varietyId": "beermaverick-mosaic",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 86,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "10.5–14",
+     "valeur": null,
+     "min": 10.5,
+     "max": 14,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3–4.5",
+     "valeur": null,
+     "min": 3,
+     "max": 4.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "21–25",
+     "valeur": null,
+     "min": 21,
+     "max": 25,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.8–3",
+     "valeur": null,
+     "min": 0.8,
+     "max": 3,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Citrus",
+     "pine",
+     "earth",
+     "herbal",
+     "mint",
+     "bubblegum",
+     "blueberry",
+     "lime peel",
+     "black pepper"
+    ],
+    "styles": null,
+    "origine": null,
+    "lignee": [
+     "Developed by Hop Breeding Company and released in 2012"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 19,
+    "trade": 10,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Motueka (NZ)",
+   "alias": [],
+   "varietyId": "beermaverick-motueka",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 58,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "6.5–7.5",
+     "valeur": null,
+     "min": 6.5,
+     "max": 7.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5–5.5",
+     "valeur": null,
+     "min": 5,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "29–29",
+     "valeur": 29,
+     "min": 29,
+     "max": 29,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.8–0.8",
+     "valeur": 0.8,
+     "min": 0.8,
+     "max": 0.8,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Lemon",
+     "lime",
+     "tropical fruit"
+    ],
+    "styles": [
+     "European Lagers",
+     "Belgian",
+     "English Ales",
+     "Pilsner"
+    ],
+    "origine": [
+     "NZ"
+    ],
+    "lignee": [
+     "Bred by crossing a New Zealand breeding selection with Saazer parentage"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 21,
+    "trade": 15,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Mt. Hood",
+   "alias": [],
+   "varietyId": null,
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 20,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "4–8",
+     "valeur": null,
+     "min": 4,
+     "max": 8,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5–7.5",
+     "valeur": null,
+     "min": 5,
+     "max": 7.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "22–27",
+     "valeur": null,
+     "min": 22,
+     "max": 27,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1–1.3",
+     "valeur": null,
+     "min": 1,
+     "max": 1.3,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "somewhat pungent"
+    ],
+    "styles": [
+     "Lager",
+     "Pilsner",
+     "Bock",
+     "Alt",
+     "Munich Helles",
+     "Wheat"
+    ],
+    "origine": null,
+    "lignee": [
+     "Triploid seedling of Gr. Hallertauer Mittelfrüh, half sister to Ultra, Liberty and Crystal"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 6,
+    "trade": 12,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Mt. Rainier",
+   "alias": [],
+   "varietyId": null,
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 21,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5–8.1",
+     "valeur": null,
+     "min": 5,
+     "max": 8.1,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5–7",
+     "valeur": null,
+     "min": 5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "21–24",
+     "valeur": null,
+     "min": 21,
+     "max": 24,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.2–0.5",
+     "valeur": null,
+     "min": 0.2,
+     "max": 0.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Excellent floral",
+     "noble aromas",
+     "with citrus",
+     "licorice tones"
+    ],
+    "styles": null,
+    "origine": null,
+    "lignee": [
+     "Complex parentage including Hallertau, Galena, and Fuggle"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 8,
+    "trade": 8,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Nelson Sauvin (NZ)",
+   "alias": [],
+   "varietyId": "beermaverick-nelson-sauvin",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 59,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "12–13",
+     "valeur": null,
+     "min": 12,
+     "max": 13,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "6–8",
+     "valeur": null,
+     "min": 6,
+     "max": 8,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "24–24",
+     "valeur": 24,
+     "min": 24,
+     "max": 24,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.1–1.1",
+     "valeur": 1.1,
+     "min": 1.1,
+     "max": 1.1,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Distinctive white wine 'fruitiness'",
+     "gooseberry"
+    ],
+    "styles": [
+     "American Pale Ale",
+     "Lager"
+    ],
+    "origine": [
+     "NZ"
+    ],
+    "lignee": [
+     "A triploid variety bred from NZ \"smoothcone\" and a selected NZ male"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 10,
+    "trade": 16,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Newport",
+   "alias": [],
+   "varietyId": "beermaverick-newport",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 22,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "13.5–17",
+     "valeur": null,
+     "min": 13.5,
+     "max": 17,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "7.2–9.1",
+     "valeur": null,
+     "min": 7.2,
+     "max": 9.1,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "36–38",
+     "valeur": null,
+     "min": 36,
+     "max": 38,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.6–3.4",
+     "valeur": null,
+     "min": 1.6,
+     "max": 3.4,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild"
+    ],
+    "styles": [
+     "Ales",
+     "Stout",
+     "Barley Wine"
+    ],
+    "origine": null,
+    "lignee": [
+     "Open pollination"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 3,
+    "trade": 6,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Northdown (UK)",
+   "alias": [],
+   "varietyId": "beermaverick-northdown",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 73,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "6–10",
+     "valeur": null,
+     "min": 6,
+     "max": 10,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4.4–6.2",
+     "valeur": null,
+     "min": 4.4,
+     "max": 6.2,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "24–29",
+     "valeur": null,
+     "min": 24,
+     "max": 29,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.2–2.2",
+     "valeur": null,
+     "min": 1.2,
+     "max": 2.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "pleasant",
+     "delicate hop aroma"
+    ],
+    "styles": [
+     "All Ales",
+     "Porter"
+    ],
+    "origine": [
+     "UK"
+    ],
+    "lignee": [
+     "First generation selection from Northern Brewer and downy resistant, German male"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 18,
+    "trade": 12,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Northern Brewer (DE)",
+   "alias": [],
+   "varietyId": "beermaverick-northern-brewer-gr",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 46,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "7–10",
+     "valeur": null,
+     "min": 7,
+     "max": 10,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.5–5",
+     "valeur": null,
+     "min": 3.5,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "27–33",
+     "valeur": null,
+     "min": 27,
+     "max": 33,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.6–2.1",
+     "valeur": null,
+     "min": 1.6,
+     "max": 2.1,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Medium intensity",
+     "hoppy tang"
+    ],
+    "styles": [
+     "ESB",
+     "Bitter",
+     "English Pale Ale",
+     "Porter",
+     "Lager"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "One of the original high alpha hops bred in England; a cross between an American wild hop and English male"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 13,
+    "trade": 5,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Northern Brewer (US)",
+   "alias": [],
+   "varietyId": "beermaverick-northern-brewer-us",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 23,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "8–10",
+     "valeur": null,
+     "min": 8,
+     "max": 10,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3–5",
+     "valeur": null,
+     "min": 3,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "20–30",
+     "valeur": null,
+     "min": 20,
+     "max": 30,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.5–2",
+     "valeur": null,
+     "min": 1.5,
+     "max": 2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Medium intensity with Evergeen",
+     "wood",
+     "mint overtones"
+    ],
+    "styles": [
+     "All English-styles",
+     "esp. Porters",
+     "Ales",
+     "Kölsch",
+     "and Munich Helles"
+    ],
+    "origine": [
+     "US"
+    ],
+    "lignee": [
+     "Canterbury Golding female and the male OB21"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 9,
+    "trade": 8,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Nugget",
+   "alias": [],
+   "varietyId": "beermaverick-nugget",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 24,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "12–14.5",
+     "valeur": null,
+     "min": 12,
+     "max": 14.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–6",
+     "valeur": null,
+     "min": 4,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "24–30",
+     "valeur": null,
+     "min": 24,
+     "max": 30,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.7–2.3",
+     "valeur": null,
+     "min": 1.7,
+     "max": 2.3,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "herbal",
+     "pleasant"
+    ],
+    "styles": [
+     "Ales",
+     "Stout",
+     "Barley Wine",
+     "Saison",
+     "Biere de Garde"
+    ],
+    "origine": null,
+    "lignee": [
+     "Lineage incldues Brewer's Gold, Early Green and Canterbury Golding"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 6,
+    "trade": 9,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Opal (DE)",
+   "alias": [],
+   "varietyId": "beermaverick-opal",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 47,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5–8",
+     "valeur": null,
+     "min": 5,
+     "max": 8,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.5–5.5",
+     "valeur": null,
+     "min": 3.5,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "13–17",
+     "valeur": null,
+     "min": 13,
+     "max": 17,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.8–1.3",
+     "valeur": null,
+     "min": 0.8,
+     "max": 1.3,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Balanced fruity",
+     "hoppy",
+     "flowery",
+     "citrusy",
+     "herbal characteristics"
+    ],
+    "styles": [
+     "Summer Ales",
+     "Light Ales",
+     "Belgian-style Ales",
+     "Wheat"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Bred at the Hop Research Center in Hüll, Germany"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 3,
+    "trade": 3,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Pacific Gem (NZ)",
+   "alias": [],
+   "varietyId": "beermaverick-pacific-gem",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 61,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "13–15",
+     "valeur": null,
+     "min": 13,
+     "max": 15,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "7–9",
+     "valeur": null,
+     "min": 7,
+     "max": 9,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "37–40",
+     "valeur": null,
+     "min": 37,
+     "max": 40,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.2–1.2",
+     "valeur": 1.2,
+     "min": 1.2,
+     "max": 1.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Delicate balackberry",
+     "floral oak"
+    ],
+    "styles": [
+     "European Lagers",
+     "Ales",
+     "Dry Stouts"
+    ],
+    "origine": [
+     "NZ"
+    ],
+    "lignee": [
+     "Triploid alpha type bred from NZ \"Smoothcone\", Californian Late Cluster and Fuggle"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 15,
+    "trade": 17,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Pacific Jade",
+   "alias": [],
+   "varietyId": "beermaverick-pacific-jade",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 95,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "12–14",
+     "valeur": null,
+     "min": 12,
+     "max": 14,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "7–8",
+     "valeur": null,
+     "min": 7,
+     "max": 8,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "24–24",
+     "valeur": 24,
+     "min": 24,
+     "max": 24,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.4–1.4",
+     "valeur": 1.4,
+     "min": 1.4,
+     "max": 1.4,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Citrus fruits with pepper spice"
+    ],
+    "styles": null,
+    "origine": null,
+    "lignee": [
+     "Triploid alpha variety from a cross between First Choice and Saazer"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 0,
+    "trade": 17,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Pacifica (NZ)",
+   "alias": [],
+   "varietyId": "beermaverick-pacifica",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 60,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5–6",
+     "valeur": null,
+     "min": 5,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "6–6",
+     "valeur": 6,
+     "min": 6,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "25–25",
+     "valeur": 25,
+     "min": 25,
+     "max": 25,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1–1",
+     "valeur": 1,
+     "min": 1,
+     "max": 1,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Clean floral",
+     "slight citrus"
+    ],
+    "styles": [
+     "Lager",
+     "Pale Ale",
+     "Bock",
+     "Porter",
+     "Stouts"
+    ],
+    "origine": [
+     "NZ"
+    ],
+    "lignee": [
+     "A triploid aroma type bred through open pollination of Hallertau Mittelfrüh"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 15,
+    "trade": 13,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Palisade",
+   "alias": [],
+   "varietyId": "beermaverick-palisade",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 25,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5.5–9.5",
+     "valeur": null,
+     "min": 5.5,
+     "max": 9.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "6–8",
+     "valeur": null,
+     "min": 6,
+     "max": 8,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "24–29",
+     "valeur": null,
+     "min": 24,
+     "max": 29,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.4–1.6",
+     "valeur": null,
+     "min": 1.4,
+     "max": 1.6,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Floral",
+     "fruity",
+     "earthy tones"
+    ],
+    "styles": [
+     "English",
+     "American-style ales"
+    ],
+    "origine": null,
+    "lignee": [
+     "Tettnang parentage"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 6,
+    "trade": 8,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Perle (DE)",
+   "alias": [],
+   "varietyId": "beermaverick-perle-gr",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 48,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "6–10",
+     "valeur": null,
+     "min": 6,
+     "max": 10,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "2.5–5",
+     "valeur": null,
+     "min": 2.5,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "29–35",
+     "valeur": null,
+     "min": 29,
+     "max": 35,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.8–1.3",
+     "valeur": null,
+     "min": 0.8,
+     "max": 1.3,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Delicate",
+     "floral",
+     "fruity"
+    ],
+    "styles": [
+     "Pale Ale",
+     "Porter",
+     "Stout",
+     "Lager",
+     "Pilsner",
+     "Weizen",
+     "Ale",
+     "Alt",
+     "Kölsch",
+     "Munich Helles"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Bred at the Hüll Hop Research Institute from the English Northern Brewer variety"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 9,
+    "trade": 7,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Perle (US)",
+   "alias": [],
+   "varietyId": "beermaverick-perle-us",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 26,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "7–9.5",
+     "valeur": null,
+     "min": 7,
+     "max": 9.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–5",
+     "valeur": null,
+     "min": 4,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "27–32",
+     "valeur": null,
+     "min": 27,
+     "max": 32,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.7–0.9",
+     "valeur": null,
+     "min": 0.7,
+     "max": 0.9,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Slightly spicy with floral tones"
+    ],
+    "styles": [
+     "Pale Ale",
+     "Porter",
+     "Stout",
+     "Lager",
+     "Weizen",
+     "Alt",
+     "Barley Wine",
+     "Kölsch"
+    ],
+    "origine": [
+     "US"
+    ],
+    "lignee": [
+     "Bred from English Northern Brewer"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 13,
+    "trade": 7,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Phoenix (UK)",
+   "alias": [],
+   "varietyId": "beermaverick-phoenix",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 74,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "8–12",
+     "valeur": null,
+     "min": 8,
+     "max": 12,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4.2–5.5",
+     "valeur": null,
+     "min": 4.2,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "30–30",
+     "valeur": 30,
+     "min": 30,
+     "max": 30,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.2–2.5",
+     "valeur": null,
+     "min": 1.2,
+     "max": 2.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Crisp",
+     "pleasant"
+    ],
+    "styles": [
+     "Ales"
+    ],
+    "origine": [
+     "UK"
+    ],
+    "lignee": [
+     "Seedling of the high alpha variety, Yeoman"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 4,
+    "trade": 17,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Pilgrim (UK)",
+   "alias": [],
+   "varietyId": "beermaverick-pilgrim",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 75,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "9–13",
+     "valeur": null,
+     "min": 9,
+     "max": 13,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4.3–5",
+     "valeur": null,
+     "min": 4.3,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "36–38",
+     "valeur": null,
+     "min": 36,
+     "max": 38,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.2–2.4",
+     "valeur": null,
+     "min": 1.2,
+     "max": 2.4,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Distinctly hoppy with pleasant lemon tones"
+    ],
+    "styles": [
+     "Ales"
+    ],
+    "origine": [
+     "UK"
+    ],
+    "lignee": [
+     "Descendent of First Gold and Herald"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 12,
+    "trade": 0,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Pioneer (UK)",
+   "alias": [],
+   "varietyId": "beermaverick-pioneer",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 76,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "7–11",
+     "valeur": null,
+     "min": 7,
+     "max": 11,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.5–4",
+     "valeur": null,
+     "min": 3.5,
+     "max": 4,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "37–37",
+     "valeur": 37,
+     "min": 37,
+     "max": 37,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.8–1.8",
+     "valeur": null,
+     "min": 0.8,
+     "max": 1.8,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Pleasant lemon",
+     "citrus tones"
+    ],
+    "styles": [
+     "Ales",
+     "ESB"
+    ],
+    "origine": [
+     "UK"
+    ],
+    "lignee": [
+     "Sister to English Herald, distant relative to Yeoman"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 0,
+    "trade": 11,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Premiant (CZ)",
+   "alias": [],
+   "varietyId": "beermaverick-premiant",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 109,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "7–10",
+     "valeur": null,
+     "min": 7,
+     "max": 10,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.5–5.5",
+     "valeur": null,
+     "min": 3.5,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "18–23",
+     "valeur": null,
+     "min": 18,
+     "max": 23,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1–2",
+     "valeur": null,
+     "min": 1,
+     "max": 2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Pleasant",
+     "mild",
+     "neutral bittering",
+     "slightly spicy"
+    ],
+    "styles": [
+     "Pilsner",
+     "Ale",
+     "Pale Ale",
+     "Belgian Ales",
+     "Belgian Pilsners"
+    ],
+    "origine": [
+     "CZ"
+    ],
+    "lignee": [
+     "Bred from Saaz and released in 1996"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 10,
+    "trade": 0,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Pride of Ringwood (AU)",
+   "alias": [],
+   "varietyId": "beermaverick-pride-of-ringwood",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 37,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "7–11",
+     "valeur": null,
+     "min": 7,
+     "max": 11,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–6",
+     "valeur": null,
+     "min": 4,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "32–39",
+     "valeur": null,
+     "min": 32,
+     "max": 39,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.9–2",
+     "valeur": null,
+     "min": 0.9,
+     "max": 2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Pronounced",
+     "pleasant"
+    ],
+    "styles": [
+     "Australian lagers"
+    ],
+    "origine": [
+     "AU"
+    ],
+    "lignee": [
+     "2nd generation from the English Pride of Kent"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 8,
+    "trade": 11,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Progress (UK)",
+   "alias": [],
+   "varietyId": "beermaverick-progress",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 77,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "4–7",
+     "valeur": null,
+     "min": 4,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "2–2.8",
+     "valeur": null,
+     "min": 2,
+     "max": 2.8,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "25–30",
+     "valeur": null,
+     "min": 25,
+     "max": 30,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.6–1.2",
+     "valeur": null,
+     "min": 0.6,
+     "max": 1.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Moderatly strong",
+     "good aroma"
+    ],
+    "styles": [
+     "Ale",
+     "Bitter",
+     "ESB",
+     "Porter"
+    ],
+    "origine": [
+     "UK"
+    ],
+    "lignee": [
+     "Seedling of WGV crossed with O.B.79 (which is also the grandfather of Target)"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 14,
+    "trade": 8,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Rakau (NZ)",
+   "alias": [],
+   "varietyId": "beermaverick-rakau",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 102,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "10–11",
+     "valeur": null,
+     "min": 10,
+     "max": 11,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5–6",
+     "valeur": null,
+     "min": 5,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "23–25",
+     "valeur": null,
+     "min": 23,
+     "max": 25,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2.2–2.2",
+     "valeur": 2.2,
+     "min": 2.2,
+     "max": 2.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Stone fruit",
+     "fig characteristics",
+     "fresh orchard fruits",
+     "specifically apricot with some resinous pine needle"
+    ],
+    "styles": [
+     "New World styles of ales",
+     "lagers"
+    ],
+    "origine": [
+     "NZ"
+    ],
+    "lignee": [
+     "Re-released in 2007 from the New Zealand hop breeding program"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 8,
+    "trade": 13,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Riwaka (NZ)",
+   "alias": [],
+   "varietyId": "beermaverick-riwaka",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 62,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "4.5–6.5",
+     "valeur": null,
+     "min": 4.5,
+     "max": 6.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–5",
+     "valeur": null,
+     "min": 4,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "36–36",
+     "valeur": 36,
+     "min": 36,
+     "max": 36,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.5–1.5",
+     "valeur": 1.5,
+     "min": 1.5,
+     "max": 1.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Strong grapefruit",
+     "citrus"
+    ],
+    "styles": [
+     "Pale Ale",
+     "Pilsner"
+    ],
+    "origine": [
+     "NZ"
+    ],
+    "lignee": [
+     "Triploid variety bred through the crossing of \"Old Line\" Saazer and specially developed New Zealand breeding selections"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 8,
+    "trade": 20,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Saaz (CZ)",
+   "alias": [],
+   "varietyId": "beermaverick-saaz-cz",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 38,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "2–5",
+     "valeur": null,
+     "min": 2,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "7–8",
+     "valeur": null,
+     "min": 7,
+     "max": 8,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "23–28",
+     "valeur": null,
+     "min": 23,
+     "max": 28,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.4–1",
+     "valeur": null,
+     "min": 0.4,
+     "max": 1,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Very mild with pleasant hoppy notes"
+    ],
+    "styles": [
+     "Pilsner",
+     "Lagers",
+     "Belgian-Style Ales",
+     "Lambic"
+    ],
+    "origine": [
+     "CZ"
+    ],
+    "lignee": [
+     "Czech aroma landrace variety"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 4,
+    "trade": 16,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Saaz (US)",
+   "alias": [],
+   "varietyId": "beermaverick-saaz-us",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 27,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "3–4.5",
+     "valeur": null,
+     "min": 3,
+     "max": 4.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3–4.5",
+     "valeur": null,
+     "min": 3,
+     "max": 4.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "24–28",
+     "valeur": null,
+     "min": 24,
+     "max": 28,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.5–1",
+     "valeur": null,
+     "min": 0.5,
+     "max": 1,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Very mild",
+     "spicy",
+     "earthy"
+    ],
+    "styles": [
+     "Pilsner",
+     "Lager",
+     "Wheat",
+     "Belgian-style Ales"
+    ],
+    "origine": [
+     "US"
+    ],
+    "lignee": [
+     "US equivalent of the longstanding Czech variety"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 10,
+    "trade": 4,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Santiam",
+   "alias": [],
+   "varietyId": "beermaverick-santiam",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 28,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5–7",
+     "valeur": null,
+     "min": 5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "6–8.5",
+     "valeur": null,
+     "min": 6,
+     "max": 8.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "20–24",
+     "valeur": null,
+     "min": 20,
+     "max": 24,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.3–1.7",
+     "valeur": null,
+     "min": 1.3,
+     "max": 1.7,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Slightly spicy with herbal",
+     "floral tones"
+    ],
+    "styles": [
+     "Lager",
+     "Pilsner",
+     "Belgian Tripel",
+     "Kölsch",
+     "Bock",
+     "Munich Helles"
+    ],
+    "origine": null,
+    "lignee": [
+     "Triploid aroma selection from a diploid Tettnang clone and a tetraploid Hallertauer"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 7,
+    "trade": 8,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Saphir (DE)",
+   "alias": [],
+   "varietyId": "beermaverick-saphir",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 49,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "2–4.5",
+     "valeur": null,
+     "min": 2,
+     "max": 4.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–7",
+     "valeur": null,
+     "min": 4,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "12–17",
+     "valeur": null,
+     "min": 12,
+     "max": 17,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.8–1.4",
+     "valeur": null,
+     "min": 0.8,
+     "max": 1.4,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Distinct aroma with flowery",
+     "fruity tones"
+    ],
+    "styles": [
+     "German lagers",
+     "Pilsners",
+     "Belgian-style Ales"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Bred at the Hop Research Center in Hüll, Germany"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 3,
+    "trade": 3,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Simcoe",
+   "alias": [],
+   "varietyId": "beermaverick-simcoe",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 29,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "12–14",
+     "valeur": null,
+     "min": 12,
+     "max": 14,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–5",
+     "valeur": null,
+     "min": 4,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "15–20",
+     "valeur": null,
+     "min": 15,
+     "max": 20,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2–2.5",
+     "valeur": null,
+     "min": 2,
+     "max": 2.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Very unique",
+     "pine-like aroma"
+    ],
+    "styles": [
+     "American-style Ales",
+     "Pale ale",
+     "IPA",
+     "Double IPA"
+    ],
+    "origine": null,
+    "lignee": [
+     "Bittering and aroma type cultivar"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 14,
+    "trade": 6,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Sladek (CZ)",
+   "alias": [],
+   "varietyId": "beermaverick-sladek",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 97,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5–9",
+     "valeur": null,
+     "min": 5,
+     "max": 9,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "8–11",
+     "valeur": null,
+     "min": 8,
+     "max": 11,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "22–28",
+     "valeur": null,
+     "min": 22,
+     "max": 28,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.8–1",
+     "valeur": null,
+     "min": 0.8,
+     "max": 1,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Fruity flavor profile with essences of peach",
+     "passion fruit",
+     "and grapefruit"
+    ],
+    "styles": [
+     "Lagers"
+    ],
+    "origine": [
+     "CZ"
+    ],
+    "lignee": [
+     "The variety Sladek contains genetically 30% of Saaz hops"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 4,
+    "trade": 16,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Smaragd (DE)",
+   "alias": [],
+   "varietyId": "beermaverick-smaragd",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 51,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "4–6",
+     "valeur": null,
+     "min": 4,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.5–5.5",
+     "valeur": null,
+     "min": 3.5,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "13–18",
+     "valeur": null,
+     "min": 13,
+     "max": 18,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.7–1.7",
+     "valeur": null,
+     "min": 0.7,
+     "max": 1.7,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Predominantly fruity with hoppy",
+     "flowery tones"
+    ],
+    "styles": [
+     "Ales",
+     "Alt",
+     "Kölsch"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Bred at the Hop Research Center in Hüll, Germany"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 0,
+    "trade": 8,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Sorachi Ace",
+   "alias": [],
+   "varietyId": "beermaverick-sorachi-ace",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 30,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "10–16",
+     "valeur": null,
+     "min": 10,
+     "max": 16,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "6–7",
+     "valeur": null,
+     "min": 6,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "23–23",
+     "valeur": 23,
+     "min": 23,
+     "max": 23,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2–2.8",
+     "valeur": null,
+     "min": 2,
+     "max": 2.8,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Unique",
+     "lemon",
+     "slight dill"
+    ],
+    "styles": [
+     "Belgian Wit",
+     "IPA",
+     "Pale Ale",
+     "Beglian Saison"
+    ],
+    "origine": null,
+    "lignee": [
+     "Cross between Brewer's Gold, Saazer - OP and Beikei No. 2 male"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 5,
+    "trade": 11,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Spalt (DE)",
+   "alias": [],
+   "varietyId": "beermaverick-spalt",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 52,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "2.5–5.5",
+     "valeur": null,
+     "min": 2.5,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3–5",
+     "valeur": null,
+     "min": 3,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "22–29",
+     "valeur": null,
+     "min": 22,
+     "max": 29,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.5–0.9",
+     "valeur": null,
+     "min": 0.5,
+     "max": 0.9,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "pleasant with flowery",
+     "fruity",
+     "spicy tones"
+    ],
+    "styles": [
+     "Lager",
+     "Pilsner",
+     "Bock",
+     "Alt",
+     "Kölsch",
+     "Munich Helles"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Traditional German landrace variety selected and grown in the area of the same name"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 8,
+    "trade": 17,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Spalter Select (DE)",
+   "alias": [],
+   "varietyId": "beermaverick-spalter-select",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 50,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "3–6.5",
+     "valeur": null,
+     "min": 3,
+     "max": 6.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.5–5",
+     "valeur": null,
+     "min": 3.5,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "21–27",
+     "valeur": null,
+     "min": 21,
+     "max": 27,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.6–0.9",
+     "valeur": null,
+     "min": 0.6,
+     "max": 0.9,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Very fine Spalter type aroma with fruity",
+     "flowery tones",
+     "imparts a distinct hoppy tang"
+    ],
+    "styles": [
+     "Lager",
+     "Alt",
+     "Kölsch"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Bred from Hallertauer Mittlefrüh and Spalt as a disease resistant Spalt type."
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 12,
+    "trade": 7,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Sterling",
+   "alias": [],
+   "varietyId": "beermaverick-sterling",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 31,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "6–9",
+     "valeur": null,
+     "min": 6,
+     "max": 9,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–6",
+     "valeur": null,
+     "min": 4,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "22–28",
+     "valeur": null,
+     "min": 22,
+     "max": 28,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.3–1.9",
+     "valeur": null,
+     "min": 1.3,
+     "max": 1.9,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Herbal",
+     "spicy with a hint of floral",
+     "citrus"
+    ],
+    "styles": [
+     "Pilsner",
+     "Lager",
+     "Belgian-style Ales"
+    ],
+    "origine": null,
+    "lignee": [
+     "Lineage includes Saaz, Cascade, Brewer's Gold, Early Green and German open-pollination"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 7,
+    "trade": 6,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Strisselspalt (FR)",
+   "alias": [],
+   "varietyId": "beermaverick-strisselspalt",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 39,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "3–5",
+     "valeur": null,
+     "min": 3,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3–5.5",
+     "valeur": null,
+     "min": 3,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "20–25",
+     "valeur": null,
+     "min": 20,
+     "max": 25,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.6–0.9",
+     "valeur": null,
+     "min": 0.6,
+     "max": 0.9,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Medium intensity",
+     "pleasant",
+     "hoppy"
+    ],
+    "styles": [
+     "Pilsner",
+     "Lager",
+     "Wheat",
+     "Belgian-style Ales",
+     "Saison",
+     "Biere de Garde"
+    ],
+    "origine": [
+     "FR"
+    ],
+    "lignee": [
+     "Major aroma hop of the Alsace area of France near Strasbourg"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 14,
+    "trade": 4,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Summit",
+   "alias": [],
+   "varietyId": "beermaverick-summit",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 32,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "16–19",
+     "valeur": null,
+     "min": 16,
+     "max": 19,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.3–6",
+     "valeur": null,
+     "min": 3.3,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "26–33",
+     "valeur": null,
+     "min": 26,
+     "max": 33,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.5–2.5",
+     "valeur": null,
+     "min": 1.5,
+     "max": 2.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Distinct spiciness with earthy",
+     "onion",
+     "garlic",
+     "citrus characteristics"
+    ],
+    "styles": [
+     "IPA",
+     "Pale Ale",
+     "Imperial IPA"
+    ],
+    "origine": null,
+    "lignee": [
+     "Cross pollination of Lexus and an unspecified male; derived from numerous plants including Zeus, Nugget and male USDA varieties"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 14,
+    "trade": 4,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Super Galena",
+   "alias": [],
+   "varietyId": "beermaverick-super-galena",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 88,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "13–16",
+     "valeur": null,
+     "min": 13,
+     "max": 16,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "8–10",
+     "valeur": null,
+     "min": 8,
+     "max": 10,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "24–40",
+     "valeur": null,
+     "min": 24,
+     "max": 40,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.5–2.5",
+     "valeur": null,
+     "min": 1.5,
+     "max": 2.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "pleasant hoppy aroma"
+    ],
+    "styles": [
+     "IPA",
+     "Pale Ale",
+     "Stout"
+    ],
+    "origine": null,
+    "lignee": [
+     "Developed in 1998 by Roger Jeske in Yakima Washington. Galena was crossed with an Open Pollinated Nugget Hops variety"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 22,
+    "trade": 12,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Target (UK)",
+   "alias": [],
+   "varietyId": "beermaverick-target",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 78,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "8–13",
+     "valeur": null,
+     "min": 8,
+     "max": 13,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4.5–5.7",
+     "valeur": null,
+     "min": 4.5,
+     "max": 5.7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "29–37",
+     "valeur": null,
+     "min": 29,
+     "max": 37,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.6–2.6",
+     "valeur": null,
+     "min": 1.6,
+     "max": 2.6,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Pleasant but intense English hop aroma"
+    ],
+    "styles": [
+     "All Ales",
+     "Lagers"
+    ],
+    "origine": [
+     "UK"
+    ],
+    "lignee": [
+     "Second generation selection from Northern Brewer and a male, English Golding seedling"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 17,
+    "trade": 11,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Taurus (DE)",
+   "alias": [],
+   "varietyId": null,
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 53,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "12–17",
+     "valeur": null,
+     "min": 12,
+     "max": 17,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–6",
+     "valeur": null,
+     "min": 4,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "20–25",
+     "valeur": null,
+     "min": 20,
+     "max": 25,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.9–1.4",
+     "valeur": null,
+     "min": 0.9,
+     "max": 1.4,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Strong"
+    ],
+    "styles": [
+     "German-style Ales",
+     "Lagers"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Cross between 82/39/37 and 85/54/15M"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 9,
+    "trade": 8,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Tettnang (DE)",
+   "alias": [],
+   "varietyId": null,
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 54,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "3–6",
+     "valeur": null,
+     "min": 3,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3–5",
+     "valeur": null,
+     "min": 3,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "22–29",
+     "valeur": null,
+     "min": 22,
+     "max": 29,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.5–0.9",
+     "valeur": null,
+     "min": 0.5,
+     "max": 0.9,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "pleasant with balanced aroma impressions"
+    ],
+    "styles": [
+     "Lager",
+     "Ale",
+     "Pilsner",
+     "Weizen",
+     "Lambic",
+     "Alt",
+     "Kölsch",
+     "Munich Helles",
+     "Belgian-style Ales"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "Traditional German landrace variety"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 13,
+    "trade": 4,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Tettnang (US)",
+   "alias": [],
+   "varietyId": "beermaverick-tettnang-us",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 33,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "4–5",
+     "valeur": null,
+     "min": 4,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3–4.5",
+     "valeur": null,
+     "min": 3,
+     "max": 4.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "20–25",
+     "valeur": null,
+     "min": 20,
+     "max": 25,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.4–0.8",
+     "valeur": null,
+     "min": 0.4,
+     "max": 0.8,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Slightly spicy"
+    ],
+    "styles": [
+     "Pilsner",
+     "Lager",
+     "Wheat",
+     "American-style Ales"
+    ],
+    "origine": [
+     "US"
+    ],
+    "lignee": [
+     "A traditional German land-race variety"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 7,
+    "trade": 5,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Topaz (AU)",
+   "alias": [],
+   "varietyId": "beermaverick-topaz",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 98,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "13.7–17.7",
+     "valeur": null,
+     "min": 13.7,
+     "max": 17.7,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "6.4–7.9",
+     "valeur": null,
+     "min": 6.4,
+     "max": 7.9,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "48–51",
+     "valeur": null,
+     "min": 48,
+     "max": 51,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1.7–2.2",
+     "valeur": null,
+     "min": 1.7,
+     "max": 2.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Light tropical fruit (some say lychee) flavours. fleshy citrus",
+     "apricot",
+     "with a strong \"dank\" overtone",
+     "a hint of sulfur"
+    ],
+    "styles": null,
+    "origine": [
+     "AU"
+    ],
+    "lignee": [
+     "Australian high alpha acid variety crossed with pollen from a Wye college male"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 18,
+    "trade": 16,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Tradition (DE)",
+   "alias": [],
+   "varietyId": null,
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 55,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5–7",
+     "valeur": null,
+     "min": 5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4–5",
+     "valeur": null,
+     "min": 4,
+     "max": 5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "26–29",
+     "valeur": null,
+     "min": 26,
+     "max": 29,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1–1.4",
+     "valeur": null,
+     "min": 1,
+     "max": 1.4,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Medium intensity",
+     "floral",
+     "herbal tones"
+    ],
+    "styles": [
+     "Lager",
+     "Pilsner",
+     "Bock",
+     "Wheat",
+     "Weizen"
+    ],
+    "origine": [
+     "DE"
+    ],
+    "lignee": [
+     "A cross between Hallertauer Gold and 75/15/106M originating in Germany"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 15,
+    "trade": 0,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Ultra",
+   "alias": [],
+   "varietyId": "beermaverick-ultra",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 87,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "9.4–9.7",
+     "valeur": null,
+     "min": 9.4,
+     "max": 9.7,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3.8–4",
+     "valeur": null,
+     "min": 3.8,
+     "max": 4,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "23–38",
+     "valeur": null,
+     "min": 23,
+     "max": 38,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1–1.5",
+     "valeur": null,
+     "min": 1,
+     "max": 1.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "pleasant Saaz-like aroma"
+    ],
+    "styles": [
+     "Pilsners",
+     "Wheat",
+     "Bock beers"
+    ],
+    "origine": null,
+    "lignee": null
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 11,
+    "trade": 14,
+    "pedigree": 35
+   }
+  },
+  {
+   "nom": "Vanguard",
+   "alias": [],
+   "varietyId": "beermaverick-vanguard",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 34,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5–6",
+     "valeur": null,
+     "min": 5,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "5–7",
+     "valeur": null,
+     "min": 5,
+     "max": 7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "14–16",
+     "valeur": null,
+     "min": 14,
+     "max": 16,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.8–1.2",
+     "valeur": null,
+     "min": 0.8,
+     "max": 1.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Similar to Hallertau Mittelfrüh"
+    ],
+    "styles": [
+     "Lager",
+     "Pilsner",
+     "Bock",
+     "Kölsch",
+     "Wheat",
+     "Munich Helles",
+     "Belgian-style Ales"
+    ],
+    "origine": null,
+    "lignee": [
+     "Cross between USDA accessions 21285 (a Hallertau Mittelfrüh daughter) and 64037M"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 9,
+    "trade": 8,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Vic Secret (AU)",
+   "alias": [],
+   "varietyId": "beermaverick-vic-secret",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 103,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "14–17",
+     "valeur": null,
+     "min": 14,
+     "max": 17,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "6.1–7.8",
+     "valeur": null,
+     "min": 6.1,
+     "max": 7.8,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "51–56",
+     "valeur": null,
+     "min": 51,
+     "max": 56,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2.2–2.8",
+     "valeur": null,
+     "min": 2.2,
+     "max": 2.8,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Tropical fruit",
+     "pine",
+     "herbs"
+    ],
+    "styles": [
+     "Pale Ale",
+     "India Pale Ale",
+     "Stout",
+     "Porter"
+    ],
+    "origine": [
+     "AU"
+    ],
+    "lignee": [
+     "Developed in 2000 in Victoria, Australia alongside sister variety Topaz"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 9,
+    "trade": 29,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Waimea (NZ)",
+   "alias": [],
+   "varietyId": "beermaverick-waimea",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 100,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "16–19",
+     "valeur": null,
+     "min": 16,
+     "max": 19,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "7–9",
+     "valeur": null,
+     "min": 7,
+     "max": 9,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "22–24",
+     "valeur": null,
+     "min": 22,
+     "max": 24,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "2–2.2",
+     "valeur": null,
+     "min": 2,
+     "max": 2.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Citrus",
+     "fruity",
+     "pine",
+     "tangelo"
+    ],
+    "styles": [
+     "American Pale Ale",
+     "Cream Ale",
+     "IPA",
+     "Pale Lager",
+     "Trappist",
+     "Belgian Ale"
+    ],
+    "origine": [
+     "NZ"
+    ],
+    "lignee": [
+     "Released from The New Zealand Institute for Plant & Food Research Limited’s Motueka Research Centre, as a granddaughter to Pacific Jade"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 0,
+    "trade": 16,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Wakatu (NZ)",
+   "alias": [],
+   "varietyId": "beermaverick-wakatu",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 57,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "6.5–8.5",
+     "valeur": null,
+     "min": 6.5,
+     "max": 8.5,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "8.5–8.5",
+     "valeur": 8.5,
+     "min": 8.5,
+     "max": 8.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "28–30",
+     "valeur": null,
+     "min": 28,
+     "max": 30,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1–1",
+     "valeur": 1,
+     "min": 1,
+     "max": 1,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Distinct floral",
+     "slight citrus",
+     "lime"
+    ],
+    "styles": [
+     "Lager",
+     "Pilsner",
+     "Bitter",
+     "Ales",
+     "Bock"
+    ],
+    "origine": [
+     "NZ"
+    ],
+    "lignee": [
+     "Triploid aroma type bred by open pollination of Hallertau Mittelfrüh and a NZ derived male"
+    ]
+   },
+   "codeUsage": 3,
+   "proseNonCopiee": {
+    "info": 10,
+    "trade": 16,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Warrior",
+   "alias": [],
+   "varietyId": "beermaverick-warrior",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 35,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "15–17",
+     "valeur": null,
+     "min": 15,
+     "max": 17,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "4.5–5.5",
+     "valeur": null,
+     "min": 4.5,
+     "max": 5.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "24–26",
+     "valeur": null,
+     "min": 24,
+     "max": 26,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1–2",
+     "valeur": null,
+     "min": 1,
+     "max": 2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Very mild"
+    ],
+    "styles": [
+     "Pale Ale",
+     "IPA"
+    ],
+    "origine": null,
+    "lignee": [
+     "Bred by Yakima Chief Ranches"
+    ]
+   },
+   "codeUsage": 2,
+   "proseNonCopiee": {
+    "info": 3,
+    "trade": 4,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Whitbread Golding Variety (UK)",
+   "alias": [],
+   "varietyId": null,
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 79,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "5–8",
+     "valeur": null,
+     "min": 5,
+     "max": 8,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "2–2.7",
+     "valeur": null,
+     "min": 2,
+     "max": 2.7,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "25–34",
+     "valeur": null,
+     "min": 25,
+     "max": 34,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "0.8–1.2",
+     "valeur": null,
+     "min": 0.8,
+     "max": 1.2,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Moderate",
+     "sweet",
+     "pleasant",
+     "slightly fruity"
+    ],
+    "styles": [
+     "Pale Ale",
+     "Wheat"
+    ],
+    "origine": [
+     "UK"
+    ],
+    "lignee": [
+     "Open pollination of Bates Brewer"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 3,
+    "trade": 7,
+    "pedigree": 0
+   }
+  },
+  {
+   "nom": "Willamette",
+   "alias": [],
+   "varietyId": "beermaverick-willamette",
+   "rattachement": "nom",
+   "url": "https://github.com/stuartraetaylor/hops-json/blob/655499ffda7166abff83f52f8012390ffc1107f7/hops.json",
+   "releve": "2026-09-08T00:36:43.471Z",
+   "publie": null,
+   "idSource": 36,
+   "champs": {
+    "alpha": {
+     "etiquette": "AlphaMin / AlphaMax",
+     "brut": "4–6",
+     "valeur": null,
+     "min": 4,
+     "max": 6,
+     "unite": null,
+     "base": null
+    },
+    "beta": {
+     "etiquette": "BetaMin / BetaMax",
+     "brut": "3–4.5",
+     "valeur": null,
+     "min": 3,
+     "max": 4.5,
+     "unite": null,
+     "base": null
+    },
+    "cohumulone": {
+     "etiquette": "CoHumuloneMin / CoHumuloneMax",
+     "brut": "30–35",
+     "valeur": null,
+     "min": 30,
+     "max": 35,
+     "unite": null,
+     "base": null
+    },
+    "huileTotale": {
+     "etiquette": "TotalOilMin / TotalOilMax",
+     "brut": "1–1.5",
+     "valeur": null,
+     "min": 1,
+     "max": 1.5,
+     "unite": null,
+     "base": null
+    }
+   },
+   "listes": {
+    "descripteurs": [
+     "Mild",
+     "pleasant",
+     "slightly spicy"
+    ],
+    "styles": [
+     "All English-style Ales",
+     "US Pale Ale",
+     "US Brown Ale",
+     "American Lager"
+    ],
+    "origine": null,
+    "lignee": [
+     "Triploid seedling of the English Fuggle variety"
+    ]
+   },
+   "codeUsage": 1,
+   "proseNonCopiee": {
+    "info": 16,
+    "trade": 4,
+    "pedigree": 0
+   }
+  }
+ ]
+}

@@ -1,0 +1,125 @@
+/* Ajustements de mise en page du mur du stock (voie sz, correction du 13.11, critique c25).
+   Écrit à la main, après mur.css (généré depuis la maquette sy/fA) : rien ici ne modifie le dessin mobile de la maquette,
+   sauf les gestes (un libellé ne vole plus le toucher du nom du rayon) et le rayon actif, qui se voit. */
+
+/* c25 n° 6 : l'échelle « 250 g » ou « 5 kg » (position absolue) recouvrait le milieu du bouton du nom du rayon et captait le toucher. */
+.stock-mur .l1e-cl,.stock-mur .sw-rl,.stock-mur .sw-rln{pointer-events:none}
+/* le rayon touché se voit : bandeau teinté, nom souligné de la couleur du rayon, ruban plus large */
+.stock-mur .l1e-r:has(.l1e-n[aria-pressed=true]){background:color-mix(in srgb,var(--l1-k) 12%,transparent)}
+.stock-mur .l1e-r:has(.l1e-n[aria-pressed=true])::before{width:7px;left:-1px}
+.stock-mur .l1e-n[aria-pressed=true] b{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:3px;text-decoration-color:var(--l1-k)}
+.stock-mur .l1e-n:focus-visible{outline:2px solid var(--l1-t0);outline-offset:2px;border-radius:4px}
+
+/* c25 n° 3 : la pile de sachets ne monte plus sur le titre de la colonne ; la planche grandit de sa pile (5 briques au plus, comme avant) */
+.stock-mur .l1e-r[data-f=f2] .l1e-gb{height:auto;min-height:var(--hm)}
+
+/* af0763f4 n° 3 : sans aucune levure, le rayon n'a que ses pastilles et ne fait que 45 px ; le « ? » (posé à 29 px, 28 px de haut, bas à 57 px)
+   sortait de 12 px et le coin arrondi du mur le tranchait. Hauteur minimale = bas du « ? » + 6 px = 63 px, la hauteur qu'a déjà le rayon avec des
+   levures à 390 : rien ne bouge quand il y en a. */
+.stock-mur .l1e-r[data-f=f2]{min-height:63px}
+
+/* c25 n° 11 : la barre d'une colonne à une seule marque pose sur son socle (le script de la maquette abaissait ce socle de 1 px) */
+.stock-mur .l1e-gb>.sy-so{transform:none!important}
+
+/* c25 n° 4 et 5 : les rayons s'empilent toujours (comme à 390), jamais côte à côte : une légende ouverte se pose sous son rayon,
+   et le mur, comprimé dans le volet de la fiche, garde une ligne par rayon. Le mur tient la largeur : les corps se jugent sur elle. */
+.stock-mur .l1-mur{container-type:inline-size;container-name:mur}
+/* c26 n° 4 : un trait de repère ne sort jamais du mur (la ligne « 1 kg » entrait de 19 px dans la gouttière de la fiche pendant le recalage
+   du volet) ; coupe en largeur seulement : les bulles et contours verticaux restent entiers */
+.stock-mur .l1-mur{overflow-x:clip}
+@media (min-width:900px){
+  .stock-mur .l1-mur{display:block;column-gap:0;padding:0 8px 6px}
+  .stock-mur .l1-mu.l1e-r{border-bottom:1px solid var(--l1-border);grid-template-columns:60px minmax(0,1fr)!important}
+}
+
+/* c25 n° 10 : mur large (rayons pleine largeur) : aucun texte sous 12 px, briques de levure plus grandes pour leur lettre */
+@container mur (min-width:440px){
+  .sx-vd{font-size:12px;line-height:14px;padding-left:5px}
+  .sx-gl,.sx-it,.sx-g0{font-size:12px;line-height:12px}
+  /* largeur fixe : la lettre ne la fait pas varier avec la police chargée (le socle se mesure sur ces largeurs) */
+  .sx-g3 .l1e-s1{width:16px}
+  .sx-g3 .l1e-s1.sx-g{width:16px!important;min-width:16px;padding:0;height:14px;font:700 12px/14px var(--l1-sans,inherit)}
+  .sx-pl small,.sx-nm0,.sx-et0{font-size:12px}
+  .l1e-b.sx-p.l1e-lq>b.l1e-fv{width:10px}
+}
+/* CT4C-2 (critique tour 4, BLOQUANT) : au téléphone (mur étroit, 390), les pastilles « rien en stock » (Torréfiés, Fumé, Sucres, Hazy, W. Coast,
+   Belge/Blé, Anglaise…) faisaient 10 px et la lettre de souche des sachets 10 px : illisibles. Aucun texte du mur sous 12 px, à toute largeur :
+   les règles du mur large (ci-dessus) valent aussi pour le mur étroit. La colonne des pastilles se mesure au rendu (murMiseEnPage) : elle
+   passe sous la planche quand elle ne tient plus à droite. */
+.stock-mur .sx-vd{font-size:12px;line-height:14px}
+.stock-mur .sx-v{gap:3px}
+.stock-mur .sx-gl,.stock-mur .sx-it,.stock-mur .sx-g0{font-size:12px;line-height:12px}
+.stock-mur .sx-g3 .l1e-s1{width:16px}
+.stock-mur .sx-g3 .l1e-s1.sx-g{width:16px!important;min-width:16px;padding:0;height:14px;font:700 12px/14px var(--l1-sans,inherit)}
+.stock-mur .sx-pl small,.stock-mur .sx-nm,.stock-mur .sx-et,.stock-mur .sx-nm0,.stock-mur .sx-et0{font-size:12px}
+.stock-mur .l1e-b.sx-p.l1e-lq>b.l1e-fv{width:10px}
+.stock-mur .l1e-n span[data-compte]{font-size:12px}
+
+/* CT4C-3 : le « ? » rond de la rangée Levures était une icône muette (refus connu) : il dit « Légende » et ouvre les trois légendes,
+   qui nomment la brique (sachet), la fiole et la lettre (la souche). Pastille de 28 px, cible élargie à 40 px par ::before. */
+.stock-mur .l1e-c1 .sx-q{width:auto;padding:0 6px;border-radius:14px;font:600 12px/25px var(--l1-sans,inherit);letter-spacing:0}
+
+/* une île, pas une bande de 850 px : les colonnes restent groupées, la pastille « rien en stock » au bout */
+@container mur (min-width:700px){
+  .l1e-r .l1e-pl{max-width:640px}
+}
+
+/* c25 n° 13 : thème sombre, les titres de colonnes (brun, gris de la famille) s'éclaircissent vers le texte du thème */
+html[data-theme="cave"] .stock-mur .l1e-w{color:color-mix(in srgb,var(--ink) 38%,var(--l1-t0))}
+html[data-theme="cave"] .stock-mur .l1e-t{color:var(--l1-t0)}
+
+/* c26 n° 1 : les tirets de repère (5 kg, 1 kg, 250 g) et le « - - - » de la légende sont dessinés en noir fixe dans mur.css
+   (rgba(17,17,17,…)) : ils disparaissent sur fond sombre. En sombre, même pointillé, couleur du texte du thème (--l1-t1) à 60 %. */
+html[data-theme="cave"] .stock-mur .sw-rln,
+html[data-theme="cave"] .stock-mur .sv-tir{border-top-color:color-mix(in srgb,var(--l1-t1) 60%,transparent)}
+html[data-theme="cave"] .stock-mur .l1e-r:not(.l1e-sansc) .l1e-gb::after{border-top-color:color-mix(in srgb,var(--l1-t1) 60%,transparent)}
+
+/* ST-T5 (mur fin à 1280 : marques de 8 à 20 px) : à partir de 900 px, chaque marque (houblon, malt, sachet, fiole) grandit de ×1,5, la planche avec elle
+   (--hm : la hauteur de la planche, --hc : le trait de repère). La maquette à 390 reste inchangée. `zoom` agrandit la seule marque (et ce qu'elle porte : la lettre,
+   le chiffre, le tracé) ; les titres, écarts et pastilles, eux, ne bougent pas. Le script de mise en page mesure les rectangles à l'écran (déjà agrandis) et
+   n'écrit que sur des éléments non agrandis (marges des colonnes, écart, socle) : il reste juste sans rien changer. Les rayons Malts et Houblons grandissent
+   de leur planche ; Levures garde sa planche (sa pile se pose en hauteur libre). */
+@media (min-width:900px){
+  .stock-mur .l1e-r .l1e-b{zoom:1.5}
+  .stock-mur .l1e-r[data-f=f0],.stock-mur .l1e-r[data-f=f1]{--hm:42px!important;--hc:16.5px!important}
+}
+
+/* cx, ST-T48 : sous un filtre ou une recherche, les marques du mur qui n'y répondent pas pâlissent (fA : .l1-pale{opacity:.16}) */
+.stock-mur .l1-pale{opacity:.16}
+
+/* vd2 n° 1 (verdict 5cdcd12e) : sous un filtre, le compte du rayon (« 3/12 ») tient dans la colonne du nom, à gauche du repère d'échelle (« 5 kg », « 250 g », collé à droite de la colonne).
+   Chiffres tabulaires en police du texte, 11 px : « 28/36 » fait 27 px, le repère « 250 g » laisse 27 px. */
+.l1e-n span[data-compte]{font:11px/14px var(--l1-sans,inherit);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+
+/* CT4C (g1, tour 2) n° 4 : la lettre de la brique ne dit pas la souche ; son nom court (US-05, S-04) s'écrit à côté du compte de la colonne, sans la Légende. */
+.stock-mur .sx-sn{font-size:12px;font-weight:600;margin-right:4px}
+
+/* STG-1 : une rangée qui ne tient pas défile (la colonne « Autres » des Levures n'est plus coupée) ; l'indice « › » dit qu'il y a une suite. Les autres rangées ne changent pas. */
+.stock-mur .l1e-r .l1e-pl[data-defile]{overflow-x:auto;overflow-y:hidden;padding-top:3px;padding-bottom:3px;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x pan-y!important}
+.stock-mur .l1e-r .l1e-pl[data-defile]::-webkit-scrollbar{display:none}
+.stock-mur .sx-suite{display:none;position:absolute;right:0;top:0;bottom:0;width:22px;align-items:center;justify-content:flex-end;padding-right:4px;font:700 20px/1 var(--l1-sans,inherit);font-style:normal;color:var(--l1-t0);background:linear-gradient(90deg,transparent,var(--l1-panel) 65%);pointer-events:none}
+.stock-mur .sx-suite[data-on]{display:flex}
+/* STG-2 et STG-3 : la bulle qui confirme (« toucher ici : la fiche ») se touche au pouce : 44 px de haut au moins */
+.l1x-bul{min-height:44px;justify-content:center}
+
+/* D2a (22.11) : le « ? » de la légende est un rond (maquette st1-d2a), le rayon touché est encadré de sa couleur avec une encoche vers sa liste. */
+.stock-mur .l1e-c1 .sx-q{width:28px;padding:0;border-radius:50%;font:700 15px/25px var(--l1-sans,inherit)}
+.stock-mur .l1e-r:has(.l1e-n[aria-pressed=true]){box-shadow:inset 0 0 0 2px var(--l1-k)}
+.stock-mur .l1e-r:has(.l1e-n[aria-pressed=true])::after{content:"";position:absolute;left:26px;bottom:-8px;width:14px;height:14px;background:var(--l1-page,#fff);transform:rotate(45deg);border-right:2px solid var(--l1-k);border-bottom:2px solid var(--l1-k);z-index:2}
+
+/* D3b (22.11) : la légende est une bulle sous le « ? », cinq lignes de 18 px (maquette st1-d3b-legende), par-dessus la liste. */
+.stock-mur .l1-mur{position:relative}
+.stock-mur .sv-bulle-leg{position:absolute;z-index:30;left:12px;bottom:-4px;transform:translateY(100%);display:flex;flex-direction:column;flex-wrap:nowrap;gap:4px;width:max-content;max-width:calc(100% - 24px);margin:0;padding:10px 14px;border-radius:14px;box-shadow:0 0 0 1.5px var(--l1-t0),0 6px 18px rgba(0,0,0,.18)}
+.stock-mur .sv-bulle-leg[hidden]{display:none}
+.stock-mur .sv-bulle-leg .sv-li{gap:10px;min-height:26px;font-size:16px;color:var(--l1-t0)}
+.stock-mur .sv-bl-seuil{display:inline-block;flex:none;width:22px;height:14px;background:linear-gradient(#B7822E,#B7822E) center/8px 100% no-repeat;border-top:1.5px dashed color-mix(in srgb,var(--l1-t1) 70%,transparent)}
+.stock-mur .sv-bl-sachet{width:14px;height:14px}
+.stock-mur .sv-bl-res{display:inline-block;flex:none;width:22px;text-align:center;font:italic 700 15px/1 var(--l1-sans,inherit);color:var(--l1-t1)}
+
+/* D3a (22.11, maquette st1-d3a) : à 1280, trois cartes de rayon côte à côte, chacune dans sa carte ; plus d'agrandissement (la pile des levures garde sa hauteur) */
+@media (min-width:1024px){
+  .stock-mur .l1-mur{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr);column-gap:12px;padding:0;background:none}
+  .stock-mur .l1-mu.l1e-r{border:0;border-radius:12px;background:var(--l1-panel);padding-right:8px}
+  .stock-mur .l1e-r .l1e-b{zoom:1}
+  .stock-mur .l1e-r[data-f=f0],.stock-mur .l1e-r[data-f=f1]{--hm:26px!important;--hc:10px!important}
+}

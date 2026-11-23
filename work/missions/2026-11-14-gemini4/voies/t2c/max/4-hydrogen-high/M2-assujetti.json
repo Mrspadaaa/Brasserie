@@ -1,0 +1,72 @@
+{
+ "reglage": "4-hydrogen@high",
+ "cas": "M2-assujetti",
+ "tache": "monthlySummary",
+ "moitie": "jugement",
+ "note": {
+  "qualite": 1,
+  "utilisable": true,
+  "passes": [
+   "charges 2 251,20",
+   "recettes 1 621,50 (apport privé exclu)",
+   "solde −629,70",
+   "TVA collectée 121,50",
+   "TVA déductible 51,20",
+   "loyer 1 500,00"
+  ],
+  "manques": []
+ },
+ "ms": 7127,
+ "coutMicro": 22829,
+ "etat": "STOP",
+ "valeur": {
+  "period": "2026-10",
+  "totalCharges": 2251.2,
+  "totalRecettes": 1621.5,
+  "solde": -629.7,
+  "byCategory": [
+   {
+    "category": "Ventes",
+    "total": 1621.5,
+    "count": 2
+   },
+   {
+    "category": "Apport privé",
+    "total": 5000,
+    "count": 1
+   },
+   {
+    "category": "Matières premières",
+    "total": 102.6,
+    "count": 1
+   },
+   {
+    "category": "Énergie",
+    "total": 108.1,
+    "count": 1
+   },
+   {
+    "category": "Loyer",
+    "total": 1500,
+    "count": 1
+   },
+   {
+    "category": "Équipement",
+    "total": 540.5,
+    "count": 1
+   }
+  ],
+  "attentionPoints": [
+   "V03 (5000 CHF) est un apport privé : il est exclu des recettes et du résultat d'exploitation (et hors TVA), bien qu'il figure dans le détail par catégorie.",
+   "A04 (Cuve inox 300 L, 540.50 CHF TTC) est saisi en charge sous Équipement : vérifier s'il doit être traité comme un investissement/immobilisation plutôt qu'une charge courante.",
+   "A03 (Loyer, 1500 CHF, TVA 0) : vérifier sur le justificatif ou le bail que la location est bien sans TVA (exonérée sans option).",
+   "Les montants sont agrégés en TTC sur les seules écritures fournies, sans distinction entre facturation et paiement réel daté ni vérification de l'exhaustivité des pièces."
+  ],
+  "highlights": [
+   "Brasserie assujettie à la TVA selon la méthode effective : TVA collectée de 121.50 CHF (V01, V02) et TVA déductible de 51.20 CHF (A01, A02, A04), soit une TVA nette de 70.30 CHF sur ces écritures.",
+   "Solde d'exploitation provisoire TTC de -629.70 CHF hors apport privé (1621.50 CHF de recettes pour 2251.20 CHF de charges)."
+  ],
+  "tvaCollected": 121.5,
+  "tvaDeductible": 51.2
+ }
+}

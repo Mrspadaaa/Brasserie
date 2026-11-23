@@ -1,0 +1,4 @@
+/* L'étape Houblons v4 dans l'app (T12, #170) : ses classes lisent des jetons en canaux RGB (rgb(var(--cave-50))).
+ * Depuis #144 (25.10), l'app pose ces jetons pour toute la page, par thème (src/theme/themes.css : clair par défaut,
+ * « cave » au choix) : l'étape suit le thème de l'app, comme sa maquette. Ce fichier ne force plus « cave » sur
+ * [data-hop-v4-etape] ; il reste pour les règles propres à l'étape dans l'app, s'il en faut. */

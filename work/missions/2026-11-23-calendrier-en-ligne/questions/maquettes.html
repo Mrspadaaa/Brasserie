@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Sources des mini maquettes, questions du Calendrier (23.11)</title>
+<style>
+  body { margin: 0; padding: 10px; background: #ccc; font-family: "Source Sans 3", "Segoe UI", system-ui, sans-serif; }
+  .qm { width: 390px; height: 330px; overflow: hidden; background: #fff; margin: 0 0 16px; position: relative; }
+  .qm svg { display: block; }
+  .qm-cap { background-repeat: no-repeat; background-position: 0 0; background-size: 390px auto; }
+  .qm-auto { height: auto; }
+  .qm-auto img { display: block; width: 390px; }
+</style>
+</head>
+<body>
+<!-- Captures réelles, recadrées à l'en-tête (même hauteur que les maquettes). -->
+<div class="qm qm-cap" data-m="q1-actuel" style="background-image:url(../contre-epreuve/01-paquet-tour11.png)"></div>
+<div class="qm qm-cap" data-m="q1-actuel-6m" style="background-image:url(../contre-epreuve/L3-6mois-repos.png)"></div>
+<div class="qm qm-auto" data-m="q2-actuel"><img src="../captures-M1/20-glisse-hors-cadre-lecture.png" alt=""></div>
+<div class="qm qm-cap" data-m="q3-actuel" style="background-image:url(../contre-epreuve/L9-butee.png)"></div>
+<div id="qm-sortie"></div>
+<script>
+(() => {
+  const BLEU = '#2b5d9c', ROUGE = '#a3262a', ROSE = '#e0287d', GRIS = '#6b6b6b';
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const T = (x, y, s, o = {}) => `<text x="${x}" y="${y}" font-size="${o.fs || 13}" font-weight="${o.fw || 400}" fill="${o.c || '#333'}" text-anchor="${o.a || 'start'}"${o.halo ? ' stroke="#fff" stroke-width="4" paint-order="stroke"' : ''}>${esc(s)}</text>`;
+  const ring = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="9" fill="none" stroke="${ROSE}" stroke-width="2.5" stroke-dasharray="6 4"/>`;
+
+  // Axe du temps : semaine k0 au bord gauche x0, n semaines jusqu'à x1.
+  const axe = (k0, n, x0, x1) => { const w = (x1 - x0) / n; return { k0, n, x0, x1, w, X: (k) => x0 + (k - k0) * w }; };
+
+  function entete(o) {
+    const pill = o.pill || '6 sem.';
+    const pw = Math.max(90, pill.length * 8 + 30);
+    return [
+      `<rect x="10" y="6" width="26" height="26" rx="7" fill="#1d1d1d"/><rect x="17" y="12" width="12" height="14" rx="2" fill="#e0a040"/>`,
+      T(42, 24, "L'Affinée", { fs: 14, fw: 600, c: '#222' }),
+      `<rect x="172" y="4" width="122" height="34" rx="12" fill="#fff" stroke="#bbb"/><line x1="207" y1="4" x2="207" y2="38" stroke="#ccc"/><line x1="259" y1="4" x2="259" y2="38" stroke="#ccc"/>`,
+      T(189, 26, '‹', { fs: 18, a: 'middle' }), T(233, 26, o.nav || 'Nov.', { fs: 14, a: 'middle', c: '#222' }), T(277, 26, '›', { fs: 18, a: 'middle' }),
+      `<circle cx="312" cy="21" r="14" fill="#fff" stroke="#bbb"/><circle cx="310" cy="19" r="5" fill="none" stroke="#333" stroke-width="1.6"/><line x1="314" y1="23" x2="318" y2="27" stroke="#333" stroke-width="1.6"/>`,
+      `<circle cx="345" cy="21" r="11" fill="#1d1d1d"/>${T(345, 25.5, 'G', { fs: 11, fw: 700, c: '#fff', a: 'middle' })}<circle cx="366" cy="21" r="11" fill="#e8e8e8"/>${T(366, 25.5, 'A', { fs: 11, fw: 700, c: '#333', a: 'middle' })}<circle cx="377" cy="9" r="3.5" fill="#1d1d1d"/>`,
+      `<line x1="0" y1="44" x2="390" y2="44" stroke="#eee"/>`,
+      T(16, 74, o.montant || '−683', { fs: 20, fw: 700, c: o.mc || ROUGE }),
+      T(o.lx || 68, 65, o.l1 || 'CHF à dépenser', { fs: 13, c: GRIS }),
+      T(o.lx || 68, 79, o.l2 || 'S50', { fs: 12.5, fw: 700, c: o.l2c || BLEU }),
+      `<rect x="176" y="54" width="22" height="26" rx="6" fill="#f4f4f4" stroke="#bbb"/>${T(187, 72, '±', { fs: 14, a: 'middle' })}`,
+      `<rect x="202" y="52" width="${pw}" height="30" rx="15" fill="#151515"/>${T(202 + pw - 24, 72, pill, { fs: 14, fw: 700, c: '#fff', a: 'end' })}<path d="M${202 + pw - 19} 64 l4.5 4.5 l4.5 -4.5" fill="none" stroke="#fff" stroke-width="1.8"/>${''}`,
+      `<circle cx="${210 + pw}" cy="67" r="10.5" fill="#fff" stroke="${ROUGE}" stroke-width="1.6"/>${T(212 + pw, 71, '7', { fs: 10.5, fw: 700, c: ROUGE, a: 'middle' })}`,
+      o.aligner
+        ? `<rect x="${226 + pw}" y="55" width="24" height="24" rx="6" fill="${BLEU}"/><rect x="${231 + pw}" y="63" width="14" height="8" rx="1.5" fill="none" stroke="#fff" stroke-width="1.6" transform="rotate(-35 ${238 + pw} 67)"/>`
+        : `<rect x="${231 + pw}" y="63" width="14" height="8" rx="1.5" fill="none" stroke="#333" stroke-width="1.6" transform="rotate(-35 ${238 + pw} 67)"/>`,
+      `<path d="M${258 + pw} 67 q8 -7 16 0 q-8 7 -16 0z M${259 + pw} 59 l15 16" fill="none" stroke="#333" stroke-width="1.6"/>`,
+      `<path d="M${364} 60 h7 v7 M${371} 60 l-6 6 M${355} 74 h-7 v-7 M${348} 74 l6 -6" fill="none" stroke="#333" stroke-width="1.6" transform="translate(4 0)"/>`,
+    ].join('');
+  }
+
+  // Courbe en marches (cumul), découpée à la bande 96…168.
+  function courbe(a, val, o = {}) {
+    const yZ = o.yZ ?? 101, s = o.s ?? 64 / 700;
+    const y = (v) => yZ - v * s;
+    const kS = Math.floor(a.k0 - a.x0 / a.w) - 1, kE = Math.ceil(a.k0 + (390 - a.x0) / a.w) + 1;
+    let d = `M${a.X(kS)} ${y(val(kS))}`;
+    for (let k = kS; k < kE; k++) d += ` H${a.X(k + 1)} V${y(val(k + 1))}`;
+    const fond = `${d} H${a.X(kE)} V${yZ} H${a.X(kS)} Z`;
+    let out = `<clipPath id="cb${o.id}"><rect x="0" y="96" width="390" height="72"/></clipPath><g clip-path="url(#cb${o.id})">`;
+    out += `<path d="${fond}" fill="${o.fond || 'rgba(200,60,60,.15)'}"/>`;
+    out += `<line x1="0" y1="${yZ}" x2="390" y2="${yZ}" stroke="#c0392b" stroke-width="1.4" stroke-dasharray="5 4"/>`;
+    out += `<path d="${d}" fill="none" stroke="${o.trait || '#b3261e'}" stroke-width="2"/></g>`;
+    out += T(376, yZ - 4, '0', { fs: 12, fw: 700, c: '#c0392b', a: 'middle' });
+    if (o.creux != null) out += `<circle cx="${a.X(o.creux) + a.w / 2}" cy="${Math.min(163, y(val(o.creux)))}" r="5" fill="${BLEU}" stroke="#fff" stroke-width="2"/>`;
+    return out;
+  }
+
+  // Noms de la courbe, posés près de leur marche (seulement s'ils tiennent à l'écran).
+  function noms(a, liste) {
+    return liste.map((n) => {
+      const x = a.X(n.k) + (n.dx || 0);
+      if (x < 4 || x > 386) return '';
+      if (n.haut) return `<text x="${Math.min(300, Math.max(140, x))}" y="92" font-size="13" text-anchor="middle" fill="#333">${esc(n.t)} <tspan fill="${ROUGE}" font-weight="700">${esc(n.m)}</tspan></text>`;
+      return `<text x="${x}" y="${n.y}" font-size="13" text-anchor="${n.a || 'start'}" fill="#333" stroke="#fff" stroke-width="3" paint-order="stroke">${esc(n.t)} <tspan fill="${ROUGE}" font-weight="700">${esc(n.m)}</tspan></text>`;
+    }).join('');
+  }
+
+  function cadre(x0, x1, etiquette) {
+    let s = `<rect x="${x0}" y="99" width="${x1 - x0}" height="67" rx="10" fill="rgba(43,93,156,.12)" stroke="${BLEU}" stroke-width="2.5"/>`;
+    s += `<rect x="${x0 - 3.5}" y="119" width="7" height="26" rx="3" fill="${BLEU}"/><rect x="${x1 - 3.5}" y="119" width="7" height="26" rx="3" fill="${BLEU}"/>`;
+    if (etiquette) s += T((x0 + x1) / 2, 160, etiquette, { fs: 12.5, fw: 700, c: BLEU, a: 'middle', halo: true });
+    return s;
+  }
+
+  // Graduations : liste de { s, x, genre: 'dans' | 'hors' | 'jour' } ; traits aux limites de semaine.
+  function graduations(liste, traits = [], bords = []) {
+    let s = traits.map((x) => `<line x1="${x}" y1="171" x2="${x}" y2="176" stroke="#c4c4c4" stroke-width="1"/>`).join('');
+    s += bords.map((x) => `<line x1="${x}" y1="167" x2="${x}" y2="179" stroke="${BLEU}" stroke-width="1.6"/>`).join('');
+    s += liste.map((g) => T(g.x, 192, g.s, { fs: 13, fw: g.genre === 'jour' ? 700 : 400, c: g.genre === 'hors' ? '#a9a9a9' : g.genre === 'jour' ? '#1d1d1d' : '#555', a: 'middle' })).join('');
+    return s + `<line x1="12" y1="203" x2="378" y2="203" stroke="#e3e3e3"/>`;
+  }
+
+  const plus = (y, c) => `<rect x="12" y="${y}" width="22" height="22" rx="5" fill="${c}"/><path d="M23 ${y + 5} v12 M17 ${y + 11} h12" stroke="#fff" stroke-width="2.2"/>`;
+  const oeil = (x, y) => `<path d="M${x} ${y} q7 -6 14 0 q-7 6 -14 0z" fill="none" stroke="#444" stroke-width="1.5"/><circle cx="${x + 7}" cy="${y}" r="2" fill="#444"/>`;
+  const barre = (y, x0, x1, gauche, droite, c = '#8b4a2b') => `<rect x="${x0}" y="${y}" width="${x1 - x0}" height="22" rx="5" fill="#f3e6dc" stroke="${c}" stroke-width="1.4"/><rect x="${x0 + 1}" y="${y + 19}" width="${x1 - x0 - 2}" height="3" fill="#3b78c4"/>${T(x0 + 8, y + 16, gauche, { fs: 13, c: '#222' })}${droite ? T(x1 - 6, y + 16, droite, { fs: 12.5, c: '#444', a: 'end' }) : ''}`;
+
+  function lignes(genre, prevu) {
+    if (genre === 'vide') {
+      const cats = [['Brassins', '#9a4a22'], ['Fêtes', '#7b4fc4'], ['Ventes', '#4f8a3c'], ['Achats', '#2f63a8'], ['Travaux', '#a07020']];
+      return cats.map(([n, c], i) => { const y = 212 + i * 26; return plus(y, c) + T(42, y + 16, n, { fs: 14, fw: 700, c }) + oeil(42 + n.length * 8.4 + 6, y + 11) + T(42 + n.length * 8.4 + 28, y + 16, 'vide', { fs: 13.5, c: GRIS }); }).join('');
+    }
+    if (genre === 'six') {
+      return plus(212, '#9a4a22') + T(42, 228, 'Brassins', { fs: 14, fw: 700, c: '#9a4a22' }) + oeil(112, 223)
+        + `<rect x="132" y="212" width="92" height="24" rx="12" fill="#e2e2e2"/>` + T(178, 229, 'coût à venir', { fs: 13, fw: 700, c: '#222', a: 'middle' })
+        + T(232, 229, 'prévu ' + prevu, { fs: 13, c: GRIS }) + barre(240, 155, 378, 'Milk Stout · coût à venir', '')
+        + plus(272, '#7b4fc4') + T(42, 288, 'Fêtes', { fs: 14, fw: 700, c: '#7b4fc4' }) + oeil(86, 283) + T(108, 288, 'vide', { fs: 13.5, c: GRIS })
+        + plus(298, '#4f8a3c') + T(42, 314, 'Ventes', { fs: 14, fw: 700, c: '#4f8a3c' }) + oeil(96, 309) + T(118, 314, 'vide', { fs: 13.5, c: GRIS });
+    }
+    return plus(212, '#9a4a22') + T(42, 228, 'Brassins', { fs: 14, fw: 700, c: '#9a4a22' }) + oeil(112, 223)
+      + `<rect x="132" y="212" width="126" height="24" rx="12" fill="#e2e2e2"/><rect x="132" y="212" width="16" height="24" rx="8" fill="#b8907a"/>` + T(195, 229, '−12 + coût à venir', { fs: 13, fw: 700, c: '#222', a: 'middle' })
+      + T(266, 229, 'prévu ' + prevu, { fs: 13, c: GRIS })
+      + barre(240, 12, 378, 'Milk Stout · coût à venir', 'J206 / 255 · prête 11 janv.')
+      + barre(270, 12, 378, 'Ttt  −4 + à venir', 'pas brassée · prête le 11 janv.')
+      + barre(300, 12, 378, 'Hefe  −5 + à venir', 'pas brassée · prête le 14 déc.');
+  }
+
+  const doigt = (x, y) => `<circle cx="${x}" cy="${y}" r="17" fill="rgba(0,0,0,.16)" stroke="rgba(0,0,0,.45)" stroke-width="1.5"/>`;
+  const trace = (x0, x1, y) => `<line x1="${x0}" y1="${y}" x2="${x1 - 22}" y2="${y}" stroke="rgba(0,0,0,.35)" stroke-width="3" stroke-dasharray="2 5" stroke-linecap="round"/><path d="M${x1 - 30} ${y - 6} l8 6 l-8 6" fill="none" stroke="rgba(0,0,0,.45)" stroke-width="2.5"/>`;
+
+  // Données de la courbe (2026) : marches reprises de la capture (−23, −600, −5, −683 en S50) ; montants intermédiaires d'exemple.
+  const val6 = (k) => (k < 46 ? -50 : k < 48 ? -73 : k < 50 ? -678 : -683);
+  const noms6 = [{ k: 46, haut: true, t: 'consomable ( masque gant)', m: '−23' }, { k: 48, dx: -5, y: 117, a: 'end', t: 'lol', m: '−600' }, { k: 48, dx: 5, y: 137, t: 'Achats', m: '−5' }];
+  const nomS = (k) => (k > 52 ? 'S' + (k - 52) : 'S' + k);
+
+  // Graduations sur l'axe de la courbe (option A de Q-1) : semaines de la fenêtre foncées, marges en gris.
+  function gradAxe(a, pas, aujourdhui, taire, lu) {
+    const g = [], tr = [];
+    for (let k = Math.ceil(a.k0 - a.x0 / a.w); a.X(k) <= 390; k++) {
+      if (a.X(k) >= 0) tr.push(a.X(k));
+      if ((k - a.k0) % pas !== 0) continue;
+      const x = a.X(k) + a.w / 2, dans = k >= a.k0 && k < a.k0 + a.n;
+      if (x - 14 < 0 || x + 14 > 390) continue;
+      if (dans && taire) continue;
+      g.push({ s: nomS(k), x, genre: k === lu || (dans && k === aujourdhui) ? 'jour' : !dans ? 'hors' : 'dans' });
+    }
+    return graduations(g, tr, [a.x0, a.x1]);
+  }
+  // Graduations d'aujourd'hui : la fenêtre étalée sur toute la largeur (12 à 372), sans lien avec le cadre.
+  function gradLarge(k0, n, aujourdhui, pas = 1) {
+    const w = 360 / n, g = [];
+    for (let i = 0; i < n; i += pas) g.push({ s: nomS(k0 + i), x: 12 + (i + 0.5) * w, genre: k0 + i === aujourdhui ? 'jour' : 'dans' });
+    return graduations(g);
+  }
+
+  const maquettes = {};
+  const svg = (corps) => `<svg width="390" height="330" viewBox="0 0 390 330" xmlns="http://www.w3.org/2000/svg" font-family="Source Sans 3, Segoe UI, Arial, sans-serif"><rect width="390" height="330" fill="#fff"/>${corps}</svg>`;
+
+  // ---------- Q-1 ----------
+  {
+    const a = axe(44, 6, 68, 316);
+    maquettes['q1-a'] = svg(entete({}) + noms(a, noms6) + courbe(a, val6, { id: 'q1a', creux: 50 }) + cadre(68, 316, 'S44 – S49') + gradAxe(a, 1, 48) + lignes('plein', 'S44–S49') + ring(4, 169, 382, 32));
+    const a6 = axe(8, 26, 68, 316);
+    const v6m = (k) => (k < 35 ? 200 : -300);
+    maquettes['q1-a-6m'] = svg(entete({ pill: '6 mois' }) + courbe(a6, v6m, { id: 'q1a6', yZ: 146, s: 45 / 200, fond: 'rgba(43,93,156,.10)', trait: BLEU }) + cadre(68, 316, 'S8 – S33') + gradAxe(a6, 4, -1) + lignes('six', 'S8–S33') + ring(4, 169, 382, 32));
+    const b = axe(44, 6, 12, 378);
+    maquettes['q1-b'] = svg(entete({}) + noms(b, noms6) + courbe(b, val6, { id: 'q1b', creux: 50 }) + cadre(14, 376, 'S44 – S49') + gradAxe(b, 1, 48) + lignes('plein', 'S44–S49') + ring(4, 95, 382, 105));
+    maquettes['q1-c'] = svg(entete({ aligner: true }) + noms(b, noms6) + courbe(b, val6, { id: 'q1c', creux: 50 }) + gradAxe(b, 1, 48).replace(/stroke="#2b5d9c" stroke-width="1.6"/g, 'stroke="#c4c4c4" stroke-width="1"') + lignes('plein', 'S44–S49') + ring(4, 95, 382, 105) + ring(318, 50, 38, 34));
+  }
+
+  // ---------- Q-2 (sur la géométrie de Q-1 A) ----------
+  {
+    const a = axe(44, 6, 68, 316);
+    const xs = a.X(50) + a.w / 2;
+    maquettes['q2-a'] = svg(entete({ montant: '−683', l1: 'CHF · S50', l2: '7 → 13 déc.', l2c: GRIS }) + noms(a, noms6) + courbe(a, val6, { id: 'q2a' }) + cadre(68, 316, 'S44 – S49')
+      + `<line x1="${xs}" y1="97" x2="${xs}" y2="180" stroke="#1d1d1d" stroke-width="1.6"/>` + gradAxe(a, 1, 48, false, 50) + lignes('plein', 'S44–S49')
+      + trace(30, xs, 150) + doigt(xs, 150) + ring(6, 48, 164, 35));
+    const b = axe(36, 6, 68, 316);
+    maquettes['q2-b'] = svg(entete({}) + noms(b, noms6) + courbe(b, val6, { id: 'q2b' }) + cadre(68, 316, 'S36 – S41') + gradAxe(b, 1, -1) + lignes('plein', 'S36–S41')
+      + trace(30, 345, 150) + doigt(345, 150) + ring(4, 95, 382, 105));
+  }
+
+  // ---------- Q-3 (sur la frise telle qu'elle est en ligne : cadre fixe, graduations pleine largeur) ----------
+  {
+    const a = axe(44, 6, 68, 316);
+    maquettes['q3-a-6sem'] = svg(entete({ montant: '−678', l2: 'S48' }) + noms(a, noms6) + courbe(a, val6, { id: 'q3a1', creux: 48 }) + cadre(68, 316, 'S44 – S49') + gradLarge(44, 6, 48) + lignes('plein', 'S44–S49') + ring(6, 48, 164, 35) + `<circle cx="${a.X(48) + a.w / 2}" cy="163" r="11" fill="none" stroke="${ROSE}" stroke-width="2.5" stroke-dasharray="4 3"/>`);
+    const bu = axe(48, 6, 68, 316);
+    const fondButee = `<rect x="${bu.X(54)}" y="100" width="${390 - bu.X(54)}" height="66" fill="rgba(43,93,156,.10)"/><line x1="${bu.X(54)}" y1="100" x2="390" y2="100" stroke="${BLEU}" stroke-width="2"/>`;
+    const gButee = graduations([48, 49, 50, 51, 52, 53].map((k, i) => ({ s: nomS(k), x: 12 + (i + 0.5) * 60, genre: 'dans' })));
+    maquettes['q3-a-butee'] = svg(entete({ montant: '0', mc: '#444', l2: 'dans le cadre', l2c: GRIS }) + fondButee + cadre(68, 316, 'S48 2025 – S1 2026') + gButee + lignes('vide') + ring(6, 48, 164, 35));
+    maquettes['q3-b'] = svg(entete({ l1: 'CHF · horizon', l2: 'S50 2026' }) + fondButee + cadre(68, 316, 'S48 2025 – S1 2026') + gButee + lignes('vide') + ring(6, 48, 164, 35));
+  }
+
+  // ---------- Q-5 (sur la géométrie de Q-1 A) ----------
+  {
+    const a = axe(44, 6, 68, 316);
+    const base = (et, taire) => entete({}) + noms(a, noms6) + courbe(a, val6, { id: 'q5' + et.length + (taire ? 't' : '') , creux: 50 }) + cadre(68, 316, et) + gradAxe(a, 1, 48, taire) + lignes('plein', 'S44–S49') + ring(128, 146, 128, 21) + ring(4, 178, 382, 23);
+    maquettes['q5-a'] = svg(base('26 oct. – 6 déc.'));
+    maquettes['q5-b'] = svg(base('S44 – S49', true));
+    maquettes['q5-c'] = svg(base('S44 – S49'));
+  }
+
+  const sortie = document.getElementById('qm-sortie');
+  for (const [id, s] of Object.entries(maquettes)) {
+    const d = document.createElement('div');
+    d.className = 'qm';
+    d.dataset.m = id;
+    d.innerHTML = s;
+    sortie.appendChild(d);
+  }
+})();
+</script>
+</body>
+</html>

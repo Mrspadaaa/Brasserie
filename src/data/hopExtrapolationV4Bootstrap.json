@@ -1,0 +1,1741 @@
+[
+  {
+    "id": "laffinee-experimental-v1",
+    "kind": "extrapolation",
+    "name": "Exploration sensorielle · hypothèses de brasseur",
+    "version": "2026-09-08.2",
+    "enabled": true,
+    "source": {
+      "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+      "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/hop-extrapolation.md",
+      "locator": "Version du 8 septembre 2026. Bornes de conception non ajustées sur des dégustations, non issues d’une élicitation formelle ; aucun taux de couverture garanti."
+    },
+    "evidence": [
+      {
+        "title": "Impact of static dry-hopping rate on the sensory and analytical profiles of beer",
+        "author": "Lafontaine et Shellhammer",
+        "year": 2018,
+        "kind": "research",
+        "reference": "https://doi.org/10.1002/jib.517",
+        "locator": "Cascade en cônes, un lot2015, bière clarifiée,24h,13,3–15°C,0–16g/L. Non-linéarité et différences entre axes ; ne fournit pas nos constantes de saturation."
+      },
+      {
+        "title": "Yeast Strain Influences the Hop-Derived Sensory Properties and Volatile Composition of Beer",
+        "author": "Kumar, Warburton, Silcock, Bremer et Eyres",
+        "year": 2023,
+        "kind": "research",
+        "reference": "https://doi.org/10.3390/foods12051064",
+        "locator": "Motueka5g/L après ébullition,20°C,9jours ; souches et taux d’ensemencement en partie confondus, un fermenteur par souche. Fréquences de descripteurs, pas intensités transférables."
+      },
+      {
+        "title": "Varietal Difference of Hop-Derived Flavour Compounds in Late-Hopped/Dry-Hopped Beers",
+        "author": "Takoi et al.",
+        "year": 2016,
+        "kind": "research",
+        "reference": "https://brewingscience.de/index.php/brewingscience/article/download/284/194/505",
+        "locator": "18variétés à chaud,3variétés comparées aux jours3/6 ; pelletsT90,0,8g/L,levure lager interne10–12°C. Effets spécifiques aux composés, pas ordre universel entre timings."
+      },
+      {
+        "title": "A Gentle Introduction to Conformal Prediction and Distribution-Free Uncertainty Quantification",
+        "author": "Angelopoulos et Bates",
+        "year": 2022,
+        "kind": "research",
+        "reference": "https://arxiv.org/abs/2107.07511",
+        "locator": "Version6 du7décembre2022. Une couverture statistique exige une calibration indépendante et des hypothèses d’échangeabilité ; notre enveloppe experte ne l’affirme pas."
+      }
+    ],
+    "limitations": [
+      "Aucun ajustement ni validation indépendante de ces coefficients. Confiance faible, même avec un COA.",
+      "Indice local de présence sensorielle, pas intensité de panel étalonnée, concentration chimique ou probabilité de réussite.",
+      "Une famille non citée conserve tout son domaine possible ; elle n’est pas considérée absente.",
+      "Matrice, oxygène, stockage, température de fermentation et interactions de mélanges ne sont pas identifiés séparément."
+    ],
+    "axes": [
+      {
+        "id": "citrus",
+        "version": "local-1",
+        "terms": [
+          "agrumes",
+          "agrume",
+          "citrus",
+          "citrusy",
+          "citron",
+          "citronné",
+          "citronnée",
+          "lemon",
+          "lime",
+          "citron vert",
+          "pamplemousse",
+          "grapefruit",
+          "orange",
+          "oranges",
+          "mandarine",
+          "mandarin",
+          "tangerine",
+          "bergamote",
+          "bergamot"
+        ],
+        "doseScale": {
+          "range": {
+            "min": 1,
+            "max": 1
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Facteur de demi-dose de la famille citrus ; réponse herbacée plus progressive, sans ajustement aux données Cascade Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 1
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Lexique français/anglais repris du guide documentaire ; son usage comme indice est un choix supplémentaire du modèle expérimental, pas une équivalence chimique."
+        }
+      },
+      {
+        "id": "tropical",
+        "version": "local-1",
+        "terms": [
+          "tropical",
+          "tropicale",
+          "tropicaux",
+          "tropicales",
+          "tropical fruit",
+          "fruits tropicaux",
+          "mangue",
+          "mango",
+          "ananas",
+          "pineapple",
+          "passion fruit",
+          "passionfruit",
+          "fruit de la passion",
+          "papaye",
+          "papaya",
+          "goyave",
+          "guava",
+          "litchi",
+          "lychee",
+          "coconut",
+          "noix de coco"
+        ],
+        "doseScale": {
+          "range": {
+            "min": 1,
+            "max": 1
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Facteur de demi-dose de la famille tropical ; réponse herbacée plus progressive, sans ajustement aux données Cascade Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 1
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Lexique français/anglais repris du guide documentaire ; son usage comme indice est un choix supplémentaire du modèle expérimental, pas une équivalence chimique."
+        }
+      },
+      {
+        "id": "stoneFruit",
+        "version": "local-1",
+        "terms": [
+          "fruits à noyau",
+          "fruit à noyau",
+          "stone fruit",
+          "stone fruits",
+          "stonefruit",
+          "pêche",
+          "peach",
+          "abricot",
+          "apricot",
+          "nectarine",
+          "prune",
+          "plum",
+          "cerise",
+          "cherry"
+        ],
+        "doseScale": {
+          "range": {
+            "min": 1,
+            "max": 1
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Facteur de demi-dose de la famille stoneFruit ; réponse herbacée plus progressive, sans ajustement aux données Cascade Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 1
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Lexique français/anglais repris du guide documentaire ; son usage comme indice est un choix supplémentaire du modèle expérimental, pas une équivalence chimique."
+        }
+      },
+      {
+        "id": "pomeFruit",
+        "version": "local-1",
+        "terms": [
+          "pomme",
+          "pommes",
+          "apple",
+          "apples",
+          "poire",
+          "poires",
+          "pear",
+          "pears",
+          "pome fruit"
+        ],
+        "doseScale": {
+          "range": {
+            "min": 1,
+            "max": 1
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Facteur de demi-dose de la famille pomeFruit ; réponse herbacée plus progressive, sans ajustement aux données Cascade Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 1
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Lexique français/anglais repris du guide documentaire ; son usage comme indice est un choix supplémentaire du modèle expérimental, pas une équivalence chimique."
+        }
+      },
+      {
+        "id": "berries",
+        "version": "local-1",
+        "terms": [
+          "petits fruits",
+          "baies",
+          "baie",
+          "berry",
+          "berries",
+          "cassis",
+          "black currant",
+          "blackcurrant",
+          "groseille",
+          "red currant",
+          "redcurrant",
+          "framboise",
+          "raspberry",
+          "fraise",
+          "strawberry",
+          "mûre",
+          "blackberry",
+          "myrtille",
+          "blueberry"
+        ],
+        "doseScale": {
+          "range": {
+            "min": 1,
+            "max": 1
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Facteur de demi-dose de la famille berries ; réponse herbacée plus progressive, sans ajustement aux données Cascade Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 1
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Lexique français/anglais repris du guide documentaire ; son usage comme indice est un choix supplémentaire du modèle expérimental, pas une équivalence chimique."
+        }
+      },
+      {
+        "id": "melon",
+        "version": "local-1",
+        "terms": [
+          "melon",
+          "melons",
+          "honeydew",
+          "cantaloupe",
+          "pastèque",
+          "watermelon"
+        ],
+        "doseScale": {
+          "range": {
+            "min": 1,
+            "max": 1
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Facteur de demi-dose de la famille melon ; réponse herbacée plus progressive, sans ajustement aux données Cascade Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 1
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Lexique français/anglais repris du guide documentaire ; son usage comme indice est un choix supplémentaire du modèle expérimental, pas une équivalence chimique."
+        }
+      },
+      {
+        "id": "floral",
+        "version": "local-1",
+        "terms": [
+          "floral",
+          "florale",
+          "florales",
+          "floraux",
+          "fleur",
+          "fleurs",
+          "flowery",
+          "flower",
+          "flowers",
+          "rose",
+          "roses",
+          "lavande",
+          "lavender",
+          "géranium",
+          "geranium",
+          "jasmin",
+          "jasmine",
+          "elderflower",
+          "fleur de sureau"
+        ],
+        "doseScale": {
+          "range": {
+            "min": 1,
+            "max": 1
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Facteur de demi-dose de la famille floral ; réponse herbacée plus progressive, sans ajustement aux données Cascade Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 1
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Lexique français/anglais repris du guide documentaire ; son usage comme indice est un choix supplémentaire du modèle expérimental, pas une équivalence chimique."
+        }
+      },
+      {
+        "id": "herbal",
+        "version": "local-1",
+        "terms": [
+          "herbacé",
+          "herbacée",
+          "herbacées",
+          "herbacés",
+          "herbal",
+          "herbaceous",
+          "herbes aromatiques",
+          "thé",
+          "tea",
+          "menthe",
+          "mint",
+          "menthol",
+          "romarin",
+          "rosemary",
+          "sauge",
+          "sage",
+          "basilic",
+          "basil",
+          "eucalyptus"
+        ],
+        "doseScale": {
+          "range": {
+            "min": 1.5,
+            "max": 2.5
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Facteur de demi-dose de la famille herbal ; réponse herbacée plus progressive, sans ajustement aux données Cascade Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 2
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Lexique français/anglais repris du guide documentaire ; son usage comme indice est un choix supplémentaire du modèle expérimental, pas une équivalence chimique."
+        }
+      },
+      {
+        "id": "resin",
+        "version": "local-1",
+        "terms": [
+          "boisé",
+          "boisée",
+          "boisés",
+          "boisées",
+          "wood",
+          "woody",
+          "résine",
+          "résineux",
+          "résineuse",
+          "resin",
+          "resinous",
+          "pin",
+          "pine",
+          "piney",
+          "cèdre",
+          "cedar",
+          "santal",
+          "sandalwood"
+        ],
+        "doseScale": {
+          "range": {
+            "min": 1,
+            "max": 1
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Facteur de demi-dose de la famille resin ; réponse herbacée plus progressive, sans ajustement aux données Cascade Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 1
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Lexique français/anglais repris du guide documentaire ; son usage comme indice est un choix supplémentaire du modèle expérimental, pas une équivalence chimique."
+        }
+      },
+      {
+        "id": "spice",
+        "version": "local-1",
+        "terms": [
+          "épicé",
+          "épicée",
+          "épicés",
+          "épicées",
+          "épice",
+          "épices",
+          "spice",
+          "spices",
+          "spicy",
+          "poivre",
+          "pepper",
+          "peppery",
+          "clou de girofle",
+          "clove",
+          "cloves",
+          "cannelle",
+          "cinnamon",
+          "anis",
+          "anise",
+          "réglisse",
+          "licorice",
+          "liquorice"
+        ],
+        "doseScale": {
+          "range": {
+            "min": 1,
+            "max": 1
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Facteur de demi-dose de la famille spice ; réponse herbacée plus progressive, sans ajustement aux données Cascade Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 1
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Lexique français/anglais repris du guide documentaire ; son usage comme indice est un choix supplémentaire du modèle expérimental, pas une équivalence chimique."
+        }
+      },
+      {
+        "id": "green",
+        "version": "local-1",
+        "terms": [
+          "végétal",
+          "végétale",
+          "végétaux",
+          "vegetal",
+          "green",
+          "herbe fraîche",
+          "herbe coupée",
+          "grass",
+          "grassy",
+          "fresh cut grass",
+          "foin",
+          "hay",
+          "feuille",
+          "feuilles",
+          "leafy",
+          "green pepper"
+        ],
+        "doseScale": {
+          "range": {
+            "min": 1.5,
+            "max": 2.5
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Facteur de demi-dose de la famille green ; réponse herbacée plus progressive, sans ajustement aux données Cascade Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 2
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Lexique français/anglais repris du guide documentaire ; son usage comme indice est un choix supplémentaire du modèle expérimental, pas une équivalence chimique."
+        }
+      },
+      {
+        "id": "earthy",
+        "version": "local-1",
+        "terms": [
+          "terreux",
+          "terreuse",
+          "earthy",
+          "earth",
+          "soil",
+          "humus",
+          "champignon",
+          "mushroom",
+          "mushrooms"
+        ],
+        "doseScale": {
+          "range": {
+            "min": 1,
+            "max": 1
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Facteur de demi-dose de la famille earthy ; réponse herbacée plus progressive, sans ajustement aux données Cascade Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 1
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Lexique français/anglais repris du guide documentaire ; son usage comme indice est un choix supplémentaire du modèle expérimental, pas une équivalence chimique."
+        }
+      }
+    ],
+    "descriptor": {
+      "mentioned": {
+        "range": {
+          "min": 0.55,
+          "max": 0.9
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Domaine de présence associé à un descripteur positif Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+        },
+        "central": 0.7250000000000001
+      },
+      "unmentioned": {
+        "range": {
+          "min": 0,
+          "max": 1
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Non-mention conserve le domaine complet Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+        },
+        "central": 0.5
+      },
+      "unknown": {
+        "range": {
+          "min": 0,
+          "max": 1
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Information documentaire absente : domaine complet Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+        },
+        "central": 0.5
+      }
+    },
+    "gain": {
+      "range": {
+        "min": 2.2,
+        "max": 3
+      },
+      "source": {
+        "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+        "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/hop-extrapolation.md",
+        "locator": "Gain latent fixant une échelle cardinale de conception ; permet aux familles de parcourir les classes locales sans prétendre reproduire un panel Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+      },
+      "central": 2.6
+    },
+    "residual": {
+      "range": {
+        "min": -0.08,
+        "max": 0.08
+      },
+      "source": {
+        "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+        "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/hop-extrapolation.md",
+        "locator": "Marge structurelle ajoutée sur la sortie normalisée ; ce n’est pas un résidu observé Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+      },
+      "central": 0
+    },
+    "matrix": {
+      "range": {
+        "min": 0.85,
+        "max": 1.15
+      },
+      "source": {
+        "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+        "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/hop-extrapolation.md",
+        "locator": "Variation structurelle commune de matrice et d’interactions ; enveloppe supposée Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+      },
+      "central": 1
+    },
+    "sourceUncertainty": {
+      "coa": {
+        "range": {
+          "min": 0,
+          "max": 0.03
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Marge de transposition documentaire pour source coa ; choix expert, pas fiabilité probabiliste Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+        },
+        "central": 0.015
+      },
+      "manufacturer": {
+        "range": {
+          "min": 0,
+          "max": 0.03
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Marge de transposition documentaire pour source manufacturer ; choix expert, pas fiabilité probabiliste Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+        },
+        "central": 0.015
+      },
+      "research": {
+        "range": {
+          "min": 0,
+          "max": 0.03
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Marge de transposition documentaire pour source research ; choix expert, pas fiabilité probabiliste Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+        },
+        "central": 0.015
+      },
+      "review": {
+        "range": {
+          "min": 0,
+          "max": 0.03
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Marge de transposition documentaire pour source review ; choix expert, pas fiabilité probabiliste Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+        },
+        "central": 0.015
+      },
+      "observation": {
+        "range": {
+          "min": 0,
+          "max": 0.08
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Marge de transposition documentaire pour source observation ; choix expert, pas fiabilité probabiliste Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+        },
+        "central": 0.04
+      },
+      "community": {
+        "range": {
+          "min": 0,
+          "max": 0.12
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Marge de transposition documentaire pour source community ; choix expert, pas fiabilité probabiliste Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+        },
+        "central": 0.06
+      },
+      "judgment": {
+        "range": {
+          "min": 0,
+          "max": 0.12
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Marge de transposition documentaire pour source judgment ; choix expert, pas fiabilité probabiliste Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+        },
+        "central": 0.06
+      }
+    },
+    "undatedUncertainty": {
+      "range": {
+        "min": 0,
+        "max": 0.04
+      },
+      "source": {
+        "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+        "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/hop-extrapolation.md",
+        "locator": "Marge si la source du descripteur n’est pas datée Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+      },
+      "central": 0.02
+    },
+    "unknownFormUncertainty": {
+      "range": {
+        "min": 0,
+        "max": 0.03
+      },
+      "source": {
+        "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+        "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "docs/hop-extrapolation.md",
+        "locator": "Marge si la forme commerciale est inconnue Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+      },
+      "central": 0.015
+    },
+    "timings": {
+      "firstWort": {
+        "expression": {
+          "range": {
+            "min": 0.35,
+            "max": 0.85
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Expression conditionnelle du houblon, pas fraction massique retenue Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.6
+        },
+        "halfSaturationGL": {
+          "range": {
+            "min": 1,
+            "max": 3
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Demi-dose de l’indice en g/L ; la littérature motive une réponse compressive mais pas ces bornes Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 2
+        },
+        "extractionHours": {
+          "range": {
+            "min": 0.01,
+            "max": 0.1
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Constante d’exposition du modèle en heures ; pas une cinétique analytique mesurée Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.055
+        },
+        "decayHours": {
+          "range": {
+            "min": 0.15,
+            "max": 0.65
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Constante de perte apparente à chaud en heures ; pas une demi-vie publiée Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.4
+        },
+        "temperatureC": {
+          "range": {
+            "min": 70,
+            "max": 105
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Fenêtre usuelle de scénario ; ne certifie pas une validation dans cette fenêtre Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 87.5
+        },
+        "outsideTemperatureUncertainty": {
+          "range": {
+            "min": 0,
+            "max": 0.12
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Élargissement normalisé si température inconnue ou hors fenêtre ; aucune correction Q10 inventée Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.06
+        }
+      },
+      "boil": {
+        "expression": {
+          "range": {
+            "min": 0.7,
+            "max": 1
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Expression conditionnelle du houblon, pas fraction massique retenue Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.85
+        },
+        "halfSaturationGL": {
+          "range": {
+            "min": 1,
+            "max": 3
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Demi-dose de l’indice en g/L ; la littérature motive une réponse compressive mais pas ces bornes Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 2
+        },
+        "extractionHours": {
+          "range": {
+            "min": 0.01,
+            "max": 0.1
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Constante d’exposition du modèle en heures ; pas une cinétique analytique mesurée Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.055
+        },
+        "decayHours": {
+          "range": {
+            "min": 0.08,
+            "max": 0.5
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Constante de perte apparente à chaud en heures ; pas une demi-vie publiée Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.29
+        },
+        "temperatureC": {
+          "range": {
+            "min": 90,
+            "max": 105
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Fenêtre usuelle de scénario ; ne certifie pas une validation dans cette fenêtre Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 97.5
+        },
+        "outsideTemperatureUncertainty": {
+          "range": {
+            "min": 0,
+            "max": 0.12
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Élargissement normalisé si température inconnue ou hors fenêtre ; aucune correction Q10 inventée Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.06
+        }
+      },
+      "whirlpool": {
+        "expression": {
+          "range": {
+            "min": 0.6,
+            "max": 1
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Expression conditionnelle du houblon, pas fraction massique retenue Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.8
+        },
+        "halfSaturationGL": {
+          "range": {
+            "min": 2,
+            "max": 5
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Demi-dose de l’indice en g/L ; la littérature motive une réponse compressive mais pas ces bornes Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 3.5
+        },
+        "extractionHours": {
+          "range": {
+            "min": 0.02,
+            "max": 0.15
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Constante d’exposition du modèle en heures ; pas une cinétique analytique mesurée Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.08499999999999999
+        },
+        "decayHours": null,
+        "temperatureC": {
+          "range": {
+            "min": 55,
+            "max": 95
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Fenêtre usuelle de scénario ; ne certifie pas une validation dans cette fenêtre Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 75
+        },
+        "outsideTemperatureUncertainty": {
+          "range": {
+            "min": 0,
+            "max": 0.12
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Élargissement normalisé si température inconnue ou hors fenêtre ; aucune correction Q10 inventée Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.06
+        }
+      },
+      "fermentation": {
+        "expression": {
+          "range": {
+            "min": 0.4,
+            "max": 1.05
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Expression conditionnelle du houblon, pas fraction massique retenue Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.7250000000000001
+        },
+        "halfSaturationGL": {
+          "range": {
+            "min": 2,
+            "max": 4
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Demi-dose de l’indice en g/L ; la littérature motive une réponse compressive mais pas ces bornes Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 3
+        },
+        "extractionHours": {
+          "range": {
+            "min": 2,
+            "max": 12
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Constante d’exposition du modèle en heures ; pas une cinétique analytique mesurée Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 7
+        },
+        "decayHours": null,
+        "temperatureC": {
+          "range": {
+            "min": 8,
+            "max": 28
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Fenêtre usuelle de scénario ; ne certifie pas une validation dans cette fenêtre Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 18
+        },
+        "outsideTemperatureUncertainty": {
+          "range": {
+            "min": 0,
+            "max": 0.12
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Élargissement normalisé si température inconnue ou hors fenêtre ; aucune correction Q10 inventée Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.06
+        }
+      },
+      "postFermentation": {
+        "expression": {
+          "range": {
+            "min": 0.7,
+            "max": 1.15
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Expression conditionnelle du houblon, pas fraction massique retenue Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.9249999999999999
+        },
+        "halfSaturationGL": {
+          "range": {
+            "min": 2,
+            "max": 4
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Demi-dose de l’indice en g/L ; la littérature motive une réponse compressive mais pas ces bornes Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 3
+        },
+        "extractionHours": {
+          "range": {
+            "min": 2,
+            "max": 12
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Constante d’exposition du modèle en heures ; pas une cinétique analytique mesurée Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 7
+        },
+        "decayHours": null,
+        "temperatureC": {
+          "range": {
+            "min": 1,
+            "max": 24
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Fenêtre usuelle de scénario ; ne certifie pas une validation dans cette fenêtre Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 12.5
+        },
+        "outsideTemperatureUncertainty": {
+          "range": {
+            "min": 0,
+            "max": 0.12
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Élargissement normalisé si température inconnue ou hors fenêtre ; aucune correction Q10 inventée Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.06
+        }
+      }
+    },
+    "defaultYeast": {
+      "aroma": {
+        "range": {
+          "min": 0,
+          "max": 1.1
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Profil fermentaire inconnu ; enveloppe contenant les profils de souche proposés Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+        },
+        "central": 0.55
+      },
+      "expression": {
+        "range": {
+          "min": 0,
+          "max": 2
+        },
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Expression avec une souche inconnue ; inclut toutes les enveloppes proposées Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+        },
+        "central": 1
+      }
+    },
+    "yeasts": [
+      {
+        "yeastId": "fermentis-us05",
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Version du 8 septembre 2026. Bornes de conception non ajustées sur des dégustations, non issues d’une élicitation formelle ; aucun taux de couverture garanti."
+        },
+        "evidence": [
+          {
+            "title": "SafAle US-05 — fiche produit",
+            "author": "Fermentis",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://fermentis.com/en/product/safale-us-05/",
+            "locator": "Profil neutre revendiqué ; aucune date publiée ni valeur universelle de biotransformation."
+          },
+          {
+            "title": "Yeast Strain Influences the Hop-Derived Sensory Properties and Volatile Composition of Beer",
+            "author": "Kumar, Warburton, Silcock, Bremer et Eyres",
+            "year": 2023,
+            "kind": "research",
+            "reference": "https://doi.org/10.3390/foods12051064",
+            "locator": "Motueka5g/L après ébullition,20°C,9jours ; souches et taux d’ensemencement en partie confondus, un fermenteur par souche. Fréquences de descripteurs, pas intensités transférables."
+          }
+        ],
+        "aroma": {
+          "citrus": {
+            "range": {
+              "min": 0,
+              "max": 0.1
+            },
+            "source": {
+              "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+              "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-extrapolation.md",
+              "locator": "Indice fermentaire latent citrus de fermentis-us05 : traduction experte des descriptions, pas concentration Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+            },
+            "central": 0.05
+          }
+        },
+        "expression": {},
+        "otherAroma": {
+          "range": {
+            "min": 0,
+            "max": 0.08
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Contribution fermentaire des familles non détaillées dans ce profil expert Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.04
+        },
+        "otherExpression": {
+          "range": {
+            "min": 0.65,
+            "max": 1.35
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Expression du houblon avec la souche, enveloppe commune prudente ; pas multiplicateur enzymatique validé Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 1
+        },
+        "notes": [
+          "Fermentis décrit un profil fermentaire neutre. Cela ne prouve ni une activité β-lyase nulle ni une absence de transformation des terpènes. Le statut POF n’est pas attesté dans cette fiche de travail.",
+          "Les descripteurs fabricant orientent ce prior ; leurs intensités sont choisies par le modèle et restent à calibrer.",
+          "Le caractère fermentaire persiste même après fermentation. β-lyase, POF et ATF1 ne sont pas assimilés."
+        ]
+      },
+      {
+        "yeastId": "lalbrew-verdant-ipa",
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Version du 8 septembre 2026. Bornes de conception non ajustées sur des dégustations, non issues d’une élicitation formelle ; aucun taux de couverture garanti."
+        },
+        "evidence": [
+          {
+            "title": "LalBrew Verdant IPA — fiche technique",
+            "author": "Lallemand",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2023/05/TDS_LPS_BREWINGYEAST_VERDANT_ENG_A4-4.pdf",
+            "locator": "Abricot dominant, tropical et agrumes ; POF négative. Date de publication non établie par le chemin du fichier."
+          },
+          {
+            "title": "Yeast Strain Influences the Hop-Derived Sensory Properties and Volatile Composition of Beer",
+            "author": "Kumar, Warburton, Silcock, Bremer et Eyres",
+            "year": 2023,
+            "kind": "research",
+            "reference": "https://doi.org/10.3390/foods12051064",
+            "locator": "Motueka5g/L après ébullition,20°C,9jours ; souches et taux d’ensemencement en partie confondus, un fermenteur par souche. Fréquences de descripteurs, pas intensités transférables."
+          }
+        ],
+        "aroma": {
+          "stoneFruit": {
+            "range": {
+              "min": 0.35,
+              "max": 0.95
+            },
+            "source": {
+              "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+              "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-extrapolation.md",
+              "locator": "Indice fermentaire latent stoneFruit de lalbrew-verdant-ipa : traduction experte des descriptions, pas concentration Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+            },
+            "central": 0.6499999999999999
+          },
+          "tropical": {
+            "range": {
+              "min": 0.1,
+              "max": 0.5
+            },
+            "source": {
+              "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+              "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-extrapolation.md",
+              "locator": "Indice fermentaire latent tropical de lalbrew-verdant-ipa : traduction experte des descriptions, pas concentration Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+            },
+            "central": 0.3
+          },
+          "citrus": {
+            "range": {
+              "min": 0.1,
+              "max": 0.3
+            },
+            "source": {
+              "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+              "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-extrapolation.md",
+              "locator": "Indice fermentaire latent citrus de lalbrew-verdant-ipa : traduction experte des descriptions, pas concentration Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+            },
+            "central": 0.2
+          }
+        },
+        "expression": {},
+        "otherAroma": {
+          "range": {
+            "min": 0,
+            "max": 0.15
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Contribution fermentaire des familles non détaillées dans ce profil expert Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.075
+        },
+        "otherExpression": {
+          "range": {
+            "min": 0.65,
+            "max": 1.35
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Expression du houblon avec la souche, enveloppe commune prudente ; pas multiplicateur enzymatique validé Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 1
+        },
+        "notes": [
+          "La fiche Lallemand décrit l’abricot, puis des notes tropicales et d’agrumes ; elle indique POF négative. La revendication de β-lyase ne donne aucun rendement générique pour les thiols.",
+          "Les descripteurs fabricant orientent ce prior ; leurs intensités sont choisies par le modèle et restent à calibrer.",
+          "Le caractère fermentaire persiste même après fermentation. β-lyase, POF et ATF1 ne sont pas assimilés."
+        ]
+      },
+      {
+        "yeastId": "lalbrew-pomona",
+        "source": {
+          "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+          "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-extrapolation.md",
+          "locator": "Version du 8 septembre 2026. Bornes de conception non ajustées sur des dégustations, non issues d’une élicitation formelle ; aucun taux de couverture garanti."
+        },
+        "evidence": [
+          {
+            "title": "LalBrew Pomona — fiche technique",
+            "author": "Lallemand",
+            "year": null,
+            "kind": "manufacturer",
+            "reference": "https://admin.lallemandbrewing.com/wp-content/uploads/2024/04/Pomona-TDS-FRA-A4-Print-LalBrew.pdf",
+            "locator": "Pêche, agrumes et tropical ; POF négative. Date de publication non établie par le chemin du fichier."
+          }
+        ],
+        "aroma": {
+          "stoneFruit": {
+            "range": {
+              "min": 0.3,
+              "max": 0.95
+            },
+            "source": {
+              "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+              "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-extrapolation.md",
+              "locator": "Indice fermentaire latent stoneFruit de lalbrew-pomona : traduction experte des descriptions, pas concentration Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+            },
+            "central": 0.625
+          },
+          "tropical": {
+            "range": {
+              "min": 0.2,
+              "max": 0.65
+            },
+            "source": {
+              "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+              "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-extrapolation.md",
+              "locator": "Indice fermentaire latent tropical de lalbrew-pomona : traduction experte des descriptions, pas concentration Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+            },
+            "central": 0.42500000000000004
+          },
+          "citrus": {
+            "range": {
+              "min": 0.2,
+              "max": 0.6
+            },
+            "source": {
+              "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+              "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-extrapolation.md",
+              "locator": "Indice fermentaire latent citrus de lalbrew-pomona : traduction experte des descriptions, pas concentration Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+            },
+            "central": 0.4
+          }
+        },
+        "expression": {},
+        "otherAroma": {
+          "range": {
+            "min": 0,
+            "max": 0.15
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Contribution fermentaire des familles non détaillées dans ce profil expert Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 0.075
+        },
+        "otherExpression": {
+          "range": {
+            "min": 0.65,
+            "max": 1.35
+          },
+          "source": {
+            "title": "Hypothèses initiales du modèle exploratoire L’Affinée",
+            "author": "L’Affinée — proposition expérimentale assistée par IA, à valider par le brasseur",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-extrapolation.md",
+            "locator": "Expression du houblon avec la souche, enveloppe commune prudente ; pas multiplicateur enzymatique validé Hypothèse de conception du 8 septembre 2026, non coefficient publié. Repère central initial : milieu de cette plage, choix de scénario explicite et non espérance mesurée."
+          },
+          "central": 1
+        },
+        "notes": [
+          "La fiche Lallemand décrit pêche, agrumes et fruits tropicaux ; elle indique POF négative. Le potentiel de biotransformation annoncé ne permet pas de calculer seul une teneur en thiols.",
+          "Les descripteurs fabricant orientent ce prior ; leurs intensités sont choisies par le modèle et restent à calibrer.",
+          "Le caractère fermentaire persiste même après fermentation. β-lyase, POF et ATF1 ne sont pas assimilés."
+        ]
+      }
+    ],
+    "doseReferences": [
+      {
+        "axisId": "citrus",
+        "timings": [
+          "fermentation",
+          "postFermentation"
+        ],
+        "points": [
+          {
+            "doseGL": 0,
+            "value": 0
+          },
+          {
+            "doseGL": 2,
+            "value": 0.4807692307692309
+          },
+          {
+            "doseGL": 3.86,
+            "value": 0.7500000000000001
+          },
+          {
+            "doseGL": 8,
+            "value": 1
+          },
+          {
+            "doseGL": 16,
+            "value": 0.9807692307692308
+          }
+        ],
+        "source": {
+          "title": "Transfert exploratoire de formes de réponse à la dose",
+          "author": "L’Affinée — reconstruction explicite, non modèle des auteurs",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-solver.md",
+          "locator": "Les moyennes sont centrées sur le témoin à 0 g/L, puis divisées par le plus grand accroissement observé de cet axe. Mélange convexe avec l’ancienne réponse de saturation. Poids de transfert 0–1 : les deux formes restent plausibles ; repère central 0,5, jugement non ajusté. Erreur relative : plus grand résidu absolu d’interpolation entre doses intérieures divisé par l’accroissement maximal observé. Aucune validation indépendante du transfert entre houblons, souches ou matrices."
+        },
+        "evidence": {
+          "title": "Impact of static dry-hopping rate on the sensory and analytical profiles of beer",
+          "author": "Scott R. Lafontaine et Thomas H. Shellhammer",
+          "year": 2018,
+          "kind": "research",
+          "reference": "https://onlinelibrary.wiley.com/doi/full/10.1002/jib.517",
+          "locator": "Tableau 3 et protocole. Un lot Cascade 2015, cônes broyés en sacs, Wyeast 1728 puis clarification ; 24 h à 13,3–15 °C. Moyennes du panel sur 0–15, sans dispersion entre brassins publiée pour cette courbe."
+        },
+        "transferWeight": {
+          "range": {
+            "min": 0,
+            "max": 1
+          },
+          "central": 0.5,
+          "source": {
+            "title": "Transfert exploratoire de formes de réponse à la dose",
+            "author": "L’Affinée — reconstruction explicite, non modèle des auteurs",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Les moyennes sont centrées sur le témoin à 0 g/L, puis divisées par le plus grand accroissement observé de cet axe. Mélange convexe avec l’ancienne réponse de saturation. Poids de transfert 0–1 : les deux formes restent plausibles ; repère central 0,5, jugement non ajusté. Erreur relative : plus grand résidu absolu d’interpolation entre doses intérieures divisé par l’accroissement maximal observé. Aucune validation indépendante du transfert entre houblons, souches ou matrices."
+          }
+        },
+        "relativeError": {
+          "range": {
+            "min": 0.17130274996831826,
+            "max": 0.17130274996831826
+          },
+          "central": 0.17130274996831826,
+          "source": {
+            "title": "Transfert exploratoire de formes de réponse à la dose",
+            "author": "L’Affinée — reconstruction explicite, non modèle des auteurs",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Les moyennes sont centrées sur le témoin à 0 g/L, puis divisées par le plus grand accroissement observé de cet axe. Mélange convexe avec l’ancienne réponse de saturation. Poids de transfert 0–1 : les deux formes restent plausibles ; repère central 0,5, jugement non ajusté. Erreur relative : plus grand résidu absolu d’interpolation entre doses intérieures divisé par l’accroissement maximal observé. Aucune validation indépendante du transfert entre houblons, souches ou matrices."
+          }
+        },
+        "limitations": [
+          "Un seul lot Cascade 2015, cônes, bière clarifiée sans levure. Le transfert vers une autre variété, une levure active ou une autre forme reste une hypothèse de faible confiance.",
+          "Les répétitions du panel ne constituent pas des brassins indépendants. Aucun intervalle 95 % n’est déduit de ces cinq doses.",
+          "Aucune prolongation de la courbe au-delà de 16 g/L. Température et contact continuent à être traités par les hypothèses du modèle, pas par une nouvelle loi mesurée."
+        ]
+      },
+      {
+        "axisId": "herbal",
+        "timings": [
+          "fermentation",
+          "postFermentation"
+        ],
+        "points": [
+          {
+            "doseGL": 0,
+            "value": 0
+          },
+          {
+            "doseGL": 2,
+            "value": 0.22784810126582275
+          },
+          {
+            "doseGL": 3.86,
+            "value": 0.4050632911392405
+          },
+          {
+            "doseGL": 8,
+            "value": 0.620253164556962
+          },
+          {
+            "doseGL": 16,
+            "value": 1
+          }
+        ],
+        "source": {
+          "title": "Transfert exploratoire de formes de réponse à la dose",
+          "author": "L’Affinée — reconstruction explicite, non modèle des auteurs",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "docs/hop-solver.md",
+          "locator": "Les moyennes sont centrées sur le témoin à 0 g/L, puis divisées par le plus grand accroissement observé de cet axe. Mélange convexe avec l’ancienne réponse de saturation. Poids de transfert 0–1 : les deux formes restent plausibles ; repère central 0,5, jugement non ajusté. Erreur relative : plus grand résidu absolu d’interpolation entre doses intérieures divisé par l’accroissement maximal observé. Aucune validation indépendante du transfert entre houblons, souches ou matrices."
+        },
+        "evidence": {
+          "title": "Impact of static dry-hopping rate on the sensory and analytical profiles of beer",
+          "author": "Scott R. Lafontaine et Thomas H. Shellhammer",
+          "year": 2018,
+          "kind": "research",
+          "reference": "https://onlinelibrary.wiley.com/doi/full/10.1002/jib.517",
+          "locator": "Tableau 3 et protocole. Un lot Cascade 2015, cônes broyés en sacs, Wyeast 1728 puis clarification ; 24 h à 13,3–15 °C. Moyennes du panel sur 0–15, sans dispersion entre brassins publiée pour cette courbe."
+        },
+        "transferWeight": {
+          "range": {
+            "min": 0,
+            "max": 1
+          },
+          "central": 0.5,
+          "source": {
+            "title": "Transfert exploratoire de formes de réponse à la dose",
+            "author": "L’Affinée — reconstruction explicite, non modèle des auteurs",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Les moyennes sont centrées sur le témoin à 0 g/L, puis divisées par le plus grand accroissement observé de cet axe. Mélange convexe avec l’ancienne réponse de saturation. Poids de transfert 0–1 : les deux formes restent plausibles ; repère central 0,5, jugement non ajusté. Erreur relative : plus grand résidu absolu d’interpolation entre doses intérieures divisé par l’accroissement maximal observé. Aucune validation indépendante du transfert entre houblons, souches ou matrices."
+          }
+        },
+        "relativeError": {
+          "range": {
+            "min": 0.05556962025316456,
+            "max": 0.05556962025316456
+          },
+          "central": 0.05556962025316456,
+          "source": {
+            "title": "Transfert exploratoire de formes de réponse à la dose",
+            "author": "L’Affinée — reconstruction explicite, non modèle des auteurs",
+            "year": 2026,
+            "kind": "judgment",
+            "reference": "docs/hop-solver.md",
+            "locator": "Les moyennes sont centrées sur le témoin à 0 g/L, puis divisées par le plus grand accroissement observé de cet axe. Mélange convexe avec l’ancienne réponse de saturation. Poids de transfert 0–1 : les deux formes restent plausibles ; repère central 0,5, jugement non ajusté. Erreur relative : plus grand résidu absolu d’interpolation entre doses intérieures divisé par l’accroissement maximal observé. Aucune validation indépendante du transfert entre houblons, souches ou matrices."
+          }
+        },
+        "limitations": [
+          "Un seul lot Cascade 2015, cônes, bière clarifiée sans levure. Le transfert vers une autre variété, une levure active ou une autre forme reste une hypothèse de faible confiance.",
+          "Les répétitions du panel ne constituent pas des brassins indépendants. Aucun intervalle 95 % n’est déduit de ces cinq doses.",
+          "Aucune prolongation de la courbe au-delà de 16 g/L. Température et contact continuent à être traités par les hypothèses du modèle, pas par une nouvelle loi mesurée."
+        ]
+      }
+    ]
+  }
+]

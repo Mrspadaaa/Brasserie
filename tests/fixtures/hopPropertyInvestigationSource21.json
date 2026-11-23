@@ -1,0 +1,1032 @@
+{
+  "source": {
+    "path": "work/houblons-v55-integration-app-2026-10-02/luna-runtime/q02-payload21/payload.json",
+    "sha256": "01b4226671db684a789e5862383b6f4072d8c67368b3ec4c645be5080373c393",
+    "kind": "isolated-native-fixture-replay",
+    "originalRootRecord": false
+  },
+  "initial": {
+    "format": "hop-documentary-request-v3",
+    "id": "property-request-v3:6767c869-0915-46a5-b8b4-a7c3257fadb2",
+    "originalQuestion": "Ou dans ma stout si j'amèrise avec nuget est-ce que je suis pas trop résineux ou au contraire pas assez et je peux aussi ajouter autre chose.",
+    "interpretation": {
+      "id": "interpretation-property-request-v3:6767c869-0915-46a5-b8b4-a7c3257fadb2",
+      "version": "hop-v55-property-advice-reading-v3",
+      "text": "Lecture proposée : Question à examiner : résineux (Risque conditionnel demandé; ni excès ni manque n’est constaté.).",
+      "origin": "proposal"
+    },
+    "propertyIntents": [
+      {
+        "id": "criterion-source-69-77-resineux",
+        "property": "aroma",
+        "label": "résineux",
+        "familyId": "resin",
+        "role": "investigation",
+        "direction": "investigate",
+        "qualification": "Risque conditionnel demandé; ni excès ni manque n’est constaté.",
+        "required": true,
+        "comparisonBasis": {
+          "kind": "none",
+          "assertionIds": []
+        },
+        "metric": "sensory",
+        "subject": {
+          "kind": "beer",
+          "label": "Bière visée",
+          "materialId": null,
+          "sensoryContext": "beer"
+        },
+        "sourceSpans": [
+          {
+            "start": 69,
+            "end": 77,
+            "text": "résineux"
+          }
+        ],
+        "interpretationOrigin": "proposal",
+        "basis": "Question d’investigation conservée; elle ne devient pas une observation ni un effet.",
+        "relatedIntentIds": []
+      }
+    ],
+    "candidatePolicy": {
+      "kind": "explicit",
+      "materialIds": [],
+      "basis": "Aucune matière n’a encore été choisie. La recherche reste un geste explicite."
+    },
+    "context": {
+      "stage": "planning",
+      "stageBasis": "Stade exact du programme lié au contexte préparé; aucun stade ne vient d’un nom de recette ou d’un scénario futur.",
+      "assertions": [
+        {
+          "id": "context-culture",
+          "subject": "culture",
+          "statement": "Une souche est explicitement liée ou résolue dans cette recette; aucune composition supplémentaire supposée.",
+          "state": "reported",
+          "value": "hop-v55-fixture-culture-neutral",
+          "dimension": "bioInteraction"
+        },
+        {
+          "id": "context-style-intention",
+          "subject": "style.name",
+          "statement": "Fait typé du contexte préparé (target, origine userHypothesis).",
+          "state": "planned",
+          "value": "Style non renseigné",
+          "source": {
+            "title": "Recette et journal du scénario",
+            "author": "Données enregistrées du brasseur",
+            "year": null,
+            "kind": "observation",
+            "reference": "brewing-scenario-context-recipe-v1:sha256:58ed17fe062bf20b65f846e5dc6994906c4774f9097c1de3f9a9d2fe516b80f2"
+          }
+        },
+        {
+          "id": "context-target-volumeL",
+          "subject": "volumeL",
+          "statement": "Fait typé du contexte préparé (target, origine userHypothesis).",
+          "state": "planned",
+          "value": 20,
+          "unit": "L",
+          "source": {
+            "title": "Recette et journal du scénario",
+            "author": "Données enregistrées du brasseur",
+            "year": null,
+            "kind": "observation",
+            "reference": "brewing-scenario-context-recipe-v1:sha256:58ed17fe062bf20b65f846e5dc6994906c4774f9097c1de3f9a9d2fe516b80f2"
+          }
+        },
+        {
+          "id": "program-recipe-hop:0",
+          "subject": "recipe-hop:0",
+          "statement": "Ajout de programme transmis: hop-v55-fixture-recipe-planning:recipe-hop:0, boil, planned.",
+          "state": "planned",
+          "value": 40,
+          "unit": "g",
+          "dimension": "process"
+        },
+        {
+          "id": "program-recipe-hop:1",
+          "subject": "recipe-hop:1",
+          "statement": "Ajout de programme transmis: hop-v55-fixture-recipe-planning:recipe-hop:1, fermentation, planned.",
+          "state": "planned",
+          "value": 30,
+          "unit": "g",
+          "dimension": "process"
+        }
+      ],
+      "access": {
+        "bulkBeer": {
+          "state": "unknown",
+          "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+          "assertionIds": []
+        },
+        "sampling": {
+          "state": "unknown",
+          "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+          "assertionIds": []
+        },
+        "separatePortion": {
+          "state": "unknown",
+          "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+          "assertionIds": []
+        }
+      }
+    },
+    "exclusions": [],
+    "materials": []
+  },
+  "withPartner": {
+    "format": "hop-documentary-request-v3",
+    "id": "property-request-v3:6767c869-0915-46a5-b8b4-a7c3257fadb2",
+    "originalQuestion": "Ou dans ma stout si j'amèrise avec nuget est-ce que je suis pas trop résineux ou au contraire pas assez et je peux aussi ajouter autre chose.",
+    "interpretation": {
+      "id": "property-interpretation-2c7e0085-2b4a-4e4f-bf13-af056eaf3d16",
+      "version": "2",
+      "text": "Lecture proposée : Question à examiner : résineux (Risque conditionnel demandé; ni excès ni manque n’est constaté.).",
+      "origin": "user"
+    },
+    "propertyIntents": [
+      {
+        "id": "criterion-source-69-77-resineux",
+        "property": "aroma",
+        "label": "résineux",
+        "familyId": "resin",
+        "role": "investigation",
+        "direction": "investigate",
+        "qualification": "Risque conditionnel demandé; ni excès ni manque n’est constaté.",
+        "required": true,
+        "comparisonBasis": {
+          "kind": "none",
+          "assertionIds": []
+        },
+        "metric": "sensory",
+        "subject": {
+          "kind": "beer",
+          "label": "Bière visée",
+          "materialId": null,
+          "sensoryContext": "beer"
+        },
+        "sourceSpans": [
+          {
+            "start": 69,
+            "end": 77,
+            "text": "résineux"
+          }
+        ],
+        "interpretationOrigin": "proposal",
+        "basis": "Question d’investigation conservée; elle ne devient pas une observation ni un effet.",
+        "relatedIntentIds": [],
+        "partner": {
+          "kind": "material",
+          "id": "variety:hopsteiner-nug"
+        }
+      }
+    ],
+    "candidatePolicy": {
+      "kind": "explicit",
+      "materialIds": [],
+      "basis": "Aucune matière n’a encore été choisie. La recherche reste un geste explicite."
+    },
+    "context": {
+      "stage": "planning",
+      "stageBasis": "Stade exact du programme lié au contexte préparé; aucun stade ne vient d’un nom de recette ou d’un scénario futur.",
+      "assertions": [
+        {
+          "id": "context-culture",
+          "subject": "culture",
+          "statement": "Une souche est explicitement liée ou résolue dans cette recette; aucune composition supplémentaire supposée.",
+          "state": "reported",
+          "value": "hop-v55-fixture-culture-neutral",
+          "dimension": "bioInteraction"
+        },
+        {
+          "id": "context-style-intention",
+          "subject": "style.name",
+          "statement": "Fait typé du contexte préparé (target, origine userHypothesis).",
+          "state": "planned",
+          "value": "Style non renseigné",
+          "source": {
+            "title": "Recette et journal du scénario",
+            "author": "Données enregistrées du brasseur",
+            "year": null,
+            "kind": "observation",
+            "reference": "brewing-scenario-context-recipe-v1:sha256:58ed17fe062bf20b65f846e5dc6994906c4774f9097c1de3f9a9d2fe516b80f2"
+          }
+        },
+        {
+          "id": "context-target-volumeL",
+          "subject": "volumeL",
+          "statement": "Fait typé du contexte préparé (target, origine userHypothesis).",
+          "state": "planned",
+          "value": 20,
+          "unit": "L",
+          "source": {
+            "title": "Recette et journal du scénario",
+            "author": "Données enregistrées du brasseur",
+            "year": null,
+            "kind": "observation",
+            "reference": "brewing-scenario-context-recipe-v1:sha256:58ed17fe062bf20b65f846e5dc6994906c4774f9097c1de3f9a9d2fe516b80f2"
+          }
+        },
+        {
+          "id": "program-recipe-hop:0",
+          "subject": "recipe-hop:0",
+          "statement": "Ajout de programme transmis: hop-v55-fixture-recipe-planning:recipe-hop:0, boil, planned.",
+          "state": "planned",
+          "value": 40,
+          "unit": "g",
+          "dimension": "process"
+        },
+        {
+          "id": "program-recipe-hop:1",
+          "subject": "recipe-hop:1",
+          "statement": "Ajout de programme transmis: hop-v55-fixture-recipe-planning:recipe-hop:1, fermentation, planned.",
+          "state": "planned",
+          "value": 30,
+          "unit": "g",
+          "dimension": "process"
+        }
+      ],
+      "access": {
+        "bulkBeer": {
+          "state": "unknown",
+          "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+          "assertionIds": []
+        },
+        "sampling": {
+          "state": "unknown",
+          "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+          "assertionIds": []
+        },
+        "separatePortion": {
+          "state": "unknown",
+          "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+          "assertionIds": []
+        }
+      }
+    },
+    "exclusions": [],
+    "materials": [
+      {
+        "id": "variety:hopsteiner-nug",
+        "name": "Nugget",
+        "form": "unknown",
+        "variety": {
+          "id": "hopsteiner-nug",
+          "name": "Nugget",
+          "aliases": [],
+          "origin": "États-Unis",
+          "form": "unknown",
+          "descriptions": [
+            {
+              "text": "Familles déclarées sur houblon brut : Épicé, Floral, Herbacé.",
+              "context": "rawHop",
+              "source": {
+                "title": "Fiche variétale Nugget",
+                "author": "Hopsteiner",
+                "year": 2025,
+                "kind": "manufacturer",
+                "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/nug",
+                "locator": "Mise à jour affichée 11/02/2025. Catalogue de variété ; aucune forme commerciale particulière n’est attestée."
+              }
+            },
+            {
+              "text": "Descripteurs de la fiche (langue source) : Pineapple, floral.",
+              "context": "rawHop",
+              "source": {
+                "title": "Fiche variétale Nugget",
+                "author": "Hopsteiner",
+                "year": 2025,
+                "kind": "manufacturer",
+                "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/nug",
+                "locator": "Mise à jour affichée 11/02/2025. Catalogue de variété ; aucune forme commerciale particulière n’est attestée."
+              }
+            },
+            {
+              "text": "Classe fabricant « Thiol impact » : faible. Elle concerne les thiols libres du houblon ; ce n’est ni un rendement de levure ni une intensité prédite en bière.",
+              "context": "rawHop",
+              "source": {
+                "title": "Fiche variétale Nugget",
+                "author": "Hopsteiner",
+                "year": 2025,
+                "kind": "manufacturer",
+                "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/nug",
+                "locator": "Mise à jour affichée 11/02/2025. Catalogue de variété ; aucune forme commerciale particulière n’est attestée."
+              }
+            }
+          ],
+          "analysis": [
+            {
+              "analyte": "alpha",
+              "unit": "percentMass",
+              "basis": "unknown",
+              "kind": "range",
+              "range": {
+                "min": 11,
+                "max": 14
+              },
+              "confidence": "low",
+              "source": {
+                "title": "Fiche variétale Nugget",
+                "author": "Hopsteiner",
+                "year": 2025,
+                "kind": "manufacturer",
+                "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/nug",
+                "locator": "Mise à jour affichée 11/02/2025. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Alpha acids %."
+              },
+              "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+            },
+            {
+              "analyte": "beta",
+              "unit": "percentMass",
+              "basis": "unknown",
+              "kind": "range",
+              "range": {
+                "min": 4,
+                "max": 6
+              },
+              "confidence": "low",
+              "source": {
+                "title": "Fiche variétale Nugget",
+                "author": "Hopsteiner",
+                "year": 2025,
+                "kind": "manufacturer",
+                "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/nug",
+                "locator": "Mise à jour affichée 11/02/2025. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Beta acids %."
+              },
+              "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+            },
+            {
+              "analyte": "totalOil",
+              "unit": "ml100g",
+              "basis": "unknown",
+              "kind": "range",
+              "range": {
+                "min": 1.5,
+                "max": 3
+              },
+              "confidence": "low",
+              "source": {
+                "title": "Fiche variétale Nugget",
+                "author": "Hopsteiner",
+                "year": 2025,
+                "kind": "manufacturer",
+                "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/nug",
+                "locator": "Mise à jour affichée 11/02/2025. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Total oil (ml/100g)."
+              },
+              "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+            },
+            {
+              "analyte": "linalool",
+              "unit": "percentOil",
+              "basis": "oil",
+              "kind": "range",
+              "range": {
+                "min": 0.8,
+                "max": 1
+              },
+              "confidence": "low",
+              "source": {
+                "title": "Fiche variétale Nugget",
+                "author": "Hopsteiner",
+                "year": 2025,
+                "kind": "manufacturer",
+                "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/nug",
+                "locator": "Mise à jour affichée 11/02/2025. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Linalool % rel. of total oil."
+              },
+              "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "acquiredPairing": {
+    "source": "work/houblons-backend-technique-2026-09-30/conseil-proprietes-2026-10-03/exemples-complets-10.json",
+    "sha256": "4a0854e04dcb8a89e5b974a69abe377ea185fd33a209ffc4c909cfb8dd5e3355",
+    "request": {
+      "format": "hop-documentary-request-v2",
+      "id": "fixture-property-advice-aroma-pairing",
+      "originalQuestion": "Je veux une blanche ultra tropicale qui se marie bien avec mon goût de banane.",
+      "interpretation": {
+        "id": "interpretation-aroma-pairing",
+        "version": "property-advice-fixture-1",
+        "text": "Lecture fixture corrigée par propriétés; le nom de style ne décide pas les propriétés ni les candidats.",
+        "origin": "proposal"
+      },
+      "propertyIntents": [
+        {
+          "id": "pairing-tropical-banana",
+          "label": "ultra tropicale",
+          "property": "aroma",
+          "familyId": "tropical",
+          "role": "target",
+          "direction": "increase",
+          "partner": {
+            "kind": "freeContext",
+            "text": "mon goût de banane"
+          },
+          "qualification": "ultra",
+          "required": true,
+          "comparisonBasis": {
+            "kind": "qualitativeTarget",
+            "assertionIds": []
+          },
+          "metric": "sensory",
+          "subject": {
+            "kind": "beer",
+            "label": "bière visée",
+            "materialId": null,
+            "sensoryContext": "beer"
+          },
+          "interpretationOrigin": "fixture",
+          "basis": "L’accord est une préférence de comparaison; le partenaire reste freeContext et aucun candidat n’est sélectionné.",
+          "relatedIntentIds": [],
+          "sourceSpans": [
+            {
+              "start": 20,
+              "end": 35,
+              "text": "ultra tropicale"
+            },
+            {
+              "start": 40,
+              "end": 58,
+              "text": "se marie bien avec"
+            },
+            {
+              "start": 59,
+              "end": 77,
+              "text": "mon goût de banane"
+            }
+          ]
+        }
+      ],
+      "candidatePolicy": {
+        "kind": "explicit",
+        "materialIds": [
+          "variety:hopsteiner-ers",
+          "variety:hopsteiner-cal",
+          "variety:hopsteiner-hs09326",
+          "variety:hopsteiner-ana"
+        ],
+        "basis": "Périmètre explicite de quatre fiches variétales source-backed pour comparer les termes présents; ni preset de style ni sélection de remplacement."
+      },
+      "context": {
+        "stage": "planning",
+        "stageBasis": "Stade exact du programme lié au contexte préparé; aucun stade ne vient du champ phase ou du nom de recette.",
+        "assertions": [
+          {
+            "id": "context-culture",
+            "subject": "culture",
+            "statement": "La culture de la recette reste inconnue.",
+            "state": "unknown",
+            "value": null,
+            "dimension": "bioInteraction"
+          },
+          {
+            "id": "context-style-intention",
+            "subject": "style.name",
+            "statement": "Fait typé du contexte préparé (target, origine userHypothesis).",
+            "state": "planned",
+            "value": "Blanche",
+            "source": {
+              "title": "Recette et journal du scénario",
+              "author": "Données enregistrées du brasseur",
+              "year": null,
+              "kind": "observation",
+              "reference": "brewing-scenario-context-recipe-v1:sha256:da6967e9dd1404e8a20b577609d56197c535cbe0aa36795e7252b7cf857c0252"
+            }
+          },
+          {
+            "id": "context-target-volumeL",
+            "subject": "volumeL",
+            "statement": "Fait typé du contexte préparé (target, origine userHypothesis).",
+            "state": "planned",
+            "value": 20,
+            "unit": "L",
+            "source": {
+              "title": "Recette et journal du scénario",
+              "author": "Données enregistrées du brasseur",
+              "year": null,
+              "kind": "observation",
+              "reference": "brewing-scenario-context-recipe-v1:sha256:da6967e9dd1404e8a20b577609d56197c535cbe0aa36795e7252b7cf857c0252"
+            }
+          },
+          {
+            "id": "program-recipe-hop:0",
+            "subject": "recipe-hop:0",
+            "statement": "Ajout de programme transmis: hop-v55-fixture-recipe-unknownCulture:recipe-hop:0, boil, planned.",
+            "state": "planned",
+            "value": 40,
+            "unit": "g",
+            "dimension": "process"
+          },
+          {
+            "id": "program-recipe-hop:1",
+            "subject": "recipe-hop:1",
+            "statement": "Ajout de programme transmis: hop-v55-fixture-recipe-unknownCulture:recipe-hop:1, fermentation, planned.",
+            "state": "planned",
+            "value": 30,
+            "unit": "g",
+            "dimension": "process"
+          }
+        ],
+        "access": {
+          "bulkBeer": {
+            "state": "unknown",
+            "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+            "assertionIds": []
+          },
+          "sampling": {
+            "state": "unknown",
+            "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+            "assertionIds": []
+          },
+          "separatePortion": {
+            "state": "unknown",
+            "basis": "Accès non déclaré; il n’est pas déduit du stade, de la recette ou du programme.",
+            "assertionIds": []
+          }
+        }
+      },
+      "exclusions": [],
+      "materials": [
+        {
+          "id": "variety:hopsteiner-ana",
+          "name": "Ariana",
+          "form": "unknown",
+          "variety": {
+            "id": "hopsteiner-ana",
+            "name": "Ariana",
+            "aliases": [],
+            "origin": "Allemagne",
+            "form": "unknown",
+            "descriptions": [
+              {
+                "text": "Familles déclarées sur houblon brut : Fruité, Agrumes, Floral.",
+                "context": "rawHop",
+                "source": {
+                  "title": "Fiche variétale Ariana",
+                  "author": "Hopsteiner",
+                  "year": 2024,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/ana",
+                  "locator": "Mise à jour affichée 25/06/2024. Catalogue de variété ; aucune forme commerciale particulière n’est attestée."
+                }
+              },
+              {
+                "text": "Descripteurs de la fiche (langue source) : Black berries, black currant, peach, pear, tropical fruits, resinous.",
+                "context": "rawHop",
+                "source": {
+                  "title": "Fiche variétale Ariana",
+                  "author": "Hopsteiner",
+                  "year": 2024,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/ana",
+                  "locator": "Mise à jour affichée 25/06/2024. Catalogue de variété ; aucune forme commerciale particulière n’est attestée."
+                }
+              },
+              {
+                "text": "Classe fabricant « Thiol impact » : moyenne. Elle concerne les thiols libres du houblon ; ce n’est ni un rendement de levure ni une intensité prédite en bière.",
+                "context": "rawHop",
+                "source": {
+                  "title": "Fiche variétale Ariana",
+                  "author": "Hopsteiner",
+                  "year": 2024,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/ana",
+                  "locator": "Mise à jour affichée 25/06/2024. Catalogue de variété ; aucune forme commerciale particulière n’est attestée."
+                }
+              }
+            ],
+            "analysis": [
+              {
+                "analyte": "alpha",
+                "unit": "percentMass",
+                "basis": "unknown",
+                "kind": "range",
+                "range": {
+                  "min": 9,
+                  "max": 13
+                },
+                "confidence": "low",
+                "source": {
+                  "title": "Fiche variétale Ariana",
+                  "author": "Hopsteiner",
+                  "year": 2024,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/ana",
+                  "locator": "Mise à jour affichée 25/06/2024. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Alpha acids %."
+                },
+                "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+              },
+              {
+                "analyte": "beta",
+                "unit": "percentMass",
+                "basis": "unknown",
+                "kind": "range",
+                "range": {
+                  "min": 4.5,
+                  "max": 6
+                },
+                "confidence": "low",
+                "source": {
+                  "title": "Fiche variétale Ariana",
+                  "author": "Hopsteiner",
+                  "year": 2024,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/ana",
+                  "locator": "Mise à jour affichée 25/06/2024. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Beta acids %."
+                },
+                "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+              },
+              {
+                "analyte": "totalOil",
+                "unit": "ml100g",
+                "basis": "unknown",
+                "kind": "range",
+                "range": {
+                  "min": 1.6,
+                  "max": 2.4
+                },
+                "confidence": "low",
+                "source": {
+                  "title": "Fiche variétale Ariana",
+                  "author": "Hopsteiner",
+                  "year": 2024,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/ana",
+                  "locator": "Mise à jour affichée 25/06/2024. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Total oil (ml/100g)."
+                },
+                "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+              }
+            ]
+          }
+        },
+        {
+          "id": "variety:hopsteiner-cal",
+          "name": "Callista",
+          "form": "unknown",
+          "variety": {
+            "id": "hopsteiner-cal",
+            "name": "Callista",
+            "aliases": [],
+            "origin": "Allemagne",
+            "form": "unknown",
+            "descriptions": [
+              {
+                "text": "Familles déclarées sur houblon brut : Fruité.",
+                "context": "rawHop",
+                "source": {
+                  "title": "Fiche variétale Callista",
+                  "author": "Hopsteiner",
+                  "year": 2024,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/cal",
+                  "locator": "Mise à jour affichée 25/06/2024. Catalogue de variété ; aucune forme commerciale particulière n’est attestée."
+                }
+              },
+              {
+                "text": "Descripteurs de la fiche (langue source) : Apricot, passion fruit, red berries.",
+                "context": "rawHop",
+                "source": {
+                  "title": "Fiche variétale Callista",
+                  "author": "Hopsteiner",
+                  "year": 2024,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/cal",
+                  "locator": "Mise à jour affichée 25/06/2024. Catalogue de variété ; aucune forme commerciale particulière n’est attestée."
+                }
+              },
+              {
+                "text": "Classe fabricant « Thiol impact » : forte. Elle concerne les thiols libres du houblon ; ce n’est ni un rendement de levure ni une intensité prédite en bière.",
+                "context": "rawHop",
+                "source": {
+                  "title": "Fiche variétale Callista",
+                  "author": "Hopsteiner",
+                  "year": 2024,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/cal",
+                  "locator": "Mise à jour affichée 25/06/2024. Catalogue de variété ; aucune forme commerciale particulière n’est attestée."
+                }
+              }
+            ],
+            "analysis": [
+              {
+                "analyte": "alpha",
+                "unit": "percentMass",
+                "basis": "unknown",
+                "kind": "range",
+                "range": {
+                  "min": 2,
+                  "max": 5
+                },
+                "confidence": "low",
+                "source": {
+                  "title": "Fiche variétale Callista",
+                  "author": "Hopsteiner",
+                  "year": 2024,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/cal",
+                  "locator": "Mise à jour affichée 25/06/2024. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Alpha acids %."
+                },
+                "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+              },
+              {
+                "analyte": "beta",
+                "unit": "percentMass",
+                "basis": "unknown",
+                "kind": "range",
+                "range": {
+                  "min": 5,
+                  "max": 10
+                },
+                "confidence": "low",
+                "source": {
+                  "title": "Fiche variétale Callista",
+                  "author": "Hopsteiner",
+                  "year": 2024,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/cal",
+                  "locator": "Mise à jour affichée 25/06/2024. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Beta acids %."
+                },
+                "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+              },
+              {
+                "analyte": "totalOil",
+                "unit": "ml100g",
+                "basis": "unknown",
+                "kind": "range",
+                "range": {
+                  "min": 0.7,
+                  "max": 1.5
+                },
+                "confidence": "low",
+                "source": {
+                  "title": "Fiche variétale Callista",
+                  "author": "Hopsteiner",
+                  "year": 2024,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/cal",
+                  "locator": "Mise à jour affichée 25/06/2024. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Total oil (ml/100g)."
+                },
+                "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+              }
+            ]
+          }
+        },
+        {
+          "id": "variety:hopsteiner-ers",
+          "name": "Erebus",
+          "form": "unknown",
+          "variety": {
+            "id": "hopsteiner-ers",
+            "name": "Erebus",
+            "aliases": [],
+            "origin": "États-Unis",
+            "form": "unknown",
+            "descriptions": [
+              {
+                "text": "Familles déclarées sur houblon brut : Fruité, Agrumes, Doux, Autres.",
+                "context": "rawHop",
+                "source": {
+                  "title": "Fiche variétale Erebus",
+                  "author": "Hopsteiner",
+                  "year": 2026,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/ers",
+                  "locator": "Mise à jour affichée 26/05/2026. Catalogue de variété ; aucune forme commerciale particulière n’est attestée."
+                }
+              },
+              {
+                "text": "Descripteurs de la fiche (langue source) : Blueberry, citrus, candied fruit, and floral rose.",
+                "context": "rawHop",
+                "source": {
+                  "title": "Fiche variétale Erebus",
+                  "author": "Hopsteiner",
+                  "year": 2026,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/ers",
+                  "locator": "Mise à jour affichée 26/05/2026. Catalogue de variété ; aucune forme commerciale particulière n’est attestée."
+                }
+              },
+              {
+                "text": "Classe fabricant « Thiol impact » : faible. Elle concerne les thiols libres du houblon ; ce n’est ni un rendement de levure ni une intensité prédite en bière.",
+                "context": "rawHop",
+                "source": {
+                  "title": "Fiche variétale Erebus",
+                  "author": "Hopsteiner",
+                  "year": 2026,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/ers",
+                  "locator": "Mise à jour affichée 26/05/2026. Catalogue de variété ; aucune forme commerciale particulière n’est attestée."
+                }
+              }
+            ],
+            "analysis": [
+              {
+                "analyte": "alpha",
+                "unit": "percentMass",
+                "basis": "unknown",
+                "kind": "range",
+                "range": {
+                  "min": 8,
+                  "max": 11
+                },
+                "confidence": "low",
+                "source": {
+                  "title": "Fiche variétale Erebus",
+                  "author": "Hopsteiner",
+                  "year": 2026,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/ers",
+                  "locator": "Mise à jour affichée 26/05/2026. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Alpha acids %."
+                },
+                "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+              },
+              {
+                "analyte": "beta",
+                "unit": "percentMass",
+                "basis": "unknown",
+                "kind": "range",
+                "range": {
+                  "min": 3,
+                  "max": 4
+                },
+                "confidence": "low",
+                "source": {
+                  "title": "Fiche variétale Erebus",
+                  "author": "Hopsteiner",
+                  "year": 2026,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/ers",
+                  "locator": "Mise à jour affichée 26/05/2026. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Beta acids %."
+                },
+                "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+              },
+              {
+                "analyte": "totalOil",
+                "unit": "ml100g",
+                "basis": "unknown",
+                "kind": "range",
+                "range": {
+                  "min": 2.3,
+                  "max": 2.8
+                },
+                "confidence": "low",
+                "source": {
+                  "title": "Fiche variétale Erebus",
+                  "author": "Hopsteiner",
+                  "year": 2026,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/ers",
+                  "locator": "Mise à jour affichée 26/05/2026. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Total oil (ml/100g)."
+                },
+                "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+              },
+              {
+                "analyte": "linalool",
+                "unit": "percentOil",
+                "basis": "oil",
+                "kind": "range",
+                "range": {
+                  "min": 0.6,
+                  "max": 1
+                },
+                "confidence": "low",
+                "source": {
+                  "title": "Fiche variétale Erebus",
+                  "author": "Hopsteiner",
+                  "year": 2026,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/ers",
+                  "locator": "Mise à jour affichée 26/05/2026. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Linalool % rel. of total oil."
+                },
+                "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+              }
+            ]
+          }
+        },
+        {
+          "id": "variety:hopsteiner-hs09326",
+          "name": "HS09326",
+          "form": "unknown",
+          "variety": {
+            "id": "hopsteiner-hs09326",
+            "name": "HS09326",
+            "aliases": [],
+            "origin": "États-Unis",
+            "form": "unknown",
+            "descriptions": [
+              {
+                "text": "Familles déclarées sur houblon brut : Agrumes, Fruité.",
+                "context": "rawHop",
+                "source": {
+                  "title": "Fiche variétale HS09326",
+                  "author": "Hopsteiner",
+                  "year": 2025,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/hs09326",
+                  "locator": "Mise à jour affichée 13/10/2025. Catalogue de variété ; aucune forme commerciale particulière n’est attestée."
+                }
+              },
+              {
+                "text": "Descripteurs de la fiche (langue source) : Berry jam, tropical fruit, grapefruit, herbal.",
+                "context": "rawHop",
+                "source": {
+                  "title": "Fiche variétale HS09326",
+                  "author": "Hopsteiner",
+                  "year": 2025,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/hs09326",
+                  "locator": "Mise à jour affichée 13/10/2025. Catalogue de variété ; aucune forme commerciale particulière n’est attestée."
+                }
+              }
+            ],
+            "analysis": [
+              {
+                "analyte": "alpha",
+                "unit": "percentMass",
+                "basis": "unknown",
+                "kind": "range",
+                "range": {
+                  "min": 4,
+                  "max": 7
+                },
+                "confidence": "low",
+                "source": {
+                  "title": "Fiche variétale HS09326",
+                  "author": "Hopsteiner",
+                  "year": 2025,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/hs09326",
+                  "locator": "Mise à jour affichée 13/10/2025. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Alpha acids %."
+                },
+                "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+              },
+              {
+                "analyte": "beta",
+                "unit": "percentMass",
+                "basis": "unknown",
+                "kind": "range",
+                "range": {
+                  "min": 4.5,
+                  "max": 7
+                },
+                "confidence": "low",
+                "source": {
+                  "title": "Fiche variétale HS09326",
+                  "author": "Hopsteiner",
+                  "year": 2025,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/hs09326",
+                  "locator": "Mise à jour affichée 13/10/2025. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Beta acids %."
+                },
+                "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+              },
+              {
+                "analyte": "totalOil",
+                "unit": "ml100g",
+                "basis": "unknown",
+                "kind": "range",
+                "range": {
+                  "min": 2,
+                  "max": 2.6
+                },
+                "confidence": "low",
+                "source": {
+                  "title": "Fiche variétale HS09326",
+                  "author": "Hopsteiner",
+                  "year": 2025,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/hs09326",
+                  "locator": "Mise à jour affichée 13/10/2025. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Total oil (ml/100g)."
+                },
+                "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+              },
+              {
+                "analyte": "linalool",
+                "unit": "percentOil",
+                "basis": "oil",
+                "kind": "range",
+                "range": {
+                  "min": 0.8,
+                  "max": 1.3
+                },
+                "confidence": "low",
+                "source": {
+                  "title": "Fiche variétale HS09326",
+                  "author": "Hopsteiner",
+                  "year": 2025,
+                  "kind": "manufacturer",
+                  "reference": "https://www.hopsteiner.de/en/products/all-hop-varieties/detail/hs09326",
+                  "locator": "Mise à jour affichée 13/10/2025. Catalogue de variété ; aucune forme commerciale particulière n’est attestée. Champ : Linalool % rel. of total oil."
+                },
+                "note": "Valeur variétale, pas analyse du lot acheté. Incertitude analytique non fournie ; aucune conversion entre % d’huile et masse de houblon."
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

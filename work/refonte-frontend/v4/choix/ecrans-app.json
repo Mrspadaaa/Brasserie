@@ -1,0 +1,179 @@
+{
+  "maj": "2026-11-09",
+  "regle": "« C'est critique que mes choix soient respectés. SI non, rien n'a de valeur. » (23.10). Chaque écran de l'app repart de la maquette qu'il a choisie, telle qu'il l'a vue (CLAUDE.md, règle n° 1 ; D105, D206).",
+  "usage": "Le registre des écrans de l'APP (ecrans.json ne couvre que la maquette houblons : y inscrire Identité casserait son contrôle, qui veut une page par écran dans le dossier construit). controle-choix.mjs --registre=work/refonte-frontend/v4/choix/ecrans-app.json : le registre seul ; controle-choix.mjs work/missions/2026-10-31-ecran-identite/v1 --registre=… lit v1/r4-a/etat.html (la maquette) et son NOTE.md. À mettre à jour à chacun de ses choix, avec ses mots.",
+  "ecrans": [
+    {
+      "ecran": "identite",
+      "route": "r4-a",
+      "statut": "choisi",
+      "choix": "r4-a",
+      "mots": "7 · r4 · Chaque nombre est un curseur Est le meilleur, mais limite peut être un peu trop, au je veux plus d'ébullition, SI je change de fermenteur... Quelques adaptations mais si non c'est bien !",
+      "capture": "work/missions/2026-10-31-ecran-identite/v1/r4-a/r4-et-r4a-repos.png",
+      "inventaire": "work/missions/2026-10-31-ecran-identite/v1/r4-a/inventaire-r4a.json"
+    },
+    {
+      "ecran": "fermentescibles",
+      "route": "s1",
+      "statut": "choisi",
+      "choix": "s1 (la recherche sous le champ, sur p6-b2)",
+      "mots": "C'est très bien avec algo de reconnaissance pour le style et autres comme pour les houblons",
+      "capture": "work/missions/2026-10-31-ecran-fermentescibles/v7/s1/p7-s1-ouverture-pendant.png",
+      "controles": [
+        "work/missions/2026-10-31-ecran-fermentescibles/controle-masse-ligne.mjs {dossier}/s1/etat.html",
+        "work/missions/2026-10-31-ecran-fermentescibles/controle-moment-ligne.mjs {dossier}/s1/etat.html",
+        "work/missions/2026-10-31-ecran-fermentescibles/controle-recherche.mjs {dossier}/s1/etat.html",
+        "work/refonte-frontend/v4/tournoi/outils/controle-volee.mjs {dossier}/s1/etat.html",
+        "work/refonte-frontend/v4/tournoi/outils/controle-gestes-ligne.mjs {dossier}/s1/etat.html"
+      ]
+    },
+    {
+      "ecran": "depense",
+      "route": "r2b",
+      "statut": "ouvert",
+      "options": [
+        "r2b",
+        "z2b",
+        "u4b"
+      ],
+      "provisoire": "r2b (le ticket, choisi par le pilote, D223, D227)",
+      "page": "https://claude.ai/artifact/PyodUeikFKc9SwD7M9k4wu",
+      "maquettes": "work/missions/2026-10-31-ecran-depense/v1"
+    },
+    {
+      "ecran": "levure",
+      "route": "l5b",
+      "statut": "choisi",
+      "choix": "l5b (effets en jauges, + entre les paliers ; conduite l4b)",
+      "mots": "s5a · effets de fermentation en tête / Candidate / l5b · effets en jauges, + entre les paliers / Top !",
+      "capture": "work/missions/2026-11-09-ecran-levure/p2/l5b/l5b-cadres.png",
+      "page": "https://claude.ai/artifact/XeAsjYdnSkosrRTTWR23Gz"
+    },
+    {
+      "ecran": "levure-comparer",
+      "route": "s5a",
+      "statut": "choisi",
+      "choix": "s5a (colonnes s1b, effets de fermentation en tête)",
+      "mots": "s5a · effets de fermentation en tête / Candidate / l5b · effets en jauges, + entre les paliers / Top !",
+      "capture": "work/missions/2026-11-09-ecran-levure/p2/s5a/s5a-cadres.png",
+      "page": "https://claude.ai/artifact/XeAsjYdnSkosrRTTWR23Gz"
+    },
+    {
+      "ecran": "levure-chercher",
+      "route": "c6b",
+      "statut": "choisi",
+      "page": "https://claude.ai/artifact/DW4PfrQci56fx2YJ9hCAHd",
+      "choix": "c6b (résumé d'une ligne, puces, feuille à index des 18 filtres)",
+      "mots": "Les deux suggestions sont bien, IMPLÉMENTE toutes ces vues maintenant",
+      "capture": "work/missions/2026-11-09-ecran-levure/p2/c6b/c6b-cadres.png"
+    },
+    {
+      "ecran": "levure-suggerer",
+      "route": "s7a",
+      "statut": "choisi",
+      "choix": "s7a (s6a rendu générique : chaque caractéristique en − / +, Arômes · Corps · Conduite)",
+      "mots": "Les deux suggestions sont bien, IMPLÉMENTE toutes ces vues maintenant",
+      "capture": "work/missions/2026-11-09-ecran-levure/p2/s7a/s7a-cadres.png",
+      "page": "https://claude.ai/artifact/DW4PfrQci56fx2YJ9hCAHd"
+    },
+    {
+      "ecran": "impot-biere",
+      "route": "p2b",
+      "statut": "choisi",
+      "choix": "p2b (la règle des degrés : trois bandes du barème, chaque bière posée dessus)",
+      "mots": "La règle des degrés / p2b · tiède / Ça top comme ça",
+      "capture": "work/missions/2026-11-09-compta-prix/v0/p2b/p2b-page.png",
+      "page": "https://claude.ai/artifact/TxmDK9GPdx61jP3UG7kTLS"
+    },
+    {
+      "ecran": "cout-brassin-litre",
+      "route": "c3a",
+      "statut": "choisi",
+      "choix": "c3a (le flux de c1c, trois notions nommées : déjà payé, à payer, coût de l année ; le litre découpé)",
+      "mots": "c1c, trois notions nommées / c3a / Oui choix définitif",
+      "capture": "work/missions/2026-11-09-compta-prix/p2/c3a/c3a-page.png",
+      "page": "https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su"
+    },
+    {
+      "ecran": "facture-vente",
+      "route": "v3a",
+      "statut": "choisi",
+      "choix": "v3a (la caisse complète : comptoir, Pro ou Privé, échéance, facture imprimée)",
+      "mots": "La caisse complète / v3a / Choix définitif",
+      "capture": "work/missions/2026-11-09-compta-prix/p2/v3a/v3a-page.png",
+      "page": "https://claude.ai/artifact/1ePJcgviBQ5SqzqJe7w2Su"
+    },
+    {
+      "ecran": "synthese",
+      "route": "g3a",
+      "statut": "choisi",
+      "choix": "g3a (g1b, entré contre dépensé à la même échelle, l à-payer hachuré)",
+      "mots": "Ta base / g3a et g3c / passe 2 / Non la meilleure on garde celle ci",
+      "capture": "work/missions/2026-11-09-compta-prix/p2/g3a/g3a-page.png",
+      "page": "https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe"
+    },
+    {
+      "ecran": "annuel-cloture",
+      "route": "g6",
+      "statut": "choisi",
+      "choix": "g6 (g4a, colonnes de l année, puis 9 écrans de clôture)",
+      "mots": "L année, et la clôture / g6",
+      "capture": "work/missions/2026-11-09-compta-prix/p3/g6/g6-page.png",
+      "page": "https://claude.ai/artifact/Du3g2PfGqwka9cLuEHcWPe"
+    },
+    {
+      "ecran": "rangement-prix-impot",
+      "route": "e3a",
+      "statut": "choisi",
+      "choix": "e3a (e1b amélioré : prix et impôt depuis la fiche du brassin)",
+      "mots": "3 et 4 candidat validé",
+      "capture": "work/missions/2026-11-09-compta-prix/p4/e3a/e3a-page.png",
+      "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm"
+    },
+    {
+      "ecran": "operations",
+      "route": "v6b",
+      "statut": "choisi",
+      "choix": "v6b (v5a, lignes serrées : qui, quoi, état, échéance, pièce)",
+      "mots": "3 et 4 candidat validé",
+      "capture": "work/missions/2026-11-09-compta-prix/p4/v6b/v6b-page.png",
+      "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm"
+    },
+    {
+      "ecran": "prix-marges",
+      "route": "c7c",
+      "statut": "choisi",
+      "choix": "c7c (c5b retouchée : deux échelles par bouteille et par an côte à côte)",
+      "mots": "Deux échelles côte à côte / c7c",
+      "capture": "work/missions/2026-11-09-compta-prix/p4/c7c/c7c-page.png",
+      "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm"
+    },
+    {
+      "ecran": "previsions",
+      "route": "p5b",
+      "statut": "choisi",
+      "choix": "p5b (les étiquettes accrochées à l escalier : brassin futur, frigo, point bas)",
+      "mots": "Les étiquettes accrochées / p5b / Là je vois tout sur le graphe.",
+      "capture": "work/missions/2026-11-09-compta-prix/p4/p5b/p5b-page.png",
+      "page": "https://claude.ai/artifact/TVUKKH2kF17shw3e44zmQm"
+    },
+    {
+      "ecran": "impot-biere-annee",
+      "route": "i1a",
+      "statut": "choisi",
+      "choix": "i1a (le total découpé par bande, chaque brassin sur sa bande, la feuille p2b en annexe)",
+      "mots": "Le total et la liste / i1a / Le total découpé par bande ; chaque brassin sur sa bande ; ta feuille p2b en annexe. Très bien",
+      "capture": "work/missions/2026-11-09-compta-prix/p5/i1a/i1a-page.png",
+      "page": "https://claude.ai/artifact/Hy1x2S4oV5YM5aQ2FhDHyE"
+    },
+    {
+      "ecran": "outil-analyse",
+      "route": "a2a",
+      "statut": "choisi",
+      "choix": "a2a (l’escalier a1a en couleur ; segment Caisse · Sources · Budget · Filtrer ; Sources = cascade de a1e ; Filtrer = tuiles de a1b)",
+      "mots": "Super ! Ajoute encore un petit peu de clarté dans le protage mais c'est du 19/20 pas besoin de mini maquettes en plus",
+      "capture": "work/missions/2026-11-09-compta-prix/p7/a2a/a2a-page.png",
+      "page": "https://claude.ai/artifact/1u4n7VUJskLyi4BCiYhCAY"
+    }
+  ]
+}

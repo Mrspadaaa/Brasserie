@@ -1,0 +1,807 @@
+import React, { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { ChevronLeft } from 'lucide-react';
+import { ThemeToggle } from '../theme/ThemeToggle';
+import { useCoarsePointer, useDensity, useKeyboardInset } from '../ui/useViewport';
+import './page-shell.css';
+
+/*
+ * p2-rendu (#179) : des attributs sur <body> à la place des règles `body:has(...)`.
+ *
+ * ⚠️ Une règle `body:has(.x)` oblige le navigateur à ré-évaluer, à CHAQUE changement du DOM, le sélecteur pour toute la
+ * page (mesuré : −20 à −50 % sur le changement de moment de Comparer et sur les grammes de Ma bière une fois retirées).
+ * Un observateur léger pose donc l'attribut une fois par lot de mutations, et les CSS (floating-actions, water/workshop,
+ * brewer-chat, brewer-navigation, yeast-choice) lisent `body[data-has-…]`. Le sens est le même qu'avant : « existe-t-il un
+ * tel élément dans la page ? ». L'attribut suit l'élément avec une micro-tâche de retard, avant la peinture.
+ */
+const BODY_FLAGS: ReadonlyArray<readonly [string, string]> = [
+  ['data-has-modal', '[role="dialog"][aria-modal="true"]'],
+  ['data-has-drawer-open', "[data-vaul-drawer][data-state='open']"],
+  ['data-has-fiche-page', '[data-fiche-page]'],
+  ['data-has-fab', '.floating-actions'],
+  ['data-has-fab-floating', '.floating-actions[data-floating-actions-docked="false"]'],
+  ['data-has-water-sels', '[data-water-step="sels"]'],
+  ['data-has-activity-pill', '.brewer-activity-pill'],
+];
+function syncBodyFlags() {
+  const body = document.body;
+  if (!body) return;
+  for (const [name, selector] of BODY_FLAGS) {
+    const present = body.querySelector(selector) !== null;
+    if (present !== body.hasAttribute(name)) {
+      if (present) body.setAttribute(name, ''); else body.removeAttribute(name);
+    }
+  }
+}
+let bodyFlagsObserver: MutationObserver | undefined;
+function watchBodyFlags() {
+  if (typeof document === 'undefined' || typeof MutationObserver === 'undefined' || bodyFlagsObserver || !document.body) return;
+  syncBodyFlags();
+  bodyFlagsObserver = new MutationObserver(syncBodyFlags);
+  bodyFlagsObserver.observe(document.body, {
+    childList: true, subtree: true, attributes: true,
+    attributeFilter: ['data-state', 'aria-modal', 'role', 'data-floating-actions-docked', 'data-water-step']
+  });
+}
+watchBodyFlags();
+
+/*
+ * Zones d'action réservées au lanceur global (`FloatingActions`).
+ *
+ * Sur les onglets, le lanceur se pose dans une case réservée à droite de la
+ * barre, hors de toute zone défilante ; clavier ouvert sur une page plein
+ * écran, dans une case de son en-tête.
+ *
+ * ⚠️ Page plein écran, clavier fermé : le lanceur FLOTTE en bas à droite,
+ * par-dessus le contenu (#114, choix du brasseur). La case du pied qu'il
+ * occupait coûtait une bande basse sur chaque page, même sans action de page.
+ * En contrepartie, la fin du contenu réserve sa hauteur
+ * (`data-floating-actions-gap="page"`, `floating-actions.css`) : le dernier
+ * champ défile au-dessus du bouton et reçoit son toucher. Un champ
+ * intermédiaire peut passer dessous au défilement (sélecteur « Nature du
+ * constat » à 390 px) ; il suffit de faire défiler pour le dégager.
+ *
+ * Le registre vit ici, sans dépendance lourde, pour que chaque page puisse
+ * réserver sa case sans importer le compagnon ni ses services.
+ */
+export type ActionDockKind = 'nav' | 'page-compact';
+export interface ActionDockEntry {
+  element: HTMLElement;
+  kind: ActionDockKind;
+  priority: number;
+  order: number;
+}
+export interface ActionDockSnapshot {
+  /** La case qu'occupe le lanceur : celle de la page au premier plan. */
+  dock: ActionDockEntry | null;
+  /** Un lanceur est monté : une page ne réserve sa case que pour lui. */
+  launcher: boolean;
+  /** Une page montre son pied d'actions : le lanceur qui flotte au-dessus s'y présente sans aplat paille. */
+  pageFooter: boolean;
+}
+const actionDocks = new Set<ActionDockEntry>();
+const actionDockListeners = new Set<() => void>();
+let actionDockOrder = 0;
+let actionDockPriority = 0;
+let actionLaunchers = 0;
+let pageFooters = 0;
+let actionDockSnapshot: ActionDockSnapshot = { dock: null, launcher: false, pageFooter: false };
+
+function publishActionDocks() {
+  let dock: ActionDockEntry | null = null;
+  for (const entry of actionDocks) {
+    if (!entry.element.isConnected) continue;
+    if (!dock || entry.priority > dock.priority || (entry.priority === dock.priority && entry.order > dock.order)) dock = entry;
+  }
+  const launcher = actionLaunchers > 0;
+  const pageFooter = pageFooters > 0;
+  if (dock !== actionDockSnapshot.dock || launcher !== actionDockSnapshot.launcher || pageFooter !== actionDockSnapshot.pageFooter) {
+    actionDockSnapshot = { dock, launcher, pageFooter };
+  }
+  actionDockListeners.forEach(listener => listener());
+}
+const subscribeActionDocks = (listener: () => void) => {
+  actionDockListeners.add(listener);
+  return () => { actionDockListeners.delete(listener); };
+};
+const actionDockState = () => actionDockSnapshot;
+const actionLauncherState = () => actionDockSnapshot.launcher;
+
+/** Une page ouverte plus tard possède la case du lanceur devant les pages et les onglets restés dessous. */
+export const nextActionDockPriority = () => ++actionDockPriority;
+
+/** Case actuellement attribuée au lanceur, ou `null` si aucune n'est montée. */
+export function useActionDock(): ActionDockSnapshot {
+  return useSyncExternalStore(subscribeActionDocks, actionDockState, actionDockState);
+}
+
+/** Déclare le lanceur monté : les pages réservent alors leur case d'action. */
+export function useActionLauncherRegistration() {
+  useLayoutEffect(() => {
+    actionLaunchers += 1;
+    publishActionDocks();
+    return () => { actionLaunchers -= 1; publishActionDocks(); };
+  }, []);
+}
+
+function useActionLauncherPresent(): boolean {
+  return useSyncExternalStore(subscribeActionDocks, actionLauncherState, () => false);
+}
+
+/**
+ * Case vide réservée par la mise en page ; le lanceur fixe se pose exactement
+ * dessus. Elle n'est ni focalisable ni cliquable : seul le lanceur l'est.
+ */
+export function ActionDock({ kind, priority = 0, className = '' }: {
+  kind: ActionDockKind;
+  priority?: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    const entry: ActionDockEntry = { element, kind, priority, order: ++actionDockOrder };
+    actionDocks.add(entry);
+    publishActionDocks();
+    return () => { actionDocks.delete(entry); publishActionDocks(); };
+  }, [kind, priority]);
+  return <div ref={ref} aria-hidden="true" data-action-dock={kind} className={`pointer-events-none ${className}`} />;
+}
+
+const PAGE_OVERLAYS = [
+  'dialog[open]:not([role="presentation"]):not([role="none"])', '[role="dialog"]', '[role="alertdialog"]',
+  '[role="menu"]', '[role="listbox"]', '[data-page-overlay]',
+  '[data-vaul-overlay]', '[data-radix-popper-content-wrapper]',
+  '[role="alert"]', '[role="status"]', '[aria-live]:not([aria-live="off"])'
+].join(',');
+// A drawer's focus scope can still run during its closing transition. Defer to
+// the mounted, visible dialog until its trap cleans up, even with data-state=closed.
+// Desktop capture panels use an open dialog as a non-modal inline container.
+// Their presentation role does not own a focus trap or consume the page's Escape.
+const PAGE_DIALOGS = 'dialog[open]:not([role="presentation"]):not([role="none"]), [role="dialog"], [role="alertdialog"]';
+const pageScopes: HTMLElement[] = [];
+const pageInert = new Map<HTMLElement, string | null>();
+const pageOpenerSources = new WeakMap<HTMLElement, HTMLElement | null>();
+const pageOverlaySources = new WeakMap<HTMLElement, HTMLElement | null>();
+let isolationObserver: MutationObserver | undefined;
+
+function connectedPageOpener(opener: HTMLElement | null) {
+  let target = opener;
+  const seen = new Set<HTMLElement>();
+  // A real lazy page can capture the fallback's focused main during render.
+  // Follow that removed page's source rather than losing the return target.
+  while (target && !target.isConnected) {
+    let scope = target.closest<HTMLElement>(`[data-page-shell],${PAGE_OVERLAYS}`);
+    while (scope && !pageOpenerSources.has(scope) && !pageOverlaySources.has(scope)) {
+      scope = scope.parentElement?.closest<HTMLElement>(`[data-page-shell],${PAGE_OVERLAYS}`) ?? null;
+    }
+    if (!scope || seen.has(scope)) return null;
+    seen.add(scope);
+    target = pageOpenerSources.get(scope) ?? pageOverlaySources.get(scope) ?? null;
+  }
+  return target;
+}
+
+/** One synchronous visibility pass. Never retain styles across a DOM/CSS change. */
+function pageVisibilityCheck() {
+  const visibleAncestors = new Map<HTMLElement, boolean>();
+  const ancestorsShown = (node: HTMLElement): boolean => {
+    const cached = visibleAncestors.get(node);
+    if (cached !== undefined) return cached;
+    const style = getComputedStyle(node);
+    const shown = style.display !== 'none' && style.visibility !== 'hidden' &&
+      (!node.parentElement || ancestorsShown(node.parentElement));
+    visibleAncestors.set(node, shown);
+    return shown;
+  };
+  return (element: HTMLElement) => {
+    // Closed documentary sections often contain many status/live nodes. Reject
+    // them without forcing style/layout reads, preserving their summary's access.
+    for (let node: HTMLElement | null = element; node; node = node.parentElement) {
+      if (node.hidden || node.getAttribute('aria-hidden') === 'true') return false;
+      if (node instanceof HTMLDetailsElement && !node.open && !node.querySelector('summary')?.contains(element)) return false;
+    }
+    return ancestorsShown(element);
+  };
+}
+/** Layout visibility, independent of inert that this scope temporarily owns. */
+const pageElementShown = (element: HTMLElement) => pageVisibilityCheck()(element);
+
+const foregroundPage = () => pageScopes.at(-1);
+function pageOverlayShown(element: HTMLElement, shown: (element: HTMLElement) => boolean) {
+  for (let node: HTMLElement | null = element; node; node = node.parentElement) {
+    // Ignore only inert introduced here; a pre-existing inert surface stays disabled.
+    if (node.hasAttribute('inert') && !(pageInert.has(node) && pageInert.get(node) === null)) return false;
+  }
+  return shown(element);
+}
+const pageOverlays = () => {
+  const page = foregroundPage();
+  const shown = pageVisibilityCheck();
+  // Internal announcements/dialogs are already permitted by the page branch.
+  // Only external portals can add a branch or receive focus outside that page.
+  return [...document.querySelectorAll<HTMLElement>(PAGE_OVERLAYS)].filter(element =>
+    !page?.contains(element) && pageOverlayShown(element, shown));
+};
+const hasPageDialog = () => {
+  const shown = pageVisibilityCheck();
+  return [...document.querySelectorAll<HTMLElement>(PAGE_DIALOGS)].some(element => pageOverlayShown(element, shown));
+};
+
+/** Keep the active page, portals and announcements; isolate only their sibling branches. */
+function refreshPageIsolation() {
+  const page = foregroundPage();
+  const blocked = new Set<HTMLElement>();
+  if (page) {
+    const allowed = [page, ...pageOverlays()];
+    const visit = (element: HTMLElement) => {
+      if (allowed.includes(element)) return;
+      if (allowed.some(surface => element.contains(surface))) {
+        [...element.children].forEach(child => { if (child instanceof HTMLElement) visit(child); });
+      } else if (!element.matches('script, style, link, meta')) blocked.add(element);
+    };
+    [...document.body.children].forEach(child => { if (child instanceof HTMLElement) visit(child); });
+  }
+  for (const [element, previous] of pageInert) {
+    if (blocked.has(element)) continue;
+    if (previous === null) element.removeAttribute('inert');
+    else element.setAttribute('inert', previous);
+    pageInert.delete(element);
+  }
+  for (const element of blocked) {
+    if (pageInert.has(element)) continue;
+    pageInert.set(element, element.getAttribute('inert'));
+    element.setAttribute('inert', '');
+  }
+}
+
+function pageFocusTargets(page: HTMLElement) {
+  const surfaces = [page, ...pageOverlays()];
+  const shown = pageVisibilityCheck();
+  return [...document.querySelectorAll<HTMLElement>(
+    'button, a[href], input, select, textarea, summary, [tabindex], [contenteditable="true"], [contenteditable="plaintext-only"]'
+  )].filter(element => surfaces.some(surface => surface.contains(element)) &&
+    element.tabIndex >= 0 && !element.matches(':disabled, input[type="hidden"]') &&
+    !element.closest('[inert]') && shown(element));
+}
+
+/**
+ * Cadre commun des pages plein écran.
+ *
+ * ⚠️ Pourquoi une page et non une modale : le brassage vivait dans trois
+ * modales de 1244, 862 et 497 lignes. Une modale ne peut pas se partager, ne
+ * survit pas à un rechargement, et — le point qui compte le jour du brassage —
+ * **ne se ferme pas au geste retour du téléphone**. On l'ouvre avec les mains
+ * propres, on la referme avec les mains dans la cuve.
+ *
+ * Chaque ouverture pousse une entrée d'historique : le retour du navigateur et
+ * le geste de bord d'écran referment donc la page, sans dépendance de routage
+ * supplémentaire.
+ */
+
+interface PageShellProps {
+  /**
+   * Un nœud permet de mettre une partie du titre en retrait (le volume grisé de la page de la recette, maquette r1).
+   * Il porte alors `titleLabel`, son nom en texte : c'est lui qui nomme le titre et la zone de contenu.
+   */
+  title: React.ReactNode;
+  /** Nom accessible du titre quand `title` est un nœud ; une chaîne se nomme elle-même. */
+  titleLabel?: string;
+  /** Ligne secondaire : style, volume, date. */
+  subtitle?: string;
+  onClose: () => void;
+  /** Actions de l'en-tête, alignées à droite. */
+  actions?: React.ReactNode;
+  /**
+   * Filet d'avancement, collé SOUS le titre, dans l'en-tête.
+   *
+   * ⚠️ Le fil d'étapes de l'assistant occupait une rangée à lui seul dans le
+   * contenu — hauteur de la piste, plus une gouttière au-dessus et une en
+   * dessous. Sur un téléphone clavier ouvert, ces ~24 px valent une ligne de
+   * formulaire. Ici il ne coûte que son épaisseur.
+   */
+  progress?: React.ReactNode;
+  /** Barre collée en bas — validation, étape suivante. */
+  footer?: React.ReactNode;
+  /**
+   * Actions de fin de contenu (Retour, Suivant du wizard), non collées : la dernière rangée de la page.
+   *
+   * ⚠️ Le lanceur flottant (#114) se posait sur « Suivant » à chaque fois qu'on le croisait en défilant (T12b, #170).
+   * Ici la rangée lui laisse son coin : elle garde à droite la largeur du bouton (48 px + 16 px de bord), et la fin du
+   * contenu ne réserve plus sa hauteur. Au bas de la page, le bouton se pose au bout de la rangée, à sa hauteur ; en
+   * défilant, Retour et Suivant ne passent jamais dessous. Clavier ouvert, le lanceur va dans l'en-tête : la rangée
+   * reprend toute sa largeur.
+   */
+  endActions?: React.ReactNode;
+  /** Rangée de fin collée au bas de l'écran à toutes les largeurs (l'étape Levure : pied « Retour · Suivant » de ses maquettes, le + à sa droite). */
+  endActionsCollant?: boolean;
+  /**
+   * Sans effet depuis #114 : le lanceur ne réserve plus de case dans le pied,
+   * il flotte au-dessus de la page.
+   */
+  compactDock?: boolean;
+  /**
+   * En-tête personnalisé sur mobile : remplace complètement le gros titre / sous-titre
+   * pour ne garder que l'en-tête ultra-compact (ex: steps + import).
+   */
+  mobileHeader?: React.ReactNode;
+  /** Largeur de travail pour les pages avec une colonne de contrôle. */
+  wide?: boolean;
+  className?: string;
+  scrollKey?: string;
+  children: React.ReactNode;
+}
+
+export const PageShell: React.FC<PageShellProps> = ({
+  title,
+  titleLabel,
+  subtitle,
+  onClose,
+  actions,
+  progress,
+  footer,
+  endActions,
+  endActionsCollant,
+  mobileHeader,
+  wide = false,
+  className = '',
+  scrollKey,
+  children
+}) => {
+  /*
+   * ⚠️ En-tête et pied mangeaient ensemble près de 140 px. Clavier ouvert sur un
+   * téléphone, il ne restait plus la place d'un seul champ entre les deux. Ils
+   * se réduisent donc quand l'écran devient rare — le titre reste, le reste
+   * s'efface.
+   */
+  const density = useDensity();
+  const tight = density === 'tight';
+  const compact = density !== 'comfortable';
+  const coarse = useCoarsePointer();
+  const keyboardInset = useKeyboardInset();
+  const frame = wide ? 'max-w-6xl' : 'max-w-3xl';
+  const pageRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLElement>(null);
+  const footerRef = useRef<HTMLElement>(null);
+  const [opener] = useState(() => document.activeElement instanceof HTMLElement ? document.activeElement : null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+  /*
+   * Case du lanceur global, clavier ouvert seulement : il reste environ
+   * 300 px, et un bouton flottant se poserait sur le champ que le navigateur
+   * amène juste au-dessus du clavier. La case passe dans l'en-tête, où elle ne
+   * prend que de la largeur. Clavier fermé, le lanceur flotte (voir en tête).
+   */
+  const launcherPresent = useActionLauncherPresent();
+  // Au-dessus de 640 px la rangée de fin est collante (`sm:sticky`) : la marge qui dégage le bouton flottant ne vaut qu'au téléphone.
+  const [largeur, setLargeur] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.('(min-width: 640px)').matches);
+  useEffect(() => {
+    const mq = window.matchMedia?.('(min-width: 640px)');
+    if (!mq) return;
+    const maj = () => setLargeur(mq.matches);
+    mq.addEventListener?.('change', maj);
+    return () => mq.removeEventListener?.('change', maj);
+  }, []);
+  // BK3-3 : sous 481 px de haut (téléphone couché), la rangée suit le contenu au lieu de prendre 44 px de la hauteur.
+  const [assezHaut, setAssezHaut] = useState(() => typeof window === 'undefined' || !window.matchMedia || window.matchMedia('(min-height: 481px)').matches);
+  useEffect(() => {
+    const mq = window.matchMedia?.('(min-height: 481px)');
+    if (!mq) return;
+    const maj = () => setAssezHaut(mq.matches);
+    mq.addEventListener?.('change', maj);
+    return () => mq.removeEventListener?.('change', maj);
+  }, []);
+  const [dockPriority] = useState(nextActionDockPriority);
+  const headerRef = useRef<HTMLElement>(null);
+  /*
+   * ⚠️ Un hôte peut masquer l'en-tête du cadre pour poser le sien dans son
+   * contenu défilant. Une case posée là n'aurait aucune taille. L'en-tête ne
+   * reçoit donc la case que s'il est rendu ; sinon le lanceur garde son
+   * ancrage flottant, en bas de la fenêtre, sous le clavier.
+   */
+  const [headerRendered, setHeaderRendered] = useState(true);
+  const dockInHeader = launcherPresent && tight && headerRendered;
+
+  useLayoutEffect(() => {
+    const header = headerRef.current;
+    // p2-rendu (#179) : ce résultat ne sert que clavier ouvert (dockInHeader) ; hors de là, la chaîne d'ancêtres n'est plus
+    // relue par getComputedStyle (8 appels, dont le premier force le recalcul de style de toute la page, à chaque ouverture).
+    if (!launcherPresent || !tight || !header) return;
+    // Rendu au sens de la mise en page seulement : un `aria-hidden` posé par une
+    // modale sur la branche ne retire pas l'en-tête de l'écran.
+    const check = () => {
+      let rendered = true;
+      for (let node: HTMLElement | null = header; node && rendered; node = node.parentElement) {
+        rendered = getComputedStyle(node).display !== 'none';
+      }
+      setHeaderRendered(rendered);
+    };
+    check();
+    // Masqué puis rendu, ou l'inverse : la boîte observée passe de zéro à sa taille.
+    const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(check);
+    observer?.observe(header);
+    return () => observer?.disconnect();
+  }, [launcherPresent, tight, className]);
+
+  useLayoutEffect(() => {
+    const page = pageRef.current;
+    if (!page) return;
+    let lastFocus: HTMLElement | null = null;
+    const focusPage = () => {
+      const target = lastFocus?.isConnected && page.contains(lastFocus) && pageElementShown(lastFocus) &&
+        !lastFocus.matches(':disabled') ? lastFocus : scrollRef.current;
+      target?.focus({ preventScroll: true });
+    };
+    pageScopes.push(page);
+    pageOpenerSources.set(page, opener);
+    // CAL-LENT 2 : l'isolation (inert) et le premier focus relisent le style de toute la page (getComputedStyle, focus()) ; faits dans le commit,
+    // ils retardent la première image de la page ouverte (INP). On les fait juste après elle ; la page est déjà dans pageScopes, donc devant.
+    let annule = false; let image = 0; let tache = 0;
+    const apresPeinture = () => {
+      image = requestAnimationFrame(() => {
+        tache = window.setTimeout(() => {
+          if (annule || foregroundPage() !== page) return;
+          refreshPageIsolation();
+          if (!page.contains(document.activeElement) && !hasPageDialog()) focusPage();
+        }, 0);
+      });
+    };
+    if (!isolationObserver) {
+      // p2-rendu (#179) : une mutation interne à la page de devant ne change ni les couches à isoler ni le focus permis
+      // (portails et annonces sont HORS de la page ; ses dialogues internes sont déjà permis par sa branche). On ne refait
+      // donc pas la passe, qui relit getComputedStyle sur la chaîne d'ancêtres (~78 ms par toucher sur « + »).
+      isolationObserver = new MutationObserver((records) => {
+        const front = foregroundPage();
+        if (front && records.every(record => record.target !== front && front.contains(record.target))) return;
+        refreshPageIsolation();
+      });
+      isolationObserver.observe(document.body, {
+        childList: true, subtree: true, attributes: true,
+        attributeFilter: ['open', 'hidden', 'data-state', 'role', 'aria-live']
+      });
+    }
+    apresPeinture();
+    const onFocus = (event: FocusEvent) => {
+      if (foregroundPage() !== page) return;
+      const target = event.target as HTMLElement;
+      if (page.contains(target)) { lastFocus = target; return; }
+      // Portaled dialogs own their focus; live alerts may carry a retry action.
+      const overlay = pageOverlays().find(surface => surface.contains(target));
+      if (overlay) {
+        pageOverlaySources.set(overlay, lastFocus ?? scrollRef.current);
+        return;
+      }
+      if (hasPageDialog()) return;
+      focusPage();
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab' && event.key !== 'Escape') return;
+      if (event.defaultPrevented || foregroundPage() !== page || hasPageDialog()) return;
+      const target = event.target as HTMLElement;
+      if (event.key === 'Escape') {
+        if (!page.contains(target) && pageOverlays().some(overlay => overlay.contains(target))) return;
+        event.preventDefault(); closeRef.current(); return;
+      }
+      if (event.key !== 'Tab') return;
+      const targets = pageFocusTargets(page);
+      const first = targets[0], last = targets.at(-1);
+      if (!first || !last) { event.preventDefault(); scrollRef.current?.focus(); return; }
+      const active = document.activeElement;
+      if (!targets.includes(active as HTMLElement) || (event.shiftKey ? active === first : active === last)) {
+        event.preventDefault(); (event.shiftKey ? last : first).focus();
+      }
+    };
+    document.addEventListener('focusin', onFocus);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      annule = true; cancelAnimationFrame(image); window.clearTimeout(tache);
+      document.removeEventListener('focusin', onFocus);
+      document.removeEventListener('keydown', onKey);
+      pageScopes.splice(pageScopes.indexOf(page), 1);
+      if (!pageScopes.length) { isolationObserver?.disconnect(); isolationObserver = undefined; }
+      refreshPageIsolation();
+      const remaining = foregroundPage();
+      const target = connectedPageOpener(opener);
+      if (target?.isConnected && !target.closest('[inert]') && pageElementShown(target) &&
+        (!remaining || remaining.contains(target)) && !hasPageDialog()) target.focus({ preventScroll: true });
+    };
+  }, [opener]);
+
+  const firstScrollKey = useRef(true);
+  useLayoutEffect(() => {
+    // Au montage la page est déjà en haut et l'effet d'isolation vient de lui donner le focus : ne rien refaire (écrire
+    // scrollTop force une mise en page, focus() un recalcul de style). Seul un changement de scrollKey remonte et refocalise.
+    if (firstScrollKey.current) { firstScrollKey.current = false; return; }
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+    // A field can disappear when Enter changes steps. Keep rail/button focus when it survives.
+    if (foregroundPage() === pageRef.current && !pageRef.current?.contains(document.activeElement) && !hasPageDialog()) {
+      scrollRef.current?.focus({ preventScroll: true });
+    }
+  }, [scrollKey]);
+
+  const [isFieldFocused, setIsFieldFocused] = useState(false);
+
+  useEffect(() => {
+    if (!coarse) return;
+    const refreshFocus = () => {
+      const field = document.activeElement as HTMLElement | null;
+      const isTextField =
+        field?.matches(
+          'textarea, input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="range"])'
+        ) || field?.isContentEditable;
+      // Une saisie modale possède son propre pied ; conserver son bouton d'origine
+      // permet au navigateur de lui rendre le focus à la fermeture.
+      setIsFieldFocused(!!isTextField && !field?.closest('dialog[open], [role="dialog"]'));
+    };
+    let pending: ReturnType<typeof setTimeout> | undefined;
+    const onFocusIn = () => refreshFocus();
+    const onFocusOut = () => {
+      clearTimeout(pending);
+      pending = setTimeout(() => {
+        refreshFocus();
+      }, 60);
+    };
+
+    document.addEventListener('focusin', onFocusIn);
+    document.addEventListener('focusout', onFocusOut);
+    return () => {
+      clearTimeout(pending);
+      document.removeEventListener('focusin', onFocusIn);
+      document.removeEventListener('focusout', onFocusOut);
+    };
+  }, [coarse]);
+
+  const isTypingOnMobile = coarse && isFieldFocused;
+  const footerShown = !!footer && !isTypingOnMobile;
+
+  useLayoutEffect(() => {
+    if (!footerShown) return;
+    pageFooters += 1;
+    publishActionDocks();
+    return () => { pageFooters -= 1; publishActionDocks(); };
+  }, [footerShown]);
+
+  /*
+   * Hauteur du pied, publiée pour ce qui flotte au-dessus de la page —
+   * aujourd'hui le bouton d'action. Sans pied, on publie la zone sûre : le
+   * bouton doit dégager la barre de gestes du téléphone, pas s'y coller.
+   */
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    const property = '--page-footer-height';
+    const previousValue = root.style.getPropertyValue(property);
+    const previousPriority = root.style.getPropertyPriority(property);
+    const restore = () => {
+      if (previousValue) root.style.setProperty(property, previousValue, previousPriority);
+      else root.style.removeProperty(property);
+    };
+    const element = footerRef.current;
+    if (!element) {
+      root.style.setProperty(property, 'env(safe-area-inset-bottom, 0px)');
+      return restore;
+    }
+    const publishHeight = () => {
+      const height = `${element.getBoundingClientRect().height}px`;
+      if (root.style.getPropertyValue(property) !== height) root.style.setProperty(property, height);
+    };
+    publishHeight();
+    const observer = new ResizeObserver(publishHeight);
+    observer.observe(element, { box: 'border-box' });
+    return () => {
+      observer.disconnect();
+      restore();
+    };
+  }, [footerShown]);
+
+  // Au-dessus de 640 px (écran d'ordinateur, 800 px de haut), la rangée Retour / Suivant reste en bas de la page, hors de la zone qui défile (B1 n° 15 : sortie de
+  // l'écran dès qu'une étape dépassait la page). Au téléphone elle suit le contenu (T12b : 56 px confisqués sinon), sauf si l'hôte la veut fixe (`endActionsCollant`, Levure).
+  const barreHorsDefilement = !!endActions && (!!endActionsCollant || largeur) && assezHaut;
+  const rangeeFin = endActions ? (
+    <div data-page-end-actions className={`pb-safe ${launcherPresent && !dockInHeader ? 'pr-16' : ''}`}
+      style={launcherPresent && !dockInHeader && !largeur ? { marginBottom: '0.5rem', ...(endActionsCollant ? { paddingRight: '4.75rem' } : {}) } : undefined}>
+      {endActions}
+    </div>
+  ) : null;
+
+  return (
+    <div
+      ref={pageRef}
+      data-page-shell
+      {...(footerShown ? { 'data-page-footer': '' } : {})}
+      style={{
+        bottom: keyboardInset || undefined
+      }}
+      className={`page-shell fixed inset-0 z-[49] flex flex-col bg-cave-950 ${className}`}
+    >
+      <header
+        ref={headerRef}
+        className={`shrink-0 border-b border-cave-800 bg-cave-950/95 backdrop-blur-sm ${
+          // Clavier ouvert, la zone sûre du haut est déjà dégagée :
+          // la réserver une seconde fois coûte une rangée pour rien.
+          tight ? '' : 'pt-safe'
+        }`}
+      >
+        {/* Structure stable : la case du lanceur s'ajoute à droite sans remonter
+            l'en-tête, dont un champ peut avoir le focus pendant la saisie. */}
+        <div className="flex items-start">
+        <div className="min-w-0 flex-1">
+        {mobileHeader ? (
+          <>
+            <div className="sm:hidden">{mobileHeader}</div>
+            <div className="hidden sm:block">
+              <div
+                data-page-titlebar
+                className={`${frame} mx-auto flex items-center gap-1.5 ${
+                  tight ? 'px-1.5 py-0.5' : compact ? 'px-2 py-0.5' : 'px-2 py-0.5'
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Fermer"
+                  className="w-7 h-7 rounded-control flex items-center justify-center text-cave-200 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+
+                <div className="min-w-0 flex-1">
+                  <h1 aria-label={titleLabel} className="text-sm font-semibold text-cave-50 break-words leading-tight">
+                    {title}
+                  </h1>
+                  {subtitle && !tight && (
+                    <p className="text-xs text-cave-400 break-words leading-tight mt-0.5">
+                      {subtitle}
+                    </p>
+                  )}
+                </div>
+
+                <ThemeToggle />
+                {actions && <div className="page-title-actions shrink-0">{actions}</div>}
+              </div>
+
+              {progress && (
+                <div
+                  data-page-progress
+                  className={`${frame} mx-auto ${tight ? 'px-1.5 pb-1' : 'px-2.5 sm:px-3 pb-1.5'}`}
+                >
+                  {progress}
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            <div
+              data-page-titlebar
+              className={`${frame} mx-auto flex items-center gap-1.5 ${
+                tight ? 'px-1.5 py-0.5' : compact ? 'px-2 py-0.5' : 'px-2 py-0.5'
+              }`}
+            >
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Fermer"
+                className="w-7 h-7 rounded-control flex items-center justify-center text-cave-200 hover:text-cave-50 active:bg-cave-850 shrink-0 transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              <div className="min-w-0 flex-1">
+                <h1 aria-label={titleLabel} className="text-sm font-semibold text-cave-50 break-words leading-tight">
+                  {title}
+                </h1>
+                {/* Le sous-titre — style, volume, date — est concis et discret */}
+                {subtitle && !tight && (
+                  <p className="text-xs text-cave-400 break-words leading-tight mt-0.5">
+                    {subtitle}
+                  </p>
+                )}
+              </div>
+
+              <ThemeToggle />
+                {actions && <div className="page-title-actions shrink-0">{actions}</div>}
+            </div>
+
+            {progress && (
+              <div
+                data-page-progress
+                className={`${frame} mx-auto ${tight ? 'px-1.5 pb-1' : 'px-2.5 sm:px-3 pb-1.5'}`}
+              >
+                {progress}
+              </div>
+            )}
+          </>
+        )}
+        </div>
+        {dockInHeader && <ActionDock kind="page-compact" priority={dockPriority} className="shrink-0 h-8 w-10 my-0.5 mr-1.5" />}
+        </div>
+      </header>
+
+      {/* Le pied est hors de cette zone défilante. Le lanceur flotte au-dessus :
+          `data-floating-actions-gap="page"` lui réserve la fin du contenu. */}
+      <main ref={scrollRef} tabIndex={-1} aria-label={subtitle || titleLabel || (typeof title === 'string' ? title : undefined)}
+        // Le conteneur (tabIndex -1) ne prend le focus que par programme (changement d'étape, ouverture) : aucun anneau autour de tout le contenu (cadre de 2 px noir en
+        // clair, jaune en cave, vu sur la fiche et l'assistant). Les commandes gardent le leur.
+        className="flex-1 min-h-0 overflow-y-auto overscroll-contain outline-none focus:outline-none focus-visible:outline-none">
+        <div
+          // Avec une rangée de fin, c'est elle qui laisse le coin au lanceur : la fin du contenu ne réserve plus sa hauteur.
+          data-floating-actions-gap={endActions ? 'page-row' : 'page'}
+          className={`${frame} mx-auto pb-3 ${
+            tight
+              ? 'px-2.5 py-1.5 space-y-1.5'
+              : compact
+                ? 'px-2 py-2 space-y-2'
+                : 'px-2 py-2 space-y-2'
+          }`}
+        >
+          {children}
+          {/* `marginBottom` 0,5 rem (en ligne : `mb-2` n'est pas généré par la feuille Tailwind du projet) : avec une rangée de fin, la réserve de 4,5 rem (48 px de bouton, 16 de décalage, 8 d'air ; floating-actions.css) n'est plus posée par la fin du
+              contenu. Rangée (44 px) + marge de la page (12) + espace entre blocs (8) ne faisaient que 64 px : le dernier bloc touchait le bouton (critique B1 n° 7, en bas de page). */}
+          {!barreHorsDefilement && rangeeFin}
+        </div>
+      </main>
+
+      {barreHorsDefilement && (
+        // BK3-3 : la rangée Retour / Suivant est HORS de la zone qui défile. C'est la réserve de place : la zone finit là où la rangée commence, la rangée ne passe sur
+        // aucun bloc. Téléphone couché (< 481 px de haut) et téléphone debout (hors étape Levure) : elle suit le contenu, comme avant.
+        <div data-page-end-dock className="shrink-0 bg-cave-950">
+          <div className={`${frame} mx-auto px-2 pt-1`}>{rangeeFin}</div>
+        </div>
+      )}
+
+      {footerShown && (
+        <footer
+          ref={footerRef}
+          className={`shrink-0 border-t border-cave-800 bg-cave-950/95 backdrop-blur-sm ${
+            // Clavier ouvert, le clavier couvre déjà la zone sûre du bas.
+            tight ? '' : 'pb-safe'
+          }`}
+        >
+          {/* Imbrication conservée : des pages règlent `footer > div`. */}
+          <div className="flex items-end">
+            <div className="min-w-0 flex-1">
+              <div
+                className={`${frame} mx-auto ${
+                  tight ? 'px-2.5 py-0.5' : compact ? 'px-2 py-0.5' : 'px-2 py-0.5'
+                }`}
+              >
+                {footer}
+              </div>
+            </div>
+          </div>
+        </footer>
+      )}
+    </div>
+  );
+};
+
+/** Bloc de contenu titré, unité de composition de toutes les pages. */
+export const Section: React.FC<{
+  title: string;
+  /** Ce que la section apporte, quand ce n'est pas évident. */
+  hint?: string;
+  actions?: React.ReactNode;
+  children: React.ReactNode;
+}> = ({ title, hint, actions, children }) => {
+  const density = useDensity();
+  const tight = density === 'tight';
+  const compact = density !== 'comfortable';
+
+  return (
+    <section
+      className={`panel ${tight ? 'p-2 space-y-1.5' : compact ? 'p-2 space-y-2' : 'p-2 space-y-2'}`}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h2 className="text-sm sm:text-base font-semibold text-cave-50 leading-tight">{title}</h2>
+          {/* L'explication d'une section se lit une fois. */}
+          {hint && !tight && (
+            <p className="text-sm text-cave-400 leading-snug mt-0.5">{hint}</p>
+          )}
+        </div>
+        {actions && <div className="shrink-0 flex items-center gap-1">{actions}</div>}
+      </div>
+      {children}
+    </section>
+  );
+};

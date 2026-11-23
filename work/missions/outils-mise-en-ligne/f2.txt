@@ -1,0 +1,6 @@
+cap=f2-1
+d
+js=() => [...document.querySelectorAll('button,[role=button]')].filter(e=>e.getBoundingClientRect().width>0).map(e=>(e.getAttribute('aria-label')||e.innerText).replace(/\s+/g,' ').slice(0,50)).slice(12,60)
+nav=Stocks
+t=Recompter
+z=1000

@@ -1,0 +1,59 @@
+DEPART {"lab":"Fenêtre : S44 – S49","glisse":null,"tir":null,"cadre":[68,322,99,167],"courbe":[12,378,81,169],"deb":[34,78,99,167],"fin":[312,356,99,167],"per":"Nov. · période, liste, tri et filtre | Nov.","entTop":53,"ban":null,"scrollY":0}
+
+## g1-glisser-droite : doigt 56→116
+avant : Fenêtre : S44 – S49 | cadre 68,322,99,167 | Nov. · période, liste, tri et filtre | Nov.
+trace : 60:[68,322](g-) 64:[68,322]«S44 – S49» 67:[68,322]«S44 – S49» 71:[68,322]«S44 – S49» 75:[68,322]«S44 – S49» 79:[68,322]«S45 – S50» 82:[68,322]«S45 – S50» 86:[68,322]«S45 – S50» 90:[68,322]«S45 – S50» 94:[68,322]«S45 – S50» 97:[68,322]«S45 – S50» 101:[68,322]«S45 – S50» 105:[68,322]«S45 – S50» 109:[68,322]«S45 – S50» 112:[68,322]«S45 – S50» 116:[68,322]«S45 – S50»
+lâché +80 ms : Fenêtre : S45 – S50 | cadre 68,322,99,167
+après : Fenêtre : S45 – S50 | cadre 68,322,99,167 | prises deb 34,78,99,167 fin 312,356,99,167 | 6 sem. · période, liste, tri et filtre | 6 sem. | entTop 53 | bandeau null
+
+## g2-glisser-gauche : doigt 56→-4
+avant : Fenêtre : S45 – S50 | cadre 68,322,99,167 | 6 sem. · période, liste, tri et filtre | 6 sem.
+trace : 52:[68,322](g-) 49:[68,322]«S45 – S50» 45:[68,322]«S45 – S50» 41:[68,322]«S44 – S49» 37:[68,322]«S44 – S49» 34:[68,322]«S44 – S49» 30:[68,322]«S44 – S49» 26:[68,322]«S44 – S49» 22:[68,322]«S43 – S48» 19:[68,322]«S43 – S48» 15:[68,322]«S43 – S48» 11:[68,322]«S42 – S47» 7:[68,322]«S42 – S47» 4:[68,322]«S41 – S46» 0:[68,322]«S41 – S46» -4:[68,322]«S40 – S45»
+lâché +80 ms : Fenêtre : S39 – S44 | cadre 68,322,99,167
+après : Fenêtre : S39 – S44 | cadre 68,322,99,167 | prises deb 34,78,99,167 fin 312,356,99,167 | 6 sem. · période, liste, tri et filtre | 6 sem. | entTop 53 | bandeau null
+
+## g3-fin-etirer : doigt 334→370
+avant : Fenêtre : S39 – S44 | cadre 68,322,99,167 | 6 sem. · période, liste, tri et filtre | 6 sem.
+trace : 336:[68,322](g-) 339:[68,322](g-) 341:[68,322]«S39 – S44» 343:[68,321.2]«S39 – S44» 345:[68,320.3]«S39 – S44» 348:[68,319.3]«S39 – S44» 350:[68,318]«S39 – S45» 352:[68,357.6]«S39 – S45» 354:[68,355.7]«S39 – S45» 357:[68,353.5]«S39 – S45» 359:[68,350.9]«S39 – S45» 361:[68,348.1]«S39 – S45» 363:[68,344.1]«S39 – S45» 366:[68,341.5]«S39 – S45» 368:[68,375]«S39 – S46» 370:[68,371.5]«S39 – S46»
+lâché +80 ms : Fenêtre : S39 – S46 | cadre 68,322,99,167
+après : Fenêtre : S39 – S46 | cadre 68,322,99,167 | prises deb 34,78,99,167 fin 312,356,99,167 | 8 sem. · période, liste, tri et filtre | 8 sem. | entTop 53 | bandeau null
+
+## g4-fin-raccourcir : doigt 334→284
+avant : Fenêtre : S39 – S46 | cadre 68,322,99,167 | 8 sem. · période, liste, tri et filtre | 8 sem.
+trace : 331:[68,322](g-) 328:[68,322]«S39 – S46» 325:[68,322]«S39 – S46» 322:[68,322]«S39 – S46» 318:[68,290.3]«S39 – S45» 315:[68,290.3]«S39 – S45» 312:[68,290.3]«S39 – S45» 309:[68,290.3]«S39 – S45» 306:[68,290.3]«S39 – S45» 303:[68,290.3]«S39 – S45» 300:[68,290.3]«S39 – S45» 297:[68,290.3]«S39 – S45» 293:[68,290.3]«S39 – S45» 290:[68,290.3]«S39 – S45» 287:[68,290.3]«S39 – S45» 284:[68,258.5]«S39 – S44»
+lâché +80 ms : Fenêtre : S39 – S44 | cadre 68,322,99,167
+après : Fenêtre : S39 – S44 | cadre 68,322,99,167 | prises deb 34,78,99,167 fin 312,356,99,167 | 6 sem. · période, liste, tri et filtre | 6 sem. | entTop 53 | bandeau null
+
+## g5-debut-vers-gauche : doigt 56→16
+avant : Fenêtre : S39 – S44 | cadre 68,322,99,167 | 6 sem. · période, liste, tri et filtre | 6 sem.
+trace : 54:[68,322](g-) 51:[68,322](g-) 49:[68,322]«S39 – S44» 46:[68,322]«S39 – S44» 44:[68,322]«S39 – S44» 41:[68,322]«S38 – S43» 39:[68,322]«S38 – S43» 36:[68,322]«S38 – S43» 34:[68,322]«S38 – S43» 31:[68,322]«S38 – S43» 29:[68,322]«S37 – S42» 26:[68,322]«S37 – S42» 24:[68,322]«S37 – S42» 21:[68,322]«S37 – S42» 19:[68,322]«S36 – S41» 16:[68,322]«S36 – S41»
+lâché +80 ms : Fenêtre : S35 – S40 | cadre 68,322,99,167
+après : Fenêtre : S35 – S40 | cadre 68,322,99,167 | prises deb 34,78,99,167 fin 312,356,99,167 | 6 sem. · période, liste, tri et filtre | 6 sem. | entTop 53 | bandeau null
+
+## g6-bord-gauche-dedans : doigt 70→110
+avant : Fenêtre : S35 – S40 | cadre 68,322,99,167 | 6 sem. · période, liste, tri et filtre | 6 sem.
+trace : 73:[68,322](g-) 75:[68,322](g-) 78:[68,322]«S35 – S40» 80:[68,322]«S35 – S40» 83:[68,322]«S35 – S40» 85:[68,322]«S35 – S40» 88:[68,322]«S35 – S40» 90:[68,322]«S35 – S40» 93:[68,322]«S36 – S41» 95:[68,322]«S36 – S41» 98:[68,322]«S36 – S41» 100:[68,322]«S36 – S41» 103:[68,322]«S36 – S41» 105:[68,322]«S36 – S41» 108:[68,322]«S36 – S41» 110:[68,322]«S36 – S41»
+lâché +80 ms : Fenêtre : S36 – S41 | cadre 68,322,99,167
+après : Fenêtre : S36 – S41 | cadre 68,322,99,167 | prises deb 34,78,99,167 fin 312,356,99,167 | 6 sem. · période, liste, tri et filtre | 6 sem. | entTop 53 | bandeau null
+
+## g7-bord-droit-dedans : doigt 320→280
+avant : Fenêtre : S36 – S41 | cadre 68,322,99,167 | 6 sem. · période, liste, tri et filtre | 6 sem.
+trace : 318:[68,322](g-) 315:[68,322](g-) 313:[68,322]«S36 – S41» 310:[68,322]«S36 – S41» 308:[68,322]«S36 – S41» 305:[68,322]«S36 – S41» 303:[68,322]«S36 – S41» 300:[68,322]«S36 – S41» 298:[68,322]«S36 – S40» 295:[68,279.7]«S36 – S40» 293:[68,279.7]«S36 – S40» 290:[68,279.7]«S36 – S40» 288:[68,279.7]«S36 – S40» 285:[68,279.7]«S36 – S40» 283:[68,279.7]«S36 – S40» 280:[68,279.7]«S36 – S40»
+lâché +80 ms : Fenêtre : S36 – S40 | cadre 68,322,99,167
+après : Fenêtre : S36 – S40 | cadre 68,322,99,167 | prises deb 34,78,99,167 fin 312,356,99,167 | 5 sem. · période, liste, tri et filtre | 5 sem. | entTop 53 | bandeau null
+
+## g8-reculer-au-bord : doigt 56→6 puis tenu 1500 ms
+avant : Fenêtre : S36 – S40 | cadre 68,322,99,167 | 5 sem. · période, liste, tri et filtre | 5 sem.
+trace : 53:[68,322](g-) 50:[68,322]«S36 – S40» 47:[68,322]«S36 – S40» 44:[68,322]«S36 – S40» 40:[68,322]«S36 – S40» 37:[68,322]«S35 – S39» 34:[68,322]«S35 – S39» 31:[68,322]«S35 – S39» 28:[68,322]«S35 – S39» 25:[68,322]«S35 – S39» 22:[68,322]«S35 – S39» 19:[68,322]«S34 – S38» 15:[68,322]«S34 – S38» 12:[68,322]«S34 – S38» 9:[68,322]«S34 – S38» 6:[68,322]«S33 – S37» 6+0:[68,322]«S31 – S35»(g-) 6+250:[68,322]«S28 – S32»(g-) 6+500:[68,322]«S26 – S30»(g-) 6+750:[68,322]«S24 – S28»(g-) 6+1000:[68,322]«S21 – S25»(g-) 6+1250:[68,322]«S19 – S23»(g-)
+lâché +80 ms : Fenêtre : S18 – S22 | cadre 68,322,99,167
+après : Fenêtre : S18 – S22 | cadre 68,322,99,167 | prises deb 34,78,99,167 fin 312,356,99,167 | 5 sem. · période, liste, tri et filtre | 5 sem. | entTop 53 | bandeau null
+
+## g9-avancer-fin-au-bord : doigt 334→386 puis tenu 1500 ms
+avant : Fenêtre : S18 – S22 | cadre 68,322,99,167 | 5 sem. · période, liste, tri et filtre | 5 sem.
+trace : 337:[68,322](g-) 341:[68,322]«S18 – S22» 344:[68,321]«S18 – S22» 347:[68,320]«S18 – S22» 350:[68,319.2]«S18 – S22» 354:[68,319.2]«S18 – S23» 357:[68,366]«S18 – S23» 360:[68,363.3]«S18 – S23» 363:[68,360.2]«S18 – S23» 367:[68,356.6]«S18 – S23» 370:[68,353.4]«S18 – S23» 373:[68,349.8]«S18 – S23» 376:[68,344.4]«S18 – S23» 380:[68,385.4]«S18 – S24» 383:[68,380.1]«S18 – S24» 386:[68,373.2]«S18 – S24» 386+0:[68,388.6]«S18 – S26»(g-) 386+250:[68,386.3]«S18 – S28»(g-) 386+500:[68,373.6]«S18 – S30»(g-) 386+750:[68,375.3]«S18 – S33»(g-) 386+1000:[68,380]«S18 – S37»(g-) 386+1250:[68,373.9]«S18 – S41»(g-)
+lâché +80 ms : Fenêtre : S18 – S43 | cadre 68,322,99,167
+après : Fenêtre : S18 – S43 | cadre 68,322,99,167 | prises deb 34,78,99,167 fin 312,356,99,167 | 6 mois · période, liste, tri et filtre | 6 mois | entTop 53 | bandeau null
+
+FIN {"lab":"Fenêtre : S18 – S43","glisse":null,"tir":null,"cadre":[68,322,99,167],"courbe":[12,378,81,169],"deb":[34,78,99,167],"fin":[312,356,99,167],"per":"6 mois · période, liste, tri et filtre | 6 mois","entTop":53,"ban":null,"scrollY":0}
+RECHARGE {"lab":"Fenêtre : S18 – S43","glisse":null,"tir":null,"cadre":[68,322,99,167],"courbe":[12,378,81,169],"deb":[34,78,99,167],"fin":[312,356,99,167],"per":"6 mois · période, liste, tri et filtre | 6 mois","entTop":53,"ban":null,"scrollY":0}
+erreurs page : aucune

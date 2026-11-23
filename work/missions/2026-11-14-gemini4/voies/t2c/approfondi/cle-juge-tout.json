@@ -1,0 +1,74 @@
+{
+ "S0070f4": {
+  "cas": "fermentation",
+  "cellule": "analysis=4-hydrogen@medium"
+ },
+ "S0becf0": {
+  "cas": "fermentation",
+  "cellule": "prod"
+ },
+ "S1f48b1": {
+  "cas": "fermentation",
+  "cellule": "analysis=4-hydrogen@high"
+ },
+ "S2ab2f3": {
+  "cas": "edit-recipe",
+  "cellule": "analysis=4-hydrogen@medium"
+ },
+ "S2db5d2": {
+  "cas": "color",
+  "cellule": "prod"
+ },
+ "S332383": {
+  "cas": "grassy",
+  "cellule": "analysis=4-hydrogen@high"
+ },
+ "S40d805": {
+  "cas": "edit-recipe",
+  "cellule": "analysis=4-hydrogen@high"
+ },
+ "S8d831c": {
+  "cas": "power",
+  "cellule": "analysis=4-hydrogen@high"
+ },
+ "S9b78dc": {
+  "cas": "color",
+  "cellule": "analysis=4-hydrogen@medium"
+ },
+ "Sb2f43a": {
+  "cas": "color",
+  "cellule": "analysis=4-hydrogen@high"
+ },
+ "Sbc71cd": {
+  "cas": "power",
+  "cellule": "analysis=4-hydrogen@medium"
+ },
+ "Sc81c97": {
+  "cas": "low-ph",
+  "cellule": "analysis=4-hydrogen@medium"
+ },
+ "Sc90bc5": {
+  "cas": "edit-recipe",
+  "cellule": "prod"
+ },
+ "Scc7356": {
+  "cas": "low-ph",
+  "cellule": "analysis=4-hydrogen@high"
+ },
+ "Scd7fde": {
+  "cas": "power",
+  "cellule": "prod"
+ },
+ "Sd326ce": {
+  "cas": "grassy",
+  "cellule": "prod"
+ },
+ "Sf43b6f": {
+  "cas": "grassy",
+  "cellule": "analysis=4-hydrogen@medium"
+ },
+ "Sfdd985": {
+  "cas": "low-ph",
+  "cellule": "prod"
+ }
+}

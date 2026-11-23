@@ -1,0 +1,165 @@
+{
+  "_avertissement": "STOCK SIMULÉ (noms d’après StockPreview.tsx), pas le stock réel du brasseur",
+  "articles": [
+    {
+      "id": "Maris Otter",
+      "ref": "MP-Maris Otter",
+      "name": "Maris Otter",
+      "unit": "kg",
+      "category": "Malt",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "Pilsner Malz",
+      "ref": "MP-Pilsner Malz",
+      "name": "Pilsner Malz",
+      "unit": "kg",
+      "category": "Malt",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "Caramünch Typ 2",
+      "ref": "MP-Caramünch Typ 2",
+      "name": "Caramünch Typ 2",
+      "unit": "kg",
+      "category": "Malt",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "Röstgerste",
+      "ref": "MP-Röstgerste",
+      "name": "Röstgerste",
+      "unit": "kg",
+      "category": "Malt",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "Weizenmalz hell",
+      "ref": "MP-Weizenmalz hell",
+      "name": "Weizenmalz hell",
+      "unit": "kg",
+      "category": "Malt",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "Haferflocken",
+      "ref": "MP-Haferflocken",
+      "name": "Haferflocken",
+      "unit": "kg",
+      "category": "Malt",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "Gerstenflocken",
+      "ref": "MP-Gerstenflocken",
+      "name": "Gerstenflocken",
+      "unit": "kg",
+      "category": "Malt",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "Target",
+      "ref": "MP-Target",
+      "name": "Target",
+      "unit": "g",
+      "category": "Houblon",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "Galaxy",
+      "ref": "MP-Galaxy",
+      "name": "Galaxy",
+      "unit": "g",
+      "category": "Houblon",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "Nelson Sauvin 9.6%",
+      "ref": "MP-Nelson Sauvin 9.6%",
+      "name": "Nelson Sauvin 9.6%",
+      "unit": "g",
+      "category": "Houblon",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "Motueka 8.1%",
+      "ref": "MP-Motueka 8.1%",
+      "name": "Motueka 8.1%",
+      "unit": "g",
+      "category": "Houblon",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "Sabro 13.4%",
+      "ref": "MP-Sabro 13.4%",
+      "name": "Sabro 13.4%",
+      "unit": "g",
+      "category": "Houblon",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "SafAle US-05",
+      "ref": "MP-SafAle US-05",
+      "name": "SafAle US-05",
+      "unit": "sachet",
+      "category": "Levure",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "LALLEMAND Windsor",
+      "ref": "MP-LALLEMAND Windsor",
+      "name": "LALLEMAND Windsor",
+      "unit": "sachet",
+      "category": "Levure",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "Verdant IPA",
+      "ref": "MP-Verdant IPA",
+      "name": "Verdant IPA",
+      "unit": "sachet",
+      "category": "Levure",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    },
+    {
+      "id": "Safale BE-256",
+      "ref": "MP-Safale BE-256",
+      "name": "Safale BE-256",
+      "unit": "sachet",
+      "category": "Levure",
+      "currentStock": 1,
+      "minStock": 0,
+      "reorder": false
+    }
+  ]
+}

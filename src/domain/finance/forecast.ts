@@ -1,0 +1,272 @@
+import type { Batch, StockItem } from '../../types';
+import type { FinanceTransaction, FinancialAsset, FinancialPayment, FinancialPlan, FinancialProfile } from './types';
+import { estimerBrassinsPlanifies, planBrewBatchId, type ReglagesBrewForecast, budgetsDeRecette, type BudgetRepris } from './brewForecast';
+import type { CashCause } from './ledger';
+import { formatCHF, isoDate, isActiveTransaction, paymentState, planInvoiceAllocation, summarizeLedger, todayISO, transactionAmount, transactionDirection, transactionKind } from './ledger';
+import { isUpgradePlan, upgradeReadiness } from './upgrades';
+import { retirerSoldees } from './soldeImpot';
+
+export interface ForecastItem { id: string; date: string; label: string; amountCents: number; direction: 'in' | 'out'; source: 'invoice' | 'plan' | 'recurring' | 'brew' | 'trend' | 'equipment'; category: string; planId?: string; occurrenceId?: string;
+  /** Sortie dérivée d'un brassin (d2) : identifiant du brassin, pour ouvrir sa ligne. */
+  batchId?: string;
+  /** Ce qui manque pour que le montant soit entier ; le montant affiché est le connu. */
+  partial?: string[];
+  /** D'où vient chaque montant (prix de facture, réglage, densité…). */
+  lines?: Array<{ label: string; amountCents: number; origin: string }>;
+  /** D405 : sortie d'un brassin sans budget à lui, chiffrée par la dernière estimation de sa recette (`budgetsDeRecette`) : un montant estimé. */
+  repriseRecette?: BudgetRepris }
+export interface ForecastMonth { month: string; incomeCents: number; expenseCents: number; committedCents: number; projectedCents: number; balanceCents: number | null; items: ForecastItem[] }
+/** Pièce à payer ou à encaisser dont l'échéance manque : jamais placée dans un mois, comptée à part (aucune date inventée). */
+export interface UndatedForecastItem { id: string; label: string; amountCents: number; direction: 'in' | 'out'; category: string; pieceDate: string | null; planId?: string; occurrenceId?: string; unconfirmed?: boolean }
+/** Où ouvrir ce qui manque (CP-18) : la pièce, le plan, la fiche ou le coût du brassin, la feuille du solde, le journal des paiements à confirmer. */
+export type CibleLimite =
+  | { kind: 'piece'; txId: string }
+  | { kind: 'plan'; planId: string }
+  | { kind: 'brassin'; batchId: string; rubrique: 'date' | 'cout' | 'argent' }
+  | { kind: 'journal-a-confirmer' }
+  | { kind: 'solde' }
+  | { kind: 'historique' };
+/** Un avertissement structuré, ajouté À CÔTÉ de sa chaîne (`texte` est exactement l'entrée de `warnings`) : de quoi faire une ligne-tâche « … › ». */
+export interface AvertissementCible {
+  texte: string; cible: CibleLimite;
+  /** Le sujet : le nom du brassin, de la pièce, du plan. */
+  titre: string;
+  /** Ce qui manque, en tête de ligne quand le brassin groupe plusieurs limites (« Date de brassage »). */
+  sujet?: string;
+  /** Ce qui manque et ce que ça empêche, en une petite ligne. */
+  detail: string;
+  batchId?: string;
+  /** Brassin : tout ce qui manque (ingrédients sans prix, frais, impôt). */
+  manque?: string[];
+}
+export interface FinanceForecast {
+  months: ForecastMonth[]; items: ForecastItem[]; warnings: string[]; avertissements: AvertissementCible[]; cashComplete: boolean; trendMonths: string[]; openingCashCents: number | null;
+  /** Pourquoi la caisse n'est pas complète (`null` quand elle l'est) : solde absent, à confirmer, pièces payées sans paiement… (CHD-1 : le message du Calendrier dit la vraie cause). */
+  cashCause?: CashCause | null;
+  undated: UndatedForecastItem[]; undatedInCents: number; undatedOutCents: number;
+}
+/** Le point le plus bas à venir (K4) : le solde de fin de journée le plus bas, d'aujourd'hui à `fin` inclus, sur les mêmes sorties que Finances. */
+export interface PointBas {
+  date: string; soldeCents: number;
+  /** Une sortie estimée (brassin, tendance) est passée avant ce point : le chiffre est une estimation. */
+  estime: boolean;
+  /** Une part de brassin sans montant (« à compléter ») tombe avant ce point : le vrai point bas est au plus ce chiffre. */
+  partiel: boolean;
+}
+/**
+ * K4 (21.11) : une seule caisse. Le Bord lit ce point sur `buildForecast`, comme Finances › Prévisions (même départ : la caisse connue et
+ * complète, sinon `null` : l'inconnu n'est jamais 0) et les mêmes sorties (montant > 0, jour ≤ `fin`). Jour par jour : plusieurs mouvements
+ * d'un même jour font une seule marche.
+ */
+export function pointBasAVenir(forecast: Pick<FinanceForecast, 'items' | 'cashComplete' | 'openingCashCents'>, asOf: string, fin: string): PointBas | null {
+  if (!forecast.cashComplete || forecast.openingCashCents == null) return null;
+  const parJour = new Map<string, ForecastItem[]>();
+  for (const i of forecast.items) if (i.date <= fin && (i.amountCents > 0 || i.partial?.length)) parJour.set(i.date, [...(parJour.get(i.date) ?? []), i]);
+  let solde = forecast.openingCashCents, estime = false, partiel = false;
+  let bas: PointBas = { date: asOf, soldeCents: solde, estime, partiel };
+  for (const jour of [...parJour.keys()].sort()) {
+    for (const i of parJour.get(jour)!) {
+      solde += i.direction === 'in' ? i.amountCents : -i.amountCents;
+      if (i.source === 'brew' || i.source === 'trend') estime = true;
+      if (i.partial?.length && i.direction === 'out') partiel = true;
+    }
+    if (solde < bas.soldeCents) bas = { date: jour, soldeCents: solde, estime, partiel };
+  }
+  // une part sans montant, même après ce jour, peut creuser plus bas : le point reste « au plus »
+  return { ...bas, partiel };
+}
+/** Seules les catégories de dépenses récurrentes nourrissent la tendance : l'achat de malt, de houblon ou de levure est irrégulier. */
+export const TREND_CATEGORIES: readonly string[] = ['chargesFixes'];
+/** Les mêmes mots que `CATEGORY_LABELS` (FinanceForms), en phrase : « Achats de brassage non projetés », jamais la clé brute (`chargesFixes`, `renovation`). */
+const CATEGORY_PHRASE: Record<string, string> = { brassage: 'de brassage', materiel: 'de matériel', nettoyage: 'de nettoyage', chargesFixes: 'de charges fixes', renovation: 'de local et travaux', divers: 'divers' };
+const monthKey = (date: string) => date.slice(0, 7);
+function shiftMonth(month: string, offset: number): string {
+  const date = new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5, 7)) - 1 + offset, 1));
+  return date.toISOString().slice(0, 7);
+}
+function anchoredDate(start: string, offset: number): string {
+  const month = shiftMonth(monthKey(start), offset);
+  const lastDay = new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 0)).getUTCDate();
+  return `${month}-${String(Math.min(Number(start.slice(8)), lastDay)).padStart(2, '0')}`;
+}
+/** End is exclusive. 365 means twelve calendar months, not 365 elapsed days. */
+export function forecastHorizonEnd(asOf: string, horizon: 30 | 90 | 365): string {
+  const start = isoDate(asOf);
+  if (!start) throw new Error('Date de départ de prévision invalide.');
+  if (horizon === 365) return anchoredDate(start, 12);
+  if (horizon !== 30 && horizon !== 90) throw new Error('Horizon de prévision invalide.');
+  const date = new Date(`${start}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + horizon);
+  return date.toISOString().slice(0, 10);
+}
+export function planOccurrences(plan: FinancialPlan, from: string, to: string): Array<{ id: string; date: string }> {
+  const start = isoDate(plan.date);
+  if (!start || plan.status !== 'active') return [];
+  if (!plan.recurrence) return start <= to ? [{ id: `${plan.id}:${start}`, date: start < from ? from : start }] : [];
+  const step = plan.recurrence.frequency === 'yearly' ? 12 : plan.recurrence.frequency === 'quarterly' ? 3 : 1;
+  const end = isoDate(plan.recurrence.endDate) ?? to;
+  const delta = (Number(from.slice(0, 4)) - Number(start.slice(0, 4))) * 12 + Number(from.slice(5, 7)) - Number(start.slice(5, 7));
+  const first = Math.max(0, Math.floor(delta / step) * step);
+  const result: Array<{ id: string; date: string }> = [];
+  for (let offset = first; offset <= first + 240; offset += step) {
+    const date = anchoredDate(start, offset);
+    if (date > to || date > end) break;
+    if (date >= from) result.push({ id: `${plan.id}:${date}`, date });
+  }
+  return result;
+}
+const median = (values: number[]) => { const sorted = [...values].sort((a, b) => a - b), i = Math.floor(sorted.length / 2); return sorted.length % 2 ? sorted[i] : Math.round((sorted[i - 1] + sorted[i]) / 2); };
+export function isResidualExpense(tx: FinanceTransaction): boolean {
+  return isActiveTransaction(tx) && transactionKind(tx) === 'expense' && !tx.finance?.planId && !tx.finance?.batchId && !tx.finance?.excludedFromTrend
+    && !['materiel', 'renovation'].includes(tx.category) && !tx.finance?.lines.some(l => l.kind === 'equipment');
+}
+function prevoirSansReprise(input: { transactions: FinanceTransaction[]; payments: FinancialPayment[]; plans: FinancialPlan[]; profile: FinancialProfile; asOf?: string; months?: number; includeEquipmentProjects?: boolean;
+  /** Brassins et stock : avec eux, les brassins planifiés ajoutent leurs sorties DÉRIVÉES (jamais écrites) et remplacent leurs plans « Prévoir ». Sans eux : comportement inchangé. */
+  batches?: Batch[]; stockItems?: StockItem[]; assets?: FinancialAsset[]; brewReglages?: Partial<ReglagesBrewForecast>; brewTaxReduction?: { pct?: number; annee?: number }; ignoreUpgradePlanId?: string }): FinanceForecast {
+  const { transactions, payments, plans, profile } = input, asOf = isoDate(input.asOf) ?? todayISO();
+  const count = Math.min(24, Math.max(1, input.months ?? 12)), currentMonth = monthKey(asOf);
+  const monthKeys = Array.from({ length: count }, (_, i) => shiftMonth(currentMonth, i));
+  const end = anchoredDate(`${monthKeys[count - 1]}-31`, 0);
+  const ledger = summarizeLedger(transactions, payments, profile, asOf), warnings = [...ledger.warnings], items: ForecastItem[] = [];
+  const active = transactions.filter(isActiveTransaction);
+  const avertissements: AvertissementCible[] = [];
+  /** Une limite : sa chaîne (inchangée) va dans `warnings`, sa cible à côté. */
+  const noter = (texte: string, cible: CibleLimite, titre: string, detail: string) => { warnings.push(texte); avertissements.push({ texte, cible, titre, detail }); };
+  // Les avertissements du grand livre (ledger.ts) : mêmes conditions, ici seulement leur cible.
+  for (const tx of active) {
+    if (isoDate(tx.date)) continue;
+    const nom = tx.description || tx.id;
+    avertissements.push({ texte: `Date à corriger : ${nom}.`, cible: { kind: 'piece', txId: tx.id }, titre: nom, detail: 'date à corriger : sans elle, la pièce n’est ni comptée ni placée' });
+  }
+  for (const w of ledger.warnings) {
+    const montantFaux = /^Montant à vérifier : (.+)\.$/.exec(w);
+    if (montantFaux) { const tx = active.find(t => t.id === montantFaux[1]); if (tx) avertissements.push({ texte: w, cible: { kind: 'piece', txId: tx.id }, titre: tx.description || tx.id, detail: 'montant à vérifier : il est écarté du solde' }); }
+    else if (w.startsWith('Solde de trésorerie initial')) avertissements.push({ texte: w, cible: { kind: 'solde' }, titre: 'Solde de départ', detail: 'solde à confirmer : sans lui, seul l’écart de la période est connu' });
+    else if (/paiements? historiques? à confirmer/.test(w)) avertissements.push({ texte: w, cible: { kind: 'journal-a-confirmer' }, titre: 'Paiements à confirmer', detail: 'à confirmer dans le journal : exclus des échéances' });
+  }
+  const undated: UndatedForecastItem[] = [];
+  const linkedPlanOf = (tx: FinanceTransaction) => plans.find(p => p.id === tx.finance?.planId && (p.status === 'active' || isUpgradePlan(p)));
+  /** Reste à payer ou à encaisser, sans échéance valide : la pièce va dans `undated`, et ne remplace pas l'occurrence de son plan. */
+  const isUndatedPending = (tx: FinanceTransaction): boolean => {
+    if (isoDate(tx.finance?.dueDate)) return false;
+    const state = paymentState(tx, payments, transactions, asOf);
+    return state.remainingCents > 0 && (state.state !== 'unknown' || !!linkedPlanOf(tx));
+  };
+  for (const tx of active) {
+    const state = paymentState(tx, payments, transactions, asOf);
+    const linkedPlan = linkedPlanOf(tx);
+    if (!state.remainingCents || state.state === 'unknown' && !linkedPlan) continue;
+    if (state.state === 'unknown') noter(`Paiement à confirmer : ${tx.description}. Le montant lié à la prévision reste réservé.`, { kind: 'piece', txId: tx.id }, tx.description, 'paiement à confirmer : son montant reste réservé dans la prévision');
+    const due = isoDate(tx.finance?.dueDate), date = due && due > asOf ? due : asOf;
+    const direction = transactionDirection(tx, transactions);
+    if (!due) {
+      undated.push({ id: `invoice:${tx.id}`, label: tx.description, amountCents: state.remainingCents, direction, category: tx.category, pieceDate: isoDate(tx.date),
+        planId: tx.finance?.planId, occurrenceId: tx.finance?.occurrenceId, ...(state.state === 'unknown' ? { unconfirmed: true } : {}) });
+      noter(`Échéance à préciser : ${tx.description} (${formatCHF(state.remainingCents)}). Montant hors des mois prévus.`, { kind: 'piece', txId: tx.id }, tx.description, `échéance à préciser : ${formatCHF(state.remainingCents)} hors des mois prévus`);
+      continue;
+    }
+    if (date <= end) items.push({ id: `invoice:${tx.id}`, date, label: state.state === 'unknown' ? `${tx.description} · paiement à confirmer` : tx.description, amountCents: state.remainingCents, direction: transactionDirection(tx, transactions), source: 'invoice', category: tx.category, planId: tx.finance?.planId, occurrenceId: tx.finance?.occurrenceId });
+  }
+  const derived = input.batches ? estimerBrassinsPlanifies({ batches: input.batches, stockItems: input.stockItems ?? [], transactions, plans, profile, assets: input.assets, asOf, fin: end, reglages: input.brewReglages, reductionImpot: input.brewTaxReduction, ignorerPlanId: input.ignoreUpgradePlanId }) : undefined;
+  /* PD-2 : une pièce active qui dit avoir soldé une sortie dérivée (la facture de l'impôt, `finance.soldeIds`) la retire : réelle, elle est seule à compter. */
+  const soldees = new Set(active.filter(t => transactionKind(t) === 'expense').flatMap(t => t.finance?.soldeIds ?? []));
+  if (derived) { items.push(...retirerSoldees(derived.items, soldees)); warnings.push(...derived.warnings); avertissements.push(...derived.avertissements); }
+  for (const plan of plans) {
+    if (plan.status !== 'active') continue;
+    // Le brassin porte ses sorties dérivées (ou n'en a plus : annulé, conditionné, terminé) : son plan « Prévoir » reste lisible, jamais compté.
+    if (derived && plan.source === 'brew') { const batchId = planBrewBatchId(plan); if (batchId && derived.remplaces.has(batchId)) continue; }
+    if (isUpgradePlan(plan) && input.includeEquipmentProjects === false) continue;
+    if (isUpgradePlan(plan) && upgradeReadiness(plan).length) { noter(`Projet à compléter : ${plan.title}.`, { kind: 'plan', planId: plan.id }, plan.title, 'projet de matériel à compléter (date ou budget) : écarté de la prévision'); continue; }
+    if (!Number.isSafeInteger(plan.amountCents) || plan.amountCents < 0 || !isoDate(plan.date)) { noter(`Prévision invalide : ${plan.title}.`, { kind: 'plan', planId: plan.id }, plan.title, 'date ou montant illisible : la prévision n’est pas comptée'); continue; }
+    const linked = active.filter(t => t.finance?.planId === plan.id && transactionKind(t) === (plan.direction === 'out' ? 'expense' : 'income'));
+    if (plan.recurrence && linked.some(t => !t.finance?.occurrenceId)) {
+      noter(`Récurrence « ${plan.title} » : confirmer l’échéance des factures liées. Leur mois sert au rapprochement provisoire ; les échéances suivantes restent prévues.`, { kind: 'plan', planId: plan.id }, plan.title, 'récurrence : confirme l’échéance des factures liées');
+    }
+    for (const occurrence of planOccurrences(plan, plan.recurrence ? `${currentMonth}-01` : asOf, end)) {
+      // A documented invoice replaces the intention, whether paid or still payable.
+      const undatedLinked = linked.filter(isUndatedPending);
+      if (undatedLinked.length) noter(`Facture sans échéance liée à « ${plan.title} » : la prévision reste réservée, la facture est comptée à part.`, { kind: 'plan', planId: plan.id }, plan.title, 'facture sans échéance liée : la prévision reste réservée');
+      const invoiced = linked.filter(t => !undatedLinked.includes(t)).filter(t => !plan.recurrence || t.finance?.occurrenceId === occurrence.id || !t.finance?.occurrenceId && monthKey(isoDate(t.finance?.dueDate) ?? isoDate(t.date) ?? '') === monthKey(occurrence.date)).reduce((sum, t) => {
+        const allocation = planInvoiceAllocation(t);
+        if (allocation.issue === 'allocation') {
+          noter(`Montant lié à corriger : ${t.description}. La prévision reste réservée.`, { kind: 'piece', txId: t.id }, t.description, `montant lié à corriger : la prévision « ${plan.title} » reste réservée`); return sum;
+        }
+        if (allocation.issue === 'mixed') { noter(`Facture mixte « ${t.description} » : préciser le montant affecté à « ${plan.title} ». La prévision reste réservée.`, { kind: 'piece', txId: t.id }, t.description, `facture mixte : indique la part de « ${plan.title} »`); return sum; }
+        return sum + allocation.amountCents!;
+      }, 0);
+      const remaining = Math.max(0, plan.amountCents - invoiced);
+      if (!remaining) continue;
+      if (occurrence.date < asOf) noter(`Échéance passée « ${plan.title} » : montant encore prévu aujourd’hui, à rapprocher d’une facture ou à confirmer.`, { kind: 'plan', planId: plan.id }, plan.title, 'échéance passée : encore prévue aujourd’hui, à rapprocher d’une facture');
+      items.push({ id: occurrence.id, occurrenceId: occurrence.id, planId: plan.id, date: occurrence.date < asOf ? asOf : occurrence.date, label: plan.title, amountCents: remaining,
+        direction: plan.direction, source: plan.source === 'brew' ? 'brew' : isUpgradePlan(plan) ? 'equipment' : plan.recurrence ? 'recurring' : 'plan', category: plan.category });
+    }
+  }
+  const completeFrom = isoDate(profile.historyCompleteFrom);
+  const trendMonths = Array.from({ length: 6 }, (_, i) => shiftMonth(currentMonth, i - 6)).filter(month => !!completeFrom && `${month}-01` >= completeFrom!);
+  // Confirmed recurrence vendors are removed from the historical residual even before a manual link.
+  const vendorKey = (value?: string) => (value ?? '').trim().toLocaleLowerCase('fr');
+  const txVendor = (tx: FinanceTransaction) => vendorKey(tx.finance?.vendor ?? tx.proofNotes?.replace(/^Fournisseur:\s*/i, '').split('·')[0]);
+  const recurringVendors = new Set(plans.filter(p => p.status === 'active' && p.direction === 'out' && p.recurrence && p.vendor?.trim()).map(p => vendorKey(p.vendor)));
+  const residual = active.filter(isResidualExpense).filter(tx => !recurringVendors.has(txVendor(tx)));
+  if (trendMonths.length < 3) noter('Tendance non calculée : confirmer au moins trois mois complets d’historique. Les engagements restent affichés.', { kind: 'historique' }, 'Tendance non calculée', 'indique depuis quand ton historique est complet (3 mois au moins) : sans lui, pas de dépenses courantes prévues');
+  else {
+    const seen = [...new Set(residual.filter(tx => trendMonths.includes(monthKey(isoDate(tx.date) ?? ''))).map(tx => tx.category))];
+    const categories = seen.filter(category => TREND_CATEGORIES.includes(category));
+    for (const category of seen.filter(category => !TREND_CATEGORIES.includes(category))) warnings.push(`Achats ${CATEGORY_PHRASE[category] ?? `de ${category}`} non projetés (irréguliers).`);
+    for (const category of categories) {
+      const relevant = residual.filter(tx => tx.category === category);
+      const historicalVendors = new Set(relevant.filter(tx => trendMonths.includes(monthKey(isoDate(tx.date) ?? ''))).map(txVendor));
+      const baseline = median(trendMonths.map(month => relevant.filter(tx => monthKey(isoDate(tx.date) ?? '') === month).reduce((sum, tx) => sum + transactionAmount(tx), 0)));
+      for (const month of monthKeys) {
+        const alreadySpent = month === currentMonth ? relevant.filter(tx => monthKey(isoDate(tx.date) ?? '') === month && isoDate(tx.date)! <= asOf).reduce((sum, tx) => sum + transactionAmount(tx), 0) : 0;
+        // The trend fills the category's historical envelope. A new recurring bill
+        // without a vendor must not be added a second time to its own old median.
+        // Named recurring vendors were already removed from the historical base.
+        const coveredByPlans = plans.filter(plan => plan.status === 'active' && plan.direction === 'out' && plan.category === category && ['manual', 'recurring'].includes(plan.source)).filter(plan => {
+          const vendor = vendorKey(plan.vendor);
+          return !vendor || !recurringVendors.has(vendor) && historicalVendors.has(vendor);
+        }).reduce((n, plan) => {
+          if (!plan.recurrence && monthKey(isoDate(plan.date) ?? '') !== month) return n;
+          // Keep the original occurrence amount even when its invoice is already
+          // paid: the historical monthly cost has then already been covered.
+          return n + planOccurrences(plan, `${month}-01`, anchoredDate(`${month}-31`, 0)).length * plan.amountCents;
+        }, 0);
+        const amountCents = Math.max(0, baseline - alreadySpent - coveredByPlans);
+        if (amountCents) items.push({ id: `trend:${month}:${category}`, date: month === currentMonth ? asOf : `${month}-01`, label: `Autres dépenses · ${category}`, amountCents, direction: 'out', source: 'trend', category });
+      }
+    }
+  }
+  items.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  let balance = ledger.cashCents;
+  const months = monthKeys.map(month => {
+    const rows = items.filter(item => monthKey(item.date) === month);
+    const incomeCents = rows.filter(i => i.direction === 'in').reduce((sum, i) => sum + i.amountCents, 0);
+    const expenseCents = rows.filter(i => i.direction === 'out').reduce((sum, i) => sum + i.amountCents, 0);
+    if (balance != null) balance += incomeCents - expenseCents;
+    return { month, incomeCents, expenseCents, balanceCents: balance,
+      committedCents: rows.filter(i => i.direction === 'out' && i.source !== 'trend').reduce((sum, i) => sum + i.amountCents, 0),
+      projectedCents: rows.filter(i => i.source === 'trend').reduce((sum, i) => sum + i.amountCents, 0), items: rows };
+  });
+  const undatedTotal = (direction: 'in' | 'out') => undated.filter(u => u.direction === direction).reduce((sum, u) => sum + u.amountCents, 0);
+  return { months, items, warnings: [...new Set(warnings)], avertissements: [...new Map(avertissements.map(a => [a.texte, a])).values()], cashComplete: ledger.cashComplete, cashCause: ledger.cashCause, trendMonths, openingCashCents: ledger.cashCents,
+    undated, undatedInCents: undatedTotal('in'), undatedOutCents: undatedTotal('out') };
+}
+
+/**
+ * D405 (21.11) : une seule caisse. Un brassin planifié sans budget à lui (ni estimation enregistrée, ni ligne chiffrée) reprend la dernière
+ * estimation de sa recette (`budgetsDeRecette`) ; la prévision est refaite, seulement s'il y en a un, et ses sorties sont marquées estimées
+ * (libellé et `repriseRecette`). Le Bord, Finances, le calendrier et le compagnon lisent ce même calcul. Sans brassins : inchangé.
+ */
+export function buildForecast(input: Parameters<typeof prevoirSansReprise>[0]): FinanceForecast {
+  const brut = prevoirSansReprise(input);
+  if (!input.batches) return brut;
+  const chiffres = new Set(brut.items.filter(i => i.source === 'brew' && i.batchId && i.amountCents > 0 && !i.id.endsWith(':impot')).map(i => i.batchId as string));
+  const reprise = budgetsDeRecette(input.batches, input.plans, chiffres);
+  if (!reprise.repris.size) return brut;
+  const f = prevoirSansReprise({ ...input, plans: reprise.plans, batches: reprise.batches });
+  const marquer = (i: ForecastItem): ForecastItem => {
+    const r = i.batchId ? reprise.repris.get(i.batchId) : undefined;
+    return r ? { ...i, label: `${i.label} · budget de sa recette, estimé`, repriseRecette: r } : i;
+  };
+  return { ...f, items: f.items.map(marquer), months: f.months.map(m => ({ ...m, items: m.items.map(marquer) })) };
+}

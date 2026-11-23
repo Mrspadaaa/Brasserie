@@ -1,0 +1,7 @@
+{
+  "maj": "2026-11-20",
+  "role": "Registre local de la passe « moins de gestes » : chaque version part d'un écran choisi différent (voir VERSIONS.md) ; ce registre ne sert qu'aux règles dures et statiques de controle-base. Le calendrier se contrôle contre le registre principal (chantier calendrier).",
+  "chantiers": {
+    "moins-de-gestes": { "base": { "proto": "voir VERSIONS.md" }, "gardes": [], "refuses": [] }
+  }
+}

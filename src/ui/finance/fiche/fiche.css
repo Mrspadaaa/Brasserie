@@ -1,0 +1,105 @@
+/* Fiche d'une opération (m5fo-a : la fiche rangée de m2fo-a, la facture en barre de m2fo-c). Classes préfixées `fiche-` (L26), racine `.fiche-sheet`.
+   Clair comme cave : texte, fonds et filets prennent les jetons du thème ; seuls la barre, les liserés de lignes et le carré de catégorie portent des teintes de couleur. */
+:root:not([data-theme='cave']) .fiche-sheet {
+  /* Les teintes de catégorie du clair sont pâles ailleurs ; ici, comme sous `.ops` (fx1), le carré garde le fond sombre et le trait clair de la maquette. */
+  --c-56d27b: 86 210 123; --c-9856d2: 152 86 210; --c-d2b356: 210 179 86; --c-56c1d2: 86 193 210; --c-567bd2: 86 123 210; --c-d256a4: 210 86 164;
+  --c-255633: 37 86 51; --c-3f2556: 63 37 86; --c-564925: 86 73 37; --c-254f56: 37 79 86; --c-253356: 37 51 86; --c-562544: 86 37 68;
+  --ct-b9f4ca: 185 244 202; --ct-d8b9f4: 216 185 244; --ct-f4e5b9: 244 229 185; --ct-b9ecf4: 185 236 244; --ct-b9caf4: 185 202 244; --ct-f4b9de: 244 185 222;
+  --fiche-hach-a: rgb(227 181 93); --fiche-hach-b: rgb(252 239 210); --fiche-hach-bord: rgb(201 154 58);
+}
+.fiche-sheet { --fiche-t1: rgb(var(--cave-texte-50)); --fiche-t2: rgb(var(--cave-texte-200)); --fiche-bord: rgb(var(--cave-700)); --fiche-fond: rgb(var(--cave-850));
+  --fiche-lien: rgb(var(--area-finances-texte)); --fiche-hach-a: rgb(var(--attention)); --fiche-hach-b: rgb(var(--c-302719)); --fiche-hach-bord: rgb(var(--attention)); }
+:root:not([data-theme='cave']) .fiche-sheet { --fiche-hach-a: rgb(227 181 93); --fiche-hach-b: rgb(252 239 210); --fiche-hach-bord: rgb(201 154 58); }
+/* L'en-tête de la feuille est celui de la maquette (carré, titre 18, croix 36) : celui du Sheet reste dans l'arbre (nom du dialogue) mais ne se dessine pas. */
+.fiche-sheet > header { display:none; }
+.fiche { padding:2px 8px 18px; color:var(--fiche-t1); font-size:14px; line-height:18px; }
+.fiche button { font:inherit; color:inherit; cursor:pointer; text-align:left; }
+.fiche-m { font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; font-weight:600; }
+
+.fiche-hd { display:flex; gap:10px; align-items:flex-start; }
+.fiche-sq { width:30px; height:30px; border-radius:10px; display:grid; place-items:center; flex:none; margin-top:2px; }
+.fiche-t { flex:1; min-width:0; }
+.fiche-t b { display:block; font-size:18px; line-height:22px; font-weight:600; overflow-wrap:anywhere; }
+.fiche-t span { font-size:13px; color:var(--fiche-t2); }
+.fiche-x { position:relative; width:44px; height:44px; border-radius:12px; background:rgb(var(--cave-800)); border:1px solid rgb(var(--cave-600)); display:grid; place-items:center; flex:none; }
+.fiche-x::after { content:''; position:absolute; inset:-4px; }
+
+.fiche-sum { display:flex; align-items:baseline; gap:6px; margin:10px 0 4px; flex-wrap:wrap; }
+.fiche-amt { font-size:28px; line-height:32px; }
+.fiche-cur { font-size:13px; color:var(--fiche-t2); margin-right:auto; }
+.fiche-tg { display:inline-block; max-width:100%; padding:0 6px; border-radius:999px; line-height:16px; font-size:12px; }
+.fiche-tg-ok { background:rgb(var(--c-20311d)); color:rgb(var(--area-stocks-texte)); }
+.fiche-tg-pay { background:repeating-linear-gradient(135deg, rgb(var(--attention) / .3) 0 3px, transparent 3px 8px), rgb(var(--c-302719)); box-shadow:inset 0 0 0 1px var(--fiche-hach-bord); color:rgb(var(--attention-texte)); } /* hachure = à payer ; en cave elle reste en fond, le texte se lit */
+:root:not([data-theme='cave']) .fiche-tg-pay { background:repeating-linear-gradient(135deg, rgb(251 235 201) 0 4px, rgb(255 247 230) 4px 8px); color:#6E500F; box-shadow:inset 0 0 0 1px #E3C27E; }
+.fiche-tg-late, .fiche-tg-alert { background:rgb(var(--c-402320)); color:rgb(var(--alert-strong-texte)); box-shadow:inset 0 0 0 1px rgb(var(--alert-strong-texte)); }
+.fiche-tg-unknown, .fiche-tg-void { background:rgb(var(--cave-800)); color:var(--fiche-t2); }
+.fiche-note { margin:4px 0; font-size:13px; line-height:18px; color:var(--fiche-t2); }
+.fiche-erreur { margin:4px 0; font-size:13px; color:rgb(var(--alert-strong-texte)); }
+
+/* Pièce jointe : cible 44, le bouton « Voir » en 32 avec une zone élargie. Sans justificatif : pointillé. */
+.fiche-pj { display:flex; align-items:center; gap:8px; min-height:44px; margin:6px 0 2px; padding:0 4px 0 10px; border-radius:12px; background:var(--fiche-fond); border:1px solid var(--fiche-bord); font-size:14px; }
+.fiche-pj > span { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.fiche-pj em { font-style:normal; color:var(--fiche-t2); }
+.fiche-pj-sans { border-style:dashed; color:var(--fiche-t2); padding-right:10px; }
+/* « c’est normal » (18.11) : la coche d’une pièce qui n’aura jamais de justificatif ; toute la hauteur de la case est cible. */
+.fiche-pj-sans:has(.fiche-pj-normal) { padding-right:4px; }
+.fiche-pj-normal { display:inline-flex; align-items:center; gap:8px; min-height:44px; padding:0 8px; font-size:13px; color:var(--fiche-t2); white-space:nowrap; cursor:pointer; }
+.fiche-pj-normal input { width:20px; height:20px; margin:0; accent-color:rgb(var(--ebc-straw)); }
+.fiche-pj .fiche-voir { position:relative; min-height:32px; padding:0 12px; margin:0; border-radius:10px; border:1px solid rgb(var(--cave-600)); background:rgb(var(--cave-900)); color:var(--fiche-t1); font-size:12px; font-weight:400; gap:4px; }
+.fiche-pj .fiche-voir::after { content:''; position:absolute; inset:-6px -2px; }
+
+.fiche-h { display:flex; justify-content:space-between; align-items:baseline; gap:8px; font-size:15px; font-weight:600; margin:14px 0 2px; }
+.fiche-h small { font-size:13px; font-weight:400; color:var(--fiche-t2); }
+.fiche-fbar { position:relative; height:30px; border-radius:10px; overflow:hidden; background:rgb(var(--cave-800)); margin:6px 0 4px; }
+.fiche-fseg { position:absolute; top:0; bottom:0; display:block; padding:0; border:0; border-right:2px solid rgb(var(--cave-900)); }
+.fiche-fseg:focus-visible { outline:2px solid rgb(var(--cave-50)); outline-offset:-2px; }
+.fiche-ln { display:grid; grid-template-columns:4px 1fr auto 44px; align-items:center; gap:0 8px; min-height:44px; width:100%; border:0; border-bottom:1px solid var(--fiche-bord); background:none; padding:0; text-align:left; }
+.fiche-ln i { align-self:stretch; margin:7px 0; border-radius:2px; }
+.fiche-ln b { font-size:14px; font-weight:600; }
+.fiche-ln small { font-size:13px; color:var(--fiche-t2); font-weight:400; }
+.fiche-ln .fiche-m { font-size:14px; }
+.fiche-st { width:44px; height:44px; display:grid; place-items:center; }
+.fiche-st > span { width:32px; height:32px; border-radius:10px; background:rgb(var(--c-20311d)); color:rgb(var(--area-stocks-texte)); display:grid; place-items:center; }
+
+.fiche-rec { display:flex; align-items:center; gap:6px; min-height:44px; padding:0; border:0; background:none; font-size:15px; color:var(--fiche-lien); font-weight:600; }
+.fiche-acts { display:grid; grid-template-columns:.8fr 1.5fr; gap:8px; margin:4px 0 10px; }
+.fiche-acts > * { white-space:nowrap; }
+.fiche-b1, .fiche-b2 { min-height:44px; border-radius:14px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:0 14px; text-align:center; }
+.fiche .fiche-confirmer { flex-direction:column; gap:0; margin:8px 0 2px; }
+.fiche .fiche-confirmer span { font-size:12px; font-weight:500; opacity:.75; }
+.fiche .fiche-b1 { text-align:center; width:100%; background:rgb(var(--cave-texte-50)); color:rgb(var(--cave-900)); font-weight:600; font-size:16px; margin:6px 0 0; border:0; }
+.fiche-b2 { background:rgb(var(--cave-800)); border:1px solid rgb(var(--cave-600)); }
+.fiche-b2:only-child { grid-column:1 / -1; }
+.fiche-plus { margin:0 0 6px; }
+.fiche-plus > summary { list-style:none; min-height:44px; display:flex; align-items:center; gap:6px; font-size:15px; color:var(--fiche-t2); cursor:pointer; border-top:1px solid var(--fiche-bord); }
+.fiche-plus > summary::-webkit-details-marker { display:none; }
+.fiche-plus > div { display:grid; gap:8px; padding:6px 0 10px; }
+
+/* Rangées repliables : « Échéance et prévision », « Paiements », « Corriger une erreur de saisie » (chevron à droite, 44 de haut). */
+.fiche-dt { border-top:1px solid var(--fiche-bord); }
+.fiche-dt > summary { list-style:none; display:flex; align-items:center; gap:8px; min-height:44px; font-size:15px; cursor:pointer; }
+.fiche-dt > summary::-webkit-details-marker { display:none; }
+.fiche-dt > summary > span { flex:1; }
+.fiche-dt > summary > em { font-style:normal; font-size:13px; color:var(--fiche-t2); }
+.fiche-dt > summary > svg { color:var(--fiche-t2); flex:none; }
+.fiche-dt[open] > summary > svg { transform:rotate(90deg); }
+.fiche-dt-bas[open] > summary > svg { transform:none; } /* m5fo-a : « Paiements » garde son chevron vers le bas, ouvert comme dans la maquette */
+.fiche-corps { padding:2px 0 10px; display:grid; gap:8px; }
+.fiche-hist { background:rgb(var(--cave-850)); border-radius:12px; padding:6px 10px 8px; margin-bottom:6px; }
+.fiche-hist > div { display:flex; justify-content:space-between; gap:8px; font-size:14px; min-height:28px; align-items:center; }
+.fiche-hist button { min-height:28px; padding:0; border:0; background:none; font-size:13px; color:var(--fiche-lien); }
+/* Justificatif d'un paiement (m5pa-d) : nom du fichier à gauche, lien « Justificatif » à droite, sous la ligne du paiement. */
+.fiche-hist > .fiche-hist-pj { justify-content:flex-start; gap:6px; font-size:13px; color:var(--fiche-t2); }
+.fiche-hist-pj > span { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.fiche-hist-pj > button { flex:none; padding:0 4px; }
+.fiche-corriger { border:1px solid var(--fiche-bord); border-radius:12px; padding:10px; display:grid; gap:8px; }
+.fiche-corriger .finance-actions { justify-content:flex-end; }
+@media (min-width:768px) { .fiche-sheet { max-width:640px; margin-left:auto; margin-right:auto; } }
+@media (prefers-reduced-motion:reduce) { .fiche *, .fiche-sheet * { transition:none!important; } }
+/* FN-6 : une paire paiement / contre-paiement repliée en une ligne « corrigé » ; le détail s'ouvre d'un toucher. */
+.fiche-hist-corr > summary { display:flex; align-items:center; gap:8px; min-height:36px; cursor:pointer; list-style:none; font-size:14px; color:var(--fiche-t2); }
+.fiche-hist-corr > summary::-webkit-details-marker { display:none; }
+.fiche-hist-corr > summary > span:first-child { flex:1; min-width:0; }
+.fiche-hist-corr .fiche-m-barre { text-decoration:line-through; }
+.fiche-hist-corr[open] > summary svg { transform:rotate(180deg); }
+.fiche-hist-corr > div { color:var(--fiche-t2); }

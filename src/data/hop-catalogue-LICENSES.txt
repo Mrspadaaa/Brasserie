@@ -1,0 +1,53 @@
+Attribution des référentiels GitHub utilisés par l'Index Houblon
+
+kasperg3/HopDatabase
+https://github.com/kasperg3/HopDatabase
+Révision cf9aad4b59fe7c30441550ef703e095f8b1116ab
+Copyright (c) 2024 Kasper Andreas Rømer Grøntved
+
+stuartraetaylor/hops-json
+https://github.com/stuartraetaylor/hops-json
+Révision 655499ffda7166abff83f52f8012390ffc1107f7
+Copyright (c) 2019 Stuart Taylor
+
+Chacun de ces deux dépôts publie le texte de licence suivant (MIT).
+Les références des fabricants d'origine sont conservées séparément lorsqu'elles
+figurent dans le jeu de données. Cette licence ne constitue pas une affirmation
+sur les droits des sites tiers cités par les agrégateurs.
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Analyses publiques ajoutées le 8 septembre 2026
+
+Les neuf certificats YQH / HopTechnic / YCH / Clayton sont identifiés dans
+hopPublicLotBootstrap.json par leur URL, date, laboratoire et empreinte SHA-256.
+Le pack reprend les valeurs factuelles et leur contexte, pas les documents
+complets, logos ou textes des certificats. Aucune licence ouverte générale de
+ces sites n'est affirmée.
+
+Samia, Chenot, Divilov, Shayevitz et Shellhammer (2026)
+A time-course assessment of polyfunctional thiol release and yeast gene
+expression in dry-hopped beers. DOI 10.1016/j.fochms.2026.100445.
+Publication électronique : 30 juillet 2026. Le texte intégral porte la licence
+CC BY-NC 4.0 (https://creativecommons.org/licenses/by-nc/4.0/).
+Seules sept valeurs mesurées de la première ligne du tableau 2, avec unités et
+attribution, sont transcrites dans le pack. Ni figures, ni texte intégral, ni
+contributions théoriques en bière ne sont redistribués dans ce pack.

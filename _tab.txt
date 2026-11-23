@@ -1,0 +1,14 @@
+| SafAle US-05 | Faible ; 40 ppm [1][2] | non déclaré, pas POF− [1][2] | non documenté | non documenté | 11 g/L dont 3 g/L maltotriose [2] | POF : tranché |
+| SafAle S-04 | Faible ; 37 ppm ; fruité-floral [3][4] | − (symbole) [3] | non documenté | non documenté | 18 g/L dont 10 g/L maltotriose [4] | esters : tranché |
+| SafAle BE-256 | Élevé ; acétate d’isoamyle [5][7] (TDS ancien : 20 ppm [6]) | − déclaré [7] | non documenté | non documenté | 0 g/L [6] ; maltotriose consommé [16] | esters : réserve |
+| SafAle T-58 | Élevé ; 37 ppm [8][9] | + ; girofle [8][9] | non documenté | non documenté | 22 g/L dont 11 g/L maltotriose [9] | — |
+| SafLager W-34/70 | Faible ; floral-fruité [10] | − (symbole) [10] | non documenté | non documenté | 5 g/L dont 2 g/L maltotriose [11] | — |
+| SafAle WB-06 | Moyen ; 78 ppm [12][13] | + ; girofle [13] | non documenté | non documenté | 0 g/L ; maltotriose consommé [13][16] | — |
+| LalBrew Verdant IPA | niveau non documenté ; abricot, tropical [17] | − déclaré [17] | un peu plus de corps qu’une IPA US [17] | β-lyase déclarée [17] ; terpène Medium, thiol High [22] | non documenté | — |
+| LalBrew Nottingham | neutre à légèrement estérifié [18] | − déclaré [18] | non documenté | β-gluc. et β-lyase « modérées » [18] ; terpène Medium, thiol High [22] ; plus de thiols des ales testés [23] | non documenté | — |
+| LalBrew Pomona | niveau non documenté ; pêche, agrumes [19] | − déclaré [19] | non documenté | annoncée [19] ; terpène High, thiol Medium [22] ; géraniol vers citronellol : non documenté | non documenté | — |
+| LalBrew Belle Saison | niveau non documenté ; agrumes, poivre [20] | + déclaré [20] | non documenté | β-glucosidase déclarée, pas de β-lyase [20] ; terpène High, thiol Low [22] | dextrines partiellement utilisées, STA1+ [20] | POF : tranché |
+| LalBrew Abbaye | tropical, épicé, banane à chaud [21] | + déclaré [21] | non documenté | terpène Medium, thiol Low [22] | non documenté | profil « équilibré » : tranché |
+| Mangrove Jack’s M44 | très neutre, niveau non documenté [25] | non documenté | sec, net ; mince si bière légère [25] | non documenté | non documenté | — |
+| Fermentis BE-134 | Moyen ; 45 ppm [14][15] | + ; girofle [15] | sec [14] | non documenté | 0 g/L [15] | — |
+| Mangrove Jack’s M20 | esters de banane abondants [25] | girofle phénolique [25] | crémeux, soyeux, corps plein [25] | non documenté | non documenté | — |

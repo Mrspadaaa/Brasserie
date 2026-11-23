@@ -1,0 +1,144 @@
+[
+  {
+    "id": "cascade-dose-lafontaine2018",
+    "kind": "model",
+    "name": "Cascade × Wyeast 1728 · courbes de dose observées",
+    "version": "lafontaine-dose-local-1",
+    "enabled": true,
+    "confidence": "low",
+    "source": {
+      "title": "Interpolation locale des doses Cascade 2015",
+      "author": "L’Affinée — reconstruction explicite, non modèle des auteurs",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "docs/hop-solver.md",
+      "locator": "Interpolation linéaire des cinq moyennes ; conversion affine 0–15 vers l’indice local 0–100, convention non validée de correspondance sensorielle. Marge symétrique : plus grand écart absolu en laissant chacune des trois doses intérieures hors de l’interpolation. Ce contrôle entre doses corrélées n’est pas une validation sur des brassins indépendants, ni une couverture 95 %."
+    },
+    "scope": {
+      "varietyId": "cascade-cones-lafontaine",
+      "yeastId": "wyeast-1728",
+      "timing": "postFermentation",
+      "form": "cone",
+      "doseGL": {
+        "min": 0,
+        "max": 16
+      },
+      "temperatureC": {
+        "min": 13.3,
+        "max": 15
+      },
+      "contactHours": {
+        "min": 24,
+        "max": 24
+      },
+      "matrixId": "cascade-static-dose-2015",
+      "notes": "Tableau 3 et protocole. Un lot Cascade 2015, cônes broyés en sacs, Wyeast 1728 puis clarification ; 24 h à 13,3–15 °C. Moyennes du panel sur 0–15, sans dispersion entre brassins publiée pour cette courbe. Fermentation 19,4–20 °C, moût 11,3 °P, bière 4,75 % vol ; iso-humulones ajoutées après filtration. Autres lots, pellets, matrices et souches hors domaine. La baisse 8→16 g/L des moyennes agrumes reste conservée, sans prétendre établir une baisse réelle significative."
+    },
+    "outputs": [
+      {
+        "target": "axis:citrus",
+        "axisVersion": "local-1",
+        "envelope": null,
+        "doseCurve": {
+          "points": [
+            {
+              "doseGL": 0,
+              "value": 12.666666666666666
+            },
+            {
+              "doseGL": 2,
+              "value": 29.333333333333336
+            },
+            {
+              "doseGL": 3.86,
+              "value": 38.666666666666664
+            },
+            {
+              "doseGL": 8,
+              "value": 47.333333333333336
+            },
+            {
+              "doseGL": 16,
+              "value": 46.666666666666664
+            }
+          ],
+          "source": {
+            "title": "Impact of static dry-hopping rate on the sensory and analytical profiles of beer",
+            "author": "Scott R. Lafontaine et Thomas H. Shellhammer",
+            "year": 2018,
+            "kind": "research",
+            "reference": "https://onlinelibrary.wiley.com/doi/full/10.1002/jib.517",
+            "locator": "Tableau 3 et protocole. Un lot Cascade 2015, cônes broyés en sacs, Wyeast 1728 puis clarification ; 24 h à 13,3–15 °C. Moyennes du panel sur 0–15, sans dispersion entre brassins publiée pour cette courbe."
+          },
+          "residual": {
+            "range": {
+              "min": -5.938495332235032,
+              "max": 5.938495332235032
+            },
+            "source": {
+              "title": "Interpolation locale des doses Cascade 2015",
+              "author": "L’Affinée — reconstruction explicite, non modèle des auteurs",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Interpolation linéaire des cinq moyennes ; conversion affine 0–15 vers l’indice local 0–100, convention non validée de correspondance sensorielle. Marge symétrique : plus grand écart absolu en laissant chacune des trois doses intérieures hors de l’interpolation. Ce contrôle entre doses corrélées n’est pas une validation sur des brassins indépendants, ni une couverture 95 %."
+            }
+          },
+          "method": "Interpolation linéaire des cinq moyennes ; conversion affine 0–15 vers l’indice local 0–100, convention non validée de correspondance sensorielle. Marge symétrique : plus grand écart absolu en laissant chacune des trois doses intérieures hors de l’interpolation. Ce contrôle entre doses corrélées n’est pas une validation sur des brassins indépendants, ni une couverture 95 %."
+        }
+      },
+      {
+        "target": "axis:herbal",
+        "axisVersion": "local-1",
+        "envelope": null,
+        "doseCurve": {
+          "points": [
+            {
+              "doseGL": 0,
+              "value": 16.666666666666668
+            },
+            {
+              "doseGL": 2,
+              "value": 28.666666666666668
+            },
+            {
+              "doseGL": 3.86,
+              "value": 38
+            },
+            {
+              "doseGL": 8,
+              "value": 49.333333333333336
+            },
+            {
+              "doseGL": 16,
+              "value": 69.33333333333333
+            }
+          ],
+          "source": {
+            "title": "Impact of static dry-hopping rate on the sensory and analytical profiles of beer",
+            "author": "Scott R. Lafontaine et Thomas H. Shellhammer",
+            "year": 2018,
+            "kind": "research",
+            "reference": "https://onlinelibrary.wiley.com/doi/full/10.1002/jib.517",
+            "locator": "Tableau 3 et protocole. Un lot Cascade 2015, cônes broyés en sacs, Wyeast 1728 puis clarification ; 24 h à 13,3–15 °C. Moyennes du panel sur 0–15, sans dispersion entre brassins publiée pour cette courbe."
+          },
+          "residual": {
+            "range": {
+              "min": -2.926666666666667,
+              "max": 2.926666666666667
+            },
+            "source": {
+              "title": "Interpolation locale des doses Cascade 2015",
+              "author": "L’Affinée — reconstruction explicite, non modèle des auteurs",
+              "year": 2026,
+              "kind": "judgment",
+              "reference": "docs/hop-solver.md",
+              "locator": "Interpolation linéaire des cinq moyennes ; conversion affine 0–15 vers l’indice local 0–100, convention non validée de correspondance sensorielle. Marge symétrique : plus grand écart absolu en laissant chacune des trois doses intérieures hors de l’interpolation. Ce contrôle entre doses corrélées n’est pas une validation sur des brassins indépendants, ni une couverture 95 %."
+            }
+          },
+          "method": "Interpolation linéaire des cinq moyennes ; conversion affine 0–15 vers l’indice local 0–100, convention non validée de correspondance sensorielle. Marge symétrique : plus grand écart absolu en laissant chacune des trois doses intérieures hors de l’interpolation. Ce contrôle entre doses corrélées n’est pas une validation sur des brassins indépendants, ni une couverture 95 %."
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "fixtureOnly": true,
+  "provenance": {
+    "kind": "curated-provider-facts",
+    "manufacturer": "Fermentis",
+    "sourceUrl": "https://fermentis.com/en/product/safale-s-04/",
+    "captureDate": "2026-09-25",
+    "scope": "Only the S-04 facts used by the test plus a URL-only invalid-image counterexample. Model, prompt, token usage, and unrelated capture metadata are removed."
+  },
+  "results": [
+    {
+      "requestedName": "SafAle S-04",
+      "validationError": null,
+      "data": {
+        "found": true,
+        "name": "SafAle S-04",
+        "source": "SafAle™ S-04 - Fermentis",
+        "sourceUrl": "https://fermentis.com/en/product/safale-s-04/",
+        "form": "sèche",
+        "lab": "Fermentis",
+        "retrievedAt": "2026-09-25",
+        "strain": "SafAle S-04",
+        "tempMinC": 18,
+        "tempMaxC": 26,
+        "technicalFacts": [
+          {
+            "key": "pitchRate",
+            "reported": "50 to 80 g/hl",
+            "origin": "ai",
+            "source": "SafAle™ S-04 - Fermentis",
+            "sourceUrl": "https://fermentis.com/en/product/safale-s-04/",
+            "retrievedAt": "2026-09-25",
+            "qualifier": "range",
+            "range": { "min": 50, "max": 80 },
+            "unit": "g/hl"
+          },
+          {
+            "key": "flocculation",
+            "reported": "High / Fast sedimentation",
+            "origin": "ai",
+            "source": "SafAle™ S-04 - Fermentis",
+            "sourceUrl": "https://fermentis.com/en/product/safale-s-04/",
+            "retrievedAt": "2026-09-25"
+          }
+        ]
+      }
+    },
+    {
+      "requestedName": "M20 · Bavarian Wheat",
+      "validationError": "Image URL is not a documentary source",
+      "data": {
+        "found": true,
+        "name": "M20 · Bavarian Wheat",
+        "source": "Candidate image response; not a documentary source.",
+        "sourceUrl": "https://darkrockbrewing.co.uk/wp-content/uploads/2023/06/bavarian_wheat_1.jpg",
+        "technicalFacts": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 3,
+  "fixture": "equipment-maintenance-v4",
+  "syntheticOnly": true,
+  "maximumProviderRequests": 2,
+  "maxOutputTokensPerGeneration": 2048,
+  "scenarios": 1,
+  "retries": 0,
+  "modelFallbacks": false,
+  "pathway": "local aiTask.run -> scanInvoiceSafely -> runBudgetedInvoiceScan -> real Gemini",
+  "scope": "Handler, shared pause/limits, durable reservations, document hash/cache and independent reviewer. Published HTTPS transport and Firebase token verification are not tested.",
+  "credentials": [
+    "GEMINI_API_KEY",
+    "EVAL_GOOGLE_ACCESS_TOKEN",
+    "EVAL_FIREBASE_PROJECT_ID",
+    "AUTHORIZED_ACCOUNTS (or VITE_AUTHORIZED_ACCOUNTS)"
+  ],
+  "optionalEnvironment": [
+    "EVAL_CALLER_EMAIL (defaults to first configured authorized account)"
+  ],
+  "writes": [
+    "invoiceScans/<synthetic document hash>",
+    "brewerAiUsage/<current Zurich day>"
+  ],
+  "sharedControlsAreReadOnly": true,
+  "createsTransactionsOrStockOrChatJobs": false,
+  "output": "docs/expense-scan-evaluation-v4.json",
+  "timestamp": "2026-09-09T16:21:55.035Z",
+  "runId": "e126702c-50f3-4df5-ba49-91f2b64e20fc",
+  "status": "ready-no-generation",
+  "generations": 0,
+  "requests": [],
+  "cases": [],
+  "transport": {
+    "authLibraryVersion": "9.15.1",
+    "explicitTokenHeaderVerified": true,
+    "authenticatedRequests": 5
+  },
+  "model": "gemini-3.5-flash-lite",
+  "document": {
+    "sha256": "35df0d837792fa4f2cc13c972f2fa2c569fc283d9ece8c37c7131f7d72974511",
+    "bytes": 4004,
+    "mimeType": "application/pdf",
+    "pages": 1
+  },
+  "sharedBudget": {
+    "before": {
+      "day": "2026-09-09",
+      "calls": 2,
+      "tokens": 1802,
+      "proCalls": 0
+    },
+    "paused": false,
+    "limits": {
+      "dailyCalls": 400,
+      "dailyProCalls": 20,
+      "dailyTokens": 5000000,
+      "questionCalls": 12,
+      "questionTokens": 1000000
+    },
+    "controlsModified": false,
+    "beforeAfterDeltasMayIncludeConcurrentUse": true,
+    "after": {
+      "day": "2026-09-09",
+      "calls": 2,
+      "tokens": 1802,
+      "proCalls": 0
+    }
+  },
+  "scanLedgerBefore": null,
+  "scanLedgerAfter": null,
+  "finishedAt": "2026-09-09T16:21:55.607Z",
+  "reportedTotalTokens": 0,
+  "tokenUsageComplete": true
+}

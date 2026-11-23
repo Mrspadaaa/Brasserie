@@ -1,0 +1,693 @@
+{
+ "ecran": "substituer",
+ "choix": "u4 (lot 11, fils11-substitution) : « Substitution, ça serait plus du u4 » (19.10) ; registre « choisi u4 » (D34, 24.10)",
+ "source": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html et NOTE.md ; captures/u4-vue-390.png",
+ "maj": "2026-10-24",
+ "construction": "5345f6ad",
+ "note": "u4 est une page statique : ses états sont ses blocs au repos, le toucher d’une rangée (marque) et « Lire ces scores » (ouvert, refermé). Joué à 390 × 844 tactile ; d3 chargé depuis jsdelivr. Données de u4 du 19.10 : Galaxy y était le 3e du stock ; le stock de la fixture actuelle met Idaho 7 (20 g, ne suffit pas) devant, Galaxy n’est donc pas dans un « attendu ».",
+ "etats": [
+  {
+   "id": "etat-subst-repos",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "ouvrir Substituer, au repos",
+   "quoi": "Tête « ‹ Nugget » et, à droite, « remplaçants / à 60′ » ; la réponse en gras « Magnat et Yeoman, 99 sans inconnue. », dessous « Altus, Trident, Zenia vont de 78 à 99. ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-repos-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": ".barre",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"contexte\"]",
+    "selecteur_5345f6ad": "[data-role=\"contexte\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : titre en question « Lequel à la place de Nugget ? », ligne « fixé Stout 16D · à 60′ · 60 IBU égal » ; aucune réponse en une phrase.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-repos-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": ".barre",
+    "geste": "repos",
+    "attendu": [
+     "Nugget",
+     "remplaçants",
+     "à 60′",
+     "Trident et Yeoman, 99 sans inconnue."
+    ],
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Nugget",
+      "remplaçants",
+      "à 60′",
+      "Magnat et Yeoman, 99 sans inconnue.",
+      "Altus, Trident, Zenia vont de 78 à 99."
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : la réponse en gras devient « Yeoman, 100 sans inconnue. » ; la ligne « Altus, Trident, Zenia vont de 78 à 99. » n'existe plus car plus aucun candidat n'a de composante inconnue (la ligne ne s'écrit que pour une plage). Même tête, même bascule 60′/whirlpool/dry hop, même échelle. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-repos.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. La réponse en gras devient « Trident et Yeoman, 99 sans inconnue. » (Yeoman 100 avant). (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-repos.png.)"
+   }
+  },
+  {
+   "id": "etat-subst-echelle",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "l’échelle de ressemblance, au repos",
+   "quoi": "Échelle 50–100 à paliers (partiel, proche, très proche) ; huit remplaçants rangés par le pire cas, stock en icône (chariot, boîte pleine, boîte basse) ; Magnat (bleu) et Nelson Sauvin (vert) marqués.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-echelle-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": ".echelle",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"porte\"]",
+    "selecteur_5345f6ad": "[data-role=\"porte\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Maquette : pas d’échelle ; des colonnes (Nugget épinglé, Nelson Sauvin, Galaxy…) avec une barre « proche » par colonne, sans paliers ni pire cas.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-echelle-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": ".echelle",
+    "geste": "repos",
+    "attendu": [
+     "partiel",
+     "proche",
+     "très proche",
+     "Trident",
+     "Yeoman",
+     "Helios",
+     "Centennial",
+     "Magnat",
+     "Citra cryo",
+     "Motueka",
+     "Galaxy",
+     "50",
+     "65",
+     "80",
+     "100",
+     "À acheter",
+     "En stock, suffisant",
+     "En stock, insuffisant"
+    ],
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "partiel",
+      "proche",
+      "très proche",
+      "Magnat",
+      "Yeoman",
+      "Sabro",
+      "Nelson Sauvin",
+      "Altus",
+      "Trident",
+      "Zenia",
+      "50",
+      "65",
+      "80",
+      "100",
+      "À acheter",
+      "En stock, suffisant",
+      "En stock, insuffisant"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : Helios prend la place de Zenia parmi les huit candidats ; même échelle 50–100, mêmes trois paliers, mêmes icônes de stock. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-echelle.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Les huit candidats sont Trident, Yeoman, Helios, Centennial, Magnat (à acheter), Citra cryo, Motueka, Galaxy (du stock) ; Sabro, Nelson Sauvin et Altus n’y sont plus. Même échelle 50–100, mêmes trois paliers, mêmes icônes de stock. (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-echelle.png.)"
+   }
+  },
+  {
+   "id": "etat-subst-plage",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "la plage d’une composante inconnue et sa clé",
+   "quoi": "Altus et Trident 79–99, Zenia 78–98 en plage hachurée ; clé « ● tout connu » et « plage, une composante inconnue ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-plage-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": ".cle",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"porte\"]",
+    "selecteur_5345f6ad": "[data-role=\"porte\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Maquette : le score du moteur seul (« proche 86 ») et « · huiles ? » ; aucune plage.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-plage-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": ".cle",
+    "geste": "repos",
+    "attendu": [
+     "tout connu",
+     "100",
+     "99",
+     "97",
+     "96",
+     "95",
+     "80",
+     "77"
+    ],
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "tout connu",
+      "plage, une composante inconnue",
+      "79",
+      "99",
+      "78",
+      "98"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : plus aucun candidat de Nugget à 60′ n'a de composante inconnue, donc aucune plage hachurée n'est dessinée (« plage, une composante inconnue » n'est plus lu) ; seuls des points « tout connu » (100, 99, 97, 96, 94, 93, 85). Le dessin de la plage existe toujours dans le code (src/ui/hopIndex/substituer/index.tsx) mais n'est plus joué par cette fixture : voir RESULTAT, DÉCISION À PRENDRE. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-plage.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Points « tout connu » à 99, 99, 97, 96, 96, 95, 80 et 77 ; toujours aucune plage hachurée (voir DÉCISION de e3 : la fixture ne l’exerce plus). (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-plage.png.)"
+   }
+  },
+  {
+   "id": "etat-subst-toucher-rang",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "toucher un remplaçant de l’échelle (Yeoman)",
+   "quoi": "La rangée touchée se marque (fond gris, nom en couleur) ; u4 note : « choix des deux comparés statique (le toucher marque seulement) ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-toucher-rang-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": ".r[data-houblon=\"Yeoman\"]",
+    "geste_5345f6ad": "toucher la dernière colonne",
+    "selecteur_5345f6ad": "[data-remplacant]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : toucher une colonne la choisit (radio) ; pas d’échelle à toucher.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-toucher-rang-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": ".r[data-houblon=\"Yeoman\"]",
+    "geste": "toucher",
+    "attendu": [
+     "Yeoman"
+    ],
+    "interdit": []
+   }
+  },
+  {
+   "id": "etat-subst-face",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "le face à face, même IBU",
+   "quoi": "Trois bandes : Nugget (épuisé, 46 g), Magnat (à acheter, amérisant, 37–54 g), Nelson Sauvin (en stock, 62 g), bord à la couleur du houblon.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-face-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "h2",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"epingle\"]",
+    "selecteur_5345f6ad": "[data-role=\"epingle\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : colonnes « dose » 46 g, 62,5 g, 35 g ; pas de bandes ni de plage de dose pour un houblon à acheter.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-face-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "h2",
+    "geste": "repos",
+    "attendu": [
+     "Face à face, même IBU",
+     "Nugget",
+     "46 g",
+     "Trident",
+     "43–54 g",
+     "Galaxy",
+     "35 g",
+     "double usage",
+     "Épuisé"
+    ],
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Face à face, même IBU",
+      "Nugget",
+      "46 g",
+      "Magnat",
+      "37–54 g",
+      "Nelson Sauvin",
+      "62",
+      "amérisant",
+      "Épuisé"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : le premier remplaçant sûr à acheter est Yeoman (37–50 g) et non Magnat (37–54 g) ; même bande « Face à face, même IBU », mêmes trois cartes. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-face.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Les trois bandes : Nugget (épuisé, 46 g), Trident (premier sûr à acheter, 43–54 g), Citra cryo (premier du stock qui suffit, 24 g, aromatique) ; Nelson Sauvin (62 g) n’est plus le premier du stock. (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-face.png.) — e7, 26.10 : D115 : face à face sans produit d’arôme à 60′ (w1, b1d73ea1) : la 3e carte est Galaxy (35 g, double usage, premier du stock qui suffit) et non Citra cryo (24 g, aromatique) ; le classement de la liste (Trident, Yeoman, Helios, Centennial, Magnat, Citra cryo, Motueka, Galaxy), les cartes de Nugget et de Trident et le dessin sont identiques. Les trois bandes : Nugget (épuisé, 46 g), Trident (premier sûr à acheter, 43–54 g), Galaxy (premier du stock qui suffit, 35 g, double usage ; plus de mot « aromatique », qui était la marque de Citra cryo). (captures avant : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-face.png (moitié droite : avant w1) ; après : work/missions/2026-10-25-integration-houblons/voies/e7-bloquants-b1d7/captures/etat-subst-face-construite.png, regardées.)"
+   }
+  },
+  {
+   "id": "etat-subst-alpha",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "α par source, lot et article nommés",
+   "quoi": "Rangées α : sources en traits fins, plage, milieu en noir ; « lot 13 » sur Nugget, « article 9,6 » (▽) sur Nelson Sauvin.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-alpha-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "#m-alpha",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"alpha\"]",
+    "selecteur_5345f6ad": "[data-role=\"alpha\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : « α 13 % 9,5–16 », « α 9,6 % ≠ 10–13 » en texte ; ni sources, ni milieu, ni piste.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-alpha-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "#m-alpha",
+    "geste": "repos",
+    "attendu": [
+     "9–16",
+     "11–14",
+     "11–19,8",
+     "lot 13",
+     "lot 17,2"
+    ],
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "9,5–16",
+      "11–16",
+      "10–14",
+      "lot 13",
+      "article 9,6"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : α de Yeoman 12–16 à la place de Magnat 11–16 ; mêmes trois lignes, même repère « lot 13 » et « article 9,6 ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-alpha.png.) — 2e passe, commit deeb4d23 : dessin voulu, pas une régression (s1, exigence du brasseur du 26.10 : un trait par plage de source qui diffère, sources d'accord fusionnées, rangées plus hautes ; t1, D160 : mots traduits) : Nugget α 9–16 (au lieu de 9,5–16) et Nelson Sauvin 10–14,5 (au lieu de 10–14) parce que les compléments de d4 ajoutent des sources ; la rangée α porte un trait fin par plage qui diffère. Mêmes trois lignes, mêmes repères « lot 13 » et « article 9,6 ». (captures avant (98fac6b2) et après (deeb4d23) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires-s1t1/etat-subst-alpha.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Les trois rangées α sont Nugget 9–16 (lot 13), Trident 11–14, Citra cryo 10–15 (article 24,8) ; le repère « article » passe de Nelson Sauvin (9,6) à Citra cryo (24,8). (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-alpha.png.) — e7, 26.10 : D115 : face à face sans produit d’arôme à 60′ (w1, b1d73ea1) : la 3e carte est Galaxy (35 g, double usage, premier du stock qui suffit) et non Citra cryo (24 g, aromatique) ; le classement de la liste (Trident, Yeoman, Helios, Centennial, Magnat, Citra cryo, Motueka, Galaxy), les cartes de Nugget et de Trident et le dessin sont identiques. Les trois rangées α sont Nugget 9–16 (lot 13), Trident 11–14, Galaxy 11–19,8 (lot 17,2, son lot en stock) ; le repère « article 24,8 » de Citra cryo disparaît avec lui. (captures avant : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-alpha.png (moitié droite : avant w1) ; après : work/missions/2026-10-25-integration-houblons/voies/e7-bloquants-b1d7/captures/etat-subst-alpha-construite.png, regardées.)"
+   }
+  },
+  {
+   "id": "etat-subst-aromes",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "arômes en barres face au 16D",
+   "quoi": "Tableau Nugget · Magnat · Nelson : attendues en gras sur fond gris (Floral, Herbacé, Terreux), puis « Hors 16D » ; 2 crans (cité, marqué), pointillé = non décrit ; « Noyau, Pépins, Baies, Melon, Végétal : aucune des trois fiches ne les décrit, ce n’est pas zéro » ; « Fiches lues : Nugget 4, Magnat 1, Nelson Sauvin 2 ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-aromes-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "#aro",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"remplacants\"]",
+    "selecteur_5345f6ad": "[data-role=\"remplacants\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : pictos des familles citées par colonne, « perd » et « gagne » en pictos ; pas d’attendues du style, pas de crans, pas de « non décrit ».",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-aromes-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "#aro",
+    "geste": "repos",
+    "attendu": [
+     "Arômes",
+     "16D",
+     "Floral",
+     "Herbacé",
+     "Terreux",
+     "Hors 16D",
+     "Agrumes",
+     "Tropicaux",
+     "Résineux",
+     "Épicé",
+     "Fiches lues",
+     "Nugget 10",
+     "Trident 2",
+     "Galaxy 5",
+     "Pointillé",
+     "Noyau",
+     "Pépins",
+     "Baies",
+     "Melon",
+     "Végétal",
+     "sans famille"
+    ],
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Arômes",
+      "16D",
+      "Floral",
+      "Herbacé",
+      "Terreux",
+      "Hors 16D",
+      "Agrumes",
+      "Tropicaux",
+      "Résineux",
+      "Épicé",
+      "Noyau, Pépins, Baies, Melon, Végétal",
+      "aucune des trois fiches ne les décrit, ce n’est pas zéro",
+      "Fiches lues",
+      "Nugget 4",
+      "Magnat 1",
+      "Nelson Sauvin 2",
+      "Pointillé"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : les fiches décrivent maintenant les douze familles, donc la note « Noyau, Pépins, Baies, Melon, Végétal : aucune des trois fiches ne les décrit » n'est plus écrite (elle ne l'est que pour une famille sans donnée) ; ces cinq familles ont leur ligne dans « Hors 16D ». Mêmes colonnes, mêmes deux groupes (16D, hors 16D), même ligne « sans famille ». (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-aromes.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Fiches lues : Nugget 10, Trident 2, Citra cryo 7 (avant Yeoman 1, Nelson Sauvin 9) ; mêmes colonnes et mêmes groupes. (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-aromes.png.) — e7, 26.10 : D115 : face à face sans produit d’arôme à 60′ (w1, b1d73ea1) : la 3e carte est Galaxy (35 g, double usage, premier du stock qui suffit) et non Citra cryo (24 g, aromatique) ; le classement de la liste (Trident, Yeoman, Helios, Centennial, Magnat, Citra cryo, Motueka, Galaxy), les cartes de Nugget et de Trident et le dessin sont identiques. Fiches lues : Nugget 10, Trident 2, Galaxy 5 (avant Citra cryo 7) ; mêmes colonnes et mêmes groupes. (captures avant : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-aromes.png (moitié droite : avant w1) ; après : work/missions/2026-10-25-integration-houblons/voies/e7-bloquants-b1d7/captures/etat-subst-aromes-construite.png, regardées.)"
+   }
+  },
+  {
+   "id": "etat-subst-radar",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "le radar D3 des trois",
+   "quoi": "Radar 12 axes : Nugget en contour seul, Magnat et Nelson Sauvin remplis ; secteurs hachurés et « Melon ? »… pour l’inconnu ; légende et « gras : attendu en 16D ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-radar-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "svg[data-radar]",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"porte\"]",
+    "selecteur_5345f6ad": "[data-role=\"porte\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Maquette : aucun radar.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-radar-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "svg[data-radar]",
+    "geste": "repos",
+    "attendu": [
+     "Radar des citations : Nugget, Trident, Galaxy",
+     "Nugget (l’original, contour seul)",
+     "gras : attendu en 16D",
+     "Du centre vers le bord",
+     "non décrit, cité, marqué"
+    ],
+    "interdit": [],
+    "couleurs_min": 2,
+    "choisie": {
+     "attendu": [
+      "Radar des citations : Nugget, Magnat, Nelson Sauvin",
+      "Nugget (l’original, contour seul)",
+      "gras : attendu en 16D",
+      "Du centre vers le bord",
+      "non décrit, cité, marqué"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : le radar compare Nugget, Yeoman, Nelson Sauvin ; la zone hachurée « sans donnée » a disparu parce que les douze axes sont décrits (mêmes anneaux, mêmes cercles gras pour les familles attendues en 16D). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-radar.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Le radar compare Nugget, Trident et Citra cryo ; mêmes anneaux, même contour seul pour l’original. (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-radar.png.) — e7, 26.10 : D115 : face à face sans produit d’arôme à 60′ (w1, b1d73ea1) : la 3e carte est Galaxy (35 g, double usage, premier du stock qui suffit) et non Citra cryo (24 g, aromatique) ; le classement de la liste (Trident, Yeoman, Helios, Centennial, Magnat, Citra cryo, Motueka, Galaxy), les cartes de Nugget et de Trident et le dessin sont identiques. Le radar compare Nugget, Trident et Galaxy ; mêmes anneaux, même contour seul pour l’original. (captures avant : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-radar.png (moitié droite : avant w1) ; après : work/missions/2026-10-25-integration-houblons/voies/e7-bloquants-b1d7/captures/etat-subst-radar-construite.png, regardées.)"
+   }
+  },
+  {
+   "id": "etat-subst-beta",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "β par source",
+   "quoi": "Rangées β : 3–6, 2,8–7, 4,5–8, mêmes traits que l’α ; note des sources (Beer Maverick, Hopsteiner).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-beta-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "#m-beta",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"porte\"]",
+    "selecteur_5345f6ad": "[data-role=\"porte\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Maquette : pas de β.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-beta-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "#m-beta",
+    "geste": "repos",
+    "attendu": [
+     "3–8",
+     "4–5",
+     "5–11,6",
+     "un par plage qui diffère",
+     "milieu moyen des sources"
+    ],
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "3–6",
+      "2,8–7",
+      "4,5–8",
+      "une source chacun (Beer Maverick, Hopsteiner)",
+      "milieu moyen des sources"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : β de Yeoman 4–5 à la place de Magnat 2,8–7 ; mêmes trois lignes, même légende. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-beta.png.) — 2e passe, commit deeb4d23 : dessin voulu, pas une régression (s1, exigence du brasseur du 26.10 : un trait par plage de source qui diffère, sources d'accord fusionnées, rangées plus hautes ; t1, D160 : mots traduits) : la légende « α et β : traits fins, une source chacun (Beer Maverick, Hopsteiner) » devient « un par plage qui diffère (des sources d'accord n'en font qu'un, leurs noms au survol) » ; Nugget β 3–8 (au lieu de 3–6). (captures avant (98fac6b2) et après (deeb4d23) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires-s1t1/etat-subst-beta.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Rangées β : Nugget 3–8, Trident 4–5, Citra cryo 2,7–4,5 ; même légende. (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-beta.png.) — e7, 26.10 : D115 : face à face sans produit d’arôme à 60′ (w1, b1d73ea1) : la 3e carte est Galaxy (35 g, double usage, premier du stock qui suffit) et non Citra cryo (24 g, aromatique) ; le classement de la liste (Trident, Yeoman, Helios, Centennial, Magnat, Citra cryo, Motueka, Galaxy), les cartes de Nugget et de Trident et le dessin sont identiques. Rangées β : Nugget 3–8, Trident 4–5, Galaxy 5–11,6 (avant Citra cryo 2,7–4,5) ; même légende. (captures avant : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-beta.png (moitié droite : avant w1) ; après : work/missions/2026-10-25-integration-houblons/voies/e7-bloquants-b1d7/captures/etat-subst-beta-construite.png, regardées.)"
+   }
+  },
+  {
+   "id": "etat-subst-huiles",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "huiles, composants",
+   "quoi": "Myrcène, Humulène, Caryophyllène, Linalol par houblon (% de l’huile) ; « ? non renseigné » pour le linalol de Magnat ; farnésène non importé.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-huiles-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "#m-huiles",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"porte\"]",
+    "selecteur_5345f6ad": "[data-role=\"porte\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Maquette : « · huiles 72 » (composante du score) seulement.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-huiles-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "#m-huiles",
+    "geste": "repos",
+    "attendu": [
+     "Huiles, composants",
+     "% de l’huile",
+     "Myrcène",
+     "Humulène",
+     "Caryophyllène",
+     "Linalol",
+     "non renseigné",
+     "27–60",
+     "Farnésène publié, non importé"
+    ],
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Huiles, composants",
+      "% de l’huile",
+      "Myrcène",
+      "Humulène",
+      "Caryophyllène",
+      "Linalol",
+      "non renseigné",
+      "48–59",
+      "Farnésène publié par Beer Maverick, non importé"
+     ]
+    },
+    "note": "D168 : noms de sources retirés (voie s2) : « par Beer Maverick » disparaît de « Farnésène publié » (la ligne reste, sans nom de source). D83/D86 puis s1/t1, 26.10 : dessin voulu, pas une régression (s1, exigence du brasseur du 26.10 : un trait par plage de source qui diffère, sources d'accord fusionnées, rangées plus hautes ; t1, D160 : mots traduits) : Nugget myrcène 27–60 (au lieu de 48–59), un trait fin par plage qui diffère sous chaque barre ; mêmes trois lignes par composant, mêmes titres, même note « Linalol de Yeoman non renseigné ». (captures avant (98fac6b2) et après (deeb4d23) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires-s1t1/etat-subst-huiles.png.)"
+   }
+  },
+  {
+   "id": "etat-subst-style",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "relation au 16D",
+   "quoi": "« 16D Foreign Extra Stout attend floral, herbacé, terreux ; IBU 50–70, la recette est à 59,7 et chaque dose la garde. » ; par houblon : ce qu’il garde et perd, ses mots (Beer Maverick), ses styles d’emploi, « aucune stout citée ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-style-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "#style16",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-famille-ligne]",
+    "selecteur_5345f6ad": "[data-famille-ligne]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : « ma bière » au style en mini barres (familles attendues), sans phrase sur le style, les mots ni les styles d’emploi.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-style-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "#style16",
+    "geste": "repos",
+    "attendu": [
+     "16D Foreign Extra Stout",
+     "attend floral, herbacé, terreux",
+     "IBU 50–70",
+     "la recette est à 59,7 et chaque dose la garde",
+     "cite les trois",
+     "ne cite aucune des trois",
+     "fruité, agrumes, fruits tropicaux, fruit de la passion",
+     "fruit de la passion, agrumes, pêche, ananas, fruits tropicaux, cannabis",
+     "Employé en Hazy IPA, IPA",
+     "Employé en IPA, NEIPA",
+     "aucune stout citée"
+    ],
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "16D Foreign Extra Stout",
+      "attend floral, herbacé, terreux",
+      "IBU 50–70",
+      "la recette est à 59,7 et chaque dose la garde",
+      "cite les trois",
+      "garde floral (cité), perd herbacé et terreux",
+      "ne cite aucune des trois",
+      "vin blanc, fruité, groseille à maquereau, raisin, sauvignon blanc",
+      "aucune stout citée",
+      "Aucun style d’emploi dans le dépôt"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : la ligne du premier remplaçant est celle de Yeoman (« ne cite aucune des trois. noble, agrumes (Beer Maverick) ») et non de Magnat (« garde floral (cité), perd herbacé et terreux ») ; même liste de quatre lignes (16D, Nugget, remplaçant, Nelson Sauvin). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-style.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Les quatre lignes sont la 16D, Nugget, Trident (« ne cite aucune des trois ») et Citra cryo (« garde floral (marqué), perd herbacé et terreux ») ; les trois houblons ont maintenant un style d’emploi : « Aucun style d’emploi dans le dépôt » n’est plus lu par cette fixture (à rejouer avec un houblon sans style d’emploi : DÉCISION de e6). (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-style.png.) — e7, 26.10 : D115 : face à face sans produit d’arôme à 60′ (w1, b1d73ea1) : la 3e carte est Galaxy (35 g, double usage, premier du stock qui suffit) et non Citra cryo (24 g, aromatique) ; le classement de la liste (Trident, Yeoman, Helios, Centennial, Magnat, Citra cryo, Motueka, Galaxy), les cartes de Nugget et de Trident et le dessin sont identiques. Les quatre lignes sont la 16D, Nugget, Trident (« ne cite aucune des trois ») et Galaxy (« ne cite aucune des trois. fruit de la passion, agrumes, pêche, ananas, fruits tropicaux, cannabis. Employé en IPA, NEIPA ») ; la ligne « garde floral (marqué), perd herbacé et terreux » était celle de Citra cryo. (captures avant : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-style.png (moitié droite : avant w1) ; après : work/missions/2026-10-25-integration-houblons/voies/e7-bloquants-b1d7/captures/etat-subst-style-construite.png, regardées.)"
+   }
+  },
+  {
+   "id": "etat-subst-actions",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "les deux actions",
+   "quoi": "« Ajouter Magnat aux achats » (contour) et « Remplacer par Nelson Sauvin » (plein, noir).",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-actions-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": ".choisir",
+    "geste_5345f6ad": "premier écran, défilé jusqu’à [data-role=\"dock\"]",
+    "selecteur_5345f6ad": "[data-role=\"dock\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "different",
+   "ecart": "Maquette : « Annuler » et « Remplacer › » en pied, résumé « 46 g de Nugget → 62,5 g de Nelson Sauvin » ; pas d’« Ajouter … aux achats ».",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-actions-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": ".choisir",
+    "geste": "repos",
+    "attendu": [
+     "Ajouter Trident aux achats",
+     "Remplacer",
+     "Citra cryo"
+    ],
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Ajouter Magnat aux achats",
+      "Remplacer",
+      "Nelson Sauvin"
+     ]
+    },
+    "note": "D83/D86, 26.10 : données changées, dessin identique : le bouton nomme Yeoman (premier remplaçant sûr à acheter) ; mêmes « Ma bière avec chacun », même bouton, même pied. (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-actions.png.) — e6, 26.10 : classe (a), dessin identique : D106 (3) (à 60′ l’usage « arôme » de Beer Maverick recule : Sabro, Nelson Sauvin, Idaho 7, Galaxy et Hallertau Blanc quittent le haut) et D102 J1 (l’α passe de 0,4 à 0,15 à 60′ : Trident et Yeoman à 99, Magnat à 96). Attribué par sonde (voies/e6-ecarts-lot/sonde-subst.ts, Nugget à 60′, stout 16D, fixtures) : les deux retirés rendent exactement le classement de fb0d14e3 ; le catalogue complet de c7 ne change pas ce haut de liste. Le bouton nomme Trident (premier remplaçant sûr à acheter) et le pied propose « 46 g de Nugget → 24 g de Citra cryo » (premier du stock qui suffit) ; même bouton « Remplacer ›». (captures avant (deeb4d23, ETATS OK 138/138) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e6-ecarts-lot/paires/etat-subst-actions.png.)"
+   }
+  },
+  {
+   "id": "etat-subst-lire",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "« Lire ces scores », ouvert",
+   "quoi": "Ouvert au repos, en bas : calculés depuis nos fiches (pas Beer Maverick), la plage expliquée (Altus 79 à 99), sans inconnue n’est pas sûr, le pire cas d’abord, huit des 318, pourquoi ces deux au face à face.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-lire-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "details",
+    "geste_5345f6ad": "toucher « ? »",
+    "selecteur_5345f6ad": "[data-role=\"legende-bouton\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Maquette : « ? » ouvre quatre lignes sur les colonnes ; rien sur l’origine des scores, la plage ni le pire cas.",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-lire-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "details",
+    "geste": "repos",
+    "attendu": [
+     "Lire ces scores",
+     "Calculés depuis nos fiches",
+     "pas des scores de substitution déjà publiés",
+     "Prix, rareté et cohumulone",
+     "Sans inconnue ne veut pas dire sûr",
+     "Le pire cas d’abord",
+     "premiers du catalogue",
+     "premier du stock qui suffit"
+    ],
+    "interdit": [],
+    "choisie": {
+     "attendu": [
+      "Lire ces scores",
+      "Calculés depuis nos fiches",
+      "pas les scores de substitution de Beer Maverick",
+      "Prix, rareté et cohumulone",
+      "La plage",
+      "Altus vaut entre 79 et 99",
+      "Sans inconnue ne veut pas dire sûr",
+      "Le pire cas d’abord",
+      "premiers du catalogue",
+      "premier du stock qui suffit"
+     ]
+    },
+    "note": "D168 : noms de sources retirés (voie s2). « pas les scores de substitution de Beer Maverick » devient « pas des scores de substitution déjà publiés » (même sens : des scores publiés, non importés) ; la maquette choisie garde son nom (attendu ancien). D83/D86, 26.10 : données changées, dessin identique : le paragraphe « La plage : … Altus vaut entre 79 et 99 » n'est écrit que s'il existe un candidat à composante inconnue (aucun avec ces données) ; les cinq autres paragraphes restent dans le même ordre. « La plage » n'était plus lu que par coïncidence (« bas de la plage »). (captures avant (98fac6b2) et après (HEAD) regardées côte à côte : work/missions/2026-10-25-integration-houblons/voies/e3-etats-donnees/captures/paires/etat-subst-lire.png.)"
+   }
+  },
+  {
+   "id": "etat-subst-lire-fermer",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "toucher « Lire ces scores » (refermer)",
+   "quoi": "Le résumé se referme : il ne reste que « Lire ces scores ».",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-lire-fermer-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": "summary",
+    "geste_5345f6ad": "toucher [data-role=\"legende-bouton\"]",
+    "selecteur_5345f6ad": "[data-role=\"legende-bouton\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "absent",
+   "ecart": "Maquette : pas de « Lire ces scores ».",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-lire-fermer-5345f6ad.png",
+   "voulu": "",
+   "verif": {
+    "route": "substituer",
+    "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+    "selecteur_choisie": "summary",
+    "geste": "toucher",
+    "attendu": [
+     "Lire ces scores"
+    ],
+    "interdit": [
+     "Calculés depuis nos fiches"
+    ]
+   }
+  },
+  {
+   "id": "etat-subst-croix",
+   "mots": "« Substitution, ça serait plus du u4 » (19.10, SPEC-BRASSEUR l. 217) ; « Ajouter, vue -> substituer à faire dans le git » (23.10, #145)",
+   "etat": "toucher le retour",
+   "quoi": "Le « ‹ » de u4 (statique) ramène à la recette.",
+   "page_choisie": "work/refonte-frontend/v4/ecran-1/fils11-substitution/u4/vue.html",
+   "capture_choisie": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-croix-choisie.png",
+   "jeu": {
+    "page": "prototypes/houblons-v4/maquettes/parcours-5345f6ad/substituer/etat.html",
+    "selecteur_geste_choisie": ".retour",
+    "geste_5345f6ad": "toucher [data-role=\"retour\"]",
+    "selecteur_5345f6ad": "[data-role=\"retour\"]",
+    "viewport": "390x844 tactile (hasTouch, isMobile), puppeteer-core, Chrome"
+   },
+   "verdict_5345f6ad": "present",
+   "ecart": "Maquette : ✕ qui ramène à l’étape Houblons (D118).",
+   "capture_5345f6ad": "work/refonte-frontend/v4/choix/etats/captures/etat-subst-croix-5345f6ad.png",
+   "voulu": "D109 : la croix ✕ remplace le ‹ de u4 (sa page est statique, le retour n’y est pas jouable)"
+  }
+ ]
+}

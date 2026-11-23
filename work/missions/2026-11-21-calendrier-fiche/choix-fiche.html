@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calendrier · fiche d'une chose · 11 versions · 21.11</title>
+<style>
+  :root { --fond:#f3f3f1; --carte:#fff; --trait:#b9b9b4; --pas:#e8e8e4; --encre:#2b2b29; --gris:#6a6a66; --fort:#1f1f1d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--fond); color:var(--encre); font:16px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width:1100px; margin:0 auto; padding:10px 8px 40px; }
+  h1 { font-size:22px; margin:4px 0 2px; }
+  .sous { color:var(--gris); margin:0 0 10px; font-size:15px; }
+  blockquote { margin:0 0 6px; padding:4px 0 4px 10px; border-left:3px solid var(--fort); font-style:italic; font-size:16px; }
+  blockquote.fort { font-size:18px; font-weight:700; }
+  #a-choisir { background:var(--carte); border:2px solid var(--fort); border-radius:10px; padding:10px; margin:10px 0 12px; }
+  #a-choisir h2 { font-size:17px; margin:0 0 6px; }
+  #a-choisir ol { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+  #a-choisir a { display:flex; gap:8px; align-items:baseline; color:inherit; text-decoration:none; min-height:44px; padding:6px 8px; border:1.5px solid var(--trait); border-radius:8px; background:var(--fond); font-size:15px; }
+  #a-choisir a b { font-size:18px; }
+  #a-choisir p { margin:8px 0 0; font-size:14px; color:var(--gris); }
+  section { background:var(--carte); border:1.5px solid var(--trait); border-radius:12px; padding:10px 8px; margin:0 0 14px; }
+  section h2 { font-size:19px; margin:0 0 4px; }
+  section h2 .code { display:inline-block; min-width:40px; text-align:center; background:var(--fort); color:#fff; border-radius:6px; margin-right:6px; padding:0 4px; }
+  .idee { margin:0 0 6px; font-size:16px; }
+  .chiffres { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 8px; }
+  .chiffres span { background:var(--pas); border-radius:6px; padding:3px 7px; font-size:14px; }
+  .chiffres b { font-size:17px; }
+  .rang { display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; scroll-snap-type:x mandatory; }
+  .rang figure { margin:0; flex:none; scroll-snap-align:start; }
+  .rang img { display:block; width:340px; height:auto; border:1px solid var(--trait); border-radius:8px; }
+  .rang img.large { width:620px; }
+  .rang figcaption { font-size:14px; color:var(--gris); margin-top:3px; }
+  .prendre { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-height:48px; margin-top:8px; border:2px solid var(--fort); border-radius:10px; background:var(--carte); color:var(--fort); font:inherit; font-size:17px; font-weight:800; cursor:pointer; }
+  .prendre[aria-pressed="true"] { background:var(--fort); color:#fff; }
+  .prendre[aria-pressed="true"]::after { content:" ✓"; }
+  .ch-note { display:block; margin-top:8px; font-size:14px; color:var(--gris); }
+  .ch-note textarea { display:block; width:100%; min-height:56px; margin-top:4px; padding:8px; border:1px solid var(--trait); border-radius:6px; background:var(--carte); color:var(--encre); font:inherit; font-size:15px; }
+  .ch-etat { font-size:14px; color:var(--gris); margin-top:4px; min-height:1em; }
+  .ecartee { font-size:14px; color:var(--gris); }
+  .ch-barre { position:sticky; bottom:0; background:var(--carte); border-top:1px solid var(--trait); padding:10px 12px; margin-top:16px; font-size:15px; font-weight:700; }
+  @media (min-width:700px) { #a-choisir ol { grid-template-columns:repeat(4, 1fr); } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Calendrier · la fiche d'une chose · 21.11</h1>
+  <p class="sous">11 mini maquettes, mêmes données que ton écran : NEIPA Test au repos, une date modifiée, Jhhh avec un achat manquant, thème cave.</p>
+
+  <blockquote class="fort">« L'édition, detail est franchement mal fait. Pas compact, pas visuel, vraiment à revoir complète »</blockquote>
+  <blockquote class="fort">« Pareil, la modification est horrible »</blockquote>
+  <blockquote>« trop de text et pas assez de visuel » · « tailles fix » · « Ça, ça fonctionne bien… date dans le passé »</blockquote>
+
+  <nav id="a-choisir">
+    <h2>À choisir : une ou deux versions, d'un toucher sur « Je prends »</h2>
+    <ol>
+      <li><a href="#v01"><b>v01</b>Frise des phases</a></li>
+      <li><a href="#v02"><b>v02</b>Pastilles</a></li>
+      <li><a href="#v03"><b>v03</b>Ligne compacte</a></li>
+      <li><a href="#v04"><b>v04</b>Volets</a></li>
+      <li><a href="#v05"><b>v05</b>Barre loupe</a></li>
+      <li><a href="#v07"><b>v07</b>Ticket</a></li>
+      <li><a href="#v08"><b>v08</b>Étagère</a></li>
+      <li><a href="#v09"><b>v09</b>Fil des dates</a></li>
+      <li><a href="#v10"><b>v10</b>Bulle</a></li>
+      <li><a href="#v11"><b>v11</b>Volet fixe</a></li>
+      <li><a href="#v12"><b>v12</b>Jauges</a></li>
+      <li><a href="#ref"><b>Réf.</b>Aujourd'hui</a></li>
+    </ol>
+    <p>Mélanger deux versions marche aussi : dis-le dans la note.</p>
+  </nav>
+
+  <section id="ref">
+    <h2>Aujourd'hui, en ligne</h2>
+    <p class="idee">Grande carte de texte, quatre boutons ; Modifier rouvre l'ancien carrousel de semaines.</p>
+    <div class="rang">
+      <figure><img src="ref/capture-15.jpg" alt="Fiche actuelle d'un brassin"><figcaption>Fiche d'un brassin</figcaption></figure>
+      <figure><img class="large" src="ref/capture-16.jpg" alt="Fiche actuelle de la fête vi"><figcaption>Fiche de la fête « vi »</figcaption></figure>
+      <figure><img class="large" src="ref/capture-17.jpg" alt="Fiche actuelle, autre chose"><figcaption>Fiche, frais non renseignés</figcaption></figure>
+      <figure><img src="ref/capture-18.jpg" alt="Modifier aujourd'hui : carrousel de semaines"><figcaption>Modifier : le carrousel</figcaption></figure>
+    </div>
+  </section>
+
+  <section id="v01">
+    <h2><span class="code">v01</span>Frise des phases</h2>
+    <p class="idee">Les phases du brassin en frise : chaque date est un repère qu'on tire.</p>
+    <div class="chiffres"><span><b>232</b> px de haut</span><span><b>4</b> mots</span><span>Modifier : tirer la fin au 12 déc.</span></div>
+    <div class="rang">
+      <figure><img src="captures/v01-repos.jpg" alt="v01 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="captures/v01-edition.jpg" alt="v01 en modification"><figcaption>Modifier</figcaption></figure>
+      <figure><img src="captures/v01-limite.jpg" alt="v01 Jhhh avec achat manquant"><figcaption>Jhhh, achat manquant</figcaption></figure>
+      <figure><img src="captures/v01-repos-cave.jpg" alt="v01 en cave"><figcaption>Cave</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="v01" aria-pressed="false">Je prends v01</button>
+    <label class="ch-note">Note sur v01<textarea data-note="v01"></textarea></label>
+    <div class="ch-etat" data-etat="v01"></div>
+  </section>
+
+  <section id="v02">
+    <h2><span class="code">v02</span>Pastilles chiffrées</h2>
+    <p class="idee">Quatre gros chiffres en pastilles ; l'inconnu en pointillé, à remplir d'un toucher.</p>
+    <div class="chiffres"><span><b>186</b> px de haut</span><span><b>5</b> mots</span><span>Modifier : la pastille devient une règle</span></div>
+    <div class="rang">
+      <figure><img src="captures/v02-repos.jpg" alt="v02 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="captures/v02-edition.jpg" alt="v02 en modification"><figcaption>Modifier</figcaption></figure>
+      <figure><img src="captures/v02-limite.jpg" alt="v02 Jhhh avec achat manquant"><figcaption>Jhhh, achat manquant</figcaption></figure>
+      <figure><img src="captures/v02-repos-cave.jpg" alt="v02 en cave"><figcaption>Cave</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="v02" aria-pressed="false">Je prends v02</button>
+    <label class="ch-note">Note sur v02<textarea data-note="v02"></textarea></label>
+    <div class="ch-etat" data-etat="v02"></div>
+  </section>
+
+  <section id="v03">
+    <h2><span class="code">v03</span>Ligne compacte</h2>
+    <p class="idee">Une seule ligne sous la barre ; Modifier ouvre la frise Durée de la feuille d'ajout, passé compris.</p>
+    <div class="chiffres"><span><b>52</b> px de haut</span><span><b>0</b> mot</span><span>Modifier : « vi », 22 sem., S42 → S10</span></div>
+    <div class="rang">
+      <figure><img src="captures/v03-repos.jpg" alt="v03 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="captures/v03-edition.jpg" alt="v03 en modification"><figcaption>Modifier « vi »</figcaption></figure>
+      <figure><img src="captures/v03-limite.jpg" alt="v03 Jhhh avec achat manquant"><figcaption>Jhhh, achat manquant</figcaption></figure>
+      <figure><img src="captures/v03-repos-cave.jpg" alt="v03 en cave"><figcaption>Cave</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="v03" aria-pressed="false">Je prends v03</button>
+    <label class="ch-note">Note sur v03<textarea data-note="v03"></textarea></label>
+    <div class="ch-etat" data-etat="v03"></div>
+  </section>
+
+  <section id="v04">
+    <h2><span class="code">v04</span>Carte à volets</h2>
+    <p class="idee">Un rail de pictos à gauche déplie un volet à la fois : dates, achats, frais.</p>
+    <div class="chiffres"><span><b>210</b> px de haut</span><span><b>2</b> mots</span><span>Modifier : la garde de Jhhh, − et +</span></div>
+    <div class="rang">
+      <figure><img src="captures/v04-repos.jpg" alt="v04 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="captures/v04-edition.jpg" alt="v04 en modification"><figcaption>Modifier une phase</figcaption></figure>
+      <figure><img src="captures/v04-limite.jpg" alt="v04 Jhhh avec achat manquant"><figcaption>Jhhh, volet achats</figcaption></figure>
+      <figure><img src="captures/v04-repos-cave.jpg" alt="v04 en cave"><figcaption>Cave</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="v04" aria-pressed="false">Je prends v04</button>
+    <label class="ch-note">Note sur v04<textarea data-note="v04"></textarea></label>
+    <div class="ch-etat" data-etat="v04"></div>
+  </section>
+
+  <section id="v05">
+    <h2><span class="code">v05</span>Barre loupe</h2>
+    <p class="idee">La barre touchée s'agrandit sous elle, à son échelle : on tire ses bords au doigt, passé compris.</p>
+    <div class="chiffres"><span><b>154</b> px de haut</span><span><b>1</b> mot</span><span>Modifier : début de « vi » tiré au 28 sept.</span></div>
+    <div class="rang">
+      <figure><img src="captures/v05-repos.jpg" alt="v05 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="captures/v05-edition.jpg" alt="v05 en modification"><figcaption>Modifier « vi », dans le passé</figcaption></figure>
+      <figure><img src="captures/v05-limite.jpg" alt="v05 Jhhh avec achat manquant"><figcaption>Jhhh, achat manquant</figcaption></figure>
+      <figure><img src="captures/v05-repos-cave.jpg" alt="v05 en cave"><figcaption>Cave</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="v05" aria-pressed="false">Je prends v05</button>
+    <label class="ch-note">Note sur v05<textarea data-note="v05"></textarea></label>
+    <div class="ch-etat" data-etat="v05"></div>
+  </section>
+
+  <section id="v07">
+    <h2><span class="code">v07</span>Ticket</h2>
+    <p class="idee">Un ticket : la souche colorée porte le chiffre clé, le corps les dates, le talon les gestes.</p>
+    <div class="chiffres"><span><b>150</b> px de haut</span><span><b>3</b> mots</span><span>Modifier : « vi », 12 oct. → 14 mars</span></div>
+    <div class="rang">
+      <figure><img src="captures/v07-repos.jpg" alt="v07 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="captures/v07-edition.jpg" alt="v07 en modification"><figcaption>Modifier « vi »</figcaption></figure>
+      <figure><img src="captures/v07-limite.jpg" alt="v07 Jhhh avec achat manquant"><figcaption>Jhhh, achat manquant</figcaption></figure>
+      <figure><img src="captures/v07-repos-cave.jpg" alt="v07 en cave"><figcaption>Cave</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="v07" aria-pressed="false">Je prends v07</button>
+    <label class="ch-note">Note sur v07<textarea data-note="v07"></textarea></label>
+    <div class="ch-etat" data-etat="v07"></div>
+  </section>
+
+  <section id="v08">
+    <h2><span class="code">v08</span>Étagère</h2>
+    <p class="idee">Chaque valeur est une case d'étagère, comme la vue stock « épicerie » : gros picto, gros chiffre.</p>
+    <div class="chiffres"><span><b>210</b> px de haut</span><span><b>3</b> mots</span><span>Modifier : la garde au jour près</span></div>
+    <div class="rang">
+      <figure><img src="captures/v08-repos.jpg" alt="v08 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="captures/v08-edition.jpg" alt="v08 en modification"><figcaption>Modifier une phase</figcaption></figure>
+      <figure><img src="captures/v08-limite.jpg" alt="v08 Jhhh avec achat manquant"><figcaption>Jhhh, achat manquant</figcaption></figure>
+      <figure><img src="captures/v08-repos-cave.jpg" alt="v08 en cave"><figcaption>Cave</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="v08" aria-pressed="false">Je prends v08</button>
+    <label class="ch-note">Note sur v08<textarea data-note="v08"></textarea></label>
+    <div class="ch-etat" data-etat="v08"></div>
+  </section>
+
+  <section id="v09">
+    <h2><span class="code">v09</span>Fil des dates</h2>
+    <p class="idee">Les dates en fil vertical, de la plus ancienne à la prochaine ; on touche une date pour la régler.</p>
+    <div class="chiffres"><span><b>172</b> px de haut</span><span><b>0</b> mot</span><span>Modifier : glissière, 12 déc.</span></div>
+    <div class="rang">
+      <figure><img src="captures/v09-repos.jpg" alt="v09 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="captures/v09-edition.jpg" alt="v09 en modification"><figcaption>Modifier</figcaption></figure>
+      <figure><img src="captures/v09-limite.jpg" alt="v09 Jhhh avec achat manquant"><figcaption>Jhhh, achat manquant</figcaption></figure>
+      <figure><img src="captures/v09-repos-cave.jpg" alt="v09 en cave"><figcaption>Cave</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="v09" aria-pressed="false">Je prends v09</button>
+    <label class="ch-note">Note sur v09<textarea data-note="v09"></textarea></label>
+    <div class="ch-etat" data-etat="v09"></div>
+  </section>
+
+  <section id="v10">
+    <h2><span class="code">v10</span>Bulle sur la barre</h2>
+    <p class="idee">Une petite bulle accrochée à la barre ; on règle les dates en tirant les poignées de la vraie barre.</p>
+    <div class="chiffres"><span><b>106</b> px de haut</span><span><b>0</b> mot</span><span>Modifier : « vi », S8 → S10</span></div>
+    <div class="rang">
+      <figure><img src="captures/v10-repos.jpg" alt="v10 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="captures/v10-edition.jpg" alt="v10 en modification"><figcaption>Modifier « vi »</figcaption></figure>
+      <figure><img src="captures/v10-limite.jpg" alt="v10 Jhhh avec achat manquant"><figcaption>Jhhh, achat manquant</figcaption></figure>
+      <figure><img src="captures/v10-repos-cave.jpg" alt="v10 en cave"><figcaption>Cave</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="v10" aria-pressed="false">Je prends v10</button>
+    <label class="ch-note">Note sur v10<textarea data-note="v10"></textarea></label>
+    <div class="ch-etat" data-etat="v10"></div>
+  </section>
+
+  <section id="v11">
+    <h2><span class="code">v11</span>Volet de taille fixe</h2>
+    <p class="idee">Un volet de hauteur fixe au-dessus des onglets : la frise ne bouge jamais, quel que soit le contenu.</p>
+    <div class="chiffres"><span><b>236</b> px, toujours</span><span><b>4</b> mots</span><span>Modifier : « vi », frise dans le volet</span></div>
+    <div class="rang">
+      <figure><img src="captures/v11-repos.jpg" alt="v11 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="captures/v11-edition.jpg" alt="v11 en modification"><figcaption>Modifier « vi »</figcaption></figure>
+      <figure><img src="captures/v11-limite.jpg" alt="v11 Jhhh avec achat manquant"><figcaption>Jhhh, achat manquant</figcaption></figure>
+      <figure><img src="captures/v11-repos-cave.jpg" alt="v11 en cave"><figcaption>Cave</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="v11" aria-pressed="false">Je prends v11</button>
+    <label class="ch-note">Note sur v11<textarea data-note="v11"></textarea></label>
+    <div class="ch-etat" data-etat="v11"></div>
+  </section>
+
+  <section id="v12">
+    <h2><span class="code">v12</span>Jauges de cuve</h2>
+    <p class="idee">Le brassin en cuve : les jours montent dans la jauge ; la fin se règle en tirant le niveau.</p>
+    <div class="chiffres"><span><b>238</b> px de haut</span><span><b>1</b> mot</span><span>Modifier : niveau tiré au 12 déc.</span></div>
+    <div class="rang">
+      <figure><img src="captures/v12-repos.jpg" alt="v12 au repos"><figcaption>Au repos</figcaption></figure>
+      <figure><img src="captures/v12-edition.jpg" alt="v12 en modification"><figcaption>Modifier</figcaption></figure>
+      <figure><img src="captures/v12-limite.jpg" alt="v12 Jhhh avec achat manquant"><figcaption>Jhhh, achat manquant</figcaption></figure>
+      <figure><img src="captures/v12-repos-cave.jpg" alt="v12 en cave"><figcaption>Cave</figcaption></figure>
+    </div>
+    <button class="prendre" data-v="v12" aria-pressed="false">Je prends v12</button>
+    <label class="ch-note">Note sur v12<textarea data-note="v12"></textarea></label>
+    <div class="ch-etat" data-etat="v12"></div>
+  </section>
+
+  <section id="general">
+    <h2>Note générale</h2>
+    <label class="ch-note">Un mélange, une idée à garder d'une version écartée…<textarea data-note="general"></textarea></label>
+    <div class="ch-etat" data-etat="general"></div>
+    <p class="ecartee">v06 (anneau) écartée : l'anneau ne se voyait pas au repos.</p>
+  </section>
+
+  <div class="ch-barre" id="ch-barre">Tes choix : aucun</div>
+</main>
+<script>
+(function(){
+  var L=['v01','v02','v03','v04','v05','v07','v08','v09','v10','v11','v12'],etat={},db=null,minuteurs={};
+  function barre(){var p=L.filter(function(v){return etat[v]&&etat[v].pris});document.getElementById('ch-barre').textContent='Tes choix : '+(p.length?p.join(', '):'aucun')+(db?' · enregistré pour Claude':' · gardé sur cet appareil');}
+  function montrer(v){var b=document.querySelector('[data-v="'+v+'"]');if(b)b.setAttribute('aria-pressed',etat[v]&&etat[v].pris?'true':'false');var ta=document.querySelector('[data-note="'+v+'"]');if(ta&&document.activeElement!==ta)ta.value=(etat[v]&&etat[v].note)||'';}
+  function local(){try{localStorage.setItem('choix-fiche-cal',JSON.stringify(etat))}catch(e){}}
+  function ecrire(v){var e=document.querySelector('[data-etat="'+v+'"]');local();if(!db){if(e)e.textContent='Gardé sur cet appareil';return;}if(e)e.textContent='Enregistrement…';db.doc('choix/fiche-'+v).set({pris:!!(etat[v]&&etat[v].pris),note:(etat[v]&&etat[v].note)||'',le:new Date().toISOString()}).then(function(){if(e)e.textContent='Enregistré';}).catch(function(){if(e)e.textContent='Pas enregistré (droits ou réseau) ; gardé sur cet appareil';});}
+  try{var g=JSON.parse(localStorage.getItem('choix-fiche-cal')||'{}');if(g&&typeof g==='object')etat=g;}catch(e){}
+  L.forEach(function(v){var b=document.querySelector('[data-v="'+v+'"]');if(b)b.addEventListener('click',function(){etat[v]=etat[v]||{};etat[v].pris=!etat[v].pris;montrer(v);barre();ecrire(v);});montrer(v);});
+  L.concat(['general']).forEach(function(v){var ta=document.querySelector('[data-note="'+v+'"]');if(!ta)return;ta.value=(etat[v]&&etat[v].note)||'';ta.addEventListener('input',function(){etat[v]=etat[v]||{};etat[v].note=ta.value;clearTimeout(minuteurs[v]);minuteurs[v]=setTimeout(function(){ecrire(v)},700);});});
+  barre();
+  if(window.claude&&window.claude.use){window.claude.use('db').then(function(d){if(!d)return;db=d;L.concat(['general']).forEach(function(v){d.doc('choix/fiche-'+v).onSnapshot(function(s){if(!s.exists)return;var x=s.data()||{};etat[v]={pris:!!x.pris,note:x.note||''};montrer(v);barre();},function(){});});barre();}).catch(function(){});}
+})();
+</script>
+</body>
+</html>

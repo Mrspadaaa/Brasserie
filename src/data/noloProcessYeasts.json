@@ -1,0 +1,124 @@
+{
+  "version": "nolo-process-yeasts-2026-09-12",
+  "sources": {
+    "lowFermentability": {
+      "title": "Best Practices — Low alcohol beer",
+      "author": "Lallemand Brewing",
+      "year": 2021,
+      "kind": "manufacturer",
+      "reference": "https://connect.lallemandbrewing.com/wp-content/uploads/2021/06/LAL-bestpractices-Low_alcohol_beer-DIGITAL.pdf",
+      "locator": "Procédure à faible fermentescibilité et souches maltotriose négatives. Les résultats du moût expérimental ne sont pas une plage universelle."
+    },
+    "processes": {
+      "title": "Best Practices — A Novel Fermentation Approach to NABLAB",
+      "author": "Lallemand Brewing",
+      "year": null,
+      "kind": "manufacturer",
+      "reference": "https://connect.lallemandbrewing.com/wp-content/uploads/2023/06/NABLAB-BP-ENG-Digital-LalBrew.pdf",
+      "locator": "p. 1 : retrait d’alcool, arrêt de fermentation et limitation de fermentescibilité ; consulté le 12 septembre 2026."
+    },
+    "coldContact": {
+      "title": "Production of non-alcoholic beer via cold contact fermentation with Torulaspora delbrueckii",
+      "author": "Nikulin, Aisala et Gibson",
+      "year": 2022,
+      "kind": "research",
+      "reference": "https://doi.org/10.1002/jib.681",
+      "locator": "Méthodes et discussion : environ 1 °C ; souche lager A15 et T. delbrueckii Tdel8. Aucun résultat transférable automatiquement aux souches commerciales proposées."
+    }
+  },
+  "additionalStrains": [
+    {
+      "form": "liquide",
+      "family": "restricted",
+      "profile": "fruity",
+      "strain": {
+        "yeastId": "white-labs-wlp603",
+        "name": "White Labs WLP603",
+        "aliases": ["WLP603", "WLP 603", "WLP603 Torulaspora delbrueckii"],
+        "sugars": {"glucose": "yes", "fructose": "yes", "sucrose": "yes", "maltose": "no", "maltotriose": "no"},
+        "hydrolysis": "unknown",
+        "pof": "unknown",
+        "temperatureC": {"min": 19, "max": 23},
+        "attenuationPct": null,
+        "durationDays": null,
+        "pitchGL": null,
+        "aroma": ["Esters fruités ; candidate pour IPA fruitée ou saison"],
+        "limitation": "Atténuation de 20 % affichée comme point, sans dispersion : aucune plage fabriquée. Le profil concerne WLP603, pas toutes les Torulaspora delbrueckii. Durée et dose en grammes non publiées ; dimensionner l’ensemencement liquide. Le protocole froid de Tdel8 n’est pas validé pour WLP603.",
+        "availability": "Souche Vault : disponibilité et conditionnement à confirmer auprès de White Labs.",
+        "source": {
+          "title": "WLP603 Torulaspora delbrueckii",
+          "author": "White Labs",
+          "year": null,
+          "kind": "manufacturer",
+          "reference": "https://www.whitelabs.com/yeast-single?id=176&type=YEAST",
+          "locator": "Fiche consultée le 12 septembre 2026 : sucres, 19–23 °C, esters et statut Vault. Le point 20 % n’est pas un intervalle."
+        }
+      }
+    },
+    {
+      "form": "liquide",
+      "family": "restricted",
+      "profile": "neutral",
+      "strain": {
+        "yeastId": "white-labs-wlp686",
+        "name": "White Labs WLP686",
+        "aliases": ["WLP686", "WLP 686", "WLP686 Zygosaccharomyces lentus"],
+        "sugars": {"glucose": "yes", "fructose": "yes", "sucrose": "yes", "maltose": "no", "maltotriose": "no"},
+        "hydrolysis": "unknown",
+        "pof": "unknown",
+        "temperatureC": {"min": 20, "max": 24},
+        "attenuationPct": null,
+        "durationDays": null,
+        "pitchGL": null,
+        "aroma": ["Profil neutre ; peu d’esters perçus dans les essais fabricant"],
+        "limitation": "Seule une borne supérieure d’atténuation de 20 % est affichée, pas une plage 0–20 %. Souche décrite comme plus lente pour consommer les sucres et abaisser le pH, sans durée chiffrée. Dimensionner l’ensemencement liquide.",
+        "availability": "Souche Vault : disponibilité et conditionnement à confirmer auprès de White Labs.",
+        "source": {
+          "title": "WLP686 Zygosaccharomyces lentus",
+          "author": "White Labs",
+          "year": null,
+          "kind": "manufacturer",
+          "reference": "https://www.whitelabs.com/yeast-single?id=197&type=YEAST",
+          "locator": "Fiche consultée le 12 septembre 2026 : sucres, 20–24 °C, profil neutre et cinétique plus lente. Aucune durée déduite."
+        }
+      }
+    },
+    {
+      "form": "sèche",
+      "family": "conventional",
+      "profile": "lowAttenuation",
+      "strain": {
+        "yeastId": "lalbrew-windsor",
+        "name": "LalBrew Windsor",
+        "aliases": ["Windsor", "LalBrew Windsor", "Lallemand Windsor"],
+        "sugars": {"glucose": "unknown", "fructose": "unknown", "sucrose": "unknown", "maltose": "unknown", "maltotriose": "no"},
+        "hydrolysis": "unknown",
+        "pof": "unknown",
+        "temperatureC": {"min": 15, "max": 25},
+        "attenuationPct": {"min": 65, "max": 72},
+        "durationDays": null,
+        "pitchGL": {"min": 0.5, "max": 1},
+        "aroma": ["Ale anglaise fruitée, corps plus présent"],
+        "limitation": "Maltotriose négative, mais pas une souche maltose négative. Les 65–72 % concernent la plage fabricant en brassage classique ; un moût peu fermentescible doit être calibré. La faible floculation ne constitue pas un moyen d’arrêt de fermentation.",
+        "availability": "Conditionnements secs 11 g et 500 g référencés ; vérifier le distributeur.",
+        "source": {
+          "title": "LalBrew Windsor",
+          "author": "Lallemand Brewing",
+          "year": null,
+          "kind": "manufacturer",
+          "reference": "https://www.lallemandbrewing.com/en/continental-europe/products/windsor-british-style-beer-yeast/",
+          "locator": "Fiche consultée le 12 septembre 2026 : 65–72 %, 15–25 °C, 50–100 g/hL, maltotriose non métabolisé. Conversion exacte du dosage : g/hL ÷ 100 = g/L."
+        }
+      }
+    }
+  ],
+  "profiles": {
+    "lowAttenuation": ["lalbrew-windsor", "wyeast-1968", "white-labs-wlp002", "wyeast-1318"],
+    "neutral": ["fermentis-us05", "lalbrew-bry97", "lalbrew-nottingham"],
+    "fruity": ["yeast-fermentis-safale-s-e2-80-9104", "lalbrew-verdant-ipa", "white-labs-wlp066"],
+    "lager": ["yeast-fermentis-saflager-w-34-70", "lalbrew-diamond", "yeast-fermentis-saflager-s-189", "yeast-fermentis-saflager-s-e2-80-9123", "wyeast-2124", "wyeast-2308", "white-labs-wlp830"],
+    "wheat": ["lallemand-munich-classic", "wyeast-3068", "white-labs-wlp300", "white-labs-wlp380", "wyeast-3638", "fermentis-w68", "yeast-mangrove-jacks-132040951", "lalbrew-wit", "wyeast-3944", "white-labs-wlp400", "wyeast-1010"],
+    "belgian": ["lalbrew-abbaye", "lalbrew-farmhouse"],
+    "diastatic": ["lalbrew-belle-saison", "yeast-fermentis-safale-wb-06"]
+  }
+}

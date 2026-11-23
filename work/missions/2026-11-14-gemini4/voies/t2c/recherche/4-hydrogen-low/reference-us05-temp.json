@@ -1,0 +1,17 @@
+{
+ "reglage": "4-hydrogen@low",
+ "kind": "reference",
+ "id": "us05-temp",
+ "utilisable": true,
+ "produits": [],
+ "pertinentes": 0,
+ "exactes": 0,
+ "sourcesPrimaires": 1,
+ "faitCle": true,
+ "ms": 7979,
+ "coutMicro": 32369,
+ "web": 1,
+ "appels": 1,
+ "etat": "STOP",
+ "extrait": "Selon la fiche produit officielle du fabricant Fermentis, la plage de température de fermentation idéale recommandée pour la levure sèche **SafAle™ US-05** est de **18 à 26 °C** (64,4 à 78,8 °F).\n\nConcernant la mise en œuvre, Fermentis précise que la levure peut être ensemencée directement dans le m"
+}

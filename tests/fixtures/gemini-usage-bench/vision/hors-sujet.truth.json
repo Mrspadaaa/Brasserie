@@ -1,0 +1,34 @@
+{
+  "id": "hors-sujet",
+  "level": "tri : étiquette de bière, aucun justificatif",
+  "facture": {
+    "vendor": "",
+    "documentType": "other",
+    "paymentEvidence": [
+      "unknown"
+    ],
+    "date": "",
+    "currency": "",
+    "invoiceNumber": [
+      ""
+    ],
+    "orderNumber": "",
+    "amountHT": null,
+    "tvaRate": null,
+    "tvaAmount": null,
+    "amountTTC": null,
+    "items": []
+  },
+  "triage": {
+    "kind": [
+      "off_topic"
+    ],
+    "documentCount": 1,
+    "readable": true,
+    "currencies": [],
+    "route": "refuse"
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision/hors-sujet.png",
+  "mimeType": "image/png",
+  "note": "FIXTURE DE TEST – document fictif"
+}

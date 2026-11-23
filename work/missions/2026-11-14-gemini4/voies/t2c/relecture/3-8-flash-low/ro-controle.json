@@ -1,0 +1,16 @@
+{
+ "reglage": "3.8-flash@low",
+ "element": "ro-controle",
+ "cas": "ro",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 2237,
+ "coutMicro": 9754,
+ "etat": "STOP"
+}

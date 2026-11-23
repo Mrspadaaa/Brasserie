@@ -1,0 +1,40 @@
+{
+  "source": {
+    "nom": "Weyermann® Specialty Malts — catalogue « Brewery » (fiches techniques, récolte 2026)",
+    "url": "https://www.weyermann.de/wp-content/uploads/2023/05/WEYERMANN-PRODUCTS-Brewery-EN_Crop2026.pdf",
+    "releve": "2026-11-20",
+    "lecture": "malts[slug Beer Analytics] = produit Weyermann dont la fiche donne la plage de couleur (EBC), l'extrait fine grind sur sec (%) et l'humidité (%). Les valeurs sont celles du tableau « Parameter » de chaque fiche ; le PPG et l'EBC unique se déduisent par ingredientFacts.deduireValeursMalt (extrait × 0,46 × (1 − humidité) ; milieu de la plage). Un malt d'un autre malteur du même nom courant n'a que ces valeurs de référence : à contrôler. Absent de la table = inconnu, jamais deviné."
+  },
+  "malts": {
+    "pilsner-malt": { "produit": "Pilsner Malt", "ebcMin": 2.5, "ebcMax": 4.5, "extraitSec": 80.5, "humidite": 5 },
+    "pale-ale-malt": { "produit": "Pale Ale Malt", "ebcMin": 5.5, "ebcMax": 7.5, "extraitSec": 79, "humidite": 5 },
+    "vienna-malt": { "produit": "Vienna Malt", "ebcMin": 6, "ebcMax": 9, "extraitSec": 79, "humidite": 5.5 },
+    "munich-light-malt": { "produit": "Munich Malt Type 1", "ebcMin": 12, "ebcMax": 18, "extraitSec": 78, "humidite": 4.5 },
+    "munich-dark-malt": { "produit": "Munich Malt Type 2", "ebcMin": 20, "ebcMax": 25, "extraitSec": 78, "humidite": 4 },
+    "wheat-malt": { "produit": "Wheat Malt Pale", "ebcMin": 3, "ebcMax": 5, "extraitSec": 82, "humidite": 5.5 },
+    "dark-wheat-malt": { "produit": "Wheat Malt Dark", "ebcMin": 15, "ebcMax": 20, "extraitSec": 81, "humidite": 5 },
+    "rye-malt": { "produit": "Rye Malt Pale", "ebcMin": 4, "ebcMax": 10, "extraitSec": 81, "humidite": 6 },
+    "spelt-malt": { "produit": "Spelt Malt", "ebcMin": 3, "ebcMax": 7, "extraitSec": 79.5, "humidite": 6 },
+    "carapils-carafoam": { "produit": "Carapils®", "ebcMin": 2.5, "ebcMax": 6.5, "extraitSec": 75, "humidite": 8 },
+    "carahell": { "produit": "Carahell®", "ebcMin": 20, "ebcMax": 30, "extraitSec": 74, "humidite": 9 },
+    "caramunich-i": { "produit": "Caramunich® Type 1", "ebcMin": 80, "ebcMax": 100, "extraitSec": 73, "humidite": 8 },
+    "caramunich-ii": { "produit": "Caramunich® Type 2", "ebcMin": 110, "ebcMax": 130, "extraitSec": 73, "humidite": 8 },
+    "caramunich-iii": { "produit": "Caramunich® Type 3", "ebcMin": 140, "ebcMax": 160, "extraitSec": 73, "humidite": 8 },
+    "carared": { "produit": "Carared®", "ebcMin": 40, "ebcMax": 60, "extraitSec": 74, "humidite": 8 },
+    "caraamber": { "produit": "Caraamber®", "ebcMin": 60, "ebcMax": 80, "extraitSec": 75, "humidite": 4.5 },
+    "caraaroma": { "produit": "Caraaroma®", "ebcMin": 350, "ebcMax": 450, "extraitSec": 74, "humidite": 7 },
+    "carawheat": { "produit": "Carawheat®", "ebcMin": 110, "ebcMax": 140, "extraitSec": 68, "humidite": 6.5 },
+    "cararye": { "produit": "Cararye®", "ebcMin": 150, "ebcMax": 200, "extraitSec": 74, "humidite": 6.5 },
+    "melanoidin-malt": { "produit": "Melanoidin Malt", "ebcMin": 60, "ebcMax": 80, "extraitSec": 75, "humidite": 4.5 },
+    "abbey-malt": { "produit": "Abbey Malt® (Biscuit Malt)", "ebcMin": 40, "ebcMax": 50, "extraitSec": 75, "humidite": 4.5 },
+    "biscuit-malt": { "produit": "Abbey Malt® (Biscuit Malt)", "ebcMin": 40, "ebcMax": 50, "extraitSec": 75, "humidite": 4.5 },
+    "acidulated-malt": { "produit": "Acidulated Malt", "ebcMin": 1.5, "ebcMax": 5, "extraitSec": null, "humidite": 8 },
+    "carafa-i": { "produit": "Carafa® Type 1", "ebcMin": 800, "ebcMax": 1000, "extraitSec": 65, "humidite": 3.8 },
+    "carafa-ii": { "produit": "Carafa® Type 2", "ebcMin": 1050, "ebcMax": 1250, "extraitSec": 65, "humidite": 3.8 },
+    "carafa-iii": { "produit": "Carafa® Type 3", "ebcMin": 1300, "ebcMax": 1500, "extraitSec": 65, "humidite": 3.8 },
+    "carafa-special-i": { "produit": "Carafa® Special Type 1", "ebcMin": 800, "ebcMax": 1000, "extraitSec": 65, "humidite": 3.8 },
+    "carafa-special-ii": { "produit": "Carafa® Special Type 2", "ebcMin": 1050, "ebcMax": 1250, "extraitSec": 65, "humidite": 3.8 },
+    "carafa-special-iii": { "produit": "Carafa® Special Type 3", "ebcMin": 1300, "ebcMax": 1500, "extraitSec": 65, "humidite": 3.8 },
+    "roasted-barley-malt": { "produit": "Roasted Barley", "ebcMin": 1000, "ebcMax": 1300, "extraitSec": 65, "humidite": 3.8 }
+  }
+}

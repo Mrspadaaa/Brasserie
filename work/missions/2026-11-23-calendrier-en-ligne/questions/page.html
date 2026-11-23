@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calendrier : 4 choix sur la frise · 23.11</title>
+<style>
+  :root { --fond: #f6f4ef; --carte: #fff; --encre: #1d1d1d; --doux: #5c5c5c; --bleu: #2b5d9c; --rose: #e0287d; --vert: #2f7a3a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fond); color: var(--encre); font: 16px/1.45 "Source Sans 3", "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 1220px; margin: 0 auto; padding: 14px 12px 40px; }
+  h1 { font-size: 24px; margin: 4px 0 6px; }
+  h2 { font-size: 20px; margin: 0 0 4px; }
+  p { margin: 6px 0; }
+  .doux { color: var(--doux); font-size: 15px; }
+  .rose { color: var(--rose); font-weight: 700; }
+  #a-choisir { background: var(--carte); border: 2px solid var(--encre); border-radius: 14px; padding: 12px 14px; margin: 10px 0 22px; }
+  #a-choisir ol { margin: 6px 0; padding-left: 0; list-style: none; }
+  #a-choisir li { padding: 7px 0; border-top: 1px solid #eee; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  #a-choisir li:first-child { border-top: 0; }
+  #a-choisir a { color: var(--encre); font-weight: 700; }
+  .reco { display: inline-block; background: var(--vert); color: #fff; font-weight: 700; font-size: 14px; border-radius: 999px; padding: 1px 10px; }
+  section.q { margin: 0 0 30px; }
+  .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; margin-top: 10px; }
+  figure { margin: 0; background: var(--carte); border: 1px solid #ddd8cc; border-radius: 12px; overflow: hidden; }
+  figure.recommande { border: 3px solid var(--vert); }
+  figure img { display: block; width: 100%; height: auto; border-bottom: 1px solid #eee; }
+  figure img + img { border-top: 6px solid var(--fond); }
+  .tete { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-weight: 700; font-size: 17px; }
+  .tete .lettre { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: var(--encre); color: #fff; }
+  .tete.actuel .lettre { background: #999; }
+  figcaption { padding: 8px 12px 12px; font-size: 15px; }
+  figcaption b { color: var(--encre); }
+  .q4 { background: var(--carte); border: 1px dashed #999; border-radius: 12px; padding: 12px 14px; font-size: 17px; }
+</style>
+</head>
+<body>
+<main>
+<h1>Calendrier : 4 choix sur la frise · 23.11</h1>
+<p class="doux">Tour 11, en ligne. Pour chaque question : aujourd'hui, puis 2 ou 3 variantes à 390 px, sur ta frise B. <span class="rose">Pointillé rose</span> : ce qui change.</p>
+
+<section id="a-choisir">
+  <h2>À choisir</h2>
+  <ol>
+    <li><a href="#q1">Q-1 · Graduations ou cadre</a> <span class="reco">A recommandé</span></li>
+    <li><a href="#q2">Q-2 · Doigt hors du cadre</a> <span class="reco">A recommandé</span></li>
+    <li><a href="#q3">Q-3 · Pastille « à dépenser »</a> <span class="reco">A recommandé</span></li>
+    <li><a href="#q5">Q-5 · Période écrite deux fois</a> <span class="reco">A recommandé</span></li>
+    <li><a href="#q4">Q-4 · Vitesse au bord</a> <span>sur ton téléphone</span></li>
+  </ol>
+  <p class="doux">Réponds en une ligne, par exemple « 1A 2A 3A 5A, bord : bien ».</p>
+</section>
+
+<section class="q" id="q1">
+  <h2>Q-1 · Le cadre ne tombe pas sur ses graduations</h2>
+  <p class="doux">Le cadre reste fixe au milieu (ta règle R4 : les deux bouts toujours visibles). Les graduations, elles, s'étalent sur toute la largeur.</p>
+  <div class="grille">
+    <figure>
+      <div class="tete actuel"><span class="lettre">·</span>Aujourd'hui, tour 11</div>
+      <img src="img/q1-actuel.png" alt="Capture du tour 11 à 6 semaines" width="780" height="660">
+      <figcaption>Cadre « S44 – S49 », mais S44 et S49 tombent hors du cadre.</figcaption>
+    </figure>
+    <figure class="recommande">
+      <div class="tete"><span class="lettre">A</span>Graduations sur la courbe <span class="reco">recommandé</span></div>
+      <img src="img/q1-a.png" alt="Variante A à 6 semaines" width="780" height="660">
+      <img src="img/q1-a-6m.png" alt="Variante A à 6 mois" width="780" height="660">
+      <figcaption><b>Ce qui change :</b> le cadre couvre exactement S44 à S49 ; les semaines d'avant et d'après, en gris, dans les marges. À 6 mois, une graduation toutes les 4 semaines.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">B</span>Cadre pleine largeur</div>
+      <img src="img/q1-b.png" alt="Variante B" width="780" height="660">
+      <figcaption><b>Ce qui change :</b> plus de marges. On ne voit plus ce qui précède ni ce qui suit ; les poignées touchent le bord de l'écran.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">C</span>« Aligner » allumé d'office</div>
+      <img src="img/q1-c.png" alt="Variante C" width="780" height="660">
+      <figcaption><b>Ce qui change :</b> courbe et graduations d'accord, mais le cadre disparaît (il faudrait le redessiner).</figcaption>
+    </figure>
+    <figure>
+      <div class="tete actuel"><span class="lettre">·</span>Aujourd'hui à 6 mois</div>
+      <img src="img/q1-actuel-6m.png" alt="Capture du tour 11 à 6 mois" width="780" height="660">
+      <figcaption>Cadre « S8 – S33 », graduations S8 à S32 sur toute la largeur : à comparer avec A à 6 mois.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="q" id="q2">
+  <h2>Q-2 · Doigt posé sur la courbe hors du cadre, puis glissé</h2>
+  <p class="doux">Lire la semaine, ou faire défiler vers le passé ? Dessiné avec Q-1 A.</p>
+  <div class="grille">
+    <figure>
+      <div class="tete actuel"><span class="lettre">·</span>Aujourd'hui (capture du tour 10)</div>
+      <img src="img/q2-actuel.png" alt="Capture : lecture de la semaine hors du cadre" width="780" height="220">
+      <figcaption>La pastille lit la semaine touchée (« S42, 12 → 18 oct. ») ; la fenêtre ne bouge pas. Geste non changé depuis.</figcaption>
+    </figure>
+    <figure class="recommande">
+      <div class="tete"><span class="lettre">A</span>Lire la semaine <span class="reco">recommandé</span></div>
+      <img src="img/q2-a.png" alt="Variante A : lecture" width="780" height="660">
+      <figcaption><b>Ce qui change :</b> rien. La pastille dit la semaine sous le doigt (S50, 7 → 13 déc.) ; pour reculer, on tire le cadre au bord.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">B</span>Défiler</div>
+      <img src="img/q2-b.png" alt="Variante B : défilement" width="780" height="660">
+      <figcaption><b>Ce qui change :</b> la frise suit le doigt, le passé arrive par la gauche (ici 8 semaines plus tôt, S36 – S41). Plus de lecture hors du cadre.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="q" id="q3">
+  <h2>Q-3 · La pastille « −683 CHF à dépenser · S50 »</h2>
+  <p class="doux">Le creux de ce que montre le cadre, ou de tout l'horizon ? Ta règle : « pastille = ce que montre le cadre ».</p>
+  <div class="grille">
+    <figure>
+      <div class="tete actuel"><span class="lettre">·</span>Aujourd'hui, tour 11</div>
+      <img src="img/q3-actuel.png" alt="Capture du tour 11 à la butée" width="780" height="660">
+      <figcaption>Cadre à la butée, S48 2025 – S1 2026, rien dedans : la pastille dit toujours −683 en S50.</figcaption>
+    </figure>
+    <figure class="recommande">
+      <div class="tete"><span class="lettre">A</span>Creux du cadre <span class="reco">recommandé</span></div>
+      <img src="img/q3-a-6sem.png" alt="Variante A à 6 semaines" width="780" height="660">
+      <img src="img/q3-a-butee.png" alt="Variante A à la butée" width="780" height="660">
+      <figcaption><b>Ce qui change :</b> chiffre et semaine suivent le cadre. En 6 sem., le creux de S44 – S49 (−678, montant d'exemple) ; à la butée, 0.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">B</span>Creux de l'horizon</div>
+      <img src="img/q3-b.png" alt="Variante B" width="780" height="660">
+      <figcaption><b>Ce qui change :</b> « horizon » et l'année écrits à l'écran ; le chiffre ne bouge pas au geste.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="q" id="q5">
+  <h2>Q-5 · Période écrite deux fois</h2>
+  <p class="doux">« S44 – S49 » sur le cadre, puis S44 … S49 juste dessous. Dessiné avec Q-1 A.</p>
+  <div class="grille">
+    <figure>
+      <div class="tete actuel"><span class="lettre">·</span>Aujourd'hui, tour 11</div>
+      <img src="img/q1-actuel.png" alt="Capture du tour 11" width="780" height="660">
+      <figcaption>Le cadre et les graduations disent les mêmes semaines.</figcaption>
+    </figure>
+    <figure class="recommande">
+      <div class="tete"><span class="lettre">A</span>Dates sur le cadre <span class="reco">recommandé</span></div>
+      <img src="img/q5-a.png" alt="Variante A" width="780" height="660">
+      <figcaption><b>Ce qui change :</b> le cadre dit les dates (« 26 oct. – 6 déc. »), les graduations les semaines. Chaque chose une fois.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">B</span>Graduations muettes sous le cadre</div>
+      <img src="img/q5-b.png" alt="Variante B" width="780" height="660">
+      <figcaption><b>Ce qui change :</b> le cadre dit « S44 – S49 » ; dessous, seuls les traits. S43 et S50 restent dans les marges.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">C</span>Garder les deux</div>
+      <img src="img/q5-c.png" alt="Variante C" width="780" height="660">
+      <figcaption><b>Ce qui change :</b> rien ; la règle « une seule fois » ne vaudrait que pour 1 semaine.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="q" id="q4">
+  <h2>Q-4 · Vitesse du défilement au bord</h2>
+  <p class="q4">À essayer sur ton téléphone : 36 semaines en 3 s au bord ; plus lent / bien / plus rapide.</p>
+</section>
+
+<p class="doux">Montants de la courbe repris des captures (−23, −600, −5, −683) ; les montants intermédiaires sont d'exemple. Sources : LISTE.md § 5, contre-épreuve T11-8 à T11-10.</p>
+</main>
+</body>
+</html>

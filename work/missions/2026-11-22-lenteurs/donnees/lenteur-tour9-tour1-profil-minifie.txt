@@ -1,0 +1,48 @@
+390×844 tactile, processeur ×4, build minifié C:\Users\mrspa\AppData\Local\Temp\lenteurs-22-11-b\build-tour9
+ KO  semaine            INP  816 ms (1 interaction(s), pire « click » : attente 13, traitement 652) ; tâches longues 8 (max 658 ms ; 658, 204, 155, 116, 74, 68)
+        LoAF 732 ms (bloquant 682) : DIV#root.onclick → Id index-D9INo0xc.js 651 ms | FrameRequestCallback → ? CalendrierTab-BigFNzAR.js 7 ms
+        LoAF 217 ms (bloquant 167) : MessagePort.onmessage → At index-D9INo0xc.js 155 ms | DIV#root.ontransitionstart → ni index-D9INo0xc.js 7 ms
+        profil : getBoundingClientRect :0 590 ms ; (anonyme) CalendrierTab-BigFNzAR.js:77 67 ms ; ni index-D9INo0xc.js:50 24 ms ; Xf CalendrierTab-BigFNzAR.js:77 20 ms ; (anonyme) index-D9INo0xc.js:49 19 ms ; measureText :0 18 ms
+        natifs : getBoundingClientRect ← (anonyme):77 ← (anonyme):77 ← ne:49 529 ms ; getBoundingClientRect ← (anonyme):77 ← (anonyme):77 45 ms ; getBoundingClientRect ← (anonyme):77 ← (anonyme):77 ← (anonyme):77 17 ms ; measureText ← gt:77 ← Li:77 ← (anonyme):77 7 ms
+ KO  frise              INP  608 ms (1 interaction(s), pire « pointerup » : attente 154, traitement 388) ; tâches longues 6 (max 390 ms ; 390, 89, 54, 54, 52, 50)
+        LoAF 476 ms (bloquant 376) : DIV.onpointerup → v useGlisse-Qt8U3Hjk.js 388 ms | MessagePort.onmessage → At index-D9INo0xc.js 49 ms
+        LoAF 81 ms (bloquant 25) : 
+        profil : yt CalendrierTab-BigFNzAR.js:77 523 ms ; getBoundingClientRect :0 276 ms ; Sd CalendrierTab-BigFNzAR.js:77 244 ms ; (anonyme) CalendrierTab-BigFNzAR.js:77 76 ms ; measureText :0 55 ms ; (anonyme) index-D9INo0xc.js:49 32 ms
+        natifs : getBoundingClientRect ← (anonyme):77 ← (anonyme):77 ← ne:49 219 ms ; getBoundingClientRect ← L:1 46 ms ; measureText ← yt:77 ← jr:77 ← Sd:77 32 ms ; setAttribute ← He:49 ← cl:50 ← pd:50 16 ms
+ KO  barre              INP  424 ms (1 interaction(s), pire « pointerup » : attente 52, traitement 325) ; tâches longues 14 (max 326 ms ; 326, 253, 128, 123, 121, 110)
+        LoAF 347 ms (bloquant 297) : DIV#root.onpointerup → Id index-D9INo0xc.js 325 ms
+        LoAF 294 ms (bloquant 244) : MessagePort.onmessage → At index-D9INo0xc.js 254 ms | FrameRequestCallback → ? CalendrierTab-BigFNzAR.js 10 ms
+        profil : (anonyme) CalendrierTab-BigFNzAR.js:77 302 ms ; getBoundingClientRect :0 225 ms ; Kf CalendrierTab-BigFNzAR.js:77 158 ms ; Y FloatingActions-Eg5USilI.js:71 108 ms ; measureText :0 82 ms ; querySelectorAll :0 65 ms
+        natifs : getBoundingClientRect ← (anonyme):77 ← (anonyme):77 ← ne:49 108 ms ; getBoundingClientRect ← (anonyme):77 ← (anonyme):77 ← (anonyme):77 47 ms ; querySelectorAll ← (anonyme):77 ← (anonyme):77 ← ne:49 37 ms ; getBoundingClientRect ← re:77 ← (anonyme):77 ← ne:49 32 ms
+ KO  courbe-lecture     INP  392 ms (1 interaction(s), pire « pointerup » : attente 2, traitement 330) ; tâches longues 2 (max 331 ms ; 331, 68)
+        LoAF 358 ms (bloquant 308) : DIV.onpointerup → v useGlisse-Qt8U3Hjk.js 329 ms
+        LoAF 57 ms (bloquant 6) : 
+        profil : getBoundingClientRect :0 170 ms ; Sd CalendrierTab-BigFNzAR.js:77 45 ms ; Y FloatingActions-Eg5USilI.js:71 24 ms ; yt CalendrierTab-BigFNzAR.js:77 22 ms ; (anonyme) CalendrierTab-BigFNzAR.js:77 16 ms ; be FloatingActions-Eg5USilI.js:71 10 ms
+        natifs : getBoundingClientRect ← (anonyme):77 ← (anonyme):77 ← ne:49 166 ms ; setAttribute ← He:49 ← cl:50 ← pd:50 4 ms ; querySelectorAll ← (anonyme):77 ← (anonyme):77 ← ne:49 3 ms ; insertBefore ← hn:49 ← hn:49 ← Jl:49 3 ms
+ ok  courbe-cacher      INP  112 ms (1 interaction(s), pire « pointerup » : attente 19, traitement 0) ; tâches longues 1 (max 59 ms)
+        LoAF 64 ms (bloquant 12) : DIV#root.onclick → Id index-D9INo0xc.js 51 ms
+        profil : getBoundingClientRect :0 21 ms ; (anonyme) CalendrierTab-BigFNzAR.js:77 7 ms ; gt CalendrierTab-BigFNzAR.js:77 4 ms ; pd index-D9INo0xc.js:50 2 ms ; Zi CalendrierTab-BigFNzAR.js:77 2 ms ; r index-D9INo0xc.js:49 2 ms
+        natifs : getBoundingClientRect ← (anonyme):77 ← (anonyme):77 ← ne:49 15 ms ; getBoundingClientRect ← ls:77 ← Qv:49 ← (anonyme):49 6 ms ; setAttribute ← He:49 ← cl:50 ← pd:50 2 ms ; matchMedia ← nt:1 ← un:1 ← Vs:49 1 ms
+ KO  evenement-ouvrir   INP    0 ms (0 interaction(s)) ; tâches longues 0 (max 0 ms) ; ERREUR introuvable : « Marché de Noël, »
+        profil : getBoundingClientRect :0 4 ms ; (anonyme) firebase-BbAUq6DT.js:3653 1 ms ; _poll firebase-BbAUq6DT.js:3653 1 ms
+        natifs : getBoundingClientRect ← (anonyme):3 ← (anonyme):1 4 ms
+ KO  evenement-modifier INP    0 ms (0 interaction(s)) ; tâches longues 0 (max 0 ms) ; ERREUR introuvable : « Modifier »
+        profil : 
+ KO  evenement-semaine  INP    0 ms (0 interaction(s)) ; tâches longues 0 (max 0 ms) ; ERREUR puce de la semaine précédente introuvable
+        profil : (anonyme) yeastReferences-BHII2bHT.js:1 7 ms ; appendChild :0 5 ms ; querySelectorAll :0 4 ms ; (anonyme) modele-Cc52y198.js:1 2 ms ; (anonyme) EntityList-BPE4kt3j.js:1 2 ms ; (anonyme) App-BrJ12Lyk.js:46 2 ms
+        natifs : appendChild ← (anonyme):2 ← Tu:2 ← (anonyme):46 5 ms ; querySelectorAll ← (anonyme):1 4 ms
+ KO  evenement-enregistrer INP    0 ms (0 interaction(s)) ; tâches longues 0 (max 0 ms) ; ERREUR introuvable : « Enregistrer »
+        profil : n pptr:evaluate;parTexte%20(file%3A%2F%2F%2FC%3A%2FUsers%2Fmrspa%2FAppData%2FLocal%2FTemp%2Flenteurs-22-11-b%2Ftour9%2Fscripts%2Fparcours%2Flenteur.mjs%3A98%3A48):2 2 ms ; getBoundingClientRect :0 2 ms
+        natifs : getBoundingClientRect ← (anonyme):3 ← (anonyme):1 2 ms
+LENTEUR CALENDRIER ECHEC (11)
+  - semaine : INP 816 ms > 200
+  - frise : INP 608 ms > 200
+  - frise : tâche longue de 390 ms pendant le glisser (> 100)
+  - barre : INP 424 ms > 200
+  - barre : tâche longue de 326 ms pendant le glisser (> 100)
+  - courbe-lecture : INP 392 ms > 200
+  - courbe-lecture : tâche longue de 331 ms pendant le glisser (> 100)
+  - evenement-ouvrir : introuvable : « Marché de Noël, »
+  - evenement-modifier : introuvable : « Modifier »
+  - evenement-semaine : puce de la semaine précédente introuvable
+  - evenement-enregistrer : introuvable : « Enregistrer »

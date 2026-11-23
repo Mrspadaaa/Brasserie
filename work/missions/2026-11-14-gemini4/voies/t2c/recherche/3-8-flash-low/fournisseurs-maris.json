@@ -1,0 +1,54 @@
+{
+ "reglage": "3.8-flash@low",
+ "kind": "fournisseurs",
+ "id": "maris",
+ "utilisable": true,
+ "produits": [
+  {
+   "name": "Maris Otter, Gramm",
+   "url": "https://www.brauundrauchshop.ch/maris-otter#stock-availability-value-3459",
+   "supplier": "Brau- und Rauchshop",
+   "packageLabel": "Preis/Gramm"
+  },
+  {
+   "name": "Maris Otter, Kg",
+   "url": "https://www.brauundrauchshop.ch/maris-otter#stock-availability-value-1456",
+   "supplier": "Brau- und Rauchshop",
+   "packageLabel": "Preis/Kilogramm"
+  },
+  {
+   "name": "Maris Otter 25 Kg",
+   "url": "https://www.brauundrauchshop.ch/maris-otter#stock-availability-value-3277",
+   "supplier": "Brau- und Rauchshop",
+   "packageLabel": "25 Kg"
+  },
+  {
+   "name": "Maris Otter Pale Ale Malt, 7 EBC, 25 kg",
+   "url": "https://www.sios.ch/Maris-Otter-Pale-Ale-Malt-7-EBC-25-kg",
+   "supplier": "SIOS",
+   "packageLabel": "25 kg"
+  },
+  {
+   "name": "Malt type Vienne 8 EBC, 25 kg",
+   "url": "https://www.sios.ch/Malt-type-Vienne-8-EBC-25-kg",
+   "supplier": "SIOS",
+   "packageLabel": "25 kg"
+  },
+  {
+   "name": "Roasted Barley, 1200 EBC, 25 kg",
+   "url": "https://www.sios.ch/Roasted-Barley-1200-EBC-25-kg",
+   "supplier": "SIOS",
+   "packageLabel": "25 kg"
+  }
+ ],
+ "pertinentes": 4,
+ "exactes": 2,
+ "sourcesPrimaires": 0,
+ "faitCle": false,
+ "ms": 8161,
+ "coutMicro": 38160,
+ "web": 2,
+ "appels": 1,
+ "etat": "STOP",
+ "extrait": "Voici les fiches produit correspondantes disponibles en Suisse pour le malt **Maris Otter** en sac de **25 kg** :\n\n1. **Brau- und Rauchshop**\n   * **Produit :** Maris Otter Pale Ale Blendet Malt (4.5 - 6.5 EBC)\n   * **Conditionnement :** Sac de 25 kg\n   * **Prix :** CHF 52.00\n   * **Lien :** https:/"
+}

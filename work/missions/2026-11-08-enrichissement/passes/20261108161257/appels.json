@@ -1,0 +1,1432 @@
+[
+  {
+    "id": "p05",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Nelson Sauvin",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 42159,
+        "entree": 1024,
+        "sortie": 4493,
+        "recherches": 20,
+        "coutMicro": 394042,
+        "reserveMicro": 414703,
+        "etat": "inutilisable"
+      }
+    ],
+    "coutMicro": 394042,
+    "ms": 42159,
+    "etat": "echec",
+    "erreur": "La réponse de l’IA a été coupée au plafond de sortie. Rien n’est appliqué ; la même demande serait coupée encore : modifie-la avant de relancer."
+  },
+  {
+    "id": "p09",
+    "famille": "levure",
+    "kind": "levure",
+    "nom": "Nottingham",
+    "chemin": "f4",
+    "garde": {
+      "decision": "catalogue",
+      "raison": "le catalogue des levures la rend (aControler)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 12107,
+        "entree": 1399,
+        "sortie": 1360,
+        "recherches": 20,
+        "coutMicro": 365374,
+        "reserveMicro": 417154,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 365374,
+    "ms": 12107,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "LalBrew Nottingham",
+      "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+      "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+      "technicalFacts": [
+        {
+          "key": "temperature",
+          "reported": "10 - 25°C",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08",
+          "qualifier": "range",
+          "range": {
+            "min": 10,
+            "max": 25
+          },
+          "unit": "°C"
+        },
+        {
+          "key": "attenuation",
+          "reported": "78 - 84%",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08",
+          "qualifier": "range",
+          "range": {
+            "min": 78,
+            "max": 84
+          },
+          "unit": "%"
+        },
+        {
+          "key": "alcoholTolerance",
+          "reported": "14% ABV",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08",
+          "qualifier": "reportedPoint",
+          "range": {
+            "min": 14,
+            "max": 14
+          },
+          "unit": "%"
+        },
+        {
+          "key": "flocculation",
+          "reported": "High",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "pitchRate",
+          "reported": "50 - 100 g/hL",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08",
+          "qualifier": "range",
+          "range": {
+            "min": 50,
+            "max": 100
+          },
+          "unit": "g/hL"
+        },
+        {
+          "key": "species",
+          "reported": "Saccharomyces cerevisiae",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-diastaticus/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "diastatic",
+          "reported": "Undetectable",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Nottingham Specifications Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "form",
+          "reported": "Active Dry Yeast",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Nottingham Specifications Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        }
+      ],
+      "alcoholTolerancePct": 14,
+      "flocculation": "haute",
+      "form": "sèche",
+      "lab": "Lallemand",
+      "note": "Lallemand recommande une plage générale de 10 à 25 °C (10 à 22 °C pour les styles traditionnels d'ale). L'atténuation étant publiée sous forme de plage (78-84 %), elle est conservée dans technicalFacts sans moyenne scalaire.",
+      "retrievedAt": "2026-11-08",
+      "strain": "LalBrew Nottingham",
+      "tempMaxC": 25,
+      "tempMinC": 10
+    },
+    "facts": {
+      "found": true,
+      "name": "LalBrew Nottingham",
+      "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+      "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+      "alcoholTolerancePct": 14,
+      "flocculation": "haute",
+      "form": "sèche",
+      "lab": "Lallemand",
+      "retrievedAt": "2026-11-08",
+      "strain": "LalBrew Nottingham",
+      "tempMaxC": 25,
+      "tempMinC": 10,
+      "origin": "ai",
+      "technicalFacts": [
+        {
+          "key": "temperature",
+          "reported": "10 - 25°C",
+          "origin": "ai",
+          "range": {
+            "min": 10,
+            "max": 25
+          },
+          "unit": "°C",
+          "qualifier": "range",
+          "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "attenuation",
+          "reported": "78 - 84%",
+          "origin": "ai",
+          "range": {
+            "min": 78,
+            "max": 84
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "alcoholTolerance",
+          "reported": "14% ABV",
+          "origin": "ai",
+          "range": {
+            "min": 14,
+            "max": 14
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint",
+          "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "flocculation",
+          "reported": "High",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "pitchRate",
+          "reported": "50 - 100 g/hL",
+          "origin": "ai",
+          "range": {
+            "min": 50,
+            "max": 100
+          },
+          "unit": "g/hL",
+          "qualifier": "range",
+          "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "species",
+          "reported": "Saccharomyces cerevisiae",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-diastaticus/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "diastatic",
+          "reported": "Undetectable",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Nottingham Specifications Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "form",
+          "reported": "Active Dry Yeast",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Nottingham Specifications Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        }
+      ],
+      "documentaryNotes": [
+        {
+          "text": "Lallemand recommande une plage générale de 10 à 25 °C (10 à 22 °C pour les styles traditionnels d'ale). L'atténuation étant publiée sous forme de plage (78-84 %), elle est conservée dans technicalFacts sans moyenne scalaire.",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        }
+      ]
+    },
+    "ecritF4": {
+      "valeurs": {
+        "yeastLab": "Lallemand",
+        "yeastStrain": "LalBrew Nottingham",
+        "yeastForm": "sèche",
+        "yeastTempMinC": 10,
+        "yeastTempMaxC": 25,
+        "yeastFlocculation": "haute",
+        "yeastAlcoholTolerancePct": 14,
+        "yeastTechnicalFacts": [
+          {
+            "key": "temperature",
+            "reported": "10 - 25°C",
+            "origin": "ai",
+            "range": {
+              "min": 10,
+              "max": 25
+            },
+            "unit": "°C",
+            "qualifier": "range",
+            "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "attenuation",
+            "reported": "78 - 84%",
+            "origin": "ai",
+            "range": {
+              "min": 78,
+              "max": 84
+            },
+            "unit": "%",
+            "qualifier": "range",
+            "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "alcoholTolerance",
+            "reported": "14% ABV",
+            "origin": "ai",
+            "range": {
+              "min": 14,
+              "max": 14
+            },
+            "unit": "%",
+            "qualifier": "reportedPoint",
+            "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "flocculation",
+            "reported": "High",
+            "origin": "ai",
+            "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "pitchRate",
+            "reported": "50 - 100 g/hL",
+            "origin": "ai",
+            "range": {
+              "min": 50,
+              "max": 100
+            },
+            "unit": "g/hL",
+            "qualifier": "range",
+            "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "species",
+            "reported": "Saccharomyces cerevisiae",
+            "origin": "ai",
+            "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-diastaticus/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "diastatic",
+            "reported": "Undetectable",
+            "origin": "ai",
+            "source": "Lallemand Brewing — LalBrew Nottingham Specifications Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "form",
+            "reported": "Active Dry Yeast",
+            "origin": "ai",
+            "source": "Lallemand Brewing — LalBrew Nottingham Specifications Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          }
+        ],
+        "technicalSource": "Trouvée en ligne — Lallemand Brewing — LalBrew Nottingham Technical Data Sheet"
+      },
+      "source": "Lallemand Brewing — LalBrew Nottingham Technical Data Sheet",
+      "url": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-nottingham-high-performance-ale-yeast/",
+      "deduit": {}
+    }
+  },
+  {
+    "id": "f01",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Idaho 7",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 7982,
+        "entree": 1024,
+        "sortie": 355,
+        "recherches": 2,
+        "coutMicro": 40249,
+        "reserveMicro": 414680,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 40249,
+    "ms": 7982,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "Idaho 7",
+      "source": "Yakima Chief Hops — Fiche variété Idaho 7® Brand (J-007)",
+      "sourceUrl": "https://www.yakimachief.com/idaho-7",
+      "usage": "Double usage (aromatique et amérisant / whirlpool et houblonnage à cru / bières houblonnées type IPA, Pale Ale, NEIPA). Note : l'acide alpha est publié sous forme de plage (12.0 - 15.0 % chez Yakima Chief Hops / 13.0 - 15.0 % chez John I. Haas), donc absent du champ scalaire strict. L'acide bêta est publié à 4.0 - 5.0 % chez John I. Haas. Profil aromatique : fruits tropicaux (ananas), fruits à noyau (pêche, abricot), agrumes, pin résineux et notes subtiles de thé noir. Variété créée par Jackson Hop Farm (Wilder, Idaho)."
+    },
+    "facts": {
+      "found": true,
+      "name": "Idaho 7",
+      "source": "Yakima Chief Hops — Fiche variété Idaho 7® Brand (J-007)",
+      "sourceUrl": "https://www.yakimachief.com/idaho-7",
+      "usage": "Double usage (aromatique et amérisant / whirlpool et houblonnage à cru / bières houblonnées type IPA, Pale Ale, NEIPA). Note : l'acide alpha est publié sous forme de plage (12.0 - 15.0 % chez Yakima Chief Hops / 13.0 - 15.0 % chez John I. Haas), donc absent du champ scalaire strict. L'acide bêta est publié à 4.0 - 5.0 % chez John I. Haas. Profil aromatique : fruits tropicaux (ananas), fruits à noyau (pêche, abricot), agrumes, pin résineux et notes subtiles de thé noir. Variété créée par Jackson Hop Farm (Wilder, Idaho)."
+    },
+    "ecritF4": null
+  },
+  {
+    "id": "f04",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Pilsner Malz",
+    "chemin": "f4",
+    "garde": {
+      "decision": "nonIdentifiable",
+      "raison": "malt sans fabricant ni marque : a saisir, aucun appel"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 6354,
+        "entree": 694,
+        "sortie": 319,
+        "recherches": 20,
+        "coutMicro": 354292,
+        "reserveMicro": 408253,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 354292,
+    "ms": 6354,
+    "etat": "repondu",
+    "reponse": {
+      "found": false,
+      "name": "Pilsner Malz",
+      "source": "Non spécifié",
+      "sourceUrl": "",
+      "colorEbc": null,
+      "colorEbcMin": null,
+      "colorEbcMax": null,
+      "extractPct": null,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08T16:14:00Z",
+      "note": "La désignation « Pilsner Malz » est générique et correspond à une catégorie de malt de base produite en langue allemande par plusieurs malteries (notamment Weyermann ou Bestmalz), chacune ayant des spécifications analytiques propres (par exemple Weyermann Pilsner Malz à 2,5 – 4,5 EBC ou Bestmalz BEST Pilsen à 3,0 – 4,9 EBC). Merci de préciser le malteur pour obtenir la fiche technique exacte.",
+      "grainType": "orge",
+      "usage": "Malt de base universel convenant jusqu'à l'intégralité de la mouture pour tous styles de bières, particulièrement les lagers, pilsners et bières blondes.",
+      "substitutes": [
+        "Weyermann Pilsner Malt",
+        "Bestmalz BEST Pilsen Malt",
+        "Castle Malting Château Pilsen"
+      ]
+    },
+    "facts": {
+      "found": false,
+      "name": "Pilsner Malz",
+      "source": "Non spécifié",
+      "sourceUrl": "",
+      "retrievedAt": "2026-11-08T16:14:00Z",
+      "note": "La désignation « Pilsner Malz » est générique et correspond à une catégorie de malt de base produite en langue allemande par plusieurs malteries (notamment Weyermann ou Bestmalz), chacune ayant des spécifications analytiques propres (par exemple Weyermann Pilsner Malz à 2,5 – 4,5 EBC ou Bestmalz BEST Pilsen à 3,0 – 4,9 EBC). Merci de préciser le malteur pour obtenir la fiche technique exacte.",
+      "grainType": "orge",
+      "usage": "Malt de base universel convenant jusqu'à l'intégralité de la mouture pour tous styles de bières, particulièrement les lagers, pilsners et bières blondes.",
+      "substitutes": [
+        "Weyermann Pilsner Malt",
+        "Bestmalz BEST Pilsen Malt",
+        "Castle Malting Château Pilsen"
+      ]
+    },
+    "ecritF4": null
+  },
+  {
+    "id": "f14",
+    "famille": "levure",
+    "kind": "levure",
+    "nom": "LalBrew Verdant IPA 11g",
+    "chemin": "f4",
+    "garde": {
+      "decision": "catalogue",
+      "raison": "le catalogue des levures la rend (sur)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 11894,
+        "entree": 1415,
+        "sortie": 1489,
+        "recherches": 20,
+        "coutMicro": 366613,
+        "reserveMicro": 417202,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 366613,
+    "ms": 11894,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "LalBrew Verdant IPA 11g",
+      "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+      "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+      "technicalFacts": [
+        {
+          "key": "temperature",
+          "reported": "18 - 25°C",
+          "origin": "ai",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08",
+          "context": "Plage de température de fermentation recommandée (la TDS mentionne 18-23°C pour les styles traditionnels)",
+          "qualifier": "range",
+          "range": {
+            "min": 18,
+            "max": 25
+          },
+          "unit": "°C"
+        },
+        {
+          "key": "attenuation",
+          "reported": "75-82%",
+          "origin": "ai",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08",
+          "context": "Atténuation apparente moyenne à élevée",
+          "qualifier": "range",
+          "range": {
+            "min": 75,
+            "max": 82
+          },
+          "unit": "%"
+        },
+        {
+          "key": "alcoholTolerance",
+          "reported": "12% ABV",
+          "origin": "ai",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08",
+          "qualifier": "reportedPoint",
+          "range": {
+            "min": 12,
+            "max": 12
+          },
+          "unit": "% ABV"
+        },
+        {
+          "key": "pitchRate",
+          "reported": "50 - 100g/hL",
+          "origin": "ai",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08",
+          "qualifier": "range",
+          "range": {
+            "min": 50,
+            "max": 100
+          },
+          "unit": "g/hL"
+        },
+        {
+          "key": "flocculation",
+          "reported": "Medium",
+          "origin": "ai",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "species",
+          "reported": "Saccharomyces cerevisiae",
+          "origin": "ai",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "form",
+          "reported": "Levure sèche active (Active Dry Yeast)",
+          "origin": "ai",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "pof",
+          "reported": "POF négatif",
+          "origin": "ai",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "diastatic",
+          "reported": "Undetectable / Négatif",
+          "origin": "ai",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        }
+      ],
+      "alcoholTolerancePct": 12,
+      "flocculation": "moyenne",
+      "form": "sèche",
+      "lab": "Lallemand",
+      "retrievedAt": "2026-11-08",
+      "strain": "LalBrew Verdant IPA",
+      "tempMaxC": 25,
+      "tempMinC": 18
+    },
+    "facts": {
+      "found": true,
+      "name": "LalBrew Verdant IPA 11g",
+      "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+      "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+      "alcoholTolerancePct": 12,
+      "flocculation": "moyenne",
+      "form": "sèche",
+      "lab": "Lallemand",
+      "retrievedAt": "2026-11-08",
+      "strain": "LalBrew Verdant IPA",
+      "tempMaxC": 25,
+      "tempMinC": 18,
+      "origin": "ai",
+      "technicalFacts": [
+        {
+          "key": "temperature",
+          "reported": "18 - 25°C",
+          "origin": "ai",
+          "range": {
+            "min": 18,
+            "max": 25
+          },
+          "unit": "°C",
+          "qualifier": "range",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08",
+          "context": "Plage de température de fermentation recommandée (la TDS mentionne 18-23°C pour les styles traditionnels)"
+        },
+        {
+          "key": "attenuation",
+          "reported": "75-82%",
+          "origin": "ai",
+          "range": {
+            "min": 75,
+            "max": 82
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08",
+          "context": "Atténuation apparente moyenne à élevée"
+        },
+        {
+          "key": "alcoholTolerance",
+          "reported": "12% ABV",
+          "origin": "ai",
+          "range": {
+            "min": 12,
+            "max": 12
+          },
+          "unit": "% ABV",
+          "qualifier": "reportedPoint",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "pitchRate",
+          "reported": "50 - 100g/hL",
+          "origin": "ai",
+          "range": {
+            "min": 50,
+            "max": 100
+          },
+          "unit": "g/hL",
+          "qualifier": "range",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "flocculation",
+          "reported": "Medium",
+          "origin": "ai",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "species",
+          "reported": "Saccharomyces cerevisiae",
+          "origin": "ai",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "form",
+          "reported": "Levure sèche active (Active Dry Yeast)",
+          "origin": "ai",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "pof",
+          "reported": "POF négatif",
+          "origin": "ai",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "diastatic",
+          "reported": "Undetectable / Négatif",
+          "origin": "ai",
+          "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        }
+      ]
+    },
+    "ecritF4": {
+      "valeurs": {
+        "yeastLab": "Lallemand",
+        "yeastStrain": "LalBrew Verdant IPA",
+        "yeastForm": "sèche",
+        "yeastTempMinC": 18,
+        "yeastTempMaxC": 25,
+        "yeastFlocculation": "moyenne",
+        "yeastAlcoholTolerancePct": 12,
+        "yeastTechnicalFacts": [
+          {
+            "key": "temperature",
+            "reported": "18 - 25°C",
+            "origin": "ai",
+            "range": {
+              "min": 18,
+              "max": 25
+            },
+            "unit": "°C",
+            "qualifier": "range",
+            "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+            "retrievedAt": "2026-11-08",
+            "context": "Plage de température de fermentation recommandée (la TDS mentionne 18-23°C pour les styles traditionnels)"
+          },
+          {
+            "key": "attenuation",
+            "reported": "75-82%",
+            "origin": "ai",
+            "range": {
+              "min": 75,
+              "max": 82
+            },
+            "unit": "%",
+            "qualifier": "range",
+            "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+            "retrievedAt": "2026-11-08",
+            "context": "Atténuation apparente moyenne à élevée"
+          },
+          {
+            "key": "alcoholTolerance",
+            "reported": "12% ABV",
+            "origin": "ai",
+            "range": {
+              "min": 12,
+              "max": 12
+            },
+            "unit": "% ABV",
+            "qualifier": "reportedPoint",
+            "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "pitchRate",
+            "reported": "50 - 100g/hL",
+            "origin": "ai",
+            "range": {
+              "min": 50,
+              "max": 100
+            },
+            "unit": "g/hL",
+            "qualifier": "range",
+            "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "flocculation",
+            "reported": "Medium",
+            "origin": "ai",
+            "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "species",
+            "reported": "Saccharomyces cerevisiae",
+            "origin": "ai",
+            "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "form",
+            "reported": "Levure sèche active (Active Dry Yeast)",
+            "origin": "ai",
+            "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "pof",
+            "reported": "POF négatif",
+            "origin": "ai",
+            "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "diastatic",
+            "reported": "Undetectable / Négatif",
+            "origin": "ai",
+            "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          }
+        ],
+        "technicalSource": "Trouvée en ligne — Lallemand Brewing — Fiche technique LalBrew Verdant IPA"
+      },
+      "source": "Lallemand Brewing — Fiche technique LalBrew Verdant IPA",
+      "url": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-verdant-ipa-dry-ale-yeast/",
+      "deduit": {}
+    }
+  },
+  {
+    "id": "f15",
+    "famille": "levure",
+    "kind": "levure",
+    "nom": "Voss Kveik",
+    "chemin": "f4",
+    "garde": {
+      "decision": "ambigu",
+      "raison": "plusieurs levures du catalogue : a controler, aucun appel"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 12026,
+        "entree": 1405,
+        "sortie": 1521,
+        "recherches": 20,
+        "coutMicro": 366894,
+        "reserveMicro": 417154,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 366894,
+    "ms": 12026,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "LalBrew Voss Kveik",
+      "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+      "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+      "technicalFacts": [
+        {
+          "key": "temperature",
+          "reported": "25 - 40°C (77 - 104°F), optimal: 35 - 40°C (95 - 104°F)",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08",
+          "qualifier": "range",
+          "range": {
+            "min": 25,
+            "max": 40
+          },
+          "unit": "°C"
+        },
+        {
+          "key": "attenuation",
+          "reported": "76 - 82%",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08",
+          "qualifier": "range",
+          "range": {
+            "min": 76,
+            "max": 82
+          },
+          "unit": "%"
+        },
+        {
+          "key": "alcoholTolerance",
+          "reported": "12% ABV",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08",
+          "qualifier": "reportedPoint",
+          "range": {
+            "min": 12,
+            "max": 12
+          },
+          "unit": "%"
+        },
+        {
+          "key": "pitchRate",
+          "reported": "50 - 100 g/hL",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08",
+          "qualifier": "range",
+          "range": {
+            "min": 50,
+            "max": 100
+          },
+          "unit": "g/hL"
+        },
+        {
+          "key": "flocculation",
+          "reported": "Very High",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "species",
+          "reported": "Saccharomyces cerevisiae",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "aroma",
+          "reported": "Relatively neutral at high temperatures, slight orange and citrus notes",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "diastatic",
+          "reported": "Undetectable",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "form",
+          "reported": "Sèche (poudre granulaire sous vide)",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        }
+      ],
+      "alcoholTolerancePct": 12,
+      "flocculation": "Very High",
+      "form": "sèche",
+      "lab": "Lallemand",
+      "note": "Données extraites pour LalBrew Voss Kveik de Lallemand, l'incarnation la plus courante sous cette dénomination.",
+      "retrievedAt": "2026-11-08",
+      "strain": "LalBrew Voss",
+      "tempMaxC": 40,
+      "tempMinC": 25
+    },
+    "facts": {
+      "found": true,
+      "name": "LalBrew Voss Kveik",
+      "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+      "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+      "alcoholTolerancePct": 12,
+      "flocculation": "Very High",
+      "form": "sèche",
+      "lab": "Lallemand",
+      "retrievedAt": "2026-11-08",
+      "strain": "LalBrew Voss",
+      "tempMaxC": 40,
+      "tempMinC": 25,
+      "origin": "ai",
+      "technicalFacts": [
+        {
+          "key": "temperature",
+          "reported": "25 - 40°C (77 - 104°F), optimal: 35 - 40°C (95 - 104°F)",
+          "origin": "ai",
+          "range": {
+            "min": 25,
+            "max": 40
+          },
+          "unit": "°C",
+          "qualifier": "range",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "attenuation",
+          "reported": "76 - 82%",
+          "origin": "ai",
+          "range": {
+            "min": 76,
+            "max": 82
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "alcoholTolerance",
+          "reported": "12% ABV",
+          "origin": "ai",
+          "range": {
+            "min": 12,
+            "max": 12
+          },
+          "unit": "%",
+          "qualifier": "reportedPoint",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "pitchRate",
+          "reported": "50 - 100 g/hL",
+          "origin": "ai",
+          "range": {
+            "min": 50,
+            "max": 100
+          },
+          "unit": "g/hL",
+          "qualifier": "range",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "flocculation",
+          "reported": "Very High",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "species",
+          "reported": "Saccharomyces cerevisiae",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "aroma",
+          "reported": "Relatively neutral at high temperatures, slight orange and citrus notes",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "diastatic",
+          "reported": "Undetectable",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        },
+        {
+          "key": "form",
+          "reported": "Sèche (poudre granulaire sous vide)",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        }
+      ],
+      "documentaryNotes": [
+        {
+          "text": "Données extraites pour LalBrew Voss Kveik de Lallemand, l'incarnation la plus courante sous cette dénomination.",
+          "origin": "ai",
+          "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+          "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+          "retrievedAt": "2026-11-08"
+        }
+      ]
+    },
+    "ecritF4": {
+      "valeurs": {
+        "yeastLab": "Lallemand",
+        "yeastStrain": "LalBrew Voss",
+        "yeastForm": "sèche",
+        "yeastTempMinC": 25,
+        "yeastTempMaxC": 40,
+        "yeastFlocculation": "Very High",
+        "yeastAlcoholTolerancePct": 12,
+        "yeastTechnicalFacts": [
+          {
+            "key": "temperature",
+            "reported": "25 - 40°C (77 - 104°F), optimal: 35 - 40°C (95 - 104°F)",
+            "origin": "ai",
+            "range": {
+              "min": 25,
+              "max": 40
+            },
+            "unit": "°C",
+            "qualifier": "range",
+            "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "attenuation",
+            "reported": "76 - 82%",
+            "origin": "ai",
+            "range": {
+              "min": 76,
+              "max": 82
+            },
+            "unit": "%",
+            "qualifier": "range",
+            "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "alcoholTolerance",
+            "reported": "12% ABV",
+            "origin": "ai",
+            "range": {
+              "min": 12,
+              "max": 12
+            },
+            "unit": "%",
+            "qualifier": "reportedPoint",
+            "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "pitchRate",
+            "reported": "50 - 100 g/hL",
+            "origin": "ai",
+            "range": {
+              "min": 50,
+              "max": 100
+            },
+            "unit": "g/hL",
+            "qualifier": "range",
+            "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "flocculation",
+            "reported": "Very High",
+            "origin": "ai",
+            "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "species",
+            "reported": "Saccharomyces cerevisiae",
+            "origin": "ai",
+            "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "aroma",
+            "reported": "Relatively neutral at high temperatures, slight orange and citrus notes",
+            "origin": "ai",
+            "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "diastatic",
+            "reported": "Undetectable",
+            "origin": "ai",
+            "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          },
+          {
+            "key": "form",
+            "reported": "Sèche (poudre granulaire sous vide)",
+            "origin": "ai",
+            "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+            "sourceUrl": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+            "retrievedAt": "2026-11-08"
+          }
+        ],
+        "technicalSource": "Trouvée en ligne — Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet"
+      },
+      "source": "Lallemand Brewing — LalBrew Voss™ Kveik Technical Data Sheet",
+      "url": "https://www.lallemandbrewing.com/en/united-states/product-details/lalbrew-voss-kveik-ale-yeast/",
+      "deduit": {}
+    }
+  },
+  {
+    "id": "x02",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Citra Zeta",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 9665,
+        "entree": 1024,
+        "sortie": 172,
+        "recherches": 20,
+        "coutMicro": 353533,
+        "reserveMicro": 414692,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 353533,
+    "ms": 9665,
+    "etat": "repondu",
+    "reponse": {
+      "found": false,
+      "name": "Citra Zeta",
+      "source": "Non répertorié — Yakima Chief Hops / BarthHaas / Hop Breeding Company",
+      "note": "Aucune variété de houblon officielle ne porte le nom « Citra Zeta ». Il s'agit très probablement d'une confusion avec le houblon Citra® (HBC 394), d'une confusion avec le sigle CTZ (Columbus, Tomahawk, Zeus), ou de la référence à une bière commerciale (telle que Zeta Hop ou des cuvées de la brasserie espagnole Zeta Beer brassées avec du Citra). Merci de préciser le producteur ou la variété exacte recherchée pour renseigner les teneurs en acides alpha."
+    },
+    "facts": {
+      "found": false,
+      "name": "Citra Zeta",
+      "source": "Non répertorié — Yakima Chief Hops / BarthHaas / Hop Breeding Company",
+      "note": "Aucune variété de houblon officielle ne porte le nom « Citra Zeta ». Il s'agit très probablement d'une confusion avec le houblon Citra® (HBC 394), d'une confusion avec le sigle CTZ (Columbus, Tomahawk, Zeus), ou de la référence à une bière commerciale (telle que Zeta Hop ou des cuvées de la brasserie espagnole Zeta Beer brassées avec du Citra). Merci de préciser le producteur ou la variété exacte recherchée pour renseigner les teneurs en acides alpha."
+    },
+    "ecritF4": null
+  },
+  {
+    "id": "x06",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Malt Munich",
+    "chemin": "f4",
+    "garde": {
+      "decision": "nonIdentifiable",
+      "raison": "malt sans fabricant ni marque : a saisir, aucun appel"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 6177,
+        "entree": 690,
+        "sortie": 294,
+        "recherches": 20,
+        "coutMicro": 354050,
+        "reserveMicro": 408249,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 354050,
+    "ms": 6177,
+    "etat": "repondu",
+    "reponse": {
+      "found": false,
+      "name": "Malt Munich",
+      "source": "Non attribuable — Malteur non spécifié",
+      "sourceUrl": "",
+      "colorEbc": null,
+      "colorEbcMin": null,
+      "colorEbcMax": null,
+      "extractPct": null,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08T16:14:00Z",
+      "note": "Le nom « Malt Munich » est générique. Plusieurs malteries proposent des malts Munich avec des spécifications et des intensités différentes (ex. Weyermann Munich I ou II, Castle Malting Château Munich ou Munich Light, Bestmalz BEST Munich, etc.). Veuillez préciser le fabricant ou la variété exacte.",
+      "grainType": "orge",
+      "diastaticPower": 0,
+      "usage": "Malt de base ou de spécialité apportant un profil malté prononcé et des arômes de pain ou de biscuit, couramment utilisé dans les lagers ambrées, bocks et bières de tradition allemande.",
+      "substitutes": [
+        "Munich Type 1",
+        "Munich Type 2",
+        "Vienna"
+      ]
+    },
+    "facts": {
+      "found": false,
+      "name": "Malt Munich",
+      "source": "Non attribuable — Malteur non spécifié",
+      "sourceUrl": "",
+      "retrievedAt": "2026-11-08T16:14:00Z",
+      "note": "Le nom « Malt Munich » est générique. Plusieurs malteries proposent des malts Munich avec des spécifications et des intensités différentes (ex. Weyermann Munich I ou II, Castle Malting Château Munich ou Munich Light, Bestmalz BEST Munich, etc.). Veuillez préciser le fabricant ou la variété exacte.",
+      "grainType": "orge",
+      "diastaticPower": 0,
+      "usage": "Malt de base ou de spécialité apportant un profil malté prononcé et des arômes de pain ou de biscuit, couramment utilisé dans les lagers ambrées, bocks et bières de tradition allemande.",
+      "substitutes": [
+        "Munich Type 1",
+        "Munich Type 2",
+        "Vienna"
+      ]
+    },
+    "ecritF4": null
+  },
+  {
+    "id": "x07",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Sucre cristal 1 kg",
+    "chemin": "f4",
+    "garde": {
+      "decision": "nonIdentifiable",
+      "raison": "malt sans fabricant ni marque : a saisir, aucun appel"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 5676,
+        "entree": 698,
+        "sortie": 278,
+        "recherches": 20,
+        "coutMicro": 353915,
+        "reserveMicro": 408275,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 353915,
+    "ms": 5676,
+    "etat": "repondu",
+    "reponse": {
+      "found": false,
+      "name": "Sucre cristal 1 kg",
+      "source": "Non spécifiée",
+      "sourceUrl": "",
+      "colorEbc": null,
+      "colorEbcMin": null,
+      "colorEbcMax": null,
+      "extractPct": null,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08T16:14:00Z",
+      "note": "« Sucre cristal 1 kg » est une dénomination générique sans indication du fabricant ou raffineur (par exemple Schweizer Zucker / Sucre Suisse, Cristalco, Béghin Say, etc.). Veuillez préciser la marque ou le fournisseur afin d'identifier la fiche technique officielle du produit.",
+      "grainType": "sucre",
+      "diastaticPower": 0,
+      "usage": "Augmentation de la densité et de l'alcool sans apport de corps ni de couleur, ou sucre de resucrage pour la refermentation en bouteille.",
+      "substitutes": [
+        "Dextrose",
+        "Sucre de canne blanc",
+        "Sucre candi blanc"
+      ]
+    },
+    "facts": {
+      "found": false,
+      "name": "Sucre cristal 1 kg",
+      "source": "Non spécifiée",
+      "sourceUrl": "",
+      "retrievedAt": "2026-11-08T16:14:00Z",
+      "note": "« Sucre cristal 1 kg » est une dénomination générique sans indication du fabricant ou raffineur (par exemple Schweizer Zucker / Sucre Suisse, Cristalco, Béghin Say, etc.). Veuillez préciser la marque ou le fournisseur afin d'identifier la fiche technique officielle du produit.",
+      "grainType": "sucre",
+      "diastaticPower": 0,
+      "usage": "Augmentation de la densité et de l'alcool sans apport de corps ni de couleur, ou sucre de resucrage pour la refermentation en bouteille.",
+      "substitutes": [
+        "Dextrose",
+        "Sucre de canne blanc",
+        "Sucre candi blanc"
+      ]
+    },
+    "ecritF4": null
+  },
+  {
+    "id": "x10",
+    "famille": "houblon",
+    "kind": "houblon",
+    "nom": "Houblon amer sac 1 kg",
+    "chemin": "assistant",
+    "garde": {
+      "decision": "aucune-recherche",
+      "raison": "houblon : jamais de recherche en ligne, jamais d'alpha (M2)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 4275,
+        "entree": 1034,
+        "sortie": 126,
+        "recherches": 20,
+        "coutMicro": 353120,
+        "reserveMicro": 414733,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 353120,
+    "ms": 4275,
+    "etat": "repondu",
+    "reponse": {
+      "found": false,
+      "name": "Houblon amer sac 1 kg",
+      "source": "Aucune fiche technique disponible",
+      "note": "La désignation « Houblon amer sac 1 kg » est générique et correspond uniquement à une catégorie d'usage et un conditionnement. Sans connaître la variété exacte de houblon (par exemple Magnum, Target, Columbus, Galena, etc.) ou le producteur/fournisseur, il est impossible de déterminer le taux d'acides alpha et les caractéristiques techniques du produit."
+    },
+    "facts": {
+      "found": false,
+      "name": "Houblon amer sac 1 kg",
+      "source": "Aucune fiche technique disponible",
+      "note": "La désignation « Houblon amer sac 1 kg » est générique et correspond uniquement à une catégorie d'usage et un conditionnement. Sans connaître la variété exacte de houblon (par exemple Magnum, Target, Columbus, Galena, etc.) ou le producteur/fournisseur, il est impossible de déterminer le taux d'acides alpha et les caractéristiques techniques du produit."
+    },
+    "ecritF4": null
+  }
+]

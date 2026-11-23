@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Témoin du rail : D46, une poignée qui saute par paquets</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font: 14px/1.3 system-ui, sans-serif; background: #f6efe6; color: #2a2118; min-height: 100vh; }
+  main { padding: 12px; }
+  h1 { font-size: 16px; margin: 0 0 6px; }
+  .ibu { font: 600 15px ui-monospace, Menlo, monospace; }
+  .dock { position: fixed; left: 0; right: 0; bottom: 0; background: #fffaf2; border-top: 1px solid #d8c9b4; padding: 8px 10px 14px; }
+  .dock.haut { top: 660px; bottom: auto; }
+  .dock.deplace.doigt { transform: translateY(70px); }
+  .rangee { display: grid; gap: 4px; margin-bottom: 6px; }
+  .etapes { grid-template-columns: repeat(4, 1fr); }
+  .jours { grid-template-columns: repeat(7, 1fr); }
+  .rangee button { font: inherit; height: 28px; border: 1px solid #c9b79d; border-radius: 6px; background: #fff; }
+  .rangee button[aria-pressed="true"], .rangee button[aria-current="true"] { background: #2a2118; color: #fff; }
+  .rangee button[aria-disabled="true"] { opacity: .45; }
+  .bulle-zone { height: 30px; position: relative; }
+  .frise { position: relative; height: 44px; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .rail { position: absolute; left: 0; right: 0; top: 18px; height: 24px; }
+  .zone { position: absolute; top: 9px; height: 6px; border-radius: 3px; }
+  .z0 { background: #d9a86c; } .z1 { background: #9b8a6a; } .z2 { background: #8fae7e; } .z3 { background: #8aa0b8; }
+  .cran { position: absolute; top: 2px; width: 1px; height: 18px; background: #2a2118; transform: translateX(-50%); }
+  .pouce { position: absolute; top: 2px; width: 20px; height: 20px; margin-left: -10px; border-radius: 50%; background: #2a2118; border: 3px solid #fffaf2; }
+  .pouce.ombre { box-shadow: 0 4px 10px rgba(0,0,0,.45); }
+  .etiq { position: absolute; top: 0; font: 600 12px ui-monospace, Menlo, monospace; transform: translateX(-50%); white-space: nowrap; }
+  .bulle { position: absolute; top: 2px; transform: translateX(-50%); font: 600 14px ui-monospace, Menlo, monospace; background: #2a2118; color: #fff; padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
+  .bulle.chevauche { top: 30px; }
+  .repere { position: absolute; top: 0; left: 70%; font: 12px ui-monospace, Menlo, monospace; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li.ligne { position: relative; margin-top: 20px; padding: 6px 10px 8px; border: 1px solid #d8c9b4; border-radius: 10px; background: #fffaf2; }
+  .ligne .tete { display: flex; align-items: baseline; gap: 8px; }
+  .ligne .tete b { font-size: 16px; }
+  .ligne .tete output { margin-left: auto; }
+  .poignee { position: relative; height: 32px; margin-top: 44px; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .poignee .piste { position: absolute; left: 0; right: 0; top: 13px; height: 6px; }
+  .ligne .pouce { top: 4px; width: auto; height: 24px; border-radius: 12px; padding: 0 8px; margin-left: 0; transform: translateX(-50%); background: #fff; color: #2a2118; border: 2px solid #2a2118; font: 600 12px/20px ui-monospace, Menlo, monospace; white-space: nowrap; }
+  .loupe { position: absolute; bottom: calc(100% + 4px); transform: translateX(-50%); display: flex; align-items: flex-end; gap: 26px; padding: 3px 10px; border-radius: 8px; background: #fff; border: 1px solid #c9b79d; pointer-events: none; }
+  .loupe span { font: 12px ui-monospace, Menlo, monospace; white-space: nowrap; }
+  .loupe span.ici { font: 600 16px ui-monospace, Menlo, monospace; }
+</style>
+</head>
+<body data-route="temoin-rail">
+<main data-ecran="temoin">
+  <h1>Quand ajouter le houblon ?</h1>
+  <div id="haut"></div>
+</main>
+<div id="zone"></div>
+<script>
+(function () {
+  var CFG = {"forme":"frise","boil":60,"pas":5,"loupe":true,"saccade":true};
+  var PAD = 14, SEG = [[0, 44], [44, 52], [52, 76], [76, 100]];
+  var crans = [], m, j;
+  for (m = CFG.boil; m >= 0; m -= CFG.pas) crans.push({ seg: 0, m: m, aria: 'ébullition ' + m + '′', court: m + '′' });
+  crans.push({ seg: 1, aria: 'whirlpool', court: 'WP' });
+  for (j = 1; j <= 7; j++) crans.push({ seg: 2, j: j, aria: 'dry hop actif, ' + (CFG.joursFiges ? 3 : j) + ' j', court: (CFG.joursFiges ? 3 : j) + ' j' });
+  for (j = 1; j <= 7; j++) crans.push({ seg: 3, j: j, aria: 'dry hop après fermentation, ' + (CFG.joursFiges ? 3 : j) + ' j', court: (CFG.joursFiges ? 3 : j) + ' j' });
+  var n = crans.length;
+  var ibuDe = function (c) { return c.seg === 0 ? 60 * (1 - Math.exp(-0.04 * c.m)) / (1 - Math.exp(-0.04 * CFG.boil)) : c.seg === 1 ? 10 : 0; };
+  var pct = function (k) {
+    var du = crans.map(function (c, i) { return i; }).filter(function (i) { return crans[i].seg === crans[k].seg; });
+    var b = SEG[crans[k].seg];
+    return du.length === 1 ? (b[0] + b[1]) / 2 : b[0] + (b[1] - b[0]) * (0.06 + 0.88 * du.indexOf(k) / (du.length - 1));
+  };
+  var idx = 0, q0; for (q0 = 0; q0 < n; q0++) if (crans[q0].seg === 2 && crans[q0].j === 3) idx = q0; // départ : dry hop actif, 3 j
+  if (CFG.forme === 'ligne') idx = 0;
+  var doigt = false, fx = 0;
+
+  var zone = document.getElementById('zone');
+  var forme = CFG.forme;
+  var html = '';
+  if (forme === 'frise') {
+    html += '<div class="dock' + (CFG.extreme ? ' haut' : '') + (CFG.deplace ? ' deplace' : '') + '" id="dock" data-acquis="frise" data-pas="5" data-libre="moment">';
+    html += '<div class="rangee etapes">' + [[CFG.boil + '′–0′', 0], ['WP', 1], ['actif', 2], ['après', 3]].map(function (e) { return '<button type="button" data-etape="' + e[1] + '">' + e[0] + '</button>'; }).join('') + '</div>';
+    html += '<div class="rangee jours" data-jours="">' + [1, 2, 3, 4, 5, 6, 7].map(function (d) { return '<button type="button" data-jour="' + d + '">' + d + ' j</button>'; }).join('') + '</div>';
+    html += '<div class="bulle-zone" id="bulle-zone"></div>';
+    html += '<div class="frise" data-acquis="geste" data-role="frise" id="frise"><div class="rail" id="rail" role="slider" tabindex="0" data-role="reglage" aria-label="Moment de l’ajout" aria-valuemin="0" aria-valuemax="' + (n - 1) + '"></div></div>';
+    html += '</div>';
+  } else {
+    html += '<main><ul><li class="ligne" data-role="ligne-houblon" data-voie="a1"><div class="tete"><b>Houblon</b><span>α 13 %</span><output data-role="ibu-ajout" id="ibu"></output></div>';
+    html += '<div class="poignee" id="rail" data-role="glisser-moment" role="slider" tabindex="0" aria-label="Moment du houblon" aria-valuemin="0" aria-valuemax="' + (n - 1) + '"></div></li></ul></main>';
+  }
+  zone.innerHTML = html;
+  var rail = document.getElementById('rail');
+  var frise = document.getElementById('frise') || rail;
+  var dock = document.getElementById('dock');
+  if (forme === 'frise') document.getElementById('haut').innerHTML = '<output class="ibu" data-role="ibu-dry" id="ibu"></output>';
+  var ibuEl = document.getElementById('ibu');
+
+  var largeur = function () { return rail.getBoundingClientRect().width; };
+  var xDe = function (p) { return PAD + (largeur() - 2 * PAD) * p / 100; };
+  var loupe = function (x, f, mm) { var d = x - f, D = d >= 0 ? 100 - f : f; if (D <= 0) return x; var t = Math.abs(d) / D; return f + (d < 0 ? -1 : 1) * D * (((mm + 1) * t) / (mm * t + 1)); };
+  var plusProche = function (x) {
+    var r = rail.getBoundingClientRect(), f = (x - r.left - PAD) / Math.max(1, r.width - 2 * PAD) * 100, best = 0, bd = 1e9, k;
+    for (k = 0; k < n; k++) { var d = Math.abs(pct(k) - f); if (d < bd) { bd = d; best = k; } }
+    return best;
+  };
+
+  function dessiner() {
+    var c = crans[idx], i, k, h = '';
+    rail.setAttribute('aria-valuenow', idx);
+    rail.setAttribute('aria-valuetext', c.aria);
+    var v = ibuDe(c);
+    ibuEl.setAttribute('data-valeur', v.toFixed(2));
+    ibuEl.textContent = (CFG.forme === 'ligne' ? '' : '') + Math.round(v) + ' IBU';
+    var px = doigt ? Math.max(PAD, Math.min(largeur() - PAD, fx)) : xDe(pct(idx));
+    if (CFG.saccade && doigt) px = Math.round(px / 30) * 30;
+    if (forme === 'frise') {
+      for (i = 0; i < 4; i++) h += '<span class="zone z' + i + '" style="left:' + xDe(SEG[i][0] + 0.4) + 'px;width:' + (xDe(SEG[i][1] - 0.4) - xDe(SEG[i][0] + 0.4)) + 'px"></span>';
+      if (doigt || CFG.gradueRepos) {
+        var f = pct(idx);
+        for (k = 0; k < n; k++) {
+          if (doigt && crans[k].seg !== c.seg) continue;
+          var p = doigt && CFG.loupe ? loupe(pct(k), f, 14) : pct(k);
+          h += '<i class="cran" data-cran="' + k + '" style="left:' + xDe(p) + 'px"></i>';
+        }
+      }
+      if (!doigt) h += '<span class="etiq" style="left:' + Math.max(24, Math.min(largeur() - 24, px)) + 'px;top:-16px">' + c.court + '</span>';
+      else if (CFG.chevauche) h += '<span class="etiq" style="left:' + Math.max(24, Math.min(largeur() - 24, px)) + 'px;top:-16px">' + c.court + '</span><span class="bulle" data-role="loupe" style="top:-18px;left:' + Math.max(24, Math.min(largeur() - 24, px)) + 'px">' + c.court + '</span>';
+      if (CFG.repere) h += '<span class="repere">10′</span>';
+      h += '<span class="pouce' + (CFG.ombre && !doigt ? ' ombre' : '') + '" data-role="moment-pouce" style="left:' + px + 'px"></span>';
+      rail.innerHTML = h;
+      var bz = document.getElementById('bulle-zone');
+      var bx = Math.max(30, Math.min(largeur() - 30, px));
+      bz.innerHTML = doigt && !CFG.chevauche ? '<span class="bulle" data-role="loupe" style="left:' + bx + 'px">' + c.court + '</span>' : '';
+      var jb = dock.querySelectorAll('[data-jour]'), on = c.seg >= 2;
+      for (i = 0; i < jb.length; i++) { jb[i].setAttribute('aria-disabled', on ? 'false' : 'true'); jb[i].setAttribute('aria-pressed', on && c.j === i + 1 ? 'true' : 'false'); }
+      var eb = dock.querySelectorAll('[data-etape]');
+      for (i = 0; i < eb.length; i++) eb[i].setAttribute('aria-current', Number(eb[i].getAttribute('data-etape')) === c.seg ? 'true' : 'false');
+      if (CFG.deplace) dock.classList.toggle('doigt', doigt);
+    } else {
+      for (i = 0; i < 4; i++) h += '<span class="zone z' + i + '" style="left:' + xDe(SEG[i][0] + 0.4) + 'px;width:' + (xDe(SEG[i][1] - 0.4) - xDe(SEG[i][0] + 0.4)) + 'px;top:0"></span>';
+      h = '<span class="piste" aria-hidden="true">' + h + '</span>';
+      if (CFG.repere) h += '<span class="repere">10′</span>';
+      h += '<span class="pouce' + (CFG.ombre && !doigt ? ' ombre' : '') + '" data-role="moment-pouce" style="left:' + px + 'px">' + c.court + '</span>';
+      if (doigt) {
+        h += '<span class="loupe" data-role="loupe" style="left:' + Math.max(90, Math.min(largeur() - 90, px)) + 'px">';
+        for (k = idx - 2; k <= idx + 2; k++) if (k >= 0 && k < n) h += '<span data-cran="' + k + '"' + (k === idx ? ' class="ici"' : '') + '>' + crans[k].court + '</span>';
+        h += '</span>';
+      }
+      rail.innerHTML = h;
+    }
+  }
+
+  var vers = function (k) { if (CFG.inerte) return; if (k !== idx) idx = k; };
+  var bas = function (e) {
+    if (e.button > 0) return;
+    frise.setPointerCapture(e.pointerId);
+    doigt = true; fx = e.clientX - rail.getBoundingClientRect().left;
+    vers(plusProche(e.clientX)); dessiner();
+  };
+  var bouge = function (e) { if (!doigt) return; fx = e.clientX - rail.getBoundingClientRect().left; vers(plusProche(e.clientX)); dessiner(); };
+  var leve = function () { if (!doigt) return; doigt = false; dessiner(); };
+  frise.addEventListener('pointerdown', bas);
+  frise.addEventListener('pointermove', bouge);
+  frise.addEventListener('pointerup', leve);
+  if (!CFG.annule) { frise.addEventListener('pointercancel', leve); frise.addEventListener('lostpointercapture', leve); }
+  rail.addEventListener('keydown', function (e) {
+    var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    vers(Math.max(0, Math.min(n - 1, idx + d))); dessiner();
+  });
+  if (forme === 'frise') {
+    dock.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-jour],[data-etape]');
+      if (!b || CFG.inerte) return;
+      if (b.hasAttribute('data-jour')) {
+        if (crans[idx].seg < 2) return;
+        var d = Number(b.getAttribute('data-jour')), k;
+        for (k = 0; k < n; k++) if (crans[k].seg === crans[idx].seg && crans[k].j === d) idx = k;
+      } else {
+        var s = Number(b.getAttribute('data-etape')), k2;
+        for (k2 = 0; k2 < n; k2++) if (crans[k2].seg === s) { idx = k2; break; }
+      }
+      dessiner();
+    });
+  }
+  window.addEventListener('resize', dessiner);
+  dessiner();
+})();
+</script>
+</body>
+</html>

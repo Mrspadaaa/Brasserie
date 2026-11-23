@@ -1,0 +1,508 @@
+import { useCallback, useMemo, useRef, useState } from "react";
+
+import { SaltId, WaterIons } from "../../types";
+import { describeTreatmentIssues } from "../../domain/water/solverMessages";
+import {
+  SALTS,
+  calculateWaterTreatment,
+  SALT_IDS,
+  ACIDS,
+  ION_LABEL,
+  CAUTION_APPROACH,
+  saltCautions,
+  alkalinityAsCaCO3,
+  residualAlkalinity,
+  alkalineSaltGoal,
+  estimateMashPh,
+  lactateInBeer,
+  sulfateChlorideRatio,
+  solveSalts,
+  splitDoses,
+} from "../../domain/water";
+import { styleWaterForReference } from "../../domain/waterStyles";
+
+import { SaltSolverProps, WaterChangeIntent, WaterState } from "./types";
+import { RADAR_IONS } from "./constants";
+import { waterTreatmentTarget } from "../../domain/water/profileTarget";
+import { manualWaterImpact, type ManualWaterEdit } from "../../domain/water/manualImpact";
+import { diagnoseWaterProfile } from "../../domain/water/profileDiagnosis";
+import { useWaterAnalysis } from "./useWaterAnalysis";
+import { useWaterAnalysisInputs, waterStateWithRetainedAcid } from "./useWaterAnalysisInputs";
+import { completeWaterProposal } from "../../domain/water/proposal";
+import { noteAcideProfil } from "./acideProfil";
+type Tab = "empatage" | "rincage";
+type MobileStep = "eau" | "sels";
+
+export { waterStateWithRetainedAcid };
+
+/** Keep an explicit mash/sparge allocation while rebasing the edited mass. */
+function rebalanceCustomSaltSplit(state: WaterState, id: SaltId, grams: number) {
+  if (!state.saltSplit) return undefined;
+  const mash = { ...state.saltSplit.mash };
+  const sparge = { ...state.saltSplit.sparge };
+  const oldMash = mash[id] ?? 0;
+  const oldSparge = sparge[id] ?? 0;
+  const oldTotal = oldMash + oldSparge;
+  const standard = splitDoses({ [id]: grams }, state.mashWaterL, state.spargeWaterL,
+    state.allSaltsInMash !== false);
+  const mashGrams = oldTotal > 0
+    ? Math.round(grams * oldMash / oldTotal * 1e9) / 1e9
+    : standard.mash[id] ?? 0;
+  const spargeGrams = Math.round((grams - mashGrams) * 1e9) / 1e9;
+  if (grams > 0) {
+    if (mashGrams > 0) mash[id] = mashGrams;
+    else delete mash[id];
+    if (spargeGrams > 0) sparge[id] = spargeGrams;
+    else delete sparge[id];
+  } else {
+    delete mash[id];
+    delete sparge[id];
+  }
+  return { mash, sparge };
+}
+
+/** Coordinates edits and derives the workshop from the shared water domain. */
+export function useWaterWorkshop({
+  source,
+  onSourceChange,
+  beerEbc,
+  beerVolumeL,
+  brew,
+  onMashRatioChange,
+  state,
+  onChange,
+  profileMode,
+  noSparge,
+  onNoSpargeChange,
+}: SaltSolverProps) {
+  const [lastEdit, setLastEdit] = useState<{
+    edit: ManualWaterEdit;
+    before: ReturnType<typeof calculateWaterTreatment>;
+    beforePh: ReturnType<typeof estimateMashPh> | null;
+    context: string;
+  } | null>(null);
+  const editing = useRef<NonNullable<typeof lastEdit> | null>(null);
+  const set = (patch: Partial<WaterState>, intent?: WaterChangeIntent) => {
+    setLastEdit(null);
+    onChange({
+      ...state,
+      ...patch,
+      ...(patch.allSaltsInMash != null &&
+      patch.allSaltsInMash !== state.allSaltsInMash
+        ? { saltSplit: undefined }
+        : {}),
+    }, intent);
+  };
+  /** A committed profile is the brewer's choice, the current one included. */
+  const chooseProfile = (code: string) =>
+    set({ styleCode: code, ratioOverride: undefined }, "profile-choice");
+  const setDose = (id: SaltId, value: number) => {
+    if (state.disabled.includes(id) || !Number.isFinite(value)) return;
+    const doses = { ...state.doses, [id]: Math.max(0, value) };
+    if (!doses[id]) delete doses[id];
+    const saltSplit = rebalanceCustomSaltSplit(state, id, Math.max(0, value));
+    const split = saltSplit ?? splitDoses(
+      doses,
+      state.mashWaterL,
+      state.spargeWaterL,
+      state.allSaltsInMash !== false,
+    );
+    const saltOverrides = state.autoTreatment
+      ? {
+          mash: { ...state.saltOverrides?.mash, [id]: split.mash[id] ?? 0 },
+          sparge: {
+            ...state.saltOverrides?.sparge,
+            [id]: split.sparge[id] ?? 0,
+          },
+        }
+      : state.saltOverrides;
+    set({
+      doses,
+      saltOverrides,
+      saltSplit,
+      ratioOverride: undefined,
+    });
+    if ((state.doses[id] ?? 0) !== Math.max(0, value))
+      rememberEdit({ kind: 'salt', id, from: state.doses[id] ?? 0, to: Math.max(0, value) });
+  };
+  const [tab, setTab] = useState<Tab>("empatage");
+  const [activeStep, setActiveStep] = useState<MobileStep>("eau");
+
+  const [activeSalt, setActiveSalt] = useState<SaltId | "acide" | null>(null);
+  const [targetOpen, setTargetOpen] = useState(false);
+  const workbenchRef = useRef<HTMLDivElement>(null);
+
+  const handleStepChange = (step: MobileStep) => {
+    setActiveStep(step);
+    if (typeof document !== "undefined") {
+      const main = document.querySelector("main");
+      if (main) main.scrollTop = 0;
+    }
+  };
+
+  // L'entrée de l'analyse (sels + minimum d'osmosée) se bâtit dans `useWaterAnalysisInputs`, la même que celle du préchargement de l'assistant.
+  const {
+    totalWaterL, style, start, spargeDi, startSparge, mashRatioLPerKg, waterModelIssue, retainedAcidState,
+    raBand, raCeiling, raPreference, allSaltsInMash, hopHint, wantedRatio, planInputFor, solveInput, dilutionInput,
+  } = useWaterAnalysisInputs({ source, beerEbc, beerVolumeL, brew, state });
+  const recipeStyle = styleWaterForReference(brew?.style ?? "",brew?.styleRef);
+  const differentProfile =
+    !state.customTarget &&
+    recipeStyle.code !== "—" &&
+    recipeStyle.code !== style.code;
+  const spargeLinked = state.spargeDiRatioPct == null;
+
+  const vol = brew?.volumes;
+
+  const alkaliGoal = alkalineSaltGoal(raBand, raCeiling);
+
+  const treatment = useMemo(
+    () =>
+      calculateWaterTreatment(
+        source,
+        { ...retainedAcidState, ...waterTreatmentTarget(style, state.customTarget?.ions, { ceiling: raCeiling, target: raPreference }) },
+        raBand,
+      ),
+    [source, retainedAcidState, raBand, style, raCeiling, raPreference],
+  );
+  const achievedMash = treatment.raw.mash;
+  const achievedSparge = treatment.raw.sparge;
+  const achievedTotal = treatment.total;
+
+  const ra = residualAlkalinity(achievedMash);
+  const ratio = sulfateChlorideRatio(achievedTotal);
+
+  const phEstimate = useMemo(
+    () => waterModelIssue ? null : estimateMashPh(brew?.grist, treatment.mashPhRa, mashRatioLPerKg),
+    [brew?.grist, waterModelIssue, treatment.mashPhRa, mashRatioLPerKg],
+  );
+
+  // Do not keep a before/after claim across a different source, recipe,
+  // volume, dilution or acid product. The snapshot is UI state, never saved.
+  const editContext = JSON.stringify([source, state.styleCode, state.customTarget,
+    state.diRatioPct, spargeDi, state.mashWaterL, state.spargeWaterL,
+    state.allSaltsInMash, state.acidId, beerEbc, brew?.grist, waterModelIssue]);
+  const hasKnownAcidDose = (side: 'mash' | 'sparge') =>
+    state.acidOverride?.[side] != null || (!waterModelIssue && Number.isFinite(source.hco3));
+  const beginEdit = (edit: ManualWaterEdit) => {
+    if (edit.kind === 'acid' && !hasKnownAcidDose(edit.side)) {
+      editing.current = null;
+      return;
+    }
+    editing.current = { edit, before: treatment, beforePh: phEstimate, context: editContext };
+  };
+  const endEdit = () => { editing.current = null; };
+  const rememberEdit = (edit: ManualWaterEdit) => {
+    const start = editing.current;
+    const sameControl = start?.context === editContext && start.edit.kind === edit.kind
+      && (edit.kind === 'salt' ? start.edit.kind === 'salt' && start.edit.id === edit.id
+        : start.edit.kind === 'acid' && start.edit.side === edit.side);
+    setLastEdit(sameControl ? { ...start, edit: { ...edit, from: start.edit.from } }
+      : { edit, before: treatment, beforePh: phEstimate, context: editContext });
+  };
+  const manualImpact = lastEdit?.context === editContext ? manualWaterImpact({
+    ...lastEdit, beforePh: lastEdit.beforePh ?? estimateMashPh(undefined, 0, 0),
+    after: treatment, afterPh: phEstimate ?? estimateMashPh(undefined, 0, 0), totalWaterL,
+    ranges: style.ions, targeted: RADAR_IONS.filter(ion => !style.untargetedIons?.includes(ion)),
+  }) : null;
+  const setAcidDose = (side: 'mash' | 'sparge', value: number) => {
+    if (!Number.isFinite(value) || value < 0) return;
+    const before = side === 'mash' ? treatment.mashAcid.amount : treatment.spargeAcid.amount;
+    set({ acidOverride: { ...state.acidOverride, [side]: value } });
+    if (hasKnownAcidDose(side) && value !== before) rememberEdit({ kind: 'acid', side, from: before, to: value });
+  };
+
+  const planFor = useCallback((ratio: number, forceRatio = false) =>
+    solveSalts(planInputFor(ratio, forceRatio)), [planInputFor]);
+
+  const ionsAuPlafond = useMemo(
+    () =>
+      (["ca", "mg", "na", "so4", "cl"] as Array<keyof WaterIons>)
+        .filter(
+          (ion) =>
+            style.ions[ion] && treatment.startTotal[ion] > style.ions[ion].max,
+        )
+        .map(
+          (ion) =>
+            `${ION_LABEL[ion].toLowerCase()} (${Math.round(treatment.startTotal[ion])} pour ${style.ions[ion].max})`,
+        ),
+    [treatment.startTotal, style],
+  );
+
+  // Actual weighed water above stays synchronous. Searching alternative salt
+  // plans and up to 21 RO dilutions must not block a manual acid keystroke.
+  const analysis = useWaterAnalysis({ solve: solveInput, dilution: dilutionInput });
+  const proposalFor=(doses:WaterState['doses'])=>completeWaterProposal(source,
+    {...retainedAcidState,doses,...waterTreatmentTarget(style,state.customTarget?.ions,{ceiling:raCeiling,target:raPreference})},
+    raBand,state.disabled,state.saltOverrides?{mash:state.saltOverrides.mash??{},sparge:state.saltOverrides.sparge??{}}:undefined);
+  const completed=analysis.result?.solution?proposalFor(analysis.result.solution.doses):undefined;
+  const solution = analysis.result?.solution&&completed?{...analysis.result.solution,doses:completed.doses}:undefined;
+  const justEnough = analysis.result?.justEnough;
+  const diagnoses = useMemo(() => {
+    // Do not describe a stale proposal, or claim a search failed while pending.
+    if (!solution) return [];
+    const input = { ...retainedAcidState, ...waterTreatmentTarget(style, state.customTarget?.ions, { ceiling: raCeiling, target: raPreference }) };
+    const proposal = completed!.treatment;
+    const automaticAcid = !waterModelIssue && (state.acidOverride?.mash != null || state.acidOverride?.sparge != null)
+      ? calculateWaterTreatment(source, { ...input, acidOverride: undefined }, raBand) : undefined;
+    return diagnoseWaterProfile({ actual: treatment, proposal, automaticAcid,
+      ranges: { ...style.ions, ...(state.customTarget && treatment.hco3Range ? { hco3: treatment.hco3Range } : {}) },
+      targeted: RADAR_IONS.filter(ion => !style.untargetedIons?.includes(ion)),
+      disabled: state.disabled, totalWaterL, spargeWaterL: state.spargeWaterL,
+      requestedRatio: wantedRatio,
+    });
+  }, [state, retainedAcidState, waterModelIssue, style, source, solution, raBand, raCeiling, raPreference, treatment, totalWaterL, wantedRatio]);
+  const planApplied = !!solution && SALT_IDS.every(id =>
+    Math.abs((state.doses[id] ?? 0) - (solution.doses[id] ?? 0)) < 0.05);
+  const rienAProposer = !!solution && SALT_IDS.every(id => !((solution.doses[id] ?? 0) > 0));
+  const applyDoses = () => {
+    const proposal=completed??proposalFor(planFor(wantedRatio).doses);
+    set({doses:proposal.doses,saltSplit:proposal.split});
+  };
+  const applyMinimum = () => {
+    const proposal=justEnough?.feasible?justEnough.proposal:undefined;
+    if(!proposal||(state.roLimitL!=null&&proposal.volumes.totalRoL>state.roLimitL))return;
+    set({diRatioPct:proposal.diRatioPct,spargeDiRatioPct:undefined,doses:proposal.doses,saltSplit:proposal.split});
+  };
+
+  const applyRatio = (ratio: number) => {
+    setLastEdit(null);
+    const proposal=proposalFor(planFor(ratio,true).doses);
+    onChange({
+      ...state,
+      ratioOverride: ratio,
+      doses: proposal.doses,
+      saltSplit: proposal.split,
+    });
+  };
+
+  const split = useMemo(() => treatment.split, [treatment]);
+
+  const mashAcidCalcule = treatment.mashAcidCalculated;
+  const spargeAcidCalcule = treatment.spargeAcidCalculated;
+  const mashAcid = treatment.mashAcid;
+  const spargeAcid = treatment.spargeAcid;
+
+  const acideForce =
+    state.acidOverride?.mash != null || state.acidOverride?.sparge != null;
+  const mashAcidDiffers =
+    state.acidOverride?.mash != null &&
+    Math.abs(mashAcid.amount - mashAcidCalcule.amount) >= 0.05;
+
+  const raApresAcide = treatment.raAfter;
+
+  const placeAcide: "haut" | "juste" | "bas" =
+    raApresAcide > raBand.max + 5
+      ? "haut"
+      : raApresAcide < raBand.min - 5
+        ? "bas"
+        : "juste";
+
+  const acideSuffit = placeAcide !== "haut";
+
+  // RL-5 : acide dosé par le profil du style alors que l'alcalinité est déjà dans le repère. Le calcul ne change pas ; l'écran le dit.
+  const acideProfil = useMemo(
+    () => noteAcideProfil({
+      ra, raBand, placeAcide, acidAmount: mashAcid.amount, manual: state.acidOverride?.mash != null,
+      phSansAcide: waterModelIssue ? null : estimateMashPh(brew?.grist, ra, mashRatioLPerKg),
+      profil: { code: style.code, name: style.name },
+    }),
+    [ra, raBand, placeAcide, mashAcid.amount, state.acidOverride?.mash, waterModelIssue, brew?.grist, mashRatioLPerKg, style.code, style.name],
+  );
+
+  const messagesSolveur = useMemo(
+    () =>
+      planApplied
+        ? describeTreatmentIssues(
+            (solution?.issues ?? []).filter((issue) => issue.code !== "grist"),
+            treatment,
+            raBand,
+            // The bicarbonate diagnosis is already shown beside the acid controls.
+            { includeBicarbonateTarget: !state.customTarget },
+          )
+        : [],
+    [planApplied, solution?.issues, treatment, raBand, state.customTarget],
+  );
+
+  const spargeAlkalinity = Math.round(
+    alkalinityAsCaCO3(treatment.treated.sparge.hco3),
+  );
+
+  const achievedTotalApresAcide = treatment.treatedTotal;
+
+  const lactate =
+    state.acidId === "lactique"
+      ? lactateInBeer(mashAcid.amount + spargeAcid.amount, beerVolumeL)
+      : 0;
+
+  const cautions = useMemo(
+    () =>
+      saltCautions(
+        state.doses,
+        state.disabled,
+        achievedTotalApresAcide,
+        totalWaterL,
+      ),
+    [state.doses, state.disabled, achievedTotalApresAcide, totalWaterL],
+  );
+
+  const seuilGoutProche = useMemo(() => {
+    const t = ACIDS[state.acidId].taste;
+    return !!t && lactate >= t.gPerL * CAUTION_APPROACH && lactate <= t.gPerL;
+  }, [state.acidId, lactate]);
+
+  const caShort =
+    totalWaterL > 0 &&
+    achievedTotal.ca < style.ions.ca.min &&
+    !(planApplied && solution?.unreachable.some((m) => m.startsWith("Calcium")));
+
+  const hasSparge = !noSparge;
+  const activeTab: Tab = hasSparge ? tab : "empatage";
+
+  const round1 = (n: number) => Math.round(n * 10) / 10;
+  const mashOsmoseeL = round1((state.mashWaterL * state.diRatioPct) / 100);
+  const mashReseauL = round1(state.mashWaterL - mashOsmoseeL);
+  const spargeOsmoseeL = hasSparge
+    ? round1((state.spargeWaterL * spargeDi) / 100)
+    : 0;
+  const spargeReseauL = hasSparge
+    ? round1(state.spargeWaterL - spargeOsmoseeL)
+    : 0;
+  // Round totals once, like the saved recipe, rather than adding rounded jugs.
+  const exactOsmoseeL = (state.mashWaterL * state.diRatioPct + (hasSparge ? state.spargeWaterL * spargeDi : 0)) / 100;
+  const totalOsmoseeL = round1(exactOsmoseeL);
+  const totalReseauL = round1(state.mashWaterL + (hasSparge ? state.spargeWaterL : 0) - exactOsmoseeL);
+
+  const ionsOf = (id: SaltId) =>
+    RADAR_IONS.filter((ion) => (SALTS[id].ions[ion] ?? 0) > 0);
+
+  const bump = (id: SaltId, delta: number) => {
+    const next = Math.max(
+      0,
+      Math.round(((state.doses[id] ?? 0) + delta) * 10) / 10,
+    );
+    setDose(id, next);
+  };
+
+  const toggleSalt = (id: SaltId) => {
+    const off = state.disabled.includes(id);
+    const disabled = off
+      ? state.disabled.filter((d) => d !== id)
+      : [...state.disabled, id];
+    const doses = { ...state.doses };
+    if (!off) delete doses[id];
+    const saltOverrides = state.saltOverrides
+      ? structuredClone(state.saltOverrides)
+      : undefined;
+    if (saltOverrides) {
+      delete saltOverrides.mash?.[id];
+      delete saltOverrides.sparge?.[id];
+    }
+    const saltSplit = rebalanceCustomSaltSplit(state, id, doses[id] ?? 0);
+    set({ disabled, doses, saltSplit, saltOverrides });
+    if (!off && (state.doses[id] ?? 0) > 0)
+      rememberEdit({ kind: 'salt', id, from: state.doses[id]!, to: 0 });
+  };
+
+  const totalDosesGrams = Object.values(state.doses).reduce(
+    (acc, d) => acc + (d || 0),
+    0,
+  );
+
+  return {
+    applyMinimum,
+    source,
+    onSourceChange,
+    beerEbc,
+    beerVolumeL,
+    brew,
+    onMashRatioChange,
+    state,
+    onChange,
+    profileMode,
+    noSparge,
+    onNoSpargeChange,
+    set,
+    chooseProfile,
+    setDose,
+    setAcidDose,
+    manualImpact,
+    beginEdit,
+    endEdit,
+    tab,
+    setTab,
+    activeStep,
+    setActiveStep,
+    activeSalt,
+    setActiveSalt,
+    targetOpen,
+    setTargetOpen,
+    workbenchRef,
+    handleStepChange,
+    totalWaterL,
+    style,
+    recipeStyle,
+    differentProfile,
+    start,
+    spargeDi,
+    spargeLinked,
+    startSparge,
+    mashRatioLPerKg,
+    waterModelIssue,
+    vol,
+    raBand,
+    raCeiling,
+    alkaliGoal,
+    allSaltsInMash,
+    treatment,
+    achievedMash,
+    achievedSparge,
+    achievedTotal,
+    ra,
+    ratio,
+    phEstimate,
+    hopHint,
+    wantedRatio,
+    planFor,
+    applyDoses,
+    solution,
+    diagnoses,
+    planApplied,
+    rienAProposer,
+    ionsAuPlafond,
+    justEnough,
+    applyRatio,
+    split,
+    mashAcidCalcule,
+    spargeAcidCalcule,
+    mashAcid,
+    spargeAcid,
+    acideForce,
+    mashAcidDiffers,
+    raApresAcide,
+    placeAcide,
+    acideProfil,
+    acideSuffit,
+    messagesSolveur,
+    spargeAlkalinity,
+    achievedTotalApresAcide,
+    lactate,
+    cautions,
+    seuilGoutProche,
+    caShort,
+    hasSparge,
+    activeTab,
+    round1,
+    mashOsmoseeL,
+    mashReseauL,
+    spargeOsmoseeL,
+    spargeReseauL,
+    totalOsmoseeL,
+    totalReseauL,
+    ionsOf,
+    bump,
+    toggleSalt,
+    totalDosesGrams,
+  };
+}
+export type WaterWorkshopModel = ReturnType<typeof useWaterWorkshop>;

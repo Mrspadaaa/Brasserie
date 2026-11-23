@@ -1,0 +1,242 @@
+<title>Recherche avancée · 24.10, soir</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+/* La disposition qu'il aime (24.10, soir) : une rangée par endroit, le nom à gauche (au téléphone : au-dessus) ; sa
+   référence puis les huit jeux en vignettes serrées, six par rangée à l'ordinateur, trois au téléphone. Rien ne défile
+   en largeur (D126). Chaque vignette s'ouvre en grand, à côté de sa référence. Page claire (D106). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 4px 14px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 var(--texte); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 64px;
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.12; }
+h1 { font-size: clamp(1.7rem, 6vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.25rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--houblon); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 6px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.encart { border-left: 4px solid var(--ambre); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 84ch; }
+.encart .canal { font-weight: 700; }
+.sommaire { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.pastille { justify-self: start; display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.5; padding: 0 9px; border-radius: 999px; color: #fff; white-space: nowrap; }
+.p-ref { background: #2f6b1f; }
+.p-froide { background: #2a6fb0; }
+.p-tiede { background: #85600a; }
+.p-chaude { background: #a8431a; }
+.pastilles { display: flex; flex-wrap: wrap; gap: 3px 4px; }
+.verdict { display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.4; padding: 0 7px; border-radius: 999px; border: 1.5px solid currentColor; white-space: nowrap; }
+.v-accepte { color: #2f6b1f; } .v-tete { color: #fff; background: #2f6b1f; border-color: #2f6b1f; }
+.legende-pastilles { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 0.875rem; color: var(--discret); align-items: center; }
+.rangee { display: grid; gap: 12px; padding-top: 18px; border-top: 1px solid var(--trait); }
+.nom { display: grid; gap: 4px; align-content: start; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.05rem; color: var(--houblon); }
+.note { font-size: 0.875rem; color: var(--discret); }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 8px; align-items: start; }
+@media (min-width: 900px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 20px; }
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px 14px; }
+}
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; aspect-ratio: 780 / 1688; }
+.ecran img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.vue[data-reference] .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--ambre), var(--ombre); }
+.vue figcaption { display: grid; gap: 3px; }
+.vue figcaption b { font-family: var(--titre); font-size: 0.95rem; line-height: 1.2; }
+.id { font-size: 0.875rem; color: var(--discret); font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; overflow-wrap: anywhere; }
+.ligne { font-size: 0.875rem; font-style: italic; color: var(--encre); line-height: 1.35; }
+.reserves { display: grid; gap: 6px; font-size: 0.95rem; }
+footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: #0e100c; overflow-y: auto; padding: calc(64px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); color: #eef2ea; }
+.vis-tete { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px)); background: #0e100c; }
+.vis-titre { font: 800 1.05rem/1.2 var(--titre); min-width: 0; }
+.vis-boutons { display: flex; gap: 6px; flex: none; }
+.vis-boutons button { font: 700 0.95rem var(--texte); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; background: #2d3328; color: #eef2ea; }
+.vis-boutons .fermer { background: #eef2ea; color: #1c2019; }
+.vis-corps { display: grid; gap: 28px; max-width: 1240px; margin: 0 auto; }
+.vis-rangee { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.vis-panneau { flex: 0 0 86%; scroll-snap-align: start; margin: 0; display: grid; gap: 8px; align-content: start; }
+.vis-panneau img { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff; }
+.vis-panneau.ref img { box-shadow: 0 0 0 3px var(--ambre); }
+.vis-panneau figcaption { font-size: 0.95rem; }
+.vis-panneau.ref figcaption { color: #f6d38f; font-weight: 700; }
+.vis-glisse { font-size: 0.875rem; color: #c9d0c3; }
+@media (min-width: 900px) {
+  .vis-rangee { overflow: visible; justify-content: center; flex-wrap: wrap; }
+  .vis-panneau { flex: 0 1 400px; min-width: 290px; }
+  .vis-glisse { display: none; }
+}
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · houblons · la recherche avancée · 24.10, soir</p>
+    <h1>Recherche avancée de houblons</h1>
+  </header>
+
+  <section id="a-choisir" aria-label="À choisir">
+    <div class="encart">
+      <p><b>À choisir :</b> la recherche qui te fait trouver le houblon sans connaître son nom (ou des greffes entre concepts).</p>
+      <p>Chacun part d'un vrai cas, sur les vraies fiches : « tropical, fruit de la passion, α &lt; 12, dry hop, en stock », ou « comme Nelson Sauvin ».</p>
+      <p class="canal">Commente la mini maquette que tu choisis (commentaire de l'artefact) : je lis les commentaires.</p>
+      <p>Touche une vignette : elle s'ouvre en grand, à côté de ta maquette d'aujourd'hui.</p>
+      <p class="legende-pastilles"><span class="pastille p-ref">ta maquette</span><span class="pastille p-froide">froide</span> au plus près de l'app <span class="pastille p-tiede">tiède</span> forme de la série <span class="pastille p-chaude">chaude</span> forme libre <span class="verdict v-tete">en tête</span> le critique les met devant</p>
+    </div>
+  </section>
+
+  <section class="rangee" id="r-recherche" data-choix="recherche" aria-labelledby="t-rc" data-ref-nom="ta maquette" data-ref-imgs="img/ref-etape.png" data-ref-etats="l'étape, le champ « Ajouter — houblon… »">
+    <div class="nom">
+      <h2 id="t-rc">La recherche avancée</h2>
+      <p class="question">« de la recherche avancée de houblons »</p>
+      <p class="note">Douze concepts, trois séries : les critères en clair (rca), libre (rcb), l'arôme d'abord (rcc). Tous acceptés par le critique.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Ta maquette · le champ « Ajouter — houblon… »" data-imgs="img/ref-etape.png" data-etats="l'étape aujourd'hui"><img src="img/ref-etape.png" width="780" height="1688" alt="L'étape Houblons de la maquette, son champ d'ajout"></button>
+        <figcaption><span class="pastille p-ref">ta maquette</span><b>Le champ d'aujourd'hui</b><span class="id">ce soir</span><span class="ligne">Le nom seulement ; d'ici, la recherche s'ouvrirait.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rcc4 · La grille des mots" data-imgs="img/rcc4.png|img/rcc4-apres.png|img/rcc4-fiche.png" data-etats="la recherche|après un toucher|la fiche"><img src="img/rcc4.png" width="780" height="1688" alt="rcc4"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-tete">en tête</span></span><b>La grille des mots</b><span class="id">rcc4</span><span class="ligne">Ta matrice flb5b retournée : les mots en lignes, les houblons classés 6/6 à 2/6.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rca3 · Les presque" data-imgs="img/rca3.png" data-etats="la recherche"><img src="img/rca3.png" width="780" height="1688" alt="rca3"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-tete">en tête</span></span><b>Les presque</b><span class="id">rca3</span><span class="ligne">Celui qui coche tout, puis ceux en stock à qui il manque un critère.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rcc3 · La force du nez" data-imgs="img/rcc3.png|img/rcc3-apres.png|img/rcc3-fiche.png" data-etats="la recherche|après un toucher|la fiche"><img src="img/rcc3.png" width="780" height="1688" alt="rcc3"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-tete">en tête</span></span><b>La force du nez</b><span class="id">rcc3</span><span class="ligne">« Tropicaux, quelle force ? » : une fenêtre au doigt sur l'huile ; Saaz en pointillé.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rcb2 · Le champ α × huile" data-imgs="img/rcb2.png|img/rcb2-page.png|img/rcb2-fiche.png" data-etats="la recherche|la page entière|la fiche"><img src="img/rcb2.png" width="780" height="1688" alt="rcb2"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>Le champ α × huile</b><span class="id">rcb2</span><span class="ligne">Tout le catalogue sur un plan, un cadre à quatre poignées, ton stock cerclé.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rca4 · La carte α × huile" data-imgs="img/rca4.png|img/rca4-fiche.png" data-etats="la recherche|la fiche"><img src="img/rca4.png" width="780" height="1688" alt="rca4"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>La carte α × huile</b><span class="id">rca4</span><span class="ligne">Les 32 « fruit de la passion » en carte, une bande d'α au doigt.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rca1 · Le champ de l'étape s'ouvre en recherche" data-imgs="img/rca1.png" data-etats="la recherche"><img src="img/rca1.png" width="780" height="1688" alt="rca1"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-froide">froide</span><span class="verdict v-accepte">accepté</span></span><b>Le champ s'ouvre en recherche</b><span class="id">rca1</span><span class="ligne">Le champ de l'étape devient la recherche ; des pastilles comptées.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rca2 · Les pastilles comptent" data-imgs="img/rca2.png" data-etats="la recherche"><img src="img/rca2.png" width="780" height="1688" alt="rca2"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>Les pastilles comptent</b><span class="id">rca2</span><span class="ligne">Chaque critère dit combien de houblons il laisse avant de le toucher.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rcb1 · Tape comme tu parles" data-imgs="img/rcb1.png|img/rcb1-page.png|img/rcb1-fiche.png" data-etats="la recherche|la page entière|la fiche"><img src="img/rcb1.png" width="780" height="1688" alt="rcb1"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>Tape comme tu parles</b><span class="id">rcb1</span><span class="ligne">Une phrase, soulignée à la couleur de ce qui est compris.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rcb3 · Comme Nelson Sauvin" data-imgs="img/rcb3.png|img/rcb3-page.png|img/rcb3-fiche.png" data-etats="la recherche|la page entière|la fiche"><img src="img/rcb3.png" width="780" height="1688" alt="rcb3"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Comme Nelson Sauvin</b><span class="id">rcb3</span><span class="ligne">« Disent ses mots » d'abord (Hallertau Blanc 4/4), les calculés ensuite.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rcb4 · Par élimination" data-imgs="img/rcb4.png|img/rcb4-page.png|img/rcb4-fiche.png" data-etats="la recherche|la page entière|la fiche"><img src="img/rcb4.png" width="780" height="1688" alt="rcb4"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Par élimination</b><span class="id">rcb4</span><span class="ligne">Tu rayes ce que tu ne veux pas ; il reste ceux qui conviennent.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rcc1 · La roue d'abord" data-imgs="img/rcc1.png|img/rcc1-apres.png|img/rcc1-fiche.png" data-etats="la recherche|après un toucher|la fiche"><img src="img/rcc1.png" width="780" height="1688" alt="rcc1"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-tiede">tiède</span><span class="verdict v-accepte">accepté</span></span><b>La roue d'abord</b><span class="id">rcc1</span><span class="ligne">La roue des 12 comptée, les mots précis, le centre « hors 12 ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rcc2 · Le mur des mots" data-imgs="img/rcc2.png|img/rcc2-apres.png|img/rcc2-fiche.png" data-etats="la recherche|après un toucher|la fiche"><img src="img/rcc2.png" width="780" height="1688" alt="rcc2"></button>
+        <figcaption><span class="pastilles"><span class="pastille p-chaude">chaude</span><span class="verdict v-accepte">accepté</span></span><b>Le mur des mots</b><span class="id">rcc2</span><span class="ligne">Un toucher « je veux », deux « sans » ; les mots hors des 12 en noir.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    <p>Douze concepts en trois séries (Opus, Fable, Opus), jugés par le critique : tous acceptés, deux après une retouche. Rien n'est dans la maquette avant ton choix. Source : <span class="id">ecran-1/fils24-recherche/</span>.</p>
+  </footer>
+</div>
+
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-labelledby="vis-titre">
+  <div class="vis-tete">
+    <p class="vis-titre" id="vis-titre"></p>
+    <div class="vis-boutons">
+      <button type="button" id="vis-prec" aria-label="Vue précédente">◀</button>
+      <button type="button" id="vis-suiv" aria-label="Vue suivante">▶</button>
+      <button type="button" class="fermer" id="vis-fermer">Fermer</button>
+    </div>
+  </div>
+  <div class="vis-corps" id="vis-corps"></div>
+</div>
+
+<script>
+// En grand : chaque état du jeu à côté de la maquette telle quelle. Le contenu ne dépend pas de ce script.
+(function () {
+  var vis = document.getElementById('visionneuse');
+  var corps = document.getElementById('vis-corps');
+  var titre = document.getElementById('vis-titre');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.planche .ecran'));
+  var rang = -1, retour = null;
+  function liste(el, cle) { return (el.getAttribute(cle) || '').split('|').filter(Boolean); }
+  function panneaux(b) {
+    var sec = b.closest('[data-choix]');
+    var etats = liste(b, 'data-etats');
+    var v = liste(b, 'data-imgs').map(function (s, i) { return { src: s, leg: etats[i] || '' }; });
+    if (b.closest('[data-reference]') || !sec.getAttribute('data-ref-imgs')) return v;
+    var refEtats = liste(sec, 'data-ref-etats');
+    return v.concat(liste(sec, 'data-ref-imgs').map(function (s, i) { return { src: s, leg: 'maquette telle quelle · ' + (refEtats[i] || ''), ref: true }; }));
+  }
+  function panneau(p) {
+    var f = document.createElement('figure');
+    f.className = 'vis-panneau' + (p.ref ? ' ref' : '');
+    var c = document.createElement('figcaption'); c.textContent = p.leg;
+    var i = document.createElement('img'); i.src = p.src; i.alt = p.leg;
+    f.appendChild(c); f.appendChild(i);
+    return f;
+  }
+  function ouvrir(n, depuis) {
+    if (depuis) retour = depuis;
+    rang = n;
+    var b = boutons[rang];
+    titre.textContent = b.getAttribute('data-nom');
+    corps.textContent = '';
+    var ps = panneaux(b);
+    if (ps.length > 1) { var g = document.createElement('p'); g.className = 'vis-glisse'; g.textContent = 'Glisse : ' + ps.slice(1).map(function (p) { return p.leg; }).join(', ') + ' →'; corps.appendChild(g); }
+    var d = document.createElement('div'); d.className = 'vis-rangee';
+    ps.forEach(function (p) { d.appendChild(panneau(p)); });
+    corps.appendChild(d);
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('vis-fermer').focus();
+  }
+  function fermer() { vis.hidden = true; corps.textContent = ''; if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang >= 0) ouvrir((rang + pas + boutons.length) % boutons.length); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.planche .ecran');
+    if (b) ouvrir(boutons.indexOf(b), b);
+  });
+  document.getElementById('vis-fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', function () { aller(-1); });
+  document.getElementById('vis-suiv').addEventListener('click', function () { aller(1); });
+  document.addEventListener('keydown', function (e) {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

@@ -1,0 +1,19 @@
+{
+ "cas": "rel-saine-pale",
+ "usage": "relecture",
+ "half": "jugement",
+ "cellule": "hy@low",
+ "ok": true,
+ "ms": 3342,
+ "microChf": 10928,
+ "microDecembre": 10928,
+ "entree": 1538,
+ "sortie": 858,
+ "etat": "STOP",
+ "ancrage": "sans objet",
+ "note": 1,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "0/0 défauts · 0 bloquant(s) dont 0 injustifié(s) · 0 de goût ou pire",
+ "reponse": "{\n  \"verdict\": \"La recette est prête à brasser.\",\n  \"findings\": [],\n  \"missing\": [],\n  \"styleFit\": \"La recette correspond au style American Pale Ale (DI 1.050, DF 1.011, 38 IBU, 14 EBC, profil d'eau à dominante sulfate 160 ppm pour 75 ppm de chlorure).\"\n}"
+}

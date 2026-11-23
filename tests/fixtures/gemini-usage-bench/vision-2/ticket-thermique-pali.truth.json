@@ -1,0 +1,101 @@
+{
+  "id": "ticket-thermique-pali",
+  "level": "très compliqué : papier thermique pâli à droite, deux taux, article au poids (kg)",
+  "facture": {
+    "vendor": "Epicerie du Lac",
+    "documentType": "receipt",
+    "paymentEvidence": [
+      "paid",
+      "unknown"
+    ],
+    "date": "08.10.2026",
+    "currency": "CHF",
+    "invoiceNumber": [
+      "10442",
+      "Ticket 10442",
+      ""
+    ],
+    "orderNumber": "",
+    "amountHT": 30,
+    "tvaRate": null,
+    "tvaAmount": 1.33,
+    "amountTTC": 31.33,
+    "items": [
+      {
+        "name": "Sucre de canne 1 kg",
+        "kind": [
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 3.2,
+        "amountTTC": 3.2
+      },
+      {
+        "name": "Miel de fleurs 500 g",
+        "kind": [
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 9.8,
+        "amountTTC": 9.8
+      },
+      {
+        "name": "Citrons bio",
+        "kind": [
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 0.452,
+        "unit": "kg",
+        "price": 16.64,
+        "amountTTC": 7.52
+      },
+      {
+        "name": "Eponges (3)",
+        "kind": [
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 4.51,
+        "amountTTC": 4.51
+      },
+      {
+        "name": "Sac cabas",
+        "kind": [
+          "packaging",
+          "other",
+          "unknown",
+          "equipment"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 6.3,
+        "amountTTC": 6.3
+      }
+    ]
+  },
+  "triage": {
+    "kind": [
+      "receipt"
+    ],
+    "documentCount": 1,
+    "readable": true,
+    "currencies": [
+      "CHF"
+    ],
+    "route": "scan"
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision-2/ticket-thermique-pali.jpg",
+  "mimeType": "image/jpeg",
+  "note": "FIXTURE DE TEST – document fictif"
+}

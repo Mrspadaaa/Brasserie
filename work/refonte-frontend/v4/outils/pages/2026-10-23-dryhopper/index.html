@@ -1,0 +1,185 @@
+<title>Dryhopper · 23.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Une page = un choix. Captures à 340 px au moins, texte à 14 px au moins (verifier-page.mjs). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --houblon-doux: #e6efdc;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 6px 20px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fond: #131611; --carte: #1b1f18; --encre: #e8ece3; --discret: #a0a798; --trait: #2d3328;
+    --houblon: #8ec25c; --houblon-doux: #24301b; --ambre: #e0a43f;
+    --ombre: 0 1px 2px rgb(0 0 0 / 40%); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fond: #131611; --carte: #1b1f18; --encre: #e8ece3; --discret: #a0a798; --trait: #2d3328;
+  --houblon: #8ec25c; --houblon-doux: #24301b; --ambre: #e0a43f;
+  --ombre: 0 1px 2px rgb(0 0 0 / 40%); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.5 var(--texte);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 64px;
+}
+.page { max-width: 1180px; margin: 0 auto; display: grid; gap: 36px; }
+h1, h2, h3 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.3rem, 4vw, 1.7rem); font-weight: 800; }
+h3 { font-size: 1.1rem; font-weight: 600; }
+p { margin: 0; max-width: 65ch; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+header { display: grid; gap: 10px; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.15rem; color: var(--houblon); }
+section { display: grid; gap: 16px; }
+.grille { display: grid; gap: 32px 24px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+.variante { display: grid; gap: 10px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 18px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.ecran:focus-visible, .plus:focus-visible, a:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+.nom { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.code { font: 700 0.875rem/1 ui-monospace, "Cascadia Mono", monospace; color: var(--houblon); }
+.puces { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0; list-style: none; }
+.puces li { font-size: 0.875rem; padding: 3px 10px; border-radius: 999px; background: var(--houblon-doux); }
+.critique { font-size: 0.9rem; color: var(--discret); }
+.plus { font: inherit; font-size: 0.95rem; color: var(--houblon); background: none; border: 0; padding: 4px 0; cursor: pointer; text-align: left; text-decoration: underline; justify-self: start; }
+.note { font-size: 0.95rem; color: var(--discret); max-width: 70ch; }
+.encart { border-left: 4px solid var(--ambre); padding: 10px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 75ch; }
+footer { border-top: 1px solid var(--trait); padding-top: 18px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+footer a { color: var(--houblon); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: rgb(10 12 9 / 92%); display: grid; place-items: start center; overflow-y: auto; padding: calc(60px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); }
+.visionneuse figure { margin: 0; display: grid; gap: 10px; justify-items: center; }
+.visionneuse img { width: min(430px, 100%); height: auto; border-radius: 16px; display: block; }
+.visionneuse figcaption { color: #eef2ea; font-size: 1rem; text-align: center; max-width: 430px; }
+.fermer { position: fixed; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); font: 600 1rem var(--texte); background: #eef2ea; color: #1c2019; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+.nav { display: flex; gap: 10px; }
+.nav button { font: 600 1rem var(--texte); background: #2d3328; color: #eef2ea; border: 0; border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · houblons · Dryhopper · 23.10</p>
+    <h1>Dryhopper : laquelle tu gardes ?</h1>
+    <p class="question">« Quand ajouter Idaho 7 ? »</p>
+    <p>Seul le moment change. Les cinq meilleures des 56 concepts, améliorées avec les bonnes idées des autres. Touche une capture pour l'agrandir.</p>
+  </header>
+
+  <section id="a-choisir" aria-label="À choisir" data-voies="r7a2-passe2 r7b2-passe2 r7d2-passe2 r7e2-passe2 r7g2-passe2">
+    <div class="grille">
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh2-g1.png" data-legende="g1 · Libre"><img src="img/dh2-g1.png" width="780" height="1688" alt="Premier écran de g1"></button>
+        <div class="nom"><span class="code">g1</span><h3>Libre</h3></div>
+        <ul class="puces"><li>77 mots</li><li>courbes et barres d'IBU</li></ul>
+        <button class="plus" type="button" data-img="img/dh2-g1-geste.png" data-legende="g1 : après un geste sur le moment">Voir après un geste</button>
+        <p class="critique">Critique (indicatif) : l'ébullition n'apporte que de l'amer, l'actif à 2 j est le meilleur. Reste à dire ce que veut dire la zone hachurée.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh2-e5.png" data-legende="e5 · La frise"><img src="img/dh2-e5.png" width="780" height="1688" alt="Premier écran de e5"></button>
+        <div class="nom"><span class="code">e5</span><h3>La frise</h3></div>
+        <ul class="puces"><li>76 mots</li><li>on gagne, on paie</li></ul>
+        <button class="plus" type="button" data-img="img/dh2-e5-geste.png" data-legende="e5 : après un geste sur le moment">Voir après un geste</button>
+        <p class="critique">Critique (indicatif) : la pile par famille remplit le haut ; on voit ce qu'on gagne et ce qu'on paie à chaque moment.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh2-b4.png" data-legende="b4 · La réponse d'abord"><img src="img/dh2-b4.png" width="780" height="1688" alt="Premier écran de b4"></button>
+        <div class="nom"><span class="code">b4</span><h3>La réponse d'abord</h3></div>
+        <ul class="puces"><li>80 mots</li><li>le podium des moments</li></ul>
+        <button class="plus" type="button" data-img="img/dh2-b4-geste.png" data-legende="b4 : après un geste sur le moment">Voir après un geste</button>
+        <p class="critique">Critique (indicatif) : au niveau de r6n2 ; la réponse en gros, puis le tableau par moment.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh2-a1.png" data-legende="a1 · Le geste d'abord"><img src="img/dh2-a1.png" width="780" height="1688" alt="Premier écran de a1"></button>
+        <div class="nom"><span class="code">a1</span><h3>Le geste d'abord</h3></div>
+        <ul class="puces"><li>79 mots</li><li>y1b affiné</li></ul>
+        <button class="plus" type="button" data-img="img/dh2-a1-geste.png" data-legende="a1 : après un geste sur le moment">Voir après un geste</button>
+        <p class="critique">Critique (indicatif) : ton y1b, avec l'amertume devenue une figure, sans un mot de plus.</p>
+      </article>
+      <article class="variante">
+        <button class="ecran" type="button" data-img="img/dh2-d8.png" data-legende="d8 · Le simulateur"><img src="img/dh2-d8.png" width="780" height="1688" alt="Premier écran de d8"></button>
+        <div class="nom"><span class="code">d8</span><h3>Le simulateur</h3></div>
+        <ul class="puces"><li>77 mots</li><li>le ruban de couleur</li></ul>
+        <button class="plus" type="button" data-img="img/dh2-d8-geste.png" data-legende="d8 : après un geste sur le moment">Voir après un geste</button>
+        <p class="critique">Critique (indicatif) : la couleur qui arrive, avant et après, et la table d'IBU chiffrée par étape.</p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="t-savoir">
+    <h2 id="t-savoir">Ce que les cinq montrent</h2>
+    <div class="encart">
+      <p>À chaud, Idaho 7 sort ta stout de sa bande d'amertume (60′ ~162 IBU, 10′ ~97, whirlpool ~75, pour 50 à 70 visés) pour peu de nez.</p>
+      <p>Le dry hop actif donne ~+22 de floral pour ~+14 de résineux ; après fermentation, ~+23 pour ~+20. Au-delà de 2 jours de contact, rien ne bouge.</p>
+      <p>L'avis du critique est indicatif : c'est ton œil qui compte.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Données : stout export 16 °P, Idaho 7 à 4 g/L, US-05. Le simulé est marqué « ~ ».</p>
+    <p>Pour répondre, dis-le dans la conversation. Exemple : « b4 ».</p>
+    <p>Les 56 concepts de départ, classés : <a href="https://claude.ai/artifact/HexW2XmnU4iUbJaRcPJNzW">Dryhopper · 56 concepts · 23.10</a>.</p>
+  </footer>
+</div>
+
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-label="Capture agrandie">
+  <button class="fermer" id="fermer" type="button">Fermer</button>
+  <figure>
+    <img id="vis-img" alt="">
+    <figcaption id="vis-legende"></figcaption>
+    <div class="nav" id="vis-nav" hidden>
+      <button type="button" id="vis-prec">◀ Précédente</button>
+      <button type="button" id="vis-suiv">Suivante ▶</button>
+    </div>
+  </figure>
+</div>
+
+<script>
+// Agrandir au toucher, passer d'une variante à l'autre. Le contenu ne dépend pas de ce script.
+(function () {
+  const vis = document.getElementById('visionneuse');
+  const visImg = document.getElementById('vis-img');
+  const visLeg = document.getElementById('vis-legende');
+  const visNav = document.getElementById('vis-nav');
+  const ordre = Array.from(document.querySelectorAll('.grille .ecran')).map((b) => ({ img: b.dataset.img, legende: b.dataset.legende }));
+  let rang = -1;
+  let retour = null;
+  function ouvrir(img, legende, depuis) {
+    retour = depuis || retour;
+    visImg.src = img; visImg.alt = legende; visLeg.textContent = legende;
+    rang = ordre.findIndex((o) => o.img === img);
+    visNav.hidden = rang < 0;
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('fermer').focus();
+  }
+  function fermer() { vis.hidden = true; visImg.removeAttribute('src'); if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang < 0) return; rang = (rang + pas + ordre.length) % ordre.length; ouvrir(ordre[rang].img, ordre[rang].legende); }
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-img]');
+    if (b) ouvrir(b.dataset.img, b.dataset.legende, b);
+  });
+  document.getElementById('fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', () => aller(-1));
+  document.getElementById('vis-suiv').addEventListener('click', () => aller(1));
+  vis.addEventListener('click', (e) => { if (e.target === vis) fermer(); });
+  document.addEventListener('keydown', (e) => {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

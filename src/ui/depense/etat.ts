@@ -1,0 +1,233 @@
+// L'état pur de l'écran « Nouvelle dépense » (r2b, le ticket). Aucune écriture, aucun service : des fonctions testées.
+// Une seule source par règle : les points viennent de `invoicePoints.ts` (celui du serveur, recalculé au client), jamais refaits ici.
+import { PESE_PAR_CODE, SCAN_POINT_CODES, peserPoint, recomputeInvoicePoints, statutDeLecture, type InvoicePoint, type ResultatRecalcul, type StatutLecture } from '../../domain/finance/invoicePoints';
+import { toCents } from '../../../functions/src/invoiceControls';
+import { hasHopWord, hasYeastWord, readProductLabel } from '../../services/ingredientIdentity';
+import { isMillingSurcharge } from '../../services/purchasePrefill';
+import { millingParentIndex, stockQuantityFor, type PurchaseLineDraft } from '../../services/purchaseEntry';
+import { contexteDeArticle, donneesDArticle, donneesDeLigne, formatUnitLink, isReadableUnit, memeNom, regleProduit, type RegleProduit } from '../../services/stockLineMatching';
+import { nomPropre } from '../../domain/stock/donnees';
+import { ligneDeBrouillon } from '../../domain/stock/articleNeuf';
+import type { ScannedInvoiceResult } from '../../services/geminiScanner';
+import type { StockItem } from '../../types';
+
+type Code = InvoicePoint['code'];
+/** LR3-3 : un barré qui ne dit que des inconnus (« ? × ? », « ? ») ne dit rien de la 1re lecture : la rangée le tait. « 30 ? » et « × 1,45 » parlent. */
+export const barreMuet = (avant: string): boolean => !/[^?×·\s]/.test(avant);
+export type Enjeu = 'argent' | 'stock' | 'info';
+export interface ChipDef { nom: string; enjeu: Enjeu }
+export interface Chip { id: string; nom: string; enjeu: Enjeu; ligne: number | null; codes: string[]; source: 'point' | 'paiement' | 'mouture' | 'voisin' | 'unite' | 'qr'; cible?: string }
+
+/** Le nom court de chaque code qui pèse (T3). Un code qui ne pèse pas (`type-deduit`) n'a pas de chip. */
+const NOMS: Partial<Record<Code, ChipDef>> = {
+  'ligne-montant': { nom: 'Ligne', enjeu: 'argent' }, 'ligne-prix-par-lot': { nom: 'Prix par lot', enjeu: 'argent' },
+  'somme-ecart': { nom: 'Total', enjeu: 'argent' }, 'somme-incomplete': { nom: 'Total', enjeu: 'argent' }, 'total-absent': { nom: 'Total', enjeu: 'argent' },
+  'tva-incoherente': { nom: 'TVA', enjeu: 'argent' }, 'ht-tva-ttc': { nom: 'TVA', enjeu: 'argent' }, 'taux-tva-hors-plage': { nom: 'TVA', enjeu: 'argent' },
+  'lignes-perdues': { nom: 'Lignes', enjeu: 'argent' }, 'lignes-annoncees': { nom: 'Lignes', enjeu: 'argent' }, 'lignes-absentes': { nom: 'Lignes', enjeu: 'argent' },'lignes-non-rapprochees': { nom: 'Lignes', enjeu: 'argent' },
+  'pro-forma-non-payee': { nom: 'Pro-forma', enjeu: 'argent' }, devis: { nom: 'Devis', enjeu: 'argent' }, 'document-livraison': { nom: 'Document', enjeu: 'argent' },
+  avoir: { nom: 'Avoir', enjeu: 'argent' }, 'devise-non-chf': { nom: 'Devise', enjeu: 'argent' }, 'date-absente': { nom: 'Date', enjeu: 'argent' },
+  'alpha-libelle': { nom: 'α', enjeu: 'stock' }, 'unite-absente': { nom: 'Unité', enjeu: 'stock' }, 'nature-a-preciser': { nom: 'Nature', enjeu: 'stock' }, 'ambiguite-ligne': { nom: 'Ligne ?', enjeu: 'stock' },
+  'forme-rejetee': { nom: 'Valeur', enjeu: 'info' }, 'lectures-divergentes': { nom: 'Désaccord', enjeu: 'info' }, 'lecture-coupee': { nom: 'Lecture coupée', enjeu: 'info' },
+};
+const GENERIQUE: ChipDef = { nom: 'À revoir', enjeu: 'info' };
+export const CHIP_PAR_CODE: Partial<Record<Code, ChipDef>> = Object.fromEntries(SCAN_POINT_CODES.filter(code => PESE_PAR_CODE[code]).map(code => [code, NOMS[code] ?? GENERIQUE])) as Partial<Record<Code, ChipDef>>;
+
+const RANG: Record<Enjeu, number> = { argent: 0, stock: 1, info: 2 };
+const nomDuPoint = (p: InvoicePoint, def: ChipDef): string =>
+  p.code === 'ligne-montant' && p.ligne ? `Ligne ${p.ligne}` : p.code === 'lectures-divergentes' && /tva/i.test(p.champ) ? 'TVA' : def.nom;
+
+/** Les chips des points typés qui pèsent, plus celles que l'écran tire d'ailleurs (`extras`), l'argent d'abord (T3). */
+export function chipsDeLecture(points: readonly InvoicePoint[] | undefined, extras: readonly Chip[]): Chip[] {
+  const groupes = new Map<string, Chip>();
+  for (const p of points ?? []) {
+    if (!peserPoint(p)) continue;
+    const def = CHIP_PAR_CODE[p.code] ?? GENERIQUE;
+    const nom = nomDuPoint(p, def), cle = `${nom}|${p.code === 'ligne-montant' ? p.ligne : ''}`;
+    const dejà = groupes.get(cle);
+    if (dejà) dejà.codes.push(p.code);
+    else groupes.set(cle, { id: cle, nom, enjeu: def.enjeu, ligne: p.ligne ?? null, codes: [p.code], source: 'point' });
+  }
+  return [...groupes.values(), ...extras].map((chip, ordre) => ({ chip, ordre })).sort((a, b) => RANG[a.chip.enjeu] - RANG[b.chip.enjeu] || a.ordre - b.ordre).map(x => x.chip);
+}
+
+export interface BrouillonLecture { lines: readonly PurchaseLineDraft[]; amount?: number; sourceVatAmount?: number; sourceNetAmount?: number }
+/** Le recalcul des points sur le brouillon COURANT (T1) : seulement si la lecture porte des `points` (format l1) ; sinon rien. */
+export function recalculerLecture(result: ScannedInvoiceResult, draft: BrouillonLecture): ResultatRecalcul | undefined {
+  if (!result.points) return undefined;
+  return recomputeInvoicePoints({
+    items: draft.lines.map(line => ({ id: line.id, name: line.description, kind: line.kind, quantity: line.quantity ?? null, unit: line.unit, price: line.unitPrice ?? null, amountTTC: line.amount ?? null })),
+    amountTTC: draft.amount ?? null, amountHT: draft.sourceNetAmount ?? null, tvaAmount: draft.sourceVatAmount ?? null,
+    linesLost: result.linesLost, points: result.points, controls: result.controls, review: result.review,
+  });
+}
+/** Le statut affiché (T1) : sans `points`, le plancher de l2 (« à confirmer »), jamais « vérifié ». Un geste du brasseur ne le change pas. */
+const RANG_STATUT: Record<StatutLecture, number> = { checked: 0, corrected: 1, disputed: 2, unavailable: 3 };
+/** Le pire de deux statuts (z2 : un QR qui contredit le total ne laisse jamais « vérifiée »). */
+export const pireStatut = (a: StatutLecture, b: StatutLecture): StatutLecture => (RANG_STATUT[b] > RANG_STATUT[a] ? b : a);
+/** R10 (D229) : le titre est le PIRE du statut de départ (la lecture telle que reçue) et du recalcul : un geste ne le fait jamais monter
+ *  (vider la TVA ne « vérifie » pas la lecture) ; une valeur tapée qui crée un point le fait descendre. « Points revus » est dit par la chip. */
+export function statutAffiche(result: ScannedInvoiceResult, recalcul: ResultatRecalcul | undefined): StatutLecture {
+  const depart = statutDeLecture(result, undefined);
+  const courant = result.points && recalcul ? statutDeLecture(result, recalcul) : depart;
+  return RANG_STATUT[courant] > RANG_STATUT[depart] ? courant : depart;
+}
+
+const cts = (c: number | null | undefined) => (c === null || c === undefined ? '—' : (Math.abs(c) / 100).toFixed(2).replace('.', ','));
+/** C2, R4 : la relation d'un contrôle de TVA en phrase ; une clé inconnue reçoit un libellé neutre, jamais la clé. */
+export function phraseRelation(d: { relation: string; lu: number | null; calcule: number | null; ecart: number | null }): string {
+  const ecart = d.ecart ? ` (${d.ecart > 0 ? '+' : '−'}${cts(d.ecart)})` : '';
+  if (d.relation === 'somme-bases') return `Bases N + R : imprimé ${cts(d.lu)} · lignes ${cts(d.calcule)}${ecart}`;
+  const base = /^base-par-code:(.+)$/.exec(d.relation);
+  if (base) return `Base ${base[1]} : imprimée ${cts(d.lu)} · lignes ${cts(d.calcule)}${ecart}`;
+  if (d.relation === 'somme-tva') return `TVA : colonne ${cts(d.lu)} · N + R ${cts(d.calcule)}`;
+  const taux = /^tva-du-taux:(.+)$/.exec(d.relation);
+  if (taux) return `TVA du taux ${taux[1]} : imprimée ${cts(d.lu)} · calculée ${cts(d.calcule)}${ecart}`;
+  return `Autre contrôle de la TVA : lu ${cts(d.lu)} · calculé ${cts(d.calcule)}`;
+}
+
+/**
+ * R6 : un article du stock est-il CE produit ? La règle unique de `stockLineMatching.ts` (S6, R9) : « même article » seulement si l'appariement de s1 relie cet
+ * article ; une autre α, une autre origine ou un autre EBC n'est jamais fusionné (D215), une donnée connue d'un seul côté non plus (cas « incertain »).
+ */
+export function memeProduit(description: string, unit: string, items: readonly StockItem[], quantity?: number, vendor?: string, noms?: { nameFr?: string; nomLu?: string }): StockItem | undefined {
+  // Voie n1-nom-fr : la même lecture que l'écran et l'enregistrement : le nom imprimé lu (noms gardés) et le nom français comptent.
+  const regle = regleProduit({ ...ligneProduit({ description, unit, quantity: quantity !== undefined && quantity > 0 ? quantity : 1, ...(noms ?? {}) }, vendor) }, items);
+  return regle.cas === 'meme' ? regle.article : undefined;
+}
+/**
+ * DP-4 (10.11) : l'article du stock qui PORTE LE NOM de la ligne, quelle que soit sa catégorie ou son unité (jamais deux : le brasseur choisit alors). Le nom de la ligne est celui que la rangée montre
+ * (`nomAffiche` : sans α ni options), comparé au nom de l'article et à ses noms gardés de la facture (`memeNom` : pliés, sans ®™©). Sert à montrer la vue FACTURE | STOCK dès qu'un même nom existe.
+ */
+export function articlesDeMemeNom(ligne: { description: string; nameFr?: string; nomLu?: string }, items: readonly StockItem[]): StockItem[] {
+  const noms = [ligne.description, ligne.nameFr, ligne.nomLu].map(n => (n ?? '').trim()).filter(Boolean);
+  if (!noms.length) return [];
+  return items.filter(item => noms.some(n => memeNom(nomAffiche(n), item.name) || memeNom(n, item.name) || (item.nomsFacture ?? []).some(g => memeNom(n, g) || memeNom(nomAffiche(n), g))));
+}
+export function articleDeMemeNom(ligne: { description: string; nameFr?: string; nomLu?: string }, items: readonly StockItem[]): StockItem | undefined {
+  const portes = articlesDeMemeNom(ligne, items);
+  return portes.length === 1 ? portes[0] : undefined;
+}
+/**
+ * p5 (jeu en ligne 9, bloquant 2) : les articles entre lesquels le brasseur choisit quand PLUSIEURS portent le nom de la ligne : ceux que la règle dit « ambigu » (jamais un lien d'office), plus ceux de même nom ;
+ * moins de deux : rien (le cas d'un seul article garde sa vue, D215). Même règle pour une ligne lue et pour une ligne ajoutée à la main.
+ */
+export function candidatsDuNom(regle: RegleProduit | undefined, ligne: { description: string; nameFr?: string; nomLu?: string }, items: readonly StockItem[]): StockItem[] {
+  const vus = new Set<string>(), out: StockItem[] = [];
+  const ajouter = (i: StockItem) => { if (!vus.has(i.ref)) { vus.add(i.ref); out.push(i); } };
+  if (regle?.cas === 'ambigu') regle.candidats.forEach(ajouter);
+  articlesDeMemeNom(ligne, items).forEach(ajouter);
+  return out.length >= 2 ? out : [];
+}
+/** C5 : le nom que la ligne montre au repos (affichage seul) : l'article relié, sinon le nom propre lu ; l'imprimé reste dans le plateau. */
+/** D287 : le deux-points final d'un libellé de facture (« Frais de port : ») tombe, imprimé ou traduit. */
+export const nomAffiche = (description: string, article?: StockItem): string => article?.name ?? (readProductLabel(description, { hop: hasHopWord(description), yeast: hasYeastWord(description), side: 'line' }).name || description).replace(/\s*:\s*$/u, '');
+
+export interface CompteLiens { relie: number; neuf: number; precis: number; mouture: number; autre: number }
+/** Le compte des liens de la preuve : chaque ligne y est une fois, donc la somme vaut le nombre de lignes. */
+export function compteLiens(lines: readonly Pick<PurchaseLineDraft, 'id' | 'stockAction' | 'stockRef' | 'kind' | 'description'>[], precis: ReadonlySet<string>): CompteLiens {
+  const c: CompteLiens = { relie: 0, neuf: 0, precis: 0, mouture: 0, autre: 0 };
+  for (const line of lines) {
+    if (isMillingSurcharge(line as any)) c.mouture++;
+    else if (precis.has(line.id)) c.precis++;
+    else if (line.stockAction === 'existing' && line.stockRef) c.relie++;
+    else if (line.stockAction === 'new') c.neuf++;
+    else c.autre++;
+  }
+  return c;
+}
+
+const num = (n: number) => { const r = Math.round(n * 1e6) / 1e6; const [w, d] = String(r).split('.'); return w.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + (d ? ',' + d : ''); };
+/** La pastille-mot de l'effet au stock (critique n° 1) : ce que l'enregistrement fera, jamais plus. `null` : rien à dire (mouture, service). */
+export function effetStock(line: PurchaseLineDraft, article: StockItem | undefined): string | null {
+  if (!['ingredient', 'packaging', 'cleaning'].includes(line.kind) || isMillingSurcharge(line)) return null;
+  if (line.stockAction === 'none') return null;
+  if (line.stockAction === 'new') return isReadableUnit(line.unit) ? 'nouveau' : 'unité à préciser';
+  if (!article) return 'article ?';
+  if (!isReadableUnit(line.unit) || line.quantity === undefined) return 'unité à préciser';
+  const q = stockQuantityFor({ description: line.description, quantity: line.quantity, unit: line.unit }, article);
+  return q.ok ? `+${num(q.quantity)} ${article.unit}` : 'unité ?';
+}
+/**
+ * Le nom d'une rangée SANS le pourcentage d'α que la rangée dit déjà dans son « α 9,6 » (C084 : pas d'info en doublon). Affichage seul : le nom imprimé entier reste au plateau,
+ * et rien d'enregistré ne change. Seul un pourcentage égal à l'α affiché est retiré (« Nelson Sauvin 9.6% » + α 9,6 → « Nelson Sauvin ») ; un autre (« Target 11.8% » face à α 11,3) reste.
+ */
+/** Le libellé d'une ligne lue : `nom · variante`, sauf si la lecture a déjà mis la variante dans le nom (D261a). Comparaison sans casse,
+ *  accents, espaces ni ponctuation ; rien n'est retiré du nom. */
+export function libelleDeLigne(nom: string, variante: string | undefined): string {
+  const plat = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  const v = (variante ?? '').trim();
+  if (!v || !nom) return nom || v;
+  return plat(nom).includes(plat(v)) ? nom : `${nom} · ${v}`;
+}
+
+export function sansAlphaDoublon(nom: string, alpha: string | undefined): string {
+  if (!alpha) return nom;
+  const a = Number(alpha.replace(',', '.'));
+  if (!Number.isFinite(a)) return nom;
+  const sans = nom.replace(/\s*\(?\b(\d+(?:[.,]\d+)?)\s*%\)?/g, (tout: string, n: string) => (Math.abs(Number(n.replace(',', '.')) - a) < 1e-9 ? '' : tout)).replace(/\s{2,}/g, ' ').trim();
+  return sans || nom;
+}
+/** La conversion de la pastille d'une rangée : « = 2 sachets » (l'équivalent, au pluriel quand il le faut ; la quantité imprimée est déjà dans la colonne). « 25 kg → 25 000 g » reste entier. */
+export function pastilleConversion(conversion: string): string {
+  const egal = /^.*?=\s*(\d+(?:[.,]\d+)?)\s+sachet\b/.exec(conversion);
+  if (egal) return `= ${egal[1]} sachet${Number(egal[1].replace(',', '.')) > 1 ? 's' : ''}`;
+  return /[=→]/.test(conversion) ? conversion : `= ${conversion}`;
+}
+/** B2 n° 20 : un seul mot pour le geste : le message du service dit « Réessaie » (lecture en morceaux incomplète), le bouton dit « Relire » : le message nomme le bouton. */
+export const motRelire = (message: string): string => message.replace(/(Lecture en morceaux incomplète[^.]*\.) Réessaie\./, (_tout, debut: string) => `${debut} Touche « Relire ».`);
+/** B2 n° 5 : une seule casse d'unité à l'écran : « Kg » (le service écrit « kg »). */
+export const casseUnites = (texte: string): string => texte.replace(/\bkg\b/g, 'Kg');
+export const conversionDe = (line: PurchaseLineDraft, article: StockItem | undefined): string | undefined => {
+  const c = article && line.quantity !== undefined && isReadableUnit(line.unit) ? formatUnitLink(line.quantity, line.unit, article.unit, article.category) : undefined;
+  return c === undefined ? undefined : casseUnites(c);
+};
+
+/** Le malt dont `lines[index]` est la mouture, SEULEMENT si le service l'écrira : parent juste au-dessus ET lien confirmé (Conception 7). */
+export function parentDeLaMouture(lines: readonly PurchaseLineDraft[], index: number): number {
+  const parent = millingParentIndex(lines as PurchaseLineDraft[], index);
+  return parent >= 0 && lines[index].surchargeOf === lines[parent].id ? parent : -1;
+}
+/** Prix par unité du malt « avec mouture », en centimes entiers ; `exact` faux si la division n'est pas ronde. */
+export function prixAvecMouture(malt: Pick<PurchaseLineDraft, 'amount' | 'quantity'>, mouture: Pick<PurchaseLineDraft, 'amount'>): { cents: number; exact: boolean } | undefined {
+  const a = toCents(malt.amount), b = toCents(mouture.amount);
+  if (a === null || b === null || !(malt.quantity! > 0)) return undefined;
+  const brut = (a + b) / malt.quantity!;
+  return { cents: Math.round(brut), exact: Math.abs(brut - Math.round(brut)) < 1e-9 };
+}
+
+/**
+ * Un article du stock du même produit que la ligne mais qui n'est pas le même article (autre α, origine, récolte, EBC, poids ; ou donnée connue d'un seul côté) :
+ * montré grisé, JAMAIS lié. La règle unique de `stockLineMatching.ts` (S6, R9) : `neuf`, `incertain` ou `ambigu`.
+ */
+export function voisinDe(line: Pick<PurchaseLineDraft, 'description' | 'unit' | 'quantity'> & Partial<Pick<PurchaseLineDraft, 'kind' | 'stockCategory' | 'sourceReference' | 'nameFr' | 'nomLu'>>, items: readonly StockItem[]): StockItem | undefined {
+  const regle = regleProduit(ligneProduit(line), items);
+  return regle.cas === 'neuf' || regle.cas === 'incertain' ? regle.voisin : regle.cas === 'ambigu' ? regle.candidats[0] : undefined;
+}
+export const ligneProduit = ligneDeBrouillon;
+
+/** Le mot court de la chip d'un voisin : la donnée qui diffère (« α », le code d'origine, « EBC »…), « ? » quand rien n'est écarté mais que s1 ne relie pas. */
+export function marqueDeVoisin(regle: RegleProduit, origine?: string): string {
+  if (regle.cas !== 'neuf') return '?';
+  const premier = regle.ecarts[0];
+  return premier === 'alpha' ? 'α' : premier === 'origine' ? (origine ?? 'origine') : premier === 'ebc' ? 'EBC' : premier === 'recolte' ? 'récolte' : 'poids';
+}
+const virgule = (n: number) => String(n).replace('.', ',');
+/**
+ * Ce que l'article grisé dit (r2b : « Target α 11,8 », « Hallertauer Blanc DE ») : son nom propre et la valeur QUI DIFFÈRE, lue dans ses champs ou son nom. Une valeur
+ * inconnue ne s'affiche pas ; sans écart connu (incertain, ambigu), le nom de l'article tel quel.
+ */
+export function etiquetteVoisin(regle: RegleProduit, voisin: StockItem): string {
+  if (regle.cas !== 'neuf') return voisin.name;
+  const propre = nomPropre(voisin.name, contexteDeArticle(voisin), { unit: voisin.unit, side: 'item' });
+  const d = donneesDArticle(voisin).donnees, ecart = regle.ecarts[0];
+  if (ecart === 'alpha' && d.alpha !== undefined) return `${propre} α ${virgule(d.alpha)}`;
+  if (ecart === 'ebc' && d.ebc !== undefined) return `${propre} ${virgule(d.ebc)} EBC`;
+  if (ecart === 'origine' && d.origine) return `${propre} ${d.origine}`;
+  return voisin.name;
+}
+/** Le voisin d'une ligne et le mot de sa chip, d'une seule lecture de la règle. */
+export function voisinEtMarque(line: Parameters<typeof voisinDe>[0], items: readonly StockItem[], vendor?: string): { article: StockItem; marque: string } | undefined {
+  const ligne = ligneProduit(line, vendor), regle = regleProduit(ligne, items);
+  const article = regle.cas === 'neuf' || regle.cas === 'incertain' ? regle.voisin : regle.cas === 'ambigu' ? regle.candidats[0] : undefined;
+  return article ? { article, marque: marqueDeVoisin(regle, donneesDeLigne(ligne).donnees.origine) } : undefined;
+}

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ok : Suggérer, un candidat qui bouge, un muet</title>
+<style>body{font:16px sans-serif;margin:8px}li{list-style:none;padding:6px;border:1px solid #888;margin:4px 0}span,button{margin-right:8px}</style></head>
+<body data-route="suggerer">
+<!-- Témoin du contrôle usage/intensité (mode --parcours) : ok : Suggérer, un candidat qui bouge, un muet -->
+<ul><li data-role="ligne-houblon" data-voie="1" data-candidat="hop-a"><b data-houblon="hop-a">hop-a</b><span data-role="usage" data-usage="aromatique" data-source="fournisseur">aromatique</span><span data-role="cible" data-famille="floral" data-crans="2.2">floral +2</span></li>
+<li data-role="ligne-houblon" data-voie="2" data-candidat="hop-b" data-muet><b data-houblon="hop-b">hop-b</b><span data-role="usage" data-usage="double" data-source="règle">mixte</span></li></ul>
+<script>
+  window.__parcours = {
+    etat: { recette: { styleCode: 'x', additions: [] } },
+    moteur: {
+      style: () => ({ families: { floral: { cran: 5 } } }),
+      suggerer: () => [
+        { cle: 'hop-a', lu: { ecart: { floral: { centre: 10 } } } },
+        { cle: 'hop-b', lu: { ecart: { floral: { centre: 0.2 } } } },
+      ],
+    },
+    regles: { hopRole: (k) => k === 'hop-a'
+        ? { value: 'aromatique', source: 'fournisseur : fiche fournisseur' }
+        : { value: 'double', source: 'règle : règle rôle-α v1 (prototype, à valider)' } },
+  };
+</script>
+</body>
+</html>

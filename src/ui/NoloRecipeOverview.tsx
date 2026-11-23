@@ -1,0 +1,60 @@
+import React, { useMemo } from 'react';
+import type { TrialRecipe } from '../domain/hopIndex/trials';
+import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
+import { evaluateNoloRecipe, noloInput } from '../domain/nolo';
+import { noloDecimal, noloProcessLabels } from '../domain/noloPresentation';
+import { BoundGraph } from './NoloAlcoholChart';
+import { NoloOperationList } from './NoloOperationList';
+
+/** Un volume se lit au décilitre (test en ligne n° 15 : « 24,012 L »). */
+const litresNolo = (value: number) => value.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
+const emptyKnowledge: HopKnowledge[] = [];
+/** The saved plan, including applied operations. Calculator drafts never enter this summary. */
+export function NoloRecipeOverview({ recipe, saved = emptyKnowledge }: { recipe: TrialRecipe; saved?: HopKnowledge[] }) {
+  const evaluated = useMemo(() => {
+    try { return { result: evaluateNoloRecipe(recipe, saved), error: '' }; }
+    catch (error) { return { result: null, error: error instanceof Error ? error.message : 'Configuration NOLO invalide.' }; }
+  }, [recipe, saved]);
+  if (!recipe.nolo?.enabled) return null;
+  const { result, error } = evaluated, config = recipe.nolo;
+  const simulation = result?.simulationActive ? config.planning?.simulation : undefined;
+  const baseVolume = simulation?.volumeL ?? noloInput(recipe).volumeL;
+  const status = !result || result.projection.max === null ? 'Projection à compléter'
+    : result.projectionStatus === 'exceeds' ? 'Au-dessus de la cible'
+    : result.projection.max > config.targetAbvPct ? 'La plage traverse la cible'
+    : result.projection.kind === 'measurement' ? 'Analyse sous la cible' : 'Sous la cible · sous hypothèses';
+  const needsAttention = result?.projection.max != null && result.projection.max > config.targetAbvPct;
+  return <section aria-label="Aperçu NOLO" className="nolo-overview min-w-0 space-y-1">
+    <div className="flex flex-wrap items-baseline justify-between gap-x-2 text-xs">
+      <h3 className="text-sm font-semibold text-cave-50">{noloProcessLabels[config.process]}</h3>
+      <span className="text-attention">Cible ≤ {noloDecimal(config.targetAbvPct)} % vol.</span>
+    </div>
+    {/* k3 n° 2 : une projection inconnue ne s'écrit plus « Données manquantes » en gras mono (jargon) : « pas encore estimé », en mots du brasseur. */}
+    {result && result.projection.max === null && result.projection.min <= 0
+      ? <figure aria-label="Projection au conditionnement" className="space-y-1" data-nolo-max="unknown">
+        <p className="text-xs text-cave-400">Projection au conditionnement</p>
+        <p className="reading text-base">pas encore estimée</p>
+      </figure>
+      : result ? <BoundGraph compact bound={result.projection} target={config.targetAbvPct}
+      label={result.projection.kind === 'measurement' ? result.measuredPackaged ? 'Alcool analysé · bière conditionnée' : 'Alcool analysé · avant conditionnement' : 'Projection au conditionnement'}/>
+      : <p role="alert" className="nolo-error">{error || 'Références NOLO à compléter pour calculer la projection.'}</p>}
+    {!(result && result.projection.max === null && result.projection.min <= 0) && <p className={`text-xs ${needsAttention ? 'text-alert-strong' : 'text-cave-200'}`}>{status}</p>}
+    {simulation && <p className="text-xs text-cave-200">OG visée : <span className="font-mono text-cave-50">{simulation.wortSg.min.toLocaleString('fr-FR', {minimumFractionDigits:4,maximumFractionDigits:4})}–{simulation.wortSg.max.toLocaleString('fr-FR', {minimumFractionDigits:4,maximumFractionDigits:4})} SG</span></p>}
+    {simulation && <p className="text-xs text-cave-200">Atténuation {noloDecimal(simulation.settings.attenuationPct.min)}–{noloDecimal(simulation.settings.attenuationPct.max)} % · extrait ±{noloDecimal(simulation.settings.extractTolerancePct)} % · hypothèses de pilote.</p>}
+    {config.planning?.simulation && !simulation && <p className="text-xs text-attention">Simulation à recalculer : la recette ou le procédé ont changé.</p>}
+    <dl className="grid grid-cols-2 gap-2 border-t border-cave-800 pt-1 text-xs">
+      <div><dt className="text-cave-400">{config.process === 'secondRunnings' ? simulation ? 'Récupération visée' : 'Moût récupéré' : 'Volume de base'}</dt><dd className="reading text-sm">{baseVolume > 0 ? litresNolo(baseVolume) + ' L' : 'À mesurer'}</dd></div>
+      <div><dt className="text-cave-400">Après opérations</dt><dd className="reading text-sm">{result?.volumeL != null ? litresNolo(result.volumeL) + ' L' : 'À compléter'}</dd></div>
+    </dl>
+    {/* k3 n° 2 : la phrase du moteur (« Relation de fermentation limitée absente… ») est un message de développeur ; sans projection on dit
+        au brasseur ce qu'il peut faire. */}
+    {result && <p className="text-xs text-cave-200 leading-snug">{result.nextAction.startsWith('Relation de fermentation limitée absente')
+      ? 'L’alcool final n’est pas encore estimé : cette levure n’a pas de données de fermentation pour ce procédé. Choisis une autre souche à l’étape Levure, ou saisis une analyse d’alcool.'
+      : result.nextAction}</p>}
+    {!!result?.activeOperations.length && <details>
+      <summary className="min-h-touch cursor-pointer text-xs text-cave-200">{result.activeOperations.length} {result.activeOperations.length === 1 ? 'opération prévue' : 'opérations prévues'} · doses et ordre</summary>
+      <NoloOperationList operations={result.activeOperations} recipe={recipe}/>
+      <p className="text-xs text-cave-400">Prévisions de recette. Les réalisations et mesures sont consignées dans le journal du brassin.</p>
+    </details>}
+  </section>;
+}

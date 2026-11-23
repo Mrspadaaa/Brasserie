@@ -1,0 +1,19 @@
+{
+ "cas": "imp-en-imperial",
+ "usage": "import",
+ "half": "jugement",
+ "cellule": "hy@low",
+ "ok": true,
+ "ms": 4901,
+ "microChf": 23322,
+ "microDecembre": 23322,
+ "entree": 6673,
+ "sortie": 1153,
+ "etat": "STOP · ancrage non prouvé",
+ "ancrage": "non prouvé",
+ "note": 0.7962962962962964,
+ "utilisable": true,
+ "inventes": 0,
+ "detail": "id 0.67 · vol 18.93 · fer 3/3 · hops 3/3 · levure ok · paliers 0/1",
+ "reponse": "{\n  \"name\": \"Citrus Session IPA\",\n  \"style\": \"Session IPA\",\n  \"volumeL\": 18.93,\n  \"fermentables\": [\n    {\n      \"name\": \"2-row pale malt\",\n      \"weightKg\": 4.536,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    },\n    {\n      \"name\": \"Crystal 40L\",\n      \"weightKg\": 0.454,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    },\n    {\n      \"name\": \"Carapils\",\n      \"weightKg\": 0.227,\n      \"kind\": \"grain\",\n      \"use\": \"empatage\"\n    }\n  ],\n  \"hops\": [\n    {\n      \"name\": \"Magnum\",\n      \"weightG\": 14.18,\n      \"stage\": \"boil\",\n      \"alpha\": 13,\n      \"timeMin\": 60\n    },\n    {\n      \"name\": \"Citra\",\n      \"weightG\": 28.35,\n      \"stage\": \"whirlpool\",\n      \"alpha\": 12,\n      \"timeMin\": 20\n      },\n    {\n      \"name\": \"Citra\",\n      \"weightG\": 56.7,\n      \"stage\": \"dryHop\",\n      \"alpha\": 12,\n      \"dayOffset\": 4\n    }\n  ],\n  \"ogTarget\": 1.062,\n  \"waterNote\": \"\",\n  \"yeast\": {\n    \"name\": \"SafAle US-05\",\n    \"form\": \"sèche\",\n    \"lab\": \"Fermentis\",\n    \"qty\": 11.5,\n    \"unit\": \"g\"\n  }\n}"
+}

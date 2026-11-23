@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "fixture": "flash-vision-hotte-reparation-v1",
+  "syntheticOnly": true,
+  "expectedModel": "gemini-3.8-flash",
+  "maximumProviderRequests": 3,
+  "maxOutputTokensPerGeneration": 2048,
+  "scenarios": 1,
+  "expectedPipeline": "Two complete independent readings in parallel; one further reading only if required.",
+  "retries": 0,
+  "modelFallbacks": false,
+  "webSearch": false,
+  "pathway": "local scanInvoiceSafely -> runBudgetedInvoiceScan -> real Firestore monthly reservations -> real Gemini",
+  "scope": "Compiled application pipeline, independent vision, bounded calls, shared controls, reservations and cache. Published HTTPS transport, Firebase token verification, browser upload and photographs are not tested.",
+  "credentials": [
+    "GEMINI_API_KEY",
+    "EVAL_GOOGLE_ACCESS_TOKEN",
+    "EVAL_FIREBASE_PROJECT_ID",
+    "AUTHORIZED_ACCOUNTS (or VITE_AUTHORIZED_ACCOUNTS)"
+  ],
+  "writes": [
+    "invoiceScans/<fixed synthetic document hash>",
+    "brewerAiUsage/<Zurich day>",
+    "brewerAiCosts/<Zurich month>",
+    "brewerAiCosts/<Zurich month>/calls/<generated id>"
+  ],
+  "sharedControlsAreReadOnly": true,
+  "businessAndDriveWritesBlocked": true,
+  "output": "docs/expense-vision-evaluation.json",
+  "timestamp": "2026-09-09T18:42:42.489Z",
+  "runId": "f793c595-74bf-4568-9526-b205053c0fee",
+  "status": "ready-no-generation",
+  "attemptedGenerations": 0,
+  "generations": 0,
+  "requests": [],
+  "cases": [],
+  "transport": {
+    "authLibraryVersion": "9.15.1",
+    "explicitTokenHeaderVerified": true,
+    "authenticatedRequests": 7
+  },
+  "scanVersion": "invoice-v3",
+  "document": {
+    "sha256": "1560afed0a3b372868d08a0a2dddc04b2e6e7cf998fd3a6590366956e1e5a474",
+    "bytes": 4022,
+    "mimeType": "application/pdf",
+    "pages": 1
+  },
+  "sharedBudget": {
+    "dailyBefore": {
+      "day": "2026-09-09",
+      "calls": 16,
+      "tokens": 62904,
+      "proCalls": 0
+    },
+    "monthlyBefore": {
+      "month": "2026-09",
+      "usedMicroChf": 301795,
+      "reservedMicroChf": 0
+    },
+    "monthlyLimitMicroChf": 20000000,
+    "paused": false,
+    "limits": {
+      "dailyCalls": 1000,
+      "dailyProCalls": 20,
+      "dailyTokens": 5000000,
+      "questionCalls": 24,
+      "questionTokens": 1000000
+    },
+    "controlsModified": false,
+    "beforeAfterDeltasMayIncludeConcurrentUse": true,
+    "dailyAfter": {
+      "day": "2026-09-09",
+      "calls": 16,
+      "tokens": 62904,
+      "proCalls": 0
+    },
+    "monthlyAfter": {
+      "month": "2026-09",
+      "usedMicroChf": 301795,
+      "reservedMicroChf": 0
+    }
+  },
+  "scanLedgerBefore": null,
+  "scanLedgerAfter": null,
+  "finishedAt": "2026-09-09T18:42:43.037Z",
+  "maximumConcurrentProviderCalls": 0,
+  "writePaths": [],
+  "reportedTotalTokens": 0,
+  "tokenUsageComplete": true,
+  "estimatedCostMicroChf": 0,
+  "costIsConservativeApplicationEstimateNotGoogleInvoice": true
+}

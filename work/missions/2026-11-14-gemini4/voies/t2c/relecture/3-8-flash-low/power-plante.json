@@ -1,0 +1,19 @@
+{
+ "reglage": "3.8-flash@low",
+ "element": "power-plante",
+ "cas": "power",
+ "type": "plante",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Le résumé contredit le calcul physique et l'action proposée en affirmant qu'il faudra 'exactement 18 minutes', ce qui est erroné et incohérent avec la borne basse théorique de 25,4 minutes.",
+   "La chauffe sous 1000 W ne permet pas de garantir un temps exact d'arrivée à 80 °C (ETA garantie) : le calcul de 25,4 minutes constitue une borne basse idéale sans pertes, et les déperditions thermiques réelles peuvent considérablement allonger ce délai voire empêcher d'atteindre la consigne."
+  ]
+ },
+ "ms": 3036,
+ "coutMicro": 9332,
+ "etat": "STOP"
+}

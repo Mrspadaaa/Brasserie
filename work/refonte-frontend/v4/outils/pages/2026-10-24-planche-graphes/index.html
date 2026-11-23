@@ -1,0 +1,261 @@
+<title>Planche des graphes · 24.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Une planche par vue (D126 : « J'ai pratiquement aucun choix ?? Et j'ai pas du coté à cote ») : sa référence en premier,
+   puis onze mini maquettes, toutes visibles ensemble. Ordinateur : trois par rangée (377 px). Téléphone : deux par rangée
+   en vignettes, qui s'ouvrent en grand à côté de la référence. Texte à 14 px au moins ; page claire (D106). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 6px 20px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.5 var(--texte); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 64px;
+}
+.page { max-width: 1180px; margin: 0 auto; display: grid; gap: 28px; }
+h1, h2 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.12; }
+h1 { font-size: clamp(1.7rem, 6vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.15rem, 3.4vw, 1.4rem); font-weight: 800; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--houblon); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+nav[data-autres-vues] { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.95rem; }
+nav[data-autres-vues]:empty { display: none; }
+nav[data-autres-vues] a { padding: 4px 12px; border-radius: 999px; background: var(--carte); border: 1px solid var(--trait); text-decoration: none; }
+header { display: grid; gap: 6px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.sous-titre { font-size: 1.05rem; color: var(--discret); }
+.encart { border-left: 4px solid var(--ambre); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 82ch; }
+.encart .canal { font-weight: 700; }
+.chaleurs { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.875rem; color: var(--discret); }
+.tag { display: inline-block; font-size: 0.875rem; line-height: 1.5; padding: 0 9px; border-radius: 999px; border: 1px solid var(--trait); background: var(--carte); white-space: nowrap; }
+.chaude { background: #fbe6d2; } .tiede { background: #fbf1c9; } .froide { background: #e0edf7; }
+.choix { background: #fbecc8; border-color: var(--ambre); font-weight: 700; }
+.chemin { overflow-wrap: anywhere; }
+.id { font-size: 0.875rem; color: var(--discret); font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+
+/* La planche : deux par rangée au téléphone, trois sur ordinateur. Rien ne défile en largeur. */
+.planche { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 12px; align-items: start; }
+@media (min-width: 900px) { .planche { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 44px 24px; } }
+.vue { margin: 0; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.ecran { position: relative; display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 16px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; }
+.ecran img { display: block; width: 100%; height: auto; }
+.vue[data-reference] .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--ambre), var(--ombre); }
+.rang { display: inline-block; min-width: 28px; height: 28px; padding: 0 7px; margin-right: 4px; border-radius: 999px; background: var(--encre); color: #fff; font: 800 0.9rem/28px var(--titre); text-align: center; vertical-align: 1px; }
+.vue[data-reference] .rang { background: var(--ambre); }
+.vue figcaption { display: grid; gap: 4px; }
+.vue figcaption b { font-family: var(--titre); font-size: 1.08rem; line-height: 1.2; }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.ligne { font-size: 0.9375rem; color: var(--encre); }
+.groupe { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; border-top: 1px solid var(--trait); padding-top: 12px; }
+.groupe span { font-size: 0.95rem; color: var(--discret); }
+footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+
+/* En grand : la mini maquette à côté de ta référence, état par état. Ordinateur côte à côte ; téléphone d'un glissement. */
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: #0e100c; overflow-y: auto; padding: calc(64px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); color: #eef2ea; }
+.vis-tete { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px)); background: #0e100c; }
+.vis-titre { font: 800 1.05rem/1.2 var(--titre); min-width: 0; }
+.vis-boutons { display: flex; gap: 6px; flex: none; }
+.vis-boutons button { font: 700 0.95rem var(--texte); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; background: #2d3328; color: #eef2ea; }
+.vis-boutons .fermer { background: #eef2ea; color: #1c2019; }
+.vis-corps { display: grid; gap: 28px; max-width: 1240px; margin: 0 auto; }
+.vis-rangee { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.vis-panneau { flex: 0 0 86%; scroll-snap-align: start; margin: 0; display: grid; gap: 8px; align-content: start; }
+.vis-panneau img { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff; }
+.vis-panneau.ref img { box-shadow: 0 0 0 3px var(--ambre); }
+.vis-panneau figcaption { font-size: 0.95rem; }
+.vis-panneau.ref figcaption { color: #f6d38f; font-weight: 700; }
+.vis-glisse { font-size: 0.875rem; color: #c9d0c3; }
+@media (min-width: 900px) {
+  .vis-rangee { overflow: visible; justify-content: center; }
+  .vis-panneau { flex: 0 1 400px; min-width: 300px; }
+  .vis-glisse { display: none; }
+}
+.ecran.rogne { aspect-ratio: 780 / 1688; }
+.ecran.rogne img { height: 100%; object-fit: cover; object-position: top; }
+</style>
+
+<div class="page">
+  <nav data-autres-vues aria-label="Les autres vues"><a href="https://claude.ai/artifact/ULZkzFyvgc3Chv6hmYDWA7">Dryhopper</a><a href="https://claude.ai/artifact/QVfyarrN8m68dTvnq2PF4X">Substituer</a><a href="https://claude.ai/artifact/2vUzuyzUpsShrYnkp1PUPZ">La liste de la fiche</a></nav>
+
+
+  <header>
+    <p class="sur-titre">L'Affinée · les graphes · planche · 24.10</p>
+    <h1>« Lequel te bloque ? »</h1>
+    <p class="sous-titre">Ta base v4.10, puis tes six graphes côte à côte ; sous chacun, ses deux lectures au doigt.</p>
+  </header>
+
+  <section id="a-choisir" aria-label="À choisir">
+    <div class="encart">
+      <p><b>À dire :</b> lequel des six graphes te bloque, et pour lui, la lecture au doigt qui t'aide, b ou c. Aucun n'écrit sa légende au repos.</p>
+      <p class="canal">Commente la mini maquette que tu choisis (commentaire de l'artefact) : je lis les commentaires.</p>
+      <p>Touche un graphe : il s'ouvre en grand, tel quel, ses deux lectures, puis la capture de ton écran choisi.</p>
+    </div>
+  </section>
+
+  <section data-choix="graphes" aria-label="Les six graphes">
+    <style>
+      .lectures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+      .lecture { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); cursor: zoom-in; }
+      .lecture img { display: block; width: 100%; height: auto; }
+      .accepte { background: #dfeccf; } .corrige { background: #f6dcdc; }
+    </style>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Ta base v4.10 · onglet Ma bière" data-imgs="img/ref-biere.png|img/ref-biere-absolu.png|img/ref-biere-radar.png" data-etats="ta base v4.10 · barres au style|ta base v4.10 · absolu|ta base v4.10 · radar"><img src="img/ref-biere.png" width="780" height="1688" alt="Ta base v4.10, l'onglet Ma bière en barres"></button>
+        <figcaption><b><span class="rang">v4.10</span> Ta base, onglet Ma bière</b><span class="meta"><span class="tag choix">ta référence</span><span class="id">base v4.10</span></span><span class="ligne">Le graphe que tu connais, capture de ton choix. En grand, chaque graphe s'ouvre à côté de sa propre référence.</span><span class="id chemin">ecran-1/base/captures/consolide-biere-390.png</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="gr1 · Les barres de Ma bière" data-ref-nom="ta base v4.10" data-ref-imgs="img/ref-biere.png" data-ref-etats="Ma bière en barres" data-imgs="img/gr1-repos.png|img/gr1-toucher.png|img/gr1-toucher-c.png" data-etats="a · tel qu'il est, dans la maquette jouable|b · le mot sous le doigt|c · le haut du style, un trait"><img src="img/gr1-repos.png" width="390" height="844" alt="gr1 a, les barres de Ma bière telles qu'elles sont"></button>
+        <div class="lectures">
+          <button class="lecture" type="button" data-depart="1"><img src="img/gr1-toucher.png" width="390" height="844" alt="gr1 b, le mot sous le doigt"></button>
+          <button class="lecture" type="button" data-depart="2"><img src="img/gr1-toucher-c.png" width="390" height="844" alt="gr1 c, le haut du style"></button>
+        </div>
+        <figcaption><b><span class="rang">1</span> Les barres de Ma bière</b><span class="meta"><span class="tag corrige">rejeté, corrigé</span><span class="id">gr1 · l5b</span></span><span class="ligne">b · le mot de la famille sous le doigt.</span><span class="ligne">c · le haut du style en trait ; la barre se remplit au doigt.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="gr2 · Les barres en absolu" data-ref-nom="ta base v4.10" data-ref-imgs="img/ref-biere-absolu.png" data-ref-etats="Ma bière en absolu" data-imgs="img/gr2-repos.png|img/gr2-toucher.png|img/gr2-toucher-c.png" data-etats="a · tel qu'il est, dans la maquette jouable|b · le mot et le repère|c · l'absolu sous le doigt"><img src="img/gr2-repos.png" width="390" height="844" alt="gr2 a, les barres en absolu telles qu'elles sont"></button>
+        <div class="lectures">
+          <button class="lecture" type="button" data-depart="1"><img src="img/gr2-toucher.png" width="390" height="844" alt="gr2 b, le mot et le repère"></button>
+          <button class="lecture" type="button" data-depart="2"><img src="img/gr2-toucher-c.png" width="390" height="844" alt="gr2 c, l'absolu sous le doigt"></button>
+        </div>
+        <figcaption><b><span class="rang">2</span> Les barres en absolu</b><span class="meta"><span class="tag accepte">accepté</span><span class="id">gr2 · vue Absolu</span></span><span class="ligne">b · le mot et le repère du style dans une bulle.</span><span class="ligne">c · la vue reste au style ; l'absolu d'une famille sous le doigt tenu.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="gr3 · Le radar de Ma bière" data-ref-nom="ta base v4.10" data-ref-imgs="img/ref-biere-radar.png" data-ref-etats="Ma bière en radar" data-imgs="img/gr3-repos.png|img/gr3-toucher.png|img/gr3-toucher-c.png" data-etats="a · tel qu'il est, dans la maquette jouable|b · le sommet au doigt|c · la grille au doigt"><img src="img/gr3-repos.png" width="390" height="844" alt="gr3 a, le radar de Ma bière tel qu'il est"></button>
+        <div class="lectures">
+          <button class="lecture" type="button" data-depart="1"><img src="img/gr3-toucher.png" width="390" height="844" alt="gr3 b, le sommet au doigt"></button>
+          <button class="lecture" type="button" data-depart="2"><img src="img/gr3-toucher-c.png" width="390" height="844" alt="gr3 c, la grille au doigt"></button>
+        </div>
+        <figcaption><b><span class="rang">3</span> Le radar de Ma bière</b><span class="meta"><span class="tag corrige">rejeté, corrigé</span><span class="id">gr3 · m4</span></span><span class="ligne">b · le sommet touché trace son rayon, sa ligne de grille cernée.</span><span class="ligne">c · la grille au doigt, sans rien ajouter à ton radar.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="gr4 · Le radar de la fiche" data-ref-nom="g1" data-ref-imgs="img/ref-fiche-g1.png" data-ref-etats="ta fiche de Nugget" data-imgs="img/gr4-repos.png|img/gr4-toucher.png|img/gr4-toucher-c.png" data-etats="a · tel qu'il est, dans la maquette jouable|b · les mots des fiches|c · face à ma bière"><img src="img/gr4-repos.png" width="390" height="844" alt="gr4 a, le radar de la fiche tel qu'il est"></button>
+        <div class="lectures">
+          <button class="lecture" type="button" data-depart="1"><img src="img/gr4-toucher.png" width="390" height="844" alt="gr4 b, les mots des fiches"></button>
+          <button class="lecture" type="button" data-depart="2"><img src="img/gr4-toucher-c.png" width="390" height="844" alt="gr4 c, face à ma bière"></button>
+        </div>
+        <figcaption><b><span class="rang">4</span> Le radar de la fiche</b><span class="meta"><span class="tag accepte">accepté</span><span class="id">gr4 · h4, Nugget</span></span><span class="ligne">b · les mots des fiches sous le doigt ; « inconnu, pas zéro ».</span><span class="ligne">c · les rayons de tes deux objectifs en couleur : la fiche face à ta bière.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="gr5 · Les petits traits de Suggérer" data-ref-nom="q2b" data-ref-imgs="img/ref-q2b.png" data-ref-etats="Suggestions" data-imgs="img/gr5-repos.png|img/gr5-toucher.png|img/gr5-toucher-c.png" data-etats="a · tel qu'il est, dans la maquette jouable|b · le cran au doigt|c · les crans comptés"><img src="img/gr5-repos.png" width="390" height="844" alt="gr5 a, les traits de Suggérer tels qu'ils sont"></button>
+        <div class="lectures">
+          <button class="lecture" type="button" data-depart="1"><img src="img/gr5-toucher.png" width="390" height="844" alt="gr5 b, le cran au doigt"></button>
+          <button class="lecture" type="button" data-depart="2"><img src="img/gr5-toucher-c.png" width="390" height="844" alt="gr5 c, les crans comptés"></button>
+        </div>
+        <figcaption><b><span class="rang">5</span> Les petits traits de Suggérer</b><span class="meta"><span class="tag accepte">accepté</span><span class="id">gr5 · q2b</span></span><span class="ligne">b · le cran touché : « +1,6 cran du 16D », le picto cerné.</span><span class="ligne">c · les crans vides comptés au repos, sans un mot.</span></figcaption>
+      </figure>
+
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="gr6 · Le radar de Comparer" data-ref-nom="r6a" data-ref-imgs="img/ref-r6a.png" data-ref-etats="Comparer, premier écran" data-imgs="img/gr6-repos.png|img/gr6-toucher.png|img/gr6-toucher-c.png" data-etats="a · tel qu'il est, dans la maquette jouable|b · un houblon à la fois|c · l'axe au doigt"><img src="img/gr6-repos.png" width="390" height="844" alt="gr6 a, le radar de Comparer tel qu'il est"></button>
+        <div class="lectures">
+          <button class="lecture" type="button" data-depart="1"><img src="img/gr6-toucher.png" width="390" height="844" alt="gr6 b, un houblon à la fois"></button>
+          <button class="lecture" type="button" data-depart="2"><img src="img/gr6-toucher-c.png" width="390" height="844" alt="gr6 c, l'axe au doigt"></button>
+        </div>
+        <figcaption><b><span class="rang">6</span> Le radar de Comparer</b><span class="meta"><span class="tag corrige">rejeté, corrigé</span><span class="id">gr6 · r2</span></span><span class="ligne">b · un houblon à la fois, au-dessus et en dessous du 16D.</span><span class="ligne">c · l'axe au doigt : le rang des trois houblons face à ta 16D.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    <p>a : le graphe rendu dans la maquette jouable, qui reprend ton écran choisi ; b, c : le même graphe lu au doigt. En grand, la référence est la capture de ton choix : base v4.10, g1, q2b, r6a.</p>
+    <p>Rejeté, corrigé : le critique a refusé la première version ; celle-ci est la corrigée, rejugée acceptée.</p>
+    <p>Page d'avant : <a href="https://claude.ai/artifact/5nrApsrrY7yhnqK1gU7wYp">Choix de vues · 24.10</a>.</p>
+  </footer>
+</div>
+
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-labelledby="vis-titre">
+  <div class="vis-tete">
+    <p class="vis-titre" id="vis-titre"></p>
+    <div class="vis-boutons">
+      <button type="button" id="vis-prec" aria-label="Vue précédente">◀</button>
+      <button type="button" id="vis-suiv" aria-label="Vue suivante">▶</button>
+      <button type="button" class="fermer" id="vis-fermer">Fermer</button>
+    </div>
+  </div>
+  <div class="vis-corps" id="vis-corps"></div>
+</div>
+
+<script>
+// En grand : chaque état de la mini maquette à côté du même état de ta référence. Le contenu ne dépend pas de ce script.
+(function () {
+  var vis = document.getElementById('visionneuse');
+  var corps = document.getElementById('vis-corps');
+  var titre = document.getElementById('vis-titre');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.planche .ecran'));
+  var rang = -1, retour = null;
+  function liste(b, cle) { return (b.getAttribute(cle) || '').split('|').filter(Boolean); }
+  function rangees(b) {
+    var sec = b.closest('[data-choix]');
+    var etats = liste(b, 'data-etats');
+    var v = liste(b, 'data-imgs').map(function (s, i) { return { src: s, leg: (etats[i] || '') }; });
+    var src = b.getAttribute('data-ref-imgs') ? b : sec;
+    if (b.closest('[data-reference]') || !src.getAttribute('data-ref-imgs')) return [v];
+    var refEtats = liste(src, 'data-ref-etats'), nomRef = src.getAttribute('data-ref-nom');
+    var r = liste(src, 'data-ref-imgs').map(function (s, i) { return { src: s, leg: 'ta référence ' + nomRef + ' · ' + (refEtats[i] || ''), ref: true }; });
+    if (sec.getAttribute('data-mode') === 'paires') return v.map(function (x, i) { return r[i] ? [x, r[i]] : [x]; });
+    return [v.concat(r)];
+  }
+  function panneau(p) {
+    var f = document.createElement('figure');
+    f.className = 'vis-panneau' + (p.ref ? ' ref' : '');
+    var i = document.createElement('img'); i.src = p.src; i.alt = p.leg;
+    var c = document.createElement('figcaption'); c.textContent = p.leg;
+    f.appendChild(c); f.appendChild(i);
+    return f;
+  }
+  function ouvrir(n, depuis, depart) {
+    if (depuis) retour = depuis;
+    rang = n;
+    var b = boutons[rang];
+    titre.textContent = b.getAttribute('data-nom');
+    corps.textContent = '';
+    rangees(b).forEach(function (r) {
+      var d = document.createElement('div'); d.className = 'vis-rangee';
+      r.forEach(function (p) { d.appendChild(panneau(p)); });
+      if (r.length > 1) { var g = document.createElement('p'); g.className = 'vis-glisse'; g.textContent = 'Glisse : ' + r.slice(1).map(function (p) { return p.leg; }).join(', ') + ' →'; corps.appendChild(g); }
+      corps.appendChild(d);
+    });
+    vis.hidden = false; vis.scrollTop = 0;
+    if (depart) { var cible = corps.querySelectorAll('.vis-panneau')[depart]; if (cible) cible.parentNode.scrollLeft = cible.offsetLeft - cible.parentNode.offsetLeft; }
+    document.getElementById('vis-fermer').focus();
+  }
+  function fermer() { vis.hidden = true; corps.textContent = ''; if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang >= 0) ouvrir((rang + pas + boutons.length) % boutons.length); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.planche .ecran, .planche .lecture');
+    if (!b) return;
+    var principal = b.classList.contains('ecran') ? b : b.closest('.vue').querySelector('.ecran');
+    ouvrir(boutons.indexOf(principal), b, Number(b.getAttribute('data-depart') || 0));
+  });
+  document.getElementById('vis-fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', function () { aller(-1); });
+  document.getElementById('vis-suiv').addEventListener('click', function () { aller(1); });
+  document.addEventListener('keydown', function (e) {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

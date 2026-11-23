@@ -1,0 +1,330 @@
+{
+  "id": "cui-dm303-2015",
+  "source": {
+    "title": "Enhancing the levels of 4-vinylguaiacol and 4-vinylphenol in pilot-scale top-fermented wheat beers by response surface methodology",
+    "author": "Cui et al.",
+    "year": 2015,
+    "kind": "research",
+    "reference": "https://onlinelibrary.wiley.com/doi/full/10.1002/jib.189",
+    "locator": "Tableau 2, 29 essais dans l'ordre publié ; tableaux 3–4 ANOVA ; section validation du modèle."
+  },
+  "verifiedAt": "2026-09-09",
+  "transcription": "Tableau 2 transcrit indépendamment du pack fermentation et de ses coefficients.",
+  "columns": [
+    "x1",
+    "x2",
+    "x3",
+    "x4",
+    "vgMgL",
+    "vpMgL"
+  ],
+  "rows": [
+    [
+      0,
+      1,
+      0,
+      1,
+      2.106,
+      1.295
+    ],
+    [
+      0,
+      1,
+      -1,
+      0,
+      1.959,
+      0.952
+    ],
+    [
+      0,
+      -1,
+      1,
+      0,
+      2.065,
+      1.059
+    ],
+    [
+      1,
+      0,
+      0,
+      1,
+      2.006,
+      1.003
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      2.296,
+      1.324
+    ],
+    [
+      0,
+      -1,
+      -1,
+      0,
+      2.191,
+      1.187
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      2.367,
+      1.197
+    ],
+    [
+      1,
+      -1,
+      0,
+      0,
+      2.089,
+      1.069
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      2.476,
+      1.468
+    ],
+    [
+      -1,
+      -1,
+      0,
+      0,
+      2.261,
+      1.256
+    ],
+    [
+      -1,
+      0,
+      1,
+      0,
+      2.321,
+      1.309
+    ],
+    [
+      0,
+      0,
+      1,
+      1,
+      2.319,
+      1.321
+    ],
+    [
+      -1,
+      0,
+      0,
+      -1,
+      2.256,
+      1.249
+    ],
+    [
+      -1,
+      0,
+      -1,
+      0,
+      2.292,
+      1.287
+    ],
+    [
+      0,
+      -1,
+      0,
+      -1,
+      2.084,
+      1.076
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      2.319,
+      1.372
+    ],
+    [
+      -1,
+      0,
+      0,
+      1,
+      2.401,
+      1.396
+    ],
+    [
+      0,
+      0,
+      -1,
+      1,
+      2.368,
+      1.373
+    ],
+    [
+      1,
+      0,
+      1,
+      0,
+      1.953,
+      0.947
+    ],
+    [
+      0,
+      0,
+      1,
+      -1,
+      2.078,
+      1.091
+    ],
+    [
+      1,
+      0,
+      0,
+      -1,
+      1.878,
+      0.859
+    ],
+    [
+      0,
+      -1,
+      0,
+      1,
+      2.221,
+      1.209
+    ],
+    [
+      -1,
+      1,
+      0,
+      0,
+      2.203,
+      1.198
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      2.205,
+      1.294
+    ],
+    [
+      1,
+      1,
+      0,
+      0,
+      1.764,
+      0.765
+    ],
+    [
+      0,
+      0,
+      -1,
+      -1,
+      2.097,
+      1.082
+    ],
+    [
+      0,
+      1,
+      0,
+      -1,
+      1.901,
+      0.908
+    ],
+    [
+      1,
+      0,
+      -1,
+      0,
+      1.827,
+      0.821
+    ],
+    [
+      0,
+      1,
+      1,
+      0,
+      2.117,
+      1.109
+    ]
+  ],
+  "protocol": {
+    "yeastId": "doemens-dm303",
+    "wortPlato": 11,
+    "pitchMillionCellsMl": 8,
+    "volumeL": 1000,
+    "tankVolumeL": 2000,
+    "levels": {
+      "wheatPct": [
+        40,
+        45,
+        50
+      ],
+      "mashInC": [
+        37,
+        44,
+        52
+      ],
+      "boilMin": [
+        70,
+        90,
+        110
+      ],
+      "fermentC": [
+        16,
+        18,
+        20
+      ]
+    },
+    "mashHoldMin": [
+      20,
+      30,
+      40
+    ]
+  },
+  "publishedDiagnostics": {
+    "vgR2": 0.9153,
+    "vgResidualMse": 0.005685,
+    "vpResidualMse": 0.005572,
+    "parameters": 15,
+    "residualDf": 14
+  },
+  "reservedValidation": {
+    "wheatPct": 40,
+    "mashInC": 44,
+    "boilMin": 88,
+    "fermentC": 19.5,
+    "replicates": 3,
+    "availableObservations": 1,
+    "vgMgL": 2.418,
+    "vpMgL": 1.402,
+    "individualValuesAvailable": false
+  },
+  "intervalReference": {
+    "coverage": 0.95,
+    "criticalTByDf": {
+      "9": 2.262,
+      "13": 2.16,
+      "14": 2.145
+    },
+    "source": {
+      "title": "Critical values of the Student's t distribution",
+      "author": "NIST/SEMATECH",
+      "year": null,
+      "kind": "research",
+      "reference": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda3672.htm",
+      "locator": "Colonne 0.975 ; df 9, 13 et 14. Table sans date indiquée, consultée le 9 septembre 2026. Usage conditionnel au modèle gaussien, sans garantie de transfert."
+    }
+  },
+  "limitations": [
+    "29 expériences pilotes dans une seule étude, dont cinq répétitions au centre du plan ; 25 conditions distinctes.",
+    "La validation réservée est UNE moyenne de trois répétitions dont les mesures individuelles sont indisponibles.",
+    "Les trois mash-in couplent température et durée ; pas de causalité thermique isolée.",
+    "La couverture nominale concerne une nouvelle observation sous les hypothèses de régression ; la moyenne de validation ne permet pas d'en vérifier la couverture.",
+    "4VG et 4VP en mg/L ; aucune conversion automatique en intensité sensorielle."
+  ]
+}

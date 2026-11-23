@@ -1,0 +1,38 @@
+# Consignes remplacées
+
+Quand une leçon ou une décision change une règle, l'ancienne formulation est inscrite ici. Un motif par
+ligne (expression régulière, sans tenir compte de la casse). `node scripts/agents/systeme.mjs remplaces`
+échoue si l'un de ces motifs survit quelque part :
+- dans CLAUDE.md ou le cerveau ;
+- dans les agents, les skills `voies` et `conseil`, les règles ou `docs/agents/` ;
+- dans la mémoire locale de la machine.
+
+Une ligne qui cite l'ancienne consigne comme une erreur (« - Erreur : », « remplacé ») n'est pas une consigne.
+Corriger chaque copie, ne pas la contourner.
+
+| Motif | Remplacée par | Depuis |
+|---|---|---|
+| `Obligatoire pour toute voie d'interface` | une interface est jugée par le critique ; le relecteur juge hors interface (L25) | 2026-10-22 |
+| `passe par un relecteur` | le critique pour une interface (L25) | 2026-10-22 |
+| `arbitre Opus/Fable\|session arbitre` | le skill `conseil` pour une décision lourde | 2026-10-22 |
+| `Dans le doute, rejette` | un REJET cite sa règle ; un goût se signale (L27) | 2026-10-22 |
+| `pas 40 \(L18\)` | L18 plafonne les agents et les tours, pas les variantes (M13) | 2026-10-22 |
+| `ni REJET ni étoile\|ne classes? pas` | au tri, le critique classe tout le panel ; c'est une proposition, tout est montré (« vaste panel et ensuite ranking ») | 2026-10-22 |
+| `Indicatif[^\n]*la baseline\|seuls trois points sont obligatoires\|Seuls l'honnêteté, le doigt` | la baseline est obligatoire même en v0 (« toujours suivre la Baseline ») | 2026-10-22 |
+| `30 variantes au moins\|au moins 30 variantes\|3 à 8 variantes` | 48 concepts minimalistes au moins, en 6 séries de 4 à 12 (M13) | 2026-10-22 |
+| `48 au moins\|48 v0 au moins\|au moins 48 concepts\|48 concepts minimalistes au moins` | 12 à 16 concepts minimalistes en 3 ou 4 séries (D204 : « il faudra pas autant de mini maquettes et série, c'est trop demandant en quotas ») | 2026-10-31 |
+| `sans unité lisible.*reliée à rien` | une ligne à l'unité illisible reste proposée, unité vide, « unité à préciser » (D214 : « Unité illisible : la ligne n'est reliée à aucun article.???? ») | 2026-10-31 |
+| `réduit à l'essentiel : la représentation qui répond\|environ 5 tours par concept` | un concept minimaliste = une idée sur un écran plein, environ 10 tours (M14) | 2026-10-23 |
+| `publier à la même adresse\|à jour à la même adresse\|artefact privé, à jour seulement\|Source de la page :` | une version = un nouvel artefact daté, inscrit dans « ## Pages » de MISSION.md (« chaque version devrait en créé des nouveaux ») | 2026-10-23 |
+| `nom de l'étape et sa position .* manquent dans l'en-tête` | le fil d'étapes seul dans l'en-tête de l'étape ; « Text header inutile » (D58, sur « Houblons 3/7 ») | 2026-10-24 |
+| `APP INTACTE OK` | depuis D64 (porte B ouverte), l'intégration écrit dans src/ ; `app-intacte.mjs` ne garde plus que functions/ (FONCTIONS INTACTES OK) | 2026-10-25 |
+| `stop à 80 %\|[Aa]ucun lancement (dès\|à partir de) 77 %` | aucun plafond hebdomadaire, la fenêtre de 5 h reste la seule limite (« Oublie la règle 80% elle est fausse, tu peux la supprimer ») | 2026-10-26 |
+| `sans unité devinée` | l'unité absente se déduit et se signale : sûre, rien ; reprise, jaune ; inconnue, rouge (D277, « de base ça essaie d'auto remplir ») | 2026-11-01 |
+| `Créer « … » »\? sur chaque ligne\|bouton « Créer » par ligne` | une ligne d'ingrédient sans article devient d'office un nouvel article, picto « nouveau », sans bouton au repos (D275) | 2026-11-01 |
+
+- 02.11 : « aucun nouvel agent dès 98 % hebdo, arrêt à 99 % » (26.10) remplacé par « À 90% d'usage hebdo, terminé tes tâches » ([[fermeture-et-quota]]).
+
+- **17.11** — CAL-INFO-TROP « 12 textes au plus dans l'en-tête du calendrier » (controle-entete-cal.mjs) → retiré : « graph » visait la bande des semaines ; la courbe garde toutes ses infos, la bande montre la semaine seule et un bouton ± (CAL-BANDE-SEMAINE, controle-bande-semaine.mjs). Copies corrigées : controle-entete-cal.mjs, DEFAUTS-RECURRENTS.
+
+- **18.11** — Carnet : « ce qui est annoncé pendant la frappe est ce qui arrive » (critique 6 n° 2, critique 7 n° 3) → remplacé par « le rangement de l'IA fait foi ; l'aperçu local n'est qu'une attente ou le repli hors ligne ; un carnet ou une rubrique corrigés d'un toucher restent le choix du brasseur » (test en ligne 2 : l'IA rangeait juste, l'app l'écrasait ; voies/en-ligne-2-corr).
+- 22.11 : « deux thèmes, 390 tactile et 1280 » pour tout test → un thème, téléphone surtout (390 tactile, 844×340), 1280 peu. Ses mots : « les deux thèmes, pas besoin, et surtout testé en version téléphone, peu en version desktop ».

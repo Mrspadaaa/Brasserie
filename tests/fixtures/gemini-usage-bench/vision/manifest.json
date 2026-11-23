@@ -1,0 +1,62 @@
+{
+  "ticket-net": {
+    "file": "ticket-net.png",
+    "html": "705e9446602bc44a05c4dac2e608186d645a03b57e8d0fb263dd44ad1df500a5",
+    "image": "986250e31cc2159048b3c805c6c85a11ae87d0d1c2de5b56cdae4a03a777ba03",
+    "bytes": 31387
+  },
+  "ticket-sombre-pli": {
+    "file": "ticket-sombre-pli.jpg",
+    "html": "79de30e06afcb95c4167d6004c8e0822c5471920034ab5d487c0c0217d421917",
+    "image": "0b01e38981cd8c160316922875bc2e40e609fabe69ed97f132e45caac6337201",
+    "bytes": 15972
+  },
+  "ticket-long-tva": {
+    "file": "ticket-long-tva.png",
+    "html": "082f76c0133d9008543abdb1274a7008ef30435b3819d0476a4d4773913b220e",
+    "image": "0fa46907f5bddaa61570452b2ef0510bd5dc20bbc2b5692abbfa261eb4863494",
+    "bytes": 152727
+  },
+  "ticket-etranger": {
+    "file": "ticket-etranger.jpg",
+    "html": "cd63cac0322400404699abfef961bcd5243914af48983b9a6b4d0c6d92e39360",
+    "image": "c8c6d76b5b993760fdb9fb61dd742c8791172a0d8ce32f5052c23a049dfff984",
+    "bytes": 43501
+  },
+  "deux-documents": {
+    "file": "deux-documents.jpg",
+    "html": "3a9358f223d08185e1f83feac3c07d830270cd2e1b79f8fec823ad5b1a8aa303",
+    "image": "eafdec2428fdd111d3b74bf7cde37dede83599233aa5603b766bdf99bf1eb273",
+    "bytes": 61183
+  },
+  "bulletin-photo": {
+    "file": "bulletin-photo.png",
+    "html": "2a6b1fcac1649c6398783053ef90dba2bee6e7e268867dab2ce18c2697ad1e30",
+    "image": "f1d440343bc464d4e058f1fcc9cabf68cbef2d3961b93f02bcd783064ca242dd",
+    "bytes": 92780
+  },
+  "coa-photo": {
+    "file": "coa-photo.png",
+    "html": "35f1f41d8e9c13c9a4de42b890546e449ed80a5e145538c16d9d236cf0f86f59",
+    "image": "eb938d37b096fde6ad2bb0198344074dad96976dfa7516fbcbfa1f3dc99ddfe1",
+    "bytes": 89832
+  },
+  "illisible": {
+    "file": "illisible.jpg",
+    "html": "e981f2bd9d29212245dc326c9ba399f960c4ee68c25de4ad67bfd99a67d0cacf",
+    "image": "0cfcc00fe5c58fe81fa04a8791b427ada6e33ab1a429557a3f01a202ab590bc8",
+    "bytes": 5805
+  },
+  "hors-sujet": {
+    "file": "hors-sujet.png",
+    "html": "9606cf79c3c85d67e82a6d7e9a2f1e6cb61f3e1fecfc62fc1ff3bed4c3317122",
+    "image": "d30576da1a28713008d91858115553323a8c95b3b5c31e534165026286d0f653",
+    "bytes": 122198
+  },
+  "recette-photo": {
+    "file": "recette-photo.png",
+    "html": "443cf6a3ec2aa5abef9b270d03719284cf87b6a79f371c1ce6e6a04d068cf3cf",
+    "image": "e2a3d5b90b197644cdb17c748430a1caaa36b4bc2717dfc10ea1a6ab4ececa2d",
+    "bytes": 76701
+  }
+}

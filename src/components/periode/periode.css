@@ -1,0 +1,61 @@
+/* La période de l'app (m3r-a) : pastille d'en-tête et grille. Jetons de l'app (themes.css) ; classes préfixées `pr-` (L26). */
+.pr{--pg:rgb(var(--cave-950));--s:rgb(var(--cave-850));--b:rgb(var(--cave-800));--bm:rgb(var(--cave-700));--tf:rgb(var(--cave-600));
+  --t2:rgb(var(--cave-texte-400));--t1:rgb(var(--cave-texte-200));--t0:rgb(var(--cave-texte-50));
+  --act:rgb(var(--ebc-straw));--actt:rgb(var(--sur-paille,var(--cave-950)));--al:rgb(var(--alert));--alt:rgb(var(--alert-texte))}
+.pr-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+/* Pastille d'en-tête « ‹ Nov. › » : flèches de 44 px de large (reprise du critique, correction 1). */
+.pr-pill{display:inline-flex;align-items:stretch;height:36px;border-radius:12px;border:1px solid var(--bm);background:var(--pg);overflow:hidden;flex:none}
+.pr-pill>button{display:grid;place-items:center;color:var(--t1);background:transparent}
+.pr-pill>button:disabled{opacity:.35}
+.pr-pill>button.pr-fl{width:44px}
+.pr-pill>button.pr-ce{min-width:52px;max-width:108px;padding:0 8px;border-inline:1px solid var(--bm);font-weight:600;font-size:14px;color:var(--t0);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-ce .pr-court{display:none}
+/* CRN-20 : la flèche de la plage, dessinée (la pointe du « → » de la police s'effaçait en clair) ; le caractère reste dans le texte, non peint. */
+.pr-sep{position:relative;display:inline-block;margin:0 .3em;vertical-align:-2px;line-height:0}
+.pr-sep-t{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:pre}
+/* v2 (2) : « 18 oct. → 16 nov. » se lit entière à 1280 (108 px la rognait contre la flèche) ; la plage garde sa largeur, les flèches restent à 44 px. */
+.pr-pill>button.pr-ce:has(.pr-long){max-width:none;text-overflow:clip}
+/* Sous 430 px, une plage se dit en « 12.10–03.11 » : la pastille longue chassait le duo d'avatars sur une seconde ligne. */
+@media (max-width:429px){.pr-ce .pr-long{display:none}.pr-ce .pr-court{display:inline}.pr-pill>button.pr-ce:has(.pr-court){padding:0 4px;font-size:13px}}
+.pr-pill>button:active{background:var(--s)}
+.pr-pill:focus-within{outline:2px solid var(--act);outline-offset:1px}
+
+/* Grille */
+.pr-g{display:grid;gap:8px}
+/* `.ops` devient, dès 900 px, la grille à deux colonnes de l'écran Opérations (liste | frise) : ici une seule colonne, la frise d'Opérations à sa hauteur de téléphone. */
+.ops.pr-plage{grid-template-columns:minmax(0,1fr);gap:8px;--ops-haut:96px}
+.ops.pr-plage>*{grid-column:1}
+/* PERIODE-PARTOUT : la FrisePeriode d'un écran (Synthèse, Revoir le mois, filtres Brassins) aussi : une colonne, jamais la grille d'Opérations (1 px de large à 1280). */
+.ops.fp{display:block;--ops-haut:88px}
+.pr-gt{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.pr-gt>span{font-size:12px;font-weight:600;color:var(--t2)}
+.pr-gt>b{font-size:15px;color:var(--t0);font-weight:700}
+.pr-rac{display:grid;grid-template-columns:repeat(4,auto);gap:2px;border-radius:14px;background:var(--pg);box-shadow:inset 0 0 0 1px var(--b);padding:3px}
+.pr-rac>button{min-height:44px;border-radius:11px;padding:0 6px;font-size:14px;color:var(--t1);white-space:nowrap}
+.pr-rac>button[aria-pressed=true]{background:var(--act);color:var(--actt);font-weight:700}
+.pr-tri{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.pr-t{border-radius:12px;background:var(--pg);box-shadow:inset 0 0 0 1px var(--b);overflow:hidden;min-width:0}
+.pr-t[data-on=true]{box-shadow:inset 0 0 0 2px var(--act)}
+.pr-t>button.pr-th{width:100%;min-height:44px;display:flex;align-items:baseline;justify-content:space-between;gap:4px;padding:6px 8px 2px;font-weight:700;font-size:15px;color:var(--t0)}
+.pr-t>button.pr-th>small{font-size:12px;font-weight:400;color:var(--t2)}
+.pr-t[data-on=true]>button.pr-th{background:var(--act);color:var(--actt)}
+.pr-t[data-on=true]>button.pr-th>small{color:inherit}
+.pr-ms{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--b)}
+.pr-ms>button{min-height:44px;display:grid;align-content:center;justify-items:center;gap:1px;font-weight:700;font-size:14px;color:var(--t0);padding:2px 0}
+.pr-ms>button>small{font-size:12px;font-weight:400;color:var(--t2)}
+.pr-ms>button[aria-pressed=true]{background:var(--act);color:var(--actt)}
+.pr-ms>button[aria-pressed=true]>small{color:inherit}
+.pr-ms>button[data-vide=true]{color:var(--t2);font-weight:500}
+.pr-lib{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:44px}
+.pr-lib>.pr-lbl{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--t1)}
+.pr-lib input{width:72px;height:36px;border-radius:10px;border:1px dashed var(--tf);background:transparent;color:var(--t0);text-align:center;font-size:14px;font-family:"IBM Plex Mono",ui-monospace,monospace}
+.pr-lib input::placeholder{color:var(--t2)}
+/* v1 (33) : « Tout l'historique » écrit l'étendue réelle (jj.mm.aaaa) en grisé dans les champs : ils s'élargissent pour que l'année ne soit pas coupée. */
+.pr-lib.pr-tout input,.pr-lib.pr-croise input{width:104px}
+.pr-lib input[aria-invalid=true]{border-color:var(--al);border-style:solid}
+.pr-lib input:focus{outline:2px solid var(--act);outline-offset:1px;border-style:solid}
+.pr-lib>.pr-n{margin-left:auto;font-size:13px;color:var(--t2)}
+.pr-err{font-size:12px;color:var(--alt);font-weight:600}
+/* CAL-ENTETE (21.11) : à 390, la barre du haut tient sur une ligne ; les flèches de la pastille de l'en-tête passent à 34 px. */
+@media (max-width:429px){header .pr-pill>button.pr-fl{width:34px}}

@@ -1,0 +1,315 @@
+<title>Recherche, menu, barre · 14.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+/* La disposition qu'il aime (24.10, soir) : une rangée par sujet, le nom à gauche (au téléphone : au-dessus) ; l'app
+   d'aujourd'hui d'abord, puis les quatre idées et la candidate finie, en vignettes serrées. Rien ne défile en largeur
+   (D126). Chaque vignette s'ouvre en grand, à côté de l'app d'aujourd'hui. Page claire (D106). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 4px 14px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 var(--texte); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 64px;
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.12; }
+h1 { font-size: clamp(1.7rem, 6vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.25rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--houblon); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 6px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.encart { border-left: 4px solid var(--ambre); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 84ch; }
+.encart .canal { font-weight: 700; }
+.pastille { justify-self: start; display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.5; padding: 0 9px; border-radius: 999px; color: #fff; white-space: nowrap; }
+.p-ref { background: #2f6b1f; }
+.p-froide { background: #2a6fb0; }
+.p-tiede { background: #85600a; }
+.p-chaude { background: #a8431a; }
+.p-finie { background: #1c2019; }
+.p-ecartee { background: #8a8f86; }
+.legende-pastilles { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 0.875rem; color: var(--discret); align-items: center; }
+.rangee { display: grid; gap: 12px; padding-top: 18px; border-top: 1px solid var(--trait); }
+.nom { display: grid; gap: 4px; align-content: start; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.05rem; color: var(--houblon); }
+.note { font-size: 0.875rem; color: var(--discret); }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 8px; align-items: start; }
+@media (min-width: 900px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 20px; }
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px 14px; }
+}
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; max-width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; aspect-ratio: 780 / 1688; }
+.ecran img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.vue[data-reference] .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--ambre), var(--ombre); }
+.vue.finie .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--encre), var(--ombre); }
+.vue.ecartee .ecran { opacity: 0.6; }
+.vue figcaption { display: grid; gap: 3px; }
+.vue figcaption b { font-family: var(--titre); font-size: 0.95rem; line-height: 1.2; }
+.id { font-size: 0.875rem; color: var(--discret); font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; overflow-wrap: anywhere; }
+.ligne { font-size: 0.875rem; font-style: italic; color: var(--encre); line-height: 1.35; }
+footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: #0e100c; overflow-y: auto; padding: calc(64px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); color: #eef2ea; }
+.vis-tete { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px)); background: #0e100c; }
+.vis-titre { font: 800 1.05rem/1.2 var(--titre); min-width: 0; }
+.vis-boutons { display: flex; gap: 6px; flex: none; }
+.vis-boutons button { font: 700 0.95rem var(--texte); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; background: #2d3328; color: #eef2ea; }
+.vis-boutons .fermer { background: #eef2ea; color: #1c2019; }
+.vis-corps { display: grid; gap: 28px; max-width: 1240px; margin: 0 auto; }
+.vis-rangee { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.vis-panneau { flex: 0 0 86%; scroll-snap-align: start; margin: 0; display: grid; gap: 8px; align-content: start; }
+.vis-panneau img { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff; }
+.vis-panneau.ref img { box-shadow: 0 0 0 3px var(--ambre); }
+.vis-panneau figcaption { font-size: 0.95rem; }
+.vis-panneau.ref figcaption { color: #f6d38f; font-weight: 700; }
+.vis-glisse { font-size: 0.875rem; color: #c9d0c3; }
+@media (min-width: 900px) {
+  .vis-rangee { overflow: visible; justify-content: center; flex-wrap: wrap; }
+  .vis-panneau { flex: 0 1 400px; min-width: 290px; }
+  .vis-glisse { display: none; }
+}
+</style>
+
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · ce qui entoure les écrans · mini maquettes · 14.11</p>
+    <h1>Recherche, menu, barre et +</h1>
+  </header>
+  <section id="a-choisir" aria-label="À choisir">
+    <div class="encart">
+      <p><b>À choisir :</b> une version par rangée (recherche, menu de l'en-tête, barre du bas et +, ce qu'ouvrent le menu et le +). Tu peux aussi greffer un détail d'une autre.</p>
+      <p>Tes mots : « Lance des autres sous session pour les autres écrans important(sauf clients) pour des mini maquettes ».</p>
+      <p>Les rangées se combinent : l'en-tête suivra ton choix du menu, le + et l'ordinateur celui de la barre.</p>
+      <p>Maquettes figées, non jouables, sur des données d'exemple. Touche une vignette : tous ses états en grand, à côté de l'app d'aujourd'hui.</p>
+      <p class="canal">Commente ici : je lis les commentaires.</p>
+      <p class="legende-pastilles"><span class="pastille p-ref">l'app aujourd'hui</span><span class="pastille p-finie">finie, conseillée</span><span class="pastille p-froide">sobre</span><span class="pastille p-tiede">tiède</span><span class="pastille p-chaude">osée</span><span class="pastille p-ecartee">écartée</span></p>
+    </div>
+  </section>
+
+  <section class="rangee" id="r-recherche" data-choix="recherche" aria-labelledby="t-recherche" data-ref-nom="l'app aujourd'hui" data-ref-imgs="img/ref-390-clair-recherche.png" data-ref-etats="ouverte, rien tapé">
+    <div class="nom">
+      <h2 id="t-recherche">La recherche</h2>
+      <p class="question">La loupe et ⌘K : trouver, aller, créer</p>
+      <p class="note">Aujourd'hui : « Rien ne correspond » avant même de taper.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Recherche · l'app aujourd'hui" data-imgs="img/ref-390-clair-recherche.png" data-etats="ouverte, rien tapé"><img src="img/ref-390-clair-recherche.png" width="780" height="1688" alt="Recherche de l'app aujourd'hui"></button>
+        <figcaption><span class="pastille p-ref">aujourd'hui</span><b>L'app</b><span class="ligne">Vide, sans récents ni raccourcis.</span></figcaption>
+      </figure>
+      <figure class="vue finie" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="r3p2 · Le geste d'abord, au pouce" data-imgs="img/r3p2-a-390.png|img/r3p2-b-390.png|img/r3p2-x-vide.png|img/r3p2-cave-390.png|img/r3p2-1280.png" data-etats="ouverte, rien tapé|« cit » tapé|rien trouvé|cave|ordinateur"><img src="img/r3p2-a-390.png" width="780" height="1688" alt="r3p2"></button>
+        <figcaption><span class="pastille p-finie">finie</span><b>Le geste d'abord, au pouce</b><span class="id">r3p2</span><span class="ligne">Les gestes d'ici sur la ligne : Retirer, Brasser.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="r1 · Au pouce" data-imgs="img/r1-a-390.png|img/r1-b-390.png|img/r1-x-vide.png|img/r1-cave-390.png|img/r1-1280.png" data-etats="ouverte, rien tapé|« cit » tapé|rien trouvé|cave|ordinateur"><img src="img/r1-a-390.png" width="780" height="1688" alt="r1"></button>
+        <figcaption><span class="pastille p-froide">sobre</span><b>Au pouce</b><span class="id">r1</span><span class="ligne">Récents, Créer, Aller à, près du pouce.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="r2 · Par type" data-imgs="img/r2-a-390.png|img/r2-b-390.png|img/r2-x-vide.png|img/r2-cave-390.png|img/r2-1280.png" data-etats="ouverte, rien tapé|« cit » tapé|rien trouvé|cave|ordinateur"><img src="img/r2-a-390.png" width="780" height="1688" alt="r2"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>Par type</b><span class="id">r2</span><span class="ligne">Six tuiles de type avec leur compte.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="r3 · Le geste d'abord (v0)" data-imgs="img/r3-a-390.png|img/r3-b-390.png|img/r3-x-vide.png|img/r3-cave-390.png|img/r3-1280.png" data-etats="ouverte, rien tapé|« cit » tapé|rien trouvé|cave|ordinateur"><img src="img/r3-a-390.png" width="780" height="1688" alt="r3"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>Le geste d'abord</b><span class="id">r3</span><span class="ligne">Sait d'où elle est ouverte.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="r4 · La carte de l'app" data-imgs="img/r4-a-390.png|img/r4-b-390.png|img/r4-x-vide.png|img/r4-cave-390.png|img/r4-1280.png" data-etats="ouverte, rien tapé|« cit » tapé|rien trouvé|cave|ordinateur"><img src="img/r4-a-390.png" width="780" height="1688" alt="r4"></button>
+        <figcaption><span class="pastille p-chaude">osée</span><b>La carte de l'app</b><span class="id">r4</span><span class="ligne">Toute l'app en blocs de rubrique.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" id="r-menu" data-choix="menu" aria-labelledby="t-menu" data-ref-nom="l'app aujourd'hui" data-ref-imgs="img/ref-390-clair-menu.png|img/ref-390-cave-menu.png|img/ref-1280-clair-bord.png" data-ref-etats="menu ⋮ ouvert|cave|ordinateur">
+    <div class="nom">
+      <h2 id="t-menu">Le menu de l'en-tête</h2>
+      <p class="question">Période, qui saisit, thème, réglages</p>
+      <p class="note">Aujourd'hui : neuf lignes à plat sous le ⋮.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Menu ⋮ · l'app aujourd'hui" data-imgs="img/ref-390-clair-menu.png|img/ref-390-cave-menu.png|img/ref-1280-clair-bord.png" data-etats="menu ⋮ ouvert|cave|ordinateur"><img src="img/ref-390-clair-menu.png" width="780" height="1688" alt="Menu ⋮ de l'app aujourd'hui"></button>
+        <figcaption><span class="pastille p-ref">aujourd'hui</span><b>L'app</b><span class="ligne">Période, compte, outils, réglages mêlés.</span></figcaption>
+      </figure>
+      <figure class="vue finie" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="m2p2 · Pastille de période et avatar" data-imgs="img/m2p2-a-390.png|img/m2p2-b-390.png|img/m2p2-reglages-390.png|img/m2p2-cave-390.png|img/m2p2-menu-cave-390.png|img/m2p2-1280.png|img/m2p2-menu-1280.png" data-etats="période|menu de l'avatar|Réglages|cave|menu, cave|ordinateur|menu, ordinateur"><img src="img/m2p2-a-390.png" width="780" height="1688" alt="m2p2"></button>
+        <figcaption><span class="pastille p-finie">finie</span><b>Pastille de période et avatar</b><span class="id">m2p2</span><span class="ligne">« Nov. » en pastille, avatar à la place du ⋮.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="m1 · Menu de compte groupé" data-imgs="img/m1-a-390.png|img/m1-b-390.png|img/m1-cave-390.png|img/m1-1280.png" data-etats="menu ouvert|une destination|cave|ordinateur"><img src="img/m1-a-390.png" width="780" height="1688" alt="m1"></button>
+        <figcaption><span class="pastille p-froide">sobre</span><b>Menu de compte groupé</b><span class="id">m1</span><span class="ligne">Groupé par nature, thème dedans.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="m2 · Pastille de contexte (v0)" data-imgs="img/m2-a-390.png|img/m2-b-390.png|img/m2-menu-390.png|img/m2-cave-390.png|img/m2-1280.png" data-etats="pastille ouverte|une destination|menu|cave|ordinateur"><img src="img/m2-a-390.png" width="780" height="1688" alt="m2"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>Pastille de contexte</b><span class="id">m2</span><span class="ligne">Période, auteur, thème hors du ⋮.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="m3 · Page « Plus » à sections" data-imgs="img/m3-a-390.png|img/m3-b-390.png|img/m3-cave-390.png|img/m3-1280.png" data-etats="page Plus|une destination|cave|ordinateur"><img src="img/m3-a-390.png" width="780" height="1688" alt="m3"></button>
+        <figcaption><span class="pastille p-chaude">osée</span><b>Page « Plus »</b><span class="id">m3</span><span class="ligne">Duo d'avatars, page plein écran.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="m4 · Tiroir du pouce" data-imgs="img/m4-a-390.png|img/m4-b-390.png|img/m4-cave-390.png|img/m4-1280.png" data-etats="tiroir ouvert|une destination|cave|ordinateur"><img src="img/m4-a-390.png" width="780" height="1688" alt="m4"></button>
+        <figcaption><span class="pastille p-chaude">osée</span><b>Tiroir du pouce</b><span class="id">m4</span><span class="ligne">Tout en feuille du bas.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" id="r-barre" data-choix="barre" aria-labelledby="t-barre" data-ref-nom="l'app aujourd'hui" data-ref-imgs="img/ref-390-clair-plus.png|img/ref-1280-clair-bord.png" data-ref-etats="+ ouvert|ordinateur">
+    <div class="nom">
+      <h2 id="t-barre">La barre du bas et le +</h2>
+      <p class="question">Changer de rubrique, créer vite</p>
+      <p class="note">Aujourd'hui : barre de téléphone étirée à l'ordinateur.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Barre et + · l'app aujourd'hui" data-imgs="img/ref-390-clair-plus.png|img/ref-1280-clair-bord.png" data-etats="+ ouvert|ordinateur"><img src="img/ref-390-clair-plus.png" width="780" height="1688" alt="Barre et + de l'app aujourd'hui"></button>
+        <figcaption><span class="pastille p-ref">aujourd'hui</span><b>L'app</b><span class="ligne">Cinq ou six lignes, ordre qui change.</span></figcaption>
+      </figure>
+      <figure class="vue finie" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="b3p2 · L'orgue des rubriques, fini" data-imgs="img/b3p2-a-390.png|img/b3p2-b-390.png|img/b3p2-ecrans-390.png|img/b3p2-cave-390.png|img/b3p2-1280.png" data-etats="au repos|+ ouvert|le + sur les 12 écrans|cave|ordinateur"><img src="img/b3p2-a-390.png" width="780" height="1688" alt="b3p2"></button>
+        <figcaption><span class="pastille p-finie">finie</span><b>L'orgue des rubriques</b><span class="id">b3p2</span><span class="ligne">Chaque création au-dessus de sa rubrique.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="b1 · Le + à ordre figé" data-imgs="img/b1-b-390.png|img/b1-a-390.png|img/b1-cave-390.png|img/b1-1280.png" data-etats="+ ouvert|au repos|cave|ordinateur"><img src="img/b1-b-390.png" width="780" height="1688" alt="b1"></button>
+        <figcaption><span class="pastille p-froide">sobre</span><b>Le + à ordre figé</b><span class="id">b1</span><span class="ligne">« Sur cet écran », puis toujours le même ordre.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="b2 · La rangée Créer" data-imgs="img/b2-b-390.png|img/b2-a-390.png|img/b2-cave-390.png|img/b2-1280.png" data-etats="+ ouvert|au repos|cave|ordinateur"><img src="img/b2-b-390.png" width="780" height="1688" alt="b2"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>La rangée Créer</b><span class="id">b2</span><span class="ligne">Des pastilles collées à la barre.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="b3 · L'orgue des rubriques (v0)" data-imgs="img/b3-b-390.png|img/b3-a-390.png|img/b3-cave-390.png|img/b3-1280.png" data-etats="+ ouvert|au repos|cave|ordinateur"><img src="img/b3-b-390.png" width="780" height="1688" alt="b3"></button>
+        <figcaption><span class="pastille p-chaude">osée</span><b>L'orgue (première idée)</b><span class="id">b3</span><span class="ligne">Colonnes au-dessus des onglets.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="b4 · L'éventail au pouce" data-imgs="img/b4-b-390.png|img/b4-a-390.png|img/b4-cave-390.png|img/b4-1280.png" data-etats="+ ouvert|au repos|cave|ordinateur"><img src="img/b4-b-390.png" width="780" height="1688" alt="b4"></button>
+        <figcaption><span class="pastille p-chaude">osée</span><b>L'éventail au pouce</b><span class="id">b4</span><span class="ligne">Quart de cercle sous le pouce.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="rangee" id="r-ouvre" data-choix="destinations" aria-labelledby="t-ouvre" data-ref-nom="l'app aujourd'hui" data-ref-imgs="img/ref-390-clair-reglages.png|img/ref-390-clair-journal.png" data-ref-etats="Réglages|Journal des modifications">
+    <div class="nom">
+      <h2 id="t-ouvre">Ce qu'ouvrent le menu et le +</h2>
+      <p class="question">Réglages (4 onglets), Journal, Connexions, qui saisit, conversations, vente, période</p>
+      <p class="note">Chaque version montre les dix vues : touche, puis glisse.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Réglages et Journal · l'app aujourd'hui" data-imgs="img/ref-390-clair-reglages.png|img/ref-390-clair-journal.png" data-etats="Réglages|Journal des modifications"><img src="img/ref-390-clair-reglages.png" width="780" height="1688" alt="Réglages de l'app aujourd'hui"></button>
+        <figcaption><span class="pastille p-ref">aujourd'hui</span><b>L'app</b><span class="ligne">Formulaires ouverts, erreur rouge à l'ouverture.</span></figcaption>
+      </figure>
+      <figure class="vue finie" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="d3p2 · Dessiné, fini" data-imgs="img/d3p2-a-390.png|img/d3p2-b-390.png|img/d3p2-vues-390.png|img/d3p2-cave-390.png|img/d3p2-1280.png" data-etats="Réglages · Fiscalité|Journal|les dix vues|cave|ordinateur"><img src="img/d3p2-a-390.png" width="780" height="1688" alt="d3p2"></button>
+        <figcaption><span class="pastille p-finie">finie</span><b>Dessiné</b><span class="id">d3p2</span><span class="ligne">Le métier dessiné, bilan des réglages en tête.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="d1 · Résumé" data-imgs="img/d1-a-390.png|img/d1-b-390.png|img/d1-vues-390.png|img/d1-cave-390.png|img/d1-1280.png" data-etats="Réglages · Fiscalité|Journal|les dix vues|cave|ordinateur"><img src="img/d1-a-390.png" width="780" height="1688" alt="d1"></button>
+        <figcaption><span class="pastille p-froide">sobre</span><b>Résumé</b><span class="id">d1</span><span class="ligne">Réglage · valeur ›, modifié sur place.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="d2 · Tuiles d'état" data-imgs="img/d2-a-390.png|img/d2-b-390.png|img/d2-vues-390.png|img/d2-cave-390.png|img/d2-1280.png" data-etats="Réglages · Fiscalité|Journal|les dix vues|cave|ordinateur"><img src="img/d2-a-390.png" width="780" height="1688" alt="d2"></button>
+        <figcaption><span class="pastille p-tiede">tiède</span><b>Tuiles d'état</b><span class="id">d2</span><span class="ligne">« 1 à corriger · 3 à saisir · 4 bons ».</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="d3 · Dessiné (v0)" data-imgs="img/d3-a-390.png|img/d3-b-390.png|img/d3-vues-390.png|img/d3-cave-390.png|img/d3-1280.png" data-etats="Réglages · Fiscalité|Journal|les dix vues|cave|ordinateur"><img src="img/d3-a-390.png" width="780" height="1688" alt="d3"></button>
+        <figcaption><span class="pastille p-chaude">osée</span><b>Dessiné (première idée)</b><span class="id">d3</span><span class="ligne">Cartes à bandeau de rubrique.</span></figcaption>
+      </figure>
+      <figure class="vue ecartee" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="d4 · Phrases à trous (écartée)" data-imgs="img/d4-a-390.png|img/d4-b-390.png|img/d4-vues-390.png|img/d4-cave-390.png|img/d4-1280.png" data-etats="Réglages · Fiscalité|Journal|les dix vues|cave|ordinateur"><img src="img/d4-a-390.png" width="780" height="1688" alt="d4"></button>
+        <figcaption><span class="pastille p-ecartee">écartée</span><b>Phrases à trous</b><span class="id">d4</span><span class="ligne">Trop de texte ; sa case en pointillé est reprise.</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    <p>Hors de cette page : le Bord et Clients, et les écrans que d'autres sessions refont (Stock, Finances, Brassins, Recette, Atelier, Fûts, Matériel, compagnon). Tableau de couverture : <span class="id">work/missions/2026-11-14-ecrans-transversaux/COUVERTURE.md</span>.</p>
+    <p>Sources : <span class="id">voie-recherche, voie-menu, voie-barre, voie-destinations, voie-p2-r3, voie-p2-m2, voie-p2-b3, voie-p2-d3</span>.</p>
+  </footer>
+</div>
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-labelledby="vis-titre">
+  <div class="vis-tete">
+    <p class="vis-titre" id="vis-titre"></p>
+    <div class="vis-boutons">
+      <button type="button" id="vis-prec" aria-label="Vue précédente">◀</button>
+      <button type="button" id="vis-suiv" aria-label="Vue suivante">▶</button>
+      <button type="button" class="fermer" id="vis-fermer">Fermer</button>
+    </div>
+  </div>
+  <div class="vis-corps" id="vis-corps"></div>
+</div>
+
+<script>
+// En grand : chaque état de la version, puis l'app d'aujourd'hui. Le contenu ne dépend pas de ce script.
+(function () {
+  var vis = document.getElementById('visionneuse');
+  var corps = document.getElementById('vis-corps');
+  var titre = document.getElementById('vis-titre');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.planche .ecran'));
+  var rang = -1, retour = null;
+  function liste(el, cle) { return (el.getAttribute(cle) || '').split('|').filter(Boolean); }
+  function panneaux(b) {
+    var sec = b.closest('[data-choix]');
+    var etats = liste(b, 'data-etats');
+    var v = liste(b, 'data-imgs').map(function (s, i) { return { src: s, leg: etats[i] || '' }; });
+    if (b.closest('[data-reference]') || !sec.getAttribute('data-ref-imgs')) return v;
+    var refEtats = liste(sec, 'data-ref-etats');
+    return v.concat(liste(sec, 'data-ref-imgs').map(function (s, i) { return { src: s, leg: "l'app aujourd'hui · " + (refEtats[i] || ''), ref: true }; }));
+  }
+  function panneau(p) {
+    var f = document.createElement('figure');
+    f.className = 'vis-panneau' + (p.ref ? ' ref' : '');
+    var c = document.createElement('figcaption'); c.textContent = p.leg;
+    var i = document.createElement('img'); i.src = p.src; i.alt = p.leg;
+    f.appendChild(c); f.appendChild(i);
+    return f;
+  }
+  function ouvrir(n, depuis) {
+    if (depuis) retour = depuis;
+    rang = n;
+    var b = boutons[rang];
+    titre.textContent = b.getAttribute('data-nom');
+    corps.textContent = '';
+    var ps = panneaux(b);
+    if (ps.length > 1) { var g = document.createElement('p'); g.className = 'vis-glisse'; g.textContent = 'Glisse : ' + ps.slice(1).map(function (p) { return p.leg; }).join(', ') + ' →'; corps.appendChild(g); }
+    var d = document.createElement('div'); d.className = 'vis-rangee';
+    ps.forEach(function (p) { d.appendChild(panneau(p)); });
+    corps.appendChild(d);
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('vis-fermer').focus();
+  }
+  function fermer() { vis.hidden = true; corps.textContent = ''; if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang >= 0) ouvrir((rang + pas + boutons.length) % boutons.length); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.planche .ecran');
+    if (b) ouvrir(boutons.indexOf(b), b);
+  });
+  document.getElementById('vis-fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', function () { aller(-1); });
+  document.getElementById('vis-suiv').addEventListener('click', function () { aller(1); });
+  document.addEventListener('keydown', function (e) {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

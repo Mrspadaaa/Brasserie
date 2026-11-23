@@ -1,0 +1,185 @@
+{
+  "id": "cascade-lots-2015",
+  "source": {
+    "title": "The Effectiveness of Hop Volatile Markers for Forecasting Dry-hop Aroma Intensity and Quality of Cascade and Centennial Hops",
+    "author": "Lafontaine et al.",
+    "year": 2018,
+    "kind": "research",
+    "reference": "https://brewingscience.de/index.php/brewingscience/article/download/277/186/489",
+    "locator": "Tableaux S6 p.133 et S12 p.139 ; appariement par Sample ID, Cascade 2015."
+  },
+  "verifiedAt": "2026-09-09",
+  "transcription": "Deux tableaux sources appariés par identifiant ; aucune valeur attendue n'est extraite du pack de coefficients.",
+  "columns": [
+    "sampleId",
+    "geraniolMg100g",
+    "citrusPanelMean"
+  ],
+  "rows": [
+    [
+      "CAS_01_15",
+      2.17,
+      4.9
+    ],
+    [
+      "CAS_02_15",
+      2.92,
+      5
+    ],
+    [
+      "CAS_03_15",
+      1.71,
+      4.8
+    ],
+    [
+      "CAS_04_15",
+      1.37,
+      4.5
+    ],
+    [
+      "CAS_05_15",
+      1.44,
+      4.8
+    ],
+    [
+      "CAS_06_15",
+      1.93,
+      5.3
+    ],
+    [
+      "CAS_07_15",
+      1.44,
+      4.4
+    ],
+    [
+      "CAS_08_15",
+      3.09,
+      5.8
+    ],
+    [
+      "CAS_09_15",
+      1.82,
+      5.4
+    ],
+    [
+      "CAS_10_15",
+      2.13,
+      5.8
+    ],
+    [
+      "CAS_11_15",
+      1.26,
+      4.2
+    ],
+    [
+      "CAS_12_15",
+      0.32,
+      4.3
+    ],
+    [
+      "CAS_13_15",
+      1.84,
+      5.4
+    ],
+    [
+      "CAS_14_15",
+      3.76,
+      6.4
+    ],
+    [
+      "CAS_15_15",
+      3.82,
+      6.6
+    ],
+    [
+      "CAS_16_15",
+      2.5,
+      5.2
+    ],
+    [
+      "CAS_17_15",
+      4.07,
+      6.4
+    ],
+    [
+      "CAS_18_15",
+      1.99,
+      6.3
+    ],
+    [
+      "CAS_19_15",
+      1.48,
+      4.8
+    ],
+    [
+      "CAS_20_15",
+      2.98,
+      4.9
+    ],
+    [
+      "CAS_21_15",
+      1.09,
+      4.5
+    ],
+    [
+      "CAS_22_15",
+      1.67,
+      5.3
+    ],
+    [
+      "CAS_23_15",
+      2.46,
+      5.7
+    ],
+    [
+      "CAS_24_15",
+      0.7,
+      5.7
+    ],
+    [
+      "CAS_25_15",
+      2.56,
+      5
+    ],
+    [
+      "CAS_26_15",
+      2.61,
+      6.6
+    ],
+    [
+      "CAS_27_15",
+      1.13,
+      4.6
+    ],
+    [
+      "CAS_28_15",
+      1.66,
+      5.1
+    ],
+    [
+      "CAS_29_15",
+      3.16,
+      6.2
+    ]
+  ],
+  "sensoryScale": {
+    "min": 0,
+    "max": 15
+  },
+  "protocol": {
+    "varietyId": "cascade-cones-lafontaine",
+    "yeastId": "wyeast-1728",
+    "timing": "postFermentation",
+    "form": "cone",
+    "doseGL": 3.86,
+    "temperatureC": 14,
+    "contactHours": 24,
+    "matrixId": "pale-ale-clarifiee-cascade-2015"
+  },
+  "limitations": [
+    "Les valeurs de géraniol sont des concentrations rapportées par masse de houblon, pas des pourcentages d'huile.",
+    "Les répétitions analytiques et sensorielles restent résumées par une ligne par lot.",
+    "Validation interne sur une récolte et un procédé ; aucune validation externe sur une bière différente.",
+    "Le benchmark conditionne la régression aux covariables publiées ; leur incertitude analytique individuelle est indisponible."
+  ]
+}

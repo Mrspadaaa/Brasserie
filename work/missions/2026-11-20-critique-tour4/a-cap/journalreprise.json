@@ -1,0 +1,326 @@
+{
+ "clair-390": {
+  "etats": {
+   "f12-previsions-fermenteur": {
+    "dlg": [
+     "Fermenteur supplémentaire, 750,00 CHF estimé · 01.01 Usure sur 3 ans 5 ans 8 ans Usure par an à renseigner Mon litre à compléter aucun brassin planifié Jusqu’au 17 févr. 2 107,34 Plus bas 2 107,34 le 25.01 Pour rester à zéro Tu restes au-dessus de zéro Prix d’"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Fermenteur supplémentaire, 750,00 CHF estimé · 01.01 Usure sur 3 ans 5 ans 8 ans Usure par an à renseigner Mon litre à compléter aucun brassin planifié Jusqu’au 17 févr. 2 107,34 Plus bas 2 107,34 le 25.01 Pour rester à zéro Tu restes au-dessus de zéro Prix d’une bouteille 33 cl (CHF) Limites (3) Avec cet achat, aucun mois ne tient le seuil de 0,00 CHF d’ici fin nov. 2027 (soldes de fin de mois, 13 mois) ; au-delà de la vue affichée (jusqu’au 17 févr.). Soldes de fin de mois : un creux au milieu"
+   },
+   "f13-previsions-sans-fermenteur": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 17 févr. 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire au-dessus de zéro 2 107,34 Sans Fermenteur supplémentaire au-dessus de zéro 2 857,34 0 1 000 2 000 3 000 4 000 nov. déc. janv. févr. aujourd’hui 4 181,60 3 657,34 3 257,34 avec Fermenteur supplé… 2 107,34 2 sorties −124,26, 20.11 loyer −400, 25.11 loyer −400, 25.12 loyer −"
+   },
+   "f14-previsions-12-mois": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 19 nov. 2027 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire sous zéro 25.07 −1 492,66 Sans Fermenteur supplémentaire sous zéro 25.09 −742,66 −2 000 −1 000 0 1 000 2 000 3 000 4 000 déc. févr. avr. juin août oct. aujourd’hui 4 181,60 avec Fermenteur supplé… −1 492,66 2 sorties −124,26, 20.11 loyer −400, 25.11 loyer −400 (11 fois"
+   },
+   "f15-annuel-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Annuel 2026 provisoire Mois par mois −506,40 CHF perdus Stock au 31 déc. ? Entré 720,00 Vente au marché Dépensé + usure 1 226,40 Usure du matériel 288,00 estimé Matériel en charge 28,60 Nettoyage 42,00 Brassage 186,80 Autres frais 213,00 Charges fixes 468,00 Clôture 2026 2 / 9 prêtes Ensuite Vérifier les opérations Continuer Impôts Fribourg après le 31 déc. TVA non assujetti · sur 12 mois à ce jour 0,7 % Dossier et archives"
+   },
+   "f16-annuel-mois": {
+    "dlg": [
+     "Mois par mois · 2026 Mois par mois · 2026 Résultat Entré Dépensé janv. rien noté févr. rien noté mars rien noté avr. rien noté mai −43,00 juin −40,00 juil. −37,00 août −34,00 sept. −31,00 oct. −28,00 nov. +23,20 déc. à venir nov. · Entré 720,00 · Dépensé 696,8"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Mois par mois · 2026 Mois par mois · 2026 Résultat Entré Dépensé janv. rien noté févr. rien noté mars rien noté avr. rien noté mai −43,00 juin −40,00 juil. −37,00 août −34,00 sept. −31,00 oct. −28,00 nov. +23,20 déc. à venir nov. · Entré 720,00 · Dépensé 696,80 Matériel à part 28,60 : l’année ne compte que son usure. Mois par mois, le matériel est à part (comme la Synthèse) ; l’année l’écrit « à classer » tant qu’une pièce n’est pas rangée."
+   },
+   "k5-banc-menu": {
+    "dlg": [
+     "16 nov. → 27 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "16 nov. → 27 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+   },
+   "k6-banc-liste": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 1 740 mis de côté pour Frigo Frigo −1 800 Sols : colle et joints −320 S47 – S52 S47 S48 S49 S50 S51 S52 En retard · 2 Hopfen · Hallertau Blanc Achats · 10 nov. · S46 · pas payé −260 Saison de ferme Brassins · pas brassée · prévue le 10 nov. · S46 −137 En cours · 1 IPA de printemps Brassins · 9 nov. · S46 · J11 / 28 · prête 7 déc. reste −45 À venir Nov. 2026 Brouwland · malt Achats · 21 nov. · S47 −420 Blonde d’automne Brassins · 23 nov. · S48 ·"
+   }
+  },
+  "erreurs": [],
+  "rates": []
+ },
+ "cave-390": {
+  "etats": {
+   "f12-previsions-fermenteur": {
+    "dlg": [
+     "Fermenteur supplémentaire, 750,00 CHF estimé · 01.01 Usure sur 3 ans 5 ans 8 ans Usure par an à renseigner Mon litre à compléter aucun brassin planifié Jusqu’au 17 févr. 2 107,34 Plus bas 2 107,34 le 25.01 Pour rester à zéro Tu restes au-dessus de zéro Prix d’"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Fermenteur supplémentaire, 750,00 CHF estimé · 01.01 Usure sur 3 ans 5 ans 8 ans Usure par an à renseigner Mon litre à compléter aucun brassin planifié Jusqu’au 17 févr. 2 107,34 Plus bas 2 107,34 le 25.01 Pour rester à zéro Tu restes au-dessus de zéro Prix d’une bouteille 33 cl (CHF) Limites (3) Avec cet achat, aucun mois ne tient le seuil de 0,00 CHF d’ici fin nov. 2027 (soldes de fin de mois, 13 mois) ; au-delà de la vue affichée (jusqu’au 17 févr.). Soldes de fin de mois : un creux au milieu"
+   },
+   "f13-previsions-sans-fermenteur": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 17 févr. 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire au-dessus de zéro 2 107,34 Sans Fermenteur supplémentaire au-dessus de zéro 2 857,34 0 1 000 2 000 3 000 4 000 nov. déc. janv. févr. aujourd’hui 4 181,60 3 657,34 3 257,34 avec Fermenteur supplé… 2 107,34 2 sorties −124,26, 20.11 loyer −400, 25.11 loyer −400, 25.12 loyer −"
+   },
+   "f14-previsions-12-mois": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 19 nov. 2027 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire sous zéro 25.07 −1 492,66 Sans Fermenteur supplémentaire sous zéro 25.09 −742,66 −2 000 −1 000 0 1 000 2 000 3 000 4 000 déc. févr. avr. juin août oct. aujourd’hui 4 181,60 avec Fermenteur supplé… −1 492,66 2 sorties −124,26, 20.11 loyer −400, 25.11 loyer −400 (11 fois"
+   },
+   "f15-annuel-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Annuel 2026 provisoire Mois par mois −506,40 CHF perdus Stock au 31 déc. ? Entré 720,00 Vente au marché Dépensé + usure 1 226,40 Usure du matériel 288,00 estimé Matériel en charge 28,60 Nettoyage 42,00 Brassage 186,80 Autres frais 213,00 Charges fixes 468,00 Clôture 2026 2 / 9 prêtes Ensuite Vérifier les opérations Continuer Impôts Fribourg après le 31 déc. TVA non assujetti · sur 12 mois à ce jour 0,7 % Dossier et archives"
+   },
+   "f16-annuel-mois": {
+    "dlg": [
+     "Mois par mois · 2026 Mois par mois · 2026 Résultat Entré Dépensé janv. rien noté févr. rien noté mars rien noté avr. rien noté mai −43,00 juin −40,00 juil. −37,00 août −34,00 sept. −31,00 oct. −28,00 nov. +23,20 déc. à venir nov. · Entré 720,00 · Dépensé 696,8"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Mois par mois · 2026 Mois par mois · 2026 Résultat Entré Dépensé janv. rien noté févr. rien noté mars rien noté avr. rien noté mai −43,00 juin −40,00 juil. −37,00 août −34,00 sept. −31,00 oct. −28,00 nov. +23,20 déc. à venir nov. · Entré 720,00 · Dépensé 696,80 Matériel à part 28,60 : l’année ne compte que son usure. Mois par mois, le matériel est à part (comme la Synthèse) ; l’année l’écrit « à classer » tant qu’une pièce n’est pas rangée."
+   },
+   "k5-banc-menu": {
+    "dlg": [
+     "16 nov. → 27 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "16 nov. → 27 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+   },
+   "k6-banc-liste": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 6 sem. 2 1 740 mis de côté pour Frigo Frigo −1 800 Sols : colle et joints −320 S47 – S52 S47 S48 S49 S50 S51 S52 En retard · 2 Hopfen · Hallertau Blanc Achats · 10 nov. · S46 · pas payé −260 Saison de ferme Brassins · pas brassée · prévue le 10 nov. · S46 −137 En cours · 1 IPA de printemps Brassins · 9 nov. · S46 · J11 / 28 · prête 7 déc. reste −45 À venir Nov. 2026 Brouwland · malt Achats · 21 nov. · S47 −420 Blonde d’automne Brassins · 23 nov. · S48 ·"
+   }
+  },
+  "erreurs": [],
+  "rates": []
+ },
+ "clair-844": {
+  "etats": {
+   "f12-previsions-fermenteur": {
+    "dlg": [
+     "Fermenteur supplémentaire, 750,00 CHF estimé · 01.01 Usure sur 3 ans 5 ans 8 ans Usure par an à renseigner Mon litre à compléter aucun brassin planifié Jusqu’au 17 févr. 2 107,34 Plus bas 2 107,34 le 25.01 Pour rester à zéro Tu restes au-dessus de zéro Prix d’"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Fermenteur supplémentaire, 750,00 CHF estimé · 01.01 Usure sur 3 ans 5 ans 8 ans Usure par an à renseigner Mon litre à compléter aucun brassin planifié Jusqu’au 17 févr. 2 107,34 Plus bas 2 107,34 le 25.01 Pour rester à zéro Tu restes au-dessus de zéro Prix d’une bouteille 33 cl (CHF) Limites (3) Avec cet achat, aucun mois ne tient le seuil de 0,00 CHF d’ici fin nov. 2027 (soldes de fin de mois, 13 mois) ; au-delà de la vue affichée (jusqu’au 17 févr.). Soldes de fin de mois : un creux au milieu"
+   },
+   "f13-previsions-sans-fermenteur": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 17 févr. 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire au-dessus de zéro 2 107,34 Sans Fermenteur supplémentaire au-dessus de zéro 2 857,34 0 1 000 2 000 3 000 4 000 nov. déc. janv. févr. aujourd’hui 4 181,60 3 657,34 3 257,34 avec Fermenteur supplé… 2 107,34 2 sorties −124,26, 20.11 loyer −400, 25.11 loyer −400, 25.12 loyer −"
+   },
+   "f14-previsions-12-mois": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 19 nov. 2027 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire sous zéro 25.07 −1 492,66 Sans Fermenteur supplémentaire sous zéro 25.09 −742,66 −2 000 −1 000 0 1 000 2 000 3 000 4 000 déc. janv. févr. mars avr. mai juin juil. août sept. oct. nov. aujourd’hui 4 181,60 avec Fermenteur supplé… −1 492,66 2 sorties −124,26, 20.11 loyer"
+   },
+   "f15-annuel-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Annuel 2026 provisoire Mois par mois −506,40 CHF perdus Stock au 31 déc. ? Entré 720,00 Vente au marché Dépensé + usure 1 226,40 Usure du matériel 288,00 estimé Matériel en charge 28,60 Nettoyage 42,00 Brassage 186,80 Autres frais 213,00 Charges fixes 468,00 Clôture 2026 2 / 9 prêtes Ensuite Vérifier les opérations Continuer Impôts Fribourg après le 31 déc. TVA non assujetti · sur 12 mois à ce jour 0,7 % Dossier et archives"
+   },
+   "f16-annuel-mois": {
+    "dlg": [
+     "Mois par mois · 2026 Mois par mois · 2026 Résultat Entré Dépensé janv. rien noté févr. rien noté mars rien noté avr. rien noté mai −43,00 juin −40,00 juil. −37,00 août −34,00 sept. −31,00 oct. −28,00 nov. +23,20 déc. à venir nov. · Entré 720,00 · Dépensé 696,8"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Mois par mois · 2026 Mois par mois · 2026 Résultat Entré Dépensé janv. rien noté févr. rien noté mars rien noté avr. rien noté mai −43,00 juin −40,00 juil. −37,00 août −34,00 sept. −31,00 oct. −28,00 nov. +23,20 déc. à venir nov. · Entré 720,00 · Dépensé 696,80 Matériel à part 28,60 : l’année ne compte que son usure. Mois par mois, le matériel est à part (comme la Synthèse) ; l’année l’écrit « à classer » tant qu’une pièce n’est pas rangée."
+   },
+   "k5-banc-menu": {
+    "dlg": [
+     "16 nov. 2026 → 14 févr. 2027 Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "16 nov. 2026 → 14 févr. 2027 Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+   },
+   "k6-banc-liste": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 1 740 mis de côté pour Frigo Frigo −1 800 Facture Café du Lac +1 200 S47 – S6 2027 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 En retard · 2 Hopfen · Hallertau Blanc Achats · 10 nov. · S46 · pas payé −260 Saison de ferme Brassins · pas brassée · prévue le 10 nov. · S46 −137 En cours · 1 IPA de printemps Brassins · 9 nov. · S46 · J11 / 28 · prête 7 déc. reste −45 À venir Nov. 2026 Brouwland · malt Achats · 21 nov. · S47 −420 Blonde d’automne B"
+   }
+  },
+  "erreurs": [],
+  "rates": []
+ },
+ "cave-844": {
+  "etats": {
+   "f12-previsions-fermenteur": {
+    "dlg": [
+     "Fermenteur supplémentaire, 750,00 CHF estimé · 01.01 Usure sur 3 ans 5 ans 8 ans Usure par an à renseigner Mon litre à compléter aucun brassin planifié Jusqu’au 17 févr. 2 107,34 Plus bas 2 107,34 le 25.01 Pour rester à zéro Tu restes au-dessus de zéro Prix d’"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Fermenteur supplémentaire, 750,00 CHF estimé · 01.01 Usure sur 3 ans 5 ans 8 ans Usure par an à renseigner Mon litre à compléter aucun brassin planifié Jusqu’au 17 févr. 2 107,34 Plus bas 2 107,34 le 25.01 Pour rester à zéro Tu restes au-dessus de zéro Prix d’une bouteille 33 cl (CHF) Limites (3) Avec cet achat, aucun mois ne tient le seuil de 0,00 CHF d’ici fin nov. 2027 (soldes de fin de mois, 13 mois) ; au-delà de la vue affichée (jusqu’au 17 févr.). Soldes de fin de mois : un creux au milieu"
+   },
+   "f13-previsions-sans-fermenteur": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 17 févr. 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire au-dessus de zéro 2 107,34 Sans Fermenteur supplémentaire au-dessus de zéro 2 857,34 0 1 000 2 000 3 000 4 000 nov. déc. janv. févr. aujourd’hui 4 181,60 3 657,34 3 257,34 avec Fermenteur supplé… 2 107,34 2 sorties −124,26, 20.11 loyer −400, 25.11 loyer −400, 25.12 loyer −"
+   },
+   "f14-previsions-12-mois": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 19 nov. 2027 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire sous zéro 25.07 −1 492,66 Sans Fermenteur supplémentaire sous zéro 25.09 −742,66 −2 000 −1 000 0 1 000 2 000 3 000 4 000 déc. janv. févr. mars avr. mai juin juil. août sept. oct. nov. aujourd’hui 4 181,60 avec Fermenteur supplé… −1 492,66 2 sorties −124,26, 20.11 loyer"
+   },
+   "f15-annuel-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Annuel 2026 provisoire Mois par mois −506,40 CHF perdus Stock au 31 déc. ? Entré 720,00 Vente au marché Dépensé + usure 1 226,40 Usure du matériel 288,00 estimé Matériel en charge 28,60 Nettoyage 42,00 Brassage 186,80 Autres frais 213,00 Charges fixes 468,00 Clôture 2026 2 / 9 prêtes Ensuite Vérifier les opérations Continuer Impôts Fribourg après le 31 déc. TVA non assujetti · sur 12 mois à ce jour 0,7 % Dossier et archives"
+   },
+   "f16-annuel-mois": {
+    "dlg": [
+     "Mois par mois · 2026 Mois par mois · 2026 Résultat Entré Dépensé janv. rien noté févr. rien noté mars rien noté avr. rien noté mai −43,00 juin −40,00 juil. −37,00 août −34,00 sept. −31,00 oct. −28,00 nov. +23,20 déc. à venir nov. · Entré 720,00 · Dépensé 696,8"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Mois par mois · 2026 Mois par mois · 2026 Résultat Entré Dépensé janv. rien noté févr. rien noté mars rien noté avr. rien noté mai −43,00 juin −40,00 juil. −37,00 août −34,00 sept. −31,00 oct. −28,00 nov. +23,20 déc. à venir nov. · Entré 720,00 · Dépensé 696,80 Matériel à part 28,60 : l’année ne compte que son usure. Mois par mois, le matériel est à part (comme la Synthèse) ; l’année l’écrit « à classer » tant qu’une pièce n’est pas rangée."
+   },
+   "k5-banc-menu": {
+    "dlg": [
+     "16 nov. 2026 → 14 févr. 2027 Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "16 nov. 2026 → 14 févr. 2027 Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+   },
+   "k6-banc-liste": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser S44 ’27 ± 3 mois 2 1 740 mis de côté pour Frigo Frigo −1 800 Facture Café du Lac +1 200 S47 – S6 2027 S47 S48 S49 S50 S51 S52 S53 S1 S2 S3 S4 S5 S6 En retard · 2 Hopfen · Hallertau Blanc Achats · 10 nov. · S46 · pas payé −260 Saison de ferme Brassins · pas brassée · prévue le 10 nov. · S46 −137 En cours · 1 IPA de printemps Brassins · 9 nov. · S46 · J11 / 28 · prête 7 déc. reste −45 À venir Nov. 2026 Brouwland · malt Achats · 21 nov. · S47 −420 Blonde d’automne B"
+   }
+  },
+  "erreurs": [],
+  "rates": []
+ },
+ "clair-1280": {
+  "etats": {
+   "f12-previsions-fermenteur": {
+    "dlg": [
+     "Fermenteur supplémentaire, 750,00 CHF estimé · 01.01 Usure sur 3 ans 5 ans 8 ans Usure par an à renseigner Mon litre à compléter aucun brassin planifié Jusqu’au 17 févr. 2 107,34 Plus bas 2 107,34 le 25.01 Pour rester à zéro Tu restes au-dessus de zéro Prix d’"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Fermenteur supplémentaire, 750,00 CHF estimé · 01.01 Usure sur 3 ans 5 ans 8 ans Usure par an à renseigner Mon litre à compléter aucun brassin planifié Jusqu’au 17 févr. 2 107,34 Plus bas 2 107,34 le 25.01 Pour rester à zéro Tu restes au-dessus de zéro Prix d’une bouteille 33 cl (CHF) Limites (3) Avec cet achat, aucun mois ne tient le seuil de 0,00 CHF d’ici fin nov. 2027 (soldes de fin de mois, 13 mois) ; au-delà de la vue affichée (jusqu’au 17 févr.). Soldes de fin de mois : un creux au milieu"
+   },
+   "f13-previsions-sans-fermenteur": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 17 févr. 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire au-dessus de zéro 2 107,34 Sans Fermenteur supplémentaire au-dessus de zéro 2 857,34 0 1 000 2 000 3 000 4 000 nov. déc. janv. févr. aujourd’hui 4 181,60 3 657,34 3 257,34 avec Fermenteur supplé… 2 107,34 2 sorties −124,26, 20.11 loyer −400, 25.11 loyer −400, 25.12 loyer −"
+   },
+   "f14-previsions-12-mois": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 19 nov. 2027 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire sous zéro 25.07 −1 492,66 Sans Fermenteur supplémentaire sous zéro 25.09 −742,66 −2 000 −1 000 0 1 000 2 000 3 000 4 000 déc. janv. févr. mars avr. mai juin juil. août sept. oct. nov. aujourd’hui 4 181,60 avec Fermenteur supplé… −1 492,66 2 sorties −124,26, 20.11 loyer"
+   },
+   "f15-annuel-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Annuel 2026 provisoire Mois par mois −506,40 CHF perdus Stock au 31 déc. ? Entré 720,00 Vente au marché Dépensé + usure 1 226,40 Usure du matériel 288,00 estimé Matériel en charge 28,60 Nettoyage 42,00 Brassage 186,80 Autres frais 213,00 Charges fixes 468,00 Clôture 2026 2 / 9 prêtes Ensuite Vérifier les opérations Continuer Impôts Fribourg après le 31 déc. TVA non assujetti · sur 12 mois à ce jour 0,7 % Dossier et archives"
+   },
+   "f16-annuel-mois": {
+    "dlg": [
+     "Mois par mois · 2026 Mois par mois · 2026 Résultat Entré Dépensé janv. rien noté févr. rien noté mars rien noté avr. rien noté mai −43,00 juin −40,00 juil. −37,00 août −34,00 sept. −31,00 oct. −28,00 nov. +23,20 déc. à venir nov. · Entré 720,00 · Dépensé 696,8"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Mois par mois · 2026 Mois par mois · 2026 Résultat Entré Dépensé janv. rien noté févr. rien noté mars rien noté avr. rien noté mai −43,00 juin −40,00 juil. −37,00 août −34,00 sept. −31,00 oct. −28,00 nov. +23,20 déc. à venir nov. · Entré 720,00 · Dépensé 696,80 Matériel à part 28,60 : l’année ne compte que son usure. Mois par mois, le matériel est à part (comme la Synthèse) ; l’année l’écrit « à classer » tant qu’une pièce n’est pas rangée."
+   },
+   "k5-banc-menu": {
+    "dlg": [
+     "16 nov. → 27 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "16 nov. → 27 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+   },
+   "k6-banc-liste": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 1 740 mis de côté pour Frigo Frigo −1 800 Facture Café du Lac +1 200 Sols : colle et joints −320 TVA T4 −300 Emballage · Porter d’hiver −45 Impôt sur la bière · IPA de printemps −32 Impôt sur la bière · Porter d’hiver −24 S47 – S52 S47 S48 S49 S50 S51 S52 En retard · 2 Hopfen · Hallertau Blanc Achats · 10 nov. · S46 · pas payé −260 Saison de ferme Brassins · pas brassée · prévue le 10 nov. · S46 −137 En cours · 1 IPA de printemps Brassins · 9"
+   }
+  },
+  "erreurs": [],
+  "rates": []
+ },
+ "cave-1280": {
+  "etats": {
+   "f12-previsions-fermenteur": {
+    "dlg": [
+     "Fermenteur supplémentaire, 750,00 CHF estimé · 01.01 Usure sur 3 ans 5 ans 8 ans Usure par an à renseigner Mon litre à compléter aucun brassin planifié Jusqu’au 17 févr. 2 107,34 Plus bas 2 107,34 le 25.01 Pour rester à zéro Tu restes au-dessus de zéro Prix d’"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Fermenteur supplémentaire, 750,00 CHF estimé · 01.01 Usure sur 3 ans 5 ans 8 ans Usure par an à renseigner Mon litre à compléter aucun brassin planifié Jusqu’au 17 févr. 2 107,34 Plus bas 2 107,34 le 25.01 Pour rester à zéro Tu restes au-dessus de zéro Prix d’une bouteille 33 cl (CHF) Limites (3) Avec cet achat, aucun mois ne tient le seuil de 0,00 CHF d’ici fin nov. 2027 (soldes de fin de mois, 13 mois) ; au-delà de la vue affichée (jusqu’au 17 févr.). Soldes de fin de mois : un creux au milieu"
+   },
+   "f13-previsions-sans-fermenteur": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 17 févr. 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire au-dessus de zéro 2 107,34 Sans Fermenteur supplémentaire au-dessus de zéro 2 857,34 0 1 000 2 000 3 000 4 000 nov. déc. janv. févr. aujourd’hui 4 181,60 3 657,34 3 257,34 avec Fermenteur supplé… 2 107,34 2 sorties −124,26, 20.11 loyer −400, 25.11 loyer −400, 25.12 loyer −"
+   },
+   "f14-previsions-12-mois": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Jusqu’au 19 nov. 2027 30j 90j 12 mois 2 achats de matériel pas comptés date ou budget à compléter : Hotte de brassage 800,00, Système de brassage plus performant Avec Fermenteur supplémentaire sous zéro 25.07 −1 492,66 Sans Fermenteur supplémentaire sous zéro 25.09 −742,66 −2 000 −1 000 0 1 000 2 000 3 000 4 000 déc. janv. févr. mars avr. mai juin juil. août sept. oct. nov. aujourd’hui 4 181,60 avec Fermenteur supplé… −1 492,66 2 sorties −124,26, 20.11 loyer"
+   },
+   "f15-annuel-repos": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Synthèse Opérations Prévisions Annuel Annuel 2026 provisoire Mois par mois −506,40 CHF perdus Stock au 31 déc. ? Entré 720,00 Vente au marché Dépensé + usure 1 226,40 Usure du matériel 288,00 estimé Matériel en charge 28,60 Nettoyage 42,00 Brassage 186,80 Autres frais 213,00 Charges fixes 468,00 Clôture 2026 2 / 9 prêtes Ensuite Vérifier les opérations Continuer Impôts Fribourg après le 31 déc. TVA non assujetti · sur 12 mois à ce jour 0,7 % Dossier et archives"
+   },
+   "f16-annuel-mois": {
+    "dlg": [
+     "Mois par mois · 2026 Mois par mois · 2026 Résultat Entré Dépensé janv. rien noté févr. rien noté mars rien noté avr. rien noté mai −43,00 juin −40,00 juil. −37,00 août −34,00 sept. −31,00 oct. −28,00 nov. +23,20 déc. à venir nov. · Entré 720,00 · Dépensé 696,8"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "Mois par mois · 2026 Mois par mois · 2026 Résultat Entré Dépensé janv. rien noté févr. rien noté mars rien noté avr. rien noté mai −43,00 juin −40,00 juil. −37,00 août −34,00 sept. −31,00 oct. −28,00 nov. +23,20 déc. à venir nov. · Entré 720,00 · Dépensé 696,80 Matériel à part 28,60 : l’année ne compte que son usure. Mois par mois, le matériel est à part (comme la Synthèse) ; l’année l’écrit « à classer » tant qu’une pièce n’est pas rangée."
+   },
+   "k5-banc-menu": {
+    "dlg": [
+     "16 nov. → 27 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+    ],
+    "deborde": false,
+    "petits": [],
+    "texte": "16 nov. → 27 déc. Échelle Jour Semaine Mois 2 sem. 6 sem. 3 mois 6 mois An Liste Sans date · 1 Trier les rangées Filtrer par type"
+   },
+   "k6-banc-liste": {
+    "dlg": [],
+    "deborde": false,
+    "petits": [],
+    "texte": "Calendrier −6 417 CHF à dépenser · S44 ’27 ± 6 sem. 2 1 740 mis de côté pour Frigo Frigo −1 800 Facture Café du Lac +1 200 Sols : colle et joints −320 TVA T4 −300 Emballage · Porter d’hiver −45 Impôt sur la bière · IPA de printemps −32 Impôt sur la bière · Porter d’hiver −24 S47 – S52 S47 S48 S49 S50 S51 S52 En retard · 2 Hopfen · Hallertau Blanc Achats · 10 nov. · S46 · pas payé −260 Saison de ferme Brassins · pas brassée · prévue le 10 nov. · S46 −137 En cours · 1 IPA de printemps Brassins · 9"
+   }
+  },
+  "erreurs": [],
+  "rates": []
+ }
+}

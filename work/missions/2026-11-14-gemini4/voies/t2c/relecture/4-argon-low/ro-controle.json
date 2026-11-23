@@ -1,0 +1,21 @@
+{
+ "reglage": "4-argon@low",
+ "element": "ro-controle",
+ "cas": "ro",
+ "type": "controle",
+ "moitie": "choix",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "Respecter la phase réelle et vérifier ce qui a déjà été versé : la phase affichée est « Saccharification » alors que la réponse ordonne directement de verser 4 L d'eau osmosée et 20 L d'eau du réseau comme si la cuve était vide. Il faut d'abord vérifier si l'eau et le grain sont déjà en cuve (et quel volume a déjà été versé), ou formuler cet arbitrage sous réserve que l'empâtage n'ait pas encore commencé.",
+   "Traiter les compartiments séparément (empâtage vs rinçage) : le plan complet prévoit aussi 10 L d'eau de rinçage à 20 % d'osmosée (et l'outil E2 répartit les 4 L totaux en ~2,8 L pour l'empâtage et ~1,2 L pour le rinçage). Il faut préciser que mettre les 4 L à l'empâtage laisse 0 L d'osmosée pour le rinçage, ou demander si les 4 L sont le stock total pour tout le brassin.",
+   "Donner le profil ionique recalculé complet de la simulation E1 (Ca 50, Mg 4,2, Na 8,3, SO4 20,8, Cl 16,7, HCO3 150 mg/L) en rappelant qu'une correction ultérieure par acide ne retire ni sulfates ni chlorures.",
+   "Nuancer l'affirmation dans « why » (« maintient tes rendements » / « sans bloquer la saccharification ») : ne pas garantir le maintien des rendements ni l'absence d'impact enzymatique avant d'avoir mesuré le pH réel sur échantillon refroidi."
+  ]
+ },
+ "ms": 11978,
+ "coutMicro": 18325,
+ "etat": "STOP"
+}

@@ -1,0 +1,19 @@
+{
+ "reglage": "3.8-flash@low",
+ "element": "ph-meter-plante",
+ "cas": "ph-meter",
+ "type": "plante",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": false,
+  "proposalApproved": true,
+  "issues": [
+   "L'action préconise d'ajouter 6 g de gypse et 8 mL d'acide lactique à l'aveugle, ce qui contredit directement la règle métier interdisant tout ajustement chimique sans mesure fiable lorsque le pH-mètre est en panne.",
+   "L'action contredit le résumé ('Sans appareil fiable, ne tente aucun ajustement chimique du moût')."
+  ]
+ },
+ "ms": 3826,
+ "coutMicro": 8710,
+ "etat": "STOP"
+}

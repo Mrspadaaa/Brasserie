@@ -1,0 +1,73 @@
+/* m4bb-a (choix du 15.11) : le coût d'un brassin rangé en v6a. Classes préfixées `bbx-` (L26), sous la racine `.ops` (jetons clair/cave, `ops-sq`, `ops-tg-*`, `ops-hach` de operations.css).
+   Mesures de la maquette : rangée 35 px, pile de 80 px au plus, boîte du litre 1,15 fr. */
+.bbx { gap:0; padding:0 0 6px; }
+/* operations.css range `.ops` en deux colonnes dès 900 px (bande à gauche, liste à droite) : la feuille du budget garde une seule colonne,
+   pleine largeur (t1, problème 1 : à 1280 tout tenait dans 140 px collés à droite). */
+.ops.bbx, .ops.bbx-pied { display:flex; flex-direction:column; align-items:stretch; }
+.ops.bbx > *, .ops.bbx-pied > * { grid-column:auto; grid-row:auto; }
+.ops.bbx > .bbx-vol { align-self:flex-start; }
+.bbx button { -webkit-tap-highlight-color:transparent; }
+.bbx-vol { display:inline-flex; align-items:center; gap:4px; align-self:flex-start; min-height:44px; padding:0 8px; margin:0 0 6px; border-radius:10px; border:1px solid var(--ops-bord); font-size:13px; color:var(--ops-t2); }
+.bbx-vol[data-inconnu='true'] { border-style:dashed; }
+.bbx-vol b { font-size:13px; color:var(--ops-t1); }
+
+/* bande « Quand tu paies » */
+.bbx-band { border-radius:16px; background:var(--ops-fond); padding:6px 8px 8px; }
+.bbx-t { display:flex; justify-content:space-between; font-size:12px; color:var(--ops-t2); }
+.bbx-piles { display:grid; grid-template-columns:1fr 1fr 1fr 16px 1.15fr; align-items:end; gap:6px; height:110px; margin-top:2px; }
+.bbx-p { display:flex; flex-direction:column; justify-content:flex-end; height:100%; text-align:center; gap:2px; min-width:0; }
+.bbx-p b { font-size:13px; line-height:15px; }
+.bbx-st { display:block; border-radius:10px 6px 2px 2px; min-height:4px; }
+.bbx-vide { border:1px dashed var(--ops-t3); background:transparent; }
+.bbx-eq { align-self:center; text-align:center; font-size:16px; color:var(--ops-t3); }
+.bbx-lit { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; min-height:44px; border-radius:10px; background:rgb(var(--cave-950)); border:1px solid var(--ops-bord); text-align:center; }
+.bbx-lit b { font-size:22px; line-height:26px; }
+.bbx-lit span { font-size:12px; color:var(--ops-t2); }
+.bbx-lit[data-etat='inconnu'] { border-style:dashed; }
+.bbx-base { display:grid; grid-template-columns:1fr 1fr 1fr 16px 1.15fr; gap:6px; border-top:2px solid var(--ops-t1); padding-top:3px; }
+.bbx-base > span { font-size:12px; color:var(--ops-t2); text-align:center; line-height:14px; }
+.bbx-base b { font-size:12px; color:var(--ops-t1); }
+
+/* ligne-tâche : pointillé, jamais hachurée (la hachure reste « à payer ») */
+.bbx-taches { list-style:none; margin:8px 0 2px; padding:0; display:flex; flex-direction:column; gap:4px; }
+.bbx-tache { display:flex; align-items:center; gap:8px; width:100%; min-height:44px; padding:4px 10px; border-radius:10px; border:1px dashed var(--ops-t3); background:rgb(var(--cave-950)); text-align:left; }
+.bbx-tache i { font-style:normal; width:24px; height:24px; border-radius:50%; border:1.5px dotted var(--ops-t2); display:grid; place-items:center; font-weight:700; color:var(--ops-t1); flex:none; font-size:13px; }
+.bbx-tache > span { flex:1; font-size:13px; line-height:16px; min-width:0; }
+.bbx-tache small { display:block; color:var(--ops-t2); font-size:12px; }
+.bbx-tache > em { font-style:normal; color:var(--ops-t2); }
+
+/* liste : groupes et rangées */
+.bbx-g { display:grid; grid-template-columns:22px 1fr auto; gap:6px; align-items:center; padding:7px 0 1px; }
+.bbx-g b { font-size:13px; letter-spacing:.02em; }
+.bbx-g-renvoi { width:100%; background:none; border:0; color:inherit; font:inherit; text-align:left; cursor:pointer; }
+.bbx-renvoi { background:none; border:0; padding:0; margin:0; color:inherit; font:inherit; cursor:pointer; }
+.bbx-tot { font-size:13px; color:var(--ops-t2); }
+.bbx-op { display:grid; grid-template-columns:4px minmax(0,1fr) auto auto; column-gap:8px; align-items:center; width:100%; min-height:35px; padding:0; border-bottom:1px solid var(--ops-bord); text-align:left; }
+.bbx-bar { display:block; height:22px; border-radius:2px; align-self:center; background:transparent; }
+.bbx-op .bbx-bar.ops-hach { box-shadow:inset 0 0 0 1px rgb(var(--attention)); }
+.bbx-q { font-size:14px; font-weight:600; line-height:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.bbx-q small { font-weight:400; color:var(--ops-t2); font-size:13px; }
+.bbx-pa { order:0; }
+.bbx-a { font-size:14px; text-align:right; min-width:44px; }
+.bbx-est::before { content:'≈ '; color:var(--ops-t3); }
+.bbx-unk { border:1px dotted var(--ops-t3); background:transparent; color:var(--ops-t1); }
+.bbx-yr { background:rgb(var(--c-3f2556)); color:rgb(var(--ct-d8b9f4)); }
+.bbx-hors { display:flex; align-items:center; gap:6px; width:100%; min-height:35px; border-bottom:1px solid var(--ops-bord); font-size:12px; color:var(--ops-t2); text-align:left; }
+
+/* pied : la maquette, boutons de 44 px */
+.bbx-pied .cbf-raison { color:rgb(var(--attention-texte)); font-size:13px; padding:2px 0 6px; text-align:left; }
+.bbx-pied .cbf-ia { background:transparent; border:1px dashed rgb(var(--c-5b9bd5, 91 155 213)); color:#2F6EA8; }
+[data-theme='cave'] .bbx-pied .cbf-ia { color:#8FBFEA; }
+.bbx-pied .cbf-sec { background:rgb(var(--cave-800)); border:0; }
+.bbx-pied .cbf-pri:disabled { opacity:1; background:rgb(var(--cave-800)); color:var(--ops-t2, inherit); }
+
+/* choix du brassin */
+.bbx-choix { padding:0 0 12px; }
+.bbx-k { font-size:12px; color:var(--ops-t2); padding:6px 0 0; margin:0; }
+.bbx-row { display:grid; grid-template-columns:4px 1fr auto 14px; gap:0 8px; align-items:center; width:100%; min-height:44px; padding:2px 0; border-bottom:1px solid var(--ops-bord); text-align:left; }
+.bbx-row .bbx-bar { height:30px; }
+.bbx-q2 { display:block; min-width:0; }
+.bbx-q2 b { display:block; font-size:16px; font-weight:700; line-height:20px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.bbx-q2 small { display:block; font-size:12px; color:var(--ops-t2); }
+.bbx-row .ops-m { font-size:14px; }
+.bbx-vide-msg { font-size:14px; color:var(--ops-t2); padding:8px 0; }

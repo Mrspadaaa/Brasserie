@@ -1,0 +1,78 @@
+[
+  {
+    "id": "technical-thiol-pathways",
+    "kind": "note",
+    "name": "Thiols libres, précurseurs et acétates",
+    "topics": [
+      "chimie",
+      "atelier"
+    ],
+    "summary": "3SH et 3MH désignent le même alcool ; 3SHA et 3MHA son acétate. 4MSP et 4MMP désignent un autre thiol. La forme glutathionylée implique transport et étapes de transformation avant la libération ; les précurseurs cystéinylés et glutathionylés ne sont pas interchangeables.",
+    "limitation": "Une voie identifiée ne fournit pas son rendement dans ta cuve. Aucun coefficient commun aux souches ni addition de rendements concurrents n’est appliqué.",
+    "source": {
+      "title": "Yeast genes required for conversion of grape precursors to varietal thiols in wine",
+      "author": "Santiago et Gardner",
+      "year": 2015,
+      "kind": "research",
+      "reference": "https://doi.org/10.1093/femsyr/fov034",
+      "locator": "Travaux en vin ; mécanisme documentaire, sans rendement brassicole. Nomenclature 3SH/3MH et 4MSP/4MMP également explicitée dans les documents Lallemand joints."
+    }
+  },
+  {
+    "id": "technical-terpenes",
+    "kind": "note",
+    "name": "Géraniol, linalol et β-citronellol",
+    "topics": [
+      "chimie",
+      "atelier"
+    ],
+    "summary": "Le devenir des terpènes pendant la fermentation diffère entre houblons. Takoi et al. distinguent notamment des houblons riches en géraniol libre et d’autres dont le potentiel paraît surtout porté par des précurseurs.",
+    "limitation": "Une fraction de l’huile essentielle n’est pas une concentration dans la bière. L’étude ne fournit pas une formule universelle « % d’huile → intensité par famille ».",
+    "source": {
+      "title": "Systematic Analysis of Behaviour of Hop-Derived Monoterpene Alcohols During Fermentation and New Classification of Geraniol-Rich Flavour Hops",
+      "author": "Takoi et al.",
+      "year": 2017,
+      "kind": "research",
+      "reference": "https://doi.org/10.23763/BrSc17-17takoi",
+      "locator": "BrewingScience 70, 177–186 ; résumé primaire, classification de 42 variétés."
+    }
+  },
+  {
+    "id": "technical-pof",
+    "kind": "note",
+    "name": "Phénols de levure · clou de girofle et épices",
+    "topics": [
+      "chimie",
+      "atelier"
+    ],
+    "summary": "Le caractère POF décrit la capacité d’une levure à former certains phénols volatils. La conversion de l’acide férulique en 4-vinylgaïacol implique PAD1/FDC1. Ce caractère doit être vérifié pour la souche utilisée, séparément de son activité β-lyase.",
+    "limitation": "Un phénol de levure n’est pas un thiol. POF positif ou négatif ne prédit ni la libération de 3SH ni l’intensité épicée d’une recette ; un résultat d’essai en milieu enrichi n’est pas un rendement en bière.",
+    "source": {
+      "title": "Characterizing German and Belgian Strains for POF",
+      "author": "Alexander Smulsky · Wyeast",
+      "year": 2025,
+      "kind": "manufacturer",
+      "reference": "https://wyeastlab.com/resource/characterizing-german-and-belgian-strains-for-pof/",
+      "locator": "30 juillet 2025 ; caractérisation fabricant en milieu enrichi, pas mesure de la recette."
+    }
+  },
+  {
+    "id": "technical-polyphenols",
+    "kind": "note",
+    "name": "Polyphénols · un autre aspect du houblonnage",
+    "topics": [
+      "chimie",
+      "atelier"
+    ],
+    "summary": "L’étude compare différentes conduites de whirlpool et de dry-hop et observe une relation entre composés phénoliques totaux et amertume perçue. Cette analyse est distincte des phénols volatils produits par une souche POF.",
+    "limitation": "Une corrélation dans ces IPA ne devient pas un coefficient universel. Un brassin par condition, plusieurs houblons et protocole partiellement ambigu : aucune prédiction chiffrée ni programme conseillé n’en est extrait.",
+    "source": {
+      "title": "Effect of hopping (whirlpool hopping and dry hopping) on the sensory profile of IPA-style craft beer using CATA and JAR sensory methods",
+      "author": "Guanilo-Pairazamán et al.",
+      "year": 2026,
+      "kind": "research",
+      "reference": "https://doi.org/10.3389/frfst.2026.1815939",
+      "locator": "17 juin 2026 ; protocole et limites de répétition biologique."
+    }
+  }
+]

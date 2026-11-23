@@ -1,0 +1,46 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "affinee-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "maquette-houblons",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "prototypes/houblons-v4/parcours/outils/servir.mjs",
+        "--dossier=prototypes/houblons-v4/maquettes/parcours-pilote",
+        "--port=5191"
+      ],
+      "port": 5191
+    },
+    {
+      "name": "affinee-dev-deploy",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "C:/Users/mrspa/AppData/Local/Temp/deploy-bc70",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "3010",
+        "--strictPort"
+      ],
+      "port": 3010
+    },
+    {
+      "name": "t3-propre",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "C:/Users/mrspa/AppData/Local/Temp/t3-propre", "run", "dev", "--", "--port", "3020", "--strictPort"],
+      "port": 3020
+    }
+  ]
+}

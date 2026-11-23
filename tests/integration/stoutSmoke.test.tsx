@@ -1,0 +1,151 @@
+import React, { useState } from 'react';
+import { afterEach, describe, expect, it } from 'vitest';
+import { cleanup, fireEvent, render as testingRender, screen } from '@testing-library/react';
+import { SaltSolver, WaterState } from '../../src/ui/SaltSolver';
+import { ALKALINE_SALTS, SALT_IDS } from '../../src/domain/water';
+import { monSuperStoutRo } from '../fixtures/monSuperStout';
+import { changeWaterRatio, readWaterRatio } from '../helpers/waterRatio';
+
+afterEach(cleanup);
+const recipe = monSuperStoutRo;
+const plan = recipe.waterPlan!;
+function mount(overrides: Partial<WaterState> = {}) {
+  let current: WaterState;
+  function Host() {
+    const [state, setState] = useState<WaterState>({
+      diRatioPct: 100, styleCode: '20C', doses: { ...plan.mash }, disabled: [],
+      acidId: 'lactique', mashWaterL: 34.6, spargeWaterL: 11,
+      allSaltsInMash: true, ratioOverride: 0.4, ...overrides
+    });
+    current = state;
+    return <SaltSolver source={plan.sourceSnapshot!} onSourceChange={() => {}}
+      beerEbc={98.8} beerVolumeL={30} state={state} onChange={setState}
+      brew={{ grist: recipe.fermentables, totalGristKg: 9.1, style: 'Imperial stout' }}
+      noSparge={state.spargeWaterL === 0} />;
+  }
+  render(<Host />);
+  return () => current;
+}
+const click = (name: string | RegExp) => fireEvent.click(screen.getByRole('button', { name }));
+const doser = () => click('Proposer les doses');
+const graph = () => screen.getByRole('img', { name: /Profil ionique/ });
+const zones = () => Array.from(graph().querySelectorAll('[data-ion-target]')).map(e => e.getAttribute('d'));
+const readPh = () => Number(screen.getByText(/^pH estimé — cible/).parentElement!.textContent!.match(/(\d[.,]\d{2})\s*±/)![1].replace(',', '.'));
+const readTrialPh = () => {
+  const text = screen.getByLabelText('Conséquences du réglage de Acide empâtage').textContent ?? '';
+  const values = text.match(/pH estimé : (\d[.,]\d+) → (\d[.,]\d+)/);
+  if (!values) throw new Error(`Impact pH non trouvé : ${text}`);
+  return [Number(values![1].replace(',', '.')), Number(values![2].replace(',', '.'))] as const;
+};
+function acid(amount: string) {
+  const field = screen.getByRole('textbox', { name: /Dose d’acide.*à l’empâtage/ });
+  fireEvent.change(field, { target: { value: amount } });
+  fireEvent.blur(field);
+}
+
+describe('Imperial stout UI smoke — Doser and live controls', () => {
+  it('reports unavailable alkali, then recovers when bicarbonate is enabled again', () => {
+    const state = mount({ disabled: ALKALINE_SALTS, doses: {} });
+    doser();
+    expect(state().doses.nahco3 ?? 0).toBe(0);
+    expect(screen.getByText(/sels alcalins écartés/)).toBeInTheDocument();
+    expect(screen.getByText(/Profil non atteint/)).toBeInTheDocument();
+    // EAU-SELS-UN-ECRAN : l'interrupteur vit dans la feuille « Minéraux du sel », ouverte par le nom du sel.
+    fireEvent.click(screen.getByRole('button', { name: 'Détail des minéraux de Bicarbonate de soude' }));
+    fireEvent.click(screen.getByRole('switch', { name: 'Bicarbonate de soude — écarté' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Fermer' }));
+    expect(state().disabled).not.toContain('nahco3');
+    doser();
+    expect(state().doses.nahco3).toBeGreaterThan(0);
+    expect(screen.queryByText(/sels alcalins écartés/)).not.toBeInTheDocument();
+    expect(screen.getByText('Profil atteint : 6/6 ions dans les plages.')).toBeInTheDocument();
+    const doses = { ...state().doses };
+    doser();
+    expect(state().doses).toEqual(doses);
+  });
+
+  it('applies an empty mineral proposal and preserves manual acid', () => {
+    const state = mount({ disabled: SALT_IDS, acidOverride: { mash: 2, sparge: 1 } });
+    doser();
+    expect(state().doses).toEqual({});
+    expect(state().acidOverride).toEqual({ mash: 2, sparge: 1 });
+    expect(screen.getByRole('button', { name: 'Proposer les doses' })).toBeEnabled();
+    expect(graph()).toHaveAccessibleName(/Alcalinité/);
+  });
+
+  it.each([0.2, 0.4, 0.9, 5])('ratio %s updates doses without moving the style zones; subsequent manual salts move the slider', (ratio) => {
+    const state = mount();
+    doser(); // The saved fixture predates this solver; plan it before testing idempotence.
+    const before = zones();
+    const slider = screen.getByRole('slider', { name: 'SO₄ ⇄ Cl' });
+    changeWaterRatio(slider, ratio);
+    expect(state().ratioOverride).toBe(ratio);
+    expect(zones()).toEqual(before);
+    const doses = { ...state().doses };
+    doser();
+    expect(state().doses).toEqual(doses);
+    const oldRatio = Number(document.querySelector('[data-ratio-obtained]')!.getAttribute('data-ratio'));
+    click('Ajouter 0,5 g de Chlorure de calcium');
+    expect(readWaterRatio(slider)).toBeLessThan(oldRatio);
+    expect(zones()).toEqual(before);
+  });
+
+  it('records magnesium in the visible draft without a stale zero-magnesium note', () => {
+    const state = mount();
+    expect(screen.getByText(/Mg : 0 ppm dans l’eau/)).toBeInTheDocument();
+    const before = zones();
+    click('Ajouter 0,5 g de Sel d’Epsom');
+    expect(graph()).toHaveAccessibleName(/Magnésium[^)]*\) 1 ppm/);
+    expect(screen.queryByText(/Mg : 0 ppm dans l’eau/)).not.toBeInTheDocument();
+    expect(state().doses.epsom).toBe(0.5);
+    expect(screen.queryByText(/Mg : 0 ppm dans l’eau/)).not.toBeInTheDocument();
+    expect(zones()).toEqual(before);
+  });
+
+  it.each(['lactique', 'phosphorique'] as const)('%s: pH feedback must continue below zero bicarbonate when more acid is entered', (acidId) => {
+    const state = mount({ acidId });
+    // Both doses exceed the initial bicarbonate capacity. The graph must not
+    // invent negative HCO3; the local pH impact must still account for more acid.
+    const initial = readPh();
+    acid('6');
+    expect(graph()).toHaveAccessibleName(/Alcalinité[^)]*\) 0 ppm/);
+    const atSix = readTrialPh();
+    expect(atSix[0]).toBeCloseTo(initial, 2);
+    expect(atSix[1]).toBeLessThan(initial);
+    expect(state().acidOverride?.mash).toBe(6);
+    expect(readPh()).toBeCloseTo(atSix[1], 2);
+    acid('15');
+    const atFifteen = readTrialPh();
+    expect(atFifteen[0]).toBeCloseTo(atSix[1], 2);
+    expect(atFifteen[1]).toBeLessThan(atFifteen[0]);
+    expect(atFifteen[1]).toBeLessThan(5.2);
+    expect(state().acidOverride?.mash).toBe(15);
+    expect(readPh()).toBeCloseTo(atFifteen[1], 2);
+    expect(screen.getByText(/^pH estimé — cible/).parentElement!.querySelector('.ew-hors')).not.toBeNull();
+    doser();
+    expect(screen.getByRole('textbox', { name: /Dose d’acide.*à l’empâtage/ })).toHaveValue('15');
+    click('Revenir aux doses d’acide calculées');
+    expect(readPh()).toBeGreaterThan(atFifteen[1]);
+    // Resetting an acid override preserves weighed salts. Automatic acid must
+    // respect HCO3, even when the separate grist pH estimate is above its band.
+    expect(screen.getByText('Profil atteint : 6/6 ions dans les plages.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Revenir aux doses d’acide calculées' })).not.toBeInTheDocument();
+  });
+
+  it('zero sparge removes its acid input, and zero total water disables Doser', () => {
+    mount({ spargeWaterL: 0 });
+    expect(screen.queryByRole('textbox', { name: /Dose d’acide.*au rinçage/ })).not.toBeInTheDocument();
+    doser();
+    expect(document.body.textContent).not.toMatch(/NaN|Infinity|undefined/);
+    cleanup();
+    mount({ mashWaterL: 0, spargeWaterL: 0 });
+    expect(screen.getByRole('button', { name: 'Proposer les doses' })).toBeDisabled();
+    expect(document.body.textContent).not.toMatch(/NaN|Infinity|undefined/);
+  });
+});
+
+// Open advanced salts for the existing numeric/chemistry regressions.
+function render(...args:Parameters<typeof testingRender>){const view=testingRender(...args);
+  for(const el of view.container.querySelectorAll('summary'))fireEvent.click(el);
+  const unused=screen.queryByRole('button',{name:'Sels autorisés et inutilisés'});if(unused)fireEvent.click(unused);return view;
+}

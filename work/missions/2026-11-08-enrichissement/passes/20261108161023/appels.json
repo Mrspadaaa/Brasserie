@@ -1,0 +1,492 @@
+[
+  {
+    "id": "p01",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Weyermann Pilsner Malt",
+    "chemin": "f4",
+    "garde": {
+      "decision": "recherche",
+      "raison": "malt identifiable (fabricant ou marque ecrits)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 5979,
+        "entree": 695,
+        "sortie": 290,
+        "recherches": 20,
+        "coutMicro": 354022,
+        "reserveMicro": 408290,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 354022,
+    "ms": 5979,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "Weyermann Pilsner Malt",
+      "source": "Weyermann — Fiche technique Weyermann Pilsner Malt",
+      "sourceUrl": "https://www.weyermann.de",
+      "colorEbc": null,
+      "colorEbcMin": 2.5,
+      "colorEbcMax": 4.5,
+      "extractPct": 80.5,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08T16:11:00Z",
+      "note": "Données issues de la fiche technique officielle Weyermann. Le potentiel en PPG n'est pas spécifié par le malteur et doit être calculé à partir du rendement d'extrait.",
+      "grainType": "Base Malt",
+      "usage": "Malt de base tout usage convenant jusqu'à l'intégralité de la mouture pour tous types de bières, particulièrement les lagers, pilsners et ales blondes.",
+      "substitutes": [
+        "Castle Malting Château Pilsen",
+        "Bestmalz BEST Pilsen",
+        "Dingemans Pilsen",
+        "Crisp Best Ale Malt"
+      ]
+    },
+    "facts": {
+      "found": true,
+      "name": "Weyermann Pilsner Malt",
+      "source": "Weyermann — Fiche technique Weyermann Pilsner Malt",
+      "sourceUrl": "https://www.weyermann.de",
+      "colorEbcMin": 2.5,
+      "colorEbcMax": 4.5,
+      "extractPct": 80.5,
+      "retrievedAt": "2026-11-08T16:11:00Z",
+      "note": "Données issues de la fiche technique officielle Weyermann. Le potentiel en PPG n'est pas spécifié par le malteur et doit être calculé à partir du rendement d'extrait. EBC déduit : milieu de la plage publiée 2,5 à 4,5 EBC ; PPG déduit : extrait publié 80,5 % × 0,46 × (1 − 4,5 % d’humidité).",
+      "grainType": "Base Malt",
+      "usage": "Malt de base tout usage convenant jusqu'à l'intégralité de la mouture pour tous types de bières, particulièrement les lagers, pilsners et ales blondes.",
+      "substitutes": [
+        "Castle Malting Château Pilsen",
+        "Bestmalz BEST Pilsen",
+        "Dingemans Pilsen",
+        "Crisp Best Ale Malt"
+      ],
+      "colorEbc": 3.5,
+      "potentialPpg": 35.4
+    },
+    "ecritF4": {
+      "valeurs": {
+        "colorEbc": 3.5,
+        "potentialPpg": 35.4,
+        "technicalSource": "Trouvée en ligne — Weyermann — Fiche technique Weyermann Pilsner Malt"
+      },
+      "source": "Weyermann — Fiche technique Weyermann Pilsner Malt",
+      "url": "https://www.weyermann.de",
+      "deduit": {
+        "colorEbc": "EBC déduit : milieu de la plage publiée 2,5 à 4,5 EBC",
+        "potentialPpg": "PPG déduit : extrait publié 80,5 % × 0,46 × (1 − 4,5 % d’humidité)"
+      }
+    }
+  },
+  {
+    "id": "p08",
+    "famille": "levure",
+    "kind": "levure",
+    "nom": "SafAle US-05",
+    "chemin": "f4",
+    "garde": {
+      "decision": "catalogue",
+      "raison": "le catalogue des levures la rend (sur)"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 10566,
+        "entree": 1408,
+        "sortie": 1287,
+        "recherches": 20,
+        "coutMicro": 364706,
+        "reserveMicro": 417161,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 364706,
+    "ms": 10566,
+    "etat": "repondu",
+    "reponse": {
+      "found": true,
+      "name": "SafAle US-05",
+      "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+      "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+      "technicalFacts": [
+        {
+          "key": "temperature",
+          "reported": "18-26°C",
+          "origin": "ai",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Température idéale de fermentation recommandée par le fabricant",
+          "qualifier": "range",
+          "range": {
+            "min": 18,
+            "max": 26
+          },
+          "unit": "°C"
+        },
+        {
+          "key": "attenuation",
+          "reported": "78-82%",
+          "origin": "ai",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Atténuation apparente sous conditions standards de laboratoire (moût standard à 18°P, 20°C)",
+          "qualifier": "range",
+          "range": {
+            "min": 78,
+            "max": 82
+          },
+          "unit": "%"
+        },
+        {
+          "key": "alcoholTolerance",
+          "reported": "9-11%",
+          "origin": "ai",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Tolérance à l'alcool",
+          "qualifier": "range",
+          "range": {
+            "min": 9,
+            "max": 11
+          },
+          "unit": "%"
+        },
+        {
+          "key": "pitchRate",
+          "reported": "50 to 80 g/hl",
+          "origin": "ai",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Taux d'ensemencement recommandé",
+          "qualifier": "range",
+          "range": {
+            "min": 50,
+            "max": 80
+          },
+          "unit": "g/hl"
+        },
+        {
+          "key": "form",
+          "reported": "sèche",
+          "origin": "ai",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Levure sèche active (E2U)"
+        },
+        {
+          "key": "species",
+          "reported": "Saccharomyces cerevisiae",
+          "origin": "ai",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Ingrédients : levure (Saccharomyces cerevisiae), émulsifiant E491"
+        },
+        {
+          "key": "flocculation",
+          "reported": "Moyen",
+          "origin": "ai",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Temps de sédimentation"
+        },
+        {
+          "key": "pof",
+          "reported": "POF-",
+          "origin": "ai",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Phenolic Off-Flavor négatif"
+        }
+      ],
+      "form": "sèche",
+      "lab": "Fermentis",
+      "strain": "SafAle US-05",
+      "tempMinC": 18
+    },
+    "facts": {
+      "found": true,
+      "name": "SafAle US-05",
+      "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+      "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+      "form": "sèche",
+      "lab": "Fermentis",
+      "strain": "SafAle US-05",
+      "tempMinC": 18,
+      "origin": "ai",
+      "technicalFacts": [
+        {
+          "key": "temperature",
+          "reported": "18-26°C",
+          "origin": "ai",
+          "range": {
+            "min": 18,
+            "max": 26
+          },
+          "unit": "°C",
+          "qualifier": "range",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Température idéale de fermentation recommandée par le fabricant"
+        },
+        {
+          "key": "attenuation",
+          "reported": "78-82%",
+          "origin": "ai",
+          "range": {
+            "min": 78,
+            "max": 82
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Atténuation apparente sous conditions standards de laboratoire (moût standard à 18°P, 20°C)"
+        },
+        {
+          "key": "alcoholTolerance",
+          "reported": "9-11%",
+          "origin": "ai",
+          "range": {
+            "min": 9,
+            "max": 11
+          },
+          "unit": "%",
+          "qualifier": "range",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Tolérance à l'alcool"
+        },
+        {
+          "key": "pitchRate",
+          "reported": "50 to 80 g/hl",
+          "origin": "ai",
+          "range": {
+            "min": 50,
+            "max": 80
+          },
+          "unit": "g/hl",
+          "qualifier": "range",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Taux d'ensemencement recommandé"
+        },
+        {
+          "key": "form",
+          "reported": "sèche",
+          "origin": "ai",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Levure sèche active (E2U)"
+        },
+        {
+          "key": "species",
+          "reported": "Saccharomyces cerevisiae",
+          "origin": "ai",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Ingrédients : levure (Saccharomyces cerevisiae), émulsifiant E491"
+        },
+        {
+          "key": "flocculation",
+          "reported": "Moyen",
+          "origin": "ai",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Temps de sédimentation"
+        },
+        {
+          "key": "pof",
+          "reported": "POF-",
+          "origin": "ai",
+          "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+          "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+          "retrievedAt": "2026-11-08",
+          "context": "Phenolic Off-Flavor négatif"
+        }
+      ],
+      "flocculation": "Moyen"
+    },
+    "ecritF4": {
+      "valeurs": {
+        "yeastLab": "Fermentis",
+        "yeastStrain": "SafAle US-05",
+        "yeastForm": "sèche",
+        "yeastTempMinC": 18,
+        "yeastFlocculation": "Moyen",
+        "yeastTechnicalFacts": [
+          {
+            "key": "temperature",
+            "reported": "18-26°C",
+            "origin": "ai",
+            "range": {
+              "min": 18,
+              "max": 26
+            },
+            "unit": "°C",
+            "qualifier": "range",
+            "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+            "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+            "retrievedAt": "2026-11-08",
+            "context": "Température idéale de fermentation recommandée par le fabricant"
+          },
+          {
+            "key": "attenuation",
+            "reported": "78-82%",
+            "origin": "ai",
+            "range": {
+              "min": 78,
+              "max": 82
+            },
+            "unit": "%",
+            "qualifier": "range",
+            "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+            "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+            "retrievedAt": "2026-11-08",
+            "context": "Atténuation apparente sous conditions standards de laboratoire (moût standard à 18°P, 20°C)"
+          },
+          {
+            "key": "alcoholTolerance",
+            "reported": "9-11%",
+            "origin": "ai",
+            "range": {
+              "min": 9,
+              "max": 11
+            },
+            "unit": "%",
+            "qualifier": "range",
+            "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+            "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+            "retrievedAt": "2026-11-08",
+            "context": "Tolérance à l'alcool"
+          },
+          {
+            "key": "pitchRate",
+            "reported": "50 to 80 g/hl",
+            "origin": "ai",
+            "range": {
+              "min": 50,
+              "max": 80
+            },
+            "unit": "g/hl",
+            "qualifier": "range",
+            "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+            "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+            "retrievedAt": "2026-11-08",
+            "context": "Taux d'ensemencement recommandé"
+          },
+          {
+            "key": "form",
+            "reported": "sèche",
+            "origin": "ai",
+            "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+            "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+            "retrievedAt": "2026-11-08",
+            "context": "Levure sèche active (E2U)"
+          },
+          {
+            "key": "species",
+            "reported": "Saccharomyces cerevisiae",
+            "origin": "ai",
+            "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+            "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+            "retrievedAt": "2026-11-08",
+            "context": "Ingrédients : levure (Saccharomyces cerevisiae), émulsifiant E491"
+          },
+          {
+            "key": "flocculation",
+            "reported": "Moyen",
+            "origin": "ai",
+            "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+            "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+            "retrievedAt": "2026-11-08",
+            "context": "Temps de sédimentation"
+          },
+          {
+            "key": "pof",
+            "reported": "POF-",
+            "origin": "ai",
+            "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+            "sourceUrl": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+            "retrievedAt": "2026-11-08",
+            "context": "Phenolic Off-Flavor négatif"
+          }
+        ],
+        "technicalSource": "Trouvée en ligne — Fermentis — SafAle™ US-05 Fiche Technique"
+      },
+      "source": "Fermentis — SafAle™ US-05 Fiche Technique",
+      "url": "https://fermentis.com/fr/fermentis-product/safale-us-05/",
+      "deduit": {}
+    }
+  },
+  {
+    "id": "x01",
+    "famille": "malt",
+    "kind": "malt",
+    "nom": "Malterie Zorbax Super Pale 77",
+    "chemin": "f4",
+    "garde": {
+      "decision": "nonIdentifiable",
+      "raison": "malt sans fabricant ni marque : a saisir, aucun appel"
+    },
+    "tentatives": [
+      {
+        "model": "gemini-3.8-flash",
+        "ms": 4552,
+        "entree": 707,
+        "sortie": 195,
+        "recherches": 20,
+        "coutMicro": 353154,
+        "reserveMicro": 408317,
+        "etat": "ok"
+      }
+    ],
+    "coutMicro": 353154,
+    "ms": 4552,
+    "etat": "repondu",
+    "reponse": {
+      "found": false,
+      "name": "Malterie Zorbax Super Pale 77",
+      "source": "Inconnu",
+      "sourceUrl": "",
+      "colorEbc": null,
+      "colorEbcMin": null,
+      "colorEbcMax": null,
+      "extractPct": null,
+      "potentialPpg": null,
+      "retrievedAt": "2026-11-08T16:10:00Z",
+      "note": "Aucune malterie ni aucun produit brassicole connu sous le nom « Zorbax » ou « Malterie Zorbax Super Pale 77 ». Veuillez vérifier le nom du fabricant ou fournir une fiche technique valide.",
+      "grainType": "grain",
+      "usage": "",
+      "substitutes": []
+    },
+    "facts": {
+      "found": false,
+      "name": "Malterie Zorbax Super Pale 77",
+      "source": "Inconnu",
+      "sourceUrl": "",
+      "retrievedAt": "2026-11-08T16:10:00Z",
+      "note": "Aucune malterie ni aucun produit brassicole connu sous le nom « Zorbax » ou « Malterie Zorbax Super Pale 77 ». Veuillez vérifier le nom du fabricant ou fournir une fiche technique valide.",
+      "grainType": "grain",
+      "usage": "",
+      "substitutes": []
+    },
+    "ecritF4": null
+  }
+]

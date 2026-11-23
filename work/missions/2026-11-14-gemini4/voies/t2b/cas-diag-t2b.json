@@ -1,0 +1,66 @@
+[
+  {
+    "id": "t2b-diag-1-saison-seche", "usage": "diagnostic", "moitie": "choisir",
+    "context": { "recipe": { "name": "Saison de banc (fictive)", "style": "Saison", "volumeL": 20, "ogTarget": 1.05, "fgTarget": 1.005, "yeast": { "name": "Belle Saison", "lab": "Lallemand", "attenuationPct": 90, "tempMinC": 17, "tempMaxC": 35 } },
+      "currentStep": "fermentation primaire", "phase": "fermentation",
+      "readings": [ { "date": "2026-10-01", "gravity": 1.05, "tempC": 24, "note": "ensemencement" }, { "date": "2026-10-04", "gravity": 1.02, "tempC": 28 }, { "date": "2026-10-08", "gravity": 1.008, "tempC": 29 }, { "date": "2026-10-12", "gravity": 1.005, "tempC": 29 }, { "date": "2026-10-14", "gravity": 1.004, "tempC": 29 } ],
+      "notes": ["Fermentation chaude voulue pour la saison, arômes poivrés propres."] },
+    "expected": { "severity": ["normal"], "severityPartial": [], "attenuationPct": 92, "causePattern": null, "actionPattern": null, "piege": "fausse alerte : 92 % d'atténuation est normal pour Belle Saison" }
+  },
+  {
+    "id": "t2b-diag-2-sous-ensemencement", "usage": "diagnostic", "moitie": "juger",
+    "context": { "recipe": { "name": "Brune de banc (fictive)", "style": "English Brown Ale", "volumeL": 20, "ogTarget": 1.06, "fgTarget": 1.015, "yeast": { "name": "SafAle S-04", "lab": "Fermentis", "attenuationPct": 75, "tempMinC": 15, "tempMaxC": 24 } },
+      "currentStep": "fermentation primaire", "phase": "fermentation",
+      "readings": [ { "date": "2026-10-01", "gravity": 1.06, "tempC": 20, "note": "5 g de S-04 jetés sec dans 20 L" }, { "date": "2026-10-04", "gravity": 1.045, "tempC": 20 }, { "date": "2026-10-07", "gravity": 1.034, "tempC": 20 }, { "date": "2026-10-09", "gravity": 1.032, "tempC": 20 }, { "date": "2026-10-11", "gravity": 1.032, "tempC": 20 } ],
+      "notes": ["Température stable à 20 °C, plus de bulles depuis deux jours."] },
+    "expected": { "severity": ["agir"], "severityPartial": ["surveiller", "urgent"], "attenuationPct": 46.7, "causePattern": "ensemenc|pitch|quantit|levure.{0,30}(insuffis|peu|stress|sous|trop peu)|sous-?dos|5 ?g|sec", "actionPattern": "levure|ensemenc|réensemenc|pitch|remise en suspension|remu|r[ée]chauff|temp[ée]rature" }
+  },
+  {
+    "id": "t2b-diag-3-ale-normale", "usage": "diagnostic", "moitie": "choisir",
+    "context": { "recipe": { "name": "Ale de banc (fictive)", "style": "American Amber Ale", "volumeL": 20, "ogTarget": 1.045, "fgTarget": 1.011, "yeast": { "name": "SafAle US-05", "lab": "Fermentis", "attenuationPct": 78, "tempMinC": 18, "tempMaxC": 26 } },
+      "currentStep": "fermentation primaire", "phase": "fermentation",
+      "readings": [ { "date": "2026-10-01", "gravity": 1.045, "tempC": 18 }, { "date": "2026-10-02", "gravity": 1.04, "tempC": 18 }, { "date": "2026-10-04", "gravity": 1.025, "tempC": 18 }, { "date": "2026-10-07", "gravity": 1.014, "tempC": 18 }, { "date": "2026-10-10", "gravity": 1.011, "tempC": 18 } ],
+      "notes": ["Fermentation un peu lente au début, rien d'inhabituel."] },
+    "expected": { "severity": ["normal"], "severityPartial": ["surveiller"], "attenuationPct": 75.6, "causePattern": null, "actionPattern": null }
+  },
+  {
+    "id": "t2b-diag-4-temperature-haute", "usage": "diagnostic", "moitie": "juger",
+    "context": { "recipe": { "name": "Blonde de banc (fictive)", "style": "Blonde Ale", "volumeL": 20, "ogTarget": 1.048, "fgTarget": 1.01, "yeast": { "name": "SafAle S-04", "lab": "Fermentis", "attenuationPct": 75, "tempMinC": 15, "tempMaxC": 24 } },
+      "currentStep": "fermentation primaire", "phase": "fermentation",
+      "readings": [ { "date": "2026-10-01", "gravity": 1.048, "tempC": 27 }, { "date": "2026-10-02", "gravity": 1.03, "tempC": 29 }, { "date": "2026-10-03", "gravity": 1.014, "tempC": 28 }, { "date": "2026-10-05", "gravity": 1.01, "tempC": 27 } ],
+      "notes": ["Cave à 27 °C par canicule, odeur de solvant et de banane forte au barboteur."] },
+    "expected": { "severity": ["surveiller", "agir"], "severityPartial": [], "attenuationPct": 79.2, "causePattern": "temp|chaud|°C|27|28|29|ester|fusel|haute|canicule", "actionPattern": null }
+  },
+  {
+    "id": "t2b-diag-5-infection", "usage": "diagnostic", "moitie": "choisir",
+    "context": { "recipe": { "name": "Pale de banc (fictive)", "style": "Pale Ale", "volumeL": 20, "ogTarget": 1.048, "fgTarget": 1.012, "yeast": { "name": "SafAle US-05", "lab": "Fermentis", "attenuationPct": 78, "tempMinC": 18, "tempMaxC": 26 } },
+      "currentStep": "fermentation primaire", "phase": "fermentation",
+      "readings": [ { "date": "2026-10-01", "gravity": 1.048, "tempC": 19 }, { "date": "2026-10-06", "gravity": 1.016, "tempC": 19 }, { "date": "2026-10-10", "gravity": 1.012, "tempC": 19 }, { "date": "2026-10-17", "gravity": 1.008, "tempC": 19 }, { "date": "2026-10-24", "gravity": 1.004, "tempC": 19 } ],
+      "notes": ["Voile blanc fin et irrégulier en surface depuis le 17.10, odeur aigre-vinaigre, la densité continue de baisser sous la densité finale visée."] },
+    "expected": { "severity": ["agir", "urgent"], "severityPartial": ["surveiller"], "attenuationPct": 91.7, "causePattern": "infect|contamin|bact[ée]ri|brett|lactobac|pellicule|acétobact|levure sauvage", "actionPattern": "[ée]cart|isol|ne pas (embouteiller|mettre en bouteille|conditionner)|jeter|s[ée]par|ne pas consommer|surveill|go[ûu]t|v[ée]rifi" }
+  },
+  {
+    "id": "t2b-diag-6-latence", "usage": "diagnostic", "moitie": "juger",
+    "context": { "recipe": { "name": "Ambrée de banc (fictive)", "style": "American Amber Ale", "volumeL": 20, "ogTarget": 1.058, "fgTarget": 1.014, "yeast": { "name": "SafAle US-05", "lab": "Fermentis", "attenuationPct": 78, "tempMinC": 18, "tempMaxC": 26 } },
+      "currentStep": "fermentation primaire", "phase": "fermentation",
+      "readings": [ { "date": "2026-10-01 20:00", "gravity": 1.058, "tempC": 19, "note": "ensemencement de 11,5 g réhydratés" }, { "date": "2026-10-02 10:00", "gravity": 1.056, "tempC": 19 } ],
+      "notes": ["Pas de bulles au barboteur après 14 heures."] },
+    "expected": { "severity": ["normal"], "severityPartial": ["surveiller"], "attenuationPct": 3.4, "causePattern": null, "actionPattern": null, "piege": "phase de latence normale à 14 h : pas d'alerte" }
+  },
+  {
+    "id": "t2b-diag-7-lager-lent", "usage": "diagnostic", "moitie": "choisir",
+    "context": { "recipe": { "name": "Pils de banc (fictive)", "style": "Czech Pilsner", "volumeL": 20, "ogTarget": 1.05, "fgTarget": 1.012, "yeast": { "name": "Saflager W-34/70", "lab": "Fermentis", "attenuationPct": 82, "tempMinC": 9, "tempMaxC": 22 } },
+      "currentStep": "fermentation primaire", "phase": "fermentation",
+      "readings": [ { "date": "2026-10-01", "gravity": 1.05, "tempC": 10, "note": "un sachet de 11,5 g réhydraté pour 20 L" }, { "date": "2026-10-05", "gravity": 1.048, "tempC": 10 }, { "date": "2026-10-08", "gravity": 1.04, "tempC": 10 } ],
+      "notes": ["Bulles lentes mais régulières."] },
+    "expected": { "severity": ["surveiller"], "severityPartial": ["normal", "agir"], "attenuationPct": 20, "causePattern": "ensemenc|levure|sous-?dos|quantit|froid|10 ?°C|lent|temp[ée]rature|pitch", "actionPattern": null }
+  },
+  {
+    "id": "t2b-diag-8-bouteilles-trop-tot", "usage": "diagnostic", "moitie": "juger",
+    "context": { "recipe": { "name": "Blonde de banc (fictive)", "style": "Blonde Ale", "volumeL": 20, "ogTarget": 1.048, "fgTarget": 1.01, "yeast": { "name": "SafAle US-05", "lab": "Fermentis", "attenuationPct": 78, "tempMinC": 18, "tempMaxC": 26 } },
+      "currentStep": "mise en bouteilles", "phase": "conditionnement",
+      "readings": [ { "date": "2026-10-01", "gravity": 1.048, "tempC": 19 }, { "date": "2026-10-08", "gravity": 1.022, "tempC": 19 }, { "date": "2026-10-10", "gravity": 1.02, "tempC": 19 } ],
+      "notes": ["Mis en bouteilles le 10.10 avec 8 g/L de sucre, densité 1.020 contre 1.010 visé, bouteilles stockées à 22 °C."] },
+    "expected": { "severity": ["urgent", "agir"], "severityPartial": ["surveiller"], "attenuationPct": 58.3, "causePattern": "densit|pas termin|fermentation|sur-?carbon|pression|sucre|bouteille", "actionPattern": "ouvr|d[ée]gaz|r[ée]frig[ée]r|froid|surveill|pression|stock|cave|explos" }
+  }
+]

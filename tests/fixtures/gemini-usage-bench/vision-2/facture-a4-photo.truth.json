@@ -1,0 +1,93 @@
+{
+  "id": "facture-a4-photo",
+  "level": "très compliqué : facture A4 photographiée de biais, montants TTC, remise, déplacement, payable à 30 jours",
+  "facture": {
+    "vendor": "Atelier Inox Fictif",
+    "documentType": "invoice",
+    "paymentEvidence": [
+      "unpaid",
+      "unknown"
+    ],
+    "date": "02.10.2026",
+    "currency": "CHF",
+    "invoiceNumber": [
+      "F-2026-1042"
+    ],
+    "orderNumber": "CMD-8812",
+    "amountHT": 337.02,
+    "tvaRate": 0.081,
+    "tvaAmount": 27.3,
+    "amountTTC": 364.32,
+    "items": [
+      {
+        "name": "Main d'oeuvre reparation pompe",
+        "kind": [
+          "maintenance",
+          "service"
+        ],
+        "quantity": 2.5,
+        "unit": "h",
+        "price": 95,
+        "amountTTC": 237.5
+      },
+      {
+        "name": "Garniture mecanique 25 mm",
+        "kind": [
+          "maintenance",
+          "equipment"
+        ],
+        "quantity": 1,
+        "unit": "pce",
+        "price": 64,
+        "amountTTC": 64
+      },
+      {
+        "name": "Raccord Tri-Clamp 1.5 pouce",
+        "kind": [
+          "equipment",
+          "maintenance"
+        ],
+        "quantity": 2,
+        "unit": "pce",
+        "price": 18.5,
+        "amountTTC": 37
+      },
+      {
+        "name": "Frais de deplacement",
+        "kind": [
+          "service",
+          "shipping",
+          "maintenance"
+        ],
+        "quantity": 1,
+        "unit": "forfait",
+        "price": 45,
+        "amountTTC": 45
+      },
+      {
+        "name": "Remise fidelite 5 %",
+        "kind": [
+          "discount"
+        ],
+        "quantity": null,
+        "unit": "",
+        "price": null,
+        "amountTTC": -19.18
+      }
+    ]
+  },
+  "triage": {
+    "kind": [
+      "invoice"
+    ],
+    "documentCount": 1,
+    "readable": true,
+    "currencies": [
+      "CHF"
+    ],
+    "route": "scan"
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision-2/facture-a4-photo.jpg",
+  "mimeType": "image/jpeg",
+  "note": "FIXTURE DE TEST – document fictif"
+}

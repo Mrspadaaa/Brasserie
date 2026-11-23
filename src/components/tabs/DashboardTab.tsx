@@ -1,0 +1,427 @@
+import { batchDisplayDate, hasBrewStarted, plannedBrewDate, plannedDateIsPast } from '../../domain/batchSchedule';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  AlertTriangle, Beer, Boxes, Calendar, Check, ChevronDown, ChevronRight,
+  Copy, ShieldCheck, Wallet
+} from 'lucide-react';
+import type { AppConfig, Batch, CreativeItem, StockItem, Transaction } from '../../types';
+import { dansPeriode, enPeriode, titre as titrePeriode, type PeriodeEntree } from '../periode/periode';
+import { compte } from '../../services/plural';
+import { StorageService } from '../../services/storage';
+import { useStorageValue } from '../../hooks/useLiveData';
+import { DateUtils } from '../../services/dateUtils';
+import { FinanceService } from '../../services/financeService';
+import { formatCHF, summarizeLedger, todayISO } from '../../domain/finance/ledger';
+import { buildForecast, forecastHorizonEnd, pointBasAVenir } from '../../domain/finance/forecast';
+import { ajouterJours } from '../../domain/finance/brewForecast';
+import { duneSemaine, evenementsAgenda, evenementsBrassins, semainesDe } from '../../domain/calendrier';
+import { isCurrent } from '../../domain/catalogOrganization';
+import { statusOfBatch } from '../../domain/batchStatus';
+import { articlesACommander } from '../../domain/stockLevel';
+import { libellesSources } from '../../domain/stock/disponibilite';
+import { levuresADateProche } from '../../domain/stock/durabilite';
+import { fermentationReadings } from '../../domain/fermentationReadings';
+import { joursDepuisBrassage } from '../../domain/productionInsights';
+
+interface DashboardTabProps {
+  transactions: Transaction[];
+  batches: Batch[];
+  stocks: { rawMaterials: StockItem[]; cleaning: StockItem[] };
+  config: AppConfig;
+  globalTimeFilter: PeriodeEntree;
+  onNavigateTab: (tab: 'finances' | 'calendrier' | 'production' | 'stocks' | 'clients') => void;
+  onOpenBatch: (batchId: string) => void;
+  onNavigateToCreativeLab: () => void;
+}
+
+const readRecipes = () => StorageService.getRecipes();
+const quantity = new Intl.NumberFormat('fr-CH', { maximumFractionDigits: 3 });
+const gravity = new Intl.NumberFormat('fr-CH', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+const rowAction = 'flex w-full min-h-7 items-center gap-2 px-2 py-1 text-left hover:bg-cave-850';
+const smallAction = 'inline-flex min-h-7 items-center justify-center gap-1 rounded-control px-2 text-2xs font-semibold hover:bg-cave-850';
+const summaryAction = 'flex min-h-8 cursor-pointer list-none items-center gap-2 px-2 py-1.5';
+const dateOrder = (date?: string) => DateUtils.parseDate(date || '')?.getTime() ?? Infinity;
+/** Un événement daté avant aujourd'hui et pas fait est en retard : la ligne le dit avec sa date, jamais un compteur de jours (E08). */
+function estEnRetard(item: CreativeItem, aujourdhui: string): boolean {
+  const jour = DateUtils.parseDate(item.date || ''), ref = DateUtils.parseDate(aujourdhui);
+  return item.status !== 'done' && !!jour && !!ref && jour.getTime() < ref.getTime();
+}
+function displayDate(value?: string) {
+  const date = DateUtils.parseDate(value || '');
+  return date ? date.toLocaleDateString('fr-CH') : value || 'Date à préciser';
+}
+
+/** Le seuil est le repère affiché, pas une capacité ou une couverture supposée. */
+function StockThreshold({ item }: { item: StockItem }) {
+  if (!Number.isFinite(item.currentStock) || !Number.isFinite(item.minStock) || item.minStock <= 0) return null;
+  const width = Math.min(1, Math.max(0, item.currentStock / item.minStock)) * 40;
+  return <svg aria-hidden="true" viewBox="0 0 40 6" className="h-1.5 w-10 shrink-0">
+    <rect y="1" width="40" height="4" rx="1" className="fill-cave-700" />
+    <rect y="1" width={width} height="4" rx="1" className="fill-attention" />
+    <path d="M39.5 0v6" className="stroke-cave-200" />
+  </svg>;
+}
+
+/** A batch row always uses saved observations, at every viewport width. */
+function BatchRow({ batch, onOpen }: { batch: Batch; onOpen: (id: string) => void }) {
+  const status = statusOfBatch(batch);
+  const reading = fermentationReadings(batch);
+  const days = joursDepuisBrassage(batch);
+  const planned = batch.status === 'planifie';
+  return <button type="button" onClick={() => onOpen(batch.id)} className={rowAction}>
+    <span className="min-w-0 flex-1">
+      <span className="flex flex-wrap items-baseline justify-between gap-x-2 leading-4">
+        <strong className="break-words font-semibold text-cave-50">{batch.name}</strong>
+        <span className="text-xs text-cave-400">{batch.id}</span>
+      </span>
+      <span className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
+        <span className={`rounded border px-1 ${status.chip}`} title={status.hint}>
+          <span className="text-cave-50">{status.label}</span>
+        </span>
+        {planned
+          ? <span className="text-cave-200">{batchDisplayDate(batch) ? displayDate(batchDisplayDate(batch)) : 'Date à définir'} · {quantity.format(batch.volumeL)} L</span>
+          : <>
+            <span className="text-cave-400">{days === undefined ? 'Date à préciser' : days < 0 ? 'Date future à vérifier' : `J+${days}`}</span>
+            <span className="font-mono text-2xs text-cave-200">
+              {reading.latest === undefined ? 'Densité non relevée' : `Densité ${gravity.format(reading.latest)}`}
+            </span>
+          </>}
+      </span>
+    </span>
+    <ChevronRight size={14} className="shrink-0 text-area-production" aria-hidden="true" />
+  </button>;
+}
+
+/** Existing administrative reminders; checking one records the user's follow-up only. */
+function administrativeReminders(config: AppConfig) {
+  return [
+    {
+      id: 'ofdf', title: 'Impôt fédéral sur la bière — Taxas',
+      description: 'Selon le régime OFDF confirmé : déclaration dans les 20 jours et paiement dans les 30 jours après la fin du trimestre ou de l’année. La réserve de l’app ne remplace pas les relevés de sorties.',
+      deadline: 'Régime OFDF à confirmer'
+    },
+    {
+      id: 'tva', title: 'Décompte TVA Trimestriel AFC',
+      description: config.fiscal.isTvaRegistered ? 'Bière alcoolisée : taux normal de 8,1 %. Décompte selon la méthode et la périodicité confirmées auprès de l’AFC.' : 'Brasserie non assujettie : aucune TVA facturée ni récupérée. Surveiller l’évolution de la situation.',
+      deadline: config.fiscal.isTvaRegistered ? 'Selon le régime AFC' : 'Non assujettie'
+    },
+    {
+      id: 'saav', title: 'Autocontrôle & Hygiène SAAV Fribourg',
+      description: 'Plan HACCP de sécurité alimentaire, traçabilité des lots et hygiène de la salle de brassage',
+      deadline: 'Permanent'
+    },
+    {
+      id: 'patente_b', title: 'Patente Cantonale B (Police du Commerce)',
+      description: 'Si une patente de commerce au détail s’applique : 2 % du chiffre d’affaires concerné de l’année précédente, minimum 100 CHF. Vérifier la décision cantonale.',
+      deadline: 'Selon la décision cantonale'
+    },
+    {
+      id: 'metas', title: 'Contrôle Métrologique des Instruments (METAS)',
+      description: 'Étalonnage des balances et manomètres officiels utilisés pour le pesage et le conditionnement',
+      deadline: 'Contrôle bisannuel'
+    },
+    {
+      id: 'fiscale', title: 'Clôture Comptable & Déclaration Fiscale Fribourg',
+      description: 'Bilan et compte d’exploitation de l’activité indépendante pour les impôts cantonaux',
+      deadline: '31 mars'
+    }
+  ];
+}
+
+export const DashboardTab: React.FC<DashboardTabProps> = ({
+  transactions, batches, stocks, config, globalTimeFilter, onNavigateTab, onOpenBatch,
+  onNavigateToCreativeLab
+}) => {
+  const creativeItems = useStorageValue(StorageService.getCreativeItems);
+  const financeProfile = useStorageValue(FinanceService.getProfile);
+  const financePayments = useStorageValue(FinanceService.getPayments);
+  const financePlans = useStorageValue(FinanceService.getPlans);
+  const financeAssets = useStorageValue(FinanceService.getAssets);
+  const [showAllBatches, setShowAllBatches] = useState(false);
+  const [completedDeadlines, setCompletedDeadlines] = useState<Record<string, boolean>>(
+    () => StorageService.getUiState('dashboard_completed_deadlines', {})
+  );
+  const [copyState, setCopyState] = useState<'idle' | 'copying' | 'copied' | 'error'>('idle');
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(copyTimer.current), []);
+
+  const activeBatches = useMemo(() => batches.filter(batch =>
+    isCurrent(batch) && (batch.status === 'fermentation' || batch.status === 'garde')
+  ), [batches]);
+  const plannedBatches = useMemo(() => batches.filter(batch =>
+    isCurrent(batch) && batch.status === 'planifie' && !hasBrewStarted(batch)
+  ).sort((a, b) => dateOrder(batchDisplayDate(a)) - dateOrder(batchDisplayDate(b))), [batches]);
+  const brewingBatches = useMemo(() => batches.filter(batch =>
+    isCurrent(batch) && batch.status === 'planifie' && hasBrewStarted(batch)
+  ), [batches]);
+  // Le même comptage que Stocks et que le badge de la barre du bas (test en ligne n° 49) : `articlesACommander`.
+  const recettes = useStorageValue(readRecipes);
+  const aCommander = useMemo(() => articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recettes)
+    .sort((a, b) => Number(b.rupture) - Number(a.rupture)), [stocks, batches, recettes]);
+  const itemsToOrder = useMemo(() => aCommander.map(({ item, missing, sources }) => ({ ...item, missing, sources })), [aCommander]);
+  // AM-56 : une levure périmée (ou à moins de 30 jours de l'être) se voit ici, avant de brasser.
+  const levuresDatees = useMemo(() => levuresADateProche(stocks.rawMaterials, todayISO()), [stocks.rawMaterials]);
+  const ruptures = aCommander.filter(a => a.rupture).length;
+  const events = useMemo(() => creativeItems.filter(item => item.type === 'event')
+    .sort((a, b) => Number(a.status === 'done') - Number(b.status === 'done') ||
+      dateOrder(a.date) - dateOrder(b.date)), [creativeItems]);
+  const pendingEvents = events.filter(item => item.status !== 'done');
+  const jourJ = todayISO();
+  /* « Cette semaine au calendrier » (onglet/v1) : ce que le calendrier pose cette semaine, lu des mêmes brassins et événements que lui (les échéances de Finances ne s'y comptent pas : sans ligne, le Bord n'affirme pas « rien »). */
+  const cetteSemaine = useMemo(() => {
+    const aujourdhui = todayISO(), semaines = semainesDe(aujourdhui);
+    return duneSemaine([...evenementsBrassins(batches, semaines, aujourdhui, batch => joursDepuisBrassage(batch)), ...evenementsAgenda(creativeItems, semaines)], 0);
+  }, [batches, creativeItems]);
+
+  const periodTxs = useMemo(() => transactions.filter(tx =>
+    dansPeriode(tx.date, globalTimeFilter)), [transactions, globalTimeFilter]);
+  const ledger = useMemo(() => summarizeLedger(transactions, financePayments, financeProfile),
+    [transactions, financePayments, financeProfile]);
+  const periodLedger = useMemo(() => summarizeLedger(periodTxs, financePayments, financeProfile),
+    [periodTxs, financePayments, financeProfile]);
+  const periodNet = periodLedger.incomeCents - periodLedger.expenseCents;
+  /* K4 (21.11) : une seule caisse. Le point le plus bas à venir se lit sur le même calcul que Finances › Prévisions (buildForecast avec
+     brassins, stock et registre ; même horizon par défaut, 90 jours) ; solde inconnu : rien d'écrit, jamais 0. */
+  const pointBas = useMemo(() => {
+    const asOf = todayISO();
+    const prevision = buildForecast({ transactions, payments: financePayments ?? [], plans: financePlans ?? [], profile: financeProfile, assets: financeAssets ?? [], asOf, months: 13,
+      batches, stockItems: [...stocks.rawMaterials, ...stocks.cleaning] });
+    return pointBasAVenir(prevision, asOf, ajouterJours(forecastHorizonEnd(asOf, 90), -1));
+  }, [transactions, financePayments, financePlans, financeProfile, financeAssets, batches, stocks]);
+  /* CT4-A-5 : la Synthèse de Finances lit « Dépensé » sans le matériel et les travaux (un investissement, « à part ») ; les Charges du Bord les comptent. Le Bord le dit au lieu d'afficher deux chiffres muets pour le même mois. */
+  const materielCents = useMemo(() => summarizeLedger(periodTxs.filter(tx => tx.category === 'materiel' || tx.category === 'renovation'), financePayments, financeProfile).expenseCents,
+    [periodTxs, financePayments, financeProfile]);
+  const periodLabel = titrePeriode(enPeriode(globalTimeFilter));
+  const reminders = administrativeReminders(config);
+  const remainingReminders = reminders.filter(item => !completedDeadlines[item.id]).length;
+
+  async function copyShoppingList() {
+    clearTimeout(copyTimer.current);
+    setCopyState('copying');
+    const text = [
+      "LISTE DE RÉAPPROVISIONNEMENT — L'AFFINÉE",
+      `Date : ${new Date().toLocaleDateString('fr-CH')}`,
+      'Quantités pour retrouver le seuil de stock.',
+      ...itemsToOrder.map(item =>
+        `- ${item.name} : ${item.missing > 0 ? `manque ${quantity.format(item.missing)} ${item.unit}` : 'seuil atteint, quantité à définir'}${item.supplier ? ` (${item.supplier})` : ''}`
+      )
+    ].join('\n');
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyState('copied');
+      copyTimer.current = setTimeout(() => setCopyState('idle'), 2500);
+    } catch {
+      setCopyState('error');
+    }
+  }
+
+  function toggleEvent(item: CreativeItem) {
+    StorageService.updateCreativeItem({ ...item, status: item.status === 'done' ? 'todo' : 'done' });
+  }
+
+  function toggleDeadline(id: string) {
+    const updated = { ...completedDeadlines, [id]: !completedDeadlines[id] };
+    setCompletedDeadlines(updated);
+    StorageService.setUiState('dashboard_completed_deadlines', updated);
+  }
+
+  return <div className="space-y-2 pt-1 pb-1 text-sm">
+    {/*
+      Le titre reste pour les lecteurs d'écran, pas à l'écran : « À la brasserie »
+      ne disait rien que l'onglet actif ne dise déjà, et coûtait une rangée aux
+      brassins et aux stocks. La saisie rapide et la création de brassin, elles,
+      vivent dans le bouton d'action flottant, présent sur tous les écrans.
+    */}
+    <h1 className="sr-only">À la brasserie</h1>
+
+    <div className="grid gap-2 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start">
+        <section aria-labelledby="dashboard-production" className="order-1 min-w-0 rounded-panel border border-area-production/30 bg-cave-900">
+          <div className="flex min-h-8 flex-wrap items-center gap-x-2 rounded-t-panel bg-area-production/10 px-2">
+            <Beer size={16} className="shrink-0 text-area-production" aria-hidden="true" />
+            <h2 id="dashboard-production" className="flex-1 font-semibold text-area-production">Brassins</h2>
+            <span className="text-xs text-cave-200">{brewingBatches.length > 0 && `${brewingBatches.length} en brassage · `}{activeBatches.length} en cuve</span>
+            <button type="button" onClick={() => onNavigateTab('production')} className={`${smallAction} text-area-production`}>Tous<ChevronRight size={12} aria-hidden="true" /></button>
+          </div>
+          <div className="divide-y divide-cave-800">
+            {brewingBatches.map(batch => <BatchRow key={batch.id} batch={batch} onOpen={onOpenBatch} />)}
+            {(showAllBatches ? activeBatches : activeBatches.slice(0, 4)).map(batch =>
+              <BatchRow key={batch.id} batch={batch} onOpen={onOpenBatch} />)}
+          </div>
+          {!activeBatches.length && <p className="px-2 py-2 text-cave-400">Aucun brassin en cuve.</p>}
+          {activeBatches.length > 4 && <button type="button" onClick={() => setShowAllBatches(value => !value)}
+            aria-expanded={showAllBatches} className={`${smallAction} text-area-production`}>
+            {showAllBatches ? 'Réduire la liste' : `Voir les ${activeBatches.length - 4} autres en cuve`}
+            <ChevronDown size={14} className={showAllBatches ? 'rotate-180' : ''} aria-hidden="true" />
+          </button>}
+          {plannedBatches.length > 0 && <details className="group/planned border-t border-cave-800">
+            <summary className={`${summaryAction} text-2xs`}>
+              <Calendar size={14} className="shrink-0 text-area-production" aria-hidden="true" />
+              <span className="min-w-0 flex-1">
+                <span className="font-semibold text-area-production">À brasser · {plannedBatches.length}</span>
+                <span className="ml-2 text-cave-200">{plannedBatches[0].name}</span>
+                <span className="block text-xs text-cave-400">{plannedBrewDate(plannedBatches[0]) ? `Prévu le ${displayDate(plannedBrewDate(plannedBatches[0]))}${plannedDateIsPast(plannedBatches[0]) ? ' · date dépassée' : ''}` : 'Date à définir'}</span>
+              </span>
+              <ChevronDown size={14} className="shrink-0 text-area-production group-open/planned:rotate-180" aria-hidden="true" />
+            </summary>
+            <div className="divide-y divide-cave-800">{plannedBatches.map(batch =>
+              <BatchRow key={batch.id} batch={batch} onOpen={onOpenBatch} />)}</div>
+          </details>}
+        </section>
+
+
+        <section aria-labelledby="dashboard-stocks" className="order-2 min-w-0 rounded-panel border border-area-stocks/30 bg-cave-900">
+          <div className="flex min-h-8 flex-wrap items-center gap-x-2 rounded-t-panel bg-area-stocks/10 px-2">
+            <Boxes size={16} className="shrink-0 text-area-stocks" aria-hidden="true" />
+            <h2 id="dashboard-stocks" className="flex-1 font-semibold text-area-stocks">Stocks</h2>
+            <button type="button" onClick={() => onNavigateTab('stocks')} className={`${smallAction} text-area-stocks`}>Voir<ChevronRight size={12} aria-hidden="true" /></button>
+          </div>
+          {levuresDatees.length > 0 && <div className="divide-y divide-cave-800 border-b border-cave-800">
+            {levuresDatees.slice(0, 2).map(({ item, statut, texte }) => <button type="button" key={item.id || item.ref}
+              onClick={() => onNavigateTab('stocks')} className={rowAction}>
+              <AlertTriangle size={14} className={`shrink-0 ${statut === 'perime' ? 'text-alert-strong' : 'text-attention'}`} aria-hidden="true" />
+              <span className="min-w-0 flex-1 break-words font-semibold leading-4 text-cave-50">{item.name}</span>
+              <span className={`shrink-0 text-right text-xs ${statut === 'perime' ? 'text-alert-strong' : 'text-attention'}`}>{texte}</span>
+            </button>)}
+            {levuresDatees.length > 2 && <button type="button" onClick={() => onNavigateTab('stocks')}
+              className={`${smallAction} text-area-stocks`}>{compte(levuresDatees.length - 2, 'autre levure', 'autres levures')} à date proche<ChevronRight size={14} aria-hidden="true" /></button>}
+          </div>}
+          {itemsToOrder.length === 0
+            ? <p className="flex items-center gap-2 px-2 py-2 text-2xs text-cave-200"><Check size={14} className="text-area-stocks" aria-hidden="true" />Stocks suffisants</p>
+            : <>
+              <div className="flex flex-wrap items-center gap-x-2 px-2 py-1 text-xs">
+                <span className="text-attention">{compte(itemsToOrder.length, 'article')} à commander</span>
+                {ruptures > 0 && <span className="inline-flex items-center gap-1 font-semibold text-alert-strong"><AlertTriangle size={12} aria-hidden="true" />{compte(ruptures, 'rupture')}</span>}
+              </div>
+              <div className="divide-y divide-cave-800">
+                {itemsToOrder.slice(0, 3).map(item => <button type="button" key={item.id || item.ref}
+                  onClick={() => onNavigateTab('stocks')} className={rowAction}>
+                  <span className="min-w-0 flex-1">
+                    <strong className="block break-words font-semibold leading-4 text-cave-50">{item.name}</strong>
+                    <span className="flex flex-wrap items-center gap-x-1 text-xs text-cave-400">
+                      <StockThreshold item={item} />
+                      <span>Stock {quantity.format(item.currentStock)} / seuil {quantity.format(item.minStock)} {item.unit}</span>
+                    </span>
+                    {/* CT4-A-6 : le manque vient d'un brassin ou d'une recette qui prévoit plus que le stock, pas du seuil : le Bord le dit, comme Stocks. */}
+                    {item.missing > 0 && item.sources.length > 0 && <span data-bord-raison className="block break-words text-xs text-cave-400">manque {quantity.format(item.missing)} {item.unit} pour {libellesSources(item.sources).join(' · ')}</span>}
+                  </span>
+                  <span className={`shrink-0 text-right text-xs ${item.currentStock <= 0 ? 'text-alert-strong' : 'text-attention'}`}>
+                    <span className="block">{item.currentStock <= 0 ? 'Rupture' : item.missing > 0 ? 'À compléter' : 'Seuil atteint'}</span>
+                    {item.missing > 0 && <span className="font-mono text-2xs">+{quantity.format(item.missing)} {item.unit}</span>}
+                  </span>
+                </button>)}
+              </div>
+              {itemsToOrder.length > 3 && <button type="button" onClick={() => onNavigateTab('stocks')}
+                className={`${smallAction} text-area-stocks`}>Voir les {itemsToOrder.length - 3} autres articles<ChevronRight size={14} aria-hidden="true" /></button>}
+              <div className="border-t border-cave-800 px-1 py-0.5">
+                <button type="button" onClick={copyShoppingList} disabled={copyState === 'copying'}
+                  className={`${smallAction} text-area-stocks disabled:opacity-50`}>
+                  {copyState === 'copied' ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
+                  {copyState === 'copying' ? 'Copie…' : copyState === 'copied' ? 'Liste copiée' : copyState === 'error' ? 'Réessayer la copie' : 'Copier la liste'}
+                </button>
+                {copyState === 'copied' && <span role="status" className="sr-only">Liste copiée dans le presse-papiers.</span>}
+                {copyState === 'error' && <p role="alert" className="px-1 pb-1 text-xs text-alert-strong">Copie impossible. Autorisez le presse-papiers puis réessayez.</p>}
+              </div>
+            </>}
+        </section>
+
+        <section aria-label="Finances" className="order-3 min-w-0 rounded-panel border border-area-finances/30 bg-cave-900">
+          <details className="group/finance">
+            <summary className={`${summaryAction} rounded-panel bg-area-finances/10`}>
+              <Wallet size={16} className="shrink-0 self-start mt-0.5 text-area-finances" aria-hidden="true" />
+              <span className="min-w-0 flex-1">
+                <span className="flex flex-wrap items-baseline justify-between gap-x-2">
+                  <span className="font-semibold text-area-finances">Finances</span>
+                  <span className="text-xs text-cave-200">{periodLabel}</span>
+                </span>
+                <span className="mt-0.5 flex flex-wrap justify-between gap-x-2 text-2xs">
+                  <span className="text-cave-200">Charges</span>
+                  <span className="font-mono text-cave-50">{formatCHF(periodLedger.expenseCents)}</span>
+                </span>
+                {pointBas && <span data-point-bas className="mt-0.5 flex flex-wrap justify-between gap-x-2 text-2xs">
+                  <span className="text-cave-200">Point le plus bas</span>
+                  <span className={`font-mono ${pointBas.soldeCents < 0 ? 'text-alert-strong' : 'text-cave-50'}`}>{pointBas.partiel ? 'au plus ' : pointBas.estime ? '≈ ' : ''}{formatCHF(pointBas.soldeCents).replace('-', '−')} · {pointBas.date.slice(8, 10)}.{pointBas.date.slice(5, 7)} · horizon 90 j</span>
+                </span>}
+                {materielCents > 0 && <span data-charges-materiel className="mt-0.5 block text-2xs text-cave-400">dont matériel {formatCHF(materielCents)}, à part dans Finances</span>}
+              </span>
+              <ChevronDown size={14} className="shrink-0 text-area-finances group-open/finance:rotate-180" aria-hidden="true" />
+            </summary>
+            <div className="px-2 pb-1">
+              <dl className="divide-y divide-cave-800 text-2xs">
+                {[
+                  ['Recettes de la période', formatCHF(periodLedger.incomeCents)],
+                  ['Résultat de la période', formatCHF(periodNet)],
+                  ['Trésorerie suivie', ledger.cashCents == null ? 'À initialiser' : formatCHF(ledger.cashCents)],
+                  ['Apports privés depuis le début', formatCHF(ledger.contributionCents)]
+                ].map(([label, value]) => <div key={label} className="flex flex-wrap items-baseline justify-between gap-x-2 py-1">
+                  <dt className="text-cave-200">{label}</dt>
+                  <dd className={`max-w-full break-words text-right font-mono ${label === 'Résultat de la période' && periodNet < 0 ? 'text-alert-strong' : 'text-cave-50'}`}>{value}</dd>
+                </div>)}
+              </dl>
+              {!ledger.cashComplete && <p className="py-1 text-xs text-attention">Solde initial et paiements à compléter.</p>}
+              <button type="button" onClick={() => onNavigateTab('finances')} className={`${smallAction} text-area-finances`}>Ouvrir les finances<ChevronRight size={14} aria-hidden="true" /></button>
+            </div>
+          </details>
+        </section>
+
+        <section aria-labelledby="dashboard-agenda" className="order-4 min-w-0 rounded-panel border border-area-agenda/30 bg-cave-900">
+          <div className="flex min-h-8 flex-wrap items-center gap-x-2 rounded-t-panel bg-area-agenda/10 px-2">
+            <Calendar size={16} className="shrink-0 text-area-agenda" aria-hidden="true" />
+            <h2 id="dashboard-agenda" className="flex-1 font-semibold text-area-agenda">Agenda</h2>
+            <span className="text-xs text-cave-200">{pendingEvents.length} à faire</span>
+            <button type="button" onClick={onNavigateToCreativeLab} className={`${smallAction} text-area-agenda`}>Gérer<ChevronRight size={12} aria-hidden="true" /></button>
+          </div>
+          {/* Onglet/v1 : « Bord ne bouge pas » — le calendrier se lit d'une ligne dans la carte Agenda, sans carte de plus ni rien déplacé. */}
+          <button type="button" onClick={() => onNavigateTab('calendrier')} aria-label="Cette semaine au calendrier" aria-describedby="bord-cal-resume" className="flex min-h-[52px] w-full items-center gap-2 border-b border-cave-800 px-2 py-1 text-left hover:bg-cave-850">
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold text-cave-50">Cette semaine au calendrier</span>
+              <span id="bord-cal-resume" className="block truncate text-xs text-cave-200">{cetteSemaine.length
+                ? `${cetteSemaine.length} cette semaine : ${cetteSemaine.slice(0, 2).map(e => e.titre).join(', ')}${cetteSemaine.length > 2 ? '…' : ''}`
+                : 'rien de posé · voir les six semaines'}</span>
+            </span>
+            <ChevronRight size={16} className="shrink-0 text-cave-400" aria-hidden="true" />
+          </button>
+          {events.length === 0 && <p className="px-2 py-2 text-2xs text-cave-400">Aucune tâche prévue.</p>}
+          <div className="divide-y divide-cave-800">
+            {events.slice(0, 3).map(item => <label key={item.id} className="flex min-h-8 cursor-pointer items-center gap-2 px-2 py-1">
+              <input type="checkbox" checked={item.status === 'done'} onChange={() => toggleEvent(item)}
+                className="h-4 w-4 shrink-0 accent-area-agenda" />
+              <span className="min-w-0 flex-1">
+                <span className={`block break-words text-2xs ${item.status === 'done' ? 'text-cave-400 line-through' : 'text-cave-50'}`}>{item.title}</span>
+                {item.date && <span className="block text-xs text-cave-400">{displayDate(item.date)}{estEnRetard(item, jourJ) && <> · <b className="font-semibold text-attention">en retard</b></>}</span>}
+              </span>
+              {item.status === 'done' && <span className="text-xs text-cave-400">Fait</span>}
+            </label>)}
+          </div>
+          {events.length > 3 && <button type="button" onClick={onNavigateToCreativeLab} className={`${smallAction} text-area-agenda`}>Voir tout l’agenda<ChevronRight size={14} aria-hidden="true" /></button>}
+        </section>
+
+        <section aria-label="Échéances et démarches" className="order-5 lg:col-start-2 min-w-0 rounded-panel border border-area-agenda/30 bg-cave-900">
+          <details className="group/reminders">
+            <summary className={`${summaryAction} rounded-panel bg-area-agenda/10`}>
+              <ShieldCheck size={16} className="shrink-0 text-area-agenda" aria-hidden="true" />
+              <span className="min-w-0 flex-1">
+                <span className="block font-semibold text-area-agenda">Échéances et démarches</span>
+                <span className="block text-xs text-cave-200">{compte(remainingReminders, 'point')} à suivre · Fribourg / OFDF</span>
+              </span>
+              <ChevronDown size={14} className="shrink-0 text-area-agenda group-open/reminders:rotate-180" aria-hidden="true" />
+            </summary>
+            <div className="divide-y divide-cave-800 px-2">
+              {reminders.map(item => <div key={item.id} className="py-1">
+                <label className="flex min-h-6 cursor-pointer items-center gap-2">
+                  <input type="checkbox" checked={!!completedDeadlines[item.id]} onChange={() => toggleDeadline(item.id)}
+                    className="h-4 w-4 shrink-0 accent-area-agenda" />
+                  <span className={`min-w-0 text-2xs ${completedDeadlines[item.id] ? 'text-cave-400 line-through' : 'text-cave-50'}`}>{item.title}</span>
+                </label>
+                <details className="group/reminder ml-6">
+                  <summary className="flex min-h-6 cursor-pointer list-none items-center justify-between gap-2 text-xs text-cave-200">
+                    {item.deadline}<ChevronDown size={12} className="shrink-0 text-area-agenda group-open/reminder:rotate-180" aria-hidden="true" />
+                  </summary>
+                  <p className="pb-1 text-sm text-cave-200">{item.description}</p>
+                </details>
+              </div>)}
+            </div>
+          </details>
+        </section>
+    </div>
+  </div>;
+};

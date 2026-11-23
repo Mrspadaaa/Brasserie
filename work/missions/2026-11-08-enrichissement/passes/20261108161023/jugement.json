@@ -1,0 +1,201 @@
+{
+  "juges": [
+    {
+      "id": "p01",
+      "nom": "Weyermann Pilsner Malt",
+      "famille": "malt",
+      "groupe": "phare",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.354022,
+      "ms": 5979,
+      "essais": 1,
+      "verdict": "ok",
+      "champs": [
+        {
+          "champ": "colorEbc",
+          "attendu": {
+            "plage": [
+              2.5,
+              4.5
+            ]
+          },
+          "rendu": {
+            "plage": [
+              2.5,
+              4.5
+            ],
+            "valeur": 3.5,
+            "deduit": true
+          },
+          "verdict": "juste"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "racine-producteur",
+        "hote": "weyermann.de",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "p08",
+      "nom": "SafAle US-05",
+      "famille": "levure",
+      "groupe": "phare",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.364706,
+      "ms": 10566,
+      "essais": 1,
+      "verdict": "a-corriger",
+      "champs": [
+        {
+          "champ": "attenuationPct",
+          "attendu": {
+            "plage": [
+              78,
+              82
+            ]
+          },
+          "rendu": {
+            "plage": [
+              78,
+              82
+            ]
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "tempC",
+          "attendu": {
+            "plage": [
+              18,
+              26
+            ]
+          },
+          "rendu": {
+            "plage": [
+              18,
+              26
+            ]
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "alcoholTolerancePct",
+          "attendu": {
+            "plage": [
+              9,
+              11
+            ]
+          },
+          "rendu": {
+            "plage": [
+              9,
+              11
+            ]
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "flocculation",
+          "attendu": {
+            "texte": "medium"
+          },
+          "rendu": {
+            "texte": "Moyen"
+          },
+          "verdict": "faux"
+        },
+        {
+          "champ": "lab",
+          "attendu": {
+            "texte": "fermentis"
+          },
+          "rendu": {
+            "texte": "Fermentis"
+          },
+          "verdict": "juste"
+        },
+        {
+          "champ": "form",
+          "attendu": {
+            "texte": "sèche"
+          },
+          "rendu": {
+            "texte": "sèche"
+          },
+          "verdict": "juste"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "producteur",
+        "hote": "fermentis.com",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x01",
+      "nom": "Malterie Zorbax Super Pale 77",
+      "famille": "malt",
+      "groupe": "piege",
+      "chemin": "f4",
+      "statutVerite": "piege",
+      "coutChf": 0.353154,
+      "ms": 4552,
+      "essais": 1,
+      "verdict": "introuvable-a-raison",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-url"
+      },
+      "violeM2": false,
+      "inventes": 0
+    }
+  ],
+  "synthese": {
+    "produits": 3,
+    "appeles": 3,
+    "parVerdict": {
+      "ok": 1,
+      "a-corriger": 1,
+      "introuvable-a-raison": 1
+    },
+    "parChamp": {
+      "juste": 6,
+      "dans-la-plage": 0,
+      "faux": 1,
+      "invente": 0,
+      "absent-a-raison": 0,
+      "absent-a-tort": 0,
+      "non-verifie": 0
+    },
+    "parSource": {
+      "racine-producteur": 1,
+      "producteur": 1
+    },
+    "inventes": 0,
+    "violationsM2": 0,
+    "introuvablesATort": 0,
+    "introuvablesARaison": 1,
+    "coutTotalChf": 1.071882,
+    "coutParAppel": {
+      "moyen": 0.357294,
+      "mediane": 0.354022,
+      "max": 0.364706
+    },
+    "duree": {
+      "moyenneMs": 7032,
+      "p95Ms": 10566,
+      "maxMs": 10566
+    },
+    "aReverifier": 0
+  }
+}

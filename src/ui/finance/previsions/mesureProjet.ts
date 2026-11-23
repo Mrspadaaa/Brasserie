@@ -1,0 +1,75 @@
+import type { Batch, StockItem } from '../../../types';
+import type { FinanceForecast } from '../../../domain/finance/forecast';
+import { estimerBrassinsPlanifies } from '../../../domain/finance/brewForecast';
+import { mesurerAchat } from '../../../domain/finance/materielFutur';
+import { upgradeBudget, upgradeDetails } from '../../../domain/finance/upgrades';
+import type { FinanceTransaction, FinancialAsset, FinancialPlan, FinancialProfile } from '../../../domain/finance/types';
+import { construireEscalier, regrouperTendance, type Escalier } from './escalier';
+import { moisCourt } from './format';
+
+/** Fiche d'un projet de matériel : usure, litre avant → après, plus bas, bouteilles. Assemble `mesurerAchat` (d3) et l'escalier quotidien (pas les soldes de fin de mois). */
+export interface MesureProjet {
+  usureParAnCents: number | null;
+  litreAvant: number | null;
+  litreApres: number | null;
+  /** Pourquoi le litre est vide (jamais un 0 : constat 12 du test d'écran P5B) : aucun brassin planifié, ou un brassin dont le coût est encore partiel. */
+  litreManque: 'aucun-brassin' | 'brassin-partiel' | null;
+  pointBas: Escalier['pointBas'];
+  soldeFinCents: number | null;
+  /** CT4-A-1 : sur tout l'horizon du domaine (13 mois), pas seulement la vue : premier jour sous zéro et plus bas. `null` = jamais sous zéro (ou caisse inconnue). */
+  sousZero: { date: string; soldeCents: number; dateBas: string; finHorizon: string } | null;
+  /** Dernier jour regardé par le verdict « Pour rester à zéro ». */
+  finHorizon: string | null;
+  /** « Pour rester à zéro » : bouteilles à vendre pour combler le plus bas, en trésorerie, avant coût de production. `null` = prix manquant ; 0 = aucun creux. */
+  bouteillesPourZero: number | null;
+  /** « Pour payer le matériel » : sur la marge après tous les coûts du litre (`mesurerAchat().ventes`). */
+  bouteillesPourPayer: number | null;
+  avertissements: string[];
+}
+
+export const bouteillesPourZero = (pointBasCents: number | null | undefined, prixBouteilleCents: number | null | undefined): number | null => {
+  if (pointBasCents == null) return null;
+  if (pointBasCents >= 0) return 0;
+  if (typeof prixBouteilleCents !== 'number' || !Number.isFinite(prixBouteilleCents) || prixBouteilleCents <= 0) return null;
+  return Math.ceil(-pointBasCents / prixBouteilleCents);
+};
+
+export function mesureDuProjet(input: { plan: FinancialPlan; plans: FinancialPlan[]; assets: FinancialAsset[]; transactions: FinanceTransaction[]; forecast: FinanceForecast; escalier: Escalier;
+  batches: Batch[]; stockItems: StockItem[]; profile: FinancialProfile; asOf: string; fin: string; prixBouteilleCents?: number | null }): MesureProjet {
+  const { plan, profile } = input, detail = upgradeDetails(plan);
+  // Litre « avant » : le brassin planifié le plus proche, calculé sans l'usure de ce projet (`ignorerPlanId`). Aucun brassin : inconnu.
+  const brassins = estimerBrassinsPlanifies({ batches: input.batches, stockItems: input.stockItems, transactions: input.transactions, plans: input.plans, profile, assets: input.assets, asOf: input.asOf, fin: input.fin, ignorerPlanId: plan.id }).brassins;
+  const litre = brassins.find(b => b.coutLitre)?.coutLitre ?? null;
+  const prix = input.prixBouteilleCents ?? null;
+  const mesure = mesurerAchat({ coutInitialCents: upgradeBudget(detail) ?? (plan.amountCents > 0 ? plan.amountCents : null), moisAchat: plan.date.slice(0, 7), usure: { dureeAns: detail.usefulLifeYears, categorie: detail.depreciationCategory },
+    assujettiTva: !!profile.vatRegistered, productionAnnuelleL: profile.annualProductionL, coutLitreCents: litre ? litre.complet * 100 : null,
+    format: prix && prix > 0 ? { label: 'bouteille 33 cl', volumeL: 0.33, prixCents: prix } : undefined, prevision: input.forecast, ignorerPlanId: plan.id });
+  const apres = mesure.coutLitreAvecCents;
+  // CT4-A-1 : le verdict « Pour rester à zéro » lit tout l'horizon (même escalier quotidien, mêmes sorties que la vue), sinon il contredit les limites et la vue 12 mois.
+  const dernierMois = input.forecast.months[input.forecast.months.length - 1]?.month;
+  const finHorizon = dernierMois ? new Date(Date.UTC(Number(dernierMois.slice(0, 4)), Number(dernierMois.slice(5, 7)), 0)).toISOString().slice(0, 10) : null;
+  const long = finHorizon && finHorizon > input.fin && input.escalier.departCents !== null
+    ? construireEscalier({ departCents: input.escalier.departCents, items: regrouperTendance(input.forecast.items.filter(i => i.amountCents > 0)), debut: input.asOf, fin: finHorizon })
+    : input.escalier;
+  const basVue = input.escalier.pointBas, basLong = long.pointBas;
+  const bas = basVue && basLong ? (basLong.soldeCents < basVue.soldeCents ? basLong : basVue) : basVue ?? basLong;
+  const sousZero = bas && bas.soldeCents < 0 && long.premierJourSousZero ? { date: long.premierJourSousZero, soldeCents: bas.soldeCents, dateBas: bas.date, finHorizon: long.fin } : null;
+  return { usureParAnCents: mesure.usureParAnCents, litreAvant: litre ? litre.affiche.complet : null, litreApres: apres == null ? null : Math.round(apres) / 100,
+    litreManque: litre ? null : brassins.length ? 'brassin-partiel' : 'aucun-brassin',
+    pointBas: input.escalier.pointBas, soldeFinCents: input.escalier.soldeFinCents, sousZero, finHorizon: long === input.escalier ? input.fin : long.fin, // la vue déjà sous zéro garde son compte (p5b, à côté de « Plus bas ») ; une vue au-dessus de zéro compte le creux de l'horizon
+    bouteillesPourZero: bouteillesPourZero(basVue && basVue.soldeCents < 0 ? basVue.soldeCents : bas?.soldeCents, prix),
+    bouteillesPourPayer: mesure.ventes?.bouteilles ?? null, avertissements: mesure.avertissements.map(a => direHorizon(a, input.forecast, input.fin)) };
+}
+
+/**
+ * w1, FN-25 (test d'écran 8b9e1732) : « aucun mois ne tient le seuil … dans l’horizon » parle des soldes de FIN DE MOIS sur tout l'horizon du domaine
+ * (13 mois), alors que « Plus bas » et « Tu restes au-dessus de zéro » lisent l'escalier du jour sur la vue affichée (30 j, 90 j ou 12 mois). Les deux
+ * phrases ne se contredisent pas si la limite dit jusqu'où elle regarde, et que la vue est plus courte.
+ */
+export function direHorizon(avertissement: string, forecast: Pick<FinanceForecast, 'months'>, fin: string): string {
+  if (!avertissement.startsWith('Avec cet achat, aucun mois ne tient') || !avertissement.endsWith(' dans l’horizon.')) return avertissement;
+  const mois = forecast.months.map(m => m.month), dernier = mois[mois.length - 1];
+  if (!dernier) return avertissement;
+  const vue = fin.slice(0, 7) < dernier ? ` ; au-delà de la vue affichée (jusqu’au ${Number(fin.slice(8, 10))} ${moisCourt(fin)})` : '';
+  return `${avertissement.slice(0, -' dans l’horizon.'.length)} d’ici fin ${moisCourt(`${dernier}-01`)} ${dernier.slice(0, 4)} (soldes de fin de mois, ${mois.length} mois)${vue}.`;
+}

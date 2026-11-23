@@ -1,0 +1,97 @@
+diff --git a/src/domain/stock/murDonnees.ts b/src/domain/stock/murDonnees.ts
+index af6ae96b9..4e982c28a 100644
+--- a/src/domain/stock/murDonnees.ts
++++ b/src/domain/stock/murDonnees.ts
+@@ -15,7 +15,7 @@ import {
+   formeCereale, ordreColonne, pastillesVides, traceCereale, traceHoublon, type FamilleBrasseur, type FormeCereale, type SommetHoublon,
+ } from './mur';
+ 
+-export type TypeMalt = 'base' | 'caramel' | 'torrefies' | 'speciaux';
++export type TypeMalt = 'base' | 'caramel' | 'torrefies' | 'speciaux' | 'sucres';
+ export type ColonneLevure = 'ipa' | 'anglaise' | 'ble' | 'lager' | 'autres';
+ export interface InfosHoublon { id: string | null; role: 'aroma' | 'bittering' | 'dual' | null; origine: string | null; arome: number[] | null }
+ export interface SourcesMur {
+@@ -48,7 +48,7 @@ export interface MarqueMur {
+   /** compter : quantité inconnue ; epuise : 0 ; vide : en stock. */
+   etat: 'compter' | 'epuise' | null;
+   hauteur: number; trace: string; fill: string; hachure: string | null;
+-  cereale?: string; forme?: FormeCereale; sommet?: SommetHoublon; teinte?: string; alpha?: number | null; parDefaut?: boolean;
++  cereale?: string; forme?: FormeCereale; /** Un sucre (pot doré à points, D7a). */ sucre?: boolean; sommet?: SommetHoublon; teinte?: string; alpha?: number | null; parDefaut?: boolean;
+   /** Levures : n briques (sachets) ou fioles, initiale de la souche, atténuation, forme, rang de bord. */
+   n?: number; liquide?: boolean; ini?: string; /** Nom court de la souche (US-05, S-04), écrit sous la colonne (CT4C g1 tour 2). */ souche?: string | null; att?: number | null; bord?: number; ddmDepassee?: boolean; inconnue?: boolean; /** Style lu dans le nom d'une levure en Autres (Saison…) ; absent = type non connu. */ style?: string;
+ }
+@@ -114,6 +114,8 @@ const COULEURS_COLONNE_HOUBLON: Array<[string, string]> = [['#2E5420', '#2E5420'
+ const GROUPES_MALT: Array<{ id: TypeMalt; mot: string; ink: string; fill: string }> = [
+   { id: 'base', mot: 'Base', ink: '#7e6429', fill: '#F2C14E' }, { id: 'caramel', mot: 'Caramel', ink: '#965b21', fill: '#C87A2C' },
+   { id: 'torrefies', mot: 'Torréfiés', ink: '#3B1F14', fill: '#3B1F14' }, { id: 'speciaux', mot: 'Spéciaux', ink: '#A0522D', fill: '#A0522D' },
++  // D7a (maquette st1-d7a) : les sucres ont leur groupe, au bout du rang (pots dorés à points), et non plus dans « Spéciaux »
++  { id: 'sucres', mot: 'Sucres', ink: '#9C7020', fill: '#E9CF7E' },
+ ];
+ const sansAccent = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+ /**
+@@ -188,10 +190,10 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements:
+   // ---- Malts ----
+   {
+     const par = new Map<TypeMalt, StockItem[]>();
+-    // La source d'abord (Beer Analytics) ; son « Spéciaux » ou son silence cèdent au nom puis à l'EBC. Un sucre est un spécial (forme creux).
++    // La source d'abord (Beer Analytics) ; son « Spéciaux » ou son silence cèdent au nom puis à l'EBC. Un sucre a son groupe « Sucres » (D7a).
+     for (const i of malts) {
+       const s = src.typeMalt(i);
+-      const t: TypeMalt = estSucre(i) && !/^malt/.test(cat(i)) ? 'speciaux' : s && s !== 'speciaux' ? s : typeMaltParNom(i.name, i.colorEbc) ?? s ?? 'speciaux';
++      const t: TypeMalt = estSucre(i) && !/^malt/.test(cat(i)) ? 'sucres' : s && s !== 'speciaux' ? s : typeMaltParNom(i.name, i.colorEbc) ?? s ?? 'speciaux';
+       par.set(t, [...(par.get(t) ?? []), i]);
+     }
+     const groupes: GroupeMur[] = [];
+@@ -204,10 +206,11 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements:
+         const kg = enKg(i); const cer = cerealeDe(i.name); const forme = formeCereale(i.name);
+         const inconnu = !Number.isFinite(i.currentStock) || kg == null;
+         const h = arrondi(inconnu ? 12 + (forme === 'droite' ? 0 : 2) : kg! <= 0 ? 8 : Math.max(HMIN_MARQUE, hauteurLog(kg!, R, R * 40, 11, 28)));
+-        const fill = i.colorEbc != null ? couleurMalt(i.colorEbc) : '#9a9a9a';
++        const sucre = estSucre(i) && !/^malt/.test(cat(i));
++        const fill = sucre ? '#E9CF7E' : i.colorEbc != null ? couleurMalt(i.colorEbc) : '#9a9a9a';
+         const q = inconnu ? 'à compter' : kg! <= 0 ? 'épuisé' : qMalt(kg!);
+         return {
+-          ref: i.ref, nom: i.name, rayon: 'Malts', k: i.ref, etat: inconnu ? 'compter' : kg! <= 0 ? 'epuise' : null, hauteur: h, trace: traceCereale(forme, h), fill, hachure: null, cereale: cer, forme,
++          ref: i.ref, nom: i.name, rayon: 'Malts', k: i.ref, etat: inconnu ? 'compter' : kg! <= 0 ? 'epuise' : null, hauteur: h, trace: traceCereale(forme, h), fill, hachure: null, cereale: cer, forme, ...(sucre ? { sucre: true } : {}),
+           titre: [i.name, q, i.colorEbc != null ? `EBC ${i.colorEbc.toLocaleString('fr-FR')}` : 'EBC non connu', NOM_CEREALE[cer]].join(' · '),
+         };
+       });
+@@ -215,8 +218,7 @@ export function construireMur(items: StockItem[], src: SourcesMur, equipements:
+       groupes.push({ id: g.id, mot: g.mot, titre: g.mot, ink: g.ink, fill: g.fill, total: qMalt(somme), marques, socle: null, r2: g.id !== 'base', r2a: g.id !== 'base' && premierR2 && !(premierR2 = false) });
+     }
+     // Pastilles « rien en stock » (maquette fA, SXV) : les colonnes sans article, puis « Fumé » et « Sucres » (absents du rayon ; masqués quand l'article existe).
+-    const fume = malts.some((i) => /rauch|fume|smoke|tourbe|peat/.test(sansAccent(i.name))); const sucre = malts.some(estSucre);
+-    const videsMalts = [...GROUPES_MALT.map((g) => g.mot), ...(fume ? [] : ['Fumé']), ...(sucre ? [] : ['Sucres'])];
++    const fume = malts.some((i) => /rauch|fume|smoke|tourbe|peat/.test(sansAccent(i.name))); const videsMalts = [...GROUPES_MALT.map((g) => g.mot), ...(fume ? [] : ['Fumé'])];
+     rayons.push({ id: 'f0', nom: 'Malts', systeme: 'M1', total: malts.length, sousTitre: 'rangés par type', echelle: groupes.length ? '5 kg' : null, hc: 11, hm: 28, groupes, vides: pastillesVides(videsMalts, groupes.map((g) => g.mot)), hachures: [] });
+   }
+ 
+diff --git a/src/ui/stock/EnteteRayon.tsx b/src/ui/stock/EnteteRayon.tsx
+index d91361d31..8e426132e 100644
+--- a/src/ui/stock/EnteteRayon.tsx
++++ b/src/ui/stock/EnteteRayon.tsx
+@@ -12,7 +12,7 @@ const ICONES: Record<number, string> = {
+   4: 'M10 3h4v4l2 3v10a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V10l2-3V3ZM8 13h8',
+   5: 'M9 3h6M12 3v4M7 10a5 5 0 0 1 10 0v10a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V10Zm3 5h4',
+ };
+-const NOM_AFFICHE: Record<string, string> = { Malts: 'Malts', Houblons: 'Houblons', Levures: 'Levures' };
++const NOM_AFFICHE: Record<string, string> = { Malts: 'Malts et sucres', Houblons: 'Houblons', Levures: 'Levures' };
+ 
+ /** La règle de la barre : dessous le titre sur mobile, dans l'en-tête de tableau (colonne « échelle ») à partir de 900 px. */
+ const Regle: React.FC<{ e: Echelle; rayon: string; classe: string }> = ({ e, rayon, classe }) => (
+diff --git a/src/ui/stock/MurStock.tsx b/src/ui/stock/MurStock.tsx
+index dd6630e5e..a79eba66d 100644
+--- a/src/ui/stock/MurStock.tsx
++++ b/src/ui/stock/MurStock.tsx
+@@ -44,9 +44,10 @@ function Marque({ a, ink }: { a: MarqueMur; ink: string }) {
+   if (a.rayon === 'Malts') {
+     const compter = a.etat === 'compter';
+     return (
+-      <svg {...attrs} data-cer={a.cereale} data-forme={a.forme} {...(compter ? { 'data-etat': 'compter' } : {})} className="l1e-b sw-m" width={w} height={h} viewBox={`0 0 ${w} ${h}`} focusable="false">
++      <svg {...attrs} data-cer={a.cereale} data-forme={a.forme} {...(compter ? { 'data-etat': 'compter' } : {})} {...(a.sucre ? { 'data-sucre': '1' } : {})} className="l1e-b sw-m" width={w} height={h} viewBox={`0 0 ${w} ${h}`} focusable="false">
+         <title>{a.titre}</title>
+         {compter ? <path d={a.trace} fill="#fff" stroke="#333" strokeWidth="1.5" strokeDasharray="2 1.5" strokeLinejoin="round" transform="translate(0 0)" /> : <path d={a.trace} style={{ fill: a.fill, ...(parseInt(a.fill.slice(1, 3), 16) < 0x70 ? { stroke: 'var(--l1-lisere)', strokeWidth: 1 } : {}) }} />}
++        {a.sucre && !compter && <><defs><pattern id="sw-pts" width="4" height="4" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#fff" /></pattern></defs><path d={a.trace} fill="url(#sw-pts)" /></>}
+       </svg>
+     );
+   }

@@ -1,0 +1,1638 @@
+{
+  "source": {
+    "id": "indiehops",
+    "nom": "Indie Hops",
+    "hote": "indiehops.com",
+    "type": "producteur (États-Unis)",
+    "conditions": "robots.txt : Disallow /wp-admin/ seulement ; aucune licence lue ; pages publiques",
+    "releve": "2026-10-26"
+  },
+  "fiches": [
+    {
+      "nom": "Audacia",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://indiehops.com/hops/audacia",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5.5 – 8.0%",
+          "valeur": null,
+          "min": 5.5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3 – 3.5%",
+          "valeur": null,
+          "min": 3,
+          "max": 3.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "18.2 – 20.2%",
+          "valeur": null,
+          "min": 18.2,
+          "max": 20.2,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.1 – 1.5 ml/100 gr",
+          "valeur": null,
+          "min": 1.1,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "25 – 30%",
+          "valeur": null,
+          "min": 25,
+          "max": 30,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "10 – 11.4%",
+          "valeur": null,
+          "min": 10,
+          "max": 11.4,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "6.5 – 7.3%",
+          "valeur": null,
+          "min": 6.5,
+          "max": 7.3,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "0.1 – 0.7%",
+          "valeur": null,
+          "min": 0.1,
+          "max": 0.7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "Cascade",
+      "alias": [],
+      "varietyId": "beermaverick-cascade",
+      "url": "https://indiehops.com/hops/cascade",
+      "releve": "2026-10-26",
+      "publie": 1972,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5 - 8%",
+          "valeur": null,
+          "min": 5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 7%",
+          "valeur": null,
+          "min": 4,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "40%",
+          "valeur": 40,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "0.8 - 1.5mls/100g",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "45 - 60%",
+          "valeur": null,
+          "min": 45,
+          "max": 60,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "10 - 16%",
+          "valeur": null,
+          "min": 10,
+          "max": 16,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "3 - 6%",
+          "valeur": null,
+          "min": 3,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "4 - 8%",
+          "valeur": null,
+          "min": 4,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "Centennial",
+      "alias": [],
+      "varietyId": "beermaverick-centennial",
+      "url": "https://indiehops.com/hops/centennial",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "9.5 - 11.5%",
+          "valeur": null,
+          "min": 9.5,
+          "max": 11.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3.5 - 4.5%",
+          "valeur": null,
+          "min": 3.5,
+          "max": 4.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "29 - 30%",
+          "valeur": null,
+          "min": 29,
+          "max": 30,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.5-2.3mls/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 2.3,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "45 - 55%",
+          "valeur": null,
+          "min": 45,
+          "max": 55,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "10 - 18%",
+          "valeur": null,
+          "min": 10,
+          "max": 18,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "5 - 8%",
+          "valeur": null,
+          "min": 5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "Chinook",
+      "alias": [],
+      "varietyId": "beermaverick-chinook",
+      "url": "https://indiehops.com/hops/chinook",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "12 - 14%",
+          "valeur": null,
+          "min": 12,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3.5 - 4.5%",
+          "valeur": null,
+          "min": 3.5,
+          "max": 4.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "33%",
+          "valeur": 33,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.5 - 2.2mls/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 2.2,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "35 - 40%",
+          "valeur": null,
+          "min": 35,
+          "max": 40,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "22%",
+          "valeur": 22,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "10%",
+          "valeur": 10,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "Crystal",
+      "alias": [],
+      "varietyId": "beermaverick-crystal",
+      "url": "https://indiehops.com/hops/crystal",
+      "releve": "2026-10-26",
+      "publie": 1993,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "3.5 - 5%",
+          "valeur": null,
+          "min": 3.5,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 - 6.5%",
+          "valeur": null,
+          "min": 5,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "21 - 26%",
+          "valeur": null,
+          "min": 21,
+          "max": 26,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.0 - 1.3mls/100g",
+          "valeur": null,
+          "min": 1,
+          "max": 1.3,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "40 - 50%",
+          "valeur": null,
+          "min": 40,
+          "max": 50,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "20 - 26%",
+          "valeur": null,
+          "min": 20,
+          "max": 26,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "6 - 8%",
+          "valeur": null,
+          "min": 6,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "Liberty",
+      "alias": [],
+      "varietyId": "beermaverick-liberty",
+      "url": "https://indiehops.com/hops/liberty",
+      "releve": "2026-10-26",
+      "publie": 1992,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4 - 6%",
+          "valeur": null,
+          "min": 4,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3.5 - 4.5%",
+          "valeur": null,
+          "min": 3.5,
+          "max": 4.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "29 - 30%",
+          "valeur": null,
+          "min": 29,
+          "max": 30,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.5 - 2.3mls/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 2.3,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "45 - 55%",
+          "valeur": null,
+          "min": 45,
+          "max": 55,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "10 - 18%",
+          "valeur": null,
+          "min": 10,
+          "max": 18,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "5 - 8%",
+          "valeur": null,
+          "min": 5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "Lórien",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://indiehops.com/hops/lorien",
+      "releve": "2026-10-26",
+      "publie": 2021,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4.0%-5.5%",
+          "valeur": null,
+          "min": 4,
+          "max": 5.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "7.0%-9.0%",
+          "valeur": null,
+          "min": 7,
+          "max": 9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "22.6%",
+          "valeur": 22.6,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.8-2.2 ml/100gr",
+          "valeur": null,
+          "min": 1.8,
+          "max": 2.2,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "40-50%",
+          "valeur": null,
+          "min": 40,
+          "max": 50,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "19-25%",
+          "valeur": null,
+          "min": 19,
+          "max": 25,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "2.6-5.0%",
+          "valeur": null,
+          "min": 2.6,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "2.7-4.0%",
+          "valeur": null,
+          "min": 2.7,
+          "max": 4,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "Luminosa",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://indiehops.com/hops/luminosa",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "9 - 12%",
+          "valeur": null,
+          "min": 9,
+          "max": 12,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 5%",
+          "valeur": null,
+          "min": 4,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "28.3%",
+          "valeur": 28.3,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.8 - 2.2ml/100g",
+          "valeur": null,
+          "min": 1.8,
+          "max": 2.2,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "43 - 54%",
+          "valeur": null,
+          "min": 43,
+          "max": 54,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "10 - 13%",
+          "valeur": null,
+          "min": 10,
+          "max": 13,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "3 - 7%",
+          "valeur": null,
+          "min": 3,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "0%",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile",
+          "zeroPublie": true
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "Meridian",
+      "alias": [],
+      "varietyId": "beermaverick-meridian",
+      "url": "https://indiehops.com/hops/meridian",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5 – 6.5%",
+          "valeur": null,
+          "min": 5,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "7 – 8%",
+          "valeur": null,
+          "min": 7,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "50.1%",
+          "valeur": 50.1,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.1 – 1.6mls/100grams",
+          "valeur": null,
+          "min": 1.1,
+          "max": 1.6,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "40 – 64.4%",
+          "valeur": null,
+          "min": 40,
+          "max": 64.4,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "9 – 17.6%",
+          "valeur": null,
+          "min": 9,
+          "max": 17.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "4 – 8.%",
+          "valeur": null,
+          "min": 4,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "Mt. Hood",
+      "alias": [],
+      "varietyId": "beermaverick-mount-hood",
+      "url": "https://indiehops.com/hops/mt-hood",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5 - 8%",
+          "valeur": null,
+          "min": 5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 - 7.5%",
+          "valeur": null,
+          "min": 5,
+          "max": 7.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "22 - 23%",
+          "valeur": null,
+          "min": 22,
+          "max": 23,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.0 - 1.3mls/100g",
+          "valeur": null,
+          "min": 1,
+          "max": 1.3,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "55 - 65%",
+          "valeur": null,
+          "min": 55,
+          "max": 65,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "26-30%",
+          "valeur": null,
+          "min": 26,
+          "max": 30,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "26 - 30%",
+          "valeur": null,
+          "min": 26,
+          "max": 30,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "Nugget",
+      "alias": [],
+      "varietyId": "beermaverick-nugget",
+      "url": "https://indiehops.com/hops/nugget",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11 - 15%",
+          "valeur": null,
+          "min": 11,
+          "max": 15,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3 - 8%",
+          "valeur": null,
+          "min": 3,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "26%",
+          "valeur": 26,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.2 - 2.3 mls/100g",
+          "valeur": null,
+          "min": 1.2,
+          "max": 2.3,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "50 - 60%",
+          "valeur": null,
+          "min": 50,
+          "max": 60,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "17%",
+          "valeur": 17,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "10%",
+          "valeur": 10,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "Sterling",
+      "alias": [],
+      "varietyId": "beermaverick-sterling",
+      "url": "https://indiehops.com/hops/sterling",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "6 - 9%",
+          "valeur": null,
+          "min": 6,
+          "max": 9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 6%",
+          "valeur": null,
+          "min": 4,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "24%",
+          "valeur": 24,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "1.3 - 1.9mls/100g",
+          "valeur": null,
+          "min": 1.3,
+          "max": 1.9,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "46%",
+          "valeur": 46,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "19 - 23%",
+          "valeur": null,
+          "min": 19,
+          "max": 23,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "5 - 7%",
+          "valeur": null,
+          "min": 5,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "11 - 17%",
+          "valeur": null,
+          "min": 11,
+          "max": 17,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "Strata CGX",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://indiehops.com/hops/strata-cgx",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "23.1 – 23.5%",
+          "valeur": null,
+          "min": 23.1,
+          "max": 23.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "9.3 – 9.6%",
+          "valeur": null,
+          "min": 9.3,
+          "max": 9.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "3.1 – 3.2 mls / 100g",
+          "valeur": null,
+          "min": 3.1,
+          "max": 3.2,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        }
+      },
+      "listes": {
+        "formes": [
+          "T90s & Whole Cone Hops",
+          "Cryogenic Lupulin Pellets",
+          "Cryogenic Lupulin Pellets",
+          "Oil-Boosted Hop Extract"
+        ]
+      }
+    },
+    {
+      "nom": "Strata Cryo",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://indiehops.com/hops/strata-cryo",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "22.6 – 23.9%",
+          "valeur": null,
+          "min": 22.6,
+          "max": 23.9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "10.6 – 11.3%",
+          "valeur": null,
+          "min": 10.6,
+          "max": 11.3,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "2.9 – 3.4%",
+          "valeur": null,
+          "min": 2.9,
+          "max": 3.4,
+          "unite": "%",
+          "base": null
+        }
+      },
+      "listes": {
+        "formes": [
+          "T90s & Whole Cone Hops",
+          "Cryogenic Lupulin Pellets",
+          "Cryogenic Lupulin Pellets",
+          "Oil-Boosted Hop Extract"
+        ]
+      }
+    },
+    {
+      "nom": "Strata HyperBoost",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://indiehops.com/hops/strata-hyperboost",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "15 – 40% (w/w)",
+          "valeur": null,
+          "min": 15,
+          "max": 40,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 – 15% (w/w)",
+          "valeur": null,
+          "min": 5,
+          "max": 15,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "> 40% (w/w)",
+          "valeur": null,
+          "min": 40,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "operateur": ">"
+        }
+      },
+      "listes": {
+        "formes": [
+          "T90s & Whole Cone Hops",
+          "Cryogenic Lupulin Pellets",
+          "Cryogenic Lupulin Pellets",
+          "Oil-Boosted Hop Extract"
+        ]
+      }
+    },
+    {
+      "nom": "Strata",
+      "alias": [],
+      "varietyId": "beermaverick-strata",
+      "url": "https://indiehops.com/hops/strata",
+      "releve": "2026-10-26",
+      "publie": 2018,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "12 – 15%",
+          "valeur": null,
+          "min": 12,
+          "max": 15,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 – 6%",
+          "valeur": null,
+          "min": 5,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "21%",
+          "valeur": 21,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "2.3 – 3.5mls/100g",
+          "valeur": null,
+          "min": 2.3,
+          "max": 3.5,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "52 – 65%",
+          "valeur": null,
+          "min": 52,
+          "max": 65,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "22 – 30%",
+          "valeur": null,
+          "min": 22,
+          "max": 30,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "5 – 12.5%",
+          "valeur": null,
+          "min": 5,
+          "max": 12.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {
+        "formes": [
+          "T90s & Whole Cone Hops",
+          "Cryogenic Lupulin Pellets",
+          "Cryogenic Lupulin Pellets",
+          "Oil-Boosted Hop Extract"
+        ]
+      }
+    },
+    {
+      "nom": "US Fuggle",
+      "alias": [],
+      "varietyId": "beermaverick-fuggle",
+      "url": "https://indiehops.com/hops/us-fuggle",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4 - 5%",
+          "valeur": null,
+          "min": 4,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "2 - 3%",
+          "valeur": null,
+          "min": 2,
+          "max": 3,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "27%",
+          "valeur": 27,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "0.5 - 1 mls/100g",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "43%",
+          "valeur": 43,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "27%",
+          "valeur": 27,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "9%",
+          "valeur": 9,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "4%",
+          "valeur": 4,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "US Tettnanger",
+      "alias": [],
+      "varietyId": "beermaverick-tettnanger",
+      "url": "https://indiehops.com/hops/us-tettnanger",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4 - 5%",
+          "valeur": null,
+          "min": 4,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "2 - 3%",
+          "valeur": null,
+          "min": 2,
+          "max": 3,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "27%",
+          "valeur": 27,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "0.5-1.0mls/100g",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "43%",
+          "valeur": 43,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "27%",
+          "valeur": 27,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "9%",
+          "valeur": 9,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "4%",
+          "valeur": 4,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "Willamette",
+      "alias": [],
+      "varietyId": "beermaverick-willamette",
+      "url": "https://indiehops.com/hops/willamette",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "variete",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5 - 8%",
+          "valeur": null,
+          "min": 5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3 - 5%",
+          "valeur": null,
+          "min": 3,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone",
+          "brut": "29 - 35%",
+          "valeur": null,
+          "min": 29,
+          "max": 35,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil",
+          "brut": "0.8 - 1.2mls/100g",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.2,
+          "unite": "mL/100 g",
+          "base": null,
+          "baseImplicite": "mL/100 g"
+        },
+        "myrcene": {
+          "champ": "Myrcene",
+          "brut": "45 - 50%",
+          "valeur": null,
+          "min": 45,
+          "max": 50,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "humulene": {
+          "champ": "Humulene",
+          "brut": "18 - 22%",
+          "valeur": null,
+          "min": 18,
+          "max": 22,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "caryophyllene": {
+          "champ": "Caryophyllene",
+          "brut": "6 - 7%",
+          "valeur": null,
+          "min": 6,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        },
+        "farnesene": {
+          "champ": "Farnesene",
+          "brut": "4 - 6%",
+          "valeur": null,
+          "min": 4,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% de l'huile"
+        }
+      },
+      "listes": {}
+    }
+  ]
+}

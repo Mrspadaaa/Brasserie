@@ -1,0 +1,979 @@
+{
+  "format": "hop-v55-decision-reading-v2",
+  "id": "reading:after06-legacy-v2-shadow",
+  "ownerKey": "owner:shadow-after06",
+  "workspaceId": "workspace:shadow-after06",
+  "recordedAt": "2026-10-04T23:25:09.000Z",
+  "reading": {
+    "intent": {
+      "question": "QA AFTER06 : faut-il garder 17,625 g de Cascade · cônes en fermentation à 18 °C pendant 72 h ?",
+      "criteria": [
+        {
+          "id": "criterion-source-28-30-17",
+          "label": "À préserver : 17",
+          "direction": "keep"
+        }
+      ]
+    },
+    "criterionDrafts": [
+      {
+        "id": "criterion-source-28-30-17",
+        "source": {
+          "start": 28,
+          "end": 30,
+          "text": "17"
+        },
+        "term": "17",
+        "direction": "keep",
+        "requirement": "required",
+        "origin": "parser"
+      }
+    ],
+    "interpretation": "Lecture locale proposée : À préserver : 17. Les critères sont des intentions déclarées, pas des mesures ni des résultats sensoriels.",
+    "response": {
+      "version": "hop-decision-v1",
+      "intent": {
+        "originalQuestion": "QA AFTER06 : faut-il garder 17,625 g de Cascade · cônes en fermentation à 18 °C pendant 72 h ?",
+        "interpretation": "Lecture locale proposée : À préserver : 17. Les critères sont des intentions déclarées, pas des mesures ni des résultats sensoriels.",
+        "criteria": [
+          {
+            "id": "criterion-source-28-30-17",
+            "description": "À préserver : 17",
+            "role": "preserve",
+            "origin": "user"
+          }
+        ]
+      },
+      "actionKind": "exploreStrategies",
+      "status": "conditional",
+      "answer": "Des pistes de stratégie sont examinées selon votre lecture et la situation fournie. Préférer une piste ne choisit aucune dose et ne modifie pas le programme ; chaque voie garde ses raisons, conditions et inconnues.",
+      "result": {
+        "version": "hop-strategy-advice-v1",
+        "inputReference": "hop-advice-input-v1:sha256:7dbcb0a33e6318e326ed09ed58471cd0067ba6eccad1a65e3b5ddd51fa516faf",
+        "stage": "planning",
+        "status": "conditional",
+        "options": [
+          {
+            "id": "hop-advice-option-001",
+            "reference": "hop-advice-option-v1:sha256:a9206fcea830434413706873cda84bf9c0f9d161ca2221f43d9c1cd3f436aa30",
+            "title": "Retirer seulement l’ajout prévu recipe-hop:0 du brouillon",
+            "materialIds": [
+              "hop-v55-fixture-recipe-planning:recipe-hop:0"
+            ],
+            "relevance": "conditional",
+            "programScope": {
+              "kind": "removePlanned",
+              "additionIds": [
+                "recipe-hop:0"
+              ]
+            },
+            "criterionEffects": [
+              {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            ],
+            "dimensionEffects": [
+              {
+                "dimension": "bioInteraction",
+                "status": "conditional",
+                "statement": "Les sources rapportent des interactions dépendantes de la souche, du composé et du milieu; l’effet pour la culture et le houblon fournis reste inconnu.",
+                "reason": "Aucune souche/produit, viabilité au contact ou exposition équivalente aux iso-α-acides n’est établie par les seuls libellés de situation.",
+                "evidenceIds": [
+                  "m-ab-sakamoto-2001",
+                  "m-ab-dysvik-2020",
+                  "m-ab-mahanta-2022"
+                ],
+                "assertionIds": [
+                  "context-culture"
+                ],
+                "criterionIds": []
+              },
+              {
+                "dimension": "process",
+                "status": "structuralChange",
+                "statement": "Aucune addition effectuée n’est modifiée par cette portée.",
+                "reason": "Cette option décrit une portée possible seulement; elle n’exécute ni ne persiste une modification.",
+                "evidenceIds": [],
+                "assertionIds": [
+                  "program-recipe-hop:0",
+                  "program-recipe-hop:1"
+                ],
+                "criterionIds": []
+              }
+            ],
+            "exclusions": [],
+            "conditions": [
+              "Le retrait vise uniquement la ligne prévue sélectionnée; il ne défait pas les opérations effectuées et ne conclut pas sur le bilan global."
+            ],
+            "nonConclusions": [
+              "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+              "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil.",
+              "Aucun taux de biotransformation, effet d’inhibition, viabilité ou conversion biologique n’est prédit."
+            ],
+            "informationRequestIds": []
+          },
+          {
+            "id": "hop-advice-option-002",
+            "reference": "hop-advice-option-v1:sha256:605bde019262fb963f65aa443a0e7c6fc3b6605bc6e7fb073e91bc85d2bb4cc3",
+            "title": "Retirer seulement l’ajout prévu recipe-hop:1 du brouillon",
+            "materialIds": [
+              "hop-v55-fixture-recipe-planning:recipe-hop:1"
+            ],
+            "relevance": "conditional",
+            "programScope": {
+              "kind": "removePlanned",
+              "additionIds": [
+                "recipe-hop:1"
+              ]
+            },
+            "criterionEffects": [
+              {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            ],
+            "dimensionEffects": [
+              {
+                "dimension": "bioInteraction",
+                "status": "conditional",
+                "statement": "Les sources rapportent des interactions dépendantes de la souche, du composé et du milieu; l’effet pour la culture et le houblon fournis reste inconnu.",
+                "reason": "Aucune souche/produit, viabilité au contact ou exposition équivalente aux iso-α-acides n’est établie par les seuls libellés de situation.",
+                "evidenceIds": [
+                  "m-ab-sakamoto-2001",
+                  "m-ab-dysvik-2020",
+                  "m-ab-mahanta-2022"
+                ],
+                "assertionIds": [
+                  "context-culture"
+                ],
+                "criterionIds": []
+              },
+              {
+                "dimension": "process",
+                "status": "structuralChange",
+                "statement": "Aucune addition effectuée n’est modifiée par cette portée.",
+                "reason": "Cette option décrit une portée possible seulement; elle n’exécute ni ne persiste une modification.",
+                "evidenceIds": [],
+                "assertionIds": [
+                  "program-recipe-hop:0",
+                  "program-recipe-hop:1"
+                ],
+                "criterionIds": []
+              }
+            ],
+            "exclusions": [],
+            "conditions": [
+              "Le retrait vise uniquement la ligne prévue sélectionnée; il ne défait pas les opérations effectuées et ne conclut pas sur le bilan global."
+            ],
+            "nonConclusions": [
+              "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+              "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil.",
+              "Aucun taux de biotransformation, effet d’inhibition, viabilité ou conversion biologique n’est prédit."
+            ],
+            "informationRequestIds": []
+          },
+          {
+            "id": "hop-advice-option-003",
+            "reference": "hop-advice-option-v1:sha256:d33b3fc492dfcd4578c17ba05d38f02bc5c9643b32740feb0625056db7484f6a",
+            "title": "Comparer Identité fictive A à l’ajout prévu recipe-hop:0 sans le rendre actif",
+            "materialIds": [
+              "variety:hop-v55-fixture-identity-a"
+            ],
+            "relevance": "conditional",
+            "programScope": {
+              "kind": "none"
+            },
+            "criterionEffects": [
+              {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            ],
+            "dimensionEffects": [
+              {
+                "dimension": "bioInteraction",
+                "status": "conditional",
+                "statement": "Les sources rapportent des interactions dépendantes de la souche, du composé et du milieu; l’effet pour la culture et le houblon fournis reste inconnu.",
+                "reason": "Aucune souche/produit, viabilité au contact ou exposition équivalente aux iso-α-acides n’est établie par les seuls libellés de situation.",
+                "evidenceIds": [
+                  "m-ab-sakamoto-2001",
+                  "m-ab-dysvik-2020",
+                  "m-ab-mahanta-2022"
+                ],
+                "assertionIds": [
+                  "context-culture"
+                ],
+                "criterionIds": []
+              },
+              {
+                "dimension": "process",
+                "status": "structuralChange",
+                "statement": "Aucune addition effectuée n’est modifiée par cette portée.",
+                "reason": "Cette option décrit une portée possible seulement; elle n’exécute ni ne persiste une modification.",
+                "evidenceIds": [],
+                "assertionIds": [
+                  "program-recipe-hop:0",
+                  "program-recipe-hop:1"
+                ],
+                "criterionIds": []
+              }
+            ],
+            "exclusions": [],
+            "conditions": [
+              "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+              "Cette voie compare ou documente la matière sans la rendre active; aucun emploi n’est déduit des mots ou d’une préférence."
+            ],
+            "nonConclusions": [
+              "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+              "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil.",
+              "Aucun taux de biotransformation, effet d’inhibition, viabilité ou conversion biologique n’est prédit."
+            ],
+            "informationRequestIds": []
+          },
+          {
+            "id": "hop-advice-option-004",
+            "reference": "hop-advice-option-v1:sha256:57190dbbf09f9a6bef5a2719db45d6dfaa202a5e34af64c881847266f9327204",
+            "title": "Comparer Identité fictive A à l’ajout prévu recipe-hop:1 sans le rendre actif",
+            "materialIds": [
+              "variety:hop-v55-fixture-identity-a"
+            ],
+            "relevance": "conditional",
+            "programScope": {
+              "kind": "none"
+            },
+            "criterionEffects": [
+              {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            ],
+            "dimensionEffects": [
+              {
+                "dimension": "bioInteraction",
+                "status": "conditional",
+                "statement": "Les sources rapportent des interactions dépendantes de la souche, du composé et du milieu; l’effet pour la culture et le houblon fournis reste inconnu.",
+                "reason": "Aucune souche/produit, viabilité au contact ou exposition équivalente aux iso-α-acides n’est établie par les seuls libellés de situation.",
+                "evidenceIds": [
+                  "m-ab-sakamoto-2001",
+                  "m-ab-dysvik-2020",
+                  "m-ab-mahanta-2022"
+                ],
+                "assertionIds": [
+                  "context-culture"
+                ],
+                "criterionIds": []
+              },
+              {
+                "dimension": "process",
+                "status": "structuralChange",
+                "statement": "Aucune addition effectuée n’est modifiée par cette portée.",
+                "reason": "Cette option décrit une portée possible seulement; elle n’exécute ni ne persiste une modification.",
+                "evidenceIds": [],
+                "assertionIds": [
+                  "program-recipe-hop:0",
+                  "program-recipe-hop:1"
+                ],
+                "criterionIds": []
+              }
+            ],
+            "exclusions": [],
+            "conditions": [
+              "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+              "Cette voie compare ou documente la matière sans la rendre active; aucun emploi n’est déduit des mots ou d’une préférence."
+            ],
+            "nonConclusions": [
+              "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+              "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil.",
+              "Aucun taux de biotransformation, effet d’inhibition, viabilité ou conversion biologique n’est prédit."
+            ],
+            "informationRequestIds": []
+          },
+          {
+            "id": "hop-advice-option-005",
+            "reference": "hop-advice-option-v1:sha256:1259c3fb7e4bc2666d55d65c785718e0d2e221e3cd8a7e8c5f730163ddc11e99",
+            "title": "Comparer Identité fictive B à l’ajout prévu recipe-hop:0 sans le rendre actif",
+            "materialIds": [
+              "variety:hop-v55-fixture-identity-b"
+            ],
+            "relevance": "conditional",
+            "programScope": {
+              "kind": "none"
+            },
+            "criterionEffects": [
+              {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            ],
+            "dimensionEffects": [
+              {
+                "dimension": "bioInteraction",
+                "status": "conditional",
+                "statement": "Les sources rapportent des interactions dépendantes de la souche, du composé et du milieu; l’effet pour la culture et le houblon fournis reste inconnu.",
+                "reason": "Aucune souche/produit, viabilité au contact ou exposition équivalente aux iso-α-acides n’est établie par les seuls libellés de situation.",
+                "evidenceIds": [
+                  "m-ab-sakamoto-2001",
+                  "m-ab-dysvik-2020",
+                  "m-ab-mahanta-2022"
+                ],
+                "assertionIds": [
+                  "context-culture"
+                ],
+                "criterionIds": []
+              },
+              {
+                "dimension": "process",
+                "status": "structuralChange",
+                "statement": "Aucune addition effectuée n’est modifiée par cette portée.",
+                "reason": "Cette option décrit une portée possible seulement; elle n’exécute ni ne persiste une modification.",
+                "evidenceIds": [],
+                "assertionIds": [
+                  "program-recipe-hop:0",
+                  "program-recipe-hop:1"
+                ],
+                "criterionIds": []
+              }
+            ],
+            "exclusions": [],
+            "conditions": [
+              "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+              "Cette voie compare ou documente la matière sans la rendre active; aucun emploi n’est déduit des mots ou d’une préférence."
+            ],
+            "nonConclusions": [
+              "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+              "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil.",
+              "Aucun taux de biotransformation, effet d’inhibition, viabilité ou conversion biologique n’est prédit."
+            ],
+            "informationRequestIds": []
+          },
+          {
+            "id": "hop-advice-option-006",
+            "reference": "hop-advice-option-v1:sha256:1b9f97c9d92951776ab64f09038b5251a404336d1e4eb29b78ee3d45142ae722",
+            "title": "Comparer Identité fictive B à l’ajout prévu recipe-hop:1 sans le rendre actif",
+            "materialIds": [
+              "variety:hop-v55-fixture-identity-b"
+            ],
+            "relevance": "conditional",
+            "programScope": {
+              "kind": "none"
+            },
+            "criterionEffects": [
+              {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            ],
+            "dimensionEffects": [
+              {
+                "dimension": "bioInteraction",
+                "status": "conditional",
+                "statement": "Les sources rapportent des interactions dépendantes de la souche, du composé et du milieu; l’effet pour la culture et le houblon fournis reste inconnu.",
+                "reason": "Aucune souche/produit, viabilité au contact ou exposition équivalente aux iso-α-acides n’est établie par les seuls libellés de situation.",
+                "evidenceIds": [
+                  "m-ab-sakamoto-2001",
+                  "m-ab-dysvik-2020",
+                  "m-ab-mahanta-2022"
+                ],
+                "assertionIds": [
+                  "context-culture"
+                ],
+                "criterionIds": []
+              },
+              {
+                "dimension": "process",
+                "status": "structuralChange",
+                "statement": "Aucune addition effectuée n’est modifiée par cette portée.",
+                "reason": "Cette option décrit une portée possible seulement; elle n’exécute ni ne persiste une modification.",
+                "evidenceIds": [],
+                "assertionIds": [
+                  "program-recipe-hop:0",
+                  "program-recipe-hop:1"
+                ],
+                "criterionIds": []
+              }
+            ],
+            "exclusions": [],
+            "conditions": [
+              "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+              "Cette voie compare ou documente la matière sans la rendre active; aucun emploi n’est déduit des mots ou d’une préférence."
+            ],
+            "nonConclusions": [
+              "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+              "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil.",
+              "Aucun taux de biotransformation, effet d’inhibition, viabilité ou conversion biologique n’est prédit."
+            ],
+            "informationRequestIds": []
+          },
+          {
+            "id": "hop-advice-option-007",
+            "reference": "hop-advice-option-v1:sha256:bb480d1aee9b89a26e94914ad04fc1de2d3488c257eb1a6d52a701b730fbc96a",
+            "title": "Comparer Identité fictive C à l’ajout prévu recipe-hop:0 sans le rendre actif",
+            "materialIds": [
+              "variety:hop-v55-fixture-identity-c"
+            ],
+            "relevance": "conditional",
+            "programScope": {
+              "kind": "none"
+            },
+            "criterionEffects": [
+              {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            ],
+            "dimensionEffects": [
+              {
+                "dimension": "bioInteraction",
+                "status": "conditional",
+                "statement": "Les sources rapportent des interactions dépendantes de la souche, du composé et du milieu; l’effet pour la culture et le houblon fournis reste inconnu.",
+                "reason": "Aucune souche/produit, viabilité au contact ou exposition équivalente aux iso-α-acides n’est établie par les seuls libellés de situation.",
+                "evidenceIds": [
+                  "m-ab-sakamoto-2001",
+                  "m-ab-dysvik-2020",
+                  "m-ab-mahanta-2022"
+                ],
+                "assertionIds": [
+                  "context-culture"
+                ],
+                "criterionIds": []
+              },
+              {
+                "dimension": "process",
+                "status": "structuralChange",
+                "statement": "Aucune addition effectuée n’est modifiée par cette portée.",
+                "reason": "Cette option décrit une portée possible seulement; elle n’exécute ni ne persiste une modification.",
+                "evidenceIds": [],
+                "assertionIds": [
+                  "program-recipe-hop:0",
+                  "program-recipe-hop:1"
+                ],
+                "criterionIds": []
+              }
+            ],
+            "exclusions": [],
+            "conditions": [
+              "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+              "Cette voie compare ou documente la matière sans la rendre active; aucun emploi n’est déduit des mots ou d’une préférence."
+            ],
+            "nonConclusions": [
+              "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+              "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil.",
+              "Aucun taux de biotransformation, effet d’inhibition, viabilité ou conversion biologique n’est prédit."
+            ],
+            "informationRequestIds": []
+          },
+          {
+            "id": "hop-advice-option-008",
+            "reference": "hop-advice-option-v1:sha256:172e768b6edd09f0369a4bf8d8e4ccf50cbaefdb4ea0cdc720a6c89ad91bfc8f",
+            "title": "Comparer Identité fictive C à l’ajout prévu recipe-hop:1 sans le rendre actif",
+            "materialIds": [
+              "variety:hop-v55-fixture-identity-c"
+            ],
+            "relevance": "conditional",
+            "programScope": {
+              "kind": "none"
+            },
+            "criterionEffects": [
+              {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            ],
+            "dimensionEffects": [
+              {
+                "dimension": "bioInteraction",
+                "status": "conditional",
+                "statement": "Les sources rapportent des interactions dépendantes de la souche, du composé et du milieu; l’effet pour la culture et le houblon fournis reste inconnu.",
+                "reason": "Aucune souche/produit, viabilité au contact ou exposition équivalente aux iso-α-acides n’est établie par les seuls libellés de situation.",
+                "evidenceIds": [
+                  "m-ab-sakamoto-2001",
+                  "m-ab-dysvik-2020",
+                  "m-ab-mahanta-2022"
+                ],
+                "assertionIds": [
+                  "context-culture"
+                ],
+                "criterionIds": []
+              },
+              {
+                "dimension": "process",
+                "status": "structuralChange",
+                "statement": "Aucune addition effectuée n’est modifiée par cette portée.",
+                "reason": "Cette option décrit une portée possible seulement; elle n’exécute ni ne persiste une modification.",
+                "evidenceIds": [],
+                "assertionIds": [
+                  "program-recipe-hop:0",
+                  "program-recipe-hop:1"
+                ],
+                "criterionIds": []
+              }
+            ],
+            "exclusions": [],
+            "conditions": [
+              "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+              "Cette voie compare ou documente la matière sans la rendre active; aucun emploi n’est déduit des mots ou d’une préférence."
+            ],
+            "nonConclusions": [
+              "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+              "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil.",
+              "Aucun taux de biotransformation, effet d’inhibition, viabilité ou conversion biologique n’est prédit."
+            ],
+            "informationRequestIds": []
+          },
+          {
+            "id": "hop-advice-option-009",
+            "reference": "hop-advice-option-v1:sha256:a19701c84f3e762eafa0b731703bc4111d40cb22550185a34a352ac3b9ed6199",
+            "title": "Comparer Identité fictive A à l’ajout prévu recipe-hop:1 sans le rendre actif",
+            "materialIds": [
+              "hop-v55-fixture-recipe-planning:recipe-hop:0"
+            ],
+            "relevance": "conditional",
+            "programScope": {
+              "kind": "none"
+            },
+            "criterionEffects": [
+              {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            ],
+            "dimensionEffects": [
+              {
+                "dimension": "bioInteraction",
+                "status": "conditional",
+                "statement": "Les sources rapportent des interactions dépendantes de la souche, du composé et du milieu; l’effet pour la culture et le houblon fournis reste inconnu.",
+                "reason": "Aucune souche/produit, viabilité au contact ou exposition équivalente aux iso-α-acides n’est établie par les seuls libellés de situation.",
+                "evidenceIds": [
+                  "m-ab-sakamoto-2001",
+                  "m-ab-dysvik-2020",
+                  "m-ab-mahanta-2022"
+                ],
+                "assertionIds": [
+                  "context-culture"
+                ],
+                "criterionIds": []
+              },
+              {
+                "dimension": "process",
+                "status": "structuralChange",
+                "statement": "Aucune addition effectuée n’est modifiée par cette portée.",
+                "reason": "Cette option décrit une portée possible seulement; elle n’exécute ni ne persiste une modification.",
+                "evidenceIds": [],
+                "assertionIds": [
+                  "program-recipe-hop:0",
+                  "program-recipe-hop:1"
+                ],
+                "criterionIds": []
+              }
+            ],
+            "exclusions": [],
+            "conditions": [
+              "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+              "Cette voie compare ou documente la matière sans la rendre active; aucun emploi n’est déduit des mots ou d’une préférence."
+            ],
+            "nonConclusions": [
+              "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+              "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil.",
+              "Aucun taux de biotransformation, effet d’inhibition, viabilité ou conversion biologique n’est prédit."
+            ],
+            "informationRequestIds": []
+          },
+          {
+            "id": "hop-advice-option-010",
+            "reference": "hop-advice-option-v1:sha256:1f54226bd3dc58b17af7cf858f5c8f06578274a9ff85776109513b7ee7bb70fe",
+            "title": "Comparer Identité fictive B à l’ajout prévu recipe-hop:0 sans le rendre actif",
+            "materialIds": [
+              "hop-v55-fixture-recipe-planning:recipe-hop:1"
+            ],
+            "relevance": "conditional",
+            "programScope": {
+              "kind": "none"
+            },
+            "criterionEffects": [
+              {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            ],
+            "dimensionEffects": [
+              {
+                "dimension": "bioInteraction",
+                "status": "conditional",
+                "statement": "Les sources rapportent des interactions dépendantes de la souche, du composé et du milieu; l’effet pour la culture et le houblon fournis reste inconnu.",
+                "reason": "Aucune souche/produit, viabilité au contact ou exposition équivalente aux iso-α-acides n’est établie par les seuls libellés de situation.",
+                "evidenceIds": [
+                  "m-ab-sakamoto-2001",
+                  "m-ab-dysvik-2020",
+                  "m-ab-mahanta-2022"
+                ],
+                "assertionIds": [
+                  "context-culture"
+                ],
+                "criterionIds": []
+              },
+              {
+                "dimension": "process",
+                "status": "structuralChange",
+                "statement": "Aucune addition effectuée n’est modifiée par cette portée.",
+                "reason": "Cette option décrit une portée possible seulement; elle n’exécute ni ne persiste une modification.",
+                "evidenceIds": [],
+                "assertionIds": [
+                  "program-recipe-hop:0",
+                  "program-recipe-hop:1"
+                ],
+                "criterionIds": []
+              }
+            ],
+            "exclusions": [],
+            "conditions": [
+              "Forme de la matière inconnue; elle reste documentaire et n’est pas proposée comme ingrédient actif.",
+              "Cette voie compare ou documente la matière sans la rendre active; aucun emploi n’est déduit des mots ou d’une préférence."
+            ],
+            "nonConclusions": [
+              "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+              "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil.",
+              "Aucun taux de biotransformation, effet d’inhibition, viabilité ou conversion biologique n’est prédit."
+            ],
+            "informationRequestIds": []
+          },
+          {
+            "id": "hop-advice-option-011",
+            "reference": "hop-advice-option-v1:sha256:a4af9ccc198ba6f587708c0b0442f85b5d8be50994510d5361a337d0808d2a64",
+            "title": "Contextualiser séparément les assertions biologiques fournies",
+            "materialIds": [
+              "variety:hop-v55-fixture-identity-a",
+              "variety:hop-v55-fixture-identity-b",
+              "variety:hop-v55-fixture-identity-c",
+              "hop-v55-fixture-recipe-planning:recipe-hop:0",
+              "hop-v55-fixture-recipe-planning:recipe-hop:1"
+            ],
+            "relevance": "conditional",
+            "programScope": {
+              "kind": "none"
+            },
+            "criterionEffects": [
+              {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            ],
+            "dimensionEffects": [
+              {
+                "dimension": "bioInteraction",
+                "status": "conditional",
+                "statement": "Les sources rapportent des interactions dépendantes de la souche, du composé et du milieu; l’effet pour la culture et le houblon fournis reste inconnu.",
+                "reason": "Aucune souche/produit, viabilité au contact ou exposition équivalente aux iso-α-acides n’est établie par les seuls libellés de situation.",
+                "evidenceIds": [
+                  "m-ab-sakamoto-2001",
+                  "m-ab-dysvik-2020",
+                  "m-ab-mahanta-2022"
+                ],
+                "assertionIds": [
+                  "context-culture"
+                ],
+                "criterionIds": []
+              },
+              {
+                "dimension": "process",
+                "status": "structuralChange",
+                "statement": "Aucune addition effectuée n’est modifiée par cette portée.",
+                "reason": "Cette option décrit une portée possible seulement; elle n’exécute ni ne persiste une modification.",
+                "evidenceIds": [],
+                "assertionIds": [
+                  "program-recipe-hop:0",
+                  "program-recipe-hop:1"
+                ],
+                "criterionIds": []
+              }
+            ],
+            "exclusions": [],
+            "conditions": [
+              "Cette piste facultative contextualise les assertions biologiques déjà fournies; aucune validation supplémentaire n’est requise pour consulter les voies d’arôme direct ou documentaire.",
+              "Information qui changerait son interprétation : culture/souche précise, viabilité au contact, mesure de substrat et exposition dans la matrice réelle. Ces éléments ne sont pas présumés et leur absence ne ferme pas les autres voies."
+            ],
+            "nonConclusions": [
+              "Aucune intensité, synergie ou qualité sensorielle de la bière finie n’est prédite.",
+              "Aucune dose, masse, volume, base analytique ou résultat de conformité n’est ajouté par le conseil.",
+              "Aucun taux de biotransformation, effet d’inhibition, viabilité ou conversion biologique n’est prédit."
+            ],
+            "informationRequestIds": []
+          }
+        ],
+        "informationRequests": [],
+        "evidenceSources": [
+          {
+            "id": "m-ab-sakamoto-2001",
+            "source": {
+              "title": "Hop resistance in the beer spoilage bacterium Lactobacillus brevis is mediated by the ATP-binding cassette multidrug transporter HorA",
+              "author": "Sakamoto, Margolles, van Veen et Konings",
+              "year": 2001,
+              "kind": "research",
+              "reference": "https://journals.asm.org/doi/10.1128/JB.183.18.5371-5375.2001",
+              "locator": "Journal of Bacteriology 183(18):5371–5375; méthodes « Bacterial strains and growth conditions », « Hop resistance »; résultats/Figure 2 et discussion."
+            },
+            "locator": "Methods and Results/Fig. 2; study of a specific L. brevis isolate and heterologous HorA expression in L. lactis.",
+            "readingLevel": "primaryFullText",
+            "domain": "résistance de souches à des composés de houblon",
+            "established": "Le travail porte sur HorA d’un isolat L. brevis précis; le test rapporté utilise des iso-α-acides et une expression de HorA dans L. lactis.",
+            "limits": [
+              "N’établit pas HorA, tolérance ou inhibition pour une culture L. plantarum non identifiée.",
+              "Ne teste pas S. pastorianus, leur co-culture ni l’ajout à froid de houblon brut."
+            ]
+          },
+          {
+            "id": "m-ab-dysvik-2020",
+            "source": {
+              "title": "Co-fermentation Involving Saccharomyces cerevisiae and Lactobacillus Species Tolerant to Brewing-Related Stress Factors for Controlled and Rapid Production of Sour Beer",
+              "author": "Dysvik et al.",
+              "year": 2020,
+              "kind": "research",
+              "reference": "https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2020.00279/full",
+              "locator": "Frontiers in Microbiology 11:279; méthodes « Yeast, Bacterial Strains and Growth Conditions », « Stress Experiments », « Small Scale Co-fermentations »; Figure 1 et discussion."
+            },
+            "locator": "Primary full text; pure-culture stress assays and separate co-fermentation protocol.",
+            "readingLevel": "primaryFullText",
+            "domain": "interaction conditionnelle entre iso-α-acides et cultures lactiques",
+            "established": "Une souche commerciale L. plantarum réagit différemment selon les conditions de stress et réussit une co-fermentation séparée avec S. cerevisiae sous leur protocole.",
+            "limits": [
+              "Les essais de stress utilisent un extrait pré-isomérisé; ils ne prouvent pas une exposition équivalente avec des cônes crus ajoutés à froid.",
+              "Les souches, matrice, milieu, éthanol et montage diffèrent de la situation fournie; aucune inhibition/tolérance du couple de cultures n’est prédite."
+            ]
+          },
+          {
+            "id": "m-ab-mahanta-2022",
+            "source": {
+              "title": "Sour beer production in India using a coculture of Saccharomyces pastorianus and Lactobacillus plantarum: optimization, microbiological, and biochemical profiling",
+              "author": "Mahanta et al.",
+              "year": 2022,
+              "kind": "research",
+              "reference": "https://link.springer.com/article/10.1007/s42770-022-00691-8",
+              "locator": "Brazilian Journal of Microbiology 53:947–958; résumé de l’éditeur et extraits indexés de texte primaire."
+            },
+            "locator": "Publisher abstract; indexed excerpts for inoculation/methods and process-variable/optimization results.",
+            "readingLevel": "primaryAbstract",
+            "domain": "précédent de procédé avec un couple d’espèces documenté",
+            "established": "Le résumé éditeur rapporte une co-fermentation de S. pastorianus et L. plantarum avec houblon comme facteur de procédé dans une bière cible à 6–8 % vol.",
+            "limits": [
+              "Le plein texte et les suppléments n’ont pas été examinés; les extraits accessibles ne donnent pas de souche comparable à la situation fournie.",
+              "Ne démontre pas une tolérance universelle, un effet à faible alcool, une exposition iso-α isolée, un résultat d’arôme ou une dose transférable."
+            ]
+          }
+        ],
+        "coverage": {
+          "status": "completeWithinSuppliedScope",
+          "consideredMaterialIds": [
+            "variety:hop-v55-fixture-identity-a",
+            "variety:hop-v55-fixture-identity-b",
+            "variety:hop-v55-fixture-identity-c",
+            "hop-v55-fixture-recipe-planning:recipe-hop:0",
+            "hop-v55-fixture-recipe-planning:recipe-hop:1"
+          ],
+          "excludedMaterialIds": [],
+          "contextOnlyMaterialIds": [],
+          "omittedMaterials": [],
+          "conditionalMaterials": [],
+          "limits": [
+            "Exploration limitée aux matières explicitement transmises à cette action; aucun catalogue complet ou épuisement de recherche n’est revendiqué.",
+            "Conseil qualitatif/documentaire seulement : aucune dose, volume, alpha, IBU, pH final, ABV, intensité ou conformité globale n’est calculé.",
+            "Les sources décrivent leurs propres matrices/protocoles; aucun effet sensoriel universel ni réponse biologique certaine n’est transféré.",
+            "L’ordre des options est une liste stable dans le périmètre fourni, pas un classement ni une recommandation universelle."
+          ]
+        },
+        "limitations": [
+          "Exploration limitée aux matières explicitement transmises à cette action; aucun catalogue complet ou épuisement de recherche n’est revendiqué.",
+          "Conseil qualitatif/documentaire seulement : aucune dose, volume, alpha, IBU, pH final, ABV, intensité ou conformité globale n’est calculé.",
+          "Les sources décrivent leurs propres matrices/protocoles; aucun effet sensoriel universel ni réponse biologique certaine n’est transféré.",
+          "L’ordre des options est une liste stable dans le périmètre fourni, pas un classement ni une recommandation universelle."
+        ],
+        "reference": "hop-advice-result-v1:sha256:f7cb6c15dbd78f64e9cefe2e33f4b45b1f66cbce790df82828723bc36c879230"
+      },
+      "criteria": [
+        {
+          "id": "criterion-source-28-30-17",
+          "description": "À préserver : 17",
+          "role": "preserve",
+          "origin": "user",
+          "status": "evaluatedByStrategy",
+          "reason": "Les évaluations sont propres aux pistes documentaires ; elles ne certifient ni résultat sensoriel ni applicabilité opérationnelle.",
+          "strategies": [
+            {
+              "optionId": "hop-advice-option-001",
+              "optionReference": "hop-advice-option-v1:sha256:a9206fcea830434413706873cda84bf9c0f9d161ca2221f43d9c1cd3f436aa30",
+              "evaluation": {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            },
+            {
+              "optionId": "hop-advice-option-002",
+              "optionReference": "hop-advice-option-v1:sha256:605bde019262fb963f65aa443a0e7c6fc3b6605bc6e7fb073e91bc85d2bb4cc3",
+              "evaluation": {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            },
+            {
+              "optionId": "hop-advice-option-003",
+              "optionReference": "hop-advice-option-v1:sha256:d33b3fc492dfcd4578c17ba05d38f02bc5c9643b32740feb0625056db7484f6a",
+              "evaluation": {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            },
+            {
+              "optionId": "hop-advice-option-004",
+              "optionReference": "hop-advice-option-v1:sha256:57190dbbf09f9a6bef5a2719db45d6dfaa202a5e34af64c881847266f9327204",
+              "evaluation": {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            },
+            {
+              "optionId": "hop-advice-option-005",
+              "optionReference": "hop-advice-option-v1:sha256:1259c3fb7e4bc2666d55d65c785718e0d2e221e3cd8a7e8c5f730163ddc11e99",
+              "evaluation": {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            },
+            {
+              "optionId": "hop-advice-option-006",
+              "optionReference": "hop-advice-option-v1:sha256:1b9f97c9d92951776ab64f09038b5251a404336d1e4eb29b78ee3d45142ae722",
+              "evaluation": {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            },
+            {
+              "optionId": "hop-advice-option-007",
+              "optionReference": "hop-advice-option-v1:sha256:bb480d1aee9b89a26e94914ad04fc1de2d3488c257eb1a6d52a701b730fbc96a",
+              "evaluation": {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            },
+            {
+              "optionId": "hop-advice-option-008",
+              "optionReference": "hop-advice-option-v1:sha256:172e768b6edd09f0369a4bf8d8e4ccf50cbaefdb4ea0cdc720a6c89ad91bfc8f",
+              "evaluation": {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            },
+            {
+              "optionId": "hop-advice-option-009",
+              "optionReference": "hop-advice-option-v1:sha256:a19701c84f3e762eafa0b731703bc4111d40cb22550185a34a352ac3b9ed6199",
+              "evaluation": {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            },
+            {
+              "optionId": "hop-advice-option-010",
+              "optionReference": "hop-advice-option-v1:sha256:1f54226bd3dc58b17af7cf858f5c8f06578274a9ff85776109513b7ee7bb70fe",
+              "evaluation": {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            },
+            {
+              "optionId": "hop-advice-option-011",
+              "optionReference": "hop-advice-option-v1:sha256:a4af9ccc198ba6f587708c0b0442f85b5d8be50994510d5361a337d0808d2a64",
+              "evaluation": {
+                "criterionId": "criterion-source-28-30-17",
+                "status": "unknown",
+                "reason": "Aucune dimension ou famille documentaire n’est explicitement liée à ce critère; son texte reste intact et aucun parsing n’est tenté.",
+                "evidenceIds": []
+              }
+            }
+          ]
+        }
+      ],
+      "missingInformation": [],
+      "sources": [
+        {
+          "title": "Hop resistance in the beer spoilage bacterium Lactobacillus brevis is mediated by the ATP-binding cassette multidrug transporter HorA",
+          "author": "Sakamoto, Margolles, van Veen et Konings",
+          "year": 2001,
+          "kind": "research",
+          "reference": "https://journals.asm.org/doi/10.1128/JB.183.18.5371-5375.2001",
+          "locator": "Journal of Bacteriology 183(18):5371–5375; méthodes « Bacterial strains and growth conditions », « Hop resistance »; résultats/Figure 2 et discussion."
+        },
+        {
+          "title": "Co-fermentation Involving Saccharomyces cerevisiae and Lactobacillus Species Tolerant to Brewing-Related Stress Factors for Controlled and Rapid Production of Sour Beer",
+          "author": "Dysvik et al.",
+          "year": 2020,
+          "kind": "research",
+          "reference": "https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2020.00279/full",
+          "locator": "Frontiers in Microbiology 11:279; méthodes « Yeast, Bacterial Strains and Growth Conditions », « Stress Experiments », « Small Scale Co-fermentations »; Figure 1 et discussion."
+        },
+        {
+          "title": "Sour beer production in India using a coculture of Saccharomyces pastorianus and Lactobacillus plantarum: optimization, microbiological, and biochemical profiling",
+          "author": "Mahanta et al.",
+          "year": 2022,
+          "kind": "research",
+          "reference": "https://link.springer.com/article/10.1007/s42770-022-00691-8",
+          "locator": "Brazilian Journal of Microbiology 53:947–958; résumé de l’éditeur et extraits indexés de texte primaire."
+        }
+      ],
+      "boundaries": {
+        "offline": true,
+        "writesRecipe": false,
+        "writesBatch": false,
+        "sensoryValidation": "notEstablished"
+      }
+    },
+    "branches": [],
+    "unresolved": [
+      "Le terme « 17 » est conservé comme critère, mais n’est rattaché à aucune famille ou dimension du lexique préparé."
+    ]
+  },
+  "source": {
+    "kind": "exploration"
+  },
+  "runtimeReference": "hop-v55-scenario-runtime-v1:sha256:741aa4a1aa05b5bc2bc944e9b03847a1a31009111fee25d4a1c0711874d9d7a9",
+  "contentReference": "hop-v55-decision-reading-v2:sha256:513186d81227857f110dbf6fcaab44ca06f575170d1e5f5c536a34acdcea33ea"
+}

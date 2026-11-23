@@ -1,0 +1,31 @@
+
+> brasserie-laffinee-admin@1.0.0 lint:design
+> node tools/design-lint/lancer.mjs DESIGN.md
+
+[warning] missing-primary colors : No 'primary' color defined. The agent will auto-generate key colors, reducing your control over the palette.
+[warning] orphaned-tokens colors.cave-800 : 'cave-800' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.cave-700 : 'cave-700' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.cave-600 : 'cave-600' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.cave-400 : 'cave-400' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.ebc-gold : 'ebc-gold' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.ebc-amber : 'ebc-amber' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.ebc-copper : 'ebc-copper' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.ebc-brown : 'ebc-brown' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.ebc-stout : 'ebc-stout' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.area-production : 'area-production' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.area-finances : 'area-finances' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.area-stocks : 'area-stocks' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.area-agenda : 'area-agenda' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.attention : 'attention' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.alert-strong : 'alert-strong' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.hop : 'hop' is defined but never referenced by any component.
+[warning] orphaned-tokens colors.water : 'water' is defined but never referenced by any component.
+[info] token-summary  : Design system defines 24 colors, 5 typography scales, 3 rounding levels, 3 spacing tokens, 5 components.
+OUTIL GOOGLE : 0 erreur(s), 18 avertissement(s), 1 info(s)
+Chemins cités vérifiés : 12
+OK  button-primary : cave-950 sur ebc-straw = 11.31:1
+OK  button-secondary : cave-200 sur cave-850 = 10.78:1
+AVERTISSEMENT contraste <4,5 : button-danger : alert sur cave-900 (fond transparent, surface supposée) = 4.09:1
+OK  reading-value : cave-50 sur cave-900 (fond transparent, surface supposée) = 15.87:1
+EXTRA OK
+LINT DESIGN OK (avertissements de format mis à part)

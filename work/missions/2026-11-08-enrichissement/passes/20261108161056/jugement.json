@@ -1,0 +1,997 @@
+{
+  "juges": [
+    {
+      "id": "p01",
+      "nom": "Weyermann Pilsner Malt",
+      "famille": "malt",
+      "groupe": "phare",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.354154,
+      "ms": 7982,
+      "essais": 1,
+      "verdict": "ok",
+      "champs": [
+        {
+          "champ": "colorEbc",
+          "attendu": {
+            "plage": [
+              2.5,
+              4.5
+            ]
+          },
+          "rendu": {
+            "plage": [
+              2.5,
+              4.5
+            ],
+            "valeur": 3.5,
+            "deduit": true
+          },
+          "verdict": "juste"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "producteur",
+        "hote": "weyermann.de",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "p02",
+      "nom": "Maris Otter Crisp",
+      "famille": "malt",
+      "groupe": "phare",
+      "chemin": "f4",
+      "statutVerite": "a-reverifier",
+      "coutChf": 0.354335,
+      "ms": 5616,
+      "essais": 1,
+      "verdict": "ok",
+      "champs": [
+        {
+          "champ": "colorEbc",
+          "attendu": {
+            "plage": [
+              4.5,
+              7.5
+            ]
+          },
+          "rendu": {
+            "plage": [
+              5.5,
+              7.2
+            ],
+            "valeur": 6.4,
+            "deduit": true
+          },
+          "verdict": "dans-la-plage"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "producteur",
+        "hote": "crispmalt.com",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "p03",
+      "nom": "Weyermann Caramünch Typ 1",
+      "famille": "malt",
+      "groupe": "phare",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.35444,
+      "ms": 5719,
+      "essais": 1,
+      "verdict": "ok",
+      "champs": [
+        {
+          "champ": "colorEbc",
+          "attendu": {
+            "plage": [
+              80,
+              100
+            ]
+          },
+          "rendu": {
+            "plage": [
+              80,
+              100
+            ],
+            "valeur": 90,
+            "deduit": true
+          },
+          "verdict": "juste"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "producteur",
+        "hote": "weyermann.de",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "p04",
+      "nom": "Citra",
+      "famille": "houblon",
+      "groupe": "phare",
+      "chemin": "assistant",
+      "statutVerite": "a-reverifier",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "p05",
+      "nom": "Nelson Sauvin",
+      "famille": "houblon",
+      "groupe": "phare",
+      "chemin": "assistant",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "p06",
+      "nom": "Idaho 7",
+      "famille": "houblon",
+      "groupe": "phare",
+      "chemin": "assistant",
+      "statutVerite": "a-reverifier",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "p07",
+      "nom": "Magnum",
+      "famille": "houblon",
+      "groupe": "phare",
+      "chemin": "assistant",
+      "statutVerite": "a-reverifier",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "p08",
+      "nom": "SafAle US-05",
+      "famille": "levure",
+      "groupe": "phare",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "p09",
+      "nom": "Nottingham",
+      "famille": "levure",
+      "groupe": "phare",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "p10",
+      "nom": "WLP001",
+      "famille": "levure",
+      "groupe": "phare",
+      "chemin": "f4",
+      "statutVerite": "a-reverifier",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f01",
+      "nom": "Idaho7",
+      "famille": "houblon",
+      "groupe": "nom-tape",
+      "chemin": "assistant",
+      "statutVerite": "a-reverifier",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f02",
+      "nom": "Cryo Hops Citra 25g",
+      "famille": "houblon",
+      "groupe": "facture",
+      "chemin": "assistant",
+      "statutVerite": "a-reverifier",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f03",
+      "nom": "Caramünch Typ 2",
+      "famille": "malt",
+      "groupe": "nom-tape",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.354255,
+      "ms": 5741,
+      "essais": 1,
+      "verdict": "ok",
+      "champs": [
+        {
+          "champ": "colorEbc",
+          "attendu": {
+            "plage": [
+              110,
+              130
+            ]
+          },
+          "rendu": {
+            "plage": [
+              110,
+              130
+            ],
+            "valeur": 120,
+            "deduit": true
+          },
+          "verdict": "juste"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "racine-producteur",
+        "hote": "weyermann.de",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f04",
+      "nom": "Pilsner Malz",
+      "famille": "malt",
+      "groupe": "facture",
+      "chemin": "f4",
+      "statutVerite": "piege",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f05",
+      "nom": "Pale Ale Malz Weyermann 25kg",
+      "famille": "malt",
+      "groupe": "facture",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.354172,
+      "ms": 6926,
+      "essais": 1,
+      "verdict": "ok",
+      "champs": [
+        {
+          "champ": "colorEbc",
+          "attendu": {
+            "plage": [
+              5.5,
+              7.5
+            ]
+          },
+          "rendu": {
+            "plage": [
+              5.5,
+              7.5
+            ],
+            "valeur": 6.5,
+            "deduit": true
+          },
+          "verdict": "juste"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "producteur",
+        "hote": "weyermann.de",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f06",
+      "nom": "Münchner Malz Typ 1 Weyermann",
+      "famille": "malt",
+      "groupe": "facture",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.35403,
+      "ms": 19978,
+      "essais": 1,
+      "verdict": "ok",
+      "champs": [
+        {
+          "champ": "colorEbc",
+          "attendu": {
+            "plage": [
+              12,
+              18
+            ]
+          },
+          "rendu": {
+            "plage": [
+              12,
+              18
+            ],
+            "valeur": 15,
+            "deduit": true
+          },
+          "verdict": "juste"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "producteur",
+        "hote": "weyermann.de",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f07",
+      "nom": "Wiener Malz Weyermann",
+      "famille": "malt",
+      "groupe": "facture",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.354324,
+      "ms": 6992,
+      "essais": 1,
+      "verdict": "ok",
+      "champs": [
+        {
+          "champ": "colorEbc",
+          "attendu": {
+            "plage": [
+              6,
+              9
+            ]
+          },
+          "rendu": {
+            "plage": [
+              6,
+              9
+            ],
+            "valeur": 7.5,
+            "deduit": true
+          },
+          "verdict": "juste"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "producteur",
+        "hote": "weyermann.de",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f08",
+      "nom": "Roggenmalz Weyermann",
+      "famille": "malt",
+      "groupe": "facture",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.354148,
+      "ms": 6367,
+      "essais": 1,
+      "verdict": "ok",
+      "champs": [
+        {
+          "champ": "colorEbc",
+          "attendu": {
+            "plage": [
+              4,
+              10
+            ]
+          },
+          "rendu": {
+            "plage": [
+              4,
+              10
+            ],
+            "valeur": 7,
+            "deduit": true
+          },
+          "verdict": "juste"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "racine-producteur",
+        "hote": "weyermann.de",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f09",
+      "nom": "Weizenmalz dunkel Weyermann",
+      "famille": "malt",
+      "groupe": "facture",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.35403,
+      "ms": 5955,
+      "essais": 1,
+      "verdict": "ok",
+      "champs": [
+        {
+          "champ": "colorEbc",
+          "attendu": {
+            "plage": [
+              15,
+              20
+            ]
+          },
+          "rendu": {
+            "plage": [
+              15,
+              20
+            ],
+            "valeur": 17.5,
+            "deduit": true
+          },
+          "verdict": "juste"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "producteur",
+        "hote": "weyermann.de",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f10",
+      "nom": "Melanoidin Malz Weyermann",
+      "famille": "malt",
+      "groupe": "facture",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.35451,
+      "ms": 6848,
+      "essais": 1,
+      "verdict": "ok",
+      "champs": [
+        {
+          "champ": "colorEbc",
+          "attendu": {
+            "plage": [
+              60,
+              80
+            ]
+          },
+          "rendu": {
+            "plage": [
+              60,
+              80
+            ],
+            "valeur": 70,
+            "deduit": true
+          },
+          "verdict": "juste"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "producteur",
+        "hote": "weyermann.de",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f11",
+      "nom": "Carafa Special II Weyermann",
+      "famille": "malt",
+      "groupe": "facture",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0.35472,
+      "ms": 6626,
+      "essais": 1,
+      "verdict": "a-corriger",
+      "champs": [
+        {
+          "champ": "colorEbc",
+          "attendu": {
+            "plage": [
+              1100,
+              1200
+            ]
+          },
+          "rendu": {
+            "plage": [
+              1050,
+              1250
+            ],
+            "valeur": 1150,
+            "deduit": true
+          },
+          "verdict": "faux"
+        }
+      ],
+      "trouvee": true,
+      "source": {
+        "classe": "racine-producteur",
+        "hote": "weyermann.de",
+        "attendue": true
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f12",
+      "nom": "Safale S-04 11,5 g",
+      "famille": "levure",
+      "groupe": "facture",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f13",
+      "nom": "Saflager W-34/70 500g",
+      "famille": "levure",
+      "groupe": "facture",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f14",
+      "nom": "LalBrew Verdant IPA 11g",
+      "famille": "levure",
+      "groupe": "facture",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f15",
+      "nom": "Voss Kveik",
+      "famille": "levure",
+      "groupe": "nom-tape",
+      "chemin": "f4",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f16",
+      "nom": "Mosaic T90 100g",
+      "famille": "houblon",
+      "groupe": "facture",
+      "chemin": "assistant",
+      "statutVerite": "a-reverifier",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f17",
+      "nom": "Motueka NZ pellets",
+      "famille": "houblon",
+      "groupe": "facture",
+      "chemin": "assistant",
+      "statutVerite": "lu-sur-la-fiche",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "f18",
+      "nom": "Saaz CZ Pellets 100g",
+      "famille": "houblon",
+      "groupe": "facture",
+      "chemin": "assistant",
+      "statutVerite": "a-reverifier",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x01",
+      "nom": "Malterie Zorbax Super Pale 77",
+      "famille": "malt",
+      "groupe": "piege",
+      "chemin": "f4",
+      "statutVerite": "piege",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x02",
+      "nom": "Citra Zeta",
+      "famille": "houblon",
+      "groupe": "piege",
+      "chemin": "assistant",
+      "statutVerite": "piege",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x03",
+      "nom": "SafAle XQ-99",
+      "famille": "levure",
+      "groupe": "piege",
+      "chemin": "f4",
+      "statutVerite": "piege",
+      "coutChf": 0.353938,
+      "ms": 6909,
+      "essais": 1,
+      "verdict": "introuvable-a-raison",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "racine-producteur",
+        "hote": "fermentis.com"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x04",
+      "nom": "Levure Maison 42",
+      "famille": "levure",
+      "groupe": "piege",
+      "chemin": "f4",
+      "statutVerite": "piege",
+      "coutChf": 0.353634,
+      "ms": 6523,
+      "essais": 1,
+      "verdict": "introuvable-a-raison",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-url"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x05",
+      "nom": "Flocons d'avoine",
+      "famille": "malt",
+      "groupe": "piege",
+      "chemin": "f4",
+      "statutVerite": "piege",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x06",
+      "nom": "Malt Munich",
+      "famille": "malt",
+      "groupe": "piege",
+      "chemin": "f4",
+      "statutVerite": "piege",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x07",
+      "nom": "Sucre cristal 1 kg",
+      "famille": "malt",
+      "groupe": "piege",
+      "chemin": "f4",
+      "statutVerite": "piege",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x08",
+      "nom": "Dextrose",
+      "famille": "malt",
+      "groupe": "piege",
+      "chemin": "f4",
+      "statutVerite": "piege",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x09",
+      "nom": "Levure de boulanger fraiche 42g",
+      "famille": "levure",
+      "groupe": "piege",
+      "chemin": "f4",
+      "statutVerite": "piege",
+      "coutChf": 0.353878,
+      "ms": 4940,
+      "essais": 1,
+      "verdict": "introuvable-a-raison",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-url"
+      },
+      "violeM2": false,
+      "inventes": 0
+    },
+    {
+      "id": "x10",
+      "nom": "Houblon amer 12% sac 1 kg",
+      "famille": "houblon",
+      "groupe": "piege",
+      "chemin": "assistant",
+      "statutVerite": "piege",
+      "coutChf": 0,
+      "ms": 0,
+      "essais": 0,
+      "verdict": "non-appele",
+      "champs": [],
+      "trouvee": false,
+      "source": {
+        "classe": "sans-source"
+      },
+      "violeM2": false,
+      "inventes": 0
+    }
+  ],
+  "synthese": {
+    "produits": 38,
+    "appeles": 14,
+    "parVerdict": {
+      "ok": 10,
+      "non-appele": 24,
+      "a-corriger": 1,
+      "introuvable-a-raison": 3
+    },
+    "parChamp": {
+      "juste": 9,
+      "dans-la-plage": 1,
+      "faux": 1,
+      "invente": 0,
+      "absent-a-raison": 0,
+      "absent-a-tort": 0,
+      "non-verifie": 0
+    },
+    "parSource": {
+      "producteur": 8,
+      "racine-producteur": 3
+    },
+    "inventes": 0,
+    "violationsM2": 0,
+    "introuvablesATort": 0,
+    "introuvablesARaison": 3,
+    "coutTotalChf": 4.958568,
+    "coutParAppel": {
+      "moyen": 0.35418342857142854,
+      "mediane": 0.354154,
+      "max": 0.35472
+    },
+    "duree": {
+      "moyenneMs": 7366,
+      "p95Ms": 19978,
+      "maxMs": 19978
+    },
+    "aReverifier": 9
+  }
+}

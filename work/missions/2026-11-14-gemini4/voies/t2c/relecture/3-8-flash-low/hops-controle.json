@@ -1,0 +1,16 @@
+{
+ "reglage": "3.8-flash@low",
+ "element": "hops-controle",
+ "cas": "hops",
+ "type": "controle",
+ "moitie": "jugement",
+ "verdict": {
+  "utilisable": true,
+  "approved": true,
+  "proposalApproved": true,
+  "issues": []
+ },
+ "ms": 1819,
+ "coutMicro": 12074,
+ "etat": "STOP"
+}

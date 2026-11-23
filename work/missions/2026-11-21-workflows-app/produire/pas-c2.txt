@@ -1,0 +1,8 @@
+# C2 : du brassin planifié ZZ TEST IPA à la feuille Brasser (fixture simulée, 21.11)
+t=Brassins
+d
+cap=01-brassins
+t=Brasser
+d
+cap=02-feuille-brasser
+inp

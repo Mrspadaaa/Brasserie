@@ -1,0 +1,274 @@
+<title>Radar, vingt essais · 25.10</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:wght@600;800&display=swap">
+<style>
+/* La disposition qu'il aime (24.10, soir) : une rangée par endroit, le nom à gauche (au téléphone : au-dessus) ; sa
+   référence puis les huit jeux en vignettes serrées, six par rangée à l'ordinateur, trois au téléphone. Rien ne défile
+   en largeur (D126). Chaque vignette s'ouvre en grand, à côté de sa référence. Page claire (D106). */
+:root {
+  --fond: #f4f6f1;
+  --carte: #ffffff;
+  --encre: #1c2019;
+  --discret: #5a6155;
+  --trait: #dde2d6;
+  --houblon: #4a7426;
+  --ambre: #b97a12;
+  --ombre: 0 1px 2px rgb(28 32 25 / 8%), 0 4px 14px rgb(28 32 25 / 6%);
+  --titre: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texte: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--fond); color: var(--encre); font: 16px/1.45 var(--texte); margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 64px;
+}
+.page { max-width: 1320px; margin: 0 auto; display: grid; gap: 22px; }
+h1, h2 { font-family: var(--titre); text-wrap: balance; margin: 0; line-height: 1.12; }
+h1 { font-size: clamp(1.7rem, 6vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.25rem; font-weight: 800; }
+p { margin: 0; max-width: 70ch; }
+a { color: var(--houblon); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--houblon); outline-offset: 2px; }
+header { display: grid; gap: 6px; }
+.sur-titre { font-size: 0.875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--discret); }
+.encart { border-left: 4px solid var(--ambre); padding: 12px 14px; background: var(--carte); border-radius: 0 10px 10px 0; display: grid; gap: 8px; max-width: 84ch; }
+.encart .canal { font-weight: 700; }
+.sommaire { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.pastille { justify-self: start; display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.5; padding: 0 9px; border-radius: 999px; color: #fff; white-space: nowrap; }
+.p-ref { background: #2f6b1f; }
+.p-froide { background: #2a6fb0; }
+.p-tiede { background: #85600a; }
+.p-chaude { background: #a8431a; }
+.pastilles { display: flex; flex-wrap: wrap; gap: 3px 4px; }
+.verdict { display: inline-block; font-size: 0.875rem; font-weight: 700; line-height: 1.4; padding: 0 7px; border-radius: 999px; border: 1.5px solid currentColor; white-space: nowrap; }
+.v-accepte { color: #2f6b1f; } .v-tete { color: #fff; background: #2f6b1f; border-color: #2f6b1f; }
+.legende-pastilles { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 0.875rem; color: var(--discret); align-items: center; }
+.rangee { display: grid; gap: 12px; padding-top: 18px; border-top: 1px solid var(--trait); }
+.nom { display: grid; gap: 4px; align-content: start; }
+.question { font-family: var(--titre); font-weight: 600; font-size: 1.05rem; color: var(--houblon); }
+.note { font-size: 0.875rem; color: var(--discret); }
+.planche { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 8px; align-items: start; }
+@media (min-width: 900px) {
+  .rangee { grid-template-columns: 200px minmax(0, 1fr); gap: 20px; }
+  .planche { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px 14px; }
+}
+.vue { margin: 0; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.ecran { display: block; width: 100%; padding: 0; border: 1px solid var(--trait); border-radius: 10px; overflow: hidden; background: var(--carte); box-shadow: var(--ombre); cursor: zoom-in; aspect-ratio: 780 / 1688; }
+.ecran img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.vue[data-reference] .ecran { border-color: transparent; box-shadow: 0 0 0 3px var(--ambre), var(--ombre); }
+.vue figcaption { display: grid; gap: 3px; }
+.vue figcaption b { font-family: var(--titre); font-size: 0.95rem; line-height: 1.2; }
+.id { font-size: 0.875rem; color: var(--discret); font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; overflow-wrap: anywhere; }
+.ligne { font-size: 0.875rem; font-style: italic; color: var(--encre); line-height: 1.35; }
+.reserves { display: grid; gap: 6px; font-size: 0.95rem; }
+footer { border-top: 1px solid var(--trait); padding-top: 16px; display: grid; gap: 8px; font-size: 0.95rem; color: var(--discret); }
+.visionneuse { position: fixed; inset: 0; z-index: 20; background: #0e100c; overflow-y: auto; padding: calc(64px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); color: #eef2ea; }
+.vis-tete { position: fixed; top: 0; left: 0; right: 0; z-index: 2; display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) 10px max(12px, env(safe-area-inset-left, 0px)); background: #0e100c; }
+.vis-titre { font: 800 1.05rem/1.2 var(--titre); min-width: 0; }
+.vis-boutons { display: flex; gap: 6px; flex: none; }
+.vis-boutons button { font: 700 0.95rem var(--texte); border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; background: #2d3328; color: #eef2ea; }
+.vis-boutons .fermer { background: #eef2ea; color: #1c2019; }
+.vis-corps { display: grid; gap: 28px; max-width: 1240px; margin: 0 auto; }
+.vis-rangee { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+.vis-panneau { flex: 0 0 86%; scroll-snap-align: start; margin: 0; display: grid; gap: 8px; align-content: start; }
+.vis-panneau img { display: block; width: 100%; height: auto; border-radius: 14px; background: #fff; }
+.vis-panneau.ref img { box-shadow: 0 0 0 3px var(--ambre); }
+.vis-panneau figcaption { font-size: 0.95rem; }
+.vis-panneau.ref figcaption { color: #f6d38f; font-weight: 700; }
+.vis-glisse { font-size: 0.875rem; color: #c9d0c3; }
+@media (min-width: 900px) {
+  .vis-rangee { overflow: visible; justify-content: center; flex-wrap: wrap; }
+  .vis-panneau { flex: 0 1 400px; min-width: 290px; }
+  .vis-glisse { display: none; }
+}
+</style>
+
+<style>/* Radars seuls : la vignette prend le format du radar (748 × 638), sans recadrage ; rde3, plus haute, entière. */
+.ecran { aspect-ratio: 748 / 638; background: #fbfaf7; }
+.ecran img { object-fit: contain; object-position: center; }</style>
+<div class="page">
+  <header>
+    <p class="sur-titre">L'Affinée · houblons · Comparer, le radar seul · 25.10</p>
+    <h1>Le radar : vingt essais sur ta base</h1>
+  </header>
+  <section id="a-choisir" aria-label="À choisir">
+    <div class="encart">
+      <p><b>À choisir :</b> vingt radars, tous partis de cmb3b, sur les mêmes données. Chaque vignette s'ouvre sur trois états : après, 60′, Motueka face à Nelson Sauvin.</p>
+      <p>Tes mots : « genre 20 sur le radargraph uniquement focus dessus » ; « En partant de ce type de base ».</p>
+      <p>Partout : rien n'est dessiné sur un arôme inconnu (hachuré).</p>
+      <p class="canal">Commente les radars qui te parlent : je lis les commentaires.</p>
+    </div>
+  </section>
+
+  <section class="rangee" id="r-radar" data-choix="radar-vingt" aria-labelledby="t-radar" data-ref-nom="Le type de base, cmb3b" data-ref-imgs="img/rd00.png|img/rd00-60.png|img/rd00-nelson.png|img/brasseur-base-type-cmb3b.jpg" data-ref-etats="après|à 60′|Motueka face à Nelson Sauvin|ta capture">
+    <div class="nom">
+      <h2 id="t-radar">Vingt radars sur ta base</h2>
+      <p class="question">« uniquement focus dessus »</p>
+      <p class="note">rda : ta base, les pics ; rdb : en courbes ; rdc : pics en Λ ; rdd : comparer les deux ; rde : libre.</p>
+    </div>
+    <div class="planche">
+      <figure class="vue" data-reference data-vignette>
+        <button class="ecran" type="button" data-nom="Le type de base · cmb3b" data-imgs="img/rd00.png|img/rd00-60.png|img/rd00-nelson.png|img/brasseur-base-type-cmb3b.jpg" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin|ta capture"><img src="img/rd00.png" width="748" height="638" alt="Le radar de cmb3b"></button>
+        <figcaption><span class="pastille p-ref">ta base</span><b>Le radar de cmb3b</b><span class="id">rd00</span><span class="ligne">Redessiné sur les mêmes données.</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rda1 · Le zéro sur un anneau" data-imgs="img/rda1.png|img/rda1-60.png|img/rda1-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rda1.png" width="748" height="638" alt="rda1"></button>
+        <figcaption><b>Le zéro sur un anneau</b><span class="id">rda1</span><span class="ligne">Le radar de cmb3b tel quel, mais son zéro est un petit anneau à 20 %…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rda2 · Des pointes nettes" data-imgs="img/rda2.png|img/rda2-60.png|img/rda2-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rda2.png" width="748" height="638" alt="rda2"></button>
+        <figcaption><b>Des pointes nettes</b><span class="id">rda2</span><span class="ligne">Le radar de cmb3b tel quel, avec des angles vifs au lieu des…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rda3 · Des pointes en Λ" data-imgs="img/rda3.png|img/rda3-60.png|img/rda3-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rda3.png" width="748" height="638" alt="rda3"></button>
+        <figcaption><b>Des pointes en Λ</b><span class="id">rda3</span><span class="ligne">Le radar de cmb3b tel quel, mais chaque valeur est marquée d'une…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rda4 · Les pics du retenu devant" data-imgs="img/rda4.png|img/rda4-60.png|img/rda4-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rda4.png" width="748" height="638" alt="rda4"></button>
+        <figcaption><b>Les pics du retenu devant</b><span class="id">rda4</span><span class="ligne">Le radar de cmb3b tel quel, mais le retenu passe devant (trait de 3,…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rdb1 · Une courbe et des points" data-imgs="img/rdb1.png|img/rdb1-60.png|img/rdb1-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rdb1.png" width="748" height="638" alt="rdb1"></button>
+        <figcaption><b>Une courbe et des points</b><span class="id">rdb1</span><span class="ligne">Son dessin en courbes : entre deux axes connus, le contour tourne…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rdb2 · Une courbe ouverte, coupée sur l'inconnu" data-imgs="img/rdb2.png|img/rdb2-60.png|img/rdb2-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rdb2.png" width="748" height="638" alt="rdb2"></button>
+        <figcaption><b>Une courbe ouverte, coupée sur l'inconnu</b><span class="id">rdb2</span><span class="ligne">Chaque suite d'axes connus devient un arc continu qui tient sa…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rdb3 · Une courbe tenue dans la bande du style" data-imgs="img/rdb3.png|img/rdb3-60.png|img/rdb3-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rdb3.png" width="748" height="638" alt="rdb3"></button>
+        <figcaption><b>Une courbe tenue dans la bande du style</b><span class="id">rdb3</span><span class="ligne">La bande de ta 16D devient elle aussi une courbe, et la courbe du…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rdb4 · Une courbe pour le retenu, un trait droit pour l'autre" data-imgs="img/rdb4.png|img/rdb4-60.png|img/rdb4-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rdb4.png" width="748" height="638" alt="rdb4"></button>
+        <figcaption><b>Une courbe pour le retenu, un trait droit pour l'autre</b><span class="id">rdb4</span><span class="ligne">La forme dit qui est qui : le houblon retenu en courbe pleine,…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rdc1 · Une pointe par famille, posée sur un anneau" data-imgs="img/rdc1.png|img/rdc1-60.png|img/rdc1-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rdc1.png" width="748" height="638" alt="rdc1"></button>
+        <figcaption><b>Une pointe par famille, posée sur un anneau</b><span class="id">rdc1</span><span class="ligne">Chaque famille connue devient un Λ étroit qui part d'un anneau…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rdc2 · Deux pointes par famille, côte à côte" data-imgs="img/rdc2.png|img/rdc2-60.png|img/rdc2-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rdc2.png" width="748" height="638" alt="rdc2"></button>
+        <figcaption><b>Deux pointes par famille, côte à côte</b><span class="id">rdc2</span><span class="ligne">Sur chaque axe, deux Λ jumeaux partent du même moyeu, le retenu…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rdc3 · Des pétales en pointe" data-imgs="img/rdc3.png|img/rdc3-60.png|img/rdc3-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rdc3.png" width="748" height="638" alt="rdc3"></button>
+        <figcaption><b>Des pétales en pointe</b><span class="id">rdc3</span><span class="ligne">Chaque famille connue devient un pétale effilé qui part du centre et…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rdc4 · Les crêtes : chaque pic relié à ses voisins en creux" data-imgs="img/rdc4.png|img/rdc4-60.png|img/rdc4-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rdc4.png" width="748" height="638" alt="rdc4"></button>
+        <figcaption><b>Les crêtes : chaque pic relié à ses voisins en creux</b><span class="id">rdc4</span><span class="ligne">Le contour de cmb3b reste d'un tenant mais descend en flancs…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rdd1 · L'écart à la couleur du gagnant" data-imgs="img/rdd1.png|img/rdd1-60.png|img/rdd1-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rdd1.png" width="748" height="638" alt="rdd1"></button>
+        <figcaption><b>L'écart à la couleur du gagnant</b><span class="id">rdd1</span><span class="ligne">Ce que les deux houblons ont en commun est gris pâle, l'écart entre…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rdd2 · Deux barres par axe" data-imgs="img/rdd2.png|img/rdd2-60.png|img/rdd2-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rdd2.png" width="748" height="638" alt="rdd2"></button>
+        <figcaption><b>Deux barres par axe</b><span class="id">rdd2</span><span class="ligne">Plus de contours : sur chaque axe, deux barres côte à côte partant…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rdd3 · Le retenu plein, l'autre seulement en plus" data-imgs="img/rdd3.png|img/rdd3-60.png|img/rdd3-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rdd3.png" width="748" height="638" alt="rdd3"></button>
+        <figcaption><b>Le retenu plein, l'autre seulement en plus</b><span class="id">rdd3</span><span class="ligne">Le retenu reste plein comme dans cmb3b ; de l'autre on ne voit que…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rdd4 · Superposés : le plein et la trame" data-imgs="img/rdd4.png|img/rdd4-60.png|img/rdd4-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rdd4.png" width="748" height="638" alt="rdd4"></button>
+        <figcaption><b>Superposés : le plein et la trame</b><span class="id">rdd4</span><span class="ligne">Le retenu en plein, l'autre en trame de points (jamais de traits,…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rde1 · La rose des familles" data-imgs="img/rde1.png|img/rde1-60.png|img/rde1-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rde1.png" width="748" height="674" alt="rde1"></button>
+        <figcaption><b>La rose des familles</b><span class="id">rde1</span><span class="ligne">Chaque famille est un pétale à sa couleur, de la longueur de la…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rde2 · L'anneau en miroir" data-imgs="img/rde2.png|img/rde2-60.png|img/rde2-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rde2.png" width="748" height="676" alt="rde2"></button>
+        <figcaption><b>L'anneau en miroir</b><span class="id">rde2</span><span class="ligne">Depuis un même cercle, le houblon retenu pousse en barres vers…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rde3 · Deux petits radars, et l'écart" data-imgs="img/rde3.png|img/rde3-60.png|img/rde3-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rde3.png" width="748" height="914" alt="rde3"></button>
+        <figcaption><b>Deux petits radars, et l'écart</b><span class="id">rde3</span><span class="ligne">Chaque houblon a son petit radar, au contour coupé net à l'inconnu,…</span></figcaption>
+      </figure>
+      <figure class="vue" data-variante data-vignette>
+        <button class="ecran" type="button" data-nom="rde4 · Le style en creux, ce qui en sort en relief" data-imgs="img/rde4.png|img/rde4-60.png|img/rde4-nelson.png" data-etats="Idaho 7 face à Cascade, après|à 60′|Motueka face à Nelson Sauvin"><img src="img/rde4.png" width="748" height="674" alt="rde4"></button>
+        <figcaption><b>Le style en creux, ce qui en sort en relief</b><span class="id">rde4</span><span class="ligne">La bande du style devient un bassin creusé dans le papier : ce qui…</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer>
+    <p>Vingt radars, contrôle de rendu seul, sans critique, comme tu l'as demandé. Rien n'entre dans la maquette avant ton choix. Source : <span class="id">ecran-1/fils26-radar/</span>.</p>
+  </footer>
+</div>
+<div class="visionneuse" id="visionneuse" hidden role="dialog" aria-modal="true" aria-labelledby="vis-titre">
+  <div class="vis-tete">
+    <p class="vis-titre" id="vis-titre"></p>
+    <div class="vis-boutons">
+      <button type="button" id="vis-prec" aria-label="Vue précédente">◀</button>
+      <button type="button" id="vis-suiv" aria-label="Vue suivante">▶</button>
+      <button type="button" class="fermer" id="vis-fermer">Fermer</button>
+    </div>
+  </div>
+  <div class="vis-corps" id="vis-corps"></div>
+</div>
+
+<script>
+// En grand : chaque état du jeu à côté de la maquette telle quelle. Le contenu ne dépend pas de ce script.
+(function () {
+  var vis = document.getElementById('visionneuse');
+  var corps = document.getElementById('vis-corps');
+  var titre = document.getElementById('vis-titre');
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.planche .ecran'));
+  var rang = -1, retour = null;
+  function liste(el, cle) { return (el.getAttribute(cle) || '').split('|').filter(Boolean); }
+  function panneaux(b) {
+    var sec = b.closest('[data-choix]');
+    var etats = liste(b, 'data-etats');
+    var v = liste(b, 'data-imgs').map(function (s, i) { return { src: s, leg: etats[i] || '' }; });
+    if (b.closest('[data-reference]') || !sec.getAttribute('data-ref-imgs')) return v;
+    var refEtats = liste(sec, 'data-ref-etats');
+    return v.concat(liste(sec, 'data-ref-imgs').map(function (s, i) { return { src: s, leg: 'maquette telle quelle · ' + (refEtats[i] || ''), ref: true }; }));
+  }
+  function panneau(p) {
+    var f = document.createElement('figure');
+    f.className = 'vis-panneau' + (p.ref ? ' ref' : '');
+    var c = document.createElement('figcaption'); c.textContent = p.leg;
+    var i = document.createElement('img'); i.src = p.src; i.alt = p.leg;
+    f.appendChild(c); f.appendChild(i);
+    return f;
+  }
+  function ouvrir(n, depuis) {
+    if (depuis) retour = depuis;
+    rang = n;
+    var b = boutons[rang];
+    titre.textContent = b.getAttribute('data-nom');
+    corps.textContent = '';
+    var ps = panneaux(b);
+    if (ps.length > 1) { var g = document.createElement('p'); g.className = 'vis-glisse'; g.textContent = 'Glisse : ' + ps.slice(1).map(function (p) { return p.leg; }).join(', ') + ' →'; corps.appendChild(g); }
+    var d = document.createElement('div'); d.className = 'vis-rangee';
+    ps.forEach(function (p) { d.appendChild(panneau(p)); });
+    corps.appendChild(d);
+    vis.hidden = false; vis.scrollTop = 0;
+    document.getElementById('vis-fermer').focus();
+  }
+  function fermer() { vis.hidden = true; corps.textContent = ''; if (retour) retour.focus(); retour = null; }
+  function aller(pas) { if (rang >= 0) ouvrir((rang + pas + boutons.length) % boutons.length); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.planche .ecran');
+    if (b) ouvrir(boutons.indexOf(b), b);
+  });
+  document.getElementById('vis-fermer').addEventListener('click', fermer);
+  document.getElementById('vis-prec').addEventListener('click', function () { aller(-1); });
+  document.getElementById('vis-suiv').addEventListener('click', function () { aller(1); });
+  document.addEventListener('keydown', function (e) {
+    if (vis.hidden) return;
+    if (e.key === 'Escape') fermer();
+    if (e.key === 'ArrowRight') aller(1);
+    if (e.key === 'ArrowLeft') aller(-1);
+  });
+})();
+</script>

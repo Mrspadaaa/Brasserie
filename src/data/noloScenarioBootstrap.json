@@ -1,0 +1,564 @@
+[
+  {
+    "id": "nolo-process-science",
+    "kind": "noloScience",
+    "name": "NOLO · procédés, souches et bilan d’alcool",
+    "version": "2026-09-09.2",
+    "enabled": true,
+    "source": {
+      "title": "Bilan NOLO et limites des transferts de modèle",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "functions/reports/fermentation-2026.md",
+      "locator": "Révision scénarios : projection conditionnelle séparée des analyses, LA-01 édition novembre 2025."
+    },
+    "ethanolDensityGL": {
+      "value": 789.24,
+      "unit": "g/L à 20 °C",
+      "source": {
+        "title": "International alcoholometric tables R22",
+        "author": "OIML",
+        "year": 1975,
+        "kind": "review",
+        "reference": "https://www.oiml.org/en/files/pdf_r/r022-e75.pdf",
+        "locator": "Masse volumique de l’éthanol à 20 °C : 789,24 kg/m³."
+      }
+    },
+    "waterMashMaxLKg": {
+      "value": 8,
+      "unit": "L/kg",
+      "source": {
+        "title": "Bilan NOLO et limites des transferts de modèle",
+        "author": "L’Affinée",
+        "year": 2026,
+        "kind": "judgment",
+        "reference": "functions/reports/fermentation-2026.md",
+        "locator": "Limite de prudence propre à L’Affinée, sans validation du modèle de pH au-delà ; pas un seuil chimique universel."
+      }
+    },
+    "ethanolMaxGPerG": {
+      "glucose": {
+        "value": 0.5114286583374353,
+        "unit": "g éthanol / g sucre (plafond)",
+        "source": {
+          "title": "Calcul stœchiométrique des plafonds éthanol/sucre",
+          "author": "L’Affinée",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "https://webbook.nist.gov/chemistry/",
+          "locator": "Calcul 2026 : 2×46.06844/180.15588 (hexoses), 4×46.06844/342.29648 (disaccharides), 6×46.06844/504.43708 (maltotriose). Aucune perte : plafond physique, jamais rendement de fermentation."
+        }
+      },
+      "fructose": {
+        "value": 0.5114286583374353,
+        "unit": "g éthanol / g sucre (plafond)",
+        "source": {
+          "title": "Calcul stœchiométrique des plafonds éthanol/sucre",
+          "author": "L’Affinée",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "https://webbook.nist.gov/chemistry/",
+          "locator": "Calcul 2026 : 2×46.06844/180.15588 (hexoses), 4×46.06844/342.29648 (disaccharides), 6×46.06844/504.43708 (maltotriose). Aucune perte : plafond physique, jamais rendement de fermentation."
+        }
+      },
+      "sucrose": {
+        "value": 0.5383454717384182,
+        "unit": "g éthanol / g sucre (plafond)",
+        "source": {
+          "title": "Calcul stœchiométrique des plafonds éthanol/sucre",
+          "author": "L’Affinée",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "https://webbook.nist.gov/chemistry/",
+          "locator": "Calcul 2026 : 2×46.06844/180.15588 (hexoses), 4×46.06844/342.29648 (disaccharides), 6×46.06844/504.43708 (maltotriose). Aucune perte : plafond physique, jamais rendement de fermentation."
+        }
+      },
+      "maltose": {
+        "value": 0.5383454717384182,
+        "unit": "g éthanol / g sucre (plafond)",
+        "source": {
+          "title": "Calcul stœchiométrique des plafonds éthanol/sucre",
+          "author": "L’Affinée",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "https://webbook.nist.gov/chemistry/",
+          "locator": "Calcul 2026 : 2×46.06844/180.15588 (hexoses), 4×46.06844/342.29648 (disaccharides), 6×46.06844/504.43708 (maltotriose). Aucune perte : plafond physique, jamais rendement de fermentation."
+        }
+      },
+      "maltotriose": {
+        "value": 0.5479586076424041,
+        "unit": "g éthanol / g sucre (plafond)",
+        "source": {
+          "title": "Calcul stœchiométrique des plafonds éthanol/sucre",
+          "author": "L’Affinée",
+          "year": 2026,
+          "kind": "judgment",
+          "reference": "https://webbook.nist.gov/chemistry/",
+          "locator": "Calcul 2026 : 2×46.06844/180.15588 (hexoses), 4×46.06844/342.29648 (disaccharides), 6×46.06844/504.43708 (maltotriose). Aucune perte : plafond physique, jamais rendement de fermentation."
+        }
+      }
+    },
+    "la01": {
+      "yeastId": "yeast-fermentis-safbrew-la-01",
+      "slope": {
+        "value": 0.0862,
+        "unit": "% vol. / °P",
+        "source": {
+          "title": "SafBrew LA-01 Technical Guidelines V3",
+          "author": "Fermentis",
+          "year": 2025,
+          "kind": "manufacturer",
+          "reference": "https://sbi4beer.com/wp-content/uploads/2025/11/SafBrew-LA-01-technical-guidelines-nov-25.pdf",
+          "locator": "V3 Nov25, p.1 : Gravity ; p.2 : Temperature. Pas de résidus ni intervalle statistique publié."
+        }
+      },
+      "intercept": {
+        "value": -0.1208,
+        "unit": "% vol.",
+        "source": {
+          "title": "SafBrew LA-01 Technical Guidelines V3",
+          "author": "Fermentis",
+          "year": 2025,
+          "kind": "manufacturer",
+          "reference": "https://sbi4beer.com/wp-content/uploads/2025/11/SafBrew-LA-01-technical-guidelines-nov-25.pdf",
+          "locator": "V3 Nov25, p.1 : Gravity ; p.2 : Temperature. Pas de résidus ni intervalle statistique publié."
+        }
+      },
+      "plato": {
+        "min": 6,
+        "max": 15
+      },
+      "mash": [
+        {
+          "tempC": 65,
+          "minutes": 40
+        },
+        {
+          "tempC": 73,
+          "minutes": 25
+        }
+      ],
+      "temperatureC": {
+        "min": 15,
+        "max": 25
+      },
+      "source": {
+        "title": "SafBrew LA-01 Technical Guidelines V3",
+        "author": "Fermentis",
+        "year": 2025,
+        "kind": "manufacturer",
+        "reference": "https://sbi4beer.com/wp-content/uploads/2025/11/SafBrew-LA-01-technical-guidelines-nov-25.pdf",
+        "locator": "V3 Nov25, p.1 : Gravity ; p.2 : Temperature. Pas de résidus ni intervalle statistique publié."
+      },
+      "limitation": "Régression de protocole : ingrédients et sucres simples influencent le résultat. La plage d’entrée est propagée, sans marge résiduelle publiée. À confirmer par analyse du pilote."
+    },
+    "strains": [
+      {
+        "yeastId": "yeast-fermentis-safbrew-la-01",
+        "name": "Fermentis SafBrew LA-01",
+        "aliases": [
+          "LA-01",
+          "SafBrew LA-01",
+          "Fermentis LA 01"
+        ],
+        "sugars": {
+          "glucose": "yes",
+          "fructose": "yes",
+          "sucrose": "yes",
+          "maltose": "no",
+          "maltotriose": "no"
+        },
+        "hydrolysis": "unknown",
+        "pof": "positive",
+        "temperatureC": {
+          "min": 15,
+          "max": 25
+        },
+        "attenuationPct": {
+          "min": 13,
+          "max": 17
+        },
+        "durationDays": {
+          "min": 2,
+          "max": 2
+        },
+        "pitchGL": {
+          "min": 0.5,
+          "max": 0.8
+        },
+        "aroma": [
+          "Phénols (4-vinylgaïacol et 4-vinylphénol), sous réserve de précurseurs",
+          "Profil aromatique global décrit comme subtil"
+        ],
+        "limitation": "ADF 13–14 % observée sur les moûts du guide ; la fiche produit annonce 15 %. Pas de forte banane établie. Pas de repos diacétyle dans ce protocole.",
+        "availability": "Vérifier le conditionnement professionnel et la disponibilité locale.",
+        "source": {
+          "title": "SafBrew LA-01 Technical Guidelines V3",
+          "author": "Fermentis",
+          "year": 2025,
+          "kind": "manufacturer",
+          "reference": "https://sbi4beer.com/wp-content/uploads/2025/11/SafBrew-LA-01-technical-guidelines-nov-25.pdf",
+          "locator": "V3 Nov25, p.1 : Gravity ; p.2 : Temperature. Pas de résidus ni intervalle statistique publié."
+        }
+      },
+      {
+        "yeastId": "lalbrew-lona",
+        "name": "LalBrew LoNa",
+        "aliases": [
+          "LoNa",
+          "Lallemand LoNa"
+        ],
+        "sugars": {
+          "glucose": "yes",
+          "fructose": "yes",
+          "sucrose": "unknown",
+          "maltose": "no",
+          "maltotriose": "no"
+        },
+        "hydrolysis": "unknown",
+        "pof": "negative",
+        "temperatureC": {
+          "min": 20,
+          "max": 25
+        },
+        "attenuationPct": {
+          "min": 16,
+          "max": 20
+        },
+        "durationDays": {
+          "min": 2,
+          "max": 3
+        },
+        "pitchGL": {
+          "min": 0.5,
+          "max": 0.5
+        },
+        "aroma": [
+          "Profil propre et neutre",
+          "Réduction des aldéhydes du moût"
+        ],
+        "limitation": "Le taux dépend du profil de sucres du moût. Saccharose laissé inconnu en l’absence de donnée explicite dans la fiche utilisée ; pas de transfert depuis une autre souche.",
+        "availability": "Conditionnement professionnel ; vérifier le distributeur.",
+        "source": {
+          "title": "LalBrew LoNa",
+          "author": "Lallemand",
+          "year": null,
+          "reference": "https://www.lallemandbrewing.com/global/product-details/lalbrew-lona/",
+          "kind": "manufacturer",
+          "locator": "Consulté le 9 septembre 2026 ; année de publication non indiquée."
+        }
+      },
+      {
+        "yeastId": "white-labs-wlp618",
+        "name": "White Labs WLP618",
+        "aliases": [
+          "WLP618",
+          "WLP 618"
+        ],
+        "sugars": {
+          "glucose": "yes",
+          "fructose": "yes",
+          "sucrose": "yes",
+          "maltose": "no",
+          "maltotriose": "no"
+        },
+        "hydrolysis": "unknown",
+        "pof": "unknown",
+        "temperatureC": {
+          "min": 20,
+          "max": 24
+        },
+        "attenuationPct": null,
+        "durationDays": null,
+        "pitchGL": null,
+        "aroma": [
+          "Candidate à fermentation limitée, à comparer sur le moût réel"
+        ],
+        "limitation": "Saccharomycodes ludwigii. La borne ≤20 % seule n’est pas convertie en plage d’atténuation ; durée et POF non établis dans cette référence.",
+        "availability": "Vérifier commande, format et instructions d’ensemencement du fabricant.",
+        "source": {
+          "title": "WLP618 Saccharomycodes ludwigii",
+          "author": "White Labs",
+          "year": null,
+          "reference": "https://www.whitelabs.com/yeast-single?id=179&type=YEAST",
+          "kind": "manufacturer",
+          "locator": "Consulté le 9 septembre 2026 ; borne supérieure d’atténuation seule, pas intervalle 0–20 %."
+        }
+      },
+      {
+        "yeastId": "yeast-whc-10418626003283",
+        "name": "WHC Zero Hero",
+        "aliases": [
+          "Zero Hero",
+          "WHC ZeroHero"
+        ],
+        "sugars": {
+          "glucose": "yes",
+          "fructose": "unknown",
+          "sucrose": "unknown",
+          "maltose": "no",
+          "maltotriose": "no"
+        },
+        "hydrolysis": "unknown",
+        "pof": "unknown",
+        "temperatureC": {
+          "min": 18,
+          "max": 22
+        },
+        "attenuationPct": null,
+        "durationDays": null,
+        "pitchGL": {
+          "min": 0.5,
+          "max": 1
+        },
+        "aroma": [
+          "Profil propre présenté par le fabricant"
+        ],
+        "limitation": "Torulaspora delbrueckii : informations limitées à Zero Hero. Une autre souche de cette espèce peut consommer le maltose. Low Rider n’est pas une candidate équivalente.",
+        "availability": "Catalogue WHC 2026 ; vérifier distributeur et format.",
+        "source": {
+          "title": "Brewing & Distilling Product Catalogue 2026",
+          "author": "WHC",
+          "year": 2026,
+          "reference": "https://cdn.shopify.com/s/files/1/0891/5124/2579/files/brewing-distilling-product-catalogue-2026-v1.0.pdf?v=1772640074",
+          "kind": "manufacturer",
+          "locator": "Zero Hero, page 12. Low Rider, page 8, est une autre souche destinée aux bières session."
+        }
+      }
+    ],
+    "processes": [
+      {
+        "id": "restricted",
+        "name": "Moût neuf + fermentation limitée",
+        "aroma": "LA-01 pour une piste phénolique ; comparer une souche propre. La banane reste à construire et à déguster.",
+        "work": "Brassin unique ; maîtriser les sucres simples, suivre densité et pH.",
+        "waterEnergy": "Brassage et refroidissement ordinaires ; pas de retraitement thermique de désalcoolisation.",
+        "equipment": "Maîtrise thermique, pH-mètre, conditionnement maîtrisé et stabilisation validée.",
+        "analyses": "Sucres accessibles, alcool au conditionnement, pH, CO₂ et conservation.",
+        "evidence": "Protocole fabricant quantifié pour LA-01.",
+        "limitation": "Un maltose négatif ne garantit pas ≤0,5 % ; glucose, fructose et parfois saccharose restent fermentescibles.",
+        "source": {
+          "title": "SafBrew LA-01 Technical Guidelines v1.5",
+          "author": "Fermentis",
+          "year": 2022,
+          "reference": "https://rahrbsg.com/wp-content/uploads/2025/08/SafBrew_LA-_01_-_Technical_Guidelines.pdf",
+          "kind": "manufacturer",
+          "locator": "18 février 2022 ; 211215-TG-LA-01. Conditions d’essai, pas garantie pour tout moût."
+        }
+      },
+      {
+        "id": "restored",
+        "name": "Fermentation limitée + restitution aromatique",
+        "aroma": "Essais sur fractions : banane seule puis assemblage ; comparer à un témoin.",
+        "work": "Même brassin, puis petits dosages documentés et dégustation comparative.",
+        "waterEnergy": "Peu de volume additionnel ; bilan du support à comptabiliser.",
+        "equipment": "Dosage précis, fractions identifiées, produit et support documentés.",
+        "analyses": "Composition, dosage, support alcoolique, sucres ajoutés et analyse finale.",
+        "evidence": "Cas fabricant Jopen : Belgian Blond, produit banane plus mélange tropical.",
+        "limitation": "Le dosage combiné rapporté n’est pas un optimum banane ni une preuve d’équivalence hefeweisse.",
+        "source": {
+          "title": "Jopen — aroma restitution case",
+          "author": "Evodiabio",
+          "year": null,
+          "reference": "https://evodiabio.com/portfolio/jopen/",
+          "kind": "manufacturer",
+          "locator": "Cas fabricant consulté le 9 septembre 2026 ; pas d’essai indépendant de hefeweisse."
+        }
+      },
+      {
+        "id": "dealcoholized",
+        "name": "Fermentation complète + désalcoolisation",
+        "aroma": "Une base Weizen aromatique est possible ; pertes spécifiques du procédé, restitution éventuelle.",
+        "work": "Fermentation classique puis traitement spécialisé ou prestation.",
+        "waterEnergy": "Chaleur, froid ou pression selon le procédé ; eau et pertes à mesurer.",
+        "equipment": "Installation spécialisée (thermique ou membrane) ou prestataire.",
+        "analyses": "Alcool et composés avant/après, volume final, stabilité.",
+        "evidence": "Comparaison Lager/Weizen 2026 : conclusions de l’abstract, tableaux complets non accessibles.",
+        "limitation": "Pas de rendement de retrait ou de rétention aromatique universel.",
+        "source": {
+          "title": "Impact of different production methods on selected aroma compounds",
+          "author": "Kienitz et al.",
+          "year": 2026,
+          "reference": "https://portal.fis.tum.de/en/publications/impact-of-different-production-methods-on-selected-aroma-compound/",
+          "kind": "research"
+        }
+      },
+      {
+        "id": "lowExtract",
+        "name": "Moût à faible extrait",
+        "aroma": "Moins de substrat, risque de corps et d’intensité insuffisants.",
+        "work": "Formuler un moût neuf et mesurer sa composition.",
+        "waterEnergy": "Faible charge de malt ; eau et énergie par litre à suivre.",
+        "equipment": "Matériel de brassage existant, mesure adaptée aux faibles densités.",
+        "analyses": "OG, sucres, alcool final et dégustation.",
+        "evidence": "Les procédés biologiques publiés reposent sur un moût et une souche précis.",
+        "limitation": "Une faible OG seule ne suffit pas à garantir la cible.",
+        "source": {
+          "title": "Production of non-alcoholic beer via cold contact fermentation with Torulaspora delbrueckii",
+          "author": "Nikulin, Aisala et Gibson",
+          "year": 2022,
+          "reference": "https://onlinelibrary.wiley.com/doi/full/10.1002/jib.681",
+          "kind": "research"
+        }
+      },
+      {
+        "id": "coldExtraction",
+        "name": "Extraction à froid du malt",
+        "aroma": "Extraction sélective ; la chauffe ultérieure peut encore convertir de l’amidon.",
+        "work": "Extraction séparée et contrôle de la filtration, du temps et de la température.",
+        "waterEnergy": "Réfrigération et attente, puis éventuelle chauffe ; pas de gain énergétique automatique.",
+        "equipment": "Cuve refroidie et filtration adaptées.",
+        "analyses": "Extrait récupéré, sucres après chauffe, alcool final.",
+        "evidence": "Essais Briess/ASBC, pas une recette validée à ≤0,5 %.",
+        "limitation": "Les sucres et enzymes solubles ne disparaissent pas à froid.",
+        "source": {
+          "title": "Cold extraction of malt components",
+          "author": "Dan Bies · Briess",
+          "year": 2020,
+          "reference": "https://brewingwithbriess.com/blog/cold-extraction-of-malt-components-and-their-use-in-brewing-applications/",
+          "kind": "manufacturer"
+        }
+      },
+      {
+        "id": "coldContact",
+        "name": "Contact à froid",
+        "aroma": "Réduction des aldéhydes étudiée avec Tdel8 ; banane non établie.",
+        "work": "Contact très froid, souche et durée propres au protocole.",
+        "waterEnergy": "Froid prolongé et suivi ; comparer au brassage unique à température usuelle.",
+        "equipment": "Régulation précise du froid, inoculum et conditionnement maîtrisés.",
+        "analyses": "Alcool, aldéhydes, stabilité et identité de souche.",
+        "evidence": "Nikulin 2022 : T. delbrueckii Tdel8, S. pastorianus A15 comme comparaison.",
+        "limitation": "Tdel8 ne représente pas toutes les T. delbrueckii ; pas de transfert à Zero Hero.",
+        "source": {
+          "title": "Production of non-alcoholic beer via cold contact fermentation with Torulaspora delbrueckii",
+          "author": "Nikulin, Aisala et Gibson",
+          "year": 2022,
+          "reference": "https://onlinelibrary.wiley.com/doi/full/10.1002/jib.681",
+          "kind": "research"
+        }
+      },
+      {
+        "id": "arrested",
+        "name": "Fermentation interrompue",
+        "aroma": "Fermentation courte, possible moût résiduel ; maturité aromatique à vérifier.",
+        "work": "Arrêt au point mesuré, séparation/stabilisation effective.",
+        "waterEnergy": "Refroidissement et traitement de stabilisation à prévoir.",
+        "equipment": "Procédé d’arrêt validé, simple mise au froid insuffisante.",
+        "analyses": "Alcool avant et après conditionnement, sucres et stabilité.",
+        "evidence": "Voie technologique documentée ; paramètres locaux à établir.",
+        "limitation": "Les sucres résiduels et les levures encore actives peuvent reprendre la fermentation.",
+        "source": {
+          "title": "Impact of different production methods on selected aroma compounds",
+          "author": "Kienitz et al.",
+          "year": 2026,
+          "reference": "https://portal.fis.tum.de/en/publications/impact-of-different-production-methods-on-selected-aroma-compound/",
+          "kind": "research"
+        }
+      },
+      {
+        "id": "secondRunnings",
+        "name": "Seconde extraction des drêches",
+        "aroma": "Valorisation possible ; dilution et sous-produits dépendent de la souche et du moût récupéré.",
+        "work": "Brassin d’origine puis collecte mesurée ; conserver la traçabilité des extractions.",
+        "waterEnergy": "Eau ajoutée, chauffe et volume récupéré à comparer au service rendu.",
+        "equipment": "Collecte, densité et pH des dernières eaux ; pas une nouvelle charge de grain sec.",
+        "analyses": "Sucres, pH, volume, alcool avant ET après resucrage.",
+        "evidence": "Essai 2024 : moût 1,2 °P, cinq souches. YAN contradictoire entre texte et tableau.",
+        "limitation": "US-05 dépasse 0,5 % avant resucrage. L’alcool publié est antérieur à la refermentation en bouteille.",
+        "source": {
+          "title": "Non-Alcoholic and Low-Alcohol Beer from Brewers’ Spent Grain",
+          "author": "Canonico et al.",
+          "year": 2024,
+          "reference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10887606/",
+          "kind": "research"
+        }
+      }
+    ],
+    "planningModels": {
+      "sgAbvFactor": {
+        "value": 131.25,
+        "unit": "% vol. / différence SG",
+        "source": {
+          "title": "Calculations – Alcohol and gravity",
+          "author": "Brewer’s Friend",
+          "year": 2011,
+          "kind": "community",
+          "reference": "https://www.brewersfriend.com/2011/06/16/alcohol-by-volume-calculator-updated/",
+          "locator": "Relation approchée ABV=(OG−FG)×131.25 ; consulté en 2026. Plage de préparation, pas analyse NOLO."
+        }
+      },
+      "sgPlatoCoefficients": [
+        {
+          "value": -616.868,
+          "unit": "coefficient SG^0 vers °P",
+          "source": {
+            "title": "FAQ — Recipe calculations, SG / Plato",
+            "author": "Brewer’s Friend",
+            "year": 2026,
+            "kind": "community",
+            "reference": "https://docs.brewersfriend.com/faq/recipes",
+            "locator": "Conversion polynomiale SG/Plato ; approximation sans arrondi intermédiaire, consultée en 2026."
+          }
+        },
+        {
+          "value": 1111.14,
+          "unit": "coefficient SG^1 vers °P",
+          "source": {
+            "title": "FAQ — Recipe calculations, SG / Plato",
+            "author": "Brewer’s Friend",
+            "year": 2026,
+            "kind": "community",
+            "reference": "https://docs.brewersfriend.com/faq/recipes",
+            "locator": "Conversion polynomiale SG/Plato ; approximation sans arrondi intermédiaire, consultée en 2026."
+          }
+        },
+        {
+          "value": -630.272,
+          "unit": "coefficient SG^2 vers °P",
+          "source": {
+            "title": "FAQ — Recipe calculations, SG / Plato",
+            "author": "Brewer’s Friend",
+            "year": 2026,
+            "kind": "community",
+            "reference": "https://docs.brewersfriend.com/faq/recipes",
+            "locator": "Conversion polynomiale SG/Plato ; approximation sans arrondi intermédiaire, consultée en 2026."
+          }
+        },
+        {
+          "value": 135.997,
+          "unit": "coefficient SG^3 vers °P",
+          "source": {
+            "title": "FAQ — Recipe calculations, SG / Plato",
+            "author": "Brewer’s Friend",
+            "year": 2026,
+            "kind": "community",
+            "reference": "https://docs.brewersfriend.com/faq/recipes",
+            "locator": "Conversion polynomiale SG/Plato ; approximation sans arrondi intermédiaire, consultée en 2026."
+          }
+        }
+      ],
+      "mothers": [
+        {
+          "yeastId": "lallemand-munich-classic",
+          "attenuationPct": {
+            "min": 76,
+            "max": 83
+          },
+          "temperatureC": {
+            "min": 17,
+            "max": 25
+          },
+          "source": {
+            "title": "LalBrew Munich Classic – product facts",
+            "author": "Lallemand",
+            "year": 2026,
+            "kind": "manufacturer",
+            "reference": "https://www.lallemandbrewing.com/en/africa/products/munich-classic-wheat-beer-yeast/",
+            "locator": "Fiche consultée septembre 2026 : atténuation 76–83 %, 17–25 °C. Dépend du moût ; ne décrit pas une fermentation limitée."
+          }
+        }
+      ]
+    }
+  }
+]

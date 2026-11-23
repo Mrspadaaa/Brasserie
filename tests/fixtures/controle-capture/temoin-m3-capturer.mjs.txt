@@ -1,0 +1,136 @@
+// Voie m3-listes-u4 : la vraie vue Substituer de l'app (u4, son choix), entière et inchangée, avec la liste d'une colonne.
+// Rien n'est masqué, rien n'est ajouté dans la page : seul l'ordre des remplaçants vient de la colonne, par
+// `window.__hopSubstituerOrdre` (src/ui/hopIndex/substituer/donnees.ts, développement seulement). Les houblons à remplacer
+// entrent au brouillon par la porte de l'app (le champ « Ajouter un houblon », son « + »), jamais par le DOM.
+// Colonnes : A = le moteur sans injection ; B, C, D = ordres.json (ordres.ts : listes-lambda.json et cote-a-cote.json).
+// À chaque capture, le script mesure l'écran sans l'injection (colonne A, même état) puis avec, et l'écrit dans fidelite.json
+// (lu par work/refonte-frontend/v4/tournoi/outils/controle-capture-fidele.mjs).
+// Usage (racine) :
+//   node scripts/with_server.mjs --server "npm run dev -- --port 5243 --strictPort" --port 5243 --env VITE_HOP_V4=on -- node work/missions/2026-10-25-integration-houblons/voies/m3-listes-u4/capturer.mjs [--seulement=Nelson]
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+const ICI = import.meta.dirname;
+const RACINE = path.resolve(ICI, '..', '..', '..', '..', '..');
+const { ouvrir } = await import(pathToFileURL(path.join(RACINE, '.claude/skills/webapp-testing/examples/_lanceur.mjs')).href);
+const IMG = path.join(ICI, 'img');
+fs.mkdirSync(IMG, { recursive: true });
+const ORDRES = JSON.parse(fs.readFileSync(path.join(ICI, 'ordres.json'), 'utf8')).houblons;
+const SEUL = process.argv.find((a) => a.startsWith('--seulement='))?.split('=')[1];
+const COLONNES = ['a', 'b', 'c', 'd'];
+const fichier = (h) => h.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
+// 960 px de haut : la liste de dix remplaçants et son pied tiennent ensemble (à 844, le pied cache la dixième rangée).
+const HAUT = 960;
+const base = `http://localhost:${process.env.WITH_SERVER_PORTS}`;
+const { browser, page, journal } = await ouvrir({ largeur: 390, hauteur: HAUT });
+
+// La mesure de l'écran de l'app, dans la page rendue : nœuds visibles hors rangées, et ses blocs (data-role, data-etat, titres).
+const MESURE = () => {
+  const ecran = document.querySelector('[data-ecran="substituer"]');
+  const visible = (e) => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.opacity !== '0'; };
+  const rangs = ecran.querySelector('[data-libre="houblon"]');
+  const tous = [...ecran.querySelectorAll('*')].filter(visible);
+  const hors = tous.filter((e) => !(rangs && rangs.contains(e)));
+  const blocs = new Set();
+  const marques = (e) => {
+    const role = e.getAttribute('data-role'), etat = e.getAttribute('data-etat');
+    if (role) blocs.add(`role:${role}`);
+    if (etat) blocs.add(`etat:${etat}`);
+    if (/^(H1|H2|SUMMARY)$/.test(e.tagName)) blocs.add(`${e.tagName.toLowerCase()}:${e.textContent.trim().slice(0, 40)}`);
+  };
+  for (const e of tous) marques(e);
+  // Un bloc que le code de l'app laisse vide selon les données (« Tropicaux… aucune fiche ne les décrit » n'a rien à dire quand
+  // les dix remplaçants décrivent toutes les familles) existe dans le DOM sans texte ni enfant : rien n'y est caché.
+  for (const e of ecran.querySelectorAll('[data-role], [data-etat]')) if (!visible(e) && !e.textContent.trim() && !e.children.length) marques(e);
+  const lignes = [...ecran.querySelectorAll('[data-remplacant]')].filter(visible).map((e) => ({ nom: e.getAttribute('data-houblon-rang'), min: Number(e.getAttribute('data-min')), max: Number(e.getAttribute('data-max')) }));
+  return { noeudsHorsRangs: hors.length, noeudsTotal: tous.length, blocs: [...blocs].sort(), lignes };
+};
+
+async function ouvrirSubstituer(h, colonne) {
+  const col = colonne === 'a' ? null : h.colonnes[colonne];
+  await page.evaluate((ordre) => { if (ordre) window.__hopSubstituerOrdre = ordre; else delete window.__hopSubstituerOrdre; }, col ? col.map((r) => ({ id: r.id, score: r.score })) : null);
+  await page.evaluate((k) => window.__hopPile.open({ view: 'hopSubstitute', hopKey: k }), h.id);
+  await page.waitForSelector('[data-ecran="substituer"] [data-remplacant]', { timeout: 90000 });
+  await dormir(500);
+  // Le moment : dry hop, par la puce de l'app (un vrai toucher).
+  await page.click('[data-ecran="substituer"] .pq-substituer-moments [data-moment="dryhop"]');
+  await page.waitForFunction(() => document.querySelector('.pq-substituer-moments [data-moment="dryhop"][aria-checked="true"]') || document.querySelector('.pq-substituer-moments [data-moment="dryhop"].pq-substituer-moment-on'), { timeout: 20000 });
+  await dormir(1200);
+}
+async function fermer() {
+  await page.evaluate(() => { window.__hopPile.close(); });
+  await page.waitForFunction(() => !document.querySelector('[data-ecran="substituer"]'), { timeout: 20000 });
+  await dormir(300);
+}
+async function defiler(haut = 0) {
+  await page.evaluate((y) => {
+    const ecran = document.querySelector('[data-ecran="substituer"]');
+    let sc = ecran; while (sc && !(sc.scrollHeight > sc.clientHeight + 5 && /(auto|scroll)/.test(getComputedStyle(sc).overflowY))) sc = sc.parentElement;
+    if (sc) sc.scrollTop = y;
+  }, haut);
+  await dormir(250);
+}
+
+const mesures = [], jeux = [];
+for (const h of ORDRES) {
+  if (SEUL && !h.houblon.includes(SEUL)) continue;
+  await page.goto(`${base}/?dev-local&etape=houblons`, { waitUntil: 'networkidle0' });
+  await page.waitForSelector('[data-ecran="ma-biere"]', { timeout: 120000 });
+  await dormir(800);
+  // Le houblon entre au brouillon par la porte de l'app : le champ « Ajouter un houblon », son « + » (Nugget y est déjà).
+  if (h.id !== 'beermaverick-nugget') {
+    const champ = '[aria-label="Ajouter un houblon : stock ou catalogue"]';
+    await page.waitForSelector(champ, { timeout: 30000 });
+    await page.type(champ, h.houblon, { delay: 15 });
+    const plus = `[data-role="ajout-rapide"][data-houblon-ajout="${h.id}"] [data-role="ajout-rapide-plus"]`;
+    await page.waitForSelector(plus, { timeout: 30000 });
+    await page.click(plus);
+    await dormir(1000);
+  }
+  let reference = null;
+  for (const colonne of COLONNES) {
+    if (colonne !== 'a' && !h.colonnes[colonne]) continue;
+    await ouvrirSubstituer(h, colonne);
+    for (const etat of colonne === 'a' || colonne === 'c' ? (h.houblon === 'Nelson Sauvin' ? ['repos', 'scores'] : ['repos']) : ['repos']) {
+      if (etat === 'scores') {
+        // « Lire ces scores » est ouvert d'emblée dans l'app (`<details open>`) : l'état « scores » est la fin de l'écran, sans clic.
+        const ouvert = await page.evaluate(() => [...document.querySelectorAll('[data-ecran="substituer"] details')].some((d) => d.open && /Lire ces scores/.test(d.querySelector('summary')?.textContent ?? '')));
+        if (!ouvert) throw new Error('« Lire ces scores » n\'est pas ouvert');
+      }
+      // `avant` : l'écran tel que l'app le rend avec la liste de la colonne ; `apres` : à la prise de vue (le script n'a rien touché).
+      const m = await page.evaluate(MESURE);
+      await defiler(etat === 'scores' ? 1e5 : 0);
+      const image = `${fichier(h.houblon)}-${colonne}${etat === 'scores' ? '-scores' : ''}.png`;
+      await page.screenshot({ path: path.join(IMG, image) });
+      const apres = await page.evaluate(MESURE);
+      if (colonne === 'a') reference = { ...(reference ?? {}), [etat]: m };
+      else {
+        const att = h.colonnes[colonne].map((r) => `${r.nom}|${r.score}`);
+        const lu = m.lignes.map((l) => `${l.nom}|${l.min === l.max ? l.min : `${l.min}-${l.max}`}`);
+        if (JSON.stringify(att) !== JSON.stringify(lu)) console.log(`ÉCART ${image} : attendu ${att.join(', ')} ; lu ${lu.join(', ')}`);
+        mesures.push({ image, houblon: h.houblon, colonne, etat, avant: { noeudsHorsRangs: m.noeudsHorsRangs, blocs: m.blocs }, apres: { noeudsHorsRangs: apres.noeudsHorsRangs, blocs: apres.blocs },
+          referenceA: { noeudsHorsRangs: reference?.[etat]?.noeudsHorsRangs ?? null, blocs: reference?.[etat]?.blocs ?? [] } });
+      }
+      jeux.push({ houblon: h.houblon, colonne, etat, image, lignes: m.lignes });
+      console.log(image, `${m.noeudsHorsRangs} nœuds hors rangées, ${m.lignes.length} rangées`);
+      if (etat === 'repos' && colonne === 'a' && h.houblon === 'Nelson Sauvin') {
+        // La vue entière, de haut en bas, pour la comparer à u4-vue-390.png : le viewport prend la hauteur du contenu.
+        const hauteur = await page.evaluate(() => { const e = document.querySelector('[data-ecran="substituer"]'); let sc = e; while (sc && !(sc.scrollHeight > sc.clientHeight + 5 && /(auto|scroll)/.test(getComputedStyle(sc).overflowY))) sc = sc.parentElement; return sc ? sc.scrollHeight + (innerHeight - sc.clientHeight) : innerHeight; });
+        await page.setViewport({ width: 390, height: Math.min(Math.ceil(hauteur), 6000), deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+        await dormir(900);
+        await page.screenshot({ path: path.join(IMG, `${fichier(h.houblon)}-a-long.png`) });
+        await page.setViewport({ width: 390, height: HAUT, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+        await dormir(600);
+      }
+    }
+    await fermer();
+  }
+}
+fs.writeFileSync(path.join(ICI, 'fidelite.json'), JSON.stringify({ lecture: 'Écran Substituer de l\'app, mesuré sans (colonne A) puis avec l\'ordre imposé (B, C, D), même état.', mesures }, null, 1) + '\n');
+fs.writeFileSync(path.join(IMG, 'jeux.json'), JSON.stringify(jeux, null, 1) + '\n');
+const erreurs = journal.erreurs.filter((e) => !/Firestore|firebase|net::ERR/i.test(e));
+console.log(erreurs.length ? 'erreurs de page : ' + erreurs.slice(0, 3).join(' | ') : 'aucune erreur de page');
+await browser.close();
+console.log('CAPTURES', IMG);

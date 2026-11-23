@@ -1,0 +1,464 @@
+{
+ "clair-390": {
+  "etats": {
+   "munich-1-repos": {
+    "entete": "112 g",
+    "bande": "sur-dosé · 5× le besoin | → 22 g | 0 | besoin lager 22 g | 120 g › | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "repos",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-2-plus": {
+    "entete": "115 g",
+    "bande": "523 % | du besoin | sur-dosé | → 22 g | besoin lager 22 g | 0 | 20 | 40 | 60 | 80 | 120 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-3-moins": {
+    "entete": "105 g",
+    "bande": "477 % | du besoin | sur-dosé | → 22 g | besoin lager 22 g | 0 | 20 | 40 | 60 | 80 | 120 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-4-remede": {
+    "entete": "22 g",
+    "bande": "100 % | du besoin | couvre | manque 22 g | besoin lager 22 g | 0 | 5 | 10 | 15 | 20 | 25 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-5-caler": {
+    "entete": "22 g",
+    "bande": "100 % | du besoin | couvre | manque 22 g | besoin lager 22 g | 0 | 5 | 10 | 15 | 20 | 25 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 11 °C | 19 °C",
+    "conduite": "11 °C · 10 j → 4 °C · 5 j fin J15",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "munich-6-conduite": {
+    "entete": "22 g",
+    "bande": "100 % | du besoin | couvre | manque 22 g | besoin lager 22 g | 0 | 5 | 10 | 15 | 20 | 25 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 11 °C | 19 °C",
+    "conduite": "11 °C · 10 j → 4 °C · 5 j fin J15",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "us05-1-repos": {
+    "entete": "Dose à choisir",
+    "bande": "aucune dose écrite | Mettre 3 sachets | 0 | besoin 2,4 sachets | 4 › | fabricant 15–24 g · taux ale 0,75 M/mL/°P · 30 L",
+    "etat": "a-choisir",
+    "temp": "fiche · conduite | 18–26 · 19 °C",
+    "conduite": "19 °C · 9 j → 4 °C · 3 j fin J12",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "us05-2-plus": {
+    "entete": "1 sachet",
+    "bande": "41 % | du besoin | sous | → 3 sachets | besoin ale 2,4 | 0 | 1 · 11,5 g | 2 | 3 | 4 | fabricant 15–24 g · taux ale 0,75 M/mL/°P · 30 L",
+    "etat": "apres",
+    "temp": "fiche · conduite | 18–26 · 19 °C",
+    "conduite": "19 °C · 9 j → 4 °C · 3 j fin J12",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "us05-3-conduite-tiree": {
+    "entete": "1 sachet",
+    "bande": "41 % | du besoin | sous | → 3 sachets | besoin ale 2,4 | 0 | 1 · 11,5 g | 2 | 3 | 4 | fabricant 15–24 g · taux ale 0,75 M/mL/°P · 30 L",
+    "etat": "apres",
+    "temp": "fiche · conduite | 18–26 · 19 °C",
+    "conduite": "19 °C · 9 j → 4 °C · 3 j fin J12",
+    "puce": "À vérifier · Fermentation principale : 10,5 °C, hors de la plage de conduite retenue (18–26 °C)",
+    "resume": "Essai · 2 changements / À vérifier · Fermentation principale : 10,5 °C, hors de la plage de conduite retenue (18–26 °C)",
+    "deborde": 0
+   },
+   "us05-4-change-munich": {
+    "entete": "1 sachet",
+    "bande": "41 % | du besoin | sous | → 3 sachets | besoin ale 2,4 | 0 | 1 · 11,5 g | 2 | 3 | 4 | fabricant 15–24 g · taux ale 0,75 M/mL/°P · 30 L",
+    "etat": "apres",
+    "temp": "fiche · conduite | 18–26 · 19 °C",
+    "conduite": "19 °C · 9 j → 4 °C · 3 j fin J12",
+    "puce": "À vérifier · Fermentation principale : 10,5 °C, hors de la plage de conduite retenue (18–26 °C)",
+    "resume": "Essai · 2 changements / À vérifier · Fermentation principale : 10,5 °C, hors de la plage de conduite retenue (18–26 °C)",
+    "deborde": 0
+   }
+  },
+  "erreurs": [],
+  "hors": [
+   "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,7",
+   "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,7"
+  ],
+  "gestes": {
+   "plus": true,
+   "moins": true,
+   "remede": true,
+   "caler": true,
+   "us05plus": true,
+   "selection": true,
+   "temp": "tirée",
+   "duree": "tirée"
+  }
+ },
+ "cave-390": {
+  "etats": {
+   "munich-1-repos": {
+    "entete": "112 g",
+    "bande": "sur-dosé · 5× le besoin | → 22 g | 0 | besoin lager 22 g | 120 g › | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "repos",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-2-plus": {
+    "entete": "115 g",
+    "bande": "523 % | du besoin | sur-dosé | → 22 g | besoin lager 22 g | 0 | 20 | 40 | 60 | 80 | 120 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-3-moins": {
+    "entete": "105 g",
+    "bande": "477 % | du besoin | sur-dosé | → 22 g | besoin lager 22 g | 0 | 20 | 40 | 60 | 80 | 120 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-4-remede": {
+    "entete": "22 g",
+    "bande": "100 % | du besoin | couvre | manque 22 g | besoin lager 22 g | 0 | 5 | 10 | 15 | 20 | 25 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-5-caler": {
+    "entete": "22 g",
+    "bande": "100 % | du besoin | couvre | manque 22 g | besoin lager 22 g | 0 | 5 | 10 | 15 | 20 | 25 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 11 °C | 19 °C",
+    "conduite": "11 °C · 10 j → 4 °C · 5 j fin J15",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "munich-6-conduite": {
+    "entete": "22 g",
+    "bande": "100 % | du besoin | couvre | manque 22 g | besoin lager 22 g | 0 | 5 | 10 | 15 | 20 | 25 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 11 °C | 19 °C",
+    "conduite": "11 °C · 10 j → 4 °C · 5 j fin J15",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "us05-1-repos": {
+    "entete": "Dose à choisir",
+    "bande": "aucune dose écrite | Mettre 3 sachets | 0 | besoin 2,4 sachets | 4 › | fabricant 15–24 g · taux ale 0,75 M/mL/°P · 30 L",
+    "etat": "a-choisir",
+    "temp": "fiche · conduite | 18–26 · 19 °C",
+    "conduite": "19 °C · 9 j → 4 °C · 3 j fin J12",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "us05-2-plus": {
+    "entete": "1 sachet",
+    "bande": "41 % | du besoin | sous | → 3 sachets | besoin ale 2,4 | 0 | 1 · 11,5 g | 2 | 3 | 4 | fabricant 15–24 g · taux ale 0,75 M/mL/°P · 30 L",
+    "etat": "apres",
+    "temp": "fiche · conduite | 18–26 · 19 °C",
+    "conduite": "19 °C · 9 j → 4 °C · 3 j fin J12",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "us05-3-conduite-tiree": {
+    "entete": "1 sachet",
+    "bande": "41 % | du besoin | sous | → 3 sachets | besoin ale 2,4 | 0 | 1 · 11,5 g | 2 | 3 | 4 | fabricant 15–24 g · taux ale 0,75 M/mL/°P · 30 L",
+    "etat": "apres",
+    "temp": "fiche · conduite | 18–26 · 19 °C",
+    "conduite": "19 °C · 9 j → 4 °C · 3 j fin J12",
+    "puce": "À vérifier · Fermentation principale : 10,5 °C, hors de la plage de conduite retenue (18–26 °C)",
+    "resume": "Essai · 2 changements / À vérifier · Fermentation principale : 10,5 °C, hors de la plage de conduite retenue (18–26 °C)",
+    "deborde": 0
+   },
+   "us05-4-change-munich": {
+    "entete": "1 sachet",
+    "bande": "41 % | du besoin | sous | → 3 sachets | besoin ale 2,4 | 0 | 1 · 11,5 g | 2 | 3 | 4 | fabricant 15–24 g · taux ale 0,75 M/mL/°P · 30 L",
+    "etat": "apres",
+    "temp": "fiche · conduite | 18–26 · 19 °C",
+    "conduite": "19 °C · 9 j → 4 °C · 3 j fin J12",
+    "puce": "À vérifier · Fermentation principale : 10,5 °C, hors de la plage de conduite retenue (18–26 °C)",
+    "resume": "Essai · 2 changements / À vérifier · Fermentation principale : 10,5 °C, hors de la plage de conduite retenue (18–26 °C)",
+    "deborde": 0
+   }
+  },
+  "erreurs": [],
+  "hors": [
+   "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,7",
+   "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,7"
+  ],
+  "gestes": {
+   "plus": true,
+   "moins": true,
+   "remede": true,
+   "caler": true,
+   "us05plus": true,
+   "selection": true,
+   "temp": "tirée",
+   "duree": "tirée"
+  }
+ },
+ "clair-1280": {
+  "etats": {
+   "munich-1-repos": {
+    "entete": "112 g",
+    "bande": "sur-dosé · 5× le besoin | → 22 g | 0 | besoin lager 22 g | 120 g › | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "repos",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-2-plus": {
+    "entete": "115 g",
+    "bande": "523 % | du besoin | sur-dosé | → 22 g | besoin lager 22 g | 0 | 20 | 40 | 60 | 80 | 120 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "conduite 19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-3-moins": {
+    "entete": "105 g",
+    "bande": "477 % | du besoin | sur-dosé | → 22 g | besoin lager 22 g | 0 | 20 | 40 | 60 | 80 | 120 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "conduite 19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-4-remede": {
+    "entete": "22 g",
+    "bande": "100 % | du besoin | couvre | manque 22 g | besoin lager 22 g | 0 | 5 | 10 | 15 | 20 | 25 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "conduite 19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-5-caler": {
+    "entete": "22 g",
+    "bande": "100 % | du besoin | couvre | manque 22 g | besoin lager 22 g | 0 | 5 | 10 | 15 | 20 | 25 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 11 °C | 19 °C",
+    "conduite": "conduite 11 °C · 10 j → 4 °C · 5 j fin J15",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "munich-6-conduite": {
+    "entete": "22 g",
+    "bande": "100 % | du besoin | couvre | manque 22 g | besoin lager 22 g | 0 | 5 | 10 | 15 | 20 | 25 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 11 °C | 19 °C",
+    "conduite": "conduite 11 °C · 10 j → 4 °C · 5 j fin J15",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "us05-1-repos": {
+    "entete": "Dose à choisir",
+    "bande": "aucune dose écrite | Mettre 3 sachets | 0 | besoin 2,4 sachets | 4 › | fabricant 15–24 g · taux ale 0,75 M/mL/°P · 30 L",
+    "etat": "a-choisir",
+    "temp": "fiche · conduite | 18–26 · 19 °C",
+    "conduite": "19 °C · 9 j → 4 °C · 3 j fin J12",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "us05-2-plus": {
+    "entete": "1 sachet",
+    "bande": "41 % | du besoin | sous | → 3 sachets | besoin ale 2,4 | 0 | 1 · 11,5 g | 2 | 3 | 4 | fabricant 15–24 g · taux ale 0,75 M/mL/°P · 30 L",
+    "etat": "apres",
+    "temp": "fiche · conduite | 18–26 · 19 °C",
+    "conduite": "conduite 19 °C · 9 j → 4 °C · 3 j fin J12",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "us05-3-conduite-tiree": {
+    "entete": "1 sachet",
+    "bande": "41 % | du besoin | sous | → 3 sachets | besoin ale 2,4 | 0 | 1 · 11,5 g | 2 | 3 | 4 | fabricant 15–24 g · taux ale 0,75 M/mL/°P · 30 L",
+    "etat": "apres",
+    "temp": "fiche · conduite | 18–26 · 19 °C",
+    "conduite": "conduite 19 °C · 9 j → 4 °C · 3 j fin J12",
+    "puce": "À vérifier · Fermentation principale : 11 °C, hors de la plage de conduite retenue (18–26 °C)",
+    "resume": "Essai · 1 changement / À vérifier · Fermentation principale : 11 °C, hors de la plage de conduite retenue (18–26 °C)",
+    "deborde": 0
+   },
+   "us05-4-change-munich": {
+    "entete": "56 g",
+    "bande": "couvre le besoin | manque 56 g | 0 | besoin lager 56 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 30 L · ≈ 13 Md/g à confirmer",
+    "etat": "repos",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "19 °C · 9 j → 4 °C · 3 j fin J12",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C) (+1)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C) (+1)",
+    "deborde": 0
+   }
+  },
+  "erreurs": [],
+  "hors": [
+   "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,7",
+   "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,7"
+  ],
+  "gestes": {
+   "plus": true,
+   "moins": true,
+   "remede": true,
+   "caler": true,
+   "us05plus": true,
+   "selection": true,
+   "temp": "tirée",
+   "duree": "tirée",
+   "changer": true
+  }
+ },
+ "cave-1280": {
+  "etats": {
+   "munich-1-repos": {
+    "entete": "112 g",
+    "bande": "sur-dosé · 5× le besoin | → 22 g | 0 | besoin lager 22 g | 120 g › | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "repos",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-2-plus": {
+    "entete": "115 g",
+    "bande": "523 % | du besoin | sur-dosé | → 22 g | besoin lager 22 g | 0 | 20 | 40 | 60 | 80 | 120 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "conduite 19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-3-moins": {
+    "entete": "105 g",
+    "bande": "477 % | du besoin | sur-dosé | → 22 g | besoin lager 22 g | 0 | 20 | 40 | 60 | 80 | 120 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "conduite 19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-4-remede": {
+    "entete": "22 g",
+    "bande": "100 % | du besoin | couvre | manque 22 g | besoin lager 22 g | 0 | 5 | 10 | 15 | 20 | 25 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "conduite 19 °C · 10 j → 4 °C · 5 j fin J15",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C)",
+    "deborde": 0
+   },
+   "munich-5-caler": {
+    "entete": "22 g",
+    "bande": "100 % | du besoin | couvre | manque 22 g | besoin lager 22 g | 0 | 5 | 10 | 15 | 20 | 25 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 11 °C | 19 °C",
+    "conduite": "conduite 11 °C · 10 j → 4 °C · 5 j fin J15",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "munich-6-conduite": {
+    "entete": "22 g",
+    "bande": "100 % | du besoin | couvre | manque 22 g | besoin lager 22 g | 0 | 5 | 10 | 15 | 20 | 25 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 29 L · ≈ 13 Md/g à confirmer",
+    "etat": "apres",
+    "temp": "fiche · conduite | 9–11 · 11 °C | 19 °C",
+    "conduite": "conduite 11 °C · 10 j → 4 °C · 5 j fin J15",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "us05-1-repos": {
+    "entete": "Dose à choisir",
+    "bande": "aucune dose écrite | Mettre 3 sachets | 0 | besoin 2,4 sachets | 4 › | fabricant 15–24 g · taux ale 0,75 M/mL/°P · 30 L",
+    "etat": "a-choisir",
+    "temp": "fiche · conduite | 18–26 · 19 °C",
+    "conduite": "19 °C · 9 j → 4 °C · 3 j fin J12",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "us05-2-plus": {
+    "entete": "1 sachet",
+    "bande": "41 % | du besoin | sous | → 3 sachets | besoin ale 2,4 | 0 | 1 · 11,5 g | 2 | 3 | 4 | fabricant 15–24 g · taux ale 0,75 M/mL/°P · 30 L",
+    "etat": "apres",
+    "temp": "fiche · conduite | 18–26 · 19 °C",
+    "conduite": "conduite 19 °C · 9 j → 4 °C · 3 j fin J12",
+    "resume": "Brouillon",
+    "deborde": 0
+   },
+   "us05-3-conduite-tiree": {
+    "entete": "1 sachet",
+    "bande": "41 % | du besoin | sous | → 3 sachets | besoin ale 2,4 | 0 | 1 · 11,5 g | 2 | 3 | 4 | fabricant 15–24 g · taux ale 0,75 M/mL/°P · 30 L",
+    "etat": "apres",
+    "temp": "fiche · conduite | 18–26 · 19 °C",
+    "conduite": "conduite 19 °C · 9 j → 4 °C · 3 j fin J12",
+    "puce": "À vérifier · Fermentation principale : 11 °C, hors de la plage de conduite retenue (18–26 °C)",
+    "resume": "Essai · 1 changement / À vérifier · Fermentation principale : 11 °C, hors de la plage de conduite retenue (18–26 °C)",
+    "deborde": 0
+   },
+   "us05-4-change-munich": {
+    "entete": "56 g",
+    "bande": "couvre le besoin | manque 56 g | 0 | besoin lager 56 g | fabricant ≥ 15 g · taux lager 1,5 M/mL/°P · 30 L · ≈ 13 Md/g à confirmer",
+    "etat": "repos",
+    "temp": "fiche · conduite | 9–11 · 19 °C | → Caler à 11 °C",
+    "conduite": "19 °C · 9 j → 4 °C · 3 j fin J12",
+    "puce": "À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C) (+1)",
+    "resume": "Brouillon / À vérifier · Fermentation principale : 19 °C, hors de la plage de conduite retenue (9–11 °C) (+1)",
+    "deborde": 0
+   }
+  },
+  "erreurs": [],
+  "hors": [
+   "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,7",
+   "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,600;0,7"
+  ],
+  "gestes": {
+   "plus": true,
+   "moins": true,
+   "remede": true,
+   "caler": true,
+   "us05plus": true,
+   "selection": true,
+   "temp": "tirée",
+   "duree": "tirée",
+   "changer": true
+  }
+ }
+}

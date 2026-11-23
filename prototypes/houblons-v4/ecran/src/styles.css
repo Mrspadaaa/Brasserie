@@ -1,0 +1,3 @@
+/* Jetons et couches de l'app (src/index.css), importés tels quels, puis les thèmes du prototype. */
+@import '../../../../src/index.css';
+@import './themes.css';

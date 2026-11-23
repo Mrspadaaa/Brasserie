@@ -1,0 +1,223 @@
+/*
+ * Décider : Comparer (R06), Choisir (R07), Supprimer une idée (R23). Correction 3 du port du carnet (17.11), puis 4 et 5 (18.11).
+ * Importé par Comparer.tsx, Choisir.tsx et SupprimerCarnet.tsx, après carnets.css (lot L3, non modifié ici), et par StocksTab.tsx
+ * (la barre de segments et le + volant de Stocks › Matériel, critique 5 n° 41) ; préfixe `cn-`, variables de thème de l'app
+ * (--c-*, posées par carnets.css sur .cn-page et .cn-supprimer).
+ */
+
+/* P4 · 390 : la suite à droite se voit. Ombre de bord (et non plus un fondu vers le fond, invisible sur une colonne blanche),
+   dans les deux thèmes : l'encre de l'app à faible opacité ; « → n de plus » dessous, à droite, discret. */
+.cn-comparer .cn-tableau-cadre[data-suite]::after {
+  width: 22px;
+  background: linear-gradient(to left, color-mix(in srgb, var(--c-ink) 22%, transparent), color-mix(in srgb, var(--c-ink) 0%, transparent));
+}
+.cn-suite-indice { margin: 4px 2px 0; text-align: right; font-size: 13px; color: var(--c-mut); }
+
+/* La colonne des noms reste collée et se détache du défilé par un trait plus net. */
+.cn-comparer .cn-tableau-comparer thead th:first-child,
+.cn-comparer .cn-tableau-comparer tbody th { box-shadow: 1px 0 0 var(--c-line2); }
+
+/* P5 · constat 5 : un lien dont la page n'est pas lue, « Lien sans aperçu · <domaine> · page non lue » (R04). */
+.cn-sans-apercu { font-size: 13px; overflow-wrap: anywhere; }
+.cn-tableau-comparer th[data-apercu] .cn-col-tete > span:not(.cn-mut) { color: var(--c-ink2); font-style: italic; }
+.cn-choisir .cn-article[data-apercu] b,
+.cn-offre[data-apercu] b { color: var(--c-ink2); font-style: italic; font-weight: 600; }
+.cn-choisir .cn-action:disabled { background: var(--c-s2) !important; color: var(--c-mut) !important; cursor: default; }
+
+/* La ligne « Écarté » (D-52), sous le tableau comme p2:h04-7 : « Écartés · n », puis le nom et sa raison, une ligne chacun. */
+.cn-ecartes { width: 100%; margin-top: 12px; border-collapse: collapse; border-top: 1px solid var(--c-line); font-size: 15px; }
+.cn-ecartes caption { caption-side: top; text-align: left; padding: 8px 0 4px; font-weight: 700; color: var(--c-ink2); }
+.cn-ecartes tr { display: block; padding: 8px 0; border-top: 1px solid var(--c-line); }
+.cn-ecartes th, .cn-ecartes td { display: block; padding: 0; text-align: left; background: none; }
+.cn-ecartes th { font-weight: 600; color: var(--c-mut); }
+.cn-ecartes td.cn-ecarte-raison { color: var(--c-ink2); white-space: normal; max-width: none; min-width: 0; }
+
+/* (3) Supprimer (R23, g4:v02-18) : à 0 lien, contour rouge net de 2 px, texte rouge sur le fond de page (≥ 4,5:1 dans les deux
+   thèmes, voir le test) ; avec au moins un lien, grisé, et lisible comme tel. */
+.cn-supprimer .cn-supprimer-bouton { border-width: 2px !important; border-style: solid !important; }
+.cn-supprimer .cn-supprimer-bouton:not(:disabled) { border-color: var(--c-rouge) !important; color: var(--c-rouge) !important; background: var(--c-bg) !important; }
+/* P45 : grisé, mais lisible : contour et texte en --c-mut (≥ 3:1 sur le fond rouge pâle de la carte, dans les deux thèmes ; test). */
+.cn-supprimer .cn-supprimer-bouton:disabled { border-color: var(--c-mut) !important; border-style: dashed !important; color: var(--c-mut) !important; background: transparent !important; }
+/* CRN-5 : un carnet réalisé s'archive ; le geste prend la place de Supprimer, en contour vert (v02-18), Garder en noir à côté */
+.cn-supprimer .cn-archiver-bouton { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 48px; border-radius: 12px; border: 2px solid var(--c-zone) !important; color: var(--c-zonet) !important; background: var(--c-bg) !important; font-weight: 700; }
+
+/* P42 : le plan qui retient, sur toute la largeur (2 lignes au plus à 390), son réglage dessous, calé à droite. */
+.cn-lien-retient .cn-lien-retient-tx { flex: 1 1 100%; min-width: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cn-lien-retient > button { margin-left: auto; }
+@media (min-width: 640px) { .cn-lien-retient .cn-lien-retient-tx { flex-basis: 0; flex-grow: 1; } }
+
+/* G35 (g5:v08-27) : l'aide locale, encadrée, « Déplacer » en pastille. Critique 5, n° 38 (Q19) : le calcul local ne passe pas pour
+   de l'IA ; ni fond ni trait violets, picto calculette en encre neutre. */
+.cn-g35 { display: flex; align-items: center; flex-wrap: nowrap; gap: 10px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); }
+.cn-g35 .cn-sp { min-width: 0; line-height: 1.35; }
+.cn-g35 .cn-g35-bouton { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: 999px; background: none; color: var(--c-ink); border: 1.5px solid var(--c-ink2); font-weight: 700; }
+.cn-g35 .cn-prov-local, .cn-supprimer .cn-g36 .cn-prov-local { color: var(--c-ink2); }
+
+/* ---------- Comparer, corrections 4 et 5 (g01-8) ---------- */
+
+/* P46 : même colonne que le reste du carnet (736 px de contenu à 1280). */
+@media (min-width: 900px) { article.cn-page.cn-comparer { max-width: 760px; } }
+
+/* g01-8 : vignette au-dessus du rang et du nom ; P38 : le nom tient sur 2 lignes au plus (nom entier en infobulle).
+   Critique 5, n° 9 : des colonnes d'environ 88 px comme g01-8 (174 px de l'image en 2×), 3 visibles à 390 avec la colonne des noms ;
+   la vignette à 44 px ; plus aucune pastille dans l'en-tête (« moins bien que la 3e sur tout » passe sous le tableau). */
+.cn-comparer .cn-col-tete { align-items: flex-start; text-align: left; }
+.cn-comparer .cn-cmp-vignette { width: 44px; height: 44px; border-radius: 10px; margin-bottom: 4px; }
+.cn-comparer .cn-cmp-vignette svg { width: 34px; height: 34px; }
+.cn-comparer .cn-cmp-nom { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-weight: 400; line-height: 1.3; }
+.cn-comparer .cn-tableau-comparer .cn-col-tete { min-width: 70px; max-width: 78px; overflow-wrap: break-word; hyphens: auto; }
+.cn-comparer .cn-tableau-comparer thead th, .cn-comparer .cn-tableau-comparer td { padding-left: 6px; padding-right: 6px; }
+.cn-comparer .cn-tableau-comparer tbody th { padding-left: 8px; }
+.cn-comparer .cn-tableau-comparer thead th.cn-ecarte .cn-col-tete { min-width: 70px; max-width: 78px; }
+.cn-comparer .cn-cmp-critere { margin: 2px 0 0; }
+.cn-comparer .cn-cmp-sans-valeur { margin: 0 0 6px; font-size: 14px; line-height: 1.35; }
+.cn-comparer .cn-tableau-comparer tbody th { white-space: nowrap; }
+/* n° 23 : « la 4e, … : moins bien que la 3e sur tout », sous le tableau, une ligne par article dominé. */
+.cn-cmp-domines { list-style: none; margin: 8px 2px 0; padding: 0; font-size: 14px; color: var(--c-ink2); line-height: 1.4; }
+.cn-cmp-domines li + li { margin-top: 4px; }
+@media (min-width: 900px) { .cn-comparer .cn-tableau-comparer .cn-col-tete { max-width: 132px; } .cn-comparer .cn-cmp-vignette { width: 52px; height: 52px; } }
+
+/* Critique 6, n° 36 (D-58) : un nom ne se coupe pas quand la place existe. À 390, 3 lignes avant le « … » (colonnes de 78 px) ; à
+   1280, le nom entier, écarté compris (la règle de l'écarté, plus précise, gardait 78 px et coupait « Ventilateur de plafon… »). */
+.cn-comparer .cn-cmp-nom { -webkit-line-clamp: 3; }
+@media (min-width: 900px) {
+  .cn-comparer .cn-cmp-nom { display: block; -webkit-line-clamp: unset; overflow: visible; }
+  .cn-comparer .cn-tableau-comparer thead th.cn-ecarte .cn-col-tete { max-width: 132px; }
+}
+/* n° 17 : les caractéristiques sans aucune valeur lue, nommées sous le tableau (pas de rangée de « – »). */
+.cn-cmp-sans-lue { margin: 6px 2px 0; font-size: 14px; }
+/* Doute D-122 : « sous votre minimum » sous la valeur, en encre d'alerte discrète (le seuil est le sien, écrit dans une note). */
+.cn-hors-seuil { display: block; font-size: 12px; line-height: 1.25; color: var(--c-rouge); font-weight: 600; white-space: normal; }
+/* tour 3, f5c n° 7 : dans le tableau, la forme courte (« < min. 1 500 ») tient sur une ligne ; les colonnes d'articles se partagent la
+   place mesurée (--cn-col, posée par Comparer quand le tableau déborde) : aucune colonne coupée au repos */
+.cn-tableau-comparer .cn-hors-seuil { white-space: nowrap; }
+.cn-comparer .cn-tableau-comparer thead th:not(:first-child) { width: var(--cn-col); min-width: var(--cn-col); box-sizing: border-box; }
+.cn-choisir .cn-droite .cn-hors-seuil { text-align: right; }
+/* f9 n° 2 : à 390, la colonne de droite (prix, seuil court « < min. 1 500 ») ne prend jamais la place du nom : bornée, le nom garde le reste */
+.cn-choisir .cn-article .cn-droite { flex: 0 0 auto; max-width: 40%; }
+.cn-choisir .cn-droite .cn-hors-seuil { white-space: nowrap; }
+.cn-choisir-retenus li { font-size: 15px; line-height: 1.4; }
+
+/* Le compromis (g01-8) : la balance verte, « Compromis : » en gras, fond de zone. */
+.cn-compromis { align-items: flex-start; margin-top: 12px; background: var(--c-zonebg); border-color: transparent; line-height: 1.45; }
+.cn-compromis svg { flex: none; margin-top: 2px; }
+.cn-annonce { margin: 8px 2px 0; font-size: 14px; }
+
+/* P6 : les liens à relire, sous le tableau, jamais classés. */
+.cn-a-relire { list-style: none; margin: 12px 0 0; padding: 0; border-top: 1px solid var(--c-line); }
+.cn-a-relire li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--c-line); }
+.cn-a-relire li .cn-sp { display: flex; flex-direction: column; min-width: 0; }
+.cn-a-relire li .cn-mut { overflow-wrap: anywhere; font-size: 14px; }
+.cn-a-relire-q { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; border: 1.5px dashed var(--c-mut); color: var(--c-mut); font-weight: 700; }
+
+/* ---------- Choisir et Pourquoi ce choix, corrections 4 et 5 (g05-9, g05-11) ---------- */
+
+.cn-offre-nom b { line-height: 1.3; }
+/* g05-9 : « Ses autres valeurs · place parmi les n » en tête de tableau ; valeur sur une ligne, place calée à droite. */
+.cn-place thead th { padding: 6px 0; font-weight: 700; text-align: left; border-top: 0; }
+.cn-place thead th.cn-mut { font-weight: 400; text-align: right; white-space: nowrap; }
+.cn-place td.cn-mono { white-space: nowrap; text-align: right; padding-right: 12px; }
+.cn-place td:last-child { white-space: nowrap; width: 1%; }
+/* g01-8 : les têtes de colonne partent du haut (vignette, rang, nom), sans vide quand une pastille allonge une colonne. */
+.cn-comparer .cn-tableau-comparer thead th { vertical-align: top; }
+.cn-pourquoi-champ textarea { min-height: 72px; }
+.cn-choisi-photo { width: 88px; height: 88px; border-radius: 12px; }
+.cn-pourquoi-phrase { font-size: 17px; line-height: 1.45; margin: 4px 0 8px; }
+.cn-pourquoi-sienne { color: var(--c-ink2); font-style: italic; margin: 0 0 8px; }
+
+/* Critique 5, n° 10 : la photo du choisi en tête du cadre (ou son picto en grand, à la taille du cadre), le prix sous le nom. */
+.cn-offre.cn-offre-choisir { align-items: flex-start; gap: 12px; }
+.cn-offre-photo { width: 72px; height: 72px; border-radius: 12px; display: grid; place-items: center; }
+.cn-offre-nom { gap: 2px; min-width: 0; }
+.cn-offre-prix { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+/* n° 25 : un picto à la taille de son cadre (2/3), jamais un trait minuscule au milieu d'un grand carré. */
+.cn-vignette-vide.cn-offre-photo svg { width: 52px; height: 52px; }
+.cn-vignette-vide.cn-choisi-photo { display: grid; place-items: center; }
+.cn-vignette-vide.cn-choisi-photo svg { width: 64px; height: 64px; }
+/* La réglette sous sa ligne du tableau (g05-11), sans tête : la valeur et la place sont dites dans la ligne. */
+.cn-place tr.cn-place-avec-reglette th, .cn-place tr.cn-place-avec-reglette td { padding-bottom: 0; }
+.cn-place tr.cn-place-reglette td { border-top: 0; padding: 0 0 6px; text-align: left; width: auto; white-space: normal; }
+/* Les écartés, chacun avec son ✕ et sa raison, sous le tableau du cadre (g05-11). */
+.cn-choisir-ecartes li { font-size: 15px; line-height: 1.4; }
+.cn-choisir-ecartes svg { flex: none; color: var(--c-mut); margin-top: 1px; }
+
+/* La réglette (g05-11) : points creux pour les autres, le choisi plein ; le meilleur à gauche. Critique 5, n° 25 : posée à plat.
+   `carnets.css` donne à `.cn-reglette` (carte d'article, R04) une barre de 4 px sur fond gris arrondi qui grandit en flex : ici,
+   sous « Pourquoi ce choix » et dans le cadre Choisir, ni fond, ni arrondi, ni croissance. */
+.cn-pourquoi .cn-reglette, .cn-choisir .cn-reglette { position: static; flex: none; height: auto; border-radius: 0; background: none; }
+.cn-reglette { padding: 8px 0 4px; }
+.cn-reglette.cn-reglette-seule { padding: 0; }
+.cn-reglette-tete { display: flex; align-items: baseline; gap: 8px; }
+.cn-reglette-piste { position: relative; height: 24px; margin: 8px 9px 2px; }
+.cn-reglette-seule .cn-reglette-piste { margin-top: 2px; }
+.cn-reglette-piste::before { content: ''; position: absolute; left: -9px; right: -9px; top: 11px; height: 2px; background: var(--c-line2); }
+.cn-reglette-piste i { position: absolute; top: 5px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; border: 2px solid var(--c-mut); background: var(--c-bg); }
+.cn-reglette-piste i.cn-reglette-moi { top: 2px; width: 20px; height: 20px; margin-left: -10px; border-color: var(--c-zonet); background: var(--c-zonet); z-index: 1; }
+.cn-reglette-bornes { display: flex; justify-content: space-between; font-size: 14px; }
+
+/* ---------- Stocks › Matériel à 1280 : segment et + volant (critique 5, n° 41 ; R28, p2:g05-1) ---------- */
+
+/* La barre « À venir · Carnets · Réalisés » sert d'ancre : sa largeur est celle de la colonne (736 px, `BARRE_COLONNE`). */
+.cn-barre-materiel { anchor-name: --cn-barre-materiel; }
+/* Le + volant se pose au bord droit de la colonne, collé (8 px), et non plus au bord de la fenêtre, à 175 px du champ. Sans ancrage
+   CSS (navigateur ancien), il garde sa place d'avant. Le téléphone garde sa case des onglets (R28, juste au-dessus des onglets). */
+@media (min-width: 900px) {
+  @supports (anchor-name: --a) {
+    body:has(.cn-barre-materiel) .floating-actions[data-floating-actions-docked="false"] {
+      position-anchor: --cn-barre-materiel;
+      left: calc(anchor(right) + 8px);
+      right: auto;
+    }
+  }
+}
+/* Une colonne sans photo ni picto garde la place de la vignette (ni fond ni cube) : rangs et noms alignés. */
+.cn-comparer .cn-cmp-vignette-place { display: block; background: none; border: 0; }
+
+/* ---------- Comparer, voie V3 de la Chasse Carnet (21.11) : CRB-2, CRB-3, CRB-5, CRB-13, CRB-14, CRU-5, CRU-6, CRU-11, CRU-13 ---------- */
+
+/* CRU-11 : l'échelle de DESIGN (titre 18, corps et données 14, libellés 12) ; avant : 13, 14, 15, 16 et 22 sur le même écran. */
+.cn-comparer { font-size: 14px; }
+.cn-comparer .cn-titre { font-size: 18px; }
+.cn-comparer .cn-retour { font-size: 14px; }
+.cn-comparer .cn-tableau, .cn-comparer .cn-ecartes, .cn-comparer .cn-groupe { font-size: 14px; }
+.cn-comparer .cn-suite-indice, .cn-comparer .cn-sans-apercu { font-size: 12px; }
+.cn-comparer .cn-tableau-comparer tbody th { font-size: 12px; }
+
+/* CRB-3 (la part sans carte) : la colonne des libellés se replie au lieu de garder 221 px sur 342 ; les valeurs passent à la ligne, la
+   colonne d'un article ne dépasse plus ses 85 px : les deux articles se voient à 390. */
+.cn-comparer .cn-tableau-comparer tbody th { white-space: normal; min-width: 72px; max-width: 104px; line-height: 1.25; overflow-wrap: break-word; }
+.cn-comparer .cn-tableau-comparer td { white-space: normal; vertical-align: top; }
+@media (min-width: 900px) { .cn-comparer .cn-tableau-comparer tbody th { max-width: 190px; } }
+
+/* CRU-6 : un mot en police du texte, à gauche, qui passe à la ligne ; une mesure en mono à droite, un terme par ligne (« 1800 × », « 1500 × », « 2100 mm »). */
+.cn-comparer .cn-tableau-comparer td.cn-cell-texte { text-align: left; }
+.cn-comparer .cn-valeur-texte { font-family: inherit; overflow-wrap: break-word; hyphens: auto; line-height: 1.3; }
+.cn-comparer .cn-terme { display: block; white-space: nowrap; }
+/* CRB-2 : « prix ? » quand le prix n'est pas connu (jamais 0), en police du texte */
+.cn-comparer .cn-prix-inconnu { font-family: inherit; font-style: italic; }
+
+/* D419, A1 : Comparer de la maquette choisie (cmp-build.mjs, A1). Fil « ‹ carnet », titre « Comparer », chaîne « Classé par », colonnes-cartes,
+   rang rond sur le picto, grande valeur, colonne du 1er teintée, ligne épinglée en vert, prix inconnu en case hachurée. Échelle 18 / 14 / 12. */
+.cn-cmp-sous { margin: 0 0 8px; font-size: 14px; }
+.cn-chaine { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; font-size: 14px; }
+.cn-chaine b { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; background: rgb(var(--cave-800)); font-weight: 600; font-size: 14px; }
+.cn-chaine b.cn-on { background: var(--c-ink); color: var(--c-bg); }
+.cn-chaine b.cn-trou { background: transparent; border: 2px dashed var(--c-mut); color: var(--c-mut); }
+.cn-comparer .cn-cmp-rang { width: 26px; height: 26px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 14px; font-weight: 700; margin-top: -14px; border: 2px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); align-self: flex-start; position: relative; }
+.cn-comparer .cn-cmp-rang.cn-cmp-rang-1 { background: rgb(var(--area-stocks)); border-color: rgb(var(--area-stocks)); color: #fff; }
+.cn-comparer .cn-cmp-gros { font-size: 18px; font-weight: 600; line-height: 1.1; }
+.cn-comparer .cn-cmp-vend { font-size: 12px; line-height: 1.2; }
+.cn-comparer .cn-tableau-comparer .cn-c1 { background: rgb(var(--area-stocks) / .10); }
+.cn-comparer .cn-tableau-comparer thead th.cn-c1 { border-radius: 12px 12px 0 0; }
+.cn-comparer .cn-tableau-comparer tr.cn-ligne-epinglee > th, .cn-comparer .cn-tableau-comparer tr.cn-ligne-epinglee > td { background: rgb(var(--area-stocks) / .16); }
+.cn-comparer .cn-tableau-comparer tr.cn-ligne-epinglee > th { font-weight: 700; }
+.cn-comparer .cn-tableau-comparer tr.cn-ligne-epinglee > td.cn-c1 { background: rgb(var(--area-stocks) / .30); }
+.cn-comparer .cn-epingle { vertical-align: -2px; margin-right: 4px; color: rgb(var(--area-stocks)); }
+.cn-hach { display: inline-grid; place-items: center; width: 64px; height: 30px; border-radius: 8px; border: 2px dashed var(--c-mut); background: repeating-linear-gradient(135deg, rgb(var(--cave-800)) 0 5px, transparent 5px 10px); font-weight: 700; color: var(--c-mut); font-size: 18px; }
+.cn-comparer td small { display: block; font-size: 12px; line-height: 1.1; }
+.cn-brun { color: rgb(180 120 60); }
+
+/* D419 A1 : au téléphone la colonne des libellés se serre pour que ses trois articles tiennent sans défiler (cmp-a1) */
+@media (max-width: 899px) {
+  .cn-comparer .cn-tableau-comparer tbody th { min-width: 60px; max-width: 74px; padding-left: 6px; padding-right: 4px; }
+}

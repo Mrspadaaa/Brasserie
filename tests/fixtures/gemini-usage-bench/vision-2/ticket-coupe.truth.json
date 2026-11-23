@@ -1,0 +1,104 @@
+{
+  "id": "ticket-coupe",
+  "level": "très compliqué : bas du ticket arraché, totaux et paiement absents (rien à calculer)",
+  "facture": {
+    "vendor": "Quincaillerie Centrale",
+    "documentType": "receipt",
+    "paymentEvidence": [
+      "unknown"
+    ],
+    "date": "09.10.2026",
+    "currency": "CHF",
+    "invoiceNumber": [
+      "33018",
+      "Ticket 33018",
+      ""
+    ],
+    "orderNumber": "",
+    "amountHT": null,
+    "tvaRate": null,
+    "tvaAmount": null,
+    "amountTTC": null,
+    "items": [
+      {
+        "name": "Tuyau PVC 12 mm",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 3,
+        "unit": "",
+        "price": 2.4,
+        "amountTTC": 7.2
+      },
+      {
+        "name": "Collier inox 16-27",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 4,
+        "unit": "",
+        "price": 1.8,
+        "amountTTC": 7.2
+      },
+      {
+        "name": "Vanne 1/2 pouce",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 14.9,
+        "amountTTC": 14.9
+      },
+      {
+        "name": "Ruban teflon",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 2.5,
+        "amountTTC": 2.5
+      },
+      {
+        "name": "Bac plastique 40 L",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 12.9,
+        "amountTTC": 12.9
+      }
+    ]
+  },
+  "triage": {
+    "kind": [
+      "receipt"
+    ],
+    "documentCount": 1,
+    "readable": true,
+    "currencies": [
+      "CHF"
+    ],
+    "route": "scan"
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision-2/ticket-coupe.jpg",
+  "mimeType": "image/jpeg",
+  "note": "FIXTURE DE TEST – document fictif"
+}

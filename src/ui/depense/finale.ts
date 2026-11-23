@@ -1,0 +1,558 @@
+// Lenteur D (D308) : la fusion « sa saisie l'emporte » du final sur le provisoire. PURE : aucun état d'écran, aucun service, aucune écriture. Le contrat est `l1-plan/PLAN.md` § 4 bis.
+//   - la BASE de comparaison est le brouillon tel que `applyOutcome` du provisoire l'a posé (jamais la valeur brute de la lecture) : `baseDeBrouillon` ;
+//   - le final passe par les MÊMES transformations (`lignesDeLecture`, `enteteDeLecture`, extraites d'`applyOutcome`) avant toute comparaison ;
+//   - une cellule est « touchée » si `courant ≠ base` ou si son registre la nomme (jamais pour un simple focus : ouvrir une rangée ou y poser le curseur ne la fige pas, PLAN § 4 bis B2) : une cellule touchée ne change jamais, sans fond bleu ;
+//   - une seule table « rang final → id du brouillon » (B3) s'applique à tous les champs qui portent une ligne ;
+//   - la fusion n'appelle jamais `applyOutcome` (qui remet tout à zéro) : elle rend le brouillon, le résultat remappé, les corrections, les lignes ajoutées et pas retrouvées.
+import { makePoint, signerPoint } from '../../../functions/src/invoiceControls';
+import type { ScannedInvoiceResult, ScannedLineKind } from '../../services/geminiScanner';
+import { applyScannedDescription, applyScannedPayment, invoiceTotalProposal, patchPurchaseDraft } from '../../services/purchasePrefill';
+import { sansCetteSaisie, uniteEffective, type PurchaseDraft, type PurchaseLineDraft } from '../../services/purchaseEntry';
+import { PROPOSAL_WEIGHT_MARK, STOCK_LINE_PROPOSALS_ENABLED, STOCK_PROPOSAL_KINDS, donneesDArticle, donneesDeLigne, isReadableUnit, matchStockLine, regleProduit, shortUnit } from '../../services/stockLineMatching';
+import { ligneDeBrouillon } from '../../domain/stock/articleNeuf';
+import { ecartsEntre } from '../../domain/stock/donnees';
+import { rangsHorsPiece } from '../../domain/finance/controlesPiece';
+import { lireOptions } from './optionsDuNom';
+import { articleDeMemeNom, libelleDeLigne, voisinEtMarque } from './etat';
+import { avecUnitesDeduites, libelleLu, texteQuantite } from './rangees';
+import { groupeDe } from './groupes';
+import { tvaImprimee } from './tva';
+import { auPoidsLu } from './poidsPiece';
+import { categorieDeLaPiece, depenseHorsBrassage, familleAUnStock, NATURE_DE_FAMILLE, type FamilleCle } from './familles';
+import { ressemblanceNoms, SEUIL_VARIANTE_NOM, varianteDeFournisseur } from './ressemblanceNoms';
+import type { StockItem } from '../../types';
+
+// Le point « lecture coupée » (R1) : recopié du serveur (`functions/src/invoiceVisionReview.ts`, `phraseCoupure`, `pointLectureCoupee`, `ajouterCoupure`) en fonctions pures, parce que ce module tire `invoiceScanCore`, `models` et `node:*`
+// dans le paquet du client. `finale.test.ts` compare leurs sorties à celles du serveur : toute dérive casse ce test.
+export const PHRASE_DELAI_SAUTE = 'Le contrôle complémentaire n’a pas abouti. Les divergences restent à vérifier sur le justificatif.';
+export const phraseCoupure = (_cause: 'delai-saute') => PHRASE_DELAI_SAUTE;
+export function pointLectureCoupee(cause: 'delai-saute', message: string) {
+  const p = { ...makePoint('lecture-coupee', 'ecart', 'items', null, { regle: 'chaque lecture demandée arrive à son terme', message, unite: 'texte', enjeu: 'argent', origine: 'lecture', luTexte: cause }), source: 'contrôle' as const, pese: true };
+  return { ...p, signature: signerPoint(p) };
+}
+export function ajouterCoupure<R extends { points: any[]; issues: string[]; review: { status: string; findings: string[] } }>(result: R, cause: 'delai-saute', message: string): R {
+  result.points = [...result.points, pointLectureCoupee(cause, message)];
+  if (!result.issues.includes(message)) result.issues = [...result.issues, message];
+  if (!result.review.findings.includes(message)) result.review.findings = [...result.review.findings, message];
+  if (result.review.status !== 'unavailable') result.review.status = 'disputed';
+  return result;
+}
+
+/**
+ * s1 (jeu en ligne, VERDICT-EN-LIGNE n° 3 ; ses mots : « 90 % du temps j'ai pas besoin de plus ») : un ticket de magasin n'imprime pas la quantité d'un article vendu à l'unité ; le serveur rend alors `quantity` null et un prix
+ * unitaire égal au montant (`montantDeLigne` de `invoiceScanCore.ts` : « quantity null ou 1 → price »). La quantité est donc 1, SEULEMENT quand ce prix est lu et égal au montant (au centime) : une ligne dont le prix diffère du montant
+ * (2 × 2,60 = 5,20 sans quantité) garde sa quantité inconnue, jamais inventée ; hors CHF il n'y a pas de montant de ligne.
+ */
+export function quantiteImpliciteDuTicket(item: { price?: number | null; amountTTC?: number | null }, devise: string | null | undefined): number | undefined {
+  if (devise !== 'CHF' || item.price === null || item.price === undefined || item.amountTTC === null || item.amountTTC === undefined) return undefined;
+  return Math.round(item.price * 100) === Math.round(item.amountTTC * 100) && item.price > 0 ? 1 : undefined;
+}
+/**
+ * dp (10.11, « Aucune unité rien ? ») : une ligne HORS STOCK (divers, entretien, matériel, service) lue avec un seul total (ni quantité, ni prix unitaire) est « 1 × total » : quantité 1, prix unitaire = total.
+ * Jamais pour un ingrédient, un emballage ou un nettoyant (leur quantité décide du stock : elle reste à remplir), ni une remise.
+ */
+const SANS_STOCK: ReadonlySet<string> = new Set(['other', 'maintenance', 'service', 'shipping']);
+export function totalSeulEnUn(l: PurchaseLineDraft): PurchaseLineDraft {
+  if (!SANS_STOCK.has(l.kind) || l.quantity !== undefined || l.unitPrice !== undefined || l.amount === undefined || !(l.amount > 0)) return l;
+  return { ...l, quantity: 1, unitPrice: l.amount };
+}
+export const scanKind = (kind: ScannedLineKind): PurchaseLineDraft['kind'] => (kind === 'stock' ? 'ingredient' : kind === 'unknown' ? 'other' : kind);
+/** Le prix lu, au moins deux décimales (2,30 et non 2,3), trois sous 0,10 : une mise en forme, jamais un chiffre ajouté. */
+export const prixImprime = (p: number) => { const d = (String(p).split('.')[1] ?? '').length; return p.toFixed(Math.max(Math.abs(p) < 0.1 ? 3 : 2, d)).replace('.', ','); };
+const fr2 = (n: number) => (Math.round(n * 100) / 100).toFixed(2).replace('.', ',');
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Le calcul d'`applyOutcome`, extrait : les lignes d'une lecture et l'en-tête qu'elle propose.
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------
+export interface Propositions {
+  proposedStock: Set<string>; proposedRef: Map<string, string>; voisins: Map<string, { article: StockItem; marque: string }>; relieAuto: Map<string, string>; neufDOffice: Set<string>;
+}
+const propositionsVides = (): Propositions => ({ proposedStock: new Set(), proposedRef: new Map(), voisins: new Map(), relieAuto: new Map(), neufDOffice: new Set() });
+
+/**
+ * DP-4 : l'article auquel un même nom relie la ligne quand seule l'UNITÉ l'empêchait (D371b), ou rien. 1. la règle de `regleProduit` sans l'unité (comme « Suivre au stock ») dit « même article » ;
+ * 2. sinon l'article qui porte le même nom (toute catégorie) dont AUCUNE donnée connue des deux côtés (α, origine, récolte, EBC, poids) ne diffère. Une unité illisible n'a rien à relâcher : la règle l'a déjà fait.
+ */
+function lienParLeNom(line: PurchaseLineDraft, unit: string, regle: ReturnType<typeof regleProduit>, existants: readonly StockItem[], vendor?: string): StockItem | undefined {
+  if (regle.cas === 'meme') return regle.article;
+  if (!isReadableUnit(unit) || !(Number(line.quantity) > 0)) return undefined; // quantité absente : un autre obstacle (D381), hors DP-4
+  const sansUnite = regleProduit(ligneDeBrouillon({ ...line, unit: '' }, vendor), existants);
+  if (sansUnite.cas === 'meme') return sansUnite.article;
+  const memeNom = articleDeMemeNom(line, existants);
+  if (!memeNom) return undefined;
+  const lu = donneesDeLigne(ligneDeBrouillon({ ...line, unit }, vendor)).donnees;
+  return ecartsEntre(lu, donneesDArticle(memeNom).donnees).length === 0 ? memeNom : undefined;
+}
+
+/**
+ * Les lignes du brouillon d'une lecture (D275, D277, D306) et ce que la lecture PROPOSE (articles liés, voisins, « nouvel article » d'office). Le calcul d'`applyOutcome`, sans changement :
+ * libellé lu, Rénovation, unités déduites, rapprochement du stock, nouvel article d'office.
+ */
+export function lignesDeLecture(result: ScannedInvoiceResult, stockItems: readonly StockItem[], submissionId: string): { lines: PurchaseLineDraft[]; propositions: Propositions } {
+  const propositions = propositionsVides();
+  const categorie = categorieDeLaPiece(result.category, result.items.map(i => i.name), result.items.map(i => (i.kind === 'shipping' || i.kind === 'discount' ? undefined : i.amountTTC))); // p3 : la catégorie de la PIÈCE (familles.ts), pas le seul choix de la lecture
+  const total = invoiceTotalProposal(result);
+  const lues0: PurchaseLineDraft[] = result.items.map(item => {
+    /* d2, bloquant 1 (critique) : une remise n'a ni quantité ni unité ni prix unitaire (« 1 pièce × −0,68 » comptait 2 pièces de plus) ; elle reste un montant négatif. */
+    /* P4 (banc b1) : une remise s'appelle « Rabais », jamais le libellé de taxe que le ticket imprime sous l'article (« NoVatTax - 0% ») ; ce libellé reste sous « Imprimé » (rien n'est perdu). */
+    const nomImprime = String(item.name ?? '').trim(), lu: ReturnType<typeof libelleLu> = item.kind === 'discount' ? { description: 'Rabais', ...(nomImprime ? { imprime: { nom: nomImprime, ...(item.variant ? { variante: String(item.variant).trim() } : {}) } } : {}) } : libelleLu(item);
+    const nomLu = lireOptions(String(item.name ?? ''), item.variant ? String(item.variant) : undefined, String(item.unit ?? '')).base.trim().slice(0, 80);
+    return { id: item.id, description: lu.description, ...(nomLu ? { nomLu } : {}), ...(lu.imprime ? { imprime: lu.imprime } : {}), kind: scanKind(item.kind), amount: result.currency === 'CHF' ? (item.amountTTC ?? undefined) : undefined, quantity: item.kind === 'discount' ? undefined : item.quantity ?? quantiteImpliciteDuTicket(item, result.currency), unit: item.kind === 'discount' ? '' : item.unit, unitPrice: result.currency === 'CHF' && item.kind !== 'discount' ? (item.price ?? undefined) : undefined, ...(item.montantDeduit === true ? { montantDeduit: true as const } : {}), stockAction: 'none' as const, equipmentAction: 'none' as const, stockCategory: item.stockCategory, sourceReference: item.reference, evidence: [item.reference ? `Réf. ${item.reference}` : '', lu.imprime ? `Imprimé : ${libelleDeLigne(item.name, item.variant)}` : '', item.evidence].filter(Boolean).join(' · ') };
+  });
+  const existantsLus = sansCetteSaisie(stockItems, submissionId);
+  const familleDeLigne = (l: PurchaseLineDraft): FamilleCle => groupeDe(donneesDeLigne(ligneDeBrouillon({ ...l, unit: uniteEffective(l) }, result.vendor ?? undefined)).contexte, l.kind, l.description, l.stockCategory, undefined, categorie);
+  /* D328c : une famille SANS stock (matériel, rénovation, services, « Autres ») dont un article existe déjà au stock, relié par son nom (même produit) ou par la ressemblance que `matchStockLine`
+     retient, garde la ligne en ingrédient (liée à lui : le lien d'un article du brasseur ne se perd pas). Les familles AVEC stock (nettoyage, emballage, consommable) prennent leur nature
+     (cleaning, packaging) : le rapprochement qui suit relie le même article, pour ces natures aussi. */
+  const dejaAuStock = (l: PurchaseLineDraft, famille: FamilleCle): boolean => {
+    if (familleAUnStock(famille)) return false;
+    const unit = uniteEffective(l);
+    if (regleProduit(ligneDeBrouillon({ ...l, unit }, result.vendor ?? undefined), existantsLus).cas === 'meme') return true;
+    return STOCK_LINE_PROPOSALS_ENABLED && matchStockLine({ description: l.description, unit, quantity: l.quantity, vendor: result.vendor ?? undefined, stockCategory: l.stockCategory, reference: l.sourceReference, kind: l.kind, ...(l.nomLu ? { nomLu: l.nomLu } : {}) }, stockItems as StockItem[]) !== undefined;
+  };
+  /* D306, D328c : une ligne que la lecture dit « stock » (kind ingredient) prend la nature de sa famille quand ce n'est pas un ingrédient (`NATURE_DE_FAMILLE` : nettoyant → cleaning, emballage → packaging,
+     matériel et rénovation → equipment, inclassable → other) : la bande et le type d'achat disent la même chose. Sans catégorie de stock (matériel, rénovation, services, « Autres »), aucun article, et
+     jamais de « nouvel article » d'office (nettoyage et emballage non plus : seul un article déjà là se relie). Exceptions : un article déjà au stock la garde en ingrédient (familles sans stock) ;
+     une ligne « Autres » d'une dépense de brassage (un adjuvant que nul mot ne classe) reste un ingrédient, jamais perdue. */
+  const lues: PurchaseLineDraft[] = lues0.map(l => {
+    /* f12 P-1 : une ligne que la famille range sous « Services » (un acte, LR2-7 : la lecture le dit `other` ou `equipment` d'un tirage à l'autre) a la nature Service :
+       la bande, le choix de nature et la ligne enregistrée disent la même chose (sinon l'acte part en matériel). Le port et la remise gardent la leur. */
+    if (l.kind !== 'ingredient') return l.kind !== 'service' && l.kind !== 'shipping' && l.kind !== 'discount' && familleDeLigne(l) === 'service' ? { ...l, kind: 'service' as const, stockAction: 'none' as const } : l;
+    const famille = familleDeLigne(l), nature = NATURE_DE_FAMILLE[famille];
+    if (!nature || (famille === 'autres' && categorie === 'brassage') || dejaAuStock(l, famille)) return l;
+    return { ...l, kind: nature, stockAction: 'none' as const };
+  });
+  /* D277 : l'unité absente se déduit avant le rapprochement ; l'imprimé reste vide (D213). */
+  const deduites = avecUnitesDeduites({ lines: lues, vendor: result.vendor ?? '', amount: total.amount, category: categorie }, stockItems as StockItem[]).lines;
+  const horsBrassage = depenseHorsBrassage(categorie);
+  const lines = deduites.map(ligneLue => {
+    /* ST-T1 : un paquet pesé vendu à la pièce se compte en g d'office (le poids lu dans son nom) : il se rattache à l'article en kg au lieu d'un doublon. */
+    const line = horsBrassage ? ligneLue : auPoidsLu(ligneLue, uniteEffective(ligneLue), existantsLus, result.vendor ?? undefined);
+    const unit = uniteEffective(line);
+    /* ST-T34 : une ligne « Matériel de brassage » (cuve, siphon, tuyaux) propose sa fiche dans Stocks › Matériel : « Créer la fiche de ce matériel » est présélectionné, le brasseur le change d'un geste (jamais un ingrédient). La rénovation (peinture, chevilles) n'en reçoit pas. */
+    if (line.kind === 'equipment' && line.equipmentAction === 'none' && familleDeLigne({ ...line, unit }) === 'materiel') return { ...line, stockAction: 'none' as const, equipmentAction: 'new' as const };
+    /* s1 (VERDICT-EN-LIGNE-2) : une dépense hors brassage ne crée ni ne relie aucun article, quelle que soit la famille lue pour la ligne ; le brasseur peut toujours « Suivre au stock » à la main. */
+    if (horsBrassage) return { ...line, stockAction: 'none' as const };
+    /* D306 : une ligne de Rénovation (lue emballage, nettoyage…) ne se relie à rien ; D328c : un ingrédient qui est resté tel (article déjà au stock) suit le rapprochement. */
+    if (line.kind !== 'ingredient' && familleDeLigne({ ...line, unit }) === 'renovation') return { ...line, stockAction: 'none' as const };
+    const match = STOCK_LINE_PROPOSALS_ENABLED && (STOCK_PROPOSAL_KINDS as readonly string[]).includes(line.kind) ? matchStockLine({ description: line.description, unit, quantity: line.quantity, vendor: result.vendor ?? undefined, stockCategory: line.stockCategory, reference: line.sourceReference, kind: line.kind, ...(line.nomLu ? { nomLu: line.nomLu } : {}) }, stockItems as StockItem[]) : undefined;
+    if (!match) {
+      const voisin = (STOCK_PROPOSAL_KINDS as readonly string[]).includes(line.kind) ? voisinEtMarque({ ...line, unit }, stockItems, result.vendor ?? undefined) : undefined;
+      if (voisin) propositions.voisins.set(line.id, voisin);
+      if (line.kind === 'ingredient' && line.description.trim()) {
+        const regle = regleProduit(ligneDeBrouillon({ ...line, unit }, result.vendor ?? undefined), existantsLus);
+        if (regle.cas === 'meme') { propositions.relieAuto.set(line.id, regle.article.name); return { ...line, stockAction: 'existing' as const, stockRef: regle.article.ref }; }
+        /* DP-4 (10.11, D371b) : l'unité n'est pas une identité. « Idaho 7 » en pièce face à « Idaho 7 » compté en g n'est pas un autre produit : le même nom, sans l'unité, est CET article (ou un article de même nom
+           sans aucune donnée qui diffère) ; il est PROPOSÉ (jaune, « Garder » ; la vue FACTURE | STOCK et ses trois sorties s'ouvrent), jamais un « bis » d'office. Une autre α, origine ou récolte reste un autre produit (D215). */
+        if (regle.cas !== 'ambigu') {
+          const parLeNom = lienParLeNom(line, unit, regle, existantsLus, result.vendor ?? undefined);
+          if (parLeNom) { propositions.voisins.delete(line.id); /* un lien proposé n'est plus un « voisin » à trancher */ propositions.proposedStock.add(line.id); propositions.proposedRef.set(line.id, parLeNom.ref); return { ...line, stockAction: 'existing' as const, stockRef: parLeNom.ref }; }
+          propositions.neufDOffice.add(line.id); return { ...line, stockAction: 'new' as const };
+        }
+      }
+      return line;
+    }
+    propositions.proposedStock.add(line.id); propositions.proposedRef.set(line.id, match.item.ref);
+    if (match.weightUnconfirmed) propositions.proposedStock.add(line.id + PROPOSAL_WEIGHT_MARK);
+    return { ...line, stockAction: 'existing' as const, stockRef: match.item.ref, evidence: [line.evidence, ...(match.deduced.length ? [`Libellé : ${line.description}`, ...match.deduced] : [])].filter(Boolean).join(' · ') };
+  });
+  return { lines: lines.map(totalSeulEnUn), propositions };
+}
+
+/** Ce que la lecture propose pour l'en-tête (sans les lignes) : le patch que `applyOutcome` passe à `patchPurchaseDraft`. */
+export function enteteDeLecture(previous: PurchaseDraft, result: ScannedInvoiceResult, today: string): Partial<PurchaseDraft> {
+  const total = invoiceTotalProposal(result), proposed = applyScannedDescription(previous, result);
+  return { vendor: result.vendor, date: result.date, ...applyScannedPayment(previous, result, today), invoiceNumber: result.invoiceNumber, ...proposed, category: categorieDeLaPiece(result.category, result.items.map(i => i.name), result.items.map(i => (i.kind === 'shipping' || i.kind === 'discount' ? undefined : i.amountTTC))) as ScannedInvoiceResult["category"], amount: total.amount, sourceCurrency: result.currency, sourceAmount: result.amountTTC ?? undefined, sourceDocumentType: result.documentType, sourceOrderNumber: result.orderNumber, sourceTotalBasis: total.calculated ? 'line_sum' : result.amountTTC !== null ? 'printed' : undefined, sourceNetAmount: result.amountHT ?? undefined, sourceVatRate: result.tvaRate ?? undefined, sourceVatAmount: tvaImprimee(result)?.montant };
+}
+
+export interface OptionsLecture { stockItems: readonly StockItem[]; today: string; model?: string; documentHash?: string; ligneVide: () => PurchaseLineDraft }
+/** Le brouillon que pose une lecture : ce que fait `applyOutcome`, en pur (la même sortie, les propositions en plus). */
+export function brouillonDeLecture(previous: PurchaseDraft, result: ScannedInvoiceResult, o: OptionsLecture): { draft: PurchaseDraft; propositions: Propositions } {
+  const { lines, propositions } = lignesDeLecture(result, o.stockItems, previous.submissionId), entete = enteteDeLecture(previous, result, o.today);
+  const description = entete.description ?? previous.description;
+  const draft = patchPurchaseDraft(previous, { ...entete, lines: lines.length ? lines : [{ ...o.ligneVide(), description: description || 'Achat', amount: entete.amount }], scanModel: o.model, documentHash: o.documentHash }, o.today);
+  return { draft, propositions };
+}
+
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------
+// La base (B1) et les cellules (B2)
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------
+/** Les cellules d'une rangée que la fusion compare. `evidence` suit sa ligne et n'est jamais une correction montrée ; `nameFr` vient de la traduction (M6). */
+export const CELLULES_LIGNE = ['description', 'nomLu', 'imprime', 'kind', 'quantity', 'unit', 'unitPrice', 'amount', 'stockCategory', 'sourceReference', 'stockAction', 'stockRef', 'articleName', 'equipmentAction'] as const;
+export type Cellule = typeof CELLULES_LIGNE[number];
+const NOM_CELLULES: readonly Cellule[] = ['description', 'nomLu', 'imprime'];
+const LIEN_CELLULES: readonly Cellule[] = ['stockAction', 'stockRef', 'articleName', 'equipmentAction'];
+/** LR3-3 : les valeurs lues qu'un final muet (non lues par la 3.8) ne vide jamais. */
+const VALEURS_GARDEES: readonly Cellule[] = ['quantity', 'unitPrice', 'amount'];
+const inconnue = (v: unknown) => v === undefined || v === null || v === '';
+export type CellulesLigne = Partial<Pick<PurchaseLineDraft, Cellule | 'evidence' | 'nameFr' | 'uniteDeduite'>>;
+/** Les groupes d'en-tête : une cellule d'écran peut être posée par plusieurs champs du brouillon (le total : trois ; la TVA : deux). `registre` : ce qui dit « il l'a touchée ». */
+const GROUPES_ENTETE: Array<{ cle: string; champs: Array<keyof PurchaseDraft>; registre: string[] }> = [
+  { cle: 'vendor', champs: ['vendor'], registre: ['vendor'] }, { cle: 'date', champs: ['date'], registre: ['date'] }, { cle: 'invoiceNumber', champs: ['invoiceNumber'], registre: ['invoiceNumber'] },
+  { cle: 'total', champs: ['amount', 'sourceAmount', 'sourceTotalBasis'], registre: ['amountTTC'] }, { cle: 'tva', champs: ['sourceVatAmount', 'sourceVatRate'], registre: ['tvaAmount'] },
+  { cle: 'ht', champs: ['sourceNetAmount'], registre: ['amountHT'] }, { cle: 'paiement', champs: ['paymentStatus', 'paymentMethod'], registre: ['paymentEvidence'] }, { cle: 'description', champs: ['description', 'descriptionSource'], registre: [] },
+  { cle: 'category', champs: ['category'], registre: ['category'] }, { cle: 'currency', champs: ['sourceCurrency'], registre: ['currency'] },
+  { cle: 'documentType', champs: ['sourceDocumentType'], registre: [] }, { cle: 'order', champs: ['sourceOrderNumber'], registre: [] },
+];
+/** Les groupes d'en-tête qui ont une case à l'écran (bandeau : fournisseur, date, total ; tuiles : TVA, Règlement) : seuls ceux-là se marquent en bleu et entrent dans le compte de la puce. */
+export const CASES_ENTETE = ['vendor', 'date', 'total', 'tva', 'paiement'] as const;
+export interface BaseFusion {
+  jeton: string; nProvisoire: number;
+  lignes: Record<string, CellulesLigne>; entete: Partial<PurchaseDraft>;
+  /** Les ids de lignes dont l'article est proposé, ou fait « nouvel article » d'office, au moment de la base : un id qui en sort est un geste du brasseur (« Garder », ⇄…). */
+  proposes: string[]; neufsOffice: string[];
+}
+const memes = (a: unknown, b: unknown) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+/**
+ * LR1-5, LR3-3 (voie r, DÉCISION 1) : une cellule de nom que la 3.8 lit autrement de quelques lettres (ressemblance ≥ 0,9 : « TUBEO » / « TUBEQ », « 2,5L » / « 2.5L »)
+ * n'est pas une correction : la valeur de la 3.8 est reprise sans marque, sans barré et sans compte. `imprime` compare son nom ; sa variante doit rester la même.
+ */
+export function varianteDeNom(champ: Cellule, avant: unknown, apres: unknown): boolean {
+  if (!(NOM_CELLULES as readonly string[]).includes(champ)) return false;
+  if (champ !== 'imprime') return ressemblanceNoms(avant, apres) >= SEUIL_VARIANTE_NOM;
+  const a = avant as { nom?: string; variante?: string } | undefined, b = apres as { nom?: string; variante?: string } | undefined;
+  return (a?.variante ?? '') === (b?.variante ?? '') && ressemblanceNoms(a?.nom, b?.nom) >= SEUIL_VARIANTE_NOM;
+}
+const motsDe = (v: unknown): string => String(v ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+export { varianteDeFournisseur };
+/**
+ * v3-4 (vision v3, doc2) : le règlement de la 1re lecture n'est une LECTURE que si elle a lu une preuve (payé, à payer) ou un type qui le décide (pro-forma, devis, avoir). Sinon « Payé » est
+ * la supposition de `scannedPayment` (date du document passée) : la 3.8 qui lit « à payer » complète, elle ne corrige rien ; aucun barré.
+ */
+const reglementLu = (r: ScannedInvoiceResult): boolean => {
+  const type = r.documentTypeRetenu ?? r.documentType;
+  return r.paymentEvidence === 'paid' || r.paymentEvidence === 'unpaid' || Boolean(r.proForma) || type === 'quote' || type === 'credit_note';
+};
+const prendre = <T extends object>(o: T, cles: readonly string[]): Record<string, unknown> => Object.fromEntries(cles.map(k => [k, (o as Record<string, unknown>)[k]]));
+/** L'instantané du brouillon posé : par id de ligne et par cellule, pour toutes les cellules (B1). Il se met à jour de la seule écriture du programme entre les deux (la traduction). */
+export function baseDeBrouillon(draft: PurchaseDraft, jeton: string, propositions: Propositions, nProvisoire: number): BaseFusion {
+  return {
+    jeton, nProvisoire,
+    lignes: Object.fromEntries(draft.lines.map(l => [l.id, { ...prendre(l, [...CELLULES_LIGNE, 'evidence', 'nameFr', 'uniteDeduite']) } as CellulesLigne])),
+    entete: prendre(draft, GROUPES_ENTETE.flatMap(g => g.champs as string[])) as Partial<PurchaseDraft>,
+    proposes: [...propositions.proposedStock].filter(x => !x.endsWith(PROPOSAL_WEIGHT_MARK)), neufsOffice: [...propositions.neufDOffice],
+  };
+}
+
+export interface Registres {
+  reviewedFields: readonly string[]; manuallyClassified: ReadonlySet<string>;
+  /** Les ids dont l'article est encore proposé, ou « nouvel article » d'office, MAINTENANT. */
+  proposes: ReadonlySet<string>; neufsOffice: ReadonlySet<string>;
+  reglees: ReadonlySet<string>;
+  /** IGNORÉ depuis e-finitions : un focus posé sans changer la valeur ne rend ni la rangée ni la cellule « touchée » (seule une valeur changée est gardée). Champ conservé pour les appelants et les tests d'avant. */
+  focus?: string | null;
+}
+export interface Correction { id: string; champ: Cellule; avant: unknown; apres: unknown }
+export interface Perdue { ligne: PurchaseLineDraft; /** La ligne gardée qui la précède dans le brouillon (`null` : en tête). */ apres: string | null }
+export interface SortieFusion {
+  etat: 'finie' | 'echec';
+  draft: PurchaseDraft; result: ScannedInvoiceResult;
+  /** id du final → id du brouillon (B3). */
+  table: Map<string, string>;
+  corrections: { lignes: Record<string, Correction[]>; entete: Record<string, { avant: unknown; apres: unknown }> };
+  /** Les ids du brouillon que la 3.8 ajoute (son choix 1 B). */
+  ajoutees: string[];
+  /** Les lignes que la 3.8 ne lit plus (son choix 2 D) : hors du brouillon, donc hors de toute somme, jusqu'à « Garder ». « Confirmer » sans trancher : elles partent. */
+  perdues: Perdue[];
+  /** m2 : le nombre de CIBLES corrigées : une rangée avec au moins une cellule corrigée, un champ d'en-tête corrigé, une ligne ajoutée. Les lignes pas retrouvées n'y sont pas. */
+  nCorrigees: number;
+  /** M6 : les lignes dont le nom de base change, et les lignes ajoutées : à traduire. */
+  aRetraduire: string[];
+  /** Les lignes dont les propositions (article lié, voisin…) viennent du final : leurs anciennes marques s'effacent, ces nouvelles les remplacent. */
+  reprises: string[]; propositions: Propositions;
+}
+export interface EntreeFusion {
+  base: BaseFusion; courant: PurchaseDraft; provisoire: ScannedInvoiceResult; final: ScannedInvoiceResult; stockItems: readonly StockItem[]; today: string; registres: Registres; ligneVide: () => PurchaseLineDraft; model?: string;
+}
+
+const rangDe = (id: string): number => { const m = /^line-(\d+)$/.exec(id); return m ? Number(m[1]) : Number.NaN; };
+const clone = <T,>(x: T): T => JSON.parse(JSON.stringify(x));
+
+export interface LigneAAligner { name?: string | null; amountTTC?: number | null }
+const SEUIL_PAIRE_PROPOSEE = 0.5, SEUIL_PAIRE_LIBRE = 0.7, SEUIL_PAIRE_MEME_MONTANT = 0.5;
+/**
+ * LR3-3 (vision v3, doc25) : les rangs que le serveur donne (`rangProvisoire`) ou la position (M4) ne portent une correction que si les deux lignes sont la même. Au doc25, dès « ROULEAU … TUBEO »
+ * relu sans rang, le serveur donnait à chaque ligne suivante le rang de la PRÉCÉDENTE : « MASQUE DE PROTECT. » portait « COMBINAISON JETABLE · 9,50 » barré, deux lignes partaient « retirées ».
+ * Problème d'école : l'alignement de deux séquences ordonnées autour d'ancres (Needleman-Wunsch, la méthode du serveur `rangsProvisoires`), en programmation dynamique, écart de coût nul.
+ * Ancres : les paires proposées dont les noms se ressemblent ou dont le montant est le même (ressemblance ≥ 0,5, Levenshtein normalisée `ressemblanceNoms`, la même que le serveur), ou sans nom des deux côtés ; une pièce d'une seule
+ * ligne de chaque côté garde sa paire. Les lignes restées seules s'alignent dans l'ordre ; une paire y est admise dès 0,7, ou 0,5 à montant égal (les seuils du serveur).
+ * Une ligne sans paire est « pas retrouvée » au provisoire, « ajoutée » au final : jamais une valeur de la voisine.
+ */
+export function alignerLignesLues(provisoire: readonly LigneAAligner[], final: readonly LigneAAligner[], proposes: ReadonlyArray<number | null>): Array<number | null> {
+  const seule = final.length === 1 && provisoire.length === 1;
+  const cts = (v: number | null | undefined) => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v * 100) : null);
+  const rangs: Array<number | null> = final.map(() => null), pris = new Set<number>();
+  // 1. La paire proposée est gardée si les noms se ressemblent (ou s'il n'y a de nom d'aucun côté) : elle peut croiser une autre paire (une ligne de port que la 3.8 range ailleurs, E3).
+  proposes.forEach((p, f) => {
+    if (p === null || p === undefined || p < 0 || p >= provisoire.length || pris.has(p)) return;
+    const sansNoms = !motsDe(final[f].name) && !motsDe(provisoire[p].name), s = ressemblanceNoms(final[f].name, provisoire[p].name);
+    // Une autre ligne du provisoire porte presque le même nom (≥ 0,9) et ressemble mieux : la paire proposée est décalée, elle n'est pas une ancre.
+    const mieux = provisoire.some((q, k) => k !== p && ressemblanceNoms(final[f].name, q.name) >= Math.max(SEUIL_VARIANTE_NOM, s + 1e-9));
+    const memeMontant = cts(final[f].amountTTC) !== null && cts(final[f].amountTTC) === cts(provisoire[p].amountTTC); // « Malt Pilsner » relu « Pilsner Malz » au même montant
+    if (seule || sansNoms || ((s >= SEUIL_PAIRE_PROPOSEE || memeMontant) && !mieux)) { rangs[f] = p; pris.add(p); }
+  });
+  // 2. Les lignes restées seules des deux côtés s'alignent dans l'ordre (Needleman-Wunsch) : score = 1 + ressemblance (+ 0,25 à montant égal) ; paire admise dès 0,7, ou 0,5 à montant égal.
+  const F = final.map((_, f) => f).filter(f => rangs[f] === null), P = provisoire.map((_, p) => p).filter(p => !pris.has(p));
+  const score = (f: number, p: number): number | null => {
+    const s = ressemblanceNoms(final[f].name, provisoire[p].name), a = cts(final[f].amountTTC), memeMontant = a !== null && a === cts(provisoire[p].amountTTC);
+    return s >= SEUIL_PAIRE_LIBRE || (memeMontant && s >= SEUIL_PAIRE_MEME_MONTANT) ? 1 + s + (memeMontant ? 0.25 : 0) : null;
+  };
+  const S = F.map(f => P.map(p => score(f, p)));
+  const H: number[][] = Array.from({ length: F.length + 1 }, () => new Array<number>(P.length + 1).fill(0));
+  for (let i = 1; i <= F.length; i++) for (let j = 1; j <= P.length; j++) {
+    const d = S[i - 1][j - 1];
+    H[i][j] = Math.max(H[i - 1][j], H[i][j - 1], d === null ? -Infinity : H[i - 1][j - 1] + d);
+  }
+  for (let i = F.length, j = P.length; i > 0 && j > 0;) {
+    const d = S[i - 1][j - 1];
+    if (d !== null && H[i][j] === H[i - 1][j - 1] + d) { rangs[F[i - 1]] = P[j - 1]; i -= 1; j -= 1; }
+    else if (H[i][j] === H[i - 1][j]) i -= 1;
+    else j -= 1;
+  }
+  return rangs;
+}
+
+/** B3 : « rang final → id du brouillon ». `fiable` : le jeton du morceau reçu est celui du final et chaque ligne dit son rang ; sinon (M4) la position, si les deux listes ont la même longueur. */
+export function tableDeRangs(final: ScannedInvoiceResult, nProvisoire: number, jeton: string, provisoire?: readonly LigneAAligner[]): { ok: boolean; table: Map<string, string>; ajoutees: string[]; paires: Set<number> } {
+  const table = new Map<string, string>(), ajoutees: string[] = [], paires = new Set<number>();
+  const fiable = final.provisoireJeton === jeton && final.items.length > 0 && final.items.every(i => i.rangProvisoire !== undefined);
+  const parPosition = !fiable && final.items.length === nProvisoire && nProvisoire > 0;
+  if (!fiable && !parPosition) return { ok: false, table, ajoutees, paires };
+  const proposes = final.items.map((item, j) => (fiable ? item.rangProvisoire ?? null : j));
+  // LR3-3 : la paire proposée (serveur ou position) passe par l'alignement des noms quand les lignes du provisoire sont connues.
+  const rangs = provisoire && provisoire.length === nProvisoire ? alignerLignesLues(provisoire, final.items, proposes) : proposes;
+  let k = 0;
+  final.items.forEach((item, j) => {
+    const r = rangs[j];
+    if (typeof r === 'number' && r >= 0 && r < nProvisoire && !paires.has(r)) { paires.add(r); table.set(item.id, `line-${r + 1}`); }
+    else { k += 1; const id = `line-${nProvisoire + k}`; table.set(item.id, id); ajoutees.push(id); }
+  });
+  return { ok: true, table, ajoutees, paires };
+}
+
+/** Un numéro de ligne (`points[].ligne`) passé par la table : le numéro de l'id du brouillon (R4). */
+const renumeroter = (n: number | null | undefined, table: ReadonlyMap<string, string>): number | null | undefined => {
+  if (typeof n !== 'number') return n;
+  const id = table.get(`line-${n}`);
+  return id ? rangDe(id) : n;
+};
+function remapperPoints(points: any[] | undefined, table: ReadonlyMap<string, string>): any[] | undefined {
+  if (!points) return points;
+  return points.map(p => {
+    if (p.ligne === null || p.ligne === undefined) return p;
+    const ligne = renumeroter(p.ligne, table) as number;
+    const sans = { ...p, ligne, ...(Array.isArray(p.lignes) ? { lignes: p.lignes.map((n: number) => renumeroter(n, table)) } : {}),
+      champs: (p.champs ?? []).map((c: string) => c.replace(/^items\.(\d+)\./, (_m, n) => `items.${renumeroter(Number(n), table)}.`)),
+      cle: String(p.cle).replace(/:(\d+):/, (_m, n) => `:${renumeroter(Number(n), table)}:`) };
+    const { signature: _ancienne, ...reste } = sans;
+    return { ...reste, signature: signerPoint(reste) };
+  });
+}
+
+/** Le texte de l'ancienne valeur d'une rangée corrigée (sa maquette : « 10 Kg × 1,45 », « 30 ? », « 4 Kg × 1,80 · 7,20 »). */
+export function libelleAvant(base: CellulesLigne, corrections: readonly Pick<Correction, 'champ'>[], courant?: Pick<PurchaseLineDraft, 'quantity' | 'unit' | 'uniteDeduite'>): string {
+  const champs = new Set(corrections.map(c => c.champ));
+  /* La quantité d'une rangée dont seul le prix est corrigé est celle d'aujourd'hui (celle qu'il a tapée, le cas échéant) : on ne barre jamais une valeur qui n'a pas été corrigée. */
+  const qteCorrigee = champs.has('quantity') || champs.has('unit');
+  /* e-finitions (mineur 2) : quand la quantité d'aujourd'hui n'est ni la lue ni une correction, elle est la sienne : le barré ne montre alors que le prix (« × 1,45 »), jamais un produit qui n'a pas existé (« 12 Kg × 1,45 »). */
+  const qteLaSienne = !qteCorrigee && courant !== undefined && !(memes(courant.quantity, base.quantity) && (courant.unit ?? '') === (base.unit ?? ''));
+  const ligne = { quantity: base.quantity, unit: base.unit ?? '', uniteDeduite: base.uniteDeduite } as PurchaseLineDraft;
+  // Le barré dit « ? » pour une unité ou une quantité qui n'était pas lue : `horsStock` faux (la rangée n'ajoute plus « ? » à une ligne hors stock, g2a, mais ici l'ancienne valeur est à dire).
+  const qte = qteLaSienne ? '' : texteQuantite(ligne, uniteEffective(ligne), false);
+  const parts: string[] = [];
+  if (champs.has('unitPrice')) parts.push(`${qte ? `${qte} ` : ''}× ${base.unitPrice === undefined ? '?' : prixImprime(base.unitPrice)}`);
+  else if (champs.has('quantity') || champs.has('unit')) parts.push(qte);
+  if (champs.has('amount')) parts.push(base.amount === undefined ? '?' : fr2(base.amount));
+  if (NOM_CELLULES.some(c => champs.has(c)) && base.description) parts.unshift(base.description);
+  return parts.join(' · ');
+}
+
+/**
+ * f12 P-2 : un barré qui ne dit rien de plus que la rangée. Le barré (`libelleAvant`) et le même libellé tiré des valeurs d'aujourd'hui sont comparés mot à mot :
+ * chaque mot du barré est « ? » (une valeur que la 1re lecture n'avait pas) ou le mot d'aujourd'hui (casse ignorée). « Collerette … · ? » sous « Collerette … »,
+ * « 3 cp × ? · ? » sous 3 cp × 1,50 : muets. Un autre nom, une autre quantité ou un autre prix connus parlent (« 10 Kg × 1,45 » sous 5 Kg × 2,90).
+ * Même règle que `barreMuet` (« ? × ? », 7b199eb85) et la variante de nom (LR1-5, 84551fc8e), étendue au nom identique suivi de « ? ».
+ */
+export function barreSansInfo(base: CellulesLigne, corrections: readonly Pick<Correction, 'champ'>[], courant: Partial<Pick<PurchaseLineDraft, 'quantity' | 'unit' | 'uniteDeduite' | 'description' | 'unitPrice' | 'amount'>>): boolean {
+  const avant = libelleAvant(base, corrections, courant as Pick<PurchaseLineDraft, 'quantity' | 'unit' | 'uniteDeduite'>);
+  if (!avant) return true;
+  const ici: CellulesLigne = { ...base, quantity: courant.quantity, unit: courant.unit, uniteDeduite: courant.uniteDeduite, description: courant.description, unitPrice: courant.unitPrice, amount: courant.amount };
+  /* Le libellé d'aujourd'hui garde la forme du barré : sans quantité quand le barré n'en montre pas (sa quantité tapée, `qteLaSienne`). */
+  const champs = new Set(corrections.map(c => c.champ));
+  const sansQte = !(champs.has('quantity') || champs.has('unit')) && !(memes(courant.quantity, base.quantity) && (courant.unit ?? '') === (base.unit ?? ''));
+  const maintenant = sansQte ? libelleAvant(ici, corrections, { quantity: -1, unit: '' } as PurchaseLineDraft) : libelleAvant(ici, corrections, courant as PurchaseLineDraft);
+  const a = avant.toLowerCase().split(/\s+/).filter(Boolean), b = maintenant.toLowerCase().split(/\s+/).filter(Boolean);
+  return a.length === b.length && a.every((m, i) => m === '?' || m === b[i]);
+}
+
+/** « Garder » : la ligne pas retrouvée revient à sa place (après la ligne qui la précédait, avant les lignes de rang plus haut). */
+export function rangerLaPerdue(lignes: readonly PurchaseLineDraft[], perdue: Perdue, ligne: PurchaseLineDraft): PurchaseLineDraft[] {
+  const rang = rangDe(perdue.ligne.id), sortie = [...lignes];
+  let i = perdue.apres === null ? 0 : sortie.findIndex(l => l.id === perdue.apres) + 1;
+  if (perdue.apres !== null && i === 0) i = sortie.length;
+  while (i < sortie.length && rangDe(sortie[i].id) < rang) i += 1;
+  sortie.splice(i, 0, ligne);
+  return sortie;
+}
+
+/** La fusion. `etat: 'echec'` : aucun rapprochement possible (jeton inégal, longueurs différentes) : le provisoire reste, avec le point « lecture coupée » (R1). */
+export function appliquerFinale(e: EntreeFusion): SortieFusion {
+  const { base, courant, provisoire, final, registres: reg } = e;
+  const vide = (): SortieFusion => ({ etat: 'echec', draft: courant, result: ajouterCoupure(clone(provisoire) as any, 'delai-saute', phraseCoupure('delai-saute')) as ScannedInvoiceResult, table: new Map(), corrections: { lignes: {}, entete: {} }, ajoutees: [], perdues: [], nCorrigees: 0, aRetraduire: [], reprises: [], propositions: propositionsVides() });
+  const t = tableDeRangs(final, base.nProvisoire, base.jeton, provisoire.items);
+  if (!t.ok) return vide();
+
+  // Les lignes du final passent par les MÊMES transformations que celles du provisoire (B1), puis changent d'id par la table.
+  const { lines: lignesFinales, propositions: propsFinales } = lignesDeLecture(final, e.stockItems, courant.submissionId);
+  const finalParId = new Map(lignesFinales.map(l => [t.table.get(l.id)!, { ...l, id: t.table.get(l.id)! }]));
+  const marquesFinales = (idFinal: string, idBrouillon: string, vers: Propositions) => {
+    if (propsFinales.proposedStock.has(idFinal)) vers.proposedStock.add(idBrouillon);
+    if (propsFinales.proposedStock.has(idFinal + PROPOSAL_WEIGHT_MARK)) vers.proposedStock.add(idBrouillon + PROPOSAL_WEIGHT_MARK);
+    const ref = propsFinales.proposedRef.get(idFinal); if (ref !== undefined) vers.proposedRef.set(idBrouillon, ref);
+    const v = propsFinales.voisins.get(idFinal); if (v) vers.voisins.set(idBrouillon, v);
+    const r = propsFinales.relieAuto.get(idFinal); if (r !== undefined) vers.relieAuto.set(idBrouillon, r);
+    if (propsFinales.neufDOffice.has(idFinal)) vers.neufDOffice.add(idBrouillon);
+  };
+  const idFinalDe = new Map([...t.table].map(([idFinal, idBrouillon]) => [idBrouillon, idFinal]));
+
+  const propositions = propositionsVides(), reprises: string[] = [], aRetraduire: string[] = [];
+  const corrections: SortieFusion['corrections'] = { lignes: {}, entete: {} };
+  const perdues: Perdue[] = [], gardees: PurchaseLineDraft[] = [];
+  let precedente: string | null = null;
+  /* p3 : un total, un sous-total, un règlement ou un rabais global que la 3.8 ne rend plus n'est pas une ligne retirée : ni proposé, ni compté (« Les garder » ne ramène que des articles). */
+  const horsPiece = new Set(
+    [...rangsHorsPiece(courant.lines.map(l => ({ name: l.imprime?.nom ?? l.nomLu ?? l.description, kind: l.kind, quantity: l.quantity ?? null, unit: l.unit, price: l.unitPrice ?? null, amountTTC: l.amount ?? null })))].map(i => courant.lines[i].id));
+
+  const touchee = (id: string, c: Cellule, l: PurchaseLineDraft, b: CellulesLigne): boolean => {
+    if (!memes(l[c], b[c])) return true;
+    if (c === 'kind' && reg.manuallyClassified.has(id)) return true;
+    if ((LIEN_CELLULES as readonly string[]).includes(c)) {
+      if (reg.manuallyClassified.has(id)) return true;
+      if (base.proposes.includes(id) && !reg.proposes.has(id)) return true;
+      if (base.neufsOffice.includes(id) && !reg.neufsOffice.has(id)) return true;
+    }
+    return false;
+  };
+
+  for (const l of courant.lines) {
+    const b = base.lignes[l.id];
+    if (!b) { gardees.push(l); precedente = l.id; continue; } // une ligne qu'il a ajoutée : intacte
+    const F = finalParId.get(l.id);
+    if (!F) {
+      // Pas retrouvée : si le brasseur l'a retouchée, elle reste une ligne comme les autres ; sinon elle sort du brouillon et attend sa décision (son choix 2 D).
+      if (CELLULES_LIGNE.some(c => touchee(l.id, c, l, b))) { gardees.push(l); precedente = l.id; }
+      else if (!horsPiece.has(l.id)) perdues.push({ ligne: l, apres: precedente });
+      continue;
+    }
+    const fusionnee: PurchaseLineDraft = { ...l, evidence: F.evidence };
+    const faites: Correction[] = [];
+    /* LR3-3 (« 1 ? × 4,95 » barré sous « ? × — ») : une ligne « 1 × total » (la quantité 1 et le prix égal au montant, lus ou déduits) dont la 3.8 ne dit ni quantité ni prix
+       (une autre nature, où `totalSeulEnUn` ne déduit rien) garde 1 × total : le prix suit le montant retenu. */
+    const unFoisTotal = b.quantity === 1 && b.unitPrice !== undefined && memes(b.unitPrice, b.amount) && F.quantity === undefined && F.unitPrice === undefined;
+    for (const c of CELLULES_LIGNE) {
+      if (touchee(l.id, c, l, b)) continue;
+      if (memes(F[c], b[c])) continue;
+      /* LR3-3 : une valeur connue n'est jamais remplacée par l'inconnu de la 3.8 (elle ne l'a pas lue : rien n'est corrigé). */
+      if (VALEURS_GARDEES.includes(c) && inconnue(F[c]) && !inconnue(b[c])) continue;
+      (fusionnee as unknown as Record<string, unknown>)[c] = F[c];
+      if (varianteDeNom(c, b[c], F[c])) continue; // LR1-5 : le même nom lu autrement, repris sans correction ni barré
+      /* LR1-5 (« 30 g » barré sous « 30 g ») : l'unité lue égale l'unité que la ligne montrait déjà (déduite) : reprise sans correction. */
+      if (c === 'unit' && uniteEffective({ unit: String(b.unit ?? ''), uniteDeduite: b.uniteDeduite }) === uniteEffective({ unit: String(F.unit ?? ''), uniteDeduite: F.uniteDeduite })) continue;
+      faites.push({ id: l.id, champ: c, avant: b[c], apres: F[c] });
+    }
+    if (unFoisTotal && !touchee(l.id, 'unitPrice', l, b) && typeof fusionnee.amount === 'number') fusionnee.unitPrice = fusionnee.amount;
+    // Les marques de lien viennent du final seulement pour une rangée dont il n'a pas touché le lien.
+    if (!LIEN_CELLULES.some(c => touchee(l.id, c, l, b))) { reprises.push(l.id); marquesFinales(idFinalDe.get(l.id)!, l.id, propositions); }
+    if (faites.length) corrections.lignes[l.id] = faites.filter(c => c.champ !== 'equipmentAction');
+    if (!corrections.lignes[l.id]?.length) delete corrections.lignes[l.id];
+    // M6 : le nom de base qui change efface `nameFr`, et la ligne sera traduite à nouveau ; un nom qu'il a retouché reste le sien.
+    if (faites.some(c => (NOM_CELLULES as readonly string[]).includes(c.champ))) { delete fusionnee.nameFr; aRetraduire.push(l.id); }
+    gardees.push(fusionnee); precedente = l.id;
+  }
+
+  // Les lignes ajoutées par la 3.8 : à leur place, après la ligne qui les précède dans le final.
+  const ajoutees = t.ajoutees, ajouteesIds: string[] = [];
+  const ordre = [...gardees];
+  final.items.forEach((item, j) => {
+    const id = t.table.get(item.id)!;
+    if (!ajoutees.includes(id)) return;
+    const F = finalParId.get(id)!;
+    let apres = -1;
+    for (let k = j - 1; k >= 0 && apres < 0; k -= 1) apres = ordre.findIndex(x => x.id === t.table.get(final.items[k].id));
+    ordre.splice(apres + 1, 0, F); ajouteesIds.push(id); reprises.push(id); aRetraduire.push(id);
+    marquesFinales(item.id, id, propositions);
+  });
+
+  // L'en-tête : chaque groupe non touché prend la valeur du final ; une valeur touchée ne change jamais, et aucune correction n'est comptée.
+  const entete = enteteDeLecture(courant, final, e.today);
+  const patch: Record<string, unknown> = {};
+  for (const g of GROUPES_ENTETE) {
+    const avant = prendre(base.entete, g.champs as string[]), maintenant = prendre(courant, g.champs as string[]), apres = prendre(entete, g.champs as string[]);
+    const registre = g.registre.some(r => reg.reviewedFields.includes(r)) || (g.cle === 'tva' && reg.reglees.has('TVA|')) || (g.cle === 'description' && courant.descriptionSource === 'typed');
+    if (registre || !memes(maintenant, avant)) continue;
+    Object.assign(patch, apres);
+    /* Une correction se dit sur la valeur que la case MONTRE (le premier champ du groupe : le montant de TVA, l'état du règlement) ; un autre champ du groupe qui change seul s'applique sans marque et sans compte. */
+    const montre = g.champs[0] as string;
+    if (memes(apres[montre], avant[montre])) continue;
+    if (g.cle === 'vendor' && varianteDeFournisseur(avant[montre], apres[montre])) continue; // LR1-5, v3-3 : le même fournisseur lu autrement
+    if (g.cle === 'paiement' && !reglementLu(provisoire)) continue; // v3-4 : « Payé » supposé, jamais lu
+    corrections.entete[g.cle] = { avant: avant[montre], apres: apres[montre] };
+  }
+  const draft = { ...patchPurchaseDraft(courant, { ...patch, lines: ordre, ...(e.model ? { scanModel: e.model } : {}) } as Partial<PurchaseDraft>, e.today), duplicateConfirmed: courant.duplicateConfirmed };
+
+  // B3 : le résultat remappé, ses lignes dans l'ordre du brouillon, avec leur id ; les lignes provisoires gardées gardent leur ligne provisoire.
+  const itemsFinaux = new Map(final.items.map(i => [t.table.get(i.id)!, { ...i, id: t.table.get(i.id)! }]));
+  const itemsProvisoires = new Map(provisoire.items.map(i => [i.id, i]));
+  const items = ordre.map(l => itemsFinaux.get(l.id) ?? itemsProvisoires.get(l.id)).filter((i): i is ScannedInvoiceResult['items'][number] => Boolean(i));
+  const controls = final.controls ? { ...final.controls, lines: { ...final.controls.lines, skippedIds: (final.controls.lines.skippedIds ?? []).map(id => t.table.get(id) ?? id) } } : undefined;
+  const result: ScannedInvoiceResult = {
+    ...final, items, ...(controls ? { controls } : {}), ...(final.points ? { points: remapperPoints(final.points, t.table) as ScannedInvoiceResult['points'] } : {}),
+    ...(final.remarques ? { remarques: final.remarques.map(r => ({ ...r, ...(r.ligne !== undefined ? { ligne: renumeroter(r.ligne, t.table) as number } : {}) })) } : {}),
+    ...(final.rejets ? { rejets: final.rejets.map(r => ({ ...r, ligne: renumeroter(r.ligne, t.table) as number | null })) } : {}),
+  };
+
+  // Le compte de la puce ne porte que ce qui a une marque à l'écran : une correction d'un champ sans case (n° de facture, HT, catégorie…) est appliquée mais n'entre pas dans le compte (VERDICT-e-ecran, majeur 2).
+  const nCorrigees = Object.keys(corrections.lignes).length + Object.keys(corrections.entete).filter(k => (CASES_ENTETE as readonly string[]).includes(k)).length + ajouteesIds.length;
+  return { etat: 'finie', draft, result, table: t.table, corrections, ajoutees: ajouteesIds, perdues, nCorrigees, aRetraduire, reprises, propositions };
+}
+
+/** R1 : la fin de partie (rien du final n'a pu être posé) : le provisoire, avec le point « lecture coupée » (`delai-saute`) qui marque les lignes « reprises ». */
+export const provisoireCoupe = (provisoire: ScannedInvoiceResult): ScannedInvoiceResult => ajouterCoupure(clone(provisoire) as any, 'delai-saute', phraseCoupure('delai-saute')) as ScannedInvoiceResult;
+export { shortUnit };
+
+/** p2 : le jeton du provisoire reconstruit à partir d'un final servi du cache (aucun flux n'a eu lieu). */
+export const JETON_CACHE = 'cache-retirees';
+
+/**
+ * p2 (jeu en ligne 4 : deux tickets lus comme deux pages, la 3.8 retire la page 1) : un final servi du cache n'a plus de flux provisoire, donc plus de « pas retrouvée ». Le serveur écrit ce qu'il a retiré dans
+ * `result.retirees` (lignes avec leur rang, total et TVA d'avant) ; on en refait le provisoire (lignes remises à leur rang, total et TVA d'avant) et le final (chaque ligne dit son rang), puis la fusion habituelle
+ * (`appliquerFinale`) donne les mêmes lignes barrées, les mêmes valeurs changées et les mêmes gestes que sur le flux. Limite : une ligne que la 3.8 a AJOUTÉE n'est pas connue (le serveur ne l'écrit pas) : elle
+ * se lit comme une ligne inchangée. Rend `null` quand rien n'a été retiré.
+ */
+export function provisoireDeRetirees(final: ScannedInvoiceResult): { provisoire: ScannedInvoiceResult; final: ScannedInvoiceResult } | null {
+  const re = final.retirees;
+  if (!re || (!re.lignes.length && re.amountTTC === undefined && re.tvaAmount === undefined)) return null;
+  const prov: Array<{ ligne: ScannedInvoiceResult['items'][number]; deFinal: number | null }> = final.items.map((ligne, j) => ({ ligne, deFinal: j }));
+  for (const r of [...re.lignes].sort((a, b) => a.rang - b.rang)) prov.splice(Math.min(r.rang, prov.length), 0, { ligne: r.ligne, deFinal: null });
+  const { retirees: _retirees, ...sans } = final;
+  const rangDuFinal = new Map<number, number>();
+  prov.forEach((p, k) => { if (p.deFinal !== null) rangDuFinal.set(p.deFinal, k); });
+  const provisoire: ScannedInvoiceResult = {
+    ...sans, points: [], provisoireJeton: undefined,
+    items: prov.map((p, k) => ({ ...p.ligne, id: `line-${k + 1}`, rangProvisoire: undefined })),
+    ...(re.amountTTC !== undefined ? { amountTTC: re.amountTTC } : {}), ...(re.tvaAmount !== undefined ? { tvaAmount: re.tvaAmount } : {}),
+  };
+  delete (provisoire as { provisoireJeton?: string }).provisoireJeton;
+  return { provisoire, final: { ...sans, provisoireJeton: JETON_CACHE, items: final.items.map((it, j) => ({ ...it, rangProvisoire: rangDuFinal.get(j) ?? null })) } };
+}
+
+/**
+ * p3 (jeu en ligne 5, « Payé = imprimé · TWINT 14,60 » vert sous un terminal à 163,85) : le payé lu par la 3.8 sur la PARTIE qu'elle a gardée n'est pas le règlement du document. Quand la vérification a changé le total (163,85 → 14,60),
+ * que le payé lu égale ce total changé et que le terminal égale le total d'AVANT, le payé est une copie du total changé : il n'est pas retenu. Le règlement est alors le terminal, comparé au total (rouge tant que le total est le changé,
+ * « Payé = imprimé » une fois le total remis). Sans terminal lu, ou sans total changé, le payé lu reste : jamais une valeur inventée.
+ */
+export function payeCopieDuTotal(final: ScannedInvoiceResult | undefined, total: { avant: unknown; apres: unknown } | undefined): boolean {
+  const c = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? Math.round(v * 100) : null);
+  const avant = c(total?.avant), apres = c(total?.apres), paye = c(final?.amountPaid), terminal = c(final?.terminalAmount);
+  return paye !== null && avant !== null && apres !== null && avant !== apres && paye === apres && terminal !== null && Math.abs(terminal - avant) <= 5;
+}

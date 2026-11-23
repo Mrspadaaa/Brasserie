@@ -1,0 +1,1633 @@
+import React, { useState, useEffect, useLayoutEffect, useMemo, useRef, useContext, lazy } from 'react';
+import { StorageService, defaultConfig } from './services/storage';
+import { Header } from './components/Header';
+import { PagePlus } from './components/plus/PagePlus';
+import { lire as lirePeriode, serialiser as serialiserPeriode, type Periode } from './components/periode/periode';
+import { PersistenceStatus } from './ui/PersistenceStatus';
+import { NouvelleVersion } from './ui/NouvelleVersion';
+import { ProofUploadNotice } from './ui/finance/ProofUploadNotice';
+import { startProofQueue } from './services/proofQueue';
+import { startEnrichissement } from './services/enrichissement';
+import { motsCleEcriture } from './services/search';
+import { BrewerActivity } from './ui/BrewerActivity';
+import { brewerAppScreen } from '../functions/src/brewerAppScreens';
+import { BottomNav, TabType } from './components/BottomNav';
+import { BandeauEffets } from './ui/BandeauEffets';
+import { FloatingActions } from './ui/FloatingActions';
+import { ModalOpenerContext } from './ui/ModalShell';
+
+import type { WizardSeed } from './pages/BrewWizard';
+
+import { useFullScreenRoute, type LayerRoute, type Route } from './pages/useFullScreenRoute';
+import { readRecipeDraftState } from './services/recipeDraft';
+import { useHopPileDevHook } from './ui/hopIndex/devHook';
+import { CommandPalette, type CommandGroup } from './ui/CommandPalette';
+import { useStorageValue } from './hooks/useLiveData';
+import { FinancialArchiveService } from './services/financialArchiveService';
+import { FinanceService } from './services/financeService';
+import { FinancialLedgerLoading } from './ui/FinancialLedgerLoading';
+import { archiveIndex, isTransactionArchived } from './domain/finance/archive';
+import { isoDate } from './domain/finance/ledger';
+import { fabActionFor, FabIntent, AnySubTab } from './domain/fabActions';
+import { ACTION_CARNETS, plusMenuFor, plusMenuPage, type PlusCle } from './domain/plusEcran';
+import { joursDepuisBrassage } from './domain/productionInsights';
+import { apercuArticle, formaterAlpha } from './components/recherche/apercu';
+import { dateCourte, resumeLigneEcriture, type DestinationId } from './components/recherche/modele';
+import { INVENTORY_REASONS } from './services/storage';
+import { nextBatchId, nextRef } from './services/refs';
+import { batchDisplayDate } from './domain/batchSchedule';
+import { recipeInstallationAdoptionIssue, recipeInstallationIssues } from './domain/recipeInstallation';
+import { isCurrent } from './domain/catalogOrganization';
+import { nextUniqueRef } from './services/refs';
+import { articlesACommander } from './domain/stockLevel';
+import { compteDeReglage, lignesDeReglage, prochainBrassin, SEMAINES_FENETRE, vueHorizon, type Reglage } from './domain/stock/horizon';
+import { useHorizonStock, aujourdhuiLocal } from './ui/stock/useHorizonStock';
+import { formatLitres } from './domain/recipeMetrics';
+
+import { Units } from './services/units';
+import { saveRecipeConfirmed } from './services/recipeSave';
+import { Beaker, CalendarDays, FlaskConical, Package, Users, Receipt } from 'lucide-react';
+import { LoginPage } from './components/LoginPage';
+
+import type { CreativeLabSectionRequest } from './components/CreativeLabTab';
+import type { QuickActionScreen } from './components/QuickActionModal';
+
+import { 
+  AppConfig, 
+  Transaction,
+  StockItem,
+  EquipmentItem,
+  KegItem,
+  Batch, 
+  Recipe, 
+  WaterSource,
+
+  Client, 
+  BudgetLine, 
+  PricingItem, 
+  AuditLog,
+  CreativeItem,
+  FinanceCategory
+} from './types';
+import { FirebaseAuthService } from './services/firebaseAuth';
+import { etatConnexions, etatReglages } from './components/plus/etats';
+import { bilanReglages } from './components/reglages/regles';
+import { COMPANY_FALLBACK } from './domain/companyDefaults';
+import { runMigrationIfNeeded } from './services/migration';
+import { User } from 'firebase/auth';
+
+import { DeferredSurface, LazySurface } from './ui/LazySurface';
+import { Sheet } from './ui/Sheet';
+import { PageShell } from './pages/PageShell';
+import { loadRecipePage, preparedRecipePage } from './pages/recipePageLoader';
+import { prechargerVuesAuRepos } from './services/prechargeVues';
+import { chargerBibliothequeLevures } from './domain/yeastLibraryLoader';
+import { HopV55SemanticAdviceCapabilityContext, qualifyHopV55SemanticAdviceCapabilityV3 } from './ui/hopV55/assistedAdviceUiContracts';
+import { montantChf } from './domain/finance/ledger';
+import { memoriserDefilement, restaurerDefilement } from './ui/calendrier/retourDefilement';
+import { useRetourEcran } from './ui/calendrier/useRetour';
+import { lireCarnets } from './domain/carnets/modele';
+import { EVENEMENT_CALENDRIER, NOM_SECTION, lireSection, type SectionCalendrier } from './ui/calendrier/LienSection';
+
+const QuickActionModal = lazy(() => import('./components/QuickActionModal').then(module => ({ default: module.QuickActionModal })));
+const SettingsModal = lazy(() => import('./components/SettingsModal').then(module => ({ default: module.SettingsModal })));
+const InventoryCorrectionSheet = lazy(() => import('./ui/InventoryCorrectionSheet').then(module => ({ default: module.InventoryCorrectionSheet })));
+const AuditLogModal = lazy(() => import('./components/AuditLogModal').then(module => ({ default: module.AuditLogModal })));
+const CloudConfigModal = lazy(() => import('./components/CloudConfigModal').then(module => ({ default: module.CloudConfigModal })));
+const RecipePage = lazy(() => loadRecipePage().then(module => ({ default: module.RecipePage })));
+const BrewDayPage = lazy(() => import('./pages/BrewDayPage').then(module => ({ default: module.BrewDayPage })));
+const DashboardTab = lazy(() => import('./components/tabs/DashboardTab').then(module => ({ default: module.DashboardTab })));
+const PageFournisseurs = lazy(() => import('./ui/fournisseurs/PageFournisseurs').then(module => ({ default: module.PageFournisseurs })));
+const PlanSheet = lazy(() => import('./ui/finance/FinanceForms').then(module => ({ default: module.PlanSheet })));
+const BrewBudgetDialog = lazy(() => import('./ui/finance/BrewBudgetDialog').then(module => ({ default: module.BrewBudgetDialog })));
+/** Les prévisions du Calendrier, lues pour la recherche (lecteur à identité stable pour `useStorageValue`). */
+const lirePrevisions = () => FinanceService.getPlans();
+const CalendrierTab = lazy(() => import('./components/tabs/CalendrierTab').then(module => ({ default: module.CalendrierTab })));
+const FinancesTab = lazy(() => import('./components/tabs/FinancesTab').then(module => ({ default: module.FinancesTab })));
+const ProductionTab = lazy(() => import('./components/tabs/ProductionTab').then(module => ({ default: module.ProductionTab })));
+const StocksTab = lazy(() => import('./components/tabs/StocksTab').then(module => ({ default: module.StocksTab })));
+const ClientsTab = lazy(() => import('./components/tabs/ClientsTab').then(module => ({ default: module.ClientsTab })));
+const BrewWizard = lazy(() => import('./pages/BrewWizardEntry'));
+// Voie l3 : le chunk du Host et la bibliothèque de levures (1,4 Mo) partent EN PARALLÈLE ; le Host ne se monte qu'une fois les deux là,
+// donc tout calcul synchrone du moteur (prepareBrewingScenarioContext…) trouve la bibliothèque. Elle n'est plus une dépendance statique du Host.
+const HopV55Host = lazy(() => Promise.all([import('./ui/hopV55/Host'), chargerBibliothequeLevures()]).then(([module]) => ({ default: module.HopV55Host })));
+// Écran provisoire des outils houblons v4 (#162) : atteint seulement par le crochet de développement tant que le
+// drapeau `hopV4` (src/ui/hopIndex/flags.ts) est éteint.
+// Une couche préchargée (precharge.ts) se rend d'un coup : la fabrique rend alors un thenable synchrone, car React garde sinon
+// 300 ms le repli de Suspense même quand le module est déjà là (mesuré : 311 ms à la première ouverture).
+type CoucheOutils = typeof import('./ui/hopIndex/HopToolLayer');
+let coucheOutils: CoucheOutils | undefined;
+const HopToolLayer = lazy(() => coucheOutils
+  ? ({ then: (ok: (m: CoucheOutils) => unknown) => ok(coucheOutils!) } as unknown as Promise<CoucheOutils>)
+  : import('./ui/hopIndex/HopToolLayer').then(m => (coucheOutils = m)));
+
+/**
+ * Compte factice pour le DÉVELOPPEMENT LOCAL, et rien d'autre.
+ *
+ * ⚠️ Sans lui, `npm run dev` ne montre que la page de connexion Google : on ne
+ * peut vérifier aucun écran sans ouvrir une vraie session, ce qui rend le
+ * contrôle local impossible.
+ *
+ * ⚠️ DEUX VERROUS, et il faut les deux :
+ *
+ *   1. `import.meta.env.DEV` — Vite remplace cette constante par `false` au
+ *      build. Le `if (false)` qui en résulte est éliminé par le bundler : ni le
+ *      code, ni la chaîne « dev-local » ne survivent dans `dist/`. C'est
+ *      vérifiable, et c'est vérifié par `scripts/check-no-dev-auth.mjs`.
+ *   2. `?dev-local` dans l'URL — même en développement, le contournement
+ *      n'existe que si on le demande explicitement. Ouvrir `localhost` sans ce
+ *      paramètre montre la vraie page de connexion.
+ *
+ * ⚠️ CE COMPTE N'OUVRE AUCUNE DONNÉE. Les règles Firestore sont appliquées par
+ * le SERVEUR : un utilisateur fabriqué côté navigateur n'a pas de jeton, donc
+ * les lectures sont refusées et l'application s'ouvre VIDE. C'est voulu — le
+ * contournement donne accès aux écrans, jamais aux données de la brasserie.
+ */
+function devLocalUser(): User | null {
+  if (import.meta.env.DEV) {
+    if (typeof location !== 'undefined' && new URLSearchParams(location.search).has('dev-local')) {
+      return {
+        uid: 'dev-local',
+        email: 'dev-local@localhost',
+        displayName: 'Développement local'
+      } as unknown as User;
+    }
+  }
+  return null;
+}
+
+export const App: React.FC = () => {
+  // Relayed as provided by the entry point (default: unavailable). App installs no transport and never derives a
+  // provider from the UID, a URL or a flag; a malformed declaration is relayed as unavailable with its reason.
+  // The Host's classic lane and the recipe creator's Wizard lane each open only for a factory declared here.
+  const providedSemanticAdviceCapability = useContext(HopV55SemanticAdviceCapabilityContext);
+  const semanticAdviceCapability = useMemo(() => qualifyHopV55SemanticAdviceCapabilityV3(providedSemanticAdviceCapability),
+    [providedSemanticAdviceCapability]);
+  // Official Firebase Authentication State
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  useEffect(() => {
+    // Développement local : on court-circuite Google, sans toucher au reste.
+    const local = devLocalUser();
+    if (local) {
+      setCurrentUser(local);
+      setIsAuthLoading(false);
+      return;
+    }
+
+    // Safety timer: Never leave user stuck on loading spinner for more than 1000ms
+    const timer = setTimeout(() => {
+      setIsAuthLoading(false);
+    }, 1000);
+
+    const unsubscribe = FirebaseAuthService.onUserChange((user) => {
+      clearTimeout(timer);
+      setCurrentUser(user);
+      setIsAuthLoading(false);
+    });
+
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
+  }, []);
+
+  // Persistent active tab
+  const [activeTab, setActiveTab] = useState<TabType>(() =>
+    StorageService.getUiState('app_active_tab', 'dashboard')
+  );
+
+  // Persistent Global Time Filter (Single Source of Truth across the ENTIRE APP)
+  // m3r-a : UNE période pour toute l'app (pastille d'en-tête, page Plus, Finances, Brassins, Bord lisent celle-ci). Gardée en texte, anciennes valeurs relues.
+  const [globalTimeFilter, setGlobalTimeFilter] = useState<Periode>(() =>
+    lirePeriode(StorageService.getUiState('app_global_time_filter', 'this-month'))
+  );
+  /** La page « Plus » (m3) : posée à la place de l'écran, qui reste monté dessous ; le geste retour la ferme. */
+  const [plusOuvert, setPlusOuvert] = useState(false);
+  const plusPousse = useRef(false);
+  /** La liste des fournisseurs et leur fiche (maquette fournisseur/v1) : posée à la place de l'écran, ouverte depuis Plus. */
+  const [fournisseursOuvert, setFournisseursOuvert] = useState(false);
+  /** Changer de signataire redessine l'en-tête et la page Plus (le nom se lit dans le stockage). */
+  const [signataireNonce, setSignataireNonce] = useState(0);  const fermerPlus = React.useCallback(() => {
+    setPlusOuvert(false);
+    setFournisseursOuvert(false);
+    if (plusPousse.current) { plusPousse.current = false; window.history.back(); }
+  }, []);
+  const ouvrirPlus = React.useCallback(() => {
+    if (plusPousse.current) { fermerPlus(); return; }
+    // Même profondeur d'historique que l'entrée courante : le retour du téléphone ferme Plus sans toucher à la pile des pages.
+    window.history.pushState({ ...(window.history.state ?? {}), 'laffinee-plus': true }, '');
+    plusPousse.current = true;
+    setPlusOuvert(true);
+  }, [fermerPlus]);
+  // Changer d'écran (barre, retour, lien) referme Plus.
+  useEffect(() => { if (plusPousse.current) fermerPlus(); }, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { setFournisseursOuvert(false); }, [activeTab]);
+  useEffect(() => {
+    const retour = () => { if (plusPousse.current) { plusPousse.current = false; setPlusOuvert(false); setFournisseursOuvert(false); } };
+    window.addEventListener('popstate', retour);
+    return () => window.removeEventListener('popstate', retour);
+  }, []);
+
+  // SubTab targeting for Production (e.g. from 💡 or 🧰 in Header)
+  const [productionSubTab, setProductionSubTab] = useState<'batches' | 'recipes' | 'lab' | 'scaler'>(() => StorageService.getUiState('production_subtab', 'batches'));
+
+  /**
+   * Écran de saisie rapide demandé, `null` quand la feuille est fermée.
+   *
+   * ⚠️ Le bouton d'action ouvre désormais chaque saisie à son écran — facture,
+   * vente, brassin — plutôt qu'au sommaire. Un booléen ne pouvait pas dire
+   * lequel, et le brasseur repassait par un menu pour la seule action qu'il
+   * venait de choisir.
+   */
+  const [quickAction, setQuickActionState] = useState<QuickActionScreen | null>(null);
+  const quickActionOpener = useRef<HTMLElement | null>(null);
+  const actionLauncherRef = useRef<HTMLButtonElement | null>(null);
+  // Capture avant que la surface ne masque le lanceur et ne retire son focus.
+  const setQuickAction = React.useCallback((screen: QuickActionScreen | null, opener?: HTMLElement | null) => {
+    if (screen) {
+      const target = opener?.isConnected ? opener : document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      if (!target?.closest('[role="dialog"], [role="alertdialog"]')) {
+        quickActionOpener.current = target === document.body ? null : target;
+      }
+    }
+    setQuickActionState(screen);
+  }, []);
+  const quickActionWasOpen = useRef(false);
+  useEffect(() => {
+    const wasOpen = quickActionWasOpen.current;
+    quickActionWasOpen.current = quickAction !== null;
+    if (!wasOpen || quickAction !== null) return;
+    const opener = quickActionOpener.current;
+    if (!opener?.isConnected) return;
+    // Laisser les focus scopes et leur DOM de fermeture terminer avant le retour.
+    const restore = () => {
+      if (document.querySelector('[role="dialog"][aria-modal="true"], [role="alertdialog"]')) return;
+      if (opener.closest('[inert], [aria-hidden="true"]')) return;
+      if (document.activeElement === document.body && opener.isConnected) opener.focus({ preventScroll: true });
+      observer.disconnect();
+    };
+    const observer = new MutationObserver(restore);
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['inert', 'aria-hidden'] });
+    const frame = requestAnimationFrame(restore);
+    return () => { cancelAnimationFrame(frame); observer.disconnect(); };
+  }, [quickAction]);
+  const [brewRecipeId, setBrewRecipeId] = useState<string>();
+  /** C1 : la semaine choisie au récap de la recette (lundi ISO) ; la feuille Brasser s'y ouvre. */
+  const [brewSemaine, setBrewSemaine] = useState<string>();
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const [financeOpenRequest, setFinanceOpenRequest] = useState<{ id: string; at: number; retour?: 'calendrier' } | null>(null);
+  const [batchOpenRequest, setBatchOpenRequest] = useState<{ id: string; at: number; retour?: boolean } | null>(null);
+  const [batchCree, setBatchCree] = useState<{ id: string; at: number } | null>(null);
+  /** Renvoi depuis une écriture financière vers l'article qu'elle a acheté. */
+  const [stockOpenRequest, setStockOpenRequest] = useState<{ ref: string; at: number } | null>(null);
+  /** Carnet d'idées à ouvrir (R08 « Ouvrir le carnet », R48 icône d'idée du calendrier) : Stocks › Matériel › Carnets, ce carnet ouvert. */
+  const [calendrierCentre, setCalendrierCentre] = useState<string | undefined>(undefined);
+  const [calendrierViser, setCalendrierViser] = useState<{ id: string; at: number; annuler?: () => Promise<void> | void; texte?: string } | undefined>(undefined);
+  const [carnetOpenRequest, setCarnetOpenRequest] = useState<{ id: string; at: number } | null>(null);
+  const ouvrirCarnet = React.useCallback((id: string) => {
+    StorageService.setUiState('stocks_subtab', 'materiel');
+    StorageService.setUiState('stocks_materiel', 'carnets');
+    setCarnetOpenRequest({ id, at: Date.now() });
+    setActiveTab('stocks');
+  }, []);
+  // « Ouvrir le carnet » d'une carte d'À venir montée hors de Stocks (Atelier, Prévisions) : l'événement est pris ici.
+  useEffect(() => {
+    const ouvrir = (event: Event) => {
+      const id = (event as CustomEvent<{ id?: string }>).detail?.id;
+      if (!id) return;
+      ouvrirCarnet(id);
+      event.preventDefault();
+    };
+    window.addEventListener('affinee:ouvrir-carnet', ouvrir);
+    return () => window.removeEventListener('affinee:ouvrir-carnet', ouvrir);
+  }, [ouvrirCarnet]);
+  /* CT4A-12 : un renvoi du Calendrier (fête, événement, idée) ou de sa section se referme sur l'écran d'où il est parti. */
+  const poserRetour = useRetourEcran<TabType>(activeTab, setActiveTab);
+  /** E44 : le calendrier d'une section (Argent, Brassins, Matériel, Stocks, Agenda) ; `undefined` : le général. Il se règle depuis la section, jamais gardé. */
+  const [calendrierSection, setCalendrierSection] = useState<SectionCalendrier | undefined>(undefined);
+  const ouvrirDateRef = useRef<(date: string, id?: string, geste?: { annuler: () => Promise<void> | void; texte: string }) => void>(() => {});
+  const ouvrirCalendrierSection = React.useCallback((section: SectionCalendrier) => {
+    poserRetour(activeTab);
+    setCalendrierSection(section);
+    setActiveTab('calendrier');
+  }, [poserRetour, activeTab]);
+  useEffect(() => {
+    /* K2 (F-HORIZON) : une date seule, sans section, centre le Calendrier général sur sa semaine */
+    const ouvrir = (event: Event) => { const s = lireSection(event); if (s) ouvrirCalendrierSection(s); else { const detail = (event as CustomEvent<{ date?: string; id?: string; annuler?: () => Promise<void> | void; texte?: string }>).detail; if (detail?.date) ouvrirDateRef.current(detail.date, detail.id, detail.annuler && detail.texte ? { annuler: detail.annuler, texte: detail.texte } : undefined); } };
+    window.addEventListener(EVENEMENT_CALENDRIER, ouvrir);
+    return () => window.removeEventListener(EVENEMENT_CALENDRIER, ouvrir);
+  }, [ouvrirCalendrierSection]);
+  useEffect(() => { if (activeTab !== 'calendrier') setCalendrierSection(undefined); }, [activeTab]);
+  const [labSectionRequest, setLabSectionRequest] = useState<CreativeLabSectionRequest | null>(null);
+  /** Calendrier, « Prévoir une dépense » : la feuille de prévision (écriture prévue, non payée), datée de la semaine touchée. */
+  const [prevoirDepense, setPrevoirDepense] = useState<{ date: string; categorie?: FinanceCategory; saisie?: { titre?: string; centimes?: number; direction?: 'in' | 'out' } } | null>(null);
+  /** Calendrier, « Budget › » d'un brassin (D-71) : la feuille de budget existante, sur le brassin de cet id. */
+  const [budgetBrassinId, setBudgetBrassinId] = useState<string | null>(null);
+  useEffect(() => {
+    if (activeTab !== 'finances') setFinanceOpenRequest(null);
+  }, [activeTab]);
+  useEffect(() => {
+    if (activeTab !== 'production') setBatchOpenRequest(null);
+  }, [activeTab]);
+  useEffect(() => {
+    if (activeTab !== 'production' || productionSubTab !== 'lab') setLabSectionRequest(null);
+  }, [activeTab, productionSubTab]);
+  const [wizardSeed, setWizardSeed] = useState<WizardSeed | undefined>(undefined);
+  /** Sous-onglet courant, remonté par l'onglet actif. */
+  /* BX-4 (09.11) : le sous-onglet de CHAQUE onglet, gardé. Le vider au changement d'onglet (et au toucher de l'onglet déjà actif) laissait le + sur
+     la première action (« Nouveau brassin » sous Recettes) : un écran resté monté ne renvoie son sous-onglet que s'il change. */
+  const [subTabs, setSubTabs] = useState<Partial<Record<TabType, AnySubTab>>>({});
+  const subTab: AnySubTab = subTabs[activeTab] ?? null;
+  const setSubTabOf = React.useCallback((tab: TabType, sub: AnySubTab) => setSubTabs(s => s[tab] === sub ? s : { ...s, [tab]: sub }), []);
+  const handleProductionSubTabChange = React.useCallback((sub: string) => {
+    setSubTabOf('production', sub as AnySubTab);
+    setProductionSubTab(sub as 'batches' | 'recipes' | 'lab' | 'scaler');
+  }, [setSubTabOf]);
+  /**
+   * Demande de création adressée à l'écran courant.
+   *
+   * L'horodatage rend chaque demande unique : sans lui, deux appuis successifs
+   * sur le même bouton produiraient la même valeur et le second serait ignoré.
+   */
+  const [createRequest, setCreateRequest] = useState<{ kind: FabIntent; at: number } | null>(null);
+  const route = useFullScreenRoute();
+  /** Dernier rendu de la page de base, réemployé tel quel tant qu'une couche la couvre. */
+  const frozenBase = useRef<{ route: Route; element: React.ReactNode } | null>(null);
+  /*
+   * La pile (#162, D65) : la PAGE de base (onglets, recette, brassin, wizard) et, au-dessus, les COUCHES
+   * (atelier V5.5, outils houblons v4). La base reste montée sous les couches : le wizard garde son instance,
+   * son étape et son brouillon, sans repasser par la lecture du brouillon ni par `DraftFreshnessChoice`.
+   * Un crochet sans `pile` (faux crochet des tests) vaut une pile d'un seul étage : sa route est la base.
+   */
+  const routePile: Route[] = route.pile ?? [route.route];
+  const baseRoute: Route = route.base ?? route.route;
+  const layerRoutes: LayerRoute[] = route.layers ?? [];
+  const baseIndex = routePile.length - 1 - layerRoutes.length;
+  useHopPileDevHook({ open: route.open, close: route.close, closeTo: route.closeTo, pile: routePile });
+  // Outils houblons v4 (#167) : préchargés au repos, en ligne, drapeau allumé seulement ; rien sur le chemin du démarrage.
+  // Le drapeau est lu en clair : éteint, Vite retire tout le bloc (ni code ni requête) ; allumé, le programmateur est un petit
+  // chunk à part, demandé après le montage, qui attend la fin du chargement et un instant de repos avant de rien charger.
+  useEffect(() => {
+    if (import.meta.env.VITE_HOP_V4 !== 'on') return;
+    let annuler = () => {};
+    let demonte = false;
+    void import('./ui/hopIndex/precharge').then(m => { if (!demonte) annuler = m.prechargerOutilsAuRepos(c => { coucheOutils = c; }); });
+    return () => { demonte = true; annuler(); };
+  }, []);
+  // A resolved background import should not still mount a Suspense fallback.
+  // Lock the surface for this route so later data updates preserve local UI state.
+  const RecipeSurface = useMemo(() => preparedRecipePage()?.RecipePage ?? RecipePage,
+    [baseRoute.view === 'recipe' ? baseRoute.recipeId : undefined]);
+  const currentRoute = useRef(route.route);
+  currentRoute.current = route.route;
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  // Onglet de Réglages demandé par l'événement (« brasserie » : Nouveau brassin › contenance) ; absent : l'onglet courant.
+  const [settingsOuvertSur, setSettingsOuvertSur] = useState<'brewhouse' | undefined>();
+  // « Régler dans Réglages › » de la feuille Impôt bière (p2b) : l'événement annulable ouvre Réglages ; la feuille se ferme dès qu'il est pris.
+  useEffect(() => {
+    const ouvrir = (event: Event) => {
+      setSettingsOuvertSur((event as CustomEvent<{ section?: string } | undefined>).detail?.section === 'brasserie' ? 'brewhouse' : undefined);
+      setIsSettingsOpen(true);
+      event.preventDefault();
+    };
+    window.addEventListener('affinee:ouvrir-reglages', ouvrir);
+    return () => window.removeEventListener('affinee:ouvrir-reglages', ouvrir);
+  }, []);
+  // « Ce qui manque pour N L » (Nouveau brassin) : l'événement annulable ouvre Stocks sur le sous-onglet Courses.
+  useEffect(() => {
+    const ouvrir = (event: Event) => {
+      StorageService.setUiState('stocks_subtab', 'courses');
+      setActiveTab('stocks');
+      event.preventDefault();
+    };
+    window.addEventListener('affinee:ouvrir-stocks', ouvrir);
+    return () => window.removeEventListener('affinee:ouvrir-stocks', ouvrir);
+  }, []);
+  // « Mes clients › » (Atelier, Contacts) et « Agenda du Bord › » (Atelier, À faire) : l'événement annulable ouvre l'onglet visé.
+  useEffect(() => {
+    const versClients = (event: Event) => { setActiveTab('clients'); event.preventDefault(); };
+    const versBord = (event: Event) => { setActiveTab('dashboard'); event.preventDefault(); };
+    window.addEventListener('affinee:ouvrir-clients', versClients);
+    window.addEventListener('affinee:ouvrir-bord', versBord);
+    return () => {
+      window.removeEventListener('affinee:ouvrir-clients', versClients);
+      window.removeEventListener('affinee:ouvrir-bord', versBord);
+    };
+  }, []);
+  // « Modifier la recette › » (Nouveau brassin, recette à adapter au matériel) : l'événement annulable ouvre l'assistant sur cette recette.
+  const recipesRef = useRef<Recipe[]>([]);
+  useEffect(() => {
+    const ouvrir = (event: Event) => {
+      const id = (event as CustomEvent<{ recipeId?: string } | undefined>).detail?.recipeId;
+      const recipe = recipesRef.current.find((r) => r.id === id);
+      if (!recipe) return;
+      openWizardRef.current?.({ recipe });
+      event.preventDefault();
+    };
+    window.addEventListener('affinee:modifier-recette', ouvrir);
+    return () => window.removeEventListener('affinee:modifier-recette', ouvrir);
+  }, []);
+  // CP-13 : « Datés et budgétés, ils entrent dans Finances › Prévisions » (Brassins › Atelier › Matériel) : l'événement annulable ouvre l'onglet Finances sur le sous-onglet demandé.
+  const [financeTabRequest, setFinanceTabRequest] = useState<{ onglet: string; at: number } | null>(null);
+  useEffect(() => {
+    const ouvrir = (event: Event) => {
+      const onglet = (event as CustomEvent<{ onglet?: string }>).detail?.onglet;
+      if (typeof onglet !== 'string') return;
+      setFinanceOpenRequest(null);
+      if (onglet === 'previsions') StorageService.setUiState('finances_workspace', 'forecast');
+      setFinanceTabRequest({ onglet, at: Date.now() });
+      setActiveTab('finances');
+      event.preventDefault();
+    };
+    window.addEventListener('affinee:ouvrir-finances', ouvrir);
+    return () => window.removeEventListener('affinee:ouvrir-finances', ouvrir);
+  }, []);
+  const [isCloudConfigOpen, setIsCloudConfigOpen] = useState(false);
+  const [isAuditLogsOpen, setIsAuditLogsOpen] = useState(false);
+  /** L'article dont la recherche ouvre la correction d'inventaire (le geste « Corriger » de sa ligne). */
+  const [correctingItem, setCorrectingItem] = useState<StockItem | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [writeError, setWriteError] = useState<string | null>(null);
+  const [isDataReady, setIsDataReady] = useState(false);
+  const isDevLocal = import.meta.env.DEV && currentUser?.email === 'dev-local@localhost';
+
+  // Reactive state from StorageService (STRICTLY ISOLATED: Empty by default until Google auth validates!)
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  /** Les dates des écritures : les comptes de la grille de période. */
+  const [stocks, setStocks] = useState<{ rawMaterials: StockItem[]; cleaning: StockItem[]; equipment: EquipmentItem[]; kegs: KegItem[] }>({
+    rawMaterials: [],
+    cleaning: [],
+    equipment: [],
+    kegs: []
+  });
+  const [batches, setBatches] = useState<Batch[]>([]);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const openWizardRef = useRef<((seed?: WizardSeed, duplicateOf?: string) => void) | undefined>(undefined);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [budgetLines, setBudgetLines] = useState<BudgetLine[]>([]);
+  const [tarifs, setTarifs] = useState<PricingItem[]>([]);
+  const [config, setConfig] = useState<AppConfig>(defaultConfig);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [creativeItems, setCreativeItems] = useState<CreativeItem[]>([]);
+
+  // Démarre la synchronisation Firestore dès que le compte Google est validé,
+  // puis rejoue une seule fois la migration depuis l'ancien localStorage.
+  useEffect(() => {
+    if (!currentUser) {
+      StorageService.clearMemoryCache();
+      setIsDataReady(false);
+      return;
+    }
+
+    StorageService.startSync();
+    const stopProofQueue = startProofQueue();
+    const stopFiches = startEnrichissement();
+
+    let cancelled = false;
+    runMigrationIfNeeded().then((report) => {
+      if (cancelled) return;
+      if (report.error) {
+        setWriteError(report.error);
+      } else if (report.ran) {
+        const total = Object.values(report.counts).reduce((a, b) => a + b, 0);
+        showToast(
+          report.source === 'localStorage'
+            ? `${total} enregistrements repris depuis ce navigateur et synchronisés.`
+            : `Base initialisée avec ${total} enregistrements.`
+        );
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      stopProofQueue();
+      stopFiches();
+    };
+  }, [currentUser]);
+
+  // Recopie les données de la façade vers l'état React à chaque snapshot.
+  useEffect(() => {
+    if (currentUser) {
+      setTransactions([...StorageService.getTransactions()]);
+      setStocks({ ...StorageService.getStocks() });
+      setBatches([...StorageService.getBatches()]);
+      setRecipes([...StorageService.getRecipes()]);
+      setClients([...StorageService.getClients()]);
+      setBudgetLines([...StorageService.getBudgetLines()]);
+      setTarifs([...StorageService.getTarifs()]);
+      setConfig({ ...StorageService.getConfig() });
+      setAuditLogs([...StorageService.getAuditLogs()]);
+      setCreativeItems([...StorageService.getCreativeItems()]);
+      setIsDataReady(StorageService.isReady());
+    } else {
+      setTransactions([]);
+      setStocks({ rawMaterials: [], cleaning: [], equipment: [], kegs: [] });
+      setBatches([]);
+      setRecipes([]);
+      setClients([]);
+      setBudgetLines([]);
+      setTarifs([]);
+      setAuditLogs([]);
+      setCreativeItems([]);
+      setIsDataReady(false);
+    }
+  }, [currentUser]);
+
+  // Save active tab
+  useEffect(() => {
+    if (currentUser) {
+      StorageService.setUiState('app_active_tab', activeTab);
+    }
+  }, [activeTab, currentUser]);
+
+  // Save global time filter
+  useEffect(() => {
+    if (currentUser) {
+      StorageService.setUiState('app_global_time_filter', serialiserPeriode(globalTimeFilter));
+    }
+  }, [globalTimeFilter, currentUser]);
+
+  // Subscribe to storage changes ONLY when authenticated
+  useEffect(() => {
+    if (!currentUser) return;
+    const refresh = () => {
+      setTransactions([...StorageService.getTransactions()]);
+      setStocks({ ...StorageService.getStocks() });
+      setBatches([...StorageService.getBatches()]);
+      setRecipes([...StorageService.getRecipes()]);
+      setClients([...StorageService.getClients()]);
+      setBudgetLines([...StorageService.getBudgetLines()]);
+      setTarifs([...StorageService.getTarifs()]);
+      setConfig({ ...StorageService.getConfig() });
+      setAuditLogs([...StorageService.getAuditLogs()]);
+      setCreativeItems([...StorageService.getCreativeItems()]);
+      // Once opened, keep cached screens and their drafts mounted during a stream outage.
+      // PersistenceStatus exposes the error; signing out still resets readiness above.
+      setIsDataReady(ready => ready || StorageService.isReady());
+    };
+    const unsubscribe = StorageService.subscribe(refresh);
+    refresh();
+    return unsubscribe;
+  }, [currentUser]);
+
+  // Une sauvegarde qui échoue (quota du navigateur saturé) ne doit jamais
+  // passer inaperçue dans une app de comptabilité : on la remonte à l'écran.
+  useEffect(() => {
+    if (!currentUser) return;
+    const check = () => {
+      const err = StorageService.consumeWriteError();
+      if (err) setWriteError(err);
+    };
+    check();
+    const interval = setInterval(check, 2000);
+    return () => clearInterval(interval);
+  }, [currentUser]);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+  /** Une seule suppression de recette pour la page, la fiche du carnet et l'éditeur (36, 16.11). */
+  const supprimerRecette = (recipe: Recipe) => {
+    StorageService.deleteRecipe(recipe.id);
+    showToast(`Recette « ${recipe.name} » supprimée.`);
+  };
+
+  // Un message informatif ne doit pas recouvrir la commande qui suit une
+  // navigation ; les erreurs de sauvegarde restent, elles, persistantes.
+  useEffect(() => {
+    setToastMessage(null);
+  }, [activeTab, route.route]);
+
+  // Critical stock count
+  // LE comptage du « manque » : la même fonction que Stocks et le Bord (test en ligne n° 49 : 26 au badge, 12 à Stocks).
+  // R1 (k2) : le manque compte aussi les recettes écrites, jamais brassées ; `recipes` est le carnet entier.
+  // Pastille C (16.11) : le même horizon « S49 · 6 sem. · Tout » règle le chiffre clé du Stocks et cette pastille (domain/stock/horizon.ts).
+  const [horizonStock, reglerHorizonStock] = useHorizonStock();
+  const criticalStockCount = useMemo(() => {
+    const vue = vueHorizon(articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recipes), batches, aujourdhuiLocal());
+    return compteDeReglage(vue, horizonStock);
+  }, [stocks, batches, recipes, horizonStock]);
+
+  // Pending To-Do count from Creative Lab
+  const pendingTodosCount = creativeItems.filter(
+    (i) => i.type === 'event' && i.status !== 'done'
+  ).length;
+  /* CRN-10 : le menu Plus compte les carnets que le Carnet montre. */
+  const nbCarnets = useMemo(() => lireCarnets(creativeItems).length, [creativeItems]);
+
+  /* h1 (20.11, CPL-1) : toute porte de l'Atelier mène à son Carnet choisi (CarnetsVue, ra+p5f), sauf demande d'une autre rubrique. */
+  const navigateToCreativeLab = (demande: CreativeLabSectionRequest = { section: 'carnet', at: Date.now() }) => {
+    setLabSectionRequest(demande);
+    setProductionSubTab('lab');
+    setActiveTab('production');
+  };
+  /** « À venir » / « Réalisés » d'un carnet monté dans l'Atelier : leur place réelle, Stocks › Matériel. */
+  const voirMateriel = (seg: 'avenir' | 'realises') => {
+    StorageService.setUiState('stocks_subtab', 'materiel');
+    StorageService.setUiState('stocks_materiel', seg);
+    setNavNonce(n => n + 1);
+    setActiveTab('stocks');
+  };
+
+  const navigateToBrewAssistant = () => {
+    setProductionSubTab('batches');
+    setActiveTab('production');
+  };
+
+  // --- Pages plein écran du brassage ---------------------------------------
+
+  const openRecipe = (recipe: Recipe) => route.open({ view: 'recipe', recipeId: recipe.id });
+  const openBrewDay = (batch: Batch) => route.open({ view: 'brewday', batchId: batch.id });
+
+  const openWizard = (seed?: WizardSeed, duplicateOf?: string) => {
+    setWizardSeed(seed);
+    route.open({ view: 'wizard', recipeId: duplicateOf ?? seed?.recipe?.id,
+      duplicate: !!duplicateOf, title: seed?.title, description: seed?.description });
+  };
+  openWizardRef.current = openWizard;
+  recipesRef.current = recipes;
+
+  /*
+   * Banc local de l'étape Houblons (T12b, #170 ; contrôles de ses choix sur l'app, T14) : `?dev-local&etape=houblons`
+   * ouvre le wizard à l'étape 3 sur la recette de sa maquette (fixture), `&recette=vide` sur une recette neuve. Mêmes
+   * deux verrous que devLocalUser : `import.meta.env.DEV` (éliminé au build) et le compte dev-local ; une seule fois.
+   */
+  const apercuOuvert = useRef(false);
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      if (!isDevLocal || !isDataReady || apercuOuvert.current) return;
+      const q = new URLSearchParams(location.search);
+      if (q.get('etape') === 'levure') {
+        // Banc de l'étape Levure (mission levure-port, u1) : une recette de démonstration (US-05, OG 1,066, 30 L, 19 °C), ou `&recette=vide`.
+        apercuOuvert.current = true;
+        import('./ui/etapeLevure/apercuDev').then(({ recetteApercuEtapeLevure, recetteApercuSansLevure, rechercheSimulee }) => {
+          if (q.get('recherche') === 'simulee') (window as unknown as { __lvRechercheSimulee?: unknown }).__lvRechercheSimulee = rechercheSimulee;
+          openWizard({ recipe: q.get('recette') === 'vide' ? recetteApercuSansLevure() : recetteApercuEtapeLevure(), step: 'levure' });
+        });
+        return;
+      }
+      if (q.get('etape') !== 'houblons') return;
+      apercuOuvert.current = true;
+      if (q.get('recette') === 'vide') { openWizard({ step: 'houblons' }); return; }
+      if (q.get('recette') === 'identite') {
+        import('./ui/identite/apercuDev').then(({ recetteApercuIdentite }) => openWizard({ recipe: recetteApercuIdentite(), step: 'houblons' }));
+        return;
+      }
+      import('./ui/hopIndex/maBiere/apercuDev').then(({ recetteApercuEtapeHoublons }) =>
+        openWizard({ recipe: recetteApercuEtapeHoublons(), step: 'houblons' }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDevLocal, isDataReady]);
+
+  /*
+   * Reprise après rechargement (critique B1 n° 14, 07.11 ; rejeu ff0f822e, B1-14 et B1-NOTE-5) : la page ouverte au moment du rechargement était le
+   * wizard, et l'app retombait sur le carnet, brouillon oublié. L'entrée d'historique garde sa route (`laffinee-route`) : si c'était le wizard ET que son
+   * brouillon existe sur cet appareil, on le rouvre à l'étape où il était (l'étape est dans le brouillon, `restoredDraft.step`). Sans brouillon (rien n'a
+   * été modifié), rien n'est rouvert : un wizard vide sous une clé de recette existante se prendrait pour sa modification.
+   * La reprise attend les données (elle lit la recette enregistrée) et se joue avant la première peinture (`useLayoutEffect`) : pas de carnet entrevu.
+   * - Recette modifiée : la fiche enregistrée redevient la base du wizard (`seed.recipe`), comme après « Modifier » ; elle donne l'empreinte (`serverBase`)
+   *   et laisse le wizard dire si la recette a changé ailleurs. Une recette supprimée entre-temps ne rouvre rien : le brouillon l'enregistrerait de nouveau.
+   * - Idée : titre et description de la route sont la base ; copie : le brouillon seul (la copie n'existe pas ailleurs).
+   * Une seule fois ; jamais sur un lien `?brewday=`, ni sur le banc local `?etape=` (qui ouvre sa propre page). Rien n'est écrit sur le serveur.
+   * `replaceTop` ne pousse aucune entrée : le retour ferme la page sur place.
+   */
+  const repriseTentee = useRef(false);
+  useLayoutEffect(() => {
+    if (!currentUser || !isDataReady || repriseTentee.current) return;
+    repriseTentee.current = true;
+    if (route.pile?.length !== 1) return;
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('etape') || q.get('brewday')) return;
+    // La clé « laffinee-route » est celle qu'écrit `useFullScreenRoute.ts` dans l'état de l'entrée d'historique (« pour une future reprise en avant »).
+    const state = window.history.state as Record<string, unknown> | null;
+    const stored = state && typeof state === 'object' ? state['laffinee-route'] as Route | undefined : undefined;
+    if (!stored || stored.view !== 'wizard') return;
+    const id = stored.recipeId ? `${stored.duplicate ? 'duplicate:' : ''}${stored.recipeId}` : stored.title ? `idea:${stored.title}` : 'new';
+    if (readRecipeDraftState(`${currentUser.uid}:${id}`).status !== 'available') return;
+    const modification = !!stored.recipeId && !stored.duplicate;
+    const modifiee = modification ? StorageService.getRecipes().find(r => r.id === stored.recipeId) : undefined;
+    if (modification && !modifiee) return;
+    if (modifiee) setWizardSeed({ recipe: modifiee });
+    else if (!stored.recipeId) setWizardSeed({ title: stored.title, description: stored.description });
+    route.replaceTop(stored);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, isDataReady]);
+
+  // l2 (10.11) : une fois connecté, l'accueil affiché et le navigateur au repos, les vues les plus ouvertes (brassins, stocks, finances,
+  // clients) se chargent une à une ; leur première ouverture n'attend plus le réseau. Voir services/prechargeVues.ts.
+  useEffect(() => {
+    if (!currentUser || !isDataReady) return;
+    let annuler = () => {};
+    let demonte = false;
+    const lancer = () => { if (!demonte) annuler = prechargerVuesAuRepos(); };
+    if (document.readyState === 'complete') lancer();
+    else window.addEventListener('load', lancer, { once: true });
+    return () => { demonte = true; window.removeEventListener('load', lancer); annuler(); };
+  }, [currentUser, isDataReady]);
+
+  /**
+   * Le bouton + conserve l'action de création de l'écran courant
+   * (article, recette, écriture…). Le compagnon dispose de son propre bouton.
+   */
+  /* Stocks › Matériel › Carnets (R28, D-42) : le + porte d'abord « Nouvelle idée », le focus du champ du bas. */
+  const surCarnets = activeTab === 'stocks' && (subTab as string | null) === 'carnets';
+  const fabAction = surCarnets ? ACTION_CARNETS : fabActionFor(activeTab, subTab);
+
+  /* Le brassin dont « Saisir une densité » ouvre la fiche : le premier en fermentation (le même que l'assistant de Plus). */
+  const brassinEnFermentation = batches.find(b => b.status === 'fermentation');
+  /* Le menu du + de l'écran (b1r). Les précisions viennent de l'app : prochain numéro de brassin et de fût, articles à commander. */
+  const plusMenu = plusMenuFor(activeTab, subTab, {
+    prochainBrassin: nextBatchId(batches.map(b => b.id)),
+    prochainFut: nextRef('F', stocks.kegs.map(k => k.id)),
+    aCommander: criticalStockCount,
+    enCuve: batches.filter(b => b.status === 'fermentation' || b.status === 'garde').length,
+    enFermentation: brassinEnFermentation ? { id: brassinEnFermentation.id, jours: joursDepuisBrassage(brassinEnFermentation) } : undefined
+  });
+  const [navNonce, setNavNonce] = useState(0);
+  const horsConnexion = isDevLocal || (typeof navigator !== 'undefined' && navigator.onLine === false);
+
+  /** Un geste « Depuis ici » : ouvre l'écran voulu (sous-onglet compris), puis sa création. Chaque geste garde sa fonction d'aujourd'hui. */
+  const runPlus = (cle: PlusCle | 'ecran') => {
+    if (cle === 'ecran') { runFabAction(); return; }
+    const vers = (tab: TabType, cle2: 'stocks_subtab' | 'clients_subtab' | null, sous: string | null, kind?: FabIntent) => {
+      if (cle2 && sous) StorageService.setUiState(cle2, sous);
+      setNavNonce(n => n + 1);
+      setActiveTab(tab);
+      if (kind) {
+        const at = Date.now();
+        setCreateRequest({ kind, at });
+        // La demande ne doit pas rouvrir la feuille au prochain retour sur l'écran.
+        window.setTimeout(() => setCreateRequest(c => (c && c.at === at ? null : c)), 3000);
+      }
+    };
+    switch (cle) {
+      /* v01s (D426) : « Écriture » ouvre la saisie à la main (le genre d'abord : sens, rythme, apport) ; « Facture », la lecture du document. */
+      case 'ecriture': setQuickAction('quick-expense', actionLauncherRef.current); break;
+      case 'facture': setQuickAction('scan', actionLauncherRef.current); break;
+      case 'vente': setQuickAction('quick-sale', actionLauncherRef.current); break;
+      case 'brassin': setQuickAction('brew-batch', actionLauncherRef.current); break;
+      case 'recette': openWizard(); break;
+      case 'idee': setLabSectionRequest({ section: 'carnet', at: Date.now() }); setProductionSubTab('lab'); vers('production', null, null, 'newIdea'); break;
+      case 'courses': vers('stocks', 'stocks_subtab', 'courses'); break;
+      case 'estimer': window.dispatchEvent(new CustomEvent('finances-estimer')); break;
+      // Le geste « Mesure » de la recherche : la fiche du brassin s'ouvre à la section Mesures.
+      case 'densite':
+        if (brassinEnFermentation) { setProductionSubTab('batches'); setActiveTab('production'); setBatchOpenRequest({ id: brassinEnFermentation.id, at: Date.now() }); }
+        break;
+      // D420 (d1a) : plus d'onglet Houblons au Stock ; une variété nouvelle est un article (rayon Houblons).
+      case 'houblon': vers('stocks', 'stocks_subtab', 'stock', 'newStockItem'); break;
+      case 'article': vers('stocks', 'stocks_subtab', 'stock', 'newStockItem'); break;
+      case 'fut': vers('stocks', 'stocks_subtab', 'futs', 'newKeg'); break;
+      case 'materiel': vers('stocks', 'stocks_subtab', 'materiel', 'newEquipment'); break;
+      case 'client': vers('clients', 'clients_subtab', 'crm', 'newClient'); break;
+      case 'tarif': vers('clients', 'clients_subtab', 'tarifs', 'newTarif'); break;
+    }
+  };
+
+  const runFabAction = () => {
+    switch (fabAction.intent) {
+      case 'newBatch':
+        // BX-4 (09.11) : « Nouveau brassin » ouvrait l'assistant de RECETTE (le même geste que « Créer une recette ») ; il lance un brassin.
+        setQuickAction('brew-batch', actionLauncherRef.current);
+        break;
+      case 'newRecipe':
+        openWizard();
+        break;
+      case 'newIdea':
+        // Sur Carnets, l'écran prend la demande lui-même : le champ du bas reçoit le focus, rien ne s'ouvre ailleurs.
+        if (surCarnets) { setCreateRequest({ kind: 'newIdea', at: Date.now() }); break; }
+        /* h1 : déjà sur l'Atelier, la rubrique ouverte prend la demande (Carnet : le champ ; Matériel : un besoin ; Tarifs : une idée de prix). */
+        if (!(activeTab === 'production' && productionSubTab === 'lab')) setLabSectionRequest({ section: 'carnet', at: Date.now() });
+        setProductionSubTab('lab');
+        setActiveTab('production');
+        setCreateRequest({ kind: 'newIdea', at: Date.now() });
+        break;
+      case 'newStockItem':
+      case 'newHopVariety':
+      case 'newKeg':
+      case 'newEquipment':
+      case 'newClient':
+      case 'newTarif':
+      case 'copyShoppingList':
+        // L'écran concerné sait quoi faire : on lui passe la demande, il ouvre
+        // sa propre feuille de création. L'App n'a pas à connaître ses formulaires.
+        setCreateRequest({ kind: fabAction.intent, at: Date.now() });
+        break;
+      case 'newTransaction':
+        // 09.11, ses mots : « entrer une facture ouvre la bonne vue tandis que nouvelle écriture, non » : la même entrée que « Entrer une facture »
+        // (document, photo, ou « Saisir sans justificatif » d'un toucher), sans repasser par le sommaire.
+        // 22.11 (D426) : l'écriture est la saisie à la main v01s ; son icône du document mène à la lecture en un toucher.
+        setQuickAction('quick-expense', actionLauncherRef.current);
+        break;
+      case 'quickAction':
+      default:
+        setQuickAction('menu');
+    }
+  };
+
+  // Déstructuré pour que TypeScript sache restreindre l'union : la
+  // restriction ne traverse pas un accès de propriété (`route.route.view`).
+  // `view` : l'écran au premier plan ; `base` : la page restée montée sous les couches.
+  const view = route.route;
+  const base = baseRoute;
+  const wizardDraftId = base.view === 'wizard' && base.recipeId
+    ? `${base.duplicate ? 'duplicate:' : ''}${base.recipeId}`
+    : base.view === 'wizard' && base.title ? `idea:${base.title}` : 'new';
+  const routedRecipe =
+    base.view === 'recipe' ? recipes.find((r) => r.id === base.recipeId) : undefined;
+  const routedBatch =
+    base.view === 'brewday' ? batches.find((b) => b.id === base.batchId) : undefined;
+  const baseCovered = layerRoutes.length > 0;
+
+  /**
+   * Ce dont le compagnon parle ici, affiché sous son entrée dans le menu.
+   *
+   * Les pages plein écran montent leur propre conversation — recette, brouillon
+   * d'assistant, brassin du jour — et `brewerLauncher` la retrouve avant le
+   * repli sur l'écran d'onglet. Le libellé doit donc nommer la page, pas
+   * l'onglet qu'on a quitté pour l'ouvrir.
+   */
+  const companionLabel =
+    view.view === 'recipe' ? routedRecipe?.name ?? 'Cette recette'
+    : view.view === 'brewday' ? routedBatch?.name ?? 'Ce brassin'
+    : view.view === 'wizard' ? 'Recette en cours d’écriture'
+    : brewerAppScreen(activeTab, subTab).label;
+
+  const allStockItems = [...stocks.rawMaterials, ...stocks.cleaning];
+
+  /**
+   * Crée un article de stock à ZÉRO depuis l'assistant de recette.
+   *
+   * À zéro, parce qu'on ne l'a pas encore acheté : lui inventer une quantité
+   * fausserait la liste de courses au moment précis où elle sert.
+   */
+  const createStockItem = (name: string, category: string, unit: string): StockItem => {
+    const kind: 'rawMaterials' | 'cleaning' = 'rawMaterials';
+    const item: StockItem = {
+      id: name,
+      ref: nextUniqueRef('MP', allStockItems.map((s) => s.ref)),
+      name,
+      category,
+      unit,
+      currentStock: 0,
+      minStock: 0,
+      reorder: false
+    };
+    StorageService.addStockItem(kind, item);
+    return item;
+  };
+
+  /**
+   * Retient une fiche technique retrouvée par l'IA, sur l'article de stock.
+   *
+   * ⚠️ « L'EBC d'un malt ne changera jamais. » Ces valeurs sont des constantes
+   * du produit, pas des choix de recette : elles doivent survivre au brassin
+   * qui les a fait chercher. Sans ça, chaque nouvelle recette repartait d'une
+   * fiche vide et repayait le même appel pour le même chiffre.
+   *
+   * ⚠️ On n'écrase JAMAIS une valeur déjà présente. Ce que Gaëtan a saisi à la
+   * main — ou lu sur le sac qu'il a réellement acheté — prime sur ce qu'un
+   * modèle a trouvé en ligne : le lot dans sa cave peut différer de la fiche
+   * générique du malteur, et lui seul le sait. On ne comble que les trous.
+   */
+  const learnIngredient = (name: string, facts: Partial<StockItem>) => {
+    StorageService.learnIngredient(name, facts);
+  };
+
+  /** Enregistre la recette, et lance éventuellement le brassin dans la foulée. */
+  const saveFromWizard = async (recipe: Recipe, thenBrew: boolean, semaine?: string) => {
+    const sourceRoute = route.route;
+    const activeProfile = config.brewhouses.find(b => b.id === config.activeBrewhouseId) ?? config.brewhouses[0];
+    if (thenBrew) {
+      const adoptionIssue = recipeInstallationAdoptionIssue(recipe, activeProfile);
+      if (adoptionIssue) throw new Error(adoptionIssue);
+    }
+    recipe = await saveRecipeConfirmed(recipe);
+    if (thenBrew) {
+      const installationIssues=recipeInstallationIssues(recipe, activeProfile);
+      if(installationIssues.length) throw new Error(`Recette enregistrée. Avant de lancer : ${installationIssues.join(' ')}`);
+    }
+
+    if (!thenBrew) {
+      showToast(`Recette « ${recipe.name} » enregistrée.`);
+      if (currentRoute.current === sourceRoute) {
+        // BR-7 : une recette modifiée depuis sa fiche revient à sa fiche (la pile pose le wizard sur les onglets : `close` ramenait à la liste, défilée).
+        if (sourceRoute.view === 'wizard' && sourceRoute.recipeId && !sourceRoute.duplicate) route.replaceTop({ view: 'recipe', recipeId: recipe.id });
+        else route.close();
+      }
+      return;
+    }
+
+    showToast(`Recette « ${recipe.name} » enregistrée.`);
+    if (currentRoute.current === sourceRoute) {
+      route.open({ view: 'recipe', recipeId: recipe.id });
+      setBrewRecipeId(recipe.id);
+      setBrewSemaine(semaine);
+      setQuickAction('brew-batch');
+    }
+  };
+
+  /**
+   * Enregistre l'analyse d'eau. Elle vit dans la configuration, pas dans la
+   * recette : c'est l'eau de la brasserie, la même pour tous les brassins.
+   */
+  const saveWaterSource = (updated: WaterSource) => {
+    const others = (config.waterSources ?? []).filter((w) => w.id !== updated.id);
+    StorageService.saveConfig({
+      ...config,
+      waterSources: [...others, updated],
+      activeWaterSourceId: updated.id
+    });
+    showToast(`Analyse « ${updated.name} » enregistrée.`);
+  };
+
+  /** Clôture du jour de brassage : sauvegarde des relevés, puis fermentation. */
+  const finishBrewDay = (updated: Batch) => {
+    const result = StorageService.completeBrewStock(updated);
+    showToast(result.success ? `${updated.id} en fermentation. Consommation enregistrée.${result.issues.length ? ' Levure à régulariser dans le dossier du brassin.' : ''}` :`${updated.id} enregistré. Stock à vérifier dans le dossier du brassin.`);
+    route.close();
+  };
+
+  // --- Recherche universelle ------------------------------------------------
+
+  /** « Aller à » de la recherche : les mêmes ouvertures que la barre et le + (sous-onglet mémorisé, puis l'onglet). */
+  const allerA = (id: DestinationId) => {
+    const stocksVers = (sous: string) => { StorageService.setUiState('stocks_subtab', sous); setNavNonce(n => n + 1); setActiveTab('stocks'); };
+    const clientsVers = (sous: string) => { StorageService.setUiState('clients_subtab', sous); setNavNonce(n => n + 1); setActiveTab('clients'); };
+    const production = (sous: 'batches' | 'recipes' | 'lab' | 'scaler') => { setProductionSubTab(sous); setActiveTab('production'); };
+    switch (id) {
+      case 'bord': setActiveTab('dashboard'); break;
+      case 'finances': setActiveTab('finances'); break;
+      case 'calendrier': setActiveTab('calendrier'); break;
+      case 'brassins': production('batches'); break;
+      case 'recettes': production('recipes'); break;
+      case 'atelier': navigateToCreativeLab(); break;
+      case 'volumes': production('scaler'); break;
+      case 'stock': stocksVers('stock'); break;
+      case 'courses': stocksVers('courses'); break;
+      case 'futs': stocksVers('futs'); break;
+      case 'materiel': stocksVers('materiel'); break;
+      // D422 : « Aller à Houblons » ouvre le catalogue des houblons, que le titre du rayon Houblons ouvre aussi.
+      case 'houblons': StorageService.setUiState('stocks_catalogue', '1'); stocksVers('stock'); break;
+      case 'clients': clientsVers('crm'); break;
+      case 'impot': clientsVers('ofdf'); break;
+      case 'tarifs': clientsVers('tarifs'); break;
+      case 'assistant': navigateToBrewAssistant(); break;
+      case 'journal': setIsAuditLogsOpen(true); break;
+      case 'reglages': setIsSettingsOpen(true); break;
+    }
+  };
+
+  const financialArchives = useStorageValue(FinancialArchiveService.getArchives);
+  /* B10 (WFR-9) : les choses du Calendrier (prévisions, fêtes) se cherchent à la loupe comme le reste ; le résultat ouvre le Calendrier sur leur semaine. */
+  const financialPlans = useStorageValue(lirePrevisions);
+  /** CHN-6 : un saut vers une chose ne change pas la période de l'app (un coup d'œil ne réécrit pas « Nov. » partout) : le Calendrier pose sa fenêtre sur la chose.
+      CHN-5, CHN-12 : `id` (l'identifiant de sa source) la fait montrer à l'arrivée. */
+  ouvrirDateRef.current = (date: string, id?: string, geste?: { annuler: () => Promise<void> | void; texte: string }) => { poserRetour(activeTab); ouvrirChoseCalendrier(date, id, geste); };
+  /* T11-1 : un geste fait ailleurs (Carnet › « Au calendrier ») arrive avec son Annuler, dit par le message du Calendrier */
+  const ouvrirChoseCalendrier = (date?: string, id?: string, geste?: { annuler: () => Promise<void> | void; texte: string }) => {
+    const jour = isoDate(date);
+    setCalendrierCentre(jour ?? undefined);
+    setCalendrierViser(id ? { id, at: Date.now(), ...(geste ?? {}) } : undefined);
+    setActiveTab('calendrier');
+  };
+  const financialArchiveIndex = useMemo(() => archiveIndex(financialArchives), [financialArchives]);
+  const commandGroups: CommandGroup[] = [
+    {
+      heading: 'Recettes',
+      items: recipes.filter(isCurrent).map((r) => ({
+        id: `rec-${r.id}`,
+        label: r.name,
+        detail: [r.style, formatLitres(r.volumeL)].filter(Boolean).join(' · '),
+        icon: <Beaker className="w-4 h-4" />,
+        keywords: [r.style, r.id],
+        gestes: [{ id: 'brasser' as const, label: 'Brasser', run: () => { setBrewRecipeId(r.id); setQuickAction('brew-batch', actionLauncherRef.current); } }],
+        onSelect: () => openRecipe(r)
+      }))
+    },
+    {
+      heading: 'Brassins',
+      items: batches.filter(isCurrent).map((b) => ({
+        id: `bat-${b.id}`,
+        label: `${b.id} — ${b.name}`,
+        detail: [b.style, batchDisplayDate(b), b.status].filter(Boolean).join(' · '),
+        icon: <FlaskConical className="w-4 h-4" />,
+        keywords: [b.style, b.status],
+        // Un brassin en cours de fermentation ou de garde : le jour J+N seulement s'il est connu, et le geste « Mesure » ouvre sa fiche à la section Mesures.
+        ...((b.status === 'fermentation' || b.status === 'garde') ? {
+          valeur: joursDepuisBrassage(b) !== undefined ? `J+${joursDepuisBrassage(b)}` : undefined,
+          gestes: [{ id: 'mesure' as const, label: 'Mesure', run: () => { setProductionSubTab('batches'); setActiveTab('production'); setBatchOpenRequest({ id: b.id, at: Date.now() }); } }]
+        } : {}),
+        onSelect: () => openBrewDay(b)
+      }))
+    },
+    {
+      heading: 'Stock',
+      items: allStockItems.map((s) => ({
+        id: `stk-${s.ref}`,
+        label: s.name,
+        // Un houblon se lit à son α (L04), les autres articles à leur catégorie ; la quantité est la valeur de la ligne.
+        detail: formaterAlpha(s.alphaPct) ? `α ${formaterAlpha(s.alphaPct)}` : s.category,
+        valeur: Units.format(s.currentStock, s.unit),
+        icon: <Package className="w-4 h-4" />,
+        keywords: [s.ref, s.category, s.supplier ?? ''],
+        gestes: [
+          { id: 'corriger' as const, label: 'Corriger', run: () => setCorrectingItem(s) },
+          { id: 'courses' as const, label: 'Courses', run: () => runPlus('courses') }
+        ],
+        apercu: () => apercuArticle(s, recipes, transactions),
+        // La fiche de l'article, comme avant mais jusqu'à la donnée : Stocks › Stock, la fiche ouverte (le mécanisme du renvoi existant).
+        onSelect: () => { StorageService.setUiState('stocks_subtab', 'stock'); setNavNonce(n => n + 1); setActiveTab('stocks'); setStockOpenRequest({ ref: s.ref, at: Date.now() }); }
+      }))
+    },
+    {
+      heading: 'Clients',
+      items: clients.map((c) => ({
+        id: `cli-${c.id}`,
+        label: c.name,
+        detail: [c.contact].filter(Boolean).join(' · '),
+        valeur: c.type || undefined,
+        icon: <Users className="w-4 h-4" />,
+        keywords: [c.email, c.phone, c.type],
+        onSelect: () => setActiveTab('clients')
+      }))
+    },
+    {
+      heading: 'Calendrier',
+      items: [
+        ...financialPlans.filter((p) => p.status !== 'cancelled' && p.title).map((p) => ({
+          id: `cal-plan-${p.id}`,
+          label: p.title,
+          detail: ['Calendrier', dateCourte(p.date), p.direction === 'in' ? 'rentrée prévue' : 'dépense prévue'].filter(Boolean).join(' · '),
+          valeur: `${p.direction === 'in' ? '+' : '−'}${montantChf(p.amountCents / 100)} CHF`,
+          icon: <CalendarDays className="w-4 h-4" />,
+          keywords: [p.vendor ?? '', p.category, p.notes ?? ''],
+          onSelect: () => ouvrirChoseCalendrier(p.date, p.id)
+        })),
+        ...creativeItems.filter((c) => c.type === 'event' && c.title).map((c) => ({
+          id: `cal-fete-${c.id}`,
+          label: c.title,
+          detail: ['Calendrier', dateCourte(c.date ?? ''), c.activite ? 'activité' : 'fête'].filter(Boolean).join(' · '),
+          icon: <CalendarDays className="w-4 h-4" />,
+          keywords: [c.description ?? '', c.notes ?? ''],
+          onSelect: () => ouvrirChoseCalendrier(c.date, c.id)
+        }))
+      ]
+    },
+    {
+      heading: 'Écritures',
+      items: [...transactions].sort((a, b) => (isoDate(b.date) ?? '').localeCompare(isoDate(a.date) ?? '') || b.id.localeCompare(a.id)).map((t) => ({
+        id: `tx-${t.id}`,
+        label: t.description,
+        // r3p2 : la date et la première ligne en détail (« 09.11 · Citra T90 1 kg »), le montant à droite ; sans ligne reliée, la sous-catégorie.
+        detail: [dateCourte(t.date), resumeLigneEcriture(t) ?? t.subcategory].filter(Boolean).join(' · '),
+        valeur: `${montantChf(t.amountTTC)} CHF`,
+        icon: <Receipt className="w-4 h-4" />,
+        keywords: motsCleEcriture(t),
+        archived: isTransactionArchived(t, financialArchiveIndex),
+        ...(t.proofUrl ? { gestes: [{ id: 'piece' as const, label: 'Pièce', run: () => { setActiveTab('finances'); setFinanceOpenRequest({ id: t.id, at: Date.now() }); } }] } : {}),
+        onSelect: () => {
+          setActiveTab('finances');
+          setFinanceOpenRequest({ id: t.id, at: Date.now() });
+        }
+      }))
+    }
+  ].filter((g) => g.items.length > 0);
+
+  const handleLogout = async () => {
+    await FirebaseAuthService.logout();
+    StorageService.clearMemoryCache();
+    setCurrentUser(null);
+    setTransactions([]);
+    setStocks({ rawMaterials: [], cleaning: [], equipment: [], kegs: [] });
+    setBatches([]);
+    setRecipes([]);
+    setClients([]);
+    setBudgetLines([]);
+    setTarifs([]);
+    setConfig(defaultConfig);
+    setAuditLogs([]);
+    setCreativeItems([]);
+    showToast("Session Google déconnectée.");
+  };
+
+  // Loading official auth state
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen bg-cave-950 flex flex-col items-center justify-center text-cave-400 space-y-3 font-sans">
+        <div className="w-10 h-10 border-2 border-ebc-straw/30 border-t-ebc-straw rounded-full animate-spin" />
+        <span className="text-sm font-medium tracking-wide">Vérification de la session Google...</span>
+      </div>
+    );
+  }
+
+  // If not authenticated with allowed Google account, show standard LoginPage
+  if (!currentUser) {
+    return <LoginPage />;
+  }
+
+  // Première synchronisation Firestore. Le cache IndexedDB rend cet écran
+  // quasi instantané dès la deuxième ouverture, y compris hors-ligne.
+  if (!isDataReady) {
+    return (
+      <div className="min-h-screen bg-cave-950 flex flex-col items-center justify-center text-cave-400 space-y-3 font-sans px-6">
+        <div className="w-10 h-10 border-2 border-ebc-straw/30 border-t-ebc-straw rounded-full animate-spin" />
+        <span className="text-sm font-medium tracking-wide text-center">
+          Synchronisation des données de la brasserie...
+        </span>
+        <FinancialLedgerLoading />
+        {writeError && (
+          <div className="text-center space-y-3">
+            <p className="text-sm text-alert max-w-xs leading-relaxed">{writeError}</p>
+            <button type="button" className="min-h-11 rounded-xl border border-cave-700 px-4" onClick={() => window.location.reload()}>Réessayer la synchronisation</button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /*
+   * La page de base. Couverte par une couche, elle garde le MÊME élément React : React n'en refait ni le rendu ni le
+   * style (ouvrir une couche ne coûte que la couche), et son état vit tant qu'elle est montée. Découverte, elle
+   * reçoit de nouveau des props fraîches. Couverte, elle n'est jamais visible (couche opaque au-dessus, dans l'ordre
+   * du DOM) ni atteignable (PageShell rend inerte la branche sous la page du premier plan ; `aria-hidden` ici).
+   */
+  const baseContent = baseCovered && frozenBase.current?.route === base ? frozenBase.current.element : (
+    <LazySurface resetKey={base.view} fallback={<PageShell title="Chargement…" onClose={route.close}><p role="status">Ouverture de la page…</p></PageShell>}>
+    {routedRecipe && (
+      <RecipeSurface
+        key={routedRecipe.id}
+        recipe={routedRecipe}
+        batches={batches}
+        config={config}
+        onClose={route.close}
+        onEdit={() => openWizard({ recipe: routedRecipe })}
+        onDuplicate={() =>
+          openWizard({
+            recipe: {
+              ...routedRecipe,
+              archivedAt: null,
+              id: `REC-${Date.now().toString(36).toUpperCase()}`,
+              name: `${routedRecipe.name} (copie)`
+            }
+          }, routedRecipe.id)
+        }
+        onDelete={() => {
+          supprimerRecette(routedRecipe);
+          route.close();
+        }}
+        onBrew={() => { setBrewRecipeId(routedRecipe.id); setQuickAction('brew-batch'); }}
+        onOpenBatch={openBrewDay}
+      />
+    )}
+  
+    {routedBatch && (
+      <BrewDayPage
+        key={routedBatch.id}
+        batch={routedBatch}
+        config={config}
+        stockItems={allStockItems}
+        onClose={route.close}
+        onSave={(b) => StorageService.updateBatch(b)}
+        onFinish={finishBrewDay}
+      />
+    )}
+  
+    {base.view === 'wizard' && (
+      <BrewWizard
+        key={`${currentUser.uid}:${wizardDraftId}`}
+        draftKey={`${currentUser.uid}:${wizardDraftId}`}
+        ownerKey={currentUser.uid}
+        localOnly={isDevLocal}
+        seed={wizardSeed}
+        stockItems={allStockItems}
+        config={config}
+        onClose={route.close}
+        onCreateStockItem={createStockItem}
+        onLearnIngredient={learnIngredient}
+        onSaveWaterSource={saveWaterSource}
+        onSave={saveFromWizard}
+        onDelete={(recipe) => {
+          supprimerRecette(recipe);
+          // Retour à l'onglet d'où l'on venait : la page de la recette supprimée n'existe plus.
+          route.closeTo((r) => r.view === 'tabs', { view: 'recipe', recipeId: recipe.id });
+        }}
+        writeError={writeError}
+        onDismissWriteError={() => setWriteError(null)}
+      />
+    )}
+    </LazySurface>
+  );
+  frozenBase.current = { route: base, element: baseContent };
+
+  return (
+    <div className="min-h-screen bg-cave-950 text-cave-50 flex flex-col font-sans">
+      <BrewerActivity
+        context={brewerAppScreen(activeTab, subTab)}
+        localOnly={isDevLocal}
+        hideActivityPill={activeTab === 'finances' || activeTab === 'production' && subTab === 'lab'}
+      />
+      {/* Erreur de sauvegarde : bandeau persistant, fermé manuellement.
+          Contrairement au toast, il ne disparaît pas tout seul : perdre une
+          écriture comptable sans s'en apercevoir n'est pas acceptable. */}
+      {writeError && view.view !== 'wizard' && view.view !== 'hopV55' && (
+        <div role="alert" className="fixed top-0 inset-x-0 z-[60] bg-alert text-white px-4 py-3 shadow-2xl flex items-start gap-3">
+          <span className="text-lg leading-none shrink-0">⚠️</span>
+          <div className="flex-1 text-sm leading-relaxed font-medium">{writeError}</div>
+          <button
+            onClick={() => setWriteError(null)}
+            className="shrink-0 px-3 py-1 bg-rose-800/60 hover:bg-rose-800 rounded-lg text-sm font-bold min-h-[32px]"
+          >
+            Fermer
+          </button>
+        </div>
+      )}
+
+      {/* Toast notification */}
+      {toastMessage && (
+        <div role="status" data-toast className="pointer-events-none fixed z-50 left-2 right-[4.75rem] bottom-[calc(var(--main-navigation-height,2.5rem)+0.75rem)] min-h-[34px] rounded-[10px] bg-cave-850 border border-cave-700 text-cave-50 px-2.5 py-1.5 shadow-lift text-sm flex items-center gap-2 animate-in fade-in min-[1024px]:left-[calc(var(--rail-width,88px)+0.5rem)] min-[1024px]:right-auto min-[1024px]:mx-0 min-[1024px]:bottom-4 min-[1024px]:w-[360px]">
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Main App Header with Global Time Filter, Direct Quick-Nav & To-Do Badge */}
+      <PersistenceStatus />
+      <NouvelleVersion />
+      {/* L'envoi des justificatifs au Drive se fait en arrière-plan : un échec reste ici, avec ses deux gestes (D235). */}
+      <ProofUploadNotice hidden={view.view === 'wizard' || view.view === 'hopV55'} onResend={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }} />
+      <Header
+        compactLayout
+        large={activeTab === 'stocks'}
+        globalTimeFilter={globalTimeFilter}
+        onChangeGlobalTimeFilter={(p) => setGlobalTimeFilter(p)}
+        transactions={transactions}
+        onAnnoncePeriode={showToast}
+        onOpenPlus={ouvrirPlus}
+        plusOpen={plusOuvert}
+        onOpenSearch={() => setIsPaletteOpen(true)}
+        onGoHome={() => { fermerPlus(); setActiveTab('dashboard'); }}
+        pendingTodosCount={pendingTodosCount}
+      />
+
+      {/* Main Content Area */}
+      <main data-floating-actions-gap="nav" className={`flex-1 max-w-4xl ${activeTab === 'stocks' ? 'min-[900px]:max-w-[1264px] min-[1024px]:pl-[calc(var(--rail-width,88px)+0.75rem)]' : 'min-[1024px]:max-w-[calc(56rem+var(--rail-width,88px))] min-[1024px]:pl-[calc(var(--rail-width,88px)+0.75rem)]'} w-full mx-auto px-2 xs:px-3`}>
+        {plusOuvert && (
+          <PagePlus
+            key={signataireNonce}
+            courant={StorageService.getCurrentUser()}
+            onSigner={(cible) => { StorageService.setCurrentUser(cible); setSignataireNonce(n => n + 1); }}
+            periode={globalTimeFilter}
+            onChoisirPeriode={(p) => setGlobalTimeFilter(p)}
+            transactions={transactions}
+            logs={auditLogs}
+            batches={batches}
+            pendingTodosCount={pendingTodosCount}
+            nbCarnets={nbCarnets}
+            horsConnexion={horsConnexion}
+            entreprise={config.company?.name}
+            etatCloud={etatConnexions(
+              FirebaseAuthService.hasDriveAccess() ? 'connecte' : FirebaseAuthService.driveTokenExpired() ? 'a-renouveler' : 'a-connecter',
+              StorageService.getUiState<string>('ai_default_tier', 'fast')
+            )}
+            etatReglages={etatReglages(bilanReglages(config, { ibanEffectif: config.company.iban || COMPANY_FALLBACK.iban, compteConnecte: !!FirebaseAuthService.getCurrentUser() }))}
+            onBack={fermerPlus}
+            onAssistant={() => { fermerPlus(); navigateToBrewAssistant(); }}
+            onAtelier={() => { fermerPlus(); navigateToCreativeLab(); }}
+            onConversations={() => window.dispatchEvent(new Event('brewer-inbox-open'))}
+            onJournal={() => setIsAuditLogsOpen(true)}
+            onFournisseurs={() => { setPlusOuvert(false); setFournisseursOuvert(true); }}
+            onCloud={() => setIsCloudConfigOpen(true)}
+            onReglages={() => setIsSettingsOpen(true)}
+            onLogout={handleLogout}
+          />
+        )}
+        {fournisseursOuvert && !plusOuvert && (
+          <LazySurface resetKey="fournisseurs">
+            <PageFournisseurs
+              transactions={transactions}
+              stocks={stocks}
+              onBack={() => { setFournisseursOuvert(false); setPlusOuvert(true); }}
+              onScanner={() => setQuickAction('scan', actionLauncherRef.current)}
+            />
+          </LazySurface>
+        )}
+        <div style={{ display: plusOuvert || fournisseursOuvert ? 'none' : 'contents' }}>
+        <LazySurface resetKey={activeTab}>
+        {activeTab === 'dashboard' && (
+          <DashboardTab
+            transactions={transactions}
+            batches={batches}
+            stocks={stocks}
+            config={config}
+            globalTimeFilter={globalTimeFilter}
+            onNavigateTab={(tab) => { if(tab==='production') setProductionSubTab('batches'); setActiveTab(tab); }}
+            onOpenBatch={(batchId) => {
+              setProductionSubTab('batches');
+              setBatchOpenRequest({ id: batchId, at: Date.now() });
+              setActiveTab('production');
+            }}
+            /* h1 (audit des vues n° 3) : l'agenda (tâches datées) vit au Calendrier, sa vue choisie ; plus dans l'ancien carnet. */
+            onNavigateToCreativeLab={() => ouvrirCalendrierSection('agenda')}
+          />
+        )}
+
+        {activeTab === 'finances' && (
+          <FinancesTab
+            transactions={transactions}
+            openTransactionRequest={financeOpenRequest}
+            onRetour={() => { setActiveTab('calendrier'); restaurerDefilement(); }}
+            ongletRequest={financeTabRequest}
+            recipes={recipes}
+            batches={batches}
+            stockItems={[...stocks.rawMaterials, ...stocks.cleaning]}
+            budgetLines={budgetLines}
+            config={config}
+            globalTimeFilter={globalTimeFilter}
+            onChangeGlobalTimeFilter={(p) => setGlobalTimeFilter(p)}
+            onOpenStockItem={(ref) => {
+              setStockOpenRequest({ ref, at: Date.now() });
+              setActiveTab('stocks');
+            }}
+            onOpenRecipe={(recipeId) => {
+              const recipe = recipes.find((r) => r.id === recipeId);
+              if (recipe) openRecipe(recipe);
+            }}
+            onOpenSale={() => setQuickAction('quick-sale', actionLauncherRef.current)}
+          />
+        )}
+
+        {activeTab === 'calendrier' && (<>
+          {calendrierSection && (
+            <div className="mb-2 flex min-h-11 items-center gap-2 rounded-panel border border-cave-800 px-3 text-sm" data-calendrier-section={calendrierSection}>
+              <span className="min-w-0 flex-1 truncate font-semibold text-cave-200">Calendrier · {NOM_SECTION[calendrierSection]}</span>
+              <button type="button" data-calendrier-general onClick={() => setCalendrierSection(undefined)} className="min-h-11 shrink-0 px-2 font-semibold text-cave-200">Tout le calendrier ›</button>
+            </div>
+          )}
+          <CalendrierTab
+            {...(calendrierSection ? { section: calendrierSection } : {})}
+            {...(calendrierCentre ? { centrerSur: calendrierCentre } : {})}
+            {...(calendrierViser ? { viser: calendrierViser } : {})}
+            transactions={transactions}
+            batches={batches}
+            stockItems={[...stocks.rawMaterials, ...stocks.cleaning]}
+            onOpenBatch={(batchId) => {
+              poserRetour('calendrier'); /* CAL-PASSE : le retour du téléphone ramène au Calendrier (CT4A-12), comme une fête ou une idée */
+              setProductionSubTab('batches');
+              setBatchOpenRequest({ id: batchId, at: Date.now(), retour: true }); /* CHN-8 : la croix de la fiche ramène au Calendrier */
+              setActiveTab('production');
+            }}
+            onOpenFinances={() => setActiveTab('finances')}
+            onOpenCourses={(batchId) => {
+              /* CRITIQUE-5 n° 17 (D-191, E25) : « Commander » d'un brassin planifié ouvre les Courses sur une fenêtre qui contient ses courses.
+                 Si le réglage de Stocks (`stocks_horizon`) les montre déjà, il ne change pas. Sinon : de la semaine en cours à celle du
+                 brassin, quand ses courses y tombent ; à défaut, « Tout ». Ce défaut couvre aussi la date à la suisse (« 07.12.2026 », écrite
+                 par `normalizeBrewDate`) que `horizon.ts` ne lit pas : les courses de ce brassin y tombent au seuil (RESULTAT, DÉCISION 2). */
+              const b = batchId ? batches.find(x => x.id === batchId) : undefined;
+              if (b && b.status === 'planifie') {
+                const jour = aujourdhuiLocal();
+                const vue = vueHorizon(articlesACommander([...stocks.rawMaterials, ...stocks.cleaning], batches, recipes), batches, jour);
+                const siennes = (r: Reglage) => lignesDeReglage(vue, r).some(l => l.sources.some(s => s.genre === 'brassin' && s.id === b.id));
+                const sien = prochainBrassin([b], jour);
+                const fenetre: Reglage | null = sien && sien.semaine - vue.courante <= SEMAINES_FENETRE - 1 ? { de: vue.courante, a: sien.semaine } : null;
+                if (!siennes(horizonStock)) reglerHorizonStock(fenetre && siennes(fenetre) ? fenetre : 'tout');
+              }
+              runPlus('courses');
+            }}
+            onPoserBrassin={(recetteId) => { setBrewRecipeId(recetteId); setQuickAction('brew-batch', actionLauncherRef.current); }}
+            onPoserFete={(lundi, saisie) => {
+              /* h1 (audit n° 4) : ce qui est tapé arrive dans le champ du Carnet (CarnetsVue), rien ne se perd ; correctif propre au Calendrier : ouvert. */
+              poserRetour('calendrier');
+              navigateToCreativeLab({ section: 'event', at: Date.now(), date: lundi, ...(saisie ? { saisie } : {}) });
+            }}
+            onPoserDepense={(lundi, _rangee, categorie, saisie) => {
+              /* CRITIQUE-6 n° 3 (D-68, E34) : la catégorie vient de la rangée d'où l'on part (`CATEGORIE_DE_RANGEE` du calendrier) ; un achat
+                 de matières est « Brassage » (rangé dans Achats), jamais « Charges fixes » (Papiers). PlanSheet la pose dans la prévision neuve. */
+              setPrevoirDepense({ date: lundi, ...(categorie ? { categorie } : {}), ...(saisie ? { saisie } : {}) });
+            }}
+            periode={globalTimeFilter}
+            onPeriode={(p) => setGlobalTimeFilter(p)}
+            onOuvrirBudget={(batchId) => setBudgetBrassinId(batchId)}
+            onOpenPiece={(id) => { memoriserDefilement(); setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now(), retour: 'calendrier' }); }}
+            onOpenAgenda={() => { poserRetour('calendrier'); navigateToCreativeLab({ section: 'event', at: Date.now() }); }}
+            onOpenCarnet={(id) => { poserRetour('calendrier'); ouvrirCarnet(id); }}
+          />
+        </>)}
+
+        {activeTab === 'production' && (
+          <ProductionTab
+            visible={view.view === 'tabs'}
+            batches={batches}
+            recipes={recipes}
+            brewhouses={config.brewhouses}
+            activeBrewhouseId={config.activeBrewhouseId}
+            globalTimeFilter={globalTimeFilter}
+            onChangeGlobalTimeFilter={(p) => setGlobalTimeFilter(p)}
+            targetSubTab={productionSubTab}
+            onOpenCreateBatch={() => openWizard()}
+            onOpenRecipe={openRecipe}
+            onEditRecipe={(recipe) => openWizard({ recipe })}
+            onDeleteRecipe={supprimerRecette}
+            onRebrewRecipe={(recipeId) => { setBrewRecipeId(recipeId); setQuickAction('brew-batch'); }}
+            onOpenBrewDay={openBrewDay}
+            onSubTabChange={handleProductionSubTabChange}
+            createRequest={createRequest}
+            openBatchRequest={batchOpenRequest}
+            onOpenBatchRequestHandled={() => setBatchOpenRequest(null)}
+            onRetourEcran={() => { if ((window.history.state as Record<string, unknown> | null)?.['laffinee-retour']) window.history.back(); else setActiveTab('calendrier'); }}
+            batchCree={batchCree}
+            onBatchCreeHandled={() => setBatchCree(null)}
+            openLabSectionRequest={labSectionRequest}
+            onOpenLabSectionRequestHandled={() => setLabSectionRequest(null)}
+            onDraftRecipe={(seed) => openWizard(seed)}
+            onVoirMateriel={voirMateriel}
+            onCreateRequestHandled={() => setCreateRequest(null)}
+            onSuccessMessage={showToast}
+          />
+        )}
+
+        {activeTab === 'stocks' && (
+          <StocksTab
+            key={navNonce}
+            stocks={stocks}
+            batches={batches}
+            clients={clients}
+            onOpenTransaction={(id) => { setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }}
+            onOpenBatch={(id) => { setProductionSubTab('batches'); setBatchOpenRequest({ id, at: Date.now() }); setActiveTab('production'); }}
+            onOpenEquipmentProjects={() => { StorageService.setUiState('finances_workspace', 'projects'); setFinanceOpenRequest(null); setActiveTab('finances'); }}
+            onSubTabChange={(sub) => setSubTabOf('stocks', sub as AnySubTab)}
+            openItemRequest={stockOpenRequest}
+            onOpenItemRequestHandled={() => setStockOpenRequest(null)}
+            openCarnetRequest={carnetOpenRequest}
+            onOpenCarnetRequestHandled={() => setCarnetOpenRequest(null)}
+            createRequest={createRequest}
+            onSuccessMessage={showToast}
+          />
+        )}
+
+        {activeTab === 'clients' && (
+          <ClientsTab
+            key={navNonce}
+            clients={clients}
+            batches={batches}
+            tarifs={tarifs}
+            config={config}
+            onSubTabChange={(sub) => setSubTabOf('clients', sub as AnySubTab)}
+            createRequest={createRequest}
+            onSuccessMessage={showToast}
+          />
+        )}
+        </LazySurface>
+        </div>
+      </main>
+      <BandeauEffets />
+
+      {/* Bottom Navigation Bar, et la case réservée au bouton d'action à sa droite :
+          sur les onglets, le bouton ne flotte pas au-dessus du contenu défilant. */}
+      <div className="app-bottom-dock">
+        <BottomNav
+          // Fournisseurs s'ouvre depuis Plus, sous Finances (maquette fournisseur/v1) : c'est l'onglet marqué, pas celui d'où l'on venait.
+          activeTab={fournisseursOuvert ? 'finances' : activeTab}
+          onChangeTab={(tab) => {
+            // Le sous-onglet de chaque onglet est gardé (BX-4) : rien à vider.
+            setFournisseursOuvert(false);
+            if (tab === 'calendrier') setCalendrierSection(undefined); // la barre du bas ouvre toujours le calendrier général
+            setActiveTab(tab);
+          }}
+          criticalStockCount={criticalStockCount}
+          horsConnexion={horsConnexion}
+        />
+        {/* b1s-a (15.11) : plus de case pour le + dans la barre, il flotte (FloatingActions). */}
+      </div>
+
+      {/* Le geste d'action : présent sur les onglets ET sur les pages plein écran,
+          posé sur la case que la barre ou la page lui réserve. */}
+      {/* Une couche d'outil houblons v4 a son propre dock (Défi, Égaler, Valeurs…) : le lanceur flottant s'efface tant qu'elle
+          est ouverte (le « + » rond couvrait la colonne de Galaxy et « Placer »), et revient à sa fermeture. L'atelier V5.5
+          (hopV55) et le wizard (rangée endActions) gardent le lanceur. */}
+      {!layerRoutes.some(l => l.view !== 'hopV55') && <FloatingActions
+        launcherRef={actionLauncherRef}
+        // `quickAction` ne crée rien de propre à l'écran : il rouvrirait le
+        // sommaire des saisies que le menu liste déjà en clair.
+        action={view.view === 'tabs' && !fournisseursOuvert && fabAction.intent !== 'quickAction' ? fabAction : null}
+        onAction={runFabAction}
+        menu={view.view === 'tabs' ? (fournisseursOuvert ? plusMenuPage({}, null) : plusMenu) : undefined}
+        onPlus={runPlus}
+        horsConnexion={horsConnexion}
+        companionLabel={companionLabel}
+        anchor={view.view === 'tabs' ? 'nav' : 'page'}
+        onInvoice={() => setQuickAction('scan', actionLauncherRef.current)}
+        onSale={() => setQuickAction('quick-sale', actionLauncherRef.current)}
+        onRecipe={() => openWizard()}
+        onBrew={() => setQuickAction('brew-batch', actionLauncherRef.current)}
+      />}
+
+      {/* Quick Action Modal (Scanner IA, Matching Stock interactif, Brassin, Vente) */}
+      {prevoirDepense && <React.Suspense fallback={null}><PlanSheet date={prevoirDepense.date} {...(prevoirDepense.categorie ? { categorie: prevoirDepense.categorie } : {})} {...(prevoirDepense.saisie ? { saisie: prevoirDepense.saisie } : {})} onClose={() => setPrevoirDepense(null)} /></React.Suspense>}
+      {budgetBrassinId && batches.some(b => b.id === budgetBrassinId) && <React.Suspense fallback={null}><BrewBudgetDialog batch={batches.find(b => b.id === budgetBrassinId)} onClose={() => setBudgetBrassinId(null)} /></React.Suspense>}
+      <ModalOpenerContext.Provider value={quickActionOpener.current}><DeferredSurface active={quickAction !== null} fallback={<Sheet open={quickAction !== null} title="Chargement…" onClose={() => setQuickAction(null)}><p role="status">Ouverture…</p></Sheet>}><QuickActionModal
+        isOpen={quickAction !== null}
+        initialScreen={quickAction ?? 'menu'}
+        onClose={() => { setQuickAction(null); setBrewRecipeId(undefined); setBrewSemaine(undefined); }}
+        initialRecipeId={brewRecipeId}
+        initialBrewWeek={brewSemaine}
+        onBatchCreated={batch => {
+          // c2a « après » : le brassin créé arrive en tête de la liste des brassins, avec ses effets et « Défaire » (plus de saut au jour de brassage).
+          setProductionSubTab('batches');
+          setActiveTab('production');
+          if (view.view !== 'tabs') route.close();
+          setBatchCree({ id: batch.id, at: Date.now() });
+        }}
+        onOpenBatch={batch => { setProductionSubTab('batches'); setActiveTab('production'); setBatchOpenRequest({ id: batch.id, at: Date.now() }); }}
+        onOpenExpense={id => { setQuickAction(null); setActiveTab('finances'); setFinanceOpenRequest({ id, at: Date.now() }); }}
+        recipes={recipes}
+        geminiApiKey={config.geminiApiKey}
+        onSuccessMessage={showToast}
+        onOpenCreateBatch={() => openWizard()}
+      /></DeferredSurface></ModalOpenerContext.Provider>
+
+      {/* Settings Modal */}
+      <DeferredSurface active={isSettingsOpen} fallback={<Sheet open={isSettingsOpen} title="Chargement…" onClose={() => setIsSettingsOpen(false)}><p role="status">Ouverture…</p></Sheet>}><SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => { setIsSettingsOpen(false); setSettingsOuvertSur(undefined); }}
+        ouvertSur={settingsOuvertSur}
+        config={config}
+        onConfigUpdated={(newCfg) => setConfig(newCfg)}
+        onOpenAuditLogs={() => setIsAuditLogsOpen(true)}
+      /></DeferredSurface>
+
+      {/* Audit Logbook Modal */}
+      <DeferredSurface active={isAuditLogsOpen} fallback={<Sheet open={isAuditLogsOpen} title="Chargement…" onClose={() => setIsAuditLogsOpen(false)}><p role="status">Ouverture…</p></Sheet>}><AuditLogModal
+        isOpen={isAuditLogsOpen}
+        onClose={() => setIsAuditLogsOpen(false)}
+        logs={auditLogs}
+      /></DeferredSurface>
+
+      {/* Cloud & AI Config Modal (Google Drive & Gemini API) */}
+      <DeferredSurface active={isCloudConfigOpen} fallback={<Sheet open={isCloudConfigOpen} title="Chargement…" onClose={() => setIsCloudConfigOpen(false)}><p role="status">Ouverture…</p></Sheet>}><CloudConfigModal
+        isOpen={isCloudConfigOpen}
+        onClose={() => setIsCloudConfigOpen(false)}
+        onSaved={() => showToast('Configuration Cloud & IA mise à jour !')}
+      /></DeferredSurface>
+
+      {/* Recherche universelle — ⌘K / Ctrl+K depuis n'importe où. */}
+      <CommandPalette
+        open={isPaletteOpen}
+        onOpenChange={setIsPaletteOpen}
+        groups={commandGroups}
+        menu={view.view === 'tabs' ? (fournisseursOuvert ? plusMenuPage({}, null) : plusMenu) : undefined}
+        onGeste={runPlus}
+        onCompagnon={() => window.dispatchEvent(new Event('brewer-companion-open'))}
+        onAllerA={allerA}
+      />
+      {/* Le geste « Corriger » d'une ligne de la recherche : la même feuille de correction d'inventaire que la fiche de l'article. */}
+      <DeferredSurface active={correctingItem !== null} fallback={<Sheet open={correctingItem !== null} title="Chargement…" onClose={() => setCorrectingItem(null)}><p role="status">Ouverture…</p></Sheet>}><InventoryCorrectionSheet
+        open={correctingItem !== null}
+        item={correctingItem}
+        onClose={() => setCorrectingItem(null)}
+        onConfirm={(qty, reason, note) => {
+          const item = correctingItem;
+          if (!item) return;
+          const type = stocks.cleaning.some(c => c.ref === item.ref) ? 'cleaning' : 'rawMaterials';
+          const result = StorageService.adjustInventory(type, item.ref, qty, reason, note);
+          showToast(!result ? `${item.name} : correction refusée, le stock n’a pas changé.`
+            : result.delta === 0 ? `${item.name} : inventaire confirmé.`
+            : `${item.name} : ${result.delta > 0 ? '+' : ''}${Units.format(result.delta, item.unit)} — ${INVENTORY_REASONS[reason]}.`);
+          setCorrectingItem(null);
+        }}
+      /></DeferredSurface>
+
+      {/* --- Pages plein écran ------------------------------------------
+          Elles se ferment au geste retour du téléphone, contrairement aux
+          modales qu'elles remplacent. */}
+
+      <HopV55SemanticAdviceCapabilityContext.Provider value={semanticAdviceCapability}>
+      {/* La base reste à la même place de l'arbre, couverte ou non : React garde son instance. Couverte, elle est
+          cachée (sans perdre sa mise en page ni son défilement) ; PageShell rend inerte la branche sous la couche. */}
+      <div data-route-base={base.view} aria-hidden={baseCovered || undefined} style={{ display: 'contents' }}>
+      {baseContent}
+      </div>
+
+      {/* Les couches, du bas vers le haut ; chacune garde sa place (clé = son niveau) et son chargement à part,
+          pour qu'une couche qui se charge ne masque pas celles du dessous. */}
+      {layerRoutes.map((layer, i) => {
+        const covered = i < layerRoutes.length - 1;
+        return (
+          <div key={`${baseIndex + 1 + i}:${layer.view}`} data-route-layer={layer.view} aria-hidden={covered || undefined}
+            style={{ display: 'contents' }}>
+            <LazySurface resetKey={layer.view} fallback={<PageShell title="Chargement…" onClose={route.close}><p role="status">Ouverture de la page…</p></PageShell>}>
+              {layer.view === 'hopV55'
+                ? <HopV55Host key={`${currentUser.uid}:${layer.recipeId ?? layer.batchId ?? 'explore'}`} ownerKey={currentUser.uid}
+                    recipe={layer.recipeId ? recipes.find(recipe => recipe.id === layer.recipeId) : undefined}
+                    batch={layer.batchId ? batches.find(batch => batch.id === layer.batchId) : undefined}
+                    onClose={route.close} onOpenRecipe={openRecipe} writeError={writeError} onDismissWriteError={() => setWriteError(null)} />
+                : <HopToolLayer route={layer} level={i + 1} onClose={route.close} />}
+            </LazySurface>
+          </div>
+        );
+      })}
+      </HopV55SemanticAdviceCapabilityContext.Provider>
+    </div>
+  );
+};

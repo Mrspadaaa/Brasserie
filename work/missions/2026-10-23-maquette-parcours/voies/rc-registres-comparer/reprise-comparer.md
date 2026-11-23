@@ -1,0 +1,59 @@
+## Reprise
+
+- r6a-question : repris — le titre en question, « Cascade, Idaho 7 ou Galaxy pour ma stout ? », en tête de l'écran (D119)
+- r6a-contexte : repris — la ligne de contexte : 16D, 4 g/L chacun (r6n2), US-05, et le « ? » à sa droite ; le moment en sort, il est dans la bande des étapes (D107, D128)
+- r6a-simule : repris — la pastille « ~ simulé » au-dessus du radar
+- r6a-lentille : repris — « Au style / Absolu », au style par défaut
+- r6a-radar : repris — le radar r2 à 12 axes : zone de ta 16D, un trait par houblon, pictos aux axes, secteurs inconnus hachurés
+- r6a-ta-stout : repris — la colonne Ta stout (♣ ↓, ❀ ↑ : les flèches de ses rangées, 80 mots, D128) et son trait noir dans chaque barre
+- r6a-tetes : repris — les têtes de colonne : nom, α (lot ou plage, ≠), rôle, familles en pictos, verdict ~✓ ou ~⚠
+- r6a-rangees : repris — au premier écran comme r6a (D128, FAMILLES OK) : une rangée par famille, une barre l5b par houblon, au moment choisi dans la bande des étapes
+- r6a-ecarts : repris — Floral ↑ et Résineux ↓ : la flèche ; l'écart chiffré de la famille du critère dans la bande des étapes, juste au-dessus, à chaque moment ; sur la rangée Floral quand le critère est une autre famille (80 mots, D128)
+- r6a-inconnus : repris — les cases hachurées et la rangée « inconnus »
+- r6a-chimie : repris — « Chimie et vraies valeurs » à un toucher sous le tableau
+- r6a-osu : repris — « Panel OSU, Cascade » (panel, sur 15, g/L), à un toucher « Panel OSU » sous le tableau (D114)
+- y1b-face-a-ta-stout : repris — dans la bande des étapes (D128) : ★ au meilleur de chaque étape par le critère, le nombre de chacun ; la ligne de réponse à part n'est plus au premier écran (80 mots)
+- y1b-pastille-critere : repris — « Face à ta stout, par [floral ⌄] » (r6n2) en tête de la bande des étapes : floral, agrumes, tropicaux, moins résineux ; il choisit la famille chiffrée aux étapes, le ★, le mis en avant et le Défi ; « Pourquoi ce classement › » en bas de sa liste (D124, D128)
+- y1b-jauge-amertume : repris — dock « Défi », carte « Amertume tenue » : Nugget 60′ 46 g et son IBU calculé, « + ? » à cru hachuré, doses pour 10 IBU à 10′ (r6n2, D124)
+- y1b-dock-pouce : en pont — Dryhopper ; « Placer <retenu> › » en bas de l'écran, comme le « Doser … dans Dryhopper » de r6a (D128)
+- y1b-plan-d-avant : repris — le trait noir de ta stout dans chaque barre, son polygone au radar, la colonne Ta stout
+- y1b-bandes-style : repris — les rangées : zone de ta 16D pâle, orangé au-dessus, inconnu hachuré, trait de l'intervalle
+- y1b-ligne-contexte : en contexte — Stout 16D, 4 g/L chacun, US-05
+- y1b-defi : repris — dock « Défi 2/4 » (r6n2) : ta dégustation, score par houblon, plus floral, moins résineux, amertume tenue, dans ta 16D (D124)
+- y1b-tirage-preuve : repris — dock « Preuve » (r6n2) : le panel OSU, puis 20 bières tirées dans la bande du moteur, famille par famille, « 20 autres » (D124)
+- y1b-levure-pastilles : en contexte — la levure est fixée dans la ligne de contexte (US-05) ; elle se règle dans Levure
+- y1b-second-houblon-puis : en pont — Dryhopper ; « Placer » ouvre Dryhopper, où se règle la suite des ajouts
+- y3-panel-osu : repris — le panel OSU à un toucher sous le tableau (D114), sans molette, « pas de panel publié » pour les autres
+- y3-pour-egaler : repris — « Égaler » à un toucher : la dose de chaque autre houblon qui donne le floral du retenu, par le moteur
+- v1-vraies-valeurs : repris — « Chimie et vraies valeurs » : α, β, huile dans les colonnes des houblons, sourcés
+- v1-en-a-plus : repris — dans les vraies valeurs, la plus haute de chaque rangée prend la couleur de son houblon
+- v1-linalol-en-biere : repris — linalol mesuré en bière (H12, E03 à confirmer), « pas comparables entre eux »
+- w2-piste-commune : repris — dock « Défi » : une piste par objectif, un rond lettré par houblon sur la même règle, la visée en pointillé (r6n2, D124)
+- w2-cartes-verdict : repris — les têtes de colonne : verdict face à la 16D en signe, familles qui sortent
+- x3b-cuve-jour-apres-jour : repris — sa manière dans la bande des étapes : ton Nugget en pointillé, la barre qui monte à l'étape de l'ajout ; « dans la cuve » sous le tableau ; les jours de contact à Dryhopper
+- a2b-ce-que-la-levure-change : en contexte — la levure est fixée (US-05) dans la ligne de contexte
+- d1-tout-ouvert : repris — la chimie rangée par famille, une ligne par composé avec son picto, rien d'ouvert d'office
+- l5b-barres-voie : repris — les barres des rangées, face au trait de ta stout
+- l5b-pistes-objectif : repris — les rangées Floral ↑ et Résineux ↓ de ta demande, avec l'écart chiffré par houblon
+- l8-disposition : repris — tournée : familles communes en rangées, houblons en colonnes, la réponse en tête
+- l8b-verdicts-pictos-trait : repris — verdicts en signe dans les têtes, pictos au trait partout
+- l8b-legende-cachee : repris — le « ? » à droite du contexte, fermé au repos, à la même place que sur les autres écrans
+- l5f-carte-role-alpha : repris — les têtes de colonne : nom, α du lot ou des fiches (≠), rôle en mot, familles, stock en icône
+- m4-radar-degustation : repris — la colonne Ta stout : ta dégustation du 18.10 (trop ♣, plus ❀) et son trait noir
+- h4-radar-demande : repris — au radar, flèche verte vers l'extérieur sur Floral, flèche orangée au bout du résineux
+- p03-plages-sources : repris — vraies valeurs : α et β en enveloppe des sources (BM, HS), le trait de ton lot
+- p03-radar-superpose : repris — le radar r2, un polygone par houblon à sa couleur
+- p06-grille-familles : repris — les têtes : les familles de ses fiches, marquées grandes, citées petites
+- p02-radar-intervalle : repris — l'intervalle du retenu en trait fin sur chaque axe, coupé « // » au bord (D103)
+- s5-deux-objectifs : en pont — Suggérer ; dock « Défi » : les deux objectifs (Plus floral, Moins résineux : aucune voie houblon), « Toutes les voies pour tes deux objectifs : Suggérer » (r6n2, D124)
+- p4-plus-comparaison : repris — le « + » sous Ta stout : un 4ᵉ houblon de ton stock, simulé en direct
+- g1-fiche : en pont — fiche ; appui long sur un nom de houblon, survol long à l'ordinateur
+- fiche-citra-cryo : en pont — fiche ; la même fiche courte, à l'appui long sur le nom
+- d107-etapes : repris — la bande des étapes sur les rangées (D128) : chaque houblon à 60′, 10′ et dry hop, ensemble, au repos, au premier écran, calculés par le moteur ; chaque ligne est un toucher qui pose ce moment sur les rangées et le radar
+- d107-etat-au-moment : repris — toucher 60′, 10′ ou dry hop : le radar, les rangées et les verdicts ~ dans / ~ hors passent à ce moment, le moteur posant chaque houblon là (D128)
+- d107-reference : repris — ton Nugget (houblon de base de la recette) aux mêmes étapes, à la même dose, en gris dans la colonne de gauche
+- d128-selecteur-etapes : repris — le sélecteur segmenté du moment (60′, 10′, WP, actif, après) sous les têtes : il pose le moment sur le radar, les têtes et les rangées
+- d128bis-ses-mots : repris — « Ses mots » sous les rangées : tous les mots de chaque houblon, picto de famille ou losange hors des 12 familles, sans « +n », du plus fort au plus faible
+- flb5-lui-seul : repris — dans « Ses mots », en gras ce que ce houblon est seul à dire, en gris ce qu'un autre dit aussi
+- x3b-plans : repris — la feuille « Étapes » du dock : les plans des étapes de la comparaison, à un toucher
+- x3b-biotransfo : repris — la feuille « Biotransformation » du dock : ce que la levure change au dry hop, à un toucher

@@ -1,0 +1,88 @@
+{
+  "id": "ticket-sombre-pli",
+  "level": "très compliqué : de travers, plié, faible lumière",
+  "facture": {
+    "vendor": "Droguerie des Remparts",
+    "documentType": "receipt",
+    "paymentEvidence": [
+      "paid",
+      "unknown"
+    ],
+    "date": "21.09.2026",
+    "currency": "CHF",
+    "invoiceNumber": [
+      "88213",
+      "Ticket 88213",
+      ""
+    ],
+    "orderNumber": "",
+    "amountHT": 36.26,
+    "tvaRate": 0.081,
+    "tvaAmount": 2.94,
+    "amountTTC": 39.2,
+    "items": [
+      {
+        "name": "Acide peracetique 1 L",
+        "kind": [
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 12.4,
+        "amountTTC": 12.4
+      },
+      {
+        "name": "Soude caustique 1 kg",
+        "kind": [
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 8.9,
+        "amountTTC": 8.9
+      },
+      {
+        "name": "Gants nitrile (100)",
+        "kind": [
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 11.5,
+        "amountTTC": 11.5
+      },
+      {
+        "name": "Javel 2 L",
+        "kind": [
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 2,
+        "unit": "",
+        "price": 3.2,
+        "amountTTC": 6.4
+      }
+    ]
+  },
+  "triage": {
+    "kind": [
+      "receipt"
+    ],
+    "documentCount": 1,
+    "readable": true,
+    "currencies": [
+      "CHF"
+    ],
+    "route": "scan"
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision/ticket-sombre-pli.jpg",
+  "mimeType": "image/jpeg",
+  "note": "FIXTURE DE TEST – document fictif"
+}

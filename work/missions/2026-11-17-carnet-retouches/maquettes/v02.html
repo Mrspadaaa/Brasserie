@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Carnet · v02 · axe A — les articles classés par ce qui compte (17.11, passe de correction)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!--
+  v02 · axe A (CARNET-CARTE-MUETTE). Base : ra-p5f/proto.html (« J'aime bien mais pas mal de retouche »), clair seul.
+  Parti pris inchangé : la carte d'article et l'article ouvert ont pour colonne vertébrale le classement sur ce qui
+  compte (critère proposé par l'IA) ; la carte touchée s'ouvre en place, à son rang.
+  Passe de correction (17.11) : six écrans de 390 côte à côte — 1 liste au repos (5 rangs au premier écran, côte à côte
+  sous le pli), 2 rang 1 ouvert en place, 3 Choisir, 4 Choisi, 5 Pourquoi ce choix, 6 Calendrier › À venir (preuve de l'envoi).
+  Chaque valeur dit sa source (page du vendeur, estimé IA en fourchette, ?) ; un « ? » passe avant le rang.
+  Tailles : 14, 16 et 18 px. Rayons : 10, 16, 24. Vert = le meilleur ; vert de zone Stocks sur l'onglet seul.
+  Statique : ni script ni gestionnaire. Données d'exemple (carnet Embouteillage au 17 nov.).
+-->
+<style>
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--line2:#bfbfbf;--mut:#666;--txt:#333;--ink:#111;--onact:#fff;--stk:#4c6b2a;--ok:#3f6b2e;--straw:#F2C14E;--bdg:#8a5212}
+:root{--okbg:color-mix(in srgb,var(--ok) 12%,var(--bg));--botOn:color-mix(in srgb,var(--stk) 12%,var(--s1))}
+*{box-sizing:border-box}
+html,body{margin:0;background:#e4e4e4;color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+a{color:inherit;text-decoration:none}
+.da-ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.v2-m{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.v2-ex{display:inline-block;border:1px solid var(--line2);color:var(--mut);border-radius:10px;font-size:14px;line-height:18px;padding:0 6px;font-weight:600;vertical-align:2px;white-space:nowrap}
+
+/* planche : six écrans de 390 côte à côte ; chaque écran défile en entier, le pli de 844 px est marqué */
+.v2-pl{display:flex;gap:28px;align-items:flex-start;width:max-content}
+.v2-col{width:390px;flex:none}
+@media (max-width:700px){.v2-pl{flex-direction:column;width:390px;gap:0}}
+.v2-tel{position:relative;width:390px;min-height:844px;display:flex;flex-direction:column;background:var(--bg)}
+.v2-tel>main{flex:1}
+.v2-pli{position:absolute;left:0;right:0;top:844px;border-top:2px dashed #9a9a9a;z-index:5;pointer-events:none}
+.v2-pli span{position:absolute;right:6px;top:-22px;font-size:14px;color:var(--mut);background:var(--bg);padding:0 4px}
+.v2-cap{margin:12px 14px 40px;font-size:14px;color:var(--mut)}
+.v2-cap b{color:var(--ink)}
+
+/* coque de l'app : barre « L'Affinée », en-tête compact, champ en bas, + carré, onglets */
+.v2-top{position:sticky;top:0;z-index:20;background:var(--bg)}
+.v2-bar{display:flex;align-items:center;gap:10px;height:52px;padding:0 14px;border-bottom:1px solid var(--line)}
+.v2-logo{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:var(--ink);color:var(--straw)}
+.v2-logo .da-ico{width:18px;height:18px}
+.v2-nom{font-size:18px;font-weight:700;flex:1}
+.v2-ic{display:grid;place-items:center;width:44px;height:44px;color:var(--txt)}
+.v2-hd{display:flex;align-items:center;gap:4px;min-height:48px;padding:0 14px 0 4px;border-bottom:1px solid var(--line)}
+.v2-hd a.b{display:grid;place-items:center;width:44px;height:44px;flex:none}
+.v2-hd h1{font-size:18px;font-weight:700;margin:0;line-height:1.2;flex:1;min-width:0}
+.v2-hd h1 small{display:block;font-size:14px;font-weight:400;color:var(--mut)}
+.v2-foot{position:sticky;bottom:0;z-index:30;background:var(--bg)}
+.v2-dock{display:flex;align-items:center;gap:10px;padding:8px 12px;border-top:1px solid var(--line);box-shadow:0 -6px 16px rgba(0,0,0,.06)}
+.v2-comp{flex:1;display:flex;align-items:center;gap:2px;min-height:48px;background:var(--s1);border:1px solid var(--line2);border-radius:10px;padding:0 2px 0 12px;font-size:16px;color:var(--mut)}
+.v2-comp span.t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v2-cb{display:grid;place-items:center;width:40px;height:44px;color:var(--mut)}
+.v2-fab{display:grid;place-items:center;width:52px;height:52px;flex:none;border-radius:16px;background:var(--ink);color:var(--onact);box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.v2-fab .da-ico{width:26px;height:26px;stroke-width:2.4}
+.v2-tabs{height:56px;display:flex;background:var(--s1);border-top:1px solid var(--line)}
+.v2-tabs a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;position:relative;min-width:0;color:var(--txt)}
+.v2-tabs a.on{background:var(--botOn);font-weight:600;box-shadow:inset 0 3px 0 var(--stk);color:var(--stk)}
+.v2-tabs a.onc{background:var(--s2);font-weight:600;box-shadow:inset 0 3px 0 var(--ink);color:var(--ink)}
+.v2-tabs .bdg{position:absolute;top:2px;left:calc(50% + 4px);background:var(--bdg);color:var(--onact);font-size:14px;font-weight:600;border-radius:10px;padding:0 5px;line-height:18px}
+
+/* ce qui compte, et le tri */
+.v2-crit{margin:8px 14px 0;padding:8px 10px;border-radius:16px;background:var(--s1)}
+.v2-cl{display:flex;align-items:center;gap:8px;font-size:16px;line-height:1.3}
+.v2-cl b{font-weight:700}
+.v2-cs{font-size:14px;color:var(--mut);margin:0 0 0 28px}
+.v2-seg{display:flex;gap:2px;margin-top:6px;padding:3px;border-radius:10px;background:var(--bg);border:1px solid var(--line)}
+.v2-seg a{flex:1;display:flex;align-items:center;justify-content:center;min-height:36px;border-radius:8px;font-size:14px;font-weight:600;color:var(--txt)}
+.v2-seg a.on{background:var(--ink);color:#fff}
+
+/* réglette commune : 0 à 300 ppb, moins = mieux ; 5 repères gris, le sien en couleur, l'estimé en fourchette */
+.v2-list{padding:0 14px}
+.v2-row{display:grid;grid-template-columns:56px 1fr 48px;gap:0 10px;align-items:center}
+.v2-leg{padding:10px 0 2px;font-size:14px;color:var(--mut)}
+.v2-leg .s{display:flex;justify-content:space-between}
+.v2-tr{position:relative;display:block;height:16px}
+.v2-tr:before{content:"";position:absolute;left:0;right:0;top:7px;height:2px;background:var(--s2)}
+.v2-tr i{position:absolute;top:3px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--line2)}
+.v2-tr u{position:absolute;top:5px;height:6px;border-radius:3px;background:var(--line2);opacity:.75}
+.v2-tr i.me{width:14px;height:14px;top:1px;margin-left:-7px;background:var(--ink);box-shadow:0 0 0 2px var(--bg)}
+.v2-tr i.me.best{background:var(--ok)}
+.v2-tr u.me{background:var(--ink);opacity:1;top:4px;height:8px;box-shadow:0 0 0 2px var(--bg)}
+.v2-grp{display:flex;justify-content:space-between;gap:8px;font-size:14px;font-weight:700;margin:8px 0 4px}
+.v2-grp span{font-weight:400;color:var(--mut)}
+
+/* carte repliée */
+.v2-art{display:grid;grid-template-columns:56px 1fr 48px;gap:0 10px;align-items:start;border:1px solid var(--line);border-radius:16px;background:var(--bg);padding:6px 0 6px 8px;margin:0 0 6px}
+.v2-pw{position:relative;margin-left:-0px}
+.v2-ph{display:block;width:56px;height:52px;border-radius:10px}
+.v2-rk{position:absolute;left:-4px;top:-4px;display:grid;place-items:center;min-width:24px;height:24px;padding:0 4px;border-radius:12px;background:var(--bg);border:1px solid var(--line2);font-weight:700;font-size:14px;line-height:1}
+.v2-rk.best{background:var(--ok);border-color:var(--ok);color:#fff}
+.v2-rk.est{border-style:dashed;color:var(--mut)}
+.v2-i{min-width:0;display:flex;flex-direction:column;gap:0}
+.v2-nm{font-size:16px;font-weight:700;line-height:1.2}
+.v2-v{display:flex;align-items:baseline;gap:6px;font-size:14px;color:var(--mut)}
+.v2-v .v2-m{font-size:16px;font-weight:600;color:var(--ink)}
+.v2-v .v2-m.best{color:var(--ok)}
+.v2-v .q{font-size:16px;font-weight:700;color:var(--ink)}
+.v2-p{font-size:14px;color:var(--mut);line-height:1.3}
+.v2-p .v2-m{color:var(--ink);font-weight:600}
+.v2-w{display:flex;flex-direction:column;align-items:center;gap:0;font-size:14px;color:var(--mut);padding-top:2px;line-height:1.2}
+.v2-w.on{color:var(--ink);font-weight:600}
+
+/* côte à côte */
+.v2-tab{width:100%;border-collapse:collapse;font-size:14px;margin:4px 0 12px}
+.v2-tab th{font-weight:600;color:var(--mut);text-align:right;padding:4px 0 4px 6px;border-bottom:1px solid var(--line2);white-space:nowrap}
+.v2-tab th:first-child,.v2-tab td:first-child{text-align:left;padding-left:0}
+.v2-tab td{text-align:right;padding:8px 0 8px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+.v2-tab td.n{white-space:normal;font-weight:600}
+.v2-tab td.best{color:var(--ok);font-weight:700}
+.v2-tab td.q{color:var(--mut)}
+
+/* écarté, autres carnets */
+.v2-out{display:flex;gap:10px;align-items:flex-start;border:1px dashed var(--line2);border-radius:16px;padding:10px 12px;margin:4px 0 14px;font-size:14px}
+.v2-out .da-ico{color:var(--mut)}
+.v2-h{font-size:14px;font-weight:700;margin:10px 0 6px}
+.v2-oc{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.v2-oc a{display:inline-flex;align-items:center;gap:2px;min-height:44px;padding:0 8px 0 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;font-weight:600}
+.v2-oc .da-ico{width:16px;height:16px;color:var(--mut)}
+
+/* carte ouverte en place, réduite à l'essentiel */
+.v2-open{border:1.5px solid var(--ink);border-radius:16px;background:var(--bg);margin:0 0 8px;padding:0 0 12px}
+.v2-oh{display:flex;align-items:center;gap:8px;padding:4px 4px 0 12px}
+.v2-oh .k{flex:1;font-size:14px;font-weight:700;color:var(--ok)}
+.v2-fold{display:inline-flex;align-items:center;gap:2px;min-height:44px;padding:0 8px;font-size:14px;font-weight:600;color:var(--mut)}
+.v2-fold .da-ico{transform:rotate(90deg);width:18px;height:18px}
+.v2-oi{display:grid;grid-template-columns:120px 1fr;gap:10px;padding:0 12px}
+.v2-oi svg{display:block;width:120px;height:106px;border-radius:10px}
+.v2-on{font-size:18px;font-weight:700;line-height:1.2;margin:0 0 4px}
+.v2-src{font-size:14px;color:var(--mut)}
+.v2-hero{display:flex;align-items:baseline;gap:8px;margin-top:4px}
+.v2-hero .v2-m{font-size:18px;font-weight:600;color:var(--ok)}
+.v2-hero b{font-size:14px;color:var(--ok)}
+.v2-sec{margin:10px 12px 0;padding-top:8px;border-top:1px solid var(--line)}
+.v2-sh{display:flex;justify-content:space-between;gap:8px;font-size:14px;font-weight:700;margin:0 0 2px}
+.v2-sh span{font-weight:400;color:var(--mut)}
+.v2-of{display:grid;grid-template-columns:86px 1fr auto;gap:0 8px;align-items:center;min-height:48px;border-bottom:1px solid var(--line);font-size:14px}
+.v2-of:last-of-type{border-bottom:0}
+.v2-of .p{font-size:16px;font-weight:600;text-align:right}
+.v2-of .p.best{color:var(--ok)}
+.v2-of em{display:block;font-style:normal;color:var(--mut)}
+.v2-lk{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 4px 0 8px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.v2-lk .da-ico{width:16px;height:16px}
+.v2-sw{display:flex;align-items:center;gap:10px;min-height:48px;margin-top:6px;padding:4px 10px;border-radius:10px;background:var(--s1);font-size:14px}
+.v2-sw .t{flex:1;line-height:1.3}
+.v2-sw .t b{display:block}
+.v2-sw .t span{color:var(--mut)}
+.v2-tg{display:inline-flex;align-items:center;gap:6px;font-weight:700}
+.v2-tg i{width:38px;height:22px;border-radius:11px;background:var(--ink);position:relative;flex:none}
+.v2-tg i:after{content:"";position:absolute;top:3px;left:19px;width:16px;height:16px;border-radius:50%;background:#fff}
+.v2-kv{display:grid;grid-template-columns:1fr auto 116px;font-size:14px}
+.v2-kv>*{display:flex;align-items:center;min-height:34px;border-bottom:1px solid var(--line)}
+.v2-kv .v{justify-content:flex-end;font-weight:600;padding-right:10px;white-space:nowrap}
+.v2-kv .r{justify-content:flex-end;color:var(--mut);white-space:nowrap}
+.v2-kv .r.best{color:var(--ok);font-weight:700}
+.v2-go{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;margin:12px 12px 0;border-radius:10px;background:var(--ink);color:var(--onact);font-weight:700;font-size:16px}
+.v2-nx{font-size:14px;color:var(--mut);margin:6px 12px 0;text-align:center}
+
+/* Choisir, Choisi, Pourquoi, À venir */
+.v2-pad{padding:0 14px}
+.v2-obj{display:grid;grid-template-columns:64px 1fr;gap:10px;align-items:center;padding:12px 0}
+.v2-obj svg{display:block;width:64px;height:56px;border-radius:10px}
+.v2-q{font-size:16px;font-weight:700;margin:12px 0 4px}
+.v2-q span{font-size:14px;font-weight:400;color:var(--mut)}
+.v2-rad{display:grid;grid-template-columns:24px 1fr auto;gap:0 10px;align-items:center;min-height:56px;padding:4px 0 4px 10px;border:1px solid var(--line);border-radius:10px;margin-bottom:6px;font-size:14px}
+.v2-rad.on{border:1.5px solid var(--ink)}
+.v2-rad .o{width:20px;height:20px;border-radius:50%;border:2px solid var(--line2)}
+.v2-rad.on .o{border:6px solid var(--ink)}
+.v2-rad em{display:block;font-style:normal;color:var(--mut)}
+.v2-rad .v2-m{font-size:16px;font-weight:600}
+.v2-fld{border:1px solid var(--line2);border-radius:10px;background:var(--s1);padding:10px 12px;font-size:16px;line-height:1.4}
+.v2-hint{font-size:14px;color:var(--mut);margin:4px 0 0}
+.v2-av{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:16px;padding:10px 12px;font-size:14px;background:var(--s1)}
+.v2-av .da-ico{margin-top:2px}
+.v2-av b{font-size:16px;display:block}
+.v2-av ul{margin:2px 0 0;padding:0;list-style:none;color:var(--txt)}
+.v2-act{position:sticky;bottom:56px;background:var(--bg);padding:10px 14px;border-top:1px solid var(--line)}
+.v2-act .v2-go{margin:0}
+.v2-ban{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center;border:1.5px solid var(--ink);border-radius:16px;padding:10px;margin:12px 0 8px}
+.v2-ban svg{display:block;width:96px;height:84px;border-radius:10px}
+.v2-ban .k{font-size:14px;font-weight:700;color:var(--ok)}
+.v2-ban .n{font-size:16px;font-weight:700;line-height:1.2}
+.v2-ban .p{font-size:14px;color:var(--mut);margin-top:2px}
+.v2-ban .p .v2-m{font-size:16px;font-weight:600;color:var(--ink)}
+.v2-li{display:flex;align-items:center;gap:10px;min-height:56px;border-bottom:1px solid var(--line);font-size:14px}
+.v2-li .t{flex:1;min-width:0;line-height:1.3}
+.v2-li .t b{display:block;font-size:16px}
+.v2-li .t span{color:var(--mut)}
+.v2-li .da-ico.c{color:var(--mut)}
+.v2-dim{position:absolute;inset:0;background:rgba(0,0,0,.38);z-index:25}
+.v2-sheet{position:absolute;left:0;right:0;bottom:56px;z-index:26;background:var(--bg);border-radius:24px 24px 0 0;padding:6px 14px 16px;box-shadow:0 -8px 24px rgba(0,0,0,.18)}
+.v2-grab{width:40px;height:4px;border-radius:2px;background:var(--line2);margin:4px auto 6px}
+.v2-shh{display:flex;align-items:center;gap:8px}
+.v2-shh h2{flex:1;font-size:18px;font-weight:700;margin:0;line-height:1.2}
+.v2-x{display:grid;place-items:center;width:44px;height:44px;margin-right:-8px}
+.v2-rs{margin:8px 0 0;padding:0;list-style:none}
+.v2-rs li{display:grid;grid-template-columns:20px 1fr;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.v2-rs li b{font-size:16px}
+.v2-rs li span{display:block;color:var(--mut)}
+.v2-rs .da-ico{color:var(--ok);width:18px;height:18px;margin-top:2px}
+.v2-segp{display:flex;gap:2px;margin:10px 14px 0;padding:3px;border-radius:10px;background:var(--s1);border:1px solid var(--line)}
+.v2-segp a{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;border-radius:8px;font-size:14px;font-weight:600;color:var(--txt)}
+.v2-segp a.on{background:var(--ink);color:#fff}
+.v2-segp .v2-m{font-weight:500}
+.v2-new{border:1.5px solid var(--ink);border-radius:16px;padding:10px;margin:6px 0 8px}
+.v2-new .h{display:flex;justify-content:space-between;font-size:14px;color:var(--mut);margin-bottom:6px}
+.v2-new .h b{color:var(--ok)}
+.v2-new .r{display:grid;grid-template-columns:56px 1fr;gap:10px;align-items:center}
+.v2-new svg{display:block;width:56px;height:50px;border-radius:10px}
+.v2-new .t b{display:block;font-size:16px;line-height:1.2}
+.v2-new .t span{color:var(--mut);font-size:14px}
+.v2-new .a{display:flex;gap:8px;margin-top:8px}
+.v2-new .a a{flex:1;display:flex;align-items:center;justify-content:center;min-height:44px;border:1px solid var(--line2);border-radius:10px;font-size:14px;font-weight:600}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8a2.5 2.5 0 0 1 1-4.5c.8-1.5 3-2 4-1 1-1 3.5-1 4.5.5A2.5 2.5 0 0 1 17 8z"/></symbol>
+<symbol id="i-boxes" viewBox="0 0 24 24"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+<symbol id="i-stamp" viewBox="0 0 24 24"><path d="M9 3h6l-1 7h4v4H6v-4h4z"/><path d="M5 20h14"/></symbol>
+<symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+<!-- photos d'aperçu (dessins d'exemple ; l'app montre l'image de la page collée) : une silhouette par machine -->
+<symbol id="p-pre" viewBox="0 0 100 88"><rect width="100" height="88" fill="#dfe6ec"/><rect x="13" y="9" width="4" height="66" fill="#8d99a3"/><rect x="83" y="9" width="4" height="66" fill="#8d99a3"/><rect x="15" y="13" width="70" height="21" rx="3" fill="#bcc6ce" stroke="#6d7880" stroke-width="1.5"/><circle cx="25" cy="23.5" r="6" fill="#fff" stroke="#55616b" stroke-width="1.5"/><path d="M25 23.5l3.5-3" stroke="#a8291f" stroke-width="1.5"/><rect x="67" y="17" width="13" height="13" rx="2" fill="#3f6b2e"/><path d="M73.5 30v6h-8" stroke="#3f6b2e" stroke-width="2" fill="none"/><g fill="#55616b"><rect x="33" y="34" width="3" height="11"/><rect x="45" y="34" width="3" height="11"/><rect x="57" y="34" width="3" height="11"/><rect x="69" y="34" width="3" height="11"/></g><g fill="#6a4a2a"><rect x="30" y="50" width="9" height="22" rx="2"/><rect x="33" y="44" width="3" height="7"/><rect x="42" y="50" width="9" height="22" rx="2"/><rect x="45" y="44" width="3" height="7"/><rect x="54" y="50" width="9" height="22" rx="2"/><rect x="57" y="44" width="3" height="7"/><rect x="66" y="50" width="9" height="22" rx="2"/><rect x="69" y="44" width="3" height="7"/></g><rect x="9" y="72" width="82" height="5" rx="2" fill="#55616b"/><path d="M14 77v7M86 77v7" stroke="#55616b" stroke-width="3"/></symbol>
+<symbol id="p-mono" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e3e7ea"/><rect x="7" y="8" width="86" height="60" rx="4" fill="#c3ccd3" stroke="#6d7880" stroke-width="1.5"/><rect x="13" y="14" width="74" height="38" rx="2" fill="#eef4f8" stroke="#6d7880" stroke-width="1.5"/><g fill="#55616b"><rect x="19" y="14" width="2.5" height="8"/><rect x="31" y="14" width="2.5" height="8"/><rect x="43" y="14" width="2.5" height="8"/><rect x="55" y="14" width="2.5" height="8"/><rect x="67" y="14" width="2.5" height="8"/><rect x="79" y="14" width="2.5" height="8"/></g><g fill="#6a4a2a"><rect x="16.5" y="30" width="7.5" height="18" rx="2"/><rect x="28.5" y="30" width="7.5" height="18" rx="2"/><rect x="40.5" y="30" width="7.5" height="18" rx="2"/><rect x="52.5" y="30" width="7.5" height="18" rx="2"/><rect x="64.5" y="30" width="7.5" height="18" rx="2"/><rect x="76.5" y="30" width="7.5" height="18" rx="2"/></g><rect x="62" y="56" width="22" height="7" rx="1.5" fill="#2f5f7d"/><rect x="2" y="70" width="96" height="6" rx="2" fill="#55616b"/><path d="M12 76v8M50 76v8M88 76v8" stroke="#55616b" stroke-width="3"/></symbol>
+<symbol id="p-semi" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e2e8ec"/><ellipse cx="50" cy="12" rx="22" ry="6" fill="#bcc6ce" stroke="#6d7880" stroke-width="1.5"/><rect x="28" y="12" width="44" height="10" fill="#bcc6ce" stroke="#6d7880" stroke-width="1.5"/><rect x="20" y="22" width="60" height="12" rx="2" fill="#a9b4bd" stroke="#6d7880" stroke-width="1.5"/><g fill="#55616b"><rect x="28" y="34" width="3" height="10"/><rect x="41" y="34" width="3" height="10"/><rect x="54" y="34" width="3" height="10"/><rect x="67" y="34" width="3" height="10"/></g><g fill="#6a4a2a"><rect x="25" y="50" width="9" height="22" rx="2"/><rect x="28" y="44" width="3" height="7"/><rect x="38" y="50" width="9" height="22" rx="2"/><rect x="41" y="44" width="3" height="7"/><rect x="51" y="50" width="9" height="22" rx="2"/><rect x="54" y="44" width="3" height="7"/><rect x="64" y="50" width="9" height="22" rx="2"/><rect x="67" y="44" width="3" height="7"/></g><rect x="16" y="72" width="68" height="5" rx="2" fill="#55616b"/><path d="M48 77v7M30 84h40" stroke="#55616b" stroke-width="3"/><rect x="72" y="80" width="12" height="4" rx="1" fill="#7f5b10"/></symbol>
+<symbol id="p-deux" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e6eaed"/><rect x="47" y="10" width="6" height="40" fill="#8d99a3"/><rect x="30" y="16" width="40" height="14" rx="3" fill="#bcc6ce" stroke="#6d7880" stroke-width="1.5"/><g fill="#55616b"><rect x="38" y="30" width="3" height="10"/><rect x="59" y="30" width="3" height="10"/></g><g fill="#6a4a2a"><rect x="35" y="46" width="9" height="21" rx="2"/><rect x="38" y="40" width="3" height="7"/><rect x="56" y="46" width="9" height="21" rx="2"/><rect x="59" y="40" width="3" height="7"/></g><rect x="26" y="67" width="48" height="4" rx="2" fill="#55616b"/><rect x="6" y="71" width="88" height="6" fill="#b08a5a"/><path d="M14 77v9M86 77v9" stroke="#8a6a40" stroke-width="4"/></symbol>
+<symbol id="p-man" viewBox="0 0 100 88"><rect width="100" height="88" fill="#ebe7e1"/><path d="M72 10c10 4 12 14 6 22" stroke="#2f5f7d" stroke-width="3" fill="none"/><rect x="44" y="8" width="10" height="34" rx="2" fill="#bcc6ce" stroke="#6d7880" stroke-width="1.5"/><path d="M54 16h16l4 6" stroke="#55616b" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="47" y="42" width="4" height="8" fill="#55616b"/><rect x="42" y="56" width="14" height="22" rx="3" fill="#6a4a2a"/><rect x="46" y="48" width="6" height="9" fill="#6a4a2a"/><rect x="20" y="78" width="60" height="4" rx="2" fill="#8a7a60"/></symbol>
+</svg>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-glass" viewBox="0 0 24 24"><path d="M6 4h12l-1.5 15a2 2 0 0 1-2 2h-5a2 2 0 0 1-2-2z"/><path d="M6.5 9h11"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+<symbol id="i-eyeoff" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><path d="M4 4l16 16"/></symbol>
+<symbol id="i-cal-in" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><path d="M5 4h14v16H5z"/><path d="M8 9h8M8 13h8M8 17h5"/></symbol>
+</svg>
+<div class="v2-pl">
+
+<!-- ═══ 1 · liste au repos : les 5 rangs au premier écran ═══ -->
+<div class="v2-col">
+<section class="v2-tel" aria-label="Articles au repos">
+  <div class="v2-pli" aria-hidden="true"><span>bas du premier écran</span></div>
+  <header class="v2-top">
+    <div class="v2-bar"><span class="v2-logo"><svg class="da-ico"><use href="#i-glass"/></svg></span><span class="v2-nom">L'Affinée</span><span class="v2-ic" aria-label="Chercher"><svg class="da-ico"><use href="#i-search"/></svg></span></div>
+    <div class="v2-hd"><a class="b" href="#" aria-label="Retour aux carnets"><svg class="da-ico"><use href="#i-left"/></svg></a><h1>Embouteillage <span class="v2-ex">exemple</span><small>2 façons · 7 articles · 5 machines</small></h1></div>
+  </header>
+  <main>
+    <section class="v2-crit" aria-label="Ce qui compte">
+      <div class="v2-cl"><svg class="da-ico"><use href="#i-target"/></svg><span>L'IA propose : <b>le moins d'oxygène capté</b></span></div>
+      <nav class="v2-seg" aria-label="Classer par">
+        <a class="on" href="#" aria-current="true">Oxygène</a><a href="#">Prix</a><a href="#">Cadence</a><a href="#">Délai</a>
+      </nav>
+    </section>
+    <div class="v2-list">
+      <div class="v2-grp">Oxygène, lu sur la page <span>ppb · moins = mieux</span></div>
+      <a class="v2-art" href="#" aria-label="Rang 1">
+        <span class="v2-pw"><svg class="v2-ph" viewBox="0 0 100 88" style="background:#dfe6ec"><use href="#p-pre"/></svg><span class="v2-rk best">1</span></span>
+        <span class="v2-i">
+          <span class="v2-nm">Isobarique 4 becs pré-évacuation</span>
+          <span class="v2-v"><span class="v2-m best">40</span><span class="v2-tr" style="flex:1" aria-hidden="true"><i class="me best" style="left:13.3%"></i><i style="left:16.7%"></i><u style="left:23.3%;width:13.4%"></u><u style="left:33.3%;width:20%"></u><u style="left:50%;width:50%"></u></span></span>
+          <span class="v2-p"><span class="v2-m">11 400 CHF</span> · en stock · 3 vendeurs</span>
+        </span>
+        <span class="v2-w on"><svg class="da-ico"><use href="#i-eye"/></svg>veille</span>
+      </a>
+      <a class="v2-art" href="#" aria-label="Rang 2">
+        <span class="v2-pw"><svg class="v2-ph" viewBox="0 0 100 88" style="background:#e3e7ea"><use href="#p-mono"/></svg><span class="v2-rk">2</span></span>
+        <span class="v2-i">
+          <span class="v2-nm">Monobloc isobarique 6 becs</span>
+          <span class="v2-v"><span class="v2-m">50</span><span class="v2-tr" style="flex:1" aria-hidden="true"><i style="left:13.3%"></i><i class="me" style="left:16.7%"></i><u style="left:23.3%;width:13.4%"></u><u style="left:33.3%;width:20%"></u><u style="left:50%;width:50%"></u></span></span>
+          <span class="v2-p"><span class="v2-m">21 500 CHF</span> · délai à demander</span>
+        </span>
+        <span class="v2-w on"><svg class="da-ico"><use href="#i-eye"/></svg>veille</span>
+      </a>
+
+      <div class="v2-grp">Pas sur la page : « ? » et fourchette de l'IA <span>3</span></div>
+      <a class="v2-art" href="#" aria-label="Oxygène inconnu, rang estimé 3">
+        <span class="v2-pw"><svg class="v2-ph" viewBox="0 0 100 88" style="background:#e2e8ec"><use href="#p-semi"/></svg><span class="v2-rk est">3</span></span>
+        <span class="v2-i">
+          <span class="v2-nm">Isobarique 4 becs semi-auto</span>
+          <span class="v2-v"><span class="q">?</span>70–110<span class="v2-tr" style="flex:1" aria-hidden="true"><i style="left:13.3%"></i><i style="left:16.7%"></i><u class="me" style="left:23.3%;width:13.4%"></u><u style="left:33.3%;width:20%"></u><u style="left:50%;width:50%"></u></span></span>
+          <span class="v2-p"><span class="v2-m">6 400 CHF</span> · délai 6 semaines</span>
+        </span>
+        <span class="v2-w"><svg class="da-ico"><use href="#i-eyeoff"/></svg>sans</span>
+      </a>
+      <a class="v2-art" href="#" aria-label="Oxygène inconnu, rang estimé 4">
+        <span class="v2-pw"><svg class="v2-ph" viewBox="0 0 100 88" style="background:#e6eaed"><use href="#p-deux"/></svg><span class="v2-rk est">4</span></span>
+        <span class="v2-i">
+          <span class="v2-nm">Isobarique 2 becs de table</span>
+          <span class="v2-v"><span class="q">?</span>100–160<span class="v2-tr" style="flex:1" aria-hidden="true"><i style="left:13.3%"></i><i style="left:16.7%"></i><u style="left:23.3%;width:13.4%"></u><u class="me" style="left:33.3%;width:20%"></u><u style="left:50%;width:50%"></u></span></span>
+          <span class="v2-p"><span class="v2-m">1 850 CHF</span> · en stock</span>
+        </span>
+        <span class="v2-w"><svg class="da-ico"><use href="#i-eyeoff"/></svg>sans</span>
+      </a>
+      <a class="v2-art" href="#" aria-label="Oxygène inconnu, rang estimé 5">
+        <span class="v2-pw"><svg class="v2-ph" viewBox="0 0 100 88" style="background:#ebe7e1"><use href="#p-man"/></svg><span class="v2-rk est">5</span></span>
+        <span class="v2-i">
+          <span class="v2-nm">Contre-pression manuelle 1 bec</span>
+          <span class="v2-v"><span class="q">?</span>150–300<span class="v2-tr" style="flex:1" aria-hidden="true"><i style="left:13.3%"></i><i style="left:16.7%"></i><u style="left:23.3%;width:13.4%"></u><u style="left:33.3%;width:20%"></u><u class="me" style="left:50%;width:50%"></u></span></span>
+          <span class="v2-p"><span class="v2-m">190 CHF</span> · en stock</span>
+        </span>
+        <span class="v2-w"><svg class="da-ico"><use href="#i-eyeoff"/></svg>sans</span>
+      </a>
+
+      <div class="v2-h">Côte à côte</div>
+      <table class="v2-tab" aria-label="Les 5 machines côte à côte">
+        <thead><tr><th>Machine</th><th>O₂ ppb</th><th>Prix CHF</th><th>bt/h</th><th>Délai</th></tr></thead>
+        <tbody>
+          <tr><td class="n">1 · Iso 4 pré-évac.</td><td class="v2-m best">40</td><td class="v2-m">11 400</td><td class="v2-m">400</td><td class="best">en stock</td></tr>
+          <tr><td class="n">2 · Monobloc 6</td><td class="v2-m">50</td><td class="v2-m">21 500</td><td class="v2-m best">900</td><td class="q">?</td></tr>
+          <tr><td class="n">3 · Iso 4 semi-auto</td><td class="q">?</td><td class="v2-m">6 400</td><td class="v2-m">400</td><td>6 sem.</td></tr>
+          <tr><td class="n">4 · Iso 2 de table</td><td class="q">?</td><td class="v2-m">1 850</td><td class="v2-m">100</td><td class="best">en stock</td></tr>
+          <tr><td class="n">5 · Manuelle 1 bec</td><td class="q">?</td><td class="v2-m best">190</td><td class="v2-m">60</td><td class="best">en stock</td></tr>
+        </tbody>
+      </table>
+
+      <div class="v2-out"><svg class="da-ico"><use href="#i-x"/></svg><div><b>Écarté : remplir par gravité</b><br>trop d'oxygène capté · 22 oct.</div></div>
+      <div class="v2-h">Autres carnets</div>
+      <nav class="v2-oc" aria-label="Autres carnets"><a href="#">Frigo de garde<svg class="da-ico"><use href="#i-right"/></svg></a><a href="#">Ventilation<svg class="da-ico"><use href="#i-right"/></svg></a><a href="#">Évier inox<svg class="da-ico"><use href="#i-right"/></svg></a></nav>
+    </div>
+  </main>
+  <div class="v2-foot">
+    <div class="v2-dock"><div class="v2-comp"><span class="t">Écrire, ou coller un lien…</span><span class="v2-cb" aria-label="Photo"><svg class="da-ico"><use href="#i-cam"/></svg></span><span class="v2-cb" aria-label="Voix"><svg class="da-ico"><use href="#i-mic"/></svg></span></div><a class="v2-fab" href="#" aria-label="Ajouter"><svg class="da-ico"><use href="#i-plus"/></svg></a></div>
+    <nav class="v2-tabs" aria-label="Navigation"><a href="#"><svg class="da-ico"><use href="#i-bord"/></svg>Bord</a><a href="#"><svg class="da-ico"><use href="#i-wallet"/></svg>Finances</a><a href="#"><svg class="da-ico"><use href="#i-cal"/></svg>Calendrier</a><a href="#"><svg class="da-ico"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on" aria-current="page"><svg class="da-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a><a href="#"><svg class="da-ico"><use href="#i-users"/></svg>Clients</a></nav>
+  </div>
+</section>
+<p class="v2-cap"><b>1 · Au repos.</b> Les 5 rangs au premier écran ; le « ? » avant le rang ; côte à côte sous le pli.</p>
+</div>
+
+<!-- ═══ 2 · rang 1 touché : il s'ouvre en place, réduit à photo, valeur, vendeurs, Choisir ═══ -->
+<div class="v2-col">
+<section class="v2-tel" aria-label="Rang 1 ouvert en place">
+  <div class="v2-pli" aria-hidden="true"><span>bas du premier écran</span></div>
+  <header class="v2-top">
+    <div class="v2-bar"><span class="v2-logo"><svg class="da-ico"><use href="#i-glass"/></svg></span><span class="v2-nom">L'Affinée</span><span class="v2-ic" aria-label="Chercher"><svg class="da-ico"><use href="#i-search"/></svg></span></div>
+    <div class="v2-hd"><a class="b" href="#" aria-label="Retour aux carnets"><svg class="da-ico"><use href="#i-left"/></svg></a><h1>Embouteillage <span class="v2-ex">exemple</span><small>classé par : le moins d'oxygène capté</small></h1></div>
+  </header>
+  <main class="v2-list" style="padding-top:10px">
+    <article class="v2-open" aria-label="Rang 1, ouvert">
+      <div class="v2-oh"><span class="v2-rk best" style="position:static">1</span><span class="k">Le plus bas en oxygène</span><a class="v2-fold" href="#" aria-expanded="true">Replier<svg class="da-ico"><use href="#i-right"/></svg></a></div>
+      <div class="v2-oi">
+        <svg viewBox="0 0 100 88" style="background:#dfe6ec" role="img" aria-label="Photo de la page"><use href="#p-pre"/></svg>
+        <div>
+          <div class="v2-on">Isobarique 4 becs pré-évacuation</div>
+          <div class="v2-hero"><span class="v2-m">40 ppb</span><b>1er sur 5</b></div>
+          <div class="v2-src">lu sur la fiche technique du vendeur, 12 nov.</div>
+        </div>
+      </div>
+      <div style="margin:8px 12px 0"><span class="v2-tr" aria-hidden="true"><i class="me best" style="left:13.3%"></i><i style="left:16.7%"></i><u style="left:23.3%;width:13.4%"></u><u style="left:33.3%;width:20%"></u><u style="left:50%;width:50%"></u></span><div class="v2-leg s" style="padding:0;display:flex;justify-content:space-between"><span>0</span><span>gris : les 4 autres</span><span>300 ppb</span></div></div>
+
+      <div class="v2-sec">
+        <div class="v2-sh">La même machine, 3 vendeurs <span>300 CHF d'écart</span></div>
+        <div class="v2-of"><span class="p best v2-m">11 400</span><span>Abfülltechnik West · DE<em>en stock · le moins cher</em></span><a class="v2-lk" href="#">Ouvrir<svg class="da-ico"><use href="#i-ext"/></svg></a></div>
+        <div class="v2-of"><span class="p v2-m">11 600</span><span>Getränketechnik Ost · AT<em>en stock · trouvé par la veille le 13 nov.</em></span><a class="v2-lk" href="#">Ouvrir<svg class="da-ico"><use href="#i-ext"/></svg></a></div>
+        <div class="v2-of"><span class="p v2-m">11 700</span><span>Brassage Romandie · CH<em>sur commande · SAV en Suisse · 600 CHF de moins depuis le 15 nov.</em></span><a class="v2-lk" href="#">Ouvrir<svg class="da-ico"><use href="#i-ext"/></svg></a></div>
+        <a class="v2-sw" href="#" role="switch" aria-checked="true"><svg class="da-ico"><use href="#i-eye"/></svg><span class="t"><b>Veille tous les 3 jours</b><span>prix et stock · prochain passage le 19 nov.</span></span><span class="v2-tg">oui<i></i></span></a>
+      </div>
+
+      <div class="v2-sec">
+        <div class="v2-sh">Ses autres valeurs <span>place parmi les 5</span></div>
+        <div class="v2-kv">
+          <span>Cadence</span><span class="v v2-m">400 bt/h</span><span class="r">2e ex aequo</span>
+          <span>CO₂ par bouteille</span><span class="v v2-m">7 g</span><span class="r">2e sur 4 connus</span>
+          <span>Prix</span><span class="v v2-m">11 400 CHF</span><span class="r">4e</span>
+          <span>Délai</span><span class="v">en stock</span><span class="r best">1er ex aequo</span>
+        </div>
+        <div class="v2-src" style="margin-top:4px">Nettoyage en place · 100 × 70 cm au sol · toutes lues sur la page</div>
+      </div>
+
+      <a class="v2-go" href="#"><svg class="da-ico"><use href="#i-check"/></svg>Choisir celui-ci</a>
+      <div class="v2-nx">Écran suivant : le vendeur et le pourquoi</div>
+    </article>
+    <a class="v2-art" href="#" aria-label="Rang 2">
+      <span class="v2-pw"><svg class="v2-ph" viewBox="0 0 100 88" style="background:#e3e7ea"><use href="#p-mono"/></svg><span class="v2-rk">2</span></span>
+      <span class="v2-i"><span class="v2-nm">Monobloc isobarique 6 becs</span><span class="v2-v"><span class="v2-m">50</span><span class="v2-tr" style="flex:1" aria-hidden="true"><i style="left:13.3%"></i><i class="me" style="left:16.7%"></i><u style="left:23.3%;width:13.4%"></u><u style="left:33.3%;width:20%"></u><u style="left:50%;width:50%"></u></span></span><span class="v2-p"><span class="v2-m">21 500 CHF</span> · délai à demander</span></span>
+      <span class="v2-w on"><svg class="da-ico"><use href="#i-eye"/></svg>veille</span>
+    </a>
+  </main>
+  <div class="v2-foot">
+    <div class="v2-dock"><div class="v2-comp"><span class="t">Écrire, ou coller un lien…</span><span class="v2-cb" aria-label="Photo"><svg class="da-ico"><use href="#i-cam"/></svg></span><span class="v2-cb" aria-label="Voix"><svg class="da-ico"><use href="#i-mic"/></svg></span></div><a class="v2-fab" href="#" aria-label="Ajouter"><svg class="da-ico"><use href="#i-plus"/></svg></a></div>
+    <nav class="v2-tabs" aria-label="Navigation"><a href="#"><svg class="da-ico"><use href="#i-bord"/></svg>Bord</a><a href="#"><svg class="da-ico"><use href="#i-wallet"/></svg>Finances</a><a href="#"><svg class="da-ico"><use href="#i-cal"/></svg>Calendrier</a><a href="#"><svg class="da-ico"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on" aria-current="page"><svg class="da-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a><a href="#"><svg class="da-ico"><use href="#i-users"/></svg>Clients</a></nav>
+  </div>
+</section>
+<p class="v2-cap"><b>2 · Touché : ouvert en place.</b> Chaque vendeur a son lien ; la place sur chaque valeur.</p>
+</div>
+
+<!-- ═══ 3 · Choisir : le vendeur, un seul pourquoi proposé, ce qui part dans À venir ═══ -->
+<div class="v2-col">
+<section class="v2-tel" aria-label="Choisir">
+  <header class="v2-top">
+    <div class="v2-hd"><a class="b" href="#" aria-label="Retour à la liste"><svg class="da-ico"><use href="#i-left"/></svg></a><h1>Choisir cette machine <span class="v2-ex">exemple</span><small>Embouteillage</small></h1></div>
+  </header>
+  <main class="v2-pad">
+    <div class="v2-obj"><svg viewBox="0 0 100 88" style="background:#dfe6ec"><use href="#p-pre"/></svg><div><b style="font-size:16px">Isobarique 4 becs pré-évacuation</b><div class="v2-src"><span class="v2-m" style="color:var(--ok);font-weight:600">40 ppb</span> · le plus bas des 5</div></div></div>
+    <div class="v2-q">Chez quel vendeur ?</div>
+    <a class="v2-rad" href="#" role="radio" aria-checked="false"><span class="o"></span><span>Abfülltechnik West · DE<em>en stock</em></span><span class="v2-m" style="padding-right:12px">11 400</span></a>
+    <a class="v2-rad" href="#" role="radio" aria-checked="false"><span class="o"></span><span>Getränketechnik Ost · AT<em>en stock</em></span><span class="v2-m" style="padding-right:12px">11 600</span></a>
+    <a class="v2-rad on" href="#" role="radio" aria-checked="true"><span class="o"></span><span>Brassage Romandie · CH<em>sur commande · SAV en Suisse</em></span><span class="v2-m" style="padding-right:12px">11 700</span></a>
+    <div class="v2-q">Pourquoi <span>· proposé par l'IA, à corriger si besoin</span></div>
+    <div class="v2-fld" role="textbox" aria-label="Pourquoi">Le moins d'oxygène capté (40 ppb). SAV en Suisse, pour 300 CHF de plus.</div>
+    <div class="v2-hint">Un mot suffit. Les 4 autres restent dans le carnet.</div>
+    <div class="v2-q">Part dans À venir</div>
+    <div class="v2-av"><svg class="da-ico"><use href="#i-cal-in"/></svg><div><b>Commander l'isobarique 4 becs</b><ul><li>11 700 CHF · Brassage Romandie · sur commande</li><li>lien de la page et pourquoi joints</li><li>date à fixer dans À venir</li></ul></div></div>
+  </main>
+  <div class="v2-act"><a class="v2-go" href="#"><svg class="da-ico"><use href="#i-check"/></svg>Choisir et mettre dans À venir</a></div>
+  <div class="v2-foot">
+    <nav class="v2-tabs" aria-label="Navigation"><a href="#"><svg class="da-ico"><use href="#i-bord"/></svg>Bord</a><a href="#"><svg class="da-ico"><use href="#i-wallet"/></svg>Finances</a><a href="#"><svg class="da-ico"><use href="#i-cal"/></svg>Calendrier</a><a href="#"><svg class="da-ico"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on" aria-current="page"><svg class="da-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a><a href="#"><svg class="da-ico"><use href="#i-users"/></svg>Clients</a></nav>
+  </div>
+</section>
+<p class="v2-cap"><b>3 · Choisir.</b> Retour en haut à gauche, un seul pourquoi, ce qui part est écrit.</p>
+</div>
+
+<!-- ═══ 4 · Choisi : l'objet, son prix, la preuve dans À venir ═══ -->
+<div class="v2-col">
+<section class="v2-tel" aria-label="Choisi">
+  <header class="v2-top">
+    <div class="v2-bar"><span class="v2-logo"><svg class="da-ico"><use href="#i-glass"/></svg></span><span class="v2-nom">L'Affinée</span><span class="v2-ic" aria-label="Chercher"><svg class="da-ico"><use href="#i-search"/></svg></span></div>
+    <div class="v2-hd"><a class="b" href="#" aria-label="Retour aux carnets"><svg class="da-ico"><use href="#i-left"/></svg></a><h1>Embouteillage <span class="v2-ex">exemple</span><small>choisi le 17 nov.</small></h1></div>
+  </header>
+  <main class="v2-pad">
+    <div class="v2-ban"><svg viewBox="0 0 100 88" style="background:#dfe6ec"><use href="#p-pre"/></svg><div><div class="k">Choisi</div><div class="n">Isobarique 4 becs pré-évacuation</div><div class="p"><span class="v2-m">11 700 CHF</span> chez Brassage Romandie · CH</div><div class="p">40 ppb · sur commande</div></div></div>
+    <a class="v2-li" href="#"><svg class="da-ico"><use href="#i-cal-in"/></svg><span class="t"><b>Dans À venir</b><span>commander · date à fixer</span></span><span style="font-weight:600">Voir</span><svg class="da-ico c"><use href="#i-right"/></svg></a>
+    <a class="v2-li" href="#"><svg class="da-ico"><use href="#i-note"/></svg><span class="t"><b>Pourquoi ce choix</b><span>le moins d'oxygène capté · SAV en Suisse</span></span><svg class="da-ico c"><use href="#i-right"/></svg></a>
+    <a class="v2-li" href="#"><svg class="da-ico"><use href="#i-boxes"/></svg><span class="t"><b>Les 4 autres machines</b><span>gardées, avec leur valeur</span></span><svg class="da-ico c"><use href="#i-right"/></svg></a>
+    <div class="v2-out" style="margin-top:12px"><svg class="da-ico"><use href="#i-x"/></svg><div><b>Écarté : remplir par gravité</b><br>trop d'oxygène capté · 22 oct.</div></div>
+  </main>
+  <div class="v2-foot">
+    <div class="v2-dock"><div class="v2-comp"><span class="t">Écrire, ou coller un lien…</span><span class="v2-cb" aria-label="Photo"><svg class="da-ico"><use href="#i-cam"/></svg></span><span class="v2-cb" aria-label="Voix"><svg class="da-ico"><use href="#i-mic"/></svg></span></div><a class="v2-fab" href="#" aria-label="Ajouter"><svg class="da-ico"><use href="#i-plus"/></svg></a></div>
+    <nav class="v2-tabs" aria-label="Navigation"><a href="#"><svg class="da-ico"><use href="#i-bord"/></svg>Bord</a><a href="#"><svg class="da-ico"><use href="#i-wallet"/></svg>Finances</a><a href="#"><svg class="da-ico"><use href="#i-cal"/></svg>Calendrier</a><a href="#"><svg class="da-ico"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on" aria-current="page"><svg class="da-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a><a href="#"><svg class="da-ico"><use href="#i-users"/></svg>Clients</a></nav>
+  </div>
+</section>
+<p class="v2-cap"><b>4 · Choisi.</b> Photo et prix en tête ; la ligne « Dans À venir » mène à l'écran 6.</p>
+</div>
+
+<!-- ═══ 5 · Pourquoi ce choix : une seule entrée, une réponse courte et sourcée ═══ -->
+<div class="v2-col">
+<section class="v2-tel" aria-label="Pourquoi ce choix">
+  <header class="v2-top">
+    <div class="v2-bar"><span class="v2-logo"><svg class="da-ico"><use href="#i-glass"/></svg></span><span class="v2-nom">L'Affinée</span><span class="v2-ic" aria-label="Chercher"><svg class="da-ico"><use href="#i-search"/></svg></span></div>
+    <div class="v2-hd"><a class="b" href="#" aria-label="Retour aux carnets"><svg class="da-ico"><use href="#i-left"/></svg></a><h1>Embouteillage <span class="v2-ex">exemple</span><small>choisi le 17 nov.</small></h1></div>
+  </header>
+  <main class="v2-pad"><div class="v2-ban"><svg viewBox="0 0 100 88" style="background:#dfe6ec"><use href="#p-pre"/></svg><div><div class="k">Choisi</div><div class="n">Isobarique 4 becs pré-évacuation</div></div></div></main>
+  <div class="v2-dim" aria-hidden="true"></div>
+  <div class="v2-sheet" role="dialog" aria-label="Pourquoi ce choix">
+    <div class="v2-grab"></div>
+    <div class="v2-shh"><h2>Pourquoi ce choix</h2><a class="v2-x" href="#" aria-label="Fermer"><svg class="da-ico"><use href="#i-x"/></svg></a></div>
+    <div class="v2-obj" style="padding:6px 0"><svg viewBox="0 0 100 88" style="background:#dfe6ec"><use href="#p-pre"/></svg><div><b style="font-size:16px">Isobarique 4 becs pré-évacuation</b><div class="v2-src"><span class="v2-m" style="color:var(--ink);font-weight:600">11 700 CHF</span> · Brassage Romandie · choisi le 17 nov.</div></div></div>
+    <ul class="v2-rs">
+      <li><svg class="da-ico"><use href="#i-check"/></svg><div><b>Le moins d'oxygène capté : 40 ppb</b><span>fiche technique du vendeur, 12 nov.</span></div></li>
+      <li><svg class="da-ico"><use href="#i-check"/></svg><div><b>SAV en Suisse</b><span>300 CHF de plus que l'offre allemande</span></div></li>
+      <li><svg class="da-ico"><use href="#i-check"/></svg><div><b>Vos mots : « il faut minimiser l'oxygène »</b><span>note du 20 oct.</span></div></li>
+      <li><svg class="da-ico" style="color:var(--mut)"><use href="#i-x"/></svg><div><b>Écarté : remplir par gravité</b><span>trop d'oxygène capté · 22 oct.</span></div></li>
+    </ul>
+  </div>
+  <div class="v2-foot">
+    <nav class="v2-tabs" aria-label="Navigation"><a href="#"><svg class="da-ico"><use href="#i-bord"/></svg>Bord</a><a href="#"><svg class="da-ico"><use href="#i-wallet"/></svg>Finances</a><a href="#"><svg class="da-ico"><use href="#i-cal"/></svg>Calendrier</a><a href="#"><svg class="da-ico"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on" aria-current="page"><svg class="da-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a><a href="#"><svg class="da-ico"><use href="#i-users"/></svg>Clients</a></nav>
+  </div>
+</section>
+<p class="v2-cap"><b>5 · Pourquoi ce choix.</b> Une entrée ; quatre lignes, chacune avec sa source.</p>
+</div>
+
+<!-- ═══ 6 · Calendrier › À venir : la preuve de l'envoi ═══ -->
+<div class="v2-col">
+<section class="v2-tel" aria-label="Calendrier, À venir">
+  <header class="v2-top">
+    <div class="v2-bar"><span class="v2-logo"><svg class="da-ico"><use href="#i-glass"/></svg></span><span class="v2-nom">L'Affinée</span><span class="v2-ic" aria-label="Chercher"><svg class="da-ico"><use href="#i-search"/></svg></span></div>
+    <nav class="v2-segp" aria-label="Vue du calendrier"><a class="on" href="#" aria-current="true">À venir <span class="v2-m">5</span></a><a href="#">Réalisés <span class="v2-m">12</span></a></nav>
+  </header>
+  <main class="v2-pad">
+    <div class="v2-h" style="margin-top:12px">Sans date</div>
+    <div class="v2-new">
+      <div class="h"><b>Ajouté le 17 nov.</b><span>du carnet Embouteillage <span class="v2-ex">exemple</span></span></div>
+      <div class="r"><svg viewBox="0 0 100 88" style="background:#dfe6ec"><use href="#p-pre"/></svg><div class="t"><b>Commander l'isobarique 4 becs</b><span><span class="v2-m" style="color:var(--ink)">11 700 CHF</span> · Brassage Romandie · sur commande</span></div></div>
+      <div class="a"><a href="#">Fixer la date</a><a href="#">Ouvrir le carnet</a></div>
+    </div>
+    <div class="v2-h">Cette semaine et après</div>
+    <a class="v2-li" href="#"><span class="v2-m" style="width:58px">ven. 21</span><span class="t"><b>Brassin · IPA Nelson</b><span>200 L · cuve 2</span></span><svg class="da-ico c"><use href="#i-right"/></svg></a>
+    <a class="v2-li" href="#"><span class="v2-m" style="width:58px">lun. 24</span><span class="t"><b>Livraison malt</b><span>Pale Ale 75 kg</span></span><svg class="da-ico c"><use href="#i-right"/></svg></a>
+    <a class="v2-li" href="#"><span class="v2-m" style="width:58px">ven. 28</span><span class="t"><b>Mise en bouteille · Blanche</b><span>180 L</span></span><svg class="da-ico c"><use href="#i-right"/></svg></a>
+    <a class="v2-li" href="#"><span class="v2-m" style="width:58px">mar. 2</span><span class="t"><b>Facture houblons à payer</b><span>déc.</span></span><svg class="da-ico c"><use href="#i-right"/></svg></a>
+  </main>
+  <div class="v2-foot">
+    <div class="v2-dock" style="justify-content:flex-end;border-top:0;box-shadow:none;background:transparent"><a class="v2-fab" href="#" aria-label="Ajouter"><svg class="da-ico"><use href="#i-plus"/></svg></a></div>
+    <nav class="v2-tabs" aria-label="Navigation"><a href="#"><svg class="da-ico"><use href="#i-bord"/></svg>Bord</a><a href="#"><svg class="da-ico"><use href="#i-wallet"/></svg>Finances</a><a href="#" class="onc" aria-current="page"><svg class="da-ico"><use href="#i-cal"/></svg>Calendrier</a><a href="#"><svg class="da-ico"><use href="#i-beer"/></svg>Brassins</a><a href="#"><svg class="da-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a><a href="#"><svg class="da-ico"><use href="#i-users"/></svg>Clients</a></nav>
+  </div>
+</section>
+<p class="v2-cap"><b>6 · Calendrier › À venir.</b> La preuve : la ligne y est, À venir et Réalisés répondent.</p>
+</div>
+
+</div>
+</body>
+</html>

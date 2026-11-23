@@ -1,0 +1,12 @@
+import { demarrer, ouvrirLigne, numeroLigne, saisir } from '../../../../../../missions/2026-10-31-ecran-depense/banc-b2/aide-b2.mjs';
+const { nav, ouvrir } = await demarrer();
+let p = await ouvrir('3', 't390', 'clair');
+await p.evaluate(() => document.querySelector('[data-dp-mouture-tous]')?.click()); await new Promise((r) => setTimeout(r, 500));
+console.log(await p.evaluate(() => { const a = [...document.querySelectorAll('[data-dp-ligne]')].find((a) => a.querySelector('summary')?.innerText.includes('Pilsner')); return a.querySelector('summary').outerHTML; }));
+await ouvrirLigne(p, 'Weizenmalz'); const n = await numeroLigne(p, 'Weizenmalz'); await saisir(p, `[aria-label="Quantité ligne ${n}"]`, '-1');
+console.log('=== QTE', await p.evaluate(() => { const a = [...document.querySelectorAll('[data-dp-ligne]')].find((a) => a.querySelector('summary')?.innerText.includes('Weizen')); return a.querySelector('[data-dp-qte]').outerHTML + ' || ' + a.querySelector('[aria-label^="Quantité ligne"]').className; }));
+console.log('=== PLIE', await p.evaluate(() => [...document.querySelectorAll('button')].filter((b) => /^(Plié|Déplié)$/.test(b.innerText.trim())).map((b) => b.outerHTML).join('\n')));
+await p.close();
+p = await ouvrir('difficile', 't390', 'clair');
+console.log('=== DIFF', await p.evaluate(() => { const b = [...document.querySelectorAll('button')].find((b) => /^Relire$/.test(b.innerText.trim())); const m = [...document.querySelectorAll('p,div')].find((e) => /^Lecture en morceaux/.test(e.innerText.trim()) && e.children.length < 3); return (m?.outerHTML.slice(0, 600)) + '\n' + b.parentElement.outerHTML.slice(0, 900); }));
+await nav.close();

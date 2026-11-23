@@ -1,0 +1,361 @@
+[
+  {
+    "id": "citrus",
+    "name": "Agrumes",
+    "terms": [
+      "agrumes",
+      "agrume",
+      "citrus",
+      "citrusy",
+      "citron",
+      "citronné",
+      "citronnée",
+      "lemon",
+      "lime",
+      "citron vert",
+      "pamplemousse",
+      "grapefruit",
+      "orange",
+      "oranges",
+      "mandarine",
+      "mandarin",
+      "tangerine",
+      "bergamote",
+      "bergamot"
+    ],
+    "source": {
+      "title": "Lexique documentaire du guide de recette",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "src/data/hopRecipeGuideBootstrap.json",
+      "locator": "Choix éditorial du 8 septembre 2026 : rapprochement de mots français/anglais vers les familles locales. Aucun poids, seuil, rendement, score sensoriel ni prédiction de bière. Les mentions génériques « fruité/fruity » ne sont pas affectées à une famille de fruits particulière."
+    }
+  },
+  {
+    "id": "tropical",
+    "name": "Fruits tropicaux",
+    "terms": [
+      "tropical",
+      "tropicale",
+      "tropicaux",
+      "tropicales",
+      "tropical fruit",
+      "fruits tropicaux",
+      "mangue",
+      "mango",
+      "ananas",
+      "pineapple",
+      "passion fruit",
+      "passionfruit",
+      "fruit de la passion",
+      "papaye",
+      "papaya",
+      "goyave",
+      "guava",
+      "litchi",
+      "lychee",
+      "coconut",
+      "noix de coco"
+    ],
+    "source": {
+      "title": "Lexique documentaire du guide de recette",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "src/data/hopRecipeGuideBootstrap.json",
+      "locator": "Choix éditorial du 8 septembre 2026 : rapprochement de mots français/anglais vers les familles locales. Aucun poids, seuil, rendement, score sensoriel ni prédiction de bière. Les mentions génériques « fruité/fruity » ne sont pas affectées à une famille de fruits particulière."
+    }
+  },
+  {
+    "id": "stoneFruit",
+    "name": "Fruits à noyau",
+    "terms": [
+      "fruits à noyau",
+      "fruit à noyau",
+      "stone fruit",
+      "stone fruits",
+      "stonefruit",
+      "pêche",
+      "peach",
+      "abricot",
+      "apricot",
+      "nectarine",
+      "prune",
+      "plum",
+      "cerise",
+      "cherry"
+    ],
+    "source": {
+      "title": "Lexique documentaire du guide de recette",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "src/data/hopRecipeGuideBootstrap.json",
+      "locator": "Choix éditorial du 8 septembre 2026 : rapprochement de mots français/anglais vers les familles locales. Aucun poids, seuil, rendement, score sensoriel ni prédiction de bière. Les mentions génériques « fruité/fruity » ne sont pas affectées à une famille de fruits particulière."
+    }
+  },
+  {
+    "id": "pomeFruit",
+    "name": "Pomme et poire",
+    "terms": [
+      "pomme",
+      "pommes",
+      "apple",
+      "apples",
+      "poire",
+      "poires",
+      "pear",
+      "pears",
+      "pome fruit"
+    ],
+    "source": {
+      "title": "Lexique documentaire du guide de recette",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "src/data/hopRecipeGuideBootstrap.json",
+      "locator": "Choix éditorial du 8 septembre 2026 : rapprochement de mots français/anglais vers les familles locales. Aucun poids, seuil, rendement, score sensoriel ni prédiction de bière. Les mentions génériques « fruité/fruity » ne sont pas affectées à une famille de fruits particulière."
+    }
+  },
+  {
+    "id": "berries",
+    "name": "Petits fruits",
+    "terms": [
+      "petits fruits",
+      "baies",
+      "baie",
+      "berry",
+      "berries",
+      "cassis",
+      "black currant",
+      "blackcurrant",
+      "groseille",
+      "red currant",
+      "redcurrant",
+      "framboise",
+      "raspberry",
+      "fraise",
+      "strawberry",
+      "mûre",
+      "blackberry",
+      "myrtille",
+      "blueberry"
+    ],
+    "source": {
+      "title": "Lexique documentaire du guide de recette",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "src/data/hopRecipeGuideBootstrap.json",
+      "locator": "Choix éditorial du 8 septembre 2026 : rapprochement de mots français/anglais vers les familles locales. Aucun poids, seuil, rendement, score sensoriel ni prédiction de bière. Les mentions génériques « fruité/fruity » ne sont pas affectées à une famille de fruits particulière."
+    }
+  },
+  {
+    "id": "melon",
+    "name": "Melon",
+    "terms": [
+      "melon",
+      "melons",
+      "honeydew",
+      "cantaloupe",
+      "pastèque",
+      "watermelon"
+    ],
+    "source": {
+      "title": "Lexique documentaire du guide de recette",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "src/data/hopRecipeGuideBootstrap.json",
+      "locator": "Choix éditorial du 8 septembre 2026 : rapprochement de mots français/anglais vers les familles locales. Aucun poids, seuil, rendement, score sensoriel ni prédiction de bière. Les mentions génériques « fruité/fruity » ne sont pas affectées à une famille de fruits particulière."
+    }
+  },
+  {
+    "id": "floral",
+    "name": "Floral",
+    "terms": [
+      "floral",
+      "florale",
+      "florales",
+      "floraux",
+      "fleur",
+      "fleurs",
+      "flowery",
+      "flower",
+      "flowers",
+      "rose",
+      "roses",
+      "lavande",
+      "lavender",
+      "géranium",
+      "geranium",
+      "jasmin",
+      "jasmine",
+      "elderflower",
+      "fleur de sureau"
+    ],
+    "source": {
+      "title": "Lexique documentaire du guide de recette",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "src/data/hopRecipeGuideBootstrap.json",
+      "locator": "Choix éditorial du 8 septembre 2026 : rapprochement de mots français/anglais vers les familles locales. Aucun poids, seuil, rendement, score sensoriel ni prédiction de bière. Les mentions génériques « fruité/fruity » ne sont pas affectées à une famille de fruits particulière."
+    }
+  },
+  {
+    "id": "herbal",
+    "name": "Herbacé aromatique",
+    "terms": [
+      "herbacé",
+      "herbacée",
+      "herbacées",
+      "herbacés",
+      "herbal",
+      "herbaceous",
+      "herbes aromatiques",
+      "thé",
+      "tea",
+      "menthe",
+      "mint",
+      "menthol",
+      "romarin",
+      "rosemary",
+      "sauge",
+      "sage",
+      "basilic",
+      "basil",
+      "eucalyptus"
+    ],
+    "source": {
+      "title": "Lexique documentaire du guide de recette",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "src/data/hopRecipeGuideBootstrap.json",
+      "locator": "Choix éditorial du 8 septembre 2026 : rapprochement de mots français/anglais vers les familles locales. Aucun poids, seuil, rendement, score sensoriel ni prédiction de bière. Les mentions génériques « fruité/fruity » ne sont pas affectées à une famille de fruits particulière."
+    }
+  },
+  {
+    "id": "resin",
+    "name": "Boisé et résineux",
+    "terms": [
+      "boisé",
+      "boisée",
+      "boisés",
+      "boisées",
+      "wood",
+      "woody",
+      "résine",
+      "résineux",
+      "résineuse",
+      "resin",
+      "resinous",
+      "pin",
+      "pine",
+      "piney",
+      "cèdre",
+      "cedar",
+      "santal",
+      "sandalwood"
+    ],
+    "source": {
+      "title": "Lexique documentaire du guide de recette",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "src/data/hopRecipeGuideBootstrap.json",
+      "locator": "Choix éditorial du 8 septembre 2026 : rapprochement de mots français/anglais vers les familles locales. Aucun poids, seuil, rendement, score sensoriel ni prédiction de bière. Les mentions génériques « fruité/fruity » ne sont pas affectées à une famille de fruits particulière."
+    }
+  },
+  {
+    "id": "spice",
+    "name": "Épicé",
+    "terms": [
+      "épicé",
+      "épicée",
+      "épicés",
+      "épicées",
+      "épice",
+      "épices",
+      "spice",
+      "spices",
+      "spicy",
+      "poivre",
+      "pepper",
+      "peppery",
+      "clou de girofle",
+      "clove",
+      "cloves",
+      "cannelle",
+      "cinnamon",
+      "anis",
+      "anise",
+      "réglisse",
+      "licorice",
+      "liquorice"
+    ],
+    "source": {
+      "title": "Lexique documentaire du guide de recette",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "src/data/hopRecipeGuideBootstrap.json",
+      "locator": "Choix éditorial du 8 septembre 2026 : rapprochement de mots français/anglais vers les familles locales. Aucun poids, seuil, rendement, score sensoriel ni prédiction de bière. Les mentions génériques « fruité/fruity » ne sont pas affectées à une famille de fruits particulière."
+    }
+  },
+  {
+    "id": "green",
+    "name": "Végétal vert",
+    "terms": [
+      "végétal",
+      "végétale",
+      "végétaux",
+      "vegetal",
+      "green",
+      "herbe fraîche",
+      "herbe coupée",
+      "grass",
+      "grassy",
+      "fresh cut grass",
+      "foin",
+      "hay",
+      "feuille",
+      "feuilles",
+      "leafy",
+      "green pepper"
+    ],
+    "source": {
+      "title": "Lexique documentaire du guide de recette",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "src/data/hopRecipeGuideBootstrap.json",
+      "locator": "Choix éditorial du 8 septembre 2026 : rapprochement de mots français/anglais vers les familles locales. Aucun poids, seuil, rendement, score sensoriel ni prédiction de bière. Les mentions génériques « fruité/fruity » ne sont pas affectées à une famille de fruits particulière."
+    }
+  },
+  {
+    "id": "earthy",
+    "name": "Terreux",
+    "terms": [
+      "terreux",
+      "terreuse",
+      "earthy",
+      "earth",
+      "soil",
+      "humus",
+      "champignon",
+      "mushroom",
+      "mushrooms"
+    ],
+    "source": {
+      "title": "Lexique documentaire du guide de recette",
+      "author": "L’Affinée",
+      "year": 2026,
+      "kind": "judgment",
+      "reference": "src/data/hopRecipeGuideBootstrap.json",
+      "locator": "Choix éditorial du 8 septembre 2026 : rapprochement de mots français/anglais vers les familles locales. Aucun poids, seuil, rendement, score sensoriel ni prédiction de bière. Les mentions génériques « fruité/fruity » ne sont pas affectées à une famille de fruits particulière."
+    }
+  }
+]

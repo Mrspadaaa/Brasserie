@@ -1,0 +1,223 @@
+/* Position et taille passent par des variables, pas par le style en ligne : le
+   bouton suit la case que la mise en page lui réserve (`ActionDock`), et un écran
+   peut encore le docker ailleurs — l'atelier de l'eau le remonte près de ses
+   onglets pour dégager les champs de pesée — sans qu'un style en ligne gagne
+   contre sa règle. */
+.floating-actions {
+  right: var(--floating-actions-right, 0.75rem);
+  bottom: var(--floating-actions-bottom, 1rem);
+}
+
+/* Sans case (page plein écran, clavier fermé), le bouton flotte avec la forme de sa case des onglets (BX-4, 09.11 :
+   « Différents ») : 64 × 40, à 12 px du bord droit comme sur la barre, décollé de 16 px du bas. */
+.floating-actions > button {
+  width: var(--floating-actions-width, 4rem);
+  height: var(--floating-actions-height, 2.5rem);
+}
+
+/* Flottant, il porte une ombre franche et décalée : `shadow-lift` se perdait sur
+   le fond de page, et le bouton seul dans le coin se lisait comme un pied (#114).
+   La variable de `shadow-lift` est remplacée, pas `box-shadow` : l'anneau du ton
+   discret passe aussi par `box-shadow` et doit rester. */
+.floating-actions[data-floating-actions-docked="false"] > button {
+  --tw-shadow: 0 10px 22px -6px rgba(0, 0, 0, 0.9), 0 4px 8px -2px rgba(0, 0, 0, 0.7);
+}
+
+.floating-actions .floating-actions-icon {
+  width: var(--floating-actions-icon, 1.5rem);
+  height: var(--floating-actions-icon, 1.5rem);
+}
+
+/* Onglets : le bouton prend la case réservée à droite de la barre, à sa hauteur.
+   La barre se raccourcit d'autant, au lieu que le bouton flotte au-dessus du
+   contenu défilant et reçoive le toucher d'un champ passé dessous. */
+.app-bottom-dock > nav {
+  right: var(--floating-actions-nav-dock, 5rem);
+}
+
+.app-bottom-dock-cell {
+  width: var(--floating-actions-nav-dock, 5rem);
+  height: var(--main-navigation-height, auto);
+}
+
+/* Fin de liste sur les onglets : la dernière ligne dégage la barre et sa case.
+   Le bouton n'y flotte pas : aucune réserve supplémentaire pour lui. */
+[data-floating-actions-gap="nav"] {
+  padding-bottom: calc(var(--main-navigation-height, 2.5rem) + 0.75rem);
+}
+
+/* Page plein écran : le bouton flotte par-dessus le contenu (#114). La fin du
+   contenu réserve sa place, sans plus — 48 px, 16 px de décalage, 8 px d'air,
+   zone sûre — pour que le dernier champ défile AU-DESSUS du bouton et reçoive
+   le toucher ; la même marge garde un champ atteint au clavier hors de dessous. */
+:root body[data-has-fab-floating] [data-floating-actions-gap="page"] {
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+:root body[data-has-fab-floating] [data-page-shell] > main {
+  scroll-padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Avec un pied, c'est lui qui porte la zone sûre et le bouton se pose dessus :
+   elle n'est pas comptée une seconde fois. */
+:root body[data-has-fab-floating] [data-page-shell][data-page-footer] [data-floating-actions-gap="page"] {
+  padding-bottom: 4.5rem;
+}
+
+:root body[data-has-fab-floating] [data-page-shell][data-page-footer] > main {
+  scroll-padding-bottom: 4.5rem;
+}
+
+/* Ancienne réserve, gardée telle quelle pour une surface qui porterait encore
+   l'attribut nu (`data-floating-actions-gap` rendu `="true"`). */
+body[data-has-fab] [data-floating-actions-gap="true"] {
+  padding-bottom: 4.5rem;
+}
+
+/* Une feuille ou une modale possède l'interaction : le bouton s'efface plutôt
+   que de flotter au-dessus d'un formulaire qu'il ne peut pas servir. Sa case
+   reste réservée : la page ne saute pas à l'ouverture de la feuille. C'est la
+   racine qui s'efface : le bouton porte son `display` en ligne, pour qu'aucune
+   feuille d'écran ne le retire de sa case hors de ces deux cas. */
+:root body[data-has-modal] .floating-actions,
+:root body[data-has-drawer-open] .floating-actions,
+:root body[data-has-fiche-page] .floating-actions {
+  display: none;
+}
+
+/* L'atelier de l'eau docke lui-même le bouton dans sa rangée d'onglets
+   (`water/workshop.css`). La case d'en-tête, clavier ouvert, serait alors
+   vide : elle se retire, et la fin du contenu ne réserve rien pour un bouton
+   posé en haut (12 px, la marge ordinaire). Même borne que l'atelier. */
+@media (max-width: 639px) {
+  body[data-has-water-sels] [data-action-dock^="page"] {
+    display: none;
+  }
+
+  body[data-has-water-sels] [data-page-shell] [data-floating-actions-gap="page"] {
+    padding-bottom: 12px;
+  }
+
+  body[data-has-water-sels][data-has-fab] [data-page-shell] > main {
+    scroll-padding-bottom: 0;
+  }
+}
+
+/* BR-28, BR-89, BR-103, TL-31, BE-13, BE-56, T3-10 (19.11) : « masquer au défilement vers le bas, réafficher vers le haut ou à l'arrêt ». `FloatingActions`
+   pose `data-floating-actions-masque="true"` pendant la descente : le + est transparent et ne reçoit plus le toucher (rien ne se déclenche sous un +
+   invisible). La transition (160 ms) ne joue que si le brasseur n'a pas demandé moins de mouvement ; sinon le + apparaît et disparaît sans animation. */
+.floating-actions[data-floating-actions-masque="true"] > button {
+  opacity: 0;
+  scale: 0.85;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .floating-actions > button {
+    transition: opacity 160ms ease, scale 160ms ease, transform 150ms ease;
+  }
+}
+
+/* T3-10 (19.11, en ligne) : sur une liste dont les quantités et les boutons vivent au bord droit (Stocks › Courses), le + flottant (56 px, 12 px du bord)
+   cachait « 2 L », « 133,7 g » ou « Copier » à chaque ligne qui passait dessous. Une gouttière de 76 px (56 + 12 + 8 d'air) à droite de la liste les garde
+   à gauche du +, à tout défilement. Au rail (1024 px et plus) le + est dans le coin du contenu large : aucune gouttière.
+   Le bloc Courses se reconnaît à son premier enfant (`data-testid="commande-repliee"`) : aucun attribut ajouté à StocksTab. */
+@media (max-width: 1023px) {
+  .stocks-screen > :has(> [data-testid="commande-repliee"]) {
+    padding-right: 4.75rem;
+  }
+}
+
+/* k1, points 9 et 10 (19.11, critique) : AU REPOS (page arrêtée, le + visible) le + (56 px, 12 px du bord) couvrait la rangée d'onglets de l'atelier houblons
+   (« Historique ») dans l'étape Houblons, au téléphone debout et couché, et — couché seulement (844 × 340, le + tombe à la hauteur du champ) — « Recherche avancée »,
+   la légende et les cartes de la liste d'ajouts. Ces rangées gardent la place du + (76 px : 56 + 12 + 8 d'air) à leur droite, sous 1024 px et seulement quand le + flotte ;
+   le reste de la page, en défilement, est servi par le masque (BR-28). La rangée « Suivant » a la sienne depuis b4c92eb73 (page-shell.css). */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] .recipe-hop-v55 .hv-nav {
+    padding-right: 4.75rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  :root body[data-has-fab-floating] [data-role="ajouts-proposes"] {
+    padding-right: 4.75rem;
+  }
+}
+
+/* k2, points 19 et 20 (20.11, critique) : AU REPOS, le + (64 px, 12 px du bord) recouvrait le texte d'un plan d'eau incompatible sur l'écran NOLO (390), et il touchait presque
+   « Suivant — Houblons » (11 px d'écart) : au pouce, un bouton pour l'autre. Même gouttière de 76 px que T3-10 et k1 : les textes de l'écran NOLO la gardent à leur droite ;
+   la rangée « Suivant » prend 88 px (24 px d'air entre les deux boutons). Sous 1024 px et seulement quand le + flotte. Le sélecteur de la rangée répète l'attribut : il passe devant la règle de page-shell.css. */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] .nolo-simulator :is(p, ul) {
+    padding-right: 4.75rem;
+  }
+
+  :root body[data-has-fab-floating] .page-shell [data-page-end-actions][data-page-end-actions] {
+    padding-right: 5.5rem;
+  }
+}
+
+/* w1 k3, points 3 et 4 (20.11) : au repos, le + (64 px, 12 px du bord) recouvrait le chevron de « Texte complet et fichier .txt » dans le menu « Plus » du Récap,
+   et mordait le cadre de l'invite de matériel de l'Identité en collant son bouton. Même gouttière de 76 px : le bloc d'export du menu la garde à sa droite ; le cadre
+   de l'invite s'arrête avant le + (marge, pas remplissage : un remplissage laisserait le cadre sous le +). Sous 1024 px, quand le + flotte. */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] .rc2-plus .rc2-plus-ex {
+    padding-right: 4.75rem;
+  }
+
+  :root body[data-has-fab-floating] aside[aria-label="Matériel requis pour le scénario NOLO"] {
+    margin-right: 4.75rem;
+  }
+}
+
+/* w1 k3, point 5 (20.11) : au repos, la barre « Retour · Suivant » collante coupait le bas des cartes de l'Identité (« Espace libre », « Matériel ») sans un trait :
+   la coupe se lisait comme un défaut de carte. Un filet fin marque le bord de la barre ; la carte passe dessous, comme sous toute barre collante. */
+@media (min-width: 640px) {
+  .page-shell [data-page-end-actions] {
+    box-shadow: 0 -1px 0 rgb(var(--cave-700));
+  }
+}
+
+/* f2 k3, point 13 (20.11) : Opérations à 844 × 340 (téléphone couché) range la liste dans la colonne de droite (operations.css, T3-9), et le + au repos (64 px, 12 px du bord)
+   recouvrait « +720,00 » et « + pièce » de « Vente au marché ». Même gouttière de 76 px (56 + 12 + 8 d'air) à droite de la colonne : les montants et les boutons restent à
+   gauche du +. Même borne que la disposition en deux colonnes ; seulement quand le + flotte. */
+@media (min-width: 600px) and (max-width: 899px) and (max-height: 520px) {
+  :root body[data-has-fab-floating] .ops > :not(.ops-bande) {
+    padding-right: 4.75rem;
+  }
+}
+
+/* ct4b tour 2, point 7 (CT4-B-12 rouvert, critique k4) : l'éditeur de recette. Au repos (le + visible), le + (64 px, 12 px du bord) recouvrait, à un état de défilement ou à l'autre,
+   la bascule NOLO de l'Identité, la rangée « Au style · Absolu » de l'étape Houblons, l'onglet « Rinçage » de l'Eau et « Rétablir ce palier » de la Levure (390, debout).
+   Même gouttière de 76 px (56 + 12 + 8 d'air) que T3-10 et k1 à k3 : ces rangées s'arrêtent avant le +. Mesuré à chaque pas de défilement (voies/ct4b/mesure.mjs 7). */
+@media (max-width: 1023px) {
+  :root body[data-has-fab-floating] [data-gouttiere-plus],
+  :root body[data-has-fab-floating] .recipe-wizard .ew-tabs,
+  :root body[data-has-fab-floating] .recipe-wizard .ew-arr,
+  :root body[data-has-fab-floating] .recipe-wizard .pq-comparer-rad-h,
+  :root body[data-has-fab-floating] .recipe-wizard .yc-phase-baseline,
+  :root body[data-has-fab-floating] .recipe-wizard .yc-phase-structure {
+    padding-right: 4.75rem;
+  }
+
+  :root body[data-has-fab-floating] .recipe-wizard .idn-nolo,
+  :root body[data-has-fab-floating] .recipe-wizard .pq-ma-biere-pont-analyse {
+    max-width: calc(100% - 4.75rem);
+  }
+
+  :root body[data-has-fab-floating] .recipe-wizard .ew.ew button.ew-lien {
+    width: calc(100% - 4.75rem);
+  }
+}
+
+/* Téléphone couché (844 × 340) : la largeur ne manque pas et le + tombe à la hauteur des champs (« 0 L libre, plein », la durée d'ébullition…). Tout le contenu de l'éditeur
+   garde la gouttière de 76 px à droite ; la rangée Retour / Suivant a déjà la sienne. */
+@media (orientation: landscape) and (max-height: 520px) {
+  :root body[data-has-fab-floating] .recipe-wizard :is([data-floating-actions-gap="page-row"], [data-floating-actions-gap="page"]) {
+    padding-right: 5.25rem;
+  }
+
+  :root body[data-has-fab-floating] .recipe-wizard .page-shell [data-page-end-actions][data-page-end-actions][data-page-end-actions] {
+    padding-right: 0;
+  }
+}

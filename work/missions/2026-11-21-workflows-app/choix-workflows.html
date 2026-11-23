@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workflows · 4 choix · 21.11</title>
+<style>
+  :root { --fond:#f3f3f1; --carte:#fff; --trait:#b9b9b4; --pas:#e8e8e4; --encre:#2b2b29; --gris:#6a6a66; --fort:#1f1f1d; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--fond); color:var(--encre); font:16px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width:980px; margin:0 auto; padding:10px 8px 40px; }
+  h1 { font-size:22px; margin:4px 0 2px; }
+  .sous { color:var(--gris); margin:0 0 10px; font-size:15px; }
+  #a-choisir { background:var(--carte); border:2px solid var(--fort); border-radius:10px; padding:10px; margin-bottom:12px; }
+  #a-choisir h2 { font-size:17px; margin:0 0 6px; }
+  #a-choisir ol { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+  #a-choisir a { display:flex; gap:8px; align-items:baseline; color:inherit; text-decoration:none; min-height:44px; padding:6px 8px; border:1.5px solid var(--trait); border-radius:8px; background:var(--fond); }
+  #a-choisir a b { font-size:18px; }
+  .rep { margin:8px 0 0; font-size:15px; }
+  .rep code { font:inherit; font-weight:700; }
+  details.regle { background:var(--carte); border:1.5px dashed var(--trait); border-radius:10px; padding:8px 10px; margin-bottom:14px; }
+  details.regle summary { font-size:15px; font-weight:600; min-height:32px; cursor:pointer; }
+  details.regle li { font-size:15px; margin:4px 0; }
+  section.choix { background:var(--carte); border:1.5px solid var(--trait); border-radius:12px; padding:10px 8px; margin:0 0 14px; }
+  section.choix h2 { font-size:19px; margin:0 0 6px; }
+  section.choix h2 .lettre { display:inline-block; min-width:28px; text-align:center; background:var(--fort); color:#fff; border-radius:6px; margin-right:6px; }
+  blockquote { margin:0 0 8px; padding:4px 0 4px 10px; border-left:3px solid var(--fort); font-style:italic; font-size:15px; }
+  .gain { display:flex; gap:10px; align-items:center; margin:0 0 10px; padding:6px; background:var(--fond); border-radius:8px; }
+  .gain .vignette img { display:block; width:72px; height:auto; border:1px solid var(--trait); border-radius:4px; }
+  .gain p { margin:0; font-size:15px; }
+  .gain .gros { font-size:22px; font-weight:800; }
+  .options { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:6px; }
+  .opt { border:1.5px solid var(--trait); border-radius:10px; padding:6px 5px; display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .opt h3 { font-size:15px; margin:0; line-height:1.2; }
+  .opt h3 .code { display:block; font-size:18px; font-weight:800; }
+  .compte { margin:0; font-size:14px; color:var(--gris); }
+  .compte b { font-size:24px; color:var(--fort); }
+  .pas { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; counter-reset:n; }
+  .pas li { counter-increment:n; background:var(--pas); border-radius:6px; padding:4px 5px 4px 26px; position:relative; font-size:14px; line-height:1.25; overflow-wrap:anywhere; }
+  .pas li::before { content:counter(n); position:absolute; left:4px; top:4px; width:18px; height:18px; border-radius:50%; background:var(--fort); color:#fff; font-size:14px; line-height:18px; text-align:center; font-weight:700; }
+  .pas li.plus-tard { background:#fff; border:2px dashed var(--gris); color:var(--gris); }
+  .pas i { font-style:normal; font-weight:700; }
+  .seul { margin:0; font-size:14px; border:1.5px dashed var(--fort); border-radius:6px; padding:4px 5px; overflow-wrap:anywhere; }
+  .seul b { display:block; }
+  .commun { margin:8px 0 0; font-size:14px; color:var(--gris); }
+  footer { color:var(--gris); font-size:14px; margin-top:16px; }
+  @media (min-width:700px) {
+    main { padding:16px 16px 40px; }
+    #a-choisir ol { grid-template-columns:1fr 1fr; }
+    .options { gap:12px; }
+    .opt { padding:10px; }
+    .pas li, .seul, .compte { font-size:15px; }
+    .gain .vignette img { width:110px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Workflows de l'app · 4 choix</h1>
+  <p class="sous">21.11 · fil de fer : des gestes, pas un dessin d'écran</p>
+
+  <nav id="a-choisir">
+    <h2>À choisir : une option par lettre</h2>
+    <ol>
+      <li><a href="#A"><b>A</b> Vendre 6 bouteilles d'un geste</a></li>
+      <li><a href="#B"><b>B</b> Où lire ce qu'il reste à vendre</a></li>
+      <li><a href="#C"><b>C</b> Quand « dans 3 mois » devient un jour</a></li>
+      <li><a href="#D"><b>D</b> D'où vient le prix d'un projet</a></li>
+    </ol>
+    <p class="rep">Réponse : <code>A1 B2 C3 D1</code>, par exemple. Mélanger deux options marche aussi.</p>
+    <p class="rep">Case grise = un geste. Pointillé = plus tard, s'il veut.</p>
+  </nav>
+
+  <details class="regle">
+    <summary>Réglé sans ton choix : 11 bugs, 5 propositions</summary>
+    <ul>
+      <li>Bugs : recette neuve vers brassin, feuille Brasser, Calendrier qui ne s'ouvre pas, récap vert puis refus.</li>
+      <li>Bugs : la vente solde la commande promise ; la facture solde l'achat prévu ; un fût vendu sort de la cave.</li>
+      <li>Bugs : barre lâchée au mauvais endroit, courbe qui lit août, loupe aveugle au Calendrier, bières en vente cachées.</li>
+      <li>Un brassin planifié pose son coût estimé et ses courses.</li>
+      <li>Une seule caisse : le point le plus bas à venir, partout le même.</li>
+      <li>Ce que l'app sait ne se retape pas : α du lot, litres et coût du brassin, styles déjà brassés.</li>
+      <li>Un projet ou une recette datés partent au Calendrier, comme tu l'as dit.</li>
+      <li>Mettre un lot en fûts : 8 gestes deviennent 3.</li>
+    </ul>
+  </details>
+
+  <!-- A -->
+  <section class="choix" id="A">
+    <h2><span class="lettre">A</span>Vendre 6 bouteilles d'un geste</h2>
+    <blockquote>« Clicker pour ouvrir le clavier et taper c'est déjà beaucoup d'action... »</blockquote>
+    <div class="gain">
+      <a class="vignette" data-vignette href="vendre/captures/c1-02-caisse.png"><img src="vendre/captures/c1-02-caisse.png" alt="La caisse aujourd'hui"></a>
+      <p><b>Gain mesuré :</b> <span class="gros">10 → 5</span> gestes (−50 %). Aujourd'hui 7,3 s pour 6 × 33 cl ; 28 gestes pour 24.</p>
+    </div>
+    <div class="options">
+      <article class="opt">
+        <h3><span class="code">A1</span>Glisser la tuile</h3>
+        <p class="compte"><b>5</b> gestes · 24 bt : 5</p>
+        <ol class="pas">
+          <li><i>toucher</i> +</li>
+          <li><i>toucher</i> Vente</li>
+          <li><i>glisser ↑</i> sur 33 cl : 1, 6, 12, 24</li>
+          <li><i>toucher</i> TWINT</li>
+          <li><i>toucher</i> Encaisser</li>
+        </ol>
+        <p class="seul"><b>Suit le doigt</b>total, Mon mois, reste du brassin</p>
+      </article>
+      <article class="opt">
+        <h3><span class="code">A2</span>Appui long</h3>
+        <p class="compte"><b>6</b> gestes · 24 bt : 6</p>
+        <ol class="pas">
+          <li><i>toucher</i> +</li>
+          <li><i>toucher</i> Vente</li>
+          <li><i>appui long</i> 33 cl</li>
+          <li><i>toucher</i> 6 · 12 · 24</li>
+          <li><i>toucher</i> TWINT</li>
+          <li><i>toucher</i> Encaisser</li>
+        </ol>
+        <p class="seul"><b>Après le toucher</b>total, Mon mois, reste du brassin</p>
+      </article>
+      <article class="opt">
+        <h3><span class="code">A3</span>Pas de 6</h3>
+        <p class="compte"><b>5</b> gestes (6 la 1re fois) · 24 bt : 8</p>
+        <ol class="pas">
+          <li><i>toucher</i> +</li>
+          <li><i>toucher</i> Vente</li>
+          <li><i>toucher</i> ×6, la 1re fois seulement</li>
+          <li><i>toucher</i> 33 cl : +6</li>
+          <li><i>toucher</i> TWINT</li>
+          <li><i>toucher</i> Encaisser</li>
+        </ol>
+        <p class="seul"><b>Après le toucher</b>total, Mon mois, reste du brassin</p>
+      </article>
+    </div>
+    <p class="commun">Dans les trois : le toucher simple garde +1 ; TWINT et Espèces passent à 44 px.</p>
+  </section>
+
+  <!-- B -->
+  <section class="choix" id="B">
+    <h2><span class="lettre">B</span>Où lire ce qu'il reste à vendre</h2>
+    <blockquote>« la vue sur le stock type épicerie, ça c'est du grand art »</blockquote>
+    <div class="gain">
+      <a class="vignette" data-vignette href="vendre/captures/c1-v-Brassins.png"><img src="vendre/captures/c1-v-Brassins.png" alt="Brassins aujourd'hui, sans les bières en vente"></a>
+      <p><b>Gain mesuré :</b> <span class="gros">impossible → 1 à 2</span> gestes. Aucun écran ne dit qu'il reste 114 × 33 cl (joué).</p>
+    </div>
+    <div class="options">
+      <article class="opt">
+        <h3><span class="code">B1</span>Carte du brassin</h3>
+        <p class="compte"><b>1</b> geste</p>
+        <ol class="pas">
+          <li><i>toucher</i> Brassins</li>
+          <li><i>lire</i> Pale Ale · 114 × 33 cl · 2 fûts</li>
+          <li class="plus-tard">pour vendre : <i>toucher</i> le reste</li>
+        </ol>
+        <p class="seul"><b>Seul</b>chaque vente baisse le reste</p>
+      </article>
+      <article class="opt">
+        <h3><span class="code">B2</span>Rayon Bière, épicerie</h3>
+        <p class="compte"><b>2</b> gestes</p>
+        <ol class="pas">
+          <li><i>toucher</i> Stocks</li>
+          <li><i>toucher</i> Bière</li>
+          <li><i>lire</i> rayons bouteilles et fûts pleins</li>
+          <li class="plus-tard">pour vendre : <i>toucher</i> la bière</li>
+        </ol>
+        <p class="seul"><b>Seul</b>le rayon se vide à la vente ; un fût livré le quitte</p>
+      </article>
+      <article class="opt">
+        <h3><span class="code">B3</span>Caisse seulement</h3>
+        <p class="compte"><b>2</b> gestes · rien de neuf</p>
+        <ol class="pas">
+          <li><i>toucher</i> +</li>
+          <li><i>toucher</i> Vente</li>
+          <li><i>lire</i> la tuile : reste 114</li>
+        </ol>
+        <p class="seul"><b>Seul</b>la tuile se grise à 0</p>
+      </article>
+    </div>
+    <p class="commun">Dans les trois : le reste se calcule depuis les ventes ; une vente d'avant la caisse n'est pas comptée, et c'est dit.</p>
+  </section>
+
+  <!-- C -->
+  <section class="choix" id="C">
+    <h2><span class="lettre">C</span>Quand « dans 3 mois » devient un jour</h2>
+    <blockquote>« juste, aujourd'hui, dans 1 mois, dans 3 mois. Ou plus... Et plus reporté à dans 6m 1 ans »</blockquote>
+    <div class="gain">
+      <a class="vignette" data-vignette href="projets-captures/t4-C6-recette.png"><img src="projets-captures/t4-C6-recette.png" alt="L'assistant de recette aujourd'hui, sans date"></a>
+      <p><b>Gain mesuré :</b> <span class="gros">7 → 1</span> geste (compté). Idée à 3 mois : un carrousel qui part de janvier.</p>
+    </div>
+    <div class="options">
+      <article class="opt">
+        <h3><span class="code">C1</span>Au glisser</h3>
+        <p class="compte"><b>1</b> + 1 s'il veut</p>
+        <ol class="pas">
+          <li><i>toucher</i> 3 mois : « vers févr. »</li>
+          <li class="plus-tard"><i>glisser</i> sur la frise : la semaine</li>
+          <li class="plus-tard">Brasser : le jour</li>
+        </ol>
+        <p class="seul"><b>Seul</b>Calendrier, courses et coût à l'horizon</p>
+      </article>
+      <article class="opt">
+        <h3><span class="code">C2</span>Quand le jour compte</h3>
+        <p class="compte"><b>1</b> + 1 à Brasser</p>
+        <ol class="pas">
+          <li><i>toucher</i> 3 mois : « vers févr. »</li>
+          <li class="plus-tard">Brasser propose « sem. du 2 févr. »</li>
+          <li class="plus-tard"><i>toucher</i> : le jour</li>
+        </ol>
+        <p class="seul"><b>Seul</b>Calendrier, courses et coût à l'horizon</p>
+      </article>
+      <article class="opt">
+        <h3><span class="code">C3</span>L'app relance</h3>
+        <p class="compte"><b>1</b> + 1 au Bord</p>
+        <ol class="pas">
+          <li><i>toucher</i> 3 mois : « vers févr. »</li>
+          <li class="plus-tard">4 sem. avant, le Bord : « quelle semaine ? » cuve libre proposée</li>
+          <li class="plus-tard"><i>toucher</i> la semaine</li>
+        </ol>
+        <p class="seul"><b>Seul</b>idem, et la cuve se réserve</p>
+      </article>
+    </div>
+    <p class="commun">Dans les trois : aujourd'hui · 1 mois · 3 mois · 6 mois · 1 an · plus tard ; reporter = 1 toucher. Pointillé : plus tard.</p>
+  </section>
+
+  <!-- D -->
+  <section class="choix" id="D">
+    <h2><span class="lettre">D</span>D'où vient le prix d'un projet</h2>
+    <blockquote>« on peut aussi lui donner ou estimer directement un prix... En 1 bouton on a 3 action super précise »</blockquote>
+    <div class="gain">
+      <a class="vignette" data-vignette href="projets-captures/e-carnet-projet.png"><img src="projets-captures/e-carnet-projet.png" alt="La fiche d'un projet aujourd'hui"></a>
+      <p><b>Gain mesuré :</b> <span class="gros">aucun</span> encore. La fiche n'a aucun geste (joué) ; clavier 3 à 4 gestes → 1 (estimé).</p>
+    </div>
+    <div class="options">
+      <article class="opt">
+        <h3><span class="code">D1</span>Ordre de grandeur</h3>
+        <p class="compte"><b>1</b> geste</p>
+        <ol class="pas">
+          <li><i>toucher</i> 100 · 200 · 500 · 1 000 · 5 000</li>
+          <li class="plus-tard"><i>glisser</i> pour ajuster</li>
+        </ol>
+        <p class="seul"><b>Seul</b>« estimé » dans la courbe</p>
+      </article>
+      <article class="opt">
+        <h3><span class="code">D2</span>Dernier achat semblable</h3>
+        <p class="compte"><b>1</b> geste</p>
+        <ol class="pas">
+          <li><i>lire</i> « Pompe 2025 : 420 »</li>
+          <li><i>toucher</i> garder</li>
+          <li class="plus-tard">rien de semblable : D1</li>
+        </ol>
+        <p class="seul"><b>Seul</b>« estimé » dans la courbe</p>
+      </article>
+      <article class="opt">
+        <h3><span class="code">D3</span>Fourchette</h3>
+        <p class="compte"><b>1</b> geste</p>
+        <ol class="pas">
+          <li><i>glisser</i> 2 poignées : 300 – 600</li>
+        </ol>
+        <p class="seul"><b>Seul</b>la caisse prévue compte le haut</p>
+      </article>
+    </div>
+    <p class="commun">Dans les trois : la facture réelle remplace l'estimé. L'estimation par IA est écartée : chiffre inventé et facturé.</p>
+  </section>
+
+  <footer>Détail, chiffres et gimmicks écartés : SYNTHESE.md, même dossier.</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,635 @@
+{
+  "source": {
+    "id": "freestylehops",
+    "nom": "Freestyle Hops Ltd",
+    "hote": "www.freestylehops.com",
+    "type": "producteur et fournisseur (Nouvelle-Zélande)",
+    "conditions": "robots.txt : User-agent * « Allow: / », Content-Signal search=yes, ai-train=no, use=reference ; ClaudeBot, Claude-Web et anthropic-ai y sont interdits nommément ; aucune licence de réutilisation lue",
+    "diffusion": "usage non commercial, dans l'app seulement ; aucun entraînement d'IA ; pas de republication du texte (gardé dans le cache, hors du dépôt)",
+    "autorisation": {
+      "citation": "Tu peux y aller, j'ai eu leur autorisation explicite. Pour un usage non commerciales, c'est bon, tu dois juste pas être trop intrusif",
+      "date": "2026-10-26",
+      "declaree_par": "utilisateur",
+      "nature": "déclarée par l'utilisateur, non vérifiée par l'agent",
+      "limites": "une requête toutes les 2 s, une seule à la fois, 80 au plus ; seulement les pages variétés et leurs fiches PDF liées ; arrêt sur 401, 403, 429 ou défi"
+    },
+    "releve": "2026-10-26"
+  },
+  "fiches": [
+    {
+      "nom": "Kohia Nelson",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.freestylehops.com/hop-varieties/kohia-nelson/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "kohia-nelson",
+      "titre": "Kohia Nelson™",
+      "nature": "mélange",
+      "marque": {
+        "symbole": "™",
+        "nom": "Kohia Nelson"
+      },
+      "modifieSitemap": "2025-12-08",
+      "champs": {
+        "sucresBrix": {
+          "champ": "brix",
+          "brut": "0.45 brix",
+          "valeur": 0.45,
+          "min": null,
+          "max": null,
+          "unite": "brix",
+          "base": null
+        },
+        "sucresTotaux": {
+          "champ": "total sugars",
+          "brut": "4.5g of total sugars per kg of pellets",
+          "valeur": 4.5,
+          "min": null,
+          "max": null,
+          "unite": "g/kg",
+          "base": "de granulés"
+        }
+      },
+      "listes": {
+        "descripteurs": [
+          "pink grapefruit",
+          "passion fruit",
+          "tropical",
+          "orange",
+          "citrus",
+          "guava"
+        ],
+        "composition": [
+          "Nelson Sauvin",
+          "Rakau"
+        ]
+      }
+    },
+    {
+      "nom": "Limequat",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.freestylehops.com/hop-varieties/maui-nelson-2/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "maui-nelson-2",
+      "titre": "Limequat™",
+      "nature": "mélange",
+      "marque": {
+        "symbole": "™",
+        "nom": "Limequat"
+      },
+      "modifieSitemap": "2026-10-23",
+      "champs": {},
+      "listes": {
+        "descripteurs": [
+          "zesty lime",
+          "tropical",
+          "floral"
+        ],
+        "stadesRecolte": [
+          "mid"
+        ]
+      }
+    },
+    {
+      "nom": "Maui Nelson",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.freestylehops.com/hop-varieties/maui-nelson/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "maui-nelson",
+      "titre": "Maui Nelson™",
+      "nature": "produit (infusion de fruit)",
+      "marque": {
+        "symbole": "™",
+        "nom": "Maui Nelson"
+      },
+      "modifieSitemap": "2026-10-23",
+      "champs": {},
+      "listes": {}
+    },
+    {
+      "nom": "Mega Motueka",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.freestylehops.com/hop-varieties/mega-motueka/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "mega-motueka",
+      "titre": "Mega Motueka",
+      "nature": "mélange",
+      "modifieSitemap": "2025-11-24",
+      "champs": {
+        "dosageWhirlpool": {
+          "champ": "whirlpool dosage rates",
+          "brut": "whirlpool dosage rates from 4 g/L upwards",
+          "valeur": null,
+          "min": 4,
+          "max": null,
+          "unite": "g/L",
+          "base": null,
+          "operateur": ">="
+        }
+      },
+      "listes": {
+        "descripteurs": [
+          "passion fruit",
+          "tropical",
+          "citrus",
+          "green grape",
+          "lime"
+        ],
+        "composition": [
+          "Motueka",
+          "Phantasm"
+        ],
+        "thiols": [
+          "3SH"
+        ],
+        "composesCites": [
+          "linalool",
+          "geraniol"
+        ]
+      }
+    },
+    {
+      "nom": "Motueka",
+      "alias": [],
+      "varietyId": "beermaverick-motueka",
+      "url": "https://www.freestylehops.com/hop-varieties/motueka/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "motueka",
+      "titre": "Motueka",
+      "nature": "variété",
+      "modifieSitemap": "2025-11-24",
+      "champs": {},
+      "listes": {
+        "descripteurs": [
+          "lemon/lime",
+          "tropical",
+          "citrus",
+          "zesty lime",
+          "lemon",
+          "lime",
+          "floral"
+        ],
+        "stadesRecolte": [
+          "early",
+          "late"
+        ]
+      }
+    },
+    {
+      "nom": "Nectaron",
+      "alias": [
+        "Nectaron® by Freestyle"
+      ],
+      "varietyId": "beermaverick-nectaron",
+      "url": "https://www.freestylehops.com/hop-varieties/nectaron/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "nectaron",
+      "titre": "Nectaron® by Freestyle",
+      "nature": "variété",
+      "marque": {
+        "symbole": "®",
+        "nom": "Nectaron"
+      },
+      "modifieSitemap": "2025-11-24",
+      "champs": {},
+      "listes": {
+        "descripteurs": [
+          "tropical"
+        ]
+      }
+    },
+    {
+      "nom": "Nelson Sauvin",
+      "alias": [
+        "Freestyle Nelson Sauvin"
+      ],
+      "varietyId": "beermaverick-nelson-sauvin",
+      "url": "https://www.freestylehops.com/hop-varieties/nelson-sauvin/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "nelson-sauvin",
+      "titre": "Freestyle Nelson Sauvin",
+      "nature": "variété",
+      "modifieSitemap": "2025-11-24",
+      "champs": {},
+      "listes": {
+        "descripteurs": [
+          "gooseberry",
+          "dank",
+          "wine-y",
+          "grape",
+          "white wine",
+          "citrus",
+          "tropical",
+          "cannabis",
+          "pink grapefruit",
+          "passion fruit",
+          "nectarine"
+        ],
+        "accords": [
+          "Southern Cross"
+        ],
+        "stadesRecolte": [
+          "early",
+          "mid",
+          "late"
+        ]
+      }
+    },
+    {
+      "nom": "NZ Cascade",
+      "alias": [],
+      "varietyId": "beermaverick-cascade",
+      "url": "https://www.freestylehops.com/hop-varieties/nz-cascade/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "nz-cascade",
+      "titre": "NZ Cascade",
+      "nature": "variété",
+      "modifieSitemap": "2025-11-24",
+      "champs": {},
+      "listes": {
+        "descripteurs": [
+          "red berry",
+          "tropical",
+          "citrus",
+          "grapefruit",
+          "apple blossom"
+        ],
+        "stadesRecolte": [
+          "late"
+        ]
+      }
+    },
+    {
+      "nom": "Pacifica",
+      "alias": [],
+      "varietyId": "beermaverick-pacifica",
+      "url": "https://www.freestylehops.com/hop-varieties/pacifica/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "pacifica",
+      "titre": "Pacifica",
+      "nature": "variété",
+      "modifieSitemap": "2025-11-24",
+      "champs": {},
+      "listes": {
+        "descripteurs": [
+          "citrus",
+          "floral",
+          "citrus blossom",
+          "orange",
+          "kiwi"
+        ]
+      }
+    },
+    {
+      "nom": "Peacharine",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.freestylehops.com/hop-varieties/peacharine/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "peacharine",
+      "titre": "Peacharine®",
+      "nature": "variété",
+      "marque": {
+        "symbole": "®",
+        "nom": "Peacharine"
+      },
+      "modifieSitemap": "2025-12-08",
+      "champs": {},
+      "listes": {
+        "descripteurs": [
+          "nectarine",
+          "citrus",
+          "peach",
+          "lime zest",
+          "floral"
+        ],
+        "accords": [
+          "NZ Cascade"
+        ],
+        "stadesRecolte": [
+          "mid",
+          "late"
+        ]
+      }
+    },
+    {
+      "nom": "Rakau",
+      "alias": [],
+      "varietyId": "beermaverick-rakau",
+      "url": "https://www.freestylehops.com/hop-varieties/rakau/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "rakau",
+      "titre": "Rakau",
+      "nature": "variété",
+      "modifieSitemap": "2025-11-24",
+      "champs": {},
+      "listes": {
+        "descripteurs": [
+          "stone fruit",
+          "apricot",
+          "dank",
+          "cannabis"
+        ],
+        "accords": [
+          "Nelson Sauvin",
+          "Waimea"
+        ]
+      }
+    },
+    {
+      "nom": "Riwaka",
+      "alias": [],
+      "varietyId": "beermaverick-riwaka",
+      "url": "https://www.freestylehops.com/hop-varieties/riwaka/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "riwaka",
+      "titre": "Riwaka",
+      "nature": "variété",
+      "modifieSitemap": "2025-11-24",
+      "champs": {},
+      "listes": {
+        "descripteurs": [
+          "citrus",
+          "tropical",
+          "papaya",
+          "lychee"
+        ]
+      }
+    },
+    {
+      "nom": "Southern Cross",
+      "alias": [],
+      "varietyId": "beermaverick-southern-cross",
+      "url": "https://www.freestylehops.com/hop-varieties/southern-cross/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "southern-cross",
+      "titre": "Southern Cross",
+      "nature": "variété",
+      "modifieSitemap": "2025-11-24",
+      "champs": {},
+      "listes": {
+        "descripteurs": [
+          "tropical",
+          "citrus",
+          "lemon",
+          "lime",
+          "pine"
+        ],
+        "accords": [
+          "Nelson Sauvin"
+        ],
+        "stadesRecolte": [
+          "late"
+        ]
+      }
+    },
+    {
+      "nom": "SubZero Hop Kief",
+      "alias": [
+        "SubZero Hop Kief ®"
+      ],
+      "varietyId": null,
+      "url": "https://www.freestylehops.com/hop-varieties/subzero-hop-kief/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "subzero-hop-kief",
+      "titre": "SubZero Hop Kief ®",
+      "nature": "produit (extrait)",
+      "marque": {
+        "symbole": "®",
+        "nom": "SubZero Hop Kief"
+      },
+      "remarques": [
+        "sans acides alpha (publié)"
+      ],
+      "modifieSitemap": "2025-11-24",
+      "champs": {
+        "ethanol": {
+          "champ": "EtOH",
+          "brut": "~24% EtOH by weight",
+          "valeur": 24,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": "en poids"
+        },
+        "volumeBouteille": {
+          "champ": "bottle",
+          "brut": "275 mL bottles",
+          "valeur": 275,
+          "min": null,
+          "max": null,
+          "unite": "mL",
+          "base": null
+        },
+        "volumeUtile": {
+          "champ": "SZHK volume",
+          "brut": "approximately 260 mL of SZHK",
+          "valeur": 260,
+          "min": null,
+          "max": null,
+          "unite": "mL",
+          "base": null
+        }
+      },
+      "listes": {}
+    },
+    {
+      "nom": "Super Sauvin",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.freestylehops.com/hop-varieties/super-sauvin/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "super-sauvin",
+      "titre": "Super Sauvin",
+      "nature": "mélange",
+      "modifieSitemap": "2025-11-24",
+      "champs": {
+        "dosageWhirlpool": {
+          "champ": "whirlpool dosage rates",
+          "brut": "whirlpool dosage rates from 4 g/L upwards",
+          "valeur": null,
+          "min": 4,
+          "max": null,
+          "unite": "g/L",
+          "base": null,
+          "operateur": ">="
+        }
+      },
+      "listes": {
+        "composition": [
+          "Nelson Sauvin",
+          "Phantasm"
+        ],
+        "thiols": [
+          "3S4MP",
+          "3SH",
+          "3SO"
+        ]
+      }
+    },
+    {
+      "nom": "The Singles Collection",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.freestylehops.com/hop-varieties/singles-collection/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "singles-collection",
+      "titre": "The Singles Collection",
+      "nature": "coffret",
+      "lots": [
+        {
+          "variete": "Nelson Sauvin",
+          "recolte": "late",
+          "descripteurs": [
+            "sweet tropical",
+            "pink grapefruit",
+            "light cannabis"
+          ],
+          "brut": "Nelson Sauvin - Late Harvest - Sweet Tropical, Pink Grapefruit, Light Cannabis"
+        },
+        {
+          "variete": "Riwaka",
+          "recolte": "mid",
+          "descripteurs": [
+            "yuzu",
+            "red grapefruit",
+            "kumquat"
+          ],
+          "brut": "Riwaka - Mid Harvest - Yuzu, Red Grapefruit, Kumquat"
+        },
+        {
+          "variete": "Rakau",
+          "recolte": "late",
+          "descripteurs": [
+            "red plum",
+            "apricot",
+            "cannabis"
+          ],
+          "brut": "Rakau - Late Harvest - Red Plum, Apricot, Cannabis"
+        },
+        {
+          "variete": "Waimea",
+          "recolte": "mid",
+          "descripteurs": [
+            "pink grapefruit",
+            "complex tropical"
+          ],
+          "brut": "Waimea - Mid Harvest - Pink Grapefruit, Complex Tropical"
+        }
+      ],
+      "modifieSitemap": "2026-10-23",
+      "champs": {},
+      "listes": {
+        "composition": [
+          "Nelson Sauvin",
+          "Rakau",
+          "Riwaka",
+          "Waimea"
+        ]
+      }
+    },
+    {
+      "nom": "Tropical Fusion",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.freestylehops.com/hop-varieties/tropical-fusion/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "tropical-fusion",
+      "titre": "Tropical Fusion™",
+      "nature": "mélange",
+      "marque": {
+        "symbole": "™",
+        "nom": "Tropical Fusion"
+      },
+      "modifieSitemap": "2025-12-08",
+      "champs": {},
+      "listes": {
+        "descripteurs": [
+          "tropical",
+          "citrus"
+        ],
+        "composition": [
+          "Motueka",
+          "Riwaka",
+          "Southern Cross"
+        ]
+      }
+    },
+    {
+      "nom": "Waimea",
+      "alias": [],
+      "varietyId": "beermaverick-waimea",
+      "url": "https://www.freestylehops.com/hop-varieties/waimea/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "waimea",
+      "titre": "Waimea",
+      "nature": "variété",
+      "modifieSitemap": "2024-05-29",
+      "champs": {},
+      "listes": {
+        "descripteurs": [
+          "orange zest",
+          "grapefruit",
+          "citrus",
+          "spruce",
+          "pink grapefruit",
+          "cannabis",
+          "orange",
+          "tropical"
+        ],
+        "accords": [
+          "Motueka",
+          "Rakau",
+          "SOX"
+        ]
+      }
+    },
+    {
+      "nom": "Wakatu",
+      "alias": [],
+      "varietyId": "beermaverick-wakatu",
+      "url": "https://www.freestylehops.com/hop-varieties/wakatu/",
+      "releve": "2026-10-26",
+      "publie": null,
+      "slug": "wakatu",
+      "titre": "Wakatu",
+      "nature": "variété",
+      "modifieSitemap": "2025-11-24",
+      "champs": {},
+      "listes": {
+        "descripteurs": [
+          "lime zest",
+          "citrus",
+          "floral",
+          "tropical",
+          "zesty lime",
+          "jasmine"
+        ],
+        "stadesRecolte": [
+          "mid"
+        ]
+      }
+    }
+  ]
+}

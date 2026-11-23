@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Témoin de controle-pics-radar : contours en spline cardinale fermée, zéro sur un anneau intérieur (SIMULÉ)</title>
+<style>
+  body { font: 14px system-ui, sans-serif; margin: 0; padding: 10px; background: #fff; color: #1c1917; }
+  h1 { font-size: 15px; margin: 0 0 6px; }
+  .pr-note { font-size: 11px; color: #57534e; margin: 0 0 8px; }
+  .pr-seg { display: flex; gap: 4px; margin: 6px 0 10px; }
+  .pr-s { flex: 1; min-height: 40px; border: 1px solid #1c1917; background: #fff; font: inherit; }
+  .pr-s[aria-checked="true"] { background: #1c1917; color: #fff; }
+  .pr-radar { display: block; margin: 0 auto; }
+  .pr-grille { stroke: #a8a29e; stroke-width: 1; fill: none; }
+  .pr-anneau { stroke: #2f6b4f; stroke-width: 1; fill: rgba(47,107,79,.08); stroke-dasharray: 3 3; }
+</style>
+</head>
+<body>
+<h1>Cascade, Idaho 7 ou Galaxy</h1>
+<p class="pr-note">Témoin SIMULÉ (valeurs inventées, de 0 à 1 par famille, déjà mises à l'échelle du moment) pour controle-pics-radar.mjs. Chaque contour est une spline cardinale fermée (courbes C seulement) ; un zéro se pose sur l'anneau intérieur, jamais au centre ; les valeurs voisines sont lissées d'un passage (1-2-1) avant la courbe, sinon un pic isolé fait un coin.</p>
+<div class="pr-seg" role="radiogroup" aria-label="Quand comparer" data-role="quand-comparer">
+  <button type="button" role="radio" aria-checked="true" data-moment="60" class="pr-s">60′</button>
+  <button type="button" role="radio" aria-checked="false" data-moment="10" class="pr-s">10′</button>
+  <button type="button" role="radio" aria-checked="false" data-moment="whirlpool" class="pr-s">WP</button>
+  <button type="button" role="radio" aria-checked="false" data-moment="dryhop-actif" class="pr-s">actif</button>
+  <button type="button" role="radio" aria-checked="false" data-moment="dryhop-apres" class="pr-s">après</button>
+</div>
+<svg id="pr-radar" class="pr-radar" data-role="radar" width="358" height="330" viewBox="0 0 358 330" role="img" aria-label="Radar des 12 familles au moment choisi"></svg>
+<script>
+(function () {
+  // Ordre des 12 familles autour du radar : floral, herbacé, terreux, agrumes, tropicaux, noyau, pépins, baies, melon, résineux, épicé, végétal.
+  var N = 12;
+  // Valeurs simulées par moment et houblon (0 à 1 ; 0 = apport nul, posé sur l'anneau intérieur).
+  var DONNEES = {
+    '60': {
+      Cascade: [0.35, 0, 0, 0.55, 0.30, 0, 0, 0.70, 0, 0.25, 0.10, 0],
+      'Idaho 7': [0.50, 0, 0, 0.35, 0.40, 0.30, 0, 0.60, 0, 0.20, 0, 0],
+      Galaxy: [0.45, 0, 0, 1.00, 0.95, 0.80, 0, 0, 0, 0.15, 0, 0]
+    },
+    '10': {
+      Cascade: [0.50, 0.30, 0, 0.60, 0.35, 0, 0, 0.90, 0, 0.30, 0.55, 0],
+      'Idaho 7': [0.70, 0.25, 0.20, 0.45, 0.55, 0.40, 0, 0.80, 0, 0.30, 0.10, 0],
+      Galaxy: [0.55, 0, 0, 1.00, 1.00, 0.85, 0, 0, 0, 0.20, 0, 0]
+    },
+    'whirlpool': {
+      Cascade: [0.55, 0.35, 0, 0.70, 0.45, 0.10, 0, 0.90, 0, 0.35, 0.60, 0],
+      'Idaho 7': [0.75, 0.30, 0.25, 0.55, 0.65, 0.45, 0.10, 0.85, 0, 0.35, 0.15, 0],
+      Galaxy: [0.60, 0.10, 0, 1.00, 1.00, 0.90, 0, 0.15, 0, 0.25, 0, 0]
+    },
+    'dryhop-actif': {
+      Cascade: [0.70, 0.60, 0.20, 0.75, 0.50, 0.20, 0.10, 1.00, 0.10, 0.40, 0.70, 0.20],
+      'Idaho 7': [0.95, 0.55, 0.40, 0.60, 0.80, 0.55, 0.30, 0.95, 0.20, 0.45, 0.25, 0.15],
+      Galaxy: [0.65, 0.30, 0.10, 1.00, 1.00, 0.90, 0.20, 0.30, 0.15, 0.30, 0.05, 0]
+    },
+    'dryhop-apres': {
+      Cascade: [0.75, 0.65, 0.25, 0.75, 0.55, 0.25, 0.10, 1.00, 0.10, 0.45, 0.75, 0.20],
+      'Idaho 7': [1.00, 0.60, 0.45, 0.65, 0.85, 0.60, 0.30, 0.95, 0.25, 0.50, 0.30, 0.15],
+      Galaxy: [0.65, 0.35, 0.10, 1.00, 1.00, 0.95, 0.25, 0.30, 0.15, 0.30, 0.05, 0]
+    }
+  };
+  var COULEURS = { Cascade: '#781838', 'Idaho 7': '#e80030', Galaxy: '#681878' };
+  var CX = 179, CY = 165, R = 130, ANNEAU = 0.2; // anneau intérieur à 20 % du rayon : un zéro s'y pose
+  var svg = document.getElementById('pr-radar');
+
+  function sommet(k, v) {
+    var a = -Math.PI / 2 + (2 * Math.PI * k) / N;
+    var r = R * (ANNEAU + (1 - ANNEAU) * v);
+    return [CX + r * Math.cos(a), CY + r * Math.sin(a)];
+  }
+  // Spline cardinale fermée (Catmull-Rom, tension 1/6) convertie en courbes de Bézier cubiques : que des C, aucun L.
+  function spline(pts) {
+    var n = pts.length;
+    var d = 'M' + pts[0][0].toFixed(1) + ',' + pts[0][1].toFixed(1);
+    for (var i = 0; i < n; i += 1) {
+      var p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+      var c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+      var c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      d += 'C' + c1[0].toFixed(1) + ',' + c1[1].toFixed(1) + ' ' + c2[0].toFixed(1) + ',' + c2[1].toFixed(1) + ' ' + p2[0].toFixed(1) + ',' + p2[1].toFixed(1);
+    }
+    return d + 'Z';
+  }
+  function dessiner(m) {
+    var s = '';
+    [ANNEAU, 0.6, 1].forEach(function (f, i) {
+      s += '<circle class="' + (i === 0 ? 'pr-anneau' : 'pr-grille') + '" cx="' + CX + '" cy="' + CY + '" r="' + (R * f).toFixed(1) + '"></circle>';
+    });
+    for (var k = 0; k < N; k += 1) {
+      var a = -Math.PI / 2 + (2 * Math.PI * k) / N;
+      s += '<line class="pr-grille" x1="' + CX + '" y1="' + CY + '" x2="' + (CX + R * Math.cos(a)).toFixed(1) + '" y2="' + (CY + R * Math.sin(a)).toFixed(1) + '"></line>';
+    }
+    Object.keys(DONNEES[m]).forEach(function (h) {
+      var vals = DONNEES[m][h]; for (var q = 0; q < 1; q += 1) vals = vals.map(function (v, k) { return (vals[(k + N - 1) % N] + 2 * v + vals[(k + 1) % N]) / 4; }); var pts = vals.map(function (v, k) { return sommet(k, v); });
+      s += '<path data-serie="' + h + '" d="' + spline(pts) + '" fill="' + COULEURS[h] + '" fill-opacity="0.16" stroke="' + COULEURS[h] + '" stroke-width="2"></path>';
+    });
+    svg.innerHTML = s;
+  }
+  document.querySelectorAll('[data-role="quand-comparer"] [data-moment]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('[data-role="quand-comparer"] [data-moment]').forEach(function (x) {
+        x.setAttribute('aria-checked', x === b ? 'true' : 'false');
+      });
+      dessiner(b.getAttribute('data-moment'));
+    });
+  });
+  dessiner('60');
+})();
+</script>
+</body>
+</html>

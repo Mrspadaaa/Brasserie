@@ -1,0 +1,58 @@
+/* Mur d'Autres stocks, version A (D423, D424). Rien dans murAjustements.css : les classes l1e-* de l'étagère valent ici aussi. Préfixe sa-. */
+.sa-mur{grid-column:1/-1;min-width:0;--hm:22px;--hc:14px;--sa-w:8px}
+.sa-mur .l1e-r{grid-template-columns:72px minmax(0,1fr)!important;min-height:56px}
+.sa-mur .l1e-n b{font:700 13px/15px var(--l1-sans,inherit);letter-spacing:0;color:var(--l1-t0)}
+.sa-mur .l1e-w{font:700 12px/14px var(--l1-sans,inherit);letter-spacing:0}
+.sa-mur .l1e-pl{justify-content:flex-start;gap:8px;align-items:flex-end;touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.sa-mur .l1e-gb{gap:2px;height:var(--hm);overflow:visible;border-bottom:2px solid var(--ink)}
+.sa-mur .l1e-r .l1e-gb::after{border-top:1.5px dashed var(--l1-t1);bottom:var(--hc);left:-3px;right:-3px}
+.sa-mur .sa-nt .l1e-gb::after{display:none}
+.sa-mur .sa-p{width:var(--sa-w);height:calc(var(--hm) * var(--h));min-height:3px;background:var(--fill);border-radius:2px 2px 0 0;position:relative;opacity:1}
+.sa-mur .sa-p[data-forme]{border-radius:0}
+.sa-mur .sa-ep{width:10px;height:8px;min-height:0;background:var(--l1-page)!important;box-shadow:inset 0 0 0 1.5px var(--l1-alert)!important;border-radius:0}
+.sa-mur .sa-p.sv-ac{background:var(--l1-page)!important;outline:1.5px dashed var(--l1-t1);outline-offset:-1.5px}
+.sa-mur .sa-td{position:absolute;left:-3px;right:-3px;bottom:var(--hc);border-top:1.5px dashed var(--l1-t1);pointer-events:none}
+.sa-mur .sa-lab{padding-left:30px}
+.sa-mur .sa-lab .sw-rl{left:-30px;bottom:calc(var(--hc) - 7px);color:var(--l1-t0);pointer-events:none}
+.sa-mur .l1e-t{color:var(--l1-t1)}
+.sa-mur .sx-vd{align-self:flex-end;display:flex;gap:8px;font-size:12px;color:var(--l1-t2)}
+.sa-mur .sx-o{display:inline-block;width:8px;height:8px;border:1.5px solid var(--l1-t2);border-radius:50%;margin-right:3px}
+.sa-mur .sv-leg{margin:4px 0 6px 10px;gap:4px 12px}
+.sa-mur .sv-li{display:inline-flex;gap:5px;align-items:center}
+.sa-mur .sa-lg-t{width:12px;border-top:1.5px dashed var(--l1-t1)}
+.sa-mur .sa-lg-p{display:inline-block;width:8px;height:12px}
+.sa-mur .sa-lg-x{display:inline-block;width:10px;border-top:1.5px solid var(--l1-t0);transform:rotate(-32deg)}
+.sa-mur .sa-bul{position:fixed}
+@media(min-width:1000px){.sa-mur{--hm:50px;--hc:31px}.sa-mur .l1e-t{font-size:18px;line-height:21px}}
+/* Pastille « à compter » : bord en pointillé (légende « pointillé : à compter », A-PORT-LISTE n° 34) ; les autres gardent le trait plein. */
+.sz-pu[data-f="compter"]:not(.sz-on){border-style:dashed}
+/* Liste : en dessous de 1024 px le seuil reste dans la 2e ligne, pas dans la colonne repère */
+.la-l .stock-liste .l1-rp{display:none}
+/* 1280 (n° 35 à 42) : une table par rayon, 5fr 4fr 3fr, côte à côte sous le mur ; en-têtes « seuil » et « 0 · seuil · 1,6× », barre à l'échelle du seuil */
+@media(min-width:1024px){
+  .sz-tables.sz-autres{grid-template-columns:minmax(0,5fr) minmax(0,4fr) minmax(0,3fr);column-gap:12px}
+  body:not([data-has-fiche-page]) .sz-autres .la-l .stock-liste .l1-rp{display:block;font:13px/20px var(--l1-mono,ui-monospace,monospace);color:var(--l1-t1)}
+  body:not([data-has-fiche-page]) .sz-autres .l1-th>:nth-child(3)::before,body:not([data-has-fiche-page]) .sz-autres .l1-th>:nth-child(5)::before{font:12px/28px var(--l1-sans);color:var(--l1-t2);white-space:nowrap}
+  body:not([data-has-fiche-page]) .sz-autres .l1-th>:nth-child(3)::before{content:"seuil"}
+  body:not([data-has-fiche-page]) .sz-autres .l1-th>:nth-child(5)::before{content:"0 · seuil · 1,6×"}
+  body:not([data-has-fiche-page]) .sz-autres .la-l .l1-n1{font-size:15px}
+  body:not([data-has-fiche-page]) .sz-autres .la-l .l1-q{font-size:16px}
+  .sz-autres .la-sl{display:none}
+  .sz-autres .la-n2{font-size:13px}
+  .sz-autres .la-l .l1-ec-c::before{content:"";position:absolute;left:0;right:0;top:calc(50% - 7px);height:14px;background:color-mix(in srgb,var(--fi) 15%,transparent)}
+  body:not([data-has-fiche-page]) .sz-autres .la-l .l1-ec-c::after{content:"";position:absolute;left:62.5%;top:calc(50% - 10px);height:20px;border-left:1.5px dashed var(--l1-t2);pointer-events:none}
+  .sz-autres .la-l .l1-kg{top:calc(50% - 7px);bottom:auto;height:14px;border-radius:0;background:var(--fi);box-shadow:none}
+}
+/* La même grille que les tables (n° 35) ; les colonnes se resserrent quand la table est étroite (3fr ≈ 300 px), sans cacher ni seuil ni barre */
+@media(min-width:1024px){
+  .stock-mur .sa-mur.l1-mur{grid-template-columns:minmax(0,5fr) minmax(0,4fr) minmax(0,3fr);column-gap:12px}
+  .sz-autres .sz-table{container-type:inline-size;container-name:ta}
+  body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-row,body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-th{grid-template-columns:12px minmax(0,1fr) 52px 58px 40px;column-gap:4px;padding-right:28px}
+  body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-q-c{font-size:12px}
+  body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-th>:nth-child(5)::before{content:"jauge"}
+  @container ta (min-width:400px){
+    body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-row,body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-th{grid-template-columns:12px minmax(0,1fr) 84px 78px minmax(50px,.7fr);column-gap:5px;padding-right:30px}
+    body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-q-c{font-size:16px}
+    body:not([data-has-fiche-page]) .sz-tables.sz-autres .stock-liste .l1-th>:nth-child(5)::before{content:"0 · seuil · 1,6×"}
+  }
+}

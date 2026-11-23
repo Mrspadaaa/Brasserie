@@ -1,0 +1,4 @@
+/* Inconnu : hachuré, jamais une barre à zéro (Marques, BarreStyle et les barres des écrans). */
+.pq-hachure {
+  background-image: repeating-linear-gradient(135deg, rgb(var(--cave-700) / 0.55) 0 3px, transparent 3px 7px);
+}

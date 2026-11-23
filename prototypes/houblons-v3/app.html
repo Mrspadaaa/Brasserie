@@ -1,0 +1,1089 @@
+<title>Houblons de la recette</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Étape Houblons, prototype v3 (mission #119). Téléphone : en-tête, jauge IBU, puis une zone
+   qui défile (mon houblonnage, mes houblons classés) et, dès 2 houblons cochés, le volet de
+   comparaison qui prend sa place en bas sans rien couvrir. Bureau (≥ 900 px) : trois colonnes.
+   Jetons de DESIGN.md ; app sombre. Couleurs des houblons comparés : validées (CVD, contraste). */
+:root {
+  --c950: #12100E; --c900: #1A1613; --c850: #221D19; --c800: #2C2521; --c700: #3D342E; --c600: #574A42;
+  --c400: #9A8A7E; --c200: #D8CEC5; --c50: #F5F0EA;
+  --straw: #F2C14E; --attention: #E3B55D; --alert-strong: #F29289; --hop: #6E9B5B; --hop-text: #9CC488;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c9a227;
+  --sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--c950); color: var(--c200); font: 14px/18px var(--sans); -webkit-text-size-adjust: 100%; }
+::selection { background: #F2C14E55; color: var(--c50); }
+button, select, input { font: inherit; color: inherit; }
+button { background: none; border: 0; padding: 0; cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible { outline: 2px solid var(--straw); outline-offset: 1px; border-radius: 6px; }
+a { color: var(--c50); text-underline-offset: 2px; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.muted { color: var(--c400); }
+.strong { color: var(--c50); }
+.warn { color: var(--attention); }
+.bad { color: var(--alert-strong); }
+.ok { color: var(--hop-text); }
+.ico { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+*::-webkit-scrollbar { width: 6px; height: 6px; } *::-webkit-scrollbar-thumb { background: var(--c700); border-radius: 3px; } *::-webkit-scrollbar-track { background: transparent; }
+
+#app { height: 100%; display: flex; flex-direction: column; overflow: hidden; padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+.progp { display: none; }
+.ph3 { margin: 0; padding: 10px 10px 4px; font-size: 13px; font-weight: 600; color: var(--c50); }
+.ph3 .muted { font-weight: 400; font-size: 12px; }
+.top { flex: none; background: var(--c950); }
+.hd { height: 40px; display: flex; align-items: center; gap: 6px; padding: 0 8px 0 10px; border-bottom: 1px solid var(--c800); }
+.hd .title { display: flex; align-items: center; gap: 6px; min-width: 0; height: 32px; padding: 0 4px; border-radius: 10px; }
+.hd .title b { color: var(--c50); font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hd .title .ico { color: var(--c400); }
+.hd .meta { color: var(--c400); font-size: 12px; white-space: nowrap; }
+.sp { flex: 1; }
+.btn { height: 28px; padding: 0 8px; border-radius: 10px; background: var(--c850); border: 1px solid var(--c700); color: var(--c200); display: inline-flex; align-items: center; gap: 4px; font-size: 13px; white-space: nowrap; }
+.btn.primary { background: var(--straw); color: var(--c950); border-color: var(--straw); font-weight: 600; }
+.btn.ghost { background: none; border-color: transparent; }
+.btn.sq { width: 28px; padding: 0; justify-content: center; }
+.gauge { display: grid; gap: 2px; padding: 6px 10px; border-bottom: 1px solid var(--c800); min-height: 40px; }
+.gauge .g1 { display: flex; align-items: center; gap: 8px; }
+.gauge .g2 { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 12px; line-height: 16px; color: var(--c400); }
+.note.comp { border-radius: 10px; flex-wrap: wrap; border: 1px solid var(--c700); }
+.gauge .v { font: 600 20px/24px var(--mono); color: var(--c50); }
+.gauge .u { font-size: 12px; color: var(--c400); }
+.track { position: relative; flex: 1; height: 10px; border-radius: 5px; background: var(--c850); min-width: 100px; }
+.track .band { position: absolute; top: 0; bottom: 0; border: 1px solid var(--hop); background: #6E9B5B33; border-radius: 5px; }
+.track .mk { position: absolute; top: -3px; width: 3px; height: 16px; border-radius: 2px; background: var(--c50); transform: translateX(-1px); }
+.track .dryr { position: absolute; top: 3px; height: 4px; background: var(--c200); opacity: .5; border-radius: 2px; }
+
+.main { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+.sec { display: flex; align-items: center; gap: 6px; padding: 6px 10px 4px; min-height: 32px; }
+.sec h2 { margin: 0; font-size: 14px; font-weight: 600; color: var(--c50); white-space: nowrap; }
+.sec .muted { font-size: 12px; }
+.seg { display: inline-flex; border: 1px solid var(--c700); border-radius: 10px; overflow: hidden; background: var(--c900); }
+.seg { flex: none; }
+.seg button { height: 28px; padding: 0 9px; font-size: 13px; color: var(--c400); white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: var(--c800); color: var(--c50); font-weight: 600; }
+.grp { display: flex; align-items: center; gap: 6px; padding: 3px 10px; min-height: 24px; font-size: 12px; color: var(--c400); background: var(--c900); border-top: 1px solid var(--c800); }
+.grp b { color: var(--c200); font-weight: 600; }
+
+.row { display: flex; align-items: center; min-height: 44px; border-top: 1px solid var(--c850); padding-right: 6px; }
+.row.on { background: var(--c900); }
+.cb { width: 36px; height: 44px; flex: none; display: grid; place-items: center; }
+.cb .box { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--c600); display: grid; place-items: center; }
+.cb[aria-checked="true"] .box { border-color: transparent; }
+.rowmain { flex: 1; min-width: 0; text-align: left; padding: 4px 0; min-height: 40px; display: flex; flex-direction: column; justify-content: center; }
+.rowmain .l1 { display: flex; align-items: baseline; gap: 6px; }
+.rowmain .nm { color: var(--c50); font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rowmain .rk { font: 600 12px var(--mono); color: var(--c400); }
+.rowmain .l2 { font-size: 12px; line-height: 16px; color: var(--c400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
+.qty { display: flex; flex-direction: column; align-items: flex-end; font: 600 14px/18px var(--mono); color: var(--c50); padding: 0 8px 0 4px; white-space: nowrap; }
+.qty .zero { color: var(--c400); font: 400 13px/18px var(--sans); }
+.qty small { font: 400 12px/16px var(--mono); color: var(--c400); }
+.qty small.warn { color: var(--attention); }
+.cb .box svg { width: 14px; height: 14px; }
+.addb { width: 28px; height: 28px; border-radius: 10px; border: 1px solid var(--c700); display: grid; place-items: center; color: var(--c200); background: var(--c850); flex: none; }
+.addb.done { border-color: var(--hop); color: var(--hop-text); }
+.meter { position: relative; width: 56px; height: 6px; border-radius: 3px; background: var(--c800); flex: none; }
+.meter i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; }
+.lv { display: inline-flex; gap: 1px; margin-left: 2px; vertical-align: middle; }
+.lv i { width: 3px; height: 8px; border-radius: 1px; background: var(--c700); }
+.lv i.f { background: var(--c200); }
+.axw { color: var(--c200); }
+.axw.st { color: var(--c50); font-weight: 600; }
+.info { padding: 6px 10px 8px 36px; font-size: 13px; line-height: 18px; color: var(--c200); background: var(--c900); border-top: 1px dashed var(--c800); }
+.info p { margin: 0 0 4px; }
+.info .acts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.more { display: flex; justify-content: center; padding: 8px 10px 12px; border-top: 1px solid var(--c850); }
+
+/* Mon houblonnage */
+.adds { border-bottom: 1px solid var(--c800); }
+.add { border-top: 1px solid var(--c850); }
+.addrow { display: flex; align-items: center; padding-right: 6px; }
+.addh { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; min-height: 36px; padding: 2px 6px 2px 10px; text-align: left; }
+.addh .nm { flex: 1; min-width: 0; color: var(--c50); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.addh .d { font: 600 13px var(--mono); color: var(--c50); }
+.addh .t { font-size: 12px; color: var(--c400); min-width: 54px; }
+.addh .i { font: 600 13px var(--mono); color: var(--c200); min-width: 54px; text-align: right; }
+.addh .st { font-size: 12px; min-width: 64px; text-align: right; }
+.ed { padding: 4px 10px 8px; background: var(--c900); display: grid; gap: 6px; }
+.step { display: inline-flex; align-items: center; gap: 4px; }
+.step input { width: 64px; height: 32px; border-radius: 10px; border: 1px solid var(--c700); background: var(--c850); color: var(--c50); text-align: center; font: 600 16px var(--mono); }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip { height: 28px; padding: 0 8px; border-radius: 10px; border: 1px solid var(--c700); background: var(--c850); font-size: 13px; color: var(--c200); display: inline-flex; align-items: center; gap: 4px; }
+.chip[aria-pressed="true"] { background: var(--c700); color: var(--c50); border-color: var(--c400); font-weight: 600; }
+.ed .line { font-size: 12px; color: var(--c400); }
+.ed .acts { display: flex; gap: 6px; }
+.note { display: flex; align-items: center; gap: 8px; padding: 6px 10px; font-size: 13px; background: var(--c850); border-top: 1px solid var(--c800); }
+.empty { display: flex; align-items: center; gap: 8px; padding: 4px 10px 8px; font-size: 13px; color: var(--c400); }
+
+/* Comparaison */
+.dock { flex: none; height: 52dvh; min-height: 0; overflow: hidden; display: flex; flex-direction: column; background: var(--c900); border-top: 1px solid var(--c700); border-radius: 16px 16px 0 0; box-shadow: 0 -12px 40px -16px rgba(0,0,0,.8); }
+.dock.peek { height: auto; }
+.peekb { display: flex; gap: 2px; padding: 4px 8px 6px 0; }
+.peekb .radar { padding: 0; flex: none; }
+.peekb .radar svg { width: 200px; height: 200px; max-width: none; }
+.peekr { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; padding-top: 2px; }
+.peekr .ph { display: flex; align-items: center; gap: 4px; }
+.peekr h2 { margin: 0; font-size: 14px; color: var(--c50); white-space: nowrap; }
+.pl { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 4px 6px; align-items: center; font-size: 13px; }
+.pl .nm { color: var(--c50); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pl .mono { color: var(--c200); font-size: 13px; }
+.peekr .cap { font-size: 12px; color: var(--c400); }
+.peekr .btn { align-self: flex-start; }
+.app.full .main { display: none; }
+.app.full .dock { flex: 1; height: auto; border-radius: 0; }
+.dockh { flex: none; display: flex; align-items: center; gap: 6px; padding: 6px 8px 4px 10px; }
+.dockh h2 { margin: 0; font-size: 14px; color: var(--c50); }
+.dockb { flex: 1; overflow-y: auto; padding-bottom: 10px; }
+.legend { display: flex; gap: 4px; padding: 0 8px 4px 10px; flex-wrap: wrap; }
+.lgi { display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 2px 0 6px; border-radius: 10px; background: var(--c850); border: 1px solid var(--c800); font-size: 13px; color: var(--c50); max-width: 100%; }
+.lgi .q { font: 12px var(--mono); color: var(--c400); }
+.lgi button { width: 24px; height: 24px; display: grid; place-items: center; color: var(--c400); border-radius: 8px; }
+.shape { width: 12px; height: 12px; flex: none; }
+.cmp h3 { margin: 0; padding: 10px 10px 4px; font-size: 13px; font-weight: 600; color: var(--c50); display: block; }
+.cmp h3.band { margin: 14px 0 6px; padding: 7px 10px; font-size: 15px; background: var(--c850); border-top: 1px solid var(--c700); border-bottom: 1px solid var(--c700); }
+.cmp h3.band:first-child { margin-top: 0; }
+.cmp .why { margin: 0 0 6px; font-size: 13px; line-height: 18px; color: var(--c400); }
+.cmp .why.center { text-align: center; padding: 0 14px; }
+.cmp .why.warn { color: var(--attention); margin-top: 6px; }
+.cmp .metric { padding: 4px 10px 10px; }
+.cmp .metric .mh { font-size: 13px; padding: 2px 0 2px; }
+.cmp .metric .mh b { font-size: 14px; color: var(--c50); }
+.cmp .br { font-size: 13px; min-height: 26px; grid-template-columns: 112px minmax(0, 1fr) auto; }
+.cmp .br .n { font-size: 13px; }
+.cmp .br .b { height: 10px; border-radius: 5px; }
+.cmp .br .b i { height: 10px; border-radius: 5px; }
+.app.full .top .gauge { display: none; }
+.cmp h3 .muted { font-weight: 400; font-size: 12px; margin-left: 4px; }
+.radar { display: flex; justify-content: center; padding: 0 4px; }
+.radar svg { width: 100%; max-width: 240px; height: auto; }
+.app.full .radar svg { max-width: 320px; }
+.dots { padding: 0 10px; display: grid; gap: 1px; }
+.dr { display: grid; grid-template-columns: 76px 1fr; align-items: center; gap: 8px; font-size: 12px; }
+.dr .tr.sc { height: 16px; }
+.dr .tr.sc b { position: absolute; top: 0; transform: translateX(-50%); font: 400 12px var(--mono); color: var(--c400); }
+.dr .t { color: var(--c400); }
+.dr .t.st { color: var(--c50); font-weight: 600; }
+.dr .tr { position: relative; margin: 0 6px; }
+.dr .tr .g { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--c800); }
+.dr .tr .mk { position: absolute; width: 10px; height: 10px; transform: translateX(-5px); line-height: 0; }
+.dr .tr .mk .shape { width: 10px; height: 10px; }
+.dr .tr .mk.z { opacity: .45; }
+.dr .n { text-align: right; color: var(--c400); font-size: 12px; }
+.diffs { padding: 0 10px; font-size: 12px; color: var(--c400); display: grid; gap: 2px; }
+.bars { padding: 0 10px; display: grid; gap: 3px; }
+.br { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; align-items: center; gap: 8px; min-height: 22px; font-size: 12px; }
+.br .o { color: var(--c400); font-size: 12px; margin-left: 6px; }
+@media (min-width: 900px) { .dockh [data-act="full"] { display: none; } }
+.br .t { color: var(--c200); display: flex; align-items: center; gap: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.br .b { position: relative; height: 8px; background: var(--c850); border-radius: 4px; }
+.br .b i { position: absolute; top: 0; height: 8px; border-radius: 4px; }
+.br .b .tick { position: absolute; top: -3px; width: 2px; height: 14px; background: var(--c50); border-radius: 1px; }
+.br .b .need { position: absolute; top: -3px; width: 2px; height: 14px; background: var(--c50); }
+.br .n { text-align: right; color: var(--c200); font: 12px var(--mono); white-space: nowrap; }
+.metric { padding: 2px 10px 6px; }
+.metric .mh { display: flex; justify-content: space-between; font-size: 12px; color: var(--c400); padding: 2px 0; }
+.metric .mh b { color: var(--c200); font-weight: 600; }
+.cls { font-size: 12px; padding: 1px 6px; border-radius: 8px; border: 1px solid var(--c700); color: var(--c200); white-space: nowrap; }
+.tagsl { padding: 0 10px; display: grid; gap: 4px; font-size: 12px; color: var(--c200); }
+.tagsl .t { display: flex; gap: 6px; align-items: baseline; }
+.cmpacts { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 10px 4px; }
+.src { padding: 8px 10px 0; font-size: 12px; color: var(--c400); }
+.hint { padding: 8px 10px; font-size: 13px; color: var(--c400); display: grid; gap: 8px; justify-items: start; }
+
+/* Feuilles */
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 20; }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; max-height: 86dvh; z-index: 21; background: var(--c900); border-radius: 24px 24px 0 0; border-top: 1px solid var(--c700); box-shadow: 0 -12px 40px -16px rgba(0,0,0,.8); display: flex; flex-direction: column; }
+.sheet.fullv { top: 0; max-height: none; border-radius: 0; }
+.sheeth { flex: none; display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 8px 0 12px; border-bottom: 1px solid var(--c800); }
+.sheeth h2 { margin: 0; font-size: 16px; color: var(--c50); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sheetb { flex: 1; overflow-y: auto; padding-bottom: 16px; }
+.field { display: flex; align-items: center; gap: 8px; padding: 6px 12px; }
+.field label { width: 96px; font-size: 13px; color: var(--c400); }
+.field input, .search { height: 32px; border-radius: 10px; border: 1px solid var(--c700); background: var(--c850); color: var(--c50); padding: 0 10px; font-size: 16px; }
+.field input { width: 96px; font-family: var(--mono); }
+.search { width: calc(100% - 24px); margin: 6px 12px; }
+.stl { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 36px; padding: 2px 12px; text-align: left; border-top: 1px solid var(--c850); }
+.stl .c { font: 12px var(--mono); color: var(--c400); width: 34px; }
+.stl .n { flex: 1; color: var(--c200); }
+.stl[aria-current="true"] .n { color: var(--c50); font-weight: 600; }
+.stl .i { font: 12px var(--mono); color: var(--c400); }
+.sub { display: flex; align-items: center; gap: 8px; min-height: 52px; width: 100%; padding: 4px 12px; text-align: left; border-top: 1px solid var(--c850); }
+.sub .m { flex: 1; min-width: 0; }
+.sub .m b { color: var(--c50); display: block; }
+.sub .m small { display: block; font-size: 12px; color: var(--c400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sub .d { font: 600 14px var(--mono); color: var(--c50); text-align: right; }
+.sub .s { font-size: 12px; text-align: right; display: block; }
+
+/* Questions */
+.qg { padding: 10px 12px 2px; font-size: 12px; font-weight: 600; color: var(--c400); letter-spacing: .02em; }
+.qa { border-top: 1px solid var(--c850); }
+.qhead { display: flex; gap: 8px; align-items: flex-start; width: 100%; padding: 8px 12px 2px; text-align: left; }
+.qhead .qt { flex: 1; color: var(--c50); font-weight: 600; font-size: 14px; }
+.qhead .ico { margin-top: 2px; color: var(--c400); transition: transform .15s ease-out; }
+.qa.open .qhead .ico { transform: rotate(180deg); }
+.ans { padding: 0 12px 8px; font-size: 13px; line-height: 18px; color: var(--c200); }
+.ans .nd { color: var(--attention); font-weight: 600; }
+.ans ul { margin: 2px 0 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.ans li { display: flex; gap: 8px; align-items: baseline; }
+.ans li > span:first-child { flex: 1; min-width: 0; }
+.ans li .mono { color: var(--c50); white-space: nowrap; }
+.ans li .v { color: var(--c50); text-align: right; }
+.qnav { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 12px 4px; }
+.ans li .sp { display: none; }
+.pick { height: 28px; border-radius: 10px; border: 1px solid var(--c700); background: var(--c850); color: var(--c50); padding: 0 6px; font-size: 13px; max-width: 170px; }
+.det { padding: 6px 12px 10px; font-size: 12px; line-height: 17px; color: var(--c400); background: var(--c850); border-top: 1px dashed var(--c800); }
+.det p { margin: 0 0 4px; }
+.det b { color: var(--c200); font-weight: 600; }
+.mini { display: flex; gap: 8px; align-items: center; }
+.mini svg { flex: none; }
+.toast { display: flex; align-items: center; gap: 8px; padding: 4px 10px; min-height: 36px; font-size: 13px; background: var(--c850); border-top: 1px solid var(--c700); }
+
+@media (min-width: 900px) {
+  #app { display: grid; grid-template-columns: 380px minmax(0, 1fr) 460px; grid-template-rows: auto minmax(0, 1fr); }
+  .top { grid-column: 1 / -1; }
+  .gauge .track { max-width: 520px; }
+  .progp { display: block; border-top: 1px solid var(--c800); }
+  .progp .radar svg { max-width: 260px; }
+  .radar svg, .app.full .radar svg { max-width: 320px; }
+  .main { display: contents; }
+  .col-a { grid-column: 1; grid-row: 2; overflow-y: auto; border-right: 1px solid var(--c800); }
+  .col-b { grid-column: 2; grid-row: 2; overflow-y: auto; }
+  .dock { grid-column: 3; grid-row: 2; height: auto; border-radius: 0; border-top: 0; border-left: 1px solid var(--c700); box-shadow: none; }
+  .app.full .main { display: contents; }
+  .sheet { left: 50%; right: auto; width: 640px; transform: translateX(-50%); bottom: 0; }
+  .sheet.fullv { top: 24px; bottom: 24px; border-radius: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<div id="app" class="app"></div>
+<script>window.DATA=/*DATA*/;</script>
+<script>
+'use strict';
+/* ---------- Données ---------- */
+const D = window.DATA;
+const AX = D.axes.map((a) => a.label);
+const AXI = Object.fromEntries(D.axes.map((a, i) => [a.id, i]));
+const VAR = new Map(D.varieties.map((v) => [v.id, v]));
+const STY = new Map(D.styles.map((s) => [s.id, s]));
+const STYC = new Map(D.styles.map((s) => [s.code, s]));
+const STOCK = D.stock.map((s) => ({ key: s.v + (s.form === 'cryo' ? ':cryo' : ''), v: VAR.get(s.v), form: s.form, g: s.g, alpha: s.alpha, alphaFrom: s.alphaFrom, item: s.item }));
+const SER = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)'];
+const SERHEX = ['#3987e5', '#d95926', '#199e70', '#c9a227'];
+const TIMES = [
+  { id: 'fwh', short: '1er moût', label: 'premier moût', w: 0 },
+  { id: 'b60', min: 60, short: '60′', label: '60 min', w: 0 },
+  { id: 'b30', min: 30, short: '30′', label: '30 min', w: 0 },
+  { id: 'b15', min: 15, short: '15′', label: '15 min', w: 0.3 },
+  { id: 'b10', min: 10, short: '10′', label: '10 min', w: 0.5 },
+  { id: 'b5', min: 5, short: '5′', label: '5 min', w: 0.5 },
+  { id: 'wp', short: 'Whirlpool', label: 'whirlpool 80 °C, 20 min', w: 0.8 },
+  { id: 'dry', short: 'Dry hop', label: 'dry hop', w: 1 },
+];
+const TI = Object.fromEntries(TIMES.map((t) => [t.id, t]));
+// Doses de départ en g/L : préréglages du solveur de l'app (src/data/hopSolverBootstrap.json, « à adapter »).
+const START_GL = { wp: 3, dry: 4, b10: 1, b5: 1, b15: 1 };
+
+/* ---------- Format ---------- */
+const nf = (x, n = 0) => Number.isFinite(x) ? x.toLocaleString('fr-FR', { minimumFractionDigits: n, maximumFractionDigits: n }) : '—';
+const gtxt = (g) => nf(g, Number.isInteger(g) || g >= 100 ? 0 : 1);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const rng = (r, n = 1, u = '') => !r ? 'inconnu' : (r[0] === r[1] ? nf(r[0], n) : `${nf(r[0], n)}–${nf(r[1], n)}`) + u;
+const sum = (a) => a.reduce((s, x) => s + x, 0);
+const ICONS = {
+  down: '<path d="m6 9 6 6 6-6"/>', plus: '<path d="M12 5v14M5 12h14"/>', x: '<path d="M18 6 6 18M6 6l12 12"/>', check: '<path d="M20 6 9 17l-5-5"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/>', help: '<circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>',
+  up: '<path d="m6 15 6-6 6 6"/>', swap: '<path d="M16 3l4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/>', trash: '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/>',
+  minus: '<path d="M5 12h14"/>', expand: '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>', shrink: '<path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/>',
+  warn: '<path d="M12 3 2 21h20L12 3z"/><path d="M12 10v4M12 18h.01"/>', link: '<path d="M14 3h7v7M21 3l-9 9M19 14v6H4V5h6"/>', cmp: '<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',
+};
+const ico = (n, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]}</svg>`;
+const SHAPES = [(c) => `<circle cx="6" cy="6" r="5" fill="${c}"/>`, (c) => `<path d="M6 1 11 11H1z" fill="${c}"/>`, (c) => `<rect x="1.5" y="1.5" width="9" height="9" rx="1" fill="${c}"/>`, (c) => `<path d="M6 0.5 11.5 6 6 11.5 0.5 6z" fill="${c}"/>`];
+const shape = (k) => `<svg class="shape" viewBox="0 0 12 12" aria-hidden="true">${SHAPES[k](SERHEX[k])}</svg>`;
+const SHAPE_IN = SHAPES.map((f) => `<svg viewBox="-3 -3 18 18" aria-hidden="true">${f('#12100E')}</svg>`);
+
+/* ---------- État ---------- */
+const S = {
+  style: 'foreign-extra-stout', V: 20, og: STY.get('foreign-extra-stout').ogMid, boil: 60,
+  next: null, adds: [], open: null, sel: [], full: false, cat: false, catN: 30, catQ: '', info: null,
+  sheet: null, replaceFor: null, styleQ: '', qOpen: new Set(), toast: null, nextId: 1,
+  qp: { q04: 'nugget', q05x: 'saaz-cz', q05y: 'styrian-golding', q06: null, q16: null, q18x: null, q18y: null, q19: null, q19t: 'wp', q19y: 0, q21: 'saison', q29: 'cascade' },
+};
+const style = () => STY.get(S.style);
+const ctx = (over = {}) => ({ V: S.V, og: S.og, boil: S.boil, st: style(), ...over });
+
+/* ---------- Houblons ---------- */
+const stockHop = (key) => STOCK.find((h) => h.key === key);
+function hop(key) {
+  const s = stockHop(key);
+  if (s) return s;
+  const v = VAR.get(key);
+  return v ? { key, v, form: 'pellet', g: 0, alpha: null, alphaFrom: null, catalogue: true } : null;
+}
+const inStock = () => STOCK.filter((h) => h.g > 0);
+const hname = (h) => h.v.n + (h.form === 'cryo' ? ' cryo' : '');
+function alphaOf(h) {
+  if (h.alpha) return { val: h.alpha, lo: h.alpha, hi: h.alpha, lot: true };
+  if (h.v.a) return { val: (h.v.a[0] + h.v.a[1]) / 2, lo: h.v.a[0], hi: h.v.a[1], lot: false };
+  return null;
+}
+const alphaTxt = (h) => { const a = alphaOf(h); return !a ? 'α inconnu' : a.lot ? `α ${nf(a.val, 1)} %` : `α ${rng([a.lo, a.hi])} %`; };
+
+/* ---------- Calculs (formule de BrewingMath.hopIbu) ---------- */
+function util(c, t) {
+  const gf = 1.65 * Math.pow(0.000125, Math.max(0, c.og - 1));
+  const tf = (m) => (1 - Math.exp(-0.04 * Math.max(0, m))) / 4.15;
+  if (t === 'fwh') return gf * tf(c.boil) * 1.1;
+  if (t === 'wp') return gf * tf(20) * Math.pow(2, (80 - 100) / 10);
+  if (t === 'dry') return 0;
+  return gf * tf(TI[t].min);
+}
+const ibuG = (g, alpha, t, c) => g * 1000 / c.V * alpha / 100 * util(c, t);
+function ibuOf(h, g, t, c) { const a = alphaOf(h); if (!a) return null; return { val: ibuG(g, a.val, t, c), lo: ibuG(g, a.lo, t, c), hi: ibuG(g, a.hi, t, c), lot: a.lot }; }
+function doseFor(h, ibu, t, c) { const a = alphaOf(h); const u = util(c, t); if (!a || !u) return null; return ibu * c.V / (1000 * a.val / 100 * u); }
+const ibuTxt = (r) => !r ? 'IBU inconnu' : r.lot || Math.abs(r.hi - r.lo) < 0.5 ? `${nf(r.val)} IBU` : `${nf(r.lo)}–${nf(r.hi)} IBU`;
+// Amertume à cru : scénarios Maye 2016 (même logique que functions/src/hopBitternessCore.ts).
+function dryBitter(grams, V, hot) {
+  const GL = (lb) => lb * 453.59237 / (31 * 3.785411784);
+  if (!grams) return null;
+  const dose = grams / V;
+  const maxDose = Math.min(...D.dry.exp.map((e) => GL(e.pts.at(-1)[0])));
+  if (dose > maxDose) return { over: true, maxDose };
+  const fin = [];
+  for (const e of D.dry.exp) {
+    const pts = [{ d: 0, iso: 1, rec: e.pts[0][2] }, ...e.pts.map((p) => ({ d: GL(p[0]), iso: p[1], rec: p[2] }))];
+    const i = pts.findIndex((p) => p.d >= dose); const lo = pts[Math.max(0, i - 1)], hi = pts[Math.max(0, i)];
+    const t = hi.d === lo.d ? 0 : (dose - lo.d) / (hi.d - lo.d);
+    const iso = lo.iso + t * (hi.iso - lo.iso), rec = lo.rec + t * (hi.rec - lo.rec);
+    fin.push(hot[0] * iso + dose * D.dry.hum[0] * 10 * rec * D.dry.rel, hot[1] * iso + dose * D.dry.hum[1] * 10 * rec * D.dry.rel);
+  }
+  return { lo: Math.min(...fin), hi: Math.max(...fin), dose };
+}
+
+/* ---------- Programme ---------- */
+function prog(adds = S.adds, c = ctx()) {
+  let hot = 0, lo = 0, hi = 0, dryG = 0; const prof = AX.map(() => 0); let aroW = 0; const lines = [];
+  for (const a of adds) {
+    const h = hop(a.key); const r = ibuOf(h, a.g, a.t, c);
+    if (r) { hot += r.val; lo += r.lo; hi += r.hi; }
+    if (a.t === 'dry') dryG += a.g;
+    const w = TI[a.t].w;
+    if (w && h.v.ax) { h.v.ax.forEach((x, i) => { prof[i] += w * a.g / c.V * x; }); aroW += w * a.g; }
+    lines.push({ a, h, r, w });
+  }
+  const dry = dryG ? dryBitter(dryG, c.V, [lo, hi]) : null;
+  return { hot, lo, hi, dryG, dry, prof, aroW, lines };
+}
+const topAxes = (vec, n = 2) => vec.map((x, i) => [x, i]).filter(([x]) => x > 0).sort((a, b) => b[0] - a[0]).slice(0, n).map(([, i]) => AX[i].toLowerCase());
+const target = (st) => st.ibu ? Math.round((st.ibu[0] + st.ibu[1]) / 2) : null;
+function need(c = ctx(), adds = S.adds) { const t = target(c.st); const cur = prog(adds, c).hot; if (t == null) return { ibu: 20, txt: '20 IBU', partial: false, noStyle: true }; const left = Math.round(t - cur); return left >= 10 ? { ibu: left, txt: left === t ? `${t} IBU` : `les ${left} IBU manquants`, partial: left !== t } : { ibu: t, txt: `${t} IBU`, partial: false }; }
+
+/* ---------- Classement ---------- */
+function fitOf(v, dir) {
+  if (!v.ax || !dir) return null;
+  const tot = sum(v.ax), w = sum(dir.want.map((a) => v.ax[AXI[a]])), u = sum(dir.not.map((a) => v.ax[AXI[a]]));
+  return { tot, w, u, score: tot ? (w - 1.5 * u) / (tot + 2) : 0, ratio: tot ? w / tot : 0 };
+}
+function classOf(v, st) {
+  const dir = st.dir;
+  if (!dir) return 'nd';
+  if (dir.use.length && v.use.some((f) => dir.use.includes(f))) return 'attest';
+  if (!v.ax) return 'inconnu';
+  const f = fitOf(v, dir);
+  if (f.u > 0) return 'hors';
+  if (dir.orig.includes(v.o) && f.w > 0) return 'typique';
+  if (f.ratio >= 0.4) return 'compatible';
+  return 'hors';
+}
+const CLS_ORDER = { attest: 0, typique: 1, compatible: 2, hors: 3, inconnu: 4, nd: 5 };
+const CLS_LABEL = { attest: 'usage attesté', typique: 'typique', compatible: 'compatible', hors: 'hors style', inconnu: 'profil inconnu', nd: 'non documenté' };
+function rankAroma(list, st) {
+  return list.map((h) => ({ h, cls: classOf(h.v, st), fit: fitOf(h.v, st.dir) }))
+    .sort((a, b) => CLS_ORDER[a.cls] - CLS_ORDER[b.cls] || (b.fit?.score ?? -9) - (a.fit?.score ?? -9) || b.h.g - a.h.g || a.h.v.n.localeCompare(b.h.v.n));
+}
+function rankBitter(list, st, n, c) {
+  return list.map((h) => { const dose = doseFor(h, n.ibu, 'b60', c); return { h, dose, enough: dose != null && h.g >= dose, cls: classOf(h.v, st) }; })
+    .sort((a, b) => (b.enough - a.enough) || ((a.h.form === 'cryo') - (b.h.form === 'cryo')) || CLS_ORDER[a.cls] - CLS_ORDER[b.cls] || ((alphaOf(b.h)?.val ?? 0) - (alphaOf(a.h)?.val ?? 0)));
+}
+const hasBitter = (adds = S.adds) => adds.some((a) => ['fwh', 'b60', 'b30'].includes(a.t));
+// Prochain ajout : choisi par le brasseur (« + » ajoute…), sinon l'amertume tant qu'elle manque, puis le whirlpool.
+const nextStep = () => S.next || (hasBitter() ? 'wp' : 'b60');
+const STEP_LABEL = { b60: 'Amertume 60′', wp: 'Whirlpool', dry: 'Dry hop' };
+// Stock encore libre d'un houblon : son stock moins ses ajouts déjà prévus (hors l'ajout `exceptId`).
+const usedG = (key, exceptId) => sum(S.adds.filter((a) => a.key === key && a.id !== exceptId).map((a) => a.g));
+const avail = (h, exceptId) => h.g - usedG(h.key, exceptId);
+// Stock disponible pour l'amertume de ce houblon : on ne déduit que ses ajouts d'arôme (l'amertume est la question posée).
+const availBitter = (h) => h.g - sum(S.adds.filter((a) => a.key === h.key && !['fwh', 'b60', 'b30'].includes(a.t)).map((a) => a.g));
+// Ce que « + » ajoute pour ce houblon : dose pour l'IBU visé (amertume) ou dose de départ plafonnée au stock libre (arôme).
+function plusPlan(h, c = ctx(), t = nextStep()) {
+  const left = Math.max(0, avail(h));
+  if (t === 'b60') { const n = need(c); const d = doseFor(h, n.ibu, 'b60', c); const g = d == null ? null : Math.max(1, Math.round(d)); return { t, g, short: h.g > 0 && g != null && g > left ? g - left : 0 }; }
+  const want = Math.round(START_GL[t] * c.V);
+  if (h.g <= 0) return { t, g: want, short: 0 };
+  return left > 0 ? { t, g: Math.min(left, want), all: left < want, short: 0 } : { t, g: want, short: want };
+}
+// Classement de la liste : toujours par adéquation au style (groupes), puis, dans chaque groupe,
+// selon le prochain ajout : amertume → stock suffisant, pellets avant cryo, alpha ; arôme → adéquation, stock.
+function rankList(list, st, t = nextStep(), c = ctx()) {
+  const n = need(c);
+  return list.map((h) => { const r = { h, cls: classOf(h.v, st), fit: fitOf(h.v, st.dir) }; if (t === 'b60') { r.dose = doseFor(h, n.ibu, 'b60', c); r.enough = r.dose != null && avail(h) >= r.dose; } return r; })
+    .sort((a, b) => CLS_ORDER[a.cls] - CLS_ORDER[b.cls]
+      || (t === 'b60' ? ((b.enough - a.enough) || ((a.h.form === 'cryo') - (b.h.form === 'cryo')) || ((alphaOf(b.h)?.val ?? 0) - (alphaOf(a.h)?.val ?? 0)))
+        : ((b.fit?.score ?? -9) - (a.fit?.score ?? -9) || b.h.g - a.h.g))
+      || a.h.v.n.localeCompare(b.h.v.n));
+}
+function catalogue() {
+  const known = new Set(STOCK.filter((h) => h.g > 0).map((h) => h.v.id));
+  return D.varieties.filter((v) => !known.has(v.id)).map((v) => hop(v.id));
+}
+// Proposition avec le stock : un ajout d'arôme typique (plafonné au stock), puis l'amertume avec ce qui reste.
+function proposal(c = ctx()) {
+  const st = c.st; const adds = []; const used = new Map();
+  if (st.dir && st.dir.int >= 1) {
+    const ar = rankAroma(inStock(), st).find((r) => ['attest', 'typique', 'compatible'].includes(r.cls));
+    if (ar) { const t = st.dir.int >= 2 ? 'wp' : 'b10'; const g = Math.max(1, Math.min(ar.h.g, Math.round(START_GL[t] * c.V))); adds.push({ key: ar.h.key, g, t }); used.set(ar.h.key, g); }
+  }
+  // Même dose que « + » en amertume : l'IBU visé entier à 60 min (l'arôme ajoute quelques IBU en plus).
+  const n = need(c, []);
+  const b = rankBitter(inStock(), st, n, c).find((r) => r.dose != null && r.h.g - (used.get(r.h.key) || 0) >= r.dose);
+  if (b) adds.unshift({ key: b.h.key, g: Math.round(b.dose), t: 'b60' });
+  return adds;
+}
+
+/* ---------- Comparaison ---------- */
+function radarSvg(items, size = 300, opts = {}) {
+  const lab = opts.labels !== false, c = size / 2, R = size / 2 - (lab ? (opts.small ? 52 : 58) : 6), n = AX.length;
+  const want = new Set((style().dir?.want || []).map((a) => AXI[a]));
+  const pt = (i, r) => [c + Math.sin(2 * Math.PI * i / n) * r, c - Math.cos(2 * Math.PI * i / n) * r];
+  let g = '';
+  for (const k of [1, 2, 3]) g += `<polygon points="${[...Array(n)].map((_, i) => pt(i, R * k / 3).map((x) => x.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="#3D342E" stroke-width="1"/>`;
+  for (let i = 0; i < n; i++) { const [x, y] = pt(i, R); g += `<line x1="${c}" y1="${c}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#3D342E" stroke-width="1"/>`; }
+  if (lab) for (let i = 0; i < n; i++) {
+    const [x, y] = pt(i, R + 9); const w = want.has(i);
+    const anchor = x > c + 4 ? 'start' : x < c - 4 ? 'end' : 'middle';
+    const dy = y < c - R * 0.9 ? -2 : y > c + R * 0.9 ? 11 : 4;
+    g += `<text x="${x.toFixed(1)}" y="${(y + dy).toFixed(1)}" text-anchor="${anchor}" font-size="12" font-family="Source Sans 3, system-ui, sans-serif" fill="${w ? '#F5F0EA' : '#9A8A7E'}" font-weight="${w ? 600 : 400}">${AX[i]}</text>`;
+    if (w) { const [dx, dy2] = pt(i, R + 3); g += `<circle cx="${dx.toFixed(1)}" cy="${dy2.toFixed(1)}" r="2.5" fill="#6E9B5B"/>`; }
+  }
+  for (const it of items) {
+    if (!it.ax) continue;
+    const pts = it.ax.map((v, i) => pt(i, R * Math.max(0.04, v / 3)));
+    const col = SERHEX[it.k];
+    g += `<polygon points="${pts.map((p) => p.map((x) => x.toFixed(1)).join(',')).join(' ')}" fill="${col}" fill-opacity="0.13" stroke="${col}" stroke-width="2" stroke-linejoin="round" ${it.k === 3 ? 'stroke-dasharray="6 3"' : ''}/>`;
+    g += pts.map(([x, y], i) => it.ax[i] ? `<g transform="translate(${(x - 5).toFixed(1)} ${(y - 5).toFixed(1)}) scale(.84)">${SHAPES[it.k](col).replace('fill=', 'stroke="#1A1613" stroke-width="2" fill=')}</g>` : '').join('');
+  }
+  return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="${esc(opts.aria || 'Profil d’arôme')}">${g}</svg>`;
+}
+function selHops() { return S.sel.map((s) => ({ ...s, h: hop(s.key) })).filter((s) => s.h); }
+function toggleSel(key) {
+  const i = S.sel.findIndex((s) => s.key === key);
+  if (i >= 0) { S.sel.splice(i, 1); if (S.sel.length < 2) S.full = false; return; }
+  if (S.sel.length >= 4) { S.toast = { msg: '4 houblons au plus : décoche-en un pour en ajouter un autre.' }; return; }
+  const used = new Set(S.sel.map((s) => s.k)); const k = [0, 1, 2, 3].find((x) => !used.has(x));
+  S.sel.push({ key, k });
+}
+function setSel(keys) { S.sel = keys.slice(0, 4).map((key, k) => ({ key, k })); }
+function similar(h, pool, n = 3) {
+  const a = h.v.ax; if (!a) return [];
+  const cos = (x, y) => { const d = Math.sqrt(sum(x.map((v) => v * v)) * sum(y.map((v) => v * v))); return d ? sum(x.map((v, i) => v * y[i])) / d : 0; };
+  return pool.filter((o) => o.key !== h.key && o.v.id !== h.v.id && o.v.ax).map((o) => ({ h: o, s: cos(a, o.v.ax) })).sort((x, y) => y.s - x.s || y.h.g - x.h.g).slice(0, n);
+}
+
+/* ---------- Remplacement ---------- */
+// Remplaçants d'un ajout. Ajout d'amertume (premier moût, 60′, 30′, 15′) : même IBU au même moment.
+// Ajout d'arôme (10′ et moins, whirlpool, dry hop) : même masse, l'IBU change et s'affiche.
+// Stock : celui qui reste libre, hors cet ajout. Deux groupes : dans mon stock (5), à acheter (3, typiques du style d'abord).
+const aromaAdd = (t) => TI[t].w >= 0.5;
+function substitutes(a, c = ctx(), nStock = 5, nBuy = 3) {
+  const h = hop(a.key); const r = ibuOf(h, a.g, a.t, c); const w = TI[a.t].w; const aroma = aromaAdd(a.t); const st = c.st;
+  const cos = (x, y) => { if (!x || !y) return 0; const d = Math.sqrt(sum(x.map((v) => v * v)) * sum(y.map((v) => v * v))); return d ? sum(x.map((v, i) => v * y[i])) / d : 0; };
+  const pool = [...inStock(), ...catalogue()].filter((o) => o.v.id !== h.v.id);
+  const out = pool.map((o) => {
+    const dose = aroma ? a.g : (r ? doseFor(o, r.val, a.t, c) : null);
+    const left = o.g > 0 ? o.g - usedG(o.key, a.id) : 0;
+    const sim = cos(h.v.ax, o.v.ax);
+    const grp = o.g <= 0 ? 2 : dose != null && left >= dose ? 0 : 1;
+    const gain = [], lose = [];
+    if (h.v.ax && o.v.ax) h.v.ax.forEach((x, i) => { const dlt = o.v.ax[i] - x; if (dlt >= 1) gain.push([dlt, i]); if (dlt <= -1) lose.push([-dlt, i]); });
+    gain.sort((p, q) => q[0] - p[0]); lose.sort((p, q) => q[0] - p[0]);
+    return { h: o, dose, left, sim, grp, cls: classOf(o.v, st), ibu: dose != null ? ibuOf(o, dose, a.t, c) : null, gain: gain.slice(0, 2).map(([, i]) => AX[i].toLowerCase()), lose: lose.slice(0, 2).map(([, i]) => AX[i].toLowerCase()) };
+  }).filter((x) => x.dose != null);
+  const byFit = (x, y) => (w ? y.sim - x.sim : (alphaOf(y.h)?.val ?? 0) - (alphaOf(x.h)?.val ?? 0)) || y.sim - x.sim;
+  const stock = out.filter((x) => x.grp < 2).sort((x, y) => x.grp - y.grp || byFit(x, y)).slice(0, nStock);
+  const buy = out.filter((x) => x.grp === 2).sort((x, y) => CLS_ORDER[x.cls] - CLS_ORDER[y.cls] || byFit(x, y)).slice(0, nBuy);
+  return { h, r, aroma, stock, buy, list: [...stock, ...buy], all: out };
+}
+
+/* ---------- Rendu ---------- */
+const app = document.getElementById('app');
+function render() {
+  const t0 = performance.now();
+  const focus = document.activeElement?.dataset?.focuskey; const caret = document.activeElement?.selectionStart;
+  const p = prog();
+  // Les zones qui défilent gardent leur position d'un rendu à l'autre (même feuille, même volet).
+  const keyOf = { '.main': 'main', '.col-a': 'main', '.col-b': 'main', '.dockb': 'dock' + S.full, '.sheetb': 'sheet' + S.sheet };
+  const scrolls = Object.keys(keyOf).map((s) => { const e = app.querySelector(s); return e ? [s, e.scrollTop, render.keys?.[s]] : null; }).filter(Boolean);
+  app.className = 'app' + (S.full && S.sel.length >= 2 ? ' full' : '');
+  app.innerHTML = renderTop(p) + `<div class="main">${renderMain(p)}</div>` + renderDock(p) + renderSheet();
+  for (const [s, top, key] of scrolls) { const e = app.querySelector(s); if (e && key === keyOf[s]) e.scrollTop = top; }
+  render.keys = keyOf;
+  const blocked = S.sheet ? app.querySelectorAll('.top, .main, .dock') : [];
+  blocked.forEach((e) => e.setAttribute('inert', ''));
+  if (focus) { const el = app.querySelector(`[data-focuskey="${focus}"]`); if (el) { S._refocus = true; el.focus(); S._refocus = false; try { el.setSelectionRange(caret, caret); } catch (_) {} } }
+  window.__v3.lastRenderMs = performance.now() - t0;
+}
+function renderTop(p) {
+  const st = style(); const t = st.ibu; const max = Math.max(100, t ? t[1] * 1.25 : 60, p.hi * 1.1);
+  const pos = (x) => (Math.min(x, max) / max * 100).toFixed(1) + '%';
+  const aro = !S.adds.length ? '' : p.aroW > 0 ? 'Arôme dominant : ' + topAxes(p.prof, 3).join(', ') : 'Peu d’arôme : ajouts d’amertume seulement';
+  const ibuTxtTop = Math.abs(p.hi - p.lo) >= 1 ? `${nf(p.lo)}–${nf(p.hi)}` : nf(p.hot);
+  const dryTxt = p.dry ? (p.dry.over ? `<span>Après dry hop : dose au-delà des essais publiés, amertume non estimée</span>` : `<span>Après dry hop : <b class="strong mono">${nf(p.dry.lo)}–${nf(p.dry.hi)} IBU</b> estimés</span>`) : '';
+  return `<div class="top"><div class="hd">
+    <button class="title" data-act="recipe" aria-label="Changer le style et la recette : ${esc(st.n)}"><b>${esc(st.n)}</b>${ico('down')}</button>
+    <span class="meta mono">${nf(S.V)} L · ${nf(S.og, 3)}</span><span class="sp"></span>
+    <button class="btn" data-act="questions">${ico('help')}Questions</button></div>
+    <div class="gauge"><div class="g1"><span class="v">${ibuTxtTop}</span><span class="u">IBU à chaud${t ? ` · visé ${t[0]}–${t[1]}` : ''}</span>
+      <div class="track" role="img" aria-label="IBU à chaud ${ibuTxtTop}${t ? `, plage du style ${t[0]} à ${t[1]}` : ''}${p.dry && !p.dry.over ? `, après dry hop ${nf(p.dry.lo)} à ${nf(p.dry.hi)}` : ''}">${t ? `<div class="band" style="left:${pos(t[0])};width:calc(${pos(t[1])} - ${pos(t[0])})"></div>` : ''}${p.dry && !p.dry.over ? `<div class="dryr" style="left:${pos(p.dry.lo)};width:calc(${pos(p.dry.hi)} - ${pos(p.dry.lo)})"></div>` : ''}<div class="mk" style="left:${pos(p.hot)}"></div></div></div>
+      ${dryTxt || aro ? `<div class="g2">${dryTxt}${aro ? `<span>${esc(aro)}</span>` : ''}</div>` : ''}</div></div>`;
+}
+function renderMain(p) {
+  return `<div class="col-a">${renderToast()}${renderAdds(p)}</div><div class="col-b">${renderList()}</div>`;
+}
+function renderToast() {
+  if (!S.toast) return '';
+  return `<div class="toast" role="status"><span class="sp">${esc(S.toast.msg)}</span>${S.toast.undo ? '<button class="btn" data-act="undo">Annuler</button>' : ''}<button class="btn sq ghost" data-act="toastx" aria-label="Fermer le message">${ico('x')}</button></div>`;
+}
+function renderAdds(p) {
+  let h = `<div class="adds"><div class="sec"><h2>Mon houblonnage</h2><span class="muted">${S.adds.length ? `${S.adds.length} ajout${S.adds.length > 1 ? 's' : ''} · ${nf(sum(S.adds.map((a) => a.g)))} g` : ''}</span></div>`;
+  if (!S.adds.length) {
+    const pr = proposal();
+    const why = pr.find((a) => a.t === 'b60') ? '' : ' · aucun houblon ne suffit seul pour l’amertume';
+    h += `<div class="empty"><span class="sp">${pr.length ? 'Proposition avec ton stock : ' + pr.map((a) => `${esc(hname(hop(a.key)))} ${a.g} g ${a.t === 'wp' ? 'au whirlpool' : 'à ' + TI[a.t].short}`).join(' + ') + why : 'Vide : ajoute un houblon avec « + ».'}</span>${pr.length ? '<button class="btn" data-act="propose">Appliquer</button>' : ''}</div>`;
+  }
+  for (const L of p.lines) h += renderAdd(L);
+  // Bureau : profil d'arôme de tout le houblonnage (somme pondérée par moment et dose), sous la liste des ajouts.
+  if (p.aroW > 0) { const m = Math.max(...p.prof); h += `<div class="progp"><h3 class="ph3">Profil de mon houblonnage <span class="muted">forme relative · ${nf(sum(S.adds.filter((a) => TI[a.t].w).map((a) => a.g)) / S.V, 1)} g/L en arôme</span></h3><div class="radar">${radarSvg([{ ax: p.prof.map((x) => x / m * 3), k: 0 }], 260, { aria: 'Profil d’arôme de mon houblonnage', small: true })}</div></div>`; }
+  return h + '</div>';
+}
+function stockState(h, g) {
+  if (h.g <= 0) return `<span class="warn">à acheter</span>`;
+  const used = sum(S.adds.filter((a) => a.key === h.key).map((a) => a.g));
+  return used <= h.g ? `<span class="ok">${ico('check')}</span><span class="muted mono">${nf(h.g)} g</span>` : `<span class="bad">manque ${nf(used - h.g)} g</span>`;
+}
+function renderAdd(L) {
+  const { a, h, r, w } = L; const open = S.open === a.id;
+  let x = `<div class="add" data-add="${a.id}"><div class="addrow"><button class="addh" data-act="openadd" data-id="${a.id}" aria-expanded="${open}" aria-label="${esc(hname(h))} ${gtxt(a.g)} g ${TI[a.t].label} : régler"><span class="nm">${esc(hname(h))}</span><span class="d">${gtxt(a.g)} g</span><span class="t">${TI[a.t].short}</span><span class="i">${a.t === 'dry' ? 'à cru' : r ? (r.lot ? nf(r.val) : `${nf(r.lo)}–${nf(r.hi)}`) + ' IBU' : 'IBU ?'}</span><span class="st">${stockState(h, a.g)}</span></button><button class="btn sq ghost" data-act="replace" data-id="${a.id}" aria-label="Remplacer ${esc(hname(h))}">${ico('swap')}</button></div>`;
+  if (open) {
+    const aro = w && h.v.ax ? `Arôme : ${topAxes(h.v.ax.map((v) => v * w), 3).join(', ')} (estimation)` : 'Amertume seulement : à ce moment, l’arôme part presque entièrement.';
+    x += `<div class="ed"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="step"><button class="btn sq" data-act="dose" data-id="${a.id}" data-d="-1" aria-label="Retirer 1 g">${ico('minus')}</button><input type="text" inputmode="decimal" aria-label="Dose en grammes" data-act="dosein" data-id="${a.id}" data-focuskey="dose-${a.id}" value="${gtxt(a.g)}"><button class="btn sq" data-act="dose" data-id="${a.id}" data-d="1" aria-label="Ajouter 1 g">${ico('plus')}</button></span><span class="muted">g · ${nf(a.g / S.V, 1)} g/L</span></div>
+      <div class="chips" role="group" aria-label="Moment de l’ajout">${TIMES.map((t) => `<button class="chip" data-act="time" data-id="${a.id}" data-t="${t.id}" aria-pressed="${a.t === t.id}">${t.short}</button>`).join('')}</div>
+      ${compNote(a, h, r)}
+      <div class="line">${esc(aro)} · ${alphaTxt(h)}${alphaOf(h)?.lot ? ` (${esc(h.alphaFrom)})` : ' (plage de la variété)'} · IBU : Tinseth, DI ${nf(S.og, 3)}, ${nf(S.V)} L</div>
+      <div class="acts"><button class="btn" data-act="remove" data-id="${a.id}">${ico('trash')}Retirer</button><span class="sp"></span><button class="btn ghost" data-act="openadd" data-id="${a.id}">Fermer</button></div></div>`;
+  }
+  return x + '</div>';
+}
+// Moment changé (Q25) : écart d'IBU par rapport au moment précédent, et la dose à ajouter maintenant pour le retrouver.
+function compNote(a, h, r) {
+  if (!a.prev || a.prev.ibu == null) return '';
+  const now = a.t === 'dry' ? 0 : r ? r.val : null; if (now == null) return '';
+  const d = now - a.prev.ibu; if (Math.abs(d) < 1) return '';
+  const extra = d < 0 && a.t !== 'dry' ? Math.round(doseFor(h, -d, a.t, ctx()) * 10) / 10 : null;
+  // Stock libre pour cette correction : stock moins tous les ajouts de ce houblon, celui-ci compris.
+  // Manque après la correction : tous les ajouts de ce houblon, correction comprise, moins son stock.
+  const left = h.g > 0 ? h.g - usedG(h.key) : 0; const short = extra && h.g > 0 && extra > left ? Math.round((extra - left) * 10) / 10 : 0;
+  const head = `<b class="strong">${TI[a.prev.t].short} → ${TI[a.t].short}</b> : ${nf(now)} IBU au lieu de ${nf(a.prev.ibu)} (${d > 0 ? '+' : '−'}${nf(Math.abs(d))}).`;
+  const tail = extra ? ` Ajouter ${gtxt(extra)} g maintenant rend ${nf(a.prev.ibu)} IBU${h.g <= 0 ? '' : short ? ` ; <span class="bad">manque ${gtxt(short)} g</span>` : ` ; reste ${nf(left)} g`}.` : a.t === 'dry' ? ' À cru, plus d’IBU à chaud.' : '';
+  return `<div class="note comp"><span class="sp">${head}${tail}</span>${extra ? `<button class="btn" data-act="comp" data-id="${a.id}" data-g="${extra}">Ajouter ${gtxt(extra)} g</button>` : ''}</div>`;
+}
+function lvl(n) { return `<span class="lv" aria-hidden="true">${[1, 2, 3].map((i) => `<i class="${i <= n ? 'f' : ''}"></i>`).join('')}</span>`; }
+// Arômes en mots : d'abord ceux du style (en clair), puis l'arôme dominant hors style ; 3 au plus.
+function aromaLine(v, st) {
+  if (!v.ax) return '<span>profil inconnu</span>';
+  const want = new Set((st.dir?.want || []).map((a) => AXI[a]));
+  const on = v.ax.map((x, i) => [x, i]).filter(([x]) => x > 0);
+  const inS = on.filter(([, i]) => want.has(i)).sort((a, b) => b[0] - a[0]);
+  const out = on.filter(([, i]) => !want.has(i)).sort((a, b) => b[0] - a[0]);
+  const pick = [...inS.slice(0, 2), ...out].slice(0, 3);
+  return pick.map(([x, i]) => `<span class="axw ${want.has(i) ? 'st' : ''}">${AX[i].toLowerCase()}${lvl(x)}</span>`).join(' ');
+}
+function renderRow(r, rank) {
+  const h = r.h, st = style(); const on = S.sel.find((s) => s.key === h.key); const added = S.adds.some((a) => a.key === h.key);
+  const plan = plusPlan(h); const ex = S.adds.find((a) => a.key === h.key);
+  const exShort = ex && h.g > 0 ? Math.max(0, usedG(h.key) - h.g) : 0;
+  const exAdds = S.adds.filter((a) => a.key === h.key);
+  const planTxt = ex ? `${exAdds.length > 1 ? `${exAdds.length} ajouts · ${gtxt(sum(exAdds.map((a) => a.g)))} g` : `${gtxt(ex.g)} g ${TI[ex.t].short}`}${exShort ? ` · manque ${nf(exShort)} g` : ''}` : plan.g == null ? 'α inconnu' : h.g <= 0 ? `${nf(plan.g)} g` : plan.short ? `${nf(plan.g)} g · manque ${nf(plan.short)} g` : plan.t === 'b60' ? `${nf(plan.g)} g · assez` : plan.all ? `${nf(plan.g)} g · max` : `${nf(plan.g)} g`;
+  const box = on ? `<span class="box" style="background:${SERHEX[on.k]}">${SHAPE_IN[on.k]}</span>` : '<span class="box"></span>';
+  const addLabel = ex ? `${hname(h)} est dans mon houblonnage : régler l’ajout` : `Ajouter ${plan.g == null ? '' : nf(plan.g) + ' g ' + (/^[aeiouyhéèêâîôûAEIOUYHÉ]/.test(hname(h)) ? 'd’' : 'de ')}${hname(h)} ${plan.t === 'b60' ? 'à 60 min' : plan.t === 'wp' ? 'au whirlpool' : 'en dry hop'}`;
+  let x = `<div class="row${on ? ' on' : ''}" data-hop="${esc(h.key)}"><button class="cb" role="checkbox" aria-checked="${!!on}" data-act="sel" data-key="${esc(h.key)}" aria-label="Comparer ${esc(hname(h))}">${box}</button>
+    <button class="rowmain" data-act="info" data-key="${esc(h.key)}" aria-expanded="${S.info === h.key}" aria-label="${esc(hname(h))} : détails"><span class="l1">${rank ? `<span class="rk">${rank}</span>` : ''}<span class="nm">${esc(hname(h))}</span></span><span class="l2">${aromaLine(h.v, st)}</span></button>
+    <span class="qty"><span class="${h.g > 0 ? '' : 'zero'}">${h.g > 0 ? `${nf(h.g)} g` : 'à acheter'}</span><small class="${(ex ? exShort : plan.short) ? 'warn' : ''}">${planTxt}</small></span>
+    <button class="addb${ex ? ' done' : ''}" data-act="${ex ? 'openadd' : 'addhop'}" data-key="${esc(h.key)}" ${ex ? `data-id="${ex.id}"` : ''} aria-label="${esc(addLabel)}">${ico(ex ? 'check' : 'plus')}</button></div>`;
+  if (S.info === h.key) x += renderInfo(h, r);
+  return x;
+}
+function renderInfo(h, r) {
+  const st = style(); const v = h.v; const cls = classOf(v, st); const dir = st.dir;
+  const why = !dir ? 'Style sans direction houblon documentée : l’ordre suit le stock.'
+    : cls === 'attest' ? `Usage attesté pour ce style : ${esc(v.useSrc || 'source fournisseur')}.`
+    : cls === 'typique' ? `Origine ${esc(v.o)}, citée par le guide BJCP pour ce style, et arômes du style (${dir.want.map((a) => AX[AXI[a]].toLowerCase()).join(', ')}).`
+    : cls === 'compatible' ? `Au moins 40 % de ses descripteurs dans les arômes du style (${dir.want.map((a) => AX[AXI[a]].toLowerCase()).join(', ')}).`
+    : cls === 'inconnu' ? 'Aucun descripteur : profil inconnu.' : `Peu de descripteurs dans les arômes du style (${dir.want.map((a) => AX[AXI[a]].toLowerCase()).join(', ')})${dir.not.length ? ', ou un arôme exclu' : ''}.`;
+  return `<div class="info">
+    <p><b class="strong">${CLS_LABEL[cls]}</b> · ${why}</p>
+    <p>${alphaTxt(h)}${alphaOf(h)?.lot ? ` (lot, ${esc(h.alphaFrom)}) · plage ${rng(v.a)} %` : ''} · β ${rng(v.b)} % · huiles ${rng(v.oil)} mL/100 g · ${esc(v.o || 'origine inconnue')}${v.oSrc ? ` <span class="muted">(${esc(v.oSrc)})</span>` : ''}</p>
+    <p class="muted">${v.tags.length ? 'Descripteurs : ' + esc(v.tags.join(', ')) + ' (Beer Maverick)' : 'Aucun descripteur'}${v.hs?.f?.length ? ' · Hopsteiner : ' + esc(v.hs.f.join(', ').toLowerCase()) : ''}</p>
+    <div class="acts"><button class="btn" data-act="addas" data-key="${esc(h.key)}" data-t="b60">${ico('plus')}En amertume 60′</button><button class="btn" data-act="addas" data-key="${esc(h.key)}" data-t="wp">${ico('plus')}En arôme (whirlpool)</button><button class="btn" data-act="near" data-key="${esc(h.key)}">${ico('cmp')}Comparer aux 3 plus proches en stock</button>${v.url ? `<a class="btn" href="${esc(v.url)}" target="_blank" rel="noopener">Fiche ${ico('link')}</a>` : ''}</div></div>`;
+}
+const GROUP_LABEL = (st) => ({ attest: `Usage attesté pour ${esc(st.n)}`, typique: `Typique de ${esc(st.n)}`, compatible: 'Compatible', hors: 'Hors style', inconnu: 'Profil inconnu', nd: 'Style sans direction houblon documentée' });
+function renderList() {
+  const st = style(); const t = nextStep(); const n = need();
+  const wantTxt = st.dir && st.dir.want.length ? st.dir.want.map((a) => AX[AXI[a]].toLowerCase()).join(', ') : 'non documentés pour ce style';
+  let h = `<div class="sec"><h2>Mes houblons</h2><span class="muted" style="white-space:nowrap">du + au −</span><span class="sp"></span><button class="btn" data-act="top4" aria-label="Comparer les 4 premiers">${ico('cmp')}4 premiers</button><button class="btn sq ghost" data-act="legend" aria-label="Comment la liste est classée" aria-expanded="${!!S.legend}">${ico('info')}</button></div>`;
+  h += `<div class="sec step"><span class="muted" style="display:inline-flex;align-items:center;gap:2px;white-space:nowrap">${ico('plus')}ajoute</span><span class="seg" role="group" aria-label="Prochain ajout">${['b60', 'wp', 'dry'].map((x) => `<button data-act="next" data-t="${x}" aria-pressed="${t === x}">${STEP_LABEL[x]}</button>`).join('')}</span><span class="muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${t === 'b60' ? `pour ${n.partial ? `${n.ibu} IBU de plus` : `${n.ibu} IBU`}` : `${nf(START_GL[t], 0)} g/L`}</span></div>`;
+  if (S.legend) h += `<div class="info" style="padding-left:10px"><p>Groupes : <b class="strong">typique</b> (origine citée par le guide BJCP pour ce style et arômes du style), <b class="strong">compatible</b> (au moins 40 % de ses descripteurs dans les arômes du style), <b class="strong">hors style</b>. Arômes du style, en clair sur chaque ligne : ${wantTxt}.</p><p>Dans chaque groupe : pour l’amertume, d’abord les houblons dont le stock suffit, les pellets avant le cryo (réservé à l’arôme), puis l’alpha le plus haut ; pour le whirlpool et le dry hop, du plus au moins proche du style, puis le stock. À droite : mon stock, puis la dose que « + » ajoute (« manque » si le stock ne suffit pas). Rang chiffré seulement quand l’usage pour le style est attesté (IPA).</p></div>`;
+  const groups = (rows, cat) => {
+    let out = '', cur = null, idx = 0;
+    for (const r of rows) {
+      if (r.cls !== cur) {
+        cur = r.cls; idx = 0;
+        const cnt = rows.filter((x) => x.cls === cur).length;
+        out += `<div class="grp"><b>${cat ? 'À acheter · ' : ''}${GROUP_LABEL(st)[cur]}</b><span>· ${cnt}</span></div>`;
+      }
+      idx++;
+      out += renderRow(r, r.cls === 'attest' ? idx : null);
+    }
+    return out;
+  };
+  if (st.dir && st.dir.int === 0) h += `<div class="grp"><b>Arôme houblon nul ou presque pour ce style</b></div>`;
+  h += groups(rankList(inStock(), st, t), false);
+  if (!S.cat) {
+    const cat = catalogue(); const best = st.dir ? rankAroma(cat, st).filter((r) => ['attest', 'typique'].includes(r.cls)).length : 0;
+    h += `<div class="more"><button class="btn" data-act="cat">${ico('plus')}Catalogue : ${st.dir ? `${best} typiques à acheter sur ` : ''}${cat.length} variétés</button></div>`;
+  } else {
+    const q = S.catQ.trim().toLowerCase();
+    const cat = catalogue().filter((x) => !q || x.v.n.toLowerCase().includes(q)); const rows = rankList(cat, st, t).slice(0, S.catN);
+    h += `<div class="sec"><input class="search" style="margin:0;width:100%" type="text" id="catq" aria-label="Chercher une variété dans le catalogue" placeholder="Chercher une variété (Fuggle, Saaz…)" data-act="catq" data-focuskey="catq" value="${esc(S.catQ)}"></div>`;
+    h += rows.length ? groups(rows, true) : '<div class="empty">Aucune variété de ce nom.</div>';
+    h += `<div class="more">${S.catN < cat.length ? `<button class="btn" data-act="catmore">Voir 30 de plus</button>` : ''}<button class="btn ghost" data-act="cat">Masquer le catalogue</button></div>`;
+  }
+  return h;
+}
+function renderDock(p) {
+  const L = selHops();
+  if (L.length < 2) {
+    if (window.matchMedia('(min-width: 900px)').matches) {
+      // Bureau : aperçu des 3 premiers de la liste tant que rien n'est coché.
+      const prev = rankList(inStock(), style()).slice(0, 3).map((r, k) => ({ key: r.h.key, k, h: r.h }));
+      return `<aside class="dock cmp" aria-label="Comparaison"><div class="dockh"><h2>Aperçu : les 3 premiers</h2><span class="sp"></span><span class="muted" style="font-size:12px">coche 2 à 4 houblons pour choisir</span></div>
+        <div class="legend">${prev.map((s) => `<span class="lgi" style="padding-right:8px">${shape(s.k)}<span>${esc(hname(s.h))}</span></span>`).join('')}${L.length === 1 ? `<button class="btn" data-act="near" data-key="${esc(L[0].key)}">${ico('cmp')}${esc(hname(L[0].h))} et ses 3 plus proches</button>` : ''}</div>
+        <div class="dockb">${renderCompare(prev)}</div></aside>`;
+    }
+    if (L.length === 1) return `<div class="note" style="flex:none"><span class="sp">${esc(hname(L[0].h))} coché : coche un autre houblon, ou</span><button class="btn" data-act="near" data-key="${esc(L[0].key)}">ses 3 plus proches en stock</button></div>`;
+    return '';
+  }
+  if (!S.full && !window.matchMedia('(min-width: 900px)').matches) {
+    // Volet replié (téléphone) : radar et IBU à dose égale, sans masquer la liste ; « Agrandir » donne tout.
+    const c = ctx(); const ref = S.adds.find((a) => L.some((s) => s.key === a.key)); const g = ref ? ref.g : 20, t = ref && ref.t !== 'dry' ? ref.t : 'b60';
+    return `<aside class="dock peek" aria-label="Comparaison"><div class="peekb"><div class="radar">${radarSvg(L.map((s) => ({ ax: s.h.v.ax, k: s.k })), 200, { aria: 'Profils d’arôme superposés de ' + L.map((s) => hname(s.h)).join(', '), small: true })}</div>
+      <div class="peekr"><h2>Comparer · ${L.length}</h2>
+      <div class="pl">${L.map((s) => { const r = ibuOf(s.h, g, t, c); return `${shape(s.k)}<span class="nm">${esc(hname(s.h))}</span><span class="mono">${r ? (r.lot ? nf(r.val) : `${nf(r.lo)}–${nf(r.hi)}`) : '?'}</span>`; }).join('')}</div>
+      <span class="cap">IBU pour ${nf(g)} g à ${TI[t].short}</span><span class="cap"><span style="color:var(--hop-text)">●</span> et gras : arômes du style · profil estimé d’après les descripteurs</span><span class="sp"></span><div class="ph"><button class="btn" data-act="full" aria-label="Agrandir la comparaison">${ico('expand')}Tout comparer</button><span class="sp"></span><button class="btn sq" data-act="clearsel" aria-label="Fermer la comparaison">${ico('x')}</button></div></div></div></aside>`;
+  }
+  return `<aside class="dock cmp" aria-label="Comparaison"><div class="dockh"><h2>Comparer · ${L.length}</h2><span class="sp"></span><button class="btn" data-act="full" aria-label="${S.full ? 'Réduire la comparaison' : 'Agrandir la comparaison'}">${ico(S.full ? 'shrink' : 'expand')}${S.full ? 'Réduire' : 'Agrandir'}</button><button class="btn sq" data-act="clearsel" aria-label="Fermer la comparaison">${ico('x')}</button></div>
+    <div class="legend">${L.map((s) => `<span class="lgi">${shape(s.k)}<span>${esc(hname(s.h))}</span><button data-act="sel" data-key="${esc(s.key)}" aria-label="Retirer ${esc(hname(s.h))} de la comparaison">${ico('x')}</button></span>`).join('')}</div>
+    <div class="dockb">${renderCompare(L)}</div></aside>`;
+}
+// Comparaison complète : la grammaire de Beer Maverick (une notion par section sous un bandeau,
+// une ligne « à quoi ça sert » par mesure, une barre par houblon sur une échelle commune),
+// plus ce qu'il n'a pas : ma recette, ma dose face au stock, mon style, le nom et la forme sur chaque barre.
+const MEASURE = {
+  a: ['Alpha', '%', 20, 1, 'Source de l’amertume : ils s’isomérisent à l’ébullition. Plus d’alpha, moins de grammes pour le même IBU.'],
+  b: ['Bêta', '%', 10, 1, 'Presque pas d’amertume à l’ébullition ; leur oxydation au stockage peut en ajouter un peu.'],
+  oil: ['Huiles totales', 'mL/100 g', 4, 1, 'Elles portent l’arôme. Très volatiles, elles partent à l’ébullition : elles comptent pour les ajouts tardifs et le dry hop.'],
+  my: ['Myrcène', '% de l’huile', 80, 0, 'Saveurs : vert, résineux, agrumes. La plus volatile : surtout en dry hop.'],
+  hu: ['Humulène', '% de l’huile', 50, 0, 'Saveurs : boisé, épicé, « noble ». Tient mieux à la chaleur que le myrcène.'],
+  ca: ['Caryophyllène', '% de l’huile', 20, 0, 'Saveurs : poivré, boisé, herbacé.'],
+};
+function rangeBars(L, k) {
+  const [lab, unit, scale0, dec, why] = MEASURE[k];
+  const scale = Math.max(scale0, ...L.map((s) => s.h.v[k] ? s.h.v[k][1] : 0), ...(k === 'a' ? L.map((s) => s.h.alpha ? Math.ceil(s.h.alpha) : 0) : []));
+  const u = unit === 'mL/100 g' ? ' mL' : ' %';
+  const pc = (x) => (x / scale * 100).toFixed(1) + '%';
+  return `<div class="metric"><div class="mh"><b>${lab}</b><span>échelle 0–${nf(scale)} ${unit}</span></div><p class="why">${why}</p><div class="bars" style="padding:0">${L.map((s) => {
+    const r = s.h.v[k]; const lot = k === 'a' && s.h.alpha ? s.h.alpha : null; const out = lot && r && (lot < r[0] || lot > r[1]);
+    return `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span class="b">${r ? `<i style="left:0;width:${pc(r[0])};background:${SERHEX[s.k]};opacity:.3"></i><i style="left:${pc(r[0])};width:${pc(Math.max(scale * 0.015, r[1] - r[0]))};background:${SERHEX[s.k]}"></i>` : ''}${lot ? `<span class="tick" style="left:${pc(lot)}"></span>` : ''}</span><span class="n">${r ? rng(r, dec, u) : 'inconnu'}</span></div>`;
+  }).join('')}</div>${k === 'a' ? (() => { const outs = L.filter((s) => s.h.alpha && s.h.v.a && (s.h.alpha < s.h.v.a[0] || s.h.alpha > s.h.v.a[1])); return outs.length ? `<p class="why warn">Lot hors de la plage des fournisseurs : ${outs.map((s) => `${esc(hname(s.h))} ${nf(s.h.alpha, 1)} %`).join(', ')}.</p>` : ''; })() : ''}</div>`;
+}
+function renderCompare(L) {
+  const st = style(); const c = ctx(); const n = need();
+  const ref = S.adds.find((a) => L.some((s) => s.key === a.key));
+  const g = ref ? ref.g : 20, t = ref && ref.t !== 'dry' ? ref.t : 'b60';
+  const unknown = L.filter((s) => !s.h.v.ax);
+  const want = new Set((st.dir?.want || []).map((a) => AXI[a]));
+  const band = (title, note = '') => `<h3 class="band">${title}${note ? ` <span class="muted">${note}</span>` : ''}</h3>`;
+  // 1. Profil d'arôme : le radar superposé, et ce qu'il mesure, dit sous le graphique.
+  let h = band('Profil d’arôme') + `<div class="radar">${radarSvg(L.map((s) => ({ ax: s.h.v.ax, k: s.k })), 300, { aria: 'Profils d’arôme superposés de ' + L.map((s) => hname(s.h)).join(', ') })}</div>
+    <p class="why center">Estimation : nombre de descripteurs Beer Maverick par arôme, de 0 (aucun) à 3 (dominant) ; ce n’est pas une intensité mesurée. <span style="color:var(--hop-text)">●</span> et gras : arômes du style.${unknown.length ? ` ${unknown.map((s) => esc(hname(s.h))).join(', ')} : aucun descripteur, profil inconnu, non tracé.` : ''}</p>`;
+  // 2. Dans ma recette : IBU à dose égale, dose pour l'IBU visé face au stock, adéquation au style.
+  const ibus = L.map((s) => ({ s, r: ibuOf(s.h, g, t, c) }));
+  const imax = Math.max(1, ...ibus.map((x) => x.r ? x.r.hi : 0));
+  h += band('Dans ma recette', `${esc(st.n)}, ${nf(S.V)} L, DI ${nf(S.og, 3)}`);
+  h += `<div class="metric"><div class="mh"><b>IBU pour ${nf(g)} g à ${TI[t].label}</b><span>${ref ? `comme ${esc(hname(hop(ref.key)))}` : 'même dose pour tous'}</span></div><p class="why">À dose égale, ce que chaque houblon donne en amertume dans cette recette (Tinseth, alpha du lot si connu).</p><div class="bars" style="padding:0">${ibus.map(({ s, r }) => `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span class="b">${r ? (r.lot ? `<i style="left:0;width:${(r.val / imax * 100).toFixed(1)}%;background:${SERHEX[s.k]}"></i>` : `<i style="left:0;width:${(r.lo / imax * 100).toFixed(1)}%;background:${SERHEX[s.k]}"></i><i style="left:${(r.lo / imax * 100).toFixed(1)}%;width:${((r.hi - r.lo) / imax * 100).toFixed(1)}%;background:${SERHEX[s.k]};opacity:.4"></i>`) : ''}</span><span class="n">${r ? (r.lot ? nf(r.val) : `${nf(r.lo)}–${nf(r.hi)}`) : '?'} IBU</span></div>`).join('')}</div></div>`;
+  const doses = L.map((s) => ({ s, d: doseFor(s.h, n.ibu, 'b60', c) }));
+  const dmax = Math.max(1, ...doses.map((x) => Math.max(x.d || 0, x.s.h.g)));
+  h += `<div class="metric"><div class="mh"><b>Dose pour ${n.txt} à 60′</b><span>barre : mon stock · trait : dose</span></div><p class="why">Ce houblon peut-il faire l’amertume seul avec ce que j’ai ?</p><div class="bars" style="padding:0">${doses.map(({ s, d }) => `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span class="b">${s.h.g > 0 ? `<i style="left:0;width:${(s.h.g / dmax * 100).toFixed(1)}%;background:${SERHEX[s.k]};opacity:.55"></i>` : ''}${d != null ? `<span class="need" style="left:${(Math.min(d, dmax) / dmax * 100).toFixed(1)}%"></span>` : ''}</span><span class="n">${d == null ? '?' : `${nf(Math.round(d))} g`} ${s.h.g <= 0 ? '<span class="warn">à acheter</span>' : d != null && availBitter(s.h) >= d ? `<span class="ok">assez</span>` : `<span class="bad">manque ${nf(d - Math.max(0, availBitter(s.h)))} g</span>`}</span></div>`).join('')}</div></div>`;
+  h += `<div class="metric"><div class="mh"><b>Pour ${esc(st.n)}</b></div><p class="why">${esc(st.dir ? 'Le guide BJCP : ' + st.dir.note + '.' : 'Direction houblon non documentée pour ce style.')}</p><div class="bars" style="padding:0">${L.map((s) => `<div class="br"><span class="t">${shape(s.k)}${esc(hname(s.h))}</span><span><span class="cls">${CLS_LABEL[classOf(s.h.v, st)]}</span><span class="o">${esc(s.h.v.o || '')}</span></span><span></span></div>`).join('')}</div></div>`;
+  // 3. Valeurs brassicoles, 4. Huiles : une ligne « à quoi ça sert », une barre par houblon, échelle commune.
+  h += band('Valeurs brassicoles', 'plages des fournisseurs · trait blanc : mon lot') + rangeBars(L, 'a') + rangeBars(L, 'b');
+  h += band('Huiles') + rangeBars(L, 'oil') + rangeBars(L, 'my') + rangeBars(L, 'hu') + rangeBars(L, 'ca');
+  h += `<p class="why" style="padding:0 10px">Barre pâle : de 0 au bas de la plage ; barre pleine : la plage des fournisseurs. Nos données n’ont ni moyenne ni zone typique : aucune n’est dessinée.</p>`;
+  // 5. Arômes axe par axe : le classement exact et les égalités, que le radar ne montre pas.
+  const known = L.filter((s) => s.h.v.ax);
+  const lane = 7, rowH = Math.max(18, known.length * lane + 6);
+  const order = AX.map((_, i) => i).sort((x, y) => want.has(y) - want.has(x) || Math.max(0, ...known.map((s) => s.h.v.ax[y])) - Math.max(0, ...known.map((s) => s.h.v.ax[x])));
+  h += band('Arômes axe par axe', 'même échelle que le radar · rond vide : aucun descripteur') + `<div class="dots"><div class="dr"><span></span><span class="tr sc">${[0, 1, 2, 3].map((x) => `<b style="left:${(x / 3 * 100).toFixed(1)}%">${x}</b>`).join('')}</span></div>${order.map((i) => { const lab = AX[i]; return `<div class="dr" style="min-height:${rowH}px"><span class="t${want.has(i) ? ' st' : ''}">${lab}</span><span class="tr" style="height:${rowH}px" role="img" aria-label="${lab} : ${known.map((s) => `${esc(hname(s.h))} ${s.h.v.ax[i]}`).join(', ')}">${[0, 1, 2, 3].map((x) => `<i class="g" style="left:${(x / 3 * 100).toFixed(1)}%"></i>`).join('')}${known.map((s, j) => `<span class="mk${s.h.v.ax[i] ? '' : ' z'}" style="left:${(s.h.v.ax[i] / 3 * 100).toFixed(1)}%;top:${3 + j * lane - 1.5}px">${s.h.v.ax[i] ? shape(s.k) : `<svg class="shape" viewBox="0 0 12 12" aria-hidden="true">${SHAPES[s.k]('none').replace('fill="none"', `fill="none" stroke="${SERHEX[s.k]}" stroke-width="1.5"`)}</svg>`}</span>`).join('')}</span></div>`; }).join('')}</div>`;
+  h += band('Descripteurs') + `<div class="tagsl">${L.map((s) => `<div class="t">${shape(s.k)}<span><b class="strong">${esc(hname(s.h))}</b> ${s.h.v.tags.length ? esc(s.h.v.tags.join(', ')) : 'aucun'}${s.h.v.hs?.f?.length ? ` <span class="muted">· Hopsteiner : ${esc(s.h.v.hs.f.join(', ').toLowerCase())}</span>` : ''}</span></div>`).join('')}</div>`;
+  const openAdd = S.adds.find((a) => a.id === S.open);
+  h += `<div class="cmpacts">${L.map((s) => `<button class="btn" data-act="addhop" data-key="${esc(s.key)}">${ico('plus')}${esc(hname(s.h))}</button>`).join('')}${openAdd ? L.filter((s) => s.key !== openAdd.key).map((s) => `<button class="btn" data-act="applysub" data-id="${openAdd.id}" data-key="${esc(s.key)}">${ico('swap')}${esc(hname(hop(openAdd.key)))} → ${esc(hname(s.h))}</button>`).join('') : ''}</div>`;
+  h += `<p class="src">Plages et descripteurs : Beer Maverick (agrégat de fournisseurs, pas une analyse de lot). Familles Hopsteiner : fiches 2025. IBU : Tinseth, alpha du lot si connu, sinon plage de la variété. Explications des mesures : repères généraux de brassage.</p>`;
+  return `<div class="cmp">${h}</div>`;
+}
+function renderSheet() {
+  if (!S.sheet) return '';
+  if (S.sheet === 'recipe') return renderRecipe();
+  if (S.sheet === 'replace') return renderReplace();
+  if (S.sheet === 'questions') return renderQuestions();
+  return '';
+}
+function renderRecipe() {
+  const q = S.styleQ.trim().toLowerCase();
+  const list = D.styles.filter((s) => !q || (s.n + ' ' + s.en + ' ' + s.code).toLowerCase().includes(q));
+  return `<div class="scrim" data-act="close"></div><section class="sheet" role="dialog" aria-modal="true" aria-label="Recette"><div class="sheeth"><h2>Ma recette</h2><span class="sp"></span><button class="btn sq" data-act="close" aria-label="Fermer">${ico('x')}</button></div><div class="sheetb">
+    <div class="field"><label for="fV">Volume</label><input id="fV" type="text" inputmode="decimal" data-act="param" data-p="V" data-focuskey="pV" value="${nf(S.V)}"><span class="muted">L</span></div>
+    <div class="field"><label for="fOG">Densité initiale</label><input id="fOG" type="text" inputmode="decimal" data-act="param" data-p="og" data-focuskey="pOG" value="${nf(S.og, 3)}"></div>
+    <div class="field"><label for="fB">Ébullition</label><input id="fB" type="text" inputmode="decimal" data-act="param" data-p="boil" data-focuskey="pB" value="${nf(S.boil)}"><span class="muted">min</span></div>
+    <input class="search" type="text" aria-label="Chercher un style" placeholder="Chercher un style (stout, pils, 21A…)" data-act="styleq" data-focuskey="styleq" value="${esc(S.styleQ)}">
+    ${(() => { const row = (s) => `<button class="stl" data-act="style" data-id="${s.id}" aria-current="${s.id === S.style}"><span class="c">${s.code}</span><span class="n">${esc(s.n)}</span><span class="i">${s.ibu ? `${s.ibu[0]}–${s.ibu[1]} IBU` : 'IBU libre'}</span></button>`;
+      return (q ? '' : `<div class="grp"><b>Style actuel</b></div>${row(style())}<div class="grp"><b>Tous les styles BJCP 2021</b><span>· ${D.styles.length}</span></div>`) + (list.length ? list.map(row).join('') : '<div class="empty">Aucun style de ce nom.</div>'); })()}
+    <p class="src">Styles et plages : guide BJCP 2021. Direction houblon de chaque style : résumé du guide par catégorie ; bières de spécialité (catégories 28 à 34) : non documentée, elle dépend de la bière de base.</p></div></section>`;
+}
+function renderReplace() {
+  const a = S.adds.find((x) => x.id === S.replaceFor); if (!a) return '';
+  const R = substitutes(a); const h = R.h;
+  const sub = (x) => `<button class="sub" data-act="applysub" data-id="${a.id}" data-key="${esc(x.h.key)}"><span class="m"><b>${esc(hname(x.h))}</b><small>${x.gain.length ? 'gagné : ' + x.gain.join(', ') : 'rien de gagné'} · ${x.lose.length ? 'perdu : ' + x.lose.join(', ') : 'rien de perdu'}${R.aroma && x.ibu ? ` · ${ibuTxt(x.ibu)}` : ''}</small></span><span><span class="d">${gtxt(Math.round(x.dose * 10) / 10)} g</span><span class="s">${x.grp === 0 ? `<span class="ok">${nf(x.left)} g libres</span>` : x.grp === 1 ? `<span class="bad">manque ${nf(x.dose - Math.max(0, x.left))} g</span>` : `<span class="warn">à acheter</span>`}</span></span></button>`;
+  return `<div class="scrim" data-act="close"></div><section class="sheet" role="dialog" aria-modal="true" aria-label="Remplacer"><div class="sheeth"><h2>Remplacer ${esc(hname(h))}</h2><span class="sp"></span><button class="btn sq" data-act="close" aria-label="Fermer">${ico('x')}</button></div>
+    <div class="sec"><span class="muted">${gtxt(a.g)} g · ${TI[a.t].label} · ${R.aroma ? `ajout d’arôme : même masse (${ibuTxt(R.r)} avant)` : `ajout d’amertume : même IBU, ${ibuTxt(R.r)}`}</span><span class="sp"></span><button class="btn sq ghost" data-act="repinfo" aria-label="Comment les remplaçants sont classés" aria-expanded="${!!S.repInfo}">${ico('info')}</button></div>
+    ${S.repInfo ? `<div class="info" style="padding-left:12px"><p>Dans chaque groupe : ${TI[a.t].w ? 'arômes les plus proches d’abord' : 'alpha le plus haut d’abord (ajout d’amertume : l’arôme compte peu)'}. « Libres » : stock moins tes autres ajouts de ce houblon. Ordre : stock suffisant d’abord, puis insuffisant. À acheter : typiques de ${esc(style().n)} d’abord. Proximité : profils d’arôme d’après les descripteurs Beer Maverick ; ce n’est pas une garantie de goût.</p></div>` : ''}
+    <div class="sheetb"><div class="grp"><b>Dans mon stock</b><span class="sp"></span><button class="btn" data-act="cmpsubs" data-id="${a.id}">${ico('cmp')}Comparer aux 3 premiers</button></div>${R.stock.map(sub).join('') || '<div class="empty">Aucun houblon de ton stock.</div>'}
+    <div class="grp"><b>À acheter</b><span>· typiques de ${esc(style().n)} d’abord</span></div>${R.buy.map(sub).join('')}</div></section>`;
+}
+
+/* ---------- Questions ---------- */
+const pickVar = (id, cur, opts) => `<select class="pick" data-act="qp" data-p="${id}" aria-label="Choisir">${opts.map(([v, l]) => `<option value="${esc(v)}" ${v === cur ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>`;
+const varOpts = () => { const st = inStock().map((h) => [h.key, hname(h) + ' (stock)']); return [...st, ...D.varieties.map((v) => [v.id, v.n])]; };
+function progOrProposal() { return S.adds.length ? { adds: S.adds, label: 'ton houblonnage' } : { adds: proposal(), label: 'la proposition avec ton stock (houblonnage vide)' }; }
+// Ligne de réponse : texte à gauche, valeur à droite (en mono seulement si c'est une mesure).
+const li = (a, b = '', words = false) => `<li><span>${a}</span>${b ? `<span class="sp"></span><span class="${words ? 'v' : 'mono'}">${b}</span>` : ''}</li>`;
+const ND = (what) => `<span class="nd">Non documenté</span> : il manque ${what}.`;
+function styleCtx(code, ibuPick = 'mid') { const st = STYC.get(code); const t = st.ibu ? (ibuPick === 'mid' ? Math.round((st.ibu[0] + st.ibu[1]) / 2) : st.ibu[1]) : 20; return { st, c: { V: S.V, og: st.ogMid || 1.05, boil: 60, st }, t }; }
+function miniRadar(list) { return radarSvg(list.map((x, k) => ({ ax: x.ax, k })), 72, { labels: false, aria: 'Profil' }); }
+
+const Q = [];
+const q = (id, group, title, fn) => Q.push({ id, group, title, fn });
+q('Q01', 'Choisir', 'Stout : tous mes houblons classés du + au −', () => {
+  const st = style(); const c = ctx(); const n = need(c);
+  const ar = rankAroma(inStock(), st); const typ = ar.filter((r) => ['attest', 'typique', 'compatible'].includes(r.cls));
+  const bt = rankBitter(inStock(), st, n, c).filter((r) => r.enough);
+  const buy = rankAroma(catalogue(), st).filter((r) => ['attest', 'typique'].includes(r.cls)).slice(0, 3);
+  return { short: `<ul>${li(`<b class="strong">Arôme</b> : ${typ.length ? typ.map((r) => `${esc(hname(r.h))} (${CLS_LABEL[r.cls]}, ${nf(r.h.g)} g)`).join(', ') : 'aucun de tes houblons n’est typique'}`)}${li(`<b class="strong">Amertume</b> : ${bt.length ? bt.slice(0, 3).map((r) => `${esc(hname(r.h))} ${nf(r.dose)} g`).join(', ') + ` suffisent seuls pour ${n.ibu} IBU` : 'aucun ne suffit seul'}`)}${li(`<b class="strong">À acheter</b> : ${buy.map((r) => esc(r.h.v.n)).join(', ') || '—'}`)}</ul>`,
+    detail: `<p>Pour <b>${esc(st.n)}</b> (${st.code}) : ${esc(st.dir?.note || 'pas de direction documentée')}. La liste « Mes houblons » donne tout le classement, stock d’abord ; « pour l’amertume » trie par stock suffisant puis alpha, « pour l’arôme » par adéquation au style.</p><p>Pas de rang chiffré : aucun usage attesté pour ce style dans les données (seules les IPA en ont). Classes d’après l’origine citée par le guide BJCP et les descripteurs Beer Maverick.</p>` };
+});
+q('Q03', 'Choisir', 'En un toucher, sans défiler : mon houblon et ce que j’ai', () => {
+  const s = inStock().sort((a, b) => b.g - a.g);
+  return { short: `${s.length} houblons en stock, ${nf(sum(s.map((h) => h.g)))} g : ${s.map((h) => `${esc(hname(h))} <b class="strong">${nf(h.g)} g</b>`).join(', ')}. Ils sont sur l’écran d’arrivée, classés pour ta bière ; le + ajoute.`,
+    detail: `<p>Épuisés (0 g) : ${STOCK.filter((h) => h.g <= 0).map((h) => esc(hname(h))).join(', ')}. Stock de production du 17.10.2026, relié aux variétés par le nom de l’article.</p>` };
+});
+q('Q21', 'Choisir', 'Houblons pour n’importe quel style', () => {
+  const st = STY.get(S.qp.q21) || STYC.get('25B'); const c = { ...ctx(), st };
+  const ar = rankAroma(inStock(), st).slice(0, 3); const nd = !st.dir;
+  const opts = D.styles.map((s) => [s.id, `${s.code} ${s.n}`]);
+  return { short: `${pickVar('q21', st.id, opts)} ${nd ? ND('une direction houblon pour ce style (bière de spécialité : dépend de la bière de base)') : `<ul>${ar.map((r) => li(`${esc(hname(r.h))} · ${CLS_LABEL[r.cls]}`, `${nf(r.h.g)} g`)).join('')}</ul><span class="muted">${esc(st.dir.note)} · ${st.ibu ? `${st.ibu[0]}–${st.ibu[1]} IBU` : ''}</span>`}`,
+    detail: `<p>${D.styles.filter((s) => s.dir).length} des ${D.styles.length} styles BJCP 2021 ont une direction houblon (arômes voulus, origines, intensité). Change le style de la recette par son nom en haut de l’écran pour reclasser toute la liste.</p>` };
+});
+q('Q23', 'Choisir', 'Houblons pour une IPA, au-delà des noms cités', () => {
+  const st = STYC.get('21A'); const all = rankAroma([...inStock(), ...catalogue()], st); const att = all.filter((r) => r.cls === 'attest');
+  const mine = rankAroma(inStock(), st).slice(0, 4);
+  return { short: `<ul>${li(`<b class="strong">Dans ton stock</b> : ${mine.map((r) => `${esc(hname(r.h))} (${CLS_LABEL[r.cls]})`).join(', ')}`)}${li(`<b class="strong">Usage attesté</b> : ${att.length} variétés, dont ${att.filter((r) => r.h.g <= 0).slice(0, 5).map((r) => esc(r.h.v.n)).join(', ')}…`)}</ul>`,
+    detail: `<p>IPA américaine (21A). Usages attestés : fournisseurs cités dans les données du dépôt (67 variétés, IPA seulement), rang chiffré dans la liste. Au-delà : typiques (origine États-Unis, Nouvelle-Zélande, Australie et arômes du style) et compatibles, sur tout le catalogue de 318 variétés.</p>` };
+});
+q('Q22', 'Choisir', 'Stout très amère et chocolatée : quel houblonnage ?', () => {
+  const { st, c } = styleCtx('20C'); const t = st.ibu[1]; const r = rankBitter(inStock(), st, { ibu: t }, c).filter((x) => x.enough).slice(0, 3);
+  const two = r[0] ? { fwh: doseFor(r[0].h, t * 0.3, 'fwh', c), b: doseFor(r[0].h, t * 0.7, 'b60', c) } : null;
+  return { short: `Stout impériale à ${t} IBU (haut de la plage BJCP ${st.ibu[0]}–${st.ibu[1]}), DI ${nf(c.og, 3)}. ${r.length === 1 ? `Seul ${esc(hname(r[0].h))} suffit dans ton stock` : r.length ? `${r.length} houblons de ton stock suffisent` : 'Aucun houblon de ton stock ne suffit seul'} :<ul>${r.map((x) => li(`${esc(hname(x.h))} à 60′ (stock ${nf(x.h.g)} g)`, `${nf(x.dose)} g`)).join('')}</ul>${two ? `<span class="muted">Ou en deux temps avec ${esc(hname(r[0].h))} : ${nf(two.fwh)} g au premier moût + ${nf(two.b)} g à 60′.</span>` : ''}`,
+    detail: `<p>Amérisants classés par stock suffisant puis alpha. L’effet de la torréfaction sur l’amertume perçue n’est pas modélisé : le chocolat vient du malt, l’IBU reste un calcul Tinseth.</p>` };
+});
+q('Q07', 'Choisir', 'Forte amertume, sans sapin, sans résine, sans tropical', () => {
+  const st = style(); const c = ctx(); const n = need(c);
+  const ok = (h) => h.v.ax && !h.v.ax[AXI.res] && !h.v.ax[AXI.tro] && (alphaOf(h)?.val ?? 0) >= 10;
+  const rows = rankBitter([...inStock(), ...catalogue()].filter(ok), st, n, c).slice(0, 5);
+  const excl = inStock().filter((h) => h.v.ax && (h.v.ax[AXI.res] || h.v.ax[AXI.tro])).map((h) => hname(h));
+  return { short: `<ul>${rows.map((r) => li(`${esc(hname(r.h))} · ${alphaTxt(r.h)} · ${r.h.g > 0 ? (r.enough ? 'en stock' : `stock ${nf(r.h.g)} g`) : 'à acheter'}`, `${nf(r.dose)} g à 60′`)).join('')}</ul><span class="muted">Exclus de ton stock (résine, pin ou tropical) : ${excl.map(esc).join(', ')}.</span>`,
+    detail: `<p>Filtre : alpha ≥ 10 %, aucun descripteur résine, pin ou tropical (Beer Maverick). Dose pour ${n.ibu} IBU à 60 min. Autre voie : l’extrait CO₂ (Hopsteiner) donne l’amertume sans matière végétale ; dose par calculateur fabricant.</p>` };
+});
+q('Q02', 'Comparer', 'Comparer 2, 3 ou 4 houblons', () => {
+  const L = selHops(); const st = style(); const c = ctx();
+  const items = L.length >= 2 ? L.map((s) => s.h) : rankAroma(inStock(), st).slice(0, 3).map((r) => r.h);
+  return { short: `<div class="mini">${miniRadar(items.map((h) => ({ ax: h.v.ax })))}<ul>${items.map((h, k) => li(`${shape(k)} ${esc(hname(h))} · ${topAxes(h.v.ax || [], 2).join(', ') || 'profil inconnu'}`, ibuTxt(ibuOf(h, 20, 'b60', c)))).join('')}</ul></div><button class="btn" data-act="cmpkeys" data-keys="${items.map((h) => h.key).join(',')}">${ico('cmp')}Voir la comparaison complète</button>`,
+    detail: `<p>${L.length >= 2 ? 'Houblons cochés.' : 'Aucun houblon coché : les 3 premiers pour ta bière.'} IBU pour 20 g à 60 min. Coche 2 à 4 houblons dans la liste : la comparaison s’ouvre en bas, avec les profils superposés, l’IBU à dose égale, la dose pour l’IBU visé face au stock et les plages α, β, huiles.</p>` };
+});
+q('Q16', 'Comparer', 'Profil d’un houblon : saveurs, chimie, usages', () => {
+  const key = S.qp.q16 || inStock()[0].key; const h = hop(key) || hop(inStock()[0].key);
+  return { short: `${pickVar('q16', h.key, varOpts())}<div class="mini">${miniRadar([{ ax: h.v.ax }])}<span>${topAxes(h.v.ax || [], 3).join(', ') || 'profil inconnu'} · ${alphaTxt(h)} · huiles ${rng(h.v.oil)} mL/100 g · ${esc(h.v.o || '')}</span></div>`,
+    detail: `<p>Descripteurs : ${esc(h.v.tags.join(', ') || 'aucun')} (Beer Maverick)${h.v.hs?.f?.length ? ` ; Hopsteiner : ${esc(h.v.hs.f.join(', ').toLowerCase())}, thiols : ${esc(h.v.hs.th || 'non documenté')}` : ''}. β ${rng(h.v.b)} % · myrcène ${rng(h.v.my, 0)} % · humulène ${rng(h.v.hu, 0)} % · caryophyllène ${rng(h.v.ca, 0)} % de l’huile. Usages attestés : ${h.v.use.length ? esc(h.v.use.join(', ')) : 'aucun dans les données'}.</p>` };
+});
+q('Q04', 'Comparer', 'Stout amérisée au Nugget : trop résineuse ou pas assez ?', () => {
+  const h = hop(S.qp.q04) || hop('nugget'); const v = h.v; const st = style(); const c = ctx();
+  const res = v.ax ? v.ax[AXI.res] : null; const hsRes = v.hs?.f?.includes('Résineux');
+  const verdict = res == null ? 'profil inconnu' : res === 0 && !hsRes ? 'peu résineux : aucune des deux sources ne le décrit résineux' : res === 0 && hsRes ? 'sources en désaccord : Hopsteiner le dit résineux, Beer Maverick non' : `résineux (${res} sur 3 d’après Beer Maverick)`;
+  // Compléments typiques du style, stock d'abord ; dose de départ de l'app à 10 min, plafonnée au stock.
+  const comp = rankAroma([...inStock(), ...catalogue()], st).filter((r) => ['attest', 'typique'].includes(r.cls) && r.h.v.id !== v.id).sort((a, b) => (b.h.g > 0) - (a.h.g > 0)).slice(0, 3);
+  const g0 = Math.round(START_GL.b10 * c.V);
+  return { short: `${pickVar('q04', h.key, varOpts())} à 60′ : <b class="strong">${verdict}</b> ; à 60 min, l’arôme résiduel est faible. Compléments à 10′ :<ul>${comp.map((r) => { const g = r.h.g > 0 ? Math.min(r.h.g, g0) : g0; return li(`${esc(hname(r.h))} ${r.h.g > 0 ? `(stock ${nf(r.h.g)} g)` : '(à acheter)'}`, `${nf(g)} g · +${nf(ibuOf(r.h, g, 'b10', c)?.val)} IBU`); }).join('')}</ul>`,
+    detail: `<p>Beer Maverick : ${esc(v.tags.join(', ') || 'aucun descripteur')}. Hopsteiner : ${esc(v.hs?.f?.join(', ').toLowerCase() || 'non relié')}. Compléments : typiques de ${esc(st.n)}, ${nf(START_GL.b10, 0)} g/L à 10 min (dose de départ de l’app, à adapter). L’intensité d’un amérisant dans une bière torréfiée n’est pas chiffrée dans les données.</p>` };
+});
+q('Q15', 'Simuler', 'Quel IBU total, dry hop compris ?', () => {
+  const P = progOrProposal(); const p = prog(P.adds);
+  const tot = p.dry && !p.dry.over ? `${nf(p.dry.lo)}–${nf(p.dry.hi)}` : null;
+  const sg = (x) => (x >= 0 ? '+' : '−') + nf(Math.abs(x));
+  return { short: `<b class="strong mono">${nf(p.hot)} IBU</b> à chaud${p.dryG ? ` · ${tot ? `après ${nf(p.dryG)} g de dry hop : <b class="strong mono">${tot} IBU</b> estimés (part du dry hop : ${sg(p.dry.lo - p.hot)} à ${sg(p.dry.hi - p.hot)})` : `dry hop de ${nf(p.dryG / S.V, 1)} g/L au-delà des essais publiés : total non estimé`}` : ' · aucun dry hop'} <span class="muted">· ${P.label}</span>`,
+    detail: `<p>À chaud : Tinseth par ajout. À cru : équivalent d’amertume (humulinones ajoutées, iso-alpha perdus), scénarios Maye 2016 (Cascade et Centennial, 16 °C, 1 à 5 jours) : une plage, pas une mesure d’IBU.</p>` };
+});
+q('Q17', 'Simuler', 'IBU et arôme de chaque ajout', () => {
+  const P = progOrProposal(); const p = prog(P.adds);
+  return { short: `<ul>${p.lines.map((L) => li(`${esc(hname(L.h))} ${nf(L.a.g)} g ${TI[L.a.t].short} · ${L.w && L.h.v.ax ? 'arôme ' + topAxes(L.h.v.ax, 2).join(', ') + ` (${Math.round(L.w * 100)} % gardé à ce moment, estimation)` : 'amertume seulement'}`, L.a.t === 'dry' ? 'à cru' : ibuTxt(L.r), L.a.t === 'dry')).join('')}</ul><span class="muted">${P.label}</span>`,
+    detail: `<p>Chaque ligne de « Mon houblonnage » montre son IBU et se recalcule à chaque réglage. Poids d’arôme par moment : dry hop 1, whirlpool 0,8, 5 à 10 min 0,5, 15 min 0,3, au-delà 0 (estimation, pas une mesure).</p>` };
+});
+q('Q20', 'Simuler', 'Saveur et chimie de l’ensemble de mes ajouts', () => {
+  const P = progOrProposal(); const p = prog(P.adds);
+  return { short: p.aroW ? `<div class="mini">${miniRadar([{ ax: p.prof.map((x) => x / Math.max(...p.prof) * 3) }])}<span>Dominantes : <b class="strong">${topAxes(p.prof, 3).join(', ')}</b> · ${nf(p.hot)} IBU · ${nf(sum(P.adds.filter((a) => TI[a.t].w).map((a) => a.g)) / S.V, 1)} g/L en arôme</span></div><span class="muted">${P.label}</span>` : `Aucun ajout aromatique : ${nf(p.hot)} IBU, peu d’arôme <span class="muted">· ${P.label}</span>`,
+    detail: `<p>Profil total = somme, pour chaque ajout, du profil de la variété × dose (g/L) × poids du moment ; forme relative (l’axe le plus fort vaut 3). L’intensité perçue et la saturation ne sont pas modélisées.</p>` };
+});
+q('Q24', 'Simuler', 'Ai-je assez de ce houblon pour ma recette ?', () => {
+  const P = progOrProposal(); const by = new Map();
+  for (const a of P.adds) by.set(a.key, (by.get(a.key) || 0) + a.g);
+  return { short: `<ul>${[...by].map(([k, g]) => { const h = hop(k); return li(`${esc(hname(h))} : ${nf(g)} g prévus`, h.g <= 0 ? 'à acheter' : h.g >= g ? `${nf(h.g)} g ✓` : `manque ${nf(g - h.g)} g`); }).join('')}</ul><span class="muted">${P.label}</span>`,
+    detail: '<p>Sur chaque ligne d’ajout, l’état du stock est à droite ; il passe en rouge « manque X g » si la somme des ajouts du même houblon dépasse le stock.</p>' };
+});
+q('Q25', 'Simuler', 'Ajouté à +30 au lieu de +60 : qu’est-ce que ça change ?', () => {
+  const P = progOrProposal(); const c = ctx(); const a = P.adds.find((x) => x.t === 'b60') || P.adds[0];
+  if (!a) return { short: 'Aucun ajout à 60 min.', detail: '' };
+  const h = hop(a.key); const r60 = ibuOf(h, a.g, 'b60', c), r30 = ibuOf(h, a.g, 'b30', c); const extra = doseFor(h, r60.val - r30.val, 'b30', c);
+  const i30 = Math.round(r30.val), i60 = Math.round(r60.val);
+  return { short: `${esc(hname(h))} ${nf(a.g)} g : <b class="strong mono">${i30} IBU</b> au lieu de ${i60} (−${i60 - i30}). Correction : ajouter <b class="strong mono">${nf(extra)} g</b> maintenant, 30 min avant la fin.${S.adds.length ? '' : ' <span class="muted">(proposition avec ton stock)</span>'}`,
+    detail: `<p>Tinseth, DI ${nf(S.og, 3)}, ${nf(S.V)} L. Ajouter ${nf(extra)} g du même houblon pour les 30 min restantes rend l’IBU visé ; le surplus d’arôme à 30 min reste faible.</p>` };
+});
+q('Q12', 'Simuler', 'Blanche : dry hop si j’enlève 20 g dans le moût', () => {
+  const { st, c, t } = styleCtx('24A');
+  // Houblon de blanche : le premier typique ou compatible (stock d'abord) dont la dose pour l'IBU visé dépasse 20 g.
+  const cand = rankAroma([...inStock(), ...catalogue()], st).filter((r) => ['typique', 'compatible'].includes(r.cls) && alphaOf(r.h)).map((r) => ({ h: r.h, dose: doseFor(r.h, t, 'b60', c) })).sort((a, b) => (b.h.g > 0) - (a.h.g > 0));
+  const b = cand.find((x) => x.dose >= 25) || cand[0];
+  const g0 = Math.round(b.dose); const g1 = Math.max(0, g0 - 20); const before = ibuOf(b.h, g0, 'b60', c).val, after = ibuOf(b.h, g1, 'b60', c).val;
+  const dry = dryBitter(20, c.V, [after, after]);
+  return { short: `Blanche ${nf(c.V)} L : ${esc(hname(b.h))} ${g0} g à 60′ = ${nf(before)} IBU${b.h.g > 0 ? '' : ' (houblon typique, à acheter)'}.<ul>${li(`Moût : ${g1} g au lieu de ${g0} g`, `${nf(after)} IBU (−${nf(before - after)})`)}${li('+ 20 g en dry hop', dry && !dry.over ? `${nf(dry.lo)}–${nf(dry.hi)} équiv. IBU` : 'hors essais', !(dry && !dry.over))}</ul>`,
+    detail: `<p>Blanche BJCP 24A, ${st.ibu[0]}–${st.ibu[1]} IBU visés au milieu (${t}), DI ${nf(c.og, 3)}. À cru : équivalent d’amertume, scénarios Maye 2016 (plage). L’apport d’arôme du dry hop n’est pas chiffré : il dépend du houblon (voir son profil).</p>` };
+});
+q('Q19', 'Simuler', 'Tel houblon, tel moment, telle levure : quel résultat ?', () => {
+  const h = hop(S.qp.q19 || inStock()[0].key) || hop(inStock()[0].key); const t = S.qp.q19t; const c = ctx(); const g = Math.round((START_GL[t] || 1) * c.V);
+  const r = ibuOf(h, g, t, c);
+  return { short: `${pickVar('q19', h.key, varOpts())} ${pickVar('q19t', t, TIMES.map((x) => [x.id, x.label]))}<br>${nf(g)} g : <b class="strong">${t === 'dry' ? 'à cru, sans IBU à chaud' : ibuTxt(r)}</b> · ${TI[t].w && h.v.ax ? 'arôme ' + topAxes(h.v.ax, 3).join(', ') : 'amertume seulement'}. Part de la levure : ${ND(`son effet sur ce houblon (β-lyase inconnue pour les ${D.yeasts.length} levures des données : ${D.yeasts.map((y) => y.n.replace(/\s*\(.*\)$/, '')).join(', ')})`)}`,
+    detail: `<p>${nf(START_GL[t] || 1, 0)} g/L : dose de départ de l’app pour ce moment. Un seul essai houblon × levure est documenté dans les données (Cascade × Wyeast 1728, Lafontaine 2018).</p>` };
+});
+q('Q06', 'Remplacer', 'Houblon indisponible : avec quoi le remplacer ?', () => {
+  const key = S.qp.q06 || (S.adds[0]?.key) || 'galaxy'; const h = hop(key) || hop('galaxy'); const mine = S.adds.find((a) => a.key === h.key);
+  const t = S.qp.q06t || mine?.t || 'b60'; const g = mine && mine.t === t ? mine.g : 20;
+  const R = substitutes({ key: h.key, g, t, id: mine?.id }, ctx(), 4, 2);
+  const row = (x) => li(`${esc(hname(x.h))} · ${x.grp === 0 ? `reste ${nf(x.left)} g` : x.grp === 1 ? `manque ${nf(x.dose - Math.max(0, x.left))} g` : `à acheter, ${CLS_LABEL[x.cls]}`} · ${x.gain.length ? 'gagné ' + x.gain.join(', ') : 'rien de gagné'} · ${x.lose.length ? 'perdu ' + x.lose.join(', ') : 'rien de perdu'}`, `${gtxt(Math.round(x.dose * 10) / 10)} g`);
+  return { short: `${pickVar('q06', h.key, varOpts())} ${pickVar('q06t', t, TIMES.map((x) => [x.id, x.label]))} ${gtxt(g)} g, ${R.aroma ? 'même masse' : `même IBU (${ibuTxt(R.r)})`} :<ul>${R.stock.map(row).join('')}${R.buy.map(row).join('')}</ul>`,
+    detail: `<p>Ordre : stock suffisant, puis insuffisant, puis à acheter ; dans chaque groupe, proximité des profils d’arôme (descripteurs). Dose : même IBU au même moment, ou même masse à cru. Sur une ligne d’ajout, « Remplacer » applique le choix en un toucher.</p>` };
+});
+q('Q18', 'Remplacer', 'Si je remplace X par Y, quelle quantité pour le même IBU ?', () => {
+  const x = hop(S.qp.q18x || inStock()[0].key) || hop(inStock()[0].key); const y = hop(S.qp.q18y || inStock()[1].key) || hop(inStock()[1].key); const c = ctx();
+  const r = ibuOf(x, 20, 'b60', c); const d = doseFor(y, r.val, 'b60', c);
+  return { short: `20 g de ${pickVar('q18x', x.key, varOpts())} à 60′ = ${nf(r.val)} IBU → <b class="strong mono">${nf(d)} g</b> de ${pickVar('q18y', y.key, varOpts())}`,
+    detail: `<p>${alphaTxt(x)} contre ${alphaTxt(y)} ; alpha du lot si connu, sinon milieu de la plage de la variété. Même moment, même volume et même densité.</p>` };
+});
+q('Q05', 'Remplacer', 'Light lager : Saaz remplacé par Styrian Golding, je gagne ou je perds quoi ?', () => {
+  const { st, c, t } = styleCtx('1A'); const x = hop(S.qp.q05x) || hop('saaz-cz'); const y = hop(S.qp.q05y) || hop('styrian-golding');
+  const gx = doseFor(x, t, 'b60', c); const gy = doseFor(y, t, 'b60', c);
+  const gain = [], lose = []; if (x.v.ax && y.v.ax) x.v.ax.forEach((v, i) => { if (y.v.ax[i] > v) gain.push(AX[i].toLowerCase()); if (y.v.ax[i] < v) lose.push(AX[i].toLowerCase()); });
+  return { short: `${pickVar('q05x', x.key, varOpts())} → ${pickVar('q05y', y.key, varOpts())}<ul>${li('Gagné', esc(gain.join(', ') || 'rien'), true)}${li('Perdu', esc(lose.join(', ') || 'rien'), true)}${li(`Dose pour ${t} IBU à 60′, light lager`, `${nf(gx)} g → ${nf(gy)} g`)}</ul>`,
+    detail: `<p>Light lager américaine (BJCP 1A, ${st.ibu[0]}–${st.ibu[1]} IBU), ${nf(c.V)} L, DI ${nf(c.og, 3)}. ${esc(x.v.n)} : ${esc(x.v.tags.join(', '))}. ${esc(y.v.n)} : ${esc(y.v.tags.join(', '))}. ${alphaTxt(x)} contre ${alphaTxt(y)} (plages des variétés).</p>` };
+});
+q('Q14', 'Remplacer', 'Cryo et HyperBoost : quand et combien ?', () => {
+  const cryo = STOCK.find((h) => h.form === 'cryo' && h.g > 0); const P = D.products; const T90 = Math.round(START_GL.dry * S.V);
+  return { short: `<ul>${li(`<b class="strong">Cryo</b> : oui en arôme (whirlpool, dry hop), pas pour garantir l’IBU. ${T90} g de T-90 à cru →`, `${nf(T90 * P.cryo.ratio[0])}–${nf(T90 * P.cryo.ratio[1])} g`)}${cryo ? li(`Ton ${esc(hname(cryo))} : ${nf(cryo.g)} g, de quoi remplacer`, `${nf(cryo.g / P.cryo.ratio[1])}–${nf(cryo.g / P.cryo.ratio[0])} g T-90`) : ''}${li(`<b class="strong">HyperBoost</b> : dry hop seulement, 25–50 % de la charge (${nf(T90 * 0.25)}–${nf(T90 * 0.5)} g de T-90) →`, `${nf(T90 * 0.25 * P.hyperboost.perKg[0] / 1000, 1)}–${nf(T90 * 0.5 * P.hyperboost.perKg[1] / 1000, 1)} g`)}</ul>`,
+    detail: `<p>${esc(P.cryo.note)} Source : ${esc(P.cryo.src)}. ${esc(P.hyperboost.note)} Source : ${esc(P.hyperboost.src)}. Dry hop de référence : ${nf(START_GL.dry, 0)} g/L × ${nf(S.V)} L (dose de départ de l’app).</p>` };
+});
+q('Q08', 'Selon la bière', 'Blanche ultra tropicale qui se marie avec la banane', () => {
+  const { st, c } = styleCtx('24A'); const pool = [...inStock(), ...catalogue()].filter((h) => h.v.ax && h.v.ax[AXI.tro] >= 2);
+  const rows = pool.sort((a, b) => (b.g > 0) - (a.g > 0) || b.v.ax[AXI.tro] - a.v.ax[AXI.tro] || (b.v.tags.includes('banane') - a.v.tags.includes('banane'))).slice(0, 3);
+  const gw = Math.round(START_GL.wp * c.V);
+  return { short: `Au whirlpool 80 °C, ${nf(START_GL.wp, 0)} g/L (${gw} g), plafonné à ton stock :<ul>${rows.map((h) => { const g = h.g > 0 ? Math.min(h.g, gw) : gw; return li(`${esc(hname(h))} · tropical ${h.v.ax[AXI.tro]}/3${h.v.tags.includes('banane') ? ', banane' : ''} · ${h.g > 0 ? (h.g < gw ? `tout ton stock (manque ${nf(gw - h.g)} g pour ${nf(START_GL.wp, 0)} g/L)` : `stock ${nf(h.g)} g`) : 'à acheter'}`, `${nf(g)} g · +${nf(ibuOf(h, g, 'wp', c)?.val)} IBU`); }).join('')}</ul>Effet sur la banane : ${ND('des données sur l’interaction des esters de levure avec le houblon')}`,
+    detail: `<p>Blanche BJCP 24A : ${st.ibu[0]}–${st.ibu[1]} IBU, houblon habituellement discret ; une version tropicale sort du style. Whirlpool ${nf(START_GL.wp, 0)} g/L à 80 °C (dose de départ de l’app) : peu d’IBU ajoutés. Un dry hop de ${nf(START_GL.dry, 0)} g/L renforce l’arôme sans IBU à chaud.</p>` };
+});
+q('Q09', 'Selon la bière', 'Lager juicy, très aromatique et non amère', () => {
+  const { st, c } = styleCtx('4A'); const juicy = [...inStock()].filter((h) => h.v.ax).sort((a, b) => (b.v.ax[AXI.tro] + b.v.ax[AXI.agr] + b.v.ax[AXI.fru]) - (a.v.ax[AXI.tro] + a.v.ax[AXI.agr] + a.v.ax[AXI.fru])).slice(0, 2);
+  const gw = Math.round(START_GL.wp * c.V), gd = Math.round(START_GL.dry * c.V);
+  // Whirlpool à 70 °C : même formule que BrewingMath (isomérisation divisée par 2 tous les 10 °C sous l'ébullition).
+  const u70 = util(c, 'wp') * Math.pow(2, (70 - 80) / 10);
+  const share = juicy.map((h) => ({ h, g: Math.min(h.g, gw / juicy.length) }));
+  const A = sum(share.map(({ h, g }) => g * 1000 / c.V * alphaOf(h).val / 100 * u70));
+  const low = rankBitter(inStock(), st, { ibu: 10 }, c).find((r) => r.enough); const B = 10; const dry = dryBitter(gd, c.V, [B, B]);
+  return { short: `<ul>${li(`<b class="strong">Tout au whirlpool à 70 °C</b> : ${share.map(({ h, g }) => `${esc(hname(h))} ${nf(g)} g`).join(' + ')}`, `${nf(A)} IBU`)}${li(`<b class="strong">Amertume basse + dry hop</b> : ${low ? `${esc(hname(low.h))} ${nf(low.dose)} g à 60′` : '—'}, puis ${gd} g à cru`, dry && !dry.over ? `${nf(dry.lo)}–${nf(dry.hi)} IBU` : '')}</ul>`,
+    detail: `<p>Base : Helles (BJCP 4A, ${st.ibu[0]}–${st.ibu[1]} IBU). Houblons « juicy » : les plus tropicaux, agrumes et fruits de ton stock, ${nf(START_GL.wp, 0)} g/L au whirlpool (dose de départ de l’app, plafonnée au stock). À 70 °C au lieu de 80 °C, l’isomérisation est environ deux fois plus lente : moins d’IBU pour le même arôme. Le dry hop en lager se fait à froid ; amertume à cru en plage (Maye 2016). L’écart entre IBU calculé et amertume perçue n’est pas modélisé.</p>` };
+});
+q('Q10', 'Selon la bière', 'Pastry stout trop sucrée : compenser avec le houblon ?', () => {
+  const st = STYC.get('16A'); const mine = /stout/i.test(style().en) && S.adds.length > 0;
+  const og = mine ? S.og : 1.09; const c = { ...ctx(), og }; const cur = mine ? prog().hot : 30;
+  const pts = (og - 1) * 1000; const bugu = cur / pts;
+  const mid = (st.og[0] + st.og[1]) / 2; const ref = [st.ibu[0] / ((mid - 1) * 1000), st.ibu[1] / ((mid - 1) * 1000)]; const refMid = (ref[0] + ref[1]) / 2;
+  const add = Math.max(0, refMid * pts - cur);
+  const b = add > 0 ? rankBitter(inStock(), st, { ibu: add }, c).find((r) => r.enough) : null;
+  return { short: `${mine ? 'Ta recette' : 'Exemple, pastry stout'} : BU:GU <b class="strong mono">${nf(bugu, 2)}</b> (${nf(cur)} IBU, DI ${nf(og, 3)}) ; stout douce BJCP : ${nf(ref[0], 2)}–${nf(ref[1], 2)}. ${add > 0 ? `Levier houblon : <b class="strong mono">+${nf(add)} IBU</b> pour revenir au rapport moyen (${nf(refMid, 2)})${b ? ` = ${esc(hname(b.h))} ${nf(b.dose)} g à 60′` : ''}.` : 'Ton rapport est déjà au-dessus du rapport moyen du style.'} Limite : l’amertume équilibre, elle n’enlève pas le sucre.`,
+    detail: `<p>${mine ? 'Ta recette.' : 'Exemple : pastry stout à DI 1,090 et 30 IBU (ton houblonnage est vide ou ta recette n’est pas une stout).'} Repère : IBU / points de densité de la stout douce BJCP 16A (${st.ibu[0]}–${st.ibu[1]} IBU, DI moyenne ${nf(mid, 3)}). L’équilibre sucre–amertume perçu n’est pas modélisé ; densité finale, levure et malt restent les autres leviers.</p>` };
+});
+q('Q11', 'Selon la bière', 'Bière de Champagne florale : la biotransformation peut-elle aider ?', () => {
+  const pool = [...inStock(), ...catalogue()].filter((h) => h.v.hs?.lin).sort((a, b) => (b.g > 0) - (a.g > 0) || b.v.hs.lin[1] - a.v.hs.lin[1]).slice(0, 3);
+  const flo = [...catalogue()].filter((h) => h.v.hs?.lin).sort((a, b) => b.v.hs.lin[1] - a.v.hs.lin[1]).slice(0, 3);
+  return { short: `Possible, si les houblons apportent du linalol et du géraniol et si la levure les transforme. Deux voies :<ul>${li(`Whirlpool 80 °C, houblons riches en linalol : ${flo.map((h) => `${esc(h.v.n)} ${rng(h.v.hs.lin)} %`).join(', ')}`)}${li(`Dry hop pendant la fermentation active ; dans ton stock : ${pool.filter((h) => h.g > 0).map((h) => `${esc(hname(h))} ${rng(h.v.hs.lin)} %`).join(', ') || 'aucun linalol documenté'}`)}</ul>Ta levure : ${ND('la β-lyase et la conversion des terpènes des levures du dépôt (inconnues pour les 6)')}`,
+    detail: '<p>Linalol en % de l’huile : fiches Hopsteiner 2025 (77 variétés). La conversion du géraniol en citronellol par la levure est décrite (Takoi et al.) mais non chiffrée par levure dans les données. Amertume légère : garder l’essentiel du houblon après l’ébullition.</p>' };
+});
+q('Q13', 'Selon la bière', 'Avec ma levure, quels houblons et quand pour ma NEIPA ?', () => {
+  const st = STYC.get('21C'); const pool = [...inStock(), ...catalogue()].filter((h) => h.v.hs?.th === 'forte');
+  const r = rankAroma(pool, st).filter((x) => x.cls !== 'hors').sort((a, b) => (b.h.g > 0) - (a.h.g > 0)).slice(0, 3);
+  const gd = Math.round(START_GL.dry * S.V), gw = Math.round(START_GL.wp * S.V);
+  return { short: `<ul>${li(`<b class="strong">1. Dry hop en fermentation active (J2–J3), ${nf(START_GL.dry, 0)} g/L (${gd} g)</b> : ${r.map((x) => `${esc(hname(x.h))}${x.h.g > 0 ? ` (stock ${nf(x.h.g)} g)` : ' (à acheter)'}`).join(', ')} : thiols forts, biotransformation possible ; hop creep à surveiller`)}${li(`<b class="strong">2. Whirlpool 80 °C, ${nf(START_GL.wp, 0)} g/L (${gw} g), puis dry hop après fermentation, ${nf(START_GL.dry, 0)} g/L</b> : arôme plus prévisible, sans compter sur la levure`)}</ul>Part de ta levure : ${ND('des essais houblon × levure ; β-lyase inconnue pour les 6 levures des données')}`,
+    detail: '<p>Classe « Thiol impact » forte : fiches Hopsteiner (thiols libres du houblon, pas un rendement de levure). Style IPA trouble (BJCP 21C) : herbacé et végétal exclus. Un seul essai houblon × levure documenté dans les données (Cascade, Lafontaine 2018).</p>' };
+});
+q('Q27', 'Selon la bière', 'NOLO : quels houblons et quelle stratégie ?', () => ({ short: ND('des sources houblon propres aux bières sans ou peu alcoolisées (aucune dans les données ; les données NOLO portent sur les levures et l’alcool)'), detail: '<p>Le classement et les simulations restent utilisables en choisissant le style de base ; l’effet de l’absence d’alcool sur l’amertume et l’arôme n’est pas documenté.</p>' }));
+q('Q28', 'Selon la bière', 'Sour : quels houblons avec ma culture acidifiante ?', () => {
+  const b = STYC.get('23A'), g = STYC.get('23G');
+  return { short: `${ND('la tolérance de ta culture acidifiante au houblon (aucun seuil dans les données)')} Repère de style : Berliner Weisse ${b.ibu[0]}–${b.ibu[1]} IBU, Gose ${g.ibu[0]}–${g.ibu[1]} IBU (BJCP).`, detail: '<p>Les iso-alpha-acides freinent certaines bactéries lactiques ; le seuil dépend de la souche et n’est pas documenté ici.</p>' };
+});
+q('Q26', 'Cas particuliers', 'Goût trop herbeux ou raté : que faire ?', () => {
+  const P = progOrProposal(); const herb = P.adds.map((a) => hop(a.key)).filter((h) => h.v.ax && h.v.ax[AXI.her] >= 1);
+  return { short: `${ND('des sources sur les défauts (herbacé, végétal) et leurs remèdes')} Dans ${P.label}, l’herbacé vient de : ${herb.map((h) => esc(hname(h))).join(', ') || 'aucun houblon décrit herbacé'}.`, detail: '<p>Pour le prochain brassin, la liste « pour l’arôme » montre l’herbacé de chaque houblon ; l’IPA trouble l’exclut.</p>' };
+});
+q('Q29', 'Cas particuliers', 'Houblon maison ou sans analyse : comment l’utiliser ?', () => {
+  const h = hop(S.qp.q29) || hop('cascade'); const v = h.v; const c = ctx(); const n = need(c); const a = v.a;
+  if (!a) return { short: ND('une plage d’alpha pour cette variété'), detail: '' };
+  const d = n.ibu * c.V / (1000 * (a[0] + a[1]) / 2 / 100 * util(c, 'b60'));
+  const lo = ibuG(d, a[0], 'b60', c), hi = ibuG(d, a[1], 'b60', c);
+  return { short: `${pickVar('q29', v.id, D.varieties.map((x) => [x.id, x.n]))} sans analyse : α ${rng(a)} % (plage de la variété). Départ : <b class="strong mono">${nf(d)} g</b> à 60′ → entre <b class="strong mono">${nf(lo)} et ${nf(hi)} IBU</b>. Note l’amertume perçue pour caler l’alpha au prochain brassin.`,
+    detail: `<p>Dose pour ${n.ibu} IBU au milieu de la plage d’alpha Beer Maverick ; l’IBU réel peut aller du bas au haut de la plage. Un houblon maison varie davantage qu’un lot analysé ; garder ses ajouts d’arôme tardifs, moins sensibles à l’alpha.</p>` };
+});
+q('Q30', 'Cas particuliers', 'Où acheter ce houblon en Suisse ?', () => ({ short: ND('des offres de houblon datées de fournisseurs suisses (les données d’approvisionnement ne couvrent que les levures)'), detail: '<p>Les houblons « à acheter » de la liste restent marqués comme tels ; aucun lien d’achat n’est inventé.</p>' }));
+
+function renderQuestions() {
+  let h = `<section class="sheet fullv" role="dialog" aria-modal="true" aria-label="Mes questions"><div class="sheeth"><h2>Mes questions</h2><span class="muted" style="font-size:12px">calculé sur ta recette et ton stock</span><span class="sp"></span><button class="btn sq" data-act="close" aria-label="Fermer">${ico('x')}</button></div><div class="sheetb">`;
+  const groups = [...new Set(Q.map((it) => it.group))];
+  h += `<nav class="qnav" aria-label="Aller à">${groups.map((g, i) => `<button class="chip" data-act="qjump" data-g="${i}">${g} · ${Q.filter((it) => it.group === g).length}</button>`).join('')}</nav>`;
+  let grp = null;
+  for (const it of Q) {
+    if (it.group !== grp) { grp = it.group; h += `<div class="qg" data-g="${groups.indexOf(grp)}">${grp}</div>`; }
+    let r; try { r = it.fn(); } catch (e) { r = { short: '<span class="bad">Erreur de calcul</span>', detail: esc(e.message) }; }
+    const open = S.qOpen.has(it.id);
+    h += `<div class="qa${open ? ' open' : ''}" data-q="${it.id}"><button class="qhead" data-act="qopen" data-q="${it.id}" aria-expanded="${open}"><span class="qt">${esc(it.title)}</span>${ico('down')}</button><div class="ans">${r.short}</div>${open && r.detail ? `<div class="det">${r.detail}</div>` : ''}</div>`;
+  }
+  return h + '</div></section>';
+}
+
+/* ---------- Actions ---------- */
+function addHop(key, t, g0) {
+  const h = hop(key); const c = ctx(); let g = g0;
+  if (g == null && (t === 'b60' || t === 'fwh' || t === 'b30')) { const n = need(); g = Math.round(doseFor(h, n.ibu, t, c) || 20); }
+  else if (g == null) g = Math.round((START_GL[t] || 1) * S.V);
+  const a = { id: S.nextId++, key, g: Math.max(1, g), t };
+  const before = nextStep();
+  S.adds.push(a); S.toast = null;
+  // Le prochain ajout change seul après l'amertume : on l'annonce.
+  if (!S.next && before !== nextStep()) S.toast = { msg: `Amertume faite. « + » ajoute maintenant au ${STEP_LABEL[nextStep()].toLowerCase()} ; change-le au-dessus de la liste.` };
+  return a;
+}
+function parseNum(s) { const x = Number(String(s).replace(/\s/g, '').replace(',', '.')); return Number.isFinite(x) ? x : null; }
+app.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-act]'); if (!el || el.tagName === 'INPUT' || el.tagName === 'SELECT') return;
+  const act = el.dataset.act, id = Number(el.dataset.id), key = el.dataset.key;
+  const A = () => S.adds.find((a) => a.id === id);
+  switch (act) {
+    case 'recipe': S.sheet = 'recipe'; S.styleQ = ''; break;
+    case 'next': S.next = el.dataset.t; break;
+    case 'qjump': { const g = app.querySelector(`.qg[data-g="${el.dataset.g}"]`); if (g) g.scrollIntoView({ block: 'start' }); return; }
+    case 'questions': S.sheet = 'questions'; break;
+    case 'close': S.sheet = null; break;
+    case 'legend': S.legend = !S.legend; break;
+    case 'sel': toggleSel(key); break;
+    case 'clearsel': S.sel = []; S.full = false; break;
+    case 'full': S.full = !S.full; break;
+    case 'top4': setSel(rankList(inStock(), style()).slice(0, 4).map((r) => r.h.key)); break;
+    case 'near': { const h = hop(key); setSel([h.key, ...similar(h, inStock()).map((x) => x.h.key)]); S.info = null; break; }
+    case 'cmpkeys': setSel(el.dataset.keys.split(',')); S.sheet = null; break;
+    case 'info': S.info = S.info === key ? null : key; break;
+    case 'cat': S.cat = !S.cat; S.catN = 30; break;
+    case 'catmore': S.catN += 30; break;
+    case 'addhop': { const pl = plusPlan(hop(key)); addHop(key, pl.t, pl.g); break; }
+    case 'addas': addHop(key, el.dataset.t); S.info = null; break;
+    case 'propose': for (const a of proposal()) S.adds.push({ id: S.nextId++, ...a }); break;
+    case 'openadd': S.open = S.open === id ? null : id; break;
+    case 'dose': { const a = A(); a.g = Math.max(0, a.g + Number(el.dataset.d)); break; }
+    case 'time': { const a = A(); if (a.t === el.dataset.t) break; const old = ibuOf(hop(a.key), a.g, a.t, ctx()); a.prev = { t: a.t, ibu: old ? old.val : null }; a.t = el.dataset.t; break; }
+    case 'remove': { const i = S.adds.findIndex((a) => a.id === id); const [a] = S.adds.splice(i, 1); S.toast = { msg: `${hname(hop(a.key))} retiré.`, undo: () => { S.adds.splice(i, 0, a); S.open = a.id; } }; S.open = null; break; }
+    case 'replace': S.sheet = 'replace'; S.replaceFor = id; break;
+    case 'cmpsubs': { const a = A(); const R = substitutes(a); setSel([a.key, ...R.list.slice(0, 3).map((x) => x.h.key)]); S.sheet = null; break; }
+    case 'repinfo': S.repInfo = !S.repInfo; break;
+    case 'comp': { const a = A(); a.g = Math.round((a.g + Number(el.dataset.g)) * 10) / 10; a.prev = null; break; }
+    case 'applysub': { const a = A(); const R = substitutes(a); const x = R.all.find((s) => s.h.key === key); const before = { key: a.key, g: a.g }; const oldName = hname(hop(a.key));
+      a.key = key; a.g = Math.max(0.1, Math.round((x ? x.dose : a.g) * 10) / 10); S.sheet = null; S.open = a.id;
+      S.toast = { msg: `${oldName} remplacé par ${hname(hop(key))}, ${gtxt(a.g)} g.`, undo: () => { a.key = before.key; a.g = before.g; } }; break; }
+    case 'undo': S.toast?.undo?.(); S.toast = null; break;
+    case 'toastx': S.toast = null; break;
+    case 'style': S.style = el.dataset.id; S.og = style().ogMid || S.og; S.sheet = null; S.next = null; S.info = null; break;
+    case 'qopen': { const qid = el.dataset.q; S.qOpen.has(qid) ? S.qOpen.delete(qid) : S.qOpen.add(qid); break; }
+    default: return;
+  }
+  render();
+  // Une fiche ouverte dans la liste reste à l'écran (catalogue compris).
+  if (act === 'info' && S.info) app.querySelector(`.row[data-hop="${CSS.escape(S.info)}"] + .info`)?.scrollIntoView({ block: 'nearest' });
+});
+app.addEventListener('input', (e) => {
+  const el = e.target; const act = el.dataset.act;
+  if (act === 'dosein') { const a = S.adds.find((x) => x.id === Number(el.dataset.id)); const v = parseNum(el.value); if (a && v != null && v >= 0) { a.g = v; renderSoft(el); } }
+  else if (act === 'param') { const v = parseNum(el.value); if (v != null && v > 0) { if (el.dataset.p === 'og' && v > 1.2) return; S[el.dataset.p] = v; renderSoft(el); } }
+  else if (act === 'styleq') { S.styleQ = el.value; renderSoft(el); }
+  else if (act === 'catq') { S.catQ = el.value; S.catN = 30; renderSoft(el); }
+});
+app.addEventListener('change', (e) => {
+  const el = e.target; if (el.dataset.act !== 'qp') return;
+  const p = el.dataset.p; S.qp[p] = p === 'q19y' ? Number(el.value) : el.value; render();
+});
+// Un champ numérique sélectionne sa valeur à l'entrée : la saisie la remplace.
+app.addEventListener('focusin', (e) => { const el = e.target; if (S._refocus || el.tagName !== 'INPUT' || el.inputMode !== 'decimal') return; setTimeout(() => { try { el.select(); } catch (_) {} }, 0); });
+// Rendu sans réécrire le champ en cours de saisie (la valeur tapée reste telle quelle).
+function renderSoft(input) { const v = input.value; render(); const el = app.querySelector(`[data-focuskey="${input.dataset.focuskey}"]`); if (el && el.value !== v) { el.value = v; S._refocus = true; el.focus(); S._refocus = false; try { el.setSelectionRange(v.length, v.length); } catch (_) {} } }
+window.matchMedia('(min-width: 900px)').addEventListener('change', render);
+
+/* ---------- Accès pour les contrôles automatiques (scripts/check-hop-v3.mjs) ---------- */
+window.__v3 = {
+  S, render, hop, prog, rankAroma, rankBitter, substitutes, Q,
+  setStyle(id) { S.style = id; S.og = style().ogMid || S.og; render(); },
+  compare(keys) { setSel(keys); render(); },
+  openQuestions() { S.sheet = 'questions'; render(); },
+  answers() { return Q.map((it) => { let r; try { r = it.fn(); } catch (e) { r = { short: 'ERREUR ' + e.message }; } const t = document.createElement('div'); t.innerHTML = r.short; return { id: it.id, title: it.title, text: t.textContent.trim(), nd: /Non documenté/.test(t.textContent) }; }); },
+};
+render();
+</script>

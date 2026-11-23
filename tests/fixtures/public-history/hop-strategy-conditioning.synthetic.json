@@ -1,0 +1,91 @@
+{
+  "fixtureMetadata": {
+    "kind": "synthetic scenario input projection",
+    "scope": "Original structured scenario inputs only; no proposed answer, prediction or model/session metadata. Unknown values remain unknown."
+  },
+  "request": {
+    "originalQuestion": "La fermentation est terminée et le lot est en conditionnement. La bière est faible en alcool et acidulée, mais la culture et mon houblon maison ne sont pas caractérisés. Puis-je ajouter quelque chose pour renforcer un fruité/citronné ?",
+    "proposedInterpretation": {
+      "criteria": [
+        {
+          "id": "alcohol",
+          "role": "constraint",
+          "origin": "user",
+          "text": "bière décrite comme faible en alcool; ABV mesuré absent"
+        },
+        {
+          "id": "acid",
+          "role": "preserve",
+          "origin": "user",
+          "text": "caractère acidulé à préserver; pH et acidité titrable absents"
+        },
+        {
+          "id": "aroma",
+          "role": "seek",
+          "origin": "user",
+          "text": "fruité/citronné; aucune molécule cible ou intensité n’est inférée"
+        }
+      ]
+    }
+  },
+  "scenarioStatements": {
+    "stage": "conditioning",
+    "houseHop": {
+      "materialId": "house-hop-lot-unanalysed",
+      "identity": "houblon maison reporté par le brasseur",
+      "form": "unknown",
+      "analysis": [],
+      "availableGrams": null,
+      "note": "absence de mesure; ne vaut pas alpha nul, huile nulle, précurseurs nuls, masse fraîche ou absence d’enzymes"
+    },
+    "matrix": {
+      "alcohol": {
+        "description": "faible alcool rapporté",
+        "measuredValue": null
+      },
+      "acidity": {
+        "description": "acidité vive rapportée",
+        "pH": null,
+        "titratableAcidity": null
+      }
+    },
+    "culture": {
+      "identity": null,
+      "strainId": null,
+      "betaLyase": "unknown",
+      "fermentationState": "finished",
+      "viabilityAtFutureHopContact": "unknown",
+      "note": "finished n’équivaut pas à noViableYeast dans le contrat bio"
+    },
+    "programSnapshot": {
+      "stage": "conditioning",
+      "revision": 4,
+      "volumeL": null,
+      "wortGravity": null,
+      "additions": [
+        {
+          "id": "performed-late-hop",
+          "materialId": "house-hop-lot-unanalysed",
+          "grams": null,
+          "use": "postFermentation",
+          "status": "performed",
+          "contactHours": null,
+          "temperatureC": null
+        },
+        {
+          "id": "planned-follow-up-hop",
+          "materialId": "house-hop-lot-unanalysed",
+          "grams": null,
+          "use": "postFermentation",
+          "status": "planned",
+          "contactHours": null,
+          "temperatureC": null
+        }
+      ],
+      "pastToPreserve": [
+        "performed-late-hop"
+      ],
+      "note": "null signale que cette fixture ne fournit pas la masse, pas une masse nulle; ne pas remplacer ou réécrire l’ajout effectué"
+    }
+  }
+}

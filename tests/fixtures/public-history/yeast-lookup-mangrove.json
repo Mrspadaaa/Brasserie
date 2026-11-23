@@ -1,0 +1,83 @@
+{
+  "fixtureOnly": true,
+  "provenance": {
+    "kind": "curated-provider-facts",
+    "manufacturer": "Mangrove Jack",
+    "sourceUrls": [
+      "https://mangrovejacks.com/products/m20-bavarian-wheat-10g",
+      "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785"
+    ],
+    "captureDate": "2026-09-25",
+    "scope": "Only M20 and M54 facts used by the test; model, prompt, token usage, and unrelated capture metadata are removed.",
+    "limitation": "The 79.5 scalar is retained only as an untrusted lookup counterexample; the documented attenuation remains the 77–82% range."
+  },
+  "results": [
+    {
+      "requestedName": "M20 · Bavarian Wheat",
+      "validationError": null,
+      "data": {
+        "found": true,
+        "name": "M20 · Bavarian Wheat",
+        "source": "M20 Bavarian Wheat Yeast - 10g - Mangrove Jack's",
+        "sourceUrl": "https://mangrovejacks.com/products/m20-bavarian-wheat-10g",
+        "form": "sèche",
+        "lab": "Mangrove Jack’s",
+        "retrievedAt": "2026-09-25",
+        "strain": "M20",
+        "tempMinC": 18,
+        "tempMaxC": 30,
+        "technicalFacts": [
+          {
+            "key": "flocculation",
+            "reported": "Low",
+            "origin": "ai",
+            "source": "M20 Bavarian Wheat Yeast - 10g - Mangrove Jack's",
+            "sourceUrl": "https://mangrovejacks.com/products/m20-bavarian-wheat-10g",
+            "retrievedAt": "2026-09-25"
+          }
+        ]
+      }
+    },
+    {
+      "requestedName": "M54 · Californian Lager",
+      "validationError": null,
+      "data": {
+        "found": true,
+        "name": "M54 · Californian Lager",
+        "source": "Mangrove Jack's — Craft Series Yeast Technical Data",
+        "sourceUrl": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+        "form": "sèche",
+        "lab": "Mangrove Jack’s",
+        "retrievedAt": "2026-09-25",
+        "strain": "M54",
+        "attenuationPct": 79.5,
+        "technicalFacts": [
+          {
+            "key": "attenuation",
+            "reported": "77 - 82%",
+            "origin": "ai",
+            "source": "Mangrove Jack's — Craft Series Yeast Technical Data",
+            "sourceUrl": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "retrievedAt": "2026-09-25",
+            "context": "Atténuation apparente",
+            "qualifier": "range",
+            "range": { "min": 77, "max": 82 },
+            "unit": "%"
+          },
+          {
+            "key": "alcoholTolerance",
+            "reported": "9 % ABV",
+            "origin": "ai",
+            "source": "Mangrove Jack's — Craft Series Yeast Technical Data",
+            "sourceUrl": "https://help.mangrovejacks.com/hc/en-us/article_attachments/13551379984785",
+            "retrievedAt": "2026-09-25",
+            "context": "Tolérance maximale à l'alcool",
+            "qualifier": "upTo",
+            "range": { "min": 9, "max": 9 },
+            "unit": "%"
+          }
+        ]
+      }
+    }
+  ]
+}

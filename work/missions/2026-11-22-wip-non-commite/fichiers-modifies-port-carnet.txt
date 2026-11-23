@@ -1,0 +1,5 @@
+src/domain/stock/murDonnees.ts
+src/ui/calendrier/frise/fiche.css
+src/ui/stock/EnteteRayon.tsx
+src/ui/stock/MurStock.tsx
+tests/integration/calendrier-onglet.test.tsx

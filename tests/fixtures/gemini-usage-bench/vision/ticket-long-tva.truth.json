@@ -1,0 +1,259 @@
+{
+  "id": "ticket-long-tva",
+  "level": "très compliqué : ticket long (20 lignes), deux taux de TVA, remise",
+  "facture": {
+    "vendor": "Brassi-Shop",
+    "documentType": "receipt",
+    "paymentEvidence": [
+      "paid",
+      "unknown"
+    ],
+    "date": "27.09.2026",
+    "currency": "CHF",
+    "invoiceNumber": [
+      "30559",
+      "Ticket 30559",
+      ""
+    ],
+    "orderNumber": "",
+    "amountHT": 156.81,
+    "tvaRate": null,
+    "tvaAmount": 8.39,
+    "amountTTC": 165.2,
+    "items": [
+      {
+        "name": "Malt Pale Ale 5 kg",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 16.5,
+        "amountTTC": 16.5
+      },
+      {
+        "name": "Malt Munich 1 kg",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 2,
+        "unit": "",
+        "price": 4.2,
+        "amountTTC": 8.4
+      },
+      {
+        "name": "Malt Crystal 150 500 g",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 3.6,
+        "amountTTC": 3.6
+      },
+      {
+        "name": "Malt Carapils 500 g",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 3.4,
+        "amountTTC": 3.4
+      },
+      {
+        "name": "Flocons d'avoine 500 g",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 2.9,
+        "amountTTC": 2.9
+      },
+      {
+        "name": "Houblon Cascade 100 g",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 2,
+        "unit": "",
+        "price": 7.2,
+        "amountTTC": 14.4
+      },
+      {
+        "name": "Houblon Citra 100 g",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 9.8,
+        "amountTTC": 9.8
+      },
+      {
+        "name": "Houblon Magnum 100 g",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 5.6,
+        "amountTTC": 5.6
+      },
+      {
+        "name": "Levure US-05 11.5 g",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 2,
+        "unit": "",
+        "price": 4.9,
+        "amountTTC": 9.8
+      },
+      {
+        "name": "Sucre candi 500 g",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 3.2,
+        "amountTTC": 3.2
+      },
+      {
+        "name": "Irish Moss 50 g",
+        "kind": [
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 2.8,
+        "amountTTC": 2.8
+      },
+      {
+        "name": "Capsules 26 mm (200)",
+        "kind": [
+          "packaging",
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 7.9,
+        "amountTTC": 7.9
+      },
+      {
+        "name": "Bouteilles 33 cl (24)",
+        "kind": [
+          "packaging",
+          "stock"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 18,
+        "amountTTC": 18
+      },
+      {
+        "name": "Densimetre 1.000-1.100",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 14.5,
+        "amountTTC": 14.5
+      },
+      {
+        "name": "Eprouvette 250 ml",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 9.9,
+        "amountTTC": 9.9
+      },
+      {
+        "name": "Star San 237 ml",
+        "kind": [
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 16.9,
+        "amountTTC": 16.9
+      },
+      {
+        "name": "Tuyau silicone 8 mm 2 m",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 9.8,
+        "amountTTC": 9.8
+      },
+      {
+        "name": "Sac de brassage 40 cm",
+        "kind": [
+          "equipment",
+          "stock",
+          "other",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 12.5,
+        "amountTTC": 12.5
+      },
+      {
+        "name": "Rabais carte fidelite",
+        "kind": [
+          "discount"
+        ],
+        "quantity": null,
+        "unit": "",
+        "price": null,
+        "amountTTC": -5
+      },
+      {
+        "name": "Sachet papier",
+        "kind": [
+          "packaging",
+          "other",
+          "stock",
+          "unknown"
+        ],
+        "quantity": 1,
+        "unit": "",
+        "price": 0.3,
+        "amountTTC": 0.3
+      }
+    ]
+  },
+  "triage": {
+    "kind": [
+      "receipt"
+    ],
+    "documentCount": 1,
+    "readable": true,
+    "currencies": [
+      "CHF"
+    ],
+    "route": "scan"
+  },
+  "file": "tests/fixtures/gemini-usage-bench/vision/ticket-long-tva.png",
+  "mimeType": "image/png",
+  "note": "FIXTURE DE TEST – document fictif"
+}

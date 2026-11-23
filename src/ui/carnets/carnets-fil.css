@@ -1,0 +1,123 @@
+/*
+ * Carnet d'idées : le fil, le champ et les gestes (correction du tour 4, lot D). Classes préfixées `cnf-` (L26) ; `carnets.css` reste
+ * au lot B. Importé par CarnetsVue.tsx et EtatIA.tsx.
+ */
+
+/* P29, P30, P31 (R27, G7) : le champ prend toute la largeur de la colonne. Dans la vue en colonne (`.cn`, flex), des marges auto
+   réduisaient la zone à son contenu (270 px à 1280) ; `width: 100%` la rend à la colonne, centrée et bornée comme la page. */
+[data-carnets] > .cn-champ-zone { width: 100%; box-sizing: border-box; flex: none; }
+@media (min-width: 900px) {
+  [data-carnets] > .cn-champ-zone { max-width: 760px; margin-left: auto; margin-right: auto; padding-right: 12px; }
+}
+/* f13 tour 3 (critique n° 4, g5:v04-4) : à 390, le champ part du bord de la liste, pas 12 px plus à droite */
+@media (max-width: 899px) {
+  /* la liste garde son retrait (ses cartes sont à 24 px du bord, le champ aussi) ; carnet et fiche commencent au bord de la colonne */
+  [data-carnets]:not([data-vue=liste]) > .cn-champ-zone { padding-left: 0; }
+  /* le texte de sa maquette tient entier à 390 (« Écrire, ou coller un lien… », 172 px) : pictos resserrés comme g5:v04-4 */
+  [data-carnets]:not([data-vue=liste]) .cn-champ { gap: 4px; padding-left: 12px; }
+}
+/* f13 tour 3 (critique n° 5) : clavier ouvert, la zone qui défile garde de la place en bas, pour que le défilement automatique puisse
+   cacher entière la ligne que son bord haut trancherait (ChampCarnet, sansLigneCoupee) */
+[data-carnets]:has(> .cn-champ-zone[data-clavier]) > .cn-defile { padding-bottom: 56px; }
+
+/* P37 : clavier ouvert, la bulle G8 et « Coller » sur une seule ligne ; chacune se tronque plutôt que de prendre deux lignes. */
+.cnf-aides { display: flex; flex-direction: column; gap: 8px; align-items: stretch; }
+.cnf-aides > .cn-coller { align-self: flex-start; }
+/* tour 3, f7 n° 1 : à 390, la bulle et la puce ne tiennent pas ensemble (278 px) : la ligne passe à la ligne, la puce dessous garde sa largeur ;
+   à 1280, elles restent sur une ligne (P37). */
+.cnf-aides-ligne { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; }
+.cnf-aides-ligne > .cn-bulle { flex: 1 1 13rem; min-width: 0; min-height: 36px; padding: 6px 10px; align-items: center; }
+/* tour 3, PCN-103 et f5 n° 2 : la bulle dit entre quoi, les deux façons entières ; elle prend les lignes qu’il faut, jamais coupée par « … » */
+.cnf-aides-ligne > .cn-bulle > span:last-child { min-width: 0; overflow-wrap: anywhere; line-height: 1.25; text-align: left; }
+.cnf-aides-ligne > .cn-coller { flex: 0 1 auto; min-width: 0; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-height: 36px; }
+.cn-champ-zone[data-clavier] { gap: 6px; padding-top: 6px; padding-bottom: 6px; }
+/* Tour 3, f13 (PCN-37, CARNET-CLAV) : clavier ouvert, le bloc au-dessus du clavier se compacte pour laisser au carnet 60 % de la hauteur
+   visible au moins. Le + volant (fixe, en bas) est sous le clavier : la zone reprend sa colonne. La bulle G8 tient sur une ligne, la puce
+   « Coller » à côté ; le texte entier reste dans son title. Clavier fermé, tout revient (deux lignes, PCN-103). */
+.cn-champ-zone[data-clavier] { padding-right: 12px; }
+.cn-champ-zone[data-clavier] > .cn-vadans { margin-right: 0; }
+/* f13 tour 2 (n° 3) : la bulle G8 garde deux lignes serrées plutôt qu'une ligne tronquée (« Hotte in… » ne disait plus entre quoi) ; la
+   forme qui y tient est choisie par ChampCarnet (`formesBulle`), jamais coupée au milieu d'un mot. « Coller » passe dessous au besoin. */
+.cn-champ-zone[data-clavier] .cnf-aides-ligne > .cn-bulle { min-height: 36px; padding-top: 4px; padding-bottom: 4px; }
+.cn-champ-zone[data-clavier] .cn-bulle > span:last-child { line-height: 1.2; overflow-wrap: break-word; }
+
+/* P28 (R09, g5:v03-2) : Créer · avant */
+.cnf-avant { display: flex; flex-direction: column; gap: 10px; }
+.cnf-avant-phrase { color: var(--c-ink); font-size: 15px; line-height: 21px; }
+.cnf-fantome { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1.5px dashed var(--c-line2); border-radius: 12px; opacity: .8; }
+.cnf-fantome-photo { width: 36px; height: 36px; flex: none; border-radius: 8px; background: var(--c-s1); border: 1px solid var(--c-line); }
+.cnf-exemples { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* P33 (R20) : « Se modifie ici » prend la place de la note modifiée (la ligne de note juste avant le cadre ne s'affiche plus). */
+.cn-note:has(+ .cnf-cadre-modifier) { display: none; }
+.cnf-modifie-texte { font-weight: 400; color: var(--c-ink2); font-style: italic; }
+
+/* P9 (R25) : le lien rangé, en clair, et « Ouvrir ↗ » */
+.cnf-bandeau-lien { display: flex; align-items: center; gap: 10px; margin-top: 4px; min-width: 0; }
+.cnf-lien-clair { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; color: var(--c-ink2); font-size: 14px; }
+.cnf-ouvrir { flex: none; min-height: 44px; display: inline-flex; align-items: center; }
+
+/* P22, P36 : l'avis de l'IA dans le bandeau même ; l'échec se distingue de « L'IA range… » (aucune roue, filet orangé) */
+.cnf-avis { display: flex; gap: 8px; align-items: flex-start; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--c-line); color: var(--c-ink2); font-size: 14px; line-height: 20px; }
+.cnf-avis > svg { flex: none; margin-top: 2px; }
+.cnf-avis[data-avis="echec"] { color: var(--c-warn, #a15c00); }
+.cnf-avis-detail { color: var(--c-ink2); }
+.cn-etat[data-etat="echec"] { border: 1px solid var(--c-warn, #a15c00); color: var(--c-ink); background: var(--c-s1); }
+
+/* P23 (D-35) : les puces que l'IA propose, un toucher les range */
+/* tour 3, v1-neuf 3 : une marge sous la puce, avant « 2 articles à comparer » */
+.cnf-proposees { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; margin-bottom: 10px; }
+.cnf-proposee { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 2px 4px 2px 12px; border: 1px dashed var(--c-ia); border-radius: 12px; background: var(--c-iabg); color: var(--c-ink); }
+.cnf-proposee-ia { color: var(--c-ia); flex: none; }
+.cnf-proposee-texte { flex: 1 1 auto; min-width: 0; }
+.cnf-proposee .cn-x { flex: none; min-width: 44px; min-height: 44px; font-size: 20px; color: var(--c-mut); }
+
+/* P11 (g5:v01-16) : type ▾ et carnet ▾ ; le choix natif couvre la puce, un toucher l'ouvre */
+.cnf-choix { position: relative; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; min-height: 36px; max-width: 100%; box-sizing: border-box; }
+.cnf-choix > span:not([aria-hidden]) { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cnf-choix > select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; font-size: 16px; }
+.cnf-choix:focus-within { outline: 2px solid var(--c-zone); outline-offset: 2px; }
+
+/* Critique 5, n° 5 et 21 : la bulle G8 au focus seulement ; tour 3, PCN-103 : deux lignes au plus (plus d'ellipse) */
+
+/* Critique 5, n° 3 : la ligne du carnet visé, au-dessus des rubriques ; « en » relie les deux lignes */
+.cnf-vadans-carnet .cn-puce[aria-pressed="true"] { font-weight: 700; }
+
+/* Critique 5, n° 26 (g4:v01-13) : « Se renomme ici » se pose à la place du titre ; l'en-tête et le contenu restent */
+.cn-ouvert:has(> .cnf-renommer) { display: flex; flex-direction: column; }
+.cn-ouvert:has(> .cnf-renommer) > .cn-tete,
+.cn-ouvert:has(> .cnf-renommer) > .cn-menu { order: -2; }
+.cn-ouvert > .cnf-renommer { order: -1; margin-bottom: 8px; }
+.cn-ouvert:has(> .cnf-renommer) > .cn-titre-ligne { display: none; }
+/* f13 tour 2 (n° 5) : tout juste créé, l'en-tête et le titre sont dans la bande ; renommer la garde en tête, sans le titre */
+.cn-ouvert:has(> .cnf-renommer) > .cn-bande { order: -2; }
+.cn-ouvert:has(> .cnf-renommer) > .cn-bande > .cn-titre-ligne { display: none; }
+.cnf-renommer-tete { display: inline-flex; align-items: center; gap: 6px; }
+.cnf-renommer-tete > svg { flex: none; }
+.cnf-renommer-titre { font-size: 24px; line-height: 30px; font-weight: 800; color: var(--c-ink); margin: 4px 0 0; overflow-wrap: anywhere; }
+.cnf-renommer-pied { display: flex; align-items: center; gap: 8px; padding: 0 4px; min-height: 36px; }
+.cnf-renommer-pied .cn-lien { min-height: 44px; display: inline-flex; align-items: center; }
+
+/* Critique 5 : la flèche ou le crayon d'une tête de cadre reste sur la ligne de son libellé (« ↓ va dans Évier inox ») */
+.cn-cadre-bloc .cn-cadre-tete > .cn-vert { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.cn-cadre-bloc .cn-cadre-tete > .cn-vert > svg { flex: none; }
+
+/* Critique 6, n° 29 : les puces « Va dans » tiennent sur un rang à 390 ; au-delà, le rang défile, il ne passe jamais à la ligne */
+/* Tour 3, PCN-121 : un fondu à droite dit que le rang défile ; la dernière puce n'est jamais coupée sans indice */
+/* Tour 3, f7 n° 3 : le fondu et sa marge seulement quand la dernière puce dépasse (`data-deborde`, posé par ChampCarnet) ; sinon la puce entière */
+.cn-champ-zone .cn-vadans { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 6px; }
+.cn-champ-zone .cn-vadans[data-deborde] { padding-right: 24px; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
+.cn-champ-zone .cn-vadans::-webkit-scrollbar { display: none; }
+.cn-champ-zone .cn-vadans > .cn-puce { flex: none; white-space: nowrap; }
+/* Tour 3, f7 n° 3 : sous 900 px, les rangs « Va dans » (au-dessus du champ, jamais à sa hauteur) prennent aussi la colonne du + : 342 px à 390
+   au lieu de 278. Le champ descend de 6 px de plus : le + (8 px plus haut que le champ) reste à 8 px sous le dernier rang. */
+@media (max-width: 899px) {
+  .cn-champ-zone > .cn-vadans { margin-right: -64px; }
+  .cn-champ-zone > .cn-vadans + .cn-champ { margin-top: 6px; }
+}
+
+/* Critique 6, n° 24 : « Ranger maintenant », au retour du réseau */
+.cnf-reprise .cn-bandeau-tete { gap: 8px; }
+
+/* g5:v01-15, v01-16 : « › Texte d’origine », la flèche en tête */
+.cnf-origine-fleche { margin-right: 6px; }

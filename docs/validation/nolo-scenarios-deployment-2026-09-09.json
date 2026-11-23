@@ -1,0 +1,36 @@
+{
+  "featureCommit": "60a42841b011bb7f5744951010ae733be11c5540",
+  "compatibilityCommit": "ced12ff",
+  "checkedAt": "2026-09-09T18:34:01.970Z",
+  "deployment": {
+    "hosting": "verified",
+    "functionsUpdated": 32,
+    "functionsDeleted": 0,
+    "existingFinancePreserved": true
+  },
+  "checks": {
+    "combinedUnitAndIntegrationTests": 3046,
+    "secondExtractionRegressions": "passed",
+    "browserWidths": [
+      320,
+      390,
+      1280
+    ],
+    "noloSmoke": "passed",
+    "hopSmoke": "passed",
+    "twentyHopAdditionsMs": [
+      10.7,
+      14.5
+    ],
+    "remoteSimulationRequests": 0,
+    "simulationWrites": 0,
+    "publicAssetsMatchValidatedBuild": true,
+    "privateReportAnonymousStatus": 401,
+    "privateRecipeAnonymousStatus": 403,
+    "qaAccessInProduction": false,
+    "anonymousLoginOverflow": false,
+    "previousRecipeHistoryPreserved": true,
+    "paidGeminiCalls": 0
+  },
+  "scope": "Projection conditionnelle et vérification alcoolique restent distinctes. Aucune validation sensorielle externe ni conformité alcoolique mesurée revendiquée."
+}

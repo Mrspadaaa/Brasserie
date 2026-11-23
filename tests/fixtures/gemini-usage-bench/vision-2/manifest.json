@@ -1,0 +1,38 @@
+{
+  "ticket-thermique-pali": {
+    "file": "ticket-thermique-pali.jpg",
+    "html": "689a212a1886f4b17578beeb27bbae961edb0882422a54394f0bd2e1888ec783",
+    "image": "f8c624a3ddc0b556c9e666bb82621280f9f68e091cb12d12a954ae1a127f0e61",
+    "bytes": 16591
+  },
+  "ticket-froisse-ombre": {
+    "file": "ticket-froisse-ombre.jpg",
+    "html": "cba490cfe666a5674416ef81fc563e05eda09eef11c928d9b327a1210431285b",
+    "image": "ec70a6e5f66193c33c91b014c6fd8ad5514af61e631a622002cc4d5a30def73d",
+    "bytes": 26670
+  },
+  "ticket-coupe": {
+    "file": "ticket-coupe.jpg",
+    "html": "2bfd9221f10ba0ab2d4444ce45e3f08f4232898ce0b20e45e91552cff1166afc",
+    "image": "09c1b267869fa3dcbad4094f4f51b730f72e902a5d95793c23aaa706d1123a8f",
+    "bytes": 24798
+  },
+  "ticket-italien-eur": {
+    "file": "ticket-italien-eur.jpg",
+    "html": "cedc713fafe0361353f53127c4bae39a0ef420e3556fe8729f05ec170f07fa33",
+    "image": "ce0f3a2b3432a70ff95e161d5c7a7b1fbbba55e45d759dc19a262f4092411c2b",
+    "bytes": 33676
+  },
+  "facture-a4-photo": {
+    "file": "facture-a4-photo.jpg",
+    "html": "e10b36a8e07e4d08c94e50c24340f06a8fa1388e8fe66a52af16d12bff2e32bc",
+    "image": "292ec2a74984397032414a62ae60cb841766c40cdbe4f1718075fa7101c68334",
+    "bytes": 58174
+  },
+  "quittance-manuscrite": {
+    "file": "quittance-manuscrite.png",
+    "html": "ccd6b2d1aeab66fecd2a4c6cedb830d3e5088b0c516d927d5103fca4e8a88561",
+    "image": "73359b9b20ef46e8f6d2c3420ed007f0ac2f534260569f2a114509b5fec3771c",
+    "bytes": 86158
+  }
+}

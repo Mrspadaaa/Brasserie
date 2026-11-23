@@ -1,0 +1,187 @@
+/**
+ * Mise à jour de l'application (T10-M2-1, D429). Méthode standard (L29) : `virtual:pwa-register` de vite-plugin-pwa
+ * (« Prompt for new content refreshing »), `registration.update()` pour chercher une version, `updateSW(true)` pour la prendre
+ * (le worker reçoit SKIP_WAITING, prend la main, la page se recharge). Ce fichier ne contient que la politique du moment :
+ *
+ *  - on cherche une nouvelle version au lancement, à chaque retour sur l'app (visibilitychange, pageshow, retour du réseau)
+ *    et toutes les 30 min tant que l'app est visible ;
+ *  - version prête et ni feuille ni saisie ouverte (depuis 1,5 s) → on l'active et la page se recharge ;
+ *  - sinon un bandeau « Nouvelle version · Recharger » ; la version s'applique d'elle-même dès que la feuille se ferme.
+ *
+ * Le worker n'est jamais activé de force pendant une saisie : l'ancien cache continue de servir les morceaux de la page ouverte
+ * (D413), car `cleanupOutdatedCaches` ne passe qu'à l'activation de la nouvelle version.
+ * `virtual:pwa-register` est importé par `enregistrerPwa.ts` seul, pour que ce fichier reste testable sans le plugin.
+ */
+
+export const CALME_MS = 1500;         // libre depuis ce délai avant d'appliquer : une écriture qui part n'est pas coupée
+export const SONDE_MS = 500;          // pendant qu'une version attend
+export const VERIFICATION_MS = 30 * 60_000;
+export const INTERVALLE_MIN_MS = 15_000; // deux vérifications ne se suivent pas de plus près
+export const GARDE_BOUCLE_MS = 15_000;   // un rechargement automatique ne suit pas un autre de moins de 15 s
+
+export interface EntreeMiseAJour {
+  /** Une feuille ou une saisie est ouverte : on ne recharge pas. */
+  occupe: () => boolean;
+  /** Active la version prête puis recharge. `auto` : rend `false` si une garde anti-boucle refuse. */
+  appliquer: (auto: boolean) => boolean;
+  verifier: () => Promise<unknown>;
+  visible: () => boolean;
+  montrer: (visible: boolean) => void;
+}
+
+export interface MiseAJour {
+  /** Le worker a une nouvelle version en attente. */
+  versionPrete: () => void;
+  /** Cherche une nouvelle version (limité à une fois par INTERVALLE_MIN_MS, jamais hors écran). */
+  verifier: () => void;
+  /** Le brasseur touche « Recharger ». */
+  recharger: () => void;
+  /** Branche les déclencheurs de vérification ; rend la fonction qui les retire. */
+  demarrer: () => () => void;
+}
+
+export function creerMiseAJour(e: EntreeMiseAJour): MiseAJour {
+  let prete = false;
+  let appliquee = false;
+  let libreDepuis: number | null = null;
+  let sonde: ReturnType<typeof setInterval> | null = null;
+  let derniere = -Infinity;
+
+  const arreterSonde = () => { if (sonde !== null) { clearInterval(sonde); sonde = null; } };
+
+  function pas() {
+    if (!prete || appliquee) { arreterSonde(); return; }
+    if (e.occupe()) { libreDepuis = null; e.montrer(true); return; }
+    libreDepuis ??= Date.now();
+    if (Date.now() - libreDepuis < CALME_MS) return;
+    arreterSonde();
+    if (e.appliquer(true)) appliquee = true;
+    else e.montrer(true); // garde anti-boucle : le bandeau reste, le brasseur décide
+  }
+
+  const versionPrete = () => {
+    if (prete) return;
+    prete = true;
+    pas();
+    if (!appliquee && sonde === null) sonde = setInterval(pas, SONDE_MS);
+  };
+
+  const verifier = () => {
+    if (appliquee || !e.visible()) return;
+    const t = Date.now();
+    if (t - derniere < INTERVALLE_MIN_MS) return;
+    derniere = t;
+    e.verifier().catch(() => { /* hors ligne ou worker introuvable : on réessaiera au prochain retour */ });
+  };
+
+  const recharger = () => {
+    appliquee = true;
+    arreterSonde();
+    e.appliquer(false);
+  };
+
+  const demarrer = () => {
+    const surVisibilite = () => verifier();
+    const surPageShow = (ev: Event) => { if ((ev as PageTransitionEvent).persisted) verifier(); };
+    document.addEventListener('visibilitychange', surVisibilite);
+    window.addEventListener('pageshow', surPageShow);
+    window.addEventListener('online', surVisibilite);
+    const minuterie = setInterval(verifier, VERIFICATION_MS);
+    return () => {
+      document.removeEventListener('visibilitychange', surVisibilite);
+      window.removeEventListener('pageshow', surPageShow);
+      window.removeEventListener('online', surVisibilite);
+      clearInterval(minuterie);
+      arreterSonde();
+    };
+  };
+
+  return { versionPrete, verifier, recharger, demarrer };
+}
+
+const CHAMPS_SANS_SAISIE = /^(?:button|checkbox|radio|submit|reset|range|image|file|color)$/i;
+const FEUILLES = [
+  'dialog[open]', '[role="dialog"]:not([data-state="closed"])', '[role="alertdialog"]', '[aria-modal="true"]',
+  '[data-vaul-drawer][data-state="open"]', '[data-saisie-ouverte]',
+].join(',');
+
+const affiche = (el: Element): boolean => {
+  const h = el as HTMLElement & { checkVisibility?: () => boolean };
+  return !h.closest('[hidden]') && (typeof h.checkVisibility !== 'function' || h.checkVisibility());
+};
+
+/**
+ * Vrai si une feuille (dialogue, tiroir, alerte) est affichée ou si un champ de saisie a le focus. Un élément porte
+ * `data-saisie-ouverte` pour déclarer une saisie en cours que ces deux règles ne voient pas.
+ */
+export function interfaceOccupee(doc: Document = document): boolean {
+  const a = doc.activeElement as HTMLElement | null;
+  if (a && a !== doc.body) {
+    const tag = a.tagName;
+    if (a.isContentEditable || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+    if (tag === 'INPUT' && !CHAMPS_SANS_SAISIE.test((a as HTMLInputElement).type)) return true;
+  }
+  return [...doc.querySelectorAll(FEUILLES)].some(affiche);
+}
+
+// --- Bandeau : état partagé avec `ui/BandeauMiseAJour.tsx` ---------------------------------------------------------------
+let bandeau = false;
+const abonnes = new Set<() => void>();
+export const bandeauVisible = (): boolean => bandeau;
+export const surBandeau = (f: () => void): (() => void) => { abonnes.add(f); return () => { abonnes.delete(f); }; };
+const poserBandeau = (v: boolean) => { if (v !== bandeau) { bandeau = v; abonnes.forEach(f => f()); } };
+
+type RegisterSW = (options?: {
+  immediate?: boolean;
+  onNeedRefresh?: () => void;
+  onNeedReload?: () => void;
+  onRegisteredSW?: (url: string, registration: ServiceWorkerRegistration | undefined) => void;
+}) => (reloadPage?: boolean) => Promise<void>;
+
+let courante: MiseAJour | null = null;
+/** « Recharger » du bandeau. */
+export const rechargerMaintenant = (): void => courante?.recharger();
+
+const CLE_GARDE = 'affinee-maj-auto';
+// Deux voies mènent au rechargement (notre `controllerchange`, le `controlling` de workbox-window) : la première seule compte,
+// la seconde interromprait la navigation déjà partie (constaté : net::ERR_ABORTED, puis page parfois sans le nouveau paquet).
+let rechargementLance = false;
+const recharger = () => { if (rechargementLance) return; rechargementLance = true; window.location.reload(); };
+
+/** Enregistre le worker (une fois) et branche la politique ci-dessus. `registerSW` vient de `virtual:pwa-register`. */
+export function demarrerMiseAJour(registerSW: RegisterSW): MiseAJour {
+  if (courante) return courante;
+  let registration: ServiceWorkerRegistration | undefined;
+  let activer: (reloadPage?: boolean) => Promise<void> = async () => {};
+  let enCours = false;
+  const gestion = creerMiseAJour({
+    occupe: () => interfaceOccupee(),
+    visible: () => document.visibilityState !== 'hidden',
+    montrer: poserBandeau,
+    verifier: () => (registration ? registration.update() : Promise.resolve()),
+    appliquer: (auto) => {
+      if (enCours) return true;
+      if (auto) {
+        try {
+          const avant = Number(sessionStorage.getItem(CLE_GARDE) ?? 0);
+          if (Date.now() - avant < GARDE_BOUCLE_MS) return false;
+          sessionStorage.setItem(CLE_GARDE, String(Date.now()));
+        } catch { /* stockage de session refusé : pas de garde, on applique */ }
+      }
+      enCours = true;
+      // La page se recharge quand la nouvelle version prend la main, jamais avant (sinon elle relirait l'ancien paquet).
+      navigator.serviceWorker.addEventListener('controllerchange', recharger, { once: true });
+      void activer(true).catch(() => { enCours = false; });
+      return true;
+    },
+  });
+  courante = gestion;
+  activer = registerSW({
+    immediate: true,
+    onNeedRefresh: gestion.versionPrete,
+    onNeedReload: recharger,
+    onRegisteredSW: (_url, r) => { registration = r; gestion.verifier(); },
+  });
+  gestion.demarrer();
+  return gestion;
+}

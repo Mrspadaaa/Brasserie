@@ -1,0 +1,78 @@
+/*
+ * La feuille d'ajout du calendrier (E34, E45) et la vue Liste (E40, E46). Des classes propres (`cal-feuille`, `cal-f-*`, `cal-liste`) :
+ * le Sheet des autres écrans ne change pas. La frise garde frise.css.
+ */
+
+/* les montants (puces, noms récents) : la police de l'app, chiffres alignés (CRITIQUE-3 n° 36 : plus de chasse fixe) */
+.cal-f-m { font-variant-numeric: tabular-nums; }
+
+/* les semaines défilent sur 52 : 13 à l'écran partout, 390 compris (n° 28) ; la largeur d'une case est posée par la feuille (24 px au moins),
+   la case prend toute la hauteur de la ligne au doigt */
+.cal-f-semaines { scroll-snap-type: x proximity; scrollbar-width: thin; }
+.cal-f-sem { box-sizing: border-box; padding: 0; scroll-snap-align: start; }
+/* paquet D n° 3 : la case dessinée est dans le bouton, qui couvre aussi l'écart (cible = toute la colonne) */
+.cal-f-sem-c { box-sizing: border-box; min-width: 0; }
+.cal-f-sem[aria-pressed='true'] > .cal-f-sem-c { border-color: rgb(var(--cave-50)); }
+.cal-f-sem[data-dans] > .cal-f-sem-c { background: rgb(var(--cave-850)); }
+.cal-f-sem:focus-visible { outline: none; }
+.cal-f-sem:focus-visible > .cal-f-sem-c { outline: 2px solid rgb(var(--cave-50)); outline-offset: 1px; }
+.cal-f-sem-n { font-size: 14px; line-height: 18px; font-weight: 700; }
+.cal-f-sem-j { font-size: 12px; line-height: 14px; color: rgb(var(--cave-200)); white-space: nowrap; }
+.cal-f-etroit .cal-f-sem { min-height: 48px; }
+.cal-f-etroit .cal-f-sem-c { border-radius: 8px; }
+.cal-f-etroit .cal-f-sem-n { font-size: 12px; letter-spacing: -0.02em; }
+@media (min-width: 1024px) {
+  /* au 1280 le champ CHF reste court : un repli, pas une ligne de 1 200 px */
+  .cal-feuille .cal-f-chf { width: 8rem; }
+}
+
+/* Paysage (844 × 390) : le corps se resserre et défile au-dessus du pied (Ajouter), qui reste fixe ; la rangée « Quoi » tient sur une ligne. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .cal-feuille-corps.cal-feuille-corps > :not([hidden]) ~ :not([hidden]) { margin-top: 6px; }
+  .cal-feuille-corps [data-feuille-quoi] { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .cal-feuille-corps [data-feuille-montant] > span:first-child { width: auto; margin-right: 2px; }
+  .cal-f-sem { min-height: 40px; }
+}
+
+/* « Lier à un brassin, un client » (f5-a, D-126, CRITIQUE-5 n° 6) : des puces groupées, sans clavier, 44 px au doigt */
+.cal-lier-g { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 4px 2px 6px; }
+.cal-lier-t { width: 100%; font-size: 14px; font-weight: 600; color: rgb(var(--cave-200)); }
+.cal-lier-p {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 44px; max-width: 100%; padding: 0 12px; border-radius: 22px;
+  border: 1.5px solid rgb(var(--cave-600)); background: transparent; color: rgb(var(--cave-50)); font-size: 15px; font-weight: 600;
+}
+.cal-lier-p > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-lier-p:active { background: rgb(var(--cave-700)); }
+/* lot A (18.11, n° 2) : les mêmes puces, dépliées sous les boutons de la fiche par « Lier » */
+.cal-det-lier { margin-top: 8px; border-top: 1px solid rgb(var(--cave-700)); padding-top: 6px; }
+
+/* La vue Liste ouverte sur la poche « Sans date » : la poche s'arrête sous l'en-tête collé, pas dessous. */
+.cal-liste [data-poche] { scroll-margin-top: 200px; }
+.cal-liste [data-poche]:focus { outline: none; }
+.cal-liste [data-poche]:focus-visible { outline: 2px solid rgb(var(--cave-50)); outline-offset: 2px; }
+
+/* PC-NOTE-16 (paquet E) : la puce de jours actifs choisie (« 3 j ») se distinguait mal : coche et gras, sans changer son nom accessible */
+.cal-jour-puce[aria-pressed="true"]::before { content: "✓ "; }
+
+/* D404 : la durée s'étire au geste de la frise B. Piste de 44 px (la cible), barre de la teinte de la rangée, bord de fin rond ; les mois sous
+   les repères. `touch-action: none` sur la seule piste (R13) ; au lâcher, l'échelle se recale en 200 ms (R10). */
+.cal-f-duree-piste { position: relative; height: 62px; touch-action: none; user-select: none; overflow: hidden; border-radius: 8px; background: rgb(var(--cave-950)); border: 1px solid rgb(var(--cave-700)); cursor: ew-resize; }
+.cal-f-duree-rep { position: absolute; top: 8px; height: 30px; width: 1px; background: rgb(var(--cave-700)); transition: left 200ms ease-out; }
+.cal-f-duree-rep-mois { background: rgb(var(--cave-400)); }
+/* CHV-19 : les mois sous la piste (« nov. déc. janv. ») : 12 px (11 était sous le plancher du corps lisible), contraste ≥ 4,5:1 sur le fond de la piste, deux thèmes (étape CH-V19) */
+.cal-f-duree-rep small { position: absolute; top: 33px; left: 3px; font-size: 12px; font-weight: 500; line-height: 16px; color: rgb(var(--cave-100)); white-space: nowrap; }
+.cal-f-duree-barre { position: absolute; top: 15px; height: 16px; border-radius: 6px; background: var(--c); transition: left 200ms ease-out, width 200ms ease-out; }
+.cal-f-duree-fin { position: absolute; top: 1px; width: 44px; height: 44px; margin-left: -22px; transition: left 200ms ease-out; }
+.cal-f-duree-fin::after { content: ""; position: absolute; left: 13px; top: 11px; width: 18px; height: 22px; border-radius: 9px; background: rgb(var(--cave-50)); border: 3px solid var(--c); box-sizing: border-box; }
+.cal-f-duree-fin:focus { outline: none; }
+.cal-f-duree-fin:focus-visible::after { outline: 2px solid rgb(var(--cave-50)); outline-offset: 2px; }
+.cal-f-duree-poi { position: absolute; top: 1px; width: 44px; height: 44px; margin-left: -22px; transition: left 200ms ease-out; }
+.cal-f-duree-poi::after { content: ""; position: absolute; left: 13px; top: 11px; width: 18px; height: 22px; border-radius: 9px; background: rgb(var(--cave-50)); border: 3px solid var(--c); box-sizing: border-box; }
+.cal-f-duree-poi:focus { outline: none; }
+.cal-f-duree-poi:focus-visible::after { outline: 2px solid rgb(var(--cave-50)); outline-offset: 2px; }
+.cal-f-duree-tenue .cal-f-duree-poi { transition: none; }
+@media (prefers-reduced-motion: reduce) { .cal-f-duree-poi { transition: none; } }
+.cal-f-duree-tenue .cal-f-duree-rep, .cal-f-duree-tenue .cal-f-duree-barre, .cal-f-duree-tenue .cal-f-duree-fin { transition: none; }
+@media (prefers-reduced-motion: reduce) { .cal-f-duree-rep, .cal-f-duree-barre, .cal-f-duree-fin { transition: none; } }
+/* CAL-FICHE-FRISE (22.11) : la même frise au jour dans la fiche d'une chose ; un trait court par jour, plein aux lundis et au 1er du mois */
+.cal-f-duree-jour .cal-f-duree-rep-court { top: 16px; height: 14px; background: rgb(var(--cave-800)); }

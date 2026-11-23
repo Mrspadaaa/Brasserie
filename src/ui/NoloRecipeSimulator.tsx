@@ -1,0 +1,251 @@
+import React, { createContext, useCallback, useContext, useEffect, useId, useMemo, useState } from 'react';
+import { RotateCcw, Sparkles } from 'lucide-react';
+import type { NoloProcess, NoloScience } from '../../functions/src/noloSchema';
+import type { HopKnowledge } from '../../functions/src/hopPredictionSchema';
+import type { HopRange } from '../../functions/src/hopIndexSchema';
+import type { NoloBound } from '../../functions/src/noloCore';
+import type { TrialRecipe } from '../domain/hopIndex/trials';
+import { evaluateNoloRecipe } from '../domain/nolo';
+import { noloProcessLabels } from '../domain/noloPresentation';
+import { noloYeastCandidates } from '../domain/noloYeastSelection';
+import { noloWaterModelIssue } from '../domain/noloWaterModelIssue';
+import { BrewingMath, kettleHopGrams } from '../services/brewingMath';
+import { prepareNoloRecipe, adjustNoloRecipe, applyNoloRecipeProposal, noloRecipeProposalBasis,
+  type NoloRecipeSettings, type NoloRecipeProposal } from '../domain/noloRecipeSolver';
+import { Input } from './Input';
+import { parseDecimal, useNumericDraft } from './numericInput';
+import { BORNES_PROCEDE } from '../domain/bornesProcede';
+import { noloDisplayRangeLabel } from './NoloAlcoholChart';
+import { HopSourceLink } from './hopIndex/HopTechnicalPanel';
+import './nolo-simulator.css';
+import { refCurseurNatif } from './geste';
+
+const number = (value: number, digits = 2) => value.toLocaleString('fr-FR', { maximumFractionDigits: digits });
+const emptyKnowledge: HopKnowledge[] = [];
+const DraftValidity = createContext<(label: string, invalid: boolean) => void>(() => {});
+
+function Setting({ label, value, unit, onChange, min = 0, max, digits = 3, slider }: {
+  label: string; value: number | null; unit?: string; onChange: (n: number) => void;
+  min?: number; max?: number; digits?: number; slider?: { min: number; max: number; step: number };
+}) {
+  const id = useId();
+  const report = useContext(DraftValidity);
+  const { draft, push, settle } = useNumericDraft(value == null ? undefined : Number(value.toFixed(digits)),
+    n => { if (typeof n === 'number' && Number.isFinite(n) && n >= min && (max == null || n <= max)) onChange(n); }, { emptyValue: undefined });
+  const parsed = parseDecimal(draft);
+  const invalid = parsed == null || parsed < min || (max != null && parsed > max);
+  useEffect(() => { report(label, invalid); return () => report(label, false); }, [report, label, invalid]);
+  return <div className="nolo-setting"><label htmlFor={id}>{label}</label><span className="nolo-setting-value">
+    <Input id={id} name={`nolo_${id}`} type="text" inputMode="decimal" enterKeyHint="next" autoComplete="off"
+      autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
+      value={draft} aria-describedby={unit ? id + '-unit' : undefined} aria-invalid={invalid || undefined}
+      required placeholder="À préciser" className="nolo-number" onFocus={event => event.currentTarget.select()}
+      onChange={event => push(event.target.value)} onBlur={() => { if (!invalid) settle({ min, max }); }}/>
+    {unit && <span id={id + '-unit'}>{unit}</span>}
+  </span>{slider && value != null && <input ref={refCurseurNatif} type="range" name="nolo_simulation_range" autoComplete="off" data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
+    aria-label={label + ' — curseur'} className="nolo-knob-slider" value={value} min={slider.min} max={Math.max(slider.max, value)} step={slider.step}
+    onChange={event => onChange(Number(event.target.value))}/>}</div>;
+}
+
+function RangeSetting({ label, value, unit, onChange, min = 0, max = 100, digits = 2 }: {
+  label: string; value: HopRange; unit: string; onChange: (range: HopRange) => void;
+  min?: number; max?: number; digits?: number;
+}) {
+  return <fieldset className="nolo-range-setting"><legend>{label} · {unit}</legend><div>
+    <Setting label={label + ' minimum'} value={value.min} min={min} max={max} digits={digits} onChange={n => onChange({ ...value, min: n })}/>
+    <span aria-hidden="true">–</span>
+    <Setting label={label + ' maximum'} value={value.max} min={min} max={max} digits={digits} onChange={n => onChange({ ...value, max: n })}/>
+  </div></fieldset>;
+}
+
+/** k1 point 6 : un manque qui tient au moteur (souche ou procédé sans relation) n'est pas une donnée que le brasseur peut saisir ; on ne le renvoie pas à « compléter ». */
+const manqueDuMoteur = (manque?: string) => !!manque && /absente? pour cette souche|absent de cette édition/i.test(manque);
+
+/** T3B-7 (k2 point 17) : « PPG » (points par livre et par gallon) est une unité de calculette, pas un mot de brasseur. Le moteur garde sa phrase ; l'écran dit « potentiel d'extrait ». */
+export const enMotsDeBrasseur = (message: string) => message
+  .replace(/les potentiels PPG/gi, 'le potentiel d’extrait')
+  .replace(/(p)otentiels? PPG/gi, (_tout, p: string) => `${p}otentiel d’extrait`);
+
+/** A bounded interval on an honest shared scale; the goal is a limit, not a mean. */
+function SimulationRange({ bound, target, current, manque }: { bound: NoloBound; target: number; current: NoloBound | null; manque?: string }) {
+  const limit = Math.max(.6, Math.ceil(Math.max(bound.max ?? target, target) * 10) / 10 + .1);
+  const position = (n: number) => Math.min(100, Math.max(0, n / limit * 100));
+  const crosses = bound.max != null && bound.min <= target && bound.max > target;
+  return <figure className="nolo-simulation-range" aria-label="Résultat de la simulation NOLO" data-nolo-min={bound.min} data-nolo-max={bound.max ?? 'unknown'}>
+    <figcaption><span>Alcool simulé</span><strong>{noloDisplayRangeLabel(bound)}</strong></figcaption>
+    {bound.max != null && <>
+      <div className="nolo-simulation-track" role="img" aria-label={`${noloDisplayRangeLabel(bound)} ; cible au maximum ${number(target)} % vol.`}>
+        <span className="nolo-simulation-safe" style={{ width: position(target) + '%' }}/>
+        <span className="nolo-simulation-band" style={{ left: position(bound.min) + '%', width: Math.max(.4, position(bound.max) - position(bound.min)) + '%' }}/>
+        <span className="nolo-simulation-target" style={{ left: position(target) + '%' }}/>
+      </div>
+      <div className="nolo-simulation-axis"><span>0 %</span><span>{number(limit)} %</span></div>
+    </>}
+    <p className={bound.min > target || crosses ? 'text-attention' : 'text-cave-200'}>
+      <span className="nolo-target-legend">Cible ≤ {number(target)} %</span> ·{' '}
+      {bound.max == null ? 'Compléter les points signalés pour calculer la plage.' : bound.min > target ? 'Toute la plage dépasse la consigne.' : crosses ? 'La borne haute dépasse la consigne.' : 'Sous la consigne avec ces réglages.'}
+    </p>
+    {/* TE-14 : « Données manquantes » seul ne disait pas lesquelles ; on nomme la prochaine donnée à compléter (celle que le moteur demande). */}
+    <p className="text-cave-400">Recette actuelle : {current && (current.max !== null || current.min > 0) ? noloDisplayRangeLabel(current)
+      : manqueDuMoteur(manque) ? 'pas de projection pour cette levure et ce procédé.'
+      : `à compléter${manque ? ` — ${enMotsDeBrasseur(manque.charAt(0).toLowerCase() + manque.slice(1))}` : ' (données de la recette manquantes)'}`}</p>
+    <p className="sr-only" aria-live="polite" aria-atomic="true">Estimation : {noloDisplayRangeLabel(bound)} ; cible au maximum {number(target)} % vol.{bound.max != null && bound.max > target ? ' Dépassement de la cible.' : ''}</p>
+  </figure>;
+}
+
+/** `children` : le reste de l'écran NOLO (outils, catalogue, bilan), rangé avec les réglages derrière le seul dépliant du premier plan (T3B-7). */
+export function NoloRecipeSimulator({ recipe, onChange, science, saved = emptyKnowledge, variant = false, children }: {
+  recipe: TrialRecipe; onChange: (next: TrialRecipe) => void; science: NoloScience; saved?: HopKnowledge[]; variant?: boolean; children?: React.ReactNode;
+}) {
+  const [process, setProcess] = useState<NoloProcess>(recipe.nolo?.process ?? 'restricted');
+  const [target, setTarget] = useState(recipe.nolo?.targetAbvPct ?? .5);
+  const [yeastId, setYeastId] = useState(recipe.yeast.hopIndexId ?? '');
+  // Wizard build() creates new objects on every keystroke. A name edit has no
+  // brewing effect; keep it outside the calculation and merge it on application.
+  const recipeInputsKey = noloRecipeProposalBasis({ ...recipe, name: '' });
+  const sourceRecipe = useMemo(() => JSON.parse(recipeInputsKey) as TrialRecipe, [recipeInputsKey]);
+  const candidates = useMemo(() => noloYeastCandidates({ ...sourceRecipe, nolo: { ...sourceRecipe.nolo!, process } }, science, saved), [sourceRecipe, process, science, saved]);
+  const selected = candidates.find(candidate => candidate.strain.yeastId === yeastId) ?? candidates[0];
+  const [edited, setEdited] = useState<NoloRecipeProposal | null>(null);
+  const [notice, setNotice] = useState('');
+  const [error, setError] = useState('');
+  const [resetKey, setResetKey] = useState(0);
+  const [invalidFields, setInvalidFields] = useState<string[]>([]);
+  const reportValidity = useCallback((label: string, invalid: boolean) => setInvalidFields(previous =>
+    invalid === previous.includes(label) ? previous : invalid ? [...previous, label] : previous.filter(item => item !== label)), []);
+  const prepared = useMemo(() => {
+    if (!selected) return { proposal: null, error: 'Aucune souche documentée pour ce procédé. Choisir une autre méthode ou compléter les références.' };
+    try { return { proposal: prepareNoloRecipe(sourceRecipe, science, selected.strain, { process, targetAbvPct: target }), error: '' }; }
+    catch (cause) { return { proposal: null, error: cause instanceof Error ? cause.message : 'Recette à compléter pour préparer la simulation.' }; }
+  }, [sourceRecipe, science, selected, process, target]);
+  const proposal = edited ?? prepared.proposal;
+  const stale = proposal != null && proposal.basis !== recipeInputsKey;
+  const proposedWater = (() => {
+    const next = proposal?.recipe;
+    const plan = next?.waterPlan;
+    if (!next || !plan || next.nolo?.process === 'secondRunnings') return null;
+    const grainKg = next.fermentables.filter(f => f.kind === 'grain' && (f.use ?? 'empatage') === 'empatage')
+      .reduce((sum, f) => sum + f.weightKg, 0);
+    const ratio = grainKg > 0 ? plan.mashWaterL / grainKg : null;
+    const fit = next.brewhouse?.equipment && ratio !== null && next.nolo?.process !== 'coldExtraction'
+      ? BrewingMath.waterVolumes(grainKg, next.volumeL, next.brewhouse, next.mash?.spargeType,
+          next.boilMin, kettleHopGrams(next.hops), {
+            manualWaterSplit: { mashWaterL: plan.mashWaterL, spargeWaterL: plan.spargeWaterL }
+          }) : null;
+    return { mashL: plan.mashWaterL, spargeL: plan.spargeWaterL, ratio, fit,
+      modelIssue: ratio !== null ? noloWaterModelIssue(next.nolo, ratio) : undefined,
+      acidPlanned: !!plan.acid };
+  })();
+  const waterBlocked = proposedWater?.fit?.planningStatus === 'invalid' || proposedWater?.fit?.planningStatus === 'impossible';
+  // k2 point 16 : le dépliant s'ouvre seul quand une saisie est invalide, ou quand le plan d'eau est LE SEUL motif du bouton grisé (sinon la liste d'alertes du premier plan
+  // dit déjà le blocage — « Volume avant ébullition supérieur… » — et le détail reste replié : la capture du 20.11 le montrait ouvert, donc un cockpit).
+  const motifEauSeul = waterBlocked && (proposal?.blocking.length ?? 0) === 0;
+  const alerteEau = waterBlocked ? <p role="alert" className="text-alert-strong">Plan d’eau incompatible avec le matériel : {proposedWater!.fit!.issues.join(' ')}</p> : null;
+  const evalCourante = useMemo(() => { try { return evaluateNoloRecipe(sourceRecipe, saved) ?? null; } catch { return null; } }, [sourceRecipe, saved]);
+  const current = evalCourante?.projection ?? null;
+  const choose = () => { setEdited(null); setError(''); setNotice(''); };
+  const adjust = (patch: Partial<NoloRecipeSettings>) => {
+    if (!proposal || stale) return;
+    try { setEdited(adjustNoloRecipe(proposal, patch, science)); setError(''); setNotice(''); }
+    catch (cause) { setError(cause instanceof Error ? cause.message : 'Vérifier ce réglage.'); }
+  };
+  const apply = () => {
+    if (!proposal || stale || invalidFields.length || waterBlocked) return;
+    try {
+      const next = applyNoloRecipeProposal(recipe, { ...proposal, basis: noloRecipeProposalBasis(recipe),
+        sourceRecipe: recipe, recipe: { ...proposal.recipe, name: recipe.name } });
+      onChange(next);
+      setEdited(null);
+      setError('');
+      setNotice(`Programme appliqué à la ${variant ? 'variante' : 'recette'}. Les quantités, paliers et consignes restent modifiables.`);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Impossible d’appliquer cette simulation.'); }
+  };
+  const s = proposal?.settings;
+  const baseGrainKg = proposal?.sourceRecipe.fermentables.filter(f => (f.kind ?? 'grain') === 'grain' && f.use !== 'fermentation').reduce((sum, f) => sum + f.weightKg, 0) ?? 0;
+  return <DraftValidity.Provider value={reportValidity}><section key={resetKey} className="nolo-simulator" aria-label="Simulateur de recette NOLO">
+    <div className="nolo-solver-goal">
+      <label>Procédé<select aria-label="Procédé à simuler" value={process} onChange={event => { setProcess(event.target.value as NoloProcess); setYeastId(''); choose(); }}>
+        {Object.entries(noloProcessLabels).map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+      </select></label>
+      <Setting label="Consigne d’alcool" value={target} unit="%" max={.5} onChange={value => { setTarget(value); choose(); }}/>
+    </div>
+    <label className="nolo-solver-yeast">Levure · {candidates.length} propositions pour ce procédé
+      <select aria-label="Levure de la simulation" value={selected?.strain.yeastId ?? ''} onChange={event => { setYeastId(event.target.value); choose(); }}>
+        {candidates.map(({ strain }) => <option key={strain.yeastId} value={strain.yeastId}>{strain.name}</option>)}
+      </select>
+    </label>
+    {selected && <p className="nolo-solver-reason">{selected.reason}</p>}
+    {(error || prepared.error) && <p role="alert" className="nolo-error">{error || prepared.error}</p>}
+    {stale && <p role="alert" className="nolo-error">La recette a changé. Réinitialiser l’essai pour reprendre ses nouvelles données.</p>}
+    {invalidFields.length > 0 && <p role="alert" className="nolo-error">Saisie à corriger : {invalidFields.join(', ')}. Entrer un nombre dans les limites du champ.</p>}
+    {proposal && s && <>
+      <SimulationRange bound={!invalidFields.length && proposal.result?.projection || { min: 0, max: null, kind: 'unknown', confidence: 'low' }} target={target} current={current} manque={evalCourante?.nextAction}/>
+      {proposal.blocking.length > 0 && <ul role="alert" className="nolo-solver-errors">{proposal.blocking.map((message, index) => <li key={index}>{enMotsDeBrasseur(message)}</li>)}</ul>}
+      <div className="nolo-solver-actions">
+        <button type="button" className="nolo-solver-apply bg-ebc-straw" disabled={stale || !!error || invalidFields.length > 0 || proposal.blocking.length > 0 || waterBlocked} onClick={apply}><Sparkles size={14} aria-hidden="true"/>Appliquer à la {variant ? 'variante' : 'recette'}</button>
+        <button type="button" className="nolo-solver-reset" onClick={() => { choose(); setResetKey(key => key + 1); }} title="Revenir aux réglages préremplis depuis la recette et la consigne"><RotateCcw size={13} aria-hidden="true"/>Réinitialiser</button>
+      </div>
+      {/* TE-15, T3B-7 (lecture étroite, 2e passe) : au premier plan, le procédé, la consigne, la levure, la plage et « Appliquer » ; TOUT le reste (réglages préremplis, programme, champs,
+          hypothèses, outils, catalogue, bilan : 7 dépliants le 20.11) tient derrière un seul dépliant, ouvert seul si une saisie est invalide ou l'eau bloquée. Réversible : défaire le `<details>`. */}
+      <details className="nolo-solver-details nolo-solver-hypotheses" open={invalidFields.length > 0 || motifEauSeul || undefined}>
+      <summary>Réglages et détails du calcul · densité {number(s.ogSg, 3)} · atténuation <span className="nolo-sans-coupure">{number(s.attenuationPct.min, 1)}–{number(s.attenuationPct.max, 1)}&nbsp;%</span></summary>
+      <div className="nolo-solver-knobs" aria-label="Réglages préremplis de la simulation">
+        <Setting label="Densité initiale visée" value={s.ogSg} min={1} max={1.3} digits={3} slider={{ min: 1, max: Math.max(1.025, s.ogSg * 1.02), step: .001 }} onChange={ogSg => adjust({ ogSg })}/>
+        {process !== 'secondRunnings' && <Setting label="Charge de grain" value={baseGrainKg * s.grainScale} unit="kg" max={100000} digits={3} onChange={value => { if (baseGrainKg > 0) adjust({ grainScale: value / baseGrainKg }); }}/ >}
+        <RangeSetting label="Atténuation envisagée" value={s.attenuationPct} unit="%" onChange={attenuationPct => adjust({ attenuationPct })}/>
+        <Setting label="Température de fermentation" value={s.fermentationTempC} unit="°C" max={BORNES_PROCEDE.fermentationTempC.max} digits={1} onChange={fermentationTempC => adjust({ fermentationTempC })}/>
+        <Setting label="Variation de l’extrait" value={s.extractTolerancePct} unit="± %" max={80} digits={1} onChange={extractTolerancePct => adjust({ extractTolerancePct })}/>
+        {process === 'arrested' && s.stopSg && <RangeSetting label="Densité d’arrêt" value={s.stopSg} unit="SG" min={1} max={1.3} digits={4} onChange={stopSg => adjust({ stopSg })}/>}
+        {process === 'dealcoholized' && <>
+          {s.removedPct && <RangeSetting label="Retrait de l’alcool" value={s.removedPct} unit="%" digits={1} onChange={removedPct => adjust({ removedPct })}/>}
+          <Setting label="Volume après traitement" value={s.finalVolumeL} unit="L" max={100000} onChange={finalVolumeL => adjust({ finalVolumeL })}/>
+        </>}
+        {process === 'coldContact' && <Setting label="Contact à froid" value={s.contactHours} unit="h" max={1000} onChange={contactHours => adjust({ contactHours })}/>}
+        {['coldExtraction', 'secondRunnings'].includes(process) && <>
+          <Setting label="Température d’extraction" value={s.extractionTempC} unit="°C" max={100} onChange={extractionTempC => adjust({ extractionTempC })}/>
+          <Setting label="Durée d’extraction" value={s.extractionHours} unit="h" max={1000} onChange={extractionHours => adjust({ extractionHours })}/>
+        </>}
+        {process === 'secondRunnings' && <Setting label="Volume de récupération visé" value={s.recoveredVolumeL} unit="L" max={100000} onChange={recoveredVolumeL => adjust({ recoveredVolumeL })}/>}
+      </div>
+      <p className="nolo-solver-confidence"><strong>Plage de simulation</strong> · {proposal.confidence.level === 'documented' ? 'atténuation publiée, extrait à confirmer par un pilote.' : 'atténuation et extrait à calibrer sur un pilote.'}</p>
+      {proposedWater && <div role="region" aria-label="Eau proposée pour le scénario NOLO" className="rounded-control border border-cave-700 bg-cave-850/70 px-2 py-1.5 text-xs text-cave-200 space-y-0.5">
+        <p><strong className="text-cave-50">Eau proposée</strong> · Empâtage <span className="reading">{number(proposedWater.mashL, 1)} L</span> + rinçage <span className="reading">{number(proposedWater.spargeL, 1)} L</span>
+          {proposedWater.fit?.spargeHotL != null && <> · {number(proposedWater.fit.spargeHotL, 1)} L à chaud</>}</p>
+        {proposedWater.ratio !== null && <p>Ratio atteint <strong className="reading text-cave-50">{number(proposedWater.ratio)} L/kg</strong>{Math.abs(proposedWater.ratio - s.mashRatioLKg) > 0.05 && <> · consigne {number(s.mashRatioLKg)} L/kg adaptée par le matériel</>}.</p>}
+        {proposedWater.modelIssue && <p className="text-ebc-amber">{proposedWater.modelIssue} {proposedWater.acidPlanned ? 'Vérifier la dose d’acide retenue par mesure.' : 'Aucune dose d’acide calculée ; mesurer ou titrer avant de doser.'}</p>}
+        {!proposedWater.fit && !proposal.recipe.brewhouse?.equipment && <p className="text-ebc-amber">Matériel non figé : vérifier la capacité de cette répartition avant le brassin.</p>}
+        {alerteEau}
+        {proposedWater.fit?.planningStatus === 'exception' && <p className="text-ebc-amber">{proposedWater.fit.issues.join(' ')}</p>}
+      </div>}
+      <details className="nolo-solver-details"><summary>Programme prérempli · {number(s.yeastQty)} {s.yeastUnit} · {number(s.fermentationDays)} j</summary>
+        <div className="nolo-solver-knobs">
+          <Setting label="Quantité de levure" value={s.yeastQty} unit={s.yeastUnit} max={100000} onChange={yeastQty => adjust({ yeastQty })}/>
+          <Setting label="Durée de fermentation prévue" value={s.fermentationDays} unit="j" max={BORNES_PROCEDE.fermentationJours.max} onChange={fermentationDays => adjust({ fermentationDays })}/>
+          {!['coldExtraction', 'secondRunnings'].includes(process) && <>
+            <Setting label="Palier d’empâtage" value={s.mashTempC} unit="°C" max={BORNES_PROCEDE.empatageTempC.max} onChange={mashTempC => adjust({ mashTempC })}/>
+            <Setting label="Durée du palier" value={s.mashMinutes} unit="min" max={BORNES_PROCEDE.empatageDureeMin.max} onChange={mashMinutes => adjust({ mashMinutes })}/>
+            <Setting label="Eau d’empâtage par kg" value={s.mashRatioLKg} unit="L/kg" max={BORNES_PROCEDE.rapportEmpatage.max} onChange={mashRatioLKg => adjust({ mashRatioLKg })}/>
+          </>}
+          <Setting label="Efficacité envisagée" value={s.efficiencyPct} unit="%" min={1} max={BORNES_PROCEDE.rendementPct.max} onChange={efficiencyPct => adjust({ efficiencyPct })}/>
+          <Setting label="Réserve pour les ajouts" value={s.reserveAbvPct} unit="% vol." max={.5} onChange={reserveAbvPct => adjust({ reserveAbvPct })}/>
+        </div>
+        <p>Température et durée sont des consignes de conduite. Leur modification ne donne pas artificiellement un taux d’alcool.</p>
+      </details>
+      <details className="nolo-solver-details"><summary>Champs de la recette · {proposal.changes.length} changement{proposal.changes.length > 1 ? 's' : ''} proposé{proposal.changes.length > 1 ? 's' : ''}</summary>
+        <table aria-label="Changements proposés dans la recette NOLO"><thead><tr><th>Champ</th><th>Actuel</th><th>Proposé</th></tr></thead>
+          <tbody>{proposal.changes.map((change, index) => <tr key={index}><th scope="row">{change.label}</th><td>{change.before}</td><td>{change.after}</td></tr>)}</tbody>
+        </table>
+      </details>
+      <details className="nolo-solver-details"><summary>Hypothèses, limites et sources{proposal.warnings.length ? ` · ${proposal.warnings.length} point${proposal.warnings.length > 1 ? 's' : ''} à vérifier` : ''}</summary>
+        <p><strong>{proposal.confidence.label}</strong> · {proposal.confidence.detail}</p>
+        <ul>{[...proposal.warnings, ...proposal.assumptions].map((message, index) => <li key={index}>{message}</li>)}</ul>
+        <p>Intervalle de simulation, sans probabilité statistique attribuée. Un pilote mesuré permet de resserrer les hypothèses ; l’analyse d’alcool vérifie le produit final.</p>
+        {proposal.sources.map((source, index) => <HopSourceLink key={index} source={source}/>)}
+      </details>
+      {children}
+      </details>
+    </>}
+    {!(proposal && s) && children}
+    {notice && <p role="status" className="nolo-solver-notice">{notice}</p>}
+  </section></DraftValidity.Provider>;
+}

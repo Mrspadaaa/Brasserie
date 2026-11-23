@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ok : Comparer, usage sans voie (clé = data-col)</title>
+<style>body{font:16px sans-serif;margin:8px}li{list-style:none;padding:6px;border:1px solid #888;margin:4px 0}span,button{margin-right:8px}</style></head>
+<body data-route="comparer">
+<!-- Témoin du contrôle usage/intensité (mode --parcours) : ok : Comparer, usage sans voie (clé = data-col) -->
+<div><button data-col="hop-a"><span data-houblon="Hop A">Hop A</span><span data-role="usage" data-usage="aromatique" data-source="fournisseur">aromatique</span></button>
+<button data-col="hop-b"><span data-houblon="Hop B">Hop B</span><span data-role="usage" data-usage="double" data-source="règle">mixte</span></button></div>
+<script>
+  window.__parcours = {
+    regles: { hopRole: (k) => k === 'hop-a'
+        ? { value: 'aromatique', source: 'fournisseur : fiche fournisseur' }
+        : { value: 'double', source: 'règle : règle rôle-α v1 (prototype, à valider)' } },
+  };
+</script>
+</body>
+</html>

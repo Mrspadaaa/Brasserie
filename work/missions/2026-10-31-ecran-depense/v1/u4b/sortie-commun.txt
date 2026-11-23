@@ -1,0 +1,13 @@
+mots       OK
+couleurs   OK
+au-style   sauté (profil sans-houblons : compare à la plage d'un style les arômes d'un houblon : aucun houblon sur cet écran)
+survol     OK
+blocs      OK
+contraste  OK
+fiche      sauté (profil sans-houblons : l'appui long sur un houblon ouvre sa fiche : aucun nom de houblon sur cet écran)
+standard   OK
+trait      sauté (profil sans-houblons : pictos d'arôme au trait : aucune famille d'arômes sur cet écran)
+legende    sauté (profil sans-houblons : légende des familles d'arômes : aucune famille sur cet écran)
+parlant    OK
+brutes     OK
+COMMUN OK

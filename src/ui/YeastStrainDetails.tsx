@@ -1,0 +1,62 @@
+import { ChevronDown } from 'lucide-react';
+import type { YeastStrainInformation } from '../domain/yeastStrainInformation';
+import type { HopSource } from '../../functions/src/hopIndexSchema';
+import { yeastFactValue } from '../domain/yeastStrainInformation';
+import { yeastSourceTitle } from './YeastRecipeDossier';
+
+const isUrl = (value: string) => /^https?:\/\//.test(value.trim());
+function SourceLink({ source }: { source: HopSource }) {
+  // A title that is only a pasted URL reads as its short address; the link keeps the full one.
+  const label = `${source.author} · ${yeastSourceTitle(source.title, isUrl(source.title ?? '') ? source.title : isUrl(source.reference) ? source.reference : undefined)}`;
+  return isUrl(source.reference) ? <a className="yeast-source" href={source.reference} target="_blank" rel="noreferrer" title={source.reference}>{label}</a> : <span>{label}</span>;
+}
+
+/** A single closed row keeps practical manufacturer evidence available in every brewing view. */
+export function YeastStrainDetails({ information }: { information: YeastStrainInformation | null }) {
+  if (!information) return null;
+  const info = information;
+  const missing = info.facts.filter(f => !f.values.length).map(f => f.label);
+  const sourceLinks = [...new Map(info.sources.map(source => [source.reference, source])).values()];
+  // Each document is listed once; a value or description cites it by its number, or by name when it is not in the list.
+  const numbers = new Map(sourceLinks.map((source, index) => [source.reference, index + 1]));
+  const single = sourceLinks.length === 1;
+  const Mark = ({ source }: { source: HopSource }) => {
+    const number = numbers.get(source.reference);
+    if (!number) return <span className="block yeast-small"><SourceLink source={source} /></span>;
+    if (single) return null;
+    return isUrl(source.reference) ? <a className="yc-cite" href={source.reference} target="_blank" rel="noreferrer" title={source.title}>[{number}]</a>
+      : <span className="yc-cite" title={source.title}>[{number}]</span>;
+  };
+  const groups = [
+    { label: 'Préparer la levure', notes: info.practical.filter(n => n.phase === 'preparation') },
+    { label: 'Comportement et usages', notes: [...info.practical.filter(n => n.phase === 'fermentation'), ...info.behaviour] },
+    { label: 'Conserver le produit', notes: info.practical.filter(n => n.phase === 'storage') },
+  ];
+  return <details className="yeast-strain-details" data-yeast-information={info.yeastId}>
+    <summary>Fiche de la souche · repères pratiques<ChevronDown size={14} aria-hidden="true" /></summary>
+    <div>
+      <p className="yeast-small">{info.name} · {info.form ?? 'forme non documentée'}. Repères fabricant pour ce produit.</p>
+      <dl className="yeast-strain-facts">{info.facts.filter(f => f.values.length).map(fact => <div key={fact.key}>
+        <dt>{fact.label}</dt><dd>{[...new Set(fact.values.map(v => v.value))].join(' / ')}{fact.multiple && <span className="block yeast-small">Plusieurs valeurs publiées · voir les conditions</span>}</dd>
+      </div>)}</dl>
+      {missing.length > 0 && <p className="yeast-small" data-missing-facts>Non documenté : {missing.join(' · ')}.</p>}
+      <p className="yeast-small">L’atténuation dépend aussi du moût. La tolérance à l’alcool ne prédit pas le degré final. Un statut absent reste inconnu.</p>
+      {info.preparationWithheld ? <p className="yeast-notice">Confirmer la forme du produit avant d’utiliser son protocole de préparation.</p>
+        : !info.preparationDocumented && <p className="yeast-small">Préparation : suivre la notice du conditionnement ; aucun protocole propre à ce produit n’est renseigné ici.</p>}
+      {groups.filter(g => g.notes.length).map(group => <section key={group.label} aria-label={group.label}>
+        <h4>{group.label}</h4><dl className="yeast-strain-notes">{group.notes.map(note => <div key={note.id}><dt>{note.title}</dt><dd>{note.detail}</dd></div>)}</dl>
+      </section>)}
+      {info.documentary.length > 0 && <section aria-label="Descriptions du fabricant"><h4>Descriptions du fabricant</h4>
+        <dl className="yeast-strain-notes">{info.documentary.map((fact, i) => <div key={i}><dt>{fact.label}</dt><dd>{yeastFactValue(fact)}{fact.context ? ` · ${fact.context}` : ''} <Mark source={fact.source} /></dd></div>)}</dl>
+        {single && info.documentary.some(fact => numbers.has(fact.source.reference)) && <p className="yeast-small">Source commune : <SourceLink source={sourceLinks[0]} /></p>}
+        {!single && sourceLinks.length > 0 && <p className="yeast-small">Numéros : liste des sources sous « Conditions et sources des repères ».</p>}
+      </section>}
+      <details><summary>Conditions et sources des repères<ChevronDown size={14} aria-hidden="true" /></summary><div>
+        <p className="yeast-small">Les notices du lot et du conditionnement précisent l’utilisation. Ces informations n’attestent ni la viabilité du lot ni la fin de fermentation du brassin.</p>
+        <dl className="yeast-strain-notes">{info.facts.flatMap(f => f.values.map((v, i) => <div key={`${f.key}-${i}`}><dt>{f.label} · {v.value}</dt><dd>{v.reported}{v.condition ? ` · ${v.condition}` : ''} <Mark source={v.source} /></dd></div>))}</dl>
+        {sourceLinks.length > 0 && <div className="yc-citations" data-citations={sourceLinks.length}><span className="yc-citations-label">{single ? 'Source commune' : 'Sources'}</span>
+          <ol>{sourceLinks.map((source, index) => <li key={source.reference}>{!single && <span className="yc-cite-index">[{index + 1}] </span>}<SourceLink source={source} /></li>)}</ol></div>}
+      </div></details>
+    </div>
+  </details>;
+}

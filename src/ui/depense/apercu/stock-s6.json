@@ -1,0 +1,38 @@
+{
+ "_avertissement": "Stock SIMULÉ de la voie s6-fiche : aucune donnée réelle. Écrit par fixture-s6.test.ts.",
+ "articles": [
+  {
+   "id": "Target",
+   "ref": "MP-Target",
+   "name": "Target",
+   "unit": "g",
+   "category": "Houblon",
+   "alphaPct": 11.8,
+   "currentStock": 100,
+   "minStock": 0,
+   "reorder": false
+  },
+  {
+   "id": "Cascade US",
+   "ref": "MP-Cascade-US",
+   "name": "Cascade US",
+   "unit": "g",
+   "category": "Houblon",
+   "alphaPct": 6,
+   "currentStock": 200,
+   "minStock": 0,
+   "reorder": false
+  },
+  {
+   "id": "Münchner Malz",
+   "ref": "MP-Muenchner",
+   "name": "Münchner Malz",
+   "unit": "kg",
+   "category": "Malt",
+   "colorEbc": 20,
+   "currentStock": 5,
+   "minStock": 0,
+   "reorder": false
+  }
+ ]
+}

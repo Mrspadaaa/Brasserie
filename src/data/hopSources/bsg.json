@@ -1,0 +1,5663 @@
+{
+  "source": {
+    "id": "bsg",
+    "nom": "BSG / RahrBSG Hops",
+    "hote": "www.rahrbsg.com",
+    "type": "distributeur (États-Unis)",
+    "conditions": "robots.txt : Disallow /img/, /account/, /login/, /checkout/, /busca/, /quick-view/, /espiar/, /assets/, /arquivos/ ; aucune licence lue ; pages produits publiques",
+    "releve": "2026-10-26"
+  },
+  "fiches": [
+    {
+      "nom": "Amarillo",
+      "alias": [],
+      "varietyId": "beermaverick-amarillo",
+      "url": "https://www.rahrbsg.com/amarillo-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "8 - 11%",
+          "valeur": null,
+          "min": 8,
+          "max": 11,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "6 - 7%",
+          "valeur": null,
+          "min": 6,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "21 - 24%",
+          "valeur": null,
+          "min": 21,
+          "max": 24,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.5 - 1.9 mL/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 1.9,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1200 – 1600 lbs/acre",
+          "valeur": null,
+          "min": 1200,
+          "max": 1600,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Green Fruits",
+          "Tropical"
+        ],
+        "aromes": [
+          "Citrus",
+          "Green Fruits",
+          "Woody"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/1ec5bd2b-8424-4cd6-beae-db2fb18064f6___7c22f6b526f422dfd4f6a0df8c2a9bc3.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Amarillo",
+      "alias": [],
+      "varietyId": "beermaverick-amarillo",
+      "url": "https://www.rahrbsg.com/german-amarillo-enriched-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11.3%",
+          "valeur": 11.3,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Stone Fruits",
+          "Tropical"
+        ],
+        "aromes": [
+          "Grapefruit",
+          "floral",
+          "tropical"
+        ],
+        "origine": [
+          "Germany"
+        ]
+      }
+    },
+    {
+      "nom": "Amarillo",
+      "alias": [],
+      "varietyId": "beermaverick-amarillo",
+      "url": "https://www.rahrbsg.com/german-amarillo-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "8 - 11%",
+          "valeur": null,
+          "min": 8,
+          "max": 11,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "6 - 7%",
+          "valeur": null,
+          "min": 6,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "21 - 24%",
+          "valeur": null,
+          "min": 21,
+          "max": 24,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.5 - 1.9 mL/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 1.9,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Herbal",
+          "Stone Fruits"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/b6e7e1c6-3bd2-4701-b12a-93683d572c01___bde5e95e0a9f9292b1b2d45db739d74f.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Amira",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.rahrbsg.com/german-amira-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "9 - 11%",
+          "valeur": null,
+          "min": 9,
+          "max": 11,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "34%",
+          "valeur": 34,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.5 - 1.9 mL/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 1.9,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/763d4e28-255d-4591-8bce-a73031b44957___f45c5dfd0a433fbd492f000c3a412540.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Ariana",
+      "alias": [],
+      "varietyId": "beermaverick-ariana",
+      "url": "https://www.rahrbsg.com/german-ariana-enriched-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "22%",
+          "valeur": 22,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "2.75 mL/100g",
+          "valeur": 2.75,
+          "min": null,
+          "max": null,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "Data not yet available",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        }
+      },
+      "listes": {
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/a2015345-b7e4-4afc-a54c-6559a0603727___c8b22c8c99f111da28d610e73fc6115f.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Ariana",
+      "alias": [],
+      "varietyId": "beermaverick-ariana",
+      "url": "https://www.rahrbsg.com/german-ariana-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "10 - 13%",
+          "valeur": null,
+          "min": 10,
+          "max": 13,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4.5 - 6%",
+          "valeur": null,
+          "min": 4.5,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "40 - 42%",
+          "valeur": null,
+          "min": 40,
+          "max": 42,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.6 - 2.4 mL/100g",
+          "valeur": null,
+          "min": 1.6,
+          "max": 2.4,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "Data not yet available",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Herbal",
+          "Red Fruits"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/15b21464-73f0-471b-9c10-53e32574a587___70539282e420e6ed55bf6cabc24525c7.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Azacca",
+      "alias": [],
+      "varietyId": "beermaverick-azacca",
+      "url": "https://www.rahrbsg.com/azacca-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "14 - 16%",
+          "valeur": null,
+          "min": 14,
+          "max": 16,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 5.5%",
+          "valeur": null,
+          "min": 4,
+          "max": 5.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "38 - 45%",
+          "valeur": null,
+          "min": 38,
+          "max": 45,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.6 - 2.5 mL/100g",
+          "valeur": null,
+          "min": 1.6,
+          "max": 2.5,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Mid to late-season.",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "2,200 – 2,400 lbs/acre",
+          "valeur": null,
+          "min": 2.2,
+          "max": 2.4,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Stone Fruits",
+          "Tropical"
+        ],
+        "aromes": [
+          "Citrus",
+          "Stone Fruit",
+          "Mango"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/453ae1a7-38fc-4009-ae68-d790341e2d61___93db90e505551f96e5f246e0db845da8.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Callista",
+      "alias": [],
+      "varietyId": "beermaverick-callista",
+      "url": "https://www.rahrbsg.com/callista-enriched-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "7.5%",
+          "valeur": 7.5,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "2.8 mL/100g",
+          "valeur": 2.8,
+          "min": null,
+          "max": null,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle to late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "Data not yet available",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Red Fruits",
+          "Stone Fruits"
+        ],
+        "aromes": [
+          "Apricot",
+          "peach",
+          "red berries",
+          "passion fruit"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/a2015345-b7e4-4afc-a54c-6559a0603727___c8b22c8c99f111da28d610e73fc6115f.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Callista",
+      "alias": [],
+      "varietyId": "beermaverick-callista",
+      "url": "https://www.rahrbsg.com/german-callista-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "2 - 5%",
+          "valeur": null,
+          "min": 2,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 - 10%",
+          "valeur": null,
+          "min": 5,
+          "max": 10,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "15 - 21%",
+          "valeur": null,
+          "min": 15,
+          "max": 21,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.7 - 1.5 mL/100g",
+          "valeur": null,
+          "min": 0.7,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle to late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "Data not yet available",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Red Fruits",
+          "Stone Fruits",
+          "Tropical"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/333e802a-cd3c-44e2-9bae-4f1dd2ff6d54___aa062c6569068bbbe40b69874879cc60.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Cascade",
+      "alias": [],
+      "varietyId": "beermaverick-cascade",
+      "url": "https://www.rahrbsg.com/cascade-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4.5 - 7%",
+          "valeur": null,
+          "min": 4.5,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4.8 - 7%",
+          "valeur": null,
+          "min": 4.8,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "33 - 40%",
+          "valeur": null,
+          "min": 33,
+          "max": 40,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.7 - 1.4 mL/100g",
+          "valeur": null,
+          "min": 0.7,
+          "max": 1.4,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1400 – 1800 lbs/acre",
+          "valeur": null,
+          "min": 1400,
+          "max": 1800,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral"
+        ],
+        "aromes": [
+          "Citrus",
+          "Orange"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/31bf18d9-1f0b-4834-923a-c09d0558ef48___bcebcaa5ba5b379436ec927e608f0339.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Cascade",
+      "alias": [],
+      "varietyId": "beermaverick-cascade",
+      "url": "https://www.rahrbsg.com/cryo-cascade-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11 - 18%",
+          "valeur": null,
+          "min": 11,
+          "max": 18,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "11 - 17%",
+          "valeur": null,
+          "min": 11,
+          "max": 17,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "29 - 35%",
+          "valeur": null,
+          "min": 29,
+          "max": 35,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.5 - 4 mL/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 4,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Grassy",
+          "Herbal"
+        ],
+        "aromes": [
+          "Floral",
+          "Grapefruit",
+          "Grassy",
+          "Herbal",
+          "Pine"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "Yakima Chief Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/65a3ec55-f01c-46c9-b37a-da5e0fc004dc___15226b08ba433ff36ee8cd7d78c77859.pdf",
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/abc0a037-5ca9-4420-bcf1-0188430855bc___22153fa686cdb0364a48bd2669c7173e.pdf",
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/cb1608a9-a8dd-4431-8c3c-ab46199d2bdb___65dee94c90c5bbc6c26b7181f08524b0.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Cashmere",
+      "alias": [],
+      "varietyId": "beermaverick-cashmere",
+      "url": "https://www.rahrbsg.com/cashmere-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "7.7 - 9.1%",
+          "valeur": null,
+          "min": 7.7,
+          "max": 9.1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3.3 - 7.1%",
+          "valeur": null,
+          "min": 3.3,
+          "max": 7.1,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "22 - 24%",
+          "valeur": null,
+          "min": 22,
+          "max": 24,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.2 - 1.4 mL/100g",
+          "valeur": null,
+          "min": 1.2,
+          "max": 1.4,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle to middle-late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1800-2000 lbs/acre",
+          "valeur": null,
+          "min": 1800,
+          "max": 2000,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral",
+          "Green Fruits"
+        ],
+        "aromes": [
+          "Fruity",
+          "lemon",
+          "lime",
+          "peach",
+          "melon"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/131fdf01-1058-4d98-98a9-a46ff51f4b75___7757d9f06c3c5799e0b0b60106751b60.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Centennial",
+      "alias": [],
+      "varietyId": "beermaverick-centennial",
+      "url": "https://www.rahrbsg.com/centennial-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "9.5 - 11.5%",
+          "valeur": null,
+          "min": 9.5,
+          "max": 11.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3.5 - 4.5%",
+          "valeur": null,
+          "min": 3.5,
+          "max": 4.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "29 - 30%",
+          "valeur": null,
+          "min": 29,
+          "max": 30,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.5 - 2.3 mL/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 2.3,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1500 – 1750 lbs/acre",
+          "valeur": null,
+          "min": 1500,
+          "max": 1750,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Pine/Resin"
+        ],
+        "aromes": [
+          "Pine needle",
+          "citrus"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/09debb82-bb6f-4c90-8191-16b96250ed13___64916b2987526dd3c3c34009ef1ad028.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Centennial",
+      "alias": [],
+      "varietyId": "beermaverick-centennial",
+      "url": "https://www.rahrbsg.com/centennial-t-90-hop-pellets-44-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "9.5 - 11.5%",
+          "valeur": null,
+          "min": 9.5,
+          "max": 11.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3.5 - 4.5%",
+          "valeur": null,
+          "min": 3.5,
+          "max": 4.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "29 - 30%",
+          "valeur": null,
+          "min": 29,
+          "max": 30,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.5 - 2.3 mL/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 2.3,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1500 – 1750 lbs/acre",
+          "valeur": null,
+          "min": 1500,
+          "max": 1750,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Pine/Resin"
+        ],
+        "aromes": [
+          "Pine needle",
+          "citrus"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/09debb82-bb6f-4c90-8191-16b96250ed13___64916b2987526dd3c3c34009ef1ad028.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Challenger",
+      "alias": [],
+      "varietyId": "beermaverick-challenger",
+      "url": "https://www.rahrbsg.com/english-challenger-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "6.5 - 8.5%",
+          "valeur": null,
+          "min": 6.5,
+          "max": 8.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 4.5%",
+          "valeur": null,
+          "min": 4,
+          "max": 4.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "20 - 25%",
+          "valeur": null,
+          "min": 20,
+          "max": 25,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1 - 1.6 mL/100g",
+          "valeur": null,
+          "min": 1,
+          "max": 1.6,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1400-1800 kg/ha",
+          "valeur": null,
+          "min": 1400,
+          "max": 1800,
+          "unite": "kg/ha",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Red Fruits",
+          "Spicy"
+        ],
+        "origine": [
+          "United Kingdom"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/f981b452-04c3-4aa6-ae19-c8aa598fef61___cfa913172900e491bd81827b2604c3d8.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Chinook",
+      "alias": [],
+      "varietyId": "beermaverick-chinook",
+      "url": "https://www.rahrbsg.com/chinook-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11 - 14%",
+          "valeur": null,
+          "min": 11,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3 - 4%",
+          "valeur": null,
+          "min": 3,
+          "max": 4,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "29 - 35%",
+          "valeur": null,
+          "min": 29,
+          "max": 35,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.7 - 2.7 mL/100g",
+          "valeur": null,
+          "min": 1.7,
+          "max": 2.7,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1900 – 2100 lbs/acre",
+          "valeur": null,
+          "min": 1900,
+          "max": 2100,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Pine/Resin"
+        ],
+        "aromes": [
+          "Grapefruit",
+          "pine",
+          "resin"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/71cea65f-c409-4257-a18f-e422df276ebe___666281e2f33c7587b8d7862aca1f9b99.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Citra",
+      "alias": [],
+      "varietyId": "beermaverick-citra",
+      "url": "https://www.rahrbsg.com/citra-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11 - 13%",
+          "valeur": null,
+          "min": 11,
+          "max": 13,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3.5 - 4.5%",
+          "valeur": null,
+          "min": 3.5,
+          "max": 4.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "22 - 24%",
+          "valeur": null,
+          "min": 22,
+          "max": 24,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "2.2 - 2.8 mL/100g",
+          "valeur": null,
+          "min": 2.2,
+          "max": 2.8,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1200 – 1600 lbs/acre",
+          "valeur": null,
+          "min": 1200,
+          "max": 1600,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Stone Fruits",
+          "Tropical"
+        ],
+        "aromes": [
+          "Tropical",
+          "peach",
+          "passion fruit",
+          "guava"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "Yakima Chief Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/e32fa0f3-e9d4-4059-b650-87c41f564a10___dfc9ec62151f9963ab5e2e5c335bf203.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Citra",
+      "alias": [],
+      "varietyId": "beermaverick-citra",
+      "url": "https://www.rahrbsg.com/cryo-citra-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "21 - 28%",
+          "valeur": null,
+          "min": 21,
+          "max": 28,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 - 9%",
+          "valeur": null,
+          "min": 5,
+          "max": 9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "20 - 24%",
+          "valeur": null,
+          "min": 20,
+          "max": 24,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "2 - 6 mL/100g",
+          "valeur": null,
+          "min": 2,
+          "max": 6,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Pine/Resin",
+          "Stone Fruits",
+          "Tropical"
+        ],
+        "aromes": [
+          "Citrus",
+          "Stone Fruit",
+          "Tropical",
+          "Woody"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "Yakima Chief Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/65a3ec55-f01c-46c9-b37a-da5e0fc004dc___15226b08ba433ff36ee8cd7d78c77859.pdf",
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/abc0a037-5ca9-4420-bcf1-0188430855bc___22153fa686cdb0364a48bd2669c7173e.pdf",
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/cb1608a9-a8dd-4431-8c3c-ab46199d2bdb___65dee94c90c5bbc6c26b7181f08524b0.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Columbus",
+      "alias": [],
+      "varietyId": "beermaverick-columbus",
+      "url": "https://www.rahrbsg.com/cryo-columbus-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "23.4%",
+          "valeur": 23.4,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "8.9%",
+          "valeur": 8.9,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "27.5%",
+          "valeur": 27.5,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "2.5 mL/100g",
+          "valeur": 2.5,
+          "min": null,
+          "max": null,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Herbal",
+          "Stone Fruits",
+          "Tropical"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "Yakima Chief Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/65a3ec55-f01c-46c9-b37a-da5e0fc004dc___15226b08ba433ff36ee8cd7d78c77859.pdf",
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/abc0a037-5ca9-4420-bcf1-0188430855bc___22153fa686cdb0364a48bd2669c7173e.pdf",
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/cb1608a9-a8dd-4431-8c3c-ab46199d2bdb___65dee94c90c5bbc6c26b7181f08524b0.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Comet",
+      "alias": [],
+      "varietyId": "beermaverick-comet",
+      "url": "https://www.rahrbsg.com/comet-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "9 - 12%",
+          "valeur": null,
+          "min": 9,
+          "max": 12,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3 - 6%",
+          "valeur": null,
+          "min": 3,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "40 - 45%",
+          "valeur": null,
+          "min": 40,
+          "max": 45,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1 - 1.5 mL/100g",
+          "valeur": null,
+          "min": 1,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Green Fruits",
+          "Herbal"
+        ],
+        "aromes": [
+          "Citrus",
+          "lemon",
+          "lime",
+          "herbal",
+          "vanilla"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/3cd52195-b1b5-49dc-9918-bbc7754f76d3___8f255be5830b4cf3cd0dffb88931d01e.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Crystal",
+      "alias": [],
+      "varietyId": "beermaverick-crystal",
+      "url": "https://www.rahrbsg.com/crystal-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "3.5 - 5.5%",
+          "valeur": null,
+          "min": 3.5,
+          "max": 5.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4.5 - 6.5%",
+          "valeur": null,
+          "min": 4.5,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "20 - 26%",
+          "valeur": null,
+          "min": 20,
+          "max": 26,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.8 - 2.1 mL/100g",
+          "valeur": null,
+          "min": 0.8,
+          "max": 2.1,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1200 – 1500 lbs/acre",
+          "valeur": null,
+          "min": 1200,
+          "max": 1500,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Spicy"
+        ],
+        "aromes": [
+          "Herbal",
+          "sweet",
+          "floral",
+          "spicy"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/f67ddb4b-aa12-4e6b-997f-c1eedfccbac4___20a312b8475a884b451d17b5d9f4638e.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "CTZ",
+      "alias": [],
+      "varietyId": "beermaverick-ctz",
+      "url": "https://www.rahrbsg.com/ctz-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "14.5 - 16.5%",
+          "valeur": null,
+          "min": 14.5,
+          "max": 16.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 5%",
+          "valeur": null,
+          "min": 4,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "28 - 32%",
+          "valeur": null,
+          "min": 28,
+          "max": 32,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "2 - 3 mL/100g",
+          "valeur": null,
+          "min": 2,
+          "max": 3,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "2500 – 2700 lbs/acre",
+          "valeur": null,
+          "min": 2500,
+          "max": 2700,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Herbal",
+          "Pine/Resin"
+        ],
+        "aromes": [
+          "Citrus",
+          "pine"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/8558e9cb-008c-4d0f-ac84-cbb5b389478f___4cf6e5abdb4023574329ed422145aa9c.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Dr. Rudi",
+      "alias": [],
+      "varietyId": "beermaverick-dr-rudi",
+      "url": "https://www.rahrbsg.com/dr-rudi-super-alpha-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "10 - 12%",
+          "valeur": null,
+          "min": 10,
+          "max": 12,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "7 - 8.5%",
+          "valeur": null,
+          "min": 7,
+          "max": 8.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "36 - 39%",
+          "valeur": null,
+          "min": 36,
+          "max": 39,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1 - 1.4 mL/100g",
+          "valeur": null,
+          "min": 1,
+          "max": 1.4,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/bfe2a2ae-23da-4911-b5a6-8bceee424f2c___9973ab1ed31a466c7fb67c9cec4484d5.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "East Kent Goldings",
+      "alias": [],
+      "varietyId": "beermaverick-east-kent-goldings",
+      "url": "https://www.rahrbsg.com/east-kent-goldings-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4 - 6.5%",
+          "valeur": null,
+          "min": 4,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "1.9 - 2.8%",
+          "valeur": null,
+          "min": 1.9,
+          "max": 2.8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "20 - 25%",
+          "valeur": null,
+          "min": 20,
+          "max": 25,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.4 - 0.8 mL/100g",
+          "valeur": null,
+          "min": 0.4,
+          "max": 0.8,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1200 lbs/acre",
+          "valeur": 1200,
+          "min": null,
+          "max": null,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral",
+          "Herbal"
+        ],
+        "origine": [
+          "United Kingdom"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/16440605-c15c-463b-a3eb-f2aa9816772b___220c551042ced4438db66da59fa0da7b.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "El Dorado",
+      "alias": [],
+      "varietyId": "beermaverick-el-dorado",
+      "url": "https://www.rahrbsg.com/el-dorado-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "14 - 14.6%",
+          "valeur": null,
+          "min": 14,
+          "max": 14.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "7 - 8%",
+          "valeur": null,
+          "min": 7,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "28 - 31%",
+          "valeur": null,
+          "min": 28,
+          "max": 31,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "2.5 - 2.8 mL/100g",
+          "valeur": null,
+          "min": 2.5,
+          "max": 2.8,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Early to mid-season.",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "2300 – 2500 lbs/acre",
+          "valeur": null,
+          "min": 2300,
+          "max": 2500,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Stone Fruits",
+          "Tropical"
+        ],
+        "aromes": [
+          "Pineapple",
+          "citrus",
+          "tropical"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/579595f9-6697-4ed4-a318-5ee6827feeab___1ef153cb56dc5f0c1a054dd9cec6c8f5.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Fuggle",
+      "alias": [],
+      "varietyId": "beermaverick-fuggle",
+      "url": "https://www.rahrbsg.com/english-fuggle-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "3 - 5.6%",
+          "valeur": null,
+          "min": 3,
+          "max": 5.6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "2 - 3%",
+          "valeur": null,
+          "min": 2,
+          "max": 3,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "25 - 30%",
+          "valeur": null,
+          "min": 25,
+          "max": 30,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.7 - 1.4 mL/100g",
+          "valeur": null,
+          "min": 0.7,
+          "max": 1.4,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Early",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1200 lbs/acre",
+          "valeur": 1200,
+          "min": null,
+          "max": null,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Grassy",
+          "Herbal"
+        ],
+        "aromes": [
+          "Earthy",
+          "grassy",
+          "fruit"
+        ],
+        "origine": [
+          "United Kingdom"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/c653de8b-303e-43fc-8008-5ff8cd181025___eeabaffc298159671d44e88bdef2816a.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Galena",
+      "alias": [],
+      "varietyId": "beermaverick-galena",
+      "url": "https://www.rahrbsg.com/galena-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11.5 - 13.5%",
+          "valeur": null,
+          "min": 11.5,
+          "max": 13.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "7.2 - 8.7%",
+          "valeur": null,
+          "min": 7.2,
+          "max": 8.7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "36 - 40%",
+          "valeur": null,
+          "min": 36,
+          "max": 40,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.9 - 1.3 mL/100g",
+          "valeur": null,
+          "min": 0.9,
+          "max": 1.3,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Medium",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1800 – 2000 lbs/acre",
+          "valeur": null,
+          "min": 1800,
+          "max": 2000,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/cee07c91-3aab-4f9d-9233-783b6b8f59ff___c35958478747000807c6207ae0012edd.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Hallertau Blanc",
+      "alias": [],
+      "varietyId": "beermaverick-hallertau-blanc",
+      "url": "https://www.rahrbsg.com/german-hallertau-blanc-enriched-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "19%",
+          "valeur": 19,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "2.05 mL/100g",
+          "valeur": 2.05,
+          "min": null,
+          "max": null,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "origine": [
+          "Germany"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/a2015345-b7e4-4afc-a54c-6559a0603727___c8b22c8c99f111da28d610e73fc6115f.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Hallertau Blanc",
+      "alias": [],
+      "varietyId": "beermaverick-hallertau-blanc",
+      "url": "https://www.rahrbsg.com/german-hallertau-blanc-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "9 - 11%",
+          "valeur": null,
+          "min": 9,
+          "max": 11,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 7%",
+          "valeur": null,
+          "min": 4,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "28 - 35%",
+          "valeur": null,
+          "min": 28,
+          "max": 35,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.2 - 2.2 mL/100g",
+          "valeur": null,
+          "min": 1.2,
+          "max": 2.2,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1000 – 1400 lbs/acre",
+          "valeur": null,
+          "min": 1000,
+          "max": 1400,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Grassy",
+          "Green Fruits",
+          "Tropical"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/f48af32c-f259-425c-80b5-8fb19b0f56e5___8b2b591c95939a98e242789325f8ff5d.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Hallertau Mittelfrüh",
+      "alias": [],
+      "varietyId": "beermaverick-hallertau-mittelfruh",
+      "url": "https://www.rahrbsg.com/german-hallertau-mittelfruh-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "3 - 5.5%",
+          "valeur": null,
+          "min": 3,
+          "max": 5.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3 - 5%",
+          "valeur": null,
+          "min": 3,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "18 - 28%",
+          "valeur": null,
+          "min": 18,
+          "max": 28,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.7 - 1.3 mL/100g",
+          "valeur": null,
+          "min": 0.7,
+          "max": 1.3,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Early",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1250 kg/ha",
+          "valeur": 1250,
+          "min": null,
+          "max": null,
+          "unite": "kg/ha",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Grassy",
+          "Herbal",
+          "Spicy"
+        ],
+        "aromes": [
+          "Sweet",
+          "herbal",
+          "spicy",
+          "grassy"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/1b4b88ef-5845-4831-9814-7af028ceab74___08b600eda2d5db0468a401e2056c6400.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Hersbrucker",
+      "alias": [],
+      "varietyId": "beermaverick-hersbrucker",
+      "url": "https://www.rahrbsg.com/german-hersbrucker-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "1.5 - 4%",
+          "valeur": null,
+          "min": 1.5,
+          "max": 4,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "2.5 - 6%",
+          "valeur": null,
+          "min": 2.5,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "17 - 25%",
+          "valeur": null,
+          "min": 17,
+          "max": 25,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.5 - 1 mL/100g",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Mid to late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1700 kg/ha",
+          "valeur": 1700,
+          "min": null,
+          "max": null,
+          "unite": "kg/ha",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Herbal"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/c0535d12-a9b2-4f28-a445-d0d63ff20233___db30036bd791b60e2c122beb13a4d675.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Huell Melon",
+      "alias": [],
+      "varietyId": "beermaverick-huell-melon",
+      "url": "https://www.rahrbsg.com/german-huell-melon-enriched-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "13%",
+          "valeur": 13,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.8 mL/100 g",
+          "valeur": 1.8,
+          "min": null,
+          "max": null,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Red Fruits",
+          "Stone Fruits"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/a2015345-b7e4-4afc-a54c-6559a0603727___c8b22c8c99f111da28d610e73fc6115f.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Huell Melon",
+      "alias": [],
+      "varietyId": "beermaverick-huell-melon",
+      "url": "https://www.rahrbsg.com/huell-melon-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "7 - 8%",
+          "valeur": null,
+          "min": 7,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "6 - 8%",
+          "valeur": null,
+          "min": 6,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "25 - 28%",
+          "valeur": null,
+          "min": 25,
+          "max": 28,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.8 - 1.2 mL/100g",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.2,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Green Fruits",
+          "Stone Fruits"
+        ],
+        "aromes": [
+          "Melon"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/f28912de-521c-489c-a3b9-5122c57c6597___fb7e3615adb70294291e30398914b9b9.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Idaho 7",
+      "alias": [],
+      "varietyId": "beermaverick-idaho-7",
+      "url": "https://www.rahrbsg.com/idaho-7-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "13 - 15%",
+          "valeur": null,
+          "min": 13,
+          "max": 15,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 5%",
+          "valeur": null,
+          "min": 4,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "30 - 40%",
+          "valeur": null,
+          "min": 30,
+          "max": 40,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1 - 1.6 mL/100g",
+          "valeur": null,
+          "min": 1,
+          "max": 1.6,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "2000-2200 lbs/acre",
+          "valeur": null,
+          "min": 2000,
+          "max": 2200,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Stone Fruits",
+          "Tropical"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/131fc9ee-97cd-40e8-8297-cc53f647b89e___66c32f53c759c041ce1da093e3391f71.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Idaho Gem",
+      "alias": [],
+      "varietyId": "beermaverick-idaho-gem",
+      "url": "https://www.rahrbsg.com/idaho-gem-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11 - 14%",
+          "valeur": null,
+          "min": 11,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 - 7%",
+          "valeur": null,
+          "min": 5,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "40 - 45%",
+          "valeur": null,
+          "min": 40,
+          "max": 45,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.3 - 2 mL/100g",
+          "valeur": null,
+          "min": 1.3,
+          "max": 2,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Early",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1,700-2,100 lbs/acre",
+          "valeur": null,
+          "min": 1.7,
+          "max": 2.1,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Red Fruits"
+        ],
+        "aromes": [
+          "Jollyrancher",
+          "red fruits",
+          "citrus"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/e406cb78-0580-4499-9165-b13749e33d54___11226c21ecde4baece039c717073b2f4.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Kazbek",
+      "alias": [],
+      "varietyId": "beermaverick-kazbek",
+      "url": "https://www.rahrbsg.com/kazbek-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5 - 8%",
+          "valeur": null,
+          "min": 5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 6%",
+          "valeur": null,
+          "min": 4,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "35 - 40%",
+          "valeur": null,
+          "min": 35,
+          "max": 40,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.9 - 1.8 mL/100g",
+          "valeur": null,
+          "min": 0.9,
+          "max": 1.8,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "2100-3000 kg/ha",
+          "valeur": null,
+          "min": 2100,
+          "max": 3000,
+          "unite": "kg/ha",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral"
+        ],
+        "aromes": [
+          "Citrus",
+          "lemon",
+          "grapefruit",
+          "earthy"
+        ],
+        "origine": [
+          "Czech Republic"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/f92c0a60-f697-43a1-aee5-4d16082f214b___f68e7b468d0fa61152deaddbfe083755.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Kohatu",
+      "alias": [],
+      "varietyId": "beermaverick-kohatu",
+      "url": "https://www.rahrbsg.com/kohatu-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "6 - 7%",
+          "valeur": null,
+          "min": 6,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 - 6%",
+          "valeur": null,
+          "min": 5,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "21 - 23%",
+          "valeur": null,
+          "min": 21,
+          "max": 23,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1 - 1.5 mL/100g",
+          "valeur": null,
+          "min": 1,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Pine/Resin",
+          "Tropical"
+        ],
+        "aromes": [
+          "Lime",
+          "pineapple",
+          "pine"
+        ],
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/3630e967-285c-42ab-be45-2d582b286508___79506be4701adf6186f0a52c17e30cf3.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Krush",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.rahrbsg.com/cryo-krush-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "18 - 22%",
+          "valeur": null,
+          "min": 18,
+          "max": 22,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "10 - 14%",
+          "valeur": null,
+          "min": 10,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "34 - 40%",
+          "valeur": null,
+          "min": 34,
+          "max": 40,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1-5%",
+          "valeur": null,
+          "min": 1,
+          "max": 5,
+          "unite": "%",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Pine/Resin",
+          "Red Fruits",
+          "Stone Fruits",
+          "Tropical"
+        ],
+        "aromes": [
+          "Bursts with citrus (orange)",
+          "tropical (mango",
+          "guava)",
+          "stone fruit (peach)",
+          "berry (mixed berry)",
+          "ripe",
+          "punchy aromas"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "Yakima Chief Hops"
+        ]
+      }
+    },
+    {
+      "nom": "Lemondrop",
+      "alias": [],
+      "varietyId": "beermaverick-lemondrop",
+      "url": "https://www.rahrbsg.com/lemondrop-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5 - 7%",
+          "valeur": null,
+          "min": 5,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 6%",
+          "valeur": null,
+          "min": 4,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "28 - 34%",
+          "valeur": null,
+          "min": 28,
+          "max": 34,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.5 - 2 mL/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 2,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Herbal",
+          "Pine/Resin"
+        ],
+        "aromes": [
+          "Citrus",
+          "melon",
+          "herbal"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "Hopsteiner"
+        ]
+      }
+    },
+    {
+      "nom": "Loral",
+      "alias": [],
+      "varietyId": "beermaverick-loral",
+      "url": "https://www.rahrbsg.com/cryo-hops-loral-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "10 - 13%",
+          "valeur": null,
+          "min": 10,
+          "max": 13,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4.5 - 6.5%",
+          "valeur": null,
+          "min": 4.5,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral",
+          "Herbal",
+          "Tropical"
+        ],
+        "aromes": [
+          "Citrus",
+          "Floral",
+          "Herbal",
+          "Lemon",
+          "Tropical"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "Yakima Chief Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/65a3ec55-f01c-46c9-b37a-da5e0fc004dc___15226b08ba433ff36ee8cd7d78c77859.pdf",
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/abc0a037-5ca9-4420-bcf1-0188430855bc___22153fa686cdb0364a48bd2669c7173e.pdf",
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/cb1608a9-a8dd-4431-8c3c-ab46199d2bdb___65dee94c90c5bbc6c26b7181f08524b0.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Magnum",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.rahrbsg.com/german-magnum-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11 - 16%",
+          "valeur": null,
+          "min": 11,
+          "max": 16,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 - 7%",
+          "valeur": null,
+          "min": 5,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "21 - 29%",
+          "valeur": null,
+          "min": 21,
+          "max": 29,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.6 - 2.6 mL/100g",
+          "valeur": null,
+          "min": 1.6,
+          "max": 2.6,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle-late to late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "2000 kg/ha",
+          "valeur": 2000,
+          "min": null,
+          "max": null,
+          "unite": "kg/ha",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Green Fruits"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/f24468e2-ce7d-488e-a677-6de7403672ab___c86058836062e8e03796f9817ed5acb9.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Mandarina Bavaria",
+      "alias": [],
+      "varietyId": "beermaverick-mandarina-bavaria",
+      "url": "https://www.rahrbsg.com/mandarina-bavaria-enriched-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "10.4 - 14.7%",
+          "valeur": null,
+          "min": 10.4,
+          "max": 14.7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        }
+      },
+      "listes": {
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/a2015345-b7e4-4afc-a54c-6559a0603727___c8b22c8c99f111da28d610e73fc6115f.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Mandarina Bavaria",
+      "alias": [],
+      "varietyId": "beermaverick-mandarina-bavaria",
+      "url": "https://www.rahrbsg.com/mandarina-bavaria-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "7 - 10%",
+          "valeur": null,
+          "min": 7,
+          "max": 10,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 7%",
+          "valeur": null,
+          "min": 4,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "31 - 35%",
+          "valeur": null,
+          "min": 31,
+          "max": 35,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.5 - 2.2 mL/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 2.2,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral",
+          "Pine/Resin",
+          "Tropical"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/ae1aff1d-09d0-49f4-837b-054b713e99a1___80952698d7d14581ff294dfa1c1f025d.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Mosaic",
+      "alias": [],
+      "varietyId": "beermaverick-mosaic",
+      "url": "https://www.rahrbsg.com/cryo-mosaic-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "18 - 26%",
+          "valeur": null,
+          "min": 18,
+          "max": 26,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 - 8%",
+          "valeur": null,
+          "min": 5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "20 - 25%",
+          "valeur": null,
+          "min": 20,
+          "max": 25,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.5 - 4.5 mL/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 4.5,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Red Fruits",
+          "Stone Fruits",
+          "Tropical"
+        ],
+        "aromes": [
+          "Berry",
+          "Citrus",
+          "Stone Fruit",
+          "Tropical"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "Yakima Chief Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/65a3ec55-f01c-46c9-b37a-da5e0fc004dc___15226b08ba433ff36ee8cd7d78c77859.pdf",
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/abc0a037-5ca9-4420-bcf1-0188430855bc___22153fa686cdb0364a48bd2669c7173e.pdf",
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/cb1608a9-a8dd-4431-8c3c-ab46199d2bdb___65dee94c90c5bbc6c26b7181f08524b0.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Mosaic",
+      "alias": [],
+      "varietyId": "beermaverick-mosaic",
+      "url": "https://www.rahrbsg.com/mosaic-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11.5 - 13.5%",
+          "valeur": null,
+          "min": 11.5,
+          "max": 13.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3.2 - 3.9%",
+          "valeur": null,
+          "min": 3.2,
+          "max": 3.9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "24 - 26%",
+          "valeur": null,
+          "min": 24,
+          "max": 26,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1 - 1.5 mL/100g",
+          "valeur": null,
+          "min": 1,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1800 - 2200 lbs/acre",
+          "valeur": null,
+          "min": 1800,
+          "max": 2200,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Pine/Resin",
+          "Stone Fruits",
+          "Tropical"
+        ],
+        "aromes": [
+          "Citrus",
+          "grapefruit",
+          "blueberry",
+          "pineapple"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "Yakima Chief Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/adc6e3ee-85f6-481c-95ab-6840e1ad6625___dbff65077c066f503f8cf9cf86c37a3f.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Motueka",
+      "alias": [],
+      "varietyId": "beermaverick-motueka",
+      "url": "https://www.rahrbsg.com/motueka-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "6.5 - 7.5%",
+          "valeur": null,
+          "min": 6.5,
+          "max": 7.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 - 5.5%",
+          "valeur": null,
+          "min": 5,
+          "max": 5.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "28 - 30%",
+          "valeur": null,
+          "min": 28,
+          "max": 30,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.8 - 1 mL/100g",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Early",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "Low to medium",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Herbal",
+          "Pine/Resin",
+          "Sweet"
+        ],
+        "aromes": [
+          "Sweet",
+          "lemon",
+          "lime",
+          "citrus",
+          "herbal"
+        ],
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/ea7508aa-a8b0-4c16-bc73-f48f2ad6b27e___20ec8484667888474afd032cb75cbd1a.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Mount Hood",
+      "alias": [],
+      "varietyId": "beermaverick-mount-hood",
+      "url": "https://www.rahrbsg.com/mount-hood-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4 - 7%",
+          "valeur": null,
+          "min": 4,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 - 8%",
+          "valeur": null,
+          "min": 5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "21 - 23%",
+          "valeur": null,
+          "min": 21,
+          "max": 23,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.6 - 3.4 mL/100g",
+          "valeur": null,
+          "min": 1.6,
+          "max": 3.4,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1500 - 1800 lbs/acre",
+          "valeur": null,
+          "min": 1500,
+          "max": 1800,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Green Fruits",
+          "Herbal",
+          "Sweet"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/339b327f-93cb-4115-afc1-12258cfee479___538470d128b376c89b9a4573b9d33499.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Moutere",
+      "alias": [],
+      "varietyId": "beermaverick-moutere",
+      "url": "https://www.rahrbsg.com/moutere-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "17.5 - 19.5%",
+          "valeur": null,
+          "min": 17.5,
+          "max": 19.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "8 - 10%",
+          "valeur": null,
+          "min": 8,
+          "max": 10,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "24 - 28%",
+          "valeur": null,
+          "min": 24,
+          "max": 28,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.5 - 1.9 mL/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 1.9,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "Good",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        }
+      },
+      "listes": {
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/f29934a7-2455-49e6-9a1b-8dcda4292df5___72902fb02807a51431766c440de38520.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Nectaron",
+      "alias": [],
+      "varietyId": "beermaverick-nectaron",
+      "url": "https://www.rahrbsg.com/nectaron-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "10.5 - 11.5%",
+          "valeur": null,
+          "min": 10.5,
+          "max": 11.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4.5 - 5%",
+          "valeur": null,
+          "min": 4.5,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "26 - 28%",
+          "valeur": null,
+          "min": 26,
+          "max": 28,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.7 mL/100g",
+          "valeur": 1.7,
+          "min": null,
+          "max": null,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Tropical"
+        ],
+        "aromes": [
+          "Citrus",
+          "pineapple",
+          "passion fruit"
+        ],
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/e4adafd1-0dca-4c99-aad8-6c3284152e88___98e9362c58f74522bbdbc3a4a8af8ebc.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Nelson Sauvin",
+      "alias": [],
+      "varietyId": "beermaverick-nelson-sauvin",
+      "url": "https://www.rahrbsg.com/nelson-sauvin-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "12 - 13%",
+          "valeur": null,
+          "min": 12,
+          "max": 13,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "6 - 8%",
+          "valeur": null,
+          "min": 6,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "23 - 25%",
+          "valeur": null,
+          "min": 23,
+          "max": 25,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.9 - 1.2 mL/100g",
+          "valeur": null,
+          "min": 0.9,
+          "max": 1.2,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Pine/Resin",
+          "Tropical"
+        ],
+        "aromes": [
+          "White wine grape",
+          "green fruits"
+        ],
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/84b530d5-87f2-4c63-991e-67ccd25eba5a___b5a84fe20ec6bf75b702a31391bee268.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Northern Brewer",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.rahrbsg.com/german-northern-brewer-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "6 - 10%",
+          "valeur": null,
+          "min": 6,
+          "max": 10,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3 - 5%",
+          "valeur": null,
+          "min": 3,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "27 - 32%",
+          "valeur": null,
+          "min": 27,
+          "max": 32,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.6 - 2.1 mL/100g",
+          "valeur": null,
+          "min": 1.6,
+          "max": 2.1,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Early",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1600 kg/ha",
+          "valeur": 1600,
+          "min": null,
+          "max": null,
+          "unite": "kg/ha",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Spicy",
+          "Sweet",
+          "Vegetal"
+        ],
+        "aromes": [
+          "Spicy",
+          "woody",
+          "wild fruit"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/e05cf743-02bf-4e77-b209-ceb913c08382___66c916e7ee6969352f3124044e629f54.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Nugget",
+      "alias": [],
+      "varietyId": "beermaverick-nugget",
+      "url": "https://www.rahrbsg.com/nugget-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11.5 - 14%",
+          "valeur": null,
+          "min": 11.5,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3 - 5.8%",
+          "valeur": null,
+          "min": 3,
+          "max": 5.8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "22 - 30%",
+          "valeur": null,
+          "min": 22,
+          "max": 30,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.8 - 2.2 mL/100g",
+          "valeur": null,
+          "min": 1.8,
+          "max": 2.2,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Herbal",
+          "Spicy",
+          "Sweet"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/d78a9fd6-ed1b-4190-9c0a-c7425804ac61___cb11fa343b3dfe6aaa18bdf5be7d36f0.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Pacific Gem",
+      "alias": [],
+      "varietyId": "beermaverick-pacific-gem",
+      "url": "https://www.rahrbsg.com/new-zealand-pacific-gem-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "13 - 15%",
+          "valeur": null,
+          "min": 13,
+          "max": 15,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "7 - 9%",
+          "valeur": null,
+          "min": 7,
+          "max": 9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "37 - 40%",
+          "valeur": null,
+          "min": 37,
+          "max": 40,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1 - 1.3 mL/100g",
+          "valeur": null,
+          "min": 1,
+          "max": 1.3,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Mid-season",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "Moderate to high",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        }
+      },
+      "listes": {
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/c3c5a36d-cd7c-4d28-b0eb-3acf3ecb4fc2___e4cf465d9a7023001bf5152edb952649.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Pacific Jade",
+      "alias": [],
+      "varietyId": "beermaverick-pacific-jade",
+      "url": "https://www.rahrbsg.com/new-zealand-pacific-jade-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "12 - 14%",
+          "valeur": null,
+          "min": 12,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "7 - 8%",
+          "valeur": null,
+          "min": 7,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "23 - 25%",
+          "valeur": null,
+          "min": 23,
+          "max": 25,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.1 - 1.5 mL/100g",
+          "valeur": null,
+          "min": 1.1,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Mid to late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "Moderate",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Green Fruits",
+          "Stone Fruits"
+        ],
+        "aromes": [
+          "Green fruit",
+          "melon"
+        ],
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/0825d87e-cb80-4dbd-b711-d3bd21fce093___91db9ba1954c5fa556b778c659143960.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Pacifica",
+      "alias": [],
+      "varietyId": "beermaverick-pacifica",
+      "url": "https://www.rahrbsg.com/pacifica-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5 - 6%",
+          "valeur": null,
+          "min": 5,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 - 6%",
+          "valeur": null,
+          "min": 5,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "24 - 26%",
+          "valeur": null,
+          "min": 24,
+          "max": 26,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.9 - 1.2 mL/100g",
+          "valeur": null,
+          "min": 0.9,
+          "max": 1.2,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/87910d4f-649f-48ff-be70-4ccb1278b34e___88680af749214bca2df453a2354434a0.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Perle",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.rahrbsg.com/german-perle-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4 - 8%",
+          "valeur": null,
+          "min": 4,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "2.5 - 4.5%",
+          "valeur": null,
+          "min": 2.5,
+          "max": 4.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "29 - 35%",
+          "valeur": null,
+          "min": 29,
+          "max": 35,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.5 - 1.5 mL/100g",
+          "valeur": null,
+          "min": 0.5,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Spicy",
+          "Sweet"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/0418eedb-8696-4a1c-8800-c3c455632e02___1ee52ccb3ffd1a6c299a40a585e3babd.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Polaris",
+      "alias": [],
+      "varietyId": "beermaverick-polaris",
+      "url": "https://www.rahrbsg.com/polaris-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "18 - 24%",
+          "valeur": null,
+          "min": 18,
+          "max": 24,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 - 6.5%",
+          "valeur": null,
+          "min": 5,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "22 - 29%",
+          "valeur": null,
+          "min": 22,
+          "max": 29,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "4.4 - 4.8 mL/100g",
+          "valeur": null,
+          "min": 4.4,
+          "max": 4.8,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/7c3c6d06-9d7e-4522-b9d6-35ced85e35c8___d9d74062596bb286a1b9fce25347f8ad.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Progress",
+      "alias": [],
+      "varietyId": "beermaverick-progress",
+      "url": "https://www.rahrbsg.com/english-progress-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "5 - 7.5%",
+          "valeur": null,
+          "min": 5,
+          "max": 7.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "1.8 - 2.7%",
+          "valeur": null,
+          "min": 1.8,
+          "max": 2.7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "25 - 27%",
+          "valeur": null,
+          "min": 25,
+          "max": 27,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.5 - 0.8 mL/100g",
+          "valeur": null,
+          "min": 0.5,
+          "max": 0.8,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Early",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "800 – 1000 lbs/acre",
+          "valeur": null,
+          "min": 800,
+          "max": 1000,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "origine": [
+          "United Kingdom"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/70f7618e-ef30-4f2c-a8f6-0de8fb1c5670___e699b9590818125de95374d8d4cbcef9.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Rakau",
+      "alias": [],
+      "varietyId": "beermaverick-rakau",
+      "url": "https://www.rahrbsg.com/rakau-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "9 - 11%",
+          "valeur": null,
+          "min": 9,
+          "max": 11,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 - 6%",
+          "valeur": null,
+          "min": 5,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "23 - 25%",
+          "valeur": null,
+          "min": 23,
+          "max": 25,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.8 - 2.2 mL/100g",
+          "valeur": null,
+          "min": 1.8,
+          "max": 2.2,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Stone Fruits",
+          "Sweet",
+          "Tropical"
+        ],
+        "aromes": [
+          "Stone fruit",
+          "apricot",
+          "peach"
+        ],
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/5b1eef93-aab2-46cc-935e-0012361c0b69___3ced395e5cd181b02ba8c8354050c20e.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Riwaka",
+      "alias": [],
+      "varietyId": "beermaverick-riwaka",
+      "url": "https://www.rahrbsg.com/riwaka-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4.5 - 6.5%",
+          "valeur": null,
+          "min": 4.5,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 5%",
+          "valeur": null,
+          "min": 4,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "32%",
+          "valeur": 32,
+          "min": null,
+          "max": null,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.5 mL/100g",
+          "valeur": 1.5,
+          "min": null,
+          "max": null,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Pine/Resin",
+          "Red Fruits",
+          "Tropical"
+        ],
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/83b3c614-1bda-472c-a85f-be6718d2aa03___22d9af66e52ec7efa3684bbbfc1f4fd3.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Saaz",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.rahrbsg.com/czech-saaz-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "2 - 5%",
+          "valeur": null,
+          "min": 2,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4.5 - 8%",
+          "valeur": null,
+          "min": 4.5,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "23 - 26%",
+          "valeur": null,
+          "min": 23,
+          "max": 26,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.4 - 1 mL/100g",
+          "valeur": null,
+          "min": 0.4,
+          "max": 1,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1000 kg/ha",
+          "valeur": 1000,
+          "min": null,
+          "max": null,
+          "unite": "kg/ha",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Herbal",
+          "Spicy"
+        ],
+        "aromes": [
+          "Spicy",
+          "herbal",
+          "woody"
+        ],
+        "origine": [
+          "Czech Republic"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/4fbbad59-8916-4617-a3be-848ed6c8f8a5___d193aa01676c35bda6f2badf4391f7ef.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Saphir",
+      "alias": [],
+      "varietyId": "beermaverick-saphir",
+      "url": "https://www.rahrbsg.com/saphir-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "2 - 4.5%",
+          "valeur": null,
+          "min": 2,
+          "max": 4.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 7%",
+          "valeur": null,
+          "min": 4,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "12 - 17%",
+          "valeur": null,
+          "min": 12,
+          "max": 17,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.8 - 1.4 mL/100g",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.4,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Spicy",
+          "Sweet"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/cf862234-def0-4b94-8866-0c1decdf4fdb___41217970fc59dea9484f274b45269687.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Simcoe",
+      "alias": [],
+      "varietyId": "beermaverick-simcoe",
+      "url": "https://www.rahrbsg.com/cryo-simcoe/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "21 - 28%",
+          "valeur": null,
+          "min": 21,
+          "max": 28,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "6 - 9%",
+          "valeur": null,
+          "min": 6,
+          "max": 9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "17 - 21%",
+          "valeur": null,
+          "min": 17,
+          "max": 21,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "2 - 5 mL/100g",
+          "valeur": null,
+          "min": 2,
+          "max": 5,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Pine/Resin",
+          "Stone Fruits",
+          "Tropical"
+        ],
+        "aromes": [
+          "Citrus",
+          "Grapefruit",
+          "Stone Fruit",
+          "Tropical",
+          "Woody"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "Yakima Chief Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/65a3ec55-f01c-46c9-b37a-da5e0fc004dc___15226b08ba433ff36ee8cd7d78c77859.pdf",
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/abc0a037-5ca9-4420-bcf1-0188430855bc___22153fa686cdb0364a48bd2669c7173e.pdf",
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/cb1608a9-a8dd-4431-8c3c-ab46199d2bdb___65dee94c90c5bbc6c26b7181f08524b0.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Sorachi Ace",
+      "alias": [],
+      "varietyId": "beermaverick-sorachi-ace",
+      "url": "https://www.rahrbsg.com/sorachi-ace-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11 - 12.5%",
+          "valeur": null,
+          "min": 11,
+          "max": 12.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "6.5 - 7%",
+          "valeur": null,
+          "min": 6.5,
+          "max": 7,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "23 - 26%",
+          "valeur": null,
+          "min": 23,
+          "max": 26,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "2 - 2.8 mL/100g",
+          "valeur": null,
+          "min": 2,
+          "max": 2.8,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle to late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1000-1200 lbs/acre",
+          "valeur": null,
+          "min": 1000,
+          "max": 1200,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/040ae9a1-6101-4f4e-ae24-b2922cf5cb10___5d7074776e86f99fb68cd16448384046.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Southern Cross",
+      "alias": [],
+      "varietyId": "beermaverick-southern-cross",
+      "url": "https://www.rahrbsg.com/southern-cross-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "11 - 14%",
+          "valeur": null,
+          "min": 11,
+          "max": 14,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "5 - 6%",
+          "valeur": null,
+          "min": 5,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "25 - 28%",
+          "valeur": null,
+          "min": 25,
+          "max": 28,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.4 - 1.8 mL/100g",
+          "valeur": null,
+          "min": 1.4,
+          "max": 1.8,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/d4a2d58c-73de-412d-8399-aeac8aa15194___bd14c034066b441c9720a47456e7c96b.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Spalter Select",
+      "alias": [],
+      "varietyId": "beermaverick-spalter-select",
+      "url": "https://www.rahrbsg.com/german-spalter-select-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "3 - 6.5%",
+          "valeur": null,
+          "min": 3,
+          "max": 6.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "2.5 - 5%",
+          "valeur": null,
+          "min": 2.5,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "21 - 27%",
+          "valeur": null,
+          "min": 21,
+          "max": 27,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.6 - 0.9 mL/100g",
+          "valeur": null,
+          "min": 0.6,
+          "max": 0.9,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Middle-late",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1900 kg/ha",
+          "valeur": 1900,
+          "min": null,
+          "max": null,
+          "unite": "kg/ha",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Floral",
+          "Red Fruits",
+          "Spicy"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/0987b2bc-768a-4af0-bd94-5932969a155c___93c129d5690cdb2b4bf8ab8f99dcb3b3.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Sterling",
+      "alias": [],
+      "varietyId": "beermaverick-sterling",
+      "url": "https://www.rahrbsg.com/sterling-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "6 - 9%",
+          "valeur": null,
+          "min": 6,
+          "max": 9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 6%",
+          "valeur": null,
+          "min": 4,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "22 - 28%",
+          "valeur": null,
+          "min": 22,
+          "max": 28,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.3 - 1.9 mL/100g",
+          "valeur": null,
+          "min": 1.3,
+          "max": 1.9,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/8f28eb78-3a98-4628-8a49-175ebfd112c5___ccb52579c4122eaf4eb4288b824c7edf.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Styrian Golding Celeia",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.rahrbsg.com/styrian-golding-celeia-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "3 - 6%",
+          "valeur": null,
+          "min": 3,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "2 - 6%",
+          "valeur": null,
+          "min": 2,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "26 - 29%",
+          "valeur": null,
+          "min": 26,
+          "max": 29,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.6 - 3.6 mL/100g",
+          "valeur": null,
+          "min": 0.6,
+          "max": 3.6,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Herbal",
+          "Pine/Resin"
+        ],
+        "origine": [
+          "Slovenia"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/4ef922b5-1a81-4cf5-8b8d-1283c3370c02___15a8a9ae033caddc35afbe2c5adddf9c.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Summit",
+      "alias": [],
+      "varietyId": "beermaverick-summit",
+      "url": "https://www.rahrbsg.com/summit-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "15 - 18%",
+          "valeur": null,
+          "min": 15,
+          "max": 18,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4 - 6%",
+          "valeur": null,
+          "min": 4,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "26 - 33%",
+          "valeur": null,
+          "min": 26,
+          "max": 33,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.5 - 2.5 mL/100g",
+          "valeur": null,
+          "min": 1.5,
+          "max": 2.5,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Herbal"
+        ],
+        "aromes": [
+          "Grapefruit",
+          "tangerine",
+          "earthy"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/282172b4-fb46-43b8-92a6-9ee37c6caa54___16cdbca7bfa7b505b7de6a6f8d075eff.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Tettnang",
+      "alias": [],
+      "varietyId": null,
+      "url": "https://www.rahrbsg.com/german-tettnanger-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "2.5 - 5.5%",
+          "valeur": null,
+          "min": 2.5,
+          "max": 5.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3 - 5%",
+          "valeur": null,
+          "min": 3,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "22 - 28%",
+          "valeur": null,
+          "min": 22,
+          "max": 28,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.5 - 0.9 mL/100g",
+          "valeur": null,
+          "min": 0.5,
+          "max": 0.9,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Early",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1300 kg/h",
+          "valeur": 1300,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Green Fruits",
+          "Herbal",
+          "Red Fruits",
+          "Spicy"
+        ],
+        "origine": [
+          "Germany"
+        ],
+        "fournisseur": [
+          "HVG"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/6db10c4a-3e87-43ae-aa73-415ba46d0eff___74f470ec838de63cac051318fc99e47a.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Triumph",
+      "alias": [],
+      "varietyId": "beermaverick-triumph",
+      "url": "https://www.rahrbsg.com/triumph-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "9 - 12%",
+          "valeur": null,
+          "min": 9,
+          "max": 12,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3 - 5%",
+          "valeur": null,
+          "min": 3,
+          "max": 5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.8 - 1.8 mL/100g",
+          "valeur": null,
+          "min": 0.8,
+          "max": 1.8,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/4d9aecb8-54c0-4ec6-ba53-3868f5bd016a___45d51247c888d20817880cd084dadca4.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Vista",
+      "alias": [],
+      "varietyId": "beermaverick-vista",
+      "url": "https://www.rahrbsg.com/vista-t90-hop-pellet-11-lb-1/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "10.9 - 11.9%",
+          "valeur": null,
+          "min": 10.9,
+          "max": 11.9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3.78 - 4.42%",
+          "valeur": null,
+          "min": 3.78,
+          "max": 4.42,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "32.7 - 33.7%",
+          "valeur": null,
+          "min": 32.7,
+          "max": 33.7,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.1 - 1.7 mL/100g",
+          "valeur": null,
+          "min": 1.1,
+          "max": 1.7,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus"
+        ],
+        "aromes": [
+          "Honeydew",
+          "Papaya"
+        ],
+        "origine": [
+          "United States"
+        ]
+      }
+    },
+    {
+      "nom": "Wai-iti",
+      "alias": [],
+      "varietyId": "beermaverick-wai-iti",
+      "url": "https://www.rahrbsg.com/wai-iti-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "2.5 - 3.5%",
+          "valeur": null,
+          "min": 2.5,
+          "max": 3.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "4.5 - 5.5%",
+          "valeur": null,
+          "min": 4.5,
+          "max": 5.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "22 - 24%",
+          "valeur": null,
+          "min": 22,
+          "max": 24,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.4 - 1.8 mL/100g",
+          "valeur": null,
+          "min": 1.4,
+          "max": 1.8,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Stone Fruits"
+        ],
+        "aromes": [
+          "Peach",
+          "apricot",
+          "lime",
+          "mandarin"
+        ],
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/490290ed-c367-4e29-a69a-d2708fef0102___098593ec939b6a9f56cbe2e2067cf211.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Waimea",
+      "alias": [],
+      "varietyId": "beermaverick-waimea",
+      "url": "https://www.rahrbsg.com/waimea-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "16 - 19%",
+          "valeur": null,
+          "min": 16,
+          "max": 19,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "7 - 9%",
+          "valeur": null,
+          "min": 7,
+          "max": 9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "22 - 24%",
+          "valeur": null,
+          "min": 22,
+          "max": 24,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.8 - 2.3 mL/100g",
+          "valeur": null,
+          "min": 1.8,
+          "max": 2.3,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Pine/Resin"
+        ],
+        "aromes": [
+          "Citrus",
+          "tangerine",
+          "pine"
+        ],
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/73358dee-4ccd-447c-ad9b-a0cfa5b22ffc___31fc94f864d6db8a8b7c6513fceb559e.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Wakatu",
+      "alias": [],
+      "varietyId": "beermaverick-wakatu",
+      "url": "https://www.rahrbsg.com/wakatu-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "6.5 - 8.5%",
+          "valeur": null,
+          "min": 6.5,
+          "max": 8.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "8 - 8.5%",
+          "valeur": null,
+          "min": 8,
+          "max": 8.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "28 - 30%",
+          "valeur": null,
+          "min": 28,
+          "max": 30,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "0.9 - 1.2 mL/100g",
+          "valeur": null,
+          "min": 0.9,
+          "max": 1.2,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Citrus",
+          "Grassy"
+        ],
+        "aromes": [
+          "Lime peel",
+          "hay"
+        ],
+        "origine": [
+          "New Zealand"
+        ],
+        "fournisseur": [
+          "NZ Hops ™"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/4d785be7-57be-4100-a8b0-9f145cea62c6___b6a1172abc334a4129597870ef16c6b7.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Willamette",
+      "alias": [],
+      "varietyId": "beermaverick-willamette",
+      "url": "https://www.rahrbsg.com/willamette-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "4 - 6%",
+          "valeur": null,
+          "min": 4,
+          "max": 6,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "3 - 4.5%",
+          "valeur": null,
+          "min": 3,
+          "max": 4.5,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "30 - 35%",
+          "valeur": null,
+          "min": 30,
+          "max": 35,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1 - 1.5 mL/100g",
+          "valeur": null,
+          "min": 1,
+          "max": 1.5,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        },
+        "maturite": {
+          "champ": "Maturity",
+          "brut": "Early",
+          "valeur": null,
+          "min": null,
+          "max": null,
+          "unite": null,
+          "base": null
+        },
+        "rendement": {
+          "champ": "Yield",
+          "brut": "1400 - 1600 lbs/acre",
+          "valeur": null,
+          "min": 1400,
+          "max": 1600,
+          "unite": "lb/acre",
+          "base": null
+        }
+      },
+      "listes": {
+        "categoriesArome": [
+          "Floral",
+          "Spicy"
+        ],
+        "aromes": [
+          "Spicy",
+          "floral",
+          "woody"
+        ],
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/40630cb6-cd0a-4b7f-a4ce-8446af672341___a80f8d37eb4b73c3fa1114b327376dbb.pdf"
+        ]
+      }
+    },
+    {
+      "nom": "Zappa",
+      "alias": [],
+      "varietyId": "beermaverick-zappa",
+      "url": "https://www.rahrbsg.com/zappa-t-90-hop-pellets-11-lb/p",
+      "releve": "2026-10-26",
+      "publie": null,
+      "page": "produit",
+      "champs": {
+        "alpha": {
+          "champ": "Alpha Acid",
+          "brut": "6 - 8%",
+          "valeur": null,
+          "min": 6,
+          "max": 8,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "beta": {
+          "champ": "Beta Acid",
+          "brut": "8 - 9%",
+          "valeur": null,
+          "min": 8,
+          "max": 9,
+          "unite": "%",
+          "base": null,
+          "baseImplicite": "% (poids)"
+        },
+        "cohumulone": {
+          "champ": "Cohumulone (% of alpha acids)",
+          "brut": "40 - 45%",
+          "valeur": null,
+          "min": 40,
+          "max": 45,
+          "unite": "%",
+          "base": "% des α"
+        },
+        "huileTotale": {
+          "champ": "Total Oil (mL/100g)",
+          "brut": "1.8 - 2.5 mL/100g",
+          "valeur": null,
+          "min": 1.8,
+          "max": 2.5,
+          "unite": "mL/100 g",
+          "base": "mL/100 g"
+        }
+      },
+      "listes": {
+        "origine": [
+          "United States"
+        ],
+        "fournisseur": [
+          "RahrBSG Hops"
+        ],
+        "fichePdf": [
+          "https://rahrbsg.vtexassets.com/assets/vtex.file-manager-graphql/images/6b2d3245-854b-4822-b8b3-d30ca065127a___5e2e6db8dc07dbe874b92f0d3e868c15.pdf"
+        ]
+      }
+    }
+  ]
+}

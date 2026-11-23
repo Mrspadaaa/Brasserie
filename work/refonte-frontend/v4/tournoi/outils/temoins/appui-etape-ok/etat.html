@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Témoin D112 · appui long avec retour</title>
+<!-- Témoin statique de controle-appui.mjs --etape (A9, D112, voie p13). OK attendu : dès le toucher le nom se remplit (500 ms), le texte n'est pas sélectionnable, la fiche s'ouvre à 500 ms. Classes préfixées ta-. -->
+<style>
+  body { margin: 0; font: 15px/20px system-ui, sans-serif; background: #fff; color: #111; }
+  .ta-carte { margin: 40px 12px; padding: 10px 12px; background: #f0f0f0; border-radius: 10px; }
+  .ta-nom { font-weight: 700; display: inline-block; padding: 2px 4px; background: linear-gradient(#dcdcdc, #dcdcdc) no-repeat left center / 0% 100%; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; transition: none; }
+  .ta-nom.ta-appui { animation: ta-remplit 500ms linear forwards; }
+  @keyframes ta-remplit { to { background-size: 100% 100%; } }
+  .ta-fiche { position: fixed; inset: 0; background: #fff; padding: 24px; display: none; z-index: 10; }
+  .ta-fiche.ta-ouverte { display: block; }
+</style>
+</head>
+<body>
+<div class="ta-carte" data-role="ligne-houblon" data-houblon-ligne="beermaverick-nugget"><span class="ta-nom" id="ta-nom" data-houblon="beermaverick-nugget">Nugget</span> · 46 g · α 13 %</div>
+<div class="ta-fiche" id="ta-fiche" role="dialog" aria-label="Fiche de Nugget"><h1>Nugget</h1><p>Fiche du houblon.</p></div>
+<script>
+(function () {
+  var nom = document.getElementById('ta-nom'), fiche = document.getElementById('ta-fiche'), timer = null;
+  function debut() { nom.classList.add('ta-appui'); timer = setTimeout(function () { fiche.classList.add('ta-ouverte'); nom.classList.remove('ta-appui'); }, 500); }
+  function fin() { clearTimeout(timer); nom.classList.remove('ta-appui'); }
+  nom.addEventListener('touchstart', debut, { passive: true });
+  nom.addEventListener('touchend', fin); nom.addEventListener('touchcancel', fin);
+})();
+</script>
+</body>
+</html>
