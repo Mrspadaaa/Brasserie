@@ -597,7 +597,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
     void ecrire(deplacer(chose, k, ctxRef.current), false, chose.id, false, suiviDesLies(chose, k * 7));
   }, [ecrire, finGeste]);
   const surBord = useCallback((chose: ChoseCalendrier, jours: number, cote: CoteBord = 'fin') => {
-    setDrag({ id: chose.id, mode: 'bord', k: 0, jours });
+    setDrag({ id: chose.id, mode: 'bord', k: 0, jours, cote });
     setDuree({ id: chose.id, texte: cote === 'debut' ? dureeDebutTiree(chose, jours) : dureeAllongee(chose, jours, aujourdhui) });
     setMessage(null); setMenu(null);
   }, [aujourdhui]);

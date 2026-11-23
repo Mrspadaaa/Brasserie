@@ -492,6 +492,8 @@ export const Frise: React.FC<FriseProps> = props => {
       data-nb-colonnes={n}
       data-echelle={props.echelle}
       data-largeur-colonne={largeurColonne.toFixed(2)}
+      /* CAL-LACHER-OU-DESSINE : les colonnes dessinées (début/fin), pour lire la date sous un x comme l'app la lit */
+      data-colonnes={colonnes.map(c => `${c.debut}/${c.fin}`).join(' ')}
       data-largeur={largeur}
       /* CRITIQUE-10, doute m22 : le cadre de focus (pastille « lié à », barres, marques) est pour le clavier seul ; après un toucher, aucun cadre
          (comme la bande des semaines, `data-doigt`). La touche suivante du clavier le rend. */

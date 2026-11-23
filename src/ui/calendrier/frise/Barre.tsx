@@ -7,6 +7,7 @@ import { usePointeur, type CoteBord } from './usePointeur';
 import { prisesDuBord, useToucherNom, zoneToucher } from './zoneToucher';
 import { ETAPE_BRASSIN, couleurEtape, encreEtape, estEtape, type EtapeBrassin } from './etapes';
 import { posee, poseeADroite } from './posee';
+import type { Colonne } from './Rangee';
 
 /**
  * Une barre de la frise (E24 à E32). Elle porte ses gestes : toucher (le détail), appui long (le menu), glisser (déplacer en direct, f1-a),
@@ -71,6 +72,8 @@ export interface BarreProps {
   largeurColonne: number;
   /** D385 : la largeur d'un jour pour tirer le bord (une colonne d'un jour, ou 1/7 de semaine) ; absente : 1/7 de colonne. */
   largeurJour?: number;
+  /** CAL-LACHER-OU-DESSINE : les colonnes de la frise (le geste se lit par le jour sous le doigt). */
+  colonnes?: readonly Colonne[];
   /** CAL-JOUR (21.11) : le corps se glisse au jour (`glisseAuJour`) ; `onGlisse` reçoit des semaines par septièmes. */
   parJour?: boolean;
   /** Pas permis pour le glisser : `[min, max]` en semaines. */
@@ -332,6 +335,7 @@ export const Barre: React.FC<BarreProps> = props => {
 
   const gestes = usePointeur({
     largeurColonne,
+    ...(props.colonnes ? { colonnes: props.colonnes } : {}),
     ...(props.largeurJour ? { largeurJour: props.largeurJour } : {}),
     ...(props.parJour ? { parJour: true } : {}),
     borne: () => bornes,
