@@ -250,6 +250,7 @@ Lire :
 | work/missions/2026-11-23-carnet-en-ligne/fix13/RAPPORT.md | FIX13 | 2 | 0 | 23fb032b6a83 |
 | work/missions/2026-11-23-calendrier-en-ligne/zz-ventes/RAPPORT.md | ZZV | 1 | 0 | 4348a2cf528c |
 | work/missions/2026-11-23-carnet-en-ligne/gastro-held/RAPPORT.md | GH | 4 | 0 | e7d00e7b9042 |
+| work/missions/2026-11-23-carnet-en-ligne/banc-liens/RAPPORT.md | BL | 0 | 0 | en cours |
 | work/missions/2026-11-23-calendrier-en-ligne/contre-epreuve/RAPPORT.md | T11 | 24 | 0 | 22535391fb6e |
 
 Port du carnet (préfixe `PCN`, work/missions/2026-11-17-port-carnet/vision-1…) : rapports versés le 18.11 avec 0 constat, le workflow tourne encore ; critique du carnet à venir.
