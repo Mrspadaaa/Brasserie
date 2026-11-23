@@ -534,7 +534,10 @@ export const Frise: React.FC<FriseProps> = props => {
         /* un filtre sans rien d'épinglé ne laisse pas la rangée : « Tout afficher » la rend */
         if (filtreeParFiltre && !masqueeParOeil && epinglees.length === 0) return null;
         /* paquet G n° 3 : une rangée vide (rien dans la fenêtre, ni renvoi, ni alerte), affichée, se range avec ses voisines vides */
-        const vide = !masquee && !dedans.some(c => positionDans(colonnes, c)) && !(r === 'ventes' && renvois.length) && !(props.alerte && props.alerte.rangee === r) && !lignesGardees.get(r);
+        /* CAL-SECTIONS-VIDES-COMPACTES (23.11, « Il y a de la parte d'espace ») : une rangée masquée dont rien n'est épinglé dans la vue
+           (« n choses cachées ») se range aussi en ligne basse avec les vides */
+        const vide = (masquee ? epinglees.length === 0 : !dedans.some(c => positionDans(colonnes, c)) && !(r === 'ventes' && renvois.length) && !lignesGardees.get(r))
+          && !(props.alerte && props.alerte.rangee === r);
         return { r, vide, noeud: (
           <Rangee
             key={r}
