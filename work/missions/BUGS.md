@@ -248,6 +248,7 @@ Lire :
 | work/missions/2026-11-23-carnet-en-ligne/M3/RAPPORT.md | CA12-M3 | 18 | 0 | b3d7a5b549a7 |
 | work/missions/2026-11-23-carnet-en-ligne/tour13/RAPPORT.md | CA13 | 13 | 0 | 9aafd8bcdcad |
 | work/missions/2026-11-23-carnet-en-ligne/fix13/RAPPORT.md | FIX13 | 2 | 0 | 23fb032b6a83 |
+| work/missions/2026-11-23-calendrier-en-ligne/zz-ventes/RAPPORT.md | ZZV | 1 | 0 | 4348a2cf528c |
 | work/missions/2026-11-23-calendrier-en-ligne/contre-epreuve/RAPPORT.md | T11 | 24 | 0 | 22535391fb6e |
 
 Port du carnet (préfixe `PCN`, work/missions/2026-11-17-port-carnet/vision-1…) : rapports versés le 18.11 avec 0 constat, le workflow tourne encore ; critique du carnet à venir.
@@ -2839,3 +2840,9 @@ Règle (brasseur 23.11) : une seule contre-épreuve ; graves corrigés tout de s
 |---|---|---|---|---|---|---|---|
 | FIX13-1 | fix13 en ligne 23.11 | Carnets › liste | Après plan à 12 345,67 dans À venir, la carte de la liste dit encore « estimé 500 CHF » (le carnet dit 12 345,67) : la liste lit le prix du carnet, pas celui du plan | m | ouvert — présent |   | suite de CA13-3 (trois chiffres) |
 | FIX13-2 | fix13 en ligne 23.11 | Calendrier, échelle An | Un appui de 500 ms sur une icône fait passer le Calendrier à 6 sem. | m | ouvert — présent |   | vu en passant |
+
+## Ventes ZZ TEST annulées, 23.11 (`work/missions/2026-11-23-calendrier-en-ligne/zz-ventes/RAPPORT.md`)
+
+| id | source | écran | constat | gravité | état | commit | note |
+|---|---|---|---|---|---|---|---|
+| ZZV-1 | Ventes ZZ TEST annulées, 23.11 | Calendrier › rangée Ventes | Ventes « ZZ TEST — parcours r2 » et « parcours 10.11 » déjà annulées (« Écriture annulée », absentes de Finances) → observé : comptées dans la rangée Ventes et son total : +5 785 au lieu de +5 695 ; attendu : une écriture annulée ne compte nulle part au Calendrier | G | ouvert — présent |   | zz-ventes/RAPPORT.md ; CAL-ANNULEES-COMPTEES ; capture zz-ventes/ |
