@@ -1,0 +1,55 @@
+{
+ "n": 9,
+ "url": "https://www.brewtools.com/brewing-system-accessories/7712213/steam-hat-b40pro-with-silicone-plug-and-seal",
+ "phase": "lite",
+ "modele": "gemini-3.5-flash-lite",
+ "http": 200,
+ "ms": 2645,
+ "sansSchema": false,
+ "reponse": {
+  "candidates": [
+   {
+    "content": {
+     "parts": [
+      {
+       "text": "{\n  \"type\": \"illisible\",\n  \"caracteristiques\": [],\n  \"devise\": null,\n  \"nom\": null,\n  \"origine\": \"meme-page\",\n  \"photo\": null,\n  \"prix\": null,\n  \"source\": \"https://www.brewtools.com/brewing-system-accessories/7712213/steam-hat-b40pro-with-silicone-plug-and-seal\",\n  \"taxe\": null\n}",
+       "thoughtSignature": "Eo4BCosBAWkUfROcWpUpwe8Ngrp54hqyNwoYJJ9mPYPZgmqJNktQ6C8iMglRaqmFELPjpKtEfpOFfZ2uatnFVZHPcZmsWrDHvwds1yl+4uX0MFWgZOPKBCH+3iKjjx/h2TsISSgLKK6A8K+zfZXHBb/p2ANTb8wBQ5K/r/v/VDroYWZR6L3FG2EHlEsqjwSf8Q=="
+      }
+     ],
+     "role": "model"
+    },
+    "finishReason": "STOP",
+    "index": 0,
+    "urlContextMetadata": {
+     "urlMetadata": [
+      {
+       "retrievedUrl": "https://www.brewtools.com/search?q=brewing+system+accessories",
+       "urlRetrievalStatus": "URL_RETRIEVAL_STATUS_ERROR"
+      }
+     ]
+    }
+   }
+  ],
+  "usageMetadata": {
+   "promptTokenCount": 293,
+   "candidatesTokenCount": 170,
+   "totalTokenCount": 1283,
+   "promptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 293
+    }
+   ],
+   "toolUsePromptTokenCount": 820,
+   "toolUsePromptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 820
+    }
+   ],
+   "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-3.5-flash-lite",
+  "responseId": "J1AEa5P3J9atxN8P1Yfg-Q0"
+ }
+}

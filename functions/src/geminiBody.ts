@@ -31,11 +31,13 @@ export interface GeminiBodyInput {
   file?: { data: string; mimeType: string };
   /** Recherche Google ancrée (acceptée avec le schéma de réponse par Gemini 3). */
   grounded?: boolean;
+  /** L'outil `url_context` : Gemini lit la copie que Google a de l'adresse écrite dans le message (pages bloquées aux robots, lireLien). */
+  urlContext?: boolean;
   maxOutputTokens?: number;
 }
 
 /** Le corps envoyé à Gemini, avant le chiffrage du budget (`runWithMonthlyAiBudget`) qui le normalise. */
-export function geminiBody({ systemPrompt, userText, schema, settings, file, grounded = false, maxOutputTokens = DEFAULT_MAX_OUTPUT_TOKENS }: GeminiBodyInput): Record<string, unknown> {
+export function geminiBody({ systemPrompt, userText, schema, settings, file, grounded = false, urlContext = false, maxOutputTokens = DEFAULT_MAX_OUTPUT_TOKENS }: GeminiBodyInput): Record<string, unknown> {
   const parts: unknown[] = [{ text: userText }];
   if (file) {
     parts.push({ inlineData: { mimeType: file.mimeType, data: file.data } });
@@ -43,7 +45,7 @@ export function geminiBody({ systemPrompt, userText, schema, settings, file, gro
   return {
     systemInstruction: { parts: [{ text: systemPrompt }] },
     contents: [{ role: 'user', parts }],
-    ...(grounded ? { tools: [{ googleSearch: {} }] } : {}),
+    ...(grounded || urlContext ? { tools: [...(grounded ? [{ googleSearch: {} }] : []), ...(urlContext ? [{ url_context: {} }] : [])] } : {}),
     generationConfig: {
       responseMimeType: 'application/json',
       responseSchema: schema,

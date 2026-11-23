@@ -1,0 +1,47 @@
+{
+ "n": 14,
+ "url": "https://www.hobbybrauerversand.de/Gaer-und-Lagerfass-Universal-15-Liter",
+ "phase": "recherche",
+ "modele": "gemini-3.5-flash-lite",
+ "http": 200,
+ "ms": 2149,
+ "sansSchema": false,
+ "reponse": {
+  "candidates": [
+   {
+    "content": {
+     "parts": [
+      {
+       "text": "{\n  \"type\": \"introuvable\",\n  \"caracteristiques\": [],\n  \"devise\": null,\n  \"nom\": null,\n  \"origine\": null,\n  \"photo\": null,\n  \"prix\": null,\n  \"source\": null,\n  \"taxe\": null\n}",
+       "thoughtSignature": "Eo4BCosBAWkUfRPP/z5tqQZ4iQZejcqfoDtXZC8Zyyf6vdjOCbYkvmujQbRp7Xs4wmolMfOpOssJZOdvmhEKBf5NcNahbQDYXdcQ3FVJ0f6fohmMFofiuAk1+tSVKPd8knlzxfwe9xPi7waUpDI4K2Ogbiz6VN6QA47xrDPTmJRL4dzjsqM+CrWSKfYSuk7peA=="
+      }
+     ],
+     "role": "model"
+    },
+    "finishReason": "STOP",
+    "index": 0
+   }
+  ],
+  "usageMetadata": {
+   "promptTokenCount": 254,
+   "candidatesTokenCount": 71,
+   "totalTokenCount": 325,
+   "cachedContentTokenCount": 51,
+   "promptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 254
+    }
+   ],
+   "cacheTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 51
+    }
+   ],
+   "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-3.5-flash-lite",
+  "responseId": "VFAEa7eFJ47qnsEPy4a1iAw"
+ }
+}

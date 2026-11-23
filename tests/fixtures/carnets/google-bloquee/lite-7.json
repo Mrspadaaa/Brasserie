@@ -1,0 +1,58 @@
+{
+ "origine": "banc-liens/bloquees/reponses/lite-7.json (réponse réelle de gemini-3.5-flash-lite, 23.11, thoughtSignature retirée)",
+ "lien": "https://brouwland.com/fr/cuves-de-fermentation/21565-easybrew-cuve-de-fermentation-30-l-en-inox-tc.html",
+ "brut": {
+  "candidates": [
+   {
+    "content": {
+     "parts": [
+      {
+       "text": "{\n  \"type\": \"introuvable\",\n  \"caracteristiques\": [],\n  \"devise\": null,\n  \"nom\": null,\n  \"origine\": \"meme-page\",\n  \"photo\": null,\n  \"prix\": null,\n  \"source\": \"https://brouwland.com/fr/cuves-de-fermentation/21565-easybrew-cuve-de-fermentation-30-l-en-inox-tc.html\",\n  \"taxe\": null\n}"
+      }
+     ],
+     "role": "model"
+    },
+    "finishReason": "STOP",
+    "index": 0,
+    "urlContextMetadata": {
+     "urlMetadata": [
+      {
+       "retrievedUrl": "https://brouwland.com/fr/1239-cuves-de-fermentation",
+       "urlRetrievalStatus": "URL_RETRIEVAL_STATUS_SUCCESS"
+      },
+      {
+       "retrievedUrl": "https://brouwland.com/fr/1239-cuves-de-fermentation",
+       "urlRetrievalStatus": "URL_RETRIEVAL_STATUS_SUCCESS"
+      }
+     ]
+    }
+   }
+  ],
+  "usageMetadata": {
+   "promptTokenCount": 297,
+   "candidatesTokenCount": 237,
+   "totalTokenCount": 30376,
+   "cachedContentTokenCount": 9835,
+   "promptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 297
+    }
+   ],
+   "cacheTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 9835
+    }
+   ],
+   "toolUsePromptTokenCount": 29842,
+   "toolUsePromptTokensDetails": [
+    {
+     "modality": "TEXT",
+     "tokenCount": 29842
+    }
+   ],
+   "serviceTier": "standard"
+  }
+ }
+}

@@ -65,7 +65,7 @@ export interface PageLue {
   luLe: number;
 }
 
-export const ETAPES_LIEN = ['page', 'donnees', 'prix', 'devise-frais', 'photos', 'caract', 'controle', 'ia'] as const;
+export const ETAPES_LIEN = ['page', 'donnees', 'prix', 'devise-frais', 'photos', 'caract', 'controle', 'ia', 'bloquee'] as const;
 export interface EtapeLien { nom: typeof ETAPES_LIEN[number]; statut: 'trouve' | 'absent' | 'douteux'; detail?: string }
 
 export interface CaracteristiqueCompacte { nom: string; unite?: string; sens: SensCarnet }

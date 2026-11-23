@@ -1,0 +1,46 @@
+[
+ {
+  "n": 25,
+  "phase": "recherche",
+  "http": 200,
+  "ms": 1718,
+  "chf": 0.00103,
+  "entree": 317,
+  "sortie": 290,
+  "requetes": 0,
+  "sansSchema": false,
+  "outil": [],
+  "lueParOutil": false,
+  "sources": [],
+  "photoOk": true,
+  "lu": {
+   "type": "fiche",
+   "nom": "Kellerablauf - 170 mm, Kunststoff, Durchmesser_Rohranschluss: 110 Millimeter (mm)",
+   "prix": 29.95,
+   "devise": "CHF",
+   "taxe": "inkl. MwSt.",
+   "photo": "https://media.cdn.bauhaus/m/490281/prod_large_square.webp",
+   "source": "https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267",
+   "origine": "meme-boutique",
+   "caracteristiques": [
+    {
+     "nom": "Einbautiefe",
+     "valeur": "170 mm"
+    },
+    {
+     "nom": "Gewicht (Netto)",
+     "valeur": "580 g"
+    },
+    {
+     "nom": "Material",
+     "valeur": "Kunststoff"
+    },
+    {
+     "nom": "Durchmesser_Rohranschluss",
+     "valeur": "110 Millimeter (mm)"
+    }
+   ]
+  },
+  "texte": ""
+ }
+]

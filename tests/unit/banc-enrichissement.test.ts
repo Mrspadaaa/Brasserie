@@ -75,7 +75,7 @@ describe('le MÊME chemin que la production, sans copie', () => {
     const source = readFileSync(path.join(__dirname, '../../functions/src/ai.ts'), 'utf8');
     expect(source).toContain("from './geminiBody.js'");
     expect(source).toContain('userTextOf(instruction, context)');
-    expect(source).toContain('geminiBody({ systemPrompt, userText, schema, settings, file, grounded, maxOutputTokens })');
+    expect(source).toContain('geminiBody({ systemPrompt, userText, schema, settings, file, grounded, urlContext, maxOutputTokens })');
     expect(source).not.toContain('Demande : ${instruction');
     expect(source).not.toContain('tools: [{ googleSearch: {} }]');
   });
