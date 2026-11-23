@@ -41,3 +41,12 @@ Ordre et contenu inchangés (points 1 à 5 du brief), avec ces ajouts :
   à chaque échelle ; hors fenêtre : rien (pas d'invention).
 - CAL-POINT-BLEU-MUET (pilote, réversible) : retirer le point bleu du creux ; la pastille « −4 563 · S26 '27 » le dit déjà.
 - Puis CAL-PLUS-QU-UN-AN (redit : « je peux toujours avoir que 1 ans ??? »). Les deux dans UN cycle PRÊT / EN LIGNE / preuve.
+
+## Ajout 23.11 9:55 (pilote) — après le tour 18 (trait d'aujourd'hui en ligne, 00b081c1f, index-Do-2h6kK.js)
+- « ‹ auj. » au bord quand aujourd'hui sort de la vue : GARDÉ (pilote, réversible ; répond à « où est le moment présent »).
+- Ordre : (1) preuve en ligne du trait d'aujourd'hui à 1, 6, 40, 51 sem. ; (2) point bleu du creux retiré (CAL-POINT-BLEU-MUET) ;
+  (3) plus d'un an (CAL-PLUS-QU-UN-AN) : patch et test gardés par l'agent précédent (an-auj-en-cours.patch,
+  plus-qu-un-an.spec.ts.txt dans lot-cal) ; trouver pourquoi la barre ZZ MOYEN se pose au 21 déc. au lieu du 27 avec 5 ans
+  (soupçon : la transformation date↔x de alignement.ts arrondit sur des colonnes plus larges, cf. arrondi du lâcher plus haut :
+  plancher, colonne sous le doigt) ; (4) point 3 (D436) ; (5) « −1 663 » pousse « CHF à dépenser » sous ± à 14 sem., bouton de
+  durée qui garde l'ancienne valeur pendant le tirage ; (6) lenteur mesurée en ligne ; (7) bandeau « Enregistrement… ».
