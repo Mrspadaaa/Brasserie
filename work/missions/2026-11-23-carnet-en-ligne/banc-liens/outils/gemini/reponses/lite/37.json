@@ -1,0 +1,70 @@
+{
+ "n": 37,
+ "cfg": "lite",
+ "modele": "gemini-3.5-flash-lite",
+ "http": 200,
+ "ms": 1820,
+ "usage": {
+  "promptTokenCount": 422,
+  "candidatesTokenCount": 390,
+  "totalTokenCount": 3392,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 422
+   }
+  ],
+  "toolUsePromptTokenCount": 2580,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 2580
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"50-Liter Edelstahl Braukessel für Einsteiger \\u2013 Hopfenkochen & Hobby-Bierbrauen leicht gemacht\", \"marque\": null, \"prix\": 289.9, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [\"https://www.trivendo.ch/shop/170153-50-liter-edelstahl-braukessel-fur-einsteiger-hopfenkochen-hobby-bierbrauen-leicht-gemacht-619\", \"https://www.trivendo.ch/web/image/product.template/619/image_1024?unique=98a287a\", \"https://www.trivendo.ch/web/image/product.template/619/image_512?unique=98a287a\"], \"caracteristiques\": [{\"nom\": \"Leistung / Anschluss\", \"valeur\": \"230 V / 50 Hz / 2 x 2'000 Watt\"}, {\"nom\": \"Inhalt\", \"valeur\": \"50 Liter\"}, {\"nom\": \"Abmessungen\", \"valeur\": \"40 cm Durchmesser / 40 cm Höhe\"}, {\"nom\": \"Wandstärke\", \"valeur\": \"1mm\"}, {\"nom\": \"Material\", \"valeur\": \"Rostfreier Edelstahl\"}]}",
+ "json": {
+  "nom": "50-Liter Edelstahl Braukessel für Einsteiger – Hopfenkochen & Hobby-Bierbrauen leicht gemacht",
+  "marque": null,
+  "prix": 289.9,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [
+   "https://www.trivendo.ch/shop/170153-50-liter-edelstahl-braukessel-fur-einsteiger-hopfenkochen-hobby-bierbrauen-leicht-gemacht-619",
+   "https://www.trivendo.ch/web/image/product.template/619/image_1024?unique=98a287a",
+   "https://www.trivendo.ch/web/image/product.template/619/image_512?unique=98a287a"
+  ],
+  "caracteristiques": [
+   {
+    "nom": "Leistung / Anschluss",
+    "valeur": "230 V / 50 Hz / 2 x 2'000 Watt"
+   },
+   {
+    "nom": "Inhalt",
+    "valeur": "50 Liter"
+   },
+   {
+    "nom": "Abmessungen",
+    "valeur": "40 cm Durchmesser / 40 cm Höhe"
+   },
+   {
+    "nom": "Wandstärke",
+    "valeur": "1mm"
+   },
+   {
+    "nom": "Material",
+    "valeur": "Rostfreier Edelstahl"
+   }
+  ]
+ },
+ "entree": 3002,
+ "sortie": 390,
+ "chf": 0.0023445
+}

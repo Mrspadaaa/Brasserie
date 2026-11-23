@@ -10,3 +10,9 @@
 .cn-poser-prix-champ { flex: 1 1 120px; min-width: 0; min-height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); font: inherit; font-size: 16px; font-variant-numeric: tabular-nums; }
 .cn-poser-prix-champ[aria-invalid=true] { border-color: var(--c-rouge); }
 .cn-poser-prix-refus { flex-basis: 100%; color: var(--c-rouge); }
+
+/* D446 : les photos de la page, une à la fois (‹ › sur le cadre, 44 px) ; la disposition du cadre ne change pas */
+.cn-fiche-photo-nav { position: absolute; top: 50%; transform: translateY(-50%); min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; background: var(--c-bg); border-radius: 22px; opacity: .92; }
+.cn-fiche-photo-nav:disabled { opacity: .35; }
+.cn-fiche-photo-prec { left: 6px; }
+.cn-fiche-photo-suiv { right: 6px; }

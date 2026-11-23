@@ -1,0 +1,85 @@
+{
+ "n": 34,
+ "cfg": "hyd",
+ "modele": "gemini-4-hydrogen",
+ "http": 200,
+ "ms": 4894,
+ "usage": {
+  "promptTokenCount": 576,
+  "candidatesTokenCount": 233,
+  "totalTokenCount": 3427,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 576
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 233
+   }
+  ],
+  "toolUsePromptTokenCount": 2185,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 2185
+   }
+  ],
+  "thoughtsTokenCount": 433,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Mosaic Hopfenpellets\", \"marque\": \"Hopfenmarkt\", \"prix\": 7.25, \"devise\": \"CHF\", \"ttc\": true, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Land der Ernte\", \"valeur\": \"USA\"}, {\"nom\": \"Erntejahr\", \"valeur\": \"2025\"}, {\"nom\": \"Hopfentyp\", \"valeur\": \"Mehrzweckhopfen\"}, {\"nom\": \"Hopfenform\", \"valeur\": \"Pellets\"}, {\"nom\": \"Packungsgrösse\", \"valeur\": \"100 g\"}, {\"nom\": \"Artikelnummer (MPN)\", \"valeur\": \"HOP-MOSAIC-0100\"}, {\"nom\": \"Alpha\", \"valeur\": \"11.4%\"}, {\"nom\": \"Beta\", \"valeur\": \"3.4%\"}]}",
+ "json": {
+  "nom": "Mosaic Hopfenpellets",
+  "marque": "Hopfenmarkt",
+  "prix": 7.25,
+  "devise": "CHF",
+  "ttc": true,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Land der Ernte",
+    "valeur": "USA"
+   },
+   {
+    "nom": "Erntejahr",
+    "valeur": "2025"
+   },
+   {
+    "nom": "Hopfentyp",
+    "valeur": "Mehrzweckhopfen"
+   },
+   {
+    "nom": "Hopfenform",
+    "valeur": "Pellets"
+   },
+   {
+    "nom": "Packungsgrösse",
+    "valeur": "100 g"
+   },
+   {
+    "nom": "Artikelnummer (MPN)",
+    "valeur": "HOP-MOSAIC-0100"
+   },
+   {
+    "nom": "Alpha",
+    "valeur": "11.4%"
+   },
+   {
+    "nom": "Beta",
+    "valeur": "3.4%"
+   }
+  ]
+ },
+ "entree": 2761,
+ "sortie": 666,
+ "chf": 0.011420625
+}

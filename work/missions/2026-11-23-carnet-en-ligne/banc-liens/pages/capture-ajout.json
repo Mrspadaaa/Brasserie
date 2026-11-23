@@ -1,0 +1,592 @@
+{
+ "le": "2026-11-23T13:33:10.192Z",
+ "agent": "LaffineeCarnet/1.0",
+ "pages": [
+  {
+   "n": 26,
+   "lien": "https://www.sios.ch/Speidels-Braumeister-PLUS-20-Liter",
+   "sauts": [
+    {
+     "url": "https://www.sios.ch/Speidels-Braumeister-PLUS-20-Liter",
+     "status": 200,
+     "ms": 329,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 374444
+    }
+   ]
+  },
+  {
+   "n": 27,
+   "lien": "https://www.sios.ch/Citra-USA-1-kg-Hopfenpellets-Typ-90",
+   "sauts": [
+    {
+     "url": "https://www.sios.ch/Citra-USA-1-kg-Hopfenpellets-Typ-90",
+     "status": 200,
+     "ms": 340,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 359335
+    }
+   ]
+  },
+  {
+   "n": 28,
+   "lien": "https://www.sios.ch/Malz-Pilsner",
+   "sauts": [
+    {
+     "url": "https://www.sios.ch/Malz-Pilsner",
+     "status": 200,
+     "ms": 354,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 387725
+    }
+   ]
+  },
+  {
+   "n": 29,
+   "lien": "https://www.brauundrauchshop.ch/spectrum-citra-1-kg",
+   "sauts": [
+    {
+     "url": "https://www.brauundrauchshop.ch/spectrum-citra-1-kg",
+     "status": 200,
+     "ms": 944,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 298122
+    }
+   ]
+  },
+  {
+   "n": 30,
+   "lien": "https://brewstore.ch/materiel/systeme-de-brassage/microbrasserie-speidel-braumeister-plus-20-l-avec-double-enveloppe/",
+   "sauts": [
+    {
+     "url": "https://brewstore.ch/materiel/systeme-de-brassage/microbrasserie-speidel-braumeister-plus-20-l-avec-double-enveloppe/",
+     "status": 200,
+     "ms": 799,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 226438
+    }
+   ]
+  },
+  {
+   "n": 31,
+   "lien": "https://brewstore.ch/materiel/casseroles-et-cuves/casserole-de-brassage-motorisee-50l/",
+   "sauts": [
+    {
+     "url": "https://brewstore.ch/materiel/casseroles-et-cuves/casserole-de-brassage-motorisee-50l/",
+     "status": 200,
+     "ms": 818,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 220514
+    }
+   ]
+  },
+  {
+   "n": 32,
+   "lien": "https://www.bierbrauzubehoer.ch/speidels-braumeister/braumeister-von-speidel/1680/braumeister-20liter-automatisch",
+   "sauts": [
+    {
+     "url": "https://www.bierbrauzubehoer.ch/speidels-braumeister/braumeister-von-speidel/1680/braumeister-20liter-automatisch",
+     "status": 200,
+     "ms": 81,
+     "cf": null,
+     "type": "text/html; charset=UTF-8",
+     "loc": null,
+     "taille": 275731
+    }
+   ]
+  },
+  {
+   "n": 33,
+   "lien": "https://hopfenmarkt.ch/produkt/hopfen/citra",
+   "sauts": [
+    {
+     "url": "https://hopfenmarkt.ch/produkt/hopfen/citra",
+     "status": 200,
+     "ms": 229,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 44862
+    }
+   ]
+  },
+  {
+   "n": 34,
+   "lien": "https://hopfenmarkt.ch/produkt/hopfen/mosaic",
+   "sauts": [
+    {
+     "url": "https://hopfenmarkt.ch/produkt/hopfen/mosaic",
+     "status": 200,
+     "ms": 228,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 45184
+    }
+   ]
+  },
+  {
+   "n": 35,
+   "lien": "https://hopfenshop.ch/produkt/citra-hopfen/",
+   "sauts": [
+    {
+     "url": "https://hopfenshop.ch/produkt/citra-hopfen/",
+     "status": 200,
+     "ms": 97,
+     "cf": null,
+     "type": "text/html; charset=UTF-8",
+     "loc": null,
+     "taille": 202574
+    }
+   ]
+  },
+  {
+   "n": 36,
+   "lien": "https://www.baldinger.biz/shop/index.php?route=product/product&product_id=11949",
+   "sauts": [
+    {
+     "url": "https://www.baldinger.biz/shop/index.php?route=product/product&product_id=11949",
+     "status": 200,
+     "ms": 1073,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 2159212
+    }
+   ]
+  },
+  {
+   "n": 37,
+   "lien": "https://www.trivendo.ch/shop/170153-50-liter-edelstahl-braukessel-fur-einsteiger-hopfenkochen-hobby-bierbrauen-leicht-gemacht-619",
+   "sauts": [
+    {
+     "url": "https://www.trivendo.ch/shop/170153-50-liter-edelstahl-braukessel-fur-einsteiger-hopfenkochen-hobby-bierbrauen-leicht-gemacht-619",
+     "status": 200,
+     "ms": 317,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 96362
+    }
+   ]
+  },
+  {
+   "n": 38,
+   "lien": "https://mashcamp.shop/shop/brauanlagen/gaerbehaelter/gaerbehaelter-edelstahl-drucklos/speidel-edelstahl-konus-gaertank-60-liter-set-drucklos/",
+   "sauts": [
+    {
+     "url": "https://mashcamp.shop/shop/brauanlagen/gaerbehaelter/gaerbehaelter-edelstahl-drucklos/speidel-edelstahl-konus-gaertank-60-liter-set-drucklos/",
+     "status": 200,
+     "ms": 1393,
+     "cf": null,
+     "type": "text/html; charset=UTF-8",
+     "loc": null,
+     "taille": 463615
+    }
+   ]
+  },
+  {
+   "n": 39,
+   "lien": "https://www.hebu-shop.ch/shop/braukessel-brauanlage-50l-mit-umwaelzpumpe-fuer-heimbrauer/",
+   "sauts": [
+    {
+     "url": "https://www.hebu-shop.ch/shop/braukessel-brauanlage-50l-mit-umwaelzpumpe-fuer-heimbrauer/",
+     "status": 200,
+     "ms": 103,
+     "cf": null,
+     "type": "text/html; charset=UTF-8",
+     "loc": null,
+     "taille": 1060391
+    }
+   ]
+  },
+  {
+   "n": 40,
+   "lien": "https://mrgastro.ch/products/edelstahl-kuehl-gefrierschrank-440-l-740x830x2010-mm?variant=54211682238802",
+   "sauts": [
+    {
+     "url": "https://mrgastro.ch/products/edelstahl-kuehl-gefrierschrank-440-l-740x830x2010-mm?variant=54211682238802",
+     "status": 200,
+     "ms": 494,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 824452
+    }
+   ]
+  },
+  {
+   "n": 41,
+   "lien": "https://brauen.de/braukessel-aus-edelstahl-50-l-mit-auslauf-fuer-maischebrauer",
+   "sauts": [
+    {
+     "url": "https://brauen.de/braukessel-aus-edelstahl-50-l-mit-auslauf-fuer-maischebrauer",
+     "status": 200,
+     "ms": 225,
+     "cf": null,
+     "type": "text/html; charset=UTF-8",
+     "loc": null,
+     "taille": 359056
+    }
+   ]
+  },
+  {
+   "n": 42,
+   "lien": "https://brauen.de/25-kg-pilsner-malz-sackware-ungeschrotet",
+   "sauts": [
+    {
+     "url": "https://brauen.de/25-kg-pilsner-malz-sackware-ungeschrotet",
+     "status": 200,
+     "ms": 250,
+     "cf": null,
+     "type": "text/html; charset=UTF-8",
+     "loc": null,
+     "taille": 366725
+    }
+   ]
+  },
+  {
+   "n": 43,
+   "lien": "https://www.brauhardware.de/de/T50.html",
+   "sauts": [
+    {
+     "url": "https://www.brauhardware.de/de/T50.html",
+     "status": 200,
+     "ms": 459,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 119288
+    }
+   ]
+  },
+  {
+   "n": 44,
+   "lien": "https://www.braupartner.de/set-edelstahl-konus-gaertank-60-liter",
+   "sauts": [
+    {
+     "url": "https://www.braupartner.de/set-edelstahl-konus-gaertank-60-liter",
+     "status": 200,
+     "ms": 437,
+     "cf": null,
+     "type": "text/html; charset=UTF-8",
+     "loc": null,
+     "taille": 418158
+    }
+   ]
+  },
+  {
+   "n": 45,
+   "lien": "https://www.braupartner.de/citra-r-hopfenpellets",
+   "sauts": [
+    {
+     "url": "https://www.braupartner.de/citra-r-hopfenpellets",
+     "status": 200,
+     "ms": 154,
+     "cf": null,
+     "type": "text/html; charset=UTF-8",
+     "loc": null,
+     "taille": 431590
+    }
+   ]
+  },
+  {
+   "n": 46,
+   "lien": "https://gastro-brennecke.de/25kg-pilsner-malz-braumalz-ungeschrotet-sackware",
+   "sauts": [
+    {
+     "url": "https://gastro-brennecke.de/25kg-pilsner-malz-braumalz-ungeschrotet-sackware",
+     "status": 200,
+     "ms": 771,
+     "cf": null,
+     "type": "text/html; charset=UTF-8",
+     "loc": null,
+     "taille": 332779
+    }
+   ]
+  },
+  {
+   "n": 47,
+   "lien": "https://www.bier-brauen.at/gaertank-konisch-60",
+   "sauts": [
+    {
+     "url": "https://www.bier-brauen.at/gaertank-konisch-60",
+     "status": 200,
+     "ms": 584,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 245843
+    }
+   ]
+  },
+  {
+   "n": 48,
+   "lien": "https://shop.speidel-edelstahlbehaelter.de/de/bier-cider-mischgetraenke/edelstahl-konus-gaertank-60-liter",
+   "sauts": [
+    {
+     "url": "https://shop.speidel-edelstahlbehaelter.de/de/bier-cider-mischgetraenke/edelstahl-konus-gaertank-60-liter",
+     "status": 200,
+     "ms": 1687,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 118832
+    }
+   ]
+  },
+  {
+   "n": 49,
+   "lien": "https://shop.speidels-braumeister.de/de/braumeister-20-liter",
+   "sauts": [
+    {
+     "url": "https://shop.speidels-braumeister.de/de/braumeister-20-liter",
+     "status": 200,
+     "ms": 1877,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 123049
+    }
+   ]
+  },
+  {
+   "n": 50,
+   "lien": "https://www.brewtools.com/all-in-one/7714334/b40pro-brewing-system-3-dot-2kw-9kg-malt",
+   "sauts": [
+    {
+     "url": "https://www.brewtools.com/all-in-one/7714334/b40pro-brewing-system-3-dot-2kw-9kg-malt",
+     "status": 200,
+     "ms": 290,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 189086
+    }
+   ]
+  },
+  {
+   "n": 51,
+   "lien": "https://www.amazon.de/dp/B075QH8DGT",
+   "sauts": [
+    {
+     "url": "https://www.amazon.de/dp/B075QH8DGT",
+     "status": 200,
+     "ms": 271,
+     "cf": null,
+     "type": "text/html;charset=UTF-8",
+     "loc": null,
+     "taille": 2303976
+    }
+   ]
+  },
+  {
+   "n": 52,
+   "lien": "https://www.amazon.de/dp/B074PTR695",
+   "sauts": [
+    {
+     "url": "https://www.amazon.de/dp/B074PTR695",
+     "status": 200,
+     "ms": 277,
+     "cf": null,
+     "type": "text/html;charset=UTF-8",
+     "loc": null,
+     "taille": 2125172
+    }
+   ]
+  },
+  {
+   "n": 53,
+   "lien": "https://www.amazon.de/dp/B00L4F0QAE",
+   "sauts": [
+    {
+     "url": "https://www.amazon.de/dp/B00L4F0QAE",
+     "status": 200,
+     "ms": 250,
+     "cf": null,
+     "type": "text/html;charset=UTF-8",
+     "loc": null,
+     "taille": 1699619
+    }
+   ]
+  },
+  {
+   "n": 54,
+   "lien": "https://amzn.eu/d/0ihxwpST",
+   "sauts": [
+    {
+     "url": "https://amzn.eu/d/0ihxwpST",
+     "status": 301,
+     "ms": 189,
+     "cf": null,
+     "type": "application/json",
+     "loc": "https://www.amazon.fr/dp/B0G4SHPH5K?ref=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5&ref_=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5&social_share=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5"
+    },
+    {
+     "url": "https://www.amazon.fr/dp/B0G4SHPH5K?ref=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5&ref_=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5&social_share=cm_sw_r_cso_cp_apin_dp_XANY9XVYRDM4FKRPPQE5",
+     "status": 200,
+     "ms": 364,
+     "cf": null,
+     "type": "text/html;charset=UTF-8",
+     "loc": null,
+     "taille": 2341553
+    }
+   ]
+  },
+  {
+   "n": 55,
+   "lien": "https://amzn.eu/d/0bJLAc6r",
+   "sauts": [
+    {
+     "url": "https://amzn.eu/d/0bJLAc6r",
+     "status": 301,
+     "ms": 192,
+     "cf": null,
+     "type": "application/json",
+     "loc": "https://www.amazon.de/dp/B0HHXH8V29?ref=cm_sw_r_ffobk_cso_cp_apan_dp_VJNS2XF176ZA36N17WYE&ref_=cm_sw_r_ffobk_cso_cp_apan_dp_VJNS2XF176ZA36N17WYE&social_share=cm_sw_r_ffobk_cso_cp_apan_dp_VJNS2XF176ZA36N17WYE&bestFormat=true"
+    },
+    {
+     "url": "https://www.amazon.de/dp/B0HHXH8V29?ref=cm_sw_r_ffobk_cso_cp_apan_dp_VJNS2XF176ZA36N17WYE&ref_=cm_sw_r_ffobk_cso_cp_apan_dp_VJNS2XF176ZA36N17WYE&social_share=cm_sw_r_ffobk_cso_cp_apan_dp_VJNS2XF176ZA36N17WYE&bestFormat=true",
+     "status": 200,
+     "ms": 364,
+     "cf": null,
+     "type": "text/html;charset=UTF-8",
+     "loc": null,
+     "taille": 1621473
+    }
+   ]
+  },
+  {
+   "n": 56,
+   "lien": "https://www.mediamarkt.ch/de/product/_klarstein-mundschenk-maischekessel-88419523.html",
+   "sauts": [
+    {
+     "url": "https://www.mediamarkt.ch/de/product/_klarstein-mundschenk-maischekessel-88419523.html",
+     "status": 200,
+     "ms": 186,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 974751
+    }
+   ]
+  },
+  {
+   "n": 57,
+   "lien": "https://www.galaxus.ch/de/s1/product/41965972",
+   "sauts": [
+    {
+     "url": "https://www.galaxus.ch/de/s1/product/41965972",
+     "status": 200,
+     "ms": 264,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 151734
+    }
+   ]
+  },
+  {
+   "n": 58,
+   "lien": "https://www.digitec.ch/de/s1/product/43103635",
+   "sauts": [
+    {
+     "url": "https://www.digitec.ch/de/s1/product/43103635",
+     "status": 200,
+     "ms": 244,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 181056
+    }
+   ]
+  },
+  {
+   "n": 59,
+   "lien": "https://www.galaxus.ch/de/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562",
+   "sauts": [
+    {
+     "url": "https://www.galaxus.ch/de/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562",
+     "status": 200,
+     "ms": 243,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 165735
+    }
+   ]
+  },
+  {
+   "n": 60,
+   "lien": "https://www.galaxus.ch/fr/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562",
+   "sauts": [
+    {
+     "url": "https://www.galaxus.ch/fr/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562",
+     "status": 200,
+     "ms": 277,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 168611
+    }
+   ]
+  },
+  {
+   "n": 61,
+   "lien": "https://www.gastro-held.ch/fr/products/armoire-refrigeree-professionnelle-eco-400-gn-11-snackh400tn",
+   "sauts": [
+    {
+     "url": "https://www.gastro-held.ch/fr/products/armoire-refrigeree-professionnelle-eco-400-gn-11-snackh400tn",
+     "status": 200,
+     "ms": 1032,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 1468314
+    }
+   ]
+  },
+  {
+   "n": 62,
+   "lien": "https://www.fischer-lahr.de/Edelstahl-Maische-Fermenter-60-L-mit-konischem-Boden",
+   "sauts": [
+    {
+     "url": "https://www.fischer-lahr.de/Edelstahl-Maische-Fermenter-60-L-mit-konischem-Boden",
+     "status": 200,
+     "ms": 2264,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 1747855
+    }
+   ]
+  },
+  {
+   "n": 63,
+   "lien": "https://www.gastro-held.ch/products/barkuehlschrank-eco-350-mit-klapptueren-schwarz-led-beleuchtung-unterbaubar-bkse350kt?variant=67996628713702",
+   "sauts": [
+    {
+     "url": "https://www.gastro-held.ch/products/barkuehlschrank-eco-350-mit-klapptueren-schwarz-led-beleuchtung-unterbaubar-bkse350kt?variant=67996628713702",
+     "status": 200,
+     "ms": 802,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 1244293
+    }
+   ]
+  }
+ ]
+}

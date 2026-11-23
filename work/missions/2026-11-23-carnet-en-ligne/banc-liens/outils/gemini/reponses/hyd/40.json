@@ -1,0 +1,52 @@
+{
+ "n": 40,
+ "cfg": "hyd",
+ "modele": "gemini-4-hydrogen",
+ "http": 200,
+ "ms": 7753,
+ "usage": {
+  "promptTokenCount": 621,
+  "candidatesTokenCount": 168,
+  "totalTokenCount": 21174,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 621
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 168
+   }
+  ],
+  "toolUsePromptTokenCount": 19902,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 19902
+   }
+  ],
+  "thoughtsTokenCount": 483,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Edelstahl-Kühlschrank – 440 L – +2 bis +8 °C – 740×830×2010 mm\", \"marque\": \"Klima Italia\", \"prix\": 1239, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": []}",
+ "json": {
+  "nom": "Edelstahl-Kühlschrank – 440 L – +2 bis +8 °C – 740×830×2010 mm",
+  "marque": "Klima Italia",
+  "prix": 1239,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": []
+ },
+ "entree": 20523,
+ "sortie": 651,
+ "chf": 0.04458375
+}

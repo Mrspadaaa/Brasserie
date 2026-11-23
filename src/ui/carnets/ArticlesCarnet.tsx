@@ -85,12 +85,12 @@ export function rubriqueArticles(v: ArticlesCarnetV): React.ReactNode {
             {gererArticles(v)}
             {articleRange && r && !p.tableau && (
               <LigneRangee sorte="article" faconNom={faconRange?.nom} rang={r.rang} phrase={r.phrase} onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer} versSuggere={r.versSuggere}>
-                <CarteArticle article={articleRange} critere={critere} faconNom={faconRange?.nom} carnetTitre={c.title} variante="complete" luSurPage={r.luSurPage} verdict={r.verdict} onVeille={v => p.onVeille?.(articleRange.id, v)} />
+                <CarteArticle article={articleRange} taux={p.taux} critere={critere} faconNom={faconRange?.nom} carnetTitre={c.title} variante="complete" luSurPage={r.luSurPage} verdict={r.verdict} onVeille={v => p.onVeille?.(articleRange.id, v)} />
               </LigneRangee>
             )}
             {p.tableau ? (<>
               {/* n° 20 : la conclusion se colle aux façons en lice, avant l'écartée et le lien à relire */}
-              <TableauCarnet carnet={k} titre={c.title} tableau={p.tableau} aRelire={aRelire} sep={sep} onOuvrir={p.onOuvrirArticle}
+              <TableauCarnet taux={p.taux} carnet={k} titre={c.title} tableau={p.tableau} aRelire={aRelire} sep={sep} onOuvrir={p.onOuvrirArticle}
                 conclusion={conclusion && (
                   <div className="cn-encart cn-separe" role="note">
                     {/* un nombre ne se sépare pas de son unité (« 80 °C » jamais coupé en fin de ligne) */}
@@ -112,13 +112,13 @@ export function rubriqueArticles(v: ArticlesCarnetV): React.ReactNode {
                   if (seul) {
                     return (
                       <div className="cn-carte-complete">
-                        <CarteArticle article={seul} critere={critere} faconNom={k.facons.find(f => f.id === seul.faconId)?.nom} carnetTitre={c.title} variante="complete"
+                        <CarteArticle article={seul} taux={p.taux} critere={critere} faconNom={k.facons.find(f => f.id === seul.faconId)?.nom} carnetTitre={c.title} variante="complete"
                           onOuvrir={() => p.onOuvrirArticle(seul.id)} onVeille={v => p.onVeille?.(seul.id, v)} />
                       </div>
                     );
                   }
                   return reste.map(a => (
-                    <CarteArticle key={a.id} article={a} critere={critere} carnetTitre={c.title} faconNom={k.facons.find(f => f.id === a.faconId)?.nom} onOuvrir={() => p.onOuvrirArticle(a.id)} />
+                    <CarteArticle key={a.id} article={a} taux={p.taux} critere={critere} carnetTitre={c.title} faconNom={k.facons.find(f => f.id === a.faconId)?.nom} onOuvrir={() => p.onOuvrirArticle(a.id)} />
                   ));
                 })()}
               </div>

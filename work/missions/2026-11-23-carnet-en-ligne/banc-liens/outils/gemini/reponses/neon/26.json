@@ -1,0 +1,77 @@
+{
+ "n": 26,
+ "cfg": "neon",
+ "modele": "gemini-4-neon",
+ "http": 200,
+ "ms": 14244,
+ "usage": {
+  "promptTokenCount": 588,
+  "candidatesTokenCount": 219,
+  "totalTokenCount": 7192,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 588
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 219
+   }
+  ],
+  "toolUsePromptTokenCount": 5726,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 5726
+   }
+  ],
+  "thoughtsTokenCount": 659,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Speidels Braumeister PLUS 20 Liter\", \"marque\": \"Speidel\", \"prix\": 2190, \"devise\": \"CHF\", \"ttc\": true, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Artikelnummer\", \"valeur\": \"BE720P\"}, {\"nom\": \"Material\", \"valeur\": \"Rostfreier Edelstahl\"}, {\"nom\": \"Braumenge\", \"valeur\": \"20 l fertiges Bier (ca. 23 l Bierwürze)\"}, {\"nom\": \"Max. Malzmenge\", \"valeur\": \"6 kg\"}, {\"nom\": \"Kühlung\", \"valeur\": \"Angeschweißter Doppelmantel\"}, {\"nom\": \"Ablauf\", \"valeur\": \"Zusätzlicher Ablauf mit Hahn am Kesselboden\"}]}",
+ "json": {
+  "nom": "Speidels Braumeister PLUS 20 Liter",
+  "marque": "Speidel",
+  "prix": 2190,
+  "devise": "CHF",
+  "ttc": true,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Artikelnummer",
+    "valeur": "BE720P"
+   },
+   {
+    "nom": "Material",
+    "valeur": "Rostfreier Edelstahl"
+   },
+   {
+    "nom": "Braumenge",
+    "valeur": "20 l fertiges Bier (ca. 23 l Bierwürze)"
+   },
+   {
+    "nom": "Max. Malzmenge",
+    "valeur": "6 kg"
+   },
+   {
+    "nom": "Kühlung",
+    "valeur": "Angeschweißter Doppelmantel"
+   },
+   {
+    "nom": "Ablauf",
+    "valeur": "Zusätzlicher Ablauf mit Hahn am Kesselboden"
+   }
+  ]
+ },
+ "entree": 6314,
+ "sortie": 878,
+ "chf": 0.04014
+}

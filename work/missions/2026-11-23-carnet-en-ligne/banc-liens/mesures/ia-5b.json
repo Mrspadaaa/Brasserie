@@ -1,0 +1,114 @@
+{
+ "le": "2026-11-23T14:26:18.349Z",
+ "ia": "reel",
+ "bilanIA": {
+  "appels": 1,
+  "parModele": {
+   "fort": 1
+  },
+  "depenseChf": 0.00848,
+  "reserveeEngageeChf": 0,
+  "refuses": 0,
+  "rejoues": 1,
+  "textesMax": 3316,
+  "ms": [
+   3030
+  ]
+ },
+ "taux": {
+  "liens": 1,
+  "prixSansJsonLd": "1/1 (100 %)",
+  "nom": "1/1 (100 %)",
+  "prixAffiche": "1/1 (100 %)",
+  "photoAffichee": "1/1 (100 %)",
+  "caracteristiques": "0/0 (0 %)",
+  "htDit": "0/0 (0 %)",
+  "livraisonCH": "0/0 (0 %)",
+  "inventions": 0,
+  "liensAvecInvention": []
+ },
+ "lignes": [
+  {
+   "n": 49,
+   "genres": [
+    "lot",
+    "variantes",
+    "eur-hors-tva-ch",
+    "configurateur"
+   ],
+   "statut": "lue",
+   "nom": "=",
+   "prix": "=",
+   "photo": "=",
+   "caract": "·",
+   "ttc": "",
+   "livraison": "·",
+   "inventions": [],
+   "ms": 3097,
+   "lu": {
+    "url": "https://shop.speidels-braumeister.de/de/braumeister-20-liter",
+    "domaine": "shop.speidels-braumeister.de",
+    "statut": "lue",
+    "luLe": 0,
+    "nom": "Braumeister 20 Liter",
+    "photo": "https://shop.speidels-braumeister.de/media/images/category/listingTop/bm-kachel-bm-20l-20260919.jpg",
+    "photos": [
+     "https://shop.speidels-braumeister.de/media/images/category/listingTop/bm-kachel-bm-20l-20260919.jpg"
+    ],
+    "valeurs": [
+     {
+      "nom": "Volume",
+      "valeur": "20 Liter"
+     }
+    ],
+    "etapes": [
+     {
+      "nom": "page",
+      "statut": "trouve",
+      "detail": "shop.speidels-braumeister.de"
+     },
+     {
+      "nom": "donnees",
+      "statut": "absent",
+      "detail": "aucun Product schema.org"
+     },
+     {
+      "nom": "prix",
+      "statut": "absent"
+     },
+     {
+      "nom": "devise-frais",
+      "statut": "absent"
+     },
+     {
+      "nom": "photos",
+      "statut": "trouve",
+      "detail": "1"
+     },
+     {
+      "nom": "caract",
+      "statut": "trouve",
+      "detail": "1 · dont 0 du HTML, 0 de données embarquées ou de descriptions, 1 du nom"
+     },
+     {
+      "nom": "controle",
+      "statut": "trouve"
+     },
+     {
+      "nom": "ia",
+      "statut": "trouve",
+      "detail": "lite puis fort ; ajouté : prix"
+     }
+    ],
+    "prix": 1990,
+    "devise": "EUR",
+    "change": {
+     "taux": 0.93,
+     "date": "2026-11-23",
+     "source": "BCE"
+    }
+   },
+   "sansJsonLd": true
+  }
+ ]
+}

@@ -12,7 +12,7 @@
  */
 import React from 'react';
 import { ChevronLeft, ExternalLink, Pin, Scale } from 'lucide-react';
-import { prixRendu } from '../../domain/carnets/prixRendu';
+import { estEtranger, MENTION_FRAIS, renduArticle, tauxVersChf } from '../../domain/carnets/prixRendu';
 import { sourceDuCritere } from '../../domain/carnets/modele';
 import { compromisDe, groupeDeLigne, libelleCaracteristique, libelleEcarte, nombreDe, rangVisible, type Tableau } from '../../domain/carnets/comparer';
 import { montant, Provenance, rangTexte, STATUT_LIBELLE, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
@@ -113,7 +113,9 @@ export function sansApercu(a: Pick<ArticleV, 'lecture' | 'nom' | 'domaine' | 'ur
   if (a.lecture === 'lue' || a.nom?.trim()) return null;
   const domaine = domaineDe(a);
   const enCours = a.lecture === 'en-cours' || a.lecture === 'a-lire';
-  return { titre: enCours ? (domaine ?? 'Lien') : 'Lien sans aperçu', sous: `${domaine ? `${domaine} · ` : ''}${enCours ? 'lecture…' : 'page non lue'}`, enCours };
+  /* D447 : un lien mort se dit tel (« introuvable »), pas « page non lue » : la page n'existe plus, rien n'est à relire */
+  const morte = a.lecture === 'introuvable';
+  return { titre: enCours ? (domaine ?? 'Lien') : morte ? 'Lien introuvable' : 'Lien sans aperçu', sous: `${domaine ? `${domaine} · ` : ''}${enCours ? 'lecture…' : morte ? 'ne mène plus à la fiche' : 'page non lue'}`, enCours };
 }
 
 /**
@@ -311,14 +313,15 @@ function Vignette({ photo, picto }: { photo?: string; picto?: React.ReactNode })
 /** A1 : la cellule du prix. Inconnu : case hachurée « ? » ; « dès » au-dessus d'un plancher ; en euros, ≈ rendu en brun et l'euro dessous (sans taux : l'euro et « taux ? »). */
 function CellulePrix({ l, taux }: { l: LigneT; taux?: number }) {
   if (l.prixCentimes === undefined) return <span className="cn-hach" title="Prix non lu : relire la page de l'article">?</span>;
-  if (l.devise === 'EUR') {
-    const r = prixRendu({ eurCentimes: l.prixCentimes, taux });
-    const eur = `${montant(Math.round(l.prixCentimes / 100) * 100)} €`;
-    return r.totalChf !== undefined
-      ? <><small className="cn-mut">{r.manque.length ? 'dès' : 'estimé'}</small><span className="cn-mono cn-brun">≈{montant(Math.round(r.totalChf / 100) * 100)}</span><small className="cn-mut cn-mono">{eur}</small></>
-      : <><span className="cn-mono">{eur}</span><small className="cn-mut">taux ?</small></>;
+  if (estEtranger(l)) {
+    const r = renduArticle(l, taux);
+    const dev = (l.devise ?? '').toUpperCase();
+    const orig = `${montant(l.prixCentimes)} ${dev === 'EUR' ? '€' : dev}${l.taxe === 'ht' ? ' HT' : ''}`;
+    return r && r.totalChf !== undefined
+      ? <><small className="cn-mut">{r.manque.length ? 'dès' : 'estimé'}</small><span className="cn-mono cn-brun">≈{montant(Math.round(r.totalChf / 100) * 100)}</span><small className="cn-mut cn-mono">{orig}</small></>
+      : <><span className="cn-mono">{orig}</span><small className="cn-mut">{dev === 'EUR' ? 'taux ?' : 'cours ?'}</small></>;
   }
-  return <>{l.prixDes ? <small className="cn-mut">dès</small> : null}<Mesure txt={montant(l.prixCentimes) ?? ''} /></>;
+  return <>{l.prixDes ? <small className="cn-mut">dès</small> : null}<Mesure txt={montant(l.prixCentimes) ?? ''} />{l.taxe === 'ht' ? <small className="cn-mut">HT</small> : null}</>;
 }
 
 export function Comparer(p: ComparerProps) {
@@ -336,7 +339,8 @@ export function Comparer(p: ComparerProps) {
   /* A1 : le prix classe s'il est connu sur au moins 2 articles en lice de même devise ; sinon son rang reste pointillé (« Prix ? ») */
   const prixConnus = actifs.filter(l => l.prixCentimes !== undefined);
   const prixClasse = prixConnus.length >= 2 && new Set(prixConnus.map(l => l.devise ?? 'CHF')).size === 1;
-  const aUnEuro = actifs.some(l => l.devise === 'EUR' && l.prixCentimes !== undefined);
+  const aUnEuro = actifs.some(l => estEtranger(l));
+  const aUnTaux = actifs.some(l => estEtranger(l) && tauxVersChf(l, p.taux));
   const compromisLocal = p.compromis ? null : compromisDe(t);
   /* le tableau naît au 2e article LU : un lien non lu n'en tient pas lieu (P6). L-27 : un seul article lu (le choisi, et des liens non
      lus) a sa colonne ; seul un tableau sans aucun article lu reste à naître */
@@ -455,7 +459,7 @@ export function Comparer(p: ComparerProps) {
               <span><b>Compromis :</b> {p.compromis ?? compromisLocal} <Provenance origine={p.compromis ? 'ia' : 'locale'} /></span>
             </p>
           )}
-          {aUnEuro && <p className="cn-mut cn-annonce cn-annonce-eur">{p.taux ? '≈ rendu chez toi : TVA d’import 8,1 %, port et frais « ? » tant qu’inconnus, estimé' : 'Euros : le taux se pose dans la liste des articles'}</p>}
+          {aUnEuro && <p className="cn-mut cn-annonce cn-annonce-eur">{aUnTaux ? `≈ rendu chez toi : TVA d’import 8,1 %, port lu sinon « ? », ${MENTION_FRAIS}, estimé` : 'Euros : le taux se pose dans la liste des articles'}</p>}
           <p className="cn-mut cn-annonce">{p.mention ?? 'Valeurs annoncées par les vendeurs'}{p.exemple || (t && deLExemple(t)) ? <> · <Provenance origine="exemple" /></> : null}</p>
           {/* La ligne « Écarté » (D-52) : chaque écarté, son nom et sa raison, lisibles sans défiler (p2:h04-7) ; aucun écarté, aucune ligne. */}
           {ecartes.length > 0 && (
@@ -496,7 +500,7 @@ export function ARelire({ articles }: { articles: readonly { id: string; url?: s
           <li key={a.id}>
             <span className="cn-a-relire-q" aria-hidden>?</span>
             {/* test en ligne 2 (bloquant 6) : un lien que l'IA a nommé garde son nom */}
-            <span className="cn-sp"><b>{a.nom?.trim() || 'Lien sans aperçu'}</b><span className="cn-mut">{domaine ? `${domaine} · ` : ''}{a.lecture === 'en-cours' || a.lecture === 'a-lire' ? 'lecture…' : 'à relire'}</span></span>
+            <span className="cn-sp"><b>{a.nom?.trim() || (a.lecture === 'introuvable' ? 'Lien introuvable' : 'Lien sans aperçu')}</b><span className="cn-mut">{domaine ? `${domaine} · ` : ''}{a.lecture === 'en-cours' || a.lecture === 'a-lire' ? 'lecture…' : a.lecture === 'introuvable' ? 'ne mène plus à la fiche' : 'à relire'}</span></span>
             {a.url && <a className="cn-lien" href={a.url} target="_blank" rel="noreferrer noopener" aria-label={`Ouvrir ${domaine ?? 'le lien'}, nouvel onglet`}>Ouvrir <ExternalLink size={16} aria-hidden /></a>}
           </li>
         );

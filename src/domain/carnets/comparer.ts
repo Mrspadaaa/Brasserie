@@ -7,7 +7,7 @@
  */
 import { parseDecimal } from '../../ui/numericInput';
 import { quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
-import { nomArticle, sourceDuCritere, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
+import { dispoDe, nomArticle, sourceDuCritere, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
 
 type Donnees = Pick<DonneesCarnet, 'criteres' | 'facons' | 'articles' | 'choix'>;
 const donnees = (c: CarnetDoc | Donnees): Donnees => ('carnet' in c ? c.carnet : c);
@@ -217,6 +217,10 @@ export interface LigneTableau {
   /** « dès » : le prix lu est un plancher (D419, A1 et B1) */
   prixDes?: true;
   devise?: string;
+  /** D447 : la taxe dite par la page, le port vers la Suisse lu et le cours du jour (BCE) ; absents quand la page ne les donne pas. */
+  taxe?: Article['taxe'];
+  livraison?: Article['livraison'];
+  change?: Article['change'];
   /** Livraison (CRB-13) : ce que l'article porte déjà (dispo, vendeur, pays) ; absent = inconnu, jamais une valeur par défaut. */
   dispo?: string;
   vendeur?: string;
@@ -436,7 +440,8 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
       articleId: a.id, nom: noms.get(a.id) ?? nomArticle(a), rang, cellules,
       ...(a.prixCentimes !== undefined ? { prixCentimes: a.prixCentimes } : {}), ...(a.prixDes ? { prixDes: true as const } : {}),
       ...(a.devise ? { devise: a.devise } : {}),
-      ...(a.dispo ? { dispo: a.dispo } : {}), ...(a.vendeur ? { vendeur: a.vendeur } : {}), ...(a.pays ? { pays: a.pays } : {}),
+      ...(a.taxe ? { taxe: a.taxe } : {}), ...(a.livraison ? { livraison: a.livraison } : {}), ...(a.change ? { change: a.change } : {}),
+      ...(dispoDe(a) ? { dispo: dispoDe(a) } : {}), ...(a.vendeur ? { vendeur: a.vendeur } : {}), ...(a.pays ? { pays: a.pays } : {}),
       ...(a.photo ? { photo: a.photo } : {}),
       moinsBienPartout: rang !== null && moinsBienPartout(a, enLice, colonnes),
       ...(dominant !== null ? { moinsBienQue: dominant } : {}),
@@ -803,7 +808,7 @@ export function pourquoiDe(c: CarnetDoc | Donnees, articleId: string): string | 
   const l = t?.lignes.find(x => x.articleId === articleId);
   const regle = t && l ? problemeRegle(t, l) : null;
   if (regle) parts.push(regle);
-  const chez = [a.dispo, a.vendeur ? `${a.vendeur}${a.pays ? ` (${a.pays})` : ''}` : null].filter(Boolean).join(', ');
+  const chez = [dispoDe(a), a.vendeur ? `${a.vendeur}${a.pays ? ` (${a.pays})` : ''}` : null].filter(Boolean).join(', ');
   if (chez) parts.push(chez);
   if (!parts.length) return null;
   return `${majuscule(parts.join(' ; '))}.`;

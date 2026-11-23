@@ -1,0 +1,66 @@
+{
+ "n": 26,
+ "cfg": "f38",
+ "modele": "gemini-3.8-flash",
+ "http": 200,
+ "ms": 5874,
+ "usage": {
+  "promptTokenCount": 390,
+  "candidatesTokenCount": 241,
+  "totalTokenCount": 6122,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 390
+   }
+  ],
+  "toolUsePromptTokenCount": 5491,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 5491
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "```json\n{\n  \"nom\": \"Speidels Braumeister PLUS 20 Liter\",\n  \"marque\": null,\n  \"prix\": 2190.0,\n  \"devise\": \"CHF\",\n  \"ttc\": true,\n  \"fraisSuisse\": null,\n  \"photos\": [],\n  \"caracteristiques\": [\n    {\"nom\": \"Fassungsvermögen\", \"valeur\": \"20 Liter\"},\n    {\"nom\": \"Material\", \"valeur\": \"Aus rostfreiem Edelstahl\"},\n    {\"nom\": \"Braumenge\", \"valeur\": \"20 l fertiges Bier (Normalbier) = ca. 23 l Bierwürze\"},\n    {\"nom\": \"Max. Malzmenge\", \"valeur\": \"6 kg\"},\n    {\"nom\": \"Artikelnummer\", \"valeur\": \"BE720P\"}\n  ]\n}\n```",
+ "json": {
+  "nom": "Speidels Braumeister PLUS 20 Liter",
+  "marque": null,
+  "prix": 2190,
+  "devise": "CHF",
+  "ttc": true,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Fassungsvermögen",
+    "valeur": "20 Liter"
+   },
+   {
+    "nom": "Material",
+    "valeur": "Aus rostfreiem Edelstahl"
+   },
+   {
+    "nom": "Braumenge",
+    "valeur": "20 l fertiges Bier (Normalbier) = ca. 23 l Bierwürze"
+   },
+   {
+    "nom": "Max. Malzmenge",
+    "valeur": "6 kg"
+   },
+   {
+    "nom": "Artikelnummer",
+    "valeur": "BE720P"
+   }
+  ]
+ },
+ "entree": 5881,
+ "sortie": 241,
+ "chf": 0.01328625
+}

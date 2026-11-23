@@ -25,7 +25,10 @@ export interface VeilleV { active: boolean; depuis: string; releveLe?: string }
 export interface ArticleV {
   id: string; url?: string; domaine?: string; nom?: string; prixCentimes?: number; prixDes?: true; devise?: string; vendeur?: string; pays?: string;
   dispo?: string; photo?: string; faconId?: string; valeurs: Record<string, ValeurV>;
-  lecture: 'a-lire' | 'en-cours' | 'lue' | 'illisible'; veille?: VeilleV; messageId?: string; origine?: Origine; ajouteLe?: string;
+  /** D446, D447 : toutes les photos de la page, le prix HT ou TTC, le port vers la Suisse lu, le cours du jour (BCE) ; absents quand la page ne les donne pas. */
+  photos?: string[]; taxe?: 'ht' | 'ttc'; prixTTCCentimes?: number;
+  livraison?: { prixCentimes?: number; devise?: string; gratuite?: true; refusee?: true }; change?: { taux: number; date: string; source: 'BCE' };
+  lecture: 'a-lire' | 'en-cours' | 'lue' | 'illisible' | 'introuvable'; veille?: VeilleV; messageId?: string; origine?: Origine; ajouteLe?: string;
 }
 export interface NoteV { id: string; texte: string; genre: GenreNote; le?: string; modifieeLe?: string; messageId?: string; groupe?: { id: string; libelle: string }; fusionDe?: string[] }
 export interface PhotoV { id: string; jpeg: string; messageId?: string; le?: string }

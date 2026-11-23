@@ -1,0 +1,52 @@
+{
+ "n": 27,
+ "cfg": "hyd",
+ "modele": "gemini-4-hydrogen",
+ "http": 200,
+ "ms": 3823,
+ "usage": {
+  "promptTokenCount": 590,
+  "candidatesTokenCount": 92,
+  "totalTokenCount": 1591,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 590
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 92
+   }
+  ],
+  "toolUsePromptTokenCount": 746,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 746
+   }
+  ],
+  "thoughtsTokenCount": 163,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_ERROR"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": null, \"marque\": null, \"prix\": null, \"devise\": null, \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": []}",
+ "json": {
+  "nom": null,
+  "marque": null,
+  "prix": null,
+  "devise": null,
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": []
+ },
+ "entree": 1336,
+ "sortie": 255,
+ "chf": 0.004895625
+}

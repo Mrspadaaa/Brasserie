@@ -157,20 +157,35 @@ export function depuisIA(l: LigneCarnet, dest: Destination): LigneARanger {
     case 'article': {
       const p = l.page;
       const lue = p ? p.statut === 'lue' : !l.url;
+      const introuvable = p?.statut === 'introuvable';
       /* tour 3, f11 (PCN-110) : une valeur lue sur la page porte la date de sa lecture ; la fiche dit « lues sur la fiche du vendeur, <date> » (h01-6) */
       const luLe = p?.statut === 'lue' && p.luLe > 0 ? new Date(p.luLe).toISOString() : undefined;
       const valeurs: Record<string, { valeur: string; unite?: string; origine: 'page'; luLe?: string }> = {};
       for (const v of p?.valeurs ?? []) valeurs[v.nom] = { valeur: v.valeur, ...(v.unite ? { unite: v.unite } : {}), origine: 'page', ...(luLe ? { luLe } : {}) };
+      /* D447 : le prix, la taxe, le TTC et le cours vont ensemble, et ne s'attachent qu'au prix lu SUR LA PAGE ; un prix écrit par le brasseur
+         (« 3 000 euros ») garde le sien. Le port, lui, est celui de la page lue. */
+      const prixCentimes = l.prixCentimes ?? (p?.statut === 'lue' && typeof p.prix === 'number' && p.prix > 0 && p.devise ? Math.round(p.prix * 100) : undefined);
+      const devise = l.prixCentimes !== undefined ? (l.devise ?? 'CHF') : p?.devise;
+      const duPage = lue && p?.prix !== undefined && prixCentimes === Math.round(p.prix * 100) && (devise ?? 'CHF') === (p.devise ?? 'CHF');
+      const taxeLue = duPage && p?.taxe ? { taxe: p.taxe, ...(p.taxe === 'ht' && p.prixTTC !== undefined && p.prixTTC > 0 ? { prixTTCCentimes: Math.round(p.prixTTC * 100) } : {}) } : {};
+      const change = duPage && p?.change && (p.devise ?? 'CHF') !== 'CHF' && p.change.taux > 0 ? { change: { taux: p.change.taux, date: p.change.date, source: p.change.source } } : {};
+      const lv = lue ? p?.livraison : undefined;
+      const livraison = lv && (lv.gratuite || lv.refusee || (typeof lv.prix === 'number' && lv.prix >= 0))
+        ? { livraison: { ...(typeof lv.prix === 'number' && lv.prix >= 0 && !lv.gratuite && !lv.refusee ? { prixCentimes: Math.round(lv.prix * 100), devise: lv.devise ?? p?.devise ?? 'CHF' } : {}), ...(lv.gratuite ? { gratuite: true as const } : {}), ...(lv.refusee ? { refusee: true as const } : {}) } } : {};
+      /* D446 : toutes les photos de la page, la première en tête (c'est celle des cartes) */
+      const toutes = lue ? [...new Set([...(p?.photo ? [p.photo] : []), ...(p?.photos ?? [])])] : [];
       return {
         /* test en ligne 2 (bloquant 6) : l'IA passée, les pages ont été lues ; un lien sans page n'attend plus rien (jamais « lecture… » sans fin) */
-        ...dest, sorte: 'article', origine, lecture: l.url ? (lue ? 'lue' : 'illisible') : 'lue',
+        ...dest, sorte: 'article', origine, lecture: l.url ? (lue ? 'lue' : introuvable ? 'introuvable' : 'illisible') : 'lue',
         ...(l.url ? { url: l.url } : {}), ...(p?.domaine ? { domaine: p.domaine } : {}),
         ...(p?.nom ?? l.titre ? { nom: p?.nom ?? l.titre } : !l.url ? { nom: l.texte } : {}),
         ...(l.prixCentimes !== undefined ? { prixCentimes: l.prixCentimes, devise: l.devise ?? 'CHF', ...(l.prixDes ? { prixDes: true } : {}) }
           /* CRP-1, maillon 3 : le prix de la page lue de CETTE ligne, si ia.ts ne l'a pas posé */
-          : p?.statut === 'lue' && typeof p.prix === 'number' && p.prix > 0 && p.devise ? { prixCentimes: Math.round(p.prix * 100), devise: p.devise, ...(p.prixDes ? { prixDes: true } : {}) } : {}),
-        ...(l.vendeur ? { vendeur: l.vendeur } : {}), ...(p?.photo ? { photo: p.photo } : {}),
-        ...(p?.dispo ? { dispo: p.dispo === 'en-stock' ? 'en stock' : 'rupture' } : {}),
+          : prixCentimes !== undefined ? { prixCentimes, devise: p!.devise, ...(p!.prixDes ? { prixDes: true } : {}) } : {}),
+        ...taxeLue, ...change, ...livraison,
+        ...(l.vendeur ? { vendeur: l.vendeur } : {}), ...(toutes.length ? { photo: toutes[0], photos: toutes } : {}),
+        /* BL-15 : « plus disponible » est dit par la page (Discontinued, « retiré du catalogue ») ; jamais confondu avec une rupture */
+        ...(p?.dispo ? { dispo: p.dispo === 'en-stock' ? 'en stock' : p.dispo === 'retire' ? 'plus disponible' : 'rupture' } : {}),
         ...(Object.keys(valeurs).length ? { valeurs } : {})
       } as LigneARanger;
     }

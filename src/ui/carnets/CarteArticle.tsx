@@ -13,12 +13,15 @@
 import React from 'react';
 import { ExternalLink, Eye, Link2 } from 'lucide-react';
 import { libelleEcarte } from '../../domain/carnets/comparer';
+import { dispoDe } from '../../domain/carnets/modele';
 import { montant, Provenance, rangTexte, valeurTexte, type ArticleV, type CritereV, type ValeurV } from './EtatIA';
 import { VignetteObjet } from './pictos';
-import { PrixPastille, PrixRenduDetail } from './PrixPastille';
+import { detailPrix, PrixPastille, PrixRenduDetail, PrixTexte } from './PrixPastille';
 
 export interface CarteArticleProps {
   article: ArticleV;
+  /** D447 : le taux EUR→CHF (facture ou posé) ; sans lui, le cours du jour lu avec la page. */
+  taux?: number;
   /** Le critère qui range (sa caractéristique donne la mesure affichée). */
   critere?: CritereV;
   rang?: number;
@@ -43,6 +46,8 @@ export function mesureCritere(article: ArticleV, critere?: CritereV): { texte: s
   if (t === null) return null;
   return { texte: t, unite: v?.unite ?? c.unite };
 }
+
+const dispoClasse = (d: string) => (/stock/i.test(d) ? 'cn-pastille-vert' : 'cn-pastille-att');
 
 /** Un prix lisible : « 690 CHF » ; inconnu : null. */
 function prixAvecDevise(a: Pick<ArticleV, 'prixCentimes' | 'devise'>): string | null {
@@ -115,7 +120,6 @@ function Vignette({ article, faconNom, carnetTitre, classe }: { article: Article
 export function CarteArticle(p: CarteArticleProps) {
   const a = p.article;
   const prix = montant(a.prixCentimes);
-  const devise = a.devise ?? 'CHF';
   const mesure = mesureCritere(a, p.critere);
   const carac = p.critere?.caracteristique;
   const veilleDemandee = !!a.veille?.active;
@@ -128,8 +132,8 @@ export function CarteArticle(p: CarteArticleProps) {
         <span className="cn-rang cn-rang-vide" aria-label="sans rang">?</span>
         <Vignette article={a} />
         <div className="cn-article-tx">
-          <b>{enCours ? (a.domaine ?? 'Lien') : 'Lien sans aperçu'}</b>
-          <span className="cn-mut">{a.domaine ? `${a.domaine} · ` : ''}{enCours ? 'lecture…' : 'page non lue'}</span>
+          <b>{enCours ? (a.domaine ?? 'Lien') : a.lecture === 'introuvable' ? 'Lien introuvable' : 'Lien sans aperçu'}</b>
+          <span className="cn-mut">{a.domaine ? `${a.domaine} · ` : ''}{enCours ? 'lecture…' : a.lecture === 'introuvable' ? 'ne mène plus à la fiche : rien n’a été lu' : 'page non lue'}</span>
         </div>
         {a.url && <a className="cn-lien" href={a.url} target="_blank" rel="noreferrer noopener">Ouvrir <ExternalLink size={16} aria-hidden /></a>}
       </div>
@@ -151,12 +155,13 @@ export function CarteArticle(p: CarteArticleProps) {
           <b className="cn-article-nom">{a.nom}</b>
           {(origine || estExemple(a)) && <span className="cn-mut">{origine}{estExemple(a) && <> <Provenance origine="exemple" /></>}</span>}
           {valeurs.length > 0 && <span className="cn-encre-2 cn-mono-chiffres cn-valeurs-lues">{valeurs.join(' · ')}</span>}
-          {(prix || a.dispo) && (
+          {(prix || dispoDe(a)) && (
             <span className="cn-ligne cn-article-pied">
-              {prix && <span className="cn-nowrap"><span className="cn-mono cn-prix">{prix}</span> {devise}</span>}
-              {a.dispo && <span className="cn-pastille cn-pastille-vert">{a.dispo}</span>}
+              {prix && <PrixTexte a={a} taux={p.taux} />}
+              {dispoDe(a) && <span className={`cn-pastille ${dispoClasse(dispoDe(a)!)}`}>{dispoDe(a)}</span>}
             </span>
           )}
+          {prix && detailPrix(a, p.taux) && <span className="cn-mut">{detailPrix(a, p.taux)}</span>}
         </span>
       </>
     );
@@ -184,9 +189,9 @@ export function CarteArticle(p: CarteArticleProps) {
       {p.rang !== undefined && !p.ecarte && <span className={`cn-rang${p.rang === 1 ? ' cn-rang-1' : ''}`}>{p.rang}</span>}
       <Vignette article={a} faconNom={p.faconNom} carnetTitre={p.carnetTitre} />
       <div className="cn-article-tx">
-        <span className="cn-ligne"><b className="cn-sp">{a.nom}</b>{prix && <span className="cn-nowrap"><span className="cn-mono cn-prix">{prix}</span> <span className="cn-mut">{devise}</span></span>}</span>
+        <span className="cn-ligne"><b className="cn-sp">{a.nom}</b>{prix && <PrixTexte a={a} taux={p.taux} muet />}</span>
         <span className="cn-mut">
-          {p.ecarte ? libelleEcarte(p.ecarte.raison) : [origine, a.dispo].filter(Boolean).join(' · ')}
+          {p.ecarte ? libelleEcarte(p.ecarte.raison) : [origine, dispoDe(a), prix ? detailPrix(a, p.taux) : null].filter(Boolean).join(' · ')}
           {a.origine === 'exemple' && <> <Provenance origine="exemple" /></>}
         </span>
         {/* critique 5, n° 6 : les caractéristiques lues, avec leur unité (« 40 L/min · jusqu'à 90 °C »), celle du critère exclue */}
@@ -253,7 +258,7 @@ export function CarteClassee(p: CarteClasseeProps) {
           <b className="cn-deux-lignes">{a.nom}</b>
           {/* « exemple » se dit une fois, au pied de la feuille (h06-5 « Vendeurs, prix et photos : exemple ») */}
           <span className="cn-mut">{p.ecarte ? libelleEcarte(p.ecarte.raison) : qui}</span>
-          {a.dispo && <span><span className={`cn-dispo${/stock/i.test(a.dispo) ? ' cn-vert' : ' cn-att'}`}>{a.dispo}</span></span>}
+          {dispoDe(a) && <span><span className={`cn-dispo${/stock/i.test(dispoDe(a)!) ? ' cn-vert' : ' cn-att'}`}>{dispoDe(a)}</span></span>}
         </span>
         <span className="cn-classee-reserve" aria-hidden />
       </button>

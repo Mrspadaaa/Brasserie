@@ -1,0 +1,78 @@
+{
+ "n": 39,
+ "cfg": "lite",
+ "modele": "gemini-3.5-flash-lite",
+ "http": 200,
+ "ms": 1660,
+ "usage": {
+  "promptTokenCount": 408,
+  "candidatesTokenCount": 320,
+  "totalTokenCount": 16026,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 408
+   }
+  ],
+  "toolUsePromptTokenCount": 15298,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 15298
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Braukessel / Brauanlage 50L mit Umwälzpumpe für Heimbrauer\", \"marque\": \"HEBUfacturing\", \"prix\": 398.0, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Kesselinhalt total\", \"valeur\": \"50lt.\"}, {\"nom\": \"Max. Kochmenge\", \"valeur\": \"ca. 45llt.\"}, {\"nom\": \"Durchmesser Kessel\", \"valeur\": \"36cm aussen, 34.8mm innen\"}, {\"nom\": \"Stromkabel\", \"valeur\": \"1.5m\"}, {\"nom\": \"Spannung / Leistung\", \"valeur\": \"220V-240V 3000W\"}, {\"nom\": \"Umwältspumpe\", \"valeur\": \"11lt/min\"}, {\"nom\": \"Produktgrösse\", \"valeur\": \"(B)45*(H)77cm -inklusive Griff und Deckel\"}, {\"nom\": \"Gewicht\", \"valeur\": \"13.5kg\"}]}",
+ "json": {
+  "nom": "Braukessel / Brauanlage 50L mit Umwälzpumpe für Heimbrauer",
+  "marque": "HEBUfacturing",
+  "prix": 398,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Kesselinhalt total",
+    "valeur": "50lt."
+   },
+   {
+    "nom": "Max. Kochmenge",
+    "valeur": "ca. 45llt."
+   },
+   {
+    "nom": "Durchmesser Kessel",
+    "valeur": "36cm aussen, 34.8mm innen"
+   },
+   {
+    "nom": "Stromkabel",
+    "valeur": "1.5m"
+   },
+   {
+    "nom": "Spannung / Leistung",
+    "valeur": "220V-240V 3000W"
+   },
+   {
+    "nom": "Umwältspumpe",
+    "valeur": "11lt/min"
+   },
+   {
+    "nom": "Produktgrösse",
+    "valeur": "(B)45*(H)77cm -inklusive Griff und Deckel"
+   },
+   {
+    "nom": "Gewicht",
+    "valeur": "13.5kg"
+   }
+  ]
+ },
+ "entree": 15706,
+ "sortie": 320,
+ "chf": 0.00688975
+}

@@ -1,0 +1,73 @@
+{
+ "n": 29,
+ "cfg": "neon",
+ "modele": "gemini-4-neon",
+ "http": 200,
+ "ms": 10595,
+ "usage": {
+  "promptTokenCount": 585,
+  "candidatesTokenCount": 194,
+  "totalTokenCount": 10088,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 585
+   }
+  ],
+  "candidatesTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 194
+   }
+  ],
+  "toolUsePromptTokenCount": 8753,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 8753
+   }
+  ],
+  "thoughtsTokenCount": 556,
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Spectrum CITRA 1 kg\", \"marque\": \"SPECTRUM\", \"prix\": 401, \"devise\": \"CHF\", \"ttc\": null, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Artikelnummer\", \"valeur\": \"HO2253\"}, {\"nom\": \"Gebinde\", \"valeur\": \"1 kg\"}, {\"nom\": \"Zusammensetzung\", \"valeur\": \"100% Hopfen\"}, {\"nom\": \"Dosierung\", \"valeur\": \"1:5 - 1:8 (gegenüber T90-Pellets)\"}, {\"nom\": \"Haltbarkeit\", \"valeur\": \"12 Monate (bei sachgemässer Lagerung)\"}]}",
+ "json": {
+  "nom": "Spectrum CITRA 1 kg",
+  "marque": "SPECTRUM",
+  "prix": 401,
+  "devise": "CHF",
+  "ttc": null,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Artikelnummer",
+    "valeur": "HO2253"
+   },
+   {
+    "nom": "Gebinde",
+    "valeur": "1 kg"
+   },
+   {
+    "nom": "Zusammensetzung",
+    "valeur": "100% Hopfen"
+   },
+   {
+    "nom": "Dosierung",
+    "valeur": "1:5 - 1:8 (gegenüber T90-Pellets)"
+   },
+   {
+    "nom": "Haltbarkeit",
+    "valeur": "12 Monate (bei sachgemässer Lagerung)"
+   }
+  ]
+ },
+ "entree": 9338,
+ "sortie": 750,
+ "chf": 0.04908
+}

@@ -1,0 +1,50 @@
+{
+ "n": 38,
+ "cfg": "lite",
+ "modele": "gemini-3.5-flash-lite",
+ "http": 200,
+ "ms": 1103,
+ "usage": {
+  "promptTokenCount": 421,
+  "candidatesTokenCount": 156,
+  "totalTokenCount": 4912,
+  "promptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 421
+   }
+  ],
+  "toolUsePromptTokenCount": 4335,
+  "toolUsePromptTokensDetails": [
+   {
+    "modality": "TEXT",
+    "tokenCount": 4335
+   }
+  ],
+  "serviceTier": "standard"
+ },
+ "requetes": 0,
+ "statuts": [
+  "URL_RETRIEVAL_STATUS_SUCCESS"
+ ],
+ "finish": "STOP",
+ "texte": "{\"nom\": \"Speidel Edelstahl Konus Gärtank 60 Liter SET (drucklos)\", \"marque\": \"Speidel\", \"prix\": 1384.80, \"devise\": \"EUR\", \"ttc\": true, \"fraisSuisse\": null, \"photos\": [], \"caracteristiques\": [{\"nom\": \"Gewicht\", \"valeur\": \"39,000 kg\"}]}",
+ "json": {
+  "nom": "Speidel Edelstahl Konus Gärtank 60 Liter SET (drucklos)",
+  "marque": "Speidel",
+  "prix": 1384.8,
+  "devise": "EUR",
+  "ttc": true,
+  "fraisSuisse": null,
+  "photos": [],
+  "caracteristiques": [
+   {
+    "nom": "Gewicht",
+    "valeur": "39,000 kg"
+   }
+  ]
+ },
+ "entree": 4756,
+ "sortie": 156,
+ "chf": 0.002271
+}

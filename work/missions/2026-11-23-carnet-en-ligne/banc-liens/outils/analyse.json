@@ -1,0 +1,2333 @@
+[
+ {
+  "n": 1,
+  "serveur": {
+   "taille": 1101875,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 1055467,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 1766309,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 2,
+  "serveur": {
+   "taille": 1459382,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 1367582,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 1985149,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 3,
+  "serveur": {
+   "taille": 956859,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 930730,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 1060170,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 4,
+  "serveur": {
+   "taille": 951598,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 925689,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 1049673,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 5,
+  "serveur": {
+   "taille": 858561,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 834449,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 952298,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 6,
+  "serveur": {
+   "taille": 5761,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 6114,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": true,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 997099,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 7,
+  "serveur": {
+   "taille": 5785,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 6160,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": true,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 1336081,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 8,
+  "serveur": {
+   "taille": 98343,
+   "jsonldProduit": true,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 15268,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 155355,
+   "jsonldProduit": true,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 9,
+  "serveur": {
+   "taille": 172611,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 168519,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 169015,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 10,
+  "serveur": {
+   "taille": 1082924,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 916335,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 1270361,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 11,
+  "serveur": {
+   "taille": 1053742,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 887820,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 1248975,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 12,
+  "serveur": {
+   "taille": 131412,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 131175,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 144308,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 13,
+  "serveur": {
+   "taille": 109058,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 108920,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 118396,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 14,
+  "serveur": {
+   "taille": 5598,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 4261,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": true,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 560639,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 15,
+  "serveur": {
+   "taille": 125469,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 89828,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 102165,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 16,
+  "serveur": {
+   "taille": 147663,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 15271,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 188208,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 17,
+  "serveur": {
+   "taille": 192628,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 165361,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 260992,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 18,
+  "serveur": {
+   "taille": 183115,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 15401,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 235410,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 19,
+  "serveur": {
+   "taille": 456228,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 377158,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 594651,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 20,
+  "serveur": {
+   "taille": 457867,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 378852,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 726224,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 21,
+  "serveur": {
+   "taille": 169797,
+   "jsonldProduit": true,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 2880,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": true,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 183438,
+   "jsonldProduit": true,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 22,
+  "serveur": {
+   "taille": 279558,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 273700,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 305778,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 23,
+  "serveur": {
+   "taille": 290362,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 283852,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 324060,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 24,
+  "serveur": {
+   "taille": 771,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 771,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": true,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 938629,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 25,
+  "serveur": {
+   "taille": 782049,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 767289,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": true,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 474934,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": null,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 26,
+  "serveur": {
+   "taille": 374316,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 316237,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 347306,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 27,
+  "serveur": {
+   "taille": 359205,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 303728,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 330322,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 28,
+  "serveur": {
+   "taille": 387587,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 330050,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 356637,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 29,
+  "serveur": {
+   "taille": 297876,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 291346,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 306385,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 30,
+  "serveur": {
+   "taille": 226142,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 224099,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 274380,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 31,
+  "serveur": {
+   "taille": 220256,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 222027,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 272104,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 32,
+  "serveur": {
+   "taille": 275089,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 274633,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 277535,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 33,
+  "serveur": {
+   "taille": 44762,
+   "jsonldProduit": true,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": true,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 41106,
+   "jsonldProduit": true,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 41939,
+   "jsonldProduit": true,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 34,
+  "serveur": {
+   "taille": 45088,
+   "jsonldProduit": true,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": true,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 41432,
+   "jsonldProduit": true,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 42265,
+   "jsonldProduit": true,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 35,
+  "serveur": {
+   "taille": 202439,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 200975,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 199946,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 36,
+  "serveur": {
+   "taille": 2158453,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 2149699,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 2160043,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 37,
+  "serveur": {
+   "taille": 96234,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 95779,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 98224,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 38,
+  "serveur": {
+   "taille": 463326,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 437513,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 506149,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 39,
+  "serveur": {
+   "taille": 1059959,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 977977,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 1031474,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 40,
+  "serveur": {
+   "taille": 823286,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 756329,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 872700,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 41,
+  "serveur": {
+   "taille": 358334,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 343333,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 511367,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 42,
+  "serveur": {
+   "taille": 366211,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 351095,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 540862,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 43,
+  "serveur": {
+   "taille": 119177,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 114793,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 152247,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 44,
+  "serveur": {
+   "taille": 417893,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 371067,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 403934,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 45,
+  "serveur": {
+   "taille": 431310,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 384980,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 417957,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 46,
+  "serveur": {
+   "taille": 332198,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 304096,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 483831,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 47,
+  "serveur": {
+   "taille": 245613,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 239715,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 333095,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 48,
+  "serveur": {
+   "taille": 118569,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 118240,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 128438,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 49,
+  "serveur": {
+   "taille": 122733,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 122572,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 129473,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 50,
+  "serveur": {
+   "taille": 189000,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": true,
+   "photoVerite": null
+  },
+  "jina": {
+   "taille": 113427,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": null
+  },
+  "chrome": {
+   "taille": 138494,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": null
+  }
+ },
+ {
+  "n": 51,
+  "serveur": {
+   "taille": 2302453,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 1969614,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": false,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 2037846,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": false
+  }
+ },
+ {
+  "n": 52,
+  "serveur": {
+   "taille": 2123536,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 1039636,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": false,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 2051915,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": false
+  }
+ },
+ {
+  "n": 53,
+  "serveur": {
+   "taille": 1698734,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 1027280,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": false,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 1625379,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": false
+  }
+ },
+ {
+  "n": 54,
+  "serveur": {
+   "taille": 2338196,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 1494630,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": false,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 1730580,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 55,
+  "serveur": {
+   "taille": 1620532,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 987292,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": false,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 1476629,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": false
+  }
+ },
+ {
+  "n": 56,
+  "serveur": {
+   "taille": 972770,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 6041,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": true,
+   "vide": false,
+   "prixVerite": false,
+   "photoVerite": false
+  },
+  "chrome": {
+   "taille": 1043319,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 57,
+  "serveur": {
+   "taille": 151574,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 15272,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": true,
+   "prixVerite": false,
+   "photoVerite": false
+  },
+  "chrome": {
+   "taille": 192346,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 58,
+  "serveur": {
+   "taille": 180702,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 15400,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": true,
+   "prixVerite": false,
+   "photoVerite": false
+  },
+  "chrome": {
+   "taille": 235268,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 59,
+  "serveur": {
+   "taille": 165376,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 15272,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": true,
+   "prixVerite": false,
+   "photoVerite": false
+  },
+  "chrome": {
+   "taille": 198653,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 60,
+  "serveur": {
+   "taille": 168034,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 15271,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": false,
+   "ogTitle": false,
+   "bloque": false,
+   "vide": true,
+   "prixVerite": false,
+   "photoVerite": false
+  },
+  "chrome": {
+   "taille": 201241,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 61,
+  "serveur": {
+   "taille": 1465552,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 1370857,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 1817678,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 62,
+  "serveur": {
+   "taille": 1743208,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 1724616,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 1883004,
+   "jsonldProduit": false,
+   "jsonldPrix": false,
+   "jsonldDevise": false,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ },
+ {
+  "n": 63,
+  "serveur": {
+   "taille": 1242813,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "jina": {
+   "taille": 1173733,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  },
+  "chrome": {
+   "taille": 1695324,
+   "jsonldProduit": true,
+   "jsonldPrix": true,
+   "jsonldDevise": true,
+   "ogImage": true,
+   "ogTitle": true,
+   "bloque": false,
+   "vide": false,
+   "prixVerite": true,
+   "photoVerite": true
+  }
+ }
+]
