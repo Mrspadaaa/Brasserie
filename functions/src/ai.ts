@@ -20,7 +20,8 @@ import { GeminiUnusableOutputError, geminiAnswerText, unusableGeminiOutput } fro
 import { sanitizeRecipeImport } from './recipeImportResult.js';
 import { RANGER_NOTE, assainirRangerNote, contexteRangerNote } from './rangerNote.js';
 import { RANGER_CARNET, assainirRangerCarnet, contexteRangerCarnet } from './carnetIA.js';
-import { lienDe, lireLien } from './lireLien.js';
+import { lireLienTache, magasinFirestore } from './lecturesLiens.js';
+import { LIEN_IA_SCHEMA, type AppelIA, type ReponseIA } from './lienIA.js';
 import {
   AI_ATTEMPT_TIMEOUT_MS as ATTEMPT_TIMEOUT_MS, AI_OUT_OF_TIME_MESSAGE as OUT_OF_TIME, AI_TASK_DEADLINE_MS, AI_TASK_MIN_ATTEMPT_MS,
   SCAN_LITE_TIMEOUT_MS, SCAN_STRONG_TIMEOUT_MS, SCAN_TOTAL_TIMEOUT_MS
@@ -347,6 +348,9 @@ async function callGemini(
 const liteUnusable = (response: any) => unusableGeminiOutput(response)
   ?? (response?.candidates?.[0]?.finishReason === 'STOP' ? undefined : new GeminiUnusableOutputError('truncated'));
 
+/** La lecture d'un lien (D446) : sortie plafonnée à 1 500 jetons (réflexion comprise), 45 s par appel ; mesuré au banc (`scripts/banc-liens.ts`). */
+const LIEN_IA_SORTIE_MAX = 1500, LIEN_IA_DELAI_MS = 45_000;
+
 export const aiTask = onCall(
   {
     region: 'europe-west6',
@@ -371,13 +375,29 @@ export const aiTask = onCall(
       catch (error: any) { return { ok: false, tier: 'fast', error: error?.message || 'Assemblage impossible.' }; }
     }
 
-    // Carnet d'idées (lireLien.ts) : la page d'un lien collé, lue sans modèle ni coût ; robots.txt respecté. Ne lève jamais.
+    // Carnet d'idées (lireLien.ts, lecturesLiens.ts) : la page d'un lien collé ; robots.txt respecté. Cascade D446 : plateforme, schema.org, HTML, puis
+    // l'IA sur le texte (Flash-Lite, Hydrogen en escalade) seulement si un champ manque ; le coût est réservé avant chaque envoi (callGemini).
+    // Les étapes partent au fil de l'eau (flux) et s'écrivent dans `lecturesLiens/{jeton}` pour la réouverture de l'app. Ne lève jamais.
     if ((task as string) === 'lireLien') {
-      const started = Date.now();
-      const page = await lireLien(lienDe(context));
+      const cle = GEMINI_API_KEY.value();
+      const limite = Date.now() + AI_TASK_DEADLINE_MS;
+      // Clé absente : pas d'IA, la lecture sans modèle reste entière. Chaque appel a le temps qui reste à la tâche.
+      const appelIA: AppelIA | undefined = cle ? (modele, consigne, texte) => {
+        const restant = limite - Date.now();
+        if (restant < 5000) return Promise.reject(new Error('plus de temps pour l\'IA'));
+        return callGemini(modele === 'lite' ? GEMINI_LITE_MODEL : INVOICE_STRONG_MODEL, cle, consigne, texte, LIEN_IA_SCHEMA as unknown as Record<string, unknown>,
+          { temperature: 0, thinkingLevel: modele === 'lite' ? 'minimal' : 'low' }, undefined, false, LIEN_IA_SORTIE_MAX,
+          AbortSignal.timeout(Math.min(LIEN_IA_DELAI_MS, restant)), liteUnusable) as Promise<ReponseIA>;
+      } : undefined;
+      const sortie = await lireLienTache({
+        uid: request.auth!.uid, context, appelIA, magasin: await magasinFirestore(),
+        envoyer: request.acceptsStreaming && response ? (morceau) => response.sendChunk(morceau).catch(() => false) : undefined,
+        avertir: (message, detail) => logger.warn(message, { task, ...detail })
+      });
       // L-4 (23.11) : le statut de chaque lecture, pour qu'un lien non lu se diagnostique au journal (domaine seul, aucune adresse complète).
-      logger.info('Lien lu', { task, domaine: page.domaine, statut: page.statut, elapsedMs: Date.now() - started });
-      return { ok: true, data: page, model: 'lecture', tier: 'fast', elapsedMs: Date.now() - started };
+      const lue = sortie.data as { domaine?: string; statut?: string; etapes?: Array<{ nom: string; statut: string }> };
+      logger.info('Lien lu', { task, domaine: lue.domaine, statut: lue.statut, ia: lue.etapes?.find(x => x.nom === 'ia')?.statut, elapsedMs: sortie.elapsedMs });
+      return sortie;
     }
 
     // ks4 : la note du Carnet (rangerNote.ts) ; écrite et testée, pas déployée (accord attendu).

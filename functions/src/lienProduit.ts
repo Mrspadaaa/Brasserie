@@ -507,7 +507,10 @@ export function extraireProduit(html: string, url: URL): Extraction {
   if (montants.length && devises.size === 1 && [...devises][0]) {
     const min = montants.reduce((a, b) => (b.montant < a.montant ? b : a));
     prix = min.montant; devise = min.devise; tvaSchema = min.tva; sourcePrix = 'schema.org';
-    prixDes = new Set(montants.map((m) => m.montant)).size > 1 || (min.agrege === true && offres.some((o) => o.highPrice === undefined && o.offers === undefined && types(o).includes('AggregateOffer')));
+    /* « Dès » : des prix différents ; ou une AggregateOffer dont on ne lit que le bas de la fourchette (son plafond `highPrice` est plus haut que
+       lui, ou n'est pas écrit). Un plafond égal au plancher est un prix unique, sans « dès ». */
+    const plafondPlusHaut = (o: Json) => { const h = prixLocalise(typeof o.highPrice === 'object' ? texte(o.highPrice) : o.highPrice); return h !== undefined && h.montant > min.montant + 0.005; };
+    prixDes = new Set(montants.map((m) => m.montant)).size > 1 || (min.agrege === true && offres.some((o) => types(o).includes('AggregateOffer') && o.offers === undefined && (o.highPrice === undefined || plafondPlusHaut(o))));
   } else if (devises.size > 1) doutes.push('plusieurs devises dans les offres');
   if (prix === undefined) {
     const m = prixLocalise(meta('product:price:amount') ?? meta('og:price:amount')), d = m?.devise ?? meta('product:price:currency') ?? meta('og:price:currency');

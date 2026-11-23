@@ -1,6 +1,7 @@
 import { extraireProduit } from './lienProduit.js';
 import { coursVersChf, type Cours } from './coursChange.js';
-import { completerParIA, iaUtile, type AppelIA } from './lienIA.js';
+import { caracteristiquesTechniques, CARACT_SUFFISANTES, completerParIA, iaUtile, type AppelIA } from './lienIA.js';
+import { completerValeurs, lireJsonPlateforme, plateformeDe } from './lienPlateforme.js';
 import type { PageLue } from './carnetIA.js';
 
 /**
@@ -22,6 +23,8 @@ export const LIEN_DELAI_MS = 12000;
 export const LIEN_TAILLE_MAX = 4_000_000;
 export const ROBOTS_TAILLE_MAX = 128_000;
 const REDIRECTIONS_MAX = 3;
+const PLATEFORME_TAILLE_MAX = 1_000_000;
+const COURS_DELAI_MS = 5000;
 export const AGENT_CARNET = 'LaffineeCarnet/1.0';
 
 const domaineDe = (u: URL) => u.hostname.replace(/^www\./, '');
@@ -97,7 +100,10 @@ export function lirePage(html: string, url: URL, luLe = Date.now()): PageLue {
   const base: PageLue = { url: url.href, domaine: domaineDe(url), statut: 'illisible', luLe };
   const x = extraireProduit(html, url);
   const etapes = [{ nom: 'page' as const, statut: 'trouve' as const, detail: domaineDe(url) }, ...x.etapes];
-  if (!x.nom && !x.photos.length && x.prix === undefined) return { ...base, etapes: etapes.map((e) => e.nom === 'page' ? { ...e, statut: 'douteux' as const, detail: 'ni nom, ni prix, ni photo' } : e) };
+  /* Un simple titre (<h1>, <title>) sans donnée produit, sans prix, sans photo ni mesure n'est pas une fiche : accueil, catégorie, erreur
+     (« Bienvenue »). Elle reste « illisible » (« lien · page non lue ») plutôt que de montrer ce titre comme le nom d'un objet. */
+  const sansDonnees = x.etapes.some((e) => e.nom === 'donnees' && e.statut === 'absent');
+  if ((!x.nom || (sansDonnees && !x.valeurs.length)) && !x.photos.length && x.prix === undefined) return { ...base, etapes: etapes.map((e) => e.nom === 'page' ? { ...e, statut: 'douteux' as const, detail: 'ni nom, ni prix, ni photo' } : e) };
   return {
     ...base, statut: 'lue',
     ...(x.nom ? { nom: x.nom } : {}),
@@ -177,21 +183,53 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
   };
   /* L-4 (23.11) : robots.txt qui refuse, ou en 5xx (RFC 9309 : injoignable = refus) → `robots`. Une panne du réseau n'est pas un refus :
      domaine introuvable (DNS) → `introuvable`, autre panne ou délai → `indisponible` ; la page n'est pas demandée non plus. */
-  const robots = new Map<string, true | PageLue['statut']>();
+  const robots = new Map<string, { texte: string } | PageLue['statut']>();
   const permis = async (u: URL): Promise<true | PageLue['statut']> => {
     if (!robots.has(u.origin)) {
-      let ok: true | PageLue['statut'] = 'robots';
+      let v: { texte: string } | PageLue['statut'] = 'robots';
       try {
         const r = await fetchPage(new URL('/robots.txt', u), { signal, redirect: 'follow', headers: entetes });
-        if (r.status >= 400 && r.status < 500) { await r.body?.cancel(); ok = true; }
+        if (r.status >= 400 && r.status < 500) { await r.body?.cancel(); v = { texte: '' }; }
         else if (r.ok) {
           const t = await corpsBorne(r, ROBOTS_TAILLE_MAX);
-          ok = t !== null && !/^\s*(?:<!doctype|<html)/i.test(t) && robotsPermet(t, u) ? true : 'robots';
+          v = t !== null && !/^\s*(?:<!doctype|<html)/i.test(t) ? { texte: t } : 'robots';
         } else await r.body?.cancel();
-      } catch (e) { ok = statutDePanne(e); }
-      robots.set(u.origin, ok);
+      } catch (e) { v = statutDePanne(e); }
+      robots.set(u.origin, v);
     }
-    return robots.get(u.origin)!;
+    const v = robots.get(u.origin)!;
+    return typeof v === 'string' ? v : robotsPermet(v.texte, u) ? true : 'robots';
+  };
+  /* Marche « plateforme » (D446, avant l'IA) : la boutique Shopify ou WooCommerce publie sa fiche en JSON (`.js`, Store API), même agent, même
+     robots.txt que la page, sans compte. Seulement quand la page seule laisse un manque (moins de 4 mesures, ou pas de photo) : pas d'appel
+     de plus quand elle suffit. Ne remplace jamais une valeur ; une panne ou un refus laisse la page telle quelle. */
+  const parPlateforme = async (page: PageLue, html: string, u: URL): Promise<PageLue> => {
+    if (page.statut !== 'lue' || (caracteristiquesTechniques(page) >= CARACT_SUFFISANTES && page.photos?.length)) return page;
+    const pf = plateformeDe(html, u);
+    if (!pf) return page;
+    try {
+      if (await permis(pf.adresse) !== true) return page;
+      const r = await fetchPage(pf.adresse, { signal, redirect: 'manual', headers: { Accept: 'application/json', 'User-Agent': AGENT_CARNET } });
+      if (!r.ok || !(r.headers.get('content-type') ?? '').includes('json')) { await r.body?.cancel(); return page; }
+      const corps = await corpsBorne(r, PLATEFORME_TAILLE_MAX);
+      const d = corps === null ? null : lireJsonPlateforme(pf.plateforme, corps, pf.adresse.href);
+      if (!d) return page;
+      const fusion = completerValeurs(page.valeurs ?? [], d.valeurs);
+      const sansPhoto = !page.photos?.length && d.photos.length > 0;
+      if (!fusion.ajoutees && !sansPhoto) return page;
+      const etapes = [...(page.etapes ?? [])];
+      const remplace = (e: NonNullable<PageLue['etapes']>[number]) => { const i = etapes.findIndex((x) => x.nom === e.nom); if (i >= 0) etapes[i] = e; else etapes.push(e); dire(e); };
+      const out: PageLue = { ...page, etapes };
+      if (fusion.ajoutees) {
+        out.valeurs = fusion.valeurs;
+        remplace({ nom: 'caract', statut: 'trouve', detail: `${fusion.valeurs.length} · dont ${fusion.ajoutees} de la fiche ${pf.plateforme}` });
+      }
+      if (sansPhoto) {
+        out.photos = d.photos; out.photo = d.photos[0];
+        remplace({ nom: 'photos', statut: 'trouve', detail: `${d.photos.length} (fiche ${pf.plateforme})` });
+      }
+      return out;
+    } catch { return page; }
   };
   let url = depart;
   try {
@@ -218,6 +256,7 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
       dire({ nom: 'page', statut: 'trouve', detail: domaineDe(url) });
       let page = lirePage(html, url, luLe);
       for (const e of page.etapes ?? []) if (!(e.nom === 'page' && e.statut === 'trouve')) dire(e);
+      page = await parPlateforme(page, html, url);
       if (opts.ia && iaUtile(page)) {
         const avant = page.etapes?.length ?? 0;
         try { opts.onDebut?.('ia'); } catch { /* l'écran ne fait jamais échouer la lecture */ }
@@ -227,7 +266,9 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
       // D447 : un prix hors CHF reçoit le cours du jour (BCE) ; le prix d'origine reste, la conversion se dit à côté.
       if (page.prix !== undefined && page.devise && page.devise !== 'CHF') {
         const cours = opts.cours === undefined ? coursVersChf : opts.cours;
-        const c = cours ? await cours(page.devise, signal).catch(() => null) : null;
+        // Signal neuf : l'IA a pu consommer le délai de la page (12 s), le cours du jour n'en dépend pas.
+        const delaiCours = AbortSignal.timeout(COURS_DELAI_MS);
+        const c = cours ? await cours(page.devise, opts.signal ? AbortSignal.any([opts.signal, delaiCours]) : delaiCours).catch(() => null) : null;
         if (c) page.change = { taux: c.taux, date: c.date, source: 'BCE' };
       }
       return page;
