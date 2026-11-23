@@ -30,6 +30,7 @@ import './finance.css';
 import { demandeRealiseSansAchat, realiseSansAchat } from '../../domain/finance/realiseSansAchat';
 import './upgrades.css';
 import './upgrade-plan.css';
+import './a-venir.css';
 
 const read = () => {
   const items = StorageService.getCreativeItems();
@@ -70,7 +71,7 @@ function ProchainAchatCarnet({ plan, doc, lien, mois, ouvert, onDate, onPoser, o
   const vendeur = plan.vendor ?? art?.vendeur;
   const details = [vendeur, vendeur && art?.dispo ? art.dispo : null].filter(Boolean).join(' · ');
   return <section aria-label="Prochain achat" data-prochain-carnet>
-    <h3 className="mb-2 text-base font-semibold text-cave-50">{m ? `Prévu en ${nomMois(m, 'long')}` : 'Sans date'}<span className="font-normal text-cave-400"> · 1</span></h3>
+    <h3 className="mb-2 text-base font-semibold text-cave-50">{m ? `Prévu en ${libelleMois(m, 'long')}` : 'Sans date'}{m && estPasse(m) && <span data-mois-passe className="text-alert"> · mois passé</span>}<span className="font-normal text-cave-400"> · 1</span></h3>
     <div className="rounded-panel border border-area-finances/50 border-l-4 border-l-area-finances bg-cave-950 p-3">
       <div className="flex items-start gap-2">
         <span className="flex min-h-11 flex-1 items-center gap-2 text-sm font-semibold text-area-finances"><i aria-hidden className="inline-block h-3 w-3 rounded-[3px] bg-area-finances"/>Prochain achat</span>
@@ -86,7 +87,7 @@ function ProchainAchatCarnet({ plan, doc, lien, mois, ouvert, onDate, onPoser, o
       </div>
       <div className={`mt-3 grid gap-2 ${u?.sourceCarnetId && present && onOuvrir ? 'grid-cols-2' : 'grid-cols-1'}`}>
         <button type="button" className="flex min-h-11 items-center justify-center gap-2 rounded-control bg-area-finances px-3 font-semibold !text-[rgb(var(--cave-950))]" aria-expanded={ouvert} onClick={onDate}>
-          <Calendar size={18} aria-hidden/>{m ? `Date : ${nomMois(m, 'long')}` : 'Fixer la date'}</button>
+          <Calendar size={18} aria-hidden/>{m ? `Date : ${libelleMois(m, 'long')}` : 'Fixer la date'}</button>
         {u?.sourceCarnetId && present && onOuvrir && <button type="button" className="min-h-11 rounded-control border border-cave-700 px-3 font-semibold text-cave-50" onClick={() => onOuvrir(u.sourceCarnetId!)}>Ouvrir le carnet</button>}
       </div>
       {ouvert && <ChoixMois plan={plan} mois={mois} onChoisir={onPoser}/>}
@@ -160,6 +161,22 @@ const RENVOI_PREVISIONS = 'Datés et budgétés, ils entrent dans Finances › P
 const chf0 = (cents: number) => new Intl.NumberFormat('fr-CH', { maximumFractionDigits: 0 }).format(Math.round(cents / 100));
 const chf2 = (cents: number) => new Intl.NumberFormat('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(cents / 100);
 const nomMois = (mois: string, month: 'short' | 'long') => new Date(`${mois}-15T12:00:00`).toLocaleDateString('fr-CH', { month });
+/** L-40 : un mois passé ou d'une autre année dit son année (« juil. » valait 2026 et 2027 sur la même liste) ; ceux de l'année en cours, à venir, restent courts. */
+const estPasse = (mois: string) => mois < todayISO().slice(0, 7);
+const libelleMois = (mois: string, month: 'short' | 'long') => estPasse(mois) || mois.slice(0, 4) !== todayISO().slice(0, 4) ? `${nomMois(mois, month)} ${mois.slice(0, 4)}` : nomMois(mois, month);
+/** L-43 : le carnet renommé donne son titre au plan qui portait le sien (un plan renommé à part garde le sien) ; un geste sur le plan l'enregistre. */
+function avecTitreDuCarnet(plan: FinancialPlan, carnets: CarnetDoc[]): FinancialPlan {
+  const u = plan.upgrade, doc = u?.sourceCarnetId ? carnets.find(c => c.id === u.sourceCarnetId) : undefined;
+  const ancien = u?.sourceCarnetTitre?.trim(), neuf = doc?.title?.trim();
+  if (!u || !neuf || !ancien || neuf === ancien) return plan;
+  return { ...plan, title: memeTexte(plan.title, ancien) ? neuf : plan.title, upgrade: { ...u, sourceCarnetTitre: neuf } };
+}
+/** L-41 : la question d'une suppression (ou d'un archivage) se pose au bas de la feuille : elle vient en vue, « Oui, supprimer » compris. */
+function EnVue({ children }: { children: React.ReactNode }) {
+  const r = useRef<HTMLDivElement>(null);
+  useEffect(() => { r.current?.scrollIntoView?.({ block: 'end' }); }, []);
+  return <div ref={r} style={{ scrollMarginBottom: 16 }}>{children}</div>;
+}
 
 /** Anneau d'étape à trois tiers (kyh1) : un tiers par étape, Besoin · Prix ou devis · Réalisé. Les mesures sont celles de la maquette (32 px par ligne, 16 px à la légende). */
 const GEOM = { 32: { r: 13, dash: '24.23 57.45', off: [18.92, -8.31, -35.54], epais: 3.5, fin: 2.5 }, 16: { r: 6, dash: '10.97 26.73', off: [8.62, -3.95, -16.52], epais: 3, fin: 2 } } as const;
@@ -230,9 +247,11 @@ function Avis({ avis, onVoir }: { avis: { titre: string; date: string | null }; 
 }
 function ChoixMois({ plan, mois, onChoisir }: { plan: FinancialPlan; mois: string[]; onChoisir: (mois: string | null) => void }) {
   const actuel = moisDePlan(plan);
+  /* L-42 : le mois où le plan est posé a toujours sa puce (novembre, le mois en cours, manquait : aucune n'était choisie) */
+  const liste = actuel && !mois.includes(actuel) ? [...mois, actuel].sort() : mois;
   return <div className="kh-mo" role="group" aria-label={`Poser ${plan.title} sur un mois`}>
     <button type="button" className={actuel ? '' : 'on'} aria-pressed={!actuel} onClick={() => onChoisir(null)}>pas encore</button>
-    {mois.map(m => <button type="button" key={m} className={actuel === m ? 'on' : ''} aria-pressed={actuel === m} onClick={() => onChoisir(m)}>{nomMois(m, 'short')}</button>)}
+    {liste.map(m => <button type="button" key={m} className={actuel === m ? 'on' : ''} aria-pressed={actuel === m} onClick={() => onChoisir(m)} {...(estPasse(m) ? { 'data-mois-passe': '' } : {})}>{libelleMois(m, 'short')}</button>)}
   </div>;
 }
 /** Ce que l'achat fait à la caisse de fin de mois : la barre entière est la caisse avant l'achat, la part pleine ce qu'il en prend. */
@@ -328,15 +347,16 @@ function FicheProjet({ plan, plans, prevision, transactions, payments, mois, bus
         ? <><div className="kh-lbl">Fin {mTxt}</div><div className="kh-vs"><button type="button" className="w" onClick={onPrevisions}><small>Avec {titreCourt(plan.title)}{effet.auPlus ? ', au plus' : ''}</small><b className="kh-m">{chf0(effet.avecCents)}</b></button><div className="wo"><small>Sans</small><b className="kh-m">{chf0(effet.sansCents)}</b></div></div></>
         : !d.budgetKnown ? null
         : <p className="finance-muted" style={{ marginTop: 8 }}>{pose ? 'Caisse inconnue : renseigne ton solde de départ dans Prévisions.'
-          : moisPose ? `Posé sur ${nomMois(moisPose, 'long')}, mais hors de tes prévisions : allume l’interrupteur pour le compter.`
+          /* L-42 : le Calendrier compte ce plan posé (en probable) ; la fiche dit la même chose, et ce que fait l'interrupteur */
+          : moisPose ? `Posé sur ${libelleMois(moisPose, 'long')} : le Calendrier le compte en probable. Allume l’interrupteur pour l’inclure dans tes prévisions.`
           : 'Pas dans tes prévisions : pose-le sur un mois pour voir ce qu’il fait à la caisse.'}</p>}
       <div className="kh-lbl">Achats liés <b>{progress.invoiceCount ? `${progress.invoiceCount} · ${progress.invoicedComplete ? chf0(progress.invoicedCents) : 'à répartir'}` : 'aucun'}</b></div>
       <button type="button" className="kh-cta kh-cta-fiche" onClick={onEdit}><PenLine size={18}/>Modifier</button>
       <details className="kh-fold"><summary>Après l’achat<ChevronDown size={18}/></summary><p>Ta facture se range dans Dépenses › Matériel, liée à ce projet ; la fiche d’usure se lit dans Annuel.</p></details>
       <details className="kh-fold"><summary>Usure et mise en service<ChevronDown size={18}/></summary><p>Durée d’usage : {d.usefulLifeYears != null ? `${String(d.usefulLifeYears).replace('.', ',')} ans` : 'à renseigner'} · Mise en service : {d.inServiceMonth ?? 'à renseigner'}</p></details>
-      {demande === 'realise' ? <Confirmation {...demandeRealiseSansAchat(plan)} busy={!!busy} danger={false} onGarder={() => setDemande(null)} onOui={() => { setDemande(null); onStatut('completed'); }}/>
-        : demande === 'archiver' ? <Confirmation question={`Archiver « ${plan.title} » ?`} detail="Il sort de tes prévisions ; Archives le garde et un geste l’annule." oui="Oui, archiver" danger={false} busy={!!busy} onGarder={() => setDemande(null)} onOui={() => { setDemande(null); onStatut('cancelled'); }}/>
-        : demande === 'supprimer' ? <Confirmation question={`Supprimer « ${plan.title} » ?`} detail={SUPPRIMER_DETAIL} oui="Oui, supprimer" busy={!!busy} erreur={refus} onGarder={() => { setDemande(null); setRefus(''); }} onOui={() => { const r = onSupprimer(); if (r) setRefus(r); }}/>
+      {demande === 'realise' ? <EnVue key="realise"><Confirmation {...demandeRealiseSansAchat(plan)} busy={!!busy} danger={false} onGarder={() => setDemande(null)} onOui={() => { setDemande(null); onStatut('completed'); }}/></EnVue>
+        : demande === 'archiver' ? <EnVue key="archiver"><Confirmation question={`Archiver « ${plan.title} » ?`} detail="Il sort de tes prévisions ; Archives le garde et un geste l’annule." oui="Oui, archiver" danger={false} busy={!!busy} onGarder={() => setDemande(null)} onOui={() => { setDemande(null); onStatut('cancelled'); }}/></EnVue>
+        : demande === 'supprimer' ? <EnVue key="supprimer"><Confirmation question={`Supprimer « ${plan.title} » ?`} detail={SUPPRIMER_DETAIL} oui="Oui, supprimer" busy={!!busy} erreur={refus} onGarder={() => { setDemande(null); setRefus(''); }} onOui={() => { const r = onSupprimer(); if (r) setRefus(r); }}/></EnVue>
         : <div className="kh-ends"><button type="button" style={{ color: 'var(--kh-hop)', fontWeight: 600 }} disabled={!!busy} onClick={() => (realiseSansAchat(plan, progress.invoiceCount) ? setDemande('realise') : onStatut('completed'))}><Check size={18}/>Marquer comme réalisé</button><button type="button" style={{ color: 'var(--kh-mut)' }} disabled={!!busy} onClick={() => setDemande('archiver')}><Archive size={18}/>Archiver</button>
           <button type="button" className="fm-sup-f" disabled={!!busy} onClick={() => setDemande('supprimer')}><Trash2 size={18}/>Supprimer</button></div>}
     </div>
@@ -381,7 +401,7 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
           const anneau = anneauDe(plan), ouvert = etape === plan.id;
           return <React.Fragment key={plan.id}><div className={`kh-r${(marque === plan.id && pose) || ouvert ? ' kh-on' : ''}`}>
             {/* Constat 7 (16.11) : la ligne sans prix a, comme les autres, son « + mois » et son crayon ; sans prix, le mois se pose mais rien n'entre dans les prévisions. */}
-            <button type="button" className={`kh-chip ${m && estPose(plan) ? 'on' : 'off'}`} aria-expanded={picker === plan.id} aria-label={m ? `Mois de ${plan.title} : ${nomMois(m, 'long')}` : `Poser ${plan.title} sur un mois`} onClick={() => { setEtape(null); setPicker(picker === plan.id ? null : plan.id); }}>{m ? nomMois(m, 'short') : carnet ? 'Dater' : '+ mois'}</button>
+            <button type="button" className={`kh-chip ${m && estPose(plan) ? 'on' : 'off'}${m && estPasse(m) ? ' !text-alert' : ''}`} {...(m && estPasse(m) ? { 'data-mois-passe': '' } : {})} aria-expanded={picker === plan.id} aria-label={m ? `Mois de ${plan.title} : ${libelleMois(m, 'long')}${estPasse(m) ? ', mois passé' : ''}` : `Poser ${plan.title} sur un mois`} onClick={() => { setEtape(null); setPicker(picker === plan.id ? null : plan.id); }}>{m ? libelleMois(m, 'short') : carnet ? 'Dater' : '+ mois'}</button>
             <button type="button" className="kh-rb" aria-expanded={ouvert} aria-label={`${anneau.libelle} : ${plan.title}`} onClick={() => { setPicker(null); setEtape(ouvert ? null : plan.id); }}><AnneauSvg anneau={anneau} titre={false}/></button>
             {/* P39 : à 390, le prix passe sous le nom ; le nom prend la largeur et tient entier sur 2 lignes. */}
             <button type="button" className="kh-rmain max-[639px]:!flex-col max-[639px]:!items-start max-[639px]:!gap-0" onClick={() => setFiche(plan.id)}><span className="kh-nm max-[639px]:w-full"><b>{plan.title}</b>{repereDe(plan) === 'devis' && plan.vendor && <small>{plan.vendor}</small>}</span>{d.budgetKnown && <span className="kh-a kh-m">{chf0(plan.amountCents)}{carnet ? ' CHF' : ''}</span>}</button>
@@ -431,7 +451,7 @@ export function UpgradeWorkspace({ onOpenProject, createRequest, onCreateRequest
   const open = (plan: FinancialPlan | null) => onOpenProject ? onOpenProject(plan) : setEditing(plan);
   const handled = React.useRef<number>(undefined);
   React.useEffect(() => { if ((createRequest?.kind === 'newIdea' || createRequest?.kind === 'newBesoin') && createRequest.at !== handled.current) { handled.current = createRequest.at; open(null); onCreateRequestHandled?.(); } }, [createRequest?.at]);
-  const projects = useMemo(() => data.plans.filter(isUpgradePlan), [data.plans]);
+  const projects = useMemo(() => data.plans.filter(isUpgradePlan).map(p => avecTitreDuCarnet(p, data.carnetsLus)), [data.plans, data.carnetsLus]);
   /** Réalisé = une dépense liée au projet, payée en entier (dérivé des factures, rien n'est stocké) : le besoin quitte « À venir » et se range dans Réalisés. */
   const realises = useMemo(() => new Set<string>(projects.filter(p => ['draft', 'active'].includes(p.status) && estRealise(p, data.transactions, data.payments)).map(p => p.id)), [data]);
   const aVenir = useMemo(() => projects.filter(p => !realises.has(p.id)), [data, realises]);
