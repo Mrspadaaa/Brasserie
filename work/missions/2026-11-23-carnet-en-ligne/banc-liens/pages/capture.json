@@ -1,0 +1,429 @@
+{
+ "le": "2026-11-23T13:05:17.468Z",
+ "agent": "LaffineeCarnet/1.0",
+ "pages": [
+  {
+   "n": 1,
+   "lien": "https://www.gastro-held.ch/Mastro-K%C3%BChlschrank-600-Liter-aus-Edelstahl--0%C2%B0--10%C2%B0C",
+   "sauts": [
+    {
+     "url": "https://www.gastro-held.ch/Mastro-K%C3%BChlschrank-600-Liter-aus-Edelstahl--0%C2%B0--10%C2%B0C",
+     "status": 301,
+     "ms": 161,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": "/products/mastro-kuehlschrank-600-liter-aus-edelstahl-010c-bma0060"
+    },
+    {
+     "url": "https://www.gastro-held.ch/products/mastro-kuehlschrank-600-liter-aus-edelstahl-010c-bma0060",
+     "status": 200,
+     "ms": 821,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 1103216
+    }
+   ]
+  },
+  {
+   "n": 2,
+   "lien": "https://www.gastro-held.ch/products/gastronomie-kuehlschrank-eco-650-gn-21-monoblock-616-liter-kuehlraumvolumen-3-verstellbare-einlegeboeden-robuste-bauweise-edelstahl-gnh650tnm?utm_source=google&utm_medium=cpc&utm_campaign=pmax_kuehlung&gclid=Cj0KCQiAz8bpBhD7ARIsAKtQb2kZ9Xq",
+   "sauts": [
+    {
+     "url": "https://www.gastro-held.ch/products/gastronomie-kuehlschrank-eco-650-gn-21-monoblock-616-liter-kuehlraumvolumen-3-verstellbare-einlegeboeden-robuste-bauweise-edelstahl-gnh650tnm?utm_source=google&utm_medium=cpc&utm_campaign=pmax_kuehlung&gclid=Cj0KCQiAz8bpBhD7ARIsAKtQb2kZ9Xq",
+     "status": 200,
+     "ms": 1564,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 1461232
+    }
+   ]
+  },
+  {
+   "n": 3,
+   "lien": "https://www.ggmgastro.com/de-de-eur/edelstahl-kuehlzelle-2100x1200mm-3-7m3-inkl-kuehlaggregat-kf2112e-wkaf5end",
+   "sauts": [
+    {
+     "url": "https://www.ggmgastro.com/de-de-eur/edelstahl-kuehlzelle-2100x1200mm-3-7m3-inkl-kuehlaggregat-kf2112e-wkaf5end",
+     "status": 200,
+     "ms": 122,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 959992
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "lien": "https://www.ggmgastro.com/de-ch-chf/edelstahl-kuehlzelle-1800x2100mm-5-88m3-inkl-kuehlaggregat-kf1821e-wkaf75end",
+   "sauts": [
+    {
+     "url": "https://www.ggmgastro.com/de-ch-chf/edelstahl-kuehlzelle-1800x2100mm-5-88m3-inkl-kuehlaggregat-kf1821e-wkaf75end",
+     "status": 200,
+     "ms": 132,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 954737
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "lien": "https://www.ggmgastro.com/en-gb-gbp/stainless-steel-commercial-sink-unit-eco-600x600mm-with-single-bowl-centre-with-undershelf-with-upstand-stk66bm1-eco",
+   "sauts": [
+    {
+     "url": "https://www.ggmgastro.com/en-gb-gbp/stainless-steel-commercial-sink-unit-eco-600x600mm-with-single-bowl-centre-with-undershelf-with-upstand-stk66bm1-eco",
+     "status": 200,
+     "ms": 127,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 858945
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "lien": "https://brouwland.com/en/fermentation-vessels/660-brew-monk-stainless-steel-fermenter-30-l.html",
+   "sauts": [
+    {
+     "url": "https://brouwland.com/en/fermentation-vessels/660-brew-monk-stainless-steel-fermenter-30-l.html",
+     "status": 403,
+     "ms": 84,
+     "cf": "challenge",
+     "type": "text/html; charset=UTF-8",
+     "loc": null,
+     "taille": 5761
+    }
+   ]
+  },
+  {
+   "n": 7,
+   "lien": "https://brouwland.com/fr/cuves-de-fermentation/21565-easybrew-cuve-de-fermentation-30-l-en-inox-tc.html",
+   "sauts": [
+    {
+     "url": "https://brouwland.com/fr/cuves-de-fermentation/21565-easybrew-cuve-de-fermentation-30-l-en-inox-tc.html",
+     "status": 403,
+     "ms": 101,
+     "cf": "challenge",
+     "type": "text/html; charset=UTF-8",
+     "loc": null,
+     "taille": 5785
+    }
+   ]
+  },
+  {
+   "n": 8,
+   "lien": "https://www.galaxus.ch/fr/s2/product/kibernetik-getraenkekuehlschrank-115-l-kuehlschrank-freistehend-46573335",
+   "sauts": [
+    {
+     "url": "https://www.galaxus.ch/fr/s2/product/kibernetik-getraenkekuehlschrank-115-l-kuehlschrank-freistehend-46573335",
+     "status": 200,
+     "ms": 194,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 98612
+    }
+   ]
+  },
+  {
+   "n": 9,
+   "lien": "https://www.brewtools.com/brewing-system-accessories/7712213/steam-hat-b40pro-with-silicone-plug-and-seal",
+   "sauts": [
+    {
+     "url": "https://www.brewtools.com/brewing-system-accessories/7712213/steam-hat-b40pro-with-silicone-plug-and-seal",
+     "status": 301,
+     "ms": 301,
+     "cf": null,
+     "type": null,
+     "loc": "https://www.brewtools.com/Search.aspx?q=brewing+system+accessories"
+    },
+    {
+     "url": "https://www.brewtools.com/Search.aspx?q=brewing+system+accessories",
+     "status": 301,
+     "ms": 341,
+     "cf": null,
+     "type": null,
+     "loc": "/search.aspx?q=brewing+system+accessories"
+    },
+    {
+     "url": "https://www.brewtools.com/search.aspx?q=brewing+system+accessories",
+     "status": 301,
+     "ms": 392,
+     "cf": null,
+     "type": null,
+     "loc": "/search?q=brewing+system+accessories"
+    },
+    {
+     "url": "https://www.brewtools.com/search?q=brewing+system+accessories",
+     "status": 200,
+     "ms": 477,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 172640
+    }
+   ]
+  },
+  {
+   "n": 10,
+   "lien": "https://kegland.com.au/products/fermzilla-60l-all-rounder-pressure-rated-keg-fermenter",
+   "sauts": [
+    {
+     "url": "https://kegland.com.au/products/fermzilla-60l-all-rounder-pressure-rated-keg-fermenter",
+     "status": 200,
+     "ms": 393,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 1083633
+    }
+   ]
+  },
+  {
+   "n": 11,
+   "lien": "https://kegland.com.au/products/27l-fermzilla-tri-conical-easy-grip-pressure-fermenter-starter-kit?variant=1&utm_source=facebook&utm_medium=paid&fbclid=IwAR2xYz",
+   "sauts": [
+    {
+     "url": "https://kegland.com.au/products/27l-fermzilla-tri-conical-easy-grip-pressure-fermenter-starter-kit?variant=1&utm_source=facebook&utm_medium=paid&fbclid=IwAR2xYz",
+     "status": 200,
+     "ms": 363,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 1054372
+    }
+   ]
+  },
+  {
+   "n": 12,
+   "lien": "https://shop.speidels-braumeister.de/en/20-litre-braumeister/20-litre-braumeister-plus1",
+   "sauts": [
+    {
+     "url": "https://shop.speidels-braumeister.de/en/20-litre-braumeister/20-litre-braumeister-plus1",
+     "status": 200,
+     "ms": 2016,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 131552
+    }
+   ]
+  },
+  {
+   "n": 13,
+   "lien": "https://shop.speidels-braumeister.de/en/20-litre-braumeister/complete-kit-braumeister-plus-20-liter",
+   "sauts": [
+    {
+     "url": "https://shop.speidels-braumeister.de/en/20-litre-braumeister/complete-kit-braumeister-plus-20-liter",
+     "status": 200,
+     "ms": 1789,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 109183
+    }
+   ]
+  },
+  {
+   "n": 14,
+   "lien": "https://www.hobbybrauerversand.de/Gaer-und-Lagerfass-Universal-15-Liter",
+   "sauts": [
+    {
+     "url": "https://www.hobbybrauerversand.de/Gaer-und-Lagerfass-Universal-15-Liter",
+     "status": 301,
+     "ms": 155,
+     "cf": null,
+     "type": "text/html; charset=UTF-8",
+     "loc": "https://braumarkt.com/de/Gaer-und-Lagerfass-Universal-15-Liter"
+    },
+    {
+     "url": "https://braumarkt.com/de/Gaer-und-Lagerfass-Universal-15-Liter",
+     "status": 403,
+     "ms": 224,
+     "cf": "challenge",
+     "type": "text/html; charset=UTF-8",
+     "loc": null,
+     "taille": 5598
+    }
+   ]
+  },
+  {
+   "n": 15,
+   "lien": "https://www.brewtools.com/products/starter-pack-4-valve-setup-for-b40pro-b80pro-b150pro-7712553-p0000000256",
+   "sauts": [
+    {
+     "url": "https://www.brewtools.com/products/starter-pack-4-valve-setup-for-b40pro-b80pro-b150pro-7712553-p0000000256",
+     "status": 303,
+     "ms": 276,
+     "cf": null,
+     "type": null,
+     "loc": "https://www.brewtools.com/brewing-system-accessories/7712553/starter-pack-4-valve-setup-for-b40pro-b80pro-b150pro"
+    },
+    {
+     "url": "https://www.brewtools.com/brewing-system-accessories/7712553/starter-pack-4-valve-setup-for-b40pro-b80pro-b150pro",
+     "status": 200,
+     "ms": 462,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 125497
+    }
+   ]
+  },
+  {
+   "n": 16,
+   "lien": "https://www.galaxus.ch/de/s2/product/gastro-hero-lagerkuehlschrank-eco-edelstahl-590-l-kuehlschrank-freistehend-21180918",
+   "sauts": [
+    {
+     "url": "https://www.galaxus.ch/de/s2/product/gastro-hero-lagerkuehlschrank-eco-edelstahl-590-l-kuehlschrank-freistehend-21180918",
+     "status": 200,
+     "ms": 254,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 148019
+    }
+   ]
+  },
+  {
+   "n": 17,
+   "lien": "https://www.galaxus.ch/de/s2/product/kibernetik-ks340l-331-l-kuehlschrank-freistehend-2774998?utm_source=google&utm_medium=cpc&gclid=EAIaIQobChMI8x",
+   "sauts": [
+    {
+     "url": "https://www.galaxus.ch/de/s2/product/kibernetik-ks340l-331-l-kuehlschrank-freistehend-2774998?utm_source=google&utm_medium=cpc&gclid=EAIaIQobChMI8x",
+     "status": 200,
+     "ms": 312,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 193018
+    }
+   ]
+  },
+  {
+   "n": 18,
+   "lien": "https://www.digitec.ch/de/s1/product/candy-cncq2t518eb-279-l-kuehlschrank-freistehend-48998967",
+   "sauts": [
+    {
+     "url": "https://www.digitec.ch/de/s1/product/candy-cncq2t518eb-279-l-kuehlschrank-freistehend-48998967",
+     "status": 200,
+     "ms": 240,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 183435
+    }
+   ]
+  },
+  {
+   "n": 19,
+   "lien": "https://www.brack.ch/kibernetik-gewerbekuehlschrank-gastro-208l-mitte-372429",
+   "sauts": [
+    {
+     "url": "https://www.brack.ch/kibernetik-gewerbekuehlschrank-gastro-208l-mitte-372429",
+     "status": 200,
+     "ms": 273,
+     "cf": null,
+     "type": "text/html",
+     "loc": null,
+     "taille": 456968
+    }
+   ]
+  },
+  {
+   "n": 20,
+   "lien": "https://www.brack.ch/kibernetik-gewerbekuehlschrank-gk130l01-rechts-wechselbar-711099?gclid=Cj0KCQiA5rGuBhCnARIsAN11vgR&utm_source=google",
+   "sauts": [
+    {
+     "url": "https://www.brack.ch/kibernetik-gewerbekuehlschrank-gk130l01-rechts-wechselbar-711099?gclid=Cj0KCQiA5rGuBhCnARIsAN11vgR&utm_source=google",
+     "status": 200,
+     "ms": 384,
+     "cf": null,
+     "type": "text/html",
+     "loc": null,
+     "taille": 458568
+    }
+   ]
+  },
+  {
+   "n": 21,
+   "lien": "https://www.hornbach.ch/de/p/edelstahlregal-gastro-regal-kaiserthal-180-x-100-x-50-cm-4-boeden-tragkraft-320-kg/10684563/",
+   "sauts": [
+    {
+     "url": "https://www.hornbach.ch/de/p/edelstahlregal-gastro-regal-kaiserthal-180-x-100-x-50-cm-4-boeden-tragkraft-320-kg/10684563/",
+     "status": 200,
+     "ms": 291,
+     "cf": null,
+     "type": "text/html",
+     "loc": null,
+     "taille": 169970
+    }
+   ]
+  },
+  {
+   "n": 22,
+   "lien": "https://www.landi.ch/shop/lagergestelle_170307/schwerlastregal-180-160-60-cm_105447",
+   "sauts": [
+    {
+     "url": "https://www.landi.ch/shop/lagergestelle_170307/schwerlastregal-180-160-60-cm_105447",
+     "status": 200,
+     "ms": 761,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 280196
+    }
+   ]
+  },
+  {
+   "n": 23,
+   "lien": "https://www.landi.ch/shop/weisswaren_150104/tiefkuehltruhe-prima-vista-308l_105650",
+   "sauts": [
+    {
+     "url": "https://www.landi.ch/shop/weisswaren_150104/tiefkuehltruhe-prima-vista-308l_105650",
+     "status": 200,
+     "ms": 833,
+     "cf": null,
+     "type": "text/html; charset=utf-8",
+     "loc": null,
+     "taille": 291047
+    }
+   ]
+  },
+  {
+   "n": 24,
+   "lien": "https://www.jumbo.ch/de/bad-sanitaer/brausen-armaturen/kuechenarmaturen-kuechenbrausen/kuechenarmaturen/kwc-spueltischmischer-domo-mit-ausziehbarer-brause/p/5866824",
+   "sauts": [
+    {
+     "url": "https://www.jumbo.ch/de/bad-sanitaer/brausen-armaturen/kuechenarmaturen-kuechenbrausen/kuechenarmaturen/kwc-spueltischmischer-domo-mit-ausziehbarer-brause/p/5866824",
+     "status": 403,
+     "ms": 231,
+     "cf": null,
+     "type": "text/html;charset=utf-8",
+     "loc": null,
+     "taille": 771
+    }
+   ]
+  },
+  {
+   "n": 25,
+   "lien": "https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267",
+   "sauts": [
+    {
+     "url": "https://www.bauhaus.ch/de/p/marley-kellerablauf-13503267",
+     "status": 403,
+     "ms": 192,
+     "cf": "challenge",
+     "type": "text/html; charset=UTF-8",
+     "loc": null,
+     "taille": 782052
+    }
+   ]
+  }
+ ]
+}

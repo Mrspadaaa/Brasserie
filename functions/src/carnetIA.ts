@@ -44,13 +44,29 @@ export interface PageLue {
   devise?: string;
   /** « dès » : plusieurs prix sont publiés, le plus bas est donné. */
   prixDes?: boolean;
-  dispo?: 'en-stock' | 'rupture';
+  /** `retire` : la page dit le produit plus disponible (BL-15). */
+  dispo?: 'en-stock' | 'rupture' | 'retire';
   vendeur?: string;
+  /** La première photo (compatibilité) ; `photos` les garde toutes (D446). */
   photo?: string;
-  /** Caractéristiques publiées (`additionalProperty`), telles quelles. */
+  photos?: string[];
+  /** `ht` : prix publié hors taxe (net) ; `ttc` : taxe comprise, dite par la page. Absent : la page ne le dit pas. */
+  taxe?: 'ht' | 'ttc';
+  /** Le prix taxe comprise quand la page publie aussi le HT. */
+  prixTTC?: number;
+  /** Port vers la Suisse lu sur la page (D447) ; absent : la page ne le dit pas, jamais inventé. */
+  livraison?: { prix?: number; devise?: string; gratuite?: true; refusee?: true };
+  /** Cours du jour vers le franc (BCE, par Frankfurter) quand le prix n'est pas en CHF ; le prix d'origine reste `prix`. */
+  change?: { taux: number; date: string; source: 'BCE' };
+  /** Caractéristiques publiées (`additionalProperty`, tableaux de la page), telles quelles. */
   valeurs?: Array<{ nom: string; valeur: string; unite?: string }>;
+  /** Les étapes de la lecture (D446) : chacune trouvée, absente ou douteuse, écrites au fil de l'eau. */
+  etapes?: EtapeLien[];
   luLe: number;
 }
+
+export const ETAPES_LIEN = ['page', 'donnees', 'prix', 'devise-frais', 'photos', 'caract', 'controle', 'ia'] as const;
+export interface EtapeLien { nom: typeof ETAPES_LIEN[number]; statut: 'trouve' | 'absent' | 'douteux'; detail?: string }
 
 export interface CaracteristiqueCompacte { nom: string; unite?: string; sens: SensCarnet }
 export interface CarnetCompact {

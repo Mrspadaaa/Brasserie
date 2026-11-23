@@ -1,0 +1,546 @@
+import { load, type CheerioAPI } from 'cheerio/slim';
+import { Handler } from 'htmlmetaparser';
+import { Parser } from 'htmlparser2';
+import { stockStatus } from './brewerSuppliers.js';
+
+/**
+ * Lecture d'une page produit, sans modèle (D446, 23.11 : « vraiment très mauvais » au banc réel). Remplace la lecture JSON-LD seule.
+ *
+ * ## État de l'art (L29)
+ * Problème d'école : l'extraction de données produit d'une page web (« product data extraction », wrappers et données structurées).
+ * Méthode standard, dans l'ordre où elle fait foi : (1) les données structurées schema.org `Product`/`Offer` publiées pour les moteurs
+ * (JSON-LD, microdata, RDFa) ; (2) les métadonnées Open Graph `og:`/`product:` ; (3) le HTML visible (titre `h1`, bloc de prix sous le
+ * titre, tableaux de caractéristiques `table`/`dl`) ; (4) un modèle de langue sur le texte nettoyé, en dernier, sous garde (rien qui ne
+ * soit écrit dans la page). Bibliothèque : `htmlmetaparser` (B. Embrey, Apache-2.0, sur `htmlparser2` déjà présent par cheerio) lit
+ * JSON-LD, microdata et RDFa selon les spécifications W3C au lieu de motifs maison ; cheerio garde le HTML visible. Écartés : metascraper
+ * (re2 natif et jsdom, trop lourds pour une fonction), web-auto-extractor (abandonné en 2017), `@marbec/web-auto-extractor` (son propre
+ * analyseur HTML écrit à la main). Mesure : `scripts/banc-liens.ts` (63 liens réels, vérité écrite).
+ *
+ * Chaque étape rend un statut contrôlé (`trouve`, `absent`, `douteux`) : le brasseur voit ce qui a été lu et ce qui reste à vérifier
+ * (« découper les tâches en sous tâches. Et voir si tu es correcte », 23.11). Rien n'est inventé : une valeur absente reste absente ; deux
+ * sources qui se contredisent sont dites (`douteux`), jamais tranchées en silence.
+ */
+
+export const ETAPES_LECTURE = ['page', 'donnees', 'prix', 'devise-frais', 'photos', 'caract', 'controle'] as const;
+export type NomEtape = typeof ETAPES_LECTURE[number];
+export interface EtapeLecture { nom: NomEtape; statut: 'trouve' | 'absent' | 'douteux'; detail?: string }
+
+export interface Livraison { prix?: number; devise?: string; gratuite?: true; refusee?: true }
+export interface Extraction {
+  nom?: string;
+  prix?: number;
+  devise?: string;
+  prixDes?: true;
+  /** `ht` : le prix publié est hors taxe (net) ; `ttc` : taxe comprise, dite par la page. Absent : la page ne le dit pas. */
+  taxe?: 'ht' | 'ttc';
+  /** Le prix taxe comprise quand la page publie les deux (le HT reste dans `prix`). */
+  prixTTC?: number;
+  dispo?: 'en-stock' | 'rupture' | 'retire';
+  vendeur?: string;
+  photos: string[];
+  valeurs: Array<{ nom: string; valeur: string; unite?: string }>;
+  livraison?: Livraison;
+  etapes: EtapeLecture[];
+}
+
+type Json = Record<string, any>;
+const compact = (t: string) => t.replace(/[\s  ]+/g, ' ').trim();
+const norm = (t: string) => compact(t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const liste = <T = any>(v: unknown): T[] => (v === undefined || v === null ? [] : Array.isArray(v) ? v : [v]) as T[];
+const types = (o: Json) => liste(o?.['@type']).map((t) => String(t).replace(/^https?:\/\/schema\.org\//, ''));
+const estProduit = (o: Json) => types(o).some((t) => /^(Product|ProductGroup|IndividualProduct|ProductModel|SomeProducts)$/.test(t));
+
+/** Coupe à un mot entier (BL-13) : jamais « Thermomet » fabriqué par nous. */
+export function couper(t: string, max: number): string {
+  const c = compact(t);
+  if (c.length <= max) return c;
+  const bout = c.slice(0, max + 1), i = bout.lastIndexOf(' ');
+  return (i > max * 0.6 ? bout.slice(0, i) : c.slice(0, max)).replace(/[\s,;:–-]+$/, '');
+}
+
+/** Une chaîne lisible d'une valeur schema.org (texte, nombre, `{ name }`, `{ @value }`), sinon `undefined`. */
+function texte(v: unknown, max = 200): string | undefined {
+  const x = liste(v)[0];
+  if (typeof x === 'number' && Number.isFinite(x)) return String(x);
+  if (typeof x === 'string') { const c = compact(x); return c ? couper(c, max) : undefined; }
+  if (x && typeof x === 'object') return texte((x as Json)['@value'] ?? (x as Json).name, max);
+  return undefined;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------
+// Montants
+// ---------------------------------------------------------------------------------------------------------------------------
+
+/**
+ * Lire un montant écrit sans locale (« 4'890.00 », « 4 890,00 », « 4,890.00 », « CHF 1'250.– »). Heuristique standard du dernier
+ * séparateur des extracteurs de prix (reprise telle quelle de la Chasse Carnet V1) ; tout le reste rend `undefined`, jamais deviné.
+ */
+const DEVISES_ECRITES: Array<[RegExp, string]> = [[/CHF|SFr\.?|Fr\./gi, 'CHF'], [/EUR|€|EURO/gi, 'EUR'], [/USD|US\$/gi, 'USD'], [/GBP|£/gi, 'GBP'], [/AUD|A\$/gi, 'AUD']];
+export function prixLocalise(v: unknown): { montant: number; devise?: string } | undefined {
+  if (typeof v === 'number') return Number.isFinite(v) && v > 0 ? { montant: v } : undefined;
+  if (typeof v !== 'string' || v.length > 60) return undefined;
+  let s = v.replace(/[  \s]+/g, ' ').replace(/[’`´]/g, "'").trim();
+  const devs = new Set<string>();
+  for (const [re, code] of DEVISES_ECRITES) { if (re.test(s)) devs.add(code); re.lastIndex = 0; s = s.replace(re, ' '); }
+  if (devs.size > 1) return undefined;
+  s = s.replace(/\s+/g, ' ').replace(/[.,]?\s*[–—-]+\s*$/, '').replace(/\s*\*+\s*$/, '').trim();
+  if (!/^\d[\d.,' ]*$/.test(s)) return undefined;
+  const groupesOk = (t: string, sep: string | null) => {
+    if (sep === null) return /^\d+$/.test(t);
+    const g = t.split(sep);
+    return /^\d{1,3}$/.test(g[0]) && g.slice(1).every((x) => /^\d{3}$/.test(x));
+  };
+  const dernier = Math.max(s.lastIndexOf('.'), s.lastIndexOf(','));
+  let entier: string, frac = '';
+  if (dernier < 0) {
+    const seps = new Set(s.replace(/\d/g, ''));
+    if (seps.size > 1 || !groupesOk(s, seps.size ? [...seps][0] : null)) return undefined;
+    entier = s.replace(/\D/g, '');
+  } else {
+    const c = s[dernier], reste = s.slice(dernier + 1);
+    if (reste.length === 3 && new RegExp(`^[1-9]\\d{0,2}(?:\\${c}\\d{3})+$`).test(s)) entier = s.replace(/\D/g, '');
+    else {
+      if (!/^\d{1,2}$/.test(reste)) return undefined;
+      const partie = s.slice(0, dernier), seps = new Set(partie.replace(/\d/g, ''));
+      if (seps.size > 1 || seps.has(c) || !groupesOk(partie, seps.size ? [...seps][0] : null)) return undefined;
+      entier = partie.replace(/\D/g, ''); frac = reste;
+    }
+  }
+  const montant = Number(frac ? `${entier}.${frac}` : entier);
+  if (!Number.isFinite(montant) || montant <= 0) return undefined;
+  return devs.size ? { montant, devise: [...devs][0] } : { montant };
+}
+
+/** Les montants écrits d'un texte, avec leur position (devise devant ou derrière). */
+const MOTIF_MONTANT = /(?:(CHF|SFr\.?|Fr\.|EUR|€|£|GBP|USD|US\$|AUD|A\$)\s{0,3})?(\d{1,3}(?:['’ .,  ]\d{3})*(?:[.,]\d{1,2})?|\d+(?:[.,]\d{1,2})?)(?:\s?[.,]?[–—-](?!\d))?(?:\s?(CHF|EUR|€|EURO|£|GBP|USD|AUD|\$))?/g;
+export function montantsDe(t: string): Array<{ montant: number; devise: string; i: number; brut: string }> {
+  const out: Array<{ montant: number; devise: string; i: number; brut: string }> = [];
+  for (const m of t.matchAll(MOTIF_MONTANT)) {
+    const dev = m[1] ?? m[3];
+    if (!dev) continue;
+    const lu = prixLocalise(`${m[2]} ${dev === '$' ? 'USD' : dev}`);
+    if (lu?.devise) out.push({ montant: lu.montant, devise: lu.devise, i: m.index ?? 0, brut: m[0] });
+  }
+  return out;
+}
+const egal = (a: number, b: number) => Math.abs(a - b) <= Math.max(0.011, b * 0.0005);
+
+// ---------------------------------------------------------------------------------------------------------------------------
+// Données structurées
+// ---------------------------------------------------------------------------------------------------------------------------
+
+/** Décode les entités d'une chaîne du JSON-LD (« l&apos;isolation ») ; l'inconnu reste tel quel. */
+const decoder = (t: string) => t.includes('&') ? load('<i>' + t.replace(/</g, '&lt;') + '</i>').text() : t;
+function decoderJson(v: unknown, prof = 0): unknown {
+  if (typeof v === 'string') return decoder(v);
+  if (prof > 8 || !v || typeof v !== 'object') return v;
+  if (Array.isArray(v)) return v.map((x) => decoderJson(x, prof + 1));
+  return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, decoderJson(x, prof + 1)]));
+}
+/** Le microdata de htmlmetaparser est « développé » (`[{ "@value": … }]`) : on le ramène à la forme du JSON-LD. */
+function aplatir(v: unknown, prof = 0): unknown {
+  if (prof > 10) return undefined;
+  if (Array.isArray(v)) { const a = v.map((x) => aplatir(x, prof + 1)).filter((x) => x !== undefined); return a.length === 1 ? a[0] : a; }
+  if (!v || typeof v !== 'object') return v;
+  const o = v as Json;
+  if ('@value' in o) return o['@value'];
+  return Object.fromEntries(Object.entries(o).filter(([k]) => k !== '@context').map(([k, x]) => [k === '@type' ? k : k.replace(/^https?:\/\/schema\.org\//, ''), aplatir(x, prof + 1)]));
+}
+
+interface Structure { produits: Array<{ o: Json; source: 'JSON-LD' | 'microdata' | 'RDFa' }>; meta: Map<string, string> }
+
+function structure(html: string, $: CheerioAPI, url: URL): Structure {
+  const produits: Structure['produits'] = [];
+  const parcourir = (v: unknown, source: 'JSON-LD' | 'microdata' | 'RDFa', prof = 0) => {
+    if (!v || prof > 6 || typeof v !== 'object') return;
+    if (Array.isArray(v)) { v.slice(0, 60).forEach((x) => parcourir(x, source, prof + 1)); return; }
+    const o = v as Json;
+    if (types(o).some((t) => /ItemList|BreadcrumbList|SearchResultsPage|CollectionPage/.test(t))) return;
+    if (estProduit(o)) { produits.push({ o, source }); return; }
+    for (const k of ['@graph', 'mainEntity', 'mainEntityOfPage', 'itemReviewed', 'about']) if (o[k]) parcourir(o[k], source, prof + 1);
+  };
+  $('script[type="application/ld+json"]').slice(0, 30).each((_, el) => {
+    const brut = $(el).text();
+    try { parcourir(decoderJson(JSON.parse(brut)), 'JSON-LD'); }
+    catch {
+      // Un JSON-LD avec des retours à la ligne bruts dans ses chaînes (fréquent) : réparé une fois, sinon ignoré (pas une preuve).
+      try { parcourir(decoderJson(JSON.parse(brut.replace(/[\r\n\t]+/g, ' '))), 'JSON-LD'); } catch { /* schéma invalide */ }
+    }
+  });
+  let res: any = null;
+  try {
+    const h = new Handler((err: unknown, r: unknown) => { if (!err) res = r; }, { url: url.href });
+    const p = new Parser(h, { decodeEntities: true });
+    p.write(html); p.end();
+  } catch { /* microdata illisible : le JSON-LD et le HTML restent */ }
+  for (const m of liste(res?.microdata)) parcourir(aplatir(m), 'microdata');
+  const meta = new Map<string, string>();
+  for (const n of liste<Json>(res?.rdfa)) {
+    const o = aplatir(n) as Json;
+    if (types(o).length && estProduit(o)) produits.push({ o, source: 'RDFa' });
+  }
+  $('meta[property], meta[name], meta[itemprop]').each((_, el) => {
+    const k = ($(el).attr('property') ?? $(el).attr('name') ?? '').toLowerCase(), c = $(el).attr('content');
+    if (k && c && !meta.has(k)) meta.set(k, compact(c));
+  });
+  return { produits, meta };
+}
+
+/** Le produit principal : celui que nomment le titre ou l'adresse, avec une offre ; jamais un produit d'une liste. */
+function principal(s: Structure, h1: string, ogTitre: string, url: URL): Json | null {
+  if (!s.produits.length) return null;
+  const nh1 = norm(h1), nog = norm(ogTitre);
+  const score = ({ o }: { o: Json }) => {
+    const n = norm(texte(o.name, 300) ?? '');
+    let x = 0;
+    if (n && (nh1.includes(n) || nog.includes(n) || (n.includes(nh1) && nh1.length > 8))) x += 4;
+    if (o.offers || o.hasVariant) x += 2;
+    const u = texte(o.url, 2000);
+    try { if (u && new URL(u, url).pathname === url.pathname) x += 2; } catch { /* adresse illisible */ }
+    if (o.image) x += 1;
+    return x;
+  };
+  const tries = [...s.produits].sort((a, b) => score(b) - score(a));
+  const meilleur = { ...tries[0].o };
+  // JSON-LD et microdata du même produit : le second complète le premier, champ par champ (jamais ne le remplace).
+  const nm = norm(texte(meilleur.name, 300) ?? '');
+  for (const { o } of tries.slice(1)) {
+    if (norm(texte(o.name, 300) ?? '') !== nm) continue;
+    for (const [k, v] of Object.entries(o)) if (meilleur[k] === undefined) meilleur[k] = v;
+  }
+  return meilleur;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------
+// Page visible
+// ---------------------------------------------------------------------------------------------------------------------------
+
+/** Le texte visible, dans l'ordre de lecture, sans scripts, styles ni navigation. */
+export function texteVisible($: CheerioAPI): string {
+  const c = $.root().clone();
+  c.find('script, style, noscript, template, svg, iframe, nav, header, footer').remove();
+  return compact(c.find('body').text() || c.text());
+}
+
+const DIT_TTC = /inkl\.?\s*(?:\d+(?:[.,]\d+)?\s*%\s*)?(?:der\s+)?(?:gesetzl(?:\.|ichen)?\s*)?(?:MwSt|USt|Mehrwertsteuer|Umsatzsteuer)|TVA\s+(?:incluse|comprise)|(?:incl\.?|including)\s*(?:\d+\s*%\s*)?VAT|\bTTC\b|inc\.?\s*VAT/i;
+const DIT_HT = /(?:exkl\.?|zzgl\.?|zuzüglich|ohne|excl\.?|excluding|plus)\s*(?:\d+(?:[.,]\d+)?\s*%\s*)?(?:der\s+)?(?:gesetzl(?:\.|ichen)?\s*)?(?:MwSt|USt|Mehrwertsteuer|VAT)|hors\s+TVA|\bHT\b|\bnetto\b|ex\.?\s*VAT/i;
+const TAUX_TVA = [0.081, 0.077, 0.026, 0.038, 0.19, 0.2, 0.21, 0.1, 0.07, 0.055];
+
+/** Le premier montant écrit sous le titre (le bloc d'achat) : repli du prix quand la page ne publie aucune donnée structurée. */
+function prixSousTitre(visible: string, titre: string): { montant: number; devise: string; des: boolean } | undefined {
+  const t = norm(titre).slice(0, 40);
+  const nv = norm(visible);
+  let i = t.length > 5 ? nv.indexOf(t) : -1;
+  if (i < 0) return undefined;
+  // Le titre revient souvent (fil d'Ariane, h1, libellés plus bas) : la première occurrence suivie d'un montant dans les 700 caractères.
+  for (let essai = 0; essai < 4 && i >= 0; essai++) {
+    const fenetre = visible.slice(i, i + 700);
+    const m = montantsDe(fenetre).find((x) => !/(?:statt|UVP|instead of|au lieu de|RRP|PVC|ab|dès|from)\s*$/i.test(fenetre.slice(Math.max(0, x.i - 14), x.i)));
+    if (m) return { montant: m.montant, devise: m.devise, des: /(?:\bab|dès|from)\s*$/i.test(fenetre.slice(Math.max(0, m.i - 8), m.i)) };
+    i = nv.indexOf(t, i + t.length);
+  }
+  return undefined;
+}
+
+/** Les écritures possibles d'un montant (1820.9 → « 1.820,90 », « 1'820.90 », « 1820,90 »…), pour le retrouver dans le texte. */
+function ecritures(m: number): string[] {
+  const [e, f] = m.toFixed(2).split('.');
+  const groupes = (sep: string) => e.replace(/\B(?=(\d{3})+(?!\d))/g, sep);
+  const out = new Set<string>();
+  for (const sep of ['', '.', ',', "'", '’', ' ', ' ', ' ']) for (const dec of ['.', ',']) {
+    if (sep === dec) continue;
+    out.add(`${groupes(sep)}${dec}${f}`);
+    if (f === '00') { out.add(`${groupes(sep)}${dec}–`); out.add(`${groupes(sep)}.-`); out.add(`${groupes(sep)}${dec}-`); }
+  }
+  if (f === '00') { out.add(groupes("'")); out.add(groupes('.')); out.add(e); }
+  return [...out];
+}
+export function positionsMontant(visible: string, m: number): number[] {
+  const out: number[] = [];
+  for (const e of ecritures(m)) {
+    let i = visible.indexOf(e);
+    while (i >= 0 && out.length < 20) {
+      const avant = visible[i - 1] ?? ' ', apres = visible[i + e.length] ?? ' ';
+      if (!/\d/.test(avant) && !/\d/.test(apres) && !(apres === ',' || apres === '.') || /[–-]/.test(apres)) out.push(i);
+      i = visible.indexOf(e, i + 1);
+    }
+  }
+  return out;
+}
+
+/** TTC ou HT : schema.org d'abord, puis la mention écrite à côté du prix, puis le couple HT/TTC publié (prix × (1 + TVA)). */
+function taxeDe(prix: number, visible: string, schema: boolean | undefined): { taxe?: 'ht' | 'ttc'; prixTTC?: number; detail?: string } {
+  if (schema === true) return { taxe: 'ttc', detail: 'valueAddedTaxIncluded' };
+  const ici = positionsMontant(visible, prix);
+  for (const i of ici) {
+    // Un autre montant tout près (avant ou après), égal au premier × (1 + un taux de TVA), avec une mention « taxe comprise » : le premier
+    // est HT (gastro-held.ch : « CHF 1.968,39 CHF 1.820,90 CHF 1.968,39 inkl. MwSt. »).
+    const fenetre = visible.slice(Math.max(0, i - 100), i + 140);
+    for (const a of montantsDe(fenetre)) {
+      const r = TAUX_TVA.find((t) => egal(a.montant, Math.round(prix * (1 + t) * 100) / 100));
+      if (r !== undefined && DIT_TTC.test(fenetre)) return { taxe: 'ht', prixTTC: a.montant, detail: `TTC ${a.montant} publié (TVA ${Math.round(r * 1000) / 10} %)` };
+    }
+    const proche = visible.slice(i, i + 60);
+    if (DIT_TTC.test(proche) && !DIT_HT.test(proche.split(DIT_TTC)[0])) return { taxe: 'ttc', detail: 'mention « taxe comprise »' };
+    if (DIT_HT.test(proche)) return { taxe: 'ht', detail: 'mention « hors taxe »' };
+  }
+  if (schema === false) return { taxe: 'ht', detail: 'valueAddedTaxIncluded: false' };
+  return {};
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------
+// Photos et caractéristiques
+// ---------------------------------------------------------------------------------------------------------------------------
+
+const PAS_UNE_PHOTO = /no[-_]?image|placeholder|platzhalter|default[-_]?(?:image|product)|\bblank\b|spacer|\blogo\b|sprite|favicon|\bicon\b|1x1|pixel\.gif|loading\.gif/i;
+const domaineRacine = (h: string) => h.split('.').slice(-2).join('.');
+
+/** Une photo utilisable : https, jamais un logo ni une image « sans photo » (BL-12) ; http vers https sur l'hôte de la page (BL-5). */
+function photo(brut: unknown, base: URL): string | undefined {
+  const v = liste(brut)[0];
+  const s = typeof v === 'string' ? v : v && typeof v === 'object' ? texte((v as Json).contentUrl ?? (v as Json).url, 2000) : undefined;
+  if (!s || s.startsWith('data:') || PAS_UNE_PHOTO.test(s)) return undefined;
+  try {
+    const u = new URL(s.trim(), base);
+    if (/\.svg(?:$|\?)/i.test(u.pathname)) return undefined;
+    if (u.protocol === 'http:' && domaineRacine(u.hostname) === domaineRacine(base.hostname)) u.protocol = 'https:';
+    return u.protocol === 'https:' ? u.href.slice(0, 2000) : undefined;
+  } catch { return undefined; }
+}
+function photosDe(sources: unknown[], base: URL): string[] {
+  const vues = new Set<string>(), out: string[] = [];
+  for (const s of sources) for (const x of liste(s)) {
+    const p = photo(x, base);
+    if (!p) continue;
+    const cle = p.replace(/[?#].*$/, '').replace(/[-_](?:\d{2,4}x\d{2,4}|small|medium|large|md|lg|sm|xl\d?)(?=\.\w+$)/i, '');
+    if (vues.has(cle)) continue;
+    vues.add(cle); out.push(p);
+    if (out.length >= 12) return out;
+  }
+  return out;
+}
+
+const NOM_CARACT = 60, VAL_CARACT = 100;
+type Valeur = { nom: string; valeur: string; unite?: string };
+const SECTION_SPECS = /spec|techn|merkmal|eigenschaft|attribut|caract|detail|datenblatt|feature|propert|daten|kenn|fiche|product-info|produktinfo/i;
+const LIGNE_NON = /^(?:preis|price|prix|menge|quantity|quantité|anzahl|bewertung|rating|warenkorb|panier|cart)$/i;
+
+/** Les caractéristiques : `additionalProperty`, propriétés du produit (poids, dimensions…), tableaux et listes de la page. */
+function caracteristiques(p: Json | null, $: CheerioAPI, amazon: boolean): Valeur[] {
+  const out: Valeur[] = [];
+  const vus = new Set<string>();
+  const ajouter = (nom: string | undefined, valeur: string | undefined, unite?: string) => {
+    const n = nom ? couper(nom.replace(/\s*[:：]\s*$/, ''), NOM_CARACT) : undefined;
+    const v = valeur ? couper(valeur, VAL_CARACT) : undefined;
+    if (!n || !v || n.length < 2 || LIGNE_NON.test(n) || norm(n) === norm(v) || vus.has(norm(n))) return;
+    vus.add(norm(n));
+    out.push({ nom: n, valeur: v, ...(unite ? { unite: couper(unite, 12) } : {}) });
+  };
+  if (p) {
+    for (const x of liste<Json>(p.additionalProperty).slice(0, 30)) {
+      const v = x?.value;
+      ajouter(texte(x?.name, 80), typeof v === 'boolean' ? (v ? 'oui' : 'non') : texte(v, VAL_CARACT), texte(x?.unitText, 12));
+    }
+    const qv = (v: unknown) => { const o = liste<Json>(v)[0]; return o && typeof o === 'object' ? [texte(o.value), texte(o.unitText ?? o.unitCode, 12)] as const : [texte(v), undefined] as const; };
+    for (const [k, nom] of [['weight', 'Poids'], ['width', 'Largeur'], ['height', 'Hauteur'], ['depth', 'Profondeur'], ['material', 'Matière'], ['color', 'Couleur'], ['size', 'Taille']] as const) {
+      if (p[k] === undefined) continue;
+      const [v, u] = qv(p[k]);
+      ajouter(nom, v, u);
+    }
+  }
+  const lignes = (sel: string) => {
+    $(sel).each((_, t) => {
+      const zone = [t, ...$(t).parents().slice(0, 4).toArray()].map((e) => `${$(e).attr('id') ?? ''} ${$(e).attr('class') ?? ''}`).join(' ');
+      const titre = $(t).prevAll('h2, h3, h4, strong').first().text();
+      if (!amazon && !SECTION_SPECS.test(zone) && !SECTION_SPECS.test(titre) && !/caract|technische|spezifikation|specification|produktdetails|details/i.test(titre)) return;
+      $(t).find('tr').each((__, tr) => {
+        const c = $(tr).children('th, td');
+        if (c.length === 2) ajouter(compact(c.eq(0).text()), compact(c.eq(1).text()));
+      });
+      $(t).children('dt').each((__, dt) => ajouter(compact($(dt).text()), compact($(dt).nextAll('dd').first().text())));
+    });
+  };
+  lignes('table, dl');
+  // Listes « Nom : valeur » dans une zone de caractéristiques (ggmgastro, gastro-held, description de baldinger.biz).
+  $('li').each((_, li) => {
+    if (out.length >= 24) return;
+    const zone = $(li).parents().slice(0, 5).toArray().map((e) => `${$(e).attr('id') ?? ''} ${$(e).attr('class') ?? ''}`).join(' ');
+    if (!SECTION_SPECS.test(zone)) return;
+    const m = compact($(li).text()).match(/^([^:：]{2,40})\s*[:：]\s*(.{1,100})$/);
+    if (m) ajouter(m[1], m[2]);
+  });
+  const desc = p ? liste(p.description).filter((x) => typeof x === 'string').join('\n') : '';
+  for (const l of desc.split(/\r?\n|<br\s*\/?>/i).slice(0, 40)) {
+    const m = compact(l).match(/^([A-Za-zÀ-ÿ][^:：]{1,30})\s*[:：]\s*(.{1,80})$/);
+    if (m && /\d/.test(m[2])) ajouter(m[1], m[2]);
+  }
+  return out.slice(0, 24);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------
+// Livraison vers la Suisse
+// ---------------------------------------------------------------------------------------------------------------------------
+
+const LIVRAISON_GRATUITE = /(?:versandkostenfrei|kostenlose[rn]?\s+(?:versand|lieferung)|gratis(?:versand|lieferung)|livraison\s+(?:gratuite|offerte)|free\s+(?:shipping|delivery))/i;
+const LIVRAISON_REFUSEE = /(?:keine|nicht)\s+(?:lieferung|versand|liefern)\s+(?:in\s+die|nach\s+der?)\s+schweiz|(?:ne\s+livr\w*\s+pas|aucune\s+livraison)\s+(?:en|vers\s+la)\s+suisse|(?:no|not)\s+(?:shipping|deliver\w*)\s+to\s+switzerland|nur\s+innerhalb\s+(?:deutschlands|österreichs)/i;
+
+function livraisonCH(offres: Json[], visible: string, prix: number | undefined, devise: string | undefined, suisse: boolean): { l?: Livraison; doute?: string } {
+  let schema: Livraison | undefined;
+  for (const o of offres) for (const d of liste<Json>(o.shippingDetails)) {
+    const pays = liste<Json>(d.shippingDestination).flatMap((x) => liste(x?.addressCountry).map((c) => String(typeof c === 'object' ? (c as Json).name ?? '' : c).toUpperCase()));
+    if (pays.length && !pays.includes('CH')) continue;
+    if (!pays.length && !suisse) continue;
+    if (d.doesNotShip === true || d.doesNotShip === 'true') { schema = { refusee: true }; continue; }
+    const r = liste<Json>(d.shippingRate)[0];
+    const m = prixLocalise(texte(r?.value)) ?? (r?.value === 0 || r?.value === '0' ? { montant: 0 } : undefined);
+    const dev = texte(r?.currency, 3) ?? devise;
+    if (m && m.montant === 0) schema = { gratuite: true };
+    else if (m && dev) schema = { prix: m.montant, devise: dev };
+  }
+  if (LIVRAISON_REFUSEE.test(visible)) return { l: { refusee: true }, ...(schema && !schema.refusee ? { doute: 'les données disent une livraison en Suisse, la page la refuse' } : {}) };
+  // Une gratuité écrite ne vaut pour la Suisse que sur une boutique suisse (ou si la page nomme la Suisse) et sous son seuil éventuel.
+  let texteGratuit = false;
+  const m = visible.match(LIVRAISON_GRATUITE);
+  if (m && m.index !== undefined) {
+    const suite = visible.slice(m.index, m.index + 70);
+    const ailleurs = /innerhalb\s+(?:DE|AT|Deutschland|Österreich)|nach\s+(?:DE|AT)\b|en\s+France|within\s+(?:the\s+)?(?:UK|US|Australia)/i.test(suite);
+    const seuil = suite.match(/\b(?:ab|dès|from|über|over)\s+(?:CHF\s*|Fr\.\s*|€\s*)?(\d+(?:[.,']\d+)*)/i);
+    const seuilOk = !seuil || (prix !== undefined && prix >= (prixLocalise(seuil[1])?.montant ?? Infinity));
+    texteGratuit = (suisse || /schweiz|suisse|switzerland/i.test(suite)) && !ailleurs && seuilOk;
+  }
+  if (texteGratuit) return { l: { gratuite: true }, ...(schema && !schema.gratuite ? { doute: `les données disent un port de ${schema.prix} ${schema.devise ?? ''}, la page « livraison gratuite »` } : {}) };
+  return { l: schema };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------
+// Extraction
+// ---------------------------------------------------------------------------------------------------------------------------
+
+const RETIRE = /nicht\s+mehr\s+(?:verfügbar|lieferbar|erhältlich)|plus\s+disponible|n['’]est\s+plus\s+disponible|no\s+longer\s+available|discontinued|ausgelistet/i;
+const LISTE_PRIX = /ListPrice|StrikethroughPrice|SRP|MSRP|InvoicePrice|SalePrice_none/i;
+
+export function extraireProduit(html: string, url: URL): Extraction {
+  const $ = load(html);
+  const s = structure(html, $, url);
+  const meta = (k: string) => s.meta.get(k);
+  const amazon = /(^|\.)amazon\.[a-z.]+$/i.test(url.hostname);
+  const h1 = compact(amazon ? $('#productTitle').first().text() || $('h1').first().text() : $('h1').first().text());
+  const ogTitre = meta('og:title') ?? '';
+  const visible = texteVisible($);
+  const suisse = /\.ch$/i.test(url.hostname) || /[/-]ch(?:[-_/]|$)/i.test(url.pathname.split('/')[1] ?? '');
+  const p = principal(s, h1, ogTitre, url);
+  const etapes: EtapeLecture[] = [];
+  const doutes: string[] = [];
+  etapes.push(p ? { nom: 'donnees', statut: 'trouve', detail: [...new Set(s.produits.map((x) => x.source))].join(' + ') } : { nom: 'donnees', statut: 'absent', detail: 'aucun Product schema.org' });
+
+  // Nom, marque comprise (BL-9) ; repli : og:title, h1, puis <title> sans le nom de la boutique.
+  const site = norm(meta('og:site_name') ?? url.hostname.replace(/^www\./, '').split('.')[0]);
+  const marque = texte(liste<Json>(p?.brand)[0]?.name ?? p?.brand, 60) ?? meta('og:brand') ?? meta('product:brand');
+  let nom = amazon && h1 ? h1 : texte(p?.name, 300) ?? (h1 || undefined) ?? (ogTitre || undefined);
+  if (nom && /^(?:brauen\.de|home|startseite|accueil)$/i.test(nom) && h1) nom = h1;
+  if (nom && marque && !norm(nom).includes(norm(marque).split(' ')[0]) && !site.includes(norm(marque).split(' ')[0]) && !norm(marque).includes(site)) {
+    nom = `${marque.length > 20 ? marque.split(' ')[0] : marque} ${nom}`;
+  }
+
+  // Prix : les offres du produit (variante désignée par l'adresse d'abord), sinon og/product:, sinon le bloc d'achat sous le titre.
+  const offresBrutes: Json[] = [];
+  const variante = url.searchParams.get('variant');
+  const variantes = liste<Json>(p?.hasVariant);
+  const choisie = variante ? variantes.find((v) => [texte(v.url, 2000), texte(v.sku), texte(v['@id'], 2000)].some((x) => x?.includes(variante))) : undefined;
+  for (const o of liste<Json>(choisie?.offers ?? p?.offers)) offresBrutes.push(o);
+  if (!choisie) for (const v of variantes) offresBrutes.push(...liste<Json>(v.offers));
+  const offres: Json[] = [];
+  const deplier = (o: Json, prof = 0) => { if (!o || typeof o !== 'object') return; offres.push(o); if (prof < 2) liste<Json>(o.offers).forEach((x) => deplier(x, prof + 1)); };
+  offresBrutes.forEach((o) => deplier(o));
+  const montants: Array<{ montant: number; devise?: string; tva?: boolean; agrege?: boolean }> = [];
+  for (const o of offres) {
+    const specs = liste<Json>(o.priceSpecification).filter((x) => !LISTE_PRIX.test(String(x?.priceType ?? '')) && !x?.referenceQuantity);
+    const devO = texte(o.priceCurrency, 3) ?? specs.map((x) => texte(x.priceCurrency, 3)).find(Boolean);
+    const tva = specs.map((x) => x.valueAddedTaxIncluded).map((v) => v === true || v === 'true' ? true : v === false || v === 'false' ? false : undefined).find((v) => v !== undefined);
+    const bruts = [o.price, o.lowPrice, ...(o.price === undefined && o.lowPrice === undefined ? specs.map((x) => x.price) : [])];
+    for (const b of bruts) {
+      const m = prixLocalise(typeof b === 'object' ? texte(b) : b);
+      if (m) montants.push({ montant: m.montant, devise: devO ?? m.devise ?? meta('product:price:currency') ?? meta('og:price:currency'), tva, agrege: types(o).includes('AggregateOffer') });
+    }
+  }
+  let prix: number | undefined, devise: string | undefined, prixDes = false, tvaSchema: boolean | undefined, sourcePrix = '';
+  const devises = new Set(montants.map((m) => m.devise));
+  if (montants.length && devises.size === 1 && [...devises][0]) {
+    const min = montants.reduce((a, b) => (b.montant < a.montant ? b : a));
+    prix = min.montant; devise = min.devise; tvaSchema = min.tva; sourcePrix = 'schema.org';
+    prixDes = new Set(montants.map((m) => m.montant)).size > 1 || (min.agrege === true && offres.some((o) => o.highPrice === undefined && o.offers === undefined && types(o).includes('AggregateOffer')));
+  } else if (devises.size > 1) doutes.push('plusieurs devises dans les offres');
+  if (prix === undefined) {
+    const m = prixLocalise(meta('product:price:amount') ?? meta('og:price:amount')), d = m?.devise ?? meta('product:price:currency') ?? meta('og:price:currency');
+    if (m && d) { prix = m.montant; devise = d; sourcePrix = 'Open Graph'; }
+  }
+  if (prix === undefined && amazon) {
+    const j = html.match(/"desktop_buybox_group_1"\s*:\s*\[\s*\{[^}]*?"priceAmount"\s*:\s*([\d.]+)\s*,\s*"currencySymbol"\s*:\s*"([^"]+)"/);
+    const m = j ? prixLocalise(`${j[1]} ${j[2]}`) : undefined;
+    if (m?.devise) { prix = m.montant; devise = m.devise; sourcePrix = 'bloc d\'achat'; }
+  }
+  if (prix === undefined && (h1 || nom)) {
+    const m = prixSousTitre(visible, h1 || nom!);
+    if (m) { prix = m.montant; devise = m.devise; prixDes = m.des; sourcePrix = 'page (sous le titre)'; }
+  }
+
+  // Contrôle du prix : un prix des données structurées doit se lire sur la page ; sinon il est douteux (jamais retiré en silence).
+  let prixDouteux: string | undefined;
+  if (prix !== undefined && sourcePrix === 'schema.org' && visible.length > 500 && !positionsMontant(visible, prix).length) {
+    const vu = h1 ? prixSousTitre(visible, h1) : undefined;
+    if (vu && vu.devise === devise && !egal(vu.montant, prix)) prixDouteux = `données ${prix}, page ${vu.montant} ${vu.devise}`;
+  }
+  const taxe = prix !== undefined ? taxeDe(prix, visible, tvaSchema) : {};
+  etapes.push(prix !== undefined
+    ? { nom: 'prix', statut: prixDouteux ? 'douteux' : 'trouve', detail: prixDouteux ?? `${prix} ${devise} (${sourcePrix})${prixDes ? ', dès' : ''}` }
+    : { nom: 'prix', statut: 'absent' });
+  if (prixDouteux) doutes.push(`prix : ${prixDouteux}`);
+
+  // Disponibilité : schema.org, puis la page (« plus disponible », BL-15).
+  const dispos = new Set(offres.filter((o) => !types(o).includes('AggregateOffer')).map((o) => String(texte(o.availability, 80) ?? '')));
+  const dispoSchema = dispos.size === 1 ? [...dispos][0] : (meta('product:availability') ?? meta('og:availability') ?? '');
+  const stock = stockStatus('', dispoSchema.replace(/\s+/g, ''));
+  const retire = /Discontinued/i.test(dispoSchema) || (RETIRE.test(visible.slice(0, 6000)) && !offres.length);
+  const dispo = retire ? 'retire' as const : stock === 'in_stock' ? 'en-stock' as const : stock === 'out_of_stock' ? 'rupture' as const : undefined;
+
+  const { l: livraison, doute: douteLivraison } = livraisonCH(offres, visible, prix, devise, suisse);
+  if (douteLivraison) doutes.push(`port : ${douteLivraison}`);
+  etapes.push(devise
+    ? { nom: 'devise-frais', statut: douteLivraison ? 'douteux' : 'trouve', detail: [devise, taxe.taxe?.toUpperCase(), livraison?.refusee ? 'pas de livraison en Suisse' : livraison?.gratuite ? 'port gratuit' : livraison?.prix !== undefined ? `port ${livraison.prix} ${livraison.devise}` : 'port non publié'].filter(Boolean).join(' · ') }
+    : { nom: 'devise-frais', statut: 'absent' });
+
+  const sourcesPhotos: unknown[] = [p?.image, choisie?.image, ...variantes.slice(0, 3).map((v) => v.image)];
+  if (amazon) {
+    const img = $('#landingImage');
+    sourcesPhotos.push(img.attr('data-old-hires'));
+    try { sourcesPhotos.push(Object.keys(JSON.parse(img.attr('data-a-dynamic-image') ?? '{}'))); } catch { /* attribut illisible */ }
+  }
+  sourcesPhotos.push(meta('og:image:secure_url'), meta('og:image'), meta('twitter:image'));
+  const photos = photosDe(sourcesPhotos, url);
+  etapes.push(photos.length ? { nom: 'photos', statut: 'trouve', detail: `${photos.length}` } : { nom: 'photos', statut: 'absent' });
+
+  const valeurs = caracteristiques(p, $, amazon);
+  if (amazon) $('#productDetails_techSpec_section_1 tr, #productOverview_feature_div tr, #technicalSpecifications_section_1 tr').each((_, tr) => {
+    const c = $(tr).children('th, td');
+    if (c.length === 2 && valeurs.length < 24) {
+      const n = compact(c.eq(0).text()), v = compact(c.eq(1).text());
+      if (n && v && !valeurs.some((x) => norm(x.nom) === norm(n))) valeurs.push({ nom: couper(n, NOM_CARACT), valeur: couper(v, VAL_CARACT) });
+    }
+  });
+  etapes.push(valeurs.length ? { nom: 'caract', statut: 'trouve', detail: `${valeurs.length}` } : { nom: 'caract', statut: 'absent' });
+
+  const vendeur = texte(liste<Json>(offres[0]?.seller)[0]?.name, 80) ?? meta('og:site_name');
+  etapes.push(doutes.length ? { nom: 'controle', statut: 'douteux', detail: doutes.join(' ; ') } : { nom: 'controle', statut: 'trouve' });
+
+  return {
+    ...(nom ? { nom: couper(nom, 180) } : {}),
+    ...(prix !== undefined && devise ? { prix, devise, ...(prixDes ? { prixDes: true as const } : {}) } : {}),
+    ...(prix !== undefined && taxe.taxe ? { taxe: taxe.taxe } : {}),
+    ...(taxe.prixTTC !== undefined ? { prixTTC: taxe.prixTTC } : {}),
+    ...(dispo ? { dispo } : {}),
+    ...(vendeur ? { vendeur: couper(vendeur, 80) } : {}),
+    photos, valeurs,
+    ...(livraison ? { livraison } : {}),
+    etapes
+  };
+}
