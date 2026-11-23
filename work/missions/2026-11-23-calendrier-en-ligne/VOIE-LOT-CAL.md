@@ -33,3 +33,11 @@ Ordre et contenu inchangés (points 1 à 5 du brief), avec ces ajouts :
 - À 14 sem., doigt dans la 2e moitié de S3 → écrit S4 : le lâcher arrondit à la colonne la plus proche au lieu de prendre la
   colonne SOUS le doigt. Corriger (plancher, pas arrondi) dans la transformation unique ; la propriété fast-check passe à
   « date écrite ∈ colonne sous le doigt » (plus de ± 1).
+
+## Ajout 23.11 9:40 — PRIORITÉ 1 maintenant (redit une 2e fois)
+- « On voit toujours pas sur le graph où est le moment présent, et la pastille bleu, on comprend pas à quoi ça sert »
+  (capture brasseur-23-11/40sem-0937.jpg, tour 17).
+- CAL-AUJOURDHUI-COURBE : un trait vertical « aujourd'hui » sur la courbe, de la couleur de la semaine bleue du calendrier,
+  à chaque échelle ; hors fenêtre : rien (pas d'invention).
+- CAL-POINT-BLEU-MUET (pilote, réversible) : retirer le point bleu du creux ; la pastille « −4 563 · S26 '27 » le dit déjà.
+- Puis CAL-PLUS-QU-UN-AN (redit : « je peux toujours avoir que 1 ans ??? »). Les deux dans UN cycle PRÊT / EN LIGNE / preuve.

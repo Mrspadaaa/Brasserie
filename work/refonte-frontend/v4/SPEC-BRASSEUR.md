@@ -2796,3 +2796,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (même capture 9:02, tour 15 : pastille « S26 '27 » suit, mais bande S48 S49 pleine largeur sous un cadre plus étroit, étiquette « S48 – S46 2027 ») « Et échelle toujours pas dynamique... »
 - « En théorie, si je mets 1 ou 2 ou peut être 3 je devrais voir les jours plutôt que les semaines.. comme les mois pour une année »
 - (tour 16) « Ah oui mais je peux toujours avoir que 1 ans ??? » (CAL-PLUS-QU-UN-AN, pas encore fait)
+- (capture 9:37, brasseur-23-11/40sem-0937.jpg : 40 sem., cadre « 2 nov. 2026 – 8 août 2027 », point bleu entouré sur la courbe sous « J », pastille « −4 563 S26 '27 ») « On voit toujours pas sur le graph où est le moment présent, et la pastille bleu, on comprend pas à quoi ça sert »
