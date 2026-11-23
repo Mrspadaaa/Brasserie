@@ -25,3 +25,6 @@
 {"heure":"2026-11-23T03:07:10.413Z","methode":"M1","geste":"Charte 4 : double toucher sur Ajouter, 1 seul appel (rangerCarnet)","modele":"gemini-3.8-flash","estimation_chf":0.005}
 {"heure":"2026-11-23T03:07:54.126Z","methode":"M1","geste":"Charte 4 : note envoyée puis page rechargée à 0,7 s (rangerCarnet probable, non lu)","modele":"gemini-3.8-flash (probable)","estimation_chf":0.005}
 {"heure":"2026-11-23T03:08:30.000Z","methode":"M3","geste":"S6 note brute de 3 lignes dans le carnet ZZ ouvert (3 appels aiTask, rangement)","modele":"gemini (aiTask ; modèle non exposé)","estimation_chf":0.015}
+{"heure":"2026-11-23T07:29:29.716Z","methode":"tour13","geste":"Phrase ZZ depuis la liste (rangerCarnet, 7,5 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T07:30:16.017Z","methode":"tour13","geste":"Lien ggmgastro collé (lireLien, sans modèle)","modele":"aucun","estimation_chf":0}
+{"heure":"2026-11-23T07:30:16.866Z","methode":"tour13","geste":"Lien ggmgastro collé (rangerCarnet, 29,9 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
