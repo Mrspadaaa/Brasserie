@@ -347,6 +347,8 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         // « Nouvelle idée » (+ sur Carnets) : le champ du bas prend le focus, rien d'autre (R28).
         setSubTab('materiel');
         setSegMateriel('carnets');
+        // L-52 : depuis un carnet ouvert, le champ de la liste (une idée neuve), jamais « Ajouter à <carnet>… » : retour à la liste d'abord.
+        setRacineCarnets(createRequest.at);
         setFocusChamp(createRequest.at);
         break;
       case 'copyShoppingList':

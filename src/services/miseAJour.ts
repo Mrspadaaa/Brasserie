@@ -148,6 +148,31 @@ const CLE_GARDE = 'affinee-maj-auto';
 let rechargementLance = false;
 const recharger = () => { if (rechargementLance) return; rechargementLance = true; window.location.reload(); };
 
+/**
+ * E-2 (23.11) : au démarrage, avant le rendu de l'app, une version déjà en attente prend la main. Un rechargement ordinaire ne
+ * l'active jamais de lui-même (l'ancienne page et la nouvelle se chevauchent : le navigateur garde l'ancien worker), et la règle
+ * « rien d'ouvert depuis 1,5 s » ne laisse jamais passer qui touche un champ dès l'affichage : chaque rechargement resservait
+ * l'ancien paquet. Ici rien n'est encore affiché, rien ne peut se perdre : SKIP_WAITING, puis rechargement quand elle a la main.
+ * Rend `true` si l'activation est partie (la page va se recharger : ne pas monter l'app).
+ */
+export async function prendreVersionEnAttente(
+  sw: ServiceWorkerContainer | undefined = typeof navigator !== 'undefined' ? navigator.serviceWorker : undefined,
+  relancer: () => void = recharger,
+): Promise<boolean> {
+  if (!sw?.controller) return false; // première visite ou développement : rien à prendre
+  const r = await sw.getRegistration().catch(() => undefined);
+  const attente = r?.waiting;
+  if (!attente) return false;
+  try {
+    const avant = Number(sessionStorage.getItem(CLE_GARDE) ?? 0);
+    if (Date.now() - avant < GARDE_BOUCLE_MS) return false; // garde anti-boucle : l'app démarre, le bandeau prendra le relais
+    sessionStorage.setItem(CLE_GARDE, String(Date.now()));
+  } catch { /* stockage de session refusé : pas de garde */ }
+  sw.addEventListener('controllerchange', relancer, { once: true });
+  attente.postMessage({ type: 'SKIP_WAITING' });
+  return true;
+}
+
 /** Enregistre le worker (une fois) et branche la politique ci-dessus. `registerSW` vient de `virtual:pwa-register`. */
 export function demarrerMiseAJour(registerSW: RegisterSW): MiseAJour {
   if (courante) return courante;

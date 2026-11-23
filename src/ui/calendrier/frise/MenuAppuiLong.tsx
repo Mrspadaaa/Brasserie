@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ban, Beer, CalendarX, Copy, EyeOff, Filter, Link2, PartyPopper, Pin, Star, UserRound } from 'lucide-react';
+import { Ban, Beer, CalendarX, Copy, EyeOff, Filter, Link2, PartyPopper, Pin, Star, Trash2, UserRound } from 'lucide-react';
 import type { ChoseCalendrier } from '../../../domain/calendrier';
 import { libelleRetirer } from '../../../domain/calendrierGestes';
 import './feuille.css';
@@ -63,6 +63,8 @@ export interface MenuAppuiLongProps {
   onDupliquer: () => void;
   onLier: (liens: { batchId?: string; clientId?: string; evenementId?: string }, nom: string) => void;
   onRetirer: () => void;
+  /** L-71 (T11-20) : une chose créée se supprime aussi d'ici (la fiche l'offre déjà), en rouge ; le message garde Annuler. */
+  onSupprimer?: () => void;
   /** Quand Retirer est refusé (un brassin, une charge fixe) : un bouton ouvre la source, où la chose se règle. */
   onOuvrirSource?: () => void;
   libelleSource?: string;
@@ -294,7 +296,7 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
         <i className="cal-ml-cibles" aria-hidden="true"><Beer size={20} /><UserRound size={20} /><PartyPopper size={20} /></i>
       </button>
       {retirable ? (
-        <button type="button" role="menuitem" {...agir(props.onRetirer)} className={`cal-ml cal-ml-ret${enMots(retirable.effet) ? ' cal-ml-mots' : ''}`}>
+        <button type="button" role="menuitem" {...agir(props.onRetirer)} className={`cal-ml${chose.source.genre === 'creative' ? '' : ' cal-ml-ret'}${enMots(retirable.effet) ? ' cal-ml-mots' : ''}`} data-retirer-menu>
           {/* paquet F n° 2 (PC-138) : le libellé dit ce que fait le geste ; ranger n'efface rien, son picto n'est pas une corbeille */}
           {chose.source.genre === 'creative' ? <CalendarX size={20} aria-hidden="true" /> : <Ban size={20} aria-hidden="true" />}<span>{libelleRetirer(chose)}</span>{retirable.effet && <><span className="sr-only"> · </span><em data-effet-retirer>{effetVu(retirable.effet)}</em></>}
         </button>
@@ -310,6 +312,11 @@ export const MenuAppuiLong: React.FC<MenuAppuiLongProps> = props => {
             </button>
           ) : <p className="cal-mn">{'raison' in retirer ? retirer.raison : ''}</p>}
         </>
+      )}
+      {props.onSupprimer && (
+        <button type="button" role="menuitem" data-supprimer-menu {...agir(props.onSupprimer)} className="cal-ml cal-ml-ret">
+          <Trash2 size={20} aria-hidden="true" /><span>Supprimer</span>
+        </button>
       )}
     </>
   );

@@ -1,0 +1,21 @@
+/* Lot 5 du Carnet en ligne (23.11, LISTE.md § 4) : la liste des carnets. Fichier à part (carnets.css appartient au Lot 3) ; sélecteurs
+   `.cn-page.cn-liste` pour passer devant carnets.css quel que soit l'ordre de chargement. */
+
+/* L-31 (CA12-M4-12) : le titre est le seul repère d'une ligne ; il se lit en entier, sur deux lignes s'il le faut */
+.cn-page.cn-liste .cn-carnet-titre { display: block; -webkit-line-clamp: unset; overflow: visible; }
+
+/* L-32 (CA12-M4-13) : « Dans À venir depuis le … · Voir » sur une ligne basse (28 px, `touch`), alignée sur le titre (vignette 32 + 10 + 10) */
+.cn-page.cn-liste .cn-avenir { min-height: 28px; gap: 6px; padding: 2px 10px 2px 52px; font-size: 14px; line-height: 18px; }
+.cn-page.cn-liste .cn-avenir svg { width: 16px; height: 16px; flex: none; }
+.cn-page.cn-liste .cn-avenir .cn-sp { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* L-34 (CA12-M4-14) : la rangée défile, donc elle coupe ce qui la dépasse : 4 px de marge intérieure gardent l'anneau de focus entier
+   (marges négatives : la rangée ne bouge pas). Les puces se serrent pour que « Chercher un carnet » se lise, deux puces actives (en gras)
+   comprises. */
+.cn-page.cn-liste .cn-filtre { gap: 4px; padding: 4px; margin: -4px; }
+.cn-page.cn-liste .cn-recherche { flex: 1 0 150px; padding: 0 8px; } /* D430 : à 14 px, « Chercher un carnet » tient entier (L-34) */
+.cn-page.cn-liste .cn-puce.cn-puce-filtre { padding: 0 8px; }
+
+/* L-35 : les Faits laissés de côté par la recherche, sur une ligne d'en-tête de groupe */
+.cnl-faits-caches { gap: 8px; }
+.cnl-faits-caches .cn-lien { flex: none; min-height: 28px; }

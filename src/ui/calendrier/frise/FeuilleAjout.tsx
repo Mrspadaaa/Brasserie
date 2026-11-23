@@ -1,4 +1,4 @@
-import React, { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Sheet } from '../../Sheet';
 import { Input } from '../../Input';
 import { ChampMontant } from '../../finance/ChampMontant';
@@ -8,7 +8,8 @@ import {
 } from '../../../domain/calendrierAjout';
 import { prixSemblable, texteIntention } from '../../../domain/horizons';
 import { Horizons } from '../../saisie/Horizons';
-import { RANGEES, ajouterJours, etiquetteS, francs, jourLisible, lundiDe, nomRangee, type Rangee, type SemaineCalendrier } from '../../../domain/calendrier';
+import { ChoixDate } from '../../ChoixDate';
+import { RANGEES, ajouterJours, etiquetteS, francs, jourAvecAnnee, jourLisible, lundiDe, nomRangee, semaineAvecAn, type Rangee, type SemaineCalendrier } from '../../../domain/calendrier';
 import { CLASSE_TEINTE } from './Marque';
 import { DureeFenetre } from './DureeFenetre';
 import './feuille.css';
@@ -42,8 +43,6 @@ export interface FeuilleAjoutProps {
   evenements?: ReadonlyArray<{ id: string; nom: string }>;
 }
 
-const JOURS_INITIALES = ['L', 'M', 'M', 'J', 'V', 'S', 'D'] as const;
-const NOMS_JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
 const RANGEES_AVEC_DETAILS: readonly Rangee[] = ['brassins', 'fetes', 'achats', 'travaux', 'papiers'];
 
 /** Le brouillon lié à cette fête (ou à aucune) ; les autres liens (brassin, client) restent ; plus aucun lien : `liens` part. */
@@ -55,6 +54,21 @@ function avecEvenement(b: BrouillonAjout, evenementId: string | undefined): Brou
 }
 /** L'écart entre deux cases de semaine, en px. */
 const ECART_SEMAINES = 4;
+
+/* L-69 (T11-15) : ce que le brasseur a saisi dans une feuille d'ajout (nom, montant, lien) survit à un rechargement ou à une fermeture ; un brouillon par rangée,
+   retiré à l'ajout réussi. Localement seulement (aucune donnée envoyée). */
+const CLE_BROUILLON = 'laffinee.calendrier.brouillon';
+const aSaisie = (x: BrouillonAjout): boolean => (!x.nomPose && x.titre.trim() !== '') || x.centimes !== undefined;
+function brouillons(): Record<string, BrouillonAjout> {
+  try { const o = JSON.parse(localStorage.getItem(CLE_BROUILLON) ?? '{}'); return o && typeof o === 'object' ? o : {}; } catch { return {}; }
+}
+function garderBrouillon(rangee: Rangee, x: BrouillonAjout | null) {
+  try {
+    const o = brouillons();
+    if (x) o[rangee] = x; else delete o[rangee];
+    if (Object.keys(o).length) localStorage.setItem(CLE_BROUILLON, JSON.stringify(o)); else localStorage.removeItem(CLE_BROUILLON);
+  } catch { /* stockage refusé : la feuille marche sans */ }
+}
 
 const PUCE = 'inline-flex min-h-9 items-center gap-1.5 rounded-full border border-cave-700 px-3 text-sm text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850';
 
@@ -91,7 +105,17 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
     const y = x.rangee === 'brassins' && !x.tempsEnCuve ? { ...x, tempsEnCuve: 28 } : x;
     return avecNomPose(y, contexte.choses);
   };
-  const [b, setB] = useState<BrouillonAjout>(() => avecDefauts(initial));
+  const [b, setB] = useState<BrouillonAjout>(() => {
+    const base = avecDefauts(initial);
+    const d = mode === 'ajouter' ? brouillons()[base.rangee] : undefined;
+    if (!d || typeof d.titre !== 'string' || !aSaisie(d)) return base;
+    return { ...base, titre: d.titre, nomPose: false, ...(d.centimes !== undefined ? { centimes: d.centimes } : {}), ...(d.signe ? { signe: d.signe } : {}), ...(d.liens ? { liens: d.liens } : {}) };
+  });
+  /* L-68 (T11-12) : en Modifier, le × ne jette pas les changements sans un mot ; un premier toucher demande, le second abandonne */
+  const departRef = useRef(JSON.stringify(b));
+  const [abandon, setAbandon] = useState(false);
+  const modifie = mode === 'modifier' && JSON.stringify(b) !== departRef.current;
+  useEffect(() => { if (mode === 'ajouter') garderBrouillon(b.rangee, aSaisie(b) ? b : null); }, [b, mode]);
   /** D2 : le prix gardé d'un achat semblable (« ZZ TEST Pompe 2026 »), dit « estimé » tant que le montant est le sien. */
   const [prixGarde, setPrixGarde] = useState<{ centimes: number; source: string } | null>(null);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
@@ -157,6 +181,9 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
      seule, passé compris) ; plus de carrousel des semaines. Un brassin rouvert prend la date seule (sa semaine se règle au doigt). */
   const horizons = true;
   const intention = horizons && b.debut ? texteIntention(b.debut, contexte.aujourdhui) : null;
+  /* L-67 (T11-6) : « vers févr. » devient « vers févr. 2027 » quand l'année n'est pas la courante ; la frise dessous le dit déjà */
+  const anneeDite = b.debut ? ajouterJours(lundiDe(b.debut), 3).slice(0, 4) : '';
+  const intentionDite = intention && anneeDite && anneeDite !== contexte.aujourdhui.slice(0, 4) && !intention.includes(anneeDite) && !intention.startsWith('passé') ? `${intention} ${anneeDite}` : intention;
   /* D2 (D393) : le dernier achat semblable au nom tapé, montant non encore donné ; rien de semblable : aucune puce (jamais 0) */
   const prixPropose = argent && (b.rangee === 'travaux' || b.rangee === 'achats') && b.centimes === undefined && !b.nomPose && b.titre.trim().length >= 3 && contexte.achats?.length
     ? prixSemblable({ nom: b.titre }, contexte.achats) : null;
@@ -179,6 +206,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
     try {
       const r = await onAjouter(suite);
       if (r.ok === false) { setConfirmation(r.confirmer ?? null); setRefus(r.confirmer ? null : r.raison); }
+      else if (mode === 'ajouter') garderBrouillon(suite.rangee, null);
     } finally { setEnCours(false); }
   };
 
@@ -191,7 +219,7 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
   return (
     <Sheet
       open
-      onClose={onFermer}
+      onClose={() => { if (modifie && !abandon) setAbandon(true); else onFermer(); }}
       title={nomRangee(b.rangee)}
       subtitle={mode === 'modifier' ? 'Modifier' : 'Ajouter'}
       className="cal-feuille lg:left-[var(--rail-width,88px)] lg:mx-auto lg:max-w-[620px] lg:rounded-t-sheet"
@@ -199,6 +227,16 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
         <>
         {/* CRITIQUE-4 n° 10 (E45, D-8) : la fenêtre « S20 → S40 · 21 sem. » est dite dans le pied, toujours visible sans défiler la feuille, à 390
             comme en paysage, juste au-dessus d'« Ajouter » */}
+        {abandon && (
+          <div role="alert" data-abandon className="mb-1 flex flex-wrap items-center gap-2 rounded-control border border-alert px-2 py-1.5 text-sm text-cave-50">
+            <span className="mr-auto">Tes changements ne sont pas enregistrés.</span>
+            {/* lot 11 (hors lot du lot 10) : les deux choix restent ensemble ; à 390, c'est la phrase qui prend sa ligne, jamais « Abandonner » seul */}
+            <span className="ml-auto flex shrink-0 items-center gap-2">
+              <button type="button" onClick={() => setAbandon(false)} className="min-h-11 rounded-control px-3 font-semibold underline underline-offset-2">Garder</button>
+              <button type="button" data-abandonner onClick={onFermer} className="min-h-11 rounded-control px-3 font-semibold text-alert-strong underline underline-offset-2">Abandonner</button>
+            </span>
+          </div>
+        )}
         {resume && <p className="cal-f-resume mb-1 text-sm text-cave-50" data-fenetre-pied><b data-fenetre>{resume}</b>{b.joursActifs ? <span> · {b.joursActifs} j actifs</span> : null}</p>}
         <div className="flex items-center gap-2" data-feuille-pied>
           {!sansPlusDeDetails && onPlusDeDetails && RANGEES_AVEC_DETAILS.includes(b.rangee) && (
@@ -283,8 +321,10 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
         <div>
           <div className="mb-1 flex items-baseline gap-2">
             <span className="text-sm text-cave-200">{horizons ? 'Quand' : fenetre ? 'Semaines' : 'Semaine'}</span>
-            {intention && <b className="text-sm font-semibold text-cave-50" data-intention>{intention}</b>}
-            {b.debut &&<span className="text-sm text-cave-50" data-feuille-semaine={b.debut}>{etiquetteS(b.debut)}, {jourLisible(jourDit ?? b.debut)}</span>}
+            {intention && <b className="text-sm font-semibold text-cave-50" data-intention>{intentionDite}</b>}
+            {!fenetre && peutChoisirJour(b) && <span className="text-sm text-cave-50" data-jour-dit>{jourAvecAnnee(b.jour as string, contexte.aujourdhui)}</span>}
+            {/* L-67, L-70 (T11-6, T11-17) : la semaine et le jour se disent UNE fois, sur la ligne de la frise (Durée ou Date) ; ici, pour les lecteurs d'écran et les tests */}
+            {b.debut && <span className="sr-only" data-feuille-semaine={b.debut}>{semaineAvecAn(b.debut, contexte.aujourdhui)}, {jourAvecAnnee(jourDit ?? b.debut, contexte.aujourdhui)}</span>}
           </div>
           {horizons ? (
             <Horizons date={b.debut ?? undefined} aujourdhui={contexte.aujourdhui} classePuce={PUCE} sansPlusTard etiquette="Quand" className="cal-f-horizons"
@@ -315,56 +355,37 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
             })}
           </div>
           )}
-          {/* CAL-PASSE (21.11, n° 2) : le JOUR de la semaine choisie, pour une chose à date seule rouverte (mardi reste mardi ; un autre jour se touche) */}
-          {peutChoisirJour(b) && (
-            <div role="group" aria-label="Jour" data-feuille-jours className="mt-1 flex gap-1" data-vaul-no-drag>
-              {JOURS_INITIALES.map((nom, i) => {
-                const iso = ajouterJours(b.debut as string, i);
-                return (
-                  <button key={iso} type="button" data-jour={iso} aria-pressed={iso === b.jour} aria-label={`${NOMS_JOURS[i]} ${jourLisible(iso)}`}
-                    onClick={() => regler(choisirJour(b, iso))}
-                    className="cal-f-jour flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center rounded-control border border-cave-700 text-cave-50 aria-pressed:border-cave-50 aria-pressed:bg-cave-850 aria-pressed:font-bold">
-                    <b className="text-xs font-semibold">{nom}</b>
-                    <small className="text-xs text-cave-200">{Number(iso.slice(8))}</small>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-          {/* CAL-JOUR (21.11, « pourquoi à certains événements je peux pas leur donner un jour précis… ? ») : une fenêtre rouverte choisit son
-              jour de début et son jour de fin, chacun dans sa semaine ; jamais une fin avant le début */}
-          {peutChoisirJoursPlage(b) && (['debut', 'fin'] as const).map(bord => {
-            const lundi = (bord === 'debut' ? b.debut : b.fin) as string;
-            const du = jourDebutPlage(b) as string, au = jourFinPlage(b) as string, pose = bord === 'debut' ? du : au;
-            return (
-              <div key={bord} role="group" aria-label={bord === 'debut' ? 'Jour du début' : 'Jour de la fin'} data-feuille-jours={bord} className="mt-1 flex items-center gap-1" data-vaul-no-drag>
-                <span className="w-10 shrink-0 text-xs text-cave-200">{bord === 'debut' ? 'Début' : 'Fin'}</span>
-                {JOURS_INITIALES.map((nom, i) => {
-                  const iso = ajouterJours(lundi, i);
-                  return (
-                    <button key={iso} type="button" data-jour={iso} aria-pressed={iso === pose} aria-label={`${bord === 'debut' ? 'Début' : 'Fin'} ${NOMS_JOURS[i]} ${jourLisible(iso)}`}
-                      disabled={bord === 'debut' ? iso > au : iso < du}
-                      onClick={() => regler(bord === 'debut' ? choisirJour(b, iso) : choisirJourFin(b, iso))}
-                      className="cal-f-jour flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center rounded-control border border-cave-700 text-cave-50 disabled:opacity-40 aria-pressed:border-cave-50 aria-pressed:bg-cave-850 aria-pressed:font-bold">
-                      <b className="text-xs font-semibold">{nom}</b>
-                      <small className="text-xs text-cave-200">{Number(iso.slice(8))}</small>
-                    </button>
-                  );
-                })}
-              </div>
-            );
-          })}
           {/* D404 : l'horizon pose le début ; la durée s'étire au geste de la frise B (fêtes, achats, travaux, activités) */}
           {horizons && fenetre && b.debut && (
             <div className="mt-2">
-              <DureeFenetre rangee={b.rangee} debut={b.debut} fin={b.fin} jourFin={peutChoisirJoursPlage(b) ? jourFinPlage(b) : null} jourSeul={!b.fin && !b.joursActifs ? jourDit : null} onFin={f => regler(etirerFin(b, f))} onPlage={(d, f) => regler(etirerPlage(b, d, f))} />
+              <DureeFenetre rangee={b.rangee} etiquette={b.rangee === 'achats' && !b.fin ? 'Date' : 'Durée'} debut={b.debut} fin={b.fin} jourFin={peutChoisirJoursPlage(b) ? jourFinPlage(b) : null} jourSeul={!b.fin && !b.joursActifs ? jourDit : null} onFin={f => regler(etirerFin(b, f))} onPlage={(d, f) => regler(etirerPlage(b, d, f))} />
+            </div>
+          )}
+          {/* D431 (GESTE-DATE-PARTOUT, T11-22 : « rangée L 8 … D 14 sans mois, à côté de la frise partagée ») : le jour exact se choisit sur la frise partagée au jour
+              (`ChoixDate` : la pastille dit le jour avec son mois, la frise s'ouvre au toucher), plus de rangée de boutons maison. Une chose d'un jour : « Jour » ; une
+              fenêtre rouverte : le jour du début et le jour de la fin (jamais une fin avant le début). */}
+          {horizons && fenetre && b.debut && peutChoisirJour(b) && (
+            <div className="mt-2 grid grid-cols-[3rem_1fr] items-start gap-x-1" data-jours-choix>
+              <span className="flex min-h-11 items-center text-sm text-cave-200">Jour</span>
+              <ChoixDate label="Jour" rangee={b.rangee} valeur={b.jour as string} onChange={iso => regler(choisirJour(b, iso))} />
+            </div>
+          )}
+          {horizons && peutChoisirJoursPlage(b) && (
+            <div className="mt-2 grid grid-cols-[3rem_1fr] items-start gap-x-1 gap-y-1" data-jours-choix>
+              <span className="flex min-h-11 items-center text-sm text-cave-200">Début</span>
+              <ChoixDate label="Jour du début" rangee={b.rangee} valeur={jourDebutPlage(b) as string} max={jourFinPlage(b) as string} onChange={iso => regler(choisirJour(b, iso))} />
+              <span className="flex min-h-11 items-center text-sm text-cave-200">Fin</span>
+              <ChoixDate label="Jour de la fin" rangee={b.rangee} valeur={jourFinPlage(b) as string} min={jourDebutPlage(b) as string} onChange={iso => regler(choisirJourFin(b, iso))} />
             </div>
           )}
           {/* capture-12 (21.11) : une chose à une seule date (vente, papier…) prend la même frise, un seul repère, tirable dans le passé */}
           {/* L-14 (T10-14, GESTE-DATE-PARTOUT) : un brassin posé par le + prend aussi la frise partagée (il n'avait que les horizons) */}
           {horizons && !fenetre && b.debut && (
             <div className="mt-2">
-              <DureeFenetre seule rangee={b.rangee} debut={b.debut} fin={null} onFin={() => undefined} onPlage={d => regler(etirerPlage(b, d, null))} />
+              {peutChoisirJour(b)
+                /* D431 : rouverte sur un jour précis, la chose se choisit au jour (la frise de semaine ne le saurait pas) ; le jour se dit avec son mois sur la ligne « Quand » */
+                ? <ChoixDate ouvert label="Jour" rangee={b.rangee} valeur={b.jour as string} onChange={iso => regler(choisirJour(b, iso))} />
+                : <DureeFenetre seule rangee={b.rangee} debut={b.debut} fin={null} onFin={() => undefined} onPlage={d => regler(etirerPlage(b, d, null))} />}
             </div>
           )}
         </div>

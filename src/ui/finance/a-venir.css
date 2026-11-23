@@ -1,0 +1,5 @@
+/* Lot 6 du Carnet, L-41 (CA12-M1-26, CA12-M4-28) : dans À venir, un titre long (« Hotte d'aspiration au-dessus de la cuve… ») était coupé à
+   deux lignes (« au… ») à côté de « à estimer » ; il passe maintenant entier, sur autant de lignes qu'il lui faut. */
+.kh .kh-rmain b { display: block; -webkit-line-clamp: unset; overflow: visible; }
+/* le titre du prochain achat est un bouton : 44 px de haut, comme les autres cibles de la carte, en portrait comme en paysage */
+[data-prochain-carnet] h2 > button { min-height: 44px; }

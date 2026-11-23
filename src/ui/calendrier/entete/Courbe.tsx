@@ -473,6 +473,8 @@ export interface CourbeProps {
   mise?: MisePlacee | null;
   /** Les mois sous la courbe ; `false` dans l'année, où la bande des 12 mois est la seule échelle (D-168, CRITIQUE-3 n° 11). */
   mois?: boolean;
+  /** L-60 (T11-14) : la fenêtre touche la butée du passé : le trait « début » dit que rien n'existe avant (sinon une courbe vide, sans repère). */
+  debutDonnees?: boolean;
   /** Les choses étoilées, sur leur marche (« ★ Hotte −900 »). */
   etoiles?: readonly EtoileCourbe[];
   /** Pendant le tirage d'une poignée, la place de l'étiquette qui suit le doigt : les noms qu'elle couvrirait s'effacent le temps du geste. */
@@ -575,7 +577,7 @@ export function moisHorsReserves(
   return sortie;
 }
 
-export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false, abscisses, alignee = !!abscisses, creuxIndex, rangeeHaute, plate = false }: CourbeProps) {
+export function Courbe({ debutDonnees = false, courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false, abscisses, alignee = !!abscisses, creuxIndex, rangeeHaute, plate = false }: CourbeProps) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   // La police réelle arrive après le premier rendu : les noms se replacent avec ses vraies largeurs.
   const [, setPolice] = useState(0);
@@ -625,7 +627,7 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
   const boitesMois = mois.map(m => ({ l: m.x - 8, r: m.x + largeurTexte(m.texte) + 8, t: yMois - HAUT_RENDU, b: yMois + BAS_RENDU + 2 }));
   // Un nom peut se poser dans la rangée des mois, entre deux mois (z2s « Six fûts inox −1 080 », w3s « Festival +2 450 »).
   const y0 = g.y(0);
-  const exclusions = [...obstaclesCourbe(g, cadre, creux), ...obstaclesZero(g, largeur), ...boitesMois, ...reservesHaut];
+  const exclusions = [...obstaclesCourbe(g, cadre, creux), ...obstaclesZero(g, largeur), ...boitesMois, ...reservesHaut, ...(debutDonnees ? [{ l: 0, r: 40, t: g.haut, b: g.haut + 14 }] : [])];
   const noms = placerNoms(courbe, g, maxNoms(largeur), exclusions, mise, etoiles, [yMois]);
   // CHV-17 : rien de nommé à montrer : le niveau du solde, au milieu du cadre (la semaine du milieu de la fenêtre)
   const iNiveau = Math.max(0, Math.min(n - 1, cadre ? cadre.index + Math.floor(cadre.nombre / 2) : n - 1));
@@ -661,6 +663,13 @@ export function Courbe({ courbe, largeur, hauteur, curseur = null, reference, ge
         {misDeCote && <path className="ent-miscote" data-mise-de-cote="zone" d={zoneEscalier(caisses, libres, g)} fill={`url(#h${uid})`} />}
         <line className={sousZero ? 'ent-zero ent-zero-neg' : 'ent-zero'} data-ligne-zero={sousZero ? 'visible' : undefined} x1={0} x2={largeur} y1={y0} y2={y0} />
         {sousZero && <text className="ent-zero-l" data-sous-zero="repere" x={largeur - 3} y={y0 - 3} textAnchor="end" aria-hidden="true">0</text>}
+        {debutDonnees && (
+          <g data-debut-donnees aria-hidden="true">
+            <line className="ent-debut-halo" x1={g.x(0) + 1.5} x2={g.x(0) + 1.5} y1={g.haut} y2={g.bas} />
+            <line className="ent-debut" x1={g.x(0) + 1.5} x2={g.x(0) + 1.5} y1={g.haut} y2={g.bas} />
+            <text className="ent-debut-l" x={g.x(0) + 5} y={g.haut + 10}>début</text>
+          </g>
+        )}
         <path className="ent-caisse" d={escalier(caisses, g)} />
         <path className="ent-libre" d={escalier(libres, g)} />
         {marques.map(m => (

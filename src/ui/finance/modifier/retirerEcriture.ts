@@ -1,6 +1,8 @@
 import type { FinancialPayment } from '../../../domain/finance/types';
 import { planRetrait } from '../../../domain/finance/correctionMontant';
 import { isActiveTransaction } from '../../../domain/finance/ledger';
+import { planApresRetrait } from '../../../domain/finance/upgradeRing';
+import { FinanceService } from '../../../services/financeService';
 import { StorageService } from '../../../services/storage';
 import { executerPlan, type ContexteExecution } from './executerCorrection';
 
@@ -29,4 +31,12 @@ export async function retirerEcriture(pieceId: string, paiements: FinancialPayme
   if (!resultat.success) {
     throw new Error(etapes.length ? `${resultat.message} Déjà écrit : ${etapes.length > 1 ? 'paiements inversés' : 'paiement inversé'}. Vérifie l’opération dans la liste.` : resultat.message);
   }
+  // L-37 : la pièce soldait un prévu (achat prévu, projet de matériel : `soldeLeVuPlan`) ; retirée, le prévu revient s'il n'est plus couvert.
+  const planId = piece.finance?.planId;
+  const plan = planId ? FinanceService.getPlans().find(p => p.id === planId) : undefined;
+  // Le retrait est déjà écrit : un refus du prévu (plan ancien invalide) ne le fait pas passer pour raté ; le prévu se rouvre alors à la main.
+  if (plan) try {
+    const apres = planApresRetrait(plan, StorageService.getTransactions(), ctx.maintenant);
+    if (apres !== plan) FinanceService.savePlan(apres);
+  } catch { /* prévu laissé tel quel */ }
 }

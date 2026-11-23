@@ -93,7 +93,8 @@ export function AtelierPorte(p: AtelierPorteProps) {
     }
     if (p.createRequest?.kind === 'newIdea' && creee.current !== p.createRequest.at) {
       creee.current = p.createRequest.at;
-      if (cible === 'carnet') { setFocusChamp(Date.now()); p.onCreateRequestHandled?.(); }
+      // L-52 : depuis un carnet ouvert, le champ de la liste (une idée neuve), jamais « Ajouter à <carnet>… ».
+      if (cible === 'carnet') { const at = Date.now(); setRetourListe(at); setFocusChamp(at); p.onCreateRequestHandled?.(); }
       else if (cible === 'materiel') { setVueMateriel('future'); setBesoin(p.createRequest); p.onCreateRequestHandled?.(); }
       else setDemandeTarifs(p.createRequest);
     }

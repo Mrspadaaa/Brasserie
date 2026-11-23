@@ -1,0 +1,16 @@
+/* Lot 4 (L-26) : Comparer à 390, la 1re valeur haut dans l'écran. Titre, nombre et « Classé par » sur une ligne qui se replie ;
+   les colonnes d'articles se partagent la place (--cn-col, mesuré par Comparer.tsx) et leur nom prend toute la largeur de sa colonne. */
+.cn-comparer .cn-cmp-entete { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; row-gap: 2px; margin: 2px 0 8px; }
+.cn-comparer .cn-cmp-entete > * { margin: 0; }
+.cn-comparer .cn-cmp-entete .cn-chaine { flex-wrap: wrap; }
+/* spécificité relevée (.cn-page.cn-comparer) : carnets-decider.css peut venir après ce fichier dans la feuille construite */
+.cn-page.cn-comparer .cn-tableau-comparer .cn-col-tete,
+.cn-page.cn-comparer .cn-tableau-comparer thead th.cn-ecarte .cn-col-tete { max-width: calc(var(--cn-col, 90px) - 12px); }
+.cn-comparer .cn-cmp-seul { margin: 6px 0 0; font-size: 14px; }
+/* À 390 : vendeur sur une ligne, vignette de 36 px (M4-11 : deux lignes de vendeur, 44 px de vignette et des noms serrés dans 78 px
+   poussaient la 1re valeur vers 520 px sur 844). Le nom garde ses 3 lignes (D-58), dans toute la largeur de sa colonne. */
+@media (max-width: 899px) {
+  .cn-page.cn-comparer .cn-cmp-vend { align-self: stretch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cn-page.cn-comparer .cn-cmp-vignette { width: 36px; height: 36px; margin-bottom: 2px; }
+  .cn-page.cn-comparer .cn-cmp-vignette svg { width: 28px; height: 28px; }
+}

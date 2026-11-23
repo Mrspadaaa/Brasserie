@@ -216,6 +216,24 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
   );
 }
 
+/**
+ * L-44 : le budget max écrit par le brasseur (« Budget max 400 CHF » dans un critère ou une note), en centimes et sa devise ; `null` si
+ * rien ne le dit. Le nombre vient de son texte (« 1 200 », « 1'200 », « 399,5 »), jamais d'ailleurs.
+ */
+export function budgetMaxDuCarnet(c: { criteres?: readonly { texte: string }[]; notes?: unknown } | null | undefined): { centimes: number; devise: string } | null {
+  const textes = [...(c?.criteres ?? []).map(k => k.texte), ...(Array.isArray(c?.notes) ? (c!.notes as { texte?: unknown }[]).map(n => (typeof n?.texte === 'string' ? n.texte : '')) : [])];
+  for (const t of textes) {
+    const m = /budget(?:\s+(?:max(?:imum)?|plafond))?\s*:?\s*(\d[\d\s'’.,]*\d|\d)\s*(chf|eur|€|francs?|fr\.?)?/i.exec(t);
+    if (!m || !/max|plafond|au plus/i.test(t)) continue;
+    const brut = m[1].replace(/[\s'’]/g, '');
+    const n = Number(/,\d{1,2}$/.test(brut) ? brut.replace(/\./g, '').replace(',', '.') : brut.replace(/[.,](?=\d{3}\b)/g, ''));
+    if (!Number.isFinite(n) || n <= 0) continue;
+    const d = (m[2] ?? 'chf').toLowerCase();
+    return { centimes: Math.round(n * 100), devise: d === '€' || d === 'eur' ? 'EUR' : 'CHF' };
+  }
+  return null;
+}
+
 function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
   const a = p.article;
   /* n° 37 : « 2 600 CHF » (prixTexte), jamais « 2600 » */
@@ -245,6 +263,9 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
   const [raison, setRaison] = useState<string | null>(null);
   /* Une page non lue ne se choisit pas : rien n'en est connu (ni nom, ni prix, ni valeurs) ; l'inconnu n'est jamais 0. */
   const sa = choixBloque(a);
+  /* L-44 : le dépassement du budget max se voit avant le choix (même devise seulement : jamais de conversion inventée) */
+  const budget = budgetMaxDuCarnet(p.carnet);
+  const horsBudget = budget && a.prixCentimes !== undefined && (a.devise ?? 'CHF') === budget.devise && a.prixCentimes > budget.centimes ? budget : null;
   /* n° 5 : touchée au bas de Comparer, la feuille s'ouvre en haut de l'écran (sinon on reste face au bas de la page d'avant) */
   const haut = useRef<HTMLElement>(null);
   useEffect(() => { haut.current?.scrollIntoView?.({ block: 'start' }); }, []);
@@ -296,6 +317,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
             {calc.ecartes.map(e => <li key={e.nom}><X size={18} role="img" aria-label="écarté" /><span><b>{e.nom}</b> : {e.raison}</span></li>)}
           </ul>
         )}
+        {horsBudget && <p className="cn-rouge" role="note" style={{ fontWeight: 600 }}>Au-dessus de ton budget max : {prix} pour {prixTexte(horsBudget.centimes, horsBudget.devise)} (+{prixTexte(a.prixCentimes! - horsBudget.centimes, horsBudget.devise)}).</p>}
         <label className="cn-pourquoi-champ">
           <span>Pourquoi {p.pourquoiPropose ? <Provenance origine="ia" /> : propose ? <PictoLocal /> : null}{propose ? <span className="cn-mut"> · proposé, à corriger</span> : null}</span>
           <Textarea rows={3} value={pourquoi} onChange={e => setPourquoi(e.target.value)} placeholder="une phrase suffit" />

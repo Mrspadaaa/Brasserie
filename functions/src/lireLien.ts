@@ -273,8 +273,9 @@ export function lienDe(context: unknown): string {
 /**
  * Lit un lien. Ne lève jamais : chaque cas rend un statut. `fetchPage` est injecté pour les tests (aucun réseau dans `npm test`).
  *  - adresse refusée → `refusee`, aucun fetch ;
- *  - robots.txt refuse, ou ne répond pas (5xx, réseau) → `robots`, la page n'est jamais demandée (RFC 9309 : indisponible = refus) ;
- *    robots.txt absent (4xx) → permis ;
+ *  - robots.txt refuse, ou en 5xx → `robots`, la page n'est jamais demandée (RFC 9309 : injoignable = refus) ; robots.txt absent (4xx)
+ *    → permis ; domaine introuvable → `introuvable`, autre panne du réseau → `indisponible` (L-4) ;
+ *  - page refusée au robot (401, 403, 429, défi Cloudflare) → `bloquee` (L-4) ;
  *  - page non HTML, trop grosse, en erreur, trop de redirections → `indisponible` ;
  *  - page lue sans métadonnées produit → `illisible`.
  */
@@ -290,18 +291,20 @@ export async function lireLien(raw: string, opts: { fetchPage?: typeof fetch; si
   const signal = opts.signal ? AbortSignal.any([opts.signal, AbortSignal.timeout(LIEN_DELAI_MS)]) : AbortSignal.timeout(LIEN_DELAI_MS);
   const entetes = { Accept: 'text/html, text/plain;q=0.8', 'User-Agent': AGENT_CARNET };
   const echec = (statut: PageLue['statut'], u: URL): PageLue => ({ url: u.href, domaine: domaineDe(u), statut, luLe });
-  const robots = new Map<string, boolean>();
-  const permis = async (u: URL): Promise<boolean> => {
+  /* L-4 (23.11) : robots.txt qui refuse, ou en 5xx (RFC 9309 : injoignable = refus) → `robots`. Une panne du réseau n'est pas un refus :
+     domaine introuvable (DNS) → `introuvable`, autre panne ou délai → `indisponible` ; la page n'est pas demandée non plus. */
+  const robots = new Map<string, true | PageLue['statut']>();
+  const permis = async (u: URL): Promise<true | PageLue['statut']> => {
     if (!robots.has(u.origin)) {
-      let ok = false;
+      let ok: true | PageLue['statut'] = 'robots';
       try {
         const r = await fetchPage(new URL('/robots.txt', u), { signal, redirect: 'follow', headers: entetes });
         if (r.status >= 400 && r.status < 500) { await r.body?.cancel(); ok = true; }
         else if (r.ok) {
           const t = await corpsBorne(r, ROBOTS_TAILLE_MAX);
-          ok = t !== null && !/^\s*(?:<!doctype|<html)/i.test(t) && robotsPermet(t, u);
+          ok = t !== null && !/^\s*(?:<!doctype|<html)/i.test(t) && robotsPermet(t, u) ? true : 'robots';
         } else await r.body?.cancel();
-      } catch { ok = false; }
+      } catch (e) { ok = statutDePanne(e); }
       robots.set(u.origin, ok);
     }
     return robots.get(u.origin)!;
@@ -309,8 +312,12 @@ export async function lireLien(raw: string, opts: { fetchPage?: typeof fetch; si
   let url = depart;
   try {
     for (let saut = 0; saut <= REDIRECTIONS_MAX; saut++) {
-      if (!(await permis(url))) return echec('robots', url);
+      const p = await permis(url);
+      if (p !== true) return echec(p, url);
       const r = await fetchPage(url, { signal, redirect: 'manual', headers: entetes });
+      /* L-4 : brouwland.com (23.11) répond 403 avec `cf-mitigated: challenge` à tout robot : le site bloque la lecture, il ne la rate pas.
+         Le défi n'est jamais contourné ; l'écran dit pourquoi. */
+      if (r.status === 401 || r.status === 403 || r.status === 429 || r.headers.get('cf-mitigated')) { await r.body?.cancel(); return echec('bloquee', url); }
       if (r.status >= 300 && r.status < 400) {
         await r.body?.cancel();
         const loc = r.headers.get('location');
@@ -324,7 +331,13 @@ export async function lireLien(raw: string, opts: { fetchPage?: typeof fetch; si
       return lirePage(html, url, luLe);
     }
     return echec('indisponible', url);
-  } catch {
-    return echec('indisponible', url);
+  } catch (e) {
+    return echec(statutDePanne(e), url);
   }
+}
+
+/** Une panne de `fetch` : domaine inexistant (`ENOTFOUND`, Node et undici) → `introuvable` ; le reste (délai, connexion) → `indisponible`. */
+function statutDePanne(e: unknown): PageLue['statut'] {
+  const code = (e as { cause?: { code?: unknown } } | null)?.cause?.code;
+  return code === 'ENOTFOUND' ? 'introuvable' : 'indisponible';
 }

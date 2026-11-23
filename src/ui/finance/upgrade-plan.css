@@ -49,10 +49,15 @@
 .kh-st.prix { color:var(--kh-hop); }
 .kh-st.devis { color:var(--kh-att); }
 .kh-ed { width:44px; height:44px; flex:none; display:grid; place-items:center; border-radius:10px; border:1.5px solid var(--kh-line2); background:var(--kh-bg); color:var(--kh-ink); }
-.kh-mo { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin:4px 0 6px; }
-.kh-mo button { height:44px; border-radius:10px; border:1px solid var(--kh-line2); background:var(--kh-s1); font-size:14px; text-align:center; color:var(--kh-ink); }
-.kh-mo .on { background:var(--kh-fin); border-color:var(--kh-fin); color:#fff; font-weight:600; }
-:root[data-theme='cave'] .kh-mo .on { color:#12100e; }
+/* D431 (GESTE-DATE-PARTOUT, CA12-M4-20) : le choix du mois = la feuille de date partagée (puces raccourcis + frise au doigt) ; remplace la grille de mois .kh-mo */
+.kh-cm { margin:4px 0 6px; }
+.kh-cm-dit { margin:0 0 4px; font-size:14px; color:var(--kh-mut); }
+.kh-cm-dit b { color:var(--kh-ink); font-weight:600; }
+.kh-cm-puces { gap:6px !important; margin-bottom:6px; }
+.kh-cm-puce { min-height:44px; padding:0 12px; border-radius:10px; border:1px solid var(--kh-line2); background:var(--kh-s1); font-size:14px; color:var(--kh-ink); }
+.kh-cm-puce[aria-pressed='true'] { background:var(--kh-fin); border-color:var(--kh-fin); color:#fff; font-weight:600; }
+:root[data-theme='cave'] .kh-cm-puce[aria-pressed='true'] { color:#12100e; }
+.kh-cm[data-vide] .cal-f-duree-poi::after { opacity:.45; border-style:dashed; }
 .kh-err { margin-top:6px; }
 
 /* le bandeau : posé au-dessus de la barre du bas, courbe en marches et couloir de titres */

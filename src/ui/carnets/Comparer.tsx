@@ -7,6 +7,8 @@
  * Une valeur inconnue est une cellule vide (« – » discret), jamais 0. Choisir s'atteint d'ici seulement (MISSION « Rangé derrière »).
  * Correction 3 : à 390, une ombre de bord et « → n de plus » disent la suite à droite ; les écartés se lisent sous le tableau, nom et
  * raison (« Écartés · n », p2:h04-7), jamais une case vide ; un lien dont la page n'est pas lue s'écrit « Lien sans aperçu » (R04).
+ * Lot 4 : la photo lue de chaque article en tête de sa colonne (L-23) ; titre, nombre d'articles et « Classé par » sur une ligne, aucune
+ * case vide réservée, colonnes partagées en entier pour que les noms tiennent (L-26) ; un seul article lu (carnet Choisi) a sa colonne (L-27).
  */
 import React from 'react';
 import { ChevronLeft, ExternalLink, Pin, Scale } from 'lucide-react';
@@ -16,6 +18,7 @@ import { compromisDe, groupeDeLigne, libelleCaracteristique, libelleEcarte, nomb
 import { montant, Provenance, rangTexte, STATUT_LIBELLE, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
 import { Photo } from './pictos';
 import './carnets-decider.css';
+import './comparer-compact.css';
 
 /** Le tableau tel que `tableau(carnet)` de `comparer.ts` le rend (lot A, critère A9). */
 export type TableauV = Tableau;
@@ -187,7 +190,8 @@ function useSuiteADroite(): [React.RefObject<HTMLDivElement | null>, number] {
       if (nCols > 0) {
         const dispo = el.clientWidth - tetes0[0].offsetWidth;
         const n = Math.max(1, Math.floor(dispo / LARGEUR_COLONNE));
-        if (nCols > n && dispo > 0) el.style.setProperty('--cn-col', `${Math.floor(dispo / n)}px`); else el.style.removeProperty('--cn-col');
+        /* L-26 : la place se partage aussi quand tout tient (2 articles : ~125 px chacun, pas 78) : les noms se lisent en entier */
+        if (dispo > 0) el.style.setProperty('--cn-col', `${Math.floor(dispo / Math.min(nCols, n))}px`); else el.style.removeProperty('--cn-col');
       }
       /* CRU-13 : plus de suite à droite = plus d'ombre ; 2 px de tolérance (une position fractionnaire en fin de course, écran dense) */
       if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 2) { setSuite(0); return; }
@@ -334,8 +338,13 @@ export function Comparer(p: ComparerProps) {
   const prixClasse = prixConnus.length >= 2 && new Set(prixConnus.map(l => l.devise ?? 'CHF')).size === 1;
   const aUnEuro = actifs.some(l => l.devise === 'EUR' && l.prixCentimes !== undefined);
   const compromisLocal = p.compromis ? null : compromisDe(t);
-  /* le tableau naît au 2e article LU : un lien non lu n'en tient pas lieu (P6) */
-  const naissant = !t || ordre.length < 2;
+  /* le tableau naît au 2e article LU : un lien non lu n'en tient pas lieu (P6). L-27 : un seul article lu (le choisi, et des liens non
+     lus) a sa colonne ; seul un tableau sans aucun article lu reste à naître */
+  const naissant = !t || ordre.length === 0;
+  const seul = !naissant && ordre.length === 1;
+  /* L-26 : aucune case vide réservée au-dessus des noms quand aucune colonne n'a ni photo ni picto */
+  const photoDe = (l: LigneT) => p.photos?.[l.articleId] ?? l.photo;
+  const vignettes = ordre.some(l => !!photoDe(l) || !!p.pictos?.[l.articleId]);
   const sansValeur = premierSansValeur(t, p.critere);
   /* n° 23 : la phrase dite sous le tableau, pas une pastille dans l'en-tête (elle creusait ~100 px de vide sous les noms, n° 9) */
   const domines = t ? actifs.map(l => ({ l, par: moinsBienQueDe(t, l) })).filter((x): x is { l: LigneT; par: number } => x.par !== null) : [];
@@ -353,8 +362,20 @@ export function Comparer(p: ComparerProps) {
         <span className="cn-sp" />
         <span className={`cn-pastille cn-statut-${p.statut}`}>{STATUT_LIBELLE[p.statut]}</span>
       </div>
-      <h2 className="cn-titre">Comparer</h2>
-      <p className="cn-mut cn-cmp-sous">{p.facons ? <>{p.facons} façon{p.facons > 1 ? 's' : ''} · </> : null}{actifs.length} article{actifs.length > 1 ? 's' : ''}</p>
+      {/* L-26 : le titre, le nombre d'articles et « Classé par » partagent une ligne (elle se replie si la place manque) */}
+      <div className="cn-cmp-entete">
+        <h2 className="cn-titre">Comparer</h2>
+        <p className="cn-mut cn-cmp-sous">{p.facons ? <>{p.facons} façon{p.facons > 1 ? 's' : ''} · </> : null}{actifs.length} article{actifs.length > 1 ? 's' : ''}</p>
+        {/* A1 : « Classé par [Prix épinglé] › … » ; le prix s'il classe, sinon « Prix ? » pointillé et la caractéristique qui classe en noir */}
+        {!naissant && !seul && (
+          <p className="cn-chaine" aria-label="Classé par">
+            <span className="cn-mut">Classé par</span>
+            <b className={prixClasse ? 'cn-on' : 'cn-trou'}><span role="img" aria-label="épinglé" className="cn-pin-ico"><Pin size={14} aria-hidden /></span> {prixClasse ? 'Prix' : 'Prix ?'}</b>
+            {cqc.map((x, i) => <React.Fragment key={i}><span aria-hidden>›</span><b className={!prixClasse && i === 0 ? 'cn-on' : undefined}>{x.texte}</b>{!sourceUnique && x.source === 'ia' ? <span className="cn-mut"> (proposé par l'IA)</span> : null}</React.Fragment>)}
+            {sourceUnique === 'ia' ? <span className="cn-mut cn-cmp-source">proposé par l'IA</span> : null}
+          </p>
+        )}
+      </div>
       {classe && sansValeur && <p className="cn-mut cn-cmp-sans-valeur">« {sansValeur} » : sans valeur à comparer, il ne range pas</p>}
       {naissant ? (
         <>
@@ -363,13 +384,6 @@ export function Comparer(p: ComparerProps) {
         </>
       ) : (
         <>
-          {/* A1 : « Classé par [Prix épinglé] › … » ; le prix s'il classe, sinon « Prix ? » pointillé et la caractéristique qui classe en noir */}
-          <p className="cn-chaine" aria-label="Classé par">
-            <span className="cn-mut">Classé par</span>
-            <b className={prixClasse ? 'cn-on' : 'cn-trou'}><span role="img" aria-label="épinglé" className="cn-pin-ico"><Pin size={14} aria-hidden /></span> {prixClasse ? 'Prix' : 'Prix ?'}</b>
-            {cqc.map((x, i) => <React.Fragment key={i}><span aria-hidden>›</span><b className={!prixClasse && i === 0 ? 'cn-on' : undefined}>{x.texte}</b>{!sourceUnique && x.source === 'ia' ? <span className="cn-mut"> (proposé par l'IA)</span> : null}</React.Fragment>)}
-            {sourceUnique === 'ia' ? <span className="cn-mut cn-cmp-source">proposé par l'IA</span> : null}
-          </p>
           {/* À 1280, tout tient (noms et raisons repliés) ; à 390, la colonne des noms reste fixe et un fondu dit la suite à droite. */}
           <div className="cn-tableau-cadre" data-suite={suite ? true : undefined}>
           <div className="cn-tableau-zone" ref={zone}>
@@ -382,7 +396,7 @@ export function Comparer(p: ComparerProps) {
                     return (
                       <th key={l.articleId} scope="col" className={`${l.ecarte ? 'cn-ecarte' : ''}${!l.ecarte && l.rang === 1 && rangVisible(t, l) ? ' cn-c1' : ''}`.trim() || undefined} data-apercu={sa ? 'aucun' : undefined}>
                         <button type="button" className="cn-col-tete" onClick={() => p.onOuvrirArticle?.(l.articleId)} disabled={!p.onOuvrirArticle} title={sa ? undefined : l.nom}>
-                          <Vignette photo={p.photos?.[l.articleId]} picto={p.pictos?.[l.articleId]} />
+                          {vignettes && <Vignette photo={photoDe(l)} picto={p.pictos?.[l.articleId]} />}
                           {/* CRB-5 : le rang ne se dit que si un critère ou le prix classe ; sinon aucune pastille. A1 : rond de 26 px sur le bas du picto */}
                           {l.ecarte ? <b>écarté</b> : rangVisible(t, l) ? <b className={`cn-cmp-rang${rangVisible(t, l) === 1 ? ' cn-cmp-rang-1' : ''}`}>{rangVisible(t, l)}</b> : null}
                           {colEntete && texteCellule(l, colEntete) ? <span className="cn-mono cn-cmp-gros">{texteCellule(l, colEntete)}</span> : null}
@@ -427,6 +441,7 @@ export function Comparer(p: ComparerProps) {
           </div>
           </div>
           {suite > 0 && <p className="cn-suite-indice" aria-hidden>→ {suite} de plus</p>}
+          {seul && p.statut !== 'validated' && <p className="cn-mut cn-cmp-seul">Un 2e article lu se compare à celui-ci : collez un 2e lien dans le champ.</p>}
           {sansValeurLue.length > 0 && <p className="cn-mut cn-cmp-sans-lue">Aucune valeur lue pour : {sansValeurLue.map(c => libelleCaracteristique(c.nom)).join(', ')}</p>}
           {domines.length > 0 && (
             <ul className="cn-cmp-domines" aria-label="Moins bien sur tout">

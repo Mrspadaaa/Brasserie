@@ -55,8 +55,16 @@ export interface LigneCarnet {
   propose?: true;
   /** La page lue du lien de la ligne, telle que `lireLien` l'a rendue. */
   page?: PageLue;
-  /** `ia` (Gemini) ou `exemple` (simulation, B7 : toute ligne simulée reste marquée « exemple »). */
-  origine: 'ia' | 'exemple';
+  /**
+   * `ia` (Gemini) ou `exemple` (simulation, B7 : toute ligne simulée reste marquée « exemple »). `locale` (L-1) : le repli quand le
+   * rangement de l'IA échoue après la lecture des pages : l'analyse locale, avec ce que les pages ont rendu.
+   */
+  origine: 'ia' | 'exemple' | 'locale';
+  /**
+   * L-2 (23.11) : depuis la liste, le carnet existant où l'IA rangerait la ligne. Il n'est jamais écrit sans confirmation : la ligne va là
+   * où l'aperçu l'a annoncée ; ce carnet n'est qu'une suggestion (« Y ajouter ? »).
+   */
+  carnetSuggere?: string;
   /**
    * Critique 5, n° 1 : d'où vient un critère, décidé par le garde (`critereTireDe`), réponse réelle ou simulée : `phrase` s'il est tiré de
    * ses mots (« tiré de votre phrase »), sinon `ia` (« proposé par l'IA »). Absent sur les autres sortes.
@@ -70,7 +78,8 @@ export interface CarnetPourIA {
   titre: string;
   /** Dernière activité (ms) : au plus 30 carnets, les plus récents d'abord. */
   majLe?: number;
-  criteres?: ReadonlyArray<{ texte: string; caracteristique?: Caracteristique }>;
+  /** `origine` et `source` (L-6) : un critère de sa phrase compte comme ses mots quand l'IA le reprend. */
+  criteres?: ReadonlyArray<{ texte: string; caracteristique?: Caracteristique; origine?: string; source?: string }>;
   facons?: ReadonlyArray<{ nom: string; etat?: string }>;
   articles?: ReadonlyArray<{ nom?: string; valeurs?: Readonly<Record<string, { valeur: unknown; unite?: string }>> }>;
   notes?: ReadonlyArray<{ id: string; texte: string }>;
@@ -156,20 +165,44 @@ function nombresDuCarnet(c: CarnetPourIA | undefined): number[] {
 }
 
 /**
- * Critique 5, n° 1 : un critère est-il tiré des mots du message ? Ses mots significatifs (hors nom de sa caractéristique, que l'IA
- * peut nommer : « débit » pour « 150 kg/h ») sont pour 60 % au moins dans le message, et chacun de ses nombres y est écrit. Un critère
- * qui n'a ni mot propre ni nombre (« le débit ») n'est pas tiré du message : il est proposé par l'IA.
+ * Critique 5, n° 1 : un critère est-il tiré des mots du message ? Chacun de ses nombres y est écrit, et la moitié au moins de ses mots
+ * significatifs. Le nom de sa caractéristique, que l'IA peut nommer (« débit » pour « 150 kg/h »), ne compte que s'il est écrit. Un
+ * critère qui n'a ni mot écrit ni nombre (« le débit ») n'est pas tiré du message : il est proposé par l'IA.
+ * L-6 (23.11, M1-13) : « Vanne papillon en bas » (nom « vanne papillon ») et « Budget max 400 CHF » étaient dits « proposé par l'IA » :
+ * le nom écrit dans sa phrase est compté, un mot de forme (« max ») ne fait plus tomber sous le seuil, et `autres` (les critères de sa
+ * phrase déjà dans le carnet) comptent comme ses mots.
  */
-export function critereTireDe(texte: string, caracteristique: { nom: string } | undefined, message: string): boolean {
+export function critereTireDe(texte: string, caracteristique: { nom: string } | undefined, message: string, autres: readonly string[] = []): boolean {
+  const corpus = [message, ...autres].join(' \n ');
+  const ecrits = new Set(jetons(corpus));
   const nom = new Set(jetons(caracteristique?.nom ?? ''));
-  const mots = [...new Set(jetons(texte))].filter(m => !nom.has(m));
+  const mots = [...new Set(jetons(texte))].filter(m => !nom.has(m) || ecrits.has(m));
   const nombres = nombresDe(texte);
   if (!mots.length && !nombres.length) return false;
-  const dits = nombresDe(message);
+  const dits = nombresDe(corpus);
   if (!nombres.every(n => contient(dits, n))) return false;
   if (!mots.length) return true;
-  const ecrits = new Set(jetons(message));
-  return mots.filter(m => ecrits.has(m)).length / mots.length >= 0.6;
+  return mots.filter(m => ecrits.has(m)).length / mots.length >= 0.5;
+}
+
+const SANS_PREFIXE = (s: string) => s.replace(/^\s*ZZ TEST\s*[—–-]\s*/i, '');
+/** Un lien écrit tel quel dans un texte (même motif que `liensDuTexte`). */
+const MOTIF_LIEN = /\b(?:https?:\/\/|www\.)[^\s<>"'«»]+|\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:ch|com|de|fr|it|at|eu|net|org|shop|store)\/[^\s<>"'«»]*/gi;
+
+/**
+ * L-5 (23.11, M3-7) : une ligne de son message que les lignes rendues reprennent : la moitié au moins de ses mots, chacun de ses nombres
+ * et ses liens. Une reformulation (« voir » → « Vérifier ») n'est pas une perte. Même mesure que `morceauxPerdus` (CarnetsVue).
+ */
+function ligneReprise(brute: string, lignes: readonly LigneCarnet[]): boolean {
+  const dits = lignes.map(l => [l.texte, l.titre, l.carnetNeuf, l.caracteristique?.nom, l.caracteristique?.unite, l.unite].filter(Boolean).join(' ')).join(' \n ');
+  const mots = new Set(jetons(dits));
+  const nombres = [...nombresDe(dits), ...lignes.flatMap(l => [l.quantite, l.prixCentimes !== undefined ? l.prixCentimes / 100 : undefined]).filter((n): n is number => n !== undefined)];
+  const urls = new Set(lignes.flatMap(l => (l.url ? [formeUrl(l.url)] : [])));
+  if (liensDuTexte(brute).some(u => !urls.has(formeUrl(u)))) return false;
+  const sansLien = brute.replace(MOTIF_LIEN, ' ');
+  const ms = jetons(sansLien);
+  if (nombresDe(sansLien).some(n => !contient(nombres, n))) return false;
+  return ms.filter(m => !mots.has(m)).length <= ms.length / 2;
 }
 
 const memeTitre = (a: string, b: string) => sansAccents(espaces(a)) === sansAccents(espaces(b));
@@ -220,6 +253,7 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
    * critère de la Pompe). Un titre proposé (`titrePropose`) reste un renommage de l'ouvert.
    */
   const ouvert = ctx.depuis ? parId.get(ctx.depuis) : undefined;
+  const phraseDeListe = !ctx.depuis && !liensDuTexte(ctx.texte).length && ctx.texte.split(/\r?\n/).filter((s) => s.trim()).length <= 1;
   const motsOuvert = new Set(jetons(ouvert?.titre ?? ''));
   const ideesAilleurs = new Map<object, { titre: string; mots: Set<string>; nombres: number[] }>();
   if (ouvert) for (const l of lignes) {
@@ -256,9 +290,16 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
     // Rangement : un id connu, sinon une idée neuve (jamais un id inventé).
     const idDemande = chaine(r.carnetId, 120);
     const ailleurs = ideesAilleurs.get(l as object);
-    const connu = idDemande !== undefined && parId.has(idDemande) && !ailleurs;
+    const connuDemande = idDemande !== undefined && parId.has(idDemande) && !ailleurs;
+    /* L-2 (23.11, M3-1, M4-23) : une phrase seule, sans lien, tapée sur la liste : l'aperçu a annoncé « Nouveau carnet » (ou le carnet proche
+       qu'il a fait choisir). L'IA ne la verse jamais dans un autre carnet existant sans confirmation : la ligne suit l'annonce, le carnet de
+       l'IA n'est qu'une suggestion. Un lien collé (G21 : « Rangé dans … · Déplacer ») et une note en vrac (découpe annoncée ligne à ligne)
+       gardent le carnet de l'IA. */
+    /* une proposition de critère (P10, P23) n’écrit rien : elle reste permise */
+    const connu = connuDemande && (!phraseDeListe || (r.propose === true && r.sorte === 'critere'));
     if (connu) ligne.carnetId = idDemande;
     else if (ailleurs) ligne.carnetNeuf = ailleurs.titre;
+    else if (connuDemande) ligne.carnetSuggere = idDemande;
     else {
       const neuf = chaine(r.carnetNeuf, TITRE_MAX) ?? (idDemande ? (titre ?? texte).slice(0, TITRE_MAX) : undefined) ?? ideeDe(texte);
       if (neuf) ligne.carnetNeuf = neuf;
@@ -275,6 +316,17 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
       if (page) ligne.page = page;
     }
     const pagesDeLigne = ligne.page?.statut === 'lue' ? [ligne.page] : pagesLues;
+
+    /* L-7 (23.11, M2-15) : une note dont le texte n'est que l'adresse d'un lien (Wikipédia, sans prix) prend le nom lu sur sa page ; le lien
+       reste sur la ligne. Ce n'est pas un conseil caché : une note. Page non lue : l'adresse reste (rien d'autre n'est connu). */
+    const seulLien = liensDuTexte(texte);
+    if (sorte === 'note' && seulLien.length === 1 && !jetons(texte.replace(MOTIF_LIEN, ' ')).length) {
+      const page = ligne.page ?? (ctx.pages ?? []).find((p) => formeUrl(p.url) === formeUrl(seulLien[0]));
+      if (!ligne.url && urlDansTexte(seulLien[0], ctx.texte)) ligne.url = seulLien[0];
+      if (page) ligne.page = page;
+      if (page?.statut === 'lue' && page.nom) ligne.texte = `${page.nom} (${page.domaine})`.slice(0, TEXTE_LIGNE);
+      if (ligne.genre === 'conseil') ligne.genre = 'note';
+    }
 
     // Prix et quantité : écrits dans le message ou lus sur la page, sinon absents (jamais 0).
     if (typeof r.prix === 'number' && Number.isFinite(r.prix) && r.prix > 0) {
@@ -344,13 +396,24 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
       ligne.propose = true;
     } else if (sorte === 'critere') {
       /* critique 5, n° 1 : sa source réelle, jamais celle de la réponse entière */
-      ligne.source = critereTireDe(texte, ligne.caracteristique, ctx.texte) ? 'phrase' : 'ia';
+      const deSaPhrase = (parId.get(ligne.carnetId ?? '')?.criteres ?? [])
+        .filter((k) => k.origine === 'vous' || k.origine === 'locale' || k.source === 'phrase').map((k) => k.texte);
+      ligne.source = critereTireDe(texte, ligne.caracteristique, ctx.texte, deSaPhrase) ? 'phrase' : 'ia';
     }
     const propose = chaine(r.titrePropose, 200);
     if (propose && sorte === 'idee' && connu && propose.length <= TITRE_MAX && !memeTitre(propose, parId.get(idDemande!)!.titre))
       ligne.titrePropose = propose;
 
     sortie.push(ligne);
+  }
+  /* L-5 (23.11, M3-7) : écrite dans un carnet ouvert, une note de plusieurs lignes ne perd aucune ligne. Une ligne que l'IA ne reprend pas,
+     ou qu'elle rend en « idée » du carnet ouvert (que l'écran ne range pas), reste en note dans ce carnet, telle qu'il l'a écrite. */
+  if (ouvert && sortie.length) {
+    const brutes = ctx.texte.split(/\r?\n/).map((b) => b.replace(/^\s*[-•*–]\s+/, '').trim()).filter(Boolean);
+    const rendues = sortie.filter((l) => l.sorte !== 'idee' || (l.carnetNeuf && !l.carnetId));
+    if (brutes.length > 1) for (const b of brutes) {
+      if (!ligneReprise(SANS_PREFIXE(b), rendues)) sortie.push({ sorte: 'note', genre: 'note', texte: espaces(b).slice(0, TEXTE_LIGNE), carnetId: ouvert.id, origine });
+    }
   }
   if (!sortie.length) return null;
   // Les achats en tête, le reste dans l'ordre rendu (tri stable).

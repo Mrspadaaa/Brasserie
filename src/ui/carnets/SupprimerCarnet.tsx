@@ -25,6 +25,8 @@ export interface SupprimerCarnetProps {
    */
   proche?: { titre: string; onDeplacer: () => void; memeCategorie?: boolean } | null;
   onDetacher: (planId: string) => void;
+  /** L-14 : supprimer le carnet et son plan à venir d'un toucher (absent : le plan a une facture liée, il se règle dans À venir). */
+  onSupprimerAvecPlan?: (planId: string) => void;
   onArchiver: (planId: string) => void;
   onSupprimer: () => void;
   onGarder: () => void;
@@ -84,8 +86,12 @@ export function SupprimerCarnet(p: SupprimerCarnetProps) {
               <span className="cn-lien-retient-tx"><b>{l.libelle}</b><span className="cn-mut"> · plan {l.sorte === 'plan-a-venir' ? 'dans À venir' : 'réalisé'}</span></span>
               {l.reglage === 'detacher'
                 && <button type="button" className="cn-second" onClick={() => p.onDetacher(l.planId)}>Garder le plan sans ce carnet</button>}
+              {l.reglage === 'detacher' && p.onSupprimerAvecPlan
+                && <button type="button" className="cn-second cn-rouge" onClick={() => p.onSupprimerAvecPlan!(l.planId)}><Trash2 size={18} aria-hidden /> Supprimer avec son plan</button>}
             </div>
           ))}
+          {/* L-14 (CA12-M1-19, M4-21) : pourquoi Supprimer est grisé, dit à l'écran (pas seulement en info-bulle), avec les deux issues */}
+          <p className="cn-mut">Pour supprimer le carnet, réglez d'abord {n > 1 ? 'ces liens' : 'ce lien'} : gardez le plan sans ce carnet{p.onSupprimerAvecPlan ? ', ou supprimez-le avec lui' : ', ou supprimez-le dans À venir'}.</p>
         </div>
       )}
       {/* G35 (g5:v08-27) : proposé avant, sans bloquer ; calcul local (rattacher.ts), picto local en couleur neutre (n° 38, Q19 : le
@@ -98,7 +104,7 @@ export function SupprimerCarnet(p: SupprimerCarnetProps) {
           <button type="button" className="cn-puce cn-g35-bouton" onClick={p.proche.onDeplacer}><ArrowRightToLine size={18} aria-hidden /> Déplacer</button>
         </div>
       )}
-      {n === 0 && !realise && <p className="cn-mut cn-g36"><PictoLocal /> ni dans À venir, ni en commande</p>}
+      {n === 0 && !realise && <p className="cn-mut cn-g36"><PictoLocal /> Rien ne le retient : ni dans À venir, ni en commande.</p>}
       <div className="cn-rang-boutons">
         {realise && <button type="button" className="cn-archiver-bouton cn-sp" onClick={() => p.onArchiver(archives[0].planId)}><Archive size={18} aria-hidden /> Archiver</button>}
         {!realise && (

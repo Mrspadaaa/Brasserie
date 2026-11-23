@@ -11,14 +11,14 @@
   width: 22px;
   background: linear-gradient(to left, color-mix(in srgb, var(--c-ink) 22%, transparent), color-mix(in srgb, var(--c-ink) 0%, transparent));
 }
-.cn-suite-indice { margin: 4px 2px 0; text-align: right; font-size: 13px; color: var(--c-mut); }
+.cn-suite-indice { margin: 4px 2px 0; text-align: right; font-size: 14px; color: var(--c-mut); }
 
 /* La colonne des noms reste collée et se détache du défilé par un trait plus net. */
 .cn-comparer .cn-tableau-comparer thead th:first-child,
 .cn-comparer .cn-tableau-comparer tbody th { box-shadow: 1px 0 0 var(--c-line2); }
 
 /* P5 · constat 5 : un lien dont la page n'est pas lue, « Lien sans aperçu · <domaine> · page non lue » (R04). */
-.cn-sans-apercu { font-size: 13px; overflow-wrap: anywhere; }
+.cn-sans-apercu { font-size: 14px; overflow-wrap: anywhere; }
 .cn-tableau-comparer th[data-apercu] .cn-col-tete > span:not(.cn-mut) { color: var(--c-ink2); font-style: italic; }
 .cn-choisir .cn-article[data-apercu] b,
 .cn-offre[data-apercu] b { color: var(--c-ink2); font-style: italic; font-weight: 600; }
@@ -87,7 +87,7 @@
 /* n° 17 : les caractéristiques sans aucune valeur lue, nommées sous le tableau (pas de rangée de « – »). */
 .cn-cmp-sans-lue { margin: 6px 2px 0; font-size: 14px; }
 /* Doute D-122 : « sous votre minimum » sous la valeur, en encre d'alerte discrète (le seuil est le sien, écrit dans une note). */
-.cn-hors-seuil { display: block; font-size: 12px; line-height: 1.25; color: var(--c-rouge); font-weight: 600; white-space: normal; }
+.cn-hors-seuil { display: block; font-size: 14px; line-height: 1.25; color: var(--c-rouge); font-weight: 600; white-space: normal; }
 /* tour 3, f5c n° 7 : dans le tableau, la forme courte (« < min. 1 500 ») tient sur une ligne ; les colonnes d'articles se partagent la
    place mesurée (--cn-col, posée par Comparer quand le tableau déborde) : aucune colonne coupée au repos */
 .cn-tableau-comparer .cn-hors-seuil { white-space: nowrap; }
@@ -180,8 +180,8 @@
 .cn-comparer .cn-titre { font-size: 18px; }
 .cn-comparer .cn-retour { font-size: 14px; }
 .cn-comparer .cn-tableau, .cn-comparer .cn-ecartes, .cn-comparer .cn-groupe { font-size: 14px; }
-.cn-comparer .cn-suite-indice, .cn-comparer .cn-sans-apercu { font-size: 12px; }
-.cn-comparer .cn-tableau-comparer tbody th { font-size: 12px; }
+.cn-comparer .cn-suite-indice, .cn-comparer .cn-sans-apercu { font-size: 14px; }
+.cn-comparer .cn-tableau-comparer tbody th { font-size: 14px; }
 
 /* CRB-3 (la part sans carte) : la colonne des libellés se replie au lieu de garder 221 px sur 342 ; les valeurs passent à la ligne, la
    colonne d'un article ne dépasse plus ses 85 px : les deux articles se voient à 390. */
@@ -206,7 +206,7 @@
 .cn-comparer .cn-cmp-rang { width: 26px; height: 26px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 14px; font-weight: 700; margin-top: -14px; border: 2px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); align-self: flex-start; position: relative; }
 .cn-comparer .cn-cmp-rang.cn-cmp-rang-1 { background: rgb(var(--area-stocks)); border-color: rgb(var(--area-stocks)); color: #fff; }
 .cn-comparer .cn-cmp-gros { font-size: 18px; font-weight: 600; line-height: 1.1; }
-.cn-comparer .cn-cmp-vend { font-size: 12px; line-height: 1.2; }
+.cn-comparer .cn-cmp-vend { font-size: 14px; line-height: 1.2; }
 .cn-comparer .cn-tableau-comparer .cn-c1 { background: rgb(var(--area-stocks) / .10); }
 .cn-comparer .cn-tableau-comparer thead th.cn-c1 { border-radius: 12px 12px 0 0; }
 .cn-comparer .cn-tableau-comparer tr.cn-ligne-epinglee > th, .cn-comparer .cn-tableau-comparer tr.cn-ligne-epinglee > td { background: rgb(var(--area-stocks) / .16); }
@@ -214,7 +214,7 @@
 .cn-comparer .cn-tableau-comparer tr.cn-ligne-epinglee > td.cn-c1 { background: rgb(var(--area-stocks) / .30); }
 .cn-comparer .cn-epingle { vertical-align: -2px; margin-right: 4px; color: rgb(var(--area-stocks)); }
 .cn-hach { display: inline-grid; place-items: center; width: 64px; height: 30px; border-radius: 8px; border: 2px dashed var(--c-mut); background: repeating-linear-gradient(135deg, rgb(var(--cave-800)) 0 5px, transparent 5px 10px); font-weight: 700; color: var(--c-mut); font-size: 18px; }
-.cn-comparer td small { display: block; font-size: 12px; line-height: 1.1; }
+.cn-comparer td small { display: block; font-size: 14px; line-height: 1.1; }
 .cn-brun { color: rgb(180 120 60); }
 
 /* D419 A1 : au téléphone la colonne des libellés se serre pour que ses trois articles tiennent sans défiler (cmp-a1) */

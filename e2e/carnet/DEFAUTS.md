@@ -7,13 +7,13 @@ corrigé, ce qui rappelle d'enlever le `test.fail`). L'app n'a pas été corrig�
 | Id | Règle | Constat | Où | Épreuve |
 |---|---|---|---|---|
 | CA12-PW-1 | CARNET-LIS (« au plus 40 mots visibles ») | Un carnet ouvert au repos (Frigo + congel) dit 70 mots dans la zone du Carnet (titre, critère, notes, « Quand », six puces de date, « Prix estimé » et ses cinq puces, « Au calendrier »). À trancher : la règle a été écrite pour les maquettes ; l'app porte plus de contenu | 390 | regles.spec.ts, « CA12-PW-1 » |
-| CA12-PW-2 | GESTE-DATE-PARTOUT | La rubrique « Quand » d'un carnet est une rangée de puces d'horizon (Aujourd'hui, 1 mois, 3 mois, 6 mois, 1 an, Plus tard), sans la frise partagée (`.cal-f-duree`) ; le contrôle statique `controle-geste-date.mjs` ne le voit pas (aucun champ natif) | tous | feuilles.spec.ts, « CA12-PW-2 » |
+| CA12-PW-2 | GESTE-DATE-PARTOUT | **Levé au lot 11 (D431)** : puces raccourcis + frise partagée tirée au doigt. Avant : La rubrique « Quand » d'un carnet est une rangée de puces d'horizon (Aujourd'hui, 1 mois, 3 mois, 6 mois, 1 an, Plus tard), sans la frise partagée (`.cal-f-duree`) ; le contrôle statique `controle-geste-date.mjs` ne le voit pas (aucun champ natif) | tous | feuilles.spec.ts, « CA12-PW-2 » |
 | CA12-PW-3 | « aucun chevauchement » | Dans un carnet qui a des articles (Chambre froide, Prix en euros, Ventilation, Frigo de garde), la rangée « Quand » partage sa ligne avec « Au calendrier » : les puces passent sous le bouton (« Aujourd'hui » coupé, « 1 mois » et « 3 mois » recouverts, 8 à 55 px) | 390 | mise-en-page.spec.ts, `CONNUS` |
 | CA12-PW-4 | « aucun chevauchement » | Tableau des articles de « Prix en euros » : la colonne « Volume » touche la colonne du prix (« 4,06 m³3 350 », 7 px) | 390 et 844 | mise-en-page.spec.ts, `CONNUS` |
 
 ## À noter, sans épreuve rouge
 
-- **CARNET-LIS : 14 px ou 12 px.** La ligne CARNET-LIS dit « aucun texte sous 14 px », DESIGN.md donne 12 px à un libellé compact. L'épreuve
+- **CARNET-LIS : 14 px ou 12 px.** Tranché par D430 (lot 11) : 14 px, l'épreuve le tient. La ligne CARNET-LIS dit « aucun texte sous 14 px », DESIGN.md donne 12 px à un libellé compact. L'épreuve
   prend 12 px (le plancher de DESIGN.md). Sous 14 px, la liste porte 13 px (« À comparer », « Idée », « Choisi ») et 12 px (sous-titres, puces,
   « Au calendrier »). À trancher par le brasseur ; une seule constante (`< 12`) à changer.
 - **Tableau des articles : le prix d'un article en francs sous une colonne « EUR »** (Prix en euros, article CH, 3 350 sous l'en-tête EUR). Non
