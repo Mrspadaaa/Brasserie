@@ -2833,3 +2833,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (sur les 28 liens sans prix dans les données structurées) « Non mais alors on doit lire les page autrement ?? C'est pas possible ?? »
 - « reste un prix juste sur au moins 90 % des 63 liens, non 90% sur les échecs... SI non il faut faire un parser html ou juste utiliser la même manière que toi tu lis les données ??? »
 - (sur le tableau du banc, caractéristiques à 40 %, objectif 70 %) « Caractéristiques, c'est vraiment aussi important »
+- « Est-ce que on aurait besoin d'autres outils, ou autre méthode pour améliorer ça ? »
