@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carnet : 7 choix · 23.11</title>
+<style>
+  :root { --fond: #f6f4ef; --carte: #fff; --encre: #1d1d1d; --doux: #5c5c5c; --rose: #e0287d; --vert: #2f7a3a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fond); color: var(--encre); font: 16px/1.45 "Source Sans 3", "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 1220px; margin: 0 auto; padding: 14px 12px 40px; }
+  h1 { font-size: 24px; margin: 4px 0 6px; }
+  h2 { font-size: 20px; margin: 0 0 4px; }
+  p { margin: 6px 0; }
+  .doux { color: var(--doux); font-size: 15px; }
+  .rose { color: var(--rose); font-weight: 700; }
+  #a-choisir { background: var(--carte); border: 2px solid var(--encre); border-radius: 14px; padding: 12px 14px; margin: 10px 0 22px; }
+  #a-choisir ol { margin: 6px 0; padding-left: 0; list-style: none; }
+  #a-choisir li { padding: 7px 0; border-top: 1px solid #eee; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  #a-choisir li:first-child { border-top: 0; }
+  #a-choisir a { color: var(--encre); font-weight: 700; }
+  .reco { display: inline-block; background: var(--vert); color: #fff; font-weight: 700; font-size: 14px; border-radius: 999px; padding: 1px 10px; }
+  section.q { margin: 0 0 30px; }
+  .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; margin-top: 10px; align-items: start; }
+  figure { margin: 0; background: var(--carte); border: 1px solid #ddd8cc; border-radius: 12px; overflow: hidden; }
+  figure.recommande { border: 3px solid var(--vert); }
+  figure img { display: block; width: 100%; height: auto; border-bottom: 1px solid #eee; }
+  figure img + img { border-top: 6px solid var(--fond); }
+  .lieu { display: block; padding: 6px 12px 2px; font-size: 14px; color: var(--doux); font-weight: 700; }
+  .tete { display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-weight: 700; font-size: 17px; }
+  .tete .lettre { display: inline-grid; place-items: center; min-width: 28px; height: 28px; border-radius: 8px; background: var(--encre); color: #fff; padding: 0 4px; }
+  .tete.actuel .lettre { background: #999; }
+  figcaption { padding: 8px 12px 12px; font-size: 15px; }
+  .q7 { background: var(--carte); border: 1px dashed #999; border-radius: 12px; padding: 12px 14px; font-size: 17px; }
+  blockquote { margin: 4px 0 8px; padding: 2px 0 2px 10px; border-left: 3px solid var(--encre); font-style: italic; font-size: 15px; }
+</style>
+</head>
+<body>
+<main>
+<h1>Carnet : 7 choix · 23.11</h1>
+<p class="doux">Tour 12, en ligne. Pour chaque question : aujourd'hui (capture en ligne), puis 2 ou 3 variantes à 390 px, dessinées sur la vraie app (données du banc d'essai). <span class="rose">Pointillé rose</span> : ce qui change.</p>
+
+<section id="a-choisir">
+  <h2>À choisir</h2>
+  <ol>
+    <li><a href="#q1">Q-1 · Quel prix pour un projet, une fois l'article choisi ?</a> <span class="reco">A recommandé</span></li>
+    <li><a href="#q1b">Q-1b · « Prix estimé ? » : tes cinq pastilles, ou le budget en plus</a> <span class="reco">B recommandé</span></li>
+    <li><a href="#q2">Q-2 · Ce que la recherche des carnets fouille</a> <span class="reco">C recommandé</span></li>
+    <li><a href="#q3">Q-3 · Texte du Carnet : 12 px permis, ou 14 px au moins</a> <span class="reco">B recommandé</span></li>
+    <li><a href="#q4">Q-4 · Choisir une date : la frise partout</a> <span class="reco">B recommandé</span></li>
+    <li><a href="#q5">Q-5 · Le carnet au repos : 40 mots au plus</a> <span class="reco">A recommandé</span></li>
+    <li><a href="#q6">Q-6 · « Commandé » dans un carnet choisi</a> <span class="reco">A recommandé</span></li>
+    <li><a href="#q7">Q-7 · « S44 – S49 » écrit deux fois</a> <span>déjà posée au Calendrier</span></li>
+  </ol>
+  <p class="doux">Réponds en une ligne, par exemple « 1A 1bB 2C 3B 4B 5A 6A ». Un mélange se dit en mots (« 4B mais sans les puces au Carnet »).</p>
+</section>
+
+<section class="q" id="q1">
+  <h2>Q-1 · Quel prix pour un projet, une fois l'article choisi ?</h2>
+  <p class="doux">Exemple du test M1 : estimé 500 au carnet, puis l'article à 2 495,6 choisi. Aujourd'hui, trois chiffres vivent à la fois. Dessiné sur la carte À venir de « Frigo de garde » : estimé 500, choisi 4 900.</p>
+  <div class="grille">
+    <figure>
+      <div class="tete actuel"><span class="lettre">·</span>Aujourd'hui, tour 12</div>
+      <span class="lieu">À venir</span>
+      <img src="img/q1-actuel-avenir.png" alt="À venir en ligne : 500 CHF" width="780" height="196">
+      <span class="lieu">Le carnet choisi</span>
+      <img src="img/q1-actuel-choisi.png" alt="Carnet en ligne : choisi à 2 495,6 CHF" width="780" height="380">
+      <figcaption>À venir et Calendrier disent 500 (l'estimé) ; le carnet dit 2 495,6 (le choisi). Le plan reste « prix ou devis, à chercher ».</figcaption>
+    </figure>
+    <figure class="recommande">
+      <div class="tete"><span class="lettre">A</span>Le choix fait le prix <span class="reco">recommandé</span></div>
+      <img src="img/q1-a.png" alt="Variante A" width="780" height="442">
+      <figcaption><b>Ce qui change :</b> Choisir remplace l'estimé : À venir, Calendrier et carnet disent 4 900. L'étape « prix ou devis » est franchie. Un seul chiffre.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">B</span>Les deux, côte à côte</div>
+      <img src="img/q1-b.png" alt="Variante B" width="780" height="442">
+      <figcaption><b>Ce qui change :</b> l'estimé reste le chiffre du plan et du Calendrier (−500) ; le choisi s'écrit dessous. Tu changes l'estimé à la main.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">C</span>Le dernier geste gagne</div>
+      <img src="img/q1-c.png" alt="Variante C" width="780" height="442">
+      <figcaption><b>Ce qui change :</b> choisir met 4 900 ; si tu retouches le prix du plan après (ici 450, le 18 nov.), c'est 450 partout, et l'historique s'écrit dessous.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="q" id="q1b">
+  <h2>Q-1b · « Prix estimé ? » : tes cinq pastilles, ou le budget en plus</h2>
+  <p class="doux">Carnet « Frigo + congel », critère « Budget du Planning : 400 CHF ». Les pastilles vont de 100 à 5 000 ; ni 400, ni le prix lu dans un lien.</p>
+  <div class="grille">
+    <figure>
+      <div class="tete actuel"><span class="lettre">·</span>Aujourd'hui, tour 12</div>
+      <img src="img/q1b-actuel.png" alt="Prix estimé en ligne" width="780" height="312">
+      <figcaption>Le test M1 avait un budget de 400 et un prix lu de 2 763,65 : aucune pastille ne les propose.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">A</span>Les cinq pastilles</div>
+      <img src="img/q1b-a.png" alt="Variante A" width="780" height="336">
+      <figcaption><b>Ce qui change :</b> rien. 100, 200, 500, 1 000, 5 000.</figcaption>
+    </figure>
+    <figure class="recommande">
+      <div class="tete"><span class="lettre">B</span>Le budget en tête <span class="reco">recommandé</span></div>
+      <img src="img/q1b-b.png" alt="Variante B" width="780" height="336">
+      <figcaption><b>Ce qui change :</b> une pastille de plus, en premier : le budget du critère (« 400 · budget ») ou, s'il y en a un, le prix lu dans un lien. Les cinq restent.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">C</span>Une saisie libre</div>
+      <img src="img/q1b-c.png" alt="Variante C" width="780" height="336">
+      <figcaption><b>Ce qui change :</b> « Autre… » en dernier ouvre un champ de montant (clavier chiffres). L'app ne propose pas le budget.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="q" id="q2">
+  <h2>Q-2 · Ce que la recherche des carnets fouille</h2>
+  <p class="doux">M1 : « évier » trouvait 1 carnet sur 4 ; « froide » ne trouvait pas le carnet qui avait une chambre froide parmi ses articles.</p>
+  <div class="grille">
+    <figure>
+      <div class="tete actuel"><span class="lettre">·</span>Aujourd'hui, tour 12</div>
+      <img src="img/q2-actuel.png" alt="Recherche évier en ligne" width="780" height="420">
+      <figcaption>« évier » : un carnet. Les carnets faits et le texte des articles et des notes ne sont pas fouillés.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">A</span>Les titres des carnets en cours</div>
+      <span class="lieu">« évier »</span>
+      <img src="img/q2-a-evier.png" alt="Variante A, évier" width="780" height="414">
+      <span class="lieu">« froide »</span>
+      <img src="img/q2-a-froide.png" alt="Variante A, froide" width="780" height="316">
+      <figcaption><b>Ce qui change :</b> rien (accents et majuscules déjà ignorés). Le Frigo de garde, qui a deux chambres froides parmi ses articles, n'apparaît pas.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">B</span>Plus les faits, à part</div>
+      <span class="lieu">« évier »</span>
+      <img src="img/q2-b-evier.png" alt="Variante B, évier" width="780" height="716">
+      <span class="lieu">« froide »</span>
+      <img src="img/q2-b-froide.png" alt="Variante B, froide" width="780" height="316">
+      <figcaption><b>Ce qui change :</b> un groupe « Fait » sous les carnets en cours (ici les deux évier du Planning). « froide » : comme A.</figcaption>
+    </figure>
+    <figure class="recommande">
+      <div class="tete"><span class="lettre">C</span>Plus les articles et les notes <span class="reco">recommandé</span></div>
+      <span class="lieu">« évier »</span>
+      <img src="img/q2-c-evier.png" alt="Variante C, évier" width="780" height="716">
+      <span class="lieu">« froide »</span>
+      <img src="img/q2-c-froide.png" alt="Variante C, froide" width="780" height="618">
+      <figcaption><b>Ce qui change :</b> B, plus le texte des articles et des notes, la ligne trouvée citée sous la carte. « froide » trouve Prix en euros et le Frigo de garde ; « évier » : comme B (aucune note d'essai ne le dit).</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="q" id="q3">
+  <h2>Q-3 · Texte du Carnet : 12 px permis, ou 14 px au moins</h2>
+  <p class="doux">Ta règle du Carnet (16.11, « difficile à lire ») : aucun texte sous 14 px. DESIGN.md permet 12 px pour un libellé compact. Aujourd'hui, 13 libellés à 12 px et 3 à 13 px dans la liste. Deux rendus réels, même écran.</p>
+  <div class="grille">
+    <figure>
+      <div class="tete actuel"><span class="lettre">·</span>Aujourd'hui, tour 12</div>
+      <img src="img/q3-actuel.png" alt="Liste en ligne" width="780" height="1144">
+      <figcaption>« 2 articles », « pas encore d'article », « Dans À venir depuis le 20 nov. » : 12 et 13 px.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">A</span>12 px permis (DESIGN.md)</div>
+      <span class="lieu">Liste</span>
+      <img src="img/q3-a-liste.png" alt="Variante A, liste" width="780" height="1120">
+      <span class="lieu">Carnet ouvert</span>
+      <img src="img/q3-a-carnet.png" alt="Variante A, carnet" width="780" height="562">
+      <figcaption><b>Ce qui change :</b> rien. Plus dense ; « rang · article », « amb. max °C », les sous-titres restent petits.</figcaption>
+    </figure>
+    <figure class="recommande">
+      <div class="tete"><span class="lettre">B</span>14 px au moins <span class="reco">recommandé</span></div>
+      <span class="lieu">Liste</span>
+      <img src="img/q3-b-liste.png" alt="Variante B, liste" width="780" height="1120">
+      <span class="lieu">Carnet ouvert</span>
+      <img src="img/q3-b-carnet.png" alt="Variante B, carnet" width="780" height="562">
+      <figcaption><b>Ce qui change :</b> « 2 articles », « 2 façons · 6 articles » passent à 14 px ; le champ ne montre plus que « Chercher un carne… ». Le carnet ouvert est déjà presque tout à 14 px.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="q" id="q4">
+  <h2>Q-4 · Choisir une date : la frise partout</h2>
+  <blockquote>« Plus je teste et plus je trouve des endroits où le geste au doigt choisi et porté PARTOUT n'a pas été porté.... ???? » (22.11)</blockquote>
+  <p class="doux">Quatre lieux du Carnet choisissent encore une date sans ta frise : Quand du carnet, « Fixer la date » d'À venir, les jours de Modifier, la date de la fiche du Calendrier.</p>
+  <div class="grille">
+    <figure>
+      <div class="tete actuel"><span class="lettre">A</span>Aujourd'hui : chaque lieu garde son geste</div>
+      <span class="lieu">Carnet › Quand</span>
+      <img src="img/q4-actuel-carnet.png" alt="Quand du carnet en ligne" width="780" height="312">
+      <span class="lieu">À venir › Posé sur</span>
+      <img src="img/q4-actuel-avenir.png" alt="À venir en ligne : grille de mois" width="780" height="316">
+      <span class="lieu">Calendrier › Modifier</span>
+      <img src="img/q4-actuel-modifier.png" alt="Modifier en ligne : jours L 8 à D 14" width="780" height="508">
+      <span class="lieu">Calendrier › fiche</span>
+      <img src="img/q4-actuel-fiche.png" alt="Fiche en ligne : date inerte" width="780" height="252">
+      <figcaption><b>Si tu gardes A :</b> puces d'horizon, grille de mois, jours L 8 … D 14 (sans mois), date de fiche qui a l'air d'un bouton mais ne réagit pas.</figcaption>
+    </figure>
+    <figure class="recommande">
+      <div class="tete"><span class="lettre">B</span>Comme la feuille du Calendrier <span class="reco">recommandé</span></div>
+      <span class="lieu">Carnet › Quand</span>
+      <img src="img/q4-b-carnet.png" alt="Variante B, carnet" width="780" height="296">
+      <span class="lieu">À venir › Fixer la date</span>
+      <img src="img/q4-b-avenir.png" alt="Variante B, À venir" width="780" height="468">
+      <span class="lieu">Calendrier › Modifier</span>
+      <img src="img/q4-b-modifier.png" alt="Variante B, Modifier" width="780" height="444">
+      <span class="lieu">Calendrier › fiche</span>
+      <img src="img/q4-b-fiche.png" alt="Variante B, fiche" width="780" height="564">
+      <figcaption><b>Ce qui change :</b> partout, les puces 1 mois · 3 mois… en raccourci, puis ta frise au doigt dessous, comme dans « Prévoir un achat ». Grille de mois et jours L … D disparaissent ; la date de la fiche ouvre la frise.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">C</span>La frise seule</div>
+      <span class="lieu">Carnet › Quand</span>
+      <img src="img/q4-c-carnet.png" alt="Variante C, carnet" width="780" height="296">
+      <span class="lieu">À venir › Fixer la date</span>
+      <img src="img/q4-c-avenir.png" alt="Variante C, À venir" width="780" height="308">
+      <span class="lieu">Calendrier › Modifier</span>
+      <img src="img/q4-c-modifier.png" alt="Variante C, Modifier" width="780" height="276">
+      <span class="lieu">Calendrier › fiche</span>
+      <img src="img/q4-b-fiche.png" alt="Variante C, fiche" width="780" height="564">
+      <figcaption><b>Ce qui change :</b> comme B, sans les puces : un seul geste, le doigt sur la frise. Plus court, mais « dans 3 mois » demande de glisser.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="q" id="q5">
+  <h2>Q-5 · Le carnet au repos : 40 mots au plus</h2>
+  <p class="doux">Ta règle du Carnet (16.11) : au plus 40 mots visibles au repos. Elle a été écrite pour les maquettes ; l'app y ajoute Quand, Prix estimé et Au calendrier. Carnet « Frigo + congel ».</p>
+  <div class="grille">
+    <figure>
+      <div class="tete actuel"><span class="lettre">·</span>Aujourd'hui, tour 12</div>
+      <img src="img/q5-actuel.png" alt="Carnet en ligne au repos" width="780" height="1144">
+      <figcaption>Six puces de date, cinq pastilles de prix et « Au calendrier » sous les notes, à chaque ouverture.</figcaption>
+    </figure>
+    <figure class="recommande">
+      <div class="tete"><span class="lettre">A</span>Quand et prix repliés <span class="reco">recommandé</span></div>
+      <img src="img/q5-a.png" alt="Variante A" width="780" height="786">
+      <figcaption><b>Ce qui change :</b> une ligne « Quand · cette semaine · prix ? › » ; un toucher rouvre les puces, les pastilles et Au calendrier. <b>32 mots</b> au repos.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">B</span>Tout ouvert, comme aujourd'hui</div>
+      <img src="img/q5-b.png" alt="Variante B" width="780" height="914">
+      <figcaption><b>Ce qui change :</b> rien ; la règle des 40 mots ne vaut que pour les maquettes. <b>58 mots</b> au repos.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="q" id="q6">
+  <h2>Q-6 · « Commandé » dans un carnet choisi</h2>
+  <p class="doux">Aujourd'hui : Choisir, puis Placer (le projet va dans À venir). Rien ne dit « commandé le … » ni quand la livraison arrive.</p>
+  <div class="grille">
+    <figure>
+      <div class="tete actuel"><span class="lettre">·</span>Aujourd'hui, tour 12</div>
+      <img src="img/q6-actuel.png" alt="Carnet choisi en ligne" width="780" height="972">
+      <figcaption>Choisi le 23 nov., Dans À venir, Placer.</figcaption>
+    </figure>
+    <figure class="recommande">
+      <div class="tete"><span class="lettre">A</span>Placer suffit <span class="reco">recommandé</span></div>
+      <img src="img/q6-a.png" alt="Variante A" width="780" height="578">
+      <figcaption><b>Ce qui change :</b> rien. La commande se voit à la dépense liée : payée, le projet passe seul dans Réalisés.</figcaption>
+    </figure>
+    <figure>
+      <div class="tete"><span class="lettre">B</span>Un état « Commandé le … »</div>
+      <img src="img/q6-b.png" alt="Variante B" width="780" height="726">
+      <figcaption><b>Ce qui change :</b> une ligne sous le choix : date de commande, livraison attendue (délai à saisir ; le lien ne le lit pas), « Reçu » d'un toucher. Un geste de plus.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="q" id="q7">
+  <h2>Q-7 · « S44 – S49 » sur le cadre, au-dessus des graduations</h2>
+  <p class="q7">Déjà posée : Calendrier, Q-5, page du 23.11 (<a href="https://claude.ai/artifact/Md1VuUPY2uwCRsbrRnWJPR">ouvrir</a>). Ta réponse là-bas vaut pour le Carnet ; rien à choisir ici.</p>
+</section>
+
+<p class="doux">« Aujourd'hui » : captures en ligne du tour 12 (tests M1 et M4, contre-épreuve du Calendrier). Variantes : la vraie app sur les carnets d'essai (« ZZ TEST — … »), retouchée là où c'est entouré ; montants d'exemple. Source : LISTE.md § 5.</p>
+</main>
+</body>
+</html>
