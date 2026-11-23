@@ -4,8 +4,9 @@
  * (le worker reçoit SKIP_WAITING, prend la main, la page se recharge). Ce fichier ne contient que la politique du moment :
  *
  *  - on cherche une nouvelle version au lancement, à chaque retour sur l'app (visibilitychange, pageshow, retour du réseau)
- *    et toutes les 30 min tant que l'app est visible ;
- *  - version prête et ni feuille ni saisie ouverte (depuis 1,5 s) → on l'active et la page se recharge ;
+ *    et toutes les minutes tant que l'app est visible ;
+ *  - version prête et l'app au repos (`estAuRepos` : ni feuille, ni saisie, ni lecture IA ou de lien en cours, depuis 1,5 s)
+ *    → on l'active et la page se recharge ;
  *  - sinon un bandeau « Nouvelle version · Recharger » ; la version s'applique d'elle-même dès que la feuille se ferme.
  *
  * Le worker n'est jamais activé de force pendant une saisie : l'ancien cache continue de servir les morceaux de la page ouverte
@@ -15,7 +16,9 @@
 
 export const CALME_MS = 1500;         // libre depuis ce délai avant d'appliquer : une écriture qui part n'est pas coupée
 export const SONDE_MS = 500;          // pendant qu'une version attend
-export const VERIFICATION_MS = 30 * 60_000;
+// Un onglet resté ouvert (téléphone posé, écran allumé) ne reçoit aucun retour au premier plan : seule cette minuterie lui fait
+// trouver la nouvelle version. Une requête conditionnelle de `/sw.js` (quelques octets si rien n'a changé) par minute, app visible.
+export const VERIFICATION_MS = 60_000;
 export const INTERVALLE_MIN_MS = 15_000; // deux vérifications ne se suivent pas de plus près
 export const GARDE_BOUCLE_MS = 15_000;   // un rechargement automatique ne suit pas un autre de moins de 15 s
 
@@ -124,6 +127,42 @@ export function interfaceOccupee(doc: Document = document): boolean {
   return [...doc.querySelectorAll(FEUILLES)].some(affiche);
 }
 
+// --- Travaux en cours : une lecture IA ou de lien ne se coupe pas par un rechargement ---------------------------------------
+let travaux = 0;
+/** Nombre de travaux (appels de fonctions serveur, déclarations explicites) qui ne doivent pas être coupés. */
+export const appelsEnCours = (): number => travaux;
+/** Déclare un travail en cours ; rend la fonction qui le libère (une seule fois). */
+export function marquerTravail(): () => void {
+  travaux++;
+  let libre = false;
+  return () => { if (!libre) { libre = true; travaux = Math.max(0, travaux - 1); } };
+}
+
+/** Les lectures IA et de lien passent par des fonctions serveur (callables) ; Firestore, lui, se rejoue seul au retour du réseau. */
+export const estAppelServeur = (url: string): boolean => /^https?:\/\/[^/]*(?:cloudfunctions\.net|\.run\.app)(?:[/:?#]|$)/i.test(url);
+
+const urlDe = (entree: Parameters<typeof fetch>[0]): string =>
+  typeof entree === 'string' ? entree : entree instanceof URL ? entree.href : entree.url;
+
+/** Enveloppe `fetch` : chaque appel de fonction serveur compte comme travail jusqu'à sa réponse ou son échec. */
+export function suivreAppelsServeur(reseau: typeof fetch): typeof fetch {
+  return ((entree, init) => {
+    let url = '';
+    try { url = urlDe(entree); } catch { /* entrée inattendue : non suivie */ }
+    if (!estAppelServeur(url)) return reseau(entree, init);
+    const fin = marquerTravail();
+    let promesse: Promise<Response>;
+    try { promesse = reseau(entree, init); } catch (e) { fin(); throw e; }
+    return promesse.finally(fin);
+  }) as typeof fetch;
+}
+
+/**
+ * Vrai si l'app est au repos : ni feuille ni champ de saisie (`interfaceOccupee`), ni lecture IA ou de lien en cours.
+ * C'est la seule règle qui autorise un rechargement automatique pour une nouvelle version.
+ */
+export const estAuRepos = (doc: Document = document, enCours: number = travaux): boolean => !interfaceOccupee(doc) && enCours === 0;
+
 // --- Bandeau : état partagé avec `ui/BandeauMiseAJour.tsx` ---------------------------------------------------------------
 let bandeau = false;
 const abonnes = new Set<() => void>();
@@ -176,11 +215,13 @@ export async function prendreVersionEnAttente(
 /** Enregistre le worker (une fois) et branche la politique ci-dessus. `registerSW` vient de `virtual:pwa-register`. */
 export function demarrerMiseAJour(registerSW: RegisterSW): MiseAJour {
   if (courante) return courante;
+  // Les lectures IA et de lien (callables) comptent comme « occupé » : l'app ne se recharge pas pendant leur vol.
+  if (typeof window !== 'undefined' && typeof window.fetch === 'function') window.fetch = suivreAppelsServeur(window.fetch.bind(window));
   let registration: ServiceWorkerRegistration | undefined;
   let activer: (reloadPage?: boolean) => Promise<void> = async () => {};
   let enCours = false;
   const gestion = creerMiseAJour({
-    occupe: () => interfaceOccupee(),
+    occupe: () => !estAuRepos(),
     visible: () => document.visibilityState !== 'hidden',
     montrer: poserBandeau,
     verifier: () => (registration ? registration.update() : Promise.resolve()),
