@@ -43,10 +43,10 @@ export interface BandeSemainesProps {
   aujourdhui?: string;
 }
 
-export type GrainBande = 'jour' | 'semaine' | 'mois';
+export type GrainBande = 'jour' | 'semaine' | 'mois' | 'an';
 /** Le grain des graduations selon la largeur du cadre, en semaines (CAL-GRAIN-SUIT-DUREE). */
 export function grainDeFenetre(semaines: number): GrainBande {
-  return semaines <= 3 ? 'jour' : semaines >= 52 ? 'mois' : 'semaine';
+  return semaines <= 3 ? 'jour' : semaines > 2 * 52 ? 'an' : semaines >= 52 ? 'mois' : 'semaine';
 }
 
 /** Grain jour : un chiffre tous les `pas` jours (1, 2 ou 7 : le lundi), le plus petit qui tient avec 4 px d'écart. */
@@ -77,7 +77,7 @@ const DELAI = 500;
  * (« S47484950… »). Chaque semaine si « S53 » tient dans sa colonne avec 4 px d'écart ; sinon une sur deux, sinon une sur quatre (les semaines
  * rondes : S48, S52, S4…) ; sinon les mois, comme l'An (N D J F…). Colonne inconnue (0) : chaque semaine, comme avant.
  */
-export type PasEtiquettes = 1 | 2 | 4 | 'mois';
+export type PasEtiquettes = 1 | 2 | 4 | 'mois' | 'an';
 export const ECART_ETIQUETTES = 4;
 export function pasEtiquettes(largeurColonne: number, largeurEtiquette: number): PasEtiquettes {
   if (!(largeurColonne > 0)) return 1;
@@ -128,11 +128,13 @@ export function reperesReguliers(semaines: readonly SemaineBande[], pas: 1 | 2 |
  */
 export function etiquettesBande(semaines: readonly SemaineBande[], pas: PasEtiquettes, largeurColonne: number, largeurEtiquette: number): Map<number, string> {
   const res = new Map<number, string>();
-  const candidates: Array<[number, string]> = pas === 'mois'
+  const candidates: Array<[number, string]> = pas === 'an'
+    ? semaines.flatMap((s, k) => (k > 0 && s.debut.slice(0, 4) !== semaines[k - 1].debut.slice(0, 4) ? [[k, s.debut.slice(0, 4)] as [number, string]] : []))
+    : pas === 'mois'
     ? semaines.flatMap((s, k) => (k === 0 || moisDuJeudi(s.debut) !== moisDuJeudi(semaines[k - 1].debut) ? [[k, INITIALES[moisDuJeudi(s.debut)]] as [number, string]] : []))
     : reperesReguliers(semaines, pas);
   if (!(largeurColonne > 0)) { candidates.forEach(([k, t]) => res.set(k, t)); return res; }
-  const largeur = (t: string) => (t.length === 1 ? Math.ceil(largeurEtiquette / 2) : largeurEtiquette);
+  const largeur = (t: string) => (t.length === 1 ? Math.ceil(largeurEtiquette / 2) : t.length === 4 ? Math.ceil(largeurEtiquette * 1.4) : largeurEtiquette);
   let derniere: [number, string] | null = null;
   for (const [k, t] of candidates) {
     if (derniere && (k - derniere[0]) * largeurColonne < (largeur(derniere[1]) + largeur(t)) / 2 + ECART_ETIQUETTES) {
@@ -167,7 +169,7 @@ export function graduationsBande(semaines: readonly SemaineBande[], abscisses: r
       .forEach(j => { if (!sousAuj(masqueAuj, a[k] + j.x, larg)) xs.push(a[k] + j.x); }));
     return xs;
   }
-  const pas: PasEtiquettes = grain === 'mois' ? 'mois' : pasEtiquettes(largeurColonne, wEtiquette);
+  const pas: PasEtiquettes = grain === 'mois' || grain === 'an' ? grain : pasEtiquettes(largeurColonne, wEtiquette);
   const etiquettes = pas === 1 ? null : etiquettesBande(semaines, pas, largeurColonne, wEtiquette);
   semaines.forEach((_, k) => {
     if (a[k + 1] - a[k] < 0.6 * largeurColonne) return; // semaine rognée au bord : sans nom (le rendu la tait aussi)
@@ -182,7 +184,7 @@ export function BandeSemaines({ masqueAuj, semaines, courbe, decalage, mouvement
   const appui = useRef<{ id: number; x: number; y: number; timer: ReturnType<typeof setTimeout>; long: boolean } | null>(null);
   const annule = () => { if (appui.current) { clearTimeout(appui.current.timer); appui.current = null; } };
   const wEtiquette = largeurEtiquetteMax();
-  const pas: PasEtiquettes = surCourbe && grain === 'mois' ? 'mois' : pasEtiquettes(largeurColonne, wEtiquette);
+  const pas: PasEtiquettes = surCourbe && (grain === 'mois' || grain === 'an') ? grain : pasEtiquettes(largeurColonne, wEtiquette);
   const etiquettes = pas === 1 ? null : etiquettesBande(semaines, pas, largeurColonne, wEtiquette);
   const enJours = surCourbe && grain === 'jour' && largeurColonne > 0;
   const larg = surCourbe ? abscisses![abscisses!.length - 1] : 0;
@@ -203,7 +205,7 @@ export function BandeSemaines({ masqueAuj, semaines, courbe, decalage, mouvement
     return () => { document.removeEventListener('pointerdown', parDoigt, true); document.removeEventListener('keydown', parClavier, true); };
   }, []);
   return (
-    <div className="ent-bd" data-bande-semaines data-pas={pas} data-doigt={doigt ? 'oui' : undefined} role="group" aria-label="Semaines ; ± affiche les mouvements et les icônes" style={{ ['--n' as string]: semaines.length, ...(colonnesCourbe ? { gridTemplateColumns: colonnesCourbe } : {}) }} data-sur-courbe={surCourbe ? 'oui' : undefined} data-grain={surCourbe ? (enJours ? 'jour' : pas === 'mois' ? 'mois' : 'semaine') : undefined}>
+    <div className="ent-bd" data-bande-semaines data-pas={pas} data-doigt={doigt ? 'oui' : undefined} role="group" aria-label="Semaines ; ± affiche les mouvements et les icônes" style={{ ['--n' as string]: semaines.length, ...(colonnesCourbe ? { gridTemplateColumns: colonnesCourbe } : {}) }} data-sur-courbe={surCourbe ? 'oui' : undefined} data-grain={surCourbe ? (enJours ? 'jour' : pas === 'mois' || pas === 'an' ? pas : 'semaine') : undefined}>
       {semaines.map((s, k) => {
         const v = courbe ? variation(courbe, decalage + k) : null;
         const idee = idees.has(s.debut), retard = retards.has(s.debut);

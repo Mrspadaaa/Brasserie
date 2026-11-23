@@ -258,6 +258,9 @@ export const francsSignes = (centimes: number): string => `${centimes < 0 ? '' :
 
 /** La courbe porte 52 semaines à partir du lundi de la semaine courante (E02). */
 export const NB_SEMAINES_COURBE = 52;
+/** CAL-PLUS-QU-UN-AN (23.11, « on peut maintenant que afficher 1 ans Max ??? ») : l'horizon de la courbe et de la fenêtre va à cinq ans
+ *  (D425 : aujourd'hui + 5 ans), au-delà de l'An de 52 semaines ; l'An reste la durée du menu. */
+export const HORIZON_SEMAINES = 5 * 52 + 1;
 /** CAL-PASSE (20.11) : jusqu'à 52 semaines de passé sont montrées et modifiables (la caisse les borne au solde de départ, jamais inventée). */
 export const SEMAINES_PASSEES_MAX = 52;
 

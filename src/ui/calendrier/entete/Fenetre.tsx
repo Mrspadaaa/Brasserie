@@ -49,8 +49,9 @@ export function fenetreDePeriode(periode: Periode | undefined, premierLundi: str
   // le suivant (le 30 nov. : S49 à S52, jamais une semaine seule). La période reste « mois » : seule sa lecture en semaines s'allonge.
   const semaines = semainesEntre(debut, fin) + 1;
   const min = periode.genre === 'mois' ? MOIS_MIN_SEMAINES : 1;
-  /* L-44 (FC-1) : « Exercice 2026 » tient en 53 semaines ISO ; la fenêtre ne dépasse jamais l'An (52, comme le geste du cadre, T9-2), son début gardé */
-  return { du: debut, semaines: clamp(Math.max(semaines, min), 1, Math.min(SEMAINES_ANNEE, total - decalage)) };
+  /* CAL-PLUS-QU-UN-AN (23.11) : la fenêtre suit la période de l'app au-delà d'un an (« Tout », une plage de deux ans), bornée à l'horizon seul
+     (L-44 la plafonnait à 52 semaines) */
+  return { du: debut, semaines: clamp(Math.max(semaines, min), 1, total - decalage) };
 }
 
 /** Un mois lu au calendrier montre au moins ces semaines (décision pilote (c), 18.11). */
@@ -58,6 +59,8 @@ export const MOIS_MIN_SEMAINES = 4;
 
 /** Le texte du bouton de période : « 6 sem. », « 3 mois », « 6 mois », « An », ou le nombre de semaines tel quel. */
 export function libelleDuree(semaines: number, annee: boolean): string {
+  // CAL-PLUS-QU-UN-AN : au-delà de l'An, les années entières (« 2 ans ») ou les mois (« 18 mois »)
+  if (semaines > SEMAINES_ANNEE + 1) { const ans = semaines / 52.18; return Math.abs(ans - Math.round(ans)) < 0.04 ? `${Math.round(ans)} ans` : `${Math.round(semaines / 4.348)} mois`; }
   if (annee || semaines >= SEMAINES_ANNEE) return 'An';
   if (semaines === 13) return '3 mois';
   if (semaines === 26) return '6 mois';
@@ -361,9 +364,7 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
         // un bout garde son écart au doigt (R2) ; la semaine sous le doigt se lit dans la vue du moment (elle change au bord, R7)
         const u = Math.round(s.v.v0 + (x + s.off) * parPx);
         const p = poserPlage(s.role, s.a0, s.b0, s.role === 'a' ? u - s.a0 : u - s.b0, o);
-        /* T9-2 : la fenêtre ne dépasse jamais l'An (52 semaines, CAL-PASSE) ; au-delà, l'autre bout suit. Sans cela, le début tenu au bord
-           posait 58 semaines : bouton « An », frise de douze mois, et un cadre plus long qu'elle. */
-        if (p.b - p.a > SEMAINES_ANNEE) { if (s.role === 'a') p.b = p.a + SEMAINES_ANNEE; else p.a = p.b - SEMAINES_ANNEE; }
+        /* CAL-PLUS-QU-UN-AN (23.11) : plus de plafond à l'An (T9-2 bornait à 52 semaines) ; poserPlage borne à l'horizon */
         // R4 pendant le geste : aucun bout ne sort de la courbe
         if (p.a < s.v.v0) s.v = { ...s.v, v0: p.a };
         if (p.b > s.v.v0 + s.v.span) s.v = { ...s.v, v0: p.b - s.v.span };

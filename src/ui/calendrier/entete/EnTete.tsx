@@ -191,7 +191,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const annee = vue === 'annee' || anneeListe;
   const premier = Math.max(0, semainesTot.findIndex(s => s.debut >= fenetre.du));
   // CAL-PASSE (décision du pilote, 20.11) : l'An = douze mois à partir du début de la fenêtre, jamais tout le passé ajouté et l'avenir.
-  const nombre = annee ? clamp(Math.min(SEMAINES_ANNEE, Math.max(1, total)), 1, Math.max(1, total - premier)) : clamp(fenetre.semaines, 1, Math.max(1, total - premier));
+  // CAL-PLUS-QU-UN-AN : l'An dure au moins 52 semaines, plus si la fenêtre a été tirée au-delà (jusqu'à l'horizon)
+  const nombre = annee ? clamp(Math.max(SEMAINES_ANNEE, fenetre.semaines), 1, Math.max(1, total - premier)) : clamp(fenetre.semaines, 1, Math.max(1, total - premier));
   const index = premier;
   const visibles = semainesTot.slice(index, index + nombre);
   const debutVisible = visibles[0]?.debut ?? null;

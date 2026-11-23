@@ -340,7 +340,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const deplieVu = !axeVu && !annee && echelle === 'semaine' && deplie && peutDeplier(mesure.largeur || 360, fenetre.semaines) && deplie >= fenetre.du && deplie < ajouterJours(fenetre.du, fenetre.semaines * 7) ? deplie : null;
   /* CAL-PASSE (décision du pilote, 20.11) : l'An, ce sont douze mois à partir du début de la fenêtre (aujourd'hui par défaut, plus tôt si l'on a
      reculé), jamais tout le passé ajouté plus l'avenir (23 colonnes) */
-  const moisAn = useMemo(() => anneeEnMois(fenetre.du, Math.min(SEMAINES_ANNEE, Math.max(1, fenetre.semaines))), [fenetre.du, fenetre.semaines]);
+  const moisAn = useMemo(() => anneeEnMois(fenetre.du, Math.max(1, fenetre.semaines)), [fenetre.du, fenetre.semaines]);
   const colonnesFenetre: Colonne[] = useMemo(() => {
     if (annee) return moisAn.map(m => ({ debut: m.debut, fin: m.fin, etiquette: m.court }));
     return colonnesDeLAxe({ echelle, semaines: modele.semaines, mois: modele.mois, du: fenetre.du, nombre: fenetre.semaines, deplie: deplieVu });

@@ -256,7 +256,7 @@ test.describe('Frise du Calendrier', () => {
     const c1 = await attendreCoherence(page, undefined,'après le début tenu immobile');
     const dit = `« ${c0.label} » (${c0.points.length} sem.) → « ${c1.label} » (${c1.points.length} sem.)`;
     expect(c1.points.length - c0.points.length, `recul sous le doigt immobile : ${dit}`).toBeGreaterThanOrEqual(40);
-    expect(c1.points.length, `jamais plus que l'An : ${dit}`).toBeLessThanOrEqual(52);
+    expect(c1.points.length, `jamais plus que l'horizon (CAL-PLUS-QU-UN-AN : 5 ans et le passé) : ${dit}`).toBeLessThanOrEqual(5 * 52 + 1 + 52);
     expect(c1.label, `l'étiquette dit la fenêtre reculée : ${dit}`).not.toBe(c0.label);
     if (c1.etiquette && c0.etiquette && c1.etiquette.a > c0.etiquette.a) expect(c1.etiquette.anA, `le début dans l'année d'avant dit son année : ${dit}`).not.toBeNull();
   });
