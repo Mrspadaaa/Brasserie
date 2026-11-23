@@ -127,3 +127,15 @@
 {"heure":"2026-11-23T15:06:18.581Z","methode":"tour25-liens-en-ligne","geste":"Lien L7-mort-brewtools collé dans « ZZ TEST — liens tour 25 » ouvert (rangerCarnet, 5.7 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
 {"heure":"2026-11-23T15:09:12.602Z","methode":"tour25-liens-en-ligne","geste":"Phrase « ZZ TEST — liens tour 25 bis » depuis la liste (rangerCarnet), reprise du test ‹ › photo","modele":"gemini-3.8-flash","estimation_chf":0.005}
 {"heure":"2026-11-23T15:09:25.398Z","methode":"tour25-liens-en-ligne","geste":"Lien L6 galaxus KS240L recollé (bis) dans « ZZ TEST — liens tour 25 bis » (6.5 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T15:58:57.317Z","methode":"tour26-liens-en-ligne","geste":"Phrase « ZZ TEST — tour 26 » depuis la liste (rangerCarnet)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T15:58:57.318Z","methode":"tour26-liens-en-ligne","geste":"Lien L4 hopfenmarkt Mosaic collé dans « ZZ TEST — tour 26 » ouvert (6 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T15:58:57.318Z","methode":"tour26-liens-en-ligne","geste":"Lien L7 brewtools mort collé (6 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T15:58:57.318Z","methode":"tour26-liens-en-ligne","geste":"Lien L5 gastro-held ECO 400 collé (8 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T15:58:57.318Z","methode":"tour26-liens-en-ligne","geste":"Lien L2 bierbrauzubehoer collé (7,6 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T15:58:57.318Z","methode":"tour26-liens-en-ligne","geste":"Lien L2 recollé, 1re fois (doublon, lecture lancée, sans suite visible)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T15:58:57.318Z","methode":"tour26-liens-en-ligne","geste":"Lien L2 recollé, 2e fois (doublon)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T15:58:57.318Z","methode":"tour26-liens-en-ligne","geste":"Lien L2 recollé, 3e fois : « Déjà dans ce carnet » (7,6 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T15:58:57.318Z","methode":"tour26-liens-en-ligne","geste":"Lien L3 speidels EUR collé (10,6 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T15:58:57.318Z","methode":"tour26-liens-en-ligne","geste":"Lien L6 galaxus KS240L collé (5 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T15:58:57.318Z","methode":"tour26-liens-en-ligne","geste":"Lien L1 sios Citra collé (10 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
+{"heure":"2026-11-23T15:58:57.318Z","methode":"tour26-liens-en-ligne","geste":"Lien B6 brouwland brew-monk (page bloquée, Google) collé (7 s)","modele":"gemini-3.8-flash","estimation_chf":0.005}
