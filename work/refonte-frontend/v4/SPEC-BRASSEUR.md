@@ -2792,3 +2792,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - « Est-ce que on fait pas trop de passe, trop de testé avant la mise en ligne ? Car au final ça sert pas à grand chose puisque ce genre de bug de retrouve en ligne ?? »
 - (sur la proposition : porte de ~10 min, mise en ligne en petits lots, épreuve en ligne aussitôt après) « Yes »
 - (après l'épreuve en ligne du tour 13 : 7 KO sur 29 cas déclarés corrigés) « Il y a un problème dans les méthodes de fix, test, seul ceux sur la vrai app semble trouver des vrais problèmes. »
+- (capture 9:02, brasseur-23-11/2sem-0902.jpg : période « 30.11.26–21.11.27 », 2 sem., cadre « S48 – S46 2027 », pastille « −5 063 S26 '27 », courbe sans repère d'aujourd'hui) « Ça semble être mieux, mais on peut maintenant que afficher 1 ans Max ??? Et on voit plus quel moment on est sur le graph, on voit toujours en bleu notre semaine sur le calendrier, mais sur le graph, plus d'indications »
