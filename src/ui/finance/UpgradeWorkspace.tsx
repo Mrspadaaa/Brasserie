@@ -16,6 +16,11 @@ import { prixTexte as prixCarnet } from '../../domain/carnets/comparer';
 import { VignetteObjet } from '../carnets/pictos';
 import { MOIS_BANDEAU, REPERES, caisseAvantSortie, echelleCaisse, effetProjet, estPose, etapeHero, moisDePlan, partsInconnues, prochainAchat, repereDe, suivants, titreCourt, type EffetProjet } from '../../domain/finance/upgradeForecast';
 import { Sheet } from '../Sheet';
+import { Horizons } from '../saisie/Horizons';
+import { DureeFenetre } from '../calendrier/frise/DureeFenetre';
+import { plageDate } from '../plageDate';
+import { lundiDe } from '../../domain/calendrier';
+import { jeudiDe } from '../../domain/horizons';
 import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
 import { useStorageValue } from '../../hooks/useLiveData';
@@ -58,7 +63,7 @@ const jourCourt = (iso?: string) => { const d = isoDate((iso ?? '').slice(0, 10)
  * dans Réalisés, sans geste (D-2, D-8). Hors de Stocks (Atelier), la carte kh1r ne change pas (D-41).
  */
 function ProchainAchatCarnet({ plan, doc, lien, mois, ouvert, onDate, onPoser, onEdit, onFiche, onOuvrir }: { plan: FinancialPlan; doc?: CarnetDoc; lien: LienPlan; mois: string[]; ouvert: boolean;
-  onDate: () => void; onPoser: (m: string | null) => void; onEdit: () => void; onFiche: () => void; onOuvrir?: (id: string) => void }) {
+  onDate: () => void; onPoser: (m: string | null, garder?: boolean) => void; onEdit: () => void; onFiche: () => void; onOuvrir?: (id: string) => void }) {
   const d = upgradeDetails(plan), m = moisDePlan(plan), art = articleChoisi(doc), u = plan.upgrade;
   const titreCarnet = u?.sourceCarnetTitre?.trim();
   const le = jourCourt(plan.createdAt);
@@ -90,7 +95,7 @@ function ProchainAchatCarnet({ plan, doc, lien, mois, ouvert, onDate, onPoser, o
           <Calendar size={18} aria-hidden/>{m ? `Date : ${libelleMois(m, 'long')}` : 'Fixer la date'}</button>
         {u?.sourceCarnetId && present && onOuvrir && <button type="button" className="min-h-11 rounded-control border border-cave-700 px-3 font-semibold text-cave-50" onClick={() => onOuvrir(u.sourceCarnetId!)}>Ouvrir le carnet</button>}
       </div>
-      {ouvert && <ChoixMois plan={plan} mois={mois} onChoisir={onPoser}/>}
+      {ouvert && <ChoixMois plan={plan} onChoisir={onPoser}/>}
       <p className="mt-2 text-sm text-cave-400">Il passe seul dans Réalisés quand sa dépense liée est payée. Il n’entre au Parc que par une fiche matériel, créée avec l’achat.</p>
     </div>
   </section>;
@@ -245,13 +250,31 @@ function Avis({ avis, onVoir }: { avis: { titre: string; date: string | null }; 
     <button type="button" className="kh-voir" onClick={onVoir}>Voir</button>
   </div>;
 }
-function ChoixMois({ plan, mois, onChoisir }: { plan: FinancialPlan; mois: string[]; onChoisir: (mois: string | null) => void }) {
-  const actuel = moisDePlan(plan);
-  /* L-42 : le mois où le plan est posé a toujours sa puce (novembre, le mois en cours, manquait : aucune n'était choisie) */
-  const liste = actuel && !mois.includes(actuel) ? [...mois, actuel].sort() : mois;
-  return <div className="kh-mo" role="group" aria-label={`Poser ${plan.title} sur un mois`}>
-    <button type="button" className={actuel ? '' : 'on'} aria-pressed={!actuel} onClick={() => onChoisir(null)}>pas encore</button>
-    {liste.map(m => <button type="button" key={m} className={actuel === m ? 'on' : ''} aria-pressed={actuel === m} onClick={() => onChoisir(m)} {...(estPasse(m) ? { 'data-mois-passe': '' } : {})}>{libelleMois(m, 'short')}</button>)}
+/**
+ * D431 (GESTE-DATE-PARTOUT, CA12-M4-20 ; ses mots du 22.11 « PARTOUT ») : le choix du mois d'un projet est la feuille de date partagée, comme « Prévoir un achat » du Calendrier :
+ * les puces raccourcis (`Horizons` : Aujourd'hui … 1 an, « Plus tard » retire la date) et la frise au doigt (`DureeFenetre seule`), plus la grille de mois maison.
+ * La valeur reste ce que `onPoser` attend : un mois « AAAA-MM » (le mois du jeudi de la semaine, comme `texteIntention`) ou `null`. Le repère suit le doigt ; le mois
+ * s'écrit au lâcher (`garder` : la feuille reste ouverte pour un second geste), et le repère reste où le doigt l'a posé, au lieu de sauter sur la première semaine du mois.
+ */
+const moisDuLundi = (lundi: string) => jeudiDe(lundi).slice(0, 7);
+function ChoixMois({ plan, onChoisir }: { plan: FinancialPlan; onChoisir: (mois: string | null, garder?: boolean) => void }) {
+  const actuel = moisDePlan(plan), auj = todayISO();
+  /* la semaine qui représente le mois : celle dont le jeudi tombe dans les sept premiers jours (jamais dans le mois d'avant) */
+  const canon = actuel ? lundiDe(`${actuel}-04`) : lundiDe(auj);
+  const [tire, setTire] = useState<string | null>(null), [tenu, setTenu] = useState(false);
+  const tireRef = useRef<string | null>(null);
+  useEffect(() => { setTenu(false); }, [actuel]);
+  const surPlace = !!tire && (tenu || (!!actuel && moisDuLundi(tire) === actuel));
+  const montre = surPlace ? tire! : canon;
+  const moisDit = tenu && tire ? moisDuLundi(tire) : actuel;
+  const plage = useMemo(() => plageDate(canon, auj), [canon, auj]);
+  return <div className="kh-cm" data-choix-mois data-valeur={actuel ?? undefined} data-vide={actuel || tenu ? undefined : ''}>
+    <p className="kh-cm-dit" data-mois-pose>{moisDit ? <b>{libelleMois(moisDit, 'long')}</b> : 'Pas encore de date'}</p>
+    <Horizons date={actuel ? canon : undefined} aujourdhui={auj} classePuce="kh-cm-puce" className="kh-cm-puces" etiquette={`Poser ${plan.title} sur un mois`}
+      onChoisir={(_, lundi) => { tireRef.current = null; setTire(null); setTenu(false); onChoisir(lundi ? moisDuLundi(lundi) : null); }}/>
+    <DureeFenetre seule rangee="achats" debut={montre} fin={null} onFin={() => undefined} epoque={plage.epoque} dernier={plage.dernier}
+      onPlage={d => { tireRef.current = d; setTire(d); setTenu(true); }}
+      onLacher={() => { const d = tireRef.current; if (d && moisDuLundi(d) !== actuel) onChoisir(moisDuLundi(d), true); else setTenu(false); }}/>
   </div>;
 }
 /** Ce que l'achat fait à la caisse de fin de mois : la barre entière est la caisse avant l'achat, la part pleine ce qu'il en prend. */
@@ -340,7 +363,7 @@ function FicheProjet({ plan, plans, prevision, transactions, payments, mois, bus
           : connus.length === 3 ? <><span className="t">Total</span><span className="v t kh-m">{chf2(plan.amountCents)}</span></>
           : <><span className="t">Au moins <small>· {connus.length} prix sur 3</small></span><span className="v t">{connus.length === 1 && d.purchaseCents != null ? 'l’achat seul' : 'les prix connus'}</span></>}</div>
       <div className="kh-lbl">Posé sur</div>
-      <ChoixMois plan={plan} mois={mois} onChoisir={onPoser}/>
+      <ChoixMois plan={plan} onChoisir={onPoser}/>
       {!d.budgetKnown && <p className="finance-muted">Sans prix, le mois se pose mais rien n’entre dans tes prévisions : chiffre le projet avec Modifier.</p>}
       <button type="button" role="switch" aria-checked={plan.status === 'active'} className="kh-sw" disabled={!!busy} onClick={() => onInclusion(plan.status !== 'active')}><i/>Inclure dans mes prévisions</button>{/* TE-36 : le mot de la feuille et de la liste, un seul partout */}
       {effet && effet.avecCents != null && effet.sansCents != null
@@ -374,12 +397,12 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
   /* Le prochain achat peut n'être pas posé (repli, constat 7) : sans les prévisions, pas d'effet sur la caisse à dessiner. */
   const effetHero = hero && estPose(hero) ? effetProjet(hero, plans, prevision.months, prevision.items) : null;
   const focus = plans.find(p => p.id === marque) ?? null, effetFocus = focus && estPose(focus) ? effetProjet(focus, plans, prevision.months, prevision.items) : null;
-  const poser = async (plan: FinancialPlan, m: string | null) => { setPicker(null); if (await onPoser(plan, m)) setMarque(m ? plan.id : null); };
+  const poser = async (plan: FinancialPlan, m: string | null, garderOuvert = false) => { if (!garderOuvert) setPicker(null); if (await onPoser(plan, m)) setMarque(m ? plan.id : null); };
   const dansFiche = plans.find(p => p.id === fiche);
   /* Critique 6, n° 38 : dans Stocks › Matériel, les cartes prennent la largeur du segment (736 px à 1280), pas les 680 px de l'Atelier */
   return <div className={`kh${carnet ? ' kh-carnet' : ''}`}>
     {hero && carnet && <ProchainAchatCarnet plan={hero} doc={carnetsLus.find(c => c.id === hero.upgrade?.sourceCarnetId)} lien={lienDuPlan(hero, carnetIds, carnetsLus)}
-      mois={mois} ouvert={picker === hero.id} onDate={() => setPicker(picker === hero.id ? null : hero.id)} onPoser={m => void poser(hero, m)} onEdit={() => onEdit(hero)} onFiche={() => setFiche(hero.id)} onOuvrir={onOpenCarnet}/>}
+      mois={mois} ouvert={picker === hero.id} onDate={() => setPicker(picker === hero.id ? null : hero.id)} onPoser={(m, garder) => void poser(hero, m, garder)} onEdit={() => onEdit(hero)} onFiche={() => setFiche(hero.id)} onOuvrir={onOpenCarnet}/>}
     {hero && !carnet && <section className="kh-hero" aria-label="Prochain achat">
       <div className="kh-ht"><span className="kh-kick">Prochain achat</span><span className="kh-pill">D’abord · {etapeHero(hero)}</span></div>
       <div className="kh-hm"><h2><button type="button" className="kh-hbtn" onClick={() => setFiche(hero.id)}>{hero.title}</button></h2>
@@ -388,7 +411,7 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
       {effetHero && <EffetCaisse plan={hero} effet={effetHero}/>}
       <div className="kh-acts"><button type="button" className="kh-mon" aria-expanded={picker === hero.id} aria-label={`Mois de ${hero.title} : ${moisDePlan(hero) ? nomMois(moisDePlan(hero)!, 'long') : 'à poser'}`} onClick={() => setPicker(picker === hero.id ? null : hero.id)}><Calendar size={18}/>{moisDePlan(hero) ? nomMois(moisDePlan(hero)!, 'short') : '+ mois'}<ChevronDown size={14}/></button>
         <button type="button" className="kh-cta" aria-label={`Modifier ${hero.title}`} onClick={() => onEdit(hero)}><PenLine size={18}/>Modifier</button></div>
-      {picker === hero.id && <ChoixMois plan={hero} mois={mois} onChoisir={m => void poser(hero, m)}/>}
+      {picker === hero.id && <ChoixMois plan={hero} onChoisir={(m, garder) => void poser(hero, m, garder)}/>}
     </section>}
     {lignes.length > 0 && <>
       <div className="kh-lt">{hero ? 'Les suivants' : 'Mes achats'}<span>{lignes.length} achat{lignes.length > 1 ? 's' : ''} · {connuCents > 0 ? <>{inconnus ? 'au moins ' : ''}<b className="kh-m">{chf0(connuCents)}</b>{carnet ? ' CHF' : ''}</> : 'prix à estimer'}</span></div>
@@ -408,7 +431,7 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
             {!d.budgetKnown && <button type="button" className="kh-u" aria-label={`Noter le prix : ${plan.title}`} onClick={() => { setPicker(null); setEtape(ouvert ? null : plan.id); }}><span>à estimer</span></button>}
             <button type="button" className="kh-ed" aria-label={`Modifier ${plan.title}`} onClick={() => onEdit(plan)}><PenLine size={18}/></button>
           </div><LigneCarnet compact plan={plan} lien={lienDuPlan(plan, carnetIds, carnetsLus)} onOuvrir={onOpenCarnet}/>
-          {picker === plan.id && <ChoixMois plan={plan} mois={mois} onChoisir={v => void poser(plan, v)}/>}
+          {picker === plan.id && <ChoixMois plan={plan} onChoisir={(v, garder) => void poser(plan, v, garder)}/>}
           {ouvert && <PanneauEtape plan={plan} contacts={contacts} fournisseurs={fournisseurs} busy={!!busy} onPrix={c => void onPrix(plan, c).then(ok => { if (ok) setEtape(null); })} onDevis={n => void onDevis(plan, n).then(ok => { if (ok) setEtape(null); })}/>}</React.Fragment>;
         })}</section> : null;
       })}</>}
@@ -417,7 +440,7 @@ function AVenir({ plans, transactions, payments, prevision, busy, onEdit, onPose
     {carnet ? <ChoisisEnAttente carnets={carnetsLus} plans={plans} onOuvrir={onOpenCarnet}/>
       : <Bandeau prevision={prevision} hero={hero} effetHero={effetHero} focus={focus} effetFocus={effetFocus} sortie={avis} onPrevisions={onPrevisions}/>}
     {dansFiche && <FicheProjet plan={dansFiche} plans={plans} prevision={prevision} transactions={transactions} payments={payments} mois={mois} busy={busy} onClose={() => setFiche(null)}
-      onEdit={() => { setFiche(null); onEdit(dansFiche); }} onPoser={m => void poser(dansFiche, m)} onInclusion={inc => onInclusion(dansFiche, inc)} onStatut={s => void onStatut(dansFiche, s).then(ok => { if (ok) setFiche(null); })} onSupprimer={() => { const r = onSupprimer(dansFiche); if (!r) setFiche(null); return r; }} onPrevisions={() => { setFiche(null); onPrevisions(); }}/>}
+      onEdit={() => { setFiche(null); onEdit(dansFiche); }} onPoser={m => void poser(dansFiche, m, true)} onInclusion={inc => onInclusion(dansFiche, inc)} onStatut={s => void onStatut(dansFiche, s).then(ok => { if (ok) setFiche(null); })} onSupprimer={() => { const r = onSupprimer(dansFiche); if (!r) setFiche(null); return r; }} onPrevisions={() => { setFiche(null); onPrevisions(); }}/>}
   </div>;
 }
 
