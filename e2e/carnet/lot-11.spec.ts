@@ -55,6 +55,8 @@ test.describe('Carnet, lot 11', () => {
     await expect(page.locator('[data-avis="echec"]').first()).toBeVisible({ timeout: 15_000 });
     const relire = carnet(page).locator('[data-relire]').first();
     await expect(relire, 'un geste « Relire » est offert').toBeVisible();
+    await relire.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(300);
     await capture(page, 'l1-relire');
     await relire.tap();
     // l'IA simulée reste en panne : l'échec est redit, et « Relire » reste offert
