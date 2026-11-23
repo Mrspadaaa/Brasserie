@@ -12,6 +12,7 @@ import React, { useEffect, useRef } from 'react';
 import { Calculator, Check, TriangleAlert, Undo2, WifiOff } from 'lucide-react';
 import { PictoLocal, Provenance } from './EtatIA';
 import { estLienSeul } from '../../domain/carnets/modele';
+import type { PageLue } from '../../domain/carnets/ia';
 
 /** La fin de la ligne citée sous « ✓ Carnet créé » : d'où vient le titre. Seule la phrase écrite par lui est « votre phrase en titre ». */
 const ORIGINE_TITRE: Record<TitreDe, string> = {
@@ -48,8 +49,8 @@ export interface ArticleRangeV { nom: string; detail?: string; prix?: string; ex
 export type BandeauV =
   | { sorte: 'cree'; phrase: string; titreDe?: TitreDe }
   | { sorte: 'range' }
-  /* P9 (R25) : un lien seul dont la page n'a pas été lue : lequel, en clair, et « page non lue · Ouvrir ↗ » */
-  | { sorte: 'lien'; url: string; lu: boolean; ici?: boolean }
+  /* P9 (R25) : un lien seul dont la page n'a pas été lue : lequel, en clair, et « page non lue · Ouvrir ↗ ». L-4 : `statut`, la raison. */
+  | { sorte: 'lien'; url: string; lu: boolean; ici?: boolean; statut?: PageLue['statut'] }
   /* P21 : une photo rangée */
   | { sorte: 'photo'; ici?: boolean }
   /* critique 6, n° 12 : `rang`, « 1re de sa façon, devant Hotte inox 120 cm » (R26, G20) */
@@ -67,11 +68,31 @@ export type BandeauV =
 /** G26 : ce que le changement fait à la comparaison (différence calculée par `comparer.ts`, jamais inventée). */
 export interface ConsequenceV { texte: string; onPasserCritere?: () => void }
 
+/**
+ * L-4 (23.11, M2-5, M2-6) : pourquoi une page n'a pas été lue, en mots courts ; jamais « robots » pour un domaine qui n'existe pas.
+ * `lue`, ou un statut inconnu : rien à dire.
+ */
+export function raisonNonLue(statut: PageLue['statut'] | undefined): string | null {
+  switch (statut) {
+    case 'bloquee': return 'le site bloque la lecture automatique';
+    case 'robots': return 'le site refuse la lecture automatique';
+    case 'introuvable': return 'adresse introuvable';
+    case 'indisponible': return 'site injoignable';
+    case 'illisible': return 'ni nom ni prix sur la page';
+    case 'refusee': return 'adresse non lue par prudence';
+    default: return null;
+  }
+}
+
 export function texteBandeau(b: BandeauV): string {
   switch (b.sorte) {
     case 'cree': return '✓ Carnet créé, en tête des Carnets';
     case 'range': return '✓ Rangé ici, à l\'instant';
-    case 'lien': return b.lu ? '✓ Lien rangé ici' : '✓ Lien rangé ici · page non lue';
+    case 'lien': {
+      if (b.lu) return '✓ Lien rangé ici';
+      const raison = raisonNonLue(b.statut);
+      return `✓ Lien rangé ici · page non lue${raison ? ` : ${raison}` : ''}`;
+    }
     case 'photo': return '✓ Photo rangée ici';
     case 'article': return `${b.faconNom ? `✓ Article rangé ici, dans ${b.faconNom}` : '✓ Article rangé ici, à l\'instant'}${b.rang ? ` · ${b.rang}` : ''}`;
     case 'deuxieme': return `${b.nom} rangé, ${b.rang === 1 ? '1er' : `${b.rang}e`}`;

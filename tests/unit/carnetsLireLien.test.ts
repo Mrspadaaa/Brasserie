@@ -91,12 +91,12 @@ describe('lireLien (B4) : réseau simulé, jamais réel', () => {
     expect(demandes).toEqual([robots]);
   });
 
-  it('robots indisponible (5xx ou panne) : refus prudent, aucun fetch de la page', async () => {
+  it('robots en 5xx : refus prudent ; panne du réseau : indisponible (L-4) ; aucun fetch de la page', async () => {
     const r5 = reseau({ [robots]: () => texte('erreur', 503) });
     expect((await lireLien(page, { fetchPage: r5.fetchPage })).statut).toBe('robots');
     expect(r5.demandes).toEqual([robots]);
     const panne = reseau({});
-    expect((await lireLien(page, { fetchPage: panne.fetchPage })).statut).toBe('robots');
+    expect((await lireLien(page, { fetchPage: panne.fetchPage })).statut).toBe('indisponible');
     expect(panne.demandes).toEqual([robots]);
   });
 

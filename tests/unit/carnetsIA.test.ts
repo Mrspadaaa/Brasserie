@@ -90,7 +90,9 @@ describe('garde lireReponse (B2)', () => {
     expect(une(garde({ lignes: [{ sorte: 'critere', texte: 'Silencieux', carnetId: 'c-invente', titre: 'Hotte silencieuse' }] }, 'hotte silencieuse')))
       .toMatchObject({ carnetNeuf: 'Hotte silencieuse' });
     expect(une(garde({ lignes: [{ sorte: 'critere', texte: 'x', carnetId: 'c-invente' }] }, 'x')).carnetId).toBeUndefined();
-    expect(une(garde({ lignes: [{ sorte: 'note', texte: 'x', carnetId: 'c-evier' }] }, 'x')).carnetId).toBe('c-evier');
+    expect(une(garde({ lignes: [{ sorte: 'note', texte: 'x', carnetId: 'c-evier' }] }, 'x', { depuis: 'c-ventil' })).carnetId).toBe('c-evier');
+    /* L-2 (23.11) : une phrase seule tapée sur la liste n’est jamais versée dans un carnet existant ; il n’est que suggéré */
+    expect(une(garde({ lignes: [{ sorte: 'note', texte: 'x', carnetId: 'c-evier' }] }, 'x'))).toMatchObject({ carnetSuggere: 'c-evier' });
     expect(une(garde({ lignes: [{ sorte: 'note', texte: 'x' }] }, 'x', { depuis: 'c-ventil' })).carnetId).toBe('c-ventil');
   });
 
@@ -154,9 +156,9 @@ describe('garde des aides (B7, D-35, G29)', () => {
 
   it('consequence : un nombre absent du carnet et du message la retire', () => {
     const brut = (consequence: string) => ({ lignes: [{ sorte: 'critere', texte: 'fond', carnetId: 'c-evier', consequence }] });
-    expect(une(garde(brut('Inox Riviera (38 cm) ne passerait plus'), 'fond de bac 60 cm')).consequence).toBe('Inox Riviera (38 cm) ne passerait plus');
-    expect(une(garde(brut('les articles sous 60 cm ne passeraient plus'), 'fond de bac 60 cm')).consequence).toBeDefined();
-    expect(une(garde(brut('gain de 45 % sur le débit'), 'fond de bac 60 cm')).consequence).toBeUndefined();
+    expect(une(garde(brut('Inox Riviera (38 cm) ne passerait plus'), 'fond de bac 60 cm', { depuis: 'c-evier' })).consequence).toBe('Inox Riviera (38 cm) ne passerait plus');
+    expect(une(garde(brut('les articles sous 60 cm ne passeraient plus'), 'fond de bac 60 cm', { depuis: 'c-evier' })).consequence).toBeDefined();
+    expect(une(garde(brut('gain de 45 % sur le débit'), 'fond de bac 60 cm', { depuis: 'c-evier' })).consequence).toBeUndefined();
     expect(une(garde({ lignes: [{ sorte: 'idee', texte: 'x', consequence: 'sans nombre' }] }, 'x')).consequence).toBeUndefined();
   });
 
@@ -170,7 +172,7 @@ describe('garde des aides (B7, D-35, G29)', () => {
 
   it('G29 : titrePropose retiré sur carnet inconnu, autre sorte, titre identique ou plus de 60 caractères', () => {
     const brut = (l: Record<string, unknown>) => ({ lignes: [{ sorte: 'idee', texte: '2 bacs pour laver les fûts', ...l }] });
-    expect(une(garde(brut({ carnetId: 'c-evier', titrePropose: 'ZZ TEST — Évier inox 2 bacs' }), '2 bacs')).titrePropose).toBe('ZZ TEST — Évier inox 2 bacs');
+    expect(une(garde(brut({ carnetId: 'c-evier', titrePropose: 'ZZ TEST — Évier inox 2 bacs' }), '2 bacs', { depuis: 'c-evier' })).titrePropose).toBe('ZZ TEST — Évier inox 2 bacs');
     expect(une(garde(brut({ carnetId: 'c-invente', titrePropose: 'Évier 2 bacs' }), '2 bacs')).titrePropose).toBeUndefined();
     expect(une(garde(brut({ sorte: 'critere', carnetId: 'c-evier', titrePropose: 'Évier 2 bacs' }), '2 bacs')).titrePropose).toBeUndefined();
     expect(une(garde(brut({ carnetId: 'c-evier', titrePropose: 'zz test — evier  inox' }), '2 bacs')).titrePropose).toBeUndefined();

@@ -6,7 +6,9 @@
  *  4. l'IA tourne (`en-cours`, « ✻ … ») ; `annuler` (✕) coupe l'attente et n'écrit rien de plus ;
  *  5. le garde (`lireReponse`) valide la réponse ;
  *  6. les effets locaux sont remplacés par ceux de l'IA, en une écriture annulable (`ecrireIA`).
- * Panne, délai dépassé, réponse illisible : `echec`, les effets locaux restent, le message est gardé, un avis bref le dit.
+ * Panne, délai dépassé, réponse illisible : `echec`, les effets locaux restent, le message est gardé, un avis bref le dit. L-1 (23.11) :
+ * si le message porte un lien, la lecture faite n'est pas jetée : les effets locaux sont réécrits avec les pages lues (`repli`), puis
+ * l'échec est dit ; aucun article ne reste « lecture… ».
  * Hors ligne : `hors-ligne`, rangé sur l'appareil ; rien ne bouge plus tard dans son dos (aucun rerangement au retour du réseau).
  *
  * Ce module ne connaît ni le magasin ni le modèle du lot A : `CarnetsVue.tsx` (lot D) lui passe l'analyse locale et les deux
@@ -33,6 +35,9 @@ export interface AppelsIA {
   ranger(contexte: ContexteRangerCarnet, signal: AbortSignal): Promise<{ ok: boolean; data?: unknown; error?: string }>;
   lire(url: string, signal: AbortSignal): Promise<PageLue>;
 }
+
+/** L-3 (23.11) : une réponse coupée au plafond de sortie, ou le délai du serveur dépassé, se dit comme un délai. */
+const ERREUR_DELAI = /coup[ée]e au plafond|d[ée]lai|trop de temps/i;
 
 export const AVIS = {
   panne: "L'IA n'a pas répondu : rangé sur l'appareil, votre message est gardé.",
@@ -207,8 +212,9 @@ const formeLien = (u: string) => u.trim().toLowerCase().replace(/^https?:\/\//, 
  * tel que l'analyse locale l'a lu (motifs suisses, `parseDecimal`) : celui de son lien, sinon le seul prix écrit pour le seul article
  * sans prix. Un prix rendu par l'IA (déjà vérifié par le garde) n'est jamais remplacé ; rien n'est inventé.
  */
-export function prixEcrits<T extends { sorte: string; url?: string; prixCentimes?: number; devise?: string }>(lignes: LigneCarnet[], locales: readonly T[]): LigneCarnet[] {
-  const ecrits = locales.filter(l => l.sorte === 'article' && l.prixCentimes !== undefined);
+export function prixEcrits<T extends { sorte: string; url?: string; prixCentimes?: number; devise?: string; phrase?: string }>(lignes: LigneCarnet[], locales: readonly T[]): LigneCarnet[] {
+  /* L-8 (23.11, M1-11) : « budget 400 CHF » est une limite, pas le prix d'un article */
+  const ecrits = locales.filter(l => l.sorte === 'article' && l.prixCentimes !== undefined && !/\bbudget/i.test(l.phrase ?? ''));
   if (!ecrits.length) return lignes;
   const sansPrix = lignes.filter(l => l.sorte === 'article' && l.prixCentimes === undefined);
   const pris = new Set<T>();
@@ -231,6 +237,21 @@ export function pagesDesLiens(urls: readonly string[], pages: readonly PageLue[]
   return pages.map((p, i) => (urls[i] && formeLien(p.url) !== formeLien(urls[i]) ? { ...p, url: urls[i] } : p));
 }
 
+/**
+ * L-1 (23.11) : le repli quand l'IA échoue après la lecture des pages : chaque ligne de l'analyse locale (sorte, genre, texte, lien, prix
+ * écrit) passe par le même garde que la réponse de l'IA (`lireReponse`), avec les pages lues : un article prend le nom, le prix et la photo
+ * de sa page, ou devient « page non lue » ; rien n'est inventé, aucune ligne ne quitte le carnet annoncé. `null` : rien à réécrire.
+ */
+export function repliLocal(locales: readonly unknown[], texte: string, carnets: readonly CarnetPourIA[], depuis: string | null, pages: readonly PageLue[]): LigneCarnet[] | null {
+  const lignes = locales.flatMap(brut => {
+    const l = (brut ?? {}) as { sorte?: unknown; genre?: unknown; texte?: unknown; url?: unknown; prixCentimes?: unknown; devise?: unknown };
+    if (typeof l.texte !== 'string' || typeof l.sorte !== 'string') return [];
+    const prix = typeof l.prixCentimes === 'number' ? l.prixCentimes / 100 : undefined;
+    return [{ sorte: l.sorte, genre: l.genre, texte: l.texte, ...(typeof l.url === 'string' ? { url: l.url } : {}), ...(prix !== undefined ? { prix, devise: l.devise } : {}) }];
+  });
+  return lignes.length ? lireReponse({ lignes }, { texte, carnets, depuis, pages, origine: 'locale' }) : null;
+}
+
 export interface DependancesRangement<L> {
   mode: ModeCarnetIA;
   /** Le carnet ouvert, ou `null` depuis la liste. */
@@ -244,8 +265,11 @@ export interface DependancesRangement<L> {
    * l'IA va tourner (l'écran peut montrer « ✻ … ») ; faux en mode éteint ou hors ligne (rangement local définitif).
    */
   ecrireLocal: (texte: string, lignes: L[], options: { iaAttendue: boolean }) => Promise<{ messageId: string }> | { messageId: string };
-  /** Remplace les effets locaux du message par ceux de l'IA, en une écriture annulable. */
-  ecrireIA: (messageId: string, lignes: LigneCarnet[], rangement: 'ia' | 'simulee') => Promise<void> | void;
+  /**
+   * Remplace les effets locaux du message par ceux de l'IA, en une écriture annulable. `locale` (L-1) : l'IA a échoué après la lecture
+   * des pages ; les lignes sont l'analyse locale avec les pages lues, le message reste rangé sur l'appareil.
+   */
+  ecrireIA: (messageId: string, lignes: LigneCarnet[], rangement: 'ia' | 'simulee' | 'locale') => Promise<void> | void;
   surEtat?: (etat: EtatRangement<L>) => void;
   /** Par défaut : simulés en `simule`, réels en `production`. */
   appels?: AppelsIA;
@@ -304,8 +328,22 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
     const delai = setTimeout(() => ctrl.abort(new DOMException('délai', 'TimeoutError')), deps.delaiMs ?? 45_000);
     const coupe = () => ctrl.signal.aborted;
     const fin = (e: EtatRangement<L>) => { clearTimeout(delai); if (controleur === ctrl) controleur = null; return poser(e); };
+    const urls = liensDuTexte(texte).slice(0, 3);
+    let pages: PageLue[] = [];
+    /* L-1 (23.11, M1-1, M3-2) : l'IA a échoué, le message a un lien : ses articles reçoivent ce que les pages ont rendu (nom, prix, photo,
+       ou « page non lue »), par la même écriture que l'IA, sous `locale`. Avant l'avis d'échec : le retour garde son Annuler entier et
+       l'avis s'y pose. Ne lève jamais : sans repli, les effets locaux restent, comme avant. */
+    const echouer = async (avis: string) => {
+      if (urls.length) {
+        try {
+          const lignes = repliLocal(deps.analyseLocale(texte), texte, carnets, deps.depuis, pagesDesLiens(urls, pages));
+          if (lignes) await deps.ecrireIA(messageId, lignes, 'locale');
+        } catch { /* les effets locaux restent */ }
+      }
+      return fin({ etape: 'echec', messageId, texte, avis });
+    };
     const sortieCoupee = () => (ctrl.signal.reason as { name?: string } | undefined)?.name === 'TimeoutError'
-      ? fin({ etape: 'echec', messageId, texte, avis: AVIS.delai })
+      ? echouer(AVIS.delai)
       : fin({ etape: 'annule', messageId, texte });
     // Une promesse qui s'arrête au ✕ ou au délai, même si l'appel sous-jacent (AiClient) ne sait pas s'interrompre.
     const course = <T>(p: Promise<T>) => new Promise<T>((resolve, reject) => {
@@ -318,8 +356,6 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
     try {
       /* Les pages (3 au plus) sont lues ensemble, pas l'une après l'autre (d1280-18) : la lecture dure celle de la plus lente. Le cadre
          montre le premier lien. */
-      const urls = liensDuTexte(texte).slice(0, 3);
-      let pages: PageLue[] = [];
       if (urls.length) {
         poser({ etape: 'en-cours', messageId, texte, lecture: { url: urls[0] } });
         pages = pagesDesLiens(urls, await course(Promise.all(urls.map(url => appels.lire(url, ctrl.signal)))));
@@ -328,16 +364,16 @@ export function creerRangement<L>(deps: DependancesRangement<L>): Rangement<L> {
       const contexte = contexteModele(texte, deps.maintenant?.() ?? new Date(), deps.depuis, carnets, pages);
       const r = await course(appels.ranger(contexte, ctrl.signal));
       if (coupe()) return sortieCoupee();
-      if (!r.ok) return fin({ etape: 'echec', messageId, texte, avis: AVIS.panne });
+      if (!r.ok) return await echouer(ERREUR_DELAI.test(r.error ?? '') ? AVIS.delai : AVIS.panne);
       const lignes = lireReponse(r.data, { texte, carnets, depuis: deps.depuis, pages, origine: deps.mode === 'simule' ? 'exemple' : 'ia' });
-      if (!lignes) return fin({ etape: 'echec', messageId, texte, avis: AVIS.illisible });
+      if (!lignes) return await echouer(AVIS.illisible);
       if (coupe()) return sortieCoupee();
       const rangement = deps.mode === 'simule' ? 'simulee' : 'ia';
       await deps.ecrireIA(messageId, lignes, rangement);
       return fin({ etape: 'range', messageId, texte, rangement, lignes });
     } catch {
       if (coupe()) return sortieCoupee();
-      return fin({ etape: 'echec', messageId, texte, avis: AVIS.panne });
+      return echouer(AVIS.panne);
     }
   }
 
