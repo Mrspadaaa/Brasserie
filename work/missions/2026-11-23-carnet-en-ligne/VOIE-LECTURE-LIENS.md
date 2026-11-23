@@ -35,3 +35,4 @@ requis oui/non, risque. Recommandation ; tout nouveau compte ou service payant a
 - Écarter : Custom Search JSON API (fermée), Merchant API (son propre catalogue seulement).
 - Chaque appel réel au journal ia-journal.jsonl.
 - 23.11, ses mots : « carbon sera trop lent ». Carbon retiré du comparatif ; Hydrogen reste, temps de réponse mesuré pour chaque outil.
+- 23.11 : ajouter Gemini 4 Neon (sorti le 18.11, 3/15 $), chronométré, coupé s'il dépasse le temps de 3.8 Flash. Argon : écarté, même gamme que Carbon.
