@@ -1,0 +1,20 @@
+{
+ "id": "L2-bierbrauzubehoer",
+ "url": "https://www.bierbrauzubehoer.ch/speidels-braumeister/braumeister-von-speidel/1680/braumeister-20liter-automatisch",
+ "changementsMs": [
+  445,
+  1249,
+  16125,
+  16528,
+  16930
+ ],
+ "finMs": 16930,
+ "name": "",
+ "err": "TimeoutError: locator.scrollIntoViewIfNeeded: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Speidel Braumeister 20Liter, Automatisch', { exact: true }).first()\u001b[22m\n",
+ "errRetour": "TimeoutError: locator.scrollIntoViewIfNeeded: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting fo",
+ "fiche": "🍺\nL'Affinée\nTout\nA\nG\nArticles\nRecompter\nCourses\nFûts\nMatériel\nParc\nÀ venir\n11\nCarnets\n16\nRéalisés\n0\nArticles · ZZ TEST — liens tour…\n2e sur 3\nphoto\n1/2\nde la page collée\nSpeidel Braumeister 20Liter, Automatisch\n2 offres\nmême machine\nSevibräu Bierbrauzubehör Online-Shop\nen stock\n1 000 CHF\nOuvrir\nSevibräu Bierbrauzubehör Online-Shop\nen stock\n1 000 CHF\nOuvrir\nCaractéristiques\nlues sur la fiche du vendeur, 23 nov.\nVolume\n20Liter\nMax. Malzmenge\n6kg\nStromanschluss\n230 V (Absicherung mind. 10 Amp.)\nArtikel-Nr.\n12500-1\nHeizspirale\n2.000 W Heizleistung\nSteuerung\nvollautomatische Brausteuerung (Temperatur, Zeit, Pumpe)\nPumpe\n9 W\nMalzmenge\n6kg\nPoids\n29.5 kg\nVeille du prix, tous les 3 jours\nChoisir · Sevibräu Bierbrauzubehör Online-Shop\n\nPart dans À venir : Speidel Braumeister 20Liter, Automatisch, Sevibräu Bierbrauzubehör Online-Shop, 1 000 CHF, en stock, avec le pourquoi.\n\nAjouter à ZZ TEST — liens tour 25…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+ "photo": "photo 1/2",
+ "photoApres": "photo 2/2",
+ "photoRetour": "photo 1/2",
+ "prixDetail": "🍺\nL'Affinée\nTout\nA\nG\nArticles\nRecompter\nCourses\nFûts\nMatériel\nParc\nÀ venir\n11\nCarnets\n16\nRéalisés\n0\nArticles · ZZ TEST — liens tour…\n2e sur 3\nphoto\n1/2\nde la page collée\nSpeidel Braumeister 20Liter, Automatisch\n2 offres\nmême machine\nSevibräu Bierbrauzubehör Online-Shop\nen stock\n1 000 CHF\nOuvrir\nSevibräu Bierbrauzubehör Online-Shop\nen stock\n1 000 CHF\nOuvrir\nCHF\nOK\nAnnuler\nCaractéristiques\nlues sur la fiche du vendeur, 23 nov.\nVolume\n20Liter\nMax. Malzmenge\n6kg\nStromanschluss\n230 V (Absicherung mind. 10 Amp.)\nArtikel-Nr.\n12500-1\nHeizspirale\n2.000 W Heizleistung\nSteuerung\nvollautomatische Brausteuerung (Temperatur, Zeit, Pumpe)\nPumpe\n9 W\nMalzmenge\n6kg\nPoids\n29.5 kg\nVeille du prix, tous les 3 jours\nChoisir · Sevibräu Bierbrauzubehör Online-Shop\n\nPart dans À venir : Speidel Braumeister 20Liter, Automatisch, Sevibräu Bierbrauzubehör Online-Shop, 1 000 CHF, en stock, avec le pourquoi.\n\nAjouter à ZZ TEST — liens tour 25…\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients"
+}
