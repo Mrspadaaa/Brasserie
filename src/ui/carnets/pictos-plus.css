@@ -1,0 +1,4 @@
+/* Lot 4 (L-28) : la teinte rouge de l'extincteur ; les autres teintes des pictos vivent dans carnets.css (.cn-picto). */
+.cn-picto { --pr: #c4473a; }
+[data-theme='cave'] .cn-picto { --pr: #d0645a; }
+.cn-picto .r { fill: var(--pr); stroke: var(--pt); stroke-width: .9; stroke-linejoin: round; }
