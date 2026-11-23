@@ -9,11 +9,46 @@ import { Units } from '../services/units';
  * bug qu'on a corrigé de l'autre.
  */
 
-/** Espaces séparateurs de milliers, y compris insécable et fin. */
-const SPACES = /[\s  ']/g;
+/** Espaces séparateurs de milliers, y compris insécable et fin (\s les couvre tous). */
+const SPACES = /\s/g;
+/** Apostrophes séparatrices de milliers : droite (clavier, « 12'345 ») et typographique (clavier iPhone suisse, « 12’345 »), modificateur ʼ. */
+const APOSTROPHES = /['’ʼ]/g;
 
 /**
- * Texte saisi ➔ nombre. `null` si ce n'est pas un nombre lisible.
+ * Texte saisi ➔ nombre et nombre de décimales tapées. `null` si ce n'est pas un nombre lisible.
+ *
+ * État de l'art (L29, 23.11, L-36 et L-38 du Carnet) : lire un nombre dont les séparateurs dépendent du clavier, pas d'une locale fixe
+ * (Gboard envoie « . », le clavier iPhone romand « , » et « ’ », un collage anglais « 12,345.67 »). Les analyseurs de locale
+ * (CLDR / ICU, `@internationalized/number`) lisent UNE locale à la fois et ne départagent pas ce mélange ; on applique donc la règle
+ * usuelle des tableurs et des lecteurs de montants : espaces et apostrophes groupent toujours les milliers ; avec virgule ET point, le
+ * DERNIER des deux est la décimale et l'autre groupe ; un séparateur répété groupe ; un seul « , » ou « . » est la décimale (« 12,5 »,
+ * « 1.234 » restent ce qu'ils étaient). Tout groupement se vérifie par trois chiffres (« 1'23 », « 1,2,3 » : refusés, jamais devinés).
+ */
+export function lireDecimal(input: string): { valeur: number; decimales: number } | null {
+  let t = input.replace(SPACES, '');
+  const negatif = t.startsWith('-');
+  if (negatif) t = t.slice(1);
+  t = t.replace(APOSTROPHES, "'");
+  if (!/^[\d',.]*$/.test(t)) return null;
+  const virgules = t.split(',').length - 1, points = t.split('.').length - 1;
+  const decimale = virgules && points ? (t.lastIndexOf(',') > t.lastIndexOf('.') ? ',' : '.')
+    : virgules === 1 && !points ? ',' : points === 1 && !virgules ? '.' : null;
+  const i = decimale ? t.lastIndexOf(decimale) : -1;
+  const entier = i < 0 ? t : t.slice(0, i), fraction = i < 0 ? '' : t.slice(i + 1);
+  if (!/^\d*$/.test(fraction)) return null;
+  // Le groupement des milliers : un seul genre de séparateur (apostrophe, ou le séparateur qui n'est pas la décimale), par trois chiffres.
+  if (/[',.]/.test(entier)) {
+    const genres = new Set(entier.replace(/\d/g, ''));
+    if (genres.size !== 1 || !/^\d{1,3}(?:[',.]\d{3})+$/.test(entier)) return null;
+  }
+  const chiffres = entier.replace(/[',.]/g, '');
+  if (chiffres === '' && fraction === '') return null;
+  const n = Number(`${negatif ? '-' : ''}${chiffres || '0'}.${fraction || '0'}`);
+  return Number.isFinite(n) ? { valeur: n, decimales: fraction.length } : null;
+}
+
+/**
+ * Texte saisi ➔ nombre. `null` si ce n'est pas un nombre lisible (règles de `lireDecimal`).
  *
  * ⚠️ Accepte la virgule ET le point. C'est le nœud du problème : sur un clavier
  * de téléphone configuré en français, la touche décimale envoie une virgule,
@@ -21,12 +56,11 @@ const SPACES = /[\s  ']/g;
  * gestionnaires écrits `parseFloat(v) || 0`, saisir « 12,50 » enregistrait 0.
  */
 export function parseDecimal(input: string): number | null {
-  const cleaned = input.replace(SPACES, '').replace(',', '.');
-  if (cleaned === '' || cleaned === '.' || cleaned === '-' || cleaned === '-.') return null;
-  if (!/^-?\d*\.?\d*$/.test(cleaned)) return null;
-  const n = Number(cleaned);
-  return Number.isFinite(n) ? n : null;
+  return lireDecimal(input)?.valeur ?? null;
 }
+
+/** Les décimales tapées, lues comme `lireDecimal` (« 12,345.67 » : 2, pas 3) ; 0 si le texte n'est pas un nombre. */
+export const decimalesSaisies = (input: string): number => lireDecimal(input)?.decimales ?? 0;
 
 /** Ce que dit un texte tapé avec une unité (« 0,1 kg ») dans un champ qui a la sienne (« g »). */
 export type LectureUnite =

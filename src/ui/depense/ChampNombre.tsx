@@ -3,7 +3,7 @@
 // rien n'est retenu, le champ reste lisible tel que tapé, marqué rouge (`aria-invalid`, bord plein, `title` qui dit pourquoi) ; en quittant le champ, la valeur d'avant revient.
 import React, { useId, useRef, useState } from 'react';
 import { Input } from '../Input';
-import { formatDecimal, parseDecimal } from '../numericInput';
+import { decimalesSaisies, formatDecimal, parseDecimal } from '../numericInput';
 
 type Refus = 'negatif' | 'plafond' | 'illisible' | 'decimales' | null;
 export interface ChampNombreProps {
@@ -43,14 +43,20 @@ export const ChampNombre: React.FC<ChampNombreProps> = ({ value, onValue, max, f
       if (t.trim() === '') { setRefus(null); if (value !== undefined) onValue(undefined); return; }
       if (/^\s*[-−–]/.test(t)) { refuser('negatif', t); return; }
       const n = parseDecimal(t);
-      if (n === null) { if (/[^\d\s.,]/.test(t)) refuser('illisible', t); else setRefus(null); return; } // « 12, » et « . » : frappe intermédiaire ; « abc » : refusé, visible
-      if (maxDecimales !== undefined && (t.trim().replace(',', '.').split('.')[1] ?? '').length > maxDecimales) { refuser('decimales', t); return; }
+      if (n === null) { if (/[^\d\s.,'’ʼ]/.test(t)) refuser('illisible', t); else setRefus(null); return; } // « 12, », « . », « 12’3 » : frappe intermédiaire ; « abc » : refusé, visible
+      if (maxDecimales !== undefined && decimalesSaisies(t) > maxDecimales) { refuser('decimales', t); return; }
       if (n > max) { refuser('plafond', t); return; }
       setRefus(null); setDit(null);
       if (n !== value) onValue(n);
     }}
     // Un refus rend la valeur d'avant la frappe (« 99999999 » a pu retenir « 99999 » en route : elle ne reste pas).
-    onBlur={() => { if (refus && !Object.is(value, debut.current)) onValue(debut.current); setTexte(null); setRefus(null); }}
+    // L-36 : un texte resté illisible à la sortie (« 12’34,5 ») ne garde jamais le morceau lu en route (« 12 ») : il est refusé, la valeur d'avant revient.
+    onBlur={() => {
+      const illisible = !refus && texte !== null && texte.trim() !== '' && parseDecimal(texte) === null;
+      if (illisible) refuser('illisible', texte!);
+      if ((refus || illisible) && !Object.is(value, debut.current)) onValue(debut.current);
+      setTexte(null); setRefus(null);
+    }}
   />
   {note && !refus && !dit ? <span id={idNote} className="sr-only">{note}</span> : null}
   {dit && <span id={idDit} role="alert" className="block text-xs text-alert leading-snug">{dit}</span>}

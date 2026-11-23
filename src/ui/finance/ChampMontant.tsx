@@ -3,7 +3,7 @@
 // Le champ de l'app (`ChampNombre`, `NumberInput`) n'affiche pas les milliers ; on ne le change pas pour tous les écrans (t1, problème 4).
 import React, { useEffect, useId, useRef, useState } from 'react';
 import { Input, type ActionEntree } from '../Input';
-import { formatDecimal, parseDecimal } from '../numericInput';
+import { decimalesSaisies, formatDecimal, parseDecimal } from '../numericInput';
 
 type Refus = 'negatif' | 'plafond' | 'illisible' | 'decimales' | null;
 
@@ -71,8 +71,8 @@ export const ChampMontant: React.FC<ChampMontantProps> = ({ value, onValue, max,
         if (t.trim() === '') { setRefus(null); if (value !== undefined) onValue(undefined); return; }
         if (!negatif && /^\s*[-−–]/.test(t)) { refuser('negatif', t); return; }
         const n = parseDecimal(t.replace(/^(\s*)[−–]/, '$1-'));
-        if (n === null) { if (/[^\d\s.,]/.test(t.replace(/^\s*[-−–]/, ''))) refuser('illisible', t); else setRefus(null); return; }
-        if (maxDecimales !== undefined && (t.trim().replace(',', '.').split('.')[1] ?? '').length > maxDecimales) { refuser('decimales', t); return; }
+        if (n === null) { if (/[^\d\s.,'’ʼ]/.test(t.replace(/^\s*[-−–]/, ''))) refuser('illisible', t); else setRefus(null); return; }
+        if (maxDecimales !== undefined && decimalesSaisies(t) > maxDecimales) { refuser('decimales', t); return; }
         if (n > max) { refuser('plafond', t); return; }
         setRefus(null); setDit(null);
         const retenu = integer ? Math.round(n) : n;
@@ -80,7 +80,10 @@ export const ChampMontant: React.FC<ChampMontantProps> = ({ value, onValue, max,
       }}
       // Un refus rend la valeur d'avant la frappe ; un minimum non atteint ramène à ce minimum.
       onBlur={() => {
-        if (refus && !Object.is(value, debut.current)) onValue(debut.current);
+        // L-36 : un texte resté illisible à la sortie (« 12’34,5 ») ne garde jamais le morceau lu en route : refusé, la valeur d'avant revient.
+        const illisible = !refus && texte !== null && texte.trim() !== '' && parseDecimal(texte.replace(/^(\s*)[−–]/, '$1-')) === null;
+        if (illisible) refuser('illisible', texte!);
+        if ((refus || illisible) && !Object.is(value, debut.current)) onValue(debut.current);
         else if (min !== undefined && value !== undefined && value < min) onValue(min);
         setRefus(null);
         // CHE-3 : « 1000 » devient « 1 000 » : le texte du champ change DANS l'événement de sortie, pendant que le doigt prend déjà le champ voisin.
