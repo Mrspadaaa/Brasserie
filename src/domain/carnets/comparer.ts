@@ -217,6 +217,8 @@ export interface LigneTableau {
   dispo?: string;
   vendeur?: string;
   pays?: string;
+  /** L-23 : la photo lue sur la page (en-tête de sa colonne dans Comparer) ; absente si aucune. */
+  photo?: string;
   /** Vrai seulement s'il est dominé par CHACUN des autres articles en lice (critique 5, n° 23). */
   moinsBienPartout: boolean;
   /** Le rang de l'article en lice qui le domine sur toutes les colonnes connues des deux (`moinsBienQue`) ; absent sinon. */
@@ -431,6 +433,7 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
       ...(a.prixCentimes !== undefined ? { prixCentimes: a.prixCentimes } : {}), ...(a.prixDes ? { prixDes: true as const } : {}),
       ...(a.devise ? { devise: a.devise } : {}),
       ...(a.dispo ? { dispo: a.dispo } : {}), ...(a.vendeur ? { vendeur: a.vendeur } : {}), ...(a.pays ? { pays: a.pays } : {}),
+      ...(a.photo ? { photo: a.photo } : {}),
       moinsBienPartout: rang !== null && moinsBienPartout(a, enLice, colonnes),
       ...(dominant !== null ? { moinsBienQue: dominant } : {}),
       ...(raison !== null ? { ecarte: { raison } } : {}),
