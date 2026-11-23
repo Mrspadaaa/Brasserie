@@ -152,3 +152,8 @@
 .sai-ok-a button{height:44px;padding:0 12px !important;border-radius:12px;border:1px solid var(--bordm) !important;font-weight:600 !important;color:var(--val) !important;display:inline-flex;align-items:center;gap:5px}
 .sai-ok-a .sai-go{border:0 !important;color:var(--acttx) !important;margin-left:auto;padding:0 22px !important}
 @media (min-width:1024px){.sai-col{max-width:520px;margin:0 auto;width:100%;border-left:1px solid var(--bord);border-right:1px solid var(--bord)}}
+/* E35-5 : le choix de la contrepartie (« + autre ») : un champ, puis les noms déjà connus en puces */
+.sai-tiers{display:flex;flex-direction:column;gap:6px}
+.sai-tiers .sai-vide{font-size:12.5px;color:var(--sec)}
+/* E35-8 : le mot dit sous la frise quand le doigt touche la borne */
+.sai-date [data-choix-date-borne]{margin:2px 2px 0;color:var(--sec)}

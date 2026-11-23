@@ -21,7 +21,7 @@ import { soldeLeVuPlan } from '../finance/soldePrevu';
 import type { FinancialPlan } from '../../domain/finance/types';
 import {
   CATEGORIES_ACHAT, GENRES, RENTRE, SORT, achatPrevu, avecGenre, brouillonNeuf, chf, dateDeFin, derniersNoms, echeances, finsProposees, habituels, horsResultat,
-  dateMontree, grouper, jjmm, lireMontant, nomFinal, piecesRemboursables, preparer, sensDe, signe, sommeDouzeMois,
+  dateMontree, grouper, jjmm, lireMontant, nomFinal, piecesRemboursables, preparer, sensDe, signe, sommeDouzeMois, METHODES, propositionsTiers, tiersExiste, verbeEnregistrer,
   type Brouillon, type DateTiree, type Ecriture, type GenreId, type Habituel, type Methode, type Rythme
 } from './modele';
 import '../finance/finance.css';
@@ -45,7 +45,6 @@ const TEINTE: Record<string, { fond: string; trait: string; seg: string }> = {
 const teinteGenre = (g: GenreId) => TEINTE[g === 'impot' ? 'impot' : GENRES[g].category];
 const RYTHMES: Array<{ id: Rythme; nom: string }> = [{ id: 'une', nom: '1×' }, { id: 'monthly', nom: 'Mois' }, { id: 'quarterly', nom: 'Trim.' }, { id: 'yearly', nom: 'Année' }];
 const RYTHME_LONG: Record<Rythme, string> = { une: 'une fois', monthly: 'chaque mois', quarterly: 'chaque trimestre', yearly: 'chaque année' };
-const METHODES: Array<{ id: Methode; nom: string }> = [{ id: 'bank', nom: 'Banque' }, { id: 'cash', nom: 'Espèces' }, { id: 'twint', nom: 'TWINT' }, { id: 'other', nom: 'Autre' }];
 const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 const MOIS_COURT = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
 const moisDe = (iso: string) => MOIS[Number(iso.slice(5, 7)) - 1];
@@ -80,6 +79,10 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const [brut, setBrut] = useState('');
   const [nomEdit, setNomEdit] = useState(false);
   const [plateau, setPlateau] = useState(false);
+  /* E35-5 : le choix de la contrepartie (« + autre ») : ouvert ou non, et ce qu'on y tape */
+  const [tiersEdit, setTiersEdit] = useState(false);
+  const [tiersSaisie, setTiersSaisie] = useState('');
+  const tiersRef = useRef<HTMLInputElement | null>(null);
   const [recherche, setRecherche] = useState('');
   const [erreur, setErreur] = useState('');
   const [avis, setAvis] = useState('');
@@ -99,6 +102,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   /* Le focus se pose dans le geste (même champ, gardé d'un état à l'autre) ; s'il a été perdu au rendu, on le repose ici. */
   useEffect(() => { if (focusVoulu.current) { focusVoulu.current = false; if (document.activeElement !== montantRef.current) montantRef.current?.focus({ preventScroll: true }); } });
   useEffect(() => { if (nomEdit) nomRef.current?.focus(); }, [nomEdit]);
+  useEffect(() => { if (tiersEdit) tiersRef.current?.focus(); }, [tiersEdit]);
   const mesurerOmbre = () => { const c = corps.current; if (c) setOmbre(c.scrollHeight - c.scrollTop - c.clientHeight > 2); };
   useEffect(mesurerOmbre);
 
@@ -110,6 +114,8 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const pieceInfo = useMemo(() => (b.pieceId ? piecesRemboursables(donnees.txs, '', 500).find((p) => p.id === b.pieceId) : undefined), [b.pieceId, donnees.txs]);
   const habs = useMemo(() => habituels(donnees.txs, donnees.plans, aujourdhui), [donnees, aujourdhui]);
   const noms = useMemo(() => (choisi && G.qui ? derniersNoms(donnees.txs, b.genre) : []), [choisi, G.qui, donnees.txs, b.genre]);
+  const clients = useMemo(() => (choisi && G.qui === 'Client' ? StorageService.getClients() : []), [choisi, G.qui, version]); // eslint-disable-line react-hooks/exhaustive-deps
+  const propositionsTiersListe = useMemo(() => (tiersEdit ? propositionsTiers(b.genre, tiersSaisie, { clients, transactions: donnees.txs }) : []), [tiersEdit, b.genre, tiersSaisie, clients, donnees.txs]);
   const pieces = useMemo(() => (plateau ? piecesRemboursables(donnees.txs, recherche) : []), [plateau, recherche, donnees.txs]);
   const recurrent = choisi && !b.solde && G.rythme !== null && b.rythme !== 'une';
   const prevu = useMemo(() => (choisi ? achatPrevu(b, cents, donnees.plans) : null), [choisi, b, cents, donnees.plans]);
@@ -121,18 +127,18 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const garde = (e: React.PointerEvent) => { if (document.activeElement === montantRef.current) e.preventDefault(); };
   const ouvrirMontant = (selection = false) => { focusVoulu.current = true; const m = montantRef.current; if (m) { m.focus({ preventScroll: true }); if (selection) m.select(); } };
   const poserGenre = (g: GenreId) => {
-    setErreur(''); setAvis(''); setNomEdit(false); dates.fermer();
+    setErreur(''); setAvis(''); setNomEdit(false); setTiersEdit(false); dates.fermer();
     setB((x) => avecGenre(x, g)); setChoisi(true);
     if (g === 'rembt') { setPlateau(true); setRecherche(''); return; }
     ouvrirMontant();
   };
   const poserHabituel = (h: Habituel) => {
-    setErreur(''); setAvis(''); setNomEdit(false); dates.fermer();
+    setErreur(''); setAvis(''); setNomEdit(false); setTiersEdit(false); dates.fermer();
     setB((x) => ({ ...avecGenre(x, h.genre), nom: h.nom, vendor: h.vendor, solde: h.solde }));
     setChoisi(true); setBrut(chf(h.cents).replace(/ /g, ' '));
     ouvrirMontant(true);
   };
-  const changer = () => { setChoisi(false); setPlateau(false); setNomEdit(false); dates.fermer(); setB((x) => ({ ...brouillonNeuf(aujourdhui), date: x.date })); };
+  const changer = () => { setChoisi(false); setPlateau(false); setNomEdit(false); setTiersEdit(false); dates.fermer(); setB((x) => ({ ...brouillonNeuf(aujourdhui), date: x.date })); };
   const choisirPiece = (pid: string) => {
     /* la pièce donne son nom (« Remboursement Malterie ») ; le montant se tape (« reste » le pose d'un toucher) : rembourser tout n'est pas le cas courant */
     const o = donnees.txs.find((t) => t.id === pid);
@@ -140,8 +146,13 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
     ouvrirMontant(true);
   };
   const patch = (p: Partial<Brouillon>) => setB((x) => ({ ...x, ...p }));
+  /** Choisir ou créer la contrepartie : elle devient « Chez / Client… » ; le nom tapé du titre reste le sien (le titre prend la contrepartie seulement s'il est vide ou était la précédente). */
+  const poserTiers = (n: string) => {
+    setB((x) => ({ ...x, vendor: n, nom: !x.nom.trim() || x.nom === x.vendor ? n : x.nom }));
+    setTiersEdit(false); setTiersSaisie('');
+  };
 
-  const neuf = (message = '') => { setId(idFor('MAIN')); setB(brouillonNeuf(aujourdhui)); setChoisi(false); setBrut(''); setNomEdit(false); setPlateau(false); setFait(null); setErreur(''); setAvis(message); setRefusPrevu(null); setVersion((v) => v + 1); dates.fermer(); };
+  const neuf = (message = '') => { setId(idFor('MAIN')); setB(brouillonNeuf(aujourdhui)); setChoisi(false); setBrut(''); setNomEdit(false); setTiersEdit(false); setTiersSaisie(""); setPlateau(false); setFait(null); setErreur(''); setAvis(message); setRefusPrevu(null); setVersion((v) => v + 1); dates.fermer(); };
 
   const enregistrer = async () => {
     if (occupe || !choisi || !cents) return;
@@ -184,7 +195,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
 
   /* le pied : Mon mois (l'effet de ce mouvement) et le bouton qui dit le sens */
   const mm = !choisi || !cents ? { c: 'vide', t: '—' } : horsResultat(b.genre) ? { c: 'vide', t: 'inchangé' } : apayer ? { c: 'prevu', t: signe(sens!, cents) } : { c: sens!, t: signe(sens!, cents) };
-  const verbe = apayer ? 'À payer' : b.genre === 'prel' ? 'Retiré' : sens === 'out' ? 'Payé' : 'Reçu';
+  const verbe = verbeEnregistrer(apayer, sens, b.genre);
   const bouton = !choisi
     ? { texte: cents ? 'Ça sort ou ça rentre ?' : 'Enregistrer', montant: '', off: true }
     : b.genre === 'rembt' && !b.pieceId ? { texte: 'De quelle pièce ?', montant: '', off: false }
@@ -195,7 +206,7 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
   const dateChip = (cle: string, valeur: string, label: string, an = false, avant = '') =>
     <button type="button" className="sai-chip dt" aria-expanded={dates.ouverte === cle} aria-label={`${label} : ${jjmm(valeur, true)}`} onPointerDown={garde} onClick={() => dates.basculer(cle)}><CalendarDays size={14} />{avant}{jjmm(dateMontree(cle, valeur, dates.tiree), an)}</button>;
   const frise = (cle: string, valeur: string, label: string, onChange: (d: string) => void, o: { min?: string; max?: string; mois?: boolean } = {}) =>
-    dates.ouverte === cle ? <div className="sai-date"><ChoixDate ouvert valeur={valeur} label={label} min={o.min} max={o.max} mois={o.mois} rangee="achats" onBrouillon={(d) => dates.tirer(cle, d)} onChange={(d) => { onChange(d); dates.fermer(); }} /></div> : null;
+    dates.ouverte === cle ? <div className="sai-date"><ChoixDate ouvert saisie valeur={valeur} label={label} min={o.min} max={o.max} mois={o.mois} rangee="achats" onBrouillon={(d) => dates.tirer(cle, d)} onChange={(d) => { onChange(d); dates.fermer(); }} /></div> : null;
 
   const tuile = (g: GenreId) => {
     const t = teinteGenre(g);
@@ -270,7 +281,17 @@ export function SaisieMain({ onClose, onDocument, onArticles, onSaved }: {
       <b className="n">{signe('out', prevu.amountCents)}</b></button>);
     if (G.qui && !b.solde) enfants.push(<div key="qui" className="sai-qui"><small>{G.qui}</small>
       {noms.map((n) => chip(b.vendor === n, n, () => patch(b.vendor === n ? { vendor: undefined, nom: b.nom === n ? '' : b.nom } : { vendor: n, nom: n }), { 'data-saisie-nom-puce': n }))}
-      {chip(false, <><Plus size={13} />autre</>, () => setNomEdit(true), {}, 'pl')}</div>);
+      {b.vendor && !noms.includes(b.vendor) ? chip(true, b.vendor, () => patch({ vendor: undefined, nom: b.nom === b.vendor ? '' : b.nom }), { 'data-saisie-nom-puce': b.vendor }) : null}
+      {chip(tiersEdit, <><Plus size={13} />autre</>, () => { setTiersEdit((o) => !o); setTiersSaisie(''); }, { 'data-saisie-tiers-autre': '' }, 'pl')}</div>);
+    /* E35-5 : « + autre » ouvre le choix de la contrepartie (le client de l'onglet Clients, le fournisseur déjà écrit, ou un nom neuf), jamais le titre */
+    if (G.qui && !b.solde && tiersEdit) enfants.push(<div key="tiers" className="sai-tiers" data-saisie-tiers>
+      <input ref={tiersRef} className="sai-in" aria-label={`${G.qui}, nom`} placeholder={`${G.qui} : un nom, ou « créer »`} value={tiersSaisie} enterKeyHint="done" autoComplete="off"
+        onChange={(e) => setTiersSaisie(e.target.value)}
+        onKeyDown={(e) => { if (e.key !== 'Enter' || e.nativeEvent.isComposing || e.keyCode === 229) return; e.preventDefault(); if (tiersSaisie.trim()) poserTiers(propositionsTiersListe.find((n) => n.toLowerCase() === tiersSaisie.trim().toLowerCase()) ?? tiersSaisie.trim()); }} />
+      <div className="sai-row">{propositionsTiersListe.map((n) => chip(b.vendor === n, n, () => poserTiers(n), { 'data-saisie-tiers-prop': n }))}
+        {tiersSaisie.trim() && !tiersExiste(tiersSaisie, propositionsTiersListe) ? chip(false, <><Plus size={13} />Créer « {tiersSaisie.trim()} »</>, () => poserTiers(tiersSaisie.trim()), { 'data-saisie-tiers-creer': '' }) : null}
+        {!propositionsTiersListe.length && !tiersSaisie.trim() ? <small className="sai-vide">{G.qui === 'Client' ? 'Aucun client dans l’onglet Clients : tape un nom.' : 'Aucun nom encore écrit : tape un nom.'}</small> : null}</div>
+    </div>);
     if (b.genre === 'achat') enfants.push(<div key="ach" className="sai-blk"><small className="sai-lb"><Tag size={13} /> Catégorie</small>
       <div className="sai-row">{CATEGORIES_ACHAT.map((c) => chip(b.categorie === c.id, c.nom, () => patch({ categorie: c.id }), { 'data-saisie-categorie': c.id }))}</div>
       <button type="button" className="sai-art" onClick={() => onArticles({ amount: cents ? cents / 100 : undefined, description: b.nom.trim(), vendor: b.vendor ?? '', category: b.categorie, date: b.date })}>

@@ -37,7 +37,7 @@ export const GENRES: Record<GenreId, Genre> = {
   autreo: { id: 'autreo', nom: 'Autre', sens: 'out', kind: 'expense', category: 'divers', subcategory: 'Autre', rythme: 'une', nomDefaut: (d) => `Autre du ${d}`, pli: 'TVA, référence' },
   vente: { id: 'vente', nom: 'Vente', sens: 'in', kind: 'income', category: 'recettes', subcategory: 'Vente', rythme: 'une', qui: 'Client', nomDefaut: (d) => `Vente du ${d}`, pli: 'TVA, référence' },
   apport: { id: 'apport', nom: 'Apport', sous: 'de ma poche', sens: 'in', kind: 'contribution', category: 'apports', subcategory: 'Apport privé', rythme: null, nomDefaut: () => 'De ma poche', pli: 'Note' },
-  autrei: { id: 'autrei', nom: 'Autre', sous: 'pas un prêt', sens: 'in', kind: 'income', category: 'recettes', subcategory: 'Autre recette', rythme: 'une', nomDefaut: (d) => `Recette du ${d}`, pli: 'TVA, référence' },
+  autrei: { id: 'autrei', nom: 'Autre', sous: 'pas un prêt', sens: 'in', kind: 'income', category: 'recettes', subcategory: 'Autre recette', rythme: 'une', nomDefaut: (d) => `Autre entrée du ${d}`, pli: 'TVA, référence' },
   rembt: { id: 'rembt', nom: 'Remboursement', sens: 'in', kind: 'refund', category: 'divers', subcategory: 'Avoir', rythme: null, nomDefaut: () => 'Remboursement', pli: 'Note' }
 };
 export const SORT: GenreId[] = ['achat', 'loyer', 'abo', 'salaire', 'impot', 'prel', 'autreo'];
@@ -141,6 +141,15 @@ export interface DateTiree { cle: string; iso: string }
 export function dateMontree(cle: string, valeur: string, tiree: DateTiree | null): string {
   return tiree && tiree.cle === cle && /^\d{4}-\d{2}-\d{2}$/.test(tiree.iso) ? tiree.iso : valeur;
 }
+/**
+ * Ce que dit le bouton d'enregistrement (E35-7) : le sens se lit sur la carte de fin, le bouton dit la même chose.
+ * Réglé : « Payé » (sortie), « Reçu » (entrée), « Retiré » (prélèvement) ; pas encore réglé : « À payer » (sortie) ou « À recevoir » (entrée).
+ */
+export function verbeEnregistrer(apayer: boolean, sens: 'in' | 'out' | null, genre: GenreId): string {
+  if (apayer) return sens === 'in' ? 'À recevoir' : 'À payer';
+  return genre === 'prel' ? 'Retiré' : sens === 'out' ? 'Payé' : 'Reçu';
+}
+export const METHODES: Array<{ id: Methode; nom: string }> = [{ id: 'bank', nom: 'Banque' }, { id: 'cash', nom: 'Espèces' }, { id: 'twint', nom: 'TWINT' }, { id: 'other', nom: 'Autre' }];
 export const nomFinal = (b: Brouillon) => b.nom.trim() || GENRES[b.genre].nomDefaut(jjmm(b.date));
 
 /** Le sens réel : celui du genre, ou l'inverse de la pièce d'un remboursement. */
@@ -266,6 +275,45 @@ export function derniersNoms(transactions: FinanceTransaction[], g: GenreId, max
     if (noms.length >= max) break;
   }
   return noms;
+}
+
+/** Un client de l'onglet Clients, réduit à ce que la saisie lit. */
+export interface ClientConnu { name: string; favorite?: boolean; archivedAt?: string | null }
+const sansAccent = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+/**
+ * E35-5 : les noms que « + autre » propose pour la contrepartie du genre, qu'on tape ou non (la saisie filtre, « ZZ » ne trouve rien et « Créer » apparaît).
+ * Vente et autre recette : les clients de l'onglet Clients (épinglés d'abord, archivés exclus), puis les clients déjà écrits sur des ventes.
+ * Les autres genres : les fournisseurs, bailleurs, services déjà écrits sur des pièces du même genre. Sans doublon (casse et accents ignorés).
+ * Rien d'inventé : sans historique ni client, la liste est vide et seul « Créer » reste.
+ */
+export function propositionsTiers(g: GenreId, saisie: string, src: { clients: ClientConnu[]; transactions: FinanceTransaction[] }, max = 8): string[] {
+  const out: string[] = [], vus = new Set<string>();
+  const ajouter = (n: string) => { const c = sansAccent(n); if (c && !vus.has(c)) { vus.add(c); out.push(n.trim()); } };
+  if (GENRES[g].qui === 'Client') {
+    const actifs = src.clients.filter((c) => !c.archivedAt && c.name?.trim());
+    [...actifs.filter((c) => c.favorite), ...actifs.filter((c) => !c.favorite).sort((a, b) => a.name.localeCompare(b.name, 'fr'))].forEach((c) => ajouter(c.name));
+  }
+  derniersNoms(src.transactions, g, 60).forEach(ajouter);
+  const q = sansAccent(saisie);
+  return (q ? out.filter((n) => sansAccent(n).includes(q)) : out).slice(0, max);
+}
+/** Le nom tapé existe-t-il déjà tel quel dans la liste (le bouton « Créer » ne s'affiche alors pas) ? */
+export const tiersExiste = (saisie: string, noms: string[]) => noms.some((n) => sansAccent(n) === sansAccent(saisie));
+
+/**
+ * Le règlement d'une écriture déjà posée, en mots (la fiche Modifier le montre comme la saisie : Payé / À payer, le moyen, l'échéance).
+ * Les paiements annulés (contre-passations) ne comptent pas ; sans paiement ni statut, rien n'est affirmé (l'inconnu n'est pas « payé »).
+ */
+export function resumeReglement(tx: FinanceTransaction, paiements: FinancialPayment[]): { etat: 'paye' | 'apayer' | 'partiel' | 'inconnu'; moyen?: Methode; date?: string; echeance?: string } {
+  const f = tx.finance;
+  const annules = new Set(paiements.filter((p) => p.reversalOfId).map((p) => p.reversalOfId as string));
+  const siens = paiements.filter((p) => p.transactionId === tx.id && !p.reversalOfId && !annules.has(p.id)).sort((a, b) => b.date.localeCompare(a.date));
+  const dernier = siens[0];
+  const statut = f?.paymentStatus;
+  if (statut === 'paid' || (!statut && dernier)) return { etat: 'paye', moyen: dernier?.method, date: dernier?.date };
+  if (statut === 'partial') return { etat: 'partiel', moyen: dernier?.method, date: dernier?.date, echeance: f?.dueDate };
+  if (statut === 'unpaid') return { etat: 'apayer', echeance: f?.dueDate };
+  return { etat: 'inconnu' };
 }
 
 export interface PieceRemboursable { id: string; nom: string; sous: string; date: string; cents: number; reste: number; sens: 'in' | 'out'; category: FinanceCategory }

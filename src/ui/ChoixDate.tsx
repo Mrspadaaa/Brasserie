@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarDays } from 'lucide-react';
 import { plageDate } from './plageDate';
+import { jourTouche } from './toucherDate';
 import { DureeFenetre } from './calendrier/frise/DureeFenetre';
 import { jourLisible, type Rangee } from '../domain/calendrier';
 
@@ -39,12 +40,18 @@ export interface ChoixDateProps {
   id?: string;
   /** Un mois (la valeur reste un jour, le 1er) : la pastille dit « déc. 2026 », jamais un jour qu'on n'a pas choisi. */
   mois?: boolean;
+  /**
+   * Le geste de la saisie des écritures (23.11, E35-8 et E35-14) : la borne `min` / `max` se tient AU DOIGT (la pastille, le titre et le curseur s'arrêtent
+   * sur elle et le disent, au lieu de montrer un jour qu'on ne peut pas écrire puis de revenir sans un mot au lâcher), et toucher la piste pose le jour touché.
+   * Absent : le geste d'avant (R1, un toucher ne pose rien) pour tous les autres écrans.
+   */
+  saisie?: boolean;
 }
 
-const ISO = /^\d{4}-\d{2}-\d{2}$/;
+const ISO =/^\d{4}-\d{2}-\d{2}$/;
 const aujourdhuiIso = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 
-export const ChoixDate: React.FC<ChoixDateProps> = ({ valeur, onChange, label, min, max, disabled = false, depart, rangee = 'brassins', ouvert = false, vide = 'À poser', onBrouillon, className, id, mois = false }) => {
+export const ChoixDate: React.FC<ChoixDateProps> = ({ valeur, onChange, label, min, max, disabled = false, depart, rangee = 'brassins', ouvert = false, vide = 'À poser', onBrouillon, className, id, mois = false, saisie = false }) => {
   const valide = ISO.test(valeur) ? valeur : '';
   const [ouverte, setOuverte] = useState(false);
   const [brouillon, setBrouillon] = useState(valide || depart || aujourdhuiIso());
@@ -52,11 +59,26 @@ export const ChoixDate: React.FC<ChoixDateProps> = ({ valeur, onChange, label, m
   const brouillonRef = useRef(brouillon);
   const ecritRef = useRef(valide);
   const racine = useRef<HTMLDivElement | null>(null);
-  const poser = (d: string) => { brouillonRef.current = d; setBrouillon(d); onBrouillon?.(d); };
+  /* la borne atteinte par le doigt (saisie seulement) : 'min' | 'max' | '' ; dite sous la frise tant qu'on y est */
+  const [atteinte, setAtteinte] = useState<'min' | 'max' | ''>('');
+  const borne = (d: string) => (min && d < min ? min : max && d > max ? max : d);
+  const poser = (brut: string) => {
+    let d = brut;
+    if (saisie) { d = borne(brut); setAtteinte(d === brut ? '' : brut > d ? 'max' : 'min'); }
+    brouillonRef.current = d; setBrouillon(d); onBrouillon?.(d);
+  };
   useEffect(() => { ecritRef.current = valide; if (valide) { brouillonRef.current = valide; setBrouillon(valide); } }, [valide]);
   /* D425 : la plage suit la valeur ÉCRITE (jamais le brouillon : l'échelle ne bouge pas sous le doigt) et le départ quand rien n'est posé */
   const plage = useMemo(() => plageDate(valide || depart || '', aujourdhuiIso()), [valide, depart]);
-  const borne = (d: string) => (min && d < min ? min : max && d > max ? max : d);
+  /** Toucher la piste (saisie) : le jour de la case touchée devient la date, écrite aussitôt (un toucher est un geste entier). */
+  const toucher = (e: React.MouseEvent) => {
+    if (!saisie || disabled) return;
+    const piste = racine.current?.querySelector<HTMLElement>('.cal-f-duree-piste');
+    if (!piste) return;
+    const jour = jourTouche(brouillonRef.current, e.clientX - piste.getBoundingClientRect().left, Number(piste.dataset.xDebut), Number(piste.dataset.pxJour));
+    if (!jour || jour === brouillonRef.current) return;
+    poser(jour); ecrire();
+  };
   const ecrire = () => {
     const d = borne(brouillonRef.current);
     if (d !== brouillonRef.current) poser(d);
@@ -79,13 +101,15 @@ export const ChoixDate: React.FC<ChoixDateProps> = ({ valeur, onChange, label, m
         </button>
       )}
       {afficher && (
-        <div className="mt-1" data-choix-date-frise
+        <div className="mt-1" data-choix-date-frise onClick={saisie ? toucher : undefined}
           onKeyDown={e => {
             if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); fermer(true); }
             else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); fermer(false); }
           }}>
           <DureeFenetre seule pas="jour" rangee={rangee} debut={brouillon} fin={null} onFin={() => undefined} epoque={plage.epoque} dernier={plage.dernier}
             onPlage={d => poser(d)} onLacher={ecrire} />
+          {saisie && atteinte ? <small className="block text-xs text-cave-300" role="status" data-choix-date-borne={atteinte}>
+            {atteinte === 'max' && max ? `Pas de date après le ${jourLisible(max)} : le jour d’aujourd’hui est le dernier.` : min ? `Pas de date avant le ${jourLisible(min)}.` : ''}</small> : null}
         </div>
       )}
     </div>

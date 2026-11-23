@@ -17,6 +17,9 @@ import { amountOnly } from '../ui/finance/financeFormat';
 import { CATEGORY_LABELS } from '../ui/finance/FinanceForms';
 import { GROUPES, type GroupeId } from '../ui/finance/operations/groupes';
 import { RangeeApercu } from '../ui/finance/modifier/ApercuRangee';
+import { ChoixDate } from '../ui/ChoixDate';
+import { GENRES, METHODES, genreDe, jjmm, resumeReglement } from '../ui/saisie/modele';
+import type { FinanceTransaction } from '../domain/finance/types';
 import { executerPlan, simulerPlan, verifierAvoir } from '../ui/finance/modifier/executerCorrection';
 import '../ui/finance/modifier/modifier.css';
 
@@ -48,6 +51,8 @@ const avecTiers = (finance: NonNullable<Transaction['finance']>, texte: string):
   if (numero) sortie.invoiceNumber = numero; else delete sortie.invoiceNumber;
   return sortie;
 };
+const LIBELLE_TIERS: Record<string, string> = { achat: 'Fournisseur', autreo: 'Fournisseur', loyer: 'Bailleur', abo: 'Service', salaire: 'Employé', vente: 'Client', autrei: 'Client' };
+const RYTHME_MOTS: Record<string, string> = { monthly: 'chaque mois', quarterly: 'chaque trimestre', yearly: 'chaque année' };
 const groupeDe = (c: FinanceCategory) => GROUPES[(c === 'materiel' || c === 'renovation' ? 'part' : GROUPES[c as GroupeId] ? c : 'divers') as GroupeId];
 
 export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
@@ -62,6 +67,12 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const [choixManuel, setChoixManuel] = useState<ChoixPaiement | null>(null);
   /** FN-8 : le texte du champ « Fournisseur, n° de pièce » une fois touché ; tant qu'il ne l'est pas, le champ montre ce que la pièce a déjà. */
   const [notesSaisies, setNotesSaisies] = useState<string | null>(null);
+  /** E35-11 : les mêmes blocs que la saisie (contrepartie, référence, note, sans justificatif, échéance) ; `null` = pas touché, la pièce garde ce qu'elle a. */
+  const [tiersSaisi, setTiersSaisi] = useState<string | null>(null);
+  const [refSaisie, setRefSaisie] = useState<string | null>(null);
+  const [noteSaisie, setNoteSaisie] = useState<string | null>(null);
+  const [sansJustif, setSansJustif] = useState<boolean | null>(null);
+  const [echeanceSaisie, setEcheanceSaisie] = useState<string | null>(null);
   const paiements = useStorageValue(lirePaiements);
   const clotures = useStorageValue(lireClotures);
   const archives = useStorageValue(lireArchives);
@@ -126,6 +137,11 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
   const apres = plan ? simulerPlan(transaction, paiements, plan, ctx) : null;
   const sortant = transactionDirection(transaction, ecritures) === 'out';
   const gauche = groupeDe(category);
+  const aFinance = !!transaction.finance;
+  const genreSaisie = GENRES[genreDe(transaction as FinanceTransaction)];
+  const reglement = resumeReglement(transaction as FinanceTransaction, paiements);
+  const planLie = transaction.finance?.planId ? FinanceService.getPlans().find((p) => p.id === transaction.finance!.planId) : undefined;
+  const revient = planLie?.recurrence ? RYTHME_MOTS[planLie.recurrence.frequency] : undefined;
 
   const currentDrivePath = DriveService.generateDrivePath({ ...draft, category, date, amountHT, amountTTC, proofNotes });
 
@@ -143,6 +159,12 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
         lines = [{ ...l, amountCents: cents, ...(l.unitPriceCents != null && l.quantity ? { unitPriceCents: Math.round(cents / l.quantity) } : {}) }];
       }
       finance = { ...finance, amountCents: cents, lines };
+      const f2 = { ...finance };
+      const poser = (k: 'vendor' | 'invoiceNumber' | 'notes', v: string | null) => { if (v === null) return; const t = v.trim(); if (t) f2[k] = t; else delete f2[k]; };
+      poser('vendor', tiersSaisi); poser('invoiceNumber', refSaisie); poser('notes', noteSaisie);
+      if (sansJustif !== null) { if (sansJustif) f2.proofNotNeeded = true; else delete f2.proofNotNeeded; }
+      if (echeanceSaisie && f2.paymentStatus !== 'paid') f2.dueDate = echeanceSaisie;
+      finance = f2;
     }
     return {
       ...base,
@@ -345,10 +367,43 @@ export const EditTransactionModal: React.FC<EditTransactionModalProps> = ({
           {erreurDonnees && <p className="mod-erreur" role="alert">{erreurDonnees}</p>}
           {erreurPlan && <p className="mod-erreur" role="alert">{erreurPlan}</p>}
 
-          <label className="mod-f"><span className="mod-lib">Fournisseur, n° de pièce</span>
-            <Input type="text" name="tx_edit_proof_notes" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
-              value={champTiers} onChange={(e) => setNotesSaisies(e.target.value)} placeholder="Brau-Rauchshop cmd 686863, Bauhaus…" className="mod-in" />
-          </label>
+          {/* E35-11 : les blocs de la saisie à la main : contrepartie (Chez / Client…), référence, note, règlement, sans justificatif */}
+          {aFinance && <>
+            <label className="mod-f"><span className="mod-lib">{genreSaisie.qui ?? 'Tiers'}</span>
+              <Input type="text" name="tx_edit_vendor" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
+                value={tiersSaisi ?? transaction.finance?.vendor ?? ''} onChange={(e) => setTiersSaisi(e.target.value)} placeholder={LIBELLE_TIERS[genreSaisie.id] ?? 'Nom'} className="mod-in" data-modifier-tiers /></label>
+            <div className="mod-g2">
+              <label className="mod-f"><span className="mod-lib">Référence</span>
+                <Input type="text" name="tx_edit_reference" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
+                  value={refSaisie ?? transaction.finance?.invoiceNumber ?? ''} onChange={(e) => setRefSaisie(e.target.value)} placeholder="N° de facture" className="mod-in" data-modifier-reference /></label>
+              <label className="mod-f"><span className="mod-lib">Note</span>
+                <Input type="text" name="tx_edit_note" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
+                  value={noteSaisie ?? transaction.finance?.notes ?? ''} onChange={(e) => setNoteSaisie(e.target.value)} className="mod-in" data-modifier-note /></label>
+            </div>
+            <div className="mod-reg" data-modifier-reglement>
+              <span className="mod-lib">Règlement</span>
+              <div className="mod-reg-l">
+                <span className="mod-reg-c" aria-current={reglement.etat === 'paye' ? 'true' : undefined}>{sortant ? 'Payé' : 'Reçu'}{reglement.etat === 'paye' && reglement.date ? ` le ${jjmm(reglement.date)}` : ''}</span>
+                <span className="mod-reg-c" aria-current={reglement.etat === 'apayer' || reglement.etat === 'partiel' ? 'true' : undefined}>{reglement.etat === 'partiel' ? (sortant ? 'Payé en partie' : 'Reçu en partie') : sortant ? 'À payer' : 'À recevoir'}</span>
+                {reglement.moyen && <span className="mod-reg-c" aria-label="Compte et moyen de paiement">{METHODES.find((m) => m.id === reglement.moyen)?.nom ?? reglement.moyen}</span>}
+                {reglement.etat === 'inconnu' && <span className="mod-pourquoi">Règlement non noté.</span>}
+              </div>
+              {(reglement.etat === 'apayer' || reglement.etat === 'partiel') && (
+                <div className="mod-ech"><small>d’ici le</small>
+                  <ChoixDate saisie label="Échéance" valeur={echeanceSaisie ?? transaction.finance?.dueDate ?? ''} vide="Échéance à poser" rangee="achats" onChange={setEcheanceSaisie} /></div>
+              )}
+              {revient && <p className="mod-pourquoi" data-modifier-revient>Revient {revient} (prévision liée).</p>}
+            </div>
+            {transaction.finance?.kind !== 'refund' && (
+              <label className="mod-ck" data-modifier-sans-justificatif><input type="checkbox" checked={sansJustif ?? !!transaction.finance?.proofNotNeeded} onChange={(e) => setSansJustif(e.target.checked)} />Sans justificatif, c’est normal</label>
+            )}
+          </>}
+          {(!aFinance || !!notesPiece.trim()) && (
+            <label className="mod-f"><span className="mod-lib">{aFinance ? 'Note de la pièce' : 'Fournisseur, n° de pièce'}</span>
+              <Input type="text" name="tx_edit_proof_notes" autoComplete="off" autoCorrect="off" spellCheck={false} data-form-type="other" data-lpignore="true" data-1p-ignore="true" data-bwignore="true"
+                value={champTiers} onChange={(e) => setNotesSaisies(e.target.value)} placeholder="Brau-Rauchshop cmd 686863, Bauhaus…" className="mod-in" />
+            </label>
+          )}
 
           {category === 'recettes' && (
             <div className="mod-quit"><span>Quittance officielle</span>

@@ -105,3 +105,11 @@
 .mod-corps::after { content:''; display:block; height:14px; }
 .mod-ch-sous button { padding:6px 8px; }
 .mod-ch-sous button + button { border-left:1px solid var(--mod-bord); }
+/* E35-11 : les blocs de la saisie à la main dans Modifier (règlement, échéance, sans justificatif) */
+.mod-reg { margin-top:10px; }
+.mod-reg-l { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.mod-reg-c { display:inline-flex; align-items:center; height:32px; padding:0 10px; border-radius:99px; border:1px solid var(--mod-bord); font-size:13px; font-weight:600; color:var(--mod-t2); }
+.mod-reg-c[aria-current="true"] { background:var(--mod-t1); color:rgb(var(--cave-950)); border-color:var(--mod-t1); }
+.mod-ech { display:flex; align-items:center; gap:8px; margin-top:6px; flex-wrap:wrap; }
+.mod-ech > small { font-size:13px; color:var(--mod-t2); }
+.mod-ck { display:flex; align-items:center; gap:8px; margin-top:10px; min-height:36px; font-size:13px; color:var(--mod-t2); }
