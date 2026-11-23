@@ -723,6 +723,12 @@
 
 /* L-20 (23.11, M3-1) : ⋯ de la ligne Critère, chaque critère avec « Retirer » */
 .cn-critere-une > .cn-critere-actions { flex: none; align-self: center; margin-left: auto; }
+/* BL-3 : le ⋯ de la ligne Articles, à droite ; la liste et le choix du carnet d'arrivée dessous, comme les critères (L-20) */
+.cn-tete-articles > .cn-articles-actions { flex: none; margin-left: auto; }
+.cn-articles-gerer .cn-critere-retirable { display: flex; align-items: center; gap: 12px; }
+.cn-articles-gerer .cn-critere-retirable > .cn-sp { min-width: 0; overflow-wrap: anywhere; }
+.cn-articles-vers { position: static; margin: 4px 0 8px; }
+.cn-articles-vers svg { flex: none; }
 .cn-criteres-derriere > .cn-critere-retirable { display: flex; align-items: center; gap: 8px; }
 /* lot 11 : le ⋯ des critères (L-20) rétrécit la ligne ; « n critères sans valeur » garde sa propre ligne, jamais mêlé au texte qui passe à la ligne */
 .cn-critere-une .cn-critere-plus { display: flex; width: fit-content; }

@@ -4,8 +4,8 @@ import type { FinancialPlan } from '../../domain/finance/types';
 import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
 import type { MagasinCarnets } from '../../services/carnetsStore';
-import { lireCarnets, nouvelIdCarnet, type CarnetDoc } from '../../domain/carnets/modele';
-import { avecPrixEstime, deplacer, etatSortie, idPlanDuCarnet, planAuCalendrier, planDepuisChoix, planOuvertDuCarnet, planRepris, planSuitCarnet, planSuitChoix, planSuiviDuCarnet, poserSortie, ranger,
+import { lireCarnets, lireMessages, nomArticle, nouvelIdCarnet, type CarnetDoc } from '../../domain/carnets/modele';
+import { appliquerEcritures, avecPrixEstime, deplacer, etatSortie, idPlanDuCarnet, planAuCalendrier, planDepuisChoix, planOuvertDuCarnet, planRepris, planSuitCarnet, planSuitChoix, planSuiviDuCarnet, poserSortie, ranger,
   supprimerCarnet, supprimerLigne, type CibleLigne, type EcritureCarnet, type Resultat } from '../../domain/carnets/operations';
 import { EVENEMENT_CALENDRIER } from '../calendrier/LienSection';
 import { montant, type CarnetV } from './EtatIA';
@@ -84,6 +84,38 @@ export function actionsCarnet(x: ActionsV) {
     setEnTete(undefined); setVientDEtreCree(null);
     setVue({ sorte: 'carnet', id: versId });
     setRetour({ bandeau: { sorte: 'ailleurs', carnet: vers.title }, inverse, carnetId: versId });
+  }
+
+  /**
+   * BL-1 (banc réel de liens, 23.11) : le lien collé dans le carnet ouvert y est resté ; « Déplacer vers … ? » l'envoie dans le carnet que
+   * l'IA voyait. Annuler le ramène ici. L'état suit chaque écriture (le magasin Firestore ne la montre qu'à son instantané suivant).
+   */
+  function deplacerVersSuggere(rt: Retour, versId: string) {
+    let vu = magasin.lire();
+    const ici = rt.carnetId;
+    const vers = lireCarnets(vu).find(x => x.id === versId);
+    const effets = lireMessages(vu).find(m => m.id === rt.messageId)?.carnetMessage.effets.filter(e => e.carnetId === ici && e.cible !== 'carnet') ?? [];
+    if (!ici || !vers || !effets.length) return;
+    const inverse: EcritureCarnet[] = [];
+    for (const e of effets) {
+      const r = appliquer(deplacer(vu, { cible: e.cible as CibleLigne, id: e.id, depuis: ici, vers: versId }));
+      if (r) { inverse.unshift(...r.inverse); vu = appliquerEcritures(vu, r.ecritures); }
+    }
+    if (inverse.length) setRetour({ bandeau: { sorte: 'ailleurs', carnet: vers.title }, inverse, carnetId: ici });
+  }
+
+  /** BL-3 (banc réel de liens, 23.11) : « Retirer » un article, par le ⋯ de la ligne Articles ; « Article retiré · Annuler » le rend. */
+  function retirerArticle(c: CarnetDoc, articleId: string) {
+    const a = c.carnet.articles.find(x => x.id === articleId);
+    const r = a ? appliquer(supprimerLigne(magasin.lire(), { carnetId: c.id, cible: 'article', id: articleId })) : null;
+    if (r && a) setRetour({ bandeau: { sorte: 'article-retire', texte: nomArticle(a) }, inverse: r.inverse, carnetId: c.id });
+  }
+
+  /** BL-3 : « Déplacer » un article vers un autre carnet ; « Rangé dans … · Annuler » le ramène. */
+  function deplacerArticle(c: CarnetDoc, articleId: string, versId: string) {
+    const vers = lireCarnets(magasin.lire()).find(x => x.id === versId);
+    const r = vers ? appliquer(deplacer(magasin.lire(), { cible: 'article', id: articleId, depuis: c.id, vers: versId })) : null;
+    if (r && vers) setRetour({ bandeau: { sorte: 'ailleurs', carnet: vers.title }, inverse: r.inverse, carnetId: c.id });
   }
 
   /** Lot 11 (L-20, hors lot du lot 3) : « Retirer » un critère (ses doublons compris) ; un seul bandeau « Critère retiré · Annuler » rend tout. */
@@ -172,6 +204,6 @@ export function actionsCarnet(x: ActionsV) {
     if (r) p.onMessage?.('Dans À venir.');
   }
   return { sortieV, planOuvert, planSuivi, sortieFinie, avecDateDuPlan, enV, prixDuCarnet, ecrirePlanLie, planSuitLeChoix, voirSortie, ajouterEnFacon, ajouterAuSuggere,
-    retirerCriteres, dater, auCalendrier, placer, supprimerAvecPlan, envoyerAVenir };
+    deplacerVersSuggere, retirerArticle, deplacerArticle, retirerCriteres, dater, auCalendrier, placer, supprimerAvecPlan, envoyerAVenir };
 }
 export type ActionsCarnet = ReturnType<typeof actionsCarnet>;

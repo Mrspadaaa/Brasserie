@@ -65,7 +65,9 @@ export type BandeauV =
   /* CRN-4 (vision au doigt, 21.11) : un carnet archivé ne dit pas « Rangé ici » ; il dit lequel, et où reste son plan */
   | { sorte: 'archive'; titre: string }
   /* Lot 11 (L-20, hors lot du lot 3) : « Retirer » d'un critère, avec Annuler */
-  | { sorte: 'critere-retire'; texte: string };
+  | { sorte: 'critere-retire'; texte: string }
+  /* BL-3 (banc réel de liens, 23.11) : « Retirer » un article, par le ⋯ de la ligne Articles, avec Annuler */
+  | { sorte: 'article-retire'; texte: string };
 
 /** G26 : ce que le changement fait à la comparaison (différence calculée par `comparer.ts`, jamais inventée). */
 export interface ConsequenceV { texte: string; onPasserCritere?: () => void }
@@ -106,6 +108,7 @@ export function texteBandeau(b: BandeauV): string {
     case 'carnet-supprime': return 'Carnet supprimé';
     case 'archive': return '✓ Carnet archivé';
     case 'critere-retire': return 'Critère retiré';
+    case 'article-retire': return 'Article retiré';
   }
 }
 
@@ -142,7 +145,10 @@ export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLi
   detail?: string;
   /** Lot 11 (L-1, hors lot) : après un échec de l'IA, « Relire » repasse le message à l'IA, d'un toucher. */
   onRelire?: (() => void) | null;
-  /** Lot 11 (L-2, hors lot) : depuis la liste, l'IA voyait un carnet existant (`carnetSuggere`) ; la phrase a créé le sien, « Y ajouter ? » l'y range. */
+  /**
+   * Lot 11 (L-2, hors lot) : depuis la liste, l'IA voyait un carnet existant (`carnetSuggere`) ; la phrase a créé le sien, « Y ajouter ? » l'y range.
+   * BL-1 : un lien collé dans le carnet ouvert y reste ; le carnet que l'IA voyait se propose, « Déplacer vers … ? ».
+   */
   suggestion?: { titre: string; onAjouter: () => void } | null;
 }) {
   const b = bandeau;
@@ -150,7 +156,7 @@ export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLi
      bandeau à l'avis : c'est lui qui dit l'état ; ce qui a été rangé, et où, suit en détail. « Carnet créé », « Rangé dans … » et « n lignes
      rangées » restent vrais et gardent leur tête, l'avis dessous. */
   const avisEnTete = !!avis && (b.sorte === 'range' || b.sorte === 'lien' || b.sorte === 'photo');
-  const avecCoche = !avisEnTete && b.sorte !== 'note-supprimee' && b.sorte !== 'carnet-supprime' && b.sorte !== 'deuxieme' && b.sorte !== 'critere-retire';
+  const avecCoche = !avisEnTete && b.sorte !== 'note-supprimee' && b.sorte !== 'carnet-supprime' && b.sorte !== 'deuxieme' && b.sorte !== 'critere-retire' && b.sorte !== 'article-retire';
   const texte = avisEnTete ? avis!.texte : texteBandeau(b).replace(/^✓ /, '');
   const ref = useAmeneEnVue<HTMLDivElement>();
   return (
@@ -163,7 +169,7 @@ export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLi
           {texte}
           {b.sorte === 'renomme' && <span className="cn-mut"> · avant : {b.avant}</span>}
           {(b.sorte === 'carnet-supprime' || b.sorte === 'archive') && <span> · <b>{b.titre}</b></span>}
-          {b.sorte === 'critere-retire' && <span> · <b>{b.texte}</b></span>}
+          {(b.sorte === 'critere-retire' || b.sorte === 'article-retire') && <span> · <b>{b.texte}</b></span>}
         </span>
         {onRelire && <button type="button" className="cn-lien" data-relire onClick={onRelire}>Relire</button>}
         <button type="button" className="cn-lien" onClick={onAnnuler}>
@@ -176,6 +182,11 @@ export function Bandeau({ bandeau, onAnnuler, consequence, aideConsequence, enLi
         <p className="cn-bandeau-pied" data-suggestion>
           <span className="cn-sp cn-mut">Déjà un carnet proche : <b className="cn-encre">{suggestion.titre}</b></span>
           <button type="button" className="cn-puce cn-puce-ia" onClick={suggestion.onAjouter}>Y ajouter ?</button>
+        </p>
+      )}
+      {b.sorte !== 'cree' && suggestion && (
+        <p className="cn-bandeau-pied" data-suggestion>
+          <button type="button" className="cn-puce cn-puce-ia" onClick={suggestion.onAjouter}>Déplacer vers <b>{suggestion.titre}</b> ?</button>
         </p>
       )}
       {b.sorte === 'lien' && (

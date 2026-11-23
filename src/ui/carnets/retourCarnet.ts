@@ -11,7 +11,12 @@ import { plusieursLignes } from './envoiRegles';
 import { detailDe, rangDuLien } from './lignesRegles';
 import type { RetourNeuf } from './carnetsTypes';
 
-export type RetourDe = (messageId: string, txt: string, depuisM: string | null, inverse: EcritureCarnet[], lignesIA?: readonly LigneCarnet[], titresIA?: readonly (string | undefined)[]) => RetourNeuf | null;
+/**
+ * `etat` (BL-2, GH-4) : l'état juste après l'écriture, quand l'appelant le connaît. Le magasin Firestore ne voit une écriture qu'à son
+ * instantané suivant : relu aussitôt, il rendait l'écriture locale d'avant l'IA (« Lien rangé ici · page non lue » pour un lien lu, ou
+ * parti dans un autre carnet).
+ */
+export type RetourDe = (messageId: string, txt: string, depuisM: string | null, inverse: EcritureCarnet[], lignesIA?: readonly LigneCarnet[], titresIA?: readonly (string | undefined)[], etat?: CreativeItem[]) => RetourNeuf | null;
 
 /**
  * P1, P2 : le retour « après » se lit sur les effets du message tels qu'ils sont au bout du compte (magasin), jamais sur l'écriture
@@ -29,11 +34,15 @@ export function retourDeMessage(etat: CreativeItem[], messageId: string, txt: st
   const propres = effets.filter(e => e.carnetId === rr.carnetId && e.cible !== 'carnet');
   const art = propres.length === 1 && propres[0].cible === 'article' ? c?.carnet.articles.find(x => x.id === propres[0].id) : undefined;
   if (rr.sorte === 'range') {
+    /* BL-1 : le lien collé dans le carnet ouvert y est resté ; le carnet existant que l'IA voyait est proposé (« Déplacer vers … ? ») */
+    const sugId = lignesIA?.find(l => l.carnetSuggere && l.carnetSuggere !== rr.carnetId)?.carnetSuggere;
+    const sug = sugId ? lireCarnets(etat).find(x => x.id === sugId) : undefined;
+    const suggestion = sug ? { suggestion: { carnetId: sug.id, titre: sug.title } } : {};
     /* lot 11 (L-4, hors lot du lot 1) : la raison de la page non lue (site qui bloque, adresse introuvable…) se dit dans le bandeau */
     const statut = lignesIA?.find(l => l.page && (l.url === art?.url || l.page.url === art?.url))?.page?.statut ?? lignesIA?.find(l => l.page)?.page?.statut;
-    if (art?.url && art.lecture !== 'lue') return { bandeau: { sorte: 'lien', url: art.url, lu: false, ici: true, ...(statut ? { statut } : {}) }, inverse, messageId, carnetId: rr.carnetId, detail };
+    if (art?.url && art.lecture !== 'lue') return { bandeau: { sorte: 'lien', url: art.url, lu: false, ici: true, ...(statut ? { statut } : {}) }, inverse, messageId, carnetId: rr.carnetId, detail, ...suggestion };
     if (propres.length && propres.every(e => e.cible === 'photo')) return { bandeau: { sorte: 'photo', ici: true }, inverse, messageId, carnetId: rr.carnetId, detail };
-    return { bandeau: { sorte: 'range' }, inverse, messageId, carnetId: rr.carnetId, detail };
+    return { bandeau: { sorte: 'range' }, inverse, messageId, carnetId: rr.carnetId, detail, ...suggestion };
   }
   if (rr.sorte === 'cree' && propres.length && propres.every(e => e.cible === 'photo')) {
     return { bandeau: { sorte: 'photo', ici: true }, inverse, messageId, carnetId: rr.carnetId, detail };

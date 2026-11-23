@@ -29,7 +29,7 @@ import type { ActionsCarnet } from './actionsCarnet';
 import type { Appliquer, AvisIA, Boite, CarnetsVueProps, Etat, FinancesCarnet, Retour, RetourNeuf, Supprime, Vue } from './carnetsTypes';
 
 export interface EcransV extends Pick<ActionsCarnet, 'enV' | 'ecrirePlanLie' | 'voirSortie' | 'planSuitLeChoix' | 'sortieV' | 'envoyerAVenir' | 'sortieFinie' | 'placer'
-  | 'supprimerAvecPlan' | 'retirerCriteres' | 'dater' | 'auCalendrier' | 'prixDuCarnet' | 'planSuivi'> {
+  | 'supprimerAvecPlan' | 'retirerCriteres' | 'retirerArticle' | 'deplacerArticle' | 'dater' | 'auCalendrier' | 'prixDuCarnet' | 'planSuivi'> {
   p: CarnetsVueProps; ouvert: CarnetDoc | null; vue: Vue; setVue: Etat<Vue>; carnets: CarnetDoc[]; faitsPlanning: ReturnType<typeof faitsDuPlanning>;
   anciennes: ReturnType<typeof anciennesNotes>; enTete: string | undefined; retour: Retour | null; setRetour: (r: RetourNeuf | null) => void;
   supprime: Supprime | null; setSupprime: Etat<Supprime | null>; annuler: (inverse: EcritureCarnet[]) => void; repriseNode: React.ReactNode;
@@ -50,7 +50,7 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
     rangee, cadre, champRef, setTexte, rangement, rangeEnCours, tableauV, appliquer, magasin, maintenant, tauxEur, poserTaux, feuille, setFeuille, edition, setEdition,
     finances, aides, titreEdite, renommerOuvert, ouvrirRenommer, propositionTitre, iaManquee, mode, enLigne, liens, vientDEtreCree, setVientDEtreCree, noteSupprimee,
     setNoteSupprimee, annulerSuppressionNote, autresPour, achatsPasses, enV, ecrirePlanLie, voirSortie, planSuitLeChoix, sortieV, envoyerAVenir, sortieFinie, placer,
-    supprimerAvecPlan, retirerCriteres, dater, auCalendrier, prixDuCarnet, planSuivi } = x;
+    supprimerAvecPlan, retirerCriteres, retirerArticle, deplacerArticle, dater, auCalendrier, prixDuCarnet, planSuivi } = x;
   /** P33 (R20, g4:v01-11) : « ✎ Se modifie ici » à la place de la note modifiée, avec son texte ; ✕ Supprimer (G31). */
   const cadreModifier = (n: { id: string; texte: string }): React.ReactNode => {
     if (!ouvert) return null;
@@ -177,6 +177,9 @@ export function ecranCarnet(x: EcransV): React.ReactNode {
         onVeille={articleId => { appliquer(basculerVeille(magasin.lire(), { carnetId: c.id, articleId, le: maintenant().toISOString() })); }}
         onVoirChoix={() => setVue({ sorte: 'choisir', id: c.id })}
         onRetirerCritere={(...ids) => retirerCriteres(c, ids)}
+        onRetirerArticle={id => retirerArticle(c, id)}
+        onDeplacerArticle={(id, vers) => deplacerArticle(c, id, vers)}
+        carnetsVers={autresPour(c.id, c.title)}
         onEnvoyerAVenir={() => void envoyerAVenir(c)}
         aujourdhui={jourIso(maintenant())}
         onDater={(lundi, precision) => dater(c, lundi, precision)}

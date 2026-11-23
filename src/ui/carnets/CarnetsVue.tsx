@@ -7,6 +7,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { FinancialPlan } from '../../domain/finance/types';
+import type { CreativeItem } from '../../types';
 import { estLienSeul, lireCarnets, lireMessages, nouvelIdCarnet, titreDePhrase, type CarnetDoc } from '../../domain/carnets/modele';
 import { liensDe, modifierNote, ranger, renommer, type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat } from '../../domain/carnets/operations';
 import { tableau as tableauDe } from '../../domain/carnets/comparer';
@@ -124,8 +125,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
   };
 
   /** P1, P2 : le retour « après » de ce message, lu dans le magasin tel qu'il est (`retourDeMessage`, retourCarnet.ts). */
-  const retourDe = useCallback((messageId: string, txt: string, depuisM: string | null, inverse: EcritureCarnet[], lignesIA?: readonly LigneCarnet[], titresIA?: readonly (string | undefined)[]): RetourNeuf | null =>
-    retourDeMessage(magasin.lire(), messageId, txt, depuisM, inverse, lignesIA, titresIA), [magasin]);
+  const retourDe = useCallback((messageId: string, txt: string, depuisM: string | null, inverse: EcritureCarnet[], lignesIA?: readonly LigneCarnet[], titresIA?: readonly (string | undefined)[], etat?: CreativeItem[]): RetourNeuf | null =>
+    retourDeMessage(etat ?? magasin.lire(), messageId, txt, depuisM, inverse, lignesIA, titresIA), [magasin]);
 
   /** P22 : l'avis de l'IA (éteinte, hors ligne, en échec) se pose sur le retour de ce message, affiché ou tenu en réserve. */
   const poserAvis = useCallback((messageId: string, sorte: AvisIA['sorte'], enReserve?: RetourNeuf | null) => {
@@ -276,15 +277,15 @@ export function CarnetsVue(p: CarnetsVueProps) {
 
   /* ---------- calculs passés aux vues (R44, R45, R47) ---------- */
   const liens: LienV[] = ouvert ? liensDe(ouvert, finances.plans, finances.transactions, finances.payments) : [];
-  const { sortieV, planSuivi, sortieFinie, enV, prixDuCarnet, ecrirePlanLie, planSuitLeChoix, voirSortie, ajouterEnFacon, ajouterAuSuggere, retirerCriteres, dater,
-    auCalendrier, placer, supprimerAvecPlan, envoyerAVenir } = actionsCarnet({ p, finances, magasin, appliquer, annuler, maintenant, setTexte, setVue, setRetour, setEnTete,
+  const { sortieV, planSuivi, sortieFinie, enV, prixDuCarnet, ecrirePlanLie, planSuitLeChoix, voirSortie, ajouterEnFacon, ajouterAuSuggere, deplacerVersSuggere, retirerCriteres,
+    retirerArticle, deplacerArticle, dater, auCalendrier, placer, supprimerAvecPlan, envoyerAVenir } = actionsCarnet({ p, finances, magasin, appliquer, annuler, maintenant, setTexte, setVue, setRetour, setEnTete,
     setVientDEtreCree, setSupprime });
   /* R26 : le tableau vient de `comparer.ts`, passé tel quel aux vues ; `null` à 0 ou 1 article. */
   const tableauV = ouvert ? tableauDe(ouvert) : null;
 
   const { repriseNode, rangee, fixe, bandeauIci, proposeesNode } = bandeauxCarnet({ enLigne, aReprendre, retour, etatR, rangerMaintenant, ouvert, vue, idOuvert, depuis,
     messages, tous, carnets, tableauV, retourRef, attente, annonces, neDeListe, couperEnvoi, annuler, appliquer, magasin, aides, setRetour, poserRetourEtat, setEnTete,
-    setVientDEtreCree, setVue, setRangeEnCours, ajouterAuSuggere, ecartees, setEcartees });
+    setVientDEtreCree, setVue, setRangeEnCours, ajouterAuSuggere, deplacerVersSuggere, ecartees, setEcartees });
   const { cadre, champ } = apercuCarnet({ ouvert, vue, setVue, retour, etatR, edition, feuille, lignesApercu, texte, setTexte, carnets, tous, messages, corrigeCarnet,
     setCorrigeCarnet, corrige, setCorrige, envoiActif, depuis, couperEnvoi, aides, annonces, mode, enLigne, focusListe, setFocusListe, supprime, rangement, champRef,
     ajouterEnFacon, aPart, setAPart, titreEdite, setTitreEdite, renommerOuvert, envoyer, vientDEtreCree, plierApresToucher, photo, jointe, retirerJointe, pliage, presse,
@@ -293,7 +294,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
     proposeesNode, rangee, cadre, champRef, setTexte, rangement, rangeEnCours, tableauV, appliquer, magasin, maintenant, tauxEur, poserTaux, feuille, setFeuille, edition,
     setEdition, finances, aides, titreEdite, renommerOuvert, ouvrirRenommer, propositionTitre, iaManquee, mode, enLigne, liens, vientDEtreCree, setVientDEtreCree,
     noteSupprimee, setNoteSupprimee, annulerSuppressionNote, autresPour, achatsPasses, enV, ecrirePlanLie, voirSortie, planSuitLeChoix, sortieV, envoyerAVenir, sortieFinie,
-    placer, supprimerAvecPlan, retirerCriteres, dater, auCalendrier, prixDuCarnet, planSuivi });
+    placer, supprimerAvecPlan, retirerCriteres, retirerArticle, deplacerArticle, dater, auCalendrier, prixDuCarnet, planSuivi });
 
   return (
     <div className={`cn ${p.className ?? ''}`} data-carnets data-vue={vue.sorte} style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>

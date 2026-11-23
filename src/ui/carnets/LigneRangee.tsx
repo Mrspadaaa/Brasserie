@@ -25,6 +25,8 @@ export interface LigneRangeeProps {
   onVotreTexte?: () => void;
   onDeplacer?: () => void;
   onChangerEnNote?: () => void;
+  /** BL-1 : le carnet existant que l'IA voyait pour ce lien, resté ici ; « Déplacer vers … ? ». */
+  versSuggere?: { titre: string; onDeplacer: () => void };
   children: React.ReactNode;
 }
 
@@ -33,6 +35,7 @@ export function LigneRangee(p: LigneRangeeProps) {
     p.onVotreTexte && { cle: 'texte', libelle: 'Votre texte', fn: p.onVotreTexte },
     p.onDeplacer && { cle: 'deplacer', libelle: 'Déplacer', fn: p.onDeplacer },
     p.onChangerEnNote && { cle: 'note', libelle: 'Changer en note', fn: p.onChangerEnNote },
+    p.versSuggere && { cle: 'vers', libelle: `Déplacer vers ${p.versSuggere.titre} ?`, fn: p.versSuggere.onDeplacer },
   ].filter(Boolean) as { cle: string; libelle: string; fn: () => void }[];
   return (
     <div className="cn-rangee" data-sorte={p.sorte ?? 'ligne'}>
