@@ -214,7 +214,9 @@
 .ent-sem--pas { white-space: nowrap; }
 .ent-bd-c[data-courant] .ent-sem { color: var(--ent-ink); font-weight: 700; }
 /* D432 : sur l'axe de la courbe, les semaines hors du cadre en gris dans les marges */
-.ent-bd-c[data-hors] .ent-sem, .ent-bd-c[data-hors] .ent-bd-m { opacity: 0.45; }
+/* gris par la couleur, pas l'opacité (axe color-contrast : 0,45 donnait 1,9:1) : 92 % du gris vers le fond tient 4,5:1 dans les deux thèmes
+   (clair ≈ 4,8:1, sombre ≈ 5:1) ; le poids 400 contre 600 dit « hors du cadre » */
+.ent-bd-c[data-hors] .ent-sem, .ent-bd-c[data-hors] .ent-bd-m { color: color-mix(in srgb, var(--ent-mut) 92%, rgb(var(--cave-950))); font-weight: 400; }
 /* CRITIQUE-9 (doute m390-11) : l'anneau de focus d'une colonne est pour le clavier seul ; après un toucher, aucun cadre (BandeSemaines, data-doigt). */
 .ent-bd[data-doigt] .ent-bd-c:focus-visible { outline: none; }
 .ent-bd-m { display: flex; flex-direction: column; align-items: center; font-size: 14px; font-weight: 700; line-height: 18px; padding-bottom: 2px; }

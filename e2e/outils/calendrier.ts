@@ -79,7 +79,7 @@ export function boiteCadre(page: Page) {
   });
 }
 
-export type Coherence = { erreur?: string; pt: string | null; label: string; etiquette: { a: number; anA: number | null; b: number; anB: number | null } | null; points: number[]; grad: number[]; empilees: string[] };
+export type Coherence = { erreur?: string; pt: string | null; label: string; etiquette: { a: number; anA: number | null; b: number; anB: number | null; lundiA?: string } | null; points: number[]; grad: number[]; empilees: string[] };
 
 /** CAL-ECHELLE-COHERENTE : étiquette du cadre, points de courbe dans le cadre, graduations visibles, pastille de l'app, étiquettes empilées. */
 export function lireCoherence(page: Page): Promise<Coherence> {
@@ -96,8 +96,22 @@ export function lireCoherence(page: Page): Promise<Coherence> {
     const grad = [...document.querySelectorAll('[data-bande-semaines] [data-semaine]:not([data-hors])')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.left + r.width / 2 >= 0 && r.left + r.width / 2 <= innerWidth; }).map(num);
     const label = (document.querySelector('[data-cadre-etiquette]')?.textContent ?? '').replace(/\s+/g, ' ').trim();
     // « S47 – S52 », « S47 – S45 2027 », « S47 2025 – S52 2026 » (le début dit son année hors de l'année en cours)
-    const me = /^S(\d+)(?: (\d{4}))?(?: – S(\d+)(?: (\d{4}))?)?/.exec(label);
-    const etiquette = me ? { a: Number(me[1]), anA: me[2] ? Number(me[2]) : null, b: Number(me[3] ?? me[1]), anB: me[4] ? Number(me[4]) : null } : null;
+    // D434 : l'étiquette dit des dates (« 26 oct. – 15 nov. », « 24 nov. 2025 – 22 févr. 2026 », « 16–22 févr. », « 26 oct.–1 nov. ») ;
+    // lue en semaines ISO (a, b) pour la comparer au dessin. anA / anB : l'année seulement si l'étiquette l'écrit (le début dans l'année d'avant
+    // doit la dire) ; lundiA : le jour du début, daté (semaineAbsolue). Repli : l'ancienne forme en S.
+    const MOIS = ['janv', 'févr', 'mars', 'avr', 'mai', 'juin', 'juil', 'août', 'sept', 'oct', 'nov', 'déc'];
+    const mois = (m?: string) => (m ? MOIS.indexOf(m.replace('.', '')) : -1);
+    const iso = (t: number) => { const j = (new Date(t).getUTCDay() + 6) % 7, jeudi = t + (3 - j) * 864e5, an = new Date(jeudi).getUTCFullYear(); return 1 + Math.floor((jeudi - Date.UTC(an, 0, 1)) / (7 * 864e5)); };
+    const md = /^(\d{1,2})(?: ([a-zéû]+\.?))?(?: (\d{4}))? ?– ?(\d{1,2}) ([a-zéû]+\.?)(?: (\d{4}))?/.exec(label);
+    let etiquette: { a: number; anA: number | null; b: number; anB: number | null; lundiA?: string } | null = null;
+    if (md && mois(md[5]) >= 0) {
+      const mb = mois(md[5]), ma = md[2] ? mois(md[2]) : mb, yb = md[6] ? Number(md[6]) : new Date().getFullYear(), ya = md[3] ? Number(md[3]) : ma > mb ? yb - 1 : yb;
+      const ta = Date.UTC(ya, ma, Number(md[1])), tb = Date.UTC(yb, mb, Number(md[4]));
+      etiquette = { a: iso(ta), anA: md[3] ? ya : null, b: iso(tb), anB: md[6] ? yb : null, lundiA: new Date(ta).toISOString().slice(0, 10) };
+    } else {
+      const me = /^S(\d+)(?: (\d{4}))?(?: – S(\d+)(?: (\d{4}))?)?/.exec(label);
+      etiquette = me ? { a: Number(me[1]), anA: me[2] ? Number(me[2]) : null, b: Number(me[3] ?? me[1]), anB: me[4] ? Number(me[4]) : null } : null;
+    }
     const tx = [...cb.querySelectorAll('text')].filter((e) => (e.textContent ?? '').trim()).map((e) => { const r = e.getBoundingClientRect(); return { t: (e.textContent ?? '').trim().slice(0, 18), l: r.left, r: r.right, h: r.top, b: r.bottom }; }).filter((r) => r.r - r.l > 0);
     const empilees: string[] = [];
     for (let i = 0; i < tx.length; i++) for (let j = i + 1; j < tx.length; j++) {
@@ -223,7 +237,8 @@ export const lundis = (page: Page) => page.locator('[data-bande-semaines] [data-
 export const dateChose = (page: Page, id: string) => page.evaluate(([k, id]) => JSON.parse(localStorage.getItem(k) ?? '[]').find((x: any) => x.id === id)?.data?.date ?? null, [CLE_CACHE, id] as const);
 
 /** Semaine absolue (nombre de semaines depuis l'époque) du début d'une étiquette « S47 2025 – … ». */
-export function semaineAbsolue(e: { a: number; anA: number | null; anB: number | null }) {
+export function semaineAbsolue(e: { a: number; anA: number | null; anB: number | null; lundiA?: string }) {
+  if (e.lundiA) return Math.round((Date.parse(`${e.lundiA}T00:00:00Z`) - Date.UTC(1970, 0, 5)) / (7 * 864e5));
   const an = e.anA ?? e.anB ?? new Date().getFullYear(), j4 = Date.UTC(an, 0, 4), l1 = j4 - ((new Date(j4).getUTCDay() + 6) % 7) * 864e5;
   return Math.round(l1 / (7 * 864e5)) + e.a - 1;
 }
