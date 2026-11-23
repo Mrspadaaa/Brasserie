@@ -12,11 +12,17 @@ test.describe('Calendrier, frise et en-tête (lot 9)', () => {
   /* L-58 (T11-4, T11-5) : « il faudrait des tailles fix car SI non ça fait bouger le calendrier » */
   test('L-58 : la période de l\'app change, l\'en-tête ne bouge pas et « CHF à dépenser » n\'est jamais rogné', async ({ page }) => {
     const lire = () => page.evaluate(() => {
-      const r = (s: string) => { const e = document.querySelector(s); if (!e) return null; const b = e.getBoundingClientRect(); return { l: Math.round(b.left * 10) / 10, r: Math.round(b.right * 10) / 10, w: Math.round(b.width * 10) / 10 }; };
+      const r = (s: string) => { const e = document.querySelector(s); if (!e) return null; const b = e.getBoundingClientRect(); return { l: Math.round(b.left * 10) / 10, r: Math.round(b.right * 10) / 10, w: Math.round(b.width * 10) / 10, t: Math.round(b.top * 10) / 10, b: Math.round(b.bottom * 10) / 10 }; };
       const u = r('[data-ent-cle] .ent-k-u'), k = r('[data-ent-cle]'), mb = r('.ent-mb');
       const fl = [...document.querySelectorAll('[data-periode-pastille] .pr-fl')].map(e => Math.round(e.getBoundingClientRect().left * 10) / 10);
       const ke = document.querySelector('[data-ent-cle]') as HTMLElement | null;
-      return { per: r('.ent-per'), mb, u, k, fl, rogne: !!(u && mb && u.r > mb.l + 0.5), debord: !!ke && [...ke.children].some(c => c.getBoundingClientRect().right > ke.getBoundingClientRect().right + 0.5), pastille: (document.querySelector('.ent-per')?.textContent ?? '').trim() };
+      /* en paysage, la rangée des boutons (±, période, retards, œil, agrandir) tient dans la colonne du chiffre : rien ne passe sur la courbe */
+      const cbz = document.querySelector('.ent--paysage .ent-cbz')?.getBoundingClientRect();
+      const tb = [...document.querySelectorAll('.ent--paysage .ent-t-b > *')].filter(e => getComputedStyle(e).position !== 'absolute');
+      const surCourbe = cbz ? tb.filter(e => e.getBoundingClientRect().right > cbz.left + 0.5).map(e => `${e.className.split(' ')[0]} ${Math.round(e.getBoundingClientRect().right)} > ${Math.round(cbz.left)}`) : [];
+      return { per: r('.ent-per'), mb, u, k, fl, surCourbe, /* rogné : le ± empiète sur « CHF à dépenser ». En portrait il le suit sur sa ligne ; en paysage (844), il est à la ligne dessous, à gauche :
+         sans recouvrement des deux boîtes, ce n'est pas un rognage (la capture 844 le montre entier) */
+        rogne: !!(u && mb && u.r > mb.l + 0.5 && u.l < mb.r - 0.5 && u.b > mb.t + 0.5 && u.t < mb.b - 0.5), debord: !!ke && [...ke.children].some(c => c.getBoundingClientRect().right > ke.getBoundingClientRect().right + 0.5), pastille: (document.querySelector('.ent-per')?.textContent ?? '').trim() };
     });
     const vus: Awaited<ReturnType<typeof lire>>[] = [await lire()];
     for (const sens of ['Période précédente', 'Période suivante']) {
@@ -28,7 +34,7 @@ test.describe('Calendrier, frise et en-tête (lot 9)', () => {
     }
     if (process.env.DIAG) console.log('DIAG', JSON.stringify(vus.map(v => [v.pastille, v.per?.w, v.k?.w, v.u?.r, v.mb?.l, v.fl.join('/')])));
     const lib = (v: (typeof vus)[number]) => `« ${v.pastille} » ${JSON.stringify([v.per?.w, v.k, v.u, v.mb])}`;
-    for (const v of vus) { expect(v.rogne, `« CHF à dépenser » rogné avec ${lib(v)}`).toBe(false); expect(v.debord, `ligne du chiffre clé en débord avec ${lib(v)}`).toBe(false); }
+    for (const v of vus) { expect(v.rogne, `« CHF à dépenser » rogné avec ${lib(v)}`).toBe(false); expect(v.debord, `ligne du chiffre clé en débord avec ${lib(v)}`).toBe(false); expect(v.surCourbe, `boutons sur la courbe avec « ${v.pastille} »`).toEqual([]); }
     const noms = new Set(vus.map(v => v.pastille));
     for (const k of ['fl', 'per', 'mb'] as const) {
       const vals = vus.map(v => JSON.stringify(k === 'fl' ? v.fl : k === 'per' ? v.per?.w : v.mb?.l));
@@ -39,6 +45,15 @@ test.describe('Calendrier, frise et en-tête (lot 9)', () => {
   /* L-59 (T11-11) : la bande déplie une semaine en jours ; la courbe doit rester sur la même échelle (une semaine = sa place dans la bande) */
   test('L-59 : semaine dépliée, les points de la courbe tombent au milieu de leur semaine dans la bande', async ({ page }) => {
     await choisirPeriode(page, '6 sem.');
+    /* En paysage (844 × 340), la petite courbe se tient à côté du chiffre, sur sa propre échelle, même repliée (E10 : en-tête de 120 px au plus ;
+       `alignee` exclut le paysage, 0e4a22690) : elle ne se pose sur les colonnes de la frise que par « Aligner la courbe sur la frise ». On fait ce geste,
+       puis la même mesure. */
+    const vp = page.viewportSize();
+    if (vp && vp.width > vp.height) {
+      const al = page.getByRole('button', { name: 'Aligner la courbe sur la frise' });
+      await al.tap();
+      await expect(al, 'la courbe est alignée sur la frise').toHaveAttribute('aria-pressed', 'true');
+    }
     await page.locator('[data-bande-semaines] [data-semaine], [data-bande-colonnes] [data-semaine-bande]').nth(2).tap();
     await expect(page.locator('[data-bande-colonnes="deplie"]'), 'la bande déplie une semaine').toBeVisible();
     await page.waitForTimeout(600);

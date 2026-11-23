@@ -1,0 +1,85 @@
+/** La rubrique Articles du carnet ouvert (R03, h05-3, h03-5), sortie de CarnetOuvert.tsx : une fonction de rendu, appelée en place. */
+import type React from 'react';
+import { ChevronDown, ChevronRight, Tag } from 'lucide-react';
+import type { comptesCarnet } from '../../domain/carnets/comptes';
+import { CarteArticle } from './CarteArticle';
+import { Provenance, type ArticleV, type CarnetV, type ContenuCarnetV, type CritereV, type FaconV } from './EtatIA';
+import { LigneRangee } from './LigneRangee';
+import { TableauCarnet } from './TableauCarnet';
+import type { Separation } from './ouvertCalculs';
+import type { CarnetOuvertProps, RangeeV } from './carnetOuvertTypes';
+
+export interface ArticlesCarnetV {
+  p: CarnetOuvertProps; c: CarnetV; k: ContenuCarnetV; n: ReturnType<typeof comptesCarnet>; neuf: boolean; picto: number;
+  cartes: boolean; setCartes: (v: boolean) => void; r: RangeeV | null | undefined; critere: CritereV | undefined;
+  articleRange: ArticleV | undefined; faconRange: FaconV | undefined; aRelire: ArticleV[]; sep: Separation | null;
+  conclusion: { texte: string; retenir: string; onRetenir: () => void; ia: boolean } | null;
+}
+
+export function rubriqueArticles({ p, c, k, n, neuf, picto, cartes, setCartes, r, critere, articleRange, faconRange, aRelire, sep, conclusion }: ArticlesCarnetV): React.ReactNode {
+  return (
+    <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Articles">
+        {k.articles.length === 0 ? (
+          <p className="cn-rubrique-tete"><Tag size={picto} aria-hidden /> <b>Articles</b> <span className="cn-mut">· collez un lien</span></p>
+        ) : (
+          <>
+            {/* Critique 6, n° 8 (R03, D-99, h05-3) : une seule ligne, « Articles 6 ⌄ · Comparer › ». Le compte est le total de
+                `comptesCarnet` (lus et sans aperçu ensemble, n° 15) ; le lien sans aperçu se lit dans le tableau (« Lien sans aperçu ·
+                Ouvrir »). P12 (h03-5) : toucher « Articles » ouvre la feuille des cartes. */}
+            <div className="cn-rubrique-tete cn-tete-articles">
+              {p.tableau ? (
+                <button type="button" className="cn-tete-bouton" aria-haspopup="dialog" aria-expanded={cartes} onClick={() => setCartes(true)}>
+                  <Tag size={18} aria-hidden /><b>Articles</b>
+                  <span className="cn-mut cn-mono cn-compte">{n.articles}</span>
+                  <ChevronDown size={16} aria-hidden className="cn-mut" />
+                </button>
+              ) : (
+                <><Tag size={18} aria-hidden /><b>Articles</b><span className="cn-mut cn-mono cn-compte">{n.articles}</span></>
+              )}
+              {p.tableau && <><span className="cn-mut" aria-hidden>·</span><button type="button" className="cn-lien cn-comparer-lien" onClick={p.onComparer}>Comparer <ChevronRight size={16} aria-hidden /></button></>}
+            </div>
+            {articleRange && r && !p.tableau && (
+              <LigneRangee sorte="article" faconNom={faconRange?.nom} rang={r.rang} phrase={r.phrase}onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer}>
+                <CarteArticle article={articleRange} critere={critere} faconNom={faconRange?.nom} carnetTitre={c.title} variante="complete" luSurPage={r.luSurPage} verdict={r.verdict} onVeille={v => p.onVeille?.(articleRange.id, v)} />
+              </LigneRangee>
+            )}
+            {p.tableau ? (<>
+              {/* n° 20 : la conclusion se colle aux façons en lice, avant l'écartée et le lien à relire */}
+              <TableauCarnet carnet={k} titre={c.title} tableau={p.tableau} aRelire={aRelire} sep={sep} onOuvrir={p.onOuvrirArticle}
+                conclusion={conclusion && (
+                  <div className="cn-encart cn-separe" role="note">
+                    {/* un nombre ne se sépare pas de son unité (« 80 °C » jamais coupé en fin de ligne) */}
+                    <span className="cn-sp"><Provenance origine={conclusion.ia ? 'ia' : 'locale'} /> {conclusion.texte.replace(/(\d) (°C|m³\/h|L\/min|CHF|kg|cm|L)\b/g, (_, n: string, u: string) => `${n} ${u}`)}</span>
+                    <button type="button" className="cn-action cn-action-vert" onClick={conclusion.onRetenir}>Retenir {conclusion.retenir}</button>
+                  </div>
+                )} />
+              {/* tour 3, PCN-108 et 132 (G20, g5:v06-11) : au 2e article, le tableau est à l'écran avec l'article déposé dans ses
+                  lignes ; « Article rangé ici · 2e · Annuler » dessous, sans carte complète qui pousserait le tableau sous la flottaison */}
+              {articleRange && r && (
+                <LigneRangee sorte="article" faconNom={faconRange?.nom} rang={r.rang} phrase={r.phrase} onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer}>{null}</LigneRangee>
+              )}
+            </>) : (
+              <div className="cn-cartes">
+                {(() => {
+                  /* n° 6 (g5:v06-10) : un seul article lu, la carte complète (valeurs avec unité, « lu sur la page : … », veille) */
+                  const reste = k.articles.filter(a => a.id !== articleRange?.id);
+                  const seul = !articleRange && reste.length === 1 && reste[0].lecture === 'lue' ? reste[0] : null;
+                  if (seul) {
+                    return (
+                      <div className="cn-carte-complete">
+                        <CarteArticle article={seul} critere={critere} faconNom={k.facons.find(f => f.id === seul.faconId)?.nom} carnetTitre={c.title} variante="complete"
+                          onOuvrir={() => p.onOuvrirArticle(seul.id)} onVeille={v => p.onVeille?.(seul.id, v)} />
+                      </div>
+                    );
+                  }
+                  return reste.map(a => (
+                    <CarteArticle key={a.id} article={a} critere={critere} carnetTitre={c.title} faconNom={k.facons.find(f => f.id === a.faconId)?.nom} onOuvrir={() => p.onOuvrirArticle(a.id)} />
+                  ));
+                })()}
+              </div>
+            )}
+          </>
+        )}
+      </section>
+  );
+}

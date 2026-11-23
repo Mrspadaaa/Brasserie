@@ -374,6 +374,17 @@
 /* Tour 2 n° 1 (paysage 844 × 340) : 2 px entre le chiffre et les boutons ; la colonne fait 60 px, la hauteur de la courbe. */
 .ent--paysage .ent-t { grid-area: t; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 2px; padding: 2px 8px 0 12px; }
 .ent--paysage .ent-t-b { margin-left: 0; }
+/* L-58 en paysage (844 : 71 px pour « 3 mois », 112,7 pour « Sept. · 5 sem. » ; le retard, l'œil et l'agrandir suivaient) : la même pastille de
+   largeur fixe qu'au téléphone tenu droit, centrée, sans la flèche */
+.ent--paysage .ent-per { gap: 3px; padding: 0 5px 0 5px; width: 92px; min-width: 92px; justify-content: center; overflow: hidden; }
+.ent--paysage .ent-per > svg { display: none; }
+/* la pastille fixe à 92 px, la rangée des boutons (Lot C : « pleine » dans 214 px) passait de 15 px sur la courbe (l'agrandir à 241 pour 226) :
+   le même resserrement qu'au téléphone tenu droit (écarts de 2 px, boutons-icônes de 24 px, retards serrés), aucune taille de texte ne change */
+.ent--paysage .ent-t-b { gap: 2px; }
+.ent--paysage .ent-ret-b { gap: 0; padding: 0 1px; }
+.ent--paysage .ent-ret-b svg { width: 14px; height: 14px; }
+.ent--paysage .ent-mb { min-width: 24px; padding: 0 3px; }
+.ent--paysage .ent-al, .ent--paysage .ent-cc, .ent--paysage .ent-pl { width: 24px; }
 /* CRITIQUE-6 n° 14 : le chiffre clé reste dans sa colonne (214 px) ; s'il ne tient pas en ligne, la semaine passe dessous (data-empile),
    jamais sur la courbe, ni sous le bord du cadre, ni sous l'axe de la courbe zoomée. */
 .ent--paysage .ent-k { align-self: stretch; max-width: 100%; }

@@ -36,3 +36,5 @@ Corriger chaque copie, ne pas la contourner.
 
 - **18.11** — Carnet : « ce qui est annoncé pendant la frappe est ce qui arrive » (critique 6 n° 2, critique 7 n° 3) → remplacé par « le rangement de l'IA fait foi ; l'aperçu local n'est qu'une attente ou le repli hors ligne ; un carnet ou une rubrique corrigés d'un toucher restent le choix du brasseur » (test en ligne 2 : l'IA rangeait juste, l'app l'écrasait ; voies/en-ligne-2-corr).
 - 22.11 : « deux thèmes, 390 tactile et 1280 » pour tout test → un thème, téléphone surtout (390 tactile, 844×340), 1280 peu. Ses mots : « les deux thèmes, pas besoin, et surtout testé en version téléphone, peu en version desktop ».
+- 23.11 : « suites de tests d'écran au doigt sur fixture (ex. ~200 au Calendrier) » → D438 : un test par plainte + règles générales (fast-check) + épreuve sur la vraie app et ses vraies données ; copie anonymisée hors Git ; pas d'ADB.
+- 23.11 : « mise en ligne seulement après PARCOURS CALENDRIER OK » (20.11, relance automatique) → D440 : porte légère deploy-leger.sh (build, types, règles des données), épreuve en ligne aussitôt après.

@@ -62,7 +62,7 @@ Erreurs de méthode déjà commises, cause, remède. Chargé par CLAUDE.md : rel
 ### L11 — Fini veut dire utilisable, pas un reçu
 - Erreur : 08.10, couches V3 à V5.5 inutilisables. 07.11 : « 2 115 verts », 27 fichiers non chargés. 20.11 : calendrier « une catastrophe ».
 - Cause : preuves déclarées, non des parcours réels.
-- Faire : fini = branché, atteint par SON entrée dans Chrome (20.11), typé, testé, build vert. Un banc ne contourne aucun geste (D367) ; un drapeau se lit au paquet (D368). Donnée jetée ou test non chargé : jamais un vert. Écran déployé : joué en ligne, chaque onglet (HX-1). Défaut ouvert : corrigé sans attendre (19.11). Mise en ligne : gestes principaux rejoués ; un écran à la fois, parcours bloquant (20.11). ([[maquettes-16-11]])
+- Faire : un correctif se reproduit puis se prouve sur la vraie app (canal de prévisualisation, ZZ TEST), par le geste et l'entrée du constat ; une fixture ne le dit pas corrigé (23.11 : 7 KO sur 29). Fini = branché, typé, build vert. Un banc ne contourne aucun geste (D367) ; un drapeau se lit au paquet (D368). Donnée jetée ou test non chargé : jamais un vert. Défaut ouvert : corrigé sans attendre. ([[maquettes-16-11]])
 - Rôles : pilote, relecteur, exécutant
 - Contrôle : aucun
 

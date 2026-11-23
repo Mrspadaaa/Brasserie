@@ -4,14 +4,12 @@ Liste : LISTE.md de ce dossier, § 3 (table des lots, fichiers possédés) et §
 Ses mots : « c'est pas normal de perdre autant de temps pour des bugs simple » : va vite, sans sauter le test rouge.
 
 ## Où
-- Worktree propre : `git -C C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie fetch -q origin` puis
-  `git -C C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie worktree add C:/Users/mrspa/.codex/worktrees/openai-clean-start/lot-<N> -b claude/carnet-lot-<N> origin/main`.
-  node_modules : jonction (`powershell New-Item -ItemType Junction -Path <wt>/node_modules -Target C:/Users/mrspa/.codex/worktrees/openai-clean-start/port-carnet/node_modules`) ;
-  functions/node_modules de même vers port-carnet/functions/node_modules s'il existe.
+- Copie de travail : `node scripts/agents/copie-travail.mjs carnet-lot-<N>` (D439 ; exporte E2E_PORT et E2E_BUILD qu il affiche).
 - Tu n'écris QUE les fichiers possédés par ton lot (table § 3) + tes tests (e2e/carnet/lot-<N>.spec.ts ou tests/…/lot<N>*.test.ts).
   Un correctif qui exige un fichier d'un autre lot : ne le touche pas, note-le « hors lot » dans ton retour.
 
 ## Méthode (rapide)
+- 4 agents au plus en même temps (D439). Ne lance que le test de TA plainte (D438 : un test par plainte + règles fast-check) ; la suite entière se joue une fois, à l intégration, par le pilote.
 - Par défaut (ou groupe de même cause) : test qui échoue d'abord (Playwright `npx playwright test <spec> --grep`, sur la
   fixture avec e2e/outils/doigt.ts ; ou vitest ciblé), correction, ce test vert. Un `test.fail` CA12-PW de ton lot qui
   devient vert : retire le `.fail`.
