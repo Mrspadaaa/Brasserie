@@ -66,12 +66,12 @@ Lire :
 | work/missions/2026-11-21-chasse-stock/CHASSE-edition.md | STM | 16 | 1 | 8c53f403add9 |
 | work/missions/2026-11-21-chasse-stock/CHASSE-etagere.md | STG | 10 | 2 | d73c5e78fad7 |
 | work/missions/2026-11-21-chasse-stock/CHASSE-critique.md | STC | 21 | 8 | 41c83204f251 |
-| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-5.md | T4 | 7 | 1 | d59ca8f31585 |
+| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-5.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | T4 | 7 | 1 | d59ca8f31585 |
 | work/missions/2026-11-21-cal-frise-prix/RAPPORT.md | CFP | 8 | 0 | 234441c9f314 |
 | work/missions/2026-11-21-tour8-local/RAPPORT.md | T8 | 3 | 1 | 0f2cab58f609 |
 | work/missions/2026-11-22-tour9-doigt/RAPPORT.md | T9 | 5 | 3 | cc476913e394 |
-| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-4.md | T3B | 13 | 1 | a5f31f216f81 |
-| work/missions/2026-11-19-carnet-tour3/RAPPORT.md | CT3 | 54 | 0 | 6099acdd8c53 |
+| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-4.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | T3B | 13 | 1 | a5f31f216f81 |
+| work/missions/2026-11-19-carnet-tour3/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | CT3 | 54 | 0 | 6099acdd8c53 |
 | work/missions/2026-11-20-critique-tour4/c-stocks-carnet-vendre.md | CT4C | 9 | 0 | 91d1da9164e1 |
 | work/missions/2026-11-19-carnet-tour3/voies/CRITIQUE-CARNET.md | CRN | 21 | 0 | 4763d46d8f7e |
 | work/missions/2026-11-20-critique-tour4/a-calendrier-finances-bord.md | CT4A | 18 | 0 | a546e05663f2 |
@@ -79,32 +79,32 @@ Lire :
 | critique Opus k3 du 20.11 sur la reprise de tous les ouverts (port-carnet, voies k3 de la mission bugs-ecrans) | BK3 | 3 | 0 | |
 | work/missions/2026-11-20-critique-tour4/b-recettes-brassins.md | CT4B | 15 | 0 | |
 | critique Opus k4 du 20.11 sur les correctifs du tour 4 et la reprise (port-carnet, voies k4 de la mission bugs-ecrans) | BK4 | 3 | 0 | |
-| work/missions/2026-11-19-bugs-ecrans/voies/k1/RAPPORT.md | K1 | 17 | 8 | c8945b86b3ae |
-| work/missions/2026-11-19-bugs-ecrans/voies/k2/RAPPORT.md | K2 | 28 | 6 | 702c2589e4a4 |
-| work/missions/2026-11-19-bugs-ecrans/voies/k3/RAPPORT.md | K3 | 17 | 9 | 20c019b0f6a0 |
-| work/missions/2026-11-19-bugs-ecrans/voies/k4/RAPPORT.md | K4 | 10 | 5 | 0e08e6e67c42 |
-| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-3.md | T3 | 12 | 1 | 559969af9ee3 |
-| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-2.md | T2B | 3 | 1 | ef66f11d5dda |
-| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT.md | T2 | 10 | 1 | b0fb71f51615 |
-| work/missions/2026-10-31-ecran-fermentescibles/banc-critique/RAPPORT.md | B1 | 15 | 4 | c816dfc0a63a |
+| work/missions/2026-11-19-bugs-ecrans/voies/k1/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | K1 | 17 | 8 | c8945b86b3ae |
+| work/missions/2026-11-19-bugs-ecrans/voies/k2/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | K2 | 28 | 6 | 702c2589e4a4 |
+| work/missions/2026-11-19-bugs-ecrans/voies/k3/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | K3 | 17 | 9 | 20c019b0f6a0 |
+| work/missions/2026-11-19-bugs-ecrans/voies/k4/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | K4 | 10 | 5 | 0e08e6e67c42 |
+| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-3.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | T3 | 12 | 1 | 559969af9ee3 |
+| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT-2.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | T2B | 3 | 1 | ef66f11d5dda |
+| work/missions/2026-11-18-choix-calendrier/tour2/en-ligne/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | T2 | 10 | 1 | b0fb71f51615 |
+| work/missions/2026-10-31-ecran-fermentescibles/banc-critique/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | B1 | 15 | 4 | c816dfc0a63a |
 | C:\Users\mrspa\AppData\Local\Temp\affinee-test-ferm\RAPPORT.md (source effacée au nettoyage de Temp du 22.11) | B1 | 15 | 4 | c816dfc0a63a |
-| work/missions/2026-10-31-ecran-fermentescibles/banc-critique/RESULTAT.md | B1 | 0 | 3 |  |
-| work/missions/2026-11-07-banc-actionneurs/reprise-b1/RAPPORT.md | RB | 15 | 4 | c816dfc0a63a |
-| work/missions/2026-10-31-ecran-depense/banc-b2/RAPPORT.md | B2 | 20 | 6 | 9c4e9fd87693 |
+| work/missions/2026-10-31-ecran-fermentescibles/banc-critique/RESULTAT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | B1 | 0 | 3 |  |
+| work/missions/2026-11-07-banc-actionneurs/reprise-b1/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | RB | 15 | 4 | c816dfc0a63a |
+| work/missions/2026-10-31-ecran-depense/banc-b2/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | B2 | 20 | 6 | 9c4e9fd87693 |
 | C:\Users\mrspa\AppData\Local\Temp\affinee-test-b2\RAPPORT.md (source effacée au nettoyage de Temp du 22.11) | B2 | 20 | 6 | 9c4e9fd87693 |
 | work/missions/2026-10-31-ecran-depense/banc-b2/RESULTAT.md | B2 | 0 | 6 |  |
-| work/missions/2026-11-07-banc-actionneurs/RAPPORT.md | N | 7 | 6 | 2aa7fc92a693 |
-| work/missions/2026-11-07-banc-actionneurs/RESULTAT.md | BA | 0 | 2 |  |
-| work/missions/2026-11-07-test-en-ligne/RAPPORT.md | TL | 51 | 6 | 4736ffb4e599 |
-| work/missions/2026-11-07-test-en-ligne/RESULTAT.md | TR | 0 | 5 |  |
-| work/missions/2026-11-07-test-en-ligne/genants/RESULTAT.md | GE | 0 | 6 |  |
-| work/missions/2026-11-08-test-en-ligne-ecrans/RAPPORT.md | TE | 64 | 7 | 05fd72464602 |
-| work/missions/2026-11-03-lecture-longue/PLAN.md | LL | 8 | 5 |  |
+| work/missions/2026-11-07-banc-actionneurs/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | N | 7 | 6 | 2aa7fc92a693 |
+| work/missions/2026-11-07-banc-actionneurs/RESULTAT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | BA | 0 | 2 |  |
+| work/missions/2026-11-07-test-en-ligne/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | TL | 51 | 6 | 4736ffb4e599 |
+| work/missions/2026-11-07-test-en-ligne/RESULTAT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | TR | 0 | 5 |  |
+| work/missions/2026-11-07-test-en-ligne/genants/RESULTAT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | GE | 0 | 6 |  |
+| work/missions/2026-11-08-test-en-ligne-ecrans/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | TE | 64 | 7 | 05fd72464602 |
+| work/missions/2026-11-03-lecture-longue/PLAN.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | LL | 8 | 5 |  |
 | work/missions/SUIVI.md | SU | 9 | 8 |  |
 | work/refonte-frontend/v4/DEFAUTS-RECURRENTS.md | DR | 7 | 0 |  |
 | C:\Users\mrspa\.claude\uploads\cf141d92-b572-411b-bd05-1f71ad016601\8bd9218f-image.jpg | M | 4 | 1 |  |
 | work/missions/2026-11-08-audit-metier/RAPPORT.md | AM | 73 | 3 | 271af0e1d1bb |
-| work/missions/2026-11-08-banc-tous-ecrans/RAPPORT.md | BT | 2 | 5 | 4c63790acd6e |
+| work/missions/2026-11-08-banc-tous-ecrans/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | BT | 2 | 5 | 4c63790acd6e |
 | banc tous écrans, n° du RAPPORT.md (même fichier que BT) | BR | 122 | 0 |  |
 | banc tous écrans, tris par écran ecrans/*.md (non intégrés au rapport, agent arrêté par le crash) | BE | 102 | 0 |  |
 | C:\Users\mrspa\AppData\Local\Temp\affinee-metier-vision\RAPPORT.md (source effacée au nettoyage de Temp du 22.11) | MV | 50 | 0 | a9e0f2db7879 |
@@ -112,111 +112,111 @@ Lire :
 | message de la pilote 08.11, tests Dépense réparés (d146dc29) | DP | 1 | 1 |  |
 | message de la pilote 08.11, lecture des tickets doc15 à doc21 | LT | 6 | 0 |  |
 | message de la pilote 08.11, restes de 4f063301 | PI | 5 | 3 |  |
-| work/missions/2026-11-08-contre-calcul/RAPPORT.md | CF | 9 | 2 | d8b06ee25bbf |
+| work/missions/2026-11-08-contre-calcul/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | CF | 9 | 2 | d8b06ee25bbf |
 | C:/Users/mrspa/AppData/Local/Temp/affinee-relecture-finances/RELECTURE.md (source effacée au nettoyage de Temp du 22.11) | RF | 18 | 0 |  |
-| work/missions/2026-11-08-rejeu-en-ligne/RAPPORT.md | RJ | 15 | 0 | fbfda378f9a3 |
+| work/missions/2026-11-08-rejeu-en-ligne/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | RJ | 15 | 0 | fbfda378f9a3 |
 | C:/Users/mrspa/AppData/Local/Temp/affinee-critique-0c3f/RAPPORT.md (source effacée au nettoyage de Temp du 22.11) | PD | 13 | 0 | bd2a1d4929bc |
 | message de la pilote 08.11 : découpe (work/missions/2026-11-03-lecture-longue/ETAT-DE-L-ART.md) et banc k7 (4a07d674) | DC | 2 | 0 |  |
 | message de la pilote 08.11 : découpe (work/missions/2026-11-03-lecture-longue/ETAT-DE-L-ART.md) et banc k7 (4a07d674) | AJ | 3 | 0 |  |
-| work/missions/2026-11-08-rejeu-bc70/RAPPORT.md | RO | 4 | 0 | cbb50a8d12dd |
-| work/missions/2026-11-08-lecture-en-ligne/RAPPORT.md | LO |  5 | 0 | d4bccc1b45ee |
+| work/missions/2026-11-08-rejeu-bc70/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | RO | 4 | 0 | cbb50a8d12dd |
+| work/missions/2026-11-08-lecture-en-ligne/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | LO |  5 | 0 | d4bccc1b45ee |
 | work/missions/2026-11-09-banc-gemini/MISSION.md | M9 | 4 | 0 | c9f37ed54f7f |
-| C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-11-08-rejeu-b47c/RAPPORT.md | RX | 5 | 0 | 72def5479460 |
-| work/missions/2026-11-08-rejeu-b47c/VISION.md | VI | 12 | 0 | b35353079003 |
-| work/missions/2026-11-08-rejeu-013d/RAPPORT.md | RX | 0 | 0 | 9b111e12e6c4 |
+| C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-11-08-rejeu-b47c/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | RX | 5 | 0 | 72def5479460 |
+| work/missions/2026-11-08-rejeu-b47c/VISION.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | VI | 12 | 0 | b35353079003 |
+| work/missions/2026-11-08-rejeu-013d/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | RX | 0 | 0 | 9b111e12e6c4 |
 | C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-11-08-rejeu-88eb/RAPPORT.md | RV | 2 | 0 | 1aafcdf0516a |
 | message de la pilote 08.11 (SM) | SM | 2 | 0 |  |
 | message de la pilote 08.11 (HX) | HX | 6 | 1 |  |
 | message de la pilote 08.11 (OG) | OG | 1 | 0 |  |
-| C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-11-08-rejeu-ff0f/RAPPORT.md | RL | 15 | 0 | 5a48b64afd33 |
-| work/missions/2026-11-10-lecture-robuste/critique/VERDICT-EN-LIGNE-1.md | LR1 | 14 | 5 |  |
-| work/missions/2026-11-10-lecture-robuste/critique/REPRISE-EN-LIGNE-2.md | LR2 | 11 | 3 |  |
-| work/missions/2026-11-10-lecture-robuste/critique/VERDICT-EN-LIGNE-3.md | LR3 | 9 | 3 |  |
-| work/missions/2026-11-17-port-calendrier/vision-1/RAPPORT.md | PC | 0 | 0 | 9ce65bb39fb7 |
-| work/missions/2026-11-17-port-calendrier/vision-2/RAPPORT.md | PC | 42 | 0 | 50229052b114 |
-| work/missions/2026-11-17-port-calendrier/vision-3/essai1-d1280/RAPPORT.md | PC | 0 | 0 | 3f6a90e2cdf6 |
-| work/missions/2026-11-17-port-calendrier/vision-3/essai1-m390/RAPPORT.md | PC | 0 | 0 | 6b368f835acf |
-| work/missions/2026-11-17-port-calendrier/vision-4/cave-complet/RAPPORT.md | PC | 0 | 0 | 1b02fead8a7d |
-| work/missions/2026-11-17-port-calendrier/vision-4/RAPPORT-m390.md | PC | 0 | 0 | 55585a1c3d2d |
-| work/missions/2026-11-17-port-calendrier/vision-4/RAPPORT-paysage-d1280.md | PC | 0 | 0 | a23d0b6064b4 |
-| work/missions/2026-11-17-port-calendrier/vision-4/RAPPORT.md | PC | 0 | 0 | 476fcb00d14e |
-| work/missions/2026-11-17-port-calendrier/vision-5/RAPPORT-m390.md | PC | 0 | 0 | de2793c44ccf |
-| work/missions/2026-11-17-port-calendrier/vision-5/RAPPORT-paysage-d1280.md | PC | 0 | 0 | e5a5a93f1af7 |
-| work/missions/2026-11-17-port-calendrier/vision-6/RAPPORT-m390.md | PC | 0 | 0 | b6a89b23ab31 |
-| work/missions/2026-11-17-port-calendrier/vision-6/RAPPORT-paysage-d1280.md | PC | 0 | 0 | ce5cbe2f8cb6 |
-| work/missions/2026-11-17-port-calendrier/vision-6/RAPPORT.md | PC | 0 | 0 | 99e8fdb59fa8 |
-| work/missions/2026-11-17-port-calendrier/vision-6/chrono/RAPPORT.md | PC | 0 | 0 | b246a916b8f7 |
-| work/missions/2026-11-17-port-calendrier/vision-7/RAPPORT-m390.md | PC | 0 | 0 | c32a6f46ca49 |
-| work/missions/2026-11-17-port-calendrier/vision-7/RAPPORT-paysage-d1280.md | PC | 0 | 0 | de63a8517665 |
-| work/missions/2026-11-17-port-calendrier/vision-7/RAPPORT.md | PC | 0 | 0 | 89636a762622 |
-| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai1/RAPPORT.md | PC | 0 | 0 | 374dafab1a96 |
-| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai2/RAPPORT.md | PC | 0 | 0 | 7517aa879acc |
-| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai3/RAPPORT.md | PC | 0 | 0 | bf0b46364792 |
-| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai4/RAPPORT.md | PC | 0 | 0 | 8f9dbb456a3a |
-| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai5/RAPPORT.md | PC | 0 | 0 | d617e18675b9 |
-| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai6/RAPPORT.md | PC | 0 | 0 | 97708238700d |
-| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai7/RAPPORT.md | PC | 0 | 0 | 5b0c6228445c |
-| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai8/RAPPORT.md | PC | 0 | 0 | ef3d713ab2de |
-| work/missions/2026-11-17-port-calendrier/vision-8/RAPPORT-m390.md | PC | 0 | 0 | 347696721791 |
-| work/missions/2026-11-17-port-calendrier/vision-8/RAPPORT-paysage-d1280.md | PC | 0 | 0 | 0c26b5eab0e5 |
-| work/missions/2026-11-17-port-calendrier/vision-8/lot-a/RAPPORT.md | PC | 0 | 0 | 6f82729945c9 |
-| work/missions/2026-11-17-port-calendrier/vision-8/lot-b/RAPPORT.md | PC | 0 | 0 | c34e28ad2251 |
-| work/missions/2026-11-17-port-calendrier/vision-8/lot-c/RAPPORT.md | PC | 0 | 0 | 2af555d4150a |
-| work/missions/2026-11-17-port-calendrier/vision-8/lot-d/RAPPORT.md | PC | 0 | 0 | 5664517c2ae9 |
-| work/missions/2026-11-17-port-calendrier/vision-8/lot-d/rejeu/RAPPORT.md | PC | 0 | 0 | 568834f3eb63 |
-| work/missions/2026-11-17-port-calendrier/vision-8/lot-d/rejeu2/RAPPORT.md | PC | 0 | 0 | 84fe70b2012b |
-| work/missions/2026-11-17-port-calendrier/vision-10/RAPPORT-m390.md | PC | 0 | 0 | 623968b1230d |
-| work/missions/2026-11-17-port-calendrier/vision-10/RAPPORT-paysage-d1280.md | PC | 0 | 0 | 76eb7a2fd013 |
-| work/missions/2026-11-17-port-calendrier/vision-11/RAPPORT-m390.md | PC | 0 | 0 | 9716976e5639 |
-| work/missions/2026-11-17-port-calendrier/vision-11/RAPPORT-paysage-d1280.md | PC | 0 | 0 | 64a4bd31eb1d |
-| work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai1/RAPPORT.md | PC | 0 | 0 | 2c608134a51a |
-| work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai2/RAPPORT.md | PC | 0 | 0 | 0df896bbc9fa |
-| work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai3/RAPPORT.md | PC | 0 | 0 | 08d8953a3d49 |
-| work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai4/RAPPORT.md | PC | 0 | 0 | 0bdbd2b79921 |
-| work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai5/RAPPORT.md | PC | 0 | 0 | dc0fdc75256c |
-| work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai6/RAPPORT.md | PC | 0 | 0 | 876210d9b2b0 |
-| work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai7/RAPPORT.md | PC | 0 | 0 | 83c994e6c8f7 |
-| work/missions/2026-11-17-port-calendrier/vision-12/RAPPORT-m390.md | PC | 0 | 0 | beaea4607820 |
-| work/missions/2026-11-17-port-calendrier/vision-13/essai1/RAPPORT.md | PC | 0 | 0 | 237fc824484e |
-| work/missions/2026-11-17-port-calendrier/vision-13/essai2/RAPPORT.md | PC | 0 | 0 | 600aed10ee79 |
-| work/missions/2026-11-17-port-calendrier/vision-13/essai3/RAPPORT.md | PC | 0 | 0 | 40dca7adcbbe |
-| work/missions/2026-11-17-port-calendrier/vision-13/essai4/RAPPORT.md | PC | 0 | 0 | 41bc56e25b2d |
-| work/missions/2026-11-17-port-calendrier/vision-13/essai5/RAPPORT.md | PC | 0 | 0 | b39849e80191 |
-| work/missions/2026-11-17-port-calendrier/vision-13/essai6/RAPPORT.md | PC | 0 | 0 | 64b7ae2b9e3b |
-| work/missions/2026-11-17-port-calendrier/vision-13/essai7/RAPPORT.md | PC | 0 | 0 | ef890c7b6fce |
-| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT-paysage-d1280.md | PC | 0 | 0 | 50a7821873e3 |
-| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT-m390.md | PC | 0 | 0 | b14c47878a3a |
-| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT.md | PC | 0 | 0 | fecd6595650a |
-| work/missions/2026-11-17-port-calendrier/vision-14/RAPPORT-m390.md | PC | 0 | 0 | 0b87cc792889 |
-| work/missions/2026-11-17-port-calendrier/vision-14/RAPPORT-paysage-d1280.md | PC | 0 | 0 | b7010fb2d461 |
-| work/missions/2026-11-17-port-calendrier/vision-14/RAPPORT.md | PC | 0 | 0 | 6b133460c64c |
-| work/missions/2026-11-17-port-calendrier/en-ligne-1/RAPPORT.md | PC | 6 | 0 | a18acd5152e0 |
-| work/missions/2026-11-17-port-calendrier/en-ligne-2/RAPPORT.md | PC | 1 | 4 | eb81a296f6d5 |
-| work/missions/2026-11-17-port-calendrier/vision-12/RAPPORT-paysage-d1280.md | PC | 0 | 0 | 0cbb2bdb0600 |
-| work/missions/2026-11-17-port-calendrier/vision-12/lot-d/essai1/RAPPORT.md | PC | 0 | 0 | d6142bae5e0a |
-| work/missions/2026-11-17-port-calendrier/vision-12/lot-d/essai2/RAPPORT.md | PC | 0 | 0 | 15f82c416d19 |
-| work/missions/2026-11-17-port-calendrier/vision-12/lot-d/essai3/RAPPORT.md | PC | 0 | 0 | e8ac6b746789 |
-| work/missions/2026-11-17-port-calendrier/vision-9/RAPPORT-m390.md | PC | 0 | 0 | 567e1309f777 |
-| work/missions/2026-11-17-port-calendrier/vision-9/RAPPORT-paysage-d1280.md | PC | 0 | 0 | da705177ccd5 |
+| C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie/work/missions/2026-11-08-rejeu-ff0f/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | RL | 15 | 0 | 5a48b64afd33 |
+| work/missions/2026-11-10-lecture-robuste/critique/VERDICT-EN-LIGNE-1.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | LR1 | 14 | 5 |  |
+| work/missions/2026-11-10-lecture-robuste/critique/REPRISE-EN-LIGNE-2.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | LR2 | 11 | 3 |  |
+| work/missions/2026-11-10-lecture-robuste/critique/VERDICT-EN-LIGNE-3.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | LR3 | 9 | 3 |  |
+| work/missions/2026-11-17-port-calendrier/vision-1/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 9ce65bb39fb7 |
+| work/missions/2026-11-17-port-calendrier/vision-2/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 42 | 0 | 50229052b114 |
+| work/missions/2026-11-17-port-calendrier/vision-3/essai1-d1280/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 3f6a90e2cdf6 |
+| work/missions/2026-11-17-port-calendrier/vision-3/essai1-m390/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 6b368f835acf |
+| work/missions/2026-11-17-port-calendrier/vision-4/cave-complet/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 1b02fead8a7d |
+| work/missions/2026-11-17-port-calendrier/vision-4/RAPPORT-m390.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 55585a1c3d2d |
+| work/missions/2026-11-17-port-calendrier/vision-4/RAPPORT-paysage-d1280.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | a23d0b6064b4 |
+| work/missions/2026-11-17-port-calendrier/vision-4/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 476fcb00d14e |
+| work/missions/2026-11-17-port-calendrier/vision-5/RAPPORT-m390.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | de2793c44ccf |
+| work/missions/2026-11-17-port-calendrier/vision-5/RAPPORT-paysage-d1280.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | e5a5a93f1af7 |
+| work/missions/2026-11-17-port-calendrier/vision-6/RAPPORT-m390.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | b6a89b23ab31 |
+| work/missions/2026-11-17-port-calendrier/vision-6/RAPPORT-paysage-d1280.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | ce5cbe2f8cb6 |
+| work/missions/2026-11-17-port-calendrier/vision-6/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 99e8fdb59fa8 |
+| work/missions/2026-11-17-port-calendrier/vision-6/chrono/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | b246a916b8f7 |
+| work/missions/2026-11-17-port-calendrier/vision-7/RAPPORT-m390.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | c32a6f46ca49 |
+| work/missions/2026-11-17-port-calendrier/vision-7/RAPPORT-paysage-d1280.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | de63a8517665 |
+| work/missions/2026-11-17-port-calendrier/vision-7/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 89636a762622 |
+| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai1/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 374dafab1a96 |
+| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai2/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 7517aa879acc |
+| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai3/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | bf0b46364792 |
+| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai4/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 8f9dbb456a3a |
+| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai5/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | d617e18675b9 |
+| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai6/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 97708238700d |
+| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai7/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 5b0c6228445c |
+| work/missions/2026-11-17-port-calendrier/vision-7/lot4/essai8/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | ef3d713ab2de |
+| work/missions/2026-11-17-port-calendrier/vision-8/RAPPORT-m390.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 347696721791 |
+| work/missions/2026-11-17-port-calendrier/vision-8/RAPPORT-paysage-d1280.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 0c26b5eab0e5 |
+| work/missions/2026-11-17-port-calendrier/vision-8/lot-a/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 6f82729945c9 |
+| work/missions/2026-11-17-port-calendrier/vision-8/lot-b/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | c34e28ad2251 |
+| work/missions/2026-11-17-port-calendrier/vision-8/lot-c/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 2af555d4150a |
+| work/missions/2026-11-17-port-calendrier/vision-8/lot-d/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 5664517c2ae9 |
+| work/missions/2026-11-17-port-calendrier/vision-8/lot-d/rejeu/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 568834f3eb63 |
+| work/missions/2026-11-17-port-calendrier/vision-8/lot-d/rejeu2/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 84fe70b2012b |
+| work/missions/2026-11-17-port-calendrier/vision-10/RAPPORT-m390.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 623968b1230d |
+| work/missions/2026-11-17-port-calendrier/vision-10/RAPPORT-paysage-d1280.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 76eb7a2fd013 |
+| work/missions/2026-11-17-port-calendrier/vision-11/RAPPORT-m390.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 9716976e5639 |
+| work/missions/2026-11-17-port-calendrier/vision-11/RAPPORT-paysage-d1280.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 64a4bd31eb1d |
+| work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai1/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 2c608134a51a |
+| work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai2/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 0df896bbc9fa |
+| work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai3/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 08d8953a3d49 |
+| work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai4/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 0bdbd2b79921 |
+| work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai5/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | dc0fdc75256c |
+| work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai6/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 876210d9b2b0 |
+| work/missions/2026-11-17-port-calendrier/vision-11/lot-d/essai7/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 83c994e6c8f7 |
+| work/missions/2026-11-17-port-calendrier/vision-12/RAPPORT-m390.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | beaea4607820 |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai1/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 237fc824484e |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai2/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 600aed10ee79 |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai3/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 40dca7adcbbe |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai4/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 41bc56e25b2d |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai5/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | b39849e80191 |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai6/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 64b7ae2b9e3b |
+| work/missions/2026-11-17-port-calendrier/vision-13/essai7/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | ef890c7b6fce |
+| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT-paysage-d1280.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 50a7821873e3 |
+| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT-m390.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | b14c47878a3a |
+| work/missions/2026-11-17-port-calendrier/vision-13/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | fecd6595650a |
+| work/missions/2026-11-17-port-calendrier/vision-14/RAPPORT-m390.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 0b87cc792889 |
+| work/missions/2026-11-17-port-calendrier/vision-14/RAPPORT-paysage-d1280.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | b7010fb2d461 |
+| work/missions/2026-11-17-port-calendrier/vision-14/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 6b133460c64c |
+| work/missions/2026-11-17-port-calendrier/en-ligne-1/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 6 | 0 | a18acd5152e0 |
+| work/missions/2026-11-17-port-calendrier/en-ligne-2/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 1 | 4 | eb81a296f6d5 |
+| work/missions/2026-11-17-port-calendrier/vision-12/RAPPORT-paysage-d1280.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 0cbb2bdb0600 |
+| work/missions/2026-11-17-port-calendrier/vision-12/lot-d/essai1/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | d6142bae5e0a |
+| work/missions/2026-11-17-port-calendrier/vision-12/lot-d/essai2/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 15f82c416d19 |
+| work/missions/2026-11-17-port-calendrier/vision-12/lot-d/essai3/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | e8ac6b746789 |
+| work/missions/2026-11-17-port-calendrier/vision-9/RAPPORT-m390.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 567e1309f777 |
+| work/missions/2026-11-17-port-calendrier/vision-9/RAPPORT-paysage-d1280.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | da705177ccd5 |
 | work/missions/2026-11-17-port-carnet/vision-1/RAPPORT-d1280.md | PCN | 0 | 0 | 2a3cb689d32b |
 | work/missions/2026-11-17-port-carnet/vision-1/RAPPORT-m390.md | PCN | 0 | 0 | 8d63d8dcb91d |
 | work/missions/2026-11-17-port-carnet/vision-2/RAPPORT-d1280.md | PCN | 0 | 0 | a7be707a89a9 |
 | work/missions/2026-11-17-port-carnet/vision-2/RAPPORT-m390.md | PCN | 0 | 0 | 52d523779e37 |
 | work/missions/2026-11-17-port-carnet/vision-3/RAPPORT-d1280.md | PCN | 0 | 0 | 3ec26addc4c7 |
 | work/missions/2026-11-17-port-carnet/vision-3/RAPPORT-m390.md | PCN | 0 | 0 | 7bac28d26391 |
-| work/missions/2026-11-17-port-calendrier/vision-9/lot-d/essai1/RAPPORT.md | PC | 0 | 0 | f2cdc1865f78 |
-| work/missions/2026-11-17-port-calendrier/vision-9/lot-d/essai2/RAPPORT.md | PC | 0 | 0 | 8759872582a5 |
-| work/missions/2026-11-17-port-calendrier/vision-9/lot-d/essai3/RAPPORT.md | PC | 0 | 0 | 7f3e3c3a823e |
-| work/missions/2026-11-17-port-calendrier/vision-9/lot-d/essai4/RAPPORT.md | PC | 0 | 0 | 87a17cf85f60 |
-| work/missions/2026-11-17-port-calendrier/vision-9/lot-d/essai5/RAPPORT.md | PC | 0 | 0 | 811cb50cdd4b |
+| work/missions/2026-11-17-port-calendrier/vision-9/lot-d/essai1/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | f2cdc1865f78 |
+| work/missions/2026-11-17-port-calendrier/vision-9/lot-d/essai2/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 8759872582a5 |
+| work/missions/2026-11-17-port-calendrier/vision-9/lot-d/essai3/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 7f3e3c3a823e |
+| work/missions/2026-11-17-port-calendrier/vision-9/lot-d/essai4/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 87a17cf85f60 |
+| work/missions/2026-11-17-port-calendrier/vision-9/lot-d/essai5/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 0 | 0 | 811cb50cdd4b |
 | work/missions/2026-11-18-choix-calendrier/en-ligne-axe/RAPPORT.md | PC | 6 | 0 | 3b55f2a885c7 |
-| work/missions/2026-11-18-choix-calendrier/en-ligne-lot-a/RAPPORT.md | PC | 5 | 4 | 29a17d14fdd0 |
-| work/missions/2026-11-18-choix-calendrier/en-ligne-lot-bc/RAPPORT.md | PC | 5 | 6 | 127522c2789a |
-| work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-d/RAPPORT.md | PC | 1 | 3 | a815f0e44047 |
-| work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-e/RAPPORT.md | PC | 1 | 4 | 41340b8b917c |
+| work/missions/2026-11-18-choix-calendrier/en-ligne-lot-a/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 5 | 4 | 29a17d14fdd0 |
+| work/missions/2026-11-18-choix-calendrier/en-ligne-lot-bc/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 5 | 6 | 127522c2789a |
+| work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-d/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 1 | 3 | a815f0e44047 |
+| work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-e/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 1 | 4 | 41340b8b917c |
 | work/missions/2026-11-17-port-carnet/en-ligne-4/RAPPORT.md | PCN | 4 | 1 | e43ef93058d3 |
-| work/missions/2026-11-18-choix-calendrier/en-ligne-mois/RAPPORT.md | PC | 5 | 0 | 96e0a88f963f |
-| work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-f/RAPPORT.md | PC | 2 | 3 | 8d4efca5a715 |
+| work/missions/2026-11-18-choix-calendrier/en-ligne-mois/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 5 | 0 | 96e0a88f963f |
+| work/missions/2026-11-18-choix-calendrier/en-ligne-paquet-f/RAPPORT.md (source archivée au nettoyage du 23.11 : sauvegarde Brasserie-sauvegarde-2026-11-23) | PC | 2 | 3 | 8d4efca5a715 |
 | work/missions/2026-11-17-port-carnet/vision-4/RAPPORT-d1280.md | PCN | 0 | 0 | b9b896566b01 |
 | work/missions/2026-11-17-port-carnet/vision-4/RAPPORT-m390.md | PCN | 0 | 0 | 9f4b1417fdd7 |
 | work/missions/2026-11-17-port-carnet/vision-5/RAPPORT-d1280.md | PCN | 0 | 0 | 35b17d70cc0e |

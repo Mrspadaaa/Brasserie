@@ -75,7 +75,9 @@ export function lireRegistre(texte) {
 
 export const empreinte = (p) => createHash('sha1').update(fs.readFileSync(p, 'utf8').replace(/\r\n/g, '\n')).digest('hex').slice(0, 12);
 
-const commitExiste =(h) => { try { execFileSync('git', ['cat-file', '-e', `${h}^{commit}`], { cwd: RACINE, stdio: 'ignore' }); return true; } catch { return false; } };
+const ARCHIVES = (() => { try { return new Set(fs.readFileSync(path.join(RACINE, "work/missions/2026-11-23-nettoyage-depot/commits-archives.txt"), "utf8").split(/\r?\n/).filter((l) => l && !l.startsWith("#")).flatMap((l) => l.split(" "))); } catch { return new Set(); } })();
+// Historique comprimé le 23.11 : un commit cité avant la compression vit dans la sauvegarde (bundle), listé dans commits-archives.txt.
+const commitExiste = (h) => { if ([...ARCHIVES].some((a) => a.startsWith(h))) return true; try { execFileSync("git", ["cat-file", "-e", `${h}^{commit}`], { cwd: RACINE, stdio: "ignore" }); return true; } catch { return false; } };
 
 export function controler() {
   const erreurs = [];
