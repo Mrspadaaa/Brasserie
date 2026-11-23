@@ -2791,3 +2791,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (sur « Ce que je change » : 4 agents au plus et un build partagé ; un script de copie de travail ; un test par plainte, suite entière une fois ; couper les trois gros fichiers ; remplacer le parcours figé de la porte par les règles générales) « Ok »
 - « Est-ce que on fait pas trop de passe, trop de testé avant la mise en ligne ? Car au final ça sert pas à grand chose puisque ce genre de bug de retrouve en ligne ?? »
 - (sur la proposition : porte de ~10 min, mise en ligne en petits lots, épreuve en ligne aussitôt après) « Yes »
+- (après l'épreuve en ligne du tour 13 : 7 KO sur 29 cas déclarés corrigés) « Il y a un problème dans les méthodes de fix, test, seul ceux sur la vrai app semble trouver des vrais problèmes. »
