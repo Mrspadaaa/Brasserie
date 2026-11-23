@@ -166,8 +166,10 @@ const nombre = (v: unknown): number | undefined => {
 };
 const devise = (v: unknown) => typeof v === 'string' && /^[A-Z]{3}$/.test(v.trim()) ? v.trim() : undefined;
 
-function image(v: unknown, base: URL): string | undefined {
-  const brut = typeof v === 'string' ? v : Array.isArray(v) ? v[0] : v && typeof v === 'object' ? (v as Json).url ?? (v as Json).contentUrl : undefined;
+/** La photo : une URL, un `ImageObject` (`url` ou `contentUrl`) ou une liste de l'un ou l'autre (Shopify, 23.11 : gastro-held.ch). */
+function image(v: unknown, base: URL, prof = 0): string | undefined {
+  if (Array.isArray(v)) return prof ? undefined : v.slice(0, 5).map((x) => image(x, base, 1)).find(Boolean);
+  const brut = typeof v === 'string' ? v : v && typeof v === 'object' ? (v as Json).url ?? (v as Json).contentUrl : undefined;
   if (typeof brut !== 'string' || !brut.trim()) return undefined;
   try { const u = new URL(brut.trim(), base); return u.protocol === 'https:' ? u.href.slice(0, 2000) : undefined; } catch { return undefined; }
 }
@@ -222,7 +224,8 @@ export function lirePage(html: string, url: URL, luLe = Date.now()): PageLue {
   }
   if (!dispoSchema) dispoSchema = meta('product:availability') ?? meta('og:availability') ?? '';
   const statutStock = dispoSchema ? stockStatus('', dispoSchema.replace(/\s+/g, '')) : 'unknown';
-  const photo = image(p?.image, url) ?? image(meta('og:image'), url);
+  // og:image peut être en http (gastro-held.ch) : sa variante og:image:secure_url d'abord.
+  const photo = image(p?.image, url) ?? image(meta('og:image:secure_url'), url) ?? image(meta('og:image'), url);
   const metaProduit = !!p || !!ogTitre || !!photo || prix !== undefined;
   const nom = chaine(p?.name, 180) ?? ogTitre ?? (metaProduit ? chaine($('title').first().text(), 180) : undefined);
   if (!nom && !photo && prix === undefined) return base;
