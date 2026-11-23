@@ -1,4 +1,4 @@
-/* La frise du calendrier (E20 à E33). Jetons de l'app uniquement ; texte 14 px au moins. Les couleurs de rangée sont les couleurs de zone. */
+﻿/* La frise du calendrier (E20 à E33). Jetons de l'app uniquement ; texte 14 px au moins. Les couleurs de rangée sont les couleurs de zone. */
 /* CAL-LENT (21.11) : l'écart vertical entre les blocs du Calendrier, sans « space-y » de Tailwind (son « ~ » recalculait le style de tout
    l'écran à chaque feuille, message ou menu inséré) ; « :first-child » ne touche que le premier enfant. Mêmes valeurs : 8 px, 2 px en paysage. */
 .cal-pile > :not(:first-child):not([hidden]) { margin-top: 0.5rem; margin-bottom: 0; }
@@ -188,10 +188,10 @@ button.cal-lie::before { content: ''; position: absolute; inset: -6px -2px; }
    prise gardent leur place d'avant (24 px de large, 44 px pour la fin, dans la ligne de 30 px). */
 /* D384 (« icône plus petit ») : 14 px (13 en paysage) au lieu des 17 de la maquette, picto de 8 px ; le disque est centré sur le pied coloré.
    L'encre du picto (`--ei`) est le jeton de son étape (blanc en clair ; sombre en cave, blanc sur la garde). */
-.cal-jalon { position: absolute; left: 0; translate: clamp(7px, var(--x, 0cqw), calc(100cqw - 7px)) 0; bottom: -4px; z-index: 2; box-sizing: border-box; display: grid; place-items: center; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; border: 1.5px solid rgb(var(--cave-950)); background: var(--e, var(--c)); color: var(--ei, rgb(var(--cave-950))); font-style: normal; }
+.cal-jalon { position: absolute; left: 0; translate: clamp(2px, var(--x, 0cqw), calc(100cqw + var(--cal-bd) - 7px)) 0; bottom: -4px; z-index: 2; box-sizing: border-box; display: grid; place-items: center; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; border: 1.5px solid rgb(var(--cave-950)); background: var(--e, var(--c)); color: var(--ei, rgb(var(--cave-950))); font-style: normal; }
 .cal-jalon > svg { width: 8px; height: 8px; pointer-events: none; }
 .cal-jalon::before { content: ''; position: absolute; inset: -2px -5px -4px; }
-.cal-paysage .cal-jalon { translate: clamp(6.5px, var(--x, 0cqw), calc(100cqw - 6.5px)) 0; bottom: -5.5px; width: 13px; height: 13px; margin-left: -6.5px; border-width: 1px; }
+.cal-paysage .cal-jalon { translate: clamp(1.5px, var(--x, 0cqw), calc(100cqw + var(--cal-bd) - 6.5px)) 0; bottom: -5.5px; width: 13px; height: 13px; margin-left: -6.5px; border-width: 1px; }
 .cal-paysage .cal-jalon > svg { width: 8px; height: 8px; }
 .cal-paysage .cal-jalon::before { inset: 0 -5.5px -2px; }
 /* CRITIQUE-5 n° 11 (D-103, E25) : le jalon de fin se saisit au doigt : une zone de prise de 44 px de large, invisible, posée au-dessus de la poignée

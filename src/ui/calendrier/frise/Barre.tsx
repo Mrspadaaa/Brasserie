@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { Link2, Pin, Star } from 'lucide-react';
 import { COUT_A_VENIR, ecartJours, etiquetteS, francsSignes, jourLisible, type ChoseCalendrier, type JalonBrassin } from '../../../domain/calendrier';
@@ -164,14 +164,16 @@ export const ZONE_BORD_PX = 22;
 function phases(jalons: readonly JalonBrassin[] | undefined, total: number, o = 0, f = total) {
   if (!jalons?.length || total <= 0 || f <= o) return [];
   const sur = jalons.filter(j => j.ecart >= 0 && j.id !== 'commander').sort((a, b) => a.ecart - b.ecart);
-  const vu = f - o;
+  /* CAL-JOUR-EXACT : la barre montre les jours o à f, chacun entier (f − o + 1 jours) ; une phase commence au début de son jour et la dernière
+     va jusqu'au bout de la barre, comme les points d'étape, posés au milieu de leur jour */
+  const n = f - o + 1;
   return sur.flatMap((j, i) => {
     /* D384 : le brassage est un jour. Un brassin pas brassé n'a que lui (ses autres phases ne sont pas datées) : son pied n'est coloré que ce
        jour-là, jamais trois semaines de « brassage » ; le reste du pied reste nu (l'inconnu ne prend aucune couleur) */
-    const suivant = i + 1 < sur.length ? sur[i + 1].ecart : total;
-    const debut = Math.max(o, j.ecart), fin = Math.min(f, j.id === 'brassage' ? Math.min(suivant, j.ecart + 1) : suivant);
+    const suivant = i + 1 < sur.length ? sur[i + 1].ecart : total + 1;
+    const debut = Math.max(o, j.ecart), fin = Math.min(f + 1, j.id === 'brassage' ? Math.min(suivant, j.ecart + 1) : suivant);
     if (fin < debut) return [];
-    return [{ id: j.id, de: Math.min(100, ((debut - o) / vu) * 100), largeur: Math.max(0, ((fin - debut) / vu) * 100) }];
+    return [{ id: j.id, de: Math.min(100, ((debut - o) / n) * 100), largeur: Math.max(0, ((fin - debut) / n) * 100) }];
   });
 }
 
@@ -183,7 +185,8 @@ export function posPiste(p: number): string {
   if (p <= 0) return '0px';
   /* D406 : en cqw (la piste est un conteneur), pour se poser par `translate` (frise.css, `.cal-ph`) */
   if (p >= 100) return '100cqw';
-  return `(var(--cal-bg) + (100cqw - var(--cal-bg) - var(--cal-bd)) * ${Number((p / 100).toFixed(4))})`;
+  /* CAL-JOUR-EXACT : la piste couvre la barre entière, bords compris ; ses jours y sont égaux, comme sur l'axe (et les points d'étape) */
+  return `(100cqw * ${Number((p / 100).toFixed(5))})`;
 }
 
 /**
@@ -369,6 +372,8 @@ export const Barre: React.FC<BarreProps> = props => {
     /* le bord (et le jalon de fin) se tire au jour : une semaine = 7 jours, le pas du bord est 1/7 de colonne */
     onDebutBord: c => setCoteBord(c),
     onBord: (k, _dx, c) => props.onBord(chose, k, c),
+    /* CAL-JOUR-EXACT : le bout tiré va au jour sous le doigt (la fin incluse, ou le début) */
+    bout: c => (c === 'debut' ? chose.debut : chose.fin || chose.debut),
     onLacheBord: (k, annule, c) => { setCoteBord('fin'); props.onLacheBord(chose, k, annule, c); }
   });
 
@@ -379,7 +384,9 @@ export const Barre: React.FC<BarreProps> = props => {
   const o = props.coupe?.du ? Math.min(total, Math.max(0, ecartJours(chose.debut, props.coupe.du))) : 0;
   const f = props.coupe?.au ? Math.max(o, Math.min(total, ecartJours(chose.debut, props.coupe.au))) : total;
   const segments = phases(chose.jalons, total, o, f);
-  const jalonVu = (ecart: number): number | null => (ecart < o || ecart > f ? null : f > o ? Math.min(100, ((ecart - o) / (f - o)) * 100) : 0);
+  /* CAL-JOUR-EXACT : chaque point d'étape au MILIEU de son jour (la barre couvre les jours o à f, chacun entier) ; il était au début de son jour,
+     à cheval sur la veille (« le choix d'un jour tombe pas exactement sur le jour ») */
+  const jalonVu = (ecart: number): number | null => (ecart < o || ecart > f ? null : Math.min(100, ((ecart - o + 0.5) / (f - o + 1)) * 100));
   const montant = montantDe(chose);
   const w = Math.max(10, largeur + allongement);
   /* CAL-PASSE Q n° 8 : la largeur où le texte de la barre peut s'écrire (la part sous le + volant en est retirée) */
@@ -502,7 +509,7 @@ export const Barre: React.FC<BarreProps> = props => {
               className={`cal-jalon${pointVu === j.id ? ' cal-jalon-vu' : ''}`}
               /* CRITIQUE-5 n° 29 : l'icône reste dans sa barre (borné par frise.css), jamais une demi-icône hors de la grille */
               /* D406 : `--x` en cqw (la barre est un conteneur) : l'icône se pose par `translate` (frise.css) */
-              style={{ ['--x' as string]: `${total > 0 ? jalonVu(j.ecart) : 0}cqw`, ['--e' as string]: couleurEtape(j.id as EtapeBrassin), ['--ei' as string]: encreEtape(j.id as EtapeBrassin) }}
+              style={{ ['--x' as string]: `calc(${Number(((total > 0 ? jalonVu(j.ecart) ?? 0 : 0) / 100).toFixed(5))} * (100cqw + var(--cal-bg) + var(--cal-bd)) - var(--cal-bg))`, ['--e' as string]: couleurEtape(j.id as EtapeBrassin), ['--ei' as string]: encreEtape(j.id as EtapeBrassin) }}
             >
               <etape.Icone aria-hidden="true" strokeWidth={2.5} />
             </i>

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 import type { Batch, Client, CreativeItem, Recipe, StockItem, Transaction } from '../../types';
 import type { FinancialAsset, FinancialPayment, FinancialPlan, FinancialProfile } from '../../domain/finance/types';
 import { StorageService } from '../../services/storage';
@@ -7,7 +7,7 @@ import { useStorageValue } from '../../hooks/useLiveData';
 import { useReglagesFournisseurs } from '../fournisseurs/useReglagesFournisseurs';
 import { buildForecast } from '../../domain/finance/forecast';
 import { periodeSynthese } from '../../domain/finance/periodeSynthese';
-import { isoDate, todayISO, validPayment } from '../../domain/finance/ledger';
+import { isActiveTransaction, isoDate, todayISO, validPayment } from '../../domain/finance/ledger';
 import { fermentationReadings } from '../../domain/fermentationReadings';
 import { articlesACommander } from '../../domain/stockLevel';
 import { etiquetteSemaine, vueHorizon, type LigneHorizon } from '../../domain/stock/horizon';
@@ -153,7 +153,9 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   const encaissees = e.payments.flatMap((pay): ChoseCalendrier[] => {
     const t = pay.transactionId ? pieces.get(pay.transactionId) : undefined;
     const jour = isoDate(pay.date);
-    if (!t || !jour || pay.direction !== 'in' || t.finance?.kind !== 'income' || attendues.has(t.id) || !validPayment(pay) || jour < lundi0 || jour > aujourdhui) return [];
+    /* CAL-ANNULEES-COMPTEES (23.11, argent faux) : une pièce annulée (« Écriture annulée », hors de Finances) n'est plus une vente, même si son
+       paiement rendu reste dans la caisse (il y est compensé, comme dans Finances) */
+    if (!t || !jour || pay.direction !== 'in' || t.finance?.kind !== 'income' || !isActiveTransaction(t as never) || attendues.has(t.id) || !validPayment(pay) || jour < lundi0 || jour > aujourdhui) return [];
     return [{ id: `paiement-${pay.id}`, rangee: 'ventes', titre: t.description || t.id, debut: jour, fin: jour, centimes: pay.amountCents, detail: `encaissée le ${jourLisible(jour)}`,
       source: { genre: 'facture', id: t.id }, ouvre: { ecran: 'piece', id: t.id }, deplacable: { raison: 'Vente encaissée : sa date est un fait. Elle se corrige dans la pièce (Finances › Opérations).' } }];
   });

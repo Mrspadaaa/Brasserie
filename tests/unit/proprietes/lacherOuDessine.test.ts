@@ -1,15 +1,18 @@
-import { describe, it } from 'vitest';
+﻿import { describe, it } from 'vitest';
 import fc from 'fast-check';
 import * as C from '../../../src/domain/calendrier';
 import { ajouterMois, colonnesDeLAxe, echelleEffective, uniteColonne, type Echelle } from '../../../src/ui/calendrier/echelle';
-import { joursDuDoigt, pasDuDoigt, xDeDate, type AxeDoigt } from '../../../src/ui/calendrier/entete/alignement';
+import { joursDuDoigt, joursJusquAuDoigt, pasDuDoigt, xDeDate, type AxeDoigt } from '../../../src/ui/calendrier/entete/alignement';
 import { arbJours, enIso } from './_dates';
 
 /**
  * CAL-LACHER-OU-DESSINE (23.11, « là j'ai mon événement au dessus de septembre, mais il est noté en avril ??? ») : la date écrite au lâcher, la
- * date annoncée pendant le geste et la date de l'axe sous le doigt sont la même, à une colonne près, pour toute échelle (jours, semaines, mois),
+ * date annoncée pendant le geste et la date de l'axe sous le doigt sont la même pour toute échelle (jours, semaines, mois),
  * toute fenêtre (1 à 52 semaines), toute position du doigt, et quand la fenêtre a glissé ou grandi sous le doigt.
  * Le modèle : le doigt tient le bout de la barre (bord tiré) ou son début (barre glissée) ; ce bout suit le doigt sur l'axe dessiné.
+ * CAL-JOUR-EXACT (23.11, « le choix d'un jour tombe pas exactement sur le jour ») et l'arrondi du lâcher (14 sem. : S3 sous le doigt, S4 écrit) :
+ * plus de « à une colonne près ». Le bord tiré écrit le jour dont la colonne contient le doigt ; la barre glissée pose son début dans la colonne
+ * sous le doigt. Exact, d'où que le bord ait été pris.
  */
 const PASSE = 52, TOTAL = 104, GAUCHE = 16;
 const RUNS = 3000;
@@ -28,7 +31,7 @@ function jourSous(a: AxeDoigt, x: number): string {
   const w = a.largeurColonne, xr = x - a.gauche, n = a.colonnes.length;
   const i = Math.max(0, Math.min(n - 1, Math.floor(xr / w))), c = a.colonnes[i];
   const jours = C.ecartJours(c.debut, c.fin) + 1;
-  return C.ajouterJours(c.debut, Math.floor(((xr - i * w) / w) * jours));
+  return C.ajouterJours(c.debut, Math.floor(((xr - i * w) / w) * jours + 1e-7)); // une limite (à 1e-7 jour près) est le début du jour qui suit
 }
 
 const arbCas = fc.record({
@@ -50,21 +53,32 @@ function prepare(c: fc.RecordValue<typeof arbCas> extends never ? never : any) {
   return { a0, a, x0, x };
 }
 
-const ecartEnColonnes = (a: AxeDoigt, j1: string, j2: string) => Math.abs(xDeDate(a.colonnes, a.largeurColonne, j1) - xDeDate(a.colonnes, a.largeurColonne, j2)) / a.largeurColonne;
+/** La colonne (index) de l'axe qui contient le jour `iso`. */
+const colonneDe = (a: AxeDoigt, iso: string) => a.colonnes.findIndex(c => iso >= c.debut && iso <= c.fin);
+const colonneSous = (a: AxeDoigt, x: number) => Math.max(0, Math.min(a.colonnes.length - 1, Math.floor((x - a.gauche) / a.largeurColonne)));
 
-describe('CAL-LACHER-OU-DESSINE : date écrite = date annoncée = date sous le doigt', () => {
-  it('bord tiré : le bout de la barre se pose sous le doigt, à une colonne près', () => {
-    fc.assert(fc.property(arbCas, c => {
+describe('CAL-LACHER-OU-DESSINE et CAL-JOUR-EXACT : date écrite = date annoncée = date sous le doigt, sans tolérance', () => {
+  it('bord tiré, pris où que ce soit : le bout va au jour dont la colonne contient le doigt', () => {
+    fc.assert(fc.property(arbCas, fc.integer({ min: -3, max: 3 }), (c, prise) => {
       const { a0, a, x0, x } = prepare(c);
-      const bout = jourSous(a0, x0);
-      const ecrit = C.ajouterJours(bout, joursDuDoigt(a0, x0, a, x));
+      /* le bout de la barre, à quelques jours du doigt qui l'a pris (la zone du bord fait 22 px) */
+      const bout = C.ajouterJours(jourSous(a0, x0), prise);
+      const ecrit = C.ajouterJours(bout, joursJusquAuDoigt(a, x, bout));
       const sous = jourSous(a, x);
-      const e = ecartEnColonnes(a, ecrit, sous);
-      if (!(e <= 1 + 1e-6)) throw new Error(`écrit ${ecrit}, sous le doigt ${sous} : ${e.toFixed(2)} colonnes (${uniteColonne(a.colonnes[0])}, ${a.colonnes.length} col.)`);
+      if (ecrit !== sous) throw new Error(`écrit ${ecrit}, sous le doigt ${sous} (${uniteColonne(a.colonnes[0])}, ${a.colonnes.length} col.)`);
     }), { numRuns: RUNS });
   });
 
-  it('barre glissée : son début se pose sous le doigt, à une colonne près (annonce et écriture lisent le même pas)', () => {
+  it('bord tiré relu par l’écart du doigt : pris dans le jour du bout, il écrit le jour sous le doigt', () => {
+    fc.assert(fc.property(arbCas, c => {
+      const { a0, a, x0, x } = prepare(c);
+      const ecrit = C.ajouterJours(jourSous(a0, x0), joursDuDoigt(a0, x0, a, x));
+      const sous = jourSous(a, x);
+      if (ecrit !== sous) throw new Error(`écrit ${ecrit}, sous le doigt ${sous} (${uniteColonne(a.colonnes[0])}, ${a.colonnes.length} col.)`);
+    }), { numRuns: RUNS });
+  });
+
+  it('barre glissée : son début se pose dans la colonne sous le doigt (annonce et écriture lisent le même pas)', () => {
     fc.assert(fc.property(arbCas, c => {
       const { a0, a, x0, x } = prepare(c);
       const debut = jourSous(a0, x0);
@@ -72,9 +86,18 @@ describe('CAL-LACHER-OU-DESSINE : date écrite = date annoncée = date sous le d
       const k = pasDuDoigt(a0, x0, a, x);
       /* la date du pas, comme CalendrierTab l'annonce et l'écrit : un mois par colonne de mois, une semaine par colonne de semaine, un jour par jour */
       const ecrit = unite === 'mois' ? ajouterMois(debut, k) : C.ajouterJours(debut, unite === 'jour' ? k : k * 7);
+      const ce = colonneDe(a, ecrit), cs = colonneSous(a, x);
+      if (ce >= 0 && ce !== cs) throw new Error(`écrit ${ecrit} (colonne ${ce}), doigt dans la colonne ${cs} (${unite}, ${a.colonnes.length} col., k ${k})`);
+    }), { numRuns: RUNS });
+  });
+
+  it('barre glissée au jour sur un axe de semaines (CAL-JOUR) : son début va au jour sous le doigt', () => {
+    fc.assert(fc.property(arbCas, c => {
+      const { a0, a, x0, x } = prepare(c);
+      if (uniteColonne(a.colonnes[0]) !== 'semaine' || uniteColonne(a0.colonnes[0]) !== 'semaine') return; // CAL-JOUR : sur un axe de semaines seulement
+      const ecrit = C.ajouterJours(jourSous(a0, x0), Math.round(pasDuDoigt(a0, x0, a, x, true) * 7));
       const sous = jourSous(a, x);
-      const e = ecartEnColonnes(a, ecrit, sous);
-      if (!(e <= 1 + 1e-6)) throw new Error(`écrit ${ecrit}, sous le doigt ${sous} : ${e.toFixed(2)} colonnes (${unite}, ${a.colonnes.length} col., k ${k})`);
+      if (ecrit !== sous) throw new Error(`écrit ${ecrit}, sous le doigt ${sous} (${uniteColonne(a.colonnes[0])}, ${a.colonnes.length} col.)`);
     }), { numRuns: RUNS });
   });
 });
