@@ -2806,3 +2806,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (capture des Ventes au Calendrier, brasseur-23-11/1050-ventes.jpg) « Clicker sur sur une vente renvoie directement sur la vente, au lieu d'afficher la vue normal sur tableau »
 - (capture 10:49, brasseur-23-11/1049-intervalles.jpg : étiquettes S44…S2 posées sur les traits ; traits orange dessinés de part et d'autre de S52 et S53) « Avec l'échelle ce qui est un peu étrange c'est que une semaine, donc une durée est sur un trait alors que en théorie ça devrait être entre, la semaine S52 est entre le dimanche S51 et le lundi S53, ça fait beaucoup plus de sens pareil pour les moi, seul les jours sont fix »
 - (question : annuler les deux ventes « ZZ TEST — parcours » restées de tests de novembre ?) « Oui »
+- (citant « Chaque agent neuf passe ses 10 à 15 premières minutes à relire le contrat ») « C'est pas normal ça »
