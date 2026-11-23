@@ -7,7 +7,8 @@
  */
 import { parseDecimal } from '../../ui/numericInput';
 import { quantitesDe, normaliser, type LigneLocale, type Quantite } from './analyseLocale';
-import { dimensionDuClassement, ecartDePrix, prixDeClassement, type Dimension } from './prixUnitaire';
+import { dimensionDuClassement, ecartDePrix, prixDeClassement, prixEnChf, quantiteArticle, texteParUnite, type Dimension } from './prixUnitaire';
+import { convertirLongueur, mmSansUnite } from './longueurs';
 import { dispoDe, nomArticle, sourceDuCritere, statutDe, type Article, type CarnetDoc, type Caracteristique, type Critere, type DonneesCarnet, type StatutCarnet, type Valeur } from './modele';
 
 type Donnees = Pick<DonneesCarnet, 'criteres' | 'facons' | 'articles' | 'choix'>;
@@ -101,7 +102,8 @@ function valeurPropre(a: Article, col: Pick<Colonne, 'nom' | 'unite'>): Valeur |
   const cle = Object.keys(a.valeurs).find(k => normaliser(k) === normaliser(col.nom));
   const v = cle ? a.valeurs[cle] : undefined;
   if (!v) return undefined;
-  if (col.unite && v.unite && v.unite !== col.unite) return undefined;
+  if (col.unite && v.unite && v.unite !== col.unite) return convertirLongueur(col.nom, col.unite, v, nombreDe(v.valeur)) ?? undefined;
+  if (col.unite && !v.unite) return mmSansUnite(col.nom, col.unite, v, nombreDe(v.valeur)) ?? v;
   return v;
 }
 
@@ -218,6 +220,11 @@ export interface LigneTableau {
   /** « dès » : le prix lu est un plancher (D419, A1 et B1) */
   prixDes?: true;
   devise?: string;
+  /** T28-6, T30-4 : le prix qui classe (centimes de franc, par kg ou par L quand les quantités sont dites) ; absent : inconnu en francs. */
+  prixClasse?: number;
+  /** T28-6 : la quantité que le nom de l'article dit (« 100 g », « 1 kg ») et le prix ramené à l'unité (« 72,50 CHF/kg »). */
+  quantite?: string;
+  parUnite?: string;
   /** D447 : la taxe dite par la page, le port vers la Suisse lu et le cours du jour (BCE) ; absents quand la page ne les donne pas. */
   taxe?: Article['taxe'];
   livraison?: Article['livraison'];
@@ -252,6 +259,8 @@ export interface LigneTableau {
  */
 export interface Tableau {
   colonnes: Colonne[]; lignes: LigneTableau[]; rangePar: string | null; aRelire: Article[];
+  /** T28-6 : le prix classe au kilo (masse) ou au litre (volume) quand au moins deux offres disent leur quantité. */
+  prixParUnite?: Dimension;
   /** Critique 6, n° 19 : les caractéristiques qui rangent, dans l'ordre (« tient 80 °C », « le débit ») ; « le prix » s'il range seul. */
   rangeParNoms?: string[];
 }
@@ -274,17 +283,22 @@ function raisonEcarte(c: Donnees, a: Article): string | null {
 }
 
 /** Les clés de classement, dans l'ordre : les caractéristiques des critères (sens connu), puis le prix s'il départage (même devise). */
-type Cle = { sorte: 'colonne'; colonne: Colonne } | { sorte: 'prix'; /** T28-6 : classé au prix par kg (ou par L) quand les offres disent leur quantité */ parUnite?: Dimension };
+type Cle = { sorte: 'colonne'; colonne: Colonne } | { sorte: 'prix'; /** T28-6 : classé au prix par kg (ou par L) quand les offres disent leur quantité */ parUnite?: Dimension; /** T30-4 : une offre en euros est passée en francs au cours lu */ converti?: true };
 
-/** Le prix classe s'il est connu sur au moins 2 articles en lice, tous dans la même devise ; sinon il ne dit rien de sûr. */
+/**
+ * Le prix classe s'il est connu EN FRANCS sur au moins 2 articles en lice (T30-4 : un prix en euros y entre au cours lu avec l'article ;
+ * sans ce cours il n'est pas classé, jamais deviné).
+ */
 function prixClasse(enLice: readonly Article[]): boolean {
-  const connus = enLice.filter(a => a.prixCentimes !== undefined && Number.isFinite(a.prixCentimes));
-  return connus.length >= 2 && new Set(connus.map(a => a.devise ?? 'CHF')).size === 1;
+  return enLice.filter(a => prixEnChf(a) !== null).length >= 2;
 }
+
+/** T30-4 : au moins une offre en lice a été passée en francs pour être classée. */
+const aUnPrixConverti = (enLice: readonly Article[]): boolean => enLice.some(a => a.prixCentimes !== undefined && (a.devise ?? 'CHF').toUpperCase() !== 'CHF' && prixEnChf(a) !== null);
 
 function clesDe(colonnes: readonly Colonne[], enLice: readonly Article[]): Cle[] {
   const cles: Cle[] = colonnes.filter(k => k.critereId && k.sens !== 'texte').map(colonne => ({ sorte: 'colonne' as const, colonne }));
-  if (prixClasse(enLice)) { const dim = dimensionDuClassement(enLice); cles.push(dim ? { sorte: 'prix', parUnite: dim } : { sorte: 'prix' }); }
+  if (prixClasse(enLice)) { const dim = dimensionDuClassement(enLice); const converti = aUnPrixConverti(enLice); cles.push({ sorte: 'prix', ...(dim ? { parUnite: dim } : {}), ...(converti ? { converti: true as const } : {}) }); }
   return cles;
 }
 
@@ -303,12 +317,12 @@ function trier(articles: readonly Article[], cles: readonly Cle[]): Article[] {
 
 /** La règle en mots, tirée des clés mêmes du tri : ce qu'affiche l'en-tête est ce qui classe (P32). */
 function rangeParCles(cles: readonly Cle[]): string | null {
-  const noms = cles.map(k => (k.sorte === 'prix' ? (k.parUnite === 'volume' ? 'le prix au litre' : k.parUnite ? 'le prix au kilo' : 'le prix') : avecArticle(k.colonne.nom, k.colonne.sens)));
+  const noms = cles.map(k => (k.sorte === 'prix' ? `${k.parUnite === 'volume' ? 'le prix au litre' : k.parUnite ? 'le prix au kilo' : 'le prix'}${k.converti ? ' en CHF' : ''}` : avecArticle(k.colonne.nom, k.colonne.sens)));
   if (!noms.length) return null;
   return noms.length === 1 ? noms[0] : `${noms[0]} d'abord, ${noms.slice(1).map(n => `puis ${n}`).join(', ')}`;
 }
 
-const prixComparable = (a: Article, b: Article): boolean => a.prixCentimes !== undefined && b.prixCentimes !== undefined && (a.devise ?? 'CHF') === (b.devise ?? 'CHF') && ecartDePrix(a, b) !== null;
+const prixComparable = (a: Article, b: Article): boolean => ecartDePrix(a, b) !== null;
 
 /**
  * `a` est-il moins bien partout que `b` (dominé au sens de Pareto) ? Sur les caractéristiques comparables (connues des deux, sens plus,
@@ -424,7 +438,13 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
   /* L4-4 : deux colonnes, deux lignes ou deux candidats de la bulle G8 ne se nomment jamais pareil */
   const ordre = [...enLice, ...ecartes];
   const noms = new Map(nomsDistincts(ordre).map((n, i) => [ordre[i].id, n]));
+  const clePrix = cles.find(k => k.sorte === 'prix');
+  const dimPrix = clePrix && clePrix.sorte === 'prix' ? clePrix.parUnite ?? null : null;
   const ligne = (a: Article, rang: number | null): LigneTableau => {
+    const chf = prixEnChf(a);
+    const classe = clePrix ? prixDeClassement(a, dimPrix) : null;
+    const quantite = quantiteArticle(a);
+    const parUnite = quantite && chf !== null ? texteParUnite(a, chf, 'CHF') : null;
     const cellules: Record<string, Valeur | undefined> = {};
     for (const k of colonnes) { const v = valeurDe(a, k); if (v) cellules[k.nom] = v; }
     const raison = raisonEcarte(d, a);
@@ -440,6 +460,7 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
     return {
       articleId: a.id, nom: noms.get(a.id) ?? nomArticle(a), rang, cellules,
       ...(a.prixCentimes !== undefined ? { prixCentimes: a.prixCentimes } : {}), ...(a.prixDes ? { prixDes: true as const } : {}),
+      ...(classe !== null ? { prixClasse: classe } : {}), ...(quantite ? { quantite: quantite.texte } : {}), ...(parUnite ? { parUnite } : {}),
       ...(a.devise ? { devise: a.devise } : {}),
       ...(a.taxe ? { taxe: a.taxe } : {}), ...(a.livraison ? { livraison: a.livraison } : {}), ...(a.change ? { change: a.change } : {}),
       ...(dispoDe(a) ? { dispo: dispoDe(a) } : {}), ...(a.vendeur ? { vendeur: a.vendeur } : {}), ...(a.pays ? { pays: a.pays } : {}),
@@ -454,7 +475,7 @@ export function tableau(c: CarnetDoc | Donnees): Tableau | null {
   const rangeParNoms = cles.some(k => k.sorte === 'colonne')
     ? cles.flatMap(k => (k.sorte === 'colonne' ? [avecArticle(k.colonne.nom, k.colonne.sens)] : []))
     : cles.length ? ['le prix'] : [];
-  return { colonnes, lignes: [...enLice.map((a, i) => ligne(a, i + 1)), ...ecartes.map(a => ligne(a, null))], rangePar: rangeParCles(cles), aRelire, rangeParNoms };
+  return { colonnes, lignes: [...enLice.map((a, i) => ligne(a, i + 1)), ...ecartes.map(a => ligne(a, null))], rangePar: rangeParCles(cles), aRelire, rangeParNoms, ...(dimPrix ? { prixParUnite: dimPrix } : {}) };
 }
 
 /**
@@ -540,8 +561,10 @@ export function nombreTexte(v: Valeur['valeur'] | number): string {
 /** « 2 600 CHF » ; `null` si le prix est inconnu (jamais 0). */
 export function prixTexte(centimes: number | undefined, devise?: string): string | null {
   if (centimes === undefined || !Number.isFinite(centimes)) return null;
-  const f = centimes / 100;
-  return `${nombreTexte(Number.isInteger(f) ? f : Math.round(f * 100) / 100)} ${devise ?? 'CHF'}`;
+  const c = Math.round(centimes);
+  /* T30-12 : deux décimales dès qu'il y en a (72,50 CHF, jamais 72,5) */
+  const texte = c % 100 === 0 ? nombreTexte(c / 100) : `${c < 0 && Math.trunc(c / 100) === 0 ? '−' : ''}${nombreTexte(Math.trunc(c / 100))},${String(Math.abs(c) % 100).padStart(2, '0')}`;
+  return `${texte} ${devise ?? 'CHF'}`;
 }
 
 /** La place d'un article sur une colonne (ou le prix), parmi les articles en lice dont la valeur est connue. */
@@ -608,8 +631,14 @@ function placesSelon(t: Tableau, articleId: string, tous: boolean): Place[] {
     return placeSur(lignes, tous, l, k.nom, k.unite, k.sens, x => nombreCellule(x, k), texte, !!k.critereId);
   };
   for (const k of t.colonnes.filter(x => x.critereId)) { const p = deCol(k); if (p) sortie.push(p); }
-  const prix = placeSur(lignes, tous, l, 'prix', devise, 'moins', x => x.prixCentimes ?? null, prixTexte(l.prixCentimes, l.devise), false);
-  if (prix) sortie.push(prix);
+  /* T28-6, T30-4 : le rang du prix se calcule sur le prix qui classe (en francs, au kilo si les quantités sont dites), jamais sur le prix affiché */
+  const unitePrix = t.prixParUnite ? (t.prixParUnite === 'volume' ? 'CHF/L' : 'CHF/kg') : l.prixClasse !== undefined && (l.devise ?? 'CHF') !== devise ? 'CHF' : devise;
+  const texteDuPrix = prixTexte(l.prixCentimes, l.devise);
+  const prix = placeSur(lignes, tous, l, 'prix', unitePrix, 'moins', x => x.prixClasse ?? null, texteDuPrix === null ? null : l.parUnite && t.prixParUnite ? `${texteDuPrix} · ${l.parUnite}` : texteDuPrix, false);
+  if (prix) {
+    if (prix.rangColonne && t.prixParUnite) prix.rangColonne = prix.rangColonne.replace(/pour le prix$/, t.prixParUnite === 'volume' ? 'pour le prix au litre' : 'pour le prix au kilo');
+    sortie.push(prix);
+  }
   for (const k of t.colonnes.filter(x => !x.critereId)) { const p = deCol(k); if (p) sortie.push(p); }
   return sortie;
 }

@@ -91,6 +91,9 @@
 .cnl-barre { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border: 1px solid var(--c-ia) !important; border-radius: 999px; background: var(--c-iabg) !important; }
 .cnl-dock[data-phase=fin] .cnl-barre { border-color: var(--c-zone) !important; background: rgb(var(--area-stocks) / .12) !important; }
 .cnl-barre-quoi { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cnl-barre[data-deux] { height: 40px; }
+.cnl-barre-deux { display: flex; flex-direction: column; line-height: 16px; }
+.cnl-barre-deux > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cnl-comptes { display: inline-flex; gap: 3px; flex: none; }
 .cnl-comptes > span { display: inline-flex; align-items: center; gap: 1px; height: 20px; padding: 0 5px; border-radius: 999px; font-family: var(--c-mono); font-variant-numeric: tabular-nums; }
 .cnl-comptes [data-k=trouve] { background: rgb(var(--area-stocks) / .16); color: var(--c-zonet); }
@@ -102,6 +105,15 @@
 @keyframes cnl-tour { to { transform: rotate(360deg); } }
 @keyframes cnl-respire { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .cnl-tourne, .cnl-attend, .cnl-segments i { animation: none; } }
+
+/* T30-2 : la saisie d'un lien mort (nom, prix), 28 px, dans la carte d'échec */
+.cnl-saisie { display: flex; flex-direction: column; gap: 6px; padding-top: 2px; }
+.cnl-champ { box-sizing: border-box; width: 100%; min-height: 32px; padding: 0 10px; border: 1px solid var(--c-line2) !important; border-radius: 8px; background: var(--c-bg) !important; color: var(--c-ink); font: inherit; }
+.cnl-champ[aria-invalid=true] { border-color: var(--c-rouge) !important; }
+.cnl-prix-ligne { display: flex; align-items: center; gap: 6px; }
+.cnl-champ-prix { width: 9em; font-family: var(--c-mono); }
+.cnl-saisie-gestes { display: flex; gap: 6px; }
+.cnl-garder { border-color: var(--c-zone) !important; }
 
 /* T28-4 : la relecture « IA plus forte » en cours : le bouton est là, éteint */
 .cnl-bouton:disabled { opacity: .6; cursor: progress; }

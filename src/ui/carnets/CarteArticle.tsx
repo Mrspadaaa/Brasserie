@@ -83,6 +83,20 @@ export function valeursLues(valeurs: Record<string, ValeurV>, sauf?: string | nu
   });
 }
 
+/** T30-8 : combien de caractéristiques la carte rangée montre au plus (la fiche montre le reste). */
+export const VALEURS_VUES_MAX = 3;
+
+/**
+ * T30-8 : « lu sur la page : nom, prix, photo, 8 caractéristiques » : les noms des caractéristiques que la carte montre déjà (ou que la fiche porte)
+ * ne se répètent pas ; ils se comptent. Un seul nom se dit « 1 caractéristique ».
+ */
+export function luEnBref(lu: readonly string[], valeurs: Record<string, unknown>): string[] {
+  const noms = new Set(Object.keys(valeurs));
+  const champs = lu.filter(x => !noms.has(x));
+  const n = lu.length - champs.length;
+  return n > 0 ? [...champs, `${n} caractéristique${n > 1 ? 's' : ''}`] : champs;
+}
+
 /**
  * Ce que la page a donné (g5:v06-10, « lu sur la page : nom, prix, photo, débit, °C ») quand le geste ne le passe pas : lu sur
  * l'article même. Un champ ne se dit que s'il existe ; les caractéristiques se nomment (« débit »), celle du verdict exclue.
@@ -146,7 +160,8 @@ export function CarteArticle(p: CarteArticleProps) {
     const verdict = p.verdict ?? verdictDe(a, p.critere) ?? undefined;
     const sujet = sujetDuVerdict(verdict);
     const valeurs = valeursLues(a.valeurs, sujet);
-    const lu = (p.luSurPage ?? luDeLArticle(a, sujet)).filter(x => x !== sujet);
+    const lu = luEnBref((p.luSurPage ?? luDeLArticle(a, sujet)).filter(x => x !== sujet), a.valeurs);
+    const vues = valeurs.slice(0, VALEURS_VUES_MAX), reste = valeurs.length - vues.length;
     const origine = [a.domaine ?? a.vendeur, a.pays].filter(Boolean).join(' · ');
     const haut = (
       <>
@@ -154,7 +169,7 @@ export function CarteArticle(p: CarteArticleProps) {
         <span className="cn-article-tx">
           <b className="cn-article-nom">{a.nom}</b>
           {(origine || estExemple(a)) && <span className="cn-mut">{origine}{estExemple(a) && <> <Provenance origine="exemple" /></>}</span>}
-          {valeurs.length > 0 && <span className="cn-encre-2 cn-mono-chiffres cn-valeurs-lues">{valeurs.join(' · ')}</span>}
+          {valeurs.length > 0 && <span className="cn-encre-2 cn-mono-chiffres cn-valeurs-lues">{vues.join(' · ')}{reste > 0 ? <span className="cn-mut"> · +{reste}</span> : null}</span>}
           {(prix || dispoDe(a)) && (
             <span className="cn-ligne cn-article-pied">
               {prix && <PrixTexte a={a} taux={p.taux} />}

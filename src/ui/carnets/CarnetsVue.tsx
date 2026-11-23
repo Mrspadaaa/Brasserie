@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { FinancialPlan } from '../../domain/finance/types';
 import type { CreativeItem } from '../../types';
 import { estLienSeul, lireCarnets, lireMessages, nouvelIdCarnet, titreDePhrase, type CarnetDoc } from '../../domain/carnets/modele';
-import { appliquerEcritures, liensDe, marquerIntrouvable, modifierNote, ranger, renommer, type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat } from '../../domain/carnets/operations';
+import { appliquerEcritures, completerLienMort, liensDe, modifierNote, ranger, renommer, type Destination, type EcritureCarnet, type Journal, type LigneARanger, type Resultat } from '../../domain/carnets/operations';
 import { tableau as tableauDe } from '../../domain/carnets/comparer';
 import { analyserTexte, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { nommeLeCarnet, rattacher } from '../../domain/carnets/rattacher';
@@ -26,7 +26,7 @@ import { retourDeMessage } from './retourCarnet';
 import { creerRangementCarnets } from './rangementCarnets';
 import { suiviLocal } from '../../domain/carnets/lecture';
 import { sansArticleEnLecture } from '../../domain/carnets/comptes';
-import { carnetAOuvrirDepuisBarre } from './lectureRegles';
+import { avecBon, carnetAOuvrirDepuisBarre, carteEnBarre, garderBons, lectureIci, lireBons, type Bons } from './lectureRegles';
 import type { ArticleV } from './EtatIA';
 import type { LectureUi } from './apercuCarnet';
 import { actionsCarnet } from './actionsCarnet';
@@ -55,6 +55,8 @@ export function CarnetsVue(p: CarnetsVueProps) {
   /** D448 : la carte des étapes repliée en barre (v01) ; la carte de fin ou d'échec fermée (par son message). */
   const [lectureRepliee, setLectureRepliee] = useState(false);
   const [lectureFermee, setLectureFermee] = useState<string | null>(null);
+  /** T30-5 : « C'est le bon » gardé sur l'appareil, par message de lien. */
+  const [bonsLectures, setBonsLectures] = useState<Bons>(() => lireBons(typeof localStorage === 'undefined' ? undefined : localStorage));
   /** T26-4 : l'inverse du retrait d'un lien mort, par message (« Compléter » rend l'article). */
   const inversesLiens = useRef(new Map<string, EcritureCarnet[]>());
   /** IA-ETAPES-VISIBLES : les lectures lancées, gardées sur l'appareil jusqu'à leur fin (réouverture). Sans IA : rien. */
@@ -176,24 +178,30 @@ export function CarnetsVue(p: CarnetsVueProps) {
     const m = lireMessages(magasin.lire()).find(x => x.id === messageId);
     return m?.carnetMessage.effets.find(e => e.cible === 'article')?.carnetId ?? m?.carnetMessage.effets[0]?.carnetId;
   };
+  /* T30-1 : la carte entière n'est que dans la vue du lien ; quitter cette vue la replie en barre (v01) sans toucher « Replier » */
+  const lectureVue = 'lecture' in etatR && 'messageId' in etatR ? etatR : undefined;
+  const lectureIciVue = !lectureVue?.lecture || lectureIci({ carnetDuLien: lectureVue.lecture.carnetId, carnetDuMessage: carnetDuMessage(lectureVue.messageId), idOuvert });
+  useEffect(() => { if (!lectureIciVue) setLectureRepliee(true); }, [lectureIciVue]);
   const lectureUi: LectureUi = {
-    replie: lectureRepliee, setReplie: setLectureRepliee, fermee: lectureFermee, setFermee: setLectureFermee, exemple: mode === 'simule',
+    replie: lectureRepliee, setReplie: setLectureRepliee, ici: lectureIciVue, enBarre: carteEnBarre(lectureRepliee, lectureIciVue), fermee: lectureFermee, setFermee: setLectureFermee, exemple: mode === 'simule',
     onEscalader: (id, t) => { setLectureFermee(null); void rangement.escalader(id, t); },
     /* T28-3 : « Compléter » rend l'article du lien mort (marqué « introuvable », jamais « lecture… ») et ouvre sa fiche : nom, prix à saisir */
-    onCompleter: id => {
-      setLectureFermee(id);
+    onCompleter: (id, saisie) => {
+      /* T30-2 : le brasseur écrit le nom (et le prix) ; l'article du lien mort est retrouvé (son message, sinon la même adresse) ou créé dans le carnet du lien */
       const inv = inversesLiens.current.get(id);
-      if (!inv) return;
-      inversesLiens.current.delete(id);
       const avant = magasin.lire();
-      annuler(inv);
-      const apres = appliquerEcritures(avant, inv);
-      appliquer(marquerIntrouvable(apres, { messageId: id }));
-      for (const c of lireCarnets(apres, { archives: true })) {
-        const a = c.carnet.articles.find(x => x.messageId === id);
-        if (a) { setVue({ sorte: 'article', id: c.id, articleId: a.id }); return; }
-      }
+      const base = inv ? appliquerEcritures(avant, inv) : avant;
+      const lien = 'lecture' in etatR ? etatR.lecture : undefined;
+      const carnetId = lien?.carnetId ?? carnetDuMessage(id) ?? idOuvert;
+      const r = completerLienMort(base, { messageId: id, url: lien?.url ?? '', carnetId, nom: saisie.nom, ...(saisie.prixCentimes !== undefined ? { prixCentimes: saisie.prixCentimes } : {}) });
+      if (!r.ok) { p.onMessage?.((r as { raison: string }).raison); return; }
+      if (inv) { inversesLiens.current.delete(id); annuler(inv); }
+      appliquer(r);
+      setLectureFermee(id);
+      if (carnetId && carnetId !== idOuvert) setVue({ sorte: 'carnet', id: carnetId });
     },
+    bons: id => bonsLectures[id] ?? [],
+    marquerBon: (id, cle) => setBonsLectures(b => { const n = avecBon(b, id, cle); if (n !== b) garderBons(typeof localStorage === 'undefined' ? undefined : localStorage, n); return n; }),
     /* T28-2 : la barre repliée touchée depuis un autre carnet ouvre le carnet du lien (celui où il a été collé) */
     deplier: id => {
       const lien = etatR.etape !== 'repos' && etatR.etape !== 'apercu' && 'lecture' in etatR ? etatR.lecture?.carnetId : undefined;

@@ -559,6 +559,44 @@ export function marquerIntrouvable(etat: Etat, args: { messageId: string }): Res
   return b.resultat('Article gardé : à compléter');
 }
 
+/**
+ * T30-2 (test en ligne du tour 30 : « Compléter » sur un lien mort ne donnait qu'un toast « Article introuvable. ») : le brasseur écrit lui-même
+ * le nom (et le prix, en francs) de l'article dont le lien ne mène plus à rien. L'article est celui du message ; sinon celui du carnet qui porte
+ * déjà cette adresse (un lien collé deux fois ne laisse pas d'article au second message) ; sinon il est créé dans `carnetId`. Il reste « lien
+ * introuvable » (sa page ne se lit plus) mais prend nom et prix, de provenance « vous » : il se compte et se classe. Le prix est facultatif.
+ */
+export function completerLienMort(etat: Etat, args: { messageId: string; url: string; carnetId?: string | null; nom: string; prixCentimes?: number }): Resultat {
+  const nom = args.nom.trim();
+  if (!nom) return refus('Le nom de l’article est à écrire.');
+  if (args.prixCentimes !== undefined && (!Number.isSafeInteger(args.prixCentimes) || args.prixCentimes <= 0)) return refus('Prix illisible.');
+  const b = new Brouillon(etat);
+  const canon = lienCanonique(args.url);
+  const sansLecture = (x: Article) => x.lecture !== 'lue';
+  let cible: { c: CarnetDoc; a: Article } | null = null;
+  for (const d of etat) {
+    if (d.type !== 'carnet') continue;
+    const c = b.carnet(d.id);
+    const a = c?.carnet.articles.find(x => x.messageId === args.messageId && sansLecture(x)) ?? (canon ? c?.carnet.articles.find(x => x.url && lienCanonique(x.url) === canon && sansLecture(x)) : undefined);
+    if (c && a) { cible = { c, a }; break; }
+  }
+  if (!cible) {
+    const c = args.carnetId ? b.carnet(args.carnetId) : null;
+    if (!c) return refus('Carnet introuvable.');
+    let domaine: string | undefined;
+    try { domaine = new URL(args.url).hostname.replace(/^www\./, ''); } catch { domaine = undefined; }
+    const a: Article = sansIndefinis({ id: nouvelIdCarnet('ART'), url: args.url, domaine, valeurs: {}, lecture: 'introuvable' as const, messageId: args.messageId });
+    c.carnet.articles.push(a);
+    cible = { c, a };
+  }
+  const { c, a } = cible;
+  a.nom = nom;
+  a.lecture = 'introuvable';
+  a.origine = 'vous';
+  if (args.prixCentimes !== undefined) { a.prixCentimes = args.prixCentimes; a.devise = 'CHF'; delete a.prixDes; delete a.taxe; delete a.prixTTCCentimes; delete a.change; }
+  poser(b, c);
+  return b.resultat('Article gardé');
+}
+
 /* ---------- veille (R31) ---------- */
 
 /** Allumer ou éteindre la veille d'un article. Allumée : `{ active: true, depuis }`, sans `releveLe` (relève sous accord). Éteinte : retirée. */

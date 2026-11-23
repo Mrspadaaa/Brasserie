@@ -9,6 +9,17 @@
 import type { Article } from './modele';
 
 export type Dimension = 'masse' | 'volume';
+type PrixArticle = Pick<Article, 'nom' | 'prixCentimes'> & Partial<Pick<Article, 'devise' | 'change'>>;
+
+/**
+ * T30-4 : le prix en centimes de franc ; un prix en euros passe au cours que la lecture a posé (`change`, BCE) ; sans cours, il reste
+ * inconnu en francs (`null`, jamais 0, jamais un cours deviné). C'est ce prix-là qui classe, quelle que soit la devise de la page.
+ */
+export function prixEnChf(a: Pick<Article, 'prixCentimes'> & Partial<Pick<Article, 'devise' | 'change'>>): number | null {
+  if (a.prixCentimes === undefined || !Number.isFinite(a.prixCentimes)) return null;
+  if ((a.devise ?? 'CHF').toUpperCase() === 'CHF') return a.prixCentimes;
+  return a.change && a.change.taux > 0 ? a.prixCentimes * a.change.taux : null;
+}
 /** `base` : la quantité en kg (masse) ou en L (volume) ; `texte` : « 100 g », « 1 kg », « 2,5 L », comme on l'écrit à côté du prix. */
 export interface QuantiteArticle { dim: Dimension; base: number; texte: string }
 
@@ -39,17 +50,18 @@ export function quantiteArticle(a: Pick<Article, 'nom'>): QuantiteArticle | null
 }
 
 /** Le prix (centimes de sa devise) pour 1 kg ou 1 L ; `null` : prix ou quantité inconnus. */
-export function prixParUnite(a: Pick<Article, 'nom' | 'prixCentimes'>): { centimes: number; dim: Dimension } | null {
+export function prixParUnite(a: PrixArticle): { centimes: number; dim: Dimension } | null {
   const q = quantiteArticle(a);
-  if (!q || a.prixCentimes === undefined || !Number.isFinite(a.prixCentimes)) return null;
-  return { centimes: a.prixCentimes / q.base, dim: q.dim };
+  const chf = prixEnChf(a);
+  if (!q || chf === null) return null;
+  return { centimes: chf / q.base, dim: q.dim };
 }
 
 /**
  * Le classement au prix se fait par unité quand au moins deux offres en lice portent une quantité de même dimension (la plus fréquente ;
  * masse en cas d'égalité) ; sinon, le prix tel quel, comme avant. `null` : classement au prix affiché.
  */
-export function dimensionDuClassement(articles: readonly Pick<Article, 'nom' | 'prixCentimes'>[]): Dimension | null {
+export function dimensionDuClassement(articles: readonly PrixArticle[]): Dimension | null {
   const n: Record<Dimension, number> = { masse: 0, volume: 0 };
   for (const a of articles) { const p = prixParUnite(a); if (p) n[p.dim] += 1; }
   if (n.masse < 2 && n.volume < 2) return null;
@@ -57,8 +69,8 @@ export function dimensionDuClassement(articles: readonly Pick<Article, 'nom' | '
 }
 
 /** La valeur qui classe un article : son prix par unité (dimension du classement), sinon son prix ; `null` : inconnu (classé après les connus). */
-export function prixDeClassement(a: Pick<Article, 'nom' | 'prixCentimes'>, dim: Dimension | null): number | null {
-  if (!dim) return a.prixCentimes ?? null;
+export function prixDeClassement(a: PrixArticle, dim: Dimension | null): number | null {
+  if (!dim) return prixEnChf(a);
   const p = prixParUnite(a);
   return p && p.dim === dim ? p.centimes : null;
 }
@@ -67,11 +79,12 @@ export function prixDeClassement(a: Pick<Article, 'nom' | 'prixCentimes'>, dim: 
  * Deux offres se comparent au prix : même devise (vérifiée ailleurs) et, si l'une des deux dit sa quantité, les deux la disent dans la même
  * dimension. Rend l'écart `b - a` (> 0 : `a` moins cher), au prix par unité quand il y a des quantités ; `null` : non comparables.
  */
-export function ecartDePrix(a: Pick<Article, 'nom' | 'prixCentimes'>, b: Pick<Article, 'nom' | 'prixCentimes'>): number | null {
-  if (a.prixCentimes === undefined || b.prixCentimes === undefined) return null;
+export function ecartDePrix(a: PrixArticle, b: PrixArticle): number | null {
+  const ca = prixEnChf(a), cb = prixEnChf(b);
+  if (ca === null || cb === null) return null;
   const pa = prixParUnite(a), pb = prixParUnite(b);
   if (pa || pb) return pa && pb && pa.dim === pb.dim ? pb.centimes - pa.centimes : null;
-  return b.prixCentimes - a.prixCentimes;
+  return cb - ca;
 }
 
 /** « 72,50 CHF/kg » : le prix par unité d'un article (`centimes` dans la devise donnée) ; `null` sans quantité lisible. */

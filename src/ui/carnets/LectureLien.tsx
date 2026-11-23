@@ -14,6 +14,7 @@ import { ArrowRightToLine, Check, ChevronDown, ChevronUp, CircleAlert, CircleChe
 import { compterEtapes, duree, lignesEtapes, type LigneEtape, type StatutVu } from '../../domain/carnets/lecture';
 import type { LectureEnCours } from './rangement';
 import { montant, type ArticleV } from './EtatIA';
+import { parsePrix } from '../../domain/finance/upgradeRing';
 import { boutonEscalader, type Relecture } from './lectureRegles';
 import './carnets.css';
 import './lecture-lien.css';
@@ -85,6 +86,38 @@ function LigneEtapeV({ l, mot = true }: { l: LigneEtape; mot?: boolean }) {
   );
 }
 
+/** Ce que le brasseur écrit pour un lien mort : le nom de l'article, et son prix en francs (centimes) s'il le sait. */
+export interface SaisieLienMort { nom: string; prixCentimes?: number }
+
+/** T30-2 : la saisie d'un article dont le lien ne mène plus à rien (base-echec : « Compléter, ou redonner à l'IA »). */
+function SaisieMort({ onGarder, onAnnuler }: { onGarder: (s: SaisieLienMort) => void; onAnnuler: () => void }) {
+  const [nom, setNom] = useState('');
+  const [prix, setPrix] = useState('');
+  const [refus, setRefus] = useState<string | null>(null);
+  const valider = () => {
+    const n = nom.trim();
+    if (!n) { setRefus('Le nom de l’article est à écrire.'); return; }
+    const t = prix.trim();
+    const c = t ? parsePrix(t) : undefined;
+    if (t && c === null) { setRefus(`« ${t} » : ce n’est pas un prix.`); return; }
+    onGarder({ nom: n, ...(c !== undefined && c !== null ? { prixCentimes: c } : {}) });
+  };
+  return (
+    <form className="cnl-saisie" data-lecture-saisie onSubmit={e => { e.preventDefault(); valider(); }}>
+      <input type="text" enterKeyHint="next" autoComplete="off" autoFocus className="cnl-champ" aria-label="Nom de l’article" placeholder="Nom de l’article" aria-invalid={refus && !nom.trim() ? true : undefined} value={nom} onChange={e => { setNom(e.target.value); setRefus(null); }} />
+      <span className="cnl-prix-ligne">
+        <input type="text" inputMode="decimal" enterKeyHint="done" autoComplete="off" className="cnl-champ cnl-champ-prix" aria-label="Prix en francs" placeholder="Prix (facultatif)" value={prix} onChange={e => { setPrix(e.target.value); setRefus(null); }} />
+        <span className="cn-mut">CHF</span>
+      </span>
+      <span className="cnl-saisie-gestes">
+        <button type="submit" className="cnl-bouton cnl-garder"><Check size={16} aria-hidden /> Garder</button>
+        <button type="button" className="cnl-bouton" onClick={onAnnuler}>Annuler</button>
+      </span>
+      {refus && <p role="alert" className="cn-rouge">{refus}</p>}
+    </form>
+  );
+}
+
 export interface LectureLienProps {
   lecture: LectureEnCours;
   phase: 'en-cours' | 'fin' | 'echec';
@@ -97,7 +130,11 @@ export interface LectureLienProps {
   onOuvrirArticle?: () => void;
   onEscalader?: () => void;
   onAutreLien?: () => void;
-  onCompleter?: () => void;
+  /** T30-2 : « Compléter » ouvre une saisie (nom, prix) ; ceci reçoit ce que le brasseur a écrit. */
+  onCompleter?: (saisie: SaisieLienMort) => void;
+  /** T30-5 : les questions déjà réglées d'un « C'est le bon » (gardées par l'écran) et le geste qui en règle une. */
+  bons?: readonly string[];
+  onBon?: (cle: string) => void;
   onRetirer?: () => void;
   /** T28-4 : l'échec relu avec l'IA plus forte : en cours (bouton éteint, étape qui tourne) ou finie (toujours introuvable). */
   relecture?: Relecture;
@@ -117,6 +154,7 @@ export function LectureLien(p: LectureLienProps) {
   const c = compterEtapes(lignes);
   const ecoule = duree((enCours ? maintenant : l.fin ?? maintenant) - (l.debut ?? maintenant));
   const exemple = p.exemple ? <span className="cn-exemple">exemple</span> : null;
+  const [saisie, setSaisie] = useState(false);
 
   if (phase === 'echec') {
     const page = lignes.find(x => x.cle === 'page');
@@ -145,7 +183,7 @@ export function LectureLien(p: LectureLienProps) {
           )}
           {pasLancees > 0 && rel !== 'en-cours' && <li className="cnl-etape cnl-pas-lancees" data-lecture-etape data-statut="pas-lancee"><CircleDashed size={16} aria-hidden className="cnl-ico" /><span className="cnl-nom">{pasLancees} étapes pas lancées : rien n’est inventé</span></li>}
         </ol>
-        <div className="cnl-actions">
+        {saisie && p.onCompleter ? <SaisieMort onGarder={s => { setSaisie(false); p.onCompleter!(s); }} onAnnuler={() => setSaisie(false)} /> : <div className="cnl-actions">
           {p.onEscalader && bouton === 'actif' && (
             <button type="button" className="cnl-bouton cnl-escalader" data-booster="escalader" onClick={p.onEscalader}>
               <Sparkles size={16} aria-hidden /> Escalader <span className="cnl-sous">IA plus forte</span>
@@ -157,9 +195,9 @@ export function LectureLien(p: LectureLienProps) {
             </button>
           )}
           {p.onAutreLien && rel !== 'en-cours' && <button type="button" className="cnl-bouton" onClick={p.onAutreLien}><Link2 size={16} aria-hidden /> Autre lien</button>}
-          {p.onCompleter && rel !== 'en-cours' && <button type="button" className="cnl-bouton" onClick={p.onCompleter}><Pencil size={16} aria-hidden /> Compléter</button>}
+          {p.onCompleter && rel !== 'en-cours' && <button type="button" className="cnl-bouton" onClick={() => setSaisie(true)}><Pencil size={16} aria-hidden /> Compléter</button>}
           {p.onRetirer && rel !== 'en-cours' && <button type="button" className="cnl-bouton" onClick={p.onRetirer}><Trash2 size={16} aria-hidden /> Retirer</button>}
-        </div>
+        </div>}
       </section>
     );
   }
@@ -208,7 +246,10 @@ export function LectureLien(p: LectureLienProps) {
 function FinLecture(p: LectureLienProps & { lignes: LigneEtape[]; ecoule: string; pastille: React.ReactNode }) {
   const { lecture: l, lignes, article: a } = p;
   const [deplie, setDeplie] = useState(false);
-  const [bons, setBons] = useState<string[]>([]);
+  const [bonsLocaux, setBonsLocaux] = useState<string[]>([]);
+  /* T30-5 : réglée une fois, la question ne revient pas (réponse gardée par l'écran, sinon le temps de la carte) */
+  const bons: readonly string[] = p.bons ?? bonsLocaux;
+  const noterBon = (cle: string) => { if (p.onBon) p.onBon(cle); else setBonsLocaux(b => [...b, cle]); };
   const c = compterEtapes(lignes);
   const aVoir = lignes.filter(x => (x.statut === 'douteux' || x.statut === 'absent') && x.cle !== 'ia' && !bons.includes(x.cle));
   const prix = a ? montant(a.prixCentimes) : null;
@@ -239,7 +280,7 @@ function FinLecture(p: LectureLienProps & { lignes: LigneEtape[]; ecoule: string
               <Icone s={x.statut} />
               <span className="cnl-revoir-txt"><b>{x.libelle}</b> · {MOT[x.statut]}{x.detail ? <span className="cn-mut"> — {x.detail}</span> : null}</span>
               <span className="cnl-revoir-gestes">
-                {x.statut === 'douteux' && <button type="button" className="cnl-bouton" onClick={() => setBons(b => [...b, x.cle])}><Check size={14} aria-hidden /> C’est le bon</button>}
+                {x.statut === 'douteux' && <button type="button" className="cnl-bouton" onClick={() => noterBon(x.cle)}><Check size={14} aria-hidden /> C’est le bon</button>}
                 {p.onOuvrirArticle && <button type="button" className="cnl-bouton" onClick={p.onOuvrirArticle}><Pencil size={14} aria-hidden /> {x.statut === 'douteux' ? 'Corriger' : 'Compléter'}</button>}
               </span>
             </li>
@@ -257,19 +298,23 @@ function FinLecture(p: LectureLienProps & { lignes: LigneEtape[]; ecoule: string
 }
 
 /** La barre repliée (v01, plus compacte) : au-dessus du champ, une ligne ; la lecture continue côté serveur, l'app peut se fermer. */
-export function BarreLecture(p: { lecture: LectureEnCours; phase: 'en-cours' | 'fin'; titre?: string; nom?: string; onDeplier: () => void; onFermer?: () => void }) {
+export function BarreLecture(p: { lecture: LectureEnCours; phase: 'en-cours' | 'fin'; titre?: string; nom?: string; carnet?: string; onDeplier: () => void; onFermer?: () => void }) {
   const enCours = p.phase === 'en-cours';
   const maintenant = useMaintenant(enCours);
   const lignes = lignesEtapes(p.lecture.etapes, { fini: !enCours, enCours: p.lecture.enCours, escalade: !!p.lecture.escalade });
   const c = compterEtapes(lignes);
   const ecoule = duree((enCours ? maintenant : p.lecture.fin ?? maintenant) - (p.lecture.debut ?? maintenant));
   const quoi = enCours ? `Lecture du lien${p.titre ? ` · ${p.titre}` : ''}` : `Lu · ${p.nom ?? p.titre ?? domaineDe(p.lecture.url)}`;
+  /* T30-3 : vue d'un autre carnet, la fin dit le carnet du lien sur une seconde ligne (jamais tronquée par le nom de l'article) */
+  const deuxLignes = !enCours && !!p.carnet;
   return (
     <div className="cnl-dock" data-phase={p.phase}>
-      <button type="button" className="cnl-barre" data-lecture-barre data-booster="barre-lecture" onClick={p.onDeplier}
-        aria-label={`${quoi}, ${c.faites} étapes sur ${c.total} : déplier`} aria-live="polite">
+      <button type="button" className="cnl-barre" data-lecture-barre data-booster="barre-lecture" data-deux={deuxLignes || undefined} onClick={p.onDeplier}
+        aria-label={`${quoi}${deuxLignes ? `, dans « ${p.carnet} »` : ''}, ${c.faites} étapes sur ${c.total} : déplier`} aria-live="polite">
         {enCours ? <LoaderCircle size={16} aria-hidden className="cnl-ico cnl-tourne" /> : <CircleCheck size={16} aria-hidden className="cnl-ico cnl-ok" />}
-        <b className="cnl-barre-quoi">{quoi}</b>
+        {deuxLignes
+          ? <span className="cnl-barre-quoi cnl-barre-deux"><b>{quoi}</b><span className="cn-mut">dans « {p.carnet} »</span></span>
+          : <b className="cnl-barre-quoi">{quoi}</b>}
         <Comptes lignes={lignes} />
         {enCours && <span className="cn-mono cn-mut">{c.faites}/{c.total}</span>}
         <span className="cn-mono cn-mut">{ecoule}</span>
