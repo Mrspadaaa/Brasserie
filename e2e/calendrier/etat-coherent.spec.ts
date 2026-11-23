@@ -91,9 +91,11 @@ async function verifier(r: Reel) {
      l'en-tête l'expose, sinon sur l'étiquette (+ le jeu d'un mois à chaque bout) */
   const jourIso = (s: string) => { const [a, m, j] = s.split('-').map(Number); return jour(a, m - 1, j); };
   const exact = e.axe?.cdu && e.axe.cau ? (jourIso(e.axe.cau) - jourIso(e.axe.cdu) + 1) / 7 : null;
-  const jeuAns = jeuLibelle(e.duree);
+  /* « N mois » : le cadre exact (lundis) à 4 sem. près (le mois = 4,35 sem. arrondi, ± un lundi) ; l'étiquette en mois entiers (« nov. 2024 – oct. 2026 »
+     pour 22 mois) ajoute jusqu'à un mois à chaque bout et ne sert que faute de cadre exact */
+  const jeuAns = jeuLibelle(e.duree) ?? (/ mois$/.test(e.duree) && exact !== null ? 4 : null);
   const ecart = jeuAns !== null && exact !== null ? exact : semCadre;
-  const jeuI1 = jeuAns !== null ? jeuAns + (exact !== null ? 0.5 : jeu) : jeu;
+  const jeuI1 = jeuAns !== null ? jeuAns + (jeuLibelle(e.duree) !== null && exact !== null ? 0.5 : exact !== null ? 0 : jeu) : jeu;
   if (semBouton !== null) expect(Math.abs(semBouton - ecart) <= jeuI1, `I1 durée « ${e.duree} » ≠ cadre ${ecart.toFixed(1)} sem. : ${ctx}`).toBe(true);
   /* I4 : axe ⊇ cadre (« axe 2029–2030 » pour un cadre de 4 ans dès 2025, 1204-incoherent.jpg) */
   if (e.boites) expect(e.boites.cl >= -2 && e.boites.cr <= e.boites.w + 2, `I4 cadre hors de l'axe (${Math.round(e.boites.cl)}…${Math.round(e.boites.cr)} sur ${Math.round(e.boites.w)} px) : ${ctx}`).toBe(true);
