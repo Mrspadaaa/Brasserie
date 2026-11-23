@@ -23,3 +23,8 @@ Ordre et contenu inchangés (points 1 à 5 du brief), avec ces ajouts :
 - L13 : 2e refus du même élément → si la cause n'est pas un simple oubli de branchement, change de genre de solution
   (ex. la bande ne s'étale plus sur toute la largeur : elle est DESSINÉE dans le SVG de la courbe, même transformation x).
 - Puis CAL-PLUS-QU-UN-AN et CAL-AUJOURDHUI-COURBE (message précédent), puis points 3 à 5.
+
+## Ajout 23.11 9:10 — grain des graduations (CAL-GRAIN-SUIT-DUREE)
+- Ses mots : « si je mets 1 ou 2 ou peut être 3 je devrais voir les jours plutôt que les semaines.. comme les mois pour une année ».
+- Le grain suit la largeur du CADRE (pendant le tirage, à chaque durée) : jours jusqu'à 3 sem., semaines au-delà, mois pour un an
+  et plus. À faire AVEC la priorité 1 (même bande, même transformation x), un seul cycle PRÊT / EN LIGNE / preuve en ligne.
