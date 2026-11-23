@@ -24,6 +24,9 @@ import { useDonneesCarnets } from './useDonneesCarnets';
 import { useNavigationCarnet } from './useNavigationCarnet';
 import { retourDeMessage } from './retourCarnet';
 import { creerRangementCarnets } from './rangementCarnets';
+import { suiviLocal } from '../../domain/carnets/lecture';
+import type { ArticleV } from './EtatIA';
+import type { LectureUi } from './apercuCarnet';
 import { actionsCarnet } from './actionsCarnet';
 import { bandeauxCarnet } from './bandeauxCarnet';
 import { apercuCarnet } from './apercuCarnet';
@@ -43,6 +46,13 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const ouvert = idOuvert ? tous.find(c => c.id === idOuvert) ?? null : null;
   const [texte, setTexte] = useState(p.texteInitial ?? '');
   const [etatR, setEtatR] = useState<EtatRangement<LigneLocale>>({ etape: 'repos' });
+  /** D448 : la carte des étapes repliée en barre (v01) ; la carte de fin ou d'échec fermée (par son message). */
+  const [lectureRepliee, setLectureRepliee] = useState(false);
+  const [lectureFermee, setLectureFermee] = useState<string | null>(null);
+  /** T26-4 : l'inverse du retrait d'un lien mort, par message (« Compléter » rend l'article). */
+  const inversesLiens = useRef(new Map<string, EcritureCarnet[]>());
+  /** IA-ETAPES-VISIBLES : les lectures lancées, gardées sur l'appareil jusqu'à leur fin (réouverture). Sans IA : rien. */
+  const suivi = useMemo(() => (mode === 'eteint' ? undefined : p.suiviLectures ?? suiviLocal()), [mode, p.suiviLectures]);
   const [retour, setRetourEtat] = useState<Retour | null>(null);
   /* D417 : le carnet que l'IA range depuis la liste (aucune fiche provisoire) ; la ligne dit « L'IA range… » */
   const [rangeEnCours, setRangeEnCours] = useState<string | null>(null);
@@ -144,7 +154,41 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const depuis = ouvert && vue.sorte !== 'liste' ? ouvert.id : null;
   const rangement = useMemo(() => creerRangementCarnets({ p, mode, depuis, enLigne, magasin, appliquer, maintenant, retourDe, setRetour, poserRetourEtat, poserAvis, setEtatR,
     setRangeEnCours, setEnTete, setVientDEtreCree, setVue, setAReprendre, attente, annonces, aForcer, forcee, destEnvoi, titreNeufEnvoi, carnetChoisi, gardeAPartRef, aidesRef,
-    retourRef, vueRef, neDeListe }), [mode, depuis, enLigne, magasin, appliquer, maintenant, p.appels, retourDe, setRetour, poserRetourEtat, poserAvis]); // eslint-disable-line react-hooks/exhaustive-deps
+    retourRef, vueRef, neDeListe, suivi, inversesLiens }), [mode, depuis, enLigne, magasin, appliquer, maintenant, p.appels, retourDe, setRetour, poserRetourEtat, poserAvis, suivi]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* IA-ETAPES-VISIBLES : à l'ouverture, une lecture lancée avant la fermeture de l'app est reprise par son jeton (une fois) */
+  const lecturesReprises = useRef(false);
+  useEffect(() => {
+    if (lecturesReprises.current || !suivi) return;
+    lecturesReprises.current = true;
+    void rangement.reprendreLectures();
+  }, [rangement, suivi]);
+  /* une lecture neuve (son jeton) se montre dépliée */
+  const jetonLecture = etatR.etape === 'en-cours' ? etatR.lecture?.jeton ?? null : null;
+  useEffect(() => { if (jetonLecture) { setLectureRepliee(false); setLectureFermee(null); } }, [jetonLecture]);
+  const carnetDuMessage = (messageId: string) => {
+    const m = lireMessages(magasin.lire()).find(x => x.id === messageId);
+    return m?.carnetMessage.effets.find(e => e.cible === 'article')?.carnetId ?? m?.carnetMessage.effets[0]?.carnetId;
+  };
+  const lectureUi: LectureUi = {
+    replie: lectureRepliee, setReplie: setLectureRepliee, fermee: lectureFermee, setFermee: setLectureFermee, exemple: mode === 'simule',
+    onEscalader: (id, t) => { setLectureFermee(null); void rangement.escalader(id, t); },
+    onCompleter: id => {
+      const inv = inversesLiens.current.get(id);
+      if (inv) { annuler(inv); inversesLiens.current.delete(id); }
+      setLectureFermee(id);
+    },
+    onAutreLien: id => { setLectureFermee(id); setTexte(''); champRef.current?.focus(); },
+    articleDe: id => {
+      for (const c of lireCarnets(magasin.lire(), { archives: true })) {
+        const a = c.carnet.articles.find(x => x.messageId === id);
+        if (a) return { article: a as unknown as ArticleV, carnetId: c.id };
+      }
+      return null;
+    },
+    titreDe: id => { const cid = carnetDuMessage(id); return cid ? tous.find(c => c.id === cid)?.title : undefined; },
+    ouvrirArticle: (carnetId, articleId) => { setLectureFermee(null); setVue({ sorte: 'article', id: carnetId, articleId }); }
+  };
 
   /** PCN-178/182 : où déplacer une note : les autres carnets, le plus proche de la note d'abord. */
   const autresPour = (id: string, texte: string) => {
@@ -289,7 +333,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
   const { cadre, champ } = apercuCarnet({ ouvert, vue, setVue, retour, etatR, edition, feuille, lignesApercu, texte, setTexte, carnets, tous, messages, corrigeCarnet,
     setCorrigeCarnet, corrige, setCorrige, envoiActif, depuis, couperEnvoi, aides, annonces, mode, enLigne, focusListe, setFocusListe, supprime, rangement, champRef,
     ajouterEnFacon, aPart, setAPart, titreEdite, setTitreEdite, renommerOuvert, envoyer, vientDEtreCree, plierApresToucher, photo, jointe, retirerJointe, pliage, presse,
-    setPresse });
+    setPresse, lectureUi });
   const ecran = ecranCarnet({ p, ouvert, vue, setVue, carnets, faitsPlanning, anciennes, enTete, retour, setRetour, supprime, setSupprime, annuler, repriseNode, bandeauIci,
     proposeesNode, rangee, cadre, champRef, setTexte, rangement, rangeEnCours, tableauV, appliquer, magasin, maintenant, tauxEur, poserTaux, feuille, setFeuille, edition,
     setEdition, finances, aides, titreEdite, renommerOuvert, ouvrirRenommer, propositionTitre, iaManquee, mode, enLigne, liens, vientDEtreCree, setVientDEtreCree,

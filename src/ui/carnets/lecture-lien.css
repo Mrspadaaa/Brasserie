@@ -1,0 +1,104 @@
+/* Étapes de la lecture d'un lien (D448, LectureLien.tsx). Classes `cnl-` (L26). Jetons du carnet (`--c-*`, carnets.css), clair et cave.
+   CARNET-ETAPES-DENSE : une ligne d'étape tient sur 24 px, la barre repliée sur 32 px (docs/ui-compacte.md : 24/28/32) ; texte à 14 px
+   au moins (CARNET-LIS). Vert = trouvé, ambre = douteux, bleu = absent, rouge = introuvable, violet = l'IA en cours. */
+.cnl, .cnl-dock {
+  --c-bg: rgb(var(--cave-950)); --c-s1: rgb(var(--cave-900)); --c-s2: rgb(var(--cave-850));
+  --c-line: rgb(var(--cave-800)); --c-line2: rgb(var(--cave-700));
+  --c-ink: rgb(var(--cave-texte-50)); --c-ink2: rgb(var(--cave-texte-200)); --c-mut: rgb(var(--cave-texte-400));
+  --c-zone: rgb(var(--area-stocks)); --c-zonet: rgb(var(--area-stocks-texte));
+  --c-ia: rgb(var(--area-agenda-texte)); --c-iabg: rgb(var(--area-agenda) / .10);
+  --c-att: rgb(var(--attention-texte)); --c-attbg: rgb(var(--attention) / .14);
+  --c-rouge: rgb(var(--alert-texte)); --c-rougebg: rgb(var(--alert) / .07);
+  --c-lien: rgb(var(--water-texte)); --c-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  color: var(--c-ink); font-size: 14px; line-height: 18px;
+}
+.cnl :is(p, ol, ul, li) { margin: 0; padding: 0; list-style: none; }
+.cnl button, .cnl-dock button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-align: left; }
+
+.cnl { display: flex; flex-direction: column; gap: 4px; padding: 6px 10px 6px; border: 1px solid var(--c-line2); border-radius: 12px; background: var(--c-bg); }
+.cnl-cours { border-color: var(--c-ia); }
+.cnl-echec { border: 1px dashed var(--c-rouge); background: var(--c-rougebg); }
+
+.cnl-tete { display: flex; align-items: center; gap: 6px; min-height: 24px; }
+.cnl-titre { font-size: 15px; font-weight: 700; }
+.cnl-cours .cnl-titre { color: var(--c-ia); }
+.cnl-temps { color: var(--c-mut); }
+.cnl-tete-debut { align-items: flex-start; }
+.cnl-tete-debut .cnl-temps { margin-left: auto; color: var(--c-ia); }
+.cnl-qui { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.cnl-lien { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cnl-vignette { flex: none; width: 36px; height: 36px; border-radius: 8px; background: var(--c-s2); object-fit: cover; }
+.cnl-attend { animation: cnl-respire 1.6s ease-in-out infinite; }
+.cnl-url { display: flex; align-items: center; gap: 4px; min-width: 0; color: var(--c-lien); }
+.cnl-url > span:first-of-type { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.cnl-url .cn-exemple, .cnl-qui .cn-exemple { flex: none; }
+
+/* La barre par étape (v03) */
+.cnl-segments { display: flex; gap: 3px; height: 4px; }
+.cnl-segments i { flex: 1; border-radius: 2px; background: var(--c-line); }
+.cnl-segments i[data-statut=trouve] { background: var(--c-zone); }
+.cnl-segments i[data-statut=douteux] { background: rgb(var(--attention)); }
+.cnl-segments i[data-statut=absent] { background: var(--c-lien); }
+.cnl-segments i[data-statut=echec] { background: var(--c-rouge); }
+.cnl-segments i[data-statut=en-cours] { background: var(--c-ia); animation: cnl-respire 1.2s ease-in-out infinite; }
+
+/* Une étape : une ligne de 24 px ; le détail d'une étape douteuse passe à la ligne entier (il porte la décision). */
+.cnl-etapes { display: flex; flex-direction: column; }
+.cnl-etape { display: grid; grid-template-columns: 16px auto minmax(0, 1fr) auto; align-items: center; column-gap: 6px; min-height: 24px; padding: 3px 0; border-top: 1px solid var(--c-line); }
+.cnl-etape:first-child { border-top: 0; }
+.cnl-nom { font-weight: 600; white-space: nowrap; }
+.cnl-detail { display: flex; align-items: center; gap: 4px; min-width: 0; color: var(--c-ink2); }
+.cnl-detail > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.cnl-etape:is([data-statut=douteux], [data-statut=echec], [data-google]) .cnl-detail { grid-column: 2 / -1; grid-row: 2; }
+.cnl-etape:is([data-statut=douteux], [data-statut=echec], [data-google]) .cnl-detail > span:last-child { white-space: normal; }
+.cnl-etape:is([data-statut=douteux], [data-statut=echec], [data-google]) .cnl-mot { grid-column: 4; grid-row: 1; }
+.cnl-mot { font-weight: 600; white-space: nowrap; }
+.cnl-ico { flex: none; }
+.cnl-etape[data-statut=trouve] :is(.cnl-ico, .cnl-mot), .cnl-ok { color: var(--c-zonet); }
+.cnl-etape[data-statut=douteux] :is(.cnl-ico, .cnl-mot), .cnl-revoir [data-statut=douteux] .cnl-ico { color: var(--c-att); }
+.cnl-etape[data-statut=absent] :is(.cnl-ico, .cnl-mot), .cnl-revoir [data-statut=absent] .cnl-ico { color: var(--c-lien); }
+.cnl-etape[data-statut=echec] :is(.cnl-ico, .cnl-mot) { color: var(--c-rouge); }
+.cnl-etape[data-statut=en-cours] :is(.cnl-ico, .cnl-mot, .cnl-nom) { color: var(--c-ia); }
+.cnl-etape:is([data-statut=a-faire], [data-statut=pas-lancee]) :is(.cnl-ico, .cnl-mot, .cnl-nom) { color: var(--c-mut); font-weight: 400; }
+.cnl-pas-lancees { grid-template-columns: 16px 1fr; }
+.cnl-google { display: inline-flex; align-items: center; gap: 2px; flex: none; padding: 0 6px; border: 1px solid var(--c-att); border-radius: 999px; background: var(--c-attbg); color: var(--c-att); font-weight: 600; }
+.cnl-tourne { animation: cnl-tour 1s linear infinite; }
+
+.cnl-pied { display: flex; align-items: center; gap: 8px; min-height: 24px; border-top: 1px solid var(--c-line); padding-top: 2px; }
+.cnl-replier { display: inline-flex; align-items: center; gap: 2px; min-height: 24px; padding: 0 4px; color: var(--c-lien) !important; font-weight: 600; white-space: nowrap; }
+.cnl-x { display: inline-grid; place-items: center; width: 28px; height: 28px; margin: -2px -6px -2px 0; border-radius: 999px; color: var(--c-mut) !important; }
+
+/* Fin (v01, v03, v05) */
+.cnl-article { display: flex; align-items: center; gap: 8px; width: 100%; padding: 4px; border: 1px solid var(--c-line2) !important; border-radius: 8px; }
+.cnl-prix { flex: none; font-weight: 600; }
+.cnl-revoir { display: flex; flex-direction: column; gap: 4px; }
+.cnl-revoir li { display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 6px; row-gap: 4px; align-items: start; padding: 4px 6px; border-radius: 8px; background: var(--c-s1); }
+.cnl-revoir li[data-statut=douteux] { background: var(--c-attbg); }
+.cnl-revoir .cnl-ico { margin-top: 1px; }
+.cnl-revoir-gestes { grid-column: 2; display: flex; gap: 6px; flex-wrap: wrap; }
+.cnl-resume { display: flex; align-items: center; gap: 8px; min-height: 28px; width: 100%; border-top: 1px solid var(--c-line) !important; padding-top: 2px !important; }
+.cnl-resume .cnl-segments { width: 72px; flex: none; }
+.cnl-resume > span:nth-child(2) { flex: 1; }
+
+/* Boutons de la carte : 28 px (docs/ui-compacte.md), la violette pour l'IA */
+.cnl-actions { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 2px; }
+.cnl-bouton { display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 0 10px; border: 1px solid var(--c-line2) !important; border-radius: 999px; background: var(--c-bg) !important; font-weight: 600; white-space: nowrap; }
+.cnl-escalader { border-color: var(--c-ia) !important; background: var(--c-iabg) !important; color: var(--c-ia) !important; }
+.cnl-sous { font-weight: 400; color: var(--c-ia); opacity: .85; }
+
+/* La barre repliée (v01, plus compacte) : 32 px, au-dessus du champ */
+.cnl-dock { display: flex; align-items: center; gap: 4px; padding: 0 12px 4px; }
+.cnl-barre { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border: 1px solid var(--c-ia) !important; border-radius: 999px; background: var(--c-iabg) !important; }
+.cnl-dock[data-phase=fin] .cnl-barre { border-color: var(--c-zone) !important; background: rgb(var(--area-stocks) / .12) !important; }
+.cnl-barre-quoi { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cnl-comptes { display: inline-flex; gap: 3px; flex: none; }
+.cnl-comptes > span { display: inline-flex; align-items: center; gap: 1px; height: 20px; padding: 0 5px; border-radius: 999px; font-family: var(--c-mono); font-variant-numeric: tabular-nums; }
+.cnl-comptes [data-k=trouve] { background: rgb(var(--area-stocks) / .16); color: var(--c-zonet); }
+.cnl-comptes [data-k=douteux] { background: var(--c-attbg); color: var(--c-att); }
+.cnl-comptes [data-k=absent] { background: rgb(var(--water) / .14); color: var(--c-lien); }
+.cnl-dock .cnl-x { margin: 0; }
+@media (min-width: 900px) { .cnl-dock { max-width: 760px; width: 100%; margin: 0 auto; box-sizing: border-box; } }
+
+@keyframes cnl-tour { to { transform: rotate(360deg); } }
+@keyframes cnl-respire { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .cnl-tourne, .cnl-attend, .cnl-segments i { animation: none; } }

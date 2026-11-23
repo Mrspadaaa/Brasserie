@@ -25,6 +25,8 @@ export interface CarnetsVueProps {
   retirerPlan?: (plan: FinancialPlan) => Promise<void> | void;
   mode?: ModeCarnetIA;
   appels?: AppelsIA;
+  /** IA-ETAPES-VISIBLES : où garder les lectures lancées (par défaut localStorage ; tests : en mémoire). */
+  suiviLectures?: import('../../domain/carnets/lecture').SuiviLectures;
   aides?: AidesCarnet;
   /** Force hors ligne (banc `&hors-ligne=1`) ; sinon `navigator.onLine`. */
   horsLigne?: boolean;

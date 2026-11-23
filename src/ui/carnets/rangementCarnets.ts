@@ -1,5 +1,7 @@
 /** Le fil : un champ, l'IA met en forme et range. L'écriture locale, l'avis, puis l'écriture de l'IA ; sorti de CarnetsVue.tsx (code tel quel). */
 import { estLienSeul, lireCarnets, lireMessages, nouvelIdCarnet, titreDePhrase } from '../../domain/carnets/modele';
+import type { SuiviLectures } from '../../domain/carnets/lecture';
+import type { EcritureCarnet } from '../../domain/carnets/operations';
 import { appliquerEcritures, creerCarnet, fusionnerNotes, garderAPart, ranger, remplacerRangement, type Destination, type LigneARanger, type Resultat } from '../../domain/carnets/operations';
 import { analyserTexte, normaliser, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { rattacher } from '../../domain/carnets/rattacher';
@@ -20,12 +22,15 @@ export interface RangementV {
   attente: Boite<Attente | null>; annonces: Boite<Map<string, Annonce>>; aForcer: Boite<RubriqueVaDans | null>; forcee: Boite<string | null>;
   destEnvoi: Boite<string | null>; titreNeufEnvoi: Boite<string | null>; carnetChoisi: Boite<boolean>; gardeAPartRef: Boite<boolean>;
   aidesRef: Boite<AidesCarnet>; retourRef: Boite<Retour | null>; vueRef: Boite<Vue>; neDeListe: Boite<string | null>;
+  /** IA-ETAPES-VISIBLES : les lectures gardées sur l'appareil ; T26-4 : l'inverse du retrait d'un lien mort (« Compléter » le rend). */
+  suivi?: SuiviLectures; inversesLiens: Boite<Map<string, EcritureCarnet[]>>;
 }
 
 /** Appelé dans le `useMemo` du conteneur, avec les mêmes dépendances : le rangement est recréé quand elles changent, jamais autrement. */
 export function creerRangementCarnets(x: RangementV) {
   const { p, mode, depuis, enLigne, magasin, appliquer, maintenant, retourDe, setRetour, poserRetourEtat, poserAvis, setEtatR, setRangeEnCours, setEnTete,
-    setVientDEtreCree, setVue, setAReprendre, attente, annonces, aForcer, forcee, destEnvoi, titreNeufEnvoi, carnetChoisi, gardeAPartRef, aidesRef, retourRef, vueRef, neDeListe } = x;
+    setVientDEtreCree, setVue, setAReprendre, attente, annonces, aForcer, forcee, destEnvoi, titreNeufEnvoi, carnetChoisi, gardeAPartRef, aidesRef, retourRef, vueRef, neDeListe,
+    suivi, inversesLiens } = x;
   return creerRangement<LigneLocale>({
     mode, depuis,
     carnets: () => pourIA(lireCarnets(magasin.lire())),
@@ -33,8 +38,23 @@ export function creerRangementCarnets(x: RangementV) {
     analyseLocale: analyserTexte,
     appels: p.appels ?? (mode === 'simule' ? appelsSimules(comportementSimule()) : undefined),
     maintenant,
+    ...(suivi ? { suivi } : {}),
+    /* T26-4 : le lien mort retiré comme l'IA remplacerait le rangement local, sans aucune ligne ; son inverse est gardé pour « Compléter » */
+    retirerLien: messageId => {
+      const r = appliquer(remplacerRangement(magasin.lire(), { messageId, lignes: [], rangement: 'locale' }));
+      if (r) inversesLiens.current?.set(messageId, r.inverse);
+    },
+    messageExiste: messageId => lireMessages(magasin.lire()).some(m => m.id === messageId),
     surEtat: e => {
       setEtatR(e);
+      /* T26-4 : lien mort : rien n'est gardé ; ni retour local, ni avis, ni « Relire » : la carte d'échec des étapes le dit seule */
+      if (e.etape === 'echec' && e.lecture?.statut === 'introuvable') {
+        if (attente.current?.messageId === e.messageId) attente.current = null;
+        annonces.current.delete(e.messageId);
+        setRangeEnCours(null);
+        if (retourRef.current?.messageId === e.messageId) setRetour(null);
+        return;
+      }
       /* l'IA a échoué ou a été coupée : l'écriture locale reste, son retour paraît enfin (avec son Annuler) ; un échec le dit (P36) */
       if ((e.etape === 'echec' || e.etape === 'annule') && attente.current?.messageId === e.messageId) {
         const { retour: local, montre, neuf } = attente.current;
