@@ -87,6 +87,16 @@ function nombreLu(t: string): string {
   if (/^\d+\.\d+$/.test(t)) return t.replace('.', ',');
   return t;
 }
+/** T25-9 : la taxe que la page dit, avec son espace devant (« 72,50 CHF TTC ») ; la page ne la dit pas : rien. « HT » et « TTC » se disent pareil. */
+export const mentionTaxe = (taxe?: 'ht' | 'ttc'): string => (taxe === 'ht' ? ' HT' : taxe === 'ttc' ? ' TTC' : '');
+/**
+ * T25-6 : un millésime n'est pas une quantité (« Erntejahr 2025 », jamais « 2 025 »). Le nom de la caractéristique le dit (année, Jahr,
+ * Ernte, récolte, millésime, vintage) ; une quantité garde son espace des milliers (« 2 500 l »).
+ */
+const MILLESIME = /ann[ée]e|jahr|ernte|r[ée]colte|mill[ée]sime|vintage|harvest|year/i;
+export function texteSelonNom(nom: string, texte: string | null): string | null {
+  return texte !== null && MILLESIME.test(nom) && /^\d[\s  ]\d{3}$/.test(texte) ? texte.replace(/[\s  ]/g, '') : texte;
+}
 /** Une valeur lue : nombre en chiffres, oui-non en mots ; absente : null. */
 export function valeurTexte(v?: ValeurV): string | null {
   if (!v) return null;

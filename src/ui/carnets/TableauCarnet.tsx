@@ -5,7 +5,7 @@ import { domaineEtChemin, libelleCaracteristique, libelleEcarte } from '../../do
 import { dispoDe } from '../../domain/carnets/modele';
 import { convertiChf, estEtranger } from '../../domain/carnets/prixRendu';
 import { colonnesVue, estMesure, meilleursDe, sansApercu, texteCellule, type ColonneVue, type TableauV } from './Comparer';
-import { montant, type ArticleV, type ContenuCarnetV, type FaconV } from './EtatIA';
+import { mentionTaxe, montant, type ArticleV, type ContenuCarnetV, type FaconV } from './EtatIA';
 import { prixOrigine } from './PrixPastille';
 import { VignetteObjet } from './pictos';
 import { etendue, pastilleFacon, sansEcarte, texteMoinsBien, type Ligne, type Separation } from './ouvertCalculs';
@@ -125,7 +125,7 @@ export function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, o
               const a = art(l.articleId);
               /* tour 3, f7 n° 7 : la façon écartée porte déjà la raison en pastille ; son article, écarté pour la même raison, dit « écarté » seul */
               const memeRaison = !!l.ecarte && b.facon?.etat === 'ecartee' && !!b.facon.raison && sansEcarte(l.ecarte.raison) === sansEcarte(b.facon.raison);
-              const sous = l.ecarte ? (memeRaison ? 'écarté' : libelleEcarte(l.ecarte.raison)) : [a?.pays, (a ? dispoDe(a) : undefined)?.replace(/\bsemaines?\b/, 'sem.'), a && convertiChf(l, taux) !== undefined ? prixOrigine(a) : l.taxe === 'ht' ? 'HT' : null].filter(Boolean).join(' · ');
+              const sous = l.ecarte ? (memeRaison ? 'écarté' : libelleEcarte(l.ecarte.raison)) : [a?.pays, (a ? dispoDe(a) : undefined)?.replace(/\bsemaines?\b/, 'sem.'), a && convertiChf(l, taux) !== undefined ? prixOrigine(a) : mentionTaxe(l.taxe).trim() || null].filter(Boolean).join(' · ');
               const moinsBien = l.ecarte ? null : texteMoinsBien(tableau, l);
               return (
                 <button key={l.articleId} type="button" className={`cn-tab-ligne${l.ecarte ? ' cn-ecarte' : ''}`} style={gabarit} role="row" onClick={() => onOuvrir(l.articleId)}>

@@ -137,7 +137,11 @@ export const CIBLES_EFFET: readonly CibleEffet[] = ['carnet', 'critere', 'facon'
  * `fusion` (P7) : le message a précisé un critère déjà là, de même caractéristique (« le débit » → « … : 1 200 m³/h au moins ») ; l'effet
  * garde le critère d'avant, que `remplacerRangement` remet au lieu de retirer le critère.
  */
-export interface EffetMessage { carnetId: string; cible: CibleEffet; id: string; carnetSupprime?: true; fusion?: { texte: string; origine: Origine; messageId?: string } }
+export interface EffetMessage {
+  carnetId: string; cible: CibleEffet; id: string; carnetSupprime?: true; fusion?: { texte: string; origine: Origine; messageId?: string };
+  /** T25-5 : un lien déjà dans ce carnet (même adresse canonique) : le message renvoie à l'article qui y était, sans en créer un ; le défaire ne le retire pas. */
+  existant?: true;
+}
 
 /**
  * P10, P23 (D-35, D-24) : un critère que l'IA propose sans l'écrire (la caractéristique commune lue sur deux articles). Il reste sur le
@@ -355,7 +359,7 @@ export function lireMessage(item: CreativeItem | null | undefined): MessageDoc |
         const f = (e as { fusion?: unknown }).fusion;
         const fusion = estObjet(f) && typeof f.texte === 'string' && typeof f.origine === 'string'
           ? sansIndefinis({ texte: f.texte, origine: f.origine as Origine, messageId: texteNonVide(f.messageId) ? f.messageId : undefined }) : undefined;
-        return sansIndefinis({ carnetId: e.carnetId, cible: e.cible, id: e.id, carnetSupprime: e.carnetSupprime === true ? (true as const) : undefined, fusion });
+        return sansIndefinis({ carnetId: e.carnetId, cible: e.cible, id: e.id, carnetSupprime: e.carnetSupprime === true ? (true as const) : undefined, fusion, existant: e.existant === true ? (true as const) : undefined });
       })
     : [];
   const t = m.titrePropose;

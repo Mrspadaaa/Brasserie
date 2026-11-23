@@ -2,6 +2,7 @@ import { load } from 'cheerio/slim';
 import { NodeHtmlMarkdown } from 'node-html-markdown';
 import type { PageLue } from './carnetIA.js';
 import { couper, montantsDe, positionsMontant } from './lienProduit.js';
+import { bruitDeBoutique } from './lienPlateforme.js';
 
 /**
  * Dernière marche de la cascade (D446) : l'IA lit le TEXTE nettoyé de la page, jamais la page brute ni son adresse (décision du 23.11 :
@@ -89,6 +90,8 @@ export function garder(r: ReponseIA, texte: string): { gardee: Gardee; retire: s
   if (r.portGratuit === true && /gratuit|kostenlos|versandkostenfrei|gratis|free/i.test(texte)) g.portGratuit = true;
   for (const c of (r.caracteristiques ?? []).slice(0, 12)) {
     if (!c?.nom || !c?.valeur) continue;
+    /* T25-7 : « non publié », « k. A. » ou un argument de vente n'est pas une valeur : la ligne n'existe pas (l'inconnu n'est jamais écrit) */
+    if (bruitDeBoutique(c.nom, c.valeur)) continue;
     const ns = nombres(c.valeur);
     const ecrit = ns.length ? ns.every((n) => nb.has(n)) : nt.includes(norm(c.valeur));
     if (ecrit) g.caracteristiques.push({ nom: couper(c.nom, 60), valeur: couper(c.valeur, 100) }); else retire.push(`caract ${c.nom}`);

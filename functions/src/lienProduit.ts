@@ -2,7 +2,7 @@ import { load, type CheerioAPI } from 'cheerio/slim';
 import { Handler } from 'htmlmetaparser';
 import { Parser } from 'htmlparser2';
 import { stockStatus } from './brewerSuppliers.js';
-import { completerValeurs, mesuresDuNom, pairesDeTexte, valeursDonneesEmbarquees } from './lienPlateforme.js';
+import { bruitDeBoutique, completerValeurs, memeMesure, mesuresDuNom, pairesDeTexte, valeursDonneesEmbarquees } from './lienPlateforme.js';
 
 /**
  * Lecture d'une page produit, sans modèle (D446, 23.11 : « vraiment très mauvais » au banc réel). Remplace la lecture JSON-LD seule.
@@ -270,7 +270,7 @@ export function positionsMontant(visible: string, m: number): number[] {
 }
 
 /** TTC ou HT : schema.org d'abord, puis la mention écrite à côté du prix, puis le couple HT/TTC publié (prix × (1 + TVA)). */
-function taxeDe(prix: number, visible: string, schema: boolean | undefined): { taxe?: 'ht' | 'ttc'; prixTTC?: number; detail?: string } {
+function taxeDe(prix: number, visible: string, schema: boolean | undefined, notes = ''): { taxe?: 'ht' | 'ttc'; prixTTC?: number; detail?: string } {
   if (schema === true) return { taxe: 'ttc', detail: 'valueAddedTaxIncluded' };
   const ici = positionsMontant(visible, prix);
   for (const i of ici) {
@@ -289,8 +289,14 @@ function taxeDe(prix: number, visible: string, schema: boolean | undefined): { t
     if (DIT_HT.test(avant) && !DIT_TTC.test(avant)) return { taxe: 'ht', detail: 'libellé « hors taxe » avant le prix' };
   }
   if (schema === false) return { taxe: 'ht', detail: 'valueAddedTaxIncluded: false' };
+  /* T25-9 : une note de bas de page dit la taxe pour toute la boutique (« * Alle Preise inkl. gesetzlicher MwSt. », sios.ch). Dernier
+     recours, après tout ce que la page dit près du prix : une mention « hors taxe » ailleurs la contredirait, alors rien n'est dit. */
+  const page = `${visible} ${notes}`;
+  if (NOTE_TTC.test(page) && !NOTE_HT.test(page)) return { taxe: 'ttc', detail: 'note de la page : tous les prix taxe comprise' };
   return {};
 }
+const NOTE_TTC = /(?:alle\s+preise|preise|tous\s+(?:nos\s+|les\s+)?prix|prix|all\s+prices|prices)\s+(?:sind\s+)?(?:inkl\.?|inklusive|incl\.?|including|include|TVA\s+(?:incluse|comprise)|TTC)[^.]{0,40}?(?:MwSt|USt|Mehrwertsteuer|VAT|TVA)/i;
+const NOTE_HT = /(?:alle\s+preise|preise|tous\s+(?:nos\s+|les\s+)?prix|all\s+prices|prices)\s+(?:sind\s+)?(?:exkl\.?|zzgl\.?|zuzüglich|excl\.?|excluding|hors\s+TVA|HT|netto)/i;
 
 // ---------------------------------------------------------------------------------------------------------------------------
 // Photos et caractéristiques
@@ -357,6 +363,8 @@ function caracteristiques(p: Json | null, $: CheerioAPI, amazon: boolean): Valeu
     const n = nom ? couper(nom.replace(/\s*[:：]\s*$/, ''), NOM_CARACT) : undefined;
     const v = valeur ? couper(valeur, VAL_CARACT) : undefined;
     if (!n || !v || n.length < 2 || LIGNE_NON.test(n) || EN_TETE.test(v) || norm(n) === norm(v) || vus.has(`${norm(n)}|${norm(v)}`)) return;
+    /* T25-4 : ni argument de vente, ni phrase d'en-tête, ni « non publié » ; ni la même mesure sous un second nom (le premier reste) */
+    if (bruitDeBoutique(n, v) || out.some((x) => memeMesure(x, { nom: n, valeur: v, ...(unite ? { unite } : {}) }))) return;
     // Un même nom avec une autre valeur reste : une page dit parfois « Gewicht 15 kg » (expédition) puis « Gewicht: 13.5kg » (appareil).
     vus.add(`${norm(n)}|${norm(v)}`);
     out.push({ nom: n, valeur: v, ...(unite ? { unite: couper(unite, 12) } : {}) });
@@ -477,6 +485,9 @@ export function extraireProduit(html: string, url: URL): Extraction {
   const marque = texte(liste<Json>(p?.brand)[0]?.name ?? p?.brand, 60) ?? meta('og:brand') ?? meta('product:brand');
   let nom = amazon && h1 ? h1 : texte(p?.name, 300) ?? (h1 || undefined) ?? (ogTitre || undefined);
   if (nom && /^(?:brauen\.de|home|startseite|accueil)$/i.test(nom) && h1) nom = h1;
+  /* T25-3 : le titre de la page prolonge le nom des données de quelques mots (« Mosaic » → « Mosaic Hopfenpellets ») : c'est le nom que le
+     brasseur lit sur la page. Un titre bien plus long (slogan, description) ne remplace rien. */
+  if (nom && h1 && !amazon && norm(h1).startsWith(`${norm(nom)} `) && h1.length <= 100 && h1.split(' ').length - nom.split(' ').length <= 3) nom = h1;
   if (nom && marque && !norm(nom).includes(norm(marque).split(' ')[0]) && !site.includes(norm(marque).split(' ')[0]) && !norm(marque).includes(site)) {
     nom = `${marque.length > 20 ? marque.split(' ')[0] : marque} ${nom}`;
   }
@@ -485,7 +496,19 @@ export function extraireProduit(html: string, url: URL): Extraction {
   const offresBrutes: Json[] = [];
   const variante = url.searchParams.get('variant');
   const variantes = liste<Json>(p?.hasVariant);
-  const choisie = variante ? variantes.find((v) => [texte(v.url, 2000), texte(v.sku), texte(v['@id'], 2000)].some((x) => x?.includes(variante))) : undefined;
+  let choisie = variante ? variantes.find((v) => [texte(v.url, 2000), texte(v.sku), texte(v['@id'], 2000)].some((x) => x?.includes(variante))) : undefined;
+  /* T25-1 : sans variante désignée par l'adresse, la page montre celle qu'elle a choisie par défaut (hopfenmarkt.ch : 100 g à 7,25 CHF, le
+     JSON-LD commençant à 50 g, 3,90). Le prix écrit sous le titre la désigne ; la moins chère n'est jamais prise à sa place. */
+  const prixOffre = (o: Json) => { const specs = liste<Json>(o?.priceSpecification); const b = o?.price ?? o?.lowPrice ?? specs[0]?.price; return prixLocalise(typeof b === 'object' ? texte(b) : b)?.montant; };
+  let variantesDites = false;
+  if (!choisie && variantes.length > 1 && (h1 || nom)) {
+    const vu = prixSousTitre(visible, h1 || nom!);
+    const prixVariantes = new Set(variantes.flatMap((v) => liste<Json>(v.offers).map(prixOffre)).filter((x): x is number => x !== undefined).map((x) => Math.round(x * 100)));
+    if (vu && prixVariantes.size > 1) {
+      const candidates = variantes.filter((v) => liste<Json>(v.offers).some((o) => { const x = prixOffre(o); return x !== undefined && egal(x, vu.montant); }));
+      if (candidates.length) { choisie = candidates[0]; variantesDites = true; }
+    }
+  }
   for (const o of liste<Json>(choisie?.offers ?? p?.offers)) offresBrutes.push(o);
   if (!choisie) for (const v of variantes) offresBrutes.push(...liste<Json>(v.offers));
   const offres: Json[] = [];
@@ -532,7 +555,9 @@ export function extraireProduit(html: string, url: URL): Extraction {
     const vu = h1 ? prixSousTitre(visible, h1) : undefined;
     if (vu && vu.devise === devise && !egal(vu.montant, prix)) prixDouteux = `données ${prix}, page ${vu.montant} ${vu.devise}`;
   }
-  const taxe = prix !== undefined ? taxeDe(prix, visible, tvaSchema) : {};
+  /* la note de taxe d'une boutique vit souvent dans son pied de page (retiré du texte visible) : lue à part, jamais pour un autre usage */
+  const notesTaxe = prix !== undefined ? compact($('[class*="footnote" i], [class*="vat" i], [class*="mwst" i], footer').map((_, e) => $(e).text()).get().filter((t) => /MwSt|USt|VAT|TVA|Mehrwertsteuer/i.test(t)).slice(0, 6).join(' ')) : '';
+  const taxe = prix !== undefined ? taxeDe(prix, visible, tvaSchema, notesTaxe) : {};
   etapes.push(prix !== undefined
     ? { nom: 'prix', statut: prixDouteux ? 'douteux' : 'trouve', detail: prixDouteux ?? `${prix} ${devise} (${sourcePrix})${prixDes ? ', dès' : ''}` }
     : { nom: 'prix', statut: 'absent' });
@@ -564,6 +589,15 @@ export function extraireProduit(html: string, url: URL): Extraction {
   etapes.push(photos.length ? { nom: 'photos', statut: 'trouve', detail: `${photos.length}${depuisGalerie.length ? ' (galerie de la page)' : ''}` } : { nom: 'photos', statut: 'absent' });
 
   const valeurs = caracteristiques(p, $, amazon);
+  if (variantesDites) {
+    /* Les variantes proposées, telles que la page les publie ; celle dont le prix est affiché est dite, comme celles qui sont épuisées. */
+    const dites = variantes.map((v) => {
+      const lib = texte(v.size, 30) ?? texte(v.name, 80)?.split(/\s[–—-]\s/).pop();
+      const epuisee = liste<Json>(v.offers).some((o) => /OutOfStock|SoldOut|Discontinued/i.test(String(o?.availability ?? '')));
+      return lib ? `${lib}${v === choisie ? ' (affichée)' : ''}${epuisee ? ' (épuisé)' : ''}` : undefined;
+    }).filter((x): x is string => !!x);
+    if (dites.length > 1 && valeurs.length < 24) valeurs.push({ nom: 'Variantes', valeur: couper(dites.join(' · '), VAL_CARACT) });
+  }
   if (amazon) $('#productDetails_techSpec_section_1 tr, #productOverview_feature_div tr, #technicalSpecifications_section_1 tr').each((_, tr) => {
     const c = $(tr).children('th, td');
     if (c.length === 2 && valeurs.length < 24) {

@@ -21,7 +21,7 @@ import { detailPrix, prixTexteArticle } from './PrixPastille';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { nombreTexte, placesDe, tableau as calculerTableau, type Place } from '../../domain/carnets/comparer';
 import { parsePrix } from '../../domain/finance/upgradeRing';
-import { dateCourte, montant, Provenance, rangTexte, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
+import { dateCourte, montant, Provenance, rangTexte, texteSelonNom, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
 import './fiche-article.css';
 import { marquerCassee, photoCassee, VignetteObjet } from './pictos';
 
@@ -138,13 +138,16 @@ export function FicheArticle(p: FicheArticleProps) {
      l'origine ; 4 cases au moins quand il y a de quoi les remplir, jamais une valeur inventée. */
   const cases: Case[] = Object.entries(a.valeurs).filter(([nom]) => normaliser(nom) !== nomHeros).map(([nom, v]: [string, ValeurV]) => {
     const n = typeof v.valeur === 'string' && !milliersAPoint(v) ? nombreValeur(v) : null;
-    return { nom, texte: n !== null ? nombreTexte(n) : valeurTexte(v), ...(v.unite ? { unite: v.unite } : {}), rang: rangDe(nom), exemple: v.origine === 'exemple' };
+    return { nom, texte: texteSelonNom(nom, n !== null ? nombreTexte(n) : valeurTexte(v)), ...(v.unite ? { unite: v.unite } : {}), rang: rangDe(nom), exemple: v.origine === 'exemple' };
   });
+  /* T25-7 : les colonnes du carnet que l'article ne publie pas se disent ensemble, dans UNE phrase sous la grille (« Non publié par le
+     vendeur : Malzmenge · Max. Malzmenge · Stromanschluss »), jamais trois cases « non publié » qui font croire à une valeur. L'inconnu
+     reste dit (jamais 0), le critère reste nommé. */
   const dits = new Set([nomHeros, ...cases.map(c => normaliser(c.nom))]);
+  const manque: string[] = [];
   for (const col of t?.colonnes ?? []) {
-    if (cases.length >= 4) break;
     if (normaliser(col.nom) === 'prix' || dits.has(normaliser(col.nom))) continue;
-    cases.push({ nom: col.nom, texte: null, ...(col.unite ? { unite: col.unite } : {}) });
+    manque.push(col.nom);
     dits.add(normaliser(col.nom));
   }
   if (cases.length < 4 && dispoDe(a)) cases.push({ nom: 'Disponibilité', texte: dispoDe(a)! });
@@ -260,7 +263,7 @@ export function FicheArticle(p: FicheArticleProps) {
           {poserPrix && p.onPrix && <PoserPrix centimes={a.prixCentimes} onPoser={c => { p.onPrix!(c); setPoserPrix(false); }} onFermer={() => setPoserPrix(false)} />}
         </>
       )}
-      {cases.length > 0 && (
+      {(cases.length > 0 || manque.length > 0) && (
         <>
           <h3 className="cn-sous">Caractéristiques {lu && <span className="cn-mut">lues sur la fiche du vendeur, {lu}</span>}</h3>
           <dl className="cn-carac" aria-label="Caractéristiques">
@@ -274,6 +277,7 @@ export function FicheArticle(p: FicheArticleProps) {
               </div>
             ))}
           </dl>
+          {manque.length > 0 && <p className="cn-mut cn-carac-manque">Non publié par le vendeur : {manque.join(' · ')}</p>}
         </>
       )}
       <div className="cn-veille-bloc">

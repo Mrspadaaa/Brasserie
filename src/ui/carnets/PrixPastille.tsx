@@ -11,7 +11,7 @@
 import React, { useState } from 'react';
 import { ChevronUp, Link2, Pencil } from 'lucide-react';
 import { convertiChf, estEtranger, mentionFrais, portCentimes, renduArticle, tauxLu, tauxVersChf, TVA_IMPORT, type PrixRendu } from '../../domain/carnets/prixRendu';
-import { dateCourte, montant, type ArticleV } from './EtatIA';
+import { dateCourte, mentionTaxe, montant, type ArticleV } from './EtatIA';
 
 const nb = (centimes?: number) => montant(centimes === undefined ? undefined : Math.round(centimes / 100) * 100) ?? '?';
 const pourcent = (x: number) => String(Math.round(x * 1000) / 10).replace('.', ',');
@@ -21,7 +21,7 @@ export interface PrixPastilleProps { article: ArticleV; taux?: number; onTaux?: 
 /** Le prix d'origine tel que la page le donne : « 1 450 USD », `€` pour l'euro ; avec « HT » quand la page le dit. */
 export function prixOrigine(a: ArticleV): string {
   const d = (a.devise ?? 'CHF').toUpperCase();
-  return `${montant(a.prixCentimes) ?? '?'} ${d === 'EUR' ? '€' : d}${a.taxe === 'ht' ? ' HT' : ''}`;
+  return `${montant(a.prixCentimes) ?? '?'} ${d === 'EUR' ? '€' : d}${mentionTaxe(a.taxe)}`;
 }
 /** Le port vers la Suisse, dit quand la page le publie : « port 4,90 CHF », « port offert » ; absent sinon (jamais inventé). */
 export function portDit(a: ArticleV): string | null {
@@ -58,7 +58,7 @@ export function PrixPastille(p: PrixPastilleProps) {
     <span className="cn-pastille-prix">
       {a.prixDes ? <small>dès</small> : null}
       <span className="cn-mono">{montant(a.prixCentimes)}</span>
-      <small>{a.devise ?? 'CHF'}{a.taxe === 'ht' ? ' HT' : ''} {a.origine === 'vous' ? <Pencil size={12} aria-label="saisi" /> : <Link2 size={12} aria-label="lu" />}</small>
+      <small>{a.devise ?? 'CHF'}{mentionTaxe(a.taxe)} {a.origine === 'vous' ? <Pencil size={12} aria-label="saisi" /> : <Link2 size={12} aria-label="lu" />}</small>
       {port ? <small className="cn-pastille-port">{port}</small> : null}
     </span>
   );
@@ -123,7 +123,7 @@ export function PrixTexte({ a, taux, muet }: { a: ArticleV; taux?: number; muet?
 export function detailPrix(a: ArticleV, taux?: number): string | null {
   if (a.prixCentimes === undefined) return null;
   const converti = convertiChf(a, taux) !== undefined;
-  const parts = [converti ? prixOrigine(a) : a.taxe === 'ht' ? 'HT' : null, portDit(a), converti || estEtranger(a) ? mentionFrais(a) : null];
+  const parts = [converti ? prixOrigine(a) : mentionTaxe(a.taxe).trim() || null, portDit(a), converti || estEtranger(a) ? mentionFrais(a) : null];
   const t = parts.filter(Boolean).join(' · ');
   return t || null;
 }

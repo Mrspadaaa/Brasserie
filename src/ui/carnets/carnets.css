@@ -493,6 +493,8 @@
 .cn-radio { width: 22px; height: 22px; border-radius: 999px; border: 2px solid var(--c-line2); flex: none; }
 .cn-radio-on { border: 6px solid var(--c-ink); }
 .cn-carac-rang { font-weight: 700; }
+/* T25-7 : les colonnes du carnet que le vendeur ne publie pas, dites en une phrase sous la grille */
+.cn-carac-manque { margin: 0; padding: 8px 0; border-top: 1px solid var(--c-line); font-size: 14px; line-height: 1.4; }
 /* P11 : genre des notes (G22) */
 .cn-genre-a-acheter.cn-note-picto { background: var(--c-zonebg); color: var(--c-zonet); }
 .cn-genre-question.cn-note-picto { background: var(--c-iabg); color: var(--c-ia); }

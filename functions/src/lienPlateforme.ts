@@ -22,11 +22,30 @@ const coupe = (t: string, max: number) => (t.length <= max ? t : t.slice(0, max 
 
 const PAS_UNE_CARACT = /^(?:preis|price|prix|versand|lieferung|lieferzeit|hinweis|achtung|note|tipp|bewertung|rating|menge|anzahl|quantit|stock|lager|verf[uü]gbar|disponib|sku|ean|gtin|mpn|artikel|bestell|http)/i;
 
+/**
+ * Ce qu'une page range à côté de ses caractéristiques sans en être une (T25-4, gastro-held.ch : « Prix compétitifs : Plus de 9 500 articles… »,
+ * « Sans risque : service de retour de 14 jour », l'en-tête « Armoire réfrigérée pro ECO 400 GN 1/1 : 429 litres, froid ventilé… ») :
+ * arguments de vente et garanties de la boutique, phrase d'en-tête (virgule, ou plus de six mots, dans le nom), valeur « non publié ».
+ */
+const NOM_BOUTIQUE = /^(?:prix|preis|sans\s+risque|livraison|exp[ée]dition|retour|r[üu]ckgabe|paiement|zahlung|service|conseil|avis|satisfaction|garantie\s+(?:de\s+)?(?:remboursement|satisfaction)|kundenservice|gratuit|kostenlos|offre|angebot|aktion|promo)\b/i;
+const VALEUR_BOUTIQUE = /\b(?:jours?\s+de\s+retour|retour\s+de\s+\d+|\d+\s*tage\s+r[üu]ckgabe|articles?\s+de\s+qualit[ée]|à\s+des\s+prix|zufriedenheitsgarantie|satisfait\s+ou\s+rembours)/i;
+const VALEUR_ABSENTE = /^(?:non\s+publi[ée]e?s?|non\s+renseign[ée]e?|k\.?\s?A\.?|n\/?a|nicht\s+(?:angegeben|verf[üu]gbar)|inconnu|unbekannt|—|–|-|\?)$/i;
+export function bruitDeBoutique(nom: string, valeur: string): boolean {
+  const n = compact(nom), v = compact(valeur);
+  return NOM_BOUTIQUE.test(n) || (/,/.test(n) && n.length > 24) || n.split(' ').length > 6 || VALEUR_BOUTIQUE.test(v) || VALEUR_ABSENTE.test(v);
+}
+const premierMot = (nom: string) => norm(nom).replace(/\[.*?\]|\(.*?\)/g, ' ').split(/[^a-z0-9]+/).find((m) => m.length >= 4) ?? '';
+/** Même mesure écrite deux fois sous deux noms (« Volume utile [Litres] 429 » et « Volume de réfrigération [Litres] 429 ») : même valeur chiffrée, même premier mot. */
+export function memeMesure(a: ValeurLue, b: ValeurLue): boolean {
+  return /\d/.test(a.valeur) && norm(`${a.valeur} ${a.unite ?? ''}`) === norm(`${b.valeur} ${b.unite ?? ''}`) && premierMot(a.nom) !== '' && premierMot(a.nom) === premierMot(b.nom);
+}
+
 /** Une paire « Nom : valeur » plausible (le nom est court, la valeur porte un chiffre ou reste brève). */
 export function paire(nom: string | undefined, valeur: string | undefined): ValeurLue | undefined {
   if (!nom || !valeur) return undefined;
   const n = compact(nom).replace(/\s*[:：]\s*$/, ''), v = compact(valeur).replace(/[.;]\s*$/, '');
   if (n.length < 2 || n.length > NOM_MAX || !v || v.length > VAL_MAX + 40) return undefined;
+  if (bruitDeBoutique(n, v)) return undefined;
   if (PAS_UNE_CARACT.test(n) || /^https?:/i.test(v) || norm(n) === norm(v) || /^(?:wert|werte|value|valeur|n\/?a|-|–|null|undefined|true|false)$/i.test(v)) return undefined;
   if (!/\d/.test(v) && v.length > 30) return undefined;
   return { nom: coupe(n, NOM_MAX), valeur: coupe(v, VAL_MAX) };
@@ -46,11 +65,12 @@ export function pairesDeTexte(texte: string | undefined): ValeurLue[] {
 }
 
 const MESURES_NOM: Array<{ nom: string; re: RegExp }> = [
-  { nom: 'Volume', re: /(\d+(?:[.,]\d+)?)\s?(?:l|lt|liter|litres?|litre)(?![a-zà-ÿ])/i },
-  { nom: 'Puissance', re: /(\d+(?:[.,]\d+)?)\s?(?:kw|w)(?![a-zà-ÿ])/i },
-  { nom: 'Couleur (EBC)', re: /(\d+(?:[.,]\d+)?(?:\s?[-–]\s?\d+(?:[.,]\d+)?)?)\s?ebc/i },
-  { nom: 'Tension', re: /(\d{3})\s?v(?![a-zà-ÿ])/i },
-  { nom: 'Contenu ou poids', re: /(\d+(?:[.,]\d+)?)\s?(?:kg|g)(?![a-zà-ÿ])/i }
+  /* T25-8 : un nombre collé à des lettres est une référence (« KS240L », « B40pro »), jamais une mesure : `(?<![A-Za-zÀ-ÿ])` */
+  { nom: 'Volume', re: /(?<![A-Za-zÀ-ÿ\d])(\d+(?:[.,]\d+)?)\s?(?:l|lt|liter|litres?|litre)(?![a-zà-ÿ])/i },
+  { nom: 'Puissance', re: /(?<![A-Za-zÀ-ÿ\d])(\d+(?:[.,]\d+)?)\s?(?:kw|w)(?![a-zà-ÿ])/i },
+  { nom: 'Couleur (EBC)', re: /(?<![A-Za-zÀ-ÿ\d])(\d+(?:[.,]\d+)?(?:\s?[-–]\s?\d+(?:[.,]\d+)?)?)\s?ebc/i },
+  { nom: 'Tension', re: /(?<![A-Za-zÀ-ÿ\d])(\d{3})\s?v(?![a-zà-ÿ])/i },
+  { nom: 'Contenu ou poids', re: /(?<![A-Za-zÀ-ÿ\d])(\d+(?:[.,]\d+)?)\s?(?:kg|g)(?![a-zà-ÿ])/i }
 ];
 /** Les mesures écrites dans le nom du produit (« Braukessel 60 L Edelstahl 3000 W », « Pilsner Malz, 3-5 EBC, 25 kg ») : le titre est une source. */
 export function mesuresDuNom(nom: string | undefined): ValeurLue[] {
@@ -96,6 +116,7 @@ export function etatsEmbarques(html: string): unknown[] {
 const CLE_NOM = ['title', 'name', 'label', 'key', 'attributeName', 'attribute_name', 'displayName'];
 const CLE_VALEUR = ['value', 'text', 'displayValue', 'stringValue', 'values', 'content'];
 const CLE_ATOUTS = /sellingpoint|highlight|feature|bullet|shorttext|keyfact|usp|keyspec/i;
+const GROUPE_EMBALLAGE = /verpackung|packaging|packaged|emballage|colis|versandmass|versandma[ßs]e|lieferumfang|shipping\s+dimensions/i;
 
 function texteDe(v: unknown, prof = 0): string | undefined {
   if (typeof v === 'string') return v;
@@ -139,7 +160,11 @@ export function valeursEmbarquees(etat: unknown): ValeurLue[] {
       for (const x of o) parcourir(x, cle, prof + 1);
       return;
     }
-    for (const [k, v] of Object.entries(o as Record<string, unknown>)) parcourir(v, k, prof + 1);
+    /* T25-8 : le groupe « Verpackungsdimensionen » (galaxus.ch : Länge 140 cm, la longueur du câble) mesure l'emballage ou le colis, pas l'appareil. */
+    const r = o as Record<string, unknown>;
+    const titre = CLE_NOM.map((c) => r[c]).find((x): x is string => typeof x === 'string');
+    if (titre && GROUPE_EMBALLAGE.test(titre)) return;
+    for (const [k, v] of Object.entries(r)) parcourir(v, k, prof + 1);
   };
   parcourir(etat, '', 0);
   return out;
@@ -157,7 +182,7 @@ export function completerValeurs<T extends ValeurLue>(base: T[], ajouts: ValeurL
   for (const a of ajouts) {
     if (valeurs.length >= max) break;
     const cle = norm(a.nom);
-    if (vus.has(cle)) continue;
+    if (vus.has(cle) || bruitDeBoutique(a.nom, a.valeur) || valeurs.some((v) => memeMesure(v, a))) continue;
     vus.add(cle); valeurs.push(a); ajoutees++;
   }
   return { valeurs, ajoutees };

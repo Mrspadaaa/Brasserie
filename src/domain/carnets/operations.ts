@@ -13,6 +13,7 @@ import { dateFacture, estRealise } from '../finance/upgradeRing';
 import { upgradeBudget, upgradeDetails } from '../finance/upgrades';
 import { avecArticleTypo, statutApres } from './comparer';
 import { memeTexte } from './doublons';
+import { lienCanonique } from './lien';
 import { jetons, normaliser, quantitesDe } from './analyseLocale';
 import {
   lireCarnet, lireMessage, nouvelIdCarnet, sansIndefinis, donneesVides, titreDePhrase, VERSION_CARNET,
@@ -153,6 +154,11 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
       d.facons.push(f); return { carnetId: c.id, cible: 'facon', id: f.id };
     }
     case 'article': {
+      /* T25-5 : le même lien (adresse canonique) déjà dans ce carnet n'ajoute rien ; l'effet renvoie à l'article qui y est, que défaire ce
+         message ne retire pas (`existant`). Un article sans lien, ou dans un autre carnet, reste libre. */
+      const canon = l.url ? lienCanonique(l.url) : null;
+      const deja = canon ? d.articles.find(x => x.url && lienCanonique(x.url) === canon) : undefined;
+      if (deja) return { carnetId: c.id, cible: 'article', id: deja.id, existant: true };
       const a: Article = sansIndefinis({
         id: l.id ?? nouvelIdCarnet('ART'), url: l.url, domaine: l.domaine, nom: l.nom,
         prixCentimes: typeof l.prixCentimes === 'number' && Number.isFinite(l.prixCentimes) && l.prixCentimes >= 0 ? Math.round(l.prixCentimes) : undefined,
@@ -344,7 +350,7 @@ export function remplacerRangement(etat: Etat, args: { messageId: string; lignes
   for (const e of m.carnetMessage.effets) {
     if (e.cible === 'carnet') continue;
     const c = b.carnet(e.carnetId);
-    if (!c) continue;
+    if (!c || e.existant) continue;
     /* P7 : un critère précisé par ce message retrouve son texte d'avant ; il n'est pas retiré (il existait avant le message). */
     if (e.fusion) {
       const k = c.carnet.criteres.find(x => x.id === e.id);

@@ -33,6 +33,8 @@ export function retourDeMessage(etat: CreativeItem[], messageId: string, txt: st
   /* P9 (R25) : un lien seul dont la page n'est pas lue dit lequel, en clair, et qu'il n'est pas lu ; P21 : une photo dit « Photo rangée » */
   const propres = effets.filter(e => e.carnetId === rr.carnetId && e.cible !== 'carnet');
   const art = propres.length === 1 && propres[0].cible === 'article' ? c?.carnet.articles.find(x => x.id === propres[0].id) : undefined;
+  /* T25-5 : tout ce que le message a « rangé » était déjà là (même lien, même carnet) : on le dit, on n'annonce aucun rangement */
+  if (rr.sorte !== 'cree' && propres.length && propres.every(e => e.existant)) return { bandeau: { sorte: 'doublon' }, inverse, messageId, carnetId: rr.carnetId, detail };
   if (rr.sorte === 'range') {
     /* BL-1 : le lien collé dans le carnet ouvert y est resté ; le carnet existant que l'IA voyait est proposé (« Déplacer vers … ? ») */
     const sugId = lignesIA?.find(l => l.carnetSuggere && l.carnetSuggere !== rr.carnetId)?.carnetSuggere;

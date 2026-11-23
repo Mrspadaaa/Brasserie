@@ -15,7 +15,7 @@ import { ChevronLeft, ExternalLink, Pin, Scale } from 'lucide-react';
 import { estEtranger, MENTION_FRAIS, renduArticle, tauxVersChf } from '../../domain/carnets/prixRendu';
 import { sourceDuCritere } from '../../domain/carnets/modele';
 import { compromisDe, groupeDeLigne, libelleCaracteristique, libelleEcarte, nombreDe, rangVisible, type Tableau } from '../../domain/carnets/comparer';
-import { montant, Provenance, rangTexte, STATUT_LIBELLE, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
+import { mentionTaxe, montant, Provenance, rangTexte, STATUT_LIBELLE, texteSelonNom, valeurTexte, type ArticleV, type CritereV, type Sens, type StatutCarnet, type ValeurV } from './EtatIA';
 import { Photo } from './pictos';
 import './carnets-decider.css';
 import './comparer-compact.css';
@@ -66,7 +66,7 @@ export function texteCellule(l: LigneT, c: ColonneVue): string | null {
   if (c.cle === '__prix') return montant(l.prixCentimes);
   const liv = LIVRAISON.find(x => x.cle === c.cle);
   if (liv) return l[liv.champ] ?? null;
-  return valeurTexte(l.cellules[c.cle]);
+  return texteSelonNom(c.nom, valeurTexte(l.cellules[c.cle]));
 }
 
 /**
@@ -316,12 +316,12 @@ function CellulePrix({ l, taux }: { l: LigneT; taux?: number }) {
   if (estEtranger(l)) {
     const r = renduArticle(l, taux);
     const dev = (l.devise ?? '').toUpperCase();
-    const orig = `${montant(l.prixCentimes)} ${dev === 'EUR' ? '€' : dev}${l.taxe === 'ht' ? ' HT' : ''}`;
+    const orig = `${montant(l.prixCentimes)} ${dev === 'EUR' ? '€' : dev}${mentionTaxe(l.taxe)}`;
     return r && r.totalChf !== undefined
       ? <><small className="cn-mut">{r.manque.length ? 'dès' : 'estimé'}</small><span className="cn-mono cn-brun">≈{montant(Math.round(r.totalChf / 100) * 100)}</span><small className="cn-mut cn-mono">{orig}</small></>
       : <><span className="cn-mono">{orig}</span><small className="cn-mut">{dev === 'EUR' ? 'taux ?' : 'cours ?'}</small></>;
   }
-  return <>{l.prixDes ? <small className="cn-mut">dès</small> : null}<Mesure txt={montant(l.prixCentimes) ?? ''} />{l.taxe === 'ht' ? <small className="cn-mut">HT</small> : null}</>;
+  return <>{l.prixDes ? <small className="cn-mut">dès</small> : null}<Mesure txt={montant(l.prixCentimes) ?? ''} />{l.taxe ? <small className="cn-mut">{mentionTaxe(l.taxe).trim()}</small> : null}</>;
 }
 
 export function Comparer(p: ComparerProps) {

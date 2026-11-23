@@ -280,6 +280,10 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
         const loc = r.headers.get('location');
         const suivante = loc ? urlLisible(new URL(loc, url).href) : null;
         if (!suivante) return echec('refusee', url);
+        /* T25-2 : une fiche redirigée vers la recherche ou l'accueil est un lien mort DÈS la redirection. On ne suit pas : robots.txt
+           interdit souvent la recherche (brewtools.com : « Disallow: /search »), et la lecture disait alors « le site refuse la lecture
+           automatique » au lieu de « introuvable ». La page de recherche n'est jamais demandée. */
+        if (lienMort(depart, suivante)) return echec('introuvable', url);
         url = suivante; continue;
       }
       if (!r.ok || !(r.headers.get('content-type') ?? '').includes('text/html')) { await r.body?.cancel(); return echec('indisponible', url); }
