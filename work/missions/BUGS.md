@@ -249,6 +249,7 @@ Lire :
 | work/missions/2026-11-23-carnet-en-ligne/tour13/RAPPORT.md | CA13 | 13 | 0 | 9aafd8bcdcad |
 | work/missions/2026-11-23-carnet-en-ligne/fix13/RAPPORT.md | FIX13 | 2 | 0 | 23fb032b6a83 |
 | work/missions/2026-11-23-calendrier-en-ligne/zz-ventes/RAPPORT.md | ZZV | 1 | 0 | 4348a2cf528c |
+| work/missions/2026-11-23-carnet-en-ligne/gastro-held/RAPPORT.md | GH | 2 | 0 | 99442e372200 |
 | work/missions/2026-11-23-calendrier-en-ligne/contre-epreuve/RAPPORT.md | T11 | 24 | 0 | 22535391fb6e |
 
 Port du carnet (préfixe `PCN`, work/missions/2026-11-17-port-carnet/vision-1…) : rapports versés le 18.11 avec 0 constat, le workflow tourne encore ; critique du carnet à venir.
@@ -2846,3 +2847,10 @@ Règle (brasseur 23.11) : une seule contre-épreuve ; graves corrigés tout de s
 | id | source | écran | constat | gravité | état | commit | note |
 |---|---|---|---|---|---|---|---|
 | ZZV-1 | Ventes ZZ TEST annulées, 23.11 | Calendrier › rangée Ventes | Ventes « ZZ TEST — parcours r2 » et « parcours 10.11 » déjà annulées (« Écriture annulée », absentes de Finances) → observé : comptées dans la rangée Ventes et son total : +5 785 au lieu de +5 695 ; attendu : une écriture annulée ne compte nulle part au Calendrier | G | ouvert — présent |   | zz-ventes/RAPPORT.md ; CAL-ANNULEES-COMPTEES ; capture zz-ventes/ |
+
+## Lien gastro-held collé par le brasseur, 23.11 (`work/missions/2026-11-23-carnet-en-ligne/gastro-held/RAPPORT.md`)
+
+| id | source | écran | constat | gravité | état | commit | note |
+|---|---|---|---|---|---|---|---|
+| GH-1 | Lien gastro-held collé par le brasseur, 23.11 | Carnet › lien collé (gastro-held) | coller le lien produit gastro-held depuis Chambre froide ouvert → observé : rangerCarnet boucle dans « vendeur » (MAX_TOKENS 3985, 34 s, schéma sans ordre des champs) → repli local : frigo rangé dans Chambre froide ; attendu : article lu et rangé dans le bon carnet (Frigo + congel) | B | corrigé (aiTask en ligne 23.11, prouvé en direct) | 24099a754 | gastro-held/RAPPORT.md ; L-1/L-2 du Carnet ; capture gastro-held/01-ses-donnees-chambre-froide.png |
+| GH-2 | Lien gastro-held collé par le brasseur, 23.11 | Carnet › article gastro-held | lien Shopify → observé : photo non lue (liste ImageObject, og:image en http) ; attendu : photo de l'article | m | corrigé (aiTask en ligne 23.11) | 24099a754 | gastro-held/RAPPORT.md ; CSP photos ; capture gastro-held/02-ses-donnees-fiche.png |
