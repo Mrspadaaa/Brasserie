@@ -73,9 +73,10 @@ export interface ContexteRangerCarnet {
 }
 
 /*
- * `propertyOrdering` (23.11, lien gastro-held.ch) : sans lui, Gemini sort les clés par ordre alphabétique. Il écrivait `sorte` d'abord,
- * `carnetId`, `prix` et `devise` étaient alors déjà passés, et ce qu'il voulait encore dire bouclait dans le dernier champ libre (`vendeur`,
- * 3 985 jetons, coupé au plafond, 9 rejeux sur 9). Les clés sortent dans l'ordre écrit ici : rangement et prix avant le vendeur.
+ * `propertyOrdering` (23.11, lien gastro-held.ch) : sans lui, Gemini sort les champs requis puis les autres par ordre alphabétique
+ * (`sorte`, `texte`, puis `caracteristique`, `carnetId`… `url`, `vendeur`). `carnetId`, `prix` et `devise` venaient avant `url` ; il les
+ * sautait, et ce qu'il voulait encore dire bouclait dans le dernier champ libre (`vendeur`, 3 985 jetons, coupé au plafond, 9 rejeux sur 9).
+ * Les clés sortent dans l'ordre écrit ici : rangement et prix avant le vendeur.
  */
 const S = (properties: Record<string, unknown>, required: string[]) => ({ type: 'OBJECT', properties, required, propertyOrdering: Object.keys(properties) });
 const str = { type: 'STRING', nullable: true };
@@ -195,7 +196,9 @@ export function assainirRangerCarnet(data: unknown): { lignes: Array<Record<stri
       const texte = chaine(r.texte);
       if (!SORTES.has(r.sorte as string) || !texte) return [];
       const out: Record<string, unknown> = { sorte: r.sorte, texte };
-      for (const c of CHAINES) { const v = chaine(r[c]); if (v) out[c] = v; }
+      // Un lien collé dépasse souvent 300 caractères (gastro-held.ch, 331 avec gclid) : coupé, il ne se retrouve plus dans le message
+      // et la page lue se détache (ni photo, ni stock). Même borne que les pages lues : 2 000.
+      for (const c of CHAINES) { const v = chaine(r[c], c === 'url' ? 2000 : 300); if (v) out[c] = v; }
       if (out.genre !== undefined && !GENRES.has(out.genre as string)) delete out.genre;
       for (const c of ['prix', 'quantite'] as const) if (typeof r[c] === 'number' && Number.isFinite(r[c]) && (r[c] as number) > 0) out[c] = r[c];
       const k = r.caracteristique as Record<string, unknown> | null | undefined;

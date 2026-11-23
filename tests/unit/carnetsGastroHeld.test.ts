@@ -2,15 +2,15 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { lirePage } from '../../functions/src/lireLien';
-import { RANGER_CARNET_SCHEMA } from '../../functions/src/carnetIA';
+import { RANGER_CARNET_SCHEMA, assainirRangerCarnet } from '../../functions/src/carnetIA';
 import { lireReponse } from '../../src/domain/carnets/ia';
 
 /*
  * Lien gastro-held.ch collé le 23.11 vers 12:40 dans Chambre froide : « Ça m'a fait n'importe quoi ».
  * Journal : `lireLien` lue en 1,3 s, puis `rangerCarnet` coupé au plafond (MAX_TOKENS, 3 985 jetons de sortie, 34 s). Rejoué 9 fois en
  * direct (journal ia-journal.jsonl) : le modèle écrit `sorte`, `texte`, `titre`, `url`, puis boucle dans `vendeur` (« GastroHeld GastroHeld… »).
- * Cause : le schéma n'a pas de `propertyOrdering` ; Gemini sort alors les clés par ordre alphabétique : `carnetId`, `prix`, `devise` passent
- * avant `sorte`, qu'il écrit d'abord ; ce qu'il voulait encore dire tombe dans le dernier champ libre (`vendeur`, ou `url` sans `vendeur` :
+ * Cause : le schéma n'a pas de `propertyOrdering` ; Gemini sort alors les champs requis puis les autres par ordre alphabétique : `carnetId`,
+ * `prix`, `devise` viennent avant `url`, il les saute ; ce qu'il voulait encore dire tombe dans le dernier champ libre (`vendeur`, ou `url` sans `vendeur` :
  * « …&vendeur=GastroHeld&prix=1228.9&devise=CHF »). Avec l'ordre du schéma : réponse complète en 5 s, 508 jetons (STOP).
  */
 const URL_COLLEE = 'https://www.gastro-held.ch/products/gastronomie-kuehlschrank-eco-1300-gn-21-monoblock-1350-liter-kuehlraumvolumen-6-verstellbare-einlegeboeden-robuste-bauweise-edelstahl-gnh1410tnm?gclsrc=aw.ds&gad_source=1&gad_campaignid=21268371086&gclid=CjwKCAiA5Y_YBhBbEiwAK5Dl7acLXIXCs076S_WqnMYrfNQ__wg8Qa38mWH9HbK9cmeBFiGKpM5RZRoCgfIQAvD_BwE';
@@ -39,5 +39,13 @@ describe('gastro-held.ch (lien du 23.11)', () => {
     expect(lignes).toHaveLength(1);
     expect(lignes![0]).toMatchObject({ sorte: 'article', url: URL_COLLEE, prixCentimes: 122890, devise: 'CHF', vendeur: 'GastroHeld', carnetId: ouvert.id });
     expect(lignes![0].page?.photo).toMatch(/^https:\/\/www\.gastro-held\.ch\/cdn\/shop\/files\/224809-gnh1410tnm_2\.webp/);
+  });
+
+  /* Rejeu en ligne après 24099a754 : la garde serveur coupait toute chaîne à 300 caractères ; le lien collé en a 331, l'URL rendue ne
+     se retrouvait plus dans le message, la page lue se détachait : ni photo, ni stock, nom coupé à 120 (« Robuste Bauw »). */
+  it('la garde serveur rend le lien entier (331 caractères)', () => {
+    const brut = JSON.parse(readFileSync(new URL('../fixtures/carnets/gastro-held-reponse-ordonnee.json', import.meta.url), 'utf8'));
+    expect(URL_COLLEE.length).toBeGreaterThan(300);
+    expect(assainirRangerCarnet(brut).lignes[0].url).toBe(URL_COLLEE);
   });
 });
