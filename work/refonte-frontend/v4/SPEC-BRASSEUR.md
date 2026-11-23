@@ -2826,3 +2826,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - « Et pas d'autres modèles utilie à tester m »
 - (citant « Claude (Anthropic) : … une autre clé. ») « Du coup non »
 - (capture d'un site tiers : étapes « Découpage … ok » qui s'affichent pendant l'analyse) « Pas rien afficher, mais montrer les étapes un peu comme cette exemple quand la recherche s'effectue. Ou une barre qui se replis et c'est possible de ferme l'app. Là je donne un exemple TU DOIS PAS FAIRE ÇA c'est juste pour donner l'idée. Compris, c'est clair ? Tu dois pas faire quoi et tu dois faire quoi ? »
+- « Non même les deux, les étapes, et ai lente une barre qui de replis »
