@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Carnet · lecture d'un lien · v03 : l'article se remplit ligne à ligne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* v03 · base : ra-p5f (17.11), thème clair de l'app tel qu'il s'affiche. Une seule décision de forme change :
+   les sous-tâches de la lecture sont les lignes de la carte d'article qui arrive dans le fil ; chaque ligne reçoit
+   sa valeur et son verdict (trouvé, absent, douteux) à la place exacte où le champ vivra. Statique : HTML et CSS seuls.
+   Passe de correction : en-tête complet du carnet de la base (titre, Ensuite, critère, Façons, Articles, Comparer,
+   Décisions) et son vrai fil ; les vues 2, 4 et 5 sont des défilements de la même page, coupés entre deux blocs. */
+:root{--bg:#fff;--s1:#f5f5f5;--s2:#ebebeb;--line:#ddd;--line2:#bfbfbf;--mut:#666;--ink:#111;--act:#111;--onact:#fff;--prod:#9a4f1e;--fin:#1f64a3;--stk:#4c6b2a;--att:#7f5b10;--ok:#3f6b2e;--bad:#a8291f;--sheet:#fff;--ia:#6a4fb0;--bdg:#8a5212;--attac:#e0a02e;
+  --finbg:color-mix(in srgb,var(--fin) 12%,var(--bg));--attbg:color-mix(in srgb,var(--att) 12%,var(--bg));--okbg:color-mix(in srgb,var(--ok) 13%,var(--bg));--badbg:color-mix(in srgb,var(--bad) 12%,var(--bg));--iabg:color-mix(in srgb,var(--ia) 11%,var(--bg));--botOn:color-mix(in srgb,var(--stk) 12%,var(--s1));--zone:color-mix(in srgb,var(--stk) 8%,var(--bg));--marg:color-mix(in srgb,var(--prod) 40%,var(--bg))}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:16px;line-height:1.4}
+body{width:390px;margin:0 auto;overflow-x:hidden}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;text-align:left}
+.da-ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.da-ex{display:inline-block;border:1px solid var(--ia);color:var(--ia);border-radius:999px;font-size:14px;line-height:18px;padding:0 6px;font-weight:600;vertical-align:1px;white-space:nowrap}
+.ra-mono,.ra-px{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+
+/* cadre téléphone : 390 × 844 ; la page du carnet défile sous l'en-tête collé (--s = défilement) */
+.v3-ph{position:relative;width:390px;height:844px;overflow:hidden;background:var(--bg)}
+.v3-vp{position:absolute;left:0;right:0;top:0;bottom:0;overflow:hidden}
+.v3-pg{padding-top:52px;transform:translateY(calc(-1 * var(--s,0px)))}
+.v3-cap{padding:14px 16px 18px;background:var(--s1);border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:15px;line-height:1.45;color:var(--ink)}
+.v3-cap b{font-weight:800}.v3-cap .n{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--stk);color:#fff;font-weight:800;font-size:15px;margin-right:8px}
+.v3-cap p{margin:6px 0 0;color:var(--mut)}
+
+/* coque de l'app (ra-p5f) */
+.da-bot{position:absolute;left:0;right:0;bottom:0;height:56px;display:flex;background:var(--s1);border-top:1px solid var(--line);z-index:30}
+.da-bot a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:14px;letter-spacing:-.01em;position:relative;min-width:0;color:inherit;text-decoration:none}
+.da-bot a.on{background:var(--botOn);font-weight:600;box-shadow:inset 0 3px 0 var(--stk);color:var(--stk)}
+.da-bot .bdg{position:absolute;top:2px;left:calc(50% + 4px);background:var(--bdg);color:var(--onact);font-size:14px;font-weight:600;border-radius:999px;padding:0 5px;line-height:18px}
+.da-fab{position:absolute;z-index:36;right:12px;bottom:64px;width:52px;height:52px;border-radius:26px;display:inline-flex;align-items:center;justify-content:center;background:var(--act);color:var(--onact);box-shadow:0 4px 12px rgba(0,0,0,.28),0 0 0 3px var(--bg)}
+.da-fab .da-ico{width:26px;height:26px;stroke-width:2.4}
+.v3-dock{position:absolute;left:0;right:0;bottom:56px;z-index:34;background:var(--bg);border-top:1px solid var(--line);box-shadow:0 -6px 16px rgba(0,0,0,.07);padding:8px 12px}
+.da-comp{display:flex;align-items:center;gap:6px;background:var(--s1);border:1.5px solid var(--line2);border-radius:16px;padding:4px 4px 4px 12px;min-height:52px;margin-right:60px}
+.da-comp .ph{flex:1;min-width:0;font-size:16px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.da-comp .lead{color:var(--mut)}
+.da-cb{display:grid;place-items:center;width:40px;height:44px;border-radius:12px;color:var(--mut)}
+.da-top{position:absolute;left:0;right:0;top:0;z-index:20;background:var(--zone);padding:8px 14px 0;height:52px}
+.da-top.v3-scr{height:78px;box-shadow:0 1px 0 var(--line),0 4px 10px rgba(0,0,0,.06)}
+.v3-tt{font-size:16px;font-weight:800;color:var(--ink);line-height:1.2;margin-top:-4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.da-top.liste{background:var(--bg);border-bottom:1px solid var(--line);height:auto}
+.da-crumb{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--mut);min-height:22px}
+.da-crumb>.da-ico{color:var(--stk)}
+.da-back{display:inline-flex;align-items:center;gap:4px;min-height:44px;font-weight:600;font-size:16px;padding-right:10px;color:var(--ink)}
+.da-seg{display:flex;gap:2px;margin-top:6px}
+.da-seg span{flex:1;text-align:center;min-height:40px;line-height:40px;font-weight:600;font-size:15px;color:var(--mut);border-bottom:3px solid transparent}
+.da-seg span.on{color:var(--ink);border-color:var(--stk)}
+.da-st{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:700;color:var(--st);white-space:nowrap}
+.da-dots{display:inline-flex;gap:4px}.da-dots i{width:7px;height:7px;border-radius:50%;background:var(--line2)}.da-dots i.f{background:var(--st)}
+
+/* liste des carnets */
+.da-wrap{padding:14px}
+.da-h1{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:2px 0 12px}
+.da-card{display:block;width:100%;position:relative;border:1px solid var(--line);border-radius:16px;background:var(--sheet);padding:14px 14px 14px 18px;margin:0 0 12px;overflow:hidden}
+.da-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--st)}
+.da-cl1 b{font-size:19px;font-weight:700;line-height:1.2}
+.da-cl0{margin-top:6px}
+.da-cl2{font-size:16px;line-height:1.4;margin-top:6px}.da-cl2 em{font-style:normal;color:var(--mut)}
+.da-cl3{display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+.da-thumbs{display:flex}.da-thumbs svg{width:28px;height:28px;border-radius:7px;border:2px solid var(--sheet);margin-right:-8px;background:var(--s2)}
+.da-meta{font-size:14px;color:var(--mut);margin-left:10px}
+.da-eye{margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:var(--mut)}
+.da-eye .da-ico{width:18px;height:18px}
+.da-eye.new{color:var(--ok)}.da-eye .pt{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+
+/* carnet ouvert (ra-p5f, valeurs de la base) */
+.da-ch{padding:6px 14px 14px;background:var(--zone);border-bottom:1px solid var(--line)}
+.da-ch h1{font-size:28px;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.1}
+.da-choix{display:block;width:100%;margin-top:12px;border-radius:14px;background:var(--attbg);border:1.5px solid color-mix(in srgb,var(--att) 40%,transparent);padding:12px 14px}
+.da-choix .k{font-size:14px;font-weight:700;color:var(--att)}
+.da-choix .v{font-size:17px;font-weight:700;line-height:1.3;margin-top:3px}
+.da-crit{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:16px}
+.da-crit .da-ico{color:var(--prod)}
+.da-crit b{font-weight:700}
+.da-rail{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 14px 6px}
+.da-pz{display:flex;flex-direction:column;gap:6px;min-height:64px;min-width:0;border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--sheet)}
+.da-pz .t{display:flex;align-items:center;gap:5px;font-size:14px;font-weight:700;color:var(--mut)}
+.da-pz .n{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:24px;font-weight:600;line-height:1}
+.da-pz.cmp{border-color:var(--fin);background:var(--finbg)}.da-pz.cmp .t{color:var(--fin)}
+.da-pz.dec{border-color:color-mix(in srgb,var(--ok) 50%,transparent)}
+.da-rail .rp-fac,.da-rail .da-pz.dec{grid-column:1/-1}
+.rp-fl{display:flex;flex-direction:column;gap:1px;padding:7px 0 6px;border-top:1px solid var(--line);width:100%}
+.rp-fac .t + .rp-fl{border-top:0;padding-top:2px}
+.rp-fl b{display:flex;align-items:center;gap:6px;font-size:17px;font-weight:700}
+.rp-et{font-size:14px;font-weight:600;color:var(--fin);margin-left:auto}
+.da-row{display:flex;align-items:center;gap:8px}
+.da-sub{color:var(--mut);font-size:15px;line-height:1.4}
+.da-sub .da-ico{width:16px;height:16px;vertical-align:-3px}
+.da-fil{position:relative;padding:10px 14px 0 76px}
+.da-fil:before{content:"";position:absolute;left:64px;top:0;bottom:0;width:2px;background:var(--marg)}
+.da-day{position:relative;margin:24px 0 6px}
+.da-day span{position:absolute;left:-76px;top:-2px;width:52px;text-align:right;font-size:14px;font-weight:600;line-height:1.15}
+.da-day span b{display:block;font-size:22px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.da-e{position:relative;margin:0 0 14px}
+.da-e:before{content:"";position:absolute;left:-17px;top:11px;width:8px;height:8px;border-radius:50%;background:var(--bg);border:2px solid var(--marg)}
+.da-note{font-size:16.5px;line-height:1.45}
+.da-tag{display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--ia);font-weight:600;margin-top:4px}
+.da-tag .da-ico{width:16px;height:16px}
+.da-ia{font-size:15px;line-height:1.45;color:var(--mut);background:var(--iabg);border-radius:10px;padding:10px 12px}.da-ia b{color:var(--ia)}
+.da-art{display:flex;gap:12px;align-items:stretch;border:1px solid var(--line);border-radius:14px;padding:10px;background:var(--sheet);width:100%}
+.da-art.rate{border-style:dashed}
+.da-art svg.ph{width:68px;height:68px;border-radius:10px;flex:none;background:var(--s2)}
+.da-art .i{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.da-art .nm{font-size:16.5px;font-weight:700;line-height:1.25}
+.da-art .fr{font-size:14px;color:var(--mut);line-height:1.35}
+.ra-lus{font-size:14px;color:var(--mut);margin-top:2px}
+.da-art .px{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;margin-top:auto;white-space:nowrap;flex-wrap:wrap}
+.da-dsp{white-space:nowrap;font-size:14px;font-weight:600;border-radius:999px;padding:0 8px;line-height:20px}
+.da-dsp.ok{background:var(--okbg);color:var(--ok)}.da-dsp.att{background:var(--attbg);color:var(--att)}
+.da-sw{display:inline-flex;align-items:center;gap:6px;color:var(--mut);min-height:44px;margin:-10px -4px -10px auto;padding:0 4px}
+.da-sw .tr{width:38px;height:22px;border-radius:11px;background:var(--line2);position:relative;flex:none}
+.da-sw .tr:after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff}
+.da-sw[aria-checked="true"]{color:var(--ok)}.da-sw[aria-checked="true"] .tr{background:var(--ok)}.da-sw[aria-checked="true"] .tr:after{left:19px}
+.da-b{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 13px;border-radius:12px;font-weight:700;font-size:15px;border:1.5px solid var(--line2);background:var(--sheet);white-space:nowrap}
+.da-b.fin{border-color:var(--fin);color:var(--fin)}
+.da-b.ia{border-color:var(--ia);color:var(--ia)}
+
+/* ===== v03 : la carte qui se remplit (une ligne = une sous-tâche = un champ) ===== */
+.v3-lc{border:1.5px solid var(--fin);border-radius:14px;background:var(--sheet);overflow:hidden;box-shadow:0 2px 10px rgba(31,100,163,.10)}
+.v3-lc.ko{border:1.5px dashed var(--bad);box-shadow:none}
+.v3-hd{padding:10px 12px 8px;background:var(--finbg)}
+.v3-lc.ko .v3-hd{background:var(--badbg)}
+.v3-url{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--mut);min-width:0;margin-top:2px}.v3-url .da-ex{flex:none}
+.v3-url span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.v3-url .da-ico{width:16px;height:16px;color:var(--fin)}
+.v3-lt{display:flex;align-items:center;gap:8px}
+.v3-lt b{font-size:16.5px;font-weight:800;color:var(--fin)}
+.v3-lc.ko .v3-lt b{color:var(--bad)}
+.v3-lt .t{font-size:14px;color:var(--mut);font-variant-numeric:tabular-nums}
+.v3-rep{margin-left:auto;display:inline-flex;align-items:center;gap:3px;min-height:44px;margin-top:-8px;margin-bottom:-8px;font-size:14px;font-weight:700;color:var(--fin)}
+.v3-rep .da-ico{width:18px;height:18px}
+.v3-seg{display:flex;gap:3px;margin-top:8px}
+.v3-seg i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.v3-seg i.ok{background:var(--ok)}.v3-seg i.att{background:var(--attac)}.v3-seg i.abs{background:repeating-linear-gradient(90deg,var(--line2) 0 4px,transparent 4px 7px)}.v3-seg i.bad{background:var(--bad)}
+.v3-seg i.cur{background:repeating-linear-gradient(90deg,var(--fin) 0 6px,color-mix(in srgb,var(--fin) 35%,var(--bg)) 6px 10px)}
+.v3-st{display:grid;grid-template-columns:24px 1fr;gap:10px;padding:9px 12px;border-top:1px solid var(--line)}
+.v3-st:first-of-type{border-top:0}
+.v3-g{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;margin-top:1px;border:2px solid var(--line2);color:transparent}
+.v3-g .da-ico{width:15px;height:15px;stroke-width:3}
+.v3-st.ok .v3-g{background:var(--ok);border-color:var(--ok);color:#fff}
+.v3-st.att .v3-g{background:var(--attac);border-color:var(--attac);color:#111}
+.v3-st.bad .v3-g{background:var(--bad);border-color:var(--bad);color:#fff}
+.v3-st.cur .v3-g{border-color:color-mix(in srgb,var(--fin) 30%,var(--bg));border-top-color:var(--fin);border-right-color:var(--fin)}
+.v3-l{display:flex;align-items:baseline;gap:8px;font-size:14px;font-weight:700;color:var(--mut)}
+.v3-l .r{margin-left:auto;font-size:14px;font-weight:800;white-space:nowrap}
+.v3-st.ok .r{color:var(--ok)}.v3-st.att .r{color:var(--att)}.v3-st.bad .r{color:var(--bad)}.v3-st.cur .r{color:var(--fin)}
+.v3-st.wait .v3-l{color:color-mix(in srgb,var(--mut) 70%,var(--bg))}
+.v3-st.wait .r{color:color-mix(in srgb,var(--mut) 70%,var(--bg));font-weight:600}
+.v3-st.cur .v3-l{color:var(--fin)}
+.v3-v{font-size:15px;line-height:1.35;margin-top:1px}
+.v3-v b{font-weight:700}
+.v3-v .ra-mono{font-weight:600}
+.v3-st.wait .v3-v{color:var(--mut)}
+.v3-w{font-size:14px;line-height:1.35;color:var(--att);margin-top:3px;font-weight:600}
+.v3-st.bad .v3-w{color:var(--bad)}
+.v3-via{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:0 8px 0 6px;line-height:22px;font-size:14px;font-weight:700;background:var(--attbg);color:var(--att);border:1.5px solid color-mix(in srgb,var(--attac) 70%,transparent);margin-right:4px;white-space:nowrap}
+.v3-via .da-ico{width:15px;height:15px}
+.v3-sk{display:block;height:12px;border-radius:6px;margin-top:6px;background:linear-gradient(90deg,var(--s2),var(--s1) 45%,var(--s2));width:var(--w,70%)}
+.v3-pics{display:flex;gap:6px;margin-top:4px}
+.v3-pics svg,.v3-pics i{width:44px;height:40px;border-radius:8px;background:var(--s2);flex:none}
+.v3-pics i{background:linear-gradient(90deg,var(--s2),var(--s1) 50%,var(--s2))}
+.v3-nl{display:flex;align-items:center;gap:10px;padding:9px 12px;border-top:1px solid var(--line);font-size:14px;font-weight:600;color:var(--mut)}
+.v3-nl .v3-g{border-style:dashed}
+.v3-acts{display:flex;flex-wrap:nowrap;gap:6px;padding:10px 12px 12px;border-top:1px solid var(--line)}
+.v3-acts .da-b{flex:1 1 auto;padding:0 8px;gap:4px}
+.v3-acts .da-b .da-ico{width:18px;height:18px}
+
+/* fin : la carte d'article de la base, avec ses champs douteux et absents signalés sur place */
+.v3-fin{border:1px solid var(--line);border-radius:14px;background:var(--sheet);overflow:hidden}
+.v3-fin .da-art{border:0;border-radius:0}
+.v3-dt{border-bottom:2px dashed var(--attac);color:var(--ink)}
+.v3-dt small{font-family:"Source Sans 3","Segoe UI",system-ui,sans-serif;font-size:14px;font-weight:700;color:var(--att);letter-spacing:0}
+.v3-dl{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start;padding:8px 12px;border-top:1px solid var(--line);background:color-mix(in srgb,var(--attac) 7%,var(--bg))}
+.v3-dl .v3-g{background:var(--attac);border-color:var(--attac);color:#111}
+.v3-dl .x{font-size:15px;line-height:1.35}
+.v3-dl .x b{font-weight:700}
+.v3-dl .x .m{display:block;font-size:14px;color:var(--mut)}
+.v3-dl .lk{display:flex;align-items:center;min-height:36px;font-size:15px;font-weight:700;color:var(--fin);margin-bottom:-6px}
+.v3-dl.abs{background:var(--s1);border-top:1.5px dashed var(--line2)}
+.v3-dl.abs .v3-g{background:var(--sheet);border:2px dashed var(--line2);color:var(--mut)}
+.v3-dl.abs .x{color:var(--mut)}.v3-dl.abs .x b{color:var(--ink)}
+.v3-dl.ctl{background:var(--okbg)}
+.v3-dl.ctl .v3-g{background:var(--ok);border-color:var(--ok);color:#fff}
+.v3-dl.ctl .x b{color:var(--ok)}
+.v3-sum{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 12px;border-top:1px solid var(--line);font-size:14px;color:var(--mut)}
+.v3-sum .v3-seg{flex:1;margin:0;max-width:96px}
+.v3-sum b{color:var(--ink);font-weight:700}
+.v3-sum .da-ico{width:18px;height:18px;margin-left:auto}
+.v3-back{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--ok);margin:0 0 6px}
+.v3-back .da-ico{width:16px;height:16px}
+
+/* barre repliée : dans la bande du bas, au-dessus du champ ; la lecture continue sur le serveur */
+.v3-bar{border:1.5px solid var(--fin);background:var(--finbg);border-radius:14px;padding:8px 6px 9px 10px;margin:0 0 8px}
+.v3-br{display:flex;align-items:center;gap:10px}
+.v3-ring{position:relative;width:38px;height:38px;flex:none}
+.v3-ring svg{width:38px;height:38px;transform:rotate(-90deg)}
+.v3-bt{flex:1;min-width:0}
+.v3-bt b{display:block;font-size:15px;font-weight:800;color:var(--fin);line-height:1.25}
+.v3-bt span{display:block;font-size:14px;color:var(--mut);line-height:1.3}
+.v3-dep{display:inline-flex;align-items:center;gap:2px;min-height:44px;padding:0 8px;font-size:14px;font-weight:700;color:var(--fin)}
+.v3-bar .v3-seg{margin:7px 4px 0 0}
+.v3-ferme{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:14px;color:var(--ink)}
+.v3-ferme .da-ico{width:16px;height:16px;color:var(--ok)}
+.v3-enl{display:inline-flex;align-items:center;gap:5px;font-size:14px;font-weight:700;color:var(--fin)}
+.v3-enl .mini{width:14px;height:14px;border-radius:50%;border:2.5px solid color-mix(in srgb,var(--fin) 30%,var(--bg));border-top-color:var(--fin);border-right-color:var(--fin)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-bord" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+<symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+<symbol id="i-beer" viewBox="0 0 24 24"><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6M13 12v6"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/><path d="M5 8a2.5 2.5 0 0 1 1-4.5c.8-1.5 3-2 4-1 1-1 3.5-1 4.5.5A2.5 2.5 0 0 1 17 8z"/></symbol>
+<symbol id="i-boxes" viewBox="0 0 24 24"><path d="M7 13 3 15v4l4 2 4-2v-4zM17 13l-4 2v4l4 2 4-2v-4zM12 3 8 5v4l4 2 4-2V5z"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-bars" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></symbol>
+<symbol id="i-stamp" viewBox="0 0 24 24"><path d="M9 3h6l-1 7h4v4H6v-4h4z"/><path d="M5 20h14"/></symbol>
+<symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+<symbol id="i-bang" viewBox="0 0 24 24"><path d="M12 5v9M12 19v.5"/></symbol>
+<symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v8"/><path d="M6.3 7.3a8 8 0 1 0 11.4 0"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></symbol>
+<symbol id="i-fork" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2"/><circle cx="18" cy="5" r="2"/><circle cx="12" cy="20" r="2"/><path d="M6 7v2a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7M12 12v6"/></symbol>
+<symbol id="i-relais" viewBox="0 0 24 24"><path d="M4 12h11"/><path d="m11 8 4 4-4 4"/><path d="M19 5v14"/></symbol>
+<symbol id="ph-hotte" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e9e9e6"/><path d="M14 52 30 26h40l16 26z" fill="#b8bec3" stroke="#6d757b" stroke-width="2"/><rect x="42" y="6" width="16" height="20" fill="#9aa1a7"/><path d="M30 64c6-6 6-10 0-14M50 66c6-6 6-10 0-14M70 64c6-6 6-10 0-14" stroke="#9aa1a7" stroke-width="2" fill="none"/></symbol>
+<symbol id="ph-hotte2" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e4e8ea"/><path d="M8 56 26 30h48l18 26z" fill="#c3c9cd" stroke="#6d757b" stroke-width="2"/><rect x="40" y="8" width="20" height="22" fill="#9aa1a7"/><rect x="44" y="12" width="12" height="10" rx="2" fill="#4c6b2a"/></symbol>
+<symbol id="ph-hotte3" viewBox="0 0 100 88"><rect width="100" height="88" fill="#ecece8"/><circle cx="50" cy="44" r="26" fill="#d7dcd6" stroke="#6d757b" stroke-width="2"/><path d="M50 44 50 22M50 44l19 11M50 44l-19 11" stroke="#6d757b" stroke-width="5" stroke-linecap="round"/></symbol>
+<symbol id="ph-fan" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e6ebe4"/><rect x="20" y="14" width="60" height="60" rx="6" fill="#c7cfc3" stroke="#6b7a66" stroke-width="2"/><circle cx="50" cy="44" r="22" fill="#eef2ec" stroke="#6b7a66" stroke-width="2"/><path d="M50 44 50 26M50 44l16 9M50 44l-16 9" stroke="#4c6b2a" stroke-width="5" stroke-linecap="round"/></symbol>
+<symbol id="ph-lien" viewBox="0 0 100 88"><rect width="100" height="88" fill="#efefef"/><path d="M42 50a10 10 0 0 0 14 0l8-8a10 10 0 0 0-14-14l-3 3M58 38a10 10 0 0 0-14 0l-8 8a10 10 0 0 0 14 14l3-3" stroke="#9a9a9a" stroke-width="5" fill="none" stroke-linecap="round"/></symbol>
+<symbol id="ph-iso" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e2e8ec"/><rect x="14" y="16" width="72" height="12" rx="2" fill="#8d99a3"/><path d="M26 28v14M42 28v14M58 28v14M74 28v14" stroke="#55616b" stroke-width="4"/><rect x="22" y="46" width="8" height="26" rx="2" fill="#6a4a2a"/><rect x="38" y="46" width="8" height="26" rx="2" fill="#6a4a2a"/><rect x="54" y="46" width="8" height="26" rx="2" fill="#6a4a2a"/><rect x="70" y="46" width="8" height="26" rx="2" fill="#6a4a2a"/></symbol>
+<symbol id="ph-froid" viewBox="0 0 100 88"><rect width="100" height="88" fill="#e2ecf3"/><rect x="18" y="14" width="64" height="62" rx="3" fill="#c9d6df" stroke="#7e93a3" stroke-width="2"/><rect x="40" y="26" width="22" height="46" rx="2" fill="#f4f8fb" stroke="#7e93a3" stroke-width="2"/></symbol>
+</svg>
+
+<!-- ============ 1 · DÉBUT (page en haut : tout l'en-tête du carnet de la base) ============ -->
+<section class="v3-ph" aria-label="1 · Début de la lecture">
+  <div class="v3-vp">
+    <div class="v3-pg" style="--s:196px">
+      <div class="da-ch"><h1>Ventilation de la salle de brassage</h1><div class="da-choix"><div class="k">Pas encore choisi</div><div class="v">Ensuite : attendre l'avis du ferblantier</div></div><div class="da-crit"><svg class="da-ico"><use href="#i-target"/></svg><span>Critère qui oriente : <b>zéro condensation au plafond</b></span></div></div>
+      <div class="da-rail">
+        <div class="da-pz rp-fac"><span class="t"><svg class="da-ico"><use href="#i-fork"/></svg>Façons</span><span class="rp-fl"><b><span class="nm">Hotte inox + extracteur</span><span class="rp-et">ouverte</span></b></span><span class="rp-fl"><b><span class="nm">Extracteur mural seul</span><span class="rp-et">ouverte</span></b></span></div>
+        <div class="da-pz"><span class="t"><svg class="da-ico"><use href="#i-link"/></svg>Articles</span><span class="da-row"><span class="n">5</span><span class="da-thumbs"><svg viewBox="0 0 100 88"><use href="#ph-hotte"/></svg><svg viewBox="0 0 100 88"><use href="#ph-hotte"/></svg><svg viewBox="0 0 100 88"><use href="#ph-fan"/></svg></span></span><span class="da-sub"><svg class="da-ico"><use href="#i-eye"/></svg> 1 surveillé</span><span class="v3-enl"><span class="mini"></span>1 en lecture</span></div>
+        <div class="da-pz cmp"><span class="t"><svg class="da-ico"><use href="#i-bars"/></svg>Comparer</span><span class="n">5</span><span class="da-sub" style="color:var(--fin)">caractéristiques ›</span></div>
+        <div class="da-pz dec"><span class="t"><svg class="da-ico"><use href="#i-stamp"/></svg>Décisions</span><span class="n">0</span><span class="da-sub">et leur pourquoi ›</span></div>
+      </div>
+      <div class="da-fil">
+        <div class="da-day"><span><b>auj.</b></span></div>
+        <div class="da-e">
+          <div class="v3-lc">
+            <div class="v3-hd">
+              <div class="v3-lt"><b>Lecture · 0 sur 6</b><span class="t">3 s</span><span class="v3-rep"><svg class="da-ico"><use href="#i-down"/></svg>Replier</span></div>
+              <div class="v3-url"><svg class="da-ico"><use href="#i-link"/></svg><span>lueftung-nord.example/haube-140</span><span class="da-ex">exemple</span></div>
+              <div class="v3-seg"><i class="cur"></i><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+            <div class="v3-st cur"><span class="v3-g"></span><div><div class="v3-l">Page<span class="r">en cours</span></div><div class="v3-v">ouverture de lueftung-nord.example…</div></div></div>
+            <div class="v3-st wait"><span class="v3-g"></span><div><div class="v3-l">Données de la page<span class="r">à faire</span></div><span class="v3-sk" style="--w:80%"></span></div></div>
+            <div class="v3-st wait"><span class="v3-g"></span><div><div class="v3-l">Prix, devise, frais<span class="r">à faire</span></div><span class="v3-sk" style="--w:55%"></span></div></div>
+            <div class="v3-st wait"><span class="v3-g"></span><div><div class="v3-l">Photos<span class="r">à faire</span></div><div class="v3-pics"><i></i><i></i><i></i></div></div></div>
+            <div class="v3-st wait"><span class="v3-g"></span><div><div class="v3-l">Caractéristiques du carnet<span class="r">à faire</span></div><div class="v3-v">Débit · Bruit · Gaine · Humidité</div></div></div>
+            <div class="v3-st wait"><span class="v3-g"></span><div><div class="v3-l">Contrôle<span class="r">à faire</span></div><div class="v3-v">recouper prix, nom et photo avec la page</div></div></div>
+          </div>
+        </div>
+        <div class="da-day"><span><b>12</b>nov.</span></div>
+        <div class="da-e"><div class="da-note">attendre l'avis du ferblantier</div><div class="da-tag"><svg class="da-ico"><use href="#i-spark"/></svg>rangé : prochaine étape</div></div>
+      </div>
+    </div>
+  </div>
+  <header class="da-top v3-scr"><div class="da-crumb"><span class="da-back"><svg class="da-ico"><use href="#i-left"/></svg>Carnets</span><span style="margin-left:auto"><span class="da-st" style="--st:var(--ia)"><span class="da-dots"><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span>compare</span></span></div><div class="v3-tt">Ventilation de la salle de brassage</div></header>
+  <div class="v3-dock"><div class="da-comp"><span class="ph">Écrire, ou coller un lien…</span><span class="da-cb"><svg class="da-ico"><use href="#i-cam"/></svg></span><span class="da-cb"><svg class="da-ico"><use href="#i-mic"/></svg></span></div></div>
+  <nav class="da-bot" aria-label="Navigation"><a href="#"><svg class="da-ico"><use href="#i-bord"/></svg>Bord</a><a href="#"><svg class="da-ico"><use href="#i-wallet"/></svg>Finances</a><a href="#"><svg class="da-ico"><use href="#i-cal"/></svg>Calendrier</a><a href="#"><svg class="da-ico"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on"><svg class="da-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a><a href="#"><svg class="da-ico"><use href="#i-users"/></svg>Clients</a></nav>
+  <button class="da-fab" aria-label="Ajouter"><svg class="da-ico"><use href="#i-plus"/></svg></button>
+</section>
+<div class="v3-cap"><span class="n">1</span><b>Début</b> · carnet Ventilation, le lien vient d'être collé. La page a juste défilé sous la zone du titre (titre, « Ensuite » et critère au-dessus ; le titre se range dans l'en-tête) ; façons et tuiles restent. L'article arrive en tête du fil (« auj. ») avec ses six lignes vides : chaque ligne est une vraie sous-tâche du serveur et le champ qu'elle remplira.<p>La tuile Articles garde « 1 surveillé » et ajoute « 1 en lecture ».</p></div>
+
+<!-- ============ 2 · MILIEU (la page a défilé jusqu'au fil) ============ -->
+<section class="v3-ph" aria-label="2 · Milieu de la lecture">
+  <div class="v3-vp">
+    <div class="v3-pg" style="--s:581px">
+      <div class="da-ch"><h1>Ventilation de la salle de brassage</h1><div class="da-choix"><div class="k">Pas encore choisi</div><div class="v">Ensuite : attendre l'avis du ferblantier</div></div><div class="da-crit"><svg class="da-ico"><use href="#i-target"/></svg><span>Critère qui oriente : <b>zéro condensation au plafond</b></span></div></div>
+      <div class="da-rail">
+        <div class="da-pz rp-fac"><span class="t"><svg class="da-ico"><use href="#i-fork"/></svg>Façons</span><span class="rp-fl"><b><span class="nm">Hotte inox + extracteur</span><span class="rp-et">ouverte</span></b></span><span class="rp-fl"><b><span class="nm">Extracteur mural seul</span><span class="rp-et">ouverte</span></b></span></div>
+        <div class="da-pz"><span class="t"><svg class="da-ico"><use href="#i-link"/></svg>Articles</span><span class="da-row"><span class="n">5</span><span class="da-thumbs"><svg viewBox="0 0 100 88"><use href="#ph-hotte"/></svg><svg viewBox="0 0 100 88"><use href="#ph-hotte"/></svg><svg viewBox="0 0 100 88"><use href="#ph-fan"/></svg></span></span><span class="da-sub"><svg class="da-ico"><use href="#i-eye"/></svg> 1 surveillé</span><span class="v3-enl"><span class="mini"></span>1 en lecture</span></div>
+        <div class="da-pz cmp"><span class="t"><svg class="da-ico"><use href="#i-bars"/></svg>Comparer</span><span class="n">5</span><span class="da-sub" style="color:var(--fin)">caractéristiques ›</span></div>
+        <div class="da-pz dec"><span class="t"><svg class="da-ico"><use href="#i-stamp"/></svg>Décisions</span><span class="n">0</span><span class="da-sub">et leur pourquoi ›</span></div>
+      </div>
+      <div class="da-fil">
+        <div class="da-day"><span><b>auj.</b></span></div>
+        <div class="da-e">
+          <div class="v3-lc">
+            <div class="v3-hd">
+              <div class="v3-lt"><b>Lecture · 3 sur 6</b><span class="t">14 s</span><span class="v3-rep"><svg class="da-ico"><use href="#i-down"/></svg>Replier</span></div>
+              <div class="v3-url"><svg class="da-ico"><use href="#i-link"/></svg><span>lueftung-nord.example/haube-140</span><span class="da-ex">exemple</span></div>
+              <div class="v3-seg"><i class="ok"></i><i class="ok"></i><i class="att"></i><i class="cur"></i><i></i><i></i></div>
+            </div>
+            <div class="v3-st ok"><span class="v3-g"><svg class="da-ico"><use href="#i-check"/></svg></span><div><div class="v3-l">Page<span class="r">trouvé</span></div><div class="v3-v"><span class="v3-via"><svg class="da-ico"><use href="#i-relais"/></svg>via Google</span>le site a bloqué la lecture</div></div></div>
+            <div class="v3-st ok"><span class="v3-g"><svg class="da-ico"><use href="#i-check"/></svg></span><div><div class="v3-l">Données de la page<span class="r">trouvé</span></div><div class="v3-v"><b>Hotte murale inox 140 cm + moteur</b><br>Lüftung Nord · DE · réf. WH-140</div></div></div>
+            <div class="v3-st att"><span class="v3-g"><svg class="da-ico"><use href="#i-bang"/></svg></span><div><div class="v3-l">Prix, devise, frais<span class="r">douteux</span></div><div class="v3-v"><b>1 690 EUR</b> + port 95 EUR ≈ <b>1 680 CHF</b></div><div class="v3-w">douane et TVA d'import non indiquées</div></div></div>
+            <div class="v3-st cur"><span class="v3-g"></span><div><div class="v3-l">Photos<span class="r">en cours</span></div><div class="v3-pics"><svg viewBox="0 0 100 88"><use href="#ph-hotte2"/></svg><i></i><i></i></div></div></div>
+            <div class="v3-st wait"><span class="v3-g"></span><div><div class="v3-l">Caractéristiques du carnet<span class="r">à faire</span></div><div class="v3-v">Débit · Bruit · Gaine · Humidité</div></div></div>
+            <div class="v3-st wait"><span class="v3-g"></span><div><div class="v3-l">Contrôle<span class="r">à faire</span></div><div class="v3-v">recouper prix, nom et photo avec la page</div></div></div>
+          </div>
+        </div>
+        <div class="da-day"><span><b>12</b>nov.</span></div>
+        <div class="da-e"><div class="da-note">attendre l'avis du ferblantier</div><div class="da-tag"><svg class="da-ico"><use href="#i-spark"/></svg>rangé : prochaine étape</div></div>
+        <div class="da-day"><span><b>6</b>nov.</span></div>
+        <div class="da-e"><div class="da-art"><svg class="ph" viewBox="0 0 100 88"><use href="#ph-fan"/></svg><div class="i"><div class="nm">Extracteur centrifuge en ligne</div><div class="fr">Aéro Rhône · FR · Extracteur mural seul <span class="da-ex">exemple</span></div><div class="ra-lus">4 valeurs · 1 ?</div><div class="px"><span class="ra-px">690 CHF</span> <span class="da-dsp ok">en stock</span><span class="da-sw" role="switch" aria-checked="false"><svg class="da-ico"><use href="#i-eye"/></svg><span class="tr"></span></span></div></div></div></div>
+        <div class="da-day"><span><b>5</b>nov.</span></div>
+        <div class="da-e"><div class="da-art rate"><svg class="ph" viewBox="0 0 100 88"><use href="#ph-lien"/></svg><div class="i"><div class="nm">exemple.invalid</div><div class="fr">sans aperçu : aucune métadonnée lue</div></div></div></div>
+      </div>
+    </div>
+  </div>
+  <header class="da-top v3-scr"><div class="da-crumb"><span class="da-back"><svg class="da-ico"><use href="#i-left"/></svg>Carnets</span><span style="margin-left:auto"><span class="da-st" style="--st:var(--ia)"><span class="da-dots"><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span>compare</span></span></div><div class="v3-tt">Ventilation de la salle de brassage</div></header>
+  <div class="v3-dock"><div class="da-comp"><span class="ph">Écrire, ou coller un lien…</span><span class="da-cb"><svg class="da-ico"><use href="#i-cam"/></svg></span><span class="da-cb"><svg class="da-ico"><use href="#i-mic"/></svg></span></div></div>
+  <nav class="da-bot" aria-label="Navigation"><a href="#"><svg class="da-ico"><use href="#i-bord"/></svg>Bord</a><a href="#"><svg class="da-ico"><use href="#i-wallet"/></svg>Finances</a><a href="#"><svg class="da-ico"><use href="#i-cal"/></svg>Calendrier</a><a href="#"><svg class="da-ico"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on"><svg class="da-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a><a href="#"><svg class="da-ico"><use href="#i-users"/></svg>Clients</a></nav>
+  <button class="da-fab" aria-label="Ajouter"><svg class="da-ico"><use href="#i-plus"/></svg></button>
+</section>
+<div class="v3-cap"><span class="n">2</span><b>Milieu</b> · la page a défilé jusqu'au fil (façons et tuiles juste au-dessus, vue 1 ; le titre reste dans l'en-tête). Trois sous-tâches faites, une douteuse : la page a été lue « via Google » (le site bloquait, source moins sûre), le nom est là, le prix est converti port compris mais douane et TVA manquent.<p>Sous la carte, le vrai fil du carnet continue. « Replier » range la carte dans la bande du bas (vue 3).</p></div>
+
+<!-- ============ 3 · BARRE REPLIÉE ============ -->
+<section class="v3-ph" aria-label="3 · Barre repliée">
+  <div class="v3-vp">
+    <div style="padding-top:110px" class="da-wrap">
+      <div class="da-h1">Carnets</div>
+      <div class="da-card" style="--st:var(--ok)"><div class="da-cl1"><b>Embouteillage</b></div><div class="da-cl0"><span class="da-st"><span class="da-dots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span>choisi</span></div><div class="da-cl2"><b>Isobarique 4 becs pré-évacuation · Revendeur Brassage Romandie (CH)</b> <em>— oxygène le plus bas à 4 becs, SAV en Suisse, −600 CHF à la veille</em></div><div class="da-cl3"><span class="da-thumbs"><svg viewBox="0 0 100 88"><use href="#ph-iso"/></svg><svg viewBox="0 0 100 88"><use href="#ph-iso"/></svg><svg viewBox="0 0 100 88"><use href="#ph-iso"/></svg></span><span class="da-meta">2 façons · 6 articles · 2 décisions</span><span class="da-eye new"><span class="pt"></span>−600 CHF</span></div></div>
+      <div class="da-card" style="--st:var(--att)"><div class="da-cl1"><b>Évier inox</b></div><div class="da-cl0"><span class="da-st"><span class="da-dots"><i class="f"></i><i></i><i></i><i></i></span>idée</span></div><div class="da-cl2"><em>« évier inox 2 bacs pour laver les fûts »</em></div><div class="da-cl3"><span class="da-meta" style="margin-left:0">rien de rangé encore</span></div></div>
+      <div class="da-card" style="--st:var(--ia)"><div class="da-cl1"><b>Ventilation de la salle de brassage</b></div><div class="da-cl0"><span class="da-st"><span class="da-dots"><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span>compare</span></div><div class="da-cl2"><em>Ensuite :</em> attendre l'avis du ferblantier</div><div class="da-cl3"><span class="da-thumbs"><svg viewBox="0 0 100 88"><use href="#ph-hotte"/></svg><svg viewBox="0 0 100 88"><use href="#ph-hotte"/></svg><svg viewBox="0 0 100 88"><use href="#ph-fan"/></svg></span><span class="da-meta">2 façons · 5 articles</span><span class="v3-enl" style="margin-left:auto"><span class="mini"></span>1 en lecture</span><span class="da-eye" style="margin-left:8px"><svg class="da-ico"><use href="#i-eye"/></svg>1</span></div></div>
+      <div class="da-card" style="--st:var(--ok)"><div class="da-cl1"><b>Frigo de garde pour fûts</b></div><div class="da-cl0"><span class="da-st"><span class="da-dots"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span>choisi</span></div><div class="da-cl2"><b>Chambre froide en kit 2 m³ · Froid Léman (CH)</b> <em>— assez pour 6 fûts, stable à 2 °C en été, la vitrine ne passe pas la porte</em></div><div class="da-cl3"><span class="da-thumbs"><svg viewBox="0 0 100 88"><use href="#ph-froid"/></svg></span><span class="da-meta">2 façons · 4 articles · 2 décisions</span><span class="da-eye"><svg class="da-ico"><use href="#i-eye"/></svg>1</span></div></div>
+    </div>
+  </div>
+  <header class="da-top liste"><div class="da-crumb"><svg class="da-ico"><use href="#i-boxes"/></svg> Stocks › Matériel</div><div class="da-seg"><span>À venir</span><span class="on">Carnets</span><span>Réalisés</span></div></header>
+  <div class="v3-dock">
+    <div class="v3-bar">
+      <div class="v3-br">
+        <span class="v3-ring"><svg viewBox="0 0 38 38"><circle cx="19" cy="19" r="15" fill="none" stroke="color-mix(in srgb,#1f64a3 22%,#fff)" stroke-width="4"/><circle cx="19" cy="19" r="15" fill="none" stroke="#1f64a3" stroke-width="4" stroke-linecap="round" stroke-dasharray="62.8 94.2"/></svg></span>
+        <span class="v3-bt"><b>Lecture du lien · 4 sur 6</b><span>Hotte inox 140 cm, carnet Ventilation</span></span>
+        <span class="v3-dep"><svg class="da-ico"><use href="#i-up"/></svg>Déplier</span>
+      </div>
+      <div class="v3-seg"><i class="ok"></i><i class="ok"></i><i class="att"></i><i class="ok"></i><i class="cur"></i><i></i></div>
+      <div class="v3-ferme"><svg class="da-ico"><use href="#i-power"/></svg>Vous pouvez fermer l'app : la lecture continue.</div>
+    </div>
+    <div class="da-comp"><svg class="da-ico lead"><use href="#i-pen"/></svg><span class="ph">Une idée, un besoin…</span></div>
+  </div>
+  <nav class="da-bot" aria-label="Navigation"><a href="#"><svg class="da-ico"><use href="#i-bord"/></svg>Bord</a><a href="#"><svg class="da-ico"><use href="#i-wallet"/></svg>Finances</a><a href="#"><svg class="da-ico"><use href="#i-cal"/></svg>Calendrier</a><a href="#"><svg class="da-ico"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on"><svg class="da-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a><a href="#"><svg class="da-ico"><use href="#i-users"/></svg>Clients</a></nav>
+  <button class="da-fab" aria-label="Ajouter"><svg class="da-ico"><use href="#i-plus"/></svg></button>
+</section>
+<div class="v3-cap"><span class="n">3</span><b>Barre repliée</b> · la lecture dure, le brasseur est revenu à ses carnets. La carte se range dans la bande du bas, au-dessus du champ : même trait par sous-tâche, même couleur par verdict. Il peut fermer l'app, le serveur finit seul.<p>Liste de la base, dans son ordre et avec ses textes ; plus bas, Ventilation garde son œil « 1 » et ajoute « 1 en lecture ».</p></div>
+
+<!-- ============ 4 · FIN (réouverture : le carnet s'ouvre sur l'article lu) ============ -->
+<section class="v3-ph" aria-label="4 · Fin, retrouvée à la réouverture">
+  <div class="v3-vp">
+    <div class="v3-pg" style="--s:581px">
+      <div class="da-ch"><h1>Ventilation de la salle de brassage</h1><div class="da-choix"><div class="k">Pas encore choisi</div><div class="v">Ensuite : attendre l'avis du ferblantier</div></div><div class="da-crit"><svg class="da-ico"><use href="#i-target"/></svg><span>Critère qui oriente : <b>zéro condensation au plafond</b></span></div></div>
+      <div class="da-rail">
+        <div class="da-pz rp-fac"><span class="t"><svg class="da-ico"><use href="#i-fork"/></svg>Façons</span><span class="rp-fl"><b><span class="nm">Hotte inox + extracteur</span><span class="rp-et">ouverte</span></b></span><span class="rp-fl"><b><span class="nm">Extracteur mural seul</span><span class="rp-et">ouverte</span></b></span></div>
+        <div class="da-pz"><span class="t"><svg class="da-ico"><use href="#i-link"/></svg>Articles</span><span class="da-row"><span class="n">6</span><span class="da-thumbs"><svg viewBox="0 0 100 88"><use href="#ph-hotte2"/></svg><svg viewBox="0 0 100 88"><use href="#ph-hotte"/></svg><svg viewBox="0 0 100 88"><use href="#ph-fan"/></svg></span></span><span class="da-sub"><svg class="da-ico"><use href="#i-eye"/></svg> 1 surveillé</span></div>
+        <div class="da-pz cmp"><span class="t"><svg class="da-ico"><use href="#i-bars"/></svg>Comparer</span><span class="n">5</span><span class="da-sub" style="color:var(--fin)">caractéristiques ›</span></div>
+        <div class="da-pz dec"><span class="t"><svg class="da-ico"><use href="#i-stamp"/></svg>Décisions</span><span class="n">0</span><span class="da-sub">et leur pourquoi ›</span></div>
+      </div>
+      <div class="da-fil">
+        <div class="da-day"><span><b>auj.</b></span></div>
+        <div class="da-e">
+          <div class="v3-back"><svg class="da-ico"><use href="#i-check"/></svg>Lu pendant que l'app était fermée · 34 s</div>
+          <div class="v3-fin">
+            <div class="da-art"><svg class="ph" viewBox="0 0 100 88"><use href="#ph-hotte2"/></svg><div class="i"><div class="nm">Hotte murale inox 140 cm + moteur</div><div class="fr">Lüftung Nord · DE · Hotte inox + extracteur <span class="da-ex">exemple</span></div><div class="ra-lus">2 valeurs · 1 absente · 2 douteuses</div><div class="px"><span class="ra-px v3-dt">≈ 1 680 CHF <small>+ douane ?</small></span><span class="da-dsp ok">en stock</span><span class="da-sw" role="switch" aria-checked="false"><svg class="da-ico"><use href="#i-eye"/></svg><span class="tr"></span></span></div></div></div>
+            <div class="v3-dl"><span class="v3-g"><svg class="da-ico"><use href="#i-bang"/></svg></span><div class="x"><b>Prix · douteux</b> port compris, sans douane ni TVA d'import<span class="lk">Compléter les frais ›</span></div></div>
+            <div class="v3-dl"><span class="v3-g"><svg class="da-ico"><use href="#i-bang"/></svg></span><div class="x"><b>Humidité · douteux</b> IP44 lu, juste pour la buée<span class="m">critère : zéro condensation au plafond</span></div></div>
+            <div class="v3-dl abs"><span class="v3-g"><svg class="da-ico"><use href="#i-minus"/></svg></span><div class="x"><b>Bruit · absent</b> – – dB, ni page ni fiche<span class="lk">Compléter ›</span></div></div>
+            <div class="v3-dl ctl"><span class="v3-g"><svg class="da-ico"><use href="#i-check"/></svg></span><div class="x"><b>Contrôle · fait</b> prix recoupé · nom = photo · 4 valeurs lues sur 5</div></div>
+            <div class="v3-sum"><span class="v3-seg"><i class="ok"></i><i class="ok"></i><i class="att"></i><i class="ok"></i><i class="att"></i><i class="ok"></i></span><span><b>6 étapes sur 6</b> · lu en 34 s</span><svg class="da-ico"><use href="#i-down"/></svg></div>
+          </div>
+        </div>
+        <div class="da-day"><span><b>12</b>nov.</span></div>
+        <div class="da-e"><div class="da-note">attendre l'avis du ferblantier</div><div class="da-tag"><svg class="da-ico"><use href="#i-spark"/></svg>rangé : prochaine étape</div></div>
+        <div class="da-day"><span><b>6</b>nov.</span></div>
+        <div class="da-e"><div class="da-art"><svg class="ph" viewBox="0 0 100 88"><use href="#ph-fan"/></svg><div class="i"><div class="nm">Extracteur centrifuge en ligne</div><div class="fr">Aéro Rhône · FR · Extracteur mural seul <span class="da-ex">exemple</span></div><div class="ra-lus">4 valeurs · 1 ?</div><div class="px"><span class="ra-px">690 CHF</span> <span class="da-dsp ok">en stock</span><span class="da-sw" role="switch" aria-checked="false"><svg class="da-ico"><use href="#i-eye"/></svg><span class="tr"></span></span></div></div></div></div>
+      </div>
+    </div>
+  </div>
+  <header class="da-top v3-scr"><div class="da-crumb"><span class="da-back"><svg class="da-ico"><use href="#i-left"/></svg>Carnets</span><span style="margin-left:auto"><span class="da-st" style="--st:var(--ia)"><span class="da-dots"><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span>compare</span></span></div><div class="v3-tt">Ventilation de la salle de brassage</div></header>
+  <div class="v3-dock">
+    <div class="da-comp"><span class="ph">Écrire, ou coller un lien…</span><span class="da-cb"><svg class="da-ico"><use href="#i-cam"/></svg></span><span class="da-cb"><svg class="da-ico"><use href="#i-mic"/></svg></span></div>
+  </div>
+  <nav class="da-bot" aria-label="Navigation"><a href="#"><svg class="da-ico"><use href="#i-bord"/></svg>Bord</a><a href="#"><svg class="da-ico"><use href="#i-wallet"/></svg>Finances</a><a href="#"><svg class="da-ico"><use href="#i-cal"/></svg>Calendrier</a><a href="#"><svg class="da-ico"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on"><svg class="da-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a><a href="#"><svg class="da-ico"><use href="#i-users"/></svg>Clients</a></nav>
+  <button class="da-fab" aria-label="Ajouter"><svg class="da-ico"><use href="#i-plus"/></svg></button>
+</section>
+<div class="v3-cap"><span class="n">4</span><b>Fin</b> · retrouvée à la réouverture : le carnet s'ouvre défilé sur l'article lu (tuiles au-dessus, titre dans l'en-tête). Les lignes se referment en carte d'article ordinaire ; restent ouverts, à leur place, les deux champs douteux (prix port compris, souligné en pointillé), le champ absent (gris, tirets) et le résultat du contrôle.<p>Une seule unité : « 2 valeurs · 1 absente · 2 douteuses » sur 5 caractéristiques. Les six traits en bas : un toucher redéplie les étapes.</p></div>
+
+<!-- ============ 5 · ÉCHEC ============ -->
+<section class="v3-ph" aria-label="5 · Échec, lien introuvable">
+  <div class="v3-vp">
+    <div class="v3-pg" style="--s:340px">
+      <div class="da-ch"><h1>Ventilation de la salle de brassage</h1><div class="da-choix"><div class="k">Pas encore choisi</div><div class="v">Ensuite : attendre l'avis du ferblantier</div></div><div class="da-crit"><svg class="da-ico"><use href="#i-target"/></svg><span>Critère qui oriente : <b>zéro condensation au plafond</b></span></div></div>
+      <div class="da-rail">
+        <div class="da-pz rp-fac"><span class="t"><svg class="da-ico"><use href="#i-fork"/></svg>Façons</span><span class="rp-fl"><b><span class="nm">Hotte inox + extracteur</span><span class="rp-et">ouverte</span></b></span><span class="rp-fl"><b><span class="nm">Extracteur mural seul</span><span class="rp-et">ouverte</span></b></span></div>
+        <div class="da-pz"><span class="t"><svg class="da-ico"><use href="#i-link"/></svg>Articles</span><span class="da-row"><span class="n">5</span><span class="da-thumbs"><svg viewBox="0 0 100 88"><use href="#ph-hotte"/></svg><svg viewBox="0 0 100 88"><use href="#ph-hotte"/></svg><svg viewBox="0 0 100 88"><use href="#ph-fan"/></svg></span></span><span class="da-sub"><svg class="da-ico"><use href="#i-eye"/></svg> 1 surveillé</span></div>
+        <div class="da-pz cmp"><span class="t"><svg class="da-ico"><use href="#i-bars"/></svg>Comparer</span><span class="n">5</span><span class="da-sub" style="color:var(--fin)">caractéristiques ›</span></div>
+        <div class="da-pz dec"><span class="t"><svg class="da-ico"><use href="#i-stamp"/></svg>Décisions</span><span class="n">0</span><span class="da-sub">et leur pourquoi ›</span></div>
+      </div>
+      <div class="da-fil">
+        <div class="da-day"><span><b>auj.</b></span></div>
+        <div class="da-e">
+          <div class="v3-lc ko">
+            <div class="v3-hd">
+              <div class="v3-lt"><b>Lien introuvable</b><span class="t">arrêté à 1 sur 6</span></div>
+              <div class="v3-url"><svg class="da-ico"><use href="#i-link"/></svg><span>lueftung-nord.example/haube-140-alt</span><span class="da-ex">exemple</span></div>
+              <div class="v3-seg"><i class="bad"></i><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+            <div class="v3-st bad"><span class="v3-g"><svg class="da-ico"><use href="#i-x"/></svg></span><div><div class="v3-l">Page<span class="r">introuvable</span></div><div class="v3-v">la page n'existe plus (erreur 404)</div><div class="v3-w">Google ne la connaît pas non plus</div></div></div>
+            <div class="v3-nl"><span class="v3-g"></span>5 étapes pas lancées : rien n'est inventé</div>
+            <div class="v3-acts"><span class="da-b fin"><svg class="da-ico"><use href="#i-link"/></svg>Autre lien</span><span class="da-b">Compléter</span><span class="da-b">Retirer</span></div>
+          </div>
+        </div>
+        <div class="da-day"><span><b>12</b>nov.</span></div>
+        <div class="da-e"><div class="da-note">attendre l'avis du ferblantier</div><div class="da-tag"><svg class="da-ico"><use href="#i-spark"/></svg>rangé : prochaine étape</div></div>
+        <div class="da-day"><span><b>6</b>nov.</span></div>
+        <div class="da-e"><div class="da-art"><svg class="ph" viewBox="0 0 100 88"><use href="#ph-fan"/></svg><div class="i"><div class="nm">Extracteur centrifuge en ligne</div><div class="fr">Aéro Rhône · FR · Extracteur mural seul <span class="da-ex">exemple</span></div><div class="ra-lus">4 valeurs · 1 ?</div><div class="px"><span class="ra-px">690 CHF</span> <span class="da-dsp ok">en stock</span><span class="da-sw" role="switch" aria-checked="false"><svg class="da-ico"><use href="#i-eye"/></svg><span class="tr"></span></span></div></div></div></div>
+      </div>
+    </div>
+  </div>
+  <header class="da-top v3-scr"><div class="da-crumb"><span class="da-back"><svg class="da-ico"><use href="#i-left"/></svg>Carnets</span><span style="margin-left:auto"><span class="da-st" style="--st:var(--ia)"><span class="da-dots"><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span>compare</span></span></div><div class="v3-tt">Ventilation de la salle de brassage</div></header>
+  <div class="v3-dock"><div class="da-comp"><span class="ph">Écrire, ou coller un lien…</span><span class="da-cb"><svg class="da-ico"><use href="#i-cam"/></svg></span><span class="da-cb"><svg class="da-ico"><use href="#i-mic"/></svg></span></div></div>
+  <nav class="da-bot" aria-label="Navigation"><a href="#"><svg class="da-ico"><use href="#i-bord"/></svg>Bord</a><a href="#"><svg class="da-ico"><use href="#i-wallet"/></svg>Finances</a><a href="#"><svg class="da-ico"><use href="#i-cal"/></svg>Calendrier</a><a href="#"><svg class="da-ico"><use href="#i-beer"/></svg>Brassins</a><a href="#" class="on"><svg class="da-ico"><use href="#i-boxes"/></svg>Stocks<span class="bdg">24</span></a><a href="#"><svg class="da-ico"><use href="#i-users"/></svg>Clients</a></nav>
+  <button class="da-fab" aria-label="Ajouter"><svg class="da-ico"><use href="#i-plus"/></svg></button>
+</section>
+<div class="v3-cap"><span class="n">5</span><b>Échec</b> · lien introuvable. La lecture s'arrête à la première ligne et le dit en clair ; le reste tient en une ligne, rien n'est inventé. Trois gestes sur une rangée : coller un autre lien, compléter à la main, retirer.<p>v03 · parti pris : les sous-tâches sont les lignes de la carte qui arrive. Tout le reste est la base ra-p5f : en-tête du carnet, tuiles et fil.</p></div>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Carnet · lecture d'un lien, les étapes visibles · 23.11</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{--bg:#f6f4ef;--carte:#fff;--fg:#1f1b16;--doux:#675e54;--ligne:#e2dbd0;--accent:#4f6f2f;--base:#efe9df;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16130f;--carte:#221e18;--fg:#f1ece4;--doux:#b3a898;--ligne:#3a332a;--accent:#9cc06b;--base:#2b261f;color-scheme:dark}}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+.page{padding-block:18px 90px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:22px;margin:0 0 6px;text-wrap:balance}
+.doux{color:var(--doux)}
+#a-choisir{background:var(--carte);border:1px solid var(--ligne);border-radius:12px;padding:12px 14px;margin:10px 0 14px;max-width:900px}
+#a-choisir p{margin:0 0 6px}
+#a-choisir p:last-child{margin:0}
+details.lv{margin:0 0 8px;max-width:1200px}
+details.lv summary{cursor:pointer;font-weight:700;padding:8px 0}
+.vers{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;margin:0 0 8px}
+.v{background:var(--carte);border:1px solid var(--ligne);border-radius:10px;padding:8px 10px;font-size:14px;min-width:0}
+.v b{font-size:15px}
+.v .n{color:var(--doux);font-style:italic}
+section.rang{margin-top:22px}
+section.rang h2{font-size:17px;margin:0 0 4px}
+.crit{margin:0 0 8px;font-size:14px;color:var(--doux);max-width:900px}
+.bande{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x proximity}
+.vg{display:contents}
+figure{margin:0;flex:0 0 auto;width:200px;background:var(--carte);border:1px solid var(--ligne);border-radius:10px;overflow:hidden;scroll-snap-align:start;display:flex;flex-direction:column}
+figure.base{background:var(--base)}
+figure button.zoom{all:unset;cursor:zoom-in;display:block}
+figure img{display:block;width:200px;height:433px;object-fit:cover;object-position:top;border-bottom:1px solid var(--ligne)}
+figcaption{padding:6px 8px;display:flex;flex-direction:column;gap:4px;font-size:14px}
+figcaption .t{font-weight:700}
+figcaption .pq{font-size:14px;color:var(--doux);line-height:1.3}
+.rgs{display:flex;gap:4px}
+.rg{min-width:32px;height:32px;border:1.5px solid var(--ligne);border-radius:16px;background:var(--carte);color:var(--doux);font:inherit;font-weight:700;font-size:15px;cursor:pointer}
+.rg[aria-pressed="true"]{color:#1f1b16;border-color:transparent}
+.rg[data-n="1"][aria-pressed="true"]{background:#e2b23a}
+.rg[data-n="2"][aria-pressed="true"]{background:#c4c8cc}
+.rg[data-n="3"][aria-pressed="true"]{background:#d49a6a}
+.rg[data-n="4"][aria-pressed="true"]{background:#b9c7d8}
+.rg[data-n="5"][aria-pressed="true"]{background:#d9d2c2}
+figure[data-rang="1"]{outline:3px solid #e2b23a;outline-offset:-1px}
+figure[data-rang="2"]{outline:3px solid #a9adb2;outline-offset:-1px}
+figure[data-rang="3"]{outline:3px solid #c98b58;outline-offset:-1px}
+figure[data-rang="4"]{outline:3px solid #8fa4bd;outline-offset:-1px}
+figure[data-rang="5"]{outline:3px solid #b8ad96;outline-offset:-1px}
+figcaption input{width:100%;box-sizing:border-box;height:32px;border:1.5px solid var(--ligne);border-radius:8px;padding:0 8px;font:inherit;font-size:14px;background:var(--carte);color:var(--fg)}
+.podium{font-size:14px;font-weight:600;color:var(--accent);margin-left:6px}
+.pied{position:fixed;left:0;right:0;bottom:0;background:var(--carte);border-top:1px solid var(--ligne);padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:10px;align-items:center;z-index:5}
+.pied button{height:40px;padding:0 16px;border-radius:10px;border:0;background:var(--accent);color:var(--carte);font:inherit;font-weight:700;cursor:pointer}
+.pied span{color:var(--doux);font-size:14px}
+#loupe{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;z-index:9;padding:16px}
+#loupe img{max-height:100%;max-width:100%;border-radius:8px}
+#sortie{width:100%;min-height:120px;margin-top:10px;font:14px/1.4 ui-monospace,monospace;background:var(--carte);color:var(--fg);border:1px solid var(--ligne);border-radius:8px;padding:8px;box-sizing:border-box}
+@media (max-width:600px){figure{width:160px}figure img{width:160px;height:346px}figcaption{padding:6px 5px}.rgs{gap:3px}.rg{min-width:27px;padding:0}}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="page">
+<h1>Carnet · lecture d'un lien, les étapes visibles · 23.11</h1>
+<div id="a-choisir">
+<p><b>À choisir :</b> <span class="doux">une rangée par moment de la lecture (début, milieu, barre repliée, fin, échec). Ta base ra+p5f d'abord, puis v01 à v06 ; glisse de côté.</span></p>
+<p class="doux">Sous chaque vignette, touche 1 à 5 pour classer (plusieurs vignettes peuvent avoir le même rang ; retouche pour l'enlever), une note si tu veux, puis Copier en bas. Touche une image pour l'agrandir.</p>
+</div>
+
+<details class="lv" open><summary>Les six versions : leur parti pris</summary><div class="vers">
+<div class="v"><b>v01</b> Les étapes vivent au-dessus du champ<br><span class="doux">Une bande « Lecture du lien » s'ouvre juste au-dessus du champ du bas ; repliée, elle garde 2 ✓, 1 ?, 1 – et le temps.</span> <span class="n">Critique : pas encore notée.</span></div>
+<div class="v"><b>v02</b> L'article en lecture dans le fil, ses étapes en panneau<br><span class="doux">L'article attend dans le fil, le panneau des six étapes se replie en « Lecture · 4 sur 6 · 1 douteux » ; à la réouverture, la liste dit « lu pendant votre absence ».</span> <span class="n">Critique : pas encore notée.</span></div>
+<div class="v"><b>v03</b> Une carte de lecture en tête du fil<br><span class="doux">Barre en six segments de couleur (fait, douteux, en cours) et une ligne par étape ; l'article fini garde ses lignes douteuses en orange.</span> <span class="n">Critique : pas encore notée.</span></div>
+<div class="v"><b>v04</b> Les étapes dans la marge du fil, avec leur temps<br><span class="doux">Chaque sous-tâche porte sa seconde (3 s, 6 s, 9 s…) ; repliée, cinq points dans la carte du carnet ; à la fin, un encadré « À vérifier ».</span> <span class="n">Critique : pas encore notée.</span></div>
+<div class="v"><b>v05</b> L'article se construit dans sa propre carte<br><span class="doux">Les étapes remplissent la carte de l'article ; repliée, une bande suit dans toute l'app (ici Brassins) et dit « Article lu » au retour.</span> <span class="n">Critique : pas encore notée.</span></div>
+<div class="v"><b>v06</b> Six cases qui se cochent, les couleurs de la carte<br><span class="doux">Repliée, une rangée de six carrés de couleur au-dessus du champ ; à la fin, « Prix à vérifier » avec Garder HT ou Prendre TTC.</span> <span class="n">Critique : pas encore notée.</span></div>
+</div></details>
+
+<section class="rang" id="debut" data-choix="debut"><h2>Début · le lien vient d'être collé <span class="podium"></span></h2><p class="crit">Ta base : « Lecture du lien… » et rien d'autre pendant 20 à 35 s.</p><div class="bande">
+<figure class="base" data-reference data-vignette data-cle="debut|base"><button type="button" class="zoom" aria-label="Agrandir la base, début"><img src="img/base-lecture.png" width="390" height="844" alt="base : Lecture du lien… dans le fil du carnet Ventilation"></button><figcaption><span class="t">base <span class="doux">· ra+p5f</span></span><span class="pq">« Lecture du lien… » seul</span><input type="text" placeholder="note" aria-label="Note sur la base, début"></figcaption></figure>
+<div class="vg" data-variante="v01"><figure data-vignette data-cle="debut|v01"><button type="button" class="zoom" aria-label="Agrandir v01, début"><img src="img/v01-debut.png" width="390" height="844" alt="v01 début : bande de lecture au-dessus du champ, Page en cours"></button><figcaption><span class="t">v01</span><span class="pq">bande au-dessus du champ</span><input type="text" placeholder="note" aria-label="Note sur v01, début"></figcaption></figure></div>
+<div class="vg" data-variante="v02"><figure data-vignette data-cle="debut|v02"><button type="button" class="zoom" aria-label="Agrandir v02, début"><img src="img/v02-1.png" width="390" height="844" alt="v02 début : article en lecture dans le fil, panneau des étapes en bas"></button><figcaption><span class="t">v02</span><span class="pq">article en attente + panneau</span><input type="text" placeholder="note" aria-label="Note sur v02, début"></figcaption></figure></div>
+<div class="vg" data-variante="v03"><figure data-vignette data-cle="debut|v03"><button type="button" class="zoom" aria-label="Agrandir v03, début"><img src="img/v03-1.png" width="390" height="844" alt="v03 début : carte Lecture 0 sur 6 dans le fil"></button><figcaption><span class="t">v03</span><span class="pq">carte « Lecture · 0 sur 6 »</span><input type="text" placeholder="note" aria-label="Note sur v03, début"></figcaption></figure></div>
+<div class="vg" data-variante="v04"><figure data-vignette data-cle="debut|v04"><button type="button" class="zoom" aria-label="Agrandir v04, début"><img src="img/v04-1.png" width="390" height="844" alt="v04 début : lien collé, Page en cours à 0 s dans la marge"></button><figcaption><span class="t">v04</span><span class="pq">étapes dans la marge</span><input type="text" placeholder="note" aria-label="Note sur v04, début"></figcaption></figure></div>
+<div class="vg" data-variante="v05"><figure data-vignette data-cle="debut|v05"><button type="button" class="zoom" aria-label="Agrandir v05, début"><img src="img/v05-2.png" width="390" height="844" alt="v05 début : la carte de l'article liste ses six étapes"></button><figcaption><span class="t">v05</span><span class="pq">étapes dans la carte</span><input type="text" placeholder="note" aria-label="Note sur v05, début"></figcaption></figure></div>
+<div class="vg" data-variante="v06"><figure data-vignette data-cle="debut|v06"><button type="button" class="zoom" aria-label="Agrandir v06, début"><img src="img/v06-1.png" width="390" height="844" alt="v06 début : carte qui arrive, six cases en attente"></button><figcaption><span class="t">v06</span><span class="pq">six cases qui attendent</span><input type="text" placeholder="note" aria-label="Note sur v06, début"></figcaption></figure></div>
+</div></section>
+
+<section class="rang" id="milieu" data-choix="milieu"><h2>Milieu · 3 étapes faites, dont une douteuse <span class="podium"></span></h2><p class="crit">Page lue (ou lue par Google), données trouvées, prix douteux ; ta base n'a pas d'autre état que « Lecture… ».</p><div class="bande">
+<figure class="base" data-reference data-vignette data-cle="milieu|base"><button type="button" class="zoom" aria-label="Agrandir la base, milieu"><img src="img/base-lecture.png" width="390" height="844" alt="base : toujours Lecture du lien…"></button><figcaption><span class="t">base <span class="doux">· ra+p5f</span></span><span class="pq">toujours « Lecture… »</span><input type="text" placeholder="note" aria-label="Note sur la base, milieu"></figcaption></figure>
+<div class="vg" data-variante="v01"><figure data-vignette data-cle="milieu|v01"><button type="button" class="zoom" aria-label="Agrandir v01, milieu"><img src="img/v01-milieu.png" width="390" height="844" alt="v01 milieu : Page lue par Google, données trouvées, prix douteux"></button><figcaption><span class="t">v01</span><span class="pq">la bande s'allonge</span><input type="text" placeholder="note" aria-label="Note sur v01, milieu"></figcaption></figure></div>
+<div class="vg" data-variante="v02"><figure data-vignette data-cle="milieu|v02"><button type="button" class="zoom" aria-label="Agrandir v02, milieu"><img src="img/v02-2.png" width="390" height="844" alt="v02 milieu : panneau, trois étapes faites dont prix douteux"></button><figcaption><span class="t">v02</span><span class="pq">panneau déplié, 14 s</span><input type="text" placeholder="note" aria-label="Note sur v02, milieu"></figcaption></figure></div>
+<div class="vg" data-variante="v03"><figure data-vignette data-cle="milieu|v03"><button type="button" class="zoom" aria-label="Agrandir v03, milieu"><img src="img/v03-2.png" width="390" height="844" alt="v03 milieu : barre en segments, prix douteux en orange"></button><figcaption><span class="t">v03</span><span class="pq">barre en six segments</span><input type="text" placeholder="note" aria-label="Note sur v03, milieu"></figcaption></figure></div>
+<div class="vg" data-variante="v04"><figure data-vignette data-cle="milieu|v04"><button type="button" class="zoom" aria-label="Agrandir v04, milieu"><img src="img/v04-2.png" width="390" height="844" alt="v04 milieu : étapes avec leur temps, prix douteux à 9 s"></button><figcaption><span class="t">v04</span><span class="pq">chaque étape à sa seconde</span><input type="text" placeholder="note" aria-label="Note sur v04, milieu"></figcaption></figure></div>
+<div class="vg" data-variante="v05"><figure data-vignette data-cle="milieu|v05"><button type="button" class="zoom" aria-label="Agrandir v05, milieu"><img src="img/v05-1.png" width="390" height="844" alt="v05 milieu : la carte se remplit, prix douteux"></button><figcaption><span class="t">v05</span><span class="pq">la carte se remplit</span><input type="text" placeholder="note" aria-label="Note sur v05, milieu"></figcaption></figure></div>
+<div class="vg" data-variante="v06"><figure data-vignette data-cle="milieu|v06"><button type="button" class="zoom" aria-label="Agrandir v06, milieu"><img src="img/v06-2.png" width="390" height="844" alt="v06 milieu : trois cases cochées, prix douteux, bouton Replier"></button><figcaption><span class="t">v06</span><span class="pq">cases cochées, « Replier »</span><input type="text" placeholder="note" aria-label="Note sur v06, milieu"></figcaption></figure></div>
+</div></section>
+
+<section class="rang" id="repliee" data-choix="repliee"><h2>Barre repliée · l'app peut se fermer <span class="podium"></span></h2><p class="crit">Ta base : revenu aux carnets, plus rien ne dit qu'une lecture tourne.</p><div class="bande">
+<figure class="base" data-reference data-vignette data-cle="repliee|base"><button type="button" class="zoom" aria-label="Agrandir la base, repliée"><img src="img/base-liste.png" width="390" height="844" alt="base : liste des carnets sans trace de la lecture"></button><figcaption><span class="t">base <span class="doux">· ra+p5f</span></span><span class="pq">aucune trace</span><input type="text" placeholder="note" aria-label="Note sur la base, repliée"></figcaption></figure>
+<div class="vg" data-variante="v01"><figure data-vignette data-cle="repliee|v01"><button type="button" class="zoom" aria-label="Agrandir v01, repliée"><img src="img/v01-repliee.png" width="390" height="844" alt="v01 repliée : barre Lecture du lien Ventilation au-dessus du champ"></button><figcaption><span class="t">v01</span><span class="pq">2 ✓ · 1 ? · 1 –, 19 s</span><input type="text" placeholder="note" aria-label="Note sur v01, repliée"></figcaption></figure></div>
+<div class="vg" data-variante="v02"><figure data-vignette data-cle="repliee|v02"><button type="button" class="zoom" aria-label="Agrandir v02, repliée"><img src="img/v02-3.png" width="390" height="844" alt="v02 repliée : Lecture 4 sur 6, 1 douteux"></button><figcaption><span class="t">v02</span><span class="pq">« 4 sur 6 · 1 douteux »</span><input type="text" placeholder="note" aria-label="Note sur v02, repliée"></figcaption></figure></div>
+<div class="vg" data-variante="v03"><figure data-vignette data-cle="repliee|v03"><button type="button" class="zoom" aria-label="Agrandir v03, repliée"><img src="img/v03-3.png" width="390" height="844" alt="v03 repliée : Lecture du lien 4 sur 6 sur la liste des carnets"></button><figcaption><span class="t">v03</span><span class="pq">anneau + « Déplier »</span><input type="text" placeholder="note" aria-label="Note sur v03, repliée"></figcaption></figure></div>
+<div class="vg" data-variante="v04"><figure data-vignette data-cle="repliee|v04"><button type="button" class="zoom" aria-label="Agrandir v04, repliée"><img src="img/v04-3.png" width="390" height="844" alt="v04 repliée : points de lecture dans la carte Ventilation et barre 4 sur 6"></button><figcaption><span class="t">v04</span><span class="pq">points dans la carte</span><input type="text" placeholder="note" aria-label="Note sur v04, repliée"></figcaption></figure></div>
+<div class="vg" data-variante="v05"><figure data-vignette data-cle="repliee|v05 carnets"><button type="button" class="zoom" aria-label="Agrandir v05, repliée dans Carnets"><img src="img/v05-3.png" width="390" height="844" alt="v05 repliée : bande Ventilation 4 sur 6, 1 douteux"></button><figcaption><span class="t">v05 <span class="doux">· Carnets</span></span><span class="pq">bande dans le dock</span><input type="text" placeholder="note" aria-label="Note sur v05, repliée dans Carnets"></figcaption></figure>
+<figure data-vignette data-cle="repliee|v05 ailleurs"><button type="button" class="zoom" aria-label="Agrandir v05, repliée ailleurs"><img src="img/v05-4.png" width="390" height="844" alt="v05 repliée ailleurs : la bande suit dans Brassins"></button><figcaption><span class="t">v05 <span class="doux">· Brassins</span></span><span class="pq">suit dans toute l'app</span><input type="text" placeholder="note" aria-label="Note sur v05, repliée ailleurs"></figcaption></figure></div>
+<div class="vg" data-variante="v06"><figure data-vignette data-cle="repliee|v06"><button type="button" class="zoom" aria-label="Agrandir v06, repliée"><img src="img/v06-3.png" width="390" height="844" alt="v06 repliée : six carrés de couleur, prix douteux, Voir"></button><figcaption><span class="t">v06</span><span class="pq">six carrés, « Voir »</span><input type="text" placeholder="note" aria-label="Note sur v06, repliée"></figcaption></figure></div>
+</div></section>
+
+<section class="rang" id="fin" data-choix="fin"><h2>Fin · retrouvée à la réouverture <span class="podium"></span></h2><p class="crit">Article rempli, champs douteux signalés ; ta base pose l'article sans dire ce qui reste à vérifier.</p><div class="bande">
+<figure class="base" data-reference data-vignette data-cle="fin|base"><button type="button" class="zoom" aria-label="Agrandir la base, fin"><img src="img/base-fin.png" width="390" height="844" alt="base : article arrivé dans le fil, 4 valeurs, 1 ?"></button><figcaption><span class="t">base <span class="doux">· ra+p5f</span></span><span class="pq">l'article arrive, « 1 ? »</span><input type="text" placeholder="note" aria-label="Note sur la base, fin"></figcaption></figure>
+<div class="vg" data-variante="v01"><figure data-vignette data-cle="fin|v01"><button type="button" class="zoom" aria-label="Agrandir v01, fin"><img src="img/v01-fin.png" width="390" height="844" alt="v01 fin : article ajouté, prix et port à écrire"></button><figcaption><span class="t">v01</span><span class="pq">douteux à corriger sur place</span><input type="text" placeholder="note" aria-label="Note sur v01, fin"></figcaption></figure></div>
+<div class="vg" data-variante="v02"><figure data-vignette data-cle="fin|v02 réouverture"><button type="button" class="zoom" aria-label="Agrandir v02, réouverture"><img src="img/v02-4.png" width="390" height="844" alt="v02 réouverture : liste, lien lu pendant votre absence"></button><figcaption><span class="t">v02 <span class="doux">· réouverture</span></span><span class="pq">« lu pendant votre absence »</span><input type="text" placeholder="note" aria-label="Note sur v02, réouverture"></figcaption></figure>
+<figure data-vignette data-cle="fin|v02 fin"><button type="button" class="zoom" aria-label="Agrandir v02, fin"><img src="img/v02-5.png" width="390" height="844" alt="v02 fin : article rempli, 3 à vérifier"></button><figcaption><span class="t">v02 <span class="doux">· carnet</span></span><span class="pq">« 3 à vérifier »</span><input type="text" placeholder="note" aria-label="Note sur v02, fin"></figcaption></figure></div>
+<div class="vg" data-variante="v03"><figure data-vignette data-cle="fin|v03"><button type="button" class="zoom" aria-label="Agrandir v03, fin"><img src="img/v03-4.png" width="390" height="844" alt="v03 fin : prix et humidité douteux, bruit absent, contrôle fait"></button><figcaption><span class="t">v03</span><span class="pq">une ligne par douteux</span><input type="text" placeholder="note" aria-label="Note sur v03, fin"></figcaption></figure></div>
+<div class="vg" data-variante="v04"><figure data-vignette data-cle="fin|v04"><button type="button" class="zoom" aria-label="Agrandir v04, fin"><img src="img/v04-4.png" width="390" height="844" alt="v04 fin : encadré À vérifier sous l'article"></button><figcaption><span class="t">v04</span><span class="pq">encadré « À vérifier »</span><input type="text" placeholder="note" aria-label="Note sur v04, fin"></figcaption></figure></div>
+<div class="vg" data-variante="v05"><figure data-vignette data-cle="fin|v05 réouverture"><button type="button" class="zoom" aria-label="Agrandir v05, réouverture"><img src="img/v05-5.png" width="390" height="844" alt="v05 réouverture dans Brassins : Article lu, 1 prix à vérifier"></button><figcaption><span class="t">v05 <span class="doux">· réouverture</span></span><span class="pq">« Article lu » ailleurs</span><input type="text" placeholder="note" aria-label="Note sur v05, réouverture"></figcaption></figure>
+<figure data-vignette data-cle="fin|v05 fin"><button type="button" class="zoom" aria-label="Agrandir v05, fin"><img src="img/v05-6.png" width="390" height="844" alt="v05 fin : article, prix et humidité à trancher"></button><figcaption><span class="t">v05 <span class="doux">· carnet</span></span><span class="pq">« C'est le bon » / Corriger</span><input type="text" placeholder="note" aria-label="Note sur v05, fin"></figcaption></figure></div>
+<div class="vg" data-variante="v06"><figure data-vignette data-cle="fin|v06"><button type="button" class="zoom" aria-label="Agrandir v06, fin"><img src="img/v06-4.png" width="390" height="844" alt="v06 fin : Prix à vérifier, Garder HT ou Prendre TTC"></button><figcaption><span class="t">v06</span><span class="pq">Garder HT / Prendre TTC</span><input type="text" placeholder="note" aria-label="Note sur v06, fin"></figcaption></figure></div>
+</div></section>
+
+<section class="rang" id="echec" data-choix="echec"><h2>Échec · lien introuvable <span class="podium"></span></h2><p class="crit">Ta base : « sans aperçu », sans dire laquelle des étapes a raté.</p><div class="bande">
+<figure class="base" data-reference data-vignette data-cle="echec|base"><button type="button" class="zoom" aria-label="Agrandir la base, échec"><img src="img/base-echec.png" width="390" height="844" alt="base : lien sans aperçu, Compléter ou Redonner à l'IA"></button><figcaption><span class="t">base <span class="doux">· ra+p5f</span></span><span class="pq">« sans aperçu »</span><input type="text" placeholder="note" aria-label="Note sur la base, échec"></figcaption></figure>
+<div class="vg" data-variante="v01"><figure data-vignette data-cle="echec|v01"><button type="button" class="zoom" aria-label="Agrandir v01, échec"><img src="img/v01-echec.png" width="390" height="844" alt="v01 échec : Page introuvable, Corriger le lien"></button><figcaption><span class="t">v01</span><span class="pq">« Corriger le lien »</span><input type="text" placeholder="note" aria-label="Note sur v01, échec"></figcaption></figure></div>
+<div class="vg" data-variante="v02"><figure data-vignette data-cle="echec|v02"><button type="button" class="zoom" aria-label="Agrandir v02, échec"><img src="img/v02-6.png" width="390" height="844" alt="v02 échec : Page introuvable, autres étapes non lancées"></button><figcaption><span class="t">v02</span><span class="pq">« non lancés »</span><input type="text" placeholder="note" aria-label="Note sur v02, échec"></figcaption></figure></div>
+<div class="vg" data-variante="v03"><figure data-vignette data-cle="echec|v03"><button type="button" class="zoom" aria-label="Agrandir v03, échec"><img src="img/v03-5.png" width="390" height="844" alt="v03 échec : arrêtée à 1 sur 6, erreur 404"></button><figcaption><span class="t">v03</span><span class="pq">« arrêté à 1 sur 6 »</span><input type="text" placeholder="note" aria-label="Note sur v03, échec"></figcaption></figure></div>
+<div class="vg" data-variante="v04"><figure data-vignette data-cle="echec|v04"><button type="button" class="zoom" aria-label="Agrandir v04, échec"><img src="img/v04-5.png" width="390" height="844" alt="v04 échec : adresse coupée, contrôle douteux"></button><figcaption><span class="t">v04</span><span class="pq">« adresse coupée ? »</span><input type="text" placeholder="note" aria-label="Note sur v04, échec"></figcaption></figure></div>
+<div class="vg" data-variante="v05"><figure data-vignette data-cle="echec|v05"><button type="button" class="zoom" aria-label="Agrandir v05, échec"><img src="img/v05-7.png" width="390" height="844" alt="v05 échec : lien introuvable, Coller un autre lien"></button><figcaption><span class="t">v05</span><span class="pq">« Coller un autre lien »</span><input type="text" placeholder="note" aria-label="Note sur v05, échec"></figcaption></figure></div>
+<div class="vg" data-variante="v06"><figure data-vignette data-cle="echec|v06"><button type="button" class="zoom" aria-label="Agrandir v06, échec"><img src="img/v06-5.png" width="390" height="844" alt="v06 échec : aucun site à cette adresse, lien mal copié"></button><figcaption><span class="t">v06</span><span class="pq">« lien mal copié ? »</span><input type="text" placeholder="note" aria-label="Note sur v06, échec"></figcaption></figure></div>
+</div></section>
+
+<textarea id="sortie" hidden aria-label="Classement copié"></textarea>
+</div>
+<div class="pied"><button type="button" id="copier">Copier</button><span id="compte">0 rang donné</span></div>
+<div id="loupe" hidden><img alt="Capture agrandie"></div>
+<script>
+(function () {
+  // Classement par écran (17.11) : sous chaque vignette, 1 à 5 ; plusieurs vignettes peuvent avoir le même rang.
+  var K = 'carnet-lecture-lien-2311', etat = {};
+  try { etat = JSON.parse(localStorage.getItem(K) || '{}'); } catch (e) {}
+  etat.note = etat.note || {}; etat.r = etat.r || {};
+  var RANGS = [1, 2, 3, 4, 5];
+  var sections = [].slice.call(document.querySelectorAll('section.rang'));
+  function cle(f) { return f.getAttribute('data-cle'); }
+  function nom(f) { return cle(f).split('|')[1]; }
+  function sauver() { try { localStorage.setItem(K, JSON.stringify(etat)); } catch (e) {} }
+  function podium(sec) {
+    var par = {}, out = [];
+    [].forEach.call(sec.querySelectorAll('figure[data-cle]'), function (f) { var n = etat.r[cle(f)]; if (n) (par[n] = par[n] || []).push(nom(f)); });
+    RANGS.forEach(function (n) { if (par[n]) out.push(n + ' ' + par[n].join(', ')); });
+    return out;
+  }
+  function rendre() {
+    var total = 0;
+    sections.forEach(function (sec) {
+      [].forEach.call(sec.querySelectorAll('figure[data-cle]'), function (f) {
+        var mon = etat.r[cle(f)] || 0; if (mon) total++;
+        f.setAttribute('data-rang', mon || '');
+        [].forEach.call(f.querySelectorAll('.rg'), function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-n') === mon ? 'true' : 'false'); });
+      });
+      var p = podium(sec);
+      sec.querySelector('.podium').textContent = p.length ? p.join(' · ') : 'pas encore classé';
+    });
+    document.getElementById('compte').textContent = total + (total > 1 ? ' rangs donnés' : ' rang donné');
+  }
+  sections.forEach(function (sec) {
+    var ecran = sec.querySelector('h2').firstChild.textContent.trim();
+    [].forEach.call(sec.querySelectorAll('figure[data-cle]'), function (f) {
+      var k = cle(f), i = f.querySelector('input'), rgs = document.createElement('span');
+      rgs.className = 'rgs';
+      RANGS.forEach(function (n) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'rg'; b.textContent = n; b.setAttribute('data-n', n);
+        b.setAttribute('aria-label', n + 'e pour ' + ecran + ', ' + nom(f));
+        b.addEventListener('click', function () { if (etat.r[k] === n) delete etat.r[k]; else etat.r[k] = n; sauver(); rendre(); });
+        rgs.appendChild(b);
+      });
+      f.querySelector('figcaption').insertBefore(rgs, i);
+      if (etat.note[k]) i.value = etat.note[k];
+      i.addEventListener('input', function () { etat.note[k] = i.value; sauver(); });
+      f.querySelector('.zoom').addEventListener('click', function () { var l = document.getElementById('loupe'); l.querySelector('img').src = f.querySelector('img').src; l.hidden = false; });
+    });
+  });
+  document.getElementById('loupe').addEventListener('click', function () { this.hidden = true; });
+  document.getElementById('copier').addEventListener('click', function () {
+    var lignes = [];
+    sections.forEach(function (sec) {
+      var titre = sec.querySelector('h2').firstChild.textContent.trim(), p = podium(sec);
+      var notes = [].slice.call(sec.querySelectorAll('figure[data-cle]')).filter(function (f) { return etat.note[cle(f)]; }).map(function (f) { return nom(f) + ' : ' + etat.note[cle(f)]; });
+      if (p.length || notes.length) lignes.push(titre + ' : ' + (p.join(' · ') || '—') + (notes.length ? ' (' + notes.join(' ; ') + ')' : ''));
+    });
+    var t = 'Carnet, lecture d’un lien, classement par écran (23.11)\n' + (lignes.join('\n') || 'rien de classé');
+    var o = document.getElementById('sortie'); o.value = t; o.hidden = false; o.select();
+    try { navigator.clipboard.writeText(t).catch(function () {}); } catch (e) {}
+  });
+  rendre();
+})();
+</script>
+</body>
+</html>

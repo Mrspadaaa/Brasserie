@@ -25,6 +25,7 @@
 ## Carnet
 - Accord du 23.11 : aiTask peut être mise à jour (seule) dès « PRÊT SERVEUR » de l'agent lecture des liens.
 - Lecture IA : étapes visibles une à une, et si lente une barre repliable, lecture qui continue app fermée (IA-ETAPES-VISIBLES, ses mots du 23.11). Après le lot lecture des liens : mini maquettes dans le style de l'app, puis port.
+- Page de choix publiée le 23.11 : https://claude.ai/artifact/M7FU5ad6NVhXD12Pjc9fBH (v01 à v06, work/missions/maquettes-carnet/page). En attente de son choix.
 - Ses choix à porter : Q-1 A (le choix fait le prix), Q-1b B (budget en 1re pastille), Q-2 C (recherche articles et notes),
   Q-5 A (Quand et prix repliés), Q-6 A ; filtres par domaine (D437, puces Local/Brasserie/Meuble/Papiers/Outils, posés par l'IA).
 - Banc de liens (BL-4 à BL-15) : prix convertis en CHF et « HT » signalé, caractéristiques (36 % justes), photos (Shopify,
