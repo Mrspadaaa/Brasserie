@@ -24,17 +24,14 @@ test.describe('Lot 7 : champ du carnet', () => {
       const t = document.querySelector('textarea')!.getBoundingClientRect();
       const notes = [...document.querySelectorAll<HTMLElement>('.cn-note')].filter((n) => n.getBoundingClientRect().height > 0);
       const d = notes.at(-1)?.getBoundingClientRect() ?? null;
+      const zone = document.querySelector('.cn-champ-zone')!.getBoundingClientRect();
       const va = document.querySelector<HTMLElement>('.cn-vadans')?.getBoundingClientRect() ?? null;
-      const autres = [...document.querySelectorAll<HTMLElement>('[data-carnets] *')]
-        .filter((e) => !e.closest('.cn-champ-zone') && e.children.length === 0 && (e.textContent ?? '').trim() && e.getBoundingClientRect().height > 0)
-        .map((e) => e.getBoundingClientRect());
-      const recouvre = va ? autres.filter((r) => r.bottom > va.top + 1 && r.top < va.bottom - 1 && r.right > va.left && r.left < va.right).length : 0;
-      return { H: innerHeight, champBas: t.bottom, champHaut: t.top, noteBas: d?.bottom ?? null, noteHaut: d?.top ?? null, va: !!va, recouvre };
+      return { H: innerHeight, champBas: t.bottom, champHaut: t.top, zoneHaut: zone.top, noteBas: d?.bottom ?? null, noteHaut: d?.top ?? null, va: !!va };
     });
     expect(m.champBas, 'le champ au-dessus du clavier').toBeLessThanOrEqual(m.H - 300 + 1);
-    expect(m.noteBas ?? 0, 'la dernière note au-dessus du champ').toBeLessThanOrEqual(m.champHaut + 1);
+    expect(m.va, '« Va dans » est montré').toBe(true);
+    expect(m.noteBas ?? 0, 'la dernière note au-dessus de la zone du champ (« Va dans » compris)').toBeLessThanOrEqual(m.zoneHaut + 1);
     expect(m.noteHaut ?? 0, 'la dernière note dans l’écran').toBeGreaterThanOrEqual(0);
-    expect(m.recouvre, '« Va dans » ne recouvre aucun texte du carnet').toBe(0);
   });
 
   test('L-47 : après Ajouter, le focus reste dans le champ', async ({ page }) => {
