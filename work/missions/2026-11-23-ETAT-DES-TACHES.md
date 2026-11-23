@@ -1,10 +1,10 @@
 # État des tâches — 23.11 soir, après le tour 26 (b44b191d3, index-Bl2OF9G2.js)
 
 ## Reprise (23.11 soir, session pilote close à la demande du brasseur ; vérifié par git et fichiers, pas de mémoire)
-- En ligne : hosting tour 26 = b44b191d3 (tag en-ligne/2026-11-23-tour26, index-Bl2OF9G2.js) ; aiTask déployée depuis b44b191d3. origin/main = 035b77ff4 (= b44b191d3 + documents du pilote : CHOIX.md, D448, cet état, journal IA fusionné).
+- En ligne : hosting tour 26 = b44b191d3 (tag en-ligne/2026-11-23-tour26, index-Bl2OF9G2.js) ; aiTask déployée depuis b44b191d3. origin/main = 9e22f0e2a ou plus récent (= b44b191d3 + documents du pilote : CHOIX.md, D448, cet état, journal IA fusionné).
   Copies : port-carnet = b44b191d3 (fusion + mise en ligne ici ; modifs NON commitées d'une autre session dans src/domain/stock/murDonnees.ts,
   src/ui/stock/EnteteRayon.tsx, MurStock.tsx, work/missions/2026-11-20-frise/REPRISE*.md : à préserver, jamais déployées car deploy-leger
-  construit depuis un worktree propre). lecture-liens = 75b6393e3 (fusionné). fix-t25 = b44b191d3 (fusionné). Pilote Brasserie = 035b77ff4.
+  construit depuis un worktree propre). lecture-liens = 75b6393e3 (fusionné). fix-t25 = b44b191d3 (fusionné). Pilote Brasserie = même commit que main.
 - deploy-leger.sh : ligne T réglée sur tour26 → passer à tour27 au prochain envoi. REGLES (vitest tests/unit/proprietes) a échoué une fois
   puis passé au 2e essai sans changement : test de propriété instable, à trouver (graine à fixer).
 - Lecture des liens (D446, D447, ses mots du 23.11 dans SPEC) : cascade plateforme → schema.org (htmlmetaparser) → HTML (htmlparser2)
@@ -44,7 +44,7 @@
 - work/missions/BUGS.md : BUGS OK, 2101 bugs, 490 ouverts, 202 sources ; en tête, les 10 plus graves (DC-1, MV-9, BR-114, BR-115,
   AM-68, M9-1, LR3-1, LR1-6, AM-33, M-4). T25-1..7, 9 marqués corrigés le 23.11 soir (vérifiés en ligne au tour 26) ; T25-8 en cours.
 - Ouverts du Calendrier : CALP-1 à CALP-14 (à revérifier contre les tours 19 à 23, plusieurs sont sans doute corrigés) et CA13-12, CA13-13.
-- Ouverts du Carnet : CA13-1 à CA13-11, FIX13-1, GH-1 à GH-4, BL-1, BL-2, BL-4 à BL-15, T26-1, T26-2, T26-4 (T26-3 versé ?
+- Ouverts du Carnet : CA13-1 à CA13-11, FIX13-1, GH-1 à GH-4, BL-1, BL-2, BL-4 à BL-15, T26-1 à T26-4 (T26-3 a un état « corrigé/clos » au registre :
   à vérifier). BL-1/2/3 ont été corrigés au tour 24 et GH, BL-4..15 en grande partie par la cascade (banc 63 liens) : à revérifier un
   à un et à marquer au registre ; aucun n'a encore son état mis à jour.
 
