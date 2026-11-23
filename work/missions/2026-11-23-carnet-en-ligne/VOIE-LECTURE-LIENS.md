@@ -34,3 +34,4 @@ requis oui/non, risque. Recommandation ; tout nouveau compte ou service payant a
 - Computer use de Gemini (navigateur Playwright local) : mesurer sur les seuls liens en JavaScript ou bloqués que la cascade rate ; jamais de CAPTCHA contourné.
 - Écarter : Custom Search JSON API (fermée), Merchant API (son propre catalogue seulement).
 - Chaque appel réel au journal ia-journal.jsonl.
+- 23.11, ses mots : « carbon sera trop lent ». Carbon retiré du comparatif ; Hydrogen reste, temps de réponse mesuré pour chaque outil.
