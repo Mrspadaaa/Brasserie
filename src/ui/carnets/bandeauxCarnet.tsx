@@ -23,12 +23,12 @@ export interface BandeauxV {
   couperEnvoi: () => void; annuler: (inverse: EcritureCarnet[]) => void; appliquer: Appliquer; magasin: MagasinCarnets; aides: AidesCarnet;
   setRetour: (r: RetourNeuf | null) => void; poserRetourEtat: (r: Retour | null) => void; setEnTete: Etat<string | undefined>;
   setVientDEtreCree: Etat<string | null>; setVue: Etat<Vue>; setRangeEnCours: Etat<string | null>;
-  ajouterAuSuggere: (rt: Retour, versId: string) => void; ecartees: ReadonlySet<string>; setEcartees: Etat<ReadonlySet<string>>;
+  ajouterAuSuggere: (rt: Retour, versId: string) => void; deplacerVersSuggere: (rt: Retour, versId: string) => void; ecartees: ReadonlySet<string>; setEcartees: Etat<ReadonlySet<string>>;
 }
 
 export function bandeauxCarnet(x: BandeauxV) {
   const { enLigne, aReprendre, retour, etatR, rangerMaintenant, ouvert, vue, idOuvert, depuis, messages, tous, carnets, tableauV, retourRef, attente, annonces,
-    neDeListe, couperEnvoi, annuler, appliquer, magasin, aides, setRetour, poserRetourEtat, setEnTete, setVientDEtreCree, setVue, setRangeEnCours, ajouterAuSuggere,
+    neDeListe, couperEnvoi, annuler, appliquer, magasin, aides, setRetour, poserRetourEtat, setEnTete, setVientDEtreCree, setVue, setRangeEnCours, ajouterAuSuggere, deplacerVersSuggere,
     ecartees, setEcartees } = x;
   /* le message dont le bandeau « L'IA n'a pas répondu » est affiché porte son « Relire » dans ce bandeau ; la ligne durable prend le relais */
   const aReprendreVus = aReprendre.filter(x => !(x.echec && retour?.messageId === x.messageId));
@@ -59,6 +59,9 @@ export function bandeauxCarnet(x: BandeauxV) {
     if (effets.length !== 1) return null;
     const e = effets[0];
     const base = { cible: e.cible as RangeeV['cible'], id: e.id, phrase: msg!.carnetMessage.texte, onAnnuler: () => annulerRetour(retour) };
+    /* BL-1 : le lien resté ici ; le carnet que l'IA voyait se propose, « Déplacer vers … ? » */
+    const sug = retour.suggestion;
+    const vers = sug ? { versSuggere: { titre: sug.titre, onDeplacer: () => deplacerVersSuggere(retour, sug.carnetId) } } : {};
     if (e.cible !== 'article') return ['critere', 'facon', 'note'].includes(e.cible) && ouvert.carnet[e.cible === 'critere' ? 'criteres' : e.cible === 'facon' ? 'facons' : 'notes'].some(x => x.id === e.id) ? base : null;
     const a = ouvert.carnet.articles.find(x => x.id === e.id);
     if (!a || a.lecture !== 'lue' || !a.url) return null;
@@ -67,7 +70,7 @@ export function bandeauxCarnet(x: BandeauxV) {
     const verdict = k ? `${k.caracteristique!.nom} : ${passe(a, k) ? 'oui' : 'non'}` : undefined;
     /* critique 6, n° 12 (R26, G20) : le bandeau dit le rang (« 1re de sa façon, devant Hotte inox 120 cm ») ; `rang` suit la ligne (LigneRangee) */
     const rang = tableauV ? rangDuLien(tableauV, a.id, ouvert.carnet.articles) : null;
-    return Object.assign({ ...base, luSurPage, ...(verdict ? { verdict } : {}) }, rang ? { rang } : {});
+    return Object.assign({ ...base, luSurPage, ...(verdict ? { verdict } : {}), ...vers }, rang ? { rang } : {});
   })();
   /** Annuler un retour : l'IA encore en route pour ce message est coupée d'abord (rien n'est réécrit après), puis tout est défait. */
   function annulerRetour(vu: Retour) {
@@ -122,7 +125,7 @@ export function bandeauxCarnet(x: BandeauxV) {
     ? retour.bandeau.sorte === 'vrac' && retour.messageId && vue.sorte === 'liste'
       ? <React.Fragment key={retour.id}>{vracApres(retour)}</React.Fragment>
       : <Bandeau key={retour.id} bandeau={retour.bandeau} onAnnuler={() => annulerRetour(retour)} aideConsequence={aides.consequence}
-        suggestion={retour.suggestion && retour.carnetId ? { titre: retour.suggestion.titre, onAjouter: () => ajouterAuSuggere(retour, retour.suggestion!.carnetId) } : null}
+        suggestion={retour.suggestion && retour.carnetId ? { titre: retour.suggestion.titre, onAjouter: () => (retour.bandeau.sorte === 'cree' ? ajouterAuSuggere : deplacerVersSuggere)(retour, retour.suggestion!.carnetId) } : null}
         onRelire={retour.avis?.sorte === 'echec' && enLigne && retour.messageId && aReprendre.some(x => x.messageId === retour.messageId) ? () => { const id = retour.messageId!; setRetour(null); void rangerMaintenant(id); } : null}
         {...(retour.avis ? { avis: retour.avis, ...(retour.detail ? { detail: retour.detail } : {}) } : {})} />
     : null;

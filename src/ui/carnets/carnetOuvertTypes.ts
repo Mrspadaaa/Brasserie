@@ -19,6 +19,8 @@ export interface RangeeV {
   onVotreTexte?: () => void;
   onDeplacer?: () => void;
   onChangerEnNote?: () => void;
+  /** BL-1 : « Déplacer vers … ? », le carnet existant que l'IA voyait pour le lien resté ici. */
+  versSuggere?: { titre: string; onDeplacer: () => void };
 }
 
 export interface CarnetOuvertProps {
@@ -76,6 +78,13 @@ export interface CarnetOuvertProps {
    */
   /** Un critère affiché peut regrouper plusieurs doublons : tous ses ids, d'un seul geste (un seul Annuler). */
   onRetirerCritere?: (...critereIds: string[]) => void;
+  /**
+   * BL-3 (banc réel de liens, 23.11) : retirer un article, ou le déplacer vers un autre carnet, par le ⋯ de la ligne Articles (comme
+   * « Retirer » des critères, L-20), avec Annuler. `carnetsVers` : les autres carnets. Absent : pas de ⋯.
+   */
+  onRetirerArticle?: (articleId: string) => void;
+  onDeplacerArticle?: (articleId: string, vers: string) => void;
+  carnetsVers?: readonly { id: string; titre: string }[];
   /** Le jour (ISO) ; défaut : aujourd'hui (local). Injecté par le banc et les tests. */
   aujourdhui?: string;
 }

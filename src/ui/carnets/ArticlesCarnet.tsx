@@ -1,6 +1,6 @@
 /** La rubrique Articles du carnet ouvert (R03, h05-3, h03-5), sortie de CarnetOuvert.tsx : une fonction de rendu, appelée en place. */
 import type React from 'react';
-import { ChevronDown, ChevronRight, Tag } from 'lucide-react';
+import { ArrowRightToLine, ChevronDown, ChevronRight, Ellipsis, Tag } from 'lucide-react';
 import type { comptesCarnet } from '../../domain/carnets/comptes';
 import { CarteArticle } from './CarteArticle';
 import { Provenance, type ArticleV, type CarnetV, type ContenuCarnetV, type CritereV, type FaconV } from './EtatIA';
@@ -14,9 +14,50 @@ export interface ArticlesCarnetV {
   cartes: boolean; setCartes: (v: boolean) => void; r: RangeeV | null | undefined; critere: CritereV | undefined;
   articleRange: ArticleV | undefined; faconRange: FaconV | undefined; aRelire: ArticleV[]; sep: Separation | null;
   conclusion: { texte: string; retenir: string; onRetenir: () => void; ia: boolean } | null;
+  /** BL-3 : le ⋯ de la ligne Articles ouvert ; `vers` : l'article dont on choisit le carnet d'arrivée. */
+  gerer: boolean; setGerer: (v: boolean) => void; vers: string | null; setVers: (id: string | null) => void;
 }
 
-export function rubriqueArticles({ p, c, k, n, neuf, picto, cartes, setCartes, r, critere, articleRange, faconRange, aRelire, sep, conclusion }: ArticlesCarnetV): React.ReactNode {
+/**
+ * BL-3 (banc réel de liens, 23.11) : un article arrivé dans le mauvais carnet ne se retirait ni ne se déplaçait une fois le bandeau parti.
+ * Comme la ligne Critère (L-20), la ligne Articles a son ⋯ : chaque article, une fois, avec « Déplacer » (puis le carnet) et « Retirer ».
+ * L'article retenu (le choix du carnet) ne se retire pas d'ici : son choix se revoit d'abord.
+ */
+function gererArticles({ p, k, gerer, setGerer, vers, setVers }: ArticlesCarnetV): React.ReactNode {
+  if (!gerer || !p.onRetirerArticle) return null;
+  const autres = p.carnetsVers ?? [];
+  const fini = () => { setGerer(false); setVers(null); };
+  return (
+    <div className="cn-criteres-derriere cn-articles-gerer" role="list" aria-label="Articles">
+      {k.articles.filter(a => a.id !== k.choix?.articleId).map(a => {
+        const nom = a.nom ?? a.domaine ?? 'lien';
+        return (
+          <div key={a.id} role="listitem">
+            <p className="cn-critere cn-critere-court cn-critere-retirable">
+              <span className="cn-sp"><b>{nom}</b>{a.domaine && a.nom ? <span className="cn-mut"> · {a.domaine}</span> : null}</span>
+              {p.onDeplacerArticle && autres.length > 0 && (
+                <button type="button" className="cn-lien" aria-expanded={vers === a.id} aria-label={`Déplacer l’article « ${nom} »`} onClick={() => setVers(vers === a.id ? null : a.id)}>Déplacer</button>
+              )}
+              <button type="button" className="cn-lien" aria-label={`Retirer l’article « ${nom} »`} onClick={() => { p.onRetirerArticle!(a.id); fini(); }}>Retirer</button>
+            </p>
+            {vers === a.id && (
+              <div className="cn-feuille cn-articles-vers" role="menu" aria-label={`Déplacer « ${nom} » vers`}>
+                {autres.map(c => (
+                  <button key={c.id} type="button" role="menuitem" className="cn-feuille-item cn-feuille-vers" onClick={() => { p.onDeplacerArticle!(a.id, c.id); fini(); }}>
+                    <ArrowRightToLine size={18} aria-hidden /> <span className="cn-mut">dans</span> {c.titre}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export function rubriqueArticles(v: ArticlesCarnetV): React.ReactNode {
+  const { p, c, k, n, neuf, picto, cartes, setCartes, r, critere, articleRange, faconRange, aRelire, sep, conclusion, gerer, setGerer } = v;
   return (
     <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Articles">
         {k.articles.length === 0 ? (
@@ -37,9 +78,13 @@ export function rubriqueArticles({ p, c, k, n, neuf, picto, cartes, setCartes, r
                 <><Tag size={18} aria-hidden /><b>Articles</b><span className="cn-mut cn-mono cn-compte">{n.articles}</span></>
               )}
               {p.tableau && <><span className="cn-mut" aria-hidden>·</span><button type="button" className="cn-lien cn-comparer-lien" onClick={p.onComparer}>Comparer <ChevronRight size={16} aria-hidden /></button></>}
+              {p.onRetirerArticle && (
+                <button type="button" className="cn-ico cn-articles-actions" aria-label="Articles, actions" aria-expanded={gerer} onClick={() => { setGerer(!gerer); v.setVers(null); }}><Ellipsis size={22} aria-hidden /></button>
+              )}
             </div>
+            {gererArticles(v)}
             {articleRange && r && !p.tableau && (
-              <LigneRangee sorte="article" faconNom={faconRange?.nom} rang={r.rang} phrase={r.phrase}onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer}>
+              <LigneRangee sorte="article" faconNom={faconRange?.nom} rang={r.rang} phrase={r.phrase} onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer} versSuggere={r.versSuggere}>
                 <CarteArticle article={articleRange} critere={critere} faconNom={faconRange?.nom} carnetTitre={c.title} variante="complete" luSurPage={r.luSurPage} verdict={r.verdict} onVeille={v => p.onVeille?.(articleRange.id, v)} />
               </LigneRangee>
             )}
@@ -56,7 +101,7 @@ export function rubriqueArticles({ p, c, k, n, neuf, picto, cartes, setCartes, r
               {/* tour 3, PCN-108 et 132 (G20, g5:v06-11) : au 2e article, le tableau est à l'écran avec l'article déposé dans ses
                   lignes ; « Article rangé ici · 2e · Annuler » dessous, sans carte complète qui pousserait le tableau sous la flottaison */}
               {articleRange && r && (
-                <LigneRangee sorte="article" faconNom={faconRange?.nom} rang={r.rang} phrase={r.phrase} onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer}>{null}</LigneRangee>
+                <LigneRangee sorte="article" faconNom={faconRange?.nom} rang={r.rang} phrase={r.phrase} onAnnuler={r.onAnnuler} onDeplacer={r.onDeplacer} versSuggere={r.versSuggere}>{null}</LigneRangee>
               )}
             </>) : (
               <div className="cn-cartes">

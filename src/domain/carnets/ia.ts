@@ -297,7 +297,15 @@ export function lireReponse(brut: unknown, ctx: ContexteGarde): LigneCarnet[] | 
        gardent le carnet de l'IA. */
     /* une proposition de critère (P10, P23) n’écrit rien : elle reste permise */
     const connu = connuDemande && (!phraseDeListe || (r.propose === true && r.sorte === 'critere'));
-    if (connu) ligne.carnetId = idDemande;
+    /* BL-1 (banc réel de liens, 23.11) : un lien collé DANS un carnet ouvert y reste, quoi que propose l'IA (4 articles versés dans un vrai
+       carnet du brasseur) : son carnet existant n'est qu'une suggestion « Déplacer vers … ? », son carnet neuf rien. Depuis la liste (G21),
+       inchangé. */
+    const urlLigne = chaine(r.url, 2000);
+    const lienIci = !!ouvert && liensDuTexte(ctx.texte).length > 0 && (sorte === 'article' || (!!urlLigne && urlDansTexte(urlLigne, ctx.texte)));
+    if (lienIci) {
+      ligne.carnetId = ouvert!.id;
+      if (connuDemande && idDemande !== ouvert!.id) ligne.carnetSuggere = idDemande;
+    } else if (connu) ligne.carnetId = idDemande;
     else if (ailleurs) ligne.carnetNeuf = ailleurs.titre;
     else if (connuDemande) ligne.carnetSuggere = idDemande;
     else {

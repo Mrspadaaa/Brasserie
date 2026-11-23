@@ -1,6 +1,6 @@
 /** Le fil : un champ, l'IA met en forme et range. L'écriture locale, l'avis, puis l'écriture de l'IA ; sorti de CarnetsVue.tsx (code tel quel). */
 import { estLienSeul, lireCarnets, lireMessages, nouvelIdCarnet, titreDePhrase } from '../../domain/carnets/modele';
-import { creerCarnet, fusionnerNotes, garderAPart, ranger, remplacerRangement, type Destination, type LigneARanger, type Resultat } from '../../domain/carnets/operations';
+import { appliquerEcritures, creerCarnet, fusionnerNotes, garderAPart, ranger, remplacerRangement, type Destination, type LigneARanger, type Resultat } from '../../domain/carnets/operations';
 import { analyserTexte, normaliser, vaDansDe, type LigneLocale, type RubriqueVaDans } from '../../domain/carnets/analyseLocale';
 import { rattacher } from '../../domain/carnets/rattacher';
 import type { LigneCarnet } from '../../domain/carnets/ia';
@@ -97,12 +97,14 @@ export function creerRangementCarnets(x: RangementV) {
       const fait = appliquer(r!);
       if (!fait) throw new Error((r! as { raison?: string }).raison ?? 'refus');
       /* P18 (G11) : « Garder à part » touché pendant la frappe : le message le retient, la fusion ne sera pas proposée ni faite */
+      /* BL-2 (GH-4) : l'état juste après l'écriture ; le magasin Firestore ne la montre qu'à son instantané suivant */
+      let vu = appliquerEcritures(etat, fait.ecritures);
       if (gardeAPartRef.current) {
         gardeAPartRef.current = false;
-        const g = appliquer(garderAPart(magasin.lire(), { messageId: message.id }));
-        if (g) fait.inverse.unshift(...g.inverse);
+        const g = appliquer(garderAPart(vu, { messageId: message.id }));
+        if (g) { fait.inverse.unshift(...g.inverse); vu = appliquerEcritures(vu, g.ecritures); }
       }
-      const local = retourDe(message.id, txt, depuis, fait.inverse) ?? { bandeau: { sorte: 'range' }, inverse: fait.inverse, messageId: message.id };
+      const local = retourDe(message.id, txt, depuis, fait.inverse, undefined, undefined, vu) ?? { bandeau: { sorte: 'range' }, inverse: fait.inverse, messageId: message.id };
       /* L'IA va tourner : son rangement peut remplacer celui-ci (P1, P2) ; le retour attend la fin, rien n'est annoncé qui pourrait mentir.
          Sauf à la création, où la cible est tenue : l'IA ne fait que mettre en forme, « Carnet créé » paraît tout de suite. La note en vrac
          montre pendant ce temps « ✻ L'IA découpe votre note » (n° 7), puis « ✓ n lignes rangées dans m carnets ». */
@@ -239,24 +241,27 @@ export function creerRangementCarnets(x: RangementV) {
       if (!fait) { if (local && !enAttente?.montre) setRetour(local); return; }
       /* P18 (G11) : la note qui répète une note connue y est fusionnée (« elles seront fusionnées »), sauf « Garder à part » */
       /* n° 10 : une phrase déjà gardée à part ne se fusionne pas en douce à son retour (la proposition n'est plus montrée, cf. `cadre`) */
-      const tousMsg = lireMessages(magasin.lire());
+      /* BL-2 (GH-4, BL-4) : l'état juste après l'écriture de l'IA ; relu dans le magasin Firestore, c'était encore l'écriture locale
+         (article « à lire » dans le carnet ouvert) : « Lien rangé ici · page non lue » pour un lien lu, ou parti ailleurs */
+      let vu = appliquerEcritures(etat, fait.ecritures);
+      const tousMsg = lireMessages(vu);
       const garde = tousMsg.find(m => m.id === messageId)?.carnetMessage.gardeAPart
         || tousMsg.some(m => m.id !== messageId && m.carnetMessage.gardeAPart && memeTexte(m.carnetMessage.texte, txt));
       if (aidesRef.current.doublon && !garde) {
         for (const l of lignes) {
           if (l.sorte !== 'note' || !l.doublonDe) continue;
           const cid = an?.sorte === 'ici' ? an.carnetId : l.carnetId ?? depuis;
-          const eff = lireMessages(magasin.lire()).find(m => m.id === messageId)?.carnetMessage.effets
+          const eff = lireMessages(vu).find(m => m.id === messageId)?.carnetMessage.effets
             .find(e => e.cible === 'note' && e.carnetId === cid && e.id !== l.doublonDe);
           if (!cid || !eff) continue;
-          const fu = appliquer(fusionnerNotes(magasin.lire(), { carnetId: cid, garderId: l.doublonDe, fusionnerId: eff.id, le: maintenant().toISOString() }));
-          if (fu) fait.inverse.unshift(...fu.inverse);
+          const fu = appliquer(fusionnerNotes(vu, { carnetId: cid, garderId: l.doublonDe, fusionnerId: eff.id, le: maintenant().toISOString() }));
+          if (fu) { fait.inverse.unshift(...fu.inverse); vu = appliquerEcritures(vu, fu.ecritures); }
         }
       }
       /* Annuler défait le rangement réel : l'écriture de l'IA, puis l'écriture locale qu'elle a remplacée. */
       /* Seule la branche où l'IA choisit le carnet neuf lui doit son titre ; ailleurs (créer, annoncé) le titre reste celui de la règle locale. */
       const titresIA = an ? undefined : lignes.flatMap(l => [l.carnetNeuf, l.titre]);
-      const final = retourDe(messageId, txt, depuis, [...fait.inverse, ...(local?.inverse ?? [])], lignes, titresIA);
+      const final = retourDe(messageId, txt, depuis, [...fait.inverse, ...(local?.inverse ?? [])], lignes, titresIA, vu);
       /* le retour tenu en réserve paraît aussi quand l'IA réussit sans rien d'autre à dire (d1280-1) */
       if (!final) { if (local && !enAttente?.montre) setRetour(local); return; }
       /* P8 (tour 3) : le retour de ce message est déjà affiché (créer, note en vrac) : il n'est pas remplacé ; même clé, même bandeau,

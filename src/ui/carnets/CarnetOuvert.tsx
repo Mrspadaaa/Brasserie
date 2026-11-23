@@ -72,6 +72,9 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
     return () => { window.removeEventListener('keydown', touche); window.removeEventListener('pointerdown', ailleurs); };
   }, [menu]);
   const [cartes, setCartes] = useState(false);
+  /* BL-3 : le ⋯ de la ligne Articles (retirer, déplacer) */
+  const [gererArticles, setGererArticles] = useState(false);
+  const [versArticle, setVersArticle] = useState<string | null>(null);
   /* L-21 (23.11, M4-22) : une rubrique Notes vue dans ce carnet ouvert ne disparaît pas quand sa dernière note est rangée ailleurs
      (en critère par l'IA) : elle dit « aucune ». La mise en page ne change pas sous les yeux. */
   const notesVues = useRef<{ id: string; vu: boolean }>({ id: c.id, vu: false });
@@ -278,7 +281,8 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
         </section>
       )}
 
-      {!enAttente && rubriqueArticles({ p, c, k, n, neuf, picto, cartes, setCartes, r, critere, articleRange, faconRange, aRelire, sep, conclusion })}
+      {!enAttente && rubriqueArticles({ p, c, k, n, neuf, picto, cartes, setCartes, r, critere, articleRange, faconRange, aRelire, sep, conclusion,
+        gerer: gererArticles, setGerer: setGererArticles, vers: versArticle, setVers: setVersArticle })}
 
       {/* tour 3, v1-neuf 6 : sous le tableau, « votre phrase en titre » flotterait seul, loin du titre : il ne se dit que sous le titre */}
       {p.tableau && !phraseEnTitre(c.title, k.phrase ?? '') && phraseCitee}
