@@ -2779,3 +2779,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (citant « 1 969 fichiers de tests, soit plus que le code lui-même ») « oui on a beaucoup trop de test et le 90% est inutile »
 - (citant « un test d'intégration par écran vivant ») « Attention car fragile vu que c'est des tests souvent avec des nouveaux comportements, pareil pour les autres »
 - « Mode nuit, soit autonome, continue tes tâches »
+- (page de choix du Calendrier, 23.11, https://claude.ai/artifact/Md1VuUPY2uwCRsbrRnWJPR) « Creux du cadre / Dates sur le cadre / Graduations sur la courbe » ; « Lire la semaine? Comprends pas »
