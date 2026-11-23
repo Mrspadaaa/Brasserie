@@ -75,3 +75,10 @@ Ordre et contenu inchangés (points 1 à 5 du brief), avec ces ajouts :
   annoncé = écrit = colonne SOUS le doigt, sans tolérance (plancher, pas arrondi ; cf. ajout « arrondi du lâcher »).
 - 1038-ttt-tirage.jpg : pendant le tirage du bord à 10 sem., la barre se vide de son nom et le fantôme part loin : à regarder.
 - Bandeau « Enregistrement sur le serveur… » encore là à 10:38, sur la période, ± et la durée : remonte en priorité 2.
+
+## Ajout 23.11 10:50 — reprise après l'arrêt de l'agent (erreur API) ; tour 21 en ligne (ddb5f2d6e, index-BQLJeQyT.js)
+Ordre : (1) preuve en ligne du tour 21 (D436, bande alignée au-delà d'un an) ; (2) CAL-JOUR-EXACT ; (3) bandeau
+« Enregistrement sur le serveur… » (encore à 10:45, couvre le cadre) ; (4) CAL-SECTIONS-VIDES-COMPACTES (« Il y a de la parte
+d'espace », 1045-espace.jpg ; pilote, réversible : rangées vides ou toutes cachées réunies en une ligne de pastilles « + Achats ·
+2 cachées », « + Travaux », …) ; (5) point rouge isolé en S17 en haut des rangées (1045-espace.jpg) : quoi ? ; (6) tirage à 10 sem.
+qui vide la barre ; (7) « −1 663 » sous ±, bouton de durée pendant le tirage ; (8) lenteur mesurée en ligne.
