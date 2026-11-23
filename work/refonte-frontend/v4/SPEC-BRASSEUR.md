@@ -2816,3 +2816,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - « Ça a pas du tout été testé avec des vrai appel IA sur la vrai app le carnet ??? »
 - (état des tâches : nettoyage de ses données ; vitesse du défilement au bord) « Ok » « Ok »
 - (sur le tableau du banc réel de 25 liens : prix 56 % affichés, caractéristiques 12 %, photo 56 %) « C'est vraiment très mauvaise ?? »
+- « Est-ce que il faudrait que on aille un système comme pour la lecture de facture avec double lecture, puis corrections, et escalage. Ou déjà mettre en place un meilleur système... Comment ça se fait que ça a jamais été testé ??? Est-ce que on utilise les vrais bon outil pour ??? »
