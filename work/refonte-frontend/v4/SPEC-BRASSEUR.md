@@ -2814,3 +2814,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (proposition de reconstruire le cœur de la frise) « Répare déjà ça, on utilisera un vrai truc robuste cette nuit. Mais je veux pas perdre de fonctionnalités »
 - (lien collé, 23.11 ~12:40 : https://www.gastro-held.ch/products/gastronomie-kuehlschrank-eco-1300-gn-21-monoblock-1350-liter-kuehlraumvolumen-6-verstellbare-einlegeboeden-robuste-bauweise-edelstahl-gnh1410tnm?… (paramètres de pub gclid)) « Ça m'a fait n'importe quoi »
 - « Ça a pas du tout été testé avec des vrai appel IA sur la vrai app le carnet ??? »
+- (état des tâches : nettoyage de ses données ; vitesse du défilement au bord) « Ok » « Ok »
