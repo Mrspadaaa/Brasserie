@@ -1,0 +1,81 @@
+build de l'arbre de travail …
+(node:19004) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+  ok  ligne en double : aucune
+  ok  courbe sous zéro : ligne zéro 1, zone sous zéro 3 (« −4 044 CHF à dépenser S51 ± 3 mois 3 0 Hotte −900 lol −600 C »)
+  ok  menu de période : 8–308 sur 390
+  ok  frise du haut (reculer) : S44 → S35 (poignée x 36, 44 px)
+  ok  glisser une barre 4 semaines au passé : « Hefe » S45 → S41
+  ok  Annuler (passé) : S45
+  ok  glisser une barre 4 semaines au futur : « Blonde d’automne » S49 → S53
+  ok  relu après rechargement (barre) : S53
+  ok  date fête : 2026-12-29 → 2027-01-01 (Jour), écrit et relu : « Marché de Noël, 1 janv., S53 »
+  ok  date vente : 2026-12-14 → 2026-12-17 (Jour), écrit et relu : « Café du Pont, 1 fût, 17 déc. »
+  ok  date achat : 2026-12-08 → 2026-12-11 (Jour), écrit et relu : « Commande de malt, 11 déc., S50 »
+  ok  date papier : 2026-12-10 → 2026-12-13 (Jour), écrit et relu : « lol, 13 déc., S50 »
+  ok  date travaux : 2026-12-16 → 2026-12-19 (Jour), écrit et relu : « Hotte, 19 déc., S51 »
+  ok  frise de période (Calendrier) : poignée « Début » x 68, 44×45
+  ok  frise de période (Calendrier) : poignée « Fin » x 278, 44×45
+  ok  frise de période (Finances) : poignée « Début » x 68, 44×45
+  ok  frise de période (Finances) : poignée « Fin » x 278, 44×45
+  ok  Plus de détails : Marché de Noël : Modifier sur place, plus d'« Ouvrir dans l'agenda » (945655a90)
+  ok  Plus de détails : Ouvrir le brassin → Fruty | Lundi 14.12
+  ok  maquette choisie (G4 lu sur la page vivante) : « Trier les rangées » dans le menu de période
+  ok  maquette choisie (G7 lu sur la page vivante) : + « Actions rapides » centre x 350/390, 12 px au-dessus des onglets (attendu : tiers droit, 4–24 px)
+  ok  maquette choisie (G8 lu sur la page vivante) : première barre à 238 px (28 % de 844, attendu ≤ 30 %)
+  KO  maquette choisie (controle-base) : gardé  KO   G1 Courbe de caisse au-dessus, une barre par chose dessous, mêmes semaines — svg path, svg polylin ;; gardé  KO   G2 Projets sans budget et activités, comptés en jours — « Activités » vu ; /\d+ j\b/ absent ;; gardé  KO   G10 Titre de rangée en clair, à gauche, juste au-dessus de ses barres — « Marché de Noël » introuv
+  ok  B8 barre au passé : « Blonde d’automne » S53 → S47, dessinée où le doigt l'a lâchée
+  ok  B8 période : « Nov. » après le glisser au bord (fenêtre S41 → S51) et après rechargement
+  KO  B9 lecture de la courbe : semaines montrées S43–S50 (après : S38–S45) ; lu départ 2 % : «  » ; départ 2 % : «  » ; départ 98 % : «  » ; départ 98 % : «  »
+  ok  B9 poignée de fin : un départ sur la poignée tire la fenêtre : S43–S50 → S37–S48
+  ok  B11 vente du jour : rangée Ventes : « Vente 6 × Pale Ale — Comptoir, 23 nov., S48, +27 »
+  ok  TOUCHER-FANTOME : détail ouvert, vente intacte (message : « Compagnon hors connexion · mode local »)
+  ok  WFV-14 Facturer : la caisse s'ouvre, client « C Pro La Cigogne »
+  ok  B3 écran ouvert : levure sans nom : Calendrier ouvert, le brassin y est
+  ok  G3 : « Travaux · S5 » créé d'un toucher (creativeItems), Annuler le retire
+  ok  RENOMMER-EVT : titre touché, tapé, Entrée : relu dans le cache et sur la frise, clavier fermé
+  KO  C1-GLISSER : tirée vers la gauche : S8 → S7 (posée le 2027-02-15) ; doigt 82 → 63 ; fenêtre avant S4–S22 (19 col. de 19.3 px, 12–378), après S4–S22 (19 col. de 19.3 px, 12–378) ; attendu : agrandie, fin gardée, date = étiquette
+  ok  D2-CAL : « Garder 420 CHF, prix estimé d’après ZZ TEST Pompe  » gardé : plan de 420 CHF
+  ok  K2 : Calendrier ouvert, S8 à x 172 sur 390
+  ok  K3-SUITES : « Blonde d’automne » posé : phases brassage, fermentation, conditionnement ; « coût à venir »
+  ok  TRAVAUX-SANS-MONTANT : Activités : « Activités · S48 » créé sans montant (creativeItems)
+  ok  TRAVAUX-SANS-MONTANT : Travaux : « Travaux · S48 » créé sans montant (creativeItems, travaux)
+  ok  CRN-11 : Carnet après « 3 mois » (Calendrier « Nov. ») : barre sur une ligne, 41 px, période « Nov. »
+  ok  CRN-11 : Finances après « 3 mois » (Calendrier « Nov. ») : barre sur une ligne, 41 px, période « Nov. »
+  ok  CRN-20 : « 26 oct. 2026 → 24 janv. 2027 » en clair comme en cave, flèche entière (clair pointe 8 px sur 4 lignes, 24 px en tout ; cave pointe 8 px sur 4 lignes, 24 px en tout)
+  ok  CAL-ENTETE : An : aucune rangée de montant sous les mois
+  ok  CAL-ENTETE : An, courbe visible : « Brassins » tient (écart 0 px sur 7 états ; panneau 0 l., 0 l., 0 l., 0 l., 0 l., 0 l.)
+  ok  CAL-ENTETE : An : en-tête 212 px (≤ 253)
+  ok  CAL-ENTETE : An, courbe cachée : « Brassins » tient (écart 0 px sur 6 états)
+  ok  CAL-ENTETE : An, courbe cachée : en-tête 124 px (≤ 169)
+  ok  CAL-ENTETE : 3 mois : aucune rangée de montant sous les mois
+  ok  CAL-ENTETE : 3 mois, courbe visible : « Brassins » tient (écart 0 px sur 7 états ; panneau 0 l., 0 l., 0 l., 0 l., 0 l., 0 l.)
+  ok  CAL-ENTETE : 3 mois : en-tête 212 px (≤ 253)
+  ok  CAL-ENTETE : 3 mois, courbe cachée : « Brassins » tient (écart 0 px sur 6 états)
+  ok  CAL-ENTETE : 3 mois, courbe cachée : en-tête 124 px (≤ 169)
+  ok  CAL-ENTETE : barre du haut sur une ligne (Bord, 41 px)
+  ok  CAL-ENTETE : barre du haut sur une ligne (Finances, 41 px)
+  ok  CAL-ENTETE : barre du haut sur une ligne (Calendrier, 41 px)
+  ok  CAL-ENTETE : barre du haut sur une ligne (Brassins, 41 px)
+  ok  CAL-ENTETE : barre du haut sur une ligne (Stocks, 41 px)
+  ok  CAL-ENTETE : barre du haut sur une ligne (Clients, 41 px)
+  note : brassin : pas de bouton Modifier (date réglée par le glisser (joué plus haut))
+  note : idée « IPA brume » : pas d'élément nommé à l'écran en 3 mois (icône de semaine) : date non jouée
+  note : écart à décider, gardé  KO   G3 Filtres de planification par genre, visibles au premier plan (3 au moins) — [data-filtre] : 0 visible(s) (min 3) | [class*="chip"] : 0  ; vivant : 0 filtre(s)/pastille(s) au premier plan ; « Filtrer par type » est dans le menu de période (présent)
+  note : CAL-ENTETE An : glissé à 12 % sans lecture ()
+  note : CAL-ENTETE An : glissé à 27 % sans lecture ()
+  note : CAL-ENTETE An : glissé à 41 % sans lecture ()
+  note : CAL-ENTETE An : glissé à 55 % sans lecture ()
+  note : CAL-ENTETE An : glissé à 70 % sans lecture ()
+  note : CAL-ENTETE An : glissé à 86 % sans lecture ()
+  note : CAL-ENTETE 3 mois : glissé à 12 % sans lecture ()
+  note : CAL-ENTETE 3 mois : glissé à 27 % sans lecture ()
+  note : CAL-ENTETE 3 mois : glissé à 41 % sans lecture ()
+  note : CAL-ENTETE 3 mois : glissé à 55 % sans lecture ()
+  note : CAL-ENTETE 3 mois : glissé à 70 % sans lecture ()
+  note : CAL-ENTETE 3 mois : glissé à 86 % sans lecture ()
+PARCOURS CALENDRIER ECHEC (3)
+  - maquette choisie (controle-base) : gardé  KO   G1 Courbe de caisse au-dessus, une barre par chose dessous, mêmes semaines — svg path, svg polylin ;; gardé  KO   G2 Projets sans budget et activités, comptés en jours — « Activités » vu ; /\d+ j\b/ absent ;; gardé  KO   G10 Titre de rangée en clair, à gauche, juste au-dessus de ses barres — « Marché de Noël » introuv
+  - B9 lecture de la courbe : semaines montrées S43–S50 (après : S38–S45) ; lu départ 2 % : «  » ; départ 2 % : «  » ; départ 98 % : «  » ; départ 98 % : «  »
+  - C1-GLISSER : tirée vers la gauche : S8 → S7 (posée le 2027-02-15) ; doigt 82 → 63 ; fenêtre avant S4–S22 (19 col. de 19.3 px, 12–378), après S4–S22 (19 col. de 19.3 px, 12–378) ; attendu : agrandie, fin gardée, date = étiquette
+FIN 1

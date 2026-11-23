@@ -1,0 +1,93 @@
+/**
+ * Les étapes qu'une page simulée rend, dans l'ordre du serveur (`lienProduit.ts`) : page, données, prix, devise et frais, photos,
+ * caractéristiques, contrôle. Une page qui porte ses étapes (lien mort, page bloquée) les garde. `lent` : la sous-tâche lente que le serveur
+ * annonce avant l'étape `avant` (Google pour une page bloquée). Rien n'est inventé : chaque étape dit ce que la page simulée contient.
+ */
+export function etapesSimulees(p: PageLue): { etapes: EtapeLien[]; lent?: { avant: number; nom: 'bloquee' | 'ia' } } {
+  if (p.etapes?.length) {
+    const i = p.etapes.findIndex((e) => e.nom === 'bloquee');
+    return { etapes: [...p.etapes], ...(i >= 0 ? { lent: { avant: i, nom: 'bloquee' as const } } : {}) };
+  }
+  if (p.statut !== 'lue') return { etapes: [{ nom: 'page', statut: 'absent', detail: p.statut }] };
+  const etranger = !!p.devise && p.devise !== 'CHF';
+  const photos = p.photos?.length ?? (p.photo ? 1 : 0);
+  const n = p.valeurs?.length ?? 0;
+  const etapes: EtapeLien[] = [
+    { nom: 'page', statut: 'trouve', detail: p.domaine },
+    p.nom ? { nom: 'donnees', statut: 'trouve', detail: [p.nom.replace(/\s*\(exemple\)$/, ''), p.vendeur].filter(Boolean).join(' · ') } : { nom: 'donnees', statut: 'absent', detail: 'aucune donnée produit' },
+    p.prix !== undefined ? { nom: 'prix', statut: p.prixDes ? 'douteux' : 'trouve', detail: `${p.prixDes ? 'dès ' : ''}${p.prix} ${p.devise ?? ''}`.trim() } : { nom: 'prix', statut: 'absent' },
+    p.devise ? { nom: 'devise-frais', statut: etranger ? 'douteux' : 'trouve',
+      detail: [p.livraison?.prix !== undefined ? `port ${p.livraison.prix} ${p.livraison.devise ?? p.devise}` : '', etranger ? 'douane et TVA d’import non indiquées' : p.devise].filter(Boolean).join(' · ') }
+      : { nom: 'devise-frais', statut: 'absent' },
+    photos ? { nom: 'photos', statut: 'trouve', detail: String(photos) } : { nom: 'photos', statut: 'absent' },
+    n ? { nom: 'caract', statut: 'trouve', detail: String(n) } : { nom: 'caract', statut: 'absent' },
+    etranger || p.prixDes ? { nom: 'controle', statut: 'douteux', detail: 'prix à recouper : frais d’import' } : { nom: 'controle', statut: 'trouve', detail: 'prix, nom et photo recoupés' }
+  ];
+  return { etapes };
+}
+
+/**
+ * Le serveur simulé du banc (`lecturesLiens/{jeton}`) : le début et la durée de chaque lecture, gardés dans `localStorage` pour qu'une page
+ * rechargée (« l'app fermée puis rouverte ») retrouve la lecture où le temps l'a menée. Hors navigateur (tests) : en mémoire.
+ */
+const CLE_SERVEUR_BANC = 'affinee.banc.lecturesLiens';
+interface LectureBanc { url: string; debut: number; duree: number }
+const memoireBanc = new Map<string, LectureBanc>();
+function serveurBanc() {
+  const ls = (globalThis as { localStorage?: Storage }).localStorage;
+  const tout = (): Record<string, LectureBanc> => { try { return JSON.parse(ls?.getItem(CLE_SERVEUR_BANC) ?? '{}') as Record<string, LectureBanc>; } catch { return {}; } };
+  return {
+    lire: (j: string): LectureBanc | undefined => memoireBanc.get(j) ?? tout()[j],
+    ecrire: (j: string, v: LectureBanc) => { memoireBanc.set(j, v); try { ls?.setItem(CLE_SERVEUR_BANC, JSON.stringify({ ...tout(), [j]: v })); } catch { /* en mémoire seulement */ } }
+  };
+}
+
+/** Les étapes dites à l'instant `ecoule` d'une lecture de `duree` : la k-ième tombe à k/(n+1) de la durée. */
+function etapesA(plan: ReturnType<typeof etapesSimulees>, ecoule: number, duree: number): { etapes: EtapeLien[]; enCours?: 'ia' | 'bloquee' } {
+  const n = plan.etapes.length;
+  const k = duree <= 0 ? n : Math.min(n, Math.floor((ecoule / duree) * (n + 1)));
+  return { etapes: plan.etapes.slice(0, k), ...(plan.lent && k === plan.lent.avant ? { enCours: plan.lent.nom } : {}) };
+}
+
+/**
+ * `lireLien` simulé : la page de `pageSimulee`, après `delaiMs` (défaut : 1,5 s, `DELAI_LECTURE_BANC` ; 0 dans les tests). S'interrompt
+ * au ✕ (`signal`). Aucun réseau. Avec `surEtapes`, les étapes sont dites une à une pendant la lecture, comme le flux du serveur ; avec un
+ * `jeton` déjà connu du serveur simulé, la lecture reprend où le temps l'a menée (réouverture), ou rend la page tout de suite si elle est finie.
+ */
+export function lireLienSimule(url: string, o: {
+  delaiMs?: number; signal?: AbortSignal; luLe?: number; jeton?: string;
+  surEtapes?: (e: { etapes: readonly EtapeLien[]; enCours?: 'ia' | 'bloquee' }) => void; maintenant?: () => number;
+} = {}): Promise<PageLue> {
+  const now = o.maintenant ?? Date.now;
+  const plan = etapesSimulees(pageSimulee(url, 0));
+  const page = (): PageLue => ({ ...pageSimulee(url, o.luLe ?? now()), etapes: plan.etapes });
+  const serveur = o.jeton ? serveurBanc() : null;
+  const deja = o.jeton ? serveur!.lire(o.jeton) : undefined;
+  const suivie = deja && deja.url === url ? deja : undefined;
+  const debut = suivie?.debut ?? now();
+  const duree = suivie?.duree ?? o.delaiMs ?? DELAI_LECTURE_BANC;
+  if (o.jeton && !suivie) serveur!.ecrire(o.jeton, { url, debut, duree });
+  return new Promise<PageLue>((resolve, reject) => {
+    if (o.signal?.aborted) { reject(o.signal.reason); return; }
+    if (duree <= 0 || now() - debut >= duree) { resolve(page()); return; }
+    const minuteurs: ReturnType<typeof setTimeout>[] = [];
+    let dites = -1;
+    const dire = () => {
+      const e = etapesA(plan, now() - debut, duree);
+      const cle = e.etapes.length * 2 + (e.enCours ? 1 : 0);
+      if (cle === dites) return;
+      dites = cle;
+      try { o.surEtapes?.(e); } catch { /* l'écran ne fait jamais échouer la lecture */ }
+    };
+    if (o.surEtapes) {
+      dire();
+      const pas = duree / (plan.etapes.length + 1);
+      for (let k = 1; k <= plan.etapes.length; k++) {
+        const t = debut + k * pas - now();
+        if (t > 0) minuteurs.push(setTimeout(dire, t + 1));
+      }
+    }
+    minuteurs.push(setTimeout(() => resolve(page()), Math.max(0, debut + duree - now())));
+    o.signal?.addEventListener('abort', () => { minuteurs.forEach(clearTimeout); reject(o.signal!.reason); }, { once: true });
+  });
+}

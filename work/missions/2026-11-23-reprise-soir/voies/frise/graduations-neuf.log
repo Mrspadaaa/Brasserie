@@ -1,0 +1,27 @@
+[WebServer]   ➜  Local:   http://127.0.0.1:4393/
+
+
+Running 4 tests using 2 workers
+
+[1/4] [android-390] › e2e\calendrier\graduations.spec.ts:71:1 › CAL-ETIQUETTE-GRAIN-AU-DESSUS : bande en jours → l'étiquette dit les semaines avec l'année ; en semaines → les dates
+[2/4] [android-390] › e2e\calendrier\graduations.spec.ts:47:1 › CAL-TOUCHER-GRADUATION : toucher une semaine, un mois de la bande pose le cadre dessus ; Annuler rend la vue d'avant
+[3/4] [android-390] › e2e\calendrier\graduations.spec.ts:85:1 › CAL-GRADUATION-ROGNEE : aucun nom de la bande rogné au bord ni chevauché, à chaque durée
+[4/4] [android-390] › e2e\calendrier\graduations.spec.ts:109:1 › 3 ans : la bande en mois dit les années (jamais « J A J O » seul)
+  1) [android-390] › e2e\calendrier\graduations.spec.ts:85:1 › CAL-GRADUATION-ROGNEE : aucun nom de la bande rogné au bord ni chevauché, à chaque durée 
+
+    Test timeout of 120000ms exceeded.
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\..\..\AppData\Local\Temp\affinee-e2e\res-grad-neuf\calendrier-graduations-CAL-091c7-ni-chevauché-à-chaque-durée-android-390\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\..\..\AppData\Local\Temp\affinee-e2e\res-grad-neuf\calendrier-graduations-CAL-091c7-ni-chevauché-à-chaque-durée-android-390\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\..\..\AppData\Local\Temp\affinee-e2e\res-grad-neuf\calendrier-graduations-CAL-091c7-ni-chevauché-à-chaque-durée-android-390\error-context.md
+
+
+  1 failed
+    [android-390] › e2e\calendrier\graduations.spec.ts:85:1 › CAL-GRADUATION-ROGNEE : aucun nom de la bande rogné au bord ni chevauché, à chaque durée 
+  3 passed (2.1m)

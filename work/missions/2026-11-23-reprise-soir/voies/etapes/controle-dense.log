@@ -1,0 +1,6 @@
+app : barre 32 px ; lignes 24, 24, 24, 24, 24, 24 px
+app OK
+v01 : barre 61.4 px ; lignes — px
+  · barre 61.4 px > 32
+v01 KO
+CONTROLE OK (app OK, témoin v01 KO)

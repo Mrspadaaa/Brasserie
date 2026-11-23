@@ -1,4 +1,4 @@
-# Voie couloirs — pose en couloirs dans les rangées de la frise, et rangée cachée sans chevauchement (CAL-LIGNES-PACKEES)
+# Voie couloirs — CONTRAT RÉÉCRIT : frise bord à bord, traits continus à travers les rangées vides ou cachées (CAL-BORDS-ET-LIGNES)
 
 - Agent : auteur ; Modèle : sonnet ; Niveau : jugement ; Plafond : 80 tours. Copie : C:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie.
 - Lis ../../COMMUN.md, puis DOSSIER.md (même dossier) À LA PLACE des sources brutes ; ouvre sa capture.
@@ -8,10 +8,10 @@
 - Gestes : grep ciblé ; un script par lot.
 
 ## À faire
-1. Trouver la pose actuelle (pourquoi l'escalier) et la cause du chevauchement quand une donnée est cachée.
-2. Pose en couloirs (interval partitioning, first-fit trié par début, boîtes = marque ∪ étiquette mesurée) ; hauteur de rangée dérivée.
-3. Cacher (œil) une donnée ou une rangée : hauteurs recalculées, aucune rangée ne chevauche la suivante.
-4. Tests unitaires de la règle de pose (couloirs minimaux, aucune intersection), rouges sur la pose actuelle, verts après.
+1. Trouver d’où viennent les marges (conteneur, padding) et pourquoi une rangée vide ou cachée est une bande blanche sans traits.
+2. Frise bord à bord (gauche, droite, jusqu’à la barre du bas) ; en-têtes de rangée avec retrait interne.
+3. Traits des graduations continus à travers toutes les rangées, vides ou cachées.
+4. Aucune pose en couloirs (retirer si déjà codée). Test : géométrie calculée (largeur = écran, traits sur toute la hauteur) si une règle de calcul existe ; sinon preuve en ligne seulement.
 Attention : fix30 et la voie agenda travaillent dans la même copie (carnets, Bord) ; ne touche pas à leurs fichiers.
 
 ## Critères

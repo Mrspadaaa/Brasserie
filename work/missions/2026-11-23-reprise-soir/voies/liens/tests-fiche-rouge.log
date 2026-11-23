@@ -1,0 +1,61 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsLiensRepriseFiche.test.tsx[2m > [22mT26-2 : « Non publié : Volume » n'a de sens que pour un appareil[2m > [22mun houblon, une levure, un malt : aucune mention du volume
+[31m[1mAssertionError[22m: Citra (USA) 1 kg Hopfenpellets Typ 90: expected 'Articles · ZZArticles · ZZ2e sur 2Cit…' not to match /Non publié/[39m
+
+[32m- Expected:[39m 
+/Non publié/
+
+[31m+ Received:[39m 
+"Articles · ZZArticles · ZZ2e sur 2Citra (USA) 1 kg Hopfenpellets Typ 90Offreexemple.ch100 CHFOuvrir Caractéristiques Largeur54 cmPoids38 kgNon publié par le vendeur : VolumeVeille du prix, tous les 3 jours"
+
+[36m [2m❯[22m tests/unit/carnetsLiensRepriseFiche.test.tsx:[2m37:30[22m[39m
+    [90m 35| [39m    for (const nom of ['Citra (USA) 1 kg Hopfenpellets Typ 90', 'Mosai…
+    [90m 36| [39m      [35mconst[39m { texte } [33m=[39m [34mfiche[39m([34marticle[39m(nom))[33m;[39m
+    [90m 37| [39m      [34mexpect[39m(texte[33m,[39m nom)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/Non publié/[39m)[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m 38| [39m      [34mexpect[39m(texte[33m,[39m nom)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/Volume/[39m)[33m;[39m
+    [90m 39| [39m    }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsLiensRepriseFiche.test.tsx[2m > [22mT26-2 : « Non publié : Volume » n'a de sens que pour un appareil[2m > [22mun houblon reconnu à ses valeurs (alpha, récolte) même si son nom ne le dit pas
+[31m[1mTypeError[22m: (0 , matiereSansVolume) is not a function[39m
+[36m [2m❯[22m tests/unit/carnetsLiensRepriseFiche.test.tsx:[2m43:12[22m[39m
+    [90m 41| [39m  it('un houblon reconnu à ses valeurs (alpha, récolte) même si son no…
+    [90m 42| [39m    const a = article('Mosaic T90', { valeurs: { Alpha: { valeur: '11.…
+    [90m 43| [39m    [34mexpect[39m([34mmatiereSansVolume[39m(a))[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   | [39m           [31m^[39m
+    [90m 44| [39m    [34mexpect[39m([34mfiche[39m(a)[33m.[39mtexte)[33m.[39mnot[33m.[39m[34mtoMatch[39m([36m/Volume/[39m)[33m;[39m
+    [90m 45| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsLiensRepriseFiche.test.tsx[2m > [22mT26-3 : une photo non lue se dit[2m > [22mpage lue, aucune photo : « photo non lue » sous le pictogramme
+[31m[1mAssertionError[22m: expected 'Articles · ZZArticles · ZZ2e sur 2Bre…' to contain 'photo non lue'[39m
+
+Expected: [32m"photo non lue"[39m
+Received: [31m"Articles · ZZArticles · ZZ2e sur 2Brew Monk fermenter 30 LOffreexemple.ch100 CHFOuvrir Caractéristiques Largeur54 cmPoids38 kgNon publié par le vendeur : VolumeVeille du prix, tous les 3 jours"[39m
+
+[36m [2m❯[22m tests/unit/carnetsLiensRepriseFiche.test.tsx:[2m67:19[22m[39m
+    [90m 65| [39m  it('page lue, aucune photo : « photo non lue » sous le pictogramme',…
+    [90m 66| [39m    const { texte, container } = fiche(article('Brew Monk fermenter 30…
+    [90m 67| [39m    [34mexpect[39m(texte)[33m.[39m[34mtoContain[39m([32m'photo non lue'[39m)[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m 68| [39m    expect(container.querySelector('[data-cadre="picto"] figcaption')?…
+    [90m 69| [39m    expect(container.querySelector('[data-cadre="picto"]')?.getAttribu…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m5 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 19:30:31
+[2m   Duration [22m 1.57s[2m (transform 356ms, setup 301ms, collect 390ms, tests 58ms, environment 643ms, prepare 60ms)[22m
+

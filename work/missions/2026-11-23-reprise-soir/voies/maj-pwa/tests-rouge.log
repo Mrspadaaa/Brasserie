@@ -1,0 +1,110 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 8 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/miseAJourRepos.test.ts[2m > [22mestAuRepos[2m > [22mpage nue, rien en cours : au repos
+[31m[1mTypeError[22m: (0 , estAuRepos) is not a function[39m
+[36m [2m❯[22m tests/unit/miseAJourRepos.test.ts:[2m13:12[22m[39m
+    [90m 11| [39m[34mdescribe[39m([32m'estAuRepos'[39m[33m,[39m () [33m=>[39m {
+    [90m 12| [39m  [34mit[39m([32m'page nue, rien en cours : au repos'[39m[33m,[39m () [33m=>[39m {
+    [90m 13| [39m    [34mexpect[39m([34mestAuRepos[39m(document[33m,[39m [34m0[39m))[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   | [39m           [31m^[39m
+    [90m 14| [39m  })[33m;[39m
+    [90m 15| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/miseAJourRepos.test.ts[2m > [22mestAuRepos[2m > [22mun champ de saisie a le focus : pas au repos
+[31m[1mTypeError[22m: (0 , estAuRepos) is not a function[39m
+[36m [2m❯[22m tests/unit/miseAJourRepos.test.ts:[2m19:12[22m[39m
+    [90m 17| [39m    document[33m.[39mbody[33m.[39minnerHTML [33m=[39m [32m'<input id="q" type="text">'[39m[33m;[39m
+    [90m 18| [39m    (document[33m.[39m[34mgetElementById[39m([32m'q'[39m) [35mas[39m [33mHTMLInputElement[39m)[33m.[39m[34mfocus[39m()[33m;[39m
+    [90m 19| [39m    [34mexpect[39m([34mestAuRepos[39m(document[33m,[39m [34m0[39m))[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m   | [39m           [31m^[39m
+    [90m 20| [39m  })[33m;[39m
+    [90m 21| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/miseAJourRepos.test.ts[2m > [22mestAuRepos[2m > [22mune feuille ouverte : pas au repos
+[31m[1mTypeError[22m: (0 , estAuRepos) is not a function[39m
+[36m [2m❯[22m tests/unit/miseAJourRepos.test.ts:[2m24:12[22m[39m
+    [90m 22| [39m  [34mit[39m([32m'une feuille ouverte : pas au repos'[39m[33m,[39m () [33m=>[39m {
+    [90m 23| [39m    document[33m.[39mbody[33m.[39minnerHTML [33m=[39m [32m'<dialog open>feuille</dialog>'[39m[33m;[39m
+    [90m 24| [39m    [34mexpect[39m([34mestAuRepos[39m(document[33m,[39m [34m0[39m))[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m   | [39m           [31m^[39m
+    [90m 25| [39m  })[33m;[39m
+    [90m 26| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/miseAJourRepos.test.ts[2m > [22mestAuRepos[2m > [22mune lecture IA ou de lien en cours : pas au repos, même sans feuille ni champ
+[31m[1mTypeError[22m: (0 , estAuRepos) is not a function[39m
+[36m [2m❯[22m tests/unit/miseAJourRepos.test.ts:[2m28:12[22m[39m
+    [90m 26| [39m
+    [90m 27| [39m  it('une lecture IA ou de lien en cours : pas au repos, même sans feu…
+    [90m 28| [39m    [34mexpect[39m([34mestAuRepos[39m(document[33m,[39m [34m1[39m))[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m   | [39m           [31m^[39m
+    [90m 29| [39m    [34mexpect[39m([34mestAuRepos[39m(document[33m,[39m [34m2[39m))[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m 30| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/miseAJourRepos.test.ts[2m > [22mappels serveur suivis[2m > [22mseuls les appels de fonctions (IA, lecture de lien) comptent, pas Firestore ni les fichiers de l'app
+[31m[1mTypeError[22m: (0 , estAppelServeur) is not a function[39m
+[36m [2m❯[22m tests/unit/miseAJourRepos.test.ts:[2m35:12[22m[39m
+    [90m 33| [39m[34mdescribe[39m([32m'appels serveur suivis'[39m[33m,[39m () [33m=>[39m {
+    [90m 34| [39m  it('seuls les appels de fonctions (IA, lecture de lien) comptent, pa…
+    [90m 35| [39m    expect(estAppelServeur('https://europe-west6-brasserie-l-affinee.c…
+    [90m   | [39m           [31m^[39m
+    [90m 36| [39m    expect(estAppelServeur('https://aitask-abc123-oa.a.run.app/')).toB…
+    [90m 37| [39m    expect(estAppelServeur('https://firestore.googleapis.com/google.fi…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/miseAJourRepos.test.ts[2m > [22mappels serveur suivis[2m > [22mun appel de fonction en vol compte jusqu'à sa réponse, même en échec
+[31m[1mTypeError[22m: (0 , suivreAppelsServeur) is not a function[39m
+[36m [2m❯[22m tests/unit/miseAJourRepos.test.ts:[2m47:24[22m[39m
+    [90m 45| [39m      [35mif[39m (url[33m.[39m[34mincludes[39m([32m'echec'[39m)) casser [33m=[39m ko[33m;[39m [35melse[39m finir [33m=[39m ok[33m;[39m
+    [90m 46| [39m    }))[33m;[39m
+    [90m 47| [39m    const fetchSuivi = suivreAppelsServeur(reseau as unknown as typeof…
+    [90m   | [39m                       [31m^[39m
+    [90m 48| [39m    [35mconst[39m avant [33m=[39m [34mappelsEnCours[39m()[33m;[39m
+    [90m 49| [39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/miseAJourRepos.test.ts[2m > [22mappels serveur suivis[2m > [22mmarquerTravail déclare un travail à terminer ; le libérer deux fois ne compte qu'une fois
+[31m[1mTypeError[22m: (0 , appelsEnCours) is not a function[39m
+[36m [2m❯[22m tests/unit/miseAJourRepos.test.ts:[2m67:19[22m[39m
+    [90m 65| [39m
+    [90m 66| [39m  it('marquerTravail déclare un travail à terminer ; le libérer deux f…
+    [90m 67| [39m    [35mconst[39m avant [33m=[39m [34mappelsEnCours[39m()[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m 68| [39m    [35mconst[39m fin [33m=[39m [34mmarquerTravail[39m()[33m;[39m
+    [90m 69| [39m    [34mexpect[39m([34mappelsEnCours[39m())[33m.[39m[34mtoBe[39m(avant [33m+[39m [34m1[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/miseAJourRepos.test.ts[2m > [22mvérification à intervalle court[2m > [22mtoutes les minutes au plus : un onglet resté ouvert trouve la nouvelle version vite
+[31m[1mAssertionError[22m: expected 1800000 to be less than or equal to 120000[39m
+[36m [2m❯[22m tests/unit/miseAJourRepos.test.ts:[2m77:29[22m[39m
+    [90m 75| [39m[34mdescribe[39m([32m'vérification à intervalle court'[39m[33m,[39m () [33m=>[39m {
+    [90m 76| [39m  it('toutes les minutes au plus : un onglet resté ouvert trouve la no…
+    [90m 77| [39m    [34mexpect[39m([33mVERIFICATION_MS[39m)[33m.[39m[34mtoBeLessThanOrEqual[39m([34m2[39m [33m*[39m [34m60_000[39m)[33m;[39m
+    [90m   | [39m                            [31m^[39m
+    [90m 78| [39m  })[33m;[39m
+    [90m 79| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m8 failed[39m[22m[90m (8)[39m
+[2m   Start at [22m 20:54:16
+[2m   Duration [22m 1.42s[2m (transform 133ms, setup 269ms, collect 11ms, tests 10ms, environment 666ms, prepare 61ms)[22m
+

@@ -1,19 +1,16 @@
-# Dossier couloirs (CAL-LIGNES-PACKEES)
+# Dossier couloirs — CONTRAT RÉÉCRIT (23.11 21:35) : bords et lignes, PAS de pose en couloirs
 
-## Sa plainte (23.11 21:27, mot pour mot) et sa capture
-« Il y a toujours de l'espace vide et une donné que je cache brise les lignes »
-Capture : work/missions/2026-11-23-reprise-soir/plaintes/2327-vide-lignes.jpg (OUVRE-LA). Calendrier, 20 mois, 390 portrait.
-- Achats : 8 choses, chacune sur sa propre ligne en escalier (Achat brasserie, Armoire malte, Hotte, Armoire extérieur, Armoire toxique, Extincteur, Frigo + congel, Embouteillage) ; tout le côté gauche vide.
-- Papiers : 5 choses en escalier de même.
-- Travaux « ZZ TEST — barre » chevauché par la bande « Activités · vide » ; « Papiers » et son « −600 » chevauchés. Il a caché une donnée (œil d'une rangée, ou œil de l'en-tête) : les lignes se cassent.
+## Ses mots (mot pour mot)
+1. « Il y a toujours de l'espace vide et une donné que je cache brise les lignes » (plaintes/2327-vide-lignes.jpg)
+2. « Je sais pas si tu as bien compris le problème c'est que il y a des bords tout autour du calendrier » (plaintes/2332-bord-gauche.jpg, 2332-bord-droit.jpg, 2332-calendrier.jpg) — OUVRE les trois.
 
-## Règle (DEFAUTS-RECURRENTS, CAL-LIGNES-PACKEES)
-Dans une rangée, les choses partagent une ligne dès que leurs marques ET étiquettes ne se chevauchent pas (pose en couloirs) ; hauteur de la rangée = couloirs occupés ; cacher une donnée ou une rangée ne fait jamais chevaucher deux rangées.
+## Ce qu'il veut dire (lecture du pilote, captures à l'appui)
+- « bords tout autour » / « espace vide » : la zone des rangées (fond gris rayé de traits verticaux) ne touche pas les bords : marge blanche ≈ 28 px à gauche, ≈ 28 px à droite, et du vide blanc sous la dernière rangée jusqu'à la barre du bas.
+- « une donnée que je cache brise les lignes » : la rangée « Activités · vide » est une bande BLANCHE pleine largeur qui coupe les traits verticaux des graduations (ils s'arrêtent sous Travaux et reprennent à Papiers).
+- PAS demandé : changer l'escalier des choses (ne pas toucher à la pose verticale ; sa maquette choisie fait foi). Si tu as déjà codé une pose en couloirs, retire-la (rien de ce qu'il n'a pas demandé ne part en ligne).
 
-## État de l'art
-- Problème d'école : interval partitioning / interval graph coloring (pose d'étiquettes en couloirs, « lane packing » des frises type Gantt). Méthode standard : trier par début (x de la boîte : marque ∪ étiquette), first-fit glouton sur la fin du dernier élément de chaque couloir (tas min) → nombre minimal de couloirs. Aucune bibliothèque nécessaire (20 lignes, algorithme connu, optimal).
-- Mesure des étiquettes : largeur réelle (canvas measureText ou getBoundingClientRect), jamais estimée.
+## Règle (DEFAUTS-RECURRENTS, CAL-BORDS-ET-LIGNES)
+La frise va d'un bord à l'autre de l'écran et jusqu'à la barre du bas ; les traits des graduations traversent toutes les rangées, vides ou cachées comprises. Les en-têtes de rangée (+ Travaux 👁) gardent leur place (lisibles, pas collés au bord : un retrait interne suffit).
 
 ## Code
-- src/ui/calendrier/frise/Rangee.tsx (œil, rangée), src/ui/calendrier/frise/** ; état : src/ui/calendrier/cadre/etat.ts.
-- Ses choix d'écran ne changent pas (règle n° 1) : seule la pose verticale des choses change, et la hauteur des rangées.
+- src/ui/calendrier/frise/** (Rangee.tsx : rangée vide, œil), conteneur de l'onglet (CalendrierTab, son CSS), styles du fond rayé.

@@ -1,0 +1,166 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 9 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsLiensReprise.test.ts[2m > [22mT25-8 / T26-1 : Galaxus KS240L, libellés en français, volume 242 l repris[2m > [22mla page en allemand : « Volume 242 l », aucun libellé allemand, rien du colis ni du câble
+[41m[1m FAIL [22m[49m tests/unit/carnetsLiensReprise.test.ts[2m > [22mT25-8 / T26-1 : Galaxus KS240L, libellés en français, volume 242 l repris[2m > [22mla page en français : « Volume 242 l », aucun libellé allemand, rien du colis ni du câble
+[31m[1mAssertionError[22m: expected undefined to be '242 l' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"242 l"
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/carnetsLiensReprise.test.ts:[2m41:30[22m[39m
+    [90m 39| [39m      [35mconst[39m valeurs [33m=[39m page[33m.[39mvaleurs [33m??[39m [][33m;[39m
+    [90m 40| [39m      [35mconst[39m volume [33m=[39m valeurs[33m.[39m[34mfind[39m((v) [33m=>[39m v[33m.[39mnom [33m===[39m [32m'Volume'[39m)[33m;[39m
+    [90m 41| [39m      [34mexpect[39m(volume[33m?.[39mvaleur)[33m.[39m[34mtoBe[39m([32m'242 l'[39m)[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m 42| [39m      // aucun nom en allemand (la lecture donnait « Kühlschranktyp »,…
+    [90m 43| [39m      for (const v of valeurs) expect(v.nom, v.nom).not.toMatch(/[äöüß…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsLiensReprise.test.ts[2m > [22mla table des libellés[2m > [22mla consigne de l'IA demande des noms français
+[31m[1mAssertionError[22m: expected 'Tu lis le texte d\'une page produit d…' to match /écrit en français/[39m
+
+[32m- Expected:[39m 
+/écrit en français/
+
+[31m+ Received:[39m 
+"Tu lis le texte d'une page produit d'une boutique en ligne. Rends UNIQUEMENT ce qui est écrit dans ce texte, copié tel quel.
+- nom : le nom du produit, marque comprise si elle est écrite.
+- prix : le prix de vente du produit principal pour 1 pièce (pas un prix barré, pas un accessoire, pas un prix au kg, pas une mensualité) ; devise : code ISO (CHF, EUR, GBP, USD, AUD).
+- taxe : « ht » si la page dit hors taxe / exkl. MwSt / zzgl. MwSt pour ce prix, « ttc » si elle dit taxe comprise / inkl. MwSt ; sinon null.
+- prixDes : true si le prix est « dès / ab / from » (plusieurs tailles ou variantes).
+- portSuisse : frais de livraison vers la Suisse seulement s'ils sont écrits ; portGratuit : true si la livraison gratuite est écrite.
+- caracteristiques : au plus 12 caractéristiques techniques écrites (volume, dimensions, puissance, poids, matière, capacité…), nom court et valeur avec son unité, recopiés du texte.
+Un champ absent du texte est null (ou une liste vide). N'invente rien, ne convertis rien, ne calcule rien."
+
+[36m [2m❯[22m tests/unit/carnetsLiensReprise.test.ts:[2m94:30[22m[39m
+    [90m 92| [39m  })[33m;[39m
+    [90m 93| [39m  [34mit[39m([32m'la consigne de l\'IA demande des noms français'[39m[33m,[39m () [33m=>[39m {
+    [90m 94| [39m    [34mexpect[39m([33mLIEN_IA_CONSIGNE[39m)[33m.[39m[34mtoMatch[39m([36m/écrit en français/[39m)[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m 95| [39m    [34mexpect[39m([33mLIEN_IA_CONSIGNE[39m)[33m.[39m[34mtoMatch[39m([36m/Longueur du câble/[39m)[33m;[39m
+    [90m 96| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsLiensReprise.test.ts[2m > [22mla table des libellés[2m > [22mle nom que l'IA écrit en allemand est rendu en français, le doublon de la page ne revient pas
+[31m[1mAssertionError[22m: expected [ Array(3) ] to include 'Volume'[39m
+[36m [2m❯[22m tests/unit/carnetsLiensReprise.test.ts:[2m103:18[22m[39m
+    [90m101| [39m    const page = await lireLien(adresse, { fetchPage: reseau(adresse, …
+    [90m102| [39m    [35mconst[39m noms [33m=[39m (page[33m.[39mvaleurs [33m??[39m [])[33m.[39m[34mmap[39m((v) [33m=>[39m v[33m.[39mnom)[33m;[39m
+    [90m103| [39m    [34mexpect[39m(noms)[33m.[39m[34mtoContain[39m([32m'Volume'[39m)[33m;[39m
+    [90m   | [39m                 [31m^[39m
+    [90m104| [39m    [34mexpect[39m(noms)[33m.[39m[34mtoContain[39m([32m'Hauteur'[39m)[33m;[39m
+    [90m105| [39m    [34mexpect[39m(noms[33m.[39m[34msome[39m((n) [33m=>[39m [36m/Nutz|Höhe/[39m[33m.[39m[34mtest[39m(n)))[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsLiensReprise.test.ts[2m > [22moption `escalade` : l'étape IA va directement au modèle fort[2m > [22mavec escalade : un seul appel, au modèle fort, et l'étape le dit
+[31m[1mAssertionError[22m: expected [ 'lite' ] to deeply equal [ 'fort' ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "fort",[39m
+[31m+   "lite",[39m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/carnetsLiensReprise.test.ts:[2m134:20[22m[39m
+    [90m132| [39m    const ia: AppelIA = async (modele) => { appels.push(modele); retur…
+    [90m133| [39m    const page = await lireLien(adresse, { fetchPage: reseau(adresse, …
+    [90m134| [39m    [34mexpect[39m(appels)[33m.[39m[34mtoEqual[39m([[32m'fort'[39m])[33m;[39m
+    [90m   | [39m                   [31m^[39m
+    [90m135| [39m    [35mconst[39m etape [33m=[39m page[33m.[39metapes[33m?.[39m[34mfind[39m((e) [33m=>[39m e[33m.[39mnom [33m===[39m [32m'ia'[39m)[33m;[39m
+    [90m136| [39m    [34mexpect[39m(etape[33m?.[39mdetail)[33m.[39m[34mtoMatch[39m([36m/modèle fort/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsLiensReprise.test.ts[2m > [22moption `escalade` : l'étape IA va directement au modèle fort[2m > [22mavec escalade, l'IA passe même quand la page paraît complète (le brasseur a demandé une lecture plus fine)
+[31m[1mAssertionError[22m: expected [] to deeply equal [ 'fort' ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [[39m
+[32m-   "fort",[39m
+[32m- ][39m
+[31m+ [][39m
+
+[36m [2m❯[22m tests/unit/carnetsLiensReprise.test.ts:[2m145:20[22m[39m
+    [90m143| [39m    const ia: AppelIA = async (modele) => { appels.push(modele); retur…
+    [90m144| [39m    await lireLien(adresse, { fetchPage: reseau(adresse, pageAvecTexte…
+    [90m145| [39m    [34mexpect[39m(appels)[33m.[39m[34mtoEqual[39m([[32m'fort'[39m])[33m;[39m
+    [90m   | [39m                   [31m^[39m
+    [90m146| [39m    appels[33m.[39mlength [33m=[39m [34m0[39m[33m;[39m
+    [90m147| [39m    await lireLien(adresse, { fetchPage: reseau(adresse, pageAvecTexte…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsLiensReprise.test.ts[2m > [22moption `escalade` : l'étape IA va directement au modèle fort[2m > [22mune panne du modèle fort ne se rejoue pas (aucun second appel)
+[31m[1mAssertionError[22m: expected [ 'lite' ] to deeply equal [ 'fort' ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "fort",[39m
+[31m+   "lite",[39m
+[2m  ][22m
+
+[36m [2m❯[22m tests/unit/carnetsLiensReprise.test.ts:[2m155:20[22m[39m
+    [90m153| [39m    const ia: AppelIA = async (modele) => { appels.push(modele); throw…
+    [90m154| [39m    const page = await lireLien(adresse, { fetchPage: reseau(adresse, …
+    [90m155| [39m    [34mexpect[39m(appels)[33m.[39m[34mtoEqual[39m([[32m'fort'[39m])[33m;[39m
+    [90m   | [39m                   [31m^[39m
+    [90m156| [39m    expect(page.etapes?.find((e) => e.nom === 'ia')).toMatchObject({ s…
+    [90m157| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsLiensReprise.test.ts[2m > [22m`aiTask` lireLien avec `context.escalade`[2m > [22mavec escalade, la lecture est neuve (jamais la page gardée) et reçoit `escalade: true`
+[31m[1mAssertionError[22m: expected "spy" to be called 1 times, but got 0 times[39m
+[36m [2m❯[22m tests/unit/carnetsLiensReprise.test.ts:[2m182:18[22m[39m
+    [90m180| [39m    const lire = vi.fn(async (_u: string, _o: Parameters<typeof lireLi…
+    [90m181| [39m    await lireLienTache({ uid: 'u1', context: { url: URL_PAGE, jeton: …
+    [90m182| [39m    [34mexpect[39m(lire)[33m.[39m[34mtoHaveBeenCalledTimes[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                 [31m^[39m
+    [90m183| [39m    [34mexpect[39m(lire[33m.[39mmock[33m.[39mcalls[[34m0[39m][[34m1[39m])[33m.[39m[34mtoMatchObject[39m({ escalade[33m:[39m [35mtrue[39m })[33m;[39m
+    [90m184| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/carnetsLiensReprise.test.ts[2m > [22mT26-3 : une page bloquée lue par Google dit que sa photo n'est pas lue[2m > [22ml'étape `photos` est absente et dit « photo non lue »
+[31m[1mAssertionError[22m: expected 'Google ne rend pas la photo' to match /photo non lue/[39m
+
+[32m- Expected:[39m 
+/photo non lue/
+
+[31m+ Received:[39m 
+"Google ne rend pas la photo"
+
+[36m [2m❯[22m tests/unit/carnetsLiensReprise.test.ts:[2m201:28[22m[39m
+    [90m199| [39m    [35mconst[39m photos [33m=[39m page[33m?.[39metapes[33m?.[39m[34mfind[39m((e) [33m=>[39m e[33m.[39mnom [33m===[39m [32m'photos'[39m)[33m;[39m
+    [90m200| [39m    [34mexpect[39m(photos[33m?.[39mstatut)[33m.[39m[34mtoBe[39m([32m'absent'[39m)[33m;[39m
+    [90m201| [39m    [34mexpect[39m(photos[33m?.[39mdetail)[33m.[39m[34mtoMatch[39m([36m/photo non lue/[39m)[33m;[39m
+    [90m   | [39m                           [31m^[39m
+    [90m202| [39m    [34mexpect[39m(page[33m?.[39mphoto)[33m.[39m[34mtoBeUndefined[39m()[33m;[39m
+    [90m203| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m9 failed[39m[22m[2m | [22m[1m[32m10 passed[39m[22m[90m (19)[39m
+[2m   Start at [22m 19:30:00
+[2m   Duration [22m 643ms[2m (transform 173ms, setup 259ms, collect 154ms, tests 46ms, environment 0ms, prepare 59ms)[22m
+

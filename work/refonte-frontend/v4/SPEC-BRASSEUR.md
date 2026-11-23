@@ -2848,3 +2848,7 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - « 2,3,4 à mettre en place » (2 : dossier préparé par voie ; 3 : le mécanique à Haiku ; 4 : gestes groupés en un script, captures à demi-échelle)
 - « Non, ce que j'ai dis c'est que les seul vrai tests sont ceux sur la vrai app. Les unit test montre peu de vrai bug. Pareil pour les test local. Donc déployé plus souvent.Tu as pas trouvé ces informations ?? »
 - (capture 23.11 21:27, Calendrier 20 mois, zones entourées : toute la frise, et Travaux/Activités/Papiers) « Il y a toujours de l'espace vide et une donné que je cache brise les lignes » (work/missions/2026-11-23-reprise-soir/plaintes/2327-vide-lignes.jpg)
+- (23.11 21:32, trois captures : bord droit, bord gauche, écran entier) « Je sais pas si tu as bien compris le problème c'est que il y a des bords tout autour du calendrier » (plaintes/2332-*.jpg)
+- (23.11 21:34–21:37, captures plaintes/2334-apport.jpg, 2335-apport-fin.jpg, 2336-calendrier-apport.jpg, 2337-vente.jpg) « Plusieurs projets problème la vue apport, d'ailleurs elle s'affiche pas sûr le calendrier... Et elle diffère des autres vue, et il y a pas de coche pour dire que il y a pas de justificatif, c'est normal ??? »
+- (21:39, plaintes/2339-curseur-date.jpg) « Le slider met pas à jour la date en dynamique »
+- (21:40, plaintes/2340-plus.jpg) « D'ailleurs le + affiche étrangement mtn »

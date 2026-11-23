@@ -1,0 +1,54 @@
+[WebServer]   ➜  Local:   http://127.0.0.1:4392/
+
+
+Running 1 test using 1 worker
+
+[1/1] [android-390] › e2e\calendrier\etat-coherent.spec.ts:154:1 › CAL-ETAT-COHERENT : après chaque geste, durée, étiquette, aujourd'hui et rangées disent la même fenêtre
+  1) [android-390] › e2e\calendrier\etat-coherent.spec.ts:154:1 › CAL-ETAT-COHERENT : après chaque geste, durée, étiquette, aujourd'hui et rangées disent la même fenêtre 
+
+    Error: Property failed after 4 tests
+    { seed: 4444, path: "3:2:1:2:6:3:3", endOnFailure: true }
+    Counterexample: [durée An,app plage 53 mois, 2 mois /*replayPath="X:B"*/]
+    Shrunk 6 time(s)
+
+    Encountered failures were:
+    - [cadre tenu au bord -1 2514 ms,app plage -47 mois, 46 mois,poignée debut tenue au bord 3338 ms,recharger,cadre -54,durée An,poignée debut -58,app plage 57 mois, 3 mois /*replayPath="X:B"*/]
+    - [recharger,cadre -54,durée An,poignée debut -58,app plage 57 mois, 3 mois /*replayPath="X:B"*/]
+    - [durée An,poignée debut -58,app plage 57 mois, 3 mois /*replayPath="X:B"*/]
+    - [durée An,app plage 57 mois, 3 mois /*replayPath="X:B"*/]
+    - [durée An,app plage 54 mois, 3 mois /*replayPath="X:B"*/]
+    - [durée An,app plage 53 mois, 3 mois /*replayPath="X:B"*/]
+    - [durée An,app plage 53 mois, 2 mois /*replayPath="X:B"*/]
+        at buildError (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2497:16)
+        at asyncThrowIfFailed (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2509:8)
+    [cause]: Error: I1 durée « An » ≠ cadre 34.9 sem. : durée An → app plage 53 mois, 2 mois | app « 1er avr. → 1er juin 203101.04.31–01.06.31 », bouton « An », étiquette « avr. – nov. 2031 »
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+        at verifier (C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\etat-coherent.spec.ts:81:145)
+        at Object.run (C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\etat-coherent.spec.ts:100:63)
+        at runAsync (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:9691:27)
+        at internalAsyncModelRun (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:9693:9)
+        at Module.asyncModelRun (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:9721:2)
+        at C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\etat-coherent.spec.ts:167:5
+        at AsyncProperty.run (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:1241:19)
+        at asyncPropertyExecution (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2604:14)
+        at asyncRunIt (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2597:15)
+        at C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\etat-coherent.spec.ts:160:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\..\..\..\AppData\Local\Temp\affinee-e2e\res-ancien\calendrier-etat-coherent-C-79af7-gées-disent-la-même-fenêtre-android-390\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ..\..\..\..\AppData\Local\Temp\affinee-e2e\res-ancien\calendrier-etat-coherent-C-79af7-gées-disent-la-même-fenêtre-android-390\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\..\..\..\AppData\Local\Temp\affinee-e2e\res-ancien\calendrier-etat-coherent-C-79af7-gées-disent-la-même-fenêtre-android-390\error-context.md
+
+
+  1 failed
+    [android-390] › e2e\calendrier\etat-coherent.spec.ts:154:1 › CAL-ETAT-COHERENT : après chaque geste, durée, étiquette, aujourd'hui et rangées disent la même fenêtre 
+FIN 1
