@@ -207,7 +207,9 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   // ---- D387, D388 : la courbe posée sur les colonnes de la frise (bouton allumé, ou pendant un glisser, comme le jouable) ----
   // Lot C (18.11) : le bouton à bascule (Ruler, pas Link2 qui dit « Lier ») a la taille des autres boutons-icônes, dans la rangée du chiffre, partout. Allumé en paysage, la
   // rangée du chiffre passe au-dessus et la courbe prend toute la largeur de l'en-tête (n° 7, comme le jouable).
-  const alignee = !!props.aligne && !!props.onAligne && !graph && !liste && !cachee && !!base;
+  /* L-59 (T11-11) : une semaine dépliée en jours change l'échelle de la bande ; la courbe se pose alors sur les colonnes de la frise (comme « Aligner »), sans changer la hauteur de l'en-tête */
+  const aligneVoulu = !!props.aligne && !!props.onAligne;
+  const alignee = (aligneVoulu || (!!props.deplie && !paysage)) && !graph && !liste && !cachee && !!base;
   const paysageAligne = paysage && alignee;
   const boutonAligne = !!props.onAligne && !!base && !graph && !liste && !cachee;
   const repliTotal = largeurColonne > 0 ? largeurColonne * Math.max(1, nombre) : 390;
@@ -220,7 +222,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   // La platitude se lit sur la courbe du modèle, jamais sur l'aperçu d'un geste : la hauteur ne saute pas pendant un glisser.
   const plate = !!base && courbePlate(base.semaines);
   const hauteur = paysageAligne ? HAUTEUR_COURBE.paysageAlignee : paysage ? HAUTEUR_COURBE.paysage
-    : alignee ? HAUTEUR_COURBE.portraitAlignee : plate ? HAUTEUR_COURBE.portraitPlate : HAUTEUR_COURBE.portrait;
+    : alignee && aligneVoulu ? HAUTEUR_COURBE.portraitAlignee : plate ? HAUTEUR_COURBE.portraitPlate : HAUTEUR_COURBE.portrait;
   const zoomee = !!apercuC && !graph && !cachee && !!base;
   /*
    * Paquet E n° 2 (E10, « en-tête de 120 px au plus » en paysage) : alignée en paysage, la rangée du chiffre (28 px) se posait au-dessus de la
@@ -648,6 +650,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const refCle = useRef<HTMLButtonElement>(null);
   const [empile, setEmpile] = useState(false);
   const [serre, setSerre] = useState(false);
+  const [tresSerre, setTresSerre] = useState(false);
   useLayoutEffect(() => {
     const el = refCle.current;
     if (!el) return undefined;
@@ -662,6 +665,10 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
          le montant passe de 21 à 17 px (`data-serre` ; la légende garde 14 px, plancher de B9), pour garder 4 px au moins. Mesuré à la taille normale (sans
          osciller) : le montant serré se rapporte à sa taille de 21 px. */
       setSerre(ligne > el.clientWidth && bN + Math.max(u.offsetWidth, em.offsetWidth) + 4 + 4 > el.clientWidth);
+      /* L-58 (T11-4) : « CHF à dépens » coupé par le ± quand même le montant serré ne laisse pas 135 px : la légende passe de 14 à 13 px (son plancher), jamais rognée. Mesuré à la taille de 14 px. */
+      const k = el.hasAttribute('data-tres-serre') ? 14 / 13 : 1;
+      const bS = el.hasAttribute('data-serre') ? b.offsetWidth : bN * 17 / 21;
+      setTresSerre(ligne > el.clientWidth && bS + Math.max(u.offsetWidth, em.offsetWidth) * k + 4 + 4 > el.clientWidth);
     };
     /* CAL-LENT (21.11) : lu dans le commit, `offsetWidth` forçait la mise en page de tout le Calendrier juste après le rendu d'un lâcher. Lu
        dans l'image suivante, la mise en page est celle de l'image, faite une fois (A/B apparié 7 tours, session 8 : frise 416 → 312 ms, barre
@@ -675,7 +682,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     // présente ou absente (le bouton n'existe qu'avec elle) ; ses valeurs passent par le creux.
   }, [semaineCreux, creux?.centimes, orientation, vue, !!courbe, lecture === null]);
   const cle = courbe && creux ? (
-    <button ref={refCle} type="button" className="ent-k" data-ent-cle data-empile={empile ? '' : undefined} data-serre={empile && serre ? '' : undefined} aria-expanded={creuxOuvert}
+    <button ref={refCle} type="button" className="ent-k" data-ent-cle data-empile={empile ? '' : undefined} data-serre={empile && serre ? '' : undefined} data-tres-serre={empile && serre && tresSerre ? '' : undefined} aria-expanded={creuxOuvert}
       aria-label={`${chf(creux.centimes)} CHF à dépenser sans passer sous 0 (${semaineCreux}, sur tout l’horizon de la courbe) : voir ses causes`} onClick={() => setCreuxOuvert(o => !o)}>
       <b className={creux.centimes < 0 ? 'ent-neg' : undefined}>{chf(creux.centimes)}</b><span className="ent-k-u">CHF à dépenser</span><em><span className="ent-k-sep">· </span>{semaineCreux}</em>
     </button>
@@ -771,7 +778,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
             )}
           </Courbe>
         ) : courbe && base ? (
-          <Courbe courbe={vueR4 ? vueR4.sem : courbe} abscisses={echelleR4?.abscisses} alignee={false} creuxIndex={vueR4 ? vueR4.creuxIndex : undefined} largeur={largeur} hauteur={hauteur}
+          <Courbe debutDonnees={!!vueR4 && vueR4.d === 0 && index === 0 && (modele.passe ?? 0) > 0} courbe={vueR4 ? vueR4.sem : courbe} abscisses={echelleR4?.abscisses} alignee={false} creuxIndex={vueR4 ? vueR4.creuxIndex : undefined} largeur={largeur} hauteur={hauteur}
             curseur={enGesteLu ? (lecture !== null && vueR4 ? lecture - vueR4.d : lecture) : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={vueR4 ? vueR4.mise : miseCourbe}
             mois={false} moisEnHaut plate={plate && !paysage} etoiles={vueR4 ? vueR4.etoiles : etoilesCourbe} masque={apercuC ? null : tirage}
             cadre={apercuC ? undefined : { index: index - (vueR4?.d ?? 0), nombre, etiquette: etiquetteRepos(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis, props.aujourdhui) }}>

@@ -193,10 +193,12 @@
   /* le pire cas du banc : « −6 417 », deux retards et « 2 sem. · j » (vue Jour) tiennent sur la ligne, sans chevauchement */
   .ent--portrait .ent-t { gap: 2px; padding: 0 0 0 4px; }
   .ent--portrait .ent-t-b { gap: 2px; }
-  .ent--portrait .ent-per { gap: 3px; padding: 0 5px 0 5px; }
+  /* L-58 (T11-4, T11-5, « il faudrait des tailles fix ») : la pastille de période a une largeur fixe (centrée) : un libellé plus long (« Juin · 5 sem. ») ne pousse plus ni le chiffre clé ni le ± ; sans la flèche (le fond clair dit le bouton), la place va au chiffre clé */
+  .ent--portrait .ent-per { gap: 3px; padding: 0 5px 0 5px; width: 92px; min-width: 92px; justify-content: center; overflow: hidden; }
+  .ent--portrait .ent-per > svg { display: none; }
   .ent--portrait .ent-ret-b { gap: 0; padding: 0 1px; }
   .ent--portrait .ent-ret-b svg { width: 14px; height: 14px; }
-  .ent--portrait .ent-mb { min-width: 22px; padding: 0 3px; }
+  .ent--portrait .ent-mb { min-width: 24px; padding: 0 3px; } /* L-62 (T11-19) : ± à 24 px, le plancher touch-sm de DESIGN.md (il faisait 22) */
   .ent--portrait .ent-al, .ent--portrait .ent-cc, .ent--portrait .ent-pl { width: 24px; }
 }
 /* La courbe zoomée du glisser en paysage (lot C n° 7, jouable `.as-zoom`) : par-dessus tout l'en-tête, le temps du geste. */
@@ -409,3 +411,10 @@
 .ent .ent-t .ent-per::after { left: 0; right: 0; }
 /* Paquet D n° 5 : le repli du chiffre empilé qui ne tient pas (montant long, vue Jour à 390)  : le montant à 17 px (la légende garde 14 px), rien ne se rogne. */
 .ent-k[data-serre] b { font-size: 17px; letter-spacing: -0.4px; }
+.ent-k[data-tres-serre] .ent-k-u, .ent-k[data-tres-serre] em { font-size: 13px; }
+.ent-k[data-tres-serre][data-empile] { column-gap: 2px; }
+
+/* L-60 (T11-14) : la butée du passé, le début des données */
+.ent-debut-halo { stroke: rgb(var(--cave-950)); stroke-width: 5px; }
+.ent-debut { stroke: rgb(var(--cave-50)); stroke-width: 2px; stroke-dasharray: 4 3; }
+.ent-debut-l { font-size: 13px; font-weight: 700; fill: rgb(var(--cave-50)); paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 4px; stroke-linejoin: round; }
