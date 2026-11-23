@@ -44,9 +44,10 @@ export interface BandeSemainesProps {
 }
 
 export type GrainBande = 'jour' | 'semaine' | 'mois' | 'an';
-/** Le grain des graduations selon la largeur du cadre, en semaines (CAL-GRAIN-SUIT-DUREE). */
+/** Le grain des graduations selon la largeur du cadre, en semaines (CAL-GRAIN-SUIT-DUREE). Les années au-delà de 3 ans (CAL-BANDE-JAMAIS-VIDE :
+ *  de 2 à 3 ans, la bande ne posait que deux années ; les mois, un sur 2, 3 ou 6, en posent toujours au moins trois). */
 export function grainDeFenetre(semaines: number): GrainBande {
-  return semaines <= 3 ? 'jour' : semaines > 2 * 52 ? 'an' : semaines >= 52 ? 'mois' : 'semaine';
+  return semaines <= 3 ? 'jour' : semaines > 3 * 52 ? 'an' : semaines >= 52 ? 'mois' : 'semaine';
 }
 
 /** Grain jour : un chiffre tous les `pas` jours (1, 2 ou 7 : le lundi), le plus petit qui tient avec 4 px d'écart. */
@@ -56,15 +57,15 @@ export function pasJours(largeurJour: number, largeurChiffre: number): 1 | 2 | 7
 }
 const JOUR_MS = 86400000;
 /** Les jours d'une semaine posés sur l'axe : centre en px de la cellule (la cellule peut être rognée au bord de la courbe). */
-function joursDeCellule(lundi: string, largeurSemaine: number, largeurCellule: number, rogneeAGauche: boolean, pas: 1 | 2 | 7, aujourdhui?: string, premiere = false, derniere = false) {
+function joursDeCellule(lundi: string, largeurSemaine: number, largeurCellule: number, rogneeAGauche: boolean, pas: 1 | 2 | 7, aujourdhui?: string, premiere = false, derniere = false, marge = 8) {
   const t0 = Date.parse(`${lundi}T00:00:00Z`), dj = largeurSemaine / 7, decal = rogneeAGauche ? largeurSemaine - largeurCellule : 0;
   const sortie: Array<{ iso: string; x: number; n: number; auj: boolean }> = [];
   for (let d = 0; d < 7; d++) {
     const t = t0 + d * JOUR_MS, iso = new Date(t).toISOString().slice(0, 10);
     if (Math.round(t / JOUR_MS) % pas !== (pas === 7 ? Math.round(t0 / JOUR_MS) % 7 : 0)) continue;
     const x = (d + 0.5) * dj - decal;
-    // un chiffre se pose sur son jour, même s'il déborde un peu de sa semaine ; seul celui qui sortirait de la courbe (premiere, derniere) se tait
-    if (x < 0 || x > largeurCellule || (premiere && x < 8) || (derniere && x > largeurCellule - 8)) continue;
+    // un chiffre se pose sur son jour, même s'il déborde un peu de sa semaine ; seul celui qui sortirait de la courbe (premiere, derniere : moins de sa demi-largeur au bord, CAL-BANDE-JAMAIS-VIDE) se tait
+    if (x < 0 || x > largeurCellule || (premiere && x < marge) || (derniere && x > largeurCellule - marge)) continue;
     sortie.push({ iso, x, n: Number(iso.slice(8, 10)), auj: iso === aujourdhui });
   }
   return sortie;
@@ -165,7 +166,7 @@ export function graduationsBande(semaines: readonly SemaineBande[], abscisses: r
   const xs: number[] = [];
   if (grain === 'jour') {
     const pasJ = pasJours(largeurColonne / 7, Math.ceil(wEtiquette * 0.75));
-    semaines.forEach((s, k) => joursDeCellule(s.debut, largeurColonne, a[k + 1] - a[k], k === 0 && a[1] - a[0] < largeurColonne - 0.5, pasJ, undefined, k === 0, k === semaines.length - 1)
+    semaines.forEach((s, k) => joursDeCellule(s.debut, largeurColonne, a[k + 1] - a[k], k === 0 && a[1] - a[0] < largeurColonne - 0.5, pasJ, undefined, k === 0, k === semaines.length - 1, Math.ceil(wEtiquette * 0.75) / 2)
       .forEach(j => { if (!sousAuj(masqueAuj, a[k] + j.x, larg)) xs.push(a[k] + j.x); }));
     return xs;
   }
@@ -210,20 +211,53 @@ export function periodesBande(semaines: readonly SemaineBande[], abscisses: read
   const X = (iso: string) => ref + ((Date.parse(`${iso}T00:00:00Z`) - t0) / JOUR_MS) * (largeurColonne / 7);
   const suivant = (iso: string) => (pas === 'mois' ? (Number(iso.slice(5, 7)) === 12 ? `${Number(iso.slice(0, 4)) + 1}-01-01` : `${iso.slice(0, 5)}${String(Number(iso.slice(5, 7)) + 1).padStart(2, '0')}-01`) : `${Number(iso.slice(0, 4)) + 1}-01-01`);
   const fin = new Date(t0 + 7 * n * JOUR_MS).toISOString().slice(0, 10);
+  /* CAL-BANDE-JAMAIS-VIDE (23.11, « Répare déjà ça » : à 20 mois, aucun mois ne tenait son initiale entre ses deux traits, la bande était vide) :
+     quand un mois de 30 jours ne tient plus son initiale, un mois sur 2, 3 ou 6 se nomme (janvier, puis un rythme régulier) ; de même une année
+     sur 2, 5 ou 10 quand « 2026 » ne tient plus dans un an, au milieu de sa part
+     visible ; son nom peut déborder ses traits, jamais le bord de la courbe ni le nom voisin. Tous les traits des mois restent (graduations). */
+  const besoin = (pas === 'mois' ? Math.ceil(wEtiquette / 2) : Math.ceil(wEtiquette * 1.4)) + ECART_ETIQUETTES, lJour = largeurColonne / 7;
+  const saut = pas === 'mois'
+    ? (30 * lJour >= besoin ? 1 : [2, 3, 6].find(s => s * 28 * lJour >= besoin) ?? 12)
+    : (365 * lJour >= besoin ? 1 : [2, 5, 10].find(s => s * 365 * lJour >= besoin) ?? 20);
+  const rang = (iso: string) => (pas === 'mois' ? Number(iso.slice(5, 7)) - 1 : Number(iso.slice(0, 4)));
   const limites: number[] = [], noms: NomPeriode[] = [];
+  let l0 = Infinity; // le début (1er du mois) du premier mois nommé : avant g, il est entamé
   for (let d = pas === 'mois' ? `${semaines[0].debut.slice(0, 7)}-01` : `${semaines[0].debut.slice(0, 4)}-01-01`; d < fin; d = suivant(d)) {
     const x0 = X(d), x1 = X(suivant(d));
     if (x0 > g + 0.5 && x0 < larg - 0.5) limites.push(x0);
     const texte = pas === 'mois' ? INITIALES[Number(d.slice(5, 7)) - 1] : d.slice(0, 4);
     const wt = texte.length === 1 ? Math.ceil(wEtiquette / 2) : Math.ceil(wEtiquette * 1.4);
     const l = Math.max(g, x0), r = Math.min(larg, x1);
-    if (r - l < wt + ECART_ETIQUETTES) continue;
+    if (saut > 1) {
+      if (rang(d) % saut !== 0 || r - l < wt / 2 || (l + r) / 2 - wt / 2 < g || (l + r) / 2 + wt / 2 > larg) continue;
+    } else if (r - l < wt + ECART_ETIQUETTES) continue;
     const x = (l + r) / 2;
     let k = 0;
     while (k < n - 1 && x >= a[k + 1]) k++;
+    // un mois sur deux ou plus : la période entamée au bord gauche cède la place à la période entière qui le suit s'ils se touchent
+    if (saut > 1 && noms.length && x - noms[noms.length - 1].x < wt + ECART_ETIQUETTES) { if (noms.length === 1 && l0 < g) noms.pop(); else continue; }
     noms.push({ k, texte, x, decal: x - (a[k] + a[k + 1]) / 2, periode: pas === 'mois' ? d.slice(0, 7) : d.slice(0, 4) });
+    if (noms.length === 1) l0 = x0;
   }
   return { limites, noms };
+}
+
+/**
+ * CAL-BANDE-JAMAIS-VIDE (23.11, 20 mois : bande vide) : les noms que la bande posée sur la courbe montre, avec leur centre et leur largeur
+ * (px de la courbe), par le même calcul que le rendu (jours, semaines, groupes, mois, années). Sert aux contrôles : jamais vide, jamais rogné.
+ */
+export function etiquettesPosees(semaines: readonly SemaineBande[], abscisses: readonly number[], grain: GrainBande, largeurColonne: number, wEtiquette = largeurEtiquetteMax()): Array<{ texte: string; x: number; w: number }> {
+  const a = abscisses, n = semaines.length;
+  if (!n || a.length !== n + 1 || !(largeurColonne > 0)) return [];
+  const larg = (t: string) => (t.length === 1 ? Math.ceil(wEtiquette / 2) : t.length === 4 ? Math.ceil(wEtiquette * 1.4) : wEtiquette);
+  if (grain === 'jour') {
+    const pasJ = pasJours(largeurColonne / 7, Math.ceil(wEtiquette * 0.75));
+    return semaines.flatMap((s, k) => joursDeCellule(s.debut, largeurColonne, a[k + 1] - a[k], k === 0 && a[1] - a[0] < largeurColonne - 0.5, pasJ, undefined, k === 0, k === n - 1, Math.ceil(wEtiquette * 0.75) / 2)
+      .map(j => ({ texte: String(j.n), x: a[k] + j.x, w: Math.ceil(wEtiquette * 0.75) })));
+  }
+  const pas: PasEtiquettes = grain === 'mois' || grain === 'an' ? grain : pasEtiquettes(largeurColonne, wEtiquette);
+  if (pas !== 1) return periodesBande(semaines, a, pas, largeurColonne, wEtiquette).noms.map(p => ({ texte: p.texte, x: p.x, w: larg(p.texte) }));
+  return semaines.flatMap((s, k) => (a[k + 1] - a[k] < 0.6 * largeurColonne ? [] : [{ texte: `S${s.numero}`, x: (a[k] + a[k + 1]) / 2, w: wEtiquette }]));
 }
 
 export function BandeSemaines({ masqueAuj, semaines, courbe, decalage, mouvements, idees, retards, onDate, onIdeeSemaine, largeurColonne = 0, onDeplier, lundiCourant, abscisses, dansCadre, grain, aujourdhui }: BandeSemainesProps) {
@@ -289,7 +323,7 @@ export function BandeSemaines({ masqueAuj, semaines, courbe, decalage, mouvement
             {/* Pas de 2, 4 ou mois : seules les étiquettes posées se lisent ; chaque colonne reste touchable et garde son nom (« S50, 7 – 13 déc. »). */}
             {enJours ? (
               <span className="ent-bd-js" aria-hidden="true">
-                {joursDeCellule(s.debut, largeurColonne, abscisses![k + 1] - abscisses![k], k === 0 && abscisses![1] - abscisses![0] < largeurColonne - 0.5, pasJ, aujourdhui, k === 0, k === semaines.length - 1)
+                {joursDeCellule(s.debut, largeurColonne, abscisses![k + 1] - abscisses![k], k === 0 && abscisses![1] - abscisses![0] < largeurColonne - 0.5, pasJ, aujourdhui, k === 0, k === semaines.length - 1, Math.ceil(wEtiquette * 0.75) / 2)
                   .filter(j => !tue(abscisses![k] + j.x)).map(j => <span key={j.iso} className="ent-bd-j" data-jour={j.iso} data-auj={j.auj ? 'oui' : undefined} style={{ left: j.x }}>{j.n}</span>)}
               </span>
             ) : periodes ? (() => { const p = periodes.get(k); return p && !tue(p.x) ? <span className="ent-sem ent-sem--pas" aria-hidden="true" data-periode={p.periode} style={{ position: 'relative', left: Math.round(p.decal * 10) / 10 }} data-auj-mois={pas === 'mois' && moisAuj === p.periode ? 'oui' : undefined}>{p.texte}</span> : null; })()
