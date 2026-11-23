@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { ArrowRight, Calendar, Check, ChevronRight, Plus, X } from 'lucide-react';
 import type { Transaction } from '../../../types';
 import type { EquipmentUpgrade, FinancialPlan } from '../../../domain/finance/types';
@@ -9,6 +9,7 @@ import { Textarea, noAutofillProps } from '../../Input';
 import { Field, MoneyInput } from '../prevision/base';
 import { STATIONS, estEtapeSaisie, etatPiste, moisDe, montant, quand, resumeUsure, texteAns, type StationId } from './piste';
 import './projet.css';
+import './projet-titre.css';
 import { ChoixMois } from '../../ChoixDate';
 
 type Progression = ReturnType<typeof upgradeProgress>;
@@ -34,6 +35,19 @@ export function ProjetPiste(props: ProjetPisteProps) {
   const budget = detail.budgetKnown ? montant(draft.amountCents) : null;
   const ferme = !['draft', 'active'].includes(draft.status);
   const bascule = (id: StationId) => setOuvert(ouvert === id ? null : id);
+  /* L-39 : un brouillon non enregistré (le prix 777 tapé) ne se perd plus sans un mot : recharger ou fermer l'onglet le demande d'abord. */
+  const depart = useRef(JSON.stringify(draft)), modifie = JSON.stringify(draft) !== depart.current;
+  useEffect(() => {
+    if (!modifie) return;
+    const retenir = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ''; };
+    window.addEventListener('beforeunload', retenir);
+    return () => window.removeEventListener('beforeunload', retenir);
+  }, [modifie]);
+  /* L-41 : « Prévu le 11 janv. 2027 » pour un jour, « Prévu en mars 2027 » pour un mois */
+  const prevu = detail.datePrecision === 'day' ? 'Prévu le' : 'Prévu en';
+  /* L-41 : le titre long passe à la ligne au lieu d'être coupé sous le budget (une seule ligne de texte : Entrée ne la coupe pas) */
+  const titre = useRef<HTMLTextAreaElement>(null);
+  useLayoutEffect(() => { const t = titre.current; if (t) { t.style.height = 'auto'; t.style.height = `${t.scrollHeight}px`; } }, [draft.title]);
   /* t3 (problème 3), m3pm-d : toucher le titre d'une étape saisie en fait l'étape en cours (les précédentes se cochent), comme son cercle ; Acheté et En service se déduisent et ne font que s'ouvrir. */
   const toucher = (id: StationId) => { if (estEtapeSaisie(id) && detail.stage !== id) { patch({ stage: id as EquipmentUpgrade['stage'] }); setOuvert(id); } else bascule(id); };
   const quandTexte = quand(draft), usure = resumeUsure(draft);
@@ -52,7 +66,7 @@ export function ProjetPiste(props: ProjetPisteProps) {
       case 'quote': return { em: devisNote ? `· ${draft.vendor?.trim() ? draft.vendor.trim() : 'devis noté'}` : '· aucun noté',
         action: <button type="button" className="pjd-a" aria-expanded={ouvert === 'quote'} onClick={() => bascule('quote')}>{devisNote ? 'Modifier le devis' : <><Plus aria-hidden="true" />Noter un devis</>}</button> };
       case 'ready': return { em: piste.actuelle === 'ready' ? '· tu en es là' : undefined,
-        resume: <p>{quandTexte ? `Prévu en ${quandTexte}` : 'mois du paiement à choisir'}{' · '}{draft.status === 'active' ? 'dans mes prévisions' : 'pas dans mes prévisions'}</p> };
+        resume: <p>{quandTexte ? `${prevu} ${quandTexte}` : 'mois du paiement à choisir'}{' · '}{draft.status === 'active' ? 'dans mes prévisions' : 'pas dans mes prévisions'}</p> };
       case 'bought': return { em: n ? `· ${n} achat${n > 1 ? 's' : ''} lié${n > 1 ? 's' : ''} : ${progress.invoicedComplete ? montant(progress.invoicedCents) : 'à répartir'}` : '· achats liés : aucun',
         action: props.onNoterAchat ? <button type="button" className="pjd-a" onClick={props.onNoterAchat}>Noter l’achat<ArrowRight aria-hidden="true" /></button> : undefined };
       case 'service': return { em: '· son usure', resume: <p>{usure.ans == null ? 'durée ?' : texteAns(usure.ans)}{' · '}{usure.parAnCents == null ? 'usure ?' : <><span className="pjd-m">{montant(usure.parAnCents)}</span> par an</>}{' · mise en service '}{usure.mise ? moisDe(usure.mise) : '?'}</p> };
@@ -81,12 +95,12 @@ export function ProjetPiste(props: ProjetPisteProps) {
       case 'ready': return ferme
         ? <p className="pjd-muet" role="status">{draft.status === 'completed' ? 'Projet réalisé. Les achats liés restent dans les analyses.' : 'Projet archivé. Tu peux le reprendre quand il redevient utile.'}</p>
         : <>
-          <div className="pjd-l"><span>Prévu en</span>
+          <div className="pjd-l"><span>{prevu}</span>
             <label className="pjd-mois"><Calendar aria-hidden="true" /><span>{quandTexte ?? 'Mois'}</span>
               <ChoixMois label="Paiement prévu en" valeur={draft.date.slice(0, 7)} onChange={setMonth} />
             </label></div>
           <label className="pjd-l pjd-incl"><span><b>Inclure dans mes prévisions</b>
-            <small>{draft.status === 'active' ? (missing.length ? missing.join(' ') : quandTexte ? `compté dans les sorties de ${quandTexte}` : 'compté dans les sorties prévues') : 'le projet reste dans tes idées de matériel'}</small></span>
+            <small>{draft.status === 'active' ? (missing.length ? missing.join(' ') : quandTexte ? `compté dans les sorties ${detail.datePrecision === 'day' ? 'du' : 'de'} ${quandTexte}` : 'compté dans les sorties prévues') : 'le projet reste dans tes idées de matériel'}</small></span>
             <Interrupteur label="Inclure dans mes prévisions" checked={draft.status === 'active'} onChange={v => setDraft(d => ({ ...d, status: v ? 'active' : 'draft' }))} /></label></>;
       case 'bought': return <>
         {n > 0 && <>
@@ -114,7 +128,8 @@ export function ProjetPiste(props: ProjetPisteProps) {
   return <div className="pjd">
     <div className="pjd-h">
       {plan && <button type="button" className="pjd-x" aria-label="Fermer" onClick={props.onClose}><X aria-hidden="true" /></button>}
-      <input className="pjd-titre" aria-label="Matériel ou aménagement" value={draft.title} onChange={e => setDraft(d => ({ ...d, title: e.target.value }))} placeholder="Hotte, fermenteur, nouvelle cuverie…" {...noAutofillProps} />
+      <textarea ref={titre} rows={1} className="pjd-titre" aria-label="Matériel ou aménagement" value={draft.title} onChange={e => { const t = e.target.value.replace(/[\r\n]+/g, ' '); setDraft(d => ({ ...d, title: t })); }}
+        onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }} enterKeyHint="done" placeholder="Hotte, fermenteur, nouvelle cuverie…" {...noAutofillProps} />
       <b className="pjd-m pjd-b" title={budget ? undefined : 'Budget à estimer'}>{budget ?? '—'}</b>
       {!plan && <button type="button" className="pjd-x" aria-label="Fermer" onClick={props.onClose}><X aria-hidden="true" /></button>}
     </div>

@@ -1,0 +1,6 @@
+/* Lot 6 du Carnet, L-41 (CA12-M1-28) : le titre du projet, long (« Achat brasserie : moulin à malt… »), passait sous le budget « 500,00 » et se
+   coupait. Il devient une zone d'une seule ligne de texte qui passe à la ligne : le budget reste à sa droite, en haut. */
+.pjd-h { align-items: flex-start; }
+.pjd-h .pjd-titre { resize: none; overflow: hidden; display: block; padding-top: 11px; padding-bottom: 11px; field-sizing: content; overflow-wrap: anywhere; }
+.pjd-h .pjd-b { padding-top: 9px; }
+.pjd-h .pjd-x { align-self: flex-start; }
