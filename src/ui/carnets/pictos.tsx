@@ -4,19 +4,25 @@
  * évier, tireuse, frigo, pompe, moulin, remplisseuse, fût, cuve, densimètre, thermomètre, balance, tuyau, chauffe-eau, filtre,
  * échangeur, bouteille de gaz, étagère, diable. Les figés montrent des objets en couleur (métal gris, moteur bleu, bouteilles brunes),
  * pas des traits fins : chaque dessin est fait de surfaces pleines, lisible à 40 px, teinté par des variables CSS qui changent avec le
- * thème (`carnets.css`, `.cn-picto`). Un objet sans dessin ne reçoit jamais le cube générique refusé (critique 4, P1) : sa vignette
- * porte l'initiale de son nom (`data-picto="objet"`), rien qui prétende le montrer.
+ * thème (`carnets.css`, `.cn-picto`). Un objet sans dessin ne reçoit jamais le cube générique refusé (critique 4, P1) ni une lettre
+ * seule (L-28 : « M », « C », « J ») : sa vignette porte une étiquette d'article (`data-picto="objet"`), rien qui prétende le montrer.
+ * L-28 : jalon (drapeau), dossier (conformité), extincteur, électricité et sachet (levure, houblon) ont leur dessin ; une levure rangée
+ * dans un carnet « Pompe » prend le sachet, jamais le picto du carnet.
  * R30 reste vrai : le picto est un dessin, rien d'autre. Aucun champ, aucun gabarit, aucune caractéristique ne dépend de lui.
  */
 import React from 'react';
 import { normaliser } from '../../domain/carnets/analyseLocale';
+import './pictos-plus.css';
 
 export type PictoNom =
   | 'hotte' | 'ventilateur' | 'centrifuge' | 'evier' | 'tireuse' | 'frigo' | 'pompe' | 'moulin' | 'embouteillage' | 'fut' | 'cuve'
-  | 'densimetre' | 'mesure' | 'balance' | 'tuyau' | 'chauffe' | 'filtre' | 'echangeur' | 'gaz' | 'etagere' | 'chariot' | 'pot' | 'objet';
+  | 'densimetre' | 'mesure' | 'balance' | 'tuyau' | 'chauffe' | 'filtre' | 'echangeur' | 'gaz' | 'etagere' | 'chariot' | 'pot'
+  | 'jalon' | 'dossier' | 'extincteur' | 'electricite' | 'sachet' | 'objet';
 
 /** Mots (normalisés : minuscules, sans accents) → picto ; le premier qui répond l'emporte, dans cet ordre. */
 const REGLES: readonly [PictoNom, RegExp][] = [
+  /* L-28 : un jalon n'est pas un objet ; « Jalon — Conformité complète » reste un jalon */
+  ['jalon', /\bjalons?\b/],
   ['hotte', /\bhottes?\b/],
   ['centrifuge', /\b(centrifuges?|gaines?)\b/],
   ['ventilateur', /\b(extracteurs?|ventilateurs?|helicoides?|aerateurs?)\b/],
@@ -28,6 +34,8 @@ const REGLES: readonly [PictoNom, RegExp][] = [
   ['frigo', /\b(frigos?|froid|froide|refrigera\w*|vitrines?|congela\w*|groupes? froid|chambres? froides?)\b/],
   ['pompe', /\bpompes?\b/],
   ['moulin', /\b(moulins?|concasseurs?|broyeurs?)\b/],
+  /* L-28 (M2-14) : une levure ou un houblon (« Brewferm brewing yeast Lager 6 g ») : un sachet, avant que le titre du carnet ne parle */
+  ['sachet', /\b(levures?|yeast|houblons?|hops?|sachets?|pellets?)\b/],
   ['fut', /\b(futs?|kegs?|tonneaux?)\b/],
   ['cuve', /\b(cuves?|fermenteurs?|unitanks?|cylindro\w*|brassins?|marmites?)\b/],
   ['densimetre', /\b(densim\w*|areom\w*|refracto\w*|saccharom\w*|hydrom\w*)\b/],
@@ -41,7 +49,10 @@ const REGLES: readonly [PictoNom, RegExp][] = [
   ['chariot', /\b(diables?|chariots?|transpalettes?|roulettes?)\b/],
   ['hotte', /\b(ventilation|buees?|vmc|aspiration|vapeurs?)\b/],
   /* tour 3, f11 (v7-2) : travaux et produits (résine du sol, peinture, nettoyage) : un pot dessiné, plus une initiale */
-  ['pot', /\b(resines?|epoxy|peintures?|vernis|enduits?|colles?|mastics?|revetements?|sols?|detergents?|desinfectants?|nettoyants?|soude|acides?)\b/]
+  ['pot', /\b(resines?|epoxy|peintures?|vernis|enduits?|colles?|mastics?|revetements?|sols?|detergents?|desinfectants?|nettoyants?|soude|acides?)\b/],
+  ['extincteur', /\b(extincteurs?|incendie|couvertures? anti-?feu)\b/],
+  ['electricite', /\b(electri\w*|prises?|disjoncteurs?|cables?|\d{2,3} ?a)\b/],
+  ['dossier', /\b(conformite|dossiers?|assurances?|autorisations?|saav|patentes?|permis|declarations?|administrati\w*|douanes?)\b/]
 ];
 
 /** Le picto d'un objet d'après ses mots, dans l'ordre donné (le nom avant la façon, la façon avant le carnet) ; `objet` sinon. */
@@ -55,8 +66,9 @@ export function pictoDe(...textes: (string | undefined | null)[]): PictoNom {
 }
 
 /* Les teintes : m métal clair, m2 métal ombré, k sombre (moteur, cadran, poignée), a vert de la zone, b bleu (moteur, froid, eau),
-   v verre brun, o ambre (bière, eau chaude), f fond clair (cadran, hélice). Le trait `t` cerne chaque surface, finement. */
-const DESSINS: Record<Exclude<PictoNom, 'objet'>, React.ReactNode> = {
+   v verre brun, o ambre (bière, eau chaude), f fond clair (cadran, hélice), r rouge (extincteur : pictos-plus.css). Le trait `t`
+   cerne chaque surface, finement. */
+const DESSINS: Record<PictoNom, React.ReactNode> = {
   hotte: <>
     <rect className="m2" x="19" y="3" width="10" height="13" rx="1" />
     <path className="m" d="M7 30 L17 15 H31 L41 30 Z" />
@@ -225,6 +237,47 @@ const DESSINS: Record<Exclude<PictoNom, 'objet'>, React.ReactNode> = {
     <path className="o" d="M11.2 25 H36.8 L35.9 34 H12.1 Z" />
     <path className="o" d="M15 17 H21 V25 H15 Z" />
     <rect className="m2" x="8" y="13" width="32" height="5" rx="1.5" />
+  </>,
+  /* L-28 : un jalon, un drapeau planté (vert de la zone) */
+  jalon: <>
+    <rect className="k" x="11" y="4" width="3" height="40" rx="1" />
+    <path className="a" d="M14 6 H38 L32 15 L38 24 H14 Z" />
+    <rect className="m2" x="6" y="42" width="14" height="4" rx="1.5" />
+  </>,
+  /* un dossier : chemise ambre, feuille claire, coche verte */
+  dossier: <>
+    <path className="o" d="M5 12 H19 L23 16 H43 V42 H5 Z" />
+    <rect className="f" x="11" y="7" width="26" height="26" rx="1" />
+    <path className="ac" d="M17 20 L22 25 L31 14" />
+    <path className="o" d="M5 26 H43 V42 H5 Z" />
+  </>,
+  /* un extincteur : corps rouge, tête sombre, tuyau */
+  extincteur: <>
+    <rect className="k" x="19" y="3" width="10" height="6" rx="1" />
+    <path className="tl" d="M29 6 C38 6 40 12 38 20" />
+    <rect className="r" x="15" y="9" width="18" height="36" rx="6" />
+    <rect className="f" x="18" y="20" width="12" height="9" rx="1" />
+  </>,
+  /* l'électricité : une prise et son éclair */
+  electricite: <>
+    <rect className="m" x="6" y="8" width="34" height="34" rx="7" />
+    <circle className="f" cx="23" cy="25" r="11" />
+    <circle className="k" cx="18.5" cy="25" r="2.2" />
+    <circle className="k" cx="27.5" cy="25" r="2.2" />
+    <path className="o" d="M37 1 L30 13 H35 L32 22 L42 8 H37 L40 1 Z" />
+  </>,
+  /* un sachet (levure, houblon) : sachet métal, bord pincé, étiquette ambre */
+  sachet: <>
+    <rect className="m2" x="11" y="4" width="26" height="5" rx="1" />
+    <path className="m" d="M12 9 H36 L38 44 H10 Z" />
+    <rect className="o" x="15" y="19" width="18" height="13" rx="2" />
+    <path className="tl" d="M18 24 H30 M18 28 H26" />
+  </>,
+  /* L-28 : l'objet sans dessin, une étiquette d'article (jamais une lettre, jamais un cube) */
+  objet: <>
+    <path className="m" d="M6 22 L22 6 H40 A2 2 0 0 1 42 8 V26 L26 42 A3 3 0 0 1 22 42 L6 26 A3 3 0 0 1 6 22 Z" />
+    <circle className="f" cx="34" cy="14" r="3.5" />
+    <path className="tl" d="M17 25 L25 17 M21 29 L29 21" />
   </>
 };
 
@@ -232,25 +285,12 @@ const LIBELLE: Record<PictoNom, string> = {
   hotte: 'hotte', ventilateur: 'extracteur', centrifuge: 'centrifuge', evier: 'évier', tireuse: 'tireuse', frigo: 'frigo', pompe: 'pompe',
   moulin: 'moulin', embouteillage: 'remplisseuse', fut: 'fût', cuve: 'cuve', densimetre: 'densimètre', mesure: 'thermomètre',
   balance: 'balance', tuyau: 'tuyau', chauffe: 'chauffe-eau', filtre: 'filtre', echangeur: 'échangeur', gaz: 'bouteille de gaz',
-  etagere: 'étagère', chariot: 'diable', pot: 'pot', objet: 'objet'
+  etagere: 'étagère', chariot: 'diable', pot: 'pot', jalon: 'jalon', dossier: 'dossier', extincteur: 'extincteur', electricite: 'électricité',
+  sachet: 'sachet', objet: 'objet'
 };
 
-/** L'initiale d'un objet sans dessin (« T » pour « Tuyau… » s'il n'avait pas de dessin) ; « ? » si rien n'est nommé. */
-export function initialeDe(...textes: (string | undefined | null)[]): string {
-  const t = textes.find(x => x?.trim())?.replace(/^ZZ TEST — /, '').trim() ?? '';
-  const l = /[\p{L}\p{N}]/u.exec(t)?.[0];
-  return l ? l.toLocaleUpperCase('fr-CH') : '?';
-}
-
-/** Le picto seul ; `data-picto` le nomme pour les contrôles. `objet` : l'initiale (`lettre`), jamais un cube. */
-export function PictoObjet({ nom, taille = 24, lettre }: { nom: PictoNom; taille?: number; lettre?: string }) {
-  if (nom === 'objet') {
-    return (
-      <svg className="cn-picto cn-picto-initiale" data-picto="objet" width={taille} height={taille} viewBox="0 0 48 48" aria-hidden>
-        <text x="24" y="25" textAnchor="middle" dominantBaseline="central" fontSize="26" fontWeight="700">{lettre ?? '?'}</text>
-      </svg>
-    );
-  }
+/** Le picto seul ; `data-picto` le nomme pour les contrôles. `objet` : l'étiquette d'article, jamais un cube ni une lettre (L-28). */
+export function PictoObjet({ nom, taille = 24 }: { nom: PictoNom; taille?: number }) {
   return (
     <svg className="cn-picto" data-picto={nom} width={taille} height={taille} viewBox="0 0 48 48" aria-hidden>
       {DESSINS[nom]}
@@ -269,7 +309,7 @@ export function VignetteObjet({ photo, mots, classe, taille }: { photo?: string;
   const nom = pictoDe(...mots);
   const picto = (
     <span className={`cn-vignette cn-vignette-vide${classe ? ` ${classe}` : ''}`} data-picto={nom} aria-hidden>
-      <PictoObjet nom={nom} taille={taille ?? 40} lettre={initialeDe(...mots)} />
+      <PictoObjet nom={nom} taille={taille ?? 40} />
     </span>
   );
   return <Photo src={photo} className={`cn-vignette${classe ? ` ${classe}` : ''}`} loading="lazy" repli={picto} />;
@@ -284,5 +324,6 @@ export const marquerCassee = (src: string): void => { PHOTOS_CASSEES.add(src); }
 export function Photo({ src, className, alt = '', loading, repli = null }: { src?: string; className?: string; alt?: string; loading?: 'lazy'; repli?: React.ReactNode }) {
   const [, redessiner] = React.useState(0);
   if (!src || PHOTOS_CASSEES.has(src)) return <>{repli}</>;
-  return <img className={className} src={src} alt={alt} loading={loading} onError={() => { PHOTOS_CASSEES.add(src); redessiner(n => n + 1); }} />;
+  /* L-23 : la photo d'un vendeur se charge sans référent (ni l'adresse de l'app chez le vendeur, ni refus anti-hotlink) */
+  return <img className={className} src={src} alt={alt} loading={loading} referrerPolicy="no-referrer" onError={() => { PHOTOS_CASSEES.add(src); redessiner(n => n + 1); }} />;
 }
