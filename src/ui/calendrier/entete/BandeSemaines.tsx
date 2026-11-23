@@ -31,6 +31,9 @@ export interface BandeSemainesProps {
   largeurColonne?: number;
   /** D385 (variante C) : présent, toucher une semaine la déplie en sept jours (sa date est alors dans son en-tête dépliée), au lieu de la bulle. */
   onDeplier?: (lundi: string) => void;
+  /** CAL-TOUCHER-GRADUATION (23.11, « que du je clique sur une semaine ou mois, ça fasse un focus dessus ») : présent (bande sur la courbe),
+   *  toucher une semaine, un mois ou une année de la bande pose le cadre dessus (`jour` : un jour de la période touchée). */
+  onCadrer?: (jour: string, unite: 'semaine' | 'mois' | 'an') => void;
   /**
    * D432 (23.11, « Graduations sur la courbe ») : les bords de chaque semaine en px de la courbe (n + 1 valeurs). Présents, la bande se pose sur
    * l'axe de la courbe : le cadre couvre exactement ses semaines, celles d'avant et d'après en gris dans les marges (`dansCadre`, index).
@@ -105,6 +108,7 @@ export function largeurEtiquetteMax(): number {
 }
 
 /** Le mois (0 à 11) du jeudi d'une semaine (ISO 8601), comme la bande de l'An. */
+const jeudiIso = (lundi: string): string => new Date(Date.parse(`${lundi}T00:00:00Z`) + 3 * 86400000).toISOString().slice(0, 10);
 const moisDuJeudi = (lundi: string): number => new Date(Date.parse(`${lundi}T00:00:00Z`) + 3 * 86400000).getUTCMonth();
 
 /**
@@ -225,17 +229,23 @@ export function periodesBande(semaines: readonly SemaineBande[], abscisses: read
   for (let d = pas === 'mois' ? `${semaines[0].debut.slice(0, 7)}-01` : `${semaines[0].debut.slice(0, 4)}-01-01`; d < fin; d = suivant(d)) {
     const x0 = X(d), x1 = X(suivant(d));
     if (x0 > g + 0.5 && x0 < larg - 0.5) limites.push(x0);
-    const texte = pas === 'mois' ? INITIALES[Number(d.slice(5, 7)) - 1] : d.slice(0, 4);
+    /* « J A J O » sans année (3 ans, 23.11) : un mois sur plusieurs, janvier se nomme par son année (« 2027 ») */
+    const texte = pas === 'mois' ? (saut > 1 && d.slice(5, 7) === '01' ? d.slice(0, 4) : INITIALES[Number(d.slice(5, 7)) - 1]) : d.slice(0, 4);
     const wt = texte.length === 1 ? Math.ceil(wEtiquette / 2) : Math.ceil(wEtiquette * 1.4);
     const l = Math.max(g, x0), r = Math.min(larg, x1);
     if (saut > 1) {
-      if (rang(d) % saut !== 0 || r - l < wt / 2 || (l + r) / 2 - wt / 2 < g || (l + r) / 2 + wt / 2 > larg) continue;
+      /* la part visible du mois doit tenir la moitié d'une initiale (une année nommée en janvier déborde ses traits, jamais le bord) */
+      if (rang(d) % saut !== 0 || r - l < Math.ceil(wEtiquette / 2) / 2 || (l + r) / 2 - wt / 2 < g || (l + r) / 2 + wt / 2 > larg) continue;
     } else if (r - l < wt + ECART_ETIQUETTES) continue;
     const x = (l + r) / 2;
     let k = 0;
     while (k < n - 1 && x >= a[k + 1]) k++;
     // un mois sur deux ou plus : la période entamée au bord gauche cède la place à la période entière qui le suit s'ils se touchent
-    if (saut > 1 && noms.length && x - noms[noms.length - 1].x < wt + ECART_ETIQUETTES) { if (noms.length === 1 && l0 < g) noms.pop(); else continue; }
+    const prec = noms[noms.length - 1];
+    if (saut > 1 && prec && x - prec.x < (wt + (prec.texte.length === 1 ? Math.ceil(wEtiquette / 2) : Math.ceil(wEtiquette * 1.4))) / 2 + ECART_ETIQUETTES) {
+      /* une année l'emporte sur l'initiale qui la touche ; la période entamée au bord gauche cède la place à la période entière qui la suit */
+      if ((texte.length === 4 && prec.texte.length === 1) || (noms.length === 1 && l0 < g)) noms.pop(); else continue;
+    }
     noms.push({ k, texte, x, decal: x - (a[k] + a[k + 1]) / 2, periode: pas === 'mois' ? d.slice(0, 7) : d.slice(0, 4) });
     if (noms.length === 1) l0 = x0;
   }
@@ -246,6 +256,16 @@ export function periodesBande(semaines: readonly SemaineBande[], abscisses: read
  * CAL-BANDE-JAMAIS-VIDE (23.11, 20 mois : bande vide) : les noms que la bande posée sur la courbe montre, avec leur centre et leur largeur
  * (px de la courbe), par le même calcul que le rendu (jours, semaines, groupes, mois, années). Sert aux contrôles : jamais vide, jamais rogné.
  */
+/**
+ * CAL-GRADUATION-ROGNEE (12:05, « S5? S53 S1 » rognés au bord droit) : le nom d'une semaine se pose au milieu de sa part visible ; il se tait quand
+ * cette part ne le tient pas entier (avec 2 px d'air) ou quand il sortirait de la courbe. Avant : 3/5 d'une semaine suffisaient, et « S53 » (23 px)
+ * débordait d'une part de 18 px, sur sa voisine et hors de la courbe.
+ */
+export function nomRogne(a: readonly number[], k: number, largeurColonne: number, wEtiquette: number): boolean {
+  const l = a[k], r = a[k + 1], x = (l + r) / 2;
+  return r - l < Math.max(0.6 * largeurColonne, wEtiquette + 2) || x - wEtiquette / 2 < a[0] - 0.5 || x + wEtiquette / 2 > a[a.length - 1] + 0.5;
+}
+
 export function etiquettesPosees(semaines: readonly SemaineBande[], abscisses: readonly number[], grain: GrainBande, largeurColonne: number, wEtiquette = largeurEtiquetteMax()): Array<{ texte: string; x: number; w: number }> {
   const a = abscisses, n = semaines.length;
   if (!n || a.length !== n + 1 || !(largeurColonne > 0)) return [];
@@ -257,10 +277,10 @@ export function etiquettesPosees(semaines: readonly SemaineBande[], abscisses: r
   }
   const pas: PasEtiquettes = grain === 'mois' || grain === 'an' ? grain : pasEtiquettes(largeurColonne, wEtiquette);
   if (pas !== 1) return periodesBande(semaines, a, pas, largeurColonne, wEtiquette).noms.map(p => ({ texte: p.texte, x: p.x, w: larg(p.texte) }));
-  return semaines.flatMap((s, k) => (a[k + 1] - a[k] < 0.6 * largeurColonne ? [] : [{ texte: `S${s.numero}`, x: (a[k] + a[k + 1]) / 2, w: wEtiquette }]));
+  return semaines.flatMap((s, k) => (nomRogne(a, k, largeurColonne, wEtiquette) ? [] : [{ texte: `S${s.numero}`, x: (a[k] + a[k + 1]) / 2, w: wEtiquette }]));
 }
 
-export function BandeSemaines({ masqueAuj, semaines, courbe, decalage, mouvements, idees, retards, onDate, onIdeeSemaine, largeurColonne = 0, onDeplier, lundiCourant, abscisses, dansCadre, grain, aujourdhui }: BandeSemainesProps) {
+export function BandeSemaines({ masqueAuj, semaines, courbe, decalage, mouvements, idees, retards, onDate, onIdeeSemaine, largeurColonne = 0, onDeplier, onCadrer, lundiCourant, abscisses, dansCadre, grain, aujourdhui }: BandeSemainesProps) {
   const surCourbe = !!abscisses && abscisses.length === semaines.length + 1;
   /* CAL-PLUS-QU-UN-AN (tour 20, en ligne) : la première colonne commence en abscisses[0] (la marge avant le début de l'horizon, passé compris) ;
      sans ce retrait, toute la bande glissait de la marge (56 px) à gauche de la courbe et des rangées. */
@@ -300,7 +320,7 @@ export function BandeSemaines({ masqueAuj, semaines, courbe, decalage, mouvement
         const idee = idees.has(s.debut), retard = retards.has(s.debut);
         const hors = surCourbe && dansCadre ? k < dansCadre[0] || k >= dansCadre[1] : false;
         /* une semaine coupée au bord de la courbe (moins des 3/5 d'une semaine) garde sa place, sans son nom (il serait coupé) */
-        const coupee = surCourbe && largeurColonne > 0 && abscisses![k + 1] - abscisses![k] < 0.6 * largeurColonne;
+        const coupee = surCourbe && largeurColonne > 0 && nomRogne(abscisses!, k, largeurColonne, wEtiquette);
         return (
           <button key={s.debut} type="button" className="ent-bd-c" data-semaine={s.numero} data-lundi={s.debut} data-hors={hors ? 'oui' : undefined} data-courant={(lundiCourant ? s.debut === lundiCourant : decalage + k === 0) ? 'oui' : undefined}
             aria-label={`${dateDeSemaine(s.debut)}${mouvements && v !== null ? ` ; mouvement ${sg(v)}` : ''}${mouvements && idee ? ' ; idée du carnet' : ''}${mouvements && retard ? ' ; en retard' : ''}`}
@@ -317,7 +337,9 @@ export function BandeSemaines({ masqueAuj, semaines, courbe, decalage, mouvement
             onClick={() => {
               // L'appui long a déjà ouvert l'idée : le toucher qui suit ne donne pas la date.
               if (appui.current?.long) { appui.current = null; return; }
-              if (onDeplier) onDeplier(s.debut);
+              /* CAL-TOUCHER-GRADUATION : sur la courbe, la semaine (le mois, l'année) touchée devient le cadre */
+              if (onCadrer && surCourbe) onCadrer(pas === 'mois' || pas === 'an' ? jeudiIso(s.debut) : s.debut, pas === 'mois' ? 'mois' : pas === 'an' ? 'an' : 'semaine');
+              else if (onDeplier) onDeplier(s.debut);
               else onDate(s.debut, k);
             }}>
             {/* Pas de 2, 4 ou mois : seules les étiquettes posées se lisent ; chaque colonne reste touchable et garde son nom (« S50, 7 – 13 déc. »). */}

@@ -50,9 +50,16 @@ async function etat(page: Page) {
     const aujs = [...document.querySelectorAll('.ent-cb [data-aujourdhui]')].map((e) => e.getAttribute('data-aujourdhui'));
     const fleches = [...document.querySelectorAll('[data-bande-semaines] *, .ent-cb *')].map((e) => (e.textContent ?? '').trim()).filter((x) => /^‹\s*auj\.|auj\.\s*›$/.test(x));
     const brassins = document.querySelector('section[data-rangee="brassins"]');
+    /* I4 (axe ⊇ cadre) : le cadre posé tient dans la courbe (ses deux bouts visibles, R4) ; et, quand l'en-tête les expose, les dates de l'axe
+       (`data-axe-du/au`) couvrent celles du cadre (`data-cadre-du/au`) */
+    const cb = document.querySelector('.ent-cbz .ent-cb') ?? document.querySelector('.ent-cb'), ca = document.querySelector('.ent-cadre');
+    const rb = cb?.getBoundingClientRect(), rc = ca?.getBoundingClientRect();
+    const axe = document.querySelector('[data-axe-du]');
     return {
       duree: (bouton?.textContent ?? '').replace(/\s+/g, ' ').trim(), etiquette: t('[data-cadre-etiquette]'), aujs, fleches: [...new Set(fleches)],
-      brassinsVide: !!brassins?.querySelector('.cal-vide'), app: t('[data-periode-pastille] .pr-ce')
+      brassinsVide: !!brassins?.querySelector('.cal-vide'), app: t('[data-periode-pastille] .pr-ce'),
+      boites: rb && rc && rb.width > 0 ? { cl: rc.left - rb.left, cr: rc.right - rb.left, w: rb.width } : null,
+      axe: axe ? { du: axe.getAttribute('data-axe-du'), au: axe.getAttribute('data-axe-au'), cdu: axe.getAttribute('data-cadre-du'), cau: axe.getAttribute('data-cadre-au') } : null
     };
   });
 }
@@ -72,6 +79,14 @@ async function verifier(r: Reel) {
   const jeu = /\d{1,2} [a-zéû]/i.test(e.etiquette) ? Math.max(1, semCadre * 0.1) : 9;
   /* I1 */
   if (semBouton !== null) expect(Math.abs(semBouton - semCadre) <= jeu, `I1 durée « ${e.duree} » ≠ cadre ${semCadre.toFixed(1)} sem. : ${ctx}`).toBe(true);
+  /* I4 : axe ⊇ cadre (« axe 2029–2030 » pour un cadre de 4 ans dès 2025, 1204-incoherent.jpg) */
+  if (e.boites) expect(e.boites.cl >= -2 && e.boites.cr <= e.boites.w + 2, `I4 cadre hors de l'axe (${Math.round(e.boites.cl)}…${Math.round(e.boites.cr)} sur ${Math.round(e.boites.w)} px) : ${ctx}`).toBe(true);
+  if (e.axe?.du && e.axe.au && e.axe.cdu && e.axe.cau) {
+    expect(e.axe.du <= e.axe.cdu && e.axe.au >= e.axe.cau, `I4 axe ${e.axe.du}…${e.axe.au} ⊉ cadre ${e.axe.cdu}…${e.axe.cau} : ${ctx}`).toBe(true);
+    /* I5 : l'étiquette dit les dates du cadre (au jour près ; en mois : le mois) */
+    const [a, m, j] = e.axe.cdu.split('-').map(Number), [a2, m2, j2] = e.axe.cau.split('-').map(Number);
+    expect(Math.abs(jour(a, m - 1, j) - d) <= (jeu > 8 ? 31 : 0) && Math.abs(jour(a2, m2 - 1, j2) - f) <= (jeu > 8 ? 31 : 0), `I5 étiquette ≠ cadre ${e.axe.cdu}…${e.axe.cau} : ${ctx}`).toBe(true);
+  }
   if (auj >= d && auj <= f) {
     /* I2 */
     expect(e.aujs.includes('dans') && e.fleches.length === 0, `I2 aujourd'hui dans le cadre mais [${e.aujs.join(',')}] ${e.fleches.join(' ')} : ${ctx}`).toBe(true);
@@ -104,7 +119,21 @@ const commandes = [
     const a = { x: h.x + h.width / 2, y: h.y + h.height / 2 };
     await doigt.glisser(a, { x: Math.max(2, Math.min(388, a.x + dx)), y: a.y }, { dureeMs: 400 });
   })),
-  fc.tuple(fc.constantFrom<'debut' | 'fin'>('debut', 'fin'), fc.integer({ min: 500, max: 4000 })).map(([c, ms]) => cmd(`poignée ${c} tenue au bord ${ms} ms`, async ({ page, doigt }) => {
+  /* D444 : la plage de l'app sur plusieurs années (saisie « Du … au » de la pastille), le geste qui a fait « 24 sem. » pour 4 ans */
+  fc.tuple(fc.integer({ min: -60, max: 60 }), fc.integer({ min: 2, max: 60 })).map(([dm, mois]) => cmd(`app plage ${dm} mois, ${mois} mois`, async ({ page }) => {
+    const [a, m] = aujourdhuiZurich().split('-').map(Number);
+    const iso = (t: number) => { const an = Math.floor(t / 12), mo = t - an * 12; return `01.${String(mo + 1).padStart(2, '0')}.${an}`; };
+    const t0 = a * 12 + (m - 1) + dm;
+    await page.locator('[data-periode-pastille] .pr-ce').tap();
+    const du = page.getByLabel('Du (jj.mm)'), au = page.getByLabel('Au (jj.mm)');
+    if (!(await du.count())) { await page.keyboard.press('Escape'); return; }
+    await du.fill(iso(t0)); await au.fill(iso(t0 + mois)); await au.blur();
+    await page.waitForTimeout(300);
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(300);
+    if (await page.getByRole('dialog').count()) await page.keyboard.press('Escape');
+  })),
+  fc.tuple(fc.constantFrom<'debut' | 'fin'>('debut', 'fin'), fc.integer({ min: 500, max: 9000 })).map(([c, ms]) => cmd(`poignée ${c} tenue au bord ${ms} ms`, async ({ page, doigt }) => {
     const h = await poignee(page, c); if (!h) return;
     const a = { x: h.x + h.width / 2, y: h.y + h.height / 2 };
     await doigt.glisser(a, { x: c === 'fin' ? 386 : 4, y: a.y }, { dureeMs: 400, avantLever: ms });
@@ -124,7 +153,8 @@ const commandes = [
 
 test('CAL-ETAT-COHERENT : après chaque geste, durée, étiquette, aujourd\'hui et rangées disent la même fenêtre', async ({ page }) => {
   test.skip((page.viewportSize()?.width ?? 0) > 500, 'sa plainte : téléphone en portrait (390)');
-  test.setTimeout(600_000);
+  /* 8 gestes au plus par suite, 1 à 10 s chacun : le temps suit le nombre de suites (ETAT_RUNS=200 ≈ 2 h), réduction comprise */
+  test.setTimeout(Math.max(600_000, Number(process.env.ETAT_RUNS ?? 12) * 60_000));
   await poserFixture(page);
   await ouvrirCalendrier(page);
   const doigt = await Doigt.sur(page);
