@@ -2830,3 +2830,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - « Ça oblige aussi à bien travailler pour découper les tâches en sous tâches. Et voir si tu es correcte »
 - « Bah il faut parallelisé ??? » (banc des liens passé lien par lien, 46 min)
 - « Par outils et par méthodes. Je veux dire tout pars à la fois quasiment ? »
+- (sur les 28 liens sans prix dans les données structurées) « Non mais alors on doit lire les page autrement ?? C'est pas possible ?? »
