@@ -6,13 +6,7 @@ import { ECRANS } from '../outils/ecransCarnet';
 
 /** Défauts réels connus (CA12-PW-n, voir DEFAUTS.md) : `écran|règle|projet` → id. Ils restent rouges (test.fail) tant que l'app n'est pas corrigée. */
 const CONNUS: Record<string, string> = {
-  // la rangée « Quand » (puces Aujourd'hui, 1 mois, 3 mois…) passe sous le bouton « Au calendrier » quand le carnet a des articles
-  'chambre-froide|chevauche|android-390': 'CA12-PW-3',
-  'ventilation|chevauche|android-390': 'CA12-PW-3',
-  'frigo-choisi|chevauche|android-390': 'CA12-PW-3',
-  // la colonne « Volume » touche la colonne du prix dans le tableau des articles (« 4,06 m³3 350 »)
-  'prix-en-euros|chevauche|android-390': 'CA12-PW-3 + CA12-PW-4',
-  'prix-en-euros|chevauche|paysage-844': 'CA12-PW-4'
+  // CA12-PW-3 (rangée « Quand ») et CA12-PW-4 (colonnes du tableau) : corrigés par le lot 3 (L-18, L-19), épreuves rendues normales
 };
 
 test.describe('Carnet : aucun texte rogné ni chevauchement', () => {

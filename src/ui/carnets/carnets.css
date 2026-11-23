@@ -684,16 +684,36 @@
 .cn-recherche { flex: 1 0 120px; min-width: 0; height: 32px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); font: inherit; font-size: 14px; }
 .cn-puce.cn-puce-filtre { min-height: 32px; padding: 0 10px; font-size: 13px; flex: none; }
 
-/* V4 fiche (21.11) : Quand sur une rangée (libellé, puces d'horizon défilantes, « Au calendrier » compact) */
-.cn-quand { flex-direction: row; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
-.cn-quand > .cn-rubrique-tete { flex: none; }
-.cn-quand > .cn-horizons { flex: 1 1 0 !important; min-width: 0; flex-wrap: nowrap !important; overflow-x: auto; scrollbar-width: none; }
-.cn-quand .cn-puce { min-height: 32px; padding: 0 10px; font-size: 13px; flex: none; }
-.cn-quand .cn-quand-cal { flex: none; min-height: 32px; padding: 0 10px; font-size: 13px; }
-.cn-quand > [role=group][aria-label="Prix estimé"] { flex: 1 0 100%; }
+/* L-18 (23.11 ; CRU-8, CA12-PW-3, M4-2, M4-3) : la rangée Quand garde UNE forme, avant et après un choix. Le libellé et son état sur leur
+   ligne, puis les puces d'horizon qui passent à la ligne (Horizons, choix C1 : jamais une fenêtre qui défile et cache la puce choisie,
+   jamais une puce sous « Au calendrier » ou sous le libellé), le prix estimé, puis « Au calendrier ». Remplace la rangée unique défilante
+   du 21.11 (« V4 fiche »), qui coupait « Aujourd'hui » et sortait « 6 mois » et « 1 an » de l'écran. */
+.cn-quand { flex-direction: column; align-items: stretch; gap: 8px; }
+.cn-quand > .cn-rubrique-tete { flex-wrap: wrap; }
+.cn-quand > .cn-horizons { gap: 6px !important; }
+.cn-quand .cn-puce { min-height: 40px; padding: 0 12px; flex: none; }
+.cn-quand .cn-quand-cal { align-self: flex-start; min-height: 40px; padding: 0 12px; }
 
 /* V4 fiche (21.11) : trois tailles (titre 18, corps 14, libellés 12) ; le critère « sans valeur à comparer » garde une cible de 24 px */
 .cn-ouvert :is(span, p, b, button, a, div, li, strong, em, small) { font-size: 14px !important; }
 .cn-ouvert h2.cn-titre { font-size: 18px !important; }
-.cn-ouvert .cn-puce, .cn-ouvert .cn-second, .cn-ouvert .cn-att, .cn-ouvert .cn-quand .cn-puce, .cn-ouvert .cn-quand .cn-quand-cal { font-size: 12px !important; }
+.cn-ouvert .cn-puce, .cn-ouvert .cn-second, .cn-ouvert .cn-att { font-size: 12px !important; }
+/* L-18 : les puces de Quand et « Au calendrier » se lisent et se touchent : 14 px, comme le corps */
+.cn-ouvert .cn-quand :is(.cn-puce, .cn-quand-cal) { font-size: 14px !important; }
 .cn-ouvert .cn-critere-plus { min-height: 24px; display: inline-flex; align-items: center; }
+
+/* L-17 (23.11 ; M1-7, M4-1) : sous 1024 px sans le cadre de hauteur du téléphone (paysage 844 × 340), la page défile entière et le champ
+   collant se posait au bas de l'écran, SOUS la barre d'onglets fixe (sa hauteur plus la zone sûre) : son texte caché, un toucher sur une
+   carte tombait dans le champ. Il colle au-dessus de la barre. Clavier ouvert, ChampCarnet pose son retrait (style en ligne, data-clavier). */
+@media (max-width: 1023px) {
+  [data-carnets] > .cn-champ-zone:not([data-clavier]) { bottom: calc(var(--main-navigation-height, 2.5rem) + env(safe-area-inset-bottom, 0px)) !important; }
+}
+
+/* L-19 (23.11 ; M1-14, M2-4, M4-7, CA12-PW-4) : chaque colonne du tableau prend la largeur de sa plus longue valeur (posée par
+   TableauCarnet, --cn-colN) ; une mesure plus longue (« 1800 x 1500 x 2100 mm ») passe à la ligne dans sa colonne au lieu d'être rognée
+   au bord de la carte. */
+.cn-tab-ligne:not(.cn-tab-cols) > .cn-tab-num { white-space: normal; overflow-wrap: break-word; line-height: 1.25; }
+
+/* L-20 (23.11, M3-1) : ⋯ de la ligne Critère, chaque critère avec « Retirer » */
+.cn-critere-une > .cn-critere-actions { flex: none; align-self: center; margin-left: auto; }
+.cn-criteres-derriere > .cn-critere-retirable { display: flex; align-items: center; gap: 8px; }

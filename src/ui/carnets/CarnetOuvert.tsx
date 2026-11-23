@@ -14,14 +14,14 @@
  * Toucher « Articles » ouvre la feuille des cartes (P12, figé h03-5) : photo, valeur du critère en gros, réglette, « Veiller ».
  * Avant le 2e article : les façons en cartes et l'article en carte. Notes : chaque note porte son genre et son picto (G22).
  */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { normaliser } from '../../domain/carnets/analyseLocale';
 import { comptesCarnet, pluriel } from '../../domain/carnets/comptes';
 import { estLienSeul, sourceDuCritere } from '../../domain/carnets/modele';
 import { CalendarCheck, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, Ellipsis, ExternalLink, Eye, FileText, GitFork, Image as ImageIcon, Lightbulb, Link2, ListTodo, Pencil, ShoppingBasket, Tag, Target, X } from 'lucide-react';
 import { Bandeau } from './Bandeau';
 import { CarteArticle, CarteClassee, estExemple, nombreValeur } from './CarteArticle';
-import { colonnesVue, meilleursDe, moinsBienQueDe, sansApercu, texteCellule, type ColonneVue, type TableauV } from './Comparer';
+import { colonnesVue, estMesure, meilleursDe, moinsBienQueDe, sansApercu, texteCellule, type ColonneVue, type TableauV } from './Comparer';
 import { avecArticle, domaineEtChemin, libelleCaracteristique, libelleEcarte, passe, texteMoinsBienQue } from '../../domain/carnets/comparer';
 /** f7 n° 7 : une raison d'écart sans son préfixe « écarté : », pour comparer celle d'un article à celle de sa façon. */
 const sansEcarte = (r: string) => r.trim().replace(/^écartée?s*:s*/i, '').trim().toLowerCase();
@@ -102,6 +102,11 @@ export interface CarnetOuvertProps {
   /** D2 : le prix du projet (`estimatedCost`, centimes ici) et le dernier achat semblable proposé ; `semblable: null` = rien, D1. */
   prix?: { centimes?: number; semblable?: { centimes: number; source: string } | null };
   onPrix?: (centimes: number) => void;
+  /**
+   * L-20 (23.11, M3-1) : retirer un critère (`supprimerLigne`, cible `critere`), par ⋯ de la ligne Critère. Absent : pas de ⋯ (rien
+   * qui ne fasse rien). Branché par la vue des carnets.
+   */
+  onRetirerCritere?: (critereId: string) => void;
   /** Le jour (ISO) ; défaut : aujourd'hui (local). Injecté par le banc et les tests. */
   aujourdhui?: string;
 }
@@ -250,6 +255,12 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
   }, [menu]);
   const [cartes, setCartes] = useState(false);
   const [voirCriteres, setVoirCriteres] = useState(false);
+  const [gererCriteres, setGererCriteres] = useState(false);
+  /* L-21 (23.11, M4-22) : une rubrique Notes vue dans ce carnet ouvert ne disparaît pas quand sa dernière note est rangée ailleurs
+     (en critère par l'IA) : elle dit « aucune ». La mise en page ne change pas sous les yeux. */
+  const notesVues = useRef<{ id: string; vu: boolean }>({ id: c.id, vu: false });
+  if (notesVues.current.id !== c.id) notesVues.current = { id: c.id, vu: false };
+  if (k.notes.length > 0) notesVues.current.vu = true;
   const r = p.rangee;
   const critere = k.criteres.find(x => x.caracteristique) ?? k.criteres[0];
   /* critique 6, n° 15 : les comptes viennent de `comptesCarnet`, comme la liste et la suppression */
@@ -326,17 +337,34 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
       <p className="cn-critere cn-critere-court"><b>{uRange.el.texte}</b><span className="cn-mut">{avecProv(uRange.el)}{uRange.el.caracteristique ? '' : ' · sans valeur à comparer'}</span></p>
     </LigneRangee>
   ) : null;
+  /* L-20 (23.11, M3-1) : aucun geste ne retirait un critère (appui court, long, ⋯ du carnet : rien). Comme chaque note a son ⋯ (R12),
+     la ligne Critère a le sien : il montre chaque critère, une fois, avec « Retirer ». */
+  const boutonCriteres = p.onRetirerCritere ? (
+    <button type="button" className="cn-ico cn-critere-actions" aria-label="Critères, actions" aria-expanded={gererCriteres} onClick={() => setGererCriteres(v => !v)}><Ellipsis size={22} aria-hidden /></button>
+  ) : null;
+  const listeCriteres = gererCriteres && p.onRetirerCritere ? (
+    <div className="cn-criteres-derriere" role="list" aria-label="Critères">
+      {criteres.map(u => (
+        <p key={u.ids[0]} className="cn-critere cn-critere-court cn-critere-retirable" role="listitem">
+          <span className="cn-sp"><b>{u.el.texte}</b><span className="cn-mut">{avecProv(u.el)}</span></span>
+          <button type="button" className="cn-lien" aria-label={`Retirer le critère « ${u.el.texte} »`} onClick={() => { for (const id of u.ids) p.onRetirerCritere!(id); }}>Retirer</button>
+        </p>
+      ))}
+    </div>
+  ) : null;
   const ligneCritere = criteres.length > 0 && (
     <section className="cn-critere-bloc" aria-label="Ce qui compte">
       {tete.length > 0 && (
         <p className="cn-critere cn-critere-une">
           <Target size={18} aria-hidden className="cn-vert cn-critere-ico" />
           <span className="cn-sp"><span className="cn-critere-tx">Critère : {texteTete}</span>{plusCriteres && <> <span className="cn-mut" aria-hidden>·</span> {plusCriteres}</>}</span>
+          {boutonCriteres}
         </p>
       )}
       {rangeeCritere}
       {tete.length === 0 && plusCriteres}
-      {voirCriteres && derriere.length > 0 && (
+      {listeCriteres}
+      {voirCriteres && !listeCriteres && derriere.length > 0 && (
         <div className="cn-criteres-derriere" role="list" aria-label="Critères sans valeur à comparer">
           {derriere.map(u => (
             <p key={u.ids[0]} className="cn-critere cn-critere-court" role="listitem">
@@ -402,8 +430,8 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
           <div ref={refMenu} className="cn-feuille cn-menu" role="menu">
             <button type="button" role="menuitem" className="cn-feuille-item" onClick={() => { setMenu(false); p.onRenommer(); }}><Pencil size={18} aria-hidden /> Renommer</button>
             <button type="button" role="menuitem" className="cn-feuille-item cn-rouge" onClick={() => { setMenu(false); p.onSupprimer(); }}>
-              {/* PCN-189 (test en ligne 4) : un carnet choisi n'est plus une idée */}
-              {c.status === 'validated' ? 'Supprimer le carnet' : "Supprimer l'idée"}</button>
+              {/* L-22 (23.11, M2-18, glossaire) : le même mot dans chaque état ; un carnet choisi n'est plus une idée (PCN-189) */}
+              Supprimer le carnet</button>
           </div>
         )}
       </div>
@@ -479,8 +507,9 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
           {criteres.length === 0
             ? <p className="cn-rubrique-tete"><Target size={picto} aria-hidden /> <b>Ce qui compte</b> <span className="cn-mut">· rien encore{ia ? " : l'IA le proposera" : ''}</span></p>
             : <>
-              <p className="cn-rubrique-tete cn-cqc-ligne"><Target size={18} aria-hidden /> <b>Ce qui compte</b> {tete.length > 0 && <span className="cn-cqc-texte">· {texteTete}</span>}</p>
+              <p className="cn-rubrique-tete cn-cqc-ligne"><Target size={18} aria-hidden /> <b>Ce qui compte</b> {tete.length > 0 && <span className="cn-cqc-texte">· {texteTete}</span>}{boutonCriteres}</p>
               {rangeeCritere}
+              {listeCriteres}
             </>}
         </section>
       )}
@@ -584,7 +613,7 @@ export function CarnetOuvert(p: CarnetOuvertProps) {
 
       {enAttente || k.photos.length === 0 ? null : <Photos photos={k.photos} />}
 
-      {!enAttente && (k.notes.length > 0 || p.noteSupprimee) && <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Notes">
+      {!enAttente && (k.notes.length > 0 || p.noteSupprimee || notesVues.current.vu) && <section className={`cn-rubrique${neuf ? ' cn-rubrique-ligne' : ''}`} aria-label="Notes">
         {k.notes.length === 0 && !p.noteSupprimee ? (
           <p className="cn-rubrique-tete"><FileText size={picto} aria-hidden /> <b>Notes</b> <span className="cn-mut">· aucune</span></p>
         ) : (
@@ -687,13 +716,41 @@ function LigneNote({ note, doublon, onNote, fait }: { note: NoteV; doublon: bool
 
 type Ligne = TableauV['lignes'][number];
 
-/** Les colonnes du tableau du carnet : la 1re valeur qui classe (plus ou moins), puis le prix ; le reste vit dans Comparer. */
-function colonnesCarnet(t: TableauV): ColonneVue[] {
+const DEVISES = new Set(['CHF', 'EUR', '€', 'Fr.', 'USD', '$']);
+
+/**
+ * Les colonnes du tableau du carnet : la 1re valeur qui classe (plus ou moins), puis le prix ; le reste vit dans Comparer.
+ * L-19 (23.11 ; M1-14, M4-7) : une colonne de valeur est une MESURE lue sur un article au moins. Une colonne en monnaie à côté du prix
+ * redisait « CHF » (deux en-têtes, la 1re vide), un mot (« avec groupe frigorifique ») ne classe pas et se rognait en mono : ni l'un ni
+ * l'autre ici.
+ */
+export function colonnesCarnet(t: TableauV): ColonneVue[] {
   const toutes = colonnesVue(t);
   const prix = toutes.find(c => c.cle === '__prix');
-  const valeur = toutes.find(c => c.cle !== '__prix' && (c.sens === 'plus' || c.sens === 'moins'))
-    ?? toutes.find(c => c.cle !== '__prix' && c.sens !== 'oui-non');
-  return [valeur, prix].filter((x): x is ColonneVue => !!x);
+  const mesures = toutes.filter(c => c.cle !== '__prix' && c.sens !== 'oui-non' && !(prix && c.unite && DEVISES.has(c.unite))
+    && t.lignes.some(l => { const v = texteCellule(l, c); return !!v && estMesure(v); }));
+  const valeur = mesures.find(c => c.sens === 'plus' || c.sens === 'moins') ?? mesures[0];
+  /* L-19 (prix en francs et en euros, « Prix en euros ») : l'en-tête disait « EUR » au-dessus de 3 350 CHF. Monnaies mêlées : l'en-tête
+     dit CHF, chaque prix d'une autre monnaie dit la sienne (TableauCarnet). */
+  const devises = new Set(t.lignes.filter(l => l.prixCentimes !== undefined).map(l => l.devise ?? 'CHF'));
+  const prixVu = prix && devises.size > 1 ? { ...prix, unite: 'CHF' } : prix;
+  return [valeur, prixVu].filter((x): x is ColonneVue => !!x);
+}
+
+/** L-19 : la largeur d'une colonne, celle de sa plus longue valeur dans la police de sa cellule, entre 44 et 104 px (au-delà, elle passe à la ligne). */
+function poserLargeurs(tab: HTMLElement, n: number) {
+  const ctx = document.createElement('canvas').getContext('2d');
+  if (!ctx) return;
+  for (let i = 0; i < n; i++) {
+    let w = 0;
+    tab.querySelectorAll<HTMLElement>(`[data-col="${i}"] > span`).forEach(s => {
+      /* le raccourci `font` est vide quand font-variant-numeric est posé (.cn-mono) : la police se recompose */
+      const cs = getComputedStyle(s);
+      ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      w = Math.max(w, ctx.measureText(s.textContent ?? '').width);
+    });
+    tab.style.setProperty(`--cn-col${i}`, `${Math.round(Math.min(104, Math.max(44, w + 4)))}px`);
+  }
 }
 
 /**
@@ -732,10 +789,21 @@ function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, onOuvrir
   const enLice = [...blocsDe(k.facons.filter(f => f.etat !== 'ecartee')), sansFacon].filter(b => b.lignes.length || (b.facon && b.facon.etat !== 'ecartee'));
   const ecartees = blocsDe(k.facons.filter(f => f.etat === 'ecartee')).filter(b => b.lignes.length);
   const blocs = [...enLice, ...ecartees];
-  const gabarit = { gridTemplateColumns: `var(--cn-rangl, 32px) var(--cn-vignl, 34px) minmax(0, 1fr) ${cols.map(() => 'var(--cn-col, 54px)').join(' ')}` } as React.CSSProperties;
+  const gabarit = { gridTemplateColumns: `var(--cn-rangl, 32px) var(--cn-vignl, 34px) minmax(0, 1fr) ${cols.map((_, i) => `var(--cn-col${i}, var(--cn-col, 54px))`).join(' ')}` } as React.CSSProperties;
+  /* L-19 : les lignes sont des grilles séparées ; la largeur de chaque colonne, mesurée, est la même pour toutes (à chaque rendu, puis
+     quand les polices sont prêtes) */
+  const refTab = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = refTab.current;
+    if (!el || typeof document === 'undefined' || !document.fonts) return;
+    poserLargeurs(el, cols.length);
+    let vivant = true;
+    void document.fonts.ready.then(() => { if (vivant) poserLargeurs(el, cols.length); });
+    return () => { vivant = false; };
+  });
 
   return (
-    <div className="cn-tab" role="table" aria-label="Articles, rangés dans leur façon">
+    <div ref={refTab} className="cn-tab" role="table" aria-label="Articles, rangés dans leur façon">
       {blocs.map((b, i) => {
         const prix = etendue(b.lignes.map(l => l.prixCentimes).filter((x): x is number => typeof x === 'number'));
         const pastille = b.facon ? pastilleFacon(k, b.facon, sep) : null;
@@ -778,9 +846,11 @@ function TableauCarnet({ carnet: k, titre, tableau, aRelire, sep, sauf, onOuvrir
                       {!l.ecarte && moinsBien && <span className="cn-att">{sous || veille(a) ? ' · ' : ''}{moinsBien}</span>}
                     </span>
                   </span>
-                  {cols.map(c => {
-                    const v = texteCellule(l, c);
-                    return <span key={c.cle} role="cell" className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{v ? <span className="cn-mono">{v}</span> : <span className="cn-inconnu" aria-label="inconnu">–</span>}</span>;
+                  {cols.map((c, ci) => {
+                    const brut = texteCellule(l, c);
+                    const autre = c.cle === '__prix' && brut && (l.devise ?? 'CHF') !== (c.unite ?? 'CHF') ? (l.devise === 'EUR' ? '€' : l.devise) : null;
+                    const v = autre ? `${brut} ${autre}` : brut;
+                    return <span key={c.cle} role="cell" data-col={ci} className={`cn-tab-num${meilleurs.get(c.cle)?.has(l.articleId) && !l.ecarte ? ' cn-meilleur' : ''}`}>{v ? <span className="cn-mono">{v}</span> : <span className="cn-inconnu" aria-label="inconnu">–</span>}</span>;
                   })}
                 </button>
               );
