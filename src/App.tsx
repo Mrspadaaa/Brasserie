@@ -86,6 +86,7 @@ import { HopV55SemanticAdviceCapabilityContext, qualifyHopV55SemanticAdviceCapab
 import { montantChf } from './domain/finance/ledger';
 import { memoriserDefilement, restaurerDefilement } from './ui/calendrier/retourDefilement';
 import { useRetourEcran } from './ui/calendrier/useRetour';
+import { carnetARouvrir } from './ui/carnets/histoireCarnet';
 import { lireCarnets } from './domain/carnets/modele';
 import { EVENEMENT_CALENDRIER, NOM_SECTION, lireSection, type SectionCalendrier } from './ui/calendrier/LienSection';
 
@@ -301,6 +302,13 @@ export const App: React.FC = () => {
     };
     window.addEventListener('affinee:ouvrir-carnet', ouvrir);
     return () => window.removeEventListener('affinee:ouvrir-carnet', ouvrir);
+  }, [ouvrirCarnet]);
+  /* CA13-2 : le retour du téléphone tombe sur l'entrée d'un carnet que plus aucun Carnet monté ne tient (quitté par un renvoi, le Calendrier) :
+     ce carnet se rouvre (le Carnet adopte l'entrée), au lieu d'un retour sans effet. */
+  useEffect(() => {
+    const surRetour = (event: PopStateEvent) => { const id = carnetARouvrir(event.state); if (id) ouvrirCarnet(id); };
+    window.addEventListener('popstate', surRetour);
+    return () => window.removeEventListener('popstate', surRetour);
   }, [ouvrirCarnet]);
   /* CT4A-12 : un renvoi du Calendrier (fête, événement, idée) ou de sa section se referme sur l'écran d'où il est parti. */
   const poserRetour = useRetourEcran<TabType>(activeTab, setActiveTab);

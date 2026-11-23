@@ -5,9 +5,8 @@ import { lireCarnets, type CarnetDoc } from '../../domain/carnets/modele';
 import type { CreativeItem } from '../../types';
 import type { Boite, CarnetsVueProps, Etat, Retour, RetourNeuf, Vue } from './carnetsTypes';
 import type { EcritureCarnet } from '../../domain/carnets/operations';
+import { avecMarque, lireMarque, marqueOrpheline, mourir, nouveauJeton, reculerSansRouvrir, vivre } from './histoireCarnet';
 
-/** L-13 : l'entrée d'historique du carnet (même profondeur que l'écran, comme Plus). */
-const MARQUE_HISTOIRE = 'laffinee-carnet';
 /** L-50 : le carnet ouvert, gardé le temps de la session du navigateur (rechargement compris). */
 const CLE_OUVERT = 'laffinee.carnet.ouvert';
 const lireSession = (k: string): string | null => { try { return sessionStorage.getItem(k); } catch { return null; } };
@@ -19,7 +18,7 @@ function vueParente(v: Vue): Vue {
 }
 
 export interface NavigationV {
-  p: Pick<CarnetsVueProps, 'ouvrir' | 'focusChamp' | 'racine'>; items: CreativeItem[]; vue: Vue; setVue: Etat<Vue>; setRetour: (r: RetourNeuf | null) => void;
+  p: Pick<CarnetsVueProps, 'ouvrir' | 'focusChamp' | 'racine' | 'onRetourOrigine'>; items: CreativeItem[]; vue: Vue; setVue: Etat<Vue>; setRetour: (r: RetourNeuf | null) => void;
   champRef: Boite<HTMLTextAreaElement | null>; edition: string | null; setEdition: Etat<string | null>; setTexte: Etat<string>; ouvert: CarnetDoc | null;
   idOuvert: string | null; setNoteSupprimee: Etat<{ id: string; inverse: EcritureCarnet[] } | null>; retour: Retour | null;
 }
@@ -28,7 +27,15 @@ export function useNavigationCarnet({ p, items, vue, setVue, setRetour, champRef
   /* L-50 (M1-24, M2-9) : au rechargement, le carnet ouvert se rouvre (l'onglet est gardé par l'app) ; la session du navigateur le tient, le
      temps que le magasin ait lu ses carnets. Une ouverture demandée (À venir, Calendrier) ou l'onglet touché l'emportent. */
   const aRouvrir = useRef<string | null>(lireSession(CLE_OUVERT));
-  useEffect(() => { if (p.ouvrir) { aRouvrir.current = null; setVue({ sorte: 'carnet', id: p.ouvrir.id }); setRetour(null); } }, [p.ouvrir?.at]); // eslint-disable-line react-hooks/exhaustive-deps
+  /* CA13-2 : le carnet ouvert depuis un autre écran (À venir) y ramène au retour du téléphone, au lieu de la liste des carnets */
+  const origine = useRef<string | null>(null);
+  const retourOrigine = useRef(p.onRetourOrigine);
+  retourOrigine.current = p.onRetourOrigine;
+  useEffect(() => {
+    if (!p.ouvrir) return;
+    aRouvrir.current = null; origine.current = p.ouvrir.depuis ? p.ouvrir.id : null;
+    setVue({ sorte: 'carnet', id: p.ouvrir.id }); setRetour(null);
+  }, [p.ouvrir?.at]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (p.focusChamp) champRef.current?.focus(); }, [p.focusChamp]);
   useEffect(() => { if (p.racine && !edition) { aRouvrir.current = null; setVue({ sorte: 'liste' }); } }, [p.racine]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
@@ -48,25 +55,44 @@ export function useNavigationCarnet({ p, items, vue, setVue, setRetour, champRef
   useEffect(() => { if (idOuvert && !ouvert) setVue({ sorte: 'liste' }); }, [idOuvert, ouvert]);
   /* L-13 (CA12-M1-4, M2-7) : le retour du téléphone remonte d'un écran (article, Comparer, Choisir, Renommer, Supprimer → carnet ; carnet →
      liste) au lieu de quitter l'app. Comme Plus (App.tsx) : une entrée d'historique à la même profondeur, marquée ; la pile des pages
-     (useFullScreenRoute) n'en voit rien. Quitter le carnet par son bouton retire l'entrée (`back`), sans rien dépiler d'autre. */
-  const histoire = useRef({ pousse: false, retourInterne: false });
+     (useFullScreenRoute) n'en voit rien. Quitter le carnet par son bouton retire l'entrée (`back`), sans rien dépiler d'autre.
+     CA13-2 : la marque porte le carnet et le jeton de ce Carnet monté. Le Carnet démonté (onglet changé) retire son entrée si elle est
+     encore au sommet ; sinon elle reste orpheline, et y revenir rouvre ce carnet (App), que ce Carnet adopte au lieu d'en poser une autre. */
+  const histoire = useRef({ pousse: false, retourInterne: false, jeton: nouveauJeton(), monte: false });
   useEffect(() => {
     const h = histoire.current;
-    if (vue.sorte !== 'liste' && !h.pousse) { window.history.pushState({ ...(window.history.state ?? {}), [MARQUE_HISTOIRE]: true }, ''); h.pousse = true; }
-    else if (vue.sorte === 'liste' && h.pousse) { h.pousse = false; h.retourInterne = true; window.history.back(); }
-  }, [vue.sorte]);
+    if (vue.sorte !== 'liste' && !h.pousse) {
+      const marque = { id: vue.id, jeton: h.jeton };
+      if (marqueOrpheline(window.history.state)) window.history.replaceState(avecMarque(window.history.state, marque), '');
+      else window.history.pushState(avecMarque(window.history.state, marque), '');
+      h.pousse = true;
+    } else if (vue.sorte === 'liste' && h.pousse) { h.pousse = false; h.retourInterne = true; reculerSansRouvrir(); }
+  }, [vue.sorte]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
+    const h = histoire.current;
+    h.monte = true; vivre(h.jeton);
     const surRetour = () => {
-      const h = histoire.current;
       if (h.retourInterne) { h.retourInterne = false; return; }
       /* une page posée sur le carnet (Plus) se ferme : l'entrée du carnet est retrouvée, rien à remonter */
-      if (!h.pousse || (window.history.state as Record<string, unknown> | null)?.[MARQUE_HISTOIRE]) return;
+      if (!h.pousse || lireMarque(window.history.state)?.jeton === h.jeton) return;
       h.pousse = false;
-      setVue(v => vueParente(v));
+      setVue(v => {
+        if (v.sorte === 'carnet' && v.id === origine.current && retourOrigine.current) { origine.current = null; retourOrigine.current(); }
+        return vueParente(v);
+      });
     };
     window.addEventListener('popstate', surRetour);
-    return () => window.removeEventListener('popstate', surRetour);
-  }, []);
+    return () => {
+      window.removeEventListener('popstate', surRetour);
+      h.monte = false; mourir(h.jeton);
+      /* démonté pour de bon (pas le double montage de StrictMode) : son entrée, encore au sommet, part avec lui */
+      setTimeout(() => {
+        if (h.monte || !h.pousse) return;
+        h.pousse = false;
+        if (lireMarque(window.history.state)?.jeton === h.jeton) reculerSansRouvrir();
+      }, 0);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   // Un retour « ✓ … · Annuler » reste au moins 8 s (Q18 : 5 s au moins), puis s'efface.
   useEffect(() => { if (!retour) return; const t = setTimeout(() => setRetour(null), 8000); return () => clearTimeout(t); }, [retour]);
 }

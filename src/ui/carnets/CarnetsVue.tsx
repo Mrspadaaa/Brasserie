@@ -276,7 +276,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
 
   /* ---------- calculs passés aux vues (R44, R45, R47) ---------- */
   const liens: LienV[] = ouvert ? liensDe(ouvert, finances.plans, finances.transactions, finances.payments) : [];
-  const { sortieV, planOuvert, sortieFinie, enV, prixDuCarnet, ecrirePlanLie, planSuitLeChoix, voirSortie, ajouterEnFacon, ajouterAuSuggere, retirerCriteres, dater,
+  const { sortieV, planSuivi, sortieFinie, enV, prixDuCarnet, ecrirePlanLie, planSuitLeChoix, voirSortie, ajouterEnFacon, ajouterAuSuggere, retirerCriteres, dater,
     auCalendrier, placer, supprimerAvecPlan, envoyerAVenir } = actionsCarnet({ p, finances, magasin, appliquer, annuler, maintenant, setTexte, setVue, setRetour, setEnTete,
     setVientDEtreCree, setSupprime });
   /* R26 : le tableau vient de `comparer.ts`, passé tel quel aux vues ; `null` à 0 ou 1 article. */
@@ -293,7 +293,7 @@ export function CarnetsVue(p: CarnetsVueProps) {
     proposeesNode, rangee, cadre, champRef, setTexte, rangement, rangeEnCours, tableauV, appliquer, magasin, maintenant, tauxEur, poserTaux, feuille, setFeuille, edition,
     setEdition, finances, aides, titreEdite, renommerOuvert, ouvrirRenommer, propositionTitre, iaManquee, mode, enLigne, liens, vientDEtreCree, setVientDEtreCree,
     noteSupprimee, setNoteSupprimee, annulerSuppressionNote, autresPour, achatsPasses, enV, ecrirePlanLie, voirSortie, planSuitLeChoix, sortieV, envoyerAVenir, sortieFinie,
-    placer, supprimerAvecPlan, retirerCriteres, dater, auCalendrier, prixDuCarnet, planOuvert });
+    placer, supprimerAvecPlan, retirerCriteres, dater, auCalendrier, prixDuCarnet, planSuivi });
 
   return (
     <div className={`cn ${p.className ?? ''}`} data-carnets data-vue={vue.sorte} style={{ display: 'flex', flexDirection: 'column', minHeight: 0 }}>

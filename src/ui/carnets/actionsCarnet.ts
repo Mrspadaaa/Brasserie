@@ -5,7 +5,7 @@ import { FinanceService } from '../../services/financeService';
 import { StorageService } from '../../services/storage';
 import type { MagasinCarnets } from '../../services/carnetsStore';
 import { lireCarnets, nouvelIdCarnet, type CarnetDoc } from '../../domain/carnets/modele';
-import { avecPrixEstime, deplacer, etatSortie, idPlanDuCarnet, planAuCalendrier, planDepuisChoix, planOuvertDuCarnet, planSuitCarnet, planSuitChoix, poserSortie, ranger,
+import { avecPrixEstime, deplacer, etatSortie, idPlanDuCarnet, planAuCalendrier, planDepuisChoix, planOuvertDuCarnet, planRepris, planSuitCarnet, planSuitChoix, planSuiviDuCarnet, poserSortie, ranger,
   supprimerCarnet, supprimerLigne, type CibleLigne, type EcritureCarnet, type Resultat } from '../../domain/carnets/operations';
 import { EVENEMENT_CALENDRIER } from '../calendrier/LienSection';
 import { montant, type CarnetV } from './EtatIA';
@@ -30,17 +30,19 @@ export function actionsCarnet(x: ActionsV) {
   };
   /** L-11 : le plan d'À venir que le carnet suit (brouillon ou actif) ; sa date et son prix sont ceux que le carnet dit. */
   const planOuvert = (c: CarnetDoc) => planOuvertDuCarnet(c, finances.plans, finances.transactions, finances.payments);
-  /** L-12 : réalisé ou archivé, le projet ne se pose plus au calendrier ni ne se place. */
-  const sortieFinie = (c: CarnetDoc) => { const e = sortieV(c)?.etat; return e === 'realise' || e === 'archive'; };
+  /** CA13-3 : le plan suivi, ouvert ou archivé ; archivé, sa date et son prix restent ceux que le carnet dit (les derniers posés). */
+  const planSuivi = (c: CarnetDoc) => planSuiviDuCarnet(c, finances.plans, finances.transactions, finances.payments);
+  /** L-12 : réalisé, le projet ne se pose plus au calendrier ni ne se place. CA13-3 : archivé (mis de côté), il s'y remet. */
+  const sortieFinie = (c: CarnetDoc) => sortieV(c)?.etat === 'realise';
   /** L-11 : la date dite par le carnet est celle de son plan (déplacé au Calendrier ou dans À venir), avec sa précision. */
   const avecDateDuPlan = (c: CarnetDoc): CarnetDoc => {
-    const pl = planOuvert(c);
+    const pl = planSuivi(c);
     return pl && /^\d{4}-\d{2}-\d{2}/.test(pl.date ?? '') ? { ...c, date: pl.date.slice(0, 10), precision: pl.upgrade?.datePrecision === 'day' ? 'semaine' : 'mois' } : c;
   };
   const enV = (c: CarnetDoc): CarnetV => { const s = sortieV(c); const d = avecDateDuPlan(c); return s ? versV({ ...d, carnet: { ...c.carnet, sortie: s } } as CarnetDoc) : versV(d); };
   /** L-11 : le prix estimé que dit le carnet : le montant de son plan s'il en suit un, sinon le sien. */
   const prixDuCarnet = (c: CarnetDoc): number | undefined => {
-    const pl = planOuvert(c);
+    const pl = planSuivi(c);
     if (pl) return pl.amountCents > 0 ? pl.amountCents : undefined;
     return typeof c.estimatedCost === 'number' && c.estimatedCost > 0 ? Math.round(c.estimatedCost * 100) : undefined;
   };
@@ -99,7 +101,7 @@ export function actionsCarnet(x: ActionsV) {
     const doc = (lundi ? { ...reste, date: lundi, precision } : reste) as CarnetDoc;
     const r = appliquer({ ok: true, ecritures: [{ op: 'put', doc }], inverse: [{ op: 'put', doc: c }], avis: lundi ? 'Daté' : 'Sans date' });
     /* L-11 : la date posée au carnet est celle de son plan (« Posé sur » d'À venir, la barre du Calendrier) ; « Plus tard » ne le déplace pas */
-    const pl = planOuvert(c);
+    const pl = planSuivi(c);
     if (r && pl && lundi) { const n = planSuitCarnet(pl, { date: lundi, precision }); if (n !== pl) void ecrirePlanLie(n); }
     return r;
   }
@@ -112,10 +114,15 @@ export function actionsCarnet(x: ActionsV) {
     const jour = jourIso(maintenant()), le = maintenant().toISOString();
     const date = c.date && /^\d{4}-\d{2}-\d{2}/.test(c.date) ? c.date.slice(0, 10) : jour;
     const ecrirePlan = p.ecrirePlan ?? ((pl: FinancialPlan) => FinanceService.saveUpgrade(pl));
-    const deja = finances.plans.find(x => x.id === idPlanDuCarnet(c.id));
+    /* CA13-3 : le plan déjà lié (sa sortie), même sous une autre clé ou archivé, plutôt qu'un second achat prévu */
+    const deja = finances.plans.find(x => x.id === idPlanDuCarnet(c.id)) ?? planSuivi(c);
     if (!c.date && !deja) dater(c, lundiIso(jour), 'semaine');
-    const chiffre = deja && deja.status === 'draft' && deja.upgrade?.sourceCarnetId === c.id ? avecPrixEstime(deja, c) : deja;
-    const plan = chiffre ?? planAuCalendrier(c, { le, date });
+    /* CA13-3 : un plan archivé est repris (brouillon), sa date et son prix gardés */
+    const repris = deja && planRepris(deja);
+    const chiffre = repris && repris.status === 'draft' && repris.upgrade?.sourceCarnetId === c.id ? avecPrixEstime(repris, c) : repris;
+    /* CA13-3 : le plan lié sans date (« Sans date » d'À venir) se pose à la date du carnet, ou aujourd'hui : Au calendrier le montre */
+    const datePosee = chiffre && !/^\d{4}-\d{2}-\d{2}/.test(chiffre.date ?? '') ? { ...chiffre, date, ...(chiffre.upgrade ? { upgrade: { ...chiffre.upgrade, datePrecision: 'day' as const } } : {}) } : chiffre;
+    const plan = datePosee ?? planAuCalendrier(c, { le, date });
     if (plan !== deja) await ecrirePlan(plan);
     if (!deja) appliquer(poserSortie(magasin.lire(), { carnetId: c.id, planId: plan.id, le }));
     const change = plan !== deja || !c.date;
@@ -124,7 +131,7 @@ export function actionsCarnet(x: ActionsV) {
       annuler([{ op: 'put', doc: c }]);
     } : undefined;
     const prix = plan.amountCents > 0 ? ` · −${montant(plan.amountCents)} CHF` : '';
-    const texte = !change ? '' : deja ? `${plan.title} : ${plan !== deja ? 'prix estimé porté' : 'au calendrier'}${prix}` : `${plan.title} : achat prévu posé${prix}`;
+    const texte = !change ? '' : deja ? `${plan.title} : ${deja.status === 'cancelled' ? 'remis au calendrier' : plan !== deja ? 'prix estimé porté' : 'au calendrier'}${prix}` : `${plan.title} : achat prévu posé${prix}`;
     window.dispatchEvent(new CustomEvent(EVENEMENT_CALENDRIER, { detail: { date: deja?.date || date, id: plan.id, ...(defaire ? { annuler: defaire, texte } : {}) } }));
   }
 
@@ -136,6 +143,7 @@ export function actionsCarnet(x: ActionsV) {
     const existant = finances.plans.find(x => x.id === plan.id);
     /* L-10, L-12 : un plan supprimé d'À venir est reposé ; un plan suivi prend l'étape et le prix du choix (sans montant seulement, Q-1) */
     if (!existant) { await ecrirePlanLie(plan); appliquer(poserSortie(magasin.lire(), { carnetId: c.id, planId: plan.id, le })); }
+    else if (existant.status === 'cancelled') await ecrirePlanLie(planRepris(existant));
     else await planSuitLeChoix(c);
     const date = existant?.date || plan.date;
     window.dispatchEvent(new CustomEvent(EVENEMENT_CALENDRIER, { detail: { date, id: plan.id } }));
@@ -163,7 +171,7 @@ export function actionsCarnet(x: ActionsV) {
     const r = appliquer(poserSortie(magasin.lire(), { carnetId: c.id, planId: plan.id, le }));
     if (r) p.onMessage?.('Dans À venir.');
   }
-  return { sortieV, planOuvert, sortieFinie, avecDateDuPlan, enV, prixDuCarnet, ecrirePlanLie, planSuitLeChoix, voirSortie, ajouterEnFacon, ajouterAuSuggere,
+  return { sortieV, planOuvert, planSuivi, sortieFinie, avecDateDuPlan, enV, prixDuCarnet, ecrirePlanLie, planSuitLeChoix, voirSortie, ajouterEnFacon, ajouterAuSuggere,
     retirerCriteres, dater, auCalendrier, placer, supprimerAvecPlan, envoyerAVenir };
 }
 export type ActionsCarnet = ReturnType<typeof actionsCarnet>;
