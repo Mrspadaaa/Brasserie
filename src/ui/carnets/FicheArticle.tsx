@@ -14,11 +14,13 @@
  * relevée » : aucune date de relève, aucun prix relevé, aucune baisse.
  */
 import React from 'react';
-import { Camera, Check, ChevronLeft, ExternalLink, Eye } from 'lucide-react';
+import { Camera, Check, ChevronLeft, ChevronRight, ExternalLink, Eye, Pencil } from 'lucide-react';
 import { Bascule, estExemple, mesureCritere, nombreValeur } from './CarteArticle';
 import { normaliser } from '../../domain/carnets/analyseLocale';
-import { nombreTexte, placesDe, prixTexte, tableau as calculerTableau, type Place } from '../../domain/carnets/comparer';
-import { dateCourte, Provenance, rangTexte, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
+import { nombreTexte, placesDe, tableau as calculerTableau, type Place } from '../../domain/carnets/comparer';
+import { parsePrix } from '../../domain/finance/upgradeRing';
+import { dateCourte, montant, Provenance, rangTexte, valeurTexte, type ArticleV, type ContenuCarnetV, type CritereV, type FaconV, type ValeurV } from './EtatIA';
+import './fiche-article.css';
 import { marquerCassee, photoCassee, VignetteObjet } from './pictos';
 
 export interface FicheArticleProps {
@@ -42,7 +44,19 @@ export interface FicheArticleProps {
   onChoisir?: () => void;
   /** Ouvrir une autre offre de la même machine. */
   onOffre?: (articleId: string) => void;
+  /** L-9 : poser ou corriger le prix de l'article (centimes, CHF). */
+  onPrix?: (centimes: number) => void;
+  /** L-16 : l'article suivant ou précédent du carnet (balayer, ou ‹ ›). */
+  onSuivant?: () => void;
+  onPrecedent?: () => void;
 }
+
+/** L-15 : « 2 495,60 CHF », le format de la liste et du carnet (`montant`) ; prix inconnu : null. */
+const prixTexte = (centimes: number | undefined, devise: string): string | null => { const m = montant(centimes); return m ? `${m} ${devise}` : null; };
+/** L-15 (CA12-M4-8) : le mono est pour ce qui se mesure ; « RAL 9002 », « avec groupe frigorifique » restent en texte. */
+const estChiffre = (t: string) => /^[−-]?\d[\d\s\u202f.,']*$/.test(t);
+/** L-15 (CA12-M4-9) : « 1.845 » lu sur une page allemande est un millier ; dit par `valeurTexte` (« 1 845 »), jamais « 1,845 ». */
+const milliersAPoint = (v: ValeurV) => typeof v.valeur === 'string' && /^\d{1,3}(\.\d{3})+$/.test(v.valeur.trim());
 
 interface Heros { nom: string; libelle: string; texte: string; unite?: string; valeurs: number[] | null; moi: number | null; sens: string; rang?: number; sur: number }
 
@@ -117,7 +131,7 @@ export function FicheArticle(p: FicheArticleProps) {
   /* La grille (h01-6) : les valeurs de l'article (le héros à part), puis les colonnes du carnet qu'il ne publie pas, puis le délai et
      l'origine ; 4 cases au moins quand il y a de quoi les remplir, jamais une valeur inventée. */
   const cases: Case[] = Object.entries(a.valeurs).filter(([nom]) => normaliser(nom) !== nomHeros).map(([nom, v]: [string, ValeurV]) => {
-    const n = typeof v.valeur === 'string' ? nombreValeur(v) : null;
+    const n = typeof v.valeur === 'string' && !milliersAPoint(v) ? nombreValeur(v) : null;
     return { nom, texte: n !== null ? nombreTexte(n) : valeurTexte(v), ...(v.unite ? { unite: v.unite } : {}), rang: rangDe(nom), exemple: v.origine === 'exemple' };
   });
   const dits = new Set([nomHeros, ...cases.map(c => normaliser(c.nom))]);
@@ -135,9 +149,23 @@ export function FicheArticle(p: FicheArticleProps) {
     ? k.articles.filter(x => x.nom && normaliser(x.nom) === normaliser(a.nom!)).sort((x, y) => (x.prixCentimes ?? Infinity) - (y.prixCentimes ?? Infinity))
     : [a];
   const qui = a.vendeur ?? a.domaine;
+  const [poserPrix, setPoserPrix] = React.useState(false);
+  /* L-16 (CA12-M4-18) : balayer à gauche, l'article suivant ; à droite, le précédent (un geste franc, surtout horizontal) */
+  const depart = React.useRef<{ x: number; y: number } | null>(null);
+  const balayer = {
+    onTouchStart: (e: React.TouchEvent) => { const t = e.touches[0]; depart.current = t ? { x: t.clientX, y: t.clientY } : null; },
+    onTouchEnd: (e: React.TouchEvent) => {
+      const d = depart.current, t = e.changedTouches[0];
+      depart.current = null;
+      if (!d || !t) return;
+      const dx = t.clientX - d.x, dy = t.clientY - d.y;
+      if (Math.abs(dx) < 64 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
+      (dx < 0 ? p.onSuivant : p.onPrecedent)?.();
+    }
+  };
 
   return (
-    <article className="cn-page cn-fiche">
+    <article className="cn-page cn-fiche" {...(p.onSuivant || p.onPrecedent ? balayer : {})}>
       <div className="cn-tete">
         {/* critique 6, n° 33 (h01-6 « ‹ Articles · Embouteillage ») : le fil d'Ariane tient sur une ligne à 390, le titre coupé sur un
             mot (`filArianeCourt`) ; à 1280, le titre entier. Le nom complet reste lu par le lecteur d'écran. */}
@@ -148,6 +176,8 @@ export function FicheArticle(p: FicheArticleProps) {
         </button>
         <span className="cn-sp" />
         {rang !== undefined && sur ? <span className="cn-pastille cn-pastille-vert">{rangTexte(rang)} sur {sur}</span> : null}
+        {p.onPrecedent && <button type="button" className="cn-ico cn-fiche-nav" aria-label="Article précédent" onClick={p.onPrecedent}><ChevronLeft size={20} aria-hidden /></button>}
+        {p.onSuivant && <button type="button" className="cn-ico cn-fiche-nav" aria-label="Article suivant" onClick={p.onSuivant}><ChevronRight size={20} aria-hidden /></button>}
       </div>
       {/* n° 8 : le cadre photo est toujours là (h01-6) ; sans photo, l'objet dessiné en grand. Critique 6, n° 20 (D-78) : la photo lue
           de la page ; celle du banc est simulée et le dit (« exemple »). */}
@@ -175,7 +205,7 @@ export function FicheArticle(p: FicheArticleProps) {
           {heros.valeurs && heros.moi !== null ? <Piste valeurs={heros.valeurs} moi={heros.moi} sens={heros.sens} /> : null}
         </div>
       )}
-      {(prix || qui) && (
+      {(prix || qui || p.onPrix) && (
         <>
           <h3 className="cn-sous">{offres.length > 1 ? <>{offres.length} offres <span className="cn-mut">même machine</span></> : 'Offre'}</h3>
           <div className="cn-offres">
@@ -190,16 +220,21 @@ export function FicheArticle(p: FicheArticleProps) {
                     {o.dispo && <span className="cn-mut">{o.dispo}</span>}
                   </span>
                   {p2 && <PrixMono texte={p2} />}
+                  {!p2 && moi && <span className="cn-mut">prix ?</span>}
                 </>
               );
               return (
                 <div key={o.id} className={`cn-offre${moi ? ' cn-offre-moi' : ''}`}>
                   {!moi && p.onOffre ? <button type="button" className="cn-offre-corps" onClick={() => p.onOffre!(o.id)}>{corps}</button> : <span className="cn-offre-corps">{corps}</span>}
+                  {moi && p.onPrix && !poserPrix && (p2
+                    ? <button type="button" className="cn-ico" aria-label="Modifier le prix" onClick={() => setPoserPrix(true)}><Pencil size={16} aria-hidden /></button>
+                    : <button type="button" className="cn-lien cn-poser-prix-ouvrir" onClick={() => setPoserPrix(true)}>Poser le prix</button>)}
                   {o.url && <a className="cn-lien" href={o.url} target="_blank" rel="noreferrer noopener">Ouvrir <ExternalLink size={16} aria-hidden /></a>}
                 </div>
               );
             })}
           </div>
+          {poserPrix && p.onPrix && <PoserPrix centimes={a.prixCentimes} onPoser={c => { p.onPrix!(c); setPoserPrix(false); }} onFermer={() => setPoserPrix(false)} />}
         </>
       )}
       {cases.length > 0 && (
@@ -209,7 +244,7 @@ export function FicheArticle(p: FicheArticleProps) {
             {cases.map(c => (
               <div key={c.nom}>
                 <dt>{c.nom}</dt>
-                <dd>{c.texte === null ? <span className="cn-mut">non publié</span> : <><span className="cn-mono">{c.texte}</span>{c.unite ? <span className="cn-mono"> {c.unite}</span> : ''}</>}
+                <dd>{c.texte === null ? <span className="cn-mut">non publié</span> : <><span className={estChiffre(c.texte) ? 'cn-mono' : undefined}>{c.texte}</span>{c.unite ? <span> {c.unite}</span> : ''}</>}
                   {c.rang ? <span className="cn-vert cn-carac-rang"> {rangTexte(c.rang)}</span> : null}
                   {c.exemple && <> <Provenance origine="exemple" /></>}
                 </dd>
@@ -237,6 +272,26 @@ export function FicheArticle(p: FicheArticleProps) {
         </>
       )}
     </article>
+  );
+}
+
+/**
+ * L-9 : le prix de l'article, tapé (« 2495.60 », « 2 495,60 », « 2'495 ») ; jamais type="number" (saisie-mobile), clavier décimal ;
+ * illisible : dit, la valeur d'avant reste.
+ */
+function PoserPrix({ centimes, onPoser, onFermer }: { centimes?: number; onPoser: (centimes: number) => void; onFermer: () => void }) {
+  const [texte, setTexte] = React.useState(montant(centimes) ?? '');
+  const [refus, setRefus] = React.useState(false);
+  const valider = () => { const c = parsePrix(texte); if (c === null) { setRefus(true); return; } onPoser(c); };
+  return (
+    <form className="cn-poser-prix" onSubmit={e => { e.preventDefault(); valider(); }}>
+      <input type="text" inputMode="decimal" enterKeyHint="done" autoComplete="off" autoFocus className="cn-poser-prix-champ" aria-label="Prix de l’article, CHF"
+        aria-invalid={refus || undefined} value={texte} onChange={e => { setTexte(e.target.value); setRefus(false); }} />
+      <span className="cn-mut">CHF</span>
+      <button type="submit" className="cn-action">OK</button>
+      <button type="button" className="cn-second" onClick={onFermer}>Annuler</button>
+      {refus && <p role="alert" className="cn-poser-prix-refus">« {texte.trim()} » : ce n’est pas un prix.</p>}
+    </form>
   );
 }
 
