@@ -1,0 +1,46 @@
+S cible ZZ TEST — Salaire · Charges fixes · 5,00 CHF · à payer · 24 déc. · dans 30 j · sans pièce
+S2 boutons ["Calendrier @130,804 66x40","Brassins @195,804 65x40","Stocks, 11 articles à commander @260,804 65x40","Clients @325,804 65x40","Fermer @330,283 44x44","Confirmer le paiement @16,451 358x44","Modifier @16,503 122x44","Avoir ou remboursement @146,503 228x44","Échéance de la facture : 24 déc. @16,625 107x28","Retirer cette écriture @16,764 358x44"]
+S3 boutons ["Fermer @330,167 44x44","Confirmer le paiement @16,335 358x44","Modifier @16,387 122x44","Avoir ou remboursement @146,387 228x44","Échéance de la facture : 24 déc. @16,509 107x28","Retirer cette écriture @16,648 358x44","Garder @170,777 58x28","Confirmer le retrait @234,775 129x32"]
+S confirme Confirmer le retrait
+S4 0 ¦ Pourquoi les autres frais pèsent autant ? ¦ Par date ¦ Filtres ¦ Doublons ¦ Apport ou prélèvement privé ¦ Archives ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ 11 ¦ Stocks ¦ Clients ¦ ZZ TEST — Salaire ¦ Charges fixes · 24 nov. 2026 ¦ 5,00 ¦ CHF ¦  ¦ Écriture annulée. Justificatif et historique conservés. ¦  ¦ Sans justificatif ¦ Paiements
+S cible ZZ TEST — Loyer · Charges fixes · 4,00 CHF · à payer · 24 déc. · dans 30 j · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Abonnement · Charges fixes · 2,00 CHF · payé 22 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Vente · Ventes · + 3,80 CHF · à encaisser · 24 déc. · dans 30 j · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Autre entrée · Autre entrée · + 1,10 CHF · encaissé 23 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S cible ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce
+S confirme Confirmer le retrait
+S9 restants ["Remboursement ZZ TEST — Achat · Brassage · + 1,00 CHF · encaissé aujourd’hui · banque · sans pièce","ZZ TEST — Achat · Brassage · 4,50 CHF · payé 19 nov. · banque · sans pièce","ZZ TEST — Impôts · Impôts · 1,20 CHF · à payer · 24 déc. · dans 30 j · sans pièce","ZZ TEST — Saisir un autre · Autres frais · 0,60 CHF · payé aujourd’hui · banque · sans pièce","ZZ TEST — Autre sortie · Autres frais · 1,00 CHF · payé 20 nov. · banque 
+INTROUVABLE Solde et paramètres financiers
+S9 {"depenser":"−464 CHF à dépenser sans passer sous 0 (S53, dans le cadre) : voir ses causes","caisse":"","synthese":"","parametres":"🍺 ¦ L'Affinée ¦ Tout ¦ A ¦ G ¦ Synthèse ¦ Opérations ¦ Prévisions ¦ Annuel ¦  ¦ Toutes les dates ¦  ¦ 114 ¦ Brassage ¦ 23 ¦ Nettoyage ¦ 135 ¦ Autres ¦ 5 500 ¦ Matériel ¦ +9 493 ¦ Apports ¦  ¦ payé ¦ 270,50 ¦ à payer ¦ 1,20 ¦ dépensé ¦ 271,70 ¦  ¦ Brassage ¦ 113,90 ¦  ¦ Remboursement ZZ TEST — Achat ¦ ✓ enc

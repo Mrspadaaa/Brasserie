@@ -1,6 +1,6 @@
 OK — saisie des écritures : borne dite, toucher pose le jour, « + autre » choisit le client, Modifier aux blocs de la saisie
 
-PRÊT À METTRE EN LIGNE <hash> (voir la fin du fichier)
+PRÊT À METTRE EN LIGNE 8eb141472
 
 ## Plan (cause, fichier, correctif) par constat
 

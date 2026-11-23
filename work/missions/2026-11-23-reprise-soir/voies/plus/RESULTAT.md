@@ -1,5 +1,7 @@
 OK — le voile du menu + n'est plus rogné : le défilement passe de la pile à un conteneur intérieur (preuve en ligne à faire)
 
+PRÊT À METTRE EN LIGNE 48e0d441a
+
 ## Cause
 Capture 2340-plus.jpg ouverte : le panneau flouté commence au bord gauche des pilules (x≈82 px sur 390) au lieu de déborder de 78 px à gauche ; cartes de Bord lisibles à gauche du panneau, tronquées par son bord net.
 `.plus-pile` porte `overflow-y: auto` (PLUS-MENU-COUPE, 22.11, pour que la pile défile). Un `overflow` rogne les pseudo-éléments positionnés de la pile : son voile propre `.plus-pile::before` (left -78 px, top -120 px, bottom -76 px) était rogné au cadre de la pile. Le fichier navigation.css est identique de tour30 à tour35 : aucune règle récente (frise.css, entete.css, DashboardTab) n'est en cause ; la frise ne touche `.plus-pile` que par la règle paysage `deux-blocs` (inchangée). Le « nouveau » vient de Bord : longue liste de texte derrière le panneau, que l'ancien écran masquait peu. Le commit exact ne se retrouve pas par git : l'historique est comprimé en un commit (875751dcb). Cause établie par lecture du CSS et de la capture, non rejouée en ligne (voie sans capture locale).

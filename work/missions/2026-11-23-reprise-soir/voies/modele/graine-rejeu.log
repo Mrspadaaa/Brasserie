@@ -1,0 +1,7 @@
+[WebServer]   ➜  Local:   http://127.0.0.1:4394/
+
+
+Running 1 test using 1 worker
+
+[1/1] [android-390] › e2e\calendrier\etat-coherent.spec.ts:170:1 › CAL-ETAT-COHERENT : après chaque geste, durée, étiquette, aujourd'hui et rangées disent la même fenêtre
+  1 passed (58.8s)

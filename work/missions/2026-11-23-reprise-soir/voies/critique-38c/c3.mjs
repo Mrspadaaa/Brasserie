@@ -1,0 +1,10 @@
+import { ouvrir, sleep, photo, log, boutons, toucher, ou, glisser, CAP } from './outil.mjs';
+import { etat } from './lire.mjs';
+import { court, outils } from './commun.mjs';
+import fs from 'node:fs'; import path from 'node:path';
+const { page, cdp, lacher } = await ouvrir();
+const { tap } = outils(page, cdp);
+await page.evaluate(() => scrollTo(0, 0));
+log('poignées', await boutons(page, 'Poign|Fenêtre|cadre'));
+log('cadre', await page.evaluate(() => { const c = document.querySelector('.ent-cadre'); if (!c) return null; const r = c.getBoundingClientRect(); return [c.getAttribute('aria-label'), r.left, r.right, r.top, r.bottom, [...c.querySelectorAll('*')].filter((x) => x.getAttribute('aria-label') || x.getAttribute('role')).map((x) => (x.getAttribute('aria-label') || x.getAttribute('role')) + '@' + Math.round(x.getBoundingClientRect().left))]; }));
+lacher();

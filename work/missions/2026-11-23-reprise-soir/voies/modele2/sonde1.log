@@ -1,0 +1,8 @@
+
+Running 1 test using 1 worker
+
+[1/1] [android-390] › e2e\calendrier\zz-modele2.spec.ts:5:1 › sonde An
+[android-390] › e2e\calendrier\zz-modele2.spec.ts:5:1 › sonde An
+{"rb":{"l":12,"w":366},"rc":{"l":66.390625,"r":323.578125},"bandes":[{"pas":"mois","noms":["A","S","O","N","D","J","F","M","A","M","J","J","A","S","O","N","D"]}],"axe":["2026-08-10","2028-01-09","2026-10-26","2027-10-24"]}
+
+  1 passed (3.0s)

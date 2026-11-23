@@ -1,0 +1,65 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/calendrierModele.test.tsx[2m > [22mT29-8 : l'année à janvier sur la bande de l'An (390 px : un mois = 30 px, « S53 » = 28 px)[2m > [22m« 2027 » ne tient pas : janvier dit « ’27 », les autres mois leur initiale
+[31m[1mAssertionError[22m: expected 'N D J F M A M J J A S O' to match /’27/[39m
+
+[32m- Expected:[39m 
+/’27/
+
+[31m+ Received:[39m 
+"N D J F M A M J J A S O"
+
+[36m [2m❯[22m tests/unit/calendrierModele.test.tsx:[2m44:45[22m[39m
+    [90m 42| [39m  it('« 2027 » ne tient pas : janvier dit « ’27 », les autres mois leu…
+    [90m 43| [39m    [35mconst[39m n [33m=[39m [34mnoms[39m([32m'2026-10-26'[39m[33m,[39m [34m53[39m[33m,[39m [34m6.9[39m[33m,[39m [34m28[39m)[33m;[39m
+    [90m 44| [39m    [34mexpect[39m(n[33m.[39m[34mmap[39m((x) [33m=>[39m x[33m.[39mtexte)[33m.[39m[34mjoin[39m([32m' '[39m))[33m.[39m[34mtoMatch[39m([36m/’27/[39m)[33m;[39m
+    [90m   | [39m                                            [31m^[39m
+    [90m 45| [39m    expect(n.filter((x) => x.texte.length === 1).length).toBeGreaterTh…
+    [90m 46| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/calendrierModele.test.tsx[2m > [22mE10 : la période de l'app changée pendant la rotation en paysage[2m > [22mle retour en portrait rend la période de l'app choisie en paysage, pas l'ancienne
+[31m[1mAssertionError[22m: expected '2026-11-23' to be '2027-02-01' // Object.is equality[39m
+
+Expected: [32m"202[7m7-02-01[27m"[39m
+Received: [31m"202[7m6-11-23[27m"[39m
+
+[36m [2m❯[22m tests/unit/calendrierModele.test.tsx:[2m66:27[22m[39m
+    [90m 64| [39m    e = reduire(e, { type: 'app', periode: dates('2027-02-01', '2027-0…
+    [90m 65| [39m    e [33m=[39m [34mreduire[39m(e[33m,[39m { type[33m:[39m [32m'orientation'[39m[33m,[39m paysage[33m:[39m [35mfalse[39m }[33m,[39m [33mH[39m)[33m;[39m
+    [90m 66| [39m    [34mexpect[39m([34mlire[39m(e[33m,[39m [33mH[39m)[33m.[39mdu)[33m.[39m[34mtoBe[39m([32m'2027-02-01'[39m)[33m;[39m
+    [90m   | [39m                          [31m^[39m
+    [90m 67| [39m    [34mexpect[39m([34mlire[39m(e[33m,[39m [33mH[39m)[33m.[39mau)[33m.[39m[34mtoBe[39m([32m'2027-02-28'[39m)[33m;[39m
+    [90m 68| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/calendrierModele.test.tsx[2m > [22mT32-1 : régler à nouveau la même période de l'app recadre la frise[2m > [22maprès un geste, la même période (une nouvelle valeur de l'App) repose le cadre sur elle
+[31m[1mAssertionError[22m: expected '2027-03-01' to be '2026-12-14' // Object.is equality[39m
+
+Expected: [32m"202[7m6-12-14[27m"[39m
+Received: [31m"202[7m7-03-01[27m"[39m
+
+[36m [2m❯[22m tests/unit/calendrierModele.test.tsx:[2m90:30[22m[39m
+    [90m 88| [39m    /* le brasseur règle la même période : une nouvelle valeur, même c…
+    [90m 89| [39m    rerender(<Sonde app={dates('2026-12-14', '2026-12-27')} sortie={so…
+    [90m 90| [39m    [34mexpect[39m(sortie[33m.[39mcadre[33m![39m[33m.[39mdu)[33m.[39m[34mtoBe[39m([32m'2026-12-14'[39m)[33m;[39m
+    [90m   | [39m                             [31m^[39m
+    [90m 91| [39m    [34mexpect[39m(sortie[33m.[39mcadre[33m![39m[33m.[39mfenetre[33m.[39msemaines)[33m.[39m[34mtoBe[39m([34m2[39m)[33m;[39m
+    [90m 92| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m4 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 21:53:44
+[2m   Duration [22m 2.20s[2m (transform 662ms, setup 279ms, collect 1.07s, tests 21ms, environment 608ms, prepare 63ms)[22m
+

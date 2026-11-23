@@ -1,0 +1,17 @@
+import { ouvrir, sleep, photo, log, ou, toucher } from './outil.mjs';
+import { outils, texte } from './commun.mjs';
+import fs from 'node:fs';
+const { page, cdp, lacher } = await ouvrir();
+const o = outils(page, cdp);
+setTimeout(() => { log('F DÉLAI'); lacher(); process.exit(2); }, 150000);
+await o.nav('Finances'); await o.tap('Synthèse', 'button,[role=tab]'); await sleep(1200);
+const t = await texte(page);
+const r = { caisse: (/En caisse\n([^\n]+)\n([^\n]+)/.exec(t) || []).slice(1).join(' | '), synthese: (/Entré\n([^\n]+)\nDépensé\n([^\n]+)/.exec(t) || []).slice(1).join(' / ') };
+await o.tap('Solde et paramètres financiers'); await sleep(1500); await photo(page, 'F4-solde', true);
+r.depart = (/aujourd’hui ([0-9  ,]+)/.exec(await texte(page)) || [])[1];
+await page.keyboard.press('Escape'); await sleep(600);
+await o.tap('Actions rapides'); await sleep(800); await o.tap('Écriture, à la main'); await sleep(1200);
+r.monMois = (/Mon mois\n([^\n]+)/.exec(await texte(page)) || [])[1]; await photo(page, 'F5-saisie', true);
+await o.tap('Fermer', 'button'); await sleep(600);
+log('F4', r); fs.writeFileSync('apres.json', JSON.stringify(r, null, 1));
+lacher(); process.exit(0);

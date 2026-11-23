@@ -1,0 +1,170 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 11 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/saisieReprise.test.ts[2m > [22m1. la coche « sans justificatif, c’est normal » de la saisie à la main[2m > [22mcochée : l’apport, la vente et l’autre recette écrivent proofNotNeeded, et la pièce ne compte plus comme sans justificatif
+[31m[1mAssertionError[22m: expected undefined to be true // Object.is equality[39m
+
+[32m- Expected:[39m 
+true
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/unit/saisieReprise.test.ts:[2m33:53[22m[39m
+    [90m 31| [39m    [35mfor[39m ([35mconst[39m g [35mof[39m [[32m'apport'[39m[33m,[39m [32m'vente'[39m[33m,[39m [32m'autrei'[39m] [35mas[39m [35mconst[39m) {
+    [90m 32| [39m      const e = preparer(brouillon(g, { sansJustificatif: true }), ctx…
+    [90m 33| [39m      [34mexpect[39m(e[33m.[39mtransaction[33m.[39mfinance[33m?.[39mproofNotNeeded)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   | [39m                                                    [31m^[39m
+    [90m 34| [39m      [34mexpect[39m([34mjustificatifManquant[39m(e[33m.[39mtransaction))[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m 35| [39m    }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/saisieReprise.test.ts[2m > [22m1. la coche « sans justificatif, c’est normal » de la saisie à la main[2m > [22ml’apport reste un apport : contribution, hors résultat, paiement entrant, avec la coche
+[31m[1mAssertionError[22m: expected { version: 1, …(5) } to match object { kind: 'contribution', …(1) }
+(5 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "kind": "contribution",[22m
+[32m-   "proofNotNeeded": true,[39m
+[2m  }[22m
+
+[36m [2m❯[22m tests/unit/saisieReprise.test.ts:[2m39:35[22m[39m
+    [90m 37| [39m  it('l’apport reste un apport : contribution, hors résultat, paiement…
+    [90m 38| [39m    const e = preparer(brouillon('apport', { sansJustificatif: true })…
+    [90m 39| [39m    expect(e.transaction.finance).toMatchObject({ kind: 'contribution'…
+    [90m   | [39m                                  [31m^[39m
+    [90m 40| [39m    expect(e.paiement).toMatchObject({ direction: 'in', amountCents: 1…
+    [90m 41| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/saisieReprise.test.ts[2m > [22m2. un apport encaissé est une chose de la rangée Ventes du Calendrier[2m > [22mapport payé aujourd’hui : une chose Ventes à son jour, au montant, qui ouvre la pièce, dite « apport »
+[31m[1mAssertionError[22m: expected [] to have a length of 1 but got +0[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m tests/unit/saisieReprise.test.ts:[2m58:15[22m[39m
+    [90m 56| [39m  it('apport payé aujourd’hui : une chose Ventes à son jour, au montan…
+    [90m 57| [39m    const c = deMaPoche(construireModele(entrees([apport('APP-1', 'con…
+    [90m 58| [39m    [34mexpect[39m(c)[33m.[39m[34mtoHaveLength[39m([34m1[39m)[33m;[39m
+    [90m   | [39m              [31m^[39m
+    [90m 59| [39m    expect(c[0]).toMatchObject({ rangee: 'ventes', id: 'paiement-PAY-A…
+    [90m 60| [39m    [34mexpect[39m(c[[34m0[39m][33m.[39mdetail)[33m.[39m[34mtoMatch[39m([36m/apport/i[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/saisieReprise.test.ts[2m > [22m3. la pastille de date suit le doigt[2m > [22mpendant le tirage, la pastille de la frise touchée dit le jour tiré, pas celui d’avant
+[31m[1mTypeError[22m: (0 , dateMontree) is not a function[39m
+[36m [2m❯[22m tests/unit/saisieReprise.test.ts:[2m74:12[22m[39m
+    [90m 72| [39m[34mdescribe[39m([32m'3. la pastille de date suit le doigt'[39m[33m,[39m () [33m=>[39m {
+    [90m 73| [39m  it('pendant le tirage, la pastille de la frise touchée dit le jour t…
+    [90m 74| [39m    expect(dateMontree('date', '2026-10-14', { cle: 'date', iso: '2026…
+    [90m   | [39m           [31m^[39m
+    [90m 75| [39m  })[33m;[39m
+    [90m 76| [39m  it('une autre pastille (échéance, début) garde sa valeur ; au repos,…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/saisieReprise.test.ts[2m > [22m3. la pastille de date suit le doigt[2m > [22mune autre pastille (échéance, début) garde sa valeur ; au repos, la valeur écrite
+[31m[1mTypeError[22m: (0 , dateMontree) is not a function[39m
+[36m [2m❯[22m tests/unit/saisieReprise.test.ts:[2m77:12[22m[39m
+    [90m 75| [39m  })[33m;[39m
+    [90m 76| [39m  it('une autre pastille (échéance, début) garde sa valeur ; au repos,…
+    [90m 77| [39m    expect(dateMontree('echeance', '2026-12-01', { cle: 'date', iso: '…
+    [90m   | [39m           [31m^[39m
+    [90m 78| [39m    [34mexpect[39m([34mdateMontree[39m([32m'date'[39m[33m,[39m [32m'2026-10-14'[39m[33m,[39m [35mnull[39m))[33m.[39m[34mtoBe[39m([32m'2026-10-14'[39m)[33m;[39m
+    [90m 79| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/saisieReprise.test.ts[2m > [22m3. la pastille de date suit le doigt[2m > [22mun jour tiré illisible n’écrase jamais la valeur
+[31m[1mTypeError[22m: (0 , dateMontree) is not a function[39m
+[36m [2m❯[22m tests/unit/saisieReprise.test.ts:[2m81:12[22m[39m
+    [90m 79| [39m  })[33m;[39m
+    [90m 80| [39m  [34mit[39m([32m'un jour tiré illisible n’écrase jamais la valeur'[39m[33m,[39m () [33m=>[39m {
+    [90m 81| [39m    expect(dateMontree('date', '2026-10-14', { cle: 'date', iso: '' })…
+    [90m   | [39m           [31m^[39m
+    [90m 82| [39m  })[33m;[39m
+    [90m 83| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/saisieReprise.test.ts[2m > [22m4. l’avis « Nouvelle version » ne couvre ni l’en-tête ni le contenu[2m > [22mles barres du bas : celles qui touchent le bas de la fenêtre ; l’en-tête et les blocs du milieu n’en sont pas
+[31m[1mTypeError[22m: (0 , hautDesBarresBasses) is not a function[39m
+[36m [2m❯[22m tests/unit/saisieReprise.test.ts:[2m91:12[22m[39m
+    [90m 89| [39m  it('les barres du bas : celles qui touchent le bas de la fenêtre ; l…
+    [90m 90| [39m    const entete = rect(0, 56), contenu = rect(100, 700), nav = rect(7…
+    [90m 91| [39m    [34mexpect[39m([34mhautDesBarresBasses[39m([entete[33m,[39m contenu][33m,[39m [33mH[39m))[33m.[39m[34mtoEqual[39m([])[33m;[39m
+    [90m   | [39m           [31m^[39m
+    [90m 92| [39m    expect(hautDesBarresBasses([entete, contenu, nav], H)).toEqual([74…
+    [90m 93| [39m    [34mexpect[39m([34mhautDesBarresBasses[39m([nav[33m,[39m pied][33m,[39m [33mH[39m))[33m.[39m[34mtoEqual[39m([[34m740[39m[33m,[39m [34m730[39m])[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/saisieReprise.test.ts[2m > [22m4. l’avis « Nouvelle version » ne couvre ni l’en-tête ni le contenu[2m > [22mune barre invisible (hauteur 0) ou hors fenêtre n’en est pas une
+[31m[1mTypeError[22m: (0 , hautDesBarresBasses) is not a function[39m
+[36m [2m❯[22m tests/unit/saisieReprise.test.ts:[2m96:12[22m[39m
+    [90m 94| [39m  })[33m;[39m
+    [90m 95| [39m  it('une barre invisible (hauteur 0) ou hors fenêtre n’en est pas une…
+    [90m 96| [39m    expect(hautDesBarresBasses([rect(800, 800), rect(900, 960)], H)).t…
+    [90m   | [39m           [31m^[39m
+    [90m 97| [39m  })[33m;[39m
+    [90m 98| [39m  it('l’avis se pose juste au-dessus de la barre la plus haute, jamais…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/saisieReprise.test.ts[2m > [22m4. l’avis « Nouvelle version » ne couvre ni l’en-tête ni le contenu[2m > [22ml’avis se pose juste au-dessus de la barre la plus haute, jamais sur elle
+[31m[1mTypeError[22m: (0 , basDeLAvis) is not a function[39m
+[36m [2m❯[22m tests/unit/saisieReprise.test.ts:[2m99:12[22m[39m
+    [90m 97| [39m  })[33m;[39m
+    [90m 98| [39m  it('l’avis se pose juste au-dessus de la barre la plus haute, jamais…
+    [90m 99| [39m    [34mexpect[39m([34mbasDeLAvis[39m([33mH[39m[33m,[39m [[34m740[39m[33m,[39m [34m730[39m]))[33m.[39m[34mtoBe[39m([33mH[39m [33m-[39m [34m730[39m [33m+[39m [34m8[39m)[33m;[39m
+    [90m   | [39m           [31m^[39m
+    [90m100| [39m    [34mexpect[39m([34mbasDeLAvis[39m([33mH[39m[33m,[39m [[34m740[39m]))[33m.[39m[34mtoBe[39m([33mH[39m [33m-[39m [34m740[39m [33m+[39m [34m8[39m)[33m;[39m
+    [90m101| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/saisieReprise.test.ts[2m > [22m4. l’avis « Nouvelle version » ne couvre ni l’en-tête ni le contenu[2m > [22msans barre, il se pose au bas de l’écran avec sa marge
+[31m[1mTypeError[22m: (0 , basDeLAvis) is not a function[39m
+[36m [2m❯[22m tests/unit/saisieReprise.test.ts:[2m103:12[22m[39m
+    [90m101| [39m  })[33m;[39m
+    [90m102| [39m  [34mit[39m([32m'sans barre, il se pose au bas de l’écran avec sa marge'[39m[33m,[39m () [33m=>[39m {
+    [90m103| [39m    [34mexpect[39m([34mbasDeLAvis[39m([33mH[39m[33m,[39m []))[33m.[39m[34mtoBe[39m([34m8[39m)[33m;[39m
+    [90m   | [39m           [31m^[39m
+    [90m104| [39m  })[33m;[39m
+    [90m105| [39m  it('une barre qui monte avec le clavier (pied de la saisie) fait mon…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/saisieReprise.test.ts[2m > [22m4. l’avis « Nouvelle version » ne couvre ni l’en-tête ni le contenu[2m > [22mune barre qui monte avec le clavier (pied de la saisie) fait monter l’avis avec elle
+[31m[1mTypeError[22m: (0 , hautDesBarresBasses) is not a function[39m
+[36m [2m❯[22m tests/unit/saisieReprise.test.ts:[2m106:39[22m[39m
+    [90m104| [39m  })[33m;[39m
+    [90m105| [39m  it('une barre qui monte avec le clavier (pied de la saisie) fait mon…
+    [90m106| [39m    const sansClavier = basDeLAvis(H, hautDesBarresBasses([rect(740, 8…
+    [90m   | [39m                                      [31m^[39m
+    [90m107| [39m    const avecClavier = basDeLAvis(500, hautDesBarresBasses([rect(440,…
+    [90m108| [39m    [34mexpect[39m(sansClavier)[33m.[39m[34mtoBe[39m([34m68[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m11 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (14)[39m
+[2m   Start at [22m 21:51:29
+[2m   Duration [22m 2.37s[2m (transform 709ms, setup 272ms, collect 1.06s, tests 21ms, environment 613ms, prepare 62ms)[22m
+

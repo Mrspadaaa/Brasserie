@@ -1,0 +1,50 @@
+[WebServer]   ➜  Local:   http://127.0.0.1:4403/
+
+
+Running 1 test using 1 worker
+
+[1/1] [android-390] › e2e\calendrier\etat-coherent.spec.ts:170:1 › CAL-ETAT-COHERENT : après chaque geste, durée, étiquette, aujourd'hui et rangées disent la même fenêtre
+  1) [android-390] › e2e\calendrier\etat-coherent.spec.ts:170:1 › CAL-ETAT-COHERENT : après chaque geste, durée, étiquette, aujourd'hui et rangées disent la même fenêtre 
+
+    Error: Property failed after 151 tests
+    { seed: 7, path: "150:2", endOnFailure: true }
+    Counterexample: [app plage 0 mois, 13 mois,recharger /*replayPath="BAB:F"*/]
+    Shrunk 1 time(s)
+
+    Encountered failures were:
+    - [app plage -23 mois, 13 mois,recharger /*replayPath="BAB:F"*/]
+    - [app plage 0 mois, 13 mois,recharger /*replayPath="BAB:F"*/]
+        at buildError (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2497:16)
+        at asyncThrowIfFailed (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2509:8)
+    [cause]: Error: I1 durée « 13 mois » ≠ cadre 65.3 sem. : app plage 0 mois, 13 mois → recharger | app « 1er nov. 2026 → 1er déc. 202701.11.26–01.12.27 », bouton « 13 mois », étiquette « oct. 2026 – déc. 2027 »
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+        at verifier (C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\etat-coherent.spec.ts:97:141)
+        at Object.run (C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\etat-coherent.spec.ts:116:63)
+        at runAsync (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:9691:27)
+        at internalAsyncModelRun (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:9693:9)
+        at Module.asyncModelRun (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:9721:2)
+        at C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\etat-coherent.spec.ts:184:5
+        at AsyncProperty.run (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:1241:19)
+        at asyncPropertyExecution (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2604:14)
+        at asyncRunIt (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2597:15)
+        at C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\etat-coherent.spec.ts:177:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    e2e\resultats\arbre\calendrier-etat-coherent-C-79af7-gées-disent-la-même-fenêtre-android-390\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    e2e\resultats\arbre\calendrier-etat-coherent-C-79af7-gées-disent-la-même-fenêtre-android-390\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: e2e\resultats\arbre\calendrier-etat-coherent-C-79af7-gées-disent-la-même-fenêtre-android-390\error-context.md
+
+
+  Slow test file: [android-390] › e2e\calendrier\etat-coherent.spec.ts (24.0m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 failed
+    [android-390] › e2e\calendrier\etat-coherent.spec.ts:170:1 › CAL-ETAT-COHERENT : après chaque geste, durée, étiquette, aujourd'hui et rangées disent la même fenêtre 

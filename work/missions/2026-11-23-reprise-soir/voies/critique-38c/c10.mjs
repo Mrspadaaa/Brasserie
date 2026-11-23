@@ -1,0 +1,11 @@
+import { ouvrir, sleep, photo, log, boutons, toucher, ou } from './outil.mjs';
+import { outils } from './commun.mjs';
+const { page, cdp, lacher } = await ouvrir();
+const { tap } = outils(page, cdp);
+const nav = async (n) => { const r = await ou(page, n, 'nav button, nav a'); await toucher(cdp, r.x, r.y); await sleep(3000); };
+await nav('Finances');
+await tap('Actions rapides'); await sleep(1000); await tap('Écriture, à la main'); await sleep(1500);
+await photo(page, 'C10-00-sortes', true);
+const dlg = await page.evaluate(() => [...document.querySelectorAll('[role=dialog] button')].filter((b) => b.getBoundingClientRect().width > 0).map((b) => (b.getAttribute('aria-label') || '') + ' ¦ ' + b.textContent.trim().slice(0, 50)));
+log('sortes', dlg);
+lacher();

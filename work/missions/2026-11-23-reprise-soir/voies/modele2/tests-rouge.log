@@ -1,0 +1,58 @@
+[1m[43m DEPRECATED [49m[22m [33m"environmentMatchGlobs" is deprecated. Use `test.projects` to define different configurations instead.[39m
+
+[1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/mrspa/.codex/worktrees/openai-clean-start/Brasserie[39m
+
+[33m[39m[32m·[39m[33m[39m[32m·[39m[33m[39m[31mx[39m[33m[39m[32m·[39m[33m[39m[31mx[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/unit/calendrierModele2.test.ts[2m > [22mmodele2 : un nom d'année ne se pose pas sous « ‹ auj. »[2m > [22mcadre du 1er févr. 2027 (44 sem.) : « 2027 » est nommée, hors de la marge muette
+[31m[1mAssertionError[22m: expected 35.6525974025974 to be greater than or equal to 56[39m
+[36m [2m❯[22m tests/unit/calendrierModele2.test.ts:[2m96:24[22m[39m
+    [90m 94| [39m    [35mconst[39m an [33m=[39m noms[33m.[39m[34mfind[39m((n) [33m=>[39m [36m/^(2027|’27)$/[39m[33m.[39m[34mtest[39m(n[33m.[39mtexte))[33m;[39m
+    [90m 95| [39m    [34mexpect[39m(an[33m,[39m noms[33m.[39m[34mmap[39m((n) [33m=>[39m n[33m.[39mtexte)[33m.[39m[34mjoin[39m([32m' '[39m))[33m.[39m[34mtoBeDefined[39m()[33m;[39m
+    [90m 96| [39m    [34mexpect[39m(an[33m![39m[33m.[39mx [33m-[39m [34m10[39m)[33m.[39m[34mtoBeGreaterThanOrEqual[39m([33mMARGE_AUJ[39m)[33m;[39m
+    [90m   | [39m                       [31m^[39m
+    [90m 97| [39m    for (const n of noms) expect(n.x, n.texte).toBeGreaterThanOrEqual(…
+    [90m 98| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/unit/calendrierModele2.test.ts[2m > [22mmodele2 : un nom d'année ne se pose pas sous « ‹ auj. »[2m > [22mpropriété : sous « ‹ auj. » (gauche) ou « auj. › » (droite), aucun nom n'est posé
+[31m[1mError[22m: Property failed after 1 tests
+{ seed: 1567910413, path: "0:0:0:0", endOnFailure: true }
+Counterexample: [14,0,"gauche"]
+Shrunk 3 time(s)
+
+Hint: Enable verbose mode in order to have the list of all failing values encountered during the run[39m
+[90m [2m❯[22m buildError node_modules/fast-check/lib/fast-check.js:[2m2497:16[22m[39m
+[90m [2m❯[22m throwIfFailed node_modules/fast-check/lib/fast-check.js:[2m2504:8[22m[39m
+[90m [2m❯[22m reportRunDetails node_modules/fast-check/lib/fast-check.js:[2m2520:14[22m[39m
+[90m [2m❯[22m Module.assert node_modules/fast-check/lib/fast-check.js:[2m2711:53[22m[39m
+[36m [2m❯[22m tests/unit/calendrierModele2.test.ts:[2m105:8[22m[39m
+    [90m103| [39m  })[33m;[39m
+    [90m104| [39m  it("propriété : sous « ‹ auj. » (gauche) ou « auj. › » (droite), auc…
+    [90m105| [39m    fc.assert(fc.property(fc.integer({ min: 14, max: 120 }), fc.intege…
+    [90m   | [39m       [31m^[39m
+    [90m106| [39m      const { sem, a, col } = axe(plusSemaines('2026-11-23', decalSem)…
+    [90m107| [39m      [35mconst[39m larg [33m=[39m a[a[33m.[39mlength [33m-[39m [34m1[39m][33m;[39m
+
+[31m[1mCaused by: AssertionError[22m: 2026 à 18: expected 17.5 to be greater than or equal to 56[39m
+[36m [2m❯[22m tests/unit/calendrierModele2.test.ts:[2m109:79[22m[39m
+[90m [2m❯[22m Property.predicate node_modules/fast-check/lib/fast-check.js:[2m1379:99[22m[39m
+[90m [2m❯[22m Property.run node_modules/fast-check/lib/fast-check.js:[2m1348:24[22m[39m
+[90m [2m❯[22m propertyExecution node_modules/fast-check/lib/fast-check.js:[2m2589:23[22m[39m
+[90m [2m❯[22m run node_modules/fast-check/lib/fast-check.js:[2m2685:91[22m[39m
+[90m [2m❯[22m runIt node_modules/fast-check/lib/fast-check.js:[2m2582:15[22m[39m
+[90m [2m❯[22m check node_modules/fast-check/lib/fast-check.js:[2m2701:14[22m[39m
+[90m [2m❯[22m Module.assert node_modules/fast-check/lib/fast-check.js:[2m2706:14[22m[39m
+[90m [2m❯[22m tests/unit/calendrierModele2.test.ts:[2m105:8[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 23:44:12
+[2m   Duration [22m 1.91s[2m (transform 725ms, setup 259ms, collect 1.16s, tests 104ms, environment 0ms, prepare 60ms)[22m
+

@@ -1,0 +1,79 @@
+🍺
+L'Affinée
+Tout
+A
+G
+Synthèse
+Opérations
+Prévisions
+Annuel
+
+Toutes les dates
+
+Archives comprises
+
+Rechercher une opération
+11
+Fixes
+114
+Brassage
+23
+Nettoyage
+134
+Autres
+5 500
+Matériel
++9 489
+Apports
+
+payé
+271,90
+à payer
+10,20
+dépensé
+282,10
+
+Apports et prélèvements
++1,00
+
+ZZ TEST — apport
+✓ encaissé aujourd’hui · banque
+sans pièce
++ pièce
++1,00
+Pourquoi les autres frais pèsent autant ?
+Par date
+Filtres
+Doublons
+Apport ou prélèvement privé
+Archives
+Bord
+Finances
+Calendrier
+Brassins
+11
+Stocks
+Clients
+ZZ TEST — apport
+Apports privés · 23 nov. 2026
+1,00
+CHF
+✓ encaissé aujourd’hui · banque
+Sans justificatif
+c’est normal
+Modifier
+Paiements
+1
+23 nov. 2026 · banque
++1,00
+Corriger ce paiement saisi par erreur
+Corriger une erreur de saisie
+
+Une annulation conserve la pièce et son historique. Un achat déjà consommé ou lié à un amortissement demande d’abord une correction de ses liens.
+
+Retirer cette écriture
+
+Retirer cette écriture ? Son paiement de 1,00 CHF est d’abord inversé, puis l’écriture est annulée. Une écriture ne se supprime jamais : elle sort de la liste, et « Écritures annulées uniquement » la montre.
+
+Garder
+Confirmer le retrait

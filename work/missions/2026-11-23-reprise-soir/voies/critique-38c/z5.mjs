@@ -1,0 +1,14 @@
+import { ouvrir, sleep, photo, log, toucher, ou } from './outil.mjs';
+import { outils, court } from './commun.mjs';
+import { etat } from './lire.mjs';
+import fs from 'node:fs';
+const { page, cdp, lacher } = await ouvrir();
+const { instantane } = outils(page, cdp);
+const av = JSON.parse(fs.readFileSync('avant.json', 'utf8')); const ap = await instantane();
+log('vue', court(await etat(page)), (await etat(page)).periode);
+log('vraies : avant', av.length, 'après', ap.length, 'disparues', av.filter((x) => !ap.includes(x)), 'nouvelles', ap.filter((x) => !av.includes(x)));
+const r = await ou(page, 'Bord', 'nav button, nav a'); await toucher(cdp, r.x, r.y); await sleep(2500);
+log('agenda', (await page.evaluate(() => { const t = document.body.innerText; const i = t.indexOf('Agenda'); return t.slice(i, i + 300); })).replace(/\n+/g, ' | '));
+log('ZZ mes', await page.evaluate(() => (document.body.innerText.match(/ZZ TEST — (barre|apport)/g) || []).length));
+const c = await ou(page, 'Calendrier', 'nav button, nav a'); await toucher(cdp, c.x, c.y); await sleep(2000);
+lacher();

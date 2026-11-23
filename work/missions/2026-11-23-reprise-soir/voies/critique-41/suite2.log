@@ -1,0 +1,17 @@
+X0 ls {"app":"{\"genre\":\"tout\"}","locale":{"genre":"dates","du":"2026-11-23","au":"2027-01-03"}}
+XR masque 
+
+Aucu ¦ e pièce  ¦ e correspo ¦ d.
+XR 23 
+
+Aucu ¦ e pièce  ¦ e correspo ¦ d.
+XR Extincteur 
+
+Aucu ¦ e pièce  ¦ e correspo ¦ d.
+XR Brau 
+
+Aucu ¦ e pièce  ¦ e correspo ¦ d.
+XP menu ["Période suivante @259,3 34x34","Plus : saisie au nom de Gaëtan @330,2 52x36","−472 CHF à dépenser sans passer sous 0 (S53, dans le cadre) : voir ses @16,53 130x28","6 sem. · période, liste, tri et filtre @174,53 92x28","Maintenant : 8 en retard @268,53 28x28","Plein écran @350,53 24x28","Poignée de fin : étirer ou réduire la fenêtre (Entrée : l’année) @331,99 44x68","S53, 28 déc. – 3 janv. @293,173 49x28","S1, 4 – 10 janv. @341,173 49x28","Ajouter dans Brassins @12,212 24x24","Milk Stout, 1 mai, S18, coût à venir, J207 / 255 · prête 11 janv. @1,238 388x26","Ttt, 15 oct., S42, −4 + à venir, pas brassée · prête le 11 janv., cour @1,302 388x26","Hefe, 10 sept., S37, −5 + à venir, pas brassée · prête le 27 janv., co @1,334 388x26","Ajouter dans Fêtes @12,558 24x24","Ajouter dans Ventes @12,614 24x24","ZZ TEST — Apport, à recevoir, 22 déc., S52, +5 / mois @252,640 137x26","Ajouter dans Achats @12,790 24x24","consomable ( masque gant), 19 nov., S47, −23 @10,816 28x28","Finances @64,804 64x40","Stocks, 11 articles à commander @261,804 64x40","Jour @20,149 92x30","Semaine @112,149 92x30","Mois @204,149 92x30","2 sem. @18,198 54x40","6 sem. @74,198 54x40","3 mois @131,198 54x40","6 mois @187,198 54x40","An @244,198 54x40","Sans date · 5 @15,289 286x44","Trier les rangées @15,335 286x44"]
+XP choix {"x":157.9921875,"y":218,"t":"3 mois"}
+XP lu {"cadre":"23 nov. 2026 – 21 févr. 2027","zz":["−477 CHF à dépenser sans passer sous 0 (S3 ’27, dans le cadre) : voir ses causes","ZZ TEST — Apport, à recevoir, 22 déc., S52, +5 / mois","ZZ TEST — Apport, 22 nov., S47, +5","ZZ TEST — Pour moi, prévu, 22 déc., S52, −3 / mois","ZZ TEST — Abonnement, à payer, 22 déc., S52, −2 / mois","ZZ TEST — Salaire, à payer, 24 janv., S3, −5 / mois","ZZ TEST — Pour moi, 22 nov., S47, −3","ZZ TEST — Abonnement, 22 nov., S47, −2","ZZ TEST — Salaire, à payer, 24 déc., S52, −5","ZZ TEST — Loyer, à payer, 24 déc., S52, −4"]}
+XP remise {"ls":"{\"app\":\"{\\\"genre\\\":\\\"tout\\\"}\",\"locale\":{\"genre\":\"dates\",\"du\":\"2026-11-23\",\"au\":\"2027-01-03\"}}","cadre":"23 nov. 2026 – 3 janv. 2027","bouton":"6 sem. · période, liste, tri et filtre"}

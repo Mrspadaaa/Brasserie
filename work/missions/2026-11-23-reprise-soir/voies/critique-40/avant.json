@@ -1,0 +1,23 @@
+{
+ "periode": {
+  "bouton": "6 sem. · période, liste, tri et filtre",
+  "cadre": "23 nov. 2026 – 3 janv. 2027",
+  "ls": {
+   "laffinee.calendrier.fenetre-locale": "{\"app\":\"{\\\"genre\\\":\\\"tout\\\"}\",\"locale\":{\"genre\":\"dates\",\"du\":\"2026-11-23\",\"au\":\"2027-01-03\"}}"
+  }
+ },
+ "s": {
+  "depenser": "−463 CHF à dépenser sans passer sous 0 (S53, dans le cadre) : voir ses causes",
+  "caisse": "1 145,00 CHF | libre 1 145,00",
+  "synthese": "0,00 / 265,40",
+  "parametres": "🍺 ¦ L'Affinée ¦ Tout ¦ A ¦ G ¦ Synthèse ¦ Opérations ¦ Prévisions ¦ Annuel ¦ Calendrier de l’argent ¦ Tout l’historique ¦ sept. ¦ oct. ¦ nov. ¦ tout ¦ … ¦ Entré ¦ 0,00 ¦ Dépensé ¦ 265,40 ¦ Nettoyage ¦ 23,00 ¦ Brassage ¦ 110,40 ¦ Autres frais ¦ 132,00 ¦ Matériel ¦ 5 500,00 ¦ à part ¦ −265,40 ¦ Perdu · CHF ¦ ✦ Pourquoi ? ¦ payé ¦ 2 à confirmer ¦ Revoir le mois ¦ Caisse jour par jour, sources, budgets, 12 mois ¦ En caisse ¦ 1 145,00 CHF ¦ libre 1 145,00 ¦ Confirmer les paiements ¦ 5 pièces exclues des montants à payer et à encaisser. ¦ 5 ¦ Vérifier les pièces sans date ¦ 1 pièce avec une date à corriger, à replacer dans la bonne période. ¦ Origine et limites des montants ¦ Estimer un brassin ¦ pour connaître son coût du litre ¦ Fournisseurs, matériel ¦ Comprendre mes dépenses ¦ Compagnon brasseur ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ 11 ¦ Stocks ¦ Clients ¦ Solde et paramètres ¦  ¦ Solde et paramètres ¦  ¦ Solde de départ ¦ CHF ¦ aujourd’hui 1 145,00 ¦ août ¦ sept. ¦ oct. ¦ nov. ¦ 1 août 2026 ¦ Vérifié ¦ Tout est noté depuis ¦ janv. 2026 ¦ janv. 2026 ¦ j ¦ f ¦ m ¦ a ¦ m ¦ j ¦ j ¦ a ¦ s ¦ o ¦ n ¦ d ¦  ¦ 10 mois complets : la tendance est calculée. ¦  ¦ Production prévue ¦ L/an ¦ 0 ¦ 2 000 ¦ 4 000 L ¦ charges fixes ¦ — ¦ production à saisir ¦ soit ¦ — ¦ aucun brassin planifié ¦ Prochain brassin ¦ — ¦ coût à compléter ¦ Indépendant · Fribourg · TVA ¦ ✓ sans TVA ¦  ¦ ventes sur 12 mois 0",
+  "monMois": "—"
+ },
+ "t": "🍺\nL'Affinée\nTout\nA\nG\nSynthèse\nOpérations\nPrévisions\nAnnuel\nCalendrier de l’argent\nTout l’historique\nsept.\noct.\nnov.\ntout\n…\nEntré\n0,00\nDépensé\n265,40\nNettoyage\n23,00\nBrassage\n110,40\nAutres frais\n132,00\nMatériel\n5 500,00\nà part\n−265,40\nPerdu · CHF\n✦ Pourquoi ?\npayé\n2 à confirmer\nRevoir le mois\nCaisse jour par jour, sources, budgets, 12 mois\nEn caisse\n1 145,00 CHF\nlibre 1 145,00\nConfirmer les paiements\n5 pièces exclues des montants à payer et à encaisser.\n5\nVérifier les pièces sans date\n1 pièce avec une date à corriger, à replacer dans la bonne période.\nOrigine et limites des montants\nEstimer un brassin\npour connaître son coût du litre\nFournisseurs, matériel\nComprendre mes dépenses\nCompagnon brasseur\nBord\nFinances\nCalendrier\nBrassins\n11\nStocks\nClients",
+ "sCRA3": {
+  "depenser": "−463 CHF à dépenser sans passer sous 0 (S53, dans le cadre) : voir ses causes",
+  "caisse": "1 145,00 CHF | libre 1 145,00",
+  "synthese": "0,00 / 265,40",
+  "parametres": "🍺 ¦ L'Affinée ¦ Tout ¦ A ¦ G ¦ Synthèse ¦ Opérations ¦ Prévisions ¦ Annuel ¦ Calendrier de l’argent ¦ Tout l’historique ¦ sept. ¦ oct. ¦ nov. ¦ tout ¦ … ¦ Entré ¦ 0,00 ¦ Dépensé ¦ 265,40 ¦ Nettoyage ¦ 23,00 ¦ Brassage ¦ 110,40 ¦ Autres frais ¦ 132,00 ¦ Matériel ¦ 5 500,00 ¦ à part ¦ −265,40 ¦ Perdu · CHF ¦ ✦ Pourquoi ? ¦ payé ¦ 2 à confirmer ¦ Revoir le mois ¦ Caisse jour par jour, sources, budgets, 12 mois ¦ En caisse ¦ 1 145,00 CHF ¦ libre 1 145,00 ¦ Confirmer les paiements ¦ 5 pièces exclues des montants à payer et à encaisser. ¦ 5 ¦ Vérifier les pièces sans date ¦ 1 pièce avec une date à corriger, à replacer dans la bonne période. ¦ Origine et limites des montants ¦ Estimer un brassin ¦ pour connaître son coût du litre ¦ Fournisseurs, matériel ¦ Comprendre mes dépenses ¦ Compagnon brasseur ¦ Bord ¦ Finances ¦ Calendrier ¦ Brassins ¦ 11 ¦ Stocks ¦ Clients ¦ Solde et paramètres ¦  ¦ Solde et paramètres ¦  ¦ Solde de départ ¦ CHF ¦ aujourd’hui 1 145,00 ¦ août ¦ sept. ¦ oct. ¦ nov. ¦ 1 août 2026 ¦ Vérifié ¦ Tout est noté depuis ¦ janv. 2026 ¦ janv. 2026 ¦ j ¦ f ¦ m ¦ a ¦ m ¦ j ¦ j ¦ a ¦ s ¦ o ¦ n ¦ d ¦  ¦ 10 mois complets : la tendance est calculée. ¦  ¦ Production prévue ¦ L/an ¦ 0 ¦ 2 000 ¦ 4 000 L ¦ charges fixes ¦ — ¦ production à saisir ¦ soit ¦ — ¦ aucun brassin planifié ¦ Prochain brassin ¦ — ¦ coût à compléter ¦ Indépendant · Fribourg · TVA ¦ ✓ sans TVA ¦  ¦ ventes sur 12 mois 0"
+ }
+}

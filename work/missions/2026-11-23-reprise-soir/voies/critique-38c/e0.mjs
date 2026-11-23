@@ -1,0 +1,14 @@
+import { ouvrir, sleep, photo, log, boutons, toucher, ou, APP } from './outil.mjs';
+import { etat } from './lire.mjs';
+import { court } from './commun.mjs';
+const { page, cdp, lacher, browser } = await ouvrir();
+log('onglets', (await browser.pages()).map((p) => p.url()).join(' ; '));
+await page.goto(APP, { waitUntil: 'domcontentloaded', timeout: 60000 }); await sleep(3000);
+log('bundle', await page.evaluate(() => [...document.scripts].map((s) => s.src).filter((s) => /index-/.test(s)).join(',')));
+const nav = async (n) => { const r = await ou(page, n, 'nav button, nav a'); await toucher(cdp, r.x, r.y); await sleep(2500); };
+await nav('Calendrier');
+await photo(page, 'A0-cal', false);
+log('etat', court(await etat(page)), JSON.stringify((await etat(page)).periode));
+log('boutons', await boutons(page));
+log('ZZ', await page.evaluate(() => [...document.querySelectorAll('[aria-label]')].map((e) => e.getAttribute('aria-label')).filter((a) => /ZZ/.test(a))));
+lacher();

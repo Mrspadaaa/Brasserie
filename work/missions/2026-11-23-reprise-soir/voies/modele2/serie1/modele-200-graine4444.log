@@ -1,0 +1,55 @@
+[WebServer]   ➜  Local:   http://127.0.0.1:4397/
+
+Running 1 test using 1 worker
+F
+
+  1) [android-390] › e2e\calendrier\etat-coherent.spec.ts:192:1 › CAL-ETAT-COHERENT : après chaque geste, durée, étiquette, aujourd'hui et rangées disent la même fenêtre 
+
+    Error: Property failed after 12 tests
+    { seed: 4444, path: "11:1:2:0:2:0:0:2:2:1:0", endOnFailure: true }
+    Counterexample: [app plage 3 mois, 10 mois /*replayPath="R:B"*/]
+    Shrunk 10 time(s)
+
+    Encountered failures were:
+    - [poignée fin -104,cadre tenu au bord 1 675 ms,Période précédente,cadre -65,cadre -55,cadre 103,cadre tenu au bord -1 1953 ms,app plage 10 mois, 25 mois /*replayPath="R:B"*/]
+    - [app plage 10 mois, 25 mois /*replayPath="R:B"*/]
+    - [app plage 8 mois, 25 mois /*replayPath="R:B"*/]
+    - [app plage 7 mois, 25 mois /*replayPath="R:B"*/]
+    - [app plage 7 mois, 14 mois /*replayPath="R:B"*/]
+    - [app plage 6 mois, 14 mois /*replayPath="R:B"*/]
+    - [app plage 5 mois, 14 mois /*replayPath="R:B"*/]
+    - [app plage 4 mois, 14 mois /*replayPath="R:B"*/]
+    - [app plage 4 mois, 11 mois /*replayPath="R:B"*/]
+    - [app plage 4 mois, 10 mois /*replayPath="R:B"*/]
+    - [app plage 3 mois, 10 mois /*replayPath="R:B"*/]
+        at buildError (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2497:16)
+        at asyncThrowIfFailed (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2509:8)
+    [cause]: Error: I6 l'année 2027 (277 px dans le cadre) n'est nommée nulle part (2028) : app plage 3 mois, 10 mois | app « 1er févr. → 1er déc. 202701.02.27–01.12.27 », bouton « 44 sem. », étiquette « 1 févr. – 5 déc. 2027 »
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+        at verifier (C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\etat-coherent.spec.ts:124:179)
+        at Object.run (C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\etat-coherent.spec.ts:138:63)
+        at runAsync (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:9691:27)
+        at internalAsyncModelRun (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:9693:9)
+        at Module.asyncModelRun (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:9721:2)
+        at C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\etat-coherent.spec.ts:206:5
+        at AsyncProperty.run (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:1241:19)
+        at asyncPropertyExecution (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2604:14)
+        at asyncRunIt (C:\Users\mrspa\.codex\worktrees\openai-clean-start\port-carnet\node_modules\fast-check\lib\fast-check.js:2597:15)
+        at C:\Users\mrspa\.codex\worktrees\openai-clean-start\lot-cal\e2e\calendrier\etat-coherent.spec.ts:199:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    e2e\resultats\modele2-4444\calendrier-etat-coherent-C-79af7-gées-disent-la-même-fenêtre-android-390\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    e2e\resultats\modele2-4444\calendrier-etat-coherent-C-79af7-gées-disent-la-même-fenêtre-android-390\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: e2e\resultats\modele2-4444\calendrier-etat-coherent-C-79af7-gées-disent-la-même-fenêtre-android-390\error-context.md
+
+  1 failed
+    [android-390] › e2e\calendrier\etat-coherent.spec.ts:192:1 › CAL-ETAT-COHERENT : après chaque geste, durée, étiquette, aujourd'hui et rangées disent la même fenêtre 
