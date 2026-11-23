@@ -53,6 +53,28 @@ export async function paquetEnLigne(page: Page, attendu?: string, delaiMs = 180_
   return p;
 }
 
+/** Aujourd'hui dans la vue de la courbe (D442 : sa colonne bleue), le cadre ne commençant pas avant lui : l'état laissé au brasseur et
+ *  celui d'où partent les preuves. À « 3 mois », le doigt posé hors du cadre, à droite, glisse vers la gauche (D436 : vers l'avenir), ou
+ *  à gauche vers la droite, jusqu'à ce que le cadre commence dans la semaine d'aujourd'hui (10 gestes au plus). */
+export async function ramenerAujourdhui(page: Page, choisir: (p: Page, nom: string) => Promise<void>, glisser: (a: { x: number; y: number }, b: { x: number; y: number }) => Promise<void>) {
+  await choisir(page, '3 mois');
+  for (let i = 0; i < 10; i++) {
+    const e = await page.evaluate(() => {
+      const c = document.querySelector('[data-cadre-etiquette]')?.closest('.ent-cadre')?.getBoundingClientRect();
+      const a = document.querySelector('.ent-cb [data-aujourdhui]');
+      const ab = a?.getBoundingClientRect();
+      const cb = document.querySelector('.ent-cb')?.getBoundingClientRect();
+      return { cote: a?.getAttribute('data-aujourdhui') ?? null, aL: ab ? ab.left : null, aR: ab ? ab.right : null, l: c?.left ?? 0, r: c?.right ?? 0, t: c ? c.top + c.height / 2 : 0, cl: cb?.left ?? 0, cr: cb?.right ?? 390 };
+    });
+    if (e.cote === 'dans' && e.aL !== null && Math.abs(e.l - e.aL) < 8) return;
+    const versAvenir = e.cote === 'droite' || (e.cote === 'dans' && e.aL! > e.l);
+    const pas = Math.max(20, Math.min(110, e.cote === 'dans' ? Math.abs(e.aL! - e.l) : 110));
+    if (versAvenir) { const x = Math.min(e.cr - 4, e.r + 30); await glisser({ x, y: e.t }, { x: x - pas, y: e.t }); }
+    else { const x = Math.max(e.cl + 4, e.l - 30); await glisser({ x, y: e.t }, { x: x + pas, y: e.t }); }
+    await page.waitForTimeout(700);
+  }
+}
+
 /** L'onglet Calendrier de l'app en ligne. */
 export async function calendrierEnLigne(page: Page) {
   await expect(page.locator('nav button').first()).toBeVisible({ timeout: 90_000 });
