@@ -11,7 +11,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CalendarCheck, Check, ChevronLeft, ChevronRight, ExternalLink, Target, X } from 'lucide-react';
 import { libelleEcarte, nombreTexte, placesDe, placesParmiTous, pourquoiDe, prixTexte, tableau, type Place } from '../../domain/carnets/comparer';
 import { normaliser } from '../../domain/carnets/analyseLocale';
-import { sourceDuCritere, type Article, type DonneesCarnet } from '../../domain/carnets/modele';
+import { dispoDe, sourceDuCritere, type Article, type DonneesCarnet } from '../../domain/carnets/modele';
+import { detailPrix, prixTexteArticle } from './PrixPastille';
 import { dateCourte, montant, PictoLocal, Provenance, rangTexte, texteSortie, type SortieV, type ArticleV, type ChoixV, type CritereV, type FaconV } from './EtatIA';
 import { choixBloque, horsSeuilCourt, sansApercu } from './Comparer';
 import { Photo } from './pictos';
@@ -23,7 +24,16 @@ export interface ValeurPlaceeV { nom: string; texte: string; rang?: number; exAe
 /** Ce que Choisir lit du carnet pour calculer places, pourquoi et écartés (P16, P17) : `ouvert.carnet`. */
 export type CarnetPourChoisir = Pick<DonneesCarnet, 'criteres' | 'facons' | 'articles' | 'choix'>;
 
+/** D447 : « ≈1 360 CHF » pour un prix hors franc converti, « 690 CHF » sinon (`prixTexte` de comparer.ts). */
+function prixChoix(a: ArticleV, taux?: number): string | null {
+  const t = prixTexteArticle(a, taux);
+  /* seul le prix converti change de forme ; en francs, le format d'avant (`prixTexte`) */
+  return t?.approx ? `≈${t.montant} ${t.devise}` : prixTexte(a.prixCentimes, a.devise);
+}
+
 export type ChoisirProps = {
+  /** D447 : le taux EUR→CHF (facture ou posé) ; sans lui, le cours du jour lu avec la page. */
+  taux?: number;
   titre: string;
   onRetour: () => void;
   /** Le carnet (`ouvert.carnet`) : sans lui, les places et le pourquoi se calculent sur les seuls articles reçus. */
@@ -149,7 +159,8 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
   const haut = useRef<HTMLElement>(null);
   useEffect(() => { haut.current?.scrollIntoView?.({ block: 'start' }); }, []);
   /* n° 37 : « 2 600 CHF », espace avant les milliers, comme partout (prixTexte) */
-  const prix = prixTexte(a.prixCentimes, a.devise);
+  const prix = prixChoix(a, p.taux);
+  const detail = detailPrix(a, p.taux);
   /* P17 : la phrase avec ses valeurs (calcul local sur le tableau), ses réglettes (le critère chiffré qui classe, puis le prix), les ✕ */
   const calc = useMemo(() => {
     const c = p.carnet ?? null;
@@ -181,7 +192,8 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
         <div className="cn-sp">
           <b>{a.nom}</b>
           <span className="cn-mut">{[a.vendeur, a.pays].filter(Boolean).join(' · ')}</span>
-          {(prix || a.dispo) && <span><b className="cn-mono">{prix ?? ''}</b>{prix && a.dispo ? <span className="cn-mut"> · </span> : null}{a.dispo ? <span className="cn-mut">{a.dispo}</span> : null}</span>}
+          {(prix || dispoDe(a)) && <span><b className="cn-mono">{prix ?? ''}</b>{prix && dispoDe(a) ? <span className="cn-mut"> · </span> : null}{dispoDe(a) ? <span className="cn-mut">{dispoDe(a)}</span> : null}</span>}
+          {detail && <span className="cn-mut">{detail}</span>}
         </div>
       </div>
       <section className="cn-pourquoi" aria-label="Pourquoi ce choix">
@@ -190,7 +202,7 @@ function ChoisiVue(p: Extract<ChoisirProps, { etape: 'choisi' }>) {
         {sienne && sienne !== calc.phrase && <p className="cn-pourquoi-sienne">« {sienne} »</p>}
         {calc.reglettes.map(pl => <Reglette key={pl.nom} place={pl} />)}
         <ul className="cn-raisons">
-          <Retenus criteres={calc.criteres} facon={p.facon} vendeur={a.vendeur} dispo={a.dispo} />
+          <Retenus criteres={calc.criteres} facon={p.facon} vendeur={a.vendeur} dispo={dispoDe(a)} />
           {calc.ecartes.map(e => <li key={e.nom}><X size={18} role="img" aria-label="écarté" /><span><b>{e.nom}</b> : {e.raison}</span></li>)}
         </ul>
         {p.choix.aRevoirSi && <p className="cn-mut">À revoir si : {p.choix.aRevoirSi}</p>}
@@ -237,7 +249,8 @@ export function budgetMaxDuCarnet(c: { criteres?: readonly { texte: string }[]; 
 function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
   const a = p.article;
   /* n° 37 : « 2 600 CHF » (prixTexte), jamais « 2600 » */
-  const prix = prixTexte(a.prixCentimes, a.devise);
+  const prix = prixChoix(a, p.taux);
+  const detail = detailPrix(a, p.taux);
   /* P16 : places et pourquoi calculés sur le carnet (valeurs et rangs), jamais un champ vide à taper ; l'IA, si elle a dit, prime.
      n° 10 (g05-11) : chaque valeur chiffrée porte sa réglette ; les écartés du tableau sont dits avec leur ✕ et leur raison. */
   const calc = useMemo(() => {
@@ -282,7 +295,8 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
           <Photo src={a.photo} className="cn-vignette cn-offre-photo" repli={p.picto ? <span className="cn-vignette cn-offre-photo cn-vignette-vide" aria-hidden>{p.picto}</span> : null} />
           {sa
             ? <div className="cn-sp"><b>{sa.titre}</b><span className="cn-mut">{sa.sous}</span></div>
-            : <div className="cn-sp cn-offre-nom"><b>{a.nom ?? a.vendeur}</b><span className="cn-mut">{[a.nom ? a.vendeur : null, a.pays].filter(Boolean).join(' · ')}{a.dispo ? `${a.vendeur || a.pays ? ' · ' : ''}${a.dispo}` : ''}</span>
+            : <div className="cn-sp cn-offre-nom"><b>{a.nom ?? a.vendeur}</b><span className="cn-mut">{[a.nom ? a.vendeur : null, a.pays].filter(Boolean).join(' · ')}{dispoDe(a) ? `${a.vendeur || a.pays ? ' · ' : ''}${dispoDe(a)}` : ''}</span>
+              {detail && <span className="cn-mut">{detail}</span>}
               {/* n° 39 : le prix seul, sans rond vide devant (il n'avait aucun rôle) */}
               {prix && <span className="cn-offre-prix"><span className="cn-mono cn-prix-grand">{prix}</span></span>}</div>}
           {a.url && <a className="cn-lien" href={a.url} target="_blank" rel="noreferrer noopener" aria-label={`Ouvrir la page${a.vendeur ? ` de ${a.vendeur}` : ''}, nouvel onglet`}>Ouvrir <ExternalLink size={16} aria-hidden /></a>}
@@ -309,7 +323,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
         {/* g05-11 : critère, façon, fournisseur (◎ ✓ ✓), puis chaque écarté avec son ✕ et sa raison */}
         {!sa && (calc.criteres.length > 0 || calc.facon || a.vendeur) && (
           <ul className="cn-raisons cn-choisir-retenus" aria-label="Retenu">
-            <Retenus criteres={calc.criteres} facon={calc.facon} vendeur={a.vendeur} dispo={a.dispo} />
+            <Retenus criteres={calc.criteres} facon={calc.facon} vendeur={a.vendeur} dispo={dispoDe(a)} />
           </ul>
         )}
         {calc.ecartes.length > 0 && (
@@ -335,7 +349,7 @@ function ChoisirArticle(p: Extract<ChoisirProps, { etape: 'choisir' }>) {
         )}
         {sa
           ? <p id={`cn-non-lue-${a.id}`} className="cn-mut">Page non lue : ni nom, ni prix connus. Elle se choisit une fois lue.</p>
-          : <p className="cn-mut">Part dans À venir : {[prix, a.dispo, a.vendeur].filter(Boolean).join(', ')}, avec le pourquoi.</p>}
+          : <p className="cn-mut">Part dans À venir : {[prix, dispoDe(a), a.vendeur].filter(Boolean).join(', ')}, avec le pourquoi.</p>}
       </section>
       {p.autres.map(o => {
         const so = sansApercu(o.article);

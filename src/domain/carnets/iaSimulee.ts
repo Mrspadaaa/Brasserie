@@ -88,6 +88,26 @@ export const PAGES_BANC: Readonly<Record<string, Omit<PageLue, 'url' | 'luLe' | 
 };
 
 /**
+ * D446, D447 (23.11) : les états que `lireLien` rend désormais, au banc (exemple), à part de `PAGES_BANC` (dont les tests exigent des prix en
+ * CHF) : hors franc converti au cours simulé, HT, port lu, trois photos ; « plus disponible » ; lien mort. Les cours et les photos sont
+ * simulés : ils ne servent qu'à voir l'écran.
+ */
+export const PAGES_BANC_ETATS: Readonly<Record<string, Omit<PageLue, 'url' | 'luLe' | 'domaine'>>> = {
+  'exemple.invalid/cuve-usd': {
+    statut: 'lue', nom: 'Cuve conique 45 L (exemple)', prix: 1450, devise: 'USD', taxe: 'ht', dispo: 'en-stock', vendeur: 'Brewgear Exemple',
+    photo: "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'320'%20height%3D'200'%3E%3Crect%20width%3D'320'%20height%3D'200'%20fill%3D'%234a6b8a'%2F%3E%3Ctext%20x%3D'160'%20y%3D'108'%20font-size%3D'28'%20text-anchor%3D'middle'%20fill%3D'white'%20font-family%3D'sans-serif'%3Ecuve%201%3C%2Ftext%3E%3C%2Fsvg%3E",
+    photos: ["data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'320'%20height%3D'200'%3E%3Crect%20width%3D'320'%20height%3D'200'%20fill%3D'%234a6b8a'%2F%3E%3Ctext%20x%3D'160'%20y%3D'108'%20font-size%3D'28'%20text-anchor%3D'middle'%20fill%3D'white'%20font-family%3D'sans-serif'%3Ecuve%201%3C%2Ftext%3E%3C%2Fsvg%3E", "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'320'%20height%3D'200'%3E%3Crect%20width%3D'320'%20height%3D'200'%20fill%3D'%237a5a3a'%2F%3E%3Ctext%20x%3D'160'%20y%3D'108'%20font-size%3D'28'%20text-anchor%3D'middle'%20fill%3D'white'%20font-family%3D'sans-serif'%3Ecuve%202%3C%2Ftext%3E%3C%2Fsvg%3E", "data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'320'%20height%3D'200'%3E%3Crect%20width%3D'320'%20height%3D'200'%20fill%3D'%234f7a4f'%2F%3E%3Ctext%20x%3D'160'%20y%3D'108'%20font-size%3D'28'%20text-anchor%3D'middle'%20fill%3D'white'%20font-family%3D'sans-serif'%3Ecuve%203%3C%2Ftext%3E%3C%2Fsvg%3E"],
+    livraison: { prix: 49, devise: 'USD' }, change: { taux: 0.8, date: '2026-11-23', source: 'BCE' },
+    valeurs: [{ nom: 'volume', valeur: '45', unite: 'L' }]
+  },
+  'exemple.invalid/cuve-retiree': {
+    statut: 'lue', nom: 'Cuve inox 30 L (exemple)', prix: 980, devise: 'CHF', dispo: 'retire', vendeur: 'Inox Exemple',
+    valeurs: [{ nom: 'volume', valeur: '30', unite: 'L' }]
+  },
+  'exemple.invalid/cuve-morte': { statut: 'introuvable', etapes: [{ nom: 'page', statut: 'absent', detail: 'introuvable' }] },
+};
+
+/**
  * P8 : ce qu'une page simulée dit lu. Chaque caractéristique a sa valeur (et son unité quand elle en a une) ; aucune caractéristique
  * sans valeur ; chaque nom une seule fois. Sert au banc et aux tests (une page qui manquerait à ces règles est une faute du banc).
  */
@@ -177,7 +197,7 @@ export function pageSimulee(url: string, luLe = 0): PageLue {
   try { domaine = new URL(url).hostname.replace(/^www\./, ''); } catch { return { url, domaine, statut: 'refusee', luLe }; }
   const cle = cleUrl(url);
   pagesFixture ??= pagesDeLaFixture();
-  const parUrl = cle ? PAGES_BANC[cle] ?? pagesFixture[cle] : undefined;
+  const parUrl = cle ? PAGES_BANC[cle] ?? PAGES_BANC_ETATS[cle] ?? pagesFixture[cle] : undefined;
   if (parUrl) return { ...parUrl, url, domaine, luLe };
   const p = PAGES_SIMULEES[domaine];
   if (p) return { ...p, url, luLe };

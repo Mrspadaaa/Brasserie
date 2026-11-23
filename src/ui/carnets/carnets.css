@@ -732,3 +732,11 @@
 .cn-criteres-derriere > .cn-critere-retirable { display: flex; align-items: center; gap: 8px; }
 /* lot 11 : le ⋯ des critères (L-20) rétrécit la ligne ; « n critères sans valeur » garde sa propre ligne, jamais mêlé au texte qui passe à la ligne */
 .cn-critere-une .cn-critere-plus { display: flex; width: fit-content; }
+
+/* D447 : le prix d'origine sous « CHF rendu » (devise dite, « HT »), sur une ligne ; la pastille s'élargit au besoin, jamais de coupe */
+.cn-pastille-est { width: auto; min-width: 96px; padding: 2px 8px; }
+.cn-pastille-prix .cn-pastille-orig { font-size: 12px; white-space: nowrap; letter-spacing: -.01em; opacity: .85; }
+.cn-pastille-prix .cn-pastille-port { font-size: 12px; white-space: nowrap; }
+/* D447 : le détail d'une offre (original, HT, port lu, mention des frais) passe sous la ligne, pleine largeur */
+.cn-offre-avec-detail { flex-wrap: wrap; }
+.cn-offre-detail { flex: 1 0 100%; font-size: 14px; }

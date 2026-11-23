@@ -99,7 +99,8 @@ export type LigneARanger = Destination & (
   | { sorte: 'facon'; id?: string; nom: string; etat?: EtatFacon; raison?: string; origine: Origine }
   | {
     sorte: 'article'; id?: string; url?: string; domaine?: string; nom?: string; prixCentimes?: number; prixDes?: true; devise?: string; vendeur?: string; pays?: string;
-    dispo?: string; photo?: string; faconId?: string; valeurs?: Record<string, Valeur>; lecture?: Article['lecture']; origine?: Origine
+    dispo?: string; photo?: string; photos?: string[]; taxe?: Article['taxe']; prixTTCCentimes?: number; livraison?: Article['livraison']; change?: Article['change'];
+    faconId?: string; valeurs?: Record<string, Valeur>; lecture?: Article['lecture']; origine?: Origine
   }
   | { sorte: 'note'; id?: string; texte: string; genre?: GenreNote }
   | { sorte: 'photo'; id?: string; jpeg: string }
@@ -156,7 +157,8 @@ function ajouterLigne(c: CarnetDoc, l: LigneARanger, messageId: string): EffetMe
         id: l.id ?? nouvelIdCarnet('ART'), url: l.url, domaine: l.domaine, nom: l.nom,
         prixCentimes: typeof l.prixCentimes === 'number' && Number.isFinite(l.prixCentimes) && l.prixCentimes >= 0 ? Math.round(l.prixCentimes) : undefined,
         prixDes: l.prixDes === true && typeof l.prixCentimes === 'number' ? true : undefined,
-        devise: l.devise, vendeur: l.vendeur, pays: l.pays, dispo: l.dispo, photo: l.photo,
+        devise: l.devise, vendeur: l.vendeur, pays: l.pays, dispo: l.dispo, photo: l.photo, photos: l.photos?.length ? [...l.photos] : undefined,
+        taxe: l.taxe, prixTTCCentimes: l.prixTTCCentimes, livraison: l.livraison ? { ...l.livraison } : undefined, change: l.change ? { ...l.change } : undefined,
         faconId: l.faconId && d.facons.some(f => f.id === l.faconId) ? l.faconId : undefined,
         valeurs: l.valeurs ? copie(l.valeurs) : {}, lecture: l.lecture ?? (l.url ? 'a-lire' : 'lue'), messageId
       });
@@ -561,6 +563,8 @@ export function poserPrixArticle(etat: Etat, args: { carnetId: string; articleId
   a.prixCentimes = args.centimes;
   a.devise = 'CHF';
   delete a.prixDes;
+  /* le prix posé est le sien : ni la taxe, ni le TTC, ni le cours du prix lu d'avant ne lui restent attachés (le port lu reste) */
+  delete a.taxe; delete a.prixTTCCentimes; delete a.change;
   poser(b, c);
   return b.resultat('✓ Prix posé');
 }
