@@ -11,3 +11,9 @@ eBay), sites suisses de brasserie (Hopfen und Malz, Brauwelt, Maltomat…), lien
 EUR sans TVA suisse, livraison vers la Suisse payante ou refusée. Vérité écrite pour chacun (page ouverte, champ par champ).
 Mesure avant/après chaque changement ; objectif prix et photo affichés ≥ 90 %, caractéristiques ≥ 70 %, zéro invention.
 Cycle inchangé : PRÊT → EN LIGNE → rejeu en ligne dans des carnets ZZ ouverts, retirés ensuite ; budget IA 1,5 CHF au total.
+
+Ajout 23.11 (« C'est vraiment les bon outil Ia, tu es sûr ? ») : le choix d'outil se MESURE sur le banc (L20), pas par défaut :
+comparer sur les mêmes 50 liens (a) la cascade avec Flash-Lite, (b) Gemini 3.8 Flash avec url_context ET ancrage Google Search
+(retrouve prix/caractéristiques ailleurs quand la page bloque), (c) une API d'extraction produit dédiée (Zyte, Diffbot) —
+(c) demande un compte externe : préparer seulement la comparaison sur leur offre d'essai SANS créer de compte, le pilote
+demandera l'accord. Tableau : justesse par champ, temps, coût par lien. Choix écrit dans « ## État de l'art ».
