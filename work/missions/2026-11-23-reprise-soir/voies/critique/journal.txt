@@ -1,0 +1,359 @@
+19:00:20 scripts ["https://apis.google.com/_/scs/abc-static/_/js/k=gapi.lb.en.smUXTMp7CeY.O/m=gapi_iframes/rt=j/sv=1/d=1/ed=1/rs=AHpOoo_-UMASGI-dbLvJPxfO6N46l3l46A/cb=gapi.loaded_0?le=scs","https://brasserie-l-affinee.web.app/assets/index-Bl2OF9G2.js","https://apis.google.com/js/api.js?onload=__iframefcb835322"]
+19:00:21 🍺
+L'Affinée
+Tout
+A
+G
+À la brasserie
+Brassins
+4 en brassage · 2 en cuve
+Tous
+Jhhh
+LOT-005
+Brassage à clôturer
+05.09.2026 · 30 L
+Jhhh
+LOT-007
+Brassage en cours
+07.09.2026 · 30 L
+neipa v3
+LOT-016
+Brassage en cours
+10.11.2026 · 24 L
+neipa v3
+LOT-019
+Brassage en cours
+11.11.2026 · 24 L
+Milk Stout
+LOT-001
+Garde froide
+J+206
+Densité 1,010
+NEIPA Test
+LOT-002
+Garde froide
+Date à préciser
+Densité non relevée
+À brasser · 10Hefe
+Prévu le 10.09.2026 · date dépassée
+Stocks
+Voir
+24 articles à commander
+13 ruptures
+Ariana
+Stock 0 / seuil 0 g
+manque 236 g pour Ttt prévu le 15.10.2026 · Fruty prévu le 20.12.20
+19:00:33 paquet https://brasserie-l-affinee.web.app/assets/index-Bl2OF9G2.js
+19:00:38 paquet https://brasserie-l-affinee.web.app/assets/index-Bl2OF9G2.js
+19:00:44 paquet https://brasserie-l-affinee.web.app/assets/index-Bl2OF9G2.js
+19:01:13 paquet https://brasserie-l-affinee.web.app/assets/index-CoXAhg_q.js
+19:01:21 B1 ["Retour au tableau de bord|🍺L'AffinéeVillars-sur-G","Période précédente|","Période : Tout l’historique. Choisir la plage|Tout","Période suivante|","Rechercher (⌘K)|","Plus : saisie au nom de Gaëtan|AG","Articles|Articles","Recompter|Recompter","Courses|Courses","Fûts|Fûts","Matériel|Matériel","|Parc","|À venir11","|Carnets15","|Réalisés0","|À comparer","|Idée","|Choisi","|Chambre froide2 articles","|Sol — matières premières + outils (peut faire en ","|Achat brasserie : moulin à malt + bac etc.passé ·","|Dans À venir depuis le 20 nov.Voir","|Frigo + congelS17budget400CHF","|Dans À venir depuis le 20 nov.Voir","|Armoire de rangement maltepassé · S29budget200CHF","|Dans À venir depuis le 20 nov.Voir","|Conformité — dossiers SAAV + SEn + assurancesvers","|Hotte recyclagepassé · S35budget200CHF","|Dans À venir depuis le 20 nov.Voir","|Armoire de rangement extérieurpassé · S39budget10","|Dans À venir depuis le 20 nov.Voir","|Armoire de rangement toxiquepassé · S39budget100C","|Dans À venir depuis le 20 nov.Voir","|ExtincteurS53budget80CHF","|Dans À venir depuis le 20 nov.Voir","|Installation électrique 27A (2027)vers avr.budget","|Embouteillage — station complète (2027)S26budget2","|Dans À venir depuis le 20 nov.Voir","|2ème évier (2027)vers sept.budget400CHF","|Jalon — Peut brasser au local (sans autorisation ","|Jalon — Conformité complète — Peut vendre officie","|Sol, murs & évacuation (béton, revêtement, peintu","|Rangement / étagères inox & déménagementbudget200","|Robinetterie & tuyaux raccords (fait par soi-même","|Achat & installation évier principal + douchetteb","|Refaire évier — bloqué (attendre vis pieds)budget","|Anciennes notes de l’Atelier · 3","Photo|","Dicter|","|Bord","|Finances","|Calendrier","|Brassins","Stocks, 11 articles à commander|11Stocks","|Clients","Actions rapides|"]
+19:01:23 B2 ["Retour au tableau de bord|🍺L'AffinéeVillars-sur-G","Période précédente|","Période : Tout l’historique. Choisir la plage|Tout","Période suivante|","Rechercher (⌘K)|","Plus : saisie au nom de Gaëtan|AG","Articles|Articles","Recompter|Recompter","Courses|Courses","Fûts|Fûts","Matériel|Matériel","|Parc","|À venir11","|Carnets15","|Réalisés0","|À comparer","|Idée","|Choisi","|Chambre froide2 articles","|Sol — matières premières + outils (peut faire en ","|Achat brasserie : moulin à malt + bac etc.passé ·","|Dans À venir depuis le 20 nov.Voir","|Frigo + congelS17budget400CHF","|Dans À venir depuis le 20 nov.Voir","|Armoire de rangement maltepassé · S29budget200CHF","|Dans À venir depuis le 20 nov.Voir","|Conformité — dossiers SAAV + SEn + assurancesvers","|Hotte recyclagepassé · S35budget200CHF","|Dans À venir depuis le 20 nov.Voir","|Armoire de rangement extérieurpassé · S39budget10","|Dans À venir depuis le 20 nov.Voir","|Armoire de rangement toxiquepassé · S39budget100C","|Dans À venir depuis le 20 nov.Voir","|ExtincteurS53budget80CHF","|Dans À venir depuis le 20 nov.Voir","|Installation électrique 27A (2027)vers avr.budget","|Embouteillage — station complète (2027)S26budget2","|Dans À venir depuis le 20 nov.Voir","|2ème évier (2027)vers sept.budget400CHF","|Jalon — Peut brasser au local (sans autorisation ","|Jalon — Conformité complète — Peut vendre officie","|Sol, murs & évacuation (béton, revêtement, peintu","|Rangement / étagères inox & déménagementbudget200","|Robinetterie & tuyaux raccords (fait par soi-même","|Achat & installation évier principal + douchetteb","|Refaire évier — bloqué (attendre vis pieds)budget","|Anciennes notes de l’Atelier · 3","Photo|","Dicter|","|Bord","|Finances","|Calendrier","|Brassins","Stocks, 11 articles à commander|11Stocks","|Clients","Actions rapides|"]
+19:01:27 T 🍺
+L'Affinée
+Tout
+A
+G
+Articles
+Recompter
+Courses
+Fûts
+Matériel
+Parc
+À venir
+11
+Carnets
+15
+Réalisés
+0
+À comparer
+Idée
+Choisi
+À comparer
+1
+Chambre froide
+2 articles
+Idée
+14
+pas encore d'article
+Sol — matières premières + outils (peut faire en 2x)
+passé · S21
+budget
+500
+CHF
+Achat brasserie : moulin à malt + bac etc.
+passé · S29
+budget
+300
+CHF
+Dans À venir depuis le 20 nov.
+Voir
+Frigo + congel
+S17
+budget
+400
+CHF
+Dans À venir depuis le 20 nov.
+Voir
+Armoire de rangement malte
+passé · S29
+budget
+200
+CHF
+Dans À venir depuis le 20 nov.
+Voir
+Conformité — dossiers SAAV + SEn + assurances
+vers déc. 2027
+budget
+850
+CHF
+Hotte recyclage
+passé · S35
+budget
+200
+CHF
+Dans À venir depuis le 20 nov.
+Voir
+Armoire de rangement extérieur
+passé · S39
+budget
+100
+CHF
+Dans À venir depuis le 20 nov.
+Voir
+Armoire de rangement toxique
+passé · S39
+budget
+100
+CHF
+Dans À venir depuis le 20 nov.
+Voir
+Extincteur
+S53
+budget
+80
+CHF
+Dans À venir depuis le 20 nov.
+Voir
+Installation électrique 27A (2027)
+vers avr.
+budget
+1 500
+CHF
+Embouteillage — station complète (2027)
+S26
+budget
+2 500
+CHF
+Dans À venir depuis le 20 nov.
+Voir
+2ème évier (2027)
+vers sept.
+budget
+400
+CHF
+Jalon — Peut brasser au local (sans autorisation vente)
+Jalon — Conformité complète — Peut vendre officiellement
+Faits
+5
+du Planning
+Sol, murs & évacuation (béton, revêtement, peinture food-safe)
+budget
+3 500
+CHF
+Rangement / étagères inox & déménagement
+budget
+200
+CHF
+Robinetterie & tuyaux raccords (fait par soi-même)
+budget
+350
+CHF
+Achat & installati
+19:01:27 B3 ["Retour au tableau de bord|🍺L'AffinéeVillars-sur-G","Période précédente|","Période : Tout l’historique. Choisir la plage|Tout","Période suivante|","Rechercher (⌘K)|","Plus : saisie au nom de Gaëtan|AG","Articles|Articles","Recompter|Recompter","Courses|Courses","Fûts|Fûts","Matériel|Matériel","|Parc","|À venir11","|Carnets15","|Réalisés0","|À comparer","|Idée","|Choisi","|Chambre froide2 articles","|Sol — matières premières + outils (peut faire en ","|Achat brasserie : moulin à malt + bac etc.passé ·","|Dans À venir depuis le 20 nov.Voir","|Frigo + congelS17budget400CHF","|Dans À venir depuis le 20 nov.Voir","|Armoire de rangement maltepassé · S29budget200CHF","|Dans À venir depuis le 20 nov.Voir","|Conformité — dossiers SAAV + SEn + assurancesvers","|Hotte recyclagepassé · S35budget200CHF","|Dans À venir depuis le 20 nov.Voir","|Armoire de rangement extérieurpassé · S39budget10","|Dans À venir depuis le 20 nov.Voir","|Armoire de rangement toxiquepassé · S39budget100C","|Dans À venir depuis le 20 nov.Voir","|ExtincteurS53budget80CHF","|Dans À venir depuis le 20 nov.Voir","|Installation électrique 27A (2027)vers avr.budget","|Embouteillage — station complète (2027)S26budget2","|Dans À venir depuis le 20 nov.Voir","|2ème évier (2027)vers sept.budget400CHF","|Jalon — Peut brasser au local (sans autorisation ","|Jalon — Conformité complète — Peut vendre officie","|Sol, murs & évacuation (béton, revêtement, peintu","|Rangement / étagères inox & déménagementbudget200","|Robinetterie & tuyaux raccords (fait par soi-même","|Achat & installation évier principal + douchetteb","|Refaire évier — bloqué (attendre vis pieds)budget","|Anciennes notes de l’Atelier · 3","Photo|","Dicter|","|Bord","|Finances","|Calendrier","|Brassins","Stocks, 11 articles à commander|11Stocks","|Clients","Actions rapides|"]
+19:01:55 champ {"x":116,"y":753,"tag":"TEXTAREA"}
+19:01:59 🍺
+L'Affinée
+Tout
+A
+G
+Articles
+Recompter
+Courses
+Fûts
+Matériel
+Parc
+À venir
+11
+Carnets
+16
+Réalisés
+0
+✓
+Carnet créé, en tête des Carnets
+Annuler
+
+« ZZ TEST — tour 28 » · votre phrase en titre
+
+À comparer
+Idée
+Choisi
+Idée
+15
+pas encore d'article
+ZZ TEST — tour 28
+✻ L'IA range…
+Sol — matières premières + outils (peut faire en 2x)
+passé · S21
+budget
+500
+CHF
+Achat brasserie : moulin à malt + bac etc.
+passé · S29
+budget
+300
+CHF
+Dans À venir depuis le 20 nov.
+Voir
+Frigo + congel
+S17
+budget
+400
+CHF
+Dans À venir depuis le 20 nov.
+Voir
+Armoire de rangement malte
+passé · S29
+budget
+200
+CHF
+Dans À venir depuis le 20 nov.
+Voir
+Conformité — dossiers SAAV + SEn + assurances
+vers déc. 2027
+budget
+850
+CHF
+Ho
+19:02:22 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Carnets | idée | Idée · 23 nov. | Ensuite : l'IA cherche les façons | Se renomme ici | titre du carnet | ZZ TEST — tour 28 | Articles | · collez un lien | Notes | 1 | Tour 28 | note | Quand | · pas encore daté | Aujourd'hui | 1 mois | 3 mois | 6 mois | 1 an | nov. | déc. | Au calendrier | Le champ en bas range tout ici : une phrase, un lien collé, une photo. | Nouveau titre du carnet | Renommer | Annuler | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:02:22 champs ["Nouveau titre du carnet…"]
+19:02:32 champs ["Écrire, ou coller un lien…",""]
+19:02:37 L1 champ {"x":113,"y":753,"ph":"Écrire, ou coller un lien…"}
+19:02:40 L1 0.4s Lecture · 6 sur 6 | 0 s | Replier | galaxus.ch/de/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562 | Page | galaxus.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 302 CHF (schema.org) · CHF · port gratuit | trouvé | Photos | 4 | trouvé | Caractérist
+19:02:41 L1 1.2s Lecture · 6 sur 6 | 1 s | Replier | galaxus.ch/de/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562 | Page | galaxus.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 302 CHF (schema.org) · CHF · port gratuit | trouvé | Photos | 4 | trouvé | Caractérist
+19:02:42 L1 2.5s Lecture · 6 sur 6 | 2 s | Replier | galaxus.ch/de/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562 | Page | galaxus.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 302 CHF (schema.org) · CHF · port gratuit | trouvé | Photos | 4 | trouvé | Caractérist
+19:02:43 L1 4s Lecture · 6 sur 6 | 4 s | Replier | galaxus.ch/de/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562 | Page | galaxus.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 302 CHF (schema.org) · CHF · port gratuit | trouvé | Photos | 4 | trouvé | Caractérist
+19:02:45 L1 6s 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Carnets | À comparer | ZZ TEST — tour 28 | Lu | · 1 s | 6 étapes sur 6 · lu en 1 s | Articles | 1 | ✓ | Article rangé ici, à l'instant | Annuler | Kibernetik KS240L 
+19:02:54 L1 15s 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Carnets | À comparer | ZZ TEST — tour 28 | Lu | · 1 s | 6 étapes sur 6 · lu en 1 s | Articles | 1 | Kibernetik KS240L | galaxus.ch | Type de réfrigérateur Kühlschran
+19:03:48 L1 fiche {"dialog":false,"h":844,"c":844}
+19:03:49 L1 TEXTE 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Articles · ZZ TEST — tour 28 | photo | 1/4 | de la page collée | Kibernetik KS240L | Offre | galaxus.ch | en stock | 302 CHF | Ouvrir | port offert | Caractéristiques | lues sur la fiche du vendeur, 23 nov. | Type de réfrigérateur | Kühlschrank ohne Gefrierfach | Classe climatique | N (Normal) | Hauteur | 143.50 cm | Poids | 38 kg | Niveau sonore (max.) | 40 dB | Largeur | 54 cm | Caractéristiques du réfrigérateur | Fresh Zone Fach | Volume | 242 l | Veille du prix, tous les 3 jours | Choisir · galaxus.ch | Part dans À venir : Kibernetik KS240L, galaxus.ch, 302 CHF, en stock, avec le pourquoi. | Ajouter à ZZ TEST — tour 28… | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:03:49 L1 boutons ["Retour au tableau de bord","Période précédente","Période : Tout l’historique. C","Période suivante","Rechercher (⌘K)","Plus : saisie au nom de Gaëtan","Articles","Recompter","Courses","Fûts","Matériel","Parc","À venir11","Carnets16","Réalisés0","Articles · ZZ TEST — tour 28","Photo précédente","Photo suivante","Modifier le prix","Veille du prix, tous les 3 jou","Choisir · galaxus.ch","Photo","Dicter","Bord","Finances","Calendrier","Brassins","Stocks, 11 articles à commande","Clients","Compagnon brasseur","Actions rapides"]
+19:04:07 L2 champ {"x":113,"y":753,"ph":"Ajouter à ZZ TEST…"}
+19:04:10 L2 0.4s 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Carnets | ZZ TEST — tour 28 | sios.ch/Citra-USA-1-kg-Hopfenpellets-Typ-90 | lien collé à 20:04 | 0 s | Page | ouverture de sios.ch… | en cours | Données de la page |
+19:04:11 L2 1.2s Lecture · 6 sur 7 | 1 s | Replier | sios.ch/Citra-USA-1-kg-Hopfenpellets-Typ-90 | Page | sios.ch | trouvé | Données de la page | microdata | trouvé | Prix, devise et frais | 72.5 CHF (schema.org) · CHF · TTC · port non publié | trouvé | Photos | 2 | trouvé | Caractéristiques | 3 · dont 2 du HTML, 0 
+19:04:13 L2 2.5s Lecture · 7 sur 7 | 2 s | Replier | sios.ch/Citra-USA-1-kg-Hopfenpellets-Typ-90 | Page | sios.ch | trouvé | Données de la page | microdata | trouvé | Prix, devise et frais | 72.5 CHF (schema.org) · CHF · TTC · port non publié | trouvé | Photos | 2 | trouvé | Caractéristiques | 3 · dont 2 du HTML, 0 
+19:04:14 L2 4s Lecture · 7 sur 7 | 4 s | Replier | sios.ch/Citra-USA-1-kg-Hopfenpellets-Typ-90 | Page | sios.ch | trouvé | Données de la page | microdata | trouvé | Prix, devise et frais | 72.5 CHF (schema.org) · CHF · TTC · port non publié | trouvé | Photos | 2 | trouvé | Caractéristiques | 3 · dont 2 du HTML, 0 
+19:04:16 L2 6s 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Carnets | ZZ TEST — tour 28 | Lu | · 2 s | 7 étapes sur 7 · lu en 2 s | 2 articles à comparer | Articles | 2 | · | Comparer | rang · article | CHF | 1 | Citra (USA) 
+19:05:01 L2 fiche {"dialog":false,"h":844,"c":844}
+19:05:02 L2 TEXTE 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Articles · ZZ TEST — tour 28 | 1re sur 2 | photo | 1/2 | de la page collée | Citra (USA) 1 kg Hopfenpellets Typ 90 | Offre | sios.ch | en stock | 72,50 CHF | Ouvrir | TTC | Caractéristiques | lues sur la fiche du vendeur, 23 nov. | Numéro d'article | HH0251001 | Catégorie | Hopfenpellets Typ 90 | Contenu ou poids | 1 kg | Disponibilité | en stock | Veille du prix, tous les 3 jours | Choisir · sios.ch | Part dans À venir : Citra (USA) 1 kg Hopfenpellets Typ 90, sios.ch, 72,50 CHF, en stock, avec le pourquoi. | Ajouter à ZZ TEST — tour 28… | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:05:02 L2 boutons ["Retour au tableau de bord","Période précédente","Période : Tout l’historique. C","Période suivante","Rechercher (⌘K)","Plus : saisie au nom de Gaëtan","Articles","Recompter","Courses","Fûts","Matériel","Parc","À venir11","Carnets16","Réalisés0","Articles · ZZ TEST — tour 28","Article suivant","Photo précédente","Photo suivante","Modifier le prix","Veille du prix, tous les 3 jou","Choisir · sios.ch","Photo","Dicter","Bord","Finances","Calendrier","Brassins","Stocks, 11 articles à commande","Clients","Compagnon brasseur","Actions rapides"]
+19:05:22 L3 champ {"x":113,"y":753,"ph":"Ajouter à ZZ TEST…"}
+19:05:25 L3 0.4s Lecture · 6 sur 6 | 0 s | Replier | hopfenmarkt.ch/produkt/hopfen/mosaic | Page | hopfenmarkt.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 7.25 CHF (schema.org) · CHF · TTC · port 4.9 CHF | trouvé | Photos | 1 | trouvé | Caractéristiques | 13 | trouvé | Contrôle | tr
+19:05:26 L3 1.2s Lecture · 6 sur 6 | 1 s | Replier | hopfenmarkt.ch/produkt/hopfen/mosaic | Page | hopfenmarkt.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 7.25 CHF (schema.org) · CHF · TTC · port 4.9 CHF | trouvé | Photos | 1 | trouvé | Caractéristiques | 13 | trouvé | Contrôle | tr
+19:05:27 L3 2.5s Lecture · 6 sur 6 | 2 s | Replier | hopfenmarkt.ch/produkt/hopfen/mosaic | Page | hopfenmarkt.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 7.25 CHF (schema.org) · CHF · TTC · port 4.9 CHF | trouvé | Photos | 1 | trouvé | Caractéristiques | 13 | trouvé | Contrôle | tr
+19:05:28 L3 4s Lecture · 6 sur 6 | 4 s | Replier | hopfenmarkt.ch/produkt/hopfen/mosaic | Page | hopfenmarkt.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 7.25 CHF (schema.org) · CHF · TTC · port 4.9 CHF | trouvé | Photos | 1 | trouvé | Caractéristiques | 13 | trouvé | Contrôle | tr
+19:05:30 L3 6s 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Carnets | ZZ TEST — tour 28 | Lu | · 1 s | 6 étapes sur 6 · lu en 1 s | 3 articles à comparer | Articles | 3 | · | Comparer | rang · article | CHF | 1 | Mosaic Hopfe
+19:05:53 L3 fiche {"dialog":false,"h":844,"c":844}
+19:05:54 L3 TEXTE 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Articles · ZZ TEST — tour 28 | 1re sur 3 | photo de la page collée | Mosaic Hopfenpellets | Offre | Hopfenmarkt | en stock | 7,25 CHF | Ouvrir | TTC · port 4,90 CHF | Caractéristiques | lues sur la fiche du vendeur, 23 nov. | Farnesene | 0.2% | Pays de récolte | USA | Forme | Pellets | Total oil | 0.8ml | Caryophyllene | 7.2% | Variantes | 50 g · 100 g (affichée) · 250 g · 500 g · 1 kg (épuisé) | Alpha | 11.4% | Type de houblon | Mehrzweckhopfen | Cohumulone | 21.2% | Myrcene | 47.9% | Récolte | 2025 | Humulene | 16.2% | Beta | 3.4% | Veille du prix, tous les 3 jours | Choisir · Hopfenmarkt | Part dans À venir : Mosaic Hopfenpellets, Hopfenmarkt, 7,25 CHF, en stock, avec le pourquoi. | Ajouter à ZZ TEST — tour 28… | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:05:54 L3 boutons ["Retour au tableau de bord","Période précédente","Période : Tout l’historique. C","Période suivante","Rechercher (⌘K)","Plus : saisie au nom de Gaëtan","Articles","Recompter","Courses","Fûts","Matériel","Parc","À venir11","Carnets16","Réalisés0","Articles · ZZ TEST — tour 28","Article suivant","Modifier le prix","Veille du prix, tous les 3 jou","Choisir · Hopfenmarkt","Photo","Dicter","Bord","Finances","Calendrier","Brassins","Stocks, 11 articles à commande","Clients","Compagnon brasseur","Actions rapides"]
+19:06:29 L4 1.6 a (pas de lecture)
+19:06:30 L4 3.2 b Lecture · 4 sur 6 | 3 s | Replier | brouwland.com/en/fermentation-vessels/660-brew-monk-stainless-steel-fermenter-30-l.html | Page | via Google | page bloquée, lue par Google | trouvé | Données de la page | pas lancée | Prix, devise et frais | 159.99 EUR (lu par Google) | trouvé | Photos | photo non lue : Google ne rend pas la photo | absent | Caractéristiques | 10 (lues par Google) | trouvé | Contrôle | en cours | 4 articles à comparer | Articles | 4 | · | Comparer | rang · article | CHF | 1 | 
+19:06:30 L4 Replier {"x":327.3125,"y":246,"txt":"Replier"}
+19:06:31 L4 4.3 c Lecture du lien · ZZ TEST — tour 28 | 3 | 1– | 4/6 | 4 s | Ajouter à ZZ TEST — tour 28… | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:06:33 L4 6.3 d ture food-safe) | budget | 3 500 | CHF | Rangement / étagères inox & déménagement | budget | 200 | CHF | Robinetterie & tuyaux raccords (fait par soi-même) | budget | 350 | CHF | Achat & installation évier principal + douchette | budget | 1 000 | CHF | Refaire évier — bloqué (attendre vis pieds) | budget | 200 | CHF | Anciennes notes de l’Atelier · 3 | Lecture du lien · ZZ TEST — tour 28 | 3 | 1– | 4/6 | 6 s | Une idée, un besoin… | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:06:36 L4 9.0 e0 udget | 200 | CHF | Robinetterie & tuyaux raccords (fait par soi-même) | budget | 350 | CHF | Achat & installation évier principal + douchette | budget | 1 000 | CHF | Refaire évier — bloqué (attendre vis pieds) | budget | 200 | CHF | Anciennes notes de l’Atelier · 3 | Lu · Brew Monk® stainless steel fermenter 30 l | 3 | 2– | 3 s | Une idée, un besoin… | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:06:39 L4 12.0 e1 udget | 200 | CHF | Robinetterie & tuyaux raccords (fait par soi-même) | budget | 350 | CHF | Achat & installation évier principal + douchette | budget | 1 000 | CHF | Refaire évier — bloqué (attendre vis pieds) | budget | 200 | CHF | Anciennes notes de l’Atelier · 3 | Lu · Brew Monk® stainless steel fermenter 30 l | 3 | 2– | 3 s | Une idée, un besoin… | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:07:10 L4 fiche {"dialog":false,"h":844,"c":844}
+19:07:12 L4 TEXTE 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Carnets | Idée · 3 sept. | Sol — matières premières + outils (peut faire en 2x) | Critère : Budget du Planning : 500 CHF | Articles | · collez un lien | Notes | 2 | À faire du 20.05.2026 au 22.09.2026 (Planning, Structure) | à faire | En cours au 20.11.2026 | note | Quand | · passé · S21 | Aujourd'hui | 1 mois | 3 mois | 6 mois | 1 an | Plus tard | avr. | mai | juin | Prix estimé ? | 100 CHF | 200 CHF | 500 CHF | 1 000 CHF | 5 000 CHF | Au calendrier | Lu · Brew Monk® stainless steel fermenter 30 l | 3 | 2– | 3 s | Ajouter à Sol — matières premières + outils (peut faire en 2x)… | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:07:12 L4 boutons ["Retour au tableau de bord","Période précédente","Période : Tout l’historique. C","Période suivante","Rechercher (⌘K)","Plus : saisie au nom de Gaëtan","Articles","Recompter","Courses","Fûts","Matériel","Parc","À venir11","Carnets16","Réalisés0","Carnets","Plus","Renommer","Critères, actions","Note : À faire du 20.05.2026 a","Note : En cours au 20.11.2026,","Aujourd'hui","1 mois","3 mois","6 mois","1 an","Plus tard","100 CHF","200 CHF","500 CHF","1 000 CHF","5 000 CHF","Au calendrier","Lu · Brew Monk® stainless stee","Fermer","Photo","Dicter","Bord","Finances","Calendrier","Brassins","Stocks, 11 articles à commande","Clients","Compagnon brasseur","Actions rapides"]
+19:07:28 barre {"x":179,"y":698,"t":"Lu · Brew Monk® stainless steel fermenter 30 l32–3 s","aria":"Lu · Brew Monk® stainless steel fermenter 30 l, 5 étapes sur 6 : déplier"}
+19:07:30 · 3 sept. | Sol — matières premières + outils (peut faire en 2x) | Lu | · 3 s | Photos · absent — photo non lue : Google ne rend pas la photo | Compléter | Contrôle · absent | Compléter | 5 étapes sur 6 · lu en 3 s | Critère : Budget du Planning : 500 CHF | Articles | · collez un lien | Notes | 2 | À faire du 20.05.2026 au 22.09.2026 (Planning, Structure) | à faire | En cours au 20.11.2026 | note | Quand | · passé · S21 | Aujourd'hui | 1 mois | 3 mois | 6 mois | 1 an | Plus tard | avr. | mai | juin | Prix estimé ? | 100 CHF | 200 CHF | 500 CHF 
+19:07:51 fermer {"x":353,"y":209,"a":"Fermer"}
+19:08:12 dans ZZ true
+19:08:18 L4 fiche {"dialog":false,"h":844,"c":844}
+19:08:20 L4 TEXTE 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Articles · ZZ TEST — tour 28 | 4e sur 4 | photo non lue | Brew Monk® stainless steel fermenter 30 l | Offre | brouwland.com | ≈147 CHF | Ouvrir | 159,99 € · douane, port et envoi non comptés | Caractéristiques | lues sur la fiche du vendeur, 23 nov. | Full volume | 32 l | Matériau | SST 304 | Height with extension legs | 68.5 cm | Top opening | 35 cm | Height without extension legs | 58.5 cm | Poids | 7.9 kg | Dump valve size | 3/4" | Fermentable volume | 25 l | Size of valve | 1/2" | Diameter at the top | 35 cm | Veille du prix, tous les 3 jours | Choisir · brouwland.com | Part dans À venir : Brew Monk® stainless steel fermenter 30 l, brouwland.com, ≈147 CHF, avec le pourquoi. | Ajouter à ZZ TEST — tour 28… | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:08:20 L4 boutons ["Retour au tableau de bord","Période précédente","Période : Tout l’historique. C","Période suivante","Rechercher (⌘K)","Plus : saisie au nom de Gaëtan","Articles","Recompter","Courses","Fûts","Matériel","Parc","À venir11","Carnets16","Réalisés0","Articles · ZZ TEST — tour 28","Article précédent","Modifier le prix","Veille du prix, tous les 3 jou","Choisir · brouwland.com","Photo","Dicter","Bord","Finances","Calendrier","Brassins","Stocks, 11 articles à commande","Clients","Compagnon brasseur","Actions rapides"]
+19:08:40 L5 champ {"x":113,"y":753,"ph":"Ajouter à ZZ TEST…"}
+19:08:43 L5 0.4s Lecture · 1 sur 6 | 0 s | Replier | brewtools.com/brewing-system-accessories/7712213/steam-hat-b40pro-with-silicone-plug-and-seal | Page | adresse introuvable : le site n’existe plus | non lue | Données de la page | pas lancée | Prix, devise et frais | pas lancée | Photos | pas lancée | Caractéristi
+19:08:44 L5 1.2s 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Carnets | ZZ TEST — tour 28 | Lien introuvable | arrêté à 1 sur 6 | brewtools.com/brewing-system-accessories/7712213/steam-hat-b40pro-with-silicone-plug-and-seal | P
+19:09:34 L5esc bouton {"x":109.171875,"y":372,"txt":"Escalader IA plus forte"}
+19:09:35 L5esc 0.5s ZZ TEST — tour 28 | Lien introuvable | arrêté à 1 sur 7 | brewtools.com/brewing-system-accessories/7712213/steam-hat-b40pro-with-silicone-plug-and-seal | Page | adresse introuvable : le site n’existe plus | non lue | 6 étapes pas lancées : rien n’est inventé | Escalader | IA plus forte | Autre lien | Compléter | Retirer | 4 articles à comparer | Articles | 4 | · | Comparer | ra
+19:10:26 L5-completer Compléter → ZZ TEST — tour 28 | L'IA n'a pas répondu : rangé sur place, rien n'est perdu. | 4 articles à comparer | Articles | 4 | · | Comparer | rang · article | Poids | CHF | 1 | Kibernetik KS240L | en stock | 38 kg | 302 | 2 | Citra (USA) 1 kg Hopfenpellets Typ 90 | en stock · TTC | – | 72,50 | 3 | Mosaic Hopfenpellets | en stock · TTC | – | 7,25 | 4 | Brew Monk® stainless steel fermenter 30 l | 159,99 € | 7.9 kg | ≈147 | Not
+19:10:26 L5-completer focus {"tag":"BODY"}
+19:10:26 L5-autre INTROUVABLE Autre lien
+19:10:45 L5b champ {"x":113,"y":753,"ph":"Ajouter à ZZ TEST…"}
+19:10:48 L5b 0.4s 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Carnets | ZZ TEST — tour 28 | Lien introuvable | arrêté à 1 sur 6 | brewtools.com/brewing-system-accessories/7712213/steam-hat-b40pro-with-silicone-plug-and-seal | P
+19:10:56 L5b-completer Compléter → ZZ TEST — tour 28 | L'IA n'a pas répondu : rangé sur place, rien n'est perdu. | 5 articles à comparer | Articles | 5 | · | Comparer | rang · article | Poids | CHF | 1 | Kibernetik KS240L | en stock | 38 kg | 302 | 2 | Citra (USA) 1 kg Hopfenpellets Typ 90 | en stock · TTC | – | 72,50 | 3 | Mosaic Hopfenpellets | en stock · TTC | – | 7,25 | 4 | Brew Monk® stainless steel fermenter 30 l | 159,99 € | 7.9 kg | ≈147 | ? |
+19:10:56 L5b-completer focus {"tag":"BODY"}
+19:10:56 L5b-completer2 INTROUVABLE Annuler
+19:11:16 L5m fiche {"dialog":false,"h":844,"c":844}
+19:11:18 L5m TEXTE 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Carnets | ZZ TEST — tour 28 | L'IA n'a pas répondu : rangé sur place, rien n'est perdu. | 5 articles à comparer | Articles | 5 | · | Comparer | rang · article | Poids | CHF | 1 | Kibernetik KS240L | en stock | 38 kg | 302 | 2 | Citra (USA) 1 kg Hopfenpellets Typ 90 | en stock · TTC | – | 72,50 | 3 | Mosaic Hopfenpellets | en stock · TTC | – | 7,25 | 4 | Brew Monk® stainless steel fermenter 30 l | 159,99 € | 7.9 kg | ≈147 | ? | brewtools.com | brewtools.com/steam-hat-b40pro-with-s… · lecture… | Ouvrir | Notes | 1 | Tour 28 | note | Quand | · pas encore daté | Aujourd'hui | 1 mois | 3 mois | 6 mois | 1 an | nov. | déc. | Au calendrier | Ajouter à ZZ TEST — tour 28… | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:11:18 L5m boutons ["Retour au tableau de bord","Période précédente","Période : Tout l’historique. C","Période suivante","Rechercher (⌘K)","Plus : saisie au nom de Gaëtan","Articles","Recompter","Courses","Fûts","Matériel","Parc","À venir11","Carnets16","Réalisés0","Carnets","Plus","Renommer","Articles5","Comparer","Articles, actions","1Kibernetik KS240Len stock38 k","2Citra (USA) 1 kg Hopfenpellet","3Mosaic Hopfenpelletsen stock ","4Brew Monk® stainless steel fe","Note : Tour 28, actions","Aujourd'hui","1 mois","3 mois","6 mois","1 an","Au calendrier","Photo","Dicter","Bord","Finances","Calendrier","Brassins","Stocks, 11 articles à commande","Clients","Compagnon brasseur","Actions rapides"]
+19:11:24 L5-menu Articles, actions → ZZ TEST — tour 28 | L'IA n'a pas répondu : rangé sur place, rien n'est perdu. | 5 articles à comparer | Articles | 5 | · | Comparer | Kibernetik KS240L · galaxus.ch | Déplacer | Retirer | Citra (USA) 1 kg Hopfenpellets Typ 90 · sios.ch | Déplacer | Retirer | Mosaic Hopfenpellets · hopfenmarkt.ch | Déplacer | Retirer | Brew Monk® stainless steel fermenter 30 l · brouwland.com | Déplacer | Retirer | brewtools.com | Dép
+19:11:24 L5-menu focus {"tag":"BUTTON","v":""}
+19:12:05 Déplacer {"x":268.15625,"y":379.1875,"txt":"Déplacer"}
+19:12:08 après Déplacer ZZ TEST — tour 28 | L'IA n'a pas répondu : rangé sur place, rien n'est perdu. | 5 articles à comparer | Articles | 5 | · | Comparer | Kibernetik KS240L · galaxus.ch | Déplacer | Retirer | dans | Chambre froide | dans | Sol — matières premières + outils (peut faire en 2x) | dans | Achat brasserie : moulin à malt + bac etc. | dans | Frigo + congel | dans | Armoire de rangement malte | dans | Conformité — dossiers SAAV + SEn + assurances | dans | Hotte recyclage | dans | Armoire de rangement extérieur | dans | Armoire de rangement toxique | dans | Extincteur | dans | Installation électrique 27A (2027) | dans | Embouteillage — station complète (2027) | dans | 2ème évier (2027) | dans | Jalon — P
+19:12:08 boutons ["Réalisés0","Carnets","Plus","Renommer","Articles5","Comparer","Articles, actions","Déplacer l’article « Kibernetik KS2","Retirer l’article « Kibernetik KS24","dans Chambre froide","dans Sol — matières premières + out","dans Achat brasserie : moulin à mal","dans Frigo + congel","dans Armoire de rangement malte","dans Conformité — dossiers SAAV + S","dans Hotte recyclage","dans Armoire de rangement extérieur","dans Armoire de rangement toxique","dans Extincteur","dans Installation électrique 27A (2","dans Embouteillage — station complè","dans 2ème évier (2027)","dans Jalon — Peut brasser au local ","dans Jalon — Conformité complète — ","Déplacer l’article « Citra (USA) 1 ","Retirer l’article « Citra (USA) 1 k","Déplacer l’article « Mosaic Hopfenp","Retirer l’article « Mosaic Hopfenpe","Déplacer l’article « Brew Monk® sta","Retirer l’article « Brew Monk® stai","Déplacer l’article « brewtools.com ","Retirer l’article « brewtools.com »","1Kibernetik KS240Len stock38 kg302","2Citra (USA) 1 kg Hopfenpellets Typ","3Mosaic Hopfenpelletsen stock · TTC","4Brew Monk® stainless steel ferment","Note : Tour 28, actions","Aujourd'hui","1 mois","3 mois","6 mois","1 an","Au calendrier","Photo","Dicter","Bord"]
+19:12:23 Retirer brewtools {"x":335.3828125,"y":421.75,"w":49.234375,"h":44,"visible":true,"op":"1"}
+19:12:25 ZZ TEST — tour 28 | Article retiré · brewtools.com | Annuler | L'IA n'a pas répondu : rangé sur place, rien n'est perdu. | 4 articles à comparer | Articles | 4 | · | Comparer | rang · article | Poids | CHF | 1 | Kibernetik KS240L | en stock | 38 kg | 302 | 2 | Citra (USA) 1 kg Hopfenpellets Typ 90 |
+19:12:48 L6 0.6s landi.ch/shop/lagergestelle_170307/schwerlastregal-180-160-60-cm_105447 | lien collé à 20:12 | 0 s | Page | ouverture de landi.ch… | en cours | Données de la page | Prix, devise et frais | Photos | Caractéristiques | Contrôle | Replier | lu par le serveur, 20 à 35 s | 5 articles à comparer | Articles | 5 | · | Comparer | rang · article | Poids | CHF | 1 | Kibernetik KS240L | en stock | 38 kg | 302
+19:12:49 L6 1.6s Lecture · 6 sur 7 | 1 s | Replier | landi.ch/shop/lagergestelle_170307/schwerlastregal-180-160-60-cm_105447 | Page | landi.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 79.95 CHF (schema.org) · CHF · port non publié | trouvé | Photos | 1 | trouvé | Caractéristiques | 2 · dont 0 du HTML, 2 de données embarquées ou de descriptions | trouvé | Contrôle | trouvé | Lectur
+19:12:49 L6 RECHARGE à 1.6
+19:12:54 L6 après recharge Rangement / étagères inox & déménagement | budget | 200 | CHF | Robinetterie & tuyaux raccords (fait par soi-même) | budget | 350 | CHF | Achat & installation évier principal + douchette | budget | 1 000 | CHF | Refaire évier — bloqué (attendre vis pieds) | budget | 200 | CHF | Anciennes notes de l’Atelier · 3 | Une idée, un besoin… | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:13:00 L6 13.4 ZZ rouvert ST — tour 28 | Lu pendant que l’app était fermée | · 3 s | Schwerlastregal 180 × 160 × 60 cm | landi.ch | 79,95 CHF | 7 étapes sur 7 · lu en 3 s | 4 articles à comparer | Articles | 4 | · | Comparer | rang · article | Poids | CHF | 1 | Kibernetik KS240L | en stock | 38 kg | 302 | 2 | Citra (USA) 1 kg Hopfenpellets Typ 90 | en stock · TTC | – | 72,50 | 3 | Mosaic Hopfenpellets | en stock · TTC | – | 7,25 | 4 | Brew Monk® stainless steel fermenter 30 l | 159,99 € | 7.9 kg | ≈147 | Notes | 1 | Tour 28 | note | Quand | · pas encore daté | Aujourd'h
+19:13:10 L6 23.0 ZZ +8 s ST — tour 28 | Lu pendant que l’app était fermée | · 3 s | Schwerlastregal 180 × 160 × 60 cm | landi.ch | 79,95 CHF | 7 étapes sur 7 · lu en 3 s | 4 articles à comparer | Articles | 4 | · | Comparer | rang · article | Poids | CHF | 1 | Kibernetik KS240L | en stock | 38 kg | 302 | 2 | Citra (USA) 1 kg Hopfenpellets Typ 90 | en stock · TTC | – | 72,50 | 3 | Mosaic Hopfenpellets | en stock · TTC | – | 7,25 | 4 | Brew Monk® stainless steel fermenter 30 l | 159,99 € | 7.9 kg | ≈147 | Notes | 1 | Tour 28 | note | Quand | · pas encore daté | Aujourd'h
+19:13:11 L6 lignes 9 neuves ["7 étapes sur 7 · lu en 3 s"]
+19:13:20 L6 FICHE s
+19:14:12 placeholder ["Ajouter à Armoire…"]
+19:14:12 PAS DANS ARMOIRE
+19:14:23 placeholder ["Ajouter à Armoire…"]
+19:14:24 retirables ["Retirer l’article « Schwerlastregal 180 × 160 × 60 cm »"]
+19:14:45 après ts | Idée · 3 sept. | Armoire de rangement malte | Critère : Budget du Planning : 200 CHF | Dans À venir | Voir | Articles | · collez un lien | Notes | 2 | À faire du 22.06.2026 au 13.07.2026 (Planning, Équipements) | à faire | Pas encore fait au 20.11.2026 | note | Quand | · passé · S29 | · 200 CHF estimé | Prix | Aujourd'hui | 1 mois | 3 mois | 6 mois | 1 an | Plus tard | juin | juil. | août | Au calendrier | Ajouter à Armoire de rangement malte… | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:15:07 L7 0.6s gastro-held.ch/fr/products/armoire-refrigeree-professionnelle-eco-400-gn-11-snackh400tn | lien collé à 20:15 | 0 s | Page | ouverture de gastro-held.ch… | en cours | Données de la page | Prix, devise et frais | Photos | Caractéristiques | Contrôle | Replier | lu par le serveur, 20 à 35 s | 5 articles à comparer | Articles | 5 | · | Comparer | rang · article | Poids | CHF | 1 | Kibernetik KS240L | 
+19:15:08 L7 1.6s gastro-held.ch/fr/products/armoire-refrigeree-professionnelle-eco-400-gn-11-snackh400tn | lien collé à 20:15 | 1 s | Page | ouverture de gastro-held.ch… | en cours | Données de la page | Prix, devise et frais | Photos | Caractéristiques | Contrôle | Replier | lu par le serveur, 20 à 35 s | 5 articles à comparer | Articles | 5 | · | Comparer | rang · article | Poids | CHF | 1 | Kibernetik KS240L | 
+19:15:10 L7 3.0s Lecture · 7 sur 7 | 3 s | Replier | gastro-held.ch/fr/products/armoire-refrigeree-professionnelle-eco-400-gn-11-snackh400tn | Page | gastro-held.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 913.9 CHF (schema.org) · CHF · HT · port gratuit | douteux | Photos | 12 | trouvé | Caractéristiques | 20 | trouvé | Contrôle | port : les données disent un port de 7.9 CHF, la 
+19:15:12 L7 5.3s Lecture · 7 sur 7 | 5 s | Replier | gastro-held.ch/fr/products/armoire-refrigeree-professionnelle-eco-400-gn-11-snackh400tn | Page | gastro-held.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 913.9 CHF (schema.org) · CHF · HT · port gratuit | douteux | Photos | 12 | trouvé | Caractéristiques | 20 | trouvé | Contrôle | port : les données disent un port de 7.9 CHF, la 
+19:15:15 L7 8.5s Lu | · 3 s | Prix, devise et frais · douteux — 913.9 CHF (schema.org) · CHF · HT · port gratuit | C’est le bon | Corriger | Contrôle · douteux — port : les données disent un port de 7.9 CHF, la page « livraison gratuite » | C’est le bon | Corriger | 7 étapes sur 7 · lu en 3 s | 5 articles à comparer | Articles | 5 | · | Comparer | rang · article | Poids | CHF | 1 | Kibernetik KS240L | en stock | 3
+19:15:34 L7 lignes 10 neuves ["7 étapes sur 7 · lu en 3 s","5GastroHero Armoire réfrigérée professionnelle ECO 400 GN 1/1en stock · HT–913,90"]
+19:15:43 L7 FICHE s
+19:15:49 dans ZZ true
+19:15:53 L7 fiche {"dialog":false,"h":844,"c":844}
+19:15:54 L7 TEXTE 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Articles · ZZ TEST — tour 28 | 5e sur 5 | photo | 1/12 | de la page collée | GastroHero Armoire réfrigérée professionnelle ECO 400 GN 1/1 | Offre | GastroHeld | en stock | 913,90 CHF | Ouvrir | HT · port offert | Caractéristiques | lues sur la fiche du vendeur, 23 nov. | Poids net en kg | 82 | Nombre de portes | 1 | Clayettes réglables en hauteur | oui | Consommation énergétique annuelle (kWh/an) | 819 | Niveau de qualité | Eco | Plage de température | +2 °C bis +8 °C | Réfrigération | ventilé / à air pulsé | Raccordement en volt | 230 V | Hauteur en mm | 2 010 | Réglable en hauteur | oui | Profondeur en mm | 710 | Largeur en mm | 680 | Matériau | inox | Plage de réfrigération | réfrigération classique | Classe d'efficacité énergétique | D | Marque | GastroHero | Type de porte | Porte pleine rabattable | Verrouillable | oui | Zones de température | 1 | Volume de réfrigération [Litres] | 429 | Non publié par le vendeur : Poids | Veille du prix, tous les 3 jours | Choisir · GastroHeld | Part dans À venir : GastroHero Armoire réfrigérée professionnelle ECO 400 GN 1/1, GastroHeld, 913,90 CHF, en stock, avec le pourquoi. | Ajouter à ZZ TEST — tour 28… | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:15:54 L7 boutons ["Retour au tableau de bord","Période précédente","Période : Tout l’historique. C","Période suivante","Rechercher (⌘K)","Plus : saisie au nom de Gaëtan","Articles","Recompter","Courses","Fûts","Matériel","Parc","À venir11","Carnets16","Réalisés0","Articles · ZZ TEST — tour 28","Article précédent","Photo précédente","Photo suivante","Modifier le prix","Veille du prix, tous les 3 jou","Choisir · GastroHeld","Photo","Dicter","Bord","Finances","Calendrier","Brassins","Stocks, 11 articles à commande","Clients","Compagnon brasseur","Actions rapides"]
+19:16:14 L7-bon C’est le bon → ZZ TEST — tour 28 | Lu | · 3 s | Contrôle · douteux — port : les données disent un port de 7.9 CHF, la page « livraison gratuite » | C’est le bon | Corriger | 7 étapes sur 7 · lu en 3 s | 5 articles à comparer | Articles | 5 | · | Comparer | rang · article | Poids | CHF | 1 | Kibernetik KS240L | en stock | 38 kg | 302 | 2 | Citra (USA) 1 kg Hopfenpellets Typ 90 | en stock · TTC | – | 72,50 | 3 | Mosaic Hopfenpellets 
+19:16:14 L7-bon focus {"tag":"BODY"}
+19:16:18 L7-corriger Corriger → ZZ TEST — tour 28 | 5e sur 5 | photo | 1/12 | de la page collée | GastroHero Armoire réfrigérée professionnelle ECO 400 GN 1/1 | Offre | GastroHeld | en stock | 913,90 CHF | Ouvrir | HT · port offert | Caractéristiques | lues sur la fiche du vendeur, 23 nov. | Poids net en kg | 82 | Nombre de portes | 1 | Clayettes réglables en hauteur | oui | Consommation énergétique annuelle (kWh/an) | 819 | Niveau de qualité | Eco
+19:16:18 L7-corriger focus {"tag":"BODY"}
+19:16:20 L8 0.5s 5e sur 5 | photo | 1/12 | de la page collée | GastroHero Armoire réfrigérée professionnelle ECO 400 GN 1/1 | Offre | GastroHeld | en stock | 913,90 CHF | Ouvrir | HT · port offert | Caractéristiques | lues sur la fiche du vendeur, 23 nov. | Poids net en kg | 82 | Nombre de portes | 1 | Clayettes réglables en hauteur | oui | Consommation énergétique annuelle (kWh/an) | 819 | Niveau de qualité | Eco
+19:16:46 L8 lignes 0 neuves []
+19:17:08 L8b champ {"x":113,"y":753,"ph":"Ajouter à ZZ TEST…"}
+19:17:12 L8b 0.4s Lecture · 6 sur 6 | 0 s | Replier | galaxus.ch/de/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562 | Page | galaxus.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 302 CHF (schema.org) · CHF · port gratuit | trouvé | Photos | 4 | trouvé | Caractérist
+19:17:13 L8b 1.2s Lecture · 6 sur 6 | 1 s | Replier | galaxus.ch/de/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562 | Page | galaxus.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 302 CHF (schema.org) · CHF · port gratuit | trouvé | Photos | 4 | trouvé | Caractérist
+19:17:14 L8b 2.5s Lecture · 6 sur 6 | 2 s | Replier | galaxus.ch/de/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562 | Page | galaxus.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 302 CHF (schema.org) · CHF · port gratuit | trouvé | Photos | 4 | trouvé | Caractérist
+19:17:16 L8b 4s Lecture · 6 sur 6 | 4 s | Replier | galaxus.ch/de/s2/product/kibernetik-ks240l-242-l-kuehlschrank-freistehend-49548562 | Page | galaxus.ch | trouvé | Données de la page | JSON-LD | trouvé | Prix, devise et frais | 302 CHF (schema.org) · CHF · port gratuit | trouvé | Photos | 4 | trouvé | Caractérist
+19:17:18 L8b 6s Enregistrement sur le serveur… | 🍺 | L'Affinée | Tout | A | G | Articles | Recompter | Courses | Fûts | Matériel | Parc | À venir | 11 | Carnets | 16 | Réalisés | 0 | Carnets | ZZ TEST — tour 28 | ✓ | Déjà dans ce carnet : rien de plus rangé | Annuler | Lu | · 1 s | 6 étapes sur 6 · lu en 1 s | 5 a
+19:17:41 champs []
+19:17:41 boutons ["−1 663 CHF à dépenser sans pas","±","3 mois · période, liste, tri e","Maintenant : 8 en retard","Aligner la courbe sur la frise","Cacher la courbe","Plein écran","Poignée de début : étirer la f","Poignée de fin : étirer ou réd","S45, 2 – 8 nov.","S46, 9 – 15 nov.","S47, 16 – 22 nov.","S48, 23 – 29 nov.","S49, 30 nov. – 6 déc.","S50, 7 – 13 déc.","S51, 14 – 20 déc.","S52, 21 – 27 déc.","S53, 28 déc. – 3 janv.","S1, 4 – 10 janv.","S2, 11 – 17 janv.","S3, 18 – 24 janv.","S4, 25 – 31 janv.","S5, 1 – 7 févr.","S6, 8 – 14 févr.","S7, 15 – 21 févr.","S8, 22 – 28 févr.","S9, 1 – 7 mars","S10, 8 – 14 mars","Ajouter dans Brassins","Masquer Brassins","Ajouter dans Fêtes","Masquer Fêtes","Ajouter dans Ventes","Masquer Ventes","Ajouter dans Achats","Masquer Achats","Extincteur, proposé, 31 déc., ","Ajouter dans Travaux","Masquer Travaux"]
+19:17:49 champs ["textarea:CHF","textarea:null"]
+19:17:49 iana, flocons d'avoine, levure safale us-05, malt maris otter | Fêtes | 1 chose | sans montant | vi | Ventes | vide | Achats | −80 probable | pas confirmé | Extincteur | −80 | Travaux | vide | Activités | vide | Papiers | −600 | prévu S48–S7 | lol | −600 | Impôt sur la bière · 2 brassins | Impôt sur la bière · 3 brassins | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients | Travaux | Ajouter | Brassins | Fêtes | Ventes | Achats | Travaux | Activités | Papiers | CHF | − | Quand | cette semaine | S48, 23 nov. | Aujourd'hui | 1 mois | 3 mois | 6 mois | 1 an | Durée | 1 j | le S48, 23 nov. | déc. | janv. | févr. | Jours actifs | · tous | › | Nom | Plus de détails › | Ajouter en S48
+19:18:09 barre {"x":71.16541290283203,"y":624,"w":28,"l":57.16541290283203,"a":"ZZ TEST — barre, 23 nov., S48"}
+19:18:13 pendant ["prête 16 déc. @213,189 83x18","J13 / 101 · prête 19 févr. @221,221 147x18","J0 / 12 @298,352 38x18","J0 / 99 · prête 29 mars @80,384 127x18"]
+19:18:15 après  | 1 chose | sans montant | vi | Ventes | vide | Achats | vide | Travaux | 1 chose | sans montant | ZZ TEST — barre | Activités | vide | Papiers | −600 | prévu S46–S51 | lol | −600 | Impôt sur la | bière · 2 brassins | ZZ TEST — barre : 23 nov. → 16 nov. | · | Annuler | Bord | Finances | Calendrier | Brassins | 11 | Stocks | Clients
+19:18:57 barre ZZ TEST — barre, 16 nov., S47
+19:19:00 boutons ["Plus : saisie au nom de Gaëtan","Fermer","Plus d’actions"]
+19:19:10 options ["Supprimer"]
+19:19:12 confirm []
+19:19:21 reste ZZ 0
+19:19:51 options ["Supprimer le carnet"]
+19:19:53 confirm ["Supprimer"]
+19:20:12 compte 15 ZZ restant false Armoire Armoire de rangement malte | passé · S29 |

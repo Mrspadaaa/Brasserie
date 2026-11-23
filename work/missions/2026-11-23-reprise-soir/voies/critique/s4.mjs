@@ -1,0 +1,12 @@
+import { ouvrir, sleep, photo, log, taper } from './outil.mjs';
+const { page, cdp, lacher } = await ouvrir();
+const boutons = () => page.evaluate(() => [...document.querySelectorAll('button,[role=tab],a')].filter((e) => e.getBoundingClientRect().width > 0).map((e) => ((e.getAttribute('aria-label') || '') + '|' + (e.textContent || '').trim()).slice(0, 50)));
+await taper(page, cdp, 'Stocks', 'nav button, nav a, [role=tab]'); await sleep(1500);
+log('B1', await boutons());
+await taper(page, cdp, 'Matériel'); await sleep(1500);
+log('B2', await boutons());
+await taper(page, cdp, 'Carnets'); await sleep(2000);
+await photo(page, '02-carnets', true);
+log('T', (await page.evaluate(() => document.body.innerText)).slice(0, 1500));
+log('B3', await boutons());
+lacher();

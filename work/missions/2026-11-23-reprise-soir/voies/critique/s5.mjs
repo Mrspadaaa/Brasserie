@@ -1,0 +1,11 @@
+import { ouvrir, sleep, photo, log, taper, ou, toucher } from './outil.mjs';
+const { page, cdp, lacher } = await ouvrir();
+const champ = await page.evaluate(() => { const e = [...document.querySelectorAll('input,textarea')].find((x) => (x.placeholder || '').startsWith('Une idée')); if (!e) return null; const b = e.getBoundingClientRect(); return { x: b.left + b.width / 2, y: b.top + b.height / 2, tag: e.tagName }; });
+log('champ', champ);
+await toucher(cdp, champ.x, champ.y); await sleep(400);
+await page.keyboard.type('ZZ TEST — tour 28'); await sleep(300);
+await photo(page, '03-saisie');
+await page.keyboard.press('Enter'); await sleep(2500);
+await photo(page, '04-cree');
+log((await page.evaluate(() => document.body.innerText)).slice(0, 700));
+lacher();

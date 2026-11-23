@@ -1,0 +1,10 @@
+import { ouvrir, sleep, photo, log, toucher, ou } from './outil.mjs';
+const { page, cdp, lacher } = await ouvrir();
+await sleep(6000);
+const a = await page.evaluate(() => { const e = [...document.querySelectorAll('button,[role=button]')].find((x) => (x.getAttribute('aria-label') || '').startsWith('ZZ TEST — barre') && x.getBoundingClientRect().width > 0); if (!e) return null; e.scrollIntoView({ block: 'center', inline: 'center' }); return e.getAttribute('aria-label'); });
+log('barre', a); await sleep(800);
+const b = await page.evaluate((a) => { const r = [...document.querySelectorAll('button,[role=button]')].find((x) => x.getAttribute('aria-label') === a).getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }, a);
+await toucher(cdp, b.x, b.y); await sleep(1500);
+await photo(page, 'C6-ouvert');
+log('boutons', await page.evaluate(() => [...document.querySelectorAll('button')].filter((b) => b.getBoundingClientRect().width > 0).map((b) => (b.getAttribute('aria-label') || b.textContent.trim()).slice(0, 30)).filter((t) => /Suppr|Retir|Effac|Plus|Fermer|Annul/.test(t))));
+lacher();

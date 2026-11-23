@@ -301,3 +301,13 @@
 {"heure":"2026-11-23T14:41:11.217Z","methode":"banc-liens-bloquees","geste":"Page bloquée n° 25 lue par gemini-4-hydrogen (recherche, 8876 ms, http 200, 0 requête(s) de recherche)","modele":"gemini-4-hydrogen","jetons_entree":1036,"jetons_sortie":1043,"estimation_chf":0.01172}
 {"heure":"2026-11-23T14:41:27.945Z","methode":"banc-liens-bloquees","geste":"Page bloquée n° 25 lue par gemini-3.5-flash-lite (recherche, 1718 ms, http 200, 0 requête(s) de recherche)","modele":"gemini-3.5-flash-lite","jetons_entree":317,"jetons_sortie":290,"estimation_chf":0.00103}
 {"heure":"2026-11-23T14:46:20.320Z","methode":"banc-liens-ia","geste":"Lien n° 25 lu par gemini-3.5-flash-lite sur le texte nettoyé (5721 car., 880 ms, http 200)","modele":"gemini-3.5-flash-lite","jetons_entree":2533,"jetons_sortie":141,"estimation_chf":0.00139}
+{"date":"2026-11-23T20:03:19+01:00","tache":"lireLien","url":"galaxus kibernetik-ks240l","modele":"serveur (aiTask tour 28)","cout_chf":0.01,"voie":"critique tour 28"}
+{"date":"2026-11-23T20:04:38+01:00","tache":"lireLien","url":"sios Citra 1 kg","modele":"serveur (aiTask tour 28)","cout_chf":0.01,"voie":"critique tour 28"}
+{"date":"2026-11-23T20:05:45+01:00","tache":"lireLien","url":"hopfenmarkt mosaic","modele":"serveur (aiTask tour 28)","cout_chf":0.01,"voie":"critique tour 28"}
+{"date":"2026-11-23T20:06:39+01:00","tache":"lireLien","url":"brouwland brew monk 30 l","modele":"serveur (aiTask tour 28)","cout_chf":0.01,"voie":"critique tour 28"}
+{"date":"2026-11-23T20:09:11+01:00","tache":"lireLien","url":"brewtools 7712213 (lien mort)","modele":"serveur (aiTask tour 28)","cout_chf":0.01,"voie":"critique tour 28"}
+{"date":"2026-11-23T20:10:06+01:00","tache":"lireLien (escalade)","url":"brewtools 7712213 (lien mort)","modele":"serveur, IA plus forte","cout_chf":0.05,"voie":"critique tour 28"}
+{"date":"2026-11-23T20:10:51+01:00","tache":"lireLien","url":"brewtools 7712213 (lien mort, 2e)","modele":"serveur (aiTask tour 28)","cout_chf":0.01,"voie":"critique tour 28"}
+{"date":"2026-11-23T20:13:20+01:00","tache":"lireLien","url":"landi schwerlastregal","modele":"serveur (aiTask tour 28)","cout_chf":0.01,"voie":"critique tour 28"}
+{"date":"2026-11-23T20:15:43+01:00","tache":"lireLien","url":"gastro-held snackh400tn","modele":"serveur (aiTask tour 28)","cout_chf":0.01,"voie":"critique tour 28"}
+{"date":"2026-11-23T20:17:18+01:00","tache":"lireLien","url":"galaxus KS240L (doublon x2)","modele":"serveur (aiTask tour 28)","cout_chf":0.02,"voie":"critique tour 28"}
