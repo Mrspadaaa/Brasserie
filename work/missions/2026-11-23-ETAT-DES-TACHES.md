@@ -1,6 +1,11 @@
 # État des tâches — 23.11, après le tour 24 (21bd69fd0, index-7UIfuot2.js)
 
-## En attente de lui
+## Reprise (23.11, ~14:30, contexte du pilote à 700 k)
+- Agent en cours : lecture des liens par méthode standard (copie `lecture-liens`, D446 : cascade schema.org → HTML → Flash-Lite → 3.8 Flash + url_context, banc permanent des 25 liens, rejeu en ligne, objectif prix et photo ≥ 90 %). À son « PRÊT À METTRE EN LIGNE <hash> » : fusionner dans port-carnet, deploy-leger.sh (T → tour25), aiTask seule si changée, puis lui envoyer « EN LIGNE ».
+- Fait depuis le tour 22 : tour 23 (bande jamais vide, rangées compactes), tour 24 (lien reste dans le carnet ouvert, bandeau juste, ⋯ Retirer/Déplacer) ; aiTask 4edd21a15 (ordre des champs, URL entière) ; nettoyage de ses carnets fait (D445).
+- Cette nuit : reconstruction du cœur de la frise (D444) ; contrat court : work/missions/2026-11-23-calendrier-en-ligne/VOIE-LOT-CAL.md.
+
+## En attente de lui (fait : nettoyage D445 ; vitesse au bord « Ok »)
 - Nettoyage de ses données (accord) : 4 articles de test dans « Frigo + congel » (Galaxus KS340L, Digitec Candy, 2 Brack),
   le frigo gastro-held dans « Chambre froide », le critère « 2,6 m³ » (CRIT-ffa36c63…) et le message ZZ de Chambre froide.
   Plus nos restes ZZ : carnet vide « ZZ TEST — fix liens 24 ».
