@@ -50,3 +50,13 @@ Ordre et contenu inchangés (points 1 à 5 du brief), avec ces ajouts :
   (soupçon : la transformation date↔x de alignement.ts arrondit sur des colonnes plus larges, cf. arrondi du lâcher plus haut :
   plancher, colonne sous le doigt) ; (4) point 3 (D436) ; (5) « −1 663 » pousse « CHF à dépenser » sous ± à 14 sem., bouton de
   durée qui garde l'ancienne valeur pendant le tirage ; (6) lenteur mesurée en ligne ; (7) bandeau « Enregistrement… ».
+
+## Ajout 23.11 9:50 — PRIORITÉ 0 : CAL-UN-SEUL-AXE (3e plainte), D441
+- « Toujours un gros problème entrer l'axe du graph et l'axe du calendrier, 3 ème fois que je le dis... » (captures
+  brasseur-23-11/10sem-0947.jpg, 3sem-0947.jpg). Cause visible : la bande suit la fenêtre de la COURBE (S44…S3), les rangées
+  dessinent la fenêtre du CADRE étirée sur toute la largeur → « prête 29 déc. » tombe sous S1.
+- D441 : une seule fenêtre et une seule transformation date → x pour courbe, bande et rangées (celle de la courbe) ; le cadre
+  est une zone qui traverse courbe et rangées. Vérifier TOUT ce qui dépend de la largeur des colonnes des rangées (glisser,
+  bord, lâcher, CAL-LACHER-OU-DESSINE, fiches) : les règles fast-check doivent passer sur la nouvelle géométrie.
+- Test : CAL-UN-SEUL-AXE (DEFAUTS-RECURRENTS) rouge sur le tour 18 ; preuve en ligne par SES deux gestes (10 sem., 3 sem.).
+- Leçon : un correctif d'un élément (la bande) se juge avec ce qui l'entoure (les rangées) : capture d'écran ENTIÈRE regardée.
