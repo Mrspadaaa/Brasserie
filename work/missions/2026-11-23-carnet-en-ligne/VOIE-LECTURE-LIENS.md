@@ -27,3 +27,10 @@ compte nécessaire, ce qu'on peut tester sans compte), puis mesurer ce qui est t
   navigateur sans tête (Puppeteer en fonction serveur).
 Tableau final : justesse par champ sur les 50 liens (mesurée, ou « non testé : compte requis »), temps, coût par lien, compte
 requis oui/non, risque. Recommandation ; tout nouveau compte ou service payant attend l'accord du brasseur (pilote).
+
+## Ajout du 23.11 : outils Google à mesurer (RECHERCHE.md, commit 86ede5202)
+- « Carbone » = Gemini 4 Carbon (10.11, 2/10 $ par M jusqu'au 30.11) ; « Oxygen » = rumeur, ignorer.
+- Ajouter au comparatif mesuré, sur les 50 liens, dans le budget de 1,5 CHF : Gemini 4 Hydrogen (1,50/7,50 $) et Carbon, chacun avec url_context (+ google_search en repli) ; vérifier d'abord que leurs identifiants sont listés par notre clé (models.list), sinon le noter.
+- Computer use de Gemini (navigateur Playwright local) : mesurer sur les seuls liens en JavaScript ou bloqués que la cascade rate ; jamais de CAPTCHA contourné.
+- Écarter : Custom Search JSON API (fermée), Merchant API (son propre catalogue seulement).
+- Chaque appel réel au journal ia-journal.jsonl.
