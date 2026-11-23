@@ -233,6 +233,8 @@ function ordreGarde(garde: ReadonlyMap<string, number> | undefined, a: string, b
 }
 
 export interface OptionsDisposer {
+  /** D441 (CAL-UN-SEUL-AXE) : l'axe partagé avec la courbe : chaque chose au jour près, jamais étirée à ses colonnes entières. */
+  lineaire?: boolean;
   /** CAL-PASSE N1 n° 6 : l'ordre d'origine des choses de la rangée, tenu par la rangée pour toute la session de la vue (écrit par `disposer`). */
   rang?: Map<string, number>;
   /**
@@ -298,7 +300,7 @@ export function disposer(choses: readonly ChoseCalendrier[], colonnes: readonly 
   const emprises = new Map<string, { emprise: [number, number]; o0: number; o1: number; lab: number; labCourt: number; labNom: number; w: number; wTxt: number; marque: boolean; dureeMin: number; formes: string[] }>();
   /* l'année (colonnes d'un mois) : la chose garde sa vraie durée, au jour près ; en semaines, elle prend ses colonnes entières. D385 : un axe qui
      porte des jours (vue Jour, semaine dépliée) pose aussi chaque chose au jour près, sur ses colonnes d'un jour */
-  const auJour = (colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14) || aDesJours(colonnes);
+  const auJour = !!options.lineaire || (colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14) || aDesJours(colonnes);
   const xDuJour = (iso: string): number => {
     const i = colonnes.findIndex(c => iso >= c.debut && iso <= c.fin);
     if (i < 0) return iso < colonnes[0].debut ? 0 : colonnes.length * largeurColonne;
@@ -684,6 +686,10 @@ export interface DragEtat { id: string; mode: 'glisse' | 'bord'; k: number; jour
 export interface Renvoi { chose: ChoseCalendrier; texte: string }
 
 export interface RangeeProps {
+  /** D441 : l'axe partagé avec la courbe (OptionsDisposer.lineaire). */
+  lineaire?: boolean;
+  /** D441 : les colonnes du cadre seul, que la pastille (« prévu S48–S5 ») compte quand la rangée montre aussi les marges. */
+  colonnesCadre?: readonly Colonne[];
   id: IdRangee;
   /** Toutes les choses de cette rangée (la rangée filtre ce qu'elle montre). */
   choses: readonly ChoseCalendrier[];
@@ -852,7 +858,8 @@ export const Rangee: React.FC<RangeeProps> = props => {
     [choses, colonnes, masquee, epingles]
   );
   const cachees = masquee ? dedans.length - montrees.length : 0;
-  const p = pastille(id, masquee ? [] : dedans, colonnes);
+  const cadreCols = props.colonnesCadre ?? colonnes;
+  const p = pastille(id, masquee ? [] : dedans.filter(c => positionDans(cadreCols, c)), cadreCols);
   const vide = dedans.length === 0;
   const texteCachees = cachees ? `${cachees} chose${cachees > 1 ? 's' : ''} cachée${cachees > 1 ? 's' : ''}` : '';
   const zoneTitre = paysage ? largeurTitre(nom, masquee ? (texteCachees || 'masquée') : vide ? 'vide' : p.texte) : 0;
@@ -885,14 +892,14 @@ export const Rangee: React.FC<RangeeProps> = props => {
     () => {
       const r = disposer(montreesEnSeries, colonnes, largeurColonne, largeur, {
         /* CRITIQUE-5 n° 14 : partout (téléphone, paysage, 1280), un nom reste entier tant que la place existe, quitte à ouvrir une ligne */
-        reserveDroite, zoneTitre, vueLarge, renvois: largeursRenvois, paysage, lieCourt, rang: rangs.current, garde: gardes.current, formeGardee: formeGardee.current
+        reserveDroite, zoneTitre, vueLarge, renvois: largeursRenvois, paysage, lieCourt, lineaire: !!props.lineaire, rang: rangs.current, garde: gardes.current, formeGardee: formeGardee.current
       });
       lignesVues.current = new Map(r.items.map(i => [i.chose.id, i.ligne]));
       formesVues.current = new Map(r.items.map(i => [i.chose.id, i.marque]));
       return r;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [montreesEnSeries, colonnes, largeurColonne, largeur, reserveDroite, zoneTitre, paysage, vueLarge, cleRenvois, lieCourt, auJourVue, cleGardes, cleForme]
+    [montreesEnSeries, colonnes, largeurColonne, largeur, reserveDroite, zoneTitre, paysage, vueLarge, cleRenvois, lieCourt, auJourVue, cleGardes, cleForme, props.lineaire]
   );
   /* D406 et D408 (21.11, « il faudrait des tailles fix car SI non ça fait bouger le calendrier ») : à une même échelle, la piste garde le plus
      grand nombre de lignes qu'elle a montré (Frise le retient) : une autre période ou une semaine dépliée ne la raccourcit pas, les rangées

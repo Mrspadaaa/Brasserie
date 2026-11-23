@@ -51,6 +51,9 @@ export function repereAujourdhui(courbe: readonly SoldeSemaine[], g: { x: (i: nu
   return { cote: lundi < courbe[0].lundi ? 'gauche' : 'droite' };
 }
 
+/** D442 : la colonne d'aujourd'hui sur l'axe partagé (px de la courbe), ou le bord vers lequel il se trouve. */
+export type RepereAujourdhui = { cote: 'dans' | 'gauche' | 'droite'; x0: number; x1: number };
+
 /** CAL-PASSE : l'index d'aujourd'hui dans la courbe (le passé la précède : `courbe[0]` n'est plus aujourd'hui). */
 export const aujourdhuiDe = (courbe: readonly SoldeSemaine[]): number => indexAujourdhui(courbe);
 
@@ -490,6 +493,9 @@ export interface CourbeProps {
   mois?: boolean;
   /** CAL-AUJOURDHUI-COURBE (23.11) : le jour d'aujourd'hui (ISO) : un trait sur la courbe à sa date, ou une flèche au bord vers lui. */
   aujourdhui?: string;
+  /** D442 (son choix B, « la colonne bleue monte ») : l'unité d'aujourd'hui (jour ou semaine) en px de la courbe, en colonne bleue ; hors de la
+   *  vue, un dégradé bleu au bord. Remplace le trait d'`aujourdhui`. */
+  repere?: RepereAujourdhui | null;
   /** L-60 (T11-14) : la fenêtre touche la butée du passé : le trait « début » dit que rien n'existe avant (sinon une courbe vide, sans repère). */
   debutDonnees?: boolean;
   /** Les choses étoilées, sur leur marche (« ★ Hotte −900 »). */
@@ -594,7 +600,7 @@ export function moisHorsReserves(
   return sortie;
 }
 
-export function Courbe({ aujourdhui, debutDonnees = false, courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false, abscisses, alignee = !!abscisses, creuxIndex, rangeeHaute, plate = false }: CourbeProps) {
+export function Courbe({ repere, aujourdhui, debutDonnees = false, courbe, largeur, hauteur, curseur = null, reference, gestes, cadre, mise = null, mois: avecMois = true, etoiles, masque = null, children, moisEnHaut = false, abscisses, alignee = !!abscisses, creuxIndex, rangeeHaute, plate = false }: CourbeProps) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   // La police réelle arrive après le premier rendu : les noms se replacent avec ses vraies largeurs.
   const [, setPolice] = useState(0);
@@ -646,7 +652,7 @@ export function Courbe({ aujourdhui, debutDonnees = false, courbe, largeur, haut
   const y0 = g.y(0);
   /* CAL-AUJOURDHUI-COURBE (« on voit plus quel moment on est sur le graph ») : le trait d'aujourd'hui à son jour dans sa semaine ; hors de la vue,
      « ‹ auj. » ou « auj. › » au pied du bord vers lui */
-  const auj = repereAujourdhui(courbe, g, largeur, aujourdhui);
+  const auj = repere === undefined ? repereAujourdhui(courbe, g, largeur, aujourdhui) : null;
   const boiteAuj = auj && auj.cote !== 'dans' ? [{ l: auj.cote === 'gauche' ? 0 : largeur - LARGEUR_AUJ, r: auj.cote === 'gauche' ? LARGEUR_AUJ : largeur, t: g.bas - 16, b: g.bas }] : [];
   const exclusions = [...obstaclesCourbe(g, cadre, creux), ...obstaclesZero(g, largeur), ...boitesMois, ...reservesHaut, ...boiteAuj, ...(debutDonnees ? [{ l: 0, r: 40, t: g.haut, b: g.haut + 14 }] : [])];
   const noms = placerNoms(courbe, g, maxNoms(largeur), exclusions, mise, etoiles, [yMois]);
@@ -691,6 +697,9 @@ export function Courbe({ aujourdhui, debutDonnees = false, courbe, largeur, haut
             <text className="ent-debut-l" x={g.x(0) + 5} y={g.haut + 10}>début</text>
           </g>
         )}
+        {repere && (repere.cote === 'dans'
+          ? <rect className="ent-auj-col" data-aujourdhui="dans" x={Math.max(0, repere.x0)} y={g.haut} width={Math.max(5, Math.min(largeur, repere.x1) - Math.max(0, repere.x0))} height={g.bas - g.haut}><title>Aujourd’hui</title></rect>
+          : <g data-aujourdhui={repere.cote}><title>Aujourd’hui</title><defs><linearGradient id={`${uid}auj`} x1={repere.cote === 'gauche' ? 0 : 1} x2={repere.cote === 'gauche' ? 1 : 0}><stop offset="0" className="ent-auj-g0" /><stop offset="1" className="ent-auj-g1" /></linearGradient></defs><rect x={repere.cote === 'gauche' ? 0 : largeur - 22} y={g.haut} width={22} height={g.bas - g.haut} fill={`url(#${uid}auj)`} /></g>)}
         {auj && (auj.cote === 'dans'
           ? <g className="ent-auj" data-aujourdhui="dans"><title>Aujourd’hui</title><line x1={auj.x} x2={auj.x} y1={g.haut} y2={g.bas} /><path d={`M${(auj.x - 5).toFixed(1)} ${g.haut}h10l-5 6z`} /></g>
           : <g className="ent-auj" data-aujourdhui={auj.cote}><title>Aujourd’hui</title><text className="ent-auj-l" x={auj.cote === 'gauche' ? 2 : largeur - 2} y={g.bas - 3} textAnchor={auj.cote === 'gauche' ? 'start' : 'end'}>{auj.cote === 'gauche' ? '‹ auj.' : 'auj. ›'}</text></g>)}

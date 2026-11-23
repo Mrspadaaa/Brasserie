@@ -1,9 +1,11 @@
 import React from 'react';
-import { RANGEES, barreLiee, ecartJours, estPonctuel, type ChoseCalendrier, type Rangee as IdRangee } from '../../../domain/calendrier';
+import { RANGEES, ajouterJours, barreLiee, ecartJours, estPonctuel, type ChoseCalendrier, type Rangee as IdRangee } from '../../../domain/calendrier';
 import { colonneCourante, MESURES_PAYSAGE, MESURES_PAYSAGE_BRASSINS, MESURES_PORTRAIT, MESURES_PORTRAIT_BRASSINS, Rangee, pastille, positionDans, texteRenvoi, type Colonne, type DragEtat, type Renvoi, type RangeeProps } from './Rangee';
 import { todayISO } from '../../../domain/finance/ledger';
 import { GrilleJours } from './GrilleJours';
 import { posee } from './posee';
+import { xDeDate } from '../entete/alignement';
+import type { AxeCourbe } from '../entete/Fenetre';
 import { usePincement } from './usePincement';
 import { cheminDePoints, routerFil } from './routageFil';
 import { aDesJours, type SensPincement } from '../echelle';
@@ -79,6 +81,11 @@ export interface FriseProps extends Pick<RangeeProps, 'drag' | 'ici' | 'etiquett
   echelle?: string;
   /** Aujourd'hui (ISO) : son trait sur la grille des jours. */
   aujourdhui?: string;
+  /** D441 (CAL-UN-SEUL-AXE) : les colonnes sont la fenêtre de la courbe ; le cadre (`cadreDu` → `cadreAu`) y est une zone, le reste grisé, et les
+   *  lignes des colonnes tombent sur les graduations de la bande (CAL-GRILLE-SUR-GRADUATIONS). */
+  axe?: AxeCourbe;
+  /** D441 : les colonnes du cadre seul (pastilles « prévu … », renvois, vue large) quand la frise montre aussi ses marges. */
+  colonnesCadre?: readonly Colonne[];
   /** E44 : un calendrier de section ne montre que ces rangées. */
   seulement?: readonly IdRangee[];
 }
@@ -421,14 +428,16 @@ export const Frise: React.FC<FriseProps> = props => {
 
   const largeur = mesuree || largeurRepli;
   const n = Math.max(1, colonnes.length);
-  const enMois = colonnes.length > 0 && ecartJours(colonnes[0].debut, colonnes[0].fin) >= 14;
+  /* D441 : les comptes (pastilles, renvois, vue large) portent sur le cadre ; le dessin, sur toutes les colonnes */
+  const cadreCols = props.colonnesCadre ?? colonnes;
+  const enMois = cadreCols.length > 0 && ecartJours(cadreCols[0].debut, cadreCols[0].fin) >= 14;
   /* CRITIQUE-4 n° 4 (D-199, E27) : le paysage montre 13 semaines, c'est déjà une vue large. Plus de 6 semaines, au téléphone comme tourné :
      une marque prend l'appui long et ouvre les 6 semaines centrées sur elle, jamais le menu f5-a (qui reste aux barres et aux 6 semaines). */
   /* D385 : en vue Jour (14 colonnes d'un jour), la vue est étroite : on compte les jours couverts, pas les colonnes */
-  const joursCouverts = colonnes.length ? ecartJours(colonnes[0].debut, colonnes[colonnes.length - 1].fin) + 1 : 0;
+  const joursCouverts = cadreCols.length ? ecartJours(cadreCols[0].debut, cadreCols[cadreCols.length - 1].fin) + 1 : 0;
   const vueLarge = props.vueLarge ?? (enMois || joursCouverts > 6.5 * 7);
   usePincement(zone, props.onPincer);
-  const avecJours = aDesJours(colonnes);
+  const avecJours = !props.axe && aDesJours(colonnes);
   const largeurColonne = largeur / n;
   /* CAL-PASSE (V-16, r2-c `.col.now`) : la semaine en cours, teintée d'UN bloc sur toute la hauteur de la frise (une teinte par rangée sortait
      de l'écran dans les lignes de rangées vides, plus étroites que la frise : scrollWidth 505 à 390) */
@@ -441,9 +450,11 @@ export const Frise: React.FC<FriseProps> = props => {
   /* CAL-PASSE : `ordreComplet` rend les rangées absentes de l'ordre gardé ; un calendrier de section (E44) n'en montre que les siennes */
   const rangees = ordreComplet(ordre).filter(r => !props.seulement || props.seulement.includes(r));
   const parRangee = (r: IdRangee) => choses.filter(c => c.rangee === r);
-  const pastilles = rangees.map(r => Math.abs(pastille(r, parRangee(r), colonnes).part));
+  const pastilles = rangees.map(r => Math.abs(pastille(r, parRangee(r), cadreCols).part));
   const partMax = Math.max(0, ...pastilles);
-  const renvois = renvoisHorsVue(choses, colonnes);
+  const renvois = renvoisHorsVue(choses, cadreCols);
+  /* D441 : le cadre en zone sur les rangées (hors de lui, grisé léger), au x de ses dates sur l'axe partagé */
+  const zoneCadre = props.axe ? { a: xDeDate(colonnes, largeurColonne, props.axe.cadreDu), b: xDeDate(colonnes, largeurColonne, ajouterJours(props.axe.cadreAu, 1)) } : null;
 
   const selection = selectionId ? choses.find(c => c.id === selectionId) : undefined;
   const eclairage = jalonsAllumes(choses, selection);
@@ -487,7 +498,7 @@ export const Frise: React.FC<FriseProps> = props => {
   return (
     <div
       ref={zone}
-      className={`cal-frise${paysage ? ' cal-paysage' : ''}`}
+      className={`cal-frise${paysage ? ' cal-paysage' : ''}${props.axe ? ' cal-frise--axe' : ''}`}
       data-frise
       data-nb-colonnes={n}
       data-echelle={props.echelle}
@@ -502,7 +513,17 @@ export const Frise: React.FC<FriseProps> = props => {
       onKeyDownCapture={e => { if (e.currentTarget.hasAttribute('data-doigt')) e.currentTarget.removeAttribute('data-doigt'); }}
     >
       <CalqueTraits ref={calque} idMasque={idMasque} />
-      {courante && <i className="cal-col-now" aria-hidden="true" data-col-now style={{ ...posee(courante.debut * largeurColonne), width: courante.n * largeurColonne }} />}
+      {props.axe && (
+        <span className="cal-axe" aria-hidden="true" data-axe-grille>
+          {props.axe.graduations.map(x => <i key={x} className="cal-axe-l" data-graduation={x} style={posee(x)} />)}
+          {zoneCadre && zoneCadre.a > 0 && <i className="cal-hors-cadre" data-hors-cadre="avant" style={{ ...posee(0), width: zoneCadre.a }} />}
+          {zoneCadre && zoneCadre.b < largeur && <i className="cal-hors-cadre" data-hors-cadre="apres" style={{ ...posee(zoneCadre.b), width: largeur - zoneCadre.b }} />}
+        </span>
+      )}
+      {props.axe?.auj && props.axe.auj.cote !== 'dans' && <i className={`cal-auj-bord cal-auj-bord--${props.axe.auj.cote}`} aria-hidden="true" data-auj-bord={props.axe.auj.cote} />}
+      {/* D442 : sur l'axe partagé, la colonne bleue est l'unité d'aujourd'hui de la bande (jour ou semaine), au même x */}
+      {props.axe ? (props.axe.auj && props.axe.auj.cote === 'dans' && <i className="cal-col-now" aria-hidden="true" data-col-now style={{ ...posee(Math.max(0, props.axe.auj.x0)), width: Math.max(5, Math.min(largeur, props.axe.auj.x1) - Math.max(0, props.axe.auj.x0)) }} />)
+        : courante && <i className="cal-col-now" aria-hidden="true" data-col-now style={{ ...posee(courante.debut * largeurColonne), width: courante.n * largeurColonne }} />}
       {props.tete}
       {grouperVides(rangees.map(r => {
         const dedans = parRangee(r);
@@ -520,6 +541,7 @@ export const Frise: React.FC<FriseProps> = props => {
             id={r}
             choses={dedans}
             colonnes={colonnes}
+            {...(props.axe ? { lineaire: true, colonnesCadre: cadreCols } : {})}
             largeurColonne={largeurColonne}
             largeur={largeur}
             mesures={r === 'brassins' ? (paysage ? MESURES_PAYSAGE_BRASSINS : MESURES_PORTRAIT_BRASSINS) : mesures}

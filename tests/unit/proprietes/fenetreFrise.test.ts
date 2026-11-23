@@ -216,12 +216,16 @@ describe('etiquetteCadre : « S47 2025 – S52 2026 » dit la vraie fenêtre, an
 /* ---------- la vue du cadre sur la courbe ---------- */
 
 describe('vueDeFenetre et semainesDeVue : le cadre posé sur la courbe', () => {
-  it('au repos, le début est à 56 px du bord gauche et la fin à 56 px du bord droit, quelle que soit la durée', () => {
+  /* D441 (23.11) : les marges se posent en unités entières (jours, semaines) pour que les rangées partagent l'axe : 56 px à une demi-unité près,
+     une unité au moins, les mêmes des deux côtés (avant : 56 px exactement) */
+  it('au repos, le début et la fin à 56 px des bords, à une demi-unité près, en unités entières, les mêmes des deux côtés', () => {
     fc.assert(fc.property(fc.integer({ min: 0, max: 100 }), fc.integer({ min: 1, max: 52 }), fc.integer({ min: 168, max: 1600 }), (index, nombre, largeur) => {
-      const v = F.vueDeFenetre(index, nombre, largeur);
+      const v = F.vueDeFenetre(index, nombre, largeur), u = F.uniteDeVue(v.span), pxU = largeur / (v.span * u);
       const x = (semaine: number) => ((semaine - v.v0) / v.span) * largeur;
-      expect(x(index)).toBeCloseTo(56, 6);
-      expect(x(index + nombre)).toBeCloseTo(largeur - 56, 6);
+      const g = x(index), d = largeur - x(index + nombre);
+      expect(Math.abs(g - d)).toBeLessThan(1e-6);
+      expect(g).toBeGreaterThanOrEqual(Math.min(56 - pxU / 2, pxU) - 1e-6);
+      expect(g).toBeLessThanOrEqual(Math.max(56 + pxU / 2, pxU) + 1e-6);
     }), { numRuns: RUNS });
   });
 

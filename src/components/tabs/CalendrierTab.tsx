@@ -9,7 +9,7 @@ import { useDonneesCalendrier, type DonneesCalendrier } from '../../ui/calendrie
 import { appliquer, portParDefaut, type EcritureFaite, type PortEcritures } from '../../ui/calendrier/ecritures';
 import { useOrientation } from '../../ui/calendrier/useOrientation';
 import { EnTeteCalendrier, type MessageEnTete, type VueCalendrier } from '../../ui/calendrier/entete/EnTete';
-import { fenetreDePeriode, libelleDuree, periodeDeFenetre, SEMAINES_ANNEE, type FenetreSemaines } from '../../ui/calendrier/entete/Fenetre';
+import { fenetreDePeriode, libelleDuree, periodeDeFenetre, SEMAINES_ANNEE, type AxeCourbe, type FenetreSemaines } from '../../ui/calendrier/entete/Fenetre';
 import { Frise, ordreComplet } from '../../ui/calendrier/frise/Frise';
 import type { SaisieRapide } from '../../ui/finance/prevision/PlanSheetC';
 import { isoDate } from '../../domain/finance/ledger';
@@ -24,7 +24,7 @@ import { positionDans, type Colonne, type DragEtat } from '../../ui/calendrier/f
 import type { CoteBord } from '../../ui/calendrier/frise/usePointeur';
 import { aDesJours, ajouterMois, cibleDuGlisse, colonnesDeLAxe, ECHELLES, enMois, echelleApres, echelleEffective, glisseAuJour, peutDeplier, PERIODE_DE_L_ECHELLE, type Echelle, type SensPincement } from '../../ui/calendrier/echelle';
 import {
-  RANGEES, anneeEnMois, ajouterJours, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
+  RANGEES, anneeEnMois, ajouterJours, numeroSemaine, barreLiee, dateDeSemaine, ecartJours, estPonctuel, etiquetteS, jourLisible, lundiDe, nomRangee, nomSeules, preparerChoses,
   type CibleOuverture, type ChoseCalendrier, type ModeleCalendrier, type Rangee as IdRangee,
   jourAvecAnnee, semaineAvecAn
 } from '../../domain/calendrier';
@@ -307,6 +307,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const [courbeCachee, setCourbeCachee] = useEtatGarde<boolean>('calendrier_courbe_cachee', false);
   const [duree, setDuree] = useState<{ id: string; texte: string } | null>(null);
   const [mesure, setMesure] = useState({ largeur: 0, largeurColonne: 0 });
+  /* D441 (CAL-UN-SEUL-AXE) : l'axe de la petite courbe (portrait), que les rangées reprennent ; `null` : chacun le sien (paysage, alignée, graphe) */
+  const [axeCourbe, setAxeCourbe] = useState<AxeCourbe | null>(null);
   /* D385 : l'échelle de l'axe (Jour, Semaine, Mois), Semaine par défaut (« semaine par default », #202) ; la semaine dépliée (C).
      Paquet F n° 3 (PC-139) : l'échelle choisie se garde par appareil, comme la plage : au rechargement, « 3 mois » en Mois reste en Mois */
   const [echelleVoulue, setEchelleVoulue] = useEtatGarde<Echelle>('calendrier_echelle', 'semaine');
@@ -331,15 +333,27 @@ export function CalendrierTab(props: CalendrierTabProps) {
   const annee = vue === 'annee';
   /* D385 (D, C, B ensemble) : l'échelle voulue, si la période la permet (Jour jusqu'à 3 semaines, Mois dès 3 mois) ; une semaine se déplie en
      Semaine, si ses jours gardent 16 px au moins et si elle est dans la fenêtre */
-  const echelle = echelleEffective(echelleVoulue, fenetre.semaines, annee);
-  const deplieVu = !annee && echelle === 'semaine' && deplie && peutDeplier(mesure.largeur || 360, fenetre.semaines) && deplie >= fenetre.du && deplie < ajouterJours(fenetre.du, fenetre.semaines * 7) ? deplie : null;
+  const echelleBrute = echelleEffective(echelleVoulue, fenetre.semaines, annee);
+  const axeVu = !paysage ? axeCourbe : null;
+  /* D441 : sur l'axe de la courbe, les rangées ont des colonnes d'un jour (vue de moins de 5 semaines) ou d'une semaine, à toute durée (An compris) */
+  const echelle: Echelle = axeVu ? (axeVu.unite === 'jour' ? 'jour' : 'semaine') : echelleBrute;
+  const deplieVu = !axeVu && !annee && echelle === 'semaine' && deplie && peutDeplier(mesure.largeur || 360, fenetre.semaines) && deplie >= fenetre.du && deplie < ajouterJours(fenetre.du, fenetre.semaines * 7) ? deplie : null;
   /* CAL-PASSE (décision du pilote, 20.11) : l'An, ce sont douze mois à partir du début de la fenêtre (aujourd'hui par défaut, plus tôt si l'on a
      reculé), jamais tout le passé ajouté plus l'avenir (23 colonnes) */
   const moisAn = useMemo(() => anneeEnMois(fenetre.du, Math.min(SEMAINES_ANNEE, Math.max(1, fenetre.semaines))), [fenetre.du, fenetre.semaines]);
-  const colonnes: Colonne[] = useMemo(() => {
+  const colonnesFenetre: Colonne[] = useMemo(() => {
     if (annee) return moisAn.map(m => ({ debut: m.debut, fin: m.fin, etiquette: m.court }));
     return colonnesDeLAxe({ echelle, semaines: modele.semaines, mois: modele.mois, du: fenetre.du, nombre: fenetre.semaines, deplie: deplieVu });
   }, [annee, echelle, deplieVu, moisAn, modele.mois, modele.semaines, fenetre]);
+  /* D441 : les colonnes de la frise = la fenêtre de la courbe (ses marges comprises), en jours ou en semaines égaux : une même date, un même x */
+  const colonnes: Colonne[] = useMemo(() => {
+    if (!axeVu) return colonnesFenetre;
+    return Array.from({ length: axeVu.unites }, (_, k) => {
+      if (axeVu.unite === 'jour') { const d = ajouterJours(axeVu.du, k); return { debut: d, fin: d, etiquette: String(Number(d.slice(8, 10))) }; }
+      const d = ajouterJours(axeVu.du, 7 * k);
+      return { debut: d, fin: ajouterJours(d, 6), etiquette: `S${numeroSemaine(d)}` };
+    });
+  }, [axeVu, colonnesFenetre]);
   const colonnesRef = useRef(colonnes);
   colonnesRef.current = colonnes;
   const echelleRef = useRef(echelle);
@@ -354,8 +368,8 @@ export function CalendrierTab(props: CalendrierTabProps) {
   }, [periodeLocale, modele.semaines]);
   const fenetreSurLaPeriode = !periodeLocale || (modele.semaines.length > 0 && (semainesDeLaPeriode === null || semainesDeLaPeriode === fenetre.semaines));
   useEffect(() => {
-    if (!paysage && !annee && fenetreSurLaPeriode && echelleVoulue !== echelle) setEchelleVoulue(echelle);
-  }, [paysage, annee, fenetreSurLaPeriode, echelleVoulue, echelle, setEchelleVoulue]);
+    if (!paysage && !annee && fenetreSurLaPeriode && echelleVoulue !== echelleBrute) setEchelleVoulue(echelleBrute);
+  }, [paysage, annee, fenetreSurLaPeriode, echelleVoulue, echelleBrute, setEchelleVoulue]);
 
   /* ---------- le message : UN canal pour tout l'onglet (E33, D-200, CRITIQUE-3 n° 7) ----------
      Un message chasse le précédent. Il part au premier défilement de 24 px (la page ou un conteneur de l'onglet, la frise comprise), à tout
@@ -1139,10 +1153,11 @@ export function CalendrierTab(props: CalendrierTabProps) {
           orientation={orientation}
           apercu={apercuLundi ?? undefined}
           largeurColonne={largeurSemaine}
-          echelle={echelle}
+          echelle={echelleBrute}
           onEchelle={changerEchelle}
-          colonnes={colonnes}
+          colonnes={colonnesFenetre}
           deplie={deplieVu}
+          onAxe={setAxeCourbe}
           aujourdhui={aujourdhui}
           {...(deplier ? { onDeplier: surDeplier } : {})}
           onOuvrirFinances={onOpenFinances}
@@ -1201,6 +1216,7 @@ export function CalendrierTab(props: CalendrierTabProps) {
         <Frise
           choses={choses}
           colonnes={colonnes}
+          {...(axeVu ? { axe: axeVu, colonnesCadre: colonnesFenetre } : {})}
           paysage={paysage}
           ordre={ordre}
           seulement={section ? RANGEES_SECTION[section] : undefined}

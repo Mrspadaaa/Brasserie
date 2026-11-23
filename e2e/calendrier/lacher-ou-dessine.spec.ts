@@ -18,7 +18,7 @@ async function poser(page: Page) {
   const auj = aujourdhuiZurich(), e = fixtureFrise(auj);
   const plan = (id: string, du: string, au: string) => e.push({ name: 'financialPlans', id, data: { id, title: id.replace('P-ZZ-', 'ZZ TEST '), date: du, amountCents: 1000, direction: 'out', category: 'renovation', source: 'manual', status: 'active', createdAt: `${ajouter(auj, -30)}T08:00:00.000Z`, fenetre: { du, au, joursActifs: 2 } } });
   const lundi = ajouter(auj, -((new Date(`${auj}T12:00:00Z`).getUTCDay() + 6) % 7));
-  COURTS.forEach((id, k) => plan(id, ajouter(lundi, 7 * (k - 10) + 1), ajouter(lundi, 7 * (k - 10) + 2)));
+  COURTS.forEach((id, k) => plan(id, ajouter(lundi, 7 * (k - 10) + 1), ajouter(lundi, 7 * (k - 10) + 3))); // D441 : trois jours (au jour près, deux jours à 3 sem. font une marque)
   plan('P-ZZ-LONG', ajouter(auj, 21), ajouter(auj, 105));
   plan('P-ZZ-MOYEN', ajouter(lundi, 15), ajouter(lundi, 43));
   await page.addInitScript(([kf, j]) => { if (!localStorage.getItem(kf)) localStorage.setItem(kf, j); localStorage.setItem('laffinee.theme', 'clair'); }, [CLE_FIXTURE, JSON.stringify(e)] as const);

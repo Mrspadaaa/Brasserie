@@ -442,3 +442,14 @@
 .ent-debut-halo { stroke: rgb(var(--cave-950)); stroke-width: 5px; }
 .ent-debut { stroke: rgb(var(--cave-50)); stroke-width: 2px; stroke-dasharray: 4 3; }
 .ent-debut-l { font-size: 13px; font-weight: 700; fill: rgb(var(--cave-50)); paint-order: stroke; stroke: rgb(var(--cave-950)); stroke-width: 4px; stroke-linejoin: round; }
+
+/* D442 (son choix B, « la colonne bleue monte ») : l'unité d'aujourd'hui en colonne bleue sur la courbe (20 %) et la bande (12 %), son chiffre ou
+   son nom en bleu gras ; hors de la vue, un dégradé bleu au bord (28 % → 0) et « ‹ auj. » sur la bande */
+.ent-auj-col { fill: rgb(var(--area-finances) / 0.2); }
+.ent-auj-g0 { stop-color: rgb(var(--area-finances)); stop-opacity: 0.28; }
+.ent-auj-g1 { stop-color: rgb(var(--area-finances)); stop-opacity: 0; }
+.ent-auj-bd { position: absolute; top: 0; bottom: 0; pointer-events: none; background: rgb(var(--area-finances) / 0.12); }
+.ent-auj-hors { position: absolute; top: 0; bottom: 1px; display: flex; align-items: center; padding: 0 6px 0 14px; z-index: 1; pointer-events: none; font-size: 13.5px; font-weight: 800; color: var(--ent-fin); background: linear-gradient(to right, rgb(var(--area-finances) / 0.28), rgb(var(--area-finances) / 0) 22px), rgb(var(--cave-950) / 0.85); }
+.ent-auj-hors--gauche { left: 0; }
+.ent-auj-hors--droite { right: 0; padding: 0 14px 0 6px; background: linear-gradient(to left, rgb(var(--area-finances) / 0.28), rgb(var(--area-finances) / 0) 22px), rgb(var(--cave-950) / 0.85); }
+.ent-bd-c[data-courant] .ent-sem, .ent-bd-j[data-auj], .ent-sem[data-auj-mois] { color: var(--ent-fin); font-weight: 800; }

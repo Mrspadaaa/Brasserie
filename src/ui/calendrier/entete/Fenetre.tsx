@@ -206,7 +206,27 @@ export function boiteTirage(texte: string, bord: number, largeur: number, cote: 
  * du bord gauche et sa fin à 56 px du bord droit, quelle que soit sa durée (1 semaine à l'année).
  */
 export interface VueCourbe { v0: number; span: number }
-export const vueDeFenetre = (index: number, nombre: number, largeur: number): VueCourbe => cadrerDeuxBouts(index, index + Math.max(1, nombre), Math.max(1, largeur));
+export const vueDeFenetre = (index: number, nombre: number, largeur: number): VueCourbe => {
+  const n = Math.max(1, nombre), v = cadrerDeuxBouts(index, index + n, Math.max(1, largeur));
+  /* D441 (CAL-UN-SEUL-AXE) : les marges en unités entières (jours sous 5 semaines de vue, semaines au-delà), les mêmes des deux côtés : la
+     courbe, la bande et les rangées commencent au début d'un jour ou d'un lundi et partagent la même transformation date → x */
+  const u = uniteDeVue(v.span), m = Math.max(1, Math.round(((v.span - n) / 2) * u));
+  return { v0: index - m / u, span: n + (2 * m) / u };
+};
+
+/**
+ * D441 (CAL-UN-SEUL-AXE) : l'axe que la courbe donne aux rangées : `unites` colonnes d'un jour ou d'une semaine dès `du`, sur la largeur de la
+ * courbe ; le cadre (`cadreDu` → `cadreAu`, inclus) en zone ; les graduations de la bande (px de la courbe), où les rangées tirent leurs lignes.
+ */
+export interface AxeCourbe { du: string; unites: number; unite: 'jour' | 'semaine'; cadreDu: string; cadreAu: string; graduations: readonly number[]; auj?: { cote: 'dans' | 'gauche' | 'droite'; x0: number; x1: number } | null }
+
+/** D441 : l'unité des rangées sous la courbe : 7 (des jours) pour une vue de moins de 5 semaines, 1 (des semaines) au-delà. */
+export const uniteDeVue = (span: number): 1 | 7 => (span < 5 ? 7 : 1);
+/** D441 : une vue (pendant un tirage, son recalage) posée sur des unités entières : début au début d'un jour ou d'un lundi, largeur en unités. */
+export function vueEnUnites(v: VueCourbe): VueCourbe {
+  const u = uniteDeVue(v.span);
+  return { v0: Math.round(v.v0 * u) / u, span: Math.max(1 / u, Math.round(v.span * u) / u) };
+}
 
 /**
  * Les semaines de la courbe que la vue montre, et leurs bords en px de la courbe (bornés à la largeur) : la même forme que l'alignement sur la

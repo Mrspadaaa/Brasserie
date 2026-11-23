@@ -12,6 +12,8 @@ import { INITIALES } from './BandeAnnee';
 export interface SemaineBande { debut: string; numero: number }
 
 export interface BandeSemainesProps {
+  /** D442 : aujourd'hui hors de la vue, de ce côté : « ‹ auj. » s'y pose, les graduations sous lui se taisent (MARGE_AUJ). */
+  masqueAuj?: 'gauche' | 'droite';
   /** Les semaines de la fenêtre, de la première à la dernière colonne. */
   semaines: readonly SemaineBande[];
   /** La courbe entière et l'index de la première colonne dans cette courbe : pour la variation de chaque semaine. */
@@ -144,7 +146,37 @@ export function etiquettesBande(semaines: readonly SemaineBande[], pas: PasEtiqu
   return res;
 }
 
-export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, retards, onDate, onIdeeSemaine, largeurColonne = 0, onDeplier, lundiCourant, abscisses, dansCadre, grain, aujourdhui }: BandeSemainesProps) {
+/**
+ * CAL-GRILLE-SUR-GRADUATIONS (23.11, « le découpage en section … c'est pas corrélé à l'échelle ») : le x (px de la courbe) de chaque graduation
+ * que la bande posée sur la courbe montre, au même grain (jours, semaines, mois) : le centre de chaque chiffre de jour, de chaque « S.. » ou
+ * initiale de mois posé. Les rangées tirent leurs lignes de là. Même calcul que le rendu (pas, étiquettes, semaine rognée).
+ */
+/** D442 (maquette B, hors de la vue) : la place de « ‹ auj. » au bord ; aucune graduation n'y tient. */
+export const MARGE_AUJ = 56;
+const sousAuj = (masque: 'gauche' | 'droite' | undefined, x: number, largeur: number) => (masque === 'gauche' ? x < MARGE_AUJ : masque === 'droite' ? x > largeur - MARGE_AUJ : false);
+
+export function graduationsBande(semaines: readonly SemaineBande[], abscisses: readonly number[], grain: GrainBande, largeurColonne: number, masqueAuj?: 'gauche' | 'droite'): number[] {
+  const a = abscisses;
+  if (a.length !== semaines.length + 1 || !(largeurColonne > 0)) return [];
+  const larg = a[a.length - 1];
+  const wEtiquette = largeurEtiquetteMax();
+  const xs: number[] = [];
+  if (grain === 'jour') {
+    const pasJ = pasJours(largeurColonne / 7, Math.ceil(wEtiquette * 0.75));
+    semaines.forEach((s, k) => joursDeCellule(s.debut, largeurColonne, a[k + 1] - a[k], k === 0 && a[1] - a[0] < largeurColonne - 0.5, pasJ, undefined, k === 0, k === semaines.length - 1)
+      .forEach(j => { if (!sousAuj(masqueAuj, a[k] + j.x, larg)) xs.push(a[k] + j.x); }));
+    return xs;
+  }
+  const pas: PasEtiquettes = grain === 'mois' ? 'mois' : pasEtiquettes(largeurColonne, wEtiquette);
+  const etiquettes = pas === 1 ? null : etiquettesBande(semaines, pas, largeurColonne, wEtiquette);
+  semaines.forEach((_, k) => {
+    if (a[k + 1] - a[k] < 0.6 * largeurColonne) return; // semaine rognée au bord : sans nom (le rendu la tait aussi)
+    if ((etiquettes === null || etiquettes.has(k)) && !sousAuj(masqueAuj, (a[k] + a[k + 1]) / 2, larg)) xs.push((a[k] + a[k + 1]) / 2);
+  });
+  return xs;
+}
+
+export function BandeSemaines({ masqueAuj, semaines, courbe, decalage, mouvements, idees, retards, onDate, onIdeeSemaine, largeurColonne = 0, onDeplier, lundiCourant, abscisses, dansCadre, grain, aujourdhui }: BandeSemainesProps) {
   const surCourbe = !!abscisses && abscisses.length === semaines.length + 1;
   const colonnesCourbe = surCourbe ? abscisses!.slice(1).map((x, k) => `${Math.max(0, x - abscisses![k])}px`).join(' ') : undefined;
   const appui = useRef<{ id: number; x: number; y: number; timer: ReturnType<typeof setTimeout>; long: boolean } | null>(null);
@@ -153,6 +185,11 @@ export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, r
   const pas: PasEtiquettes = surCourbe && grain === 'mois' ? 'mois' : pasEtiquettes(largeurColonne, wEtiquette);
   const etiquettes = pas === 1 ? null : etiquettesBande(semaines, pas, largeurColonne, wEtiquette);
   const enJours = surCourbe && grain === 'jour' && largeurColonne > 0;
+  const larg = surCourbe ? abscisses![abscisses!.length - 1] : 0;
+  const tue = (x: number) => surCourbe && sousAuj(masqueAuj, x, larg);
+  /* D442 : le mois d'aujourd'hui en bleu gras (maquette B, « N ») */
+  const moisAuj = aujourdhui ? aujourdhui.slice(0, 7) : null;
+  const jeudi = (lundi: string) => new Date(Date.parse(`${lundi}T00:00:00Z`) + 3 * 86400000).toISOString().slice(0, 7);
   const pasJ = enJours ? pasJours(largeurColonne / 7, Math.ceil(wEtiquette * 0.75)) : 1;
   // CRITIQUE-9 (doute « cadre noir sur S48 », m390-11) : l'anneau de focus d'une colonne n'est que pour le clavier. Après un toucher ou un clic
   // (où qu'il soit sur la page), une colonne qui reçoit le focus (rendu par une feuille qui se ferme, focus programmé) ne le montre pas, même si
@@ -196,10 +233,10 @@ export function BandeSemaines({ semaines, courbe, decalage, mouvements, idees, r
             {enJours ? (
               <span className="ent-bd-js" aria-hidden="true">
                 {joursDeCellule(s.debut, largeurColonne, abscisses![k + 1] - abscisses![k], k === 0 && abscisses![1] - abscisses![0] < largeurColonne - 0.5, pasJ, aujourdhui, k === 0, k === semaines.length - 1)
-                  .map(j => <span key={j.iso} className="ent-bd-j" data-jour={j.iso} data-auj={j.auj ? 'oui' : undefined} style={{ left: j.x }}>{j.n}</span>)}
+                  .filter(j => !tue(abscisses![k] + j.x)).map(j => <span key={j.iso} className="ent-bd-j" data-jour={j.iso} data-auj={j.auj ? 'oui' : undefined} style={{ left: j.x }}>{j.n}</span>)}
               </span>
-            ) : coupee ? null : etiquettes === null ? <span className="ent-sem">{`S${s.numero}`}</span>
-              : etiquettes.has(k) ? <span className="ent-sem ent-sem--pas" aria-hidden="true">{etiquettes.get(k)}</span> : null}
+            ) : coupee || tue((abscisses?.[k] ?? 0) / 2 + (abscisses?.[k + 1] ?? 0) / 2) ? null : etiquettes === null ? <span className="ent-sem">{`S${s.numero}`}</span>
+              : etiquettes.has(k) ? <span className="ent-sem ent-sem--pas" aria-hidden="true" data-auj-mois={pas === 'mois' && moisAuj && jeudi(s.debut) === moisAuj ? 'oui' : undefined}>{etiquettes.get(k)}</span> : null}
             {mouvements && (
               <span className="ent-bd-m">
                 {v !== null && <span className={v < 0 ? 'ent-m' : 'ent-p'}>{sg(v)}</span>}

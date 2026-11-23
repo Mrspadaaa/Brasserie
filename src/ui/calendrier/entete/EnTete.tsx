@@ -3,14 +3,14 @@ import { flushSync } from 'react-dom';
 import { ChartLine, ChevronDown, Clock, EyeOff, Maximize2, Minimize2, Ruler } from 'lucide-react';
 import { alignerSemaines, colonnesDeSemaines, semaineSous } from './alignement';
 import type { Periode } from '../../../components/periode/periode';
-import { anneeEnMois, dateDeSemaine, etiquetteS, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
+import { anneeEnMois, dateDeSemaine, ecartJours, etiquetteS, lundiDe, type ModeleCalendrier, type Retard } from '../../../domain/calendrier';
 import { creuxDepuis, creuxEntre, miseDeCoteVisible, type CourbeCaisse, type MouvementNomme } from '../../../domain/calendrierCaisse';
 import type { Orientation } from '../useOrientation';
 import { demanderPleinEcran, estPleinEcran, poserPleinCalendrier, sortirPleinEcran } from '../pleinEcran';
 import { usePointeurCourbe } from '../usePointeurCourbe';
-import { Courbe, CourbeZoom, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, courbePlate, jourCourt, moisDeSemaine, semaineCourte, type Boite, type EtoileCourbe } from './Courbe';
-import { Cadre, etiquetteCadre, etiquetteRepos, fenetreDePeriode, libelleDuree, libellePeriode, periodeDeFenetre, semainesDeVue, SEMAINES_ANNEE, vueDeFenetre, type FenetreSemaines, type VueCourbe } from './Fenetre';
-import { BandeSemaines, grainDeFenetre, type GrainBande } from './BandeSemaines';
+import { Courbe, CourbeZoom, type RepereAujourdhui, HAUTEUR_MOIS, MOIS_MIN, ajouterJours, chf, courbePlate, jourCourt, moisDeSemaine, semaineCourte, type Boite, type EtoileCourbe } from './Courbe';
+import { Cadre, etiquetteCadre, etiquetteRepos, fenetreDePeriode, libelleDuree, libellePeriode, periodeDeFenetre, semainesDeVue, SEMAINES_ANNEE, uniteDeVue, vueDeFenetre, vueEnUnites, type AxeCourbe, type FenetreSemaines, type VueCourbe } from './Fenetre';
+import { BandeSemaines, grainDeFenetre, graduationsBande, type GrainBande } from './BandeSemaines';
 import { BandeColonnes, jourEntier } from './BandeColonnes';
 import type { Echelle } from '../echelle';
 import type { Colonne } from '../frise/Rangee';
@@ -94,6 +94,8 @@ export interface EnTeteCalendrierProps {
    */
   moisCourbeAlignee?: boolean;
   onAligne?: (aligne: boolean) => void;
+  /** D441 (CAL-UN-SEUL-AXE) : l'axe de la courbe, que les rangées reprennent ; `null` : pas de courbe posée seule (alignée, paysage, graphe). */
+  onAxe?: (axe: AxeCourbe | null) => void;
   /** D389 : « un bouton qui peut cacher le graph » ; cachée, seule la bande de l'axe reste sous la tête. Sans `onCourbeCachee`, pas de bouton. */
   courbeCachee?: boolean;
   onCourbeCachee?: (cachee: boolean) => void;
@@ -218,7 +220,8 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   // Frise B, R4 (20.11, « l'échelle doit changer pour toujours voir les 2 bouts ») : la vue de la petite courbe pose le début de la fenêtre à
   // 56 px du bord gauche et sa fin à 56 px du bord droit. Pendant un tirage (R7) et son recalage (R10), la vue vient de la poignée.
   const [vueTirage, setVueTirage] = useState<VueCourbe | null>(null);
-  const vueC = useMemo(() => vueTirage ?? vueDeFenetre(index, nombre, largeur), [vueTirage, index, nombre, largeur]);
+  // D441 : la vue posée sur des jours ou des semaines entiers, au repos comme pendant le tirage : les rangées ont les mêmes colonnes
+  const vueC = useMemo(() => vueEnUnites(vueTirage ?? vueDeFenetre(index, nombre, largeur)), [vueTirage, index, nombre, largeur]);
   // La platitude se lit sur la courbe du modèle, jamais sur l'aperçu d'un geste : la hauteur ne saute pas pendant un glisser.
   const plate = !!base && courbePlate(base.semaines);
   const hauteur = paysageAligne ? HAUTEUR_COURBE.paysageAlignee : paysage ? HAUTEUR_COURBE.paysage
@@ -276,12 +279,14 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   }, [alignee, zoomee, orientation, props.colonnes]);
   const lundiDebut = visibles[0]?.debut ?? fenetre.du;
   const alignement = useMemo(() => {
-    if ((!alignee && !zoomee) || !base) return null;
+    /* D441 : en portrait, le glisser d'une barre garde l'axe partagé (la courbe ne se repose plus sur des colonnes de frise qui changeraient sous
+       le doigt) ; son zoom se trace sur cet axe (plus bas). Le paysage garde D388. */
+    if ((!alignee && !(zoomee && paysage)) || !base) return null;
     const cols = props.colonnes?.length ? props.colonnes : colonnesDeSemaines(base.semaines.slice(index, index + nombre).map(s => s.lundi));
     const lf = frise?.largeur ?? largeur;
     return alignerSemaines(base.semaines.map(s => s.lundi), cols, lf / Math.max(1, cols.length), frise?.decalage ?? 0, largeur);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [alignee, zoomee, base, props.colonnes, index, nombre, lundiDebut, frise, largeur]);
+  }, [alignee, zoomee, paysage, base, props.colonnes, index, nombre, lundiDebut, frise, largeur]);
   // Lot C n° 7 (jouable paysage, `as-gestes.js` zoomOn : `.as-zoom` fixe, toute la largeur, la hauteur de l'en-tête) : en paysage, la courbe
   // zoomée du glisser se pose par-dessus tout l'en-tête, colonne du chiffre comprise ; ses semaines sur les colonnes de la frise.
   const alignementTout = useMemo(() => {
@@ -730,6 +735,32 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const bandeSurCourbe: { semaines: typeof visibles; decalage: number; abscisses?: readonly number[]; dansCadre?: readonly [number, number] } = echelleR4 && !paysage
     ? { semaines: semainesTot.slice(echelleR4.debut, echelleR4.debut + echelleR4.abscisses.length - 1), decalage: echelleR4.debut, abscisses: echelleR4.abscisses, dansCadre: [fenetreVue.index - echelleR4.debut, fenetreVue.index + fenetreVue.nombre - echelleR4.debut] }
     : { semaines: visibles, decalage: index };
+  /* D441 (CAL-UN-SEUL-AXE, 3e plainte : « Toujours un gros problème entrer l'axe du graph et l'axe du calendrier ») : les rangées prennent la
+     fenêtre de la courbe (ses jours ou ses semaines, de son bord gauche à son bord droit), le cadre y devient une zone ; CAL-GRILLE-SUR-GRADUATIONS :
+     leurs lignes tombent sur les graduations de la bande. Envoyé à chaque changement (pendant le tirage aussi). */
+  const lundi0 = semainesTot[0]?.debut ?? null;
+  /* D442 (son choix B, « la colonne bleue monte ») : l'unité d'aujourd'hui (son jour quand la bande dit les jours, sa semaine sinon) sur l'axe
+     partagé : une colonne bleue à travers courbe, bande et rangées ; hors de la vue, un dégradé bleu au bord et « ‹ auj. » */
+  const repereAuj: RepereAujourdhui | null = bandeSurCourbe.abscisses && lundi0 && props.aujourdhui ? (() => {
+    const dA = ecartJours(lundi0, props.aujourdhui), u0 = grain === 'jour' ? dA : 7 * Math.floor(dA / 7), u1 = u0 + (grain === 'jour' ? 1 : 7);
+    const X = (j: number) => Math.round((j / 7 - vueC.v0) * (largeur / Math.max(1e-6, vueC.span)) * 10) / 10;
+    const x0 = X(u0), x1 = X(u1);
+    return { cote: x1 <= 0 ? 'gauche' : x0 >= largeur ? 'droite' : 'dans', x0, x1 };
+  })() : null;
+  const masqueAuj = repereAuj && repereAuj.cote !== 'dans' ? repereAuj.cote : undefined;
+  const axe: AxeCourbe | null = bandeSurCourbe.abscisses && lundi0 ? (() => {
+    const u = uniteDeVue(vueC.span), cadreDu = ajouterJours(lundi0, fenetreVue.index * 7);
+    return {
+      du: ajouterJours(lundi0, Math.round(vueC.v0 * 7)), unites: Math.max(1, Math.round(vueC.span * u)), unite: u === 7 ? 'jour' : 'semaine', cadreDu,
+      cadreAu: ajouterJours(cadreDu, fenetreVue.nombre * 7 - 1),
+      graduations: graduationsBande(bandeSurCourbe.semaines, bandeSurCourbe.abscisses, grain, largeur / Math.max(1e-6, vueC.span), masqueAuj).map(x => Math.round(x * 10) / 10),
+      auj: repereAuj
+    };
+  })() : null;
+  const cleAxe = axe ? JSON.stringify(axe) : '';
+  const onAxeRef = useRef(props.onAxe);
+  onAxeRef.current = props.onAxe;
+  useEffect(() => { onAxeRef.current?.(cleAxe ? JSON.parse(cleAxe) as AxeCourbe : null); }, [cleAxe]);
   // D388, la ligne du jouable : « si tu lâches en S51 : S50 5 120 → 4 480 » (la semaine d'arrivée, la première qui change, avant → après).
   // `d` : l'index de la première semaine montrée (celui de l'alignement de la courbe, ou de l'en-tête entier en paysage).
   const lacherDe = (d: number) => {
@@ -797,13 +828,17 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
             )}
           </Courbe>
         ) : courbe && base ? (
-          <Courbe aujourdhui={props.aujourdhui} debutDonnees={!!vueR4 && vueR4.d === 0 && index === 0 && (modele.passe ?? 0) > 0} courbe={vueR4 ? vueR4.sem : courbe} abscisses={echelleR4?.abscisses} alignee={false} creuxIndex={vueR4 ? vueR4.creuxIndex : undefined} largeur={largeur} hauteur={hauteur}
+          <Courbe aujourdhui={props.aujourdhui} {...(repereAuj ? { repere: repereAuj } : {})} debutDonnees={!!vueR4 && vueR4.d === 0 && index === 0 && (modele.passe ?? 0) > 0} courbe={vueR4 ? vueR4.sem : courbe} abscisses={echelleR4?.abscisses} alignee={false} creuxIndex={vueR4 ? vueR4.creuxIndex : undefined} largeur={largeur} hauteur={hauteur}
             curseur={enGesteLu ? (lecture !== null && vueR4 ? lecture - vueR4.d : lecture) : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={vueR4 ? vueR4.mise : miseCourbe}
             mois={false} moisEnHaut plate={plate && !paysage} etoiles={vueR4 ? vueR4.etoiles : etoilesCourbe} masque={apercuC ? null : tirage}
             cadre={apercuC ? undefined : { index: index - (vueR4?.d ?? 0), nombre, etiquette: etiquetteRepos(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis, props.aujourdhui) }}>
             {apercuC ? (
               <div className="ent-zoom-c" style={{ height: hauteur }}>
-                <CourbeZoom avant={base.semaines.slice(index, index + nombre).map(s => s.libre)} apres={apercuC.semaines.slice(index, index + nombre).map(s => s.libre)} largeur={largeur} hauteur={hauteur - HAUTEUR_MOIS + 8} />
+                {vueR4 && echelleR4 ? (
+                  <CourbeZoom avant={base.semaines.slice(vueR4.d, vueR4.d + vueR4.m).map(s => s.libre)} apres={apercuC.semaines.slice(vueR4.d, vueR4.d + vueR4.m).map(s => s.libre)} abscisses={echelleR4.abscisses} largeur={largeur} hauteur={hauteur - HAUTEUR_MOIS + 8} lacher={lacherDe(vueR4.d)} />
+                ) : (
+                  <CourbeZoom avant={base.semaines.slice(index, index + nombre).map(s => s.libre)} apres={apercuC.semaines.slice(index, index + nombre).map(s => s.libre)} largeur={largeur} hauteur={hauteur - HAUTEUR_MOIS + 8} />
+                )}
               </div>
             ) : (
               <Cadre numeros={semainesTot.map(s => s.numero)} lundis={lundis} aujourdhui={props.aujourdhui} index={index} nombre={nombre} largeur={largeur} annee={annee}
@@ -827,12 +862,14 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
 
       {!graph && (
         <div className="ent-bz">
-          {annee && courbe ? <BandeAnnee courbe={courbe} mois={moisDeLAn} creux={creux} /> : vue === 'semaines' && props.colonnes && props.echelle && !bandeSurCourbe.abscisses && (props.echelle === 'jour' || props.deplie || props.echelle === 'mois') ? (
+          {repereAuj && repereAuj.cote === 'dans' && <i className="ent-auj-bd" aria-hidden="true" data-auj-bande style={{ left: Math.max(0, repereAuj.x0), width: Math.max(5, Math.min(largeur, repereAuj.x1) - Math.max(0, repereAuj.x0)) }} />}
+          {repereAuj && repereAuj.cote !== 'dans' && <span className={`ent-auj-hors ent-auj-hors--${repereAuj.cote}`} data-auj-bande={repereAuj.cote}>{repereAuj.cote === 'gauche' ? '‹ auj.' : 'auj. ›'}</span>}
+          {annee && courbe && !bandeSurCourbe.abscisses ? <BandeAnnee courbe={courbe} mois={moisDeLAn} creux={creux} /> : vue === 'semaines' && props.colonnes && props.echelle && !bandeSurCourbe.abscisses && (props.echelle === 'jour' || props.deplie || props.echelle === 'mois') ? (
             <BandeColonnes colonnes={props.colonnes} echelle={props.echelle} aujourdhui={props.aujourdhui} deplie={props.deplie ?? null} onDeplier={props.onDeplier} onIdeeSemaine={onIdeeSemaine}
               onJour={(jour, colonne, n) => touche(jour, colonne, `${jourEntier(jour)} · ${etiquetteS(jour)}`, n)}
               onSemaine={(lundi, colonne, n) => touche(lundi, colonne, dateDeSemaine(lundi), n)} />
           ) : (
-            <BandeSemaines {...bandeSurCourbe} grain={bandeSurCourbe.abscisses ? grain : undefined} aujourdhui={props.aujourdhui} courbe={courbe} lundiCourant={modele.semaines[modele.passe ?? 0]?.debut} mouvements={mouvements} idees={idees} retards={semainesRetard} onDate={touche} onIdeeSemaine={onIdeeSemaine}
+            <BandeSemaines {...bandeSurCourbe} masqueAuj={masqueAuj} grain={bandeSurCourbe.abscisses ? grain : undefined} aujourdhui={props.aujourdhui} courbe={courbe} lundiCourant={modele.semaines[modele.passe ?? 0]?.debut} mouvements={mouvements} idees={idees} retards={semainesRetard} onDate={touche} onIdeeSemaine={onIdeeSemaine}
               {...(props.onDeplier && vue === 'semaines' ? { onDeplier: props.onDeplier } : {})}
               largeurColonne={bandeSurCourbe.abscisses ? largeur / Math.max(1e-6, vueC.span) : largeurColonne > 0 ? largeurColonne : largeur / Math.max(1, nombre)} />
           )}
