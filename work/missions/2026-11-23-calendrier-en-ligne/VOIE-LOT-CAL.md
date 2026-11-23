@@ -9,6 +9,7 @@ ligne (Chrome 9222, ta page, 390, ZZ TEST, captures entières regardées). Jamai
    rangées vides). Méthode standard (L29) : TEST PAR MODÈLE fast-check (`fc.commands`) sur l'état de la fenêtre (période,
    durée, cadre, vue) : suites aléatoires de gestes, invariants vérifiés après chacun (ligne DEFAUTS). Trouver les gestes qui
    cassent (reproduire aussi « Tout » en ligne), une seule source de vérité pour l'état, puis corriger.
+0b. Ses demandes de 12:07 (captures 1205-s53-rogne.jpg, 1207-jours-etiquette.jpg) : CAL-TOUCHER-GRADUATION (toucher une semaine ou un mois → le cadre s y pose), CAL-ETIQUETTE-GRAIN-AU-DESSUS (en jours : « S52 2026 – S1 2027 »), CAL-GRADUATION-ROGNEE. Avec le point 0 (même état de fenêtre).
 1. Preuve en ligne du tour 22 (si pas déjà faite). 2. Bandeau « Enregistrement… » (`data-attente` en ligne).
 3. Sections vides : vertical, lignes basses (≤ 32 px), pas d'espace vide (CAL-VIDES-EN-LIGNE).
 4. « −1 663 » sous ± ; bouton de durée en retard. 5. Lenteur mesurée en ligne avant/après. 6. Barre vidée au tirage (10 sem.).
