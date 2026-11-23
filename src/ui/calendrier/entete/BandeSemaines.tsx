@@ -180,7 +180,12 @@ export function graduationsBande(semaines: readonly SemaineBande[], abscisses: r
 
 export function BandeSemaines({ masqueAuj, semaines, courbe, decalage, mouvements, idees, retards, onDate, onIdeeSemaine, largeurColonne = 0, onDeplier, lundiCourant, abscisses, dansCadre, grain, aujourdhui }: BandeSemainesProps) {
   const surCourbe = !!abscisses && abscisses.length === semaines.length + 1;
-  const colonnesCourbe = surCourbe ? abscisses!.slice(1).map((x, k) => `${Math.max(0, x - abscisses![k])}px`).join(' ') : undefined;
+  /* CAL-PLUS-QU-UN-AN (tour 20, en ligne) : la première colonne commence en abscisses[0] (la marge avant le début de l'horizon, passé compris) ;
+     sans ce retrait, toute la bande glissait de la marge (56 px) à gauche de la courbe et des rangées. */
+  /* Chrome pose les pistes au 1/64 de px : au-delà d'un an (313 colonnes de moins d'un px), l'arrondi de chacune s'ajoutait (1 px de dérive au bout).
+     Chaque piste est la différence de deux bords arrondis au 1/64 : la somme tombe juste. */
+  const au64 = (x: number) => Math.round(x * 64) / 64;
+  const colonnesCourbe = surCourbe ? abscisses!.slice(1).map((x, k) => `${Math.max(0, au64(x) - au64(abscisses![k]))}px`).join(' ') : undefined;
   const appui = useRef<{ id: number; x: number; y: number; timer: ReturnType<typeof setTimeout>; long: boolean } | null>(null);
   const annule = () => { if (appui.current) { clearTimeout(appui.current.timer); appui.current = null; } };
   const wEtiquette = largeurEtiquetteMax();
@@ -205,7 +210,7 @@ export function BandeSemaines({ masqueAuj, semaines, courbe, decalage, mouvement
     return () => { document.removeEventListener('pointerdown', parDoigt, true); document.removeEventListener('keydown', parClavier, true); };
   }, []);
   return (
-    <div className="ent-bd" data-bande-semaines data-pas={pas} data-doigt={doigt ? 'oui' : undefined} role="group" aria-label="Semaines ; ± affiche les mouvements et les icônes" style={{ ['--n' as string]: semaines.length, ...(colonnesCourbe ? { gridTemplateColumns: colonnesCourbe } : {}) }} data-sur-courbe={surCourbe ? 'oui' : undefined} data-grain={surCourbe ? (enJours ? 'jour' : pas === 'mois' || pas === 'an' ? pas : 'semaine') : undefined}>
+    <div className="ent-bd" data-bande-semaines data-pas={pas} data-doigt={doigt ? 'oui' : undefined} role="group" aria-label="Semaines ; ± affiche les mouvements et les icônes" style={{ ['--n' as string]: semaines.length, ...(colonnesCourbe ? { gridTemplateColumns: colonnesCourbe, paddingLeft: au64(abscisses![0]) } : {}) }} data-sur-courbe={surCourbe ? 'oui' : undefined} data-grain={surCourbe ? (enJours ? 'jour' : pas === 'mois' || pas === 'an' ? pas : 'semaine') : undefined}>
       {semaines.map((s, k) => {
         const v = courbe ? variation(courbe, decalage + k) : null;
         const idee = idees.has(s.debut), retard = retards.has(s.debut);
