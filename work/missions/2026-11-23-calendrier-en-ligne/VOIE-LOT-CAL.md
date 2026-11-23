@@ -82,3 +82,5 @@ Ordre : (1) preuve en ligne du tour 21 (D436, bande alignée au-delà d'un an) ;
 d'espace », 1045-espace.jpg ; pilote, réversible : rangées vides ou toutes cachées réunies en une ligne de pastilles « + Achats ·
 2 cachées », « + Travaux », …) ; (5) point rouge isolé en S17 en haut des rangées (1045-espace.jpg) : quoi ? ; (6) tirage à 10 sem.
 qui vide la barre ; (7) « −1 663 » sous ±, bouton de durée pendant le tirage ; (8) lenteur mesurée en ligne.
+- Ajout 10:55 : CAL-VENTE-FICHE (« Clicker sur une vente renvoie directement sur la vente, au lieu d'afficher la vue normal sur
+  tableau ») : le toucher d'une vente ouvre la fiche du Calendrier comme les autres choses ; à placer juste après (2).
