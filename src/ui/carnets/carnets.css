@@ -684,7 +684,7 @@
 .cn-liste .cn-cite.cn-deux-lignes { display: block; -webkit-line-clamp: unset; }
 .cn-filtre { display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: none; }
 .cn-recherche { flex: 1 0 120px; min-width: 0; height: 32px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--c-line2); background: var(--c-bg); color: var(--c-ink); font: inherit; font-size: 14px; }
-.cn-puce.cn-puce-filtre { min-height: 32px; padding: 0 10px; font-size: 14px; flex: none; }
+.cn-puce.cn-puce-filtre { min-height: 32px; padding: 0 8px; font-size: 14px; flex: none; }
 
 /* L-18 (23.11 ; CRU-8, CA12-PW-3, M4-2, M4-3) : la rangée Quand garde UNE forme, avant et après un choix. Le libellé et son état sur leur
    ligne, puis les puces d'horizon qui passent à la ligne (Horizons, choix C1 : jamais une fenêtre qui défile et cache la puce choisie,
@@ -724,3 +724,5 @@
 /* L-20 (23.11, M3-1) : ⋯ de la ligne Critère, chaque critère avec « Retirer » */
 .cn-critere-une > .cn-critere-actions { flex: none; align-self: center; margin-left: auto; }
 .cn-criteres-derriere > .cn-critere-retirable { display: flex; align-items: center; gap: 8px; }
+/* lot 11 : le ⋯ des critères (L-20) rétrécit la ligne ; « n critères sans valeur » garde sa propre ligne, jamais mêlé au texte qui passe à la ligne */
+.cn-critere-une .cn-critere-plus { display: flex; width: fit-content; }

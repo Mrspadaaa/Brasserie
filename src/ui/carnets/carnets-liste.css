@@ -13,7 +13,7 @@
    (marges négatives : la rangée ne bouge pas). Les puces se serrent pour que « Chercher un carnet » se lise, deux puces actives (en gras)
    comprises. */
 .cn-page.cn-liste .cn-filtre { gap: 4px; padding: 4px; margin: -4px; }
-.cn-page.cn-liste .cn-recherche { flex: 1 0 150px; }
+.cn-page.cn-liste .cn-recherche { flex: 1 0 150px; padding: 0 8px; } /* D430 : à 14 px, « Chercher un carnet » tient entier (L-34) */
 .cn-page.cn-liste .cn-puce.cn-puce-filtre { padding: 0 8px; }
 
 /* L-35 : les Faits laissés de côté par la recherche, sur une ligne d'en-tête de groupe */
