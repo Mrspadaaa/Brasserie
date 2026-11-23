@@ -33,8 +33,11 @@ export interface PageLue {
   /** Adresse finale lue (après redirections), ou l'adresse demandée si rien n'a été lu. */
   url: string;
   domaine: string;
-  /** `lue` : au moins un nom, un prix ou une photo lus dans les métadonnées ; tout autre statut = « lien · page non lue ». */
-  statut: 'lue' | 'illisible' | 'robots' | 'refusee' | 'indisponible';
+  /**
+   * `lue` : au moins un nom, un prix ou une photo lus dans les métadonnées ; tout autre statut = « lien · page non lue ». L-4 (23.11) :
+   * `bloquee` = le site refuse le robot (401, 403, 429, défi Cloudflare) ; `introuvable` = le domaine n'existe pas (DNS).
+   */
+  statut: 'lue' | 'illisible' | 'robots' | 'refusee' | 'indisponible' | 'bloquee' | 'introuvable';
   nom?: string;
   /** Prix en unités de la devise (690, 1450.5), lu dans schema.org `Offer` ou Open Graph `product:price`. */
   prix?: number;
@@ -104,6 +107,10 @@ export const RANGER_CARNET_SCHEMA = S({
 export const RANGER_CARNET: TaskDef = {
   defaultTier: 'fast',
   // 12 lignes courtes : 4 000 jetons laissent la place à la réflexion basse (même plafond que `rangerNote`).
+  // L-3 (23.11, L20) : 2 réponses coupées sur 25 au journal du 23.11 (02:47 et 02:55), à 32 s contre 3 à 25 s pour les autres. Les jetons
+  // n'étaient pas journalisés : non mesuré. Estimé : 4 000 jetons à ce débit font 3 à 10 fois une réponse ordinaire, donc une boucle
+  // plutôt qu'une réponse longue ; 8 000 la couperaient vers 64 s, au-delà des 45 s du client. Le plafond reste ; `aiTask` journalise
+  // désormais les jetons (sortie, réflexion) de chaque rangement, et le client garde la page lue quand la réponse est coupée (L-1).
   maxOutputTokens: 4000,
   acceptsFile: false,
   system: `Tu assistes une micro-brasserie suisse. Le brasseur note ses idées dans un carnet, comme dans un chat : une phrase, un lien
@@ -128,6 +135,8 @@ Rends « lignes », une par chose, au plus ${LIGNES_MAX}, dans l'ordre : d'abord
     c'est mieux), "moins", "oui-non" ou "texte". Choisis la grandeur selon la catégorie de l'objet, pas selon un modèle fixe.
   • "facon" : une manière de faire (une solution), sans produit précis.
   • "article" : un produit précis, souvent un lien. « url » telle qu'écrite dans le texte ; « titre » = nom du produit.
+    Un lien dont la page lue n'a ni prix ni offre (une page de référence : encyclopédie, article, fiche technique) est une "note"
+    de genre "note" : « texte » = le nom lu de la page, « url » = le lien ; jamais l'adresse seule en « texte ».
   • "note" : le reste. « genre » de chaque ligne, "note" seulement en dernier recours : "a-acheter" (une chose à acheter,
     même sans le mot acheter : « filtre à air G4, 2 pièces »), "a-faire" (un geste), "question" (un doute, un « ? »), "conseil".
 « texte » reprend ses mots, mis en forme (orthographe, une ligne claire, majuscule), jamais une idée qu'il n'a pas écrite :

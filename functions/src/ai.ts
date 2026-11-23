@@ -374,7 +374,10 @@ export const aiTask = onCall(
     // Carnet d'idées (lireLien.ts) : la page d'un lien collé, lue sans modèle ni coût ; robots.txt respecté. Ne lève jamais.
     if ((task as string) === 'lireLien') {
       const started = Date.now();
-      return { ok: true, data: await lireLien(lienDe(context)), model: 'lecture', tier: 'fast', elapsedMs: Date.now() - started };
+      const page = await lireLien(lienDe(context));
+      // L-4 (23.11) : le statut de chaque lecture, pour qu'un lien non lu se diagnostique au journal (domaine seul, aucune adresse complète).
+      logger.info('Lien lu', { task, domaine: page.domaine, statut: page.statut, elapsedMs: Date.now() - started });
+      return { ok: true, data: page, model: 'lecture', tier: 'fast', elapsedMs: Date.now() - started };
     }
 
     // ks4 : la note du Carnet (rangerNote.ts) ; écrite et testée, pas déployée (accord attendu).
@@ -451,13 +454,21 @@ export const aiTask = onCall(
       const lite = model === GEMINI_LITE_MODEL, strong = model === INVOICE_STRONG_MODEL;
       // Le diagnostic de brassin : Hydrogen a son propre délai, pour que Flash-Lite puis 3.8 gardent le temps de répondre (voie h4, models.ts).
       const capped = strong && index < route.length - 1;
+      const inspecter = lite || strong ? liteUnusable : unusableGeminiOutput;
+      // L-3 (23.11, L20) : les jetons de chaque rangement du Carnet, pour mesurer avant de toucher au plafond de sortie.
+      const inspect = rangerCarnet ? (reponse: any) => {
+        const u = reponse?.usageMetadata;
+        logger.info('Jetons rangerCarnet', { model, finishReason: reponse?.candidates?.[0]?.finishReason, entree: u?.promptTokenCount,
+          sortie: u?.candidatesTokenCount, reflexion: u?.thoughtsTokenCount, plafond: def.maxOutputTokens });
+        return inspecter(reponse);
+      } : inspecter;
       try {
         // In Rapide, a fiche, the yeast one included, is capped at 4500 tokens: 12000 let a numeric loop run 69 s (#100).
         // Import and review carry their own cap (TaskDef.maxOutputTokens). Max keeps at least 12000, shared with its
         // high reasoning (callGemini): no screen asks a fiche in Max, and 4500 would cut its answer.
         let data = await callGemini(model, apiKey, def.system, userText, def.schema, { temperature: cfg.temperature, thinkingLevel }, file,
           def.grounded, def.maxOutputTokens ?? 4500, AbortSignal.timeout(Math.min(capped ? DIAGNOSTIC_STRONG_TIMEOUT_MS : ATTEMPT_TIMEOUT_MS, remaining)),
-          lite || strong ? liteUnusable : unusableGeminiOutput);
+          inspect);
         const elapsedMs = Date.now() - started;
         if (task === 'lookupIngredient' && (context as { kind?: unknown } | undefined)?.kind === 'levure') {
           const error = yeastLookupResultError(data);
