@@ -3,7 +3,6 @@ import { bornes, etiquetteCourte, type Periode } from '../../../components/perio
 import { lundiDe } from '../../../domain/calendrier';
 import { ajouterJours, jourCourt, largeurTexte, placeEtiquette, type Boite } from './Courbe';
 import { cadrerDeuxBouts, CIBLE_PX, MARGE_BOUTS_PX, poserPlage, RECALAGE_MS, roleSous, useGlisse } from '../../geste';
-import { APPUI_LONG_MS } from '../../gestes/useAppuiLong';
 import { avalerClicSuivant } from '../usePointeurCourbe';
 
 /**
@@ -101,10 +100,8 @@ export interface CadreProps {
   /** CAL-ECHELLE-SUIT-CADRE (2e refus, 23.11) : la fenêtre sous le doigt pendant le geste (début, nombre de semaines) ; `null` au lâcher. La bande
    *  des graduations la suit en direct (gris, grain), pas seulement au lâcher. */
   onTire?: (f: { index: number; nombre: number } | null) => void;
-  /** Le nœud de la courbe : le geste s'y attache (le doigt posé à plus de 22 px du cadre lui reste, pour la lecture c2-b). */
+  /** Le nœud de la courbe : le geste s'y attache (le doigt posé à plus de 22 px du cadre fait défiler la fenêtre, CAL-SANS-LECTURE). */
   surface: React.RefObject<HTMLElement | null>;
-  /** CAL-FRISE-PRIX : le corps du cadre tenu 450 ms sans bouger lit la semaine sous le doigt (`clientX`) ; `null` : la lecture se ferme. */
-  onLire?: (clientX: number | null) => void;
   /** Dans l'année, l'étiquette dit les mois (« nov. – oct. »), jamais « S47 – S45 » (c1-d). */
   etiquetteAnnee?: string;
   /** T9-2 : aujourd'hui (ISO), l'année de référence de l'étiquette. */
@@ -247,7 +244,8 @@ export function semainesDeVue(total: number, vue: VueCourbe, largeur: number): {
 
 /** Le geste en cours sur le cadre (semaines, fin exclusive ; px de la courbe à l'écran). */
 interface SaisieCadre {
-  role: 'a' | 'b' | 'corps';
+  /** `defile` (CAL-SANS-LECTURE, D436) : le doigt posé hors du cadre fait défiler la fenêtre sous lui, comme une carte (vers la droite : le passé). */
+  role: 'a' | 'b' | 'corps' | 'defile';
   a0: number; b0: number; a: number; b: number;
   /** Largeur et bord gauche de la courbe à l'écran (px). */
   w: number; left: number;
@@ -256,12 +254,9 @@ interface SaisieCadre {
   off: number; pan: number;
   /** L-13 : la part de semaine que le doigt a parcourue au-delà de la semaine posée (corps) ; le cadre est dessiné là, posé à la semaine au lâcher. */
   glis?: number;
-  /** Appui long sur le corps : le doigt lit la courbe au lieu de déplacer. */
-  lit: boolean;
-  minuterie: ReturnType<typeof setTimeout> | null;
 }
 
-export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTirage, onTire, etiquetteAnnee, surface, onLire, debutRamenee, vue, onVue, aujourdhui }: CadreProps) {
+export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange, onAnnee, onRevient, onTirage, onTire, etiquetteAnnee, surface, debutRamenee, vue, onVue, aujourdhui }: CadreProps) {
   const total = numeros.length;
   // R4 : une semaine fait `unit` px dans la vue ; la semaine i commence en (i − v0) × unit.
   const unit = largeur / Math.max(1e-6, vue.span);
@@ -314,19 +309,16 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
 
   /*
    * CAL-FRISE-PRIX (D410) : le geste de Finances › Opérations, un seul pour l'app (src/ui/geste : useGlisse, roleSous, poserPlage), attaché à
-   * la courbe ; en semaines, fin exclusive. Un doigt posé à plus de 22 px du cadre n'est pas pour lui : la courbe le lit (c2-b). Début : il
+   * la courbe ; en semaines, fin exclusive. Un doigt posé à plus de 22 px du cadre fait défiler la fenêtre (CAL-SANS-LECTURE, D436). Début : il
    * s'étire seul, la fin reste (R6) ; fin : pareil ; corps : la fenêtre entière se déplace (R5), la courbe défile sous elle à 56 px du bord.
-   * Corps tenu 450 ms sans bouger (R1) : lecture de la semaine sous le doigt, qui le suit. Au bord (R7) : le corps fait défiler ; un bout tiré
+   * Plus aucune lecture de la courbe au doigt (D436). Au bord (R7) : le corps fait défiler ; un bout tiré
    * dehors resserre l'échelle, l'autre bout reste à sa place à l'écran. Lâcher : la fenêtre posée, la vue se recale sur ses deux bouts (R4,
    * R10). Échap ou pointercancel : la fenêtre et la vue d'avant. Dans l'An, le geste marche aussi et en sort (CAL-ECHELLE-FIGEE, EnTete).
    */
-  const onLireRef = useRef(onLire);
-  onLireRef.current = onLire;
-  const coupe = (s: SaisieCadre) => { if (s.minuterie) { clearTimeout(s.minuterie); s.minuterie = null; } };
   const montrer = (s: SaisieCadre) => {
     const px = (u: number) => (u - s.v.v0) * largeur / s.v.span;
     const g = s.role === 'corps' ? s.glis ?? 0 : 0;
-    setDrag({ index: s.a, nombre: s.b - s.a, bord: s.role === 'a' ? px(s.a) : s.role === 'b' ? px(s.b) : (px(s.a + g) + px(s.b + g)) / 2, cote: s.role, glis: g });
+    setDrag({ index: s.a, nombre: s.b - s.a, bord: s.role === 'a' ? px(s.a) : s.role === 'b' ? px(s.b) : (px(s.a + g) + px(s.b + g)) / 2, cote: s.role === 'defile' ? 'corps' : s.role, glis: g });
     onVueRef.current?.(s.v);
   };
   const glisse = useGlisse<SaisieCadre>({
@@ -336,21 +328,22 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
       const r = surface.current?.getBoundingClientRect();
       const w = r && r.width ? r.width : largeur;
       const v = { ...vue }, xa = ((index - v.v0) / v.span) * w, xb = ((index + nombre - v.v0) / v.span) * w;
-      if (x < xa - CIBLE_PX / 2 || x > xb + CIBLE_PX / 2) return null;
-      // le doigt est au cadre : la lecture de la courbe (onPointerDown React, délégué à la racine) ne le reçoit pas
-      e.stopPropagation();
+      const dehors = x < xa - CIBLE_PX / 2 || x > xb + CIBLE_PX / 2;
+      /* CAL-SANS-LECTURE (D436) : hors du cadre, le doigt fait défiler la fenêtre ; sans stopPropagation, l'appui long (courbe en grand) reste. */
+      if (!dehors) e.stopPropagation();
       if (recalage.current) { cancelAnimationFrame(recalage.current); recalage.current = 0; }
-      onLireRef.current?.(null);
-      const role = roleSous(x, xa, xb);
-      const s: SaisieCadre = { role, a0: index, b0: index + nombre, a: index, b: index + nombre, w, left: r?.left ?? 0, vue0: v, v, off: role === 'a' ? xa - x : role === 'b' ? xb - x : 0, pan: 0, lit: false, minuterie: null };
-      if (role === 'corps') s.minuterie = setTimeout(() => { s.minuterie = null; s.lit = true; onLireRef.current?.(s.left + x); }, APPUI_LONG_MS);
-      return s;
+      const role = dehors ? 'defile' : roleSous(x, xa, xb);
+      return { role, a0: index, b0: index + nombre, a: index, b: index + nombre, w, left: r?.left ?? 0, vue0: v, v, off: role === 'a' ? xa - x : role === 'b' ? xb - x : 0, pan: 0 };
     },
     suivre: (dx, s, x) => {
-      if (s.lit) { onLireRef.current?.(s.left + x); return; }
-      coupe(s);
       const o = { min: 0, max: total, minLarg: 1 }, parPx = s.v.span / s.w;
-      if (s.role === 'corps') {
+      if (s.role === 'defile') {
+        // la courbe suit le doigt (vers la droite : le passé arrive par la gauche) ; la fenêtre garde sa place à l'écran, posée à la semaine
+        const k = Math.round(-dx * (s.vue0.span / s.w));
+        const p = poserPlage('corps', s.a0, s.b0, k, o);
+        s.v = { ...s.vue0, v0: s.vue0.v0 + (p.a - s.a0) };
+        s.a = p.a; s.b = p.b;
+      } else if (s.role === 'corps') {
         const brut = dx * (s.vue0.span / s.w) + s.pan, k = Math.round(brut);
         const p = poserPlage('corps', s.a0, s.b0, k, o);
         // L-13 : la fraction de semaine sous le doigt, sauf contre une borne (le cadre ne la dépasse pas)
@@ -373,7 +366,7 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
       montrer(s);
     },
     bord: (sens, vitesse, dt, s) => {
-      if (s.lit) return;
+      if (s.role === 'defile') return;
       if (s.role === 'corps') { s.pan += sens * vitesse * s.v.span * dt; return; }
       if ((s.role === 'b' && sens > 0) || (s.role === 'a' && sens < 0)) {
         const ancre = s.role === 'b' ? s.a0 : s.b0, xAncre = (ancre - s.v.v0) / s.v.span;
@@ -382,18 +375,16 @@ export function Cadre({ numeros, lundis, index, nombre, largeur, annee, onChange
       }
     },
     lacher: (s, bouge) => {
-      coupe(s);
       // le Cadre a pris le doigt : le clic fabriqué au doigt levé n'atteint ni ± ni la courbe (les poignées ne répondent qu'au clic clavier)
       avalerClicSuivant();
       /* CAL-ECHELLE-SUIT-CADRE : l'état du tirage part toujours au lâcher (resté, la bulle du tirage gardait une autre fenêtre : « S49 – S46 2027 » à 3 sem.) */
       setDrag(null);
-      if (s.lit) return;
       if (!bouge) { onVueRef.current?.(null); return; }
       const n = s.b - s.a;
       if (s.a !== s.a0 || s.b !== s.b0) onChange({ index: s.a, nombre: n });
       recaler(s.v, vueDeFenetre(s.a, n, largeur));
     },
-    annuler: (s) => { coupe(s); setDrag(null); onVueRef.current?.(null); },
+    annuler: () => { setDrag(null); onVueRef.current?.(null); },
   });
   useEffect(() => { glisse(surface.current); return () => glisse(null); }, [glisse, surface]);
 

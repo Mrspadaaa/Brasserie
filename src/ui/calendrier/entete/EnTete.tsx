@@ -18,7 +18,6 @@ import { BandeAnnee } from './BandeAnnee';
 import { MenuPeriode, hautDesOnglets } from './MenuPeriode';
 import { DetailCreux } from './DetailCreux';
 import { Retards, titreRetards } from './Retards';
-import { LectureDetail, LectureTete } from './LectureCourbe';
 import { GrandeCourbe, PLACE_DETAIL, TITRE_GRANDE, geoGrande, hautDuPlus, hautLegende, largeurGrande } from './GrandeCourbe';
 import './entete.css';
 
@@ -319,16 +318,6 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const [tiree, setTiree] = useState<{ index: number; nombre: number } | null>(null);
   const [menuOuvert, setMenuOuvert] = useState(false);
   const [retardsOuverts, setRetardsOuverts] = useState(false);
-  const [lecture, setLecture] = useState<number | null>(null);
-  // CAL-BARRE-INUTILE : le curseur (trait, colonne, barre) ne se dessine que pendant le geste ; au doigt levé il disparaît, le chiffre et le détail restent.
-  const [enGesteLu, setEnGesteLu] = useState(false);
-  useEffect(() => {
-    if (lecture === null) { setEnGesteLu(false); return undefined; }
-    setEnGesteLu(true);
-    const leve = () => setEnGesteLu(false);
-    document.addEventListener('pointerup', leve, { capture: true, once: true }); document.addEventListener('pointercancel', leve, { capture: true, once: true });
-    return () => { document.removeEventListener('pointerup', leve, true); document.removeEventListener('pointercancel', leve, true); };
-  }, [lecture]);
   const [info, setInfo] = useState<Info | null>(null);
   const [plein, setPlein] = useState(() => estPleinEcran());
   // Doute m27 (CRITIQUE-10) : le cadre de focus des boutons de tête est pour le clavier seul. La dernière modalité de la page se lit sur
@@ -454,11 +443,11 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   const { props: gestes, attacher } = usePointeurCourbe({
     indexSous,
     actif: !!courbe && !apercuC,
-    onLire: i => setLecture(i),
-    onAppuiLong: i => {
+    /* CAL-SANS-LECTURE (D436, 23.11, « plus de bulle. Et plus de lecture du graph au doigt ») : le doigt ne lit plus la courbe (ni pastille,
+       ni détail, ni curseur) ; l'appui long ouvre encore la courbe en grand, sans lecture. Le doigt hors du cadre fait défiler (Cadre). */
+    onAppuiLong: () => {
       if (vue === 'graph') return;
       vueAvant.current = vue;
-      setLecture(i);
       taire();
       onVue('graph');
     }
@@ -466,7 +455,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
   // Les nœuds des deux courbes reçoivent l'écouteur `touchmove` qui bloque le défilement pendant la lecture et l'appui long (n° 3).
   const refCourbe = useCallback((el: HTMLDivElement | null) => { cadreCourbe.current = el; attacher(el); }, [attacher]);
   const refGrande = useCallback((el: HTMLDivElement | null) => { cadreGrande.current = el; attacher(el); }, [attacher]);
-  const gestesGrande = { ...gestes, onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => { gestes.onPointerDown(e); setLecture(indexSous(e.clientX)); } };
+  const gestesGrande = gestes;
   // CAL-FRISE-PRIX : sur la petite courbe, le cadre prend lui-même le doigt posé à 22 px de lui au plus (useGlisse, natif, avant ce
   // onPointerDown délégué) ; tout autre doigt lit la semaine (c2-b).
   const gestesCourbe = gestes;
@@ -494,15 +483,12 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     } as unknown as React.PointerEvent<HTMLDivElement>);
   };
 
-  // CAL-ENTETE : la courbe cachée ferme la lecture (son détail se posait sous l'en-tête sans courbe à lire).
-  useEffect(() => { if (cachee) setLecture(null); }, [cachee]);
-  const fermerLecture = () => { setLecture(null); if (vue === 'graph') onVue(vueAvant.current === 'graph' ? 'semaines' : vueAvant.current); };
+  const fermerLecture = () => { if (vue === 'graph') onVue(vueAvant.current === 'graph' ? 'semaines' : vueAvant.current); };
   const fermerRef = useRef(fermerLecture);
   fermerRef.current = fermerLecture;
-  // La lecture (c2-b) reste après le doigt levé, comme le jouable ; la courbe en grand (c3-a) aussi, jusqu'au × (E12, CRITIQUE-3 n° 25).
-  // Un toucher hors de l'en-tête ferme la lecture ; un toucher hors de la courbe ferme la courbe en grand.
+  // La courbe en grand (c3-a) reste après le doigt levé, jusqu'au × (E12, CRITIQUE-3 n° 25) ; un toucher hors d'elle la ferme.
   useEffect(() => {
-    if (lecture === null && !graph) return undefined;
+    if (!graph) return undefined;
     const dehors = (e: PointerEvent) => {
       const dedans = graph ? zone.current : racine.current;
       if (dedans && e.target instanceof Node && dedans.contains(e.target)) return;
@@ -510,13 +496,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     };
     document.addEventListener('pointerdown', dehors, true);
     return () => document.removeEventListener('pointerdown', dehors, true);
-  }, [lecture, graph]);
-  const premiereLecture = useRef(true);
-  useEffect(() => {
-    if (premiereLecture.current) { premiereLecture.current = false; return; }
-    onLectureSemaine?.(lecture !== null && courbe ? courbe[lecture]?.lundi ?? null : null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lecture]);
+  }, [graph]);
 
   // ---- Les gestes de la fenêtre ----
   const versAnnee = () => {
@@ -691,7 +671,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     return () => { if (image) cancelAnimationFrame(image); ro.disconnect(); };
     // Le bouton est remonté quand la lecture au doigt se ferme : il se rejuge alors (lecture dans les dépendances). La courbe ne compte que
     // présente ou absente (le bouton n'existe qu'avec elle) ; ses valeurs passent par le creux.
-  }, [semaineCreux, creux?.centimes, creuxVide, orientation, vue, !!courbe, lecture === null]);
+  }, [semaineCreux, creux?.centimes, creuxVide, orientation, vue, !!courbe]);
   const cle = courbe && creux ? (
     <button ref={refCle} type="button" className="ent-k" data-ent-cle data-empile={empile ? '' : undefined} data-serre={empile && serre ? '' : undefined} data-tres-serre={empile && serre && tresSerre ? '' : undefined} aria-expanded={creuxOuvert}
       aria-label={`${chf(creux.centimes)} CHF à dépenser sans passer sous 0 (${semaineCreux}, dans le cadre) : voir ses causes`} onClick={() => setCreuxOuvert(o => !o)}>
@@ -785,7 +765,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
     <div ref={racine} className={`ent ent--${orientation}`} data-vue={vue} data-doigt={doigt ? 'oui' : undefined} data-aligne={paysageAligne ? 'oui' : undefined}
       data-bouton-al={boutonAligne ? '' : undefined} data-calendrier-entete aria-label="En-tête du calendrier" role="group">
       <div className="ent-t" onPointerDownCapture={versCourbe}>
-        {lecture !== null && !graph && courbeC ? <LectureTete courbe={courbeC} index={lecture} boutons={paysage ? undefined : boutonsTete} /> : cle}
+        {cle}
         <span ref={boutonsTete} className="ent-t-b">
           <button type="button" className="ent-mb" aria-pressed={mouvements} title="Afficher les + et − et les icônes de chaque semaine" onClick={() => onMouvements(!mouvements)}>±</button>
           <button ref={boutonPeriode} type="button" className="ent-per" data-ent-periode aria-haspopup="dialog" aria-expanded={menuOuvert} title="Période, liste, tri et filtre"
@@ -817,10 +797,10 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
 
       <div ref={zone} className="ent-cbz">
         {graph && courbeC && courbe ? (
-          <GrandeCourbe courbe={courbeC} rangeeDe={rangeeDe} largeur={largeur} hauteur={hauteurGrande} paysage={paysage} lecture={lecture} onFermer={fermerLecture} reference={refGrande} gestes={gestesGrande} />
+          <GrandeCourbe courbe={courbeC} rangeeDe={rangeeDe} largeur={largeur} hauteur={hauteurGrande} paysage={paysage} lecture={null} onFermer={fermerLecture} reference={refGrande} gestes={gestesGrande} />
         ) : courbe && base && cachee ? null : courbe && base && vueAl && alignement ? (
           <Courbe aujourdhui={props.aujourdhui} courbe={vueAl.sem} abscisses={alignement.abscisses} creuxIndex={vueAl.creuxIndex} largeur={largeur} hauteur={hauteur}
-            curseur={enGesteLu && lecture !== null && !apercuC ? lecture - vueAl.d : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe}
+            reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe}
             mise={vueAl.mise} mois={!!props.moisCourbeAlignee} moisEnHaut etoiles={vueAl.etoiles} {...(paysageAligne ? { rangeeHaute: { hauteur: RANGEE_CHIFFRE_PAYSAGE, reserves } } : {})}>
             {vueAl.ap && !zoomTout && (
               <div className="ent-zoom-c" data-zoom-aligne style={{ height: hauteur }}>
@@ -830,7 +810,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
           </Courbe>
         ) : courbe && base ? (
           <Courbe aujourdhui={props.aujourdhui} {...(repereAuj ? { repere: repereAuj } : {})} debutDonnees={!!vueR4 && vueR4.d === 0 && index === 0 && (modele.passe ?? 0) > 0} courbe={vueR4 ? vueR4.sem : courbe} abscisses={echelleR4?.abscisses} alignee={false} creuxIndex={vueR4 ? vueR4.creuxIndex : undefined} largeur={largeur} hauteur={hauteur}
-            curseur={enGesteLu ? (lecture !== null && vueR4 ? lecture - vueR4.d : lecture) : null} reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={vueR4 ? vueR4.mise : miseCourbe}
+            reference={refCourbe} gestes={apercuC ? undefined : gestesCourbe} mise={vueR4 ? vueR4.mise : miseCourbe}
             mois={false} moisEnHaut plate={plate && !paysage} etoiles={vueR4 ? vueR4.etoiles : etoilesCourbe} masque={apercuC ? null : tirage}
             cadre={apercuC ? undefined : { index: index - (vueR4?.d ?? 0), nombre, etiquette: etiquetteRepos(semainesTot.map(s => s.numero), index, nombre, annee, etiquetteAnnee, lundis, props.aujourdhui) }}>
             {apercuC ? (
@@ -844,7 +824,7 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
             ) : (
               <Cadre numeros={semainesTot.map(s => s.numero)} lundis={lundis} aujourdhui={props.aujourdhui} index={index} nombre={nombre} largeur={largeur} annee={annee}
                 onChange={changerCadre} onAnnee={versAnnee} onRevient={quitterAnnee}
-                onTirage={setTirage} onTire={setTiree} etiquetteAnnee={etiquetteAnnee} surface={cadreCourbe} onLire={cx => setLecture(cx === null ? null : indexSous(cx))} debutRamenee={(modele.passe ?? 0) > 0}
+                onTirage={setTirage} onTire={setTiree} etiquetteAnnee={etiquetteAnnee} surface={cadreCourbe} debutRamenee={(modele.passe ?? 0) > 0}
                 vue={vueC} onVue={setVueTirage} />
             )}
           </Courbe>
@@ -882,7 +862,6 @@ export function EnTeteCalendrier(props: EnTeteCalendrierProps) {
         </div>
       )}
 
-      {lecture !== null && !graph && courbeC && <div className="ent-lu"><LectureDetail courbe={courbeC} index={lecture} rangeeDe={rangeeDe} /></div>}
       {/* CHN-10 : « Tourne le téléphone » se pose dans la page, sous l'en-tête, et la pousse ; flottant, il couvrait « Loyer du local » sans geste pour le retirer. */}
       <div className="ent-live" aria-live="polite" style={info?.genre === 'invite' ? { position: 'static', pointerEvents: 'auto' } : undefined}>
         {info && info.genre !== 'date' && <p className={`ent-info ent-info--${info.genre}`} data-info={info.genre}>{info.texte}</p>}

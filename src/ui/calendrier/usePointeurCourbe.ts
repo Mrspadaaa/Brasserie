@@ -22,8 +22,9 @@ export type ModeGeste = 'repos' | 'appui' | 'lit' | 'long';
 export interface OptionsPointeurCourbe {
   /** La semaine (index dans la courbe) sous l'abscisse écran donnée. */
   indexSous: (clientX: number) => number;
-  /** Le doigt lit cette semaine (en glissant, ou après un appui long). */
-  onLire: (index: number, mode: 'lit' | 'long') => void;
+  /** Le doigt lit cette semaine (en glissant, ou après un appui long). Le Calendrier ne lit plus (CAL-SANS-LECTURE, D436) : il ne le passe pas ;
+   *  l'état « lit » garde seulement le défilement de la page bloqué pendant que le doigt glisse sur la courbe (le Cadre la fait défiler). */
+  onLire?: (index: number, mode: 'lit' | 'long') => void;
   /** L'appui long a pris : la courbe passe en grand. */
   onAppuiLong: (index: number) => void;
   actif?: boolean;
@@ -111,7 +112,7 @@ export function usePointeurCourbe(options: OptionsPointeurCourbe) {
           if (Math.abs(dy) > Math.abs(dx)) { nettoie(); poser('repos'); return; }
           poser('lit');
         }
-        if (etat === 'lit' || etat === 'long') o.onLire(o.indexSous(ev.clientX), etat);
+        if ((etat === 'lit' || etat === 'long') && o.onLire) o.onLire(o.indexSous(ev.clientX), etat);
       };
       const leve = (ev: PointerEvent) => {
         if (ev.pointerId !== id) return;
