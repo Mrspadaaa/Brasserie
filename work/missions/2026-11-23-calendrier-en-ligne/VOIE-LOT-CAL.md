@@ -84,3 +84,5 @@ d'espace », 1045-espace.jpg ; pilote, réversible : rangées vides ou toutes ca
 qui vide la barre ; (7) « −1 663 » sous ±, bouton de durée pendant le tirage ; (8) lenteur mesurée en ligne.
 - Ajout 10:55 : CAL-VENTE-FICHE (« Clicker sur une vente renvoie directement sur la vente, au lieu d'afficher la vue normal sur
   tableau ») : le toucher d'une vente ouvre la fiche du Calendrier comme les autres choses ; à placer juste après (2).
+- Ajout 10:58 : CAL-SEMAINE-ENTRE-TRAITS (1049-intervalles.jpg) : semaines et mois sont des durées : les traits = leurs limites
+  (lundi, 1er du mois), l'étiquette centrée ENTRE deux traits ; jours : inchangés. À grouper avec CAL-JOUR-EXACT (même bande).
