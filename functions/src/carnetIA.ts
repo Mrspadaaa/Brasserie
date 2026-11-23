@@ -72,7 +72,12 @@ export interface ContexteRangerCarnet {
   pages?: Array<Pick<PageLue, 'url' | 'domaine' | 'nom' | 'prix' | 'devise' | 'vendeur' | 'valeurs'>>;
 }
 
-const S = (properties: Record<string, unknown>, required: string[]) => ({ type: 'OBJECT', properties, required });
+/*
+ * `propertyOrdering` (23.11, lien gastro-held.ch) : sans lui, Gemini sort les clés par ordre alphabétique. Il écrivait `sorte` d'abord,
+ * `carnetId`, `prix` et `devise` étaient alors déjà passés, et ce qu'il voulait encore dire bouclait dans le dernier champ libre (`vendeur`,
+ * 3 985 jetons, coupé au plafond, 9 rejeux sur 9). Les clés sortent dans l'ordre écrit ici : rangement et prix avant le vendeur.
+ */
+const S = (properties: Record<string, unknown>, required: string[]) => ({ type: 'OBJECT', properties, required, propertyOrdering: Object.keys(properties) });
 const str = { type: 'STRING', nullable: true };
 const num = { type: 'NUMBER', nullable: true };
 
