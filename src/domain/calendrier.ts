@@ -935,13 +935,17 @@ export interface IconeSemaine { id: string; lundi: string; numero: number; genre
  * (carnet d'idées, Stocks › Matériel › Carnets) et son icône ouvre ce carnet ; un carnet sans date, archivé ou fait n'en a pas. Les `recipe-idea`
  * datées déjà écrites gardent leur icône vers l'Atelier (aucune migration).
  */
-export function iconesIdees(items: readonly CreativeItem[]): IconeSemaine[] {
+/* Lot 11 (hors lot du lot 2) : un carnet dont le plan est suivi (À venir, barre du Calendrier) prend la date de ce plan : la barre
+   déplacée emmène l'icône, jamais deux semaines pour un même projet. Plan réalisé, annulé ou absent : la date du carnet. */
+export function iconesIdees(items: readonly CreativeItem[], plans: readonly { id: string; status?: string; date?: string }[] = []): IconeSemaine[] {
   const sortie: IconeSemaine[] = [];
   for (const item of items) {
     const carnet = item.type === 'carnet';
     if (!(carnet || item.type === 'recipe-idea') || item.status === 'done' || (item as { archivedAt?: string }).archivedAt) continue;
     if (carnet && (item.carnet as { archive?: unknown } | undefined)?.archive) continue;
-    const jour = isoDate(item.date);
+    const planId = carnet ? (item.carnet as { sortie?: { planId?: string } } | undefined)?.sortie?.planId : undefined;
+    const plan = planId ? plans.find(p => p.id === planId && (p.status === 'draft' || p.status === 'active')) : undefined;
+    const jour = isoDate(plan?.date) || isoDate(item.date);
     if (!jour) continue;
     const lundi = lundiDe(jour);
     sortie.push({ id: `idee-${item.id}`, lundi, numero: numeroSemaine(lundi), genre: 'idee', titre: item.title, ouvre: { ecran: carnet ? 'carnets' : 'atelier', id: item.id } });

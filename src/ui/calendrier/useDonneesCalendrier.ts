@@ -225,7 +225,7 @@ export function construireModele(e: EntreesModele): ModeleCalendrier {
   }
 
   const icones: IconeSemaine[] = [
-    ...iconesIdees(e.items),
+    ...iconesIdees(e.items, e.plans),
     ...retards.filter(r => r.jour).map<IconeSemaine>(r => {
       const lundi = lundiDe(r.jour as string) < lundi0 ? lundi0 : lundiDe(r.jour as string);
       return { id: `retard-${r.id}`, lundi, numero: numeroSemaine(lundi), genre: 'retard', titre: r.titre, ouvre: r.ouvre };
