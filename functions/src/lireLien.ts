@@ -154,6 +154,8 @@ export interface OptionsLecture {
   onEtape?: (e: NonNullable<PageLue['etapes']>[number]) => void;
   /** La dernière marche (D446) : l'IA sur le texte nettoyé, seulement si un champ manque ou est douteux. Absente : aucune IA. */
   ia?: AppelIA;
+  /** La sous-tâche qui démarre (seule l'IA est lente : l'écran la montre « en cours » avant sa réponse). */
+  onDebut?: (nom: 'ia') => void;
 }
 
 export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<PageLue> {
@@ -212,10 +214,13 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
       if (html === null) return echec('indisponible', url);
       // BL-15 : une fiche redirigée vers la recherche ou l'accueil est un lien mort, pas une page « sans nom ni prix ».
       if (lienMort(depart, url)) return echec('introuvable', url);
+      // La page est lue : première étape dite tout de suite, avant l'analyse (IA-ETAPES-VISIBLES).
+      dire({ nom: 'page', statut: 'trouve', detail: domaineDe(url) });
       let page = lirePage(html, url, luLe);
-      for (const e of page.etapes ?? []) dire(e);
+      for (const e of page.etapes ?? []) if (!(e.nom === 'page' && e.statut === 'trouve')) dire(e);
       if (opts.ia && iaUtile(page)) {
         const avant = page.etapes?.length ?? 0;
+        try { opts.onDebut?.('ia'); } catch { /* l'écran ne fait jamais échouer la lecture */ }
         page = await completerParIA(page, html, opts.ia);
         for (const e of (page.etapes ?? []).slice(avant)) dire(e);
       }

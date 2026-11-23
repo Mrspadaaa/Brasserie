@@ -23,7 +23,9 @@ export const TEXTE_IA_MAX = 12_000;
 /** Le texte de la page en Markdown, à partir du titre du produit, sans navigation ni scripts. */
 export function markdownProduit(html: string, titre?: string): string {
   const $ = load(html);
-  $('script, style, noscript, template, svg, iframe, nav, header, footer, form, aside, [role="navigation"], [id*="cookie" i], [class*="cookie" i]').remove();
+  /* Le `form` n'est pas retiré : sur nombre de boutiques il enveloppe tout le bloc d'achat et la description (sios.ch, bier-brauen.at).
+     Reste ouvert (non mesuré faute de budget IA) : sios.ch place la description dans un <nav class="tab-navigation">, retiré ici. */
+  $('script, style, noscript, template, svg, iframe, nav, header, footer, aside, input, select, textarea, button, [role="navigation"], [id*="cookie" i], [class*="cookie" i]').remove();
   const racine = $('main').first().html() ?? $('body').html() ?? $.html();
   const md = NodeHtmlMarkdown.translate(racine, { keepDataImages: false, ignore: ['img', 'picture', 'video'] })
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/\n{3,}/g, '\n\n').trim();
@@ -98,7 +100,16 @@ export function garder(r: ReponseIA, texte: string): { gardee: Gardee; retire: s
 export function iaUtile(p: PageLue): boolean {
   if (p.statut !== 'lue') return false;
   const prixDouteux = p.etapes?.some((e) => e.nom === 'prix' && e.statut === 'douteux');
-  return p.prix === undefined || !!prixDouteux || (p.valeurs?.length ?? 0) < 2;
+  return p.prix === undefined || !!prixDouteux || caracteristiquesTechniques(p) < CARACT_SUFFISANTES;
+}
+
+/** Sous ce nombre de mesures lues sur la page, l'IA complète (elle ne coûte que ~0,001 CHF sur Flash-Lite) : poids et dimensions seuls laissent souvent le volume ou la puissance. */
+export const CARACT_SUFFISANTES = 4;
+const IDENTIFIANT = /artikel|sku|\bean\b|gtin|mpn|bestell|nummer|numéro|référence|reference|kategorie|catégorie|marke|brand|hersteller|lagerbestand|verfügbar|disponib|versandgewicht|shipping/i;
+const MESURE = /\d\s*(?:mm|cm|dm|m|km|kg|g|mg|l|ml|cl|w|kw|v|a|bar|°c?|%|ebc|ibu|ph|min|h|s|ppm|zoll|"|×|x)(?![a-zà-ÿ])|\d\s*[x×]\s*\d/i;
+/** Les caractéristiques qui disent quelque chose du produit : une mesure chiffrée avec son unité, pas un numéro d'article ni un en-tête de tableau. */
+export function caracteristiquesTechniques(p: PageLue): number {
+  return (p.valeurs ?? []).filter((v) => !IDENTIFIANT.test(v.nom) && MESURE.test(`${v.valeur} ${v.unite ?? ''}`)).length;
 }
 
 /**
@@ -109,12 +120,24 @@ export async function completerParIA(p: PageLue, html: string, appel: AppelIA): 
   const texte = markdownProduit(html, p.nom);
   if (texte.length < 200) return p;
   const etapes = [...(p.etapes ?? [])];
-  let r = await appel('lite', LIEN_IA_CONSIGNE, texte).catch(() => null);
-  let { gardee, retire } = r ? garder(r, texte) : { gardee: { caracteristiques: [] } as Gardee, retire: ['réponse'] };
+  let panne: string | undefined;
+  const demander = (m: 'lite' | 'fort') => appel(m, LIEN_IA_CONSIGNE, texte).catch((e: unknown) => { panne = String((e as { message?: unknown })?.message ?? e).slice(0, 120); return null; });
+  let r = await demander('lite');
+  let { gardee, retire } = r ? garder(r, texte) : { gardee: { caracteristiques: [] } as Gardee, retire: [] as string[] };
+  const modeles: string[] = ['lite'];
   const contredit = p.prix !== undefined && gardee.prix !== undefined && Math.abs(gardee.prix - p.prix) > 0.011 && gardee.prix !== p.prixTTC;
-  if ((p.prix === undefined && gardee.prix === undefined) || contredit || retire.includes('prix')) {
-    const fort = await appel('fort', LIEN_IA_CONSIGNE, texte).catch(() => null);
+  /* Escalade (Hydrogen) seulement si un champ qui compte reste absent ou douteux après Flash-Lite : le prix manque encore, ou il est
+     retiré par la garde, ou il contredit le prix publié. Une panne (budget, délai) ne s'escalade pas : elle se répéterait et coûterait. */
+  if (!panne && ((p.prix === undefined && gardee.prix === undefined) || contredit || retire.includes('prix'))) {
+    const fort = await demander('fort');
+    modeles.push('fort');
     if (fort) { const g2 = garder(fort, texte); if (g2.gardee.prix !== undefined || !r) { r = fort; gardee = { ...g2.gardee, caracteristiques: g2.gardee.caracteristiques.length ? g2.gardee.caracteristiques : gardee.caracteristiques }; retire = g2.retire; } }
+  }
+  // Un nom que l'IA écrit autrement ne gêne pas quand la page a déjà le sien (il ne remplace jamais) : ce n'est pas un doute.
+  if (p.nom) retire = retire.filter((x) => x !== 'nom');
+  if (!r && panne) {
+    etapes.push({ nom: 'ia', statut: 'absent', detail: `IA indisponible (${panne})` });
+    return { ...p, etapes };
   }
   const out: PageLue = { ...p };
   const ajouts: string[] = [];
@@ -132,7 +155,7 @@ export async function completerParIA(p: PageLue, html: string, appel: AppelIA): 
   const nouvelles = (gardee.caracteristiques ?? []).filter((c) => !deja.has(norm(c.nom)));
   if (nouvelles.length) { out.valeurs = [...(out.valeurs ?? []), ...nouvelles].slice(0, 24); ajouts.push(`${nouvelles.length} caract.`); }
   const contreditFinal = p.prix !== undefined && gardee.prix !== undefined && Math.abs(gardee.prix - p.prix) > 0.011 && gardee.prix !== p.prixTTC;
-  etapes.push({ nom: 'ia', statut: retire.length || contreditFinal ? 'douteux' : ajouts.length ? 'trouve' : 'absent', detail: [ajouts.length ? `ajouté : ${ajouts.join(', ')}` : 'rien de plus', retire.length ? `retiré (absent du texte) : ${retire.join(', ')}` : '', contreditFinal ? `l'IA lit ${gardee.prix} ${gardee.devise ?? ''}, la page publie ${p.prix} ${p.devise ?? ''}` : ''].filter(Boolean).join(' ; ') });
+  etapes.push({ nom: 'ia', statut: retire.length || contreditFinal ? 'douteux' : ajouts.length ? 'trouve' : 'absent', detail: [modeles.join(' puis '), ajouts.length ? `ajouté : ${ajouts.join(', ')}` : 'rien de plus', retire.length ? `retiré (absent du texte) : ${retire.join(', ')}` : '', contreditFinal ? `l'IA lit ${gardee.prix} ${gardee.devise ?? ''}, la page publie ${p.prix} ${p.devise ?? ''}` : ''].filter(Boolean).join(' ; ') });
   if (contreditFinal) {
     const i = etapes.findIndex((e) => e.nom === 'controle');
     const d = `prix : l'IA lit ${gardee.prix}, les données ${p.prix}`;

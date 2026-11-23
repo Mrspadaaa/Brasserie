@@ -149,7 +149,8 @@
   "prixDes": false,
   "prixBarre": null,
   "variantes": null,
-  "photo": false,
+  "photo": true,
+  "photoRevisee": "23.11 (voie lecture-liens) : était false (« visuel de marque, pas une photo du produit »). Le site publie pourtant cette image comme LA photo du produit (itemprop=image, alt « Bild von Spectrum CITRA 1 kg », fichier 0228141_spectrum-citra-1-kg) ; aucun lecteur sans vision ne sait la distinguer d'une photo. Rendue, elle montre ce que la page montre ; à valider par le pilote.",
   "photoExemple": null,
   "caract": [],
   "dispo": "en-stock",
@@ -452,7 +453,8 @@
   "variantes": [
    {
     "libelle": "50 g",
-    "prix": null
+    "prix": 4,
+    "revise": "23.11 (voie lecture-liens) : 4.00 = le bas de la fourchette « CHF4.00 – CHF285.00 » affichée en haut de la page ; la 50 g est la plus petite taille"
    },
    {
     "libelle": "100 g (choix par défaut)",

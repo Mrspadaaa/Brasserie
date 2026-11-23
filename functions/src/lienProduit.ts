@@ -2,6 +2,7 @@ import { load, type CheerioAPI } from 'cheerio/slim';
 import { Handler } from 'htmlmetaparser';
 import { Parser } from 'htmlparser2';
 import { stockStatus } from './brewerSuppliers.js';
+import { completerValeurs, mesuresDuNom, pairesDeTexte, valeursDonneesEmbarquees } from './lienPlateforme.js';
 
 /**
  * Lecture d'une page produit, sans modèle (D446, 23.11 : « vraiment très mauvais » au banc réel). Remplace la lecture JSON-LD seule.
@@ -283,6 +284,9 @@ function taxeDe(prix: number, visible: string, schema: boolean | undefined): { t
     const proche = visible.slice(i, i + 60);
     if (DIT_TTC.test(proche) && !DIT_HT.test(proche.split(DIT_TTC)[0])) return { taxe: 'ttc', detail: 'mention « taxe comprise »' };
     if (DIT_HT.test(proche)) return { taxe: 'ht', detail: 'mention « hors taxe »' };
+    // Le libellé du prix précède parfois le montant : « Produktpreis (ohne MwSt.) CHF 1'620.00 » (baldinger.biz, banc 36).
+    const avant = visible.slice(Math.max(0, i - 70), i);
+    if (DIT_HT.test(avant) && !DIT_TTC.test(avant)) return { taxe: 'ht', detail: 'libellé « hors taxe » avant le prix' };
   }
   if (schema === false) return { taxe: 'ht', detail: 'valueAddedTaxIncluded: false' };
   return {};
@@ -320,9 +324,29 @@ function photosDe(sources: unknown[], base: URL): string[] {
   return out;
 }
 
+/** Repli quand la page ne publie aucune photo en données : la galerie du produit dans le HTML (WooCommerce, thèmes classiques). Jamais les produits liés. */
+function photosGalerie($: CheerioAPI, base: URL): string[] {
+  const src: string[] = [];
+  $('[class*="gallery" i] img, [class*="gallery" i] a[href], [id*="gallery" i] img, [class*="product-image" i] img, [class*="product__media" i] img, [class*="zoom" i] img').each((_, e) => {
+    const el = $(e);
+    if (el.closest('[class*="related" i], [class*="upsell" i], [class*="cross" i], [class*="similar" i], [class*="recommend" i]').length) return;
+    for (const a of ['data-large_image', 'data-zoom-image', 'data-src', 'data-original', 'data-lazy-src', 'src', 'href']) {
+      const v = el.attr(a);
+      if (v && /\.(?:jpe?g|png|webp)(?:\?|$)/i.test(v)) {
+        const w = v.match(/[-_](\d{2,4})x\d{2,4}\.\w+(?:\?|$)/);
+        if (!w || Number(w[1]) >= 300) src.push(v);
+        break;
+      }
+    }
+  });
+  return photosDe(src, base).slice(0, 6);
+}
+
 const NOM_CARACT = 60, VAL_CARACT = 100;
 type Valeur = { nom: string; valeur: string; unite?: string };
 const SECTION_SPECS = /spec|techn|merkmal|eigenschaft|attribut|caract|detail|datenblatt|feature|propert|daten|kenn|fiche|product-info|produktinfo/i;
+/** L'en-tête d'un tableau (« Spezifikation | Wert ») n'est pas une caractéristique. */
+const EN_TETE = /^(?:wert|werte|value|valeur|beschreibung|description|details?)$/i;
 const LIGNE_NON = /^(?:preis|price|prix|menge|quantity|quantité|anzahl|bewertung|rating|warenkorb|panier|cart)$/i;
 
 /** Les caractéristiques : `additionalProperty`, propriétés du produit (poids, dimensions…), tableaux et listes de la page. */
@@ -332,8 +356,9 @@ function caracteristiques(p: Json | null, $: CheerioAPI, amazon: boolean): Valeu
   const ajouter = (nom: string | undefined, valeur: string | undefined, unite?: string) => {
     const n = nom ? couper(nom.replace(/\s*[:：]\s*$/, ''), NOM_CARACT) : undefined;
     const v = valeur ? couper(valeur, VAL_CARACT) : undefined;
-    if (!n || !v || n.length < 2 || LIGNE_NON.test(n) || norm(n) === norm(v) || vus.has(norm(n))) return;
-    vus.add(norm(n));
+    if (!n || !v || n.length < 2 || LIGNE_NON.test(n) || EN_TETE.test(v) || norm(n) === norm(v) || vus.has(`${norm(n)}|${norm(v)}`)) return;
+    // Un même nom avec une autre valeur reste : une page dit parfois « Gewicht 15 kg » (expédition) puis « Gewicht: 13.5kg » (appareil).
+    vus.add(`${norm(n)}|${norm(v)}`);
     out.push({ nom: n, valeur: v, ...(unite ? { unite: couper(unite, 12) } : {}) });
   };
   if (p) {
@@ -369,7 +394,15 @@ function caracteristiques(p: Json | null, $: CheerioAPI, amazon: boolean): Valeu
     const m = compact($(li).text()).match(/^([^:：]{2,40})\s*[:：]\s*(.{1,100})$/);
     if (m) ajouter(m[1], m[2]);
   });
-  const desc = p ? liste(p.description).filter((x) => typeof x === 'string').join('\n') : '';
+  // Puces de description sans deux-points (« Max. Malzmenge 6 kg », « Braumenge 20 l fertiges Bier ») : le nom précède le premier nombre.
+  $('li').each((_, li) => {
+    if (out.length >= 24 || $(li).closest('nav, header, footer, aside').length) return;
+    const zone = $(li).parents().slice(0, 6).toArray().map((e) => `${$(e).attr('id') ?? ''} ${$(e).attr('class') ?? ''}`).join(' ');
+    if (!/descr|beschreib|tab-pane|tab-content|product-?(?:info|detail|text)|highlight/i.test(zone)) return;
+    const m = compact($(li).text()).match(/^([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ.\- ]{2,35}?)\s+(\d[\d.,]*\s?(?:kg|g|l|ml|cl|liter|litres?|w|kw|v|mm|cm|m|bar|%|°c|stück|pcs).{0,70})$/i);
+    if (m) ajouter(m[1], m[2]);
+  });
+  const desc =p ? liste(p.description).filter((x) => typeof x === 'string').join('\n') : '';
   for (const l of desc.split(/\r?\n|<br\s*\/?>/i).slice(0, 40)) {
     const m = compact(l).match(/^([A-Za-zÀ-ÿ][^:：]{1,30})\s*[:：]\s*(.{1,80})$/);
     if (m && /\d/.test(m[2])) ajouter(m[1], m[2]);
@@ -385,8 +418,14 @@ const LIVRAISON_GRATUITE = /(?:versandkostenfrei|kostenlose[rn]?\s+(?:versand|li
 const LIVRAISON_REFUSEE = /(?:keine|nicht)\s+(?:lieferung|versand|liefern)\s+(?:in\s+die|nach\s+der?)\s+schweiz|(?:ne\s+livr\w*\s+pas|aucune\s+livraison)\s+(?:en|vers\s+la)\s+suisse|(?:no|not)\s+(?:shipping|deliver\w*)\s+to\s+switzerland|nur\s+innerhalb\s+(?:deutschlands|österreichs)/i;
 
 function livraisonCH(offres: Json[], visible: string, prix: number | undefined, devise: string | undefined, suisse: boolean): { l?: Livraison; doute?: string } {
-  let schema: Livraison | undefined;
+  /* Le port est celui de l'OFFRE retenue (celle dont le prix est affiché), jamais le dernier ni le plus haut : hopfenmarkt.ch publie 4,90 pour
+     50 et 100 g, 11,90 pour 250 g et plus (BL banc 33, 34). Sans offre au prix retenu, la première offre qui publie un port. */
+  let schema: Livraison | undefined, schemaOffreChoisie = false;
   for (const o of offres) for (const d of liste<Json>(o.shippingDetails)) {
+    const specs = liste<Json>(o.priceSpecification);
+    const prixO = [o.price, o.lowPrice, ...specs.map((x) => x?.price)].map((b) => prixLocalise(typeof b === 'object' ? texte(b) : b)?.montant);
+    const choisie = prix !== undefined && prixO.some((x) => x !== undefined && egal(x, prix));
+    if (schema && (schemaOffreChoisie || !choisie)) continue;
     const pays = liste<Json>(d.shippingDestination).flatMap((x) => liste(x?.addressCountry).map((c) => String(typeof c === 'object' ? (c as Json).name ?? '' : c).toUpperCase()));
     if (pays.length && !pays.includes('CH')) continue;
     if (!pays.length && !suisse) continue;
@@ -394,8 +433,8 @@ function livraisonCH(offres: Json[], visible: string, prix: number | undefined, 
     const r = liste<Json>(d.shippingRate)[0];
     const m = prixLocalise(texte(r?.value)) ?? (r?.value === 0 || r?.value === '0' ? { montant: 0 } : undefined);
     const dev = texte(r?.currency, 3) ?? devise;
-    if (m && m.montant === 0) schema = { gratuite: true };
-    else if (m && dev) schema = { prix: m.montant, devise: dev };
+    const lu: Livraison | undefined = m && m.montant === 0 ? { gratuite: true } : m && dev ? { prix: m.montant, devise: dev } : undefined;
+    if (lu) { schema = lu; schemaOffreChoisie = choisie; }
   }
   if (LIVRAISON_REFUSEE.test(visible)) return { l: { refusee: true }, ...(schema && !schema.refusee ? { doute: 'les données disent une livraison en Suisse, la page la refuse' } : {}) };
   // Une gratuité écrite ne vaut pour la Suisse que sur une boutique suisse (ou si la page nomme la Suisse) et sous son seuil éventuel.
@@ -516,8 +555,10 @@ export function extraireProduit(html: string, url: URL): Extraction {
     try { sourcesPhotos.push(Object.keys(JSON.parse(img.attr('data-a-dynamic-image') ?? '{}'))); } catch { /* attribut illisible */ }
   }
   sourcesPhotos.push(meta('og:image:secure_url'), meta('og:image'), meta('twitter:image'));
-  const photos = photosDe(sourcesPhotos, url);
-  etapes.push(photos.length ? { nom: 'photos', statut: 'trouve', detail: `${photos.length}` } : { nom: 'photos', statut: 'absent' });
+  let photos = photosDe(sourcesPhotos, url);
+  const depuisGalerie = !photos.length ? photosGalerie($, url) : [];
+  if (depuisGalerie.length) photos = depuisGalerie;
+  etapes.push(photos.length ? { nom: 'photos', statut: 'trouve', detail: `${photos.length}${depuisGalerie.length ? ' (galerie de la page)' : ''}` } : { nom: 'photos', statut: 'absent' });
 
   const valeurs = caracteristiques(p, $, amazon);
   if (amazon) $('#productDetails_techSpec_section_1 tr, #productOverview_feature_div tr, #technicalSpecifications_section_1 tr').each((_, tr) => {
@@ -527,7 +568,20 @@ export function extraireProduit(html: string, url: URL): Extraction {
       if (n && v && !valeurs.some((x) => norm(x.nom) === norm(n))) valeurs.push({ nom: couper(n, NOM_CARACT), valeur: couper(v, VAL_CARACT) });
     }
   });
-  etapes.push(valeurs.length ? { nom: 'caract', statut: 'trouve', detail: `${valeurs.length}` } : { nom: 'caract', statut: 'absent' });
+  /* Marches « plateforme » synchrones (avant l'IA) : ce que la page publie ailleurs que dans ses tableaux. Les valeurs trouvées dans
+     le HTML restent ; on n'ajoute que les noms manquants. 1. données embarquées (__NEXT_DATA__ …) ; 2. « Nom : valeur » des
+     descriptions ; 3. mesures écrites dans le nom du produit. */
+  const descriptions = [meta('description'), meta('og:description'), ...liste(p?.description).filter((x): x is string => typeof x === 'string')];
+  const dHtml = valeurs.length;
+  const embarquees = valeursDonneesEmbarquees(html);
+  const depuisDescriptions = descriptions.flatMap((d) => pairesDeTexte(d));
+  let fusion = completerValeurs(valeurs, [...embarquees, ...depuisDescriptions]);
+  let dNom = 0;
+  { const n = completerValeurs(fusion.valeurs, mesuresDuNom(nom)); fusion = n; dNom = n.ajoutees; }
+  valeurs.splice(0, valeurs.length, ...(fusion.valeurs as Valeur[]));
+  etapes.push(valeurs.length
+    ? { nom: 'caract', statut: 'trouve', detail: [`${valeurs.length}`, dHtml !== valeurs.length ? `dont ${dHtml} du HTML, ${valeurs.length - dHtml - dNom} de données embarquées ou de descriptions${dNom ? `, ${dNom} du nom` : ''}` : ''].filter(Boolean).join(' · ') }
+    : { nom: 'caract', statut: 'absent' });
 
   const vendeur = texte(liste<Json>(offres[0]?.seller)[0]?.name, 80) ?? meta('og:site_name');
   etapes.push(doutes.length ? { nom: 'controle', statut: 'douteux', detail: doutes.join(' ; ') } : { nom: 'controle', statut: 'trouve' });
