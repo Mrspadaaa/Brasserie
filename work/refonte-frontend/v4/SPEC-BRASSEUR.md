@@ -2787,3 +2787,4 @@ Stock (choix-stock) : d1a, d2a, d3a (« Top pour la vue desktop !! »), d3b, d5a
 - (page des filtres par domaine, https://claude.ai/artifact/Rj7BVAqZoAHKRJFngMnLq6) « Puces de domaines Très bien !! »
 - (citant « En local : environ 200 tests automatiques au doigt sur le Calendrier, mais sur des données d'essai, pas les tiennes. ») « C'est vraiment utile de passer autant de temps sur ce genre de test si au final il y a plein de vrai problème sur la vrai app ? »
 - (sur la proposition : 1 vraie app + vraies données, 2 son téléphone en USB, 3 règles vérifiées partout, 4 copie anonymisée de ses données ; un test par plainte, plus de tests d'écran à la chaîne) « Oui mais pas de point 2 »
+- (tableau des tâches, ligne « Lecture IA côté serveur (aiTask) … attend ton accord ») « Lecture IA côté serveur (aiTask)ok »
