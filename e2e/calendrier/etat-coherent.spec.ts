@@ -37,15 +37,18 @@ export function lireEtiquette(t: string, an0: number): [number, number] | null {
   const fin = b.j ? jour(anB, b.mois, b.j) : jour(anB, b.mois + 1, 1) - 1;
   return [debut, fin];
 }
-/** « 6 sem. », « 3 mois », « An », « 2 ans », « 18 mois » → semaines. */
+/** « 6 sem. », « 3 mois », « An », « 2 ans », « 2 ans ½ », « 18 mois » → semaines (l'année : 52,18 semaines, comme `libelleDuree`). */
 export function lireDuree(t: string): number | null {
   const s = t.replace(/\s+/g, ' ').trim().replace(/^[^·]+ · /, '');
   let m = /^(\d+) sem/.exec(s); if (m) return Number(m[1]);
   m = /^(\d+) mois/.exec(s); if (m) return Math.round(Number(m[1]) * 52 / 12);
   if (/^An\b/.test(s)) return 52;
-  m = /^(\d+) ans/.exec(s); if (m) return Number(m[1]) * 52;
+  /* T29-12 : « 2 ans ½ » = deux ans et demi ; le libellé arrondit au demi-an près (le quart vers le bas) : il peut s'écarter de ¼ d'an du cadre */
+  m = /^(\d+) ans( ½)?$/.exec(s); if (m) return (Number(m[1]) + (m[2] ? 0.5 : 0)) * 52.18;
   return null;
 }
+/** L'écart permis entre un libellé de durée et le cadre, en semaines : en années, ¼ d'an (14,4 sem. : `libelleDuree` arrondit au demi-an, le quart vers le bas). */
+export const jeuLibelle = (libelle: string): number | null => (/ ans( ½)?$/.test(libelle) ? 14.5 : null);
 
 type Reel = { page: Page; doigt: Doigt; journal: string[] };
 type Modele = Record<string, never>;
@@ -81,11 +84,17 @@ async function verifier(r: Reel) {
   const [d, f] = dates!;
   const semCadre = (f - d + 1) / 7, semBouton = lireDuree(e.duree);
   /* I0 : un libellé de durée bien formé (« 1 ans » vu au tour 22) */
-  expect(/^(?:[^·]+ · )?(\d+ sem\.|\d+ mois|An|[2-9] ans)$/.test(e.duree), `I0 libellé « ${e.duree} » : ${ctx}`).toBe(true);
+  expect(/^(?:[^·]+ · )?(\d+ sem\.|\d+ mois|An|(?:[2-9]|10) ans(?: ½)?)$/.test(e.duree), `I0 libellé « ${e.duree} » : ${ctx}`).toBe(true);
   /* une étiquette en mois (sans jour) couvre ses mois entiers : un mois de jeu à chaque bout */
   const jeu = /\d{1,2} [a-zéû]/i.test(e.etiquette) ? Math.max(1, semCadre * 0.1) : 9;
-  /* I1 */
-  if (semBouton !== null) expect(Math.abs(semBouton - semCadre) <= jeu, `I1 durée « ${e.duree} » ≠ cadre ${semCadre.toFixed(1)} sem. : ${ctx}`).toBe(true);
+  /* I1 : en années, le libellé arrondit au demi-an (T29-12) : ¼ d'an d'écart permis, mesuré sur le cadre exact (`data-cadre-du/au`) quand
+     l'en-tête l'expose, sinon sur l'étiquette (+ le jeu d'un mois à chaque bout) */
+  const jourIso = (s: string) => { const [a, m, j] = s.split('-').map(Number); return jour(a, m - 1, j); };
+  const exact = e.axe?.cdu && e.axe.cau ? (jourIso(e.axe.cau) - jourIso(e.axe.cdu) + 1) / 7 : null;
+  const jeuAns = jeuLibelle(e.duree);
+  const ecart = jeuAns !== null && exact !== null ? exact : semCadre;
+  const jeuI1 = jeuAns !== null ? jeuAns + (exact !== null ? 0.5 : jeu) : jeu;
+  if (semBouton !== null) expect(Math.abs(semBouton - ecart) <= jeuI1, `I1 durée « ${e.duree} » ≠ cadre ${ecart.toFixed(1)} sem. : ${ctx}`).toBe(true);
   /* I4 : axe ⊇ cadre (« axe 2029–2030 » pour un cadre de 4 ans dès 2025, 1204-incoherent.jpg) */
   if (e.boites) expect(e.boites.cl >= -2 && e.boites.cr <= e.boites.w + 2, `I4 cadre hors de l'axe (${Math.round(e.boites.cl)}…${Math.round(e.boites.cr)} sur ${Math.round(e.boites.w)} px) : ${ctx}`).toBe(true);
   if (e.axe?.du && e.axe.au && e.axe.cdu && e.axe.cau) {

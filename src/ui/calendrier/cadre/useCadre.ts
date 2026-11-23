@@ -49,14 +49,20 @@ export function useCadre(o: { app: Periode | undefined; centrerSur?: string; pay
   }, []);
 
   /* la période de l'app a changé (barre de l'app, Finances) : la fenêtre gardée pour elle, sinon elle */
+  /* T32-1 : « régler à nouveau cette même période ne recadre pas la frise » : la période de l'app est un état de l'App (une nouvelle valeur à chaque
+     choix, même identique) ; le cadre se pose sur elle à chaque choix. Changée, la fenêtre gardée pour elle revient ; re-choisie telle quelle, la
+     période l'emporte sur la fenêtre déplacée depuis. */
   const cleVue = useRef(cleApp);
+  const appVue = useRef(o.app);
   useEffect(() => {
-    if (cleApp === cleVue.current) return;
+    if (o.app === appVue.current) return;
+    appVue.current = o.app;
+    const change = cleApp !== cleVue.current;
     cleVue.current = cleApp;
     const g = lireGardee();
-    agir({ type: 'app', periode: o.app, gardee: g && g.app === cleApp ? g.locale : null });
+    agir({ type: 'app', periode: o.app, gardee: change && g && g.app === cleApp ? g.locale : null });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cleApp]);
+  }, [o.app]);
 
   /* E10 : en paysage, 13 semaines au moins ; la fenêtre d'avant au retour */
   useEffect(() => { agir({ type: 'orientation', paysage: o.paysage }); }, [o.paysage, agir]);

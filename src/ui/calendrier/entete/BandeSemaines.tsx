@@ -234,8 +234,14 @@ export function periodesBande(semaines: readonly SemaineBande[], abscisses: read
     /* T29-8 (23.11, « O N D J F M A… » sans année au passage de janvier) : même à un nom par mois, janvier dit son année quand elle tient dans
        sa part visible ; sinon son initiale */
     const anneeTient = r - l >= Math.ceil(wEtiquette * 1.4) + ECART_ETIQUETTES;
-    const texte = pas === 'mois' ? (d.slice(5, 7) === '01' && (saut > 1 || anneeTient) ? d.slice(0, 4) : INITIALES[Number(d.slice(5, 7)) - 1]) : d.slice(0, 4);
-    const wt = texte.length === 1 ? Math.ceil(wEtiquette / 2) : Math.ceil(wEtiquette * 1.4);
+    /* T29-8 (tour 32, en ligne : à l'An, 390 px, un mois = 30 px, « 2027 » n'y tient pas : « S O N D J F M… » restait sans année) : à défaut de
+       l'année entière, janvier dit « ’27 » (trois signes, un peu moins large qu'un « S53 », comme la bande de l'An) ; sinon son initiale */
+    const anneeCourteTient = r - l >= Math.ceil(wEtiquette * 0.85) + ECART_ETIQUETTES;
+    const janvier = pas === 'mois' && d.slice(5, 7) === '01';
+    const texte = pas === 'mois'
+      ? (janvier && (saut > 1 || anneeTient) ? d.slice(0, 4) : janvier && anneeCourteTient ? `’${d.slice(2, 4)}` : INITIALES[Number(d.slice(5, 7)) - 1])
+      : d.slice(0, 4);
+    const wt = texte.length === 1 ? Math.ceil(wEtiquette / 2) : texte.length === 3 ? Math.ceil(wEtiquette * 0.85) : Math.ceil(wEtiquette * 1.4);
     if (saut > 1) {
       /* la part visible du mois doit tenir la moitié d'une initiale (une année nommée en janvier déborde ses traits, jamais le bord) */
       if (rang(d) % saut !== 0 || r - l < Math.ceil(wEtiquette / 2) / 2 || (l + r) / 2 - wt / 2 < g || (l + r) / 2 + wt / 2 > larg) continue;
@@ -283,7 +289,7 @@ export function nomRogne(a: readonly number[], k: number, largeurColonne: number
 export function etiquettesPosees(semaines: readonly SemaineBande[], abscisses: readonly number[], grain: GrainBande, largeurColonne: number, wEtiquette = largeurEtiquetteMax()): Array<{ texte: string; x: number; w: number }> {
   const a = abscisses, n = semaines.length;
   if (!n || a.length !== n + 1 || !(largeurColonne > 0)) return [];
-  const larg = (t: string) => (t.length === 1 ? Math.ceil(wEtiquette / 2) : t.length === 4 ? Math.ceil(wEtiquette * 1.4) : wEtiquette);
+  const larg = (t: string) => (t.length === 1 ? Math.ceil(wEtiquette / 2) : t.length === 4 ? Math.ceil(wEtiquette * 1.4) : t.length === 3 && t[0] === '’' ? Math.ceil(wEtiquette * 0.85) : wEtiquette);
   if (grain === 'jour') {
     const pasJ = pasJours(largeurColonne / 7, Math.ceil(wEtiquette * 0.75));
     return semaines.flatMap((s, k) => joursDeCellule(s.debut, largeurColonne, a[k + 1] - a[k], k === 0 && a[1] - a[0] < largeurColonne - 0.5, pasJ, undefined, k === 0, k === n - 1, Math.ceil(wEtiquette * 0.75) / 2)

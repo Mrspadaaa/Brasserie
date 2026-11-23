@@ -141,7 +141,8 @@ function agir(e: EtatCadre, a: ActionCadre, h: Horizon): EtatCadre {
       if (!voulue || !f) return { ...e, periode: periodeDeFenetre(fenetreDuCadre(e, h)), ephemere: false };
       /* CHV-4 : une plage qui commence avant l'horizon se lit posée à son début ; elle s'écrit telle qu'elle se montre */
       const periode = voulue.genre === 'dates' && lundi(voulue.du) < f.du ? periodeDeFenetre(f) : voulue;
-      return { ...e, periode, ephemere: false, avantGeste: null };
+      /* E10 : changée en paysage, la période de l'app est celle que le portrait retrouve (sinon le retour rendait l'ancienne, sonde de la relecture) */
+      return { ...e, periode, ephemere: false, avantGeste: null, ...(e.paysage ? { avantPaysage: periode } : {}) };
     }
     case 'poser':
       return { ...e, periode: borner(a.fenetre, h), ephemere: false, vue: a.vue ?? e.vue };
