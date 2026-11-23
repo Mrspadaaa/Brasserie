@@ -1,5 +1,6 @@
 import type { FinanceTransaction, FinancialPayment, FinancialPlan } from './types';
-import { isoDate, isActiveTransaction, transactionKind, transactionVendor } from './ledger';
+import { isoDate, isActiveTransaction, transactionAmount, transactionKind, transactionVendor } from './ledger';
+import { lireDecimal } from '../../ui/numericInput';
 import { upgradeBudget, upgradeDetails, upgradeProgress } from './upgrades';
 import { repereDe } from './upgradeForecast';
 
@@ -33,6 +34,20 @@ export function estRealise(plan: FinancialPlan, transactions: FinanceTransaction
   if (p.invoiceCount === 0 || !p.invoicedComplete || !p.paymentKnown) return false;
   const attendu = upgradeDetails(plan).budgetKnown ? plan.amountCents : 1;
   return p.invoicedCents >= attendu && p.paidCents >= p.invoicedCents;
+}
+/**
+ * L-37 (23.11) : la pièce qui avait soldé le plan (`soldeLeVuPlan`, `planApresVente` : réalisé s'il est couvert) vient d'être retirée. Le geste
+ * inverse, par la même règle : si les pièces liées encore en vigueur ne couvrent plus le montant prévu, le plan revient à « À venir » (actif s'il a
+ * un mois et un prix, sinon en idée) ; il retrouve sa place dans la prévision et dans le Calendrier. Un plan réalisé sans aucune pièce liée
+ * (« Réalisé, sans achat ») ou couvert par une autre pièce ne bouge pas.
+ */
+export function planApresRetrait(plan: FinancialPlan, transactions: FinanceTransaction[], maintenant: string): FinancialPlan {
+  if (plan.status !== 'completed') return plan;
+  const liees = transactions.filter(tx => tx.finance?.planId === plan.id && transactionKind(tx) === 'expense');
+  if (!liees.some(tx => !isActiveTransaction(tx))) return plan;
+  const couvert = liees.filter(isActiveTransaction).reduce((n, tx) => n + transactionAmount(tx), 0);
+  if (couvert > 0 && couvert >= plan.amountCents) return plan;
+  return { ...plan, status: plan.amountCents > 0 && isoDate(plan.date) ? 'active' : 'draft', updatedAt: maintenant };
 }
 /** La date (AAAA-MM-JJ) de la dernière facture liée au projet, ou null. */
 export function dateFacture(plan: FinancialPlan, transactions: FinanceTransaction[]): string | null {
@@ -72,9 +87,10 @@ export function fournisseursConnus(plans: FinancialPlan[], transactions: Finance
 
 /** « 1 234,50 », « 1'234.5 », « 900 » → centimes ; vide, nul, négatif ou illisible → null (l'inconnu n'est jamais 0). */
 export function parsePrix(texte: string): number | null {
-  const propre = texte.replace(/[\s'’  ]/g, '').replace(',', '.');
-  if (!/^\d+(\.\d{1,2})?$/.test(propre)) return null;
-  const cents = Math.round(parseFloat(propre) * 100);
+  // L-36, L-38 : la lecture commune (`lireDecimal` : « 12,345.67 », « 12’345,50 ») ; deux décimales au plus, un prix en francs.
+  const lu = lireDecimal(texte);
+  if (!lu || lu.decimales > 2) return null;
+  const cents = Math.round(lu.valeur * 100);
   return Number.isSafeInteger(cents) && cents > 0 ? cents : null;
 }
 /** Le prix trouvé (ou celui du devis) : l'achat prend ce prix, livraison et installation restent ce qu'ils étaient ; le projet passe à « Prêt à acheter ». */
