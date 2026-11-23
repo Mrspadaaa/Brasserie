@@ -30,6 +30,16 @@ Contrat : VOIE-LOT-CAL.md (ajouts 9:05 et 9:10 compris), dossier Brasserie de ce
   la longueur du modèle (Rangee, colonnesDeLAxe, occurrences). Le test T9-2 immobile « jamais plus que l'An » protège FC-1, que la plainte
   CAL-PLUS-QU-UN-AN renverse : à changer en « jamais plus que l'horizon ».
 
+## PRIORITÉ 1 (ajout 9:40 du contrat, non commencé par cet agent)
+- Capture brasseur-23-11/40sem-0937.jpg (tour 17) : « On voit toujours pas sur le graph où est le moment présent ». Vérifier d'abord si le
+  tour 17 contient a3b3dc47c (le trait d'aujourd'hui) ; sinon c'est ce commit à mettre en ligne. S'il le contient : le trait n'est pas vu →
+  le rendre net (couleur de la semaine bleue du calendrier, pas `--ent-fin`, plus épais, devant l'aire).
+- Le contrat dit « hors fenêtre : rien » : retirer « ‹ auj. » / « auj. › » de `Courbe.tsx` (branche `cote !== 'dans'` et `boiteAuj`) et le
+  dernier bloc de `aujourdhui-courbe.spec.ts` (fenêtre poussée dans l'avenir → attendre aucun repère).
+- CAL-POINT-BLEU-MUET : retirer le point bleu du creux sur la petite courbe (`.ent-creux-pt` dans Courbe.tsx ; la pastille le dit déjà) ;
+  un test : aucun `.ent-cb .ent-creux-pt` à chaque échelle.
+- Puis CAL-PLUS-QU-UN-AN (ci-dessous, bloquant à lever), dans le même cycle PRÊT / EN LIGNE / preuve en ligne.
+
 ## Reste du contrat
 1. Point 3 (D436, CAL-SANS-LECTURE) : correctif écrit, mis de côté dans le scratchpad (perdu) — à refaire : `usePointeurCourbe` sans état
    « lit » (appui long seul), EnTete sans `lecture`/`LectureTete`/`LectureDetail`/`indexSous`/`onLectureSemaine` (personne ne la passe),
