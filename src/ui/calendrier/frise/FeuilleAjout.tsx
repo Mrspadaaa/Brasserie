@@ -230,8 +230,11 @@ export const FeuilleAjout: React.FC<FeuilleAjoutProps> = ({ mode, initial, conte
         {abandon && (
           <div role="alert" data-abandon className="mb-1 flex flex-wrap items-center gap-2 rounded-control border border-alert px-2 py-1.5 text-sm text-cave-50">
             <span className="mr-auto">Tes changements ne sont pas enregistrés.</span>
-            <button type="button" onClick={() => setAbandon(false)} className="min-h-11 rounded-control px-3 font-semibold underline underline-offset-2">Garder</button>
-            <button type="button" data-abandonner onClick={onFermer} className="min-h-11 rounded-control px-3 font-semibold text-alert-strong underline underline-offset-2">Abandonner</button>
+            {/* lot 11 (hors lot du lot 10) : les deux choix restent ensemble ; à 390, c'est la phrase qui prend sa ligne, jamais « Abandonner » seul */}
+            <span className="ml-auto flex shrink-0 items-center gap-2">
+              <button type="button" onClick={() => setAbandon(false)} className="min-h-11 rounded-control px-3 font-semibold underline underline-offset-2">Garder</button>
+              <button type="button" data-abandonner onClick={onFermer} className="min-h-11 rounded-control px-3 font-semibold text-alert-strong underline underline-offset-2">Abandonner</button>
+            </span>
           </div>
         )}
         {resume && <p className="cal-f-resume mb-1 text-sm text-cave-50" data-fenetre-pied><b data-fenetre>{resume}</b>{b.joursActifs ? <span> · {b.joursActifs} j actifs</span> : null}</p>}

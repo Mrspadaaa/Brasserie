@@ -76,6 +76,10 @@ test.describe('Lot 10 : Calendrier, fiches, feuilles, bandeau', () => {
     await feuille.locator('[data-feuille-nom]').fill('ZZ TEST Achat L68 changé');
     await feuille.getByRole('button', { name: /^Fermer/ }).first().tap();
     await expect(feuille.locator('[data-abandon]'), 'le × dit que les changements seraient perdus').toBeVisible();
+    // lot 11 (hors lot du lot 10) : « Abandonner » se tient à côté de « Garder », jamais renvoyé seul à la ligne
+    const [g, a] = await Promise.all([feuille.getByRole('button', { name: 'Garder' }).boundingBox(), feuille.locator('[data-abandonner]').boundingBox()]);
+    expect(Math.abs(g!.y - a!.y), 'Garder et Abandonner sur la même rangée').toBeLessThan(4);
+    await page.screenshot({ path: test.info().outputPath('l68-garder-abandonner.png') });
     await feuille.getByRole('button', { name: 'Garder' }).tap();
     await expect(feuille.locator('[data-abandon]')).toHaveCount(0);
     await expect(feuille.locator('[data-feuille-nom]')).toHaveValue('ZZ TEST Achat L68 changé');
