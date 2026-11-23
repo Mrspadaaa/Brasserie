@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { EtapeLien, PageLue } from './carnetIA.js';
 import type { AppelIA } from './lienIA.js';
+import type { AppelPageBloquee } from './lienBloquee.js';
 import { lienDe, lireLien, type OptionsLecture } from './lireLien.js';
 
 /**
@@ -22,8 +23,8 @@ export type StatutLecture = 'en-cours' | 'fini' | 'echec';
 export interface DocLecture {
   uid: string; url: string; statut: StatutLecture;
   etapes: EtapeLien[];
-  /** La sous-tâche lente en cours (seule l'IA l'est). */
-  enCours?: 'ia';
+  /** La sous-tâche lente en cours (l'IA, ou la lecture d'une page bloquée par Google). */
+  enCours?: 'ia' | 'bloquee';
   page?: PageLue; erreur?: string;
   creeLe: number; majLe: number;
 }
@@ -38,7 +39,7 @@ export const LECTURE_PERIMEE_MS = 330_000;
 export const jetonValide = (brut: unknown): string | undefined => typeof brut === 'string' && /^[A-Za-z0-9_-]{16,64}$/.test(brut) ? brut : undefined;
 
 /** Ce que l'app reçoit en rappelant un jeton : l'état de la lecture, la page quand elle est finie. */
-export interface VueLecture { statut: StatutLecture | 'inconnue'; jeton?: string; etapes: EtapeLien[]; enCours?: 'ia'; page?: PageLue; erreur?: string }
+export interface VueLecture { statut: StatutLecture | 'inconnue'; jeton?: string; etapes: EtapeLien[]; enCours?: 'ia' | 'bloquee'; page?: PageLue; erreur?: string }
 
 export function vueDe(jeton: string, d: DocLecture | undefined, uid: string, maintenant: number): VueLecture {
   if (!d || d.uid !== uid) return { statut: 'inconnue', etapes: [] };
@@ -63,6 +64,8 @@ export interface EntreeLecture {
   magasin: MagasinLecture;
   /** Pas d'IA sans appel : une clé absente ou un test sans modèle. */
   appelIA?: AppelIA;
+  /** La lecture d'une page bloquée par Google (`url_context`) ; absente : la page reste `bloquee`. */
+  appelBloquee?: AppelPageBloquee;
   /** Le flux de la réponse (`response.sendChunk`) ; absent sans SSE. */
   envoyer?: (morceau: Record<string, unknown>) => unknown;
   lire?: (url: string, opts: OptionsLecture) => Promise<PageLue>;
@@ -112,9 +115,10 @@ export async function lireLienTache(e: EntreeLecture): Promise<SortieLecture> {
 
   const opts: OptionsLecture = {
     ...(e.appelIA ? { ia: e.appelIA } : {}),
+    ...(e.appelBloquee ? { pageBloquee: e.appelBloquee } : {}),
     onEtape: (etape) => {
       doc = { ...doc, etapes: cumuler(doc.etapes, etape), majLe: now() };
-      if (etape.nom === 'ia') delete doc.enCours;
+      if (etape.nom === 'ia' || etape.nom === 'bloquee') delete doc.enCours;
       dire();
     },
     onDebut: (nom) => { doc = { ...doc, enCours: nom, majLe: now() }; dire(); }

@@ -2,6 +2,7 @@ import { extraireProduit } from './lienProduit.js';
 import { coursVersChf, type Cours } from './coursChange.js';
 import { caracteristiquesTechniques, CARACT_SUFFISANTES, completerParIA, iaUtile, type AppelIA } from './lienIA.js';
 import { completerValeurs, lireJsonPlateforme, plateformeDe } from './lienPlateforme.js';
+import { pageLueParGoogle, type AppelPageBloquee } from './lienBloquee.js';
 import type { PageLue } from './carnetIA.js';
 
 /**
@@ -160,8 +161,13 @@ export interface OptionsLecture {
   onEtape?: (e: NonNullable<PageLue['etapes']>[number]) => void;
   /** La dernière marche (D446) : l'IA sur le texte nettoyé, seulement si un champ manque ou est douteux. Absente : aucune IA. */
   ia?: AppelIA;
-  /** La sous-tâche qui démarre (seule l'IA est lente : l'écran la montre « en cours » avant sa réponse). */
-  onDebut?: (nom: 'ia') => void;
+  /**
+   * Page bloquée (401, 403, 429, défi anti-robot ; jamais robots.txt ni un lien introuvable) : Gemini lit la copie que Google en a (`url_context`,
+   * `lienBloquee.ts`). Absente : la page reste `bloquee`, comme avant. Lue : le résultat passe par la garde de `pageLueParGoogle` et est signalé à l'étape `bloquee`.
+   */
+  pageBloquee?: AppelPageBloquee;
+  /** La sous-tâche qui démarre (seules l'IA et la lecture par Google sont lentes : l'écran les montre « en cours » avant leur réponse). */
+  onDebut?: (nom: 'ia' | 'bloquee') => void;
 }
 
 export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<PageLue> {
@@ -231,6 +237,31 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
       return out;
     } catch { return page; }
   };
+  // D447 : un prix hors CHF reçoit le cours du jour (BCE) ; le prix d'origine reste, la conversion se dit à côté.
+  const avecChange = async (page: PageLue): Promise<PageLue> => {
+    if (page.prix !== undefined && page.devise && page.devise !== 'CHF') {
+      const cours = opts.cours === undefined ? coursVersChf : opts.cours;
+      // Signal neuf : l'IA a pu consommer le délai de la page (12 s), le cours du jour n'en dépend pas.
+      const delaiCours = AbortSignal.timeout(COURS_DELAI_MS);
+      const c = cours ? await cours(page.devise, opts.signal ? AbortSignal.any([opts.signal, delaiCours]) : delaiCours).catch(() => null) : null;
+      if (c) page.change = { taux: c.taux, date: c.date, source: 'BCE' };
+    }
+    return page;
+  };
+  /* Page bloquée par un défi : Google l'a peut-être lue. Sans appel injecté (`null`), la page reste `bloquee`. Avec lui, la lecture rend toujours
+     une page : lue, ou `bloquee` avec l'étape `bloquee` qui dit pourquoi (absent, douteux). Une panne ne fait jamais échouer la lecture. */
+  const parGoogle = async (u: URL): Promise<PageLue | null> => {
+    if (!opts.pageBloquee) return null;
+    const bloquee = { nom: 'page' as const, statut: 'absent' as const, detail: 'bloquee' };
+    dire(bloquee);
+    try { opts.onDebut?.('bloquee'); } catch { /* l'écran ne fait jamais échouer la lecture */ }
+    let sortie: ReturnType<typeof pageLueParGoogle>;
+    try { sortie = pageLueParGoogle(u, await opts.pageBloquee(u.href, opts.signal), luLe); }
+    catch (e) { sortie = { page: null, etape: { nom: 'bloquee', statut: 'absent', detail: `Google indisponible (${String((e as { message?: unknown })?.message ?? e).slice(0, 120)})` } }; }
+    if (!sortie.page) { dire(sortie.etape); return { url: u.href, domaine: domaineDe(u), statut: 'bloquee', luLe, etapes: [bloquee, sortie.etape] }; }
+    for (const e of sortie.page.etapes ?? []) if (e.nom !== 'page') dire(e);
+    return sortie.page;
+  };
   let url = depart;
   try {
     for (let saut = 0; saut <= REDIRECTIONS_MAX; saut++) {
@@ -239,7 +270,11 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
       const r = await fetchPage(url, { signal, redirect: 'manual', headers: entetes });
       /* L-4 : brouwland.com (23.11) répond 403 avec `cf-mitigated: challenge` à tout robot : le site bloque la lecture, il ne la rate pas.
          Le défi n'est jamais contourné ; l'écran dit pourquoi. */
-      if (r.status === 401 || r.status === 403 || r.status === 429 || r.headers.get('cf-mitigated')) { await r.body?.cancel(); return echec('bloquee', url); }
+      if (r.status === 401 || r.status === 403 || r.status === 429 || r.headers.get('cf-mitigated')) {
+        await r.body?.cancel();
+        const lueParGoogle = await parGoogle(url);
+        return lueParGoogle ? avecChange(lueParGoogle) : echec('bloquee', url);
+      }
       if (r.status >= 300 && r.status < 400) {
         await r.body?.cancel();
         const loc = r.headers.get('location');
@@ -263,15 +298,7 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
         page = await completerParIA(page, html, opts.ia);
         for (const e of (page.etapes ?? []).slice(avant)) dire(e);
       }
-      // D447 : un prix hors CHF reçoit le cours du jour (BCE) ; le prix d'origine reste, la conversion se dit à côté.
-      if (page.prix !== undefined && page.devise && page.devise !== 'CHF') {
-        const cours = opts.cours === undefined ? coursVersChf : opts.cours;
-        // Signal neuf : l'IA a pu consommer le délai de la page (12 s), le cours du jour n'en dépend pas.
-        const delaiCours = AbortSignal.timeout(COURS_DELAI_MS);
-        const c = cours ? await cours(page.devise, opts.signal ? AbortSignal.any([opts.signal, delaiCours]) : delaiCours).catch(() => null) : null;
-        if (c) page.change = { taux: c.taux, date: c.date, source: 'BCE' };
-      }
-      return page;
+      return avecChange(page);
     }
     return echec('indisponible', url);
   } catch (e) {

@@ -22,6 +22,11 @@ export const GEMINI_SEARCH_COST_POLICY = {
   reservedQueriesPerCall: 20,
   microChfPerQuery: 17_500 // 14 USD / 1,000 queries × 1.25 CHF/USD
 } as const;
+/** L'outil `url_context` lit la page lui-même et la facture en jetons d'entrée (`toolUsePromptTokenCount`), que nous ne connaissons pas avant l'appel.
+ * Mesuré au banc (23.11) : 800 à 7 500 jetons pour une fiche, 30 000 pour une page de catégorie ; 111 000 vu une fois sur une page lourde. On réserve
+ * 120 000 jetons d'entrée par appel : une borne de provision, PAS une limite du fournisseur ; le règlement reprend le chiffre réellement observé.
+ */
+export const URL_CONTEXT_RESERVED_INPUT_TOKENS = 120_000;
 const MODEL_CONTEXT = 1_048_576;
 /** A call is quoted and settled at the rate of the model that serves it: gemini-3.8-flash, or
  * gemini-3.5-flash-lite where models.ts routes a usage to it (LITE_ROUTES), or gemini-4-hydrogen for the
@@ -80,6 +85,8 @@ export interface GeminiCostQuote {
   model: string; inputTokens: number; outputTokens: number; reservedMicroChf: number;
   searchQueriesReserved: number;
   audioInput: boolean;
+  /** L'outil `url_context` est demandé : les pages qu'il lit sont réservées d'avance et réglées en entrée. */
+  urlContext?: true;
   /** La date du devis : le règlement (`observedGeminiCostDetails`) reprend le tarif de CE jour. */
   at?: number;
   body: Record<string, unknown>;
@@ -92,8 +99,14 @@ export function quoteGeminiCost(model: string, body: Record<string, unknown>, at
   if (body.cachedContent || body.serviceTier) throw unavailable('Cette option Gemini n’a pas de budget vérifiable.');
   const tools = body.tools as any[] | undefined;
   if (tools && (!Array.isArray(tools) || tools.some(tool => !tool || typeof tool !== 'object' || Array.isArray(tool) ||
-    Object.keys(tool).some(key => !['functionDeclarations', 'googleSearch', 'google_search'].includes(key)))))
+    Object.keys(tool).some(key => !['functionDeclarations', 'googleSearch', 'google_search', 'urlContext', 'url_context'].includes(key)))))
     throw unavailable('Le coût de cet outil Gemini n’est pas couvert par le budget.');
+  const urlTools = tools?.filter(tool => 'urlContext' in tool || 'url_context' in tool) ?? [];
+  if (urlTools.length > 1 || urlTools.some(tool => {
+    const lecture = tool.urlContext ?? tool.url_context;
+    return !lecture || typeof lecture !== 'object' || Array.isArray(lecture) || Object.keys(lecture).length > 0 ||
+      ('urlContext' in tool && 'url_context' in tool);
+  })) throw unavailable('Cette configuration de lecture d’adresse Gemini n’a pas de provision vérifiable.');
   const searchTools = tools?.filter(tool => 'googleSearch' in tool || 'google_search' in tool) ?? [];
   if (searchTools.length > 1 || searchTools.some(tool => {
     const search = tool.googleSearch ?? tool.google_search;
@@ -125,8 +138,8 @@ export function quoteGeminiCost(model: string, body: Record<string, unknown>, at
   // instead of assuming that a compressed PDF/photo has a small token count.
   const bytes = Buffer.byteLength(json) + 4096;
   if (bytes > MODEL_CONTEXT) throw unavailable('Contexte trop volumineux pour estimer le coût de cette analyse.');
-  const inputTokens = media ? MODEL_CONTEXT : bytes;
-  return { model, inputTokens, outputTokens: requested, searchQueriesReserved, audioInput, at,
+  const inputTokens = media ? MODEL_CONTEXT : bytes + (urlTools.length ? URL_CONTEXT_RESERVED_INPUT_TOKENS : 0);
+  return { model, inputTokens, outputTokens: requested, searchQueriesReserved, audioInput, at, ...(urlTools.length ? { urlContext: true as const } : {}),
     reservedMicroChf: amount(model, inputTokens, requested, audioInput, at) +searchQueriesReserved * GEMINI_SEARCH_COST_POLICY.microChfPerQuery,
     body: normalized };
 }
@@ -158,12 +171,15 @@ export function observedGeminiSearchQueries(quote: GeminiCostQuote, response: an
 export function observedGeminiCostDetails(quote: GeminiCostQuote, response: any): GeminiObservedCost | null {
   const usage = response?.usageMetadata;
   if (!usage || !nonnegative(usage.promptTokenCount) || !nonnegative(usage.candidatesTokenCount) ||
-      !nonnegative(usage.thoughtsTokenCount ?? 0) || !nonnegative(usage.totalTokenCount)) return null;
+      !nonnegative(usage.thoughtsTokenCount ?? 0) || (quote.urlContext && !nonnegative(usage.toolUsePromptTokenCount ?? 0)) || !nonnegative(usage.totalTokenCount)) return null;
   const proven = observedGeminiSearchQueries(quote, response);
   const searchQueries = proven ?? quote.searchQueriesReserved;
-  const output = Math.max(usage.candidatesTokenCount + (usage.thoughtsTokenCount ?? 0), usage.totalTokenCount - usage.promptTokenCount);
+  // Les pages lues par `url_context` sont de l'entrée (`toolUsePromptTokenCount`, comprise dans le total) : jamais facturées au tarif de la sortie.
+  // Seulement pour `url_context` : le règlement de la recherche ancrée reste celui d'avant (ses jetons d'outil comptés dans le total, au tarif de sortie, donc par excès).
+  const input = usage.promptTokenCount + (quote.urlContext ? usage.toolUsePromptTokenCount ?? 0 : 0);
+  const output = Math.max(usage.candidatesTokenCount + (usage.thoughtsTokenCount ?? 0), usage.totalTokenCount - input);
   // Cached input is deliberately charged at the undiscounted input rate.
-  const tokenMicroChf = amount(quote.model, usage.promptTokenCount, output, quote.audioInput, quote.at);
+  const tokenMicroChf = amount(quote.model, input, output, quote.audioInput, quote.at);
   const searchMicroChf = searchQueries * GEMINI_SEARCH_COST_POLICY.microChfPerQuery;
   const chargedMicroChf = tokenMicroChf + searchMicroChf;
   if (!Number.isSafeInteger(chargedMicroChf)) return null;
