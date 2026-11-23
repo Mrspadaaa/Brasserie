@@ -189,7 +189,7 @@ export const StocksTab: React.FC<StocksTabProps> = ({
   const segments = useStorageValue(readSegments);
   const avenirParc = useStorageValue(readAvenirParc);
   /** Une demande d'ouverture (carnet précis) ou de focus du champ (+ « Nouvelle idée ») pour la vue Carnets. */
-  const [carnetOuvert, setCarnetOuvert] = useState<{ id: string; at: number } | null>(null);
+  const [carnetOuvert, setCarnetOuvert] = useState<{ id: string; at: number; depuis?: 'a-venir' } | null>(null);
   const [focusChamp, setFocusChamp] = useState<number | null>(null);
   const [racineCarnets, setRacineCarnets] = useState<number | null>(null);
   const tabsRef = useRef<HTMLElement>(null);
@@ -832,14 +832,14 @@ export const StocksTab: React.FC<StocksTabProps> = ({
         <div className="min-h-0 flex-1 overflow-y-auto">
           <UpgradeWorkspace vue={segMateriel === 'avenir' ? 'future' : 'completed'} onVue={(v) => setSegMateriel(v === 'future' ? 'avenir' : 'realises')}
             createRequest={besoinDemande} onCreateRequestHandled={() => setBesoinDemande(null)}
-            onOpenCarnet={(id) => { setSegMateriel('carnets'); setCarnetOuvert({ id, at: Date.now() }); }} />
+            onOpenCarnet={(id) => { setSegMateriel('carnets'); setCarnetOuvert({ id, at: Date.now(), depuis: 'a-venir' }); }} />
         </div>
       )}
 
       {subTab === 'materiel' && segMateriel === 'carnets' && (
         <Suspense fallback={<div role="status" className="py-3 text-sm text-cave-400">Chargement des carnets…</div>}>
           <CarnetsVue className="min-h-0 flex-1" ouvrir={carnetOuvert} focusChamp={focusChamp} racine={racineCarnets}
-            onVoirAVenir={() => setSegMateriel('avenir')} onVoirRealises={() => setSegMateriel('realises')} onMessage={onSuccessMessage} />
+            onVoirAVenir={() => setSegMateriel('avenir')} onRetourOrigine={() => setSegMateriel('avenir')} onVoirRealises={() => setSegMateriel('realises')} onMessage={onSuccessMessage} />
         </Suspense>
       )}
 

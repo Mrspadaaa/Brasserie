@@ -721,6 +721,22 @@ export function planOuvertDuCarnet(c: CarnetDoc, plans: readonly FinancialPlan[]
 }
 
 /**
+ * CA13-3 (tour 13 : archivé, le carnet revenait à « vers mai · 500 CHF », ses valeurs d'avant le Calendrier et À venir) : le plan que le
+ * carnet suit, ouvert ou mis de côté (archivé). Archivé, il garde la dernière date et le dernier prix posés, que le carnet dit encore et
+ * que « Au calendrier » reprend. Réalisé ou supprimé : `undefined`.
+ */
+export function planSuiviDuCarnet(c: CarnetDoc, plans: readonly FinancialPlan[], transactions: readonly FinanceTransaction[] = [], payments: readonly FinancialPayment[] = []): FinancialPlan | undefined {
+  const ouvert = planOuvertDuCarnet(c, plans, transactions, payments);
+  if (ouvert) return ouvert;
+  if (etatSortie(c, plans, transactions, payments)?.sorte !== 'archive') return undefined;
+  const plan = plans.find(p => p.id === c.carnet.sortie!.planId);
+  return plan && (!plan.upgrade?.sourceCarnetId || plan.upgrade.sourceCarnetId === c.id) ? plan : undefined;
+}
+
+/** CA13-3 : un plan archivé repris (« Au calendrier », Placer) redevient un brouillon d'À venir, date et prix gardés (comme « Reprendre » des Archives). */
+export const planRepris = (plan: FinancialPlan): FinancialPlan => (plan.status === 'cancelled' ? { ...plan, status: 'draft' } : plan);
+
+/**
  * L-11 : un geste du carnet suit sur son plan. Date (un lundi, « mois » ou « semaine ») : la date du plan et sa précision ; sans date
  * (« Plus tard ») le plan garde la sienne. Prix estimé (centimes) : le prix d'achat du plan, livraison et installation gardées, budget connu,
  * « estimé ». Rien ne change : le même objet.

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { sansMarque } from '../carnets/histoireCarnet';
 
 /**
  * CT4A-12 (suite) : un renvoi parti d'un écran (le Calendrier : « Plus de détails › » d'une fête, un événement, une idée ; une section : son calendrier)
@@ -13,7 +14,8 @@ export function useRetourEcran<T extends string>(activeTab: T, setActiveTab: (t:
 
   const pousser = useCallback((origine: T) => {
     if (attente.current) { attente.current = { origine, destination: null }; return; }
-    window.history.pushState({ ...(window.history.state ?? {}), [CLE]: origine }, '');
+    /* CA13-2 : la marque d'un carnet n'est pas recopiée ici ; sinon le Carnet prenait cette entrée pour la sienne et le retour restait sans effet */
+    window.history.pushState({ ...sansMarque(window.history.state), [CLE]: origine }, '');
     attente.current = { origine, destination: null };
   }, []);
 
