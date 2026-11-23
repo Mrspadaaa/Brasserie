@@ -29,6 +29,9 @@ const PLATEFORME_TAILLE_MAX = 1_000_000;
 const COURS_DELAI_MS = 5000;
 export const AGENT_CARNET = 'LaffineeCarnet/1.0';
 
+/** Le site répond mais la page n'existe plus (T28-5) ; une redirection vers sa recherche ou son accueil en est la forme douce (BL-15, T25-2). */
+const PAGE_ABSENTE = (code: number) => `la page n’existe plus (erreur ${code})`;
+
 const domaineDe = (u: URL) => u.hostname.replace(/^www\./, '');
 
 /** Une adresse qu'on accepte de lire : https public, sans identifiant, port, IP ni page d'action. `null` sinon. */
@@ -193,8 +196,9 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
   const signal = opts.signal ? AbortSignal.any([opts.signal, AbortSignal.timeout(LIEN_DELAI_MS)]) : AbortSignal.timeout(LIEN_DELAI_MS);
   const entetes = { Accept: 'text/html, text/plain;q=0.8', 'User-Agent': AGENT_CARNET };
   const dire = (e: NonNullable<PageLue['etapes']>[number]) => { try { opts.onEtape?.(e); } catch { /* l'écran ne fait jamais échouer la lecture */ } };
-  const echec = (statut: PageLue['statut'], u: URL): PageLue => {
-    const e = { nom: 'page' as const, statut: 'absent' as const, detail: statut };
+  /* `detail` : ce que l'écran dit de la page. Par défaut le statut (l'écran le met en mots) ; une page absente d'un site qui répond dit son erreur. */
+  const echec = (statut: PageLue['statut'], u: URL, detail: string = statut): PageLue => {
+    const e = { nom: 'page' as const, statut: 'absent' as const, detail };
     dire(e);
     return { url: u.href, domaine: domaineDe(u), statut, luLe, etapes: [e] };
   };
@@ -239,11 +243,11 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
       const out: PageLue = { ...page, etapes };
       if (fusion.ajoutees) {
         out.valeurs = fusion.valeurs;
-        remplace({ nom: 'caract', statut: 'trouve', detail: `${fusion.valeurs.length} · dont ${fusion.ajoutees} de la fiche ${pf.plateforme}` });
+        remplace({ nom: 'caract', statut: 'trouve', detail: `${fusion.valeurs.length} mesures : ${fusion.ajoutees} de plus lues sur la fiche de la boutique` });
       }
       if (sansPhoto) {
         out.photos = d.photos; out.photo = d.photos[0];
-        remplace({ nom: 'photos', statut: 'trouve', detail: `${d.photos.length} (fiche ${pf.plateforme})` });
+        remplace({ nom: 'photos', statut: 'trouve', detail: `${d.photos.length} (fiche de la boutique)` });
       }
       return out;
     } catch { return page; }
@@ -294,14 +298,16 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
         /* T25-2 : une fiche redirigée vers la recherche ou l'accueil est un lien mort DÈS la redirection. On ne suit pas : robots.txt
            interdit souvent la recherche (brewtools.com : « Disallow: /search »), et la lecture disait alors « le site refuse la lecture
            automatique » au lieu de « introuvable ». La page de recherche n'est jamais demandée. */
-        if (lienMort(depart, suivante)) return echec('introuvable', url);
+        if (lienMort(depart, suivante)) return echec('introuvable', url, PAGE_ABSENTE(404));
         url = suivante; continue;
       }
+      /* T28-5 : le site répond, la page n'existe plus (404, 410) : « la page n’existe plus (erreur 404) », pas « le site n’existe plus ». */
+      if (r.status === 404 || r.status === 410) { await r.body?.cancel(); return echec('introuvable', url, PAGE_ABSENTE(r.status)); }
       if (!r.ok || !(r.headers.get('content-type') ?? '').includes('text/html')) { await r.body?.cancel(); return echec('indisponible', url); }
       const html = await corpsBorne(r, LIEN_TAILLE_MAX);
       if (html === null) return echec('indisponible', url);
       // BL-15 : une fiche redirigée vers la recherche ou l'accueil est un lien mort, pas une page « sans nom ni prix ».
-      if (lienMort(depart, url)) return echec('introuvable', url);
+      if (lienMort(depart, url)) return echec('introuvable', url, PAGE_ABSENTE(404));
       // La page est lue : première étape dite tout de suite, avant l'analyse (IA-ETAPES-VISIBLES).
       dire({ nom: 'page', statut: 'trouve', detail: domaineDe(url) });
       let page = lirePage(html, url, luLe);

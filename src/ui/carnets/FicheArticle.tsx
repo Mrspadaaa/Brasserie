@@ -105,6 +105,26 @@ export function matiereSansVolume(a: Pick<ArticleV, 'nom' | 'valeurs'>): boolean
   return MATIERE.test(a.nom ?? '') || Object.keys(a.valeurs).some(k => VALEUR_DE_MATIERE.test(normaliser(k)));
 }
 
+/**
+ * T28-14 (L04, penser-brasseur) : la fiche d'un houblon dit d'abord l'alpha, la récolte, les huiles totales ; le reste garde l'ordre de la
+ * page. Sans alpha dans les valeurs, ce n'est pas un houblon : l'ordre de la page ne bouge pas. Les noms d'avant la traduction
+ * (« Alpha », « Erntejahr », « Total oil ») passent aussi : les articles déjà rangés gardent ceux de leur lecture.
+ */
+const ALPHA = /^alpha\b/;
+const RECOLTE = /^(?:recolte|erntejahr|annee de recolte|harvest(?: year)?|crop year)\b/;
+const HUILES = /^(?:huiles? totales?|total oils?|gesamtol)\b/;
+function ordreHoublon(cases: Case[]): Case[] {
+  if (!cases.some(c => ALPHA.test(normaliser(c.nom)))) return cases;
+  const poids = (c: Case) => { const n = normaliser(c.nom); return ALPHA.test(n) ? 0 : RECOLTE.test(n) ? 1 : HUILES.test(n) ? 2 : 3; };
+  return cases.map((c, i) => ({ c, i })).sort((x, y) => poids(x.c) - poids(y.c) || x.i - y.i).map(x => x.c);
+}
+/** « 0.8ml » ou « 0,8 » + « ml » : les huiles totales d'un houblon se disent pour 100 g (« 0,8 ml/100 g »). */
+function huilesDites(v: ValeurV): { texte: string; unite: string } | null {
+  const brut = typeof v.valeur === 'string' ? v.valeur : typeof v.valeur === 'number' ? String(v.valeur) : '';
+  const m = `${brut} ${v.unite ?? ''}`.trim().match(/^(\d+(?:[.,]\d+)?)\s*(?:ml)?(?:\s*\/\s*100\s*g)?$/i);
+  return m && /ml/i.test(`${brut} ${v.unite ?? ''}`) ? { texte: m[1].replace('.', ','), unite: 'ml/100 g' } : null;
+}
+
 /** Une case de la grille « Caractéristiques » : son nom, sa valeur dite (ou « non publié »), son rang s'il classe. */
 interface Case { nom: string; texte: string | null; unite?: string; rang?: number; exemple?: boolean }
 
@@ -147,10 +167,12 @@ export function FicheArticle(p: FicheArticleProps) {
 
   /* La grille (h01-6) : les valeurs de l'article (le héros à part), puis les colonnes du carnet qu'il ne publie pas, puis le délai et
      l'origine ; 4 cases au moins quand il y a de quoi les remplir, jamais une valeur inventée. */
-  const cases: Case[] = Object.entries(a.valeurs).filter(([nom]) => normaliser(nom) !== nomHeros).map(([nom, v]: [string, ValeurV]) => {
+  const cases: Case[] = ordreHoublon(Object.entries(a.valeurs).filter(([nom]) => normaliser(nom) !== nomHeros).map(([nom, v]: [string, ValeurV]) => {
+    const huiles = HUILES.test(normaliser(nom)) ? huilesDites(v) : null;
+    if (huiles) return { nom, texte: huiles.texte, unite: huiles.unite, rang: rangDe(nom), exemple: v.origine === 'exemple' };
     const n = typeof v.valeur === 'string' && !milliersAPoint(v) ? nombreValeur(v) : null;
     return { nom, texte: texteSelonNom(nom, n !== null ? nombreTexte(n) : valeurTexte(v)), ...(v.unite ? { unite: v.unite } : {}), rang: rangDe(nom), exemple: v.origine === 'exemple' };
-  });
+  }));
   /* T25-7 : les colonnes du carnet que l'article ne publie pas se disent ensemble, dans UNE phrase sous la grille (« Non publié par le
      vendeur : Malzmenge · Max. Malzmenge · Stromanschluss »), jamais trois cases « non publié » qui font croire à une valeur. L'inconnu
      reste dit (jamais 0), le critère reste nommé. */

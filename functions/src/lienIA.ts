@@ -69,6 +69,18 @@ export type AppelIA = (modele: 'lite' | 'fort', consigne: string, texte: string)
 const norm = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[\s  ]+/g, ' ').trim();
 const nombres = (t: string) => (norm(t).replace(/(\d)['’.](?=\d{3}\b)/g, '$1').match(/\d+(?:[.,]\d+)?/g) ?? []).map((x) => x.replace(',', '.').replace(/\.0+$/, ''));
 
+/**
+ * T28-8 : une dimension (largeur, hauteur, profondeur, longueur…) dont le nombre n'est écrit nulle part avec une unité de longueur, ni dans une
+ * suite « 180 × 160 × 60 », n'est pas lue : « Largeur 61 cm · Longueur 162 cm · Hauteur 6 cm » sur une page qui dit « 180 × 160 × 60 cm »
+ * passait la garde parce que 61, 162 et 6 figuraient ailleurs dans le texte (un numéro de filiale, un nombre de clients).
+ */
+const DIMENSION = /^(?:largeur|hauteur|profondeur|longueur|diametre|epaisseur|breite|hohe|tiefe|lange|durchmesser|width|height|depth|length|diameter)\b/;
+function nombreAvecUnite(texte: string, n: string): boolean {
+  // « 2010 » s'écrit aussi « 2.010 », « 2 010 » ou « 2'010 » : le séparateur de milliers est facultatif
+  const e = n.includes('.') ? n.replace(/\./g, '[.,]') : n.replace(/\B(?=(\d{3})+(?!\d))/g, '[.\' \\u00a0]?');
+  return new RegExp(`(?<![\\d.,])${e}(?:[.,]0+)?\\s*(?:cm|mm|dm|m)(?![a-z])|(?<![\\d.,])${e}\\s*[x×]\\s*\\d|\\d\\s*[x×]\\s*${e}(?![\\d.,])`).test(texte);
+}
+
 /** La garde : ne garde que ce qui est écrit dans le texte envoyé. Rend aussi ce qui a été retiré (pour le statut `douteux`). */
 export interface Gardee { nom?: string; prix?: number; devise?: string; taxe?: 'ht' | 'ttc'; prixDes?: true; portSuisse?: number; portGratuit?: true; caracteristiques: Array<{ nom: string; valeur: string }> }
 export function garder(r: ReponseIA, texte: string): { gardee: Gardee; retire: string[] } {
@@ -93,7 +105,7 @@ export function garder(r: ReponseIA, texte: string): { gardee: Gardee; retire: s
     /* T25-7 : « non publié », « k. A. » ou un argument de vente n'est pas une valeur : la ligne n'existe pas (l'inconnu n'est jamais écrit) */
     if (bruitDeBoutique(c.nom, c.valeur)) continue;
     const ns = nombres(c.valeur);
-    const ecrit = ns.length ? ns.every((n) => nb.has(n)) : nt.includes(norm(c.valeur));
+    const ecrit = (ns.length ? ns.every((n) => nb.has(n)) : nt.includes(norm(c.valeur))) && (!DIMENSION.test(norm(c.nom)) || ns.every((n) => nombreAvecUnite(nt, n)));
     if (ecrit) g.caracteristiques.push({ nom: couper(c.nom, 60), valeur: couper(c.valeur, 100) }); else retire.push(`caract ${c.nom}`);
   }
   return { gardee: g, retire };

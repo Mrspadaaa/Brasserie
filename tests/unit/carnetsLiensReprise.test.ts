@@ -69,10 +69,10 @@ describe('la table des libellés', () => {
     expect(libelleFrancais('Länge')).toBe('Longueur');
     expect(libelleFrancais('Longueur du câble')).toBe('Longueur du câble');
   });
-  it('un nom inconnu reste tel que la page l\'écrit (rien d\'inventé) ; la valeur n\'est jamais touchée', () => {
+  it('un nom ou un mot inconnu reste tel que la page l\'écrit (rien d\'inventé) ; le nombre s\'écrit à la suisse (T28-13), jamais autrement', () => {
     expect(libelleFrancais('Zilla Labs')).toBe('Zilla Labs');
     const sortie = traduireValeurs([{ nom: 'Höhe', valeur: '143.50 cm' }, { nom: 'Zilla Labs', valeur: 'x' }]);
-    expect(sortie).toEqual([{ nom: 'Hauteur', valeur: '143.50 cm' }, { nom: 'Zilla Labs', valeur: 'x' }]);
+    expect(sortie).toEqual([{ nom: 'Hauteur', valeur: '143,5 cm' }, { nom: 'Zilla Labs', valeur: 'x' }]);
   });
   it('idempotent : repasser sur du français ne change rien', () => {
     const v = [{ nom: 'Volume', valeur: '242 l' }, { nom: 'Largeur', valeur: '54 cm' }, { nom: 'Poids', valeur: '38 kg' }];

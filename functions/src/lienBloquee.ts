@@ -1,5 +1,6 @@
 import type { EtapeLien, PageLue } from './carnetIA.js';
 import { couper } from './lienProduit.js';
+import { montantDit } from './lienValeurs.js';
 
 /**
  * Marche « page bloquée » de la lecture des liens (23.11, `banc-liens/bloquees/RESULTATS.md`) : quand le site refuse le robot (401, 403, 429, défi
@@ -132,12 +133,12 @@ export function pageLueParGoogle(url: URL, l: LectureGoogle, luLe: number): { pa
     if (!valeurs.some((x) => norm(x.nom) === norm(n))) valeurs.push({ nom: n, valeur: v });
   }
 
-  const dit = [nom ? 'nom' : '', prix !== undefined ? `prix ${prix} ${devise}${taxe ? ` ${taxe}` : ''}` : '', valeurs.length ? `${valeurs.length} caract.` : ''].filter(Boolean);
+  const dit = [nom ? 'nom' : '', prix !== undefined ? `prix ${montantDit(prix)} ${devise}${taxe ? ` ${taxe === 'ttc' ? 'taxe comprise' : 'hors taxe'}` : ''}` : '', valeurs.length ? `${valeurs.length} mesure${valeurs.length > 1 ? 's' : ''}` : ''].filter(Boolean);
   if (!nom && prix === undefined) return { page: null, etape: { nom: 'bloquee', statut: retire.length ? 'douteux' : 'absent', detail: retire.length ? `Google a lu la page, rien de sûr : ${retire.join(', ')}` : 'Google a lu la page : ni nom ni prix' } };
   const etape: EtapeLien = { nom: 'bloquee', statut: retire.length ? 'douteux' : 'trouve', detail: `lue par Google : ${dit.join(', ')}${retire.length ? ` ; retiré : ${retire.join(', ')}` : ''}` };
   const etapes: EtapeLien[] = [
     { nom: 'page', statut: 'absent', detail: 'bloquee' }, etape,
-    prix !== undefined ? { nom: 'prix', statut: 'trouve', detail: `${prix} ${devise}${taxe ? ` ${taxe}` : ''} (lu par Google)` } : { nom: 'prix', statut: 'absent' },
+    prix !== undefined ? { nom: 'prix', statut: 'trouve', detail: `prix ${montantDit(prix)} ${devise}${taxe ? ` ${taxe === 'ttc' ? 'taxe comprise' : 'hors taxe'}` : ''} (lu par Google)` } : { nom: 'prix', statut: 'absent' },
     { nom: 'photos', statut: 'absent', detail: 'photo non lue : Google ne rend pas la photo' },
     valeurs.length ? { nom: 'caract', statut: 'trouve', detail: `${valeurs.length} (lues par Google)` } : { nom: 'caract', statut: 'absent' }
   ];

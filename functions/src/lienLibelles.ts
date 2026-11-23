@@ -12,6 +12,8 @@
  * Une longueur de câble n'est jamais une dimension : « Kabellänge » devient « Longueur du câble », jamais « Longueur ».
  */
 
+import { nomEtUnite, nombreSeul, valeurFrancaise } from './lienValeurs.js';
+
 export interface Valeur { nom: string; valeur: string; unite?: string }
 
 const cle = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/ß/g, 'ss')
@@ -115,7 +117,28 @@ const TABLE: ReadonlyArray<readonly [readonly string[], string]> = [
   [['erntejahr'], 'Récolte'],
   [['hopfentyp'], 'Type de houblon'],
   [['hopfenform'], 'Forme'],
-  [['alphasaure'], 'Alpha'],
+  [['alphasaure', 'alpha', 'alpha acid', 'alpha acids', 'alpha-acid'], 'Alpha'],
+  [['betasaure', 'beta', 'beta acid', 'beta acids', 'beta-acid', 'bêta'], 'Bêta'],
+  [['gesamtol', 'total oil', 'total oils', 'huiles totales', 'huile totale'], 'Huiles totales'],
+  [['farnesene', 'farnesen'], 'Farnésène'],
+  [['caryophyllene', 'caryophyllen'], 'Caryophyllène'],
+  [['myrcene', 'myrcen'], 'Myrcène'],
+  [['humulene', 'humulen'], 'Humulène'],
+  [['linalool'], 'Linalol'],
+  [['geraniol'], 'Géraniol'],
+  [['cohumulone', 'cohumulon'], 'Cohumulone'],
+  // Fermenteurs et cuves (fiches en anglais : Brouwland, Brewtools)
+  [['full volume', 'total volume', 'gesamtvolumen', 'volume total'], 'Volume total'],
+  [['fermentable volume', 'working volume', 'workable volume', 'volume de fermentation'], 'Volume de fermentation'],
+  [['height with extension legs', 'height with legs extended'], 'Hauteur avec pieds d’extension'],
+  [['top opening', 'opening at the top'], 'Ouverture supérieure'],
+  [['dump valve size', 'size of dump valve', 'dump valve'], 'Taille de la vanne de vidange'],
+  [['size of valve', 'valve size', 'size of the valve'], 'Taille de la vanne'],
+  [['diameter at the top', 'top diameter'], 'Diamètre en haut'],
+  [['wall thickness'], 'Épaisseur de paroi'],
+  [['thread', 'gewinde'], 'Filetage'],
+  [['connection', 'anschluss-typ'], 'Raccordement'],
+  [['consommation energetique annuelle', 'energieverbrauch pro jahr', 'annual energy consumption'], 'Consommation annuelle'],
   [['herkunft', 'herkunft hopfen'], 'Origine'],
   [['pelletstyp'], 'Type de pellets'],
   [['malztyp', 'malzsorte'], 'Type de malt'],
@@ -162,10 +185,39 @@ export function libelleFrancais(nom: string): string {
 /** Même valeur écrite deux fois (« Volumen 60 l », « Volume 60 L ») : chiffres et unité identiques. */
 const memeValeur = (a: Valeur, b: Valeur) => cle(`${a.valeur} ${a.unite ?? ''}`) === cle(`${b.valeur} ${b.unite ?? ''}`);
 
+
+/** Les huiles totales d'un houblon se disent pour 100 g de cônes (« 0.8ml » sur la page, « ml/100 g » dans le métier : T28-14). */
+const HUILES = /^\s*(\d+(?:[.,]\d+)?)\s*ml(?:\s*\/\s*100\s*g)?\s*$/i;
+
+/** Un seul nom, un seul sens : « Poids net » est le poids de l'article quand la page n'en donne pas d'autre (T28-7). */
+const POIDS_NET = 'Poids net';
+
+/** Une caractéristique en français : nom de la table, unité sortie du nom vers `unite`, valeur à la suisse. */
+function enFrancais<T extends Valeur>(v: T): T {
+  const brut = v.nom.replace(/[‎‏]/g, '').trim();
+  let nom = libelleFrancais(brut);
+  let unite = v.unite;
+  const porte = nomEtUnite(nom);
+  if (porte) {
+    if (nombreSeul(v.valeur) && !unite) { nom = libelleFrancais(porte.base); unite = porte.unite; }
+    else if (/\d/.test(v.valeur)) nom = libelleFrancais(porte.base);
+  }
+  let valeur = valeurFrancaise(v.valeur, unite);
+  if (nom === 'Huiles totales') {
+    const h = (unite ? `${v.valeur} ${unite}` : v.valeur).match(HUILES);
+    if (h) { valeur = h[1].replace('.', ','); unite = 'ml/100 g'; }
+  }
+  const sortie: T = { ...v, nom, valeur };
+  if (unite) sortie.unite = unite; else delete sortie.unite;
+  return sortie;
+}
+
 /**
- * Les caractéristiques d'une page avec des noms français. Une clé technique est retirée ; deux lignes qui deviennent le même nom
- * (« Volumen 60 l » et « Volume 60 L ») : la seconde disparaît si elle dit la même chose, sinon elle garde son nom d'origine
- * (jamais deux valeurs sous un même nom). Idempotent : repasser sur du français ne change rien.
+ * Les caractéristiques d'une page avec des noms et des valeurs français (T25-8, T26-1, T28-7, T28-12, T28-13). Une clé technique est
+ * retirée ; une unité écrite dans le nom (« Poids net en kg » 82) passe dans `unite` (« Poids » 82 kg : la colonne du carnet s'y
+ * rattache par le nom) ; deux lignes qui deviennent le même nom (« Volumen 60 l » et « Volume 60 L ») : la seconde disparaît si elle dit
+ * la même chose, sinon elle garde son nom d'origine (jamais deux valeurs sous un même nom). Idempotent : repasser sur du français ne
+ * change rien.
  */
 export function traduireValeurs<T extends Valeur>(valeurs: T[] | undefined): T[] | undefined {
   if (!valeurs) return valeurs;
@@ -173,19 +225,22 @@ export function traduireValeurs<T extends Valeur>(valeurs: T[] | undefined): T[]
   const pris = new Map<string, T>();
   for (const v of valeurs) {
     if (cleTechnique(v.nom)) continue;
-    const libelle = libelleFrancais(v.nom);
-    const k = cle(libelle);
+    const cand = enFrancais(v);
+    const k = cle(cand.nom);
     const deja = pris.get(k);
     if (deja) {
-      if (memeValeur(deja, v)) continue;
+      if (memeValeur(deja, cand)) continue;
       const brut = v.nom.replace(/[‎‏]/g, '').trim();
       if (pris.has(cle(brut))) continue;
-      const tel = { ...v, nom: brut };
+      const tel = { ...cand, nom: brut };
       pris.set(cle(brut), tel); sortie.push(tel);
       continue;
     }
-    const traduite = libelle === v.nom ? v : { ...v, nom: libelle };
-    pris.set(k, traduite); sortie.push(traduite);
+    pris.set(k, cand); sortie.push(cand);
+  }
+  if (!pris.has(cle('Poids'))) {
+    const i = sortie.findIndex((v) => v.nom === POIDS_NET);
+    if (i >= 0) sortie[i] = { ...sortie[i], nom: 'Poids' };
   }
   return sortie;
 }
