@@ -37,6 +37,7 @@ export function RenommerCarnet(p: RenommerCarnetProps) {
           <span className="cn-mut">titre du carnet</span>
         </div>
         <p className="cnf-renommer-titre">{p.champBas.valeur || p.titre}</p>
+        {!p.champBas.valeur.trim() && <p className="cn-mut" role="alert">Écris un titre pour renommer ; sans lui, « {p.titre} » reste.</p>}
         {propose && p.champBas.valeur === propose.titre && (
           <p className="cn-mut"><Provenance origine="ia" /> proposé d'après « {propose.phrase} » · avant : « {p.titre} »</p>
         )}
@@ -56,6 +57,7 @@ export function RenommerCarnet(p: RenommerCarnetProps) {
       {propose && (
         <p className="cn-mut"><Provenance origine="ia" /> proposé d'après « {propose.phrase} » · avant : « {p.titre} »</p>
       )}
+      {!valeur.trim() && <p className="cn-mut" role="alert">Écris un titre pour renommer ; sans lui, « {p.titre} » reste.</p>}
       <label htmlFor={id} className="cn-cache">Titre du carnet</label>
       <input
         id={id}

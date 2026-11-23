@@ -299,7 +299,24 @@ export function ChampCarnet(p: ChampCarnetProps) {
   const fichier = useRef<HTMLInputElement>(null);
   const zone = useRef<HTMLDivElement>(null);
   const id = useId();
-  const dictee = useDictee(t => p.onChange(p.valeur ? `${p.valeur} ${t}` : t));
+  const renomme = p.libelleEnvoi === 'Renommer';
+  /* L-45 : le brouillon (hors modification et renommage) tient au rechargement, par carnet ; il part avec l'envoi */
+  const cleBrouillon = p.libelleEnvoi && p.libelleEnvoi !== 'Ajouter' ? null : `laffinee.carnet.brouillon:${p.titreCarnet ?? ''}`;
+  const changer = (t: string) => {
+    if (cleBrouillon && t.trim()) { try { localStorage.setItem(cleBrouillon, t); } catch { /* sans stockage, pas de brouillon */ } }
+    p.onChange(t);
+  };
+  const vu = useRef({ valeur: p.valeur, cle: cleBrouillon });
+  useEffect(() => {
+    if (!cleBrouillon || p.valeur.trim()) return;
+    try { const garde = localStorage.getItem(cleBrouillon); if (garde) p.onChange(garde); } catch { /* idem */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cleBrouillon]);
+  useEffect(() => {
+    if (cleBrouillon && vu.current.cle === cleBrouillon && vu.current.valeur.trim() && !p.valeur.trim()) { try { localStorage.removeItem(cleBrouillon); } catch { /* idem */ } }
+    vu.current = { valeur: p.valeur, cle: cleBrouillon };
+  }, [p.valeur, cleBrouillon]);
+  const dictee = useDictee(t => changer(p.valeur ? `${p.valeur} ${t}` : t));
   const dansCarnet = !!p.titreCarnet;
   const ecoute = dictee.disponible && dictee.ecoute;
   const large = useLarge();
@@ -318,8 +335,8 @@ export function ChampCarnet(p: ChampCarnetProps) {
   const titreVu = p.titreCarnet ? (mesurer ? titreQuiTient(titreAffiche(p.titreCarnet), placeTexte - 2, mesurer) : large ? titreAffiche(p.titreCarnet) : titreCourt(titreAffiche(p.titreCarnet))) : '';
   /* f13 tour 3 (n° 4) : le texte voulu par la vue, s'il tient (mesuré) ; sinon sans sa virgule (« Écrire ou coller un lien… ») */
   const invite = p.invite && dansCarnet ? ([p.invite, p.invite.replace(', ou ', ' ou ')].find(t => !mesurer || mesurer(t) <= placeTexte - 2) ?? p.invite.replace(', ou ', ' ou ')) : null;
-  const placeholder = ecoute ? 'J’écoute…' : invite ? invite : dansCarnet ? (mesurer ? placeholderCarnet(titreAffiche(p.titreCarnet!), placeTexte - 2, mesurer) : `Ajouter à ${titreVu}${titreVu.endsWith('…') ? '' : '…'}`) : 'Une idée, un besoin…';
-  const libelle = dansCarnet ? `Ajouter à ${titreAffiche(p.titreCarnet!)}…` : 'Une idée, un besoin…';
+  const placeholder = ecoute ? 'J’écoute…' : renomme ? 'Nouveau titre du carnet…' : invite ? invite : dansCarnet ? (mesurer ? placeholderCarnet(titreAffiche(p.titreCarnet!), placeTexte - 2, mesurer) : `Ajouter à ${titreVu}${titreVu.endsWith('…') ? '' : '…'}`) : 'Une idée, un besoin…';
+  const libelle = renomme ? 'Nouveau titre du carnet' : dansCarnet ? `Ajouter à ${titreAffiche(p.titreCarnet!)}…` : 'Une idée, un besoin…';
   /* Critique 5, n° 42 : un seul habit d'envoi partout, le bouton vert à mot des maquettes du champ qui tape (g5:v02-10, v03-7, v07-10,
      v01-15 sur la liste) : « Ajouter », et « Enregistrer » ou « Renommer » quand le champ modifie. */
   const envoi = p.libelleEnvoi ?? 'Ajouter';
@@ -327,6 +344,8 @@ export function ChampCarnet(p: ChampCarnetProps) {
   /* une photo prête s'envoie seule ; pendant sa lecture, l'envoi attend */
   const jointe = p.jointe ?? null;
   const pret = (plein || (!!jointe && !jointe.lecture)) && !jointe?.lecture;
+  /* L-47 : après Ajouter, le focus reste dans le champ (le clavier du téléphone ne se ferme pas) */
+  const envoyer = () => { p.onEnvoyer(); if (!renomme) zoneTexte.current?.focus(); };
   const montrerBulle = !!p.suggestion && focus && !plein;
   useChampPublie(zone, inset, montrerBulle);
   /* tour 3, f13 (PCN-37, CARNET-CLAV) : clavier ouvert, la barre d'onglets (fixe, en bas de la page) est sous le clavier. La zone ne lui
@@ -367,7 +386,7 @@ export function ChampCarnet(p: ChampCarnetProps) {
               type="button"
               className="cn-bulle"
               onMouseDown={e => e.preventDefault()}
-              onClick={() => p.onChange(`${p.suggestion!.critere} : `)}
+              onClick={() => changer(`${p.suggestion!.critere} : `)}
               title={`Le critère « ${p.suggestion.critere} » tranche entre ${p.suggestion.a} et ${p.suggestion.b}`}
             >
               <PictoLocal />
@@ -408,7 +427,7 @@ export function ChampCarnet(p: ChampCarnetProps) {
       )}
       <form
         className={`cn-champ${focus ? ' cn-champ-focus' : ''}${plein ? ' cn-champ-plein' : ''}${jointe ? ' cn-champ-joint' : ''}${ecoute ? ' cn-champ-ecoute' : ''}`}
-        onSubmit={e => { e.preventDefault(); if (pret && !p.desactive) p.onEnvoyer(); }}
+        onSubmit={e => { e.preventDefault(); if (pret && !p.desactive) envoyer(); }}
       >
         {jointe && (
           <div className="cn-jointe" role="status">
@@ -431,11 +450,11 @@ export function ChampCarnet(p: ChampCarnetProps) {
           disabled={p.desactive}
           onFocus={() => { setFocus(true); p.onFocusChamp?.(); }}
           onBlur={() => { setFocus(false); p.onBlurChamp?.(); }}
-          onChange={e => p.onChange(e.target.value)}
+          onChange={e => changer(e.target.value)}
           onKeyDown={e => {
             if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
               e.preventDefault();
-              if (pret && !p.desactive) p.onEnvoyer();
+              if (pret && !p.desactive) envoyer();
             }
           }}
           enterKeyHint="send"
@@ -464,7 +483,7 @@ export function ChampCarnet(p: ChampCarnetProps) {
             {ecoute && <span className="cn-ecoute-mot" aria-hidden>Arrêter la dictée</span>}
           </button>
         )}
-        {(plein || jointe) && !ecoute && <button type="submit" className="cn-envoi-mot" disabled={p.desactive || !pret}>{envoi}</button>}
+        {(plein || jointe) && !ecoute && <button type="submit" className="cn-envoi-mot" onMouseDown={e => e.preventDefault()} disabled={p.desactive || !pret}>{envoi}</button>}
       </form>
       {p.pied}
     </div>
