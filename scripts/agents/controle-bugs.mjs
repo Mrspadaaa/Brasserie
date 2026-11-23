@@ -67,7 +67,8 @@ export function lireRegistre(texte) {
         empreinte: (c[4] ?? '').replace(/`/g, '').trim() });
       continue;
     }
-    const m = /^([A-Z][A-Z0-9]*)(-NOTE)?-(\d+)$/.exec(c[0] ?? '');
+    // Préfixe à segments permis (23.11 : CA12-M4-n, une méthode par préfixe).
+    const m = /^([A-Z][A-Z0-9]*(?:-(?!NOTE-)[A-Z][A-Z0-9]*)*)(-NOTE)?-(\d+)$/.exec(c[0] ?? '');
     if (m) bugs.push({ id: c[0], prefixe: m[1], etat: (c[5] ?? '').toLowerCase(), commit: (c[6] ?? '').replace(/`/g, '') });
   }
   return { sources, bugs };
@@ -75,7 +76,9 @@ export function lireRegistre(texte) {
 
 export const empreinte = (p) => createHash('sha1').update(fs.readFileSync(p, 'utf8').replace(/\r\n/g, '\n')).digest('hex').slice(0, 12);
 
-const commitExiste =(h) => { try { execFileSync('git', ['cat-file', '-e', `${h}^{commit}`], { cwd: RACINE, stdio: 'ignore' }); return true; } catch { return false; } };
+const ARCHIVES = (() => { try { return new Set(fs.readFileSync(path.join(RACINE, "work/missions/2026-11-23-nettoyage-depot/commits-archives.txt"), "utf8").split(/\r?\n/).filter((l) => l && !l.startsWith("#")).flatMap((l) => l.split(" "))); } catch { return new Set(); } })();
+// Historique comprimé le 23.11 : un commit cité avant la compression vit dans la sauvegarde (bundle), listé dans commits-archives.txt.
+const commitExiste = (h) => { if ([...ARCHIVES].some((a) => a.startsWith(h))) return true; try { execFileSync("git", ["cat-file", "-e", `${h}^{commit}`], { cwd: RACINE, stdio: "ignore" }); return true; } catch { return false; } };
 
 export function controler() {
   const erreurs = [];
