@@ -686,13 +686,13 @@ export function pastille(rangee: IdRangee, choses: readonly ChoseCalendrier[], c
   const enMots = aVenir.length ? 'coût à venir' : nbVu ? nChoses(nbVu) : '';
   const texte = rangee === 'activites' ? (jours ? `${jours} j` : nbVu ? nChoses(nbVu) : '')
     : solde !== null ? `${francsSignes(solde)}${aVenir.length ? ' + coût à venir' : ''}`
-      : estime !== null && !aVenir.length ? `${francsSignes(estime)} estimé` : probable !== null ? `${francsSignes(probable)} probable` : recu !== null && !aVenir.length ? `${francsSignes(recu)} reçu` : enMots;
+      : estime !== null && !aVenir.length ? `${francsSignes(estime)} estimé` : probable !== null ? `${francsSignes(probable)} probable` : enMots;
   /* le mot posé à côté : « prévu S44–S49 » ; sans argent dans la fenêtre, il le dit (« aucun mouvement »), jamais « confirmé » */
   /* REPRISE-4 (a) : une seule colonne (1 sem.) se dit une fois, « prévu S47 », jamais « S47–S47 » */
   const periode = premier === dernier ? premier : `${premier}–${dernier}`;
   const conf = mot ? `${mot} ${periode}${estime !== null ? ` · ${francsSignes(estime)} estimé` : ''}`
     : estime !== null && !probSeul ? 'hors courbe'
-      : recu !== null && !probSeul ? `reçu ${periode}` : probSeul ? 'pas confirmé' : sansMouvement && !sansMontant ? 'aucun mouvement' : sansMontant ? 'sans montant' : 'pas confirmé';
+      : recu !== null && !probSeul ? `hors ventes ${periode}` : probSeul ? 'pas confirmé' : sansMouvement && !sansMontant ? 'aucun mouvement' : sansMontant ? 'sans montant' : 'pas confirmé';
   return { texte, lecture: morceaux.join(', '), part: Math.abs(solde ?? (aVenir.length ? 0 : estime ?? probable ?? 0)), solde, estime, confirme, mot, conf, debut: premier, fin: dernier, periode };
 }
 

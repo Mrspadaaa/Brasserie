@@ -1,5 +1,5 @@
 import React from 'react';
-import { Barrel, Beer, BottleWine, FileText, Hammer, Link2, ListChecks, PartyPopper, Repeat, ShoppingCart, TrendingUp } from 'lucide-react';
+import { Barrel, Beer, BottleWine, FileText, Hammer, Link2, ListChecks, MoreHorizontal, PartyPopper, PiggyBank, Repeat, ShoppingCart, TrendingUp } from 'lucide-react';
 import { etiquetteS, francsSignes, jourLisible, texteDuree, type ChoseCalendrier, type Rangee } from '../../../domain/calendrier';
 import { usePointeur } from './usePointeur';
 import { useToucherNom } from './zoneToucher';
@@ -136,9 +136,12 @@ export const ICONE_RANGEE: Record<Rangee, typeof Beer> = {
  * titre ne dit rien du format garde la flèche générique : jamais un format deviné. La consigne (ou une vente d'un plan récurrent) prend les flèches
  * en boucle, comme la maquette.
  */
-export function iconeChose(c: Pick<ChoseCalendrier, 'rangee' | 'titre' | 'source' | 'brassinLie'>): typeof Beer {
+export function iconeChose(c: Pick<ChoseCalendrier, 'rangee' | 'titre' | 'source' | 'brassinLie'> & { horsVentes?: ChoseCalendrier['horsVentes'] }): typeof Beer {
   if (c.brassinLie) return ShoppingCart;
   if (c.rangee !== 'ventes') return ICONE_RANGEE[c.rangee];
+  /* C38-3 (tour 38) : un apport garde sa tirelire de la saisie, une autre entrée ses trois points : ce ne sont pas des ventes (flèche montante) */
+  if (c.horsVentes === 'apport') return PiggyBank;
+  if (c.horsVentes === 'autre-entree') return MoreHorizontal;
   if (/\bf[uû]ts?\b/i.test(c.titre)) return Barrel;
   if (/\b(bouteilles?|cartons?|caisses?|packs?)\b/i.test(c.titre)) return BottleWine;
   if (/\bconsignes?\b/i.test(c.titre) || (c.source.genre === 'plan' && c.source.origine === 'recurring')) return Repeat;

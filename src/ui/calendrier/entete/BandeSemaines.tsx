@@ -224,6 +224,8 @@ export function periodesBande(semaines: readonly SemaineBande[], abscisses: read
     ? (30 * lJour >= besoin ? 1 : [2, 3, 6].find(s => s * 28 * lJour >= besoin) ?? 12)
     : (365 * lJour >= besoin ? 1 : [2, 5, 10].find(s => s * 365 * lJour >= besoin) ?? 20);
   const rang = (iso: string) => (pas === 'mois' ? Number(iso.slice(5, 7)) - 1 : Number(iso.slice(0, 4)));
+  /** La largeur d'un nom : une initiale, « ’27 » ou une année entière. */
+  const largeurNom = (t: string) => (t.length === 1 ? Math.ceil(wEtiquette / 2) : t.length === 3 ? Math.ceil(wEtiquette * 0.85) : Math.ceil(wEtiquette * 1.4));
   const limites: number[] = [], noms: NomPeriode[] = [];
   let l0 = Infinity; // le début (1er du mois) du premier mois nommé : avant g, il est entamé
   for (let d = pas === 'mois' ? `${semaines[0].debut.slice(0, 7)}-01` : `${semaines[0].debut.slice(0, 4)}-01-01`; d < fin; d = suivant(d)) {
@@ -238,35 +240,47 @@ export function periodesBande(semaines: readonly SemaineBande[], abscisses: read
        l'année entière, janvier dit « ’27 » (trois signes, un peu moins large qu'un « S53 », comme la bande de l'An) ; sinon son initiale */
     const anneeCourteTient = r - l >= Math.ceil(wEtiquette * 0.85) + ECART_ETIQUETTES;
     const janvier = pas === 'mois' && d.slice(5, 7) === '01';
+    /* C38-1 (tour 38, en ligne : « 2025 M J S N 2027… » à 19 mois, aucune année à 14 et 16 mois) : l'année de janvier est TOUJOURS posée, entière
+       quand elle tient, sinon « ’27 » ; elle déborde les traits de son mois (jamais la courbe), et l'emporte sur les initiales qu'elle touche */
     const texte = pas === 'mois'
-      ? (janvier && (saut > 1 || anneeTient) ? d.slice(0, 4) : janvier && anneeCourteTient ? `’${d.slice(2, 4)}` : INITIALES[Number(d.slice(5, 7)) - 1])
+      ? (janvier ? (saut > 1 || anneeTient ? d.slice(0, 4) : `’${d.slice(2, 4)}`) : INITIALES[Number(d.slice(5, 7)) - 1])
       : d.slice(0, 4);
-    const wt = texte.length === 1 ? Math.ceil(wEtiquette / 2) : texte.length === 3 ? Math.ceil(wEtiquette * 0.85) : Math.ceil(wEtiquette * 1.4);
-    if (saut > 1) {
-      /* la part visible du mois doit tenir la moitié d'une initiale (une année nommée en janvier déborde ses traits, jamais le bord) */
-      if (rang(d) % saut !== 0 || r - l < Math.ceil(wEtiquette / 2) / 2 || (l + r) / 2 - wt / 2 < g || (l + r) / 2 + wt / 2 > larg) continue;
+    const wt = largeurNom(texte);
+    let x = (l + r) / 2;
+    if (janvier) {
+      /* collée au bord, l'année se décale vers l'intérieur, tant que son centre reste sur son année (jamais le nom d'une autre année) */
+      x = Math.min(Math.max(x, g + wt / 2, x0 + wt / 2), larg - wt / 2);
+      if (x < x0 + 0.5 || x > X(`${Number(d.slice(0, 4)) + 1}-01-01`) - 0.5) continue;
+    } else if (saut > 1) {
+      /* la part visible du mois doit tenir la moitié d'une initiale */
+      if (rang(d) % saut !== 0 || r - l < Math.ceil(wEtiquette / 2) / 2 || x - wt / 2 < g || x + wt / 2 > larg) continue;
     } else if (r - l < wt + ECART_ETIQUETTES) continue;
-    const x = (l + r) / 2;
     let k = 0;
     while (k < n - 1 && x >= a[k + 1]) k++;
-    // un mois sur deux ou plus : la période entamée au bord gauche cède la place à la période entière qui le suit s'ils se touchent
-    const prec = noms[noms.length - 1];
-    if (saut > 1 && prec && x - prec.x < (wt + (prec.texte.length === 1 ? Math.ceil(wEtiquette / 2) : Math.ceil(wEtiquette * 1.4))) / 2 + ECART_ETIQUETTES) {
-      /* une année l'emporte sur l'initiale qui la touche ; la période entamée au bord gauche cède la place à la période entière qui la suit */
-      if ((texte.length === 4 && prec.texte.length === 1) || (noms.length === 1 && l0 < g)) noms.pop(); else continue;
+    // la période entamée au bord gauche cède la place à la période entière qui la suit s'ils se touchent ; une année l'emporte sur l'initiale qui la touche
+    const touche = (p: NomPeriode) => x - p.x < (wt + largeurNom(p.texte)) / 2 + ECART_ETIQUETTES;
+    if (noms.length && touche(noms[noms.length - 1])) {
+      if (texte.length > 1) {
+        while (noms.length && touche(noms[noms.length - 1]) && noms[noms.length - 1].texte.length === 1) noms.pop();
+        if (noms.length && touche(noms[noms.length - 1])) { if (saut > 1 && noms.length === 1 && l0 < g) noms.pop(); else continue; }
+      } else if (saut > 1 && noms.length === 1 && l0 < g) noms.pop(); else continue;
     }
     noms.push({ k, texte, x, decal: x - (a[k] + a[k + 1]) / 2, periode: pas === 'mois' ? d.slice(0, 7) : d.slice(0, 4) });
     if (noms.length === 1) l0 = x0;
   }
   /* T29-7 (23.11, « M M J S 2027 M J S 2028 » : la première année n'a pas de nom) : quand un mois sur plusieurs se nomme, l'année du bord gauche, si
      son janvier n'est pas dans le cadre, se nomme au bord gauche ; les noms qu'elle toucherait lui cèdent la place */
-  if (pas === 'mois' && saut > 1) {
-    const an0 = semaines[0].debut.slice(0, 4), wt = Math.ceil(wEtiquette * 1.4);
-    if (!noms.some(n => n.texte === an0) && larg - g >= wt + ECART_ETIQUETTES) {
-      const x = g + wt / 2 + 1;
-      const libres = noms.filter(n => n.x - x >= (wt + (n.texte.length === 1 ? Math.ceil(wEtiquette / 2) : wt)) / 2 + ECART_ETIQUETTES);
+  /* C38-1 : à toute durée (le saut d'un mois n'y change rien), et jamais une année fausse : le nom se pose au bord gauche seulement si son centre
+     est sur son année (un premier segment de dix jours ne porte pas « 2025 » : la courbe y est déjà en 2026) ; entier, sinon « ’25 » */
+  if (pas === 'mois' && fin > `${Number(semaines[0].debut.slice(0, 4)) + 1}-01-01`) {
+    const an0 = semaines[0].debut.slice(0, 4), finAn0 = X(`${Number(an0) + 1}-01-01`);
+    const nomme = noms.some(n => n.texte === an0 || n.texte === `’${an0.slice(2)}`);
+    for (const texte of nomme ? [] : [an0, `’${an0.slice(2)}`]) {
+      const wt = largeurNom(texte), x = g + wt / 2 + (texte.length === 4 ? 1 : 0);
+      if (larg - g < wt + ECART_ETIQUETTES || x > finAn0 - 2) continue;
+      const libres = noms.filter(n => n.x - x >= (wt + largeurNom(n.texte)) / 2 + ECART_ETIQUETTES);
       /* jamais au prix d'une année déjà nommée : un premier segment trop court pour son nom s'efface devant le janvier qui le suit */
-      if (noms.every(n => n.texte.length === 1 || libres.includes(n))) return { limites, noms: [{ k: 0, texte: an0, x, decal: x - (a[0] + a[1]) / 2, periode: an0 }, ...libres] };
+      if (noms.every(n => n.texte.length === 1 || libres.includes(n))) return { limites, noms: [{ k: 0, texte, x, decal: x - (a[0] + a[1]) / 2, periode: an0 }, ...libres] };
     }
   }
   return { limites, noms };

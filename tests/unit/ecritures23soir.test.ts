@@ -78,8 +78,9 @@ describe('E35-2, E35-3 : un apport et une autre entrée ne sont pas des ventes',
     const m = construireModele(entrees({ transactions: [apport.transaction], payments: [pays[1]] }));
     const p = pastille('ventes', m.choses.filter(c => c.rangee === 'ventes'), cols('2026-11-16', 4));
     expect(p.solde).toBeNull();
-    expect(p.texte).toMatch(/reçu$/);
-    expect(p.conf).toMatch(/^reçu /);
+    /* C38-3 (tour 38) : l'apport n'entre jamais dans un total « reçu » des Ventes : la pastille dit « hors ventes » */
+    expect(p.texte).not.toMatch(/reçu/);
+    expect(p.conf).toMatch(/^hors ventes /);
   });
   it('un apport promis (à recevoir) est « attendu, hors ventes », jamais « à encaisser »', () => {
     const promis = saisir('apport', { cents: 50_000, date: '2026-12-01', reglement: 'apayer', echeance: '2026-12-01', nom: 'Promis' }, 'T-p').transaction;

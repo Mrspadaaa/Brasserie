@@ -2,6 +2,7 @@
 // pour un cadre de 4 ans, axe 2029–2030 avec « ‹ auj. » alors qu'aujourd'hui est dans le cadre, rangées vides malgré des brassins).
 // État de l'art (L29) : test par modèle (fast-check `fc.commands`, `fc.asyncModelRun`) : des suites aléatoires de gestes sur la fenêtre (durée
 // au menu, période de l'app ‹ › et « Tout », poignées, cadre glissé, rechargement) ; après CHAQUE geste, les invariants d'un état unique :
+//   I6 (C38-1) chaque année du cadre nommée sur l’axe des mois, jamais une année fausse ;
 //   I1 le libellé de durée = la durée du cadre (son étiquette datée) ; I2 aujourd'hui dans le cadre ⇒ marqué « dans » sur la courbe, aucun
 //   « ‹ auj. » / « auj. › » ; I3 aujourd'hui dans le cadre ⇒ la rangée Brassins n'est pas « vide » (la fixture a des brassins autour d'aujourd'hui).
 // Le contre-exemple réduit (shrink) est la suite de gestes à rejouer. Données : la fixture simulée. Rouge sur le tour 22 attendu.
@@ -65,7 +66,11 @@ async function etat(page: Page) {
     const cb = document.querySelector('.ent-cbz .ent-cb') ?? document.querySelector('.ent-cb'), ca = document.querySelector('.ent-cadre');
     const rb = cb?.getBoundingClientRect(), rc = ca?.getBoundingClientRect();
     const axe = document.querySelector('[data-axe-du]');
+    /* I6 (C38-1) : les noms de la bande des initiales de mois (`data-pas="mois"`), leur centre en px de la courbe ; seuls les noms d'année nous servent */
+    const bande = document.querySelector('[data-bande-semaines][data-pas="mois"]');
+    const noms = bande && rb ? [...bande.querySelectorAll('.ent-sem--pas')].map((s) => { const r = s.getBoundingClientRect(); return { t: (s.textContent ?? '').trim(), x: (r.left + r.right) / 2 - rb.left }; }).filter((n) => /^(\d{4}|’\d\d)$/.test(n.t)) : null;
     return {
+      noms,
       duree: (bouton?.textContent ?? '').replace(/\s+/g, ' ').trim(), etiquette: t('[data-cadre-etiquette]'), aujs, fleches: [...new Set(fleches)],
       brassinsVide: !!brassins?.querySelector('.cal-vide'), app: t('[data-periode-pastille] .pr-ce'),
       boites: rb && rc && rb.width > 0 ? { cl: rc.left - rb.left, cr: rc.right - rb.left, w: rb.width } : null,
@@ -104,6 +109,21 @@ async function verifier(r: Reel) {
     /* I5 : l'étiquette dit les dates du cadre (au jour près ; en mois : le mois) */
     const [a, m, j] = e.axe.cdu.split('-').map(Number), [a2, m2, j2] = e.axe.cau.split('-').map(Number);
     expect(Math.abs(jour(a, m - 1, j) - d) <= (jeu > 8 ? 31 : 0) && Math.abs(jour(a2, m2 - 1, j2) - f) <= (jeu > 8 ? 31 : 0), `I5 étiquette ≠ cadre ${e.axe.cdu}…${e.axe.cau} : ${ctx}`).toBe(true);
+  }
+  /* I6 (C38-1, tour 38 : « 2025 M J S N 2027… » à 19 mois, aucune année à 14 et 16 mois) : quand l'axe porte des initiales de mois et passe un nouvel an,
+     chaque année qui tient 32 px dans le cadre est nommée au moins une fois, et aucun nom d'année n'est posé sur un jour d'une autre année */
+  if (e.noms && e.boites && e.axe?.du && e.axe.au && e.axe.cdu && e.axe.cau) {
+    const du = jourIso(e.axe.du), au = jourIso(e.axe.au) + 1, px = e.boites.w / (au - du);
+    const anDe = (t: string) => (/^\d{4}$/.test(t) ? Number(t) : 2000 + Number(t.slice(1)));
+    const anAu = (x: number) => new Date((du + x / px) * 864e5).getUTCFullYear();
+    for (const n of e.noms) expect(anAu(n.x - 2) === anDe(n.t) || anAu(n.x + 2) === anDe(n.t), `I6 « ${n.t} » posée sur ${anAu(n.x)} : ${ctx}`).toBe(true);
+    if (new Date(du * 864e5).getUTCFullYear() !== new Date((au - 1) * 864e5).getUTCFullYear()) {
+      const xAn = (an: number) => (jour(an, 0, 1) - du) * px, nommees = new Set(e.noms.map((n) => anDe(n.t)));
+      for (let an = new Date(du * 864e5).getUTCFullYear(); an <= new Date((au - 1) * 864e5).getUTCFullYear(); an++) {
+        const part = Math.min(e.boites.cr, xAn(an + 1)) - Math.max(e.boites.cl, xAn(an));
+        expect(part < 32 || nommees.has(an), `I6 l'année ${an} (${Math.round(part)} px dans le cadre) n'est nommée nulle part (${[...nommees].join(', ') || 'aucune'}) : ${ctx}`).toBe(true);
+      }
+    }
   }
   if (auj >= d && auj <= f) {
     /* I2 */
