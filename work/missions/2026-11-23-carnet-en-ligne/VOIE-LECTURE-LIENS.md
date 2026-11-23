@@ -36,3 +36,4 @@ requis oui/non, risque. Recommandation ; tout nouveau compte ou service payant a
 - Chaque appel réel au journal ia-journal.jsonl.
 - 23.11, ses mots : « carbon sera trop lent ». Carbon retiré du comparatif ; Hydrogen reste, temps de réponse mesuré pour chaque outil.
 - 23.11 : ajouter Gemini 4 Neon (sorti le 18.11, 3/15 $), chronométré, coupé s'il dépasse le temps de 3.8 Flash. Argon : écarté, même gamme que Carbon.
+- 23.11 (IA-ETAPES-VISIBLES, ses mots : « découper les tâches en sous tâches. Et voir si tu es correcte ») : la cascade est découpée en sous-tâches nommées (page lue, données structurées, prix, devise et frais, photos, caractéristiques, contrôle), chacune rend un statut contrôlé (trouvé / absent / douteux) et le serveur l'écrit au fil de l'eau pour que l'app l'affiche ; testé au banc.
