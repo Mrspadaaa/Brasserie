@@ -34,6 +34,9 @@ import { Photos } from './Photos';
 import { titreAffiche } from './titre';
 import { VignetteObjet } from './pictos';
 import { Horizons } from '../saisie/Horizons';
+import { DureeFenetre } from '../calendrier/frise/DureeFenetre';
+import { plageDate } from '../plageDate';
+import { lundiDe } from '../../domain/calendrier';
 import { ORDRES_DE_GRANDEUR, texteIntention } from '../../domain/horizons';
 
 /** Lien « lié à » (R47), calculé par `liensDe` (lot A) : jamais de montant. */
@@ -658,7 +661,14 @@ const jourLocal = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() 
  */
 function RubriqueQuand(p: { date?: string; precision?: 'semaine' | 'mois'; aujourdhui: string; neuf: boolean; picto: number; onDater: (lundi: string | null) => void; onAuCalendrier?: () => void;
   prix?: CarnetOuvertProps['prix']; onPrix?: (centimes: number) => void }) {
-  const quand = texteIntention(p.date, p.aujourdhui, p.precision);
+  /* D431 (GESTE-DATE-PARTOUT, CA12-PW-2) : sous les puces raccourcis, la frise partagée du Calendrier (`DureeFenetre seule`, rangée achats) ; le repère
+     suit le doigt (brouillon), la date s'écrit au lâcher (`onDater(lundi)`), jamais à chaque pas. Sans date, le repère attend sur cette semaine, estompé. */
+  const lundiPose = p.date && /^\d{4}-\d{2}-\d{2}/.test(p.date) ? lundiDe(p.date.slice(0, 10)) : null;
+  const [tire, setTire] = useState<string | null>(null);
+  const tireRef = useRef<string | null>(null);
+  useEffect(() => { tireRef.current = null; setTire(null); }, [lundiPose]);
+  const quand = tire ? texteIntention(tire, p.aujourdhui, 'semaine') : texteIntention(p.date, p.aujourdhui, p.precision);
+  const plage = plageDate(lundiPose ?? p.aujourdhui, p.aujourdhui);
   const [changerPrix, setChangerPrix] = useState(false);
   const pose = p.prix?.centimes;
   const semblable = p.prix?.semblable;
@@ -669,6 +679,12 @@ function RubriqueQuand(p: { date?: string; precision?: 'semaine' | 'mois'; aujou
         {quand && pose !== undefined && <span className="cn-mut"> · {montant(pose)} CHF estimé</span>}
         {quand && pose !== undefined && p.onPrix && <> <button type="button" className="cn-lien" aria-expanded={changerPrix} onClick={() => setChangerPrix(v => !v)}>Prix</button></>}</p>
       <Horizons date={p.date} aujourdhui={p.aujourdhui} classePuce="cn-puce" className="cn-horizons" onChoisir={(_, lundi) => p.onDater(lundi)} />
+      <div className="cn-quand-frise" data-quand-frise data-valeur={lundiPose ?? undefined} data-vide={lundiPose || tire ? undefined : ''}>
+        <DureeFenetre seule rangee="achats" debut={tire ?? lundiPose ?? lundiDe(p.aujourdhui)} fin={null} onFin={() => undefined}
+          epoque={plage.epoque} dernier={plage.dernier}
+          onPlage={d => { tireRef.current = d; setTire(d); }}
+          onLacher={() => { const d = tireRef.current; if (d && d !== lundiPose) p.onDater(d); else { tireRef.current = null; setTire(null); } }} />
+      </div>
       {quand && p.onPrix && (pose === undefined || changerPrix) && (
         <div role="group" aria-label="Prix estimé" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginTop: 8 }}>
           {/* les montants seuls ne disaient pas ce qu'ils sont : le mot en gris, comme l'état d'une rubrique */}

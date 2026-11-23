@@ -202,6 +202,16 @@ export function DureeFenetre({ rangee, debut, fin, onFin, onPlage, seule = false
   }
   const pxSemaine = pxUnite * 7 / u;
   const finTexte = fin ?? debut;
+  /* D431 (« rien de coupé ») : un mois nommé près du bord droit sortirait de la piste, rogné (« janv » sans son point, « ja ») : il se tait là où il ne tient pas,
+     mesuré sur la boîte rendue (la police change d'un écran à l'autre : 12 px au Calendrier, 14 px au Carnet), à chaque rendu, donc à chaque pas du doigt */
+  useLayoutEffect(() => {
+    const el = piste.current;
+    if (!el) return;
+    for (const rep of el.querySelectorAll<HTMLElement>('.cal-f-duree-rep')) {
+      const mois = rep.firstElementChild as HTMLElement | null;
+      if (mois) mois.style.visibility = parseFloat(rep.style.left) + 3 + mois.offsetWidth > el.clientWidth ? 'hidden' : '';
+    }
+  });
 
   return (
     <div className={`cal-f-duree${jour ? ' cal-f-duree-jour' : ''}`} data-duree={seule ? undefined : ''} data-date-seule={seule ? '' : undefined} data-pas={pas} data-vaul-no-drag>
