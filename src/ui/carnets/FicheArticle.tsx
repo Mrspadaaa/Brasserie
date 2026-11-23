@@ -94,6 +94,17 @@ export function filArianeCourt(titre: string, max = 22): string {
   return `${garde.length ? garde.join(' ') : t.slice(0, max)}…`;
 }
 
+/**
+ * T26-2 : une matière qui se pèse ou se compte (houblon, levure, malt, grain, sucre, bouchons, capsules, étiquettes) n'a pas de volume.
+ * Le nom de l'article le dit, ou ses valeurs (un taux d'alpha, une année de récolte). Un appareil, une cuve, un fermenteur : volume.
+ */
+const MATIERE = /houblon|hopfen|\bhops?\b|pellets?|levure|hefe|yeast|\bmalt|malz|\bgrain|getreide|sucre|zucker|bouchon|capsule|kronkorken|[ée]tiquette|etikett|d[ée]sinfectant|sanitizer/i;
+const VALEUR_DE_MATIERE = /^(?:alpha|beta|cohumulone|erntejahr|r[ée]colte|hopfentyp|type de houblon)\b/;
+const COLONNE_VOLUME = /^(?:volume|volumen|capacit|contenance|fassungsverm|nutzvolumen|nutzinhalt|litres?\b)/;
+export function matiereSansVolume(a: Pick<ArticleV, 'nom' | 'valeurs'>): boolean {
+  return MATIERE.test(a.nom ?? '') || Object.keys(a.valeurs).some(k => VALEUR_DE_MATIERE.test(normaliser(k)));
+}
+
 /** Une case de la grille « Caractéristiques » : son nom, sa valeur dite (ou « non publié »), son rang s'il classe. */
 interface Case { nom: string; texte: string | null; unite?: string; rang?: number; exemple?: boolean }
 
@@ -145,8 +156,11 @@ export function FicheArticle(p: FicheArticleProps) {
      reste dit (jamais 0), le critère reste nommé. */
   const dits = new Set([nomHeros, ...cases.map(c => normaliser(c.nom))]);
   const manque: string[] = [];
+  const sansVolume = matiereSansVolume(a);
   for (const col of t?.colonnes ?? []) {
     if (normaliser(col.nom) === 'prix' || dits.has(normaliser(col.nom))) continue;
+    /* T26-2 : « Non publié : Volume » n'a pas de sens pour un houblon, une levure, un malt : la colonne ne se dit que pour un appareil. */
+    if (sansVolume && COLONNE_VOLUME.test(normaliser(col.nom))) continue;
     manque.push(col.nom);
     dits.add(normaliser(col.nom));
   }
@@ -164,6 +178,7 @@ export function FicheArticle(p: FicheArticleProps) {
   const [iPhoto, setIPhoto] = React.useState(0);
   const iP = Math.min(iPhoto, Math.max(photos.length - 1, 0));
   const photoCourante = photos[iP];
+  const photoNonLue = !photoCourante && !!a.url && a.lecture === 'lue';
   /* L-16 (CA12-M4-18) : balayer à gauche, l'article suivant ; à droite, le précédent (un geste franc, surtout horizontal) */
   const depart = React.useRef<{ x: number; y: number } | null>(null);
   const balayer = {
@@ -207,8 +222,10 @@ export function FicheArticle(p: FicheArticleProps) {
           )}
         </figure>
       ) : (
-        <figure className="cn-fiche-photo cn-fiche-picto" data-cadre="picto" aria-hidden>
-          <VignetteObjet mots={[a.nom, p.facon?.nom, p.titreCarnet]} classe="cn-vignette-fiche" taille={132} />
+        <figure className="cn-fiche-photo cn-fiche-picto" data-cadre="picto" {...(photoNonLue ? {} : { 'aria-hidden': true })}>
+          <span aria-hidden><VignetteObjet mots={[a.nom, p.facon?.nom, p.titreCarnet]} classe="cn-vignette-fiche" taille={132} /></span>
+          {/* T26-3 : la page est lue mais sa photo ne l'est pas (page bloquée lue par Google, aucune image publiée) : la fiche le dit. */}
+          {photoNonLue && <figcaption className="cn-fiche-photo-non-lue"><Camera size={16} aria-hidden /> photo non lue</figcaption>}
         </figure>
       )}
       <h2 className="cn-titre">{a.nom ?? a.domaine ?? 'Lien sans aperçu'}</h2>

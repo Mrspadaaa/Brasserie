@@ -138,7 +138,7 @@ export function pageLueParGoogle(url: URL, l: LectureGoogle, luLe: number): { pa
   const etapes: EtapeLien[] = [
     { nom: 'page', statut: 'absent', detail: 'bloquee' }, etape,
     prix !== undefined ? { nom: 'prix', statut: 'trouve', detail: `${prix} ${devise}${taxe ? ` ${taxe}` : ''} (lu par Google)` } : { nom: 'prix', statut: 'absent' },
-    { nom: 'photos', statut: 'absent', detail: 'Google ne rend pas la photo' },
+    { nom: 'photos', statut: 'absent', detail: 'photo non lue : Google ne rend pas la photo' },
     valeurs.length ? { nom: 'caract', statut: 'trouve', detail: `${valeurs.length} (lues par Google)` } : { nom: 'caract', statut: 'absent' }
   ];
   return {

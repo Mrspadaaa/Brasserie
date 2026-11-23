@@ -58,7 +58,7 @@ export const LIEN_IA_CONSIGNE = [
   '- taxe : « ht » si la page dit hors taxe / exkl. MwSt / zzgl. MwSt pour ce prix, « ttc » si elle dit taxe comprise / inkl. MwSt ; sinon null.',
   '- prixDes : true si le prix est « dès / ab / from » (plusieurs tailles ou variantes).',
   '- portSuisse : frais de livraison vers la Suisse seulement s\'ils sont écrits ; portGratuit : true si la livraison gratuite est écrite.',
-  '- caracteristiques : au plus 12 caractéristiques techniques écrites (volume, dimensions, puissance, poids, matière, capacité…), nom court et valeur avec son unité, recopiés du texte.',
+  '- caracteristiques : au plus 12 caractéristiques techniques écrites (volume, dimensions, puissance, poids, matière, capacité…), la valeur avec son unité, recopiée du texte ; le nom court, écrit en français (« Largeur », « Volume », « Puissance ») même si la page est en allemand ou en anglais. Une longueur de câble est « Longueur du câble », jamais « Longueur ».',
   'Un champ absent du texte est null (ou une liste vide). N\'invente rien, ne convertis rien, ne calcule rien.'
 ].join('\n');
 
@@ -119,19 +119,21 @@ export function caracteristiquesTechniques(p: PageLue): number {
  * Complète la page lue par l'IA : Flash-Lite d'abord ; escalade vers le modèle fort (Hydrogen) seulement si le prix manque encore ou
  * si Flash-Lite contredit le prix publié. Les données structurées restent prioritaires ; chaque ajout est gardé contre le texte.
  */
-export async function completerParIA(p: PageLue, html: string, appel: AppelIA): Promise<PageLue> {
+export async function completerParIA(p: PageLue, html: string, appel: AppelIA, options: { escalade?: boolean } = {}): Promise<PageLue> {
   const texte = markdownProduit(html, p.nom);
   if (texte.length < 200) return p;
   const etapes = [...(p.etapes ?? [])];
   let panne: string | undefined;
   const demander = (m: 'lite' | 'fort') => appel(m, LIEN_IA_CONSIGNE, texte).catch((e: unknown) => { panne = String((e as { message?: unknown })?.message ?? e).slice(0, 120); return null; });
-  let r = await demander('lite');
+  /* `escalade` (lecture refaite à la demande du brasseur) : directement le modèle fort, sans Flash-Lite ; une panne ne se rejoue pas. */
+  const direct = options.escalade === true;
+  let r = await demander(direct ? 'fort' : 'lite');
   let { gardee, retire } = r ? garder(r, texte) : { gardee: { caracteristiques: [] } as Gardee, retire: [] as string[] };
-  const modeles: string[] = ['lite'];
+  const modeles: string[] = [direct ? 'modèle fort' : 'lite'];
   const contredit = p.prix !== undefined && gardee.prix !== undefined && Math.abs(gardee.prix - p.prix) > 0.011 && gardee.prix !== p.prixTTC;
   /* Escalade (Hydrogen) seulement si un champ qui compte reste absent ou douteux après Flash-Lite : le prix manque encore, ou il est
      retiré par la garde, ou il contredit le prix publié. Une panne (budget, délai) ne s'escalade pas : elle se répéterait et coûterait. */
-  if (!panne && ((p.prix === undefined && gardee.prix === undefined) || contredit || retire.includes('prix'))) {
+  if (!direct && !panne && ((p.prix === undefined && gardee.prix === undefined) || contredit || retire.includes('prix'))) {
     const fort = await demander('fort');
     modeles.push('fort');
     if (fort) { const g2 = garder(fort, texte); if (g2.gardee.prix !== undefined || !r) { r = fort; gardee = { ...g2.gardee, caracteristiques: g2.gardee.caracteristiques.length ? g2.gardee.caracteristiques : gardee.caracteristiques }; retire = g2.retire; } }

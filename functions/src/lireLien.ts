@@ -3,6 +3,7 @@ import { coursVersChf, type Cours } from './coursChange.js';
 import { caracteristiquesTechniques, CARACT_SUFFISANTES, completerParIA, iaUtile, type AppelIA } from './lienIA.js';
 import { completerValeurs, lireJsonPlateforme, plateformeDe } from './lienPlateforme.js';
 import { pageLueParGoogle, type AppelPageBloquee } from './lienBloquee.js';
+import { traduireValeurs } from './lienLibelles.js';
 import type { PageLue } from './carnetIA.js';
 
 /**
@@ -168,6 +169,16 @@ export interface OptionsLecture {
   pageBloquee?: AppelPageBloquee;
   /** La sous-tâche qui démarre (seules l'IA et la lecture par Google sont lentes : l'écran les montre « en cours » avant leur réponse). */
   onDebut?: (nom: 'ia' | 'bloquee') => void;
+  /** Lecture refaite à la demande du brasseur : l'étape IA va directement au modèle fort (Hydrogen), sans passer par Flash-Lite ; l'étape le dit (« modèle fort »). */
+  escalade?: boolean;
+}
+
+/** Les noms des caractéristiques en français (`lienLibelles.ts`) ; la valeur n'est jamais touchée. */
+function enFrancais(page: PageLue): PageLue {
+  if (!page.valeurs) return page;
+  const valeurs = traduireValeurs(page.valeurs);
+  const { valeurs: _avant, ...reste } = page;
+  return valeurs?.length ? { ...reste, valeurs } : reste;
 }
 
 export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<PageLue> {
@@ -260,7 +271,7 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
     catch (e) { sortie = { page: null, etape: { nom: 'bloquee', statut: 'absent', detail: `Google indisponible (${String((e as { message?: unknown })?.message ?? e).slice(0, 120)})` } }; }
     if (!sortie.page) { dire(sortie.etape); return { url: u.href, domaine: domaineDe(u), statut: 'bloquee', luLe, etapes: [bloquee, sortie.etape] }; }
     for (const e of sortie.page.etapes ?? []) if (e.nom !== 'page') dire(e);
-    return sortie.page;
+    return enFrancais(sortie.page);
   };
   let url = depart;
   try {
@@ -295,11 +306,12 @@ export async function lireLien(raw: string, opts: OptionsLecture = {}): Promise<
       dire({ nom: 'page', statut: 'trouve', detail: domaineDe(url) });
       let page = lirePage(html, url, luLe);
       for (const e of page.etapes ?? []) if (!(e.nom === 'page' && e.statut === 'trouve')) dire(e);
-      page = await parPlateforme(page, html, url);
-      if (opts.ia && iaUtile(page)) {
+      page = enFrancais(await parPlateforme(page, html, url));
+      /* `escalade` : la lecture refaite à la demande du brasseur va directement au modèle fort, même quand la page paraît complète. */
+      if (opts.ia && (iaUtile(page) || (opts.escalade === true && page.statut === 'lue'))) {
         const avant = page.etapes?.length ?? 0;
         try { opts.onDebut?.('ia'); } catch { /* l'écran ne fait jamais échouer la lecture */ }
-        page = await completerParIA(page, html, opts.ia);
+        page = enFrancais(await completerParIA(page, html, opts.ia, { escalade: opts.escalade === true }));
         for (const e of (page.etapes ?? []).slice(avant)) dire(e);
       }
       return avecChange(page);
